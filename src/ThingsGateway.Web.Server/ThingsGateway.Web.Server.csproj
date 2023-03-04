@@ -7,7 +7,7 @@
 		<SatelliteResourceLanguages>zh-Hans</SatelliteResourceLanguages>
 		<PublishReadyToRunComposite>true</PublishReadyToRunComposite>
 		<NoWarn>CS1591;</NoWarn>
-		<Version>1.2.0</Version>
+		<Version>1.0.0</Version>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<ApplicationIcon>favicon.ico</ApplicationIcon>
 		<ServerGarbageCollection>false</ServerGarbageCollection>
