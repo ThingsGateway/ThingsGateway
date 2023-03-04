@@ -1,0 +1,42 @@
+﻿@namespace ThingsGateway.Web.Rcl.Core
+<MMenu Bottom
+       CloseDelay="100"
+       ContentClass="rounded"
+       Left
+       MaxHeight="500"
+       OffsetY
+       OpenDelay="60"
+       Transition="slide-y-transition">
+    <ActivatorContent>
+        @ActivatorContent?.Invoke(context)
+    </ActivatorContent>
+    <ChildContent>
+        <AppSheet Outlined="@false">
+            @if (ChildContent is not null)
+            {
+                @ChildContent
+            }
+            else
+            {
+                <DefaultList Items="@Items" ItemContent="ItemContent">
+                </DefaultList>
+            }
+        </AppSheet>
+    </ChildContent>
+</MMenu>
+
+@code {
+
+    [Parameter, EditorRequired]
+    public RenderFragment<ActivatorProps> ActivatorContent { get; set; }
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public RenderFragment<DefaultItem> ItemContent { get; set; }
+
+    [Parameter]
+    public List<DefaultItem> Items { get; set; } = new();
+
+}

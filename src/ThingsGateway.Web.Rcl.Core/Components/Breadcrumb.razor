@@ -1,0 +1,55 @@
+﻿@inject NavigationManager NavigationManager
+@namespace ThingsGateway.Web.Rcl.Core
+@inherits CultureComponentBase
+<div class="d-flex align-center py-1">
+    <MBreadcrumbs Linkage @key="@(Guid.NewGuid())" Class="pa-0">
+        <DividerContent>
+            <MIcon Class="ma-0 pa-0">mdi-chevron-right</MIcon>
+        </DividerContent>
+        <ChildContent>
+            <div style="white-space: nowrap !important;overflow: hidden !important; text-overflow: ellipsis !important;">
+                <MBreadcrumbsItem Href="javascript:history.back(-1)">
+                    <MIcon Size=20>mdi-arrow-left</MIcon>
+                </MBreadcrumbsItem>
+                @for (var i = 0; i < BreadcrumbItems.Count; i++)
+                {
+                    var item = BreadcrumbItems[i];
+                    var isLast = i == BreadcrumbItems.Count - 1;
+                    <MBreadcrumbsItem Href="@item.Href">
+                        <span class="@(isLast ? "text-subtitle2" : "text-body2")">@item.Text</span>
+                    </MBreadcrumbsItem>
+                }
+            </div>
+
+        </ChildContent>
+    </MBreadcrumbs>
+</div>
+
+
+@code {
+    [Inject]
+    UserResoures UserResoures { get; set; }
+    private List<BreadcrumbItem> GetBreadcrumbItems()
+    {
+        var items = new List<BreadcrumbItem>();
+        var currentNav = UserResoures.AllSameLevelMenus.FirstOrDefault(n => n.Component is not null && NavigationManager.Uri.Replace(NavigationManager.BaseUri, "/") == (n.Component));
+        if (currentNav is not null)
+        {
+            if (currentNav.ParentId != 0)
+            {
+                var parentNav = UserResoures.AllSameLevelMenus.FirstOrDefault(n => n.Id == currentNav.ParentId);
+                if (parentNav != null)
+                    items.Add(new BreadcrumbItem { Text = T(parentNav.Title), Href = null });
+            }
+            items.Add(new BreadcrumbItem() { Text = T(currentNav.Title), Href = currentNav.Component });
+            items.Last().Href = currentNav.Component;
+        }
+        return items;
+    }
+    private List<BreadcrumbItem> BreadcrumbItems;
+    protected override void OnParametersSet()
+    {
+        BreadcrumbItems = GetBreadcrumbItems();
+        base.OnParametersSet();
+    }
+}

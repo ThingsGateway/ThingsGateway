@@ -1,0 +1,84 @@
+﻿@page "/sys/openapisession"
+@using System.Linq.Expressions;
+@using Masa.Blazor.Presets;
+@inject IOpenApiSessionService SessionService
+@namespace ThingsGateway.Web.Rcl
+@attribute [Authorize]
+@attribute [RolePermission]
+@inject UserResoures UserResoures
+@inherits CultureComponentBase
+@layout MainLayout
+<AppDataTable TItem="OpenApiSessionOutput"
+              SearchItem="OpenApiSessionPageInput"
+              AddItem="OpenApiSessionOutput" EditItem="OpenApiSessionOutput"
+              SearchModel="@sessionSearch"
+              QueryCall="sessionQueryCall"
+              FilterHeaders="sessionFilterHeaders"
+              IsMenuOperTemplate=false
+              ShowQueryButton>
+
+    <SearchTemplate>
+        <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="my-1 mx-2 " @bind-Value="context.Account"
+                    Outlined Label=@context.Description(x => x.Account) />
+        <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="my-1 mx-2 " @bind-Value="context.LatestLoginIp"
+                    Outlined Label=@context.Description(x => x.LatestLoginIp) />
+    </SearchTemplate>
+
+    <ItemColOperTemplate>
+        <MButton Color="info" Text StopPropagation OnClick=@(()=>showVerificatList(context.Item.VerificatSignList))>
+            @context.Item.Description(it=>it.VerificatSignList)
+        </MButton>
+        @if (@UserResoures.IsHasButtonWithRole("openapisessionexit"))
+        {
+            <MButton Color="error" Text OnClick="()=>sessionExit(context.Item.Id)">
+                @T("强退")
+            </MButton>
+        }
+
+    </ItemColOperTemplate>
+
+    <HeaderTemplate>
+        <MLabel class="text-subtitle">@context.Text</MLabel>
+    </HeaderTemplate>
+
+</AppDataTable>
+
+<PModal @bind-Value="IsShowVerificatSignList" OnCancel="() => IsShowVerificatSignList = false"
+        Title=@sessionOutput.Description(it => it.VerificatSignList) Height=@("calc(100vh - 300px)")
+        MaxWidth="1200">
+    @if (IsShowVerificatSignList)
+    {
+        <AppDataTable @ref="_verificatinfosDatatable" TItem="VerificatInfo"
+                  SearchItem="BasePageInput" AddItem="object" EditItem="object"
+                  QueryCall="verificatQueryCall"
+                  DeleteCall="verificatExit" IsPage=false
+                  FilterHeaders="verificatFilterHeaders"
+                  IsMenuOperTemplate=false IsShowToolbar
+                  ShowDeleteButton=@UserResoures.IsHasButtonWithRole("openapiverificatdelete")>
+
+            <ItemColTemplate>
+                @switch (context.Header.Value)
+                {
+                    case nameof(context.Item.Device):
+                        <MChip Class="ma-1">
+                            @(context.Item.Device)
+                        </MChip>
+                        break;
+                    case nameof(context.Item.VerificatRemainPercent):
+                        <MProgressLinear Color="warning" Value="@(context.Item.VerificatRemainPercent*100)" Height="15" Context="LinearValue">
+                            <strong>@($"{LinearValue.ToString("f1")}%")</strong>
+                        </MProgressLinear>
+                        break;
+
+                    default:
+                        @context.Value
+                        break;
+                }
+
+            </ItemColTemplate>
+
+        </AppDataTable>
+
+    }
+</PModal>
+

@@ -1,0 +1,21 @@
+﻿@namespace ThingsGateway.Web.Rcl.Core
+@typeparam TItem where TItem : IDefaultItem<TItem>
+
+<MListItem Href="@Item?.Href" Link Target="@Item?.Target"
+           Exact>
+    @if (Item?.Icon is not null)
+    {
+        <MListItemIcon>
+            <MIcon>@Item.Icon</MIcon>
+        </MListItemIcon>
+    }
+
+    <NavItemContent Item="Item" />
+
+</MListItem>
+
+@code {
+
+    [Parameter, EditorRequired]
+    public TItem Item { get; set; }
+}

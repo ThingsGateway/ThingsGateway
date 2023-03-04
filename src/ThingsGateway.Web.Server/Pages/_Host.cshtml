@@ -1,0 +1,48 @@
+﻿@page "_Host"
+@using ThingsGateway.Web.Rcl.Core;
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>ThingsGateway</title>
+    <base href="/" />
+
+    <script>
+        window.downloadFileFromStream = async (fileName, contentStreamReference) => {
+            const arrayBuffer = await contentStreamReference.arrayBuffer();
+            const blob = new Blob([arrayBuffer]);
+            const url = URL.createObjectURL(blob);
+            const anchorElement = document.createElement('a');
+            anchorElement.href = url;
+            if (fileName == null) fileName = ""
+            anchorElement.download = fileName;
+            anchorElement.click();
+            anchorElement.remove();
+            URL.revokeObjectURL(url);
+        }
+    </script>
+
+</head>
+
+
+<body>
+
+    <app>
+        <component type="typeof(ThingsGateway.Web.Rcl.BlazorApp)" render-mode="ServerPrerendered" />
+    </app>
+    <link href="_content/Masa.Blazor/css/masa-blazor.min.css" rel="stylesheet" />
+    <link href=@(BlazorConst.ResourceUrl+"css/materialdesign/v6.x/css/materialdesignicons.min.css") rel="stylesheet">
+    <link href=@(BlazorConst.ResourceUrl+"css/material/materialicons.css") rel="stylesheet">
+    <link href=@(BlazorConst.ResourceUrl+"css/fontawesome/v5.15.4/css/all.min.css") rel="stylesheet">
+    <link href=@(BlazorConst.ResourceUrl+"TB.css") rel="stylesheet">
+    
+    <script src="_framework/blazor.server.js"></script>
+    <script src=@(BlazorConst.ResourceUrl+"js/jquery-3.5.1.js") type="text/javascript" charset="utf-8"></script>
+    <script src="_content/BlazorComponent/js/blazor-component.js"></script>
+
+</body>
+
+</html>

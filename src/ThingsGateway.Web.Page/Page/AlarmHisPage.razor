@@ -1,0 +1,175 @@
+﻿@page "/tgruntime/hisalarm"
+@namespace ThingsGateway.Web.Page
+@using System.Linq.Expressions;
+@using BlazorComponent;
+@using Furion.DataValidation;
+@using Mapster;
+@using Masa.Blazor.Presets;
+@using System.IO;
+@using TouchSocket.Core;
+@attribute [Authorize]
+@inject MasaBlazor MasaBlazor
+@attribute [RolePermission]
+@inherits CultureComponentBase
+@inject UserResoures UserResoures
+@layout MainLayout
+<AppDataTable @ref="_datatable" TItem="AlarmHis" SearchItem="HisPageInput"
+              AddItem="object" EditItem="object" ShowSelect=false
+              IsMenuOperTemplate=false SearchModel="_searchModel"
+              QueryCall="QueryCall"
+              FilterHeaders="FilterHeaders" Filters="Filters" ShowDetailButton
+                ShowQueryButton>
+    <SearchTemplate>
+
+        <MMenu CloseOnContentClick="false" OffsetY Context="menu">
+            <ActivatorContent>
+                <MTextField Dense Readonly Style="max-width:200px;" HideDetails=@("auto") Class="my-1  mx-2 " @bind-Value="context.StartTime" Clearable
+                            @attributes="menu.Attrs" Outlined Label=@context.Description(x => x.StartTime) />
+            </ActivatorContent>
+            <ChildContent>
+                <AppDateTimePicker ClassString="my-1  mx-2 " @bind-Value="context.StartTime"></AppDateTimePicker>
+            </ChildContent>
+            </MMenu>
+
+            <MMenu CloseOnContentClick="false" OffsetY Context="menu">
+            <ActivatorContent>
+                <MTextField Dense Readonly Style="max-width:200px;" HideDetails=@("auto") Class="my-1  mx-2 " @bind-Value="context.EndTime" Clearable
+                            @attributes="menu.Attrs" Outlined Label=@context.Description(x => x.EndTime) />
+            </ActivatorContent>
+            <ChildContent>
+                <AppDateTimePicker ClassString="my-1  mx-2 " @bind-Value="context.EndTime"></AppDateTimePicker>
+            </ChildContent>
+            </MMenu>
+
+
+            <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="my-1  mx-2 " @bind-Value="context.Name" Clearable
+                        Outlined Label=@context.Description(x => x.Name) />
+        <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="my-1  mx-2 " @bind-Value="context.DeviceName" Clearable
+                        Outlined Label=@context.Description(x => x.DeviceName) />
+
+
+
+    </SearchTemplate>
+
+
+    <ItemColTemplate>
+        @switch (context.Header.Value)
+        {
+
+            case nameof(context.Item.Quality):
+                <EnableChip Value="context.Item.Quality==192" DisabledLabel=@context.Item.Quality.ToString() EnabledLabel=@context.Item.Quality.ToString()>
+                </EnableChip>
+                break;
+            default:
+                @context.Value
+                break;
+
+        }
+
+    </ItemColTemplate>
+
+</AppDataTable>
+
+
+@code {
+
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string DeviceName { get; set; }
+
+    HisPageInput _searchModel { get; set; } = new();
+    private IAppDataTable _datatable;
+    AlarmHostService AlarmHostService { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        AlarmHostService = this.GetBackgroundService<AlarmHostService>();
+
+        _searchModel.DeviceName = DeviceName;
+        await base.OnInitializedAsync();
+    }
+
+
+    private async Task datatableQuery()
+    {
+        await _datatable?.QueryClick();
+    }
+
+
+    private void FilterHeaders(List<DataTableHeader<AlarmHis>> datas)
+    {
+        datas.RemoveWhere(it => it.Value == nameof(AlarmHis.Id));
+
+        foreach (var item in datas)
+        {
+            item.Sortable = false;
+            item.Filterable = false;
+            item.Divider = false;
+            item.Align = DataTableHeaderAlign.Start;
+            item.CellClass = " table-minwidth ";
+            switch (item.Value)
+            {
+                case nameof(AlarmHis.Name):
+                    item.Sortable = true;
+                    break;
+                case nameof(AlarmHis.DeviceName):
+                    item.Sortable = true;
+                    break;
+                case nameof(AlarmHis.VariableAddress):
+                    item.Sortable = true;
+                    break;
+
+                case nameof(AlarmHis.Quality):
+                    item.Sortable = true;
+                    break;
+
+            }
+        }
+    }
+
+    private void Filters(List<Filters> datas)
+    {
+        foreach (var item in datas)
+        {
+
+        }
+    }
+
+    private async Task<SqlSugarPagedList<AlarmHis>> QueryCall(HisPageInput input)
+    {
+        var result = await AlarmHostService.AlarmConfig();
+        if (result.IsSuccess)
+        {
+            return await Task.Run(async () =>
+             {
+                 try
+                 {
+                     var data = await result.Content.CopyNew().Queryable<AlarmHis>()
+    .WhereIF(!input.DeviceName.IsNullOrEmpty(), a => a.DeviceName.Contains(input.DeviceName))
+    .WhereIF(!input.Name.IsNullOrEmpty(), a => a.Name.Contains(input.Name))
+                   .WhereIF(input.StartTime != null, a => a.EventTime >= input.StartTime)
+               .WhereIF(input.EndTime != null, a => a.EventTime <= input.EndTime)
+    .OrderByIF(!string.IsNullOrEmpty(input.SortField), $"{input.SortField} {input.SortOrder}")
+    .OrderBy(u => u.Id)//排序
+    .ToPagedListAsync(input.Current, input.Size);
+                     return data;
+                 }
+                 catch (Exception ex)
+                 {
+                     await InvokeAsync(async () => await PopupService.EnqueueSnackbarAsync("查询失败，请检查网络连接", AlertTypes.Warning));
+                     return new() { Current = 1, Size = 10, Pages = 0, Records = new List<AlarmHis>(), Total = 0 };
+                 }
+
+             });
+
+        }
+        else
+        {
+            await InvokeAsync(async () => await PopupService.EnqueueSnackbarAsync(result.Message, AlertTypes.Warning));
+            return new() { Current = 1, Size = 10, Pages = 0, Records = new List<AlarmHis>(), Total = 0 };
+        }
+
+    }
+
+
+}

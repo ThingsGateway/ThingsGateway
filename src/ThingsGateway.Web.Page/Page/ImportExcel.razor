@@ -1,0 +1,163 @@
+﻿@namespace ThingsGateway.Web.Page
+@using System.Linq.Expressions;
+@using BlazorComponent;
+@using Furion.DataValidation;
+@using Mapster;
+@using Masa.Blazor.Presets;
+@using System.IO;
+@using TouchSocket.Core;
+@inject MasaBlazor MasaBlazor
+@inherits CultureComponentBase
+@inject UserResoures UserResoures
+
+<PModal @bind-Value="IsShowImport" OnCancel="() => IsShowImport = false"
+        Title=@T("导入") Persistent
+        MaxWidth="1000">
+    @if (IsShowImport)
+    {
+        <MStepper NonLinear Value="Step">
+        <MStepperHeader>
+            <MStepperStep Editable Step="1" Complete="Step==2" OnClick="()=>{Step=1;_importFile=null;}">
+                @T("导入表格")
+                </MStepperStep>
+                <MDivider></MDivider>
+                <MStepperStep Step="2" >
+                @T("验证结果")
+                </MStepperStep>
+                <MDivider></MDivider>
+                <MStepperStep Step="3">
+                @T("确认导入")
+                </MStepperStep>
+                </MStepperHeader>
+
+                <MStepperItems>
+                <MStepperContent Step="1">
+                <MFileInput @bind-Value="_importFile" FullWidth ShowSize></MFileInput>
+
+                    <div class="mt-4">
+                        <MButton Text Class="my-1 " Loading=isDownTemplate OnClick=DownTemplate Color="primary">
+                        @T("导出格式模板")
+                        </MButton>
+                    </div>
+
+                    <div class="mt-6">
+                        <MButton Color="primary" Loading=@isImport OnClick="()=>DeviceImport(_importFile)">@T("下一步")</MButton>
+                    </div>
+
+                    </MStepperContent>
+                    <MStepperContent Step="2">
+                    <div style="overflow-y:auto">
+                        @foreach (var item in ImportPreviews)
+                        {
+                            <MSubheader Class="mt-2 font-weight-black"> @($"{item.Key}，预计导入{item.Value.DataCount}条数据")  </MSubheader>
+                            if (item.Value.HasError)
+                            {
+                                <div class="mb-3 red--text">@T("请检查以下错误列") </div>
+                                foreach (var error in item.Value.RowErrors)
+                                {
+                                    <div class="red--text">@($"第{error.RowIndex + 1}行:")</div>
+                                    @foreach (var errorField in error.FieldErrors)
+                                    {
+                                        <div class="red--text">@($"列名: {errorField.Key}       错误:{errorField.Value}")</div>
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                <div class="green--text">@T("验证无错误") </div>
+                            }
+                        }
+                    </div>
+                    <div class="mt-6">
+                        <MButton Color="primary" Disabled=@ImportPreviews.Any(it=>it.Value.HasError) OnClick="()=>Step=3">@T("下一步")</MButton>
+                    </div>
+
+
+                </MStepperContent>
+                <MStepperContent Step="3">
+
+                    <MLabel Class="my-3 green--text">@T("数据量较大时(大于1万)，所需导入时间可能超过1分钟，请耐心等待") </MLabel>
+
+                    <div class="mt-6">
+                        <MButton Color="primary" Loading=@isSaveImport OnClick="SaveDeviceImport">@T("上传")</MButton>
+                    </div>
+
+                </MStepperContent>
+            </MStepperItems>
+        </MStepper>
+    }
+
+</PModal>
+
+
+
+@code {
+    [Inject]
+    IJSRuntime JS { get; set; }
+    IBrowserFile _importFile;
+    [Parameter]
+    public int Step { get; set; }
+    public bool IsShowImport {
+        get;
+        set; }
+    bool isDownTemplate; bool isImport; bool isSaveImport;
+    Dictionary<string, ImportPreviewOutputBase> ImportPreviews = new();
+
+    [Parameter]
+    public Func<Dictionary<string, ImportPreviewOutputBase>, Task> Import { get; set; }
+    [Parameter]
+    public Func<IBrowserFile, Task<Dictionary<string, ImportPreviewOutputBase>>> Preview { get; set; }
+    [Parameter]
+    public Func<Task<MemoryStream>> Template { get; set; }
+ 
+
+    async Task SaveDeviceImport()
+    {
+        try
+        {
+            isSaveImport = true;
+            StateHasChanged();
+            await Import.Invoke(ImportPreviews);
+            _importFile = null;
+            await PopupService.EnqueueSnackbarAsync(T("成功"), AlertTypes.Success);
+        }
+        finally
+        {
+            isSaveImport = false;
+        }
+
+    }
+    async Task DeviceImport(IBrowserFile file)
+    {
+        try
+        {
+            isImport = true;
+            StateHasChanged();
+            ImportPreviews = await Preview.Invoke(file);
+            Step = 2;
+        }
+        finally
+        {
+            isImport = false;
+        }
+
+    }
+    async Task DownTemplate()
+    {
+        try
+        {
+            isDownTemplate = true;
+            StateHasChanged();
+            using var memoryStream = await Template.Invoke();
+            memoryStream.Seek(0, SeekOrigin.Begin);
+            using var streamRef = new DotNetStreamReference(stream: memoryStream);
+            await JS.InvokeVoidAsync("downloadFileFromStream", $"模板{DateTime.Now.ToString("MM-dd-HH-mm-ss")}.xlsx", streamRef);
+        }
+        finally
+        {
+            isDownTemplate = false;
+        }
+
+    }
+}
+ 

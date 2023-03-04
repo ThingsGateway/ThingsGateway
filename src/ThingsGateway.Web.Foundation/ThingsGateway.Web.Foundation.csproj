@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+
+	<PropertyGroup>
+		<TargetFrameworks>net6.0;net7.0</TargetFrameworks>
+		<Version>1.2.0</Version>
+	</PropertyGroup>
+
+
+	<ItemGroup>
+	  <PackageReference Include="Hardware.Info" Version="10.1.1" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\ThingsGateway.Application\ThingsGateway.Application.csproj" />
+	  <ProjectReference Include="..\ThingsGateway.Foundation\ThingsGateway.Foundation.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="SeedData\Json\driver_plugin.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
+</Project>

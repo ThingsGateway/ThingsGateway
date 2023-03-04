@@ -1,0 +1,15 @@
+@namespace ThingsGateway.Web.Rcl
+@layout MainLayout
+@inherits CultureLayoutComponentBase
+
+<div style="height:100%" class="d-flex flex-column justify-center align-center">
+    <div class="bg">
+        <img alt="404" src="@Image" />
+    </div>
+    <h3>@T("抱歉，您访问的页面不存在。")</h3>
+    <MButton Class="mt-2" Color="primary" Href="/">@T("回到首页")</MButton>
+</div>
+
+@code {
+    private string Image { get; set; } = BlazorConst.ResourceUrl + "images/404.png";
+}

@@ -1,0 +1,32 @@
+﻿@using Microsoft.AspNetCore.Components.Routing
+@using ThingsGateway.Application;
+@using ThingsGateway.Core;
+@inject NavigationManager NavigationManager
+@inject UserResoures UserResoures
+@namespace ThingsGateway.Web.Rcl.Core
+<MCard Height=HeightInt Elevation="0" Class="d-flex justify-center align-center rounded-0" Style=@($"background-color:inherit;width:100%;text-decoration: none;")>
+    <div class="d-flex justify-center align-center rounded-0" @onclick=@(()=>NavigationManager.NavigateTo("/index",false))>
+
+        <MAvatar MinWidth=30 MinHeight=30 MaxWidth=35 MaxHeight=35 Color="teal">
+            <span class="white--text text-subtitle-1">@SYS_DEFAULT_TITLE.GetNameLen2()</span>
+        </MAvatar>
+        <MLabel Style="background-color:inherit;" Class="primary--text text-h6 ml-1">@SYS_DEFAULT_TITLE</MLabel>
+    </div>
+</MCard>
+
+@code {
+    [Parameter]
+    public int HeightInt { get; set; }
+    private string SYS_COPYRIGHT_URL;
+    private string SYS_COPYRIGHT;
+    private string SYS_DEFAULT_TITLE;
+    [Inject]
+    public IConfigService ConfigService { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        SYS_COPYRIGHT = (await ConfigService.GetByConfigKey(CateGoryConst.Config_SYS_BASE, DevConfigConst.SYS_COPYRIGHT)).ConfigValue;
+        SYS_DEFAULT_TITLE = (await ConfigService.GetByConfigKey(CateGoryConst.Config_SYS_BASE, DevConfigConst.SYS_DEFAULT_TITLE)).ConfigValue;
+        SYS_COPYRIGHT_URL = (await ConfigService.GetByConfigKey(CateGoryConst.Config_SYS_BASE, DevConfigConst.SYS_COPYRIGHT_URL)).ConfigValue;
+        await base.OnInitializedAsync();
+    }
+}

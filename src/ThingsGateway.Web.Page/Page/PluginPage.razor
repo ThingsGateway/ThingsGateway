@@ -1,0 +1,44 @@
+﻿@page "/tgconfig/plugin"
+@namespace ThingsGateway.Web.Page
+@using System.Linq.Expressions;
+@using BlazorComponent;
+@using Masa.Blazor.Presets;
+@inject IDriverPluginService DriverPluginService
+@attribute [Authorize]
+@inject MasaBlazor MasaBlazor
+@attribute [RolePermission]
+@inherits CultureComponentBase
+@inject UserResoures UserResoures
+@layout MainLayout
+<AppDataTable @ref="_datatable" TItem="DriverPlugin" SearchItem="DriverPluginPageInput"
+              AddItem="DriverPluginAddInput" EditItem="DriverPluginEditInput"
+              SearchModel="@search" IsMenuOperTemplate=false
+              QueryCall="QueryCall" AddCall="AddCall"
+              FilterHeaders="FilterHeaders" Filters="Filters" ShowDetailButton
+                ShowQueryButton IsShowClearSearch=false
+              ShowAddButton=@UserResoures.IsHasButtonWithRole("tgpluginadd")>
+
+    <SearchTemplate>
+        <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="my-1  mx-2 " @bind-Value="context.Name" Clearable
+                        Outlined Label=@context.Description(x => x.Name) />
+    </SearchTemplate>
+    <AddTemplate>
+
+
+
+        <MSubheader Class="mt-4 red--text">   注意：文件名称相同的插件将被覆盖 </MSubheader>
+        <MSubheader Class="font-weight-black">    @(context.Description(x => x.MainFile))  </MSubheader>
+        <MFileInput @bind-Value="context.MainFile" ShowSize></MFileInput>
+
+        <MSubheader Class="mt-4 font-weight-black">    @(context.Description(x => x.OtherFiles))  </MSubheader>
+        <MFileInput @bind-Value="context.OtherFiles" ShowSize Multiple Counter=true></MFileInput>
+
+
+    </AddTemplate>
+
+
+</AppDataTable>
+
+
+@code {
+}

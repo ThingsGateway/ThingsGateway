@@ -1,0 +1,28 @@
+﻿@using Microsoft.AspNetCore.Components.Routing
+@using ThingsGateway.Application;
+@using ThingsGateway.Core;
+@inject NavigationManager NavigationManager
+@inject UserResoures UserResoures
+@namespace ThingsGateway.Web.Rcl.Core
+<MSheet>
+    <MCard Flat Href=@SYS_COPYRIGHT_URL Target="_blank">
+        <MLabel Style="background-color:inherit;" Class="text-subtltie-2">@SYS_COPYRIGHT</MLabel>
+    </MCard>
+</MSheet>
+
+@code {
+    [Parameter]
+    public int HeightInt { get; set; }
+    private string SYS_COPYRIGHT_URL;
+    private string SYS_COPYRIGHT;
+    private string SYS_DEFAULT_TITLE;
+    [Inject]
+    public IConfigService ConfigService { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        SYS_COPYRIGHT = (await ConfigService.GetByConfigKey(CateGoryConst.Config_SYS_BASE, DevConfigConst.SYS_COPYRIGHT)).ConfigValue;
+        SYS_DEFAULT_TITLE = (await ConfigService.GetByConfigKey(CateGoryConst.Config_SYS_BASE, DevConfigConst.SYS_DEFAULT_TITLE)).ConfigValue;
+        SYS_COPYRIGHT_URL = (await ConfigService.GetByConfigKey(CateGoryConst.Config_SYS_BASE, DevConfigConst.SYS_COPYRIGHT_URL)).ConfigValue;
+        await base.OnInitializedAsync();
+    }
+}

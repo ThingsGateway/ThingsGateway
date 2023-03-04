@@ -1,0 +1,42 @@
+@using System.Reflection;
+@inject NavigationManager NavigationManager
+<CascadingAuthenticationState>
+    <Router AppAssembly="@typeof(BlazorApp).Assembly" AdditionalAssemblies=@(GetAssemblys())>
+        <Found Context="routeData">
+            <AuthorizeRouteView Resource="@routeData" RouteData="@routeData" DefaultLayout="typeof(BaseLayout)">
+                <NotAuthorized>
+                    @if (UserManager.UserId > 0)
+                    {
+                        <LayoutView Layout="@typeof(BaseLayout)">
+                            <Auth401></Auth401>
+                        </LayoutView>
+                    }
+                    else
+                    {
+                        if (UserManager.UserId <= 0)
+                        {
+                            <Login></Login>
+                        }
+                    }
+                </NotAuthorized>
+            </AuthorizeRouteView>
+        </Found>
+        <NotFound>
+            <LayoutView Layout="@typeof(BaseLayout)">
+                <NotFound404></NotFound404>
+            </LayoutView>
+        </NotFound>
+    </Router>
+</CascadingAuthenticationState>
+@code {
+    IEnumerable<Assembly> GetAssemblys()
+    {
+        var controllerTypes = App.EffectiveTypes.
+    Where(u => !u.IsInterface && !u.IsAbstract && u.IsClass
+    && u.IsDefined(typeof(Microsoft.AspNetCore.Components.RouteAttribute), false))
+    .Where(it => it.Assembly != typeof(BlazorApp).Assembly);
+        var assemblys = controllerTypes?.Select(it => it.Assembly)?.Distinct();
+        return assemblys;
+    }
+
+}

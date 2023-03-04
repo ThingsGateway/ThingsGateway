@@ -1,0 +1,93 @@
+{
+  "RECORDS": [
+      {
+        "Id": "389003388313861",
+        "AssembleName": "ThingsGateway.Modbus.ModbusRtuOverTcp",
+        "DriverTypeEnum": "Collect",
+        "FileName": "ThingsGateway.Modbus",
+        "CreateTime": "2023-02-23 15:18:52.369",
+        "CreateUser": "superAdmin",
+        "CreateUserId": "212725263002001",
+        "IsDelete": "0",
+        "UpdateTime": "2023-03-02 12:40:27.751",
+        "UpdateUser": "superAdmin",
+        "UpdateUserId": "212725263002001",
+        "FilePath": "Plugins\\ThingsGateway.Modbus\\ThingsGateway.Modbus.dll"
+      },
+      {
+        "Id": "389003388334341",
+        "AssembleName": "ThingsGateway.Modbus.ModbusRtuOverUdp",
+        "DriverTypeEnum": "Collect",
+        "FileName": "ThingsGateway.Modbus",
+        "CreateTime": "2023-02-23 15:18:52.373",
+        "CreateUser": "superAdmin",
+        "CreateUserId": "212725263002001",
+        "IsDelete": "0",
+        "UpdateTime": "2023-03-02 12:40:27.753",
+        "UpdateUser": "superAdmin",
+        "UpdateUserId": "212725263002001",
+        "FilePath": "Plugins\\ThingsGateway.Modbus\\ThingsGateway.Modbus.dll"
+      },
+      {
+        "Id": "389003388334342",
+        "AssembleName": "ThingsGateway.Modbus.ModbusTcp",
+        "DriverTypeEnum": "Collect",
+        "FileName": "ThingsGateway.Modbus",
+        "CreateTime": "2023-02-23 15:18:52.375",
+        "CreateUser": "superAdmin",
+        "CreateUserId": "212725263002001",
+        "IsDelete": "0",
+        "UpdateTime": "2023-03-02 12:40:27.754",
+        "UpdateUser": "superAdmin",
+        "UpdateUserId": "212725263002001",
+        "FilePath": "Plugins\\ThingsGateway.Modbus\\ThingsGateway.Modbus.dll"
+      },
+      {
+        "Id": "389003388334343",
+        "AssembleName": "ThingsGateway.Modbus.ModbusUdp",
+        "DriverTypeEnum": "Collect",
+        "FileName": "ThingsGateway.Modbus",
+        "CreateTime": "2023-02-23 15:18:52.375",
+        "CreateUser": "superAdmin",
+        "CreateUserId": "212725263002001",
+        "IsDelete": "0",
+        "UpdateTime": "2023-03-02 12:40:27.754",
+        "UpdateUser": "superAdmin",
+        "UpdateUserId": "212725263002001",
+        "FilePath": "Plugins\\ThingsGateway.Modbus\\ThingsGateway.Modbus.dll"
+      },
+      {
+        "Id": "391441718112517",
+        "AssembleName": "ThingsGateway.Modbus.ModbusServer",
+        "DriverTypeEnum": "Upload",
+        "FileName": "ThingsGateway.Modbus",
+        "CreateTime": "2023-03-02 12:40:27.7560381",
+        "CreateUser": "superAdmin",
+        "CreateUserId": "212725263002001",
+        "IsDelete": "0",
+        "FilePath": "Plugins\\ThingsGateway.Modbus\\ThingsGateway.Modbus.dll"
+      },
+      {
+        "Id": "391829470667013",
+        "AssembleName": "ThingsGateway.Mqtt.MqttClient",
+        "DriverTypeEnum": "Upload",
+        "FileName": "ThingsGateway.Mqtt",
+        "CreateTime": "2023-03-03 14:58:13.940",
+        "CreateUser": "superAdmin",
+        "CreateUserId": "212725263002001",
+        "IsDelete": "0",
+        "FilePath": "Plugins\\ThingsGateway.Mqtt\\ThingsGateway.Mqtt.dll"
+      },
+      {
+        "Id": "391829470667014",
+        "AssembleName": "ThingsGateway.Mqtt.MqttServer",
+        "DriverTypeEnum": "Upload",
+        "FileName": "ThingsGateway.Mqtt",
+        "CreateTime": "2023-03-03 14:58:13.944",
+        "CreateUser": "superAdmin",
+        "CreateUserId": "212725263002001",
+        "IsDelete": "0",
+        "FilePath": "Plugins\\ThingsGateway.Mqtt\\ThingsGateway.Mqtt.dll"
+      }
+    ]
+}

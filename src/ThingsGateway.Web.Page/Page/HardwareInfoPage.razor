@@ -1,0 +1,273 @@
+﻿@page "/tgruntime/hardwareinfo"
+@namespace ThingsGateway.Web.Page
+@using System.Linq.Expressions;
+@using BlazorComponent;
+@using Mapster;
+@using Masa.Blazor.Presets;
+@using System.IO;
+@using TouchSocket.Core;
+@inject ICollectDeviceService CollectDeviceService
+@attribute [Authorize]
+@inject MasaBlazor MasaBlazor
+@attribute [RolePermission]
+@inherits CultureComponentBase
+@inject UserResoures UserResoures
+@inject NavigationManager NavigationManager
+@inject IDriverPluginService DriverPluginService
+@layout MainLayout
+
+<MRow NoGutters>
+    <MCol Md=4 Cols="12">
+        <MCard Elevation="1" Class="ma-2">
+            <MCardSubtitle Class=@("text-h6")>
+                <div class="mt-1  d-flex align-center justify-space-between">
+                    <span>@T("服务信息")</span>
+                </div>
+            </MCardSubtitle>
+            <MDivider></MDivider>
+            @{
+                var appinfo = HardwareInfoService.APPInfo;
+            }
+            <div class="ml-4 mr-4 d-flex flex-column">
+
+                <div class="mt-1  d-flex align-center justify-space-between">
+                    <span class="text-subtitle-1 grey--text">@appinfo.Description(a=>a.HostName)</span>
+                    <span class="text-subtitle-2">@appinfo.HostName</span>
+                </div>
+
+                <div class="mt-1  d-flex align-center justify-space-between">
+                    <span class="text-subtitle-1 grey--text">@appinfo.Description(a=>a.SystemOs)</span>
+                    <span class="text-subtitle-2">@appinfo.SystemOs</span>
+                </div>
+                <div class="mt-1  d-flex align-center justify-space-between">
+                    <span class="text-subtitle-1 grey--text">@appinfo.Description(a=>a.OsArchitecture)</span>
+                    <span class="text-subtitle-2">@appinfo.OsArchitecture</span>
+                </div>
+                <div class="mt-1  d-flex align-center justify-space-between">
+                    <span class="text-subtitle-1 grey--text">@appinfo.Description(a=>a.RemoteIp)</span>
+                    <span class="text-subtitle-2">@appinfo.RemoteIp</span>
+                </div>
+                <div class="mt-1  d-flex align-center justify-space-between">
+                    <span class="text-subtitle-1 grey--text">@appinfo.Description(a=>a.LocalIp)</span>
+                    <span class="text-subtitle-2">@appinfo.LocalIp</span>
+                </div>
+                <div class="mt-1  d-flex align-center justify-space-between">
+                    <span class="text-subtitle-1 grey--text">@appinfo.Description(a=>a.FrameworkDescription)</span>
+                    <span class="text-subtitle-2">@appinfo.FrameworkDescription</span>
+                </div>
+                <div class="mt-1  d-flex align-center justify-space-between">
+                    <span class="text-subtitle-1 grey--text">@appinfo.Description(a=>a.Environment)</span>
+                    <span class="text-subtitle-2">@appinfo.Environment</span>
+                </div>
+                <div class="mt-1  d-flex align-center justify-space-between">
+                    <span class="text-subtitle-1 grey--text">@appinfo.Description(a=>a.Stage)</span>
+                    <span class="text-subtitle-2">@appinfo.Stage</span>
+                </div>
+            </div>
+        </MCard>
+    </MCol>
+    <MCol Md=8 Cols="12">
+        <MCard Elevation="1" Class="ma-2">
+            <MCardSubtitle Class=@("text-h6")>
+                <div class="mt-1  d-flex align-center justify-space-between">
+                    <span>@T("使用信息")</span>
+                </div>
+            </MCardSubtitle>
+            <MDivider></MDivider>
+            <MRow NoGutters>
+                <MCol Md=5 Cols="12" Class="ml-2 mr-2 d-flex justify-space-around">
+                    @foreach (var item in HardwareInfoService.HardwareInfo.CpuList)
+                    {
+
+                        <div class="ml-2 mr-2 d-flex flex-column  align-center">
+                            <MProgressCircular Value=@(item.PercentProcessorTime) Size="200" Width="12" Class="ma-4" Color=@(item.PercentProcessorTime>70?"red":"green")>
+                                <div class="ml-2 mr-2 d-flex flex-column align-center">
+                                    @((item.PercentProcessorTime).ToString("F0") + " %")
+
+                                    <div class="mt-1  d-flex align-center justify-space-between">
+                                        <span class="text-subtitle-2 grey--text mx-2">@item.Description(a=>a.NumberOfCores)</span>
+                                        <span class="text-caption">@item.NumberOfCores</span>
+                                    </div>
+                                    <div class="mt-1  d-flex align-center justify-space-between">
+                                        <span class="text-subtitle-2 grey--text mx-2">@item.Description(a=>a.NumberOfLogicalProcessors)</span>
+                                        <span class="text-caption">@item.NumberOfLogicalProcessors</span>
+                                    </div>
+                                </div>
+                            </MProgressCircular>
+
+                            <div class="mt-1  d-flex align-center justify-space-between">
+                                <span class="text-caption">@item.Name</span>
+                            </div>
+                        </div>
+
+                    }
+
+                </MCol>
+                <MDivider Class="mx-2" Vertical></MDivider>
+                <MCol Md=5 Cols="12" Class="ml-2 mr-2 d-flex justify-space-around">
+                    @{
+                        var memoryStatus = HardwareInfoService.HardwareInfo.MemoryStatus;
+                    }
+                    <div class="ml-2 mr-2 d-flex flex-column  align-center">
+                        <MProgressCircular Value=@(100 - (memoryStatus.AvailablePhysical * 100.00 / memoryStatus.TotalPhysical)) Size="200" Width="12" Class="ma-4" Color=@(memoryStatus.AvailablePhysical * 100.00 / memoryStatus.TotalPhysical<20?"red":"green")>
+                            <div class="ml-2 mr-2 d-flex flex-column align-center">
+                                @((100 - (memoryStatus.AvailablePhysical * 100.00 / memoryStatus.TotalPhysical)).ToString("F2") + " %")
+                                <div class="mt-1  d-flex align-center justify-space-between">
+                                    <span class="text-caption grey--text mx-2">@(memoryStatus.Description(a => a.AvailablePhysical))</span>
+                                    <span class="text-caption ">@((memoryStatus.AvailablePhysical / 1024.00 / 1024 / 1024).ToString("F2") + " GB")</span>
+                                </div>
+                                <div class="mt-1  d-flex align-center justify-space-between">
+                                    <span class="text-caption grey--text mx-2">@memoryStatus.Description(a=>a.TotalPhysical)</span>
+                                    <span class="text-caption ">@((memoryStatus.TotalPhysical / 1024.00 / 1024 / 1024).ToString("F2") + " GB")</span>
+                                </div>
+                            </div>
+                        </MProgressCircular>
+
+                        <div class="mt-1  d-flex align-center justify-space-between">
+                            <span class="text-caption">@T("内存占用率")</span>
+                        </div>
+                    </div>
+                </MCol>
+
+            </MRow>
+
+
+        </MCard>
+    </MCol>
+    <MCol Md=12 Cols="12">
+        <MCard Elevation="1" Class="ma-2">
+            <MCardSubtitle Class=@("text-h6")>
+                <div class="mt-1  d-flex align-center justify-space-between">
+                    <span>@T("磁盘信息")</span>
+                </div>
+            </MCardSubtitle>
+            <MDivider></MDivider>
+            <MRow NoGutters>
+                @foreach (var drive in HardwareInfoService.HardwareInfo.VolumeList ?? new())
+                {
+                    <MCol Md=4 Cols="12" Class="pl-2 pr-2 d-flex justify-space-around">
+                        <MProgressCircular Value=@(100 - (drive.FreeSpace * 100.00 / drive.Size)) Size="200" Width="12" Class="ma-4" Color=@(drive.FreeSpace * 100.00 / drive.Size<20?"red":"green")>
+                            <div class="ml-2 mr-2 d-flex flex-column align-center">
+                                @((100 - (drive.FreeSpace * 100.00 / drive.Size)).ToString("F2") + " %")
+                                <div>
+                                    @(drive.Name)
+                                </div>
+                                <div class="mt-1  d-flex align-center justify-space-between">
+                                    <span class="text-caption grey--text mx-2">@(drive.Description(a => a.FreeSpace))</span>
+                                    <span class="text-caption ">@((drive.FreeSpace / 1024.00 / 1024 / 1024).ToString("F2") + " GB")</span>
+                                </div>
+                                <div class="mt-1  d-flex align-center justify-space-between">
+                                    <span class="text-caption grey--text mx-2">@drive.Description(a=>a.Size)</span>
+                                    <span class="text-caption ">@((drive.Size / 1024.00 / 1024 / 1024).ToString("F2") + " GB")</span>
+                                </div>
+                            </div>
+                        </MProgressCircular>
+                    </MCol>
+
+                }
+
+
+            </MRow>
+
+
+        </MCard>
+    </MCol>
+    <MCol Md=12 Cols="12">
+        <MCard Elevation="1" Class="ma-2">
+            <MCardSubtitle Class=@("text-h6")>
+                <div class="mt-1  d-flex align-center justify-space-between">
+                    <span>@T("网络连接")</span>
+                </div>
+            </MCardSubtitle>
+            <MDivider></MDivider>
+            <MRow NoGutters>
+                @foreach (var network in HardwareInfoService.HardwareInfo.NetworkAdapterList ?? new())
+                {
+                    <MCol Md=3 Cols="12" Class="pa-5 d-flex flex-column justify-center">
+
+                        <div class="d-flex align-center justify-center">
+                            <MIcon>
+                                mdi-swap-vertical
+                            </MIcon>
+                            <div>
+                                <div class="mt-1  d-flex align-center justify-space-between">
+                                    <span class="text-subtitle-2 grey--text mx-2">@network.Description(a=>a.BytesReceivedPersec)</span>
+                                    <span class="text-caption">@network.BytesReceivedPersec</span>
+                                </div>
+                                <div class="mt-1  d-flex align-center justify-space-between">
+                                    <span class="text-subtitle-2 grey--text mx-2">@network.Description(a=>a.BytesSentPersec)</span>
+                                    <span class="text-caption">@network.BytesSentPersec</span>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="d-flex align-center justify-center">
+                            <span class="text-caption">@network.MACAddress</span>
+                        </div>
+                        <div class="d-flex align-center justify-center">
+                            <span class="text-caption">@network.NetConnectionID</span>
+                        </div>
+
+                        @*       <div class="mt-1  d-flex align-center justify-space-between">
+                    <span class="text-subtitle-2 grey--text">@network.Description(a=>a.MACAddress)</span>
+                    <span class="text-caption">@network.MACAddress</span>
+                    </div>
+
+                    <div class="mt-1  d-flex align-center justify-space-between">
+                    <span class="text-subtitle-2 grey--text">@network.Description(a=>a.AdapterType)</span>
+                    <span class="text-caption">@network.AdapterType</span>
+                    </div>
+
+                    <div class="mt-1  d-flex align-center justify-space-between">
+                    <span class="text-subtitle-2 grey--text">@network.Description(a=>a.BytesReceivedPersec)</span>
+                    <span class="text-caption">@network.BytesReceivedPersec</span>
+                    </div>
+                    <div class="mt-1  d-flex align-center justify-space-between">
+                    <span class="text-subtitle-2 grey--text">@network.Description(a=>a.BytesSentPersec)</span>
+                    <span class="text-caption">@network.BytesSentPersec</span>
+                    </div>
+
+                    <div class="mt-1  d-flex align-center justify-space-between">
+                    <span class="text-subtitle-2 grey--text">@network.Description(a=>a.NetConnectionID)</span>
+                    <span class="text-caption">@network.NetConnectionID</span>
+                    </div>*@
+
+
+
+
+
+                    </MCol>
+
+
+                }
+
+
+            </MRow>
+
+
+        </MCard>
+    </MCol>
+
+</MRow>
+
+
+
+@code {
+    private System.Timers.Timer DelayTimer;
+
+    [Inject]
+    HardwareInfoService HardwareInfoService { get; set; }
+    protected override Task OnInitializedAsync()
+    {
+        DelayTimer = new System.Timers.Timer(8000);
+        DelayTimer.Elapsed += timer_Elapsed;
+        DelayTimer.AutoReset = true;
+        DelayTimer.Start();
+        return base.OnInitializedAsync();
+    }
+    async void timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+    {
+        await InvokeAsync(StateHasChanged);
+    }
+
+}

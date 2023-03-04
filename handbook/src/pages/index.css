@@ -1,0 +1,540 @@
+.ThingsGateway-banner {
+  padding: 4rem 2rem;
+  align-items: center;
+  background-color: #211b50;
+  color: #fff;
+}
+
+.ThingsGateway-banner-container {
+  display: flex;
+  justify-content: space-between;
+  max-width: 1140px;
+  margin: 0 auto;
+}
+
+.ThingsGateway-banner-item {
+  flex: 1;
+}
+
+.ThingsGateway-banner-project {
+  font-size: 1.5em;
+  font-weight: 700;
+}
+
+.ThingsGateway-banner-description {
+  margin: 24px 0;
+  font-size: 2.5em;
+  font-weight: 700;
+  line-height: 1.25;
+  background-image: linear-gradient(81deg, #8759ff, #3fc4fe, #42ffac);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.ThingsGateway-banner-spec {
+  padding: 0;
+  opacity: 0.7;
+  font-family: Muli;
+  font-size: 1em;
+  font-weight: 500;
+  line-height: 1.33;
+}
+
+.ThingsGateway-banner-spec li {
+  list-style: none;
+  position: relative;
+  padding-left: 1em;
+  margin-bottom: 1em;
+}
+
+.ThingsGateway-banner-spec li::before {
+  content: "";
+  position: absolute;
+  top: 0.5em;
+  left: 0;
+  width: 4px;
+  height: 4px;
+  background-color: rgb(135, 89, 255);
+}
+
+.ThingsGateway-support-platform {
+  font-size: 0.85em;
+  line-height: 2;
+  margin-top: 3em;
+  font-weight: 500;
+  opacity: 0.6;
+  color: white;
+  font-family: Muli;
+}
+
+.ThingsGateway-support-icons {
+  display: flex;
+  margin-top: 12px;
+}
+
+.ThingsGateway-support-icons span {
+  margin-right: 20px;
+}
+
+.ThingsGateway-get-start,
+.ThingsGateway-try-demo {
+  margin-top: 4em;
+  border-radius: 2em;
+  min-width: 145px;
+  color: #fff;
+  background: #8759ff;
+  position: relative;
+  line-height: 1.5;
+  text-align: center;
+  padding: 8px 32px;
+  text-decoration: none;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.ThingsGateway-try-demo {
+  background-color: rgb(33, 176, 145);
+  margin-left: 20px;
+}
+
+.ThingsGateway-get-start:hover {
+  background: rgba(135, 89, 255, 0.9);
+}
+
+.ThingsGateway-try-demo:hover {
+  opacity: 0.9;
+}
+
+.ThingsGateway-banner-item .system-window {
+  width: 34rem;
+}
+
+.ThingsGateway-get-start:hover,
+.ThingsGateway-try-demo:hover {
+  color: #fff;
+  text-decoration: none;
+}
+
+.system-top-bar {
+  background-image: linear-gradient(to right,
+      rgba(136, 89, 255, 0.2),
+      rgba(63, 196, 254, 0.2) 90%,
+      rgba(66, 255, 172, 0.2));
+  padding: 0.25em 1em;
+}
+
+.system-top-bar-circle {
+  display: inline-block;
+  width: 0.5em;
+  height: 0.5em;
+  margin-left: 0.3em;
+  border-radius: 50%;
+  filter: brightness(100%);
+}
+
+.system-window {
+  --ifm-leading: 0;
+  width: 95%;
+  padding: 0;
+  border-radius: 1em;
+  overflow: hidden;
+  background: rgb(33, 27, 80);
+}
+
+.system-window iframe {
+  border-radius: unset;
+}
+
+.system-window pre {
+  margin-bottom: 0 !important;
+}
+
+.blue-accent {
+  --uni-border-color: #3fbbfe;
+  --uni-box-shadow-color: rgba(63, 187, 254, 0.1);
+  --ifm-menu-color-active: #3fbbfe;
+}
+
+.preview-border {
+  box-shadow: 0 6px 58px 0 rgba(63, 187, 254, 0.1);
+  border: solid 1px #3fbbfe;
+}
+
+.ThingsGateway-content {
+  margin-top: 4em;
+  margin-bottom: 4em;
+  text-align: center;
+}
+
+.ThingsGateway-small-title {
+  color: #412a94;
+  font-family: Muli;
+  font-size: 1em;
+  font-weight: 600;
+  letter-spacing: 1px;
+  opacity: 0.6;
+}
+
+.ThingsGateway-small-title.dark {
+  color: #f5f6f7;
+}
+
+.ThingsGateway-big-title {
+  color: #412a94;
+  font-family: Poppins;
+  font-size: 2em;
+  font-weight: 700;
+  line-height: 1.31;
+  margin-bottom: 2em;
+}
+
+.ThingsGateway-big-title.dark {
+  color: #f5f6f7;
+}
+
+.ThingsGateway-gitee-log {
+  display: flex;
+  justify-content: center;
+  flex-wrap: nowrap;
+}
+
+.ThingsGateway-log-item {
+  width: 260px;
+  height: 173px;
+  box-sizing: border-box;
+  margin-right: 65px;
+  position: relative;
+}
+
+.ThingsGateway-log-jiao {
+  width: 100px;
+  height: 100px;
+  background: #fff;
+  position: absolute;
+  top: 0;
+  right: 0;
+  top: -6px;
+  right: -6px;
+  border-top: 1px dashed #a795e8;
+  border-right: 1px dashed #a795e8;
+}
+
+.ThingsGateway-log-jiao.dark {
+  background: #18191a;
+}
+
+.ThingsGateway-log-item:last-child {
+  margin-right: 0;
+}
+
+.ThingsGateway-log-number {
+  position: relative;
+  z-index: 2;
+  height: 100%;
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.ThingsGateway-log-number div {
+  font-size: 3em;
+  font-weight: 700;
+}
+
+.ThingsGateway-log-number span {
+  font-family: Poppins, sans-serif;
+  font-stretch: normal;
+  font-style: normal;
+  letter-spacing: normal;
+  line-height: normal;
+  color: #1c1e21;
+}
+
+.ThingsGateway-log-number span.dark {
+  color: #f5f6f7;
+}
+
+.ThingsGateway-remark {
+  display: flex;
+  justify-content: center;
+}
+
+.ThingsGateway-remark-item {
+  margin: 2em;
+  max-width: 320px;
+  height: 100%;
+  padding: 4em 2em;
+  border-style: solid;
+  border-width: 6px;
+  border-image-source: linear-gradient(var(--uni-border-gradient-degrees),
+      #8759ff,
+      #3fc4fe 51%,
+      #42ffac);
+  border-image-slice: 1;
+}
+
+.ThingsGateway-remark-item:first-child {
+  border-top: 0;
+  border-right: 0;
+  --uni-border-gradient-degrees: 41deg;
+}
+
+.ThingsGateway-remark-item:nth-child(2) {
+  --uni-border-gradient-degrees: 100deg;
+  border-right: 0;
+  border-left: 0;
+  border-top: 0;
+  border-bottom: 0;
+}
+
+.ThingsGateway-remark-item:last-child {
+  --uni-border-gradient-degrees: 221deg;
+  border-bottom: 0;
+  border-left: 0;
+}
+
+.ThingsGateway-remark-p {
+  height: 150px;
+}
+
+.ThingsGateway-remark-p h1 {
+  font-size: 24px;
+}
+
+.ThingsGateway-remark-p p {
+  color: rgb(71, 71, 71);
+  font-family: Muli;
+  font-size: 1em;
+  line-height: 1.75;
+  opacity: 0.8;
+  text-align: center;
+}
+
+.ThingsGateway-remark-p p.dark {
+  color: #f5f6f7;
+}
+
+.ThingsGateway-whouse {
+  align-items: center;
+  background-color: #412a94 !important;
+  color: #fff;
+  display: flex;
+  padding: 5rem 0;
+}
+
+.ThingsGateway-who-custom {
+  background-color: #fff;
+  min-height: 500px;
+  width: 60%;
+  box-sizing: border-box;
+  padding: 6rem;
+  justify-content: flex-end;
+  align-items: center;
+  color: #723cff;
+  text-align: right;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.ThingsGateway-custom-img {
+  text-decoration: none;
+  color: transparent;
+  margin-left: 3em;
+}
+
+.ThingsGateway-who-des {
+  padding: 0 5rem;
+  box-sizing: border-box;
+}
+
+.ThingsGateway-who-des p {
+  color: #fff;
+  font-family: Muli;
+  font-size: 1em;
+  line-height: 1.75;
+  margin-bottom: 0.8em;
+  opacity: 0.8;
+}
+
+.footer {
+  background-color: #211b50 !important;
+}
+
+.ThingsGateway-links {
+  margin: 4em;
+  text-align: center;
+}
+
+.ThingsGateway-links-content a {
+  display: inline-block;
+  margin: 0 1em;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.ThingsGateway-proccesson {
+  margin: 4em 0;
+  text-align: center;
+}
+
+#dotnet-china {
+  height: 100px;
+}
+
+.ThingsGateway-contributors {
+  margin: 4em 0;
+  text-align: center;
+}
+
+.ThingsGateway-contributor-item {
+  display: inline-block;
+  margin: 10px 5px;
+  text-align: center;
+  background-color: #f3f3f3;
+  color: #333;
+  padding: 10px;
+  width: 130px;
+  overflow: hidden;
+  border-radius: 4px;
+  height: 170px;
+  box-shadow: 4px 3px 16px -3px #0009;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.ThingsGateway-contributor-extra {
+  position: absolute;
+  top: -9px;
+  right: 0;
+  padding: 2px 5px;
+  background-color: #412a94;
+  color: #fff;
+  font-size: 12px;
+  border-radius: 4px;
+  text-align: left;
+}
+
+.ThingsGateway-contributor-item a {
+  text-decoration: none;
+  color: #333;
+  font-weight: bold;
+  display: block;
+  font-size: 10pt;
+}
+
+.ThingsGateway-contributor-item div {
+  margin-top: 10px;
+}
+
+.ThingsGateway-contributor-item img {
+  display: block;
+  width: 100%;
+}
+
+.ThingsGateway-contributor-item.dark {
+  background: #333;
+}
+
+.ThingsGateway-contributor-item.dark a {
+  color: #f5f6f7;
+}
+
+.ThingsGateway-get-start-btn {
+  position: relative;
+  display: flex;
+}
+
+.ThingsGateway-version {
+  position: absolute;
+  z-index: 10;
+  right: 0;
+  top: -10px;
+  color: yellow;
+  font-size: 16px;
+}
+
+@media screen and (max-width: 1024px) {
+  .ThingsGateway-banner-container {
+    justify-content: unset;
+    flex-direction: column;
+  }
+
+  .ThingsGateway-get-start-btn {
+    text-align: center;
+  }
+
+  #dotnet-china {
+    height: 45px;
+  }
+
+  .ThingsGateway-banner-item .system-window {
+    width: 100%;
+    margin-top: 3rem;
+  }
+
+  .ThingsGateway-gitee-log {
+    justify-content: center;
+    flex-wrap: unset;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+  }
+
+  .ThingsGateway-log-item {
+    width: 100%;
+    height: 173px;
+    margin-right: 0;
+    margin-top: 25px;
+  }
+
+  .ThingsGateway-big-title {
+    margin-bottom: 1em;
+  }
+
+  .ThingsGateway-remark {
+    flex-direction: column;
+  }
+
+  .ThingsGateway-whouse {
+    flex-direction: column;
+    padding-bottom: 1em;
+  }
+
+  .ThingsGateway-who-des {
+    padding-top: 1em;
+    padding-bottom: 2em;
+  }
+
+  .ThingsGateway-remark-item {
+    border: none;
+    margin: 0;
+    width: 100%;
+    max-width: unset;
+    padding-bottom: 0;
+  }
+
+  .ThingsGateway-custom-img {
+    margin-left: 0;
+    margin-bottom: 2em;
+  }
+
+  .ThingsGateway-custom-img img {
+    max-width: unset;
+  }
+
+  .ThingsGateway-who-custom {
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    text-align: center;
+  }
+
+  .ThingsGateway-contributors {
+    margin: 4em 0;
+  }
+}
+
+

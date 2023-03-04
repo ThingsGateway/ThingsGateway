@@ -1,0 +1,201 @@
+﻿@page "/tgconfig/uploaddevice"
+@namespace ThingsGateway.Web.Page
+@using System.Linq.Expressions;
+@using BlazorComponent;
+@using Mapster;
+@using Masa.Blazor.Presets;
+@using System.IO;
+@using TouchSocket.Core;
+@inject IUploadDeviceService UploadDeviceService
+@attribute [Authorize]
+@inject MasaBlazor MasaBlazor
+@attribute [RolePermission]
+@inherits CultureComponentBase
+@inject UserResoures UserResoures
+@inject IDriverPluginService DriverPluginService
+@layout MainLayout
+<AppDataTable @ref="_datatable" TItem="UploadDevice" SearchItem="UploadDevicePageInput"
+              AddItem="UploadDeviceAddInput" EditItem="UploadDeviceEditInput"
+              IsMenuOperTemplate=false
+              QueryCall="QueryCall" AddCall="AddCall" EditCall="EditCall" DeleteCall="DeleteCall"
+              FilterHeaders="FilterHeaders" Filters="Filters" ShowDetailButton
+                ShowQueryButton
+              ShowAddButton=@UserResoures.IsHasButtonWithRole("tguploaddeviceadd")
+              ShowDeleteButton=@UserResoures.IsHasButtonWithRole("tguploaddevicedelete")
+              ShowEditButton=@UserResoures.IsHasButtonWithRole("tguploaddeviceedit")>
+    <SearchTemplate>
+        <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="my-1  mx-2 " @bind-Value="context.Name" Clearable
+                        Outlined Label=@context.Description(x => x.Name) />
+        <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="my-1  mx-2 " @bind-Value="context.PluginName" Clearable
+                        Outlined Label=@context.Description(x => x.PluginName) />
+    </SearchTemplate>
+    <OtherToolbarTemplate>
+
+        <MButton Class="my-1  mx-2" Loading=@isDownExport OnClick=DownDeviceExport Color="primary">
+            @T("导出")
+        </MButton>
+        <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("tguploaddeviceedit")) Class="my-1  mx-2" OnClick="()=>{ ImportExcel.Step=1;  ImportExcel.IsShowImport=true;}" Color="primary">
+            @T("导入")
+        </MButton>
+    </OtherToolbarTemplate>
+    <AddTemplate>
+        @GetRenderFragment(context)
+    </AddTemplate>
+
+    <EditTemplate>
+        @GetRenderFragment(context)
+
+    </EditTemplate>
+
+
+    <ItemColTemplate>
+        @switch (context.Header.Value)
+        {
+
+            case nameof(context.Item.Enable):
+                <EnableChip Value="context.Item.Enable">
+                </EnableChip>
+                break;
+            case nameof(context.Item.PluginId):
+                <span>
+                    @(
+                        DriverPluginService.GetNameById(context.Item.PluginId)
+                        )
+                </span>
+                break;
+            default:
+                @context.Value
+                break;
+
+        }
+
+    </ItemColTemplate>
+</AppDataTable>
+
+
+
+<ImportExcel @ref=ImportExcel Import="SaveDeviceImport" Preview="DeviceImport" Template="DownTemplate" />
+
+
+@code {
+    ImportExcel ImportExcel;
+
+    async Task SaveDeviceImport(Dictionary<string, ImportPreviewOutputBase> data)
+    {
+        await UploadDeviceService.Import(data);
+        await datatableQuery();
+        ImportExcel.IsShowImport = false;
+    }
+    Task<Dictionary<string, ImportPreviewOutputBase>> DeviceImport(IBrowserFile file)
+    {
+        return UploadDeviceService.Preview(file);
+    }
+    Task<MemoryStream> DownTemplate()
+    {
+        return UploadDeviceService.Template();
+    }
+}
+    @code {
+    [Inject]
+    IJSRuntime JS { get; set; }
+    bool isDownExport;
+    async Task DownDeviceExport()
+    {
+        try
+        {
+            isDownExport = true;
+            StateHasChanged();
+            using var memoryStream = await UploadDeviceService.ExportFile();
+            memoryStream.Seek(0, SeekOrigin.Begin);
+            using var streamRef = new DotNetStreamReference(stream: memoryStream);
+            await JS.InvokeVoidAsync("downloadFileFromStream", $"上传设备导出{DateTime.Now.ToString("MM-dd-HH-mm-ss")}.xlsx", streamRef);
+        }
+        finally
+        {
+            isDownExport = false;
+        }
+
+    }
+
+
+    List<DriverPluginCategory> DriverPlugins;
+    StringNumber tab;
+
+    List<DependencyProperty> GetDriverProperties(long driverId, long devId)
+    {
+        return this.GetBackgroundService<UploadDeviceHostService>().GetDevicePropertysAsync(driverId, devId);
+    }
+    RenderFragment GetRenderFragment(UploadDeviceEditInput context)
+    {
+        RenderFragment renderFragment = null;
+        renderFragment +=
+    @<div>
+        <MTabs @bind-Value="tab">
+            <MTab Value="1" Style="height:50px;">   @T("基本信息")    </MTab>
+            <MTab Value="2">    @T("扩展属性")     </MTab>
+        </MTabs>
+
+        <MTabsItems Value="tab">
+            <MTabItem Value="1">
+                <MCard Flat Class="ma-2">
+                    <MSubheader Class="mt-4 font-weight-black"> @(context.Description(x => x.Name))  </MSubheader>
+                    <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.Name />
+
+                    <MSubheader Class="mt-4 font-weight-black">    @(context.Description(x => x.Description))  </MSubheader>
+                    <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.Description />
+
+                    <MSubheader Class="mt-4 font-weight-black">    @(typeof(UploadDeviceRunTime).GetDescription(nameof(UploadDeviceRunTime.PluginName)))  </MSubheader>
+                    <MCascader @bind-Value="context.PluginId" Class="mt-3 mr-3" Clearable
+                           Items="DriverPlugins" ItemText="u => u.Name" ItemValue="u => u.Id" ItemChildren="u => u.Children"
+                           MenuProps="@(props => { props.Auto = true; props.OffsetY = true; })"
+                           ShowAllLevels="false" HideDetails="@("auto")" Height="30" Dense>
+                    </MCascader>
+
+                    <MSubheader Class="mt-4 font-weight-black">    @(context.Description(x => x.Enable))  </MSubheader>
+                    <EnableSwitch @bind-Value=@context.Enable />
+
+                    <MSubheader Class="mt-4 font-weight-black">    @(context.Description(x => x.IsLogOut))  </MSubheader>
+                    <EnableSwitch @bind-Value=@context.IsLogOut />
+
+                </MCard>
+            </MTabItem>
+            <MTabItem Value="2">
+                <MCard Flat Class="ma-2">
+                    <MButton Class="my-3" OnClick=@(async() =>
+                         {
+                         if(context.PluginId>0)
+                         {
+                         context.DevicePropertys= GetDriverProperties(context.PluginId,context.Id);
+                         }
+                         else
+                         {
+                         await PopupService.EnqueueSnackbarAsync("需选择驱动",AlertTypes.Error);
+                         }
+                         }
+                         ) Color="primary">
+                        @T("刷新设备属性")
+                    </MButton>
+                    @if (context.DevicePropertys != null)
+                    {
+                        @foreach (var item in context.DevicePropertys)
+                        {
+                            <MSubheader Class="mt-4 font-weight-black"> @item.Description </MSubheader>
+                            <MTooltip Disabled=item.Remark.IsNullOrEmpty() Bottom Context="tip">
+                                <ActivatorContent>
+                                    <MTextField Type="@(item.PropertyName.Contains("Password") ? "password" : "text")" @attributes="@tip.Attrs" Dense Outlined HideDetails="@("auto")" @bind-Value=@item.Value />
+                                    </ActivatorContent>
+                                    <ChildContent>
+                                        <span>@item.Remark</span>
+                                    </ChildContent>
+                                    </MTooltip>
+                        }
+
+                    }
+                </MCard>
+            </MTabItem>
+        </MTabsItems>
+    </div>
+    ;
+        return renderFragment;
+    }
+}

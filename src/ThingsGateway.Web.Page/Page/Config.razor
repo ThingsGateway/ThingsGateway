@@ -1,0 +1,165 @@
+﻿@page "/tgconfig/config"
+@using System.Linq.Expressions;
+
+@inject IConfigService ConfigService
+@namespace ThingsGateway.Web.Rcl
+@attribute [Authorize]
+@attribute [RolePermission]
+@inject UserResoures UserResoures
+@inherits CultureComponentBase
+@layout MainLayout
+<MCard Height=@("100%") Elevation="1" Class="pa-2">
+
+    <MTabs @bind-Value="tab">
+        <MTab Style="height:50px;">
+            @T("报警转储配置")
+        </MTab>
+        <MTab Style="height:50px;">
+            @T("历史数据配置 ")
+        </MTab>
+    </MTabs>
+
+    <MTabsItems Value="tab">
+        <MTabItem>
+            <MCard Height=@("calc(100vh - 220px)") Style="overflow-y:auto" Flat Class="ml-2 my-4">
+                <MRow NoGutters>
+                    @foreach (var item in _alarmConfig)
+                    {
+                        switch (item.ConfigKey)
+                        {
+                            case ThingsGatewayConst.Config_Alarm_ConnStr:
+                                <MCol Class="pa-2 px-4" Md=12 Cols="12">
+                                    <MSubheader Class="mt-4 font-weight-black"> @item.Remark</MSubheader>
+                                    <MTextField Type="password" Dense Outlined HideDetails="@("auto")" @bind-Value=@item.ConfigValue />
+                                    </MCol>
+                                break;
+                            case ThingsGatewayConst.Config_Alarm_DbType:
+                                <MCol Class="pa-2 px-4" Md=12 Cols="12">
+                                    <MSubheader Class="mt-4 font-weight-black"> @item.Remark</MSubheader>
+                                    <MSelect @bind-Value="item.ConfigValue" Outlined
+                                 Items=@(typeof(SqlDbType).GetEnumList()) Clearable
+                                 MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
+                                 ItemText=@((u) =>u.des) ItemValue=@(u =>u.name)
+                                 HideDetails="true" Height="30" Dense>
+                                </MSelect>
+                            </MCol>
+                                break;
+                            case ThingsGatewayConst.Config_Alarm_Enable:
+                                <MCol Class="pa-2 px-4" Md=12 Cols="12">
+                                    <MSubheader Class="mt-4 font-weight-black"> @item.Remark</MSubheader>
+                                    <MSelect @bind-Value=@item.ConfigValue Outlined
+                                 Items=@(new List<bool>(){true,false}) Clearable
+                                 MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
+                                 ItemText=@((u) =>u.ToString()) ItemValue=@(u =>u.ToString())
+                                 HideDetails=@("auto") Height="30" Dense>
+                                </MSelect>
+
+                            </MCol>
+                                break;
+                            default:
+                                <MCol Class="pa-2 px-4" Md=3 Cols="12">
+                                    <MSubheader Class="mt-4 font-weight-black"> @item.Remark</MSubheader>
+                                    <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@item.ConfigValue />
+                                    </MCol>
+                                break;
+                        }
+
+                    }
+                </MRow>
+                <MCardActions>
+                    <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("tgalarmconfig")) Class="mt-8" OnClick=OnAlarmSave Color="primary">
+                        @T("保存")
+                    </MButton>
+                </MCardActions>
+            </MCard>
+        </MTabItem>
+        <MTabItem>
+            <MCard Height=@("calc(100vh - 220px)") Style="overflow-y:auto" Flat Class="ml-2 my-4">
+                <MRow NoGutters>
+                    @foreach (var item in _hisConfig)
+                    {
+                        switch (item.ConfigKey)
+                        {
+                            case ThingsGatewayConst.Config_His_ConnStr:
+                                <MCol Class="pa-2 px-4" Md=12 Cols="12">
+                                    <MSubheader Class="mt-4 font-weight-black"> @item.Remark</MSubheader>
+                                    <MTextField Type="password" Dense Outlined HideDetails="@("auto")" @bind-Value=@item.ConfigValue />
+                                    </MCol>
+                                break;
+                            case ThingsGatewayConst.Config_His_DbType:
+                                <MCol Class="pa-2 px-4" Md=12 Cols="12">
+                                    <MSubheader Class="mt-4 font-weight-black"> @item.Remark</MSubheader>
+                                    <MSelect @bind-Value="item.ConfigValue" Outlined
+                                 Items=@(typeof(HisDbType).GetEnumList()) Clearable
+                                 MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
+                                 ItemText=@((u) =>u.des) ItemValue=@(u =>u.name)
+                                 HideDetails="true" Height="30" Dense>
+                                </MSelect>
+                            </MCol>
+                                break;
+                            case ThingsGatewayConst.Config_His_Enable:
+                                <MCol Class="pa-2 px-4" Md=12 Cols="12">
+                                    <MSubheader Class="mt-4 font-weight-black"> @item.Remark</MSubheader>
+                                    <MSelect @bind-Value=@item.ConfigValue Outlined
+                                 Items=@(new List<bool>(){true,false}) Clearable
+                                 MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
+                                 ItemText=@((u) =>u.ToString()) ItemValue=@(u =>u.ToString())
+                                 HideDetails=@("auto") Height="30" Dense>
+                                </MSelect>
+
+                            </MCol>
+                                break;
+                            default:
+                                <MCol Class="pa-2 px-4" Md=3 Cols="12">
+                                    <MSubheader Class="mt-4 font-weight-black"> @item.Remark</MSubheader>
+                                    <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@item.ConfigValue />
+                                    </MCol>
+                                break;
+                        }
+
+                    }
+                </MRow>
+                <MCardActions>
+                    <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("tghisconfig")) Class="mt-8" OnClick=OnHisSave Color="primary">
+                        @T("保存")
+                    </MButton>
+                </MCardActions>
+            </MCard>
+        </MTabItem>
+
+    </MTabsItems>
+
+</MCard>
+
+@code {
+    StringNumber tab;
+    AlarmHostService AlarmHostService { get; set; }
+    ValueHisHostService ValueHisHostService { get; set; }
+    public Config()
+    {
+        AlarmHostService = this.GetBackgroundService<AlarmHostService>();
+        ValueHisHostService = this.GetBackgroundService<ValueHisHostService>();
+    }
+    private async Task OnAlarmSave()
+    {
+        var confirm = await PopupService.OpenConfirmDialog(T("确认"), T("保存配置后将重启报警服务，是否确定?"));
+        if (confirm)
+        {
+            await ConfigService.EditBatch(_alarmConfig);
+            AlarmHostService.Restart();
+            await PopupService.EnqueueSnackbarAsync(T("成功"), AlertTypes.Success);
+        }
+
+    }
+    private async Task OnHisSave()
+    {
+        var confirm = await PopupService.OpenConfirmDialog(T("确认"), T("保存配置后将重启历史服务，是否确定?"));
+        if (confirm)
+        {
+            await ConfigService.EditBatch(_hisConfig);
+            ValueHisHostService.Restart();
+            await PopupService.EnqueueSnackbarAsync(T("成功"), AlertTypes.Success);
+        }
+    }
+}
+

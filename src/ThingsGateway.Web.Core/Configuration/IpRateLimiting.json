@@ -1,0 +1,28 @@
+{
+  "$schema": "https://gitee.com/dotnetchina/Furion/raw/net6/schemas/v3/furion-schema.json",
+  //配置限流服务
+  "IpRateLimiting": {
+    //必须开启
+    "EnableEndpointRateLimiting": true,
+    "StackBlockedRequests": false,
+    "RealIpHeader": "",
+    "ClientIdHeader": "",
+    "HttpStatusCode": 429,
+    "IpWhitelist": [],
+    "EndpointWhitelist": [],
+    "ClientWhitelist": [],
+    "QuotaExceededResponse": {
+      "Content": "{{\"code\":429,\"msg\":\"访问过于频繁,请稍后重试!\",\"data\":null,\"extras\":null}}",
+      "ContentType": "application/json",
+      "StatusCode": 429
+    },
+    //速率限制
+    "GeneralRules": [
+      {
+        "Endpoint": "*",
+        "Period": "1m", //1分最多60次
+        "Limit": 60
+      }
+    ]
+  }
+}

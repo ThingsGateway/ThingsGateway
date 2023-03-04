@@ -1,0 +1,140 @@
+﻿@page "/dev/config"
+@using System.Linq.Expressions;
+
+@inject IConfigService ConfigService
+@namespace ThingsGateway.Web.Rcl
+@attribute [Authorize]
+@attribute [RolePermission]
+@inject UserResoures UserResoures
+@inherits CultureComponentBase
+@layout MainLayout
+<MCard Height=@("100%") Elevation="1" Class="pa-2">
+
+    <MTabs @bind-Value="tab">
+        <MTab Value="1" Style="height:50px;">
+            @T("系统配置")
+        </MTab>
+        <MTab Value="2">
+            @T("自定义配置 ")
+        </MTab>
+    </MTabs>
+
+    <MTabsItems Value="tab">
+        <MTabItem Value="1">
+            @if (tab == 1)
+            {
+                <MCard Height=@("calc(100vh - 220px)") Style="overflow-y:auto" Flat Class="ml-2 my-4">
+                <MRow NoGutters>
+                    @foreach (var item in _sysConfig)
+                        {
+                            switch (item.ConfigKey)
+                            {
+                                case DevConfigConst.SYS_DEFAULT_REMARK:
+                                    <MCol Class="pa-2 px-4" Md=3 Cols="12">
+                                        <MSubheader Class="mt-4 font-weight-black"> @item.Remark</MSubheader>
+                                        <MTextarea Dense Outlined HideDetails="@("auto")" @bind-Value=@item.ConfigValue />
+                                        </MCol>
+                                    break;
+
+                                default:
+                                    <MCol Class="pa-2 px-4" Md=3 Cols="12">
+                                        <MSubheader Class="mt-4 font-weight-black"> @item.Remark</MSubheader>
+                                        <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@item.ConfigValue />
+                                        </MCol>
+                                    break;
+                            }
+
+                        }
+                    </MRow>
+                    <MCardActions>
+                        <MButton Class="mt-8" OnClick=OnSave Color="primary">
+                            @T("保存")
+                        </MButton>
+                    </MCardActions>
+                </MCard>
+            }
+        </MTabItem>
+
+        <MTabItem Style="height:100%;" Value="2">
+            @if (tab == 2)
+            {
+                <MCard Height=@("calc(100vh - 220px)") Flat Class="ml-2 my-4">
+                <AppDataTable @ref="_datatable" TItem="DevConfig" SearchItem="ConfigPageInput"
+                              AddItem="ConfigAddInput" EditItem="ConfigEditInput"
+                              SearchModel="@search"
+                              QueryCall="QueryCall"
+                              AddCall="AddCall"
+                              EditCall="EditCall"
+                              DeleteCall="DeleteCall"
+                              FilterHeaders="FilterHeaders" IsShowSearchKey
+                                    ShowQueryButton
+                              ShowAddButton=@UserResoures.IsHasButtonWithRole("devconfigadd")
+                              ShowDeleteButton=@UserResoures.IsHasButtonWithRole("devconfigdelete")
+                              ShowEditButton=@UserResoures.IsHasButtonWithRole("devconfigedit")>
+
+                    <AddTemplate>
+                        <MSubheader Class="mt-4 font-weight-black"> @(context.Description(x => x.ConfigKey))  </MSubheader>
+                            <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.ConfigKey />
+
+                            <MSubheader Class="mt-4 font-weight-black">   @(context.Description(x => x.ConfigValue))</MSubheader>
+                                <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.ConfigValue />
+
+                            <MSubheader Class="mt-4 font-weight-black">    @(context.Description(x => x.Remark))  </MSubheader>
+                            <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.Remark />
+
+                            <MSubheader Class="mt-4 mb-5 font-weight-black">@(context.Description(x => x.SortCode)) </MSubheader>
+                            <MSlider @bind-Value=@context.SortCode Class="mb-5" TValue=int ThumbLabel="@("always")" Dense />
+
+                        </AddTemplate>
+                        <EditTemplate>
+                            <MSubheader Class="mt-4 font-weight-black"> @(context.Description(x => x.ConfigKey))  </MSubheader>
+                            <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.ConfigKey />
+
+                            <MSubheader Class="mt-4 font-weight-black">   @(context.Description(x => x.ConfigValue))</MSubheader>
+                                <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.ConfigValue />
+
+                            <MSubheader Class="mt-4 font-weight-black">    @(context.Description(x => x.Remark))  </MSubheader>
+                            <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.Remark />
+
+                            <MSubheader Class="mt-4 mb-5 font-weight-black">@(context.Description(x => x.SortCode)) </MSubheader>
+                            <MSlider @bind-Value=@context.SortCode Class="mb-5" TValue=int ThumbLabel="@("always")" Dense />
+
+                        </EditTemplate>
+                        <ItemColTemplate>
+
+                            @if (context.Header.CellClass?.Contains("text-truncate") == true)
+                            {
+                                <span title=@context.Value>
+                                    @context.Value
+                                </span>
+                            }
+                            else
+                            {
+                                @switch (context.Header.Value)
+                                {
+
+                                    default:
+                                        @context.Value
+                                        break;
+                                }
+
+                            }
+                        </ItemColTemplate>
+                    </AppDataTable>
+                </MCard>
+            }
+
+        </MTabItem>
+    </MTabsItems>
+
+</MCard>
+
+@code {
+    StringNumber tab;
+    private async Task OnSave()
+    {
+        await ConfigService.EditBatch(_sysConfig);
+        await PopupService.EnqueueSnackbarAsync(T("成功"), AlertTypes.Success);
+    }
+}
+

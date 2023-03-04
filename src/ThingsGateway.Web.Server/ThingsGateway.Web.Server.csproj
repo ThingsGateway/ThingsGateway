@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+
+	<PropertyGroup>
+		<TargetFrameworks>net6.0;net7.0</TargetFrameworks>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<SatelliteResourceLanguages>zh-Hans</SatelliteResourceLanguages>
+		<PublishReadyToRunComposite>true</PublishReadyToRunComposite>
+		<NoWarn>CS1591;</NoWarn>
+		<Version>1.2.0</Version>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+		<ApplicationIcon>favicon.ico</ApplicationIcon>
+		<ServerGarbageCollection>false</ServerGarbageCollection>
+	</PropertyGroup>
+
+
+	<ItemGroup>
+	  <PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="7.0.0" />
+	  <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="7.0.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\ThingsGateway.Web.Core\ThingsGateway.Web.Core.csproj" />
+	</ItemGroup>
+
+
+</Project>

@@ -1,0 +1,80 @@
+﻿@page "/sys/spa"
+@using System.Linq.Expressions;
+@using BlazorComponent;
+@using Masa.Blazor.Presets;
+@inject ISpaService SpaService
+@namespace ThingsGateway.Web.Rcl
+@attribute [Authorize]
+@attribute [RolePermission]
+@inherits CultureComponentBase
+@inject UserResoures UserResoures
+@layout MainLayout
+<AppDataTable @ref="_datatable" TItem="SysResource" SearchItem="SpaPageInput"
+              AddItem="SpaAddInput" EditItem="SpaEditInput"
+              SearchModel="@search"
+              QueryCall="QueryCall" AddCall="AddCall" EditCall="EditCall" DeleteCall="DeleteCall"
+              FilterHeaders="FilterHeaders" Filters="Filters"
+              ShowQueryButton IsShowSearchKey ShowDetailButton
+              ShowAddButton=@UserResoures.IsHasButtonWithRole("sysspaadd")
+              ShowDeleteButton=@UserResoures.IsHasButtonWithRole("sysspadelete")
+              ShowEditButton=@UserResoures.IsHasButtonWithRole("sysspaedit")>
+
+    <AddTemplate>
+        <MSubheader Class="mt-4 font-weight-black"> @(context.Description(x => x.Title))  </MSubheader>
+        <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.Title />
+
+        <MSubheader Class="mt-4 font-weight-black">    @(context.Description(x => x.Component))  </MSubheader>
+        <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.Component />
+
+        <MSubheader Class="mt-4 font-weight-black">    @(context.Description(x => x.Name))  </MSubheader>
+        <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.Name />
+
+        <MSubheader Class="mt-4 font-weight-black">    @(context.Description(x => x.Icon))  </MSubheader>
+        <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.Icon />
+
+
+
+        <MSubheader Class="mt-4 mb-5 font-weight-black">@(context.Description(x => x.SortCode)) </MSubheader>
+        <MSlider @bind-Value=@context.SortCode Class="mb-5" TValue=int ThumbLabel="@("always")" Dense />
+
+    </AddTemplate>
+
+    <EditTemplate>
+        <MSubheader Class="mt-4 font-weight-black"> @(context.Description(x => x.Title))  </MSubheader>
+        <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.Title />
+
+        <MSubheader Class="mt-4 font-weight-black">    @(context.Description(x => x.Component))  </MSubheader>
+        <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.Component />
+
+        <MSubheader Class="mt-4 font-weight-black">    @(context.Description(x => x.Name))  </MSubheader>
+        <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.Name />
+
+        <MSubheader Class="mt-4 font-weight-black">    @(context.Description(x => x.Icon))  </MSubheader>
+        <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.Icon />
+
+        <MSubheader Class="mt-4 mb-5 font-weight-black">@(context.Description(x => x.SortCode)) </MSubheader>
+        <MSlider @bind-Value=@context.SortCode Class="mb-5" TValue=int ThumbLabel="@("always")" Dense />
+
+
+    </EditTemplate>
+
+
+    <ItemColTemplate>
+        @switch (context.Header.Value)
+        {
+            case nameof(context.Item.Icon):
+                <MIcon>
+                    @context.Value
+                </MIcon>
+                break;
+            default:
+                @context.Value
+                break;
+        }
+
+    </ItemColTemplate>
+</AppDataTable>
+
+
+
+

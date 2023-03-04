@@ -1,0 +1,363 @@
+﻿@page "/tgruntime/devicestatus"
+@namespace ThingsGateway.Web.Page
+@using System.Linq.Expressions;
+@using BlazorComponent;
+@using Mapster;
+@using Masa.Blazor.Presets;
+@using System.IO;
+@using TouchSocket.Core;
+@inject ICollectDeviceService CollectDeviceService
+@attribute [Authorize]
+@inject MasaBlazor MasaBlazor
+@attribute [RolePermission]
+@inherits CultureComponentBase
+@inject UserResoures UserResoures
+@inject NavigationManager NavigationManager
+@implements IDisposable
+@inject IDriverPluginService DriverPluginService
+@layout MainLayout
+<MSheet>
+    <MRow NoGutters>
+        <MCol Md=4 Cols="12">
+            <MCard Class="ml-2 my-3">
+                <MCardSubtitle Class=@((AlarmHostService.StatuString.IsSuccess?"green--text":"red--text")+$" text-subtitle-2")>
+                    <div class="mt-1  d-flex align-center justify-space-between">
+                        <span>@T("历史报警服务状态")</span>
+                        <span class="text-caption">@AlarmHostService.StatuString.Message</span>
+                    </div>
+                </MCardSubtitle>
+            </MCard>
+        </MCol>
+        <MCol Md=4 Cols="12">
+            <MCard Class="ml-2 my-3">
+                <MCardSubtitle Class=@((ValueHisHostService.StatuString.IsSuccess?"green--text":"red--text")+$" text-subtitle-2")>
+                    <div class="mt-1  d-flex align-center justify-space-between">
+                        <span>@T("历史数据服务状态")</span>
+                        <span class="text-caption">@ValueHisHostService.StatuString.Message</span>
+                    </div>
+                </MCardSubtitle>
+            </MCard>
+        </MCol>
+    </MRow>
+    <MTabs @bind-Value="tab">
+        <MTab Style="height:50px;">
+            @T("采集设备状态")
+        </MTab>
+        <MTab Style="height:50px;">
+            @T("上传设备状态 ")
+        </MTab>
+    </MTabs>
+    <MTabsItems Value="tab">
+        <MTabItem>
+            <MCard Height=@("calc(100vh - 220px)") Style="overflow-y:auto" Flat Class="ml-2 my-4">
+                <MRow NoGutters>
+                    @foreach (var item in CollectDeviceHostService.CollectDeviceCores)
+                    {
+                        <MCol Md=4 Cols="12">
+                            <MCard Elevation="1" Class="ma-2">
+                                <MCardSubtitle Class=@((item.Device.DeviceStatus==DeviceStatusEnum.OnLine?"green--text":"red--text")+$" text-h6")>
+                                    <div class="mt-1  d-flex align-center justify-space-between">
+                                        <span>@item.Device.Name</span>
+                                        <span class="text-caption">@(typeof(DeviceStatusEnum).GetDescription(item.Device.DeviceStatus.ToString()) + "     " + item.Device.DeviceOffMsg)</span>
+                                    </div>
+                                </MCardSubtitle>
+                                <MDivider></MDivider>
+                                <div class="ml-2 mr-2 d-flex flex-column">
+                                    <MSubheader>
+                                        运行状态
+                                    </MSubheader>
+                                    <div class="mt-1  d-flex align-center justify-space-between">
+                                        <span class="text-subtitle-2 grey--text">@item.Device.Description(a=>a.ActiveTime)</span>
+                                        <span class="text-caption">@item.Device.ActiveTime</span>
+                                    </div>
+                                    <div class="mt-1  d-flex align-center justify-space-between">
+                                        <span class="text-subtitle-2 grey--text">@item.Device.Description(a=>a.SourceVariableNum)</span>
+                                        <span class="text-caption">@item.Device.SourceVariableNum</span>
+                                    </div>
+                                    <div class="mt-1  d-flex align-center justify-space-between">
+                                        <span class="text-subtitle-2 grey--text">@item.Device.Description(a=>a.DeviceVariablesNum)</span>
+                                        <span class="text-caption">@item.Device.DeviceVariablesNum</span>
+                                    </div>
+                                    <div class="mt-1  d-flex align-center justify-space-between">
+                                        <span class="text-subtitle-2 grey--text">@item.Device.Description(a=>a.MethodVariableNum)</span>
+                                        <span class="text-caption">@item.Device.MethodVariableNum</span>
+                                    </div>
+                                    <MSubheader>
+                                        配置信息
+                                    </MSubheader>
+                                    <div class="mt-1  d-flex align-center justify-space-between">
+                                        <span class="text-subtitle-2 grey--text">@T("插件")</span>
+                                        <span class="text-caption">@item.Device.PluginName</span>
+                                    </div>
+                                    <div class="mt-1  d-flex align-center justify-space-between">
+                                        <span class="text-subtitle-2 grey--text">@T("日志输出")</span>
+                                        <span class="text-caption">@item.Device.IsLogOut</span>
+                                    </div>
+                                    @foreach (var property in item.Device.DevicePropertys ?? new())
+                                    {
+                                        <div class="mt-1  d-flex align-center justify-space-between">
+                                            <span class="text-subtitle-2 grey--text">@property.Description</span>
+                                            <span class="text-caption ">@(property.PropertyName.Contains("Password") ? "******" : @property.Value)</span>
+                                        </div>
+                                    }
+
+                                </div>
+
+                                <MCardActions>
+                                    <MSpacer></MSpacer>
+
+
+                                    <MTooltip Bottom Context="tip">
+                                    <ActivatorContent>
+                                        <MButton Disabled=@(!UserResoures.IsHasPageWithRole("/tgruntime/collectdevicevariable")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small Loading=isRestart
+                                                 OnClick=@(()=>NavigationManager.NavigateTo("/tgruntime/collectdevicevariable?devicename="+item.Device.Name))>
+                                            <MIcon>mdi-information-outline</MIcon>
+                                            </MButton>
+                                        </ActivatorContent>
+                                        <ChildContent>
+                                            <span>@T("相关变量")</span>
+                                        </ChildContent>
+                                        </MTooltip>
+
+
+                                        <MTooltip Bottom Context="tip">
+                                    <ActivatorContent>
+                                        <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("tgdevicepause")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small OnClick=@(()=>Config(item.DeviceId,!item.Device.Enable))>
+                                            <MIcon>@(item.Device.Enable ? "mdi-pause" : "mdi-play")</MIcon>
+                                                </MButton>
+                                            </ActivatorContent>
+                                            <ChildContent>
+                                                <span>@(item.Device.Enable ? T("暂停") : T("运行"))</span>
+                                        </ChildContent>
+                                    </MTooltip>
+                                    <MTooltip Bottom Context="tip">
+                                    <ActivatorContent>
+                                        <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("tgdevicerestart")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small Loading=isRestart OnClick=@(()=>Restart(item.DeviceId))>
+                                            <MIcon>mdi-restart</MIcon>
+                                            </MButton>
+                                        </ActivatorContent>
+                                        <ChildContent>
+                                            <span>@T("重启")</span>
+                                        </ChildContent>
+                                        </MTooltip>
+                                        </MCardActions>
+                                        </MCard>
+                                        </MCol>
+                    }
+
+                </MRow>
+            </MCard>
+        </MTabItem>
+        <MTabItem>
+            <MCard Height=@("calc(100vh - 220px)") Style="overflow-y:auto" Flat Class="ml-2 my-4">
+                <MRow NoGutters>
+                    @foreach (var item in UploadDeviceHostService.UploadDeviceCores)
+                    {
+                        <MCol Md=4 Cols="12">
+                            <MCard Elevation="1" Class="ma-2">
+                                <MCardSubtitle Class=@((item.Device.DeviceStatus==DeviceStatusEnum.OnLine?"green--text":"red--text")+$" text-h6")>
+                                    <div class="mt-1  d-flex align-center justify-space-between">
+                                        <span>@item.Device.Name</span>
+                                        <span class="text-caption">@(typeof(DeviceStatusEnum).GetDescription(item.Device.DeviceStatus.ToString()) + "     " + item.Device.DeviceOffMsg)</span>
+                                    </div>
+                                </MCardSubtitle>
+                                <MDivider></MDivider>
+                                <div class="ml-2 mr-2 d-flex flex-column">
+                                    <MSubheader>
+                                        运行状态
+                                    </MSubheader>
+                                    <div class="mt-1  d-flex align-center justify-space-between">
+                                        <span class="text-subtitle-2 grey--text">@item.Device.Description(a=>a.ActiveTime)</span>
+                                        <span class="text-caption">@item.Device.ActiveTime</span>
+                                    </div>
+                                    <MSubheader>
+                                        配置信息
+                                    </MSubheader>
+                                    <div class="mt-1  d-flex align-center justify-space-between">
+                                        <span class="text-subtitle-2 grey--text">@T("插件")</span>
+                                        <span class="text-caption">@item.Device.PluginName</span>
+                                    </div>
+                                    <div class="mt-1  d-flex align-center justify-space-between">
+                                        <span class="text-subtitle-2 grey--text">@T("日志输出")</span>
+                                        <span class="text-caption">@item.Device.IsLogOut</span>
+                                    </div>
+                                    @foreach (var property in item.Device.DevicePropertys ?? new())
+                                    {
+                                        <div class="mt-1  d-flex align-center justify-space-between">
+                                            <span class="text-subtitle-2 grey--text">@property.Description</span>
+                                            <span class="text-caption ">@(property.PropertyName.Contains("Password") ? "******" : @property.Value)</span>
+                                        </div>
+                                    }
+
+                                </div>
+
+                                <MCardActions>
+                                    <MSpacer></MSpacer>
+
+                                    <MTooltip Bottom Context="tip">
+                                    <ActivatorContent>
+                                        <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("tgdevicerestart")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small Loading=isRestart OnClick=@(()=>UpRestart(item.DeviceId))>
+                                            <MIcon>mdi-restart</MIcon>
+                                            </MButton>
+                                        </ActivatorContent>
+                                        <ChildContent>
+                                            <span>@T("重启")</span>
+                                        </ChildContent>
+                                        </MTooltip>
+                                        </MCardActions>
+                                        </MCard>
+                                        </MCol>
+                    }
+
+                </MRow>
+            </MCard>
+        </MTabItem>
+    </MTabsItems>
+    <MSpeedDial @bind-Value="fab" Direction="top" Class="position-button"
+                Transition="slide-y-reverse-transition">
+        <ActivatorContent>
+            <MButton Color="blue darken" Dark Small Fab @attributes="@context.Attrs">
+                <MIcon Class="position-button-spin">
+                    @(fab ? "mdi-close" : "mdi-cog")
+                </MIcon>
+            </MButton>
+        </ActivatorContent>
+        <ChildContent>
+            <MTooltip Bottom Context="tip">
+                <ActivatorContent>
+                    <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("tgdevicerestart")) Color="red" @attributes="@tip.Attrs" Dark Fab Small Loading=isAllRestart OnClick="AllRestart">
+                        <MIcon>   mdi-restart   </MIcon>
+                    </MButton>
+                </ActivatorContent>
+                <ChildContent>
+                    <span>@T("全部重启")</span>
+                </ChildContent>
+                </MTooltip>
+
+            </ChildContent>
+            </MSpeedDial>
+            <MOverlay Value="isAllRestart" Opacity="0.8">
+            <span class="green--text text--darken-2">
+                @T("后台服务重启中")
+            </span>
+            <MProgressCircular Indeterminate Width=8
+                           Size="40"></MProgressCircular>
+        </MOverlay>
+        </MSheet>
+
+        <style>
+            .position-button {
+                position: fixed !important;
+                top: 40%;
+                right: 0;
+                box-shadow: 1px 1px 8px var(--mud-palette-primary);
+                background-color: var(--mud-palette-primary);
+                cursor: pointer
+            }
+
+        </style>
+
+        @code {
+    StringNumber tab;
+    private System.Timers.Timer DelayTimer;
+    private bool fab;
+    bool isAllRestart;
+    bool isRestart;
+    CollectDeviceHostService CollectDeviceHostService { get; set; }
+    UploadDeviceHostService UploadDeviceHostService { get; set; }
+    AlarmHostService AlarmHostService { get; set; }
+    ValueHisHostService ValueHisHostService { get; set; }
+    protected override Task OnInitializedAsync()
+    {
+        CollectDeviceHostService = this.GetBackgroundService<CollectDeviceHostService>();
+        UploadDeviceHostService = this.GetBackgroundService<UploadDeviceHostService>();
+        AlarmHostService = this.GetBackgroundService<AlarmHostService>();
+        ValueHisHostService = this.GetBackgroundService<ValueHisHostService>();
+        DelayTimer = new System.Timers.Timer(1000);
+        DelayTimer.Elapsed += timer_Elapsed;
+        DelayTimer.AutoReset = true;
+        DelayTimer.Start();
+        return base.OnInitializedAsync();
+    }
+    async Task Restart(long devId)
+    {
+        try
+        {
+            var confirm = await PopupService.OpenConfirmDialog(T("重启"), T("确定重启?"));
+            if (confirm)
+            {
+                isRestart = true;
+                StateHasChanged();
+                await Task.Run(async () => await CollectDeviceHostService.UpDeviceThread(devId));
+            }
+        }
+        catch(Exception ex)
+        {
+             await PopupService.EnqueueSnackbarAsync(ex.Message, AlertTypes.Warning);
+        }
+        finally
+        {
+            isRestart = false;
+        }
+    }
+    async Task UpRestart(long devId)
+    {
+        try
+        {
+            var confirm = await PopupService.OpenConfirmDialog(T("重启"), T("确定重启?"));
+            if (confirm)
+            {
+                isRestart = true;
+                StateHasChanged();
+                await Task.Run(() => UploadDeviceHostService.UpDeviceThread(devId));
+            }
+        }
+        catch (Exception ex)
+        {
+             await PopupService.EnqueueSnackbarAsync(ex.Message, AlertTypes.Warning);
+        }
+        finally
+        {
+            isRestart = false;
+        }
+    }
+    async Task Config(long devId, bool isStart)
+    {
+        var str = isStart ? T("启动") : T("暂停");
+        var confirm = await PopupService.OpenConfirmDialog(str, $"确定{str}?");
+        if (confirm)
+        {
+            CollectDeviceHostService.ConfigDeviceThread(devId, isStart);
+        }
+    }
+
+    async Task AllRestart()
+    {
+        try
+        {
+            var confirm = await PopupService.OpenConfirmDialog(T("重启"), T("确定重启?"));
+            if (confirm)
+            {
+                isAllRestart = true;
+
+                StateHasChanged();
+                await Task.Run(async () => await CollectDeviceHostService.RestartDeviceThread());
+            }
+        }
+        finally
+        {
+            isAllRestart = false;
+        }
+    }
+
+
+    public void Dispose()
+    {
+        DelayTimer.Dispose();
+    }
+
+    async void timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+    {
+        await InvokeAsync(StateHasChanged);
+    }
+}

@@ -1,0 +1,44 @@
+﻿@inherits LayoutComponentBase
+@namespace ThingsGateway.Web.Rcl
+@using Masa.Blazor;
+@implements IDisposable
+<CascadingValue Value="IsMobile" Name="IsMobile">
+    <MApp>
+        <MErrorHandler ShowDetail>
+            @Body
+        </MErrorHandler>
+    </MApp>
+</CascadingValue>
+@code {
+
+    [Inject]
+    UserResoures UserResoures { get; set; }
+    [Inject]
+    public MasaBlazor MasaBlazor { get; set; }
+    [Inject]
+    IPopupService PopupService { get; set; }
+    [Inject]
+    JsInitVariables JsInitVariables{ get; set; }
+    public bool IsMobile { get; set; }
+    protected async override Task OnAfterRenderAsync(bool firstRender)
+    {
+        await JsInitVariables.SetTimezoneOffset();
+        await base.OnAfterRenderAsync(firstRender);
+    }
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        MasaBlazor.Breakpoint.MobileBreakpoint = 666;
+        MasaBlazor.Breakpoint.OnUpdate += BreakpointOnOnUpdate;
+    }
+    private async Task BreakpointOnOnUpdate()
+    {
+        IsMobile = MasaBlazor.Breakpoint.Mobile;
+        StateHasChanged();
+        await Task.CompletedTask;
+    }
+    public void Dispose()
+    {
+        MasaBlazor.Breakpoint.OnUpdate -= BreakpointOnOnUpdate;
+    }
+}

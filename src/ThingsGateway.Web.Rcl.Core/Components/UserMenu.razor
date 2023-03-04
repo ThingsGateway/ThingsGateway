@@ -1,0 +1,61 @@
+﻿@namespace ThingsGateway.Web.Rcl.Core
+@using NewLife.Serialization;
+@using ThingsGateway.Core;
+@inherits CultureComponentBase
+@inject I18n I18n
+@inject MasaBlazor MasaBlazor
+<Ajax></Ajax>
+<MMenu OffsetY>
+    <ActivatorContent>
+        <MButton @attributes="@context.Attrs" Color="primary"
+                 MaxHeight="@(UserResoures.Themes.LayoutPrpo.AppBarHeight-8)"
+                 Icon="@MasaBlazor.Breakpoint.SmAndDown"
+                 Class="mr-2 text-h6"
+                 Text>
+            @UserResoures.CurrentUser?.Account.GetNameLen2()
+            <AppChevronDown></AppChevronDown>
+        </MButton>
+    </ActivatorContent>
+    <ChildContent>
+        <MSheet Class="d-flex flex-column  justify-center">
+            <MLabel Class=" ma-2 my-3 text-subtitle-1" Color="primary">@UserResoures.CurrentUser?.Account</MLabel>
+            <MDivider></MDivider>
+            <MListItem Target="_self" Href="/usercenter" Link> @T("个人中心") </MListItem>
+            <MListItem OnClick="LoginoutAsync">  @T("注销") </MListItem>
+        </MSheet>
+    </ChildContent>
+</MMenu>
+
+@code {
+    [Inject]
+    private UserResoures UserResoures { get; set; }
+
+    [Inject]
+    public AjaxService AjaxService { get; set; }
+
+    protected override void OnInitialized()
+    {
+
+        base.OnInitialized();
+    }
+    private async Task LoginoutAsync()
+    {
+        var ajaxOption = new AjaxOption
+            {
+                Url = "/auth/b/loginOut",
+            };
+        var str = await AjaxService.GetMessage(ajaxOption);
+        var ret = str?.ToJsonEntity<UnifyResult<string>>();
+        if (ret?.Code != 200)
+        {
+            await PopupService.EnqueueSnackbarAsync(T("注销失败"), AlertTypes.Error);
+        }
+        else
+        {
+            await PopupService.EnqueueSnackbarAsync(T("注销成功"), AlertTypes.Success);
+            await Task.Delay(500);
+            await AjaxService.Goto("/");
+        }
+    }
+
+}

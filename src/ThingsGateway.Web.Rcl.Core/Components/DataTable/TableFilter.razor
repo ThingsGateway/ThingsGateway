@@ -1,0 +1,59 @@
+﻿@namespace ThingsGateway.Web.Rcl.Core
+@inherits BComponentBase
+@inject MasaBlazor MasaBlazor
+<MMenu OffsetY CloseOnClick=true CloseOnContentClick=false>
+    <ActivatorContent>
+        <MButton @attributes="@context.Attrs" Icon="@MasaBlazor.Breakpoint.SmAndDown"
+                 Class="mr-2 px-0 px-md-2 mdi-col"
+                 Text>
+            <MIcon>mdi-table-column-plus-after</MIcon>
+            <AppChevronDown></AppChevronDown>
+        </MButton>
+    </ActivatorContent>
+    <ChildContent>
+        <MSheet MaxWidth="400">
+            <MContainer>
+                <MRow NoGutters>
+                    @{
+                        int index = 0;
+                    }
+                    @foreach (var item in FilterHeaderString)
+                    {
+                        <MCol>
+                            <MCheckbox TValue=bool ValueChanged="((a)=>Change(item.Title,a))"
+                                   Value=item.Value
+                                   Label=@item.Title
+                                   HideDetails="true"
+                                   Color="primary"></MCheckbox>
+                        </MCol>
+                        if (index % 2 == 1)
+                        {
+                            <MResponsive Width="@("100%")"></MResponsive>
+                        }
+                        else if (index == FilterHeaderString.Count - 1)
+                        {
+                            index = 0;
+                            break;
+                        }
+                        index++;
+                    }
+
+                </MRow>
+            </MContainer>
+        </MSheet>
+
+    </ChildContent>
+</MMenu>
+
+@code {
+    [Parameter]
+    public List<Filters> FilterHeaderString { get; set; }
+    [Parameter]
+    public EventCallback ValueChanged { get; set; }
+    public async Task Change(string title, bool value)
+    {
+        var data = FilterHeaderString.FirstOrDefault(it => it.Title == title);
+        data.Value = value;
+        await ValueChanged.InvokeAsync();
+    }
+}

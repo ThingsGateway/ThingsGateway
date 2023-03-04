@@ -1,0 +1,16 @@
+{
+  "RECORDS": [
+      {
+        "Id": "212725263001001",
+        "Code": "superAdmin",
+        "Name": "超级管理员",
+        "SortCode": "1"
+      },
+      {
+        "Id": "212725263001002",
+        "Code": "admin",
+        "Name": "业务管理员",
+        "SortCode": "2"
+      }
+    ]
+}

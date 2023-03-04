@@ -1,0 +1,25 @@
+﻿@namespace ThingsGateway.Web.Rcl.Core
+@typeparam TItem where TItem : IDefaultItem<TItem>
+@inject I18n I18n
+
+@*<MListItemContent>*@
+@{
+    @*标题和子标头*@
+    var title = I18n.T(Item?.Title);
+    var subtitle = I18n.T(Item?.SubTitle);
+    if (!string.IsNullOrWhiteSpace(title))
+    {
+        <MListItemTitle>@title</MListItemTitle>
+    }
+    if (!string.IsNullOrWhiteSpace(subtitle))
+    {
+        <MListItemSubtitle>@subtitle</MListItemSubtitle>
+    }
+}
+@*</MListItemContent>*@
+
+@code {
+    [Parameter, EditorRequired]
+    public TItem Item { get; set; }
+
+}

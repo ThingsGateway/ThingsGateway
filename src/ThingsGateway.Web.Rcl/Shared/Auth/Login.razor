@@ -1,0 +1,100 @@
+﻿@page "/login"
+@layout BaseLayout
+@inherits CultureLayoutComponentBase
+@namespace ThingsGateway.Web.Rcl
+@using BlazorComponent;
+@using Masa.Blazor.Presets;
+
+<Ajax></Ajax>
+@if (IsMobile)
+{
+    <MCard Class="px-12 py-8" @onkeydown=Enter>
+        @GetLoginCore()
+    </MCard>
+}
+else
+{
+    <MRow NoGutters Style="height:100%" Class="ma-0">
+        <MCol Md=5 Sm=12 Class="ma-0">
+            <MSheet Elevation=1 Style="width:100%; height:100%;" Class="d-flex align-start flex-column mb-6">
+                <div class="d-flex align-center ml-12 mt-12">
+                    <MAvatar Size="40" Color="teal">
+                        <span class="white--text text-h6">@SYS_DEFAULT_TITLE.GetNameLen2()</span>
+                    </MAvatar>
+                    <h1>@SYS_DEFAULT_TITLE</h1>
+                </div>
+                <div class="d-flex align-center ml-12 mt-12 mb-auto">
+                    <h3>@SYS_DEFAULT_REMARK</h3>
+                </div>
+                <div class="d-flex align-center pa-2" style="width:100%;height:100%;">
+                    <MImage Src=@(BlazorConst.ResourceUrl+"images/login-left.svg")></MImage>
+                </div>
+            </MSheet>
+
+        </MCol>
+
+        <MCol Md=7 Sm=12 Align="AlignTypes.Center">
+            <MRow Md=6 Sm=12 Justify="JustifyTypes.Center" Align="AlignTypes.Center">
+                <MCard Class="px-16 py-12" @onkeydown=Enter>
+                    @GetLoginCore()
+                </MCard>
+            </MRow>
+        </MCol>
+
+    </MRow>
+
+}
+
+@code {
+    [CascadingParameter(Name = "IsMobile")]
+    public bool IsMobile
+    {
+        get;
+        set;
+    }
+    bool _showPassword;
+    bool _showCaptcha;
+    RenderFragment GetLoginCore()
+    {
+        RenderFragment ViewSubMenu = null;
+        ViewSubMenu +=
+    @<div class="mt-2 px-2 py-1 mx-auto text-center">
+        <MAvatar Size=80>
+            <MImage Src=@UserLogoUrl>
+            </MImage>
+        </MAvatar>
+        <h5 class="mt-2 mb-12">@Welcome 👋</h5>
+        <MTextField TValue="string"
+                Label=@T("账号")
+                    Outlined
+                HideDetails="@("auto")"
+                    @bind-Value=@loginModel.Account>
+        </MTextField>
+        <MTextField TValue="string"
+                Class="mt-10"
+                Label=@T("密码")
+                Type="@(_showPassword ? "text" : "password")"
+                AppendIcon="@(_showPassword ? "mdi-eye" : "mdi-eye-off")"
+                OnAppendClick="()=>_showPassword = !_showPassword"
+                    Outlined
+                HideDetails="@("auto")"
+                    @bind-Value=@Password>
+        </MTextField>
+        @if (_showCaptcha)
+        {
+            <PImageCaptcha @bind-Value="CaptchaValue"
+                   TextFieldClass="mt-10 mx-auto"
+                   Height="60"
+                   Label=@T("验证码") Outlined
+                   OnRefresh="RefreshCode"
+                   ErrorMessage=@T("验证码错误")>
+            </PImageCaptcha>
+        }
+        <MButton Class="mt-11 rounded-4" OnClick=LoginAsync Height=46 Width=@("100%") Color="primary">@T("登录")</MButton>
+    </div>
+
+
+        ;
+        return ViewSubMenu;
+    }
+}

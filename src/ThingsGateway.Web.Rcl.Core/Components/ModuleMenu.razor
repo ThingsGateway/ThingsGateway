@@ -1,0 +1,54 @@
+﻿@namespace ThingsGateway.Web.Rcl.Core
+@inject I18n I18n
+@inject MasaBlazor MasaBlazor
+@inject UserResoures UserResoures
+<AppMenu Items="items">
+    <ActivatorContent>
+        <MButton @attributes="@context.Attrs"
+                 MaxHeight="@(UserResoures.Themes.LayoutPrpo.AppBarHeight-8)"
+                 Icon="@MasaBlazor.Breakpoint.SmAndDown"
+                 Class=""
+                 Text>
+            <MIcon>mdi-translate</MIcon>
+            <AppChevronDown></AppChevronDown>
+        </MButton>
+    </ActivatorContent>
+    <ItemContent>
+        <MListItemGroup Value="@I18n.Culture.Name"
+                        Color="primary">
+            <MListItem Value="context.Value" Class="m-list-item--default" OnClick="() => OnListItemClick(context.Value)">
+                <MListItemTitle>@context.Title</MListItemTitle>
+            </MListItem>
+        </MListItemGroup>
+    </ItemContent>
+</AppMenu>
+
+@code {
+
+    private List<DefaultItem> items = new();
+
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await base.OnParametersSetAsync();
+        items = new()
+        {
+            new DefaultItem() { Heading = I18n.T("Trans") },
+        };
+
+        items.AddRange(I18n.SupportedCultures.Select(c => new DefaultItem()
+            {
+                Title = c.NativeName,
+                Value = c.Name
+            }));
+
+    }
+    [Parameter]
+    public EventCallback<string> LanguageChange { get; set; }
+
+    private Task OnListItemClick(StringNumber val)
+    {
+        return LanguageChange.InvokeAsync(val.ToString());
+    }
+
+}

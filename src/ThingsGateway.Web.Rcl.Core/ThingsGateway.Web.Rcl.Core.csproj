@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+	<PropertyGroup>
+		<TargetFrameworks>net6.0;net7.0</TargetFrameworks>
+		<Version>1.2.0</Version>
+		<NoWarn>BL0005;CS0168;</NoWarn>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <Content Remove="wwwroot\i18n\en-US.json" />
+	  <Content Remove="wwwroot\i18n\zh-CN.json" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Include="wwwroot\i18n\en-US.json">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Include="wwwroot\i18n\zh-CN.json">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Include="wwwroot\js\jsInitVariables.js" />
+	</ItemGroup>
+
+
+	<ItemGroup>
+
+		<PackageReference Include="Masa.Blazor" Version="1.0.0-preview.7" />
+
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\ThingsGateway.Application\ThingsGateway.Application.csproj" />
+	</ItemGroup>
+
+</Project>

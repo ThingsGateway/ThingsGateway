@@ -1,0 +1,52 @@
+﻿@page "/dev/vislog"
+@using System.Linq.Expressions;
+
+@inject IVisitLogService VisitLogService
+@namespace ThingsGateway.Web.Rcl
+@attribute [Authorize]
+@inject UserResoures UserResoures
+@attribute [RolePermission]
+@inherits CultureComponentBase
+@layout MainLayout
+<AppDataTable @ref="_datatable" TItem="DevLogVisit" SearchItem="VisitLogPageInput"
+              AddItem="object" EditItem="object" ShowSelect=false
+              SearchModel="@search" IsShowOperCol=false
+              QueryCall="QueryCall"
+              FilterHeaders="FilterHeaders"
+              ShowQueryButton IsShowSearchKey>
+    <SearchTemplate>
+        <MSelect Style="max-width:200px;"
+                 Class="my-1 mx-2 " @bind-Value="context.Category"
+                 Outlined Label=@context.Description(x => x.Category)
+                 Items=@(CategoryFilters) Clearable
+                 MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
+                 ItemText=@((u) =>u.Key)
+                 ItemValue=@(u => u.Value)
+                 HideDetails="true" Height="30"
+                 Dense>
+        </MSelect>
+        <MSelect Style="max-width:200px;"
+                 Class="my-1 mx-2 " @bind-Value="context.ExeStatus"
+                 Outlined Label=@context.Description(x => x.ExeStatus)
+                 Items=@(ExeStatus) Clearable
+                 MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
+                 ItemText=@((u) =>u.Key)
+                 ItemValue=@(u => u.Value)
+                 HideDetails="true" Height="30"
+                 Dense>
+        </MSelect>
+        <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="my-1 mx-2 " @bind-Value="context.Account"
+                    Outlined Label=@context.Description(x => x.Account) />
+
+    </SearchTemplate>
+    <OtherToolbarTemplate>
+        @if (@UserResoures.IsHasButtonWithRole("devvislogclear"))
+        {
+            <MButton Color="error"  Class="mx-2 my-1" OnClick=@(ClearClick)>@T("清空")</MButton>
+        }
+    </OtherToolbarTemplate>
+
+</AppDataTable>
+
+
+

@@ -1,0 +1,137 @@
+﻿@page "/tgruntime/realalarm"
+@namespace ThingsGateway.Web.Page
+@using System.Linq.Expressions;
+@using BlazorComponent;
+@using Furion.DataValidation;
+@using Mapster;
+@using Masa.Blazor.Presets;
+@using System.IO;
+@using TouchSocket.Core;
+@attribute [Authorize]
+@inject MasaBlazor MasaBlazor
+@attribute [RolePermission]
+@inherits CultureComponentBase
+@implements IDisposable
+@inject UserResoures UserResoures
+@layout MainLayout
+<AppDataTable @ref="_datatable" TItem="AlarmHis" SearchItem="VariablePageInput"
+              AddItem="object" EditItem="object" ShowSelect=false
+              IsMenuOperTemplate=false SearchModel="_searchModel"
+              QueryCall="QueryCall"
+              FilterHeaders="FilterHeaders" Filters="Filters" ShowDetailButton
+                ShowQueryButton>
+    <SearchTemplate>
+        <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="my-1  mx-2 " @bind-Value="context.Name" Clearable
+                        Outlined Label=@context.Description(x => x.Name) />
+        <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="my-1  mx-2 " @bind-Value="context.DeviceName" Clearable
+                        Outlined Label=@context.Description(x => x.DeviceName) />
+    </SearchTemplate>
+    <OtherToolbarTemplate>
+        <EnableSwitch Dense=false Class="my-1  mx-3 " @bind-Value=@IsAutoQuery EnabledLabel=@T("自动刷新") DisabledLabel=@T("取消自动刷新") />
+    </OtherToolbarTemplate>
+
+    <ItemColTemplate>
+        @switch (context.Header.Value)
+        {
+
+            case nameof(context.Item.Quality):
+                <EnableChip Value="context.Item.Quality==192" DisabledLabel=@context.Item.Quality.ToString() EnabledLabel=@context.Item.Quality.ToString()>
+                </EnableChip>
+                break;
+            default:
+                @context.Value
+                break;
+
+        }
+
+    </ItemColTemplate>
+
+</AppDataTable>
+
+
+@code {
+    bool IsAutoQuery { get; set; }
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string DeviceName { get; set; }
+
+    VariablePageInput _searchModel { get; set; } = new();
+    private IAppDataTable _datatable;
+    AlarmHostService AlarmHostService { get; set; }
+    private System.Timers.Timer DelayTimer;
+
+    protected override async Task OnInitializedAsync()
+    {
+        AlarmHostService = this.GetBackgroundService<AlarmHostService>();
+        DelayTimer = new System.Timers.Timer(5000);
+        DelayTimer.Elapsed += timer_Elapsed;
+        DelayTimer.AutoReset = true;
+        DelayTimer.Start();
+        _searchModel.DeviceName = DeviceName;
+        await base.OnInitializedAsync();
+    }
+    async void timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+    {
+        if (IsAutoQuery)
+            await InvokeAsync(async ()=>await datatableQuery());
+    }
+    public void Dispose()
+    {
+        DelayTimer.Dispose();
+    }
+    private async Task datatableQuery()
+    {
+        await _datatable?.QueryClick();
+    }
+
+
+    private void FilterHeaders(List<DataTableHeader<AlarmHis>> datas)
+    {
+        datas.RemoveWhere(it => it.Value == nameof(AlarmHis.Id));
+
+        foreach (var item in datas)
+        {
+            item.Sortable = false;
+            item.Filterable = false;
+            item.Divider = false;
+            item.Align = DataTableHeaderAlign.Start;
+            item.CellClass = " table-minwidth ";
+            switch (item.Value)
+            {
+                case nameof(AlarmHis.Name):
+                    item.Sortable = true;
+                    break;
+                case nameof(AlarmHis.DeviceName):
+                    item.Sortable = true;
+                    break;
+                case nameof(AlarmHis.VariableAddress):
+                    item.Sortable = true;
+                    break;
+
+                case nameof(AlarmHis.Quality):
+                    item.Sortable = true;
+                    break;
+
+            }
+        }
+    }
+
+    private void Filters(List<Filters> datas)
+    {
+        foreach (var item in datas)
+        {
+
+        }
+    }
+
+    private async Task<SqlSugarPagedList<AlarmHis>> QueryCall(VariablePageInput input)
+    {
+        var devices = AlarmHostService.RealAlarmDeviceVariables.Adapt<List<AlarmHis>>();
+        var data = await devices
+    .WhereIf(!input.DeviceName.IsNullOrEmpty(), a => a.DeviceName.Contains(input.DeviceName))
+    .WhereIf(!input.Name.IsNullOrEmpty(), a => a.Name.Contains(input.Name)).ToList()
+    .ToPagedListAsync(input);
+        return data;
+
+    }
+}

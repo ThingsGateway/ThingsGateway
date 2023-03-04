@@ -1,0 +1,11 @@
+@page "/"
+@layout BaseLayout
+@attribute [Authorize]
+@inject NavigationManager NavigationManager
+@namespace ThingsGateway.Web.Rcl
+@code {
+    protected override void OnAfterRender(bool firstRender)
+    {
+        NavigationManager.NavigateTo("/index", false);
+    }
+}

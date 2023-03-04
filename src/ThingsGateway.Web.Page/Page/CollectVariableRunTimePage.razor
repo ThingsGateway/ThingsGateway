@@ -1,0 +1,190 @@
+﻿@page "/tgruntime/collectdevicevariable"
+@namespace ThingsGateway.Web.Page
+@using System.Linq.Expressions;
+@using BlazorComponent;
+@using Furion.DataValidation;
+@using Furion;
+@using Mapster;
+@using Masa.Blazor.Presets;
+@using System.IO;
+@using TouchSocket.Core;
+@attribute [Authorize]
+@inject MasaBlazor MasaBlazor
+@attribute [RolePermission]
+@inherits CultureComponentBase
+@implements IDisposable
+@inject UserResoures UserResoures
+@layout MainLayout
+<AppDataTable @ref="_datatable" TItem="CollectVariableRunTime" SearchItem="VariablePageInput"
+              AddItem="object" EditItem="object"
+              SearchModel="_searchModel"
+              QueryCall="QueryCall"
+              FilterHeaders="FilterHeaders" Filters="Filters" ShowDetailButton IsShowOperCol=true
+                ShowQueryButton>
+    <SearchTemplate>
+        <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="my-1  mx-2 " @bind-Value="context.Name" Clearable
+                        Outlined Label=@context.Description(x => x.Name) />
+        <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="my-1  mx-2 " @bind-Value="context.DeviceName" Clearable
+                        Outlined Label=@context.Description(x => x.DeviceName) />
+    </SearchTemplate>
+
+    <ItemColOperTemplate>
+        <MButton Text Disabled=@(!UserResoures.IsHasButtonWithRole("tgcollectdeviceedit")) Class="my-1  mx-2" OnClick=@(() => Write(context.Item))>
+            @T("写入")
+        </MButton>
+    </ItemColOperTemplate>
+    <ItemColTemplate>
+        @switch (context.Header.Value)
+        {
+
+            case nameof(context.Item.Quality):
+                <EnableChip Value="context.Item.Quality==192" DisabledLabel=@context.Item.Quality.ToString() EnabledLabel=@context.Item.Quality.ToString()>
+                </EnableChip>
+                break;
+            default:
+                @context.Value
+                break;
+
+        }
+
+    </ItemColTemplate>
+
+</AppDataTable>
+
+
+@code {
+
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string DeviceName { get; set; }
+
+    VariablePageInput _searchModel { get; set; } = new();
+    private IAppDataTable _datatable;
+    CollectDeviceHostService CollectDeviceHostService { get; set; }
+    private System.Timers.Timer DelayTimer;
+    protected override async Task OnParametersSetAsync()
+    {
+        if (_searchModel.DeviceName != DeviceName)
+        {
+            _searchModel.DeviceName = DeviceName;
+            await datatableQuery();
+        }
+        await base.OnParametersSetAsync();  
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        CollectDeviceHostService = this.GetBackgroundService<CollectDeviceHostService>();
+        DelayTimer = new System.Timers.Timer(1000);
+        DelayTimer.Elapsed += timer_Elapsed;
+        DelayTimer.AutoReset = true;
+        DelayTimer.Start();
+        await base.OnInitializedAsync();
+    }
+    async void timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+    {
+        await InvokeAsync(StateHasChanged);
+    }
+    public void Dispose()
+    {
+        DelayTimer.Dispose();
+    }
+    private async Task datatableQuery()
+    {
+        if (_datatable != null)
+            await _datatable?.QueryClick();
+    }
+    [Inject]
+    RpcCore rpcCore { get; set; }
+    private async Task Write(CollectVariableRunTime collectVariableRunTime)
+    {
+        var confirm = await PopupService.PromptAsync(T("写入"),
+        $"输入变量{collectVariableRunTime.Name}的写入值");
+        if (confirm != null)
+        {
+            await rpcCore?.InvokeDeviceMethod($"BLAZOR-{UserResoures.CurrentUser.Account}-{App.HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString()}",  new NameVaue { Name = collectVariableRunTime.Name, Value = confirm  }, true);
+        }
+    }
+
+    private void FilterHeaders(List<DataTableHeader<CollectVariableRunTime>> datas)
+    {
+        datas.RemoveWhere(it => it.Value == nameof(CollectVariableRunTime.CreateUserId));
+        datas.RemoveWhere(it => it.Value == nameof(CollectVariableRunTime.UpdateUserId));
+
+        datas.RemoveWhere(it => it.Value == nameof(CollectVariableRunTime.IsDelete));
+        datas.RemoveWhere(it => it.Value == nameof(CollectVariableRunTime.ExtJson));
+        datas.RemoveWhere(it => it.Value == nameof(CollectVariableRunTime.Id));
+        datas.RemoveWhere(it => it.Value == nameof(CollectVariableRunTime.VariablePropertys));
+        datas.RemoveWhere(it => it.Value == nameof(CollectVariableRunTime.DeviceId));
+        datas.RemoveWhere(it => it.Value == nameof(CollectVariableRunTime.VariableValueChange));
+        datas.RemoveWhere(it => it.Value == nameof(CollectVariableRunTime.ThingsGatewayBitConverter));
+        datas.RemoveWhere(it => it.Value == nameof(CollectVariableRunTime.StringBcdFormat));
+        datas.RemoveWhere(it => it.Value == nameof(CollectVariableRunTime.DataType));
+        datas.RemoveWhere(it => it.Value == nameof(CollectVariableRunTime.EventTime));
+        datas.RemoveWhere(it => it.Value == nameof(CollectVariableRunTime.EventTypeEnum));
+
+        datas.RemoveWhere(it => it.Value.Contains("His"));
+        datas.RemoveWhere(it => it.Value.Contains("Alarm"));
+        datas.RemoveWhere(it => it.Value.Contains("RestrainExpressions"));
+
+        foreach (var item in datas)
+        {
+            item.Sortable = false;
+            item.Filterable = false;
+            item.Divider = false;
+            item.Align = DataTableHeaderAlign.Start;
+            item.CellClass = " table-minwidth ";
+            switch (item.Value)
+            {
+                case nameof(CollectVariableRunTime.Name):
+                    item.Sortable = true;
+                    break;
+                case nameof(CollectVariableRunTime.DeviceName):
+                    item.Sortable = true;
+                    break;
+                case nameof(CollectVariableRunTime.VariableAddress):
+                    item.Sortable = true;
+                    break;
+                case nameof(CollectVariableRunTime.OtherMethod):
+                    item.Sortable = true;
+                    break;
+                case nameof(CollectVariableRunTime.ChangeTime):
+                    item.Sortable = true;
+                    break;
+                case nameof(CollectVariableRunTime.Quality):
+                    item.Sortable = true;
+                    break;
+                case nameof(CollectVariableRunTime.ReadExpressions):
+                    item.Sortable = true;
+                    break;
+            }
+        }
+    }
+
+    private void Filters(List<Filters> datas)
+    {
+        foreach (var item in datas)
+        {
+            switch (item.Key)
+            {
+                case nameof(CollectVariableRunTime.CreateTime):
+                case nameof(CollectVariableRunTime.UpdateTime):
+                case nameof(CollectVariableRunTime.CreateUser):
+                case nameof(CollectVariableRunTime.UpdateUser):
+                    item.Value = false;
+                    break;
+            }
+        }
+    }
+
+    private async Task<SqlSugarPagedList<CollectVariableRunTime>> QueryCall(VariablePageInput input)
+    {
+        var devices = CollectDeviceHostService.CollectDeviceCores.SelectMany(it => it.Device.DeviceVariableRunTimes).ToList();
+        var data = await devices
+    .WhereIf(!input.DeviceName.IsNullOrEmpty(), a => a.DeviceName.Contains(input.DeviceName))
+    .WhereIf(!input.Name.IsNullOrEmpty(), a => a.Name.Contains(input.Name)).ToList()
+    .ToPagedListAsync(input);
+        return data;
+
+
+    }
+}

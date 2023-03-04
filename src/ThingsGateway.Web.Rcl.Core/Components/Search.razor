@@ -1,0 +1,46 @@
+﻿@namespace ThingsGateway.Web.Rcl.Core
+@using ThingsGateway.Core;
+@inherits CultureComponentBase
+<div class="d-flex justify-end">
+    <MAutocomplete @bind-Value="Value"
+                   Items="AvalidMenus"
+                   Class="mx-1 text-subtitle-2 rounded-0"
+                   Style="max-width: 350px;"
+                   Flat Dense Placeholder=@T("搜索")
+                   ItemValue="r=>r.Component"
+                   ItemText="r=>r.Title"
+                   HideDetails="true"
+                   PrependInnerIcon="mdi-magnify">
+    </MAutocomplete>
+</div>
+
+@code {
+    private string _value;
+    private string Value
+    {
+        get => _value;
+        set
+        {
+            _value = value;
+            if (!string.IsNullOrEmpty(value))
+            {
+                NavigationManager.NavigateTo(value);
+            }
+        }
+    }
+
+    [Inject]
+    [NotNull]
+    private NavigationManager NavigationManager { get; set; }
+
+    private List<SysResource> AvalidMenus;
+    [Inject]
+    private UserResoures UserResoures { get; set; }
+
+    protected override void OnInitialized()
+    {
+        AvalidMenus = UserResoures.SameLevelMenus.Where(it=>it.Component!=null).ToList();
+        base.OnInitialized();
+    }
+
+}

@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+	<PropertyGroup>
+		<TargetFrameworks>net6.0;net7.0</TargetFrameworks>
+		<Version>1.2.0</Version>
+		<NoWarn>BL0005;CS0168;</NoWarn>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\ThingsGateway.Web.Foundation\ThingsGateway.Web.Foundation.csproj" />
+	  <ProjectReference Include="..\ThingsGateway.Web.Rcl\ThingsGateway.Web.Rcl.csproj" />
+	</ItemGroup>
+
+
+</Project>

@@ -1,0 +1,29 @@
+﻿@namespace ThingsGateway.Web.Rcl.Core
+@inherits CultureComponentBase
+@using NewLife.Serialization;
+@using ThingsGateway.Core
+@inject MasaBlazor MasaBlazor
+@*这个子组件应该包含语言切换，主题深浅切换，用户头像菜单*@
+
+<LanguageMenu LanguageChange=@LanguageChange></LanguageMenu>
+
+<MButton Text Icon="@MasaBlazor.Breakpoint.SmAndDown"
+         MaxHeight="@(UserResoures.Themes.LayoutPrpo.AppBarHeight-8)"
+         OnClick=@(() =>UserResoures.SetDarkOrLightTheme())>
+    <MIcon>
+        mdi-theme-light-dark
+    </MIcon>
+</MButton>
+
+
+<UserMenu></UserMenu>
+
+@code
+{
+    [Parameter]
+    public EventCallback<string> LanguageChange { get; set; }
+
+    [Inject]
+    UserResoures UserResoures { get; set; }
+
+}

@@ -1,0 +1,34 @@
+﻿@page "/tglog/rpclog"
+@using System.Linq.Expressions;
+@inject IRpcLogService RpcLogService
+@namespace ThingsGateway.Web.Page
+@attribute [Authorize]
+@attribute [RolePermission]
+@inject UserResoures UserResoures
+@inherits CultureComponentBase
+@layout MainLayout
+<AppDataTable @ref="_datatable" TItem="RpcLog" SearchItem="RpcLogPageInput"
+              AddItem="object" EditItem="object" ShowSelect=false
+              SearchModel="@search" IsShowOperCol=true 
+              QueryCall="QueryCall"
+              FilterHeaders="FilterHeaders" Filters="Filters" ShowDetailButton
+                ShowQueryButton IsShowSearchKey>
+    <SearchTemplate>
+        <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="my-1  mx-2 " @bind-Value="context.Source"
+                        Outlined Label=@context.Description(x => x.Source) />
+        <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="my-1  mx-2 " @bind-Value="context.Object"
+                        Outlined Label=@context.Description(x => x.Object) />
+        <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="my-1  mx-2 " @bind-Value="context.Method"
+                        Outlined Label=@context.Description(x => x.Method) />
+
+    </SearchTemplate>
+    <OtherToolbarTemplate>
+        @if (@UserResoures.IsHasButtonWithRole("tgrpclogclear"))
+        {
+            <MButton Color="error" Class="mx-2 my-1" OnClick=@(ClearClick)>@T("清空")</MButton>
+        }
+    </OtherToolbarTemplate>
+</AppDataTable>
+
+
+

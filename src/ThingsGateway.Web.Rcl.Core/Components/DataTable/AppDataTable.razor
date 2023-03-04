@@ -1,0 +1,311 @@
+﻿@namespace ThingsGateway.Web.Rcl.Core
+@using Microsoft.AspNetCore.Components.Rendering;
+@using ThingsGateway.Core;
+@typeparam TItem where TItem : PrimaryIdEntity, new()
+@typeparam SearchItem where SearchItem : BasePageInput, new()
+@typeparam AddItem where AddItem : class, new()
+@typeparam EditItem where EditItem : class, new()
+@inherits CultureComponentBase
+@inject MasaBlazor MasaBlazor
+@using Masa.Blazor.Presets
+
+
+
+@*Add*@
+<PDrawer @bind-Value="AddShow"
+         FormModel="AddModel" 
+         Persistent AutoScrollToTop
+         Width=@(MasaBlazor.Breakpoint.Mobile?"100%":"600")
+         Title=@T("添加") MaxWidth="600"
+         OnSave="AddOnSave"
+         OnCancel="AddOnCancel">
+    <MSheet Class="pa-4 ma-0">
+        @if (AddTemplate != null && AddShow)
+        {
+            @AddTemplate(AddModel)
+        }
+    </MSheet>
+</PDrawer>
+
+@*Edit*@
+<PDrawer @bind-Value="EditShow"
+         FormModel="EditModel"
+         Persistent AutoScrollToTop
+         Width=@(MasaBlazor.Breakpoint.Mobile?"100%":"600")
+         Title=@T("修改") MaxWidth="600"
+         OnSave="EditOnSave"
+         OnCancel="EditOnCancel">
+    <MSheet Class="pa-4 ma-0">
+        @if (EditTemplate != null && EditShow)
+        {
+            @EditTemplate(EditModel)
+        }
+    </MSheet>
+</PDrawer>
+
+@*Detail*@
+<PDrawer @bind-Value="DetailShow"
+         AutoScrollToTop
+         Title=@T("详情")
+         Width=@(MasaBlazor.Breakpoint.Mobile?"100%":"600")
+         MaxWidth="600">
+    <MContainer>
+        <MSimpleTable Dense FixedHeader>
+            <tbody>
+                @if (DetailShow)
+                {
+                    @foreach (var item in Headers)
+                    {
+                        if (item.Value != BlazorConst.TB_Actions)
+                        {
+                            string value = DetailModelPairs[item.Value];
+                            {
+                                <tr @key="item.Text">
+                                    <td class="text-start table-minwidth">
+                                        @item.Text
+                                    </td>
+                                    <td class="text-start ">
+                                        <div style="word-break:break-all; white-space:pre-wrap;">
+                                            @value
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    }
+                }
+
+            </tbody>
+        </MSimpleTable>
+    </MContainer>
+</PDrawer>
+
+<MSheet Class=@(ClassString) Style="display:flex; flex-direction: column;" Height=@("100%")>
+    @if (IsShowToolbar)
+    {
+        <MSheet Class="ma-2">
+            <MForm Model="SearchModel" EnableValidation EnableI18n @ref="SearchForm">
+                <MCard Outlined Elevation="0" @onkeydown=Enter>
+                    <MRow Class="py-2 px-2" NoGutters Align="AlignTypes.Start">
+                        @if (SearchTemplate is not null)
+                        {
+                            @SearchTemplate(SearchModel)
+                        }
+                        @if (IsShowSearchKey)
+                        {
+                            <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="mx-2 my-1" @bind-Value="SearchModel.SearchKey"
+                                Outlined Label=@SearchModel.Description(x => x.SearchKey) />
+                        }
+                        @if (ShowQueryButton)
+                        {
+                            @if (IsShowClearSearch)
+                            {
+                                <MButton Color="info" Class="mx-2 my-1" OnClick=ClearClick>@T("清空搜索")</MButton>
+                            }
+                            <MButton Color="info"  Class="mx-2 my-1" Loading="QueryLoading" OnClick=QueryClick>@T("查询")</MButton>
+                        }
+                        @if (ShowAddButton)
+                        {
+                            <MButton Color="info" Class="mx-2 my-1" OnClick=@(AddClick)>@T("添加")</MButton>
+                        }
+                        @if (ShowEditButton)
+                        {
+                            <MButton Color="info"  Class="mx-2 my-1" OnClick=@(()=>EditClick(selectedItem?.ToArray()))>@T("修改")</MButton>
+                        }
+                        @if (ShowDeleteButton)
+                        {
+                            <MButton Color="error"  Loading="DeleteLoading" Class="mx-2 my-1" OnClick=@(()=>DeleteClick(selectedItem?.ToArray()))>@T("删除")</MButton>
+                        }
+                        @if (OtherToolbarTemplate != null)
+                        {
+                            @OtherToolbarTemplate(selectedItem)
+                        }
+                        @if (ShowFilter)
+                        {
+                            <div class="ml-auto mr-2 my-1">
+                                <TableFilter FilterHeaderString="FilterHeaderString"
+                                     ValueChanged="FilterChanged">
+                                </TableFilter>
+                            </div>
+                        }
+                    </MRow>
+
+                </MCard>
+            </MForm>
+
+        </MSheet>
+
+    }
+    <MSheet Class="ma-2 d-flex flex-column" Style="flex:auto;height:1%;">
+        <MDataTable HideDefaultFooter
+                    FixedRight=IsShowOperCol FixedHeader ShowSelect=ShowSelect
+                    Height=@("100%") Dense=@(Dense)
+                    @bind-Value="selectedItem"
+                    @ref="_table"
+                    OnOptionsUpdate="HandleOnOptionsUpdate"
+                    ServerItemsLength="PageItems.Total"
+                    Page="SearchModel.Current"
+                    ItemsPerPage="SearchModel.Size"
+                    OnPageCount="PageChanged"
+                    Loading="QueryLoading"
+                    ItemKey="r=>r.Id.ToString()"
+                    Style="flex:auto; overflow-y:auto;" Class="elevation-1 "
+                    Items="Items"
+                    Headers="headers">
+
+            <HeaderColContent Context="header">
+                @if (HeaderTemplate != null)
+                {
+                    @HeaderTemplate(header)
+                }
+                else
+                {
+                    <MLabel Class="text-subtitle">@header.Text</MLabel>
+                }
+            </HeaderColContent>
+            <ItemColContent>
+                @if (context.Header.Value == BlazorConst.TB_Actions)
+                {
+                    @if (ShowEditButton)
+                    {
+                        <MTooltip Bottom Context="tip">
+                            <ActivatorContent>
+                                <MButton Color="info" Small @attributes="@tip.Attrs"
+                                 OnClick="()=>EditClick(context.Item)"
+                                 Text>
+                                    <MIcon>mdi-pencil</MIcon>
+                                </MButton>
+                            </ActivatorContent>
+                            <ChildContent>
+                                <span>@T("修改")</span>
+                            </ChildContent>
+                        </MTooltip>
+                    }
+                    @if (ShowDeleteButton)
+                    {
+                        <MTooltip Bottom Context="tip">
+                            <ActivatorContent>
+                                <MButton Color="error" Small @attributes="@tip.Attrs"
+                                 OnClick="()=>DeleteClick(context.Item)"
+                                 Text>
+                                    <MIcon>mdi-delete</MIcon>
+                                </MButton>
+                            </ActivatorContent>
+                            <ChildContent>
+                                <span>@T("删除")</span>
+                            </ChildContent>
+                        </MTooltip>
+                    }
+                    @if (ShowDetailButton)
+                    {
+                        <MTooltip Bottom Context="tip">
+                            <ActivatorContent>
+                                <MButton Color="info" Small @attributes="@tip.Attrs"
+                                 OnClick="()=>DetailClick(context.Item)"
+                                 Text>
+                                    <MIcon>mdi-information</MIcon>
+                                </MButton>
+                            </ActivatorContent>
+                            <ChildContent>
+                                <span>@T("详情")</span>
+                            </ChildContent>
+                        </MTooltip>
+                    }
+                    @if (ItemColOperTemplate != null)
+                    {
+                        if (IsMenuOperTemplate)
+                        {
+                            <MMenu OffsetY CloseOnClick=true Context="menu">
+                                <ActivatorContent>
+                                    <MButton Small @attributes="@menu.Attrs" Text>
+                                        <MIcon>fas fa-ellipsis-v</MIcon>
+                                    </MButton>
+                                </ActivatorContent>
+                                <ChildContent>
+                                    <MSheet>
+                                        <MContainer>
+                                            <MRow Dense>
+                                                @ItemColOperTemplate(context)
+                                            </MRow>
+                                        </MContainer>
+                                    </MSheet>
+
+                                </ChildContent>
+                            </MMenu>
+                        }
+                        else
+                        {
+                            context.Header.Width = "Auto";
+                            @ItemColOperTemplate(context)
+                        }
+                    }
+                }
+                else
+                {
+                    if (ItemColTemplate != null)
+                    {
+                        @ItemColTemplate(context)
+                    }
+                    else
+                    {
+                        @if (context.Header.CellClass?.Contains("text-truncate") == true)
+                        {
+                            <span title=@context.Value>
+                                @context.Value
+                            </span>
+                        }
+                        else
+                        {
+                            @context.Value
+                        }
+
+                    }
+                }
+            </ItemColContent>
+        </MDataTable>
+
+        @if (IsPage)
+        {
+            <MCard Class="d-flex flex-row justify-start align-center  py-1 mt-2" Outlined Elevation="0">
+                <MRow NoGutters Align="AlignTypes.Center">
+
+                    <div class="px-1 py-1" style="white-space: nowrap;">
+                    @T("共 {0} 条",PageItems.Total.ToString())
+                    </div>
+                    <MSelect Class="px-1 py-1" Items=@(PageSizeItems)
+                         @bind-Value=@(SearchModel.Size)
+                         MenuProps="@(props => { props.Top = true; props.OffsetY = true; })"
+                         ItemText=@((u) =>{return T("{0} 条/页",u.Key);})
+                         ItemValue=@(u => u.Value)
+                         HideDetails="true" Height="30"
+                         Dense Style="max-width:150px"
+                         Outlined>
+                    </MSelect>
+
+                <MTextField Dense Style="max-width:150px" HideDetails=@("auto") Class="px-1 py-1" @bind-Value="SearchModel.Current"
+                         NumberProps=@(prop=> { prop.Min = 1;  prop.Step = 1; })    TValue=int Type="number" Outlined Label=@T("页面跳转") />
+
+@*                    <MSelect Class="px-1 py-1" Items=@(ObjectExtensions.GetOrderNum( PageItems.Pages))
+                         @bind-Value=@(SearchModel.Current)
+                         MenuProps="@(props => { props.Top = true; props.OffsetY = true; })"
+                         ItemText=@((u) =>{return T("第 {0} 页",u);})
+                         ItemValue=@(u => u)
+                         HideDetails="true" Height="30"
+                         Dense Style="max-width:150px"
+                         Outlined>
+                    </MSelect>*@
+
+
+                    <MPagination Class="ml-auto mr-1 py-1" Length="PageItems.Pages"
+                             @bind-Value="SearchModel.Current"
+                             TotalVisible="5" Color="primary" Circle></MPagination>
+
+                </MRow>
+            </MCard>
+
+        }
+
+    </MSheet>
+
+</MSheet>
+

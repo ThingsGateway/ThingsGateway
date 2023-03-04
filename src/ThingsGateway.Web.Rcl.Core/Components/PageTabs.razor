@@ -1,0 +1,37 @@
+﻿@namespace ThingsGateway.Web.Rcl.Core
+@using System.Globalization;
+@inherits CultureComponentBase
+<MPageTabs Items="UserResoures.PageTabItems"
+           ShowArrows=true 
+           NextIcon="mdi-arrow-right-bold-box-outline"
+           PrevIcon="mdi-arrow-left-bold-box-outline">
+    <TabContent>
+        <MTab Href="@context.Item.Url"
+              Class="px-4 rounded-0 m-page_tab"
+              ActiveClass="primary--text"
+              IsActive=context.IsActive
+              Ripple="false" Style=@($"height:{UserResoures.Themes.LayoutPrpo.PageTabsHeight}px;")
+              @attributes="@context.Attrs">
+            <MIcon Size=20>@context.Item.Icon</MIcon>
+            <span class="mx-2 text-capitalize" style="min-width:45px;">@T(context.Item.Name)</span>
+            @if (context.Item.Closable)
+            {
+                <MIcon Size=16 OnClick="context.Close" OnClickStopPropagation OnClickPreventDefault>mdi-close</MIcon>
+            }
+        </MTab>
+
+    </TabContent>
+
+    <ChildContent>
+        @ChildContent
+    </ChildContent>
+</MPageTabs>
+
+@code {
+
+    [Inject]
+    UserResoures UserResoures { get; set; }
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+}

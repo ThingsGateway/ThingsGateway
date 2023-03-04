@@ -1,0 +1,15 @@
+@page "/401"
+@layout MainLayout
+@inherits CultureComponentBase
+@namespace ThingsGateway.Web.Rcl
+<div style="height:100%" class="d-flex flex-column justify-center align-center">
+    <div class="bg">
+        <img alt="401" src="@Image" />
+    </div>
+    <h3>@T("抱歉，你没有权限访问此页面。")</h3>
+    <MButton Class="mt-2" Color="primary" Href="/">@T("回到首页")</MButton>
+</div>
+
+@code {
+    private string Image { get; set; } = BlazorConst.ResourceUrl + "images/401.png";
+}

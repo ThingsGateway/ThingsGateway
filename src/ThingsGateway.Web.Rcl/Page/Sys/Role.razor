@@ -1,0 +1,235 @@
+﻿@page "/sys/role"
+@using System.Linq.Expressions;
+@using BlazorComponent;
+@using Masa.Blazor.Presets;
+@inject IRoleService SysRoleService
+@namespace ThingsGateway.Web.Rcl
+@attribute [Authorize]
+@attribute [RolePermission]
+@inject UserResoures UserResoures
+@inject MasaBlazor MasaBlazor
+@inherits CultureComponentBase
+@layout MainLayout
+<AppDataTable @ref="_datatable" TItem="SysRole" SearchItem="RolePageInput" AddItem="RoleAddInput" EditItem="RoleEditInput"
+              SearchModel="@search" IsShowSearchKey
+              QueryCall="QueryCall" AddCall="AddCall" EditCall="EditCall" DeleteCall="DeleteCall"
+              FilterHeaders="FilterHeaders"
+              ShowQueryButton
+              ShowAddButton=@UserResoures.IsHasButtonWithRole("sysroleadd")
+              ShowDeleteButton=@UserResoures.IsHasButtonWithRole("sysroledelete")
+              ShowEditButton=@UserResoures.IsHasButtonWithRole("sysroleedit")>
+
+    <AddTemplate>
+        <MSubheader Class="mt-4 font-weight-black">    @(context.Description(x => x.Name))  </MSubheader>
+        <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.Name />
+
+        <MSubheader Class="mt-4 mb-5 font-weight-black">@(context.Description(x => x.SortCode)) </MSubheader>
+        <MSlider @bind-Value=@context.SortCode Class="mb-5" TValue=int ThumbLabel="@("always")" Dense />
+    </AddTemplate>
+
+    <EditTemplate>
+        <MSubheader Class="mt-4 font-weight-black">    @(context.Description(x => x.Name))  </MSubheader>
+        <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.Name />
+
+        <MSubheader Class="mt-4 mb-5 font-weight-black">@(context.Description(x => x.SortCode)) </MSubheader>
+        <MSlider @bind-Value=@context.SortCode Class="mb-5" TValue=int ThumbLabel="@("always")" Dense />
+    </EditTemplate>
+
+    <ItemColOperTemplate>
+        <MList Dense>
+            @if (@UserResoures.IsHasButtonWithRole("sysroleperresuorce"))
+            {
+                <MListItem OnClick="async()=>
+                    {
+                    ChoiceRoleId=context.Item.Id;
+                    await ResuorceInit();
+                    IsShowResuorces=true;
+                    }">
+                    <MListItemTitle Class="ml-2"> @T("资源权限") </MListItemTitle>
+                </MListItem>
+
+            }
+            @if (@UserResoures.IsHasButtonWithRole("sysroleperuser"))
+            {
+                <MListItem OnClick="async()=>
+                    {
+                    ChoiceRoleId=context.Item.Id;
+                    await UserInit();
+                    IsShowUsers=true;
+                    }">
+                    <MListItemTitle Class="ml-2"> @T("授权用户") </MListItemTitle>
+                </MListItem>
+
+            }
+        </MList>
+    </ItemColOperTemplate>
+
+</AppDataTable>
+
+<PDrawer @bind-Value="IsShowResuorces" OnCancel="() => IsShowResuorces = false"
+         Title=@T("资源授权")
+         Width=@(MasaBlazor.Breakpoint.Mobile?"100%":"600")
+         MaxWidth="600" OnSave="OnRoleHasResuorcesSave">
+    @if (IsShowResuorces)
+    {
+        <MSheet Outlined Class="ma-0 pa-2">
+            <MRow Align="AlignTypes.Center">
+                <MCol>  <MLabel Class="ml-4 font-weight-black">  @T("菜单")    </MLabel>  </MCol>
+                <MDivider Vertical />
+                <MCol>  <MLabel Class="ml-4 font-weight-black">  @T("按钮")    </MLabel>    </MCol>
+            </MRow>
+        </MSheet>
+        @foreach (var menu in ResTreeSelectors)
+        {
+            <MSheet Outlined Class="ma-0 pa-4">
+                <MRow Align="AlignTypes.Center">
+                    <MCol>
+                        <MListItem IsActive=@(RoleHasResuorces.Any(it=>it.MenuId==menu.Id))>
+                            <ItemContent>
+                                <MListItemContent>
+                                    <MListItemTitle>@menu.Title</MListItemTitle>
+                                </MListItemContent>
+                                <MListItemAction>
+                                    <MCheckbox TValue=bool Value="@context.Active" ValueChanged=@(enable=>{
+                                       if(!enable)
+                                       RoleHasResuorces.RemoveWhere(it=>it.MenuId==menu.Id);
+                                       else if(!RoleHasResuorces.Any(it=>it.MenuId==menu.Id))
+                                       RoleHasResuorces.Add(new() {MenuId=menu.Id});
+                                       })></MCheckbox>
+                                </MListItemAction>
+                            </ItemContent>
+                        </MListItem>
+                    </MCol>
+                    <MDivider Vertical />
+                    <MCol>
+                        @GetButtonCore(menu)
+                    </MCol>
+
+                </MRow>
+
+            </MSheet>
+        }
+
+    }
+
+</PDrawer>
+
+<PDrawer @bind-Value="IsShowUsers" OnCancel="() => IsShowUsers = false"
+         Title=@T("授权用户")
+         Width=@(MasaBlazor.Breakpoint.Mobile?"100%":"500")
+         MaxWidth="500" OnSave="OnUsersSave">
+
+    <MCard Flat Class="ma-0 pa-4">
+        <MCardTitle Class="py-2">
+            <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="my-1 mx-2 ml-6" @bind-Value="SearchKey"
+                        Outlined Label=@typeof(SysUser).GetDescription(nameof(SysUser.Account)) />
+        </MCardTitle>
+        <MTreeview Class="my-1" Dense OpenAll TItem="UserSelectorOutPut" TKey="UserSelectorOutPut" Selectable @bind-Value="UsersChoice" Items="AllUsers" ItemText="r=>r.Account" ItemChildren="r=>null"
+                   ItemKey=@(r=>r)>
+        </MTreeview>
+    </MCard>
+
+</PDrawer>
+
+
+@code {
+    RenderFragment GetButtonCore(RoleGrantResourceMenu menu)
+    {
+        RenderFragment ViewSubMenu = null;
+
+        foreach (var button in menu.Button ?? new())
+        {
+            ViewSubMenu +=
+    @<MListItem Class="ml-6" IsActive=@(RoleHasResuorces.FirstOrDefault(it=>it.MenuId==menu.Id)?.ButtonInfo?.Contains(button.Id)==true)>
+        <ItemContent>
+            <MListItemContent>
+                <MListItemTitle>@button.Title</MListItemTitle>
+            </MListItemContent>
+            <MListItemAction>
+                <MCheckbox TValue=bool Value="@context.Active" ValueChanged=@(a=>
+                       {
+                       if(!a)
+                       {
+                       RoleHasResuorces.FirstOrDefault(it=>it.MenuId==menu.Id)?.ButtonInfo?.RemoveWhere(it=>it==button.Id);
+                       }
+                       else
+                       {
+                       if( !(RoleHasResuorces.FirstOrDefault(it=>it.MenuId==menu.Id)?.ButtonInfo?.Any(it=>it==button.Id)==true))
+                       {
+                       if(!RoleHasResuorces.Any(it=>it.MenuId==menu.Id))
+                       {
+                       RoleHasResuorces.Add(new() {MenuId=menu.Id});
+                       }
+                       RoleHasResuorces.FirstOrDefault(it=>it.MenuId==menu.Id).ButtonInfo.Add(button.Id);
+                       }
+                       }
+                       })></MCheckbox>
+            </MListItemAction>
+        </ItemContent>
+    </MListItem>
+    ;
+        }
+
+        return ViewSubMenu;
+    }
+    private async Task OnRoleHasResuorcesSave(ModalActionEventArgs args)
+    {
+        try
+        {
+            GrantResourceInput userGrantRoleInput = new();
+            var data = new List<SysResource>();
+            userGrantRoleInput.Id = ChoiceRoleId;
+            userGrantRoleInput.GrantInfoList = RoleHasResuorces;
+            await SysRoleService.GrantResource(userGrantRoleInput);
+            IsShowResuorces = false;
+        }
+        catch (Exception ex)
+        {
+            args.Cancel();
+            await PopupService.EnqueueSnackbarAsync(ex,false);
+        }
+    }
+    [Inject]
+    IResourceService ResourceService { get; set; }
+    [Inject]
+    ISysUserService SysUserService { get; set; }
+    private string SearchKey { get; set; }
+    private List<UserSelectorOutPut> AllUsers;
+    private List<UserSelectorOutPut> UsersChoice;
+    bool IsShowUsers;
+    private async Task<List<UserSelectorOutPut>> UserInit()
+    {
+        AllUsers = await SysUserService.UserSelector(SearchKey);
+        var data = await SysRoleService.OwnUser(ChoiceRoleId.ToIdInput());
+        UsersChoice = AllUsers.Where(a => data.Contains(a.Id)).ToList();
+        return AllUsers;
+    }
+
+    private async Task OnUsersSave(ModalActionEventArgs args)
+    {
+        try
+        {
+            GrantUserInput userGrantRoleInput = new();
+            userGrantRoleInput.Id = ChoiceRoleId;
+            userGrantRoleInput.GrantInfoList = UsersChoice.Select(it => it.Id).ToList();
+            await SysRoleService.GrantUser(userGrantRoleInput);
+            IsShowUsers = false;
+        }
+        catch (Exception ex)
+        {
+            args.Cancel();
+            await PopupService.EnqueueSnackbarAsync(ex,false);
+        }
+    }
+
+    long ChoiceRoleId;
+    bool IsShowResuorces;
+    List<RoleGrantResourceMenu> ResTreeSelectors = new();
+    List<RelationRoleResuorce> RoleHasResuorces = new();
+    private async Task ResuorceInit()
+    {
+        ResTreeSelectors = (await ResourceService.ResourceTreeSelector());
+        RoleHasResuorces = (await SysRoleService.OwnResource(ChoiceRoleId.ToIdInput()))?.GrantInfoList;
+    }
+}
+

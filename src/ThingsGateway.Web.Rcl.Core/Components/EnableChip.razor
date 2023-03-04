@@ -1,0 +1,32 @@
+﻿@namespace ThingsGateway.Web.Rcl.Core
+@inherits CultureComponentBase
+<div class="@Class" style="@Style">
+    <MChip Color="@Color"  TextColor="@TextColor" Ripple="false">
+        <span class="btn">@Label</span>
+    </MChip>
+</div>
+
+@code
+{
+    [Parameter]
+    public string Class { get; set; } = "";
+
+    [Parameter]
+    public string Style { get; set; } = "";
+
+    [Parameter]
+    public bool Value { get; set; }
+
+    [Parameter]
+    public string DisabledLabel { get; set; }
+
+    [Parameter]
+    public string EnabledLabel { get; set; }
+
+    public string TextColor => Value ? "green" : "error";
+
+    public string Color => Value ? "green-lighten" : "warning-lighten";
+
+    string Label => Value ? EnabledLabel ?? T("启用") : DisabledLabel ?? T("停用");
+}
+

@@ -1,0 +1,40 @@
+{
+  "$schema": "https://gitee.com/dotnetchina/Furion/raw/net6/schemas/v3/furion-schema.json",
+  //"Urls": "https://localhost:7101;http://localhost:7100",
+  "Logging": {
+    "LogLevel": {
+      "Default": "Trace",
+      "Custom": "Information",
+      "Console": "Information",
+      "Microsoft": "Warning",
+      "Microsoft.Hosting.Lifetime": "Information"
+    }
+  },
+  "LogFileEnable": false,
+  "WriteMonitor": false,
+  //动态API设备
+  "DynamicApiControllerSettings": {
+    "LowercaseRoute": false, //是否采用小写路由，bool 类型，默认 true
+    "KeepName": true, //是否保持原有名称不处理，bool，默认 false
+    "AsLowerCamelCase": true //启用小驼峰命名（首字母小写），默认 false
+  },
+
+  "FriendlyExceptionSettings": {
+    "DefaultErrorMessage": "系统异常，请联系管理员",
+    "HideErrorCode": true
+  },
+
+  //排除特定配置文件
+  "IgnoreConfigurationFiles": [
+    "sys_user.json",
+    "dev_config.json",
+    "sys_relation.json",
+    "sys_resource.json",
+    "sys_role.json"
+  ],
+
+  "CorsAccessorSettings": {
+    "WithExposedHeaders": [ "Content-Disposition" ], // 如果前端不代理且是axios请求
+    "SignalRSupport": true // 启用 SignalR 跨域支持
+  }
+}

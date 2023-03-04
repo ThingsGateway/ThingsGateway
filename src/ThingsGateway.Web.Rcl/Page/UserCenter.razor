@@ -1,0 +1,146 @@
+@page "/usercenter"
+@layout MainLayout
+@inherits CultureComponentBase
+@attribute [Authorize]
+@namespace ThingsGateway.Web.Rcl
+@inject UserResoures UserResoures
+<MCard Elevation="1" Class="ma-2">
+
+    <MTabs @bind-Value="tab">
+        <MTab Style="height:50px;">
+            @T("基本信息")
+        </MTab>
+        <MTab>
+            @T("快捷方式")
+        </MTab>
+        <MTab>
+            @T("修改密码")
+        </MTab>
+    </MTabs>
+
+    <MTabsItems Value="tab">
+        <MTabItem>
+            <MContainer>
+                <MCard Flat Class="ma-8">
+                    <MRow Align="AlignTypes.End" Class="mt-2">
+                        <MLabel Class="mx-4">@_updateInfoInput.Description(it=>it.Account)</MLabel>
+                        <MLabel>@UserResoures.CurrentUser?.Account</MLabel>
+                    </MRow>
+                    <MRow Align="AlignTypes.End" Class="mt-2">
+                        <MLabel Class="mx-4">@_updateInfoInput.Description(it=>it.Phone)</MLabel>
+                        <MTextField Style="max-width:220px;" Class="mt-3 mr-3" Dense HideDetails="true"
+                                    @bind-Value=@_updateInfoInput.Phone />
+                        </MRow>
+
+                        <MRow Align="AlignTypes.End" Class="mt-2">
+                        <MLabel Class="mx-4">@_updateInfoInput.Description(it=>it.Email)</MLabel>
+                        <MTextField Style="max-width:220px;" Class="mt-3 mr-3" Dense HideDetails="true"
+                                    @bind-Value=@_updateInfoInput.Email />
+                        </MRow>
+                        <MCardActions>
+                        <MButton Class="mt-8" OnClick=OnUpdateUserInfo Color="primary">
+                            @T("保存")
+                        </MButton>
+                        </MCardActions>
+                        </MCard>
+                        </MContainer>
+                        </MTabItem>
+                        <MTabItem>
+                        <MContainer>
+                        <MCard Flat Class="ma-8">
+                    <MRow Align="AlignTypes.Center">
+                        <MTreeview Dense OpenAll TItem="SysResource" TKey="long" Selectable @bind-Value="_menusChoice"
+                                   Items="UserResoures.Menus" ItemText="r=>r.Title" ItemChildren="r=>r.Children" ItemKey=@(r=>r.Id) />
+                    </MRow>
+
+                    <MCardActions>
+                        <MButton Class="mt-8" OnClick=OnShortcutSave Color="primary">
+                            @T("保存")
+                        </MButton>
+                    </MCardActions>
+                </MCard>
+            </MContainer>
+        </MTabItem>
+
+        <MTabItem>
+            <MContainer>
+                <MCard Flat Class="ma-8">
+                    <MRow Align="AlignTypes.End" Class="mt-2">
+                        <MLabel Class="mx-4">@_passwordInfoInput.Description(it=>it.OldPassword)</MLabel>
+                        <MTextField Type="password" Style="max-width:220px;" Class="mt-3 mr-3" Dense HideDetails="true"
+                                    @bind-Value=@_passwordInfoInput.OldPassword />
+                        </MRow>
+                        <MRow Align="AlignTypes.End" Class="mt-2">
+                        <MLabel Class="mx-4">@_passwordInfoInput.Description(it=>it.NewPassword)</MLabel>
+                        <MTextField Type="password" Style="max-width:220px;" Class="mt-3 mr-3" Dense HideDetails="true"
+                                    @bind-Value=@_passwordInfoInput.NewPassword />
+                        </MRow>
+
+                        <MRow Align="AlignTypes.End" Class="mt-2">
+                        <MLabel Class="mx-4">@_passwordInfoInput.Description(it=>it.ConfirmPassword)</MLabel>
+                        <MTextField Type="password" Style="max-width:220px;" Class="mt-3 mr-3" Dense HideDetails="true"
+                                    @bind-Value=@_passwordInfoInput.ConfirmPassword />
+                        </MRow>
+                        <MCardActions>
+                        <MButton Class="mt-8" OnClick=OnUpdatePasswordInfo Color="primary">
+                            @T("保存")
+                        </MButton>
+                        </MCardActions>
+                        </MCard>
+                        </MContainer>
+                        </MTabItem>
+
+                        </MTabsItems>
+
+                        </MCard>
+
+
+                        @code {
+    StringNumber tab;
+    List<long> _menusChoice = new();
+    UpdateInfoInput _updateInfoInput = new();
+    PasswordInfoInput _passwordInfoInput = new();
+    [Inject]
+    IUserCenterService UserCenterService { get; set; }
+    [CascadingParameter]
+    MainLayout MainLayout { get; set; }
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _updateInfoInput.Email = UserResoures.CurrentUser.Email;
+            _updateInfoInput.Phone = UserResoures.CurrentUser.Phone;
+        }
+
+        base.OnAfterRender(firstRender);
+    }
+    [Inject]
+    public AjaxService AjaxService { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        _menusChoice = await UserCenterService.GetLoginWorkbench();
+        await base.OnInitializedAsync();
+    }
+    async Task OnShortcutSave()
+    {
+        await UserCenterService.UpdateWorkbench(_menusChoice);
+        await MainLayout.MenuChange();
+        await PopupService.EnqueueSnackbarAsync(T("成功"), AlertTypes.Success);
+    }
+    async Task OnUpdateUserInfo()
+    {
+        await UserCenterService.UpdateUserInfo(_updateInfoInput);
+        await MainLayout.UserChange();
+
+        await PopupService.EnqueueSnackbarAsync(T("成功"), AlertTypes.Success);
+    }
+    async Task OnUpdatePasswordInfo()
+    {
+        _passwordInfoInput.Id = UserResoures.CurrentUser.Id;
+        await UserCenterService.EditPassword(_passwordInfoInput);
+        await MainLayout.UserChange();
+        await PopupService.EnqueueSnackbarAsync(T("成功，将重新登录"), AlertTypes.Success);
+        await Task.Delay(2000);
+        await AjaxService.Goto("/");
+    }
+}
