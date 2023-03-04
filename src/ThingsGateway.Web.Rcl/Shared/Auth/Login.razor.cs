@@ -92,7 +92,7 @@ namespace ThingsGateway.Web.Rcl
             if (App.HostEnvironment.IsDevelopment())
             {
                 loginModel.Account = "superAdmin";
-                Password = "123456";
+                Password = "111111";
             }
             GetCaptchaInfo();
             SYS_DEFAULT_TITLE = (await ConfigService.GetByConfigKey(CateGoryConst.Config_SYS_BASE, DevConfigConst.SYS_DEFAULT_TITLE)).ConfigValue;

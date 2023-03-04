@@ -67,7 +67,7 @@
       "Id": "22222222222231",
       "Category": "SYS_BASE",
       "ConfigKey": "SYS_DEFAULT_PASSWORD",
-      "ConfigValue": "123456",
+      "ConfigValue": "111111",
       "Remark": "默认用户密码",
       "SortCode": "7",
       "IsDelete": "0"
