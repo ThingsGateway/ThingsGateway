@@ -3,10 +3,13 @@
 using Furion.Schedule;
 
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.WebEncoders;
 
 using Newtonsoft.Json;
 
+using System.Text.Encodings.Web;
 using System.Text.Json.Serialization;
+using System.Text.Unicode;
 
 namespace ThingsGateway.Web.Core
 {
@@ -57,6 +60,9 @@ namespace ThingsGateway.Web.Core
             // 允许跨域
             services.AddCorsAccessor();
 
+            services.Configure<WebEncoderOptions>(options => 
+            options.TextEncoderSettings = new TextEncoderSettings(UnicodeRanges.All));
+
             // 限流服务
             services.Configure<IpRateLimitOptions>(App.Configuration.GetSection("IpRateLimiting"));
             services.AddInMemoryRateLimiting();
@@ -95,7 +101,6 @@ namespace ThingsGateway.Web.Core
 
             services.AddServerSideBlazor().AddHubOptions(options => options.MaximumReceiveMessageSize = 64 * 1024); ;
             services.AddHealthChecks();
-
 
         }
     }
