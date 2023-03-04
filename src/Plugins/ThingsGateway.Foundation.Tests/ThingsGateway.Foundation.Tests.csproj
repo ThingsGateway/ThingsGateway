@@ -21,9 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\ThingsGateway.Application\ThingsGateway.Application.csproj" />
-    <ProjectReference Include="..\..\ThingsGateway.Foundation\ThingsGateway.Foundation.csproj" />
-    <ProjectReference Include="..\ThingsGateway.Foundation.Adapter.Modbus\ThingsGateway.Foundation.Adapter.Modbus.csproj" />
+    <PackageReference Include="ThingsGateway.Foundation.Adapter.Modbus" Version="1.0.1" />
   </ItemGroup>
 
 </Project>

@@ -3,15 +3,26 @@
 	<PropertyGroup>
 		<LangVersion>latestMajor</LangVersion>
 		<TargetFrameworks>net4.6.2;net6.0;net7.0</TargetFrameworks>
-		<Version>1.0.0</Version>
+		<Version>1.0.2</Version>
+		<Title>ThingsGateway.Foundation.Adapter.Modbus</Title>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-		<Title>ThingsGateway.Modbus</Title>
 		<Authors>Diego</Authors>
-		<Description>Modbus通讯类库，支持MdobusTcp;ModbusRtuOverTcp</Description>
-		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<Description>Modbus通讯类库，支持MdobusTcp;ModbusRtuOverTcp;ModbusTcpServer</Description>
+		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
 		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
 		<RunAnalyzersDuringBuild>True</RunAnalyzersDuringBuild>
+		<PackageProjectUrl>https://diego2098.gitee.io/thingsgateway/</PackageProjectUrl>
+		<RepositoryUrl>https://gitee.com/diego2098/ThingsGateway</RepositoryUrl>
+		<PackageOutputPath>$(SolutionDir)</PackageOutputPath>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
 	</PropertyGroup>
+
+	<ItemGroup>
+	  <None Include="..\..\..\README.md">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
+	</ItemGroup>
 
 	<ItemGroup>
 	  <ProjectReference Include="..\..\ThingsGateway.Foundation\ThingsGateway.Foundation.csproj" />

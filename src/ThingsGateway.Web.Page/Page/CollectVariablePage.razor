@@ -232,20 +232,6 @@
             <MTabItem>
                 <MCard Flat Class="ma-2">
                     <MRow NoGutters Class="my-2" Justify="JustifyTypes.Center">
-                        <MCol Md=6 Cols=12 class="px-1">
-                            <MSubheader Class="font-weight-black"> @(context.Description(x => x.AlarmDeadZone))  </MSubheader>
-                            <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.AlarmDeadZone />
-                            </MCol>
-
-                            <MCol Md=6 Cols=12 class="px-1">
-                            <MSubheader Class="font-weight-black"> @(context.Description(x => x.AlarmDelayTime))  </MSubheader>
-                            <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.AlarmDelayTime />
-                            </MCol>
-
-                            <MCol Md=12 Cols=12 class="px-1">
-                            <MSubheader Class="font-weight-black"> @(context.Description(x => x.AlarmGroup))  </MSubheader>
-                            <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.AlarmGroup />
-                            </MCol>
 
                             <MCol Md=12 Cols=12 class="px-1 py-2">
                             <MDivider Center Height="2"></MDivider>

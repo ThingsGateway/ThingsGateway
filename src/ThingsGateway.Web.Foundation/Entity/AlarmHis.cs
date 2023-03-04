@@ -14,7 +14,6 @@ public class AlarmHis : PrimaryIdEntity
     [SugarColumn(ColumnName = "Description", ColumnDescription = "描述", IsNullable = true)]
     public string Description { get; set; }
 
-
     [SugarColumn(ColumnName = "DeviceName", ColumnDescription = "设备名称", IsNullable = true)]
     public string DeviceName { get; set; }
 

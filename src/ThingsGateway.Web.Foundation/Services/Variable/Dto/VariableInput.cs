@@ -137,24 +137,24 @@ namespace ThingsGateway.Application
 
 
         #region 报警
-        /// <summary>
-        /// 报警组
-        /// </summary>
-        [ImporterHeader(Name = "报警组")]
-        [ExporterHeader(DisplayName = "报警组")]
-        public string AlarmGroup { get; set; } = "";
-        /// <summary>
-        /// 报警死区
-        /// </summary>
-        [ImporterHeader(Name = "报警死区")]
-        [ExporterHeader(DisplayName = "报警死区")]
-        public int AlarmDeadZone { get; set; }
-        /// <summary>
-        /// 报警延时
-        /// </summary>
-        [ImporterHeader(Name = "报警延时")]
-        [ExporterHeader(DisplayName = "报警延时")]
-        public int AlarmDelayTime { get; set; }
+        ///// <summary>
+        ///// 报警组
+        ///// </summary>
+        //[ImporterHeader(Name = "报警组")]
+        //[ExporterHeader(DisplayName = "报警组")]
+        //public string AlarmGroup { get; set; } = "";
+        ///// <summary>
+        ///// 报警死区
+        ///// </summary>
+        //[ImporterHeader(Name = "报警死区")]
+        //[ExporterHeader(DisplayName = "报警死区")]
+        //public int AlarmDeadZone { get; set; }
+        ///// <summary>
+        ///// 报警延时
+        ///// </summary>
+        //[ImporterHeader(Name = "报警延时")]
+        //[ExporterHeader(DisplayName = "报警延时")]
+        //public int AlarmDelayTime { get; set; }
         /// <summary>
         /// 布尔开报警使能
         /// </summary>
@@ -394,24 +394,24 @@ namespace ThingsGateway.Application
         [ExporterHeader(DisplayName = "允许远程写入")]
         public bool RpcWriteEnable { get; set; }
         #region 报警
-        /// <summary>
-        /// 报警组
-        /// </summary>
-        [ImporterHeader(Name = "报警组")]
-        [ExporterHeader(DisplayName = "报警组")]
-        public string AlarmGroup { get; set; } = "";
-        /// <summary>
-        /// 报警死区
-        /// </summary>
-        [ImporterHeader(Name = "报警死区")]
-        [ExporterHeader(DisplayName = "报警死区")]
-        public int AlarmDeadZone { get; set; }
-        /// <summary>
-        /// 报警延时
-        /// </summary>
-        [ImporterHeader(Name = "报警延时")]
-        [ExporterHeader(DisplayName = "报警延时")]
-        public int AlarmDelayTime { get; set; }
+        ///// <summary>
+        ///// 报警组
+        ///// </summary>
+        //[ImporterHeader(Name = "报警组")]
+        //[ExporterHeader(DisplayName = "报警组")]
+        //public string AlarmGroup { get; set; } = "";
+        ///// <summary>
+        ///// 报警死区
+        ///// </summary>
+        //[ImporterHeader(Name = "报警死区")]
+        //[ExporterHeader(DisplayName = "报警死区")]
+        //public int AlarmDeadZone { get; set; }
+        ///// <summary>
+        ///// 报警延时
+        ///// </summary>
+        //[ImporterHeader(Name = "报警延时")]
+        //[ExporterHeader(DisplayName = "报警延时")]
+        //public int AlarmDelayTime { get; set; }
         /// <summary>
         /// 布尔开报警使能
         /// </summary>

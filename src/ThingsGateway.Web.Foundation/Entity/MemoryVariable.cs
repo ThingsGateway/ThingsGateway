@@ -51,21 +51,21 @@ public class MemoryVariable : BaseEntity
 
 
     #region 报警
-    /// <summary>
-    /// 报警组
-    /// </summary>
-    [Description("报警组")]
-    public string AlarmGroup { get; set; }
-    /// <summary>
-    /// 报警死区
-    /// </summary>
-    [Description("报警死区")]
-    public int AlarmDeadZone { get; set; }
-    /// <summary>
-    /// 报警延时
-    /// </summary>
-    [Description("报警延时")]
-    public int AlarmDelayTime { get; set; }
+    ///// <summary>
+    ///// 报警组
+    ///// </summary>
+    //[Description("报警组")]
+    //public string AlarmGroup { get; set; }
+    ///// <summary>
+    ///// 报警死区
+    ///// </summary>
+    //[Description("报警死区")]
+    //public int AlarmDeadZone { get; set; }
+    ///// <summary>
+    ///// 报警延时
+    ///// </summary>
+    //[Description("报警延时")]
+    //public int AlarmDelayTime { get; set; }
     /// <summary>
     /// 布尔开报警使能
     /// </summary>

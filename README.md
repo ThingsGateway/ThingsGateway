@@ -18,6 +18,13 @@
 - 采集/上传配置完全支持Excel导入导出
 - 插件式驱动，方便驱动二次开发，并支持动态更新
 
+#### nuget
+
+- Modbus库，支持ModbusTcp、ModbusRtuOverTcp、ModbusUdp、ModbusServer等
+``` powershell
+ dotnet add package ThingsGateway.Foundation.Adapter.Modbus
+```
+
 
 ####  效果图
  <table>
