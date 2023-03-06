@@ -41,8 +41,11 @@ sidebar_label: 5.2、变量
 对应的数据类型，注意除了特殊驱动，否则不应该选择object
 
 #### 读取表达式
+
   支持多种运算符，原始值的代码为raw，具体可查看 [ExpressionEvaluator WiKi](https://github.com/codingseb/ExpressionEvaluator) 
-  下面走个示例：
+
+  示例：
+
   ```csharp
 
     raw*10+3
@@ -54,7 +57,7 @@ sidebar_label: 5.2、变量
 
 同读取表达式，在写入值时转化
   
-  下面走个示例：
+  示例：
   ```csharp
     
     raw*10  //读取表达式
@@ -75,69 +78,46 @@ sidebar_label: 5.2、变量
 </div>
 </details>
 
+
 <details>
 <summary>报警属性</summary>
 <div>
 
 
+#### 报警使能
+启用对应报警功能
+
+#### 报警限值
+超限时产生报警，布尔量为固定
+
+#### 报警文本
+对应报警文本
+
+#### 报警约束
+同变量表达式，计算值为true时才能产生报警
+
+
+
 </div>
 </details>
 
+<details>
+<summary>历史属性</summary>
+<div>
 
 
-### （二）导入导出采集设备
-
-#### 导出模板
-![](/img/collectdevice2.png)
-![](/img/collectdevice3.png)
-
-可以看到采集设备的excel模板，填入规则参考第一小节
-
- 
-#### 导入
-
-![](/img/collectdevice4.png)
-
-弹窗选择导入的excel文件后，点击下一步进行校验
-
-![](/img/collectdevice5.png)
-
- 根据红色字体提示，修改对应错误列字段
-
- 全部正常时可进行下一步
-
-![](/img/collectdevice6.png)
-
- 点击上传，等待导入完成，完成后自动退出弹窗，否则提示错误
-
- 
-#### 导出
-
-![](/img/collectdevice7.png)
-
- 点击导出，等待导出完成，自动下载文件
+#### 历史使能
+启用对应历史转储功能
 
 
-
-### （二）变量配置
-
-  **选择设备**
-
-
-  **变量地址/执行参数**
-
-  不同驱动的变量地址规则查看对应文档
+#### 存储类型
+1、Collect ：每次采集存储一次
+2、Change ：每次变化存储一次
 
 
-  **表达式变换**
+</div>
+</details>
 
-  支持多种运算符，具体可查看 [ExpressionEvaluator WiKi](https://gitee.com/diego2098/ThingsGateway/releases/latest) 
+### （二）导入导出变量
 
-
-### （三）重启设备
-
-  **单个设备重启如图，或可按 [全部重启] 按钮，重启全部设备**
-
-
-
-### （四）查看状态
+与设备导入导出一致，移至 [这里](http://localhost:3000/thingsgateway/docs/05%E3%80%81%E7%BD%91%E5%85%B3%E9%85%8D%E7%BD%AE/collectdevice#%E4%BA%8C%E5%AF%BC%E5%85%A5%E5%AF%BC%E5%87%BA%E9%87%87%E9%9B%86%E8%AE%BE%E5%A4%87) 查看

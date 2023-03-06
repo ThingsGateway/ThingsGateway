@@ -299,7 +299,6 @@ public class CollectDeviceCore : DisposableObject
     /// </summary>
     public void StartThread()
     {
-
         DeviceTask?.Start();
     }
     public void StopThread()
@@ -322,7 +321,7 @@ public class CollectDeviceCore : DisposableObject
                 }
             }
             DeviceTask?.Dispose();
-            if( StoppingToken != null )
+            if (StoppingToken != null)
             {
                 StoppingTokens.Remove(StoppingToken);
             }
@@ -513,8 +512,6 @@ public class CollectDeviceCore : DisposableObject
             propertyInfo.SetValue(_driver, value);
         }
     }
-
-
 
     protected override void Dispose(bool disposing)
     {
