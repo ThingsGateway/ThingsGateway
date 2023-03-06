@@ -5,3 +5,45 @@ sidebar_label: 7.2、MqttClient
 ---
 
 
+### （一）设备配置
+
+| 属性           |  说明                    | 默认值/备注|
+| ---------------| --------------------------| ---|
+| 连接Id         | 连接Id  |ThingsGatewayId|
+| 账号         | 登录账号              | admin|
+| 密码         | 登录密码              | 123456|
+| IP         | 连接IP              | 127.0.0.1|
+| 端口         | 连接端口              | 1883|
+| 连接超时         | 连接超时时间              | 3000|
+| 允许Rpc写入         | 是否允许写入变量              | True |
+| 数据请求RpcTopic         | 该主题接受到任何消息都会发布全部信息到对应的设备/变量主题中              | ThingsGateway/Quest |
+| Rpc写入Topic         | 写入变量的发布Topic              | ThingsGateway/RpcWrite |
+| Rpc返回Topic         | 写入变量的订阅Topic，返回写入结果信息              | ThingsGateway/RpcSub |
+| 变量Topic         | 变量信息订阅Topic              | ThingsGateway/Variable |
+| 设备Topic         | 设备信息订阅Topic              | ThingsGateway/Device |
+
+Rpc实体规则：
+```
+{
+  "Name":"tt8",//变量名称
+  "Value":"12421",//变量值
+  "RpcId":"testid"//当前RpcId
+}
+```
+Rpc返回实体规则：
+```
+{
+  "RpcId":"testid", //RpcId
+  "Message":"操作成功",//返回消息
+  "Success":true//是否成功
+}
+```
+
+
+### （二）变量配置
+无
+
+
+
+
+
