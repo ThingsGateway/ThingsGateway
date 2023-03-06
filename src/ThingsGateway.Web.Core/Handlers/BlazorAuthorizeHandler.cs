@@ -66,7 +66,9 @@ namespace ThingsGateway.Web.Core
                 // 此处已经自动验证 Jwt Verificat的有效性了，无需手动验证
                 // 路由名称
                 var routeName = httpContext.Request.Path.Value;
-                if (user.PermissionCodeList?.Contains(routeName) == true)//如果当前路由信息不包含在角色授权路由列表中则认证失败
+                var isRolePermission = httpContext.GetMetadata<OpenApiPermissionAttribute>();
+
+                if (isRolePermission==null||user.PermissionCodeList?.Contains(routeName) == true)//如果当前路由信息不包含在角色授权路由列表中则认证失败
                     return true;
                 else
                     return false;
