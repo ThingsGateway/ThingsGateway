@@ -106,7 +106,7 @@ public class UploadDeviceHostService : BackgroundService
     /// <summary>
     /// 更新设备线程
     /// </summary>
-    public void UpDeviceThread(long devId)
+    public void UpDeviceThread(long devId,bool isUpdateDb=true)
     {
         if (!_stoppingToken.IsCancellationRequested)
         {
@@ -115,8 +115,12 @@ public class UploadDeviceHostService : BackgroundService
             if (devcore == null) { throw Oops.Bah($"更新设备线程失败，不存在{devId}为id的设备"); }
             //这里先停止上传，操作会使线程取消，需要重新恢复线程
             devcore.StopThread();
-            var dev = (_uploadDeviceService.GetUploadDeviceRuntime(devId)).FirstOrDefault();
-            if (dev == null) { throw Oops.Bah($"更新设备线程失败，不存在{devId}为id的设备"); }
+            UploadDeviceRunTime dev = null;
+            if (isUpdateDb)
+                dev = (_uploadDeviceService.GetUploadDeviceRuntime(devId)).FirstOrDefault();
+            else
+                dev = devcore.Device;
+            if (dev == null) { _logger.LogError($"更新设备线程失败，不存在{devId}为id的设备"); }
             devcore.Init(dev);
             devcore.StartThread();
 
@@ -245,7 +249,7 @@ public class UploadDeviceHostService : BackgroundService
                     if (devcore.Device.DeviceStatus == DeviceStatusEnum.Pause)
                         continue;
                     _logger?.LogWarning(devcore.Device.Name + "上传线程假死，重启线程中");
-                    UpDeviceThread(devcore.DeviceId);
+                    UpDeviceThread(devcore.DeviceId,false);
                     i--;
                     num--;
 

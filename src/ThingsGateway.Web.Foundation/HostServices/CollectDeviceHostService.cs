@@ -41,7 +41,7 @@ public class CollectDeviceHostService : BackgroundService
     /// <summary>
     /// 更新设备线程
     /// </summary>
-    public async Task UpDeviceThread(long devId)
+    public async Task UpDeviceThread(long devId, bool isUpdateDb = true)
     {
         if (!_stoppingToken.IsCancellationRequested)
         {
@@ -51,8 +51,13 @@ public class CollectDeviceHostService : BackgroundService
             if (devcore == null) { throw Oops.Bah($"更新设备线程失败，不存在{devId}为id的设备"); }
             //这里先停止采集，操作会使线程取消，需要重新恢复线程
             devcore.StopThread();
-            var dev = (await _collectDeviceService.GetCollectDeviceRuntime(devId)).FirstOrDefault();
-            if (dev == null) { throw Oops.Bah($"更新设备线程失败，不存在{devId}为id的设备"); }
+
+            CollectDeviceRunTime dev = null;
+            if (isUpdateDb)
+                dev = (await _collectDeviceService.GetCollectDeviceRuntime(devId)).FirstOrDefault();
+            else
+                dev = devcore.Device;
+            if (dev == null) { _logger.LogError($"更新设备线程失败，不存在{devId}为id的设备"); }
             devcore.Init(dev);
             devcore.StartThread();
 
@@ -301,7 +306,7 @@ public class CollectDeviceHostService : BackgroundService
                     if (devcore.Device.DeviceStatus == DeviceStatusEnum.Pause)
                         continue;
                     _logger?.LogWarning(devcore.Device.Name + "采集线程假死，重启线程中");
-                    await UpDeviceThread(devcore.DeviceId);
+                    await UpDeviceThread(devcore.DeviceId,false);
                     i--;
                     num--;
 
