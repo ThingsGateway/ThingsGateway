@@ -26,7 +26,7 @@ namespace ThingsGateway.Modbus
         [DeviceProperty("端口", "")] public int Port { get; set; } = 502;
         [DeviceProperty("默认站号", "")] public byte Station { get; set; } = 1;
         [DeviceProperty("读写超时时间", "")] public ushort TimeOut { get; set; } = 3000;
-        [DeviceProperty("CRC检测", "")] public bool Crc16CheckEnable { get; set; }
+        [DeviceProperty("CRC检测", "")] public bool Crc16CheckEnable { get; set; } = true;
         public override void AfterStop()
         {
             _plc.Disconnect();
