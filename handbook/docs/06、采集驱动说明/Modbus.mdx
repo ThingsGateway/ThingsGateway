@@ -3,9 +3,22 @@ id: modbus
 title: Modbus驱动
 sidebar_label: 6.1、Modbus驱动
 ---
+### （一）设备配置
+
+| 属性           |  说明                    | 默认值/备注|
+| ---------------| --------------------------| ---|
+| 连接超时时间         | 建立socket通讯的超时时间（ms）                | 3000|
+| 默认解析顺序         | 4个字节以上的数据解析，可设置为ABCD/BADC/CDBA/DCBA,默认ABCD |ABCD：Big-Endian<br></br>BADC：Big-Endian Byte Swap<br></br>CDAB：Little-Endian Byte Swap<br></br>DCBA：Little-Endian |
+| IP         | 连接IP              | 127.0.0.1|
+| 端口         | 连接端口              | 502|
+| 默认站号         | 默认的mudbus站号id            | 1|
+| 读写超时时间         | 读取等待中的超时时间（ms）              | 3000|
+| 连接id检测         | 是否检查modbus的事务标识符和协议标识符为一致              | Flase |
+| crc检测         | 是否检查modbus的事务标识符和协议标识符为一致              | True|
 
 
-### （一）变量地址说明
+### （二）变量配置
+#### 变量地址说明
 
 - 1、基本地址
 
@@ -34,6 +47,6 @@ sidebar_label: 6.1、Modbus驱动
 | w=15;10001         |  读取02功能码 ,写入15功能码      |
 | w=16;40001         |  读取03功能码 ,写入16功能码        |
 
-### （二）变量其他方法说明
+#### 变量特殊方法说明
 
-- 无
+无特殊方法
