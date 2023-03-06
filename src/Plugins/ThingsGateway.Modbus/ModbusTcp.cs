@@ -28,6 +28,7 @@ namespace ThingsGateway.Modbus
         [DeviceProperty("端口", "")] public int Port { get; set; } = 502;
         [DeviceProperty("默认站号", "")] public byte Station { get; set; } = 1;
         [DeviceProperty("读写超时时间", "")] public ushort TimeOut { get; set; } = 3000;
+        [DeviceProperty("连接标识检测", "")] public bool MessageIdCheckEnable { get; set; }
 
         public override void AfterStop()
         {
@@ -60,6 +61,7 @@ namespace ThingsGateway.Modbus
             _plc.ConnectTimeOut = ConnectTimeOut;
             _plc.Station = Station;
             _plc.TimeOut = TimeOut;
+            _plc.IsCheckMessageId = MessageIdCheckEnable;
         }
 
 
