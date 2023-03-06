@@ -1,0 +1,43 @@
+---
+id: 采集ModbusTcp设备数据
+title: 采集ModbusTcp设备数据
+sidebar_label: 8.1、采集ModbusTcp设备数据
+---
+
+
+
+
+### （一）工具准备
+
+1、Modbus 模拟工具：ModbusSalve
+
+
+### （二）建立采集设备
+![](/img/modbusdemo1.png)![](/img/modbusdemo2.png)
+ 设备属性默认，IP为127.0.0.1 端口502
+
+### （三）建立采集变量
+
+
+![](/img/modbusdemo3.png)
+
+变量地址为40001，读取03功能码中的0寄存器
+数据类型选择为int16
+
+### （四）开启ModbusSalve
+![](/img/modbusdemo5.png)
+![](/img/modbusdemo6.png)
+选择ModbusTcp模式，地址设置为1，起始地址设为1，寄存器长度为10000
+
+### （五）重启采集线程
+
+![](/img/modbusdemo4.png)
+点击右边浮动按钮，全部重启
+
+### （六）查看状态
+![](/img/modbusdemo7.png)
+点击相关按钮，可以跳转到变量实时数据页面
+![](/img/modbusdemo8.png)
+
+最后，看一下实时变化效果
+![](/img/modbusdemo9.gif)
