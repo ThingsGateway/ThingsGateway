@@ -48,7 +48,7 @@
 
  ####  文档
 
- 请查看Gitee Pages [文档站点](https://diego2098.gitee.io/thingsgateway/)
+ 使用前请查看Gitee Pages [文档站点](https://diego2098.gitee.io/thingsgateway/)
 
  
 #### 补充说明
@@ -57,24 +57,17 @@
 
 #### 开源协议
 
-
 请仔细阅读 [授权协议](https://diego2098.gitee.io/thingsgateway/docs/)
 
 
 
 
 ####  支持作者
- 如果对您有帮助，请点击右上角⭐Star关注或扫码捐赠，感谢支持开源！
-  <table>
-    <tr>
-        <td><img height=150 src="https://gitee.com/diego2098/ThingsGateway/raw/master/Image/pay.png"/></td>
-    </tr>
- </table>
+ 如果对您有帮助，请点击右上角⭐Star关注，感谢支持开源！
+ 若希望捐赠项目，请跳转到文档站点查看捐赠码或使用Gitee捐赠功能
  
 
 ####  联系作者
  * QQ群：605534569
  * 邮箱：2248356998@qq.com
 
-
-**在使用 ThingsGateway 之前请进行缜密的测试。在使用期间，由本程序集造成或间接造成的所有损失，均自己承担，与本程序集无关。**
