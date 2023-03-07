@@ -1,0 +1,38 @@
+---
+id: modbusserverdemo
+title: ModbusServer插件转发数据
+sidebar_label: 8.2、使用ModbusServer插件转发数据
+---
+
+接上一篇文章：[采集ModbusTcp设备数据](modbusdemo)
+
+采集数据之后如何转发/上传到其他软件呢，下面演示网关提供的ModbusServer插件使用
+
+
+### （一）建立上传设备
+<img src={require('../../static/img/modbusserverdemo1.png').default} width="400" />
+<img src={require('../../static/img/modbusserverdemo2.png').default} width="400"/>
+
+ 设备属性默认，IP为127.0.0.1 端口503（不与modbusSlave冲突）,允许写入
+
+### （二）变量上传属性修改
+
+<img src={require('../../static/img/modbusserverdemo3.png').default} width="700" />
+
+变量从站地址为40001，允许写入
+
+### （三）重启采集线程
+
+![](/img/modbusdemo4.png)
+
+点击右边浮动按钮，全部重启
+
+### （四）查看状态
+<img src={require('../../static/img/modbusserverdemo5.png').default} width="600" />
+
+ 使用ModbusPoll连接到网关
+ 
+![](/img/modbusserverdemo4.png)
+
+### 最后，看一下实时变化效果
+![](/img/modbusserverdemo6.gif)
