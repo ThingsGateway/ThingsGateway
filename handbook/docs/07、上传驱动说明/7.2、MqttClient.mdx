@@ -22,7 +22,7 @@ sidebar_label: 7.2、MqttClient
 | 变量Topic         | 变量信息订阅Topic              | ThingsGateway/Variable |
 | 设备Topic         | 设备信息订阅Topic              | ThingsGateway/Device |
 
-Rpc实体规则：
+RpcJson：
 ```
 {
   "Name":"tt8",//变量名称
@@ -30,7 +30,24 @@ Rpc实体规则：
   "RpcId":"testid"//当前RpcId
 }
 ```
-Rpc返回实体规则：
+Rpc返回Json：
+```
+{
+  "RpcId":"testid", //RpcId
+  "Message":"操作成功",//返回消息
+  "Success":true//是否成功
+}
+```
+
+变量Json：
+```
+{
+  "RpcId":"testid", //RpcId
+  "Message":"操作成功",//返回消息
+  "Success":true//是否成功
+}
+```
+设备Json:
 ```
 {
   "RpcId":"testid", //RpcId

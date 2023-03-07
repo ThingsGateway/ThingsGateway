@@ -1,0 +1,74 @@
+---
+id: mqttserverdemo
+title: 使用MqttServer插件
+sidebar_label: 8.3、使用MqttServer插件
+---
+
+上一篇文章：[使用ModbusServer插件](modbusserverdemo) 已经介绍了ModbusServer
+
+下面演示网关提供的MqttServer插件使用
+
+**工具**
+
+Mqtt客户端：Mqttx
+
+
+### （一）建立上传设备
+<img src={require('../../static/img/mqttserverdemo1.png').default} width="400" />
+<img src={require('../../static/img/mqttserverdemo2.png').default} width="400"/>
+
+ 设备属性默认，允许写入
+
+
+### （二）重启采集线程
+
+![](/img/modbusdemo4.png)
+
+点击右边浮动按钮，全部重启
+
+### （三）Mqtt连接到网关
+ <img src={require('../../static/img/mqttserverdemo3.png').default} />
+ 
+ 使用Mqttx连接到网关
+
+:::tip
+
+ 填写对应的UserName与Password，可以在第三方授权用户菜单中自行创建，或者使用默认用户Admin，默认密码123456
+![](/img/mqttserver1.png)
+
+:::
+
+
+- 连接成功后，添加设备订阅Topic
+<img src={require('../../static/img/mqttserverdemo4.png').default} width="600" />
+
+- 首次订阅成功，会自动接收到当前的全部采集设备信息
+<img src={require('../../static/img/mqttserverdemo5.png').default} width="600" />
+
+- 添加变量订阅Topic，效果与设备Topic一致
+
+<img src={require('../../static/img/mqttserverdemo6.png').default} width="400" />
+
+<img src={require('../../static/img/mqttserverdemo7.png').default} width="400" />
+
+
+- 当前变量值变化时，也会同步接收到新数据
+
+<img src={require('../../static/img/mqttserverdemo8.png').default} width="800" />
+
+- 同理，设备状态变化时，同步接收到新数据
+
+<img src={require('../../static/img/mqttserverdemo9.png').default} width="800" />
+
+- Rpc写入变量值
+
+首先需要订阅Rpc状态返回的Topic，在前面我们定义Topic为ThingsGateway/RpcSub
+
+<img src={require('../../static/img/mqttserverdemo10.png').default} width="600" />
+
+然后往ThingsGateway/RpcWrite Topic上发布新内容,具体格式可查看MqttServer插件说明
+
+<img src={require('../../static/img/mqttserverdemo11.png').default} width="800" />
+
+可以看到回复结果为Success True，并且在订阅变量Topic时也会接收到新的变量值
+
