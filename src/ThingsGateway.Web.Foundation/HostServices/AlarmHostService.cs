@@ -210,7 +210,6 @@ public class AlarmHostService : BackgroundService, ISingleton
                             }
                             catch (Exception)
                             {
-                                LastIsSuccess = false;
                             }
                         }
 

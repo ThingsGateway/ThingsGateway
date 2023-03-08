@@ -159,7 +159,6 @@ public class ValueHisHostService : BackgroundService, ISingleton
                             }
                             catch (Exception)
                             {
-                                LastIsSuccess = false;
                             }
                         }
 
