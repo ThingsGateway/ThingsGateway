@@ -328,8 +328,7 @@ public class CollectDeviceHostService : BackgroundService
                 VariableValueChanges?.Invoke(list2);
             }
 
-
-            await Task.Delay(1000, stoppingToken);
+            await Task.Delay(500, stoppingToken);
         }
     }
 
