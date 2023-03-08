@@ -11,9 +11,9 @@ namespace ThingsGateway.Web.Foundation
         [Description("日志源")]
         public string Source { get; set; }
         /// <summary>
-        /// 日志源
+        /// 日志等级
         /// </summary>
-        [Description("日志源")]
+        [Description("日志等级")]
         public string Level { get; set; }
 
     }
