@@ -61,7 +61,7 @@ namespace ThingsGateway.OPCDA
                 var sourVars = result?.Select(
           it =>
           {
-              return new DeviceVariableSourceRead(UpdateRate * 2)
+              return new DeviceVariableSourceRead(UpdateRate)
               {
                   Address = it.Key,
                   DeviceVariables = deviceVariables.Where(a => it.Value.Select(b => b.ItemID).Contains(a.VariableAddress)).ToList()
