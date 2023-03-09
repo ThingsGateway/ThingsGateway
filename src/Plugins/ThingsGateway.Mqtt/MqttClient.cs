@@ -115,8 +115,8 @@ namespace ThingsGateway.Mqtt
             _ = Task.Run(
               async () =>
               {
-                  bool lastIsSuccess = false;
                   await Task.Delay(ConnectTimeOut * 20);
+                  bool lastIsSuccess = _mqttClient.IsConnected;
                   while (_mqttClient != null)
                   {
                       try

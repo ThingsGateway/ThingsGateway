@@ -346,6 +346,7 @@ namespace ThingsGateway.Foundation.Adapter.Modbus
         }
 
         public Func<ModbusAddress, byte[], IThingsGatewayBitConverter, SocketClient, Task<OperResult>> Write;
+
         protected override void Dispose(bool disposing)
         {
             foreach (var item in ModbusServer01ByteBlocks)
