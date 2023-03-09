@@ -5,6 +5,7 @@ using OpcDaClient.Da;
 
 using ThingsGateway.Foundation;
 using ThingsGateway.Foundation.Adapter.OPCDA;
+using ThingsGateway.Foundation.Extension;
 using ThingsGateway.Web.Foundation;
 
 using TouchSocket.Core;
@@ -79,12 +80,7 @@ namespace ThingsGateway.OPCDA
         {
             await Task.CompletedTask;
             var result = _plc.ReadSub(deviceVariableSourceRead.Address);
-            if (result.IsSuccess)
-                return OperResult.CreateSuccessResult<byte[]>(null);
-            else
-            {
-                return new OperResult<byte[]>();
-            }
+            return result.Copy<byte[]>();
         }
 
         public override async Task<OperResult> WriteValueAsync(CollectVariableRunTime deviceVariable, string value)
