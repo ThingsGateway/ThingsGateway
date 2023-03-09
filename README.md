@@ -13,7 +13,7 @@
 - Blazor Server架构，开发部署更简单
 - 支持时序数据库存储
 - 实时/历史报警(Sql转储)，支持布尔/高低限值
-- Modbus 、OPC 采集插件
+- Modbus、OPCDA、OPCUA采集插件
 - Modbus Server、Mqtt Server(Client)、OPC UAServer插件,支持Rpc写入，支持WebApi
 - 采集/上传配置完全支持Excel导入导出
 - 插件式驱动，方便驱动二次开发，并支持动态更新
