@@ -100,7 +100,7 @@ namespace ThingsGateway.Foundation.Adapter.OPCDA
         {
             int i = 0;
             Dictionary<string, List<OpcItem>> tagDicts = tags.ToList().ConvertAll(o => new OpcItem(o)
-              ).ChunkTrivialBetter(OPCNode.GroupSize).ToDictionary(a => "default" + i);
+              ).ChunkTrivialBetter(OPCNode.GroupSize).ToDictionary(a => "default" + (i++));
             Tags = tagDicts;
             return tagDicts;
         }
