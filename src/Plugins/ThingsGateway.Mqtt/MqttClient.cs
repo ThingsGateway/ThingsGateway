@@ -5,7 +5,6 @@ using Microsoft.Extensions.Logging;
 
 using MQTTnet;
 using MQTTnet.Client;
-using MQTTnet.Server;
 
 using NewLife.Serialization;
 
@@ -117,11 +116,11 @@ namespace ThingsGateway.Mqtt
               async () =>
               {
                   bool lastIsSuccess = false;
+                  await Task.Delay(ConnectTimeOut * 20);
                   while (_mqttClient != null)
                   {
                       try
                       {
-                          await Task.Delay(ConnectTimeOut*2);
                           var result = await TryMqttClient();
 
                           if (!result.IsSuccess && lastIsSuccess)
