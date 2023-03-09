@@ -24,7 +24,10 @@
 ``` powershell
  dotnet add package ThingsGateway.Foundation.Adapter.Modbus
 ```
-
+- OPCDA客户端库，支持X64，支持NetCore，支持检测重连
+``` powershell
+ dotnet add package ThingsGateway.Foundation.Adapter.OPCDA
+```
 
 ####  效果图
  <table>
