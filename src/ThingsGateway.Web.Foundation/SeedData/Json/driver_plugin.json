@@ -103,5 +103,19 @@
       "UpdateUserId": "212725263002001",
       "FilePath": "Plugins\\ThingsGateway.OPCDA\\ThingsGateway.OPCDA.dll"
     }
+    {
+      "Id": "381003388334343",
+      "AssembleName": "ThingsGateway.OPCUA.OPCUAClient",
+      "DriverTypeEnum": "Collect",
+      "FileName": "ThingsGateway.OPCUA",
+      "CreateTime": "2023-02-23 15:18:52.375",
+      "CreateUser": "superAdmin",
+      "CreateUserId": "212725263002001",
+      "IsDelete": "0",
+      "UpdateTime": "2023-03-02 12:40:27.754",
+      "UpdateUser": "superAdmin",
+      "UpdateUserId": "212725263002001",
+      "FilePath": "Plugins\\ThingsGateway.OPCUA\\ThingsGateway.OPCUA.dll"
+    }
   ]
 }
