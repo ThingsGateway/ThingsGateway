@@ -28,7 +28,10 @@
 ``` powershell
  dotnet add package ThingsGateway.Foundation.Adapter.OPCDA
 ```
-
+- OPCUA客户端库
+``` powershell
+ dotnet add package ThingsGateway.Foundation.Adapter.OPCUA
+```
 ####  效果图
  <table>
     <tr>
