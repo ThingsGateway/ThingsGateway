@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 
 namespace ThingsGateway.Foundation.Extension
 {
@@ -12,14 +11,16 @@ namespace ThingsGateway.Foundation.Extension
         /// <param name="source"></param>
         /// <param name="chunksize"></param>
         /// <returns></returns>
-        public static IEnumerable<IEnumerable<T>> ChunkTrivialBetter<T>(this IEnumerable<T> source, int chunksize)
+        public static List<List<T>> ChunkTrivialBetter<T>(this IEnumerable<T> source, int chunksize)
         {
             var pos = 0;
+            List<List<T>> n = new();
             while (source.Skip(pos).Any())
             {
-                yield return source.Skip(pos).Take(chunksize);
+                n.Add(source.Skip(pos).Take(chunksize).ToList());
                 pos += chunksize;
             }
+            return n;
         }
     }
 }

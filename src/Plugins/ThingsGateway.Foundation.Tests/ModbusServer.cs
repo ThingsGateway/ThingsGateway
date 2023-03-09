@@ -2,31 +2,17 @@ using System.Diagnostics;
 
 using ThingsGateway.Foundation.Adapter.Modbus;
 
+using Xunit;
+
 namespace ThingsGateway.Foundation.Tests
 {
-    [TestClass]
     public class ModbusServerTest
     {
-        TcpService service;
         private TouchSocketConfig config;
+        TcpService service;
         private ModbusServer TcpService;
 
-        public void ModbusServer()
-        {
-            config = new TouchSocketConfig();
-            config.SetListenIPHosts(new IPHost[] { new IPHost("127.0.0.1:5023") })
-    .SetBufferLength(300);
-            //‘ÿ»Î≈‰÷√
-            service = config.Container.Resolve<TcpService>();
-            service.Setup(config);
-            TcpService = new(service);
-            TcpService.ConnectTimeOut = 5000;
-            TcpService.Station = 1;
-            TcpService.TimeOut = 5000;
-            TcpService.Start();
-        }
-
-        [TestMethod]
+        [Fact]
         public async Task TcpReadTest()
         {
             ModbusServer();
@@ -57,6 +43,21 @@ namespace ThingsGateway.Foundation.Tests
             {
                 await Task.Delay(10000);
             }
+        }
+
+        private void ModbusServer()
+        {
+            config = new TouchSocketConfig();
+            config.SetListenIPHosts(new IPHost[] { new IPHost("127.0.0.1:5023") })
+    .SetBufferLength(300);
+            //‘ÿ»Î≈‰÷√
+            service = config.Container.Resolve<TcpService>();
+            service.Setup(config);
+            TcpService = new(service);
+            TcpService.ConnectTimeOut = 5000;
+            TcpService.Station = 1;
+            TcpService.TimeOut = 5000;
+            TcpService.Start();
         }
     }
 }

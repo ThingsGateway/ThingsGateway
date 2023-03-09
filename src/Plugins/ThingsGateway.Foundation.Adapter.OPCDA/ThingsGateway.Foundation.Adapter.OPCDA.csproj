@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<LangVersion>latestMajor</LangVersion>
+		<TargetFrameworks>net4.6.2;net6.0;net7.0</TargetFrameworks>
+		<Version>1.0.2</Version>
+		<Platforms>AnyCPU</Platforms>
+		<OutputType>Library</OutputType>
+		
+		<Title>ThingsGateway.Foundation.Adapter.Modbus</Title>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<Authors>Diego</Authors>
+		<Description>OPCDA通讯类库，支持OPCDAClient</Description>
+		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+		<RunAnalyzersDuringBuild>True</RunAnalyzersDuringBuild>
+		<PackageProjectUrl>https://diego2098.gitee.io/thingsgateway/</PackageProjectUrl>
+		<RepositoryUrl>https://gitee.com/diego2098/ThingsGateway</RepositoryUrl>
+		<PackageOutputPath>$(SolutionDir)</PackageOutputPath>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <None Include="..\..\..\README.md">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\..\ThingsGateway.Foundation\ThingsGateway.Foundation.csproj" />
+	</ItemGroup>
+
+</Project>
