@@ -188,7 +188,7 @@ namespace ThingsGateway.Foundation.Adapter.OPCDA
                         {
                             if (connect())
                             {
-                                _logger?.Debug(OPCNode.ToString() + "OPC重新链接成功！");
+                                _logger?.Info(OPCNode.ToString() + "OPC重新链接成功！");
                             }
                         }
 
