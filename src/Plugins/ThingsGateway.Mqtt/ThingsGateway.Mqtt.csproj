@@ -8,7 +8,7 @@
 		<Version>1.0.0</Version>
 		<RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
 		<EnableDynamicLoading>true</EnableDynamicLoading>
-		<CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 	</PropertyGroup>
 
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
@@ -17,9 +17,14 @@
 	
 	</Target>
 
+	<ItemGroup>
+	  <PackageReference Include="MQTTnet" Version="4.1.4.563" />
+	</ItemGroup>
+
 
   <ItemGroup>
 	  <ProjectReference Include="..\..\ThingsGateway.Web.Foundation\ThingsGateway.Web.Foundation.csproj">
+		  <IncludeAssets>Compile</IncludeAssets>
 	  </ProjectReference>
 	</ItemGroup>
 
@@ -28,12 +33,6 @@
       <HintPath>MQTTnet.dll</HintPath>
     </Reference>
   </ItemGroup>
-
-	<ItemGroup>
-	  <None Update="MQTTnet.dll">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </None>
-	</ItemGroup>
 
 
 

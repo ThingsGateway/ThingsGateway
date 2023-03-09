@@ -8,7 +8,7 @@
 		<Version>1.0.0</Version>
 		<RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
 		<EnableDynamicLoading>true</EnableDynamicLoading>
-		<CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 	</PropertyGroup>
 
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
@@ -18,7 +18,9 @@
 	</Target>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\..\ThingsGateway.Web.Foundation\ThingsGateway.Web.Foundation.csproj" />
+		<ProjectReference Include="..\..\ThingsGateway.Web.Foundation\ThingsGateway.Web.Foundation.csproj" >
+			<IncludeAssets>Compile</IncludeAssets>
+		</ProjectReference>
 	  <ProjectReference Include="..\ThingsGateway.Foundation.Adapter.OPCDA\ThingsGateway.Foundation.Adapter.OPCDA.csproj" />
 	</ItemGroup>
 
