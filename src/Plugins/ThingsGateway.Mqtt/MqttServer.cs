@@ -102,7 +102,7 @@ namespace ThingsGateway.Mqtt
 
             using var serviceScope = _scopeFactory.CreateScope();
             _globalCollectDeviceData = serviceScope.ServiceProvider.GetService<GlobalCollectDeviceData>();
-          CollectDeviceHostService  collectDeviceHostService = serviceScope.ServiceProvider.GetBackgroundService<CollectDeviceHostService>();
+            CollectDeviceHostService collectDeviceHostService = serviceScope.ServiceProvider.GetBackgroundService<CollectDeviceHostService>();
             _rpcCore = serviceScope.ServiceProvider.GetService<RpcCore>();
             collectDeviceHostService.VariableValueChanges += VariableValueChange;
             _globalCollectDeviceData.CollectDevices.ForEach(a =>
@@ -121,7 +121,7 @@ namespace ThingsGateway.Mqtt
 
         private void VariableValueChange(List<CollectVariableRunTime> collectVariableRunTime)
         {
-            collectVariableRunTime.ForEach(a=>CollectVariableRunTimes.Enqueue(a));
+            collectVariableRunTime.ForEach(a => CollectVariableRunTimes.Enqueue(a));
         }
         ConcurrentDictionary<string, string> IdWithName = new();
         private async Task _mqttServer_ValidatingConnectionAsync(ValidatingConnectionEventArgs arg)

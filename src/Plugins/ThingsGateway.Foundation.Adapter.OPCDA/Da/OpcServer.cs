@@ -15,7 +15,7 @@ namespace OpcDaClient.Da
         public OpcServer(string name, string host = "localhost")
         {
             Name = name;
-            if(host.IsNullOrEmpty())
+            if (host.IsNullOrEmpty())
             {
                 Host = "localhost";
             }

@@ -39,7 +39,7 @@ public class JobPersistence : IJobPersistence
 
     public void OnChanged(PersistenceContext context)
     {
-       
+
     }
 
     public void OnTriggerChanged(PersistenceTriggerContext context)

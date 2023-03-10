@@ -1,7 +1,5 @@
 ﻿using AspNetCoreRateLimit;
 
-using Furion.Schedule;
-
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.WebEncoders;
 
@@ -60,7 +58,7 @@ namespace ThingsGateway.Web.Core
             // 允许跨域
             services.AddCorsAccessor();
 
-            services.Configure<WebEncoderOptions>(options => 
+            services.Configure<WebEncoderOptions>(options =>
             options.TextEncoderSettings = new TextEncoderSettings(UnicodeRanges.All));
 
             // 限流服务
@@ -71,7 +69,7 @@ namespace ThingsGateway.Web.Core
             // 任务调度
             services.AddSchedule(options =>
             {
-                options.AddPersistence<JobPersistence>(); 
+                options.AddPersistence<JobPersistence>();
             });
 
             //启动LoggingMonitor操作日志写入数据库组件

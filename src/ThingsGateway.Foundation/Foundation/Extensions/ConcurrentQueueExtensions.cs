@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace ThingsGateway.Foundation.Extension
+﻿namespace ThingsGateway.Foundation.Extension
 {
     public static class ConcurrentQueueExtensions
     {

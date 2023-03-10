@@ -11,6 +11,6 @@ public class OPCNode
 
     public override string ToString()
     {
-        return $"{(OPCIP.IsNullOrEmpty()?"localhost":OPCIP)}:{OPCName}";
+        return $"{(OPCIP.IsNullOrEmpty() ? "localhost" : OPCIP)}:{OPCName}";
     }
 }

@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-/// <summary>
+﻿/// <summary>
 /// 部分源码来自Hsl7或ThingsGateway.Foundation
 /// </summary>
 public class DataHelper

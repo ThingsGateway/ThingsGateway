@@ -26,7 +26,7 @@ namespace ThingsGateway.Mqtt
         }
         public override OperResult Success()
         {
-            if (_mqttClient?.IsConnected==true)
+            if (_mqttClient?.IsConnected == true)
             {
                 return OperResult.CreateSuccessResult();
             }
@@ -103,7 +103,7 @@ namespace ThingsGateway.Mqtt
             using var serviceScope = _scopeFactory.CreateScope();
             _globalCollectDeviceData = serviceScope.ServiceProvider.GetService<GlobalCollectDeviceData>();
             _rpcCore = serviceScope.ServiceProvider.GetService<RpcCore>();
-          CollectDeviceHostService  collectDeviceHostService = serviceScope.ServiceProvider.GetBackgroundService<CollectDeviceHostService>();
+            CollectDeviceHostService collectDeviceHostService = serviceScope.ServiceProvider.GetBackgroundService<CollectDeviceHostService>();
             collectDeviceHostService.VariableValueChanges += VariableValueChange;
 
             _globalCollectDeviceData.CollectDevices.ForEach(a =>
@@ -116,7 +116,7 @@ namespace ThingsGateway.Mqtt
               async () =>
               {
                   await Task.Delay(ConnectTimeOut * 20);
-                  bool lastIsSuccess = _mqttClient?.IsConnected==true;
+                  bool lastIsSuccess = _mqttClient?.IsConnected == true;
                   while (_mqttClient != null)
                   {
                       try
@@ -136,7 +136,7 @@ namespace ThingsGateway.Mqtt
                       }
                       finally
                       {
-                          await Task.Delay(ConnectTimeOut*10);
+                          await Task.Delay(ConnectTimeOut * 10);
                       }
                   }
               });
@@ -151,7 +151,7 @@ namespace ThingsGateway.Mqtt
             {
                 _logger.LogWarning(subResult.Items
                     .Where(a => a.ResultCode > (MqttClientSubscribeResultCode)10)
-                    .Select(a => a.ToString()).ToJson()); 
+                    .Select(a => a.ToString()).ToJson());
             }
         }
 
@@ -193,18 +193,18 @@ namespace ThingsGateway.Mqtt
                     {
                         if (_mqttClient?.IsConnected == true)
                             return OperResult.CreateSuccessResult();
-                        if(_mqttClient==null)
+                        if (_mqttClient == null)
                             return new OperResult("未初始化");
                         var result = await _mqttClient?.ConnectAsync(_mqttClientOptions, timeoutToken.Token);
                         if (result.ResultCode == MqttClientConnectResultCode.Success)
                         {
- 
-                                return OperResult.CreateSuccessResult();
-                   
+
+                            return OperResult.CreateSuccessResult();
+
                         }
                         else
                         {
-                            return new OperResult(result.ReasonString); 
+                            return new OperResult(result.ReasonString);
                         }
                     }
                 }

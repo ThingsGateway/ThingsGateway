@@ -9,7 +9,7 @@ namespace ThingsGateway.Web.Rcl.Core
         private static readonly int[] _minutes = Enumerable.Range(0, 60).ToArray();
         private static readonly int[] _seconds = Enumerable.Range(0, 60).ToArray();
         [Inject]
-        public JsInitVariables JsInitVariables { get; set; } = default !;
+        public JsInitVariables JsInitVariables { get; set; } = default!;
         [Parameter]
         public DateTime? Max { get; set; }
 

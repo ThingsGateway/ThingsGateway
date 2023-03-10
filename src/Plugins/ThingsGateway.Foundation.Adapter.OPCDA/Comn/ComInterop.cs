@@ -173,7 +173,7 @@ namespace OpcDaClient.Comn
                 // 检查是否在本地或远程连接。
                 uint clsctx = 0x01 | 0x04;
 
-                if (hostName != null && hostName.Length > 0 && hostName.ToLower() != "localhost"&& hostName != "127.0.0.1")
+                if (hostName != null && hostName.Length > 0 && hostName.ToLower() != "localhost" && hostName != "127.0.0.1")
                 {
                     clsctx = 0x04 | 0x10;
                 }

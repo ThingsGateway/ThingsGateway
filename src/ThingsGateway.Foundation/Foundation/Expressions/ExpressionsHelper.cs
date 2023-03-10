@@ -1,7 +1,5 @@
 ﻿using CodingSeb.ExpressionEvaluator;
 
-using System.Collections.Generic;
-
 namespace ThingsGateway.Foundation
 {
     [System.Security.SecuritySafeCritical]

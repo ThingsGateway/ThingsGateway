@@ -68,7 +68,7 @@ namespace ThingsGateway.Web.Core
                 var routeName = httpContext.Request.Path.Value;
                 var isRolePermission = httpContext.GetMetadata<OpenApiPermissionAttribute>();
 
-                if (isRolePermission==null||user.PermissionCodeList?.Contains(routeName) == true)//如果当前路由信息不包含在角色授权路由列表中则认证失败
+                if (isRolePermission == null || user.PermissionCodeList?.Contains(routeName) == true)//如果当前路由信息不包含在角色授权路由列表中则认证失败
                     return true;
                 else
                     return false;

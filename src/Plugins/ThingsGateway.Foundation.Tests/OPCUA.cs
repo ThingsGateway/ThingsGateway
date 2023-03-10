@@ -41,15 +41,15 @@ namespace ThingsGateway.Foundation.Tests
             info.Disconnect();
         }
 
-        private void DataReceived(List<(MonitoredItem , MonitoredItemNotification)> obj)
+        private void DataReceived(List<(MonitoredItem, MonitoredItemNotification)> obj)
         {
             _output.WriteLine(obj?.ToJson().FormatJson());
         }
 
         private void Info_OpcStatusChange(object sender, OPCUAStatusEventArgs e)
         {
-            if(e.Error)
-            _output.WriteLine(e?.ToJson());
+            if (e.Error)
+                _output.WriteLine(e?.ToJson());
         }
 
 

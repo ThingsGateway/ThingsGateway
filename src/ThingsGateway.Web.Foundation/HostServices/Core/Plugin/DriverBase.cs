@@ -70,8 +70,8 @@ public abstract class DriverBase : IDisposable
     public void Init(ILogger logger, CollectDeviceRunTime device, object client = null)
     {
         privateLogger = logger;
-        if(IsLogOut)
-            _logger= privateLogger;
+        if (IsLogOut)
+            _logger = privateLogger;
         Init(device, client);
     }
     /// <summary>

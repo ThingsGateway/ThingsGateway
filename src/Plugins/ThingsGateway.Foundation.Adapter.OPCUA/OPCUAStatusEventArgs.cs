@@ -1,18 +1,12 @@
 ﻿using Opc.Ua;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace ThingsGateway.Foundation.Adapter.OPCUA;
 /// <summary>
 /// 读取属性过程中用于描述的
 /// </summary>
 public class OPCNodeAttribute
 {
-    
+
     /// <summary>
     /// 属性的名称
     /// </summary>

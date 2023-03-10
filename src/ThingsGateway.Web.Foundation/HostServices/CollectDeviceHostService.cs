@@ -306,7 +306,7 @@ public class CollectDeviceHostService : BackgroundService
                     if (devcore.Device.DeviceStatus == DeviceStatusEnum.Pause)
                         continue;
                     _logger?.LogWarning(devcore.Device.Name + "采集线程假死，重启线程中");
-                    await UpDeviceThread(devcore.DeviceId,false);
+                    await UpDeviceThread(devcore.DeviceId, false);
                     i--;
                     num--;
 

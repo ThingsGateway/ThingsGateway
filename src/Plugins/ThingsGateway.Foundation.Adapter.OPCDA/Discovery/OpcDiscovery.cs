@@ -40,7 +40,7 @@ namespace OpcDaClient.Discovery
                     {
                         IOPCServerList2 m_server2 = (IOPCServerList2)o_Server;
                         GetIOPCServerList(ref result, ref serverInfos, serverName, host, m_server2, catid);
-                        if(result == null)
+                        if (result == null)
                         {
                             IOPCServerList m_server = (IOPCServerList)o_Server;
                             GetIOPCServerList(ref result, ref serverInfos, serverName, host, m_server, catid);

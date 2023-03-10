@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace ThingsGateway.Foundation
+﻿namespace ThingsGateway.Foundation
 {
     /// <summary>
     /// Json字符串转到对应类

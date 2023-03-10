@@ -1,7 +1,6 @@
 using Masa.Blazor;
 using Masa.Blazor.Presets;
 
-using Microsoft.AspNetCore.Components.Rendering;
 using Microsoft.AspNetCore.Components.Web;
 
 namespace ThingsGateway.Web.Rcl.Core
@@ -180,11 +179,11 @@ namespace ThingsGateway.Web.Rcl.Core
 
         private IEnumerable<TItem> selectedItem { get; set; } = new List<TItem>();
 
- 
+
 
         protected override bool ShouldRender()
         {
-            return base.ShouldRender() ;
+            return base.ShouldRender();
         }
 
         public async Task QueryClick()
@@ -218,7 +217,7 @@ namespace ThingsGateway.Web.Rcl.Core
             finally
             {
                 QueryLoading = false;
-               await InvokeAsync( StateHasChanged);
+                await InvokeAsync(StateHasChanged);
             }
         }
 
@@ -450,18 +449,18 @@ namespace ThingsGateway.Web.Rcl.Core
         {
             return await PopupService.ConfirmAsync(title, content, type);
         }
-        private int size { get;set; }
-        private  async Task PageChanged(int val)
+        private int size { get; set; }
+        private async Task PageChanged(int val)
         {
             if (((float)PageItems.Total / SearchModel.Size) < SearchModel.Current)
             {
                 SearchModel.Current = (int)(PageItems.Total / SearchModel.Size) + 1;
             }
-            if(SearchModel.Current<=0)
+            if (SearchModel.Current <= 0)
             {
                 SearchModel.Current = 1;
             }
-                if (FirstRender >= 1&& size!= SearchModel.Size)
+            if (FirstRender >= 1 && size != SearchModel.Size)
             {
                 size = SearchModel.Size;
                 await QueryClick();

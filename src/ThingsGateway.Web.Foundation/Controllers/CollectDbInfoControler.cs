@@ -3,12 +3,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-using NewLife;
-
-using System.Linq;
-
 using ThingsGateway.Core;
-using ThingsGateway.Core.Extension;
 
 namespace ThingsGateway.Web.Foundation
 {
@@ -24,7 +19,7 @@ namespace ThingsGateway.Web.Foundation
     {
         IServiceScopeFactory _scopeFactory;
         IVariableService _variableService { get; set; }
-        public CollectDbInfoControler(IServiceScopeFactory scopeFactory,IVariableService variableService)
+        public CollectDbInfoControler(IServiceScopeFactory scopeFactory, IVariableService variableService)
         {
             _scopeFactory = scopeFactory;
             _variableService = variableService;
@@ -43,7 +38,7 @@ namespace ThingsGateway.Web.Foundation
             return data;
         }
 
-      
+
     }
 }
 

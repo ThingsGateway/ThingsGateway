@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace ThingsGateway.Foundation
+﻿namespace ThingsGateway.Foundation
 {
     public interface IReadWrite
     {

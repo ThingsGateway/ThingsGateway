@@ -194,7 +194,7 @@ public class OPCUAClient : DisposableObject
     /// <summary>
     /// a name of application name show on server
     /// </summary>
-    public string OPCUAName { get; set; } =typeof( OPCUAClient).FullName;
+    public string OPCUAName { get; set; } = typeof(OPCUAClient).FullName;
 
 
 
@@ -261,7 +261,7 @@ public class OPCUAClient : DisposableObject
                 StartNodeId = new NodeId(tags[i]),
                 AttributeId = Attributes.Value,
                 DisplayName = tags[i],
-                Filter = new DataChangeFilter() { DeadbandValue = OPCNode.DeadBand, DeadbandType = 1,Trigger=DataChangeTrigger.StatusValue },
+                Filter = new DataChangeFilter() { DeadbandValue = OPCNode.DeadBand, DeadbandType = 1, Trigger = DataChangeTrigger.StatusValue },
                 SamplingInterval = 100,
             };
             item.Notification += (MonitoredItem monitoredItem, MonitoredItemNotificationEventArgs args) =>
@@ -1189,7 +1189,7 @@ public class OPCUAClient : DisposableObject
     private void callback(string arg1, MonitoredItem arg2, MonitoredItemNotificationEventArgs arg3)
     {
         var data = arg3.NotificationValue as MonitoredItemNotification;
-        m_data.Enqueue((arg2,data));
+        m_data.Enqueue((arg2, data));
     }
     private void CheckReturnValue(StatusCode status)
     {
@@ -1318,7 +1318,7 @@ public class OPCUAClient : DisposableObject
                     m_ReconnectStarting?.Invoke(this, e);
 
                     m_reConnectHandler = new SessionReconnectHandler();
-                    m_reConnectHandler.BeginReconnect(m_session, (OPCNode?.ReconnectPeriod ?? 5000) , Server_ReconnectComplete);
+                    m_reConnectHandler.BeginReconnect(m_session, (OPCNode?.ReconnectPeriod ?? 5000), Server_ReconnectComplete);
                 }
 
                 return;

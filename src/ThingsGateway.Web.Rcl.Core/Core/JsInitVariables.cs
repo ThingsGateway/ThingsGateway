@@ -4,8 +4,8 @@ namespace ThingsGateway.Web.Rcl.Core;
 
 public class JsInitVariables : IAsyncDisposable
 {
-    static readonly string _timezoneOffsetKey = "timezoneOffset";   
-    readonly IJSRuntime _jsRuntime;   
+    static readonly string _timezoneOffsetKey = "timezoneOffset";
+    readonly IJSRuntime _jsRuntime;
     readonly CookieStorage _storage;
     TimeSpan _timezoneOffset;
     IJSObjectReference _helper;
@@ -22,12 +22,12 @@ public class JsInitVariables : IAsyncDisposable
         }
     }
 
-    public JsInitVariables(IJSRuntime jsRuntime, CookieStorage storage,IHttpContextAccessor httpContextAccessor)
+    public JsInitVariables(IJSRuntime jsRuntime, CookieStorage storage, IHttpContextAccessor httpContextAccessor)
     {
         _jsRuntime = jsRuntime;
         _storage = storage;
         var httpContext = httpContextAccessor.HttpContext;
-        if(httpContext is not null)
+        if (httpContext is not null)
         {
             var timezoneOffsetResult = httpContext.Request.Cookies[_timezoneOffsetKey];
             _timezoneOffset = TimeSpan.FromMinutes(Convert.ToDouble(timezoneOffsetResult));
@@ -37,7 +37,7 @@ public class JsInitVariables : IAsyncDisposable
     public async Task SetTimezoneOffset()
     {
         var timezoneOffsetResult = await _storage.GetCookieAsync(_timezoneOffsetKey);
-        if(string.IsNullOrEmpty(timezoneOffsetResult) is false)
+        if (string.IsNullOrEmpty(timezoneOffsetResult) is false)
         {
             TimezoneOffset = TimeSpan.FromMinutes(Convert.ToDouble(timezoneOffsetResult));
             return;

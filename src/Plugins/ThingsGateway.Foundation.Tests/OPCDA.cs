@@ -21,9 +21,9 @@ namespace ThingsGateway.Foundation.Tests
         [Fact]
         public void OpcTest()
         {
-            
+
             var info = new OPCDAClient(new EasyLogger(Log_Out));
-            info.Init(new OPCNode() { OPCName = "Kepware.KEPServerEX.V6" ,CheckRate=50});
+            info.Init(new OPCNode() { OPCName = "Kepware.KEPServerEX.V6", CheckRate = 50 });
             info.SetTags(new List<string> { "test.40001" });
             info.DataChangedHandler += Info_DataChangedHandler;
             info.Connect();

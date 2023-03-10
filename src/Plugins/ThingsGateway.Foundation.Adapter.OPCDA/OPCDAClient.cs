@@ -192,7 +192,7 @@ namespace ThingsGateway.Foundation.Adapter.OPCDA
                             }
                             else
                             {
-                                
+
                             }
                         }
 

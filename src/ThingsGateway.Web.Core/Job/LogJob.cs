@@ -8,7 +8,7 @@ namespace ThingsGateway.Web.Core;
 /// 清理日志作业任务
 /// </summary>
 [JobDetail("job_log", Description = "清理日志", GroupName = "default", Concurrent = false)]
-[Daily(TriggerId = "trigger_log", Description = "清理日志",RunOnStart =true)]
+[Daily(TriggerId = "trigger_log", Description = "清理日志", RunOnStart = true)]
 public class LogJob : IJob
 {
     private readonly IServiceProvider _serviceProvider;

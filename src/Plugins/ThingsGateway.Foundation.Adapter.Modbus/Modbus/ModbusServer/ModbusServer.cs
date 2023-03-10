@@ -121,7 +121,7 @@ namespace ThingsGateway.Foundation.Adapter.Modbus
             ModbusAddress mAddress = null;
             try
             {
-                 mAddress = new ModbusAddress(address, Station);
+                mAddress = new ModbusAddress(address, Station);
             }
             catch (Exception ex)
             {

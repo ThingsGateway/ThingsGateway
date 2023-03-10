@@ -23,15 +23,15 @@ namespace ThingsGateway.Mqtt
                     break;
 
                 case MqttNetLogLevel.Info:
-                    _logger?.Log(LogLevel.Information, 0, exception, source + "-"+ message, parameters);
+                    _logger?.Log(LogLevel.Information, 0, exception, source + "-" + message, parameters);
                     break;
 
                 case MqttNetLogLevel.Warning:
-                    _logger?.Log(LogLevel.Warning, 0, exception, source + "-"+ message, parameters);
+                    _logger?.Log(LogLevel.Warning, 0, exception, source + "-" + message, parameters);
                     break;
 
                 case MqttNetLogLevel.Error:
-                    _logger?.Log(LogLevel.Error, 0, exception, source + "-"+ message, parameters);
+                    _logger?.Log(LogLevel.Error, 0, exception, source + "-" + message, parameters);
                     break;
             }
         }

@@ -1,7 +1,5 @@
 using Newtonsoft.Json;
 
-using System.Text;
-
 namespace ThingsGateway.Foundation
 {
     /// <summary>

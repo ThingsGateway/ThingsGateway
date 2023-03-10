@@ -2,7 +2,6 @@
 
 using SqlSugar;
 
-using System.Collections.Concurrent;
 using System.Net;
 
 using ThingsGateway.Foundation;
@@ -12,8 +11,6 @@ using ThingsGateway.Web.Foundation;
 
 using TouchSocket.Core;
 using TouchSocket.Sockets;
-
-using static OfficeOpenXml.ExcelErrorValue;
 
 namespace ThingsGateway.Modbus
 {

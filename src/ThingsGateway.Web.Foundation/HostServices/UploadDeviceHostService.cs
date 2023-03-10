@@ -106,7 +106,7 @@ public class UploadDeviceHostService : BackgroundService
     /// <summary>
     /// 更新设备线程
     /// </summary>
-    public void UpDeviceThread(long devId,bool isUpdateDb=true)
+    public void UpDeviceThread(long devId, bool isUpdateDb = true)
     {
         if (!_stoppingToken.IsCancellationRequested)
         {
@@ -249,7 +249,7 @@ public class UploadDeviceHostService : BackgroundService
                     if (devcore.Device.DeviceStatus == DeviceStatusEnum.Pause)
                         continue;
                     _logger?.LogWarning(devcore.Device.Name + "上传线程假死，重启线程中");
-                    UpDeviceThread(devcore.DeviceId,false);
+                    UpDeviceThread(devcore.DeviceId, false);
                     i--;
                     num--;
 

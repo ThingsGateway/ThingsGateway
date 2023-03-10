@@ -236,7 +236,7 @@ public class UploadDeviceCore : DisposableObject
                 }
             }
             DeviceTask?.Dispose();
-            if(StoppingToken!= null )
+            if (StoppingToken != null)
             {
                 StoppingTokens.Remove(StoppingToken);
             }

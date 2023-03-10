@@ -59,7 +59,7 @@ public abstract class UpLoadBase : IDisposable
     public void Init(ILogger logger, UploadDevice device)
     {
         privateLogger = logger;
-        if(IsLogOut)
+        if (IsLogOut)
             _logger = privateLogger;
         Init(device);
     }
