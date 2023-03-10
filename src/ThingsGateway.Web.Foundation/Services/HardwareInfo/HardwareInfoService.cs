@@ -3,10 +3,14 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
+using NewLife.Log;
+
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Timers;
+
+using UAParser;
 
 namespace ThingsGateway.Web.Foundation
 {
@@ -38,10 +42,8 @@ namespace ThingsGateway.Web.Foundation
         [Description("Stage环境")]
         public string Stage { get; set; }
     }
-    public class HardwareInfoService : ISingleton
+    public class HardwareInfoService
     {
-        private readonly SysCacheService _sysCacheService;
-        private static IServiceScopeFactory _scopeFactory;
         public TGHardwareInfo HardwareInfo
         {
             get
@@ -70,12 +72,9 @@ namespace ThingsGateway.Web.Foundation
         private readonly Hardware.Info.HardwareInfo hardwareInfo = new();
         private System.Timers.Timer DelayTimer10000;
         private System.Timers.Timer DelayTimer30000;
-        ILogger<HardwareInfoService> _logger;
-        public HardwareInfoService(SysCacheService sysCacheService, ILogger<HardwareInfoService> logger,
-        IServiceScopeFactory scopeFactory)
+        ILogger _logger;
+        public HardwareInfoService()
         {
-            _scopeFactory = scopeFactory;
-            _sysCacheService = sysCacheService;
             DelayTimer10000 = new System.Timers.Timer(10000);
             DelayTimer10000.Elapsed += timer10000_Elapsed;
             DelayTimer10000.AutoReset = true;
@@ -84,7 +83,11 @@ namespace ThingsGateway.Web.Foundation
             DelayTimer30000.Elapsed += timer30000_Elapsed;
             DelayTimer30000.AutoReset = true;
             DelayTimer30000.Start();
-            _logger = logger;
+            Scoped.Create((factory, scope) => {
+                var loggerFactory = scope.ServiceProvider.GetRequiredService<ILoggerFactory>();
+                _logger = loggerFactory.CreateLogger(nameof(HardwareInfoService));
+            });
+
             Task.Run(() =>
             {
                 timer10000_Elapsed(null, null);

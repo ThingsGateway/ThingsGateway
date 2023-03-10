@@ -1,6 +1,7 @@
 ﻿using Furion.FriendlyException;
 using Furion.Logging.Extensions;
 
+using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -30,8 +31,6 @@ public class CollectDeviceHostService : BackgroundService
 
         using var serviceScope = scopeFactory.CreateScope();
         _globalCollectDeviceData = serviceScope.ServiceProvider.GetService<GlobalCollectDeviceData>();
-        //初始化一下硬件信息
-        serviceScope.ServiceProvider.GetService<HardwareInfoService>();
         _pluginService = serviceScope.ServiceProvider.GetService<PluginCore>();
         _collectDeviceService = serviceScope.ServiceProvider.GetService<ICollectDeviceService>();
     }
@@ -193,7 +192,7 @@ public class CollectDeviceHostService : BackgroundService
 
     #region 设备信息获取
 
-    public List<string> GetDeviceMethodsAsync(long devId)
+    public List<string> GetDeviceMethods(long devId)
     {
         var id = YitIdHelper.NextId();
         using var serviceScope = _scopeFactory.CreateScope();
@@ -213,8 +212,22 @@ public class CollectDeviceHostService : BackgroundService
 
     }
 
+    public DriverBase GetImportUI(long devId)
+    {
+        var result = CollectDeviceCores.FirstOrDefault(a => a.DeviceId == devId);
+        if (result == null)
+        {
+            return null;
+        }
+        else
+        {
+            return result._driver;
+        }
+     
+    }
 
-    public List<DependencyProperty> GetDevicePropertysAsync(long driverId, long devId = 0)
+
+    public List<DependencyProperty> GetDevicePropertys(long driverId, long devId = 0)
     {
         using var serviceScope = _scopeFactory.CreateScope();
         var driverPluginService = serviceScope.ServiceProvider.GetService<IDriverPluginService>();

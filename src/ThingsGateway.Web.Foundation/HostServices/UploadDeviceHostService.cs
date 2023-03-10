@@ -130,7 +130,7 @@ public class UploadDeviceHostService : BackgroundService
 
     #region 设备信息获取
 
-    public List<string> GetDeviceMethodsAsync(long devId)
+    public List<string> GetDeviceMethods(long devId)
     {
         var id = YitIdHelper.NextId();
         using var serviceScope = _scopeFactory.CreateScope();
@@ -152,7 +152,7 @@ public class UploadDeviceHostService : BackgroundService
     }
 
 
-    public List<DependencyProperty> GetDevicePropertysAsync(long driverId, long devId = 0)
+    public List<DependencyProperty> GetDevicePropertys(long driverId, long devId = 0)
     {
         using var serviceScope = _scopeFactory.CreateScope();
         var driverPluginService = serviceScope.ServiceProvider.GetService<IDriverPluginService>();
@@ -183,7 +183,7 @@ public class UploadDeviceHostService : BackgroundService
     }
 
 
-    public List<DependencyProperty> GetVariablePropertysAsync(long driverId, List<DependencyProperty> dependencyProperties = null)
+    public List<DependencyProperty> GetVariablePropertys(long driverId, List<DependencyProperty> dependencyProperties = null)
     {
         using var serviceScope = _scopeFactory.CreateScope();
         var driverPluginService = serviceScope.ServiceProvider.GetService<IDriverPluginService>();

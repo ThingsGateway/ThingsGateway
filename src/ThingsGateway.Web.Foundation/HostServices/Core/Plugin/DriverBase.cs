@@ -63,6 +63,9 @@ public abstract class DriverBase : IDisposable
     /// <returns></returns>
     public abstract Task BeforStart();
 
+
+    public virtual Type DriverUI { get; }
+
     public abstract void Dispose();
     /// <summary>
     /// 初始化

@@ -27,7 +27,10 @@
             services.AddHostedService<AlarmHostService>();
             services.AddHostedService<ValueHisHostService>();
             services.AddHostedService<UploadDeviceHostService>();
-
+            services.AddSingleton<HardwareInfoService>(a =>
+            {
+                return new HardwareInfoService();
+            });
         }
     }
 }

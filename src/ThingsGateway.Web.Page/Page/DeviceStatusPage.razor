@@ -140,6 +140,17 @@
                                             <span>@T("重启")</span>
                                         </ChildContent>
                                         </MTooltip>
+
+                                        <MTooltip Bottom Context="tip">
+                                    <ActivatorContent>
+                                        <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("tgdevicerestart")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small Loading=isRestart OnClick=@(()=>ImportVaiable(item.DeviceId))>
+                                            <MIcon>mdi-import</MIcon>
+                                            </MButton>
+                                        </ActivatorContent>
+                                        <ChildContent>
+                                            <span>@T("导入变量")</span>
+                                        </ChildContent>
+                                        </MTooltip>
                                         </MCardActions>
                                         </MCard>
                                         </MCol>
@@ -257,12 +268,25 @@
 
         </style>
 
-        @code {
+        <PModal @bind-Value="IsShowImportVariableList" OnCancel="() => IsShowImportVariableList = false"
+        Title=@T("导入变量") Height=@("750px") Persistent
+        MaxWidth="1500">
+        @if (IsShowImportVariableList)
+    {
+        @_importComponent.Render()
+    }
+
+</PModal>
+
+
+
+@code {
     StringNumber tab;
     private System.Timers.Timer DelayTimer;
     private bool fab;
     bool isAllRestart;
     bool isRestart;
+    bool IsShowImportVariableList;
     CollectDeviceHostService CollectDeviceHostService { get; set; }
     UploadDeviceHostService UploadDeviceHostService { get; set; }
     AlarmHostService AlarmHostService { get; set; }
@@ -279,6 +303,23 @@
         DelayTimer.Start();
         return base.OnInitializedAsync();
     }
+    private BootstrapDynamicComponent _importComponent;
+
+    async Task ImportVaiable(long devId)
+    {
+       var driver = this.GetBackgroundService<CollectDeviceHostService>().GetImportUI(devId);
+        if (driver?.DriverUI == null)
+        {
+            await PopupService.EnqueueSnackbarAsync("插件未实现导入变量", AlertTypes.Warning);
+            return;
+        }
+        _importComponent = new BootstrapDynamicComponent(driver.DriverUI, new Dictionary<string, object>()
+            {
+                [nameof(DriverUI.Driver)] = driver
+            }
+            );
+        IsShowImportVariableList = true;
+    }
     async Task Restart(long devId)
     {
         try
@@ -291,9 +332,9 @@
                 await Task.Run(async () => await CollectDeviceHostService.UpDeviceThread(devId));
             }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
-             await PopupService.EnqueueSnackbarAsync(ex.Message, AlertTypes.Warning);
+            await PopupService.EnqueueSnackbarAsync(ex.Message, AlertTypes.Warning);
         }
         finally
         {
@@ -314,7 +355,7 @@
         }
         catch (Exception ex)
         {
-             await PopupService.EnqueueSnackbarAsync(ex.Message, AlertTypes.Warning);
+            await PopupService.EnqueueSnackbarAsync(ex.Message, AlertTypes.Warning);
         }
         finally
         {

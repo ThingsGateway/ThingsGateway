@@ -14,7 +14,7 @@ namespace ThingsGateway.OPCUA
 {
     public class OPCUAClient : DriverBase
     {
-        private Foundation.Adapter.OPCUA.OPCUAClient _plc = null;
+        internal Foundation.Adapter.OPCUA.OPCUAClient PLC = null;
 
         public OPCUAClient(IServiceScopeFactory scopeFactory) : base(scopeFactory)
         {
@@ -32,21 +32,21 @@ namespace ThingsGateway.OPCUA
         public override ThingsGatewayBitConverter ThingsGatewayBitConverter { get; } = new(EndianType.Little);
         public override void AfterStop()
         {
-            _plc?.Disconnect();
+            PLC?.Disconnect();
         }
 
         public override async Task BeforStart()
         {
-            await _plc.ConnectServer();
+            await PLC.ConnectServer();
         }
 
         public override void Dispose()
         {
-            _plc.DataChangedHandler -= dataChangedHandler;
-            _plc.OpcStatusChange -= opcStatusChange;
-            _plc.Disconnect();
-            _plc.Dispose();
-            _plc = null;
+            PLC.DataChangedHandler -= dataChangedHandler;
+            PLC.OpcStatusChange -= opcStatusChange;
+            PLC.Disconnect();
+            PLC.Dispose();
+            PLC = null;
         }
 
         private void dataChangedHandler(List<(MonitoredItem monitoredItem, MonitoredItemNotification monitoredItemNotification)> values)
@@ -95,6 +95,7 @@ namespace ThingsGateway.OPCUA
                 _device.DeviceOffMsg = ex.Message;
             }
         }
+        public override Type DriverUI => typeof(ImportVariable);
 
         public override bool IsSupportAddressRequest()
         {
@@ -106,7 +107,7 @@ namespace ThingsGateway.OPCUA
             _deviceVariables = deviceVariables;
             if (deviceVariables.Count > 0)
             {
-                var result = _plc.SetTags(deviceVariables.Select(a => a.VariableAddress).ToList());
+                var result = PLC.SetTags(deviceVariables.Select(a => a.VariableAddress).ToList());
                 var sourVars = result?.Select(
           it =>
           {
@@ -127,7 +128,7 @@ namespace ThingsGateway.OPCUA
         public override async Task<OperResult<byte[]>> ReadSourceAsync(DeviceVariableSourceRead deviceVariableSourceRead, CancellationToken cancellationToken)
         {
             await Task.CompletedTask;
-            var result = await _plc.ReadNodeAsync(deviceVariableSourceRead.DeviceVariables.Select(a => a.VariableAddress).ToArray());
+            var result = await PLC.ReadNodeAsync(deviceVariableSourceRead.DeviceVariables.Select(a => a.VariableAddress).ToArray());
 
             if (result.Any(a => StatusCode.IsBad(a.StatusCode)))
             {
@@ -142,7 +143,7 @@ namespace ThingsGateway.OPCUA
         public override async Task<OperResult> WriteValueAsync(CollectVariableRunTime deviceVariable, string value)
         {
             await Task.CompletedTask;
-            var result = _plc.WriteNode(deviceVariable.VariableAddress, value);
+            var result = PLC.WriteNode(deviceVariable.VariableAddress, value);
             return result ? OperResult.CreateSuccessResult() : new OperResult();
         }
 
@@ -155,22 +156,22 @@ namespace ThingsGateway.OPCUA
             oPCNode.DeadBand = DeadBand;
             oPCNode.GroupSize = GroupSize;
             oPCNode.ReconnectPeriod = ReconnectPeriod;
-            if (_plc == null)
+            if (PLC == null)
             {
-                _plc = new();
-                _plc.DataChangedHandler += dataChangedHandler;
-                _plc.OpcStatusChange += opcStatusChange; ;
+                PLC = new();
+                PLC.DataChangedHandler += dataChangedHandler;
+                PLC.OpcStatusChange += opcStatusChange; ;
             }
             if (!UserName.IsNullOrEmpty())
             {
-                _plc.UserIdentity = new UserIdentity("Administrator", "111111");
+                PLC.UserIdentity = new UserIdentity("Administrator", "111111");
 
             }
             else
             {
-                _plc.UserIdentity = new UserIdentity(new AnonymousIdentityToken());
+                PLC.UserIdentity = new UserIdentity(new AnonymousIdentityToken());
             }
-            _plc.OPCNode = oPCNode;
+            PLC.OPCNode = oPCNode;
         }
 
         private void opcStatusChange(object sender, OPCUAStatusEventArgs e)

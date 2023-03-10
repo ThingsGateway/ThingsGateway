@@ -35,7 +35,7 @@ public class CollectDeviceCore : DisposableObject
     /// <summary>
     /// 当前的驱动插件实例
     /// </summary>
-    private DriverBase _driver;
+    internal DriverBase _driver;
 
     /// <summary>
     /// 全局插件服务

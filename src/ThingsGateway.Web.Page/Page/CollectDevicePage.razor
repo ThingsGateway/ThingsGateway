@@ -123,7 +123,7 @@
 
     List<DependencyProperty> GetDriverProperties(long driverId, long devId)
     {
-        return this.GetBackgroundService<CollectDeviceHostService>().GetDevicePropertysAsync(driverId, devId);
+        return this.GetBackgroundService<CollectDeviceHostService>().GetDevicePropertys(driverId, devId);
     }
     RenderFragment GetRenderFragment(CollectDeviceEditInput context)
     {

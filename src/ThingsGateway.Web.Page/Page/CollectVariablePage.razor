@@ -118,7 +118,7 @@
     void DeviceChanged(long devId)
     {
         if (devId > 0)
-            OtherMethods = this.GetBackgroundService<CollectDeviceHostService>().GetDeviceMethodsAsync(devId);
+            OtherMethods = this.GetBackgroundService<CollectDeviceHostService>().GetDeviceMethods(devId);
         else
             OtherMethods = new();
     }
@@ -499,6 +499,6 @@
     long choiceUploadDeviceId;
     List<DependencyProperty> GetDriverProperties(long driverId, List<DependencyProperty> dependencyProperties)
     {
-        return this.GetBackgroundService<UploadDeviceHostService>().GetVariablePropertysAsync(driverId, dependencyProperties);
+        return this.GetBackgroundService<UploadDeviceHostService>().GetVariablePropertys(driverId, dependencyProperties);
     }
 }
