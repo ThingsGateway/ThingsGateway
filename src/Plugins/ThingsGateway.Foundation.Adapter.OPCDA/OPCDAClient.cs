@@ -190,6 +190,10 @@ namespace ThingsGateway.Foundation.Adapter.OPCDA
                             {
                                 _logger?.Info(OPCNode.ToString() + "OPC重新链接成功！");
                             }
+                            else
+                            {
+                                
+                            }
                         }
 
                     }
@@ -209,10 +213,6 @@ namespace ThingsGateway.Foundation.Adapter.OPCDA
         {
             lock (this)
             {
-                if (m_server == null)
-                {
-                    Init(OPCNode);
-                }
                 try
                 {
                     if (m_server?.IsConnected == true)
@@ -251,6 +251,8 @@ namespace ThingsGateway.Foundation.Adapter.OPCDA
                     }
                     else
                     {
+                        disconnect();
+                        Init(OPCNode);
                         var result = m_server?.Connect();
                         if (result.IsSuccess)
                         {

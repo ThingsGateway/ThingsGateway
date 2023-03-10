@@ -32,9 +32,6 @@ public class OPCUAClient : DisposableObject
 
     private SessionReconnectHandler m_reConnectHandler;
 
-    //是否已经连接过
-    private int m_reconnectPeriod = 10;
-
     private EventHandler m_ReconnectStarting;
 
     private ISession m_session;
@@ -199,14 +196,7 @@ public class OPCUAClient : DisposableObject
     /// </summary>
     public string OPCUAName { get; set; } =typeof( OPCUAClient).FullName;
 
-    /// <summary>
-    /// The number of seconds between reconnect attempts (0 means reconnect is disabled).
-    /// </summary>
-    public int ReconnectPeriod
-    {
-        get { return m_reconnectPeriod; }
-        set { m_reconnectPeriod = value; }
-    }
+
 
     /// <summary>
     /// 当前活动会话。
@@ -1295,46 +1285,55 @@ public class OPCUAClient : DisposableObject
 
     }
 
+    private EasyLock _keepAliveLock = new();
     /// <summary>
     /// Handles a keep alive event from a session.
     /// </summary>
     private void Session_KeepAlive(ISession session, KeepAliveEventArgs e)
     {
-
-        // check for events from discarded sessions.
-        if (!Object.ReferenceEquals(session, m_session))
+        if (_keepAliveLock.IsWaitting) { return; }
+        _keepAliveLock.Lock();
+        try
         {
-            return;
-        }
 
-        // start reconnect sequence on communication error.
-        if (ServiceResult.IsBad(e.Status))
-        {
-            if (m_reconnectPeriod <= 0)
+            // check for events from discarded sessions.
+            if (!Object.ReferenceEquals(session, m_session))
             {
-                UpdateStatus(true, e.CurrentTime, "连接失败 ({0})", e.Status);
                 return;
             }
 
-            UpdateStatus(true, e.CurrentTime, "重新连接中 in {0}s", m_reconnectPeriod);
-
-            if (m_reConnectHandler == null)
+            // start reconnect sequence on communication error.
+            if (ServiceResult.IsBad(e.Status))
             {
-                m_ReconnectStarting?.Invoke(this, e);
+                if (OPCNode?.ReconnectPeriod <= 0)
+                {
+                    UpdateStatus(true, e.CurrentTime, "连接失败 ({0})", e.Status);
+                    return;
+                }
 
-                m_reConnectHandler = new SessionReconnectHandler();
-                m_reConnectHandler.BeginReconnect(m_session, m_reconnectPeriod * 1000, Server_ReconnectComplete);
+                UpdateStatus(true, e.CurrentTime, "重新连接中 in {0}s", OPCNode?.ReconnectPeriod);
+
+                if (m_reConnectHandler == null)
+                {
+                    m_ReconnectStarting?.Invoke(this, e);
+
+                    m_reConnectHandler = new SessionReconnectHandler();
+                    m_reConnectHandler.BeginReconnect(m_session, (OPCNode?.ReconnectPeriod ?? 5000) , Server_ReconnectComplete);
+                }
+
+                return;
             }
 
-            return;
+            // update status.
+            UpdateStatus(false, e.CurrentTime, "连接正常 [{0}]", session.Endpoint.EndpointUrl);
+
+            // raise any additional notifications.
+            m_KeepAliveComplete?.Invoke(this, e);
         }
-
-        // update status.
-        UpdateStatus(false, e.CurrentTime, "连接正常 [{0}]", session.Endpoint.EndpointUrl);
-
-        // raise any additional notifications.
-        m_KeepAliveComplete?.Invoke(this, e);
-
+        finally
+        {
+            _keepAliveLock.UnLock();
+        }
     }
 
     /// <summary>

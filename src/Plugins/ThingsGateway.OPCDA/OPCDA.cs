@@ -145,10 +145,13 @@ namespace ThingsGateway.OPCDA
                         if (value != null && quality == 192)
                         {
                             item.SetValue(value);
+
                         }
                         else
                         {
                             item.SetValue(null);
+                            _device.DeviceStatus = DeviceStatusEnum.OnLineButNoInitialValue;
+                            _device.DeviceOffMsg = $"{item.Name} 质量为Bad ";
                         }
                     }
                 }
@@ -156,6 +159,7 @@ namespace ThingsGateway.OPCDA
             catch (Exception ex)
             {
                 _logger?.LogError(ex, ToString());
+                _device.DeviceStatus = DeviceStatusEnum.OnLineButNoInitialValue;
                 _device.DeviceOffMsg = ex.Message;
             }
         }

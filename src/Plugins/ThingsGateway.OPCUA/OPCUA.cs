@@ -24,6 +24,8 @@ namespace ThingsGateway.OPCUA
         [DeviceProperty("死区", "")] public float DeadBand { get; set; } = 0;
         [DeviceProperty("自动分组大小", "")] public int GroupSize { get; set; } = 500;
         [DeviceProperty("更新频率", "")] public int UpdateRate { get; set; } = 1000;
+        [DeviceProperty("心跳频率", "")] public int ReconnectPeriod { get; set; } = 5000;
+
         [DeviceProperty("登录账号", "为空时将采用匿名方式登录")] public string UserName { get; set; }
         [DeviceProperty("登录密码", "")] public string Password { get; set; }
 
@@ -35,12 +37,13 @@ namespace ThingsGateway.OPCUA
 
         public override async Task BeforStart()
         {
-           await _plc.ConnectServer();
+            await _plc.ConnectServer();
         }
 
         public override void Dispose()
         {
             _plc.DataChangedHandler -= dataChangedHandler;
+            _plc.OpcStatusChange -= opcStatusChange;
             _plc.Disconnect();
             _plc.Dispose();
             _plc = null;
@@ -70,7 +73,7 @@ namespace ThingsGateway.OPCUA
                     foreach (var item in itemReads)
                     {
                         var value = data.monitoredItemNotification.Value.Value;
-                        var quality = StatusCode.IsBad(data.monitoredItemNotification.Value.StatusCode)?0:192;
+                        var quality = StatusCode.IsBad(data.monitoredItemNotification.Value.StatusCode) ? 0 : 192;
 
                         var time = data.monitoredItemNotification.Value.SourceTimestamp;
                         if (value != null && quality == 192)
@@ -80,6 +83,8 @@ namespace ThingsGateway.OPCUA
                         else
                         {
                             item.SetValue(null);
+                            _device.DeviceStatus = DeviceStatusEnum.OnLineButNoInitialValue;
+                            _device.DeviceOffMsg = $"{item.Name} 质量为Bad ";
                         }
                     }
                 }
@@ -122,9 +127,9 @@ namespace ThingsGateway.OPCUA
         public override async Task<OperResult<byte[]>> ReadSourceAsync(DeviceVariableSourceRead deviceVariableSourceRead, CancellationToken cancellationToken)
         {
             await Task.CompletedTask;
-            var result =await _plc.ReadNodeAsync(deviceVariableSourceRead.DeviceVariables.Select(a=>a.VariableAddress).ToArray());
+            var result = await _plc.ReadNodeAsync(deviceVariableSourceRead.DeviceVariables.Select(a => a.VariableAddress).ToArray());
 
-            if (result.Any(a=> StatusCode.IsBad( a.StatusCode)))
+            if (result.Any(a => StatusCode.IsBad(a.StatusCode)))
             {
                 return new OperResult<byte[]>($"读取失败");
             }
@@ -138,7 +143,7 @@ namespace ThingsGateway.OPCUA
         {
             await Task.CompletedTask;
             var result = _plc.WriteNode(deviceVariable.VariableAddress, value);
-            return result?OperResult.CreateSuccessResult():new OperResult();
+            return result ? OperResult.CreateSuccessResult() : new OperResult();
         }
 
         protected override void Init(CollectDeviceRunTime device, object client = null)
@@ -149,13 +154,14 @@ namespace ThingsGateway.OPCUA
             oPCNode.UpdateRate = UpdateRate;
             oPCNode.DeadBand = DeadBand;
             oPCNode.GroupSize = GroupSize;
+            oPCNode.ReconnectPeriod = ReconnectPeriod;
             if (_plc == null)
             {
                 _plc = new();
                 _plc.DataChangedHandler += dataChangedHandler;
                 _plc.OpcStatusChange += opcStatusChange; ;
             }
-            if(!UserName.IsNullOrEmpty()   )
+            if (!UserName.IsNullOrEmpty())
             {
                 _plc.UserIdentity = new UserIdentity("Administrator", "111111");
 
@@ -170,7 +176,11 @@ namespace ThingsGateway.OPCUA
         private void opcStatusChange(object sender, OPCUAStatusEventArgs e)
         {
             if (e.Error)
+            {
                 _logger.LogError(e.Text);
+                _device.DeviceStatus = DeviceStatusEnum.OnLineButNoInitialValue;
+                _device.DeviceOffMsg = $"{e.Text}";
+            }
             else
             {
                 _logger.LogTrace(e.Text);
@@ -184,6 +194,6 @@ namespace ThingsGateway.OPCUA
         }
         private CollectDeviceRunTime _device;
 
-   
+
     }
 }
