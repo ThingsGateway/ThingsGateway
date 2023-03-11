@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<LangVersion>latestMajor</LangVersion>
 		<TargetFrameworks>net4.6.2;net6.0;net7.0</TargetFrameworks>
-		<Version>1.0.2</Version>
+		<Version>1.0.3</Version>
 		<Platforms>AnyCPU</Platforms>
 		<OutputType>Library</OutputType>
 		
