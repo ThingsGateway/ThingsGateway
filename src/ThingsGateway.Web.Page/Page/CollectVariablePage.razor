@@ -46,7 +46,7 @@
     <AddTemplate>
         @{
             var data = CollectDevices.FirstOrDefault();
-            context.DeviceId = data == null ? 0 : data.Id;
+            context.DeviceId = context.DeviceId == 0 ? data == null ? 0 : data.Id : context.DeviceId;
         }
         @GetRenderFragment(context)
     </AddTemplate>

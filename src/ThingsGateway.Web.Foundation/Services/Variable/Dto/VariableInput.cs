@@ -14,6 +14,11 @@ namespace ThingsGateway.Application
     {
         [MinValue(100, ErrorMessage = "低于最小值")]
         public override int IntervalTime { get; set; } = 1000;
+        public override long DeviceId
+        {
+            get;
+            set;
+        }
     }
     public class VariableEditInput : CollectDeviceVariable, IValidatableObject
     {
@@ -21,7 +26,11 @@ namespace ThingsGateway.Application
         [Required(ErrorMessage = "不能为空")]
         public override string Name { get; set; }
         [MinValue(1, ErrorMessage = "不能为空")]
-        public override long DeviceId { get; set; }
+        public override long DeviceId
+        {
+            get;
+            set;
+        }
         [MinValue(100, ErrorMessage = "低于最小值")]
         public override int IntervalTime { get; set; }
 
