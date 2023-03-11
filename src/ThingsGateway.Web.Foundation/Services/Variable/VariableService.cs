@@ -231,16 +231,83 @@ namespace ThingsGateway.Web.Foundation
             }
 
             var exporter = new ExcelExporter();
-            var byteArray = await exporter.Append(devExports)
-    .SeparateBySheet()
-        .Append(devicePropertys)
+            if (devExports.Count > 0)
+            {
+                exporter = exporter.Append(devExports);
+                if (devicePropertys.Count > 0)
+                {
+                    exporter = exporter.SeparateBySheet()
+        .Append(devicePropertys);
+                }
+                else
+                {
+                    devicePropertys.Add(new());
+                    exporter = exporter.SeparateBySheet()
+.Append(devicePropertys);
+                }
 
-    .ExportAppendDataAsByteArray();
-            var result = new MemoryStream(byteArray);
+                var byteArray = await exporter.ExportAppendDataAsByteArray();
+                var result = new MemoryStream(byteArray);
 
-            return result;
+                return result;
+
+            }
+            else
+            {
+                throw new("没有任何数据可导出");
+            }
+
+
         }
 
+        [OperDesc("导出变量表", IsRecordPar = false)]
+        public async Task<MemoryStream> ExportFile(List<CollectDeviceVariable> collectDeviceVariables)
+        {
+            var devDatas = collectDeviceVariables;
+
+            var devExports = devDatas.Adapt<List<CollectDeviceVariableExport>>();
+            //需要手动改正设备名称
+            devExports.ForEach(it => it.DeviceName = _collectDeviceService.GetNameById(it.DeviceId));
+            List<VariablePropertyExport> devicePropertys = new List<VariablePropertyExport>();
+            foreach (var devData in devDatas)
+            {
+                var propertyExcels = devData.VariablePropertys.Adapt<Dictionary<long, List<VariablePropertyExport>>>();
+                //需要手动改正设备名称
+                foreach (var property in propertyExcels)
+                {
+                    var upDevName = _uploadDeviceService.GetNameById(property.Key);
+                    property.Value.ForEach(it => it.DeviceName = upDevName);
+                    property.Value.ForEach(it => it.VariableName = devData.Name);
+                    devicePropertys.AddRange(property.Value);
+                }
+
+            }
+            var exporter = new ExcelExporter();
+            if (devExports.Count > 0)
+            {
+                exporter = exporter.Append(devExports);
+                if (devicePropertys.Count > 0)
+                {
+                    exporter = exporter.SeparateBySheet()
+        .Append(devicePropertys);
+                }
+                else
+                {
+                    devicePropertys.Add(new());
+                    exporter = exporter.SeparateBySheet()
+  .Append(devicePropertys);
+                }
+
+                var byteArray = await exporter.ExportAppendDataAsByteArray();
+                var result = new MemoryStream(byteArray);
+                return result;
+            }
+            else
+            {
+                throw new("没有任何数据可导出");
+            }
+
+        }
 
         /// <inheritdoc/>
         public async Task<Dictionary<string, ImportPreviewOutputBase>> Preview(IBrowserFile file)

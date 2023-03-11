@@ -65,7 +65,7 @@ namespace ThingsGateway.Mqtt
         }
         public override void Dispose()
         {
-            _mqttClient.Dispose();
+            _mqttClient?.Dispose();
             _mqttClient = null;
         }
 

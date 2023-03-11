@@ -16,6 +16,7 @@ namespace ThingsGateway.Web.Foundation
         void DeleteVariableFromCache(long userId);
         Task Edit(CollectDeviceVariable input);
         Task<MemoryStream> ExportFile();
+        Task<MemoryStream> ExportFile(List<CollectDeviceVariable> collectDeviceVariables);
         Task<List<CollectVariableRunTime>> GetCollectDeviceVariableRuntime(long devId = 0);
         long GetIdByName(string name);
         string GetNameById(long Id);

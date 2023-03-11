@@ -1,31 +1,32 @@
 ﻿@using BlazorComponent;
+@using Microsoft.AspNetCore.Components.Web;
 @using Opc.Ua;
 @using ThingsGateway.Foundation.Adapter.OPCUA;
 @using ThingsGateway.Foundation;
 @using ThingsGateway.Web.Foundation;
 @using Masa.Blazor
 @inherits DriverUI
-<MCard>
-    <MCardTitle class="indigo white--text text-h6">
+<MCard Class="ma-0">
+    <MCardTitle Class="indigo white--text text-h6">
         @OPCUAClient.PLC?.OPCNode?.OPCUrl
     </MCardTitle>
     <MRow Class="pa-4"
           Justify="JustifyTypes.SpaceBetween">
         <MCol Cols="12" Md="6">
             <MTreeview @bind-Value=_selected @bind-Active=_actived SelectionType="SelectionType.Independent"
-                       Items=Nodes   TItem=OPCUATagModel
+                       Items=Nodes TItem=OPCUATagModel
                        Color="warning" Selectable Activatable
-                        LoadChildren=PopulateBranch
-                       TKey=string ItemKey="r=>r.NodeId" 
-                       Style="height:600px;overflow-y:auto;"
+                       LoadChildren=PopulateBranch
+                       TKey=string ItemKey="r=>r.NodeId"
+                       Style="height:500px;overflow-y:auto;"
                        ItemText="r=>r.Name"
                        ItemChildren="r=>r.Nodes">
-          
+
             </MTreeview>
 
-        </MCol>
-        <MCol Cols="12" Md="6">
-            <MCardText Style="height:600px;overflow-y:auto;">
+            </MCol>
+            <MCol Cols="12" Md="6">
+            <MCardText Style="height:500px;overflow-y:auto;">
                 @if (_actived?.Count == 0)
                 {
                     <div key="title"
@@ -33,23 +34,52 @@
                         选择左侧节点
                     </div>
                 }
+                else
+                {
+                    <ScrollXTransition>
+                        <MSheet Outlined Class="ma-0 pa-1">
+                        <MRow Align="AlignTypes.Center">
+                            <MCol>
+                                <MListItem>
+                                    <ItemContent>
+                                        <MListItemContent>
+                                            <MListItemTitle>NodeId </MListItemTitle>
+                                        </MListItemContent>
+                                    </ItemContent>
+                                </MListItem>
+                            </MCol>
+                            <MDivider Vertical Center />
+                                <MCol>
+                                    <MLabel Class=@($"ma-1")> @_actived.FirstOrDefault()  </MLabel>
+                                </MCol>
 
-                <ScrollXTransition>
-                    @foreach (var (selection, i) in _actived.Select((item, i) => (item, i)))
-                    {
-                        <MChip @key="i"
-                           Color="grey"
-                           Dark
-                           Small
-                           Class="ma-1">
-                        <MIcon Left
-                               Small>
-                            mdi-beer
-                        </MIcon>
-                        @selection
-                    </MChip>
-                    }
-                </ScrollXTransition>
+                            </MRow>
+                        </MSheet>
+                        @foreach (var item in nodeAttributes)
+                        {
+                            <MSheet Outlined Class="ma-0 pa-1">
+                            <MRow Align="AlignTypes.Center">
+                            <MCol>
+                                <MListItem>
+                                    <ItemContent>
+                                        <MListItemContent>
+                                            <MListItemTitle>@item.Name </MListItemTitle>
+                                        </MListItemContent>
+                                    </ItemContent>
+                                </MListItem>
+                            </MCol>
+                            <MDivider Vertical Center />
+                                    <MCol>
+                                        <MLabel Class=@($"{(StatusCode.IsBad(item.StatusCode)?"red--text":"green--text")} ma-1")> @item.Value  </MLabel>
+                                    </MCol>
+
+                                </MRow>
+                            </MSheet>
+                        }
+
+                    </ScrollXTransition>
+
+                }
             </MCardText>
         </MCol>
 
@@ -83,8 +113,23 @@
     public override object Driver { get; set; }
     private OPCUAClient OPCUAClient => (OPCUAClient)Driver;
     private List<OPCUATagModel> Nodes = new();
-    private List<string> _selected {    get;    set;     } = new();
-    private List<string> _actived { get; set; } = new();
+    private List<string> _selected { get; set; } = new();
+    private List<string> actived = new();
+    private OPCNodeAttribute[] nodeAttributes;
+    private List<string> _actived
+    {
+        get => actived;
+        set
+        {
+            if (actived?.FirstOrDefault() != value?.FirstOrDefault() && value?.Count > 0)
+            {
+                actived = value;
+                nodeAttributes = OPCUAClient.PLC.ReadNoteAttributes(actived.FirstOrDefault());
+            }
+
+        }
+
+    }
 
     private Task PopulateBranch(OPCUATagModel model)
     {
@@ -95,6 +140,44 @@
         });
 
     }
+
+    public override List<CollectDeviceVariable> GetVariableList()
+    {
+        var data = _selected.Select(a =>
+          {
+              var nodeClass = (OPCUAClient.PLC.ReadNoteAttribute(a, Attributes.NodeClass).FirstOrDefault().Value).ToString();
+              if (nodeClass == nameof(NodeClass.Variable))
+              {
+                  ProtectTypeEnum level = ProtectTypeEnum.ReadOnly;
+                  try
+                  {
+                      var userAccessLevel = (AccessLevelType)(OPCUAClient.PLC.ReadNoteAttribute(a, Attributes.UserAccessLevel).FirstOrDefault().Value);
+                      level = (userAccessLevel.HasFlag(AccessLevelType.CurrentRead)) ?
+         userAccessLevel.HasFlag(AccessLevelType.CurrentWrite) ?
+         ProtectTypeEnum.ReadWrite : ProtectTypeEnum.ReadOnly : ProtectTypeEnum.WriteOnly;
+                  }
+                  catch
+                  {
+
+                  }
+                  return new CollectDeviceVariable()
+                      {
+                          Name = a,
+                          VariableAddress = a,
+                          DeviceId = OPCUAClient.Device.Id,
+                          Id = Yitter.IdGenerator.YitIdHelper.NextId(),
+                          ProtectTypeEnum = level,
+                          IntervalTime=1000,
+                      };
+              }
+              else
+              {
+                  return null;
+              }
+          }).Where(a => a != null).ToList();
+        return data;
+    }
+
     private List<OPCUATagModel> PopulateBranch(NodeId sourceId)
     {
         List<OPCUATagModel> nodes = new List<OPCUATagModel>();
@@ -114,7 +197,6 @@
                 if (data != null && data.Count > 0)
                 {
                     @*child.Nodes = PopulateBranch((NodeId)target.NodeId);*@
-                    //child.Nodes.Add(new() { Name = Utils.Format("{0}", data.FirstOrDefault()), Tag = data.FirstOrDefault() });
                 }
                 else
                 {

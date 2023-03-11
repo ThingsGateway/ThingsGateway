@@ -16,20 +16,23 @@ namespace ThingsGateway.OPCUA
     {
         internal Foundation.Adapter.OPCUA.OPCUAClient PLC = null;
 
+        internal CollectDeviceRunTime Device;
+
+        private List<CollectVariableRunTime> _deviceVariables = new();
+
         public OPCUAClient(IServiceScopeFactory scopeFactory) : base(scopeFactory)
         {
         }
-        [DeviceProperty("连接Url", "")] public string OPCURL { get; set; } = "opc.tcp://127.0.0.1:49320";
         [DeviceProperty("激活订阅", "")] public bool ActiveSubscribe { get; set; } = true;
         [DeviceProperty("死区", "")] public float DeadBand { get; set; } = 0;
+        public override Type DriverUI => typeof(ImportVariable);
         [DeviceProperty("自动分组大小", "")] public int GroupSize { get; set; } = 500;
-        [DeviceProperty("更新频率", "")] public int UpdateRate { get; set; } = 1000;
-        [DeviceProperty("心跳频率", "")] public int ReconnectPeriod { get; set; } = 5000;
-
-        [DeviceProperty("登录账号", "为空时将采用匿名方式登录")] public string UserName { get; set; }
+        [DeviceProperty("连接Url", "")] public string OPCURL { get; set; } = "opc.tcp://127.0.0.1:49320";
         [DeviceProperty("登录密码", "")] public string Password { get; set; }
-
+        [DeviceProperty("心跳频率", "")] public int ReconnectPeriod { get; set; } = 5000;
         public override ThingsGatewayBitConverter ThingsGatewayBitConverter { get; } = new(EndianType.Little);
+        [DeviceProperty("更新频率", "")] public int UpdateRate { get; set; } = 1000;
+        [DeviceProperty("登录账号", "为空时将采用匿名方式登录")] public string UserName { get; set; }
         public override void AfterStop()
         {
             PLC?.Disconnect();
@@ -49,59 +52,11 @@ namespace ThingsGateway.OPCUA
             PLC = null;
         }
 
-        private void dataChangedHandler(List<(MonitoredItem monitoredItem, MonitoredItemNotification monitoredItemNotification)> values)
-        {
-            try
-            {
-                if (!_device.Enable)
-                {
-                    return;
-                }
-                _device.DeviceStatus = DeviceStatusEnum.OnLine;
-
-                if (IsLogOut)
-                    _logger?.LogTrace(ToString() + " OPC值变化" + values.ToJson());
-
-                foreach (var data in values)
-                {
-                    if (!_device.Enable)
-                    {
-                        return;
-                    }
-
-                    var itemReads = _deviceVariables.Where(it => it.VariableAddress == data.monitoredItem.StartNodeId).ToList();
-                    foreach (var item in itemReads)
-                    {
-                        var value = data.monitoredItemNotification.Value.Value;
-                        var quality = StatusCode.IsBad(data.monitoredItemNotification.Value.StatusCode) ? 0 : 192;
-
-                        var time = data.monitoredItemNotification.Value.SourceTimestamp;
-                        if (value != null && quality == 192)
-                        {
-                            item.SetValue(value);
-                        }
-                        else
-                        {
-                            item.SetValue(null);
-                            _device.DeviceStatus = DeviceStatusEnum.OnLineButNoInitialValue;
-                            _device.DeviceOffMsg = $"{item.Name} 质量为Bad ";
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger?.LogError(ex, ToString());
-                _device.DeviceOffMsg = ex.Message;
-            }
-        }
-        public override Type DriverUI => typeof(ImportVariable);
-
         public override bool IsSupportAddressRequest()
         {
             return !ActiveSubscribe;
         }
-        private List<CollectVariableRunTime> _deviceVariables = new();
+
         public override OperResult<List<DeviceVariableSourceRead>> LoadSourceRead(List<CollectVariableRunTime> deviceVariables)
         {
             _deviceVariables = deviceVariables;
@@ -149,7 +104,7 @@ namespace ThingsGateway.OPCUA
 
         protected override void Init(CollectDeviceRunTime device, object client = null)
         {
-            _device = device;
+            Device = device;
             OPCNode oPCNode = new();
             oPCNode.OPCUrl = OPCURL;
             oPCNode.UpdateRate = UpdateRate;
@@ -174,27 +129,70 @@ namespace ThingsGateway.OPCUA
             PLC.OPCNode = oPCNode;
         }
 
+        protected override Task<OperResult<byte[]>> ReadAsync(string address, int length, CancellationToken cancellationToken)
+        {
+            //不走ReadAsync
+            throw new NotImplementedException();
+        }
+
+        private void dataChangedHandler(List<(MonitoredItem monitoredItem, MonitoredItemNotification monitoredItemNotification)> values)
+        {
+            try
+            {
+                if (!Device.Enable)
+                {
+                    return;
+                }
+                Device.DeviceStatus = DeviceStatusEnum.OnLine;
+
+                if (IsLogOut)
+                    _logger?.LogTrace(ToString() + " OPC值变化" + values.ToJson());
+
+                foreach (var data in values)
+                {
+                    if (!Device.Enable)
+                    {
+                        return;
+                    }
+
+                    var itemReads = _deviceVariables.Where(it => it.VariableAddress == data.monitoredItem.StartNodeId).ToList();
+                    foreach (var item in itemReads)
+                    {
+                        var value = data.monitoredItemNotification.Value.Value;
+                        var quality = StatusCode.IsBad(data.monitoredItemNotification.Value.StatusCode) ? 0 : 192;
+
+                        var time = data.monitoredItemNotification.Value.SourceTimestamp;
+                        if (value != null && quality == 192)
+                        {
+                            item.SetValue(value);
+                        }
+                        else
+                        {
+                            item.SetValue(null);
+                            Device.DeviceStatus = DeviceStatusEnum.OnLineButNoInitialValue;
+                            Device.DeviceOffMsg = $"{item.Name} 质量为Bad ";
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogError(ex, ToString());
+                Device.DeviceOffMsg = ex.Message;
+            }
+        }
         private void opcStatusChange(object sender, OPCUAStatusEventArgs e)
         {
             if (e.Error)
             {
                 _logger.LogError(e.Text);
-                _device.DeviceStatus = DeviceStatusEnum.OnLineButNoInitialValue;
-                _device.DeviceOffMsg = $"{e.Text}";
+                Device.DeviceStatus = DeviceStatusEnum.OnLineButNoInitialValue;
+                Device.DeviceOffMsg = $"{e.Text}";
             }
             else
             {
                 _logger.LogTrace(e.Text);
             }
         }
-
-        protected override Task<OperResult<byte[]>> ReadAsync(string address, int length, CancellationToken cancellationToken)
-        {
-            //不走ReadAsync
-            throw new NotImplementedException();
-        }
-        private CollectDeviceRunTime _device;
-
-
     }
 }

@@ -55,10 +55,12 @@ public class BootstrapDynamicComponent
     /// 创建组件实例并渲染
     /// </summary>
     /// <returns></returns>
-    public RenderFragment Render() => builder =>
+    public RenderFragment Render(Action<object> action = null) => builder =>
     {
-        var index = 0;
+        int index = 0;
+#pragma warning disable ASP0006 // Do not use non-literal sequence numbers
         builder.OpenComponent(index++, ComponentType);
+
         if (Parameters != null)
         {
             foreach (var p in Parameters)
@@ -66,6 +68,9 @@ public class BootstrapDynamicComponent
                 builder.AddAttribute(index++, p.Key, p.Value);
             }
         }
+        if (action != null)
+            builder.AddComponentReferenceCapture(index++, action);
         builder.CloseComponent();
+#pragma warning restore ASP0006 // Do not use non-literal sequence numbers
     };
 }
