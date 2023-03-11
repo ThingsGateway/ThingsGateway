@@ -31,6 +31,7 @@ public class CollectDeviceHostService : BackgroundService
         using var serviceScope = scopeFactory.CreateScope();
         _globalCollectDeviceData = serviceScope.ServiceProvider.GetService<GlobalCollectDeviceData>();
         _pluginService = serviceScope.ServiceProvider.GetService<PluginCore>();
+        serviceScope.ServiceProvider.GetService<HardwareInfoService>();
         _collectDeviceService = serviceScope.ServiceProvider.GetService<ICollectDeviceService>();
     }
 

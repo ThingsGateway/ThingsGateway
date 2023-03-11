@@ -40,7 +40,7 @@ namespace ThingsGateway.Web.Foundation
         [Description("Stage环境")]
         public string Stage { get; set; }
     }
-    public class HardwareInfoService
+    public class HardwareInfoService:ISingleton
     {
         public TGHardwareInfo HardwareInfo
         {
