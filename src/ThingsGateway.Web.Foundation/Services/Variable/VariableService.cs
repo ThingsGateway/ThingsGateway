@@ -314,7 +314,7 @@ namespace ThingsGateway.Web.Foundation
         {
             _fileService.ImportVerification(file);
             var Importer = new ExcelImporter();
-            await using var fs = new MemoryStream();
+            using var fs = new MemoryStream();
             using var stream = file.OpenReadStream(5120000);
             await stream.CopyToAsync(fs);
             var importDic = await Importer.ImportMultipleSheet<CollectDeviceVariableWithPropertyImport>(fs);//导入的文件转化为带入结果
@@ -417,7 +417,6 @@ namespace ThingsGateway.Web.Foundation
                     ImportPreviews.Add(item.Key, ImportPreview);
                 }
             }
-
             return ImportPreviews;
         }
 
