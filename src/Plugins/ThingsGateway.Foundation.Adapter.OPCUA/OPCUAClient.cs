@@ -219,7 +219,7 @@ public class OPCUAClient : DisposableObject
         set { m_useSecurity = value; }
     }
 
-    private Dictionary<string, List<string>> _tagDicts;
+    private Dictionary<string, List<string>> _tagDicts=new();
     public Dictionary<string, List<string>> SetTags(List<string> tags)
     {
         int i = 0;
