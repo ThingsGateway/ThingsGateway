@@ -17,7 +17,7 @@
                        Items=Nodes TItem=OPCUATagModel
                        Color="warning" Selectable Activatable
                        LoadChildren=PopulateBranch
-                       TKey=string ItemKey="r=>r.NodeId"
+                       TKey=ReferenceDescription ItemKey="r=>r.Tag"
                        Style="height:500px;overflow-y:auto;"
                        ItemText="r=>r.Name"
                        ItemChildren="r=>r.Nodes">
@@ -87,7 +87,6 @@
 
     </MRow>
 
-
 </MCard>
 <MOverlay Absolute Value="overlay" Opacity="0.8">
     <span class="green--text text--darken-2">
@@ -113,10 +112,10 @@
     public override object Driver { get; set; }
     private OPCUAClient OPCUAClient => (OPCUAClient)Driver;
     private List<OPCUATagModel> Nodes = new();
-    private List<string> _selected { get; set; } = new();
-    private List<string> actived = new();
+    private List<ReferenceDescription> _selected { get; set; } = new();
+    private List<ReferenceDescription> actived = new();
     private OPCNodeAttribute[] nodeAttributes;
-    private List<string> _actived
+    private List<ReferenceDescription> _actived
     {
         get => actived;
         set
@@ -124,7 +123,7 @@
             if (actived?.FirstOrDefault() != value?.FirstOrDefault() && value?.Count > 0)
             {
                 actived = value;
-                nodeAttributes = OPCUAClient.PLC.ReadNoteAttributes(actived.FirstOrDefault());
+                nodeAttributes = OPCUAClient.PLC.ReadNoteAttributes(actived.FirstOrDefault().NodeId.ToString());
             }
 
         }
@@ -145,13 +144,13 @@
     {
         var data = _selected.Select(a =>
           {
-              var nodeClass = (OPCUAClient.PLC.ReadNoteAttribute(a, Attributes.NodeClass).FirstOrDefault().Value).ToString();
+              var nodeClass = (OPCUAClient.PLC.ReadNoteAttribute(a.NodeId.ToString(), Attributes.NodeClass).FirstOrDefault().Value).ToString();
               if (nodeClass == nameof(NodeClass.Variable))
               {
                   ProtectTypeEnum level = ProtectTypeEnum.ReadOnly;
                   try
                   {
-                      var userAccessLevel = (AccessLevelType)(OPCUAClient.PLC.ReadNoteAttribute(a, Attributes.UserAccessLevel).FirstOrDefault().Value);
+                      var userAccessLevel = (AccessLevelType)(OPCUAClient.PLC.ReadNoteAttribute(a.NodeId.ToString(), Attributes.UserAccessLevel).FirstOrDefault().Value);
                       level = (userAccessLevel.HasFlag(AccessLevelType.CurrentRead)) ?
          userAccessLevel.HasFlag(AccessLevelType.CurrentWrite) ?
          ProtectTypeEnum.ReadWrite : ProtectTypeEnum.ReadOnly : ProtectTypeEnum.WriteOnly;
@@ -162,12 +161,12 @@
                   }
                   return new CollectDeviceVariable()
                       {
-                          Name = a,
-                          VariableAddress = a,
+                          Name = OPCUAClient.Device.Name + "_" + a.DisplayName.Text,
+                          VariableAddress = a.NodeId.ToString(),
                           DeviceId = OPCUAClient.Device.Id,
                           Id = Yitter.IdGenerator.YitIdHelper.NextId(),
                           ProtectTypeEnum = level,
-                          IntervalTime=1000,
+                          IntervalTime = 1000,
                       };
               }
               else
@@ -217,7 +216,6 @@
     {
         TaskCompletionSource<ReferenceDescriptionCollection> task = new TaskCompletionSource<ReferenceDescriptionCollection>();
 
-        // find all of the components of the node.
         BrowseDescription nodeToBrowse1 = new BrowseDescription();
 
         nodeToBrowse1.NodeId = sourceId;
@@ -227,7 +225,6 @@
         nodeToBrowse1.NodeClassMask = (uint)(NodeClass.Object | NodeClass.Variable | NodeClass.Method | NodeClass.ReferenceType | NodeClass.ObjectType | NodeClass.View | NodeClass.VariableType | NodeClass.DataType);
         nodeToBrowse1.ResultMask = (uint)BrowseResultMask.All;
 
-        // find all nodes organized by the node.
         BrowseDescription nodeToBrowse2 = new BrowseDescription();
 
         nodeToBrowse2.NodeId = sourceId;
@@ -241,7 +238,6 @@
         nodesToBrowse.Add(nodeToBrowse1);
         nodesToBrowse.Add(nodeToBrowse2);
 
-        // fetch references from the server.
         ReferenceDescriptionCollection references = FormUtils.Browse(OPCUAClient.PLC.Session, nodesToBrowse, false);
         return references;
     }

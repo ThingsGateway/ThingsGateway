@@ -1,0 +1,222 @@
+﻿@using BlazorComponent;
+@using Microsoft.AspNetCore.Components.Web;
+@using OpcDaClient.Da;
+@using ThingsGateway.Foundation.Adapter.OPCDA;
+@using ThingsGateway.Foundation;
+@using ThingsGateway.Web.Foundation;
+@using Masa.Blazor
+@inherits DriverUI
+<MCard Class="ma-0">
+    <MCardTitle Class="indigo white--text text-h6">
+        @OPCDAClient.PLC?.OPCNode?.ToString()
+    </MCardTitle>
+    <MRow Class="pa-4"
+          Justify="JustifyTypes.SpaceBetween">
+        <MCol Cols="12" Md="6">
+            <MTreeview @bind-Value=_selected @bind-Active=_actived SelectionType="SelectionType.Leaf"
+                       Items=Nodes TItem=OPCDATagModel
+                       Color="warning" Selectable Activatable OpenOnClick
+                       LoadChildren=PopulateBranch
+                       TKey=BrowseElement ItemKey="r=>r.Tag"
+                       Style="height:500px;overflow-y:auto;"
+                       ItemText="r=>r.Name"
+                       ItemChildren="r=>r.Nodes">
+
+            </MTreeview>
+
+            </MCol>
+            <MCol Cols="12" Md="6">
+            <MCardText Style="height:500px;overflow-y:auto;">
+                @if (_actived?.Count == 0)
+                {
+                    <div key="title"
+                         class="text-h6 font-weight-light grey--text pa-4 text-center">
+                        选择左侧节点
+                    </div>
+                }
+                else
+                {
+                    <ScrollXTransition>
+                        <MSheet Outlined Class="ma-0 pa-1">
+                        <MRow Align="AlignTypes.Center">
+                            <MCol>
+                                <MListItem>
+                                    <ItemContent>
+                                        <MListItemContent>
+                                            <MListItemTitle>NodeId </MListItemTitle>
+                                        </MListItemContent>
+                                    </ItemContent>
+                                </MListItem>
+                            </MCol>
+                            <MDivider Vertical Center />
+                                <MCol>
+                                    <MLabel Class=@($"ma-1")> @_actived.FirstOrDefault().ItemName  </MLabel>
+                                </MCol>
+
+                            </MRow>
+                        </MSheet>
+                        @if (nodeAttributes != null)
+                        {
+                            @foreach (var item in nodeAttributes)
+                            {
+                                <MSheet Outlined Class="ma-0 pa-1">
+                                <MRow Align="AlignTypes.Center">
+                                <MCol>
+                                <MListItem>
+                                    <ItemContent>
+                                        <MListItemContent>
+                                            <MListItemTitle>@item.Description </MListItemTitle>
+                                        </MListItemContent>
+                                    </ItemContent>
+                                </MListItem>
+                                </MCol>
+                                <MDivider Vertical Center />
+                                        <MCol>
+                                            <MLabel Class=@($"{(item.ResultID.Failed()?"red--text":"green--text")} ma-1")> @item.Value  </MLabel>
+                                        </MCol>
+
+                                    </MRow>
+                                </MSheet>
+                            }
+
+                        }
+
+
+                    </ScrollXTransition>
+
+                }
+            </MCardText>
+        </MCol>
+
+        <MDivider Vertical></MDivider>
+
+    </MRow>
+
+
+</MCard>
+<MOverlay Absolute Value="overlay" Opacity="0.8">
+    <span class="green--text text--darken-2">
+        @("正在获取OPCDA节点...")
+    </span>
+    <MProgressCircular Indeterminate Width=6
+                       Size="30"></MProgressCircular>
+    </MOverlay>
+    @code
+    {
+
+    protected override void OnInitialized()
+    {
+        Task.Run(async () =>
+    {
+        Nodes = PopulateBranch("");
+        overlay = false;
+        await InvokeAsync(StateHasChanged);
+    });
+    }
+    private bool overlay = true;
+    [Parameter]
+    public override object Driver { get; set; }
+    private OPCDAClient OPCDAClient => (OPCDAClient)Driver;
+    private List<OPCDATagModel> Nodes = new();
+    private List<BrowseElement> _selected { get; set; } = new();
+    private List<BrowseElement> actived = new();
+    private ItemProperty[] nodeAttributes;
+    private List<BrowseElement> _actived
+    {
+        get => actived;
+        set
+        {
+            if (actived?.FirstOrDefault() != value?.FirstOrDefault() && value?.Count > 0)
+            {
+                actived = value;
+                nodeAttributes = actived.FirstOrDefault().Properties;
+            }
+
+        }
+
+    }
+
+    private Task PopulateBranch(OPCDATagModel model)
+    {
+        return Task.Run(() =>
+        {
+            var sourceId = model.Tag.ItemName;
+            model.Nodes = PopulateBranch(sourceId);
+        });
+
+    }
+
+    public override List<CollectDeviceVariable> GetVariableList()
+    {
+        var data = _selected.Select(a =>
+          {
+              ProtectTypeEnum level = ProtectTypeEnum.ReadOnly;
+              try
+              {
+                  var userAccessLevel = (accessRights)(a.Properties.FirstOrDefault(b => b.ID.Code == 5).Value);
+                  level = userAccessLevel == accessRights.readable ? userAccessLevel == accessRights.writable ?
+         ProtectTypeEnum.ReadWrite : ProtectTypeEnum.WriteOnly : ProtectTypeEnum.ReadOnly;
+              }
+              catch
+              {
+
+              }
+              return new CollectDeviceVariable()
+                  {
+                      Name = OPCDAClient.Device.Name+"_"+ a.Name,
+                      VariableAddress = a.ItemName,
+                      DeviceId = OPCDAClient.Device.Id,
+                      Id = Yitter.IdGenerator.YitIdHelper.NextId(),
+                      ProtectTypeEnum = level,
+                      IntervalTime = 1000,
+                  };
+
+          }).Where(a => a != null).ToList();
+        return data;
+    }
+
+    private List<OPCDATagModel> PopulateBranch(string sourceId)
+    {
+        List<OPCDATagModel> nodes = new List<OPCDATagModel>();
+        nodes.Add(new OPCDATagModel() { Name = "Browsering..." });
+
+        var result = OPCDAClient.PLC.GetBrowse(sourceId);
+        if (!result.IsSuccess) return new();
+        var references = result.Content;
+        List<OPCDATagModel> list = new List<OPCDATagModel>();
+        if (references != null)
+        {
+            for (int ii = 0; ii < references.Count; ii++)
+            {
+                var target = references[ii];
+                OPCDATagModel child = new OPCDATagModel { Name = target.Name };
+                child.Tag = target;
+
+                if (target.HasChildren)
+                {
+                    @*child.Nodes = PopulateBranch((NodeId)target.NodeId);*@
+                }
+                else
+                {
+                    child.Nodes = null;
+                }
+                list.Add(child);
+            }
+        }
+
+        List<OPCDATagModel> listNode = list;
+
+        nodes.Clear();
+        nodes.AddRange(listNode.ToArray());
+        return nodes;
+    }
+
+
+    internal class OPCDATagModel
+    {
+        internal string Name { get; set; }
+        internal BrowseElement Tag { get; set; }
+        internal string NodeId => (Tag.ItemName).ToString();
+        internal List<OPCDATagModel> Nodes { get; set; } = new();
+    }
+}

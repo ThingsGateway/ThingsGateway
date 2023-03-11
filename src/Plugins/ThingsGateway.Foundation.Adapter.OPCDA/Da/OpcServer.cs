@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using OpcRcw.Da;
+
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 
 using ThingsGateway.Foundation;
@@ -100,6 +103,87 @@ namespace OpcDaClient.Da
             GC.SuppressFinalize(this);
         }
 
+        /// <summary>
+        /// 获取节点
+        /// </summary>
+        public OperResult<List<BrowseElement>> Browse(string itemId = null)
+        {
+            lock (this)
+            {
+                if (null == m_OpcServer || IsConnected == false)
+                    return new OperResult<List<BrowseElement>>("未初始化连接！");
+
+
+                var count = 0;
+                var moreElements = 0;
+
+                var pContinuationPoint = IntPtr.Zero;
+                var pElements = IntPtr.Zero;
+                var filterId = new PropertyID[]
+         {
+                               new PropertyID(1),
+                               new PropertyID(3),
+                               new PropertyID(4),
+                               new PropertyID(5),
+                               new PropertyID(6),
+                               new PropertyID(101),
+                             };
+                try
+                {
+
+                    var server = m_OpcServer as IOPCBrowse;
+                    server.Browse(
+                             itemId.IsNullOrEmpty() ? "" : itemId,
+                         ref pContinuationPoint,
+                         int.MaxValue,
+                            OPCBROWSEFILTER.OPC_BROWSE_FILTER_ALL,
+                              "",
+                             "",
+                             0,
+                             1,
+                             filterId.Length,
+                             Interop.GetPropertyIDs(filterId),
+                         out moreElements,
+                         out count,
+                         out pElements);
+                }
+                catch (Exception ex)
+                {
+                    return new OperResult<List<BrowseElement>>(ex);
+                }
+                BrowseElement[] browseElements = Interop.GetBrowseElements(ref pElements, count, true);
+                string stringUni = Marshal.PtrToStringUni(pContinuationPoint);
+                Marshal.FreeCoTaskMem(pContinuationPoint);
+                this.ProcessResults(browseElements, filterId);
+                return OperResult.CreateSuccessResult(browseElements?.ToList());
+            }
+        }
+
+        private void ProcessResults(BrowseElement[] elements, PropertyID[] propertyIDs)
+        {
+            if (elements == null)
+                return;
+            foreach (BrowseElement element in elements)
+            {
+                if (element.Properties != null)
+                {
+                    foreach (ItemProperty property in element.Properties)
+                    {
+                        if (propertyIDs != null)
+                        {
+                            foreach (PropertyID propertyId in propertyIDs)
+                            {
+                                if (property.ID.Code == propertyId.Code)
+                                {
+                                    property.ID = propertyId;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
         /// <summary>
         /// 服务器状态
         /// </summary>

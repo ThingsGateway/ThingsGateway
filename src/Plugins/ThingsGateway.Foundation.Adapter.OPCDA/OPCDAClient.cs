@@ -11,9 +11,7 @@ using ThingsGateway.Foundation.Extension.Json;
 
 using Timer = System.Timers.Timer;
 
-//https://gitee.com/Zer0Day/opc-client 部分非托管交互代码来自此项目，更改部分逻辑
-
-
+//部分非托管交互代码来自https://gitee.com/Zer0Day/opc-client与OPC基金会opcnet库，更改部分逻辑
 
 namespace ThingsGateway.Foundation.Adapter.OPCDA
 {
@@ -58,7 +56,10 @@ namespace ThingsGateway.Foundation.Adapter.OPCDA
         {
             return this.m_server.GetServerStatus().ToJson().FormatJson();
         }
-
+        public OperResult<List<BrowseElement>> GetBrowse(string itemId=null)
+        {
+            return this.m_server.Browse(itemId);
+        }
         public void Init(OPCNode node = null)
         {
             if (node != null)

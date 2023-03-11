@@ -95,6 +95,7 @@ public class FormUtils
 
                     for (int ii = 0; ii < continuationPoints.Count; ii++)
                     {
+                         
                         // check for error.
                         if (StatusCode.IsBad(results[ii].StatusCode))
                         {

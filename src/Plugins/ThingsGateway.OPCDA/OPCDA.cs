@@ -14,9 +14,10 @@ namespace ThingsGateway.OPCDA
 {
     public class OPCDAClient : DriverBase
     {
-        private CollectDeviceRunTime _device;
+        internal CollectDeviceRunTime Device;
         private List<CollectVariableRunTime> _deviceVariables = new();
-        private ThingsGateway.Foundation.Adapter.OPCDA.OPCDAClient _plc = null;
+        internal ThingsGateway.Foundation.Adapter.OPCDA.OPCDAClient PLC = null;
+        public override System.Type DriverUI => typeof(ImportVariable);
 
         public OPCDAClient(IServiceScopeFactory scopeFactory) : base(scopeFactory)
         {
@@ -31,21 +32,21 @@ namespace ThingsGateway.OPCDA
         [DeviceProperty("更新频率", "")] public int UpdateRate { get; set; } = 1000;
         public override void AfterStop()
         {
-            _plc?.Disconnect();
+            PLC?.Disconnect();
         }
 
         public override async Task BeforStart()
         {
-            _plc.Connect();
+            PLC.Connect();
             await Task.CompletedTask;
         }
 
         public override void Dispose()
         {
-            _plc.DataChangedHandler -= dataChangedHandler;
-            _plc.Disconnect();
-            _plc.Dispose();
-            _plc = null;
+            PLC.DataChangedHandler -= dataChangedHandler;
+            PLC.Disconnect();
+            PLC.Dispose();
+            PLC = null;
         }
 
 
@@ -58,7 +59,7 @@ namespace ThingsGateway.OPCDA
             _deviceVariables = deviceVariables;
             if (deviceVariables.Count > 0)
             {
-                var result = _plc.SetTags(deviceVariables.Select(a => a.VariableAddress).ToList());
+                var result = PLC.SetTags(deviceVariables.Select(a => a.VariableAddress).ToList());
                 var sourVars = result?.Select(
           it =>
           {
@@ -79,20 +80,20 @@ namespace ThingsGateway.OPCDA
         public override async Task<OperResult<byte[]>> ReadSourceAsync(DeviceVariableSourceRead deviceVariableSourceRead, CancellationToken cancellationToken)
         {
             await Task.CompletedTask;
-            var result = _plc.ReadSub(deviceVariableSourceRead.Address);
+            var result = PLC.ReadSub(deviceVariableSourceRead.Address);
             return result.Copy<byte[]>();
         }
 
         public override async Task<OperResult> WriteValueAsync(CollectVariableRunTime deviceVariable, string value)
         {
             await Task.CompletedTask;
-            var result = _plc.Write(deviceVariable.VariableAddress, value);
+            var result = PLC.Write(deviceVariable.VariableAddress, value);
             return result;
         }
 
         protected override void Init(CollectDeviceRunTime device, object client = null)
         {
-            _device = device;
+            Device = device;
             OPCNode oPCNode = new();
             oPCNode.OPCIP = OPCIP;
             oPCNode.OPCName = OPCName;
@@ -101,12 +102,12 @@ namespace ThingsGateway.OPCDA
             oPCNode.GroupSize = GroupSize;
             oPCNode.ActiveSubscribe = ActiveSubscribe;
             oPCNode.CheckRate = CheckRate;
-            if (_plc == null)
+            if (PLC == null)
             {
-                _plc = new(TouchSocketConfig.Container.Resolve<ILog>());
-                _plc.DataChangedHandler += dataChangedHandler;
+                PLC = new(TouchSocketConfig.Container.Resolve<ILog>());
+                PLC.DataChangedHandler += dataChangedHandler;
             }
-            _plc.Init(oPCNode);
+            PLC.Init(oPCNode);
         }
 
         protected override Task<OperResult<byte[]>> ReadAsync(string address, int length, CancellationToken cancellationToken)
@@ -118,18 +119,18 @@ namespace ThingsGateway.OPCDA
         {
             try
             {
-                if (!_device.Enable)
+                if (!Device.Enable)
                 {
                     return;
                 }
-                _device.DeviceStatus = DeviceStatusEnum.OnLine;
+                Device.DeviceStatus = DeviceStatusEnum.OnLine;
 
                 if (IsLogOut)
                     _logger?.LogTrace(ToString() + " OPC值变化" + values.ToJson());
 
                 foreach (var data in values)
                 {
-                    if (!_device.Enable)
+                    if (!Device.Enable)
                     {
                         return;
                     }
@@ -148,8 +149,8 @@ namespace ThingsGateway.OPCDA
                         else
                         {
                             item.SetValue(null);
-                            _device.DeviceStatus = DeviceStatusEnum.OnLineButNoInitialValue;
-                            _device.DeviceOffMsg = $"{item.Name} 质量为Bad ";
+                            Device.DeviceStatus = DeviceStatusEnum.OnLineButNoInitialValue;
+                            Device.DeviceOffMsg = $"{item.Name} 质量为Bad ";
                         }
                     }
                 }
@@ -157,8 +158,8 @@ namespace ThingsGateway.OPCDA
             catch (Exception ex)
             {
                 _logger?.LogError(ex, ToString());
-                _device.DeviceStatus = DeviceStatusEnum.OnLineButNoInitialValue;
-                _device.DeviceOffMsg = ex.Message;
+                Device.DeviceStatus = DeviceStatusEnum.OnLineButNoInitialValue;
+                Device.DeviceOffMsg = ex.Message;
             }
         }
     }

@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
 	<PropertyGroup>
 		<LangVersion>latestMajor</LangVersion>
@@ -15,6 +15,12 @@
 		<Exec Command=" set dir=&quot;$(SolutionDir)ThingsGateway.Web.Server\bin\$(Configuration)\$(TargetFramework)\Plugins\$(AssemblyName)&quot;&#xD;&#xA; if not exist %25dir%25  md %25dir%25  &#xD;&#xA;copy &quot;$(TargetDir)*OPCDA*.dll&quot;  %25dir%25&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;" />
 	</Target>
 
+
+	<ItemGroup>
+		<PackageReference Include="Masa.Blazor" Version="1.0.0-preview.8">
+			<IncludeAssets>Compile</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\..\ThingsGateway.Web.Foundation\ThingsGateway.Web.Foundation.csproj">

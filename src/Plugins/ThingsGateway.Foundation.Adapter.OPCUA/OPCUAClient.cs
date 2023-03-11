@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 using ThingsGateway.Foundation.Extension;
 
-//https://github.com/dathlin/OpcUaHelper 修改自此代码库
+//修改自https://github.com/dathlin/OpcUaHelper 与OPC基金会net库
 
 namespace ThingsGateway.Foundation.Adapter.OPCUA;
 public class OPCUAClient : DisposableObject

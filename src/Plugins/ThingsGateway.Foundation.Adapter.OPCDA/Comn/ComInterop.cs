@@ -10,6 +10,7 @@ namespace OpcDaClient.Comn
         private static readonly Guid IID_IUnknown = new Guid("00000000-0000-0000-C000-000000000046");
 
         #region const
+
         private const uint RPC_C_AUTHN_NONE = 0;
         private const uint RPC_C_AUTHN_DCE_PRIVATE = 1;
         private const uint RPC_C_AUTHN_DCE_PUBLIC = 2;
@@ -60,23 +61,29 @@ namespace OpcDaClient.Comn
         /// The WIN32 user default locale.
         /// </summary>
         private const int LOCALE_USER_DEFAULT = 0x400;
-        #endregion
+
+        #endregion const
 
         #region struct
 
         private struct COSERVERINFO
         {
             public uint dwReserved1;
+
             [MarshalAs(UnmanagedType.LPWStr)]
             public string pwszName;
+
             public IntPtr pAuthInfo;
             public uint dwReserved2;
         };
+
         private struct MULTI_QI
         {
             public IntPtr iid;
+
             [MarshalAs(UnmanagedType.IUnknown)]
             public object pItf;
+
             public uint hr;
         }
 
@@ -85,12 +92,14 @@ namespace OpcDaClient.Comn
         {
             public uint dwAuthnSvc;
             public uint dwAuthzSvc;
+
             [MarshalAs(UnmanagedType.LPWStr)]
             public string pPrincipalName;
+
             public int hr;
         }
 
-        #endregion
+        #endregion struct
 
         #region win32 api
 
@@ -101,6 +110,7 @@ namespace OpcDaClient.Comn
                                             [In] ref COSERVERINFO pServerInfo,
                                             uint dwCount,
                                             [In, Out] MULTI_QI[] pResults);
+
         [DllImport("ole32.dll")]
         private static extern int CoInitializeSecurity(
                                                     IntPtr pSecDesc,
@@ -112,10 +122,13 @@ namespace OpcDaClient.Comn
                                                     IntPtr pAuthList,
                                                     uint dwCapabilities,
                                                     IntPtr pReserved3);
+
         [DllImport("Kernel32.dll")]
         private static extern int GetSystemDefaultLangID();
+
         [DllImport("Kernel32.dll")]
         private static extern int GetUserDefaultLangID();
+
         [DllImport("Kernel32.dll")]
         private static extern int FormatMessageW(
                                                     int dwFlags,
@@ -126,7 +139,7 @@ namespace OpcDaClient.Comn
                                                     int nSize,
                                                     IntPtr Arguments);
 
-        #endregion
+        #endregion win32 api
 
         /// <summary>
         /// 初始化COM安全。
@@ -149,6 +162,7 @@ namespace OpcDaClient.Comn
                 throw new ExternalException("CoInitializeSecurity: " + GetSystemMessage(error), error);
             }
         }
+
         /// <summary>
         /// 创建一个COM服务器的实例。
         /// </summary>
@@ -204,6 +218,7 @@ namespace OpcDaClient.Comn
             }
             return results[0].pItf;
         }
+
         public static void RealseComServer(object m_server)
         {
             if (m_server != null && m_server.GetType().IsCOMObject)
@@ -242,7 +257,6 @@ namespace OpcDaClient.Comn
                                 object o = Marshal.PtrToStructure(pos, typeof(Guid));
                                 if (o != null)
                                 {
-
                                     buffer[ii] = (Guid)o;
                                 }
                                 pos = IntPtr.Add(pos, Marshal.SizeOf(typeof(Guid)));
@@ -264,6 +278,7 @@ namespace OpcDaClient.Comn
 
             return guids.ToArray();
         }
+
         /// <summary>
         /// 从枚举器读取guid。
         /// </summary>
@@ -293,7 +308,6 @@ namespace OpcDaClient.Comn
                                 object o = Marshal.PtrToStructure(pos, typeof(Guid));
                                 if (o != null)
                                 {
-
                                     buffer[ii] = (Guid)o;
                                 }
                                 pos = IntPtr.Add(pos, Marshal.SizeOf(typeof(Guid)));
