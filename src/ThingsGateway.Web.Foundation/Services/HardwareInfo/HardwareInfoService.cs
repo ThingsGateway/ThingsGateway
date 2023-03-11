@@ -3,8 +3,6 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-using NewLife.Log;
-
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -83,7 +81,8 @@ namespace ThingsGateway.Web.Foundation
             DelayTimer30000.Elapsed += timer30000_Elapsed;
             DelayTimer30000.AutoReset = true;
             DelayTimer30000.Start();
-            Scoped.Create((factory, scope) => {
+            Scoped.Create((factory, scope) =>
+            {
                 var loggerFactory = scope.ServiceProvider.GetRequiredService<ILoggerFactory>();
                 _logger = loggerFactory.CreateLogger(nameof(HardwareInfoService));
             });

@@ -1,7 +1,6 @@
 ﻿using Furion.FriendlyException;
 using Furion.Logging.Extensions;
 
-using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -223,7 +222,7 @@ public class CollectDeviceHostService : BackgroundService
         {
             return result._driver;
         }
-     
+
     }
 
 

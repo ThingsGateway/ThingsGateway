@@ -821,7 +821,7 @@ public class OPCUAClient : DisposableObject
         DataValueCollection results = null;
         DiagnosticInfoCollection diagnosticInfos = null;
 
-        var data=m_session.Read(
+        var data = m_session.Read(
             null,
             0,
             TimestampsToReturn.Neither,
@@ -851,11 +851,11 @@ public class OPCUAClient : DisposableObject
                 // get the name of the attribute.
                 item.Name = Attributes.GetBrowseName(nodesToRead[ii].AttributeId);
 
-                
+
                 // display any unexpected error.
                 if (StatusCode.IsBad(results[ii].StatusCode))
                 {
-                    
+
                     item.Type = Utils.Format("{0}", Attributes.GetDataTypeId(nodesToRead[ii].AttributeId));
                     item.Value = Utils.Format("{0}", results[ii].StatusCode);
                 }
@@ -870,7 +870,7 @@ public class OPCUAClient : DisposableObject
                     {
                         item.Type += "[]";
                     }
-                    if(item.Name== nameof(Attributes.NodeClass))
+                    if (item.Name == nameof(Attributes.NodeClass))
                     {
                         item.Value = ((NodeClass)results[ii].Value).ToString();
                     }
@@ -879,7 +879,7 @@ public class OPCUAClient : DisposableObject
                         item.Value = ((EventNotifierType)results[ii].Value).ToString();
                     }
                     else
-                    item.Value = results[ii].Value;//Utils.Format("{0}", results[ii].Value);
+                        item.Value = results[ii].Value;//Utils.Format("{0}", results[ii].Value);
                 }
             }
 
@@ -928,7 +928,7 @@ public class OPCUAClient : DisposableObject
     /// </summary>
     /// <param name="tag">节点信息</param>
     /// <returns>节点的特性值</returns>
-    public OPCNodeAttribute[] ReadNoteAttribute(string tag,uint attributesid)
+    public OPCNodeAttribute[] ReadNoteAttribute(string tag, uint attributesid)
     {
         NodeId sourceId = new NodeId(tag);
         ReadValueIdCollection nodesToRead = new ReadValueIdCollection();

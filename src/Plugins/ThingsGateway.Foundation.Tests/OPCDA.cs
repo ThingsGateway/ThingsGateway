@@ -27,7 +27,7 @@ namespace ThingsGateway.Foundation.Tests
             info.SetTags(new List<string> { "test.40001" });
             info.DataChangedHandler += Info_DataChangedHandler;
             info.Connect();
-            var data=  info.GetBrowse();
+            var data = info.GetBrowse();
 
             Thread.Sleep(15000);
             info.Disconnect();

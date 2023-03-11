@@ -56,7 +56,7 @@ namespace ThingsGateway.Foundation.Adapter.OPCDA
         {
             return this.m_server.GetServerStatus().ToJson().FormatJson();
         }
-        public OperResult<List<BrowseElement>> GetBrowse(string itemId=null)
+        public OperResult<List<BrowseElement>> GetBrowse(string itemId = null)
         {
             return this.m_server.Browse(itemId);
         }
