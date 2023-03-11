@@ -155,7 +155,7 @@
               {
                   var userAccessLevel = (accessRights)(a.Properties.FirstOrDefault(b => b.ID.Code == 5).Value);
                   level = userAccessLevel == accessRights.readable ? userAccessLevel == accessRights.writable ?
-         ProtectTypeEnum.ReadWrite : ProtectTypeEnum.WriteOnly : ProtectTypeEnum.ReadOnly;
+         ProtectTypeEnum.WriteOnly : ProtectTypeEnum.ReadOnly : ProtectTypeEnum.ReadWrite;
               }
               catch
               {
