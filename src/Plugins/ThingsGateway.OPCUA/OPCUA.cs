@@ -23,16 +23,17 @@ namespace ThingsGateway.OPCUA
         public OPCUAClient(IServiceScopeFactory scopeFactory) : base(scopeFactory)
         {
         }
+
+        [DeviceProperty("连接Url", "")] public string OPCURL { get; set; } = "opc.tcp://127.0.0.1:49320";
+        [DeviceProperty("登录账号", "为空时将采用匿名方式登录")] public string UserName { get; set; }
+        [DeviceProperty("登录密码", "")] public string Password { get; set; }
         [DeviceProperty("激活订阅", "")] public bool ActiveSubscribe { get; set; } = true;
         [DeviceProperty("死区", "")] public float DeadBand { get; set; } = 0;
         public override Type DriverUI => typeof(ImportVariable);
         [DeviceProperty("自动分组大小", "")] public int GroupSize { get; set; } = 500;
-        [DeviceProperty("连接Url", "")] public string OPCURL { get; set; } = "opc.tcp://127.0.0.1:49320";
-        [DeviceProperty("登录密码", "")] public string Password { get; set; }
-        [DeviceProperty("心跳频率", "")] public int ReconnectPeriod { get; set; } = 5000;
         public override ThingsGatewayBitConverter ThingsGatewayBitConverter { get; } = new(EndianType.Little);
+        [DeviceProperty("重连频率", "")] public int ReconnectPeriod { get; set; } = 5000;
         [DeviceProperty("更新频率", "")] public int UpdateRate { get; set; } = 1000;
-        [DeviceProperty("登录账号", "为空时将采用匿名方式登录")] public string UserName { get; set; }
         public override void AfterStop()
         {
             PLC?.Disconnect();

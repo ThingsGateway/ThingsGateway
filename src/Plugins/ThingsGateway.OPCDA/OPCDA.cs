@@ -22,14 +22,15 @@ namespace ThingsGateway.OPCDA
         public OPCDAClient(IServiceScopeFactory scopeFactory) : base(scopeFactory)
         {
         }
+        [DeviceProperty("IP", "")] public string OPCIP { get; set; } = "localhost";
+        [DeviceProperty("OPC名称", "")] public string OPCName { get; set; } = "Kepware.KEPServerEX.V6";
         [DeviceProperty("激活订阅", "")] public bool ActiveSubscribe { get; set; } = true;
+        [DeviceProperty("更新频率", "")] public int UpdateRate { get; set; } = 1000;
         [DeviceProperty("检测重连频率", "")] public int CheckRate { get; set; } = 60000;
         [DeviceProperty("死区", "")] public float DeadBand { get; set; } = 0;
         [DeviceProperty("自动分组大小", "")] public int GroupSize { get; set; } = 500;
-        [DeviceProperty("IP", "")] public string OPCIP { get; set; } = "localhost";
-        [DeviceProperty("OPC名称", "")] public string OPCName { get; set; } = "Kepware.KEPServerEX.V6";
+
         public override ThingsGatewayBitConverter ThingsGatewayBitConverter { get; } = new(EndianType.Little);
-        [DeviceProperty("更新频率", "")] public int UpdateRate { get; set; } = 1000;
         public override void AfterStop()
         {
             PLC?.Disconnect();
