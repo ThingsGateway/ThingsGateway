@@ -364,5 +364,6 @@ FodyWeavers.xsd
 
 /src/ThingsGateway.Web.Server/Default.db
 /src/PluginPro*/
+/src/*Pro*
 /src/TestResults*/
 /src/ThingsGateway.Web.Server/ThingsGateway.db
