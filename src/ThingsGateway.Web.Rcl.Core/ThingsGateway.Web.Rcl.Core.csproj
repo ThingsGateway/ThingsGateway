@@ -18,7 +18,6 @@
 	  <None Include="wwwroot\i18n\zh-CN.json">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </None>
-	  <None Include="wwwroot\js\jsInitVariables.js" />
 	</ItemGroup>
 
 
