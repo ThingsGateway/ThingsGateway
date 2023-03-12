@@ -20,7 +20,7 @@ global using System.Diagnostics.CodeAnalysis;
 global using System.Globalization;
 global using System.Linq;
 global using System.Threading.Tasks;
+global using ThingsGateway.Web.Rcl;
 global using ThingsGateway.Web.Rcl.Core;
 global using ThingsGateway.Application;
-
 global using ThingsGateway.Core;
