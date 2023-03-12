@@ -101,7 +101,15 @@
         $"输入变量{collectVariableRunTime.Name}的写入值");
         if (confirm != null)
         {
-            await rpcCore?.InvokeDeviceMethod($"BLAZOR-{UserResoures.CurrentUser.Account}-{App.HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString()}",  new NameVaue { Name = collectVariableRunTime.Name, Value = confirm  }, true);
+            var data=   await rpcCore?.InvokeDeviceMethod($"BLAZOR-{UserResoures.CurrentUser.Account}-{App.HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString()}",  new NameVaue { Name = collectVariableRunTime.Name, Value = confirm  }, true);
+            if(data.IsSuccess)
+            {
+                await InvokeAsync(async () => await PopupService.EnqueueSnackbarAsync(data.Message, AlertTypes.Success));
+            }
+            else
+            {
+                await InvokeAsync(async () => await PopupService.EnqueueSnackbarAsync(data.Message, AlertTypes.Warning));
+            }
         }
     }
 
