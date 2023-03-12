@@ -34,8 +34,82 @@
     </MRow>
 
 </MCard>
+@if (UserManager.SuperAdmin)
+{
+    <MRow NoGutters>
+        <MCol Md=6 Cols="12">
+            <MCard MinHeight=400 Elevation="1" Class="ma-2">
+                <MCardSubtitle Class="text-subtitle-1">
+                    @T("RPC日志")
+                </MCardSubtitle>
+                <MDivider></MDivider>
+                <MTimeline AlignTop Dense>
+                    @foreach (var item in RpcLogs)
+                    {
+                        <MTimelineItem Color="primary"
+                               Small>
+                            <MRow Class="pt-1">
+                                <MCol Cols="4">
+                                    <span class="text-caption">@item.LogTime</span>
+                                </MCol>
+                                <MCol Cols="8">
+                                    <div class="mt-1 px-2 d-flex align-center justify-space-between">
+                                        <span>@item.OperateObject.Substring(0,item.OperateObject.Length>100?100:item.OperateObject.Length)</span>
+                                        <span class="text-caption">@item.Description(a=>a.OperateObject)</span>
+                                    </div>
+                                    <div class="mt-1 px-2 d-flex align-center justify-space-between">
+                                        <span>@item.OperateSource.Substring(0,item.OperateSource.Length>100?100:item.OperateSource.Length)</span>
+                                        <span class="text-caption">@item.Description(a=>a.OperateSource)</span>
+                                    </div>
+                                    <div class="mt-1 px-2 d-flex align-center justify-space-between">
+                                        <span>@item.ParamJson.Substring(0,item.ParamJson.Length>100?100:item.ParamJson.Length)</span>
+                                        <span class="text-caption">@item.Description(a=>a.ParamJson)</span>
+                                    </div>
+                                    <div class="mt-1 px-2 d-flex align-center justify-space-between">
+                                        <span>@item.ResultJson.Substring(0,item.ResultJson.Length>100?100:item.ResultJson.Length)</span>
+                                        <span class="text-caption">@item.Description(a=>a.ResultJson)</span>
+                                    </div>
 
-<MRow NoGutters >
+                                </MCol>
+                            </MRow>
+                        </MTimelineItem>
+
+                    }
+
+                </MTimeline>
+            </MCard>
+        </MCol>
+        <MCol Md=6 Cols="12">
+            <MCard MinHeight=400 Elevation="1" Class="ma-2">
+                <MCardSubtitle Class="text-subtitle-1">
+                    @T("后台日志")
+                </MCardSubtitle>
+                <MDivider></MDivider>
+                <MTimeline AlignTop Dense>
+                    @foreach (var item in RuntimeLogs)
+                    {
+                        <MTimelineItem Color="primary"
+                               Small>
+                            <MRow Class="pt-1">
+                                <MCol Cols="4">
+                                    <span class="text-caption">@item.LogTime</span>
+                                </MCol>
+                                <MCol>
+                                    <div class="text-body-1">@item.LogSource.Substring(0,item.LogSource.Length>100?100:item.LogSource.Length)</div>
+                                    <div class="text-body-1">@item.LogMessage.Substring(0,item.LogMessage.Length>100?100:item.LogMessage.Length)</div>
+                                </MCol>
+                            </MRow>
+                        </MTimelineItem>
+
+                    }
+
+                </MTimeline>
+            </MCard>
+        </MCol>
+    </MRow>
+}
+
+<MRow NoGutters>
     <MCol Md=6 Cols="12">
         <MCard MinHeight=400 Elevation="1" Class="ma-2">
             <MCardSubtitle Class="text-subtitle-1">
@@ -93,15 +167,26 @@
 </MRow>
 
 @code {
-
+    [Inject]
+    private ThingsGateway.Web.Foundation.IRpcLogService RpcLogService { get; set; }
+    [Inject]
+    private ThingsGateway.Web.Foundation.IRuntimeLogService RuntimeLogService { get; set; }
     [Inject]
     private IVisitLogService VisitLogService { get; set; }
     List<DevLogVisit> DevLogVisits;
+    List<DevLogOperate> DevLogOps;
+    List<ThingsGateway.Web.Foundation.RpcLog> RpcLogs;
+    List<ThingsGateway.Web.Foundation.RuntimeLog> RuntimeLogs;
     [Inject]
     private IOperateLogService OperateLogService { get; set; }
-    List<DevLogOperate> DevLogOps;
     protected override async Task OnInitializedAsync()
     {
+        if (UserManager.SuperAdmin)
+        {
+            RpcLogs = (await RpcLogService.Page(new() { Size = 5 })).Records.ToList();
+            RuntimeLogs = (await RuntimeLogService.Page(new() { Size = 5 })).Records.ToList();
+        }
+
         DevLogVisits = (await VisitLogService.Page(new() { Size = 5, Account = UserResoures.CurrentUser?.Account })).Records.ToList();
         DevLogOps = (await OperateLogService.Page(new() { Size = 5, Account = UserResoures.CurrentUser?.Account })).Records.ToList();
         await base.OnInitializedAsync();

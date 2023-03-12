@@ -2,6 +2,8 @@ using BlazorComponent;
 
 using Microsoft.AspNetCore.SignalR.Client;
 
+using System.Net.Http;
+
 namespace ThingsGateway.Web.Rcl
 {
     public partial class SignalR
