@@ -10,6 +10,8 @@ using System.Runtime.Loader;
 
 using ThingsGateway.Core.Extension;
 
+using TouchSocket.Core;
+
 namespace ThingsGateway.Web.Foundation;
 /// <summary>
 /// 驱动插件服务
@@ -28,6 +30,10 @@ public class PluginCore : ISingleton
     /// 插件ID/插件域
     /// </summary>
     public ConcurrentDictionary<long, AssemblyLoadContext> AssemblyLoadContexts { get; private set; } = new();
+    /// <summary>
+    /// 旧插件域
+    /// </summary>
+    public ConcurrentList<WeakReference> WeakReferences { get; private set; } = new();
     /// <summary>
     /// 插件ID/插件Type
     /// </summary>
@@ -216,17 +222,42 @@ public class PluginCore : ISingleton
 
     public void DeleteDriver(long devId, long pluginId)
     {
+        try
+        {
+            foreach (WeakReference item in WeakReferences)
+            {
+                if (item.IsAlive)
+                {
+                    GC.Collect();
+                    GC.WaitForPendingFinalizers();
+                }
+                else
+                {
+                    WeakReferences.Remove(item);
+                }
+            }
+        }
+        catch
+        {
+
+        }
+
         if (DeviceOnDriverPlugins.ContainsKey(pluginId))
         {
             DeviceOnDriverPlugins[pluginId].Remove(devId);
             if (DeviceOnDriverPlugins[pluginId].Count == 0)
             {
+                DeviceOnDriverPlugins.Remove(pluginId);
                 DriverPlugins.Remove(pluginId);
                 var assemblyLoadContext = AssemblyLoadContexts.GetValueOrDefault(pluginId);
                 if (assemblyLoadContext != null)
                 {
-                    assemblyLoadContext.Unload();
                     AssemblyLoadContexts.Remove(pluginId);
+                    WeakReference alcWeakRef = new WeakReference(assemblyLoadContext, true);
+                    WeakReferences.Add(alcWeakRef);
+                    assemblyLoadContext.Unload();
+                    GC.Collect();
+                    GC.WaitForPendingFinalizers();
                 }
             }
         }
