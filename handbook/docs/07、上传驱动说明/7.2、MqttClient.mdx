@@ -41,19 +41,46 @@ Rpc返回Json：
 
 变量Json：
 ```
-{
-  "RpcId":"testid", //RpcId
-  "Message":"操作成功",//返回消息
-  "Success":true//是否成功
-}
+
+[
+    {
+        "deviceName": "ModbusTest",
+        "rawValue": "12345",
+        "value": "12345",
+        "changeTime": "2023-03-08T08:42:36.1979048+08:00",
+        "collectTime": "2023-03-08T08:46:39.3070467+08:00",
+        "quality": 192,
+        "readExpressions": null,
+        "writeExpressions": null,
+        "intervalTime": 1000,
+        "otherMethod": null,
+        "variableAddress": "40001",
+        "name": "test40001",
+        "description": null,
+        "initialValue": null,
+        "protectTypeEnum": 1,
+        "dataTypeEnum": 7
+    }
+]
 ```
 设备Json:
 ```
-{
-  "RpcId":"testid", //RpcId
-  "Message":"操作成功",//返回消息
-  "Success":true//是否成功
-}
+[
+    {
+        "pluginName": "ThingsGateway.Modbus.ModbusTcp",
+        "deviceVariablesNum": 1,
+        "activeTime": "2023-03-08T08:46:39.2708927+08:00",
+        "deviceStatus": 1,
+        "deviceOffMsg": "",
+        "intervalTime": 0,
+        "name": "ModbusTest",
+        "description": null,
+        "enable": true,
+        "createTime": "2023-03-06T17:31:23.0562652",
+        "updateTime": "0001-01-01T00:00:00"
+    }
+]
+
 ```
 
 
