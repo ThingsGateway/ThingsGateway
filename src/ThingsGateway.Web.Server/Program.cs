@@ -13,8 +13,16 @@ namespace ThingsGateway.Web.Entry
             builder.WebHost.UseStaticWebAssets();
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             builder.Host.UseContentRoot(AppContext.BaseDirectory);
-            builder.Host.ConfigureWindowsService();
-            builder.Host.ConfigureLinuxService();
+
+            /*
+	<ItemGroup>
+	  <PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="7.0.0" />
+	  <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="7.0.0" />
+	</ItemGroup>
+             * */
+            //需要服务守护可安装
+            //builder.Host.UseWindowsService();
+            //builder.Host.UseSystemd();
 
             builder.Inject();
             var app = builder.Build();
