@@ -24,9 +24,3 @@ global using System.Threading.Tasks;
 global using ThingsGateway.Application;
 global using ThingsGateway.Core;
 
-/* 项目“ThingsGateway.Web.Rcl.Core (net7.0)”的未合并的更改
-在此之前:
-global using ThingsGateway.Application;
-在此之后:
-global using ThingsGateway.Web.Rcl;
-*/
