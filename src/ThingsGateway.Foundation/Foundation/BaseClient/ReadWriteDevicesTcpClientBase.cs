@@ -29,7 +29,10 @@
         {
             return TcpClient.ConnectAsync(ConnectTimeOut);
         }
-
+        public override void Connect()
+        {
+            TcpClient.Connect(ConnectTimeOut);
+        }
         public override void Disconnect()
         {
             TcpClient.Close();
@@ -42,6 +45,21 @@
                 if (waitingOptions == null) { waitingOptions = new WaitingOptions(); waitingOptions.ThrowBreakException = true; waitingOptions.AdapterFilter = AdapterFilter.NoneAll; }
                 await ConnectAsync();
                 ResponsedData result = await TcpClient.GetWaitingClient(waitingOptions).SendThenResponseAsync(data, TimeOut, token);
+                return OperResult.CreateSuccessResult(result.Data);
+            }
+            catch (Exception ex)
+            {
+                return new OperResult<byte[]>(ex);
+            }
+        }
+
+        public override OperResult<byte[]> SendThenResponse(byte[] data, WaitingOptions waitingOptions = null, CancellationToken token = default)
+        {
+            try
+            {
+                if (waitingOptions == null) { waitingOptions = new WaitingOptions(); waitingOptions.ThrowBreakException = true; waitingOptions.AdapterFilter = AdapterFilter.NoneAll; }
+                Connect();
+                ResponsedData result = TcpClient.GetWaitingClient(waitingOptions).SendThenResponse(data, TimeOut, token);
                 return OperResult.CreateSuccessResult(result.Data);
             }
             catch (Exception ex)

@@ -2,8 +2,6 @@
 
 using Masa.Blazor;
 
-using ThingsGateway.Application;
-
 namespace ThingsGateway.Web.Rcl.Core
 {
     /// <summary>

@@ -14,7 +14,7 @@
             "ThingsGateway.Foundation",
             "ThingsGateway.Web.Foundation",
             "ThingsGateway.Web.Page",
-
+            "BlazorComponent",
             "ThingsGateway.Web.Rcl",
             "ThingsGateway.Web.Rcl.Core",
             "ThingsGateway.Core",

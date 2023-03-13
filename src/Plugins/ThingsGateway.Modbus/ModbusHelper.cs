@@ -38,7 +38,7 @@ namespace ThingsGateway.Modbus
                         }
                         catch (Exception ex)
                         {
-                            _logger?.LogError(ex,"自动分包方法获取Bit失败" );
+                            _logger?.LogError(ex, "自动分包方法获取Bit失败");
                         }
                     }
                     item.Index = bitIndex;
@@ -105,7 +105,7 @@ namespace ThingsGateway.Modbus
             }
             catch (Exception ex)
             {
-                _logger?.LogError( ex, "自动分包失败");
+                _logger?.LogError(ex, "自动分包失败");
             }
             return OperResult.CreateSuccessResult(result);
         }

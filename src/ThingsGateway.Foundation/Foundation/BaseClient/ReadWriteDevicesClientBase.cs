@@ -21,6 +21,8 @@
         public ushort TimeOut { get; set; } = 3000;
         public ushort RegisterByteLength { get; set; } = 1;
 
+
+        public abstract void Connect();
         public abstract Task ConnectAsync();
 
         public abstract void Disconnect();
@@ -28,6 +30,7 @@
         public abstract Task<OperResult<byte[]>> ReadAsync(string address, int length, CancellationToken token = default);
 
         public abstract Task<OperResult<byte[]>> SendThenResponseAsync(byte[] data, WaitingOptions waitingOptions = null, CancellationToken token = default);
+        public abstract OperResult<byte[]> SendThenResponse(byte[] data, WaitingOptions waitingOptions = null, CancellationToken token = default);
 
         public abstract void SetDataAdapter();
 

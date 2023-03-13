@@ -6,7 +6,6 @@ using Microsoft.Extensions.Logging;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Timers;
 
 using UAParser;
 
@@ -40,7 +39,7 @@ namespace ThingsGateway.Web.Foundation
         [Description("Stage环境")]
         public string Stage { get; set; }
     }
-    public class HardwareInfoService:ISingleton
+    public class HardwareInfoService : ISingleton
     {
         public TGHardwareInfo HardwareInfo
         {
@@ -68,31 +67,26 @@ namespace ThingsGateway.Web.Foundation
             }
         }
         private readonly Hardware.Info.HardwareInfo hardwareInfo = new();
-        private System.Timers.Timer DelayTimer10000;
-        private System.Timers.Timer DelayTimer30000;
         ILogger _logger;
         public HardwareInfoService()
         {
-            DelayTimer10000 = new System.Timers.Timer(10000);
-            DelayTimer10000.Elapsed += timer10000_Elapsed;
-            DelayTimer10000.AutoReset = true;
-            DelayTimer10000.Start();
-            DelayTimer30000 = new System.Timers.Timer(30000);
-            DelayTimer30000.Elapsed += timer30000_Elapsed;
-            DelayTimer30000.AutoReset = true;
-            DelayTimer30000.Start();
             Scoped.Create((factory, scope) =>
             {
                 var loggerFactory = scope.ServiceProvider.GetRequiredService<ILoggerFactory>();
                 _logger = loggerFactory.CreateLogger(nameof(HardwareInfoService));
             });
 
-            Task.Run(() =>
-            {
-                timer10000_Elapsed(null, null);
-                timer30000_Elapsed(null, null);
-
-            });
+            _ = Task.Run(() =>
+             {
+                 while (true)
+                 {
+                     hardwareInfo.RefreshMemoryStatus();
+                     hardwareInfo.RefreshMemoryList();
+                     hardwareInfo.RefreshDriveList();
+                     hardwareInfo.RefreshNetworkAdapterList();
+                     hardwareInfo.RefreshCPUList();
+                 }
+             });
 
         }
         /// <summary>
@@ -114,34 +108,6 @@ namespace ThingsGateway.Web.Foundation
                 return "";
             }
         }
-        private void timer10000_Elapsed(object sender, ElapsedEventArgs e)
-        {
-            try
-            {
-                hardwareInfo.RefreshMemoryStatus();
-                hardwareInfo.RefreshMemoryList();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "获取硬件信息失败");
-            }
-
-        }
-        private void timer30000_Elapsed(object sender, ElapsedEventArgs e)
-        {
-            try
-            {
-                hardwareInfo.RefreshDriveList();
-                hardwareInfo.RefreshNetworkAdapterList();
-                hardwareInfo.RefreshCPUList();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "获取硬件信息失败");
-            }
-
-        }
-
 
     }
 }

@@ -21,7 +21,6 @@
                 };
             });
 
-
             //添加采集/上传后台服务
             services.AddHostedService<CollectDeviceHostService>();
             services.AddHostedService<AlarmHostService>();
