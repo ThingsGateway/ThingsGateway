@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.SignalR.Client;
 
 using System.Net.Http;
 
+using ThingsGateway.Web.Rcl.Core;
+
 namespace ThingsGateway.Web.Rcl
 {
     public partial class SignalR

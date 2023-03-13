@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.Hosting;
 
 using ThingsGateway.Core.Utils;
+using ThingsGateway.Web.Rcl.Core;
 
 namespace ThingsGateway.Web.Rcl
 {

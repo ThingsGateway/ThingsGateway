@@ -1,5 +1,6 @@
 using BlazorComponent.I18n;
 
+using ThingsGateway.Web.Rcl.Core;
 
 namespace ThingsGateway.Web.Rcl
 {
