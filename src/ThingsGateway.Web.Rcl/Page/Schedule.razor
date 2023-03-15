@@ -1,0 +1,10 @@
+@page "/schedulePage"
+@layout MainLayout
+@inherits CultureComponentBase
+@attribute [Authorize]
+@using Masa.Blazor.Presets
+@namespace ThingsGateway.Web.Rcl
+<iframe src="/schedule"
+        style="width: 100%;height: 96%;"
+        frameborder="0" scrolling="auto" id="content_iframe"></iframe>
+

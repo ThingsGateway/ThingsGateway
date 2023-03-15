@@ -9,8 +9,8 @@ namespace ThingsGateway.Web.Foundation;
 /// <summary>
 /// 清理日志作业任务
 /// </summary>
-[JobDetail("job_tglog", Description = "清理日志", GroupName = "default", Concurrent = false)]
-[Daily(TriggerId = "trigger_tglog", Description = "清理日志", RunOnStart = true)]
+[JobDetail("job_tglog", Description = "清理网关后台/Rpc日志", GroupName = "default", Concurrent = false)]
+[Daily(TriggerId = "trigger_tglog", Description = "清理网关后台/Rpc日志", RunOnStart = true)]
 public class TGLogJob : IJob
 {
     private readonly IServiceProvider _serviceProvider;
