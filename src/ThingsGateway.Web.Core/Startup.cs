@@ -31,8 +31,8 @@ namespace ThingsGateway.Web.Core
             // 任务调度看板
             app.UseScheduleUI();
 
-            // 限流服务
-            app.UseIpRateLimiting();
+            // 限流服务，自行开启
+            //app.UseIpRateLimiting();
 
             app.UseInject("api");
 
@@ -61,10 +61,10 @@ namespace ThingsGateway.Web.Core
             services.Configure<WebEncoderOptions>(options =>
             options.TextEncoderSettings = new TextEncoderSettings(UnicodeRanges.All));
 
-            // 限流服务
-            services.Configure<IpRateLimitOptions>(App.Configuration.GetSection("IpRateLimiting"));
-            services.AddInMemoryRateLimiting();
-            services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
+            // 限流服务，自行开启
+            //services.Configure<IpRateLimitOptions>(App.Configuration.GetSection("IpRateLimiting"));
+            //services.AddInMemoryRateLimiting();
+            //services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
 
             // 任务调度
             services.AddSchedule(options =>
