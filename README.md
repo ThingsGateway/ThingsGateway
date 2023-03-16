@@ -4,8 +4,7 @@
 #### 介绍
 
 基于[ThingsBlazor](https://gitee.com/diego2098/ThingsBlazor)权限管理框架开发的跨平台边缘采集网关，支持南北端插件式开发，
-动态更新插件，
-并拥有较完善的北端Rpc权限管理。
+动态更新插件，并拥有较完善的北端Rpc权限管理。
 
 
 ####  功能亮点
@@ -13,10 +12,21 @@
 - Blazor Server架构，开发部署更简单
 - 采集/上传配置完全支持Excel导入导出
 - 插件式驱动，方便驱动二次开发，并支持动态更新
-- Modbus、OPCDA、OPCUA采集插件（支持导入节点）
-- Modbus Server、Mqtt Server(Client)、OPC UAServer插件,支持Rpc写入，支持WebApi
 - 支持时序数据库存储
 - 实时/历史报警(Sql转储)，支持布尔/高低限值
+
+#### 社区版采集插件
+支持分包解析/订阅
+- Modbus
+- OPCDAClient（支持导入节点）
+- OPCUAClient（支持导入节点）
+
+#### 社区版上传插件
+支持Rpc写入
+- Modbus Server
+- Mqtt Server
+- Mqtt Client
+
 
 #### nuget
 
@@ -66,10 +76,9 @@
 
 
 
-
 ####  支持作者
  如果对您有帮助，请点击右上角⭐Star关注，感谢支持开源！
- 若希望捐赠项目，请跳转到文档站点查看捐赠码或使用Gitee捐赠功能
+ 若希望捐赠项目，请跳转到[文档站点](https://diego2098.gitee.io/thingsgateway/docs/%E6%94%AF%E6%8C%81%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE)查看捐赠码或使用Gitee捐赠功能
  
 
 ####  联系作者
