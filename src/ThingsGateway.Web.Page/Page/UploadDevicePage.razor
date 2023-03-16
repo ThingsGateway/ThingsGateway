@@ -120,7 +120,19 @@
 
     List<DriverPluginCategory> DriverPlugins;
     StringNumber tab;
-
+    private async Task DriverValueChanged(UploadDeviceEditInput context, long pluginId)
+    {
+        if (pluginId > 0)
+            context.PluginId = pluginId;
+        if (context.PluginId > 0)
+        {
+            context.DevicePropertys = GetDriverProperties(context.PluginId, context.Id);
+            await PopupService.EnqueueSnackbarAsync("插件附加属性已更新", AlertTypes.Success);
+        }
+        else
+        {
+        }
+    }
     List<DependencyProperty> GetDriverProperties(long driverId, long devId)
     {
         return this.GetBackgroundService<UploadDeviceHostService>().GetDevicePropertys(driverId, devId);
@@ -145,7 +157,8 @@
                     <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.Description />
 
                     <MSubheader Class="mt-4 font-weight-black">    @(typeof(UploadDeviceRunTime).GetDescription(nameof(UploadDeviceRunTime.PluginName)))  </MSubheader>
-                    <MCascader @bind-Value="context.PluginId" Class="mt-3 mr-3" Clearable
+                    <MCascader Value="context.PluginId" Class="mt-3 mr-3" Clearable TValue=long TItem="DriverPluginCategory"
+                           ValueChanged=@(a=>DriverValueChanged(context,a))
                            Items="DriverPlugins" ItemText="u => u.Name" ItemValue="u => u.Id" ItemChildren="u => u.Children"
                            MenuProps="@(props => { props.Auto = true; props.OffsetY = true; })"
                            ShowAllLevels="false" HideDetails="@("auto")" Height="30" Dense>
