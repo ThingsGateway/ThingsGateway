@@ -47,6 +47,7 @@ namespace ThingsGateway.RabbitMQ
         [DeviceProperty("设备队列名称", "")] public string DeviceQueueName { get; set; } = "ThingsGateway/Device";
         [DeviceProperty("是否发布List", "")] public bool IsList { get; set; } = false;
         [DeviceProperty("是否声明队列", "")] public bool IsQueueDeclare { get; set; } = false;
+        [DeviceProperty("循环间隔", "最小500ms")] public int CycleInterval { get; set; } = 1000;
 
         public string ExchangeName { get; set; } = "";
 
@@ -106,7 +107,7 @@ namespace ThingsGateway.RabbitMQ
             _globalCollectDeviceData.CollectVariables.ForEach(a =>
             {
                 a.VariableValueChange += VariableValueChange;
-                CollectVariableRunTimes.Enqueue(a);
+                VariableValueChange(a);
             });
 
 
@@ -122,17 +123,17 @@ namespace ThingsGateway.RabbitMQ
 
         private GlobalCollectDeviceData _globalCollectDeviceData;
 
-        private IntelligentConcurrentQueue<CollectVariableRunTime> CollectVariableRunTimes { get; set; } = new(10000);
-        private IntelligentConcurrentQueue<CollectDeviceRunTime> CollectDeviceRunTimes { get; set; } = new(10000);
+        private IntelligentConcurrentQueue<VariableData> CollectVariableRunTimes { get; set; } = new(10000);
+        private IntelligentConcurrentQueue<DeviceData> CollectDeviceRunTimes { get; set; } = new(10000);
 
         private void DeviceStatusCahnge(CollectDeviceRunTime collectDeviceRunTime)
         {
-            CollectDeviceRunTimes.Enqueue(collectDeviceRunTime);
+            CollectDeviceRunTimes.Enqueue(collectDeviceRunTime.Adapt<DeviceData>());
         }
 
         private void VariableValueChange(CollectVariableRunTime collectVariableRunTime)
         {
-            CollectVariableRunTimes.Enqueue(collectVariableRunTime);
+            CollectVariableRunTimes.Enqueue(collectVariableRunTime.Adapt<VariableData>());
         }
 
         public override async Task ExecuteAsync(CancellationToken cancellationToken)
@@ -145,13 +146,12 @@ namespace ThingsGateway.RabbitMQ
                 {
                     if (IsList)
                     {
-                        var list = varList.Adapt<List<VariableData>>();
-                        var listChunk = list.ChunkTrivialBetter(500);
+                        var listChunk = varList.ChunkTrivialBetter(500);
                         foreach (var variables in listChunk)
                         {
                             try
                             {
-                                var data = Encoding.UTF8.GetBytes(variables.Adapt<List<VariableData>>().ToJson());
+                                var data = Encoding.UTF8.GetBytes(variables.ToJson());
                                 // 设置消息持久化
                                 IBasicProperties properties = _model.CreateBasicProperties();
                                 properties.Persistent = true;
@@ -170,7 +170,7 @@ namespace ThingsGateway.RabbitMQ
                         {
                             try
                             {
-                                var data = Encoding.UTF8.GetBytes(variable.Adapt<VariableData>().ToJson());
+                                var data = Encoding.UTF8.GetBytes(variable.ToJson());
                                 // 设置消息持久化
                                 IBasicProperties properties = _model.CreateBasicProperties();
                                 properties.Persistent = true;
@@ -198,13 +198,12 @@ namespace ThingsGateway.RabbitMQ
                 {
                     if (IsList)
                     {
-                        var list = devList.Adapt<List<DeviceData>>();
-                        var listChunk = list.ChunkTrivialBetter(500);
+                        var listChunk = devList.ChunkTrivialBetter(500);
                         foreach (var devices in listChunk)
                         {
                             try
                             {
-                                var data = Encoding.UTF8.GetBytes(devices.Adapt<List<DeviceData>>().ToJson());
+                                var data = Encoding.UTF8.GetBytes(devices.ToJson());
                                 // 设置消息持久化
                                 IBasicProperties properties = _model.CreateBasicProperties();
                                 properties.Persistent = true;
@@ -223,7 +222,7 @@ namespace ThingsGateway.RabbitMQ
                         {
                             try
                             {
-                                var data = Encoding.UTF8.GetBytes(devices.Adapt<List<DeviceData>>().ToJson());
+                                var data = Encoding.UTF8.GetBytes(devices.ToJson());
                                 // 设置消息持久化
                                 IBasicProperties properties = _model.CreateBasicProperties();
                                 properties.Persistent = true;
@@ -244,7 +243,15 @@ namespace ThingsGateway.RabbitMQ
             {
                 _logger?.LogError(ex, ToString());
             }
-            await Task.Delay(1000);
+
+           if( CycleInterval>500+50)
+            {
+                await Task.Delay(CycleInterval-500);
+            }
+           else
+            {
+
+            }
 
         }
     }
