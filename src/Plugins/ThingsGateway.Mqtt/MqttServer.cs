@@ -71,19 +71,34 @@ namespace ThingsGateway.Mqtt
         private Task _mqttServer_LoadingRetainedMessageAsync(LoadingRetainedMessagesEventArgs arg)
         {
             //首次连接时的保留消息
-            var varMessage = new MqttApplicationMessageBuilder()
+            //分解List，避免超出mqtt字节大小限制
+            var varData = _globalCollectDeviceData.CollectVariables.Adapt<List<VariableData>>().ChunkTrivialBetter(500);
+            var devData = _globalCollectDeviceData.CollectVariables.Adapt<List<DeviceData>>().ChunkTrivialBetter(500);
+            List<MqttApplicationMessage> Messages = new();
+            foreach (var item in varData)
+            {
+                Messages.Add(new MqttApplicationMessageBuilder()
             .WithTopic($"{VariableTopic}")
-            .WithPayload(_globalCollectDeviceData.CollectVariables.Adapt<List<VariableData>>().ToJson()).Build();
-            var devMessage = new MqttApplicationMessageBuilder()
-            .WithTopic($"{DeviceTopic}")
-            .WithPayload(_globalCollectDeviceData.CollectDevices.Adapt<List<DeviceData>>().ToJson()).Build();
-            arg.LoadedRetainedMessages = new List<MqttApplicationMessage> { devMessage, varMessage };
+            .WithPayload(item.ToJson()).Build());
+            }
+            foreach (var item in devData)
+            {
+                Messages.Add(new MqttApplicationMessageBuilder()
+.WithTopic($"{DeviceTopic}")
+.WithPayload(item.ToJson()).Build());
+            }
+            arg.LoadedRetainedMessages = Messages;
             return CompletedTask.Instance;
         }
 
         private GlobalCollectDeviceData _globalCollectDeviceData;
         public override void Dispose()
         {
+            _globalCollectDeviceData.CollectVariables.ForEach(a => a.VariableValueChange -= VariableValueChange);
+            _globalCollectDeviceData.CollectDevices.ForEach(a =>
+            {
+                a.DeviceStatusCahnge -= DeviceStatusCahnge;
+            });
             _mqttServer.Dispose();
         }
         private UploadDevice _curDevice { get; set; }
@@ -102,14 +117,16 @@ namespace ThingsGateway.Mqtt
 
             using var serviceScope = _scopeFactory.CreateScope();
             _globalCollectDeviceData = serviceScope.ServiceProvider.GetService<GlobalCollectDeviceData>();
-            CollectDeviceHostService collectDeviceHostService = serviceScope.ServiceProvider.GetBackgroundService<CollectDeviceHostService>();
             _rpcCore = serviceScope.ServiceProvider.GetService<RpcCore>();
-            collectDeviceHostService.VariableValueChanges += VariableValueChange;
+        
             _globalCollectDeviceData.CollectDevices.ForEach(a =>
             {
                 a.DeviceStatusCahnge += DeviceStatusCahnge;
             });
-
+            _globalCollectDeviceData.CollectVariables.ForEach(a =>
+            {
+                a.VariableValueChange += VariableValueChange;
+            });
         }
         private IntelligentConcurrentQueue<CollectVariableRunTime> CollectVariableRunTimes { get; set; } = new(10000);
         private IntelligentConcurrentQueue<CollectDeviceRunTime> CollectDeviceRunTimes { get; set; } = new(10000);
@@ -119,9 +136,9 @@ namespace ThingsGateway.Mqtt
             CollectDeviceRunTimes.Enqueue(collectDeviceRunTime);
         }
 
-        private void VariableValueChange(List<CollectVariableRunTime> collectVariableRunTime)
+        private void VariableValueChange(CollectVariableRunTime collectVariableRunTime)
         {
-            collectVariableRunTime.ForEach(a => CollectVariableRunTimes.Enqueue(a));
+            CollectVariableRunTimes.Enqueue(collectVariableRunTime);
         }
         ConcurrentDictionary<string, string> IdWithName = new();
         private async Task _mqttServer_ValidatingConnectionAsync(ValidatingConnectionEventArgs arg)
@@ -188,13 +205,28 @@ namespace ThingsGateway.Mqtt
             {
                 ////变化推送
                 var varList = CollectVariableRunTimes.ToListWithDequeue(10000);
+
                 if (varList?.Count != 0)
                 {
-                    var variableMessage = new MqttApplicationMessageBuilder()
-                    .WithTopic($"{VariableTopic}")
-                    .WithPayload(varList.Adapt<List<VariableData>>().ToJson()).Build();
-                    await _mqttServer.InjectApplicationMessage(
-                            new InjectedMqttApplicationMessage(variableMessage));
+                    //分解List，避免超出mqtt字节大小限制
+                    var varData = varList.Adapt<List<VariableData>>().ChunkTrivialBetter(500);
+                    foreach (var item in varData)
+                    {
+                        try
+                        {
+                            var message = new MqttApplicationMessageBuilder()
+.WithTopic($"{VariableTopic}")
+.WithPayload(item.ToJson()).Build();
+                            await _mqttServer.InjectApplicationMessage(
+                                    new InjectedMqttApplicationMessage(message));
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogError(ex, ToString());
+                        }
+
+                    }
+
                 }
             }
             catch (Exception ex)
@@ -208,11 +240,25 @@ namespace ThingsGateway.Mqtt
                 var devList = CollectDeviceRunTimes.ToListWithDequeue(10000);
                 if (devList?.Count != 0)
                 {
-                    var variableMessage = new MqttApplicationMessageBuilder()
-                    .WithTopic($"{DeviceTopic}")
-                    .WithPayload(devList.Adapt<List<DeviceData>>().ToJson()).Build();
-                    await _mqttServer.InjectApplicationMessage(
-                            new InjectedMqttApplicationMessage(variableMessage));
+                    //分解List，避免超出mqtt字节大小限制
+                    var varData = devList.Adapt<List<DeviceData>>().ChunkTrivialBetter(500);
+                    foreach (var item in varData)
+                    {
+                        try
+                        {
+                            var message = new MqttApplicationMessageBuilder()
+                            .WithTopic($"{DeviceTopic}")
+                            .WithPayload(item.ToJson()).Build();
+                            await _mqttServer.InjectApplicationMessage(
+                                    new InjectedMqttApplicationMessage(message));
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogError(ex, ToString());
+                        }
+
+                    }
+
 
                 }
             }

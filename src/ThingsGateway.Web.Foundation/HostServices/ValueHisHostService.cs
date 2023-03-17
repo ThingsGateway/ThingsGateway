@@ -12,6 +12,8 @@ using ThingsGateway.Foundation;
 
 using TouchSocket.Core;
 
+using UAParser;
+
 namespace ThingsGateway.Web.Foundation;
 
 /// <summary>
@@ -264,9 +266,10 @@ public class ValueHisHostService : BackgroundService, ISingleton
     }
     internal void Start()
     {
-        foreach (var item in _globalCollectDeviceData.CollectDevices)
+        foreach (var device in _globalCollectDeviceData.CollectDevices)
         {
-            DeviceChange(item);
+            device.DeviceVariableRunTimes?.ForEach(v => { v.VariableCollectChange += DeviceVariableCollectChange; });
+            device.DeviceVariableRunTimes?.ForEach(v => { v.VariableValueChange += DeviceVariableValueChange; });
         }
         StoppingTokens.Add(new());
         Init();
@@ -280,11 +283,7 @@ public class ValueHisHostService : BackgroundService, ISingleton
         Start();
     }
 
-    private void DeviceChange(CollectDeviceRunTime device)
-    {
-        device.DeviceVariableRunTimes?.ForEach(v => { v.VariableCollectChange += DeviceVariableCollectChange; });
-        device.DeviceVariableRunTimes?.ForEach(v => { v.VariableValueChange += DeviceVariableValueChange; });
-    }
+
 
 
     private void DeviceVariableCollectChange(CollectVariableRunTime variable)

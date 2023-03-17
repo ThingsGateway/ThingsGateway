@@ -28,11 +28,7 @@
 	  </ProjectReference>
 	</ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="MQTTnet">
-      <HintPath>MQTTnet.dll</HintPath>
-    </Reference>
-  </ItemGroup>
+
 
 
 

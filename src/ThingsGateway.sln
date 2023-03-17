@@ -62,6 +62,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThingsGateway.OPCUA", "Plug
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThingsGateway.Foundation.Adapter.OPCUA", "Plugins\ThingsGateway.Foundation.Adapter.OPCUA\ThingsGateway.Foundation.Adapter.OPCUA.csproj", "{4141C657-56B0-40D9-BA52-9F53A6D9E338}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "EventSource", "EventSource", "{968A381B-E354-4089-984D-7B32DF2A470D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThingsGateway.RabbitMQ", "Plugins\ThingsGateway.EventSource\ThingsGateway.RabbitMQ.csproj", "{3AE64CCB-4291-4CEA-8698-ACE5619E24D3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -206,6 +210,14 @@ Global
 		{4141C657-56B0-40D9-BA52-9F53A6D9E338}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4141C657-56B0-40D9-BA52-9F53A6D9E338}.Release|x86.ActiveCfg = Release|Any CPU
 		{4141C657-56B0-40D9-BA52-9F53A6D9E338}.Release|x86.Build.0 = Release|Any CPU
+		{3AE64CCB-4291-4CEA-8698-ACE5619E24D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3AE64CCB-4291-4CEA-8698-ACE5619E24D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3AE64CCB-4291-4CEA-8698-ACE5619E24D3}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{3AE64CCB-4291-4CEA-8698-ACE5619E24D3}.Debug|x86.Build.0 = Debug|Any CPU
+		{3AE64CCB-4291-4CEA-8698-ACE5619E24D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3AE64CCB-4291-4CEA-8698-ACE5619E24D3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3AE64CCB-4291-4CEA-8698-ACE5619E24D3}.Release|x86.ActiveCfg = Release|Any CPU
+		{3AE64CCB-4291-4CEA-8698-ACE5619E24D3}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -232,6 +244,8 @@ Global
 		{D64E48AD-2937-4227-8270-63AEF3008374} = {D1DFBF11-65DE-49C8-9AE9-BFDFB66E129A}
 		{635B0FA6-CB7F-495A-A002-983979477916} = {D64E48AD-2937-4227-8270-63AEF3008374}
 		{4141C657-56B0-40D9-BA52-9F53A6D9E338} = {D64E48AD-2937-4227-8270-63AEF3008374}
+		{968A381B-E354-4089-984D-7B32DF2A470D} = {D1DFBF11-65DE-49C8-9AE9-BFDFB66E129A}
+		{3AE64CCB-4291-4CEA-8698-ACE5619E24D3} = {968A381B-E354-4089-984D-7B32DF2A470D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C44BAB06-0E6E-46A5-84A1-C9C94533DD4D}
