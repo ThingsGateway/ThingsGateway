@@ -50,6 +50,7 @@ namespace ThingsGateway.Mqtt
         [DeviceProperty("变量Topic", "")] public string VariableTopic { get; set; } = "ThingsGateway/Variable";
         [DeviceProperty("设备Topic", "")] public string DeviceTopic { get; set; } = "ThingsGateway/Device";
 
+        [DeviceProperty("循环间隔", "最小500ms")] public int CycleInterval { get; set; } = 1000;
 
 
         public override async Task BeforStart()
@@ -172,17 +173,17 @@ namespace ThingsGateway.Mqtt
 
         private GlobalCollectDeviceData _globalCollectDeviceData;
 
-        private IntelligentConcurrentQueue<CollectVariableRunTime> CollectVariableRunTimes { get; set; } = new(10000);
-        private IntelligentConcurrentQueue<CollectDeviceRunTime> CollectDeviceRunTimes { get; set; } = new(10000);
+        private IntelligentConcurrentQueue<VariableData> CollectVariableRunTimes { get; set; } = new(10000);
+        private IntelligentConcurrentQueue<DeviceData> CollectDeviceRunTimes { get; set; } = new(10000);
 
         private void DeviceStatusCahnge(CollectDeviceRunTime collectDeviceRunTime)
         {
-            CollectDeviceRunTimes.Enqueue(collectDeviceRunTime);
+            CollectDeviceRunTimes.Enqueue(collectDeviceRunTime.Adapt<DeviceData>());
         }
 
         private void VariableValueChange(CollectVariableRunTime collectVariableRunTime)
         {
-            CollectVariableRunTimes.Enqueue(collectVariableRunTime);
+            CollectVariableRunTimes.Enqueue(collectVariableRunTime.Adapt<VariableData>());
         }
         private EasyLock lockobj { get; set; } = new();
         private async Task<OperResult> TryMqttClient(bool reconnect = false)
@@ -302,7 +303,7 @@ namespace ThingsGateway.Mqtt
                 if (varList?.Count != 0)
                 {
                     //分解List，避免超出mqtt字节大小限制
-                    var varData = varList.Adapt<List<VariableData>>().ChunkTrivialBetter(500);
+                    var varData = varList.ChunkTrivialBetter(500);
                     foreach (var item in varData)
                     {
                         try
@@ -332,7 +333,7 @@ namespace ThingsGateway.Mqtt
                 if (devList?.Count != 0)
                 {
                     //分解List，避免超出mqtt字节大小限制
-                    var devData = devList.Adapt<List<DeviceData>>().ChunkTrivialBetter(500);
+                    var devData = devList.ChunkTrivialBetter(500);
                     foreach (var item in devData)
                     {
                         try
@@ -355,7 +356,15 @@ namespace ThingsGateway.Mqtt
             {
                 _logger?.LogError(ex, ToString());
             }
-            await Task.Delay(1000);
+
+            if (CycleInterval > 500 + 50)
+            {
+                await Task.Delay(CycleInterval - 500);
+            }
+            else
+            {
+
+            }
 
         }
     }
