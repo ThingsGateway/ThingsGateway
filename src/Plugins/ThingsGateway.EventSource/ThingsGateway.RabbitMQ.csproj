@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<LangVersion>latestMajor</LangVersion>
+		<TargetFrameworks>net6.0;net7.0</TargetFrameworks>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<GenerateDocumentationFile>False</GenerateDocumentationFile>
+		<Version>1.0.0</Version>
+		<RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+		<EnableDynamicLoading>true</EnableDynamicLoading>
+		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+	</PropertyGroup>
+
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+
+		<Exec Command=" set dir=&quot;$(SolutionDir)ThingsGateway.Web.Server\bin\$(Configuration)\$(TargetFramework)\Plugins\$(AssemblyName)&quot;&#xD;&#xA; if not exist %25dir%25  md %25dir%25  &#xD;&#xA;copy &quot;$(TargetDir)*RabbitMQ*.dll&quot;  %25dir%25&#xD;&#xA;&#xD;&#xA;" />
+	
+	</Target>
+
+	<ItemGroup>
+	  <PackageReference Include="RabbitMQ.Client" Version="6.4.0" />
+	</ItemGroup>
+
+
+  <ItemGroup>
+	  <ProjectReference Include="..\..\ThingsGateway.Web.Foundation\ThingsGateway.Web.Foundation.csproj">
+		  <IncludeAssets>Compile</IncludeAssets>
+	  </ProjectReference>
+	</ItemGroup>
+
+
+
+</Project>
