@@ -15,7 +15,7 @@ using ThingsGateway.Web.Foundation;
 
 using TouchSocket.Core;
 
-namespace ThingsGateway.EventSource
+namespace ThingsGateway.RabbitMQ
 {
     public class RabbitMQClient : UpLoadBase
     {
