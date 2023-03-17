@@ -165,7 +165,7 @@ public class CollectDeviceCore : DisposableObject
                 {
                     try
                     {
-                        await Task.Delay(500, StoppingToken.Token);
+                        await Task.Delay(100, StoppingToken.Token);
 
                         if (_driver == null) continue;
 
@@ -215,7 +215,7 @@ public class CollectDeviceCore : DisposableObject
                                         }
                                     }
 
-                                    await Task.Delay(100);
+                                    await Task.Delay(20);
 
                                 }
 
@@ -242,7 +242,7 @@ public class CollectDeviceCore : DisposableObject
                                         }
                                     }
 
-                                    await Task.Delay(100);
+                                    await Task.Delay(20);
 
                                 }
 
