@@ -136,8 +136,6 @@ public class CollectDeviceHostService : BackgroundService
     {
         if (oldDeviceRuntime?.Count > 0)
         {
-            oldDeviceRuntime.ForEach(a => a.DeviceVariableRunTimes.ForEach(b => b.VariableCollectChange -= VariableCollectChange));
-            oldDeviceRuntime.ForEach(a => a.DeviceVariableRunTimes.ForEach(b => b.VariableValueChange -= VariableValueChange));
 
 
             var alarmHostService = _scopeFactory.GetBackgroundService<AlarmHostService>();
@@ -152,22 +150,11 @@ public class CollectDeviceHostService : BackgroundService
 
     }
 
-    private void VariableValueChange(CollectVariableRunTime collectVariableRunTime)
-    {
-        if (VariableValueChanges != null)
-            CollectVariableRunTimeChangeds.Enqueue(collectVariableRunTime);
-    }
 
-    private void VariableCollectChange(CollectVariableRunTime collectVariableRunTime)
-    {
-        if (VariableCollectChanges != null)
-            CollectVariableRunTimeCollects.Enqueue(collectVariableRunTime);
-    }
 
     public void StartOtherHostService()
     {
-        CollectDeviceCores.ForEach(a => a.Device.DeviceVariableRunTimes.ForEach(b => b.VariableCollectChange += VariableCollectChange));
-        CollectDeviceCores.ForEach(a => a.Device.DeviceVariableRunTimes.ForEach(b => b.VariableValueChange += VariableValueChange));
+
 
         var alarmHostService = _scopeFactory.GetBackgroundService<AlarmHostService>();
         var valueHisHostService = _scopeFactory.GetBackgroundService<ValueHisHostService>();
@@ -286,17 +273,7 @@ public class CollectDeviceHostService : BackgroundService
         await base.StopAsync(cancellationToken);
     }
     private CancellationToken _stoppingToken;
-    private IntelligentConcurrentQueue<CollectVariableRunTime> CollectVariableRunTimeCollects { get; set; } = new(100000);
-    private IntelligentConcurrentQueue<CollectVariableRunTime> CollectVariableRunTimeChangeds { get; set; } = new(100000);
-    [Newtonsoft.Json.JsonIgnore]
-    [System.Text.Json.Serialization.JsonIgnore]
-    [AdaptIgnore]
-    public VariableCahngeListEventHandler VariableCollectChanges { get; set; }
 
-    [Newtonsoft.Json.JsonIgnore]
-    [System.Text.Json.Serialization.JsonIgnore]
-    [AdaptIgnore]
-    public VariableCahngeListEventHandler VariableValueChanges { get; set; }
     /// <summary>
     /// 变量触发变化
     /// </summary>
@@ -328,18 +305,7 @@ public class CollectDeviceHostService : BackgroundService
                 }
             }
 
-            var list1 = CollectVariableRunTimeCollects.ToListWithDequeue(100000);
-            if (list1 != null && list1.Count > 0)
-            {
-                VariableCollectChanges?.Invoke(list1);
-            }
 
-
-            var list2 = CollectVariableRunTimeChangeds.ToListWithDequeue(100000);
-            if (list2 != null && list2.Count > 0)
-            {
-                VariableValueChanges?.Invoke(list2);
-            }
 
             await Task.Delay(500, stoppingToken);
         }

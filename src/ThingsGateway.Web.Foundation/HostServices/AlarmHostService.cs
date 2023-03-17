@@ -277,7 +277,7 @@ public class AlarmHostService : BackgroundService, ISingleton
 
     internal void Stop(IEnumerable<CollectDeviceRunTime> devices = null)
     {
-
+        expressionEvaluator.PreEvaluateVariable -= ExpressionEvaluatorExtension.Evaluator_PreEvaluateVariable;
         foreach (var device in devices)
         {
             device.DeviceStatusCahnge -= DeviceStatusCahnge;
