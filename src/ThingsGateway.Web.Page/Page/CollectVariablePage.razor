@@ -153,9 +153,10 @@
                             <MCol Md=6 Cols=12 class="px-1">
                             <MSubheader Class="font-weight-black">    @context.Description(x=>x.DeviceId)  </MSubheader>
                             <MSelect Class="mr-3" @bind-Value=@context.DeviceId Outlined
-                                 Items=@(CollectDevices) Clearable OnClick=@(()=>DeviceChanged(context.DeviceId))
+                                 Items=@(CollectDevices)  OnClick=@(()=>DeviceChanged(context.DeviceId))
                                  MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
                                  ItemText=@((u) =>u.Name) ItemValue=@(u =>u.Id)
+                                 ItemDisabled="u => !u.Enable"
                                  HideDetails=@("auto") Height="30" Dense>
                             </MSelect>
                         </MCol>
