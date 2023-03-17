@@ -1,47 +1,25 @@
 ---
-id: MqttServer
-title: MqttServer
-sidebar_label: 7.1、MqttServer
+id: RabbitMQClient
+title: RabbitMQClient
+sidebar_label: 7.4、RabbitMQClient
 ---
+
 
 ### （一）设备配置
 
 | 属性           |  说明                    | 默认值/备注|
 | ---------------| --------------------------| ---|
-| 允许连接的Id(前缀)         | Mqtt客户端的连接Id需要加上此前缀，才能正常连接到网关的MqttServer  |ThingsGatewayId|
+| 账号         | 登录账号              | guest|
+| 密码         | 登录密码              | guest|
 | IP         | 连接IP              | 127.0.0.1|
-| 端口         | 连接端口              | 1883|
-| 允许Rpc写入         | 是否允许写入变量              | True |
-| Rpc写入Topic         | 客户端写入变量的发布Topic              | ThingsGateway/RpcWrite |
-| Rpc返回Topic         | 客户端写入变量的订阅Topic，返回写入结果信息              | ThingsGateway/RpcSub |
-| 变量Topic         | 变量信息订阅Topic              | ThingsGateway/Variable |
-| 设备Topic         | 设备信息订阅Topic              | ThingsGateway/Device |
+| 端口         | 连接端口              | 5672|
+| 虚拟Host         |               | / |
+|路由名称 |      |TG|
+|变量队列名称|   |ThingsGateway/Variable|
+|设备队列名称|  |ThingsGateway/Device|
+|是否发布List|  |False|
+|是否声明队列|  |False|
 
-:::tip
-
- 登录网关的MqttServer还需要配置第三方授权User，并且在客户端填写对应的UserName与Password
-
-
-![](/img/mqttserver1.png)
-
-:::
-
-RpcJson：
-```
-{
-  "Name":"tt8",//变量名称
-  "Value":"12421",//变量值
-  "RpcId":"testid"//当前RpcId
-}
-```
-Rpc返回Json：
-```
-{
-  "RpcId":"testid", //RpcId
-  "Message":"操作成功",//返回消息
-  "Success":true//是否成功
-}
-```
 
 变量Json：
 ```
@@ -86,11 +64,5 @@ Rpc返回Json：
 
 ```
 
-
-
 ### （二）变量配置
 无
-
-
-
-
