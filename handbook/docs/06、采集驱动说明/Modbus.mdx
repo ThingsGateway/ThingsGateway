@@ -5,6 +5,7 @@ sidebar_label: 6.1、Modbus驱动
 ---
 ### （一）设备配置
 
+1、Socket链路
 | 属性           |  说明                    | 默认值/备注|
 | ---------------| --------------------------| ---|
 | 连接超时时间         | 建立socket通讯的超时时间（ms）                | 3000|
@@ -15,7 +16,18 @@ sidebar_label: 6.1、Modbus驱动
 | 读写超时时间         | 读取等待中的超时时间（ms）              | 3000|
 | 连接id检测         | 是否检查modbus的事务标识符和协议标识符为一致              | Flase |
 | crc检测         | 是否检查modbus的事务标识符和协议标识符为一致              | True|
-
+2、串口链路
+| 属性           |  说明                    | 默认值/备注|
+| ---------------| --------------------------| ---|
+| 默认解析顺序         | 4个字节以上的数据解析，可设置为ABCD/BADC/CDBA/DCBA,默认ABCD |ABCD：Big-Endian<br></br>BADC：Big-Endian Byte Swap<br></br>CDAB：Little-Endian Byte Swap<br></br>DCBA：Little-Endian |
+| COM口         | COM口              | COM1|
+| 波特率         |               | 9600|
+| 数据位         |               | 8|
+| 校验位         |               | None|
+| 停止位         |               | One|
+| 默认站号         | 默认的mudbus站号id            | 1|
+| 读写超时时间         | 读取等待中的超时时间（ms）              | 3000|
+| crc检测         | 是否检查modbus的事务标识符和协议标识符为一致              | True|
 
 ### （二）变量配置
 #### 变量地址说明

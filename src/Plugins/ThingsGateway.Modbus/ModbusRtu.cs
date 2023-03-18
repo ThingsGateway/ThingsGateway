@@ -31,7 +31,7 @@ namespace ThingsGateway.Modbus
         [DeviceProperty("波特率", "通常为：38400/19200/9600/4800")] public int BaudRate { get; set; } = 9600;
         [DeviceProperty("数据位", "通常为：8/7/6")] public byte DataBits { get; set; } = 8;
         [DeviceProperty("校验位", "示例：None/Odd/Even/Mark/Space")] public Parity Parity { get; set; } = Parity.None;
-        [DeviceProperty("停止位", "示例：None/One/Two/OnePointFive")] public StopBits StopBits { get; set; } = StopBits.None;
+        [DeviceProperty("停止位", "示例：None/One/Two/OnePointFive")] public StopBits StopBits { get; set; } = StopBits.One;
 
         public override void AfterStop()
         {
