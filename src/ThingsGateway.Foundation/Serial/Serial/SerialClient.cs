@@ -542,6 +542,7 @@ namespace ThingsGateway.Foundation.Serial
                 MainSerialPort.DataReceived += this.EventArgs_DataReceived;
                 SerialReceivedEventArgs eventArgs = new();
                 ByteBlock byteBlock = BytePool.Default.GetByteBlock(this.BufferLength);
+                byteBlock.SetLength(0);
                 eventArgs.UserToken = byteBlock;
                 if (this.MainSerialPort.BytesToRead > 0)
                 {
@@ -563,6 +564,7 @@ namespace ThingsGateway.Foundation.Serial
             {
                 SerialReceivedEventArgs eventArgs = new();
                 ByteBlock byteBlock = BytePool.Default.GetByteBlock(this.BufferLength);
+                byteBlock.SetLength(0);
                 eventArgs.UserToken = byteBlock;
                 if (this.MainSerialPort.BytesToRead > 0)
                 {
@@ -825,11 +827,13 @@ namespace ThingsGateway.Foundation.Serial
                 int offset = 0;
                 int num = MainSerialPort.Read(buffer, offset, MainSerialPort.BytesToRead);
                 ByteBlock byteBlock = e.UserToken;
-                byteBlock.Write(buffer);
+                byteBlock.Write(buffer, byteBlock.Len, num);
                 this.HandleBuffer(byteBlock);
+
                 try
                 {
                     ByteBlock newByteBlock = BytePool.Default.GetByteBlock(this.BufferLength);
+                    newByteBlock.SetLength(num);
                     e.UserToken = newByteBlock;
 
                     if (MainSerialPort.BytesToRead > 0)
