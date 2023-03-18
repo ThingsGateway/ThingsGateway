@@ -2,10 +2,7 @@
 {
     public interface IReadWriteDevice : IReadWrite, IDisposable
     {
-        /// <summary>
-        /// 链接超时时间
-        /// </summary>
-        ushort ConnectTimeOut { get; set; }
+
 
         /// <summary>
         /// 多字节数据解析规则
