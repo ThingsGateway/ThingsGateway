@@ -72,28 +72,28 @@ namespace ThingsGateway.Foundation
 
         public override string ToString()
         {
-            return SerialClient.MainSerialPort.ToString();
+            return SerialClient.SerialProperty.ToString();
         }
 
         private void Opened(ISerialClient client, MsgEventArgs e)
         {
-            Logger?.Debug(client.MainSerialPort.ToString() + "连接成功");
+            Logger?.Debug(client.SerialProperty.ToString() + "连接成功");
         }
 
         private void Opening(ISerialClient client, OpeningEventArgs e)
         {
-            Logger?.Debug(client.MainSerialPort.ToString() + "正在连接");
+            Logger?.Debug(client.SerialProperty.ToString() + "正在连接");
             SetDataAdapter();
         }
 
         private void Closed(ISerialClientBase client, CloseEventArgs e)
         {
-            Logger?.Debug(client.MainSerialPort.ToString() + "断开连接-" + e.Message);
+            Logger?.Debug(client.SerialProperty.ToString() + "断开连接-" + e.Message);
         }
 
         private void Closing(ISerialClientBase client, CloseEventArgs e)
         {
-            Logger?.Debug(client.MainSerialPort.ToString() + "正在主动断开连接-" + e.Message);
+            Logger?.Debug(client.SerialProperty.ToString() + "正在主动断开连接-" + e.Message);
         }
     }
 }

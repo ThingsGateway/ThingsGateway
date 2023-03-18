@@ -12,10 +12,7 @@ namespace ThingsGateway.Foundation.Serial
         /// </summary>
         OpeningEventHandler<ISerialClient> Opening { get; set; }
 
-        /// <summary>
-        /// 串口描述
-        /// </summary>
-        SerialProperty SerialProperty { get; }
+
 
         /// <summary>
         /// 连接串口

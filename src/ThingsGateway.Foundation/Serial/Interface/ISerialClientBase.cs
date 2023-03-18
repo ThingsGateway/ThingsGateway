@@ -14,7 +14,11 @@ namespace ThingsGateway.Foundation.Serial
         /// </summary>
         bool CanSetDataHandlingAdapter { get; }
 
- 
+        /// <summary>
+        /// 串口描述
+        /// </summary>
+        SerialProperty SerialProperty { get; }
+
         TouchSocketConfig Config { get; }
 
         /// <summary>
