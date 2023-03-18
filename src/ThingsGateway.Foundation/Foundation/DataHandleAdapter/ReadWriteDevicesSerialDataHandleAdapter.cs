@@ -35,7 +35,7 @@ namespace ThingsGateway.Foundation
         protected override FilterResult Filter(ByteBlock byteBlock, bool beCached, ref TRequest request, ref int tempCapacity)
         {
             var allBytes = byteBlock.ToArray(0, byteBlock.Len);
-            Client.Logger?.Trace(Client.MainSerialPort.ToString() + Environment.NewLine + ThingsGateway.Foundation.Resources.Resource.Received + " : " + allBytes.ToHexString(" "));
+            Client.Logger?.Trace(Client.SerialProperty.ToString() + Environment.NewLine + ThingsGateway.Foundation.Resources.Resource.Received + " : " + allBytes.ToHexString(" "));
 
             //if (Request?.SendBytes == null)
             //{
@@ -125,7 +125,7 @@ namespace ThingsGateway.Foundation
             Request = GetInstance();
             Request.SendBytes = bytes;
             GoSend(bytes, 0, bytes.Length);
-            Client.Logger?.Trace(Client.MainSerialPort.ToString() + Environment.NewLine + ThingsGateway.Foundation.Resources.Resource.Send + " : " + Request.SendBytes.ToHexString(" "));
+            Client.Logger?.Trace(Client.SerialProperty.ToString() + Environment.NewLine + ThingsGateway.Foundation.Resources.Resource.Send + " : " + Request.SendBytes.ToHexString(" "));
         }
 
         protected override void PreviewSend(byte[] buffer, int offset, int length)
