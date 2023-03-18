@@ -30,7 +30,7 @@
 
 #### nuget
 
-- Modbus库，支持ModbusTcp、ModbusRtuOverTcp、ModbusUdp、ModbusServer等
+- Modbus库，支持ModbusTcp、ModbusRtu、ModbusRtuOverTcp、ModbusUdp、ModbusServer等
 ``` powershell
  dotnet add package ThingsGateway.Foundation.Adapter.Modbus
 ```
