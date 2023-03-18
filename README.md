@@ -16,16 +16,19 @@
 - 实时/历史报警(Sql转储)，支持布尔/高低限值
 
 #### 社区版采集插件
-支持分包解析/订阅
-- Modbus
+> 支持分包解析/订阅
+- Modbus(Rtu/Tcp/Udp)
 - OPCDAClient（支持导入节点）
 - OPCUAClient（支持导入节点）
 
 #### 社区版上传插件
-支持Rpc写入
+> 支持Rpc写入
 - Modbus Server
 - Mqtt Server
 - Mqtt Client
+
+> 不支持Rpc
+- RabbitMQ
 
 
 #### nuget
