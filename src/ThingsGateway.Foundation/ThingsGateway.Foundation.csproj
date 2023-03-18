@@ -6,7 +6,7 @@
 		<TargetFrameworks>net4.6.2;net6.0;net7.0</TargetFrameworks>
 		<NoWarn>SYSLIB0014;CS8981;</NoWarn>
 
-		<Version>1.0.3</Version>
+		<Version>1.0.4</Version>
 		<Title>ThingsGateway.Foundation</Title>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<Authors>Diego</Authors>
