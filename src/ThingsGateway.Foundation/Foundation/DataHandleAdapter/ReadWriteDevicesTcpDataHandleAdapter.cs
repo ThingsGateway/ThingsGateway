@@ -98,6 +98,7 @@
             {
                 byteBlock.Pos = byteBlock.Len;
                 request.ReceivedBytes = allBytes;
+                Client.Logger?.Warning(Client.GetIPPort().ToString() + unpackbytes.Message);
                 return FilterResult.Success;
             }
         }

@@ -57,8 +57,16 @@ namespace ThingsGateway.Foundation.Adapter.Modbus
         {
             try
             {
+
                 if (response[1] >= 0x80)//错误码
                     return new OperResult<byte[]>(GetDescriptionByErrorCode(response[2]));
+                if (send.Length == 0)
+                {
+                    var result= OperResult.CreateSuccessResult(GenericHelper.ArrayRemoveBegin(response, 3));
+                    result.Message = "接收数据正确，但主机并没有主动请求数据";
+                    result.ResultCode = ResultCode.Canceled;
+                    return result;
+                }
                 if (send[0] != response[0])
                     return new OperResult<byte[]>(string.Format("站号不一致", send[0], response[0]));
                 if (send[1] != response[1])

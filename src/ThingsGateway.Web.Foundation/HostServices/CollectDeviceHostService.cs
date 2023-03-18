@@ -307,7 +307,7 @@ public class CollectDeviceHostService : BackgroundService
 
 
 
-            await Task.Delay(500, stoppingToken);
+            await Task.Delay(60000, stoppingToken);
         }
     }
 
