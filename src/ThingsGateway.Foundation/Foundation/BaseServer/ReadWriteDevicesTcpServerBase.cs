@@ -22,7 +22,10 @@ namespace ThingsGateway.Foundation
         {
             throw new NotImplementedException();
         }
-
+        public override OperResult<byte[]> SendThenResponse(byte[] data, WaitingOptions waitingOptions = null, CancellationToken token = default)
+        {
+            throw new NotImplementedException();
+        }
         public override void Start()
         {
             TcpService.Start();
