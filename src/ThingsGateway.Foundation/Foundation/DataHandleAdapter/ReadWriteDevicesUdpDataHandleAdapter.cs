@@ -1,5 +1,7 @@
 ﻿using System.Net;
 
+using TouchSocket.Sockets;
+
 namespace ThingsGateway.Foundation
 {
     public abstract class ReadWriteDevicesUdpDataHandleAdapter<TRequest> : UdpDataHandlingAdapter where TRequest : class, IMessage
@@ -83,6 +85,7 @@ namespace ThingsGateway.Foundation
                 {
                     byteBlock.Pos = byteBlock.Len;
                     Request.ReceivedBytes = byteBlock.ToArray(0, byteBlock.Len);
+                    Owner.Logger?.Warning(ToString() + unpackbytes.Message);
                     GoReceived(remoteEndPoint, null, Request);
                     return;
                 }

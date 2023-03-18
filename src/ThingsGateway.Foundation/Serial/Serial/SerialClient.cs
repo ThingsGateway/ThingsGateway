@@ -23,9 +23,7 @@ namespace ThingsGateway.Foundation.Serial
         }
     }
 
-    /// <summary>
-    /// TCP客户端
-    /// </summary>
+
     public class SerialClientBase : BaseSerial, ISerialClient
     {
         static readonly Protocol SerialPortProtocol = new("SerialPort");

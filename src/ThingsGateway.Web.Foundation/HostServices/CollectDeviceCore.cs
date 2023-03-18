@@ -171,8 +171,7 @@ public class CollectDeviceCore : DisposableObject
 
                         if (Device?.Enable == false)
                         {
-                            Device.DeviceStatus = DeviceStatusEnum.OffLine;
-                            Device.DeviceOffMsg = "暂停";
+                            Device.DeviceStatus = DeviceStatusEnum.Pause;
                             continue;
                         }
                         try

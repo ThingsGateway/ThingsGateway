@@ -100,6 +100,7 @@ namespace ThingsGateway.Foundation
             {
                 byteBlock.Pos = byteBlock.Len;
                 request.ReceivedBytes = allBytes;
+                Client.Logger?.Warning(Client.SerialProperty.ToString() + unpackbytes.Message);
                 return FilterResult.Success;
             }
         }
