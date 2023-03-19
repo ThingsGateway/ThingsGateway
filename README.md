@@ -72,6 +72,7 @@
  
 #### 补充说明
 * 使用OPC相关插件时请遵循OPC基金会的授权规则
+* 使用OPCDA插件时，需安装OPC核心库，[文件地址](https://gitee.com/diego2098/ThingsGateway/attach_files)
 
 #### 开源协议
 
