@@ -20,6 +20,10 @@ namespace ThingsGateway.Core
             return secend.All(s => first.Any(f => f.Equals(s)));
         }
 
+        public static List<string> StringToList(this string str)
+        {
+            return new List<string>() { str };
+        }
         /// <summary>
         /// 分页查询
         /// </summary>

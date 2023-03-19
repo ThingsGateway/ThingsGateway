@@ -6,6 +6,8 @@ using Magicodes.ExporterAndImporter.Excel;
 
 using Microsoft.AspNetCore.Components.Forms;
 
+using NewLife;
+
 using System.IO;
 using System.Linq;
 
@@ -55,6 +57,40 @@ namespace ThingsGateway.Web.Foundation
         {
             var data = GetCacheList();
             return data.FirstOrDefault(it => it.Id == id)?.Name;
+        }
+        public List<DeviceTree> GetTree()
+        {
+            var data = GetCacheList();
+         var trees=   GetTree(data);
+            return trees;
+        }
+
+        public static List<DeviceTree> GetTree(List<CollectDevice> data)
+        {
+            Dictionary<string, DeviceTree> trees = new();
+            foreach (var item in data)
+            {
+                if (item.DeviceGroup.IsNullOrEmpty())
+                {
+                    trees.Add(item.Name, new() { Name = item.Name, Childrens = null });
+                }
+                else
+                {
+                    if (trees.ContainsKey(item.DeviceGroup))
+                    {
+                        trees[item.DeviceGroup].Childrens.Add(new() { Name = item.Name, Childrens = null });
+                    }
+                    else
+                    {
+                        trees.Add(item.DeviceGroup, new()
+                        {
+                            Name = item.DeviceGroup,
+                            Childrens = new() { new() { Name = item.Name, Childrens = null } }
+                        });
+                    }
+                }
+            }
+            return trees.Values?.ToList();
         }
 
         /// <inheritdoc/>

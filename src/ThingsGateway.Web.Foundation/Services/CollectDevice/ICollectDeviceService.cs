@@ -17,10 +17,16 @@ namespace ThingsGateway.Web.Foundation
         CollectDevice GetDeviceById(long Id);
         long? GetIdByName(string name);
         string GetNameById(long id);
+        List<DeviceTree> GetTree();
         Task Import(Dictionary<string, ImportPreviewOutputBase> input);
         Task<SqlSugarPagedList<CollectDevice>> Page(CollectDevicePageInput input);
         Task<Dictionary<string, ImportPreviewOutputBase>> Preview(IBrowserFile file);
         Task<MemoryStream> Template();
 
+    }
+    public class DeviceTree
+    {
+        public string Name { get; set; }
+        public List<DeviceTree> Childrens { get; set; } = new();
     }
 }

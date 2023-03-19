@@ -27,12 +27,7 @@ public class MemoryVariable : BaseEntity
     [SugarColumn(ColumnName = "InitialValue", ColumnDescription = "初始值", IsNullable = true)]
     [OrderData(Order = 4)]
     public string InitialValue { get; set; }
-    /// <summary>
-    /// 变量组
-    /// </summary>
-    [SugarColumn(ColumnName = "VariableGroup", ColumnDescription = "变量组", IsNullable = true)]
-    [OrderData(Order = 4)]
-    public virtual string VariableGroup { get; set; }
+
     /// <summary>
     /// 读写权限
     /// </summary>

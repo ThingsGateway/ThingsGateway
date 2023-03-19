@@ -15,6 +15,31 @@
 @implements IDisposable
 @inject UserResoures UserResoures
 @layout MainLayout
+
+<MRow>
+    <MCol Md=3 Cols="12">
+        <MCard Class="ma-2" Style="height:100%">
+            <MCardTitle>
+                <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="mx-2 my-1" @bind-Value="_searchName"
+                            Outlined Label=@typeof(CollectDevice).GetDescription(nameof(CollectDevice.DeviceGroup)) />
+                </MCardTitle>
+                <MTreeview Dense TItem="DeviceTree" TKey="string"  Active="_searchModel.DeviceName.StringToList()" OpenOnClick ActiveChanged=@((async a=>
+                       {
+                       if(this._searchModel.DeviceName!= a.FirstOrDefault())
+                       {
+                       this._searchModel.DeviceName= a.FirstOrDefault();
+                       await datatableQuery();
+                       }
+                       }) )
+                       Items="_deviceGroups" ItemText="r=>r.Name" ItemChildren="r=>r.Childrens"
+                       Search="@_searchName"
+                       Activatable ItemKey=@(r=>r.Name)>
+            </MTreeview>
+            </MCard>
+            </MCol>
+            <MCol Md=9 Cols="12">
+            <div style="height: calc(100vh - 200px)">
+
 <AppDataTable @ref="_datatable" TItem="CollectVariableRunTime" SearchItem="VariablePageInput"
               AddItem="object" EditItem="object"
               SearchModel="_searchModel"
@@ -51,8 +76,14 @@
 
 </AppDataTable>
 
+        </div>
+    </MCol>
+</MRow>
 
 @code {
+    string _searchName;
+    List<DeviceTree> _deviceGroups = new();
+
 
     [Parameter]
     [SupplyParameterFromQuery]
@@ -69,11 +100,14 @@
             _searchModel.DeviceName = DeviceName;
             await datatableQuery();
         }
+        CollectDeviceHostService = this.GetBackgroundService<CollectDeviceHostService>();
+        var data = CollectDeviceHostService.CollectDeviceCores.Select(a => a.Device).ToList();
+        _deviceGroups = CollectDeviceService.GetTree(data.Adapt<List<CollectDevice>>());
+
         await base.OnParametersSetAsync();  
     }
     protected override async Task OnInitializedAsync()
     {
-        CollectDeviceHostService = this.GetBackgroundService<CollectDeviceHostService>();
         DelayTimer = new System.Timers.Timer(1000);
         DelayTimer.Elapsed += timer_Elapsed;
         DelayTimer.AutoReset = true;
@@ -188,7 +222,7 @@
     {
         var devices = CollectDeviceHostService.CollectDeviceCores.SelectMany(it => it.Device.DeviceVariableRunTimes).ToList();
         var data = await devices
-    .WhereIf(!input.DeviceName.IsNullOrEmpty(), a => a.DeviceName.Contains(input.DeviceName))
+    .WhereIf(!input.DeviceName.IsNullOrEmpty(), a => a.DeviceName==input.DeviceName)
     .WhereIf(!input.Name.IsNullOrEmpty(), a => a.Name.Contains(input.Name)).ToList()
     .ToPagedListAsync(input);
         return data;

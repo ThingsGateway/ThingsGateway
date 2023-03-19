@@ -19,79 +19,79 @@
 <MRow>
     <MCol Md=3 Cols="12">
         <MCard Class="ma-2" Style="height:100%">
-            @* <MCardTitle>
+            <MCardTitle>
                 <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="mx-2 my-1" @bind-Value="_searchName"
                             Outlined Label=@typeof(CollectDevice).GetDescription(nameof(CollectDevice.DeviceGroup)) />
                 </MCardTitle>
-                <MTreeview Dense TItem="string" TKey="string" ActiveChanged=@(async a=>
+                <MTreeview Dense TItem="DeviceTree" TKey="string" OpenOnClick ActiveChanged=@(async a=>
                        {
-                       if(search.DeviceGroup!=a.FirstOrDefault())
+                       if(search.DeviceName!=a.FirstOrDefault())
                        {
-                       search.DeviceGroup=a.FirstOrDefault();
+                       search.DeviceName=a.FirstOrDefault();
                        await datatableQuery();
                        }
                        } )
-                       Items="_deviceGroups" ItemText="r=>r" ItemChildren="r=>null"
+                       Items="_deviceGroups" ItemText="r=>r.Name" ItemChildren="r=>r.Childrens"
                        Search="@_searchName"
-                       Activatable ItemKey=@(r=>r)>
-            </MTreeview>*@
+                       Activatable ItemKey=@(r=>r.Name)>
+            </MTreeview>
             </MCard>
             </MCol>
             <MCol Md=9 Cols="12">
             <div style="height: calc(100vh - 200px)">
 
-<AppDataTable @ref="_datatable" TItem="CollectDeviceVariable" SearchItem="VariablePageInput"
-              AddItem="VariableAddInput" EditItem="VariableEditInput"
-              IsMenuOperTemplate=false
-              QueryCall="QueryCall" AddCall="AddCall" EditCall="EditCall" DeleteCall="DeleteCall"
-              FilterHeaders="FilterHeaders" Filters="Filters" ShowDetailButton
-                ShowQueryButton
-              ShowAddButton=@UserResoures.IsHasButtonWithRole("tgvariableadd")
-              ShowDeleteButton=@UserResoures.IsHasButtonWithRole("tgvariabledelete")
-              ShowEditButton=@UserResoures.IsHasButtonWithRole("tgvariableedit")>
-    <SearchTemplate>
-        <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="my-1  mx-2 " @bind-Value="context.Name" Clearable
-                        Outlined Label=@context.Description(x => x.Name) />
-        <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="my-1  mx-2 " @bind-Value="context.DeviceName" Clearable
-                        Outlined Label=@context.Description(x => x.DeviceName) />
-    </SearchTemplate>
-    <OtherToolbarTemplate>
+                <AppDataTable @ref="_datatable" TItem="CollectDeviceVariable" SearchItem="VariablePageInput"
+                          AddItem="VariableAddInput" EditItem="VariableEditInput"
+                          IsMenuOperTemplate=false SearchModel="search"
+                          QueryCall="QueryCall" AddCall="AddCall" EditCall="EditCall" DeleteCall="DeleteCall"
+                          FilterHeaders="FilterHeaders" Filters="Filters" ShowDetailButton
+                                ShowQueryButton
+                          ShowAddButton=@UserResoures.IsHasButtonWithRole("tgvariableadd")
+                          ShowDeleteButton=@UserResoures.IsHasButtonWithRole("tgvariabledelete")
+                          ShowEditButton=@UserResoures.IsHasButtonWithRole("tgvariableedit")>
+                <SearchTemplate>
+                    <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="my-1  mx-2 " @bind-Value="context.Name" Clearable
+                                        Outlined Label=@context.Description(x => x.Name) />
+                    <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="my-1  mx-2 " @bind-Value="context.VariableAddress" Clearable
+                                        Outlined Label=@context.Description(x => x.VariableAddress) />
+                </SearchTemplate>
+                <OtherToolbarTemplate>
 
-        <MButton Class="my-1  mx-2" Loading=@isDownExport OnClick=DownDeviceExport Color="primary">
-            @T("导出")
-        </MButton>
+                    <MButton Class="my-1  mx-2" Loading=@isDownExport OnClick=DownDeviceExport Color="primary">
+                        @T("导出")
+                    </MButton>
 
-        <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("tgvariableedit")) Class="my-1  mx-2" OnClick="()=>{ ImportExcel.Step=1;  ImportExcel.IsShowImport=true;}" Color="primary">
-            @T("导入")
-        </MButton>
-        <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("tgvariableedit")) Class="my-1  mx-2" OnClick=Clear Color="primary">
-            @T("清空")
-        </MButton>
-    </OtherToolbarTemplate>
-    <AddTemplate>
-        @{
-            var data = CollectDevices.FirstOrDefault();
-            context.DeviceId = context.DeviceId == 0 ? data == null ? 0 : data.Id : context.DeviceId;
-        }
-        @GetRenderFragment(context)
-    </AddTemplate>
-    <EditTemplate>
-        @GetRenderFragment(context)
-    </EditTemplate>
-    <ItemColTemplate>
-        @switch (context.Header.Value)
-        {
-            case nameof(context.Item.DeviceId):
-                <span>@CollectDeviceService.GetNameById(context.Item.DeviceId)</span>
-                break;
-            default:
-                @context.Value
-                break;
+                    <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("tgvariableedit")) Class="my-1  mx-2" OnClick="()=>{ ImportExcel.Step=1;  ImportExcel.IsShowImport=true;}" Color="primary">
+                        @T("导入")
+                    </MButton>
+                    <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("tgvariableedit")) Class="my-1  mx-2" OnClick=Clear Color="primary">
+                        @T("清空")
+                    </MButton>
+                </OtherToolbarTemplate>
+                <AddTemplate>
+                    @{
+                        var data = CollectDevices.FirstOrDefault();
+                        context.DeviceId = context.DeviceId == 0 ? data == null ? 0 : data.Id : context.DeviceId;
+                    }
+                    @GetRenderFragment(context)
+                </AddTemplate>
+                <EditTemplate>
+                    @GetRenderFragment(context)
+                </EditTemplate>
+                <ItemColTemplate>
+                    @switch (context.Header.Value)
+                    {
+                        case nameof(context.Item.DeviceId):
+                            <span>@CollectDeviceService.GetNameById(context.Item.DeviceId)</span>
+                            break;
+                        default:
+                            @context.Value
+                            break;
 
-        }
+                    }
 
-    </ItemColTemplate>
-</AppDataTable>
+                </ItemColTemplate>
+            </AppDataTable>
 
 
         </div>
@@ -103,6 +103,10 @@
 
 
 @code {
+
+    private VariablePageInput search = new();
+
+
     ImportExcel ImportExcel;
     async Task SaveDeviceImport(Dictionary<string, ImportPreviewOutputBase> data)
     {
@@ -144,7 +148,7 @@
     StringNumber tab;
     List<CollectDevice> CollectDevices = new();
     List<UploadDevice> UploadDevices = new();
-    List<string> OtherMethods=new();
+    List<string> OtherMethods = new();
     void DeviceChanged(long devId)
     {
         if (devId > 0)
@@ -180,13 +184,10 @@
                             <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.Description />
                             </MCol>
 
-                            <MSubheader Class="mt-4 font-weight-black">    @(context.Description(x => x.VariableGroup))  </MSubheader>
-                        <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.VariableGroup />
-
                             <MCol Md=6 Cols=12 class="px-1">
                             <MSubheader Class="font-weight-black">    @context.Description(x=>x.DeviceId)  </MSubheader>
                             <MSelect Class="mr-3" @bind-Value=@context.DeviceId Outlined
-                                 Items=@(CollectDevices)  OnClick=@(()=>DeviceChanged(context.DeviceId))
+                                 Items=@(CollectDevices) OnClick=@(()=>DeviceChanged(context.DeviceId))
                                  MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
                                  ItemText=@((u) =>u.Name) ItemValue=@(u =>u.Id)
                                  ItemDisabled="u => !u.Enable"
@@ -198,7 +199,6 @@
                             <MSubheader Class="font-weight-black">    @(context.Description(x => x.VariableAddress))  </MSubheader>
                             <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.VariableAddress />
                             </MCol>
-
 
                             <MCol Md=6 Cols=12 class="px-1">
                             <MSubheader Class="font-weight-black">    @(context.Description(x => x.IntervalTime))  </MSubheader>
@@ -267,7 +267,7 @@
                 <MCard Flat Class="ma-2">
                     <MRow NoGutters Class="my-2" Justify="JustifyTypes.Center">
 
-                            <MCol Md=12 Cols=12 class="px-1 py-2">
+                        <MCol Md=12 Cols=12 class="px-1 py-2">
                             <MDivider Center Height="2"></MDivider>
                             </MCol>
 
@@ -530,6 +530,9 @@
     }
 }
 @code {
+    string _searchName;
+    List<DeviceTree> _deviceGroups = new();
+
     long choiceUploadDeviceId;
     List<DependencyProperty> GetDriverProperties(long driverId, List<DependencyProperty> dependencyProperties)
     {

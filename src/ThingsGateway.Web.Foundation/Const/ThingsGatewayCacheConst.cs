@@ -15,6 +15,10 @@ namespace ThingsGateway.Web.Foundation
         /// 设备变量Id
         /// </summary>
         public const string Cache_DeviceVariableId = CacheConst.Cache_Prefix_Web + "DeviceVariableId";
+        /// <summary>
+        /// 设备变量组
+        /// </summary>
+        public const string Cache_DeviceVariableGroup = CacheConst.Cache_Prefix_Web + "DeviceVariableGroup";
 
 
 

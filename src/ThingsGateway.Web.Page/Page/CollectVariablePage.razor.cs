@@ -6,6 +6,7 @@ namespace ThingsGateway.Web.Page
     {
         private IAppDataTable _datatable;
 
+
         [CascadingParameter]
         MainLayout MainLayout { get; set; }
 
@@ -23,6 +24,7 @@ namespace ThingsGateway.Web.Page
         {
             CollectDevices = CollectDeviceService.GetCacheList();
             UploadDevices = UploadDeviceService.GetCacheList();
+            _deviceGroups = CollectDeviceService.GetTree();
 
             await base.OnParametersSetAsync();
         }
