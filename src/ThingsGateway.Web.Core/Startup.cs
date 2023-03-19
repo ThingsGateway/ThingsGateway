@@ -58,8 +58,8 @@ namespace ThingsGateway.Web.Core
             // 允许跨域
             services.AddCorsAccessor();
 
-            //services.Configure<WebEncoderOptions>(options =>
-            //options.TextEncoderSettings = new TextEncoderSettings(UnicodeRanges.All));
+            services.Configure<WebEncoderOptions>(options =>
+            options.TextEncoderSettings = new TextEncoderSettings(UnicodeRanges.All));
 
             // 限流服务，自行开启
             //services.Configure<IpRateLimitOptions>(App.Configuration.GetSection("IpRateLimiting"));
