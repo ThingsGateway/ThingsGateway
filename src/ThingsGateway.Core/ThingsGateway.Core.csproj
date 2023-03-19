@@ -15,6 +15,7 @@
 		<PackageReference Include="NewLife.Core" Version="10.2.2023.301" />
 		<PackageReference Include="UAParser" Version="3.1.47" />
 		<PackageReference Include="Yitter.IdGenerator" Version="1.0.14" />
+		<PackageReference Include="Microsoft.Data.Sqlite" Version="7.0.4" />
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="Furion.Extras.Authentication.JwtBearer" Version="4.8.7.11" />
