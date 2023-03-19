@@ -52,6 +52,9 @@ namespace ThingsGateway.Application
         public string DeviceName { get; set; }
         [Description("变量地址")]
         public string VariableAddress { get; set; }
+
+
+
     }
 
 
@@ -119,11 +122,7 @@ namespace ThingsGateway.Application
         [ImporterHeader(Name = "描述")]
         public string Description { get; set; }
 
-        /// <summary>
-        /// 变量组
-        /// </summary>
-        [ImporterHeader(Name = "变量组")]
-        public string VariableGroup { get; set; }
+
         /// <summary>
         /// 初始值
         /// </summary>
@@ -356,11 +355,7 @@ namespace ThingsGateway.Application
         [ExporterHeader(DisplayName = "描述")]
         public string Description { get; set; }
 
-        /// <summary>
-        /// 变量组
-        /// </summary>
-        [ExporterHeader(DisplayName = "变量组")]
-        public string VariableGroup { get; set; }
+
 
         /// <summary>
         /// 变量地址，可能带有额外的信息，比如<see cref="DataFormat"/> ，以;分割

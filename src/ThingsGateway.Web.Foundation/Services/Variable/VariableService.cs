@@ -1,4 +1,5 @@
 ﻿using Furion.FriendlyException;
+using Furion.LinqBuilder;
 
 using Magicodes.ExporterAndImporter.Core;
 using Magicodes.ExporterAndImporter.Core.Models;
@@ -117,6 +118,7 @@ namespace ThingsGateway.Web.Foundation
         /// <inheritdoc />
         public void DeleteVariableFromCache(List<long> ids = null)
         {
+            _sysCacheService.RemoveByPrefixKey(ThingsGatewayCacheConst.Cache_DeviceVariableGroup);
             if (ids == null)
             {
                 _sysCacheService.RemoveByPrefixKey(ThingsGatewayCacheConst.Cache_DeviceVariableId);
