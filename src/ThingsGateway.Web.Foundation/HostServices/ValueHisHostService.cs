@@ -12,8 +12,6 @@ using ThingsGateway.Foundation;
 
 using TouchSocket.Core;
 
-using UAParser;
-
 namespace ThingsGateway.Web.Foundation;
 
 /// <summary>

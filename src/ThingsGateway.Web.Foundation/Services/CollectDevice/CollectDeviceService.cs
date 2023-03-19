@@ -61,7 +61,7 @@ namespace ThingsGateway.Web.Foundation
         public List<DeviceTree> GetTree()
         {
             var data = GetCacheList();
-         var trees=   GetTree(data);
+            var trees = GetTree(data);
             return trees;
         }
 
@@ -135,7 +135,7 @@ namespace ThingsGateway.Web.Foundation
             }
             var query = Context.Queryable<CollectDevice>()
              .WhereIF(!string.IsNullOrEmpty(input.Name), u => u.Name.Contains(input.Name))
-             .WhereIF(!string.IsNullOrEmpty(input.DeviceGroup), u => u.DeviceGroup==input.DeviceGroup)
+             .WhereIF(!string.IsNullOrEmpty(input.DeviceGroup), u => u.DeviceGroup == input.DeviceGroup)
              .WhereIF(!string.IsNullOrEmpty(input.PluginName), u => u.PluginId == (pluginid ?? 0))
              .OrderByIF(!string.IsNullOrEmpty(input.SortField), $"{input.SortField} {input.SortOrder}")
              .OrderBy(u => u.Id)//排序

@@ -13,6 +13,6 @@
 
         public abstract void SetDataAdapter(SocketClient client);
 
-      
+
     }
 }

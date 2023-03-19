@@ -244,11 +244,11 @@ namespace ThingsGateway.RabbitMQ
                 _logger?.LogError(ex, ToString());
             }
 
-           if( CycleInterval>500+50)
+            if (CycleInterval > 500 + 50)
             {
-                await Task.Delay(CycleInterval-500);
+                await Task.Delay(CycleInterval - 500);
             }
-           else
+            else
             {
 
             }

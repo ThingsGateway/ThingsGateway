@@ -9,8 +9,6 @@ using System.Timers;
 using ThingsGateway.Foundation.Extension;
 using ThingsGateway.Foundation.Extension.Json;
 
-using TouchSocket.Core;
-
 using Timer = System.Timers.Timer;
 
 //部分非托管交互代码来自https://gitee.com/Zer0Day/opc-client与OPC基金会opcnet库，更改部分逻辑

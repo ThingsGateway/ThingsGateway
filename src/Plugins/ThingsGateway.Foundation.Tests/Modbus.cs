@@ -158,7 +158,7 @@ namespace ThingsGateway.Foundation.Tests
         private void ModbusRtuClient()
         {
             config = new TouchSocketConfig();
-            config.SetSerialProperty(new() { PortName="COM6"})
+            config.SetSerialProperty(new() { PortName = "COM6" })
     .SetBufferLength(300);
             //‘ÿ»Î≈‰÷√
             serialClient = config.Container.Resolve<SerialClient>();

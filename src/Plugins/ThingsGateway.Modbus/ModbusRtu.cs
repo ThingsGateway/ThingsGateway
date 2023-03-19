@@ -53,12 +53,13 @@ namespace ThingsGateway.Modbus
         {
             if (client == null)
             {
-                TouchSocketConfig.SetSerialProperty(new() { 
-                    PortName= PortName,
-                    BaudRate= BaudRate,
-                    DataBits= DataBits,
-                    Parity= Parity,
-                    StopBits= StopBits,
+                TouchSocketConfig.SetSerialProperty(new()
+                {
+                    PortName = PortName,
+                    BaudRate = BaudRate,
+                    DataBits = DataBits,
+                    Parity = Parity,
+                    StopBits = StopBits,
                 })
                     .SetBufferLength(1024);
                 client = TouchSocketConfig.Container.Resolve<SerialClient>();

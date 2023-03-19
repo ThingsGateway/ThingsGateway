@@ -1,7 +1,5 @@
 ﻿using System.Net;
 
-using TouchSocket.Sockets;
-
 namespace ThingsGateway.Foundation
 {
     public abstract class ReadWriteDevicesUdpDataHandleAdapter<TRequest> : UdpDataHandlingAdapter where TRequest : class, IMessage
