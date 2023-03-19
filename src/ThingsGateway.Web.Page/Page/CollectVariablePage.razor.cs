@@ -21,8 +21,8 @@ namespace ThingsGateway.Web.Page
         IUploadDeviceService UploadDeviceService { get; set; }
         protected override async Task OnParametersSetAsync()
         {
-            CollectDevices = CollectDeviceService.GetCacheListAsync();
-            UploadDevices = UploadDeviceService.GetCacheListAsync();
+            CollectDevices = CollectDeviceService.GetCacheList();
+            UploadDevices = UploadDeviceService.GetCacheList();
 
             await base.OnParametersSetAsync();
         }

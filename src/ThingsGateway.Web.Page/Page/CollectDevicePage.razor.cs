@@ -5,6 +5,7 @@ namespace ThingsGateway.Web.Page
     public partial class CollectDevicePage
     {
         private IAppDataTable _datatable;
+        private CollectDevicePageInput search = new();
 
 
         [CascadingParameter]
@@ -20,12 +21,14 @@ namespace ThingsGateway.Web.Page
         protected override async Task OnParametersSetAsync()
         {
             DriverPlugins = DriverPluginService.GetDriverPluginChildrenList(DriverEnum.Collect);
+            _deviceGroups = CollectDeviceService.GetCacheList()?.Select(a => a.DeviceGroup)?.Where(a => a != null).Distinct()?.ToList();
             await base.OnParametersSetAsync();
         }
 
         private async Task AddCall(CollectDeviceAddInput input)
         {
             await CollectDeviceService.Add(input);
+            _deviceGroups = CollectDeviceService.GetCacheList()?.Select(a => a.DeviceGroup)?.Where(a => a != null).Distinct()?.ToList();
         }
         private async Task datatableQuery()
         {
@@ -36,11 +39,14 @@ namespace ThingsGateway.Web.Page
         {
             await CollectDeviceService.Delete(input.ToList().ConvertAll(it => new BaseIdInput()
             { Id = it.Id }));
+            _deviceGroups = CollectDeviceService.GetCacheList()?.Select(a => a.DeviceGroup)?.Where(a => a != null).Distinct()?.ToList();
         }
 
         private async Task EditCall(CollectDeviceEditInput input)
         {
             await CollectDeviceService.Edit(input);
+            _deviceGroups = CollectDeviceService.GetCacheList()?.Select(a => a.DeviceGroup)?.Where(a => a != null).Distinct()?.ToList();
+
         }
 
         private void FilterHeaders(List<DataTableHeader<CollectDevice>> datas)

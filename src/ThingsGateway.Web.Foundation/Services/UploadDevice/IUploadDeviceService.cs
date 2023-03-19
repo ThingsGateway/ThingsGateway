@@ -12,7 +12,7 @@ namespace ThingsGateway.Web.Foundation
         Task Delete(List<BaseIdInput> input);
         Task Edit(UploadDeviceEditInput input);
         Task<MemoryStream> ExportFile();
-        List<UploadDevice> GetCacheListAsync();
+        List<UploadDevice> GetCacheList();
         UploadDevice GetDeviceById(long Id);
         long? GetIdByName(string name);
         string GetNameById(long id);

@@ -47,13 +47,13 @@ namespace ThingsGateway.Web.Foundation
         /// <inheritdoc/>
         public long? GetIdByName(string name)
         {
-            var data = GetCacheListAsync();
+            var data = GetCacheList();
             return data.FirstOrDefault(it => it.Name == name)?.Id;
         }
         /// <inheritdoc/>
         public string GetNameById(long id)
         {
-            var data = GetCacheListAsync();
+            var data = GetCacheList();
             return data.FirstOrDefault(it => it.Id == id)?.Name;
         }
 
@@ -107,10 +107,10 @@ namespace ThingsGateway.Web.Foundation
         /// <inheritdoc/>
         public UploadDevice GetDeviceById(long Id)
         {
-            var data = GetCacheListAsync();
+            var data = GetCacheList();
             return data.FirstOrDefault(it => it.Id == Id);
         }
-        public List<UploadDevice> GetCacheListAsync()
+        public List<UploadDevice> GetCacheList()
         {
             //先从Cache拿
             var collectDevice = _sysCacheService.Get<List<UploadDevice>>(ThingsGatewayCacheConst.Cache_UploadDevice, "");
@@ -133,7 +133,7 @@ namespace ThingsGateway.Web.Foundation
         {
             if (devId == 0)
             {
-                var devices = GetCacheListAsync();
+                var devices = GetCacheList();
                 var runtime = devices.Adapt<List<UploadDeviceRunTime>>();
                 using var serviceScope = _scopeFactory.CreateScope();
                 var variableService = serviceScope.ServiceProvider.GetService<IVariableService>();
@@ -146,7 +146,7 @@ namespace ThingsGateway.Web.Foundation
             }
             else
             {
-                var devices = GetCacheListAsync();
+                var devices = GetCacheList();
                 devices = devices.Where(it => it.Id == devId).ToList();
                 var runtime = devices.Adapt<List<UploadDeviceRunTime>>();
                 using var serviceScope = _scopeFactory.CreateScope();
@@ -176,7 +176,7 @@ namespace ThingsGateway.Web.Foundation
         [OperDesc("导出上传设备表", IsRecordPar = false)]
         public async Task<MemoryStream> ExportFile()
         {
-            var devDatas = GetCacheListAsync();
+            var devDatas = GetCacheList();
 
             var devExports = devDatas.Adapt<List<UploadDeviceExport>>();
             //需要手动改正插件名称

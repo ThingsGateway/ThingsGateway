@@ -33,11 +33,9 @@ namespace ThingsGateway.Application
         [Description("设备名称")]
         public string Name { get; set; }
         [Description("插件名称")]
-        public string PluginName
-        {
-            get;
-            set;
-        }
+        public string PluginName { get; set; }
+        [Description("设备组")]
+        public string DeviceGroup { get; set; }
     }
 
 

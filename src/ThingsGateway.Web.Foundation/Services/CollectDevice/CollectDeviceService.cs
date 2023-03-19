@@ -47,13 +47,13 @@ namespace ThingsGateway.Web.Foundation
         /// <inheritdoc/>
         public long? GetIdByName(string name)
         {
-            var data = GetCacheListAsync();
+            var data = GetCacheList();
             return data.FirstOrDefault(it => it.Name == name)?.Id;
         }
         /// <inheritdoc/>
         public string GetNameById(long id)
         {
-            var data = GetCacheListAsync();
+            var data = GetCacheList();
             return data.FirstOrDefault(it => it.Id == id)?.Name;
         }
 
@@ -99,6 +99,7 @@ namespace ThingsGateway.Web.Foundation
             }
             var query = Context.Queryable<CollectDevice>()
              .WhereIF(!string.IsNullOrEmpty(input.Name), u => u.Name.Contains(input.Name))
+             .WhereIF(!string.IsNullOrEmpty(input.DeviceGroup), u => u.DeviceGroup==input.DeviceGroup)
              .WhereIF(!string.IsNullOrEmpty(input.PluginName), u => u.PluginId == (pluginid ?? 0))
              .OrderByIF(!string.IsNullOrEmpty(input.SortField), $"{input.SortField} {input.SortOrder}")
              .OrderBy(u => u.Id)//排序
@@ -111,10 +112,10 @@ namespace ThingsGateway.Web.Foundation
         /// <inheritdoc/>
         public CollectDevice GetDeviceById(long Id)
         {
-            var data = GetCacheListAsync();
+            var data = GetCacheList();
             return data.FirstOrDefault(it => it.Id == Id);
         }
-        public List<CollectDevice> GetCacheListAsync()
+        public List<CollectDevice> GetCacheList()
         {
             //先从Cache拿
             var collectDevice = _sysCacheService.Get<List<CollectDevice>>(ThingsGatewayCacheConst.Cache_CollectDevice, "");
@@ -137,7 +138,7 @@ namespace ThingsGateway.Web.Foundation
         {
             if (devId == 0)
             {
-                var devices = GetCacheListAsync();
+                var devices = GetCacheList();
                 var runtime = devices.Adapt<List<CollectDeviceRunTime>>();
                 using var serviceScope = _scopeFactory.CreateScope();
                 var variableService = serviceScope.ServiceProvider.GetService<IVariableService>();
@@ -152,7 +153,7 @@ namespace ThingsGateway.Web.Foundation
             }
             else
             {
-                var devices = GetCacheListAsync();
+                var devices = GetCacheList();
                 devices = devices.Where(it => it.Id == devId).ToList();
                 var runtime = devices.Adapt<List<CollectDeviceRunTime>>();
                 using var serviceScope = _scopeFactory.CreateScope();
@@ -184,7 +185,7 @@ namespace ThingsGateway.Web.Foundation
         [OperDesc("导出采集设备表", IsRecordPar = false)]
         public async Task<MemoryStream> ExportFile()
         {
-            var devDatas = GetCacheListAsync();
+            var devDatas = GetCacheList();
 
             var devExports = devDatas.Adapt<List<CollectDeviceExport>>();
             //需要手动改正插件名称
