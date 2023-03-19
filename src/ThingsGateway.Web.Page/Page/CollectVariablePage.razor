@@ -150,6 +150,9 @@
                             <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.Description />
                             </MCol>
 
+                            <MSubheader Class="mt-4 font-weight-black">    @(context.Description(x => x.VariableGroup))  </MSubheader>
+                        <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.VariableGroup />
+
                             <MCol Md=6 Cols=12 class="px-1">
                             <MSubheader Class="font-weight-black">    @context.Description(x=>x.DeviceId)  </MSubheader>
                             <MSelect Class="mr-3" @bind-Value=@context.DeviceId Outlined

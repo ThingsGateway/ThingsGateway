@@ -75,7 +75,11 @@ namespace ThingsGateway.Application
         /// </summary>
         [ImporterHeader(Name = "使能")]
         public virtual bool Enable { get; set; }
-
+        /// <summary>
+        /// 设备组
+        /// </summary>
+        [ImporterHeader(Name = "设备组")]
+        public virtual string DeviceGroup { get; set; }
         /// <summary>
         /// 输出日志
         /// </summary>
@@ -117,6 +121,11 @@ namespace ThingsGateway.Application
         /// </summary>
         [ExporterHeader(DisplayName = "使能")]
         public virtual bool Enable { get; set; }
+        /// <summary>
+        /// 设备组
+        /// </summary>
+        [ExporterHeader(DisplayName = "设备组")]
+        public virtual string DeviceGroup { get; set; }
         /// <summary>
         /// 输出日志
         /// </summary>

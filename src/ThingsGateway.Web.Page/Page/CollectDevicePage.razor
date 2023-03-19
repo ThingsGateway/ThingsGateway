@@ -168,6 +168,8 @@
                     <MSubheader Class="mt-4 font-weight-black">    @(context.Description(x => x.Enable))  </MSubheader>
                     <EnableSwitch @bind-Value=@context.Enable />
 
+                    <MSubheader Class="mt-4 font-weight-black">    @(context.Description(x => x.DeviceGroup))  </MSubheader>
+                    <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.DeviceGroup />
 
                     <MSubheader Class="mt-4 font-weight-black">    @(context.Description(x => x.IsLogOut))  </MSubheader>
                     <EnableSwitch @bind-Value=@context.IsLogOut />

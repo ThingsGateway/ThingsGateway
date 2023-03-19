@@ -37,6 +37,13 @@ public class UploadDevice : BaseEntity
     public virtual bool Enable { get; set; }
 
     /// <summary>
+    /// 设备组
+    /// </summary>
+    [SugarColumn(ColumnName = "DeviceGroup", ColumnDescription = "设备组", IsNullable = true)]
+    [OrderData(Order = 3)]
+    public virtual string DeviceGroup { get; set; }
+
+    /// <summary>
     /// 输出日志
     /// </summary>
     [SugarColumn(ColumnName = "IsLogOut", ColumnDescription = "输出日志")]
