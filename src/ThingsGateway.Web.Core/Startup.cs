@@ -1,6 +1,4 @@
-﻿using AspNetCoreRateLimit;
-
-using Microsoft.Extensions.Hosting;
+﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.WebEncoders;
 
 using Newtonsoft.Json;

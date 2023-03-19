@@ -62,7 +62,7 @@ namespace ThingsGateway.Foundation.Adapter.Modbus
                     return new OperResult<byte[]>(GetDescriptionByErrorCode(response[2]));
                 if (send.Length == 0)
                 {
-                    var result= OperResult.CreateSuccessResult(GenericHelper.ArrayRemoveBegin(response, 3));
+                    var result = OperResult.CreateSuccessResult(GenericHelper.ArrayRemoveBegin(response, 3));
                     result.Message = "接收数据正确，但主机并没有主动请求数据";
                     result.ResultCode = ResultCode.Canceled;
                     return result;

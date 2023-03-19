@@ -119,7 +119,7 @@ namespace ThingsGateway.Mqtt
             using var serviceScope = _scopeFactory.CreateScope();
             _globalCollectDeviceData = serviceScope.ServiceProvider.GetService<GlobalCollectDeviceData>();
             _rpcCore = serviceScope.ServiceProvider.GetService<RpcCore>();
-        
+
             _globalCollectDeviceData.CollectDevices.ForEach(a =>
             {
                 a.DeviceStatusCahnge += DeviceStatusCahnge;
