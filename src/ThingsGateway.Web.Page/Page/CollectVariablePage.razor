@@ -15,6 +15,31 @@
 @inject UserResoures UserResoures
 @inject ICollectDeviceService CollectDeviceService
 @layout MainLayout
+
+<MRow>
+    <MCol Md=3 Cols="12">
+        <MCard Class="ma-2" Style="height:100%">
+            @* <MCardTitle>
+                <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="mx-2 my-1" @bind-Value="_searchName"
+                            Outlined Label=@typeof(CollectDevice).GetDescription(nameof(CollectDevice.DeviceGroup)) />
+                </MCardTitle>
+                <MTreeview Dense TItem="string" TKey="string" ActiveChanged=@(async a=>
+                       {
+                       if(search.DeviceGroup!=a.FirstOrDefault())
+                       {
+                       search.DeviceGroup=a.FirstOrDefault();
+                       await datatableQuery();
+                       }
+                       } )
+                       Items="_deviceGroups" ItemText="r=>r" ItemChildren="r=>null"
+                       Search="@_searchName"
+                       Activatable ItemKey=@(r=>r)>
+            </MTreeview>*@
+            </MCard>
+            </MCol>
+            <MCol Md=9 Cols="12">
+            <div style="height: calc(100vh - 200px)">
+
 <AppDataTable @ref="_datatable" TItem="CollectDeviceVariable" SearchItem="VariablePageInput"
               AddItem="VariableAddInput" EditItem="VariableEditInput"
               IsMenuOperTemplate=false
@@ -67,6 +92,11 @@
 
     </ItemColTemplate>
 </AppDataTable>
+
+
+        </div>
+    </MCol>
+</MRow>
 
 <ImportExcel @ref=ImportExcel Import="SaveDeviceImport" Preview="DeviceImport" Template="DownTemplate" />
 
