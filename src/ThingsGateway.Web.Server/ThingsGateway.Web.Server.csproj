@@ -16,6 +16,7 @@
 
 
 
+	<PropertyGroup Condition=" '$(RunConfiguration)' == 'Kestrel' " />
 	<ItemGroup>
 	  <ProjectReference Include="..\ThingsGateway.Web.Core\ThingsGateway.Web.Core.csproj" />
 	</ItemGroup>
