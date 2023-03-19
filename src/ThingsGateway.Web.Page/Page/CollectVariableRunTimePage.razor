@@ -23,7 +23,7 @@
                 <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="mx-2 my-1" @bind-Value="_searchName"
                             Outlined Label=@typeof(CollectDevice).GetDescription(nameof(CollectDevice.DeviceGroup)) />
                 </MCardTitle>
-                <MTreeview Dense TItem="DeviceTree" TKey="string"  Active="_searchModel.DeviceName.StringToList()" OpenOnClick ActiveChanged=@((async a=>
+                <MTreeview Dense TItem="DeviceTree" TKey="string"  Active="_searchModel.DeviceName?.StringToList()" OpenOnClick ActiveChanged=@((async a=>
                        {
                        if(this._searchModel.DeviceName!= a.FirstOrDefault())
                        {
