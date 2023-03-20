@@ -23,7 +23,7 @@
 
 	<ItemGroup>
 
-		<PackageReference Include="Masa.Blazor" Version="1.0.0-preview.8" />
+		<PackageReference Include="Masa.Blazor" Version="1.0.0-preview.9" />
 		<PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="7.0.4" />
 
 	</ItemGroup>
