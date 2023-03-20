@@ -30,7 +30,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Masa.Blazor" Version="1.0.0-preview.8">
+		<PackageReference Include="Masa.Blazor" Version="1.0.0-preview.9">
 			<IncludeAssets>Compile</IncludeAssets>
 		</PackageReference>
 	</ItemGroup>

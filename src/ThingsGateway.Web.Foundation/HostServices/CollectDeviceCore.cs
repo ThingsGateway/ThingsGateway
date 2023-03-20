@@ -25,12 +25,12 @@ public class CollectDeviceCore : DisposableObject
     /// </summary>
     public ConcurrentList<CancellationTokenSource> StoppingTokens = new();
 
-    private ILogger _logger;
+    protected ILogger _logger;
 
     /// <summary>
     /// 当前设备信息
     /// </summary>
-    private CollectDeviceRunTime _device;
+    protected CollectDeviceRunTime _device;
 
     /// <summary>
     /// 当前的驱动插件实例
@@ -40,13 +40,13 @@ public class CollectDeviceCore : DisposableObject
     /// <summary>
     /// 全局插件服务
     /// </summary>
-    private PluginCore _pluginService;
+    protected PluginCore _pluginService;
 
     /// <summary>
     /// 分包变量
     /// </summary>
-    private List<DeviceVariableSourceRead> DeviceVariableSourceReads = new();
-    private IServiceScopeFactory _scopeFactory;
+    protected List<DeviceVariableSourceRead> DeviceVariableSourceReads = new();
+    protected IServiceScopeFactory _scopeFactory;
 
     public CollectDeviceCore(IServiceScopeFactory scopeFactory)
     {
@@ -72,14 +72,14 @@ public class CollectDeviceCore : DisposableObject
     /// <summary>
     /// 当前设备全部特殊方法，执行初始化后获取正确值
     /// </summary>
-    public List<MethodInfo> Methods { get; private set; }
+    public List<MethodInfo> Methods { get; protected set; }
 
     /// <summary>
     /// 当前设备全部设备属性，执行初始化后获取正确值
     /// </summary>
-    public List<DependencyProperty> Propertys { get; private set; }
-    GlobalCollectDeviceData _globalCollectDeviceData { get; set; }
-    IDriverPluginService _driverPluginService { get; set; }
+    public List<DependencyProperty> Propertys { get; protected set; }
+    protected GlobalCollectDeviceData _globalCollectDeviceData { get; set; }
+    protected IDriverPluginService _driverPluginService { get; set; }
     /// <summary>
     /// 初始化，在设备子线程创建或更新时才会执行
     /// </summary>
@@ -127,12 +127,12 @@ public class CollectDeviceCore : DisposableObject
 
     #region 设备子线程采集启动停止
 
-    private Task<Task> DeviceTask;
+    protected Task<Task> DeviceTask;
 
     /// <summary>
     /// 初始化
     /// </summary>
-    public void Init()
+    protected void Init()
     {
         DeviceTask = new Task<Task>(() =>
         {
@@ -296,11 +296,11 @@ public class CollectDeviceCore : DisposableObject
     /// <summary>
     /// 开始采集
     /// </summary>
-    public void StartThread()
+    public virtual void StartThread()
     {
         DeviceTask?.Start();
     }
-    public void StopThread()
+    public virtual void StopThread()
     {
         try
         {
@@ -350,7 +350,7 @@ public class CollectDeviceCore : DisposableObject
     /// 传入设备变量列表，执行后赋值<see cref="DeviceVariableSourceReads"/>
     /// </summary>
     /// <param name="collectVariableRunTimes"></param>
-    private void LoadSourceReads(List<CollectVariableRunTime> collectVariableRunTimes)
+    protected void LoadSourceReads(List<CollectVariableRunTime> collectVariableRunTimes)
     {
         if (collectVariableRunTimes == null || _driver == null) { return; }
         try

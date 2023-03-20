@@ -3,8 +3,10 @@
 using System.Threading;
 
 using ThingsGateway.Foundation;
+using ThingsGateway.Foundation.Serial;
 
 using TouchSocket.Core;
+using TouchSocket.Sockets;
 
 namespace ThingsGateway.Web.Foundation;
 /// <summary>
@@ -44,6 +46,30 @@ public abstract class DriverBase : IDisposable
             }
         }
     }
+
+    ///// <summary>
+    ///// 独立链路
+    ///// </summary>
+    //[DeviceProperty("独立链路")]
+    //public bool IsAloneLink { get; set; } = true;
+
+    ///// <summary>
+    ///// 获取串口链路描述
+    ///// </summary>
+    ///// <returns></returns>
+    //public virtual SerialProperty GetSerialProperty()
+    //{
+    //    return null;
+    //}
+    ///// <summary>
+    ///// 获取Tcp链路描述
+    ///// </summary>
+    ///// <returns></returns>
+    //public virtual IPHost GetTcpProperty()
+    //{
+    //    return null;
+    //}
+
 
     /// <summary>
     /// 数据转换器
