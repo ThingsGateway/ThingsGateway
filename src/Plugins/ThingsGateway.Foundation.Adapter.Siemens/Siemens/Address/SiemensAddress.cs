@@ -28,7 +28,7 @@
         public ushort DbBlock { get; set; }
 
 
-        public static int CalculateAddressStarted(string address, bool isCounterOrTimer = false)
+        public static int GetAddressStart(string address, bool isCounterOrTimer = false)
         {
             if (address.IndexOf('.') < 0)
             {
@@ -58,11 +58,11 @@
                     s7AddressData.DataCode = (byte)S7Area.AI;
                     if (address.StartsWith("AIX") || address.StartsWith("AIB") || address.StartsWith("AIW") || address.StartsWith("AID"))
                     {
-                        s7AddressData.AddressStart = CalculateAddressStarted(address.Substring(3));
+                        s7AddressData.AddressStart = GetAddressStart(address.Substring(3));
                     }
                     else
                     {
-                        s7AddressData.AddressStart = CalculateAddressStarted(address.Substring(2));
+                        s7AddressData.AddressStart = GetAddressStart(address.Substring(2));
                     }
                 }
                 else if (address.StartsWith("AQ"))
@@ -70,11 +70,11 @@
                     s7AddressData.DataCode = (byte)S7Area.AQ;
                     if (address.StartsWith("AQX") || address.StartsWith("AQB") || address.StartsWith("AQW") || address.StartsWith("AQD"))
                     {
-                        s7AddressData.AddressStart = CalculateAddressStarted(address.Substring(3));
+                        s7AddressData.AddressStart = GetAddressStart(address.Substring(3));
                     }
                     else
                     {
-                        s7AddressData.AddressStart = CalculateAddressStarted(address.Substring(2));
+                        s7AddressData.AddressStart = GetAddressStart(address.Substring(2));
                     }
                 }
                 else if (address[0] == 'I')
@@ -82,11 +82,11 @@
                     s7AddressData.DataCode = (byte)S7Area.PE;
                     if (address.StartsWith("IX") || address.StartsWith("IB") || address.StartsWith("IW") || address.StartsWith("ID"))
                     {
-                        s7AddressData.AddressStart = CalculateAddressStarted(address.Substring(2));
+                        s7AddressData.AddressStart = GetAddressStart(address.Substring(2));
                     }
                     else
                     {
-                        s7AddressData.AddressStart = CalculateAddressStarted(address.Substring(1));
+                        s7AddressData.AddressStart = GetAddressStart(address.Substring(1));
                     }
                 }
                 else if (address[0] == 'Q')
@@ -94,11 +94,11 @@
                     s7AddressData.DataCode = (byte)S7Area.PA;
                     if (address.StartsWith("QX") || address.StartsWith("QB") || address.StartsWith("QW") || address.StartsWith("QD"))
                     {
-                        s7AddressData.AddressStart = CalculateAddressStarted(address.Substring(2));
+                        s7AddressData.AddressStart = GetAddressStart(address.Substring(2));
                     }
                     else
                     {
-                        s7AddressData.AddressStart = CalculateAddressStarted(address.Substring(1));
+                        s7AddressData.AddressStart = GetAddressStart(address.Substring(1));
                     }
                 }
                 else if (address[0] == 'M')
@@ -106,11 +106,11 @@
                     s7AddressData.DataCode = (byte)S7Area.MK;
                     if (address.StartsWith("MX") || address.StartsWith("MB") || address.StartsWith("MW") || address.StartsWith("MD"))
                     {
-                        s7AddressData.AddressStart = CalculateAddressStarted(address.Substring(2));
+                        s7AddressData.AddressStart = GetAddressStart(address.Substring(2));
                     }
                     else
                     {
-                        s7AddressData.AddressStart = CalculateAddressStarted(address.Substring(1));
+                        s7AddressData.AddressStart = GetAddressStart(address.Substring(1));
                     }
                 }
                 else if (address[0] == 'D' || address.Substring(0, 2) == "DB")
@@ -124,17 +124,17 @@
                         address1 = address1.Substring(3);
                     }
 
-                    s7AddressData.AddressStart = CalculateAddressStarted(address1);
+                    s7AddressData.AddressStart = GetAddressStart(address1);
                 }
                 else if (address[0] == 'T')
                 {
                     s7AddressData.DataCode = (byte)S7Area.TM;
-                    s7AddressData.AddressStart = CalculateAddressStarted(address.Substring(1), true);
+                    s7AddressData.AddressStart = GetAddressStart(address.Substring(1), true);
                 }
                 else if (address[0] == 'C')
                 {
                     s7AddressData.DataCode = (byte)S7Area.CT;
-                    s7AddressData.AddressStart = CalculateAddressStarted(address.Substring(1), true);
+                    s7AddressData.AddressStart = GetAddressStart(address.Substring(1), true);
                 }
                 else
                 {
@@ -147,11 +147,11 @@
                     s7AddressData.DbBlock = 1;
                     if (address.StartsWith("VB") || address.StartsWith("VW") || address.StartsWith("VD") || address.StartsWith("VX"))
                     {
-                        s7AddressData.AddressStart = CalculateAddressStarted(address.Substring(2));
+                        s7AddressData.AddressStart = GetAddressStart(address.Substring(2));
                     }
                     else
                     {
-                        s7AddressData.AddressStart = CalculateAddressStarted(address.Substring(1));
+                        s7AddressData.AddressStart = GetAddressStart(address.Substring(1));
                     }
                 }
             }
@@ -191,33 +191,33 @@
 
             if (DataCode == (byte)S7Area.AI)
             {
-                return "AI" + GetActualStringAddress(AddressStart);
+                return "AI" + GetStringAddress(AddressStart);
             }
 
             if (DataCode == (byte)S7Area.AQ)
             {
-                return "AQ" + GetActualStringAddress(AddressStart);
+                return "AQ" + GetStringAddress(AddressStart);
             }
 
             if (DataCode == (byte)S7Area.PE)
             {
-                return "I" + GetActualStringAddress(AddressStart);
+                return "I" + GetStringAddress(AddressStart);
             }
 
             if (DataCode == (byte)S7Area.PA)
             {
-                return "Q" + GetActualStringAddress(AddressStart);
+                return "Q" + GetStringAddress(AddressStart);
             }
 
             if (DataCode == (byte)S7Area.MK)
             {
-                return "M" + GetActualStringAddress(AddressStart);
+                return "M" + GetStringAddress(AddressStart);
             }
 
-            return DataCode == (byte)S7Area.DB ? "DB" + DbBlock.ToString() + "." + GetActualStringAddress(AddressStart) : AddressStart.ToString();
+            return DataCode == (byte)S7Area.DB ? "DB" + DbBlock.ToString() + "." + GetStringAddress(AddressStart) : AddressStart.ToString();
         }
 
-        private static string GetActualStringAddress(int addressStart)
+        private static string GetStringAddress(int addressStart)
         {
             return addressStart % 8 == 0 ? (addressStart / 8).ToString() : string.Format("{0}.{1}", addressStart / 8, addressStart % 8);
         }
