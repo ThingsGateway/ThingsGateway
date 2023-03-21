@@ -46,11 +46,14 @@ namespace ThingsGateway.OPCUA
 
         public override void Dispose()
         {
-            PLC.DataChangedHandler -= dataChangedHandler;
-            PLC.OpcStatusChange -= opcStatusChange;
-            PLC.Disconnect();
-            PLC.Dispose();
-            PLC = null;
+            if(PLC != null)
+            {
+                PLC.DataChangedHandler -= dataChangedHandler;
+                PLC.OpcStatusChange -= opcStatusChange;
+                PLC.Disconnect();
+                PLC.Dispose();
+                PLC = null;
+            }
         }
 
         public override bool IsSupportAddressRequest()

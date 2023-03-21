@@ -44,9 +44,10 @@ namespace ThingsGateway.OPCDA
 
         public override void Dispose()
         {
+            if(PLC != null )
             PLC.DataChangedHandler -= dataChangedHandler;
-            PLC.Disconnect();
-            PLC.Dispose();
+            PLC?.Disconnect();
+            PLC?.Dispose();
             PLC = null;
         }
 

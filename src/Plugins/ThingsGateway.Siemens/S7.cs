@@ -64,7 +64,7 @@ namespace ThingsGateway.Siemens
 
         public override void Dispose()
         {
-            _plc.Disconnect();
+            _plc?.Disconnect();
         }
 
         public override bool IsSupportAddressRequest()

@@ -66,9 +66,9 @@ namespace ThingsGateway.Mqtt
         }
         public override void Dispose()
         {
-            _globalCollectDeviceData.CollectVariables.ForEach(a => a.VariableValueChange -= VariableValueChange);
+            _globalCollectDeviceData?.CollectVariables?.ForEach(a => a.VariableValueChange -= VariableValueChange);
 
-            _globalCollectDeviceData.CollectDevices.ForEach(a =>
+            _globalCollectDeviceData?.CollectDevices?.ForEach(a =>
             {
                 a.DeviceStatusCahnge -= DeviceStatusCahnge;
             });
