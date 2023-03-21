@@ -17,7 +17,7 @@
 
 
 	<ItemGroup>
-		<PackageReference Include="Masa.Blazor" Version="1.0.0-preview.9">
+		<PackageReference Include="Masa.Blazor" Version="1.0.0-preview.8">
 			<IncludeAssets>Compile</IncludeAssets>
 		</PackageReference>
 	</ItemGroup>
