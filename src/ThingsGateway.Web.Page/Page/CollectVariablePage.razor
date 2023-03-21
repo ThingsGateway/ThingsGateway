@@ -148,17 +148,25 @@
     StringNumber tab;
     List<CollectDevice> CollectDevices = new();
     List<UploadDevice> UploadDevices = new();
-    List<string> OtherMethods = new();
+    Dictionary<long, List<string>> OtherMethods = new();
     void DeviceChanged(long devId)
     {
         if (devId > 0)
-            OtherMethods = this.GetBackgroundService<CollectDeviceHostService>().GetDeviceMethods(devId);
+        {
+            var data = this.GetBackgroundService<CollectDeviceHostService>().GetDeviceMethods(devId);
+            OtherMethods.AddOrUpdate(devId,data);
+        }
         else
             OtherMethods = new();
     }
 
     RenderFragment GetRenderFragment(VariableEditInput context)
     {
+        if(!OtherMethods.ContainsKey(context.DeviceId))
+        {
+            DeviceChanged(context.DeviceId);      
+        }
+
         RenderFragment renderFragment = null;
         renderFragment +=
     @<div>
@@ -247,17 +255,24 @@
                             <MSubheader Class="font-weight-black">    @(context.Description(x => x.WriteExpressions))  </MSubheader>
                             <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.WriteExpressions />
                             </MCol>
+
+                            @if(OtherMethods.ContainsKey(context.DeviceId))
+                            {
+
                             <MCol Md=6 Cols=12 class="px-1">
-                            <MSubheader Class="font-weight-black">    @(context.Description(x => x.OtherMethod))  </MSubheader>
-                            <MSelect Class="mr-3" @bind-Value="context.OtherMethod" Outlined
-                                 Items=@(OtherMethods) Clearable
+                                <MSubheader Class="font-weight-black">    @(context.Description(x => x.OtherMethod))  </MSubheader>
+                                <MSelect Class="mr-3" @bind-Value="context.OtherMethod" Outlined
+                                 Items=@(OtherMethods[context.DeviceId]) Clearable
                                  MenuProps="@(props => { props.Auto = true; props.OffsetY = true; })"
                                  ItemText=@((u) =>u)
                                  ItemValue=@(u =>u)
                                  HideDetails=@("auto") Height="30"
-                                          Dense>
-                            </MSelect>
-                        </MCol>
+                                                  Dense>
+                                </MSelect>
+                            </MCol>
+
+                            }
+
                     </MRow>
 
                 </MCard>
