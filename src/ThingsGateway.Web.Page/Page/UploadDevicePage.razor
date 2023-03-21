@@ -14,70 +14,103 @@
 @inject UserResoures UserResoures
 @inject IDriverPluginService DriverPluginService
 @layout MainLayout
-<AppDataTable @ref="_datatable" TItem="UploadDevice" SearchItem="UploadDevicePageInput"
-              AddItem="UploadDeviceAddInput" EditItem="UploadDeviceEditInput"
-              IsMenuOperTemplate=false
-              QueryCall="QueryCall" AddCall="AddCall" EditCall="EditCall" DeleteCall="DeleteCall"
-              FilterHeaders="FilterHeaders" Filters="Filters" ShowDetailButton
-                ShowQueryButton
-              ShowAddButton=@UserResoures.IsHasButtonWithRole("tguploaddeviceadd")
-              ShowDeleteButton=@UserResoures.IsHasButtonWithRole("tguploaddevicedelete")
-              ShowEditButton=@UserResoures.IsHasButtonWithRole("tguploaddeviceedit")>
-    <SearchTemplate>
-        <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="my-1  mx-2 " @bind-Value="context.Name" Clearable
-                        Outlined Label=@context.Description(x => x.Name) />
-        <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="my-1  mx-2 " @bind-Value="context.PluginName" Clearable
-                        Outlined Label=@context.Description(x => x.PluginName) />
-    </SearchTemplate>
-    <OtherToolbarTemplate>
 
-        <MButton Class="my-1  mx-2" Loading=@isDownExport OnClick=DownDeviceExport Color="primary">
-            @T("导出")
-        </MButton>
-        <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("tguploaddeviceedit")) Class="my-1  mx-2" OnClick="()=>{ ImportExcel.Step=1;  ImportExcel.IsShowImport=true;}" Color="primary">
-            @T("导入")
-        </MButton>
-    </OtherToolbarTemplate>
-    <AddTemplate>
-        @GetRenderFragment(context)
-    </AddTemplate>
-
-    <EditTemplate>
-        @GetRenderFragment(context)
-
-    </EditTemplate>
+<MRow>
+    <MCol Md=2 Cols="12">
+        <MCard Class="ma-2" Style="height:100%">
+            <MCardTitle>
+                <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="mx-2 my-1" @bind-Value="_searchName"
+                            Outlined Label=@typeof(CollectDevice).GetDescription(nameof(CollectDevice.DeviceGroup)) />
+                </MCardTitle>
+                <MTreeview Dense TItem="string" TKey="string" ActiveChanged=@(async a=>
+                       {
+                       if(search.DeviceGroup!=a.FirstOrDefault())
+                       {
+                       search.DeviceGroup=a.FirstOrDefault();
+                       await datatableQuery();
+                       }
+                       } )
+                       Items="_deviceGroups" ItemText="r=>r" ItemChildren="r=>null"
+                       Search="@_searchName"
+                       Activatable ItemKey=@(r=>r)>
+            </MTreeview>
+            </MCard>
+            </MCol>
+            <MCol Md=10 Cols="12">
+            <div style="height: calc(100vh - 200px)">
 
 
-    <ItemColTemplate>
-        @switch (context.Header.Value)
-        {
+                <AppDataTable @ref="_datatable" TItem="UploadDevice" SearchItem="UploadDevicePageInput"
+                          AddItem="UploadDeviceAddInput" EditItem="UploadDeviceEditInput"
+                          IsMenuOperTemplate=false SearchModel="search"
+                          QueryCall="QueryCall" AddCall="AddCall" EditCall="EditCall" DeleteCall="DeleteCall"
+                          FilterHeaders="FilterHeaders" Filters="Filters" ShowDetailButton
+                                ShowQueryButton
+                          ShowAddButton=@UserResoures.IsHasButtonWithRole("tguploaddeviceadd")
+                          ShowDeleteButton=@UserResoures.IsHasButtonWithRole("tguploaddevicedelete")
+                          ShowEditButton=@UserResoures.IsHasButtonWithRole("tguploaddeviceedit")>
+                <SearchTemplate>
+                    <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="my-1  mx-2 " @bind-Value="context.Name" Clearable
+                                        Outlined Label=@context.Description(x => x.Name) />
+                    <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="my-1  mx-2 " @bind-Value="context.PluginName" Clearable
+                                        Outlined Label=@context.Description(x => x.PluginName) />
+                </SearchTemplate>
+                <OtherToolbarTemplate>
 
-            case nameof(context.Item.Enable):
-                <EnableChip Value="context.Item.Enable">
-                </EnableChip>
-                break;
-            case nameof(context.Item.PluginId):
-                <span>
-                    @(
-                        DriverPluginService.GetNameById(context.Item.PluginId)
-                        )
-                </span>
-                break;
-            default:
-                @context.Value
-                break;
+                    <MButton Class="my-1  mx-2" Loading=@isDownExport OnClick=DownDeviceExport Color="primary">
+                        @T("导出")
+                    </MButton>
+                    <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("tguploaddeviceedit")) Class="my-1  mx-2" OnClick="()=>{ ImportExcel.Step=1;  ImportExcel.IsShowImport=true;}" Color="primary">
+                        @T("导入")
+                    </MButton>
+                </OtherToolbarTemplate>
+                <AddTemplate>
+                    @GetRenderFragment(context)
+                </AddTemplate>
 
-        }
+                <EditTemplate>
+                    @GetRenderFragment(context)
 
-    </ItemColTemplate>
-</AppDataTable>
+                </EditTemplate>
 
 
+                <ItemColTemplate>
+                    @switch (context.Header.Value)
+                    {
+
+                        case nameof(context.Item.Enable):
+                            <EnableChip Value="context.Item.Enable">
+                            </EnableChip>
+                            break;
+                        case nameof(context.Item.PluginId):
+                            <span>
+                                @(
+                                    DriverPluginService.GetNameById(context.Item.PluginId)
+                                    )
+                            </span>
+                            break;
+                        default:
+                            @context.Value
+                            break;
+
+                    }
+
+                </ItemColTemplate>
+            </AppDataTable>
+
+        </div>
+    </MCol>
+</MRow>
 
 <ImportExcel @ref=ImportExcel Import="SaveDeviceImport" Preview="DeviceImport" Template="DownTemplate" />
 
 
 @code {
+        string _searchName;
+    List<string> _deviceGroups = new();
+    private UploadDevicePageInput search = new();
+
+
     ImportExcel ImportExcel;
 
     async Task SaveDeviceImport(Dictionary<string, ImportPreviewOutputBase> data)
@@ -155,6 +188,10 @@
 
                     <MSubheader Class="mt-4 font-weight-black">    @(context.Description(x => x.Description))  </MSubheader>
                     <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.Description />
+
+                    <MSubheader Class="mt-4 font-weight-black">    @(context.Description(x => x.DeviceGroup))  </MSubheader>
+                    <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.DeviceGroup />
+
 
                     <MSubheader Class="mt-4 font-weight-black">    @(typeof(UploadDeviceRunTime).GetDescription(nameof(UploadDeviceRunTime.PluginName)))  </MSubheader>
                     <MCascader Value="context.PluginId" Class="mt-3 mr-3" Clearable TValue=long TItem="DriverPluginCategory"

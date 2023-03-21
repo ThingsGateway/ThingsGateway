@@ -96,6 +96,7 @@ namespace ThingsGateway.Web.Foundation
             var query = Context.Queryable<UploadDevice>()
              .WhereIF(!string.IsNullOrEmpty(input.Name), u => u.Name.Contains(input.Name))
              .WhereIF(!string.IsNullOrEmpty(input.PluginName), u => u.PluginId == (pluginid ?? 0))
+             .WhereIF(!string.IsNullOrEmpty(input.DeviceGroup), u => u.DeviceGroup == input.DeviceGroup)
              .OrderByIF(!string.IsNullOrEmpty(input.SortField), $"{input.SortField} {input.SortOrder}")
              .OrderBy(u => u.Id)//排序
              .Select((u) => new UploadDevice { Id = u.Id.SelectAll() })
