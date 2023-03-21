@@ -42,7 +42,7 @@ namespace ThingsGateway.Modbus
 
         public override void Dispose()
         {
-            _plc.Disconnect();
+            _plc?.Disconnect();
         }
 
 

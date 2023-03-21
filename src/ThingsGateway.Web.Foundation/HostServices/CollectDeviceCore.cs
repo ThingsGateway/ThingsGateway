@@ -179,7 +179,11 @@ public class CollectDeviceCore : DisposableObject
                             if (Device.DeviceStatus != DeviceStatusEnum.OnLineButNoInitialValue && Device.DeviceStatus != DeviceStatusEnum.OnLine)
                                 Device.DeviceStatus = DeviceStatusEnum.OnLineButNoInitialValue;
                             Device.ActiveTime = DateTime.Now;
-
+                            if(DeviceVariableSourceReads.Count==0&&Device.DeviceVariableRunTimes.Where(a=>a.OtherMethod.IsNullOrEmpty()).Count()>0)
+                            {
+                                Device.DeviceStatus = DeviceStatusEnum.OnLineButNoInitialValue;
+                                Device.DeviceOffMsg = "分包失败，请检查变量地址是否符合规则";
+                            }
                             int deviceMedsVariableSuccessNum = 0;
                             int deviceMedsVariableFailedNum = 0;
                             int deviceSourceVariableSuccessNum = 0;
@@ -245,7 +249,7 @@ public class CollectDeviceCore : DisposableObject
 
                                 }
 
-                                if (deviceMedsVariableFailedNum == 0 && deviceSourceVariableFailedNum == 0)
+                                if (deviceMedsVariableFailedNum == 0 && deviceSourceVariableFailedNum == 0&&(DeviceVariableSourceReads.Count != 0|| DeviceVariableMedReads.Count!=0))
                                 {
                                     Device.DeviceStatus = DeviceStatusEnum.OnLine;
                                 }

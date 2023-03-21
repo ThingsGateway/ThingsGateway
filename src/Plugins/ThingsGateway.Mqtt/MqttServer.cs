@@ -95,12 +95,12 @@ namespace ThingsGateway.Mqtt
         private GlobalCollectDeviceData _globalCollectDeviceData;
         public override void Dispose()
         {
-            _globalCollectDeviceData.CollectVariables.ForEach(a => a.VariableValueChange -= VariableValueChange);
-            _globalCollectDeviceData.CollectDevices.ForEach(a =>
+            _globalCollectDeviceData?.CollectVariables?.ForEach(a => a.VariableValueChange -= VariableValueChange);
+            _globalCollectDeviceData?.CollectDevices?.ForEach(a =>
             {
                 a.DeviceStatusCahnge -= DeviceStatusCahnge;
             });
-            _mqttServer.Dispose();
+            _mqttServer?.Dispose();
         }
         private UploadDevice _curDevice { get; set; }
         RpcCore _rpcCore { get; set; }

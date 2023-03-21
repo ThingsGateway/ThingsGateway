@@ -54,9 +54,10 @@ namespace ThingsGateway.Modbus
         public override void Dispose()
         {
             _ModbusTags?.Values?.ToList()?.ForEach(a => a.VariableValueChange -= VariableValueChange);
+            if(_plc!=null)
             _plc.Write -= Write;
-            _plc.Stop();
-            _plc.Dispose();
+            _plc?.Stop();
+            _plc?.Dispose();
         }
         private UploadDevice curDevice;
         private TouchSocketConfig TouchSocketConfig = new();

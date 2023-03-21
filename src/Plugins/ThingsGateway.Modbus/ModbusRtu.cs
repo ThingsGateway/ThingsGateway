@@ -45,8 +45,8 @@ namespace ThingsGateway.Modbus
 
         public override void Dispose()
         {
-            _plc.Close();
-            _plc.Dispose();
+            _plc?.Close();
+            _plc?.Dispose();
         }
 
         protected override void Init(CollectDeviceRunTime device, object client = null)
