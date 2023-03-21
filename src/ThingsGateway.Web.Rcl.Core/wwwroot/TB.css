@@ -48,6 +48,12 @@
     padding: 0 16px;
 }
 
+
+.m-application .text-start {
+    text-align: start !important;
+    min-width: 130px;
+}
+
 /*下面都是html默认样式修改*/
 html {
     overflow-y: hidden
