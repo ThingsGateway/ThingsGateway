@@ -19,8 +19,8 @@ namespace ThingsGateway.Siemens
         [DeviceProperty("端口", "")] public int Port { get; set; } = 102;
         public override IThingsGatewayBitConverter ThingsGatewayBitConverter { get => _plc?.ThingsGatewayBitConverter; }
         [DeviceProperty("读写超时时间", "")] public ushort TimeOut { get; set; } = 3000;
-        [DeviceProperty("LocalTasp", "")] public ushort TimeOut { get; set; } = 3000;
-        [DeviceProperty("DstTasp", "")] public ushort TimeOut { get; set; } = 3000;
+        [DeviceProperty("LocalTASP", "")] public int LocalTASP { get; set; } 
+        [DeviceProperty("DestTSAP", "")] public int DestTSAP { get; set; } 
 
 
         [DeviceMethod("ReadDate", "")]
@@ -28,13 +28,17 @@ namespace ThingsGateway.Siemens
         {
             return _plc?.ReadDate(address);
         }
+        [DeviceMethod("ReadDateTime", "")]
+        public Task<OperResult<System.DateTime>> ReadDateTime(string address)
+        {
+            return _plc?.ReadDateTime(address);
+        }
 
         [DeviceMethod("ReadString", "")]
         public Task<OperResult<string>> ReadString(string address, Encoding encoding)
         {
             return _plc?.ReadString(address, encoding);
         }
-
 
         [DeviceMethod("WriteDate", "")]
         public Task<OperResult> WriteDate(string address, System.DateTime dateTime)
@@ -46,6 +50,7 @@ namespace ThingsGateway.Siemens
         {
             return _plc?.WriteDateTime(address, dateTime);
         }
+
 
         public override void AfterStop()
         {
