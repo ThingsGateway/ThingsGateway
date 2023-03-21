@@ -19,8 +19,8 @@ namespace ThingsGateway.Siemens
         [DeviceProperty("端口", "")] public int Port { get; set; } = 102;
         public override IThingsGatewayBitConverter ThingsGatewayBitConverter { get => _plc?.ThingsGatewayBitConverter; }
         [DeviceProperty("读写超时时间", "")] public ushort TimeOut { get; set; } = 3000;
-        [DeviceProperty("LocalTSAP", "为0时不写入")] public int LocalTSAP { get; set; } = 0;
-        [DeviceProperty("DestTSAP", "为0时不写入")] public int DestTSAP { get; set; } = 0;
+        [DeviceProperty("LocalTSAP", "为0时不写入，通常默认0即可")] public int LocalTSAP { get; set; } = 0;
+        [DeviceProperty("DestTSAP", "为0时不写入，通常默认0即可")] public int DestTSAP { get; set; } = 0;
 
 
         [DeviceMethod("ReadDate", "")]
