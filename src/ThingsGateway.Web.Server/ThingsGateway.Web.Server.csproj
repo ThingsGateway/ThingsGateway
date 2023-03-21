@@ -10,7 +10,7 @@
 		<Version>1.0.0</Version>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<ApplicationIcon>favicon.ico</ApplicationIcon>
-		<ServerGarbageCollection>false</ServerGarbageCollection>
+		<!--<ServerGarbageCollection>false</ServerGarbageCollection>-->
 	</PropertyGroup>
 
 
