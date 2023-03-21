@@ -3,9 +3,27 @@
 	<PropertyGroup>
 		<LangVersion>latestMajor</LangVersion>
 		<TargetFrameworks>net462;net6.0;net7.0</TargetFrameworks>
-		<Version>1.2.0</Version>
+		<Version>1.0.4</Version>
+		<Title>ThingsGateway.Foundation.Adapter.Siemens</Title>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<Authors>Diego</Authors>
+		<Description>Siemens通讯类库</Description>
+		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+		<RunAnalyzersDuringBuild>True</RunAnalyzersDuringBuild>
+		<PackageProjectUrl>https://diego2098.gitee.io/thingsgateway/</PackageProjectUrl>
+		<RepositoryUrl>https://gitee.com/diego2098/ThingsGateway</RepositoryUrl>
+		<PackageOutputPath>$(SolutionDir)</PackageOutputPath>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
 	</PropertyGroup>
 
+	<ItemGroup>
+		<None Include="..\..\..\README.md">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+	</ItemGroup>
+	
 	<ItemGroup>
 	  <ProjectReference Include="..\..\ThingsGateway.Foundation\ThingsGateway.Foundation.csproj" />
 	</ItemGroup>
