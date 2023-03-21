@@ -99,7 +99,7 @@ namespace ThingsGateway.OPCUA
         public override async Task<OperResult> WriteValueAsync(CollectVariableRunTime deviceVariable, string value)
         {
             await Task.CompletedTask;
-            var result = PLC.WriteNode(deviceVariable.VariableAddress, value);
+            var result = PLC.WriteNode(deviceVariable.VariableAddress,Convert.ChangeType( value,deviceVariable.DataType));
             return result ? OperResult.CreateSuccessResult() : new OperResult();
         }
 

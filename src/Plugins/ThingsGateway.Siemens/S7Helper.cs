@@ -175,7 +175,7 @@ namespace ThingsGateway.Siemens
                     var readNode = addressList[item];
                     if (functionCode == (byte)S7WordLength.Counter || functionCode == (byte)S7WordLength.Timer)
                     {
-                        if (readNode.DataTypeEnum == DataTypeEnum.Bool)
+                        if (readNode.DataTypeEnum == DataTypeEnum.Boolean)
                         {
                             readNode.Index = (((item.AddressStart * 2) - (tempAddress.First().AddressStart * 2)) * 8) + readNode.Index;
                         }
@@ -186,7 +186,7 @@ namespace ThingsGateway.Siemens
                     }
                     else
                     {
-                        if (readNode.DataTypeEnum == DataTypeEnum.Bool)
+                        if (readNode.DataTypeEnum == DataTypeEnum.Boolean)
                         {
                             readNode.Index = (((item.AddressStart / 8) - (tempAddress.First().AddressStart / 8)) * 8) + readNode.Index;
                         }

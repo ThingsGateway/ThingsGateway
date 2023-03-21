@@ -22,6 +22,7 @@
             TcpClient.Connected -= Connected;
             TcpClient.Disconnecting -= Disconnecting;
             TcpClient.Disconnected -= Disconnected;
+            TcpClient.Dispose();
         }
         public TcpClient TcpClient { get; }
 

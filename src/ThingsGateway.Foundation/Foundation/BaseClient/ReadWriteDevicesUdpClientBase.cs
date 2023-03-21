@@ -22,7 +22,12 @@
         {
             UdpSession.Stop();
         }
-
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+            UdpSession.Stop();
+            UdpSession.Dispose();
+        }
         public override async Task<OperResult<byte[]>> SendThenResponseAsync(byte[] data, WaitingOptions waitingOptions = null, CancellationToken token = default)
         {
             try

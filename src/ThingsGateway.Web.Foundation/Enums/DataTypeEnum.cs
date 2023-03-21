@@ -11,7 +11,7 @@ public enum DataTypeEnum
     DateTime,
     String,
 
-    Bool,
+    Boolean,
     Byte,
     SByte,
     Int16,
@@ -20,7 +20,7 @@ public enum DataTypeEnum
     UInt32,
     Int64,
     UInt64,
-    Float,
+    Single,
     Double,
 }
 /// <summary>
@@ -28,7 +28,6 @@ public enum DataTypeEnum
 /// </summary>
 public static class DataTypeExtension
 {
-
     public static Type GetNetType(this DataTypeEnum coreDataType)
     {
         switch (coreDataType)
@@ -41,7 +40,7 @@ public static class DataTypeExtension
                 return typeof(DateTime);
             case DataTypeEnum.String:
                 return typeof(string);
-            case DataTypeEnum.Bool:
+            case DataTypeEnum.Boolean:
                 return typeof(bool);
             case DataTypeEnum.Byte:
                 return typeof(byte);
@@ -59,8 +58,9 @@ public static class DataTypeExtension
                 return typeof(long);
             case DataTypeEnum.UInt64:
                 return typeof(ulong);
-            case DataTypeEnum.Float:
+            case DataTypeEnum.Single:
                 return typeof(float);
+                
             case DataTypeEnum.Double:
                 return typeof(double);
             default:
@@ -79,7 +79,7 @@ public static class DataTypeExtension
                 return 0;
             case DataTypeEnum.String:
                 return 0;
-            case DataTypeEnum.Bool:
+            case DataTypeEnum.Boolean:
                 return 1;
             case DataTypeEnum.Byte:
                 return 1;
@@ -97,7 +97,7 @@ public static class DataTypeExtension
                 return 8;
             case DataTypeEnum.UInt64:
                 return 8;
-            case DataTypeEnum.Float:
+            case DataTypeEnum.Single:
                 return 4;
             case DataTypeEnum.Double:
                 return 8;
