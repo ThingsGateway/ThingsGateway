@@ -147,7 +147,7 @@ namespace ThingsGateway.Modbus
                 {
                     var readNode = addressList[item];
                     if ((functionCode == -1 || functionCode == 3 || functionCode == 4) &&
-                        readNode.DataTypeEnum == DataTypeEnum.Bool)
+                        readNode.DataTypeEnum == DataTypeEnum.Boolean)
                     {
                         readNode.Index = ((item.AddressStart - startAddress.AddressStart) * 16) + readNode.Index;
                     }

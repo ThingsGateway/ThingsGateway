@@ -50,6 +50,8 @@ namespace ThingsGateway.Foundation
             TcpService.Connected -= Connected;
             TcpService.Disconnecting -= Disconnecting;
             TcpService.Disconnected -= Disconnected;
+            TcpService.Dispose();
+
         }
 
         protected abstract Task Received(SocketClient client, IRequestInfo requestInfo);

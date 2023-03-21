@@ -24,6 +24,7 @@ namespace ThingsGateway.Foundation
             SerialClient.Opened -= Opened;
             SerialClient.Closing -= Closing;
             SerialClient.Closed -= Closed;
+            SerialClient.Dispose();
         }
         public SerialClient SerialClient { get; }
 

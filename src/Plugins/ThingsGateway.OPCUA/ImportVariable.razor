@@ -159,11 +159,19 @@
                   {
 
                   }
+                  var dataTypeId = (Opc.Ua.NodeId)(OPCUAClient.PLC.ReadNoteAttribute(a.NodeId.ToString(), Attributes.DataType).FirstOrDefault().Value);
+                  var dataType = Opc.Ua.DataTypes.GetSystemType(dataTypeId, null);
+                  var result = Enum.TryParse(typeof(DataTypeEnum), dataType.Name, out object dataTypeEnum);
+                  if (!result)
+                  {
+                      dataTypeEnum = DataTypeEnum.Object;
+                  }
                   return new CollectDeviceVariable()
                       {
                           Name = OPCUAClient.Device.Name + "_" + a.DisplayName.Text,
                           VariableAddress = a.NodeId.ToString(),
                           DeviceId = OPCUAClient.Device.Id,
+                          DataTypeEnum = (DataTypeEnum)dataTypeEnum,
                           Id = Yitter.IdGenerator.YitIdHelper.NextId(),
                           ProtectTypeEnum = level,
                           IntervalTime = 1000,
