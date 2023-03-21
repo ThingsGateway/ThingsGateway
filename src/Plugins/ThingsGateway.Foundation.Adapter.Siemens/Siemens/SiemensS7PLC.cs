@@ -69,21 +69,6 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
 
 
         #region 设置
-        /// <summary>
-        /// 获取或设置DstTSAP，在非200系列时有效
-        /// </summary>
-        public byte ConnectionType
-        {
-            get => ISO_CR[20];
-            set
-            {
-                if (_currentPlc == SiemensEnum.S200 || _currentPlc == SiemensEnum.S200Smart)
-                {
-                    return;
-                }
-                ISO_CR[20] = value;
-            }
-        }
 
         /// <summary>
         /// 远程TSAP，需重新连接

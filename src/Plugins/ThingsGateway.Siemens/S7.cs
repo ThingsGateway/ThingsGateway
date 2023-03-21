@@ -19,6 +19,8 @@ namespace ThingsGateway.Siemens
         [DeviceProperty("端口", "")] public int Port { get; set; } = 102;
         public override IThingsGatewayBitConverter ThingsGatewayBitConverter { get => _plc?.ThingsGatewayBitConverter; }
         [DeviceProperty("读写超时时间", "")] public ushort TimeOut { get; set; } = 3000;
+        [DeviceProperty("LocalTasp", "")] public ushort TimeOut { get; set; } = 3000;
+        [DeviceProperty("DstTasp", "")] public ushort TimeOut { get; set; } = 3000;
 
 
         [DeviceMethod("ReadDate", "")]
