@@ -20,6 +20,7 @@
 - Modbus(Rtu/Tcp/Udp)
 - OPCDAClient（支持导入节点）
 - OPCUAClient（支持导入节点）
+- 西门子S7协议
 
 #### 社区版上传插件
 > 支持Rpc写入
@@ -45,6 +46,12 @@
 ``` powershell
  dotnet add package ThingsGateway.Foundation.Adapter.OPCUA
 ```
+
+- S7库
+``` powershell
+ dotnet add package ThingsGateway.Foundation.Adapter.Siemens
+```
+
 ####  效果图
  <table>
     <tr>
