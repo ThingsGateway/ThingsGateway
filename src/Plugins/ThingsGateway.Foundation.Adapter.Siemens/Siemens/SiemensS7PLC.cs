@@ -84,7 +84,6 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
             }
             set
             {
-                //TODO:这里优化为ThingsGatewayBitConverter
                 if (_currentPlc == SiemensEnum.S200 || _currentPlc == SiemensEnum.S200Smart)
                 {
                     ISO_CR[17] = BitConverter.GetBytes(value)[1];
@@ -112,7 +111,6 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
             }
             set
             {
-                //TODO:这里优化为ThingsGatewayBitConverter
                 if (_currentPlc == SiemensEnum.S200 || _currentPlc == SiemensEnum.S200Smart)
                 {
                     ISO_CR[13] = BitConverter.GetBytes(value)[1];

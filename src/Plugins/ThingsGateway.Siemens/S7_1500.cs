@@ -20,7 +20,14 @@
             _plc.DataFormat = DataFormat;
             _plc.ConnectTimeOut = ConnectTimeOut;
             _plc.TimeOut = TimeOut;
-
+            if (LocalTSAP != 0)
+            {
+                _plc.LocalTSAP = LocalTSAP;
+            }
+            if (DestTSAP != 0)
+            {
+                _plc.DestTSAP = DestTSAP;
+            }
         }
 
 
