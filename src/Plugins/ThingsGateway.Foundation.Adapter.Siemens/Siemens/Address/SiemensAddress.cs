@@ -183,7 +183,6 @@
             {
                 return "T" + AddressStart.ToString();
             }
-
             if (DataCode == (byte)S7Area.CT)
             {
                 return "C" + AddressStart.ToString();
