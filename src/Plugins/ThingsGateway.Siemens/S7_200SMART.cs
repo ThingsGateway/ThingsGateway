@@ -20,23 +20,15 @@
             _plc.DataFormat = DataFormat;
             _plc.ConnectTimeOut = ConnectTimeOut;
             _plc.TimeOut = TimeOut;
-
+            if (LocalTSAP != 0)
+            {
+                _plc.LocalTSAP = LocalTSAP;
+            }
+            if (DestTSAP != 0)
+            {
+                _plc.DestTSAP = DestTSAP;
+            }
         }
 
-        //[Method("HotStart", "热启动")]
-        //public OperResult HotStart()
-        //{
-        //    return _plc?.HotStart();
-        //}
-        //[Method("ColdStart", "冷启动")]
-        //public OperResult ColdStart()
-        //{
-        //    return _plc?.ColdStart();
-        //}
-        //[Method("Stop", "停止")]
-        //public OperResult Stop()
-        //{
-        //    return _plc?.Stop();
-        //}
     }
 }
