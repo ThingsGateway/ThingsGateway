@@ -1,6 +1,72 @@
 {
   "RECORDS": [
     {
+      "Id": "395093826302213",
+      "AssembleName": "ThingsGateway.Siemens.S7_1200",
+      "FileName": "ThingsGateway.Siemens",
+      "DriverTypeEnum": "Collect",
+      "FilePath": "Plugins\\ThingsGateway.Siemens\\ThingsGateway.Siemens.dll",
+      "CreateTime": "2023-03-12 20:20:55.726",
+      "CreateUser": "superAdmin",
+      "CreateUserId": "212725263002001",
+      "IsDelete": "0"
+    },
+    {
+      "Id": "395093826302214",
+      "AssembleName": "ThingsGateway.Siemens.S7_1500",
+      "FileName": "ThingsGateway.Siemens",
+      "DriverTypeEnum": "Collect",
+      "FilePath": "Plugins\\ThingsGateway.Siemens\\ThingsGateway.Siemens.dll",
+      "CreateTime": "2023-03-12 20:20:55.728",
+      "CreateUser": "superAdmin",
+      "CreateUserId": "212725263002001",
+      "IsDelete": "0"
+    },
+    {
+      "Id": "395093826302215",
+      "AssembleName": "ThingsGateway.Siemens.S7_200",
+      "FileName": "ThingsGateway.Siemens",
+      "DriverTypeEnum": "Collect",
+      "FilePath": "Plugins\\ThingsGateway.Siemens\\ThingsGateway.Siemens.dll",
+      "CreateTime": "2023-03-12 20:20:55.728",
+      "CreateUser": "superAdmin",
+      "CreateUserId": "212725263002001",
+      "IsDelete": "0"
+    },
+    {
+      "Id": "395093826302216",
+      "AssembleName": "ThingsGateway.Siemens.S7_200SMART",
+      "FileName": "ThingsGateway.Siemens",
+      "DriverTypeEnum": "Collect",
+      "FilePath": "Plugins\\ThingsGateway.Siemens\\ThingsGateway.Siemens.dll",
+      "CreateTime": "2023-03-12 20:20:55.728",
+      "CreateUser": "superAdmin",
+      "CreateUserId": "212725263002001",
+      "IsDelete": "0"
+    },
+    {
+      "Id": "395093826302217",
+      "AssembleName": "ThingsGateway.Siemens.S7_300",
+      "FileName": "ThingsGateway.Siemens",
+      "DriverTypeEnum": "Collect",
+      "FilePath": "Plugins\\ThingsGateway.Siemens\\ThingsGateway.Siemens.dll",
+      "CreateTime": "2023-03-12 20:20:55.728",
+      "CreateUser": "superAdmin",
+      "CreateUserId": "212725263002001",
+      "IsDelete": "0"
+    },
+    {
+      "Id": "395093826302218",
+      "AssembleName": "ThingsGateway.Siemens.S7_400",
+      "FileName": "ThingsGateway.Siemens",
+      "DriverTypeEnum": "Collect",
+      "FilePath": "Plugins\\ThingsGateway.Siemens\\ThingsGateway.Siemens.dll",
+      "CreateTime": "2023-03-12 20:20:55.728",
+      "CreateUser": "superAdmin",
+      "CreateUserId": "212725263002001",
+      "IsDelete": "0"
+    },
+    {
       "Id": "389003388313861",
       "AssembleName": "ThingsGateway.Modbus.ModbusRtuOverTcp",
       "FileName": "ThingsGateway.Modbus",

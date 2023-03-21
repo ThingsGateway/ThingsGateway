@@ -357,7 +357,6 @@
     </PModal>
 
 
-
     @code {
     private string _collectDeviceGroup;
     private string _uploadDeviceGroup;
@@ -369,19 +368,21 @@
     List<UploadDeviceCore> _uploadDeviceCores = new();
     void collectDeviceQuery()
     {
-        _collectDeviceCores = CollectDeviceHostService.CollectDeviceCores.WhereIf(!_collectDeviceGroup.IsNullOrEmpty(), a => a.Device.DeviceGroup == _collectDeviceGroup).ToList();
+        _collectDeviceCores = CollectDeviceHostService?.CollectDeviceCores?.WhereIf(!_collectDeviceGroup.IsNullOrEmpty(), a => a.Device.DeviceGroup == _collectDeviceGroup).ToList();
     }
     void uploadDeviceQuery()
     {
-        _uploadDeviceCores = UploadDeviceHostService.UploadDeviceCores.WhereIf(!_uploadDeviceGroup.IsNullOrEmpty(), a => a.Device.DeviceGroup == _uploadDeviceGroup).ToList();
+        _uploadDeviceCores = UploadDeviceHostService?.UploadDeviceCores?.WhereIf(!_uploadDeviceGroup.IsNullOrEmpty(), a => a.Device.DeviceGroup == _uploadDeviceGroup).ToList();
     }
     protected override async Task OnParametersSetAsync()
     {
         _collectDeviceGroups = CollectDeviceService.GetCacheList()?.Select(a => a.DeviceGroup)?.Where(a => a != null).Distinct()?.ToList();
         _uploadDeviceGroups = UploadDeviceService.GetCacheList()?.Select(a => a.DeviceGroup)?.Where(a => a != null).Distinct()?.ToList();
+        collectDeviceQuery();
+        uploadDeviceQuery();
         await base.OnParametersSetAsync();
     }
-
+  
     private bool isDownExport;
     [Inject]
     IJSRuntime JS { get; set; }
@@ -424,8 +425,7 @@
         DelayTimer.Elapsed += timer_Elapsed;
         DelayTimer.AutoReset = true;
         DelayTimer.Start();
-        collectDeviceQuery();
-        uploadDeviceQuery();
+
         return base.OnInitializedAsync();
     }
     private BootstrapDynamicComponent _importComponent;
@@ -459,6 +459,7 @@
                 isRestart = true;
                 StateHasChanged();
                 await Task.Run(async () => await CollectDeviceHostService.UpDeviceThread(devId));
+                collectDeviceQuery();
             }
         }
         catch (Exception ex)
@@ -480,6 +481,7 @@
                 isRestart = true;
                 StateHasChanged();
                 await Task.Run(() => UploadDeviceHostService.UpDeviceThread(devId));
+                uploadDeviceQuery();
             }
         }
         catch (Exception ex)
@@ -512,6 +514,8 @@
 
                 StateHasChanged();
                 await Task.Run(async () => await CollectDeviceHostService.RestartDeviceThread());
+                collectDeviceQuery();
+                uploadDeviceQuery();
             }
         }
         finally

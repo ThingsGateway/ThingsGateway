@@ -26,6 +26,7 @@
 		<ProjectReference Include="..\ThingsGateway.Foundation.Adapter.Modbus\ThingsGateway.Foundation.Adapter.Modbus.csproj" />
 		<ProjectReference Include="..\ThingsGateway.Foundation.Adapter.OPCDA\ThingsGateway.Foundation.Adapter.OPCDA.csproj" />
 		<ProjectReference Include="..\ThingsGateway.Foundation.Adapter.OPCUA\ThingsGateway.Foundation.Adapter.OPCUA.csproj" />
+		<ProjectReference Include="..\ThingsGateway.Foundation.Adapter.Siemens\ThingsGateway.Foundation.Adapter.Siemens.csproj" />
 	</ItemGroup>
 
 

@@ -10,47 +10,18 @@ namespace ThingsGateway.Foundation.Tests
 {
     public class Modbus
     {
+        private ITestOutputHelper _output;
         TcpClient client;
-        SerialClient serialClient;
         private TouchSocketConfig config;
-        private ModbusRtuOverTcp RtuTcpClient;
         private ModbusRtu RtuClient;
+        private ModbusRtuOverTcp RtuTcpClient;
         private ModbusRtuOverUdp RtuUdpClient;
+        SerialClient serialClient;
         private ModbusTcp TcpClient;
         private ModbusUdp UdpClient;
-        private ITestOutputHelper _output;
         public Modbus(ITestOutputHelper output)
         {
             _output = output;
-        }
-        [Fact]
-        public async Task RtuTcpReadTest()
-        {
-            ModbusRtuTcpClient();
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
-
-            for (int i = 0; i < 10; i++)
-            {
-                string address = $"4{i * 2 + 1};DATA=ABCD;";
-                var byteConverter = ByteConverterHelper.GetTransByAddress(ref address, RtuTcpClient.ThingsGatewayBitConverter, out int length, out BcdFormat bcdFormat);
-                var test = await RtuTcpClient.ReadAsync(address, 1);
-                var data = byteConverter.ToInt16(test.Content, 0);
-                _output.WriteLine(data.ToJson());
-            }
-
-            for (int i = 100; i < 110; i++)
-            {
-                string address = $"4{i * 2 + 1};TEXT=UTF8;LEN=4";
-                var byteConverter = ByteConverterHelper.GetTransByAddress(ref address, RtuTcpClient.ThingsGatewayBitConverter, out int length, out BcdFormat bcdFormat);
-                var test = await RtuTcpClient.ReadAsync(address, length / RtuTcpClient.RegisterByteLength);
-                var data = byteConverter.ToString(test.Content, 0, length);
-                _output.WriteLine(data.ToJson());
-            }
-
-            stopwatch.Stop();
-            _output.WriteLine("总耗时：" + stopwatch.Elapsed.TotalSeconds);
-
         }
         [Fact]
         public async Task RtuReadTest()
@@ -81,6 +52,36 @@ namespace ThingsGateway.Foundation.Tests
             _output.WriteLine("总耗时：" + stopwatch.Elapsed.TotalSeconds);
 
         }
+
+        [Fact]
+        public async Task RtuTcpReadTest()
+        {
+            ModbusRtuTcpClient();
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+
+            for (int i = 0; i < 10; i++)
+            {
+                string address = $"4{i * 2 + 1};DATA=ABCD;";
+                var byteConverter = ByteConverterHelper.GetTransByAddress(ref address, RtuTcpClient.ThingsGatewayBitConverter, out int length, out BcdFormat bcdFormat);
+                var test = await RtuTcpClient.ReadAsync(address, 1);
+                var data = byteConverter.ToInt16(test.Content, 0);
+                _output.WriteLine(data.ToJson());
+            }
+
+            for (int i = 100; i < 110; i++)
+            {
+                string address = $"4{i * 2 + 1};TEXT=UTF8;LEN=4";
+                var byteConverter = ByteConverterHelper.GetTransByAddress(ref address, RtuTcpClient.ThingsGatewayBitConverter, out int length, out BcdFormat bcdFormat);
+                var test = await RtuTcpClient.ReadAsync(address, length / RtuTcpClient.RegisterByteLength);
+                var data = byteConverter.ToString(test.Content, 0, length);
+                _output.WriteLine(data.ToJson());
+            }
+
+            stopwatch.Stop();
+            _output.WriteLine("总耗时：" + stopwatch.Elapsed.TotalSeconds);
+
+        }
         [Fact]
         public async Task TcpReadTest()
         {
@@ -100,6 +101,19 @@ namespace ThingsGateway.Foundation.Tests
             stopwatch.Stop();
             _output.WriteLine("总耗时：" + stopwatch.Elapsed.TotalSeconds);
 
+        }
+
+        private void ModbusRtuClient()
+        {
+            config = new TouchSocketConfig();
+            config.SetSerialProperty(new() { PortName = "COM6" })
+    .SetBufferLength(300);
+            //载入配置
+            serialClient = config.Container.Resolve<SerialClient>();
+            serialClient.Setup(config);
+            RtuClient = new(serialClient);
+            RtuClient.Station = 1;
+            RtuClient.TimeOut = 5000;
         }
 
         private void ModbusRtuTcpClient()
@@ -154,19 +168,5 @@ namespace ThingsGateway.Foundation.Tests
             UdpClient.Station = 1;
             UdpClient.TimeOut = 5000;
         }
-
-        private void ModbusRtuClient()
-        {
-            config = new TouchSocketConfig();
-            config.SetSerialProperty(new() { PortName = "COM6" })
-    .SetBufferLength(300);
-            //载入配置
-            serialClient = config.Container.Resolve<SerialClient>();
-            serialClient.Setup(config);
-            RtuClient = new(serialClient);
-            RtuClient.Station = 1;
-            RtuClient.TimeOut = 5000;
-        }
-
     }
 }
