@@ -17,7 +17,7 @@
 @layout MainLayout
 
 <MRow>
-    <MCol Md=3 Cols="12">
+    <MCol Md=2 Cols="12">
         <MCard Class="ma-2" Style="height:100%">
             <MCardTitle>
                 <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="mx-2 my-1" @bind-Value="_searchName"
@@ -37,7 +37,7 @@
             </MTreeview>
             </MCard>
             </MCol>
-            <MCol Md=9 Cols="12">
+            <MCol Md=10 Cols="12">
             <div style="height: calc(100vh - 200px)">
 
 <AppDataTable @ref="_datatable" TItem="CollectVariableRunTime" SearchItem="VariablePageInput"

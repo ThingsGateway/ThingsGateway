@@ -20,12 +20,14 @@ namespace ThingsGateway.Web.Page
         protected override async Task OnParametersSetAsync()
         {
             DriverPlugins = DriverPluginService.GetDriverPluginChildrenList(DriverEnum.Upload);
+            _deviceGroups = UploadDeviceService.GetCacheList()?.Select(a => a.DeviceGroup)?.Where(a => a != null).Distinct()?.ToList();
             await base.OnParametersSetAsync();
         }
 
         private async Task AddCall(UploadDeviceAddInput input)
         {
             await UploadDeviceService.Add(input);
+            _deviceGroups = UploadDeviceService.GetCacheList()?.Select(a => a.DeviceGroup)?.Where(a => a != null).Distinct()?.ToList();
         }
         private async Task datatableQuery()
         {
@@ -36,11 +38,13 @@ namespace ThingsGateway.Web.Page
         {
             await UploadDeviceService.Delete(input.ToList().ConvertAll(it => new BaseIdInput()
             { Id = it.Id }));
+            _deviceGroups = UploadDeviceService.GetCacheList()?.Select(a => a.DeviceGroup)?.Where(a => a != null).Distinct()?.ToList();
         }
 
         private async Task EditCall(UploadDeviceEditInput input)
         {
             await UploadDeviceService.Edit(input);
+            _deviceGroups = UploadDeviceService.GetCacheList()?.Select(a => a.DeviceGroup)?.Where(a => a != null).Distinct()?.ToList();
         }
 
         private void FilterHeaders(List<DataTableHeader<UploadDevice>> datas)
