@@ -53,7 +53,7 @@
     </MTabs>
     <MTabsItems Value="tab">
         <MTabItem>
-            <MRow>
+            <MRow NoGutters>
                 <MCol Md=2 Cols="12">
                     <MCard Class="ma-2" Style="height:100%">
                         <MCardTitle>
@@ -66,7 +66,7 @@
                                    {
                                    _collectDeviceGroup=a.FirstOrDefault(); collectDeviceQuery();
                                    }
-                             } )
+                                   } )
                                    Items="_collectDeviceGroups" ItemText="r=>r" ItemChildren="r=>null"
                                    Search="@_collectDeviceGroupSearchName"
                                    Activatable ItemKey=@(r=>r)>
@@ -75,117 +75,125 @@
                         </MCol>
                         <MCol Md=10 Cols="12">
                         <div style="height: calc(100vh - 300px)">
+
                             <MCard Height=@("calc(100vh - 320px)") Style="overflow-y:auto" Flat Class="ml-2 my-4">
                             <MRow NoGutters>
-                                @foreach (var item in _collectDeviceCores)
-                                {
-                                    <MCol Md=12 Cols="12">
-                                        <MCard Elevation="1" Class="ma-2">
-                                            <MCardSubtitle Class=@((item.Device.DeviceStatus==DeviceStatusEnum.OnLine?"green--text":"red--text")+$" text-h6")>
-                                                <div class="mt-1  d-flex align-center justify-space-between">
-                                                    <span>@item.Device.Name</span>
-                                                    <span class="text-caption">@(typeof(DeviceStatusEnum).GetDescription(item.Device.DeviceStatus.ToString()) + "     " + item.Device.DeviceOffMsg)</span>
-                                                </div>
-                                            </MCardSubtitle>
-                                            <MDivider></MDivider>
-                                            <MSubheader>
-                                                运行状态
-                                            </MSubheader>
-                                            <MRow Class="ml-2 mr-2 d-flex" NoGutters>
-                                            <MCol Md=4 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
-                                                <span class="text-subtitle-2 grey--text">@item.Device.Description(a=>a.ActiveTime)</span>
-                                                <span class="text-caption">@item.Device.ActiveTime</span>
-                                            </MCol>
-                                            <MCol Md=4 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
-                                                <span class="text-subtitle-2 grey--text">@item.Device.Description(a=>a.SourceVariableNum)</span>
-                                                <span class="text-caption">@item.Device.SourceVariableNum</span>
-                                            </MCol>
-                                            <MCol Md=4 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
-                                                <span class="text-subtitle-2 grey--text">@item.Device.Description(a=>a.DeviceVariablesNum)</span>
-                                                <span class="text-caption">@item.Device.DeviceVariablesNum</span>
-                                            </MCol>
-                                            <MCol Md=4 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
-                                                <span class="text-subtitle-2 grey--text">@item.Device.Description(a=>a.MethodVariableNum)</span>
-                                                <span class="text-caption">@item.Device.MethodVariableNum</span>
-                                            </MCol>
-
-                                        </MRow>
-
-                                        <MSubheader>
-                                            配置信息
-                                        </MSubheader>
-                                        <MRow Class="ml-2 mr-2 d-flex" NoGutters>
-                                            <MCol Md=4 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
-                                                <span class="text-subtitle-2 grey--text">@T("插件")</span>
-                                                <span class="text-caption">@item.Device.PluginName</span>
-                                            </MCol>
-                                            <MCol Md=4 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
-                                                <span class="text-subtitle-2 grey--text">@T("日志输出")</span>
-                                                <span class="text-caption">@item.Device.IsLogOut</span>
-                                            </MCol>
-                                            @foreach (var property in item.Device.DevicePropertys ?? new())
-                                                {
+                                <MExpansionPanels @bind-Value="panel">
+                                    @for (int i = 0; i < _collectDeviceCores.Count; i++)
+                                    {
+                                        var item = _collectDeviceCores[i];
+                                        <MExpansionPanel Value="i">
+                                            <MExpansionPanelHeader>
+                                                <MLabel Class=@((item.Device.DeviceStatus==DeviceStatusEnum.OnLine?"green--text":"red--text")+$" text-h6")>
+                                                    <div class="mt-1  d-flex align-center justify-space-between">
+                                                        <span>@item.Device.Name</span>
+                                                        <span class="text-caption">@(item.Device.ActiveTime + "     " + typeof(DeviceStatusEnum).GetDescription(item.Device.DeviceStatus.ToString()) + "     " + item.Device.DeviceOffMsg)</span>
+                                                    </div>
+                                                </MLabel>
+                                            </MExpansionPanelHeader>
+                                            <MExpansionPanelContent>
+                                                <MCard Flat Elevation="0" Class="ma-2">
+                                                <MDivider></MDivider>
+                                                <MSubheader>
+                                                    运行状态
+                                                </MSubheader>
+                                                <MRow Class="ml-2 mr-2 d-flex" NoGutters>
                                                     <MCol Md=4 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
-                                                        <span class="text-subtitle-2 grey--text">@property.Description</span>
-                                                        <span class="text-caption ">@(property.PropertyName.Contains("Password") ? "******" : @property.Value)</span>
+                                                        <span class="text-subtitle-2 grey--text">@item.Device.Description(a=>a.ActiveTime)</span>
+                                                        <span class="text-caption">@item.Device.ActiveTime</span>
                                                     </MCol>
-                                                }
-
-                                            </MRow>
-
-                                            <MCardActions>
-                                                <MSpacer></MSpacer>
-
-
-                                                <MTooltip Bottom Context="tip">
-                                                <ActivatorContent>
-                                                    <MButton Disabled=@(!UserResoures.IsHasPageWithRole("/tgruntime/collectdevicevariable")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small Loading=isRestart
-                                                             OnClick=@(()=>NavigationManager.NavigateTo("/tgruntime/collectdevicevariable?devicename="+item.Device.Name))>
-                                                        <MIcon>mdi-information-outline</MIcon>
-                                                        </MButton>
-                                                    </ActivatorContent>
-                                                    <ChildContent>
-                                                        <span>@T("相关变量")</span>
-                                                    </ChildContent>
-                                                    </MTooltip>
-
-
-                                                    <MTooltip Bottom Context="tip">
-                                                <ActivatorContent>
-                                                    <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("tgdevicepause")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small OnClick=@(()=>Config(item.DeviceId,!item.Device.Enable))>
-                                                        <MIcon>@(item.Device.Enable ? "mdi-pause" : "mdi-play")</MIcon>
-                                                            </MButton>
-                                                        </ActivatorContent>
-                                                        <ChildContent>
-                                                            <span>@(item.Device.Enable ? T("暂停") : T("运行"))</span>
-                                                    </ChildContent>
-                                                </MTooltip>
-                                                <MTooltip Bottom Context="tip">
-                                                <ActivatorContent>
-                                                    <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("tgdevicerestart")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small Loading=isRestart OnClick=@(()=>Restart(item.DeviceId))>
-                                                        <MIcon>mdi-restart</MIcon>
-                                                        </MButton>
-                                                    </ActivatorContent>
-                                                    <ChildContent>
-                                                        <span>@T("重启")</span>
-                                                    </ChildContent>
-                                                    </MTooltip>
-
-                                                    <MTooltip Bottom Context="tip">
-                                                <ActivatorContent>
-                                                    <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("tgdevicerestart")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small Loading=isRestart OnClick=@(()=>ImportVaiable(item.DeviceId))>
-                                                        <MIcon>mdi-import</MIcon>
-                                                        </MButton>
-                                                    </ActivatorContent>
-                                                    <ChildContent>
-                                                        <span>@T("导入变量")</span>
-                                                    </ChildContent>
-                                                    </MTooltip>
-                                                    </MCardActions>
-                                                    </MCard>
+                                                    <MCol Md=4 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
+                                                        <span class="text-subtitle-2 grey--text">@item.Device.Description(a=>a.SourceVariableNum)</span>
+                                                        <span class="text-caption">@item.Device.SourceVariableNum</span>
                                                     </MCol>
-                                }
+                                                    <MCol Md=4 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
+                                                        <span class="text-subtitle-2 grey--text">@item.Device.Description(a=>a.DeviceVariablesNum)</span>
+                                                        <span class="text-caption">@item.Device.DeviceVariablesNum</span>
+                                                    </MCol>
+                                                    <MCol Md=4 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
+                                                        <span class="text-subtitle-2 grey--text">@item.Device.Description(a=>a.MethodVariableNum)</span>
+                                                        <span class="text-caption">@item.Device.MethodVariableNum</span>
+                                                    </MCol>
 
+                                                </MRow>
+
+                                                <MSubheader>
+                                                    配置信息
+                                                </MSubheader>
+                                                <MRow Class="ml-2 mr-2 d-flex" NoGutters>
+                                                    <MCol Md=4 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
+                                                        <span class="text-subtitle-2 grey--text">@T("插件")</span>
+                                                        <span class="text-caption">@item.Device.PluginName</span>
+                                                    </MCol>
+                                                    <MCol Md=4 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
+                                                        <span class="text-subtitle-2 grey--text">@T("日志输出")</span>
+                                                        <span class="text-caption">@item.Device.IsLogOut</span>
+                                                    </MCol>
+                                                    @foreach (var property in item.Device.DevicePropertys ?? new())
+                                                        {
+                                                            <MCol Md=4 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
+                                                                <span class="text-subtitle-2 grey--text">@property.Description</span>
+                                                                <span class="text-caption ">@(property.PropertyName.Contains("Password") ? "******" : @property.Value)</span>
+                                                            </MCol>
+                                                        }
+
+                                                    </MRow>
+
+                                                    <MCardActions>
+                                                        <MSpacer></MSpacer>
+
+
+                                                        <MTooltip Bottom Context="tip">
+                                                        <ActivatorContent>
+                                                            <MButton Disabled=@(!UserResoures.IsHasPageWithRole("/tgruntime/collectdevicevariable")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small Loading=isRestart
+                                                                     OnClick=@(()=>NavigationManager.NavigateTo("/tgruntime/collectdevicevariable?devicename="+item.Device.Name))>
+                                                                <MIcon>mdi-information-outline</MIcon>
+                                                                </MButton>
+                                                            </ActivatorContent>
+                                                            <ChildContent>
+                                                                <span>@T("相关变量")</span>
+                                                            </ChildContent>
+                                                            </MTooltip>
+
+
+                                                            <MTooltip Bottom Context="tip">
+                                                        <ActivatorContent>
+                                                            <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("tgdevicepause")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small OnClick=@(()=>Config(item.DeviceId,!item.Device.Enable))>
+                                                                <MIcon>@(item.Device.Enable ? "mdi-pause" : "mdi-play")</MIcon>
+                                                                    </MButton>
+                                                                </ActivatorContent>
+                                                                <ChildContent>
+                                                                    <span>@(item.Device.Enable ? T("暂停") : T("运行"))</span>
+                                                            </ChildContent>
+                                                        </MTooltip>
+                                                        <MTooltip Bottom Context="tip">
+                                                        <ActivatorContent>
+                                                            <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("tgdevicerestart")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small Loading=isRestart OnClick=@(()=>Restart(item.DeviceId))>
+                                                                <MIcon>mdi-restart</MIcon>
+                                                                </MButton>
+                                                            </ActivatorContent>
+                                                            <ChildContent>
+                                                                <span>@T("重启")</span>
+                                                            </ChildContent>
+                                                            </MTooltip>
+
+                                                            <MTooltip Bottom Context="tip">
+                                                        <ActivatorContent>
+                                                            <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("tgdevicerestart")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small Loading=isRestart OnClick=@(()=>ImportVaiable(item.DeviceId))>
+                                                                <MIcon>mdi-import</MIcon>
+                                                                </MButton>
+                                                            </ActivatorContent>
+                                                            <ChildContent>
+                                                                <span>@T("导入变量")</span>
+                                                            </ChildContent>
+                                                            </MTooltip>
+                                                            </MCardActions>
+                                                            </MCard>
+
+                                                            </MExpansionPanelContent>
+                                                            </MExpansionPanel>
+                                    }
+                                </MExpansionPanels>
                             </MRow>
                         </MCard>
 
@@ -205,7 +213,7 @@
                                    {
                                    if(_uploadDeviceGroup!=a.FirstOrDefault())
                                    {
-                               _uploadDeviceGroup=a.FirstOrDefault(); uploadDeviceQuery();
+                                   _uploadDeviceGroup=a.FirstOrDefault(); uploadDeviceQuery();
                                    }
                                    } )
                                    Items="_uploadDeviceGroups" ItemText="r=>r" ItemChildren="r=>null"
@@ -216,73 +224,79 @@
                         </MCol>
                         <MCol Md=10 Cols="12">
                         <div style="height: calc(100vh - 300px)">
-
                             <MCard Height=@("calc(100vh - 320px)") Style="overflow-y:auto" Flat Class="ml-2 my-4">
                             <MRow NoGutters>
-                                @foreach (var item in _uploadDeviceCores)
-                                {
-                                    <MCol Md=12 Cols="12">
-                                        <MCard Elevation="1" Class="ma-2">
-                                            <MCardSubtitle Class=@((item.Device.DeviceStatus==DeviceStatusEnum.OnLine?"green--text":"red--text")+$" text-h6")>
-                                                <div class="mt-1  d-flex align-center justify-space-between">
-                                                    <span>@item.Device.Name</span>
-                                                    <span class="text-caption">@(typeof(DeviceStatusEnum).GetDescription(item.Device.DeviceStatus.ToString()) + "     " + item.Device.DeviceOffMsg)</span>
-                                                </div>
-                                            </MCardSubtitle>
-                                            <MDivider></MDivider>
+                                <MExpansionPanels @bind-Value="uppanel">
+                                    @for (int i = 0; i < _uploadDeviceCores.Count; i++)
+                                    {
+                                        var item = _uploadDeviceCores[i];
+                                        <MExpansionPanel Value="i">
+                                            <MExpansionPanelHeader>
+                                                <MLabel Class=@((item.Device.DeviceStatus==DeviceStatusEnum.OnLine?"green--text":"red--text")+$" text-h6")>
+                                                    <div class="mt-1  d-flex align-center justify-space-between">
+                                                        <span>@item.Device.Name</span>
+                                                        <span class="text-caption">@(item.Device.ActiveTime + "     " + typeof(DeviceStatusEnum).GetDescription(item.Device.DeviceStatus.ToString()) + "     " + item.Device.DeviceOffMsg)</span>
+                                                    </div>
+                                                </MLabel>
+                                            </MExpansionPanelHeader>
+                                            <MExpansionPanelContent>
+                                                <MCard Flat Elevation="0" Class="ma-2">
 
-                                            <MSubheader>
-                                                运行状态
-                                            </MSubheader>
+                                                <MDivider></MDivider>
 
-                                            <MRow Class="ml-2 mr-2 d-flex" NoGutters>
-                                            <MCol Md=4 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
-                                                <span class="text-subtitle-2 grey--text">@item.Device.Description(a=>a.ActiveTime)</span>
-                                                <span class="text-caption">@item.Device.ActiveTime</span>
-                                            </MCol>
-                                        </MRow>
-                                        <MSubheader>
-                                            配置信息
-                                        </MSubheader>
-                                        <MRow Class="ml-2 mr-2 d-flex" NoGutters>
-                                            <MCol Md=4 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
-                                                <span class="text-subtitle-2 grey--text">@T("插件")</span>
-                                                <span class="text-caption">@item.Device.PluginName</span>
-                                            </MCol>
-                                            <MCol Md=4 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
-                                                <span class="text-subtitle-2 grey--text">@T("日志输出")</span>
-                                                <span class="text-caption">@item.Device.IsLogOut</span>
-                                            </MCol>
+                                                <MSubheader>
+                                                    运行状态
+                                                </MSubheader>
 
-                                            @foreach (var property in item.Device.DevicePropertys ?? new())
-                                                {
+                                                <MRow Class="ml-2 mr-2 d-flex" NoGutters>
                                                     <MCol Md=4 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
-                                                        <span class="text-subtitle-2 grey--text">@property.Description</span>
-                                                        <span class="text-caption ">@(property.PropertyName.Contains("Password") ? "******" : @property.Value)</span>
+                                                        <span class="text-subtitle-2 grey--text">@item.Device.Description(a=>a.ActiveTime)</span>
+                                                        <span class="text-caption">@item.Device.ActiveTime</span>
+                                                    </MCol>
+                                                </MRow>
+                                                <MSubheader>
+                                                    配置信息
+                                                </MSubheader>
+                                                <MRow Class="ml-2 mr-2 d-flex" NoGutters>
+                                                    <MCol Md=4 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
+                                                        <span class="text-subtitle-2 grey--text">@T("插件")</span>
+                                                        <span class="text-caption">@item.Device.PluginName</span>
+                                                    </MCol>
+                                                    <MCol Md=4 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
+                                                        <span class="text-subtitle-2 grey--text">@T("日志输出")</span>
+                                                        <span class="text-caption">@item.Device.IsLogOut</span>
                                                     </MCol>
 
-                                                }
+                                                    @foreach (var property in item.Device.DevicePropertys ?? new())
+                                                        {
+                                                            <MCol Md=4 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
+                                                                <span class="text-subtitle-2 grey--text">@property.Description</span>
+                                                                <span class="text-caption ">@(property.PropertyName.Contains("Password") ? "******" : @property.Value)</span>
+                                                            </MCol>
 
-                                            </MRow>
+                                                        }
 
-                                            <MCardActions>
-                                                <MSpacer></MSpacer>
+                                                    </MRow>
 
-                                                <MTooltip Bottom Context="tip">
-                                                <ActivatorContent>
-                                                    <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("tgdevicerestart")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small Loading=isRestart OnClick=@(()=>UpRestart(item.DeviceId))>
-                                                        <MIcon>mdi-restart</MIcon>
-                                                        </MButton>
-                                                    </ActivatorContent>
-                                                    <ChildContent>
-                                                        <span>@T("重启")</span>
-                                                    </ChildContent>
-                                                    </MTooltip>
-                                                    </MCardActions>
-                                                    </MCard>
-                                                    </MCol>
-                                }
+                                                    <MCardActions>
+                                                        <MSpacer></MSpacer>
 
+                                                        <MTooltip Bottom Context="tip">
+                                                        <ActivatorContent>
+                                                            <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("tgdevicerestart")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small Loading=isRestart OnClick=@(()=>UpRestart(item.DeviceId))>
+                                                                <MIcon>mdi-restart</MIcon>
+                                                                </MButton>
+                                                            </ActivatorContent>
+                                                            <ChildContent>
+                                                                <span>@T("重启")</span>
+                                                            </ChildContent>
+                                                            </MTooltip>
+                                                            </MCardActions>
+                                                            </MCard>
+                                                            </MExpansionPanelContent>
+                                                            </MExpansionPanel>
+                                    }
+                                </MExpansionPanels>
                             </MRow>
                         </MCard>
 
@@ -358,6 +372,8 @@
 
 
     @code {
+    StringNumber panel { get; set; }
+    StringNumber uppanel { get; set; }
     private string _collectDeviceGroup;
     private string _uploadDeviceGroup;
     string _collectDeviceGroupSearchName;
@@ -382,7 +398,7 @@
         uploadDeviceQuery();
         await base.OnParametersSetAsync();
     }
-  
+
     private bool isDownExport;
     [Inject]
     IJSRuntime JS { get; set; }
