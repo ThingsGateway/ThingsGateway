@@ -22,8 +22,8 @@ namespace ThingsGateway.Foundation.Tests
             _opc?.Dispose();
         }
         [Theory]
-        [InlineData("ns=2;s=数据类型示例.8 位设备.K 寄存器.DWord2")] //kep
-        public async Task OpcSubscribeTest(string address)
+        [InlineData("ns=2;s=数据类型示例.8 位设备.K 寄存器.DWord2", typeof(UInt32))] //kep
+        public async Task OpcSubscribeTest(string address, Type type)
         {
             _opc = new OPCUAClient();
             //_opc.UserIdentity = new UserIdentity("Administrator", "111111");
@@ -35,7 +35,7 @@ namespace ThingsGateway.Foundation.Tests
             _opc.DataChangedHandler = DataReceived;
             await _opc.ConnectServer();
             Assert.True(_opc.Connected);
-            var result = _opc.WriteNode(address, (UInt32)new Random().Next(100));
+            var result = _opc.WriteNode(address, Convert.ChangeType(new Random().Next(100), type));
             Assert.True(result);
 
             await Task.Delay(2000);
