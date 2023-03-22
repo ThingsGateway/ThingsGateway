@@ -90,8 +90,8 @@
 ####  支持作者
  如果对您有帮助，请点击右上角⭐Star关注，感谢支持开源！
 
- 若希望捐赠项目，请[点击](https://diego2098.gitee.io/thingsgateway/docs/03%E3%80%81%E6%94%AF%E6%8C%81%E9%A1%B9%E7%9B%AE%E4%B8%8E%E4%B8%93%E4%B8%9A%E7%89%88%E8%AF%B4%E6%98%8E/%E6%94%AF%E6%8C%81%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE)查看捐赠码或使用Gitee捐赠功能
- 
+ 若希望捐赠项目，请[点击](https://diego2098.gitee.io/thingsgateway/docs/03%E3%80%81%E6%94%AF%E6%8C%81%E9%A1%B9%E7%9B%AE%E4%B8%8EPro%E7%89%88%E8%AF%B4%E6%98%8E/%E6%94%AF%E6%8C%81%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE/)查看捐赠码或使用Gitee捐赠功能
+
 
 ####  联系作者
  * QQ群：605534569
