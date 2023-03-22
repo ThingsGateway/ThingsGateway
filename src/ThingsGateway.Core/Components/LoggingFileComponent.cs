@@ -14,10 +14,11 @@ namespace ThingsGateway.Core
 
         public void Load(IServiceCollection services, ComponentContext componentContext)
         {
+
             var logFileEnable = App.GetConfig<bool>("LogFileEnable");
             if (logFileEnable != true) return;
             //获取默认日志等级
-            var defaultLevel = App.GetConfig<LogLevel?>("Logging:LogLevel:Default");
+            var defaultLevel = App.GetConfig<LogLevel?>("Logging:LogLevel:FileDefault");
             //获取最大日志等级，默认Error
             var maxLevel = App.GetConfig<LogLevel?>("Logging:LogLevel:Max") ?? LogLevel.Error;
             //获取程序根目录
@@ -69,6 +70,9 @@ namespace ThingsGateway.Core
                     //如果配置不写入mongitor日志和日志名称为System.Logging.LoggingMonitor
                     if (!WriteMonitor && logMsg.LogName == "System.Logging.LoggingMonitor")
                         return false;
+                    if(!logMsg.LogName.StartsWith("System") &&
+!logMsg.LogName.StartsWith("Microsoft"))
+                    { return false; }
                     return logMsg.LogLevel == logLevel;
                 };
             }

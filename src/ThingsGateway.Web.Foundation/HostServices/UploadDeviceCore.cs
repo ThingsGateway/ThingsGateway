@@ -176,7 +176,7 @@ public class UploadDeviceCore : DisposableObject
                         }
                         catch (Exception ex)
                         {
-                            _logger?.LogError(ex, $"上传线程循环异常{_device.Name}");
+                            _logger?.LogWarning(ex, $"上传线程循环异常{_device.Name}");
                         }
                     }
                     catch (TaskCanceledException)
@@ -185,7 +185,7 @@ public class UploadDeviceCore : DisposableObject
                     }
                     catch (Exception ex)
                     {
-                        _logger?.LogError(ex, $"上传线程循环异常{_device.Name}");
+                        _logger?.LogWarning(ex, $"上传线程循环异常{_device.Name}");
                     }
                 }
 

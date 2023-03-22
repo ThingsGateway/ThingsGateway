@@ -181,7 +181,7 @@ namespace ThingsGateway.OPCUA
             }
             catch (Exception ex)
             {
-                _logger?.LogError(ex, ToString());
+                _logger?.LogWarning(ex, ToString());
                 Device.DeviceOffMsg = ex.Message;
             }
         }
@@ -189,7 +189,7 @@ namespace ThingsGateway.OPCUA
         {
             if (e.Error)
             {
-                _logger.LogError(e.Text);
+                _logger.LogWarning(e.Text);
                 Device.DeviceStatus = DeviceStatusEnum.OnLineButNoInitialValue;
                 Device.DeviceOffMsg = $"{e.Text}";
             }

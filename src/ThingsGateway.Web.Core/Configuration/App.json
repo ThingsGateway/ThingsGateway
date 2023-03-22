@@ -3,15 +3,15 @@
   //"Urls": "https://localhost:7101;http://localhost:7100",
   "Logging": {
     "LogLevel": {
-      "Default": "Trace",
-      "Custom": "Information",
-      "Console": "Information",
+      "FileDefault": "Information", //程序日志写入文件等级，不包含网关日志
+      "RunTimeLogCustom": "Information", //网关运行日志存入数据库等级，部署推荐Error
+      "Console": "Trace", //控制台输出日志等级
       "Microsoft": "Warning",
       "Microsoft.Hosting.Lifetime": "Information"
     }
   },
-  "LogFileEnable": false,
-  "WriteMonitor": false,
+  "LogFileEnable": true, //程序日志写入文件
+  "WriteMonitor": true, //程序日志是否包含Monitor
   //动态API设备
   "DynamicApiControllerSettings": {
     "LowercaseRoute": false, //是否采用小写路由，bool 类型，默认 true

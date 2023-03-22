@@ -210,7 +210,7 @@ public class ValueHisHostService : BackgroundService, ISingleton
                             catch (Exception ex)
                             {
                                 if (LastIsSuccess)
-                                    _logger?.LogError(ex, $"历史数据循环异常");
+                                    _logger?.LogWarning(ex, $"历史数据循环异常");
                                 StatuString = new OperResult($"异常：请查看后台日志");
                                 LastIsSuccess = false;
                             }
