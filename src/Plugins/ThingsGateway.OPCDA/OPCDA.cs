@@ -159,7 +159,7 @@ namespace ThingsGateway.OPCDA
             }
             catch (Exception ex)
             {
-                _logger?.LogError(ex, ToString());
+                _logger?.LogWarning(ex, ToString());
                 Device.DeviceStatus = DeviceStatusEnum.OnLineButNoInitialValue;
                 Device.DeviceOffMsg = ex.Message;
             }

@@ -278,7 +278,7 @@ namespace ThingsGateway.Mqtt
             }
             catch (Exception ex)
             {
-                _logger?.LogError(ex, ToString());
+                _logger?.LogWarning(ex, ToString());
                 mqttRpcResult = new() { Message = "Failed", RpcId = rpcData.RpcId, Success = false };
             }
             try
@@ -316,7 +316,7 @@ namespace ThingsGateway.Mqtt
                         }
                         catch (Exception ex)
                         {
-                            _logger.LogError(ex, ToString());
+                            _logger.LogWarning(ex, ToString());
                         }
 
                     }
@@ -324,7 +324,7 @@ namespace ThingsGateway.Mqtt
             }
             catch (Exception ex)
             {
-                _logger?.LogError(ex, ToString());
+                _logger?.LogWarning(ex, ToString());
             }
             try
             {
@@ -346,7 +346,7 @@ namespace ThingsGateway.Mqtt
                         }
                         catch (Exception ex)
                         {
-                            _logger.LogError(ex, ToString());
+                            _logger.LogWarning(ex, ToString());
                         }
                     }
 
@@ -354,7 +354,7 @@ namespace ThingsGateway.Mqtt
             }
             catch (Exception ex)
             {
-                _logger?.LogError(ex, ToString());
+                _logger?.LogWarning(ex, ToString());
             }
 
             if (CycleInterval > 500 + 50)

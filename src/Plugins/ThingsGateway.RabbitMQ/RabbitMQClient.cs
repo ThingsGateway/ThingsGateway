@@ -150,7 +150,7 @@ namespace ThingsGateway.RabbitMQ
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogError(ex, ToString());
+                        _logger.LogWarning(ex, ToString());
                     }
                 }
      
@@ -175,7 +175,7 @@ namespace ThingsGateway.RabbitMQ
                             }
                             catch (Exception ex)
                             {
-                                _logger.LogError(ex, ToString());
+                                _logger.LogWarning(ex, ToString());
                             }
 
                         }
@@ -194,7 +194,7 @@ namespace ThingsGateway.RabbitMQ
                             }
                             catch (Exception ex)
                             {
-                                _logger.LogError(ex, ToString());
+                                _logger.LogWarning(ex, ToString());
                             }
                         }
 
@@ -204,7 +204,7 @@ namespace ThingsGateway.RabbitMQ
             }
             catch (Exception ex)
             {
-                _logger?.LogError(ex, ToString());
+                _logger?.LogWarning(ex, ToString());
             }
             try
             {
@@ -227,7 +227,7 @@ namespace ThingsGateway.RabbitMQ
                             }
                             catch (Exception ex)
                             {
-                                _logger.LogError(ex, ToString());
+                                _logger.LogWarning(ex, ToString());
                             }
 
                         }
@@ -246,7 +246,7 @@ namespace ThingsGateway.RabbitMQ
                             }
                             catch (Exception ex)
                             {
-                                _logger.LogError(ex, ToString());
+                                _logger.LogWarning(ex, ToString());
                             }
                         }
 
@@ -257,7 +257,7 @@ namespace ThingsGateway.RabbitMQ
             }
             catch (Exception ex)
             {
-                _logger?.LogError(ex, ToString());
+                _logger?.LogWarning(ex, ToString());
             }
 
             if (CycleInterval > 500 + 50)

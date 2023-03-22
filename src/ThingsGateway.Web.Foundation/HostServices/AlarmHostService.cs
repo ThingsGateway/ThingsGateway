@@ -167,7 +167,7 @@ public class AlarmHostService : BackgroundService, ISingleton
                     }
                     catch (Exception ex)
                     {
-                        _logger?.LogError(ex, $"实时报警循环异常");
+                        _logger?.LogWarning(ex, $"实时报警循环异常");
                     }
                 }
             }, StoppingToken.Token
@@ -253,7 +253,7 @@ public class AlarmHostService : BackgroundService, ISingleton
                             catch (Exception ex)
                             {
                                 if (LastIsSuccess)
-                                    _logger?.LogError($"历史报警循环异常:" + ex.Message);
+                                    _logger?.LogWarning($"历史报警循环异常:" + ex.Message);
                                 StatuString = new OperResult($"异常：请查看后台日志");
                                 LastIsSuccess = false;
                             }

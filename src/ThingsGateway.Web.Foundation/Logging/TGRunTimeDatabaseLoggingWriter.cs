@@ -33,7 +33,7 @@ namespace ThingsGateway.Web.Foundation
         }
         public void Write(LogMessage logMsg, bool flush)
         {
-            var customLevel = App.GetConfig<LogLevel?>("Logging:LogLevel:Custom") ?? LogLevel.Trace;
+            var customLevel = App.GetConfig<LogLevel?>("Logging:LogLevel:RunTimeLogCustom") ?? LogLevel.Trace;
             if (logMsg.LogLevel >= customLevel)
             {
                 var logRuntime = new RuntimeLog

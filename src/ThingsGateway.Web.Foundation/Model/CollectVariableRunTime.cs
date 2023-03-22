@@ -64,12 +64,13 @@ public class CollectVariableRunTime : CollectDeviceVariable
             try
             {
                 data = ReadExpressions.GetExpressionsResult(RawValue);
+                Set(data);
             }
             catch (Exception ex)
             {
+                Set(value);
                 (Name + " 转换表达式失败：" + ex.Message).LogError();
             }
-            Set(data);
         }
         else
         {

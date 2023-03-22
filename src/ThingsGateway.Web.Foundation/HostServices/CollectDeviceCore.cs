@@ -265,7 +265,7 @@ public class CollectDeviceCore : DisposableObject
                         }
                         catch (Exception ex)
                         {
-                            _logger?.LogError(ex, $"采集线程循环异常{_device.Name}");
+                            _logger?.LogWarning(ex, $"采集线程循环异常{_device.Name}");
                         }
                     }
                     catch (TaskCanceledException)
@@ -274,7 +274,7 @@ public class CollectDeviceCore : DisposableObject
                     }
                     catch (Exception ex)
                     {
-                        _logger?.LogError(ex, $"采集线程循环异常{_device.Name}");
+                        _logger?.LogWarning(ex, $"采集线程循环异常{_device.Name}");
                     }
                 }
 
