@@ -21,7 +21,7 @@
                 @T("导入表格")
                 </MStepperStep>
                 <MDivider></MDivider>
-                <MStepperStep Step="2" >
+                <MStepperStep Step="2">
                 @T("验证结果")
                 </MStepperStep>
                 <MDivider></MDivider>
@@ -53,8 +53,14 @@
                             if (item.Value.HasError)
                             {
                                 <div class="mb-3 red--text">@T("请检查以下错误列") </div>
-                                foreach (var error in item.Value.RowErrors)
+                                for (int i = 0; i < item.Value.RowErrors.Count; i++)
                                 {
+                                    var error = item.Value.RowErrors[i];
+                                    if (i >= 10)
+                                    {
+                                        <div class="red--text">......</div>
+                                        break;
+                                    }
                                     <div class="red--text">@($"第{error.RowIndex + 1}行:")</div>
                                     @foreach (var errorField in error.FieldErrors)
                                     {
@@ -97,9 +103,7 @@
     IBrowserFile _importFile;
     [Parameter]
     public int Step { get; set; }
-    public bool IsShowImport {
-        get;
-        set; }
+    public bool IsShowImport { get; set; }
     bool isDownTemplate; bool isImport; bool isSaveImport;
     Dictionary<string, ImportPreviewOutputBase> ImportPreviews = new();
 
@@ -109,7 +113,7 @@
     public Func<IBrowserFile, Task<Dictionary<string, ImportPreviewOutputBase>>> Preview { get; set; }
     [Parameter]
     public Func<Task<MemoryStream>> Template { get; set; }
- 
+
 
     async Task SaveDeviceImport()
     {
@@ -160,4 +164,3 @@
 
     }
 }
- 
