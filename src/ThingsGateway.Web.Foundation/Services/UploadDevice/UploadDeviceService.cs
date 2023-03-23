@@ -187,9 +187,13 @@ namespace ThingsGateway.Web.Foundation
             foreach (var devData in devDatas)
             {
                 var propertyExcels = devData.DevicePropertys.Adapt<List<DevicePropertyExport>>();
-                //需要手动改正设备名称
-                propertyExcels.ForEach(it => it.DeviceName = devData.Name);
-                devicePropertys.AddRange(propertyExcels);
+                if (propertyExcels != null)
+                {
+                    //需要手动改正设备名称
+                    propertyExcels.ForEach(it => it.DeviceName = devData.Name);
+                    devicePropertys.AddRange(propertyExcels);
+                }
+
             }
 
             var exporter = new ExcelExporter();

@@ -221,14 +221,18 @@ namespace ThingsGateway.Web.Foundation
             foreach (var devData in devDatas)
             {
                 var propertyExcels = devData.VariablePropertys.Adapt<Dictionary<long, List<VariablePropertyExport>>>();
-                //需要手动改正设备名称
-                foreach (var property in propertyExcels)
+                if (propertyExcels != null)
                 {
-                    var upDevName = _uploadDeviceService.GetNameById(property.Key);
-                    property.Value.ForEach(it => it.DeviceName = upDevName);
-                    property.Value.ForEach(it => it.VariableName = devData.Name);
-                    devicePropertys.AddRange(property.Value);
+                    //需要手动改正设备名称
+                    foreach (var property in propertyExcels)
+                    {
+                        var upDevName = _uploadDeviceService.GetNameById(property.Key);
+                        property.Value.ForEach(it => it.DeviceName = upDevName);
+                        property.Value.ForEach(it => it.VariableName = devData.Name);
+                        devicePropertys.AddRange(property.Value);
+                    }
                 }
+
 
             }
 
@@ -274,14 +278,19 @@ namespace ThingsGateway.Web.Foundation
             foreach (var devData in devDatas)
             {
                 var propertyExcels = devData.VariablePropertys.Adapt<Dictionary<long, List<VariablePropertyExport>>>();
-                //需要手动改正设备名称
-                foreach (var property in propertyExcels)
+                if (propertyExcels != null)
                 {
-                    var upDevName = _uploadDeviceService.GetNameById(property.Key);
-                    property.Value.ForEach(it => it.DeviceName = upDevName);
-                    property.Value.ForEach(it => it.VariableName = devData.Name);
-                    devicePropertys.AddRange(property.Value);
+                    //需要手动改正设备名称
+                    foreach (var property in propertyExcels)
+                    {
+                        var upDevName = _uploadDeviceService.GetNameById(property.Key);
+                        property.Value.ForEach(it => it.DeviceName = upDevName);
+                        property.Value.ForEach(it => it.VariableName = devData.Name);
+                        devicePropertys.AddRange(property.Value);
+                    }
+
                 }
+
 
             }
             var exporter = new ExcelExporter();
