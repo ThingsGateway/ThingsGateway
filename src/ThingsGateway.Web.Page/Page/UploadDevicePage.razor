@@ -106,7 +106,7 @@
 
 
 @code {
-        string _searchName;
+    string _searchName;
     List<string> _deviceGroups = new();
     private UploadDevicePageInput search = new();
 
@@ -157,14 +157,14 @@
     {
         if (pluginId > 0)
             context.PluginId = pluginId;
-        if (context.PluginId > 0)
+        else
+            return;
+        if (context.DevicePropertys == null || context.DevicePropertys?.Count == 0)
         {
             context.DevicePropertys = GetDriverProperties(context.PluginId, context.Id);
             await PopupService.EnqueueSnackbarAsync("插件附加属性已更新", AlertTypes.Success);
         }
-        else
-        {
-        }
+
     }
     List<DependencyProperty> GetDriverProperties(long driverId, long devId)
     {
