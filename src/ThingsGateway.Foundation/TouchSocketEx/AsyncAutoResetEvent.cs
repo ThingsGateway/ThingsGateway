@@ -110,7 +110,7 @@ namespace ThingsGateway.Foundation
 
             while (true)
             {
-            _locker.Lock();
+                _locker.Lock();
                 {
                     if (_waitQueue.Count == 0)
                     {
@@ -125,7 +125,7 @@ namespace ThingsGateway.Foundation
 
         private bool _isDisposed;
 
-        private readonly EasyLock _locker = new ();
+        private readonly EasyLock _locker = new();
 
         private readonly Queue<TaskCompletionSource<bool>> _waitQueue =
             new Queue<TaskCompletionSource<bool>>();

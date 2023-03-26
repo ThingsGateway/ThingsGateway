@@ -7,7 +7,7 @@ using Xunit.Abstractions;
 
 namespace ThingsGateway.Foundation.Tests
 {
-    public class ModbusServerTest:IDisposable
+    public class ModbusServerTest : IDisposable
     {
         private ModbusServer ModbusServer;
         private ITestOutputHelper _output;
@@ -45,11 +45,11 @@ namespace ThingsGateway.Foundation.Tests
 
         private void ModbusServerClient(string url)
         {
-           var config = new TouchSocketConfig();
+            var config = new TouchSocketConfig();
             config.SetListenIPHosts(new IPHost[] { new IPHost(url) })
     .SetBufferLength(300);
             //‘ÿ»Î≈‰÷√
-           var service = config.Container.Resolve<TcpService>();
+            var service = config.Container.Resolve<TcpService>();
             service.Setup(config);
             ModbusServer = new(service);
             ModbusServer.ConnectTimeOut = 5000;

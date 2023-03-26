@@ -55,8 +55,8 @@ namespace ThingsGateway.Modbus
         public override void Dispose()
         {
             _ModbusTags?.Values?.ToList()?.ForEach(a => a.VariableValueChange -= VariableValueChange);
-            if(_plc!=null)
-            _plc.Write -= Write;
+            if (_plc != null)
+                _plc.Write -= Write;
             _plc?.Stop();
             _plc?.Dispose();
         }
@@ -170,11 +170,9 @@ namespace ThingsGateway.Modbus
             IsFirst = false;
 
             var list = Values.ToListWithDequeue();
-            await Task.Yield();
             foreach (var item in list)
             {
                 await _plc.WriteAsync(item.Item2.DataType, item.Item1, item.Item2.Value?.ToString());
-                //直接异步等待1s
             }
             await Task.Delay(100, cancellationToken);
         }

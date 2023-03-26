@@ -16,8 +16,8 @@ namespace ThingsGateway.Foundation.Serial
             PortName = strs[0];
             BaudRate = Convert.ToInt32(strs[1]);
             DataBits = Convert.ToInt32(strs[2]);
-            Parity = (Parity)Enum.Parse(typeof(Parity),strs[3]);
-            StopBits = (StopBits)Enum.Parse(typeof(StopBits),strs[4]);
+            Parity = (Parity)Enum.Parse(typeof(Parity), strs[3]);
+            StopBits = (StopBits)Enum.Parse(typeof(StopBits), strs[4]);
             return this;
         }
         public override string ToString()

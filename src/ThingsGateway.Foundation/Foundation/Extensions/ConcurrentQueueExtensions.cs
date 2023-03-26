@@ -7,9 +7,9 @@ namespace ThingsGateway.Foundation.Extension
         /// <summary>
         /// 批量出队
         /// </summary>
-        public static List<T> ToListWithDequeue<T>(this ConcurrentQueue<T> values, int conut=0)
+        public static List<T> ToListWithDequeue<T>(this ConcurrentQueue<T> values, int conut = 0)
         {
-            if(conut==0)
+            if (conut == 0)
             {
                 conut = values.Count;
             }

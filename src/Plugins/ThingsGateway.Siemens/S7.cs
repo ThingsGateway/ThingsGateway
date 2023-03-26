@@ -71,11 +71,11 @@ namespace ThingsGateway.Siemens
         {
             return true;
         }
-        public override  OperResult<List<DeviceVariableSourceRead>> LoadSourceRead(List<CollectVariableRunTime> deviceVariables)
+        public override OperResult<List<DeviceVariableSourceRead>> LoadSourceRead(List<CollectVariableRunTime> deviceVariables)
         {
             Init(null);
             _plc.Connect();
-            var data= deviceVariables.LoadSourceRead(_logger, ThingsGatewayBitConverter, _plc);
+            var data = deviceVariables.LoadSourceRead(_logger, ThingsGatewayBitConverter, _plc);
             _plc?.Disconnect();
             return data;
         }

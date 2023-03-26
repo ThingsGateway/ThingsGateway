@@ -1,6 +1,4 @@
-﻿using ThingsGateway.Foundation;
-
-namespace ThingsGateway.Siemens
+﻿namespace ThingsGateway.Siemens
 {
     public class S7_200 : S7
     {

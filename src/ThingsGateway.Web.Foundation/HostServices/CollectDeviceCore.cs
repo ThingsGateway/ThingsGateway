@@ -166,7 +166,7 @@ public class CollectDeviceCore : DisposableObject
                     try
                     {
                         await Task.Delay(100, StoppingToken.Token);
-                     
+
                         if (_driver == null) continue;
 
                         if (Device?.Enable == false)
@@ -178,7 +178,7 @@ public class CollectDeviceCore : DisposableObject
                         {
                             if (Device.DeviceStatus != DeviceStatusEnum.OnLineButNoInitialValue && Device.DeviceStatus != DeviceStatusEnum.OnLine)
                                 Device.DeviceStatus = DeviceStatusEnum.OnLineButNoInitialValue;
-                            if(DeviceVariableSourceReads.Count==0&&Device.DeviceVariableRunTimes.Where(a=>a.OtherMethod.IsNullOrEmpty()).Count()>0)
+                            if (DeviceVariableSourceReads.Count == 0 && Device.DeviceVariableRunTimes.Where(a => a.OtherMethod.IsNullOrEmpty()).Count() > 0)
                             {
                                 Device.DeviceStatus = DeviceStatusEnum.OnLineButNoInitialValue;
                                 Device.DeviceOffMsg = "分包失败，请检查变量地址是否符合规则";
@@ -249,11 +249,11 @@ public class CollectDeviceCore : DisposableObject
                                 }
 
 
-                                if(deviceMedsVariableFailedNum == 0 && deviceSourceVariableFailedNum == 0)
+                                if (deviceMedsVariableFailedNum == 0 && deviceSourceVariableFailedNum == 0)
                                 {
                                     Device.ActiveTime = DateTime.Now;
                                 }
-                                if (deviceMedsVariableFailedNum == 0 && deviceSourceVariableFailedNum == 0&&(DeviceVariableSourceReads.Count != 0|| DeviceVariableMedReads.Count!=0))
+                                if (deviceMedsVariableFailedNum == 0 && deviceSourceVariableFailedNum == 0 && (DeviceVariableSourceReads.Count != 0 || DeviceVariableMedReads.Count != 0))
                                 {
                                     Device.DeviceStatus = DeviceStatusEnum.OnLine;
 

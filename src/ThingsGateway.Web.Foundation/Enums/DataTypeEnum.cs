@@ -60,7 +60,7 @@ public static class DataTypeExtension
                 return typeof(ulong);
             case DataTypeEnum.Single:
                 return typeof(float);
-                
+
             case DataTypeEnum.Double:
                 return typeof(double);
             default:

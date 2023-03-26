@@ -76,7 +76,7 @@ namespace ThingsGateway.RabbitMQ
         protected override void Init(UploadDevice device)
         {
             _curDevice = device;
-             _connectionFactory = new ConnectionFactory
+            _connectionFactory = new ConnectionFactory
             {
                 HostName = IP,
                 Port = Port,
@@ -132,7 +132,7 @@ namespace ThingsGateway.RabbitMQ
         {
             try
             {
-                if(_model==null)
+                if (_model == null)
                 {
                     try
                     {
@@ -154,7 +154,7 @@ namespace ThingsGateway.RabbitMQ
                         _logger.LogWarning(ex, ToString());
                     }
                 }
-     
+
 
 
                 ////变化推送

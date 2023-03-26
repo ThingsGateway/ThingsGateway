@@ -7,7 +7,7 @@ namespace ThingsGateway.Foundation
         private readonly TGWaitData<ResponsedData> m_waitData;
 
         private volatile bool breaked;
-         
+
         public TGWaitingClient(TClient client, WaitingOptions waitingOptions)
         {
             Client = client ?? throw new ArgumentNullException(nameof(client));
@@ -418,7 +418,7 @@ namespace ThingsGateway.Foundation
             {
                 responsedData = new ResponsedData(null, requestInfo);
             }
-             m_waitData.Set(responsedData);
+            m_waitData.Set(responsedData);
             return false;
         }
     }

@@ -46,7 +46,7 @@ namespace ThingsGateway.OPCUA
 
         public override void Dispose()
         {
-            if(PLC != null)
+            if (PLC != null)
             {
                 PLC.DataChangedHandler -= dataChangedHandler;
                 PLC.OpcStatusChange -= opcStatusChange;
@@ -102,7 +102,7 @@ namespace ThingsGateway.OPCUA
         public override async Task<OperResult> WriteValueAsync(CollectVariableRunTime deviceVariable, string value)
         {
             await Task.CompletedTask;
-            var result = PLC.WriteNode(deviceVariable.VariableAddress,Convert.ChangeType( value,deviceVariable.DataType));
+            var result = PLC.WriteNode(deviceVariable.VariableAddress, Convert.ChangeType(value, deviceVariable.DataType));
             return result ? OperResult.CreateSuccessResult() : new OperResult();
         }
 
