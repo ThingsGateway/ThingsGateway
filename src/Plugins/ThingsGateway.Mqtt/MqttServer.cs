@@ -129,8 +129,8 @@ namespace ThingsGateway.Mqtt
                 a.VariableValueChange += VariableValueChange;
             });
         }
-        private IntelligentConcurrentQueue<VariableData> CollectVariableRunTimes { get; set; } = new(10000);
-        private IntelligentConcurrentQueue<DeviceData> CollectDeviceRunTimes { get; set; } = new(10000);
+        private ConcurrentQueue<VariableData> CollectVariableRunTimes { get; set; } = new();
+        private ConcurrentQueue<DeviceData> CollectDeviceRunTimes { get; set; } = new();
 
         private void DeviceStatusCahnge(CollectDeviceRunTime collectDeviceRunTime)
         {
@@ -205,7 +205,7 @@ namespace ThingsGateway.Mqtt
             try
             {
                 ////变化推送
-                var varList = CollectVariableRunTimes.ToListWithDequeue(10000);
+                var varList = CollectVariableRunTimes.ToListWithDequeue();
 
                 if (varList?.Count != 0)
                 {
@@ -238,7 +238,7 @@ namespace ThingsGateway.Mqtt
             try
             {
                 ////变化推送
-                var devList = CollectDeviceRunTimes.ToListWithDequeue(10000);
+                var devList = CollectDeviceRunTimes.ToListWithDequeue();
                 if (devList?.Count != 0)
                 {
                     //分解List，避免超出mqtt字节大小限制

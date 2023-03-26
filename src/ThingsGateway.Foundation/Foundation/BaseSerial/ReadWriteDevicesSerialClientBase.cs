@@ -47,7 +47,7 @@ namespace ThingsGateway.Foundation
             {
                 if (waitingOptions == null) { waitingOptions = new WaitingOptions(); waitingOptions.ThrowBreakException = true; waitingOptions.AdapterFilter = AdapterFilter.NoneAll; }
                 await OpenAsync();
-                ResponsedData result = await SerialClient.GetWaitingClient(waitingOptions).SendThenResponseAsync(data, TimeOut, token);
+                ResponsedData result = await SerialClient.GetTGWaitingClient(waitingOptions).SendThenResponseAsync(data, TimeOut, token);
                 return OperResult.CreateSuccessResult(result.Data);
             }
             catch (Exception ex)
@@ -62,7 +62,7 @@ namespace ThingsGateway.Foundation
             {
                 if (waitingOptions == null) { waitingOptions = new WaitingOptions(); waitingOptions.ThrowBreakException = true; waitingOptions.AdapterFilter = AdapterFilter.NoneAll; }
                 Open();
-                ResponsedData result = SerialClient.GetWaitingClient(waitingOptions).SendThenResponse(data, TimeOut, token);
+                ResponsedData result = SerialClient.GetTGWaitingClient(waitingOptions).SendThenResponse(data, TimeOut, token);
                 return OperResult.CreateSuccessResult(result.Data);
             }
             catch (Exception ex)

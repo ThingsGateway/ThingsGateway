@@ -78,9 +78,9 @@ namespace ThingsGateway.Modbus
             return await _plc.WriteAsync(deviceVariable.DataType, deviceVariable.VariableAddress, value);
         }
 
-        protected override async Task<OperResult<byte[]>> ReadAsync(string address, int length, CancellationToken cancellationToken)
+        protected override  Task<OperResult<byte[]>> ReadAsync(string address, int length, CancellationToken cancellationToken)
         {
-            return await _plc.ReadAsync(address, length);
+            return  _plc.ReadAsync(address, length);
         }
 
     }

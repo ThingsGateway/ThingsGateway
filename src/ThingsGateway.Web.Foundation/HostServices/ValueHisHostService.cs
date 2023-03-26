@@ -3,6 +3,7 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
+using System.Collections.Concurrent;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
@@ -21,8 +22,8 @@ public class ValueHisHostService : BackgroundService, ISingleton
 {
     private readonly ILogger<ValueHisHostService> _logger;
     private GlobalCollectDeviceData _globalCollectDeviceData;
-    private IntelligentConcurrentQueue<CollectVariableRunTime> CollectDeviceVariables { get; set; } = new(50000);
-    private IntelligentConcurrentQueue<CollectVariableRunTime> ChangeDeviceVariables { get; set; } = new(50000);
+    private ConcurrentQueue<CollectVariableRunTime> CollectDeviceVariables { get; set; } = new();
+    private ConcurrentQueue<CollectVariableRunTime> ChangeDeviceVariables { get; set; } = new();
     public OperResult StatuString { get; set; } = new OperResult("初始化");
 
 
@@ -181,8 +182,8 @@ public class ValueHisHostService : BackgroundService, ISingleton
                                 if (StoppingToken.Token.IsCancellationRequested)
                                     break;
                                 //这里直接出队，没做失败重试，后续添加
-                                var list = CollectDeviceVariables.ToListWithDequeue(CollectDeviceVariables.Count);
-                                var changelist = ChangeDeviceVariables.ToListWithDequeue(ChangeDeviceVariables.Count);
+                                var list = CollectDeviceVariables.ToListWithDequeue();
+                                var changelist = ChangeDeviceVariables.ToListWithDequeue();
                                 await sqlSugarClient.Queryable<ValueHis>().FirstAsync();
                                 if (list.Count != 0)
                                 {

@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Logging;
 
+using System.Collections.Concurrent;
 using System.Linq;
 
 using ThingsGateway.Core;
@@ -30,14 +31,14 @@ public class RpcCore : ISingleton
         _collectDeviceHostService = serviceScope.ServiceProvider.GetBackgroundService<CollectDeviceHostService>();
         Task.Factory.StartNew(RpcLogInsert);
     }
-    private IntelligentConcurrentQueue<RpcLog> _logQueues = new(10000);
+    private ConcurrentQueue<RpcLog> _logQueues = new();
 
     private async Task RpcLogInsert()
     {
         var db = DbContext.Db.CopyNew();
         while (true)
         {
-            var data = _logQueues.ToListWithDequeue(10000);
+            var data = _logQueues.ToListWithDequeue();
             db.InsertableWithAttr(data).ExecuteCommand();//入库
             await Task.Delay(3000);
         }

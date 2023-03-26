@@ -1,4 +1,6 @@
-﻿namespace ThingsGateway.Siemens
+﻿using ThingsGateway.Foundation;
+
+namespace ThingsGateway.Siemens
 {
     public class S7_200SMART : S7
     {

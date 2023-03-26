@@ -27,7 +27,7 @@ namespace ThingsGateway.Foundation.Adapter.Modbus
                 if (commandResult.IsSuccess)
                 {
                     var item = commandResult.Content;
-                    var result = TcpClient.GetWaitingClient(new()).SendThenResponse(item, TimeOut, token);
+                    var result = TcpClient.GetTGWaitingClient(new()).SendThenResponse(item, TimeOut, token);
                     if (result.RequestInfo is MessageBase collectMessage)
                     {
                         return collectMessage;
@@ -60,7 +60,7 @@ namespace ThingsGateway.Foundation.Adapter.Modbus
                 var commandResult = ModbusHelper.GetWriteModbusCommand(address, value, Station);
                 if (commandResult.IsSuccess)
                 {
-                    var result = TcpClient.GetWaitingClient(new()).SendThenResponse(commandResult.Content, TimeOut, token);
+                    var result = TcpClient.GetTGWaitingClient(new()).SendThenResponse(commandResult.Content, TimeOut, token);
                     if (result.RequestInfo is MessageBase collectMessage)
                     {
                         return collectMessage;
@@ -87,7 +87,7 @@ namespace ThingsGateway.Foundation.Adapter.Modbus
                 var commandResult = ModbusHelper.GetWriteBoolModbusCommand(address, value, Station);
                 if (commandResult.IsSuccess)
                 {
-                    var result = TcpClient.GetWaitingClient(new()).SendThenResponse(commandResult.Content, TimeOut, token);
+                    var result = TcpClient.GetTGWaitingClient(new()).SendThenResponse(commandResult.Content, TimeOut, token);
                     if (result.RequestInfo is MessageBase collectMessage)
                     {
                         return collectMessage;

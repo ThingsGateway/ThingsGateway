@@ -174,7 +174,7 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
                     List<byte> bytes = new();
                     foreach (var item in commandResult.Content)
                     {
-                        var result = TcpClient.GetWaitingClient(new()).SendThenResponse(item, TimeOut, token);
+                        var result = TcpClient.GetTGWaitingClient(new()).SendThenResponse(item, TimeOut, token);
                         if (result.RequestInfo is MessageBase collectMessage)
                         {
                             if (collectMessage.IsSuccess)
@@ -245,7 +245,7 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
                     List<ResponsedData> bytes = new();
                     foreach (var item in commandResult.Content)
                     {
-                        ResponsedData result = TcpClient.GetWaitingClient(new()).SendThenResponse(item, TimeOut, token);
+                        ResponsedData result = TcpClient.GetTGWaitingClient(new()).SendThenResponse(item, TimeOut, token);
                         bytes.Add(result);
                     }
                     return OperResult.CreateSuccessResult(bytes.ToArray());
@@ -277,7 +277,7 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
                 var commandResult = GetWriteBitCommand(address, value[0]);
                 if (commandResult.IsSuccess)
                 {
-                    var result = TcpClient.GetWaitingClient(new()).SendThenResponse(commandResult.Content, TimeOut, token);
+                    var result = TcpClient.GetTGWaitingClient(new()).SendThenResponse(commandResult.Content, TimeOut, token);
                     return OperResult.CreateSuccessResult(result);
                 }
                 else

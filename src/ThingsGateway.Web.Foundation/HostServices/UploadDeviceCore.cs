@@ -144,7 +144,7 @@ public class UploadDeviceCore : DisposableObject
                 {
                     try
                     {
-                        await Task.Delay(500, StoppingToken.Token);
+                        await Task.Delay(100, StoppingToken.Token);
 
                         if (_driver == null) continue;
 

@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 
+using System.Collections.Concurrent;
+
 using ThingsGateway.Core;
 
 using TouchSocket.Core;
@@ -19,14 +21,14 @@ namespace ThingsGateway.Web.Foundation
 
             Task.Factory.StartNew(LogInsert);
         }
-        private IntelligentConcurrentQueue<RuntimeLog> _logQueues = new(10000);
+        private ConcurrentQueue<RuntimeLog> _logQueues = new();
 
         private async Task LogInsert()
         {
             var db = _db.CopyNew();
             while (true)
             {
-                var data = _logQueues.ToListWithDequeue(10000);
+                var data = _logQueues.ToListWithDequeue();
                 db.InsertableWithAttr(data).ExecuteCommand();//入库
                 await Task.Delay(3000);
             }

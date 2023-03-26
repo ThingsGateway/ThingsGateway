@@ -5,6 +5,7 @@ using Furion.Logging.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
+using System.Collections.Concurrent;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
@@ -23,9 +24,9 @@ public class AlarmHostService : BackgroundService, ISingleton
 {
     private readonly ILogger<AlarmHostService> _logger;
     private GlobalCollectDeviceData _globalCollectDeviceData;
-    private IntelligentConcurrentQueue<CollectVariableRunTime> CollectDeviceVariables { get; set; } = new(10000);
-    public ConcurrentList<CollectVariableRunTime> RealAlarmDeviceVariables { get; set; } = new(10000);
-    private IntelligentConcurrentQueue<CollectVariableRunTime> HisAlarmDeviceVariables { get; set; } = new(10000);
+    private ConcurrentQueue<CollectVariableRunTime> CollectDeviceVariables { get; set; } = new();
+    public ConcurrentList<CollectVariableRunTime> RealAlarmDeviceVariables { get; set; } = new();
+    private ConcurrentQueue<CollectVariableRunTime> HisAlarmDeviceVariables { get; set; } = new();
 
     public event VariableCahngeEventHandler OnAlarmChanged;
     public event DelegateOnDeviceChanged OnDeviceStatusChanged;
@@ -150,7 +151,7 @@ public class AlarmHostService : BackgroundService, ISingleton
                             expressionEvaluator = new();
                             expressionEvaluator.PreEvaluateVariable += ExpressionEvaluatorExtension.Evaluator_PreEvaluateVariable;
                         }
-                        var list = CollectDeviceVariables.ToListWithDequeue(1000);
+                        var list = CollectDeviceVariables.ToListWithDequeue();
                         foreach (var item in list)
                         {
                             if (StoppingToken.Token.IsCancellationRequested)
@@ -230,7 +231,7 @@ public class AlarmHostService : BackgroundService, ISingleton
                                 }
                                 LastIsSuccess = true;
                                 StatuString = OperResult.CreateSuccessResult();
-                                var list = HisAlarmDeviceVariables.ToListWithDequeue(500);
+                                var list = HisAlarmDeviceVariables.ToListWithDequeue();
                                 if (list.Count == 0) continue;
                                 if (!sqlSugarClient.Ado.IsValidConnection()) throw new("数据库测试连接失败");
                                 ////Sql保存

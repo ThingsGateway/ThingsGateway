@@ -45,7 +45,7 @@
             {
                 if (waitingOptions == null) { waitingOptions = new WaitingOptions(); waitingOptions.ThrowBreakException = true; waitingOptions.AdapterFilter = AdapterFilter.NoneAll; }
                 await ConnectAsync();
-                ResponsedData result = await TcpClient.GetWaitingClient(waitingOptions).SendThenResponseAsync(data, TimeOut, token);
+                ResponsedData result = await TcpClient.GetTGWaitingClient(waitingOptions).SendThenResponseAsync(data, TimeOut, token);
                 return OperResult.CreateSuccessResult(result.Data);
             }
             catch (Exception ex)
@@ -60,7 +60,7 @@
             {
                 if (waitingOptions == null) { waitingOptions = new WaitingOptions(); waitingOptions.ThrowBreakException = true; waitingOptions.AdapterFilter = AdapterFilter.NoneAll; }
                 Connect();
-                ResponsedData result = TcpClient.GetWaitingClient(waitingOptions).SendThenResponse(data, TimeOut, token);
+                ResponsedData result = TcpClient.GetTGWaitingClient(waitingOptions).SendThenResponse(data, TimeOut, token);
                 return OperResult.CreateSuccessResult(result.Data);
             }
             catch (Exception ex)
