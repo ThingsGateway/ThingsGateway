@@ -27,35 +27,35 @@ namespace ThingsGateway.Foundation.Tests
             List<Task> tasks = new List<Task>();
             for (int i = 0; i < num; i++)
             {
-                tasks.Add( TestWaiting());
+                tasks.Add(TestWaiting());
             }
             _output.WriteLine(data.ToString("yyyy-MM-dd hh:mm:ss fff"));
             _output.WriteLine(DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss fff"));
             while (true)
             {
-                
+
             }
         }
         int dd = 0;
         private Task TestWaiting()
         {
-                ////然后使用SendThenReturn。
-             return   Task.Factory.StartNew(async () =>
-                {
-                    try
-                    {
-                        int i = Interlocked.Increment(ref dd);
-                            IWaitingClient<TcpClient> waitClient = list[i];
-                        var returnData = await waitClient.SendThenResponseAsync(new byte[] { 1, 2, 3, 4 }, 0, 4, 5000);
-                        _output.WriteLine(DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss fff") + "----" + i);
-                    }
-                    catch (Exception ex)
-                    {
-                        _output.WriteLine(ex.Message);
+            ////然后使用SendThenReturn。
+            return Task.Factory.StartNew(async () =>
+               {
+                   try
+                   {
+                       int i = Interlocked.Increment(ref dd);
+                       IWaitingClient<TcpClient> waitClient = list[i];
+                       var returnData = await waitClient.SendThenResponseAsync(new byte[] { 1, 2, 3, 4 }, 0, 4, 5000);
+                       _output.WriteLine(DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss fff") + "----" + i);
+                   }
+                   catch (Exception ex)
+                   {
+                       _output.WriteLine(ex.Message);
 
-                    }
-                }
-                );
+                   }
+               }
+               );
 
         }
 

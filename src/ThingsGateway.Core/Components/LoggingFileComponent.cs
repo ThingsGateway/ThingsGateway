@@ -70,7 +70,7 @@ namespace ThingsGateway.Core
                     //如果配置不写入mongitor日志和日志名称为System.Logging.LoggingMonitor
                     if (!WriteMonitor && logMsg.LogName == "System.Logging.LoggingMonitor")
                         return false;
-                    if(!logMsg.LogName.StartsWith("System") &&
+                    if (!logMsg.LogName.StartsWith("System") &&
 !logMsg.LogName.StartsWith("Microsoft"))
                     { return false; }
                     return logMsg.LogLevel == logLevel;

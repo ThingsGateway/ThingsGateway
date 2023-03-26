@@ -1,7 +1,4 @@
-﻿
-using ThingsGateway.Foundation;
-
-namespace ThingsGateway.Siemens
+﻿namespace ThingsGateway.Siemens
 {
     public class S7_1200 : S7
     {
@@ -23,11 +20,11 @@ namespace ThingsGateway.Siemens
             _plc.DataFormat = DataFormat;
             _plc.ConnectTimeOut = ConnectTimeOut;
             _plc.TimeOut = TimeOut;
-            if(LocalTSAP !=0)
+            if (LocalTSAP != 0)
             {
                 _plc.LocalTSAP = LocalTSAP;
             }
-            if(DestTSAP!=0)
+            if (DestTSAP != 0)
             {
                 _plc.DestTSAP = DestTSAP;
             }

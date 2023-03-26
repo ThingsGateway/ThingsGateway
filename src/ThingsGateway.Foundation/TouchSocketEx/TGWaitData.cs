@@ -91,7 +91,7 @@ namespace ThingsGateway.Foundation
         /// 等待指定毫秒
         /// </summary>
         /// <param name="millisecond"></param>
-        public  WaitDataStatus Wait(int millisecond)
+        public WaitDataStatus Wait(int millisecond)
         {
 
             var task = m_waitHandle.WaitOneAsync();
@@ -123,7 +123,6 @@ namespace ThingsGateway.Foundation
         /// <param name="millisecond"></param>
         public async Task<WaitDataStatus> WaitAsync(int millisecond)
         {
-            await Task.Yield();
             var task = m_waitHandle.WaitOneAsync();
             if (await Task.WhenAny(task, Task.Delay(millisecond)) != task)
             {

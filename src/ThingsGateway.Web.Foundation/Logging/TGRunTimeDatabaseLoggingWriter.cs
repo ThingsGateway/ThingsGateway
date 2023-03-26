@@ -4,8 +4,6 @@ using System.Collections.Concurrent;
 
 using ThingsGateway.Core;
 
-using TouchSocket.Core;
-
 namespace ThingsGateway.Web.Foundation
 {
     /// <summary>

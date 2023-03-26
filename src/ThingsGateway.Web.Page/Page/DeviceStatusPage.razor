@@ -55,12 +55,12 @@
         <MTabItem>
             <MRow NoGutters>
                 <MCol Md=2 Cols="12">
-                    <MCard Class="ma-2" Style="height:100%">
+                    <MCard Class="ma-2" Style="height: calc(100vh - 300px)">
                         <MCardTitle>
                             <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="mx-2 my-1" @bind-Value="_collectDeviceGroupSearchName"
                                         Outlined Label=@typeof(CollectDevice).GetDescription(nameof(CollectDevice.DeviceGroup)) />
                             </MCardTitle>
-                            <MTreeview Dense TItem="string" TKey="string" ActiveChanged=@(async a=>
+                            <MTreeview Style="height: calc(100vh - 320px);overflow-y:auto" Dense TItem="string" TKey="string" ActiveChanged=@(async a=>
                                    {
                                    if(_collectDeviceGroup!=a.FirstOrDefault())
                                    {
@@ -114,12 +114,12 @@
         <MTabItem>
             <MRow>
                 <MCol Md=2 Cols="12">
-                    <MCard Class="ma-2" Style="height:100%">
+                    <MCard Class="ma-2" Style="height: calc(100vh - 300px)">
                         <MCardTitle>
                             <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="mx-2 my-1" @bind-Value="_uploadDeviceGroupSearchName"
                                         Outlined Label=@typeof(UploadDevice).GetDescription(nameof(UploadDevice.DeviceGroup)) />
                             </MCardTitle>
-                            <MTreeview Dense TItem="string" TKey="string" ActiveChanged=@(async a=>
+                            <MTreeview Style="height: calc(100vh - 320px);overflow-y:auto" Dense TItem="string" TKey="string" ActiveChanged=@(async a=>
                                    {
                                    if(_uploadDeviceGroup!=a.FirstOrDefault())
                                    {
@@ -446,7 +446,7 @@
         uploadDeviceInfoItem = item;
         isShowUploadDeviceInfo = true;
     }
-    }
+}
 
     @code {
     StringNumber panel { get; set; }

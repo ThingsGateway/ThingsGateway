@@ -192,7 +192,6 @@ namespace ThingsGateway.Web.Rcl.Core
             {
                 QueryLoading = true;
                 StateHasChanged();
-                await Task.Yield();
                 PageItems = await QueryCall.Invoke(SearchModel);
                 Items = PageItems.Records;
 
