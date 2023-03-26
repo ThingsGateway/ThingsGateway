@@ -1,6 +1,7 @@
 ﻿using Opc.Ua;
 using Opc.Ua.Client;
 
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -21,7 +22,7 @@ public class OPCUAClient : DisposableObject
 
     private EventHandler m_ConnectComplete;
 
-    private IntelligentConcurrentQueue<(MonitoredItem, MonitoredItemNotification)> m_data = new(100000);
+    private ConcurrentQueue<(MonitoredItem, MonitoredItemNotification)> m_data = new();
     private bool m_IsConnected;
 
     private EventHandler m_KeepAliveComplete;
@@ -1415,7 +1416,7 @@ public class OPCUAClient : DisposableObject
         while (!DisposedValue)
         {
             if (m_data.Count > 0)
-                DataChangedHandler?.Invoke(m_data.ToListWithDequeue(m_data.Count));
+                DataChangedHandler?.Invoke(m_data.ToListWithDequeue());
             if (OPCNode == null)
                 await Task.Delay(1000);
             else

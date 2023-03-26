@@ -2,6 +2,7 @@
 
 using SqlSugar;
 
+using System.Collections.Concurrent;
 using System.Net;
 
 using ThingsGateway.Foundation;
@@ -152,7 +153,7 @@ namespace ThingsGateway.Modbus
 
         private Dictionary<ModbusAddress, CollectVariableRunTime> _ModbusTags;
 
-        private IntelligentConcurrentQueue<(string, CollectVariableRunTime)> Values = new(100000);
+        private ConcurrentQueue<(string, CollectVariableRunTime)> Values = new();
         private void VariableValueChange(CollectVariableRunTime collectVariableRunTime)
         {
             var property = collectVariableRunTime.VariablePropertys[curDevice.Id].FirstOrDefault(a => a.PropertyName == nameof(ServiceAddress));
@@ -168,7 +169,7 @@ namespace ThingsGateway.Modbus
                 _ModbusTags.Values.ToList().ForEach(a => VariableValueChange(a));
             IsFirst = false;
 
-            var list = Values.ToListWithDequeue(100000);
+            var list = Values.ToListWithDequeue();
             await Task.Yield();
             foreach (var item in list)
             {

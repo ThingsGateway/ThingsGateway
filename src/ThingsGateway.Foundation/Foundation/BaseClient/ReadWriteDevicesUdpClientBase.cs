@@ -33,7 +33,7 @@
             try
             {
                 if (waitingOptions == null) { waitingOptions = new WaitingOptions(); waitingOptions.ThrowBreakException = true; waitingOptions.AdapterFilter = AdapterFilter.NoneAll; }
-                ResponsedData result = await UdpSession.GetWaitingClient(waitingOptions).SendThenResponseAsync(data, TimeOut, CancellationToken.None);
+                ResponsedData result = await UdpSession.GetTGWaitingClient(waitingOptions).SendThenResponseAsync(data, TimeOut, CancellationToken.None);
                 return OperResult.CreateSuccessResult(result.Data);
             }
             catch (Exception ex)
@@ -46,7 +46,7 @@
             try
             {
                 if (waitingOptions == null) { waitingOptions = new WaitingOptions(); waitingOptions.ThrowBreakException = true; waitingOptions.AdapterFilter = AdapterFilter.NoneAll; }
-                ResponsedData result = UdpSession.GetWaitingClient(waitingOptions).SendThenResponse(data, TimeOut, CancellationToken.None);
+                ResponsedData result = UdpSession.GetTGWaitingClient(waitingOptions).SendThenResponse(data, TimeOut, CancellationToken.None);
                 return OperResult.CreateSuccessResult(result.Data);
             }
             catch (Exception ex)

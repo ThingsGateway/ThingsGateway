@@ -7,6 +7,7 @@ using NewLife.Serialization;
 
 using RabbitMQ.Client;
 
+using System.Collections.Concurrent;
 using System.Text;
 
 using ThingsGateway.Foundation;
@@ -114,8 +115,8 @@ namespace ThingsGateway.RabbitMQ
 
         private GlobalCollectDeviceData _globalCollectDeviceData;
 
-        private IntelligentConcurrentQueue<VariableData> CollectVariableRunTimes { get; set; } = new(10000);
-        private IntelligentConcurrentQueue<DeviceData> CollectDeviceRunTimes { get; set; } = new(10000);
+        private ConcurrentQueue<VariableData> CollectVariableRunTimes { get; set; } = new();
+        private ConcurrentQueue<DeviceData> CollectDeviceRunTimes { get; set; } = new();
 
         private void DeviceStatusCahnge(CollectDeviceRunTime collectDeviceRunTime)
         {
@@ -157,7 +158,7 @@ namespace ThingsGateway.RabbitMQ
 
 
                 ////变化推送
-                var varList = CollectVariableRunTimes.ToListWithDequeue(10000);
+                var varList = CollectVariableRunTimes.ToListWithDequeue();
                 if (varList?.Count != 0)
                 {
                     if (IsList)
@@ -209,7 +210,7 @@ namespace ThingsGateway.RabbitMQ
             try
             {
                 ////变化推送
-                var devList = CollectDeviceRunTimes.ToListWithDequeue(10000);
+                var devList = CollectDeviceRunTimes.ToListWithDequeue();
                 if (devList?.Count != 0)
                 {
                     if (IsList)

@@ -27,7 +27,7 @@ public class CollectDeviceHostService : BackgroundService
     {
         _logger = logger;
         _scopeFactory = scopeFactory;
-
+        ThreadPool.SetMaxThreads(100000, 100000);
         using var serviceScope = scopeFactory.CreateScope();
         _globalCollectDeviceData = serviceScope.ServiceProvider.GetService<GlobalCollectDeviceData>();
         _pluginService = serviceScope.ServiceProvider.GetService<PluginCore>();

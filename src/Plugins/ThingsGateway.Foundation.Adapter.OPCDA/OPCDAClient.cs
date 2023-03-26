@@ -1,5 +1,6 @@
 ﻿using OpcDaClient.Da;
 
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -27,7 +28,7 @@ namespace ThingsGateway.Foundation.Adapter.OPCDA
         private List<OpcGroup> Groups = new();
         private int IsQuit = 1;
         private OpcServer m_server;
-        private IntelligentConcurrentQueue<ItemReadResult> results = new IntelligentConcurrentQueue<ItemReadResult>(100000);
+        private ConcurrentQueue<ItemReadResult> results = new ConcurrentQueue<ItemReadResult>();
         private Dictionary<string, List<OpcItem>> Tags = new();
         //定义组对象（订阅者）
         public OPCDAClient(ILog logger)
@@ -283,7 +284,7 @@ namespace ThingsGateway.Foundation.Adapter.OPCDA
             while (!DisposedValue)
             {
                 if (results.Count > 0)
-                    DataChangedHandler?.Invoke(results.ToListWithDequeue(results.Count));
+                    DataChangedHandler?.Invoke(results.ToListWithDequeue());
                 if (OPCNode == null)
                     await Task.Delay(1000);
                 else

@@ -46,7 +46,7 @@
 
 
 	<ItemGroup>
-	  <PackageReference Include="AspNetCoreRateLimit" Version="5.0.0" />
+	  <!--<PackageReference Include="AspNetCoreRateLimit" Version="5.0.0" />-->
 	</ItemGroup>
 
 

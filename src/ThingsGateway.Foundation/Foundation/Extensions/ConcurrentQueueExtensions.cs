@@ -1,12 +1,18 @@
-﻿namespace ThingsGateway.Foundation.Extension
+﻿using System.Collections.Concurrent;
+
+namespace ThingsGateway.Foundation.Extension
 {
     public static class ConcurrentQueueExtensions
     {
         /// <summary>
         /// 批量出队
         /// </summary>
-        public static List<T> ToListWithDequeue<T>(this IntelligentConcurrentQueue<T> values, int conut)
+        public static List<T> ToListWithDequeue<T>(this ConcurrentQueue<T> values, int conut=0)
         {
+            if(conut==0)
+            {
+                conut = values.Count;
+            }
             List<T> newlist = new();
             for (int i = 0; i < conut; i++)
             {

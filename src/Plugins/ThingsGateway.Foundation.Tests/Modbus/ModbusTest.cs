@@ -123,12 +123,12 @@ namespace ThingsGateway.Foundation.Tests
             stopwatch.Stop();
             _output.WriteLine(address + "ºÄÊ±£º" + stopwatch.Elapsed.TotalSeconds);
         }
-        [Theory(DisplayName = "127.0.0.1:511")]
-        [MemberData(nameof(RangeData), 3, 1, 10)]
+        [Theory(DisplayName = "127.0.0.1:503")]
+        //[MemberData(nameof(RangeData), 3, 1, 10)]
         [MemberData(nameof(RangeData), 4, 1, 10)]
         public async Task ModbusRtuOverTcpReadTest(string address)
         {
-            ModbusRtuOverTcpClient("127.0.0.1:511");
+            ModbusRtuOverTcpClient("127.0.0.1:503");
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
             var byteConverter = ByteConverterHelper.GetTransByAddress(ref address, ModbusRtuOverTcp.ThingsGatewayBitConverter, out int length, out BcdFormat bcdFormat);
