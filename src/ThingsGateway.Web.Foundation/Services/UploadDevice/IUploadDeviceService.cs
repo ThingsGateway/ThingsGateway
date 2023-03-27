@@ -9,6 +9,7 @@ namespace ThingsGateway.Web.Foundation
     public interface IUploadDeviceService : ITransient
     {
         Task Add(UploadDevice input);
+        Task CopyDev(IEnumerable<UploadDevice> input);
         Task Delete(List<BaseIdInput> input);
         Task Edit(UploadDeviceEditInput input);
         Task<MemoryStream> ExportFile();

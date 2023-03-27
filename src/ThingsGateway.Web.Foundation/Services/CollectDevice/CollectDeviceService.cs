@@ -47,6 +47,63 @@ namespace ThingsGateway.Web.Foundation
         }
 
         /// <inheritdoc/>
+        [OperDesc("复制采集设备")]
+        public async Task CopyDev(IEnumerable<CollectDevice> input)
+        {
+            var newId = Yitter.IdGenerator.YitIdHelper.NextId();
+            var newDevs = input.Adapt<List<CollectDevice>>();
+            newDevs.ForEach(a =>
+            {
+                a.Id = newId;
+                a.Name = "Copy-" + a.Name + "-" + newId.ToString();
+            });
+
+            var result = await InsertRangeAsync(newDevs);//添加数据
+            _sysCacheService.Remove(ThingsGatewayCacheConst.Cache_CollectDevice, "");//cache删除
+
+        }
+        /// <inheritdoc/>
+        [OperDesc("复制采集设备与变量")]
+        public async Task CopyDevAndVar(IEnumerable<CollectDevice>  input)
+        {
+
+            using var serviceScope = _scopeFactory.CreateScope();
+            var variableService = serviceScope.ServiceProvider.GetService<IVariableService>();
+            List<CollectDeviceVariable> collectDeviceVariables = new();
+            var newDevs = input.Adapt<List<CollectDevice>>();
+            foreach (var item in newDevs)
+            {
+                var newId = YitIdHelper.NextId();
+                var deviceVariables = await Context.Queryable<CollectDeviceVariable>().Where(a => a.DeviceId == item.Id).ToListAsync();
+                deviceVariables.ForEach(b =>
+                {
+                    b.Id = 0;
+                    b.DeviceId = newId;
+                });
+                collectDeviceVariables.AddRange(deviceVariables);
+                item.Id = newId;
+                item.Name = "Copy-" + item.Name + "-" + Yitter.IdGenerator.YitIdHelper.NextId().ToString();
+            }
+
+            var result = await itenant.UseTranAsync(async () =>
+            {
+                await InsertRangeAsync(newDevs);//添加数据
+                await Context.Insertable(collectDeviceVariables).ExecuteCommandAsync();//添加数据
+            });
+
+            if(result.IsSuccess)
+            {
+                _sysCacheService.Remove(ThingsGatewayCacheConst.Cache_CollectDevice, "");//cache删除
+
+            }
+            else
+            {
+                throw Oops.Oh(ErrorCodeEnum.A0003+ result.ErrorMessage);
+            }
+
+
+        }
+        /// <inheritdoc/>
         public long? GetIdByName(string name)
         {
             var data = GetCacheList();

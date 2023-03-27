@@ -17,12 +17,12 @@
 
 <MRow>
     <MCol Md=2 Cols="12">
-        <MCard Class="ma-2" Style="height:100%">
+        <MCard Class="ma-2" Style="height: calc(100vh - 200px)">
             <MCardTitle>
                 <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="mx-2 my-1" @bind-Value="_searchName"
                             Outlined Label=@typeof(CollectDevice).GetDescription(nameof(CollectDevice.DeviceGroup)) />
                 </MCardTitle>
-                <MTreeview Dense TItem="string" TKey="string" ActiveChanged=@(async a=>
+                <MTreeview Style="height: calc(100vh - 320px);overflow-y:auto" Dense TItem="string" TKey="string" ActiveChanged=@(async a=>
                        {
                        if(search.DeviceGroup!=a.FirstOrDefault())
                        {
@@ -56,7 +56,22 @@
                                         Outlined Label=@context.Description(x => x.PluginName) />
                 </SearchTemplate>
                 <OtherToolbarTemplate>
+                    <MMenu OffsetY Context="menu">
+                        <ActivatorContent>
+                            <MButton @attributes="@menu.Attrs" Color="primary"
+                                     Icon="@MasaBlazor.Breakpoint.SmAndDown"
+                                     Class="my-1  mx-2 ">
+                                @T("复制")
+                                <AppChevronDown></AppChevronDown>
+                            </MButton>
+                        </ActivatorContent>
+                        <ChildContent>
+                            <MList>
+                                <MListItem OnClick="()=>CopyDevice(context)"> @T("复制设备") </MListItem>
+                            </MList>
 
+                        </ChildContent>
+                    </MMenu>
                     <MButton Class="my-1  mx-2" Loading=@isDownExport OnClick=DownDeviceExport Color="primary">
                         @T("导出")
                     </MButton>
@@ -104,7 +119,20 @@
 
 <ImportExcel @ref=ImportExcel Import="SaveDeviceImport" Preview="DeviceImport" Template="DownTemplate" />
 
+@code {
+    async Task CopyDevice(IEnumerable<UploadDevice> data)
+    {
+        if (data.Count() == 0)
+        {
+            await PopupService.EnqueueSnackbarAsync(@T("需选择一项或多项"), AlertTypes.Warning);
+            return;
+        }
+        await UploadDeviceService.CopyDev(data);
+        await datatableQuery();
+        await PopupService.EnqueueSnackbarAsync("复制成功", AlertTypes.Success);
 
+    }
+}
 @code {
     string _searchName;
     List<string> _deviceGroups = new();
