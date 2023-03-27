@@ -165,7 +165,7 @@ namespace ThingsGateway.Foundation
             return SendThenResponse(byteBlock.Buffer, 0, byteBlock.Len, timeout, token);
         }
         /// <summary>
-        /// 异步发送
+        /// 异步发送,，非线程安全
         /// </summary>
         /// <param name="buffer">数据缓存区</param>
         /// <param name="offset">偏移</param>
@@ -178,6 +178,7 @@ namespace ThingsGateway.Foundation
         /// <returns>返回的数据</returns>
         public async Task<ResponsedData> SendThenResponseAsync(byte[] buffer, int offset, int length, int timeout = 1000 * 5, CancellationToken token = default)
         {
+
             try
             {
                 breaked = false;

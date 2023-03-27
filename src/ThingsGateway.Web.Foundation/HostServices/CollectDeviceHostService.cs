@@ -270,6 +270,7 @@ public class CollectDeviceHostService : BackgroundService
                 _logger?.LogError(ex, device.Name);
             }
         }
+        await Task.Delay(2000);
         await base.StopAsync(cancellationToken);
     }
     private CancellationToken _stoppingToken;
