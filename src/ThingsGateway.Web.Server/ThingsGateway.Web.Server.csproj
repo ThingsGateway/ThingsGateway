@@ -17,9 +17,35 @@
 
 
 	<PropertyGroup Condition=" '$(RunConfiguration)' == 'Kestrel' " />
+
+
+
+
 	<ItemGroup>
-	  <ProjectReference Include="..\ThingsGateway.Web.Core\ThingsGateway.Web.Core.csproj" />
+	  <Content Remove="pm2-windows.json" />
 	</ItemGroup>
 
 
+
+
+	<ItemGroup>
+	  <None Include="pm2-windows.json">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\ThingsGateway.Web.Core\ThingsGateway.Web.Core.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+	  <None Update="thingsgateway.service">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
+
+	<!--安装服务守护-->
+	<!--<ItemGroup>
+		<PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="7.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="7.0.0" />
+	</ItemGroup>-->
+	
 </Project>
