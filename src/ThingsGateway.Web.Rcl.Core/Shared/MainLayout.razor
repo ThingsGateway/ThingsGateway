@@ -1,57 +1,67 @@
 @namespace ThingsGateway.Web.Rcl
+@using Masa.Blazor.Presets
 @inherits CultureLayoutComponentBase
 @layout BaseLayout
 @if (UserManager.UserId > 0)
 {
     <SignalR></SignalR>
 }
+<PPageTabsProvider>
 
-<CascadingValue Value="@this" IsFixed>
-    <CascadingValue Value="@LanguageService.Culture">
+    <CascadingValue Value="@this" IsFixed>
+        <CascadingValue Value="@LanguageService.Culture">
 
-        <MNavigationDrawer Color="barcolor" @bind-Value="_drawerOpen" App Width="200">
-            @if (IsMobile)
-            {
-                <MSystemBar Color="barcolor" Height="@(UserResoures.Themes.LayoutPrpo.PageTabsHeight)">
-                    <MButton Icon OnClick=@(()=> _drawerOpen = !_drawerOpen)>
-                    <MIcon>
-                        mdi-close-thick
-                    </MIcon>
-                    </MButton>
-                    <MSpacer />
-                    <AppbarButtons LanguageChange=@LanguageChange />
-                    </MSystemBar>
-            }
-            <Logo HeightInt=@(IsMobile?UserResoures.Themes.LayoutPrpo.AppBarHeight:UserResoures.Themes.LayoutPrpo.AppBarHeight+UserResoures.Themes.LayoutPrpo.PageTabsHeight) />
-            <DefaultList ClassString="overflow-y-auto"
-                         StyleString=@($"height: calc(100vh - {UserResoures.Themes.LayoutPrpo.AppBarHeight+UserResoures.Themes.LayoutPrpo.PageTabsHeight}px);")
-                         Items="Navs" />
-        </MNavigationDrawer>
+            <MNavigationDrawer Color="barcolor" @bind-Value="_drawerOpen" App Width="200">
+                @if (IsMobile)
+                {
+                    <MSystemBar Color="barcolor" Height="@(UserResoures.Themes.LayoutPrpo.PageTabsHeight)">
+                        <MButton Icon OnClick=@(()=> _drawerOpen = !_drawerOpen)>
+                        <MIcon>
+                            mdi-close-thick
+                        </MIcon>
+                        </MButton>
+                        <MSpacer />
+                        <AppbarButtons LanguageChange=@LanguageChange />
+                        </MSystemBar>
+                }
+                <Logo HeightInt=@(IsMobile?UserResoures.Themes.LayoutPrpo.AppBarHeight:UserResoures.Themes.LayoutPrpo.AppBarHeight+UserResoures.Themes.LayoutPrpo.PageTabsHeight) />
+                <DefaultList ClassString="overflow-y-auto"
+                             StyleString=@($"height: calc(100vh - {UserResoures.Themes.LayoutPrpo.AppBarHeight+UserResoures.Themes.LayoutPrpo.PageTabsHeight}px);")
+                             Items="Navs" />
+            </MNavigationDrawer>
 
-        <MAppBar Style=@($"{(!(IsMobile||!_drawerOpen)? "left:200px;":"")}") Elevation="1" App Flat ClippedRight Dense ElevateOnScroll Color="barcolor"
-                 MaxHeight="@(UserResoures.Themes.LayoutPrpo.AppBarHeight)" Height="@(UserResoures.Themes.LayoutPrpo.AppBarHeight)">
-            <MButton Class="mr-0" Icon Small=IsMobile OnClick=@(() => _drawerOpen = !_drawerOpen)>
-                <MIcon>mdi-menu</MIcon>
-            </MButton>
-            <AppBarItems LanguageChange=@LanguageChange>
-            </AppBarItems>
-        </MAppBar>
+            <MAppBar Style=@($"{(!(IsMobile||!_drawerOpen)? "left:200px;":"")}") Elevation="1" App Flat ClippedRight Dense ElevateOnScroll Color="barcolor"
+                     MaxHeight="@(UserResoures.Themes.LayoutPrpo.AppBarHeight)" Height="@(UserResoures.Themes.LayoutPrpo.AppBarHeight)">
+                <MButton Class="mr-0" Icon Small=IsMobile OnClick=@(() => _drawerOpen = !_drawerOpen)>
+                    <MIcon>mdi-menu</MIcon>
+                </MButton>
+                <AppBarItems LanguageChange=@LanguageChange>
+                </AppBarItems>
 
-            <MMain Style=@($"{(!(IsMobile||!_drawerOpen)? "padding-left:200px;":"")}")>
-            <PageTabs>
-                <MDivider Center></MDivider>
-                <MCard Flat Class="overflow-y-auto overflow-x-hidden ma-auto pa-0 rounded-0" Style=@($"height: calc(100vh - {UserResoures.Themes.LayoutPrpo.AppBarHeight+UserResoures.Themes.LayoutPrpo.PageTabsHeight+UserResoures.Themes.LayoutPrpo.FooterBarHeight}px);")>
-                    @Body
-                </MCard>
-            </PageTabs>
-            <MSheet Class="d-flex justify-center align-center rounded-0" Style=@($"height: {UserResoures.Themes.LayoutPrpo.FooterBarHeight}px;")>
-                <Foter></Foter>
-            </MSheet>
-        </MMain>
-    </CascadingValue>
-</CascadingValue>
+                </MAppBar>
+
+                <MMain Style=@($"{(!(IsMobile||!_drawerOpen)? "padding-left:200px;":"")}")>
+                <div class="full-width">
+                    <PageTabs @ref="_pageTabs" />
+                </div>
+                <PPageContainer PageTabs="@_pageTabs?.PPageTabs">
+                    <MDivider Center></MDivider>
+                    <MCard Flat Class="overflow-y-auto overflow-x-hidden ma-auto pa-0 rounded-0" Style=@($"height: calc(100vh - {UserResoures.Themes.LayoutPrpo.AppBarHeight+UserResoures.Themes.LayoutPrpo.PageTabsHeight+UserResoures.Themes.LayoutPrpo.FooterBarHeight}px);")>
+                        @Body
+                    </MCard>
+                    </PPageContainer>
+                    <MSheet Class="d-flex justify-center align-center rounded-0" Style=@($"height: {UserResoures.Themes.LayoutPrpo.FooterBarHeight}px;")>
+                    <Foter></Foter>
+                    </MSheet>
+                    </MMain>
+                    </CascadingValue>
+                    </CascadingValue>
+
+</PPageTabsProvider>
+
 @code {
     private List<NavItem> Navs { get; set; } = new();
+    private PageTabs _pageTabs;
 
     [CascadingParameter(Name = "IsMobile")]
     public bool IsMobile { get; set; }

@@ -17,7 +17,7 @@ namespace ThingsGateway.Web.Rcl.Core
 
         public string T(string key, params object[] args)
         {
-            return string.Format(LanguageService.T(key, false, true), args);
+            return string.Format(LanguageService.T(key, false, key), args);
         }
     }
 }

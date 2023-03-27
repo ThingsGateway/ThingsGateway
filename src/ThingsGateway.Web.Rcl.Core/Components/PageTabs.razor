@@ -1,33 +1,28 @@
 ﻿@namespace ThingsGateway.Web.Rcl.Core
 @using System.Globalization;
+@using Masa.Blazor.Presets;
 @inherits CultureComponentBase
-<MPageTabs Items="UserResoures.PageTabItems"
-           ShowArrows=true 
-           NextIcon="mdi-arrow-right-bold-box-outline"
-           PrevIcon="mdi-arrow-left-bold-box-outline">
+<PPageTabs @ref="PPageTabs" TabClass="px-6 rounded-t-xl" Ripple="false" HideSlider>
     <TabContent>
-        <MTab Href="@context.Item.Url"
-              Class="px-4 rounded-0 m-page_tab"
-              ActiveClass="primary--text"
-              IsActive=context.IsActive
-              Ripple="false" Style=@($"height:{UserResoures.Themes.LayoutPrpo.PageTabsHeight}px;")
-              @attributes="@context.Attrs">
-            <MIcon Size=20>@context.Item.Icon</MIcon>
-            <span class="mx-2 text-capitalize" style="min-width:45px;">@T(context.Item.Name)</span>
-            @if (context.Item.Closable)
-            {
-                <MIcon Size=16 OnClick="context.Close" OnClickStopPropagation OnClickPreventDefault>mdi-close</MIcon>
-            }
-        </MTab>
+        @{
+            var item = UserResoures.PageTabItems.FirstOrDefault(u => context.IsMatch(u.Href));
+        }
+        <MSheet Class="d-flex align-center justify-center" Height=@($"{UserResoures.Themes.LayoutPrpo.PageTabsHeight}px;")>
+            <MIcon Class=@(context.Selected ? "primary--text" : "") Size="20">@item?.Icon</MIcon>
+            <span class="mx-2 text-capitalize @(context.Selected ? "primary--text" : "")" style=@($"min-width:46px;")>
+                @T(item?.Title)
+            </span>
+        </MSheet>
 
     </TabContent>
-
     <ChildContent>
         @ChildContent
     </ChildContent>
-</MPageTabs>
+
+</PPageTabs>
 
 @code {
+    public PPageTabs PPageTabs { get; private set; }
 
     [Inject]
     UserResoures UserResoures { get; set; }
