@@ -499,11 +499,20 @@
                              {
                              if(choiceUploadDeviceId>0)
                              {
-                             context.VariablePropertys.AddOrUpdate(choiceUploadDeviceId, GetDriverProperties(UploadDevices.FirstOrDefault(a=>a.Id==choiceUploadDeviceId).PluginId,context.VariablePropertys.ContainsKey(choiceUploadDeviceId)?context.VariablePropertys[choiceUploadDeviceId]:null));
+                                 var data=GetDriverProperties(UploadDevices.FirstOrDefault(a=>a.Id==choiceUploadDeviceId).PluginId,context.VariablePropertys.ContainsKey(choiceUploadDeviceId)?context.VariablePropertys[choiceUploadDeviceId]:null);
+                                 if(data.Count>0)
+                                 {
+                             context.VariablePropertys.AddOrUpdate(choiceUploadDeviceId, data);
+                                 }
+                                 else
+                                 {
+                             await PopupService.EnqueueSnackbarAsync("此上传设备没有变量上传属性",AlertTypes.Warning);
+                             context.VariablePropertys.Remove(choiceUploadDeviceId);
+                                 }
                              }
                              else
                              {
-                             await PopupService.EnqueueSnackbarAsync("需选择上传设备",AlertTypes.Error);
+                             await PopupService.EnqueueSnackbarAsync("需选择上传设备",AlertTypes.Warning);
                              }
                              }
                              ) Color="primary">
