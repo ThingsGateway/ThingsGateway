@@ -202,17 +202,18 @@ public class CollectDeviceCore : DisposableObject
                                         break;
 
                                     //连读变量
+                                    var readTime = DateTime.Now;
                                     if (deviceVariableSourceRead.CheckIfRequestAndUpdateTime(DateTime.Now))
                                     {
                                         var read = await _driver.ReadSourceAsync(deviceVariableSourceRead, StoppingToken.Token);
                                         if (read != null && read.IsSuccess)
                                         {
-                                            _logger?.LogTrace(_device.Name + "采集[" + deviceVariableSourceRead.Address + " -" + deviceVariableSourceRead.Length + "] 数据成功" + read.Content?.ToHexString(" "));
+                                            _logger?.LogTrace(_device.Name +" - "+ readTime+" - 采集[" + deviceVariableSourceRead.Address + " - " + deviceVariableSourceRead.Length + "] 数据成功" + read.Content?.ToHexString(" "));
                                             deviceSourceVariableSuccessNum += 1;
                                         }
                                         else if (read != null && read.IsSuccess == false)
                                         {
-                                            _logger?.LogWarning(_device.Name + "采集[" + deviceVariableSourceRead.Address + " -" + deviceVariableSourceRead.Length + "] 数据失败 - " + read?.Message);
+                                            _logger?.LogWarning(_device.Name +" - "+ readTime+ " - 采集[" + deviceVariableSourceRead.Address + " -" + deviceVariableSourceRead.Length + "] 数据失败 - " + read?.Message);
                                             deviceSourceVariableFailedNum += 1;
                                         }
                                     }
