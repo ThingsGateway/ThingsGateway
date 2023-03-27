@@ -31,7 +31,6 @@ namespace ThingsGateway.Web.Foundation
         /// <summary>
         /// 写入设备
         /// </summary>
-        /// <returns></returns>
         [HttpPost("writeDeviceMethod")]
         [Description("写入设备")]
         public Task<OperResult> WriteDeviceMethod(NameVaue obj)
