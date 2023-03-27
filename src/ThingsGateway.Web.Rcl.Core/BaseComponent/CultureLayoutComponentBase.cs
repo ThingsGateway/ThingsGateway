@@ -22,7 +22,7 @@ namespace ThingsGateway.Web.Rcl.Core
 
         public string T(string key, params object[] args)
         {
-            return LanguageService.T(key, false, true, args);
+            return LanguageService.T(key, false, key, args);
         }
 
     }

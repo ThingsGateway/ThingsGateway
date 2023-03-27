@@ -53,6 +53,11 @@
     text-align: start !important;
     min-width: 130px;
 }
+.neutral--text {
+    color: #1B2559 !important;
+    caret-color: #1B2559 !important;
+}
+
 
 /*下面都是html默认样式修改*/
 html {

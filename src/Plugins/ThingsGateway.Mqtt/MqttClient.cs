@@ -195,6 +195,8 @@ namespace ThingsGateway.Mqtt
 
             async Task<OperResult> Cilent()
             {
+                if (_mqttClient?.IsConnected == true)
+                    return OperResult.CreateSuccessResult();
                 try
                 {
                     lockobj.Lock();

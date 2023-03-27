@@ -1,9 +1,11 @@
 ﻿using BlazorComponent.I18n;
 
 using Masa.Blazor;
+ 
 
 namespace ThingsGateway.Web.Rcl.Core
 {
+    public record PageTabItem(string Title, string Href, string Icon);
     /// <summary>
     /// 用户菜单等资源管理
     /// </summary>
