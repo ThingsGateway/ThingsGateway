@@ -250,10 +250,7 @@ public class CollectDeviceCore : DisposableObject
                                 }
 
 
-                                if (deviceMedsVariableFailedNum == 0 && deviceSourceVariableFailedNum == 0)
-                                {
-                                    Device.ActiveTime = DateTime.Now;
-                                }
+                                 Device.ActiveTime = DateTime.Now;
                                 if (deviceMedsVariableFailedNum == 0 && deviceSourceVariableFailedNum == 0 && (DeviceVariableSourceReads.Count != 0 || DeviceVariableMedReads.Count != 0))
                                 {
                                     Device.DeviceStatus = DeviceStatusEnum.OnLine;
