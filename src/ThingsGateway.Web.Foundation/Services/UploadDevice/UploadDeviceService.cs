@@ -45,6 +45,24 @@ namespace ThingsGateway.Web.Foundation
         }
 
         /// <inheritdoc/>
+        [OperDesc("复制上传设备")]
+        public async Task CopyDev(IEnumerable<UploadDevice> input)
+        {
+            var newId = Yitter.IdGenerator.YitIdHelper.NextId();
+            var newDevs = input.Adapt<List<UploadDevice>>();
+            newDevs.ForEach(a =>
+            {
+                a.Id = newId;
+                a.Name = "Copy-" + a.Name + "-" + newId.ToString();
+            });
+
+            var result = await InsertRangeAsync(newDevs);//添加数据
+            _sysCacheService.Remove(ThingsGatewayCacheConst.Cache_UploadDevice, "");//cache删除
+
+        }
+
+
+        /// <inheritdoc/>
         public long? GetIdByName(string name)
         {
             var data = GetCacheList();

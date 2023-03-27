@@ -18,12 +18,12 @@
 
 <MRow>
     <MCol Md=2 Cols="12">
-        <MCard Class="ma-2" Style="height:100%">
+        <MCard Class="ma-2" Style="height: calc(100vh - 200px)">
             <MCardTitle>
                 <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="mx-2 my-1" @bind-Value="_searchName"
                             Outlined Label=@typeof(CollectDevice).GetDescription(nameof(CollectDevice.DeviceGroup)) />
                 </MCardTitle>
-                <MTreeview Dense TItem="DeviceTree" TKey="string" OpenOnClick ActiveChanged=@(async a=>
+                <MTreeview Style="height: calc(100vh - 320px);overflow-y:auto" Dense TItem="DeviceTree" TKey="string" OpenOnClick ActiveChanged=@(async a=>
                        {
                        if(search.DeviceName!=a.FirstOrDefault())
                        {
