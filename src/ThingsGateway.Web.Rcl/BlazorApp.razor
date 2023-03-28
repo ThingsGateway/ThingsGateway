@@ -1,5 +1,4 @@
 @using System.Reflection;
-@using ThingsGateway.Web.Foundation;
 @inject NavigationManager NavigationManager
 <CascadingAuthenticationState>
     <Router AppAssembly="@typeof(BlazorApp).Assembly" AdditionalAssemblies=@(GetAssemblys())>
@@ -31,7 +30,7 @@
 </CascadingAuthenticationState>
 @code {
     [Inject]
-    IDriverPluginService DriverPluginService { get; set; }
+    ThingsGateway.Web.Foundation.IDriverPluginService DriverPluginService { get; set; }
     IEnumerable<Assembly> GetAssemblys()
     {
         var plugins = DriverPluginService.GetCacheListAsync();
