@@ -73,7 +73,7 @@ namespace ThingsGateway.Foundation.Extension
             return int.Parse(hexString, System.Globalization.NumberStyles.HexNumber);
         }
 
-        public static string CombinePath(this string path, params string[] ps)
+        public static string CombinePathOS(this string path, params string[] ps)
         {
             if (ps == null || ps.Length == 0)
             {
@@ -89,7 +89,7 @@ namespace ThingsGateway.Foundation.Extension
             {
                 if (!text.IsNullOrEmpty())
                 {
-                    path = Path.Combine(path, text);
+                    path = Path.Combine(path, text).Replace("\\", "/");
                 }
             }
 
