@@ -187,6 +187,7 @@ public class CollectDeviceCore : DisposableObject
                             int deviceMedsVariableFailedNum = 0;
                             int deviceSourceVariableSuccessNum = 0;
                             int deviceSourceVariableFailedNum = 0;
+                            Device.ActiveTime = DateTime.Now;
                             if (StoppingToken.Token.IsCancellationRequested)
                                 break;
                             if (_driver.IsSupportAddressRequest())
@@ -250,7 +251,6 @@ public class CollectDeviceCore : DisposableObject
                                 }
 
 
-                                 Device.ActiveTime = DateTime.Now;
                                 if (deviceMedsVariableFailedNum == 0 && deviceSourceVariableFailedNum == 0 && (deviceMedsVariableSuccessNum != 0 || deviceMedsVariableSuccessNum != 0))
                                 {
                                     Device.DeviceStatus = DeviceStatusEnum.OnLine;
