@@ -11,14 +11,8 @@
         private int m_waiters = 0;
 
         /// <summary>
-        /// 所有进入锁的信息<br />
+        /// 当前锁是否在等待当中
         /// </summary>
-        public static long EasyLockCount => easyLockCount;
-
-        /// <summary>正在等待的锁的统计信息</summary>
-        public static long EasyLockWaitCount => easyLockWaitCount;
-
-        /// <summary>当前锁是否在等待当中</summary>
         public bool IsWaitting => (uint)m_waiters > 0;
 
         public void Lock()

@@ -45,7 +45,7 @@ namespace ThingsGateway.Foundation.Tests
                    try
                    {
                        int i = Interlocked.Increment(ref dd);
-                       IWaitingClient<TcpClient> waitClient = list[i];
+                       IWaitingClient<TGTcpClient> waitClient = list[i];
                        var returnData = await waitClient.SendThenResponseAsync(new byte[] { 1, 2, 3, 4 }, 0, 4, 5000);
                        _output.WriteLine(DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss fff") + "----" + i);
                    }
@@ -59,10 +59,10 @@ namespace ThingsGateway.Foundation.Tests
 
         }
 
-        List<IWaitingClient<TcpClient>> list = new();
+        List<IWaitingClient<TGTcpClient>> list = new();
         private async Task NewMethod()
         {
-            TcpClient m_tcpClient = new TcpClient();
+            TGTcpClient m_tcpClient = new TGTcpClient();
             var config = new TouchSocketConfig();
             config.SetRemoteIPHost(new IPHost("127.0.0.1:503"));
 
@@ -70,7 +70,7 @@ namespace ThingsGateway.Foundation.Tests
             m_tcpClient.Setup(config);
 
             //调用GetWaitingClient获取到IWaitingClient的对象。
-            IWaitingClient<TcpClient> waitClient = m_tcpClient.GetTGWaitingClient(new WaitingOptions()
+            IWaitingClient<TGTcpClient> waitClient = m_tcpClient.GetTGWaitingClient(new WaitingOptions()
             {
                 AdapterFilter = AdapterFilter.AllAdapter,//表示发送和接收的数据都会经过适配器
                 BreakTrigger = true,//表示当连接断开时，会立即触发

@@ -97,7 +97,7 @@ namespace ThingsGateway.Foundation
             var task = m_waitHandle.WaitOneAsync();
             if (Task.WhenAny(task, Task.Delay(millisecond)).GetAwaiter().GetResult() == task)
             {
-
+                
             }
             else
             {

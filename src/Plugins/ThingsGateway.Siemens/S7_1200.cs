@@ -12,11 +12,11 @@
             {
                 TouchSocketConfig.SetRemoteIPHost(new IPHost(IPAddress.Parse(IP), Port))
                     .SetBufferLength(1024);
-                client = TouchSocketConfig.Container.Resolve<TcpClient>();
-                ((TcpClient)client).Setup(TouchSocketConfig);
+                client = TouchSocketConfig.Container.Resolve<TGTcpClient>();
+                ((TGTcpClient)client).Setup(TouchSocketConfig);
             }
             //载入配置
-            _plc = new((TcpClient)client, SiemensEnum.S1200);
+            _plc = new((TGTcpClient)client, SiemensEnum.S1200);
             _plc.DataFormat = DataFormat;
             _plc.ConnectTimeOut = ConnectTimeOut;
             _plc.TimeOut = TimeOut;
