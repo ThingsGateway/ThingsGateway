@@ -168,11 +168,11 @@ namespace ThingsGateway.OPCUA
                         var time = data.monitoredItemNotification.Value.SourceTimestamp;
                         if (value != null && quality == 192)
                         {
-                            item.SetValue(value);
+                            item.SetValue(value, time);
                         }
                         else
                         {
-                            item.SetValue(null);
+                            item.SetValue(null, time);
                             Device.DeviceStatus = DeviceStatusEnum.OnLineButNoInitialValue;
                             Device.DeviceOffMsg = $"{item.Name} 质量为Bad ";
                         }
