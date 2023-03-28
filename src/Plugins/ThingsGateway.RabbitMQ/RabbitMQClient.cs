@@ -261,9 +261,9 @@ namespace ThingsGateway.RabbitMQ
                 _logger?.LogWarning(ex, ToString());
             }
 
-            if (CycleInterval > 500 + 50)
+            if (CycleInterval > 100 + 50)
             {
-                await Task.Delay(CycleInterval - 500);
+                await Task.Delay(CycleInterval - 100);
             }
             else
             {
