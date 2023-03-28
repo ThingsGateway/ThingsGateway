@@ -51,7 +51,11 @@
     <ItemColTemplate>
         @switch (context.Header.Value)
         {
-
+            case nameof(context.Item.CollectTime):
+                <span>
+                    @(((DateTime)context.Value).ToString("yyyy-MM-dd HH:mm:ss ffffff"))
+                </span>
+                break;
             case nameof(context.Item.Quality):
                 <EnableChip Value="context.Item.Quality==192" DisabledLabel=@context.Item.Quality.ToString() EnabledLabel=@context.Item.Quality.ToString()>
                 </EnableChip>
