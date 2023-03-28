@@ -111,7 +111,7 @@ public class PluginCore : ISingleton
         }
         else
         {
-            _logger?.LogError($"加载驱动插件 {plugin.FilePath} 失败，文件不存在");
+            _logger?.LogError($"加载驱动插件 {path} 失败，文件不存在");
             return null;
         }
 
