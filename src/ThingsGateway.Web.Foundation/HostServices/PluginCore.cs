@@ -56,9 +56,12 @@ public class PluginCore : ISingleton
         Assembly assembly = null;
         var driverFiles = plugin.FilePath;
         _logger?.LogInformation($"添加插件文件：{driverFiles}");
-        var path = Path.Combine(AppContext.BaseDirectory, plugin.FilePath);
+        var path = AppContext.BaseDirectory.CombinePathOS(plugin.FilePath);
         var parPath = Path.GetDirectoryName(path);
-        var paths = Directory.GetFiles(parPath, "*.dll");
+        List<string> paths = new();
+        var pathArrays = Directory.GetFiles(parPath, "*.dll").ToList();
+        pathArrays.ForEach(a =>
+        paths.Add(a.Replace("\\", "/")));
         if (AssemblyLoadContexts.ContainsKey(plugin.Id))
         {
             var assemblyLoadContext = AssemblyLoadContexts[plugin.Id];
@@ -115,7 +118,7 @@ public class PluginCore : ISingleton
             return null;
         }
 
-        static Assembly GetAssembly(string path, string[] paths, AssemblyLoadContext assemblyLoadContext)
+        static Assembly GetAssembly(string path, List<string> paths, AssemblyLoadContext assemblyLoadContext)
         {
             Assembly assembly = null;
             foreach (var item in paths)
@@ -144,11 +147,11 @@ public class PluginCore : ISingleton
             var otherFiles = plugin.OtherFiles;
             var maxFileSize = 5120000;
             var mainFileName = Path.GetFileNameWithoutExtension(mainFile.Name);
-            var fullDir = Path.Combine(AppContext.BaseDirectory, "Plugins", mainFileName);
-            var dir = Path.Combine("Plugins", mainFileName);
-            var path = Path.Combine(fullDir, mainFile.Name);
+            var fullDir = AppContext.BaseDirectory.CombinePathOS("Plugins", mainFileName);
+            var dir = "Plugins".CombinePathOS( mainFileName);
+            var path = fullDir.CombinePathOS( mainFile.Name);
             var stream = mainFile.OpenReadStream(maxFileSize);
-            Directory.CreateDirectory(Path.Combine(AppContext.BaseDirectory, "Plugins", mainFileName));
+            Directory.CreateDirectory(AppContext.BaseDirectory.CombinePathOS( "Plugins", mainFileName));
             using FileStream fs = new(path, FileMode.Create);
             await stream.CopyToAsync(fs);
             fs.Position = 0;
@@ -156,7 +159,7 @@ public class PluginCore : ISingleton
             foreach (var item in otherFiles)
             {
                 var otherStream = item.OpenReadStream(maxFileSize);
-                using FileStream fs1 = new(Path.Combine(fullDir, item.Name), FileMode.Create);
+                using FileStream fs1 = new(fullDir.CombinePathOS( item.Name), FileMode.Create);
                 await otherStream.CopyToAsync(fs1);
                 fs1.Position = 0;
                 assemblyLoadContext.LoadFromStream(fs1);
@@ -174,7 +177,7 @@ public class PluginCore : ISingleton
                         {
                             AssembleName = item.ToString(),
                             DriverTypeEnum = DriverEnum.Collect,
-                            FilePath = Path.Combine(dir, mainFile.Name),
+                            FilePath = dir.CombinePathOS(mainFile.Name),
                             FileName = mainFileName,
                         });
                     }
@@ -192,7 +195,7 @@ public class PluginCore : ISingleton
                         driverPlugins.Add(new DriverPlugin()
                         {
                             AssembleName = item.ToString(),
-                            FilePath = Path.Combine(dir, mainFile.Name),
+                            FilePath = dir.CombinePathOS(mainFile.Name),
                             FileName = mainFileName,
                             DriverTypeEnum = DriverEnum.Upload,
                         });
