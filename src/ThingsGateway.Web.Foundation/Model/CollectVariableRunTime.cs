@@ -44,7 +44,7 @@ public class CollectVariableRunTime : CollectDeviceVariable
     [AdaptIgnore]
     public object LastSetValue;
 
-    public void SetValue(object value)
+    public void SetValue(object value,DateTime dateTime=default)
     {
         if (value != null)
         {
@@ -79,6 +79,15 @@ public class CollectVariableRunTime : CollectDeviceVariable
 
         void Set(object data)
         {
+            DateTime time = DateTime.MinValue;
+            if (dateTime== default)
+            {
+                time = DateTime.Now;
+            }
+            else
+            {
+                time = dateTime;
+            }
             CollectTime = DateTime.Now;
             if (data?.ToString() != _value?.ToString() && LastSetValue != data)
             {
