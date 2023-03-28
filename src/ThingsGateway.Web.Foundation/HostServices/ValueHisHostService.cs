@@ -22,8 +22,8 @@ public class ValueHisHostService : BackgroundService, ISingleton
 {
     private readonly ILogger<ValueHisHostService> _logger;
     private GlobalCollectDeviceData _globalCollectDeviceData;
-    private ConcurrentQueue<CollectVariableRunTime> CollectDeviceVariables { get; set; } = new();
-    private ConcurrentQueue<CollectVariableRunTime> ChangeDeviceVariables { get; set; } = new();
+    private ConcurrentQueue<ValueHis> CollectDeviceVariables { get; set; } = new();
+    private ConcurrentQueue<ValueHis> ChangeDeviceVariables { get; set; } = new();
     public OperResult StatuString { get; set; } = new OperResult("初始化");
 
 
@@ -188,7 +188,7 @@ public class ValueHisHostService : BackgroundService, ISingleton
                                 if (list.Count != 0)
                                 {
                                     ////Sql保存
-                                    var collecthis = list.Adapt<List<ValueHis>>();
+                                    var collecthis = list;
                                     //插入
                                     await sqlSugarClient.Insertable<ValueHis>(collecthis).ExecuteCommandAsync();
                                 }
@@ -196,7 +196,7 @@ public class ValueHisHostService : BackgroundService, ISingleton
                                 if (changelist.Count != 0)
                                 {
                                     ////Sql保存
-                                    var changehis = changelist.Adapt<List<ValueHis>>();
+                                    var changehis = changelist;
                                     //插入
                                     await sqlSugarClient.Insertable<ValueHis>(changehis).ExecuteCommandAsync();
 
@@ -289,14 +289,14 @@ public class ValueHisHostService : BackgroundService, ISingleton
     {
         if (variable.HisType == HisType.Collect)
         {
-            CollectDeviceVariables.Enqueue(variable);
+            CollectDeviceVariables.Enqueue(variable.Adapt<ValueHis>());
         }
     }
     private void DeviceVariableValueChange(CollectVariableRunTime variable)
     {
         if (variable.HisType == HisType.Change)
         {
-            ChangeDeviceVariables.Enqueue(variable);
+            ChangeDeviceVariables.Enqueue(variable.Adapt<ValueHis>());
         }
     }
 
