@@ -50,11 +50,11 @@ namespace ThingsGateway.Modbus
             {
                 TouchSocketConfig.SetRemoteIPHost(new IPHost(IPAddress.Parse(IP), Port))
                     .SetBufferLength(1024);
-                client = TouchSocketConfig.Container.Resolve<TcpClient>();
-                ((TcpClient)client).Setup(TouchSocketConfig);
+                client = TouchSocketConfig.Container.Resolve<TGTcpClient>();
+                ((TGTcpClient)client).Setup(TouchSocketConfig);
             }
             //载入配置
-            _plc = new((TcpClient)client);
+            _plc = new((TGTcpClient)client);
             _plc.Crc16CheckEnable = Crc16CheckEnable;
             _plc.DataFormat = DataFormat;
             _plc.ConnectTimeOut = ConnectTimeOut;

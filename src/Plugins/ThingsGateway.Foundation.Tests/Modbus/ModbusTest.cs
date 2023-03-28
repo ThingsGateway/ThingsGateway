@@ -40,7 +40,7 @@ namespace ThingsGateway.Foundation.Tests
             config.SetRemoteIPHost(new IPHost(url))
     .SetBufferLength(300);
             //‘ÿ»Î≈‰÷√
-            var client = config.Container.Resolve<TcpClient>();
+            var client = config.Container.Resolve<TGTcpClient>();
             client.Setup(config);
             ModbusRtuOverTcp = new(client);
             ModbusRtuOverTcp.ConnectTimeOut = 5000;
@@ -65,7 +65,7 @@ namespace ThingsGateway.Foundation.Tests
             config.SetRemoteIPHost(new IPHost(url))
     .SetBufferLength(300);
             //‘ÿ»Î≈‰÷√
-            var client = config.Container.Resolve<TcpClient>();
+            var client = config.Container.Resolve<TGTcpClient>();
             client.Setup(config);
             ModbusTcp = new(client);
             ModbusTcp.ConnectTimeOut = 5000;

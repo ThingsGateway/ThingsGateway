@@ -5,38 +5,38 @@
     /// </summary>
     public abstract class ReadWriteDevicesTcpClientBase : ReadWriteDevicesClientBase
     {
-        public ReadWriteDevicesTcpClientBase(TcpClient tcpClient)
+        public ReadWriteDevicesTcpClientBase(TGTcpClient tcpClient)
         {
-            TcpClient = tcpClient;
-            TcpClient.Connecting += Connecting;
-            TcpClient.Connected += Connected;
-            TcpClient.Disconnecting += Disconnecting;
-            TcpClient.Disconnected += Disconnected;
-            Logger = TcpClient.Logger;
+            TGTcpClient = tcpClient;
+            TGTcpClient.Connecting += Connecting;
+            TGTcpClient.Connected += Connected;
+            TGTcpClient.Disconnecting += Disconnecting;
+            TGTcpClient.Disconnected += Disconnected;
+            Logger = TGTcpClient.Logger;
         }
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
-            TcpClient.Close();
-            TcpClient.Connecting -= Connecting;
-            TcpClient.Connected -= Connected;
-            TcpClient.Disconnecting -= Disconnecting;
-            TcpClient.Disconnected -= Disconnected;
-            TcpClient.Dispose();
+            TGTcpClient.Close();
+            TGTcpClient.Connecting -= Connecting;
+            TGTcpClient.Connected -= Connected;
+            TGTcpClient.Disconnecting -= Disconnecting;
+            TGTcpClient.Disconnected -= Disconnected;
+            TGTcpClient.Dispose();
         }
-        public TcpClient TcpClient { get; }
+        public TGTcpClient TGTcpClient { get; }
 
         public override Task ConnectAsync()
         {
-            return TcpClient.ConnectAsync(ConnectTimeOut);
+            return TGTcpClient.ConnectAsync(ConnectTimeOut);
         }
         public override void Connect()
         {
-            TcpClient.Connect(ConnectTimeOut);
+            TGTcpClient.Connect(ConnectTimeOut);
         }
         public override void Disconnect()
         {
-            TcpClient.Close();
+            TGTcpClient.Close();
         }
 
         public override async Task<OperResult<byte[]>> SendThenResponseAsync(byte[] data, WaitingOptions waitingOptions = null, CancellationToken token = default)
@@ -45,7 +45,7 @@
             {
                 if (waitingOptions == null) { waitingOptions = new WaitingOptions(); waitingOptions.ThrowBreakException = true; waitingOptions.AdapterFilter = AdapterFilter.NoneAll; }
                 await ConnectAsync();
-                ResponsedData result = await TcpClient.GetTGWaitingClient(waitingOptions).SendThenResponseAsync(data, TimeOut, token);
+                ResponsedData result = await TGTcpClient.GetTGWaitingClient(waitingOptions).SendThenResponseAsync(data, TimeOut, token);
                 return OperResult.CreateSuccessResult(result.Data);
             }
             catch (Exception ex)
@@ -60,7 +60,7 @@
             {
                 if (waitingOptions == null) { waitingOptions = new WaitingOptions(); waitingOptions.ThrowBreakException = true; waitingOptions.AdapterFilter = AdapterFilter.NoneAll; }
                 Connect();
-                ResponsedData result = TcpClient.GetTGWaitingClient(waitingOptions).SendThenResponse(data, TimeOut, token);
+                ResponsedData result = TGTcpClient.GetTGWaitingClient(waitingOptions).SendThenResponse(data, TimeOut, token);
                 return OperResult.CreateSuccessResult(result.Data);
             }
             catch (Exception ex)
@@ -71,7 +71,7 @@
 
         public override string ToString()
         {
-            return TcpClient.RemoteIPHost.ToString();
+            return TGTcpClient.RemoteIPHost.ToString();
         }
 
         private void Connected(ITcpClient client, MsgEventArgs e)

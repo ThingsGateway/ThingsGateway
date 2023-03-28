@@ -56,7 +56,7 @@ namespace ThingsGateway.Foundation.Tests
             config.SetRemoteIPHost(new IPHost(url))
     .SetBufferLength(300);
             //‘ÿ»Î≈‰÷√
-            var client = config.Container.Resolve<TcpClient>();
+            var client = config.Container.Resolve<TGTcpClient>();
             client.Setup(config);
             SiemensS7PLC = new(client, SiemensEnum.S1500);
             SiemensS7PLC.ConnectTimeOut = 5000;
