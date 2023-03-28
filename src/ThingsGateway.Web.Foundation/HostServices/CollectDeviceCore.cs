@@ -251,7 +251,7 @@ public class CollectDeviceCore : DisposableObject
                                 }
 
 
-                                if (deviceMedsVariableFailedNum == 0 && deviceSourceVariableFailedNum == 0 && (deviceMedsVariableSuccessNum != 0 || deviceMedsVariableSuccessNum != 0))
+                                if (deviceMedsVariableFailedNum == 0 && deviceSourceVariableFailedNum == 0 && (deviceMedsVariableSuccessNum != 0 || deviceSourceVariableSuccessNum != 0))
                                 {
                                     Device.DeviceStatus = DeviceStatusEnum.OnLine;
 
