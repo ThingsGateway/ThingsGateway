@@ -239,8 +239,8 @@ public class ValueHisHostService : BackgroundService, ISingleton
 
         foreach (var device in devices)
         {
-            device.DeviceVariableRunTimes?.ForEach(v => { v.VariableCollectChange -= DeviceVariableCollectChange; });
-            device.DeviceVariableRunTimes?.ForEach(v => { v.VariableValueChange -= DeviceVariableValueChange; });
+            device.DeviceVariableRunTimes?.Where(a=>a.HisEnable==true)?.ForEach(v => { v.VariableCollectChange -= DeviceVariableCollectChange; });
+            device.DeviceVariableRunTimes?.Where(a => a.HisEnable == true)?.ForEach(v => { v.VariableValueChange -= DeviceVariableValueChange; });
         }
 
         CancellationTokenSource StoppingToken = StoppingTokens.Last();
@@ -267,8 +267,8 @@ public class ValueHisHostService : BackgroundService, ISingleton
     {
         foreach (var device in _globalCollectDeviceData.CollectDevices)
         {
-            device.DeviceVariableRunTimes?.ForEach(v => { v.VariableCollectChange += DeviceVariableCollectChange; });
-            device.DeviceVariableRunTimes?.ForEach(v => { v.VariableValueChange += DeviceVariableValueChange; });
+            device.DeviceVariableRunTimes?.Where(a => a.HisEnable == true)?.ForEach(v => { v.VariableCollectChange += DeviceVariableCollectChange; });
+            device.DeviceVariableRunTimes?.Where(a => a.HisEnable == true)?.ForEach(v => { v.VariableValueChange += DeviceVariableValueChange; });
         }
         StoppingTokens.Add(new());
         Init();
