@@ -18,13 +18,14 @@ namespace ThingsGateway.Web.Foundation
     public class CollectDbInfoControler : IDynamicApiController
     {
         IServiceScopeFactory _scopeFactory;
-        IVariableService _variableService { get; set; }
+        /// <inheritdoc cref="CollectDbInfoControler"/>
         public CollectDbInfoControler(IServiceScopeFactory scopeFactory, IVariableService variableService)
         {
             _scopeFactory = scopeFactory;
             _variableService = variableService;
         }
 
+        IVariableService _variableService { get; set; }
         /// <summary>
         /// 获取变量信息
         /// </summary>

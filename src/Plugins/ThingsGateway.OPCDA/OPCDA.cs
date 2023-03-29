@@ -17,7 +17,7 @@ namespace ThingsGateway.OPCDA
         internal CollectDeviceRunTime Device;
         private List<CollectVariableRunTime> _deviceVariables = new();
         internal ThingsGateway.Foundation.Adapter.OPCDA.OPCDAClient PLC = null;
-        public override System.Type DriverUI => typeof(ImportVariable);
+        public override System.Type DriverImportUI => typeof(ImportVariable);
 
         public OPCDAClient(IServiceScopeFactory scopeFactory) : base(scopeFactory)
         {

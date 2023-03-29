@@ -13,7 +13,7 @@ using ThingsGateway.Core.Extension;
 namespace ThingsGateway.Web.Foundation
 {
     /// <summary>
-    /// 采集设备
+    /// 采集状态信息
     /// </summary>
     [ApiDescriptionSettings(CateGoryConst.ThingsGatewayOpenApi, Order = 200)]
     [Route("openApi/collectInfo")]
@@ -24,8 +24,7 @@ namespace ThingsGateway.Web.Foundation
     public class CollectInfoControler : IDynamicApiController
     {
         IServiceScopeFactory _scopeFactory;
-        CollectDeviceHostService _collectDeviceHostService { get; set; }
-        AlarmHostService _alarmHostService { get; set; }
+        /// <inheritdoc cref="CollectInfoControler"/>
         public CollectInfoControler(IServiceScopeFactory scopeFactory)
         {
             _scopeFactory = scopeFactory;
@@ -34,6 +33,8 @@ namespace ThingsGateway.Web.Foundation
             _alarmHostService = serviceScope.ServiceProvider.GetBackgroundService<AlarmHostService>();
         }
 
+        AlarmHostService _alarmHostService { get; set; }
+        CollectDeviceHostService _collectDeviceHostService { get; set; }
         /// <summary>
         /// 获取设备信息
         /// </summary>

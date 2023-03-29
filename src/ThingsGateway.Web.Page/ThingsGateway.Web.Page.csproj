@@ -4,6 +4,7 @@
 		<TargetFrameworks>net6.0;net7.0</TargetFrameworks>
 		<Version>1.1.0</Version>
 		<NoWarn>BL0005;CS0168;</NoWarn>
+		<!--<GenerateDocumentationFile>True</GenerateDocumentationFile>-->
 	</PropertyGroup>
 
 	<ItemGroup>

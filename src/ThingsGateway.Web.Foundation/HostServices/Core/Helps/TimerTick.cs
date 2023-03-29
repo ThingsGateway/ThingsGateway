@@ -1,16 +1,20 @@
 ﻿namespace ThingsGateway.Web.Foundation;
+
+/// <summary>
+/// 计时器
+/// </summary>
 public class TimerTick
 {
-
-    /// <summary>
-    /// 误差
-    /// </summary>
-    private int offsetTime = 60;
     /// <summary>
     /// 时间差
     /// </summary>
     private int milliSeconds = 1000;
 
+    /// <summary>
+    /// 误差
+    /// </summary>
+    private int offsetTime = 60;
+    /// <inheritdoc cref="TimerTick"/>
     public TimerTick(int milliSeconds = 1000)
     {
         if (milliSeconds < 20)
@@ -39,6 +43,10 @@ public class TimerTick
         return true;
     }
 
+    /// <summary>
+    /// 是否到达设置时间
+    /// </summary>
+    /// <returns></returns>
     public bool IsTickHappen() => IsTickHappen(DateTime.Now);
 
     /// <summary>

@@ -1,4 +1,5 @@
 ﻿using ThingsGateway.Core;
+using ThingsGateway.Foundation;
 
 namespace ThingsGateway.Web.Foundation;
 /// <summary>

@@ -11,6 +11,9 @@ using TouchSocket.Core;
 
 namespace ThingsGateway.Web.Foundation;
 
+/// <summary>
+/// 设备子线程服务
+/// </summary>
 public class UploadDeviceCore : DisposableObject
 {
 
@@ -27,11 +30,7 @@ public class UploadDeviceCore : DisposableObject
     /// <summary>
     /// 当前的驱动插件实例
     /// </summary>
-    private UpLoadBase _driver
-    {
-        get;
-        set;
-    }
+    private UpLoadBase _driver { get; set; }
 
     private ILogger _logger;
     /// <summary>
@@ -42,6 +41,7 @@ public class UploadDeviceCore : DisposableObject
 
     private IServiceScopeFactory _scopeFactory;
 
+    /// <inheritdoc cref="UploadDeviceCore"/>
     public UploadDeviceCore(IServiceScopeFactory scopeFactory)
     {
 
@@ -86,11 +86,11 @@ public class UploadDeviceCore : DisposableObject
                 SetPluginProperties(_device.DevicePropertys);
                 _driver.IsLogOut = _device.IsLogOut;
                 _driver.Init(_logger, _device);
-                isInitSuccess=true;
+                isInitSuccess = true;
             }
             catch (Exception ex)
             {
-                isInitSuccess=false;
+                isInitSuccess = false;
                 _logger.LogError(ex, $"{_device.Name}Init失败");
             }
             StoppingTokens.Add(new());
@@ -227,6 +227,9 @@ public class UploadDeviceCore : DisposableObject
     {
         DeviceTask?.Start();
     }
+    /// <summary>
+    /// 停止上传
+    /// </summary>
     public void StopThread()
     {
         try
@@ -288,7 +291,7 @@ public class UploadDeviceCore : DisposableObject
     }
 
 
-
+    /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
         base.Dispose(disposing);

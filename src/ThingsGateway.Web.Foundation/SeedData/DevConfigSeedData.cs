@@ -8,6 +8,7 @@ namespace ThingsGateway.Web.Foundation
     /// </summary>
     public class DevConfigSeedData : ISqlSugarEntitySeedData<DriverPlugin>
     {
+        /// <inheritdoc/>
         public IEnumerable<DriverPlugin> SeedData()
         {
             return SeedDataUtil.GetSeedData<DriverPlugin>("driver_plugin.json");

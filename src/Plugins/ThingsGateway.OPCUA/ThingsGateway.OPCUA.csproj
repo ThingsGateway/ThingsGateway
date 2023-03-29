@@ -4,7 +4,7 @@
 		<LangVersion>latestMajor</LangVersion>
 		<TargetFrameworks>net6.0;net7.0</TargetFrameworks>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<GenerateDocumentationFile>False</GenerateDocumentationFile>
+		<!--<GenerateDocumentationFile>True</GenerateDocumentationFile>-->
 		<Version>1.1.0</Version>
 		<RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
 		<EnableDynamicLoading>true</EnableDynamicLoading>

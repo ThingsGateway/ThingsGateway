@@ -6,34 +6,41 @@ using OfficeOpenXml.Table;
 using System.ComponentModel.DataAnnotations;
 
 using ThingsGateway.Core;
+using ThingsGateway.Foundation;
 using ThingsGateway.Web.Foundation;
 
 namespace ThingsGateway.Application
 {
+    /// <summary>
+    /// 添加变量DTO
+    /// </summary>
     public class VariableAddInput : VariableEditInput
     {
+        /// <inheritdoc/>
         [MinValue(100, ErrorMessage = "低于最小值")]
         public override int IntervalTime { get; set; } = 1000;
-        public override long DeviceId
-        {
-            get;
-            set;
-        }
+        /// <inheritdoc/>
+        public override long DeviceId { get; set; }
     }
+    /// <summary>
+    /// 修改变量DTO
+    /// </summary>
     public class VariableEditInput : CollectDeviceVariable, IValidatableObject
     {
 
+        /// <inheritdoc/>
         [Required(ErrorMessage = "不能为空")]
         public override string Name { get; set; }
+
+        /// <inheritdoc/>
         [MinValue(1, ErrorMessage = "不能为空")]
-        public override long DeviceId
-        {
-            get;
-            set;
-        }
+        public override long DeviceId  { get;   set;   }
+
+        /// <inheritdoc/>
         [MinValue(100, ErrorMessage = "低于最小值")]
         public override int IntervalTime { get; set; }
 
+        /// <inheritdoc/>
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
             if (string.IsNullOrEmpty(VariableAddress) && string.IsNullOrEmpty(OtherMethod))
@@ -46,10 +53,13 @@ namespace ThingsGateway.Application
     /// </summary>
     public class VariablePageInput : BasePageInput
     {
+        /// <inheritdoc/>
         [Description("变量名称")]
         public string Name { get; set; }
+        /// <inheritdoc/>
         [Description("设备名称")]
         public string DeviceName { get; set; }
+        /// <inheritdoc/>
         [Description("变量地址")]
         public string VariableAddress { get; set; }
 
@@ -59,8 +69,12 @@ namespace ThingsGateway.Application
 
 
     #region 导入导出
+    /// <summary>
+    /// 变量导入DTO
+    /// </summary>
     public class CollectDeviceVariableImport : ImportPreviewInput, IValidatableObject
     {
+        /// <inheritdoc/>
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
             if (string.IsNullOrEmpty(VariableAddress) && string.IsNullOrEmpty(OtherMethod))
@@ -122,12 +136,6 @@ namespace ThingsGateway.Application
         [ImporterHeader(Name = "描述")]
         public string Description { get; set; }
 
-
-        /// <summary>
-        /// 初始值
-        /// </summary>
-        [ImporterHeader(Name = "初始值")]
-        public string InitialValue { get; set; }
 
         /// <summary>
         /// 读写权限
@@ -326,7 +334,9 @@ namespace ThingsGateway.Application
         #endregion
     }
 
-
+    /// <summary>
+    /// 变量导出DTO
+    /// </summary>
     [ExcelExporter(Name = "变量", TableStyle = TableStyles.Light10, AutoFitAllColumn = true)]
     public class CollectDeviceVariableExport
     {
@@ -362,12 +372,6 @@ namespace ThingsGateway.Application
         /// </summary>
         [ExporterHeader(DisplayName = "变量地址")]
         public string VariableAddress { get; set; }
-
-        /// <summary>
-        /// 初始值
-        /// </summary>
-        [ExporterHeader(DisplayName = "初始值")]
-        public string InitialValue { get; set; }
 
         /// <summary>
         /// 读写权限
@@ -585,16 +589,29 @@ namespace ThingsGateway.Application
         public bool HisEnable { get; set; }
         #endregion
     }
-
+    /// <summary>
+    /// 变量上传属性导入DTO
+    /// </summary>
     public class VariablePropertyImport : ImportPreviewInput
     {
-
+        /// <summary>
+        /// 设备ID
+        /// </summary>
         [ImporterHeader(IsIgnore = true)]
         public virtual long DeviceId { get; set; }
+        /// <summary>
+        /// 变量ID
+        /// </summary>
         [ImporterHeader(IsIgnore = true)]
         public long VariableId { get; set; }
+        /// <summary>
+        /// 变量名称
+        /// </summary>
         [ImporterHeader(Name = "变量名称")]
         public string VariableName { get; set; }
+        /// <summary>
+        /// 设备名称
+        /// </summary>
         [ImporterHeader(Name = "上传设备名称")]
         public string DeviceName { get; set; }
 
@@ -617,13 +634,19 @@ namespace ThingsGateway.Application
 
     }
     /// <summary>
-    /// 变量上传属性
+    /// 变量上传属性导出DTO
     /// </summary>
     [ExcelExporter(Name = "变量上传属性", TableStyle = TableStyles.Light10, AutoFitAllColumn = true)]
     public class VariablePropertyExport
     {
+        /// <summary>
+        /// 设备ID
+        /// </summary>
         [ExporterHeader(IsIgnore = true)]
         public virtual long DeviceId { get; set; }
+        /// <summary>
+        /// 变量ID
+        /// </summary>
         [ExporterHeader(IsIgnore = true)]
         public long VariableId { get; set; }
         /// <summary>
@@ -655,11 +678,19 @@ namespace ThingsGateway.Application
 
     }
 
-
+    /// <summary>
+    /// 变量Excel导入表示类
+    /// </summary>
     public class CollectDeviceVariableWithPropertyImport
     {
+        /// <summary>
+        /// 变量基本属性
+        /// </summary>
         [ExcelImporter(SheetName = "变量")]
         public CollectDeviceVariableImport CollectDeviceVariableExport { get; set; }
+        /// <summary>
+        /// 变量上传属性
+        /// </summary>
         [ExcelImporter(SheetName = "变量上传属性")]
         public VariablePropertyImport DevicePropertyExcel { get; set; }
 

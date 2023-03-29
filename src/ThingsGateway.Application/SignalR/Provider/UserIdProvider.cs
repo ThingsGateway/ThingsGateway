@@ -7,6 +7,7 @@ namespace ThingsGateway.Application
     /// </summary>
     public class UserIdProvider : IUserIdProvider
     {
+        /// <inheritdoc/>
         public string GetUserId(HubConnectionContext connection)
         {
             var feature = connection.Features.Get<IHttpContextFeature>();

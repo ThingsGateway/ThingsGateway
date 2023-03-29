@@ -10,36 +10,55 @@ using ThingsGateway.Web.Foundation;
 
 namespace ThingsGateway.Application
 {
+    /// <summary>
+    /// 上传设备添加DTO
+    /// </summary>
     public class UploadDeviceAddInput : UploadDeviceEditInput
     {
-
+        /// <inheritdoc/>
         [Required(ErrorMessage = "不能为空")]
         public override string Name { get; set; }
+        /// <inheritdoc/>
         [MinValue(1, ErrorMessage = "插件不能为空")]
         public override long PluginId { get; set; }
 
     }
+    /// <summary>
+    /// 上传设备修改DTO
+    /// </summary>
     public class UploadDeviceEditInput : UploadDevice
     {
 
+        /// <inheritdoc/>
         [Required(ErrorMessage = "不能为空")]
         public override string Name { get; set; }
+        /// <inheritdoc/>
         [MinValue(1, ErrorMessage = "插件不能为空")]
         public override long PluginId { get; set; }
 
     }
+
+    /// <summary>
+    /// 上传设备分页查询
+    /// </summary>
     public class UploadDevicePageInput : BasePageInput
     {
+        /// <inheritdoc/>
         [Description("设备名称")]
         public string Name { get; set; }
+        /// <inheritdoc/>
         [Description("插件名称")]
         public string PluginName { get; set; }
+        /// <inheritdoc/>
         [Description("设备组")]
         public string DeviceGroup { get; set; }
     }
 
 
     #region 导入导出
+    /// <summary>
+    /// 上传设备导入DTO
+    /// </summary>
     public class UploadDeviceImport : ImportPreviewInput
     {
 
@@ -86,7 +105,7 @@ namespace ThingsGateway.Application
     }
 
     /// <summary>
-    /// 上传设备
+    /// 上传设备导出DTO
     /// </summary>
     [ExcelExporter(Name = "上传设备", TableStyle = TableStyles.Light10, AutoFitAllColumn = true)]
     public class UploadDeviceExport
@@ -131,12 +150,19 @@ namespace ThingsGateway.Application
         public virtual bool IsLogOut { get; set; }
     }
 
-
+    /// <summary>
+    /// 上传设备导入表示类
+    /// </summary>
     public class UploadDeviceWithPropertyImport
     {
+        /// <summary>
+        /// 上传设备基本属性
+        /// </summary>
         [ExcelImporter(SheetName = "上传设备")]
         public UploadDeviceImport UploadDeviceExport { get; set; }
-
+        /// <summary>
+        /// 上传设备附加属性
+        /// </summary>
         [ExcelImporter(SheetName = "设备附加属性")]
         public DevicePropertyImport DevicePropertyExcel { get; set; }
     }

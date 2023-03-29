@@ -6,32 +6,21 @@ using TouchSocket.Core;
 
 namespace ThingsGateway.Web.Foundation
 {
+    /// <summary>
+    /// 表达式扩展
+    /// </summary>
     public static class ExpressionEvaluatorExtension
     {
+        static ExpressionEvaluator ExpressionEvaluator;
+
         static ExpressionEvaluatorExtension()
         {
             ExpressionEvaluator = new();
             ExpressionEvaluator.PreEvaluateVariable += Evaluator_PreEvaluateVariable;
         }
-        public static void Evaluator_PreEvaluateVariable(object sender, VariablePreEvaluationEventArg e)
-        {
-            var data = App.GetService<GlobalCollectDeviceData>();
-            var obj = data.CollectVariables.FirstOrDefault(it => it.Name == e.Name);
-            if (obj == null)
-            {
-                return;
-            }
-            if (obj.Value != null)
-                e.Value = Convert.ChangeType(obj.Value, obj.DataType);
-        }
-
-        public static ExpressionEvaluator ExpressionEvaluator;
-
         /// <summary>
-        /// 计算表达式：raw*100
+        /// 计算表达式
         /// </summary>
-        /// <param name="expressions"></param>
-        /// <returns></returns>
         public static object GetExpressionsResult(this string expressions, object rawvalue)
         {
             if (expressions.IsNullOrEmpty())
@@ -46,7 +35,21 @@ namespace ThingsGateway.Web.Foundation
             var value = ExpressionEvaluator.Evaluate(expressions);
             return value;
         }
-
-
+        /// <summary>
+        /// 表达式的扩展变量来源
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public static void Evaluator_PreEvaluateVariable(object sender, VariablePreEvaluationEventArg e)
+        {
+            var data = App.GetService<GlobalCollectDeviceData>();
+            var obj = data.CollectVariables.FirstOrDefault(it => it.Name == e.Name);
+            if (obj == null)
+            {
+                return;
+            }
+            if (obj.Value != null)
+                e.Value = Convert.ChangeType(obj.Value, obj.DataType);
+        }
     }
 }

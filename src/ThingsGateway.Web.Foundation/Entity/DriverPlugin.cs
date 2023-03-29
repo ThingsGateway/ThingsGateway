@@ -31,8 +31,18 @@ public class DriverPlugin : BaseEntity
     public string FilePath { get; set; }
 
 }
+
+/// <summary>
+/// 插件类型
+/// </summary>
 public enum DriverEnum
 {
+    /// <summary>
+    /// 采集
+    /// </summary>
     Collect,
+    /// <summary>
+    /// 上传
+    /// </summary>
     Upload,
 }

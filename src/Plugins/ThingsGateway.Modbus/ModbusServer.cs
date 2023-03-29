@@ -60,7 +60,6 @@ namespace ThingsGateway.Modbus
             _plc?.Dispose();
         }
         private UploadDevice curDevice;
-        private TouchSocketConfig TouchSocketConfig = new();
         protected override void Init(UploadDevice device)
         {
             curDevice = device;

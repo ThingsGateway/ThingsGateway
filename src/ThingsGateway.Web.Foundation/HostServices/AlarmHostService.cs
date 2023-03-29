@@ -22,22 +22,38 @@ namespace ThingsGateway.Web.Foundation;
 /// </summary>
 public class AlarmHostService : BackgroundService, ISingleton
 {
+    private static IServiceScopeFactory _scopeFactory;
     private readonly ILogger<AlarmHostService> _logger;
     private GlobalCollectDeviceData _globalCollectDeviceData;
-    private ConcurrentQueue<CollectVariableRunTime> CollectDeviceVariables { get; set; } = new();
-    public ConcurrentList<CollectVariableRunTime> RealAlarmDeviceVariables { get; set; } = new();
-    private ConcurrentQueue<CollectVariableRunTime> HisAlarmDeviceVariables { get; set; } = new();
-
-    public event VariableCahngeEventHandler OnAlarmChanged;
-    public event DelegateOnDeviceChanged OnDeviceStatusChanged;
-    public OperResult StatuString { get; set; } = new OperResult("初始化");
-    private static IServiceScopeFactory _scopeFactory;
+    /// <inheritdoc cref="AlarmHostService"/>
     public AlarmHostService(ILogger<AlarmHostService> logger, IServiceScopeFactory scopeFactory)
     {
         _scopeFactory = scopeFactory;
         _logger = logger;
         _globalCollectDeviceData = scopeFactory.CreateScope().ServiceProvider.GetService<GlobalCollectDeviceData>();
     }
+    /// <summary>
+    /// 报警变化事件
+    /// </summary>
+    public event VariableCahngeEventHandler OnAlarmChanged;
+    /// <summary>
+    /// 设备状态变化事件
+    /// </summary>
+    public event DelegateOnDeviceChanged OnDeviceStatusChanged;
+    /// <summary>
+    /// 实时报警列表
+    /// </summary>
+    public ConcurrentList<CollectVariableRunTime> RealAlarmDeviceVariables { get; set; } = new();
+    /// <summary>
+    /// 服务状态
+    /// </summary>
+    public OperResult StatuString { get; set; } = new OperResult("初始化");
+    private ConcurrentQueue<CollectVariableRunTime> CollectDeviceVariables { get; set; } = new();
+    private ConcurrentQueue<CollectVariableRunTime> HisAlarmDeviceVariables { get; set; } = new();
+    /// <summary>
+    /// 获取数据库链接
+    /// </summary>
+    /// <returns></returns>
     public async Task<OperResult<SqlSugarClient>> AlarmConfig()
     {
         await Task.CompletedTask;
@@ -90,18 +106,21 @@ public class AlarmHostService : BackgroundService, ISingleton
         return OperResult.CreateSuccessResult(sqlSugarClient);
     }
     #region worker服务
+    /// <inheritdoc/>
     public override async Task StartAsync(CancellationToken cancellationToken)
     {
         _logger?.LogInformation("报警服务启动");
         await base.StartAsync(cancellationToken);
     }
 
+    /// <inheritdoc/>
     public override Task StopAsync(CancellationToken cancellationToken)
     {
         _logger?.LogInformation("报警服务停止");
         return base.StopAsync(cancellationToken);
     }
 
+    /// <inheritdoc/>
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         await Task.Delay(5000, stoppingToken);
@@ -127,9 +146,9 @@ public class AlarmHostService : BackgroundService, ISingleton
     /// 循环线程取消标识
     /// </summary>
     public ConcurrentList<CancellationTokenSource> StoppingTokens = new();
-    private Task<Task> RealAlarmTask;
+    private ExpressionEvaluator expressionEvaluator;
     private Task<Task> HisAlarmTask;
-
+    private Task<Task> RealAlarmTask;
     /// <summary>
     /// 初始化
     /// </summary>
@@ -275,6 +294,27 @@ public class AlarmHostService : BackgroundService, ISingleton
         }
  );
     }
+    /// <summary>
+    /// 重启服务
+    /// </summary>
+    public void Restart()
+    {
+        Stop(_globalCollectDeviceData.CollectDevices);
+        Start();
+    }
+
+    internal void Start()
+    {
+        foreach (var item in _globalCollectDeviceData.CollectDevices)
+        {
+            DeviceChange(item);
+        }
+        StoppingTokens.Add(new());
+        Init();
+        RealAlarmTask.Start();
+        HisAlarmTask.Start();
+
+    }
 
     internal void Stop(IEnumerable<CollectDeviceRunTime> devices = null)
     {
@@ -322,45 +362,6 @@ public class AlarmHostService : BackgroundService, ISingleton
         StoppingTokens.Remove(StoppingToken);
 
     }
-    internal void Start()
-    {
-        foreach (var item in _globalCollectDeviceData.CollectDevices)
-        {
-            DeviceChange(item);
-        }
-        StoppingTokens.Add(new());
-        Init();
-        RealAlarmTask.Start();
-        HisAlarmTask.Start();
-
-    }
-
-    public void Restart()
-    {
-        Stop(_globalCollectDeviceData.CollectDevices);
-        Start();
-    }
-
-    private void DeviceChange(CollectDeviceRunTime device)
-    {
-        device.DeviceStatusCahnge += DeviceStatusCahnge;
-        device.DeviceVariableRunTimes?.ForEach(v => { v.VariableCollectChange += DeviceVariableChange; });
-    }
-
-    private void DeviceStatusCahnge(CollectDeviceRunTime device)
-    {
-        OnDeviceStatusChanged?.Invoke(device.Adapt<CollectDeviceRunTime>());
-    }
-
-    private void DeviceVariableChange(CollectVariableRunTime variable)
-    {
-        //这里不能序列化变量，报警服务需改变同一个变量指向的属性
-        CollectDeviceVariables.Enqueue(variable);
-    }
-
-
-    private ExpressionEvaluator expressionEvaluator;
-
     private void AlarmAnalysis(CollectVariableRunTime item)
     {
         string limit = string.Empty;
@@ -466,7 +467,22 @@ public class AlarmHostService : BackgroundService, ISingleton
         }
     }
 
+    private void DeviceChange(CollectDeviceRunTime device)
+    {
+        device.DeviceStatusCahnge += DeviceStatusCahnge;
+        device.DeviceVariableRunTimes?.ForEach(v => { v.VariableCollectChange += DeviceVariableChange; });
+    }
 
+    private void DeviceStatusCahnge(CollectDeviceRunTime device)
+    {
+        OnDeviceStatusChanged?.Invoke(device.Adapt<CollectDeviceRunTime>());
+    }
+
+    private void DeviceVariableChange(CollectVariableRunTime variable)
+    {
+        //这里不能序列化变量，报警服务需改变同一个变量指向的属性
+        CollectDeviceVariables.Enqueue(variable);
+    }
     #endregion
 }
 

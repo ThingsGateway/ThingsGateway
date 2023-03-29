@@ -1,6 +1,9 @@
 ﻿
 namespace ThingsGateway.Web.Foundation;
 
+/// <summary>
+/// 上传设备运行状态
+/// </summary>
 public class UploadDeviceRunTime : UploadDevice
 {
     /// <summary>
@@ -36,6 +39,10 @@ public class UploadDeviceRunTime : UploadDevice
     private DeviceStatusEnum deviceStatus = DeviceStatusEnum.Default;
 
     private string deviceOffMsg;
+
+    /// <summary>
+    /// 失败原因
+    /// </summary>
     [Description("失败原因")]
     public string DeviceOffMsg
     {

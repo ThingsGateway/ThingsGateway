@@ -13,6 +13,7 @@ using ThingsGateway.Core;
 
 namespace ThingsGateway.Web.Foundation
 {
+    /// <inheritdoc cref="IUploadDeviceService"/>
     [Injection(Proxy = typeof(OperDispatchProxy))]
     public class UploadDeviceService : DbRepository<UploadDevice>, IUploadDeviceService
     {
@@ -21,6 +22,7 @@ namespace ThingsGateway.Web.Foundation
         private readonly IFileService _fileService;
         private readonly IServiceScopeFactory _scopeFactory;
 
+        /// <inheritdoc cref="IUploadDeviceService"/>
         public UploadDeviceService(SysCacheService sysCacheService
             , IDriverPluginService driverPluginService, IFileService fileService,
         IServiceScopeFactory scopeFactory)
@@ -129,6 +131,7 @@ namespace ThingsGateway.Web.Foundation
             var data = GetCacheList();
             return data.FirstOrDefault(it => it.Id == Id);
         }
+        /// <inheritdoc cref="IUploadDeviceService"/>
         public List<UploadDevice> GetCacheList()
         {
             //先从Cache拿
@@ -182,6 +185,7 @@ namespace ThingsGateway.Web.Foundation
         }
 
         #region 导入导出
+        /// <inheritdoc/>
         [OperDesc("导出上传设备模板", IsRecordPar = false)]
         public async Task<MemoryStream> Template()
         {
@@ -192,6 +196,7 @@ namespace ThingsGateway.Web.Foundation
             return result;
         }
 
+        /// <inheritdoc/>
         [OperDesc("导出上传设备表", IsRecordPar = false)]
         public async Task<MemoryStream> ExportFile()
         {

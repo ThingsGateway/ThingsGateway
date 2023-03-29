@@ -16,9 +16,7 @@ namespace ThingsGateway.Web.Foundation;
 /// </summary>
 public class UploadDeviceHostService : BackgroundService
 {
-    private readonly ILogger<UploadDeviceHostService> _logger;
-    private PluginCore _pluginService;
-    private static IServiceScopeFactory _scopeFactory;
+    /// <inheritdoc cref="UploadDeviceHostService"/>
     public UploadDeviceHostService(ILogger<UploadDeviceHostService> logger,
         IServiceScopeFactory scopeFactory)
     {
@@ -30,8 +28,15 @@ public class UploadDeviceHostService : BackgroundService
         _uploadDeviceService = serviceScope.ServiceProvider.GetService<IUploadDeviceService>();
     }
 
+    /// <summary>
+    /// 全部设备子线程
+    /// </summary>
     public ConcurrentList<UploadDeviceCore> UploadDeviceCores { get; private set; } = new();
-    IUploadDeviceService _uploadDeviceService { get; set; }
+
+    private ILogger<UploadDeviceHostService> _logger { get; set; }
+    private PluginCore _pluginService { get; set; }
+    private IServiceScopeFactory _scopeFactory { get; set; }
+    private IUploadDeviceService _uploadDeviceService { get; set; }
     #region 设备创建更新结束
 
     /// <summary>
@@ -48,7 +53,6 @@ public class UploadDeviceHostService : BackgroundService
     /// <summary>
     /// 删除设备线程，并且释放资源
     /// </summary>
-    /// <param name="devices"></param>
     public void RemoveDeviceThread()
     {
         var dev = UploadDeviceCores;
@@ -67,23 +71,9 @@ public class UploadDeviceHostService : BackgroundService
 
     }
     /// <summary>
-    /// 启动设备线程
+    /// 重启全部设备
     /// </summary>
-    /// <param name="devices"></param>
-    public void StartDeviceThread()
-    {
-        var devs = (_uploadDeviceService.GetUploadDeviceRuntime());
-        foreach (var item in devs)
-        {
-            if (!_stoppingToken.IsCancellationRequested)
-            {
-                UploadDeviceCore deviceCollectCore = new(_scopeFactory);
-                deviceCollectCore.Init(item);
-                deviceCollectCore.StartThread();
-                UploadDeviceCores.Add(deviceCollectCore);
-            }
-        }
-    }
+    /// <returns></returns>
     public async Task RestartDeviceThread()
     {
         try
@@ -103,6 +93,23 @@ public class UploadDeviceHostService : BackgroundService
         }
     }
 
+    /// <summary>
+    /// 启动设备线程
+    /// </summary>
+    public void StartDeviceThread()
+    {
+        var devs = (_uploadDeviceService.GetUploadDeviceRuntime());
+        foreach (var item in devs)
+        {
+            if (!_stoppingToken.IsCancellationRequested)
+            {
+                UploadDeviceCore deviceCollectCore = new(_scopeFactory);
+                deviceCollectCore.Init(item);
+                deviceCollectCore.StartThread();
+                UploadDeviceCores.Add(deviceCollectCore);
+            }
+        }
+    }
     /// <summary>
     /// 更新设备线程
     /// </summary>
@@ -129,7 +136,11 @@ public class UploadDeviceHostService : BackgroundService
     #endregion
 
     #region 设备信息获取
-
+    /// <summary>
+    /// 获取设备方法
+    /// </summary>
+    /// <param name="devId"></param>
+    /// <returns></returns>
     public List<string> GetDeviceMethods(long devId)
     {
         var id = YitIdHelper.NextId();
@@ -151,7 +162,12 @@ public class UploadDeviceHostService : BackgroundService
 
     }
 
-
+    /// <summary>
+    /// 获取设备属性
+    /// </summary>
+    /// <param name="driverId"></param>
+    /// <param name="devId"></param>
+    /// <returns></returns>
     public List<DependencyProperty> GetDevicePropertys(long driverId, long devId = 0)
     {
         using var serviceScope = _scopeFactory.CreateScope();
@@ -182,7 +198,12 @@ public class UploadDeviceHostService : BackgroundService
         }
     }
 
-
+    /// <summary>
+    /// 获取变量上传属性
+    /// </summary>
+    /// <param name="driverId"></param>
+    /// <param name="dependencyProperties"></param>
+    /// <returns></returns>
     public List<DependencyProperty> GetVariablePropertys(long driverId, List<DependencyProperty> dependencyProperties = null)
     {
         using var serviceScope = _scopeFactory.CreateScope();
@@ -216,12 +237,13 @@ public class UploadDeviceHostService : BackgroundService
 
     #region worker服务
     private CancellationToken _stoppingToken;
-
+    /// <inheritdoc/>
     public override async Task StartAsync(CancellationToken cancellationToken)
     {
         await base.StartAsync(cancellationToken);
     }
 
+    /// <inheritdoc/>
     public override async Task StopAsync(CancellationToken cancellationToken)
     {
         var stoppingToken = new CancellationTokenSource();
@@ -231,6 +253,7 @@ public class UploadDeviceHostService : BackgroundService
         RemoveDeviceThread();
         await base.StopAsync(cancellationToken);
     }
+    /// <inheritdoc/>
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
 
@@ -251,10 +274,10 @@ public class UploadDeviceHostService : BackgroundService
                         continue;
                     if (devcore.Device.DeviceStatus == DeviceStatusEnum.Pause)
                         continue;
-                    if (devcore.isInitSuccess)
+                    if (!devcore.isInitSuccess)
                         _logger?.LogWarning(devcore.Device.Name + "初始化失败，重启线程中");
                     else
-                    _logger?.LogWarning(devcore.Device.Name + "上传线程假死，重启线程中");
+                        _logger?.LogWarning(devcore.Device.Name + "上传线程假死，重启线程中");
                     UpDeviceThread(devcore.DeviceId, false);
                     i--;
                     num--;

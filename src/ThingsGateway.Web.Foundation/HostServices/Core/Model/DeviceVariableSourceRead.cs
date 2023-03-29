@@ -22,13 +22,14 @@ public class DeviceVariableSourceRead
     /// </summary>
     public string Address { get; set; }
     /// <summary>
-    /// 读取长度
-    /// </summary>
-    public string Length { get; set; }
-    /// <summary>
     /// 需分配的变量列表
     /// </summary>
     public List<CollectVariableRunTime> DeviceVariables { get; set; } = new();
+
+    /// <summary>
+    /// 读取长度
+    /// </summary>
+    public string Length { get; set; }
     /// <summary>
     /// 检测是否达到读取间隔
     /// </summary>

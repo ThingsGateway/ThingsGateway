@@ -6,6 +6,7 @@
     [AppStartup(99)]
     public class Startup : AppStartup
     {
+        /// <inheritdoc/>
         public void ConfigureServices(IServiceCollection services)
         {
 

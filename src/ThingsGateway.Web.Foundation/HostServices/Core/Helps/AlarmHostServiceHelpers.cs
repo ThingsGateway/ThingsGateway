@@ -1,7 +1,10 @@
 ﻿namespace ThingsGateway.Web.Foundation;
+
+/// <summary>
+/// 报警扩展
+/// </summary>
 public static class AlarmHostServiceHelpers
 {
-
     /// <summary>
     /// 获取bool报警类型
     /// </summary>

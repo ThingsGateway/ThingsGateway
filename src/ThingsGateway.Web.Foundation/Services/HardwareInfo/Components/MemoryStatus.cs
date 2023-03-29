@@ -1,5 +1,6 @@
 ﻿namespace ThingsGateway.Web.Foundation
 {
+        /// <inheritdoc/>
     public class MemoryStatus
     {
         /// <summary>

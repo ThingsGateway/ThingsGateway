@@ -1,5 +1,8 @@
 ﻿namespace ThingsGateway.Web.Foundation;
 
+/// <summary>
+/// 变量名称/值表示
+/// </summary>
 public class NameVaue
 {
     /// <summary>

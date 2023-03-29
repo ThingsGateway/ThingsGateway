@@ -15,19 +15,27 @@ namespace ThingsGateway.Web.Foundation;
 /// </summary>
 public abstract class DriverBase : IDisposable
 {
-
+    /// <summary>
+    /// <see cref="TouchSocketConfig"/> 
+    /// </summary>
     public TouchSocketConfig TouchSocketConfig;
+    /// <summary>
+    /// 日志
+    /// </summary>
     protected ILogger _logger;
     private bool isLogOut;
     private ILogger privateLogger;
     private IServiceScopeFactory _scopeFactory;
+    /// <inheritdoc cref="DriverBase"/>
     public DriverBase(IServiceScopeFactory scopeFactory)
     {
         _scopeFactory = scopeFactory;
         TouchSocketConfig = new TouchSocketConfig();
         TouchSocketConfig.ConfigureContainer(a => a.RegisterSingleton<ILog>(new EasyLogger(Log_Out)));
     }
-
+    /// <summary>
+    /// 是否输出日志
+    /// </summary>
     public bool IsLogOut
     {
         get => isLogOut;
@@ -87,9 +95,11 @@ public abstract class DriverBase : IDisposable
     /// <returns></returns>
     public abstract Task BeforStart();
 
-
-    public virtual Type DriverUI { get; }
-
+    /// <summary>
+    /// 导入变量UI
+    /// </summary>
+    public virtual Type DriverImportUI { get; }
+    /// <inheritdoc/>
     public abstract void Dispose();
     /// <summary>
     /// 初始化
@@ -125,8 +135,6 @@ public abstract class DriverBase : IDisposable
     /// <summary>
     /// 采集驱动读取
     /// </summary>
-    /// <param name="deviceVariableSourceRead"></param>
-    /// <returns></returns>
     public virtual async Task<OperResult<byte[]>> ReadSourceAsync(DeviceVariableSourceRead deviceVariableSourceRead, CancellationToken cancellationToken)
     {
         ushort length;
@@ -152,9 +160,6 @@ public abstract class DriverBase : IDisposable
     /// <br></br>
     /// 通常使用<see cref="IReadWrite.ReadAsync(string, int, System.Threading.CancellationToken)"/>可以直接返回正确信息
     /// </summary>
-    /// <param name="address">变量地址</param>
-    /// <param name="length">读取长度</param>
-    /// <returns></returns>
     protected abstract Task<OperResult<byte[]>> ReadAsync(string address, int length, CancellationToken cancellationToken);
 
     private void Log_Out(LogType arg1, object arg2, string arg3, Exception arg4)

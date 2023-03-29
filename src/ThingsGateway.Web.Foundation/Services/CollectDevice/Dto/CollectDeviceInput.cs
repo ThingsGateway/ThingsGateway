@@ -10,36 +10,52 @@ using ThingsGateway.Web.Foundation;
 
 namespace ThingsGateway.Application
 {
+    /// <summary>
+    /// 采集设备添加DTO
+    /// </summary>
     public class CollectDeviceAddInput : CollectDeviceEditInput
     {
-
+        /// <inheritdoc/>
         [Required(ErrorMessage = "不能为空")]
         public override string Name { get; set; }
+        /// <inheritdoc/>
         [MinValue(1, ErrorMessage = "插件不能为空")]
         public override long PluginId { get; set; }
 
     }
+    /// <summary>
+    /// 采集设备编辑DTO
+    /// </summary>
     public class CollectDeviceEditInput : CollectDevice
     {
 
+        /// <inheritdoc/>
         [Required(ErrorMessage = "不能为空")]
         public override string Name { get; set; }
+        /// <inheritdoc/>
         [MinValue(1, ErrorMessage = "插件不能为空")]
         public override long PluginId { get; set; }
 
     }
+    /// <summary>
+    /// 采集设备分页查询DTO
+    /// </summary>
     public class CollectDevicePageInput : BasePageInput
     {
+        /// <inheritdoc/>
         [Description("设备名称")]
         public string Name { get; set; }
+        /// <inheritdoc/>
         [Description("插件名称")]
         public string PluginName { get; set; }
+        /// <inheritdoc/>
         [Description("设备组")]
         public string DeviceGroup { get; set; }
     }
 
 
     #region 导入导出
+        /// <inheritdoc/>
     public class CollectDeviceImport : UploadDeviceImport
     {
 
@@ -47,7 +63,7 @@ namespace ThingsGateway.Application
     }
 
     /// <summary>
-    /// 采集设备
+    /// 采集设备导出DTO
     /// </summary>
     [ExcelExporter(Name = "采集设备", TableStyle = TableStyles.Light10, AutoFitAllColumn = true)]
     public class CollectDeviceExport : UploadDeviceExport
@@ -57,9 +73,14 @@ namespace ThingsGateway.Application
 
     }
 
+    /// <summary>
+    /// 采集设备导入DTO
+    /// </summary>
     public class DevicePropertyImport : ImportPreviewInput
     {
-
+        /// <summary>
+        /// 设备ID，已忽略
+        /// </summary>
         [ImporterHeader(IsIgnore = true)]
         public virtual long DeviceId { get; set; }
 
@@ -93,6 +114,9 @@ namespace ThingsGateway.Application
     [ExcelExporter(Name = "设备附加属性", TableStyle = TableStyles.Light10, AutoFitAllColumn = true)]
     public class DevicePropertyExport
     {
+        /// <summary>
+        /// 设备ID，已忽略
+        /// </summary>
         [ExporterHeader(IsIgnore = true)]
         public virtual long DeviceId { get; set; }
         /// <summary>
@@ -119,12 +143,19 @@ namespace ThingsGateway.Application
 
 
     }
-
+    /// <summary>
+    /// 采集设备Excel导入表示类
+    /// </summary>
     public class CollectDeviceWithPropertyImport
     {
+        /// <summary>
+        /// 采集设备基本属性
+        /// </summary>
         [ExcelImporter(SheetName = "采集设备")]
         public CollectDeviceImport CollectDeviceExport { get; set; }
-
+        /// <summary>
+        /// 采集设备附加属性
+        /// </summary>
         [ExcelImporter(SheetName = "设备附加属性")]
         public DevicePropertyImport DevicePropertyExcel { get; set; }
     }

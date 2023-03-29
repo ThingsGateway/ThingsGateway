@@ -1,6 +1,9 @@
 ﻿
 namespace ThingsGateway.Web.Foundation;
 
+/// <summary>
+/// 采集设备状态表示
+/// </summary>
 public class CollectDeviceRunTime : CollectDevice
 {
     /// <summary>
@@ -60,9 +63,15 @@ public class CollectDeviceRunTime : CollectDevice
         }
     }
     private DeviceStatusEnum deviceStatus = DeviceStatusEnum.Default;
+    /// <summary>
+    /// 设备状态变化事件
+    /// </summary>
     public event DelegateOnDeviceChanged DeviceStatusCahnge;
 
     private string deviceOffMsg;
+    /// <summary>
+    /// 失败原因
+    /// </summary>
     [Description("失败原因")]
     public string DeviceOffMsg
     {
@@ -79,5 +88,9 @@ public class CollectDeviceRunTime : CollectDevice
         set => deviceOffMsg = value;
     }
 }
+/// <summary>
+/// 设备变化委托
+/// </summary>
+/// <param name="collectDeviceRunTime"></param>
 public delegate void DelegateOnDeviceChanged(CollectDeviceRunTime collectDeviceRunTime);
 

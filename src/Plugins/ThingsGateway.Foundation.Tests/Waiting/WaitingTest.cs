@@ -3,9 +3,16 @@ using Xunit.Abstractions;
 
 namespace ThingsGateway.Foundation.Tests
 {
+    /// <summary>
+    /// 测试超时等待
+    /// </summary>
     public class WaitingTest
     {
         private ITestOutputHelper _output;
+        /// <summary>
+        /// 测试超时等待
+        /// </summary>
+        /// <param name="output"></param>
         public WaitingTest(ITestOutputHelper output)
         {
             _output = output;

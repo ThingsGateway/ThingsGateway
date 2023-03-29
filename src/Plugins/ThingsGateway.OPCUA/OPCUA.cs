@@ -29,7 +29,7 @@ namespace ThingsGateway.OPCUA
         [DeviceProperty("登录密码", "")] public string Password { get; set; }
         [DeviceProperty("激活订阅", "")] public bool ActiveSubscribe { get; set; } = true;
         [DeviceProperty("死区", "")] public float DeadBand { get; set; } = 0;
-        public override Type DriverUI => typeof(ImportVariable);
+        public override Type DriverImportUI => typeof(ImportVariable);
         [DeviceProperty("自动分组大小", "")] public int GroupSize { get; set; } = 500;
         public override ThingsGatewayBitConverter ThingsGatewayBitConverter { get; } = new(EndianType.Little);
         [DeviceProperty("重连频率", "")] public int ReconnectPeriod { get; set; } = 5000;

@@ -8,6 +8,7 @@ namespace ThingsGateway.Web.Foundation;
 /// </summary>
 public class GlobalCollectDeviceData : ISingleton
 {
+    /// <inheritdoc cref="GlobalCollectDeviceData"/>
     public GlobalCollectDeviceData()
     {
 

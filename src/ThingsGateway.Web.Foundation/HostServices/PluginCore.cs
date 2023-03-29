@@ -20,6 +20,7 @@ public class PluginCore : ISingleton
 {
     private readonly ILogger<PluginCore> _logger;
     private static IServiceScopeFactory _scopeFactory;
+    /// <inheritdoc cref="PluginCore"/>
     public PluginCore(ILogger<PluginCore> logger, IServiceScopeFactory scopeFactory)
     {
         _scopeFactory = scopeFactory;
@@ -42,7 +43,12 @@ public class PluginCore : ISingleton
     /// 插件ID/设备ID集合
     /// </summary>
     public ConcurrentDictionary<long, List<long>> DeviceOnDriverPlugins { get; private set; } = new();
-
+    /// <summary>
+    /// 获取插件
+    /// </summary>
+    /// <param name="devId"></param>
+    /// <param name="plugin"></param>
+    /// <returns></returns>
     public object AddDriver(long devId, DriverPlugin plugin)
     {
         //先判断是否已经拥有插件模块
@@ -134,7 +140,11 @@ public class PluginCore : ISingleton
             return assembly;
         }
     }
-
+    /// <summary>
+    /// 尝试添加插件，返回插件表示类
+    /// </summary>
+    /// <param name="plugin"></param>
+    /// <returns></returns>
     public async Task<List<DriverPlugin>> TestAddDriver(DriverPluginAddInput plugin)
     {
         var devId = YitIdHelper.NextId();
@@ -222,7 +232,11 @@ public class PluginCore : ISingleton
             assemblyLoadContext.Unload();
         }
     }
-
+    /// <summary>
+    /// 删除插件
+    /// </summary>
+    /// <param name="devId"></param>
+    /// <param name="pluginId"></param>
     public void DeleteDriver(long devId, long pluginId)
     {
         try

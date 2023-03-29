@@ -7,6 +7,9 @@ using TouchSocket.Core;
 
 namespace ThingsGateway.Web.Foundation;
 
+/// <summary>
+/// 变量运行状态表示
+/// </summary>
 public class CollectVariableRunTime : CollectDeviceVariable
 {
     /// <summary>
@@ -15,6 +18,9 @@ public class CollectVariableRunTime : CollectDeviceVariable
     [Description("设备名称")]
     [OrderData(Order = 2)]
     public string DeviceName { get; set; }
+    /// <summary>
+    /// 数据类型
+    /// </summary>
     [Description("数据类型")]
     public Type DataType
     {
@@ -31,19 +37,32 @@ public class CollectVariableRunTime : CollectDeviceVariable
         }
     }
 
-
+    /// <summary>
+    /// 原始值
+    /// </summary>
     [Description("原始值")]
     [OrderData(Order = 3)]
     public object RawValue { get; set; }
     private object _value;
+    /// <summary>
+    /// 实时值
+    /// </summary>
     [Description("实时值")]
     [OrderData(Order = 3)]
     public object Value { get => _value; private set => _value = value; }
+    /// <summary>
+    /// 上次值
+    /// </summary>
     [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     [AdaptIgnore]
     public object LastSetValue;
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="value"></param>
+    /// <param name="dateTime"></param>
     public void SetValue(object value,DateTime dateTime=default)
     {
         if (value != null)
@@ -89,24 +108,29 @@ public class CollectVariableRunTime : CollectDeviceVariable
                 time = dateTime;
             }
             CollectTime = DateTime.Now;
-            if (data?.ToString() != _value?.ToString() && LastSetValue != data)
+            if (data?.ToString() != _value?.ToString() && LastSetValue?.ToString() != data?.ToString())
             {
                 ChangeTime = DateTime.Now;
                 if (Quality == 192)
+                {
                     _value = data;
+                }
+                LastSetValue = data;
                 VariableValueChange?.Invoke(this);
             }
-
             VariableCollectChange?.Invoke(this);
-            LastSetValue = data;
         }
     }
 
-
+    /// <summary>
+    /// 变化时间
+    /// </summary>
     [Description("变化时间")]
     [OrderData(Order = 4)]
     public DateTime ChangeTime { get; set; }
-
+    /// <summary>
+    /// 采集时间
+    /// </summary>
     [Description("采集时间")]
     [OrderData(Order = 4)]
     public DateTime CollectTime { get; set; }
@@ -127,7 +151,9 @@ public class CollectVariableRunTime : CollectDeviceVariable
     [System.Text.Json.Serialization.JsonIgnore]
     [AdaptIgnore]
     public VariableCahngeEventHandler VariableValueChange { get; set; }
-
+    /// <summary>
+    /// 质量戳
+    /// </summary>
     [Description("质量戳")]
     [OrderData(Order = 5)]
     public int Quality { get; private set; }
@@ -135,7 +161,7 @@ public class CollectVariableRunTime : CollectDeviceVariable
 
     #region LoadSourceRead
     /// <summary>
-    /// <see cref="DriverBase.ReadAsync(string, ushort)"/>返回字节组中的索引位置
+    /// <see cref="DriverBase.ReadAsync(string, int, System.Threading.CancellationToken)"/>返回字节组中的索引位置
     /// 这个参数值由自动分包方法写入<see cref="DriverBase.LoadSourceRead(List{CollectVariableRunTime})"/>
     /// </summary>
     [Description("分包索引")]
@@ -170,7 +196,9 @@ public class CollectVariableRunTime : CollectDeviceVariable
 
 
     #region 报警
-
+    /// <summary>
+    /// 报警使能
+    /// </summary>
     public bool AlarmEnable
     {
         get
@@ -178,19 +206,33 @@ public class CollectVariableRunTime : CollectDeviceVariable
             return LAlarmEnable || LLAlarmEnable || HAlarmEnable || HHAlarmEnable || BoolOpenAlarmEnable || BoolCloseAlarmEnable;
         }
     }
-
+    /// <summary>
+    /// 报警时间
+    /// </summary>
     public DateTime AlarmTime { get; set; }
+    /// <summary>
+    /// 事件时间
+    /// </summary>
     public DateTime EventTime { get; set; }
-
+    /// <summary>
+    /// 报警类型
+    /// </summary>
     public AlarmEnum AlarmTypeEnum { get; set; }
-
+    /// <summary>
+    /// 事件类型
+    /// </summary>
     public EventEnum EventTypeEnum { get; set; }
-
+    /// <summary>
+    /// 报警值
+    /// </summary>
     public string AlarmCode { get; set; }
-
-    [SugarColumn(ColumnName = "AlamLimit", ColumnDescription = "报警限值", IsNullable = false)]
+    /// <summary>
+    /// 报警限值
+    /// </summary>
     public string AlarmLimit { get; set; }
-
+    /// <summary>
+    /// 报警文本
+    /// </summary>
     public string AlarmText { get; set; }
     #endregion
 }

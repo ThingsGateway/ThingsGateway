@@ -15,6 +15,7 @@ using ThingsGateway.Core;
 
 namespace ThingsGateway.Web.Foundation
 {
+    /// <inheritdoc cref="ICollectDeviceService"/>
     [Injection(Proxy = typeof(OperDispatchProxy))]
     public class CollectDeviceService : DbRepository<CollectDevice>, ICollectDeviceService
     {
@@ -23,6 +24,7 @@ namespace ThingsGateway.Web.Foundation
         private readonly IFileService _fileService;
         private readonly IServiceScopeFactory _scopeFactory;
 
+    /// <inheritdoc cref="ICollectDeviceService"/>
         public CollectDeviceService(SysCacheService sysCacheService
             , IDriverPluginService driverPluginService, IFileService fileService,
         IServiceScopeFactory scopeFactory)
@@ -115,6 +117,7 @@ namespace ThingsGateway.Web.Foundation
             var data = GetCacheList();
             return data.FirstOrDefault(it => it.Id == id)?.Name;
         }
+        /// <inheritdoc/>
         public List<DeviceTree> GetTree()
         {
             var data = GetCacheList();
@@ -122,6 +125,7 @@ namespace ThingsGateway.Web.Foundation
             return trees;
         }
 
+        /// <inheritdoc cref="GetTree()"/>
         public static List<DeviceTree> GetTree(List<CollectDevice> data)
         {
             Dictionary<string, DeviceTree> trees = new();
@@ -208,6 +212,7 @@ namespace ThingsGateway.Web.Foundation
             var data = GetCacheList();
             return data.FirstOrDefault(it => it.Id == Id);
         }
+        /// <inheritdoc/>
         public List<CollectDevice> GetCacheList()
         {
             //先从Cache拿
@@ -265,6 +270,7 @@ namespace ThingsGateway.Web.Foundation
         }
 
         #region 导入导出
+        /// <inheritdoc/>
         [OperDesc("导出采集设备模板", IsRecordPar = false)]
         public async Task<MemoryStream> Template()
         {
@@ -275,6 +281,7 @@ namespace ThingsGateway.Web.Foundation
             return result;
         }
 
+        /// <inheritdoc/>
         [OperDesc("导出采集设备表", IsRecordPar = false)]
         public async Task<MemoryStream> ExportFile()
         {
