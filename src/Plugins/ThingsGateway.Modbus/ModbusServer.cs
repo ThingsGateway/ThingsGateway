@@ -3,7 +3,6 @@
 using SqlSugar;
 
 using System.Collections.Concurrent;
-using System.Net;
 
 using ThingsGateway.Foundation;
 using ThingsGateway.Foundation.Adapter.Modbus;
@@ -67,7 +66,7 @@ namespace ThingsGateway.Modbus
             curDevice = device;
             TouchSocketConfig.ConfigureContainer(a => a.RegisterSingleton<ILog>(new EasyLogger(Log_Out)));
 
-            TouchSocketConfig.SetListenIPHosts(new IPHost[] { new IPHost(IPAddress.Parse(IP), Port) })
+            TouchSocketConfig.SetListenIPHosts(new IPHost[] { new IPHost($"{IP}:{Port}") })
                     .SetBufferLength(1024);
             var service = TouchSocketConfig.Container.Resolve<TcpService>();
             service.Setup(TouchSocketConfig);
