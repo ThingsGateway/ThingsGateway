@@ -46,7 +46,7 @@ namespace ThingsGateway.Modbus
         {
             if (client == null)
             {
-                TouchSocketConfig.SetRemoteIPHost(new IPHost(IPAddress.Parse(IP), Port))
+                TouchSocketConfig.SetRemoteIPHost(new IPHost($"{IP}:{Port}"))
                     .SetBufferLength(1024);
                 client = TouchSocketConfig.BuildWithUdpSession<UdpSession>();
             }

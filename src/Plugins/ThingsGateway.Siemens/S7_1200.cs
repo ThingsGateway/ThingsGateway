@@ -10,7 +10,7 @@
         {
             if (client == null)
             {
-                TouchSocketConfig.SetRemoteIPHost(new IPHost(IPAddress.Parse(IP), Port))
+                TouchSocketConfig.SetRemoteIPHost(new IPHost($"{IP}:{Port}"))
                     .SetBufferLength(1024);
                 client = TouchSocketConfig.Container.Resolve<TGTcpClient>();
                 ((TGTcpClient)client).Setup(TouchSocketConfig);
