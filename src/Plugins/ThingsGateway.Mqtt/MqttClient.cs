@@ -25,7 +25,7 @@ namespace ThingsGateway.Mqtt
         public MqttClient(IServiceScopeFactory scopeFactory) : base(scopeFactory)
         {
         }
-        public override OperResult Success()
+        public override OperResult IsConnected()
         {
             if (_mqttClient?.IsConnected == true)
             {
@@ -360,9 +360,9 @@ namespace ThingsGateway.Mqtt
                 _logger?.LogWarning(ex, ToString());
             }
 
-            if (CycleInterval > 100 + 50)
+            if (CycleInterval > 500 + 50)
             {
-                await Task.Delay(CycleInterval - 100);
+                await Task.Delay(CycleInterval - 500);
             }
             else
             {

@@ -1,5 +1,6 @@
 ﻿using Opc.Ua;
 using Opc.Ua.Client;
+using Opc.Ua.Configuration;
 
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -7,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using ThingsGateway.Foundation.Extension;
+
 
 //修改自https://github.com/dathlin/OpcUaHelper 与OPC基金会net库
 
@@ -37,9 +39,9 @@ public class OPCUAClient : DisposableObject
 
     private ISession m_session;
 
-    // 重连状态
-    private bool m_useSecurity;
-
+    /// 是否使用安全连接
+    private bool m_useSecurity = true;
+    private ApplicationInstance m_application;
     /// <summary>
     /// 默认的构造函数，实例化一个新的OPC UA类
     /// </summary>
@@ -60,6 +62,7 @@ public class OPCUAClient : DisposableObject
 
         SecurityConfiguration securityConfigurationcv = new SecurityConfiguration
         {
+            UseValidatedCertificates = true,
             AutoAcceptUntrustedCertificates = true,
             RejectSHA1SignedCertificates = false,
             MinimumCertificateKeySize = 1024,
@@ -72,8 +75,8 @@ public class OPCUAClient : DisposableObject
             ApplicationName = OPCUAName,
             ApplicationType = ApplicationType.Client,
             CertificateValidator = certificateValidator,
-            ApplicationUri = nameof(OPCUAClient),
-            ProductUri = nameof(OPCUAClient),
+            ApplicationUri = "urn:localhost:ThingsGateway:OPCUAClient",
+            ProductUri = "https://diego2098.gitee.io/thingsgateway/",
 
             ServerConfiguration = new ServerConfiguration
             {
@@ -81,6 +84,8 @@ public class OPCUAClient : DisposableObject
                 MaxMessageQueueSize = 1000000,
                 MaxNotificationQueueSize = 1000000,
                 MaxPublishRequestCount = 10000000,
+
+
             },
 
             SecurityConfiguration = new SecurityConfiguration
@@ -93,19 +98,37 @@ public class OPCUAClient : DisposableObject
                 ApplicationCertificate = new CertificateIdentifier
                 {
                     StoreType = CertificateStoreType.X509Store,
-                    StorePath = "CurrentUser\\My",
-                    SubjectName = OPCUAName,
+                    StorePath = "CurrentUser\\UA_ThingsGateway",
+                    SubjectName = "CN=ThingsGateway OPCUAClient, C=US, S=Arizona, O=ThingsGateway, DC=localhost",
                 },
                 TrustedIssuerCertificates = new CertificateTrustList
                 {
-                    StoreType = CertificateStoreType.X509Store,
-                    StorePath = "CurrentUser\\Root",
+                    StoreType = CertificateStoreType.Directory,
+                    StorePath = "%CommonApplicationData%\\ThingsGateway\\pki\\issuer",
                 },
                 TrustedPeerCertificates = new CertificateTrustList
                 {
-                    StoreType = CertificateStoreType.X509Store,
-                    StorePath = "CurrentUser\\Root",
+                    StoreType = CertificateStoreType.Directory,
+                    StorePath = "%CommonApplicationData%\\ThingsGateway\\pki\\issuer",
+                },
+                RejectedCertificateStore = new CertificateStoreIdentifier
+                {
+                    StoreType = CertificateStoreType.Directory,
+                    StorePath = "%CommonApplicationData%\\ThingsGateway\\pki\\rejected",
+                },
+                UserIssuerCertificates = new CertificateTrustList
+                {
+                    StoreType = CertificateStoreType.Directory,
+                    StorePath = "%CommonApplicationData%\\ThingsGateway\\pki\\issuerUser",
+
+                },
+                TrustedUserCertificates = new CertificateTrustList
+                {
+                    StoreType = CertificateStoreType.Directory,
+                    StorePath = "%CommonApplicationData%\\ThingsGateway\\pki\\trustedUser",
                 }
+
+
             },
 
             TransportQuotas = new TransportQuotas
@@ -129,6 +152,8 @@ public class OPCUAClient : DisposableObject
 
         configuration.Validate(ApplicationType.Client);
         m_configuration = configuration;
+        m_application = new ApplicationInstance();
+        m_application.ApplicationConfiguration = m_configuration;
 
         EasyTask.Run(dataChangedHandlerInvoke);
 
@@ -195,7 +220,7 @@ public class OPCUAClient : DisposableObject
     /// <summary>
     /// a name of application name show on server
     /// </summary>
-    public string OPCUAName { get; set; } = typeof(OPCUAClient).FullName;
+    public string OPCUAName { get; set; } = "OPCUAClient";
 
 
 
@@ -212,7 +237,7 @@ public class OPCUAClient : DisposableObject
     public IUserIdentity UserIdentity { get; set; }
 
     /// <summary>
-    /// Whether to use security when connecting.
+    /// 是否使用安全连接.
     /// </summary>
     public bool UseSecurity
     {
@@ -1377,22 +1402,24 @@ public class OPCUAClient : DisposableObject
         {
             throw new ArgumentNullException("未初始化配置");
         }
-
+        UseSecurity = OPCNode?.IsUseSecurity ?? true;
         // select the best endpoint.
         EndpointDescription endpointDescription = CoreClientUtils.SelectEndpoint(serverUrl, UseSecurity);
         EndpointConfiguration endpointConfiguration = EndpointConfiguration.Create(m_configuration);
 
         ConfiguredEndpoint endpoint = new ConfiguredEndpoint(null, endpointDescription, endpointConfiguration);
-
+        await m_application.CheckApplicationInstanceCertificate(false, 0);
+        //var x509 = await m_configuration.SecurityConfiguration.ApplicationCertificate.Find(true);
         m_session = await Opc.Ua.Client.Session.Create(
-            m_configuration,
-            endpoint,
-            false,
-            false,
-            (string.IsNullOrEmpty(OPCUAName)) ? m_configuration.ApplicationName : OPCUAName,
-            60000,
-            UserIdentity,
-            new string[] { });
+     m_configuration,
+    endpoint,
+    true,
+    false,
+    (string.IsNullOrEmpty(OPCUAName)) ? m_configuration.ApplicationName : OPCUAName,
+    5000,
+    UserIdentity,
+    new string[] { });
+
 
         // set up keep alive callback.
         m_session.KeepAlive += new KeepAliveEventHandler(Session_KeepAlive);

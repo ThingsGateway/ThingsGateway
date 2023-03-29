@@ -41,7 +41,7 @@
                 if ((item.Category == MenuCategoryEnum.MENU || item.Category == MenuCategoryEnum.SPA) && item.TargetType == TargetTypeEnum.SELF)
                 {
                     if (item.Icon == null)
-                        pageTabItems.Add(new PageTabItem(item.Title, item.Component,""));
+                        pageTabItems.Add(new PageTabItem(item.Title, item.Component, ""));
                     else
                         pageTabItems.Add(new PageTabItem(item.Title, item.Component, item.Icon));
                 }

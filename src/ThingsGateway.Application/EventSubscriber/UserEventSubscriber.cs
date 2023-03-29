@@ -7,7 +7,6 @@
     {
         private readonly IServiceProvider _services;
 
-        /// <inheritdoc cref="UserEventSubscriber"/>
         public UserEventSubscriber(IServiceProvider services)
         {
             this._services = services;

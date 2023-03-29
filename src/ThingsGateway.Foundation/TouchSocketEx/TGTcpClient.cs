@@ -520,11 +520,11 @@ namespace TouchSocket.Sockets
                 this.PrivateOnConnecting(args);
                 {
 #if (NET6_0_OR_GREATER)
-                    var nowTime=DateTime.Now;
+                    var nowTime = DateTime.Now;
                     CancellationTokenSource cancellationTokenSource = new();
                     var task = this.MainSocket.ConnectAsync(iPHost.EndPoint, cancellationTokenSource.Token).AsTask();
                     var result = await Task.WhenAny(task, Task.Delay(timeout, cancellationTokenSource.Token));
-                    if(DateTime.Now-nowTime< TimeSpan.FromMilliseconds(timeout))
+                    if (DateTime.Now - nowTime < TimeSpan.FromMilliseconds(timeout))
                     {
                         await Task.Delay(500);
                     }
@@ -546,9 +546,9 @@ namespace TouchSocket.Sockets
                     }
 #else
 
-                    var nowTime=DateTime.Now;
+                    var nowTime = DateTime.Now;
                     CancellationTokenSource cancellationTokenSource = new();
-                    var task= Task.Factory.FromAsync(this.MainSocket.BeginConnect(iPHost.EndPoint, null, null), this.MainSocket.EndConnect);
+                    var task = Task.Factory.FromAsync(this.MainSocket.BeginConnect(iPHost.EndPoint, null, null), this.MainSocket.EndConnect);
                     var result = await Task.WhenAny(task, Task.Delay(timeout, cancellationTokenSource.Token));
                     if (DateTime.Now - nowTime < TimeSpan.FromMilliseconds(timeout))
                     {

@@ -22,7 +22,7 @@ namespace ThingsGateway.Modbus
         public ModbusServer(IServiceScopeFactory scopeFactory) : base(scopeFactory)
         {
         }
-        public override OperResult Success()
+        public override OperResult IsConnected()
         {
             if (_plc?.TcpService?.ServerState == ServerState.Running)
             {

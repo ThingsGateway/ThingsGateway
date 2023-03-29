@@ -63,7 +63,7 @@ public class CollectVariableRunTime : CollectDeviceVariable
     /// </summary>
     /// <param name="value"></param>
     /// <param name="dateTime"></param>
-    public void SetValue(object value,DateTime dateTime=default)
+    public void SetValue(object value, DateTime dateTime = default)
     {
         if (value != null)
         {
@@ -99,7 +99,7 @@ public class CollectVariableRunTime : CollectDeviceVariable
         void Set(object data)
         {
             DateTime time = DateTime.MinValue;
-            if (dateTime== default)
+            if (dateTime == default)
             {
                 time = DateTime.Now;
             }

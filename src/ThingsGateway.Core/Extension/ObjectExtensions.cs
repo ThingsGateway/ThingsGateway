@@ -87,7 +87,7 @@ namespace ThingsGateway.Core
             var cacheKey = $"{nameof(GetAllProps)}-{CultureInfo.CurrentUICulture.Name}-{modelType.FullName}";
             IEnumerable<PropertyInfo> displayName = BlazorCacheService.GetOrAdd("", cacheKey, entry =>
             {
-                var props = modelType.GetRuntimeProperties().Where(a=>a.GetMethod.IsPublic);
+                var props = modelType.GetRuntimeProperties().Where(a => a.GetMethod.IsPublic);
                 props = props.OrderBy(a =>
                 {
                     var order = a.GetCustomAttribute<OrderDataAttribute>()?.Order;

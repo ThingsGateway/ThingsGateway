@@ -19,7 +19,10 @@ namespace ThingsGateway.Modbus
         public ModbusRtu(IServiceScopeFactory scopeFactory) : base(scopeFactory)
         {
         }
-
+        public override bool IsConnected()
+        {
+            return _plc?.SerialClient?.CanSend ?? false;
+        }
         public override IThingsGatewayBitConverter ThingsGatewayBitConverter { get => _plc?.ThingsGatewayBitConverter; }
         [DeviceProperty("连接超时时间", "")] public ushort ConnectTimeOut { get; set; } = 3000;
         [DeviceProperty("默认解析顺序", "")] public DataFormat DataFormat { get; set; }

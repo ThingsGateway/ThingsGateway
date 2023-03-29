@@ -19,7 +19,7 @@ public abstract class UpLoadBase : IDisposable
     /// <summary>
     /// <see cref="TouchSocketConfig"/> 
     /// </summary>
-    public TouchSocketConfig TouchSocketConfig=new();
+    public TouchSocketConfig TouchSocketConfig = new();
     /// <summary>
     /// 日志
     /// </summary>
@@ -64,7 +64,7 @@ public abstract class UpLoadBase : IDisposable
     /// <summary>
     /// 返回是否已经在线/成功启动
     /// </summary>
-    public abstract OperResult Success();
+    public abstract OperResult IsConnected();
     /// <inheritdoc/>
     public abstract void Dispose();
     /// <summary>

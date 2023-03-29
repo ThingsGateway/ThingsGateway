@@ -138,6 +138,7 @@ public class UploadDeviceCore : DisposableObject
                 {
                     if (Device?.Enable == true)
                     {
+                        Device.ActiveTime = DateTime.Now;
                         //驱动插件执行循环前方法
                         await _driver?.BeforStart();
                     }
@@ -169,10 +170,10 @@ public class UploadDeviceCore : DisposableObject
                         {
                             if (Device.DeviceStatus != DeviceStatusEnum.OnLineButNoInitialValue && Device.DeviceStatus != DeviceStatusEnum.OnLine)
                                 Device.DeviceStatus = DeviceStatusEnum.OnLineButNoInitialValue;
-                            Device.ActiveTime = DateTime.Now;
                             await _driver.ExecuteAsync(StoppingToken.Token);
-                            if (_driver.Success().IsSuccess)
+                            if (_driver.IsConnected().IsSuccess)
                             {
+                                Device.ActiveTime = DateTime.Now;
                                 Device.DeviceStatus = DeviceStatusEnum.OnLine;
                             }
                             else

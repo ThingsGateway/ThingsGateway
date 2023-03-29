@@ -6,6 +6,7 @@ public class OPCNode
     public int GroupSize { get; set; } = 500;
     public float DeadBand { get; set; } = 0;
     public int ReconnectPeriod { get; set; } = 5000;
+    public bool IsUseSecurity { get; set; } = true;
 
     public override string ToString()
     {
