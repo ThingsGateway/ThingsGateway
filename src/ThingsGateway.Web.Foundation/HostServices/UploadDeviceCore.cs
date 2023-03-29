@@ -67,6 +67,7 @@ public class UploadDeviceCore : DisposableObject
     /// </summary>
     public List<DependencyProperty> Propertys { get; private set; }
     IDriverPluginService _driverPluginService { get; set; }
+    internal bool isInitSuccess;
     /// <summary>
     /// 初始化，在设备子线程创建或更新时才会执行
     /// </summary>
@@ -79,12 +80,21 @@ public class UploadDeviceCore : DisposableObject
             using var scope = _scopeFactory.CreateScope();
             var loggerFactory = scope.ServiceProvider.GetRequiredService<ILoggerFactory>();
             _logger = loggerFactory.CreateLogger("上传设备:" + _device.Name);
-            UpDriver();
-            SetPluginProperties(_device.DevicePropertys);
-            _driver.IsLogOut = _device.IsLogOut;
-            _driver.Init(_logger, _device);
+            try
+            {
+                UpDriver();
+                SetPluginProperties(_device.DevicePropertys);
+                _driver.IsLogOut = _device.IsLogOut;
+                _driver.Init(_logger, _device);
+                isInitSuccess=true;
+            }
+            catch (Exception ex)
+            {
+                isInitSuccess=false;
+                _logger.LogError(ex, $"{_device.Name}Init失败");
+            }
             StoppingTokens.Add(new());
-            Init();
+            InitTask();
         }
         catch (Exception ex)
         {
@@ -114,13 +124,15 @@ public class UploadDeviceCore : DisposableObject
     /// <summary>
     /// 初始化
     /// </summary>
-    public void Init()
+    public void InitTask()
     {
         DeviceTask = new Task<Task>(() =>
         {
             CancellationTokenSource StoppingToken = StoppingTokens.Last();
             return Task.Factory.StartNew(async (a) =>
             {
+                if (!isInitSuccess)
+                    return;
                 _logger?.LogInformation($"{_device.Name}上传设备线程开始");
                 try
                 {
@@ -136,9 +148,9 @@ public class UploadDeviceCore : DisposableObject
                 }
                 catch (Exception ex)
                 {
-                    _logger?.LogError(ex, _device.Name + "初始化出错");
+                    _logger?.LogError(ex, _device.Name + "BeforStart错误");
                     Device.DeviceStatus = DeviceStatusEnum.OffLine;
-                    Device.DeviceOffMsg = "初始化出错";
+                    Device.DeviceOffMsg = "BeforStart错误";
                 }
                 while (!StoppingToken.Token.IsCancellationRequested)
                 {

@@ -80,6 +80,7 @@ public class CollectDeviceCore : DisposableObject
     public List<DependencyProperty> Propertys { get; protected set; }
     protected GlobalCollectDeviceData _globalCollectDeviceData { get; set; }
     protected IDriverPluginService _driverPluginService { get; set; }
+    internal bool isInitSuccess;
     /// <summary>
     /// 初始化，在设备子线程创建或更新时才会执行
     /// </summary>
@@ -92,13 +93,22 @@ public class CollectDeviceCore : DisposableObject
             using var scope = _scopeFactory.CreateScope();
             var loggerFactory = scope.ServiceProvider.GetRequiredService<ILoggerFactory>();
             _logger = loggerFactory.CreateLogger("采集设备:" + _device.Name);
-            UpDriver();
-            SetPluginProperties(_device.DevicePropertys);
-            _driver.IsLogOut = _device.IsLogOut;
-            _driver.Init(_logger, _device, client);
-            LoadSourceReads(_device.DeviceVariableRunTimes);
+            try
+            {
+                UpDriver();
+                SetPluginProperties(_device.DevicePropertys);
+                _driver.IsLogOut = _device.IsLogOut;
+                _driver.Init(_logger, _device, client);
+                LoadSourceReads(_device.DeviceVariableRunTimes);
+                isInitSuccess=true;
+            }
+            catch (Exception ex)
+            {
+                isInitSuccess=false;
+                _logger.LogError(ex, $"{_device.Name}Init失败");
+            }
             StoppingTokens.Add(new());
-            Init();
+            InitTask();
             //重新初始化设备属性
             _globalCollectDeviceData.CollectDevices.RemoveWhere(it => it.Id == device.Id);
             _globalCollectDeviceData.CollectDevices.Add(device);
@@ -132,13 +142,15 @@ public class CollectDeviceCore : DisposableObject
     /// <summary>
     /// 初始化
     /// </summary>
-    protected void Init()
+    protected void InitTask()
     {
         DeviceTask = new Task<Task>(() =>
         {
             CancellationTokenSource StoppingToken = StoppingTokens.Last();
             return Task.Factory.StartNew(async (a) =>
             {
+                if (!isInitSuccess)
+                    return;
                 _logger?.LogInformation($"{_device.Name}采集设备线程开始");
                 try
                 {
@@ -155,9 +167,9 @@ public class CollectDeviceCore : DisposableObject
                 }
                 catch (Exception ex)
                 {
-                    _logger?.LogError(ex, _device.Name + "初始化出错");
+                    _logger?.LogError(ex, _device.Name + "BeforStart错误");
                     Device.DeviceStatus = DeviceStatusEnum.OffLine;
-                    Device.DeviceOffMsg = "初始化出错";
+                    Device.DeviceOffMsg = "BeforStart错误";
                 }
                 Device.SourceVariableNum = DeviceVariableSourceReads.Count;
                 Device.MethodVariableNum = DeviceVariableMedReads.Count;

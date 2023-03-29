@@ -290,13 +290,19 @@ public class CollectDeviceHostService : BackgroundService
             for (int i = 0; i < num; i++)
             {
                 CollectDeviceCore devcore = CollectDeviceCores[i];
-                if (devcore.Device.ActiveTime != DateTime.MinValue && devcore.Device.ActiveTime.AddMinutes(3) <= DateTime.Now)
+                if (
+                    (devcore.Device.ActiveTime != DateTime.MinValue && devcore.Device.ActiveTime.AddMinutes(3) <= DateTime.Now)
+                    || devcore.isInitSuccess==false
+                    )
                 {
                     if (devcore.StoppingTokens.Last().Token.IsCancellationRequested)
                         continue;
                     if (devcore.Device.DeviceStatus == DeviceStatusEnum.Pause)
                         continue;
-                    _logger?.LogWarning(devcore.Device.Name + "采集线程假死，重启线程中");
+                    if(devcore.isInitSuccess)
+                    _logger?.LogWarning(devcore.Device.Name + "初始化失败，重启线程中");
+                    else
+                        _logger?.LogWarning(devcore.Device.Name + "采集线程假死，重启线程中");
                     await UpDeviceThread(devcore.DeviceId, false);
                     i--;
                     num--;
@@ -308,7 +314,7 @@ public class CollectDeviceHostService : BackgroundService
 
 
 
-            await Task.Delay(60000, stoppingToken);
+            await Task.Delay(100000, stoppingToken);
         }
     }
 
