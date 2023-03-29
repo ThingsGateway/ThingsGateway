@@ -117,6 +117,10 @@ namespace ThingsGateway.OPCDA
             //不走ReadAsync
             throw new NotImplementedException();
         }
+        public override bool IsConnected()
+        {
+            return PLC.IsConnected;
+        }
         private void dataChangedHandler(List<ItemReadResult> values)
         {
             try
@@ -145,7 +149,7 @@ namespace ThingsGateway.OPCDA
                         var time = data.TimeStamp;
                         if (value != null && quality == 192)
                         {
-                            item.SetValue(value,time);
+                            item.SetValue(value, time);
 
                         }
                         else

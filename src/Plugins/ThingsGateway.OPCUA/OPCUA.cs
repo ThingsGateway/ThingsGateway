@@ -34,6 +34,7 @@ namespace ThingsGateway.OPCUA
         public override ThingsGatewayBitConverter ThingsGatewayBitConverter { get; } = new(EndianType.Little);
         [DeviceProperty("重连频率", "")] public int ReconnectPeriod { get; set; } = 5000;
         [DeviceProperty("更新频率", "")] public int UpdateRate { get; set; } = 1000;
+        [DeviceProperty("安全策略", "True为使用安全策略，False为无")] public bool IsUseSecurity { get; set; } = true;
         public override void AfterStop()
         {
             PLC?.Disconnect();
@@ -41,7 +42,7 @@ namespace ThingsGateway.OPCUA
 
         public override async Task BeforStart()
         {
-            await PLC.ConnectServer();
+            await PLC?.ConnectServer();
         }
 
         public override void Dispose()
@@ -115,6 +116,7 @@ namespace ThingsGateway.OPCUA
             oPCNode.DeadBand = DeadBand;
             oPCNode.GroupSize = GroupSize;
             oPCNode.ReconnectPeriod = ReconnectPeriod;
+            oPCNode.IsUseSecurity = IsUseSecurity;
             if (PLC == null)
             {
                 PLC = new();
@@ -123,8 +125,7 @@ namespace ThingsGateway.OPCUA
             }
             if (!UserName.IsNullOrEmpty())
             {
-                PLC.UserIdentity = new UserIdentity("Administrator", "111111");
-
+                PLC.UserIdentity = new UserIdentity(UserName, Password);
             }
             else
             {
@@ -138,7 +139,10 @@ namespace ThingsGateway.OPCUA
             //不走ReadAsync
             throw new NotImplementedException();
         }
-
+        public override bool IsConnected()
+        {
+            return PLC.Connected;
+        }
         private void dataChangedHandler(List<(MonitoredItem monitoredItem, MonitoredItemNotification monitoredItemNotification)> values)
         {
             try

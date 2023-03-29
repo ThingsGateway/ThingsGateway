@@ -1,7 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 
-using System.Net;
-
 using ThingsGateway.Foundation;
 using ThingsGateway.Web.Foundation;
 
@@ -17,7 +15,10 @@ namespace ThingsGateway.Modbus
         public ModbusRtuOverUdp(IServiceScopeFactory scopeFactory) : base(scopeFactory)
         {
         }
-
+        public override bool IsConnected()
+        {
+            return _plc?.UdpSession?.CanSend ?? false;
+        }
         public override IThingsGatewayBitConverter ThingsGatewayBitConverter { get => _plc?.ThingsGatewayBitConverter; }
         [DeviceProperty("连接超时时间", "")] public ushort ConnectTimeOut { get; set; } = 3000;
         [DeviceProperty("默认解析顺序", "")] public DataFormat DataFormat { get; set; }

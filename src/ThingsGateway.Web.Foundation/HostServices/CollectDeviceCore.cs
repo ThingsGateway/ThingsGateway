@@ -106,11 +106,11 @@ public class CollectDeviceCore : DisposableObject
                 _driver.IsLogOut = _device.IsLogOut;
                 _driver.Init(_logger, _device, client);
                 LoadSourceReads(_device.DeviceVariableRunTimes);
-                isInitSuccess=true;
+                isInitSuccess = true;
             }
             catch (Exception ex)
             {
-                isInitSuccess=false;
+                isInitSuccess = false;
                 _logger.LogError(ex, $"{_device.Name}Init失败");
             }
             StoppingTokens.Add(new());
@@ -231,7 +231,8 @@ public class CollectDeviceCore : DisposableObject
                     if (Device?.Enable == true)
                     {
                         //驱动插件执行循环前方法
-                        _driver?.BeforStart();
+                        Device.ActiveTime = DateTime.Now;
+                        await _driver?.BeforStart();
                     }
 
                     if (!StoppingToken.IsCancellationRequested)
@@ -273,9 +274,10 @@ public class CollectDeviceCore : DisposableObject
                             int deviceMedsVariableFailedNum = 0;
                             int deviceSourceVariableSuccessNum = 0;
                             int deviceSourceVariableFailedNum = 0;
-                            Device.ActiveTime = DateTime.Now;
                             if (StoppingToken.Token.IsCancellationRequested)
                                 break;
+                            if (_driver.IsConnected())
+                                Device.ActiveTime = DateTime.Now;
                             if (_driver.IsSupportAddressRequest())
                             {
                                 foreach (var deviceVariableSourceRead in DeviceVariableSourceReads)
@@ -295,12 +297,12 @@ public class CollectDeviceCore : DisposableObject
                                         var read = await _driver.ReadSourceAsync(deviceVariableSourceRead, StoppingToken.Token);
                                         if (read != null && read.IsSuccess)
                                         {
-                                            _logger?.LogTrace(_device.Name +" - "+ readTime+" - 采集[" + deviceVariableSourceRead.Address + " - " + deviceVariableSourceRead.Length + "] 数据成功" + read.Content?.ToHexString(" "));
+                                            _logger?.LogTrace(_device.Name + " - " + readTime + " - 采集[" + deviceVariableSourceRead.Address + " - " + deviceVariableSourceRead.Length + "] 数据成功" + read.Content?.ToHexString(" "));
                                             deviceSourceVariableSuccessNum += 1;
                                         }
                                         else if (read != null && read.IsSuccess == false)
                                         {
-                                            _logger?.LogWarning(_device.Name +" - "+ readTime+ " - 采集[" + deviceVariableSourceRead.Address + " -" + deviceVariableSourceRead.Length + "] 数据失败 - " + read?.Message);
+                                            _logger?.LogWarning(_device.Name + " - " + readTime + " - 采集[" + deviceVariableSourceRead.Address + " -" + deviceVariableSourceRead.Length + "] 数据失败 - " + read?.Message);
                                             deviceSourceVariableFailedNum += 1;
                                         }
                                     }

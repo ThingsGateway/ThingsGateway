@@ -1,7 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 
-using System.Net;
-
 using ThingsGateway.Foundation;
 using ThingsGateway.Web.Foundation;
 
@@ -18,7 +16,10 @@ namespace ThingsGateway.Modbus
         public ModbusRtuOverTcp(IServiceScopeFactory scopeFactory) : base(scopeFactory)
         {
         }
-
+        public override bool IsConnected()
+        {
+            return _plc?.TGTcpClient?.CanSend ?? false;
+        }
         public override IThingsGatewayBitConverter ThingsGatewayBitConverter { get => _plc?.ThingsGatewayBitConverter; }
         [DeviceProperty("连接超时时间", "")] public ushort ConnectTimeOut { get; set; } = 3000;
         [DeviceProperty("默认解析顺序", "")] public DataFormat DataFormat { get; set; }
@@ -48,7 +49,7 @@ namespace ThingsGateway.Modbus
         {
             if (client == null)
             {
-                TouchSocketConfig.SetRemoteIPHost(new IPHost($"{ IP}:{Port }"))
+                TouchSocketConfig.SetRemoteIPHost(new IPHost($"{IP}:{Port}"))
                     .SetBufferLength(1024);
                 client = TouchSocketConfig.Container.Resolve<TGTcpClient>();
                 ((TGTcpClient)client).Setup(TouchSocketConfig);

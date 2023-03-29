@@ -24,7 +24,7 @@ namespace ThingsGateway.Web.Foundation
         private readonly IFileService _fileService;
         private readonly IServiceScopeFactory _scopeFactory;
 
-    /// <inheritdoc cref="ICollectDeviceService"/>
+        /// <inheritdoc cref="ICollectDeviceService"/>
         public CollectDeviceService(SysCacheService sysCacheService
             , IDriverPluginService driverPluginService, IFileService fileService,
         IServiceScopeFactory scopeFactory)
@@ -66,7 +66,7 @@ namespace ThingsGateway.Web.Foundation
         }
         /// <inheritdoc/>
         [OperDesc("复制采集设备与变量")]
-        public async Task CopyDevAndVar(IEnumerable<CollectDevice>  input)
+        public async Task CopyDevAndVar(IEnumerable<CollectDevice> input)
         {
 
             using var serviceScope = _scopeFactory.CreateScope();
@@ -93,14 +93,14 @@ namespace ThingsGateway.Web.Foundation
                 await Context.Insertable(collectDeviceVariables).ExecuteCommandAsync();//添加数据
             });
 
-            if(result.IsSuccess)
+            if (result.IsSuccess)
             {
                 _sysCacheService.Remove(ThingsGatewayCacheConst.Cache_CollectDevice, "");//cache删除
 
             }
             else
             {
-                throw Oops.Oh(ErrorCodeEnum.A0003+ result.ErrorMessage);
+                throw Oops.Oh(ErrorCodeEnum.A0003 + result.ErrorMessage);
             }
 
 
@@ -125,7 +125,7 @@ namespace ThingsGateway.Web.Foundation
             return trees;
         }
 
-        /// <inheritdoc cref="GetTree()"/>
+        /// <inheritdoc/>
         public static List<DeviceTree> GetTree(List<CollectDevice> data)
         {
             Dictionary<string, DeviceTree> trees = new();

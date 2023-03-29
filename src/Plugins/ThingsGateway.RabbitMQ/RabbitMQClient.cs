@@ -24,7 +24,7 @@ namespace ThingsGateway.RabbitMQ
         public RabbitMQClient(IServiceScopeFactory scopeFactory) : base(scopeFactory)
         {
         }
-        public override OperResult Success()
+        public override OperResult IsConnected()
         {
             if (_connection?.IsOpen == true)
             {

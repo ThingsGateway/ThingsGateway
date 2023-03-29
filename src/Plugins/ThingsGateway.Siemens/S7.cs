@@ -12,7 +12,10 @@ namespace ThingsGateway.Siemens
         protected S7(IServiceScopeFactory scopeFactory) : base(scopeFactory)
         {
         }
-
+        public override bool IsConnected()
+        {
+            return _plc?.TGTcpClient?.CanSend ?? false;
+        }
         [DeviceProperty("连接超时时间", "")] public ushort ConnectTimeOut { get; set; } = 3000;
         [DeviceProperty("默认解析顺序", "")] public DataFormat DataFormat { get; set; }
         [DeviceProperty("IP", "")] public string IP { get; set; } = "127.0.0.1";

@@ -192,4 +192,10 @@ public abstract class DriverBase : IDisposable
         }
     }
 
+    /// <summary>
+    /// 是否连接成功
+    /// </summary>
+    /// <returns></returns>
+    public abstract bool IsConnected();
+
 }

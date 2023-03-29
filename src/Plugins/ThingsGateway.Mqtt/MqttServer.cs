@@ -267,9 +267,9 @@ namespace ThingsGateway.Mqtt
             {
                 _logger.LogWarning(ex, ToString());
             }
-            if (CycleInterval > 100 + 50)
+            if (CycleInterval > 500 + 50)
             {
-                await Task.Delay(CycleInterval - 100);
+                await Task.Delay(CycleInterval - 500);
             }
             else
             {
@@ -277,7 +277,7 @@ namespace ThingsGateway.Mqtt
             }
         }
 
-        public override OperResult Success()
+        public override OperResult IsConnected()
         {
             if (_mqttServer?.IsStarted == true)
             {
