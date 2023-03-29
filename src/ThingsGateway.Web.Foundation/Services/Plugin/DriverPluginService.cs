@@ -7,11 +7,13 @@ using ThingsGateway.Core;
 
 namespace ThingsGateway.Web.Foundation
 {
+    /// <inheritdoc cref="IDriverPluginService"/>
     [Injection(Proxy = typeof(OperDispatchProxy))]
     public partial class DriverPluginService : DbRepository<DriverPlugin>, IDriverPluginService
     {
         private readonly SysCacheService _sysCacheService;
 
+        /// <inheritdoc cref="IDriverPluginService"/>
         public DriverPluginService(SysCacheService sysCacheService)
         {
             _sysCacheService = sysCacheService;
@@ -99,6 +101,7 @@ namespace ThingsGateway.Web.Foundation
              });
             return driverPluginCategories.ToList();
         }
+        /// <inheritdoc/>
         public List<DriverPlugin> GetCacheListAsync()
         {
             //先从Cache拿

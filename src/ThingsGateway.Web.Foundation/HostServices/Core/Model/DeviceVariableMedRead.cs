@@ -28,6 +28,16 @@ public class DeviceVariableMedRead
     /// </summary>
     public TouchSocket.Core.StringConverter Converter { get; }
     /// <summary>
+    /// 需分配的变量
+    /// </summary>
+    public CollectVariableRunTime DeviceVariable { get; set; } = new();
+
+    /// <summary>
+    /// 方法
+    /// </summary>
+    public Method MedInfo { get; set; }
+
+    /// <summary>
     /// 方法参数
     /// </summary>
     public object[] MedObj { get; set; }
@@ -35,14 +45,6 @@ public class DeviceVariableMedRead
     /// 方法参数
     /// </summary>
     public string MedStr { get; set; }
-    /// <summary>
-    /// 方法
-    /// </summary>
-    public Method MedInfo { get; set; }
-    /// <summary>
-    /// 需分配的变量
-    /// </summary>
-    public CollectVariableRunTime DeviceVariable { get; set; } = new();
     /// <summary>
     /// 检测是否达到读取间隔
     /// </summary>

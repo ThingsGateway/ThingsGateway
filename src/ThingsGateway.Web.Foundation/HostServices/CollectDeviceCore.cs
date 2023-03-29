@@ -13,6 +13,9 @@ using TouchSocket.Core;
 
 namespace ThingsGateway.Web.Foundation;
 
+/// <summary>
+/// 设备子线程服务
+/// </summary>
 public class CollectDeviceCore : DisposableObject
 {
     /// <summary>
@@ -24,8 +27,12 @@ public class CollectDeviceCore : DisposableObject
     /// 循环线程取消标识
     /// </summary>
     public ConcurrentList<CancellationTokenSource> StoppingTokens = new();
+    /// <summary>
+    /// 当前的驱动插件实例
+    /// </summary>
+    internal DriverBase _driver;
 
-    protected ILogger _logger;
+    internal bool isInitSuccess;
 
     /// <summary>
     /// 当前设备信息
@@ -33,10 +40,9 @@ public class CollectDeviceCore : DisposableObject
     protected CollectDeviceRunTime _device;
 
     /// <summary>
-    /// 当前的驱动插件实例
+    /// 日志
     /// </summary>
-    internal DriverBase _driver;
-
+    protected ILogger _logger;
     /// <summary>
     /// 全局插件服务
     /// </summary>
@@ -46,8 +52,8 @@ public class CollectDeviceCore : DisposableObject
     /// 分包变量
     /// </summary>
     protected List<DeviceVariableSourceRead> DeviceVariableSourceReads = new();
-    protected IServiceScopeFactory _scopeFactory;
-
+    private IServiceScopeFactory _scopeFactory;
+    /// <inheritdoc cref="CollectDeviceCore"/>
     public CollectDeviceCore(IServiceScopeFactory scopeFactory)
     {
 
@@ -78,9 +84,9 @@ public class CollectDeviceCore : DisposableObject
     /// 当前设备全部设备属性，执行初始化后获取正确值
     /// </summary>
     public List<DependencyProperty> Propertys { get; protected set; }
+    /// <inheritdoc cref="GlobalCollectDeviceData"/>
     protected GlobalCollectDeviceData _globalCollectDeviceData { get; set; }
-    protected IDriverPluginService _driverPluginService { get; set; }
-    internal bool isInitSuccess;
+    private IDriverPluginService _driverPluginService { get; set; }
     /// <summary>
     /// 初始化，在设备子线程创建或更新时才会执行
     /// </summary>
@@ -136,8 +142,76 @@ public class CollectDeviceCore : DisposableObject
     }
 
     #region 设备子线程采集启动停止
-
+    /// <summary>
+    /// 线程
+    /// </summary>
     protected Task<Task> DeviceTask;
+
+    /// <summary>
+    /// 暂停采集
+    /// </summary>
+    public void PasueThread(bool enable)
+    {
+        lock (this)
+        {
+            var str = enable == false ? "设备线程采集暂停" : "设备线程采集继续";
+            _logger?.LogInformation($"{str}:{_device.Name}");
+            this.Device.Enable = enable;
+        }
+    }
+
+    /// <summary>
+    /// 开始采集
+    /// </summary>
+    public virtual void StartThread()
+    {
+        DeviceTask?.Start();
+    }
+    /// <summary>
+    /// 停止采集
+    /// </summary>
+    public virtual void StopThread()
+    {
+        try
+        {
+            CancellationTokenSource StoppingToken = StoppingTokens.LastOrDefault();
+            StoppingToken?.Cancel();
+            _logger?.LogInformation($"{_device.Name}采集线程停止中");
+            var devResult = DeviceTask?.Result;
+            if (devResult?.Status != TaskStatus.Canceled)
+            {
+                if (devResult?.Wait(5000) == true)
+                {
+                    _logger?.LogInformation($"{_device.Name}采集线程已停止");
+                }
+                else
+                {
+                    _logger?.LogInformation($"{_device.Name}采集线程停止超时，已强制取消");
+                }
+            }
+            DeviceTask?.Dispose();
+            if (StoppingToken != null)
+            {
+                StoppingTokens.Remove(StoppingToken);
+            }
+            _globalCollectDeviceData.CollectDevices.RemoveWhere(it => it.Id == Device.Id);
+
+            try
+            {
+                _driver?.AfterStop();
+                _driver?.Dispose();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{Device.Name} Dispose Error: {ex.Message}");
+            }
+
+        }
+        finally
+        {
+            _pluginService.DeleteDriver(DeviceId, Device.PluginId);
+        }
+    }
 
     /// <summary>
     /// 初始化
@@ -298,69 +372,6 @@ public class CollectDeviceCore : DisposableObject
         }
          );
     }
-
-    /// <summary>
-    /// 暂停采集
-    /// </summary>
-    public void PasueThread(bool enable)
-    {
-        lock (this)
-        {
-            var str = enable == false ? "设备线程采集暂停" : "设备线程采集继续";
-            _logger?.LogInformation($"{str}:{_device.Name}");
-            this.Device.Enable = enable;
-        }
-    }
-
-    /// <summary>
-    /// 开始采集
-    /// </summary>
-    public virtual void StartThread()
-    {
-        DeviceTask?.Start();
-    }
-    public virtual void StopThread()
-    {
-        try
-        {
-            CancellationTokenSource StoppingToken = StoppingTokens.LastOrDefault();
-            StoppingToken?.Cancel();
-            _logger?.LogInformation($"{_device.Name}采集线程停止中");
-            var devResult = DeviceTask?.Result;
-            if (devResult?.Status != TaskStatus.Canceled)
-            {
-                if (devResult?.Wait(5000) == true)
-                {
-                    _logger?.LogInformation($"{_device.Name}采集线程已停止");
-                }
-                else
-                {
-                    _logger?.LogInformation($"{_device.Name}采集线程停止超时，已强制取消");
-                }
-            }
-            DeviceTask?.Dispose();
-            if (StoppingToken != null)
-            {
-                StoppingTokens.Remove(StoppingToken);
-            }
-            _globalCollectDeviceData.CollectDevices.RemoveWhere(it => it.Id == Device.Id);
-
-            try
-            {
-                _driver?.AfterStop();
-                _driver?.Dispose();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"{Device.Name} Dispose Error: {ex.Message}");
-            }
-
-        }
-        finally
-        {
-            _pluginService.DeleteDriver(DeviceId, Device.PluginId);
-        }
-    }
     #endregion
 
     #region 驱动信息获取
@@ -475,6 +486,13 @@ public class CollectDeviceCore : DisposableObject
         }
 
     }
+
+    /// <summary>
+    /// 执行方法
+    /// </summary>
+    /// <param name="coreMethod"></param>
+    /// <param name="par"></param>
+    /// <returns></returns>
     public async Task<OperResult> InvokeMed(Method coreMethod, params object[] par)
     {
         return (OperResult)await coreMethod.InvokeObjectAsync(_driver, par);
@@ -531,6 +549,8 @@ public class CollectDeviceCore : DisposableObject
         }
     }
 
+
+    /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
         base.Dispose(disposing);

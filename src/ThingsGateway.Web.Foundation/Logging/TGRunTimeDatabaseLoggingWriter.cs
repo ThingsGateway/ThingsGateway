@@ -13,6 +13,7 @@ namespace ThingsGateway.Web.Foundation
     {
         private readonly SqlSugarScope _db;
 
+        /// <inheritdoc cref="TGRunTimeDatabaseLoggingWriter"/>
         public TGRunTimeDatabaseLoggingWriter()
         {
             _db = DbContext.Db;
@@ -31,6 +32,7 @@ namespace ThingsGateway.Web.Foundation
                 await Task.Delay(3000);
             }
         }
+        /// <inheritdoc/>
         public void Write(LogMessage logMsg, bool flush)
         {
             var customLevel = App.GetConfig<LogLevel?>("Logging:LogLevel:RunTimeLogCustom") ?? LogLevel.Trace;

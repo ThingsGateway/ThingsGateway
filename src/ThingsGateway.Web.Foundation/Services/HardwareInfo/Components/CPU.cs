@@ -1,5 +1,6 @@
 ﻿namespace ThingsGateway.Web.Foundation
 {
+    /// <inheritdoc/>
     public class CPU
     {
         /// <summary>
@@ -98,6 +99,7 @@
         [Description("CPU总占用率")]
         public UInt64 PercentProcessorTime { get; set; }
 
+        /// <inheritdoc/>
         public List<CpuCore> CpuCoreList { get; set; } = new List<CpuCore>();
 
     }

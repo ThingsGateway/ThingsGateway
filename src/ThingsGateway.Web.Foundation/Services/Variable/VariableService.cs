@@ -17,6 +17,7 @@ using ThingsGateway.Core;
 
 namespace ThingsGateway.Web.Foundation
 {
+    /// <inheritdoc cref="IVariableService"/>
     [Injection(Proxy = typeof(OperDispatchProxy))]
     public class VariableService : DbRepository<CollectDeviceVariable>, IVariableService
     {
@@ -25,6 +26,7 @@ namespace ThingsGateway.Web.Foundation
         private readonly IUploadDeviceService _uploadDeviceService;
         private readonly FileService _fileService;
 
+        /// <inheritdoc cref="IVariableService"/>
         public VariableService(SysCacheService sysCacheService,
             ICollectDeviceService collectDeviceService, FileService fileService,
             IUploadDeviceService uploadDeviceService
@@ -198,6 +200,7 @@ namespace ThingsGateway.Web.Foundation
 
 
         #region 导入导出
+        /// <inheritdoc/>
         [OperDesc("导出变量模板", IsRecordPar = false)]
         public async Task<MemoryStream> Template()
         {
@@ -209,6 +212,7 @@ namespace ThingsGateway.Web.Foundation
         }
 
 
+        /// <inheritdoc/>
         [OperDesc("导出变量表", IsRecordPar = false)]
         public async Task<MemoryStream> ExportFile()
         {
@@ -266,6 +270,7 @@ namespace ThingsGateway.Web.Foundation
 
         }
 
+        /// <inheritdoc/>
         [OperDesc("导出变量表", IsRecordPar = false)]
         public async Task<MemoryStream> ExportFile(List<CollectDeviceVariable> collectDeviceVariables)
         {

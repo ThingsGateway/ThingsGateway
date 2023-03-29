@@ -4,9 +4,29 @@ using System.Reflection;
 using ThingsGateway.Foundation;
 
 namespace ThingsGateway.Web.Foundation;
+
+/// <summary>
+/// 读写扩展
+/// </summary>
 public static class ReadWriteHelpers
 {
+    /// <summary>
+    /// 根据<see cref="OperResult.IsSuccess"/>执行action
+    /// </summary>
+    public static OperResult<T> DealWithReadResult<T>(OperResult<T> read, Action<T> action)
+    {
+        if (!read.IsSuccess || action == null)
+            return read;
+        action(read.Content);
+        return read;
+    }
 
+    /// <summary>
+    /// 根据<see cref="PropertyInfo"/> 数据类型转化返回值类型
+    /// </summary>
+    /// <param name="p"></param>
+    /// <param name="value"></param>
+    /// <returns></returns>
     public static object ObjToTypeValue(PropertyInfo p, string value)
     {
         object _value = null;
@@ -45,18 +65,6 @@ public static class ReadWriteHelpers
         return _value;
 
     }
-
-    /// <summary>
-    /// 根据<see cref="OperResult.IsSuccess"/>执行action
-    /// </summary>
-    public static OperResult<T> DealWithReadResult<T>(OperResult<T> read, Action<T> action)
-    {
-        if (!read.IsSuccess || action == null)
-            return read;
-        action(read.Content);
-        return read;
-    }
-
     /// <summary>
     /// 在返回的字节数组中解析每个变量的值
     /// 根据每个变量的<see cref="CollectVariableRunTime.Index"/>

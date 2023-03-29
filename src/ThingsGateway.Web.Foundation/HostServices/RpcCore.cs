@@ -10,7 +10,7 @@ using TouchSocket.Core;
 
 namespace ThingsGateway.Web.Foundation;
 /// <summary>
-/// 驱动插件服务
+/// 变量写入值服务
 /// </summary>
 public class RpcCore : ISingleton
 {
@@ -22,6 +22,7 @@ public class RpcCore : ISingleton
     private CollectDeviceHostService _collectDeviceHostService;
 
     private IServiceScopeFactory _scopeFactory;
+    /// <inheritdoc cref="RpcCore"/>
     public RpcCore(ILogger<RpcCore> logger, IServiceScopeFactory scopeFactory)
     {
         _scopeFactory = scopeFactory;
@@ -46,10 +47,6 @@ public class RpcCore : ISingleton
     /// <summary>
     /// 反向RPC入口方法
     /// </summary>
-    /// <param name="MethodBase"></param>
-    /// <param name="par"></param>
-    /// <param name="id"></param>
-    /// <returns></returns>
     /// <exception cref="Exception"></exception>
     public async Task<OperResult> InvokeDeviceMethod(string sourceName, NameVaue item, bool isBlazorWeb = false)
     {

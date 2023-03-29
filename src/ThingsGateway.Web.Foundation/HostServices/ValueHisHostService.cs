@@ -24,17 +24,25 @@ public class ValueHisHostService : BackgroundService, ISingleton
     private GlobalCollectDeviceData _globalCollectDeviceData;
     private ConcurrentQueue<ValueHis> CollectDeviceVariables { get; set; } = new();
     private ConcurrentQueue<ValueHis> ChangeDeviceVariables { get; set; } = new();
+    /// <summary>
+    /// 服务状态
+    /// </summary>
     public OperResult StatuString { get; set; } = new OperResult("初始化");
 
 
 
     private static IServiceScopeFactory _scopeFactory;
+    /// <inheritdoc cref="ValueHisHostService"/>
     public ValueHisHostService(ILogger<ValueHisHostService> logger, IServiceScopeFactory scopeFactory)
     {
         _scopeFactory = scopeFactory;
         _logger = logger;
         _globalCollectDeviceData = scopeFactory.CreateScope().ServiceProvider.GetService<GlobalCollectDeviceData>();
     }
+    /// <summary>
+    /// 获取数据库链接
+    /// </summary>
+    /// <returns></returns>
     public async Task<OperResult<SqlSugarClient>> HisConfig()
     {
         await Task.CompletedTask;
@@ -82,18 +90,20 @@ public class ValueHisHostService : BackgroundService, ISingleton
         return OperResult.CreateSuccessResult(sqlSugarClient);
     }
     #region worker服务
+    /// <inheritdoc/>
     public override async Task StartAsync(CancellationToken cancellationToken)
     {
         _logger?.LogInformation("历史服务启动");
         await base.StartAsync(cancellationToken);
     }
-
+    /// <inheritdoc/>
     public override Task StopAsync(CancellationToken cancellationToken)
     {
         _logger?.LogInformation("历史服务停止");
         return base.StopAsync(cancellationToken);
     }
 
+    /// <inheritdoc/>
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         await Task.Delay(5000, stoppingToken);
@@ -276,6 +286,9 @@ public class ValueHisHostService : BackgroundService, ISingleton
 
     }
 
+    /// <summary>
+    /// 重新启动服务
+    /// </summary>
     public void Restart()
     {
         Stop(_globalCollectDeviceData.CollectDevices);
@@ -305,8 +318,13 @@ public class ValueHisHostService : BackgroundService, ISingleton
 
     #endregion
 }
+/// <summary>
+/// <see cref="ValueHis"/> Master规则
+/// </summary>
 public class ValueHisMapper : IRegister
 {
+
+    /// <inheritdoc/>
     public void Register(TypeAdapterConfig config)
     {
         config.ForType<CollectVariableRunTime, ValueHis>()

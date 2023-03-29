@@ -8,9 +8,15 @@
 [AttributeUsage(AttributeTargets.Method, Inherited = false, AllowMultiple = false)]
 public class DeviceMethodAttribute : Attribute
 {
+    /// <summary>
+    /// 名称
+    /// </summary>
     public string Name { get; }
+    /// <summary>
+    /// 描述
+    /// </summary>
     public string Description { get; }
-
+    /// <inheritdoc cref="DeviceMethodAttribute"/>
     public DeviceMethodAttribute(string name, string description = "")
     {
         Name = name;

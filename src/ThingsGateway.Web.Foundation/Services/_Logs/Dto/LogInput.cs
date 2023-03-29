@@ -2,7 +2,9 @@
 
 namespace ThingsGateway.Web.Foundation
 {
-
+    /// <summary>
+    /// 运行日志分页DTO
+    /// </summary>
     public class RuntimeLogPageInput : BasePageInput
     {
         /// <summary>
@@ -17,6 +19,9 @@ namespace ThingsGateway.Web.Foundation
         public string Level { get; set; }
 
     }
+    /// <summary>
+    /// RPC日志分页DTO
+    /// </summary>
     public class RpcLogPageInput : BasePageInput
     {
         /// <summary>

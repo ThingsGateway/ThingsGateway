@@ -5,22 +5,36 @@
 /// </summary>
 public enum DataTypeEnum
 {
+    /// <inheritdoc/>
     Object,
-
+    /// <inheritdoc/>
     Bcd,
+    /// <inheritdoc/>
     DateTime,
+    /// <inheritdoc/>
     String,
 
+    /// <inheritdoc/>
     Boolean,
+    /// <inheritdoc/>
     Byte,
+    /// <inheritdoc/>
     SByte,
+    /// <inheritdoc/>
     Int16,
+    /// <inheritdoc/>
     UInt16,
+    /// <inheritdoc/>
     Int32,
+    /// <inheritdoc/>
     UInt32,
+    /// <inheritdoc/>
     Int64,
+    /// <inheritdoc/>
     UInt64,
+    /// <inheritdoc/>
     Single,
+    /// <inheritdoc/>
     Double,
 }
 /// <summary>
@@ -28,6 +42,11 @@ public enum DataTypeEnum
 /// </summary>
 public static class DataTypeExtension
 {
+    /// <summary>
+    /// 获取DOTNET RUNTIME TYPE
+    /// </summary>
+    /// <param name="coreDataType"></param>
+    /// <returns></returns>
     public static Type GetNetType(this DataTypeEnum coreDataType)
     {
         switch (coreDataType)
@@ -67,6 +86,12 @@ public static class DataTypeExtension
                 return typeof(string);
         }
     }
+
+    /// <summary>
+    /// 获取实际字节长度，不足1写1
+    /// </summary>
+    /// <param name="coreDataType"></param>
+    /// <returns></returns>
     public static int GetByteLength(this DataTypeEnum coreDataType)
     {
         switch (coreDataType)
@@ -105,6 +130,5 @@ public static class DataTypeExtension
                 return 0;
         }
     }
-
 
 }

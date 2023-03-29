@@ -15,11 +15,12 @@ public class TGLogJob : IJob
 {
     private readonly IServiceProvider _serviceProvider;
 
+    /// <inheritdoc cref="TGLogJob"/>
     public TGLogJob(IServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider;
     }
-
+    /// <inheritdoc/>
     public async Task ExecuteAsync(JobExecutingContext context, CancellationToken stoppingToken)
     {
         var db = DbContext.Db.CopyNew();

@@ -9,18 +9,18 @@ using ThingsGateway.Foundation;
 namespace ThingsGateway.Web.Foundation
 {
     /// <summary>
-    /// 设备写入
+    /// 变量写入
     /// </summary>
     [ApiDescriptionSettings(CateGoryConst.ThingsGatewayOpenApi, Order = 200)]
     [Route("openApi/rpc")]
-    [Description("设备写入")]
+    [Description("变量写入")]
     [OpenApiPermission]
     [LoggingMonitor]
     [Authorize(AuthenticationSchemes = "Bearer")]
     public class RpcControler : IDynamicApiController
     {
         IServiceScopeFactory _scopeFactory;
-        RpcCore _rpcCore { get; set; }
+        /// <inheritdoc cref="RpcControler"/>
         public RpcControler(IServiceScopeFactory scopeFactory)
         {
             _scopeFactory = scopeFactory;
@@ -28,6 +28,7 @@ namespace ThingsGateway.Web.Foundation
             _rpcCore = serviceScope.ServiceProvider.GetService<RpcCore>();
         }
 
+        RpcCore _rpcCore { get; set; }
         /// <summary>
         /// 写入设备
         /// </summary>

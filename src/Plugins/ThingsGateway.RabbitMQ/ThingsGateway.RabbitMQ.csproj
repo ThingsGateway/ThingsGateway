@@ -2,9 +2,9 @@
 
 	<PropertyGroup>
 		<LangVersion>latestMajor</LangVersion>
+		<!--<GenerateDocumentationFile>True</GenerateDocumentationFile>-->
 		<TargetFrameworks>net6.0;net7.0</TargetFrameworks>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<GenerateDocumentationFile>False</GenerateDocumentationFile>
 		<Version>1.1.0</Version>
 		<RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
 		<EnableDynamicLoading>true</EnableDynamicLoading>

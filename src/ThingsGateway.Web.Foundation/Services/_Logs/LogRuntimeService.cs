@@ -2,6 +2,7 @@
 
 namespace ThingsGateway.Web.Foundation
 {
+    /// <inheritdoc cref="IRuntimeLogService"/>
     [Injection(Proxy = typeof(OperDispatchProxy))]
     public class RuntimeLogService : DbRepository<RuntimeLog>, IRuntimeLogService
     {

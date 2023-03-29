@@ -16,15 +16,28 @@ namespace ThingsGateway.Web.Foundation;
 /// </summary>
 public abstract class UpLoadBase : IDisposable
 {
+    /// <summary>
+    /// <see cref="TouchSocketConfig"/> 
+    /// </summary>
+    public TouchSocketConfig TouchSocketConfig=new();
+    /// <summary>
+    /// 日志
+    /// </summary>
     protected ILogger _logger;
     private bool isLogOut;
     private ILogger privateLogger;
+    /// <summary>
+    /// 服务工厂
+    /// </summary>
     protected IServiceScopeFactory _scopeFactory;
+    /// <inheritdoc cref="UpLoadBase"/>
     public UpLoadBase(IServiceScopeFactory scopeFactory)
     {
         _scopeFactory = scopeFactory;
     }
-
+    /// <summary>
+    /// 是否输出日志
+    /// </summary>
     public bool IsLogOut
     {
         get => isLogOut;
@@ -52,6 +65,7 @@ public abstract class UpLoadBase : IDisposable
     /// 返回是否已经在线/成功启动
     /// </summary>
     public abstract OperResult Success();
+    /// <inheritdoc/>
     public abstract void Dispose();
     /// <summary>
     /// 初始化
@@ -72,9 +86,15 @@ public abstract class UpLoadBase : IDisposable
     /// <summary>
     /// 循环执行
     /// </summary>
-    /// <param name="deviceVariableSourceRead"></param>
-    /// <returns></returns>
     public abstract Task ExecuteAsync(CancellationToken cancellationToken);
+
+    /// <summary>
+    /// <see cref="TouchSocket"/> 日志输出
+    /// </summary>
+    /// <param name="arg1"></param>
+    /// <param name="arg2"></param>
+    /// <param name="arg3"></param>
+    /// <param name="arg4"></param>
     protected void Log_Out(LogType arg1, object arg2, string arg3, Exception arg4)
     {
         switch (arg1)

@@ -22,13 +22,6 @@ public class MemoryVariable : BaseEntity
     public string Description { get; set; }
 
     /// <summary>
-    /// 初始值
-    /// </summary>
-    [SugarColumn(ColumnName = "InitialValue", ColumnDescription = "初始值", IsNullable = true)]
-    [OrderData(Order = 4)]
-    public string InitialValue { get; set; }
-
-    /// <summary>
     /// 读写权限
     /// </summary>
     [SugarColumn(ColumnName = "ProtectTypeEnum", ColumnDescription = "读写权限", IsNullable = false)]
@@ -43,7 +36,7 @@ public class MemoryVariable : BaseEntity
     public DataTypeEnum DataTypeEnum { get; set; }
 
     /// <summary>
-    /// 变量额外属性Json，通常使用为<上传设备，List属性>
+    /// 变量额外属性Json，通常使用为上传设备,List属性
     /// </summary>
     [SugarColumn(IsJson = true, ColumnName = "VariablePropertys", ColumnDescription = "变量属性Json", IsNullable = true)]
     public Dictionary<long, List<DependencyProperty>> VariablePropertys { get; set; } = new();
@@ -199,10 +192,18 @@ public class MemoryVariable : BaseEntity
     #endregion
 }
 
-
+/// <summary>
+/// 历史类型
+/// </summary>
 public enum HisType
 {
+    /// <summary>
+    /// 改变存储
+    /// </summary>
     Change,
+    /// <summary>
+    /// 采集存储
+    /// </summary>
     Collect,
 }
 

@@ -528,12 +528,12 @@
     async Task ImportVaiable(long devId)
     {
         var driver = this.GetBackgroundService<CollectDeviceHostService>().GetImportUI(devId);
-        if (driver?.DriverUI == null)
+        if (driver?.DriverImportUI == null)
         {
             await PopupService.EnqueueSnackbarAsync("插件未实现导入变量", AlertTypes.Warning);
             return;
         }
-        _importComponent = new BootstrapDynamicComponent(driver.DriverUI, new Dictionary<string, object>()
+        _importComponent = new BootstrapDynamicComponent(driver.DriverImportUI, new Dictionary<string, object>()
             {
                 [nameof(DriverUI.Driver)] = driver
             }

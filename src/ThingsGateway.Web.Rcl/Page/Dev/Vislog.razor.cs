@@ -4,11 +4,20 @@ using System.Linq;
 
 namespace ThingsGateway.Web.Rcl
 {
+    /// <summary>
+    /// 访问日志页面
+    /// </summary>
     public partial class Vislog
     {
         private IAppDataTable _datatable;
         private VisitLogPageInput search = new();
+        /// <summary>
+        /// 日志分类菜单
+        /// </summary>
         public List<StringFilters> CategoryFilters { get; set; } = new();
+        /// <summary>
+        /// 执行结果菜单
+        /// </summary>
         public List<StringFilters> ExeStatus { get; set; } = new();
 
         private void FilterHeaders(List<DataTableHeader<DevLogVisit>> datas)
@@ -65,7 +74,7 @@ namespace ThingsGateway.Web.Rcl
                 }
             }
         }
-
+        /// <inheritdoc/>
         protected override void OnInitialized()
         {
             CategoryFilters.Add(new StringFilters() { Key = T("登录"), Value = CateGoryConst.Log_LOGIN });
