@@ -242,12 +242,18 @@ public class UploadDeviceHostService : BackgroundService
             for (int i = 0; i < num; i++)
             {
                 UploadDeviceCore devcore = UploadDeviceCores[i];
-                if (devcore.Device.ActiveTime != DateTime.MinValue && devcore.Device.ActiveTime.AddMinutes(3) <= DateTime.Now)
+                if (
+                    (devcore.Device.ActiveTime != DateTime.MinValue && devcore.Device.ActiveTime.AddMinutes(3) <= DateTime.Now)
+                    || devcore.isInitSuccess == false
+                    )
                 {
                     if (devcore.StoppingTokens.Last().Token.IsCancellationRequested)
                         continue;
                     if (devcore.Device.DeviceStatus == DeviceStatusEnum.Pause)
                         continue;
+                    if (devcore.isInitSuccess)
+                        _logger?.LogWarning(devcore.Device.Name + "初始化失败，重启线程中");
+                    else
                     _logger?.LogWarning(devcore.Device.Name + "上传线程假死，重启线程中");
                     UpDeviceThread(devcore.DeviceId, false);
                     i--;
@@ -257,7 +263,7 @@ public class UploadDeviceHostService : BackgroundService
 
                 }
             }
-            await Task.Delay(60000, stoppingToken);
+            await Task.Delay(100000, stoppingToken);
         }
     }
 
