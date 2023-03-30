@@ -9,7 +9,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="Hardware.Info" Version="11.0.0" />
-		<PackageReference Include="CS-Script" Version="4.6.2" />
+		<PackageReference Include="CS-Script" Version="4.6.5" />
 		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.5.0" />
 	</ItemGroup>
 

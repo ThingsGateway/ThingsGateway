@@ -92,5 +92,32 @@ Rpc返回Json：
 无
 
 
+### （三）实体脚本
 
+脚本功能由cs-script实现
+<img src={require('../../static/img/script1.png').default} width="400" />
 
+```
+ //提供这个例子
+
+ //定义返回List
+  List<dynamic> newModelList=new List<dynamic>(); 
+  //input为固定传入值，在变量脚本中为变量实体类List，在设备脚本中为设备实体类List，查看上面的json说明
+  foreach (var item in input)
+  {
+    //添加自定义值
+    newModelList.Add(new
+  {
+      customName=item.name,//变量名称
+      customValue=item.value,//变量值
+      customCollectTime=item.collectTime.ToString("yyyy-MM-dd HH:mm:ss fffffff"), //采集时间，这里格式化为自定义时间格式
+  });
+
+  }
+  return newModelList;
+
+```
+
+<img src={require('../../static/img/script2.png').default} width="400" />
+
+可以看到mqtt上传内容已经改为以上脚本返回值
