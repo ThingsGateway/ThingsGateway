@@ -34,7 +34,7 @@ namespace ThingsGateway.Web.Foundation
         /// </summary>
         [HttpPost("writeDeviceMethod")]
         [Description("写入设备")]
-        public Task<OperResult> WriteDeviceMethod(NameVaue obj)
+        public Task<OperResult> WriteDeviceMethod(NameValue obj)
         {
             return _rpcCore.InvokeDeviceMethod($"WebApi-{UserManager.UserAccount}-{App.HttpContext.Connection.RemoteIpAddress.MapToIPv4()}", obj);
         }
