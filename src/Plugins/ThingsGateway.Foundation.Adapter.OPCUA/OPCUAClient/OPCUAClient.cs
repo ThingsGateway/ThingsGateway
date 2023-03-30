@@ -75,7 +75,7 @@ public class OPCUAClient : DisposableObject
             ApplicationName = OPCUAName,
             ApplicationType = ApplicationType.Client,
             CertificateValidator = certificateValidator,
-            ApplicationUri = "urn:localhost:ThingsGateway:OPCUAClient",
+            ApplicationUri = Utils.Format(@"urn:{0}:thingsgatewayopcuaclient", System.Net.Dns.GetHostName()),
             ProductUri = "https://diego2098.gitee.io/thingsgateway/",
 
             ServerConfiguration = new ServerConfiguration
@@ -84,7 +84,6 @@ public class OPCUAClient : DisposableObject
                 MaxMessageQueueSize = 1000000,
                 MaxNotificationQueueSize = 1000000,
                 MaxPublishRequestCount = 10000000,
-
 
             },
 
@@ -99,7 +98,7 @@ public class OPCUAClient : DisposableObject
                 {
                     StoreType = CertificateStoreType.X509Store,
                     StorePath = "CurrentUser\\UA_ThingsGateway",
-                    SubjectName = "CN=ThingsGateway OPCUAClient, C=US, S=Arizona, O=ThingsGateway, DC=localhost",
+                    SubjectName = "CN=ThingsGateway OPCUAClient, C=CN, S=GUANGZHOU, O=ThingsGateway, DC=" + System.Net.Dns.GetHostName(),
                 },
                 TrustedIssuerCertificates = new CertificateTrustList
                 {
@@ -1408,7 +1407,7 @@ public class OPCUAClient : DisposableObject
         EndpointConfiguration endpointConfiguration = EndpointConfiguration.Create(m_configuration);
 
         ConfiguredEndpoint endpoint = new ConfiguredEndpoint(null, endpointDescription, endpointConfiguration);
-        await m_application.CheckApplicationInstanceCertificate(false, 0);
+      var d=  await m_application.CheckApplicationInstanceCertificate(true, 0);
         //var x509 = await m_configuration.SecurityConfiguration.ApplicationCertificate.Find(true);
         m_session = await Opc.Ua.Client.Session.Create(
      m_configuration,

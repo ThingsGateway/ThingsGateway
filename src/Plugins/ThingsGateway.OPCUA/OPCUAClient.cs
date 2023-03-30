@@ -12,39 +12,84 @@ using TouchSocket.Core;
 
 namespace ThingsGateway.OPCUA
 {
+    /// <summary>
+    /// OPCUA客户端
+    /// </summary>
     public class OPCUAClient : DriverBase
     {
-        internal Foundation.Adapter.OPCUA.OPCUAClient PLC = null;
-
         internal CollectDeviceRunTime Device;
-
+        internal Foundation.Adapter.OPCUA.OPCUAClient PLC = null;
         private List<CollectVariableRunTime> _deviceVariables = new();
-
+        /// <inheritdoc cref="OPCUAClient"/>
         public OPCUAClient(IServiceScopeFactory scopeFactory) : base(scopeFactory)
         {
         }
 
+        /// <summary>
+        /// 连接Url
+        /// </summary>
         [DeviceProperty("连接Url", "")] public string OPCURL { get; set; } = "opc.tcp://127.0.0.1:49320";
-        [DeviceProperty("登录账号", "为空时将采用匿名方式登录")] public string UserName { get; set; }
-        [DeviceProperty("登录密码", "")] public string Password { get; set; }
+
+        /// <summary>
+        /// 激活订阅
+        /// </summary>
         [DeviceProperty("激活订阅", "")] public bool ActiveSubscribe { get; set; } = true;
+
+        /// <summary>
+        /// 死区
+        /// </summary>
         [DeviceProperty("死区", "")] public float DeadBand { get; set; } = 0;
-        public override Type DriverImportUI => typeof(ImportVariable);
+        /// <summary>
+        /// 自动分组大小
+        /// </summary>
         [DeviceProperty("自动分组大小", "")] public int GroupSize { get; set; } = 500;
-        public override ThingsGatewayBitConverter ThingsGatewayBitConverter { get; } = new(EndianType.Little);
-        [DeviceProperty("重连频率", "")] public int ReconnectPeriod { get; set; } = 5000;
-        [DeviceProperty("更新频率", "")] public int UpdateRate { get; set; } = 1000;
+
+        /// <inheritdoc/>
+        public override Type DriverImportUI => typeof(ImportVariable);
+
+
+        /// <summary>
+        /// 登录账号
+        /// </summary>
+        [DeviceProperty("登录账号", "为空时将采用匿名方式登录")] public string UserName { get; set; }
+
+        /// <summary>
+        /// 登录密码
+        /// </summary>
+        [DeviceProperty("登录密码", "")] public string Password { get; set; }
+
+
+        /// <summary>
+        /// 安全策略
+        /// </summary>
         [DeviceProperty("安全策略", "True为使用安全策略，False为无")] public bool IsUseSecurity { get; set; } = true;
+
+        /// <summary>
+        /// 重连频率
+        /// </summary>
+        [DeviceProperty("重连频率", "")] public int ReconnectPeriod { get; set; } = 5000;
+
+        /// <inheritdoc/>
+        public override ThingsGatewayBitConverter ThingsGatewayBitConverter { get; } = new(EndianType.Little);
+
+        /// <summary>
+        /// 更新频率
+        /// </summary>
+        [DeviceProperty("更新频率", "")] public int UpdateRate { get; set; } = 1000;
+
+        /// <inheritdoc/>
         public override void AfterStop()
         {
             PLC?.Disconnect();
         }
 
+        /// <inheritdoc/>
         public override async Task BeforStart()
         {
             await PLC?.ConnectServer();
         }
 
+        /// <inheritdoc/>
         public override void Dispose()
         {
             if (PLC != null)
@@ -57,11 +102,19 @@ namespace ThingsGateway.OPCUA
             }
         }
 
+        /// <inheritdoc/>
+        public override bool IsConnected()
+        {
+            return PLC.Connected;
+        }
+
+        /// <inheritdoc/>
         public override bool IsSupportAddressRequest()
         {
             return !ActiveSubscribe;
         }
 
+        /// <inheritdoc/>
         public override OperResult<List<DeviceVariableSourceRead>> LoadSourceRead(List<CollectVariableRunTime> deviceVariables)
         {
             _deviceVariables = deviceVariables;
@@ -85,6 +138,7 @@ namespace ThingsGateway.OPCUA
             }
         }
 
+        /// <inheritdoc/>
         public override async Task<OperResult<byte[]>> ReadSourceAsync(DeviceVariableSourceRead deviceVariableSourceRead, CancellationToken cancellationToken)
         {
             await Task.CompletedTask;
@@ -100,6 +154,7 @@ namespace ThingsGateway.OPCUA
             }
         }
 
+        /// <inheritdoc/>
         public override async Task<OperResult> WriteValueAsync(CollectVariableRunTime deviceVariable, string value)
         {
             await Task.CompletedTask;
@@ -107,6 +162,7 @@ namespace ThingsGateway.OPCUA
             return result ? OperResult.CreateSuccessResult() : new OperResult();
         }
 
+        /// <inheritdoc/>
         protected override void Init(CollectDeviceRunTime device, object client = null)
         {
             Device = device;
@@ -134,14 +190,11 @@ namespace ThingsGateway.OPCUA
             PLC.OPCNode = oPCNode;
         }
 
+        /// <inheritdoc/>
         protected override Task<OperResult<byte[]>> ReadAsync(string address, int length, CancellationToken cancellationToken)
         {
             //不走ReadAsync
             throw new NotImplementedException();
-        }
-        public override bool IsConnected()
-        {
-            return PLC.Connected;
         }
         private void dataChangedHandler(List<(MonitoredItem monitoredItem, MonitoredItemNotification monitoredItemNotification)> values)
         {
