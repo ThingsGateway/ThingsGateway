@@ -325,17 +325,17 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
         {
             OPCUATag variable = node as OPCUATag;
             // 验证数据类型。
-            Opc.Ua.TypeInfo typeInfo = Opc.Ua.TypeInfo.IsInstanceOfDataType(
-                value,
-                variable.DataType,
-                variable.ValueRank,
-                context.NamespaceUris,
-                context.TypeTable);
+            //Opc.Ua.TypeInfo typeInfo = Opc.Ua.TypeInfo.IsInstanceOfDataType(
+            //    value,
+            //    variable.DataType,
+            //    variable.ValueRank,
+            //    context.NamespaceUris,
+            //    context.TypeTable);
 
-            if (typeInfo == null || typeInfo == Opc.Ua.TypeInfo.Unknown)
-            {
-                return StatusCodes.BadTypeMismatch;
-            }
+            //if (typeInfo == null || typeInfo == Opc.Ua.TypeInfo.Unknown)
+            //{
+            //    return StatusCodes.BadTypeMismatch;
+            //}
             // 检查索引范围。
             if (_idTags.TryGetValue(variable.NodeId, out OPCUATag tag))
             {
