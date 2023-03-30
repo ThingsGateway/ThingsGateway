@@ -8,10 +8,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Furion.Extras.ObjectMapper.Mapster" Version="4.8.7.20" />
-		<PackageReference Include="Furion.Pure" Version="4.8.7.20" />
+		<PackageReference Include="Furion.Extras.ObjectMapper.Mapster" Version="4.8.7.28" />
+		<PackageReference Include="Furion.Pure" Version="4.8.7.28" />
 		<PackageReference Include="Magicodes.IE.Excel" Version="2.7.4.3" />
-		<PackageReference Include="SqlSugarCore" Version="5.1.4.60" />
+		<PackageReference Include="SqlSugarCore" Version="5.1.4.62" />
 		<PackageReference Include="Portable.BouncyCastle" Version="1.9.0" />
 		<PackageReference Include="NewLife.Core" Version="10.2.2023.301" />
 		<PackageReference Include="UAParser" Version="3.1.47" />
@@ -19,6 +19,6 @@
 		<PackageReference Include="Microsoft.Data.Sqlite" Version="7.0.4" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="Furion.Extras.Authentication.JwtBearer" Version="4.8.7.20" />
+		<PackageReference Include="Furion.Extras.Authentication.JwtBearer" Version="4.8.7.28" />
 	</ItemGroup>
 </Project>

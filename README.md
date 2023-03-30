@@ -3,7 +3,7 @@
 
 #### 介绍
 
-基于[ThingsBlazor](https://gitee.com/diego2098/ThingsBlazor)权限管理框架开发的跨平台边缘采集网关，支持南北端插件式开发，
+基于Net6/7+Blazor Server的跨平台边缘采集网关，支持南北端插件式开发，
 动态更新插件，并拥有较完善的北端Rpc权限管理。
 
 
@@ -77,7 +77,17 @@
 
  使用前请查看Gitee Pages [文档站点](https://diego2098.gitee.io/thingsgateway/)
 
- 
+ #### 特别鸣谢
+- 👉 Furion：[https://dotnetchina.gitee.io/furion](https://dotnetchina.gitee.io/furion)
+- 👉 SqlSugar：[https://gitee.com/dotnetchina/SqlSugar](https://gitee.com/dotnetchina/SqlSugar)
+- 👉 Simple.Admin：[https://gitee.com/zxzyjs/SimpleAdmin](https://gitee.com/zxzyjs/SimpleAdmin)
+- 👉 Masa.Blazor：[https://www.masastack.com/blazor](https://www.masastack.com/blazor)
+- 👉 IdGenerator：[https://github.com/yitter/idgenerator](https://github.com/yitter/idgenerator)
+- 👉 CodingSeb.ExpressionEvaluator：[https://github.com/codingseb/ExpressionEvaluator](https://github.com/codingseb/ExpressionEvaluator)
+- 👉 TouchSocket：[https://gitee.com/rrqm_home/touchsocket](https://gitee.com/rrqm_home/touchsocket)
+- 👉 Hardware.Info：[https://github.com/Jinjinov/Hardware.Info](https://github.com/Jinjinov/Hardware.Info)
+- 👉 UAParser：[https://github.com/ua-parser/uap-csharp](https://github.com/ua-parser/uap-csharp)
+
 #### 补充说明
 * 使用OPC相关插件时请遵循OPC基金会的授权规则
 * 使用OPCDA插件时，需安装OPC核心库，[文件地址](https://gitee.com/diego2098/ThingsGateway/attach_files)
