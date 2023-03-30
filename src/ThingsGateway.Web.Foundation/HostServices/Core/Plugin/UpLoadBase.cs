@@ -12,7 +12,9 @@ namespace ThingsGateway.Web.Foundation;
 /// <summary>
 /// 上传插件
 /// 属性暴露使用<see cref="DevicePropertyAttribute"/>特性标识
+/// 约定：
 /// 如果设备属性需要密码输入，属性名称中需包含Password字符串
+/// 如果设备属性需要大文本输入，属性名称中需包含BigText字符串
 /// </summary>
 public abstract class UpLoadBase : IDisposable
 {

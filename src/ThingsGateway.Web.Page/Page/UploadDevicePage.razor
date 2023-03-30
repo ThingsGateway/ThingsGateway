@@ -260,7 +260,14 @@
                             <MSubheader Class="mt-4 font-weight-black"> @item.Description </MSubheader>
                             <MTooltip Disabled=item.Remark.IsNullOrEmpty() Bottom Context="tip">
                                 <ActivatorContent>
-                                    <MTextField Type="@(item.PropertyName.Contains("Password") ? "password" : "text")" @attributes="@tip.Attrs" Dense Outlined HideDetails="@("auto")" @bind-Value=@item.Value />
+                                    @if (item.PropertyName.Contains("BigText"))
+                                    {
+                                        <MTextarea AutoGrow Dense @attributes="@tip.Attrs" Outlined HideDetails="@("auto")" @bind-Value=@item.Value />
+                                    }
+                                    else
+                                    {
+                                        <MTextField Type="@(item.PropertyName.Contains("Password") ? "password" : "text")" @attributes="@tip.Attrs" Dense Outlined HideDetails="@("auto")" @bind-Value=@item.Value />
+                                    }
                                     </ActivatorContent>
                                     <ChildContent>
                                         <span>@item.Remark</span>

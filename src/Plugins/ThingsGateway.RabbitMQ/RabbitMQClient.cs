@@ -49,6 +49,8 @@ namespace ThingsGateway.RabbitMQ
         [DeviceProperty("是否发布List", "")] public bool IsList { get; set; } = false;
         [DeviceProperty("是否声明队列", "")] public bool IsQueueDeclare { get; set; } = false;
         [DeviceProperty("循环间隔", "最小500ms")] public int CycleInterval { get; set; } = 1000;
+        [DeviceProperty("设备实体脚本", "查看文档说明，为空时不起作用")] public string BigTextScriptDeviceModel { get; set; }
+        [DeviceProperty("变量实体脚本", "查看文档说明，为空时不起作用")] public string BigTextScriptVariableModel { get; set; }
 
         public string ExchangeName { get; set; } = "";
 
@@ -168,7 +170,7 @@ namespace ThingsGateway.RabbitMQ
                         {
                             try
                             {
-                                var data = Encoding.UTF8.GetBytes(variables.ToJson());
+                                var data = Encoding.UTF8.GetBytes(variables.GetSciptListValue(BigTextScriptVariableModel));
                                 // 设置消息持久化
                                 IBasicProperties properties = _model?.CreateBasicProperties();
                                 properties.Persistent = true;
@@ -187,7 +189,7 @@ namespace ThingsGateway.RabbitMQ
                         {
                             try
                             {
-                                var data = Encoding.UTF8.GetBytes(variable.ToJson());
+                                var data = Encoding.UTF8.GetBytes(variable.GetSciptListValue(BigTextScriptVariableModel));
                                 // 设置消息持久化
                                 IBasicProperties properties = _model?.CreateBasicProperties();
                                 properties.Persistent = true;
@@ -220,7 +222,7 @@ namespace ThingsGateway.RabbitMQ
                         {
                             try
                             {
-                                var data = Encoding.UTF8.GetBytes(devices.ToJson());
+                                var data = Encoding.UTF8.GetBytes(devices.GetSciptListValue(BigTextScriptDeviceModel));
                                 // 设置消息持久化
                                 IBasicProperties properties = _model?.CreateBasicProperties();
                                 properties.Persistent = true;
@@ -239,7 +241,7 @@ namespace ThingsGateway.RabbitMQ
                         {
                             try
                             {
-                                var data = Encoding.UTF8.GetBytes(devices.ToJson());
+                                var data = Encoding.UTF8.GetBytes(devices.GetSciptListValue(BigTextScriptDeviceModel));
                                 // 设置消息持久化
                                 IBasicProperties properties = _model?.CreateBasicProperties();
                                 properties.Persistent = true;
