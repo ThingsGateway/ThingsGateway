@@ -323,6 +323,7 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
     {
         try
         {
+            var context1 = context as ServerSystemContext;
             OPCUATag variable = node as OPCUATag;
             // 验证数据类型。
             //Opc.Ua.TypeInfo typeInfo = Opc.Ua.TypeInfo.IsInstanceOfDataType(
@@ -345,7 +346,8 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
                     if (variable.Value != null)
                     {
                         var nv = new NameValue() { Name = variable.SymbolicName, Value = value?.ToString() };
-                        var result = _rpcCore.InvokeDeviceMethod("OPCUASERVER", nv).GetAwaiter().GetResult();
+
+                        var result = _rpcCore.InvokeDeviceMethod("OPCUASERVER-" + context1?.OperationContext?.Session?.Identity?.DisplayName, nv).GetAwaiter().GetResult();
                         if (result.IsSuccess)
                         {
                             return StatusCodes.Good;
