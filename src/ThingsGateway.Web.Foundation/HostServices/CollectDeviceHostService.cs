@@ -122,8 +122,6 @@ public class CollectDeviceHostService : BackgroundService
     /// </summary>
     public void StartOtherHostService()
     {
-
-
         var alarmHostService = _scopeFactory.GetBackgroundService<AlarmHostService>();
         var valueHisHostService = _scopeFactory.GetBackgroundService<ValueHisHostService>();
         alarmHostService?.Start();
