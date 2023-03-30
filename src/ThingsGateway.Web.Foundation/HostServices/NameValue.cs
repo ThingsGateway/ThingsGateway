@@ -3,7 +3,7 @@
 /// <summary>
 /// 变量名称/值表示
 /// </summary>
-public class NameVaue
+public class NameValue
 {
     /// <summary>
     /// 变量名称

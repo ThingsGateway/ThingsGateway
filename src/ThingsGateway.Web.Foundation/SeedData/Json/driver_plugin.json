@@ -207,6 +207,17 @@
       "CreateUser": "superAdmin",
       "CreateUserId": "212725263002001",
       "IsDelete": "0"
+    },
+    {
+      "Id": "321802939232517",
+      "AssembleName": "ThingsGateway.OPCUA.OPCUAServer",
+      "FileName": "ThingsGateway.OPCUA",
+      "DriverTypeEnum": "Upload",
+      "FilePath": "Plugins/ThingsGateway.OPCUA/ThingsGateway.OPCUA.dll",
+      "CreateTime": "2023-03-17 16:15:19.6697472",
+      "CreateUser": "superAdmin",
+      "CreateUserId": "212725263002001",
+      "IsDelete": "0"
     }
   ]
 }

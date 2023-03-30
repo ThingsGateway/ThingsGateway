@@ -48,7 +48,7 @@ public class RpcCore : ISingleton
     /// 反向RPC入口方法
     /// </summary>
     /// <exception cref="Exception"></exception>
-    public async Task<OperResult> InvokeDeviceMethod(string sourceName, NameVaue item, bool isBlazorWeb = false)
+    public async Task<OperResult> InvokeDeviceMethod(string sourceName, NameValue item, bool isBlazorWeb = false)
     {
         OperResult data = new();
         var tag = _globalCollectDeviceData.CollectVariables.FirstOrDefault(it => it.Name == item.Name);

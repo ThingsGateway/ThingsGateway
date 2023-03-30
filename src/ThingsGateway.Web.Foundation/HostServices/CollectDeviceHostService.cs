@@ -328,6 +328,10 @@ public class CollectDeviceHostService : BackgroundService
                     GC.Collect();
 
                 }
+                else
+                {
+                        _logger?.LogInformation(devcore.Device.Name + "检测正常");
+                }
             }
 
 

@@ -277,7 +277,9 @@ public class CollectDeviceCore : DisposableObject
                             if (StoppingToken.Token.IsCancellationRequested)
                                 break;
                             if (_driver.IsConnected())
+                            {
                                 Device.ActiveTime = DateTime.Now;
+                            }
                             if (_driver.IsSupportAddressRequest())
                             {
                                 foreach (var deviceVariableSourceRead in DeviceVariableSourceReads)
@@ -348,6 +350,10 @@ public class CollectDeviceCore : DisposableObject
                                 {
                                     Device.DeviceStatus = DeviceStatusEnum.OnLineButNoInitialValue;
                                 }
+                            }
+                            else
+                            {
+
                             }
                         }
                         catch (TaskCanceledException)
