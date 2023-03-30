@@ -21,7 +21,6 @@ namespace ThingsGateway.Mqtt
 {
     public class MqttClient : UpLoadBase
     {
-
         public MqttClient(IServiceScopeFactory scopeFactory) : base(scopeFactory)
         {
         }
@@ -47,11 +46,13 @@ namespace ThingsGateway.Mqtt
         [DeviceProperty("Rpc返回Topic", "")] public string RpcSubTopic { get; set; } = "ThingsGateway/RpcSub";
 
         [DeviceProperty("数据请求RpcTopic", "这个主题接收到任何数据都会把全部的信息发送到变量/设备主题中")] public string QuestRpcTopic { get; set; } = "ThingsGateway/Quest";
-
         [DeviceProperty("变量Topic", "")] public string VariableTopic { get; set; } = "ThingsGateway/Variable";
         [DeviceProperty("设备Topic", "")] public string DeviceTopic { get; set; } = "ThingsGateway/Device";
 
         [DeviceProperty("循环间隔", "最小500ms")] public int CycleInterval { get; set; } = 1000;
+
+        [DeviceProperty("设备实体脚本", "查看文档说明，为空时不起作用")] public string BigTextScriptDeviceModel { get; set; }
+        [DeviceProperty("变量实体脚本", "查看文档说明，为空时不起作用")] public string BigTextScriptVariableModel { get; set; }
 
 
         public override async Task BeforStart()
@@ -238,11 +239,14 @@ namespace ThingsGateway.Mqtt
             //分解List，避免超出mqtt字节大小限制
             var varData = _globalCollectDeviceData.CollectVariables.Adapt<List<VariableData>>().ChunkTrivialBetter(500);
             var devData = _globalCollectDeviceData.CollectVariables.Adapt<List<DeviceData>>().ChunkTrivialBetter(500);
+
             foreach (var item in devData)
             {
+
+                
                 var devMessage = new MqttApplicationMessageBuilder()
 .WithTopic($"{DeviceTopic}")
-.WithPayload(item.ToJson()).Build();
+.WithPayload(item.GetSciptListValue(BigTextScriptDeviceModel)).Build();
                 await _mqttClient.PublishAsync(devMessage);
             }
 
@@ -250,7 +254,7 @@ namespace ThingsGateway.Mqtt
             {
                 var varMessage = new MqttApplicationMessageBuilder()
                 .WithTopic($"{VariableTopic}")
-                .WithPayload(item.ToJson()).Build();
+                .WithPayload(item.GetSciptListValue(BigTextScriptVariableModel)).Build();
                 await _mqttClient.PublishAsync(varMessage);
             }
         }
@@ -313,7 +317,7 @@ namespace ThingsGateway.Mqtt
                         {
                             var variableMessage = new MqttApplicationMessageBuilder()
 .WithTopic($"{VariableTopic}")
-.WithPayload(item.ToJson()).Build();
+.WithPayload(item.GetSciptListValue(BigTextScriptVariableModel)).Build();
                             if (_mqttClient.IsConnected)
                                 await _mqttClient.PublishAsync(variableMessage);
                         }
@@ -343,7 +347,7 @@ namespace ThingsGateway.Mqtt
                         {
                             var variableMessage = new MqttApplicationMessageBuilder()
                         .WithTopic($"{DeviceTopic}")
-                        .WithPayload(item.ToJson()).Build();
+                        .WithPayload(item.GetSciptListValue(BigTextScriptDeviceModel)).Build();
                             if (_mqttClient.IsConnected)
                                 await _mqttClient.PublishAsync(variableMessage);
                         }

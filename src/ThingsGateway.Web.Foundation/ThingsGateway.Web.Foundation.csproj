@@ -7,19 +7,20 @@
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 	</PropertyGroup>
 
-
 	<ItemGroup>
-	  <PackageReference Include="Hardware.Info" Version="11.0.0" />
+		<PackageReference Include="Hardware.Info" Version="11.0.0" />
+		<PackageReference Include="CS-Script" Version="4.6.2" />
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.5.0" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\ThingsGateway.Application\ThingsGateway.Application.csproj" />
-	  <ProjectReference Include="..\ThingsGateway.Foundation\ThingsGateway.Foundation.csproj" />
+		<ProjectReference Include="..\ThingsGateway.Application\ThingsGateway.Application.csproj" />
+		<ProjectReference Include="..\ThingsGateway.Foundation\ThingsGateway.Foundation.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Update="SeedData\Json\driver_plugin.json">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </None>
+		<None Update="SeedData\Json\driver_plugin.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
 	</ItemGroup>
 </Project>

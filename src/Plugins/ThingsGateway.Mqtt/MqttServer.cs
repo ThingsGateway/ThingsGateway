@@ -42,6 +42,10 @@ namespace ThingsGateway.Mqtt
         [DeviceProperty("设备Topic", "")] public string DeviceTopic { get; set; } = "ThingsGateway/Device";
         [DeviceProperty("循环间隔", "最小500ms")] public int CycleInterval { get; set; } = 1000;
 
+        [DeviceProperty("设备实体脚本", "查看文档说明，为空时不起作用")] public string BigTextScriptDeviceModel { get; set; }
+        [DeviceProperty("变量实体脚本", "查看文档说明，为空时不起作用")] public string BigTextScriptVariableModel { get; set; }
+
+
         public override string ToString()
         {
             return $" {nameof(MqttServer)} IP:{IP} Port:{Port}";
@@ -80,13 +84,13 @@ namespace ThingsGateway.Mqtt
             {
                 Messages.Add(new MqttApplicationMessageBuilder()
             .WithTopic($"{VariableTopic}")
-            .WithPayload(item.ToJson()).Build());
+            .WithPayload(item.GetSciptListValue(BigTextScriptVariableModel)).Build());
             }
             foreach (var item in devData)
             {
                 Messages.Add(new MqttApplicationMessageBuilder()
 .WithTopic($"{DeviceTopic}")
-.WithPayload(item.ToJson()).Build());
+.WithPayload(item.GetSciptListValue(BigTextScriptDeviceModel)).Build());
             }
             arg.LoadedRetainedMessages = Messages;
             return CompletedTask.Instance;
@@ -217,7 +221,7 @@ namespace ThingsGateway.Mqtt
                         {
                             var message = new MqttApplicationMessageBuilder()
 .WithTopic($"{VariableTopic}")
-.WithPayload(item.ToJson()).Build();
+.WithPayload(item.GetSciptListValue(BigTextScriptVariableModel)).Build();
                             await _mqttServer.InjectApplicationMessage(
                                     new InjectedMqttApplicationMessage(message));
                         }
@@ -249,7 +253,7 @@ namespace ThingsGateway.Mqtt
                         {
                             var message = new MqttApplicationMessageBuilder()
                             .WithTopic($"{DeviceTopic}")
-                            .WithPayload(item.ToJson()).Build();
+                            .WithPayload(item.GetSciptListValue(BigTextScriptDeviceModel)).Build();
                             await _mqttServer.InjectApplicationMessage(
                                     new InjectedMqttApplicationMessage(message));
                         }
