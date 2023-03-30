@@ -11,7 +11,7 @@ using UAParser;
 
 namespace ThingsGateway.Web.Foundation
 {
-        /// <inheritdoc/>
+    /// <inheritdoc/>
     public class TGHardwareInfo
     {
         /// <inheritdoc/>
@@ -118,7 +118,7 @@ namespace ThingsGateway.Web.Foundation
                 _logger = loggerFactory.CreateLogger(nameof(HardwareInfoService));
             });
 
-            _ = Task.Run(() =>
+            _ = Task.Run(async () =>
              {
                  while (true)
                  {
@@ -127,6 +127,7 @@ namespace ThingsGateway.Web.Foundation
                      hardwareInfo.RefreshDriveList();
                      hardwareInfo.RefreshNetworkAdapterList();
                      hardwareInfo.RefreshCPUList();
+                     await Task.Delay(5000);
                  }
              });
 
