@@ -25,6 +25,7 @@
 #### 社区版上传插件
 > 支持Rpc写入
 - Modbus Server
+- OPCUA Server
 - Mqtt Server
 - Mqtt Client
 
