@@ -177,7 +177,7 @@ namespace ThingsGateway.Mqtt
             MqttRpcResult mqttRpcResult = new();
             try
             {
-                var result = await _rpcCore.InvokeDeviceMethod(ToString() + "-" + IdWithName[arg.ClientId], rpcData.Adapt<NameVaue>());
+                var result = await _rpcCore.InvokeDeviceMethod(ToString() + "-" + IdWithName[arg.ClientId], rpcData.Adapt<NameValue>());
 
                 mqttRpcResult = new() { Message = result.Message, RpcId = rpcData.RpcId, Success = result.IsSuccess };
 
