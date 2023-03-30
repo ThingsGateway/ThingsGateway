@@ -59,7 +59,7 @@ public class CollectVariableRunTime : CollectDeviceVariable
     public object LastSetValue;
 
     /// <summary>
-    /// 
+    /// 设置变量值
     /// </summary>
     /// <param name="value"></param>
     /// <param name="dateTime"></param>
