@@ -9,6 +9,7 @@ namespace ThingsGateway.Web.Foundation
     /// <summary>
     /// 表达式扩展
     /// </summary>
+    [System.Security.SecuritySafeCritical]
     public static class ExpressionEvaluatorExtension
     {
         static ExpressionEvaluator ExpressionEvaluator;
@@ -35,6 +36,25 @@ namespace ThingsGateway.Web.Foundation
             var value = ExpressionEvaluator.Evaluate(expressions);
             return value;
         }
+
+        /// <summary>
+        /// 计算表达式：raw*100
+        /// </summary>
+        public static object GetExpressionsResult(this ExpressionEvaluator evaluator, string expressions, object rawvalue)
+        {
+            if (expressions.IsNullOrEmpty())
+            {
+                return rawvalue;
+            }
+            evaluator.Variables = new Dictionary<string, object>()
+                {
+                  { "Raw", rawvalue},
+                  { "raw", rawvalue},
+                };
+            var value = evaluator.Evaluate(expressions);
+            return value;
+        }
+
         /// <summary>
         /// 表达式的扩展变量来源
         /// </summary>
