@@ -400,11 +400,20 @@
 
                 @foreach (var property in item.Device.DevicePropertys ?? new())
                     {
-                        <MCol Md=4 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
-                            <span class="text-subtitle-2 grey--text">@property.Description</span>
-                            <span class="text-caption ">@(property.PropertyName.Contains("Password") ? "******" : @property.Value)</span>
-                        </MCol>
-
+                        if (!property.PropertyName.Contains("BigText"))
+                        {
+                            <MCol Md=4 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
+                                <span class="text-subtitle-2 grey--text">@property.Description</span>
+                                <span class="text-caption ">@(property.PropertyName.Contains("Password") ? "******" : @property.Value)</span>
+                            </MCol>
+                        }
+                        else
+                        {
+                            <MCol Md=12 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
+                                <span class="text-subtitle-2 grey--text">@property.Description</span>
+                                <span style="word-break:break-all; white-space:pre-wrap;" class="text-caption ">@(property.PropertyName.Contains("Password") ? "******" : @property.Value)</span>
+                            </MCol>
+                        }
                     }
 
                 </MRow>
