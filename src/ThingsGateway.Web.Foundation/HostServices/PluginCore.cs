@@ -158,10 +158,10 @@ public class PluginCore : ISingleton
             var maxFileSize = 51200000;
             var mainFileName = Path.GetFileNameWithoutExtension(mainFile.Name);
             var fullDir = AppContext.BaseDirectory.CombinePathOS("Plugins", mainFileName);
-            var dir = "Plugins".CombinePathOS( mainFileName);
-            var path = fullDir.CombinePathOS( mainFile.Name);
+            var dir = "Plugins".CombinePathOS(mainFileName);
+            var path = fullDir.CombinePathOS(mainFile.Name);
             var stream = mainFile.OpenReadStream(maxFileSize);
-            Directory.CreateDirectory(AppContext.BaseDirectory.CombinePathOS( "Plugins", mainFileName));
+            Directory.CreateDirectory(AppContext.BaseDirectory.CombinePathOS("Plugins", mainFileName));
             using FileStream fs = new(path, FileMode.Create);
             await stream.CopyToAsync(fs);
             fs.Position = 0;
@@ -169,7 +169,7 @@ public class PluginCore : ISingleton
             foreach (var item in otherFiles)
             {
                 var otherStream = item.OpenReadStream(maxFileSize);
-                using FileStream fs1 = new(fullDir.CombinePathOS( item.Name), FileMode.Create);
+                using FileStream fs1 = new(fullDir.CombinePathOS(item.Name), FileMode.Create);
                 await otherStream.CopyToAsync(fs1);
                 fs1.Position = 0;
                 assemblyLoadContext.LoadFromStream(fs1);

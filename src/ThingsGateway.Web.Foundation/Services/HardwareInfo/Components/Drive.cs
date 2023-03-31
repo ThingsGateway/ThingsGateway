@@ -47,7 +47,7 @@
         [Description("名称")]
         public string Name { get; set; } = string.Empty;
 
-    /// <inheritdoc/>
+        /// <inheritdoc/>
         public List<Partition> PartitionList { get; set; } = new List<Partition>();
         /// <summary>
         /// 这个物理磁盘驱动器上的分区数量所识别出的操作系统。

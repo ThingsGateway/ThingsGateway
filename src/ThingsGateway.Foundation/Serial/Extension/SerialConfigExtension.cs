@@ -1,7 +1,13 @@
 namespace ThingsGateway.Foundation.Serial
 {
+    /// <summary>
+    /// 串口附加属性
+    /// </summary>
     public static class SerialConfigExtension
     {
+        /// <summary>
+        /// 串口属性
+        /// </summary>
         public static readonly DependencyProperty<SerialProperty> SerialProperty =
             DependencyProperty<SerialProperty>.Register("SerialProperty", typeof(SerialConfigExtension), null);
 

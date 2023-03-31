@@ -1,5 +1,8 @@
 ﻿namespace ThingsGateway.Foundation
 {
+    /// <summary>
+    /// 采集返回消息
+    /// </summary>
     public interface IMessage : IOperResult, IRequestInfo
     {
         /// <summary>

@@ -5,17 +5,17 @@ namespace ThingsGateway.Web.Foundation
     /// <summary>
     /// 脚本扩展方法
     /// </summary>
-    public static class CSharpScriptEngineExtension 
+    public static class CSharpScriptEngineExtension
     {
         static CSharpScriptEngine _cSharpScriptEngine;
         static CSharpScriptEngineExtension()
         {
-            _cSharpScriptEngine = App.GetService< CSharpScriptEngine>();
+            _cSharpScriptEngine = App.GetService<CSharpScriptEngine>();
         }
         /// <summary>
         /// 获取返回值
         /// </summary>
-        public static string GetSciptListValue<T>(this T datas,string script) where T : class
+        public static string GetSciptListValue<T>(this T datas, string script) where T : class
         {
             var inPut = System.Text.Json.JsonSerializer.Serialize(datas);
             if (!script.IsNullOrEmpty())

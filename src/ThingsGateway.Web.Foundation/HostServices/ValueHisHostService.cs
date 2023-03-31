@@ -249,7 +249,7 @@ public class ValueHisHostService : BackgroundService, ISingleton
 
         foreach (var device in devices)
         {
-            device.DeviceVariableRunTimes?.Where(a=>a.HisEnable==true)?.ForEach(v => { v.VariableCollectChange -= DeviceVariableCollectChange; });
+            device.DeviceVariableRunTimes?.Where(a => a.HisEnable == true)?.ForEach(v => { v.VariableCollectChange -= DeviceVariableCollectChange; });
             device.DeviceVariableRunTimes?.Where(a => a.HisEnable == true)?.ForEach(v => { v.VariableValueChange -= DeviceVariableValueChange; });
         }
 

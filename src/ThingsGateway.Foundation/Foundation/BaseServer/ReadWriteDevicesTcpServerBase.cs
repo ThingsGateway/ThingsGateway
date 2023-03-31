@@ -2,9 +2,12 @@
 
 namespace ThingsGateway.Foundation
 {
-
+    /// <summary>
+    /// 服务设备
+    /// </summary>
     public abstract class ReadWriteDevicesTcpServerBase : ReadWriteDevicesServerBase
     {
+        /// <inheritdoc cref="ReadWriteDevicesTcpServerBase"/>
         public ReadWriteDevicesTcpServerBase(TcpService tcpService)
         {
             TcpService = tcpService;
@@ -15,32 +18,39 @@ namespace ThingsGateway.Foundation
             TcpService.Disconnected += Disconnected;
             Logger = TcpService.Logger;
         }
-
+        /// <summary>
+        /// 服务管理对象
+        /// </summary>
         public TcpService TcpService { get; }
-
+        /// <inheritdoc/>
         public override Task<OperResult<byte[]>> SendThenResponseAsync(byte[] data, WaitingOptions waitingOptions = null, CancellationToken token = default)
         {
             throw new NotImplementedException();
         }
+        /// <inheritdoc/>
         public override OperResult<byte[]> SendThenResponse(byte[] data, WaitingOptions waitingOptions = null, CancellationToken token = default)
         {
             throw new NotImplementedException();
         }
+        /// <inheritdoc/>
         public override void Start()
         {
             TcpService.Start();
         }
 
+        /// <inheritdoc/>
         public override void Stop()
         {
             TcpService.Stop();
         }
 
+        /// <inheritdoc/>
         public override string ToString()
         {
             return TcpService.Monitors.Select(a => a.IPHost.ToString() + Environment.NewLine).ToJson();
         }
 
+        /// <inheritdoc/>
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
@@ -54,6 +64,9 @@ namespace ThingsGateway.Foundation
 
         }
 
+        /// <summary>
+        /// 接收解析
+        /// </summary>
         protected abstract Task Received(SocketClient client, IRequestInfo requestInfo);
 
         private void Connected(SocketClient client, TouchSocketEventArgs e)

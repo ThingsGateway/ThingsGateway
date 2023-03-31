@@ -3,7 +3,6 @@
 using System.ComponentModel.DataAnnotations;
 
 using ThingsGateway.Core;
-using ThingsGateway.Web.Foundation;
 
 namespace ThingsGateway.Application
 {

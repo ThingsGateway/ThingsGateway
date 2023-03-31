@@ -1,17 +1,25 @@
 ﻿namespace ThingsGateway.Foundation
 {
+    /// <summary>
+    /// TCP适配器基类
+    /// </summary>
     public abstract class ReadWriteDevicesTcpDataHandleAdapter<TRequest> : CustomDataHandlingAdapter<TRequest> where TRequest : class, IMessage
     {
+        /// <inheritdoc cref="ReadWriteDevicesTcpDataHandleAdapter{TRequest}"/>
         public ReadWriteDevicesTcpDataHandleAdapter()
         {
             Request = GetInstance();
         }
+        /// <inheritdoc/>
         public override bool CanSendRequestInfo => false;
 
+        /// <inheritdoc/>
         public override bool CanSplicingSend => false;
 
+        /// <inheritdoc/>
         public virtual bool IsSendPackCommand { get; set; } = true;
 
+        /// <inheritdoc/>
         public TRequest Request { get; set; }
 
         /// <summary>
@@ -82,7 +90,9 @@
                 }
             }
         }
-
+        /// <summary>
+        /// 解包获取实际数据包
+        /// </summary>
         protected virtual FilterResult GetResponse(ByteBlock byteBlock, TRequest request, byte[] allBytes, byte[] bytes)
         {
             var unpackbytes = UnpackResponse(request.SendBytes, bytes);
@@ -112,8 +122,6 @@
         /// <summary>
         /// 发送方法,会重新建立<see cref="Request"/>
         /// </summary>
-        /// <param name="item"></param>
-        /// <param name="isAsync"></param>
         protected void GoSend(byte[] item)
         {
             byte[] bytes = null;
@@ -127,6 +135,7 @@
             Client.Logger?.Trace(Client.GetIPPort().ToString() + Environment.NewLine + ThingsGateway.Foundation.Resources.Resource.Send + " : " + Request.SendBytes.ToHexString(" "));
         }
 
+        /// <inheritdoc/>
         protected override void PreviewSend(byte[] buffer, int offset, int length)
         {
             GoSend(buffer);

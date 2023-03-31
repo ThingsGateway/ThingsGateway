@@ -1,5 +1,6 @@
 namespace ThingsGateway.Foundation.Extension
 {
+    /// <inheritdoc/>
     public static class ByteExtensions
     {
         /// <summary>
@@ -68,8 +69,6 @@ namespace ThingsGateway.Foundation.Extension
         /// 字节数组默认转16进制字符
         /// </summary>
         /// <param name="buffer"></param>
-        /// <param name="offset"></param>
-        /// <param name="length"></param>
         /// <param name="splite"></param>
         /// <returns></returns>
         public static string ToHexString(this byte[] buffer, string splite = default)

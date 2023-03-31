@@ -12,7 +12,6 @@ namespace ThingsGateway.Foundation.Serial
         /// <summary>
         /// 构造函数
         /// </summary>
-        /// <param name="socket"></param>
         public OpeningEventArgs(SerialPort serialPort)
         {
             this.serialPort = serialPort;

@@ -2,14 +2,36 @@ using System.IO.Ports;
 
 namespace ThingsGateway.Foundation.Serial
 {
+    /// <summary>
+    /// 串口属性
+    /// </summary>
     public class SerialProperty
     {
+        /// <summary>
+        /// COM
+        /// </summary>
         public string PortName { get; set; } = "COM1";
+        /// <summary>
+        /// 波特率
+        /// </summary>
         public int BaudRate { get; set; } = 9600;
+        /// <summary>
+        /// 数据位
+        /// </summary>
         public int DataBits { get; set; } = 8;
+        /// <summary>
+        /// 校验位
+        /// </summary>
         public Parity Parity { get; set; } = Parity.None;
+        /// <summary>
+        /// 停止位
+        /// </summary>
         public StopBits StopBits { get; set; } = StopBits.One;
-
+        /// <summary>
+        /// 字符串转实体类，属性用-分隔，需按顺序
+        /// </summary>
+        /// <param name="url"></param>
+        /// <returns></returns>
         public SerialProperty Pase(string url)
         {
             var strs = url.Split('-');
@@ -20,6 +42,10 @@ namespace ThingsGateway.Foundation.Serial
             StopBits = (StopBits)Enum.Parse(typeof(StopBits), strs[4]);
             return this;
         }
+        /// <summary>
+        /// 实体类转字符串
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             return $"{PortName}-{BaudRate}-{DataBits}-{Parity}-{StopBits}";

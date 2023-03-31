@@ -8,7 +8,11 @@ namespace ThingsGateway.Foundation.Extension
     public static class TypeExtensions
     {
 
-
+        /// <summary>
+        /// 是否是bool类型
+        /// </summary>
+        /// <param name="self"></param>
+        /// <returns></returns>
         public static bool IsBool(this Type self)
         {
             return self == typeof(bool);
@@ -92,7 +96,7 @@ namespace ThingsGateway.Foundation.Extension
         }
 
         /// <summary>
-        /// 判断是否为Nullable<>类型
+        /// 判断是否为Nullable类型
         /// </summary>
         /// <param name="self">Type类</param>
         /// <returns>判断结果</returns>
@@ -100,7 +104,11 @@ namespace ThingsGateway.Foundation.Extension
         {
             return self.IsGeneric(typeof(Nullable<>));
         }
-
+        /// <summary>
+        /// 是否是数值类型
+        /// </summary>
+        /// <param name="self"></param>
+        /// <returns></returns>
         public static bool IsNumber(this Type self)
         {
             Type checktype = self;

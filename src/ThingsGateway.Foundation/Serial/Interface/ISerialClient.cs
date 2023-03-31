@@ -1,5 +1,6 @@
 namespace ThingsGateway.Foundation.Serial
 {
+    /// <inheritdoc cref="ISerialClientBase"/>
     public interface ISerialClient : ISerialClientBase, IClientSender, IPluginObject
     {
         /// <summary>

@@ -3,7 +3,7 @@
 namespace ThingsGateway.Foundation
 {
     /// <summary>
-    /// 所有数据转换类的静态辅助方法<br />
+    /// 所有数据转换类的静态辅助方法
     /// </summary>
     public static class ByteConverterHelper
     {

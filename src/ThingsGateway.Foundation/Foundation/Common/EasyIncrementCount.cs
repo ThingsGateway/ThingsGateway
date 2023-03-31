@@ -1,12 +1,15 @@
 ﻿namespace ThingsGateway.Foundation
 {
+    /// <summary>
+    /// 自增
+    /// </summary>
     public sealed class EasyIncrementCount : DisposableObject
     {
         private long current = 0;
         private EasyLock easyLock;
         private long max = long.MaxValue;
         private long start = 0;
-
+        /// <inheritdoc cref="EasyIncrementCount"/>
         public EasyIncrementCount(long max, long start = 0, int tick = 1)
         {
             this.start = start;
@@ -16,6 +19,9 @@
             easyLock = new EasyLock();
         }
 
+        /// <summary>
+        /// Tick
+        /// </summary>
         public int IncreaseTick { get; set; } = 1;
 
         /// <summary>
@@ -26,7 +32,6 @@
         /// <summary>
         /// 获取自增信息，获得数据之后，下一次获取将会自增，如果自增后大于最大值，则会重置为最小值，如果小于最小值，则会重置为最大值。
         /// </summary>
-        /// <returns>计数自增后的值</returns>
         public long GetCurrentValue()
         {
             easyLock.Lock();
@@ -58,7 +63,6 @@
         /// <summary>
         /// 将当前的值重置为指定值
         /// </summary>
-        /// <param name="value">指定的数据值</param>
         public void ResetCurrentValue(long value)
         {
             easyLock.Lock();
@@ -69,7 +73,6 @@
         /// <summary>
         /// 重置当前序号的最大值
         /// </summary>
-        /// <param name="max">最大值</param>
         public void ResetMaxValue(long max)
         {
             easyLock.Lock();
@@ -88,7 +91,6 @@
         /// <summary>
         /// 重置当前序号的初始值
         /// </summary>
-        /// <param name="start">初始值</param>
         public void ResetStartValue(long start)
         {
             easyLock.Lock();
@@ -103,7 +105,7 @@
             }
             easyLock.UnLock();
         }
-
+        /// <inheritdoc/>
         protected override void Dispose(bool disposing)
         {
             easyLock.Dispose();
