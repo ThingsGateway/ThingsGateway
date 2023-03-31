@@ -25,12 +25,12 @@
 #### 社区版上传插件
 > 支持Rpc写入
 - Modbus Server
-- OPCUA Server
-- Mqtt Server
-- Mqtt Client
+- OPCUA Server (支持历史查询)
+- Mqtt Server (支持自定义json)
+- Mqtt Client (支持自定义json)
 
 > 不支持Rpc
-- RabbitMQ
+- RabbitMQ (支持自定义json)
 
 
 #### nuget

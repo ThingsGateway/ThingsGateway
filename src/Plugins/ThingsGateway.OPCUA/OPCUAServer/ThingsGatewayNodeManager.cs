@@ -27,12 +27,18 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
     private Dictionary<NodeId, OPCUATag> _idTags = new Dictionary<NodeId, OPCUATag>();
     private RpcCore _rpcCore;
     private IServiceScope _serviceScope;
+    private TypeAdapterConfig _config;
     /// <inheritdoc cref="ThingsGatewayNodeManager"/>
     public ThingsGatewayNodeManager(IServiceScope serviceScope, IServerInternal server, ApplicationConfiguration configuration) : base(server, configuration, ReferenceServer)
     {
         _serviceScope = serviceScope;
         _rpcCore = serviceScope.ServiceProvider.GetService<RpcCore>();
         _globalCollectDeviceData = serviceScope.ServiceProvider.GetService<GlobalCollectDeviceData>();
+        _config = new TypeAdapterConfig();
+        _config.ForType<ValueHis, DataValue>()
+.Map(dest => dest.WrappedValue, (src) => new Variant(src.Value))
+.Map(dest => dest.SourceTimestamp, (src) => src.CollectTime)
+.Map(dest => dest.StatusCode, (src) => src.Quality == 192 ? StatusCodes.Good : StatusCodes.Bad);
     }
 
 
@@ -86,12 +92,20 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
 
     }
 
+
     /// <summary>
     /// 读取历史数据
     /// </summary>
-    public override void HistoryRead(OperationContext context, HistoryReadDetails details, TimestampsToReturn timestampsToReturn, bool releaseContinuationPoints, IList<HistoryReadValueId> nodesToRead, IList<HistoryReadResult> results, IList<ServiceResult> errors)
+    public override void HistoryRead(OperationContext context, 
+        HistoryReadDetails details, 
+        TimestampsToReturn timestampsToReturn, 
+        bool releaseContinuationPoints, 
+        IList<HistoryReadValueId> nodesToRead, 
+        IList<HistoryReadResult> results, 
+        IList<ServiceResult> errors)
     {
-        ReadProcessedDetails readDetail = details as ReadProcessedDetails;
+        base.HistoryRead(context, details, timestampsToReturn, releaseContinuationPoints, nodesToRead, results, errors);
+        var readDetail = details as ReadRawModifiedDetails;
         //必须带有时间范围
         if (readDetail == null || readDetail.StartTime == DateTime.MinValue || readDetail.EndTime == DateTime.MinValue)
         {
@@ -127,10 +141,17 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
 
                 if (data.Count > 0)
                 {
+
+                    var hisDataValue = data.Adapt<List<DataValue>>(_config);
+                    HistoryData hisData = new HistoryData();
+                    hisData.DataValues.AddRange(hisDataValue);
+                    errors[i] = StatusCodes.Good;
+                    //切记Processed设为true，否则客户端会报错
+                    historyRead.Processed = true;
                     results[i] = new HistoryReadResult()
                     {
                         StatusCode = StatusCodes.Good,
-                        HistoryData = new ExtensionObject(data)
+                        HistoryData = new ExtensionObject(hisData)
                     };
                 }
                 else
@@ -149,7 +170,6 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
                 };
             }
         }
-        base.HistoryRead(context, details, timestampsToReturn, releaseContinuationPoints, nodesToRead, results, errors);
     }
     /// <inheritdoc/>
     public override NodeId New(ISystemContext context, NodeState node)
@@ -263,15 +283,13 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
         variable.WriteMask = AttributeWriteMask.DisplayName | AttributeWriteMask.Description;
         variable.UserWriteMask = AttributeWriteMask.DisplayName | AttributeWriteMask.Description;
         variable.ValueRank = ValueRanks.Scalar;
-
-
         variable.Id = variableRunTime.Id;
         variable.DataType = DataNodeType(variableRunTime);
-        var level = ProtectTypeTrans(variableRunTime.ProtectTypeEnum);
+        var level = ProtectTypeTrans(variableRunTime);
         variable.AccessLevel = level;
         variable.UserAccessLevel = level;
+        variable.Historizing = variableRunTime.HisEnable;
 
-        variable.Historizing = false;
         variable.StatusCode = StatusCodes.Good;
         variable.Timestamp = DateTime.Now;
         variable.Value = Opc.Ua.TypeInfo.GetDefaultValue(variable.DataType, ValueRanks.Scalar, Server.TypeTree);
@@ -367,15 +385,26 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
 
     }
 
-    private byte ProtectTypeTrans(ProtectTypeEnum protectTypeEnum)
+    private byte ProtectTypeTrans(CollectVariableRunTime variableRunTime)
     {
-        switch (protectTypeEnum)
+        byte result = 0;
+        switch (variableRunTime.ProtectTypeEnum)
         {
-            case ProtectTypeEnum.ReadOnly: return AccessLevels.CurrentRead;
+            case ProtectTypeEnum.ReadOnly:
+                result = (byte)(result | AccessLevels.CurrentRead);
+                break;
             case ProtectTypeEnum.ReadWrite:
-                return AccessLevels.CurrentReadOrWrite;
+                result = (byte)(result | AccessLevels.CurrentReadOrWrite);
+                break;
             default:
-                return AccessLevels.CurrentRead;
+                result = (byte)(result | AccessLevels.CurrentRead);
+                break;
         }
+        if (variableRunTime.HisEnable)
+        {
+            result = (byte)(result | AccessLevels.HistoryRead);
+        }
+        return result;
     }
+
 }
