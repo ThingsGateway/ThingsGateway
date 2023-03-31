@@ -7,6 +7,8 @@ using Opc.Ua.Server;
 
 using ThingsGateway.Web.Foundation;
 
+using TouchSocket.Core;
+
 namespace ThingsGateway.OPCUA;
 
 
@@ -278,7 +280,7 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
         {
             parent.AddChild(variable);
         }
-        _idTags.Add(variable.NodeId, variable);
+        _idTags.AddOrUpdate(variable.NodeId, variable);
         return variable;
     }
 

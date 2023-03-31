@@ -1,17 +1,17 @@
 ﻿/// <summary>
-/// 部分源码来自Hsl7或ThingsGateway.Foundation
+/// 有一部分参考来自Hsl7或TouchSocket
 /// </summary>
 public class DataHelper
 {
     /// <summary>
-    /// 字节数据转化成16进制表示的字符串<br />
+    /// 字节数据转化成16进制表示的字符串
     /// </summary>
     /// <param name="InBytes">字节数组</param>
     /// <returns>返回的字符串</returns>
     public static string ByteToHexString(byte[] InBytes) => DataHelper.ByteToHexString(InBytes, char.MinValue);
 
     /// <summary>
-    /// 字节数据转化成16进制表示的字符串<br />
+    /// 字节数据转化成16进制表示的字符串
     /// </summary>
     /// <param name="InBytes">字节数组</param>
     /// <param name="segment">分割符</param>
@@ -19,7 +19,7 @@ public class DataHelper
     public static string ByteToHexString(byte[] InBytes, char segment) => DataHelper.ByteToHexString(InBytes, segment, 0);
 
     /// <summary>
-    /// 字节数据转化成16进制表示的字符串<br />
+    /// 字节数据转化成16进制表示的字符串
     /// </summary>
     /// <param name="InBytes">字节数组</param>
     /// <param name="segment">分割符</param>
@@ -50,7 +50,7 @@ public class DataHelper
     }
 
     /// <summary>
-    /// 字符串数据转化成16进制表示的字符串<br />
+    /// 字符串数据转化成16进制表示的字符串
     /// </summary>
     /// <param name="InString">输入的字符串数据</param>
     public static string ByteToHexString(string InString) => DataHelper.ByteToHexString(Encoding.Unicode.GetBytes(InString));
@@ -72,7 +72,9 @@ public class DataHelper
         offset = addressStart % 8;
         newStart = addressStart - offset;
     }
-
+    /// <summary>
+    /// 获取BCD值
+    /// </summary>
     public static byte GetBcdCodeFromChar(char value, BcdFormat format)
     {
         switch (format)
@@ -261,7 +263,9 @@ public class DataHelper
                 return byte.MaxValue;
         }
     }
-
+    /// <summary>
+    /// 获取BCD值
+    /// </summary>
     public static string GetBcdFromByte(int value, BcdFormat format)
     {
         switch (format)
@@ -450,7 +454,9 @@ public class DataHelper
                 return "*";
         }
     }
-
+    /// <summary>
+    /// 获取BCD值
+    /// </summary>
     public static string GetBCDValue(byte[] buffer, BcdFormat format)
     {
         StringBuilder stringBuilder = new StringBuilder();
@@ -463,7 +469,9 @@ public class DataHelper
         }
         return stringBuilder.ToString();
     }
-
+    /// <summary>
+    /// 获取BCD值
+    /// </summary>
     public static byte[] GetBytesFromBCD(string value, BcdFormat format)
     {
         if (string.IsNullOrEmpty(value))
@@ -523,7 +531,7 @@ public class DataHelper
     }
 
     /// <summary>
-    /// 拼接任意个泛型数组为一个总的泛型数组对象，采用深度拷贝实现。<br />
+    /// 拼接任意个泛型数组为一个总的泛型数组对象，采用深度拷贝实现。
     /// </summary>
     /// <typeparam name="T">数组的类型信息</typeparam>
     /// <param name="arrays">任意个长度的数组</param>
@@ -552,7 +560,7 @@ public class DataHelper
     }
 
     /// <summary>
-    /// 将整数进行有效的拆分成数组，指定每个元素的最大值<br />
+    /// 将整数进行有效的拆分成数组，指定每个元素的最大值
     /// </summary>
     /// <param name="integer">整数信息</param>
     /// <param name="everyLength">单个的数组长度</param>
@@ -568,9 +576,6 @@ public class DataHelper
     /// <summary>
     /// 切割当前的地址数据信息，根据读取的长度来分割成多次不同的读取内容，需要指定地址，总的读取长度，切割读取长度
     /// </summary>
-    /// <param name="address">整数的地址信息</param>
-    /// <param name="length">读取长度信息</param>
-    /// <returns>切割结果</returns>
     public static OperResult<int[], int[]> SplitReadLength(
       int address,
       ushort length,

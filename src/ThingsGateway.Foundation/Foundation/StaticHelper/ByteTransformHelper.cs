@@ -5,12 +5,7 @@
     /// </summary>
     public static class ByteTransformHelper
     {
-        public static OperResult<TResult> GetResultFromArray<TResult>(
-          OperResult<TResult[]> result)
-        {
-            return GetSuccessResultFromOther(result, m => m[0]);
-        }
-
+        /// <inheritdoc/>
         public static OperResult<TResult> GetResultFromBytes<TResult>(
           OperResult<byte[]> result,
           Func<byte[], TResult> translator)
@@ -29,6 +24,7 @@
             }
         }
 
+        /// <inheritdoc/>
         public static OperResult GetResultFromOther<TIn>(
                   OperResult<TIn> result,
           Func<TIn, OperResult> trans)
@@ -36,6 +32,7 @@
             return !result.IsSuccess ? result : trans(result.Content);
         }
 
+        /// <inheritdoc/>
         public static OperResult<TResult> GetResultFromOther<TResult, TIn>(
           OperResult<TIn> result,
           Func<TIn, OperResult<TResult>> trans)
@@ -43,6 +40,7 @@
             return !result.IsSuccess ? result.Copy<TResult>() : trans(result.Content);
         }
 
+        /// <inheritdoc/>
         public static OperResult<TResult> GetSuccessResultFromOther<TResult, TIn>(
                   OperResult<TIn> result,
           Func<TIn, TResult> trans)

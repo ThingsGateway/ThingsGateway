@@ -1,7 +1,15 @@
 ﻿namespace ThingsGateway.Foundation
 {
+    /// <summary>
+    /// 读写扩展方法
+    /// </summary>
     public static class ReadWriteDevicesExHelpers
     {
+        /// <summary>
+        /// 转换布尔值
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public static bool GetBoolValue(this string value)
         {
             if (value == "1")
@@ -18,6 +26,15 @@
             return !(value == "OFF") && bool.Parse(value);
         }
 
+        /// <summary>
+        /// 根据数据类型写入下位机
+        /// </summary>
+        /// <param name="readWriteDevice"></param>
+        /// <param name="type"></param>
+        /// <param name="address"></param>
+        /// <param name="value"></param>
+        /// <param name="isBcd"></param>
+        /// <returns></returns>
         public static Task<OperResult> WriteAsync(this IReadWriteDevice readWriteDevice, Type type, string address, string value, bool isBcd = false)
         {
             if (type == typeof(bool))
@@ -51,7 +68,13 @@
 
 
 
-
+        /// <summary>
+        /// 根据数据类型获取实际值
+        /// </summary>
+        /// <param name="thingsGatewayBitConverter"></param>
+        /// <param name="type"></param>
+        /// <param name="bytes"></param>
+        /// <returns></returns>
         public static dynamic GetDynamicData(this IThingsGatewayBitConverter thingsGatewayBitConverter, Type type, params byte[] bytes)
         {
             if (type == typeof(bool))

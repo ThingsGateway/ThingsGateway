@@ -2,13 +2,12 @@
 
 namespace ThingsGateway.Foundation.Extension
 {
+        /// <inheritdoc/>
     public static class StringExtension
     {
         /// <summary>
         /// 将字符串数组转换成字符串
         /// </summary>
-        /// <param name="strArray">需要转换的字符串</param>
-        /// <returns>合并完成的字符串</returns>
         public static string ArrayToString(this string[] strArray, string spitStr = "")
         {
             StringBuilder str = new StringBuilder();
@@ -72,7 +71,10 @@ namespace ThingsGateway.Foundation.Extension
             }
             return int.Parse(hexString, System.Globalization.NumberStyles.HexNumber);
         }
-
+        /// <summary>
+        /// <inheritdoc cref="Path.Combine(string[])"/>
+        /// 并把\\转为/
+        /// </summary>
         public static string CombinePathOS(this string path, params string[] ps)
         {
             if (ps == null || ps.Length == 0)

@@ -4,6 +4,7 @@ using TouchSocket.Resources;
 
 namespace ThingsGateway.Foundation.Serial
 {
+    /// <inheritdoc cref="SerialClientBase"/>
     public class SerialClient : SerialClientBase
     {
         /// <summary>
@@ -23,7 +24,9 @@ namespace ThingsGateway.Foundation.Serial
         }
     }
 
-
+    /// <summary>
+    /// 串口管理
+    /// </summary>
     public class SerialClientBase : BaseSerial, ISerialClient
     {
         static readonly Protocol SerialPortProtocol = new("SerialPort");
@@ -44,19 +47,28 @@ namespace ThingsGateway.Foundation.Serial
 
         #region 事件
 
-
+        /// <summary>
+        /// 已关闭事件
+        /// </summary>
         public CloseEventHandler<ISerialClientBase> Closed { get; set; }
-
+        /// <summary>
+        /// 关闭中事件
+        /// </summary>
         public CloseEventHandler<ISerialClientBase> Closing { get; set; }
 
 
         /// <summary>
-        /// 成功连接到服务器
+        /// 成功连接到串口
         /// </summary>
         public MessageEventHandler<ISerialClient> Opened { get; set; }
-
+        /// <summary>
+        /// 连接中
+        /// </summary>
         public OpeningEventHandler<ISerialClient> Opening { get; set; }
-
+        /// <summary>
+        /// 已连接
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnOpened(MsgEventArgs e)
         {
             try
@@ -229,7 +241,9 @@ namespace ThingsGateway.Foundation.Serial
         /// <inheritdoc/>
         /// </summary>
         public DateTime LastSendTime { get; private set; }
-
+        /// <summary>
+        /// 串口对象
+        /// </summary>
         public SerialPort MainSerialPort { get; private set; }
 
         /// <summary>
@@ -483,7 +497,11 @@ namespace ThingsGateway.Foundation.Serial
             adapter.SendCallBack = this.DefaultSend;
             this.SerialDataHandlingAdapter = adapter;
         }
-
+        /// <summary>
+        /// 打开串口方法
+        /// </summary>
+        /// <exception cref="ObjectDisposedException"></exception>
+        /// <exception cref="ArgumentNullException"></exception>
         protected void SerialOpen()
         {
             lock (SyncRoot)

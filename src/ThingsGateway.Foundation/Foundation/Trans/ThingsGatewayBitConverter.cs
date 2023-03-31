@@ -11,6 +11,7 @@ namespace ThingsGateway.Foundation
         private readonly EndianType endianType;
 
         private DataFormat dataFormat;
+        /// <inheritdoc/>
         [JsonIgnore]
         public Encoding Encoding { get; set; }
         /// <summary>
@@ -25,12 +26,12 @@ namespace ThingsGateway.Foundation
         /// <summary>
         /// 构造函数
         /// </summary>
-        /// <param name="endianType"></param>
         public ThingsGatewayBitConverter(EndianType endianType, DataFormat dataFormat)
         {
             this.endianType = endianType; this.dataFormat = dataFormat;
         }
 
+        /// <inheritdoc/>
         public DataFormat DataFormat
         {
             get
@@ -43,13 +44,13 @@ namespace ThingsGateway.Foundation
             }
         }
 
-        /// <summary>
-        /// 指定大小端。
-        /// </summary>
-        public EndianType EndianType => endianType;
 
+        /// <inheritdoc/>
+        public EndianType EndianType => endianType;
+        /// <inheritdoc/>
         public bool IsStringReverseByteWord { get; set; }
 
+        /// <inheritdoc/>
         public virtual IThingsGatewayBitConverter CreateByDateFormat(DataFormat dataFormat)
         {
             ThingsGatewayBitConverter byteConverter = new ThingsGatewayBitConverter(EndianType, dataFormat)
@@ -58,7 +59,7 @@ namespace ThingsGateway.Foundation
             };
             return byteConverter;
         }
-
+        /// <inheritdoc/>
         public byte[] GetBytes(bool value)
         {
             return GetBytes(new bool[1]
@@ -67,11 +68,13 @@ namespace ThingsGateway.Foundation
             });
         }
 
+        /// <inheritdoc/>
         public byte[] GetBytes(bool[] values)
         {
             return values?.BoolArrayToByte();
         }
 
+        /// <inheritdoc/>
         public byte[] GetBytes(short value)
         {
             byte[] bytes = BitConverter.GetBytes(value);
@@ -82,6 +85,7 @@ namespace ThingsGateway.Foundation
             return bytes;
         }
 
+        /// <inheritdoc/>
         public byte[] GetBytes(ushort value)
         {
             byte[] bytes = BitConverter.GetBytes(value);
@@ -92,36 +96,43 @@ namespace ThingsGateway.Foundation
             return bytes;
         }
 
+        /// <inheritdoc/>
         public byte[] GetBytes(int value)
         {
             return ByteTransDataFormat4(BitConverter.GetBytes(value));
         }
 
+        /// <inheritdoc/>
         public byte[] GetBytes(uint value)
         {
             return ByteTransDataFormat4(BitConverter.GetBytes(value));
         }
 
+        /// <inheritdoc/>
         public byte[] GetBytes(long value)
         {
             return ByteTransDataFormat8(BitConverter.GetBytes(value));
         }
 
+        /// <inheritdoc/>
         public byte[] GetBytes(ulong value)
         {
             return ByteTransDataFormat8(BitConverter.GetBytes(value));
         }
 
+        /// <inheritdoc/>
         public byte[] GetBytes(float value)
         {
             return ByteTransDataFormat4(BitConverter.GetBytes(value));
         }
 
+        /// <inheritdoc/>
         public byte[] GetBytes(double value)
         {
             return ByteTransDataFormat8(BitConverter.GetBytes(value));
         }
 
+        /// <inheritdoc/>
         public byte[] GetBytes(string value)
         {
             if (value == null)
@@ -133,6 +144,7 @@ namespace ThingsGateway.Foundation
             return IsStringReverseByteWord ? bytes.BytesReverseByWord() : bytes;
         }
 
+        /// <inheritdoc/>
         public byte[] GetBytes(string value, int length)
         {
             if (value == null)
@@ -144,6 +156,7 @@ namespace ThingsGateway.Foundation
             return IsStringReverseByteWord ? bytes.BytesReverseByWord().ArrayExpandToLength(length) : bytes.ArrayExpandToLength(length);
         }
 
+        /// <inheritdoc/>
         public byte[] GetBytes(string value, BcdFormat bcdFormat)
         {
             if (value == null)
@@ -155,6 +168,7 @@ namespace ThingsGateway.Foundation
             return IsStringReverseByteWord ? bytes.BytesReverseByWord() : bytes;
         }
 
+        /// <inheritdoc/>
         public byte[] GetBytes(string value, int length, BcdFormat bcdFormat)
         {
             if (value == null)
@@ -166,33 +180,37 @@ namespace ThingsGateway.Foundation
             return IsStringReverseByteWord ? bytes.BytesReverseByWord().ArrayExpandToLength(length) : bytes.ArrayExpandToLength(length);
         }
 
+        /// <inheritdoc/>
         public bool IsSameOfSet()
         {
             return !(BitConverter.IsLittleEndian ^ (endianType == EndianType.Little));
         }
 
+        /// <inheritdoc/>
         public string ToBcdString(byte[] buffer, BcdFormat bcdFormat)
         {
             return ToBcdString(buffer, 0, buffer.Length, bcdFormat);
         }
 
+        /// <inheritdoc/>
         public string ToBcdString(byte[] buffer, int offset, int length, BcdFormat bcdFormat)
         {
             return IsStringReverseByteWord ? DataHelper.GetBCDValue(buffer.SelectMiddle<byte>(offset, length).BytesReverseByWord(), bcdFormat) : DataHelper.GetBCDValue(buffer.SelectMiddle<byte>(offset, length), bcdFormat);
         }
 
+        /// <inheritdoc/>
         public bool ToBoolean(byte[] buffer, int offset)
         {
             byte[] bytes = new byte[buffer.Length];
             Array.Copy(buffer, 0, bytes, 0, buffer.Length);
-            //TODO:待验证
-            //if (!IsSameOfSet())
-            //{
-            //    bytes = bytes.BytesReverseByWord();
-            //}
+            if (!IsSameOfSet() && buffer.Length > 1)
+            {
+                bytes = bytes.BytesReverseByWord();
+            }
             return bytes.GetBoolByIndex(offset);
         }
 
+        /// <inheritdoc/>
         public byte ToByte(byte[] buffer, int offset)
         {
             byte[] bytes = new byte[1];
@@ -200,6 +218,7 @@ namespace ThingsGateway.Foundation
             return bytes[0];
         }
 
+        /// <inheritdoc/>
         public byte[] ToByte(byte[] buffer, int offset, int length)
         {
             byte[] bytes = new byte[length];
@@ -220,6 +239,7 @@ namespace ThingsGateway.Foundation
             return BitConverter.ToDouble(bytes, 0);
         }
 
+        /// <inheritdoc/>
         public short ToInt16(byte[] buffer, int offset)
         {
             byte[] bytes = new byte[2];
@@ -231,6 +251,7 @@ namespace ThingsGateway.Foundation
             return BitConverter.ToInt16(bytes, 0);
         }
 
+        /// <inheritdoc/>
         public int ToInt32(byte[] buffer, int offset)
         {
             byte[] bytes = ByteTransDataFormat4(buffer, offset);
@@ -238,12 +259,14 @@ namespace ThingsGateway.Foundation
             return BitConverter.ToInt32(bytes, 0);
         }
 
+        /// <inheritdoc/>
         public long ToInt64(byte[] buffer, int offset)
         {
             byte[] bytes = ByteTransDataFormat8(buffer, offset);
             return BitConverter.ToInt64(bytes, 0);
         }
 
+        /// <inheritdoc/>
         public float ToSingle(byte[] buffer, int offset)
         {
             byte[] bytes = ByteTransDataFormat4(buffer, offset);
@@ -251,11 +274,13 @@ namespace ThingsGateway.Foundation
             return BitConverter.ToSingle(bytes, 0);
         }
 
+        /// <inheritdoc/>
         public string ToString(byte[] buffer)
         {
             return ToString(buffer, 0, buffer.Length);
         }
 
+        /// <inheritdoc/>
         public string ToString(byte[] buffer, int offset, int length)
         {
             byte[] numArray = buffer.SelectMiddle<byte>(offset, length);
@@ -265,6 +290,7 @@ namespace ThingsGateway.Foundation
             ;
         }
 
+        /// <inheritdoc/>
         public ushort ToUInt16(byte[] buffer, int offset)
         {
             byte[] bytes = new byte[2];
@@ -276,6 +302,7 @@ namespace ThingsGateway.Foundation
             return BitConverter.ToUInt16(bytes, 0);
         }
 
+        /// <inheritdoc/>
         public uint ToUInt32(byte[] buffer, int offset)
         {
             byte[] bytes = ByteTransDataFormat4(buffer, offset);
@@ -283,6 +310,7 @@ namespace ThingsGateway.Foundation
             return BitConverter.ToUInt32(bytes, 0);
         }
 
+        /// <inheritdoc/>
         public ulong ToUInt64(byte[] buffer, int offset)
         {
             byte[] bytes = ByteTransDataFormat8(buffer, offset);

@@ -2,6 +2,7 @@
 
 namespace ThingsGateway.Foundation.Extension
 {
+    /// <inheritdoc/>
     public static class IEnumerableExtensions
     {
         /// <summary>

@@ -5,6 +5,7 @@
     /// </summary>
     public abstract class ReadWriteDevicesTcpClientBase : ReadWriteDevicesClientBase
     {
+        /// <inheritdoc cref="ReadWriteDevicesTcpClientBase"/>
         public ReadWriteDevicesTcpClientBase(TGTcpClient tcpClient)
         {
             TGTcpClient = tcpClient;
@@ -14,6 +15,7 @@
             TGTcpClient.Disconnected += Disconnected;
             Logger = TGTcpClient.Logger;
         }
+        /// <inheritdoc/>
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
@@ -24,21 +26,29 @@
             TGTcpClient.Disconnected -= Disconnected;
             TGTcpClient.Dispose();
         }
+
+        /// <summary>
+        /// Socket管理对象
+        /// </summary>
         public TGTcpClient TGTcpClient { get; }
 
+        /// <inheritdoc/>
         public override Task ConnectAsync()
         {
             return TGTcpClient.ConnectAsync(ConnectTimeOut);
         }
+        /// <inheritdoc/>
         public override void Connect()
         {
             TGTcpClient.Connect(ConnectTimeOut);
         }
+        /// <inheritdoc/>
         public override void Disconnect()
         {
             TGTcpClient.Close();
         }
 
+        /// <inheritdoc/>
         public override async Task<OperResult<byte[]>> SendThenResponseAsync(byte[] data, WaitingOptions waitingOptions = null, CancellationToken token = default)
         {
             try
@@ -54,6 +64,7 @@
             }
         }
 
+        /// <inheritdoc/>
         public override OperResult<byte[]> SendThenResponse(byte[] data, WaitingOptions waitingOptions = null, CancellationToken token = default)
         {
             try
@@ -69,6 +80,7 @@
             }
         }
 
+        /// <inheritdoc/>
         public override string ToString()
         {
             return TGTcpClient.RemoteIPHost.ToString();

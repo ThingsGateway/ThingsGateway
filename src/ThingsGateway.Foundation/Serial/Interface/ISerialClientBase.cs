@@ -2,6 +2,9 @@ using System.IO.Ports;
 
 namespace ThingsGateway.Foundation.Serial
 {
+    /// <summary>
+    /// 串口连接接口
+    /// </summary>
     public interface ISerialClientBase : IClient, ISender, IDefaultSender, IPluginObject, IRequsetInfoSender
     {
         /// <summary>
@@ -18,7 +21,9 @@ namespace ThingsGateway.Foundation.Serial
         /// 串口描述
         /// </summary>
         SerialProperty SerialProperty { get; }
-
+        /// <summary>
+        /// 配置
+        /// </summary>
         TouchSocketConfig Config { get; }
 
         /// <summary>
@@ -34,7 +39,7 @@ namespace ThingsGateway.Foundation.Serial
         /// <summary>
         /// 即将断开连接(仅主动断开时有效)。
         /// <para>
-        /// 当主动调用Close断开时，可通过<see cref="ThingsGateway.Foundation.Serial.SerialEventArgs.IsPermitOperation"/>终止断开行为。
+        /// 当主动调用Close断开时，可通过<see cref="TouchSocketEventArgs.IsPermitOperation"/>终止断开行为。
         /// </para>
         /// </summary>
         CloseEventHandler<ISerialClientBase> Closing { get; set; }

@@ -2,6 +2,7 @@
 
 namespace ThingsGateway.Foundation.Extension
 {
+    /// <inheritdoc/>
     public static class GenericHelper
     {
         /// <summary>
@@ -104,7 +105,12 @@ namespace ThingsGateway.Foundation.Extension
             }
             return arrayFromOneArray;
         }
-
+        /// <summary>
+        /// For循环
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="objs"></param>
+        /// <param name="action"></param>
         public static void ForEach<T>(this IEnumerable<T> objs, Action<T> action)
         {
             foreach (T obj in objs)
@@ -136,7 +142,12 @@ namespace ThingsGateway.Foundation.Extension
         /// 将一个数组的后面指定位数移除，返回新的一个数组<br />
         /// </summary>
         public static T[] RemoveLast<T>(this T[] value, int length) => value.RemoveArray(0, length);
-
+        /// <summary>
+        /// RmoveWhere
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="this"></param>
+        /// <param name="where"></param>
         public static void RemoveWhere<T>(this ICollection<T> @this, Func<T, bool> where)
         {
             foreach (T item in @this.Where(where).ToList())

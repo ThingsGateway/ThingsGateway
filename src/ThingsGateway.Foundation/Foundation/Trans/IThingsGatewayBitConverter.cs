@@ -2,27 +2,42 @@
 
 namespace ThingsGateway.Foundation
 {
+    /// <summary>
+    /// 类型转换
+    /// </summary>
     public interface IThingsGatewayBitConverter
     {
         #region Public Properties
-
+        /// <summary>
+        /// 4字节数据转换规则
+        /// </summary>
         DataFormat DataFormat { get; set; }
+        /// <summary>
+        /// 指定大小端。
+        /// </summary>
         EndianType EndianType { get; }
+        /// <inheritdoc/>
         [JsonIgnore]
         Encoding Encoding { get; set; }
         /// <summary>
-        /// 获取或设置在解析字符串的时候是否将字节按照字单位反转<br />
+        /// 获取或设置在解析字符串的时候是否将字节按照字单位反转
         /// </summary>
         bool IsStringReverseByteWord { get; set; }
-
+        /// <summary>
+        /// 根据<see cref="DataFormat"/> 获取新的<see cref="IThingsGatewayBitConverter"/>
+        /// </summary>
+        /// <param name="dataFormat"></param>
+        /// <returns></returns>
         IThingsGatewayBitConverter CreateByDateFormat(DataFormat dataFormat);
 
         #endregion Public Properties
 
         #region GetBytes
 
+        /// <inheritdoc/>
         byte[] GetBytes(string value, BcdFormat bcdFormat);
 
+        /// <inheritdoc/>
         byte[] GetBytes(string value, int length, BcdFormat bcdFormat);
 
         /// <summary>
@@ -123,19 +138,11 @@ namespace ThingsGateway.Foundation
         /// <summary>
         /// 从缓存中提取bcdstring结果，使用指定的编码将全部的缓存转为字符串<br />
         /// </summary>
-        /// <param name="buffer">缓存对象</param>
-        /// <param name="encoding">字符串的编码</param>
-        /// <returns>string对象</returns>
         string ToBcdString(byte[] buffer, BcdFormat bcdFormat);
 
         /// <summary>
         /// 从缓存中的部分字节数组转化为bcdstring结果，使用指定的编码，指定起始的字节索引，字节长度信息。<br />
         /// </summary>
-        /// <param name="buffer">缓存对象</param>
-        /// <param name="offset">索引位置</param>
-        /// <param name="length">byte数组长度</param>
-        /// <param name="encoding">字符串的编码</param>
-        /// <returns>string对象</returns>
         string ToBcdString(byte[] buffer, int offset, int length, BcdFormat bcdFormat);
 
         /// <summary>
@@ -144,9 +151,10 @@ namespace ThingsGateway.Foundation
         /// <param name="buffer">等待提取的缓存数据</param>
         /// <param name="offset">位的索引，注意：是从0开始的位索引，10则表示 buffer[1] 的第二位。</param>
         bool ToBoolean(byte[] buffer, int offset);
-
+        /// <inheritdoc/>
         byte ToByte(byte[] buffer, int offset);
 
+        /// <inheritdoc/>
         byte[] ToByte(byte[] buffer, int offset, int length);
 
         /// <summary>
@@ -193,7 +201,6 @@ namespace ThingsGateway.Foundation
         /// 从缓存中提取string结果，使用指定的编码将全部的缓存转为字符串<br />
         /// </summary>
         /// <param name="buffer">缓存对象</param>
-        /// <param name="encoding">字符串的编码</param>
         /// <returns>string对象</returns>
         string ToString(byte[] buffer);
 
@@ -203,7 +210,6 @@ namespace ThingsGateway.Foundation
         /// <param name="buffer">缓存对象</param>
         /// <param name="offset">索引位置</param>
         /// <param name="length">byte数组长度</param>
-        /// <param name="encoding">字符串的编码</param>
         /// <returns>string对象</returns>
         string ToString(byte[] buffer, int offset, int length);
 

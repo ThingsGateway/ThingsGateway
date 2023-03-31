@@ -1,5 +1,8 @@
 namespace ThingsGateway.Foundation.Serial
 {
+    /// <summary>
+    /// 串口插件接口
+    /// </summary>
     public interface ISerialPlugin : IPlugin, IOpeningPlugin, IOpenedPlugin, IClosingPlugin, IClosedPlguin
     {
         /// <summary>

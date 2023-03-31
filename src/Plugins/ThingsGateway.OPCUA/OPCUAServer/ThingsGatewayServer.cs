@@ -28,7 +28,6 @@ public partial class ThingsGatewayServer : StandardServer
         _logger = logger;
         _serviceScope = serviceScope;
     }
-
     /// <inheritdoc/>
     public override UserTokenPolicyCollection GetUserTokenPolicies(ApplicationConfiguration configuration, EndpointDescription description)
     {

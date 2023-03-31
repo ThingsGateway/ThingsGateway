@@ -15,12 +15,20 @@
         /// </summary>
         public int Length { get; set; }
 
+        /// <summary>
+        /// 字符串地址转换为实体类
+        /// </summary>
+        /// <param name="address"></param>
+        /// <param name="length"></param>
         public virtual void Parse(string address, int length)
         {
             AddressStart = int.Parse(address);
             Length = length;
         }
-
+        /// <summary>
+        /// 实体类转换为字符串
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             return AddressStart.ToString();

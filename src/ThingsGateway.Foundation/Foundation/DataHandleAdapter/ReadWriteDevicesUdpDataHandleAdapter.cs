@@ -2,14 +2,21 @@
 
 namespace ThingsGateway.Foundation
 {
+    /// <summary>
+    /// UDP适配器基类
+    /// </summary>
     public abstract class ReadWriteDevicesUdpDataHandleAdapter<TRequest> : UdpDataHandlingAdapter where TRequest : class, IMessage
     {
+        /// <inheritdoc cref="ReadWriteDevicesUdpDataHandleAdapter{TRequest}"/>
         public ReadWriteDevicesUdpDataHandleAdapter()
         {
             Request = GetInstance();
         }
+        /// <inheritdoc/>
         public override bool CanSendRequestInfo => false;
+        /// <inheritdoc/>
         public override bool CanSplicingSend => false;
+        /// <inheritdoc/>
         public virtual bool IsSendPackCommand { get; set; } = true;
 
         /// <summary>
@@ -31,8 +38,6 @@ namespace ThingsGateway.Foundation
         /// <summary>
         /// 预发送方法，会对命令重新打包并发送字节数组
         /// </summary>
-        /// <param name="item"></param>
-        /// <param name="isAsync"></param>
         protected void GoSend(EndPoint endPoint, byte[] item)
         {
             byte[] bytes = null;
@@ -46,6 +51,7 @@ namespace ThingsGateway.Foundation
             Owner.Logger?.Debug(ToString() + Environment.NewLine + ThingsGateway.Foundation.Resources.Resource.Send + " : " + Request.SendBytes.ToHexString(" "));
         }
 
+        /// <inheritdoc/>
         protected override void PreviewReceived(EndPoint remoteEndPoint, ByteBlock byteBlock)
         {
             var allBytes = byteBlock.ToArray(0, byteBlock.Len);
@@ -90,21 +96,24 @@ namespace ThingsGateway.Foundation
             }
         }
 
+        /// <inheritdoc/>
         protected override void PreviewSend(EndPoint endPoint, byte[] buffer, int offset, int length)
         {
             GoSend(endPoint, buffer);
         }
 
+        /// <inheritdoc/>
         protected override void PreviewSend(EndPoint endPoint, IList<ArraySegment<byte>> transferBytes)
         {
             throw new System.NotImplementedException();//因为设置了不支持拼接发送，所以该方法可以不实现。
         }
-
+        /// <inheritdoc/>
         protected override void PreviewSend(IRequestInfo requestInfo)
         {
             throw new System.NotImplementedException();//因为设置了不支持，所以该方法可以不实现。
         }
 
+        /// <inheritdoc/>
         protected override void Reset()
         {
         }

@@ -1,16 +1,22 @@
 ﻿namespace ThingsGateway.Foundation
 {
+    /// <inheritdoc cref="IMessage"/>
     public abstract class MessageBase : OperResult<byte[]>, IMessage
     {
         private byte[] sendBytes = new byte[] { };
 
+    /// <inheritdoc/>
         public int BodyLength { get; set; }
 
+    /// <inheritdoc/>
         public byte[] HeadBytes { get; set; }
 
+    /// <inheritdoc/>
         public virtual int HeadBytesLength { get; }
+    /// <inheritdoc/>
         public byte[] ReceivedBytes { get; set; }
 
+    /// <inheritdoc/>
         public byte[] SendBytes
         {
             get
@@ -24,6 +30,7 @@
             }
         }
 
+    /// <inheritdoc/>
         public abstract bool CheckHeadBytes(byte[] head);
 
         /// <summary>

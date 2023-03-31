@@ -1,5 +1,8 @@
 namespace ThingsGateway.Foundation.Serial
 {
+    /// <summary>
+    /// 扩展方法
+    /// </summary>
     public static class ClientExtension
     {
 
@@ -34,9 +37,6 @@ namespace ThingsGateway.Foundation.Serial
         /// <summary>
         /// 安全性发送关闭报文
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="client"></param>
-        /// <param name="how"></param>
         public static bool TryShutdown<T>(this T client) where T : ISerialClientBase
         {
             try
@@ -59,10 +59,6 @@ namespace ThingsGateway.Foundation.Serial
         /// <summary>
         /// 尝试连接。不会抛出异常。
         /// </summary>
-        /// <typeparam name="TClient"></typeparam>
-        /// <param name="client"></param>
-        /// <param name="timeout"></param>
-        /// <returns></returns>
         public static Result TryOpen<TClient>(this TClient client) where TClient : ISerialClient
         {
             try
@@ -79,10 +75,6 @@ namespace ThingsGateway.Foundation.Serial
         /// <summary>
         /// 尝试连接。不会抛出异常。
         /// </summary>
-        /// <typeparam name="TClient"></typeparam>
-        /// <param name="client"></param>
-        /// <param name="timeout"></param>
-        /// <returns></returns>
         public static async Task<Result> TryOpenAsync<TClient>(this TClient client) where TClient : ISerialClient
         {
             try

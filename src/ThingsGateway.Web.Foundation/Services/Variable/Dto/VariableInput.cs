@@ -34,7 +34,7 @@ namespace ThingsGateway.Application
 
         /// <inheritdoc/>
         [MinValue(1, ErrorMessage = "不能为空")]
-        public override long DeviceId  { get;   set;   }
+        public override long DeviceId { get; set; }
 
         /// <inheritdoc/>
         [MinValue(100, ErrorMessage = "低于最小值")]

@@ -55,7 +55,7 @@ namespace ThingsGateway.Application
 
 
     #region 导入导出
-        /// <inheritdoc/>
+    /// <inheritdoc/>
     public class CollectDeviceImport : UploadDeviceImport
     {
 

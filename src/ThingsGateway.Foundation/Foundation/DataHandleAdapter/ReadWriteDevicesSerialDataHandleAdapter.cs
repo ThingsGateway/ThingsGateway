@@ -2,18 +2,27 @@
 
 namespace ThingsGateway.Foundation
 {
+    /// <summary>
+    /// 串口适配器基类
+    /// </summary>
     public abstract class ReadWriteDevicesSerialDataHandleAdapter<TRequest> : CustomSerialDataHandlingAdapter<TRequest> where TRequest : class, IMessage
     {
+        /// <inheritdoc cref="ReadWriteDevicesSerialDataHandleAdapter{TRequest}"/>
         public ReadWriteDevicesSerialDataHandleAdapter()
         {
             Request = GetInstance();
         }
+
+        /// <inheritdoc/>
         public override bool CanSendRequestInfo => false;
 
+        /// <inheritdoc/>
         public override bool CanSplicingSend => false;
 
+        /// <inheritdoc/>
         public virtual bool IsSendPackCommand { get; set; } = true;
 
+        /// <inheritdoc/>
         public TRequest Request { get; set; }
 
         /// <summary>
@@ -84,7 +93,9 @@ namespace ThingsGateway.Foundation
                 }
             }
         }
-
+        /// <summary>
+        /// 解包获取实际数据包
+        /// </summary>
         protected virtual FilterResult GetResponse(ByteBlock byteBlock, TRequest request, byte[] allBytes, byte[] bytes)
         {
             var unpackbytes = UnpackResponse(request.SendBytes, bytes);
@@ -114,8 +125,6 @@ namespace ThingsGateway.Foundation
         /// <summary>
         /// 发送方法,会重新建立<see cref="Request"/>
         /// </summary>
-        /// <param name="item"></param>
-        /// <param name="isAsync"></param>
         protected void GoSend(byte[] item)
         {
             byte[] bytes = null;
@@ -129,6 +138,7 @@ namespace ThingsGateway.Foundation
             Client.Logger?.Trace(Client.SerialProperty.ToString() + Environment.NewLine + ThingsGateway.Foundation.Resources.Resource.Send + " : " + Request.SendBytes.ToHexString(" "));
         }
 
+        /// <inheritdoc/>
         protected override void PreviewSend(byte[] buffer, int offset, int length)
         {
             GoSend(buffer);

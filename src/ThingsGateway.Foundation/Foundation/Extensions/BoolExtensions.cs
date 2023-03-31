@@ -1,9 +1,12 @@
 namespace ThingsGateway.Foundation.Extension
 {
+    /// <summary>
+    /// bool扩展
+    /// </summary>
     public static class BoolExtensions
     {
         /// <summary>
-        /// 将bool数组转换到byte数组<br />
+        /// 将bool数组转换到byte数组
         /// </summary>
         public static byte[] BoolArrayToByte(this bool[] array)
         {

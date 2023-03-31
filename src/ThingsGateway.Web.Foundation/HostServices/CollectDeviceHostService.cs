@@ -328,7 +328,7 @@ public class CollectDeviceHostService : BackgroundService
                 }
                 else
                 {
-                        _logger?.LogInformation(devcore.Device.Name + "检测正常");
+                    _logger?.LogInformation(devcore.Device.Name + "检测正常");
                 }
             }
 

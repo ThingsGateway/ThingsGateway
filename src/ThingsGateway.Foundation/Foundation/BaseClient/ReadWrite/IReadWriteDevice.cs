@@ -1,9 +1,10 @@
 ﻿namespace ThingsGateway.Foundation
 {
+    /// <summary>
+    /// 读写设备接口
+    /// </summary>
     public interface IReadWriteDevice : IReadWrite, IDisposable
     {
-
-
         /// <summary>
         /// 多字节数据解析规则
         /// </summary>

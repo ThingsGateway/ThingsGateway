@@ -7,6 +7,10 @@ namespace ThingsGateway.Foundation
     /// </summary>
     public abstract class ReadWriteDevicesSerialClientBase : ReadWriteDevicesSerialBase
     {
+        /// <summary>
+        /// <inheritdoc cref="ReadWriteDevicesSerialClientBase"/>
+        /// </summary>
+        /// <param name="serialClient"></param>
         public ReadWriteDevicesSerialClientBase(SerialClient serialClient)
         {
             SerialClient = serialClient;
@@ -16,6 +20,7 @@ namespace ThingsGateway.Foundation
             SerialClient.Closed += Closed;
             Logger = SerialClient.Logger;
         }
+        /// <inheritdoc/>
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
@@ -26,21 +31,28 @@ namespace ThingsGateway.Foundation
             SerialClient.Closed -= Closed;
             SerialClient.Dispose();
         }
+        /// <summary>
+        /// 串口管理对象
+        /// </summary>
         public SerialClient SerialClient { get; }
 
+        /// <inheritdoc/>
         public override Task OpenAsync()
         {
             return SerialClient.OpenAsync();
         }
+        /// <inheritdoc/>
         public override void Open()
         {
             SerialClient.Open();
         }
+        /// <inheritdoc/>
         public override void Close()
         {
             SerialClient.Close();
         }
 
+        /// <inheritdoc/>
         public override async Task<OperResult<byte[]>> SendThenResponseAsync(byte[] data, WaitingOptions waitingOptions = null, CancellationToken token = default)
         {
             try
@@ -56,6 +68,7 @@ namespace ThingsGateway.Foundation
             }
         }
 
+        /// <inheritdoc/>
         public override OperResult<byte[]> SendThenResponse(byte[] data, WaitingOptions waitingOptions = null, CancellationToken token = default)
         {
             try
@@ -71,6 +84,7 @@ namespace ThingsGateway.Foundation
             }
         }
 
+        /// <inheritdoc/>
         public override string ToString()
         {
             return SerialClient.SerialProperty.ToString();
