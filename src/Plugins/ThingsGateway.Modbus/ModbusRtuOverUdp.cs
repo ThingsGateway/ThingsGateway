@@ -3,8 +3,6 @@
 using ThingsGateway.Foundation;
 using ThingsGateway.Web.Foundation;
 
-using TouchSocket.Sockets;
-
 namespace ThingsGateway.Modbus
 {
     public class ModbusRtuOverUdp : DriverBase

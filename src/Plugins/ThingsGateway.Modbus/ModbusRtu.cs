@@ -6,9 +6,6 @@ using ThingsGateway.Foundation;
 using ThingsGateway.Foundation.Serial;
 using ThingsGateway.Web.Foundation;
 
-using TouchSocket.Core;
-using TouchSocket.Sockets;
-
 namespace ThingsGateway.Modbus
 {
     public class ModbusRtu : DriverBase, IDisposable

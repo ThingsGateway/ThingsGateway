@@ -233,7 +233,7 @@ public partial class ThingsGatewayServer : StandardServer
                 "Security token is not a valid username token. An empty password is not accepted.");
         }
         var _openApiUserService = _serviceScope.ServiceProvider.GetService<IOpenApiUserService>();
-        var userInfo =  _openApiUserService.GetUserByAccount(userName).GetAwaiter().GetResult();//获取用户信息
+        var userInfo = _openApiUserService.GetUserByAccount(userName).GetAwaiter().GetResult();//获取用户信息
         if (userInfo == null)
         {
             // construct translation object with default text.
@@ -259,7 +259,7 @@ public partial class ThingsGatewayServer : StandardServer
         {
             return new UserIdentity(userNameToken);
         }
-       
+
 
     }
     private void VerifyUserTokenCertificate(X509Certificate2 certificate)

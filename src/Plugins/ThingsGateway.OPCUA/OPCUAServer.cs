@@ -121,7 +121,7 @@ public partial class OPCUAServer : UpLoadBase
 
     private void VariableValueChange(CollectVariableRunTime collectVariableRunTime)
     {
-            CollectVariableRunTimes.Enqueue(collectVariableRunTime.Adapt<VariableData>());
+        CollectVariableRunTimes.Enqueue(collectVariableRunTime.Adapt<VariableData>());
     }
 
 
@@ -214,7 +214,7 @@ public partial class OPCUAServer : UpLoadBase
             TrustedPeerCertificates = new CertificateTrustList()
             {
                 StoreType = CertificateStoreType.Directory,
-                    StorePath = "%CommonApplicationData%\\ThingsGateway\\pki\\issuer",
+                StorePath = "%CommonApplicationData%\\ThingsGateway\\pki\\issuer",
             },
 
             TrustedIssuerCertificates = new CertificateTrustList()

@@ -243,7 +243,7 @@ namespace ThingsGateway.Mqtt
             foreach (var item in devData)
             {
 
-                
+
                 var devMessage = new MqttApplicationMessageBuilder()
 .WithTopic($"{DeviceTopic}")
 .WithPayload(item.GetSciptListValue(BigTextScriptDeviceModel)).Build();
