@@ -1,0 +1,562 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DirectedGraph DataVirtualized="True" FilterState="CodeMap_ExternalReference,CodeSchema_Calls,References" GraphDirection="TopToBottom" Layout="Sugiyama" ZoomLevel="-1" xmlns="http://schemas.microsoft.com/vs/2009/dgml">
+  <Nodes>
+    <Node Id="(@599 Namespace=::)" Category="CodeSchema_Namespace" Bounds="-68.0239888109714,167.943869025012,62.78,25" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="Fetched" Group="Collapsed" Label="::" UseManualLocation="True" />
+    <Node Id="68d77fc2-70a2-4a82-b7bb-87f34097d231" Category="Category10" Bounds="-738.406846388689,435.694522916123,373,250.0005" Group="Expanded" Label="采集驱动" UseManualLocation="True" />
+    <Node Id="7b739f71-f529-4431-b31a-d08a0a5d779e" Category="Category5" Bounds="-787.336672998352,80.648634363298,475.340000000006,305.0006" Group="Expanded" Label="网关插件（上传/采集）" UseManualLocation="True">
+      <Category Ref="Category10" />
+    </Node>
+    <Node Id="@10" Category="CodeSchema_Assembly" Bounds="-767.336672998348,175.648834363298,209.956666666667,25" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="NotFetched" FilePath="$(e1eb9df9-b801-4b5c-8fbc-ae23aa2516ce.OutputPath)" Group="Collapsed" Label="ThingsGateway.OPCDA.dll">
+      <Category Ref="Category10" />
+      <Category Ref="Category5" />
+      <Category Ref="FileSystem.Category.FileOfType.dll" />
+    </Node>
+    <Node Id="@1036" Category="CodeSchema_Assembly" Bounds="-767.33667299835,120.648734363298,195.563333333334,25" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="NotFetched" FilePath="$(d00b0c9b-293c-4cb7-baf4-92772c87e907.OutputPath)" Group="Collapsed" Label="ThingsGateway.Mqtt.dll">
+      <Category Ref="Category10" />
+      <Category Ref="Category5" />
+      <Category Ref="FileSystem.Category.FileOfType.dll" />
+    </Node>
+    <Node Id="@1075" Category="CodeSchema_Namespace" Bounds="-68.0239888109714,277.943869025012,246.953333333333,25" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="Fetched" Group="Collapsed" Label="AspNetCoreGeneratedDocument" UseManualLocation="True" />
+    <Node Id="@1076" Category="CodeSchema_Namespace" Bounds="24.7560111890286,167.943869025012,94.9233333333334,25" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="Fetched" Group="Collapsed" Label="OneOf" UseManualLocation="True" />
+    <Node Id="@1077" Category="CodeSchema_Namespace" Bounds="149.679344522362,167.943869025012,206.236666666667,25" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="Fetched" Group="Collapsed" Label="ThingsGateway‎.Web‎.Entry" UseManualLocation="True" />
+    <Node Id="@1078" Category="CodeSchema_Namespace" Bounds="-68.0239888109714,332.943869025012,272.193333333333,25" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="Fetched" Group="Collapsed" Label="ThingsGateway‎.Web‎.Entry‎.Controllers" UseManualLocation="True" />
+    <Node Id="@1079" Category="CodeSchema_Namespace" Bounds="-68.0239888109714,222.943869025012,212.856666666667,25" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="Fetched" Group="Collapsed" Label="ThingsGateway‎.Web‎.Server" UseManualLocation="True" />
+    <Node Id="@142" Category="CodeSchema_Assembly" Bounds="-248.722877823078,42.0009534425677,223.846666666666,25" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="NotFetched" FilePath="$(452b00d1-9ffb-467f-b8a7-c8e87e6c0c12.OutputPath)" Group="Collapsed" Label="ThingsGateway.Web.Core.dll" UseManualLocation="True">
+      <Category Ref="FileSystem.Category.FileOfType.dll" />
+    </Node>
+    <Node Id="@154" Category="CodeSchema_Assembly" Bounds="29.2577784192348,120.337285943347,243.78,25" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="NotFetched" FilePath="$(e93bf23c-3454-4601-950a-87283abf1197.OutputPath)" Group="Collapsed" Label="ThingsGateway.Web.Rcl.Core.dll" UseManualLocation="True">
+      <Category Ref="Category7" />
+      <Category Ref="FileSystem.Category.FileOfType.dll" />
+    </Node>
+    <Node Id="@174" Category="CodeSchema_Assembly" Bounds="57.459889752933,344.302603301606,194.273333333333,25" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="NotFetched" FilePath="$(21a66f0e-b26e-409b-ab60-2a1ad6c8d131.OutputPath)" Group="Collapsed" Label="ThingsGateway.Core.dll" UseManualLocation="True">
+      <Category Ref="Category7" />
+      <Category Ref="FileSystem.Category.FileOfType.dll" />
+    </Node>
+    <Node Id="@20" Category="CodeSchema_Assembly" Bounds="-718.406846388689,530.694722916123,327.623333333333,25" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="NotFetched" FilePath="$(4141c657-56b0-40d9-ba52-9f53a6d9e338.OutputPath)" Group="Collapsed" Label="ThingsGateway.Foundation.Adapter.OPCUA.dll">
+      <Category Ref="Category10" />
+      <Category Ref="FileSystem.Category.FileOfType.dll" />
+    </Node>
+    <Node Id="@22" Category="CodeSchema_Assembly" Bounds="-541.773339665012,120.648734363298,209.776666666666,25.0000000000001" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="NotFetched" FilePath="$(635b0fa6-cb7f-495a-a002-983979477916.OutputPath)" Group="Collapsed" Label="ThingsGateway.OPCUA.dll">
+      <Category Ref="Category10" />
+      <Category Ref="Category5" />
+      <Category Ref="FileSystem.Category.FileOfType.dll" />
+    </Node>
+    <Node Id="@284" Category="CodeSchema_Assembly" Bounds="43.583760743115,45.2869722892774,213.84,25" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="NotFetched" FilePath="$(e2f6f9a3-c32e-49ae-a39b-0071a7aaadd2.OutputPath)" Group="Collapsed" Label="ThingsGateway.Web.Rcl.dll" UseManualLocation="True">
+      <Category Ref="Category7" />
+      <Category Ref="FileSystem.Category.FileOfType.dll" />
+    </Node>
+    <Node Id="@368" Category="CodeSchema_Assembly" Bounds="37.3263708046965,223.812929891126,232.716666666667,25" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="NotFetched" FilePath="$(43008ba7-162e-4230-aa59-c4c5f8f4a97c.OutputPath)" Group="Collapsed" Label="ThingsGateway.Application.dll" UseManualLocation="True">
+      <Category Ref="Category7" />
+      <Category Ref="FileSystem.Category.FileOfType.dll" />
+    </Node>
+    <Node Id="@374" Category="CodeSchema_Assembly" Bounds="-270.284064653285,222.819529378575,262.583333333333,25" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="NotFetched" FilePath="$(c6421545-5df4-4b24-985b-b04481239ab7.OutputPath)" Group="Collapsed" Label="ThingsGateway.Web.Foundation.dll" UseManualLocation="True">
+      <Category Ref="FileSystem.Category.FileOfType.dll" />
+    </Node>
+    <Node Id="@376" Category="CodeSchema_Assembly" Bounds="-256.14054221123,550.752166338115,233.01,25" CodeSchemaProperty_IsExternal="True" CodeSchemaProperty_StrongName="ThingsGateway.Foundation, Version=1.2.1.0, Culture=neutral, PublicKeyToken=null" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="NotFetched" FilePath="$(32fd5b1d-52ef-4036-8179-bca88f1594ed.OutputPath)" Group="Collapsed" Label="ThingsGateway.Foundation.dll" UseManualLocation="True">
+      <Category Ref="FileSystem.Category.FileOfType.dll" />
+    </Node>
+    <Node Id="@524" Category="CodeSchema_Assembly" Bounds="-767.336672998346,340.649134363298,226.183333333333,25" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="NotFetched" FilePath="$(7d38a1c3-56fa-41ce-b541-9ff1b5a632f7.OutputPath)" Group="Collapsed" Label="ThingsGateway.RabbitMQ.dll">
+      <Category Ref="Category10" />
+      <Category Ref="Category5" />
+      <Category Ref="FileSystem.Category.FileOfType.dll" />
+    </Node>
+    <Node Id="@600" Category="CodeSchema_Assembly" Bounds="-252.737469984583,-14.306185497788,232.809999999999,25" DelayedChildNodesState="Fetched" DelayedCrossGroupLinksState="NotFetched" FetchedChildrenCount="6" FilePath="$(5fea231a-5d22-428d-a0fa-814dbc3091c1.OutputPath)" Group="Collapsed" Label="ThingsGateway.Web.Server.dll" UseManualLocation="True">
+      <Category Ref="FileSystem.Category.FileOfType.dll" />
+    </Node>
+    <Node Id="@774" Category="CodeSchema_Assembly" Bounds="-718.406846388689,475.694622916123,333,25.0000000000002" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="NotFetched" FilePath="$(a0c38de3-56fd-4ecc-9599-372a4716a4c8.OutputPath)" Group="Collapsed" Label="ThingsGateway.Foundation.Adapter.Siemens.dll">
+      <Category Ref="Category10" />
+      <Category Ref="FileSystem.Category.FileOfType.dll" />
+    </Node>
+    <Node Id="@776" Category="CodeSchema_Assembly" Bounds="-767.336672998347,285.649034363298,215.153333333333,25" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="NotFetched" FilePath="$(12d7e735-8da0-47fb-849f-84c965e4c746.OutputPath)" Group="Collapsed" Label="ThingsGateway.Siemens.dll">
+      <Category Ref="Category10" />
+      <Category Ref="Category5" />
+      <Category Ref="FileSystem.Category.FileOfType.dll" />
+    </Node>
+    <Node Id="@8" Category="CodeSchema_Assembly" Bounds="-718.406846388689,585.694822916123,327.803333333333,25" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="NotFetched" FilePath="$(dae920a3-d399-4142-8d59-18884c0a8cc4.OutputPath)" Group="Collapsed" Label="ThingsGateway.Foundation.Adapter.OPCDA.dll">
+      <Category Ref="Category10" />
+      <Category Ref="FileSystem.Category.FileOfType.dll" />
+    </Node>
+    <Node Id="@960" Category="CodeSchema_Assembly" Bounds="-1073.8064384519,549.707011404452,265.166666666666,25" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="NotFetched" FilePath="$(5da7bd8e-32d3-4ce0-aa79-719fcf8b76d5.OutputPath)" Group="Collapsed" Label="ThingsGateway.Foundation.Tests.dll" UseManualLocation="True">
+      <Category Ref="Category10" />
+      <Category Ref="FileSystem.Category.FileOfType.dll" />
+    </Node>
+    <Node Id="@966" Category="CodeSchema_Assembly" Bounds="-718.406846388689,640.694922916123,332.709999999999,25" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="NotFetched" FilePath="$(65cf6486-e577-4802-8df5-4c43755fcb00.OutputPath)" Group="Collapsed" Label="ThingsGateway.Foundation.Adapter.Modbus.dll">
+      <Category Ref="Category10" />
+      <Category Ref="FileSystem.Category.FileOfType.dll" />
+    </Node>
+    <Node Id="@968" Category="CodeSchema_Assembly" Bounds="-767.336672998352,230.648934363298,214.863333333335,25" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="NotFetched" FilePath="$(4ccd8c74-1cdb-4691-b068-1a7a85de9886.OutputPath)" Group="Collapsed" Label="ThingsGateway.Modbus.dll">
+      <Category Ref="Category10" />
+      <Category Ref="Category5" />
+      <Category Ref="FileSystem.Category.FileOfType.dll" />
+    </Node>
+    <Node Id="@98" Category="CodeSchema_Assembly" Bounds="-250.941629382414,117.142029210082,225.26,25" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="NotFetched" FilePath="$(d2cd34bf-27aa-4c83-b14b-2a25fdf9ec47.OutputPath)" Group="Collapsed" Label="ThingsGateway.Web.Page.dll" UseManualLocation="True">
+      <Category Ref="FileSystem.Category.FileOfType.dll" />
+    </Node>
+  </Nodes>
+  <Links>
+    <Link Source="68d77fc2-70a2-4a82-b7bb-87f34097d231" Target="@20" Category="Contains" />
+    <Link Source="68d77fc2-70a2-4a82-b7bb-87f34097d231" Target="@774" Category="Contains" />
+    <Link Source="68d77fc2-70a2-4a82-b7bb-87f34097d231" Target="@8" Category="Contains" />
+    <Link Source="68d77fc2-70a2-4a82-b7bb-87f34097d231" Target="@966" Category="Contains" />
+    <Link Source="7b739f71-f529-4431-b31a-d08a0a5d779e" Target="@10" Category="Contains" />
+    <Link Source="7b739f71-f529-4431-b31a-d08a0a5d779e" Target="@1036" Category="Contains" />
+    <Link Source="7b739f71-f529-4431-b31a-d08a0a5d779e" Target="@22" Category="Contains" />
+    <Link Source="7b739f71-f529-4431-b31a-d08a0a5d779e" Target="@524" Category="Contains" />
+    <Link Source="7b739f71-f529-4431-b31a-d08a0a5d779e" Target="@776" Category="Contains" />
+    <Link Source="7b739f71-f529-4431-b31a-d08a0a5d779e" Target="@968" Category="Contains" />
+    <Link Source="@10" Target="@174" Category="CodeMap_ExternalReference" Bounds="1284.11450195313,119.247871398926,203.073852539063,136.602760314941" />
+    <Link Source="@10" Target="@368" Category="CodeMap_ExternalReference" Bounds="997.997985839844,119.247871398926,365.193542480469,85.0301284790039" />
+    <Link Source="@10" Target="@374" Category="CodeMap_ProjectReference" Bounds="-557.766189412808,197.575669446828,280.708690647745,25.3001255531051" />
+    <Link Source="@10" Target="@376" Category="CodeMap_ExternalReference" Bounds="1472.43139648438,119.247871398926,14.367919921875,131.037559509277" />
+    <Link Source="@10" Target="@8" Category="CodeMap_ProjectReference" Bounds="-659.070502356703,200.648834363298,98.988111287302,376.342037351833" />
+    <Link Source="@1036" Target="@174" Category="CodeMap_ExternalReference" Bounds="1204.33654785156,119.247825622559,154.731811523438,137.538246154785" />
+    <Link Source="@1036" Target="@368" Category="CodeMap_ExternalReference" Bounds="889.006042480469,117.199073791504,244.562194824219,79.7400741577148" />
+    <Link Source="@1036" Target="@374" Category="CodeMap_ProjectReference" Bounds="-604.643770167556,145.648734363298,391.902509274731,75.4689273448376" />
+    <Link Source="@1036" Target="@376" Category="CodeMap_ExternalReference" Bounds="1204.33654785156,119.247825622559,255.802978515625,135.404823303223" />
+    <Link Source="@1078" Target="@174" Category="References" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="7">
+      <Category Ref="CodeSchema_Calls" />
+    </Link>
+    <Link Source="@1078" Target="@368" Category="References" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="44">
+      <Category Ref="CodeSchema_Calls" />
+    </Link>
+    <Link Source="@142" Target="@154" Category="CodeMap_ExternalReference" Bounds="1089.51428222656,-248.381988525391,62.7528076171875,392.750122070313" />
+    <Link Source="@142" Target="@174" Category="CodeMap_ExternalReference" Bounds="1129.89294433594,-248.381988525391,229.175415039063,505.168060302734" />
+    <Link Source="@142" Target="@284" Category="CodeMap_ProjectReference" Bounds="-24.876211156412,55.7810716174067,59.4605605110534,0.680077531015108" />
+    <Link Source="@142" Target="@368" Category="CodeMap_ExternalReference" Bounds="868.144958496094,-248.381988525391,275.020935058594,443.648330688477" />
+    <Link Source="@142" Target="@374" Category="CodeMap_ExternalReference" Bounds="1160.26806640625,-248.381988525391,183.432250976563,388.671234130859" />
+    <Link Source="@142" Target="@376" Category="CodeMap_ExternalReference" Bounds="1159.80346679688,-248.381988525391,328.701416015625,498.630737304688" />
+    <Link Source="@142" Target="@98" Category="CodeMap_ProjectReference" Bounds="-137.879015525253,67.0009534425677,0.827930037920424,41.142897473019" />
+    <Link Source="@154" Target="@174" Category="CodeMap_ExternalReference" Bounds="1010.99664306641,174.247924804688,134.786315917969,83.7677307128906" />
+    <Link Source="@154" Target="@368" Category="CodeMap_ProjectReference" Bounds="151.454242532673,145.337285943347,1.70340961682345,69.4783476322539" />
+    <Link Source="@20" Target="@376" Category="CodeMap_ProjectReference" Bounds="-390.800944031421,551.111863086478,125.670897045522,6.07441466452485" />
+    <Link Source="@22" Target="@174" Category="CodeMap_ExternalReference" Bounds="1288.21765136719,119.247871398926,335.200317382813,136.944236755371" />
+    <Link Source="@22" Target="@20" Category="CodeMap_ProjectReference" Bounds="-548.523560252518,145.648734363298,108.050231614427,376.395368043302" />
+    <Link Source="@22" Target="@368" Category="CodeMap_ExternalReference" Bounds="997.997985839844,117.181449890137,601.077575683594,87.096549987793" />
+    <Link Source="@22" Target="@374" Category="CodeMap_ProjectReference" Bounds="-400.439585663703,145.648734363298,216.488570812676,74.2509507521287" />
+    <Link Source="@22" Target="@376" Category="CodeMap_ExternalReference" Bounds="1490.08129882813,119.247871398926,133.336669921875,131.017234802246" />
+    <Link Source="@284" Target="@154" Category="CodeMap_ProjectReference" Bounds="150.611025064336,70.2869722892774,0.352261565710677,41.0506449980473" />
+    <Link Source="@284" Target="@174" Category="CodeMap_ExternalReference" Bounds="509.124847412109,119.247970581055,629.875396728516,145.58723449707" />
+    <Link Source="@284" Target="@368" Category="CodeMap_ExternalReference" Bounds="528.619302082586,119.247972878114,293.111605916242,82.5599403401875" />
+    <Link Source="@284" Target="@376" Category="CodeMap_ExternalReference" Bounds="509.124847412109,119.247970581055,900.837188720703,138.41667175293" />
+    <Link Source="@368" Target="@174" Category="CodeMap_ProjectReference" Bounds="153.779302730565,248.812929891126,0.654546060248606,86.4899311275488" />
+    <Link Source="@374" Target="@174" Category="CodeMap_ExternalReference" Bounds="1297.78405761719,174.247970581055,55.291748046875,82.5411224365234" />
+    <Link Source="@374" Target="@368" Category="CodeMap_ProjectReference" Bounds="-7.700731319952,235.765157711005,36.0271539664432,0.122282860381659" />
+    <Link Source="@374" Target="@376" Category="CodeMap_ProjectReference" Bounds="-139.593376265731,247.819529378575,0.576463174784692,293.932654268012" />
+    <Link Source="@524" Target="@174" Category="CodeMap_ExternalReference" Bounds="930.556518554688,119.247825622559,215.226440429688,138.76782989502" />
+    <Link Source="@524" Target="@368" Category="CodeMap_ExternalReference" Bounds="892.980407714844,119.247825622559,81.2813110351563,78.5025863647461" />
+    <Link Source="@524" Target="@374" Category="CodeMap_ProjectReference" Bounds="-599.584230670517,249.825884353188,397.157543489617,90.8232500101096" />
+    <Link Source="@524" Target="@376" Category="CodeMap_ExternalReference" Bounds="1072.47937011719,119.247825622559,387.66015625,135.404823303223" />
+    <Link Source="@600" Target="(@599 Namespace=::)" Category="Contains" FetchingParent="@600" />
+    <Link Source="@600" Target="@1075" Category="Contains" FetchingParent="@600" />
+    <Link Source="@600" Target="@1076" Category="Contains" FetchingParent="@600" />
+    <Link Source="@600" Target="@1077" Category="Contains" FetchingParent="@600" />
+    <Link Source="@600" Target="@1078" Category="Contains" FetchingParent="@600" />
+    <Link Source="@600" Target="@1079" Category="Contains" FetchingParent="@600" />
+    <Link Source="@600" Target="@142" Category="CodeMap_ProjectReference" Bounds="-136.62120196636,10.693814502212,0.185042974940444,22.307448564989" />
+    <Link Source="@600" Target="@154" Category="CodeMap_ExternalReference" Bounds="1038.54968261719,-385.111419677734,103.393920898438,529.479553222656" />
+    <Link Source="@600" Target="@174" Category="CodeMap_ExternalReference" Bounds="-342.6644468337,377.943749024991,284.041493466527,175.274562720416" />
+    <Link Source="@600" Target="@284" Category="CodeMap_ExternalReference" Bounds="508.077517695955,-385.111420921319,630.959602001457,473.954035332814" />
+    <Link Source="@600" Target="@368" Category="CodeMap_ExternalReference" Bounds="-198.755500945473,377.943749024991,167.689373679617,119.769816511074" />
+    <Link Source="@600" Target="@374" Category="CodeMap_ExternalReference" Bounds="1168.94921875,-385.111419677734,173.475708007813,525.46696472168" />
+    <Link Source="@600" Target="@376" Category="CodeMap_ExternalReference" Bounds="1168.94921875,-385.111419677734,319.5556640625,635.360168457031" />
+    <Link Source="@600" Target="@98" Category="CodeMap_ExternalReference" Bounds="749.467102050781,-385.111419677734,392.476501464844,472.342613220215" />
+    <Link Source="@774" Target="@376" Category="CodeMap_ProjectReference" Bounds="-483.247640834297,500.694622916123,266.098438807739,48.44551372593" />
+    <Link Source="@776" Target="@174" Category="CodeMap_ExternalReference" Bounds="1330.86706542969,119.247970581055,588.34619140625,138.555557250977" />
+    <Link Source="@776" Target="@368" Category="CodeMap_ExternalReference" Bounds="953.488708496094,119.247970581055,965.724548339844,83.4147491455078" />
+    <Link Source="@776" Target="@374" Category="CodeMap_ProjectReference" Bounds="-556.51954666056,248.897542859006,304.98464801282,36.7957494965559" />
+    <Link Source="@776" Target="@376" Category="CodeMap_ExternalReference" Bounds="1539.39233398438,119.247970581055,374.152709960938,137.433242797852" />
+    <Link Source="@776" Target="@774" Category="CodeMap_ProjectReference" Bounds="-652.666105812581,310.649034363298,89.2232379617159,157.218228747177" />
+    <Link Source="@8" Target="@376" Category="CodeMap_ProjectReference" Bounds="-406.094298102083,573.774458649555,141.528941602566,11.9203642665674" />
+    <Link Source="@960" Target="@20" Category="CodeMap_ProjectReference" Bounds="-808.639771785234,551.690626854113,81.2745588328704,3.99664705467762" />
+    <Link Source="@960" Target="@376" Category="CodeMap_ExternalReference" Bounds="1513.17720092589,174.247972878113,109.315160248111,79.6980738985507" />
+    <Link Source="@960" Target="@774" Category="CodeMap_ProjectReference" Bounds="-875.471231229362,502.375495895522,248.97086709825,47.3315155089302" />
+    <Link Source="@960" Target="@8" Category="CodeMap_ProjectReference" Bounds="-811.595672866109,574.270087078691,113.806677342598,10.5908027117575" />
+    <Link Source="@960" Target="@966" Category="CodeMap_ProjectReference" Bounds="-887.758412355512,574.707011404452,273.478206526861,63.9389736463241" />
+    <Link Source="@966" Target="@376" Category="CodeMap_ProjectReference" Bounds="-494.735348669975,577.669876611636,288.989993818636,63.0250463044866" />
+    <Link Source="@968" Target="@174" Category="CodeMap_ExternalReference" Bounds="1325.60255962286,119.247972878113,793.265069954655,138.452725108828" />
+    <Link Source="@968" Target="@368" Category="CodeMap_ExternalReference" Bounds="953.488708496094,119.247970581055,1171.28375244141,83.4147491455078" />
+    <Link Source="@968" Target="@374" Category="CodeMap_ProjectReference" Bounds="-552.473339665018,237.428121681533,273.190291416554,4.10609648361176" />
+    <Link Source="@968" Target="@376" Category="CodeMap_ExternalReference" Bounds="1550.68172681531,119.247972878113,586.643595578452,137.940121463997" />
+    <Link Source="@968" Target="@966" Category="CodeMap_ProjectReference" Bounds="-656.617169023374,255.648934363298,98.9881112873057,376.342037351833" />
+    <Link Source="@98" Target="@154" Category="CodeMap_ProjectReference" Bounds="-25.681629382414,130.885318445698,45.939956089982,0.507117578721108" />
+    <Link Source="@98" Target="@174" Category="CodeMap_ExternalReference" Bounds="768.960510253906,119.247970581055,376.822448730469,138.767684936523" />
+    <Link Source="@98" Target="@368" Category="CodeMap_ExternalReference" Bounds="749.811436173497,119.247972878113,101.844670604881,79.4636397489572" />
+    <Link Source="@98" Target="@374" Category="CodeMap_ProjectReference" Bounds="-138.853897380135,142.142029210082,0.461743689907678,71.6776869066085" />
+    <Link Source="@98" Target="@376" Category="CodeMap_ExternalReference" Bounds="765.472351074219,119.247970581055,694.683288574219,135.377593994141" />
+  </Links>
+  <Categories>
+    <Category Id="Category10" Label="类别 10" Background="#FF672878" IsTag="True" />
+    <Category Id="Category5" Label="类别 5" Background="#FF9B4F96" IsTag="True" />
+    <Category Id="Category7" Label="类别 7" Background="#FF347A30" IsTag="True" />
+    <Category Id="CodeMap_ExternalReference" Label="外部引用" CanBeDataDriven="True" CanLinkedNodesBeDataDriven="True" IncomingActionLabel="引用者" OutgoingActionLabel="引用" />
+    <Category Id="CodeMap_ProjectReference" Label="项目引用" CanBeDataDriven="True" CanLinkedNodesBeDataDriven="True" IncomingActionLabel="引用者" OutgoingActionLabel="引用" />
+    <Category Id="CodeSchema_Assembly" Label="程序集" BasedOn="File" CanBeDataDriven="True" DefaultAction="Microsoft.Contains" Icon="CodeSchema_Assembly" NavigationActionLabel="程序集" />
+    <Category Id="CodeSchema_Calls" Label="调用" CanBeDataDriven="True" CanLinkedNodesBeDataDriven="True" IncomingActionLabel="调用者" OutgoingActionLabel="调用" />
+    <Category Id="CodeSchema_Namespace" Label="命名空间" CanBeDataDriven="True" DefaultAction="Node:Both:CodeSchema_Type" Icon="CodeSchema_Namespace" NavigationActionLabel="命名空间" />
+    <Category Id="Contains" Label="包含" Description="链接的源是否包含目标对象" CanBeDataDriven="False" CanLinkedNodesBeDataDriven="True" IncomingActionLabel="包含者" IsContainment="True" OutgoingActionLabel="包含" />
+    <Category Id="File" Label="文件" CanBeDataDriven="True" DefaultAction="Microsoft.Contains" Icon="File" NavigationActionLabel="文件" />
+    <Category Id="FileSystem.Category.FileOfType.dll" BasedOn="CodeSchema_Assembly" CanBeDataDriven="True" IsProviderRoot="False" />
+    <Category Id="References" Label="引用" CanBeDataDriven="True" CanLinkedNodesBeDataDriven="True" IncomingActionLabel="引用者" OutgoingActionLabel="引用" />
+  </Categories>
+  <Properties>
+    <Property Id="Background" Label="背景" Description="背景色" DataType="System.Windows.Media.Brush" />
+    <Property Id="Bounds" DataType="System.Windows.Rect" />
+    <Property Id="CanBeDataDriven" Label="CanBeDataDriven" Description="CanBeDataDriven" DataType="System.Boolean" />
+    <Property Id="CanLinkedNodesBeDataDriven" Label="CanLinkedNodesBeDataDriven" Description="CanLinkedNodesBeDataDriven" DataType="System.Boolean" />
+    <Property Id="CodeSchemaProperty_IsExternal" Label="是外部的" Description="一个标志，用于指示此节点是否被认为是外部的" DataType="System.Boolean" />
+    <Property Id="CodeSchemaProperty_StrongName" Label="StrongName" Description="StrongName" DataType="System.String" />
+    <Property Id="DataVirtualized" Label="已虚拟化数据" Description="如果为 true，则图中可以包含表示虚拟化节点/链接(即，不在图中实际创建)的数据的节点和链接。" DataType="System.Boolean" />
+    <Property Id="DefaultAction" Label="DefaultAction" Description="DefaultAction" DataType="System.String" />
+    <Property Id="DelayedChildNodesState" Label="延迟的子节点状态" Description="如果未指定延迟的子节点状态，则为 Unspecified。如果尚未将组包含的子节点提取到关系图中，则为 NotFetched。如果已提取组内的所有延迟的子节点，则为 Fetched。" DataType="Microsoft.VisualStudio.GraphModel.DelayedDataState" />
+    <Property Id="DelayedCrossGroupLinksState" Label="延迟的跨组链接状态" Description="如果未指定延迟的跨组链接状态，则为 Unspecified。如果尚未将此节点上延迟的跨组链接提取到关系图中，则为 NotFetched。如果已提取所有延迟的跨组链接，则为 Fetched。" DataType="Microsoft.VisualStudio.GraphModel.DelayedDataState" />
+    <Property Id="Expression" DataType="System.String" />
+    <Property Id="FetchedChildrenCount" DataType="System.Int32" />
+    <Property Id="FetchingParent" DataType="Microsoft.VisualStudio.GraphModel.GraphNodeId" />
+    <Property Id="FilePath" Label="文件路径" Description="文件路径" DataType="System.String" />
+    <Property Id="FilterState" DataType="System.String" />
+    <Property Id="GraphDirection" DataType="Microsoft.VisualStudio.Diagrams.Layout.LayoutOrientation" />
+    <Property Id="Group" Label="组" Description="将节点显示为组" DataType="Microsoft.VisualStudio.GraphModel.GraphGroupStyle" />
+    <Property Id="GroupLabel" DataType="System.String" />
+    <Property Id="Icon" Label="图标" Description="图标" DataType="System.String" />
+    <Property Id="IncomingActionLabel" Label="IncomingActionLabel" Description="IncomingActionLabel" DataType="System.String" />
+    <Property Id="IsContainment" DataType="System.Boolean" />
+    <Property Id="IsEnabled" DataType="System.Boolean" />
+    <Property Id="IsProviderRoot" Label="IsProviderRoot" Description="IsProviderRoot" DataType="System.Boolean" />
+    <Property Id="IsSourceVirtualized" Label="已虚拟化链接源" Description="如果为 true，则链接源端包含虚拟化节点/链接(即，不在图中实际创建)的数据。" DataType="System.Boolean" />
+    <Property Id="IsTag" DataType="System.Boolean" />
+    <Property Id="IsTargetVirtualized" Label="已虚拟化链接目标" Description="如果为 true，则链接目标端包含虚拟化节点/链接(即，不在图中实际创建)的数据。" DataType="System.Boolean" />
+    <Property Id="Label" Label="标签" Description="可批注对象的可显示标签" DataType="System.String" />
+    <Property Id="Layout" DataType="System.String" />
+    <Property Id="NavigationActionLabel" Label="NavigationActionLabel" Description="NavigationActionLabel" DataType="System.String" />
+    <Property Id="OutgoingActionLabel" Label="OutgoingActionLabel" Description="OutgoingActionLabel" DataType="System.String" />
+    <Property Id="TargetType" DataType="System.Type" />
+    <Property Id="UseManualLocation" DataType="System.Boolean" />
+    <Property Id="Value" DataType="System.String" />
+    <Property Id="ValueLabel" DataType="System.String" />
+    <Property Id="Visibility" Label="Visibility" Description="Defines whether a node in the graph is visible or not" DataType="System.Windows.Visibility" />
+    <Property Id="Weight" Label="粗细" Description="粗细" DataType="System.Double" />
+    <Property Id="ZoomLevel" DataType="System.String" />
+  </Properties>
+  <QualifiedNames>
+    <Name Id="Assembly" Label="程序集" ValueType="Uri" />
+    <Name Id="Namespace" Label="命名空间" ValueType="System.String" />
+  </QualifiedNames>
+  <IdentifierAliases>
+    <Alias n="7" Uri="Assembly=$(dae920a3-d399-4142-8d59-18884c0a8cc4.OutputPathUri)" />
+    <Alias n="8" Id="(@7)" />
+    <Alias n="9" Uri="Assembly=$(e1eb9df9-b801-4b5c-8fbc-ae23aa2516ce.OutputPathUri)" />
+    <Alias n="10" Id="(@9)" />
+    <Alias n="19" Uri="Assembly=$(4141c657-56b0-40d9-ba52-9f53a6d9e338.OutputPathUri)" />
+    <Alias n="20" Id="(@19)" />
+    <Alias n="21" Uri="Assembly=$(635b0fa6-cb7f-495a-a002-983979477916.OutputPathUri)" />
+    <Alias n="22" Id="(@21)" />
+    <Alias n="97" Uri="Assembly=$(d2cd34bf-27aa-4c83-b14b-2a25fdf9ec47.OutputPathUri)" />
+    <Alias n="98" Id="(@97)" />
+    <Alias n="141" Uri="Assembly=$(452b00d1-9ffb-467f-b8a7-c8e87e6c0c12.OutputPathUri)" />
+    <Alias n="142" Id="(@141)" />
+    <Alias n="153" Uri="Assembly=$(e93bf23c-3454-4601-950a-87283abf1197.OutputPathUri)" />
+    <Alias n="154" Id="(@153)" />
+    <Alias n="173" Uri="Assembly=$(21a66f0e-b26e-409b-ab60-2a1ad6c8d131.OutputPathUri)" />
+    <Alias n="174" Id="(@173)" />
+    <Alias n="283" Uri="Assembly=$(e2f6f9a3-c32e-49ae-a39b-0071a7aaadd2.OutputPathUri)" />
+    <Alias n="284" Id="(@283)" />
+    <Alias n="367" Uri="Assembly=$(43008ba7-162e-4230-aa59-c4c5f8f4a97c.OutputPathUri)" />
+    <Alias n="368" Id="(@367)" />
+    <Alias n="373" Uri="Assembly=$(c6421545-5df4-4b24-985b-b04481239ab7.OutputPathUri)" />
+    <Alias n="374" Id="(@373)" />
+    <Alias n="375" Uri="Assembly=$(32fd5b1d-52ef-4036-8179-bca88f1594ed.OutputPathUri)" />
+    <Alias n="376" Id="(@375)" />
+    <Alias n="523" Uri="Assembly=$(7d38a1c3-56fa-41ce-b541-9ff1b5a632f7.OutputPathUri)" />
+    <Alias n="524" Id="(@523)" />
+    <Alias n="599" Uri="Assembly=$(5fea231a-5d22-428d-a0fa-814dbc3091c1.OutputPathUri)" />
+    <Alias n="600" Id="(@599)" />
+    <Alias n="773" Uri="Assembly=$(a0c38de3-56fd-4ecc-9599-372a4716a4c8.OutputPathUri)" />
+    <Alias n="774" Id="(@773)" />
+    <Alias n="775" Uri="Assembly=$(12d7e735-8da0-47fb-849f-84c965e4c746.OutputPathUri)" />
+    <Alias n="776" Id="(@775)" />
+    <Alias n="959" Uri="Assembly=$(5da7bd8e-32d3-4ce0-aa79-719fcf8b76d5.OutputPathUri)" />
+    <Alias n="960" Id="(@959)" />
+    <Alias n="965" Uri="Assembly=$(65cf6486-e577-4802-8df5-4c43755fcb00.OutputPathUri)" />
+    <Alias n="966" Id="(@965)" />
+    <Alias n="967" Uri="Assembly=$(4ccd8c74-1cdb-4691-b068-1a7a85de9886.OutputPathUri)" />
+    <Alias n="968" Id="(@967)" />
+    <Alias n="1035" Uri="Assembly=$(d00b0c9b-293c-4cb7-baf4-92772c87e907.OutputPathUri)" />
+    <Alias n="1036" Id="(@1035)" />
+    <Alias n="1075" Id="(@599 Namespace=AspNetCoreGeneratedDocument)" />
+    <Alias n="1076" Id="(@599 Namespace=OneOf)" />
+    <Alias n="1077" Id="(@599 Namespace=ThingsGateway.Web.Entry)" />
+    <Alias n="1078" Id="(@599 Namespace=ThingsGateway.Web.Entry.Controllers)" />
+    <Alias n="1079" Id="(@599 Namespace=ThingsGateway.Web.Server)" />
+  </IdentifierAliases>
+  <Styles>
+    <Style TargetType="Node" GroupLabel="类别 10" ValueLabel="具有类别">
+      <Condition Expression="HasCategory('Category10')" />
+      <Setter Property="Background" Value="#FF672878" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="类别 5" ValueLabel="具有类别">
+      <Condition Expression="HasCategory('Category5')" />
+      <Setter Property="Background" Value="#FF9B4F96" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="类别 7" ValueLabel="具有类别">
+      <Condition Expression="HasCategory('Category7')" />
+      <Setter Property="Background" Value="#FF347A30" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="结果" ValueLabel="True">
+      <Condition Expression="HasCategory('QueryResult')" />
+      <Setter Property="Background" Value="#FFBCFFBE" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="测试项目" ValueLabel="测试项目">
+      <Condition Expression="HasCategory('CodeMap_TestProject')" />
+      <Setter Property="Icon" Value="CodeMap_TestProject" />
+      <Setter Property="Background" Value="#FF307A69" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="Web 项目" ValueLabel="Web 项目">
+      <Condition Expression="HasCategory('CodeMap_WebProject')" />
+      <Setter Property="Icon" Value="CodeMap_WebProject" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="Windows 应用商店项目" ValueLabel="Windows 应用商店项目">
+      <Condition Expression="HasCategory('CodeMap_WindowsStoreProject')" />
+      <Setter Property="Icon" Value="CodeMap_WindowsStoreProject" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="电话项目" ValueLabel="电话项目">
+      <Condition Expression="HasCategory('CodeMap_PhoneProject')" />
+      <Setter Property="Icon" Value="CodeMap_PhoneProject" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="可移植库" ValueLabel="可移植库">
+      <Condition Expression="HasCategory('CodeMap_PortableLibraryProject')" />
+      <Setter Property="Icon" Value="CodeMap_PortableLibraryProject" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="WPF 项目" ValueLabel="WPF 项目">
+      <Condition Expression="HasCategory('CodeMap_WpfProject')" />
+      <Setter Property="Icon" Value="CodeMap_WpfProject" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="VSIX 项目" ValueLabel="VSIX 项目">
+      <Condition Expression="HasCategory('CodeMap_VsixProject')" />
+      <Setter Property="Icon" Value="CodeMap_VsixProject" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="建模项目" ValueLabel="建模项目">
+      <Condition Expression="HasCategory('CodeMap_ModelingProject')" />
+      <Setter Property="Icon" Value="CodeMap_ModelingProject" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="程序集" ValueLabel="具有类别">
+      <Condition Expression="HasCategory('CodeSchema_Assembly')" />
+      <Setter Property="Background" Value="#FF094167" />
+      <Setter Property="Stroke" Value="#FF094167" />
+      <Setter Property="Icon" Value="CodeSchema_Assembly" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="命名空间" ValueLabel="具有类别">
+      <Condition Expression="HasCategory('CodeSchema_Namespace')" />
+      <Setter Property="Background" Value="#FF0E619A" />
+      <Setter Property="Stroke" Value="#FF0E619A" />
+      <Setter Property="Icon" Value="CodeSchema_Namespace" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="接口" ValueLabel="具有类别">
+      <Condition Expression="HasCategory('CodeSchema_Interface')" />
+      <Setter Property="Background" Value="#FF1382CE" />
+      <Setter Property="Stroke" Value="#FF1382CE" />
+      <Setter Property="Icon" Value="CodeSchema_Interface" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="结构" ValueLabel="具有类别">
+      <Condition Expression="HasCategory('CodeSchema_Struct')" />
+      <Setter Property="Background" Value="#FF1382CE" />
+      <Setter Property="Stroke" Value="#FF1382CE" />
+      <Setter Property="Icon" Value="CodeSchema_Struct" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="枚举" ValueLabel="具有类别">
+      <Condition Expression="HasCategory('CodeSchema_Enum')" />
+      <Setter Property="Background" Value="#FF1382CE" />
+      <Setter Property="Stroke" Value="#FF1382CE" />
+      <Setter Property="Icon" Value="CodeSchema_Enum" />
+      <Setter Property="LayoutSettings" Value="List" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="委托" ValueLabel="具有类别">
+      <Condition Expression="HasCategory('CodeSchema_Delegate')" />
+      <Setter Property="Background" Value="#FF1382CE" />
+      <Setter Property="Stroke" Value="#FF1382CE" />
+      <Setter Property="Icon" Value="CodeSchema_Delegate" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="类" ValueLabel="具有类别">
+      <Condition Expression="HasCategory('CodeSchema_Type')" />
+      <Setter Property="Background" Value="#FF0E70C0" />
+      <Setter Property="Stroke" Value="#FF0E70C0" />
+      <Setter Property="Icon" Value="CodeSchema_Class" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="属性" ValueLabel="具有类别">
+      <Condition Expression="HasCategory('CodeSchema_Property')" />
+      <Setter Property="Background" Value="#FFE0E0E0" />
+      <Setter Property="Stroke" Value="#FFE0E0E0" />
+      <Setter Property="Icon" Value="CodeSchema_Property" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="方法" ValueLabel="具有类别">
+      <Condition Expression="HasCategory('CodeSchema_Method') Or HasCategory('CodeSchema_CallStackUnresolvedMethod')" />
+      <Setter Property="Background" Value="#FFE0E0E0" />
+      <Setter Property="Stroke" Value="#FFE0E0E0" />
+      <Setter Property="Icon" Value="CodeSchema_Method" />
+      <Setter Property="LayoutSettings" Value="List" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="事件" ValueLabel="具有类别">
+      <Condition Expression="HasCategory('CodeSchema_Event')" />
+      <Setter Property="Background" Value="#FFE0E0E0" />
+      <Setter Property="Stroke" Value="#FFE0E0E0" />
+      <Setter Property="Icon" Value="CodeSchema_Event" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="字段" ValueLabel="具有类别">
+      <Condition Expression="HasCategory('CodeSchema_Field')" />
+      <Setter Property="Background" Value="#FFE0E0E0" />
+      <Setter Property="Stroke" Value="#FFE0E0E0" />
+      <Setter Property="Icon" Value="CodeSchema_Field" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="Out 参数" ValueLabel="具有类别">
+      <Condition Expression="CodeSchemaProperty_IsOut = 'True'" />
+      <Setter Property="Icon" Value="CodeSchema_OutParameter" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="参数" ValueLabel="具有类别">
+      <Condition Expression="HasCategory('CodeSchema_Parameter')" />
+      <Setter Property="Icon" Value="CodeSchema_Parameter" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="局部变量" ValueLabel="具有类别">
+      <Condition Expression="HasCategory('CodeSchema_LocalExpression')" />
+      <Setter Property="Icon" Value="CodeSchema_LocalExpression" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="外部" ValueLabel="具有类别">
+      <Condition Expression="HasCategory('Externals')" />
+      <Setter Property="Background" Value="#FF424242" />
+      <Setter Property="Stroke" Value="#FF424242" />
+    </Style>
+    <Style TargetType="Link" GroupLabel="继承自" ValueLabel="True">
+      <Condition Expression="HasCategory('InheritsFrom')" />
+      <Setter Property="Stroke" Value="#FF00A600" />
+      <Setter Property="StrokeDashArray" Value="2 0" />
+      <Setter Property="DrawArrow" Value="true" />
+    </Style>
+    <Style TargetType="Link" GroupLabel="实现" ValueLabel="True">
+      <Condition Expression="HasCategory('Implements')" />
+      <Setter Property="Stroke" Value="#8000A600" />
+      <Setter Property="StrokeDashArray" Value="2 2" />
+      <Setter Property="DrawArrow" Value="true" />
+    </Style>
+    <Style TargetType="Link" IsEnabled="false" GroupLabel="调用" ValueLabel="True">
+      <Condition Expression="HasCategory('CodeSchema_Calls')" />
+      <Setter Property="Stroke" Value="#FFFF00FF" />
+      <Setter Property="StrokeDashArray" Value="2 0" />
+      <Setter Property="DrawArrow" Value="true" />
+    </Style>
+    <Style TargetType="Link" GroupLabel="函数指针" ValueLabel="True">
+      <Condition Expression="HasCategory('CodeSchema_FunctionPointer')" />
+      <Setter Property="Stroke" Value="#FFFF00FF" />
+      <Setter Property="StrokeDashArray" Value="2 2" />
+      <Setter Property="DrawArrow" Value="true" />
+    </Style>
+    <Style TargetType="Link" GroupLabel="字段读取" ValueLabel="True">
+      <Condition Expression="HasCategory('CodeSchema_FieldRead')" />
+      <Setter Property="Stroke" Value="#FF00AEEF" />
+      <Setter Property="StrokeDashArray" Value="2 2" />
+      <Setter Property="DrawArrow" Value="true" />
+    </Style>
+    <Style TargetType="Link" GroupLabel="字段写入" ValueLabel="True">
+      <Condition Expression="HasCategory('CodeSchema_FieldWrite')" />
+      <Setter Property="Stroke" Value="#FF00AEEF" />
+      <Setter Property="DrawArrow" Value="true" />
+      <Setter Property="IsHidden" Value="false" />
+    </Style>
+    <Style TargetType="Link" GroupLabel="Inherits From" ValueLabel="True" Visibility="Hidden">
+      <Condition Expression="HasCategory('InheritsFrom') And Target.HasCategory('CodeSchema_Class')" />
+      <Setter Property="TargetDecorator" Value="OpenArrow" />
+    </Style>
+    <Style TargetType="Link" GroupLabel="Implements" ValueLabel="True" Visibility="Hidden">
+      <Condition Expression="HasCategory('Implements') And Target.HasCategory('CodeSchema_Interface')" />
+      <Setter Property="TargetDecorator" Value="OpenArrow" />
+    </Style>
+    <Style TargetType="Link" GroupLabel="Comment Link" ValueLabel="True" Visibility="Hidden">
+      <Condition Expression="Source.HasCategory('Comment')" />
+      <Setter Property="Stroke" Value="#FFE5C365" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="Cursor Location Changed" ValueLabel="True" Visibility="Hidden">
+      <Condition Expression="IsCursorLocation" />
+      <Setter Property="IndicatorWest" Value="WestIndicator" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="Disabled Breakpoint Location Changed" ValueLabel="True" Visibility="Hidden">
+      <Condition Expression="DisabledBreakpointCount" />
+      <Setter Property="IndicatorWest" Value="WestIndicator" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="Enabled Breakpoint Location Changed" ValueLabel="True" Visibility="Hidden">
+      <Condition Expression="EnabledBreakpointCount" />
+      <Setter Property="IndicatorWest" Value="WestIndicator" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="Instruction Pointer Location Changed" ValueLabel="True" Visibility="Hidden">
+      <Condition Expression="IsInstructionPointerLocation" />
+      <Setter Property="IndicatorWest" Value="WestIndicator" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="Current Callstack Changed" ValueLabel="True" Visibility="Hidden">
+      <Condition Expression="IsCurrentCallstackFrame" />
+      <Setter Property="IndicatorWest" Value="WestIndicator" />
+    </Style>
+    <Style TargetType="Link" GroupLabel="返回" ValueLabel="True" Visibility="Hidden">
+      <Condition Expression="HasCategory('CodeSchema_ReturnTypeLink')" />
+    </Style>
+    <Style TargetType="Link" IsEnabled="false" GroupLabel="引用" ValueLabel="True" Visibility="Hidden">
+      <Condition Expression="HasCategory('References')" />
+    </Style>
+    <Style TargetType="Link" GroupLabel="使用特性" ValueLabel="True" Visibility="Hidden">
+      <Condition Expression="HasCategory('CodeSchema_AttributeUse')" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="解决方案文件夹" ValueLabel="True" Visibility="Hidden">
+      <Condition Expression="HasCategory('CodeMap_SolutionFolder')" />
+      <Setter Property="Background" Value="#FFDEBA83" />
+    </Style>
+    <Style TargetType="Link" GroupLabel="项目引用" ValueLabel="项目引用">
+      <Condition Expression="HasCategory('CodeMap_ProjectReference')" />
+      <Setter Property="Stroke" Value="#9A9A9A" />
+      <Setter Property="StrokeDashArray" Value="2 2" />
+      <Setter Property="DrawArrow" Value="true" />
+    </Style>
+    <Style TargetType="Link" IsEnabled="false" GroupLabel="外部引用" ValueLabel="外部引用">
+      <Condition Expression="HasCategory('CodeMap_ExternalReference')" />
+      <Setter Property="Stroke" Value="#9A9A9A" />
+      <Setter Property="StrokeDashArray" Value="2 2" />
+      <Setter Property="DrawArrow" Value="true" />
+    </Style>
+  </Styles>
+  <Paths>
+    <Path Id="12d7e735-8da0-47fb-849f-84c965e4c746.OutputPath" Value="E:\Tg\ThingsGateway\ThingsGateway\src\Plugins\ThingsGateway.Siemens\bin\Debug\net6.0\ThingsGateway.Siemens.dll" />
+    <Path Id="12d7e735-8da0-47fb-849f-84c965e4c746.OutputPathUri" Value="file:///E:/Tg/ThingsGateway/ThingsGateway/src/Plugins/ThingsGateway.Siemens/bin/Debug/net6.0/ThingsGateway.Siemens.dll" />
+    <Path Id="21a66f0e-b26e-409b-ab60-2a1ad6c8d131.OutputPath" Value="E:\Tg\ThingsGateway\ThingsGateway\src\ThingsGateway.Core\bin\Debug\net6.0\ThingsGateway.Core.dll" />
+    <Path Id="21a66f0e-b26e-409b-ab60-2a1ad6c8d131.OutputPathUri" Value="file:///E:/Tg/ThingsGateway/ThingsGateway/src/ThingsGateway.Core/bin/Debug/net6.0/ThingsGateway.Core.dll" />
+    <Path Id="32fd5b1d-52ef-4036-8179-bca88f1594ed.OutputPath" Value="E:\Tg\ThingsGateway\ThingsGateway\src\ThingsGateway.Foundation\bin\Debug\net4.6.2\ThingsGateway.Foundation.dll" />
+    <Path Id="32fd5b1d-52ef-4036-8179-bca88f1594ed.OutputPathUri" Value="file:///E:/Tg/ThingsGateway/ThingsGateway/src/ThingsGateway.Foundation/bin/Debug/net4.6.2/ThingsGateway.Foundation.dll" />
+    <Path Id="4141c657-56b0-40d9-ba52-9f53a6d9e338.OutputPath" Value="E:\Tg\ThingsGateway\ThingsGateway\src\Plugins\ThingsGateway.Foundation.Adapter.OPCUA\bin\Debug\net4.6.2\ThingsGateway.Foundation.Adapter.OPCUA.dll" />
+    <Path Id="4141c657-56b0-40d9-ba52-9f53a6d9e338.OutputPathUri" Value="file:///E:/Tg/ThingsGateway/ThingsGateway/src/Plugins/ThingsGateway.Foundation.Adapter.OPCUA/bin/Debug/net4.6.2/ThingsGateway.Foundation.Adapter.OPCUA.dll" />
+    <Path Id="43008ba7-162e-4230-aa59-c4c5f8f4a97c.OutputPath" Value="E:\Tg\ThingsGateway\ThingsGateway\src\ThingsGateway.Application\bin\Debug\net6.0\ThingsGateway.Application.dll" />
+    <Path Id="43008ba7-162e-4230-aa59-c4c5f8f4a97c.OutputPathUri" Value="file:///E:/Tg/ThingsGateway/ThingsGateway/src/ThingsGateway.Application/bin/Debug/net6.0/ThingsGateway.Application.dll" />
+    <Path Id="452b00d1-9ffb-467f-b8a7-c8e87e6c0c12.OutputPath" Value="E:\Tg\ThingsGateway\ThingsGateway\src\ThingsGateway.Web.Core\bin\Debug\net6.0\ThingsGateway.Web.Core.dll" />
+    <Path Id="452b00d1-9ffb-467f-b8a7-c8e87e6c0c12.OutputPathUri" Value="file:///E:/Tg/ThingsGateway/ThingsGateway/src/ThingsGateway.Web.Core/bin/Debug/net6.0/ThingsGateway.Web.Core.dll" />
+    <Path Id="4ccd8c74-1cdb-4691-b068-1a7a85de9886.OutputPath" Value="E:\Tg\ThingsGateway\ThingsGateway\src\Plugins\ThingsGateway.Modbus\bin\Debug\net6.0\ThingsGateway.Modbus.dll" />
+    <Path Id="4ccd8c74-1cdb-4691-b068-1a7a85de9886.OutputPathUri" Value="file:///E:/Tg/ThingsGateway/ThingsGateway/src/Plugins/ThingsGateway.Modbus/bin/Debug/net6.0/ThingsGateway.Modbus.dll" />
+    <Path Id="5da7bd8e-32d3-4ce0-aa79-719fcf8b76d5.OutputPath" Value="E:\Tg\ThingsGateway\ThingsGateway\src\Plugins\ThingsGateway.Foundation.Tests\bin\Debug\net6.0\ThingsGateway.Foundation.Tests.dll" />
+    <Path Id="5da7bd8e-32d3-4ce0-aa79-719fcf8b76d5.OutputPathUri" Value="file:///E:/Tg/ThingsGateway/ThingsGateway/src/Plugins/ThingsGateway.Foundation.Tests/bin/Debug/net6.0/ThingsGateway.Foundation.Tests.dll" />
+    <Path Id="5fea231a-5d22-428d-a0fa-814dbc3091c1.OutputPath" Value="E:\Tg\ThingsGateway\ThingsGateway\src\ThingsGateway.Web.Server\bin\Debug\net6.0\ThingsGateway.Web.Server.dll" />
+    <Path Id="5fea231a-5d22-428d-a0fa-814dbc3091c1.OutputPathUri" Value="file:///E:/Tg/ThingsGateway/ThingsGateway/src/ThingsGateway.Web.Server/bin/Debug/net6.0/ThingsGateway.Web.Server.dll" />
+    <Path Id="635b0fa6-cb7f-495a-a002-983979477916.OutputPath" Value="E:\Tg\ThingsGateway\ThingsGateway\src\Plugins\ThingsGateway.OPCUA\bin\Debug\net6.0\ThingsGateway.OPCUA.dll" />
+    <Path Id="635b0fa6-cb7f-495a-a002-983979477916.OutputPathUri" Value="file:///E:/Tg/ThingsGateway/ThingsGateway/src/Plugins/ThingsGateway.OPCUA/bin/Debug/net6.0/ThingsGateway.OPCUA.dll" />
+    <Path Id="65cf6486-e577-4802-8df5-4c43755fcb00.OutputPath" Value="E:\Tg\ThingsGateway\ThingsGateway\src\Plugins\ThingsGateway.Foundation.Adapter.Modbus\bin\Debug\net4.6.2\ThingsGateway.Foundation.Adapter.Modbus.dll" />
+    <Path Id="65cf6486-e577-4802-8df5-4c43755fcb00.OutputPathUri" Value="file:///E:/Tg/ThingsGateway/ThingsGateway/src/Plugins/ThingsGateway.Foundation.Adapter.Modbus/bin/Debug/net4.6.2/ThingsGateway.Foundation.Adapter.Modbus.dll" />
+    <Path Id="7d38a1c3-56fa-41ce-b541-9ff1b5a632f7.OutputPath" Value="E:\Tg\ThingsGateway\ThingsGateway\src\Plugins\ThingsGateway.RabbitMQ\bin\Debug\net6.0\ThingsGateway.RabbitMQ.dll" />
+    <Path Id="7d38a1c3-56fa-41ce-b541-9ff1b5a632f7.OutputPathUri" Value="file:///E:/Tg/ThingsGateway/ThingsGateway/src/Plugins/ThingsGateway.RabbitMQ/bin/Debug/net6.0/ThingsGateway.RabbitMQ.dll" />
+    <Path Id="a0c38de3-56fd-4ecc-9599-372a4716a4c8.OutputPath" Value="E:\Tg\ThingsGateway\ThingsGateway\src\Plugins\ThingsGateway.Foundation.Adapter.Siemens\bin\Debug\net4.6.2\ThingsGateway.Foundation.Adapter.Siemens.dll" />
+    <Path Id="a0c38de3-56fd-4ecc-9599-372a4716a4c8.OutputPathUri" Value="file:///E:/Tg/ThingsGateway/ThingsGateway/src/Plugins/ThingsGateway.Foundation.Adapter.Siemens/bin/Debug/net4.6.2/ThingsGateway.Foundation.Adapter.Siemens.dll" />
+    <Path Id="c6421545-5df4-4b24-985b-b04481239ab7.OutputPath" Value="E:\Tg\ThingsGateway\ThingsGateway\src\ThingsGateway.Web.Foundation\bin\Debug\net6.0\ThingsGateway.Web.Foundation.dll" />
+    <Path Id="c6421545-5df4-4b24-985b-b04481239ab7.OutputPathUri" Value="file:///E:/Tg/ThingsGateway/ThingsGateway/src/ThingsGateway.Web.Foundation/bin/Debug/net6.0/ThingsGateway.Web.Foundation.dll" />
+    <Path Id="d00b0c9b-293c-4cb7-baf4-92772c87e907.OutputPath" Value="E:\Tg\ThingsGateway\ThingsGateway\src\Plugins\ThingsGateway.Mqtt\bin\Debug\net6.0\ThingsGateway.Mqtt.dll" />
+    <Path Id="d00b0c9b-293c-4cb7-baf4-92772c87e907.OutputPathUri" Value="file:///E:/Tg/ThingsGateway/ThingsGateway/src/Plugins/ThingsGateway.Mqtt/bin/Debug/net6.0/ThingsGateway.Mqtt.dll" />
+    <Path Id="d2cd34bf-27aa-4c83-b14b-2a25fdf9ec47.OutputPath" Value="E:\Tg\ThingsGateway\ThingsGateway\src\ThingsGateway.Web.Page\bin\Debug\net6.0\ThingsGateway.Web.Page.dll" />
+    <Path Id="d2cd34bf-27aa-4c83-b14b-2a25fdf9ec47.OutputPathUri" Value="file:///E:/Tg/ThingsGateway/ThingsGateway/src/ThingsGateway.Web.Page/bin/Debug/net6.0/ThingsGateway.Web.Page.dll" />
+    <Path Id="dae920a3-d399-4142-8d59-18884c0a8cc4.OutputPath" Value="E:\Tg\ThingsGateway\ThingsGateway\src\Plugins\ThingsGateway.Foundation.Adapter.OPCDA\bin\Debug\net4.6.2\ThingsGateway.Foundation.Adapter.OPCDA.dll" />
+    <Path Id="dae920a3-d399-4142-8d59-18884c0a8cc4.OutputPathUri" Value="file:///E:/Tg/ThingsGateway/ThingsGateway/src/Plugins/ThingsGateway.Foundation.Adapter.OPCDA/bin/Debug/net4.6.2/ThingsGateway.Foundation.Adapter.OPCDA.dll" />
+    <Path Id="e1eb9df9-b801-4b5c-8fbc-ae23aa2516ce.OutputPath" Value="E:\Tg\ThingsGateway\ThingsGateway\src\Plugins\ThingsGateway.OPCDA\bin\Debug\net6.0\ThingsGateway.OPCDA.dll" />
+    <Path Id="e1eb9df9-b801-4b5c-8fbc-ae23aa2516ce.OutputPathUri" Value="file:///E:/Tg/ThingsGateway/ThingsGateway/src/Plugins/ThingsGateway.OPCDA/bin/Debug/net6.0/ThingsGateway.OPCDA.dll" />
+    <Path Id="e2f6f9a3-c32e-49ae-a39b-0071a7aaadd2.OutputPath" Value="E:\Tg\ThingsGateway\ThingsGateway\src\ThingsGateway.Web.Rcl\bin\Debug\net6.0\ThingsGateway.Web.Rcl.dll" />
+    <Path Id="e2f6f9a3-c32e-49ae-a39b-0071a7aaadd2.OutputPathUri" Value="file:///E:/Tg/ThingsGateway/ThingsGateway/src/ThingsGateway.Web.Rcl/bin/Debug/net6.0/ThingsGateway.Web.Rcl.dll" />
+    <Path Id="e93bf23c-3454-4601-950a-87283abf1197.OutputPath" Value="E:\Tg\ThingsGateway\ThingsGateway\src\ThingsGateway.Web.Rcl.Core\bin\Debug\net6.0\ThingsGateway.Web.Rcl.Core.dll" />
+    <Path Id="e93bf23c-3454-4601-950a-87283abf1197.OutputPathUri" Value="file:///E:/Tg/ThingsGateway/ThingsGateway/src/ThingsGateway.Web.Rcl.Core/bin/Debug/net6.0/ThingsGateway.Web.Rcl.Core.dll" />
+  </Paths>
+</DirectedGraph>

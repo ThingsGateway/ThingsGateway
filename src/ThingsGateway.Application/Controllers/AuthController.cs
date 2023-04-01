@@ -2,7 +2,7 @@
 
 using Microsoft.AspNetCore.Mvc;
 
-namespace ThingsGateway.Web.Entry.Controllers
+namespace ThingsGateway.Application
 {
     /// <summary>
     /// B端登录控制器

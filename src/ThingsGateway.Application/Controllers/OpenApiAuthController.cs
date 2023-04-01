@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 using ThingsGateway.Application.Services.Auth;
 
-namespace ThingsGateway.Web.Entry.Controllers
+namespace ThingsGateway.Application
 {
     /// <summary>
     /// OpenApi登录控制器
