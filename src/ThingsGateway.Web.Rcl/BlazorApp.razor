@@ -29,18 +29,18 @@
     </Router>
 </CascadingAuthenticationState>
 @code {
-    [Inject]
-    ThingsGateway.Web.Foundation.IDriverPluginService DriverPluginService { get; set; }
+    //[Inject]
+    //ThingsGateway.Web.Foundation.IDriverPluginService DriverPluginService { get; set; }
     IEnumerable<Assembly> GetAssemblys()
     {
-        var plugins = DriverPluginService.GetCacheListAsync();
+        //var plugins = DriverPluginService.GetCacheListAsync();
         var controllerTypes = App.EffectiveTypes.
     Where(u => !u.IsInterface && !u.IsAbstract && u.IsClass
     && u.IsDefined(typeof(Microsoft.AspNetCore.Components.RouteAttribute), false))
     .Where(it => it.Assembly != typeof(BlazorApp).Assembly)
-    .Where(a => !(plugins.Select(b=>b.AssembleName).Contains(a.ToString())))
+    //.Where(a => !(plugins.Select(b=>b.AssembleName).Contains(a.ToString())))
     ;
-        var assemblys = controllerTypes?.Select(it => it.Assembly)?.Distinct();
+        var assemblys = controllerTypes?.Select(it => it.Assembly)?.Distinct().ToList();
         return assemblys;
     }
 

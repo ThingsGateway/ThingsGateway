@@ -1,11 +1,10 @@
-﻿using Furion.DependencyInjection;
-using Furion.DynamicApiController;
+﻿using Furion.DynamicApiController;
 using Furion.SpecificationDocument;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 
-namespace ThingsGateway.Web.Entry.Controllers
+namespace ThingsGateway.Application
 {
     /// <summary>
     /// 系统登录授权服务

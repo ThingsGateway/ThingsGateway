@@ -1,8 +1,6 @@
 ﻿using Furion.Reflection;
 using Furion.Reflection.Extensions;
 
-using System.Text;
-
 namespace ThingsGateway.Application
 {
     /// <summary>

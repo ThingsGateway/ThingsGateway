@@ -1,3 +1,4 @@
+﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33213.308
@@ -48,6 +49,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Git", "Git", "{3B3C256C-A07
 		..\.gitignore = ..\.gitignore
 		..\LICENSE.txt = ..\LICENSE.txt
 		..\README.md = ..\README.md
+		关系图.dgml = 关系图.dgml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OPCDA", "OPCDA", "{FCEDB40F-6FA3-4DD0-927B-B023EDBD01C1}"
