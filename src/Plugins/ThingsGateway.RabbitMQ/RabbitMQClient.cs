@@ -3,8 +3,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-using NewLife.Serialization;
-
 using RabbitMQ.Client;
 
 using System.Collections.Concurrent;
@@ -13,8 +11,6 @@ using System.Text;
 using ThingsGateway.Foundation;
 using ThingsGateway.Foundation.Extension;
 using ThingsGateway.Web.Foundation;
-
-using TouchSocket.Core;
 
 namespace ThingsGateway.RabbitMQ
 {

@@ -1,6 +1,6 @@
 ﻿namespace ThingsGateway.Application
 {
-    
+
     /// <inheritdoc cref="IUserCenterService"/>
     [Injection(Proxy = typeof(OperDispatchProxy))]
     public class UserCenterService : DbRepository<SysUser>, IUserCenterService

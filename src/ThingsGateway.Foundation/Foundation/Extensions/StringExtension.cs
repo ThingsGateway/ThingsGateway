@@ -2,7 +2,7 @@
 
 namespace ThingsGateway.Foundation.Extension
 {
-        /// <inheritdoc/>
+    /// <inheritdoc/>
     public static class StringExtension
     {
         /// <summary>

@@ -9,9 +9,6 @@ using ThingsGateway.Foundation.Adapter.Modbus;
 using ThingsGateway.Foundation.Extension;
 using ThingsGateway.Web.Foundation;
 
-using TouchSocket.Core;
-using TouchSocket.Sockets;
-
 namespace ThingsGateway.Modbus
 {
     public class ModbusServer : UpLoadBase

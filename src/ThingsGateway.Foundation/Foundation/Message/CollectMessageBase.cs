@@ -5,18 +5,18 @@
     {
         private byte[] sendBytes = new byte[] { };
 
-    /// <inheritdoc/>
+        /// <inheritdoc/>
         public int BodyLength { get; set; }
 
-    /// <inheritdoc/>
+        /// <inheritdoc/>
         public byte[] HeadBytes { get; set; }
 
-    /// <inheritdoc/>
+        /// <inheritdoc/>
         public virtual int HeadBytesLength { get; }
-    /// <inheritdoc/>
+        /// <inheritdoc/>
         public byte[] ReceivedBytes { get; set; }
 
-    /// <inheritdoc/>
+        /// <inheritdoc/>
         public byte[] SendBytes
         {
             get
@@ -30,7 +30,7 @@
             }
         }
 
-    /// <inheritdoc/>
+        /// <inheritdoc/>
         public abstract bool CheckHeadBytes(byte[] head);
 
         /// <summary>

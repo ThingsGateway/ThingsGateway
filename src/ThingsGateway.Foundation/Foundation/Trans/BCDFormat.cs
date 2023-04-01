@@ -5,15 +5,15 @@
     /// </summary>
     public enum BcdFormat
     {
-    /// <inheritdoc/>
+        /// <inheritdoc/>
         C8421 = 1,
-    /// <inheritdoc/>
+        /// <inheritdoc/>
         C5421 = 2,
-    /// <inheritdoc/>
+        /// <inheritdoc/>
         C2421 = 3,
-    /// <inheritdoc/>
+        /// <inheritdoc/>
         C3 = 4,
-    /// <inheritdoc/>
+        /// <inheritdoc/>
         Gray = 5,
     }
 }

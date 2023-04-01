@@ -1407,7 +1407,7 @@ public class OPCUAClient : DisposableObject
         EndpointConfiguration endpointConfiguration = EndpointConfiguration.Create(m_configuration);
 
         ConfiguredEndpoint endpoint = new ConfiguredEndpoint(null, endpointDescription, endpointConfiguration);
-      var d=  await m_application.CheckApplicationInstanceCertificate(true, 0);
+        var d = await m_application.CheckApplicationInstanceCertificate(true, 0);
         //var x509 = await m_configuration.SecurityConfiguration.ApplicationCertificate.Find(true);
         m_session = await Opc.Ua.Client.Session.Create(
      m_configuration,
