@@ -10,6 +10,7 @@
         private readonly IRoleService _roleService;
         private readonly SysCacheService _sysCacheService;
 
+        /// <inheritdoc cref="ISysUserService"/>
         public SysUserService(SysCacheService sysCacheService,
                            IRelationService relationService,
                            IResourceService resourceService,
@@ -380,7 +381,6 @@
         /// <summary>
         /// 检查是否为自己
         /// </summary>
-        /// <param name="id"></param>
         private void CheckSelf(long id, string operate)
         {
             if (id == UserManager.UserId)//如果是自己

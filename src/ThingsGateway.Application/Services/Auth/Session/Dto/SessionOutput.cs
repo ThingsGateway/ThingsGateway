@@ -27,9 +27,6 @@
         [Description("最新登录时间")]
         public DateTime? LatestLoginTime { get; set; }
 
-        [Description("姓名")]
-        public virtual string Name { get; set; }
-
         /// <summary>
         /// 在线状态
         /// </summary>

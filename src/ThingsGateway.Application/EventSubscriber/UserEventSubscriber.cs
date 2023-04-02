@@ -6,7 +6,10 @@
     public class UserEventSubscriber : IEventSubscriber, ISingleton
     {
         private readonly IServiceProvider _services;
-
+        /// <summary>
+        /// <inheritdoc cref="UserEventSubscriber"/>
+        /// </summary>
+        /// <param name="services"></param>
         public UserEventSubscriber(IServiceProvider services)
         {
             this._services = services;

@@ -9,6 +9,7 @@
         private readonly IRelationService _relationService;
         private readonly IResourceService _resourceService;
         private readonly IRoleService _roleService;
+        /// <inheritdoc cref="IMenuService"/>
         public MenuService(IResourceService resourceService, IRelationService relationService, IRoleService roleService)
         {
             _roleService = roleService;

@@ -1,7 +1,14 @@
 namespace ThingsGateway.Web.Entry
 {
+    /// <summary>
+    /// Æô¶¯
+    /// </summary>
     public class Program
     {
+        /// <summary>
+        /// Ö÷
+        /// </summary>
+        /// <param name="args"></param>
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(new WebApplicationOptions

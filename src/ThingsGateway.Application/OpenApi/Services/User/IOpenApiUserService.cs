@@ -66,7 +66,11 @@
         /// <param name="account">用户名</param>
         /// <returns>用户信息</returns>
         Task<OpenApiUser> GetUserByAccount(string account);
-
+        /// <summary>
+        /// 根据ID获取用户信息
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
         Task<OpenApiUser> GetUsertById(long Id);
 
         /// <summary>

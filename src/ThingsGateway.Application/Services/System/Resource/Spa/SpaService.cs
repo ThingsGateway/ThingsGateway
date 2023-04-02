@@ -8,6 +8,7 @@
     {
         private readonly IResourceService _resourceService;
 
+        /// <inheritdoc cref="ISpaService"/>
         public SpaService(IResourceService resourceService)
         {
             this._resourceService = resourceService;

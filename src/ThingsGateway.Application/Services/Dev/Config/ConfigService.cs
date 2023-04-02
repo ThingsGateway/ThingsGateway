@@ -6,6 +6,7 @@
     {
         private readonly SysCacheService _sysCacheService;
 
+        /// <inheritdoc cref="IConfigService"/>
         public ConfigService(SysCacheService sysCacheService)
         {
             _sysCacheService = sysCacheService;

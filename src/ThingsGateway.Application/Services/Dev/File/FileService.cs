@@ -11,6 +11,7 @@ namespace ThingsGateway.Application
     {
         private readonly IConfigService _configService;
 
+        /// <inheritdoc cref="IFileService"/>
         public FileService(IConfigService configService)
         {
             this._configService = configService;

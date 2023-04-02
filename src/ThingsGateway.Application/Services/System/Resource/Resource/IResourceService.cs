@@ -10,6 +10,13 @@
         /// </summary>
         /// <returns>所有的菜单和模块以及单页面列表</returns>
         Task<List<SysResource>> GetaMenuAndSpaList();
+        /// <summary>
+        /// 获取子资源
+        /// </summary>
+        /// <param name="sysResources"></param>
+        /// <param name="resId"></param>
+        /// <param name="isContainOneself"></param>
+        /// <returns></returns>
         List<SysResource> GetChildListById(List<SysResource> sysResources, long resId, bool isContainOneself = true);
 
         /// <summary>
@@ -40,7 +47,10 @@
         /// <param name="category">分类名称</param>
         /// <returns></returns>
         Task RefreshCache(MenuCategoryEnum category);
-
+        /// <summary>
+        /// 资源列表
+        /// </summary>
+        /// <returns></returns>
         Task<List<RoleGrantResourceMenu>> ResourceTreeSelector();
     }
 }

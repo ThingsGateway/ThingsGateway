@@ -17,7 +17,10 @@ namespace ThingsGateway.Application
     public class OpenApiAuthController : IDynamicApiController
     {
         private readonly OpenApiAuthService _authService;
-
+        /// <summary>
+        /// <inheritdoc cref="OpenApiAuthController"/>
+        /// </summary>
+        /// <param name="authService"></param>
         public OpenApiAuthController(OpenApiAuthService authService)
         {
             _authService = authService;

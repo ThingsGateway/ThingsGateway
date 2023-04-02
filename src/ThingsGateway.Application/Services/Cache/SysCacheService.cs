@@ -3,13 +3,16 @@ using NewLife.Caching;
 namespace ThingsGateway.Application
 {
     /// <summary>
-    /// 系统缓存服务,这里只用于代替Redis,存取都会进行Mapper拷贝操作
+    /// 系统缓存服务,代替Redis,存取都会进行Mapper拷贝操作
     /// </summary>
     public class SysCacheService : ISingleton
     {
         private readonly ICache _cache;
         private string _symbol = "tgcache_tgcache";
-
+        /// <summary>
+        /// <inheritdoc cref="SysCacheService"/>
+        /// </summary>
+        /// <param name="cache"></param>
         public SysCacheService(ICache cache)
         {
             _cache = cache;
@@ -18,8 +21,6 @@ namespace ThingsGateway.Application
         /// <summary>
         /// 检查缓存是否存在
         /// </summary>
-        /// <param name="key">键</param>
-        /// <returns></returns>
         public bool ExistKey(string prefixKey, string key)
         {
             var str = prefixKey + _symbol + key;
@@ -29,15 +30,15 @@ namespace ThingsGateway.Application
         /// <summary>
         /// 获取缓存
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="key"></param>
-        /// <returns></returns>
         public T Get<T>(string prefixKey, string key)
         {
             var str = prefixKey + _symbol + key;
             return _cache.Get<T>(str).Adapt<T>();
         }
-
+        /// <summary>
+        /// 获取验证ID
+        /// </summary>
+        /// <returns></returns>
         public List<SysVerificat> GetAllOpenApiVerificatId()
         {
             var ids = GetKeyByPrefixKey(CacheConst.Cache_OpenApiUserId).Select(it => it.ToLong()).ToList();
@@ -64,7 +65,10 @@ namespace ThingsGateway.Application
             }
             return verificats;
         }
-
+        /// <summary>
+        /// 获取验证ID
+        /// </summary>
+        /// <returns></returns>
         public List<SysVerificat> GetAllVerificatId()
         {
             var ids = GetKeyByPrefixKey(CacheConst.Cache_UserId).Select(it => it.ToLong()).ToList();
@@ -124,7 +128,11 @@ namespace ThingsGateway.Application
         ).ToList();
             return delKeys;
         }
-
+        /// <summary>
+        /// 获取验证ID
+        /// </summary>
+        /// <param name="userid"></param>
+        /// <returns></returns>
         public List<VerificatInfo> GetOpenApiVerificatId(long userid)
         {
             var data = Get<List<VerificatInfo>>(CacheConst.Cache_OpenApiUserVerificat, userid.ToString());
@@ -151,15 +159,17 @@ namespace ThingsGateway.Application
         /// <summary>
         /// 获取缓存
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="key"></param>
-        /// <returns></returns>
         public T GetOrAdd<T>(string prefixKey, string key, Func<string, T> func, int expire = -1)
         {
             var str = prefixKey + _symbol + key;
             return _cache.GetOrAdd<T>(str, func, expire);
         }
 
+        /// <summary>
+        /// 获取验证ID
+        /// </summary>
+        /// <param name="userid"></param>
+        /// <returns></returns>
         public List<VerificatInfo> GetVerificatId(long userid)
         {
             var data = Get<List<VerificatInfo>>(CacheConst.Cache_UserVerificat, userid.ToString());
@@ -186,8 +196,6 @@ namespace ThingsGateway.Application
         /// <summary>
         /// 删除缓存
         /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
         public void Remove(string prefixKey, string key)
         {
             var str = prefixKey + _symbol + key;
@@ -209,9 +217,6 @@ namespace ThingsGateway.Application
         /// <summary>
         /// 增加缓存
         /// </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
         public void Set(string prefixKey, string key, object value)
         {
             var str = prefixKey + _symbol + key;
@@ -221,16 +226,16 @@ namespace ThingsGateway.Application
         /// <summary>
         /// 增加缓存并设置过期时间
         /// </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        /// <param name="expire"></param>
-        /// <returns></returns>
         public void Set(string prefixKey, string key, object value, TimeSpan expire)
         {
             var str = prefixKey + _symbol + key;
             _cache.Set(str, value.Adapt<object>(), expire);
         }
-
+        /// <summary>
+        /// 设置验证ID
+        /// </summary>
+        /// <param name="userid"></param>
+        /// <param name="values"></param>
         public void SetOpenApiVerificatId(long userid, List<VerificatInfo> values)
         {
             SysVerificat sysverificat = new();
@@ -241,7 +246,11 @@ namespace ThingsGateway.Application
                 Set(CacheConst.Cache_OpenApiUserVerificat, userid.ToString(), values);
             }
         }
-
+        /// <summary>
+        /// 设置验证ID
+        /// </summary>
+        /// <param name="userid"></param>
+        /// <param name="values"></param>
         public void SetVerificatId(long userid, List<VerificatInfo> values)
         {
             SysVerificat sysverificat = new();

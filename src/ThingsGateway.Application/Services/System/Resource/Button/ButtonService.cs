@@ -10,6 +10,7 @@
         private readonly IRelationService _relationService;
         private readonly IResourceService _resourceService;
 
+        /// <inheritdoc cref="IButtonService"/>
         public ButtonService(IResourceService resourceService, IRelationService relationService, IEventPublisher eventPublisher)
         {
             this._resourceService = resourceService;

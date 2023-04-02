@@ -5,7 +5,13 @@
     /// </summary>
     public class BaseLoginOutPut
     {
+        /// <summary>
+        /// 账号
+        /// </summary>
         public string Account { get; set; }
+        /// <summary>
+        /// 验证ID
+        /// </summary>
         public long VerificatId { get; set; }
     }
 

@@ -134,6 +134,7 @@ namespace ThingsGateway.RabbitMQ
                 {
                     try
                     {
+
                         // 创建连接
                         if (_connection == null)
                             _connection = _connectionFactory.CreateConnection();
@@ -146,6 +147,8 @@ namespace ThingsGateway.RabbitMQ
                             _model?.QueueDeclare(VariableQueueName, true, false, false);
                             _model?.QueueDeclare(DeviceQueueName, true, false, false);
                         }
+
+
                     }
                     catch (Exception ex)
                     {
@@ -166,11 +169,18 @@ namespace ThingsGateway.RabbitMQ
                         {
                             try
                             {
-                                var data = Encoding.UTF8.GetBytes(variables.GetSciptListValue(BigTextScriptVariableModel));
-                                // 设置消息持久化
-                                IBasicProperties properties = _model?.CreateBasicProperties();
-                                properties.Persistent = true;
-                                _model?.BasicPublish(ExchangeName, VariableQueueName, properties, data);
+                                if (!cancellationToken.IsCancellationRequested)
+                                {
+                                    var data = Encoding.UTF8.GetBytes(variables.GetSciptListValue(BigTextScriptVariableModel));
+                                    // 设置消息持久化
+                                    IBasicProperties properties = _model?.CreateBasicProperties();
+                                    properties.Persistent = true;
+                                    _model?.BasicPublish(ExchangeName, VariableQueueName, properties, data);
+                                }
+                                else
+                                {
+                                    break;
+                                }
                             }
                             catch (Exception ex)
                             {
@@ -185,11 +195,19 @@ namespace ThingsGateway.RabbitMQ
                         {
                             try
                             {
-                                var data = Encoding.UTF8.GetBytes(variable.GetSciptListValue(BigTextScriptVariableModel));
-                                // 设置消息持久化
-                                IBasicProperties properties = _model?.CreateBasicProperties();
-                                properties.Persistent = true;
-                                _model?.BasicPublish(ExchangeName, VariableQueueName, properties, data);
+                                if (!cancellationToken.IsCancellationRequested)
+                                {
+                                    var data = Encoding.UTF8.GetBytes(variable.GetSciptListValue(BigTextScriptVariableModel));
+                                    // 设置消息持久化
+                                    IBasicProperties properties = _model?.CreateBasicProperties();
+                                    properties.Persistent = true;
+                                    _model?.BasicPublish(ExchangeName, VariableQueueName, properties, data);
+                                }
+                                else
+                                {
+                                    break;
+                                }
+
                             }
                             catch (Exception ex)
                             {

@@ -6,6 +6,7 @@
         private readonly IResourceService _resourceService;
         private readonly SysCacheService _sysCacheService;
 
+        /// <inheritdoc cref="IRelationService"/>
         public RelationService(SysCacheService sysCacheService, IResourceService resourceService)
         {
             _sysCacheService = sysCacheService;

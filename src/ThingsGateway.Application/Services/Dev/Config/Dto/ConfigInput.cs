@@ -42,6 +42,9 @@
     /// </summary>
     public class ConfigPageInput : BasePageInput
     {
+        /// <summary>
+        /// 分类
+        /// </summary>
         [Description("分类")]
         public string Category { get; set; }
     }
@@ -51,6 +54,9 @@
     /// </summary>
     public class ConfigDeleteInput : BaseIdInput
     {
+        /// <summary>
+        /// 分类
+        /// </summary>
         [Required(ErrorMessage = "Category不能为空")]
         public string Category { get; set; } = CateGoryConst.Config_CUSTOM_DEFINE;
     }

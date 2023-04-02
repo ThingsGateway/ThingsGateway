@@ -219,11 +219,18 @@ namespace ThingsGateway.Mqtt
                     {
                         try
                         {
-                            var message = new MqttApplicationMessageBuilder()
+                            if (!cancellationToken.IsCancellationRequested)
+                            {
+                                var message = new MqttApplicationMessageBuilder()
 .WithTopic($"{VariableTopic}")
 .WithPayload(item.GetSciptListValue(BigTextScriptVariableModel)).Build();
-                            await _mqttServer.InjectApplicationMessage(
-                                    new InjectedMqttApplicationMessage(message));
+                                await _mqttServer.InjectApplicationMessage(
+                                        new InjectedMqttApplicationMessage(message));
+                            }
+                            else
+                            {
+                                break;
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -251,11 +258,18 @@ namespace ThingsGateway.Mqtt
                     {
                         try
                         {
-                            var message = new MqttApplicationMessageBuilder()
+                            if (!cancellationToken.IsCancellationRequested)
+                            {
+                                var message = new MqttApplicationMessageBuilder()
                             .WithTopic($"{DeviceTopic}")
                             .WithPayload(item.GetSciptListValue(BigTextScriptDeviceModel)).Build();
-                            await _mqttServer.InjectApplicationMessage(
-                                    new InjectedMqttApplicationMessage(message));
+                                await _mqttServer.InjectApplicationMessage(
+                                        new InjectedMqttApplicationMessage(message));
+                            }
+                            else
+                            {
+                                break;
+                            }
                         }
                         catch (Exception ex)
                         {

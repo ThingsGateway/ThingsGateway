@@ -1,5 +1,8 @@
 ﻿namespace ThingsGateway.Application
 {
+    /// <summary>
+    /// <inheritdoc cref="IOpenApiSessionService"/>
+    /// </summary>
     [Injection(Proxy = typeof(OperDispatchProxy))]
     public class OpenApiSessionService : DbRepository<OpenApiUser>, IOpenApiSessionService
     {
@@ -11,6 +14,7 @@
 
         #region Public Constructors
 
+        /// <inheritdoc cref="IOpenApiSessionService"/>
         public OpenApiSessionService(SysCacheService sysCacheService)
         {
             this._sysCacheService = sysCacheService;
@@ -71,7 +75,6 @@
         /// 获取verificat剩余时间信息
         /// </summary>
         /// <param name="verificatInfos">verificat列表</param>
-        /// <param name="loginClientType">登录类型</param>
         public void GetVerificatInfos(ref List<VerificatInfo> verificatInfos)
         {
             verificatInfos = verificatInfos.ToList();

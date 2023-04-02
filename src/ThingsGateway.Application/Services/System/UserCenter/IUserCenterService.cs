@@ -31,6 +31,11 @@
         /// <param name="input">工作台字符串</param>
         /// <returns></returns>
         Task UpdateWorkbench(List<long> input);
+        /// <summary>
+        /// 更改密码
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
         Task EditPassword(PasswordInfoInput input);
     }
 }

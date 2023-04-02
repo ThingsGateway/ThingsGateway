@@ -1,5 +1,8 @@
 ﻿namespace ThingsGateway.Application
 {
+    /// <summary>
+    /// Api授权资源树
+    /// </summary>
     public class OpenApiPermissionTreeSelector : ITree<OpenApiPermissionTreeSelector>
     {
         /// <summary>
@@ -13,11 +16,17 @@
         /// </summary>
         [Description("Api路径")]
         public string ApiRoute { get; set; }
-
+        /// <summary>
+        /// 子节点
+        /// </summary>
         public List<OpenApiPermissionTreeSelector> Children { get; set; } = new();
-
+        /// <summary>
+        /// ID
+        /// </summary>
         public long Id { get; set; }
-
+        /// <summary>
+        /// 父ID
+        /// </summary>
         public long ParentId { get; set; }
 
         /// <summary>

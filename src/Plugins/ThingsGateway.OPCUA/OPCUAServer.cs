@@ -62,7 +62,7 @@ public partial class OPCUAServer : UpLoadBase
     }
 
     /// <inheritdoc/>
-    public override async Task ExecuteAsync(CancellationToken stoppingToken)
+    public override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
         try
         {
@@ -74,7 +74,14 @@ public partial class OPCUAServer : UpLoadBase
                 {
                     try
                     {
-                        m_server.NodeManager.UpVariable(item);
+                        if (!cancellationToken.IsCancellationRequested)
+                        {
+                            m_server.NodeManager.UpVariable(item);
+                        }
+                        else
+                        {
+                            break;
+                        }
                     }
                     catch (Exception ex)
                     {

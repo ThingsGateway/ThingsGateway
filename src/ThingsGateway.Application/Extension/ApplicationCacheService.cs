@@ -9,7 +9,9 @@ namespace ThingsGateway.Application
     {
         private readonly ICache _cache;
         private string _symbol = "TBCache_TBCache";
-
+        /// <summary>
+        /// <inheritdoc cref="ApplicationCacheService"/>
+        /// </summary>
         public ApplicationCacheService()
         {
             _cache = new MemoryCache();
@@ -18,8 +20,6 @@ namespace ThingsGateway.Application
         /// <summary>
         /// 检查缓存是否存在
         /// </summary>
-        /// <param name="key">键</param>
-        /// <returns></returns>
         public bool ExistKey(string prefixKey, string key)
         {
             var str = prefixKey + _symbol + key;
@@ -29,9 +29,6 @@ namespace ThingsGateway.Application
         /// <summary>
         /// 获取缓存
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="key"></param>
-        /// <returns></returns>
         public T Get<T>(string prefixKey, string key)
         {
             var str = prefixKey + _symbol + key;
@@ -41,8 +38,6 @@ namespace ThingsGateway.Application
         /// <summary>
         /// 根据键名前缀获取缓存
         /// </summary>
-        /// <param name="prefixKey">键名前缀</param>
-        /// <returns></returns>
         public IDictionary<string, T> GetByPrefixKey<T>(string prefixKey)
         {
             var delKeys = _cache.Keys.Where(u => u.Split(_symbol).FirstOrDefault() == prefixKey).ToArray();
@@ -53,8 +48,6 @@ namespace ThingsGateway.Application
         /// <summary>
         /// 根据键名前缀获取全部中间key
         /// </summary>
-        /// <param name="prefixKey">键名前缀</param>
-        /// <returns></returns>
         public List<long> GetKeyByPrefixKey(string prefixKey)
         {
             var delKeys = _cache.Keys.SelectMany(u =>
@@ -74,9 +67,6 @@ namespace ThingsGateway.Application
         /// <summary>
         /// 获取缓存
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="key"></param>
-        /// <returns></returns>
         public T GetOrAdd<T>(string prefixKey, string key, Func<string, T> func, int expire = -1)
         {
             var str = prefixKey + _symbol + key;
@@ -86,8 +76,6 @@ namespace ThingsGateway.Application
         /// <summary>
         /// 删除缓存
         /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
         public void Remove(string prefixKey, string key)
         {
             var str = prefixKey + _symbol + key;
@@ -109,9 +97,6 @@ namespace ThingsGateway.Application
         /// <summary>
         /// 增加缓存
         /// </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
         public void Set(string prefixKey, string key, object value)
         {
             var str = prefixKey + _symbol + key;
@@ -121,10 +106,6 @@ namespace ThingsGateway.Application
         /// <summary>
         /// 增加缓存并设置过期时间
         /// </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        /// <param name="expire"></param>
-        /// <returns></returns>
         public void Set(string prefixKey, string key, object value, TimeSpan expire)
         {
             var str = prefixKey + _symbol + key;
