@@ -23,7 +23,9 @@
         [Required(ErrorMessage = "密码不能为空"), MinLength(3, ErrorMessage = "密码不能少于3个字符")]
         public string Password { get; set; }
     }
-
+    /// <summary>
+    /// 验证码输入
+    /// </summary>
     public class ValidCodeInput
     {
         /// <summary>

@@ -555,6 +555,9 @@
     {
         try
         {
+            _importComponent = null;
+            _importRef = null;
+            _importRender=null;
             var confirm = await PopupService.OpenConfirmDialog(T("重启"), T("确定重启?"));
             if (confirm)
             {
@@ -577,6 +580,9 @@
     {
         try
         {
+            _importComponent = null;
+            _importRef = null;
+            _importRender = null;
             var confirm = await PopupService.OpenConfirmDialog(T("重启"), T("确定重启?"));
             if (confirm)
             {

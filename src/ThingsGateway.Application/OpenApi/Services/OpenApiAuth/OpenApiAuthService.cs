@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication;
 
 namespace ThingsGateway.Application.Services.Auth
 {
+    /// <inheritdoc cref="IOpenApiAuthService"/>
     public class OpenApiAuthService : IOpenApiAuthService, ITransient
     {
         private readonly IConfigService _configService;
@@ -11,6 +12,7 @@ namespace ThingsGateway.Application.Services.Auth
         private readonly IOpenApiUserService _openApiUserService;
         private readonly SysCacheService _sysCacheService;
 
+        /// <inheritdoc cref="IOpenApiAuthService"/>
         public OpenApiAuthService(
                            IEventPublisher eventPublisher,
                            IOpenApiUserService openApiUserService,

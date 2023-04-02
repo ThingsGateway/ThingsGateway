@@ -13,7 +13,10 @@ namespace ThingsGateway.Application
     public class AuthController : IDynamicApiController
     {
         private readonly IAuthService _authService;
-
+        /// <summary>
+        /// <inheritdoc cref="AuthController"/>
+        /// </summary>
+        /// <param name="authService"></param>
         public AuthController(IAuthService authService)
         {
             _authService = authService;

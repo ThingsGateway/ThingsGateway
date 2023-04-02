@@ -1,7 +1,9 @@
 ﻿namespace ThingsGateway.Application
 {
 
-
+    /// <summary>
+    /// 角色按钮资源
+    /// </summary>
     public class RoleGrantResourceButton
     {
         /// <summary>

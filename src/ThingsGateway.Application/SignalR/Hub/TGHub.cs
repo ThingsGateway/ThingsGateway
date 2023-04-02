@@ -12,9 +12,12 @@ namespace ThingsGateway.Application
     [MapHub(HubConst.HubUrl)]
     public class TGHub : Hub<ITGHub>
     {
+        /// <summary>
+        /// 分隔符
+        /// </summary>
         public const string TG_TrackingCircuitHandlerid = nameof(TG_TrackingCircuitHandlerid);
         private readonly SysCacheService _sysCacheService;
-
+        /// <inheritdoc cref="ITGHub"/>
         public TGHub(SysCacheService sysCacheService)
         {
             this._sysCacheService = sysCacheService;

@@ -49,10 +49,6 @@ namespace ThingsGateway.Web.Rcl
                         item.Sortable = true;
                         break;
 
-                    case nameof(SessionOutput.Name):
-                        item.Sortable = true;
-                        break;
-
                     case BlazorConst.TB_Actions:
                         item.CellClass = "";
                         break;

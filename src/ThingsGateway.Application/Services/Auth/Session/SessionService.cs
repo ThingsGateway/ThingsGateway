@@ -9,6 +9,7 @@
         private readonly INoticeService _noticeService;
         private readonly SysCacheService _sysCacheService;
 
+        /// <inheritdoc cref="ISessionService"/>
         public SessionService(SysCacheService sysCacheService, INoticeService noticeService)
         {
             this._sysCacheService = sysCacheService;
@@ -99,8 +100,6 @@
         /// <summary>
         /// 获取verificat剩余时间信息
         /// </summary>
-        /// <param name="verificatInfos">verificat列表</param>
-        /// <param name="loginClientType">登录类型</param>
         public void GetVerificatInfos(ref List<VerificatInfo> verificatInfos)
         {
             verificatInfos = verificatInfos.ToList();

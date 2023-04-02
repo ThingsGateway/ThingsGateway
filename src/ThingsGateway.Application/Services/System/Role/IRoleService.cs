@@ -87,8 +87,6 @@
         /// <summary>
         /// 角色选择器
         /// </summary>
-        /// <param name="input"></param>
-        /// <returns></returns>
         Task<List<SysRole>> RoleSelector(string searchKey = null);
     }
 }

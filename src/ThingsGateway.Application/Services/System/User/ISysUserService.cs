@@ -72,7 +72,11 @@
         /// <param name="account">用户名</param>
         /// <returns>用户信息</returns>
         Task<SysUser> GetUserByAccount(string account);
-
+        /// <summary>
+        /// 根据ID获取用户信息
+        /// </summary>
+        /// <param name="Id">用户ID</param>
+        /// <returns>用户信息</returns>
         Task<SysUser> GetUsertById(long Id);
 
         /// <summary>
@@ -106,7 +110,6 @@
         /// <summary>
         /// 用户选择器
         /// </summary>
-        /// <param name="input">查询参数</param>
         /// <returns></returns>
         Task<List<UserSelectorOutPut>> UserSelector(string searchKey);
     }

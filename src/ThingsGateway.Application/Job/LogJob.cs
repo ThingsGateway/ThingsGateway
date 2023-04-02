@@ -1,7 +1,5 @@
 ﻿using Furion.Schedule;
 
-using System.Threading;
-
 namespace ThingsGateway.Web.Core;
 
 /// <summary>
@@ -12,12 +10,15 @@ namespace ThingsGateway.Web.Core;
 public class LogJob : IJob
 {
     private readonly IServiceProvider _serviceProvider;
-
+    /// <summary>
+    /// <inheritdoc cref="LogJob"/>
+    /// </summary>
+    /// <param name="serviceProvider"></param>
     public LogJob(IServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider;
     }
-
+    /// <inheritdoc/>
     public async Task ExecuteAsync(JobExecutingContext context, CancellationToken stoppingToken)
     {
         var db = DbContext.Db.CopyNew();

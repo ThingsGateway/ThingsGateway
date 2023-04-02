@@ -9,6 +9,7 @@
         private readonly IResourceService _resourceService;
         private readonly SysCacheService _sysCacheService;
 
+        /// <inheritdoc cref="IRoleService"/>
         public RoleService(
                            SysCacheService sysCacheService,
                            IRelationService relationService,
@@ -314,6 +315,7 @@
             await GetListAsync();//重新缓存
         }
 
+        /// <inheritdoc />
         public async Task RefreshResource(long? menuId = null)
         {
             var data = await GetListAsync();

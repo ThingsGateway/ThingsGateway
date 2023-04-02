@@ -4,6 +4,9 @@ using System.Globalization;
 
 namespace ThingsGateway.Application
 {
+    /// <summary>
+    /// 扩展方法
+    /// </summary>
     public static class ApplicationExtension
     {
         private static ApplicationCacheService ApplicationCacheService;
@@ -13,6 +16,10 @@ namespace ThingsGateway.Application
             ApplicationCacheService = App.GetService<ApplicationCacheService>();
         }
 
+        /// <summary>
+        /// 获取全部Api授权树
+        /// </summary>
+        /// <returns></returns>
         public static List<OpenApiPermissionTreeSelector> OpenApiPermissionTreeSelector()
         {
             var cacheKey = $"{nameof(OpenApiPermissionTreeSelector)}-{CultureInfo.CurrentUICulture.Name}";

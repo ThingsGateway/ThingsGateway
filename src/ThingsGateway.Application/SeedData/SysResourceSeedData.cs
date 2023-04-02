@@ -5,6 +5,7 @@
     /// </summary>
     public class SysResourceSeedData : ISqlSugarEntitySeedData<SysResource>
     {
+        /// <inheritdoc/>
         public IEnumerable<SysResource> SeedData()
         {
             return SeedDataUtil.GetSeedData<SysResource>("sys_resource.json");

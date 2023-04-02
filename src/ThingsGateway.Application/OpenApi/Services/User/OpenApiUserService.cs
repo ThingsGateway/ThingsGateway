@@ -1,11 +1,15 @@
 ﻿namespace ThingsGateway.Application
 {
+    /// <summary>
+    /// <inheritdoc cref="IOpenApiUserService"/>
+    /// </summary>
     [Injection(Proxy = typeof(OperDispatchProxy))]
     public class OpenApiUserService : DbRepository<OpenApiUser>, IOpenApiUserService
     {
         private readonly IConfigService _configService;
         private readonly SysCacheService _sysCacheService;
 
+        /// <inheritdoc cref="IOpenApiUserService"/>
         public OpenApiUserService(SysCacheService sysCacheService,
                            IConfigService configService)
         {
@@ -205,6 +209,7 @@
             }
         }
 
+        /// <inheritdoc/>
         public async Task<List<string>> OwnPermissions(BaseIdInput input)
         {
             var openApiUser = await GetUsertById(input.Id);//获取用户信息

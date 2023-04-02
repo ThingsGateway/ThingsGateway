@@ -7,7 +7,7 @@
     {
         private readonly SqlSugarScope _db;
         private readonly SysCacheService _sysCacheService;
-
+        /// <inheritdoc/>
         public OpenApiAuthEventSubscriber(SysCacheService sysCacheService, IServiceProvider services)
         {
             _db = DbContext.Db;
@@ -15,7 +15,7 @@
             this._services = services;
         }
 
-        public IServiceProvider _services { get; }
+        private IServiceProvider _services { get; }
 
         /// <summary>
         /// 登录事件

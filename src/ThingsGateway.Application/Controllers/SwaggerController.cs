@@ -15,7 +15,11 @@ namespace ThingsGateway.Application
     {
         private readonly IMemoryCache _cache;
         private readonly ConfigService _configService;
-
+        /// <summary>
+        /// <inheritdoc cref="SwaggerController"/>
+        /// </summary>
+        /// <param name="sysConfigService"></param>
+        /// <param name="cache"></param>
         public SwaggerController(ConfigService sysConfigService,
             IMemoryCache cache)
         {

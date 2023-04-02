@@ -23,7 +23,9 @@
         [Required(ErrorMessage = "Title不能为空")]
         public override string Title { get; set; }
     }
-
+    /// <summary>
+    /// 按钮分页
+    /// </summary>
     public class ButtonPageInput : BasePageInput
     {
         /// <summary>
@@ -32,7 +34,9 @@
         [Required(ErrorMessage = "ParentId不能为空")]
         public long? ParentId { get; set; }
     }
-
+    /// <summary>
+    /// 按钮编辑
+    /// </summary>
     public class ButtonEditInput : ButtonAddInput
     {
         /// <summary>

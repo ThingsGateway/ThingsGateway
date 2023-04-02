@@ -5,6 +5,7 @@
     /// </summary>
     public class DevConfigSeedData : ISqlSugarEntitySeedData<DevConfig>
     {
+        /// <inheritdoc/>
         public IEnumerable<DevConfig> SeedData()
         {
             return SeedDataUtil.GetSeedData<DevConfig>("dev_config.json");

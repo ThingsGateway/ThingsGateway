@@ -5,6 +5,7 @@
     {
         private readonly SysCacheService _sysCacheService;
 
+        /// <inheritdoc cref="IResourceService"/>
         public ResourceService(SysCacheService sysCacheService)
         {
             _sysCacheService = sysCacheService;

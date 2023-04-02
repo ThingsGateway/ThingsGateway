@@ -7,6 +7,10 @@ namespace ThingsGateway.Application
     /// </summary>
     public static class UserAgent
     {
+
+        /// <summary>
+        /// 单例
+        /// </summary>
         public static Parser Parser;
 
         static UserAgent()

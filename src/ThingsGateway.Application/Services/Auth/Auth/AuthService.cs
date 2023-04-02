@@ -14,6 +14,7 @@ namespace ThingsGateway.Application.Services.Auth
         private readonly SysCacheService _sysCacheService;
         private readonly ISysUserService _userService;
 
+        /// <inheritdoc cref="IAuthService"/>
         public AuthService(
                            IEventPublisher eventPublisher,
                            ISysUserService userService,
@@ -28,6 +29,7 @@ namespace ThingsGateway.Application.Services.Auth
             _noticeService = noticeService;
         }
 
+        /// <inheritdoc/>
         public ValidCodeOutPut GetCaptchaInfo()
         {
             //生成验证码
