@@ -1,6 +1,6 @@
-﻿<div align="center"><h1 align="center">ThingsGateway</a></h1></div>
-<div align="center"><h3 align="center">边缘采集网关</h3></div>
-
+﻿<p style="text-align:center">
+<img src="https://gitee.com/diego2098/ThingsGateway/raw/master/Image/gitLogo.png" height=100 />
+</p>
 #### 介绍
 
 基于Net6/7+Blazor Server的跨平台边缘采集网关，支持南北端插件式开发，
