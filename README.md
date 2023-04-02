@@ -1,7 +1,7 @@
 ﻿
-<p style="text-align:center">
+<div align='center'>
 <img src="https://gitee.com/diego2098/ThingsGateway/raw/master/Image/gitLogo.png" height=100 />
-</p>
+</div>
 
 #### 介绍
 
