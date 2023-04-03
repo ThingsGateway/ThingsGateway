@@ -253,7 +253,7 @@ public class ValueHisHostService : BackgroundService, ISingleton
             device.DeviceVariableRunTimes?.Where(a => a.HisEnable == true)?.ForEach(v => { v.VariableValueChange -= DeviceVariableValueChange; });
         }
 
-        CancellationTokenSource StoppingToken = StoppingTokens.Last();
+        CancellationTokenSource StoppingToken = StoppingTokens.LastOrDefault();
         StoppingToken?.Cancel();
 
         _logger?.LogInformation($"历史数据线程停止中");
