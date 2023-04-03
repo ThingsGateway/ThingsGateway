@@ -42,8 +42,6 @@ namespace ThingsGateway.Mqtt
             }
         }
 
-        [DeviceProperty("网关ID", "")] public string DeviceId { get; set; } = string.Empty;
-
         [DeviceProperty("Accesstoken", "")] public string Accesstoken { get; set; } = "Accesstoken";
         [DeviceProperty("IP", "")] public string IP { get; set; } = "127.0.0.1";
         [DeviceProperty("端口", "")] public int Port { get; set; } = 1883;
@@ -98,7 +96,7 @@ namespace ThingsGateway.Mqtt
                 .WithTopicFilter(
                     f =>
                     {
-                        f.WithTopic($"devices/{DeviceId}/rpc/request/+/+");//RPC控制请求，需要订阅
+                        f.WithTopic($"devices/+/rpc/request/+/+");//RPC控制请求，需要订阅
                     })
 
                 .Build();
