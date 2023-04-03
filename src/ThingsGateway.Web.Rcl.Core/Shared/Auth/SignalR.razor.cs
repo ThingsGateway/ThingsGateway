@@ -51,7 +51,14 @@ namespace ThingsGateway.Web.Rcl
             ).Build();
                 _hubConnection.On<object>("LoginOut", async (message) =>
                 {
-                    await PopupService.EnqueueSnackbarAsync(message.ToString(), AlertTypes.Warning);
+                    try
+                    {
+                        await InvokeAsync(() => PopupService.EnqueueSnackbarAsync(message.ToString(), AlertTypes.Warning));
+
+                    }
+                    catch (Exception ex)
+                    {
+                    }
                     await Task.Delay(2000);
                     await AjaxService.Goto("/");
                 });
