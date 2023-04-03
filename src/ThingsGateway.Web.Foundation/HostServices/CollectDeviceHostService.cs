@@ -122,11 +122,12 @@ public class CollectDeviceHostService : BackgroundService
     /// </summary>
     public void StartOtherHostService()
     {
-        var alarmHostService = _scopeFactory.GetBackgroundService<AlarmHostService>();
-        var valueHisHostService = _scopeFactory.GetBackgroundService<ValueHisHostService>();
+        using var scope = _scopeFactory.CreateScope();
+        var alarmHostService = scope.GetBackgroundService<AlarmHostService>();
+        var valueHisHostService = scope.GetBackgroundService<ValueHisHostService>();
         alarmHostService?.Start();
         valueHisHostService?.Start();
-        var uploadDeviceHostService = _scopeFactory.GetBackgroundService<UploadDeviceHostService>();
+        var uploadDeviceHostService = scope.GetBackgroundService<UploadDeviceHostService>();
         uploadDeviceHostService.StartDeviceThread();
     }
     /// <summary>
@@ -136,13 +137,14 @@ public class CollectDeviceHostService : BackgroundService
     {
         if (oldDeviceRuntime?.Count > 0)
         {
+            using var scope = _scopeFactory.CreateScope();
 
 
-            var alarmHostService = _scopeFactory.GetBackgroundService<AlarmHostService>();
-            var valueHisHostService = _scopeFactory.GetBackgroundService<ValueHisHostService>();
+            var alarmHostService = scope.GetBackgroundService<AlarmHostService>();
+            var valueHisHostService = scope.GetBackgroundService<ValueHisHostService>();
             alarmHostService?.Stop(oldDeviceRuntime);
             valueHisHostService?.Stop(oldDeviceRuntime);
-            var uploadDeviceHostService = _scopeFactory.GetBackgroundService<UploadDeviceHostService>();
+            var uploadDeviceHostService = scope.GetBackgroundService<UploadDeviceHostService>();
             uploadDeviceHostService.RemoveDeviceThread();
 
         }

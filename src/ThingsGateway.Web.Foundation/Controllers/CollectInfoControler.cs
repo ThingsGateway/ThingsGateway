@@ -29,8 +29,8 @@ namespace ThingsGateway.Web.Foundation
         {
             _scopeFactory = scopeFactory;
             using var serviceScope = _scopeFactory.CreateScope();
-            _collectDeviceHostService = serviceScope.ServiceProvider.GetBackgroundService<CollectDeviceHostService>();
-            _alarmHostService = serviceScope.ServiceProvider.GetBackgroundService<AlarmHostService>();
+            _collectDeviceHostService = serviceScope.GetBackgroundService<CollectDeviceHostService>();
+            _alarmHostService = serviceScope.GetBackgroundService<AlarmHostService>();
         }
 
         AlarmHostService _alarmHostService { get; set; }

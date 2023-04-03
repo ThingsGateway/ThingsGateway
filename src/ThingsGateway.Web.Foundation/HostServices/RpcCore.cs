@@ -29,7 +29,7 @@ public class RpcCore : ISingleton
         _logger = logger;
         using var serviceScope = scopeFactory.CreateScope();
         _globalCollectDeviceData = serviceScope.ServiceProvider.GetService<GlobalCollectDeviceData>();
-        _collectDeviceHostService = serviceScope.ServiceProvider.GetBackgroundService<CollectDeviceHostService>();
+        _collectDeviceHostService = serviceScope.GetBackgroundService<CollectDeviceHostService>();
         Task.Factory.StartNew(RpcLogInsert);
     }
     private ConcurrentQueue<RpcLog> _logQueues = new();
