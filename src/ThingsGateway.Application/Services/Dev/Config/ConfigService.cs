@@ -13,6 +13,7 @@
         }
 
         /// <inheritdoc/>
+        [OperDesc("编辑网关配置项")]
         public async Task EditBatch(List<DevConfig> devConfigs)
         {
             if (devConfigs.Count > 0)

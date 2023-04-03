@@ -113,7 +113,7 @@ namespace ThingsGateway.Mqtt
             using var serviceScope = _scopeFactory.CreateScope();
             _globalCollectDeviceData = serviceScope.ServiceProvider.GetService<GlobalCollectDeviceData>();
             _rpcCore = serviceScope.ServiceProvider.GetService<RpcCore>();
-            collectDeviceHostService = serviceScope.ServiceProvider.GetBackgroundService<CollectDeviceHostService>();
+            collectDeviceHostService = serviceScope.GetBackgroundService<CollectDeviceHostService>();
 
             _globalCollectDeviceData.CollectDevices.ForEach(a =>
             {
