@@ -89,10 +89,8 @@ namespace ThingsGateway.Web.Core
                 {
                     options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
                 })
-             .AddUnifyResult<UnifyResultProvider>()
              .AddFriendlyException()
-            .AddInject()
-            .AddDataValidation()
+             .AddInjectWithUnifyResult<UnifyResultProvider>()
                 ;
 
             services.AddServerSideBlazor().AddHubOptions(options => options.MaximumReceiveMessageSize = 64 * 1024); ;
