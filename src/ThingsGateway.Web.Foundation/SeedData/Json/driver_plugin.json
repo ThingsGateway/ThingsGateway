@@ -159,6 +159,17 @@
       "IsDelete": "0"
     },
     {
+      "Id": "311425470667013",
+      "AssembleName": "ThingsGateway.Mqtt.IotSharpClient",
+      "FileName": "ThingsGateway.Mqtt",
+      "DriverTypeEnum": "Upload",
+      "FilePath": "Plugins/ThingsGateway.Mqtt/ThingsGateway.Mqtt.dll",
+      "CreateTime": "2023-03-03 14:58:13.940",
+      "CreateUser": "superAdmin",
+      "CreateUserId": "212725263002001",
+      "IsDelete": "0"
+    },
+    {
       "Id": "391829470667014",
       "AssembleName": "ThingsGateway.Mqtt.MqttServer",
       "FileName": "ThingsGateway.Mqtt",

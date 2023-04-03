@@ -37,6 +37,7 @@ http://120.24.62.140:5000/
 - OPCUA Server (支持历史查询)
 - Mqtt Server (支持自定义json)
 - Mqtt Client (支持自定义json)
+- IotSharp Client (IotSharp网关插件，Rpc待测试)
 
 > 不支持Rpc
 - RabbitMQ (支持自定义json)
