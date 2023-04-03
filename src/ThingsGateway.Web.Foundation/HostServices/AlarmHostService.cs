@@ -326,7 +326,7 @@ public class AlarmHostService : BackgroundService, ISingleton
             device.DeviceVariableRunTimes?.ForEach(v => { v.VariableCollectChange -= DeviceVariableChange; });
         }
 
-        CancellationTokenSource StoppingToken = StoppingTokens.Last();
+        CancellationTokenSource StoppingToken = StoppingTokens.LastOrDefault();
         StoppingToken?.Cancel();
 
         _logger?.LogInformation($"实时报警线程停止中");
