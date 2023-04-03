@@ -5,7 +5,7 @@
       "Category": "SYS_BASE",
       "ConfigKey": "SYS_DEFAULT_SWAGGER_NAME",
       "ConfigValue": "admin",
-      "Remark": "swaager账号",
+      "Remark": "swagger账号",
       "SortCode": "1",
       "IsDelete": "0"
     },
@@ -14,7 +14,7 @@
       "Category": "SYS_BASE",
       "ConfigKey": "SYS_DEFAULT_SWAGGER_PASSWORD",
       "ConfigValue": "000000",
-      "Remark": "swaager密码",
+      "Remark": "swagger密码",
       "SortCode": "2",
       "IsDelete": "0"
     },
