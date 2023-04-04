@@ -2,7 +2,7 @@
 
 	<PropertyGroup>
 		<TargetFrameworks>net6.0;net7.0</TargetFrameworks>
-		<Version>1.3.0</Version>
+		<Version>1.3.1</Version>
 		<NoWarn>BL0005;CS0168;</NoWarn>
 		<!--<GenerateDocumentationFile>True</GenerateDocumentationFile>-->
 	</PropertyGroup>
