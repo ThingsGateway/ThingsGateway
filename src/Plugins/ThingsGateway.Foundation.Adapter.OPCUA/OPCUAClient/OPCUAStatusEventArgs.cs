@@ -51,7 +51,7 @@ public class OPCUAStatusEventArgs
     /// <returns></returns>
     public override string ToString()
     {
-        return Error ? "[异常]" : "[正常]" + Time.ToString("  yyyy-MM-dd HH:mm:ss  ") + Text;
+        return Error ? "[异常]" : "[正常][" + Time.ToString() + "]"+Text;
     }
 
 

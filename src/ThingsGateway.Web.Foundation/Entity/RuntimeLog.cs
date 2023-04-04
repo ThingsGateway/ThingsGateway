@@ -11,7 +11,6 @@ namespace ThingsGateway.Web.Foundation
     [Tenant(SqlsugarConst.DB_Default)]
     public class RuntimeLog : PrimaryIdEntity
     {
-
         /// <summary>
         /// 日志时间
         /// </summary>

@@ -16,6 +16,10 @@
         public bool IsSeedData { get; set; }
 
         /// <summary>
+        /// 是否更新种子数据
+        /// </summary>
+        public bool IsUpdateSeedData { get; set; }
+        /// <summary>
         /// 是否驼峰转下划线
         /// </summary>
         public bool IsUnderLine { get; set; }

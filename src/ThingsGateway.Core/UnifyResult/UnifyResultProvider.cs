@@ -91,7 +91,7 @@ namespace ThingsGateway.Core
                 Msg = statusCode == StatusCodes.Status200OK ? "请求成功" : errors,
                 Data = data,
                 Extras = UnifyContext.Take(),
-                Time = DateTime.Now
+                Time = DateTime.UtcNow,
             };
         }
     }

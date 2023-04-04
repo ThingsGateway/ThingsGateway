@@ -637,7 +637,7 @@ $", RegexOptions.IgnorePatternWhitespace | RegexOptions.IgnoreCase | RegexOption
             {
                 byte[] factors12 = new byte[12] { 2, 3, 4, 5, 6, 7, 8, 9, 2, 3, 4, 5 };
                 int year = Convert.ToUInt16(patnum.Substring(0, 4));
-                if (year >= 2003 && year <= DateTime.Now.Year)
+                if (year >= 2003 && year <= DateTime.UtcNow.Year)
                 {
                     int sum = 0;
                     for (byte i = 0; i < 12; i++)

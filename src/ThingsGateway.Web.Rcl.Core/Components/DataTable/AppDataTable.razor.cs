@@ -362,6 +362,10 @@ namespace ThingsGateway.Web.Rcl.Core
                     if (item != BlazorConst.TB_Actions)
                     {
                         string value = typeof(TItem).GetPropValue(DetailModel, item);
+                        if(DateTime.TryParse(value,out var result) )
+                        {
+                            value=result.Add(JsInitVariables.TimezoneOffset).ToString("yyyy-MM-dd HH:mm:ss fff");
+                        }
                         keyValuePairs.Add(item, value);
                     }
                 }

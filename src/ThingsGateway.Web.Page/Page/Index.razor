@@ -50,7 +50,7 @@
                                Small>
                             <MRow Class="pt-1">
                                 <MCol Cols="4">
-                                    <span class="text-caption">@item.LogTime</span>
+                                    <span class="text-caption">@item.LogTime.Add(JsInitVariables.TimezoneOffset).ToString("yyyy-MM-dd HH:mm:ss fff")</span>
                                 </MCol>
                                 <MCol Cols="8">
                                     <div class="mt-1 px-2 d-flex align-center justify-space-between">
@@ -92,7 +92,7 @@
                                Small>
                             <MRow Class="pt-1">
                                 <MCol Cols="4">
-                                    <span class="text-caption">@item.LogTime</span>
+                                    <span class="text-caption">@item.LogTime.Add(JsInitVariables.TimezoneOffset).ToString("yyyy-MM-dd HH:mm:ss fff")</span>
                                 </MCol>
                                 <MCol>
                                     <div class="text-body-1">@item.LogSource.Substring(0,item.LogSource.Length>100?100:item.LogSource.Length)</div>
@@ -123,7 +123,7 @@
                                Small>
                         <MRow Class="pt-1">
                             <MCol Cols="4">
-                                <span class="text-caption">@item.OpTime</span>
+                            <span class="text-caption">@item.OpTime.Add(JsInitVariables.TimezoneOffset).ToString("yyyy-MM-dd HH:mm:ss fff")</span>
                             </MCol>
                             <MCol>
                                 <div class="text-body-1">@item.Name</div>
@@ -150,7 +150,7 @@
                                Small>
                         <MRow Class="pt-1">
                             <MCol Cols="4">
-                                <span class="text-caption">@item.OpTime</span>
+                            <span class="text-caption">@item.OpTime.Add(JsInitVariables.TimezoneOffset).ToString("yyyy-MM-dd HH:mm:ss fff")</span>
                             </MCol>
                             <MCol>
                                 <div class="text-body-1">@item.Name</div>
@@ -167,6 +167,7 @@
 </MRow>
 
 @code {
+    [Inject] public JsInitVariables JsInitVariables { get; set; } = default!;
     [Inject]
     private ThingsGateway.Web.Foundation.IRpcLogService RpcLogService { get; set; }
     [Inject]

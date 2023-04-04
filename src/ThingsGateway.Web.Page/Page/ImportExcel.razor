@@ -155,7 +155,7 @@
             using var memoryStream = await Template.Invoke();
             memoryStream.Seek(0, SeekOrigin.Begin);
             using var streamRef = new DotNetStreamReference(stream: memoryStream);
-            await JS.InvokeVoidAsync("downloadFileFromStream", $"模板{DateTime.Now.ToString("MM-dd-HH-mm-ss")}.xlsx", streamRef);
+            await JS.InvokeVoidAsync("downloadFileFromStream", $"模板{DateTime.UtcNow.ToString("MM-dd-HH-mm-ss")}.xlsx", streamRef);
         }
         finally
         {

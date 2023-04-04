@@ -107,7 +107,7 @@ namespace ThingsGateway.Core
                             entityInfo.SetValue(Yitter.IdGenerator.YitIdHelper.NextId());
                     }
                     if (entityInfo.PropertyName == nameof(BaseEntity.CreateTime))
-                        entityInfo.SetValue(DateTime.Now);
+                        entityInfo.SetValue(DateTime.UtcNow);
                     //手机号和密码自动加密
                     if (entityInfo.PropertyName == nameof(SysUser.Password) || entityInfo.PropertyName == nameof(SysUser.Phone))
                         entityInfo.SetValue(CryptogramUtil.Sm4Encrypt(oldValue?.ToString()));
@@ -128,7 +128,7 @@ namespace ThingsGateway.Core
                     //    entityInfo.SetValue(CryptogramUtil.Sm4Encrypt(oldValue?.ToString()));
                     //更新时间
                     if (entityInfo.PropertyName == nameof(BaseEntity.UpdateTime))
-                        entityInfo.SetValue(DateTime.Now);
+                        entityInfo.SetValue(DateTime.UtcNow);
                     //更新人
                     if (App.User != null)
                     {

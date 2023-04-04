@@ -66,7 +66,7 @@ public class RpcCore : ISingleton
             _logQueues.Enqueue(
                 new RpcLog()
                 {
-                    LogTime = DateTime.Now,
+                    LogTime = DateTime.UtcNow,
                     OperateMessage = data.Exception,
                     IsSuccess = data.IsSuccess,
                     OperateMethod = "写入变量",
@@ -92,7 +92,7 @@ public class RpcCore : ISingleton
             _logQueues.Enqueue(
 new RpcLog()
 {
-    LogTime = DateTime.Now,
+    LogTime = DateTime.UtcNow,
     OperateMessage = data.Exception,
     IsSuccess = data.IsSuccess,
     OperateMethod = tag.OtherMethod,

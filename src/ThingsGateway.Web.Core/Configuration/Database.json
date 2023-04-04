@@ -10,7 +10,8 @@
         "IsAutoCloseConnection": false, //是否自动释放
         "IsInitDb": true, //是否初始化数据库,适用于codefirst
         "IsUnderLine": false, //是否驼峰转下划线
-        "IsSeedData": true //是否初始化种子数据
+        "IsSeedData": true, //是否初始化种子数据
+        "IsUpdateSeedData": false
       },
       {
         "ConfigId": "ThingsGateway", //租户ID
@@ -19,7 +20,8 @@
         "IsAutoCloseConnection": true, //是否自动释放
         "IsInitDb": true, //是否初始化数据库,适用于codefirst
         "IsUnderLine": false, //是否驼峰转下划线
-        "IsSeedData": true //是否初始化种子数据
+        "IsSeedData": true, //是否初始化种子数据
+        "IsUpdateSeedData": false
       }
     ]
   }

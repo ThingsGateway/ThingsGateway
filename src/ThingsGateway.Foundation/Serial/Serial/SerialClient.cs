@@ -117,8 +117,8 @@ namespace ThingsGateway.Foundation.Serial
         }
         private void PrivateOnOpening(OpeningEventArgs e)
         {
-            this.LastReceivedTime = DateTime.Now;
-            this.LastSendTime = DateTime.Now;
+            this.LastReceivedTime = DateTime.UtcNow;
+            this.LastSendTime = DateTime.UtcNow;
             if (this.CanSetDataHandlingAdapter)
             {
                 this.SetDataHandlingAdapter(this.Config.GetValue<Func<SerialDataHandlingAdapter>>(SerialConfigExtension.DataHandlingAdapterProperty).Invoke());
@@ -152,8 +152,8 @@ namespace ThingsGateway.Foundation.Serial
 
         private void PrivateOnBeforeOpen(OpeningEventArgs e)
         {
-            LastReceivedTime = DateTime.Now;
-            LastSendTime = DateTime.Now;
+            LastReceivedTime = DateTime.UtcNow;
+            LastSendTime = DateTime.UtcNow;
             if (CanSetDataHandlingAdapter)
             {
                 this.SetDataHandlingAdapter(Config.GetValue(SerialConfigExtension.DataHandlingAdapterProperty).Invoke());
@@ -600,7 +600,7 @@ namespace ThingsGateway.Foundation.Serial
         {
             try
             {
-                this.LastReceivedTime = DateTime.Now;
+                this.LastReceivedTime = DateTime.UtcNow;
                 if (this.OnHandleRawBuffer?.Invoke(byteBlock) == false)
                 {
                     return;
@@ -809,7 +809,7 @@ namespace ThingsGateway.Foundation.Serial
                     this.MainSerialPort.Write(buffer, offset, length);
                 }
 
-                this.LastSendTime = DateTime.Now;
+                this.LastSendTime = DateTime.UtcNow;
             }
         }
 

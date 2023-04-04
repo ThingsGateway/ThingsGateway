@@ -37,7 +37,7 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
         _config = new TypeAdapterConfig();
         _config.ForType<ValueHis, DataValue>()
 .Map(dest => dest.WrappedValue, (src) => new Variant(src.Value))
-.Map(dest => dest.SourceTimestamp, (src) => src.CollectTime)
+.Map(dest => dest.SourceTimestamp, (src) => DateTime.SpecifyKind(src.CollectTime, DateTimeKind.Utc))
 .Map(dest => dest.StatusCode, (src) => src.Quality == 192 ? StatusCodes.Good : StatusCodes.Bad);
     }
 
@@ -125,8 +125,8 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
             errors[0] = StatusCodes.BadHistoryOperationUnsupported;
             return;
         }
-        var startTime = readDetail.StartTime;
-        var endTime = readDetail.EndTime;
+        var startTime = readDetail.StartTime.ToUniversalTime();
+        var endTime = readDetail.EndTime.ToUniversalTime();
 
         for (int i = 0; i < nodesToRead.Count; i++)
         {
@@ -289,9 +289,8 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
         variable.AccessLevel = level;
         variable.UserAccessLevel = level;
         variable.Historizing = variableRunTime.HisEnable;
-
         variable.StatusCode = StatusCodes.Good;
-        variable.Timestamp = DateTime.Now;
+        variable.Timestamp = DateTime.UtcNow;
         variable.Value = Opc.Ua.TypeInfo.GetDefaultValue(variable.DataType, ValueRanks.Scalar, Server.TypeTree);
         variable.OnWriteValue = OnWriteDataValue;
         if (parent != null)

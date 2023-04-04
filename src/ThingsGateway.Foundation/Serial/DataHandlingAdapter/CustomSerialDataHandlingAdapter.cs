@@ -79,7 +79,7 @@ namespace ThingsGateway.Foundation.Serial
         /// <param name="byteBlock"></param>
         protected override void PreviewReceived(ByteBlock byteBlock)
         {
-            if (m_needReset || CacheTimeoutEnable && DateTime.Now - LastCacheTime > CacheTimeout)
+            if (m_needReset || CacheTimeoutEnable && DateTime.UtcNow - LastCacheTime > CacheTimeout)
             {
                 Reset();
                 m_needReset = false;
@@ -180,14 +180,14 @@ namespace ThingsGateway.Foundation.Serial
                         }
                         if (UpdateCacheTimeWhenRev)
                         {
-                            LastCacheTime = DateTime.Now;
+                            LastCacheTime = DateTime.UtcNow;
                         }
                         return;
 
                     case FilterResult.GoOn:
                         if (UpdateCacheTimeWhenRev)
                         {
-                            LastCacheTime = DateTime.Now;
+                            LastCacheTime = DateTime.UtcNow;
                         }
                         break;
                 }

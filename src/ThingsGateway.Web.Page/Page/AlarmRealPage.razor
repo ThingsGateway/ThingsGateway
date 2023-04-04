@@ -31,16 +31,20 @@
     </OtherToolbarTemplate>
 
     <ItemColTemplate>
-        @switch (context.Header.Value)
+        @if (context.Header.Value == nameof(context.Item.Quality))
         {
-
-            case nameof(context.Item.Quality):
-                <EnableChip Value="context.Item.Quality==192" DisabledLabel=@context.Item.Quality.ToString() EnabledLabel=@context.Item.Quality.ToString()>
-                </EnableChip>
-                break;
-            default:
-                @context.Value
-                break;
+            <EnableChip Value="context.Item.Quality==192" DisabledLabel=@context.Item.Quality.ToString() EnabledLabel=@context.Item.Quality.ToString()>
+            </EnableChip>
+        }
+        else if (context?.Value?.GetType() == typeof(DateTime))
+        {
+            <span>
+                @(((DateTime)context.Value).Add(JsInitVariables.TimezoneOffset).ToString("yyyy-MM-dd HH:mm:ss ffffff"))
+            </span>
+        }
+        else
+        {
+            @context.Value
 
         }
 
@@ -50,6 +54,8 @@
 
 
 @code {
+    [Inject]
+    public JsInitVariables JsInitVariables { get; set; } = default!;
     bool IsAutoQuery { get; set; }
     [Parameter]
     [SupplyParameterFromQuery]

@@ -5,6 +5,7 @@ using Furion.Logging.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
+using System;
 using System.Collections.Concurrent;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -431,8 +432,8 @@ public class AlarmHostService : BackgroundService, ISingleton
             item.EventTypeEnum = eventEnum;
             item.AlarmLimit = limit.ToString();
             item.AlarmCode = item.Value.ToString();
-            item.AlarmTime = DateTime.Now;
-            item.EventTime = DateTime.Now;
+            item.AlarmTime = DateTime.UtcNow;
+            item.EventTime = DateTime.UtcNow;
         }
         else if (eventEnum == EventEnum.Finish)
         {
@@ -441,7 +442,7 @@ public class AlarmHostService : BackgroundService, ISingleton
             item.EventTypeEnum = eventEnum;
             item.AlarmLimit = oldAlarm.AlarmLimit;
             item.AlarmCode = item.Value.ToString();
-            item.EventTime = DateTime.Now;
+            item.EventTime = DateTime.UtcNow;
         }
         else if (eventEnum == EventEnum.Check)
         {
@@ -449,7 +450,7 @@ public class AlarmHostService : BackgroundService, ISingleton
             item.EventTypeEnum = eventEnum;
             item.AlarmLimit = limit.ToString();
             item.AlarmCode = item.Value.ToString();
-            item.EventTime = DateTime.Now;
+            item.EventTime = DateTime.UtcNow;
         }
 
         OnAlarmChanged?.Invoke(item.Adapt<CollectVariableRunTime>());

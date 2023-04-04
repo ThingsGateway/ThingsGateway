@@ -66,7 +66,7 @@
                                     </td>
                                     <td class="text-start ">
                                         <div style="word-break:break-all; white-space:pre-wrap;">
-                                            @value
+                                                @value
                                         </div>
                                     </td>
                                 </tr>
@@ -242,7 +242,14 @@
                 }
                 else
                 {
-                    if (ItemColTemplate != null)
+
+                    if (context?.Value?.GetType() == typeof(DateTime))
+                    {
+                        <span>
+                            @(((DateTime)context.Value).Add(JsInitVariables.TimezoneOffset).ToString("yyyy-MM-dd HH:mm:ss fff"))
+                        </span>
+                    }
+                    else if (ItemColTemplate != null)
                     {
                         @ItemColTemplate(context)
                     }
@@ -260,6 +267,7 @@
                         }
 
                     }
+
                 }
             </ItemColContent>
         </MDataTable>
@@ -309,3 +317,6 @@
 
 </MSheet>
 
+@code{
+    [Inject] public JsInitVariables JsInitVariables { get; set; } = default!;
+}

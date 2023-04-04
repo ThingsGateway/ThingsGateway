@@ -30,14 +30,14 @@ namespace ThingsGateway.Foundation.Tests
                 }
                );
             }
-            var data = DateTime.Now;
+            var data = DateTime.UtcNow;
             List<Task> tasks = new List<Task>();
             for (int i = 0; i < num; i++)
             {
                 tasks.Add(TestWaiting());
             }
             _output.WriteLine(data.ToString("yyyy-MM-dd hh:mm:ss fff"));
-            _output.WriteLine(DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss fff"));
+            _output.WriteLine(DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss fff"));
             while (true)
             {
 
@@ -54,7 +54,7 @@ namespace ThingsGateway.Foundation.Tests
                        int i = Interlocked.Increment(ref dd);
                        IWaitingClient<TGTcpClient> waitClient = list[i];
                        var returnData = await waitClient.SendThenResponseAsync(new byte[] { 1, 2, 3, 4 }, 0, 4, 5000);
-                       _output.WriteLine(DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss fff") + "----" + i);
+                       _output.WriteLine(DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss fff") + "----" + i);
                    }
                    catch (Exception ex)
                    {

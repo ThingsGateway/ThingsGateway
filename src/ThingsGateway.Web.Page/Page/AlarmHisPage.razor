@@ -23,7 +23,7 @@
 
         <MMenu CloseOnContentClick="false" OffsetY Context="menu">
             <ActivatorContent>
-                <MTextField Dense Readonly Style="max-width:200px;" HideDetails=@("auto") Class="my-1  mx-2 " @bind-Value="context.StartTime" Clearable
+                <MTextField Dense Readonly Style="max-width:200px;" HideDetails=@("auto") Class="my-1  mx-2 " Value="context.StartTime.GetValueOrDefault().Add(JsInitVariables.TimezoneOffset)" Clearable
                             @attributes="menu.Attrs" Outlined Label=@context.Description(x => x.StartTime) />
             </ActivatorContent>
             <ChildContent>
@@ -33,7 +33,7 @@
 
             <MMenu CloseOnContentClick="false" OffsetY Context="menu">
             <ActivatorContent>
-                <MTextField Dense Readonly Style="max-width:200px;" HideDetails=@("auto") Class="my-1  mx-2 " @bind-Value="context.EndTime" Clearable
+                <MTextField Dense Readonly Style="max-width:200px;" HideDetails=@("auto") Class="my-1  mx-2 " Value="context.EndTime.GetValueOrDefault().Add(JsInitVariables.TimezoneOffset)" Clearable
                             @attributes="menu.Attrs" Outlined Label=@context.Description(x => x.EndTime) />
             </ActivatorContent>
             <ChildContent>
@@ -53,16 +53,15 @@
 
 
     <ItemColTemplate>
-        @switch (context.Header.Value)
+        @if (context.Header.Value == nameof(context.Item.Quality))
         {
+            <EnableChip Value="context.Item.Quality==192" DisabledLabel=@context.Item.Quality.ToString() EnabledLabel=@context.Item.Quality.ToString()>
+            </EnableChip>
+        }
 
-            case nameof(context.Item.Quality):
-                <EnableChip Value="context.Item.Quality==192" DisabledLabel=@context.Item.Quality.ToString() EnabledLabel=@context.Item.Quality.ToString()>
-                </EnableChip>
-                break;
-            default:
-                @context.Value
-                break;
+        else
+        {
+            @context.Value
 
         }
 
@@ -72,10 +71,10 @@
 
 
 @code {
-
     [Parameter]
     [SupplyParameterFromQuery]
     public string DeviceName { get; set; }
+    [Inject] public JsInitVariables JsInitVariables { get; set; } = default!;
 
     HisPageInput _searchModel { get; set; } = new();
     private IAppDataTable _datatable;
@@ -83,8 +82,8 @@
 
     protected override async Task OnInitializedAsync()
     {
-        AlarmHostService = this.GetBackgroundService<AlarmHostService>();
 
+        AlarmHostService = this.GetBackgroundService<AlarmHostService>();
         _searchModel.DeviceName = DeviceName;
         await base.OnInitializedAsync();
     }
