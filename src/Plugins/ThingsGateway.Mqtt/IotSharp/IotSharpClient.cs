@@ -10,8 +10,6 @@ using MQTTnet.Client;
 
 using NewLife.Serialization;
 
-using Newtonsoft.Json;
-
 using System.Collections.Concurrent;
 
 using ThingsGateway.Foundation;
@@ -225,10 +223,13 @@ namespace ThingsGateway.Mqtt
             }
         }
 
+        /// <summary>
+        /// rpcmethodname存疑，定为自定义方法，在ThingsGateway上写入变量的方法固定为"Write"
+        /// </summary>
+        private const string WriteMethod = "WRITE";
         private async Task _mqttClient_ApplicationMessageReceivedAsync(MqttApplicationMessageReceivedEventArgs e)
         {
-            if (!DeviceRpcEnable || e.ClientId.IsNullOrEmpty())
-                return;
+
             if (e.ApplicationMessage.Topic.StartsWith($"devices/") && e.ApplicationMessage.Topic.Contains("/rpc/request/"))
             {
                 var tps = e.ApplicationMessage.Topic.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
@@ -237,57 +238,101 @@ namespace ThingsGateway.Mqtt
                 var rpcrequestid = tps[5];
                 if (!string.IsNullOrEmpty(rpcmethodname) && !string.IsNullOrEmpty(rpcdevicename) && !string.IsNullOrEmpty(rpcrequestid))
                 {
+                   var rpcResponse = new RpcResponse()
+                    {
+                        DeviceId = rpcdevicename,
+                        ResponseId = rpcrequestid,
+                        Method = rpcmethodname,
+                        Success = false,
+                        Data = "参数为空"
+                    };
+                    await SendResponse(rpcResponse);
+                    return;
+                }
+                if (!DeviceRpcEnable)
+                {
+                    var rpcResponse = new RpcResponse()
+                    {
+                        DeviceId = rpcdevicename,
+                        ResponseId = rpcrequestid,
+                        Method = rpcmethodname,
+                        Success = false,
+                        Data = "不允许写入"
+                    };
+                    await SendResponse(rpcResponse);
+                    return;
+                }
+                //rpcmethodname存疑，定为自定义方法，在ThingsGateway上写入变量的方法固定为"Write"
+                if (rpcmethodname.ToUpper() != WriteMethod)
+                {
+                    var rpcResponse = new RpcResponse()
+                    {
+                        DeviceId = rpcdevicename,
+                        ResponseId = rpcrequestid,
+                        Method = rpcmethodname,
+                        Success = false,
+                        Data = "不支持的方法"
+                    };
+                    await SendResponse(rpcResponse);
                     return;
                 }
                 else
                 {
-                    //TODO:rpcmethodname存疑
                     RpcResponse rpcResponse = new();
-                    try
+                    var nameValue = e.ApplicationMessage.ConvertPayloadToString().ToJsonEntity<List<NameValue>>();
+                    Dictionary<string, OperResult> results = new();
+                    if (nameValue?.Count > 0)
                     {
-                        var result = await _rpcCore.InvokeDeviceMethod(ToString() + "-" + rpcrequestid, new NameValue() { Name= rpcmethodname, Value= e.ApplicationMessage.ConvertPayloadToString() });
-
-                        rpcResponse = new() { DeviceId = rpcdevicename, ResponseId = rpcrequestid, Data = JsonConvert.SerializeObject(new Dictionary<string, object>
-                            {
-                                { "success", result.IsSuccess }, { "message", result.Message }
-                            })
-                        };
-
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger?.LogWarning(ex, ToString());
+                        foreach (var item in nameValue)
+                        {
+                            var result = await _rpcCore.InvokeDeviceMethod(ToString() + "-" + rpcrequestid, item);
+                            results.Add(item.Name, result);
+                        }
                         rpcResponse = new()
                         {
                             DeviceId = rpcdevicename,
                             ResponseId = rpcrequestid,
-                            Data = JsonConvert.SerializeObject(new Dictionary<string, object>
-                            {
-                                { "success", false }, { "message", ex.Message }
-                            })
+                            Method = rpcmethodname,
+                            Success = !results.Any(a => !a.Value.IsSuccess),
+                            Data = results.ToJson()
                         };
                     }
-                    try
+                    else
                     {
-                        var topic = $"devices/{rpcResponse.DeviceId}/rpc/response/{rpcResponse.Method}/{rpcResponse.ResponseId}";
-
-                        var variableMessage = new MqttApplicationMessageBuilder()
-        .WithTopic($"{topic}")
-        .WithPayload(rpcResponse.ToJson()).Build();
-                        if (_mqttClient.IsConnected)
-                            await _mqttClient.PublishAsync(variableMessage);
-                    }
-                    catch
-                    {
+                        rpcResponse = new()
+                        {
+                            DeviceId = rpcdevicename,
+                            ResponseId = rpcrequestid,
+                            Method = rpcmethodname,
+                            Success = false,
+                            Data = "负荷参数无法解析"
+                        };
                     }
 
+                    await SendResponse(rpcResponse);
 
                 }
-               
+
 
             }
 
-            
+            async Task SendResponse(RpcResponse rpcResponse)
+            {
+                try
+                {
+                    var topic = $"devices/{rpcResponse.DeviceId}/rpc/response/{rpcResponse.Method}/{rpcResponse.ResponseId}";
+
+                    var variableMessage = new MqttApplicationMessageBuilder()
+    .WithTopic($"{topic}")
+    .WithPayload(rpcResponse.ToJson()).Build();
+                    if (_mqttClient.IsConnected)
+                        await _mqttClient.PublishAsync(variableMessage);
+                }
+                catch
+                {
+                }
+            }
+
         }
 
         private static DateTime timeSpan = new DateTime(1970, 1, 1, 0, 0, 0);
