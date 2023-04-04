@@ -305,7 +305,7 @@ namespace ThingsGateway.Mqtt
                             ResponseId = rpcrequestid,
                             Method = rpcmethodname,
                             Success = false,
-                            Data = "负荷参数无法解析"
+                            Data = "负载参数无法解析"
                         };
                     }
 
