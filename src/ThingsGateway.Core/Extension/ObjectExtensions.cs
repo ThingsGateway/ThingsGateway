@@ -230,7 +230,14 @@ namespace ThingsGateway.Core
 
                 var propertyInfo = props.FirstOrDefault(p => p.Name == fieldName);
                 if (propertyInfo != null)
-                    dn = propertyInfo.GetValue(forObject)?.ToString();
+                    if(propertyInfo.PropertyType!= typeof(DateTime))
+                    {
+                        dn = propertyInfo.GetValue(forObject)?.ToString();
+                    }
+                    else
+                    {
+                        dn = (propertyInfo.GetValue(forObject)).ToDateTime().ToFullString(true);
+                    }
             }
 
             return dn;

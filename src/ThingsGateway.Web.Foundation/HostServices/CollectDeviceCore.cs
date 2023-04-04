@@ -231,7 +231,7 @@ public class CollectDeviceCore : DisposableObject
                     if (Device?.Enable == true)
                     {
                         //驱动插件执行循环前方法
-                        Device.ActiveTime = DateTime.Now;
+                        Device.ActiveTime = DateTime.UtcNow;
                         await _driver?.BeforStart();
                     }
 
@@ -278,7 +278,7 @@ public class CollectDeviceCore : DisposableObject
                                 break;
                             if (_driver.IsConnected())
                             {
-                                Device.ActiveTime = DateTime.Now;
+                                Device.ActiveTime = DateTime.UtcNow;
                             }
                             if (_driver.IsSupportAddressRequest())
                             {
@@ -293,8 +293,8 @@ public class CollectDeviceCore : DisposableObject
                                         break;
 
                                     //连读变量
-                                    var readTime = DateTime.Now;
-                                    if (deviceVariableSourceRead.CheckIfRequestAndUpdateTime(DateTime.Now))
+                                    var readTime = DateTime.UtcNow;
+                                    if (deviceVariableSourceRead.CheckIfRequestAndUpdateTime(DateTime.UtcNow))
                                     {
                                         var read = await _driver.ReadSourceAsync(deviceVariableSourceRead, StoppingToken.Token);
                                         if (read != null && read.IsSuccess)
@@ -321,7 +321,7 @@ public class CollectDeviceCore : DisposableObject
                                         break;
 
                                     //连读变量
-                                    if (deviceVariableMedRead.CheckIfRequestAndUpdateTime(DateTime.Now))
+                                    if (deviceVariableMedRead.CheckIfRequestAndUpdateTime(DateTime.UtcNow))
                                     {
                                         var read = await InvokeMed(deviceVariableMedRead);
                                         if (read != null && read.IsSuccess)

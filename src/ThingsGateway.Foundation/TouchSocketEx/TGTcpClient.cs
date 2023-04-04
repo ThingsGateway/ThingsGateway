@@ -116,8 +116,8 @@ namespace TouchSocket.Sockets
 
         private void PrivateOnConnecting(ConnectingEventArgs e)
         {
-            this.LastReceivedTime = DateTime.Now;
-            this.LastSendTime = DateTime.Now;
+            this.LastReceivedTime = DateTime.UtcNow;
+            this.LastSendTime = DateTime.UtcNow;
             if (this.CanSetDataHandlingAdapter)
             {
                 this.SetDataHandlingAdapter(this.Config.GetValue<Func<DataHandlingAdapter>>(TouchSocketConfigExtension.DataHandlingAdapterProperty).Invoke());
@@ -520,11 +520,11 @@ namespace TouchSocket.Sockets
                 this.PrivateOnConnecting(args);
                 {
 #if (NET6_0_OR_GREATER)
-                    var nowTime = DateTime.Now;
+                    var nowTime = DateTime.UtcNow;
                     CancellationTokenSource cancellationTokenSource = new();
                     var task = this.MainSocket.ConnectAsync(iPHost.EndPoint, cancellationTokenSource.Token).AsTask();
                     var result = await Task.WhenAny(task, Task.Delay(timeout, cancellationTokenSource.Token));
-                    if (DateTime.Now - nowTime < TimeSpan.FromMilliseconds(timeout))
+                    if (DateTime.UtcNow - nowTime < TimeSpan.FromMilliseconds(timeout))
                     {
                         await Task.Delay(500);
                     }
@@ -533,7 +533,7 @@ namespace TouchSocket.Sockets
                         cancellationTokenSource.Cancel();
                         if (task.Exception != null)
                         {
-                            if (DateTime.Now - nowTime < TimeSpan.FromMilliseconds(timeout))
+                            if (DateTime.UtcNow - nowTime < TimeSpan.FromMilliseconds(timeout))
                             {
                                 await Task.Delay(timeout);
                             }
@@ -546,11 +546,11 @@ namespace TouchSocket.Sockets
                     }
 #else
 
-                    var nowTime = DateTime.Now;
+                    var nowTime = DateTime.UtcNow;
                     CancellationTokenSource cancellationTokenSource = new();
                     var task = Task.Factory.FromAsync(this.MainSocket.BeginConnect(iPHost.EndPoint, null, null), this.MainSocket.EndConnect);
                     var result = await Task.WhenAny(task, Task.Delay(timeout, cancellationTokenSource.Token));
-                    if (DateTime.Now - nowTime < TimeSpan.FromMilliseconds(timeout))
+                    if (DateTime.UtcNow - nowTime < TimeSpan.FromMilliseconds(timeout))
                     {
                         await Task.Delay(500);
                     }
@@ -559,7 +559,7 @@ namespace TouchSocket.Sockets
                         cancellationTokenSource.Cancel();
                         if (task.Exception != null)
                         {
-                            if (DateTime.Now - nowTime < TimeSpan.FromMilliseconds(timeout))
+                            if (DateTime.UtcNow - nowTime < TimeSpan.FromMilliseconds(timeout))
                             {
                                 await Task.Delay(timeout);
                             }
@@ -913,7 +913,7 @@ namespace TouchSocket.Sockets
         {
             try
             {
-                this.LastReceivedTime = DateTime.Now;
+                this.LastReceivedTime = DateTime.UtcNow;
                 if (this.OnHandleRawBuffer?.Invoke(byteBlock) == false)
                 {
                     return;
@@ -1111,7 +1111,7 @@ namespace TouchSocket.Sockets
                     }
                 }
 
-                this.LastSendTime = DateTime.Now;
+                this.LastSendTime = DateTime.UtcNow;
             }
         }
 

@@ -1,4 +1,5 @@
-﻿using NewLife;
+﻿
+using TouchSocket.Core;
 
 namespace ThingsGateway.Web.Foundation
 {
@@ -17,7 +18,7 @@ namespace ThingsGateway.Web.Foundation
         /// </summary>
         public static string GetSciptListValue<T>(this T datas, string script) where T : class
         {
-            var inPut = System.Text.Json.JsonSerializer.Serialize(datas);
+            var inPut = datas.ToJson();
             if (!script.IsNullOrEmpty())
             {
                 //执行脚本，获取新实体

@@ -8,7 +8,7 @@
         /// <summary>
         /// 时间
         /// </summary>
-        public DateTime DateTime = DateTime.Now;
+        public DateTime DateTime = DateTime.UtcNow;
 
         /// <summary>
         /// 登录设备

@@ -101,16 +101,16 @@ public class CollectVariableRunTime : CollectDeviceVariable
             DateTime time = DateTime.MinValue;
             if (dateTime == default)
             {
-                time = DateTime.Now;
+                time = DateTime.UtcNow;
             }
             else
             {
                 time = dateTime;
             }
-            CollectTime = DateTime.Now;
+            CollectTime = DateTime.UtcNow;
             if (data?.ToString() != _value?.ToString() && LastSetValue?.ToString() != data?.ToString())
             {
-                ChangeTime = DateTime.Now;
+                ChangeTime = DateTime.UtcNow;
                 if (Quality == 192)
                 {
                     _value = data;

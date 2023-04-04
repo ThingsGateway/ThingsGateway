@@ -105,7 +105,7 @@
             verificatInfos = verificatInfos.ToList();
             verificatInfos.ForEach(it =>
             {
-                var now = DateTime.Now;
+                var now = DateTime.UtcNow;
                 it.VerificatRemain = now.GetDiffTime(it.VerificatTimeout);//获取时间差
                 var verificatSecond = it.VerificatTimeout.AddMinutes(-it.Expire).ToLong();//颁发时间转为时间戳
                 var timeoutSecond = it.VerificatTimeout.ToLong();//过期时间转为时间戳

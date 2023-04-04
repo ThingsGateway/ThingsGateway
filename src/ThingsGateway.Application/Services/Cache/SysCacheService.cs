@@ -138,7 +138,7 @@ namespace ThingsGateway.Application
             var data = Get<List<VerificatInfo>>(CacheConst.Cache_OpenApiUserVerificat, userid.ToString());
             if (data != null)
             {
-                var infos = data.Where(it => it.VerificatTimeout > DateTime.Now).ToList();//去掉登录超时的
+                var infos = data.Where(it => it.VerificatTimeout > DateTime.UtcNow).ToList();//去掉登录超时的
                 if (infos.Count != data.Count)
                     SetOpenApiVerificatId(userid, infos);
                 return infos;
@@ -148,7 +148,7 @@ namespace ThingsGateway.Application
                 var sys = DbContext.Db.QueryableWithAttr<SysVerificat>().Where(it => it.Id == userid).First();
                 if (sys != null)
                 {
-                    var infos = sys.VerificatInfos.Where(it => it.VerificatTimeout > DateTime.Now).ToList();//去掉登录超时的
+                    var infos = sys.VerificatInfos.Where(it => it.VerificatTimeout > DateTime.UtcNow).ToList();//去掉登录超时的
                     SetOpenApiVerificatId(userid, infos);
                     return infos;
                 }
@@ -175,7 +175,7 @@ namespace ThingsGateway.Application
             var data = Get<List<VerificatInfo>>(CacheConst.Cache_UserVerificat, userid.ToString());
             if (data != null)
             {
-                var infos = data.Where(it => it.VerificatTimeout > DateTime.Now).ToList();//去掉登录超时的
+                var infos = data.Where(it => it.VerificatTimeout > DateTime.UtcNow).ToList();//去掉登录超时的
                 if (infos.Count != data.Count)
                     SetVerificatId(userid, infos);
                 return infos;
@@ -185,7 +185,7 @@ namespace ThingsGateway.Application
                 var sys = DbContext.Db.QueryableWithAttr<SysVerificat>().Where(it => it.Id == userid).First();
                 if (sys != null)
                 {
-                    var infos = sys.VerificatInfos.Where(it => it.VerificatTimeout > DateTime.Now).ToList();//去掉登录超时的
+                    var infos = sys.VerificatInfos.Where(it => it.VerificatTimeout > DateTime.UtcNow).ToList();//去掉登录超时的
                     SetVerificatId(userid, infos);
                     return infos;
                 }

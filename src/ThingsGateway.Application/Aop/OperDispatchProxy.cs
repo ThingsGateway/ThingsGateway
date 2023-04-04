@@ -150,7 +150,7 @@ namespace ThingsGateway.Application
                 OpIp = App.HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString(),
                 OpBrowser = clientInfo.UA.Family + clientInfo.UA.Major,
                 OpOs = clientInfo.OS.Family + clientInfo.OS.Major,
-                OpTime = DateTime.Now,
+                OpTime = DateTime.UtcNow,
                 OpAccount = UserManager.UserAccount,
                 ReqUrl = "",
                 ReqMethod = CateGoryConst.Log_REQMETHOD,

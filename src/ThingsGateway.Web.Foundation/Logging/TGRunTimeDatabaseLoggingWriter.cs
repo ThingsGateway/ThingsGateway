@@ -43,7 +43,7 @@ namespace ThingsGateway.Web.Foundation
                     LogLevel = logMsg.LogLevel,
                     LogMessage = logMsg.State.ToString(),
                     LogSource = logMsg.LogName,
-                    LogTime = logMsg.LogDateTime,
+                    LogTime = logMsg.LogDateTime.ToUniversalTime(),
                     Exception = logMsg.Exception?.ToString(),
                 };
                 //_db.InsertableWithAttr(logRuntime).ExecuteCommand();//入库

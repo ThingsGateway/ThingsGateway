@@ -19,7 +19,7 @@ public class TimerTick
     {
         if (milliSeconds < 20)
             milliSeconds = 20;
-        LastTime = GetExactTime(DateTime.Now.AddMilliseconds(-milliSeconds));
+        LastTime = GetExactTime(DateTime.UtcNow.AddMilliseconds(-milliSeconds));
         this.milliSeconds = milliSeconds;
 
     }
@@ -47,7 +47,7 @@ public class TimerTick
     /// 是否到达设置时间
     /// </summary>
     /// <returns></returns>
-    public bool IsTickHappen() => IsTickHappen(DateTime.Now);
+    public bool IsTickHappen() => IsTickHappen(DateTime.UtcNow);
 
     /// <summary>
     /// 此时实际时间已经大于计算时间差，需获取准确的时间，趋近整秒

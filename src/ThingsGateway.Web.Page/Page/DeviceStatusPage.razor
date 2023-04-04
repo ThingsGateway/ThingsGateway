@@ -85,7 +85,7 @@
                                                 <MLabel Class=@((item.Device.DeviceStatus==DeviceStatusEnum.OnLine?"green--text":"red--text")+$" text-h6")>
                                                     <div class="mt-1  d-flex align-center justify-space-between">
                                                         <span>@item.Device.Name</span>
-                                                        <span class="text-caption">@(item.Device.ActiveTime + "     " + typeof(DeviceStatusEnum).GetDescription(item.Device.DeviceStatus.ToString()) + "     " + item.Device.DeviceOffMsg)</span>
+                                                        <span class="text-caption">@(item.Device.ActiveTime.Add(JsInitVariables.TimezoneOffset).ToString("yyyy-MM-dd HH:mm:ss fff") + "     " + typeof(DeviceStatusEnum).GetDescription(item.Device.DeviceStatus.ToString()) + "     " + item.Device.DeviceOffMsg)</span>
                                                     </div>
                                                 </MLabel>
                                             </MListItemTitle>
@@ -143,7 +143,7 @@
                                                 <MLabel Class=@((item.Device.DeviceStatus==DeviceStatusEnum.OnLine?"green--text":"red--text")+$" text-h6")>
                                                     <div class="mt-1  d-flex align-center justify-space-between">
                                                         <span>@item.Device.Name</span>
-                                                        <span class="text-caption">@(item.Device.ActiveTime + "     " + typeof(DeviceStatusEnum).GetDescription(item.Device.DeviceStatus.ToString()) + "     " + item.Device.DeviceOffMsg)</span>
+                                                        <span class="text-caption">@(item.Device.ActiveTime.Add(JsInitVariables.TimezoneOffset).ToString("yyyy-MM-dd HH:mm:ss fff") + "     " + typeof(DeviceStatusEnum).GetDescription(item.Device.DeviceStatus.ToString()) + "     " + item.Device.DeviceOffMsg)</span>
                                                     </div>
                                                 </MLabel>
                                             </MListItemTitle>
@@ -248,7 +248,7 @@
                 <MLabel Class=@((item.Device.DeviceStatus==DeviceStatusEnum.OnLine?"green--text":"red--text")+$" text-h6")>
                     <div class="mt-1  d-flex align-center justify-space-between">
                         <span>@item.Device.Name</span>
-                        <span class="text-caption">@(item.Device.ActiveTime + "     " + typeof(DeviceStatusEnum).GetDescription(item.Device.DeviceStatus.ToString()) + "     " + item.Device.DeviceOffMsg)</span>
+                        <span class="text-caption">@(item.Device.ActiveTime.Add(JsInitVariables.TimezoneOffset).ToString("yyyy-MM-dd HH:mm:ss fff") + "     " + typeof(DeviceStatusEnum).GetDescription(item.Device.DeviceStatus.ToString()) + "     " + item.Device.DeviceOffMsg)</span>
                         </div>
                     </MLabel>
                 </MCardSubtitle>
@@ -259,7 +259,7 @@
                 <MRow Class="ml-2 mr-2 d-flex" NoGutters>
                 <MCol Md=4 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
                     <span class="text-subtitle-2 grey--text">@item.Device.Description(a=>a.ActiveTime)</span>
-                    <span class="text-caption">@item.Device.ActiveTime</span>
+                    <span class="text-caption">@item.Device.ActiveTime.Add(JsInitVariables.TimezoneOffset).ToString("yyyy-MM-dd HH:mm:ss fff")</span>
                 </MCol>
                 <MCol Md=4 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
                     <span class="text-subtitle-2 grey--text">@item.Device.Description(a=>a.SourceVariableNum)</span>
@@ -369,7 +369,7 @@
                 <MLabel Class=@((item.Device.DeviceStatus==DeviceStatusEnum.OnLine?"green--text":"red--text")+$" text-h6")>
                     <div class="mt-1  d-flex align-center justify-space-between">
                         <span>@item.Device.Name</span>
-                        <span class="text-caption">@(item.Device.ActiveTime + "     " + typeof(DeviceStatusEnum).GetDescription(item.Device.DeviceStatus.ToString()) + "     " + item.Device.DeviceOffMsg)</span>
+                        <span class="text-caption">@(item.Device.ActiveTime.Add(JsInitVariables.TimezoneOffset).ToString("yyyy-MM-dd HH:mm:ss fff") + "     " + typeof(DeviceStatusEnum).GetDescription(item.Device.DeviceStatus.ToString()) + "     " + item.Device.DeviceOffMsg)</span>
                         </div>
                     </MLabel>
                 </MCardSubtitle>
@@ -382,7 +382,7 @@
                 <MRow Class="ml-2 mr-2 d-flex" NoGutters>
                 <MCol Md=4 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
                     <span class="text-subtitle-2 grey--text">@item.Device.Description(a=>a.ActiveTime)</span>
-                    <span class="text-caption">@item.Device.ActiveTime</span>
+                    <span class="text-caption">@item.Device.ActiveTime.Add(JsInitVariables.TimezoneOffset).ToString("yyyy-MM-dd HH:mm:ss fff")</span>
                 </MCol>
             </MRow>
             <MSubheader>
@@ -441,6 +441,7 @@
 </PModal>
 
 @code {
+    [Inject] public JsInitVariables JsInitVariables { get; set; } = default!;
     bool isShowCollectDeviceInfo;
     bool isShowUploadDeviceInfo;
     CollectDeviceCore collectDeviceInfoItem;
@@ -500,7 +501,7 @@
             using var memoryStream = await VariableService.ExportFile(data);
             memoryStream.Seek(0, SeekOrigin.Begin);
             using var streamRef = new DotNetStreamReference(stream: memoryStream);
-            await JS.InvokeVoidAsync("downloadFileFromStream", $"变量导出{DateTime.Now.ToString("MM-dd-HH-mm-ss")}.xlsx", streamRef);
+            await JS.InvokeVoidAsync("downloadFileFromStream", $"变量导出{DateTime.UtcNow.Add(JsInitVariables.TimezoneOffset).ToString("yyyy-MM-dd HH:mm:ss fff")}.xlsx", streamRef);
         }
         finally
         {
@@ -557,7 +558,7 @@
         {
             _importComponent = null;
             _importRef = null;
-            _importRender=null;
+            _importRender = null;
             var confirm = await PopupService.OpenConfirmDialog(T("重启"), T("确定重启?"));
             if (confirm)
             {

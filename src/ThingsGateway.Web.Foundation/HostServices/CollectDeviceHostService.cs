@@ -309,7 +309,7 @@ public class CollectDeviceHostService : BackgroundService
             {
                 CollectDeviceCore devcore = CollectDeviceCores[i];
                 if (
-                    (devcore.Device.ActiveTime != DateTime.MinValue && devcore.Device.ActiveTime.AddMinutes(3) <= DateTime.Now)
+                    (devcore.Device.ActiveTime != DateTime.MinValue && devcore.Device.ActiveTime.AddMinutes(3) <= DateTime.UtcNow)
                     || devcore.isInitSuccess == false
                     )
                 {

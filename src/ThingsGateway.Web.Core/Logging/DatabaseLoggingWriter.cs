@@ -21,7 +21,7 @@ namespace ThingsGateway.Web.Core
             //转成实体
             var loggingMonitor = jsonString.ToJsonEntity<LoggingMonitorJson>();
             //日志时间赋值
-            loggingMonitor.LogDateTime = logMsg.LogDateTime;
+            loggingMonitor.LogDateTime = logMsg.LogDateTime.ToUniversalTime();
             {
                 var operation = logMsg.Context.Get(LoggingConst.Operation).ToString();//获取操作名称
                 var client = (ClientInfo)logMsg.Context.Get(LoggingConst.Client);//获取客户端信息

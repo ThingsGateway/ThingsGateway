@@ -25,7 +25,7 @@ public class TGLogJob : IJob
     {
         var db = DbContext.Db.CopyNew();
         var daysAgo = 30; // 删除30天以前
-        await db.Deleteable<RuntimeLog>().Where(u => (DateTime)u.LogTime < DateTime.Now.AddDays(-daysAgo)).ExecuteCommandAsync();
-        await db.Deleteable<RpcLog>().Where(u => (DateTime)u.LogTime < DateTime.Now.AddDays(-daysAgo)).ExecuteCommandAsync();
+        await db.Deleteable<RuntimeLog>().Where(u => (DateTime)u.LogTime < DateTime.UtcNow.AddDays(-daysAgo)).ExecuteCommandAsync();
+        await db.Deleteable<RpcLog>().Where(u => (DateTime)u.LogTime < DateTime.UtcNow.AddDays(-daysAgo)).ExecuteCommandAsync();
     }
 }

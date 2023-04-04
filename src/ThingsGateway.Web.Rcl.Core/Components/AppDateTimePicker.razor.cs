@@ -109,9 +109,9 @@ namespace ThingsGateway.Web.Rcl.Core
         private bool GetNowClickState()
         {
             if (Min is not null)
-                return DateTime.Now < Min;
+                return DateTime.UtcNow < Min;
             else if (Max is not null)
-                return DateTime.Now > Max;
+                return DateTime.UtcNow > Max;
             else
                 return false;
         }
@@ -187,7 +187,7 @@ namespace ThingsGateway.Web.Rcl.Core
             DateTime? dateTime = default;
             if (Date is null)
             {
-                var now = DateTime.Now;
+                var now = DateTime.UtcNow;
                 if (Min is not null)
                 {
                     if (Min < now)
@@ -210,7 +210,7 @@ namespace ThingsGateway.Web.Rcl.Core
 
         private async Task OnNowAsync()
         {
-            await UpdateValueAsync(DateTime.UtcNow);
+            await UpdateValueAsync(DateTime.UtcNow.Add(JsInitVariables.TimezoneOffset));
         }
 
         private async Task OnResetAsync()
