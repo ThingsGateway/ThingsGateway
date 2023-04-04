@@ -52,13 +52,13 @@ public class RpcCore : ISingleton
     {
         OperResult data = new();
         var tag = _globalCollectDeviceData.CollectVariables.FirstOrDefault(it => it.Name == item.Name);
-        if (tag == null) throw new Exception("不存在变量:" + item.Name);
-        if (tag.ProtectTypeEnum == ProtectTypeEnum.ReadOnly) throw new Exception("只读变量");
+        if (tag == null) return new OperResult("不存在变量:" + item.Name);
+        if (tag.ProtectTypeEnum == ProtectTypeEnum.ReadOnly) return new OperResult("只读变量");
         var dev = _collectDeviceHostService.CollectDeviceCores.FirstOrDefault(it => it.Device.Id == tag.DeviceId);
-        if (dev == null) throw new Exception("系统错误，不存在对应采集设备，请稍候重试");
-        if (dev.Device.DeviceStatus == DeviceStatusEnum.OffLine) throw new Exception("设备已离线");
-        if (dev.Device.DeviceStatus == DeviceStatusEnum.Pause) throw new Exception("设备已暂停");
-        if (tag.RpcWriteEnable && !isBlazorWeb) throw new Exception("不允许远程写入");
+        if (dev == null) return new OperResult("系统错误，不存在对应采集设备，请稍候重试");
+        if (dev.Device.DeviceStatus == DeviceStatusEnum.OffLine) return new OperResult("设备已离线");
+        if (dev.Device.DeviceStatus == DeviceStatusEnum.Pause) return new OperResult("设备已暂停");
+        if (tag.RpcWriteEnable && !isBlazorWeb) return new OperResult("不允许远程写入");
         if (tag.OtherMethod == null)
         {
             data = (await dev.InVokeWriteAsync(tag, item.Value)).Copy();
@@ -107,4 +107,5 @@ new RpcLog()
 
         return data;
     }
+
 }
