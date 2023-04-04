@@ -335,7 +335,8 @@ namespace ThingsGateway.Mqtt
 
         }
 
-        private static DateTime timeSpan = new DateTime(1970, 1, 1, 0, 0, 0);
+
+
         public override async Task ExecuteAsync(CancellationToken cancellationToken)
         {
             try
@@ -350,11 +351,17 @@ namespace ThingsGateway.Mqtt
                     {
                         try
                         {
+                            Dictionary<string, string> nameValueDict = new();
+                            foreach (var pair in item)
+                            {
+                                //只用最新的变量值
+                                nameValueDict.AddOrUpdate(pair.name,pair.value);
+                            }
                             if (!cancellationToken.IsCancellationRequested)
                             {
                                 var variableMessage = new MqttApplicationMessageBuilder()
                                 .WithTopic($"devices/{item.Key}/telemetry")
-                                .WithPayload(item.ToDictionary(o => o.name, o => o.value).ToJson()).Build();
+                                .WithPayload(nameValueDict.ToJson()).Build();
                                 if (_mqttClient.IsConnected)
                                     await _mqttClient.PublishAsync(variableMessage, cancellationToken);
                             }
