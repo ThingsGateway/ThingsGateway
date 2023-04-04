@@ -8,6 +8,7 @@ namespace IoTSharp.Data
         public string Method { get; set; }
         public string ResponseId { get; set; }
         public string Data { get; set; }
+        public bool Success { get; set; }
     }
 
 }
