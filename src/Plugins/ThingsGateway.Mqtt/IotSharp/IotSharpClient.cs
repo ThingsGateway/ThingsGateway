@@ -262,7 +262,7 @@ namespace ThingsGateway.Mqtt
                     await SendResponse(rpcResponse);
                     return;
                 }
-                //rpcmethodname存疑，定为自定义方法，在ThingsGateway上写入变量的方法固定为"Write"
+                //rpcmethodname定为自定义方法，在ThingsGateway上写入变量的方法固定为"Write"
                 if (rpcmethodname.ToUpper() != WriteMethod)
                 {
                     var rpcResponse = new RpcResponse()
