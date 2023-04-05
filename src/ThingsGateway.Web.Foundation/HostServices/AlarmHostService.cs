@@ -5,7 +5,6 @@ using Furion.Logging.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-using System;
 using System.Collections.Concurrent;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -102,8 +101,11 @@ public class AlarmHostService : BackgroundService, ISingleton
             {
                 SqlServerCodeFirstNvarchar = true,//设置默认nvarchar
                 TableEnumIsString = true,
-            }
+                
+            },
+            
         });
+
         return OperResult.CreateSuccessResult(sqlSugarClient);
     }
     #region worker服务
