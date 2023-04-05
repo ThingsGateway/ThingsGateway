@@ -146,8 +146,8 @@
                      var data = await result.Content.CopyNew().Queryable<AlarmHis>()
     .WhereIF(!input.DeviceName.IsNullOrEmpty(), a => a.DeviceName.Contains(input.DeviceName))
     .WhereIF(!input.Name.IsNullOrEmpty(), a => a.Name.Contains(input.Name))
-                   .WhereIF(input.StartTime != null, a => a.EventTime >= input.StartTime)
-               .WhereIF(input.EndTime != null, a => a.EventTime <= input.EndTime)
+                   .WhereIF(input.StartTime != null, a => a.EventTime >= input.StartTime.Value)
+               .WhereIF(input.EndTime != null, a => a.EventTime <= input.EndTime.Value)
     .OrderByIF(!string.IsNullOrEmpty(input.SortField), $"{input.SortField} {input.SortOrder}")
     .OrderBy(u => u.Id)//排序
     .ToPagedListAsync(input.Current, input.Size);
