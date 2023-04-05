@@ -79,7 +79,7 @@ namespace ThingsGateway.Core
             //定义日志文件名
             options.FileNameRule = fileName =>
             {
-                return rootPath + "\\" + string.Format(fileName, DateTime.UtcNow);
+                return rootPath + "\\" + string.Format(fileName, DateTime.Now);
             };
             options.FileSizeLimitBytes = 500000 * 1024;//日志最大500M
                                                        //日志内容格式化
@@ -88,7 +88,7 @@ namespace ThingsGateway.Core
                     var stringBuilder = new StringBuilder();
                     stringBuilder.AppendLine("【日志级别】：" + logMsg.LogLevel);
                     stringBuilder.AppendLine("【日志类名】：" + logMsg.LogName);
-                    stringBuilder.AppendLine("【日志时间】：" + DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss"));
+                    stringBuilder.AppendLine("【日志时间】：" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss zzz"));
                     stringBuilder.AppendLine("【日志内容】：" + logMsg.Message);
                     if (logMsg.Exception != null)
                     {
