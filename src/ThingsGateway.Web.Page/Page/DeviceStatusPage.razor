@@ -15,7 +15,6 @@
 @inherits CultureComponentBase
 @inject UserResoures UserResoures
 @inject NavigationManager NavigationManager
-@implements IDisposable
 @inject IDriverPluginService DriverPluginService
 @layout MainLayout
 <MSheet>
@@ -634,9 +633,10 @@
     }
 
 
-    public void Dispose()
+    protected override async Task Dispose(bool disposing)
     {
-        DelayTimer.Dispose();
+        await base.Dispose(disposing);
+        DelayTimer?.Dispose();
     }
 
     async void timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)

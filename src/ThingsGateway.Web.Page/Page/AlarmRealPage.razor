@@ -11,7 +11,6 @@
 @inject MasaBlazor MasaBlazor
 @attribute [RolePermission]
 @inherits CultureComponentBase
-@implements IDisposable
 @inject UserResoures UserResoures
 @layout MainLayout
 <AppDataTable @ref="_datatable" TItem="AlarmHis" SearchItem="VariablePageInput"
@@ -81,9 +80,10 @@
         if (IsAutoQuery)
             await InvokeAsync(async ()=>await datatableQuery());
     }
-    public void Dispose()
+    protected override async Task Dispose(bool disposing)
     {
-        DelayTimer.Dispose();
+        await base.Dispose(disposing);
+        DelayTimer?.Dispose();
     }
     private async Task datatableQuery()
     {

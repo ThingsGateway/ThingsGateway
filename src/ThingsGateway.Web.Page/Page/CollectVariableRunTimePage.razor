@@ -12,7 +12,6 @@
 @inject MasaBlazor MasaBlazor
 @attribute [RolePermission]
 @inherits CultureComponentBase
-@implements IDisposable
 @inject UserResoures UserResoures
 @layout MainLayout
 
@@ -118,9 +117,10 @@
     {
         await InvokeAsync(StateHasChanged);
     }
-    public void Dispose()
+    protected override async Task Dispose(bool disposing)
     {
-        DelayTimer.Dispose();
+        await base.Dispose(disposing);
+        DelayTimer?.Dispose();
     }
     private async Task datatableQuery()
     {
