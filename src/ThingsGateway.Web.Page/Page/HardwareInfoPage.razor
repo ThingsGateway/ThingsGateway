@@ -14,7 +14,6 @@
 @inject UserResoures UserResoures
 @inject NavigationManager NavigationManager
 @inject IDriverPluginService DriverPluginService
-@implements IDisposable
 @layout MainLayout
 
 <MRow NoGutters>
@@ -270,8 +269,9 @@
     {
         await InvokeAsync(StateHasChanged);
     }
-    public void Dispose()
+    protected override async Task Dispose(bool disposing)
     {
-        DelayTimer.Dispose();
+        await base.Dispose(disposing);
+        DelayTimer?.Dispose();
     }
 }
