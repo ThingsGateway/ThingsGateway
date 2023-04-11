@@ -369,22 +369,23 @@ public class AlarmHostService : BackgroundService, ISingleton
     {
         string limit = string.Empty;
         string ex = string.Empty;
+        string text = string.Empty;
 
         AlarmEnum alarmEnum = AlarmEnum.None;
 
         if (item.DataTypeEnum.GetNetType() == typeof(bool))
         {
 
-            alarmEnum = AlarmHostServiceHelpers.GetBoolAlarmCode(item, out limit, out ex);
+            alarmEnum = AlarmHostServiceHelpers.GetBoolAlarmCode(item, out limit, out ex,out text);
         }
         else
         {
-            alarmEnum = AlarmHostServiceHelpers.GetDecimalAlarmDegree(item, out limit, out ex);
+            alarmEnum = AlarmHostServiceHelpers.GetDecimalAlarmDegree(item, out limit, out ex, out text);
         }
         if (alarmEnum == AlarmEnum.None)
         {
             //需恢复报警，如果存在的话
-            AlarmChange(item, null, EventEnum.Finish, alarmEnum);
+            AlarmChange(item, null, text, EventEnum.Finish, alarmEnum);
         }
         else
         {
@@ -396,19 +397,19 @@ public class AlarmHostService : BackgroundService, ISingleton
                 {
                     if (result)
                     {
-                        AlarmChange(item, limit, EventEnum.Alarm, alarmEnum);
+                        AlarmChange(item, limit, text, EventEnum.Alarm, alarmEnum);
                     }
                 }
             }
             else
             {
-                AlarmChange(item, limit, EventEnum.Alarm, alarmEnum);
+                AlarmChange(item, limit, text, EventEnum.Alarm, alarmEnum);
             }
 
         }
     }
 
-    private void AlarmChange(CollectVariableRunTime item, object limit, EventEnum eventEnum, AlarmEnum alarmEnum)
+    private void AlarmChange(CollectVariableRunTime item, object limit,string text, EventEnum eventEnum, AlarmEnum alarmEnum)
     {
         if (eventEnum == EventEnum.Finish)
         {
@@ -434,6 +435,7 @@ public class AlarmHostService : BackgroundService, ISingleton
             item.EventTypeEnum = eventEnum;
             item.AlarmLimit = limit.ToString();
             item.AlarmCode = item.Value.ToString();
+            item.AlarmText = text;
             item.AlarmTime = DateTime.UtcNow;
             item.EventTime = DateTime.UtcNow;
         }
@@ -444,6 +446,7 @@ public class AlarmHostService : BackgroundService, ISingleton
             item.EventTypeEnum = eventEnum;
             item.AlarmLimit = oldAlarm.AlarmLimit;
             item.AlarmCode = item.Value.ToString();
+            item.AlarmText = text;
             item.EventTime = DateTime.UtcNow;
         }
         else if (eventEnum == EventEnum.Check)
@@ -452,6 +455,7 @@ public class AlarmHostService : BackgroundService, ISingleton
             item.EventTypeEnum = eventEnum;
             item.AlarmLimit = limit.ToString();
             item.AlarmCode = item.Value.ToString();
+            item.AlarmText = text;
             item.EventTime = DateTime.UtcNow;
         }
 
