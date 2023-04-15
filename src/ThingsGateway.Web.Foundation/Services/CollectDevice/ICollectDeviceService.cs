@@ -16,36 +16,36 @@ namespace ThingsGateway.Web.Foundation
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        Task Add(CollectDevice input);
+        Task AddAsync(CollectDevice input);
         /// <summary>
         /// 复制设备
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        Task CopyDev(IEnumerable<CollectDevice> input);
+        Task CopyDevAsync(IEnumerable<CollectDevice> input);
         /// <summary>
         /// 复制设备与变量
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        Task CopyDevAndVar(IEnumerable<CollectDevice> input);
+        Task CopyDevAndVarAsync(IEnumerable<CollectDevice> input);
         /// <summary>
         /// 上传设备
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        Task Delete(List<BaseIdInput> input);
+        Task DeleteAsync(List<BaseIdInput> input);
         /// <summary>
         /// 编辑设备
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        Task Edit(CollectDeviceEditInput input);
+        Task EditAsync(CollectDeviceEditInput input);
         /// <summary>
         /// 导出Excel
         /// </summary>
         /// <returns></returns>
-        Task<MemoryStream> ExportFile();
+        Task<MemoryStream> ExportFileAsync();
         /// <summary>
         /// 获取缓存
         /// </summary>
@@ -56,7 +56,7 @@ namespace ThingsGateway.Web.Foundation
         /// </summary>
         /// <param name="devId"></param>
         /// <returns></returns>
-        Task<List<CollectDeviceRunTime>> GetCollectDeviceRuntime(long devId = 0);
+        Task<List<CollectDeviceRunTime>> GetCollectDeviceRuntimeAsync(long devId = 0);
         /// <summary>
         /// 根据ID获取设备
         /// </summary>
@@ -85,24 +85,20 @@ namespace ThingsGateway.Web.Foundation
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        Task Import(Dictionary<string, ImportPreviewOutputBase> input);
+        Task ImportAsync(Dictionary<string, ImportPreviewOutputBase> input);
         /// <summary>
         /// 分页查询
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        Task<SqlSugarPagedList<CollectDevice>> Page(CollectDevicePageInput input);
+        Task<SqlSugarPagedList<CollectDevice>> PageAsync(CollectDevicePageInput input);
         /// <summary>
         /// 导入验证
         /// </summary>
         /// <param name="file"></param>
         /// <returns></returns>
-        Task<Dictionary<string, ImportPreviewOutputBase>> Preview(IBrowserFile file);
-        /// <summary>
-        /// 导出模板
-        /// </summary>
-        /// <returns></returns>
-        Task<MemoryStream> Template();
+        Task<Dictionary<string, ImportPreviewOutputBase>> PreviewAsync(IBrowserFile file);
+
 
     }
     /// <summary>

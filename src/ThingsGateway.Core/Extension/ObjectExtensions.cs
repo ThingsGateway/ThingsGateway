@@ -1,7 +1,4 @@
-﻿
-using Magicodes.ExporterAndImporter.Core;
-
-using NewLife;
+﻿using NewLife;
 
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
@@ -66,7 +63,7 @@ namespace ThingsGateway.Core
                 var fields = modelType.GetRuntimeFields().Where(a => a.IsPublic);
                 fields = fields.OrderBy(a =>
                 {
-                    var order = a.GetCustomAttribute<OrderDataAttribute>()?.Order;
+                    var order = a.GetCustomAttribute<OrderTableAttribute>()?.Order;
                     if (order != null)
                         return order;
                     else
@@ -90,7 +87,7 @@ namespace ThingsGateway.Core
                 var props = modelType.GetRuntimeProperties().Where(a => a.GetMethod.IsPublic);
                 props = props.OrderBy(a =>
                 {
-                    var order = a.GetCustomAttribute<OrderDataAttribute>()?.Order;
+                    var order = a.GetCustomAttribute<OrderTableAttribute>()?.Order;
                     if (order != null)
                         return order;
                     else
@@ -144,18 +141,17 @@ namespace ThingsGateway.Core
             });
 
             return displayName ?? fieldName;
+        }
 
-            string FindDisplayAttribute(MemberInfo memberInfo)
-            {
-                var dn = memberInfo.GetCustomAttribute<DisplayAttribute>(true)?.Name
-                    ?? memberInfo.GetCustomAttribute<DisplayNameAttribute>(true)?.DisplayName
-                    ?? memberInfo.GetCustomAttribute<DescriptionAttribute>(true)?.Description
-                    ?? memberInfo.GetCustomAttribute<SugarColumn>(true)?.ColumnDescription
-                    ?? memberInfo.GetCustomAttribute<ImporterHeaderAttribute>(true)?.Name
-                    ?? memberInfo.GetCustomAttribute<ExporterHeaderAttribute>(true)?.DisplayName;
+        public static string FindDisplayAttribute(this MemberInfo memberInfo, Func<MemberInfo, string> func = null)
+        {
+            var dn = memberInfo.GetCustomAttribute<DisplayAttribute>(true)?.Name
+                ?? memberInfo.GetCustomAttribute<DisplayNameAttribute>(true)?.DisplayName
+                ?? memberInfo.GetCustomAttribute<DescriptionAttribute>(true)?.Description
+                ?? memberInfo.GetCustomAttribute<SugarColumn>(true)?.ColumnDescription
+                ?? func?.Invoke(memberInfo);
 
-                return dn;
-            }
+            return dn;
         }
 
         /// <summary>
@@ -230,7 +226,7 @@ namespace ThingsGateway.Core
 
                 var propertyInfo = props.FirstOrDefault(p => p.Name == fieldName);
                 if (propertyInfo != null)
-                    if(propertyInfo.PropertyType!= typeof(DateTime))
+                    if (propertyInfo.PropertyType != typeof(DateTime))
                     {
                         dn = propertyInfo.GetValue(forObject)?.ToString();
                     }

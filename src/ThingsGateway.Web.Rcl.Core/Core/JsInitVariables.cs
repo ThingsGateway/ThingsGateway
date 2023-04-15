@@ -34,7 +34,7 @@ public class JsInitVariables : IAsyncDisposable
         }
     }
 
-    public async Task SetTimezoneOffset()
+    public async Task SetTimezoneOffsetAsync()
     {
         var timezoneOffsetResult = await _storage.GetCookieAsync(_timezoneOffsetKey);
         if (string.IsNullOrEmpty(timezoneOffsetResult) is false)

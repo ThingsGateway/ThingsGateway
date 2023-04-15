@@ -100,7 +100,7 @@ namespace ThingsGateway.Core
                     //根据判断主键插入或更新
                     var storage = db.Storageable(seedDataTable).WhereColumns(nameof(PrimaryIdEntity.Id)).ToStorage();
                     if (ignoreAdd == null) storage.AsInsertable.ExecuteCommand();//执行插入
-                    if (ignoreUpdate == null&&config.IsUpdateSeedData) storage.AsUpdateable.ExecuteCommand();//只有没有忽略更新的特性才执行更新
+                    if (ignoreUpdate == null && config.IsUpdateSeedData) storage.AsUpdateable.ExecuteCommand();//只有没有忽略更新的特性才执行更新
                 }
                 else // 没有主键或者不是预定义的主键(有重复的可能)
                 {

@@ -1,6 +1,4 @@
-﻿using Magicodes.ExporterAndImporter.Core.Models;
-
-using Microsoft.AspNetCore.Components.Forms;
+﻿using Microsoft.AspNetCore.Components.Forms;
 
 namespace ThingsGateway.Application;
 
@@ -18,13 +16,6 @@ public interface IFileService : ITransient
     /// <param name="allowTypes">允许上传类型</param>
     void ImportVerification(IBrowserFile file, int maxSzie = 30, string[] allowTypes = null);
 
-
-    /// <summary>
-    /// 模板数据验证
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="importResult">导入结果</param>
-    ImportPreviewOutput<T> TemplateDataVerification<T>(ImportResult<T> importResult) where T : class;
 
 
 }

@@ -1,6 +1,4 @@
-﻿using Magicodes.ExporterAndImporter.Core.Models;
-
-namespace ThingsGateway.Core;
+﻿namespace ThingsGateway.Core;
 
 public class ImportPreviewOutputBase
 {
@@ -9,18 +7,12 @@ public class ImportPreviewOutputBase
     /// </summary>
     public bool HasError { get; set; }
     public virtual int DataCount { get; }
-    public IList<DataRowErrorInfo> RowErrors { get; set; }
+    public string ErrorStr { get; set; }
 }
-/// <summary>
-/// 文件导入通用输出
-/// </summary>
 public class ImportPreviewOutput<T> : ImportPreviewOutputBase where T : class
 {
-    /// <summary>
-    /// 数据
-    /// </summary>
-    public List<T> Data { get; set; }
     public override int DataCount { get => Data == null ? 0 : Data.Count; }
-
+    public IList<T> Data { get; set; }
 }
+
 

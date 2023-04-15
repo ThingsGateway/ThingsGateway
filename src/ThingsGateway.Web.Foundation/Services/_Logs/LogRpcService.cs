@@ -8,13 +8,13 @@ namespace ThingsGateway.Web.Foundation
     {
         /// <inheritdoc />
         [OperDesc("删除网关Rpc日志")]
-        public async Task Delete()
+        public async Task DeleteAsync()
         {
             await AsDeleteable().ExecuteCommandAsync();
         }
 
         /// <inheritdoc />
-        public async Task<SqlSugarPagedList<RpcLog>> Page(RpcLogPageInput input)
+        public async Task<SqlSugarPagedList<RpcLog>> PageAsync(RpcLogPageInput input)
         {
             var query = Context.Queryable<RpcLog>()
                                .WhereIF(!string.IsNullOrEmpty(input.Source), it => it.OperateSource.Contains(input.Source))

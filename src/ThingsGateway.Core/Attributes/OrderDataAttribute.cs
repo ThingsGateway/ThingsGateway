@@ -3,7 +3,7 @@
 /// <summary>
 /// 排序
 /// </summary>
-public class OrderDataAttribute : Attribute
+public class OrderTableAttribute : Attribute
 {
     public int Order { get; set; } = 999;
 }

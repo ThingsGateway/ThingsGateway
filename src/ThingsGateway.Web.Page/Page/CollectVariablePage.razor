@@ -98,7 +98,7 @@
     </MCol>
 </MRow>
 
-<ImportExcel @ref=ImportExcel Import="SaveDeviceImport" Preview="DeviceImport" Template="DownTemplate" />
+<ImportExcel @ref=ImportExcel Import="SaveDeviceImport" Preview="DeviceImport" />
 
 
 
@@ -110,18 +110,15 @@
     ImportExcel ImportExcel;
     async Task SaveDeviceImport(Dictionary<string, ImportPreviewOutputBase> data)
     {
-        await VariableService.Import(data);
+        await VariableService.ImportAsync(data);
         await datatableQuery();
         ImportExcel.IsShowImport = false;
     }
     Task<Dictionary<string, ImportPreviewOutputBase>> DeviceImport(IBrowserFile file)
     {
-        return VariableService.Preview(file);
+        return VariableService.PreviewAsync(file);
     }
-    Task<MemoryStream> DownTemplate()
-    {
-        return VariableService.Template();
-    }
+
 }
 @code {
     [Inject]
@@ -133,7 +130,7 @@
         {
             isDownExport = true;
             StateHasChanged();
-            using var memoryStream = await VariableService.ExportFile();
+            using var memoryStream = await VariableService.ExportFileAsync();
             memoryStream.Seek(0, SeekOrigin.Begin);
             using var streamRef = new DotNetStreamReference(stream: memoryStream);
             await JS.InvokeVoidAsync("downloadFileFromStream", $"变量导出{DateTime.UtcNow.ToString("MM-dd-HH-mm-ss")}.xlsx", streamRef);
@@ -153,8 +150,8 @@
     {
         if (devId > 0)
         {
-            var data = this.GetBackgroundService<CollectDeviceHostService>().GetDeviceMethods(devId);
-            OtherMethods.AddOrUpdate(devId,data);
+            var data = this.GetBackgroundService<CollectDeviceWorker>().GetDeviceMethods(devId);
+            OtherMethods.AddOrUpdate(devId, data);
         }
         else
             OtherMethods = new();
@@ -162,9 +159,9 @@
 
     RenderFragment GetRenderFragment(VariableEditInput context)
     {
-        if(!OtherMethods.ContainsKey(context.DeviceId))
+        if (!OtherMethods.ContainsKey(context.DeviceId))
         {
-            DeviceChanged(context.DeviceId);      
+            DeviceChanged(context.DeviceId);
         }
 
         RenderFragment renderFragment = null;
@@ -181,13 +178,13 @@
             <MTabItem>
                 <MCard Flat Class="ma-2">
                     <MRow NoGutters Class="my-2" Justify="JustifyTypes.Start">
-                        <MCol Md=6 Cols=12 class="px-1">
+                        <MCol Md=12 Cols=12 class="px-1">
                             <MSubheader Class="font-weight-black"> @(context.Description(x => x.Name))  </MSubheader>
                             <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.Name />
                             </MCol>
 
 
-                            <MCol Md=6 Cols=12 class="px-1">
+                            <MCol Md=12 Cols=12 class="px-1">
                             <MSubheader Class="font-weight-black">    @(context.Description(x => x.Description))  </MSubheader>
                             <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.Description />
                             </MCol>
@@ -204,13 +201,14 @@
                         </MCol>
 
                         <MCol Md=6 Cols=12 class="px-1">
-                            <MSubheader Class="font-weight-black">    @(context.Description(x => x.VariableAddress))  </MSubheader>
-                            <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.VariableAddress />
-                            </MCol>
-
-                            <MCol Md=6 Cols=12 class="px-1">
                             <MSubheader Class="font-weight-black">    @(context.Description(x => x.IntervalTime))  </MSubheader>
                             <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.IntervalTime />
+                            </MCol>
+
+
+                            <MCol Md=12 Cols=12 class="px-1">
+                            <MSubheader Class="font-weight-black">    @(context.Description(x => x.VariableAddress))  </MSubheader>
+                            <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.VariableAddress />
                             </MCol>
 
 
@@ -251,10 +249,10 @@
                             <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.WriteExpressions />
                             </MCol>
 
-                            @if(OtherMethods.ContainsKey(context.DeviceId))
-                            {
+                            @if (OtherMethods.ContainsKey(context.DeviceId))
+                        {
 
-                            <MCol Md=6 Cols=12 class="px-1">
+                            <MCol Md=12 Cols=12 class="px-1">
                                 <MSubheader Class="font-weight-black">    @(context.Description(x => x.OtherMethod))  </MSubheader>
                                 <MSelect Class="mr-3" @bind-Value="context.OtherMethod" Outlined
                                  Items=@(OtherMethods[context.DeviceId]) Clearable
@@ -266,7 +264,7 @@
                                 </MSelect>
                             </MCol>
 
-                            }
+                        }
 
                     </MRow>
 
@@ -494,16 +492,16 @@
                              {
                              if(choiceUploadDeviceId>0)
                              {
-                                 var data=GetDriverProperties(UploadDevices.FirstOrDefault(a=>a.Id==choiceUploadDeviceId).PluginId,context.VariablePropertys.ContainsKey(choiceUploadDeviceId)?context.VariablePropertys[choiceUploadDeviceId]:null);
-                                 if(data.Count>0)
-                                 {
+                             var data=GetDriverProperties(UploadDevices.FirstOrDefault(a=>a.Id==choiceUploadDeviceId).PluginId,context.VariablePropertys.ContainsKey(choiceUploadDeviceId)?context.VariablePropertys[choiceUploadDeviceId]:null);
+                             if(data?.Count>0)
+                             {
                              context.VariablePropertys.AddOrUpdate(choiceUploadDeviceId, data);
-                                 }
-                                 else
-                                 {
+                             }
+                             else
+                             {
                              await PopupService.EnqueueSnackbarAsync("此上传设备没有变量上传属性",AlertTypes.Warning);
                              context.VariablePropertys.Remove(choiceUploadDeviceId);
-                                 }
+                             }
                              }
                              else
                              {
@@ -534,6 +532,15 @@
                                             </ChildContent>
                                             </MTooltip>
                                 }
+                                <MCardActions>
+                                    <MButton Class="my-3" OnClick=@(() =>
+                                 {
+                                 context.VariablePropertys.Remove(item.Key);
+                                 }
+                                 ) Color="primary">
+                                        @T("删除")
+                                    </MButton>
+                                </MCardActions>
                             </MCard>
                         }
 
@@ -555,6 +562,6 @@
     long choiceUploadDeviceId;
     List<DependencyProperty> GetDriverProperties(long driverId, List<DependencyProperty> dependencyProperties)
     {
-        return this.GetBackgroundService<UploadDeviceHostService>().GetVariablePropertys(driverId, dependencyProperties);
+        return this.GetBackgroundService<UploadDeviceWorker>().GetVariablePropertys(driverId, dependencyProperties);
     }
 }

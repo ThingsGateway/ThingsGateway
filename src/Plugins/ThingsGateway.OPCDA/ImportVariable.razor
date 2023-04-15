@@ -5,7 +5,7 @@
 @using ThingsGateway.Foundation;
 @using ThingsGateway.Web.Foundation;
 @using Masa.Blazor
-@inherits DriverUI
+@inherits DriverImportUIBase
 <MCard Class="ma-0">
     <MCardTitle Class="indigo white--text text-h6">
         @OPCDAClient.PLC?.OPCNode?.ToString()
@@ -16,7 +16,7 @@
             <MTreeview @bind-Value=_selected @bind-Active=_actived SelectionType="SelectionType.Leaf"
                        Items=Nodes TItem=OPCDATagModel
                        Color="warning" Selectable Activatable OpenOnClick
-                       LoadChildren=PopulateBranch
+                       LoadChildren=PopulateBranchAsync
                        TKey=BrowseElement ItemKey="r=>r.Tag"
                        Style="height:500px;overflow-y:auto;"
                        ItemText="r=>r.Name"
@@ -115,8 +115,8 @@
     }
     private bool overlay = true;
     [Parameter]
-    public override object Driver { get; set; }
-    private OPCDAClient OPCDAClient => (OPCDAClient)Driver;
+    public override object DriverObj { get; set; }
+    private OPCDAClient OPCDAClient => (OPCDAClient)DriverObj;
     private List<OPCDATagModel> Nodes = new();
     private List<BrowseElement> _selected { get; set; } = new();
     private List<BrowseElement> actived = new();
@@ -136,7 +136,7 @@
 
     }
 
-    private Task PopulateBranch(OPCDATagModel model)
+    private Task PopulateBranchAsync(OPCDATagModel model)
     {
         return Task.Run(() =>
         {
@@ -146,7 +146,7 @@
 
     }
 
-    public override List<CollectDeviceVariable> GetVariableList()
+    public override List<CollectDeviceVariable> GetImportVariableList()
     {
         var data = _selected.Select(a =>
           {

@@ -75,11 +75,11 @@
 
     HisPageInput _searchModel { get; set; } = new();
     private IAppDataTable _datatable;
-    ValueHisHostService ValueHisHostService { get; set; }
+    ValueHisWorker ValueHisHostService { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        ValueHisHostService = this.GetBackgroundService<ValueHisHostService>();
+        ValueHisHostService = this.GetBackgroundService<ValueHisWorker>();
         _searchModel.DeviceName = DeviceName;
         await base.OnInitializedAsync();
     }
@@ -87,7 +87,7 @@
 
     private async Task datatableQuery()
     {
-        await _datatable?.QueryClick();
+        await _datatable?.QueryClickAsync();
     }
 
 
@@ -128,7 +128,7 @@
 
     private async Task<SqlSugarPagedList<ValueHis>> QueryCall(HisPageInput input)
     {
-        var result = await ValueHisHostService.HisConfig();
+        var result = await ValueHisHostService.GetHisDbAsync();
         if (result.IsSuccess)
         {
             try

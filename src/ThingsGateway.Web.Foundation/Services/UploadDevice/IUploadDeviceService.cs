@@ -16,30 +16,30 @@ namespace ThingsGateway.Web.Foundation
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        Task Add(UploadDevice input);
+        Task AddAsync(UploadDevice input);
         /// <summary>
         /// 复制设备
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        Task CopyDev(IEnumerable<UploadDevice> input);
+        Task CopyDevAsync(IEnumerable<UploadDevice> input);
         /// <summary>
         /// 删除设备
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        Task Delete(List<BaseIdInput> input);
+        Task DeleteAsync(List<BaseIdInput> input);
         /// <summary>
         /// 编辑设备
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        Task Edit(UploadDeviceEditInput input);
+        Task EditAsync(UploadDeviceEditInput input);
         /// <summary>
         /// 导出
         /// </summary>
         /// <returns></returns>
-        Task<MemoryStream> ExportFile();
+        Task<MemoryStream> ExportFileAsync();
         /// <summary>
         /// 获取缓存
         /// </summary>
@@ -74,23 +74,18 @@ namespace ThingsGateway.Web.Foundation
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        Task Import(Dictionary<string, ImportPreviewOutputBase> input);
+        Task ImportAsync(Dictionary<string, ImportPreviewOutputBase> input);
         /// <summary>
         /// 分页
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        Task<SqlSugarPagedList<UploadDevice>> Page(UploadDevicePageInput input);
+        Task<SqlSugarPagedList<UploadDevice>> PageAsync(UploadDevicePageInput input);
         /// <summary>
         /// 导入验证
         /// </summary>
         /// <param name="file"></param>
         /// <returns></returns>
-        Task<Dictionary<string, ImportPreviewOutputBase>> Preview(IBrowserFile file);
-        /// <summary>
-        /// 导出模板
-        /// </summary>
-        /// <returns></returns>
-        Task<MemoryStream> Template();
+        Task<Dictionary<string, ImportPreviewOutputBase>> PreviewAsync(IBrowserFile file);
     }
 }

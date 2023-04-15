@@ -26,24 +26,24 @@ namespace ThingsGateway.Web.Page
 
         private async Task AddCall(UploadDeviceAddInput input)
         {
-            await UploadDeviceService.Add(input);
+            await UploadDeviceService.AddAsync(input);
             _deviceGroups = UploadDeviceService.GetCacheList()?.Select(a => a.DeviceGroup)?.Where(a => a != null).Distinct()?.ToList();
         }
         private async Task datatableQuery()
         {
-            await _datatable?.QueryClick();
+            await _datatable?.QueryClickAsync();
         }
 
         private async Task DeleteCall(IEnumerable<UploadDevice> input)
         {
-            await UploadDeviceService.Delete(input.ToList().ConvertAll(it => new BaseIdInput()
+            await UploadDeviceService.DeleteAsync(input.ToList().ConvertAll(it => new BaseIdInput()
             { Id = it.Id }));
             _deviceGroups = UploadDeviceService.GetCacheList()?.Select(a => a.DeviceGroup)?.Where(a => a != null).Distinct()?.ToList();
         }
 
         private async Task EditCall(UploadDeviceEditInput input)
         {
-            await UploadDeviceService.Edit(input);
+            await UploadDeviceService.EditAsync(input);
             _deviceGroups = UploadDeviceService.GetCacheList()?.Select(a => a.DeviceGroup)?.Where(a => a != null).Distinct()?.ToList();
         }
 
@@ -91,7 +91,7 @@ namespace ThingsGateway.Web.Page
 
         private async Task<SqlSugarPagedList<UploadDevice>> QueryCall(UploadDevicePageInput input)
         {
-            var data = await UploadDeviceService.Page(input);
+            var data = await UploadDeviceService.PageAsync(input);
             return data;
         }
     }

@@ -202,17 +202,17 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
         /// <summary>
         /// 读取变长字符串
         /// </summary>
-        public async Task<OperResult<string>> ReadString(string address, Encoding encoding)
+        public async Task<OperResult<string>> ReadStringAsync(string address, Encoding encoding)
         {
-            return await SiemensHelper.ReadString(this, address, encoding);
+            return await SiemensHelper.ReadStringAsync(this, address, encoding);
         }
 
-        public async Task<OperResult<System.DateTime>> ReadDateTime(string address)
+        public async Task<OperResult<System.DateTime>> ReadDateTimeAsync(string address)
         {
             return ByteTransformHelper.GetResultFromBytes(await ReadAsync(address, 8), ThingsGateway.Foundation.Adapter.Siemens.DateTime.FromByteArray);
         }
 
-        public async Task<OperResult<System.DateTime>> ReadDate(string address)
+        public async Task<OperResult<System.DateTime>> ReadDateAsync(string address)
         {
             return (await this.ReadAsync(address, 2)).
                  Then(m => OperResult.CreateSuccessResult(ThingsGateway.Foundation.Adapter.Siemens.DateTime.SpecMinimumDateTime.AddDays(
@@ -229,7 +229,7 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
 
         public override Task<OperResult> WriteAsync(string address, string value, Encoding encoding, CancellationToken token = default)
         {
-            return SiemensHelper.Write(this, address, value, encoding);
+            return SiemensHelper.WriteAsync(this, address, value, encoding);
         }
 
         public override async Task<OperResult> WriteAsync(string address, byte[] value, CancellationToken token = default)
@@ -318,12 +318,12 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
 
         }
 
-        public async Task<OperResult> WriteDateTime(string address, System.DateTime dateTime)
+        public async Task<OperResult> WriteDateTimeAsync(string address, System.DateTime dateTime)
         {
             return await WriteAsync(address, ThingsGateway.Foundation.Adapter.Siemens.DateTime.ToByteArray(dateTime));
         }
 
-        public async Task<OperResult> WriteDate(string address, System.DateTime dateTime)
+        public async Task<OperResult> WriteDateAsync(string address, System.DateTime dateTime)
         {
             return await base.WriteAsync(address, Convert.ToUInt16((dateTime - ThingsGateway.Foundation.Adapter.Siemens.DateTime.SpecMinimumDateTime).TotalDays));
         }

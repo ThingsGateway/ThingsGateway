@@ -119,7 +119,7 @@
     </MCol>
 </MRow>
 
-<ImportExcel @ref=ImportExcel Import="SaveDeviceImport" Preview="DeviceImport" Template="DownTemplate" />
+<ImportExcel @ref=ImportExcel Import="SaveDeviceImport" Preview="DeviceImport" />
 
 @code{
     async Task CopyDevice(IEnumerable<CollectDevice> data)
@@ -129,7 +129,7 @@
             await PopupService.EnqueueSnackbarAsync(@T("需选择一项或多项"), AlertTypes.Warning);
             return;
         }
-        await CollectDeviceService.CopyDev(data);
+        await CollectDeviceService.CopyDevAsync(data);
         await datatableQuery();
         await PopupService.EnqueueSnackbarAsync("复制成功", AlertTypes.Success);
 
@@ -142,7 +142,7 @@
             await PopupService.EnqueueSnackbarAsync(@T("需选择一项或多项"), AlertTypes.Warning);
             return;
         }
-        await CollectDeviceService.CopyDevAndVar(data);
+        await CollectDeviceService.CopyDevAndVarAsync(data);
         await datatableQuery();
         await PopupService.EnqueueSnackbarAsync("复制成功", AlertTypes.Success);
 
@@ -156,18 +156,15 @@
 
     async Task SaveDeviceImport(Dictionary<string, ImportPreviewOutputBase> data)
     {
-        await CollectDeviceService.Import(data);
+        await CollectDeviceService.ImportAsync(data);
         await datatableQuery();
         ImportExcel.IsShowImport = false;
     }
     Task<Dictionary<string, ImportPreviewOutputBase>> DeviceImport(IBrowserFile file)
     {
-        return CollectDeviceService.Preview(file);
+        return CollectDeviceService.PreviewAsync(file);
     }
-    Task<MemoryStream> DownTemplate()
-    {
-        return CollectDeviceService.Template();
-    }
+
 }
     @code {
     [Inject]
@@ -179,7 +176,7 @@
         {
             isDownExport = true;
             StateHasChanged();
-            using var memoryStream = await CollectDeviceService.ExportFile();
+            using var memoryStream = await CollectDeviceService.ExportFileAsync();
             memoryStream.Seek(0, SeekOrigin.Begin);
             using var streamRef = new DotNetStreamReference(stream: memoryStream);
             await JS.InvokeVoidAsync("downloadFileFromStream", $"采集设备导出{DateTime.UtcNow.ToString("MM-dd-HH-mm-ss")}.xlsx", streamRef);
@@ -208,7 +205,7 @@
     }
     List<DependencyProperty> GetDriverProperties(long driverId, long devId)
     {
-        return this.GetBackgroundService<CollectDeviceHostService>().GetDevicePropertys(driverId, devId);
+        return this.GetBackgroundService<CollectDeviceWorker>().GetDevicePropertys(driverId, devId);
     }
     RenderFragment GetRenderFragment(CollectDeviceEditInput context)
     {
@@ -272,7 +269,7 @@
                         @foreach (var item in context.DevicePropertys)
                         {
                             <MSubheader Class="mt-4 font-weight-black"> @item.Description </MSubheader>
-                            <MTooltip Disabled=item.Remark.IsNullOrEmpty() Bottom Context="tip">
+                            <MTooltip Disabled=@(item.Remark==null||item.Remark?.IsNullOrEmpty()==true) Bottom Context="tip">
                                 <ActivatorContent>
                                     <MTextField Type="@(item.PropertyName.Contains("Password") ? "password" : "text")" @attributes="@tip.Attrs" Dense Outlined HideDetails="@("auto")" @bind-Value=@item.Value />
                                     </ActivatorContent>

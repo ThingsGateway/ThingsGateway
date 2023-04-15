@@ -25,10 +25,10 @@ namespace ThingsGateway.Web.Foundation
         {
             _scopeFactory = scopeFactory;
             using var serviceScope = _scopeFactory.CreateScope();
-            _rpcCore = serviceScope.ServiceProvider.GetService<RpcCore>();
+            _rpcCore = serviceScope.ServiceProvider.GetService<RpcSingletonService>();
         }
 
-        RpcCore _rpcCore { get; set; }
+        RpcSingletonService _rpcCore { get; set; }
         /// <summary>
         /// 写入变量
         /// </summary>
@@ -36,7 +36,7 @@ namespace ThingsGateway.Web.Foundation
         [Description("写入变量")]
         public Task<OperResult> WriteDeviceMethod(NameValue obj)
         {
-            return _rpcCore.InvokeDeviceMethod($"WebApi-{UserManager.UserAccount}-{App.HttpContext.Connection.RemoteIpAddress.MapToIPv4()}", obj);
+            return _rpcCore.InvokeDeviceMethodAsync($"WebApi-{UserManager.UserAccount}-{App.HttpContext.Connection.RemoteIpAddress.MapToIPv4()}", obj);
         }
         /// <summary>
         /// 写入多个变量
@@ -48,7 +48,7 @@ namespace ThingsGateway.Web.Foundation
             Dictionary<string, OperResult> operResultDict = new Dictionary<string, OperResult>();
             foreach (var obj in objs)
             {
-                var result=await _rpcCore.InvokeDeviceMethod($"WebApi-{UserManager.UserAccount}-{App.HttpContext.Connection.RemoteIpAddress.MapToIPv4()}", obj);
+                var result = await _rpcCore.InvokeDeviceMethodAsync($"WebApi-{UserManager.UserAccount}-{App.HttpContext.Connection.RemoteIpAddress.MapToIPv4()}", obj);
                 operResultDict.Add(obj.Name, result);
             }
             return operResultDict;

@@ -15,11 +15,11 @@ namespace ThingsGateway.Web.Page
 
         private async Task AddCall(DriverPluginAddInput input)
         {
-            await DriverPluginService.Add(input);
+            await DriverPluginService.AddAsync(input);
         }
         private async Task datatableQuery()
         {
-            await _datatable?.QueryClick();
+            await _datatable?.QueryClickAsync();
         }
         private void FilterHeaders(List<DataTableHeader<DriverPlugin>> datas)
         {
@@ -65,7 +65,7 @@ namespace ThingsGateway.Web.Page
 
         private async Task<SqlSugarPagedList<DriverPlugin>> QueryCall(DriverPluginPageInput input)
         {
-            var data = await DriverPluginService.Page(input);
+            var data = await DriverPluginService.PageAsync(input);
             return data;
         }
     }

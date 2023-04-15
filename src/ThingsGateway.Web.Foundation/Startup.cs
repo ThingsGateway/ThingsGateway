@@ -23,10 +23,10 @@
             });
 
             //添加采集/上传后台服务
-            services.AddHostedService<CollectDeviceHostService>();
-            services.AddHostedService<AlarmHostService>();
-            services.AddHostedService<ValueHisHostService>();
-            services.AddHostedService<UploadDeviceHostService>();
+            services.AddHostedService<CollectDeviceWorker>();
+            services.AddHostedService<AlarmWorker>();
+            services.AddHostedService<ValueHisWorker>();
+            services.AddHostedService<UploadDeviceWorker>();
         }
     }
 }

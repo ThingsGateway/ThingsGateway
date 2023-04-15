@@ -29,12 +29,12 @@ namespace ThingsGateway.Web.Foundation
         {
             _scopeFactory = scopeFactory;
             using var serviceScope = _scopeFactory.CreateScope();
-            _collectDeviceHostService = serviceScope.GetBackgroundService<CollectDeviceHostService>();
-            _alarmHostService = serviceScope.GetBackgroundService<AlarmHostService>();
+            _collectDeviceHostService = serviceScope.GetBackgroundService<CollectDeviceWorker>();
+            _alarmHostService = serviceScope.GetBackgroundService<AlarmWorker>();
         }
 
-        AlarmHostService _alarmHostService { get; set; }
-        CollectDeviceHostService _collectDeviceHostService { get; set; }
+        AlarmWorker _alarmHostService { get; set; }
+        CollectDeviceWorker _collectDeviceHostService { get; set; }
         /// <summary>
         /// 获取设备信息
         /// </summary>

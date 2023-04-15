@@ -100,7 +100,7 @@ namespace ThingsGateway.Foundation.Extension
         /// </summary>
         /// <param name="self">Type类</param>
         /// <returns>判断结果</returns>
-        public static bool IsNullable(this Type self)
+        public static bool IsNullable(Type self)
         {
             return self.IsGeneric(typeof(Nullable<>));
         }
@@ -109,10 +109,10 @@ namespace ThingsGateway.Foundation.Extension
         /// </summary>
         /// <param name="self"></param>
         /// <returns></returns>
-        public static bool IsNumber(this Type self)
+        public static bool IsNumber(Type self)
         {
             Type checktype = self;
-            if (self.IsNullable())
+            if (IsNullable(self))
             {
                 checktype = self.GetGenericArguments()[0];
             }

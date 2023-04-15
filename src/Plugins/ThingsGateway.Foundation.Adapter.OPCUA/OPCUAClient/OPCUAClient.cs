@@ -18,8 +18,11 @@ public class OPCUAClient : DisposableObject
 
     public Action<List<(MonitoredItem monitoredItem, MonitoredItemNotification monitoredItemNotification)>> DataChangedHandler;
     public OPCNode OPCNode;
+    private EasyLock _keepAliveLock = new();
+    private Dictionary<string, List<string>> _tagDicts = new();
     private Dictionary<string, Subscription> dic_subscriptions;
 
+    private ApplicationInstance m_application;
     private ApplicationConfiguration m_configuration;
 
     private EventHandler m_ConnectComplete;
@@ -41,7 +44,6 @@ public class OPCUAClient : DisposableObject
 
     /// 是否使用安全连接
     private bool m_useSecurity = true;
-    private ApplicationInstance m_application;
     /// <summary>
     /// 默认的构造函数，实例化一个新的OPC UA类
     /// </summary>
@@ -243,14 +245,6 @@ public class OPCUAClient : DisposableObject
         get { return m_useSecurity; }
         set { m_useSecurity = value; }
     }
-
-    private Dictionary<string, List<string>> _tagDicts = new();
-    public Dictionary<string, List<string>> SetTags(List<string> tags)
-    {
-        int i = 0;
-        _tagDicts = tags.ChunkTrivialBetter(OPCNode.GroupSize).ToDictionary(a => "default" + (i++));
-        return _tagDicts;
-    }
     /// <summary>
     /// 新增一个订阅，需要指定订阅的关键字，订阅的tag名，以及回调方法
     /// </summary>
@@ -381,9 +375,9 @@ public class OPCUAClient : DisposableObject
     /// <summary>
     /// connect to server
     /// </summary>
-    public async Task ConnectServer()
+    public async Task ConnectAsync()
     {
-        m_session = await Connect(OPCNode.OPCUrl);
+        m_session = await ConnectAsync(OPCNode.OPCUrl);
     }
 
     /// <summary>
@@ -722,6 +716,7 @@ public class OPCUAClient : DisposableObject
 
         return taskCompletionSource.Task;
     }
+
     /// <summary>
     /// read several value nodes from server
     /// </summary>
@@ -783,6 +778,165 @@ public class OPCUAClient : DisposableObject
             asyncState: null);
 
         return taskCompletionSource.Task;
+    }
+
+    /// <summary>
+    /// 读取一个节点的所有属性
+    /// </summary>
+    /// <param name="tag">节点信息</param>
+    /// <returns>节点的特性值</returns>
+    public OPCNodeAttribute[] ReadNoteAttribute(string tag, uint attributesid)
+    {
+        NodeId sourceId = new NodeId(tag);
+        ReadValueIdCollection nodesToRead = new ReadValueIdCollection();
+
+        ReadValueId nodeToRead1 = new ReadValueId();
+        nodeToRead1.NodeId = sourceId;
+        nodeToRead1.AttributeId = attributesid;
+        nodesToRead.Add(nodeToRead1);
+
+        int startOfProperties = nodesToRead.Count;
+
+        // find all of the pror of the node.
+        BrowseDescription nodeToBrowse1 = new BrowseDescription();
+
+        nodeToBrowse1.NodeId = sourceId;
+        nodeToBrowse1.BrowseDirection = BrowseDirection.Forward;
+        nodeToBrowse1.ReferenceTypeId = ReferenceTypeIds.HasProperty;
+        nodeToBrowse1.IncludeSubtypes = true;
+        nodeToBrowse1.NodeClassMask = 0;
+        nodeToBrowse1.ResultMask = (uint)BrowseResultMask.All;
+
+        BrowseDescriptionCollection nodesToBrowse = new BrowseDescriptionCollection();
+        nodesToBrowse.Add(nodeToBrowse1);
+
+        // fetch property references from the server.
+        ReferenceDescriptionCollection references = FormUtils.Browse(m_session, nodesToBrowse, false);
+
+        if (references == null)
+        {
+            return new OPCNodeAttribute[0];
+        }
+
+        for (int ii = 0; ii < references.Count; ii++)
+        {
+            // ignore external references.
+            if (references[ii].NodeId.IsAbsolute)
+            {
+                continue;
+            }
+
+            ReadValueId nodeToRead = new ReadValueId();
+            nodeToRead.NodeId = (NodeId)references[ii].NodeId;
+            nodeToRead.AttributeId = Attributes.Value;
+            nodesToRead.Add(nodeToRead);
+        }
+
+        // read all values.
+        DataValueCollection results = null;
+        DiagnosticInfoCollection diagnosticInfos = null;
+
+        var data = m_session.Read(
+            null,
+            0,
+            TimestampsToReturn.Neither,
+            nodesToRead,
+            out results,
+            out diagnosticInfos);
+
+        ClientBase.ValidateResponse(results, nodesToRead);
+        ClientBase.ValidateDiagnosticInfos(diagnosticInfos, nodesToRead);
+
+        // process results.
+
+        List<OPCNodeAttribute> nodeAttribute = new List<OPCNodeAttribute>();
+        for (int ii = 0; ii < results.Count; ii++)
+        {
+            OPCNodeAttribute item = new OPCNodeAttribute();
+
+            // process attribute value.
+            if (ii < startOfProperties)
+            {
+                // ignore attributes which are invalid for the node.
+                if (results[ii].StatusCode == StatusCodes.BadAttributeIdInvalid)
+                {
+                    continue;
+                }
+
+                // get the name of the attribute.
+                item.Name = Attributes.GetBrowseName(nodesToRead[ii].AttributeId);
+
+
+                // display any unexpected error.
+                if (StatusCode.IsBad(results[ii].StatusCode))
+                {
+
+                    item.Type = Utils.Format("{0}", Attributes.GetDataTypeId(nodesToRead[ii].AttributeId));
+                    item.Value = Utils.Format("{0}", results[ii].StatusCode);
+                }
+
+                // display the value.
+                else
+                {
+                    TypeInfo typeInfo = TypeInfo.Construct(results[ii].Value);
+                    item.Type = typeInfo.BuiltInType.ToString();
+
+                    if (typeInfo.ValueRank >= ValueRanks.OneOrMoreDimensions)
+                    {
+                        item.Type += "[]";
+                    }
+                    if (item.Name == nameof(Attributes.NodeClass))
+                    {
+                        item.Value = ((NodeClass)results[ii].Value).ToString();
+                    }
+                    else if (item.Name == nameof(Attributes.EventNotifier))
+                    {
+                        item.Value = ((EventNotifierType)results[ii].Value).ToString();
+                    }
+                    else
+                        item.Value = results[ii].Value;//Utils.Format("{0}", results[ii].Value);
+                }
+            }
+
+            // process property value.
+            else
+            {
+                // ignore properties which are invalid for the node.
+                if (results[ii].StatusCode == StatusCodes.BadNodeIdUnknown)
+                {
+                    continue;
+                }
+
+                // get the name of the property.
+                item.Name = Utils.Format("{0}", references[ii - startOfProperties]);
+
+                // display any unexpected error.
+                if (StatusCode.IsBad(results[ii].StatusCode))
+                {
+                    item.Type = String.Empty;
+                    item.Value = Utils.Format("{0}", results[ii].StatusCode);
+                }
+
+                // display the value.
+                else
+                {
+                    TypeInfo typeInfo = TypeInfo.Construct(results[ii].Value);
+
+                    item.Type = typeInfo.BuiltInType.ToString();
+
+                    if (typeInfo.ValueRank >= ValueRanks.OneOrMoreDimensions)
+                    {
+                        item.Type += "[]";
+                    }
+
+                    item.Value = results[ii].Value; //Utils.Format("{0}", results[ii].Value);
+                }
+            }
+
+            nodeAttribute.Add(item);
+        }
+
+        return nodeAttribute.ToArray();
     }
 
     /// <summary>
@@ -948,164 +1102,7 @@ public class OPCUAClient : DisposableObject
 
         return nodeAttribute.ToArray();
     }
-    /// <summary>
-    /// 读取一个节点的所有属性
-    /// </summary>
-    /// <param name="tag">节点信息</param>
-    /// <returns>节点的特性值</returns>
-    public OPCNodeAttribute[] ReadNoteAttribute(string tag, uint attributesid)
-    {
-        NodeId sourceId = new NodeId(tag);
-        ReadValueIdCollection nodesToRead = new ReadValueIdCollection();
 
-        ReadValueId nodeToRead1 = new ReadValueId();
-        nodeToRead1.NodeId = sourceId;
-        nodeToRead1.AttributeId = attributesid;
-        nodesToRead.Add(nodeToRead1);
-
-        int startOfProperties = nodesToRead.Count;
-
-        // find all of the pror of the node.
-        BrowseDescription nodeToBrowse1 = new BrowseDescription();
-
-        nodeToBrowse1.NodeId = sourceId;
-        nodeToBrowse1.BrowseDirection = BrowseDirection.Forward;
-        nodeToBrowse1.ReferenceTypeId = ReferenceTypeIds.HasProperty;
-        nodeToBrowse1.IncludeSubtypes = true;
-        nodeToBrowse1.NodeClassMask = 0;
-        nodeToBrowse1.ResultMask = (uint)BrowseResultMask.All;
-
-        BrowseDescriptionCollection nodesToBrowse = new BrowseDescriptionCollection();
-        nodesToBrowse.Add(nodeToBrowse1);
-
-        // fetch property references from the server.
-        ReferenceDescriptionCollection references = FormUtils.Browse(m_session, nodesToBrowse, false);
-
-        if (references == null)
-        {
-            return new OPCNodeAttribute[0];
-        }
-
-        for (int ii = 0; ii < references.Count; ii++)
-        {
-            // ignore external references.
-            if (references[ii].NodeId.IsAbsolute)
-            {
-                continue;
-            }
-
-            ReadValueId nodeToRead = new ReadValueId();
-            nodeToRead.NodeId = (NodeId)references[ii].NodeId;
-            nodeToRead.AttributeId = Attributes.Value;
-            nodesToRead.Add(nodeToRead);
-        }
-
-        // read all values.
-        DataValueCollection results = null;
-        DiagnosticInfoCollection diagnosticInfos = null;
-
-        var data = m_session.Read(
-            null,
-            0,
-            TimestampsToReturn.Neither,
-            nodesToRead,
-            out results,
-            out diagnosticInfos);
-
-        ClientBase.ValidateResponse(results, nodesToRead);
-        ClientBase.ValidateDiagnosticInfos(diagnosticInfos, nodesToRead);
-
-        // process results.
-
-        List<OPCNodeAttribute> nodeAttribute = new List<OPCNodeAttribute>();
-        for (int ii = 0; ii < results.Count; ii++)
-        {
-            OPCNodeAttribute item = new OPCNodeAttribute();
-
-            // process attribute value.
-            if (ii < startOfProperties)
-            {
-                // ignore attributes which are invalid for the node.
-                if (results[ii].StatusCode == StatusCodes.BadAttributeIdInvalid)
-                {
-                    continue;
-                }
-
-                // get the name of the attribute.
-                item.Name = Attributes.GetBrowseName(nodesToRead[ii].AttributeId);
-
-
-                // display any unexpected error.
-                if (StatusCode.IsBad(results[ii].StatusCode))
-                {
-
-                    item.Type = Utils.Format("{0}", Attributes.GetDataTypeId(nodesToRead[ii].AttributeId));
-                    item.Value = Utils.Format("{0}", results[ii].StatusCode);
-                }
-
-                // display the value.
-                else
-                {
-                    TypeInfo typeInfo = TypeInfo.Construct(results[ii].Value);
-                    item.Type = typeInfo.BuiltInType.ToString();
-
-                    if (typeInfo.ValueRank >= ValueRanks.OneOrMoreDimensions)
-                    {
-                        item.Type += "[]";
-                    }
-                    if (item.Name == nameof(Attributes.NodeClass))
-                    {
-                        item.Value = ((NodeClass)results[ii].Value).ToString();
-                    }
-                    else if (item.Name == nameof(Attributes.EventNotifier))
-                    {
-                        item.Value = ((EventNotifierType)results[ii].Value).ToString();
-                    }
-                    else
-                        item.Value = results[ii].Value;//Utils.Format("{0}", results[ii].Value);
-                }
-            }
-
-            // process property value.
-            else
-            {
-                // ignore properties which are invalid for the node.
-                if (results[ii].StatusCode == StatusCodes.BadNodeIdUnknown)
-                {
-                    continue;
-                }
-
-                // get the name of the property.
-                item.Name = Utils.Format("{0}", references[ii - startOfProperties]);
-
-                // display any unexpected error.
-                if (StatusCode.IsBad(results[ii].StatusCode))
-                {
-                    item.Type = String.Empty;
-                    item.Value = Utils.Format("{0}", results[ii].StatusCode);
-                }
-
-                // display the value.
-                else
-                {
-                    TypeInfo typeInfo = TypeInfo.Construct(results[ii].Value);
-
-                    item.Type = typeInfo.BuiltInType.ToString();
-
-                    if (typeInfo.ValueRank >= ValueRanks.OneOrMoreDimensions)
-                    {
-                        item.Type += "[]";
-                    }
-
-                    item.Value = results[ii].Value; //Utils.Format("{0}", results[ii].Value);
-                }
-            }
-
-            nodeAttribute.Add(item);
-        }
-
-        return nodeAttribute.ToArray();
-    }
     /// <summary>
     /// 读取一个节点的所有属性
     /// </summary>
@@ -1228,6 +1225,12 @@ public class OPCUAClient : DisposableObject
         Utils.SetTraceMask(515);
     }
 
+    public Dictionary<string, List<string>> SetTags(List<string> tags)
+    {
+        int i = 0;
+        _tagDicts = tags.ChunkTrivialBetter(OPCNode.GroupSize).ToDictionary(a => "default" + (i++));
+        return _tagDicts;
+    }
     /// <summary>
     /// write a note to server(you should use try catch)
     /// </summary>
@@ -1392,7 +1395,7 @@ public class OPCUAClient : DisposableObject
     /// Creates a new session.
     /// </summary>
     /// <returns>The new session object.</returns>
-    private async Task<ISession> Connect(string serverUrl)
+    private async Task<ISession> ConnectAsync(string serverUrl)
     {
         // disconnect from existing session.
         Disconnect();
@@ -1477,8 +1480,6 @@ public class OPCUAClient : DisposableObject
         m_ReconnectComplete?.Invoke(this, e);
 
     }
-
-    private EasyLock _keepAliveLock = new();
     /// <summary>
     /// Handles a keep alive event from a session.
     /// </summary>

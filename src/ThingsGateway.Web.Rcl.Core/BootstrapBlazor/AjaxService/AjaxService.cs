@@ -24,7 +24,7 @@ namespace ThingsGateway.Web.Rcl.Core
         /// </summary>
         /// <param name="option"></param>
         /// <returns></returns>
-        public async Task<string> GetMessage(AjaxOption option)
+        public async Task<string> GetMessageAsync(AjaxOption option)
         {
             var cb = Cache.FirstOrDefault().Callback;
             return cb == null ? null : await cb.Invoke(option);
@@ -34,7 +34,7 @@ namespace ThingsGateway.Web.Rcl.Core
         /// 调用 Goto 方法跳转其他页面
         /// </summary>
         /// <param name="url"></param>
-        public async Task Goto(string url)
+        public async Task GotoAsync(string url)
         {
             var cb = GotoCache.FirstOrDefault().Callback;
             if (cb != null)

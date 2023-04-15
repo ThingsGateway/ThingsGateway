@@ -117,7 +117,7 @@
     </MCol>
 </MRow>
 
-<ImportExcel @ref=ImportExcel Import="SaveDeviceImport" Preview="DeviceImport" Template="DownTemplate" />
+<ImportExcel @ref=ImportExcel Import="SaveDeviceImport" Preview="DeviceImport" />
 
 @code {
     async Task CopyDevice(IEnumerable<UploadDevice> data)
@@ -127,7 +127,7 @@
             await PopupService.EnqueueSnackbarAsync(@T("需选择一项或多项"), AlertTypes.Warning);
             return;
         }
-        await UploadDeviceService.CopyDev(data);
+        await UploadDeviceService.CopyDevAsync(data);
         await datatableQuery();
         await PopupService.EnqueueSnackbarAsync("复制成功", AlertTypes.Success);
 
@@ -143,18 +143,15 @@
 
     async Task SaveDeviceImport(Dictionary<string, ImportPreviewOutputBase> data)
     {
-        await UploadDeviceService.Import(data);
+        await UploadDeviceService.ImportAsync(data);
         await datatableQuery();
         ImportExcel.IsShowImport = false;
     }
     Task<Dictionary<string, ImportPreviewOutputBase>> DeviceImport(IBrowserFile file)
     {
-        return UploadDeviceService.Preview(file);
+        return UploadDeviceService.PreviewAsync(file);
     }
-    Task<MemoryStream> DownTemplate()
-    {
-        return UploadDeviceService.Template();
-    }
+
 }
     @code {
     [Inject]
@@ -166,7 +163,7 @@
         {
             isDownExport = true;
             StateHasChanged();
-            using var memoryStream = await UploadDeviceService.ExportFile();
+            using var memoryStream = await UploadDeviceService.ExportFileAsync();
             memoryStream.Seek(0, SeekOrigin.Begin);
             using var streamRef = new DotNetStreamReference(stream: memoryStream);
             await JS.InvokeVoidAsync("downloadFileFromStream", $"上传设备导出{DateTime.UtcNow.ToString("MM-dd-HH-mm-ss")}.xlsx", streamRef);
@@ -196,7 +193,7 @@
     }
     List<DependencyProperty> GetDriverProperties(long driverId, long devId)
     {
-        return this.GetBackgroundService<UploadDeviceHostService>().GetDevicePropertys(driverId, devId);
+        return this.GetBackgroundService<UploadDeviceWorker>().GetDevicePropertys(driverId, devId);
     }
     RenderFragment GetRenderFragment(UploadDeviceEditInput context)
     {

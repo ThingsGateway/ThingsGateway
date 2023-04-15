@@ -228,7 +228,7 @@
         buttonParentId = parentId;
         IsShowButtonList = true;
         if (_buttonsDatatable != null)
-            await _buttonsDatatable.QueryClick();
+            await _buttonsDatatable.QueryClickAsync();
     }
 
     private void ButtonFilterHeaders(List<DataTableHeader<SysResource>> datas)

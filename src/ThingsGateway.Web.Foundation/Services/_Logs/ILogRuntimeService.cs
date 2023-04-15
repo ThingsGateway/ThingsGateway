@@ -11,12 +11,12 @@ namespace ThingsGateway.Web.Foundation
         /// 删除
         /// </summary>
         /// <returns></returns>
-        Task Delete();
+        Task DeleteAsync();
         /// <summary>
         /// 分页查询
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        Task<SqlSugarPagedList<RuntimeLog>> Page(RuntimeLogPageInput input);
+        Task<SqlSugarPagedList<RuntimeLog>> PageAsync(RuntimeLogPageInput input);
     }
 }

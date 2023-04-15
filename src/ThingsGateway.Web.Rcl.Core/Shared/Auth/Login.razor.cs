@@ -38,7 +38,7 @@ namespace ThingsGateway.Web.Rcl
 
         private string SYS_DEFAULT_TITLE { get; set; }
 
-        public async Task Enter(KeyboardEventArgs e)
+        private async Task Enter(KeyboardEventArgs e)
         {
             if (e.Code == "Enter" || e.Code == "NumpadEnter")
             {
@@ -46,7 +46,7 @@ namespace ThingsGateway.Web.Rcl
             }
         }
 
-        public async Task LoginAsync()
+        private async Task LoginAsync()
         {
             loginModel.ValidCodeReqNo = CaptchaInfo?.ValidCodeReqNo;
             loginModel.ValidCode = CaptchaValue;
@@ -61,7 +61,7 @@ namespace ThingsGateway.Web.Rcl
             }
 
             var ajaxOption = new AjaxOption { Url = "/auth/b/login", Data = loginModel, };
-            var str = await AjaxService.GetMessage(ajaxOption);
+            var str = await AjaxService.GetMessageAsync(ajaxOption);
             if (str != null)
             {
                 var ret = str.ToJsonEntity<UnifyResult<LoginOutPut>>();
@@ -73,7 +73,7 @@ namespace ThingsGateway.Web.Rcl
                 {
                     await PopupService.EnqueueSnackbarAsync(T("µÇÂ¼³É¹¦"), AlertTypes.Success);
                     await Task.Delay(500);
-                    await AjaxService.Goto("/");
+                    await AjaxService.GotoAsync("/");
                 }
             }
             else

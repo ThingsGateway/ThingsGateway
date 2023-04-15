@@ -16,7 +16,7 @@ namespace ThingsGateway.Web.Rcl
 
         private async Task sessionExit(long id)
         {
-            var confirm = await PopupService.OpenConfirmDialog(T("警告"), T("确定 ?"));
+            var confirm = await PopupService.OpenConfirmDialogAsync(T("警告"), T("确定 ?"));
             if (confirm)
             {
                 await SessionService.ExitSession(id.ToIdInput());
@@ -67,7 +67,7 @@ namespace ThingsGateway.Web.Rcl
             _verificatInfos = verificatInfos;
             IsShowVerificatSignList = true;
             if (_verificatinfosDatatable != null)
-                await _verificatinfosDatatable.QueryClick();
+                await _verificatinfosDatatable.QueryClickAsync();
         }
 
         private async Task verificatExit(IEnumerable<VerificatInfo> verificats)

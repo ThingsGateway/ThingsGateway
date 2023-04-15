@@ -18,11 +18,11 @@ namespace ThingsGateway.Web.Foundation
         {
             _db = DbContext.Db;
 
-            Task.Factory.StartNew(LogInsert);
+            Task.Factory.StartNew(LogInsertAsync);
         }
         private ConcurrentQueue<RuntimeLog> _logQueues = new();
 
-        private async Task LogInsert()
+        private async Task LogInsertAsync()
         {
             var db = _db.CopyNew();
             while (true)

@@ -124,13 +124,13 @@
     async Task OnShortcutSave()
     {
         await UserCenterService.UpdateWorkbench(_menusChoice);
-        await MainLayout.MenuChange();
+        await MainLayout.MenuChangeAsync();
         await PopupService.EnqueueSnackbarAsync(T("成功"), AlertTypes.Success);
     }
     async Task OnUpdateUserInfo()
     {
         await UserCenterService.UpdateUserInfo(_updateInfoInput);
-        await MainLayout.UserChange();
+        await MainLayout.UserChangeAsync();
 
         await PopupService.EnqueueSnackbarAsync(T("成功"), AlertTypes.Success);
     }
@@ -138,9 +138,9 @@
     {
         _passwordInfoInput.Id = UserResoures.CurrentUser.Id;
         await UserCenterService.EditPassword(_passwordInfoInput);
-        await MainLayout.UserChange();
+        await MainLayout.UserChangeAsync();
         await PopupService.EnqueueSnackbarAsync(T("成功，将重新登录"), AlertTypes.Success);
         await Task.Delay(2000);
-        await AjaxService.Goto("/");
+        await AjaxService.GotoAsync("/");
     }
 }

@@ -18,7 +18,7 @@ namespace ThingsGateway.Web.Rcl.Core
         /// <param name="fileName"></param>
         /// <param name="relative">是否为相对路径 默认 true</param>
         /// <returns></returns>
-        public static async Task<IJSObjectReference> LoadModule(this IJSRuntime jsRuntime, string fileName, bool relative = true)
+        public static async Task<IJSObjectReference> LoadModuleAsync(this IJSRuntime jsRuntime, string fileName, bool relative = true)
         {
             var filePath = relative ? BlazorConst.ResourceUrl + $"js/{fileName}.js" : fileName;
             try

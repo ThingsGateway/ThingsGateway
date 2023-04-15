@@ -571,6 +571,8 @@ namespace ThingsGateway.Foundation.Serial
         private SerialPort CreateSerial(SerialProperty serialProperty)
         {
             SerialPort serialPort = new SerialPort(serialProperty.PortName, serialProperty.BaudRate, serialProperty.Parity, serialProperty.DataBits, serialProperty.StopBits);
+            serialPort.DtrEnable = true;
+            serialPort.RtsEnable = true;
             return serialPort;
         }
 

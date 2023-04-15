@@ -280,11 +280,11 @@
             </MSubheader>
             <MRow Class="ml-2 mr-2 d-flex" NoGutters>
                 <MCol Md=4 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
-                    <span class="text-subtitle-2 grey--text">@T("插件")</span>
+                    <span class="text-subtitle-2 grey--text">@item.Device.Description(a=>a.PluginName)</span>
                     <span class="text-caption">@item.Device.PluginName</span>
                 </MCol>
                 <MCol Md=4 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
-                    <span class="text-subtitle-2 grey--text">@T("日志输出")</span>
+                    <span class="text-subtitle-2 grey--text">@item.Device.Description(a=>a.IsLogOut)</span>
                     <span class="text-caption">@item.Device.IsLogOut</span>
                 </MCol>
                 @foreach (var property in item.Device.DevicePropertys ?? new())
@@ -383,17 +383,21 @@
                     <span class="text-subtitle-2 grey--text">@item.Device.Description(a=>a.ActiveTime)</span>
                     <span class="text-caption">@item.Device.ActiveTime.Add(JsInitVariables.TimezoneOffset).ToString("yyyy-MM-dd HH:mm:ss fff")</span>
                 </MCol>
+                <MCol Md=4 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
+                    <span class="text-subtitle-2 grey--text">@item.Device.Description(a=>a.UploadVariableNum)</span>
+                    <span class="text-caption">@item.Device.UploadVariableNum</span>
+                </MCol>
             </MRow>
             <MSubheader>
                 配置信息
             </MSubheader>
             <MRow Class="ml-2 mr-2 d-flex" NoGutters>
                 <MCol Md=4 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
-                    <span class="text-subtitle-2 grey--text">@T("插件")</span>
+                    <span class="text-subtitle-2 grey--text">@item.Device.Description(a=>a.PluginName)</span>
                     <span class="text-caption">@item.Device.PluginName</span>
                 </MCol>
                 <MCol Md=4 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
-                    <span class="text-subtitle-2 grey--text">@T("日志输出")</span>
+                    <span class="text-subtitle-2 grey--text">@item.Device.Description(a=>a.IsLogOut)</span>
                     <span class="text-caption">@item.Device.IsLogOut</span>
                 </MCol>
 
@@ -430,8 +434,21 @@
                             <span>@T("重启")</span>
                         </ChildContent>
                         </MTooltip>
-                        </MCardActions>
-                        </MCard>
+
+
+                        <MTooltip Bottom Context="tip">
+                    <ActivatorContent>
+                        <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("tgdevicepause")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small OnClick=@(()=>UpConfig(item.DeviceId,!item.Device.Enable))>
+                            <MIcon>@(item.Device.Enable ? "mdi-pause" : "mdi-play")</MIcon>
+                                </MButton>
+                            </ActivatorContent>
+                            <ChildContent>
+                                <span>@(item.Device.Enable ? T("暂停") : T("运行"))</span>
+                        </ChildContent>
+                    </MTooltip>
+
+                </MCardActions>
+            </MCard>
         }
 
     </ChildContent>
@@ -494,10 +511,10 @@
     {
         try
         {
-            var data = _importRef.GetVariableList();
+            var data = _importRef.GetImportVariableList();
             isDownExport = true;
             StateHasChanged();
-            using var memoryStream = await VariableService.ExportFile(data);
+            using var memoryStream = await VariableService.ExportFileAsync(data);
             memoryStream.Seek(0, SeekOrigin.Begin);
             using var streamRef = new DotNetStreamReference(stream: memoryStream);
             await JS.InvokeVoidAsync("downloadFileFromStream", $"变量导出{DateTime.UtcNow.Add(JsInitVariables.TimezoneOffset).ToString("yyyy-MM-dd HH:mm:ss fff")}.xlsx", streamRef);
@@ -513,16 +530,16 @@
     bool isAllRestart;
     bool isRestart;
     bool IsShowImportVariableList;
-    CollectDeviceHostService CollectDeviceHostService { get; set; }
-    UploadDeviceHostService UploadDeviceHostService { get; set; }
-    AlarmHostService AlarmHostService { get; set; }
-    ValueHisHostService ValueHisHostService { get; set; }
+    CollectDeviceWorker CollectDeviceHostService { get; set; }
+    UploadDeviceWorker UploadDeviceHostService { get; set; }
+    AlarmWorker AlarmHostService { get; set; }
+    ValueHisWorker ValueHisHostService { get; set; }
     protected override Task OnInitializedAsync()
     {
-        CollectDeviceHostService = this.GetBackgroundService<CollectDeviceHostService>();
-        UploadDeviceHostService = this.GetBackgroundService<UploadDeviceHostService>();
-        AlarmHostService = this.GetBackgroundService<AlarmHostService>();
-        ValueHisHostService = this.GetBackgroundService<ValueHisHostService>();
+        CollectDeviceHostService = this.GetBackgroundService<CollectDeviceWorker>();
+        UploadDeviceHostService = this.GetBackgroundService<UploadDeviceWorker>();
+        AlarmHostService = this.GetBackgroundService<AlarmWorker>();
+        ValueHisHostService = this.GetBackgroundService<ValueHisWorker>();
         DelayTimer = new System.Timers.Timer(1000);
         DelayTimer.Elapsed += timer_Elapsed;
         DelayTimer.AutoReset = true;
@@ -532,22 +549,22 @@
     }
     private BootstrapDynamicComponent _importComponent;
     private RenderFragment _importRender;
-    private DriverUI _importRef;
+    private DriverImportUIBase _importRef;
 
     async Task ImportVaiable(long devId)
     {
-        var driver = this.GetBackgroundService<CollectDeviceHostService>().GetImportUI(devId);
-        if (driver?.DriverImportUI == null)
+        var driver = this.GetBackgroundService<CollectDeviceWorker>().GetImportUI(devId);
+        if (driver?.DriverImportUIType == null)
         {
             await PopupService.EnqueueSnackbarAsync("插件未实现导入变量", AlertTypes.Warning);
             return;
         }
-        _importComponent = new BootstrapDynamicComponent(driver.DriverImportUI, new Dictionary<string, object>()
+        _importComponent = new BootstrapDynamicComponent(driver.DriverImportUIType, new Dictionary<string, object>()
             {
-                [nameof(DriverUI.Driver)] = driver
+                [nameof(DriverImportUIBase.DriverObj)] = driver
             }
             );
-        _importRender = _importComponent.Render(a => _importRef = (DriverUI)a);
+        _importRender = _importComponent.Render(a => _importRef = (DriverImportUIBase)a);
 
         IsShowImportVariableList = true;
     }
@@ -558,12 +575,12 @@
             _importComponent = null;
             _importRef = null;
             _importRender = null;
-            var confirm = await PopupService.OpenConfirmDialog(T("重启"), T("确定重启?"));
+            var confirm = await PopupService.OpenConfirmDialogAsync(T("重启"), T("确定重启?"));
             if (confirm)
             {
                 isRestart = true;
                 StateHasChanged();
-                await Task.Run(async () => await CollectDeviceHostService.UpDeviceThread(devId));
+                await Task.Run(async () => await CollectDeviceHostService.UpDeviceThreadAsync(devId));
                 collectDeviceQuery();
             }
         }
@@ -583,12 +600,12 @@
             _importComponent = null;
             _importRef = null;
             _importRender = null;
-            var confirm = await PopupService.OpenConfirmDialog(T("重启"), T("确定重启?"));
+            var confirm = await PopupService.OpenConfirmDialogAsync(T("重启"), T("确定重启?"));
             if (confirm)
             {
                 isRestart = true;
                 StateHasChanged();
-                await Task.Run(() => UploadDeviceHostService.UpDeviceThread(devId));
+                await Task.Run(async() => await UploadDeviceHostService.UpDeviceThreadAsync(devId));
                 uploadDeviceQuery();
             }
         }
@@ -604,24 +621,34 @@
     async Task Config(long devId, bool isStart)
     {
         var str = isStart ? T("启动") : T("暂停");
-        var confirm = await PopupService.OpenConfirmDialog(str, $"确定{str}?");
+        var confirm = await PopupService.OpenConfirmDialogAsync(str, $"确定{str}?");
         if (confirm)
         {
-            CollectDeviceHostService.ConfigDeviceThread(devId, isStart);
+            await CollectDeviceHostService.ConfigDeviceThreadAsync(devId, isStart);
         }
     }
+    async Task UpConfig(long devId, bool isStart)
+    {
+        var str = isStart ? T("启动") : T("暂停");
+        var confirm = await PopupService.OpenConfirmDialogAsync(str, $"确定{str}?");
+        if (confirm)
+        {
+            await UploadDeviceHostService.ConfigDeviceThreadAsync(devId, isStart);
+        }
+    }
+
 
     async Task AllRestart()
     {
         try
         {
-            var confirm = await PopupService.OpenConfirmDialog(T("重启"), T("确定重启?"));
+            var confirm = await PopupService.OpenConfirmDialogAsync(T("重启"), T("确定重启?"));
             if (confirm)
             {
                 isAllRestart = true;
 
                 StateHasChanged();
-                await Task.Run(async () => await CollectDeviceHostService.RestartDeviceThread());
+                await Task.Run(async () => await CollectDeviceHostService.RestartDeviceThreadAsync());
                 collectDeviceQuery();
                 uploadDeviceQuery();
             }
@@ -633,9 +660,9 @@
     }
 
 
-    protected override async Task Dispose(bool disposing)
+    protected override async Task DisposeAsync(bool disposing)
     {
-        await base.Dispose(disposing);
+        await base.DisposeAsync(disposing);
         DelayTimer?.Dispose();
     }
 

@@ -94,11 +94,11 @@ namespace ThingsGateway.Web.Rcl
 
         private async Task ClearClick()
         {
-            var confirm = await PopupService.OpenConfirmDialog(T("删除"), T("确定 ?"));
+            var confirm = await PopupService.OpenConfirmDialogAsync(T("删除"), T("确定 ?"));
             if (confirm)
             {
                 await VisitLogService.Delete(CategoryFilters.Select(it => it.Value).ToArray());
-                await _datatable?.QueryClick();
+                await _datatable?.QueryClickAsync();
             }
         }
     }

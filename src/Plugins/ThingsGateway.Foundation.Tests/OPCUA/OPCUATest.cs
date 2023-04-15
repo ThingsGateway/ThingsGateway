@@ -33,7 +33,7 @@ namespace ThingsGateway.Foundation.Tests
             _opc.SetTags(MonitorNodeTags.ToList());
             _opc.OpcStatusChange += Info_OpcStatusChange;
             _opc.DataChangedHandler = DataReceived;
-            await _opc.ConnectServer();
+            await _opc.ConnectAsync();
             Assert.True(_opc.Connected);
             var result = _opc.WriteNode(address, Convert.ChangeType(new Random().Next(100), type));
             Assert.True(result);

@@ -6,6 +6,19 @@ namespace ThingsGateway.Foundation
     /// </summary>
     public class AsyncAutoResetEvent : IDisposable
     {
+        private static readonly Task<bool> CompletedSourceTask = Task.FromResult(true);
+
+        private readonly object _locker = new();
+
+        private readonly Queue<TaskCompletionSource<bool>> _waitQueue = new Queue<TaskCompletionSource<bool>>();
+
+        private bool _isDisposed;
+
+        /// <summary>
+        /// 用于在没有任何等待时让下一次等待通过
+        /// </summary>
+        private bool _isSignaled;
+
         /// <summary>
         /// 提供一个信号初始值，确定是否有信号
         /// </summary>
@@ -22,48 +35,31 @@ namespace ThingsGateway.Foundation
         {
             Dispose();
         }
-
-        private static readonly Task<bool> CompletedSourceTask
-            = Task.FromResult(true);
-
         /// <summary>
-        /// 异步等待一个信号，需要 await 等待
-        /// <para></para>
-        /// 可以通过返回值是 true 或 false 判断当前是收到信号还是此类被释放
+        /// 非线程安全 调用时将会释放所有等待 <see cref="WaitOneAsync"/> 方法
         /// </summary>
-        /// <returns>
-        /// 如果是正常解锁，那么返回 true 值。如果是对象调用 <see cref="Dispose"/> 释放，那么返回 false 值
-        /// </returns>
-        public Task<bool> WaitOneAsync()
+        public void Dispose()
         {
-            _locker.Lock();
-            try
+            lock (_locker)
             {
+                _isDisposed = true;
+
+            }
+
+            GC.SuppressFinalize(this);
+
+            while (true)
+            {
+                lock (_locker)
                 {
-                    if (_isDisposed)
+                    if (_waitQueue.Count == 0)
                     {
-                        throw new ObjectDisposedException(nameof(AsyncAutoResetEvent));
+                        return;
                     }
-
-                    if (_isSignaled)
-                    {
-                        // 按照 AutoResetEvent 的设计，在没有任何等待进入时，如果有设置 Set 方法，那么下一次第一个进入的等待将会通过
-                        // 也就是在没有任何等待时，无论调用多少次 Set 方法，在调用之后只有一个等待通过
-                        _isSignaled = false;
-                        return CompletedSourceTask;
-                    }
-
-                    var source = new TaskCompletionSource<bool>();
-                    _waitQueue.Enqueue(source);
-                    return source.Task;
                 }
 
+                Set();
             }
-            finally
-            {
-                _locker.UnLock();
-            }
-
         }
 
         /// <summary>
@@ -96,43 +92,39 @@ namespace ThingsGateway.Foundation
         }
 
         /// <summary>
-        /// 非线程安全 调用时将会释放所有等待 <see cref="WaitOneAsync"/> 方法
+        /// 异步等待一个信号，需要 await 等待
+        /// <para></para>
+        /// 可以通过返回值是 true 或 false 判断当前是收到信号还是此类被释放
         /// </summary>
-        public void Dispose()
+        /// <returns>
+        /// 如果是正常解锁，那么返回 true 值。如果是对象调用 <see cref="Dispose"/> 释放，那么返回 false 值
+        /// </returns>
+        public Task<bool> WaitOneAsync()
         {
-            _locker.Lock();
+            lock (_locker)
             {
-                _isDisposed = true;
-            }
-            _locker.UnLock();
-
-            GC.SuppressFinalize(this);
-
-            while (true)
-            {
-                _locker.Lock();
                 {
-                    if (_waitQueue.Count == 0)
+                    if (_isDisposed)
                     {
-                        return;
+                        throw new ObjectDisposedException(nameof(AsyncAutoResetEvent));
                     }
+
+                    if (_isSignaled)
+                    {
+                        // 按照 AutoResetEvent 的设计，在没有任何等待进入时，如果有设置 Set 方法，那么下一次第一个进入的等待将会通过
+                        // 也就是在没有任何等待时，无论调用多少次 Set 方法，在调用之后只有一个等待通过
+                        _isSignaled = false;
+                        return CompletedSourceTask;
+                    }
+
+                    var source = new TaskCompletionSource<bool>();
+                    _waitQueue.Enqueue(source);
+                    return source.Task;
                 }
-                _locker.UnLock();
 
-                Set();
             }
+
+
         }
-
-        private bool _isDisposed;
-
-        private readonly EasyLock _locker = new();
-
-        private readonly Queue<TaskCompletionSource<bool>> _waitQueue =
-            new Queue<TaskCompletionSource<bool>>();
-
-        /// <summary>
-        /// 用于在没有任何等待时让下一次等待通过
-        /// </summary>
-        private bool _isSignaled;
     }
 }

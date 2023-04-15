@@ -90,7 +90,7 @@
 
     VariablePageInput _searchModel { get; set; } = new();
     private IAppDataTable _datatable;
-    CollectDeviceHostService CollectDeviceHostService { get; set; }
+    CollectDeviceWorker CollectDeviceHostService { get; set; }
     private System.Timers.Timer DelayTimer;
     protected override async Task OnParametersSetAsync()
     {
@@ -99,7 +99,7 @@
             _searchModel.DeviceName = DeviceName;
             await datatableQuery();
         }
-        CollectDeviceHostService = this.GetBackgroundService<CollectDeviceHostService>();
+        CollectDeviceHostService = this.GetBackgroundService<CollectDeviceWorker>();
         var data = CollectDeviceHostService.CollectDeviceCores.Select(a => a.Device).ToList();
         _deviceGroups = CollectDeviceService.GetTree(data.Adapt<List<CollectDevice>>());
 
@@ -117,25 +117,25 @@
     {
         await InvokeAsync(StateHasChanged);
     }
-    protected override async Task Dispose(bool disposing)
+    protected override async Task DisposeAsync(bool disposing)
     {
-        await base.Dispose(disposing);
+        await base.DisposeAsync(disposing);
         DelayTimer?.Dispose();
     }
     private async Task datatableQuery()
     {
         if (_datatable != null)
-            await _datatable?.QueryClick();
+            await _datatable?.QueryClickAsync();
     }
     [Inject]
-    RpcCore rpcCore { get; set; }
+    RpcSingletonService rpcCore { get; set; }
     private async Task Write(CollectVariableRunTime collectVariableRunTime)
     {
         var confirm = await PopupService.PromptAsync(T("写入"),
         $"输入变量{collectVariableRunTime.Name}的写入值");
         if (confirm != null)
         {
-            var data=   await rpcCore?.InvokeDeviceMethod($"BLAZOR-{UserResoures.CurrentUser.Account}-{App.HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString()}",  new NameValue { Name = collectVariableRunTime.Name, Value = confirm  }, true);
+            var data=   await rpcCore?.InvokeDeviceMethodAsync($"BLAZOR-{UserResoures.CurrentUser.Account}-{App.HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString()}",  new NameValue { Name = collectVariableRunTime.Name, Value = confirm  }, true);
             if(data.IsSuccess)
             {
                 await InvokeAsync(async () => await PopupService.EnqueueSnackbarAsync(data.Message, AlertTypes.Success));
