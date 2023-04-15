@@ -133,16 +133,16 @@
 
 @code {
     StringNumber tab;
-    AlarmHostService AlarmHostService { get; set; }
-    ValueHisHostService ValueHisHostService { get; set; }
+    AlarmWorker AlarmHostService { get; set; }
+    ValueHisWorker ValueHisHostService { get; set; }
     public Config()
     {
-        AlarmHostService = this.GetBackgroundService<AlarmHostService>();
-        ValueHisHostService = this.GetBackgroundService<ValueHisHostService>();
+        AlarmHostService = this.GetBackgroundService<AlarmWorker>();
+        ValueHisHostService = this.GetBackgroundService<ValueHisWorker>();
     }
     private async Task OnAlarmSave()
     {
-        var confirm = await PopupService.OpenConfirmDialog(T("确认"), T("保存配置后将重启报警服务，是否确定?"));
+        var confirm = await PopupService.OpenConfirmDialogAsync(T("确认"), T("保存配置后将重启报警服务，是否确定?"));
         if (confirm)
         {
             await ConfigService.EditBatch(_alarmConfig);
@@ -153,7 +153,7 @@
     }
     private async Task OnHisSave()
     {
-        var confirm = await PopupService.OpenConfirmDialog(T("确认"), T("保存配置后将重启历史服务，是否确定?"));
+        var confirm = await PopupService.OpenConfirmDialogAsync(T("确认"), T("保存配置后将重启历史服务，是否确定?"));
         if (confirm)
         {
             await ConfigService.EditBatch(_hisConfig);

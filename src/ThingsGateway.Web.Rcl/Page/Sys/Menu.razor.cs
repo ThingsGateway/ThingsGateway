@@ -32,7 +32,7 @@ namespace ThingsGateway.Web.Rcl
         }
         private async Task datatableQuery()
         {
-            await _datatable?.QueryClick();
+            await _datatable?.QueryClickAsync();
         }
 
         private async Task DeleteCall(IEnumerable<SysResource> input)
@@ -113,7 +113,7 @@ namespace ThingsGateway.Web.Rcl
 
         private async Task NavChange()
         {
-            await MainLayout.MenuChange();
+            await MainLayout.MenuChangeAsync();
             await GetMenuCatalog();
         }
         private async Task<SqlSugarPagedList<SysResource>> QueryCall(MenuPageInput input)

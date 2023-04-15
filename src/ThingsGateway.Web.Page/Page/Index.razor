@@ -184,8 +184,8 @@
     {
         if (UserManager.SuperAdmin)
         {
-            RpcLogs = (await RpcLogService.Page(new() { Size = 5 })).Records.ToList();
-            RuntimeLogs = (await RuntimeLogService.Page(new() { Size = 5 })).Records.ToList();
+            RpcLogs = (await RpcLogService.PageAsync(new() { Size = 5 })).Records.ToList();
+            RuntimeLogs = (await RuntimeLogService.PageAsync(new() { Size = 5 })).Records.ToList();
         }
 
         DevLogVisits = (await VisitLogService.Page(new() { Size = 5, Account = UserResoures.CurrentUser?.Account })).Records.ToList();

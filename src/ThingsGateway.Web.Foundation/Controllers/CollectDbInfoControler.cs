@@ -34,7 +34,7 @@ namespace ThingsGateway.Web.Foundation
         [Description("获取变量信息")]
         public async Task<SqlSugarPagedList<CollectDeviceVariable>> GetVariableList([FromQuery] VariablePageInput input)
         {
-            var data = await _variableService.Page(input);
+            var data = await _variableService.PageAsync(input);
 
             return data;
         }

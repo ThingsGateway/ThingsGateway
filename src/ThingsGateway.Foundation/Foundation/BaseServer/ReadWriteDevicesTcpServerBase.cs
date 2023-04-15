@@ -67,7 +67,7 @@ namespace ThingsGateway.Foundation
         /// <summary>
         /// 接收解析
         /// </summary>
-        protected abstract Task Received(SocketClient client, IRequestInfo requestInfo);
+        protected abstract Task ReceivedAsync(SocketClient client, IRequestInfo requestInfo);
 
         private void Connected(SocketClient client, TouchSocketEventArgs e)
         {
@@ -94,7 +94,7 @@ namespace ThingsGateway.Foundation
         {
             try
             {
-                await Received(client, requestInfo);
+                await ReceivedAsync(client, requestInfo);
             }
             catch (Exception ex)
             {

@@ -44,7 +44,7 @@
             {
                 Url = "/auth/b/loginOut",
             };
-        var str = await AjaxService.GetMessage(ajaxOption);
+        var str = await AjaxService.GetMessageAsync(ajaxOption);
         var ret = str?.ToJsonEntity<UnifyResult<string>>();
         if (ret?.Code != 200)
         {
@@ -54,7 +54,7 @@
         {
             await PopupService.EnqueueSnackbarAsync(T("注销成功"), AlertTypes.Success);
             await Task.Delay(500);
-            await AjaxService.Goto("/");
+            await AjaxService.GotoAsync("/");
         }
     }
 

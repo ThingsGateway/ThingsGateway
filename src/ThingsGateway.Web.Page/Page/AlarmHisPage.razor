@@ -78,12 +78,12 @@
 
     HisPageInput _searchModel { get; set; } = new();
     private IAppDataTable _datatable;
-    AlarmHostService AlarmHostService { get; set; }
+    AlarmWorker AlarmHostService { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
 
-        AlarmHostService = this.GetBackgroundService<AlarmHostService>();
+        AlarmHostService = this.GetBackgroundService<AlarmWorker>();
         _searchModel.DeviceName = DeviceName;
         await base.OnInitializedAsync();
     }
@@ -91,7 +91,7 @@
 
     private async Task datatableQuery()
     {
-        await _datatable?.QueryClick();
+        await _datatable?.QueryClickAsync();
     }
 
 
@@ -136,7 +136,7 @@
 
     private async Task<SqlSugarPagedList<AlarmHis>> QueryCall(HisPageInput input)
     {
-        var result = await AlarmHostService.AlarmConfig();
+        var result = await AlarmHostService.GetAlarmDbAsync();
         if (result.IsSuccess)
         {
             return await Task.Run(async () =>

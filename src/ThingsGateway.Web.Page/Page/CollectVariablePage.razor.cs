@@ -31,22 +31,22 @@ namespace ThingsGateway.Web.Page
 
         private async Task AddCall(VariableAddInput input)
         {
-            await VariableService.Add(input);
+            await VariableService.AddAsync(input);
         }
         private async Task datatableQuery()
         {
-            await _datatable.QueryClick();
+            await _datatable.QueryClickAsync();
         }
 
         private async Task DeleteCall(IEnumerable<CollectDeviceVariable> input)
         {
-            await VariableService.Delete(input.ToList().ConvertAll(it => new BaseIdInput()
+            await VariableService.DeleteAsync(input.ToList().ConvertAll(it => new BaseIdInput()
             { Id = it.Id }));
         }
 
         private async Task EditCall(VariableEditInput input)
         {
-            await VariableService.Edit(input);
+            await VariableService.EditAsync(input);
         }
 
         private void FilterHeaders(List<DataTableHeader<CollectDeviceVariable>> datas)
@@ -97,15 +97,15 @@ namespace ThingsGateway.Web.Page
 
         private async Task<SqlSugarPagedList<CollectDeviceVariable>> QueryCall(VariablePageInput input)
         {
-            var data = await VariableService.Page(input);
+            var data = await VariableService.PageAsync(input);
             return data;
         }
         private async Task Clear()
         {
-            var confirm = await PopupService.OpenConfirmDialog(T("确认"), $"清空?");
+            var confirm = await PopupService.OpenConfirmDialogAsync(T("确认"), $"清空?");
             if (confirm)
             {
-                await VariableService.Clear();
+                await VariableService.ClearAsync();
             }
             await datatableQuery();
 

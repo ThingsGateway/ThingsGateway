@@ -125,7 +125,7 @@ IsShowRoles=true;
             userGrantRoleInput.PermissionList = RolesChoice.Select(it => it.ApiRoute).ToList();
             await OpenApiUserService.GrantRole(userGrantRoleInput);
             IsShowRoles = false;
-            await _datatable?.QueryClick();
+            await _datatable?.QueryClickAsync();
         }
         catch (Exception ex)
         {

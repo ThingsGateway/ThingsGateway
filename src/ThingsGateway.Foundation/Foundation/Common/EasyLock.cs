@@ -5,11 +5,7 @@
     /// </summary>
     public sealed class EasyLock : DisposableObject
     {
-        private static long easyLockCount;
-
-        private static long easyLockWaitCount;
-
-        private Lazy<AutoResetEvent> m_waiterLock = new Lazy<AutoResetEvent>(() => new AutoResetEvent(false));
+        private Lazy<AsyncAutoResetEvent> m_waiterLock = new Lazy<AsyncAutoResetEvent>(() => new AsyncAutoResetEvent(false));
 
         private int m_waiters = 0;
 
@@ -22,32 +18,38 @@
         /// </summary>
         public void Lock()
         {
-            Interlocked.Increment(ref easyLockCount);
             if (Interlocked.Increment(ref m_waiters) == 1)
             {
                 return;
             }
-            Interlocked.Increment(ref easyLockWaitCount);
-            m_waiterLock.Value.WaitOne();
+            m_waiterLock.Value.WaitOneAsync().GetAwaiter().GetResult();
+        }
+        /// <summary>
+        /// 进入锁
+        /// </summary>
+        public async Task LockAsync()
+        {
+            if (Interlocked.Increment(ref m_waiters) == 1)
+            {
+                return;
+            }
+            await m_waiterLock.Value.WaitOneAsync();
         }
         /// <summary>
         /// 离开锁
         /// </summary>
         public void UnLock()
         {
-            Interlocked.Decrement(ref easyLockCount);
             if (Interlocked.Decrement(ref m_waiters) == 0)
             {
                 return;
             }
-
-            Interlocked.Decrement(ref easyLockWaitCount);
             m_waiterLock.Value.Set();
         }
         /// <inheritdoc/>
         protected override void Dispose(bool disposing)
         {
-            m_waiterLock.Value.Close();
+            m_waiterLock.Value.Dispose();
             base.Dispose(disposing);
         }
     }

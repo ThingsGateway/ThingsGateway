@@ -1,6 +1,4 @@
-﻿global using Furion;
-
-global using Microsoft.AspNetCore.Components;
+﻿global using Microsoft.AspNetCore.Components;
 
 global using System.Collections.Generic;
 global using System.Threading.Tasks;

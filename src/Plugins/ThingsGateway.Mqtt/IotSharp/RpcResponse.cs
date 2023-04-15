@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-
-namespace IoTSharp.Data
+﻿namespace IoTSharp.Data
 {
     public class RpcResponse
     {

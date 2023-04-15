@@ -9,17 +9,17 @@ namespace ThingsGateway.Web.Rcl.Core
     public static class PopupServiceExtensions
     {
 
-        public static async Task<bool> OpenConfirmDialog(this IPopupService PopupService, string title, string content)
+        public static async Task<bool> OpenConfirmDialogAsync(this IPopupService PopupService, string title, string content)
         {
             return await PopupService.ConfirmAsync(title, content, AlertTypes.Error);
         }
 
-        public static async Task<bool> OpenConfirmDialog(this IPopupService PopupService, string title, string content, AlertTypes type)
+        public static async Task<bool> OpenConfirmDialogAsync(this IPopupService PopupService, string title, string content, AlertTypes type)
         {
             return await PopupService.ConfirmAsync(title, content, type);
         }
 
-        public static async Task OpenInformationMessage(this IPopupService PopupService, string message)
+        public static async Task OpenInformationMessageAsync(this IPopupService PopupService, string message)
         {
             await PopupService.EnqueueSnackbarAsync(message, AlertTypes.Info);
         }

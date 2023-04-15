@@ -117,7 +117,7 @@ namespace ThingsGateway.Web.Rcl
             }
             finally
             {
-                await _datatable?.QueryClick();
+                await _datatable?.QueryClickAsync();
             }
         }
     }

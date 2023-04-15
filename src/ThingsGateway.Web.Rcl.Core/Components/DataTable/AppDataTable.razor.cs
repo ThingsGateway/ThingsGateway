@@ -186,7 +186,7 @@ namespace ThingsGateway.Web.Rcl.Core
             return base.ShouldRender();
         }
 
-        public async Task QueryClick()
+        public async Task QueryClickAsync()
         {
             try
             {
@@ -227,14 +227,14 @@ namespace ThingsGateway.Web.Rcl.Core
                 if (Page != SearchModel.Current)
                 {
                     Page = SearchModel.Current;
-                    await QueryClick();
+                    await QueryClickAsync();
                 }
             }
             else
             {
                 Page = SearchModel.Current;
                 if (Items.Count() <= 0)
-                    await QueryClick();
+                    await QueryClickAsync();
             }
 
             await base.OnAfterRenderAsync(firstRender);
@@ -297,7 +297,7 @@ namespace ThingsGateway.Web.Rcl.Core
             try
             {
                 await AddCall(AddModel);
-                await QueryClick();
+                await QueryClickAsync();
                 AddShow = false;
             }
             catch (Exception ex)
@@ -330,7 +330,7 @@ namespace ThingsGateway.Web.Rcl.Core
                         if (confirm)
                         {
                             await DeleteCall(_selectedItem);
-                            await QueryClick();
+                            await QueryClickAsync();
                         }
                     }
                 }
@@ -362,9 +362,9 @@ namespace ThingsGateway.Web.Rcl.Core
                     if (item != BlazorConst.TB_Actions)
                     {
                         string value = typeof(TItem).GetPropValue(DetailModel, item);
-                        if(DateTime.TryParse(value,out var result) )
+                        if (DateTime.TryParse(value, out var result))
                         {
-                            value=result.Add(JsInitVariables.TimezoneOffset).ToString("yyyy-MM-dd HH:mm:ss fff");
+                            value = result.Add(JsInitVariables.TimezoneOffset).ToString("yyyy-MM-dd HH:mm:ss fff");
                         }
                         keyValuePairs.Add(item, value);
                     }
@@ -405,7 +405,7 @@ namespace ThingsGateway.Web.Rcl.Core
             try
             {
                 await EditCall?.Invoke(EditModel);
-                await QueryClick();
+                await QueryClickAsync();
                 EditShow = false;
             }
             catch (Exception ex)
@@ -419,7 +419,7 @@ namespace ThingsGateway.Web.Rcl.Core
             if (ShowQueryButton)
             {
                 SearchModel.Current = a;
-                await QueryClick();
+                await QueryClickAsync();
             }
         }
         private async Task Enter(KeyboardEventArgs e)
@@ -427,7 +427,7 @@ namespace ThingsGateway.Web.Rcl.Core
             if (ShowQueryButton)
                 if (e.Code == "Enter" || e.Code == "NumpadEnter")
                 {
-                    await QueryClick();
+                    await QueryClickAsync();
                 }
         }
 
@@ -440,7 +440,7 @@ namespace ThingsGateway.Web.Rcl.Core
         {
             SearchModel.SortField = dataOptions.SortBy.FirstOrDefault();
             SearchModel.SortOrder = dataOptions.SortDesc.FirstOrDefault() ? "desc" : "asc";
-            await QueryClick();
+            await QueryClickAsync();
         }
 
         private async Task<bool> OpenConfirmDialog(string title, string content)
@@ -466,7 +466,7 @@ namespace ThingsGateway.Web.Rcl.Core
             if (FirstRender >= 1 && size != SearchModel.Size)
             {
                 size = SearchModel.Size;
-                await QueryClick();
+                await QueryClickAsync();
             }
 
             FirstRender += 1;

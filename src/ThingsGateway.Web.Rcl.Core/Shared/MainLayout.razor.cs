@@ -20,13 +20,13 @@ namespace ThingsGateway.Web.Rcl
             Navs = UserResoures.Menus.Parse();
             await base.OnInitializedAsync();
         }
-        public async Task MenuChange()
+        public async Task MenuChangeAsync()
         {
             await UserResoures.InitMenuAsync();
             Navs = UserResoures.Menus.Parse();
             StateHasChanged();
         }
-        public async Task UserChange()
+        public async Task UserChangeAsync()
         {
             await UserResoures.InitUserAsync();
             StateHasChanged();

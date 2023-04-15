@@ -278,8 +278,8 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
         #endregion
 
         #region 字符串
-
-        internal static async Task<OperResult<string>> ReadString(
+        
+        internal static async Task<OperResult<string>> ReadStringAsync(
           SiemensS7PLC plc, string address, Encoding encoding)
         {
             //先读取一次获取长度，再读取实际值
@@ -323,7 +323,7 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
 
         }
 
-        internal static async Task<OperResult> Write(SiemensS7PLC plc, string address, string value, Encoding encoding)
+        internal static async Task<OperResult> WriteAsync(SiemensS7PLC plc, string address, string value, Encoding encoding)
         {
             if (value == null)
                 value = string.Empty;

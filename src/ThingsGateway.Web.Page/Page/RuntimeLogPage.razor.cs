@@ -45,17 +45,17 @@ namespace ThingsGateway.Web.Page
 
         private async Task<SqlSugarPagedList<RuntimeLog>> QueryCall(RuntimeLogPageInput input)
         {
-            var data = await RuntimeLogService.Page(input);
+            var data = await RuntimeLogService.PageAsync(input);
             return data;
         }
 
         private async Task ClearClick()
         {
-            var confirm = await PopupService.OpenConfirmDialog(T("删除"), T("确定 ?"));
+            var confirm = await PopupService.OpenConfirmDialogAsync(T("删除"), T("确定 ?"));
             if (confirm)
             {
-                await RuntimeLogService.Delete();
-                await _datatable?.QueryClick();
+                await RuntimeLogService.DeleteAsync();
+                await _datatable?.QueryClickAsync();
             }
         }
     }

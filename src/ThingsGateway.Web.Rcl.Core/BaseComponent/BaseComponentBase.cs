@@ -15,10 +15,10 @@ namespace ThingsGateway.Web.Rcl.Core
 
         public async ValueTask DisposeAsync()
         {
-            await Dispose(true);
+            await DisposeAsync(true);
         }
 
-        protected virtual Task Dispose(bool disposing)
+        protected virtual Task DisposeAsync(bool disposing)
         {
             if (IsDisposed) return Task.CompletedTask;
             IsDisposed = true;

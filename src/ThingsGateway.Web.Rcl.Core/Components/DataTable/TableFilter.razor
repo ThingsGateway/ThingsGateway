@@ -50,7 +50,7 @@
     public List<Filters> FilterHeaderString { get; set; }
     [Parameter]
     public EventCallback ValueChanged { get; set; }
-    public async Task Change(string title, bool value)
+    private async Task Change(string title, bool value)
     {
         var data = FilterHeaderString.FirstOrDefault(it => it.Title == title);
         data.Value = value;

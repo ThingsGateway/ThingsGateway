@@ -13,13 +13,13 @@ namespace ThingsGateway.Web.Rcl
         [Inject]
         public AjaxService AjaxService { get; set; }
 
-        protected override async Task Dispose(bool disposing)
+        protected override async Task DisposeAsync(bool disposing)
         {
             if (disposing)
             {
                 await _hubConnection.DisposeAsync();
             }
-            await base.Dispose(disposing);
+            await base.DisposeAsync(disposing);
         }
 
         protected override async Task OnInitializedAsync()
@@ -53,14 +53,14 @@ namespace ThingsGateway.Web.Rcl
                 {
                     try
                     {
-                        await InvokeAsync(() => PopupService.EnqueueSnackbarAsync(message.ToString(), AlertTypes.Warning));
+                        await InvokeAsync(async () =>await PopupService.EnqueueSnackbarAsync(message.ToString(), AlertTypes.Warning));
 
                     }
                     catch (Exception ex)
                     {
                     }
                     await Task.Delay(2000);
-                    await AjaxService.Goto("/");
+                    await AjaxService.GotoAsync("/");
                 });
 
                 await _hubConnection.StartAsync();

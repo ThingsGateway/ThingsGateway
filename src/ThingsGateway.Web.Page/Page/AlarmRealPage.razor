@@ -62,12 +62,12 @@
 
     VariablePageInput _searchModel { get; set; } = new();
     private IAppDataTable _datatable;
-    AlarmHostService AlarmHostService { get; set; }
+    AlarmWorker AlarmHostService { get; set; }
     private System.Timers.Timer DelayTimer;
 
     protected override async Task OnInitializedAsync()
     {
-        AlarmHostService = this.GetBackgroundService<AlarmHostService>();
+        AlarmHostService = this.GetBackgroundService<AlarmWorker>();
         DelayTimer = new System.Timers.Timer(5000);
         DelayTimer.Elapsed += timer_Elapsed;
         DelayTimer.AutoReset = true;
@@ -80,14 +80,14 @@
         if (IsAutoQuery)
             await InvokeAsync(async ()=>await datatableQuery());
     }
-    protected override async Task Dispose(bool disposing)
+    protected override async Task DisposeAsync(bool disposing)
     {
-        await base.Dispose(disposing);
+        await base.DisposeAsync(disposing);
         DelayTimer?.Dispose();
     }
     private async Task datatableQuery()
     {
-        await _datatable?.QueryClick();
+        await _datatable?.QueryClickAsync();
     }
 
 

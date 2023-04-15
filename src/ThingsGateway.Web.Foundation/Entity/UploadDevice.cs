@@ -13,14 +13,16 @@ public class UploadDevice : BaseEntity
     /// 名称
     /// </summary>
     [SugarColumn(ColumnName = "Name", ColumnDescription = "名称", Length = 200)]
-    [OrderData(Order = 1)]
+    [OrderTable(Order = 1)]
+    [Excel]
     public virtual string Name { get; set; }
 
     /// <summary>
     /// 描述
     /// </summary>
     [SugarColumn(ColumnName = "Description", ColumnDescription = "描述", Length = 200, IsNullable = true)]
-    [OrderData(Order = 2)]
+    [OrderTable(Order = 2)]
+    [Excel]
     public string Description { get; set; }
 
     /// <summary>
@@ -33,21 +35,24 @@ public class UploadDevice : BaseEntity
     /// 设备使能
     /// </summary>
     [SugarColumn(ColumnName = "Enable", ColumnDescription = "设备使能")]
-    [OrderData(Order = 3)]
+    [OrderTable(Order = 3)]
+    [Excel]
     public virtual bool Enable { get; set; }
 
     /// <summary>
     /// 设备组
     /// </summary>
     [SugarColumn(ColumnName = "DeviceGroup", ColumnDescription = "设备组", IsNullable = true)]
-    [OrderData(Order = 3)]
+    [OrderTable(Order = 3)]
+    [Excel]
     public virtual string DeviceGroup { get; set; }
 
     /// <summary>
     /// 输出日志
     /// </summary>
     [SugarColumn(ColumnName = "IsLogOut", ColumnDescription = "输出日志")]
-    [OrderData(Order = 3)]
+    [OrderTable(Order = 3)]
+    [Excel]
     public virtual bool IsLogOut { get; set; }
 
     /// <summary>

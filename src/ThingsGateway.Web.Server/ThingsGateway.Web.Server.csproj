@@ -6,7 +6,7 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<SatelliteResourceLanguages>zh-Hans</SatelliteResourceLanguages>
 		<PublishReadyToRunComposite>true</PublishReadyToRunComposite>
-		<Version>1.3.1</Version>
+		<Version>1.4.0</Version>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<ApplicationIcon>favicon.ico</ApplicationIcon>
 		<!--<ServerGarbageCollection>false</ServerGarbageCollection>-->

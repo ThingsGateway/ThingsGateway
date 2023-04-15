@@ -209,11 +209,15 @@ namespace ThingsGateway.Foundation.Adapter.Modbus
             return Task.FromResult(new OperResult("功能码错误"));
         }
 
-        protected override async Task Received(SocketClient client, IRequestInfo requestInfo)
+        protected override async Task ReceivedAsync(SocketClient client, IRequestInfo requestInfo)
         {
 
             if (requestInfo is ModbusServerMessage modbusServerMessage)
             {
+                if (!modbusServerMessage.IsSuccess)
+                {
+                    return;
+                }
                 if (modbusServerMessage.CurModbusAddress == null)
                 {
                     WriteError(client, modbusServerMessage);

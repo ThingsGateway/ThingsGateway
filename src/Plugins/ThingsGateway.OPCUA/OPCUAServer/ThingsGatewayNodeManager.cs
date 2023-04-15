@@ -25,14 +25,14 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
     /// OPC和网关对应表
     /// </summary>
     private Dictionary<NodeId, OPCUATag> _idTags = new Dictionary<NodeId, OPCUATag>();
-    private RpcCore _rpcCore;
+    private RpcSingletonService _rpcCore;
     private IServiceScope _serviceScope;
     private TypeAdapterConfig _config;
     /// <inheritdoc cref="ThingsGatewayNodeManager"/>
     public ThingsGatewayNodeManager(IServiceScope serviceScope, IServerInternal server, ApplicationConfiguration configuration) : base(server, configuration, ReferenceServer)
     {
         _serviceScope = serviceScope;
-        _rpcCore = serviceScope.ServiceProvider.GetService<RpcCore>();
+        _rpcCore = serviceScope.ServiceProvider.GetService<RpcSingletonService>();
         _globalCollectDeviceData = serviceScope.ServiceProvider.GetService<GlobalCollectDeviceData>();
         _config = new TypeAdapterConfig();
         _config.ForType<ValueHis, DataValue>()
@@ -112,14 +112,14 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
             errors[0] = StatusCodes.BadHistoryOperationUnsupported;
             return;
         }
-        var service = _serviceScope.GetBackgroundService<ValueHisHostService>();
+        var service = _serviceScope.GetBackgroundService<ValueHisWorker>();
         if (!service.StatuString.IsSuccess)
         {
             errors[0] = StatusCodes.BadHistoryOperationUnsupported;
             return;
         }
 
-        var db = service.HisConfig().GetAwaiter().GetResult();
+        var db = service.GetHisDbAsync().GetAwaiter().GetResult();
         if (!db.IsSuccess)
         {
             errors[0] = StatusCodes.BadHistoryOperationUnsupported;
@@ -366,7 +366,7 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
                     {
                         var nv = new NameValue() { Name = variable.SymbolicName, Value = value?.ToString() };
 
-                        var result = _rpcCore.InvokeDeviceMethod("OPCUASERVER-" + context1?.OperationContext?.Session?.Identity?.DisplayName, nv).GetAwaiter().GetResult();
+                        var result = _rpcCore.InvokeDeviceMethodAsync("OPCUASERVER-" + context1?.OperationContext?.Session?.Identity?.DisplayName, nv).GetAwaiter().GetResult();
                         if (result.IsSuccess)
                         {
                             return StatusCodes.Good;

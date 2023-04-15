@@ -2,6 +2,6 @@
 {
     public interface IAppDataTable
     {
-        public Task QueryClick();
+        public Task QueryClickAsync();
     }
 }

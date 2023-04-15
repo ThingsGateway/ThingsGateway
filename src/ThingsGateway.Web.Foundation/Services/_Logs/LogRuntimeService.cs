@@ -8,13 +8,13 @@ namespace ThingsGateway.Web.Foundation
     {
         /// <inheritdoc />
         [OperDesc("删除网关运行日志")]
-        public async Task Delete()
+        public async Task DeleteAsync()
         {
             await AsDeleteable().ExecuteCommandAsync();
         }
 
         /// <inheritdoc />
-        public async Task<SqlSugarPagedList<RuntimeLog>> Page(RuntimeLogPageInput input)
+        public async Task<SqlSugarPagedList<RuntimeLog>> PageAsync(RuntimeLogPageInput input)
         {
             var query = Context.Queryable<RuntimeLog>()
                                .WhereIF(!string.IsNullOrEmpty(input.Source), it => it.LogSource.Contains(input.Source))

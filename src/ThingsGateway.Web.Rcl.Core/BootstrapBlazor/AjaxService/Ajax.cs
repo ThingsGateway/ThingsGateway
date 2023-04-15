@@ -25,7 +25,7 @@ namespace ThingsGateway.Web.Rcl.Core
             GC.SuppressFinalize(this);
         }
 
-        public async Task<string> GetMessage(AjaxOption option)
+        public async Task<string> GetMessageAsync(AjaxOption option)
         {
             var obj = await JSObjectReference.InvokeAsync<string>("tg_ajax", option.Url, option.Method, option.Data);
             return obj;
@@ -47,7 +47,7 @@ namespace ThingsGateway.Web.Rcl.Core
         {
             if (firstRender)
             {
-                JSObjectReference = await JSRuntime.LoadModule("Ajax");
+                JSObjectReference = await JSRuntime.LoadModuleAsync("Ajax");
             }
         }
 
@@ -57,11 +57,11 @@ namespace ThingsGateway.Web.Rcl.Core
         protected override void OnInitialized()
         {
             base.OnInitialized();
-            AjaxService.Register(this, GetMessage);
-            AjaxService.RegisterGoto(this, Goto);
+            AjaxService.Register(this, GetMessageAsync);
+            AjaxService.RegisterGoto(this, GotoAsync);
         }
 
-        private async Task Goto(string url)
+        private async Task GotoAsync(string url)
         {
             await JSObjectReference.InvokeVoidAsync("tg_ajax_goto", url);
         }

@@ -1,17 +1,17 @@
 ﻿using Furion.FriendlyException;
 
-using Magicodes.ExporterAndImporter.Core;
-using Magicodes.ExporterAndImporter.Core.Models;
-using Magicodes.ExporterAndImporter.Excel;
-
 using Microsoft.AspNetCore.Components.Forms;
 
-using NewLife;
+using MiniExcelLibs;
 
+using System.Dynamic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 
 using ThingsGateway.Core;
+
+using TouchSocket.Core;
 
 namespace ThingsGateway.Web.Foundation
 {
@@ -38,7 +38,7 @@ namespace ThingsGateway.Web.Foundation
 
         /// <inheritdoc/>
         [OperDesc("添加采集设备")]
-        public async Task Add(CollectDevice input)
+        public async Task AddAsync(CollectDevice input)
         {
             var account_Id = GetIdByName(input.Name);
             if (account_Id > 0)
@@ -50,7 +50,7 @@ namespace ThingsGateway.Web.Foundation
 
         /// <inheritdoc/>
         [OperDesc("复制采集设备")]
-        public async Task CopyDev(IEnumerable<CollectDevice> input)
+        public async Task CopyDevAsync(IEnumerable<CollectDevice> input)
         {
             var newId = Yitter.IdGenerator.YitIdHelper.NextId();
             var newDevs = input.Adapt<List<CollectDevice>>();
@@ -66,7 +66,7 @@ namespace ThingsGateway.Web.Foundation
         }
         /// <inheritdoc/>
         [OperDesc("复制采集设备与变量")]
-        public async Task CopyDevAndVar(IEnumerable<CollectDevice> input)
+        public async Task CopyDevAndVarAsync(IEnumerable<CollectDevice> input)
         {
 
             using var serviceScope = _scopeFactory.CreateScope();
@@ -156,7 +156,7 @@ namespace ThingsGateway.Web.Foundation
 
         /// <inheritdoc/>
         [OperDesc("删除采集设备")]
-        public async Task Delete(List<BaseIdInput> input)
+        public async Task DeleteAsync(List<BaseIdInput> input)
         {
             //获取所有ID
             var ids = input.Select(it => it.Id).ToList();
@@ -176,7 +176,7 @@ namespace ThingsGateway.Web.Foundation
 
         /// <inheritdoc/>
         [OperDesc("编辑采集设备")]
-        public async Task Edit(CollectDeviceEditInput input)
+        public async Task EditAsync(CollectDeviceEditInput input)
         {
             var account_Id = GetIdByName(input.Name);
             if (account_Id > 0 && account_Id != input.Id)
@@ -187,12 +187,12 @@ namespace ThingsGateway.Web.Foundation
         }
 
         /// <inheritdoc/>
-        public async Task<SqlSugarPagedList<CollectDevice>> Page(CollectDevicePageInput input)
+        public async Task<SqlSugarPagedList<CollectDevice>> PageAsync(CollectDevicePageInput input)
         {
             long? pluginid = 0;
             if (!string.IsNullOrEmpty(input.PluginName))
             {
-                pluginid = _driverPluginService.GetCacheListAsync().FirstOrDefault(it => it.AssembleName.Contains(input.PluginName))?.Id;
+                pluginid = _driverPluginService.GetCacheList().FirstOrDefault(it => it.AssembleName.Contains(input.PluginName))?.Id;
             }
             var query = Context.Queryable<CollectDevice>()
              .WhereIF(!string.IsNullOrEmpty(input.Name), u => u.Name.Contains(input.Name))
@@ -232,7 +232,7 @@ namespace ThingsGateway.Web.Foundation
         }
 
         /// <inheritdoc/>
-        public async Task<List<CollectDeviceRunTime>> GetCollectDeviceRuntime(long devId = 0)
+        public async Task<List<CollectDeviceRunTime>> GetCollectDeviceRuntimeAsync(long devId = 0)
         {
             if (devId == 0)
             {
@@ -240,7 +240,7 @@ namespace ThingsGateway.Web.Foundation
                 var runtime = devices.Adapt<List<CollectDeviceRunTime>>();
                 using var serviceScope = _scopeFactory.CreateScope();
                 var variableService = serviceScope.ServiceProvider.GetService<IVariableService>();
-                var collectVariableRunTimes = await variableService.GetCollectDeviceVariableRuntime();
+                var collectVariableRunTimes = await variableService.GetCollectDeviceVariableRuntimeAsync();
                 foreach (var device in runtime)
                 {
                     var pluginName = _driverPluginService.GetNameById(device.PluginId);
@@ -259,7 +259,7 @@ namespace ThingsGateway.Web.Foundation
                 foreach (var device in runtime)
                 {
                     var pluginName = _driverPluginService.GetNameById(device.PluginId);
-                    var collectVariableRunTimes = await variableService.GetCollectDeviceVariableRuntime(devId);
+                    var collectVariableRunTimes = await variableService.GetCollectDeviceVariableRuntimeAsync(devId);
                     device.PluginName = pluginName;
                     device.DeviceVariableRunTimes = collectVariableRunTimes;
                 }
@@ -270,167 +270,203 @@ namespace ThingsGateway.Web.Foundation
         }
 
         #region 导入导出
-        /// <inheritdoc/>
-        [OperDesc("导出采集设备模板", IsRecordPar = false)]
-        public async Task<MemoryStream> Template()
-        {
-            IImporter Importer = new ExcelImporter();
-            var byteArray = await Importer.GenerateTemplateBytes<CollectDeviceWithPropertyImport>();
-
-            var result = new MemoryStream(byteArray);
-            return result;
-        }
-
+        /// <summary>
+        /// 插件前置名称
+        /// </summary>
+        public const string PluginLeftName = "ThingsGateway.";
+        /// <summary>
+        /// 设备表名称
+        /// </summary>
+        public const string CollectDeviceSheetName = "采集设备";
         /// <inheritdoc/>
         [OperDesc("导出采集设备表", IsRecordPar = false)]
-        public async Task<MemoryStream> ExportFile()
+        public async Task<MemoryStream> ExportFileAsync()
         {
+
             var devDatas = GetCacheList();
 
-            var devExports = devDatas.Adapt<List<CollectDeviceExport>>();
-            //需要手动改正插件名称
-            devExports.ForEach(it => it.PluginName = _driverPluginService.GetNameById(it.PluginId));
+            //总数据
+            Dictionary<string, object> sheets = new Dictionary<string, object>();
+            //设备页
+            List<Dictionary<string, object>> devExports = new();
+            //设备附加属性，转成Dict<表名,List<Dict<列名，列数据>>>的形式
+            Dictionary<string, List<Dictionary<string, object>>> devicePropertys = new();
 
-            List<DevicePropertyExport> devicePropertys = new List<DevicePropertyExport>();
             foreach (var devData in devDatas)
             {
-                var propertyExcels = devData.DevicePropertys.Adapt<List<DevicePropertyExport>>();
-                if (propertyExcels != null)
+
+                //设备页
+                var data = devData.GetType().GetAllProps().Where(a => a.GetCustomAttribute<ExcelAttribute>() != null);
+                Dictionary<string, object> devExport = new();
+                foreach (var item in data)
                 {
-                    //需要手动改正设备名称
-                    propertyExcels.ForEach(it => it.DeviceName = devData.Name);
-                    devicePropertys.AddRange(propertyExcels);
+                    //描述
+                    var desc = ObjectExtensions.FindDisplayAttribute(item);
+                    //数据源增加
+                    devExport.Add(desc ?? item.Name, item.GetValue(devData)?.ToString());
+                }
+                //设备实体没有包含插件名称，手动插入
+                devExport.Add("插件", _driverPluginService.GetNameById(devData.PluginId));
+                //添加完整设备信息
+                devExports.Add(devExport);
+
+                //插件属性
+                //单个设备的行数据
+                Dictionary<string, object> driverInfo = new Dictionary<string, object>();
+                foreach (var item in devData.DevicePropertys ?? new())
+                {
+                    //添加对应属性数据
+                    driverInfo.Add(item.Description, item.Value);
+                }
+                //没有包含设备名称，手动插入
+                if (driverInfo.Count > 0)
+                {
+                    driverInfo.Add("设备", devData.Name);
+                }
+
+                //插件名称去除首部ThingsGateway.作为表名
+                var pluginName = _driverPluginService.GetNameById(devData.PluginId).Replace(PluginLeftName, "");
+                if (devicePropertys.ContainsKey(pluginName))
+                {
+                    if (driverInfo.Count > 0)
+                        devicePropertys[pluginName].Add(driverInfo);
+                }
+                else
+                {
+                    if (driverInfo.Count > 0)
+                        devicePropertys.Add(pluginName, new() { driverInfo });
                 }
 
             }
 
-            var exporter = new ExcelExporter();
-            var byteArray = await exporter.Append(devExports)
-.SeparateBySheet()
-    .Append(devicePropertys).ExportAppendDataAsByteArray();
-            var result = new MemoryStream(byteArray);
+            //添加设备页
+            sheets.Add(CollectDeviceSheetName, devExports);
+            //添加插件属性页
+            foreach (var item in devicePropertys)
+            {
+                sheets.Add(item.Key, item.Value);
+            }
 
-            return result;
+            var memoryStream = new MemoryStream();
+            await memoryStream.SaveAsAsync(sheets);
+            return memoryStream;
         }
+
         /// <inheritdoc/>
-        public async Task<Dictionary<string, ImportPreviewOutputBase>> Preview(IBrowserFile file)
+        public async Task<Dictionary<string, ImportPreviewOutputBase>> PreviewAsync(IBrowserFile file)
         {
             _fileService.ImportVerification(file);
-            var Importer = new ExcelImporter();
             using var fs = new MemoryStream();
             using var stream = file.OpenReadStream(5120000);
             await stream.CopyToAsync(fs);
-            var importDic = await Importer.ImportMultipleSheet<CollectDeviceWithPropertyImport>(fs);//导入的文件转化为带入结果
+            var sheetNames = MiniExcel.GetSheetNames(fs);
+
+            //导入检验结果
             Dictionary<string, ImportPreviewOutputBase> ImportPreviews = new();
-            ImportPreviewOutput<CollectDeviceImport> DeviceImportPreview = new();
-            foreach (var item in importDic)
+            //设备页
+            ImportPreviewOutput<CollectDevice> deviceImportPreview = new();
+            foreach (var sheetName in sheetNames)
             {
-                //导入的Sheet数据，
-                if (item.Key == "采集设备")
+                //单页数据
+                var rows = fs.Query(useHeaderRow: true, sheetName: sheetName).Cast<IDictionary<string, object>>();
+                if (sheetName == CollectDeviceSheetName)
                 {
-                    //多个不同类型的Sheet返回的值为object，需要进行类型转换
-                    var import = item.Value.Adapt<ImportResult<CollectDeviceImport>>();
-                    DeviceImportPreview = _fileService.TemplateDataVerification(import);//验证数据完整度
-                    //遍历错误的行
-                    import.RowErrors.ForEach(row =>
-                    {
-                        row.RowIndex -= 2;//下表与列表中的下标一致
-                        DeviceImportPreview.Data[row.RowIndex].HasError = true;//错误的行HasError = true
-                        DeviceImportPreview.Data[row.RowIndex].ErrorInfo = row.FieldErrors;
-                    });
+                    ImportPreviewOutput<CollectDevice> importPreviewOutput = new();
+                    ImportPreviews.Add(sheetName, importPreviewOutput);
+                    deviceImportPreview = importPreviewOutput;
 
-                    for (int i = 0; i < DeviceImportPreview.Data.Count; i++)
+
+                    List<CollectDevice> devices = new List<CollectDevice>();
+                    foreach (var item in rows)
                     {
-                        var data = DeviceImportPreview.Data[i];
-                        var error = data.ErrorInfo ?? new Dictionary<string, string>();
-                        if (!data.HasError)
+                        var device = ((ExpandoObject)item).ConvertToEntity<CollectDevice>();
+                        devices.Add(device);
+                        //转化插件名称
+                        var value = item.FirstOrDefault(a => a.Key == "插件");
+                        if (_driverPluginService.GetIdByName(value.Value.ToString()) == null)
                         {
-                            if (_driverPluginService.GetIdByName(data.PluginName) == null)
-                            {
-                                //找不到对应的插件
-                                data.HasError = true;
-                                error.TryAdd(data.Description(it => it.PluginName), "不存在这个插件");
-                                DeviceImportPreview.HasError = true;
-                                DeviceImportPreview.RowErrors.Add(new DataRowErrorInfo() { RowIndex = i, FieldErrors = error });
-                            }
-                            else
-                            {
-                                data.PluginId = _driverPluginService.GetIdByName(data.PluginName).ToLong();
-                                data.Id = this.GetIdByName(data.Name) ?? YitIdHelper.NextId();
-                            }
+                            //找不到对应的插件
+                            importPreviewOutput.HasError = true;
+                            importPreviewOutput.ErrorStr = "插件名称不存在";
+                            return ImportPreviews;
                         }
-
-                        data.ErrorInfo = error;
-
+                        else
+                        {
+                            //插件ID和设备ID都需要手动补录
+                            device.PluginId = _driverPluginService.GetIdByName(value.Value.ToString()).ToLong();
+                            device.Id = this.GetIdByName(device.Name) ?? YitIdHelper.NextId();
+                        }
                     }
+                    importPreviewOutput.Data = devices;
 
-                    ImportPreviews.Add(item.Key, DeviceImportPreview);
                 }
-                if (item.Key == "设备附加属性")
+                else
                 {
-                    //多个不同类型的Sheet返回的值为object，需要进行类型转换
-                    var import = item.Value.Adapt<ImportResult<DevicePropertyImport>>();
-                    ImportPreviewOutput<DevicePropertyImport> ImportPreview = _fileService.TemplateDataVerification(import);//验证数据完整度
-                    //遍历错误的行
-                    import.RowErrors.ForEach(row =>
+                    //插件属性需加上前置名称
+                    var newName = PluginLeftName + sheetName;
+                    var pluginId = _driverPluginService.GetIdByName(newName);
+                    if (pluginId == null)
                     {
-                        row.RowIndex -= 2;//下表与列表中的下标一致
-                        ImportPreview.Data[row.RowIndex].HasError = true;//错误的行HasError = true
-                        ImportPreview.Data[row.RowIndex].ErrorInfo = row.FieldErrors;
-                    });
-                    for (int i = 0; i < ImportPreview.Data.Count; i++)
+                        deviceImportPreview.HasError = true;
+                        deviceImportPreview.ErrorStr = deviceImportPreview.ErrorStr + Environment.NewLine + $"设备{newName}不存在";
+                        return ImportPreviews;
+                    }
+
+                    var driverPlugin = _driverPluginService.GetDriverPluginById(pluginId.Value);
+                    using var serviceScope = _scopeFactory.CreateScope();
+                    var pluginSingletonService = serviceScope.ServiceProvider.GetService<PluginSingletonService>();
+                    var driver = (CollectBase)pluginSingletonService.GetDriver(YitIdHelper.NextId(), driverPlugin);
+                    var propertys = driver.DriverPropertys.GetType().GetAllProps().Where(a => a.GetCustomAttribute<DevicePropertyAttribute>() != null);
+                    foreach (var item in rows)
                     {
-                        var data = ImportPreview.Data[i];
-                        var error = data.ErrorInfo ?? new Dictionary<string, string>();
-                        if (!data.HasError)
+                        List<DependencyProperty> devices = new List<DependencyProperty>();
+                        foreach (var item1 in item)
                         {
-                            if (this.GetIdByName(data.DeviceName) == null && !DeviceImportPreview.Data?.Any(it => it.Name == data.DeviceName && it.HasError == false) == true)
+                            var propertyInfo = propertys.FirstOrDefault(p => p.FindDisplayAttribute(a => a.GetCustomAttribute<DevicePropertyAttribute>()?.Name) == item1.Key);
+                            if (propertyInfo == null)
                             {
-                                //找不到对应的设备
-                                data.HasError = true;
-                                error.TryAdd(data.Description(it => it.DeviceName), "不存在这个设备");
-                                ImportPreview.HasError = true;
-                                ImportPreview.RowErrors.Add(new DataRowErrorInfo() { RowIndex = i + 1, FieldErrors = error });
+                                //不存在时不报错
                             }
                             else
                             {
-                                data.DeviceId = this.GetIdByName(data.DeviceName) ?? DeviceImportPreview.Data.FirstOrDefault(it => it.Name == data.DeviceName).Id;
+                                devices.Add(new()
+                                {
+                                    PropertyName = propertyInfo.Name,
+                                    Description = item1.Key.ToString(),
+                                    Value = item1.Value?.ToString()
+                                });
                             }
+
+                        }
+                        //转化插件名称
+                        var value = item.FirstOrDefault(a => a.Key == "设备");
+                        if (deviceImportPreview.Data?.Any(it => it.Name == value.Value.ToString()) == true)
+                        {
+                            var deviceId = this.GetIdByName(value.Value.ToString()) ?? deviceImportPreview.Data.FirstOrDefault(it => it.Name == value.Value.ToString()).Id;
+                            deviceImportPreview.Data.FirstOrDefault(a => a.Id == deviceId).DevicePropertys = devices;
                         }
 
-                        data.ErrorInfo = error;
-
                     }
-                    ImportPreviews.Add(item.Key, ImportPreview);
+
                 }
             }
+
+
 
             return ImportPreviews;
         }
 
         /// <inheritdoc/>
         [OperDesc("导入采集设备表", IsRecordPar = false)]
-        public async Task Import(Dictionary<string, ImportPreviewOutputBase> input)
+        public async Task ImportAsync(Dictionary<string, ImportPreviewOutputBase> input)
         {
             var collectDevices = new List<CollectDevice>();
             foreach (var item in input)
             {
-                if (item.Key == "采集设备")
+                if (item.Key == CollectDeviceSheetName)
                 {
-                    var collectDeviceImports = ((ImportPreviewOutput<CollectDeviceImport>)item.Value).Data;
+                    var collectDeviceImports = ((ImportPreviewOutput<CollectDevice>)item.Value).Data;
                     collectDevices = collectDeviceImports.Adapt<List<CollectDevice>>();
-                    break;
-                }
-            }
-            foreach (var item in input)
-            {
-                if (item.Key == "设备附加属性")
-                {
-                    var propertys = ((ImportPreviewOutput<DevicePropertyImport>)item.Value).Data;
-                    foreach (var collectDevice in collectDevices.Where(a => propertys.Select(b => b.DeviceId).ToList().Contains(a.Id)).ToList())
-                    {
-                        collectDevice.DevicePropertys = (propertys.Where(it => it.DeviceId == collectDevice.Id).ToList().Adapt<List<DependencyProperty>>());
-                    }
                     break;
                 }
             }
