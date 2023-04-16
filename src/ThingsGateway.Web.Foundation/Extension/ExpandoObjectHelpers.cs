@@ -27,16 +27,8 @@ public static class ExpandoObjectHelpers
             if (property != null)
             {
                 var value = keyValuePair.Value;
-                if (value != null)
-                {
-                    var objValue = ReadWriteHelpers.ObjToTypeValue(property, value.ToString());
-                    property.SetValue(entity, objValue);
-                }
-                else
-                {
-                    property.SetValue(entity, null);
-
-                }
+                var objValue = ReadWriteHelpers.ObjToTypeValue(property, value?.ToString() ?? "");
+                property.SetValue(entity, objValue);
 
             }
         }

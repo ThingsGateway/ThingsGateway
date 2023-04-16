@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 using SqlSugar;
 
@@ -74,9 +75,12 @@ public class ModbusServer : UpLoadBase
     {
         curDevice = device;
         TouchSocketConfig.ConfigureContainer(a => a.RegisterSingleton<ILog>(new EasyLogger(Log_Out)));
-
-        TouchSocketConfig.SetListenIPHosts(new IPHost[] { new IPHost($"{driverPropertys.IP}:{driverPropertys.Port}") })
-                .SetBufferLength(1024);
+        IPHost iPHost = new IPHost(driverPropertys.Port);
+        if (!driverPropertys.IP.IsNullOrEmpty())
+        {
+            iPHost = new IPHost($"{driverPropertys.IP}:{driverPropertys.Port}");
+        }
+        TouchSocketConfig.SetListenIPHosts(new IPHost[] { iPHost }).SetBufferLength(1024);
         var service = TouchSocketConfig.Container.Resolve<TcpService>();
         service.Setup(TouchSocketConfig);
         //载入配置
@@ -167,7 +171,7 @@ public class ModbusServerProperty : DriverPropertyBase
 
 
     [DeviceProperty("IP", "")]
-    public string IP { get; set; } = "127.0.0.1";
+    public string IP { get; set; } = "";
 
 
     [DeviceProperty("端口", "")]

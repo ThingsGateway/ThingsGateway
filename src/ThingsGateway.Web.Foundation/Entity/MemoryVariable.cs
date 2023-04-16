@@ -68,16 +68,19 @@ public class MemoryVariable : BaseEntity
     /// </summary>
     [Description("布尔开报警使能")]
     [Excel]
+    [SugarColumn(ColumnDescription = "布尔开报警使能")]
     public bool BoolOpenAlarmEnable { get; set; }
     /// <summary>
     /// 布尔开报警约束
     /// </summary>
     [Description("布尔开报警约束")]
+    [SugarColumn(ColumnDescription = "布尔开报警约束", IsNullable = true)]
     [Excel]
     public string BoolOpenRestrainExpressions { get; set; } = "";
     /// <summary>
     /// 布尔开报警文本
     /// </summary>
+    [SugarColumn(ColumnDescription = "布尔开报警文本", IsNullable = true)]
     [Description("布尔开报警文本")]
     [Excel]
     public string BoolOpenAlarmText { get; set; } = "";
@@ -85,18 +88,21 @@ public class MemoryVariable : BaseEntity
     /// <summary>
     /// 布尔关报警使能
     /// </summary>
+    [SugarColumn(ColumnDescription = "布尔关报警使能")]
     [Description("布尔关报警使能")]
     [Excel]
     public bool BoolCloseAlarmEnable { get; set; }
     /// <summary>
     /// 布尔关报警约束
     /// </summary>
+    [SugarColumn(ColumnDescription = "布尔关报警约束", IsNullable = true)]
     [Description("布尔关报警约束")]
     [Excel]
     public string BoolCloseRestrainExpressions { get; set; } = "";
     /// <summary>
     /// 布尔关报警文本
     /// </summary>
+    [SugarColumn(ColumnDescription = "布尔关报警文本", IsNullable = true)]
     [Description("布尔关报警文本")]
     [Excel]
     public string BoolCloseAlarmText { get; set; } = "";
@@ -104,24 +110,28 @@ public class MemoryVariable : BaseEntity
     /// <summary>
     /// 高报使能
     /// </summary>
+    [SugarColumn(ColumnDescription = "高报使能")]
     [Description("高报使能")]
     [Excel]
     public bool HAlarmEnable { get; set; }
     /// <summary>
     /// 高报约束
     /// </summary>
+    [SugarColumn(ColumnDescription = "高报约束", IsNullable = true)]
     [Description("高报约束")]
     [Excel]
     public string HRestrainExpressions { get; set; } = "";
     /// <summary>
     /// 高报文本
     /// </summary>
+    [SugarColumn(ColumnDescription = "高报文本", IsNullable = true)]
     [Description("高报文本")]
     [Excel]
     public string HAlarmText { get; set; } = "";
     /// <summary>
     /// 高限值
     /// </summary>
+    [SugarColumn(ColumnDescription = "高限值", IsNullable = true)]
     [Description("高限值")]
     [Excel]
     public double HAlarmCode { get; set; }
@@ -129,24 +139,28 @@ public class MemoryVariable : BaseEntity
     /// <summary>
     /// 高高报使能
     /// </summary>
+    [SugarColumn(ColumnDescription = "高高报使能")]
     [Description("高高报使能")]
     [Excel]
     public bool HHAlarmEnable { get; set; }
     /// <summary>
     /// 高高报约束
     /// </summary>
+    [SugarColumn(ColumnDescription = "高高报约束", IsNullable = true)]
     [Description("高高报约束")]
     [Excel]
     public string HHRestrainExpressions { get; set; } = "";
     /// <summary>
     /// 高高报文本
     /// </summary>
+    [SugarColumn(ColumnDescription = "高高报文本", IsNullable = true)]
     [Description("高高报文本")]
     [Excel]
     public string HHAlarmText { get; set; } = "";
     /// <summary>
     /// 高高限值
     /// </summary>
+    [SugarColumn(ColumnDescription = "高高限值", IsNullable = true)]
     [Description("高高限值")]
     [Excel]
     public double HHAlarmCode { get; set; }
@@ -154,24 +168,28 @@ public class MemoryVariable : BaseEntity
     /// <summary>
     /// 低报使能
     /// </summary>
+    [SugarColumn(ColumnDescription = "低报使能")]
     [Description("低报使能")]
     [Excel]
     public bool LAlarmEnable { get; set; }
     /// <summary>
     /// 低报约束
     /// </summary>
+    [SugarColumn(ColumnDescription = "低报约束", IsNullable = true)]
     [Description("低报约束")]
     [Excel]
     public string LRestrainExpressions { get; set; } = "";
     /// <summary>
     /// 低报文本
     /// </summary>
+    [SugarColumn(ColumnDescription = "低报文本", IsNullable = true)]
     [Description("低报文本")]
     [Excel]
     public string LAlarmText { get; set; } = "";
     /// <summary>
     /// 低限值
     /// </summary>
+    [SugarColumn(ColumnDescription = "低限值", IsNullable = true)]
     [Description("低限值")]
     [Excel]
     public double LAlarmCode { get; set; }
@@ -179,24 +197,28 @@ public class MemoryVariable : BaseEntity
     /// <summary>
     /// 低低报使能
     /// </summary>
+    [SugarColumn(ColumnDescription = "低低报使能")]
     [Description("低低报使能")]
     [Excel]
     public bool LLAlarmEnable { get; set; }
     /// <summary>
     /// 低低报约束
     /// </summary>
+    [SugarColumn(ColumnDescription = "低低报约束", IsNullable = true)]
     [Description("低低报约束")]
     [Excel]
     public string LLRestrainExpressions { get; set; } = "";
     /// <summary>
     /// 低低报文本
     /// </summary>
+    [SugarColumn(ColumnDescription = "低低报文本", IsNullable = true)]
     [Description("低低报文本")]
     [Excel]
     public string LLAlarmText { get; set; } = "";
     /// <summary>
     /// 低低限值
     /// </summary>
+    [SugarColumn(ColumnDescription = "低低限值", IsNullable = true)]
     [Description("低低限值")]
     [Excel]
     public double LLAlarmCode { get; set; }
