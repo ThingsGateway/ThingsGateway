@@ -6,15 +6,15 @@
 #### 介绍
 
 基于Net6/7+Blazor Server的跨平台边缘采集网关，支持南北端插件式开发，
-动态更新插件，并拥有较完善的北端Rpc权限管理。
+并拥有较完善的北端Rpc权限管理。
 
 
 ####  功能亮点
 
 - Blazor Server架构，开发部署更简单
 - 采集/上传配置完全支持Excel导入导出
-- 插件式驱动，方便驱动二次开发，并支持动态更新
-- 支持时序数据库存储
+- 插件式驱动，方便驱动二次开发
+- 时序数据库存储
 - 实时/历史报警(Sql转储)，支持布尔/高低限值
 
 #### 演示
@@ -92,9 +92,10 @@ http://120.24.62.140:5000/
 -  SqlSugar：[https://gitee.com/dotnetchina/SqlSugar](https://gitee.com/dotnetchina/SqlSugar)
 -  Simple.Admin：[https://gitee.com/zxzyjs/SimpleAdmin](https://gitee.com/zxzyjs/SimpleAdmin)
 -  Masa.Blazor：[https://www.masastack.com/blazor](https://www.masastack.com/blazor)
+-  MiniExcel：[https://gitee.com/dotnetchina/MiniExcel](https://gitee.com/dotnetchina/MiniExcel)
+-  TouchSocket：[https://gitee.com/rrqm_home/touchsocket](https://gitee.com/rrqm_home/touchsocket)
 -  IdGenerator：[https://github.com/yitter/idgenerator](https://github.com/yitter/idgenerator)
 -  CodingSeb.ExpressionEvaluator：[https://github.com/codingseb/ExpressionEvaluator](https://github.com/codingseb/ExpressionEvaluator)
--  TouchSocket：[https://gitee.com/rrqm_home/touchsocket](https://gitee.com/rrqm_home/touchsocket)
 -  Hardware.Info：[https://github.com/Jinjinov/Hardware.Info](https://github.com/Jinjinov/Hardware.Info)
 -  UAParser：[https://github.com/ua-parser/uap-csharp](https://github.com/ua-parser/uap-csharp)
 
