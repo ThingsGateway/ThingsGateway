@@ -271,8 +271,8 @@ public class PluginSingletonService : ISingleton
         foreach (var propertyInfo in pluginPropertys ?? new())
         {
             var deviceProperty = deviceProperties.FirstOrDefault(x => x.PropertyName == propertyInfo.Name);
-            if (deviceProperty == null || string.IsNullOrEmpty(deviceProperty?.Value?.ToString())) continue;
-            var value = ReadWriteHelpers.ObjToTypeValue(propertyInfo, deviceProperty.Value);
+            if (deviceProperty == null) continue;
+            var value = ReadWriteHelpers.ObjToTypeValue(propertyInfo, deviceProperty?.Value??"");
             propertyInfo.SetValue(driver.DriverPropertys, value);
         }
     }
