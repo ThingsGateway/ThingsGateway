@@ -82,7 +82,7 @@ else
         </MTextField>
         @if (_showCaptcha)
         {
-            <PImageCaptcha @bind-Value="CaptchaValue"
+            <PImageCaptcha @ref=captcha @bind-Value="CaptchaValue"
                    TextFieldClass="mt-10 mx-auto"
                    Height="60"
                    Label=@T("验证码") Outlined
