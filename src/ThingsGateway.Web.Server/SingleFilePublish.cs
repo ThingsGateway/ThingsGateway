@@ -17,9 +17,10 @@
             "ThingsGateway.Foundation",
             "ThingsGateway.Web.Foundation",
             "ThingsGateway.Web.Page",
+            "ThingsGateway.Application",
+            "ThingsGateway.Core",
             "ThingsGateway.Web.Rcl",
             "ThingsGateway.Web.Rcl.Core",
-            "ThingsGateway.Core",
             "ThingsGateway.Web.Core"
         };
         }
