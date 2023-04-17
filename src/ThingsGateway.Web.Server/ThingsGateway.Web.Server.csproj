@@ -42,6 +42,9 @@
 	  <ProjectReference Include="..\ThingsGateway.Web.Core\ThingsGateway.Web.Core.csproj" />
 	</ItemGroup>
 	<ItemGroup>
+	  <None Update="Dockerfile">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
 	  <None Update="thingsgateway.service">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </None>
