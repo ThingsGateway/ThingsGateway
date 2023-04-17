@@ -1,3 +1,5 @@
+using Masa.Blazor.Presets;
+
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.Hosting;
 
@@ -45,7 +47,7 @@ namespace ThingsGateway.Web.Rcl
                 await LoginAsync();
             }
         }
-
+        private PImageCaptcha captcha;
         private async Task LoginAsync()
         {
             loginModel.ValidCodeReqNo = CaptchaInfo?.ValidCodeReqNo;
@@ -67,6 +69,7 @@ namespace ThingsGateway.Web.Rcl
                 var ret = str.ToJsonEntity<UnifyResult<LoginOutPut>>();
                 if (ret.Code != 200)
                 {
+                    await captcha.RefreshCode();
                     await PopupService.EnqueueSnackbarAsync(T("µÇÂ¼´íÎó") + ": " + ret.Msg.ToString(), AlertTypes.Error);
                 }
                 else
@@ -78,6 +81,7 @@ namespace ThingsGateway.Web.Rcl
             }
             else
             {
+                await captcha.RefreshCode();
                 await PopupService.EnqueueSnackbarAsync(@T("µÇÂ¼´íÎó"), AlertTypes.Error);
             }
         }
