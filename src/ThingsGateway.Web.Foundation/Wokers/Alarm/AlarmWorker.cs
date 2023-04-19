@@ -1,4 +1,4 @@
-﻿using Furion.Logging.Extensions;
+using Furion.Logging.Extensions;
 
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -18,7 +18,7 @@ namespace ThingsGateway.Web.Foundation;
 /// <summary>
 /// 设备采集报警后台服务
 /// </summary>
-public class AlarmWorker : BackgroundService, ISingleton
+public class AlarmWorker : BackgroundService
 {
     private static IServiceScopeFactory _scopeFactory;
     private readonly ILogger<AlarmWorker> _logger;
