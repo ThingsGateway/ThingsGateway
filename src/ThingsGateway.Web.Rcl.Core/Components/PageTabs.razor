@@ -2,8 +2,8 @@
 @using System.Globalization;
 @using Masa.Blazor.Presets;
 @inherits CultureComponentBase
-<PPageTabs @ref="PPageTabs" TabClass="px-6 rounded-t-xl" Ripple="false" HideSlider>
-    <TabContent>
+<PPageTabs @ref="PPageTabs" TabOptions=@TabOptions TabClass="px-6 rounded-t-xl" Ripple="false" HideSlider>
+@*    <TabContent>
         @{
             var item = UserResoures.PageTabItems.FirstOrDefault(u => context.IsMatch(u.Href));
         }
@@ -14,14 +14,35 @@
             </span>
         </MSheet>
 
-    </TabContent>
+    </TabContent>*@
     <ChildContent>
         @ChildContent
     </ChildContent>
 
 </PPageTabs>
+<style>
+
+    .tgTab {
+        height: 36px;
+    }
+
+</style>
+
 
 @code {
+    private TabOptions TabOptions(PageTabPathValue value)
+    {
+
+        var item = UserResoures.PageTabItems.FirstOrDefault(u => value.IsMatch(u.Href));
+        var title = T(item?.Title);
+        var icon = item?.Icon;
+        var titleClass = $"mx-2 text-capitalize {(value.Selected ? "primary--text" : "")}";
+
+        var op= new TabOptions(title, icon, titleClass);
+        op.TitleStyle = "min-width:46px;";
+        op.Class = "tgTab";
+        return op;
+    }
     public PPageTabs PPageTabs { get; private set; }
 
     [Inject]
