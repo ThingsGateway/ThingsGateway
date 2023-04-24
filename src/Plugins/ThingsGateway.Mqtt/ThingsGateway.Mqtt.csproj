@@ -18,7 +18,7 @@
 	</Target>
 
 	<ItemGroup>
-	  <PackageReference Include="MQTTnet" Version="4.1.4.563" />
+	  <PackageReference Include="MQTTnet" Version="4.2.0.706" />
 	</ItemGroup>
 
 
