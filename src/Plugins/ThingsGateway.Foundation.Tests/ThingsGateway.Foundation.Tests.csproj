@@ -6,7 +6,7 @@
 		<!--<GenerateDocumentationFile>True</GenerateDocumentationFile>-->
 
 		<IsPackable>false</IsPackable>
-		<Platforms>AnyCPU;x86</Platforms>
+		<Platforms>AnyCPU</Platforms>
 		<Version>1.4.0</Version>
 	</PropertyGroup>
 
