@@ -71,14 +71,23 @@ public class IotSharpClient : UpLoadBase
 
     public override void Dispose()
     {
-        _globalCollectDeviceData?.CollectVariables?.ForEach(a => a.VariableValueChange -= VariableValueChange);
-
-        _globalCollectDeviceData?.CollectDevices?.ForEach(a =>
+        try
         {
-            a.DeviceStatusCahnge -= DeviceStatusCahnge;
-        });
-        _mqttClient?.Dispose();
-        _mqttClient = null;
+            lockobj.Lock();
+            _globalCollectDeviceData?.CollectVariables?.ForEach(a => a.VariableValueChange -= VariableValueChange);
+
+            _globalCollectDeviceData?.CollectDevices?.ForEach(a =>
+            {
+                a.DeviceStatusCahnge -= DeviceStatusCahnge;
+            });
+            _mqttClient?.Dispose();
+            _mqttClient = null;
+        }
+        finally
+        {
+            lockobj.UnLock();
+        }
+
     }
 
     public override async Task ExecuteAsync(CancellationToken cancellationToken)

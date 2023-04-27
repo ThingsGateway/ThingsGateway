@@ -106,14 +106,23 @@ public class MqttClient : UpLoadBase
 
     public override void Dispose()
     {
-        _globalCollectDeviceData?.CollectVariables?.ForEach(a => a.VariableValueChange -= VariableValueChange);
-
-        _globalCollectDeviceData?.CollectDevices?.ForEach(a =>
+        try
         {
-            a.DeviceStatusCahnge -= DeviceStatusCahnge;
-        });
-        _mqttClient?.Dispose();
-        _mqttClient = null;
+            lockobj.Lock();
+            _globalCollectDeviceData?.CollectVariables?.ForEach(a => a.VariableValueChange -= VariableValueChange);
+
+            _globalCollectDeviceData?.CollectDevices?.ForEach(a =>
+            {
+                a.DeviceStatusCahnge -= DeviceStatusCahnge;
+            });
+            _mqttClient?.Dispose();
+            _mqttClient = null;
+        }
+        finally
+        {
+            lockobj.UnLock();
+        }
+
     }
 
     public override async Task ExecuteAsync(CancellationToken cancellationToken)
@@ -311,7 +320,7 @@ public class MqttClient : UpLoadBase
 
     private async Task _mqttClient_ApplicationMessageReceivedAsync(MqttApplicationMessageReceivedEventArgs arg)
     {
-        if (arg.ApplicationMessage.Topic == driverPropertys.QuestRpcTopic && arg.ApplicationMessage.Payload?.Length > 0)
+        if (arg.ApplicationMessage.Topic == driverPropertys.QuestRpcTopic && arg.ApplicationMessage.PayloadSegment.Count > 0)
         {
             await AllPublishAsync();
             return;
@@ -321,7 +330,7 @@ public class MqttClient : UpLoadBase
             return;
         if (arg.ApplicationMessage.Topic != driverPropertys.RpcWriteTopic)
             return;
-        var rpcData = Encoding.UTF8.GetString(arg.ApplicationMessage.Payload).ToJsonEntity<MqttRpcNameVaueWithId>();
+        var rpcData = Encoding.UTF8.GetString(arg.ApplicationMessage.PayloadSegment).ToJsonEntity<MqttRpcNameVaueWithId>();
         if (rpcData == null)
             return;
 

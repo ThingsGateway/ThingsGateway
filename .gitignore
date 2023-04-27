@@ -363,8 +363,7 @@ MigrationBackup/
 FodyWeavers.xsd
 
 /src/Plugins/Other
-/src/ThingsGateway.Web.Server/Default.db
-/src/ThingsGateway.Web.Server/Alarm_history.db
+/src/ThingsGateway.Web.Server/*.db
 /src/PluginPro*/
 /src/*Pro*
 /src/TestResults*/
