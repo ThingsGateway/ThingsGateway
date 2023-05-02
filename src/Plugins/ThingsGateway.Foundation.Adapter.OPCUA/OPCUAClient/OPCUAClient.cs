@@ -52,16 +52,7 @@ public class OPCUAClient : DisposableObject
         dic_subscriptions = new Dictionary<string, Subscription>();
 
         var certificateValidator = new CertificateValidator();
-        certificateValidator.CertificateValidation += (sender, eventArgs) =>
-        {
-            if (ServiceResult.IsGood(eventArgs.Error))
-                eventArgs.Accept = true;
-            else if (eventArgs.Error.StatusCode.Code == StatusCodes.BadCertificateUntrusted)
-                eventArgs.Accept = true;
-            else
-                throw new Exception(string.Format("验证证书失败，错误代码:{0}: {1}", eventArgs.Error.Code, eventArgs.Error.AdditionalInfo));
-        };
-
+        certificateValidator.CertificateValidation += CertificateValidation;
         SecurityConfiguration securityConfigurationcv = new SecurityConfiguration
         {
             UseValidatedCertificates = true,
@@ -156,10 +147,18 @@ public class OPCUAClient : DisposableObject
         m_application = new ApplicationInstance();
         m_application.ApplicationConfiguration = m_configuration;
 
-        EasyTask.Run(dataChangedHandlerInvoke);
+        Task.Run(dataChangedHandlerInvoke);
 
     }
-
+    public void CertificateValidation(CertificateValidator sender, CertificateValidationEventArgs eventArgs)
+    {
+        if (ServiceResult.IsGood(eventArgs.Error))
+            eventArgs.Accept = true;
+        else if (eventArgs.Error.StatusCode.Code == StatusCodes.BadCertificateUntrusted)
+            eventArgs.Accept = true;
+        else
+            throw new Exception(string.Format("验证证书失败，错误代码:{0}: {1}", eventArgs.Error.Code, eventArgs.Error.AdditionalInfo));
+    }
     /// <summary>
     /// 成功连接后或disconnecing从服务器。
     /// </summary>
@@ -1214,16 +1213,6 @@ public class OPCUAClient : DisposableObject
         }
     }
 
-    /// <summary>
-    /// 设置OPC客户端的日志输出
-    /// </summary>
-    /// <param name="filePath">完整的文件路径</param>
-    /// <param name="deleteExisting">是否删除原文件</param>
-    public void SetLogPathName(string filePath, bool deleteExisting)
-    {
-        Utils.SetTraceLog(filePath, deleteExisting);
-        Utils.SetTraceMask(515);
-    }
 
     public Dictionary<string, List<string>> SetTags(List<string> tags)
     {
@@ -1440,7 +1429,7 @@ public class OPCUAClient : DisposableObject
         return m_session;
     }
 
-    private async void dataChangedHandlerInvoke()
+    private async Task dataChangedHandlerInvoke()
     {
         while (!DisposedValue)
         {

@@ -100,8 +100,8 @@
             await datatableQuery();
         }
         CollectDeviceHostService = this.GetBackgroundService<CollectDeviceWorker>();
-        var data = CollectDeviceHostService.CollectDeviceCores.Select(a => a.Device).ToList();
-        _deviceGroups = CollectDeviceService.GetTree(data.Adapt<List<CollectDevice>>());
+
+        _deviceGroups = CollectDeviceServiceHelpers.GetTree(CollectDeviceHostService.CollectDeviceRunTimes.Adapt<List<CollectDevice>>());
 
         await base.OnParametersSetAsync();  
     }
@@ -220,7 +220,7 @@
 
     private async Task<SqlSugarPagedList<CollectVariableRunTime>> QueryCall(VariablePageInput input)
     {
-        var devices = CollectDeviceHostService.CollectDeviceCores.SelectMany(it => it.Device.DeviceVariableRunTimes).ToList();
+        var devices = CollectDeviceHostService.CollectDeviceRunTimes.SelectMany(it => it.DeviceVariableRunTimes).ToList();
         var data = await devices
     .WhereIf(!input.DeviceName.IsNullOrEmpty(), a => a.DeviceName==input.DeviceName)
     .WhereIf(!input.Name.IsNullOrEmpty(), a => a.Name.Contains(input.Name)).ToList()

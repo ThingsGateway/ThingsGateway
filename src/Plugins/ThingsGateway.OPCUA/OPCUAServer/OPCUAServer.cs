@@ -14,7 +14,7 @@ using ThingsGateway.Web.Foundation;
 
 namespace ThingsGateway.OPCUA;
 /// <inheritdoc/>
-public class OPCUAServerProperty : DriverPropertyBase
+public class OPCUAServerProperty : UpDriverPropertyBase
 {
     /// <summary>
     /// 服务地址
@@ -26,6 +26,7 @@ public class OPCUAServerProperty : DriverPropertyBase
     /// </summary>
     [DeviceProperty("安全策略", "")]
     public bool SecurityPolicy { get; set; }
+
 
 }
 
@@ -46,7 +47,7 @@ public partial class OPCUAServer : UpLoadBase
     {
     }
     /// <inheritdoc/>
-    public override DriverPropertyBase DriverPropertys => driverPropertys;
+    public override UpDriverPropertyBase DriverPropertys => driverPropertys;
 
     /// <inheritdoc/>
     public override List<CollectVariableRunTime> UploadVariables => _uploadVariables;
@@ -69,7 +70,6 @@ public partial class OPCUAServer : UpLoadBase
     {
         m_server?.Stop();
         m_server?.Dispose();
-        m_application?.Stop();
     }
     /// <inheritdoc/>
     public override async Task ExecuteAsync(CancellationToken cancellationToken)
@@ -86,7 +86,7 @@ public partial class OPCUAServer : UpLoadBase
                     {
                         if (!cancellationToken.IsCancellationRequested)
                         {
-                            m_server.NodeManager.UpVariable(item);
+                            m_server?.NodeManager?.UpVariable(item);
                         }
                         else
                         {
@@ -111,7 +111,7 @@ public partial class OPCUAServer : UpLoadBase
     /// <inheritdoc/>
     public override OperResult IsConnected()
     {
-        var result = m_server.GetStatus();
+        var result = m_server?.GetStatus();
 
         return OperResult.CreateSuccessResult(result);
     }

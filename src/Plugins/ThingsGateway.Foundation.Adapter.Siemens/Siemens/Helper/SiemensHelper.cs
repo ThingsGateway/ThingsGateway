@@ -278,7 +278,7 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
         #endregion
 
         #region 字符串
-        
+
         internal static async Task<OperResult<string>> ReadStringAsync(
           SiemensS7PLC plc, string address, Encoding encoding)
         {

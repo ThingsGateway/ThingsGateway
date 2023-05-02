@@ -3,8 +3,10 @@
 using System.Threading;
 
 using ThingsGateway.Foundation;
+using ThingsGateway.Foundation.Serial;
 
 using TouchSocket.Core;
+using TouchSocket.Sockets;
 
 namespace ThingsGateway.Web.Foundation;
 /// <summary>
@@ -15,16 +17,12 @@ namespace ThingsGateway.Web.Foundation;
 /// </summary>
 public abstract class CollectBase : DriverBase
 {
-    /// <summary>
-    /// <see cref="TouchSocketConfig"/> 
-    /// </summary>
-    public TouchSocketConfig TouchSocketConfig;
+
 
     /// <inheritdoc cref="CollectBase"/>
     public CollectBase(IServiceScopeFactory scopeFactory) : base(scopeFactory)
     {
-        TouchSocketConfig = new TouchSocketConfig();
-        TouchSocketConfig.ConfigureContainer(a => a.RegisterSingleton<ILog>(new EasyLogger(Log_Out)));
+
     }
     /// <summary>
     /// 导入变量UI Type，继承实现<see cref="DriverImportUIBase"/>后，返回继承类的Type，如果不存在，返回null
@@ -32,10 +30,75 @@ public abstract class CollectBase : DriverBase
     public virtual Type DriverImportUIType { get; }
 
     /// <summary>
+    /// 共享通道类型
+    /// </summary>
+    public virtual OperResult<object> GetShareChannel()
+    {
+        var config = (CollectDriverPropertyBase)DriverPropertys;
+        if (config.IsShareChannel)
+        {
+            switch (config.ShareChannel)
+            {
+                case ShareChannelEnum.None:
+                    return new OperResult<object>("不支持共享链路");
+                case ShareChannelEnum.SerialClient:
+                    TouchSocketConfig.SetSerialProperty(new()
+                    {
+                        PortName = config.PortName,
+                        BaudRate = config.BaudRate,
+                        DataBits = config.DataBits,
+                        Parity = config.Parity,
+                        StopBits = config.StopBits,
+                    })
+                .SetBufferLength(1024);
+                    var serialClient = TouchSocketConfig.Container.Resolve<SerialClient>();
+                    ((SerialClient)serialClient).Setup(TouchSocketConfig);
+                    return OperResult.CreateSuccessResult((object)serialClient);
+                case ShareChannelEnum.TcpClient:
+                    TouchSocketConfig.SetRemoteIPHost(new IPHost($"{config.IP}:{config.Port}"))
+    .SetBufferLength(1024);
+                    var tcpClient = TouchSocketConfig.Container.Resolve<TGTcpClient>();
+                    ((TGTcpClient)tcpClient).Setup(TouchSocketConfig);
+                    return OperResult.CreateSuccessResult((object)tcpClient);
+                case ShareChannelEnum.UdpSession:
+                    TouchSocketConfig.SetRemoteIPHost(new IPHost($"{config.IP}:{config.Port}"))
+    .SetBufferLength(1024);
+                    var udpSession = TouchSocketConfig.BuildWithUdpSession<UdpSession>();
+                    return OperResult.CreateSuccessResult((object)udpSession);
+            }
+
+        }
+        return new OperResult<object>("不支持共享链路");
+
+    }
+    /// <summary>
+    /// 通道标识
+    /// </summary>
+    public virtual string ChannelID()
+    {
+        var config = (CollectDriverPropertyBase)DriverPropertys;
+        if (config.IsShareChannel)
+        {
+            switch (config.ShareChannel)
+            {
+                case ShareChannelEnum.SerialClient:
+                    return config.PortName;
+                case ShareChannelEnum.TcpClient:
+                case ShareChannelEnum.UdpSession:
+                    var a = new IPHost($"{config.IP}:{config.Port}");
+                    return config.ShareChannel.ToString() + a.ToString();
+            }
+        }
+        return null;
+    }
+    /// <summary>
     /// 数据转换器
     /// </summary>
     /// <returns></returns>
     public abstract IThingsGatewayBitConverter ThingsGatewayBitConverter { get; }
+
+
+
 
     /// <summary>
     /// 结束通讯后执行的方法
@@ -58,7 +121,6 @@ public abstract class CollectBase : DriverBase
         IsLogOut = device.IsLogOut;
         Init(device, client);
     }
-
     /// <summary>
     /// 返回是否支持读取
     /// </summary>
@@ -102,6 +164,10 @@ public abstract class CollectBase : DriverBase
     /// <param name="device">设备</param>
     /// <param name="client">链路对象，如TCPClient</param>
     protected abstract void Init(CollectDeviceRunTime device, object client = null);
+    /// <summary>
+    /// 共享链路需重新设置设配器时调用该方法
+    /// </summary>
+    public abstract void InitDataAdapter();
 
     /// <summary>
     /// 返回全部内容字节数组

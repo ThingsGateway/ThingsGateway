@@ -31,7 +31,7 @@ namespace ThingsGateway.Mqtt
                     break;
 
                 case MqttNetLogLevel.Error:
-                    _logger?.Log(LogLevel.Error, 0, exception, source + "-" + message, parameters);
+                    _logger?.Log(LogLevel.Warning, 0, exception, source + "-" + message, parameters);
                     break;
             }
         }

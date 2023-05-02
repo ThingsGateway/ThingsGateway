@@ -48,14 +48,14 @@ namespace ThingsGateway.Foundation
             Request = GetInstance();
             Request.SendBytes = bytes;
             GoSend(endPoint, bytes, 0, bytes.Length);
-            Owner.Logger?.Debug(ToString() + Environment.NewLine + ThingsGateway.Foundation.Resources.Resource.Send + " : " + Request.SendBytes.ToHexString(" "));
+            Owner.Logger?.Trace("报文-" + ToString() + "-" + ThingsGateway.Foundation.Resources.Resource.Send + ":" + Request.SendBytes.ToHexString(" "));
         }
 
         /// <inheritdoc/>
         protected override void PreviewReceived(EndPoint remoteEndPoint, ByteBlock byteBlock)
         {
             var allBytes = byteBlock.ToArray(0, byteBlock.Len);
-            Owner.Logger?.Debug(ToString() + Environment.NewLine + ThingsGateway.Foundation.Resources.Resource.Received + " : " + allBytes.ToHexString(" "));
+            Owner.Logger?.Trace("报文-" + ToString() + "-" + ThingsGateway.Foundation.Resources.Resource.Received + ":" + allBytes.ToHexString(" "));
 
             if (Request?.SendBytes == null)
             {

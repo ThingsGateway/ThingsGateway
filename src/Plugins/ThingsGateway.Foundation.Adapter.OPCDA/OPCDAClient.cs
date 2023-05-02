@@ -34,7 +34,7 @@ namespace ThingsGateway.Foundation.Adapter.OPCDA
         public OPCDAClient(ILog logger)
         {
             _logger = logger;
-            EasyTask.Run(dataChangedHandlerInvoke);
+            Task.Run(dataChangedHandlerInvoke);
         }
 
         public event DataChangedEventHandler DataChangedHandler;
@@ -44,23 +44,22 @@ namespace ThingsGateway.Foundation.Adapter.OPCDA
             Interlocked.CompareExchange(ref IsQuit, 0, 1);
             connect();
             FirstConnect = true;
-            _logger.Trace("主动连接");
         }
         public void Disconnect()
         {
             Interlocked.CompareExchange(ref IsQuit, 1, 0);
             disconnect();
-            _logger.Info(ToString(), "主动断开连接");
+        }
+        public OperResult<List<BrowseElement>> GetBrowse(string itemId = null)
+        {
+            return this.m_server.Browse(itemId);
         }
 
         public string GetStatus()
         {
             return this.m_server.GetServerStatus().ToJson().FormatJson();
         }
-        public OperResult<List<BrowseElement>> GetBrowse(string itemId = null)
-        {
-            return this.m_server.Browse(itemId);
-        }
+
         public void Init(OPCNode node = null)
         {
             if (node != null)
@@ -107,6 +106,10 @@ namespace ThingsGateway.Foundation.Adapter.OPCDA
             return tagDicts;
         }
 
+        public override string ToString()
+        {
+            return OPCNode.ToString();
+        }
         public OperResult Write(string valueName, object value)
         {
             if (connect())
@@ -186,7 +189,7 @@ namespace ThingsGateway.Foundation.Adapter.OPCDA
                     var status = m_server.GetServerStatus();
                     if (status.IsSuccess)
                     {
-                        //_logger?.Trace(OPCNode.ToString() + "OPC状态检查正常！");
+                        _logger?.Trace(OPCNode.ToString() + "OPC状态检查正常!");
                     }
                     else
                     {
@@ -194,7 +197,7 @@ namespace ThingsGateway.Foundation.Adapter.OPCDA
                         {
                             if (connect())
                             {
-                                _logger?.Info(OPCNode.ToString() + "OPC重新链接成功！");
+                                _logger?.Warning(OPCNode.ToString() + "OPC重新链接成功!");
                             }
                             else
                             {
@@ -279,7 +282,7 @@ namespace ThingsGateway.Foundation.Adapter.OPCDA
                 return IsConnected;
             }
         }
-        private async void dataChangedHandlerInvoke()
+        private async Task dataChangedHandlerInvoke()
         {
             while (!DisposedValue)
             {
@@ -303,7 +306,7 @@ namespace ThingsGateway.Foundation.Adapter.OPCDA
             }
             catch (Exception ex)
             {
-                _logger?.Exception(OPCNode.ToString(), ex);
+                _logger?.Exception(ToString(), ex);
             }
         }
         private void Subscription_OnDataChanged(ItemReadResult[] values)

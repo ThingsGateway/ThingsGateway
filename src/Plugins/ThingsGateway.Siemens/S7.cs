@@ -5,26 +5,29 @@ using ThingsGateway.Foundation;
 namespace ThingsGateway.Siemens;
 
 
-public class SiemensProperty : DriverPropertyBase
+public class SiemensProperty : CollectDriverPropertyBase
 {
-    [DeviceProperty("IP", "")] public string IP { get; set; } = "127.0.0.1";
-    [DeviceProperty("端口", "")] public int Port { get; set; } = 102;
     [DeviceProperty("连接超时时间", "")] public ushort ConnectTimeOut { get; set; } = 3000;
-    [DeviceProperty("读写超时时间", "")] public ushort TimeOut { get; set; } = 3000;
     [DeviceProperty("默认解析顺序", "")] public DataFormat DataFormat { get; set; }
-    [DeviceProperty("LocalTSAP", "为0时不写入，通常默认0即可")] public int LocalTSAP { get; set; } = 0;
     [DeviceProperty("DestTSAP", "为0时不写入，通常默认0即可")] public int DestTSAP { get; set; } = 0;
+    [DeviceProperty("IP", "")] public override string IP { get; set; } = "127.0.0.1";
+    public override bool IsShareChannel { get; set; } = false;
+    [DeviceProperty("LocalTSAP", "为0时不写入，通常默认0即可")] public int LocalTSAP { get; set; } = 0;
+    [DeviceProperty("端口", "")] public override int Port { get; set; } = 102;
+    public override ShareChannelEnum ShareChannel => ShareChannelEnum.None;
+    [DeviceProperty("读写超时时间", "")] public ushort TimeOut { get; set; } = 3000;
 }
 
 public abstract class S7 : CollectBase
 {
-
     protected SiemensS7PLC _plc;
+
     protected SiemensProperty driverPropertys = new SiemensProperty();
 
     protected S7(IServiceScopeFactory scopeFactory) : base(scopeFactory)
     {
     }
+
     public override IThingsGatewayBitConverter ThingsGatewayBitConverter { get => _plc?.ThingsGatewayBitConverter; }
 
     public override void AfterStop()
@@ -42,6 +45,10 @@ public abstract class S7 : CollectBase
         _plc?.Disconnect();
     }
 
+    public override void InitDataAdapter()
+    {
+        _plc.SetDataAdapter();
+    }
     public override OperResult IsConnected()
     {
         return _plc?.TGTcpClient?.CanSend == true ? OperResult.CreateSuccessResult() : new OperResult("失败");

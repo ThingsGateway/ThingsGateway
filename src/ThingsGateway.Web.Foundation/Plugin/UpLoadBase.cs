@@ -2,8 +2,6 @@
 
 using System.Threading;
 
-using TouchSocket.Core;
-
 namespace ThingsGateway.Web.Foundation;
 
 
@@ -18,17 +16,12 @@ namespace ThingsGateway.Web.Foundation;
 /// </summary>
 public abstract class UpLoadBase : DriverBase
 {
-    /// <summary>
-    /// <see cref="TouchSocketConfig"/> 
-    /// </summary>
-    public TouchSocketConfig TouchSocketConfig = new();
 
     /// <inheritdoc cref="UpLoadBase"/>
     public UpLoadBase(IServiceScopeFactory scopeFactory) : base(scopeFactory)
     {
-        TouchSocketConfig = new TouchSocketConfig();
-        TouchSocketConfig.ConfigureContainer(a => a.RegisterSingleton<ILog>(new EasyLogger(Log_Out)));
     }
+
     /// <summary>
     /// 返回插件的上传变量，一般在<see cref="Init(UploadDevice)"/>后初始化
     /// </summary>
@@ -38,6 +31,8 @@ public abstract class UpLoadBase : DriverBase
     /// 插件配置项 ，继承实现<see cref="VariablePropertyBase"/>后，返回继承类，如果不存在，返回null
     /// </summary>
     public abstract VariablePropertyBase VariablePropertys { get; }
+
+
 
     /// <summary>
     /// 开始执行的方法

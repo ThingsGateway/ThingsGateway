@@ -135,112 +135,108 @@ public class ValueHisWorker : BackgroundService
     /// </summary>
     public void Init()
     {
-        ValueHisTask = new Task<Task>(() =>
+        CancellationTokenSource StoppingToken = StoppingTokens.Last();
+        ValueHisTask = new Task<Task>(async () =>
         {
-            CancellationTokenSource StoppingToken = StoppingTokens.Last();
-            return Task.Factory.StartNew(async (a) =>
+            await Task.Yield();//
+            _logger?.LogInformation($"历史数据线程开始");
+
+            try
             {
-                _logger?.LogInformation($"历史数据线程开始");
 
-                try
+                var result = await GetHisDbAsync();
+                if (!result.IsSuccess)
                 {
-
-                    var result = await GetHisDbAsync();
-                    if (!result.IsSuccess)
+                    _logger?.LogWarning($"历史数据线程即将退出：" + result.Message);
+                    StatuString = new OperResult($"已退出：{result.Message}");
+                    return;
+                }
+                else
+                {
+                    var sqlSugarClient = result.Content;
+                    bool LastIsSuccess = true;
+                    /***创建/更新单个表***/
+                    try
                     {
-                        _logger?.LogWarning($"历史数据线程即将退出：" + result.Message);
-                        StatuString = new OperResult($"已退出：{result.Message}");
-                        return;
+                        await sqlSugarClient.Queryable<ValueHis>().FirstAsync();
                     }
-                    else
+                    catch (Exception)
                     {
-                        var sqlSugarClient = result.Content;
-                        bool LastIsSuccess = true;
-                        /***创建/更新单个表***/
                         try
                         {
-                            await sqlSugarClient.Queryable<ValueHis>().FirstAsync();
+                            sqlSugarClient.CodeFirst.InitTables(typeof(ValueHis));
                         }
                         catch (Exception)
                         {
+                        }
+                    }
+
+                    while (!StoppingToken.Token.IsCancellationRequested)
+                    {
+                        try
+                        {
+                            await Task.Delay(500, StoppingToken.Token);
                             try
                             {
-                                sqlSugarClient.CodeFirst.InitTables(typeof(ValueHis));
+                                await sqlSugarClient.Queryable<ValueHis>().FirstAsync();
                             }
                             catch (Exception)
                             {
+                                sqlSugarClient.CodeFirst.InitTables(typeof(ValueHis));
+                                throw new("数据库测试连接失败");
                             }
-                        }
+                            LastIsSuccess = true;
+                            StatuString = OperResult.CreateSuccessResult();
+                            if (StoppingToken.Token.IsCancellationRequested)
+                                break;
+                            //这里直接出队，没做失败重试，后续添加
+                            var list = CollectDeviceVariables.ToListWithDequeue();
+                            var changelist = ChangeDeviceVariables.ToListWithDequeue();
+                            await sqlSugarClient.Queryable<ValueHis>().FirstAsync();
+                            if (list.Count != 0)
+                            {
+                                ////Sql保存
+                                var collecthis = list;
+                                //插入
+                                await sqlSugarClient.Insertable<ValueHis>(collecthis).ExecuteCommandAsync();
+                            }
 
-                        while (!StoppingToken.Token.IsCancellationRequested)
+                            if (changelist.Count != 0)
+                            {
+                                ////Sql保存
+                                var changehis = changelist;
+                                //插入
+                                await sqlSugarClient.Insertable<ValueHis>(changehis).ExecuteCommandAsync();
+
+                            }
+
+
+                        }
+                        catch (TaskCanceledException)
                         {
-                            try
-                            {
-                                await Task.Delay(500, StoppingToken.Token);
-                                try
-                                {
-                                    await sqlSugarClient.Queryable<ValueHis>().FirstAsync();
-                                }
-                                catch (Exception)
-                                {
-                                    sqlSugarClient.CodeFirst.InitTables(typeof(ValueHis));
-                                    throw new("数据库测试连接失败");
-                                }
-                                LastIsSuccess = true;
-                                StatuString = OperResult.CreateSuccessResult();
-                                if (StoppingToken.Token.IsCancellationRequested)
-                                    break;
-                                //这里直接出队，没做失败重试，后续添加
-                                var list = CollectDeviceVariables.ToListWithDequeue();
-                                var changelist = ChangeDeviceVariables.ToListWithDequeue();
-                                await sqlSugarClient.Queryable<ValueHis>().FirstAsync();
-                                if (list.Count != 0)
-                                {
-                                    ////Sql保存
-                                    var collecthis = list;
-                                    //插入
-                                    await sqlSugarClient.Insertable<ValueHis>(collecthis).ExecuteCommandAsync();
-                                }
 
-                                if (changelist.Count != 0)
-                                {
-                                    ////Sql保存
-                                    var changehis = changelist;
-                                    //插入
-                                    await sqlSugarClient.Insertable<ValueHis>(changehis).ExecuteCommandAsync();
-
-                                }
-
-
-                            }
-                            catch (TaskCanceledException)
-                            {
-
-                            }
-                            catch (Exception ex)
-                            {
-                                if (LastIsSuccess)
-                                    _logger?.LogWarning(ex, $"历史数据循环异常");
-                                StatuString = new OperResult($"异常：请查看后台日志");
-                                LastIsSuccess = false;
-                            }
                         }
-
+                        catch (Exception ex)
+                        {
+                            if (LastIsSuccess)
+                                _logger?.LogWarning(ex, $"历史数据循环异常");
+                            StatuString = new OperResult($"异常：请查看后台日志");
+                            LastIsSuccess = false;
+                        }
                     }
-                }
-                catch (TaskCanceledException)
-                {
 
                 }
-                catch (Exception ex)
-                {
-                    _logger?.LogError(ex, $"历史数据循环异常");
-                }
-            }, StoppingToken.Token
+            }
+            catch (TaskCanceledException)
+            {
+
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogError(ex, $"历史数据循环异常");
+            }
+        }, StoppingToken.Token
  , TaskCreationOptions.LongRunning);
-
-        }
- );
     }
 
     /// <summary>
@@ -265,9 +261,8 @@ public class ValueHisWorker : BackgroundService
 
     }
 
-    internal void Stop(IEnumerable<CollectDeviceRunTime> devices = null)
+    internal void Stop(IEnumerable<CollectDeviceRunTime> devices)
     {
-
         foreach (var device in devices)
         {
             device.DeviceVariableRunTimes?.Where(a => a.HisEnable == true)?.ForEach(v => { v.VariableCollectChange -= DeviceVariableCollectChange; });
@@ -278,17 +273,14 @@ public class ValueHisWorker : BackgroundService
         StoppingToken?.Cancel();
 
         _logger?.LogInformation($"历史数据线程停止中");
-        var hisHisResult = ValueHisTask?.Result;
-        if (hisHisResult?.Status != TaskStatus.Canceled)
+        var hisHisResult = ValueHisTask?.GetAwaiter().GetResult();
+        if (hisHisResult?.Wait(5000) == true)
         {
-            if (hisHisResult?.Wait(5000) == true)
-            {
-                _logger?.LogInformation($"历史数据线程已停止");
-            }
-            else
-            {
-                _logger?.LogInformation($"历史数据线程停止超时，已强制取消");
-            }
+            _logger?.LogInformation($"历史数据线程已停止");
+        }
+        else
+        {
+            _logger?.LogInformation($"历史数据线程停止超时，已强制取消");
         }
         StoppingTokens.Remove(StoppingToken);
         ValueHisTask?.Dispose();

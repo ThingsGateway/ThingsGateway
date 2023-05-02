@@ -19,7 +19,7 @@ using TouchSocket.Core;
 
 namespace ThingsGateway.Mqtt;
 
-public class MqttClientProperty : DriverPropertyBase
+public class MqttClientProperty : UpDriverPropertyBase
 {
 
 
@@ -85,7 +85,7 @@ public class MqttClient : UpLoadBase
     }
 
 
-    public override DriverPropertyBase DriverPropertys => driverPropertys;
+    public override UpDriverPropertyBase DriverPropertys => driverPropertys;
 
 
     public override List<CollectVariableRunTime> UploadVariables => _uploadVariables;
@@ -144,7 +144,8 @@ public class MqttClient : UpLoadBase
                             var variableMessage = new MqttApplicationMessageBuilder()
 .WithTopic($"{driverPropertys.VariableTopic}")
 .WithPayload(item.GetSciptListValue(driverPropertys.BigTextScriptVariableModel)).Build();
-                            if (_mqttClient.IsConnected)
+                            var isConnect = await TryMqttClientAsync();
+                            if (isConnect.IsSuccess)
                                 await _mqttClient.PublishAsync(variableMessage, cancellationToken);
                         }
                         else
@@ -182,7 +183,8 @@ public class MqttClient : UpLoadBase
                             var variableMessage = new MqttApplicationMessageBuilder()
                     .WithTopic($"{driverPropertys.DeviceTopic}")
                     .WithPayload(item.GetSciptListValue(driverPropertys.BigTextScriptDeviceModel)).Build();
-                            if (_mqttClient.IsConnected)
+                            var isConnect = await TryMqttClientAsync();
+                            if (isConnect.IsSuccess)
                                 await _mqttClient.PublishAsync(variableMessage);
                         }
                         else
@@ -287,34 +289,7 @@ public class MqttClient : UpLoadBase
             a.VariableValueChange += VariableValueChange;
         });
 
-        _ = Task.Run(
-          async () =>
-          {
-              await Task.Delay(driverPropertys.ConnectTimeOut * 20);
-              bool lastIsSuccess = _mqttClient?.IsConnected == true;
-              while (_mqttClient != null)
-              {
-                  try
-                  {
-                      var result = await TryMqttClientAsync();
 
-                      if (!result.IsSuccess && lastIsSuccess)
-                      {
-                          lastIsSuccess = false;
-                          _logger?.LogWarning(ToString() + $"-连接MqttServer失败：{result.Message}");
-                      }
-                      else if (result.IsSuccess && !lastIsSuccess)
-                      {
-                          lastIsSuccess = true;
-                          _logger?.LogInformation(ToString() + $"-连接MqttServer成功：{result.Message}");
-                      }
-                  }
-                  finally
-                  {
-                      await Task.Delay(driverPropertys.ConnectTimeOut * 10);
-                  }
-              }
-          });
     }
 
 
@@ -381,7 +356,8 @@ public class MqttClient : UpLoadBase
             var variableMessage = new MqttApplicationMessageBuilder()
 .WithTopic($"{driverPropertys.RpcSubTopic}")
 .WithPayload(mqttRpcResult.ToJson()).Build();
-            if (_mqttClient.IsConnected)
+            var isConnect = await TryMqttClientAsync();
+            if (isConnect.IsSuccess)
                 await _mqttClient.PublishAsync(variableMessage);
         }
         catch
@@ -392,12 +368,11 @@ public class MqttClient : UpLoadBase
     private async Task _mqttClient_ConnectedAsync(MqttClientConnectedEventArgs arg)
     {
         var subResult = await _mqttClient.SubscribeAsync(_mqttSubscribeOptions);
-
         if (subResult.Items.Any(a => a.ResultCode > (MqttClientSubscribeResultCode)10))
         {
-            _logger.LogWarning(subResult.Items
+            _logger.LogError("订阅失败-" + subResult.Items
                 .Where(a => a.ResultCode > (MqttClientSubscribeResultCode)10)
-                .Select(a => a.ToString()).ToJson());
+                .ToJson());
         }
     }
     private async Task AllPublishAsync()
@@ -406,15 +381,14 @@ public class MqttClient : UpLoadBase
         //分解List，避免超出mqtt字节大小限制
         var varData = _globalCollectDeviceData.CollectVariables.Adapt<List<VariableData>>().ChunkTrivialBetter(500);
         var devData = _globalCollectDeviceData.CollectVariables.Adapt<List<DeviceData>>().ChunkTrivialBetter(500);
-
+        var isConnect = await TryMqttClientAsync();
         foreach (var item in devData)
         {
-
-
             var devMessage = new MqttApplicationMessageBuilder()
 .WithTopic($"{driverPropertys.DeviceTopic}")
 .WithPayload(item.GetSciptListValue(driverPropertys.BigTextScriptDeviceModel)).Build();
-            await _mqttClient.PublishAsync(devMessage);
+            if (isConnect.IsSuccess)
+                await _mqttClient.PublishAsync(devMessage);
         }
 
         foreach (var item in varData)
@@ -422,7 +396,8 @@ public class MqttClient : UpLoadBase
             var varMessage = new MqttApplicationMessageBuilder()
             .WithTopic($"{driverPropertys.VariableTopic}")
             .WithPayload(item.GetSciptListValue(driverPropertys.BigTextScriptVariableModel)).Build();
-            await _mqttClient.PublishAsync(varMessage);
+            if (isConnect.IsSuccess)
+                await _mqttClient.PublishAsync(varMessage);
         }
     }
 

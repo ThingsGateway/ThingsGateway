@@ -1,5 +1,4 @@
-﻿
-namespace ThingsGateway.Web.Foundation;
+﻿namespace ThingsGateway.Web.Foundation;
 
 /// <summary>
 /// 采集设备状态表示
@@ -55,6 +54,10 @@ public class CollectDeviceRunTime : CollectDevice
         }
         set
         {
+            if (Name == "m1")
+            {
+
+            }
             if (deviceStatus != value)
             {
                 deviceStatus = value;

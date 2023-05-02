@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 
 using SqlSugar;
 
@@ -27,7 +26,7 @@ public class ModbusServer : UpLoadBase
     public ModbusServer(IServiceScopeFactory scopeFactory) : base(scopeFactory)
     {
     }
-    public override DriverPropertyBase DriverPropertys => driverPropertys;
+    public override UpDriverPropertyBase DriverPropertys => driverPropertys;
     public override List<CollectVariableRunTime> UploadVariables => _ModbusTags?.Values.ToList();
     public override VariablePropertyBase VariablePropertys => variablePropertys;
 
@@ -74,7 +73,6 @@ public class ModbusServer : UpLoadBase
     protected override void Init(UploadDevice device)
     {
         curDevice = device;
-        TouchSocketConfig.ConfigureContainer(a => a.RegisterSingleton<ILog>(new EasyLogger(Log_Out)));
         IPHost iPHost = new IPHost(driverPropertys.Port);
         if (!driverPropertys.IP.IsNullOrEmpty())
         {
@@ -166,7 +164,7 @@ public class ModbusServer : UpLoadBase
 
     }
 }
-public class ModbusServerProperty : DriverPropertyBase
+public class ModbusServerProperty : UpDriverPropertyBase
 {
 
 

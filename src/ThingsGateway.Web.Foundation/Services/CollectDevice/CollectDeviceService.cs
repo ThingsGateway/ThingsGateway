@@ -11,8 +11,6 @@ using System.Reflection;
 
 using ThingsGateway.Core;
 
-using TouchSocket.Core;
-
 namespace ThingsGateway.Web.Foundation
 {
     /// <inheritdoc cref="ICollectDeviceService"/>
@@ -81,6 +79,7 @@ namespace ThingsGateway.Web.Foundation
                 {
                     b.Id = 0;
                     b.DeviceId = newId;
+                    b.Name = b.Name + YitIdHelper.NextId();
                 });
                 collectDeviceVariables.AddRange(deviceVariables);
                 item.Id = newId;
@@ -121,37 +120,8 @@ namespace ThingsGateway.Web.Foundation
         public List<DeviceTree> GetTree()
         {
             var data = GetCacheList();
-            var trees = GetTree(data);
+            var trees = CollectDeviceServiceHelpers.GetTree(data);
             return trees;
-        }
-
-        /// <inheritdoc/>
-        public static List<DeviceTree> GetTree(List<CollectDevice> data)
-        {
-            Dictionary<string, DeviceTree> trees = new();
-            foreach (var item in data)
-            {
-                if (item.DeviceGroup.IsNullOrEmpty())
-                {
-                    trees.Add(item.Name, new() { Name = item.Name, Childrens = null });
-                }
-                else
-                {
-                    if (trees.ContainsKey(item.DeviceGroup))
-                    {
-                        trees[item.DeviceGroup].Childrens.Add(new() { Name = item.Name, Childrens = null });
-                    }
-                    else
-                    {
-                        trees.Add(item.DeviceGroup, new()
-                        {
-                            Name = item.DeviceGroup,
-                            Childrens = new() { new() { Name = item.Name, Childrens = null } }
-                        });
-                    }
-                }
-            }
-            return trees.Values?.ToList();
         }
 
         /// <inheritdoc/>

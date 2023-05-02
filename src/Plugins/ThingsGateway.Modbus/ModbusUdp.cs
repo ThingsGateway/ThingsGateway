@@ -8,14 +8,16 @@ namespace ThingsGateway.Modbus;
 
 public class ModbusUdp : CollectBase
 {
-
     private ThingsGateway.Foundation.Adapter.Modbus.ModbusUdp _plc;
+
     private ModbusUdpProperty driverPropertys = new ModbusUdpProperty();
 
     public ModbusUdp(IServiceScopeFactory scopeFactory) : base(scopeFactory)
     {
     }
-    public override DriverPropertyBase DriverPropertys => driverPropertys;
+
+    public override CollectDriverPropertyBase DriverPropertys => driverPropertys;
+
     public override IThingsGatewayBitConverter ThingsGatewayBitConverter { get => _plc?.ThingsGatewayBitConverter; }
 
     public override void AfterStop()
@@ -33,6 +35,10 @@ public class ModbusUdp : CollectBase
         _plc?.Disconnect();
     }
 
+    public override void InitDataAdapter()
+    {
+        _plc.SetDataAdapter();
+    }
     public override OperResult IsConnected()
     {
         return _plc?.UdpSession?.CanSend == true ? OperResult.CreateSuccessResult() : new OperResult("失败");
@@ -76,5 +82,5 @@ public class ModbusUdp : CollectBase
 
 public class ModbusUdpProperty : ModbusTcpProperty
 {
-
+    public override ShareChannelEnum ShareChannel => ShareChannelEnum.UdpSession;
 }
