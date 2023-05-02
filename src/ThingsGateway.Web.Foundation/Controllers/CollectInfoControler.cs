@@ -43,7 +43,7 @@ namespace ThingsGateway.Web.Foundation
         [Description("获取设备信息")]
         public List<DeviceData> GetCollectDeviceList()
         {
-            return _collectDeviceHostService.CollectDeviceCores.Select(a => a.Device).ToList().Adapt<List<DeviceData>>();
+            return _collectDeviceHostService.CollectDeviceRunTimes.Adapt<List<DeviceData>>();
         }
         /// <summary>
         /// 获取变量信息
@@ -53,7 +53,7 @@ namespace ThingsGateway.Web.Foundation
         [Description("获取变量信息")]
         public async Task<SqlSugarPagedList<VariableData>> GetCollectDeviceList(string name, string devName, int pageIndex = 1, int pageSize = 50)
         {
-            var data = await _collectDeviceHostService.CollectDeviceCores.SelectMany(a => a.Device.DeviceVariableRunTimes)
+            var data = await _collectDeviceHostService.CollectDeviceRunTimes.SelectMany(a => a.DeviceVariableRunTimes)
                 .WhereIf(!name.IsNullOrEmpty(), a => a.Name == name)
                 .WhereIf(!devName.IsNullOrEmpty(), a => a.DeviceName == devName)
                 .ToPagedListAsync(

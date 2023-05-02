@@ -172,7 +172,7 @@ public class AlarmWorker : BackgroundService
 
     }
 
-    internal void Stop(IEnumerable<CollectDeviceRunTime> devices = null)
+    internal void Stop(IEnumerable<CollectDeviceRunTime> devices)
     {
         foreach (var device in devices)
         {
@@ -200,17 +200,14 @@ public class AlarmWorker : BackgroundService
 
 
         _logger?.LogInformation($"历史报警线程停止中");
-        var hisAlarmResult = HisAlarmTask?.Result;
-        if (hisAlarmResult?.Status != TaskStatus.Canceled)
+        var hisAlarmResult = HisAlarmTask?.GetAwaiter().GetResult();
+        if (hisAlarmResult?.Wait(5000) == true)
         {
-            if (hisAlarmResult?.Wait(5000) == true)
-            {
-                _logger?.LogInformation($"历史报警线程已停止");
-            }
-            else
-            {
-                _logger?.LogInformation($"历史报警线程停止超时，已强制取消");
-            }
+            _logger?.LogInformation($"历史报警线程已停止");
+        }
+        else
+        {
+            _logger?.LogInformation($"历史报警线程停止超时，已强制取消");
         }
         HisAlarmTask?.Dispose();
         StoppingTokens.Remove(StoppingToken);
@@ -348,127 +345,26 @@ public class AlarmWorker : BackgroundService
     /// </summary>
     private void Init()
     {
-        RealAlarmTask = new Task<Task>(() =>
+        CancellationTokenSource StoppingToken = StoppingTokens.Last();
+        RealAlarmTask = new Task<Task>(async () =>
         {
-            CancellationTokenSource StoppingToken = StoppingTokens.Last();
-            return Task.Factory.StartNew(async (a) =>
+            await Task.Yield();//
+            _logger?.LogInformation($"实时报警线程开始");
+            while (!StoppingToken.Token.IsCancellationRequested)
             {
-                _logger?.LogInformation($"实时报警线程开始");
-                while (!StoppingToken.Token.IsCancellationRequested)
-                {
-                    try
-                    {
-                        await Task.Delay(500, StoppingToken.Token);
-                        var list = CollectDeviceVariables.ToListWithDequeue();
-                        foreach (var item in list)
-                        {
-                            if (StoppingToken.Token.IsCancellationRequested)
-                                break;
-                            if (!item.AlarmEnable) continue;
-                            AlarmAnalysis(item);
-                        }
-                        if (StoppingToken.Token.IsCancellationRequested)
-                            break;
-                    }
-                    catch (TaskCanceledException)
-                    {
-
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger?.LogWarning(ex, $"实时报警循环异常");
-                    }
-                }
-            }, StoppingToken.Token
- , TaskCreationOptions.LongRunning);
-        }
-         );
-
-        HisAlarmTask = new Task<Task>(() =>
-        {
-            CancellationTokenSource StoppingToken = StoppingTokens.Last();
-            return Task.Factory.StartNew(async (a) =>
-            {
-                _logger?.LogInformation($"历史报警线程开始");
-
                 try
                 {
                     await Task.Delay(500, StoppingToken.Token);
-
-                    var result = await GetAlarmDbAsync();
-                    if (!result.IsSuccess)
+                    var list = CollectDeviceVariables.ToListWithDequeue();
+                    foreach (var item in list)
                     {
-                        _logger?.LogWarning($"历史报警线程即将退出：" + result.Message);
-                        StatuString = new OperResult($"已退出：{result.Message}");
-                        return;
+                        if (StoppingToken.Token.IsCancellationRequested)
+                            break;
+                        if (!item.AlarmEnable) continue;
+                        AlarmAnalysis(item);
                     }
-                    else
-                    {
-                        var sqlSugarClient = result.Content;
-                        bool LastIsSuccess = true;
-                        /***创建/更新单个表***/
-                        try
-                        {
-                            await sqlSugarClient.Queryable<AlarmHis>().FirstAsync();
-                        }
-                        catch (Exception)
-                        {
-                            try
-                            {
-                                sqlSugarClient.CodeFirst.InitTables(typeof(AlarmHis));
-                            }
-                            catch (Exception)
-                            {
-                            }
-                        }
-
-                        while (!StoppingToken.Token.IsCancellationRequested)
-                        {
-                            try
-                            {
-                                await Task.Delay(600, StoppingToken.Token);
-
-                                try
-                                {
-                                    await sqlSugarClient.Queryable<AlarmHis>().FirstAsync();
-                                }
-                                catch (Exception)
-                                {
-                                    sqlSugarClient.CodeFirst.InitTables(typeof(AlarmHis));
-                                    throw new("数据库测试连接失败");
-                                }
-                                LastIsSuccess = true;
-                                StatuString = OperResult.CreateSuccessResult();
-                                var list = HisAlarmDeviceVariables.ToListWithDequeue();
-                                if (list.Count == 0) continue;
-                                if (!sqlSugarClient.Ado.IsValidConnection()) throw new("数据库测试连接失败");
-                                ////Sql保存
-                                var hisalarm = list.Adapt<List<AlarmHis>>();
-                                hisalarm.ForEach(it =>
-                                {
-                                    it.Id = YitIdHelper.NextId();
-                                }
-                                    );
-                                //插入
-                                await sqlSugarClient.Insertable(hisalarm).ExecuteCommandAsync();
-
-                                if (StoppingToken.Token.IsCancellationRequested)
-                                    break;
-                            }
-                            catch (TaskCanceledException)
-                            {
-
-                            }
-                            catch (Exception ex)
-                            {
-                                if (LastIsSuccess)
-                                    _logger?.LogWarning($"历史报警循环异常:" + ex.Message);
-                                StatuString = new OperResult($"异常：请查看后台日志");
-                                LastIsSuccess = false;
-                            }
-                        }
-
-                    }
+                    if (StoppingToken.Token.IsCancellationRequested)
+                        break;
                 }
                 catch (TaskCanceledException)
                 {
@@ -476,12 +372,106 @@ public class AlarmWorker : BackgroundService
                 }
                 catch (Exception ex)
                 {
-                    _logger?.LogError($"历史报警异常:" + ex.Message);
+                    _logger?.LogWarning(ex, $"实时报警循环异常");
                 }
-            }, StoppingToken.Token
+            }
+
+        }, StoppingToken.Token
  , TaskCreationOptions.LongRunning);
-        }
- );
+
+        HisAlarmTask = new Task<Task>(async () =>
+        {
+            await Task.Yield();//
+            _logger?.LogInformation($"历史报警线程开始");
+            try
+            {
+                await Task.Delay(500, StoppingToken.Token);
+
+                var result = await GetAlarmDbAsync();
+                if (!result.IsSuccess)
+                {
+                    _logger?.LogWarning($"历史报警线程即将退出：" + result.Message);
+                    StatuString = new OperResult($"已退出：{result.Message}");
+                    return;
+                }
+                else
+                {
+                    var sqlSugarClient = result.Content;
+                    bool LastIsSuccess = true;
+                    /***创建/更新单个表***/
+                    try
+                    {
+                        await sqlSugarClient.Queryable<AlarmHis>().FirstAsync();
+                    }
+                    catch (Exception)
+                    {
+                        try
+                        {
+                            sqlSugarClient.CodeFirst.InitTables(typeof(AlarmHis));
+                        }
+                        catch (Exception)
+                        {
+                        }
+                    }
+
+                    while (!StoppingToken.Token.IsCancellationRequested)
+                    {
+                        try
+                        {
+                            await Task.Delay(600, StoppingToken.Token);
+
+                            try
+                            {
+                                await sqlSugarClient.Queryable<AlarmHis>().FirstAsync();
+                            }
+                            catch (Exception)
+                            {
+                                sqlSugarClient.CodeFirst.InitTables(typeof(AlarmHis));
+                                throw new("数据库测试连接失败");
+                            }
+                            LastIsSuccess = true;
+                            StatuString = OperResult.CreateSuccessResult();
+                            var list = HisAlarmDeviceVariables.ToListWithDequeue();
+                            if (list.Count == 0) continue;
+                            if (!sqlSugarClient.Ado.IsValidConnection()) throw new("数据库测试连接失败");
+                            ////Sql保存
+                            var hisalarm = list.Adapt<List<AlarmHis>>();
+                            hisalarm.ForEach(it =>
+                            {
+                                it.Id = YitIdHelper.NextId();
+                            }
+                                );
+                            //插入
+                            await sqlSugarClient.Insertable(hisalarm).ExecuteCommandAsync();
+
+                            if (StoppingToken.Token.IsCancellationRequested)
+                                break;
+                        }
+                        catch (TaskCanceledException)
+                        {
+
+                        }
+                        catch (Exception ex)
+                        {
+                            if (LastIsSuccess)
+                                _logger?.LogWarning($"历史报警循环异常:" + ex.Message);
+                            StatuString = new OperResult($"异常：请查看后台日志");
+                            LastIsSuccess = false;
+                        }
+                    }
+
+                }
+            }
+            catch (TaskCanceledException)
+            {
+
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogError($"历史报警异常:" + ex.Message);
+            }
+        }, StoppingToken.Token
+ , TaskCreationOptions.LongRunning);
     }
     #endregion
 }

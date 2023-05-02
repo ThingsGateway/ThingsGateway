@@ -54,7 +54,7 @@ public class IotSharpClient : UpLoadBase
     {
     }
 
-    public override DriverPropertyBase DriverPropertys => driverPropertys;
+    public override UpDriverPropertyBase DriverPropertys => driverPropertys;
     public override List<CollectVariableRunTime> UploadVariables => _uploadVariables;
     public override VariablePropertyBase VariablePropertys => variablePropertys;
     public override async Task BeforStartAsync()
@@ -115,7 +115,8 @@ public class IotSharpClient : UpLoadBase
                             var variableMessage = new MqttApplicationMessageBuilder()
                             .WithTopic($"devices/{item.Key}/telemetry")
                             .WithPayload(nameValueDict.ToJson()).Build();
-                            if (_mqttClient.IsConnected)
+                            var isConnect = await TryMqttClientAsync();
+                            if (isConnect.IsSuccess)
                                 await _mqttClient.PublishAsync(variableMessage, cancellationToken);
                         }
                         else
@@ -413,7 +414,8 @@ public class IotSharpClient : UpLoadBase
                 var variableMessage = new MqttApplicationMessageBuilder()
 .WithTopic($"{topic}")
 .WithPayload(rpcResponse.ToJson()).Build();
-                if (_mqttClient.IsConnected)
+                var isConnect = await TryMqttClientAsync();
+                if (isConnect.IsSuccess)
                     await _mqttClient.PublishAsync(variableMessage);
             }
             catch
@@ -490,7 +492,7 @@ public class IotSharpClient : UpLoadBase
     }
 }
 
-public class IotSharpClientProperty : DriverPropertyBase
+public class IotSharpClientProperty : UpDriverPropertyBase
 {
     [DeviceProperty("IP", "")] public string IP { get; set; } = "127.0.0.1";
     [DeviceProperty("端口", "")] public int Port { get; set; } = 1883;

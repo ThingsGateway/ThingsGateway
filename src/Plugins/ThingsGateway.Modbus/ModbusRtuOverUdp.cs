@@ -7,7 +7,6 @@ namespace ThingsGateway.Modbus;
 
 public class ModbusRtuOverUdp : CollectBase
 {
-
     private ThingsGateway.Foundation.Adapter.Modbus.ModbusRtuOverUdp _plc;
 
     private ModbusRtuOverUdpProperty driverPropertys = new ModbusRtuOverUdpProperty();
@@ -15,7 +14,8 @@ public class ModbusRtuOverUdp : CollectBase
     public ModbusRtuOverUdp(IServiceScopeFactory scopeFactory) : base(scopeFactory)
     {
     }
-    public override DriverPropertyBase DriverPropertys => driverPropertys;
+
+    public override CollectDriverPropertyBase DriverPropertys => driverPropertys;
 
     public override IThingsGatewayBitConverter ThingsGatewayBitConverter { get => _plc?.ThingsGatewayBitConverter; }
 
@@ -34,6 +34,10 @@ public class ModbusRtuOverUdp : CollectBase
         _plc?.Disconnect();
     }
 
+    public override void InitDataAdapter()
+    {
+        _plc.SetDataAdapter();
+    }
     public override OperResult IsConnected()
     {
         return _plc?.UdpSession?.CanSend == true ? OperResult.CreateSuccessResult() : new OperResult("失败");
@@ -78,5 +82,6 @@ public class ModbusRtuOverUdp : CollectBase
 
 public class ModbusRtuOverUdpProperty : ModbusRtuOverTcpProperty
 {
+    public override ShareChannelEnum ShareChannel => ShareChannelEnum.UdpSession;
 
 }

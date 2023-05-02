@@ -10,19 +10,17 @@ namespace ThingsGateway.Modbus;
 
 public class ModbusRtu : CollectBase, IDisposable
 {
-
     private ThingsGateway.Foundation.Adapter.Modbus.ModbusRtu _plc;
+
     private ModbusRtuProperty driverPropertys = new ModbusRtuProperty();
 
     public ModbusRtu(IServiceScopeFactory scopeFactory) : base(scopeFactory)
     {
     }
 
-    public override DriverPropertyBase DriverPropertys => driverPropertys;
-
+    public override CollectDriverPropertyBase DriverPropertys => driverPropertys;
 
     public override IThingsGatewayBitConverter ThingsGatewayBitConverter { get => _plc?.ThingsGatewayBitConverter; }
-
 
     public override void AfterStop()
     {
@@ -40,6 +38,10 @@ public class ModbusRtu : CollectBase, IDisposable
         _plc?.Dispose();
     }
 
+    public override void InitDataAdapter()
+    {
+        _plc.SetDataAdapter();
+    }
     public override OperResult IsConnected()
     {
         return _plc?.SerialClient?.CanSend == true ? OperResult.CreateSuccessResult() : new OperResult("失败");
@@ -88,32 +90,38 @@ public class ModbusRtu : CollectBase, IDisposable
     }
 
 }
-public class ModbusRtuProperty : DriverPropertyBase
+public class ModbusRtuProperty : CollectDriverPropertyBase
 {
-    [DeviceProperty("COM口", "示例：COM1")]
-    public string PortName { get; set; } = "COM1";
-
     [DeviceProperty("波特率", "通常为：38400/19200/9600/4800")]
-    public int BaudRate { get; set; } = 9600;
+    public override int BaudRate { get; set; } = 9600;
+
+    [DeviceProperty("CRC检测", "")]
+    public bool Crc16CheckEnable { get; set; } = true;
 
     [DeviceProperty("数据位", "通常为：8/7/6")]
-    public byte DataBits { get; set; } = 8;
+    public override byte DataBits { get; set; } = 8;
 
-    [DeviceProperty("校验位", "示例：None/Odd/Even/Mark/Space")]
-    public Parity Parity { get; set; } = Parity.None;
-
-    [DeviceProperty("停止位", "示例：None/One/Two/OnePointFive")]
-    public StopBits StopBits { get; set; } = StopBits.One;
-
-    [DeviceProperty("默认站号", "")]
-    public byte Station { get; set; } = 1;
-    [DeviceProperty("读写超时时间", "")]
-    public ushort TimeOut { get; set; } = 3000;
     [DeviceProperty("默认解析顺序", "")]
     public DataFormat DataFormat { get; set; }
 
+    [DeviceProperty("共享链路", "")]
+    public override bool IsShareChannel { get; set; } = false;
+
     [DeviceProperty("最大打包长度", "")]
     public ushort MaxPack { get; set; } = 100;
-    [DeviceProperty("CRC检测", "")]
-    public bool Crc16CheckEnable { get; set; } = true;
+
+    [DeviceProperty("校验位", "示例：None/Odd/Even/Mark/Space")]
+    public override Parity Parity { get; set; } = Parity.None;
+
+    [DeviceProperty("COM口", "示例：COM1")]
+    public override string PortName { get; set; } = "COM1";
+    public override ShareChannelEnum ShareChannel => ShareChannelEnum.SerialClient;
+
+    [DeviceProperty("默认站号", "")]
+    public byte Station { get; set; } = 1;
+
+    [DeviceProperty("停止位", "示例：None/One/Two/OnePointFive")]
+    public override StopBits StopBits { get; set; } = StopBits.One;
+    [DeviceProperty("读写超时时间", "")]
+    public ushort TimeOut { get; set; } = 3000;
 }

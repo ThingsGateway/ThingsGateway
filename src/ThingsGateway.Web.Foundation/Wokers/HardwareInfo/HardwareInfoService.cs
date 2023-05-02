@@ -1,6 +1,4 @@
-﻿using Furion.RemoteRequest.Extensions;
-
-using Microsoft.Extensions.Hosting;
+﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 using System.IO;
@@ -9,7 +7,6 @@ using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Text;
 
-using UAParser;
 
 namespace ThingsGateway.Web.Foundation
 {
@@ -57,7 +54,7 @@ namespace ThingsGateway.Web.Foundation
 
         }
 
-        private TGAPPInfo aPPInfo=new();
+        private TGAPPInfo aPPInfo = new();
         /// <summary>
         /// 运行信息获取
         /// </summary>

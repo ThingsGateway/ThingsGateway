@@ -64,7 +64,14 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
             AddRootNotifier(rootFolder);
 
             //创建设备树
-            var _geviceGroup = CollectDeviceService.GetTree(_globalCollectDeviceData.CollectDevices.ToList().Adapt<List<CollectDevice>>());
+
+            /* 项目“ThingsGateway.OPCUA (net7.0)”的未合并的更改
+            在此之前:
+                        var _geviceGroup = CollectDeviceService.GetTree(_globalCollectDeviceData.CollectDevices.ToList().Adapt<List<CollectDevice>>());
+            在此之后:
+                        var _geviceGroup = CollectDeviceServiceHelpers.GetTree(_globalCollectDeviceData.CollectDevices.ToList().Adapt<List<CollectDevice>>());
+            */
+            var _geviceGroup = global::CollectDeviceServiceHelpers.GetTree(_globalCollectDeviceData.CollectDevices.ToList().Adapt<List<CollectDevice>>());
             // 开始寻找设备信息，并计算一些节点信息
             foreach (var item in _geviceGroup)
             {

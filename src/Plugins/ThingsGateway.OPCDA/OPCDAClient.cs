@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 
 using OpcDaClient.Da;
 
+using ThingsGateway.Core;
 using ThingsGateway.Foundation;
 using ThingsGateway.Foundation.Adapter.OPCDA;
 using ThingsGateway.Foundation.Extension;
@@ -15,6 +16,9 @@ namespace ThingsGateway.OPCDA;
 
 public class OPCDAClient : CollectBase
 {
+    public override void InitDataAdapter()
+    {
+    }
     internal CollectDeviceRunTime Device;
     internal ThingsGateway.Foundation.Adapter.OPCDA.OPCDAClient PLC = null;
     private List<CollectVariableRunTime> _deviceVariables = new();
@@ -24,7 +28,7 @@ public class OPCDAClient : CollectBase
     }
 
     public override System.Type DriverImportUIType => typeof(ImportVariable);
-    public override DriverPropertyBase DriverPropertys => driverPropertys;
+    public override CollectDriverPropertyBase DriverPropertys => driverPropertys;
     public override ThingsGatewayBitConverter ThingsGatewayBitConverter { get; } = new(EndianType.Little);
 
 
@@ -128,9 +132,7 @@ public class OPCDAClient : CollectBase
                 return;
             }
             Device.DeviceStatus = DeviceStatusEnum.OnLine;
-
-            if (IsLogOut)
-                _logger?.LogTrace(ToString() + " OPC值变化" + values.ToJson());
+            logMessage.Trace("报文-" + ToString() + "状态变化:" + Environment.NewLine + values.ToJson().FormatJson());
 
             foreach (var data in values)
             {
@@ -168,13 +170,15 @@ public class OPCDAClient : CollectBase
     }
 }
 
-public class OPCDAClientProperty : DriverPropertyBase
+public class OPCDAClientProperty : CollectDriverPropertyBase
 {
-    [DeviceProperty("IP", "")] public string OPCIP { get; set; } = "localhost";
-    [DeviceProperty("OPC名称", "")] public string OPCName { get; set; } = "Kepware.KEPServerEX.V6";
     [DeviceProperty("激活订阅", "")] public bool ActiveSubscribe { get; set; } = true;
     [DeviceProperty("检测重连频率", "")] public int CheckRate { get; set; } = 60000;
     [DeviceProperty("死区", "")] public float DeadBand { get; set; } = 0;
     [DeviceProperty("自动分组大小", "")] public int GroupSize { get; set; } = 500;
+    public override bool IsShareChannel { get; set; } = false;
+    [DeviceProperty("IP", "")] public string OPCIP { get; set; } = "localhost";
+    [DeviceProperty("OPC名称", "")] public string OPCName { get; set; } = "Kepware.KEPServerEX.V6";
+    public override ShareChannelEnum ShareChannel => ShareChannelEnum.None;
     [DeviceProperty("更新频率", "")] public int UpdateRate { get; set; } = 1000;
 }

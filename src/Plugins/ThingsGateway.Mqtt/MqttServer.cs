@@ -24,7 +24,7 @@ using TouchSocket.Core;
 
 namespace ThingsGateway.Mqtt;
 
-public class MqttServerProperty : DriverPropertyBase
+public class MqttServerProperty : UpDriverPropertyBase
 {
 
 
@@ -70,7 +70,7 @@ public class MqttServer : UpLoadBase
     public MqttServer(IServiceScopeFactory scopeFactory) : base(scopeFactory)
     {
     }
-    public override DriverPropertyBase DriverPropertys => driverPropertys;
+    public override UpDriverPropertyBase DriverPropertys => driverPropertys;
     public override List<CollectVariableRunTime> UploadVariables => _uploadVariables;
     public override VariablePropertyBase VariablePropertys => variablePropertys;
     public override async Task BeforStartAsync()
@@ -312,7 +312,7 @@ public class MqttServer : UpLoadBase
             return;
         if (arg.ApplicationMessage.Topic != driverPropertys.RpcWriteTopic)
             return;
-        var rpcData = Encoding.UTF8.GetString(arg.ApplicationMessage.Payload).ToJsonEntity<MqttRpcNameVaueWithId>();
+        var rpcData = Encoding.UTF8.GetString(arg.ApplicationMessage.PayloadSegment).ToJsonEntity<MqttRpcNameVaueWithId>();
         if (rpcData == null)
             return;
         MqttRpcResult mqttRpcResult = new();

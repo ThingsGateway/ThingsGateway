@@ -6,6 +6,7 @@ using Opc.Ua.Client;
 
 using ThingsGateway.Foundation;
 using ThingsGateway.Foundation.Adapter.OPCUA;
+using ThingsGateway.Foundation.Extension.Json;
 using ThingsGateway.Web.Foundation;
 
 using TouchSocket.Core;
@@ -18,9 +19,13 @@ namespace ThingsGateway.OPCUA;
 public class OPCUAClient : CollectBase
 {
     internal CollectDeviceRunTime Device;
+
     internal Foundation.Adapter.OPCUA.OPCUAClient PLC = null;
+
     private List<CollectVariableRunTime> _deviceVariables = new();
+
     private OPCUAClientProperty driverPropertys = new();
+
     /// <inheritdoc cref="OPCUAClient"/>
     public OPCUAClient(IServiceScopeFactory scopeFactory) : base(scopeFactory)
     {
@@ -30,10 +35,10 @@ public class OPCUAClient : CollectBase
     public override Type DriverImportUIType => typeof(ImportVariable);
 
     /// <inheritdoc/>
-    public override DriverPropertyBase DriverPropertys => driverPropertys;
+    public override CollectDriverPropertyBase DriverPropertys => driverPropertys;
+
     /// <inheritdoc/>
     public override ThingsGatewayBitConverter ThingsGatewayBitConverter { get; } = new(EndianType.Little);
-
 
     /// <inheritdoc/>
     public override void AfterStop()
@@ -60,6 +65,9 @@ public class OPCUAClient : CollectBase
         }
     }
 
+    public override void InitDataAdapter()
+    {
+    }
     /// <inheritdoc/>
     public override OperResult IsConnected()
     {
@@ -164,8 +172,7 @@ public class OPCUAClient : CollectBase
             }
             Device.DeviceStatus = DeviceStatusEnum.OnLine;
 
-            if (IsLogOut)
-                _logger?.LogTrace(ToString() + " OPC值变化" + values.ToJson());
+            logMessage.Trace("报文-" + ToString() + "状态变化:" + Environment.NewLine + values.ToJson().FormatJson());
 
             foreach (var data in values)
             {
@@ -216,23 +223,8 @@ public class OPCUAClient : CollectBase
 }
 
 /// <inheritdoc/>
-public class OPCUAClientProperty : DriverPropertyBase
+public class OPCUAClientProperty : CollectDriverPropertyBase
 {
-    /// <summary>
-    /// 连接Url
-    /// </summary>
-    [DeviceProperty("连接Url", "")] public string OPCURL { get; set; } = "opc.tcp://127.0.0.1:49320";
-
-
-    /// <summary>
-    /// 登录账号
-    /// </summary>
-    [DeviceProperty("登录账号", "为空时将采用匿名方式登录")] public string UserName { get; set; }
-    /// <summary>
-    /// 登录密码
-    /// </summary>
-    [DeviceProperty("登录密码", "")] public string Password { get; set; }
-
     /// <summary>
     /// 激活订阅
     /// </summary>
@@ -248,21 +240,38 @@ public class OPCUAClientProperty : DriverPropertyBase
     /// </summary>
     [DeviceProperty("自动分组大小", "")] public int GroupSize { get; set; } = 500;
 
+    public override bool IsShareChannel { get; set; } = false;
+
     /// <summary>
     /// 安全策略
     /// </summary>
     [DeviceProperty("安全策略", "True为使用安全策略，False为无")] public bool IsUseSecurity { get; set; } = true;
 
+    /// <summary>
+    /// 连接Url
+    /// </summary>
+    [DeviceProperty("连接Url", "")] public string OPCURL { get; set; } = "opc.tcp://127.0.0.1:49320";
 
+
+    /// <summary>
+    /// 登录密码
+    /// </summary>
+    [DeviceProperty("登录密码", "")] public string Password { get; set; }
 
     /// <summary>
     /// 重连频率
     /// </summary>
     [DeviceProperty("重连频率", "")] public int ReconnectPeriod { get; set; } = 5000;
 
+    public override ShareChannelEnum ShareChannel => ShareChannelEnum.None;
+
     /// <summary>
     /// 更新频率
     /// </summary>
     [DeviceProperty("更新频率", "")] public int UpdateRate { get; set; } = 1000;
 
+    /// <summary>
+    /// 登录账号
+    /// </summary>
+    [DeviceProperty("登录账号", "为空时将采用匿名方式登录")] public string UserName { get; set; }
 }

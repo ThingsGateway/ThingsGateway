@@ -3,7 +3,7 @@
 /// <summary>
 /// 设备属性的特性说明
 /// <br></br>
-/// 继承<see cref="DriverPropertyBase"/>，在需主动暴露的配置属性中加上这个特性<see cref="DevicePropertyAttribute"/>
+/// 继承<see cref="CollectDriverPropertyBase"/>，在需主动暴露的配置属性中加上这个特性<see cref="DevicePropertyAttribute"/>
 /// </summary>
 [AttributeUsage(AttributeTargets.Property, Inherited = true, AllowMultiple = false)]
 public class DevicePropertyAttribute : Attribute

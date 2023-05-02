@@ -4,7 +4,7 @@
 		<LangVersion>latestMajor</LangVersion>
 		<TargetFrameworks>net6.0;net7.0</TargetFrameworks>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+		<GenerateDocumentationFile>false</GenerateDocumentationFile>
 		<Version>1.4.0</Version>
 		<RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
 		<EnableDynamicLoading>true</EnableDynamicLoading>
@@ -30,7 +30,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Masa.Blazor" Version="1.0.0-preview.17">
+		<PackageReference Include="Masa.Blazor" Version="1.0.0-rc.1">
 			<IncludeAssets>Compile</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Server" Version="1.4.371.86" />

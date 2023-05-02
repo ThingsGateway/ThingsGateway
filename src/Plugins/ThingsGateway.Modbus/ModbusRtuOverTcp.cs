@@ -14,7 +14,7 @@ public class ModbusRtuOverTcp : CollectBase, IDisposable
     public ModbusRtuOverTcp(IServiceScopeFactory scopeFactory) : base(scopeFactory)
     {
     }
-    public override DriverPropertyBase DriverPropertys => driverPropertys;
+    public override CollectDriverPropertyBase DriverPropertys => driverPropertys;
     public override IThingsGatewayBitConverter ThingsGatewayBitConverter { get => _plc?.ThingsGatewayBitConverter; }
 
     public override void AfterStop()
@@ -30,6 +30,11 @@ public class ModbusRtuOverTcp : CollectBase, IDisposable
     public override void Dispose()
     {
         _plc?.Disconnect();
+    }
+
+    public override void InitDataAdapter()
+    {
+        _plc.SetDataAdapter();
     }
 
     public override OperResult IsConnected()
@@ -75,13 +80,13 @@ public class ModbusRtuOverTcp : CollectBase, IDisposable
 
 }
 
-public class ModbusRtuOverTcpProperty : DriverPropertyBase
+public class ModbusRtuOverTcpProperty : CollectDriverPropertyBase
 {
     [DeviceProperty("IP", "")]
-    public string IP { get; set; } = "127.0.0.1";
+    public override string IP { get; set; } = "127.0.0.1";
 
     [DeviceProperty("端口", "")]
-    public int Port { get; set; } = 502;
+    public override int Port { get; set; } = 502;
 
     [DeviceProperty("默认解析顺序", "")]
     public DataFormat DataFormat { get; set; }
@@ -95,4 +100,8 @@ public class ModbusRtuOverTcpProperty : DriverPropertyBase
     public bool Crc16CheckEnable { get; set; } = true;
     [DeviceProperty("读写超时时间", "")]
     public ushort TimeOut { get; set; } = 3000;
+
+    [DeviceProperty("共享链路", "")]
+    public override bool IsShareChannel { get; set; } = false;
+    public override ShareChannelEnum ShareChannel => ShareChannelEnum.TcpClient;
 }

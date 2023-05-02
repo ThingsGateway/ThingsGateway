@@ -7,7 +7,6 @@ namespace ThingsGateway.Modbus;
 
 public class ModbusTcp : CollectBase
 {
-
     private ThingsGateway.Foundation.Adapter.Modbus.ModbusTcp _plc;
 
     private ModbusTcpProperty driverPropertys = new ModbusTcpProperty();
@@ -15,7 +14,8 @@ public class ModbusTcp : CollectBase
     public ModbusTcp(IServiceScopeFactory scopeFactory) : base(scopeFactory)
     {
     }
-    public override DriverPropertyBase DriverPropertys => driverPropertys;
+
+    public override CollectDriverPropertyBase DriverPropertys => driverPropertys;
 
     public override IThingsGatewayBitConverter ThingsGatewayBitConverter { get => _plc?.ThingsGatewayBitConverter; }
 
@@ -34,6 +34,10 @@ public class ModbusTcp : CollectBase
         _plc?.Disconnect();
     }
 
+    public override void InitDataAdapter()
+    {
+        _plc.SetDataAdapter();
+    }
     public override OperResult IsConnected()
     {
         return _plc?.TGTcpClient?.CanSend == true ? OperResult.CreateSuccessResult() : new OperResult("失败");
@@ -76,23 +80,32 @@ public class ModbusTcp : CollectBase
     }
 }
 
-public class ModbusTcpProperty : DriverPropertyBase
+public class ModbusTcpProperty : CollectDriverPropertyBase
 {
 
-    [DeviceProperty("IP", "")]
-    public string IP { get; set; } = "127.0.0.1";
-    [DeviceProperty("端口", "")]
-    public int Port { get; set; } = 502;
-    [DeviceProperty("最大打包长度", "")]
-    public ushort MaxPack { get; set; } = 100;
-    [DeviceProperty("默认站号", "")]
-    public byte Station { get; set; } = 1;
-    [DeviceProperty("连接标识检测", "")]
-    public bool MessageIdCheckEnable { get; set; }
-    [DeviceProperty("读写超时时间", "")]
-    public ushort TimeOut { get; set; } = 3000;
     [DeviceProperty("连接超时时间", "")]
     public ushort ConnectTimeOut { get; set; } = 3000;
+
     [DeviceProperty("默认解析顺序", "")]
     public DataFormat DataFormat { get; set; }
+
+    [DeviceProperty("IP", "")]
+    public override string IP { get; set; } = "127.0.0.1";
+    [DeviceProperty("共享链路", "")]
+    public override bool IsShareChannel { get; set; } = false;
+
+    [DeviceProperty("最大打包长度", "")]
+    public ushort MaxPack { get; set; } = 100;
+
+    [DeviceProperty("连接标识检测", "")]
+    public bool MessageIdCheckEnable { get; set; }
+
+    [DeviceProperty("端口", "")]
+    public override int Port { get; set; } = 502;
+    public override ShareChannelEnum ShareChannel => ShareChannelEnum.TcpClient;
+
+    [DeviceProperty("默认站号", "")]
+    public byte Station { get; set; } = 1;
+    [DeviceProperty("读写超时时间", "")]
+    public ushort TimeOut { get; set; } = 3000;
 }

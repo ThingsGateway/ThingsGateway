@@ -6,7 +6,7 @@
         {
         }
 
-        public override DriverPropertyBase DriverPropertys => driverPropertys;
+        public override CollectDriverPropertyBase DriverPropertys => driverPropertys;
 
         protected override void Init(CollectDeviceRunTime device, object client = null)
         {

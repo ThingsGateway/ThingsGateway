@@ -51,95 +51,99 @@ public class PluginSingletonService : ISingleton
     /// <returns></returns>
     public object GetDriver(long devId, DriverPlugin plugin)
     {
-        //先判断是否已经拥有插件模块
-        if (DriverPluginDict.ContainsKey(plugin.Id))
+        lock (this)
         {
-            object driver = Activator.CreateInstance(DriverPluginDict[plugin.Id], _scopeFactory);
-            DeviceOnDriverPluginDict[plugin.Id].AddRangeIfNotContains(devId);
-            return driver;
-        }
-        Assembly assembly = null;
-        var driverFilePath = plugin.FilePath;
-        _logger?.LogInformation($"添加插件文件：{driverFilePath}");
 
-
-        var path = AppContext.BaseDirectory.CombinePathOS(driverFilePath);
-        var parPath = Path.GetDirectoryName(path);
-        List<string> paths = new();
-        var pathArrays = Directory.GetFiles(parPath, "*.dll").ToList();
-        pathArrays.ForEach(a => paths.Add(a.Replace("\\", "/")));
-
-        if (AssemblyDict.ContainsKey(plugin.FileName))
-        {
-            assembly = AssemblyDict[plugin.FileName];
-        }
-        else
-        {
-            var assemblyLoadContext = new AssemblyLoadContext(plugin.Id.ToString(), true);
-            assembly = GetAssembly(path, paths, assemblyLoadContext);
-            AssemblyLoadContextDict.TryAdd(plugin.FileName, assemblyLoadContext);
-            AssemblyDict.TryAdd(plugin.FileName, assembly);
-        }
-
-        //主程序集
-        if (assembly != null)
-        {
-            switch (plugin.DriverTypeEnum)
+            //先判断是否已经拥有插件模块
+            if (DriverPluginDict.ContainsKey(plugin.Id))
             {
-                case DriverEnum.Collect:
-                    var driverBase = assembly.GetTypes().Where(x => (typeof(CollectBase).IsAssignableFrom(x)) && x.IsClass && !x.IsAbstract).FirstOrDefault(it => it.Name == plugin.AssembleName.Replace(plugin.FileName + ".", ""));
-                    if (driverBase != null)
-                    {
-                        object driver = Activator.CreateInstance(driverBase, _scopeFactory);
-                        _logger?.LogInformation($"加载插件 {driverFilePath}-{plugin.AssembleName} 成功");
-                        DriverPluginDict.TryAdd(plugin.Id, driverBase);
-                        DeviceOnDriverPluginDict.TryAdd(plugin.Id, new() { devId });
-                        return driver;
-                    }
-                    else
-                    {
-                        _logger?.LogError($"加载插件 {driverFilePath}-{plugin.AssembleName} 失败，{plugin.AssembleName}不存在");
-                        return null;
-                    }
-                case DriverEnum.Upload:
-                    var upLoadBase = assembly.GetTypes().Where(x => (typeof(UpLoadBase).IsAssignableFrom(x)) && x.IsClass && !x.IsAbstract).FirstOrDefault(it => it.Name == plugin.AssembleName.Replace(plugin.FileName + ".", ""));
-                    if (upLoadBase != null)
-                    {
-                        object driver = Activator.CreateInstance(upLoadBase, _scopeFactory);
-                        _logger?.LogInformation($"加载插件 {driverFilePath}-{plugin.AssembleName} 成功");
-                        DriverPluginDict.TryAdd(plugin.Id, upLoadBase);
-                        DeviceOnDriverPluginDict.TryAdd(plugin.Id, new() { devId });
-                        return driver;
-                    }
-                    else
-                    {
-                        _logger?.LogError($"加载插件 {driverFilePath}-{plugin.AssembleName} 失败，{plugin.AssembleName}不存在");
-                        return null;
-                    }
+                object driver = Activator.CreateInstance(DriverPluginDict[plugin.Id], _scopeFactory);
+                DeviceOnDriverPluginDict[plugin.Id].AddRangeIfNotContains(devId);
+                return driver;
             }
-            _logger?.LogError($"加载驱动插件 {driverFilePath} 失败，{plugin.DriverTypeEnum}配置错误");
-            return null;
-        }
-        else
-        {
-            _logger?.LogError($"加载驱动插件 {path} 失败，文件不存在");
-            return null;
-        }
-
-        static Assembly GetAssembly(string path, List<string> paths, AssemblyLoadContext assemblyLoadContext)
-        {
             Assembly assembly = null;
-            foreach (var item in paths)
+            var driverFilePath = plugin.FilePath;
+            _logger?.LogInformation($"添加插件文件：{driverFilePath}");
+
+
+            var path = AppContext.BaseDirectory.CombinePathOS(driverFilePath);
+            var parPath = Path.GetDirectoryName(path);
+            List<string> paths = new();
+            var pathArrays = Directory.GetFiles(parPath, "*.dll").ToList();
+            pathArrays.ForEach(a => paths.Add(a.Replace("\\", "/")));
+
+            if (AssemblyDict.ContainsKey(plugin.FileName))
             {
-                using (var fs = new FileStream(item, FileMode.Open))
-                {
-                    if (item == path)
-                        assembly = assemblyLoadContext.LoadFromStream(fs);
-                    else
-                        assemblyLoadContext.LoadFromStream(fs);
-                }
+                assembly = AssemblyDict[plugin.FileName];
             }
-            return assembly;
+            else
+            {
+                var assemblyLoadContext = new AssemblyLoadContext(plugin.Id.ToString(), true);
+                assembly = GetAssembly(path, paths, assemblyLoadContext);
+                AssemblyLoadContextDict.TryAdd(plugin.FileName, assemblyLoadContext);
+                AssemblyDict.TryAdd(plugin.FileName, assembly);
+            }
+
+            //主程序集
+            if (assembly != null)
+            {
+                switch (plugin.DriverTypeEnum)
+                {
+                    case DriverEnum.Collect:
+                        var driverBase = assembly.GetTypes().Where(x => (typeof(CollectBase).IsAssignableFrom(x)) && x.IsClass && !x.IsAbstract).FirstOrDefault(it => it.Name == plugin.AssembleName.Replace(plugin.FileName + ".", ""));
+                        if (driverBase != null)
+                        {
+                            object driver = Activator.CreateInstance(driverBase, _scopeFactory);
+                            _logger?.LogInformation($"加载插件 {driverFilePath}-{plugin.AssembleName} 成功");
+                            DriverPluginDict.TryAdd(plugin.Id, driverBase);
+                            DeviceOnDriverPluginDict.TryAdd(plugin.Id, new() { devId });
+                            return driver;
+                        }
+                        else
+                        {
+                            _logger?.LogError($"加载插件 {driverFilePath}-{plugin.AssembleName} 失败，{plugin.AssembleName}不存在");
+                            return null;
+                        }
+                    case DriverEnum.Upload:
+                        var upLoadBase = assembly.GetTypes().Where(x => (typeof(UpLoadBase).IsAssignableFrom(x)) && x.IsClass && !x.IsAbstract).FirstOrDefault(it => it.Name == plugin.AssembleName.Replace(plugin.FileName + ".", ""));
+                        if (upLoadBase != null)
+                        {
+                            object driver = Activator.CreateInstance(upLoadBase, _scopeFactory);
+                            _logger?.LogInformation($"加载插件 {driverFilePath}-{plugin.AssembleName} 成功");
+                            DriverPluginDict.TryAdd(plugin.Id, upLoadBase);
+                            DeviceOnDriverPluginDict.TryAdd(plugin.Id, new() { devId });
+                            return driver;
+                        }
+                        else
+                        {
+                            _logger?.LogError($"加载插件 {driverFilePath}-{plugin.AssembleName} 失败，{plugin.AssembleName}不存在");
+                            return null;
+                        }
+                }
+                _logger?.LogError($"加载驱动插件 {driverFilePath} 失败，{plugin.DriverTypeEnum}配置错误");
+                return null;
+            }
+            else
+            {
+                _logger?.LogError($"加载驱动插件 {path} 失败，文件不存在");
+                return null;
+            }
+
+            static Assembly GetAssembly(string path, List<string> paths, AssemblyLoadContext assemblyLoadContext)
+            {
+                Assembly assembly = null;
+                foreach (var item in paths)
+                {
+                    using (var fs = new FileStream(item, FileMode.Open))
+                    {
+                        if (item == path)
+                            assembly = assemblyLoadContext.LoadFromStream(fs);
+                        else
+                            assemblyLoadContext.LoadFromStream(fs);
+                    }
+                }
+                return assembly;
+            }
         }
     }
     /// <summary>
@@ -272,7 +276,7 @@ public class PluginSingletonService : ISingleton
         {
             var deviceProperty = deviceProperties.FirstOrDefault(x => x.PropertyName == propertyInfo.Name);
             if (deviceProperty == null) continue;
-            var value = ReadWriteHelpers.ObjToTypeValue(propertyInfo, deviceProperty?.Value??"");
+            var value = ReadWriteHelpers.ObjToTypeValue(propertyInfo, deviceProperty?.Value ?? "");
             propertyInfo.SetValue(driver.DriverPropertys, value);
         }
     }

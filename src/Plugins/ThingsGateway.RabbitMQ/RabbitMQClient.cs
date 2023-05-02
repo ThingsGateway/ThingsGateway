@@ -13,7 +13,7 @@ using ThingsGateway.Foundation.Extension;
 using ThingsGateway.Web.Foundation;
 
 namespace ThingsGateway.RabbitMQ;
-public class RabbitMQClientProperty : DriverPropertyBase
+public class RabbitMQClientProperty : UpDriverPropertyBase
 {
 
     [DeviceProperty("IP", "")] public string IP { get; set; } = "localhost";
@@ -62,7 +62,7 @@ public class RabbitMQClient : UpLoadBase
     public RabbitMQClient(IServiceScopeFactory scopeFactory) : base(scopeFactory)
     {
     }
-    public override DriverPropertyBase DriverPropertys => driverPropertys;
+    public override UpDriverPropertyBase DriverPropertys => driverPropertys;
 
     public string ExchangeName { get; set; } = "";
 
@@ -114,8 +114,6 @@ public class RabbitMQClient : UpLoadBase
                     _logger.LogWarning(ex, ToString());
                 }
             }
-
-
 
             ////变化推送
             var varList = _collectVariableRunTimes.ToListWithDequeue();

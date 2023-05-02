@@ -11,6 +11,7 @@ using ThingsGateway.Foundation;
 
 using TouchSocket.Core;
 
+
 namespace ThingsGateway.Web.Foundation;
 
 /// <summary>
@@ -20,6 +21,7 @@ public class CollectDeviceWorker : BackgroundService
 {
     private static IServiceScopeFactory _scopeFactory;
     private readonly ILogger<CollectDeviceWorker> _logger;
+    private ICollectDeviceService _collectDeviceService;
     private GlobalCollectDeviceData _globalCollectDeviceData;
     private PluginSingletonService _pluginService;
     /// <inheritdoc/>
@@ -36,12 +38,21 @@ public class CollectDeviceWorker : BackgroundService
         _collectDeviceService = serviceScope.ServiceProvider.GetService<ICollectDeviceService>();
     }
     /// <summary>
+    /// 采集设备List
+    /// </summary>
+    public List<CollectDeviceCore> CollectDeviceCores => CollectDeviceThreads.SelectMany(a => a.CollectDeviceCores).ToList();
+
+    /// <summary>
+    /// 采集设备List
+    /// </summary>
+    public List<CollectDeviceRunTime> CollectDeviceRunTimes => CollectDeviceThreads.SelectMany(a => a.CollectDeviceCores.Select(b => b.Device))?.ToList();
+    /// <summary>
     /// 设备子线程列表
     /// </summary>
-    public ConcurrentList<CollectDeviceCore> CollectDeviceCores { get; private set; } = new();
-    ICollectDeviceService _collectDeviceService { get; set; }
+    private ConcurrentList<CollectDeviceThread> CollectDeviceThreads { get; set; } = new();
     #region 设备创建更新结束
 
+    private EasyLock easyLock = new();
     /// <summary>
     /// 控制设备线程启停
     /// </summary>
@@ -51,7 +62,7 @@ public class CollectDeviceWorker : BackgroundService
         {
             await easyLock.LockAsync();
             if (deviceId == 0)
-                CollectDeviceCores.ForEach(it => it.PasueThread(isStart));
+                CollectDeviceCores.ForEach(a => a.PasueThread(isStart));
             else
                 CollectDeviceCores.FirstOrDefault(it => it.DeviceId == deviceId)?.PasueThread(isStart);
         }
@@ -59,90 +70,176 @@ public class CollectDeviceWorker : BackgroundService
         {
             easyLock.UnLock();
         }
-
     }
-
-    /// <summary>
-    /// 删除设备线程，并且释放资源
-    /// </summary>
-    private void RemoveDeviceThread(long devId)
-    {
-        var deviceThread = CollectDeviceCores.FirstOrDefault(x => x.DeviceId == devId);
-
-        if (deviceThread != null)
-        {
-            deviceThread.Dispose();
-            CollectDeviceCores.Remove(deviceThread);
-        }
-    }
-
-    private EasyLock easyLock = new();
     /// <summary>
     /// 重启采集服务
     /// </summary>
     public async Task RestartDeviceThreadAsync()
     {
+
         try
         {
-            Task result = await Task.Factory.StartNew(async () =>
-        {
-            try
-            {
-                await easyLock.LockAsync();
-
-                StopOtherHostService(CollectDeviceCores.Select(a => a.Device)?.ToList());
-
-                var dev = CollectDeviceCores.Select(it => it.Device).ToList();
-                foreach (var device in dev)
-                {
-                    try
-                    {
-                        if (!_stoppingToken.IsCancellationRequested)
-                            RemoveDeviceThread(device.Id);
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger?.LogError(ex, device.Name);
-                    }
-                }
-                if (!_stoppingToken.IsCancellationRequested)
-                {
-                    var devs = (await _collectDeviceService.GetCollectDeviceRuntimeAsync());
-                    foreach (var item in devs)
-                    {
-                        if (!_stoppingToken.IsCancellationRequested)
-                        {
-                            CollectDeviceCore deviceCollectCore = new(_scopeFactory);
-                            deviceCollectCore.Init(item);
-                            deviceCollectCore.StartThread();
-                            CollectDeviceCores.Add(deviceCollectCore);
-                        }
-                    }
-
-                }
-
-
-
-                StartOtherHostService();
-                GC.Collect();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, nameof(RestartDeviceThreadAsync));
-            }
-            finally
-            {
-                easyLock.UnLock();
-            }
-        }, _stoppingToken);
-
-            await result;
+            await easyLock.LockAsync();
+            StopOtherHostService();
+            RemoveAllDeviceThread();
+            await CreatAllDeviceThreadsAsync();
+            StartAllDeviceThreads();
+            StartOtherHostService();
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, nameof(RestartDeviceThreadAsync));
         }
+        finally
+        {
+            easyLock.UnLock();
+        }
     }
+    /// <summary>
+    /// 更新设备线程
+    /// </summary>
+    public async Task UpDeviceThreadAsync(long devId, bool isUpdateDb = true)
+    {
+        try
+        {
+            await easyLock.LockAsync();
+            if (!_stoppingToken.IsCancellationRequested)
+            {
+                if (isUpdateDb)
+                    StopOtherHostService();
+                var devThread = CollectDeviceThreads.FirstOrDefault(it => it.CollectDeviceCores.Any(a => a.DeviceId == devId));
+                var devCore = devThread.CollectDeviceCores.FirstOrDefault(a => a.DeviceId == devId);
+                if (devThread == null) { throw Oops.Bah($"更新设备线程失败，不存在{devId}为id的设备"); }
+                //这里先停止采集，操作会使线程取消，需要重新恢复线程
+                devThread.StopThread();
+
+                CollectDeviceRunTime dev = null;
+                if (isUpdateDb)
+                    dev = (await _collectDeviceService.GetCollectDeviceRuntimeAsync(devId)).FirstOrDefault();
+                else
+                    dev = devCore.Device;
+                if (dev == null) { _logger.LogError($"更新设备线程失败，不存在{devId}为id的设备"); }
+                devCore.Init(dev);
+                devThread.CollectDeviceCores.Remove(devCore);
+                if (devThread.CollectDeviceCores.Count == 0)
+                {
+                    CollectDeviceThreads.Remove(devThread);
+                }
+                //需判断是否同一通道
+                var newDevThread = DeviceThread(devCore);
+                newDevThread?.StartThread();
+                if (isUpdateDb)
+                    StartOtherHostService();
+            }
+        }
+        finally
+        {
+            easyLock.UnLock();
+        }
+    }
+
+    #endregion
+
+    #region Private
+    /// <summary>
+    /// 创建设备采集线程
+    /// </summary>
+    /// <returns></returns>
+    private async Task CreatAllDeviceThreadsAsync()
+    {
+        if (!_stoppingToken.IsCancellationRequested)
+        {
+            var collectDeviceRunTimes = (await _collectDeviceService.GetCollectDeviceRuntimeAsync());
+            foreach (var collectDeviceRunTime in collectDeviceRunTimes)
+            {
+                if (!_stoppingToken.IsCancellationRequested)
+                {
+                    try
+                    {
+                        CollectDeviceCore deviceCollectCore = new(_scopeFactory);
+                        deviceCollectCore.Init(collectDeviceRunTime);
+
+                        DeviceThread(deviceCollectCore);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, collectDeviceRunTime.Name);
+
+                    }
+
+
+                }
+            }
+
+        }
+
+
+    }
+
+    private CollectDeviceThread DeviceThread(CollectDeviceCore deviceCollectCore)
+    {
+        if (deviceCollectCore.Driver == null)
+            return null;
+        var changelID = deviceCollectCore.Driver.ChannelID();
+        if (changelID != null)
+        {
+            foreach (var collectDeviceThread in CollectDeviceThreads)
+            {
+                if (collectDeviceThread.ChangelID == changelID)
+                {
+                    collectDeviceThread.CollectDeviceCores.Add(deviceCollectCore);
+                    return collectDeviceThread;
+                }
+            }
+        }
+        return NewDeviceThread(deviceCollectCore, changelID);
+
+        CollectDeviceThread NewDeviceThread(CollectDeviceCore deviceCollectCore, string changelID)
+        {
+            CollectDeviceThread deviceThread = new(_scopeFactory, changelID);
+            deviceThread.CollectDeviceCores.Add(deviceCollectCore);
+            CollectDeviceThreads.Add(deviceThread);
+            return deviceThread;
+        }
+    }
+
+    /// <summary>
+    /// 删除设备线程，并且释放资源
+    /// </summary>
+    private void RemoveAllDeviceThread()
+    {
+        foreach (var deviceThread in CollectDeviceThreads)
+        {
+            try
+            {
+                deviceThread.Dispose();
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogError(ex, deviceThread.ToString());
+            }
+        }
+        CollectDeviceThreads.Clear();
+    }
+
+    /// <summary>
+    /// 开始设备采集线程
+    /// </summary>
+    /// <returns></returns>
+    private void StartAllDeviceThreads()
+    {
+        if (!_stoppingToken.IsCancellationRequested)
+        {
+            foreach (var item in CollectDeviceThreads)
+            {
+                if (!_stoppingToken.IsCancellationRequested)
+                {
+                    item.StartThread();
+                }
+            }
+        }
+    }
+
     /// <summary>
     /// 启动其他后台服务
     /// </summary>
@@ -159,64 +256,22 @@ public class CollectDeviceWorker : BackgroundService
     /// <summary>
     /// 停止其他后台服务
     /// </summary>
-    private void StopOtherHostService(List<CollectDeviceRunTime> oldDeviceRuntime)
+    private void StopOtherHostService()
     {
-        if (oldDeviceRuntime?.Count > 0)
+        if (CollectDeviceRunTimes?.Count > 0)
         {
             using var scope = _scopeFactory.CreateScope();
 
-
             var alarmHostService = scope.GetBackgroundService<AlarmWorker>();
             var valueHisHostService = scope.GetBackgroundService<ValueHisWorker>();
-            alarmHostService?.Stop(oldDeviceRuntime);
-            valueHisHostService?.Stop(oldDeviceRuntime);
+            alarmHostService?.Stop(CollectDeviceRunTimes);
+            valueHisHostService?.Stop(CollectDeviceRunTimes);
             var uploadDeviceHostService = scope.GetBackgroundService<UploadDeviceWorker>();
-            uploadDeviceHostService.RemoveDeviceThread();
+            uploadDeviceHostService.StopDeviceThread();
 
         }
 
 
-    }
-
-    /// <summary>
-    /// 更新设备线程
-    /// </summary>
-    public async Task UpDeviceThreadAsync(long devId, bool isUpdateDb = true)
-    {
-        try
-        {
-            await easyLock.LockAsync();
-
-
-            if (!_stoppingToken.IsCancellationRequested)
-            {
-                if (isUpdateDb)
-                    StopOtherHostService(CollectDeviceCores.Select(a => a.Device).ToList());
-
-                var devcore = CollectDeviceCores.FirstOrDefault(it => it?.DeviceId == devId);
-                if (devcore == null) { throw Oops.Bah($"更新设备线程失败，不存在{devId}为id的设备"); }
-                //这里先停止采集，操作会使线程取消，需要重新恢复线程
-                devcore.StopThread();
-
-                CollectDeviceRunTime dev = null;
-                if (isUpdateDb)
-                    dev = (await _collectDeviceService.GetCollectDeviceRuntimeAsync(devId)).FirstOrDefault();
-                else
-                    dev = devcore.Device;
-                if (dev == null) { _logger.LogError($"更新设备线程失败，不存在{devId}为id的设备"); }
-                devcore.Init(dev);
-                devcore.StartThread();
-
-                if (isUpdateDb)
-                    StartOtherHostService();
-
-
-            }
-        }
-        finally
-        {
-            easyLock.UnLock();
-        }
     }
     #endregion
 
@@ -261,7 +316,7 @@ public class CollectDeviceWorker : BackgroundService
         var id = YitIdHelper.NextId();
         try
         {
-            var driver = (CollectBase)_pluginService.GetDriver(id, driverPlugin);
+            var driver = (DriverBase)_pluginService.GetDriver(id, driverPlugin);
             var Propertys = _pluginService.GetDriverProperties(driver);
             if (devId != 0)
             {
@@ -299,7 +354,7 @@ public class CollectDeviceWorker : BackgroundService
         }
         else
         {
-            return result._driver;
+            return result.Driver;
         }
 
     }
@@ -320,21 +375,9 @@ public class CollectDeviceWorker : BackgroundService
         var stoppingToken = new CancellationTokenSource();
         _stoppingToken = stoppingToken.Token;
         stoppingToken.Cancel();
-
-        var dev = CollectDeviceCores.Select(it => it.Device).ToList();
-        StopOtherHostService(dev);
-        foreach (var device in dev)
-        {
-            try
-            {
-                RemoveDeviceThread(device.Id);
-            }
-            catch (Exception ex)
-            {
-                _logger?.LogError(ex, device.Name);
-            }
-        }
         await Task.Delay(2000);
+        StopOtherHostService();
+        RemoveAllDeviceThread();
         await base.StopAsync(cancellationToken);
     }
     /// <inheritdoc/>
@@ -351,29 +394,25 @@ public class CollectDeviceWorker : BackgroundService
                 CollectDeviceCore devcore = CollectDeviceCores[i];
                 if (
                     (devcore.Device.ActiveTime != DateTime.MinValue && devcore.Device.ActiveTime.AddMinutes(3) <= DateTime.UtcNow)
-                    || devcore.isInitSuccess == false
+                    || devcore.IsInitSuccess == false
                     )
                 {
                     if (devcore.StoppingTokens.Last().Token.IsCancellationRequested)
                         continue;
                     if (devcore.Device.DeviceStatus == DeviceStatusEnum.Pause)
                         continue;
-                    if (!devcore.isInitSuccess)
+                    if (!devcore.IsInitSuccess)
                         _logger?.LogWarning(devcore.Device.Name + "初始化失败，重启线程中");
                     else
                         _logger?.LogWarning(devcore.Device.Name + "采集线程假死，重启线程中");
                     await UpDeviceThreadAsync(devcore.DeviceId, false);
-
-                    GC.Collect();
-
+                    break;
                 }
                 else
                 {
-                    _logger?.LogDebug(devcore.Device.Name + "检测正常");
+                    _logger?.LogTrace(devcore.Device.Name + "线程检测正常");
                 }
             }
-
-
 
             await Task.Delay(100000, stoppingToken);
         }
