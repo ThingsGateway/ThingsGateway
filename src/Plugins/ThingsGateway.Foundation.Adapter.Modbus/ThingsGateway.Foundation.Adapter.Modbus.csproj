@@ -4,7 +4,7 @@
 		<LangVersion>latestMajor</LangVersion>
 		<!--<GenerateDocumentationFile>True</GenerateDocumentationFile>-->
 		<TargetFrameworks>net4.6.2;net6.0;net7.0</TargetFrameworks>
-		<Version>1.4.0</Version>
+		<Version>1.5.0</Version>
 		<Title>ThingsGateway.Foundation.Adapter.Modbus</Title>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<Authors>Diego</Authors>
