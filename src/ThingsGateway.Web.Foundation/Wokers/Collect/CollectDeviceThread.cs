@@ -78,7 +78,7 @@ public class CollectDeviceThread : IDisposable
                 {
                     if (device.IsInitSuccess)
                     {
-                        if (CollectDeviceCores.Count > 0) device.Driver.InitDataAdapter();
+                        if (CollectDeviceCores.Count > 1) device.Driver.InitDataAdapter();
                         var result = await device.RunActionAsync(StoppingToken);
                         if (result == ThreadRunReturn.None)
                         {
