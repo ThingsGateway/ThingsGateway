@@ -1,0 +1,55 @@
+---
+id: VigorSerial
+title: Vigor Serial
+sidebar_label: 3.3.1、Vigor Serial/SerialOverTcp驱动
+---
+### （一）设备配置
+
+1、Socket链路
+
+| 属性           |  说明                    | 默认值/备注|
+| ---------------| --------------------------| ---|
+| 连接超时时间         | 建立socket通讯的超时时间（ms）                | 3000|
+| 默认解析顺序         | 4个字节以上的数据解析，可设置为ABCD/BADC/CDBA/DCBA,默认ABCD |ABCD：Big-Endian<br></br>BADC：Big-Endian Byte Swap<br></br>CDAB：Little-Endian Byte Swap<br></br>DCBA：Little-Endian |
+| IP         | 连接IP              | 127.0.0.1|
+| 端口         | 连接端口              | 502|
+| 默认站号         | 站号id            | 1|
+| 读写超时时间         | 读取等待中的超时时间（ms）              | 3000|
+
+2、串口链路
+
+| 属性           |  说明                    | 默认值/备注|
+| ---------------| --------------------------| ---|
+| 默认解析顺序         | 4个字节以上的数据解析，可设置为ABCD/BADC/CDBA/DCBA,默认ABCD |ABCD：Big-Endian<br></br>BADC：Big-Endian Byte Swap<br></br>CDAB：Little-Endian Byte Swap<br></br>DCBA：Little-Endian |
+| COM口         | COM口              | COM1|
+| 波特率         |               | 9600|
+| 数据位         |               | 8|
+| 校验位         |               | None|
+| 停止位         |               | One|
+| 默认站号         | 站号id            | 1|
+| 读写超时时间         | 读取等待中的超时时间（ms）              | 3000|
+
+### （二）变量配置
+#### 变量地址说明
+
+- 1、基本地址
+
+| 地址           | 说明                    |
+| ---------------| --------------------------|
+| Xxxxxx         |       輸入繼電器X             |
+| Yxxxxx         |       輸出繼電器Y                |
+| Mxxxxx         |       輔助繼電器M          |
+| Sxxxxx         |      步進繼電器S            |
+| Rxxxxx         |       暫存器R              |
+| Txxxxx         |       Q寄存器,例如Q100/Q100.1              |
+| TSxxxxx         |       計時器T 線圈           |
+| TCxxxxx         |       計時器T 接點             |
+| Cxxxxx         |       計數器              |
+| CCxxxxx         |       計時器T 線圈               |
+| CCxxxxx         |       計時器C 接點              |
+| Dxxxxx         |      暫存器D              |
+
+
+#### 变量特殊方法说明
+
+无特殊方法
