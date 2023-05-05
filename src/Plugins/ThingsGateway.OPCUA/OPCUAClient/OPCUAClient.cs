@@ -226,9 +226,37 @@ public class OPCUAClient : CollectBase
 public class OPCUAClientProperty : CollectDriverPropertyBase
 {
     /// <summary>
+    /// 连接Url
+    /// </summary>
+    [DeviceProperty("连接Url", "")] public string OPCURL { get; set; } = "opc.tcp://127.0.0.1:49320";
+    /// <summary>
+    /// 登录账号
+    /// </summary>
+    [DeviceProperty("登录账号", "为空时将采用匿名方式登录")] public string UserName { get; set; }
+
+
+    /// <summary>
+    /// 登录密码
+    /// </summary>
+    [DeviceProperty("登录密码", "")] public string Password { get; set; }
+
+
+    /// <summary>
+    /// 安全策略
+    /// </summary>
+    [DeviceProperty("安全策略", "True为使用安全策略，False为无")] public bool IsUseSecurity { get; set; } = true;
+
+
+    /// <summary>
     /// 激活订阅
     /// </summary>
     [DeviceProperty("激活订阅", "")] public bool ActiveSubscribe { get; set; } = true;
+
+    /// <summary>
+    /// 更新频率
+    /// </summary>
+    [DeviceProperty("更新频率", "")] public int UpdateRate { get; set; } = 1000;
+
 
     /// <summary>
     /// 死区
@@ -240,38 +268,14 @@ public class OPCUAClientProperty : CollectDriverPropertyBase
     /// </summary>
     [DeviceProperty("自动分组大小", "")] public int GroupSize { get; set; } = 500;
 
-    public override bool IsShareChannel { get; set; } = false;
 
-    /// <summary>
-    /// 安全策略
-    /// </summary>
-    [DeviceProperty("安全策略", "True为使用安全策略，False为无")] public bool IsUseSecurity { get; set; } = true;
-
-    /// <summary>
-    /// 连接Url
-    /// </summary>
-    [DeviceProperty("连接Url", "")] public string OPCURL { get; set; } = "opc.tcp://127.0.0.1:49320";
-
-
-    /// <summary>
-    /// 登录密码
-    /// </summary>
-    [DeviceProperty("登录密码", "")] public string Password { get; set; }
 
     /// <summary>
     /// 重连频率
     /// </summary>
     [DeviceProperty("重连频率", "")] public int ReconnectPeriod { get; set; } = 5000;
 
+    public override bool IsShareChannel { get; set; } = false;
     public override ShareChannelEnum ShareChannel => ShareChannelEnum.None;
 
-    /// <summary>
-    /// 更新频率
-    /// </summary>
-    [DeviceProperty("更新频率", "")] public int UpdateRate { get; set; } = 1000;
-
-    /// <summary>
-    /// 登录账号
-    /// </summary>
-    [DeviceProperty("登录账号", "为空时将采用匿名方式登录")] public string UserName { get; set; }
 }
