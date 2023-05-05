@@ -82,17 +82,20 @@ public class ModbusTcp : CollectBase
 
 public class ModbusTcpProperty : CollectDriverPropertyBase
 {
+    [DeviceProperty("IP", "")]
+    public override string IP { get; set; } = "127.0.0.1";
 
+    [DeviceProperty("端口", "")]
+    public override int Port { get; set; } = 502;
+    [DeviceProperty("默认站号", "")]
+    public byte Station { get; set; } = 1;
+    [DeviceProperty("读写超时时间", "")]
+    public ushort TimeOut { get; set; } = 3000;
     [DeviceProperty("连接超时时间", "")]
     public ushort ConnectTimeOut { get; set; } = 3000;
 
     [DeviceProperty("默认解析顺序", "")]
     public DataFormat DataFormat { get; set; }
-
-    [DeviceProperty("IP", "")]
-    public override string IP { get; set; } = "127.0.0.1";
-    [DeviceProperty("共享链路", "")]
-    public override bool IsShareChannel { get; set; } = false;
 
     [DeviceProperty("最大打包长度", "")]
     public ushort MaxPack { get; set; } = 100;
@@ -100,12 +103,10 @@ public class ModbusTcpProperty : CollectDriverPropertyBase
     [DeviceProperty("连接标识检测", "")]
     public bool MessageIdCheckEnable { get; set; }
 
-    [DeviceProperty("端口", "")]
-    public override int Port { get; set; } = 502;
+    [DeviceProperty("共享链路", "")]
+    public override bool IsShareChannel { get; set; } = false;
+
     public override ShareChannelEnum ShareChannel => ShareChannelEnum.TcpClient;
 
-    [DeviceProperty("默认站号", "")]
-    public byte Station { get; set; } = 1;
-    [DeviceProperty("读写超时时间", "")]
-    public ushort TimeOut { get; set; } = 3000;
+
 }
