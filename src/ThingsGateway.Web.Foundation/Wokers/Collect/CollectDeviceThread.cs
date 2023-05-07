@@ -139,7 +139,7 @@ public class CollectDeviceThread : IDisposable
             }
             CancellationTokenSource StoppingToken = StoppingTokens.LastOrDefault();
             StoppingToken?.Cancel();
-            if (DeviceTask.GetAwaiter().GetResult()?.Wait(5000) != true)
+            if (DeviceTask.GetAwaiter().GetResult()?.Wait(10000) != true)
             {
                 foreach (var device in CollectDeviceCores)
                 {

@@ -350,6 +350,10 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
         try
         {
             var context1 = context as ServerSystemContext;
+            if(context1.UserIdentity.TokenType==UserTokenType.Anonymous)
+            {
+                return StatusCodes.BadUserAccessDenied;
+            }
             OPCUATag variable = node as OPCUATag;
             // 验证数据类型。
             //Opc.Ua.TypeInfo typeInfo = Opc.Ua.TypeInfo.IsInstanceOfDataType(
