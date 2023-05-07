@@ -149,6 +149,7 @@ public partial class OPCUAServer : UpLoadBase
         string url = driverPropertys.OpcUaStringUrl;
         // 签名及加密验证
         ServerSecurityPolicyCollection policies = new ServerSecurityPolicyCollection();
+        var userTokens = new UserTokenPolicyCollection();
         if (driverPropertys.SecurityPolicy)
         {
             policies.Add(new ServerSecurityPolicy()
@@ -171,6 +172,8 @@ public partial class OPCUAServer : UpLoadBase
                 SecurityMode = MessageSecurityMode.SignAndEncrypt,
                 SecurityPolicyUri = SecurityPolicies.Basic256
             });
+            userTokens.Add(new UserTokenPolicy(UserTokenType.UserName));
+
         }
         else
         {
@@ -179,14 +182,14 @@ public partial class OPCUAServer : UpLoadBase
                 SecurityMode = MessageSecurityMode.None,
                 SecurityPolicyUri = SecurityPolicies.None
             });
+            userTokens.Add(new UserTokenPolicy(UserTokenType.Anonymous));
         }
 
         config.ApplicationName = "ThingsGateway OPCUAServer";
         config.ApplicationType = ApplicationType.Server;
         config.ApplicationUri = Utils.Format(@"urn:{0}:thingsgatewayopcuaserver", System.Net.Dns.GetHostName());
 
-        var userTokens = new UserTokenPolicyCollection();
-        userTokens.Add(new UserTokenPolicy(UserTokenType.UserName));
+
 
         config.ServerConfiguration = new ServerConfiguration()
         {
