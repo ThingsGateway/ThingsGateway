@@ -1,0 +1,33 @@
+---
+id: AllenBradleyCip
+title: AllenBradleyCip
+sidebar_label: 3.3.1、AllenBradleyCip驱动
+---
+### （一）设备配置
+
+1、Socket链路
+
+| 属性           |  说明                    | 默认值/备注|
+| ---------------| --------------------------| ---|
+| 连接超时时间         | 建立socket通讯的超时时间（ms）                | 3000|
+| 默认解析顺序         | 4个字节以上的数据解析，可设置为ABCD/BADC/CDBA/DCBA,默认ABCD |ABCD：Big-Endian<br></br>BADC：Big-Endian Byte Swap<br></br>CDAB：Little-Endian Byte Swap<br></br>DCBA：Little-Endian |
+| IP         | 连接IP              | 127.0.0.1|
+| 端口         | 连接端口              | 502|
+| 默认站号         | 站号id            | 1|
+| 读写超时时间         | 读取等待中的超时时间（ms）              | 3000|
+| Slot         | 槽号              | 0|
+| Router         | 路由              | 默认空|
+
+
+
+### （二）变量配置
+#### 变量地址说明
+
+PLC标签点位名称
+
+
+
+
+#### 变量特殊方法说明
+
+无特殊方法
