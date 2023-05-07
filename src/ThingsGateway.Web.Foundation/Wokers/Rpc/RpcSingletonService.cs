@@ -48,7 +48,7 @@ public class RpcSingletonService : ISingleton
         if (dev.Device.DeviceStatus == DeviceStatusEnum.OffLine) return new OperResult("设备已离线");
         if (dev.Device.DeviceStatus == DeviceStatusEnum.Pause) return new OperResult("设备已暂停");
         if (tag.RpcWriteEnable && !isBlazorWeb) return new OperResult("不允许远程写入");
-        if (tag.OtherMethod == null)
+        if (tag.OtherMethod .IsNullOrEmpty())
         {
             data = (await dev.InVokeWriteAsync(tag, item.Value)).Copy();
 
