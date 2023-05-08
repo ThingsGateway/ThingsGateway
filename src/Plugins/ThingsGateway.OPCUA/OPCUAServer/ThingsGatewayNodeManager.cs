@@ -343,7 +343,7 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
         try
         {
             var context1 = context as ServerSystemContext;
-            if(context1.UserIdentity.TokenType==UserTokenType.Anonymous)
+            if (context1.UserIdentity.TokenType == UserTokenType.Anonymous)
             {
                 return StatusCodes.BadUserAccessDenied;
             }
