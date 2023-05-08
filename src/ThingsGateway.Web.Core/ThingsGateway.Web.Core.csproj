@@ -47,6 +47,11 @@
 
 
 	<ItemGroup>
+	  <PackageReference Include="Colorful.Console" Version="1.2.15" />
+	</ItemGroup>
+
+
+	<ItemGroup>
 	  <ProjectReference Include="..\ThingsGateway.Web.Page\ThingsGateway.Web.Page.csproj" />
 	  <ProjectReference Include="..\ThingsGateway.Web.Rcl\ThingsGateway.Web.Rcl.csproj" />
 	</ItemGroup>
