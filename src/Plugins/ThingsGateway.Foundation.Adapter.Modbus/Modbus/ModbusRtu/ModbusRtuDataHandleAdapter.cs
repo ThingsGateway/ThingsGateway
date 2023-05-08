@@ -32,8 +32,8 @@
                 byteBlock.Pos = byteBlock.Len;
                 request.ReceivedBytes = allBytes;
                 request.Message = unpackbytes.Message;
-                
-                if(!(allBytes[1]<=0x10))
+
+                if (!(allBytes[1] <= 0x10))
                 {
                     return FilterResult.Success;
                 }
@@ -57,6 +57,6 @@
             return ModbusHelper.GetModbusRtuData(send, response, Crc16CheckEnable);
 
         }
- 
+
     }
 }
