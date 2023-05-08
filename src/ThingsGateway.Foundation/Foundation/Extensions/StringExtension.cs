@@ -33,30 +33,6 @@ namespace ThingsGateway.Foundation.Extension
             return Convert.FromBase64String(value);
         }
 
-        /// <summary>
-        /// 将16进制的字符转换为数组。
-        /// </summary>
-        /// <param name="hexString"></param>
-        /// <param name="splite"></param>
-        /// <returns></returns>
-        public static byte[] ByHexStringToBytes(this string hexString, string splite = default)
-        {
-            if (!string.IsNullOrEmpty(splite))
-            {
-                hexString = hexString.Replace(splite, string.Empty);
-            }
-
-            if ((hexString.Length % 2) != 0)
-            {
-                hexString += " ";
-            }
-            byte[] returnBytes = new byte[hexString.Length / 2];
-            for (int i = 0; i < returnBytes.Length; i++)
-            {
-                returnBytes[i] = Convert.ToByte(hexString.Substring(i * 2, 2), 16);
-            }
-            return returnBytes;
-        }
 
         /// <summary>
         /// 将16进制的字符转换为int32。

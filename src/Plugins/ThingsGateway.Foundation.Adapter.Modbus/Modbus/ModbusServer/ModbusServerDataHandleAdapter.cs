@@ -24,7 +24,7 @@ namespace ThingsGateway.Foundation.Adapter.Modbus
         public ThingsGatewayBitConverter ThingsGatewayBitConverter = new ThingsGatewayBitConverter(EndianType.Big);
         protected override FilterResult GetResponse(ByteBlock byteBlock, ModbusServerMessage request, byte[] allBytes, byte[] bytes)
         {
-            var unpackbytes = UnpackResponse(request.SendBytes, bytes);
+            var unpackbytes = UnpackResponse(request.SendBytes, allBytes);
             request.Message = unpackbytes.Message;
             request.ResultCode = unpackbytes.ResultCode;
             if (unpackbytes.IsSuccess)

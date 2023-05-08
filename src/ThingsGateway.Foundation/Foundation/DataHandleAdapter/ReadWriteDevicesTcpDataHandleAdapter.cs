@@ -95,7 +95,7 @@
         /// </summary>
         protected virtual FilterResult GetResponse(ByteBlock byteBlock, TRequest request, byte[] allBytes, byte[] bytes)
         {
-            var unpackbytes = UnpackResponse(request.SendBytes, bytes);
+            var unpackbytes = UnpackResponse(request.SendBytes, allBytes);
             request.Message = unpackbytes.Message;
             request.ResultCode = unpackbytes.ResultCode;
             if (unpackbytes.IsSuccess)
