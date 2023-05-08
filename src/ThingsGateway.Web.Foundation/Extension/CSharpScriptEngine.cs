@@ -67,6 +67,50 @@ namespace ThingsGateway.Web.Foundation
             var json = System.Text.Json.JsonSerializer.Serialize(result);
             return json;
         }
+
+        /// <summary>
+        /// 执行脚本获取返回值，通常用于上传实体返回脚本，参数为input
+        /// </summary>
+        /// <param name="_source"></param>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public string Do(string _source, string input)
+        {
+            var runscript = _cache.GetOrAdd(_source, c =>
+            {
+                var src = _source.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.TrimEntries);
+                StringBuilder _using = new StringBuilder();
+                StringBuilder _body = new StringBuilder();
+                src.ToList().ForEach(l =>
+                {
+                    if (l.StartsWith("using "))
+                    {
+                        _using.AppendLine(l);
+                    }
+                    else
+                    {
+                        _body.AppendLine(l);
+                    }
+
+                });
+                var eva = CSScript.Evaluator
+                       .CreateDelegate(@$"
+                                    using System; 
+                                    using System.Collections.Generic; 
+                                    {_using}
+                                    dynamic  runscript(dynamic   input)
+                                    {{
+                                      {_body}
+                                    }}");
+                return eva;
+            });
+            var expConverter = new ExpandoObjectConverter();
+            dynamic obj = JsonConvert.DeserializeObject<ExpandoObject>(input, expConverter);
+            dynamic result = runscript(obj);
+            var json = System.Text.Json.JsonSerializer.Serialize(result);
+            return json;
+        }
+
     }
 }
 
