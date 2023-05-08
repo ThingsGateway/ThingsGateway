@@ -43,7 +43,7 @@ namespace ThingsGateway.Foundation
         /// <returns></returns>
         protected override FilterResult Filter(ByteBlock byteBlock, bool beCached, ref TRequest request, ref int tempCapacity)
         {
-            var allBytes = byteBlock.ToArray(0, byteBlock.Len);
+            var allBytes = (byteBlock.ToArray(0, byteBlock.Len));
             Client.Logger?.Trace("报文-" + Client.SerialProperty.ToString() + "-" + ThingsGateway.Foundation.Resources.Resource.Received + ":" + allBytes.ToHexString(" "));
 
             //if (Request?.SendBytes == null)
@@ -53,13 +53,9 @@ namespace ThingsGateway.Foundation
             //}
             if (beCached)
             {
-                if (request.BodyLength > byteBlock.CanReadLen)//body不满足解析，开始缓存，然后保存对象
-                {
-                    return FilterResult.Cache;
-                }
                 byteBlock.Read(out byte[] body, request.BodyLength);
                 var bytes = request.HeadBytes.SpliceArray(body);
-                return GetResponse(byteBlock, request, allBytes, bytes);
+                return GetResponse(byteBlock, request, request.ReceivedBytes.SpliceArray(allBytes), bytes);
             }
             else
             {
@@ -98,7 +94,7 @@ namespace ThingsGateway.Foundation
         /// </summary>
         protected virtual FilterResult GetResponse(ByteBlock byteBlock, TRequest request, byte[] allBytes, byte[] bytes)
         {
-            var unpackbytes = UnpackResponse(request.SendBytes, bytes);
+            var unpackbytes = UnpackResponse(request.SendBytes, allBytes);
             request.Message = unpackbytes.Message;
             request.ResultCode = unpackbytes.ResultCode;
             if (unpackbytes.IsSuccess)
