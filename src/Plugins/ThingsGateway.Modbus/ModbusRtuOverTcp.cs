@@ -75,7 +75,7 @@ public class ModbusRtuOverTcp : CollectBase, IDisposable
     }
     protected override Task<OperResult<byte[]>> ReadAsync(string address, int length, CancellationToken cancellationToken)
     {
-        return _plc.ReadAsync(address, length);
+        return _plc.ReadAsync(address, length, cancellationToken);
     }
 
 }
