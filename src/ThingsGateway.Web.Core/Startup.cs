@@ -53,6 +53,8 @@ namespace ThingsGateway.Web.Core
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddLogoDisplay();
+
             // 允许跨域
             services.AddCorsAccessor();
 
