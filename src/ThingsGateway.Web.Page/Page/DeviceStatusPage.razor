@@ -440,7 +440,77 @@
                                 </MCard>
                             }
                         </MCard>
+                        <MCard Height=@("calc(100vh - 620px)") Style="overflow-y:auto" Flat Class="ml-4">
+                            @if (uploadDeviceInfoItem != null)
+                            {
+                                <MCardActions>
+                                    报文日志（共享链路的日志也会相同）
+                                    <MSpacer></MSpacer>
 
+                                    <MTooltip Bottom Context="tip">
+                                    <ActivatorContent>
+                                        <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("tgdevicepause")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small
+                                                 OnClick=@(()=>
+                                                 {
+                                                 pauseMessage=!pauseMessage;
+                                                 if(pauseMessage)
+                                                 CurMessages= uploadDeviceInfoItem.Driver.Messages.ToList();
+                                                 }
+                                                 )>
+                                            <MIcon>@((!pauseMessage) ? "mdi-pause" : "mdi-play")</MIcon>
+                                                </MButton>
+                                            </ActivatorContent>
+                                            <ChildContent>
+                                                <span>@((!pauseMessage) ? T("暂停日志") : T("运行日志"))</span>
+                                        </ChildContent>
+                                    </MTooltip>
+
+                                    <MTooltip Bottom Context="tip">
+                                    <ActivatorContent>
+                                        <MButton Loading=isDownExport Disabled=@(!UserResoures.IsHasButtonWithRole("tgdevicepause")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small
+                                                 OnClick=@(async()=>
+                                                 {
+                                                 var curMessages= uploadDeviceInfoItem.Driver.Messages.ToList();
+                                                 await DownDeviceMessageExport(curMessages);
+                                                 }
+                                                 )>
+                                            <MIcon>mdi-export</MIcon>
+                                            </MButton>
+                                        </ActivatorContent>
+                                        <ChildContent>
+                                            <span>@T("导出")</span>
+                                        </ChildContent>
+                                        </MTooltip>
+
+                                        </MCardActions>
+                                if (pauseMessage)
+                                {
+                                    var item = CurMessages;
+                                    <MRow Class="ml-2 mr-2 d-flex" NoGutters>
+                                    <MVirtualScroll Context="itemMessage" Height=@("calc(100vh - 700px)") OverscanCount=2 ItemSize="100" Items="item.OrderByDescending(a=>a.id).ToList()">
+                                        <ItemContent>
+                                            <div>
+                                                @itemMessage.message
+                                            </div>
+                                        </ItemContent>
+                                    </MVirtualScroll>
+                                </MRow>
+                                }
+                                else
+                                {
+                                    var item = uploadDeviceInfoItem.Driver.Messages;
+                                    <MRow Class="ml-2 mr-2 d-flex" NoGutters>
+                                    <MVirtualScroll Context="itemMessage" Height=@("calc(100vh - 700px)") OverscanCount=2 ItemSize="100" Items="item.OrderByDescending(a=>a.id).ToList()">
+                                        <ItemContent>
+                                            <div>
+                                                @itemMessage.message
+                                            </div>
+                                        </ItemContent>
+                                    </MVirtualScroll>
+                                </MRow>
+                                }
+                            }
+                        </MCard>
                     </div>
                 </MCol>
             </MRow>

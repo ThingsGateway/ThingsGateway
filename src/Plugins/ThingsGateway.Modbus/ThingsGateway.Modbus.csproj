@@ -18,10 +18,10 @@
 	</Target>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\ThingsGateway.Web.Foundation\ThingsGateway.Web.Foundation.csproj" >
+		<ProjectReference Include="..\..\ThingsGateway.Web.Foundation\ThingsGateway.Web.Foundation.csproj">
 			<IncludeAssets>Compile</IncludeAssets>
 		</ProjectReference>
-		<ProjectReference Include="..\ThingsGateway.Foundation.Adapter.Modbus\ThingsGateway.Foundation.Adapter.Modbus.csproj" >
+		<ProjectReference Include="..\ThingsGateway.Foundation.Adapter.Modbus\ThingsGateway.Foundation.Adapter.Modbus.csproj">
 		</ProjectReference>
 	</ItemGroup>
 
