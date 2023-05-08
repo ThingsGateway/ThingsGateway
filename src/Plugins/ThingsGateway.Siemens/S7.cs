@@ -100,7 +100,7 @@ public abstract class S7 : CollectBase
 
     protected override async Task<OperResult<byte[]>> ReadAsync(string address, int length, CancellationToken cancellationToken)
     {
-        return await _plc.ReadAsync(address, length);
+        return await _plc.ReadAsync(address, length, cancellationToken);
     }
 
 }
