@@ -40,6 +40,16 @@ public class UploadDeviceThread : IDisposable
             {
                 if (device.Driver == null)
                     return;
+                try
+                {
+                    LoggerGroup log = UploadDeviceCores.FirstOrDefault().Driver.TouchSocketConfig.Container.Resolve<ILog>() as LoggerGroup;
+                    var data = new EasyLogger(device.Driver.NewMessage);
+                    log.AddLogger(device.DeviceId.ToString(), data);
+                }
+                catch (Exception ex)
+                {
+                    device.Logger?.LogError(ex, "报文日志添加失败");
+                }
                 await device.BeforeActionAsync();
             }
             while (!UploadDeviceCores.All(a => a.IsExited))
@@ -66,7 +76,10 @@ public class UploadDeviceThread : IDisposable
                             if (!device.IsExited)
                                 device.FinishAction();
                         }
+
+
                     }
+
                     else
                     {
                         if (!device.IsExited)

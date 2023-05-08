@@ -93,6 +93,8 @@ public class CollectDeviceThread : IDisposable
                             if (!device.IsExited)
                                 device.FinishAction();
                         }
+                        if (CollectDeviceCores.Count>1)
+                            await Task.Delay(1000);//对于共享链路设备需延时，避免物理链路比如LORA等设备寻找失败
                     }
                     else
                     {
