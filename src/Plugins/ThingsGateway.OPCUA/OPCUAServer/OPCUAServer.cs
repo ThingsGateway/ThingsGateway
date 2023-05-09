@@ -61,7 +61,7 @@ public partial class OPCUAServer : UpLoadBase
     public override async Task BeforStartAsync()
     {
         // 启动服务器。
-        await m_application.CheckApplicationInstanceCertificate(true, 0);
+        await m_application.CheckApplicationInstanceCertificate(true, 0,1200);
         await m_application.Start(m_server);
     }
 
