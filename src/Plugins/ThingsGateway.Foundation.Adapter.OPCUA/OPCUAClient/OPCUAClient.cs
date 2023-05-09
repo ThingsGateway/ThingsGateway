@@ -93,6 +93,7 @@ public class OPCUAClient : DisposableObject
                     StorePath = "CurrentUser\\UA_ThingsGateway",
                     SubjectName = "CN=ThingsGateway OPCUAClient, C=CN, S=GUANGZHOU, O=ThingsGateway, DC=" + System.Net.Dns.GetHostName(),
                 },
+
                 TrustedIssuerCertificates = new CertificateTrustList
                 {
                     StoreType = CertificateStoreType.Directory,
@@ -123,7 +124,7 @@ public class OPCUAClient : DisposableObject
 
             },
 
-            TransportQuotas = new TransportQuotas
+        TransportQuotas = new TransportQuotas
             {
                 OperationTimeout = 6000000,
                 MaxStringLength = int.MaxValue,
@@ -1399,7 +1400,7 @@ public class OPCUAClient : DisposableObject
         EndpointConfiguration endpointConfiguration = EndpointConfiguration.Create(m_configuration);
 
         ConfiguredEndpoint endpoint = new ConfiguredEndpoint(null, endpointDescription, endpointConfiguration);
-        var d = await m_application.CheckApplicationInstanceCertificate(true, 0);
+        await m_application.CheckApplicationInstanceCertificate(true, 0,1200);
         //var x509 = await m_configuration.SecurityConfiguration.ApplicationCertificate.Find(true);
         m_session = await Opc.Ua.Client.Session.Create(
      m_configuration,
