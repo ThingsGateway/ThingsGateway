@@ -58,7 +58,7 @@ public class CollectDeviceThread : IDisposable
                 {
                     device.Logger?.LogError(ex, "报文日志添加失败");
                 }
-
+                device.IsShareChannel = CollectDeviceCores.Count > 1;
                 if (channelResult.IsSuccess)
                 {
                     await device.BeforeActionAsync(channelResult.Content);

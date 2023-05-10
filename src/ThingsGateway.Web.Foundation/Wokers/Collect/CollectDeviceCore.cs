@@ -183,7 +183,10 @@ public class CollectDeviceCore : DisposableObject
     #endregion
 
     #region 核心读写
-
+    /// <summary>
+    /// 是否多个设备共享链路;
+    /// </summary>
+    public bool IsShareChannel;
     /// <summary>
     /// 已经停止
     /// </summary>
@@ -507,7 +510,7 @@ public class CollectDeviceCore : DisposableObject
         try
         {
             await easyLock.LockAsync();
-
+            if (IsShareChannel) _driver.InitDataAdapter();
             return (OperResult)await coreMethod.InvokeObjectAsync(_driver, par);
         }
         catch (Exception ex)
@@ -530,6 +533,7 @@ public class CollectDeviceCore : DisposableObject
         try
         {
             await easyLock.LockAsync();
+            if (IsShareChannel) _driver.InitDataAdapter();
             if (!deviceVariable.WriteExpressions.IsNullOrEmpty() && value != null)
             {
                 object data = null;
