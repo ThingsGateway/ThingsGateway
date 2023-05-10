@@ -1,10 +1,13 @@
 ﻿
+using ThingsGateway.Core;
 using ThingsGateway.Web.Foundation;
 /// <summary>
 /// 上传DTO
 /// </summary>
 public class VariableData
 {
+    /// <inheritdoc cref="PrimaryIdEntity.Id"/>
+    public long id { get; set; }
     /// <inheritdoc cref="MemoryVariable.Name"/>
     public string name { get; set; }
     /// <inheritdoc cref="MemoryVariable.Description"/>

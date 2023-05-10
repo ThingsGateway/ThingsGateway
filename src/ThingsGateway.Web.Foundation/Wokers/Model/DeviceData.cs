@@ -1,10 +1,13 @@
 ﻿
+using ThingsGateway.Core;
 using ThingsGateway.Web.Foundation;
 /// <summary>
 /// 设备上传DTO
 /// </summary>
 public class DeviceData
 {
+    /// <inheritdoc cref="PrimaryIdEntity.Id"/>
+    public long id { get; set; }
     /// <inheritdoc cref="CollectDeviceRunTime.PluginName"/>
     public string pluginName { get; set; }
     /// <inheritdoc cref="CollectDeviceRunTime.DeviceVariablesNum"/>
