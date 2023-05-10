@@ -45,7 +45,7 @@ http://120.24.62.140:5000/
 
 > 不支持Rpc
 - RabbitMQ (支持自定义json)
-
+- Kafka
 
 #### nuget
 
