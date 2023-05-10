@@ -8,13 +8,13 @@
 	</PropertyGroup>
  
 	<ItemGroup>
-		<PackageReference Include="Furion.Extras.Authentication.JwtBearer" Version="4.8.8.7" />
-		<PackageReference Include="Furion.Extras.ObjectMapper.Mapster" Version="4.8.8.7" />
-		<PackageReference Include="Furion.Pure" Version="4.8.8.7" />
+		<PackageReference Include="Furion.Extras.Authentication.JwtBearer" Version="4.8.8.13" />
+		<PackageReference Include="Furion.Extras.ObjectMapper.Mapster" Version="4.8.8.13" />
+		<PackageReference Include="Furion.Pure" Version="4.8.8.13" />
 		<PackageReference Include="MiniExcel" Version="1.30.3" />
-		<PackageReference Include="SqlSugarCore" Version="5.1.4.69" />
-		<PackageReference Include="Portable.BouncyCastle" Version="1.9.0" />
-		<PackageReference Include="NewLife.Core" Version="10.2.2023.401" />
+		<PackageReference Include="SqlSugarCore" Version="5.1.4.72" />
+		<PackageReference Include="BouncyCastle.NetCore" Version="1.9.0" />
+		<PackageReference Include="NewLife.Core" Version="10.3.2023.503" />
 		<PackageReference Include="UAParser" Version="3.1.47" />
 		<PackageReference Include="Yitter.IdGenerator" Version="1.0.14" />
 		<PackageReference Include="Microsoft.Data.Sqlite" Version="7.0.5" />
