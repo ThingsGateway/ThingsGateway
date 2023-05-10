@@ -9,7 +9,7 @@ using ThingsGateway.Foundation;
 namespace ThingsGateway.Web.Foundation
 {
     /// <summary>
-    /// 变量写入
+    /// 设备控制
     /// </summary>
     [ApiDescriptionSettings(CateGoryConst.ThingsGatewayOpenApi, Order = 200)]
     [Route("openApi/rpc")]
@@ -19,6 +19,7 @@ namespace ThingsGateway.Web.Foundation
     [Authorize(AuthenticationSchemes = "Bearer")]
     public class RpcControler : IDynamicApiController
     {
+        CollectDeviceWorker _collectDeviceHostService { get; set; }
         IServiceScopeFactory _scopeFactory;
         /// <inheritdoc cref="RpcControler"/>
         public RpcControler(IServiceScopeFactory scopeFactory)
@@ -26,6 +27,7 @@ namespace ThingsGateway.Web.Foundation
             _scopeFactory = scopeFactory;
             using var serviceScope = _scopeFactory.CreateScope();
             _rpcCore = serviceScope.ServiceProvider.GetService<RpcSingletonService>();
+            _collectDeviceHostService = serviceScope.GetBackgroundService<CollectDeviceWorker>();
         }
 
         RpcSingletonService _rpcCore { get; set; }
@@ -53,6 +55,28 @@ namespace ThingsGateway.Web.Foundation
             }
             return operResultDict;
         }
+
+        /// <summary>
+        /// 控制采集线程启停
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("configDeviceThread")]
+        [Description("控制采集线程启停")]
+        public async Task ConfigDeviceThread(long id, bool isStart)
+        {
+             await _collectDeviceHostService.ConfigDeviceThreadAsync(id, isStart);
+        }
+        /// <summary>
+        /// 重启采集线程
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("upDeviceThread")]
+        [Description("重启采集线程")]
+        public async Task UpDeviceThread(long id)
+        {
+            await _collectDeviceHostService.UpDeviceThreadAsync(id, false);
+        }
+
     }
 }
 
