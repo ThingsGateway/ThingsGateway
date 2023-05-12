@@ -372,15 +372,19 @@ public class MqttClient : UpLoadBase
 
         _uploadVariables = tags;
 
-        _collectDevice=      _globalCollectDeviceData.CollectDevices.Where(a => _uploadVariables.Select(b => b.DeviceId).Contains(a.Id)).ToList();
-        _collectDevice.ForEach(a =>
+        _collectDevice = _globalCollectDeviceData.CollectDevices.Where(a => _uploadVariables.Select(b => b.DeviceId).Contains(a.Id)).ToList();
+        if (!driverPropertys.IsInterval)
         {
-            a.DeviceStatusCahnge += DeviceStatusCahnge;
-        });
-        _uploadVariables.ForEach(a =>
-        {
-            a.VariableValueChange += VariableValueChange;
-        });
+            _collectDevice.ForEach(a =>
+            {
+                a.DeviceStatusCahnge += DeviceStatusCahnge;
+            });
+            _uploadVariables.ForEach(a =>
+            {
+                a.VariableValueChange += VariableValueChange;
+            });
+        }
+
         if (driverPropertys.UploadInterval <= 1000) driverPropertys.UploadInterval = 1000;
         exTimerTick = new(driverPropertys.UploadInterval);
 
