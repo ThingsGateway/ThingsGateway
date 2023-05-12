@@ -77,7 +77,8 @@ public class MqttClient : UpLoadBase
     private ConcurrentQueue<VariableData> CollectVariableRunTimes = new();
     private MqttClientProperty driverPropertys = new();
 
-    private TimerTick exTimerTick;
+    private TimerTick exVariableTimerTick;
+    private TimerTick exDeviceTimerTick;
     private EasyLock lockobj = new();
     private MqttClientVariableProperty variablePropertys = new();
 
@@ -167,11 +168,11 @@ public class MqttClient : UpLoadBase
             }
             else
             {
-                if (exTimerTick.IsTickHappen())
+                if (exVariableTimerTick.IsTickHappen())
                 {
                     try
                     {
-                        var varList = _uploadVariables;
+                        var varList = _uploadVariables.Adapt<List<VariableData>>();
                         if (varList?.Count != 0)
                         {
                             //分解List，避免超出mqtt字节大小限制
@@ -257,35 +258,38 @@ public class MqttClient : UpLoadBase
 
             else
             {
-                var devList = _collectDevice;
-                if (devList?.Count != 0)
+                if (exDeviceTimerTick.IsTickHappen())
                 {
-                    //分解List，避免超出mqtt字节大小限制
-                    var devData = devList.ChunkTrivialBetter(500);
-                    foreach (var item in devData)
+                    var devList = _collectDevice.Adapt<List<DeviceData>>(); ;
+                    if (devList?.Count != 0)
                     {
-                        try
+                        //分解List，避免超出mqtt字节大小限制
+                        var devData = devList.ChunkTrivialBetter(500);
+                        foreach (var item in devData)
                         {
-                            if (!cancellationToken.IsCancellationRequested)
+                            try
                             {
-                                var variableMessage = new MqttApplicationMessageBuilder()
-                        .WithTopic($"{driverPropertys.DeviceTopic}")
-                        .WithPayload(item.GetSciptListValue(driverPropertys.BigTextScriptDeviceModel)).Build();
-                                var isConnect = await TryMqttClientAsync();
-                                if (isConnect.IsSuccess)
-                                    await _mqttClient.PublishAsync(variableMessage);
+                                if (!cancellationToken.IsCancellationRequested)
+                                {
+                                    var variableMessage = new MqttApplicationMessageBuilder()
+                            .WithTopic($"{driverPropertys.DeviceTopic}")
+                            .WithPayload(item.GetSciptListValue(driverPropertys.BigTextScriptDeviceModel)).Build();
+                                    var isConnect = await TryMqttClientAsync();
+                                    if (isConnect.IsSuccess)
+                                        await _mqttClient.PublishAsync(variableMessage);
+                                }
+                                else
+                                {
+                                    break;
+                                }
                             }
-                            else
+                            catch (Exception ex)
                             {
-                                break;
+                                _logger.LogWarning(ex, ToString());
                             }
                         }
-                        catch (Exception ex)
-                        {
-                            _logger.LogWarning(ex, ToString());
-                        }
-                    }
 
+                    }
                 }
 
 
@@ -386,7 +390,8 @@ public class MqttClient : UpLoadBase
         }
 
         if (driverPropertys.UploadInterval <= 1000) driverPropertys.UploadInterval = 1000;
-        exTimerTick = new(driverPropertys.UploadInterval);
+        exVariableTimerTick = new(driverPropertys.UploadInterval);
+        exDeviceTimerTick = new(driverPropertys.UploadInterval);
 
     }
     private async Task _mqttClient_ApplicationMessageReceivedAsync(MqttApplicationMessageReceivedEventArgs arg)
