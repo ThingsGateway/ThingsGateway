@@ -175,9 +175,9 @@ public class IotSharpClient : UpLoadBase
             _logger?.LogWarning(ex, ToString());
         }
 
-        if (driverPropertys.CycleInterval > 500 + 50)
+        if (driverPropertys.CycleInterval > UploadDeviceThread.CycleInterval + 50)
         {
-            await Task.Delay(driverPropertys.CycleInterval - 500);
+            await Task.Delay(driverPropertys.CycleInterval - UploadDeviceThread.CycleInterval);
         }
         else
         {
@@ -499,7 +499,7 @@ public class IotSharpClientProperty : UpDriverPropertyBase
     [DeviceProperty("Accesstoken", "")] public string Accesstoken { get; set; } = "Accesstoken";
     [DeviceProperty("连接超时时间", "")] public int ConnectTimeOut { get; set; } = 3000;
     [DeviceProperty("允许Rpc写入", "")] public bool DeviceRpcEnable { get; set; }
-    [DeviceProperty("循环间隔", "最小500ms")] public int CycleInterval { get; set; } = 1000;
+    [DeviceProperty("线程循环间隔", "最小500ms")] public int CycleInterval { get; set; } = 1000;
 }
 public class IotSharpClientVariableProperty : VariablePropertyBase
 {

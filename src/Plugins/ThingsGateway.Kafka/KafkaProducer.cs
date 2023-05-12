@@ -28,7 +28,7 @@ public class KafkaProducerProperty : DriverPropertyBase
     [DeviceProperty("变量主题", "")] public string VariableTopic { get; set; } = "test2";
     [DeviceProperty("分组ID", "")] public string GroupId { get; set; } = "test-consumer-group";
     [DeviceProperty("客户端ID", "")] public string ClientId { get; set; } = "test-consumer";
-    [DeviceProperty("循环间隔", "最小500ms")] public int CycleInterval { get; set; } = 1000;
+    [DeviceProperty("线程循环间隔", "最小500ms")] public int CycleInterval { get; set; } = 1000;
 
 }
 /// <summary>
@@ -242,9 +242,9 @@ public class KafkaProducer : UpLoadBase
             _logger?.LogWarning(ex, ToString());
         }
 
-        if (driverPropertys.CycleInterval > 500 + 50)
+        if (driverPropertys.CycleInterval > UploadDeviceThread.CycleInterval + 50)
         {
-            await Task.Delay(driverPropertys.CycleInterval - 500);
+            await Task.Delay(driverPropertys.CycleInterval - UploadDeviceThread.CycleInterval);
         }
         else
         {

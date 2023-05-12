@@ -34,8 +34,12 @@ public class CollectDeviceThread : IDisposable
     /// </summary>
     public ConcurrentList<CancellationTokenSource> StoppingTokens = new();
     /// <summary>
-    /// 初始化
+    /// 默认等待间隔时间
     /// </summary>
+    public static int CycleInterval { get; } = 50;
+    /// <summary>
+                                                   /// 初始化
+                                                   /// </summary>
     protected void InitTask()
     {
         CancellationTokenSource StoppingToken = StoppingTokens.Last();
@@ -82,11 +86,11 @@ public class CollectDeviceThread : IDisposable
                         var result = await device.RunActionAsync(StoppingToken);
                         if (result == ThreadRunReturn.None)
                         {
-                            await Task.Delay(20);
+                            await Task.Delay(CycleInterval);
                         }
                         else if (result == ThreadRunReturn.Continue)
                         {
-                            await Task.Delay(20);
+                            await Task.Delay(1000);
                         }
                         else if (result == ThreadRunReturn.Break)
                         {
