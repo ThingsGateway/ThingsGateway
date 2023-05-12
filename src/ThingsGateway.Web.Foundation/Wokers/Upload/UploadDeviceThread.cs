@@ -27,6 +27,11 @@ public class UploadDeviceThread : IDisposable
     /// CancellationTokenSources
     /// </summary>
     public ConcurrentList<CancellationTokenSource> StoppingTokens = new();
+    
+    /// <summary>
+    /// 默认等待间隔时间
+    /// </summary>
+    public static int CycleInterval { get; } =500;
     /// <summary>
     /// 初始化
     /// </summary>
@@ -65,11 +70,11 @@ public class UploadDeviceThread : IDisposable
                         var result = await device.RunActionAsync(StoppingToken);
                         if (result == ThreadRunReturn.None)
                         {
-                            await Task.Delay(20);
+                            await Task.Delay(CycleInterval);
                         }
                         else if (result == ThreadRunReturn.Continue)
                         {
-                            await Task.Delay(20);
+                            await Task.Delay(1000);
                         }
                         else if (result == ThreadRunReturn.Break)
                         {

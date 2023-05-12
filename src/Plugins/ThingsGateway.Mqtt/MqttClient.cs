@@ -21,9 +21,8 @@ namespace ThingsGateway.Mqtt;
 
 public class MqttClientProperty : UpDriverPropertyBase
 {
-
-
-
+    [DeviceProperty("是否间隔上传", "False时为变化检测上传")] public bool IsInterval { get; set; } = false;
+    [DeviceProperty("上传间隔时间", "最小1000ms")] public int UploadInterval { get; set; } = 1000;
 
     [DeviceProperty("IP", "")] public string IP { get; set; } = "127.0.0.1";
 
@@ -34,7 +33,7 @@ public class MqttClientProperty : UpDriverPropertyBase
 
     [DeviceProperty("连接超时时间", "")] public int ConnectTimeOut { get; set; } = 3000;
 
-    [DeviceProperty("循环间隔", "最小500ms")] public int CycleInterval { get; set; } = 1000;
+    [DeviceProperty("线程循环间隔", "最小500ms")] public int CycleInterval { get; set; } = 1000;
 
     [DeviceProperty("允许Rpc写入", "")] public bool DeviceRpcEnable { get; set; }
 
@@ -59,6 +58,7 @@ public class MqttClientVariableProperty : VariablePropertyBase
 }
 public class MqttClient : UpLoadBase
 {
+    private List<CollectDeviceRunTime> _collectDevice;
     private UploadDevice _curDevice;
     private GlobalCollectDeviceData _globalCollectDeviceData;
 
@@ -77,6 +77,7 @@ public class MqttClient : UpLoadBase
     private ConcurrentQueue<VariableData> CollectVariableRunTimes = new();
     private MqttClientProperty driverPropertys = new();
 
+    private TimerTick exTimerTick;
     private EasyLock lockobj = new();
     private MqttClientVariableProperty variablePropertys = new();
 
@@ -94,6 +95,7 @@ public class MqttClient : UpLoadBase
     public override VariablePropertyBase VariablePropertys => variablePropertys;
     public override async Task BeforStartAsync()
     {
+
         if (_mqttClient != null)
         {
             var result = await TryMqttClientAsync();
@@ -124,42 +126,91 @@ public class MqttClient : UpLoadBase
         }
 
     }
-
     public override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
         try
         {
-            ////变化推送
-            var varList = CollectVariableRunTimes.ToListWithDequeue();
-            if (varList?.Count != 0)
+            if (!driverPropertys.IsInterval)
             {
-                //分解List，避免超出mqtt字节大小限制
-                var varData = varList.ChunkTrivialBetter(500);
-                foreach (var item in varData)
+                ////变化推送
+                var varList = CollectVariableRunTimes.ToListWithDequeue();
+                if (varList?.Count != 0)
+                {
+                    //分解List，避免超出mqtt字节大小限制
+                    var varData = varList.ChunkTrivialBetter(500);
+                    foreach (var item in varData)
+                    {
+                        try
+                        {
+                            if (!cancellationToken.IsCancellationRequested)
+                            {
+                                var variableMessage = new MqttApplicationMessageBuilder()
+    .WithTopic($"{driverPropertys.VariableTopic}")
+    .WithPayload(item.GetSciptListValue(driverPropertys.BigTextScriptVariableModel)).Build();
+                                var isConnect = await TryMqttClientAsync();
+                                if (isConnect.IsSuccess)
+                                    await _mqttClient.PublishAsync(variableMessage, cancellationToken);
+                            }
+                            else
+                            {
+                                break;
+                            }
+
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogWarning(ex, ToString());
+                        }
+
+                    }
+                }
+            }
+            else
+            {
+                if (exTimerTick.IsTickHappen())
                 {
                     try
                     {
-                        if (!cancellationToken.IsCancellationRequested)
+                        var varList = _uploadVariables;
+                        if (varList?.Count != 0)
                         {
-                            var variableMessage = new MqttApplicationMessageBuilder()
-.WithTopic($"{driverPropertys.VariableTopic}")
-.WithPayload(item.GetSciptListValue(driverPropertys.BigTextScriptVariableModel)).Build();
-                            var isConnect = await TryMqttClientAsync();
-                            if (isConnect.IsSuccess)
-                                await _mqttClient.PublishAsync(variableMessage, cancellationToken);
-                        }
-                        else
-                        {
-                            break;
-                        }
+                            //分解List，避免超出mqtt字节大小限制
+                            var varData = varList.ChunkTrivialBetter(500);
+                            foreach (var item in varData)
+                            {
+                                try
+                                {
+                                    if (!cancellationToken.IsCancellationRequested)
+                                    {
+                                        var variableMessage = new MqttApplicationMessageBuilder()
+            .WithTopic($"{driverPropertys.VariableTopic}")
+            .WithPayload(item.GetSciptListValue(driverPropertys.BigTextScriptVariableModel)).Build();
+                                        var isConnect = await TryMqttClientAsync();
+                                        if (isConnect.IsSuccess)
+                                            await _mqttClient.PublishAsync(variableMessage, cancellationToken);
+                                    }
+                                    else
+                                    {
+                                        break;
+                                    }
 
+                                }
+                                catch (Exception ex)
+                                {
+                                    _logger.LogWarning(ex, ToString());
+                                }
+
+                            }
+                        }
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogWarning(ex, ToString());
+                        _logger?.LogWarning(ex, ToString());
                     }
 
                 }
+
+
             }
         }
         catch (Exception ex)
@@ -168,46 +219,87 @@ public class MqttClient : UpLoadBase
         }
         try
         {
-            ////变化推送
-            var devList = CollectDeviceRunTimes.ToListWithDequeue();
-            if (devList?.Count != 0)
+            if (!driverPropertys.IsInterval)
             {
-                //分解List，避免超出mqtt字节大小限制
-                var devData = devList.ChunkTrivialBetter(500);
-                foreach (var item in devData)
+                ////变化推送
+                var devList = CollectDeviceRunTimes.ToListWithDequeue();
+                if (devList?.Count != 0)
                 {
-                    try
+                    //分解List，避免超出mqtt字节大小限制
+                    var devData = devList.ChunkTrivialBetter(500);
+                    foreach (var item in devData)
                     {
-                        if (!cancellationToken.IsCancellationRequested)
+                        try
                         {
-                            var variableMessage = new MqttApplicationMessageBuilder()
-                    .WithTopic($"{driverPropertys.DeviceTopic}")
-                    .WithPayload(item.GetSciptListValue(driverPropertys.BigTextScriptDeviceModel)).Build();
-                            var isConnect = await TryMqttClientAsync();
-                            if (isConnect.IsSuccess)
-                                await _mqttClient.PublishAsync(variableMessage);
+                            if (!cancellationToken.IsCancellationRequested)
+                            {
+                                var variableMessage = new MqttApplicationMessageBuilder()
+                        .WithTopic($"{driverPropertys.DeviceTopic}")
+                        .WithPayload(item.GetSciptListValue(driverPropertys.BigTextScriptDeviceModel)).Build();
+                                var isConnect = await TryMqttClientAsync();
+                                if (isConnect.IsSuccess)
+                                    await _mqttClient.PublishAsync(variableMessage);
+                            }
+                            else
+                            {
+                                break;
+                            }
                         }
-                        else
+                        catch (Exception ex)
                         {
-                            break;
+                            _logger.LogWarning(ex, ToString());
                         }
                     }
-                    catch (Exception ex)
-                    {
-                        _logger.LogWarning(ex, ToString());
-                    }
+
                 }
 
             }
+
+            else
+            {
+                var devList = _collectDevice;
+                if (devList?.Count != 0)
+                {
+                    //分解List，避免超出mqtt字节大小限制
+                    var devData = devList.ChunkTrivialBetter(500);
+                    foreach (var item in devData)
+                    {
+                        try
+                        {
+                            if (!cancellationToken.IsCancellationRequested)
+                            {
+                                var variableMessage = new MqttApplicationMessageBuilder()
+                        .WithTopic($"{driverPropertys.DeviceTopic}")
+                        .WithPayload(item.GetSciptListValue(driverPropertys.BigTextScriptDeviceModel)).Build();
+                                var isConnect = await TryMqttClientAsync();
+                                if (isConnect.IsSuccess)
+                                    await _mqttClient.PublishAsync(variableMessage);
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogWarning(ex, ToString());
+                        }
+                    }
+
+                }
+
+
+            }
+
         }
         catch (Exception ex)
         {
             _logger?.LogWarning(ex, ToString());
         }
 
-        if (driverPropertys.CycleInterval > 500 + 50)
+        if (driverPropertys.CycleInterval > UploadDeviceThread.CycleInterval + 50)
         {
-            await Task.Delay(driverPropertys.CycleInterval - 500);
+            await Task.Delay(driverPropertys.CycleInterval - UploadDeviceThread.CycleInterval);
         }
         else
         {
@@ -280,7 +372,8 @@ public class MqttClient : UpLoadBase
 
         _uploadVariables = tags;
 
-        _globalCollectDeviceData.CollectDevices.Where(a => _uploadVariables.Select(b => b.DeviceId).Contains(a.Id)).ForEach(a =>
+        _collectDevice=      _globalCollectDeviceData.CollectDevices.Where(a => _uploadVariables.Select(b => b.DeviceId).Contains(a.Id)).ToList();
+        _collectDevice.ForEach(a =>
         {
             a.DeviceStatusCahnge += DeviceStatusCahnge;
         });
@@ -288,11 +381,10 @@ public class MqttClient : UpLoadBase
         {
             a.VariableValueChange += VariableValueChange;
         });
-
+        if (driverPropertys.UploadInterval <= 1000) driverPropertys.UploadInterval = 1000;
+        exTimerTick = new(driverPropertys.UploadInterval);
 
     }
-
-
     private async Task _mqttClient_ApplicationMessageReceivedAsync(MqttApplicationMessageReceivedEventArgs arg)
     {
         if (arg.ApplicationMessage.Topic == driverPropertys.QuestRpcTopic && arg.ApplicationMessage.PayloadSegment.Count > 0)
