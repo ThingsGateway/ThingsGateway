@@ -28,7 +28,7 @@ namespace ThingsGateway.Web.Foundation
         public CollectInfoControler(IServiceScopeFactory scopeFactory)
         {
             _scopeFactory = scopeFactory;
-            using var serviceScope = _scopeFactory.CreateScope();
+            var serviceScope = _scopeFactory.CreateScope();
             _collectDeviceHostService = serviceScope.GetBackgroundService<CollectDeviceWorker>();
             _alarmHostService = serviceScope.GetBackgroundService<AlarmWorker>();
         }

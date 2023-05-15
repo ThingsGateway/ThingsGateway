@@ -25,7 +25,7 @@ public class UploadDeviceWorker : BackgroundService
         _logger = logger;
         _scopeFactory = scopeFactory;
 
-        using var serviceScope = scopeFactory.CreateScope();
+        var serviceScope = scopeFactory.CreateScope();
         _pluginService = serviceScope.ServiceProvider.GetService<PluginSingletonService>();
         _uploadDeviceService = serviceScope.ServiceProvider.GetService<IUploadDeviceService>();
     }

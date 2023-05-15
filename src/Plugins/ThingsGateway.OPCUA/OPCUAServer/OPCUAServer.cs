@@ -132,7 +132,7 @@ public partial class OPCUAServer : UpLoadBase
 
         m_server = new(_logger, _scopeFactory.CreateScope());
 
-        using var serviceScope = _scopeFactory.CreateScope();
+        var serviceScope = _scopeFactory.CreateScope();
         var _globalCollectDeviceData = serviceScope.ServiceProvider.GetService<GlobalCollectDeviceData>();
 
         _uploadVariables = _globalCollectDeviceData.CollectVariables;

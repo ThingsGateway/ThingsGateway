@@ -87,7 +87,7 @@ public class ModbusServer : UpLoadBase
         _plc.Station = driverPropertys.Station;
         _plc.MulStation = driverPropertys.MulStation;
 
-        using var serviceScope = _scopeFactory.CreateScope();
+        var serviceScope = _scopeFactory.CreateScope();
         var _globalCollectDeviceData = serviceScope.ServiceProvider.GetService<GlobalCollectDeviceData>();
         var tags = _globalCollectDeviceData.CollectVariables.Where(a => a.VariablePropertys.ContainsKey(device.Id))
             .Where(b => b.VariablePropertys[device.Id].Any(c =>
@@ -142,7 +142,7 @@ public class ModbusServer : UpLoadBase
     {
         try
         {
-            using var serviceScope = _scopeFactory.CreateScope();
+            var serviceScope = _scopeFactory.CreateScope();
             var rpcCore = serviceScope.ServiceProvider.GetService<RpcSingletonService>();
             var tag = _ModbusTags.FirstOrDefault(a => a.Key?.AddressStart == address.AddressStart && a.Key?.Station == address.Station && a.Key?.ReadFunction == address.ReadFunction);
 

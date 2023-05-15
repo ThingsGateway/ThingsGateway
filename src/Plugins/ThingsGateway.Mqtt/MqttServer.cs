@@ -213,7 +213,7 @@ public class MqttServer : UpLoadBase
             .Build();
         _mqttServer = mqttFactory.CreateMqttServer(mqttServerOptions);
 
-        using var serviceScope = _scopeFactory.CreateScope();
+        var serviceScope = _scopeFactory.CreateScope();
         _globalCollectDeviceData = serviceScope.ServiceProvider.GetService<GlobalCollectDeviceData>();
         _rpcCore = serviceScope.ServiceProvider.GetService<RpcSingletonService>();
 
@@ -283,7 +283,7 @@ public class MqttServer : UpLoadBase
             arg.ReasonCode = MqttConnectReasonCode.ClientIdentifierNotValid;
             return;
         }
-        using var serviceScope = _scopeFactory.CreateScope();
+        var serviceScope = _scopeFactory.CreateScope();
         var _openApiUserService = serviceScope.ServiceProvider.GetService<IOpenApiUserService>();
         var userInfo = await _openApiUserService.GetUserByAccount(arg.UserName);//获取用户信息
         if (userInfo == null)

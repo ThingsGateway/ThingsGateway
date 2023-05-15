@@ -25,7 +25,7 @@ namespace ThingsGateway.Web.Foundation
         public RpcControler(IServiceScopeFactory scopeFactory)
         {
             _scopeFactory = scopeFactory;
-            using var serviceScope = _scopeFactory.CreateScope();
+            var serviceScope = _scopeFactory.CreateScope();
             _rpcCore = serviceScope.ServiceProvider.GetService<RpcSingletonService>();
             _collectDeviceHostService = serviceScope.GetBackgroundService<CollectDeviceWorker>();
         }

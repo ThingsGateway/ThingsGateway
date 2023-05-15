@@ -19,7 +19,7 @@ namespace ThingsGateway.Web.Foundation;
 /// </summary>
 public class CollectDeviceWorker : BackgroundService
 {
-    private static IServiceScopeFactory _scopeFactory;
+    private IServiceScopeFactory _scopeFactory;
     private readonly ILogger<CollectDeviceWorker> _logger;
     private ICollectDeviceService _collectDeviceService;
     private GlobalCollectDeviceData _globalCollectDeviceData;
@@ -31,7 +31,7 @@ public class CollectDeviceWorker : BackgroundService
         _logger = logger;
         _scopeFactory = scopeFactory;
         ThreadPool.SetMaxThreads(100000, 100000);
-        using var serviceScope = scopeFactory.CreateScope();
+        var serviceScope = scopeFactory.CreateScope();
         _globalCollectDeviceData = serviceScope.ServiceProvider.GetService<GlobalCollectDeviceData>();
         _pluginService = serviceScope.ServiceProvider.GetService<PluginSingletonService>();
         serviceScope.ServiceProvider.GetService<HardwareInfoService>();

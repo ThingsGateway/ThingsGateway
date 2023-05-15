@@ -224,7 +224,7 @@ public class IotSharpClient : UpLoadBase
         _mqttClient = mqttFactory.CreateMqttClient();
         _mqttClient.ConnectedAsync += _mqttClient_ConnectedAsync;
         _mqttClient.ApplicationMessageReceivedAsync += _mqttClient_ApplicationMessageReceivedAsync;
-        using var serviceScope = _scopeFactory.CreateScope();
+        var serviceScope = _scopeFactory.CreateScope();
         _globalCollectDeviceData = serviceScope.ServiceProvider.GetService<GlobalCollectDeviceData>();
         _rpcCore = serviceScope.ServiceProvider.GetService<RpcSingletonService>();
         collectDeviceHostService = serviceScope.GetBackgroundService<CollectDeviceWorker>();
