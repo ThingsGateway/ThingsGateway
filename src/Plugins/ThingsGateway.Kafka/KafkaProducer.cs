@@ -128,7 +128,7 @@ public class KafkaProducer : UpLoadBase
         }
         #endregion
 
-        using var serviceScope = _scopeFactory.CreateScope();
+        var serviceScope = _scopeFactory.CreateScope();
         _globalCollectDeviceData = serviceScope.ServiceProvider.GetService<GlobalCollectDeviceData>();
         _rpcCore = serviceScope.ServiceProvider.GetService<RpcSingletonService>();
         collectDeviceHostService = serviceScope.GetBackgroundService<CollectDeviceWorker>();

@@ -28,7 +28,7 @@ public class RpcSingletonService : ISingleton
     {
         _scopeFactory = scopeFactory;
         _logger = logger;
-        using var serviceScope = scopeFactory.CreateScope();
+        var serviceScope = scopeFactory.CreateScope();
         _globalCollectDeviceData = serviceScope.ServiceProvider.GetService<GlobalCollectDeviceData>();
         _collectDeviceHostService = serviceScope.GetBackgroundService<CollectDeviceWorker>();
         Task.Factory.StartNew(RpcLogInsertAsync);
