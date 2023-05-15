@@ -54,6 +54,7 @@ public class ModbusTcp : CollectBase
 
     public override async Task<OperResult> WriteValueAsync(CollectVariableRunTime deviceVariable, string value)
     {
+        await Task.Delay(driverPropertys.FrameTime);
         return await _plc.WriteAsync(deviceVariable.DataType, deviceVariable.VariableAddress, value);
     }
 
@@ -76,6 +77,7 @@ public class ModbusTcp : CollectBase
     }
     protected override async Task<OperResult<byte[]>> ReadAsync(string address, int length, CancellationToken cancellationToken)
     {
+        await Task.Delay(driverPropertys.FrameTime, cancellationToken);
         return await _plc.ReadAsync(address, length, cancellationToken);
     }
 }
@@ -93,6 +95,9 @@ public class ModbusTcpProperty : CollectDriverPropertyBase
     public ushort TimeOut { get; set; } = 3000;
     [DeviceProperty("连接超时时间", "")]
     public ushort ConnectTimeOut { get; set; } = 3000;
+
+    [DeviceProperty("帧前时间", "某些设备性能较弱，报文间需要间隔较长时间")]
+    public int FrameTime { get; set; } = 0;
 
     [DeviceProperty("默认解析顺序", "")]
     public DataFormat DataFormat { get; set; }
