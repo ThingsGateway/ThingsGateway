@@ -53,6 +53,7 @@ public class ModbusRtuOverTcp : CollectBase, IDisposable
 
     public override async Task<OperResult> WriteValueAsync(CollectVariableRunTime deviceVariable, string value)
     {
+        await Task.Delay(driverPropertys.FrameTime);
         return await _plc.WriteAsync(deviceVariable.DataType, deviceVariable.VariableAddress, value);
     }
 
@@ -73,9 +74,10 @@ public class ModbusRtuOverTcp : CollectBase, IDisposable
         _plc.Station = driverPropertys.Station;
         _plc.TimeOut = driverPropertys.TimeOut;
     }
-    protected override Task<OperResult<byte[]>> ReadAsync(string address, int length, CancellationToken cancellationToken)
+    protected override async Task<OperResult<byte[]>> ReadAsync(string address, int length, CancellationToken cancellationToken)
     {
-        return _plc.ReadAsync(address, length, cancellationToken);
+        await Task.Delay(driverPropertys.FrameTime, cancellationToken);
+        return await _plc.ReadAsync(address, length, cancellationToken);
     }
 
 }
@@ -100,6 +102,9 @@ public class ModbusRtuOverTcpProperty : CollectDriverPropertyBase
     public bool Crc16CheckEnable { get; set; } = true;
     [DeviceProperty("读写超时时间", "")]
     public ushort TimeOut { get; set; } = 3000;
+
+    [DeviceProperty("帧前时间", "某些设备性能较弱，报文间需要间隔较长时间")]
+    public int FrameTime { get; set; } = 0;
 
     [DeviceProperty("共享链路", "")]
     public override bool IsShareChannel { get; set; } = false;

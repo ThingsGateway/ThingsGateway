@@ -55,6 +55,7 @@ public class ModbusUdp : CollectBase
 
     public override async Task<OperResult> WriteValueAsync(CollectVariableRunTime deviceVariable, string value)
     {
+        await Task.Delay(driverPropertys.FrameTime);
         return await _plc.WriteAsync(deviceVariable.DataType, deviceVariable.VariableAddress, value);
     }
 
@@ -76,6 +77,7 @@ public class ModbusUdp : CollectBase
     }
     protected override async Task<OperResult<byte[]>> ReadAsync(string address, int length, CancellationToken cancellationToken)
     {
+        await Task.Delay(driverPropertys.FrameTime, cancellationToken);
         return await _plc.ReadAsync(address, length, cancellationToken);
     }
 }
