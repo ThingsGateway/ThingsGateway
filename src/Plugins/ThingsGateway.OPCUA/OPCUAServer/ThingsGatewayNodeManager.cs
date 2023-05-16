@@ -308,7 +308,22 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
     /// <returns></returns>
     private NodeId DataNodeType(CollectVariableRunTime variableRunTime)
     {
-        var tp = variableRunTime.DataType;
+        Type tp;
+        if (variableRunTime.Value != null)
+        {
+            tp = variableRunTime.Value.GetType();
+        }
+        else
+        {
+            if (variableRunTime.ReadExpressions.IsNullOrEmpty())
+            {
+                tp = variableRunTime.DataTypeEnum.GetNetType();
+            }
+            else
+            {
+                tp = typeof(string);
+            }
+        }
         if (tp == typeof(bool))
             return DataTypeIds.Boolean;
         if (tp == typeof(byte))
