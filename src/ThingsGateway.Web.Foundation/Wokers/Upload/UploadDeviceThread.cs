@@ -128,6 +128,7 @@ public class UploadDeviceThread : IDisposable
             }
             CancellationTokenSource StoppingToken = StoppingTokens.LastOrDefault();
             StoppingToken?.Cancel();
+            StoppingToken?.SafeDispose();
             if (DeviceTask.GetAwaiter().GetResult()?.Wait(10000) != true)
             {
                 foreach (var device in UploadDeviceCores)

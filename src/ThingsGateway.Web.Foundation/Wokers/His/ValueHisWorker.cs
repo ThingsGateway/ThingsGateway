@@ -117,6 +117,9 @@ public class ValueHisWorker : BackgroundService
             {
 
             }
+            catch (ObjectDisposedException)
+            {
+            }
         }
     }
 
@@ -216,6 +219,9 @@ public class ValueHisWorker : BackgroundService
                         {
 
                         }
+                        catch (ObjectDisposedException)
+                        {
+                        }
                         catch (Exception ex)
                         {
                             if (LastIsSuccess)
@@ -230,6 +236,9 @@ public class ValueHisWorker : BackgroundService
             catch (TaskCanceledException)
             {
 
+            }
+            catch (ObjectDisposedException)
+            {
             }
             catch (Exception ex)
             {
@@ -271,6 +280,7 @@ public class ValueHisWorker : BackgroundService
 
         CancellationTokenSource StoppingToken = StoppingTokens.LastOrDefault();
         StoppingToken?.Cancel();
+        StoppingToken?.SafeDispose();
 
         _logger?.LogInformation($"历史数据线程停止中");
         var hisHisResult = ValueHisTask?.GetAwaiter().GetResult();

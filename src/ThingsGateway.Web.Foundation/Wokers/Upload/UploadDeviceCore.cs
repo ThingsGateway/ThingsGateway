@@ -106,6 +106,7 @@ public class UploadDeviceCore : DisposableObject
         {
             CancellationTokenSource StoppingToken = StoppingTokens.LastOrDefault();
             StoppingToken?.Cancel();
+            StoppingToken?.SafeDispose();
         }
     }
 
@@ -266,7 +267,7 @@ public class UploadDeviceCore : DisposableObject
         try
         {
 
-            CancellationTokenSource StoppingToken = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken.Token, StoppingTokens.LastOrDefault().Token);
+            using CancellationTokenSource StoppingToken = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken.Token, StoppingTokens.LastOrDefault().Token);
             if (_driver == null) return ThreadRunReturn.Continue;
 
             if (Device?.Enable == false)
@@ -295,6 +296,10 @@ public class UploadDeviceCore : DisposableObject
 
         }
         catch (TaskCanceledException)
+        {
+            return ThreadRunReturn.Break;
+        }
+        catch (ObjectDisposedException)
         {
             return ThreadRunReturn.Break;
         }

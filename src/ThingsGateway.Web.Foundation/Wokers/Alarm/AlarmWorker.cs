@@ -137,6 +137,9 @@ public class AlarmWorker : BackgroundService
             {
 
             }
+            catch (ObjectDisposedException)
+            {
+            }
         }
     }
 
@@ -182,7 +185,7 @@ public class AlarmWorker : BackgroundService
 
         CancellationTokenSource StoppingToken = StoppingTokens.LastOrDefault();
         StoppingToken?.Cancel();
-
+        StoppingToken?.SafeDispose();
         _logger?.LogInformation($"实时报警线程停止中");
         var realAlarmResult = RealAlarmTask?.Result;
         if (realAlarmResult?.Status != TaskStatus.Canceled)
@@ -370,6 +373,9 @@ public class AlarmWorker : BackgroundService
                 {
 
                 }
+                catch (ObjectDisposedException)
+                {
+                }
                 catch (Exception ex)
                 {
                     _logger?.LogWarning(ex, $"实时报警循环异常");
@@ -451,6 +457,9 @@ public class AlarmWorker : BackgroundService
                         {
 
                         }
+                        catch (ObjectDisposedException)
+                        {
+                        }
                         catch (Exception ex)
                         {
                             if (LastIsSuccess)
@@ -465,6 +474,9 @@ public class AlarmWorker : BackgroundService
             catch (TaskCanceledException)
             {
 
+            }
+            catch (ObjectDisposedException)
+            {
             }
             catch (Exception ex)
             {

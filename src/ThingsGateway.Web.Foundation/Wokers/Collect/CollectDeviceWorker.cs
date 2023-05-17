@@ -375,6 +375,7 @@ public class CollectDeviceWorker : BackgroundService
         var stoppingToken = new CancellationTokenSource();
         _stoppingToken = stoppingToken.Token;
         stoppingToken.Cancel();
+        stoppingToken?.SafeDispose();
         await Task.Delay(2000);
         StopOtherHostService();
         RemoveAllDeviceThread();

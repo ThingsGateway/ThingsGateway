@@ -77,9 +77,9 @@ namespace ThingsGateway.Web.Foundation
             {
                 Messages.Add(new(YitIdHelper.NextId(), DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff zz") + "-" + arg3));
 
-                if (Messages.Count > 2500)
+                if (Messages.Count > 500)
                 {
-                    Messages.RemoveRange(0, 500);
+                    Messages.Clear();
                 }
             }
         }

@@ -305,6 +305,7 @@ public class UploadDeviceWorker : BackgroundService
         var stoppingToken = new CancellationTokenSource();
         _stoppingToken = stoppingToken.Token;
         stoppingToken.Cancel();
+        stoppingToken?.SafeDispose();
 
         RemoveAllDeviceThread();
         await base.StopAsync(cancellationToken);

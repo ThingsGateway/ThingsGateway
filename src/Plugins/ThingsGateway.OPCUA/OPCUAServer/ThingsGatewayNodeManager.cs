@@ -390,6 +390,10 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
                         {
                             return StatusCodes.Good;
                         }
+                        else
+                        {
+                            return new(StatusCodes.BadWaitingForResponse, result.Message);
+                        }
                     }
                 }
 

@@ -521,7 +521,7 @@ namespace TouchSocket.Sockets
                 {
 #if (NET6_0_OR_GREATER)
                     var nowTime = DateTime.UtcNow;
-                    CancellationTokenSource cancellationTokenSource = new();
+                    using CancellationTokenSource cancellationTokenSource = new();
                     var task = this.MainSocket.ConnectAsync(iPHost.EndPoint, cancellationTokenSource.Token).AsTask();
                     var result = await Task.WhenAny(task, Task.Delay(timeout, cancellationTokenSource.Token));
                     if (DateTime.UtcNow - nowTime < TimeSpan.FromMilliseconds(timeout))
@@ -547,7 +547,7 @@ namespace TouchSocket.Sockets
 #else
 
                     var nowTime = DateTime.UtcNow;
-                    CancellationTokenSource cancellationTokenSource = new();
+                    using CancellationTokenSource cancellationTokenSource = new();
                     var task = Task.Factory.FromAsync(this.MainSocket.BeginConnect(iPHost.EndPoint, null, null), this.MainSocket.EndConnect);
                     var result = await Task.WhenAny(task, Task.Delay(timeout, cancellationTokenSource.Token));
                     if (DateTime.UtcNow - nowTime < TimeSpan.FromMilliseconds(timeout))

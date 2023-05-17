@@ -36,7 +36,7 @@ public class CollectDeviceThread : IDisposable
     /// <summary>
     /// 默认等待间隔时间
     /// </summary>
-    public static int CycleInterval { get; } = 50;
+    public static int CycleInterval { get; } = 100;
     /// <summary>
                                                    /// 初始化
                                                    /// </summary>
@@ -145,6 +145,7 @@ public class CollectDeviceThread : IDisposable
             }
             CancellationTokenSource StoppingToken = StoppingTokens.LastOrDefault();
             StoppingToken?.Cancel();
+            StoppingToken?.SafeDispose();
             if (DeviceTask.GetAwaiter().GetResult()?.Wait(10000) != true)
             {
                 foreach (var device in CollectDeviceCores)
