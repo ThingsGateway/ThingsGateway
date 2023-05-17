@@ -63,7 +63,10 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
 
             }
             tcpClient.Connected += Connected;
+
+            waitingClient = TGTcpClient.GetTGWaitingClient(new());
         }
+        private IWaitingClient<TGTcpClient> waitingClient;
 
 
         #region 设置
@@ -172,7 +175,7 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
                     List<byte> bytes = new();
                     foreach (var item in commandResult.Content)
                     {
-                        var result = TGTcpClient.GetTGWaitingClient(new()).SendThenResponse(item, TimeOut, token);
+                        var result = await waitingClient.SendThenResponseAsync(item, TimeOut, token);
                         if (result.RequestInfo is MessageBase collectMessage)
                         {
                             if (collectMessage.IsSuccess)
@@ -243,7 +246,7 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
                     List<ResponsedData> bytes = new();
                     foreach (var item in commandResult.Content)
                     {
-                        ResponsedData result = TGTcpClient.GetTGWaitingClient(new()).SendThenResponse(item, TimeOut, token);
+                        ResponsedData result = await waitingClient.SendThenResponseAsync(item, TimeOut, token);
                         bytes.Add(result);
                     }
                     return OperResult.CreateSuccessResult(bytes.ToArray());
@@ -275,7 +278,7 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
                 var commandResult = GetWriteBitCommand(address, value[0]);
                 if (commandResult.IsSuccess)
                 {
-                    var result = TGTcpClient.GetTGWaitingClient(new()).SendThenResponse(commandResult.Content, TimeOut, token);
+                    var result = await waitingClient.SendThenResponseAsync(commandResult.Content, TimeOut, token);
                     return OperResult.CreateSuccessResult(result);
                 }
                 else

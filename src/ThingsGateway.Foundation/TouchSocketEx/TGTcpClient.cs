@@ -336,11 +336,12 @@ namespace TouchSocket.Sockets
             }
         }
 
-        private void BreakOut(string msg, bool manual)
+        private  void BreakOut(string msg, bool manual)
         {
 
             try
             {
+                EasyLock.Lock();
                 if (this.CanSend)
                 {
                     this.CanSend = false;
@@ -354,7 +355,7 @@ namespace TouchSocket.Sockets
             }
             finally
             {
-
+                EasyLock.UnLock();
             }
         }
 
@@ -391,6 +392,8 @@ namespace TouchSocket.Sockets
         {
             try
             {
+                 EasyLock.Lock();
+
                 if (this.CanSend)
                 {
                     return;
@@ -473,6 +476,7 @@ namespace TouchSocket.Sockets
 
             finally
             {
+                EasyLock.UnLock();
 
             }
 
@@ -486,6 +490,9 @@ namespace TouchSocket.Sockets
             this.TcpConnect(timeout);
             return this;
         }
+
+        private EasyLock EasyLock { get; set; } = new();
+
         /// <summary>
         /// 异步连接服务器
         /// </summary>
@@ -493,6 +500,8 @@ namespace TouchSocket.Sockets
         {
             try
             {
+                await EasyLock.LockAsync();
+
                 if (this.CanSend)
                 {
                     return this;
@@ -601,6 +610,7 @@ namespace TouchSocket.Sockets
             }
             finally
             {
+                EasyLock.UnLock();
             }
             return this;
         }

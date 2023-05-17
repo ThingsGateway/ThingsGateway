@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 
-
 using System.Linq;
 using System.Threading;
 
@@ -146,7 +145,20 @@ public class CollectDeviceThread : IDisposable
             CancellationTokenSource StoppingToken = StoppingTokens.LastOrDefault();
             StoppingToken?.Cancel();
             StoppingToken?.SafeDispose();
-            if (DeviceTask.GetAwaiter().GetResult()?.Wait(10000) != true)
+            bool? taskResult = false;
+            try
+            {
+                taskResult = DeviceTask.GetAwaiter().GetResult()?.Wait(10000);
+            }
+            catch (ObjectDisposedException)
+            {
+
+            }
+            catch (Exception ex)
+            {
+                CollectDeviceCores.FirstOrDefault()?.Logger?.LogError(ex,$"{CollectDeviceCores.FirstOrDefault()?.Device?.Name}采集线程停止错误");
+            }
+            if (taskResult != true)
             {
                 foreach (var device in CollectDeviceCores)
                 {

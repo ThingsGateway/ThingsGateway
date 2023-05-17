@@ -284,7 +284,20 @@ public class ValueHisWorker : BackgroundService
 
         _logger?.LogInformation($"历史数据线程停止中");
         var hisHisResult = ValueHisTask?.GetAwaiter().GetResult();
-        if (hisHisResult?.Wait(5000) == true)
+        bool? hisTaskResult = false;
+        try
+        {
+            hisTaskResult = hisHisResult?.Wait(5000);
+        }
+        catch (ObjectDisposedException)
+        {
+
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogInformation(ex, "等待线程停止错误");
+        }
+        if (hisTaskResult == true)
         {
             _logger?.LogInformation($"历史数据线程已停止");
         }

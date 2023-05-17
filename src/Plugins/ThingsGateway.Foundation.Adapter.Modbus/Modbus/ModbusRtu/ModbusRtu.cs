@@ -15,7 +15,9 @@ namespace ThingsGateway.Foundation.Adapter.Modbus
         {
             ThingsGatewayBitConverter = new ThingsGatewayBitConverter(EndianType.Big);
             RegisterByteLength = 2;
+            waitingClient = SerialClient.GetTGWaitingClient(new());
         }
+        private IWaitingClient<SerialClient> waitingClient;
 
         public bool Crc16CheckEnable { get; set; }
 
@@ -30,7 +32,7 @@ namespace ThingsGateway.Foundation.Adapter.Modbus
                 if (commandResult.IsSuccess)
                 {
                     var item = commandResult.Content;
-                    var result = await SerialClient.GetTGWaitingClient(new()).SendThenResponseAsync(item, TimeOut, token);
+                    var result = await waitingClient.SendThenResponseAsync(item, TimeOut, token);
                     if (result.RequestInfo is MessageBase collectMessage)
                     {
                         return collectMessage;
@@ -62,7 +64,7 @@ namespace ThingsGateway.Foundation.Adapter.Modbus
                 var commandResult = ModbusHelper.GetWriteModbusCommand(address, value, Station);
                 if (commandResult.IsSuccess)
                 {
-                    var result = await SerialClient.GetTGWaitingClient(new()).SendThenResponseAsync(commandResult.Content, TimeOut, token);
+                    var result = await waitingClient.SendThenResponseAsync(commandResult.Content, TimeOut, token);
                     if (result.RequestInfo is MessageBase collectMessage)
                     {
                         return collectMessage;
@@ -88,7 +90,7 @@ namespace ThingsGateway.Foundation.Adapter.Modbus
                 var commandResult = ModbusHelper.GetWriteBoolModbusCommand(address, value, Station);
                 if (commandResult.IsSuccess)
                 {
-                    var result = await SerialClient.GetTGWaitingClient(new()).SendThenResponseAsync(commandResult.Content, TimeOut, token);
+                    var result = await waitingClient.SendThenResponseAsync(commandResult.Content, TimeOut, token);
                     if (result.RequestInfo is MessageBase collectMessage)
                     {
                         return collectMessage;

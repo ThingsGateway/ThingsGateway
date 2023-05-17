@@ -129,7 +129,20 @@ public class UploadDeviceThread : IDisposable
             CancellationTokenSource StoppingToken = StoppingTokens.LastOrDefault();
             StoppingToken?.Cancel();
             StoppingToken?.SafeDispose();
-            if (DeviceTask.GetAwaiter().GetResult()?.Wait(10000) != true)
+            bool? taskResult = false;
+            try
+            {
+                taskResult = DeviceTask.GetAwaiter().GetResult()?.Wait(10000);
+            }
+            catch (ObjectDisposedException)
+            {
+
+            }
+            catch (Exception ex)
+            {
+                UploadDeviceCores.FirstOrDefault()?.Logger?.LogError(ex,$"{UploadDeviceCores.FirstOrDefault()?.Device?.Name}上传线程停止错误");
+            }
+            if (taskResult != true)
             {
                 foreach (var device in UploadDeviceCores)
                 {

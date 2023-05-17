@@ -7,6 +7,7 @@ namespace ThingsGateway.Foundation
         private readonly TGWaitData<ResponsedData> m_waitData;
 
         private volatile bool breaked;
+        private EasyLock EasyLock { get; set; } = new();
 
         public TGWaitingClient(TClient client, WaitingOptions waitingOptions)
         {
@@ -52,8 +53,9 @@ namespace ThingsGateway.Foundation
         /// <returns>返回的数据</returns>
         public ResponsedData SendThenResponse(byte[] buffer, int offset, int length, int timeout = 1000 * 5, CancellationToken token = default)
         {
-            lock (this)
+            try
             {
+                EasyLock.Lock();
                 try
                 {
                     breaked = false;
@@ -133,6 +135,10 @@ namespace ThingsGateway.Foundation
                     }
                 }
             }
+            finally
+            {
+                EasyLock.UnLock();
+            }
         }
 
         /// <summary>
@@ -181,6 +187,8 @@ namespace ThingsGateway.Foundation
 
             try
             {
+                await EasyLock.LockAsync();
+
                 breaked = false;
                 if (WaitingOptions.BreakTrigger && this.Client is ITcpClientBase tcpClient)
                 {
@@ -244,6 +252,7 @@ namespace ThingsGateway.Foundation
             }
             finally
             {
+
                 if (this.WaitingOptions.BreakTrigger && this.Client is ITcpClientBase tcpClient)
                 {
                     tcpClient.Disconnected -= this.OnDisconnected;
@@ -257,6 +266,8 @@ namespace ThingsGateway.Foundation
                 {
                     Client.OnHandleRawBuffer -= OnHandleRawBuffer;
                 }
+                EasyLock.UnLock();
+
             }
         }
 
