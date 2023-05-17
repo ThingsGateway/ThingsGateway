@@ -307,7 +307,7 @@ namespace ThingsGateway.Web.Foundation
         {
             _fileService.ImportVerification(file);
             using var fs = new MemoryStream();
-            using var stream = file.OpenReadStream(5120000);
+            using var stream = file.OpenReadStream(512000000);
             await stream.CopyToAsync(fs);
             var sheetNames = MiniExcel.GetSheetNames(fs);
 
