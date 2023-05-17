@@ -38,8 +38,8 @@ public class CollectDeviceThread : IDisposable
     /// </summary>
     public static int CycleInterval { get; } = 100;
     /// <summary>
-                                                   /// 初始化
-                                                   /// </summary>
+    /// 初始化
+    /// </summary>
     protected void InitTask()
     {
         CancellationTokenSource StoppingToken = StoppingTokens.Last();
