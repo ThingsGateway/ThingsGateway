@@ -162,7 +162,7 @@ public class PluginSingletonService : ISingleton
             var driverPlugins = new List<DriverPlugin>();
             var mainFile = plugin.MainFile;
             var otherFiles = plugin.OtherFiles;
-            var maxFileSize = 51200000;
+            var maxFileSize = 512000000;
             var mainFileName = Path.GetFileNameWithoutExtension(mainFile.Name);
             var fullDir = AppContext.BaseDirectory.CombinePathOS("Plugins", mainFileName);
             var dir = "Plugins".CombinePathOS(mainFileName);

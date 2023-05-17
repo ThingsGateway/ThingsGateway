@@ -17,7 +17,7 @@ namespace ThingsGateway.Application
 
 
         /// <inheritdoc/>
-        public void ImportVerification(IBrowserFile file, int maxSzie = 30, string[] allowTypes = null)
+        public void ImportVerification(IBrowserFile file, int maxSzie = 300, string[] allowTypes = null)
         {
 
             if (file == null) throw Oops.Bah("文件不能为空");
