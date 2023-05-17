@@ -129,6 +129,7 @@ public class CollectDeviceCore : DisposableObject
         {
             CancellationTokenSource StoppingToken = StoppingTokens.LastOrDefault();
             StoppingToken?.Cancel();
+            StoppingToken?.SafeDispose();
         }
     }
     #endregion
@@ -314,7 +315,7 @@ public class CollectDeviceCore : DisposableObject
         try
         {
 
-            CancellationTokenSource StoppingToken = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken.Token, StoppingTokens.LastOrDefault().Token);
+            using CancellationTokenSource StoppingToken = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken.Token, StoppingTokens.LastOrDefault().Token);
             if (_driver == null) return ThreadRunReturn.Continue;
 
             if (Device?.Enable == false)
@@ -439,6 +440,10 @@ public class CollectDeviceCore : DisposableObject
         {
             return ThreadRunReturn.Break;
         }
+        catch (ObjectDisposedException)
+        {
+            return ThreadRunReturn.Break;
+        }
         catch (Exception ex)
         {
             _logger?.LogWarning(ex, $"采集线程循环异常{_device.Name}");
@@ -540,13 +545,15 @@ public class CollectDeviceCore : DisposableObject
                 try
                 {
                     data = deviceVariable.WriteExpressions.GetExpressionsResult(Convert.ChangeType(value, deviceVariable.DataType));
+                    var result = await _driver.WriteValueAsync(deviceVariable, data.ToString());
+                    return result;
                 }
                 catch (Exception ex)
                 {
+
                     (deviceVariable.Name + " 转换写入表达式失败：" + ex.Message).LogError();
+                    return (new OperResult(deviceVariable.Name + " 转换写入表达式失败：" + ex.Message));
                 }
-                var result = await _driver.WriteValueAsync(deviceVariable, data.ToString());
-                return result;
             }
             else
             {
