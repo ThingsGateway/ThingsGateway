@@ -190,7 +190,20 @@ public class AlarmWorker : BackgroundService
         var realAlarmResult = RealAlarmTask?.Result;
         if (realAlarmResult?.Status != TaskStatus.Canceled)
         {
-            if (realAlarmResult?.Wait(5000) == true)
+            bool? realTaskResult = false;
+            try
+            {
+                realTaskResult = realAlarmResult?.Wait(5000);
+            }
+            catch(ObjectDisposedException)
+            {
+
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogInformation(ex,"等待线程停止错误");
+            }
+            if (realTaskResult == true)
             {
                 _logger?.LogInformation($"实时报警线程已停止");
             }
@@ -201,10 +214,22 @@ public class AlarmWorker : BackgroundService
         }
         RealAlarmTask?.Dispose();
 
-
         _logger?.LogInformation($"历史报警线程停止中");
         var hisAlarmResult = HisAlarmTask?.GetAwaiter().GetResult();
-        if (hisAlarmResult?.Wait(5000) == true)
+        bool? hisTaskResult = false;
+        try
+        {
+            hisTaskResult = hisAlarmResult?.Wait(5000);
+        }
+        catch (ObjectDisposedException)
+        {
+
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogInformation(ex, "等待线程停止错误");
+        }
+        if (hisTaskResult == true)
         {
             _logger?.LogInformation($"历史报警线程已停止");
         }

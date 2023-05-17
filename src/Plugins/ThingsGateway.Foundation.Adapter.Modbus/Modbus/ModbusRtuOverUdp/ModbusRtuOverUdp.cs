@@ -13,8 +13,9 @@ namespace ThingsGateway.Foundation.Adapter.Modbus
         {
             ThingsGatewayBitConverter = new ThingsGatewayBitConverter(EndianType.Big);
             RegisterByteLength = 2;
-
+            waitingClient = UdpSession.GetTGWaitingClient(new());
         }
+        private IWaitingClient<UdpSession> waitingClient;
         public bool Crc16CheckEnable { get => DataHandleAdapter.Crc16CheckEnable; set => DataHandleAdapter.Crc16CheckEnable = value; }
 
         public byte Station { get; set; } = 1;
@@ -28,7 +29,7 @@ namespace ThingsGateway.Foundation.Adapter.Modbus
                 if (commandResult.IsSuccess)
                 {
                     var item = commandResult.Content;
-                    var result = await UdpSession.GetTGWaitingClient(new()).SendThenResponseAsync(item, TimeOut, token);
+                    var result = await waitingClient.SendThenResponseAsync(item, TimeOut, token);
                     if (result.RequestInfo is MessageBase collectMessage)
                     {
                         return collectMessage;
@@ -60,7 +61,7 @@ namespace ThingsGateway.Foundation.Adapter.Modbus
                 var commandResult = ModbusHelper.GetWriteModbusCommand(address, value, Station);
                 if (commandResult.IsSuccess)
                 {
-                    var result = await UdpSession.GetTGWaitingClient(new()).SendThenResponseAsync(commandResult.Content, TimeOut, token);
+                    var result = await waitingClient.SendThenResponseAsync(commandResult.Content, TimeOut, token);
                     if (result.RequestInfo is MessageBase collectMessage)
                     {
                         return collectMessage;
@@ -86,7 +87,7 @@ namespace ThingsGateway.Foundation.Adapter.Modbus
                 var commandResult = ModbusHelper.GetWriteBoolModbusCommand(address, value, Station);
                 if (commandResult.IsSuccess)
                 {
-                    var result = await UdpSession.GetTGWaitingClient(new()).SendThenResponseAsync(commandResult.Content, TimeOut, token);
+                    var result = await waitingClient.SendThenResponseAsync(commandResult.Content, TimeOut, token);
                     if (result.RequestInfo is MessageBase collectMessage)
                     {
                         return collectMessage;
