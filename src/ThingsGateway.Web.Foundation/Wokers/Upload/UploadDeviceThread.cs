@@ -27,11 +27,11 @@ public class UploadDeviceThread : IDisposable
     /// CancellationTokenSources
     /// </summary>
     public ConcurrentList<CancellationTokenSource> StoppingTokens = new();
-    
+
     /// <summary>
     /// 默认等待间隔时间
     /// </summary>
-    public static int CycleInterval { get; } =500;
+    public static int CycleInterval { get; } = 500;
     /// <summary>
     /// 初始化
     /// </summary>

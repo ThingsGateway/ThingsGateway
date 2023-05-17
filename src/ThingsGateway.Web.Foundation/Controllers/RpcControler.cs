@@ -64,7 +64,7 @@ namespace ThingsGateway.Web.Foundation
         [Description("控制采集线程启停")]
         public async Task ConfigDeviceThread(long id, bool isStart)
         {
-             await _collectDeviceHostService.ConfigDeviceThreadAsync(id, isStart);
+            await _collectDeviceHostService.ConfigDeviceThreadAsync(id, isStart);
         }
         /// <summary>
         /// 重启采集线程
