@@ -249,6 +249,17 @@
                             <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.WriteExpressions />
                             </MCol>
 
+                            <MCol Md=6 Cols=12 class="px-1">
+                            <MSubheader Class="font-weight-black"> @(context.Description(x => x.RpcWriteEnable))  </MSubheader>
+                            <MSelect Class="mr-3" @bind-Value=@context.RpcWriteEnable Outlined
+                                 Items=@(new List<bool>(){true,false}) Clearable
+                                 MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
+                                 ItemText=@((u) =>u.ToString()) ItemValue=@(u =>u)
+                                 HideDetails=@("auto") Height="30" Dense>
+                            </MSelect>
+                        </MCol>
+
+
                             @if (OtherMethods.ContainsKey(context.DeviceId))
                         {
 
