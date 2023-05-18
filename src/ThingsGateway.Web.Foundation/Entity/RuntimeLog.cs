@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 
+using SqlSugar.DbConvert;
+
 using ThingsGateway.Core;
 
 namespace ThingsGateway.Web.Foundation
@@ -19,7 +21,7 @@ namespace ThingsGateway.Web.Foundation
         /// <summary>
         /// 日志级别
         /// </summary>
-        [SugarColumn(ColumnName = "LogLevel", ColumnDescription = "日志级别", IsNullable = false)]
+        [SugarColumn(ColumnDataType = "varchar(50)", ColumnName = "LogLevel", ColumnDescription = "日志级别", SqlParameterDbType = typeof(EnumToStringConvert), IsNullable = false)]
         public LogLevel LogLevel { get; set; }
         /// <summary>
         /// 日志来源

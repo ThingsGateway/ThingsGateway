@@ -1,4 +1,6 @@
-﻿namespace ThingsGateway.Core
+﻿using SqlSugar.DbConvert;
+
+namespace ThingsGateway.Core
 {
     /// <summary>
     /// 资源
@@ -36,7 +38,7 @@
         /// <summary>
         /// 分类
         ///</summary>
-        [SugarColumn(ColumnName = "Category", ColumnDescription = "分类", Length = 200)]
+        [SugarColumn(ColumnDataType = "varchar(50)", ColumnName = "Category", ColumnDescription = "分类", SqlParameterDbType = typeof(EnumToStringConvert))]
         public MenuCategoryEnum Category { get; set; }
 
         [SugarColumn(IsIgnore = true)]
@@ -65,7 +67,7 @@
         /// <summary>
         /// 跳转类型
         ///</summary>
-        [SugarColumn(ColumnName = "TargetType", ColumnDescription = "跳转类型", Length = 200, IsNullable = true)]
+        [SugarColumn(ColumnDataType = "varchar(50)", ColumnName = "TargetType", ColumnDescription = "跳转类型", SqlParameterDbType = typeof(EnumToStringConvert), IsNullable = true)]
         public virtual TargetTypeEnum TargetType { get; set; }
 
     }

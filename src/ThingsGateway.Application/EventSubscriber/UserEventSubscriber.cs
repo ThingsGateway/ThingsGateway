@@ -33,7 +33,7 @@
             if (relations.Count > 0)
             {
                 var userIds = relations.Select(it => it.ObjectId).ToList();//用户ID列表
-                                                                           // 解析用户服务
+                // 解析用户服务
                 var userService = scope.ServiceProvider.GetRequiredService<ISysUserService>();
                 //从缓存中删除
                 userService.DeleteUserFromCache(userIds);
