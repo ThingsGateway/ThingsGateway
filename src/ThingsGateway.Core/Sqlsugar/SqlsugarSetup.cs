@@ -40,11 +40,11 @@ namespace ThingsGateway.Core
         /// <param name="config">数据库配置</param>
         private static void InitDb(SqlSugarConfig config)
         {
-            DbContext.Db.DbMaintenance.CreateDatabase();//创建数据库
-                                                        // 获取所有实体表-初始化表结构
+            // 获取所有实体表-初始化表结构
             var entityTypes = App.EffectiveTypes.Where(u => !u.IsInterface && !u.IsAbstract && u.IsClass && u.IsDefined(typeof(SugarTable), false));
             if (!entityTypes.Any()) return;//没有就退出
             var db = DbContext.Db.GetConnectionScope(config.ConfigId);//获取数据库对象
+            db.DbMaintenance.CreateDatabase();//创建数据库
             foreach (var entityType in entityTypes)
             {
                 var ignoreSqlTableAtt = entityType.GetCustomAttribute<IgnoreSqlTableAttribute>();//忽略创建表
