@@ -45,7 +45,6 @@
             {
                 _sysCacheService.Set(CacheConst.Cache_OpenApiUser, openApiUser.Id.ToString(), openApiUser); //更新Cache信息
             }
-            await Task.CompletedTask;
         }
     }
 }

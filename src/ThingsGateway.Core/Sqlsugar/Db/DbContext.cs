@@ -38,7 +38,7 @@ namespace ThingsGateway.Core
                 });
             });
             //注入sqlsugar服务
-            SqlsugarSetup.AddSqlSugar();
+            SqlSugarSetup.InitSqlSugar();
         }
 
         /// <summary>

@@ -1,4 +1,6 @@
-﻿using ThingsGateway.Core;
+﻿using SqlSugar.DbConvert;
+
+using ThingsGateway.Core;
 
 namespace ThingsGateway.Web.Foundation;
 /// <summary>
@@ -21,7 +23,7 @@ public class DriverPlugin : BaseEntity
     /// <summary>
     /// 插件类型
     /// </summary>
-    [SugarColumn(ColumnName = "DriverTypeEnum", ColumnDescription = "插件类型")]
+    [SugarColumn(ColumnDataType = "varchar(50)", ColumnName = "DriverTypeEnum", ColumnDescription = "插件类型", SqlParameterDbType = typeof(EnumToStringConvert))]
     public DriverEnum DriverTypeEnum { get; set; }
 
     /// <summary>

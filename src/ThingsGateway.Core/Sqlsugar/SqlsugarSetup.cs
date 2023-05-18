@@ -7,13 +7,13 @@ namespace ThingsGateway.Core
     /// <summary>
     ///  SqlSugar设置启动
     /// </summary>
-    public static class SqlsugarSetup
+    public static class SqlSugarSetup
     {
         /// <summary>
         /// 注入Sqlsugar
         /// </summary>
         /// <param name="services"></param>
-        public static void AddSqlSugar()
+        public static void InitSqlSugar()
         {
             //services.AddSingleton<ISqlSugarClient>(DbContext.Db); // 单例注册,不用工作单元不需要注入
             //services.AddUnitOfWork<SqlSugarUnitOfWork>(); // 事务与工作单元注册

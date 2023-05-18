@@ -23,6 +23,32 @@
         "IsSeedData": true, //是否初始化种子数据
         "IsUpdateSeedData": false
       }
+
     ]
+
+
+    //"Sqlsugar": [
+    //  {
+    //    "ConfigId": "Default", //租户ID
+    //    "ConnectionString": "Data Source=./Default1.db;", //连接字符串
+    //    "DbType": "Sqlite", //数据库类型
+    //    "IsAutoCloseConnection": false, //是否自动释放
+    //    "IsInitDb": true, //是否初始化数据库,适用于codefirst
+    //    "IsUnderLine": false, //是否驼峰转下划线
+    //    "IsSeedData": true, //是否初始化种子数据
+    //    "IsUpdateSeedData": false
+    //  },
+    //  {
+    //    "ConfigId": "ThingsGateway", //租户ID
+    //    "ConnectionString": "Data Source=./ThingsGateway1.db", //连接字符串
+    //    "DbType": "Sqlite", //数据库类型
+    //    "IsAutoCloseConnection": true, //是否自动释放
+    //    "IsInitDb": true, //是否初始化数据库,适用于codefirst
+    //    "IsUnderLine": false, //是否驼峰转下划线
+    //    "IsSeedData": true, //是否初始化种子数据
+    //    "IsUpdateSeedData": false
+    //  }
+
+    //]
   }
 }

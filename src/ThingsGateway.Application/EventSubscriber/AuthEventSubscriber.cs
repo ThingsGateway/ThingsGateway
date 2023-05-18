@@ -49,7 +49,6 @@
             {
                 _sysCacheService.Set(CacheConst.Cache_SysUser, sysUser.Id.ToString(), sysUser); //更新Cache信息
             }
-            await Task.CompletedTask;
         }
     }
 }

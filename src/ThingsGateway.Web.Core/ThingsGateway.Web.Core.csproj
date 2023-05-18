@@ -10,6 +10,7 @@
 
 	<ItemGroup>
 	  <None Remove="Configuration\App.json" />
+	  <None Remove="Configuration\Database - 复制.json" />
 	  <None Remove="Configuration\Database.json" />
 	  <None Remove="Configuration\IpRateLimiting.json" />
 	  <None Remove="Configuration\JWT.json" />
@@ -19,6 +20,11 @@
 
 	<ItemGroup>
 	  <Content Include="Configuration\App.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	    <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+	    <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+	  </Content>
+	  <Content Include="Configuration\Database - 复制.json">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	    <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
 	    <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>

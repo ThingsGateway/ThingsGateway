@@ -2,20 +2,19 @@
 
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.DependencyInjection;
+
 
 namespace ThingsGateway.Web.Core
 {
     public class BlazorAuthorizeHandler : AppAuthorizeHandler
     {
-        private IOpenApiUserService _openApiUserService;
         private SysCacheService _sysCacheService;
-        private ISysUserService _sysUserService;
-
-        public BlazorAuthorizeHandler(SysCacheService sysCacheService, ISysUserService sysUserService, IOpenApiUserService openApiUserService)
+        private IServiceScope _serviceScope;
+        public BlazorAuthorizeHandler(SysCacheService sysCacheService,IServiceScopeFactory serviceScopeFactory)
         {
             _sysCacheService = sysCacheService;
-            _openApiUserService = openApiUserService;
-            _sysUserService = sysUserService;
+            _serviceScope =  serviceScopeFactory.CreateScope();
         }
 
         public override async Task HandleAsync(AuthorizationHandlerContext context)
@@ -56,11 +55,14 @@ namespace ThingsGateway.Web.Core
         /// <returns></returns>
         public override async Task<bool> PipelineAsync(AuthorizationHandlerContext context, DefaultHttpContext httpContext)
         {
-            //这里鉴别密码是否改变
-            var userId = context.User.Claims.FirstOrDefault(it => it.Type == ClaimConst.UserId).Value.ToLong();
+
+        //这里鉴别密码是否改变
+        var userId = context.User.Claims.FirstOrDefault(it => it.Type == ClaimConst.UserId).Value.ToLong();
             var isOpenApi = context.User.Claims.FirstOrDefault(it => it.Type == ClaimConst.IsOpenApi)?.Value?.ToBoolean(false) == true;
             if (isOpenApi)
             {
+
+                var _openApiUserService = _serviceScope.ServiceProvider.GetService<OpenApiUserService>();
                 var user = await _openApiUserService.GetUsertById(userId);
                 if (user == null) { return false; }
                 // 此处已经自动验证 Jwt Verificat的有效性了，无需手动验证
@@ -71,10 +73,12 @@ namespace ThingsGateway.Web.Core
                 if (isRolePermission == null || user.PermissionCodeList?.Contains(routeName) == true)//如果当前路由信息不包含在角色授权路由列表中则认证失败
                     return true;
                 else
+
                     return false;
             }
             else
             {
+                var _sysUserService = _serviceScope.ServiceProvider.GetService<SysUserService>();
                 var user = await _sysUserService.GetUsertById(userId);
                 if (user == null) { return false; }
 
