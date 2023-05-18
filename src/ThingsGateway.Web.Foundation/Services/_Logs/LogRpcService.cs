@@ -6,6 +6,7 @@ namespace ThingsGateway.Web.Foundation
     [Injection(Proxy = typeof(OperDispatchProxy))]
     public class RpcLogService : DbRepository<RpcLog>, IRpcLogService
     {
+
         /// <inheritdoc />
         [OperDesc("删除网关Rpc日志")]
         public async Task DeleteAsync()
