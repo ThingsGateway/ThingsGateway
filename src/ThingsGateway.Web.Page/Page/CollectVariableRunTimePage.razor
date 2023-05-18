@@ -86,7 +86,11 @@
 
     [Parameter]
     [SupplyParameterFromQuery]
-    public string DeviceName { get; set; }
+    public string DeviceName
+    { 
+        get; 
+        set;
+    }
 
     VariablePageInput _searchModel { get; set; } = new();
     private IAppDataTable _datatable;
@@ -94,7 +98,7 @@
     private System.Timers.Timer DelayTimer;
     protected override async Task OnParametersSetAsync()
     {
-        if (_searchModel.DeviceName != DeviceName)
+        if (_searchModel.DeviceName != DeviceName && !DeviceName.IsNullOrEmpty())
         {
             _searchModel.DeviceName = DeviceName;
             await datatableQuery();

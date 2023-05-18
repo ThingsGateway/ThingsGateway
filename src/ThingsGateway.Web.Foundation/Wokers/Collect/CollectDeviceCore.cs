@@ -3,8 +3,10 @@ using Furion.Logging.Extensions;
 
 using Microsoft.Extensions.Logging;
 
+
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Threading;
 
 using ThingsGateway.Foundation;
@@ -544,7 +546,22 @@ public class CollectDeviceCore : DisposableObject
                 object data = null;
                 try
                 {
-                    data = deviceVariable.WriteExpressions.GetExpressionsResult(Convert.ChangeType(value, deviceVariable.DataType));
+                    Regex regex = new Regex("^[-+]?[0-9]*\\.?[0-9]+$");
+                    bool match = regex.IsMatch(value);
+
+                    //bool match = NewLife.StringHelper.IsMatch(value, @"^[-+]?[0-9]*\.?[0-9]+$");
+                    if (match)
+                    {
+                        if (value.ToDouble() == 0 && Convert.ToInt32(value) != 0)
+                        {
+                            return (new OperResult(deviceVariable.Name + " 转换写入表达式失败"));
+                        }
+                        data = deviceVariable.WriteExpressions.GetExpressionsResult(value.ToDouble());
+                    }
+                    else
+                    {
+                        data = deviceVariable.WriteExpressions.GetExpressionsResult(value);
+                    }
                     var result = await _driver.WriteValueAsync(deviceVariable, data.ToString());
                     return result;
                 }

@@ -95,7 +95,7 @@
             if (configList == null)
             {
                 //cache没有再去数据可拿
-                configList = await Context.CopyNew().Queryable<DevConfig>().Where(it => it.Category == category).OrderBy(it => it.SortCode).ToListAsync();//获取系统配置列表
+                configList = await Context.Queryable<DevConfig>().Where(it => it.Category == category).OrderBy(it => it.SortCode).ToListAsync();//获取系统配置列表
                 if (configList.Count > 0)
                 {
                     _sysCacheService.Set(CacheConst.Cache_DevConfig, category, configList);//如果不为空,插入cache

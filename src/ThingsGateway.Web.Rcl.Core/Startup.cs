@@ -41,7 +41,6 @@ namespace ThingsGateway.Web.Rcl.Core
 
 
                 });
-
             })
 
                 .AddI18nForServer("wwwroot/i18n");

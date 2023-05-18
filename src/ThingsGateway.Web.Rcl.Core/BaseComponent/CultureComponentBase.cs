@@ -1,5 +1,7 @@
 ﻿using BlazorComponent.I18n;
 
+using NewLife;
+
 namespace ThingsGateway.Web.Rcl.Core
 {
     public class CultureComponentBase : BaseComponentBase
@@ -17,6 +19,10 @@ namespace ThingsGateway.Web.Rcl.Core
 
         public string T(string key, params object[] args)
         {
+            if(key.IsNullOrEmpty())
+            {
+                return "";
+            }
             return string.Format(LanguageService.T(key, false, key), args);
         }
     }

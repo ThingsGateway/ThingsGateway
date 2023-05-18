@@ -222,6 +222,7 @@ namespace ThingsGateway.Core
 
         private static void WriteSqlLog(string msg)
         {
+            Console.WriteLine(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss fffffff"));
             Console.WriteLine($"=============={msg}==============");
         }
     }

@@ -14,6 +14,7 @@ namespace ThingsGateway.Web.Rcl
         [Inject]
         private UserResoures UserResoures { get; set; }
 
+
         protected override async Task OnInitializedAsync()
         {
             await UserResoures.InitAllAsync();
