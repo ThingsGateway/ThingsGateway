@@ -58,7 +58,6 @@ public class ModbusRtu : CollectBase, IDisposable
 
     public override async Task<OperResult> WriteValueAsync(CollectVariableRunTime deviceVariable, string value)
     {
-        await Task.Delay(driverPropertys.FrameTime);
         return await _plc.WriteAsync(deviceVariable.DataType, deviceVariable.VariableAddress, value);
     }
 
@@ -81,13 +80,13 @@ public class ModbusRtu : CollectBase, IDisposable
         //载入配置
         _plc = new((SerialClient)client);
         _plc.Crc16CheckEnable = driverPropertys.Crc16CheckEnable;
+        _plc.FrameTime = driverPropertys.FrameTime;
         _plc.DataFormat = driverPropertys.DataFormat;
         _plc.Station = driverPropertys.Station;
         _plc.TimeOut = driverPropertys.TimeOut;
     }
     protected override async Task<OperResult<byte[]>> ReadAsync(string address, int length, CancellationToken cancellationToken)
     {
-        await Task.Delay(driverPropertys.FrameTime, cancellationToken);
         return await _plc.ReadAsync(address, length, cancellationToken);
     }
 

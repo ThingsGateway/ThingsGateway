@@ -20,9 +20,10 @@ namespace ThingsGateway.Foundation.Adapter.Modbus
         private IWaitingClient<SerialClient> waitingClient;
 
         public bool Crc16CheckEnable { get; set; }
+        public int FrameTime { get; set; }
 
         public byte Station { get; set; } = 1;
-
+        private EasyLock EasyLock { get; set; }
         public override async Task<OperResult<byte[]>> ReadAsync(string address, int length, CancellationToken token = default)
         {
             try
@@ -31,8 +32,7 @@ namespace ThingsGateway.Foundation.Adapter.Modbus
                 var commandResult = ModbusHelper.GetReadModbusCommand(address, length, Station);
                 if (commandResult.IsSuccess)
                 {
-                    var item = commandResult.Content;
-                    var result = await waitingClient.SendThenResponseAsync(item, TimeOut, token);
+                    ResponsedData result = await SendThenReturnAsync(commandResult, token);
                     if (result.RequestInfo is MessageBase collectMessage)
                     {
                         return collectMessage;
@@ -50,9 +50,28 @@ namespace ThingsGateway.Foundation.Adapter.Modbus
             return new OperResult<byte[]>(TouchSocketStatus.UnknownError.GetDescription());
         }
 
+        private async Task<ResponsedData> SendThenReturnAsync(OperResult<byte[]> commandResult, CancellationToken token)
+        {
+            try
+            {
+                var item = commandResult.Content;
+                await EasyLock.LockAsync();
+                await Task.Delay(FrameTime, token);
+
+                var result = await waitingClient.SendThenResponseAsync(item, TimeOut, token);
+                return result;
+
+            }
+            finally
+            {
+                EasyLock.UnLock();
+            }
+        }
+
         public override void SetDataAdapter()
         {
             DataHandleAdapter = new();
+            DataHandleAdapter.Crc16CheckEnable = Crc16CheckEnable;
             DataHandleAdapter.Crc16CheckEnable = Crc16CheckEnable;
             SerialClient.SetDataHandlingAdapter(DataHandleAdapter);
         }
@@ -64,7 +83,7 @@ namespace ThingsGateway.Foundation.Adapter.Modbus
                 var commandResult = ModbusHelper.GetWriteModbusCommand(address, value, Station);
                 if (commandResult.IsSuccess)
                 {
-                    var result = await waitingClient.SendThenResponseAsync(commandResult.Content, TimeOut, token);
+                    ResponsedData result = await SendThenReturnAsync(commandResult, token);
                     if (result.RequestInfo is MessageBase collectMessage)
                     {
                         return collectMessage;
@@ -90,7 +109,7 @@ namespace ThingsGateway.Foundation.Adapter.Modbus
                 var commandResult = ModbusHelper.GetWriteBoolModbusCommand(address, value, Station);
                 if (commandResult.IsSuccess)
                 {
-                    var result = await waitingClient.SendThenResponseAsync(commandResult.Content, TimeOut, token);
+                    ResponsedData result = await SendThenReturnAsync(commandResult, token);
                     if (result.RequestInfo is MessageBase collectMessage)
                     {
                         return collectMessage;
