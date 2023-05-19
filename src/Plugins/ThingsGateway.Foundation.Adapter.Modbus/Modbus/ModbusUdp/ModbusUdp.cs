@@ -19,7 +19,7 @@ namespace ThingsGateway.Foundation.Adapter.Modbus
         public bool IsCheckMessageId { get => DataHandleAdapter.IsCheckMessageId; set => DataHandleAdapter.IsCheckMessageId = value; }
 
         public byte Station { get; set; } = 1;
-        private EasyLock EasyLock { get; set; }
+        private EasyLock EasyLock { get; set; } = new();
         public int FrameTime { get; set; }
         private async Task<ResponsedData> SendThenReturnAsync(OperResult<byte[]> commandResult, CancellationToken token)
         {
