@@ -204,6 +204,20 @@ namespace ThingsGateway.Web.Foundation
 
 
         #region 导入导出
+
+        //查找出列表中的所有重复元素及其重复次数
+        private static Dictionary<string, int> QueryRepeatElementAndCountOfList(IEnumerable<IDictionary<string, object>> list)
+        {
+            Dictionary<string, int> DicTmp = new Dictionary<string, int>();
+            if (list != null && list.Count() > 0)
+            {
+                DicTmp = list.GroupBy(x => ((ExpandoObject)x).ConvertToEntity<CollectDeviceVariable>().Name)
+                             .Where(g => g.Count() > 1)
+               .ToDictionary(x => x.Key, y => y.Count());
+            }
+            return DicTmp;
+        }
+
         /// <summary>
         /// 插件前置名称
         /// </summary>
@@ -325,7 +339,11 @@ namespace ThingsGateway.Web.Foundation
                     ImportPreviews.Add(sheetName, importPreviewOutput);
                     deviceImportPreview = importPreviewOutput;
 
-
+                    var DicTmp = QueryRepeatElementAndCountOfList(rows);
+                    if (DicTmp.Count > 0)
+                    {
+                        throw new Exception("发现重复名称" + Environment.NewLine + DicTmp.Select(a => a.Key).ToJson());
+                    }
                     List<CollectDeviceVariable> devices = new List<CollectDeviceVariable>();
                     foreach (var item in rows)
                     {

@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Components.Forms;
 
 using MiniExcelLibs;
 
+using NewLife.Serialization;
+
 using System.Dynamic;
 using System.IO;
 using System.Linq;
@@ -240,6 +242,19 @@ namespace ThingsGateway.Web.Foundation
         }
 
         #region 导入导出
+        //查找出列表中的所有重复元素及其重复次数
+        private static Dictionary<string, int> QueryRepeatElementAndCountOfList(IEnumerable<IDictionary<string, object>> list)
+        {
+            Dictionary<string, int> DicTmp = new Dictionary<string, int>();
+            if (list != null && list.Count() > 0)
+            {
+                DicTmp= list.GroupBy(x => ((ExpandoObject)x).ConvertToEntity<CollectDevice>().Name)
+                             .Where(g => g.Count() > 1)
+               .ToDictionary(x => x.Key, y => y.Count());
+            }
+            return DicTmp;
+        }
+
         /// <summary>
         /// 插件前置名称
         /// </summary>
@@ -345,7 +360,11 @@ namespace ThingsGateway.Web.Foundation
                     ImportPreviews.Add(sheetName, importPreviewOutput);
                     deviceImportPreview = importPreviewOutput;
 
-
+                    var DicTmp=  QueryRepeatElementAndCountOfList(rows);
+                    if(DicTmp.Count > 0)
+                    {
+                        throw new Exception("发现重复名称"+ Environment.NewLine + DicTmp.Select(a=>a.Key).ToJson());
+                    }
                     List<CollectDevice> devices = new List<CollectDevice>();
                     foreach (var item in rows)
                     {
