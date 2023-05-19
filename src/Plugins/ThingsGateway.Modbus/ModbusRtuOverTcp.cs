@@ -53,7 +53,6 @@ public class ModbusRtuOverTcp : CollectBase, IDisposable
 
     public override async Task<OperResult> WriteValueAsync(CollectVariableRunTime deviceVariable, string value)
     {
-        await Task.Delay(driverPropertys.FrameTime);
         return await _plc.WriteAsync(deviceVariable.DataType, deviceVariable.VariableAddress, value);
     }
 
@@ -69,6 +68,7 @@ public class ModbusRtuOverTcp : CollectBase, IDisposable
         //载入配置
         _plc = new((TGTcpClient)client);
         _plc.Crc16CheckEnable = driverPropertys.Crc16CheckEnable;
+        _plc.FrameTime = driverPropertys.FrameTime;
         _plc.DataFormat = driverPropertys.DataFormat;
         _plc.ConnectTimeOut = driverPropertys.ConnectTimeOut;
         _plc.Station = driverPropertys.Station;
@@ -76,7 +76,6 @@ public class ModbusRtuOverTcp : CollectBase, IDisposable
     }
     protected override async Task<OperResult<byte[]>> ReadAsync(string address, int length, CancellationToken cancellationToken)
     {
-        await Task.Delay(driverPropertys.FrameTime, cancellationToken);
         return await _plc.ReadAsync(address, length, cancellationToken);
     }
 
