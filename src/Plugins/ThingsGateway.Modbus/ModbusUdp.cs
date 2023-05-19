@@ -63,6 +63,7 @@ public class ModbusUdp : CollectBase
         if (client == null)
         {
             TouchSocketConfig.SetRemoteIPHost(new IPHost($"{driverPropertys.IP}:{driverPropertys.Port}"))
+                .SetBindIPHost(new IPHost(0))
                 .SetBufferLength(1024);
             client = TouchSocketConfig.BuildWithUdpSession<TGUdpSession>();
         }
