@@ -216,7 +216,7 @@ namespace ThingsGateway.Core
             db.CurrentConnectionConfig.MoreSettings = new ConnMoreSettings
             {
                 SqlServerCodeFirstNvarchar = true,//设置默认nvarchar
-                TableEnumIsString = true,
+                //TableEnumIsString = true,
             };
         }
 
