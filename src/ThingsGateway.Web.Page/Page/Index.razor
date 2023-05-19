@@ -23,13 +23,13 @@
         </MCardSubtitle>
         <MDivider></MDivider>
         <MRow Class="pa-4" NoGutters Align="AlignTypes.Center" Justify="JustifyTypes.Start">
-            @foreach (var item in UserResoures.WorkbenchOutputs)
+        @foreach (var item in UserResoures.WorkbenchOutputs ?? new())
         {
             <MButton Text Href=@item.Component
                  Target=@(item.TargetType==TargetTypeEnum.SELF?"_self":"_blank") Class="ma-2 text-subtitle px-2">
-                <MIcon Left Size="25" Color="primary">@item.Icon</MIcon>
+            <MIcon Left Size="25" Color="primary">@item.Icon</MIcon>
                 @item.Title
-            </MButton>
+                </MButton>
         }
     </MRow>
 
@@ -37,42 +37,42 @@
 @if (UserManager.SuperAdmin)
 {
     <MRow NoGutters>
-        <MCol Md=12 Cols="12">
-            <MCard MinHeight=400 Elevation="1" Class="ma-2">
-                <MCardSubtitle Class="text-subtitle-1">
-                    @T("RPC日志")
-                </MCardSubtitle>
-                <MDivider></MDivider>
-                <MTimeline AlignTop Dense>
-                    @foreach (var item in RpcLogs??new())
+    <MCol Md=12 Cols="12">
+        <MCard MinHeight=400 Elevation="1" Class="ma-2">
+            <MCardSubtitle Class="text-subtitle-1">
+                @T("RPC日志")
+            </MCardSubtitle>
+            <MDivider></MDivider>
+            <MTimeline AlignTop Dense>
+                @foreach (var item in RpcLogs ?? new())
                     {
                         <MTimelineItem Color="primary"
-                               Small>
-                            <MRow Class="pt-1">
-                                <MCol Cols="4">
-                                    <span class="text-caption">@item.LogTime.Add(JsInitVariables.TimezoneOffset).ToString("yyyy-MM-dd HH:mm:ss fff")</span>
-                                </MCol>
-                                <MCol Cols="8">
-                                    <div class="mt-1 px-2 d-flex align-center justify-space-between">
-                                        <span>@item.OperateObject.Substring(0,item.OperateObject.Length>100?100:item.OperateObject.Length)</span>
-                                        <span class="text-caption">@item.Description(a=>a.OperateObject)</span>
-                                    </div>
-                                    <div class="mt-1 px-2 d-flex align-center justify-space-between">
-                                        <span>@item.OperateSource.Substring(0,item.OperateSource.Length>100?100:item.OperateSource.Length)</span>
-                                        <span class="text-caption">@item.Description(a=>a.OperateSource)</span>
-                                    </div>
-                                    <div class="mt-1 px-2 d-flex align-center justify-space-between">
-                                        <span>@item.ParamJson.Substring(0,item.ParamJson.Length>100?100:item.ParamJson.Length)</span>
-                                        <span class="text-caption">@item.Description(a=>a.ParamJson)</span>
-                                    </div>
-                                    <div class="mt-1 px-2 d-flex align-center justify-space-between">
-                                        <span>@item.ResultJson.Substring(0,item.ResultJson.Length>100?100:item.ResultJson.Length)</span>
-                                        <span class="text-caption">@item.Description(a=>a.ResultJson)</span>
-                                    </div>
+                                          Small>
+                        <MRow Class="pt-1">
+                            <MCol Cols="4">
+                                <span class="text-caption">@item.LogTime.Add(JsInitVariables.TimezoneOffset).ToString("yyyy-MM-dd HH:mm:ss fff")</span>
+                            </MCol>
+                            <MCol Cols="8">
+                                <div class="mt-1 px-2 d-flex align-center justify-space-between">
+                                    <span>@item.OperateObject.Substring(0,item.OperateObject.Length>100?100:item.OperateObject.Length)</span>
+                                    <span class="text-caption">@item.Description(a=>a.OperateObject)</span>
+                                </div>
+                                <div class="mt-1 px-2 d-flex align-center justify-space-between">
+                                    <span>@item.OperateSource.Substring(0,item.OperateSource.Length>100?100:item.OperateSource.Length)</span>
+                                    <span class="text-caption">@item.Description(a=>a.OperateSource)</span>
+                                </div>
+                                <div class="mt-1 px-2 d-flex align-center justify-space-between">
+                                    <span>@item.ParamJson.Substring(0,item.ParamJson.Length>100?100:item.ParamJson.Length)</span>
+                                    <span class="text-caption">@item.Description(a=>a.ParamJson)</span>
+                                </div>
+                                <div class="mt-1 px-2 d-flex align-center justify-space-between">
+                                    <span>@item.ResultJson.Substring(0,item.ResultJson.Length>100?100:item.ResultJson.Length)</span>
+                                    <span class="text-caption">@item.Description(a=>a.ResultJson)</span>
+                                </div>
 
-                                </MCol>
-                            </MRow>
-                        </MTimelineItem>
+                            </MCol>
+                        </MRow>
+                    </MTimelineItem>
 
                     }
 
@@ -86,20 +86,20 @@
                 </MCardSubtitle>
                 <MDivider></MDivider>
                 <MTimeline AlignTop Dense>
-                    @foreach (var item in RuntimeLogs??new())
+                @foreach (var item in RuntimeLogs ?? new())
                     {
                         <MTimelineItem Color="primary"
-                               Small>
-                            <MRow Class="pt-1">
-                                <MCol Cols="4">
-                                    <span class="text-caption">@item.LogTime.Add(JsInitVariables.TimezoneOffset).ToString("yyyy-MM-dd HH:mm:ss fff")</span>
-                                </MCol>
-                                <MCol>
-                                    <div class="text-body-1">@item.LogSource.Substring(0,item.LogSource.Length>100?100:item.LogSource.Length)</div>
-                                    <div class="text-body-1">@item.LogMessage.Substring(0,item.LogMessage.Length>100?100:item.LogMessage.Length)</div>
-                                </MCol>
-                            </MRow>
-                        </MTimelineItem>
+                                          Small>
+                        <MRow Class="pt-1">
+                            <MCol Cols="4">
+                                <span class="text-caption">@item.LogTime.Add(JsInitVariables.TimezoneOffset).ToString("yyyy-MM-dd HH:mm:ss fff")</span>
+                            </MCol>
+                            <MCol>
+                                <div class="text-body-1">@item.LogSource.Substring(0,item.LogSource.Length>100?100:item.LogSource.Length)</div>
+                                <div class="text-body-1">@item.LogMessage.Substring(0,item.LogMessage.Length>100?100:item.LogMessage.Length)</div>
+                            </MCol>
+                        </MRow>
+                    </MTimelineItem>
 
                     }
 
@@ -117,20 +117,20 @@
             </MCardSubtitle>
             <MDivider></MDivider>
             <MTimeline AlignTop Dense>
-                @foreach (var item in DevLogVisits??new())
+                @foreach (var item in DevLogVisits ?? new())
                 {
                     <MTimelineItem Color="primary"
-                               Small>
-                        <MRow Class="pt-1">
-                            <MCol Cols="4">
+                                      Small>
+                    <MRow Class="pt-1">
+                        <MCol Cols="4">
                             <span class="text-caption">@item.OpTime.Add(JsInitVariables.TimezoneOffset).ToString("yyyy-MM-dd HH:mm:ss fff")</span>
-                            </MCol>
-                            <MCol>
-                                <div class="text-body-1">@item.Name</div>
-                                <div class="text-caption">@item.OpIp</div>
-                            </MCol>
-                        </MRow>
-                    </MTimelineItem>
+                        </MCol>
+                        <MCol>
+                            <div class="text-body-1">@item.Name</div>
+                            <div class="text-caption">@item.OpIp</div>
+                        </MCol>
+                    </MRow>
+                </MTimelineItem>
 
                 }
 
@@ -144,20 +144,20 @@
             </MCardSubtitle>
             <MDivider></MDivider>
             <MTimeline AlignTop Dense>
-                @foreach (var item in DevLogOps??new())
+                @foreach (var item in DevLogOps ?? new())
                 {
                     <MTimelineItem Color="primary"
-                               Small>
-                        <MRow Class="pt-1">
-                            <MCol Cols="4">
+                                      Small>
+                    <MRow Class="pt-1">
+                        <MCol Cols="4">
                             <span class="text-caption">@item.OpTime.Add(JsInitVariables.TimezoneOffset).ToString("yyyy-MM-dd HH:mm:ss fff")</span>
-                            </MCol>
-                            <MCol>
-                                <div class="text-body-1">@item.Name</div>
-                                <div class="text-caption">@item.OpIp</div>
-                            </MCol>
-                        </MRow>
-                    </MTimelineItem>
+                        </MCol>
+                        <MCol>
+                            <div class="text-body-1">@item.Name</div>
+                            <div class="text-caption">@item.OpIp</div>
+                        </MCol>
+                    </MRow>
+                </MTimelineItem>
 
                 }
 
