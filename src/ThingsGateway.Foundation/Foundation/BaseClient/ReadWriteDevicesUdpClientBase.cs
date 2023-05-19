@@ -6,37 +6,37 @@
     public abstract class ReadWriteDevicesUdpClientBase : ReadWriteDevicesClientBase
     {
         /// <inheritdoc cref="ReadWriteDevicesUdpClientBase"/>
-        public ReadWriteDevicesUdpClientBase(UdpSession udpSession)
+        public ReadWriteDevicesUdpClientBase(TGUdpSession udpSession)
         {
-            UdpSession = udpSession;
+            TGUdpSession = udpSession;
             SetDataAdapter();
         }
         /// <summary>
         /// Socket管理对象
         /// </summary>
-        public UdpSession UdpSession { get; }
+        public TGUdpSession TGUdpSession { get; }
 
         /// <inheritdoc/>
         public override Task ConnectAsync()
         {
-            return Task.FromResult(UdpSession.Start());
+            return Task.FromResult(TGUdpSession.Start());
         }
         /// <inheritdoc/>
         public override void Connect()
         {
-            UdpSession.Start();
+            TGUdpSession.Start();
         }
         /// <inheritdoc/>
         public override void Disconnect()
         {
-            UdpSession.Stop();
+            TGUdpSession.Stop();
         }
         /// <inheritdoc/>
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
-            UdpSession.Stop();
-            UdpSession.Dispose();
+            TGUdpSession.Stop();
+            TGUdpSession.Dispose();
         }
         /// <inheritdoc/>
         public override async Task<OperResult<byte[]>> SendThenResponseAsync(byte[] data, WaitingOptions waitingOptions = null, CancellationToken token = default)
@@ -44,7 +44,7 @@
             try
             {
                 if (waitingOptions == null) { waitingOptions = new WaitingOptions(); waitingOptions.ThrowBreakException = true; waitingOptions.AdapterFilter = AdapterFilter.NoneAll; }
-                ResponsedData result = await UdpSession.GetTGWaitingClient(waitingOptions).SendThenResponseAsync(data, TimeOut, CancellationToken.None);
+                ResponsedData result = await TGUdpSession.GetTGWaitingClient(waitingOptions).SendThenResponseAsync(data, TimeOut, CancellationToken.None);
                 return OperResult.CreateSuccessResult(result.Data);
             }
             catch (Exception ex)
@@ -58,7 +58,7 @@
             try
             {
                 if (waitingOptions == null) { waitingOptions = new WaitingOptions(); waitingOptions.ThrowBreakException = true; waitingOptions.AdapterFilter = AdapterFilter.NoneAll; }
-                ResponsedData result = UdpSession.GetTGWaitingClient(waitingOptions).SendThenResponse(data, TimeOut, CancellationToken.None);
+                ResponsedData result = TGUdpSession.GetTGWaitingClient(waitingOptions).SendThenResponse(data, TimeOut, CancellationToken.None);
                 return OperResult.CreateSuccessResult(result.Data);
             }
             catch (Exception ex)
@@ -70,7 +70,7 @@
         /// <inheritdoc/>
         public override string ToString()
         {
-            return UdpSession.RemoteIPHost.ToString();
+            return TGUdpSession.RemoteIPHost.ToString();
         }
     }
 }

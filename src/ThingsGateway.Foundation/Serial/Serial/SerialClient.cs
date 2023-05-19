@@ -11,7 +11,10 @@ namespace ThingsGateway.Foundation.Serial
         /// 接收到数据
         /// </summary>
         public ReceivedEventHandler<SerialClient> Received { get; set; }
-
+        /// <summary>
+        /// 自定义锁
+        /// </summary>
+        public EasyLock EasyLock { get; set; } = new();
         /// <summary>
         /// 接收数据
         /// </summary>

@@ -19,14 +19,13 @@ namespace ThingsGateway.Foundation.Adapter.Modbus
         public bool IsCheckMessageId { get; set; }
 
         public byte Station { get; set; } = 1;
-        private EasyLock EasyLock { get; set; } = new();
         public int FrameTime { get; set; }
         private async Task<ResponsedData> SendThenReturnAsync(OperResult<byte[]> commandResult, CancellationToken token)
         {
             try
             {
                 var item = commandResult.Content;
-                await EasyLock.LockAsync();
+                await TGTcpClient.EasyLock.LockAsync();
                 await Task.Delay(FrameTime, token);
 
                 var result = await waitingClient.SendThenResponseAsync(item, TimeOut, token);
@@ -35,7 +34,7 @@ namespace ThingsGateway.Foundation.Adapter.Modbus
             }
             finally
             {
-                EasyLock.UnLock();
+                TGTcpClient.EasyLock.UnLock();
             }
         }
 

@@ -40,7 +40,7 @@ public class ModbusRtuOverUdp : CollectBase
     }
     public override OperResult IsConnected()
     {
-        return _plc?.UdpSession?.CanSend == true ? OperResult.CreateSuccessResult() : new OperResult("失败");
+        return _plc?.TGUdpSession?.CanSend == true ? OperResult.CreateSuccessResult() : new OperResult("失败");
     }
     public override bool IsSupportAddressRequest()
     {
@@ -63,10 +63,10 @@ public class ModbusRtuOverUdp : CollectBase
         {
             TouchSocketConfig.SetRemoteIPHost(new IPHost($"{driverPropertys.IP}:{driverPropertys.Port}"))
                 .SetBufferLength(1024);
-            client = TouchSocketConfig.BuildWithUdpSession<UdpSession>();
+            client = TouchSocketConfig.BuildWithUdpSession<TGUdpSession>();
         }
         //载入配置
-        _plc = new((UdpSession)client);
+        _plc = new((TGUdpSession)client);
         _plc.Crc16CheckEnable = driverPropertys.Crc16CheckEnable;
         _plc.FrameTime = driverPropertys.FrameTime;
         _plc.DataFormat = driverPropertys.DataFormat;
@@ -83,6 +83,6 @@ public class ModbusRtuOverUdp : CollectBase
 
 public class ModbusRtuOverUdpProperty : ModbusRtuOverTcpProperty
 {
-    public override ShareChannelEnum ShareChannel => ShareChannelEnum.UdpSession;
+    public override ShareChannelEnum ShareChannel => ShareChannelEnum.TGUdpSession;
 
 }

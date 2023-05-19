@@ -25,11 +25,11 @@ public enum ShareChannelEnum
     /// <summary>
     /// UDP
     /// </summary>
-    UdpSession
+    TGUdpSession
 }
 /// <summary>
 /// <inheritdoc cref="DriverPropertyBase"/><br></br>
-/// 1.5.0版本适配共享通道，支持自定义TCP/UDP/Serial共享<see cref="TGTcpClient"/>,<see cref="UdpSession"/>,<see cref="SerialClient"/>
+/// 1.5.0版本适配共享通道，支持自定义TCP/UDP/Serial共享<see cref="TGTcpClient"/>,<see cref="TGUdpSession"/>,<see cref="SerialClient"/>
 /// </summary>
 public abstract class CollectDriverPropertyBase : DriverPropertyBase
 {

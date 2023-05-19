@@ -63,10 +63,10 @@ public abstract class CollectBase : DriverBase
                     var tcpClient = TouchSocketConfig.Container.Resolve<TGTcpClient>();
                     ((TGTcpClient)tcpClient).Setup(TouchSocketConfig);
                     return OperResult.CreateSuccessResult((object)tcpClient);
-                case ShareChannelEnum.UdpSession:
+                case ShareChannelEnum.TGUdpSession:
                     TouchSocketConfig.SetRemoteIPHost(new IPHost($"{config.IP}:{config.Port}"))
     .SetBufferLength(1024);
-                    var udpSession = TouchSocketConfig.BuildWithUdpSession<UdpSession>();
+                    var udpSession = TouchSocketConfig.BuildWithUdpSession<TGUdpSession>();
                     return OperResult.CreateSuccessResult((object)udpSession);
             }
 
@@ -87,7 +87,7 @@ public abstract class CollectBase : DriverBase
                 case ShareChannelEnum.SerialClient:
                     return config.PortName;
                 case ShareChannelEnum.TcpClient:
-                case ShareChannelEnum.UdpSession:
+                case ShareChannelEnum.TGUdpSession:
                     var a = new IPHost($"{config.IP}:{config.Port}");
                     return config.ShareChannel.ToString() + a.ToString();
             }
