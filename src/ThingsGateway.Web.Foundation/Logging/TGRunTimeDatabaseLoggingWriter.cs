@@ -27,8 +27,19 @@ namespace ThingsGateway.Web.Foundation
             var db = _db.CopyNew();
             while (true)
             {
-                var data = _logQueues.ToListWithDequeue();
-                db.InsertableWithAttr(data).ExecuteCommand();//入库
+                if(_logQueues.Count > 0)
+                {
+                    try
+                    {
+                        var data = _logQueues.ToListWithDequeue();
+                        db.InsertableWithAttr(data).ExecuteCommand();//入库
+                    }
+                    catch
+                    {
+                    }
+
+                }
+
                 await Task.Delay(3000);
             }
         }

@@ -102,8 +102,16 @@ new RpcLog()
         var db = DbContext.Db.CopyNew();
         while (true)
         {
-            var data = _logQueues.ToListWithDequeue();
-            db.InsertableWithAttr(data).ExecuteCommand();//入库
+            try
+            {
+                var data = _logQueues.ToListWithDequeue();
+                db.InsertableWithAttr(data).ExecuteCommand();//入库
+            }
+            catch
+            {
+
+            }
+
             await Task.Delay(3000);
         }
     }
