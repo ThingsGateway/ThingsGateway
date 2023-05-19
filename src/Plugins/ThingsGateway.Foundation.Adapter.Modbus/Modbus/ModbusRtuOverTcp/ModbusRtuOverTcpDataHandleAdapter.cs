@@ -32,7 +32,10 @@
                 byteBlock.Pos = byteBlock.Len;
                 request.ReceivedBytes = allBytes;
                 request.Message = unpackbytes.Message;
-
+                if(allBytes.Length<=1)
+                {
+                    return FilterResult.Cache;
+                }
                 if (!(allBytes[1] <= 0x10))
                 {
                     return FilterResult.Success;
