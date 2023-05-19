@@ -284,13 +284,15 @@ public class UploadDeviceCore : DisposableObject
 
             if (StoppingToken.IsCancellationRequested)
                 return ThreadRunReturn.Break;
-            if (_driver.IsConnected().IsSuccess)
+            var oper = _driver.IsConnected();
+            if (oper.IsSuccess)
             {
                 Device.DeviceStatus = DeviceStatusEnum.OnLine;
             }
             else
             {
                 Device.DeviceStatus = (Device.DeviceStatus == DeviceStatusEnum.OnLine || Device.DeviceStatus == DeviceStatusEnum.OnLineButNoInitialValue) ? DeviceStatusEnum.OffLine : Device.DeviceStatus;
+                Device.DeviceOffMsg = oper.Message;
             }
             return ThreadRunReturn.None;
 
