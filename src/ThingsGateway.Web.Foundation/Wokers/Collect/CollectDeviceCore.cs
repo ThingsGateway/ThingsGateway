@@ -212,6 +212,8 @@ public class CollectDeviceCore : DisposableObject
             if (_driver != null)
             {
                 InitDriver(client);
+                Device.SourceVariableNum = DeviceVariableSourceReads.Count;
+                Device.MethodVariableNum = DeviceVariableMedReads.Count;
             }
             else
             {
@@ -227,8 +229,7 @@ public class CollectDeviceCore : DisposableObject
                     Device.ActiveTime = DateTime.UtcNow;
                     await _driver?.BeforStartAsync();
                 }
-                Device.SourceVariableNum = DeviceVariableSourceReads.Count;
-                Device.MethodVariableNum = DeviceVariableMedReads.Count;
+
             }
             catch (Exception ex)
             {
