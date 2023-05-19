@@ -409,13 +409,17 @@ public class CollectDeviceCore : DisposableObject
                 }
                 else if (deviceMedsVariableFailedNum != 0 || deviceSourceVariableFailedNum != 0)
                 {
-                    if (_driver.IsConnected().IsSuccess)
+                    var oper = _driver.IsConnected();
+
+                    if (oper.IsSuccess)
                     {
                         Device.DeviceStatus = DeviceStatusEnum.OnLineButNoInitialValue;
                     }
                     else
                     {
                         Device.DeviceStatus = DeviceStatusEnum.OffLine;
+                        Device.DeviceOffMsg = oper.Message;
+
                     }
                 }
                 else
