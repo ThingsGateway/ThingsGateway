@@ -23,7 +23,7 @@ namespace ThingsGateway.Foundation.Adapter.Modbus
         public int FrameTime { get; set; }
 
         public byte Station { get; set; } = 1;
-        private EasyLock EasyLock { get; set; }
+        private EasyLock EasyLock { get; set; } = new();
         public override async Task<OperResult<byte[]>> ReadAsync(string address, int length, CancellationToken token = default)
         {
             try
