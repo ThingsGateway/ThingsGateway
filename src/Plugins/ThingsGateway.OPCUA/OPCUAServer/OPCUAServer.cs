@@ -111,9 +111,22 @@ public partial class OPCUAServer : UpLoadBase
     /// <inheritdoc/>
     public override OperResult IsConnected()
     {
-        var result = m_server?.GetStatus();
-
-        return OperResult.CreateSuccessResult(result);
+        try
+        {
+            var result = m_server?.GetStatus();
+            if(result.State== ServerState.Running)
+            {
+                return OperResult.CreateSuccessResult(result);
+            }
+            else
+            {
+                return new OperResult(result.State.ToString());
+            }
+        }
+        catch (Exception ex)
+        {
+            return new OperResult(ex);
+        }
     }
     /// <inheritdoc/>
     protected override void Init(UploadDevice device)

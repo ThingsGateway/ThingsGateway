@@ -277,7 +277,7 @@ public class UploadDeviceCore : DisposableObject
             }
             if (StoppingToken.IsCancellationRequested)
                 return ThreadRunReturn.Break;
-            if (Device.DeviceStatus != DeviceStatusEnum.OnLineButNoInitialValue && Device.DeviceStatus != DeviceStatusEnum.OnLine)
+            if (Device.DeviceStatus != DeviceStatusEnum.OnLineButNoInitialValue && Device.DeviceStatus != DeviceStatusEnum.OnLine && Device.DeviceStatus != DeviceStatusEnum.OffLine)
                 Device.DeviceStatus = DeviceStatusEnum.OnLineButNoInitialValue;
             Device.ActiveTime = DateTime.UtcNow;
             await _driver.ExecuteAsync(StoppingToken.Token);

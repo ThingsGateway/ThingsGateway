@@ -326,7 +326,7 @@ public class CollectDeviceCore : DisposableObject
                 Device.DeviceStatus = DeviceStatusEnum.Pause;
                 return ThreadRunReturn.Continue; ;
             }
-            if (Device.DeviceStatus != DeviceStatusEnum.OnLineButNoInitialValue && Device.DeviceStatus != DeviceStatusEnum.OnLine)
+            if (Device.DeviceStatus != DeviceStatusEnum.OnLineButNoInitialValue && Device.DeviceStatus != DeviceStatusEnum.OnLine && Device.DeviceStatus != DeviceStatusEnum.OffLine)
                 Device.DeviceStatus = DeviceStatusEnum.OnLineButNoInitialValue;
             if (DeviceVariableSourceReads.Count == 0 && Device.DeviceVariableRunTimes.Where(a => a.OtherMethod.IsNullOrEmpty()).Count() > 0)
             {
