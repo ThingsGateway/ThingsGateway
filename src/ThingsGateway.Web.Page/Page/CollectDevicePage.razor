@@ -56,13 +56,12 @@
                                         Outlined Label=@context.Description(x => x.PluginName) />
                 </SearchTemplate>
                 <OtherToolbarTemplate>
-                    <MMenu OffsetY Context="menu" >
+                    <MMenu OffsetY Context="menu">
                         <ActivatorContent>
                             <MButton @attributes="@menu.Attrs" Color="primary"
                                      Icon="@MasaBlazor.Breakpoint.SmAndDown"
-                                     Class="my-1  mx-2 "
-                                              >
-                                              @T("复制")
+                                     Class="my-1  mx-2 ">
+                                @T("复制")
                                 <AppChevronDown></AppChevronDown>
                             </MButton>
                         </ActivatorContent>
@@ -71,7 +70,7 @@
                                 <MListItem OnClick="()=>CopyDevice(context)"> @T("复制设备") </MListItem>
                                 <MListItem OnClick="()=>CopyDevAndVar(context)">  @T("复制设备及设备下变量") </MListItem>
                             </MList>
-            
+
                         </ChildContent>
                     </MMenu>
                     <MButton Class="my-1  mx-2" Loading=@isDownExport OnClick=DownDeviceExport Color="primary">
@@ -121,10 +120,10 @@
 
 <ImportExcel @ref=ImportExcel Import="SaveDeviceImport" Preview="DeviceImport" />
 
-@code{
+@code {
     async Task CopyDevice(IEnumerable<CollectDevice> data)
     {
-        if(data.Count()==0)
+        if (data.Count() == 0)
         {
             await PopupService.EnqueueSnackbarAsync(@T("需选择一项或多项"), AlertTypes.Warning);
             return;
@@ -193,11 +192,16 @@
     StringNumber tab;
     private async Task DriverValueChanged(CollectDeviceEditInput context, long pluginId)
     {
+        bool a = false;
+        if (context.PluginId != pluginId && pluginId > 0)
+        {
+            a = true;
+        }
         if (pluginId > 0)
             context.PluginId = pluginId;
         else
             return;
-        if (context.DevicePropertys == null || context.DevicePropertys?.Count == 0)
+        if (context.DevicePropertys == null || context.DevicePropertys?.Count == 0 || a)
         {
             context.DevicePropertys = GetDriverProperties(context.PluginId, context.Id);
             await PopupService.EnqueueSnackbarAsync("插件附加属性已更新", AlertTypes.Success);
