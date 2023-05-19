@@ -50,7 +50,11 @@ namespace ThingsGateway.Foundation
             GoSend(endPoint, bytes, 0, bytes.Length);
             Owner.Logger?.Trace("报文-" + ToString() + "-" + ThingsGateway.Foundation.Resources.Resource.Send + ":" + Request.SendBytes.ToHexString(" "));
         }
-
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            return (Owner as TGUdpSession)?.RemoteIPHost.ToString();
+        }
         /// <inheritdoc/>
         protected override void PreviewReceived(EndPoint remoteEndPoint, ByteBlock byteBlock)
         {

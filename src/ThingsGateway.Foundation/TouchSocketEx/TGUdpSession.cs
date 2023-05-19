@@ -10,25 +10,44 @@
 //  感谢您的下载和使用
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-using System.IO;
-using System.Net.Security;
+using System;
+using System.Collections.Generic;
+using System.Net;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 
 using TouchSocket.Resources;
 
-namespace TouchSocket.Sockets
+namespace TouchSocket.Sockets;
+
+/// <summary>
+/// 简单UDP会话。
+/// </summary>
+public class TGUdpSession : UdpSessionBase
 {
     /// <summary>
-    /// 简单UDP
+    /// 当收到数据时
     /// </summary>
-    public class TGUdpSession : UdpSession
+    public UdpReceivedEventHandler Received { get; set; }
+    /// <summary>
+    /// 自定义锁
+    /// </summary>
+    public EasyLock EasyLock { get; set; } = new();
+    /// <summary>
+    /// <inheritdoc/>
+    /// </summary>
+    /// <param name="remoteEndPoint"></param>
+    /// <param name="byteBlock"></param>
+    /// <param name="requestInfo"></param>
+    protected override void HandleReceivedData(EndPoint remoteEndPoint, ByteBlock byteBlock, IRequestInfo requestInfo)
     {
-        /// <summary>
-        /// 自定义锁
-        /// </summary>
-        public EasyLock EasyLock { get; set; } = new();
+        Received?.Invoke(remoteEndPoint, byteBlock, requestInfo);
     }
-
-
 }
+
+
+
+
+
+

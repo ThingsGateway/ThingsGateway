@@ -102,6 +102,7 @@ namespace ThingsGateway.Foundation
             else
             {
                 m_status = WaitDataStatus.Overtime;
+                m_waitHandle.Set();
             }
 
             return m_status;
@@ -127,6 +128,7 @@ namespace ThingsGateway.Foundation
             if (await Task.WhenAny(task, Task.Delay(millisecond)) != task)
             {
                 m_status = WaitDataStatus.Overtime;
+                m_waitHandle.Set();
             }
             return m_status;
         }
