@@ -54,9 +54,11 @@
                 {
                     return FilterResult.Cache;
                 }
-                byteBlock.Read(out byte[] body, request.BodyLength);
+                byteBlock.Read(out byte[] body, byteBlock.Len);
                 var bytes = request.HeadBytes.SpliceArray(body);
-                return GetResponse(byteBlock, request, allBytes, bytes);
+
+                var result= GetResponse(byteBlock, request, request.ReceivedBytes.SpliceArray(allBytes), bytes);
+                return result;
             }
             else
             {

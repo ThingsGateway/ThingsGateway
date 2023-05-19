@@ -53,7 +53,7 @@ namespace ThingsGateway.Foundation
             //}
             if (beCached)
             {
-                byteBlock.Read(out byte[] body, request.BodyLength);
+                byteBlock.Read(out byte[] body, byteBlock.Len);
                 var bytes = request.HeadBytes.SpliceArray(body);
                 return GetResponse(byteBlock, request, request.ReceivedBytes.SpliceArray(allBytes), bytes);
             }
