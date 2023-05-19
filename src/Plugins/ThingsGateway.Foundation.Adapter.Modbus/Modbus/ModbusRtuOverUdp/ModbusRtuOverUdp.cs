@@ -9,24 +9,23 @@ namespace ThingsGateway.Foundation.Adapter.Modbus
     {
         public ModbusRtuOverUdpDataHandleAdapter DataHandleAdapter = new();
 
-        public ModbusRtuOverUdp(UdpSession udpSession) : base(udpSession)
+        public ModbusRtuOverUdp(TGUdpSession udpSession) : base(udpSession)
         {
             ThingsGatewayBitConverter = new ThingsGatewayBitConverter(EndianType.Big);
             RegisterByteLength = 2;
-            waitingClient = UdpSession.GetTGWaitingClient(new());
+            waitingClient = TGUdpSession.GetTGWaitingClient(new());
         }
-        private IWaitingClient<UdpSession> waitingClient;
+        private IWaitingClient<TGUdpSession> waitingClient;
         public bool Crc16CheckEnable { get => DataHandleAdapter.Crc16CheckEnable; set => DataHandleAdapter.Crc16CheckEnable = value; }
 
         public byte Station { get; set; } = 1;
-        private EasyLock EasyLock { get; set; } = new();
         public int FrameTime { get; set; }
         private async Task<ResponsedData> SendThenReturnAsync(OperResult<byte[]> commandResult, CancellationToken token)
         {
             try
             {
                 var item = commandResult.Content;
-                await EasyLock.LockAsync();
+                await TGUdpSession.EasyLock.LockAsync();
                 await Task.Delay(FrameTime, token);
 
                 var result = await waitingClient.SendThenResponseAsync(item, TimeOut, token);
@@ -35,7 +34,7 @@ namespace ThingsGateway.Foundation.Adapter.Modbus
             }
             finally
             {
-                EasyLock.UnLock();
+                TGUdpSession.EasyLock.UnLock();
             }
         }
 
@@ -69,7 +68,7 @@ namespace ThingsGateway.Foundation.Adapter.Modbus
         {
             DataHandleAdapter = new();
             DataHandleAdapter.Crc16CheckEnable = Crc16CheckEnable;
-            UdpSession.SetDataHandlingAdapter(DataHandleAdapter);
+            TGUdpSession.SetDataHandlingAdapter(DataHandleAdapter);
         }
         public override async Task<OperResult> WriteAsync(string address, byte[] value, CancellationToken token = default)
         {

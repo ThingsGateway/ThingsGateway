@@ -23,7 +23,6 @@ namespace ThingsGateway.Foundation.Adapter.Modbus
         public int FrameTime { get; set; }
 
         public byte Station { get; set; } = 1;
-        private EasyLock EasyLock { get; set; } = new();
         public override async Task<OperResult<byte[]>> ReadAsync(string address, int length, CancellationToken token = default)
         {
             try
@@ -55,7 +54,7 @@ namespace ThingsGateway.Foundation.Adapter.Modbus
             try
             {
                 var item = commandResult.Content;
-                await EasyLock.LockAsync();
+                await SerialClient.EasyLock.LockAsync();
                 await Task.Delay(FrameTime, token);
 
                 var result = await waitingClient.SendThenResponseAsync(item, TimeOut, token);
@@ -64,7 +63,7 @@ namespace ThingsGateway.Foundation.Adapter.Modbus
             }
             finally
             {
-                EasyLock.UnLock();
+                SerialClient.EasyLock.UnLock();
             }
         }
 

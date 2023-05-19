@@ -53,7 +53,7 @@ namespace ThingsGateway.Foundation.Tests
             config.SetRemoteIPHost(new IPHost(url)).SetBindIPHost(new IPHost(0))
                 .SetBufferLength(3000);
             //‘ÿ»Î≈‰÷√
-            var client1 = config.BuildWithUdpSession<UdpSession>();
+            var client1 = config.BuildWithUdpSession<TGUdpSession>();
             ModbusRtuOverUdp = new(client1);
             ModbusRtuOverUdp.ConnectTimeOut = 5000;
             ModbusRtuOverUdp.Station = 1;
@@ -78,7 +78,7 @@ namespace ThingsGateway.Foundation.Tests
             config.SetRemoteIPHost(new IPHost(url)).SetBindIPHost(new IPHost(0))
                 .SetBufferLength(3000);
             //‘ÿ»Î≈‰÷√
-            var client1 = config.BuildWithUdpSession<UdpSession>();
+            var client1 = config.BuildWithUdpSession<TGUdpSession>();
             ModbusUdp = new(client1);
             ModbusUdp.ConnectTimeOut = 5000;
             ModbusUdp.Station = 1;
