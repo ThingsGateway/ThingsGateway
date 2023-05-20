@@ -17,7 +17,7 @@ public class VariableData
     /// <inheritdoc cref="CollectVariableRunTime.RawValue"/>
     public string rawValue { get; set; }
     /// <inheritdoc cref="CollectVariableRunTime.Value"/>
-    public string value { get; set; }
+    public object value { get; set; }
     /// <inheritdoc cref="CollectVariableRunTime.ChangeTime"/>
     public DateTime changeTime { get; set; }
     /// <inheritdoc cref="CollectVariableRunTime.CollectTime"/>
