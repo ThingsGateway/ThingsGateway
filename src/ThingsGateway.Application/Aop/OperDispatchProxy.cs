@@ -1,6 +1,8 @@
 ﻿using Furion.Reflection;
 using Furion.Reflection.Extensions;
 
+using UAParser;
+
 namespace ThingsGateway.Application
 {
     /// <summary>
@@ -124,7 +126,12 @@ namespace ThingsGateway.Application
         private static void ex(MethodInfo method, object[] args, OperDescAttribute desc, string result, Exception exception)
         {
             //写入操作日志
-            var clientInfo = UserAgent.Parser.Parse(App.HttpContext.Request.Headers.UserAgent);
+            var str = App.HttpContext?.Request?.Headers?.UserAgent;
+            ClientInfo clientInfo=null;
+            if (str.HasValue)
+            {
+                 clientInfo = UserAgent.Parser.Parse(str);
+            }
 
             StringBuilder stringBuilder = new();
             if (desc.IsRecordPar)
@@ -148,8 +155,8 @@ namespace ThingsGateway.Application
                 Category = desc.Catcategory,
                 ExeStatus = DevLogConst.SUCCESS,
                 OpIp = App.HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString(),
-                OpBrowser = clientInfo.UA.Family + clientInfo.UA.Major,
-                OpOs = clientInfo.OS.Family + clientInfo.OS.Major,
+                OpBrowser = clientInfo?.UA?.Family + clientInfo?.UA?.Major,
+                OpOs = clientInfo?.OS?.Family + clientInfo?.OS?.Major,
                 OpTime = DateTime.UtcNow,
                 OpAccount = UserManager.UserAccount,
                 ReqUrl = "",

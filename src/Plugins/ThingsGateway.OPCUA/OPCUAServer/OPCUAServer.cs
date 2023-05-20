@@ -29,6 +29,16 @@ public class OPCUAServerProperty : UpDriverPropertyBase
 
 
 }
+/// <inheritdoc/>
+public class OPCUAServerVariableProperty : VariablePropertyBase
+{
+    /// <summary>
+    /// 数据类型
+    /// </summary>
+    [VariableProperty("数据类型", "")]
+    public DataTypeEnum DataTypeEnum { get; set; } = DataTypeEnum.Object;
+
+}
 
 
 /// <summary>
@@ -38,6 +48,8 @@ public partial class OPCUAServer : UpLoadBase
 {
     private List<CollectVariableRunTime> _uploadVariables = new();
     private OPCUAServerProperty driverPropertys = new();
+    private OPCUAServerVariableProperty _variablePropertys = new();
+    
     private ApplicationInstance m_application;
     private ApplicationConfiguration m_configuration;
     private ThingsGatewayServer m_server;
@@ -52,7 +64,7 @@ public partial class OPCUAServer : UpLoadBase
     /// <inheritdoc/>
     public override List<CollectVariableRunTime> UploadVariables => _uploadVariables;
     /// <inheritdoc/>
-    public override VariablePropertyBase VariablePropertys => null;
+    public override VariablePropertyBase VariablePropertys => _variablePropertys;
 
 
     private ConcurrentQueue<VariableData> _collectVariableRunTimes { get; set; } = new();
@@ -143,7 +155,7 @@ public partial class OPCUAServer : UpLoadBase
             };
         }
 
-        m_server = new(_logger, _scopeFactory.CreateScope());
+        m_server = new(device,_logger, _scopeFactory.CreateScope());
 
         var serviceScope = _scopeFactory.CreateScope();
         var _globalCollectDeviceData = serviceScope.ServiceProvider.GetService<GlobalCollectDeviceData>();

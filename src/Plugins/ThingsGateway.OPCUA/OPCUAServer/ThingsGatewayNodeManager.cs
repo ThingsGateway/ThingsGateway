@@ -27,11 +27,12 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
     private Dictionary<NodeId, OPCUATag> _idTags = new Dictionary<NodeId, OPCUATag>();
     private RpcSingletonService _rpcCore;
     private IServiceScope _serviceScope;
+    private UploadDevice _device;
     private TypeAdapterConfig _config;
     /// <inheritdoc cref="ThingsGatewayNodeManager"/>
-    public ThingsGatewayNodeManager(IServiceScope serviceScope, IServerInternal server, ApplicationConfiguration configuration) : base(server, configuration, ReferenceServer)
+    public ThingsGatewayNodeManager(IServiceScope serviceScope, UploadDevice device, IServerInternal server, ApplicationConfiguration configuration) : base(server, configuration, ReferenceServer)
     {
-        _serviceScope = serviceScope;
+        _serviceScope = serviceScope; _device = device;
         _rpcCore = serviceScope.ServiceProvider.GetService<RpcSingletonService>();
         _globalCollectDeviceData = serviceScope.ServiceProvider.GetService<GlobalCollectDeviceData>();
         _config = new TypeAdapterConfig();
@@ -300,7 +301,33 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
         _idTags.AddOrUpdate(variable.NodeId, variable);
         return variable;
     }
-
+    /// <summary>
+    /// 获取变量的默认值
+    /// </summary>
+    /// <param name="type"></param>
+    /// <returns></returns>
+    public object GetDefaultValue(Type type)
+    {
+        return type.IsValueType ? Activator.CreateInstance(type) : "";
+    }
+    /// <summary>
+    /// 获取变量的属性值
+    /// </summary>
+    /// <param name="type"></param>
+    /// <returns></returns>
+    public string GetPropertyValue(CollectVariableRunTime variableRunTime, string propertyName)
+    {
+        if (variableRunTime.VariablePropertys.ContainsKey(_device.Id))
+        {
+            var data = variableRunTime.VariablePropertys[_device.Id].FirstOrDefault(a =>
+                  a.PropertyName == propertyName);
+            if (data != null)
+            {
+                return data.Value;
+            }
+        }
+        return null;
+    }
     /// <summary>
     /// 网关转OPC数据类型
     /// </summary>
@@ -309,21 +336,33 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
     private NodeId DataNodeType(CollectVariableRunTime variableRunTime)
     {
         Type tp;
-        if (variableRunTime.Value != null)
+        var str = GetPropertyValue(variableRunTime, nameof(OPCUAServerVariableProperty.DataTypeEnum));
+        if (Enum.TryParse<DataTypeEnum>(str, out DataTypeEnum result))
         {
-            tp = variableRunTime.Value.GetType();
+            tp = result.GetNetType();
         }
         else
         {
-            if (variableRunTime.ReadExpressions.IsNullOrEmpty())
+
+            if (variableRunTime.Value != null)
             {
-                tp = variableRunTime.DataTypeEnum.GetNetType();
+                tp = variableRunTime.Value.GetType();
             }
             else
             {
-                tp = typeof(string);
+                if (variableRunTime.ReadExpressions.IsNullOrEmpty())
+                {
+                    tp = variableRunTime.DataTypeEnum.GetNetType();
+                }
+                else
+                {
+                    var tp1 = variableRunTime.DataTypeEnum.GetNetType();
+                    var data = variableRunTime.ReadExpressions.GetExpressionsResult(GetDefaultValue(tp1));
+                    tp = data.GetType();
+                }
             }
         }
+
         if (tp == typeof(bool))
             return DataTypeIds.Boolean;
         if (tp == typeof(byte))
