@@ -7,6 +7,7 @@ using Opc.Ua.Server;
 using System.Security.Cryptography.X509Certificates;
 
 using ThingsGateway.Application;
+using ThingsGateway.Web.Foundation;
 
 namespace ThingsGateway.OPCUA;
 
@@ -22,9 +23,11 @@ public partial class ThingsGatewayServer : StandardServer
     private ILogger _logger;
     private IServiceScope _serviceScope;
     private ICertificateValidator m_userCertificateValidator;
+    private UploadDevice _device;
     /// <inheritdoc cref="ThingsGatewayServer"/>
-    public ThingsGatewayServer(ILogger logger, IServiceScope serviceScope)
+    public ThingsGatewayServer(UploadDevice device,ILogger logger, IServiceScope serviceScope)
     {
+        _device = device;
         _logger = logger;
         _serviceScope = serviceScope;
     }
@@ -57,7 +60,7 @@ public partial class ThingsGatewayServer : StandardServer
     {
         IList<INodeManager> nodeManagers = new List<INodeManager>();
         // 创建自定义节点管理器.
-        NodeManager = new ThingsGatewayNodeManager(_serviceScope, server, configuration);
+        NodeManager = new ThingsGatewayNodeManager(_serviceScope, _device, server, configuration);
         nodeManagers.Add(NodeManager);
         // 创建主节点管理器.
         var masterNodeManager = new MasterNodeManager(server, configuration, null, nodeManagers.ToArray());
