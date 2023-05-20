@@ -2,6 +2,8 @@ using Mapster;
 
 using Microsoft.Extensions.DependencyInjection;
 
+using NewLife.Reflection;
+
 using Opc.Ua;
 using Opc.Ua.Server;
 
@@ -234,7 +236,16 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
         {
             lock (Lock)
             {
-                _idTags[nodeId].Value = value;
+                object newValue;
+                try
+                {
+                    newValue=Convert.ChangeType(value, _idTags[nodeId].NETDataType);
+                }
+                catch
+                {
+                    newValue= value;
+                }
+                _idTags[nodeId].Value = newValue;
                 _idTags[nodeId].Timestamp = dateTime;
                 _idTags[nodeId].ClearChangeMasks(SystemContext, false);
             }
@@ -286,6 +297,7 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
         variable.ValueRank = ValueRanks.Scalar;
         variable.Id = variableRunTime.Id;
         variable.DataType = DataNodeType(variableRunTime);
+        variable.NETDataType = NETDataNodeType(variableRunTime);
         var level = ProtectTypeTrans(variableRunTime);
         variable.AccessLevel = level;
         variable.UserAccessLevel = level;
@@ -390,6 +402,43 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
         if (tp == typeof(DateTime))
             return DataTypeIds.TimeString;
         return DataTypeIds.ObjectNode;
+    }
+    /// <summary>
+    /// 网关转OPC数据类型
+    /// </summary>
+    /// <param name="variableRunTime"></param>
+    /// <returns></returns>
+    private Type NETDataNodeType(CollectVariableRunTime variableRunTime)
+    {
+        Type tp;
+        var str = GetPropertyValue(variableRunTime, nameof(OPCUAServerVariableProperty.DataTypeEnum));
+        if (Enum.TryParse<DataTypeEnum>(str, out DataTypeEnum result))
+        {
+            tp = result.GetNetType();
+        }
+        else
+        {
+
+            if (variableRunTime.Value != null)
+            {
+                tp = variableRunTime.Value.GetType();
+            }
+            else
+            {
+                if (variableRunTime.ReadExpressions.IsNullOrEmpty())
+                {
+                    tp = variableRunTime.DataTypeEnum.GetNetType();
+                }
+                else
+                {
+                    var tp1 = variableRunTime.DataTypeEnum.GetNetType();
+                    var data = variableRunTime.ReadExpressions.GetExpressionsResult(GetDefaultValue(tp1));
+                    tp = data.GetType();
+                }
+            }
+        }
+
+        return tp;
     }
 
     private ServiceResult OnWriteDataValue(ISystemContext context, NodeState node, NumericRange indexRange, QualifiedName dataEncoding, ref object value, ref StatusCode statusCode, ref DateTime timestamp)
