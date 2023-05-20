@@ -104,7 +104,7 @@ public class IotSharpClient : UpLoadBase
                 {
                     try
                     {
-                        Dictionary<string, string> nameValueDict = new();
+                        Dictionary<string, object> nameValueDict = new();
                         foreach (var pair in item)
                         {
                             //只用最新的变量值
