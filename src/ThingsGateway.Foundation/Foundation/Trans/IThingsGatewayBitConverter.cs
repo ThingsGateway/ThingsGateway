@@ -60,6 +60,22 @@ namespace ThingsGateway.Foundation
         /// <param name="value">等待转化的数据</param>
         /// <returns>buffer数据</returns>
         byte[] GetBytes(short value);
+        /// <inheritdoc/>
+        byte[] GetBytes(short[] value);
+        /// <inheritdoc/>
+        byte[] GetBytes(ushort[] value);
+        /// <inheritdoc/>
+        byte[] GetBytes(int[] value);
+        /// <inheritdoc/>
+        byte[] GetBytes(uint[] value);
+        /// <inheritdoc/>
+        byte[] GetBytes(long[] value);
+        /// <inheritdoc/>
+        byte[] GetBytes(ulong[] value);
+        /// <inheritdoc/>
+        byte[] GetBytes(float[] value);
+        /// <inheritdoc/>
+        byte[] GetBytes(double[] value);
 
         /// <summary>
         /// ushort变量转化缓存数据，一个ushort数据可以转为2个字节的Byte数组<br />
@@ -151,6 +167,10 @@ namespace ThingsGateway.Foundation
         /// <param name="buffer">等待提取的缓存数据</param>
         /// <param name="offset">位的索引，注意：是从0开始的位索引，10则表示 buffer[1] 的第二位。</param>
         bool ToBoolean(byte[] buffer, int offset);
+
+        /// <inheritdoc/>
+        bool[] ToBoolean(byte[] buffer, int offset, int len);
+
         /// <inheritdoc/>
         byte ToByte(byte[] buffer, int offset);
 
@@ -164,7 +184,8 @@ namespace ThingsGateway.Foundation
         /// <param name="offset">索引位置</param>
         /// <returns>double对象</returns>
         double ToDouble(byte[] buffer, int offset);
-
+        /// <inheritdoc/>
+        double[] ToDouble(byte[] buffer, int offset, int len);
         /// <summary>
         /// 从缓存中提取short结果，需要指定起始的字节索引，按照字节为单位，一个short占用两个字节<br />
         /// </summary>
@@ -172,7 +193,8 @@ namespace ThingsGateway.Foundation
         /// <param name="offset">索引位置</param>
         /// <returns>short对象</returns>
         short ToInt16(byte[] buffer, int offset);
-
+        /// <inheritdoc/>
+        short[] ToInt16(byte[] buffer, int offset, int len);
         /// <summary>
         /// 从缓存中提取int结果，需要指定起始的字节索引，按照字节为单位，一个int占用四个字节<br />
         /// </summary>
@@ -180,6 +202,8 @@ namespace ThingsGateway.Foundation
         /// <param name="offset">索引位置</param>
         /// <returns>int对象</returns>
         int ToInt32(byte[] buffer, int offset);
+        /// <inheritdoc/>
+        int[] ToInt32(byte[] buffer, int offset, int len);
 
         /// <summary>
         /// 从缓存中提取long结果，需要指定起始的字节索引，按照字节为单位，一个long占用八个字节<br />
@@ -188,7 +212,8 @@ namespace ThingsGateway.Foundation
         /// <param name="offset">索引位置</param>
         /// <returns>long对象</returns>
         long ToInt64(byte[] buffer, int offset);
-
+        /// <inheritdoc/>
+        long[] ToInt64(byte[] buffer, int offset, int len);
         /// <summary>
         /// 从缓存中提取float结果，需要指定起始的字节索引，按照字节为单位，一个float占用四个字节<b />
         /// </summary>
@@ -196,7 +221,8 @@ namespace ThingsGateway.Foundation
         /// <param name="offset">索引位置</param>
         /// <returns>float对象</returns>
         float ToSingle(byte[] buffer, int offset);
-
+        /// <inheritdoc/>
+        float[] ToSingle(byte[] buffer, int offset, int len);
         /// <summary>
         /// 从缓存中提取string结果，使用指定的编码将全部的缓存转为字符串<br />
         /// </summary>
@@ -220,7 +246,8 @@ namespace ThingsGateway.Foundation
         /// <param name="offset">索引位置</param>
         /// <returns>ushort对象</returns>
         ushort ToUInt16(byte[] buffer, int offset);
-
+        /// <inheritdoc/>
+        ushort[] ToUInt16(byte[] buffer, int offset, int len);
         /// <summary>
         /// 从缓存中提取uint结果，需要指定起始的字节索引，按照字节为单位，一个uint占用四个字节<br />
         /// </summary>
@@ -228,7 +255,8 @@ namespace ThingsGateway.Foundation
         /// <param name="offset">索引位置</param>
         /// <returns>uint对象</returns>
         uint ToUInt32(byte[] buffer, int offset);
-
+        /// <inheritdoc/>
+        uint[] ToUInt32(byte[] buffer, int offset, int len);
         /// <summary>
         /// 从缓存中提取ulong结果，需要指定起始的字节索引，按照字节为单位，一个ulong占用八个字节<b />
         /// </summary>
@@ -236,6 +264,8 @@ namespace ThingsGateway.Foundation
         /// <param name="offset">索引位置</param>
         /// <returns>ulong对象</returns>
         ulong ToUInt64(byte[] buffer, int offset);
+        /// <inheritdoc/>
+        ulong[] ToUInt64(byte[] buffer, int offset, int len);
 
         #endregion ToValue
     }

@@ -19,13 +19,28 @@ namespace ThingsGateway.Web.Foundation
     {
         IServiceScopeFactory _scopeFactory;
         /// <inheritdoc cref="CollectDbInfoControler"/>
-        public CollectDbInfoControler(IServiceScopeFactory scopeFactory, IVariableService variableService)
+        public CollectDbInfoControler(IServiceScopeFactory scopeFactory, IVariableService variableService, ICollectDeviceService collectDeviceService)
         {
             _scopeFactory = scopeFactory;
             _variableService = variableService;
+            _collectDeviceService = collectDeviceService;
         }
 
         IVariableService _variableService { get; set; }
+        ICollectDeviceService _collectDeviceService { get; set; }
+        /// <summary>
+        /// 获取采集设备信息
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("collectDeviceList")]
+        [Description("获取采集设备信息")]
+        public async Task<SqlSugarPagedList<CollectDevice>> GetCollectDeviceList([FromQuery] CollectDevicePageInput input)
+        {
+            var data = await _collectDeviceService.PageAsync(input);
+
+            return data;
+        }
+
         /// <summary>
         /// 获取变量信息
         /// </summary>
@@ -38,8 +53,6 @@ namespace ThingsGateway.Web.Foundation
 
             return data;
         }
-
-
     }
 }
 
