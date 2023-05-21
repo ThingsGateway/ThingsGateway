@@ -248,7 +248,7 @@ namespace ThingsGateway.Web.Foundation
             Dictionary<string, int> DicTmp = new Dictionary<string, int>();
             if (list != null && list.Count() > 0)
             {
-                DicTmp= list.GroupBy(x => ((ExpandoObject)x).ConvertToEntity<CollectDevice>().Name)
+                DicTmp = list.GroupBy(x => ((ExpandoObject)x).ConvertToEntity<CollectDevice>().Name)
                              .Where(g => g.Count() > 1)
                .ToDictionary(x => x.Key, y => y.Count());
             }
@@ -360,10 +360,10 @@ namespace ThingsGateway.Web.Foundation
                     ImportPreviews.Add(sheetName, importPreviewOutput);
                     deviceImportPreview = importPreviewOutput;
 
-                    var DicTmp=  QueryRepeatElementAndCountOfList(rows);
-                    if(DicTmp.Count > 0)
+                    var DicTmp = QueryRepeatElementAndCountOfList(rows);
+                    if (DicTmp.Count > 0)
                     {
-                        throw new Exception("发现重复名称"+ Environment.NewLine + DicTmp.Select(a=>a.Key).ToJson());
+                        throw new Exception("发现重复名称" + Environment.NewLine + DicTmp.Select(a => a.Key).ToJson());
                     }
                     List<CollectDevice> devices = new List<CollectDevice>();
                     foreach (var item in rows)

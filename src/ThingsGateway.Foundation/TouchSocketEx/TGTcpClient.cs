@@ -340,7 +340,7 @@ namespace TouchSocket.Sockets
             }
         }
 
-        private  void BreakOut(string msg, bool manual)
+        private void BreakOut(string msg, bool manual)
         {
             try
             {
@@ -395,7 +395,7 @@ namespace TouchSocket.Sockets
         {
             try
             {
-                 privateEasyLock.Lock();
+                privateEasyLock.Lock();
 
                 if (this.CanSend)
                 {

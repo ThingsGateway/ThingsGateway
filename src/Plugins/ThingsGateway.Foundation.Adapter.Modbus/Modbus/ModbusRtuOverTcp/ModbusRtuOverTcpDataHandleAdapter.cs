@@ -32,7 +32,7 @@
                 byteBlock.Pos = byteBlock.Len;
                 request.ReceivedBytes = allBytes;
                 request.Message = unpackbytes.Message;
-                if(allBytes.Length<=4)
+                if (allBytes.Length <= 4)
                 {
                     return FilterResult.Cache;
                 }

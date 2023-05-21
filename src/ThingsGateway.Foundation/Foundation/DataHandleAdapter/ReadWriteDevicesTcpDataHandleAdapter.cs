@@ -57,7 +57,7 @@
                 byteBlock.Read(out byte[] body, byteBlock.Len);
                 var bytes = request.HeadBytes.SpliceArray(body);
 
-                var result= GetResponse(byteBlock, request, request.ReceivedBytes.SpliceArray(allBytes), bytes);
+                var result = GetResponse(byteBlock, request, request.ReceivedBytes.SpliceArray(allBytes), bytes);
                 return result;
             }
             else

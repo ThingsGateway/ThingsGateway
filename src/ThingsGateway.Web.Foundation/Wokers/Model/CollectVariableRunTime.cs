@@ -108,7 +108,7 @@ public class CollectVariableRunTime : CollectDeviceVariable
                 time = dateTime;
             }
             CollectTime = DateTime.UtcNow;
-            if (data?.ToString() != _value?.ToString() && LastSetValue?.ToString() != data?.ToString()||qualityChanged)
+            if (data?.ToString() != _value?.ToString() && LastSetValue?.ToString() != data?.ToString() || qualityChanged)
             {
                 ChangeTime = DateTime.UtcNow;
                 if (Quality == 192)
@@ -159,7 +159,9 @@ public class CollectVariableRunTime : CollectDeviceVariable
     /// </summary>
     [Description("质量戳")]
     [OrderTable(Order = 5)]
-    public int Quality { get => quality; private set
+    public int Quality
+    {
+        get => quality; private set
         {
             if (quality != value)
             {

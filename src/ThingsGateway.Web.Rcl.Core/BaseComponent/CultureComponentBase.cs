@@ -19,7 +19,7 @@ namespace ThingsGateway.Web.Rcl.Core
 
         public string T(string key, params object[] args)
         {
-            if(key.IsNullOrEmpty())
+            if (key.IsNullOrEmpty())
             {
                 return "";
             }

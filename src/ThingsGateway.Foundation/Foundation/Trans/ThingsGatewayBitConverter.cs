@@ -1,7 +1,5 @@
 using Newtonsoft.Json;
 
-using System.Reflection;
-
 namespace ThingsGateway.Foundation
 {
     /// <summary>
@@ -589,7 +587,7 @@ namespace ThingsGateway.Foundation
             ulong[] numArray = new ulong[len];
             for (int index = 0; index < len; ++index)
             {
-                numArray[index] = ToUInt64(buffer, offset + 8* index);
+                numArray[index] = ToUInt64(buffer, offset + 8 * index);
             }
             return numArray;
         }

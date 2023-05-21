@@ -25,7 +25,7 @@ public partial class ThingsGatewayServer : StandardServer
     private ICertificateValidator m_userCertificateValidator;
     private UploadDevice _device;
     /// <inheritdoc cref="ThingsGatewayServer"/>
-    public ThingsGatewayServer(UploadDevice device,ILogger logger, IServiceScope serviceScope)
+    public ThingsGatewayServer(UploadDevice device, ILogger logger, IServiceScope serviceScope)
     {
         _device = device;
         _logger = logger;
