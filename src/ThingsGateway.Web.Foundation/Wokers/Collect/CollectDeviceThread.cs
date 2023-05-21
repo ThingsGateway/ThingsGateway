@@ -156,7 +156,7 @@ public class CollectDeviceThread : IDisposable
             }
             catch (Exception ex)
             {
-                CollectDeviceCores.FirstOrDefault()?.Logger?.LogError(ex,$"{CollectDeviceCores.FirstOrDefault()?.Device?.Name}采集线程停止错误");
+                CollectDeviceCores.FirstOrDefault()?.Logger?.LogError(ex, $"{CollectDeviceCores.FirstOrDefault()?.Device?.Name}采集线程停止错误");
             }
             if (taskResult != true)
             {

@@ -127,10 +127,10 @@ namespace ThingsGateway.Application
         {
             //写入操作日志
             var str = App.HttpContext?.Request?.Headers?.UserAgent;
-            ClientInfo clientInfo=null;
+            ClientInfo clientInfo = null;
             if (str.HasValue)
             {
-                 clientInfo = UserAgent.Parser.Parse(str);
+                clientInfo = UserAgent.Parser.Parse(str);
             }
 
             StringBuilder stringBuilder = new();

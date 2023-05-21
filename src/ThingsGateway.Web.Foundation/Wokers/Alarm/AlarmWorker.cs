@@ -195,13 +195,13 @@ public class AlarmWorker : BackgroundService
             {
                 realTaskResult = realAlarmResult?.Wait(5000);
             }
-            catch(ObjectDisposedException)
+            catch (ObjectDisposedException)
             {
 
             }
             catch (Exception ex)
             {
-                _logger?.LogInformation(ex,"等待线程停止错误");
+                _logger?.LogInformation(ex, "等待线程停止错误");
             }
             if (realTaskResult == true)
             {

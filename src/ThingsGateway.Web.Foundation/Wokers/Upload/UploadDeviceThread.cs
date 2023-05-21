@@ -140,7 +140,7 @@ public class UploadDeviceThread : IDisposable
             }
             catch (Exception ex)
             {
-                UploadDeviceCores.FirstOrDefault()?.Logger?.LogError(ex,$"{UploadDeviceCores.FirstOrDefault()?.Device?.Name}上传线程停止错误");
+                UploadDeviceCores.FirstOrDefault()?.Logger?.LogError(ex, $"{UploadDeviceCores.FirstOrDefault()?.Device?.Name}上传线程停止错误");
             }
             if (taskResult != true)
             {

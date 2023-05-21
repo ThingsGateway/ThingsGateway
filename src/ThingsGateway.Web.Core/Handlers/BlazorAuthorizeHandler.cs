@@ -2,7 +2,6 @@
 
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.DependencyInjection;
 
 
 namespace ThingsGateway.Web.Core
@@ -11,10 +10,10 @@ namespace ThingsGateway.Web.Core
     {
         private SysCacheService _sysCacheService;
         private IServiceScope _serviceScope;
-        public BlazorAuthorizeHandler(SysCacheService sysCacheService,IServiceScopeFactory serviceScopeFactory)
+        public BlazorAuthorizeHandler(SysCacheService sysCacheService, IServiceScopeFactory serviceScopeFactory)
         {
             _sysCacheService = sysCacheService;
-            _serviceScope =  serviceScopeFactory.CreateScope();
+            _serviceScope = serviceScopeFactory.CreateScope();
         }
 
         public override async Task HandleAsync(AuthorizationHandlerContext context)
@@ -56,8 +55,8 @@ namespace ThingsGateway.Web.Core
         public override async Task<bool> PipelineAsync(AuthorizationHandlerContext context, DefaultHttpContext httpContext)
         {
 
-        //这里鉴别密码是否改变
-        var userId = context.User.Claims.FirstOrDefault(it => it.Type == ClaimConst.UserId).Value.ToLong();
+            //这里鉴别密码是否改变
+            var userId = context.User.Claims.FirstOrDefault(it => it.Type == ClaimConst.UserId).Value.ToLong();
             var isOpenApi = context.User.Claims.FirstOrDefault(it => it.Type == ClaimConst.IsOpenApi)?.Value?.ToBoolean(false) == true;
             if (isOpenApi)
             {

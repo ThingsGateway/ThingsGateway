@@ -49,7 +49,7 @@ public partial class OPCUAServer : UpLoadBase
     private List<CollectVariableRunTime> _uploadVariables = new();
     private OPCUAServerProperty driverPropertys = new();
     private OPCUAServerVariableProperty _variablePropertys = new();
-    
+
     private ApplicationInstance m_application;
     private ApplicationConfiguration m_configuration;
     private ThingsGatewayServer m_server;
@@ -126,7 +126,7 @@ public partial class OPCUAServer : UpLoadBase
         try
         {
             var result = m_server?.GetStatus();
-            if(result.State== ServerState.Running)
+            if (result.State == ServerState.Running)
             {
                 return OperResult.CreateSuccessResult(result);
             }
@@ -155,7 +155,7 @@ public partial class OPCUAServer : UpLoadBase
             };
         }
 
-        m_server = new(device,_logger, _scopeFactory.CreateScope());
+        m_server = new(device, _logger, _scopeFactory.CreateScope());
 
         var serviceScope = _scopeFactory.CreateScope();
         var _globalCollectDeviceData = serviceScope.ServiceProvider.GetService<GlobalCollectDeviceData>();

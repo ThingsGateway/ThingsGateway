@@ -27,7 +27,7 @@ namespace ThingsGateway.Web.Foundation
             var db = _db.CopyNew();
             while (true)
             {
-                if(_logQueues.Count > 0)
+                if (_logQueues.Count > 0)
                 {
                     try
                     {
