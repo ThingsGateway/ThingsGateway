@@ -2,8 +2,6 @@ using Mapster;
 
 using Microsoft.Extensions.DependencyInjection;
 
-using NewLife.Reflection;
-
 using Opc.Ua;
 using Opc.Ua.Server;
 
@@ -203,10 +201,18 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
         if (initialItemValue != null)
         {
             var code = variable.quality == 192 ? StatusCodes.Good : StatusCodes.Bad;
-            if (uaTag.Value != initialItemValue)
-                ChangeNodeData(uaTag.NodeId.ToString(), initialItemValue, variable.changeTime);
+            if (code == StatusCodes.Good)
+            {
+                ChangeNodeData(uaTag, initialItemValue, variable.changeTime);
+            }
+
             if (uaTag.StatusCode != code)
-                uaTag.SetStatusCode(SystemContext, code, variable.changeTime);
+            {
+                uaTag.StatusCode = code;
+            }
+            uaTag.ClearChangeMasks(SystemContext, false);
+
+
         }
     }
 
@@ -228,28 +234,22 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
     }
 
     /// <summary>
-    /// 在服务器端直接更改对应数据节点的值，并通知客户端
+    /// 在服务器端直接更改对应数据节点的值
     /// </summary>
-    private void ChangeNodeData(string nodeId, object value, DateTime dateTime)
+    private void ChangeNodeData(OPCUATag tag, object value, DateTime dateTime)
     {
-        if (_idTags.ContainsKey(nodeId))
+        object newValue;
+        try
         {
-            lock (Lock)
-            {
-                object newValue;
-                try
-                {
-                    newValue=Convert.ChangeType(value, _idTags[nodeId].NETDataType);
-                }
-                catch
-                {
-                    newValue= value;
-                }
-                _idTags[nodeId].Value = newValue;
-                _idTags[nodeId].Timestamp = dateTime;
-                _idTags[nodeId].ClearChangeMasks(SystemContext, false);
-            }
+            newValue = Convert.ChangeType(value, tag.NETDataType);
         }
+        catch
+        {
+            newValue = value;
+        }
+        tag.Value = newValue;
+        tag.Timestamp = dateTime;
+        //_idTags[nodeId].ClearChangeMasks(SystemContext, false);
     }
 
     /// <summary>
@@ -302,9 +302,10 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
         variable.AccessLevel = level;
         variable.UserAccessLevel = level;
         variable.Historizing = variableRunTime.HisEnable;
-        variable.StatusCode = StatusCodes.Good;
-        variable.Timestamp = DateTime.UtcNow;
         variable.Value = Opc.Ua.TypeInfo.GetDefaultValue(variable.DataType, ValueRanks.Scalar, Server.TypeTree);
+        var code = variableRunTime.Quality == 192 ? StatusCodes.Good : StatusCodes.Bad;
+        variable.StatusCode = code;
+        variable.Timestamp = variableRunTime.CollectTime;
         variable.OnWriteValue = OnWriteDataValue;
         if (parent != null)
         {

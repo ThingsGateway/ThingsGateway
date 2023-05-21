@@ -1,5 +1,7 @@
 using Newtonsoft.Json;
 
+using System.Reflection;
+
 namespace ThingsGateway.Foundation
 {
     /// <summary>
@@ -84,6 +86,17 @@ namespace ThingsGateway.Foundation
             }
             return bytes;
         }
+        /// <inheritdoc/>
+        public byte[] GetBytes(short[] value)
+        {
+            byte[] numArray = new byte[value.Length * 2];
+            for (int index = 0; index < value.Length; ++index)
+            {
+                byte[] bytes = GetBytes(value[index]);
+                bytes.CopyTo(numArray, 2 * index);
+            }
+            return numArray;
+        }
 
         /// <inheritdoc/>
         public byte[] GetBytes(ushort value)
@@ -95,43 +108,113 @@ namespace ThingsGateway.Foundation
             }
             return bytes;
         }
-
+        /// <inheritdoc/>
+        public byte[] GetBytes(ushort[] value)
+        {
+            byte[] numArray = new byte[value.Length * 2];
+            for (int index = 0; index < value.Length; ++index)
+            {
+                byte[] bytes = GetBytes(value[index]);
+                bytes.CopyTo(numArray, 2 * index);
+            }
+            return numArray;
+        }
         /// <inheritdoc/>
         public byte[] GetBytes(int value)
         {
             return ByteTransDataFormat4(BitConverter.GetBytes(value));
         }
-
+        /// <inheritdoc/>
+        public byte[] GetBytes(int[] value)
+        {
+            byte[] numArray = new byte[value.Length * 2];
+            for (int index = 0; index < value.Length; ++index)
+            {
+                byte[] bytes = GetBytes(value[index]);
+                bytes.CopyTo(numArray, 2 * index);
+            }
+            return numArray;
+        }
         /// <inheritdoc/>
         public byte[] GetBytes(uint value)
         {
             return ByteTransDataFormat4(BitConverter.GetBytes(value));
         }
-
+        /// <inheritdoc/>
+        public byte[] GetBytes(uint[] value)
+        {
+            byte[] numArray = new byte[value.Length * 2];
+            for (int index = 0; index < value.Length; ++index)
+            {
+                byte[] bytes = GetBytes(value[index]);
+                bytes.CopyTo(numArray, 2 * index);
+            }
+            return numArray;
+        }
         /// <inheritdoc/>
         public byte[] GetBytes(long value)
         {
             return ByteTransDataFormat8(BitConverter.GetBytes(value));
         }
-
+        /// <inheritdoc/>
+        public byte[] GetBytes(long[] value)
+        {
+            byte[] numArray = new byte[value.Length * 2];
+            for (int index = 0; index < value.Length; ++index)
+            {
+                byte[] bytes = GetBytes(value[index]);
+                bytes.CopyTo(numArray, 2 * index);
+            }
+            return numArray;
+        }
         /// <inheritdoc/>
         public byte[] GetBytes(ulong value)
         {
             return ByteTransDataFormat8(BitConverter.GetBytes(value));
         }
-
+        /// <inheritdoc/>
+        public byte[] GetBytes(ulong[] value)
+        {
+            byte[] numArray = new byte[value.Length * 2];
+            for (int index = 0; index < value.Length; ++index)
+            {
+                byte[] bytes = GetBytes(value[index]);
+                bytes.CopyTo(numArray, 2 * index);
+            }
+            return numArray;
+        }
         /// <inheritdoc/>
         public byte[] GetBytes(float value)
         {
             return ByteTransDataFormat4(BitConverter.GetBytes(value));
         }
-
+        /// <inheritdoc/>
+        public byte[] GetBytes(float[] value)
+        {
+            byte[] numArray = new byte[value.Length * 2];
+            for (int index = 0; index < value.Length; ++index)
+            {
+                byte[] bytes = GetBytes(value[index]);
+                bytes.CopyTo(numArray, 2 * index);
+            }
+            return numArray;
+        }
         /// <inheritdoc/>
         public byte[] GetBytes(double value)
         {
             return ByteTransDataFormat8(BitConverter.GetBytes(value));
         }
-
+        /// <inheritdoc/>
+        public byte[] GetBytes(double[] value)
+        {
+            byte[] numArray = new byte[value.Length * 2];
+            for (int index = 0; index < value.Length; ++index)
+            {
+                byte[] bytes = GetBytes(value[index]);
+                bytes.CopyTo(numArray, 2 * index);
+            }
+            return numArray;
+        }
         /// <inheritdoc/>
         public byte[] GetBytes(string value)
         {
@@ -409,6 +492,104 @@ namespace ThingsGateway.Foundation
                     numArray[6] = value[offset + 6];
                     numArray[7] = value[offset + 7];
                     break;
+            }
+            return numArray;
+        }
+
+        /// <inheritdoc/>
+        public bool[] ToBoolean(byte[] buffer, int offset, int len)
+        {
+            bool[] flagArray = new bool[len];
+            for (int index = 0; index < len; ++index)
+            {
+                flagArray[index] = buffer.GetBoolByIndex(offset + index);
+            }
+            return flagArray;
+        }
+
+        /// <inheritdoc/>
+        public double[] ToDouble(byte[] buffer, int offset, int len)
+        {
+            double[] numArray = new double[len];
+            for (int index = 0; index < len; ++index)
+            {
+                numArray[index] = ToDouble(buffer, offset + 8 * index);
+            }
+            return numArray;
+        }
+
+        /// <inheritdoc/>
+        public short[] ToInt16(byte[] buffer, int offset, int len)
+        {
+            short[] numArray = new short[len];
+            for (int index = 0; index < len; ++index)
+            {
+                numArray[index] = ToInt16(buffer, offset + 2 * index);
+            }
+            return numArray;
+        }
+
+        /// <inheritdoc/>
+        public int[] ToInt32(byte[] buffer, int offset, int len)
+        {
+            int[] numArray = new int[len];
+            for (int index = 0; index < len; ++index)
+            {
+                numArray[index] = ToInt32(buffer, offset + 4 * index);
+            }
+            return numArray;
+        }
+
+        /// <inheritdoc/>
+        public long[] ToInt64(byte[] buffer, int offset, int len)
+        {
+            long[] numArray = new long[len];
+            for (int index = 0; index < len; ++index)
+            {
+                numArray[index] = ToInt64(buffer, offset + 8 * index);
+            }
+            return numArray;
+        }
+        /// <inheritdoc/>
+        public float[] ToSingle(byte[] buffer, int offset, int len)
+        {
+            float[] numArray = new float[len];
+            for (int index = 0; index < len; ++index)
+            {
+                numArray[index] = ToSingle(buffer, offset + 4 * index);
+            }
+            return numArray;
+        }
+
+        /// <inheritdoc/>
+        public ushort[] ToUInt16(byte[] buffer, int offset, int len)
+        {
+            ushort[] numArray = new ushort[len];
+            for (int index = 0; index < len; ++index)
+            {
+                numArray[index] = ToUInt16(buffer, offset + 2 * index);
+            }
+            return numArray;
+        }
+
+        /// <inheritdoc/>
+        public uint[] ToUInt32(byte[] buffer, int offset, int len)
+        {
+            uint[] numArray = new uint[len];
+            for (int index = 0; index < len; ++index)
+            {
+                numArray[index] = ToUInt32(buffer, offset + 4 * index);
+            }
+            return numArray;
+        }
+
+        /// <inheritdoc/>
+        public ulong[] ToUInt64(byte[] buffer, int offset, int len)
+        {
+            ulong[] numArray = new ulong[len];
+            for (int index = 0; index < len; ++index)
+            {
+                numArray[index] = ToUInt64(buffer, offset + 8* index);
             }
             return numArray;
         }

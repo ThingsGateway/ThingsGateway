@@ -108,7 +108,7 @@ public class CollectVariableRunTime : CollectDeviceVariable
                 time = dateTime;
             }
             CollectTime = DateTime.UtcNow;
-            if (data?.ToString() != _value?.ToString() && LastSetValue?.ToString() != data?.ToString())
+            if (data?.ToString() != _value?.ToString() && LastSetValue?.ToString() != data?.ToString()||qualityChanged)
             {
                 ChangeTime = DateTime.UtcNow;
                 if (Quality == 192)
@@ -151,12 +151,30 @@ public class CollectVariableRunTime : CollectDeviceVariable
     [System.Text.Json.Serialization.JsonIgnore]
     [AdaptIgnore]
     public VariableCahngeEventHandler VariableValueChange { get; set; }
+
+    private int quality;
+    private bool qualityChanged;
     /// <summary>
     /// 质量戳
     /// </summary>
     [Description("质量戳")]
     [OrderTable(Order = 5)]
-    public int Quality { get; private set; }
+    public int Quality { get => quality; private set
+        {
+            if (quality != value)
+            {
+                quality = value;
+                qualityChanged = true;
+            }
+            else
+            {
+                qualityChanged = false;
+
+            }
+
+        }
+
+    }
 
 
     #region LoadSourceRead

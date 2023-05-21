@@ -14,6 +14,7 @@ namespace ThingsGateway.Foundation
         /// <returns></returns>
         public static IWaitingClient<TClient> GetTGWaitingClient<TClient>(this TClient client, WaitingOptions waitingOptions) where TClient : IClient, IDefaultSender, ISender
         {
+            waitingOptions.BreakTrigger = true;
             TGWaitingClient<TClient> waitingClient = new TGWaitingClient<TClient>(client, waitingOptions);
             return waitingClient;
         }
