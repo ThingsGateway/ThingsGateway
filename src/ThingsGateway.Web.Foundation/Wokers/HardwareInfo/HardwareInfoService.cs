@@ -15,7 +15,7 @@ namespace ThingsGateway.Web.Foundation
     /// </summary>
     public class HardwareInfoService : ISingleton
     {
-        private readonly Hardware.Info.HardwareInfo hardwareInfo = new();
+        private readonly Hardware.Info.HardwareInfo hardwareInfo;
 
         private ILogger _logger;
 
@@ -27,28 +27,44 @@ namespace ThingsGateway.Web.Foundation
                 var loggerFactory = scope.ServiceProvider.GetRequiredService<ILoggerFactory>();
                 _logger = loggerFactory.CreateLogger(nameof(HardwareInfoService));
             });
+            try
+            {
+                hardwareInfo = new();
+            }
+            catch
+            {
 
+            }
             _ = Task.Run(async () =>
              {
 
                  while (true)
                  {
-                     hardwareInfo.RefreshMemoryStatus();
-                     hardwareInfo.RefreshMemoryList();
-                     hardwareInfo.RefreshDriveList();
-                     hardwareInfo.RefreshNetworkAdapterList();
-                     hardwareInfo.RefreshCPUList();
-                     aPPInfo = new()
+                     try
                      {
-                         HostName = Environment.MachineName, // 主机名称
-                         SystemOs = RuntimeInformation.OSDescription, // 操作系统
-                         OsArchitecture = Environment.OSVersion.Platform.ToString() + " " + RuntimeInformation.OSArchitecture.ToString(), // 系统架构
-                         RemoteIp = await GetIpFromOnlineAsync(), // 外网地址
-                         FrameworkDescription = RuntimeInformation.FrameworkDescription, // NET框架
-                         Environment = App.HostEnvironment.IsDevelopment() ? "Development" : "Production",
-                         Stage = App.HostEnvironment.IsStaging() ? "Stage" : "非Stage", // 是否Stage环境
-                     };
-                     await Task.Delay(5000);
+
+
+                         hardwareInfo?.RefreshMemoryStatus();
+                         hardwareInfo?.RefreshMemoryList();
+                         hardwareInfo?.RefreshDriveList();
+                         hardwareInfo?.RefreshNetworkAdapterList();
+                         hardwareInfo?.RefreshCPUList();
+                         aPPInfo = new()
+                         {
+                             HostName = Environment.MachineName, // 主机名称
+                             SystemOs = RuntimeInformation.OSDescription, // 操作系统
+                             OsArchitecture = Environment.OSVersion.Platform.ToString() + " " + RuntimeInformation.OSArchitecture.ToString(), // 系统架构
+                             RemoteIp = await GetIpFromOnlineAsync(), // 外网地址
+                             FrameworkDescription = RuntimeInformation.FrameworkDescription, // NET框架
+                             Environment = App.HostEnvironment.IsDevelopment() ? "Development" : "Production",
+                             Stage = App.HostEnvironment.IsStaging() ? "Stage" : "非Stage", // 是否Stage环境
+                         };
+                         await Task.Delay(5000);
+                     }
+                     catch
+                     {
+
+                     }
                  }
              });
 
@@ -63,7 +79,7 @@ namespace ThingsGateway.Web.Foundation
         /// <summary>
         /// 硬件信息获取
         /// </summary>
-        public TGHardwareInfo HardwareInfo => hardwareInfo.Adapt<TGHardwareInfo>();
+        public TGHardwareInfo HardwareInfo => hardwareInfo?.Adapt<TGHardwareInfo>();
 
         /// <summary>
         /// IP地址信息
