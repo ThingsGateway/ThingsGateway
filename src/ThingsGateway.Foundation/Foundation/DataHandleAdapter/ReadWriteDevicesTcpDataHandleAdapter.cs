@@ -76,6 +76,7 @@
                 {
                     if (request.BodyLength > byteBlock.CanReadLen)//body不满足解析，开始缓存，然后保存对象
                     {
+                        request.ReceivedBytes = header;
                         return FilterResult.Cache;
                     }
                     if (request.BodyLength <= 0)
@@ -103,7 +104,7 @@
             if (unpackbytes.IsSuccess)
             {
                 request.Content = unpackbytes.Content;
-                request.ReceivedBytes = bytes;
+                request.ReceivedBytes = allBytes;
                 return FilterResult.Success;
             }
             else

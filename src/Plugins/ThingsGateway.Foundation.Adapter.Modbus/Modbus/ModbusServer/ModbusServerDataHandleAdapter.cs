@@ -29,7 +29,7 @@ namespace ThingsGateway.Foundation.Adapter.Modbus
             request.ResultCode = unpackbytes.ResultCode;
             if (unpackbytes.IsSuccess)
             {
-                request.ReceivedBytes = bytes;
+                request.ReceivedBytes = allBytes;
                 //解析01 03 00 00 00 0A
                 var station = ThingsGatewayBitConverter.ToByte(bytes, 6);
                 var function = ThingsGatewayBitConverter.ToByte(bytes, 7);
