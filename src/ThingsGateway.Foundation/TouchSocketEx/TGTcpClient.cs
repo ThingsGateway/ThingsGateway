@@ -536,10 +536,6 @@ namespace TouchSocket.Sockets
                     using CancellationTokenSource cancellationTokenSource = new();
                     var task = this.MainSocket.ConnectAsync(iPHost.EndPoint, cancellationTokenSource.Token).AsTask();
                     var result = await Task.WhenAny(task, Task.Delay(timeout, cancellationTokenSource.Token));
-                    if (DateTime.UtcNow - nowTime < TimeSpan.FromMilliseconds(timeout))
-                    {
-                        await Task.Delay(500);
-                    }
                     if (result == task)
                     {
                         cancellationTokenSource.Cancel();
@@ -562,10 +558,6 @@ namespace TouchSocket.Sockets
                     using CancellationTokenSource cancellationTokenSource = new();
                     var task = Task.Factory.FromAsync(this.MainSocket.BeginConnect(iPHost.EndPoint, null, null), this.MainSocket.EndConnect);
                     var result = await Task.WhenAny(task, Task.Delay(timeout, cancellationTokenSource.Token));
-                    if (DateTime.UtcNow - nowTime < TimeSpan.FromMilliseconds(timeout))
-                    {
-                        await Task.Delay(500);
-                    }
                     if (result == task)
                     {
                         cancellationTokenSource.Cancel();
