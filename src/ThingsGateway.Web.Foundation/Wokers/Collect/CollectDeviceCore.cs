@@ -370,7 +370,6 @@ public class CollectDeviceCore : DisposableObject
                         }
                     }
 
-                    await Task.Delay(20);
 
                 }
 
@@ -397,7 +396,6 @@ public class CollectDeviceCore : DisposableObject
                         }
                     }
 
-                    await Task.Delay(20);
 
                 }
 
