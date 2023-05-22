@@ -25,7 +25,7 @@
             <MTreeview Style="height: calc(100vh - 320px);overflow-y:auto" Dense TItem="DriverPluginCategory"
                        TKey="long" OpenOnClick ActiveChanged=@((async a=>
                        {
-                       if(this._searchModel.PluginId!= a.FirstOrDefault())
+                       if(this._searchModel.PluginId!= a.FirstOrDefault()&&a.Count>0)
                        {
                        this._searchModel.PluginId= a.FirstOrDefault();
                        await ImportVaiable(this._searchModel.PluginId);

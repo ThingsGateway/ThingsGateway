@@ -588,6 +588,22 @@
       "UpdateUserId": "212725263002001"
     },
     {
+      "Id": "200001011",
+      "Title": "驱动调试",
+      "Icon": "mdi-database-cog-outline",
+      "Name": "tgdriverdebug",
+      "Component": "/tgconfig/driverdebug",
+      "Category": "MENU",
+      "Code": "system",
+      "ParentId": "200001",
+      "SortCode": "1",
+      "TargetType": "SELF",
+      "IsDelete": "0",
+      "UpdateTime": "2023-03-03 17:58:09.8844904",
+      "UpdateUser": "superAdmin",
+      "UpdateUserId": "212725263002001"
+    },
+    {
       "Id": "200001003",
       "Title": "变量管理",
       "Icon": "mdi-database-cog-outline",
