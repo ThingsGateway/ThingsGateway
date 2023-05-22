@@ -358,6 +358,31 @@ public class CollectDeviceWorker : BackgroundService
         }
 
     }
+
+    /// <summary>
+    /// 获取导入变量UI
+    /// </summary>
+    /// <param name="driverId"></param>
+    /// <returns></returns>
+    public Type GetDebugUI(long driverId)
+    {
+        using var serviceScope = _scopeFactory.CreateScope();
+        var driverPluginService = serviceScope.ServiceProvider.GetService<IDriverPluginService>();
+        var driverPlugin = driverPluginService.GetDriverPluginById(driverId);
+        var id = YitIdHelper.NextId();
+        try
+        {
+            var driver = (DriverBase)_pluginService.GetDriver(id, driverPlugin);
+            driver?.Dispose();
+            return driver.DriverDebugUIType;
+        }
+        finally
+        {
+            _pluginService.DeleteDriver(id, driverId);
+        }
+
+    }
+
     #endregion
 
     #region worker服务

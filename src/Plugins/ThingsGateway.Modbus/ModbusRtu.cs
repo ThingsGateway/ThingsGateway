@@ -13,6 +13,8 @@ public class ModbusRtu : CollectBase, IDisposable
     private ThingsGateway.Foundation.Adapter.Modbus.ModbusRtu _plc;
 
     private ModbusRtuProperty driverPropertys = new ModbusRtuProperty();
+    public override Type DriverDebugUIType => typeof(ModbusRtuDebugDriverPage);
+
 
     public ModbusRtu(IServiceScopeFactory scopeFactory) : base(scopeFactory)
     {

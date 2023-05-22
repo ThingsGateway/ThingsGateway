@@ -43,6 +43,11 @@ namespace ThingsGateway.Web.Foundation
         public abstract DriverPropertyBase DriverPropertys { get; }
 
         /// <summary>
+        /// 调试UI Type，继承实现<see cref="DriverDebugUIBase"/>后，返回继承类的Type，如果不存在，返回null
+        /// </summary>
+        public virtual Type DriverDebugUIType { get; }
+
+        /// <summary>
         /// 是否输出日志
         /// </summary>
         public bool IsLogOut { get; set; }
@@ -54,6 +59,7 @@ namespace ThingsGateway.Web.Foundation
         /// 报文信息
         /// </summary>
         public ConcurrentList<(long id, string message)> Messages { get; set; } = new();
+
         /// <summary>
         /// 是否连接成功
         /// </summary>

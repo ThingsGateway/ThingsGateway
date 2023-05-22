@@ -1,0 +1,32 @@
+﻿@using BlazorComponent;
+@using Microsoft.AspNetCore.Components.Web;
+@using ThingsGateway.Foundation.Adapter.Modbus;
+@using ThingsGateway.Foundation;
+@using ThingsGateway.Web.Foundation;
+@using Masa.Blazor
+@inherits DriverDebugUIBase
+<MCard Class="ma-0">
+    <MCardTitle Class="indigo white--text text-h6">
+        @nameof(ModbusRtu)
+    </MCardTitle>
+    <MRow Class="pa-4"
+          Justify="JustifyTypes.SpaceBetween">
+        <SerialClientPage @ref=serialClientPage></SerialClientPage>
+
+        <MDivider Vertical></MDivider>
+
+    </MRow>
+
+
+</MCard>
+@code
+{
+    private SerialClientPage serialClientPage;
+    protected override void OnInitialized()
+    {
+
+    }
+
+
+
+}

@@ -28,10 +28,7 @@ public abstract class CollectBase : DriverBase
     /// 导入变量UI Type，继承实现<see cref="DriverImportUIBase"/>后，返回继承类的Type，如果不存在，返回null
     /// </summary>
     public virtual Type DriverImportUIType { get; }
-    /// <summary>
-    /// 调试UI Type，继承实现<see cref="DriverDebugUIBase"/>后，返回继承类的Type，如果不存在，返回null
-    /// </summary>
-    public virtual Type DriverDebugUIType { get; }
+
     /// <summary>
     /// 共享通道类型
     /// </summary>
