@@ -16,13 +16,13 @@
                 {
                     <MSystemBar Color="barcolor" Height="@(UserResoures.Themes.LayoutPrpo.PageTabsHeight)">
                         <MButton Icon OnClick=@(()=> _drawerOpen = !_drawerOpen)>
-                        <MIcon>
-                            mdi-close-thick
-                        </MIcon>
+                            <MIcon>
+                                mdi-close-thick
+                            </MIcon>
                         </MButton>
                         <MSpacer />
                         <AppbarButtons LanguageChange=@LanguageChange />
-                        </MSystemBar>
+                    </MSystemBar>
                 }
                 <Logo HeightInt=@(IsMobile?UserResoures.Themes.LayoutPrpo.AppBarHeight:UserResoures.Themes.LayoutPrpo.AppBarHeight+UserResoures.Themes.LayoutPrpo.PageTabsHeight) />
                 <DefaultList ClassString="overflow-y-auto"
@@ -38,24 +38,24 @@
                 <AppBarItems LanguageChange=@LanguageChange>
                 </AppBarItems>
 
-                </MAppBar>
+            </MAppBar>
 
-                <MMain Style=@($"{(!(IsMobile||!_drawerOpen)? "padding-left:200px;":"")}")>
+            <MMain Style=@($"{(!(IsMobile||!_drawerOpen)? "padding-left:200px;":"")}")>
                 <div class="full-width">
                     <PageTabs @ref="_pageTabs" />
                 </div>
-                    <MDivider Center></MDivider>
-                    <MCard Flat Class="overflow-y-auto overflow-x-hidden ma-auto pa-0 rounded-0" Style=@($"height: calc(100vh - {UserResoures.Themes.LayoutPrpo.AppBarHeight+UserResoures.Themes.LayoutPrpo.PageTabsHeight+UserResoures.Themes.LayoutPrpo.FooterBarHeight}px);")>
-                <PPageContainer PageTabs="@_pageTabs?.PPageTabs">
+                <MDivider Center></MDivider>
+                <MCard Flat Class="overflow-y-auto overflow-x-hidden ma-auto pa-0 rounded-0" Style=@($"height: calc(100vh - {UserResoures.Themes.LayoutPrpo.AppBarHeight+UserResoures.Themes.LayoutPrpo.PageTabsHeight+UserResoures.Themes.LayoutPrpo.FooterBarHeight}px);")>
+                    <PPageContainer PageTabs="@_pageTabs?.PPageTabs">
                         @Body
                     </PPageContainer>
                 </MCard>
-                    <MSheet Class="d-flex justify-center align-center rounded-0" Style=@($"height: {UserResoures.Themes.LayoutPrpo.FooterBarHeight}px;")>
+                <MSheet Class="d-flex justify-center align-center rounded-0" Style=@($"height: {UserResoures.Themes.LayoutPrpo.FooterBarHeight}px;")>
                     <Foter></Foter>
-                    </MSheet>
-                    </MMain>
-                    </CascadingValue>
-                    </CascadingValue>
+                </MSheet>
+            </MMain>
+        </CascadingValue>
+    </CascadingValue>
 
 </PPageTabsProvider>
 

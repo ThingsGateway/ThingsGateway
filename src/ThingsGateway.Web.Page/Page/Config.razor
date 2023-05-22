@@ -31,16 +31,16 @@
                                 <MCol Class="pa-2 px-4" Md=12 Cols="12">
                                     <MSubheader Class="mt-4 font-weight-black"> @item.Remark</MSubheader>
                                     <MTextField Type="password" Dense Outlined HideDetails="@("auto")" @bind-Value=@item.ConfigValue />
-                                    </MCol>
+                                </MCol>
                                 break;
                             case ThingsGatewayConst.Config_Alarm_DbType:
                                 <MCol Class="pa-2 px-4" Md=12 Cols="12">
                                     <MSubheader Class="mt-4 font-weight-black"> @item.Remark</MSubheader>
                                     <MSelect @bind-Value="item.ConfigValue" Outlined
-                                 Items=@(typeof(SqlDbType).GetEnumList()) Clearable
-                                 MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
-                                 ItemText=@((u) =>u.des) ItemValue=@(u =>u.name)
-                                 HideDetails="true" Height="30" Dense>
+                                             Items=@(typeof(SqlDbType).GetEnumList()) Clearable
+                                             MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
+                                             ItemText=@((u) =>u.des) ItemValue=@(u =>u.name)
+                                             HideDetails="true" Height="30" Dense>
                                 </MSelect>
                             </MCol>
                                 break;
@@ -48,10 +48,10 @@
                                 <MCol Class="pa-2 px-4" Md=12 Cols="12">
                                     <MSubheader Class="mt-4 font-weight-black"> @item.Remark</MSubheader>
                                     <MSelect @bind-Value=@item.ConfigValue Outlined
-                                 Items=@(new List<bool>(){true,false}) Clearable
-                                 MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
-                                 ItemText=@((u) =>u.ToString()) ItemValue=@(u =>u.ToString())
-                                 HideDetails=@("auto") Height="30" Dense>
+                                             Items=@(new List<bool>(){true,false}) Clearable
+                                             MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
+                                             ItemText=@((u) =>u.ToString()) ItemValue=@(u =>u.ToString())
+                                             HideDetails=@("auto") Height="30" Dense>
                                 </MSelect>
 
                             </MCol>
@@ -60,7 +60,7 @@
                                 <MCol Class="pa-2 px-4" Md=3 Cols="12">
                                     <MSubheader Class="mt-4 font-weight-black"> @item.Remark</MSubheader>
                                     <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@item.ConfigValue />
-                                    </MCol>
+                                </MCol>
                                 break;
                         }
 
@@ -84,16 +84,16 @@
                                 <MCol Class="pa-2 px-4" Md=12 Cols="12">
                                     <MSubheader Class="mt-4 font-weight-black"> @item.Remark</MSubheader>
                                     <MTextField Type="password" Dense Outlined HideDetails="@("auto")" @bind-Value=@item.ConfigValue />
-                                    </MCol>
+                                </MCol>
                                 break;
                             case ThingsGatewayConst.Config_His_DbType:
                                 <MCol Class="pa-2 px-4" Md=12 Cols="12">
                                     <MSubheader Class="mt-4 font-weight-black"> @item.Remark</MSubheader>
                                     <MSelect @bind-Value="item.ConfigValue" Outlined
-                                 Items=@(typeof(HisDbType).GetEnumList()) Clearable
-                                 MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
-                                 ItemText=@((u) =>u.des) ItemValue=@(u =>u.name)
-                                 HideDetails="true" Height="30" Dense>
+                                             Items=@(typeof(HisDbType).GetEnumList()) Clearable
+                                             MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
+                                             ItemText=@((u) =>u.des) ItemValue=@(u =>u.name)
+                                             HideDetails="true" Height="30" Dense>
                                 </MSelect>
                             </MCol>
                                 break;
@@ -101,10 +101,10 @@
                                 <MCol Class="pa-2 px-4" Md=12 Cols="12">
                                     <MSubheader Class="mt-4 font-weight-black"> @item.Remark</MSubheader>
                                     <MSelect @bind-Value=@item.ConfigValue Outlined
-                                 Items=@(new List<bool>(){true,false}) Clearable
-                                 MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
-                                 ItemText=@((u) =>u.ToString()) ItemValue=@(u =>u.ToString())
-                                 HideDetails=@("auto") Height="30" Dense>
+                                             Items=@(new List<bool>(){true,false}) Clearable
+                                             MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
+                                             ItemText=@((u) =>u.ToString()) ItemValue=@(u =>u.ToString())
+                                             HideDetails=@("auto") Height="30" Dense>
                                 </MSelect>
 
                             </MCol>
@@ -113,7 +113,7 @@
                                 <MCol Class="pa-2 px-4" Md=3 Cols="12">
                                     <MSubheader Class="mt-4 font-weight-black"> @item.Remark</MSubheader>
                                     <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@item.ConfigValue />
-                                    </MCol>
+                                </MCol>
                                 break;
                         }
 

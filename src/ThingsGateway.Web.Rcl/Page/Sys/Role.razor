@@ -14,7 +14,7 @@
               SearchModel="@search" IsShowSearchKey
               QueryCall="QueryCall" AddCall="AddCall" EditCall="EditCall" DeleteCall="DeleteCall"
               FilterHeaders="FilterHeaders"
-              ShowQueryButton
+                ShowQueryButton
               ShowAddButton=@UserResoures.IsHasButtonWithRole("sysroleadd")
               ShowDeleteButton=@UserResoures.IsHasButtonWithRole("sysroledelete")
               ShowEditButton=@UserResoures.IsHasButtonWithRole("sysroleedit")>
@@ -186,7 +186,7 @@
         catch (Exception ex)
         {
             args.Cancel();
-            await PopupService.EnqueueSnackbarAsync(ex,false);
+            await PopupService.EnqueueSnackbarAsync(ex, false);
         }
     }
     [Inject]
@@ -218,7 +218,7 @@
         catch (Exception ex)
         {
             args.Cancel();
-            await PopupService.EnqueueSnackbarAsync(ex,false);
+            await PopupService.EnqueueSnackbarAsync(ex, false);
         }
     }
 

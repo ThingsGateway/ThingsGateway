@@ -21,8 +21,8 @@
             <MCardTitle>
                 <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="mx-2 my-1" @bind-Value="_searchName"
                             Outlined Label=@typeof(CollectDevice).GetDescription(nameof(CollectDevice.DeviceGroup)) />
-                </MCardTitle>
-                <MTreeview Style="height: calc(100vh - 320px);overflow-y:auto" Dense TItem="DeviceTree" TKey="string" Active="_searchModel.DeviceName?.StringToList()" OpenOnClick ActiveChanged=@((async a=>
+            </MCardTitle>
+            <MTreeview Style="height: calc(100vh - 320px);overflow-y:auto" Dense TItem="DeviceTree" TKey="string" Active="_searchModel.DeviceName?.StringToList()" OpenOnClick ActiveChanged=@((async a=>
                        {
                        if(this._searchModel.DeviceName!= a.FirstOrDefault())
                        {
@@ -34,46 +34,46 @@
                        Search="@_searchName"
                        Activatable ItemKey=@(r=>r.Name)>
             </MTreeview>
-            </MCard>
-            </MCol>
-            <MCol Md=10 Cols="12">
-            <div style="height: calc(100vh - 200px)">
+        </MCard>
+    </MCol>
+    <MCol Md=10 Cols="12">
+        <div style="height: calc(100vh - 200px)">
 
-<AppDataTable @ref="_datatable" TItem="CollectVariableRunTime" SearchItem="VariablePageInput"
-              AddItem="object" EditItem="object"
-              SearchModel="_searchModel"
-              QueryCall="QueryCall"
-              FilterHeaders="FilterHeaders" Filters="Filters" ShowDetailButton IsShowOperCol=true
-                ShowQueryButton>
-    <SearchTemplate>
-        <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="my-1  mx-2 " @bind-Value="context.Name" Clearable
-                        Outlined Label=@context.Description(x => x.Name) />
-        <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="my-1  mx-2 " @bind-Value="context.DeviceName" Clearable
-                        Outlined Label=@context.Description(x => x.DeviceName) />
-    </SearchTemplate>
+            <AppDataTable @ref="_datatable" TItem="CollectVariableRunTime" SearchItem="VariablePageInput"
+                          AddItem="object" EditItem="object"
+                          SearchModel="_searchModel"
+                          QueryCall="QueryCall"
+                          FilterHeaders="FilterHeaders" Filters="Filters" ShowDetailButton IsShowOperCol=true
+                                ShowQueryButton>
+                <SearchTemplate>
+                    <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="my-1  mx-2 " @bind-Value="context.Name" Clearable
+                                        Outlined Label=@context.Description(x => x.Name) />
+                    <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="my-1  mx-2 " @bind-Value="context.DeviceName" Clearable
+                                        Outlined Label=@context.Description(x => x.DeviceName) />
+                </SearchTemplate>
 
-    <ItemColOperTemplate>
-        <MButton Text Disabled=@(!UserResoures.IsHasButtonWithRole("tgcollectdeviceedit")) Class="my-1  mx-2" OnClick=@(() => Write(context.Item))>
-            @T("写入")
-        </MButton>
-    </ItemColOperTemplate>
-    <ItemColTemplate>
-        @switch (context.Header.Value)
-        {
+                <ItemColOperTemplate>
+                    <MButton Text Disabled=@(!UserResoures.IsHasButtonWithRole("tgcollectdeviceedit")) Class="my-1  mx-2" OnClick=@(() => Write(context.Item))>
+                        @T("写入")
+                    </MButton>
+                </ItemColOperTemplate>
+                <ItemColTemplate>
+                    @switch (context.Header.Value)
+                    {
 
-            case nameof(context.Item.Quality):
-                <EnableChip Value="context.Item.Quality==192" DisabledLabel=@context.Item.Quality.ToString() EnabledLabel=@context.Item.Quality.ToString()>
-                </EnableChip>
-                break;
-            default:
-                @context.Value
-                break;
+                        case nameof(context.Item.Quality):
+                            <EnableChip Value="context.Item.Quality==192" DisabledLabel=@context.Item.Quality.ToString() EnabledLabel=@context.Item.Quality.ToString()>
+                            </EnableChip>
+                            break;
+                        default:
+                            @context.Value
+                            break;
 
-        }
+                    }
 
-    </ItemColTemplate>
+                </ItemColTemplate>
 
-</AppDataTable>
+            </AppDataTable>
 
         </div>
     </MCol>
@@ -87,8 +87,8 @@
     [Parameter]
     [SupplyParameterFromQuery]
     public string DeviceName
-    { 
-        get; 
+    {
+        get;
         set;
     }
 
@@ -107,7 +107,7 @@
 
         _deviceGroups = CollectDeviceServiceHelpers.GetTree(CollectDeviceHostService.CollectDeviceRunTimes.Adapt<List<CollectDevice>>());
 
-        await base.OnParametersSetAsync();  
+        await base.OnParametersSetAsync();
     }
     protected override async Task OnInitializedAsync()
     {
@@ -139,8 +139,8 @@
         $"输入变量{collectVariableRunTime.Name}的写入值");
         if (confirm != null)
         {
-            var data=   await rpcCore?.InvokeDeviceMethodAsync($"BLAZOR-{UserResoures.CurrentUser.Account}-{App.HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString()}",  new NameValue { Name = collectVariableRunTime.Name, Value = confirm  }, true);
-            if(data.IsSuccess)
+            var data = await rpcCore?.InvokeDeviceMethodAsync($"BLAZOR-{UserResoures.CurrentUser.Account}-{App.HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString()}", new NameValue { Name = collectVariableRunTime.Name, Value = confirm }, true);
+            if (data.IsSuccess)
             {
                 await InvokeAsync(async () => await PopupService.EnqueueSnackbarAsync(data.Message, AlertTypes.Success));
             }
@@ -226,7 +226,7 @@
     {
         var devices = CollectDeviceHostService.CollectDeviceRunTimes.SelectMany(it => it.DeviceVariableRunTimes).ToList();
         var data = await devices
-    .WhereIf(!input.DeviceName.IsNullOrEmpty(), a => a.DeviceName==input.DeviceName)
+    .WhereIf(!input.DeviceName.IsNullOrEmpty(), a => a.DeviceName == input.DeviceName)
     .WhereIf(!input.Name.IsNullOrEmpty(), a => a.Name.Contains(input.Name)).ToList()
     .ToPagedListAsync(input);
         return data;

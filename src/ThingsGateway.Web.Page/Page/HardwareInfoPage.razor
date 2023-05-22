@@ -70,64 +70,64 @@
                 </div>
             </MCardSubtitle>
             <MDivider></MDivider>
-           
-                <MRow NoGutters>
+
+            <MRow NoGutters>
                 <MCol Style="height:256px" Md=5 Cols="12" Class="ml-2 mr-2 d-flex justify-space-around">
-                        @foreach (var item in HardwareInfoService.HardwareInfo.CpuList)
-                        {
+                    @foreach (var item in HardwareInfoService.HardwareInfo.CpuList)
+                    {
 
-                            <div class="ml-2 mr-2 d-flex flex-column  align-center">
-                                <MProgressCircular Value=@(item.PercentProcessorTime) Size="200" Width="12" Class="ma-4" Color=@(item.PercentProcessorTime>70?"red":"green")>
-                                    <div class="ml-2 mr-2 d-flex flex-column align-center">
-                                        @((item.PercentProcessorTime).ToString("F0") + " %")
-
-                                        <div class="mt-1  d-flex align-center justify-space-between">
-                                            <span class="text-subtitle-2 grey--text mx-2">@item.Description(a=>a.NumberOfCores)</span>
-                                            <span class="text-caption">@item.NumberOfCores</span>
-                                        </div>
-                                        <div class="mt-1  d-flex align-center justify-space-between">
-                                            <span class="text-subtitle-2 grey--text mx-2">@item.Description(a=>a.NumberOfLogicalProcessors)</span>
-                                            <span class="text-caption">@item.NumberOfLogicalProcessors</span>
-                                        </div>
-                                    </div>
-                                </MProgressCircular>
-
-                                <div class="mt-1  d-flex align-center justify-space-between">
-                                    <span class="text-caption">@item.Name</span>
-                                </div>
-                            </div>
-
-                        }
-
-                    </MCol>
-                    <MDivider Class="mx-2" Vertical></MDivider>
-                <MCol Style="height:256px" Md=5 Cols="12" Class="ml-2 mr-2 d-flex justify-space-around">
-                        @{
-                            var memoryStatus = HardwareInfoService.HardwareInfo.MemoryStatus;
-                        }
                         <div class="ml-2 mr-2 d-flex flex-column  align-center">
-                            <MProgressCircular Value=@(100 - (memoryStatus.AvailablePhysical * 100.00 / memoryStatus.TotalPhysical)) Size="200" Width="12" Class="ma-4" Color=@(memoryStatus.AvailablePhysical * 100.00 / memoryStatus.TotalPhysical<20?"red":"green")>
+                            <MProgressCircular Value=@(item.PercentProcessorTime) Size="200" Width="12" Class="ma-4" Color=@(item.PercentProcessorTime>70?"red":"green")>
                                 <div class="ml-2 mr-2 d-flex flex-column align-center">
-                                    @((100 - (memoryStatus.AvailablePhysical * 100.00 / memoryStatus.TotalPhysical)).ToString("F2") + " %")
+                                    @((item.PercentProcessorTime).ToString("F0") + " %")
+
                                     <div class="mt-1  d-flex align-center justify-space-between">
-                                        <span class="text-caption grey--text mx-2">@(memoryStatus.Description(a => a.AvailablePhysical))</span>
-                                        <span class="text-caption ">@((memoryStatus.AvailablePhysical / 1024.00 / 1024 / 1024).ToString("F2") + " GB")</span>
+                                        <span class="text-subtitle-2 grey--text mx-2">@item.Description(a=>a.NumberOfCores)</span>
+                                        <span class="text-caption">@item.NumberOfCores</span>
                                     </div>
                                     <div class="mt-1  d-flex align-center justify-space-between">
-                                        <span class="text-caption grey--text mx-2">@memoryStatus.Description(a=>a.TotalPhysical)</span>
-                                        <span class="text-caption ">@((memoryStatus.TotalPhysical / 1024.00 / 1024 / 1024).ToString("F2") + " GB")</span>
+                                        <span class="text-subtitle-2 grey--text mx-2">@item.Description(a=>a.NumberOfLogicalProcessors)</span>
+                                        <span class="text-caption">@item.NumberOfLogicalProcessors</span>
                                     </div>
                                 </div>
                             </MProgressCircular>
 
                             <div class="mt-1  d-flex align-center justify-space-between">
-                                <span class="text-caption">@T("内存占用率")</span>
+                                <span class="text-caption">@item.Name</span>
                             </div>
                         </div>
-                    </MCol>
 
-                </MRow>
-         
+                    }
+
+                </MCol>
+                <MDivider Class="mx-2" Vertical></MDivider>
+                <MCol Style="height:256px" Md=5 Cols="12" Class="ml-2 mr-2 d-flex justify-space-around">
+                    @{
+                        var memoryStatus = HardwareInfoService.HardwareInfo.MemoryStatus;
+                    }
+                    <div class="ml-2 mr-2 d-flex flex-column  align-center">
+                        <MProgressCircular Value=@(100 - (memoryStatus.AvailablePhysical * 100.00 / memoryStatus.TotalPhysical)) Size="200" Width="12" Class="ma-4" Color=@(memoryStatus.AvailablePhysical * 100.00 / memoryStatus.TotalPhysical<20?"red":"green")>
+                            <div class="ml-2 mr-2 d-flex flex-column align-center">
+                                @((100 - (memoryStatus.AvailablePhysical * 100.00 / memoryStatus.TotalPhysical)).ToString("F2") + " %")
+                                <div class="mt-1  d-flex align-center justify-space-between">
+                                    <span class="text-caption grey--text mx-2">@(memoryStatus.Description(a => a.AvailablePhysical))</span>
+                                    <span class="text-caption ">@((memoryStatus.AvailablePhysical / 1024.00 / 1024 / 1024).ToString("F2") + " GB")</span>
+                                </div>
+                                <div class="mt-1  d-flex align-center justify-space-between">
+                                    <span class="text-caption grey--text mx-2">@memoryStatus.Description(a=>a.TotalPhysical)</span>
+                                    <span class="text-caption ">@((memoryStatus.TotalPhysical / 1024.00 / 1024 / 1024).ToString("F2") + " GB")</span>
+                                </div>
+                            </div>
+                        </MProgressCircular>
+
+                        <div class="mt-1  d-flex align-center justify-space-between">
+                            <span class="text-caption">@T("内存占用率")</span>
+                        </div>
+                    </div>
+                </MCol>
+
+            </MRow>
+
 
 
         </MCard>

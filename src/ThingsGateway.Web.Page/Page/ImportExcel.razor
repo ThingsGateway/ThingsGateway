@@ -16,30 +16,30 @@
     @if (IsShowImport)
     {
         <MStepper NonLinear Value="Step">
-        <MStepperHeader>
-            <MStepperStep Editable Step="1" Complete="Step==2" OnClick="()=>{Step=1;_importFile=null;}">
-                @T("导入表格")
+            <MStepperHeader>
+                <MStepperStep Editable Step="1" Complete="Step==2" OnClick="()=>{Step=1;_importFile=null;}">
+                    @T("导入表格")
                 </MStepperStep>
                 <MDivider></MDivider>
                 <MStepperStep Step="2">
-                @T("验证结果")
+                    @T("验证结果")
                 </MStepperStep>
                 <MDivider></MDivider>
                 <MStepperStep Step="3">
-                @T("确认导入")
+                    @T("确认导入")
                 </MStepperStep>
-                </MStepperHeader>
+            </MStepperHeader>
 
-                <MStepperItems>
+            <MStepperItems>
                 <MStepperContent Step="1">
-                <MFileInput @bind-Value="_importFile" FullWidth ShowSize></MFileInput>
+                    <MFileInput @bind-Value="_importFile" FullWidth ShowSize></MFileInput>
 
                     <div class="mt-6">
                         <MButton Color="primary" Loading=@isImport OnClick="()=>DeviceImport(_importFile)">@T("下一步")</MButton>
                     </div>
 
-                    </MStepperContent>
-                    <MStepperContent Step="2">
+                </MStepperContent>
+                <MStepperContent Step="2">
                     <div style="overflow-y:auto">
                         @foreach (var item in ImportPreviews)
                         {

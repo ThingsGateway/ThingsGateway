@@ -33,7 +33,7 @@
                           SearchModel="@search" IsMenuOperTemplate=false
                           QueryCall="QueryCall" AddCall="AddCall" EditCall="EditCall" DeleteCall="DeleteCall"
                           FilterHeaders="FilterHeaders" Filters="Filters" ShowDetailButton
-                          ShowQueryButton IsShowSearchKey
+                                ShowQueryButton IsShowSearchKey
                           ShowAddButton=@UserResoures.IsHasButtonWithRole("sysspaadd")
                           ShowDeleteButton=@UserResoures.IsHasButtonWithRole("sysspadelete")
                           ShowEditButton=@UserResoures.IsHasButtonWithRole("sysspaedit")>
@@ -50,14 +50,13 @@
                     <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.Component />
 
                     <MSubheader Class="mt-4 font-weight-black">    @(context.Description(x => x.TargetType))  </MSubheader>
-                    <MSelect 
-                             Class="mt-3 mr-3" @bind-Value="context.TargetType" Outlined
+                    <MSelect Class="mt-3 mr-3" @bind-Value="context.TargetType" Outlined
                              Items=@(typeof(TargetTypeEnum).GetEnumList()) Clearable
                              MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
                              ItemText=@((u) =>u.des)
                              ItemValue=@(u =>(TargetTypeEnum)u.value)
                              HideDetails="true" Height="30"
-                             Dense>
+                                  Dense>
                     </MSelect>
 
 
@@ -68,7 +67,7 @@
                     <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.Icon />
 
                     <MSubheader Class="mt-4 mb-5 font-weight-black">@(context.Description(x => x.SortCode)) </MSubheader>
-                    <MSlider @bind-Value=@context.SortCode Class="mb-5" TValue=int  ThumbLabel="@("always")" Dense />
+                    <MSlider @bind-Value=@context.SortCode Class="mb-5" TValue=int ThumbLabel="@("always")" Dense />
 
 
 
@@ -84,18 +83,17 @@
 
                     <MSubheader Class="mt-4 font-weight-black">    @(context.Description(x => x.TargetType))  </MSubheader>
 
-                    <MSelect 
-                             Class="mt-3 mr-3" @bind-Value="context.TargetType" Outlined
+                    <MSelect Class="mt-3 mr-3" @bind-Value="context.TargetType" Outlined
                              Items=@(typeof(TargetTypeEnum).GetEnumList()) Clearable
                              MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
                              ItemText=@((u) =>u.des)
                              ItemValue=@(u =>(TargetTypeEnum)u.value)
                              HideDetails="true" Height="30"
-                             Dense>
+                                  Dense>
                     </MSelect>
                     <MSubheader Class="mt-4 font-weight-black">@T("改变父级")</MSubheader>
                     <MSelect Class="mr-3" @bind-Value=@context.ParentId Outlined
-                             Items=@(MenuCatalog) 
+                             Items=@(MenuCatalog)
                              MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
                              ItemText=@((u) =>u.Title) ItemValue=@(u =>u.Id)
                              HideDetails=@("auto") Height="30" Dense>
@@ -149,13 +147,13 @@
     @if (IsShowButtonList)
     {
         <AppDataTable @ref="_buttonsDatatable" TItem="SysResource" SearchItem="ButtonPageInput"
-                  AddItem="ButtonAddInput" EditItem="ButtonEditInput"
-                  QueryCall="ButtonQueryCall" AddCall="ButtonAddCall" EditCall="ButtonEditCall" DeleteCall="ButtonDeleteCall"
-                  FilterHeaders="ButtonFilterHeaders"
-                  ShowQueryButton  IsShowClearSearch=false
-                  ShowAddButton=@UserResoures.IsHasButtonWithRole("sysspaadd")
-                  ShowDeleteButton=@UserResoures.IsHasButtonWithRole("sysspadelete")
-                  ShowEditButton=@UserResoures.IsHasButtonWithRole("sysspaedit")>
+                      AddItem="ButtonAddInput" EditItem="ButtonEditInput"
+                      QueryCall="ButtonQueryCall" AddCall="ButtonAddCall" EditCall="ButtonEditCall" DeleteCall="ButtonDeleteCall"
+                      FilterHeaders="ButtonFilterHeaders"
+                        ShowQueryButton IsShowClearSearch=false
+                      ShowAddButton=@UserResoures.IsHasButtonWithRole("sysspaadd")
+                      ShowDeleteButton=@UserResoures.IsHasButtonWithRole("sysspadelete")
+                      ShowEditButton=@UserResoures.IsHasButtonWithRole("sysspaedit")>
 
             <AddTemplate>
                 <MSubheader Class="mt-4 font-weight-black"> @(context.Description(x => x.Title))  </MSubheader>

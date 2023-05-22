@@ -15,13 +15,13 @@
               QueryCall="sessionQueryCall"
               FilterHeaders="sessionFilterHeaders"
               IsMenuOperTemplate=false
-              ShowQueryButton>
+                ShowQueryButton>
 
     <SearchTemplate>
         <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="my-1 mx-2 " @bind-Value="context.Account"
-                    Outlined Label=@context.Description(x => x.Account) />
+                        Outlined Label=@context.Description(x => x.Account) />
         <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="my-1 mx-2 " @bind-Value="context.LatestLoginIp"
-                    Outlined Label=@context.Description(x => x.LatestLoginIp) />
+                        Outlined Label=@context.Description(x => x.LatestLoginIp) />
     </SearchTemplate>
 
     <ItemColOperTemplate>
@@ -49,12 +49,12 @@
     @if (IsShowVerificatSignList)
     {
         <AppDataTable @ref="_verificatinfosDatatable" TItem="VerificatInfo"
-                  SearchItem="BasePageInput" AddItem="object" EditItem="object"
-                  QueryCall="verificatQueryCall"
-                  DeleteCall="verificatExit" IsPage=true
-                  FilterHeaders="verificatFilterHeaders"
-                  IsMenuOperTemplate=false IsShowToolbar
-                  ShowDeleteButton=@UserResoures.IsHasButtonWithRole("openapiverificatdelete")>
+                      SearchItem="BasePageInput" AddItem="object" EditItem="object"
+                      QueryCall="verificatQueryCall"
+                      DeleteCall="verificatExit" IsPage=true
+                      FilterHeaders="verificatFilterHeaders"
+                      IsMenuOperTemplate=false IsShowToolbar
+                      ShowDeleteButton=@UserResoures.IsHasButtonWithRole("openapiverificatdelete")>
 
             <ItemColTemplate>
                 @switch (context.Header.Value)

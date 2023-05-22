@@ -26,10 +26,10 @@
         @foreach (var item in UserResoures.WorkbenchOutputs ?? new())
         {
             <MButton Text Href=@item.Component
-                 Target=@(item.TargetType==TargetTypeEnum.SELF?"_self":"_blank") Class="ma-2 text-subtitle px-2">
-            <MIcon Left Size="25" Color="primary">@item.Icon</MIcon>
+                     Target=@(item.TargetType==TargetTypeEnum.SELF?"_self":"_blank") Class="ma-2 text-subtitle px-2">
+                <MIcon Left Size="25" Color="primary">@item.Icon</MIcon>
                 @item.Title
-                </MButton>
+            </MButton>
         }
     </MRow>
 

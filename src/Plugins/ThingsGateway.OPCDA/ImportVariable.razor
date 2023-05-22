@@ -24,8 +24,8 @@
 
             </MTreeview>
 
-            </MCol>
-            <MCol Cols="12" Md="6">
+        </MCol>
+        <MCol Cols="12" Md="6">
             <MCardText Style="height:500px;overflow-y:auto;">
                 @if (_actived?.Count == 0)
                 {
@@ -38,17 +38,17 @@
                 {
                     <ScrollXTransition>
                         <MSheet Outlined Class="ma-0 pa-1">
-                        <MRow Align="AlignTypes.Center">
-                            <MCol>
-                                <MListItem>
-                                    <ItemContent>
-                                        <MListItemContent>
-                                            <MListItemTitle>NodeId </MListItemTitle>
-                                        </MListItemContent>
-                                    </ItemContent>
-                                </MListItem>
-                            </MCol>
-                            <MDivider Vertical Center />
+                            <MRow Align="AlignTypes.Center">
+                                <MCol>
+                                    <MListItem>
+                                        <ItemContent>
+                                            <MListItemContent>
+                                                <MListItemTitle>NodeId </MListItemTitle>
+                                            </MListItemContent>
+                                        </ItemContent>
+                                    </MListItem>
+                                </MCol>
+                                <MDivider Vertical Center />
                                 <MCol>
                                     <MLabel Class=@($"ma-1")> @_actived.FirstOrDefault().ItemName  </MLabel>
                                 </MCol>
@@ -60,17 +60,17 @@
                             @foreach (var item in nodeAttributes)
                             {
                                 <MSheet Outlined Class="ma-0 pa-1">
-                                <MRow Align="AlignTypes.Center">
-                                <MCol>
-                                <MListItem>
-                                    <ItemContent>
-                                        <MListItemContent>
-                                            <MListItemTitle>@item.Description </MListItemTitle>
-                                        </MListItemContent>
-                                    </ItemContent>
-                                </MListItem>
-                                </MCol>
-                                <MDivider Vertical Center />
+                                    <MRow Align="AlignTypes.Center">
+                                        <MCol>
+                                            <MListItem>
+                                                <ItemContent>
+                                                    <MListItemContent>
+                                                        <MListItemTitle>@item.Description </MListItemTitle>
+                                                    </MListItemContent>
+                                                </ItemContent>
+                                            </MListItem>
+                                        </MCol>
+                                        <MDivider Vertical Center />
                                         <MCol>
                                             <MLabel Class=@($"{(item.ResultID.Failed()?"red--text":"green--text")} ma-1")> @item.Value  </MLabel>
                                         </MCol>
@@ -100,9 +100,9 @@
     </span>
     <MProgressCircular Indeterminate Width=6
                        Size="30"></MProgressCircular>
-    </MOverlay>
-    @code
-    {
+</MOverlay>
+@code
+{
 
     protected override void OnInitialized()
     {
@@ -163,7 +163,7 @@
               }
               return new CollectDeviceVariable()
                   {
-                      Name = OPCDAClient.Device.Name+"_"+ a.Name,
+                      Name = OPCDAClient.Device.Name + "_" + a.Name,
                       VariableAddress = a.ItemName,
                       DeviceId = OPCDAClient.Device.Id,
                       Id = Yitter.IdGenerator.YitIdHelper.NextId(),

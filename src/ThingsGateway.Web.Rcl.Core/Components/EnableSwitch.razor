@@ -6,7 +6,7 @@
          Label="@Label" />
 
 @code {
-        [Parameter]
+    [Parameter]
     public bool Dense { get; set; } = true;
     [Parameter]
     public string Class { get; set; } = "";
@@ -27,7 +27,7 @@
         catch (Exception ex)
         {
             value = !value;
-                await PopupService.EnqueueSnackbarAsync(ex,false);
+            await PopupService.EnqueueSnackbarAsync(ex, false);
         }
         finally
         {

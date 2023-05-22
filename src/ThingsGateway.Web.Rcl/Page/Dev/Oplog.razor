@@ -12,36 +12,36 @@
               SearchModel="@search" IsShowOperCol=true
               QueryCall="QueryCall"
               FilterHeaders="FilterHeaders" Filters="Filters" ShowDetailButton
-              ShowQueryButton IsShowSearchKey>
+                ShowQueryButton IsShowSearchKey>
     <SearchTemplate>
         <MSelect Style="max-width:200px;"
                  Class="my-1 mx-2 " @bind-Value="context.Category"
-                 Outlined Label=@context.Description(x => x.Category)
+                  Outlined Label=@context.Description(x => x.Category)
                  Items=@(CategoryFilters) Clearable
                  MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
                  ItemText=@((u) =>u.Key)
                  ItemValue=@(u => u.Value)
                  HideDetails="true" Height="30"
-                 Dense>
+                  Dense>
         </MSelect>
         <MSelect Style="max-width:200px;"
                  Class="my-1 mx-2 " @bind-Value="context.ExeStatus"
-                 Outlined Label=@context.Description(x => x.ExeStatus)
+                  Outlined Label=@context.Description(x => x.ExeStatus)
                  Items=@(ExeStatus) Clearable
                  MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
                  ItemText=@((u) =>u.Key)
                  ItemValue=@(u => u.Value)
                  HideDetails="true" Height="30"
-                 Dense>
+                  Dense>
         </MSelect>
         <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="my-1  mx-2 " @bind-Value="context.Account"
-                    Outlined Label=@context.Description(x => x.Account) />
+                        Outlined Label=@context.Description(x => x.Account) />
 
     </SearchTemplate>
     <OtherToolbarTemplate>
         @if (@UserResoures.IsHasButtonWithRole("devoplogclear"))
         {
-            <MButton Color="error"  Class="mx-2 my-1" OnClick=@(ClearClick)>@T("清空")</MButton>
+            <MButton Color="error" Class="mx-2 my-1" OnClick=@(ClearClick)>@T("清空")</MButton>
         }
     </OtherToolbarTemplate>
 </AppDataTable>

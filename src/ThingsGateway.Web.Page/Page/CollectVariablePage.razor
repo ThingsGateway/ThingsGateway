@@ -22,8 +22,8 @@
             <MCardTitle>
                 <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="mx-2 my-1" @bind-Value="_searchName"
                             Outlined Label=@typeof(CollectDevice).GetDescription(nameof(CollectDevice.DeviceGroup)) />
-                </MCardTitle>
-                <MTreeview Style="height: calc(100vh - 320px);overflow-y:auto" Dense TItem="DeviceTree" TKey="string" OpenOnClick ActiveChanged=@(async a=>
+            </MCardTitle>
+            <MTreeview Style="height: calc(100vh - 320px);overflow-y:auto" Dense TItem="DeviceTree" TKey="string" OpenOnClick ActiveChanged=@(async a=>
                        {
                        if(search.DeviceName!=a.FirstOrDefault())
                        {
@@ -35,12 +35,12 @@
                        Search="@_searchName"
                        Activatable ItemKey=@(r=>r.Name)>
             </MTreeview>
-            </MCard>
-            </MCol>
-            <MCol Md=10 Cols="12">
-            <div style="height: calc(100vh - 200px)">
+        </MCard>
+    </MCol>
+    <MCol Md=10 Cols="12">
+        <div style="height: calc(100vh - 200px)">
 
-                <AppDataTable @ref="_datatable" TItem="CollectDeviceVariable" SearchItem="VariablePageInput"
+            <AppDataTable @ref="_datatable" TItem="CollectDeviceVariable" SearchItem="VariablePageInput"
                           AddItem="VariableAddInput" EditItem="VariableEditInput"
                           IsMenuOperTemplate=false SearchModel="search"
                           QueryCall="QueryCall" AddCall="AddCall" EditCall="EditCall" DeleteCall="DeleteCall"
@@ -181,46 +181,46 @@
                         <MCol Md=12 Cols=12 class="px-1">
                             <MSubheader Class="font-weight-black"> @(context.Description(x => x.Name))  </MSubheader>
                             <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.Name />
-                            </MCol>
+                        </MCol>
 
 
-                            <MCol Md=12 Cols=12 class="px-1">
+                        <MCol Md=12 Cols=12 class="px-1">
                             <MSubheader Class="font-weight-black">    @(context.Description(x => x.Description))  </MSubheader>
                             <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.Description />
-                            </MCol>
+                        </MCol>
 
-                            <MCol Md=6 Cols=12 class="px-1">
+                        <MCol Md=6 Cols=12 class="px-1">
                             <MSubheader Class="font-weight-black">    @context.Description(x=>x.DeviceId)  </MSubheader>
                             <MSelect Class="mr-3" @bind-Value=@context.DeviceId Outlined
-                                 Items=@(CollectDevices) OnClick=@(()=>DeviceChanged(context.DeviceId))
-                                 MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
-                                 ItemText=@((u) =>u.Name) ItemValue=@(u =>u.Id)
-                                 ItemDisabled="u => !u.Enable"
-                                 HideDetails=@("auto") Height="30" Dense>
+                                     Items=@(CollectDevices) OnClick=@(()=>DeviceChanged(context.DeviceId))
+                                     MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
+                                     ItemText=@((u) =>u.Name) ItemValue=@(u =>u.Id)
+                                     ItemDisabled="u => !u.Enable"
+                                     HideDetails=@("auto") Height="30" Dense>
                             </MSelect>
                         </MCol>
 
                         <MCol Md=6 Cols=12 class="px-1">
                             <MSubheader Class="font-weight-black">    @(context.Description(x => x.IntervalTime))  </MSubheader>
                             <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.IntervalTime />
-                            </MCol>
+                        </MCol>
 
 
-                            <MCol Md=12 Cols=12 class="px-1">
+                        <MCol Md=12 Cols=12 class="px-1">
                             <MSubheader Class="font-weight-black">    @(context.Description(x => x.VariableAddress))  </MSubheader>
                             <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.VariableAddress />
-                            </MCol>
+                        </MCol>
 
 
 
-                            <MCol Md=6 Cols=12 class="px-1">
+                        <MCol Md=6 Cols=12 class="px-1">
                             <MSubheader Class="font-weight-black">    @(context.Description(x => x.ProtectTypeEnum))  </MSubheader>
                             <MSelect Class="mr-3" @bind-Value="context.ProtectTypeEnum" Outlined
-                                 Items=@(typeof(ProtectTypeEnum).GetEnumList())
-                                 MenuProps="@(props => { props.Auto = true; props.OffsetY = true; })"
-                                 ItemText=@((u) =>u.des)
-                                 ItemValue=@(u =>(ProtectTypeEnum)u.value)
-                                 HideDetails=@("auto") Height="30"
+                                     Items=@(typeof(ProtectTypeEnum).GetEnumList())
+                                     MenuProps="@(props => { props.Auto = true; props.OffsetY = true; })"
+                                     ItemText=@((u) =>u.des)
+                                     ItemValue=@(u =>(ProtectTypeEnum)u.value)
+                                     HideDetails=@("auto") Height="30"
                                           Dense>
                             </MSelect>
                         </MCol>
@@ -229,11 +229,11 @@
                         <MCol Md=6 Cols=12 class="px-1">
                             <MSubheader Class="font-weight-black">    @(context.Description(x => x.DataTypeEnum))  </MSubheader>
                             <MSelect Class="mr-3" @bind-Value="context.DataTypeEnum" Outlined
-                                 Items=@(typeof(DataTypeEnum).GetEnumList()) Clearable
-                                 MenuProps="@(props => { props.Auto = true; props.OffsetY = true; })"
-                                 ItemText=@((u) =>u.des)
-                                 ItemValue=@(u =>(DataTypeEnum)u.value)
-                                 HideDetails=@("auto") Height="30"
+                                     Items=@(typeof(DataTypeEnum).GetEnumList()) Clearable
+                                     MenuProps="@(props => { props.Auto = true; props.OffsetY = true; })"
+                                     ItemText=@((u) =>u.des)
+                                     ItemValue=@(u =>(DataTypeEnum)u.value)
+                                     HideDetails=@("auto") Height="30"
                                           Dense>
                             </MSelect>
                         </MCol>
@@ -242,35 +242,35 @@
 
                             <MSubheader Class="font-weight-black">    @(context.Description(x => x.ReadExpressions))  </MSubheader>
                             <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.ReadExpressions />
-                            </MCol>
-                            <MCol Md=6 Cols=12 class="px-1">
+                        </MCol>
+                        <MCol Md=6 Cols=12 class="px-1">
 
                             <MSubheader Class="font-weight-black">    @(context.Description(x => x.WriteExpressions))  </MSubheader>
                             <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.WriteExpressions />
-                            </MCol>
+                        </MCol>
 
-                            <MCol Md=6 Cols=12 class="px-1">
+                        <MCol Md=6 Cols=12 class="px-1">
                             <MSubheader Class="font-weight-black"> @(context.Description(x => x.RpcWriteEnable))  </MSubheader>
                             <MSelect Class="mr-3" @bind-Value=@context.RpcWriteEnable Outlined
-                                 Items=@(new List<bool>(){true,false}) Clearable
-                                 MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
-                                 ItemText=@((u) =>u.ToString()) ItemValue=@(u =>u)
-                                 HideDetails=@("auto") Height="30" Dense>
+                                     Items=@(new List<bool>(){true,false}) Clearable
+                                     MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
+                                     ItemText=@((u) =>u.ToString()) ItemValue=@(u =>u)
+                                     HideDetails=@("auto") Height="30" Dense>
                             </MSelect>
                         </MCol>
 
 
-                            @if (OtherMethods.ContainsKey(context.DeviceId))
+                        @if (OtherMethods.ContainsKey(context.DeviceId))
                         {
 
                             <MCol Md=12 Cols=12 class="px-1">
                                 <MSubheader Class="font-weight-black">    @(context.Description(x => x.OtherMethod))  </MSubheader>
                                 <MSelect Class="mr-3" @bind-Value="context.OtherMethod" Outlined
-                                 Items=@(OtherMethods[context.DeviceId]) Clearable
-                                 MenuProps="@(props => { props.Auto = true; props.OffsetY = true; })"
-                                 ItemText=@((u) =>u)
-                                 ItemValue=@(u =>u)
-                                 HideDetails=@("auto") Height="30"
+                                             Items=@(OtherMethods[context.DeviceId]) Clearable
+                                             MenuProps="@(props => { props.Auto = true; props.OffsetY = true; })"
+                                             ItemText=@((u) =>u)
+                                             ItemValue=@(u =>u)
+                                             HideDetails=@("auto") Height="30"
                                                   Dense>
                                 </MSelect>
                             </MCol>
@@ -288,39 +288,39 @@
 
                         <MCol Md=12 Cols=12 class="px-1 py-2">
                             <MDivider Center Height="2"></MDivider>
-                            </MCol>
+                        </MCol>
 
-                            <MCol Md=6 Cols=12 class="px-1">
+                        <MCol Md=6 Cols=12 class="px-1">
                             <MSubheader Class="font-weight-black"> @(context.Description(x => x.BoolCloseAlarmEnable))  </MSubheader>
                             <MSelect Class="mr-3" @bind-Value=@context.BoolCloseAlarmEnable Outlined
-                                 Items=@(new List<bool>(){true,false}) Clearable
-                                 MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
-                                 ItemText=@((u) =>u.ToString()) ItemValue=@(u =>u)
-                                 HideDetails=@("auto") Height="30" Dense>
+                                     Items=@(new List<bool>(){true,false}) Clearable
+                                     MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
+                                     ItemText=@((u) =>u.ToString()) ItemValue=@(u =>u)
+                                     HideDetails=@("auto") Height="30" Dense>
                             </MSelect>
                         </MCol>
 
                         <MCol Md=6 Cols=12 class="px-1">
                             <MSubheader Class="font-weight-black"> @(context.Description(x => x.BoolCloseAlarmText))  </MSubheader>
                             <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.BoolCloseAlarmText />
-                            </MCol>
+                        </MCol>
 
-                            <MCol Md=12 Cols=12 class="px-1">
+                        <MCol Md=12 Cols=12 class="px-1">
                             <MSubheader Class="font-weight-black"> @(context.Description(x => x.BoolCloseRestrainExpressions))  </MSubheader>
                             <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.BoolCloseRestrainExpressions />
-                            </MCol>
+                        </MCol>
 
-                            <MCol Md=12 Cols=12 class="px-1 py-2">
+                        <MCol Md=12 Cols=12 class="px-1 py-2">
                             <MDivider Center Height="2"></MDivider>
-                            </MCol>
+                        </MCol>
 
-                            <MCol Md=6 Cols=12 class="px-1">
+                        <MCol Md=6 Cols=12 class="px-1">
                             <MSubheader Class="font-weight-black"> @(context.Description(x => x.BoolOpenAlarmEnable))  </MSubheader>
                             <MSelect Class="mr-3" @bind-Value=@context.BoolOpenAlarmEnable Outlined
-                                 Items=@(new List<bool>(){true,false}) Clearable
-                                 MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
-                                 ItemText=@((u) =>u.ToString()) ItemValue=@(u =>u)
-                                 HideDetails=@("auto") Height="30" Dense>
+                                     Items=@(new List<bool>(){true,false}) Clearable
+                                     MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
+                                     ItemText=@((u) =>u.ToString()) ItemValue=@(u =>u)
+                                     HideDetails=@("auto") Height="30" Dense>
                             </MSelect>
                         </MCol>
 
@@ -328,147 +328,147 @@
                         <MCol Md=6 Cols=12 class="px-1">
                             <MSubheader Class="font-weight-black"> @(context.Description(x => x.BoolOpenAlarmText))  </MSubheader>
                             <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.BoolOpenAlarmText />
-                            </MCol>
+                        </MCol>
 
-                            <MCol Md=12 Cols=12 class="px-1">
+                        <MCol Md=12 Cols=12 class="px-1">
                             <MSubheader Class="font-weight-black"> @(context.Description(x => x.BoolOpenRestrainExpressions))  </MSubheader>
                             <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.BoolOpenRestrainExpressions />
-                            </MCol>
+                        </MCol>
 
-                            <MCol Md=12 Cols=12 class="px-1 py-2">
+                        <MCol Md=12 Cols=12 class="px-1 py-2">
                             <MDivider Center Height="2"></MDivider>
-                            </MCol>
+                        </MCol>
 
-                            <MCol Md=6 Cols=12 class="px-1">
+                        <MCol Md=6 Cols=12 class="px-1">
                             <MSubheader Class="font-weight-black"> @(context.Description(x => x.HHAlarmEnable))  </MSubheader>
                             <MSelect Class="mr-3" @bind-Value=@context.HHAlarmEnable Outlined
-                                 Items=@(new List<bool>(){true,false}) Clearable
-                                 MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
-                                 ItemText=@((u) =>u.ToString()) ItemValue=@(u =>u)
-                                 HideDetails=@("auto") Height="30" Dense>
+                                     Items=@(new List<bool>(){true,false}) Clearable
+                                     MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
+                                     ItemText=@((u) =>u.ToString()) ItemValue=@(u =>u)
+                                     HideDetails=@("auto") Height="30" Dense>
                             </MSelect>
                         </MCol>
 
                         <MCol Md=6 Cols=12 class="px-1">
                             <MSubheader Class="font-weight-black"> @(context.Description(x => x.HHAlarmText))  </MSubheader>
                             <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.HHAlarmText />
-                            </MCol>
+                        </MCol>
 
-                            <MCol Md=6 Cols=12 class="px-1">
+                        <MCol Md=6 Cols=12 class="px-1">
                             <MSubheader Class="font-weight-black"> @(context.Description(x => x.HHAlarmCode))  </MSubheader>
                             <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.HHAlarmCode />
-                            </MCol>
+                        </MCol>
 
-                            <MCol Md=6 Cols=12 class="px-1">
+                        <MCol Md=6 Cols=12 class="px-1">
                             <MSubheader Class="font-weight-black"> @(context.Description(x => x.HHRestrainExpressions))  </MSubheader>
                             <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.HHRestrainExpressions />
-                            </MCol>
+                        </MCol>
 
-                            <MCol Md=12 Cols=12 class="px-1 py-2">
+                        <MCol Md=12 Cols=12 class="px-1 py-2">
                             <MDivider Center Height="2"></MDivider>
-                            </MCol>
+                        </MCol>
 
 
-                            <MCol Md=6 Cols=12 class="px-1">
+                        <MCol Md=6 Cols=12 class="px-1">
                             <MSubheader Class="font-weight-black"> @(context.Description(x => x.HAlarmEnable))  </MSubheader>
                             <MSelect Class="mr-3" @bind-Value=@context.HAlarmEnable Outlined
-                                 Items=@(new List<bool>(){true,false}) Clearable
-                                 MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
-                                 ItemText=@((u) =>u.ToString()) ItemValue=@(u =>u)
-                                 HideDetails=@("auto") Height="30" Dense>
+                                     Items=@(new List<bool>(){true,false}) Clearable
+                                     MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
+                                     ItemText=@((u) =>u.ToString()) ItemValue=@(u =>u)
+                                     HideDetails=@("auto") Height="30" Dense>
                             </MSelect>
                         </MCol>
 
                         <MCol Md=6 Cols=12 class="px-1">
                             <MSubheader Class="font-weight-black"> @(context.Description(x => x.HAlarmText))  </MSubheader>
                             <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.HAlarmText />
-                            </MCol>
+                        </MCol>
 
-                            <MCol Md=6 Cols=12 class="px-1">
+                        <MCol Md=6 Cols=12 class="px-1">
                             <MSubheader Class="font-weight-black"> @(context.Description(x => x.HAlarmCode))  </MSubheader>
                             <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.HAlarmCode />
-                            </MCol>
+                        </MCol>
 
-                            <MCol Md=6 Cols=12 class="px-1 py-1">
+                        <MCol Md=6 Cols=12 class="px-1 py-1">
                             <MSubheader Class="font-weight-black"> @(context.Description(x => x.HRestrainExpressions))  </MSubheader>
                             <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.HRestrainExpressions />
-                            </MCol>
+                        </MCol>
 
-                            <MCol Md=12 Cols=12 class="px-1 py-2">
+                        <MCol Md=12 Cols=12 class="px-1 py-2">
                             <MDivider Center Height="2"></MDivider>
-                            </MCol>
-                            <MCol Md=6 Cols=12 class="px-1">
+                        </MCol>
+                        <MCol Md=6 Cols=12 class="px-1">
                             <MSubheader Class="font-weight-black"> @(context.Description(x => x.LAlarmEnable))  </MSubheader>
                             <MSelect Class="mr-3" @bind-Value=@context.LAlarmEnable Outlined
-                                 Items=@(new List<bool>(){true,false}) Clearable
-                                 MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
-                                 ItemText=@((u) =>u.ToString()) ItemValue=@(u =>u)
-                                 HideDetails=@("auto") Height="30" Dense>
+                                     Items=@(new List<bool>(){true,false}) Clearable
+                                     MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
+                                     ItemText=@((u) =>u.ToString()) ItemValue=@(u =>u)
+                                     HideDetails=@("auto") Height="30" Dense>
                             </MSelect>
                         </MCol>
 
                         <MCol Md=6 Cols=12 class="px-1">
                             <MSubheader Class="font-weight-black"> @(context.Description(x => x.LAlarmText))  </MSubheader>
                             <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.LAlarmText />
-                            </MCol>
+                        </MCol>
 
-                            <MCol Md=6 Cols=12 class="px-1">
+                        <MCol Md=6 Cols=12 class="px-1">
                             <MSubheader Class="font-weight-black"> @(context.Description(x => x.LAlarmCode))  </MSubheader>
                             <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.LAlarmCode />
-                            </MCol>
+                        </MCol>
 
-                            <MCol Md=6 Cols=12 class="px-1">
+                        <MCol Md=6 Cols=12 class="px-1">
                             <MSubheader Class="font-weight-black"> @(context.Description(x => x.LRestrainExpressions))  </MSubheader>
                             <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.LRestrainExpressions />
-                            </MCol>
+                        </MCol>
 
-                            <MCol Md=12 Cols=12 class="px-1 py-2">
+                        <MCol Md=12 Cols=12 class="px-1 py-2">
                             <MDivider Center Height="2"></MDivider>
-                            </MCol>
+                        </MCol>
 
-                            <MCol Md=6 Cols=12 class="px-1">
+                        <MCol Md=6 Cols=12 class="px-1">
                             <MSubheader Class="font-weight-black"> @(context.Description(x => x.LLAlarmEnable))  </MSubheader>
                             <MSelect Class="mr-3" @bind-Value=@context.LLAlarmEnable Outlined
-                                 Items=@(new List<bool>(){true,false}) Clearable
-                                 MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
-                                 ItemText=@((u) =>u.ToString()) ItemValue=@(u =>u)
-                                 HideDetails=@("auto") Height="30" Dense>
+                                     Items=@(new List<bool>(){true,false}) Clearable
+                                     MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
+                                     ItemText=@((u) =>u.ToString()) ItemValue=@(u =>u)
+                                     HideDetails=@("auto") Height="30" Dense>
                             </MSelect>
                         </MCol>
 
                         <MCol Md=6 Cols=12 class="px-1">
                             <MSubheader Class="font-weight-black"> @(context.Description(x => x.LLAlarmText))  </MSubheader>
                             <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.LLAlarmText />
-                            </MCol>
+                        </MCol>
 
-                            <MCol Md=6 Cols=12 class="px-1">
+                        <MCol Md=6 Cols=12 class="px-1">
                             <MSubheader Class="font-weight-black"> @(context.Description(x => x.LLAlarmCode))  </MSubheader>
                             <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.LLAlarmCode />
-                            </MCol>
+                        </MCol>
 
-                            <MCol Md=6 Cols=12 class="px-1">
+                        <MCol Md=6 Cols=12 class="px-1">
                             <MSubheader Class="font-weight-black"> @(context.Description(x => x.LLRestrainExpressions))  </MSubheader>
                             <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.LLRestrainExpressions />
-                            </MCol>
+                        </MCol>
 
 
-                            </MRow>
+                    </MRow>
 
-                            </MCard>
-                            </MTabItem>
+                </MCard>
+            </MTabItem>
 
 
-                            <MTabItem>
-                            <MCard Flat Class="ma-2">
+            <MTabItem>
+                <MCard Flat Class="ma-2">
 
                     <MRow NoGutters Class="my-2" Justify="JustifyTypes.Center">
                         <MCol Md=12 Cols=12 class="px-1">
                             <MSubheader Class="font-weight-black"> @(context.Description(x => x.HisEnable))  </MSubheader>
                             <MSelect Class="mr-3" @bind-Value=@context.HisEnable Outlined
-                                 Items=@(new List<bool>(){true,false}) Clearable
-                                 MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
-                                 ItemText=@((u) =>u.ToString()) ItemValue=@(u =>u)
-                                 HideDetails=@("auto") Height="30" Dense>
+                                     Items=@(new List<bool>(){true,false}) Clearable
+                                     MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
+                                     ItemText=@((u) =>u.ToString()) ItemValue=@(u =>u)
+                                     HideDetails=@("auto") Height="30" Dense>
                             </MSelect>
                         </MCol>
 
@@ -476,11 +476,11 @@
                             <MSubheader Class="font-weight-black"> @(context.Description(x => x.HisType))  </MSubheader>
 
                             <MSelect Class="mr-3" @bind-Value=@context.HisType Outlined
-                                 Items=@(typeof(HisType).GetEnumList()) Clearable
-                                 MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
-                                 ItemText=@((u) =>u.des)
-                                 ItemValue=@(u =>(HisType)u.value)
-                                 HideDetails=@("auto") Height="30"
+                                     Items=@(typeof(HisType).GetEnumList()) Clearable
+                                     MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
+                                     ItemText=@((u) =>u.des)
+                                     ItemValue=@(u =>(HisType)u.value)
+                                     HideDetails=@("auto") Height="30"
                                           Dense>
                             </MSelect>
                         </MCol>
@@ -494,10 +494,10 @@
                     <MRow Class="px-1 py-6" Align="AlignTypes.Center">
 
                         <MSelect Class="mr-3" @bind-Value=@choiceUploadDeviceId Outlined
-                             Items=@(UploadDevices) Clearable
-                             MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
-                             ItemText=@((u) =>u.Name) ItemValue=@(u =>u.Id)
-                             HideDetails=@("auto") Height="30" Dense>
+                                 Items=@(UploadDevices) Clearable
+                                 MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
+                                 ItemText=@((u) =>u.Name) ItemValue=@(u =>u.Id)
+                                 HideDetails=@("auto") Height="30" Dense>
                         </MSelect>
                         <MButton Class="my-3" OnClick=@(async() =>
                              {
@@ -535,13 +535,13 @@
                                 {
                                     <MSubheader Class="mt-4 font-weight-black"> @property.Description </MSubheader>
                                     <MTooltip Disabled=property.Remark.IsNullOrEmpty() Bottom Context="tip">
-                                        <ActivatorContent>
-                                            <MTextField @attributes="@tip.Attrs" Dense Outlined HideDetails="@("auto")" @bind-Value=@property.Value />
+                                            <ActivatorContent>
+                                                <MTextField @attributes="@tip.Attrs" Dense Outlined HideDetails="@("auto")" @bind-Value=@property.Value />
                                             </ActivatorContent>
                                             <ChildContent>
                                                 <span>@property.Remark</span>
                                             </ChildContent>
-                                            </MTooltip>
+                                        </MTooltip>
                                 }
                                 <MCardActions>
                                     <MButton Class="my-3" OnClick=@(() =>

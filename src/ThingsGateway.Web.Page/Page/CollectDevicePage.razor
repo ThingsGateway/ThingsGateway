@@ -21,8 +21,8 @@
             <MCardTitle>
                 <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="mx-2 my-1" @bind-Value="_searchName"
                             Outlined Label=@typeof(CollectDevice).GetDescription(nameof(CollectDevice.DeviceGroup)) />
-                </MCardTitle>
-                <MTreeview Style="height: calc(100vh - 320px);overflow-y:auto" Dense TItem="string" TKey="string" ActiveChanged=@(async a=>
+            </MCardTitle>
+            <MTreeview Style="height: calc(100vh - 320px);overflow-y:auto" Dense TItem="string" TKey="string" ActiveChanged=@(async a=>
                        {
                        if(search.DeviceGroup!=a.FirstOrDefault())
                        {
@@ -34,13 +34,13 @@
                        Search="@_searchName"
                        Activatable ItemKey=@(r=>r)>
             </MTreeview>
-            </MCard>
-            </MCol>
-            <MCol Md=10 Cols="12">
-            <div style="height: calc(100vh - 200px)">
+        </MCard>
+    </MCol>
+    <MCol Md=10 Cols="12">
+        <div style="height: calc(100vh - 200px)">
 
 
-                <AppDataTable @ref="_datatable" TItem="CollectDevice" SearchItem="CollectDevicePageInput"
+            <AppDataTable @ref="_datatable" TItem="CollectDevice" SearchItem="CollectDevicePageInput"
                           AddItem="CollectDeviceAddInput" EditItem="CollectDeviceEditInput"
                           IsMenuOperTemplate=false SearchModel="@search"
                           QueryCall="QueryCall" AddCall="AddCall" EditCall="EditCall" DeleteCall="DeleteCall"
@@ -236,10 +236,10 @@
 
                     <MSubheader Class="mt-4 font-weight-black">    @(typeof(CollectDeviceRunTime).GetDescription(nameof(CollectDeviceRunTime.PluginName)))  </MSubheader>
                     <MCascader Value="context.PluginId" Class="mt-3 mr-3" Clearable TValue=long TItem="DriverPluginCategory"
-                           ValueChanged=@(a=>DriverValueChanged(context,a))
-                           Items="DriverPlugins" ItemText="u => u.Name" ItemValue="u => u.Id" ItemChildren="u => u.Children"
-                           MenuProps="@(props => { props.Auto = true; props.OffsetY = true; })"
-                           ShowAllLevels="false" HideDetails="@("auto")" Height="30" Dense>
+                               ValueChanged=@(a=>DriverValueChanged(context,a))
+                               Items="DriverPlugins" ItemText="u => u.Name" ItemValue="u => u.Id" ItemChildren="u => u.Children"
+                               MenuProps="@(props => { props.Auto = true; props.OffsetY = true; })"
+                               ShowAllLevels="false" HideDetails="@("auto")" Height="30" Dense>
                     </MCascader>
 
                     <MSubheader Class="mt-4 font-weight-black">    @(context.Description(x => x.Enable))  </MSubheader>
@@ -274,13 +274,13 @@
                         {
                             <MSubheader Class="mt-4 font-weight-black"> @item.Description </MSubheader>
                             <MTooltip Disabled=@(item.Remark==null||item.Remark?.IsNullOrEmpty()==true) Bottom Context="tip">
-                                <ActivatorContent>
-                                    <MTextField Type="@(item.PropertyName.Contains("Password") ? "password" : "text")" @attributes="@tip.Attrs" Dense Outlined HideDetails="@("auto")" @bind-Value=@item.Value />
+                                    <ActivatorContent>
+                                        <MTextField Type="@(item.PropertyName.Contains("Password") ? "password" : "text")" @attributes="@tip.Attrs" Dense Outlined HideDetails="@("auto")" @bind-Value=@item.Value />
                                     </ActivatorContent>
                                     <ChildContent>
                                         <span>@item.Remark</span>
                                     </ChildContent>
-                                    </MTooltip>
+                                </MTooltip>
                         }
 
                     }

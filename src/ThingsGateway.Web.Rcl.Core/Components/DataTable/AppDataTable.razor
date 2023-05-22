@@ -13,7 +13,7 @@
 
 @*Add*@
 <PDrawer @bind-Value="AddShow"
-         FormModel="AddModel" 
+         FormModel="AddModel"
          Persistent AutoScrollToTop
          Width=@(MasaBlazor.Breakpoint.Mobile?"100%":"600")
          Title=@T("添加") MaxWidth="600"
@@ -66,7 +66,7 @@
                                     </td>
                                     <td class="text-start ">
                                         <div style="word-break:break-all; white-space:pre-wrap;">
-                                                @value
+                                            @value
                                         </div>
                                     </td>
                                 </tr>
@@ -94,7 +94,7 @@
                         @if (IsShowSearchKey)
                         {
                             <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="mx-2 my-1" @bind-Value="SearchModel.SearchKey"
-                                Outlined Label=@SearchModel.Description(x => x.SearchKey) />
+                                        Outlined Label=@SearchModel.Description(x => x.SearchKey) />
                         }
                         @if (ShowQueryButton)
                         {
@@ -102,7 +102,7 @@
                             {
                                 <MButton Color="info" Class="mx-2 my-1" OnClick=ClearClick>@T("清空搜索")</MButton>
                             }
-                            <MButton Color="info"  Class="mx-2 my-1" Loading="QueryLoading" OnClick=QueryClickAsync>@T("查询")</MButton>
+                            <MButton Color="info" Class="mx-2 my-1" Loading="QueryLoading" OnClick=QueryClickAsync>@T("查询")</MButton>
                         }
                         @if (ShowAddButton)
                         {
@@ -110,11 +110,11 @@
                         }
                         @if (ShowEditButton)
                         {
-                            <MButton Color="info"  Class="mx-2 my-1" OnClick=@(()=>EditClick(selectedItem?.ToArray()))>@T("修改")</MButton>
+                            <MButton Color="info" Class="mx-2 my-1" OnClick=@(()=>EditClick(selectedItem?.ToArray()))>@T("修改")</MButton>
                         }
                         @if (ShowDeleteButton)
                         {
-                            <MButton Color="error"  Loading="DeleteLoading" Class="mx-2 my-1" OnClick=@(()=>DeleteClick(selectedItem?.ToArray()))>@T("删除")</MButton>
+                            <MButton Color="error" Loading="DeleteLoading" Class="mx-2 my-1" OnClick=@(()=>DeleteClick(selectedItem?.ToArray()))>@T("删除")</MButton>
                         }
                         @if (OtherToolbarTemplate != null)
                         {
@@ -124,7 +124,7 @@
                         {
                             <div class="ml-auto mr-2 my-1">
                                 <TableFilter FilterHeaderString="FilterHeaderString"
-                                     ValueChanged="FilterChanged">
+                                             ValueChanged="FilterChanged">
                                 </TableFilter>
                             </div>
                         }
@@ -140,8 +140,8 @@
         <MDataTable HideDefaultFooter
                     FixedRight=IsShowOperCol FixedHeader ShowSelect=ShowSelect
                     Height=@("100%") Dense=@(Dense)
-                    @bind-Value="selectedItem"
-                    @ref="_table"
+        @bind-Value="selectedItem"
+        @ref="_table"
                     OnOptionsUpdate="HandleOnOptionsUpdate"
                     ServerItemsLength="PageItems.Total"
                     Page="SearchModel.Current"
@@ -171,45 +171,45 @@
                         <MTooltip Bottom Context="tip">
                             <ActivatorContent>
                                 <MButton Color="info" Small @attributes="@tip.Attrs"
-                                 OnClick="()=>EditClick(context.Item)"
-                                 Text>
-                                    <MIcon>mdi-pencil</MIcon>
-                                </MButton>
-                            </ActivatorContent>
-                            <ChildContent>
-                                <span>@T("修改")</span>
-                            </ChildContent>
-                        </MTooltip>
+                                         OnClick="()=>EditClick(context.Item)"
+                                              Text>
+                                <MIcon>mdi-pencil</MIcon>
+                            </MButton>
+                        </ActivatorContent>
+                        <ChildContent>
+                            <span>@T("修改")</span>
+                        </ChildContent>
+                    </MTooltip>
                     }
                     @if (ShowDeleteButton)
                     {
                         <MTooltip Bottom Context="tip">
                             <ActivatorContent>
                                 <MButton Color="error" Small @attributes="@tip.Attrs"
-                                 OnClick="()=>DeleteClick(context.Item)"
-                                 Text>
-                                    <MIcon>mdi-delete</MIcon>
-                                </MButton>
-                            </ActivatorContent>
-                            <ChildContent>
-                                <span>@T("删除")</span>
-                            </ChildContent>
-                        </MTooltip>
+                                         OnClick="()=>DeleteClick(context.Item)"
+                                              Text>
+                                <MIcon>mdi-delete</MIcon>
+                            </MButton>
+                        </ActivatorContent>
+                        <ChildContent>
+                            <span>@T("删除")</span>
+                        </ChildContent>
+                    </MTooltip>
                     }
                     @if (ShowDetailButton)
                     {
                         <MTooltip Bottom Context="tip">
                             <ActivatorContent>
                                 <MButton Color="info" Small @attributes="@tip.Attrs"
-                                 OnClick="()=>DetailClick(context.Item)"
-                                 Text>
-                                    <MIcon>mdi-information</MIcon>
-                                </MButton>
-                            </ActivatorContent>
-                            <ChildContent>
-                                <span>@T("详情")</span>
-                            </ChildContent>
-                        </MTooltip>
+                                         OnClick="()=>DetailClick(context.Item)"
+                                              Text>
+                                <MIcon>mdi-information</MIcon>
+                            </MButton>
+                        </ActivatorContent>
+                        <ChildContent>
+                            <span>@T("详情")</span>
+                        </ChildContent>
+                    </MTooltip>
                     }
                     @if (ItemColOperTemplate != null)
                     {
@@ -219,19 +219,19 @@
                                 <ActivatorContent>
                                     <MButton Small @attributes="@menu.Attrs" Text>
                                     <MIcon>mdi-dots-vertical</MIcon>
-                                    </MButton>
-                                </ActivatorContent>
-                                <ChildContent>
-                                    <MSheet>
-                                        <MContainer>
-                                            <MRow Dense>
-                                                @ItemColOperTemplate(context)
-                                            </MRow>
-                                        </MContainer>
-                                    </MSheet>
+                                </MButton>
+                            </ActivatorContent>
+                            <ChildContent>
+                                <MSheet>
+                                    <MContainer>
+                                        <MRow Dense>
+                                            @ItemColOperTemplate(context)
+                                        </MRow>
+                                    </MContainer>
+                                </MSheet>
 
-                                </ChildContent>
-                            </MMenu>
+                            </ChildContent>
+                        </MMenu>
                         }
                         else
                         {
@@ -278,35 +278,35 @@
                 <MRow NoGutters Align="AlignTypes.Center">
 
                     <div class="px-1 py-1" style="white-space: nowrap;">
-                    @T("共 {0} 条",PageItems.Total.ToString())
+                        @T("共 {0} 条",PageItems.Total.ToString())
                     </div>
                     <MSelect Class="px-1 py-1" Items=@(PageSizeItems)
-                         @bind-Value=@(SearchModel.Size)
-                         MenuProps="@(props => { props.Top = true; props.OffsetY = true; })"
-                         ItemText=@((u) =>{return T("{0} 条/页",u.Key);})
-                         ItemValue=@(u => u.Value)
-                         HideDetails="true" Height="30"
-                         Dense Style="max-width:150px"
-                         Outlined>
-                    </MSelect>
+                    @bind-Value=@(SearchModel.Size)
+                             MenuProps="@(props => { props.Top = true; props.OffsetY = true; })"
+                             ItemText=@((u) =>{return T("{0} 条/页",u.Key);})
+                             ItemValue=@(u => u.Value)
+                             HideDetails="true" Height="30"
+                          Dense Style="max-width:150px"
+                          Outlined>
+                </MSelect>
 
                 <MTextField Dense Style="max-width:150px" HideDetails=@("auto") Class="px-1 py-1" @bind-Value="SearchModel.Current"
-                         NumberProps=@(prop=> { prop.Min = 1;  prop.Step = 1; })    TValue=int Type="number" Outlined Label=@T("页面跳转") />
+                                NumberProps=@(prop=> { prop.Min = 1; prop.Step = 1; }) TValue=int Type="number" Outlined Label=@T("页面跳转") />
 
-@*                    <MSelect Class="px-1 py-1" Items=@(ObjectExtensions.GetOrderNum( PageItems.Pages))
-                         @bind-Value=@(SearchModel.Current)
-                         MenuProps="@(props => { props.Top = true; props.OffsetY = true; })"
-                         ItemText=@((u) =>{return T("第 {0} 页",u);})
-                         ItemValue=@(u => u)
-                         HideDetails="true" Height="30"
-                         Dense Style="max-width:150px"
-                         Outlined>
-                    </MSelect>*@
+                    @*                    <MSelect Class="px-1 py-1" Items=@(ObjectExtensions.GetOrderNum( PageItems.Pages))
+                @bind-Value=@(SearchModel.Current)
+                MenuProps="@(props => { props.Top = true; props.OffsetY = true; })"
+                ItemText=@((u) =>{return T("第 {0} 页",u);})
+                ItemValue=@(u => u)
+                HideDetails="true" Height="30"
+                Dense Style="max-width:150px"
+                Outlined>
+                </MSelect>*@
 
 
                     <MPagination Class="ml-auto mr-1 py-1" Length="PageItems.Pages"
-                             @bind-Value="SearchModel.Current"
-                             TotalVisible="5" Color="primary" Circle></MPagination>
+                    @bind-Value="SearchModel.Current"
+                                 TotalVisible="5" Color="primary" Circle></MPagination>
 
                 </MRow>
             </MCard>
@@ -317,6 +317,6 @@
 
 </MSheet>
 
-@code{
+@code {
     [Inject] public JsInitVariables JsInitVariables { get; set; } = default!;
 }

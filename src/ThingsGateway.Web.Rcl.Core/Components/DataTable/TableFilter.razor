@@ -5,7 +5,7 @@
     <ActivatorContent>
         <MButton @attributes="@context.Attrs" Icon="@MasaBlazor.Breakpoint.SmAndDown"
                  Class="mr-2 px-0 px-md-2 mdi-col"
-                 Text>
+                  Text>
             <MIcon>mdi-table-column-plus-after</MIcon>
             <AppChevronDown></AppChevronDown>
         </MButton>
@@ -21,10 +21,10 @@
                     {
                         <MCol>
                             <MCheckbox TValue=bool ValueChanged="((a)=>Change(item.Title,a))"
-                                   Value=item.Value
-                                   Label=@item.Title
-                                   HideDetails="true"
-                                   Color="primary"></MCheckbox>
+                                       Value=item.Value
+                                       Label=@item.Title
+                                       HideDetails="true"
+                                       Color="primary"></MCheckbox>
                         </MCol>
                         if (index % 2 == 1)
                         {

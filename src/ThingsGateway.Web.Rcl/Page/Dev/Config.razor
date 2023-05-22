@@ -24,7 +24,7 @@
             @if (tab == 1)
             {
                 <MCard Height=@("calc(100vh - 220px)") Style="overflow-y:auto" Flat Class="ml-2 my-4">
-                <MRow NoGutters>
+                    <MRow NoGutters>
                     @foreach (var item in _sysConfig)
                         {
                             switch (item.ConfigKey)
@@ -33,14 +33,14 @@
                                     <MCol Class="pa-2 px-4" Md=3 Cols="12">
                                         <MSubheader Class="mt-4 font-weight-black"> @item.Remark</MSubheader>
                                         <MTextarea Dense Outlined HideDetails="@("auto")" @bind-Value=@item.ConfigValue />
-                                        </MCol>
+                                    </MCol>
                                     break;
 
                                 default:
                                     <MCol Class="pa-2 px-4" Md=3 Cols="12">
                                         <MSubheader Class="mt-4 font-weight-black"> @item.Remark</MSubheader>
                                         <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@item.ConfigValue />
-                                        </MCol>
+                                    </MCol>
                                     break;
                             }
 
@@ -59,21 +59,21 @@
             @if (tab == 2)
             {
                 <MCard Height=@("calc(100vh - 220px)") Flat Class="ml-2 my-4">
-                <AppDataTable @ref="_datatable" TItem="DevConfig" SearchItem="ConfigPageInput"
-                              AddItem="ConfigAddInput" EditItem="ConfigEditInput"
-                              SearchModel="@search"
-                              QueryCall="QueryCall"
-                              AddCall="AddCall"
-                              EditCall="EditCall"
-                              DeleteCall="DeleteCall"
-                              FilterHeaders="FilterHeaders" IsShowSearchKey
+                    <AppDataTable @ref="_datatable" TItem="DevConfig" SearchItem="ConfigPageInput"
+                                  AddItem="ConfigAddInput" EditItem="ConfigEditInput"
+                                  SearchModel="@search"
+                                  QueryCall="QueryCall"
+                                  AddCall="AddCall"
+                                  EditCall="EditCall"
+                                  DeleteCall="DeleteCall"
+                                  FilterHeaders="FilterHeaders" IsShowSearchKey
                                     ShowQueryButton
-                              ShowAddButton=@UserResoures.IsHasButtonWithRole("devconfigadd")
-                              ShowDeleteButton=@UserResoures.IsHasButtonWithRole("devconfigdelete")
-                              ShowEditButton=@UserResoures.IsHasButtonWithRole("devconfigedit")>
+                                  ShowAddButton=@UserResoures.IsHasButtonWithRole("devconfigadd")
+                                  ShowDeleteButton=@UserResoures.IsHasButtonWithRole("devconfigdelete")
+                                  ShowEditButton=@UserResoures.IsHasButtonWithRole("devconfigedit")>
 
-                    <AddTemplate>
-                        <MSubheader Class="mt-4 font-weight-black"> @(context.Description(x => x.ConfigKey))  </MSubheader>
+                        <AddTemplate>
+                            <MSubheader Class="mt-4 font-weight-black"> @(context.Description(x => x.ConfigKey))  </MSubheader>
                             <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.ConfigKey />
 
                             <MSubheader Class="mt-4 font-weight-black">   @(context.Description(x => x.ConfigValue))</MSubheader>

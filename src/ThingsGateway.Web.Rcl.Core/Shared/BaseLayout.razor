@@ -4,7 +4,7 @@
 @implements IDisposable
 <CascadingValue Value="IsMobile" Name="IsMobile">
     <MApp>
-        <MErrorHandler >
+        <MErrorHandler>
             @Body
         </MErrorHandler>
     </MApp>
@@ -18,7 +18,7 @@
     [Inject]
     IPopupService PopupService { get; set; }
     [Inject]
-    JsInitVariables JsInitVariables{ get; set; }
+    JsInitVariables JsInitVariables { get; set; }
     public bool IsMobile { get; set; }
     protected async override Task OnAfterRenderAsync(bool firstRender)
     {

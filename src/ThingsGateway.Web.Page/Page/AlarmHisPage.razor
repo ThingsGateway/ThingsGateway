@@ -24,25 +24,25 @@
         <MMenu CloseOnContentClick="false" OffsetY Context="menu">
             <ActivatorContent>
                 <MTextField Dense Readonly Style="max-width:200px;" HideDetails=@("auto") Class="my-1  mx-2 " Value="context.StartTime.GetValueOrDefault().Add(JsInitVariables.TimezoneOffset)" Clearable
-                            @attributes="menu.Attrs" Outlined Label=@context.Description(x => x.StartTime) />
+                @attributes="menu.Attrs" Outlined Label=@context.Description(x => x.StartTime) />
             </ActivatorContent>
             <ChildContent>
                 <AppDateTimePicker ClassString="my-1  mx-2 " @bind-Value="context.StartTime"></AppDateTimePicker>
             </ChildContent>
-            </MMenu>
+        </MMenu>
 
-            <MMenu CloseOnContentClick="false" OffsetY Context="menu">
+        <MMenu CloseOnContentClick="false" OffsetY Context="menu">
             <ActivatorContent>
                 <MTextField Dense Readonly Style="max-width:200px;" HideDetails=@("auto") Class="my-1  mx-2 " Value="context.EndTime.GetValueOrDefault().Add(JsInitVariables.TimezoneOffset)" Clearable
-                            @attributes="menu.Attrs" Outlined Label=@context.Description(x => x.EndTime) />
+                @attributes="menu.Attrs" Outlined Label=@context.Description(x => x.EndTime) />
             </ActivatorContent>
             <ChildContent>
                 <AppDateTimePicker ClassString="my-1  mx-2 " @bind-Value="context.EndTime"></AppDateTimePicker>
             </ChildContent>
-            </MMenu>
+        </MMenu>
 
 
-            <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="my-1  mx-2 " @bind-Value="context.Name" Clearable
+        <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="my-1  mx-2 " @bind-Value="context.Name" Clearable
                         Outlined Label=@context.Description(x => x.Name) />
         <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="my-1  mx-2 " @bind-Value="context.DeviceName" Clearable
                         Outlined Label=@context.Description(x => x.DeviceName) />
