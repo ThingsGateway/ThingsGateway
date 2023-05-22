@@ -35,7 +35,7 @@ public class CollectDeviceThread : IDisposable
     /// <summary>
     /// 默认等待间隔时间
     /// </summary>
-    public static int CycleInterval { get; } = 100;
+    public static int CycleInterval { get; } = 10;
     /// <summary>
     /// 初始化
     /// </summary>

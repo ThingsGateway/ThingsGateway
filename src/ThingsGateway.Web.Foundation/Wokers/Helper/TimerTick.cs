@@ -10,18 +10,13 @@ public class TimerTick
     /// </summary>
     private int milliSeconds = 1000;
 
-    /// <summary>
-    /// 误差
-    /// </summary>
-    private int offsetTime = 60;
     /// <inheritdoc cref="TimerTick"/>
     public TimerTick(int milliSeconds = 1000)
     {
         if (milliSeconds < 20)
             milliSeconds = 20;
-        LastTime = GetExactTime(DateTime.UtcNow.AddMilliseconds(-milliSeconds));
+        LastTime = DateTime.UtcNow.AddMilliseconds(-milliSeconds);
         this.milliSeconds = milliSeconds;
-
     }
 
     /// <summary>
@@ -38,8 +33,7 @@ public class TimerTick
         DateTime dateTime = LastTime.AddMilliseconds(milliSeconds);
         if (currentTime < dateTime)
             return false;
-        LastTime = (currentTime - dateTime).TotalMilliseconds <= offsetTime ?
-            dateTime : GetExactTime(currentTime);
+        LastTime = dateTime;
         return true;
     }
 
@@ -48,24 +42,5 @@ public class TimerTick
     /// </summary>
     /// <returns></returns>
     public bool IsTickHappen() => IsTickHappen(DateTime.UtcNow);
-
-    /// <summary>
-    /// 此时实际时间已经大于计算时间差，需获取准确的时间，趋近整秒
-    /// </summary>
-    /// <param name="dateTime">当前时间</param>
-    /// <returns></returns>
-    private DateTime GetExactTime(DateTime dateTime)
-    {
-        if (milliSeconds % 1000 == 0)
-        {
-            //少于300毫秒的直接返回整秒时间
-            if (dateTime.Millisecond < 300)
-                return new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, dateTime.Hour, dateTime.Minute, dateTime.Second);
-
-            dateTime.AddSeconds(1.0);
-            return new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, dateTime.Hour, dateTime.Minute, dateTime.Second);
-        }
-        return dateTime;
-    }
 
 }

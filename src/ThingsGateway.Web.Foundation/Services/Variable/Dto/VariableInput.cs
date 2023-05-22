@@ -31,7 +31,7 @@ namespace ThingsGateway.Application
         public override long DeviceId { get; set; }
 
         /// <inheritdoc/>
-        [MinValue(100, ErrorMessage = "低于最小值")]
+        [MinValue(9, ErrorMessage = "低于最小值")]
         public override int IntervalTime { get; set; }
 
         /// <inheritdoc/>
