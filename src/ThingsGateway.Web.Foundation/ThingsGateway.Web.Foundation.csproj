@@ -7,6 +7,11 @@
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 	</PropertyGroup>
 
+
+	<ItemGroup>
+	  <PackageReference Include="System.Management" Version="7.0.1" />
+	</ItemGroup>
+
 	<ItemGroup>
 		<ProjectReference Include="..\ThingsGateway.Application\ThingsGateway.Application.csproj" />
 		<ProjectReference Include="..\ThingsGateway.Foundation\ThingsGateway.Foundation.csproj" />
