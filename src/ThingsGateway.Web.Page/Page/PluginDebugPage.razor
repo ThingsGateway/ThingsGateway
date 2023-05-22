@@ -1,0 +1,86 @@
+﻿@page "/tgconfig/driverdebug"
+@namespace ThingsGateway.Web.Page
+@using System.Linq.Expressions;
+@using BlazorComponent;
+@using Furion.DataValidation;
+@using Mapster;
+@using Masa.Blazor.Presets;
+@using System.IO;
+@using TouchSocket.Core;
+@inject IVariableService VariableService
+@attribute [Authorize]
+@inject MasaBlazor MasaBlazor
+@attribute [RolePermission]
+@inherits CultureComponentBase
+@inject UserResoures UserResoures
+@inject ICollectDeviceService CollectDeviceService
+@layout MainLayout
+
+<MRow>
+    <MCol Md=4 Cols="12">
+        <MCard Class="ma-2" Style="height: calc(100vh - 200px)">
+            <MCardTitle>
+                <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="mx-2 my-1" @bind-Value="_searchName" Outlined Label=@typeof(CollectDevice).GetDescription(nameof(CollectDevice.PluginId)) />
+            </MCardTitle>
+            <MTreeview Style="height: calc(100vh - 320px);overflow-y:auto" Dense TItem="DriverPluginCategory"
+                       TKey="long" OpenOnClick ActiveChanged=@((async a=>
+                       {
+                       if(this._searchModel.PluginId!= a.FirstOrDefault())
+                       {
+                       this._searchModel.PluginId= a.FirstOrDefault();
+                       await ImportVaiable(this._searchModel.PluginId);
+                       }
+                       }) )
+                       Items="DriverPlugins" ItemText="r=>r.Name" ItemChildren="r=>r.Children"
+                       Search="@_searchName"
+                       Activatable ItemKey=@(r=>r.Id)>
+            </MTreeview>
+        </MCard>
+    </MCol>
+    <MCol Md=8 Cols="12">
+        <MCard Class="ma-2" Style="height: calc(100vh - 200px)">
+            @if (_importRender != null)
+            {
+                @_importRender
+            }
+        </MCard>
+    </MCol>
+</MRow>
+
+@code {
+    class PluginDebugUIInput
+    {
+        public string PluginName { get; set; }
+        public long PluginId { get; set; }
+    }
+}
+
+@code {
+    string _searchName;
+    List<DeviceTree> _deviceGroups = new();
+    PluginDebugUIInput _searchModel { get; set; } = new();
+    private BootstrapDynamicComponent _importComponent;
+    private RenderFragment _importRender;
+    private DriverDebugUIBase _importRef;
+    List<DriverPluginCategory> DriverPlugins;
+    [Inject]
+    IDriverPluginService DriverPluginService { get; set; }
+
+    protected override void OnInitialized()
+    {
+        DriverPlugins = DriverPluginService.GetDriverPluginChildrenList(DriverEnum.Collect);
+
+        base.OnInitialized();
+    }
+    async Task ImportVaiable(long driverId)
+    {
+        var driver = this.GetBackgroundService<CollectDeviceWorker>().GetDebugUI(driverId);
+        if (driver == null)
+        {
+            await PopupService.EnqueueSnackbarAsync("插件未实现调试页面", AlertTypes.Warning);
+            return;
+        }
+        _importComponent = new BootstrapDynamicComponent(driver);
+        _importRender = _importComponent.Render(a => _importRef = (DriverDebugUIBase)a);
+    }
+}

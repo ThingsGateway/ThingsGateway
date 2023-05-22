@@ -1,0 +1,63 @@
+﻿@using BlazorComponent;
+@using Microsoft.AspNetCore.Components.Web;
+@using System.IO.Ports;
+@using ThingsGateway.Core;
+@using ThingsGateway.Foundation.Adapter.Modbus;
+@using ThingsGateway.Foundation;
+@using ThingsGateway.Foundation.Serial;
+@using ThingsGateway.Web.Foundation;
+@using Masa.Blazor
+<MCard Class="ma-4" Flat Elevation="0">
+    <MRow Justify="JustifyTypes.SpaceBetween" Align="AlignTypes.Center">
+        <MTextField Class="mx-1" Label=@(serialProperty.Description(x => x.PortName)) Dense Outlined HideDetails="@("auto")" @bind-Value=@serialProperty.PortName />
+
+        <MTextField Class="mx-1" Label=@(serialProperty.Description(x => x.DataBits)) Dense Outlined HideDetails="@("auto")" @bind-Value=@serialProperty.DataBits />
+        <MTextField Class="mx-1" Label=@(serialProperty.Description(x => x.BaudRate)) Dense Outlined HideDetails="@("auto")" @bind-Value=@serialProperty.BaudRate />
+        <MSelect Class="mx-1" Style="max-width:100px" @bind-Value="serialProperty.Parity" Outlined Label="@(serialProperty.Description(x => x.Parity))"
+                 Items=@(typeof(Parity).GetEnumList())
+                 MenuProps="@(props => { props.Auto = true; props.OffsetY = true; })"
+                 ItemText=@((u) =>u.des)
+                 ItemValue=@(u =>(Parity)u.value)
+                 HideDetails=@("auto") Height="30"
+                 Dense>
+        </MSelect>
+        <MSelect Class="mx-1" Style="max-width:100px" @bind-Value="serialProperty.StopBits" Outlined Label="@(serialProperty.Description(x => x.StopBits))"
+                 Items=@(typeof(StopBits).GetEnumList())
+                 MenuProps="@(props => { props.Auto = true; props.OffsetY = true; })"
+                 ItemText=@((u) =>u.des)
+                 ItemValue=@(u =>(StopBits)u.value)
+                 HideDetails=@("auto") Height="30"
+                 Dense>
+        </MSelect>
+        <MButton Class="mx-1" OnClick=@(async() =>
+                 {
+                 serialClient.Close();
+                 await GetSerialClient().OpenAsync();
+                 }
+                 ) Color="primary">
+            连接
+        </MButton>
+
+    </MRow>
+
+
+</MCard>
+@code
+{
+    private SerialProperty serialProperty = new SerialProperty();
+    private SerialClient serialClient { get; set; } = new();
+    private TouchSocketConfig config;
+    protected override void OnInitialized()
+    {
+        config = new TouchSocketConfig();
+    }
+    public SerialClient GetSerialClient()
+    {
+        config.SetSerialProperty(serialProperty).SetBufferLength(300);
+        //载入配置
+        serialClient.Setup(config);
+        return serialClient;
+    }
+
+
+}
