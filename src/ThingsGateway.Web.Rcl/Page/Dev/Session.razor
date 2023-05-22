@@ -16,15 +16,15 @@
               QueryCall="sessionQueryCall"
               FilterHeaders="sessionFilterHeaders"
               IsMenuOperTemplate=false
-              ShowQueryButton>
+                ShowQueryButton>
 
     <SearchTemplate>
         <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="my-1 mx-2 " @bind-Value="context.Account"
-                    Outlined Label=@context.Description(x => x.Account) />
+                        Outlined Label=@context.Description(x => x.Account) />
         <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="my-1 mx-2 " @bind-Value="context.Name"
-                    Outlined Label=@context.Description(x => x.Name) />
+                        Outlined Label=@context.Description(x => x.Name) />
         <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="my-1 mx-2 " @bind-Value="context.LatestLoginIp"
-                    Outlined Label=@context.Description(x => x.LatestLoginIp) />
+                        Outlined Label=@context.Description(x => x.LatestLoginIp) />
     </SearchTemplate>
 
     <ItemColOperTemplate>
@@ -49,8 +49,8 @@
         {
             case nameof(context.Item.OnlineStatus):
                 <EnableChip EnabledLabel=@T("在线")
-                    DisabledLabel=@T("离线")
-                    Value="context.Item.OnlineStatus">
+                            DisabledLabel=@T("离线")
+                            Value="context.Item.OnlineStatus">
                 </EnableChip>
                 break;
             default:
@@ -66,43 +66,43 @@
         MaxWidth="1500">
     @if (IsShowVerificatSignList)
     {
-    <AppDataTable @ref="_verificatinfosDatatable" TItem="VerificatInfo"
-                  SearchItem="BasePageInput" AddItem="object" EditItem="object"
-                  QueryCall="verificatQueryCall"
-                  DeleteCall="verificatExit"
-                  FilterHeaders="verificatFilterHeaders"
-                  IsMenuOperTemplate=false IsShowToolbar IsPage=true
-                  ShowDeleteButton=@UserResoures.IsHasButtonWithRole("sysverificatdelete")>
+        <AppDataTable @ref="_verificatinfosDatatable" TItem="VerificatInfo"
+                      SearchItem="BasePageInput" AddItem="object" EditItem="object"
+                      QueryCall="verificatQueryCall"
+                      DeleteCall="verificatExit"
+                      FilterHeaders="verificatFilterHeaders"
+                      IsMenuOperTemplate=false IsShowToolbar IsPage=true
+                      ShowDeleteButton=@UserResoures.IsHasButtonWithRole("sysverificatdelete")>
 
-        <ItemColTemplate>
-            @switch (context.Header.Value)
-            {
-                case nameof(context.Item.Device):
-                    <MChip Class="ma-1">
-                        @(context.Item.Device)
-                    </MChip>
-                    break;
-                case nameof(context.Item.IsOnline):
-                    <EnableChip EnabledLabel=@T("在线")
-                        DisabledLabel=@T("离线")
-                        Value="context.Item.IsOnline">
-                    </EnableChip>
-                    break;
-                case nameof(context.Item.VerificatRemainPercent):
-                    <MProgressLinear Color="warning" Value="@(context.Item.VerificatRemainPercent*100)" Height="15" Context="LinearValue">
-                        <strong>@($"{LinearValue.ToString("f1")}%")</strong>
-                    </MProgressLinear>
-                    break;
+            <ItemColTemplate>
+                @switch (context.Header.Value)
+                {
+                    case nameof(context.Item.Device):
+                        <MChip Class="ma-1">
+                            @(context.Item.Device)
+                        </MChip>
+                        break;
+                    case nameof(context.Item.IsOnline):
+                        <EnableChip EnabledLabel=@T("在线")
+                                    DisabledLabel=@T("离线")
+                                    Value="context.Item.IsOnline">
+                        </EnableChip>
+                        break;
+                    case nameof(context.Item.VerificatRemainPercent):
+                        <MProgressLinear Color="warning" Value="@(context.Item.VerificatRemainPercent*100)" Height="15" Context="LinearValue">
+                            <strong>@($"{LinearValue.ToString("f1")}%")</strong>
+                        </MProgressLinear>
+                        break;
 
-                default:
-                    @context.Value
-                    break;
-            }
+                    default:
+                        @context.Value
+                        break;
+                }
 
-        </ItemColTemplate>
+            </ItemColTemplate>
 
-    </AppDataTable>
-        
+        </AppDataTable>
+
     }
 
 </PModal>

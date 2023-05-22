@@ -65,30 +65,30 @@ else
         </MAvatar>
         <h5 class="mt-2 mb-12">@Welcome 👋</h5>
         <MTextField TValue="string"
-                Label=@T("账号")
-                    Outlined
-                HideDetails="@("auto")"
-                    @bind-Value=@loginModel.Account>
+                    Label=@T("账号")
+                            Outlined
+                    HideDetails="@("auto")"
+        @bind-Value=@loginModel.Account>
         </MTextField>
         <MTextField TValue="string"
-                Class="mt-10"
-                Label=@T("密码")
-                Type="@(_showPassword ? "text" : "password")"
-                AppendIcon="@(_showPassword ? "mdi-eye" : "mdi-eye-off")"
-                OnAppendClick="()=>_showPassword = !_showPassword"
-                    Outlined
-                HideDetails="@("auto")"
-                    @bind-Value=@Password>
+                    Class="mt-10"
+                    Label=@T("密码")
+                    Type="@(_showPassword ? "text" : "password")"
+                    AppendIcon="@(_showPassword ? "mdi-eye" : "mdi-eye-off")"
+                    OnAppendClick="()=>_showPassword = !_showPassword"
+                            Outlined
+                    HideDetails="@("auto")"
+        @bind-Value=@Password>
         </MTextField>
         @if (_showCaptcha)
         {
             <PImageCaptcha @ref=captcha @bind-Value="CaptchaValue"
-                   TextFieldClass="mt-10 mx-auto"
-                   Height="60"
-                   Label=@T("验证码") Outlined
-                   OnRefresh="RefreshCode"
-                   ErrorMessage=@T("验证码错误")>
-            </PImageCaptcha>
+                           TextFieldClass="mt-10 mx-auto"
+                           Height="60"
+                           Label=@T("验证码") Outlined
+                               OnRefresh="RefreshCode"
+                               ErrorMessage=@T("验证码错误")>
+                </PImageCaptcha>
         }
         <MButton Class="mt-11 rounded-4" OnClick=LoginAsync Height=46 Width=@("100%") Color="primary">@T("登录")</MButton>
     </div>

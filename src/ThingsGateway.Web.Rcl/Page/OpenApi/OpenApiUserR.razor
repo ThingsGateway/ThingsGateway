@@ -9,10 +9,10 @@
 @inherits CultureComponentBase
 @layout MainLayout
 <AppDataTable @ref="_datatable" TItem="OpenApiUser" SearchItem="OpenApiUserPageInput" AddItem="OpenApiUserAddInput" EditItem="OpenApiUserEditInput"
-              SearchModel="@search" Dense 
+              SearchModel="@search" Dense
               QueryCall="QueryCall" AddCall="AddCall" DeleteCall="DeleteCall" EditCall="EditCall"
               FilterHeaders="FilterHeaders" Filters="Filters"
-              ShowQueryButton IsShowSearchKey ShowDetailButton
+                ShowQueryButton IsShowSearchKey ShowDetailButton
               ShowAddButton=@UserResoures.IsHasButtonWithRole("openapiuseradd")
               ShowDeleteButton=@UserResoures.IsHasButtonWithRole("openapiuserdelete")
               ShowEditButton=@UserResoures.IsHasButtonWithRole("openapiuseredit")>
@@ -28,7 +28,7 @@
         <MSubheader Class="mt-4 font-weight-black">   @(context.Description(x => x.Phone))</MSubheader>
             <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.Phone />
 
-            <MSubheader Class="mt-4 font-weight-black">    @(context.Description(x => x.Email))  </MSubheader>
+        <MSubheader Class="mt-4 font-weight-black">    @(context.Description(x => x.Email))  </MSubheader>
         <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.Email />
 
         <MSubheader Class="mt-4 mb-5 font-weight-black">@(context.Description(x => x.SortCode)) </MSubheader>
@@ -46,7 +46,7 @@
         <MSubheader Class="mt-4 font-weight-black">   @(context.Description(x => x.Phone))</MSubheader>
             <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.Phone />
 
-            <MSubheader Class="mt-4 font-weight-black">    @(context.Description(x => x.Email))  </MSubheader>
+        <MSubheader Class="mt-4 font-weight-black">    @(context.Description(x => x.Email))  </MSubheader>
         <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.Email />
 
         <MSubheader Class="mt-4 mb-5 font-weight-black">@(context.Description(x => x.SortCode)) </MSubheader>
@@ -76,7 +76,7 @@ IsShowRoles=true;
 
             case nameof(context.Item.UserStatus):
                 <EnableSwitch ValueChanged=@(a=>UserStatusChange(context.Item,a))
-                      Value="context.Item.UserStatus">
+                              Value="context.Item.UserStatus">
                 </EnableSwitch>
                 break;
             default:
@@ -97,11 +97,11 @@ IsShowRoles=true;
         <MCard Flat Class="ma-0 pa-4">
             <MCardTitle Class="py-2">
                 <MTextField Clearable Dense Style="max-width:200px;" HideDetails=@("auto") Class="my-1 mx-2 ml-3" @bind-Value="SearchName"
-                        Outlined Label=@typeof(OpenApiPermissionTreeSelector).GetDescription(nameof(OpenApiPermissionTreeSelector.ApiName)) />
+                            Outlined Label=@typeof(OpenApiPermissionTreeSelector).GetDescription(nameof(OpenApiPermissionTreeSelector.ApiName)) />
             </MCardTitle>
             <MTreeview Class="my-1" Search="@SearchName" Dense OpenAll TItem="OpenApiPermissionTreeSelector" TKey="OpenApiPermissionTreeSelector" Selectable @bind-Value="RolesChoice" Items="AllRouters"
-                   ItemText="r=>r.PermissionName" ItemChildren="r=>r.Children"
-                   ItemKey=@(r=>r)>
+                       ItemText="r=>r.PermissionName" ItemChildren="r=>r.Children"
+                       ItemKey=@(r=>r)>
             </MTreeview>
         </MCard>
 
@@ -130,7 +130,7 @@ IsShowRoles=true;
         catch (Exception ex)
         {
             args.Cancel();
-            await PopupService.EnqueueSnackbarAsync(ex,false);
+            await PopupService.EnqueueSnackbarAsync(ex, false);
         }
     }
 

@@ -78,7 +78,7 @@
     async void timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
     {
         if (IsAutoQuery)
-            await InvokeAsync(async ()=>await datatableQuery());
+            await InvokeAsync(async () => await datatableQuery());
     }
     protected override async Task DisposeAsync(bool disposing)
     {

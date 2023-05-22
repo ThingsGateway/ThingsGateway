@@ -3,16 +3,16 @@
 @using Masa.Blazor.Presets;
 @inherits CultureComponentBase
 <PPageTabs @ref="PPageTabs" TabOptions=@TabOptions TabClass="px-6 rounded-t-xl" Ripple="false" HideSlider>
-@*    <TabContent>
-        @{
-            var item = UserResoures.PageTabItems.FirstOrDefault(u => context.IsMatch(u.Href));
-        }
-        <MSheet Class="d-flex align-center justify-center" Height=@($"{UserResoures.Themes.LayoutPrpo.PageTabsHeight}px;")>
-            <MIcon Class=@(context.Selected ? "primary--text" : "") Size="20">@item?.Icon</MIcon>
-            <span class="mx-2 text-capitalize @(context.Selected ? "primary--text" : "")" style=@($"min-width:46px;")>
-                @T(item?.Title)
-            </span>
-        </MSheet>
+    @*    <TabContent>
+    @{
+    var item = UserResoures.PageTabItems.FirstOrDefault(u => context.IsMatch(u.Href));
+    }
+    <MSheet Class="d-flex align-center justify-center" Height=@($"{UserResoures.Themes.LayoutPrpo.PageTabsHeight}px;")>
+    <MIcon Class=@(context.Selected ? "primary--text" : "") Size="20">@item?.Icon</MIcon>
+    <span class="mx-2 text-capitalize @(context.Selected ? "primary--text" : "")" style=@($"min-width:46px;")>
+    @T(item?.Title)
+    </span>
+    </MSheet>
 
     </TabContent>*@
     <ChildContent>
@@ -38,7 +38,7 @@
         var icon = item?.Icon;
         var titleClass = $"mx-2 text-capitalize {(value.Selected ? "primary--text" : "")}";
 
-        var op= new TabOptions(title, icon, titleClass);
+        var op = new TabOptions(title, icon, titleClass);
         op.TitleStyle = "min-width:46px;";
         op.Class = "tgTab";
         return op;

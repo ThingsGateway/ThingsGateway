@@ -58,8 +58,8 @@
                         <MCardTitle>
                             <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="mx-2 my-1" @bind-Value="_collectDeviceGroupSearchName"
                                         Outlined Label=@typeof(CollectDevice).GetDescription(nameof(CollectDevice.DeviceGroup)) />
-                            </MCardTitle>
-                            <MTreeview Style="height: calc(100vh - 320px);overflow-y:auto" Dense TItem="string" TKey="string" ActiveChanged=@(async a=>
+                        </MCardTitle>
+                        <MTreeview Style="height: calc(100vh - 320px);overflow-y:auto" Dense TItem="string" TKey="string" ActiveChanged=@(async a=>
                                    {
                                    if(_collectDeviceGroup!=a.FirstOrDefault())
                                    {
@@ -70,12 +70,12 @@
                                    Search="@_collectDeviceGroupSearchName"
                                    Activatable ItemKey=@(r=>r)>
                         </MTreeview>
-                        </MCard>
-                        </MCol>
-                        <MCol Md=4 Cols="12">
-                        <div style="height: calc(100vh - 300px)">
+                    </MCard>
+                </MCol>
+                <MCol Md=4 Cols="12">
+                    <div style="height: calc(100vh - 300px)">
 
-                            <MCard Height=@("calc(100vh - 320px)") Style="overflow-y:auto;" Flat Class="ml-2 my-4">
+                        <MCard Height=@("calc(100vh - 320px)") Style="overflow-y:auto;" Flat Class="ml-2 my-4">
 
                             <MVirtualScroll Context="item" Height=@("calc(100vh - 350px)") OverscanCount=2 ItemSize="100" Items="_collectDeviceCores">
                                 <ItemContent>
@@ -112,11 +112,11 @@
                             {
                                 var item = collectDeviceInfoItem;
                                 <MCard Flat Elevation="0" Class="ma-2">
-                                <MCardSubtitle>
-                                    <MLabel Class=@((item.Device.DeviceStatus==DeviceStatusEnum.OnLine?"green--text":"red--text")+$" text-h6")>
-                                        <div class="mt-1  d-flex align-center justify-space-between">
-                                            <span>@item.Device.Name</span>
-                                            <span class="text-caption">@(item.Device.ActiveTime.Add(JsInitVariables.TimezoneOffset).ToString("yyyy-MM-dd HH:mm:ss fff") + "     " + typeof(DeviceStatusEnum).GetDescription(item.Device.DeviceStatus.ToString()) + "     " + item.Device.DeviceOffMsg)</span>
+                                    <MCardSubtitle>
+                                        <MLabel Class=@((item.Device.DeviceStatus==DeviceStatusEnum.OnLine?"green--text":"red--text")+$" text-h6")>
+                                            <div class="mt-1  d-flex align-center justify-space-between">
+                                                <span>@item.Device.Name</span>
+                                                <span class="text-caption">@(item.Device.ActiveTime.Add(JsInitVariables.TimezoneOffset).ToString("yyyy-MM-dd HH:mm:ss fff") + "     " + typeof(DeviceStatusEnum).GetDescription(item.Device.DeviceStatus.ToString()) + "     " + item.Device.DeviceOffMsg)</span>
                                             </div>
                                         </MLabel>
                                     </MCardSubtitle>
@@ -126,22 +126,22 @@
                                         <MSpacer></MSpacer>
 
                                         <MTooltip Bottom Context="tip">
-                                        <ActivatorContent>
-                                            <MButton Disabled=@(!UserResoures.IsHasPageWithRole("/tgruntime/collectdevicevariable")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small Loading=isRestart
-                                                     OnClick=@(()=>NavigationManager.NavigateTo("/tgruntime/collectdevicevariable?devicename="+item.Device.Name))>
-                                                <MIcon>mdi-information-outline</MIcon>
+                                            <ActivatorContent>
+                                                <MButton Disabled=@(!UserResoures.IsHasPageWithRole("/tgruntime/collectdevicevariable")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small Loading=isRestart
+                                                         OnClick=@(()=>NavigationManager.NavigateTo("/tgruntime/collectdevicevariable?devicename="+item.Device.Name))>
+                                                    <MIcon>mdi-information-outline</MIcon>
                                                 </MButton>
                                             </ActivatorContent>
                                             <ChildContent>
                                                 <span>@T("相关变量")</span>
                                             </ChildContent>
-                                            </MTooltip>
+                                        </MTooltip>
 
 
-                                            <MTooltip Bottom Context="tip">
-                                        <ActivatorContent>
-                                            <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("tgdevicepause")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small OnClick=@(()=>Config(item.DeviceId,!item.Device.Enable))>
-                                                <MIcon>@(item.Device.Enable ? "mdi-pause" : "mdi-play")</MIcon>
+                                        <MTooltip Bottom Context="tip">
+                                            <ActivatorContent>
+                                                <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("tgdevicepause")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small OnClick=@(()=>Config(item.DeviceId,!item.Device.Enable))>
+                                                    <MIcon>@(item.Device.Enable ? "mdi-pause" : "mdi-play")</MIcon>
                                                     </MButton>
                                                 </ActivatorContent>
                                                 <ChildContent>
@@ -149,32 +149,32 @@
                                             </ChildContent>
                                         </MTooltip>
                                         <MTooltip Bottom Context="tip">
-                                        <ActivatorContent>
-                                            <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("tgdevicerestart")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small Loading=isRestart OnClick=@(()=>Restart(item.DeviceId))>
-                                                <MIcon>mdi-restart</MIcon>
+                                            <ActivatorContent>
+                                                <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("tgdevicerestart")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small Loading=isRestart OnClick=@(()=>Restart(item.DeviceId))>
+                                                    <MIcon>mdi-restart</MIcon>
                                                 </MButton>
                                             </ActivatorContent>
                                             <ChildContent>
                                                 <span>@T("重启")</span>
                                             </ChildContent>
-                                            </MTooltip>
+                                        </MTooltip>
 
-                                            <MTooltip Bottom Context="tip">
-                                        <ActivatorContent>
-                                            <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("tgdevicerestart")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small Loading=isRestart OnClick=@(()=>ImportVaiable(item.DeviceId))>
-                                                <MIcon>mdi-import</MIcon>
+                                        <MTooltip Bottom Context="tip">
+                                            <ActivatorContent>
+                                                <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("tgdevicerestart")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small Loading=isRestart OnClick=@(()=>ImportVaiable(item.DeviceId))>
+                                                    <MIcon>mdi-import</MIcon>
                                                 </MButton>
                                             </ActivatorContent>
                                             <ChildContent>
                                                 <span>@T("导入变量")</span>
                                             </ChildContent>
-                                            </MTooltip>
-                                            </MCardActions>
+                                        </MTooltip>
+                                    </MCardActions>
 
-                                            <MSubheader>
-                                            运行状态
-                                            </MSubheader>
-                                            <MRow Class="ml-2 mr-2 d-flex" NoGutters>
+                                    <MSubheader>
+                                        运行状态
+                                    </MSubheader>
+                                    <MRow Class="ml-2 mr-2 d-flex" NoGutters>
                                     <MCol Md=6 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
                                         <span class="text-subtitle-2 grey--text">@item.Device.Description(a=>a.ActiveTime)</span>
                                         <span class="text-caption">@item.Device.ActiveTime.Add(JsInitVariables.TimezoneOffset).ToString("yyyy-MM-dd HH:mm:ss fff")</span>
@@ -228,16 +228,16 @@
                                     <MSpacer></MSpacer>
 
                                     <MTooltip Bottom Context="tip">
-                                    <ActivatorContent>
-                                        <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("tgdevicepause")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small
-                                                 OnClick=@(()=>
+                                        <ActivatorContent>
+                                            <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("tgdevicepause")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small
+                                                     OnClick=@(()=>
                                                  {
                                                  pauseMessage=!pauseMessage;
                                                  if(pauseMessage)
                                                  CurMessages= collectDeviceInfoItem.Driver.Messages.ToList();
                                                  }
                                                  )>
-                                            <MIcon>@((!pauseMessage) ? "mdi-pause" : "mdi-play")</MIcon>
+                                                <MIcon>@((!pauseMessage) ? "mdi-pause" : "mdi-play")</MIcon>
                                                 </MButton>
                                             </ActivatorContent>
                                             <ChildContent>
@@ -246,23 +246,23 @@
                                     </MTooltip>
 
                                     <MTooltip Bottom Context="tip">
-                                    <ActivatorContent>
-                                        <MButton Loading=isDownExport Disabled=@(!UserResoures.IsHasButtonWithRole("tgdevicepause")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small
-                                                 OnClick=@(async()=>
+                                        <ActivatorContent>
+                                            <MButton Loading=isDownExport Disabled=@(!UserResoures.IsHasButtonWithRole("tgdevicepause")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small
+                                                     OnClick=@(async()=>
                                                  {
                                                  var curMessages= collectDeviceInfoItem.Driver.Messages.ToList();
                                                  await DownDeviceMessageExport(curMessages);
                                                  }
                                                  )>
-                                            <MIcon>mdi-export</MIcon>
+                                                <MIcon>mdi-export</MIcon>
                                             </MButton>
                                         </ActivatorContent>
                                         <ChildContent>
                                             <span>@T("导出")</span>
                                         </ChildContent>
-                                        </MTooltip>
+                                    </MTooltip>
 
-                                        </MCardActions>
+                                </MCardActions>
                                 if (pauseMessage)
                                 {
                                     var item = CurMessages;
@@ -303,8 +303,8 @@
                         <MCardTitle>
                             <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="mx-2 my-1" @bind-Value="_uploadDeviceGroupSearchName"
                                         Outlined Label=@typeof(UploadDevice).GetDescription(nameof(UploadDevice.DeviceGroup)) />
-                            </MCardTitle>
-                            <MTreeview Style="height: calc(100vh - 320px);overflow-y:auto" Dense TItem="string" TKey="string" ActiveChanged=@(async a=>
+                        </MCardTitle>
+                        <MTreeview Style="height: calc(100vh - 320px);overflow-y:auto" Dense TItem="string" TKey="string" ActiveChanged=@(async a=>
                                    {
                                    if(_uploadDeviceGroup!=a.FirstOrDefault())
                                    {
@@ -315,11 +315,11 @@
                                    Search="@_uploadDeviceGroupSearchName"
                                    Activatable ItemKey=@(r=>r)>
                         </MTreeview>
-                        </MCard>
-                        </MCol>
-                        <MCol Md=4 Cols="12">
-                        <div style="height: calc(100vh - 300px)">
-                            <MCard Height=@("calc(100vh - 320px)") Style="overflow-y:auto;" Flat Class="ml-2 my-4">
+                    </MCard>
+                </MCol>
+                <MCol Md=4 Cols="12">
+                    <div style="height: calc(100vh - 300px)">
+                        <MCard Height=@("calc(100vh - 320px)") Style="overflow-y:auto;" Flat Class="ml-2 my-4">
                             <MVirtualScroll Context="item" Height=@("calc(100vh - 350px)") OverscanCount=2 ItemSize="100" Items="_uploadDeviceCores">
                                 <ItemContent>
                                     <MListItem OnClick=@(()=>uploadDeviceInfo(item))>
@@ -353,11 +353,11 @@
                             {
                                 var item = uploadDeviceInfoItem;
                                 <MCard Flat Elevation="0" Class="ma-2">
-                                <MCardSubtitle>
-                                    <MLabel Class=@((item.Device.DeviceStatus==DeviceStatusEnum.OnLine?"green--text":"red--text")+$" text-h6")>
-                                        <div class="mt-1  d-flex align-center justify-space-between">
-                                            <span>@item.Device.Name</span>
-                                            <span class="text-caption">@(item.Device.ActiveTime.Add(JsInitVariables.TimezoneOffset).ToString("yyyy-MM-dd HH:mm:ss fff") + "     " + typeof(DeviceStatusEnum).GetDescription(item.Device.DeviceStatus.ToString()) + "     " + item.Device.DeviceOffMsg)</span>
+                                    <MCardSubtitle>
+                                        <MLabel Class=@((item.Device.DeviceStatus==DeviceStatusEnum.OnLine?"green--text":"red--text")+$" text-h6")>
+                                            <div class="mt-1  d-flex align-center justify-space-between">
+                                                <span>@item.Device.Name</span>
+                                                <span class="text-caption">@(item.Device.ActiveTime.Add(JsInitVariables.TimezoneOffset).ToString("yyyy-MM-dd HH:mm:ss fff") + "     " + typeof(DeviceStatusEnum).GetDescription(item.Device.DeviceStatus.ToString()) + "     " + item.Device.DeviceOffMsg)</span>
                                             </div>
                                         </MLabel>
                                     </MCardSubtitle>
@@ -367,21 +367,21 @@
                                         <MSpacer></MSpacer>
 
                                         <MTooltip Bottom Context="tip">
-                                        <ActivatorContent>
-                                            <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("tgdevicerestart")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small Loading=isRestart OnClick=@(()=>UpRestart(item.DeviceId))>
-                                                <MIcon>mdi-restart</MIcon>
+                                            <ActivatorContent>
+                                                <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("tgdevicerestart")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small Loading=isRestart OnClick=@(()=>UpRestart(item.DeviceId))>
+                                                    <MIcon>mdi-restart</MIcon>
                                                 </MButton>
                                             </ActivatorContent>
                                             <ChildContent>
                                                 <span>@T("重启")</span>
                                             </ChildContent>
-                                            </MTooltip>
+                                        </MTooltip>
 
 
-                                            <MTooltip Bottom Context="tip">
-                                        <ActivatorContent>
-                                            <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("tgdevicepause")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small OnClick=@(()=>UpConfig(item.DeviceId,!item.Device.Enable))>
-                                                <MIcon>@(item.Device.Enable ? "mdi-pause" : "mdi-play")</MIcon>
+                                        <MTooltip Bottom Context="tip">
+                                            <ActivatorContent>
+                                                <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("tgdevicepause")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small OnClick=@(()=>UpConfig(item.DeviceId,!item.Device.Enable))>
+                                                    <MIcon>@(item.Device.Enable ? "mdi-pause" : "mdi-play")</MIcon>
                                                     </MButton>
                                                 </ActivatorContent>
                                                 <ChildContent>
@@ -448,16 +448,16 @@
                                     <MSpacer></MSpacer>
 
                                     <MTooltip Bottom Context="tip">
-                                    <ActivatorContent>
-                                        <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("tgdevicepause")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small
-                                                 OnClick=@(()=>
+                                        <ActivatorContent>
+                                            <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("tgdevicepause")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small
+                                                     OnClick=@(()=>
                                                  {
                                                  pauseMessage=!pauseMessage;
                                                  if(pauseMessage)
                                                  CurMessages= uploadDeviceInfoItem.Driver.Messages.ToList();
                                                  }
                                                  )>
-                                            <MIcon>@((!pauseMessage) ? "mdi-pause" : "mdi-play")</MIcon>
+                                                <MIcon>@((!pauseMessage) ? "mdi-pause" : "mdi-play")</MIcon>
                                                 </MButton>
                                             </ActivatorContent>
                                             <ChildContent>
@@ -466,23 +466,23 @@
                                     </MTooltip>
 
                                     <MTooltip Bottom Context="tip">
-                                    <ActivatorContent>
-                                        <MButton Loading=isDownExport Disabled=@(!UserResoures.IsHasButtonWithRole("tgdevicepause")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small
-                                                 OnClick=@(async()=>
+                                        <ActivatorContent>
+                                            <MButton Loading=isDownExport Disabled=@(!UserResoures.IsHasButtonWithRole("tgdevicepause")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small
+                                                     OnClick=@(async()=>
                                                  {
                                                  var curMessages= uploadDeviceInfoItem.Driver.Messages.ToList();
                                                  await DownDeviceMessageExport(curMessages);
                                                  }
                                                  )>
-                                            <MIcon>mdi-export</MIcon>
+                                                <MIcon>mdi-export</MIcon>
                                             </MButton>
                                         </ActivatorContent>
                                         <ChildContent>
                                             <span>@T("导出")</span>
                                         </ChildContent>
-                                        </MTooltip>
+                                    </MTooltip>
 
-                                        </MCardActions>
+                                </MCardActions>
                                 if (pauseMessage)
                                 {
                                     var item = CurMessages;
@@ -538,32 +538,32 @@
                 <ChildContent>
                     <span>@T("全部重启")</span>
                 </ChildContent>
-                </MTooltip>
+            </MTooltip>
 
-            </ChildContent>
-            </MSpeedDial>
-            <MOverlay Value="isAllRestart" Opacity="0.8">
-            <span class="green--text text--darken-2">
-                @T("后台服务重启中")
-            </span>
-            <MProgressCircular Indeterminate Width=8
+        </ChildContent>
+    </MSpeedDial>
+    <MOverlay Value="isAllRestart" Opacity="0.8">
+        <span class="green--text text--darken-2">
+            @T("后台服务重启中")
+        </span>
+        <MProgressCircular Indeterminate Width=8
                            Size="40"></MProgressCircular>
-        </MOverlay>
-        </MSheet>
+    </MOverlay>
+</MSheet>
 
-        <style>
-            .position-button {
-                position: fixed !important;
-                top: 40%;
-                right: 0;
-                box-shadow: 1px 1px 8px var(--mud-palette-primary);
-                background-color: var(--mud-palette-primary);
-                cursor: pointer
-            }
+<style>
+    .position-button {
+        position: fixed !important;
+        top: 40%;
+        right: 0;
+        box-shadow: 1px 1px 8px var(--mud-palette-primary);
+        background-color: var(--mud-palette-primary);
+        cursor: pointer
+    }
 
-        </style>
+</style>
 
-        <PModal @bind-Value="IsShowImportVariableList" OnCancel="() => IsShowImportVariableList = false"
+<PModal @bind-Value="IsShowImportVariableList" OnCancel="() => IsShowImportVariableList = false"
         Title=@T("导入变量") Height=@("700") Persistent
         MaxWidth="1500" OnSave="DownDeviceExport">
     <ChildContent>
@@ -579,12 +579,12 @@
             <MLabel>@T("导出Excel")</MLabel>
         </MButton>
     </SaveContent>
-    </PModal>
+</PModal>
 
 
 
 
-    @code {
+@code {
     bool pauseMessage;
     List<(long id, string message)> CurMessages = new();
     async Task DownDeviceMessageExport(List<(long id, string message)> values)
