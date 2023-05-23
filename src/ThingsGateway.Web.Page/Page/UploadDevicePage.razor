@@ -154,6 +154,7 @@
 
 }
     @code {
+    [Inject] public JsInitVariables JsInitVariables { get; set; } = default!;
     [Inject]
     IJSRuntime JS { get; set; }
     bool isDownExport;
@@ -166,7 +167,7 @@
             using var memoryStream = await UploadDeviceService.ExportFileAsync();
             memoryStream.Seek(0, SeekOrigin.Begin);
             using var streamRef = new DotNetStreamReference(stream: memoryStream);
-            await JS.InvokeVoidAsync("downloadFileFromStream", $"上传设备导出{DateTime.UtcNow.ToString("MM-dd-HH-mm-ss")}.xlsx", streamRef);
+            await JS.InvokeVoidAsync("downloadFileFromStream", $"上传设备导出{DateTime.UtcNow.Add(JsInitVariables.TimezoneOffset).ToString("MM-dd-HH-mm-ss")}.xlsx", streamRef);
         }
         finally
         {

@@ -41,7 +41,7 @@
         protected override FilterResult Filter(ByteBlock byteBlock, bool beCached, ref TRequest request, ref int tempCapacity)
         {
             var allBytes = byteBlock.ToArray(0, byteBlock.Len);
-            Client.Logger?.Trace("报文-" + Client.GetIPPort().ToString() + "-" + ThingsGateway.Foundation.Resources.Resource.Received + ":" + allBytes.ToHexString(" "));
+            Client.Logger?.Trace("报文-" + Client.IP + ":" + Client.Port + "-" + ThingsGateway.Foundation.Resources.Resource.Received + ":" + allBytes.ToHexString(" "));
 
             //if (Request?.SendBytes == null)
             //{
@@ -111,7 +111,7 @@
             {
                 byteBlock.Pos = byteBlock.Len;
                 request.ReceivedBytes = allBytes;
-                Client.Logger?.Warning(Client.GetIPPort().ToString() + unpackbytes.Message);
+                Client.Logger?.Warning(Client.IP + ":" + Client.Port.ToString() + unpackbytes.Message);
                 return FilterResult.Success;
             }
         }
@@ -135,7 +135,7 @@
             Request = GetInstance();
             Request.SendBytes = bytes;
             GoSend(bytes, 0, bytes.Length);
-            Client.Logger?.Trace("报文-" + Client.GetIPPort().ToString() + "-" + ThingsGateway.Foundation.Resources.Resource.Send + ":" + Request.SendBytes.ToHexString(" "));
+            Client.Logger?.Trace("报文-" + Client.IP + ":" + Client.Port.ToString() + "-" + ThingsGateway.Foundation.Resources.Resource.Send + ":" + Request.SendBytes.ToHexString(" "));
         }
 
         /// <inheritdoc/>

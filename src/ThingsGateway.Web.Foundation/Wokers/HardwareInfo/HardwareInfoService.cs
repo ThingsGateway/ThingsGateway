@@ -31,9 +31,9 @@ namespace ThingsGateway.Web.Foundation
             {
                 hardwareInfo = new();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                _logger.LogError(ex,"初始化硬件信息失败");
+                _logger.LogError(ex, "初始化硬件信息失败");
             }
             _ = Task.Run(async () =>
              {

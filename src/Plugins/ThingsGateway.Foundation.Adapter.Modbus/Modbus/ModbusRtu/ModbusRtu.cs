@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.ComponentModel;
+using System.Threading;
 using System.Threading.Tasks;
 
 using ThingsGateway.Foundation.Serial;
@@ -18,10 +19,13 @@ namespace ThingsGateway.Foundation.Adapter.Modbus
             waitingClient = SerialClient.GetTGWaitingClient(new());
         }
         private IWaitingClient<SerialClient> waitingClient;
-
+        [Description("Crc校验")]
         public bool Crc16CheckEnable { get; set; }
+        [Description("帧前时间")]
         public int FrameTime { get; set; }
-
+        [Description("组包缓存时间")]
+        public double CacheTimeout { get; set; } = 1;
+        [Description("站号")]
         public byte Station { get; set; } = 1;
         public override async Task<OperResult<byte[]>> ReadAsync(string address, int length, CancellationToken token = default)
         {
@@ -71,7 +75,7 @@ namespace ThingsGateway.Foundation.Adapter.Modbus
         {
             DataHandleAdapter = new();
             DataHandleAdapter.Crc16CheckEnable = Crc16CheckEnable;
-            DataHandleAdapter.Crc16CheckEnable = Crc16CheckEnable;
+            DataHandleAdapter.CacheTimeout = TimeSpan.FromSeconds(CacheTimeout);
             SerialClient.SetDataHandlingAdapter(DataHandleAdapter);
         }
         public override async Task<OperResult> WriteAsync(string address, byte[] value, CancellationToken token = default)

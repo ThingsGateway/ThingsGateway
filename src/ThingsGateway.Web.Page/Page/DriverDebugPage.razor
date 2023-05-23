@@ -15,10 +15,9 @@
 @inject UserResoures UserResoures
 @inject ICollectDeviceService CollectDeviceService
 @layout MainLayout
-
-<MRow>
-    <MCol Md=4 Cols="12">
-        <MCard Class="ma-2" Style="height: calc(100vh - 200px)">
+<MRow NoGutters>
+    <MCol Md="@("auto")">
+        <MCard Show=IsShowTreeView Style="height: calc(100vh - 200px)">
             <MCardTitle>
                 <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="mx-2 my-1" @bind-Value="_searchName" Outlined Label=@typeof(CollectDevice).GetDescription(nameof(CollectDevice.PluginId)) />
             </MCardTitle>
@@ -37,17 +36,33 @@
             </MTreeview>
         </MCard>
     </MCol>
-    <MCol Md=8 Cols="12">
-        <MCard Class="ma-2" Style="height: calc(100vh - 200px)">
+    <MCol>
+        <MCard Style="height: calc(100vh - 200px)">
+            <MCard Class="mb-3 pa-2  text-h6" Flat Outlined Rounded="false">
+                <MRow Align="AlignTypes.Center">
+                    <MButton Class="mx-1" OnClick=@(async() =>
+                             {
+                             IsShowTreeView=!IsShowTreeView;
+                             }
+                             ) Color="primary" Icon>
+                        <MIcon>mdi-menu</MIcon>
+                    </MButton>
+                    <MLabel>
+                        @_importRef?.ToString()
+                    </MLabel>
+                </MRow>
+            </MCard>
             @if (_importRender != null)
             {
                 @_importRender
             }
         </MCard>
-    </MCol>
-</MRow>
 
+    </MCol>
+
+</MRow>
 @code {
+    bool IsShowTreeView = true;
     class PluginDebugUIInput
     {
         public string PluginName { get; set; }
@@ -68,8 +83,7 @@
 
     protected override void OnInitialized()
     {
-        DriverPlugins = DriverPluginService.GetDriverPluginChildrenList(DriverEnum.Collect);
-
+        DriverPlugins = DriverPluginService.GetDriverPluginChildrenList();
         base.OnInitialized();
     }
     async Task ImportVaiable(long driverId)

@@ -14,6 +14,7 @@ public class ModbusRtuOverUdp : CollectBase
     public ModbusRtuOverUdp(IServiceScopeFactory scopeFactory) : base(scopeFactory)
     {
     }
+    public override Type DriverDebugUIType => typeof(ModbusRtuOverUdpDebugDriverPage);
 
     public override CollectDriverPropertyBase DriverPropertys => driverPropertys;
 

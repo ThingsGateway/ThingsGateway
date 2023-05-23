@@ -19,6 +19,7 @@ public class ModbusUdp : CollectBase
     public override CollectDriverPropertyBase DriverPropertys => driverPropertys;
 
     public override IThingsGatewayBitConverter ThingsGatewayBitConverter { get => _plc?.ThingsGatewayBitConverter; }
+    public override Type DriverDebugUIType => typeof(ModbusUdpDebugDriverPage);
 
     public override void AfterStop()
     {

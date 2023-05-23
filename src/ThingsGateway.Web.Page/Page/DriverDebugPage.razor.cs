@@ -1,8 +1,6 @@
-using SqlSugar;
-
 namespace ThingsGateway.Web.Page
 {
-    public partial class PluginDebugPage
+    public partial class DriverDebugPage
     {
 
         [CascadingParameter]

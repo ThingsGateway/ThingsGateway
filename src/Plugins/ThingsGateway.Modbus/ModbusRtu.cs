@@ -83,6 +83,7 @@ public class ModbusRtu : CollectBase, IDisposable
         _plc = new((SerialClient)client);
         _plc.Crc16CheckEnable = driverPropertys.Crc16CheckEnable;
         _plc.FrameTime = driverPropertys.FrameTime;
+        _plc.CacheTimeout = driverPropertys.CacheTimeout;
         _plc.DataFormat = driverPropertys.DataFormat;
         _plc.Station = driverPropertys.Station;
         _plc.TimeOut = driverPropertys.TimeOut;
@@ -109,7 +110,8 @@ public class ModbusRtuProperty : CollectDriverPropertyBase
 
     [DeviceProperty("帧前时间", "某些设备性能较弱，报文间需要间隔较长时间")]
     public int FrameTime { get; set; } = 0;
-
+    [DeviceProperty("组包缓存超时", "某些设备性能较弱，报文间需要间隔较长时间，可以设置更长的组包缓存，默认1s")]
+    public double CacheTimeout { get; set; } = 1;
     [DeviceProperty("共享链路", "")]
     public override bool IsShareChannel { get; set; } = false;
 

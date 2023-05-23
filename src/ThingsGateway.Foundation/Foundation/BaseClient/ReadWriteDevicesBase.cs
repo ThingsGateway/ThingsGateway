@@ -1,4 +1,6 @@
-﻿namespace ThingsGateway.Foundation
+﻿using System.ComponentModel;
+
+namespace ThingsGateway.Foundation
 {
     /// <summary>
     /// 读写设备基类
@@ -6,6 +8,7 @@
     public abstract class ReadWriteDevicesBase : DisposableObject, IReadWriteDevice
     {
         /// <inheritdoc/>
+        [Description("数据转换")]
         public DataFormat DataFormat
         {
             get
@@ -23,6 +26,7 @@
         /// <inheritdoc/>
         public IThingsGatewayBitConverter ThingsGatewayBitConverter { get; protected set; } = new ThingsGatewayBitConverter(EndianType.Big);
         /// <inheritdoc/>
+        [Description("读写超时")]
         public ushort TimeOut { get; set; } = 3000;
         /// <inheritdoc/>
         public ushort RegisterByteLength { get; set; } = 1;
