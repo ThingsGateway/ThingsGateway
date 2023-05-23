@@ -19,7 +19,7 @@
 		<PackageReference Include="Yitter.IdGenerator" Version="1.0.14" />
 		<PackageReference Include="Microsoft.Data.Sqlite" Version="7.0.5" />
 		<PackageReference Include="CodingSeb.ExpressionEvaluator" Version="1.4.39" />
-		<PackageReference Include="Hardware.Info" Version="11.0.1.1" />
+		<PackageReference Include="Hardware.Info" Version="11.1.0" />
 		<PackageReference Include="CS-Script" Version="4.6.5" />
 		<!--CS-Script与Furion冲突，直接安装覆盖版本-->
 		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.6.0" />
