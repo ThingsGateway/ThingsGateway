@@ -531,8 +531,7 @@ namespace TouchSocket.Sockets
                 ConnectingEventArgs args = new ConnectingEventArgs(this.MainSocket);
                 this.PrivateOnConnecting(args);
                 {
-                    this.CanSend = true;
-                    this.LoadSocketAndReadIpPort();
+
 #if (NET6_0_OR_GREATER)
                     var nowTime = DateTime.UtcNow;
                     using CancellationTokenSource cancellationTokenSource = new();
@@ -582,7 +581,8 @@ namespace TouchSocket.Sockets
 
                     if (this.MainSocket.Connected)
                     {
-
+                        this.CanSend = true;
+                        this.LoadSocketAndReadIpPort();
                         if (this.Config.GetValue(TouchSocketConfigExtension.DelaySenderProperty) is DelaySenderOption senderOption)
                         {
                             this.m_useDelaySender = true;
