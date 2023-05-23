@@ -77,7 +77,7 @@
                     {
 
                         <div class="ml-2 mr-2 d-flex flex-column  align-center">
-                            <MProgressCircular Value=@(item.PercentProcessorTime) Size="200" Width="12" Class="ma-4" Color=@(item.PercentProcessorTime>70?"red":"green")>
+                            <MProgressCircular Value=@(item.PercentProcessorTime<=100?item.PercentProcessorTime:100) Size="200" Width="12" Class="ma-4" Color=@(item.PercentProcessorTime>70?"red":"green")>
                                 <div class="ml-2 mr-2 d-flex flex-column align-center">
                                     @((item.PercentProcessorTime).ToString("F0") + " %")
 
@@ -106,7 +106,8 @@
                         var memoryStatus = HardwareInfoService.HardwareInfo.MemoryStatus;
                     }
                     <div class="ml-2 mr-2 d-flex flex-column  align-center">
-                        <MProgressCircular Value=@(100 - (memoryStatus.AvailablePhysical * 100.00 / memoryStatus.TotalPhysical)) Size="200" Width="12" Class="ma-4" Color=@(memoryStatus.AvailablePhysical * 100.00 / memoryStatus.TotalPhysical<20?"red":"green")>
+                        <MProgressCircular Value=@(memoryStatus.TotalPhysical>memoryStatus.AvailablePhysical?100 - (memoryStatus.AvailablePhysical * 100.00 / memoryStatus.TotalPhysical):100)
+                                           Size="200" Width="12" Class="ma-4" Color=@(memoryStatus.AvailablePhysical * 100.00 / memoryStatus.TotalPhysical<20?"red":"green")>
                             <div class="ml-2 mr-2 d-flex flex-column align-center">
                                 @((100 - (memoryStatus.AvailablePhysical * 100.00 / memoryStatus.TotalPhysical)).ToString("F2") + " %")
                                 <div class="mt-1  d-flex align-center justify-space-between">
@@ -144,7 +145,7 @@
                 @foreach (var drive in HardwareInfoService.HardwareInfo.VolumeList ?? new())
                 {
                     <MCol Md=4 Cols="12" Class="pl-2 pr-2 d-flex justify-space-around">
-                        <MProgressCircular Value=@(100 - (drive.FreeSpace * 100.00 / drive.Size)) Size="200" Width="12" Class="ma-4" Color=@(drive.FreeSpace * 100.00 / drive.Size<20?"red":"green")>
+                        <MProgressCircular Value=@(drive.Size>drive.FreeSpace?100 - (drive.FreeSpace * 100.00 / drive.Size):100) Size="200" Width="12" Class="ma-4" Color=@(drive.FreeSpace * 100.00 / drive.Size<20?"red":"green")>
                             <div class="ml-2 mr-2 d-flex flex-column align-center">
                                 @((100 - (drive.FreeSpace * 100.00 / drive.Size)).ToString("F2") + " %")
                                 <div>
