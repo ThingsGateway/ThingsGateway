@@ -31,6 +31,12 @@ namespace ThingsGateway.Web.Foundation
         /// <returns></returns>
         List<DriverPluginCategory> GetDriverPluginChildrenList(DriverEnum driverTypeEnum);
         /// <summary>
+        /// 获取插件树
+        /// </summary>
+        /// <returns></returns>
+        List<DriverPluginCategory> GetDriverPluginChildrenList();
+
+        /// <summary>
         /// 根据ID获取名称
         /// </summary>
         /// <param name="name"></param>

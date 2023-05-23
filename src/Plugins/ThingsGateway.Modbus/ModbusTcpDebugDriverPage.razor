@@ -9,12 +9,12 @@
 @using ThingsGateway.Web.Foundation;
 @using Masa.Blazor
 @inherits DriverDebugUIBase
-<SerialClientPage @ref=serialClientPage></SerialClientPage>
+<TcpClientPage @ref=tcpClientPage></TcpClientPage>
 @if (_plc != null)
 {
     <MCard Flat Elevation="0">
         <MRow Class="my-1" NoGutters Justify="JustifyTypes.SpaceBetween" Align="AlignTypes.Center">
-            <MCheckbox Class="mx-1" Label=@(_plc.Description(x => x.Crc16CheckEnable)) Dense Outlined HideDetails="@("auto")" @bind-Value=@_plc.Crc16CheckEnable></MCheckbox>
+            <MCheckbox Class="mx-1" Label=@(_plc.Description(x => x.IsCheckMessageId)) Dense Outlined HideDetails="@("auto")" @bind-Value=@_plc.IsCheckMessageId></MCheckbox>
             <MTextField Class="mx-1" Label=@(_plc.Description(x => x.FrameTime)) Dense Outlined HideDetails="@("auto")" @bind-Value=@_plc.FrameTime></MTextField>
             <MTextField Class="mx-1" Label=@(_plc.Description(x => x.CacheTimeout)) Dense Outlined HideDetails="@("auto")" @bind-Value=@_plc.CacheTimeout></MTextField>
 
@@ -109,12 +109,12 @@
 
 @code
 {
-    private SerialClientPage serialClientPage;
-    private ThingsGateway.Foundation.Adapter.Modbus.ModbusRtu _plc
+    private TcpClientPage tcpClientPage;
+    private ThingsGateway.Foundation.Adapter.Modbus.ModbusTcp _plc
     {
         get
         {
-            return plc as ThingsGateway.Foundation.Adapter.Modbus.ModbusRtu;
+            return plc as ThingsGateway.Foundation.Adapter.Modbus.ModbusTcp;
         }
     }
 
@@ -122,9 +122,9 @@
     {
         if (firstRender)
         {
-            serialClientPage.LogAction = LogOut;
+            tcpClientPage.LogAction = LogOut;
             //载入配置
-            plc = new ThingsGateway.Foundation.Adapter.Modbus.ModbusRtu((SerialClient)serialClientPage.GetSerialClient());
+            plc = new ThingsGateway.Foundation.Adapter.Modbus.ModbusTcp((TGTcpClient)tcpClientPage.GetTGTcpClient());
             StateHasChanged();
         }
 
@@ -135,11 +135,11 @@
     public override void Dispose()
     {
         plc.SafeDispose();
-        serialClientPage.SafeDispose();
+        tcpClientPage.SafeDispose();
         base.Dispose();
     }
     public override string ToString()
     {
-        return nameof(ModbusRtu);
+        return nameof(ModbusTcp);
     }
 }

@@ -71,23 +71,23 @@ namespace ThingsGateway.Foundation
 
         private void Connected(SocketClient client, TouchSocketEventArgs e)
         {
-            Logger?.Debug(client.GetIPPort() + "连接成功");
+            Logger?.Debug(client.IP + ":" + client.Port + "连接成功");
         }
 
         private void Connecting(SocketClient client, OperationEventArgs e)
         {
-            Logger?.Debug(client.GetIPPort() + "正在连接");
+            Logger?.Debug(client.IP + ":" + client.Port + "正在连接");
             SetDataAdapter(client);
         }
 
         private void Disconnected(ITcpClientBase client, DisconnectEventArgs e)
         {
-            Logger?.Debug(client.GetIPPort() + "断开连接-" + e.Message);
+            Logger?.Debug(client.IP + ":" + client.Port + "断开连接-" + e.Message);
         }
 
         private void Disconnecting(ITcpClientBase client, DisconnectEventArgs e)
         {
-            Logger?.Debug(client.GetIPPort() + "正在主动断开连接-" + e.Message);
+            Logger?.Debug(client.IP + ":" + client.Port + "正在主动断开连接-" + e.Message);
         }
 
         private async void Received(SocketClient client, ByteBlock byteBlock, IRequestInfo requestInfo)

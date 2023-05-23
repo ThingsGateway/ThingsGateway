@@ -302,13 +302,13 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
                 var result1 = SendThenResponse(ISO_CR);
                 if (!result1.IsSuccess)
                 {
-                    Logger?.Error(client.GetIPPort() + "ISO初始化失败");
+                    Logger?.Error(client.IP + ":" + client.Port + "ISO初始化失败");
                     return;
                 }
                 var result2 = SendThenResponse(S7_PN);
                 if (!result2.IsSuccess)
                 {
-                    Logger?.Error(client.GetIPPort() + "初始化失败");
+                    Logger?.Error(client.IP + ":" + client.Port + "初始化失败");
                     return;
                 }
                 pdu_length = ThingsGatewayBitConverter.ToUInt16(result2.Content.SelectLast(2), 0);

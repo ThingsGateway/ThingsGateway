@@ -20,6 +20,7 @@ namespace ThingsGateway.Foundation.Adapter.Modbus
 
         public byte Station { get; set; } = 1;
         public int FrameTime { get; set; }
+        public double CacheTimeout { get; set; } = 1;
         private async Task<ResponsedData> SendThenReturnAsync(OperResult<byte[]> commandResult, CancellationToken token)
         {
             try
@@ -68,6 +69,7 @@ namespace ThingsGateway.Foundation.Adapter.Modbus
         {
             DataHandleAdapter = new();
             DataHandleAdapter.Crc16CheckEnable = Crc16CheckEnable;
+            DataHandleAdapter.CacheTimeout = TimeSpan.FromSeconds(CacheTimeout);
             TGTcpClient.SetDataHandlingAdapter(DataHandleAdapter);
         }
         public override async Task<OperResult> WriteAsync(string address, byte[] value, CancellationToken token = default)

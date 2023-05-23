@@ -9,14 +9,13 @@
 @using ThingsGateway.Web.Foundation;
 @using Masa.Blazor
 @inherits DriverDebugUIBase
-<SerialClientPage @ref=serialClientPage></SerialClientPage>
+<UdpSessionPage @ref=udpClientPage></UdpSessionPage>
 @if (_plc != null)
 {
     <MCard Flat Elevation="0">
         <MRow Class="my-1" NoGutters Justify="JustifyTypes.SpaceBetween" Align="AlignTypes.Center">
-            <MCheckbox Class="mx-1" Label=@(_plc.Description(x => x.Crc16CheckEnable)) Dense Outlined HideDetails="@("auto")" @bind-Value=@_plc.Crc16CheckEnable></MCheckbox>
+            <MCheckbox Class="mx-1" Label=@(_plc.Description(x => x.IsCheckMessageId)) Dense Outlined HideDetails="@("auto")" @bind-Value=@_plc.IsCheckMessageId></MCheckbox>
             <MTextField Class="mx-1" Label=@(_plc.Description(x => x.FrameTime)) Dense Outlined HideDetails="@("auto")" @bind-Value=@_plc.FrameTime></MTextField>
-            <MTextField Class="mx-1" Label=@(_plc.Description(x => x.CacheTimeout)) Dense Outlined HideDetails="@("auto")" @bind-Value=@_plc.CacheTimeout></MTextField>
 
             <MTextField Class="mx-1" Label=@(_plc.Description(x => x.Station)) Dense Outlined HideDetails="@("auto")" @bind-Value=@_plc.Station></MTextField>
             <MTextField Class="mx-1" Label=@(_plc.Description(x => x.TimeOut)) Dense Outlined HideDetails="@("auto")" @bind-Value=@_plc.TimeOut></MTextField>
@@ -109,12 +108,12 @@
 
 @code
 {
-    private SerialClientPage serialClientPage;
-    private ThingsGateway.Foundation.Adapter.Modbus.ModbusRtu _plc
+    private UdpSessionPage udpClientPage;
+    private ThingsGateway.Foundation.Adapter.Modbus.ModbusUdp _plc
     {
         get
         {
-            return plc as ThingsGateway.Foundation.Adapter.Modbus.ModbusRtu;
+            return plc as ThingsGateway.Foundation.Adapter.Modbus.ModbusUdp;
         }
     }
 
@@ -122,9 +121,9 @@
     {
         if (firstRender)
         {
-            serialClientPage.LogAction = LogOut;
+            udpClientPage.LogAction = LogOut;
             //载入配置
-            plc = new ThingsGateway.Foundation.Adapter.Modbus.ModbusRtu((SerialClient)serialClientPage.GetSerialClient());
+            plc = new ThingsGateway.Foundation.Adapter.Modbus.ModbusUdp((TGUdpSession)udpClientPage.GetTGUdpSession());
             StateHasChanged();
         }
 
@@ -135,11 +134,11 @@
     public override void Dispose()
     {
         plc.SafeDispose();
-        serialClientPage.SafeDispose();
+        udpClientPage.SafeDispose();
         base.Dispose();
     }
     public override string ToString()
     {
-        return nameof(ModbusRtu);
+        return nameof(ModbusUdp);
     }
 }

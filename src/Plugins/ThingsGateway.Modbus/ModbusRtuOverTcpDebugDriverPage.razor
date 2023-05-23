@@ -9,7 +9,7 @@
 @using ThingsGateway.Web.Foundation;
 @using Masa.Blazor
 @inherits DriverDebugUIBase
-<SerialClientPage @ref=serialClientPage></SerialClientPage>
+<TcpClientPage @ref=tcpClientPage></TcpClientPage>
 @if (_plc != null)
 {
     <MCard Flat Elevation="0">
@@ -109,12 +109,12 @@
 
 @code
 {
-    private SerialClientPage serialClientPage;
-    private ThingsGateway.Foundation.Adapter.Modbus.ModbusRtu _plc
+    private TcpClientPage tcpClientPage;
+    private ThingsGateway.Foundation.Adapter.Modbus.ModbusRtuOverTcp _plc
     {
         get
         {
-            return plc as ThingsGateway.Foundation.Adapter.Modbus.ModbusRtu;
+            return plc as ThingsGateway.Foundation.Adapter.Modbus.ModbusRtuOverTcp;
         }
     }
 
@@ -122,9 +122,9 @@
     {
         if (firstRender)
         {
-            serialClientPage.LogAction = LogOut;
+            tcpClientPage.LogAction = LogOut;
             //载入配置
-            plc = new ThingsGateway.Foundation.Adapter.Modbus.ModbusRtu((SerialClient)serialClientPage.GetSerialClient());
+            plc = new ThingsGateway.Foundation.Adapter.Modbus.ModbusRtuOverTcp((TGTcpClient)tcpClientPage.GetTGTcpClient());
             StateHasChanged();
         }
 
@@ -135,11 +135,11 @@
     public override void Dispose()
     {
         plc.SafeDispose();
-        serialClientPage.SafeDispose();
+        tcpClientPage.SafeDispose();
         base.Dispose();
     }
     public override string ToString()
     {
-        return nameof(ModbusRtu);
+        return nameof(ModbusRtuOverTcp);
     }
 }

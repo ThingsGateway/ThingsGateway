@@ -82,6 +82,31 @@ namespace ThingsGateway.Web.Foundation
             var data = GetCacheList();
             return data.FirstOrDefault(it => it.Id == Id);
         }
+        /// <inheritdoc/>
+        public List<DriverPluginCategory> GetDriverPluginChildrenList()
+        {
+            var data = GetCacheList();
+            var driverPluginCategories = data.GroupBy(a => a.FileName).Select(it =>
+            {
+                var childrens = new List<DriverPluginCategory>();
+                foreach (var item in it)
+                {
+                    childrens.Add(new DriverPluginCategory
+                    {
+                        Id = item.Id,
+                        Name = item.AssembleName,
+                    }
+                    );
+                }
+                return new DriverPluginCategory
+                {
+                    Id = YitIdHelper.NextId(),
+                    Name = it.Key,
+                    Children = childrens,
+                };
+            });
+            return driverPluginCategories.ToList();
+        }
 
         /// <inheritdoc/>
         public List<DriverPluginCategory> GetDriverPluginChildrenList(DriverEnum driverTypeEnum)

@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.ComponentModel;
+using System.Threading;
 using System.Threading.Tasks;
 
 using TouchSocket.Resources;
@@ -16,10 +17,16 @@ namespace ThingsGateway.Foundation.Adapter.Modbus
             waitingClient = TGTcpClient.GetTGWaitingClient(new());
         }
         private IWaitingClient<TGTcpClient> waitingClient;
+
+        [Description("检测事务标识符")]
         public bool IsCheckMessageId { get; set; }
 
+        [Description("站号")]
         public byte Station { get; set; } = 1;
+        [Description("帧前时间")]
         public int FrameTime { get; set; }
+        [Description("组包缓存时间")]
+        public double CacheTimeout { get; set; } = 1;
         private async Task<ResponsedData> SendThenReturnAsync(OperResult<byte[]> commandResult, CancellationToken token)
         {
             try
@@ -69,6 +76,7 @@ namespace ThingsGateway.Foundation.Adapter.Modbus
         {
             DataHandleAdapter = new();
             DataHandleAdapter.IsCheckMessageId = IsCheckMessageId;
+            DataHandleAdapter.CacheTimeout = TimeSpan.FromSeconds(CacheTimeout);
             TGTcpClient.SetDataHandlingAdapter(DataHandleAdapter);
         }
         public override async Task<OperResult> WriteAsync(string address, byte[] value, CancellationToken token = default)

@@ -1,0 +1,78 @@
+﻿@using BlazorComponent;
+@using Microsoft.AspNetCore.Components.Web;
+@using System.IO.Ports;
+@using System.Collections.Concurrent;
+@using ThingsGateway.Core;
+@using ThingsGateway.Foundation;
+@using ThingsGateway.Foundation.Serial;
+@using ThingsGateway.Web.Foundation;
+@using Masa.Blazor
+@implements IDisposable
+<MCard Class="pa-4" Flat Elevation="0" Rounded="false">
+    <MRow Justify="JustifyTypes.SpaceBetween" Align="AlignTypes.Center">
+        <MTextField Class="mx-1" Label="IP地址" Dense Outlined HideDetails="@("auto")" @bind-Value=@ip />
+        <MTextField Class="mx-1" Label="端口" Dense Outlined HideDetails="@("auto")" @bind-Value=@port />
+
+        <MButton Class="mx-1" OnClick=@(() =>
+                 {
+                 tgUdpSession.Stop();
+                 GetTGUdpSession().Start();
+                 }
+                 ) Color="primary">
+            连接
+        </MButton>
+        <MButton Class="mx-1" OnClick=@(() =>
+                 {
+                 tgUdpSession.Stop();
+                 }
+                 ) Color="red">
+            断开
+        </MButton>
+    </MRow>
+
+
+
+</MCard>
+@code
+{
+    public void Dispose()
+    {
+        tgUdpSession.SafeDispose();
+    }
+    private string ip = "127.0.0.1";
+    private int port = 502;
+    private TGUdpSession tgUdpSession { get; set; } = new();
+    private TouchSocketConfig config;
+    public Action<string> LogAction;
+
+    private void LogOut(string str)
+    {
+        LogAction?.Invoke(str);
+    }
+    protected override void OnInitialized()
+    {
+        config = new TouchSocketConfig();
+        var logMessage = new TouchSocket.Core.LoggerGroup();
+        logMessage.AddLogger(new EasyLogger(LogOut));
+        config.ConfigureContainer(a => a.RegisterSingleton<ILog>(logMessage));
+        config.SetRemoteIPHost(new IPHost(ip + ":" + port)).SetBufferLength(300);
+        config.SetBindIPHost(new IPHost(0));
+        tgUdpSession = config.Container.Resolve<TGUdpSession>();
+        base.OnInitialized();
+
+    }
+    public TGUdpSession GetTGUdpSession()
+    {
+        config = new TouchSocketConfig();
+        var logMessage = new TouchSocket.Core.LoggerGroup();
+        logMessage.AddLogger(new EasyLogger(LogOut));
+        config.ConfigureContainer(a => a.RegisterSingleton<ILog>(logMessage));
+        config.SetRemoteIPHost(new IPHost(ip + ":" + port)).SetBufferLength(300);
+        config.SetBindIPHost(new IPHost(0));
+        //载入配置
+        tgUdpSession.Setup(config);
+        return tgUdpSession;
+    }
+
+
+}

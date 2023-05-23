@@ -29,6 +29,7 @@ public class ModbusServer : UpLoadBase
     public override UpDriverPropertyBase DriverPropertys => driverPropertys;
     public override List<CollectVariableRunTime> UploadVariables => _ModbusTags?.Values.ToList();
     public override VariablePropertyBase VariablePropertys => variablePropertys;
+    public override Type DriverDebugUIType => typeof(ModbusServerDebugDriverPage);
 
     public override async Task BeforStartAsync()
     {
@@ -149,12 +150,12 @@ public class ModbusServer : UpLoadBase
             if (tag.Value == null) return OperResult.CreateSuccessResult();
             var enable = tag.Value.VariablePropertys[curDevice.Id].FirstOrDefault(a => a.PropertyName == nameof(variablePropertys.VariableRpcEnable))?.Value.ToBoolean() == true && driverPropertys.DeviceRpcEnable;
             if (!enable) return new OperResult("不允许写入");
-            var result = await rpcCore.InvokeDeviceMethodAsync($"{nameof(ModbusServer)}-{curDevice.Name}-{client.GetIPPort()}",
-                new()
-                {
-                    Name = tag.Value.Name,
-                    Value = thingsGatewayBitConverter.GetDynamicData(tag.Value.DataType, bytes).ToString()
-                });
+            var result = await rpcCore.InvokeDeviceMethodAsync($"{nameof(ModbusServer)}-{curDevice.Name}-{client.IP + ":" + client.Port}",
+            new()
+            {
+                Name = tag.Value.Name,
+                Value = thingsGatewayBitConverter.GetDynamicData(tag.Value.DataType, bytes).ToString()
+            });
             return result;
         }
         catch (Exception ex)
