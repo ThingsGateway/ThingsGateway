@@ -43,7 +43,6 @@ namespace ThingsGateway.Web.Foundation
                      try
                      {
 
-
                          hardwareInfo?.RefreshMemoryStatus();
                          hardwareInfo?.RefreshMemoryList();
                          hardwareInfo?.RefreshDriveList();
@@ -59,7 +58,7 @@ namespace ThingsGateway.Web.Foundation
                              Environment = App.HostEnvironment.IsDevelopment() ? "Development" : "Production",
                              Stage = App.HostEnvironment.IsStaging() ? "Stage" : "非Stage", // 是否Stage环境
                          };
-                         await Task.Delay(5000);
+                         await Task.Delay(30000);
                      }
                      catch
                      {
