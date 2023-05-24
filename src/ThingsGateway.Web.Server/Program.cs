@@ -23,16 +23,11 @@ namespace ThingsGateway.Web.Entry
         /// <param name="args"></param>
         public static void Main(string[] args)
         {
-            var builder = WebApplication.CreateBuilder(new WebApplicationOptions
-            {
-                ContentRootPath = AppContext.BaseDirectory,
-                WebRootPath = "wwwroot",
-                Args = args
-            });
+            var builder = WebApplication.CreateBuilder(args);
+            builder.WebHost.UseWebRoot("wwwroot");
             builder.WebHost.UseStaticWebAssets();
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             builder.Host.UseContentRoot(AppContext.BaseDirectory);
-
 
             //需要服务守护可安装
             //builder.Host.UseWindowsService();

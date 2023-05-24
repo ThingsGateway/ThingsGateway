@@ -21,6 +21,8 @@ using ThingsGateway.Foundation.Adapter.Modbus;
 using ThingsGateway.Foundation.Extension;
 using ThingsGateway.Web.Foundation;
 
+using UAParser;
+
 namespace ThingsGateway.Modbus;
 
 public class ModbusServer : UpLoadBase
@@ -67,11 +69,34 @@ public class ModbusServer : UpLoadBase
         var list = Values.ToListWithDequeue();
         foreach (var item in list)
         {
-            await _plc.WriteAsync(item.Item2.DataType, item.Item1, item.Item2.Value?.ToString());
+            var type = GetPropertyValue(item.Item2, nameof(ModbusServerVariableProperty.ModbusType));
+            if(Enum.TryParse<DataTypeEnum>(type,out DataTypeEnum result))
+            {
+                await _plc.WriteAsync(result.GetNetType(), item.Item1, item.Item2.Value?.ToString());
+            }
+            else
+            {
+                await _plc.WriteAsync(item.Item2.DataType, item.Item1, item.Item2.Value?.ToString());
+            }
         }
         await Task.Delay(100, cancellationToken);
     }
-
+    /// <summary>
+    /// 获取变量的属性值
+    /// </summary>
+    public string GetPropertyValue(CollectVariableRunTime variableRunTime, string propertyName)
+    {
+        if (variableRunTime.VariablePropertys.ContainsKey(curDevice.Id))
+        {
+            var data = variableRunTime.VariablePropertys[curDevice.Id].FirstOrDefault(a =>
+                  a.PropertyName == propertyName);
+            if (data != null)
+            {
+                return data.Value;
+            }
+        }
+        return null;
+    }
     public override OperResult IsConnected()
     {
         if (_plc?.TcpService?.ServerState == ServerState.Running)
@@ -204,4 +229,7 @@ public class ModbusServerVariableProperty : VariablePropertyBase
     public string ServiceAddress { get; set; }
     [VariableProperty("允许写入", "")]
     public bool VariableRpcEnable { get; set; }
+    [VariableProperty("数据类型", "")]
+    public DataTypeEnum ModbusType { get; set; } = DataTypeEnum.Int16;
+
 }

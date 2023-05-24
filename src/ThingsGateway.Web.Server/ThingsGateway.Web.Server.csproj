@@ -5,7 +5,7 @@
 		<TargetFrameworks>net6.0;net7.0</TargetFrameworks>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<SatelliteResourceLanguages>zh-Hans</SatelliteResourceLanguages>
-		<PublishReadyToRunComposite>true</PublishReadyToRunComposite>
+		<!--<PublishReadyToRunComposite>true</PublishReadyToRunComposite>-->
 		<Version>1.5.0</Version>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<ApplicationIcon>favicon.ico</ApplicationIcon>
