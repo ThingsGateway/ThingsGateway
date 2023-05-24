@@ -51,9 +51,9 @@
 	</ItemGroup>
 
 	<!--安装服务守护-->
-	<!--<ItemGroup>
+	<ItemGroup>
 		<PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="7.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="7.0.0" />
-	</ItemGroup>-->
+	</ItemGroup>
 	
 </Project>
