@@ -27,11 +27,10 @@ namespace ThingsGateway.Web.Entry
             builder.WebHost.UseWebRoot("wwwroot");
             builder.WebHost.UseStaticWebAssets();
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-            builder.Host.UseContentRoot(AppContext.BaseDirectory);
 
             //需要服务守护可安装
-            //builder.Host.UseWindowsService();
-            //builder.Host.UseSystemd();
+            builder.Host.UseWindowsService();
+            builder.Host.UseSystemd();
 
             builder.Inject();
             var app = builder.Build();

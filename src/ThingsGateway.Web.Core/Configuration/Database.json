@@ -30,7 +30,7 @@
     "Sqlsugar": [
       {
         "ConfigId": "Default", //租户ID
-        "ConnectionString": "Data Source=./Default.db;", //连接字符串
+        "ConnectionString": "Data Source=Default.db;", //连接字符串
         "DbType": "Sqlite", //数据库类型
         "IsAutoCloseConnection": true, //是否自动释放
         "IsInitDb": true, //是否初始化数据库,适用于codefirst
@@ -40,7 +40,7 @@
       },
       {
         "ConfigId": "ThingsGateway", //租户ID
-        "ConnectionString": "Data Source=./ThingsGateway.db", //连接字符串
+        "ConnectionString": "Data Source=ThingsGateway.db", //连接字符串
         "DbType": "Sqlite", //数据库类型
         "IsAutoCloseConnection": true, //是否自动释放
         "IsInitDb": true, //是否初始化数据库,适用于codefirst
