@@ -10,7 +10,6 @@
 //------------------------------------------------------------------------------
 #endregion
 
-using Microsoft.Extensions.Hosting.Internal;
 
 namespace ThingsGateway.Web.Entry
 {

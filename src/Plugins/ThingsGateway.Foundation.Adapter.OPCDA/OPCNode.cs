@@ -13,9 +13,9 @@
 namespace ThingsGateway.Foundation.Adapter.OPCDA;
 public class OPCNode
 {
-    public string OPCIP { get; set; }
-    public string OPCName { get; set; }
-    public bool ActiveSubscribe { get; set; } = false;
+    public string OPCIP { get; set; } = "localhost";
+    public string OPCName { get; set; } = "Kepware.KEPServerEX.V6";
+    public bool ActiveSubscribe { get; set; } = true;
     public int UpdateRate { get; set; } = 1000;
     public int GroupSize { get; set; } = 500;
     public float DeadBand { get; set; } = 0;

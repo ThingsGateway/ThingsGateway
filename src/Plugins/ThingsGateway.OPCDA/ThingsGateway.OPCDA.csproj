@@ -29,5 +29,11 @@
 	  <ProjectReference Include="..\ThingsGateway.Foundation.Adapter.OPCDA\ThingsGateway.Foundation.Adapter.OPCDA.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Content Update="OPCDAClientPage.razor">
+	    <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+	  </Content>
+	</ItemGroup>
+
 
 </Project>

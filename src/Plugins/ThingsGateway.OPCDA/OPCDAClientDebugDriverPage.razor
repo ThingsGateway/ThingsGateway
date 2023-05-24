@@ -13,36 +13,17 @@
 @using BlazorComponent;
 @using Microsoft.AspNetCore.Components.Web;
 @using Microsoft.JSInterop;
+@using OpcDaClient.Da;
 @using ThingsGateway.Core;
-@using ThingsGateway.Foundation.Adapter.Modbus;
 @using ThingsGateway.Foundation;
 @using ThingsGateway.Foundation.Extension;
 @using ThingsGateway.Foundation.Serial;
 @using ThingsGateway.Web.Foundation;
 @using Masa.Blazor
+@using TouchSocket.Core;
 @inherits DriverDebugUIBase
-<UdpSessionPage @ref=udpClientPage></UdpSessionPage>
-@if (_plc != null)
-{
-    <MCard Flat Elevation="0">
-        <MRow Class="my-1" NoGutters Justify="JustifyTypes.SpaceBetween" Align="AlignTypes.Center">
-            <MCheckbox Class="mx-1" Label=@(_plc.Description(x => x.IsCheckMessageId)) Dense Outlined HideDetails="@("auto")" @bind-Value=@_plc.IsCheckMessageId></MCheckbox>
-            <MTextField Class="mx-1" Label=@(_plc.Description(x => x.FrameTime)) Dense Outlined HideDetails="@("auto")" @bind-Value=@_plc.FrameTime></MTextField>
+<OPCDAClientPage @ref=tcpClientPage></OPCDAClientPage>
 
-            <MTextField Class="mx-1" Label=@(_plc.Description(x => x.Station)) Dense Outlined HideDetails="@("auto")" @bind-Value=@_plc.Station></MTextField>
-            <MTextField Class="mx-1" Label=@(_plc.Description(x => x.TimeOut)) Dense Outlined HideDetails="@("auto")" @bind-Value=@_plc.TimeOut></MTextField>
-            <MSelect Class="mx-1" Style="max-width:200px" @bind-Value="_plc.DataFormat" Outlined Label="@(_plc.Description(x => x.DataFormat))"
-                     Items=@(typeof(DataFormat).GetEnumList())
-                     MenuProps="@(props => { props.Auto = true; props.OffsetY = true; })"
-                     ItemText=@((u) =>u.des)
-                     ItemValue=@(u =>(DataFormat)u.value)
-                     HideDetails=@("auto") Height="30"
-                  Dense>
-        </MSelect>
-    </MRow>
-</MCard>
-
-}
 <MCard Class="pa-4" Flat Elevation="0">
     <MRow Class="my-1" NoGutters>
 
@@ -50,18 +31,19 @@
             <MCard Flat Elevation="0">
                 <MCol Class="my-1 py-1">
                     <MTextField Class="mx-1 my-1" Label="变量地址" Dense Outlined HideDetails="@("auto")" @bind-Value=@address />
-                    <MTextField Class="mx-1 my-1" Label="长度" Dense Outlined HideDetails="@("auto")" @bind-Value=@length />
-                    <MSelect Class="mx-1 my-1" Style="max-width:200px" @bind-Value="dataTypeEnum" Outlined Label="数据类型"
-                             Items=@(typeof(DataTypeEnum).GetEnumList())
-                             MenuProps="@(props => { props.Auto = true; props.OffsetY = true; })"
-                             ItemText=@((u) =>u.des)
-                             ItemValue=@(u =>(DataTypeEnum)u.value)
-                             HideDetails=@("auto") Height="30"
-                             Dense>
-                    </MSelect>
+                    <MRow NoGutters>
+                        <MButton Class="mx-1 my-1" Color="primary" OnClick="Add">
+                            添加
+                        </MButton>
+                        <MButton Class="mx-1 my-1" Color="primary" OnClick="Remove">
+                            移除
+                        </MButton>
+                    </MRow>
+
+
 
                     <MButton Class="mx-1 my-1" Color="primary" OnClick="Read">
-                        读取
+                        组读取
                     </MButton>
                     <MTextField Class="mx-1 mt-3 my-1" Label="值" Dense Outlined HideDetails="@("auto")" @bind-Value=@writeValue />
                     <MButton Class="mx-1 my-1" Color="primary" OnClick="Write">
@@ -100,7 +82,7 @@
                 @{
                     var item = Messages;
                     <MRow Class="ml-2 mr-2 d-flex" NoGutters>
-                        <MVirtualScroll Context="itemMessage" Height=@("calc(100vh - 500px)") OverscanCount=2 ItemSize="100" Items="item.OrderByDescending(a=>a.id).ToList()">
+                        <MVirtualScroll Context="itemMessage" Height=@("calc(100vh - 500px)") OverscanCount=2 ItemSize="200" Items="item.OrderByDescending(a=>a.id).ToList()">
                             <ItemContent>
                                 <div title=@itemMessage.message class=@(itemMessage.isRed==null?" black--text ":itemMessage.isRed==true?" red--text ":"green--text ") style="white-space: nowrap !important;overflow: hidden !important; text-overflow: ellipsis !important;">
                                     @itemMessage.message
@@ -120,37 +102,83 @@
 
 @code
 {
-    private UdpSessionPage udpClientPage;
-    private ThingsGateway.Foundation.Adapter.Modbus.ModbusUdp _plc
-    {
-        get
-        {
-            return plc as ThingsGateway.Foundation.Adapter.Modbus.ModbusUdp;
-        }
-    }
+    private OPCDAClientPage tcpClientPage;
+    private ThingsGateway.Foundation.Adapter.OPCDA.OPCDAClient _plc;
 
     protected override void OnAfterRender(bool firstRender)
     {
         if (firstRender)
         {
-            udpClientPage.LogAction = LogOut;
+            tcpClientPage.LogAction = LogOut;
+            tcpClientPage.ValueAction = ValueOut;
             //载入配置
-            plc = new ThingsGateway.Foundation.Adapter.Modbus.ModbusUdp((TGUdpSession)udpClientPage.GetTGUdpSession());
+            _plc = tcpClientPage.OPC;
             StateHasChanged();
         }
 
         base.OnAfterRender(firstRender);
     }
+    private void ValueOut(List<OpcDaClient.Da.ItemReadResult> values)
+    {
+        Messages.Add((Yitter.IdGenerator.YitIdHelper.NextId(), null, values.ToJson().FormatJson()));
+        if (Messages.Count > 2500)
+        {
+            Messages.RemoveRange(0, 2000);
+        }
+    }
 
+    private void Add()
+    {
+        var tags = new Dictionary<string, List<OpcDaClient.Da.OpcItem>>();
+        var tag = new OpcItem(address);
+        tags.Add(Yitter.IdGenerator.YitIdHelper.NextId().ToString(), new List<OpcItem>() { tag });
+        _plc.AddTags(tags);
+    }
+    private void Remove()
+    {
+        _plc.RemoveTags(new List<string>() { address });
+    }
+    public override Task Read()
+    {
+        var data = _plc.ReadSub();
+        if (data.IsSuccess)
+        {
+        }
+        else
+        {
+            Messages.Add((Yitter.IdGenerator.YitIdHelper.NextId(), true, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss ffff") + " - " + data.Message));
+        }
+        return Task.CompletedTask;
+    }
 
+    public override Task Write()
+    {
+        try
+        {
+            var data = _plc.Write(address, writeValue);
+            if (data.IsSuccess)
+            {
+                Messages.Add((Yitter.IdGenerator.YitIdHelper.NextId(), false, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss ffff") + " - 写入" + data.Message));
+            }
+            else
+            {
+                Messages.Add((Yitter.IdGenerator.YitIdHelper.NextId(), true, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss ffff") + " - " + data.Message));
+            }
+        }
+        catch (Exception ex)
+        {
+            Messages.Add((Yitter.IdGenerator.YitIdHelper.NextId(), true, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss ffff") + " - " + "写入失败：" + ex.Message));
+        }
+        return Task.CompletedTask;
+    }
     public override void Dispose()
     {
-        plc.SafeDispose();
-        udpClientPage.SafeDispose();
+        _plc.SafeDispose();
+        tcpClientPage.SafeDispose();
         base.Dispose();
     }
     public override string ToString()
     {
-        return nameof(ModbusUdp);
+        return nameof(OPCDAClient);
     }
 }

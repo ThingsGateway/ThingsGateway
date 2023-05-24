@@ -43,6 +43,7 @@ public class OPCDAClient : CollectBase
     public override CollectDriverPropertyBase DriverPropertys => driverPropertys;
     public override ThingsGatewayBitConverter ThingsGatewayBitConverter { get; } = new(EndianType.Little);
 
+    public override System.Type DriverDebugUIType => typeof(OPCDAClientDebugDriverPage);
 
     public override void AfterStop()
     {

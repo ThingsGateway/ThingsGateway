@@ -37,7 +37,7 @@ namespace ThingsGateway.Foundation.Adapter.OPCDA
         private EasyLock checkLock = new();
         private Timer checkTimer;
         private bool FirstConnect;
-        private List<OpcGroup> Groups = new();
+        private List<OpcGroup> Groups => m_server.OpcGroups;
         private int IsQuit = 1;
         private OpcServer m_server;
         private ConcurrentQueue<ItemReadResult> results = new ConcurrentQueue<ItemReadResult>();
@@ -87,26 +87,37 @@ namespace ThingsGateway.Foundation.Adapter.OPCDA
 
         public OperResult ReadSub(string groupName = null)
         {
-            if (connect())
+            try
             {
-                var groups = groupName != null ? Groups.Where(a => a.Name == groupName) : Groups;
-                foreach (var group in Groups)
+                if (connect())
                 {
-                    var result = group.ReadAsync();
-                    if (!result.IsSuccess)
+                    var groups = groupName != null ? Groups.Where(a => a.Name == groupName) : Groups;
+                    foreach (var group in groups)
                     {
-                        return result;
+                        if (group.OpcItems.Count > 0)
+                        {
+                            return group.ReadAsync();
+                        }
+                        else
+                        {
+                            return new OperResult("不存在任何变量");
+                        }
                     }
+                    return new OperResult("不存在任何变量");
                 }
-                return OperResult.CreateSuccessResult();
+                return new OperResult("未初始化连接");
             }
-            return new OperResult("未初始化连接");
+            catch (Exception ex)
+            {
+                return new OperResult(ex);
+
+            }
+
         }
 
         /// <summary>
         /// 设置Tags,只需执行一次
         /// </summary>
-        /// <typeparam name="T"></typeparam>
         /// <param name="tags"></param>
         /// <returns></returns>
         public Dictionary<string, List<OpcItem>> SetTags(List<string> tags)
@@ -154,11 +165,19 @@ namespace ThingsGateway.Foundation.Adapter.OPCDA
             return new OperResult();
         }
 
-        internal void AddTags()
+        private void AddTags()
         {
-            Groups = new();
-            if (IsQuit == 1 && connect()) return;
-            foreach (var item in Tags)
+            AddTags(Tags);
+        }
+
+        /// <summary>
+        /// 添加节点
+        /// </summary>
+        /// <param name="tags"></param>
+        public void AddTags(Dictionary<string, List<OpcItem>> tags)
+        {
+            if (IsQuit == 1) return;
+            foreach (var item in tags)
             {
                 if (IsQuit == 1) return;
                 var subscription = m_server.AddGroup(item.Key, true, OPCNode.UpdateRate, OPCNode.DeadBand);
@@ -167,22 +186,78 @@ namespace ThingsGateway.Foundation.Adapter.OPCDA
                     subscription.Content.ActiveSubscribe = OPCNode.ActiveSubscribe;
                     subscription.Content.OnDataChanged += Subscription_OnDataChanged;
                     subscription.Content.OnReadCompleted += Subscription_OnDataChanged;
-                    Groups.Add(subscription.Content);
 
                     var result = subscription.Content.AddOpcItem(item.Value.ToArray());
                     if (!result.IsSuccess)
                     {
-                        _logger?.Error(ToString(), result.Message);
+                        _logger?.Error("添加变量失败", result.Message);
+                    }
+                    else
+                    {
+                        Tags.AddOrUpdate(item.Key, item.Value);
+                        _logger?.Debug($"添加变量{item.Value.Select(a => a.ItemID).ToList().ToJson()}成功");
                     }
                 }
                 else
                 {
-                    _logger?.Error(ToString(), subscription.Message);
+                    _logger?.Error("添加组失败", subscription.Message);
+                }
+            }
+            for (int i = 0; i < Groups?.Count; i++)
+            {
+                var group = Groups[i];
+                if (group != null)
+                {
+                    if (group.OpcItems.Count == 0)
+                    {
+                        Tags.Remove(group.Name);
+                        m_server.RemoveGroup(group);
+                    }
                 }
 
             }
 
         }
+
+        /// <summary>
+        /// 移除节点
+        /// </summary>
+        /// <param name="tags"></param>
+        public void RemoveTags(List<string> tags)
+        {
+            foreach (var item in tags)
+            {
+                if (IsQuit == 1) return;
+                var opcGroup = Groups.FirstOrDefault(it => it.OpcItems.Any(a => a.ItemID == item));
+                if (opcGroup == null)
+                {
+                    _logger.Warning("找不到变量" + item);
+                    continue;
+                }
+                var tag = opcGroup.OpcItems.Where(a => item == a.ItemID);
+                var result = opcGroup.RemoveItem(tag.ToArray());
+                if (!result.IsSuccess)
+                {
+                    _logger.Warning($"移除变量{item}-" + result.Message);
+                }
+                else
+                {
+                    _logger?.Debug($"移除变量{item}成功");
+                }
+                if (opcGroup.OpcItems.Count == 0)
+                {
+                    Tags.Remove(opcGroup.Name);
+                    m_server.RemoveGroup(opcGroup);
+                }
+                else
+                {
+                    Tags[opcGroup.Name].RemoveWhere(a => tag.Contains(a));
+                }
+
+            }
+        }
+
+
 
         protected override void Dispose(bool disposing)
         {
@@ -250,9 +325,11 @@ namespace ThingsGateway.Foundation.Adapter.OPCDA
                                 {
                                     disconnect();
                                     Init(OPCNode);
+                                    _logger?.Trace($"{m_server.Host + " - " + m_server.Name} - 正在连接");
                                     var result = m_server?.Connect();
                                     if (result.IsSuccess)
                                     {
+                                        _logger?.Trace($"{m_server.Host + " - " + m_server.Name} - 连接成功");
                                         AddTags();
                                     }
                                     else
@@ -274,9 +351,11 @@ namespace ThingsGateway.Foundation.Adapter.OPCDA
                     {
                         disconnect();
                         Init(OPCNode);
+                        _logger?.Trace($"{m_server.Host + " - " + m_server.Name} - 正在连接");
                         var result = m_server?.Connect();
                         if (result.IsSuccess)
                         {
+                            _logger?.Trace($"{m_server.Host + " - " + m_server.Name} - 连接成功");
                             AddTags();
                         }
                         else
@@ -309,6 +388,8 @@ namespace ThingsGateway.Foundation.Adapter.OPCDA
 
         private void disconnect()
         {
+            if (IsConnected)
+                _logger?.Trace($"{m_server.Host + " - " + m_server.Name} - 断开连接");
             checkTimer.Enabled = false;
             checkTimer.Stop();
             try

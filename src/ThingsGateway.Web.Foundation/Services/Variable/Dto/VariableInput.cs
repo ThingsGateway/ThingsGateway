@@ -23,7 +23,7 @@ namespace ThingsGateway.Application
     public class VariableAddInput : VariableEditInput
     {
         /// <inheritdoc/>
-        [MinValue(100, ErrorMessage = "低于最小值")]
+        [MinValue(9, ErrorMessage = "低于最小值")]
         public override int IntervalTime { get; set; } = 1000;
         /// <inheritdoc/>
         public override long DeviceId { get; set; }

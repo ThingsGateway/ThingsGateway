@@ -21,8 +21,6 @@ using ThingsGateway.Foundation.Adapter.Modbus;
 using ThingsGateway.Foundation.Extension;
 using ThingsGateway.Web.Foundation;
 
-using UAParser;
-
 namespace ThingsGateway.Modbus;
 
 public class ModbusServer : UpLoadBase
@@ -70,7 +68,7 @@ public class ModbusServer : UpLoadBase
         foreach (var item in list)
         {
             var type = GetPropertyValue(item.Item2, nameof(ModbusServerVariableProperty.ModbusType));
-            if(Enum.TryParse<DataTypeEnum>(type,out DataTypeEnum result))
+            if (Enum.TryParse<DataTypeEnum>(type, out DataTypeEnum result))
             {
                 await _plc.WriteAsync(result.GetNetType(), item.Item1, item.Item2.Value?.ToString());
             }
