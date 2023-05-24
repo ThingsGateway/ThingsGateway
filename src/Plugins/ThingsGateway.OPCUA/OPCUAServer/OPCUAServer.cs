@@ -242,14 +242,6 @@ public partial class OPCUAServer : UpLoadBase
 
             userTokens.Add(new UserTokenPolicy(UserTokenType.UserName));
 
-
-
-            policies.Add(new ServerSecurityPolicy()
-            {
-                SecurityMode = MessageSecurityMode.None,
-                SecurityPolicyUri = SecurityPolicies.None
-            });
-            userTokens.Add(new UserTokenPolicy(UserTokenType.Anonymous));
         }
         else
         {
