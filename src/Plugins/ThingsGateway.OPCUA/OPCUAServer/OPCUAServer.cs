@@ -196,21 +196,60 @@ public partial class OPCUAServer : UpLoadBase
             });
             policies.Add(new ServerSecurityPolicy()
             {
-                SecurityMode = MessageSecurityMode.SignAndEncrypt,
-                SecurityPolicyUri = SecurityPolicies.Basic128Rsa15
-            });
-            policies.Add(new ServerSecurityPolicy()
-            {
                 SecurityMode = MessageSecurityMode.Sign,
                 SecurityPolicyUri = SecurityPolicies.Basic256
             });
             policies.Add(new ServerSecurityPolicy()
             {
+                SecurityMode = MessageSecurityMode.Sign,
+                SecurityPolicyUri = SecurityPolicies.Basic256Sha256
+            });
+            policies.Add(new ServerSecurityPolicy()
+            {
+                SecurityMode = MessageSecurityMode.Sign,
+                SecurityPolicyUri = SecurityPolicies.Aes128_Sha256_RsaOaep
+            });
+            policies.Add(new ServerSecurityPolicy()
+            {
+                SecurityMode = MessageSecurityMode.Sign,
+                SecurityPolicyUri = SecurityPolicies.Aes256_Sha256_RsaPss
+            });
+            policies.Add(new ServerSecurityPolicy()
+            {
+                SecurityMode = MessageSecurityMode.SignAndEncrypt,
+                SecurityPolicyUri = SecurityPolicies.Basic128Rsa15
+            });
+            policies.Add(new ServerSecurityPolicy()
+            {
                 SecurityMode = MessageSecurityMode.SignAndEncrypt,
                 SecurityPolicyUri = SecurityPolicies.Basic256
             });
+            policies.Add(new ServerSecurityPolicy()
+            {
+                SecurityMode = MessageSecurityMode.SignAndEncrypt,
+                SecurityPolicyUri = SecurityPolicies.Basic256Sha256
+            });
+            policies.Add(new ServerSecurityPolicy()
+            {
+                SecurityMode = MessageSecurityMode.SignAndEncrypt,
+                SecurityPolicyUri = SecurityPolicies.Aes128_Sha256_RsaOaep
+            });
+            policies.Add(new ServerSecurityPolicy()
+            {
+                SecurityMode = MessageSecurityMode.SignAndEncrypt,
+                SecurityPolicyUri = SecurityPolicies.Aes256_Sha256_RsaPss
+            });
+
             userTokens.Add(new UserTokenPolicy(UserTokenType.UserName));
 
+
+
+            policies.Add(new ServerSecurityPolicy()
+            {
+                SecurityMode = MessageSecurityMode.None,
+                SecurityPolicyUri = SecurityPolicies.None
+            });
+            userTokens.Add(new UserTokenPolicy(UserTokenType.Anonymous));
         }
         else
         {
