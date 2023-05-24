@@ -28,7 +28,7 @@
 @inject ICollectDeviceService CollectDeviceService
 @layout MainLayout
 <MRow NoGutters>
-    <MCol Md="@("auto")">
+    <MCol Md=@(IsShowTreeView?4:0)>
         <MCard Show=IsShowTreeView Style="height: calc(100vh - 200px)">
             <MCardTitle>
                 <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="mx-2 my-1" @bind-Value="_searchName" Outlined Label=@typeof(CollectDevice).GetDescription(nameof(CollectDevice.PluginId)) />
@@ -45,13 +45,18 @@
                        Items="DriverPlugins" ItemText="r=>r.Name" ItemChildren="r=>r.Children"
                        Search="@_searchName"
                        Activatable ItemKey=@(r=>r.Id)>
+                <LabelContent>
+                    <span title=@context.Item.Name>
+                        @context.Item.Name
+                    </span>
+                </LabelContent>
             </MTreeview>
         </MCard>
     </MCol>
-    <MCol>
+    <MCol Md=@(IsShowTreeView?8:12)>
         <MCard Style="height: calc(100vh - 200px)">
-            <MCard Class="mb-3 pa-2  text-h6" Flat Outlined Rounded="false">
-                <MRow Align="AlignTypes.Center">
+            <MCard Class="mb-3 pa-2  text-h6" Elevation="0" Flat  Rounded="false">
+                <MRow Align="AlignTypes.Center" Class="mt-1">
                     <MButton Class="mx-1" OnClick=@(async() =>
                              {
                              IsShowTreeView=!IsShowTreeView;

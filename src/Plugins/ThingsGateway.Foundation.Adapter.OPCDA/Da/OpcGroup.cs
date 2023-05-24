@@ -13,6 +13,7 @@
 
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -221,6 +222,7 @@ namespace OpcDaClient.Da
             {
                 m_ItemManagement?.RemoveItems(handles.Length, handles, out pErrors);
                 Marshal.Copy(pErrors, errors, 0, items.Length);
+
             }
             finally
             {
@@ -228,13 +230,18 @@ namespace OpcDaClient.Da
                 {
                     Marshal.FreeCoTaskMem(pErrors);
                 }
+
             }
             StringBuilder stringBuilder = new();
             for (int i = 0; i < errors.Length; i++)
             {
                 if (errors[i] != 0)
                 {
-                    stringBuilder.AppendLine(items[i].ItemID + "添加失败,错误代码:" + errors[i]);
+                    stringBuilder.AppendLine(items[i].ItemID + "移除失败,错误代码:" + errors[i]);
+                }
+                else
+                {
+                    OpcItems.Remove(items[i]);
                 }
             }
             if (stringBuilder.Length > 0)
@@ -267,6 +274,10 @@ namespace OpcDaClient.Da
                     int cancelId = 0;
                     m_Async2IO.Read(OpcItems.Count, serverHandle, 2, out cancelId, out pErrors);
                     Marshal.Copy(pErrors, PErrors, 0, OpcItems.Count);
+                    if (PErrors.Any(a => a > 0))
+                    {
+                        return new OperResult("读取错误，错误代码为" + pErrors);
+                    }
                     return OperResult.CreateSuccessResult();
                 }
                 else

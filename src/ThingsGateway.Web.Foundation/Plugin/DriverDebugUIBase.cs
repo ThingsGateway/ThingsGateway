@@ -106,7 +106,7 @@ public abstract class DriverDebugUIBase : ComponentBase, IDisposable
         }
     }
     /// <inheritdoc/>
-    public async Task Read()
+    public virtual async Task Read()
     {
         var data = await plc.ReadAsync(address, length);
         if (data.IsSuccess)
@@ -129,7 +129,7 @@ public abstract class DriverDebugUIBase : ComponentBase, IDisposable
     }
 
     /// <inheritdoc/>
-    public async Task Write()
+    public virtual async Task Write()
     {
         try
         {
