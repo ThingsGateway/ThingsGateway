@@ -10,6 +10,8 @@
 //------------------------------------------------------------------------------
 #endregion
 
+using Microsoft.Extensions.Hosting.Internal;
+
 namespace ThingsGateway.Web.Entry
 {
     /// <summary>
@@ -23,11 +25,11 @@ namespace ThingsGateway.Web.Entry
         /// <param name="args"></param>
         public static void Main(string[] args)
         {
+            System.IO.Directory.SetCurrentDirectory(AppContext.BaseDirectory);
             var builder = WebApplication.CreateBuilder(args);
             builder.WebHost.UseWebRoot("wwwroot");
             builder.WebHost.UseStaticWebAssets();
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-
             //需要服务守护可安装
             builder.Host.UseWindowsService();
             builder.Host.UseSystemd();
