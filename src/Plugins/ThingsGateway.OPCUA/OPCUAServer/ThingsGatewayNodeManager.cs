@@ -338,8 +338,6 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
     /// <summary>
     /// 获取变量的属性值
     /// </summary>
-    /// <param name="type"></param>
-    /// <returns></returns>
     public string GetPropertyValue(CollectVariableRunTime variableRunTime, string propertyName)
     {
         if (variableRunTime.VariablePropertys.ContainsKey(_device.Id))
