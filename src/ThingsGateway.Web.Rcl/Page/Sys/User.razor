@@ -46,7 +46,7 @@
 
     <EditTemplate>
         <MSubheader Class="mt-4 font-weight-black"> @(context.Description(x => x.Account))  </MSubheader>
-        <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.Account />
+        <MTextField Disabled=@(context.Account == RoleConst.SuperAdmin) Dense Outlined HideDetails="@("auto")" @bind-Value=@context.Account />
 
         <MSubheader Class="mt-4 font-weight-black">   @(context.Description(x => x.Phone))</MSubheader>
             <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.Phone />
