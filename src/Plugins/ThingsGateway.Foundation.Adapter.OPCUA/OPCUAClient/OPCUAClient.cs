@@ -54,8 +54,6 @@ public class OPCUAClient : DisposableObject
 
     private ISession m_session;
 
-    /// 是否使用安全连接
-    private bool m_useSecurity = true;
     /// <summary>
     /// 默认的构造函数，实例化一个新的OPC UA类
     /// </summary>
@@ -250,14 +248,6 @@ public class OPCUAClient : DisposableObject
     public IUserIdentity UserIdentity { get; set; }
 
     /// <summary>
-    /// 是否使用安全连接.
-    /// </summary>
-    public bool UseSecurity
-    {
-        get { return m_useSecurity; }
-        set { m_useSecurity = value; }
-    }
-    /// <summary>
     /// 新增一个订阅，需要指定订阅的关键字，订阅的tag名，以及回调方法
     /// </summary>
     /// <param name="key">关键字</param>
@@ -293,7 +283,7 @@ public class OPCUAClient : DisposableObject
                 AttributeId = Attributes.Value,
                 DisplayName = tags[i],
                 Filter = new DataChangeFilter() { DeadbandValue = OPCNode.DeadBand, DeadbandType = 1, Trigger = DataChangeTrigger.StatusValue },
-                SamplingInterval = 100,
+                SamplingInterval = OPCNode?.UpdateRate ?? 1000,
             };
             item.Notification += (MonitoredItem monitoredItem, MonitoredItemNotificationEventArgs args) =>
             {
@@ -1282,7 +1272,7 @@ public class OPCUAClient : DisposableObject
     /// <typeparam name="T">The type of tag to write on</typeparam>
     /// <param name="tag">The fully-qualified identifier of the tag. You can specify a subfolder by using a comma delimited name. E.g: the tag `foo.bar` writes on the tag `bar` on the folder `foo`</param>
     /// <param name="value">The value for the item to write</param>
-    public Task<bool> WriteNodeAsync<T>(string tag, T value)
+    public Task<OperResult> WriteNodeAsync<T>(string tag, T value)
     {
         WriteValue valueToWrite = new WriteValue()
         {
@@ -1299,7 +1289,7 @@ public class OPCUAClient : DisposableObject
             };
 
         // Wrap the WriteAsync logic in a TaskCompletionSource, so we can use C# async/await syntax to call it:
-        var taskCompletionSource = new TaskCompletionSource<bool>();
+        var taskCompletionSource = new TaskCompletionSource<OperResult>();
         m_session.BeginWrite(
             requestHeader: null,
             nodesToWrite: valuesToWrite,
@@ -1314,7 +1304,7 @@ public class OPCUAClient : DisposableObject
                 {
                     ClientBase.ValidateResponse(results, valuesToWrite);
                     ClientBase.ValidateDiagnosticInfos(diag, valuesToWrite);
-                    taskCompletionSource.SetResult(StatusCode.IsGood(results[0]));
+                    taskCompletionSource.SetResult(StatusCode.IsGood(results[0]) ? OperResult.CreateSuccessResult() : new OperResult(results[0].ToString()));
                 }
                 catch (Exception ex)
                 {
@@ -1376,6 +1366,7 @@ public class OPCUAClient : DisposableObject
         return result;
     }
 
+
     protected override void Dispose(bool disposing)
     {
         Disconnect();
@@ -1406,9 +1397,9 @@ public class OPCUAClient : DisposableObject
         {
             throw new ArgumentNullException("未初始化配置");
         }
-        UseSecurity = OPCNode?.IsUseSecurity ?? true;
+        var useSecurity = OPCNode?.IsUseSecurity ?? true;
         // select the best endpoint.
-        EndpointDescription endpointDescription = CoreClientUtils.SelectEndpoint(serverUrl, UseSecurity);
+        EndpointDescription endpointDescription = CoreClientUtils.SelectEndpoint(serverUrl, useSecurity);
         EndpointConfiguration endpointConfiguration = EndpointConfiguration.Create(m_configuration);
 
         ConfiguredEndpoint endpoint = new ConfiguredEndpoint(null, endpointDescription, endpointConfiguration);

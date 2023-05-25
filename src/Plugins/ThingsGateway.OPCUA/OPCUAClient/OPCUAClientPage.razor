@@ -1,0 +1,128 @@
+﻿@*
+//------------------------------------------------------------------------------
+//  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
+//  此代码版权（除特别声明外的代码）归作者本人Diego所有
+//  源代码使用协议遵循本仓库的开源协议及附加协议
+//  Gitee源代码仓库：https://gitee.com/diego2098/ThingsGateway
+//  Github源代码仓库：https://github.com/kimdiego2098/ThingsGateway
+//  使用文档：https://diego2098.gitee.io/thingsgateway/
+//  QQ群：605534569
+//------------------------------------------------------------------------------
+*@
+@namespace ThingsGateway.OPCUA
+
+@using BlazorComponent;
+@using Microsoft.AspNetCore.Components.Web;
+@using System.IO.Ports;
+@using System.Collections.Concurrent;
+@using Opc.Ua.Client;
+@using Opc.Ua;
+@using System.Linq;
+@using ThingsGateway.Core;
+@using ThingsGateway.Foundation;
+@using ThingsGateway.Foundation.Adapter.OPCUA;
+@using ThingsGateway.Web.Foundation;
+@using Masa.Blazor
+@using TouchSocket.Core;
+@implements IDisposable
+<MCard Class="pa-4" Flat Elevation="0" Rounded="false">
+    <MRow Justify="JustifyTypes.SpaceBetween" Align="AlignTypes.Center">
+        <MTextField Class="mx-1 my-1" Label=@node.Description(a=>a.GroupSize) Dense Outlined HideDetails="@("auto")" @bind-Value=@node.GroupSize />
+        <MTextField Class="mx-1 my-1" Label=@node.Description(a=>a.UpdateRate) Dense Outlined HideDetails="@("auto")" @bind-Value=@node.UpdateRate />
+
+        <MTextField Class="mx-1 my-1" Label=@node.Description(a=>a.DeadBand) Dense Outlined HideDetails="@("auto")" @bind-Value=@node.DeadBand />
+        <MTextField Class="mx-1 my-1" Label=@node.Description(a=>a.ReconnectPeriod) Dense Outlined HideDetails="@("auto")" @bind-Value=@node.ReconnectPeriod />
+    </MRow>
+    <MRow Justify="JustifyTypes.SpaceBetween" Align="AlignTypes.Center">
+        <MCheckbox Class="mx-1 my-1" Label=@node.Description(a=>a.IsUseSecurity) Dense HideDetails="@("auto")" @bind-Value=@node.IsUseSecurity />
+        <MTextField Class="mx-1 my-1" Label=@node.Description(a=>a.OPCUrl) Dense Outlined HideDetails="@("auto")" @bind-Value=@node.OPCUrl />
+        <MTextField Class="mx-1 my-1" Label="用户名" Dense Outlined HideDetails="@("auto")" @bind-Value=@username />
+        <MTextField Class="mx-1 my-1" Label="密码" Dense Outlined HideDetails="@("auto")" @bind-Value=@password />
+        <MButton Class="mx-1 my-1" OnClick=@(Reconnect) Color="primary">
+            连接
+        </MButton>
+        <MButton Class="mx-1 my-1" OnClick=@(() =>
+                 {
+                 OPC.Disconnect();
+                 }
+                 ) Color="red">
+            断开
+        </MButton>
+    </MRow>
+
+
+
+</MCard>
+@code
+{
+    public async Task Reconnect()
+    {
+        try
+        {
+            OPC.Disconnect();
+            await GetOPCClient().ConnectAsync();
+        }
+        catch (Exception ex)
+        {
+            LogOut(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss ffff")+" 连接失败 - " + ex.Message);
+        }
+
+    }
+    public void Dispose()
+    {
+        OPC.SafeDispose();
+    }
+    private OPCNode node = new OPCNode();
+    private string username;
+    private string password;
+    public Action<string> LogAction;
+    public ThingsGateway.Foundation.Adapter.OPCUA.OPCUAClient OPC;
+    private void LogOut(string str)
+    {
+        LogAction?.Invoke(str);
+    }
+    protected override void OnInitialized()
+    {
+        OPC = new ThingsGateway.Foundation.Adapter.OPCUA.OPCUAClient();
+        OPC.DataChangedHandler += Info_DataChangedHandler;
+        OPC.OpcStatusChange += Info_OpcStatusChange;
+        base.OnInitialized();
+
+    }
+    private void Info_OpcStatusChange(object sender, OPCUAStatusEventArgs e)
+    {
+        LogAction?.Invoke(e.ToString());
+    }
+
+    private void Info_DataChangedHandler(List<(MonitoredItem, MonitoredItemNotification)> obj)
+    {
+        LogAction?.Invoke(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss ffff ")+ obj.Select(a =>
+        {
+            var data = new
+            {
+                name = a.Item1.DisplayName,
+                value = a.Item2.Value.Value
+            };
+            return data;
+        }).ToJson());
+    }
+
+
+    private ThingsGateway.Foundation.Adapter.OPCUA.OPCUAClient GetOPCClient()
+    {
+        //载入配置
+        if (!username.IsNullOrEmpty())
+        {
+            OPC.UserIdentity = new UserIdentity(username, password);
+        }
+
+        else
+        {
+            OPC.UserIdentity = new UserIdentity(new AnonymousIdentityToken());
+        }
+        OPC.OPCNode = node;
+        return OPC;
+    }
+
+
+}
