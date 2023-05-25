@@ -13,7 +13,7 @@
 namespace ThingsGateway.Foundation.Adapter.OPCUA;
 public class OPCNode
 {
-    public string OPCUrl { get; set; }
+    public string OPCUrl { get; set; } = "opc.tcp://127.0.0.1:49320";
     public int UpdateRate { get; set; } = 1000;
     public int GroupSize { get; set; } = 500;
     public float DeadBand { get; set; } = 0;

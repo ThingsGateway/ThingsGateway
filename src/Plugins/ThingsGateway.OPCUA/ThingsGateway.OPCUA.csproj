@@ -33,7 +33,7 @@
 		<PackageReference Include="Masa.Blazor" Version="1.0.0-rc.2">
 			<IncludeAssets>Compile</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Server" Version="1.4.371.86" />
+		<PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Server" Version="1.4.371.91" />
 	</ItemGroup>
 
 </Project>

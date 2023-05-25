@@ -47,6 +47,9 @@ public class OPCUAClient : CollectBase
     public override Type DriverImportUIType => typeof(ImportVariable);
 
     /// <inheritdoc/>
+    public override Type DriverDebugUIType => typeof(OPCUAClientDebugDriverPage);
+
+    /// <inheritdoc/>
     public override CollectDriverPropertyBase DriverPropertys => driverPropertys;
 
     /// <inheritdoc/>
