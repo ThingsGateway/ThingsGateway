@@ -9,6 +9,7 @@
 		<Version>1.5.0</Version>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<ApplicationIcon>favicon.ico</ApplicationIcon>
+		<Configurations>Debug;Release;KINGVIEW</Configurations>
 		<!--<ServerGarbageCollection>false</ServerGarbageCollection>-->
 	</PropertyGroup>
 
