@@ -256,7 +256,13 @@ public class KafkaProducer : UpLoadBase
 
         if (driverPropertys.CycleInterval > UploadDeviceThread.CycleInterval + 50)
         {
-            await Task.Delay(driverPropertys.CycleInterval - UploadDeviceThread.CycleInterval);
+            try
+            {
+                await Task.Delay(driverPropertys.CycleInterval - UploadDeviceThread.CycleInterval, cancellationToken);
+            }
+            catch
+            {
+            }
         }
         else
         {

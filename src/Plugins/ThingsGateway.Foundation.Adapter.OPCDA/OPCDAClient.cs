@@ -323,7 +323,7 @@ namespace ThingsGateway.Foundation.Adapter.OPCDA
                                 //失败重新连接
                                 try
                                 {
-                                    disconnect();
+                                    //disconnect();
                                     Init(OPCNode);
                                     _logger?.Trace($"{m_server.Host + " - " + m_server.Name} - 正在连接");
                                     var result = m_server?.Connect();
@@ -349,7 +349,7 @@ namespace ThingsGateway.Foundation.Adapter.OPCDA
                     }
                     else
                     {
-                        disconnect();
+                        //disconnect();
                         Init(OPCNode);
                         _logger?.Trace($"{m_server.Host + " - " + m_server.Name} - 正在连接");
                         var result = m_server?.Connect();

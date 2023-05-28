@@ -197,7 +197,6 @@ public class AlarmWorker : BackgroundService
 
         CancellationTokenSource StoppingToken = StoppingTokens.LastOrDefault();
         StoppingToken?.Cancel();
-        StoppingToken?.SafeDispose();
         _logger?.LogInformation($"实时报警线程停止中");
         var realAlarmResult = RealAlarmTask?.Result;
         if (realAlarmResult?.Status != TaskStatus.Canceled)
@@ -250,6 +249,7 @@ public class AlarmWorker : BackgroundService
             _logger?.LogInformation($"历史报警线程停止超时，已强制取消");
         }
         HisAlarmTask?.Dispose();
+        StoppingToken?.SafeDispose();
         StoppingTokens.Remove(StoppingToken);
 
     }

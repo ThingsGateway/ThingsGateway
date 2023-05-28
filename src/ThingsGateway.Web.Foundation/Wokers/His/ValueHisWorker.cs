@@ -292,7 +292,6 @@ public class ValueHisWorker : BackgroundService
 
         CancellationTokenSource StoppingToken = StoppingTokens.LastOrDefault();
         StoppingToken?.Cancel();
-        StoppingToken?.SafeDispose();
 
         _logger?.LogInformation($"历史数据线程停止中");
         var hisHisResult = ValueHisTask?.GetAwaiter().GetResult();
@@ -317,8 +316,9 @@ public class ValueHisWorker : BackgroundService
         {
             _logger?.LogInformation($"历史数据线程停止超时，已强制取消");
         }
-        StoppingTokens.Remove(StoppingToken);
         ValueHisTask?.Dispose();
+        StoppingToken?.SafeDispose();
+        StoppingTokens.Remove(StoppingToken);
 
     }
     private void DeviceVariableCollectChange(CollectVariableRunTime variable)
