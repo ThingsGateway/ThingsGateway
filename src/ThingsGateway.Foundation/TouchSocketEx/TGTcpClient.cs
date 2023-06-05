@@ -407,6 +407,10 @@ namespace TouchSocket.Sockets
         {
             try
             {
+                if (this.CanSend)
+                {
+                    return;
+                }
                 privateEasyLock.Lock();
 
                 if (this.CanSend)
@@ -515,6 +519,11 @@ namespace TouchSocket.Sockets
         {
             try
             {
+                if (this.CanSend)
+                {
+                    return this;
+                }
+
                 await privateEasyLock.LockAsync();
 
                 if (this.CanSend)
