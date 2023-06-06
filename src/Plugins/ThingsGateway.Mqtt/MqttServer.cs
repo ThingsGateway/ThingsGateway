@@ -64,7 +64,6 @@ public class MqttServer : UpLoadBase
 
     private ConcurrentQueue<DeviceData> _collectDeviceRunTimes = new();
     private ConcurrentQueue<VariableData> _collectVariableRunTimes = new();
-    private UploadDevice _curDevice;
     private GlobalCollectDeviceData _globalCollectDeviceData;
 
     private MQTTnet.Server.MqttServer _mqttServer;
@@ -84,7 +83,7 @@ public class MqttServer : UpLoadBase
     public override UpDriverPropertyBase DriverPropertys => driverPropertys;
     public override List<CollectVariableRunTime> UploadVariables => _uploadVariables;
     public override VariablePropertyBase VariablePropertys => variablePropertys;
-    public override async Task BeforStartAsync()
+    public override async Task BeforStartAsync(CancellationToken cancellationToken)
     {
         if (_mqttServer != null)
         {
@@ -97,14 +96,22 @@ public class MqttServer : UpLoadBase
         }
     }
 
-    public override void Dispose()
+    protected override void Dispose(bool disposing)
     {
+        if (_mqttServer != null)
+        {
+            _mqttServer.ValidatingConnectionAsync -= _mqttServer_ValidatingConnectionAsync;
+            _mqttServer.InterceptingPublishAsync -= MqttServer_InterceptingPublishAsync;
+            _mqttServer.LoadingRetainedMessageAsync -= _mqttServer_LoadingRetainedMessageAsync;
+            _mqttServer.InterceptingSubscriptionAsync -= _mqttServer_InterceptingSubscriptionAsync; ;
+            _mqttServer?.SafeDispose();
+        }
         _globalCollectDeviceData?.CollectVariables?.ForEach(a => a.VariableValueChange -= VariableValueChange);
         _globalCollectDeviceData?.CollectDevices?.ForEach(a =>
         {
             a.DeviceStatusCahnge -= DeviceStatusCahnge;
         });
-        _mqttServer?.Dispose();
+        base.Dispose(disposing);
     }
 
     public override async Task ExecuteAsync(CancellationToken cancellationToken)
@@ -220,9 +227,8 @@ public class MqttServer : UpLoadBase
     {
         return $" {nameof(MqttServer)} IP:{driverPropertys.IP} Port:{driverPropertys.Port}";
     }
-    protected override void Init(UploadDevice device)
+    protected override void Init(UploadDeviceRunTime device)
     {
-        _curDevice = device;
         var mqttFactory = new MqttFactory(new PrivateLogger(_logger));
         var mqttServerOptions = mqttFactory.CreateServerOptionsBuilder()
             .WithDefaultEndpointBoundIPAddress(driverPropertys.IP.IsNullOrEmpty() ? null : IPAddress.Parse(driverPropertys.IP))
@@ -236,18 +242,7 @@ public class MqttServer : UpLoadBase
         _rpcCore = serviceScope.ServiceProvider.GetService<RpcSingletonService>();
 
         var tags = _globalCollectDeviceData.CollectVariables.Where(a => a.VariablePropertys.ContainsKey(device.Id))
-                .Where(b => b.VariablePropertys[device.Id].Any(c =>
-                {
-                    if (c.PropertyName == nameof(variablePropertys.Enable))
-                    {
-                        if (c.Value?.GetBoolValue() == true)
-                            return true;
-                        else
-                            return false;
-                    }
-                    else
-                        return false;
-                }))
+                .Where(b => GetPropertyValue(b, nameof(variablePropertys.Enable)).GetBoolValue())
                 .ToList();
 
         _uploadVariables = tags;
@@ -339,21 +334,10 @@ public class MqttServer : UpLoadBase
             var tag = _uploadVariables.FirstOrDefault(a => a.Name == nv.Name);
             if (tag != null)
             {
-                var rpcEnable = tag.VariablePropertys[_curDevice.Id]?.Any(c =>
-                {
-                    if (c.PropertyName == nameof(variablePropertys.VariableRpcEnable))
-                    {
-                        if (c.Value?.GetBoolValue() == true)
-                            return true;
-                        else
-                            return false;
-                    }
-                    else
-                        return false;
-                });
+                var rpcEnable = GetPropertyValue(tag, nameof(variablePropertys.VariableRpcEnable)).ToBoolean();
                 if (rpcEnable == true)
                 {
-                    var result = await _rpcCore.InvokeDeviceMethodAsync(ToString() + "-" + IdWithName[arg.ClientId], nv);
+                    var result = await _rpcCore.InvokeDeviceMethodAsync(ToString() + "-" + IdWithName[arg.ClientId], nv, CancellationToken.None);
 
                     mqttRpcResult = new() { Message = result.Message, RpcId = rpcData.RpcId, Success = result.IsSuccess };
 

@@ -14,8 +14,12 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace ThingsGateway.Web.Core
 {
+    /// <summary>
+    /// SignalR组件
+    /// </summary>
     public sealed class SignalRComponent : IServiceComponent
     {
+        /// <inheritdoc/>
         public void Load(IServiceCollection services, ComponentContext componentContext)
         {
             services.AddSignalR();//注册SignalR

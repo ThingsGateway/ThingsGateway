@@ -367,25 +367,25 @@ namespace ThingsGateway.Foundation.Adapter.Modbus
         {
             foreach (var item in ModbusServer01ByteBlocks)
             {
-                item.Value.Dispose();
+                item.Value.SafeDispose();
             }
             foreach (var item in ModbusServer02ByteBlocks)
             {
-                item.Value.Dispose();
+                item.Value.SafeDispose();
             }
             foreach (var item in ModbusServer03ByteBlocks)
             {
-                item.Value.Dispose();
+                item.Value.SafeDispose();
             }
             foreach (var item in ModbusServer04ByteBlocks)
             {
-                item.Value.Dispose();
+                item.Value.SafeDispose();
             }
             ModbusServer01ByteBlocks.Clear();
             ModbusServer02ByteBlocks.Clear();
             ModbusServer03ByteBlocks.Clear();
             ModbusServer04ByteBlocks.Clear();
-            Stop();
+            Disconnect();
             base.Dispose(disposing);
         }
     }

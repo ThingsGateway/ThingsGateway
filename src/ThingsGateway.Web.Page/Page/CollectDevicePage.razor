@@ -124,6 +124,8 @@
                     }
 
                 </ItemColTemplate>
+
+
             </AppDataTable>
 
         </div>
@@ -222,7 +224,7 @@
     }
     List<DependencyProperty> GetDriverProperties(long driverId, long devId)
     {
-        return this.GetBackgroundService<CollectDeviceWorker>().GetDevicePropertys(driverId, devId);
+        return ServiceExtension.GetBackgroundService<CollectDeviceWorker>().GetDevicePropertys(driverId, devId);
     }
     RenderFragment GetRenderFragment(CollectDeviceEditInput context)
     {

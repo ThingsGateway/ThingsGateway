@@ -29,7 +29,7 @@ namespace ThingsGateway.Foundation.Tests
         }
         public void Dispose()
         {
-            ModbusServer?.Dispose();
+            ModbusServer?.SafeDispose();
         }
         public static IEnumerable<object[]> RangeData(int func, int start, int end)
         {
@@ -68,7 +68,7 @@ namespace ThingsGateway.Foundation.Tests
             ModbusServer.Station = 1;
             ModbusServer.TimeOut = 5000;
             ModbusServer.MulStation = true;
-            ModbusServer.Start();
+            ModbusServer.Connect(CancellationToken.None);
         }
     }
 }

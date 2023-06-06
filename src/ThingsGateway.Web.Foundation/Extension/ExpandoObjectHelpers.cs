@@ -15,7 +15,7 @@ using System.Linq;
 using System.Reflection;
 
 using ThingsGateway.Core;
-using ThingsGateway.Web.Foundation;
+namespace ThingsGateway.Web.Foundation;
 /// <summary>
 /// 动态类型扩展
 /// </summary>

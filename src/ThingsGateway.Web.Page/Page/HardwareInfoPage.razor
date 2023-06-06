@@ -283,6 +283,6 @@
     protected override async Task DisposeAsync(bool disposing)
     {
         await base.DisposeAsync(disposing);
-        DelayTimer?.Dispose();
+        DelayTimer?.SafeDispose();
     }
 }

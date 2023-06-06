@@ -55,7 +55,7 @@ namespace ThingsGateway.Foundation.Adapter.Modbus
         {
             try
             {
-                await ConnectAsync();
+                await ConnectAsync(token);
                 var commandResult = ModbusHelper.GetReadModbusCommand(address, length, Station);
                 if (commandResult.IsSuccess)
                 {
@@ -88,7 +88,7 @@ namespace ThingsGateway.Foundation.Adapter.Modbus
         {
             try
             {
-                await ConnectAsync();
+                await ConnectAsync(token);
                 var commandResult = ModbusHelper.GetWriteModbusCommand(address, value, Station);
                 if (commandResult.IsSuccess)
                 {
@@ -114,7 +114,7 @@ namespace ThingsGateway.Foundation.Adapter.Modbus
         {
             try
             {
-                await ConnectAsync();
+                await ConnectAsync(token);
                 var commandResult = ModbusHelper.GetWriteBoolModbusCommand(address, value, Station);
                 if (commandResult.IsSuccess)
                 {

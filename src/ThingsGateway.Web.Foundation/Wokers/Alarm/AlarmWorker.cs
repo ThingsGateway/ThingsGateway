@@ -223,7 +223,7 @@ public class AlarmWorker : BackgroundService
                 _logger?.LogInformation($"实时报警线程停止超时，已强制取消");
             }
         }
-        RealAlarmTask?.Dispose();
+        RealAlarmTask?.SafeDispose();
 
         _logger?.LogInformation($"历史报警线程停止中");
         var hisAlarmResult = HisAlarmTask?.GetAwaiter().GetResult();
@@ -248,7 +248,7 @@ public class AlarmWorker : BackgroundService
         {
             _logger?.LogInformation($"历史报警线程停止超时，已强制取消");
         }
-        HisAlarmTask?.Dispose();
+        HisAlarmTask?.SafeDispose();
         StoppingToken?.SafeDispose();
         StoppingTokens.Remove(StoppingToken);
 

@@ -29,18 +29,21 @@ public class WindowsControl
     /// 获取当前相同进程名称的列表
     /// </summary>
     /// <returns></returns>
-    public static List<Process> RunningInstance(string title)
+    /// <param name="title">exe标题</param>
+    public static List<Process> GetRunningInstance(string title)
     {
         Process currentProcess = Process.GetCurrentProcess();
         Process[] processes = Process.GetProcessesByName(currentProcess.ProcessName);
         if (currentProcess.MainModule == null) return null;
 
         //遍历与当前进程名称相同的进程列表
-        return processes.Where(process => process.Id != currentProcess.Id&&process.MainWindowTitle== title).ToList();
+        return processes.Where(process => process.Id != currentProcess.Id && process.MainWindowTitle == title).ToList();
     }
     /// <summary>
     /// 窗口显示处理
     /// </summary>
+    /// <param name="MainWindowHandle">窗口句柄</param>
+    /// <param name="showStyle">显示风格</param>
     private static int HandleRunningInstance(IntPtr MainWindowHandle, int showStyle)
     {
         User.ShowWindow(MainWindowHandle, showStyle); //调用api函数，正常显示窗口
@@ -49,6 +52,7 @@ public class WindowsControl
     /// <summary>
     /// 按窗体名称找到本程序
     /// </summary>
+    /// <param name="title">exe标题</param>
     private static IntPtr FindWindow(string title)
     {
         IntPtr hWnd = (IntPtr)User.FindWindow(null, title);
@@ -56,26 +60,14 @@ public class WindowsControl
     }
 
     /// <summary>
-    /// 将程序按参数显示
+    /// 窗口显示处理
     /// </summary>
     /// <param name="title">exe标题</param>
     /// <param name="showStyle">显示风格</param>
-    public static bool LocalBringToFront(string title, int showStyle = 10)
+    public static void HandleRunningInstance(string title, int showStyle = 10)
     {
         var t = FindWindow(title);
-        if (((int)t) > 0)
-        {
-            HandleRunningInstance((IntPtr)t, showStyle);
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-
+        HandleRunningInstance((IntPtr)t, showStyle);
     }
-
-
-
 
 }

@@ -316,7 +316,7 @@ public class ValueHisWorker : BackgroundService
         {
             _logger?.LogInformation($"历史数据线程停止超时，已强制取消");
         }
-        ValueHisTask?.Dispose();
+        ValueHisTask?.SafeDispose();
         StoppingToken?.SafeDispose();
         StoppingTokens.Remove(StoppingToken);
 

@@ -31,7 +31,7 @@ namespace ThingsGateway.Foundation.Tests
 
         public void Dispose()
         {
-            _opc?.Dispose();
+            _opc?.SafeDispose();
         }
 
         [Theory]

@@ -154,7 +154,7 @@ public class UploadDeviceWorker : BackgroundService
         {
             try
             {
-                deviceThread.Dispose();
+                deviceThread.SafeDispose();
             }
             catch (Exception ex)
             {
@@ -254,7 +254,7 @@ public class UploadDeviceWorker : BackgroundService
                     }
                 });
             }
-            driver?.Dispose();
+            driver?.SafeDispose();
 
             return Propertys;
         }
@@ -291,7 +291,7 @@ public class UploadDeviceWorker : BackgroundService
                     }
                 });
             }
-            driver?.Dispose();
+            driver?.SafeDispose();
 
             return Propertys;
         }

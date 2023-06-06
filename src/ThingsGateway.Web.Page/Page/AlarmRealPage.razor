@@ -79,7 +79,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        AlarmHostService = this.GetBackgroundService<AlarmWorker>();
+        AlarmHostService = ServiceExtension.GetBackgroundService<AlarmWorker>();
         DelayTimer = new System.Timers.Timer(5000);
         DelayTimer.Elapsed += timer_Elapsed;
         DelayTimer.AutoReset = true;
@@ -95,7 +95,7 @@
     protected override async Task DisposeAsync(bool disposing)
     {
         await base.DisposeAsync(disposing);
-        DelayTimer?.Dispose();
+        DelayTimer?.SafeDispose();
     }
     private async Task datatableQuery()
     {

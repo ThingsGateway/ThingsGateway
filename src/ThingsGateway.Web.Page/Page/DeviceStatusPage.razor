@@ -152,12 +152,12 @@
 
                                         <MTooltip Bottom Context="tip">
                                             <ActivatorContent>
-                                                <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("tgdevicepause")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small OnClick=@(()=>Config(item.DeviceId,!item.Device.Enable))>
-                                                    <MIcon>@(item.Device.Enable ? "mdi-pause" : "mdi-play")</MIcon>
+                                                <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("tgdevicepause")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small OnClick=@(()=>Config(item.DeviceId,!item.Device.KeepOn))>
+                                                    <MIcon>@(item.Device.KeepOn ? "mdi-pause" : "mdi-play")</MIcon>
                                                     </MButton>
                                                 </ActivatorContent>
                                                 <ChildContent>
-                                                    <span>@(item.Device.Enable ? T("暂停") : T("运行"))</span>
+                                                    <span>@(item.Device.KeepOn ? T("暂停") : T("运行"))</span>
                                             </ChildContent>
                                         </MTooltip>
                                         <MTooltip Bottom Context="tip">
@@ -392,12 +392,12 @@
 
                                         <MTooltip Bottom Context="tip">
                                             <ActivatorContent>
-                                                <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("tgdevicepause")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small OnClick=@(()=>UpConfig(item.DeviceId,!item.Device.Enable))>
-                                                    <MIcon>@(item.Device.Enable ? "mdi-pause" : "mdi-play")</MIcon>
+                                                <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("tgdevicepause")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small OnClick=@(()=>UpConfig(item.DeviceId,!item.Device.KeepOn))>
+                                                    <MIcon>@(item.Device.KeepOn ? "mdi-pause" : "mdi-play")</MIcon>
                                                     </MButton>
                                                 </ActivatorContent>
                                                 <ChildContent>
-                                                    <span>@(item.Device.Enable ? T("暂停") : T("运行"))</span>
+                                                    <span>@(item.Device.KeepOn ? T("暂停") : T("运行"))</span>
                                             </ChildContent>
                                         </MTooltip>
 
@@ -700,10 +700,10 @@
     ValueHisWorker ValueHisHostService { get; set; }
     protected override Task OnInitializedAsync()
     {
-        CollectDeviceHostService = this.GetBackgroundService<CollectDeviceWorker>();
-        UploadDeviceHostService = this.GetBackgroundService<UploadDeviceWorker>();
-        AlarmHostService = this.GetBackgroundService<AlarmWorker>();
-        ValueHisHostService = this.GetBackgroundService<ValueHisWorker>();
+        CollectDeviceHostService = ServiceExtension.GetBackgroundService<CollectDeviceWorker>();
+        UploadDeviceHostService = ServiceExtension.GetBackgroundService<UploadDeviceWorker>();
+        AlarmHostService = ServiceExtension.GetBackgroundService<AlarmWorker>();
+        ValueHisHostService = ServiceExtension.GetBackgroundService<ValueHisWorker>();
         DelayTimer = new System.Timers.Timer(1000);
         DelayTimer.Elapsed += timer_Elapsed;
         DelayTimer.AutoReset = true;
@@ -717,7 +717,7 @@
 
     async Task ImportVaiable(long devId)
     {
-        var driver = this.GetBackgroundService<CollectDeviceWorker>().GetImportUI(devId);
+        var driver = ServiceExtension.GetBackgroundService<CollectDeviceWorker>().GetImportUI(devId);
         if (driver?.DriverImportUIType == null)
         {
             await PopupService.EnqueueSnackbarAsync("插件未实现导入变量", AlertTypes.Warning);
@@ -827,7 +827,7 @@
     protected override async Task DisposeAsync(bool disposing)
     {
         await base.DisposeAsync(disposing);
-        DelayTimer?.Dispose();
+        DelayTimer?.SafeDispose();
     }
 
     async void timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)

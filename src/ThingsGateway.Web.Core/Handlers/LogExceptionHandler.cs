@@ -22,6 +22,7 @@ namespace ThingsGateway.Web.Core
     /// </summary>
     public class LogExceptionHandler : IGlobalExceptionHandler, ISingleton
     {
+        /// <inheritdoc/>
         public async Task OnExceptionAsync(ExceptionContext context)
         {
             if (context.Filters.Any(it => it is LoggingMonitorAttribute))

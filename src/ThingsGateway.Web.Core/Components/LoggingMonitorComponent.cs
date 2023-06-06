@@ -19,6 +19,7 @@ namespace ThingsGateway.Web.Core
     /// </summary>
     public class LoggingMonitorComponent : IServiceComponent
     {
+        /// <inheritdoc/>
         public void Load(IServiceCollection services, ComponentContext componentContext)
         {
             //Monitor日志配置
@@ -29,10 +30,10 @@ namespace ThingsGateway.Web.Core
                  options.ConfigureLogger((logger, logContext, context) =>
                   {
                       var httpContext = context.HttpContext;//获取httpContext
-                                                            //获取头
+                      //获取头
                       var userAgent = httpContext.Request.Headers["User-Agent"];
                       if (string.IsNullOrEmpty(userAgent)) userAgent = "Other";//如果没有这个头就指定一个
-                                                                               //获取客户端信息
+                      //获取客户端信息
                       var client = UserAgent.Parser.Parse(userAgent);
                       // 获取控制器/操作描述器
                       var controllerActionDescriptor = context.ActionDescriptor as ControllerActionDescriptor;

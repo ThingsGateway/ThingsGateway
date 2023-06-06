@@ -82,11 +82,11 @@ namespace ThingsGateway.Web.Rcl
                 if (ret.Code != 200)
                 {
                     await captcha.RefreshCode();
-                    await PopupService.EnqueueSnackbarAsync(T("µÇÂ¼´íÎó") + ": " + ret.Msg.ToString(), AlertTypes.Error);
+                    await PopupService.EnqueueSnackbarAsync(new(T("µÇÂ¼´íÎó") + ": " + ret.Msg.ToString(), AlertTypes.Error));
                 }
                 else
                 {
-                    await PopupService.EnqueueSnackbarAsync(T("µÇÂ¼³É¹¦"), AlertTypes.Success);
+                    await PopupService.EnqueueSnackbarAsync(new(T("µÇÂ¼³É¹¦"), AlertTypes.Success));
                     await Task.Delay(500);
                     await AjaxService.GotoAsync("/");
                 }
@@ -94,7 +94,7 @@ namespace ThingsGateway.Web.Rcl
             else
             {
                 await captcha.RefreshCode();
-                await PopupService.EnqueueSnackbarAsync(@T("µÇÂ¼´íÎó"), AlertTypes.Error);
+                await PopupService.EnqueueSnackbarAsync(new(T("µÇÂ¼´íÎó"), AlertTypes.Error));
             }
         }
 

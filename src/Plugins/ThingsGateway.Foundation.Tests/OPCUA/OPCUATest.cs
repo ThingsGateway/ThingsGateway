@@ -31,7 +31,7 @@ namespace ThingsGateway.Foundation.Tests
         }
         public void Dispose()
         {
-            _opc?.Dispose();
+            _opc?.SafeDispose();
         }
         [Theory]
         [InlineData("ns=2;s=数据类型示例.8 位设备.K 寄存器.DWord2", typeof(UInt32))] //kep

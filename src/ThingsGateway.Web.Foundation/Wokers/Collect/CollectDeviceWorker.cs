@@ -224,7 +224,7 @@ public class CollectDeviceWorker : BackgroundService
         {
             try
             {
-                deviceThread.Dispose();
+                deviceThread.SafeDispose();
             }
             catch (Exception ex)
             {
@@ -304,7 +304,7 @@ public class CollectDeviceWorker : BackgroundService
             var driverPlugin = driverPluginService.GetDriverPluginById(driverId);
             var driver = (CollectBase)_pluginService.GetDriver(id, driverPlugin);
             var Propertys = _pluginService.GetMethod(driver);
-            driver?.Dispose();
+            driver?.SafeDispose();
             return Propertys.Select(it => it.Name).ToList();
         }
         finally
@@ -342,7 +342,7 @@ public class CollectDeviceWorker : BackgroundService
                     }
                 });
             }
-            driver?.Dispose();
+            driver?.SafeDispose();
             return Propertys;
         }
         finally
@@ -385,7 +385,7 @@ public class CollectDeviceWorker : BackgroundService
         try
         {
             var driver = (DriverBase)_pluginService.GetDriver(id, driverPlugin);
-            driver?.Dispose();
+            driver?.SafeDispose();
             return driver.DriverDebugUIType;
         }
         finally

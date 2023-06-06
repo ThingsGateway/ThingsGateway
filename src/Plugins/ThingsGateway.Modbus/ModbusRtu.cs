@@ -36,20 +36,21 @@ public class ModbusRtu : CollectBase, IDisposable
 
     public override IThingsGatewayBitConverter ThingsGatewayBitConverter { get => _plc?.ThingsGatewayBitConverter; }
 
-    public override void AfterStop()
+    public override Task AfterStopAsync()
     {
-        _plc?.Close();
+        _plc?.Disconnect();
+        return Task.CompletedTask;
     }
 
-    public override async Task BeforStartAsync()
+    public override async Task BeforStartAsync(CancellationToken cancellationToken)
     {
-        await _plc?.OpenAsync();
+        await _plc?.ConnectAsync(cancellationToken);
     }
-
-    public override void Dispose()
+    protected override void Dispose(bool disposing)
     {
-        _plc?.Close();
-        _plc?.Dispose();
+        _plc?.Disconnect();
+        _plc?.SafeDispose();
+        base.Dispose(disposing);
     }
 
     public override void InitDataAdapter()
@@ -60,7 +61,7 @@ public class ModbusRtu : CollectBase, IDisposable
     {
         return _plc?.SerialClient?.CanSend == true ? OperResult.CreateSuccessResult() : new OperResult("失败");
     }
-    public override bool IsSupportAddressRequest()
+    public override bool IsSupportRequest()
     {
         return true;
     }
@@ -70,9 +71,9 @@ public class ModbusRtu : CollectBase, IDisposable
         return deviceVariables.LoadSourceRead(_logger, ThingsGatewayBitConverter, driverPropertys.MaxPack);
     }
 
-    public override async Task<OperResult> WriteValueAsync(CollectVariableRunTime deviceVariable, string value)
+    public override async Task<OperResult> WriteValueAsync(CollectVariableRunTime deviceVariable, string value, CancellationToken cancellationToken)
     {
-        return await _plc.WriteAsync(deviceVariable.DataType, deviceVariable.VariableAddress, value);
+        return await _plc.WriteAsync(deviceVariable.DataType, deviceVariable.VariableAddress, value, deviceVariable.DataTypeEnum == DataTypeEnum.Bcd, cancellationToken);
     }
 
     protected override void Init(CollectDeviceRunTime device, object client = null)

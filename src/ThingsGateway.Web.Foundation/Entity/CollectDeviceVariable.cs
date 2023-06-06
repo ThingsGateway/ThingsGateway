@@ -19,6 +19,7 @@ namespace ThingsGateway.Web.Foundation;
 /// </summary>
 [SugarTable("collectdevice_variable", TableDescription = "设备变量表")]
 [Tenant(SqlsugarConst.DB_CustomId)]
+[SugarIndex("index_device", nameof(CollectDeviceVariable.DeviceId), OrderByType.Asc)]
 public class CollectDeviceVariable : MemoryVariable
 {
     /// <summary>

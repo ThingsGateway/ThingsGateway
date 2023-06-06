@@ -21,8 +21,10 @@ using System.Text.Unicode;
 
 namespace ThingsGateway.Web.Core
 {
+    /// <inheritdoc/>
     public class Startup : AppStartup
     {
+        /// <inheritdoc/>
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -63,6 +65,7 @@ namespace ThingsGateway.Web.Core
             });
         }
 
+        /// <inheritdoc/>
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddLogoDisplay();
@@ -70,8 +73,7 @@ namespace ThingsGateway.Web.Core
             // 允许跨域
             services.AddCorsAccessor();
 
-            services.Configure<WebEncoderOptions>(options =>
-            options.TextEncoderSettings = new TextEncoderSettings(UnicodeRanges.All));
+            services.Configure<WebEncoderOptions>(options => options.TextEncoderSettings = new TextEncoderSettings(UnicodeRanges.All));
 
             // 限流服务，自行开启
             //services.Configure<IpRateLimitOptions>(App.Configuration.GetSection("IpRateLimiting"));
@@ -94,18 +96,11 @@ namespace ThingsGateway.Web.Core
             services.AddComponent<SignalRComponent>();
 
             services.AddRazorPages();
-            services.AddControllers()
-                .AddJsonOptions(options =>
-                {
-                    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-                })
-                .AddNewtonsoftJson(options =>
-                {
-                    options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-                })
+            services.AddControllers()//循环引用
+                .AddJsonOptions(options => options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles)
+                .AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore)
              .AddFriendlyException()
-             .AddInjectWithUnifyResult<UnifyResultProvider>()
-                ;
+             .AddInjectWithUnifyResult<UnifyResultProvider>();//规范化
 
             services.AddServerSideBlazor().AddHubOptions(options => options.MaximumReceiveMessageSize = 64 * 1024); ;
             services.AddHealthChecks();

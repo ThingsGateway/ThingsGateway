@@ -36,7 +36,18 @@ namespace ThingsGateway.Web.Rcl.Core
             masaOp.Accent = Accent; masaOp.Success = Success;
             masaOp.Error = Error; masaOp.Info = Info;
             masaOp.Warning = Warning;
-            masaOp.UserDefined = UserDefined;
+            foreach (var item in UserDefined)
+            {
+                if (!masaOp.UserDefined.ContainsKey(item.Key))
+                {
+
+                    masaOp.UserDefined.TryAdd(item.Key, item.Value);
+                }
+                else
+                {
+                    masaOp.UserDefined[item.Key] = item.Value;
+                }
+            }
         }
     }
 

@@ -14,6 +14,7 @@ using Microsoft.Extensions.Logging;
 
 using System.Collections.Concurrent;
 using System.Linq;
+using System.Threading;
 
 using ThingsGateway.Core;
 using ThingsGateway.Foundation;
@@ -49,7 +50,7 @@ public class RpcSingletonService : ISingleton
     /// 反向RPC入口方法
     /// </summary>
     /// <exception cref="Exception"></exception>
-    public async Task<OperResult> InvokeDeviceMethodAsync(string sourceName, NameValue item, bool isBlazorWeb = false)
+    public async Task<OperResult> InvokeDeviceMethodAsync(string sourceName, NameValue item, CancellationToken cancellationToken, bool isBlazorWeb = false)
     {
         OperResult data = new();
         var tag = _globalCollectDeviceData.CollectVariables.FirstOrDefault(it => it.Name == item.Name);
@@ -62,7 +63,7 @@ public class RpcSingletonService : ISingleton
         if (!tag.RpcWriteEnable && !isBlazorWeb) return new OperResult("不允许远程写入");
         if (tag.OtherMethod.IsNullOrEmpty())
         {
-            data = (await dev.InVokeWriteAsync(tag, item.Value)).Copy();
+            data = (await dev.InVokeWriteAsync(tag, item.Value, cancellationToken)).Copy();
 
             _logQueues.Enqueue(
                 new RpcLog()

@@ -52,6 +52,13 @@ public class UploadDeviceRunTime : UploadDevice
             }
         }
     }
+
+    /// <summary>
+    /// 运行
+    /// </summary>
+    [Description("运行")]
+    public virtual bool KeepOn { get; set; } = true;
+
     private DeviceStatusEnum deviceStatus = DeviceStatusEnum.Default;
 
     private string deviceOffMsg;

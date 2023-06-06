@@ -180,7 +180,7 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
         {
             try
             {
-                await ConnectAsync();
+                await ConnectAsync(token);
                 var commandResult = GetReadByteCommand(address, length);
                 if (commandResult.IsSuccess)
                 {
@@ -251,7 +251,7 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
         {
             try
             {
-                await ConnectAsync();
+                await ConnectAsync(token);
                 var commandResult = GetWriteByteCommand(address, value);
                 if (commandResult.IsSuccess)
                 {
@@ -285,7 +285,7 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
             }
             try
             {
-                await ConnectAsync();
+                await ConnectAsync(token);
 
                 var commandResult = GetWriteBitCommand(address, value[0]);
                 if (commandResult.IsSuccess)

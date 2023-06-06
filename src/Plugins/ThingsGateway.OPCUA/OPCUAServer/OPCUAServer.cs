@@ -24,6 +24,8 @@ using ThingsGateway.Foundation;
 using ThingsGateway.Foundation.Extension;
 using ThingsGateway.Web.Foundation;
 
+using TouchSocket.Core;
+
 namespace ThingsGateway.OPCUA;
 /// <inheritdoc/>
 public class OPCUAServerProperty : UpDriverPropertyBase
@@ -82,19 +84,18 @@ public partial class OPCUAServer : UpLoadBase
     private ConcurrentQueue<VariableData> _collectVariableRunTimes { get; set; } = new();
 
     /// <inheritdoc/>
-    public override async Task BeforStartAsync()
+    public override async Task BeforStartAsync(CancellationToken cancellationToken)
     {
         // 启动服务器。
         await m_application.CheckApplicationInstanceCertificate(true, 0, 1200);
         await m_application.Start(m_server);
     }
-
-    /// <inheritdoc/>
-    public override void Dispose()
+    protected override void Dispose(bool disposing)
     {
         m_server?.Stop();
-        m_server?.Dispose();
+        m_server?.SafeDispose();
     }
+
     /// <inheritdoc/>
     public override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
@@ -153,7 +154,7 @@ public partial class OPCUAServer : UpLoadBase
         }
     }
     /// <inheritdoc/>
-    protected override void Init(UploadDevice device)
+    protected override void Init(UploadDeviceRunTime device)
     {
         m_application = new ApplicationInstance();
         m_configuration = GetDefaultConfiguration();

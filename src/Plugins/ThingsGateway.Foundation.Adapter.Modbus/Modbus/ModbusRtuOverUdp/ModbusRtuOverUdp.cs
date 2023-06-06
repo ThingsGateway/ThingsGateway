@@ -17,7 +17,7 @@ using TouchSocket.Resources;
 
 namespace ThingsGateway.Foundation.Adapter.Modbus
 {
-    public class ModbusRtuOverUdp : ReadWriteDevicesUdpClientBase
+    public class ModbusRtuOverUdp : ReadWriteDevicesUdpBase
     {
         public ModbusRtuOverUdpDataHandleAdapter DataHandleAdapter = new();
 
@@ -54,7 +54,7 @@ namespace ThingsGateway.Foundation.Adapter.Modbus
         {
             try
             {
-                await ConnectAsync();
+                await ConnectAsync(token);
                 var commandResult = ModbusHelper.GetReadModbusCommand(address, length, Station);
                 if (commandResult.IsSuccess)
                 {
@@ -86,7 +86,7 @@ namespace ThingsGateway.Foundation.Adapter.Modbus
         {
             try
             {
-                await ConnectAsync();
+                await ConnectAsync(token);
                 var commandResult = ModbusHelper.GetWriteModbusCommand(address, value, Station);
                 if (commandResult.IsSuccess)
                 {
@@ -112,7 +112,7 @@ namespace ThingsGateway.Foundation.Adapter.Modbus
         {
             try
             {
-                await ConnectAsync();
+                await ConnectAsync(token);
                 var commandResult = ModbusHelper.GetWriteBoolModbusCommand(address, value, Station);
                 if (commandResult.IsSuccess)
                 {

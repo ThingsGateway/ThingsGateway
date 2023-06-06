@@ -55,7 +55,6 @@ public class KafkaProducerVariableProperty : VariablePropertyBase
 }
 public class KafkaProducer : UpLoadBase
 {
-    private UploadDevice _curDevice;
     private GlobalCollectDeviceData _globalCollectDeviceData;
 
     private ProducerConfig producerconfig;
@@ -86,22 +85,22 @@ public class KafkaProducer : UpLoadBase
 
 
     public override VariablePropertyBase VariablePropertys => variablePropertys;
-    public override async Task BeforStartAsync()
+    public override async Task BeforStartAsync(CancellationToken cancellationToken)
     {
         await Task.CompletedTask;
     }
-
-    public override void Dispose()
+    protected override void Dispose(bool disposing)
     {
-
+        producer.Dispose();
+        base.Dispose(disposing);
     }
+
     /// <summary>
     /// 初始化
     /// </summary>
     /// <param name="device"></param>
-    protected override void Init(UploadDevice device)
+    protected override void Init(UploadDeviceRunTime device)
     {
-        _curDevice = device;
         #region Kafka 生产者
         //1、生产者配置
         producerconfig = new ProducerConfig
@@ -146,11 +145,7 @@ public class KafkaProducer : UpLoadBase
         collectDeviceHostService = serviceScope.GetBackgroundService<CollectDeviceWorker>();
 
         var tags = _globalCollectDeviceData.CollectVariables.Where(a => a.VariablePropertys.ContainsKey(device.Id))
-           .Where(b => b.VariablePropertys[device.Id].Any(c =>
-           {
-               if (c.PropertyName == nameof(variablePropertys.Enable)) { if (c.Value?.GetBoolValue() == true) return true; else return false; }
-               else return false;
-           })).ToList();
+           .Where(b => GetPropertyValue(b, nameof(variablePropertys.Enable)).GetBoolValue()).ToList();
 
         _uploadVariables = tags;
 

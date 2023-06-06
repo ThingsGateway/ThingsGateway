@@ -19,9 +19,10 @@ namespace ThingsGateway.Web.Core
     /// </summary>
     public sealed class AuthComponent : IServiceComponent
     {
+        /// <inheritdoc/>
         public void Load(IServiceCollection services, ComponentContext componentContext)
         {
-            //services.AddAppAuthorization<BlazorAuthorizeHandler>();
+            //共用Cookie和JWT，查看Furion文档(http://furion.baiqian.ltd/docs/auth-control?_highlight=authenticationscheme#1523-%E6%B7%B7%E5%90%88%E8%BA%AB%E4%BB%BD%E9%AA%8C%E8%AF%81)
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
             services.AddJwt<BlazorAuthorizeHandler>(options =>
             {

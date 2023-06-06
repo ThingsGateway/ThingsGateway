@@ -34,8 +34,8 @@ public class DeviceData
     public string name { get; set; }
     /// <inheritdoc cref="UploadDevice.Description"/>
     public string description { get; set; }
-    /// <inheritdoc cref="UploadDevice.Enable"/>
-    public bool enable { get; set; }
+    /// <inheritdoc cref="CollectDeviceRunTime.KeepOn"/>
+    public bool keepOn { get; set; }
 
 }
 

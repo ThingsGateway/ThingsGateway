@@ -115,7 +115,7 @@
             _searchModel.DeviceName = DeviceName;
             await datatableQuery();
         }
-        CollectDeviceHostService = this.GetBackgroundService<CollectDeviceWorker>();
+        CollectDeviceHostService = ServiceExtension.GetBackgroundService<CollectDeviceWorker>();
 
         _deviceGroups = CollectDeviceServiceHelpers.GetTree(CollectDeviceHostService.CollectDeviceRunTimes.Adapt<List<CollectDevice>>());
 
@@ -136,7 +136,7 @@
     protected override async Task DisposeAsync(bool disposing)
     {
         await base.DisposeAsync(disposing);
-        DelayTimer?.Dispose();
+        DelayTimer?.SafeDispose();
     }
     private async Task datatableQuery()
     {
@@ -151,7 +151,7 @@
         $"输入变量{collectVariableRunTime.Name}的写入值");
         if (confirm != null)
         {
-            var data = await rpcCore?.InvokeDeviceMethodAsync($"BLAZOR-{UserResoures.CurrentUser.Account}-{App.HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString()}", new NameValue { Name = collectVariableRunTime.Name, Value = confirm }, true);
+            var data = await rpcCore?.InvokeDeviceMethodAsync($"BLAZOR-{UserResoures.CurrentUser.Account}-{App.HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString()}", new NameValue { Name = collectVariableRunTime.Name, Value = confirm },System.Threading.CancellationToken.None, true);
             if (data.IsSuccess)
             {
                 await InvokeAsync(async () => await PopupService.EnqueueSnackbarAsync(data.Message, AlertTypes.Success));

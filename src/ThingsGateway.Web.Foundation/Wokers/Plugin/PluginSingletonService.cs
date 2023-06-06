@@ -23,6 +23,8 @@ using System.Runtime.Loader;
 using ThingsGateway.Core;
 using ThingsGateway.Core.Extension;
 
+using TouchSocket.Core;
+
 namespace ThingsGateway.Web.Foundation;
 /// <summary>
 /// 驱动插件服务  
@@ -56,6 +58,11 @@ public class PluginSingletonService : ISingleton
     /// </summary>
     public ConcurrentDictionary<long, List<long>> DeviceOnDriverPluginDict { get; private set; } = new();
     /// <summary>
+    /// 旧插件域
+    /// </summary>
+    public ConcurrentList<WeakReference> WeakReferences { get; private set; } = new();
+
+    /// <summary>
     /// 获取插件
     /// </summary>
     /// <param name="devId"></param>
@@ -65,7 +72,6 @@ public class PluginSingletonService : ISingleton
     {
         lock (this)
         {
-
             //先判断是否已经拥有插件模块
             if (DriverPluginDict.ContainsKey(plugin.Id))
             {
@@ -76,7 +82,6 @@ public class PluginSingletonService : ISingleton
             Assembly assembly = null;
             var driverFilePath = plugin.FilePath;
             _logger?.LogInformation($"添加插件文件：{driverFilePath}");
-
 
             var path = AppContext.BaseDirectory.CombinePathOS(driverFilePath);
             var parPath = Path.GetDirectoryName(path);
@@ -256,7 +261,54 @@ public class PluginSingletonService : ISingleton
     /// <param name="pluginId"></param>
     public void DeleteDriver(long devId, long pluginId)
     {
+        //try
+        //{
+        //    foreach (WeakReference item in WeakReferences)
+        //    {
+        //        if (item.IsAlive)
+        //        {
+        //            GC.Collect();
+        //            GC.WaitForPendingFinalizers();
+        //        }
+        //        else
+        //        {
+        //            WeakReferences.Remove(item);
+        //        }
+        //    }
+        //}
+        //catch
+        //{
 
+        //}
+        //using var serviceScope = _scopeFactory.CreateScope();
+        //var driverPluginService = serviceScope.ServiceProvider.GetService<IDriverPluginService>();
+        //var plugin = driverPluginService.GetDriverPluginById(pluginId);
+        //var plugins = driverPluginService.GetCacheList();
+        //var pluginGroups = plugins.GroupBy(a => a.FileName).ToList();
+        //if (DeviceOnDriverPluginDict.ContainsKey(pluginId))
+        //{
+        //    DeviceOnDriverPluginDict[pluginId].Remove(devId);
+        //    if (DeviceOnDriverPluginDict[pluginId].Count == 0)
+        //    {
+        //        DeviceOnDriverPluginDict.Remove(pluginId);
+        //        DriverPluginDict.Remove(pluginId);
+        //        if (pluginGroups.FirstOrDefault(a => a.Key == plugin.FileName).Where(a => DriverPluginDict.ContainsKey(a.Id)).Count() <= 0)
+        //        {
+        //            var assemblyLoadContext = AssemblyLoadContextDict.GetValueOrDefault(plugin.FileName);
+        //            if (assemblyLoadContext != null)
+        //            {
+        //                AssemblyDict.Remove(plugin.FileName);
+        //                AssemblyLoadContextDict.Remove(plugin.FileName);
+        //                WeakReference alcWeakRef = new WeakReference(assemblyLoadContext, true);
+        //                WeakReferences.Add(alcWeakRef);
+        //                assemblyLoadContext.Unload();
+        //                GC.Collect();
+        //                GC.WaitForPendingFinalizers();
+        //            }
+        //        }
+
+        //    }
+        //}
     }
     /// <summary>
     /// 获取插件的属性值

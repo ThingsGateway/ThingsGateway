@@ -42,19 +42,21 @@ public abstract class S7 : CollectBase
 
     public override IThingsGatewayBitConverter ThingsGatewayBitConverter { get => _plc?.ThingsGatewayBitConverter; }
 
-    public override void AfterStop()
+    public override Task AfterStopAsync()
     {
         _plc?.Disconnect();
+        return Task.CompletedTask;
     }
 
-    public override async Task BeforStartAsync()
+    public override async Task BeforStartAsync(CancellationToken cancellationToken)
     {
-        await _plc.ConnectAsync();
+        await _plc.ConnectAsync(cancellationToken);
     }
 
-    public override void Dispose()
+    protected override void Dispose(bool disposing)
     {
         _plc?.Disconnect();
+        base.Dispose(disposing);
     }
 
     public override void InitDataAdapter()
@@ -65,14 +67,14 @@ public abstract class S7 : CollectBase
     {
         return _plc?.TGTcpClient?.CanSend == true ? OperResult.CreateSuccessResult() : new OperResult("失败");
     }
-    public override bool IsSupportAddressRequest()
+    public override bool IsSupportRequest()
     {
         return true;
     }
 
     public override OperResult<List<DeviceVariableSourceRead>> LoadSourceRead(List<CollectVariableRunTime> deviceVariables)
     {
-        _plc.Connect();
+        _plc.Connect(CancellationToken.None);
         var data = deviceVariables.LoadSourceRead(_logger, ThingsGatewayBitConverter, _plc);
         _plc?.Disconnect();
         return data;
@@ -105,9 +107,9 @@ public abstract class S7 : CollectBase
     {
         return _plc?.WriteDateTimeAsync(address, dateTime);
     }
-    public override async Task<OperResult> WriteValueAsync(CollectVariableRunTime deviceVariable, string value)
+    public override async Task<OperResult> WriteValueAsync(CollectVariableRunTime deviceVariable, string value, CancellationToken cancellationToken)
     {
-        return await _plc.WriteAsync(deviceVariable.DataType, deviceVariable.VariableAddress, value);
+        return await _plc.WriteAsync(deviceVariable.DataType, deviceVariable.VariableAddress, value, deviceVariable.DataTypeEnum == DataTypeEnum.Bcd, cancellationToken);
     }
 
     protected override async Task<OperResult<byte[]>> ReadAsync(string address, int length, CancellationToken cancellationToken)

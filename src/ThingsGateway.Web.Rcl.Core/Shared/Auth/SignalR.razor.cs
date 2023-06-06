@@ -10,6 +10,8 @@
 //------------------------------------------------------------------------------
 #endregion
 
+using Masa.Blazor;
+
 using Microsoft.AspNetCore.SignalR.Client;
 
 using System.Net.Http;
@@ -65,7 +67,8 @@ namespace ThingsGateway.Web.Rcl
                 {
                     try
                     {
-                        await InvokeAsync(async () => await PopupService.EnqueueSnackbarAsync(message.ToString(), AlertTypes.Warning));
+
+                        await InvokeAsync(async () => await PopupService.EnqueueSnackbarAsync(new(message.ToString(), AlertTypes.Warning)));
 
                     }
                     catch (Exception ex)

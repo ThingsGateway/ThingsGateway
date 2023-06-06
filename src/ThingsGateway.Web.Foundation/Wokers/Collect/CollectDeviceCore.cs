@@ -125,13 +125,13 @@ public class CollectDeviceCore : DisposableObject
     /// <summary>
     /// 暂停采集
     /// </summary>
-    public void PasueThread(bool enable)
+    public void PasueThread(bool keepOn)
     {
         lock (this)
         {
-            var str = enable == false ? "设备线程采集暂停" : "设备线程采集继续";
+            var str = keepOn == false ? "设备线程采集暂停" : "设备线程采集继续";
             _logger?.LogInformation($"{str}:{_device.Name}");
-            this.Device.Enable = enable;
+            this.Device.KeepOn = keepOn;
         }
     }
     /// <summary>
@@ -210,9 +210,8 @@ public class CollectDeviceCore : DisposableObject
     /// <summary>
     /// 开始前
     /// </summary>
-    /// <param name="client"></param>
     /// <returns></returns>
-    public async Task<bool> BeforeActionAsync(object client = null)
+    public async Task<bool> BeforeActionAsync(CancellationToken cancellationToken, object client = null)
     {
         try
         {
@@ -235,11 +234,11 @@ public class CollectDeviceCore : DisposableObject
             }
             try
             {
-                if (Device?.Enable == true)
+                if (Device?.KeepOn == true)
                 {
                     //驱动插件执行循环前方法
                     Device.ActiveTime = DateTime.UtcNow;
-                    await _driver?.BeforStartAsync();
+                    await _driver?.BeforStartAsync(cancellationToken);
                 }
 
             }
@@ -265,14 +264,14 @@ public class CollectDeviceCore : DisposableObject
     /// <summary>
     /// 结束后
     /// </summary>
-    public void FinishAction()
+    public async Task FinishActionAsync()
     {
         _globalCollectDeviceData.CollectDevices.RemoveWhere(it => it.Id == Device.Id);
         try
         {
             _logger?.LogInformation($"{_device.Name}采集线程停止中");
-            _driver?.AfterStop();
-            _driver?.Dispose();
+            await _driver?.AfterStopAsync();
+            _driver?.SafeDispose();
             _pluginService.DeleteDriver(DeviceId, Device.PluginId);
             _logger?.LogInformation($"{_device.Name}采集线程已停止");
             IsExited = true;
@@ -325,15 +324,15 @@ public class CollectDeviceCore : DisposableObject
     /// <summary>
     /// 运行
     /// </summary>
-    public async Task<ThreadRunReturn> RunActionAsync(CancellationTokenSource stoppingToken)
+    public async Task<ThreadRunReturn> RunActionAsync(CancellationToken cancellationToken)
     {
         try
         {
 
-            using CancellationTokenSource StoppingToken = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken.Token, StoppingTokens.LastOrDefault().Token);
+            using CancellationTokenSource StoppingToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, StoppingTokens.LastOrDefault().Token);
             if (_driver == null) return ThreadRunReturn.Continue;
 
-            if (Device?.Enable == false)
+            if (Device?.KeepOn == false)
             {
                 Device.DeviceStatus = DeviceStatusEnum.Pause;
                 return ThreadRunReturn.Continue; ;
@@ -354,11 +353,11 @@ public class CollectDeviceCore : DisposableObject
 
             Device.ActiveTime = DateTime.UtcNow;
 
-            if (_driver.IsSupportAddressRequest())
+            if (_driver.IsSupportRequest())
             {
                 foreach (var deviceVariableSourceRead in DeviceVariableSourceReads)
                 {
-                    if (Device?.Enable == false)
+                    if (Device?.KeepOn == false)
                     {
                         continue;
                     }
@@ -387,7 +386,7 @@ public class CollectDeviceCore : DisposableObject
 
                 foreach (var deviceVariableMedRead in DeviceVariableMedReads)
                 {
-                    if (Device?.Enable == false)
+                    if (Device?.KeepOn == false)
                         continue;
                     if (StoppingToken.IsCancellationRequested)
                         break;
@@ -550,7 +549,7 @@ public class CollectDeviceCore : DisposableObject
     /// 执行变量写入
     /// </summary>
     /// <returns></returns>
-    public async Task<OperResult> InVokeWriteAsync(CollectVariableRunTime deviceVariable, string value)
+    public async Task<OperResult> InVokeWriteAsync(CollectVariableRunTime deviceVariable, string value, CancellationToken cancellationToken)
     {
         try
         {
@@ -577,7 +576,7 @@ public class CollectDeviceCore : DisposableObject
                     {
                         data = deviceVariable.WriteExpressions.GetExpressionsResult(value);
                     }
-                    var result = await _driver.WriteValueAsync(deviceVariable, data.ToString());
+                    var result = await _driver.WriteValueAsync(deviceVariable, data.ToString(), cancellationToken);
                     return result;
                 }
                 catch (Exception ex)
@@ -589,7 +588,7 @@ public class CollectDeviceCore : DisposableObject
             }
             else
             {
-                var result = await _driver.WriteValueAsync(deviceVariable, value);
+                var result = await _driver.WriteValueAsync(deviceVariable, value, cancellationToken);
                 return result;
             }
         }

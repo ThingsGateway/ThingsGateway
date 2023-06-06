@@ -44,7 +44,7 @@
         <MButton Class="mx-1" OnClick=@(async() =>
                  {
                  GetSerialClient().Close();
-                 await GetSerialClient().OpenAsync();
+                 await GetSerialClient().ConnectAsync();
                  }
                  ) Color="primary">
             连接
