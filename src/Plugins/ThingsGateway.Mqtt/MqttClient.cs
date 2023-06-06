@@ -71,7 +71,6 @@ public class MqttClientVariableProperty : VariablePropertyBase
 public class MqttClient : UpLoadBase
 {
     private List<CollectDeviceRunTime> _collectDevice;
-    private UploadDevice _curDevice;
     private GlobalCollectDeviceData _globalCollectDeviceData;
 
     private IMqttClient _mqttClient;
@@ -106,39 +105,37 @@ public class MqttClient : UpLoadBase
 
 
     public override VariablePropertyBase VariablePropertys => variablePropertys;
-    public override async Task BeforStartAsync()
+    public override async Task BeforStartAsync(CancellationToken cancellationToken)
     {
-
         if (_mqttClient != null)
         {
-            var result = await TryMqttClientAsync();
+            var result = await TryMqttClientAsync(cancellationToken);
             if (!result.IsSuccess)
             {
                 _logger?.LogWarning(ToString() + $"-连接MqttServer失败：{result.Message}");
             }
         }
     }
-
-    public override void Dispose()
+    protected override void Dispose(bool disposing)
     {
         try
         {
-            lockobj.Lock();
             _globalCollectDeviceData?.CollectVariables?.ForEach(a => a.VariableValueChange -= VariableValueChange);
 
             _globalCollectDeviceData?.CollectDevices?.ForEach(a =>
             {
                 a.DeviceStatusCahnge -= DeviceStatusCahnge;
             });
-            _mqttClient?.Dispose();
+            _mqttClient?.SafeDispose();
             _mqttClient = null;
+            base.Dispose(disposing);
         }
-        finally
+        catch (Exception ex)
         {
-            lockobj.UnLock();
+            _logger.LogError(ex, ToString());
         }
-
     }
+
     public override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
         try
@@ -160,7 +157,7 @@ public class MqttClient : UpLoadBase
                                 var variableMessage = new MqttApplicationMessageBuilder()
     .WithTopic($"{driverPropertys.VariableTopic}")
     .WithPayload(item.GetSciptListValue(driverPropertys.BigTextScriptVariableModel)).Build();
-                                var isConnect = await TryMqttClientAsync();
+                                var isConnect = await TryMqttClientAsync(cancellationToken);
                                 if (isConnect.IsSuccess)
                                     await _mqttClient.PublishAsync(variableMessage, cancellationToken);
                             }
@@ -198,7 +195,7 @@ public class MqttClient : UpLoadBase
                                         var variableMessage = new MqttApplicationMessageBuilder()
             .WithTopic($"{driverPropertys.VariableTopic}")
             .WithPayload(item.GetSciptListValue(driverPropertys.BigTextScriptVariableModel)).Build();
-                                        var isConnect = await TryMqttClientAsync();
+                                        var isConnect = await TryMqttClientAsync(cancellationToken);
                                         if (isConnect.IsSuccess)
                                             await _mqttClient.PublishAsync(variableMessage, cancellationToken);
                                     }
@@ -249,7 +246,7 @@ public class MqttClient : UpLoadBase
                                 var variableMessage = new MqttApplicationMessageBuilder()
                         .WithTopic($"{driverPropertys.DeviceTopic}")
                         .WithPayload(item.GetSciptListValue(driverPropertys.BigTextScriptDeviceModel)).Build();
-                                var isConnect = await TryMqttClientAsync();
+                                var isConnect = await TryMqttClientAsync(cancellationToken);
                                 if (isConnect.IsSuccess)
                                     await _mqttClient.PublishAsync(variableMessage);
                             }
@@ -286,7 +283,7 @@ public class MqttClient : UpLoadBase
                                     var variableMessage = new MqttApplicationMessageBuilder()
                             .WithTopic($"{driverPropertys.DeviceTopic}")
                             .WithPayload(item.GetSciptListValue(driverPropertys.BigTextScriptDeviceModel)).Build();
-                                    var isConnect = await TryMqttClientAsync();
+                                    var isConnect = await TryMqttClientAsync(cancellationToken);
                                     if (isConnect.IsSuccess)
                                         await _mqttClient.PublishAsync(variableMessage);
                                 }
@@ -346,9 +343,8 @@ public class MqttClient : UpLoadBase
         return $" {nameof(MqttClient)} IP:{driverPropertys.IP} Port:{driverPropertys.Port}";
     }
 
-    protected override void Init(UploadDevice device)
+    protected override void Init(UploadDeviceRunTime device)
     {
-        _curDevice = device;
         var mqttFactory = new MqttFactory(new PrivateLogger(_logger));
         _mqttClientOptions = mqttFactory.CreateClientOptionsBuilder()
                         .WithClientId(driverPropertys.ConnectId)
@@ -378,18 +374,7 @@ public class MqttClient : UpLoadBase
         collectDeviceHostService = serviceScope.GetBackgroundService<CollectDeviceWorker>();
 
         var tags = _globalCollectDeviceData.CollectVariables.Where(a => a.VariablePropertys.ContainsKey(device.Id))
-           .Where(b => b.VariablePropertys[device.Id].Any(c =>
-           {
-               if (c.PropertyName == nameof(variablePropertys.Enable))
-               {
-                   if (c.Value?.GetBoolValue() == true)
-                       return true;
-                   else
-                       return false;
-               }
-               else
-                   return false;
-           }))
+           .Where(b => GetPropertyValue(b, nameof(variablePropertys.Enable)).GetBoolValue())
            .ToList();
 
         _uploadVariables = tags;
@@ -416,7 +401,7 @@ public class MqttClient : UpLoadBase
     {
         if (arg.ApplicationMessage.Topic == driverPropertys.QuestRpcTopic && arg.ApplicationMessage.PayloadSegment.Count > 0)
         {
-            await AllPublishAsync();
+            await AllPublishAsync(CancellationToken.None);
             return;
         }
 
@@ -435,21 +420,10 @@ public class MqttClient : UpLoadBase
             var tag = _uploadVariables.FirstOrDefault(a => a.Name == nv.Name);
             if (tag != null)
             {
-                var rpcEnable = tag.VariablePropertys[_curDevice.Id]?.Any(c =>
-                  {
-                      if (c.PropertyName == nameof(variablePropertys.VariableRpcEnable))
-                      {
-                          if (c.Value?.GetBoolValue() == true)
-                              return true;
-                          else
-                              return false;
-                      }
-                      else
-                          return false;
-                  });
+                var rpcEnable = GetPropertyValue(tag, nameof(variablePropertys.VariableRpcEnable)).ToBoolean();
                 if (rpcEnable == true)
                 {
-                    var result = await _rpcCore.InvokeDeviceMethodAsync(ToString() + "-" + arg.ClientId, nv);
+                    var result = await _rpcCore.InvokeDeviceMethodAsync(ToString() + "-" + arg.ClientId, nv, CancellationToken.None);
 
                     mqttRpcResult = new() { Message = result.Message, RpcId = rpcData.RpcId, Success = result.IsSuccess };
 
@@ -475,7 +449,7 @@ public class MqttClient : UpLoadBase
             var variableMessage = new MqttApplicationMessageBuilder()
 .WithTopic($"{driverPropertys.RpcSubTopic}")
 .WithPayload(mqttRpcResult.ToJson()).Build();
-            var isConnect = await TryMqttClientAsync();
+            var isConnect = await TryMqttClientAsync(CancellationToken.None);
             if (isConnect.IsSuccess)
                 await _mqttClient.PublishAsync(variableMessage);
         }
@@ -494,13 +468,13 @@ public class MqttClient : UpLoadBase
                 .ToJson());
         }
     }
-    private async Task AllPublishAsync()
+    private async Task AllPublishAsync(CancellationToken cancellationToken)
     {
         //保留消息
         //分解List，避免超出mqtt字节大小限制
         var varData = _globalCollectDeviceData.CollectVariables.Adapt<List<VariableData>>().ChunkTrivialBetter(500);
         var devData = _globalCollectDeviceData.CollectVariables.Adapt<List<DeviceData>>().ChunkTrivialBetter(500);
-        var isConnect = await TryMqttClientAsync();
+        var isConnect = await TryMqttClientAsync(cancellationToken);
         foreach (var item in devData)
         {
             var devMessage = new MqttApplicationMessageBuilder()
@@ -525,7 +499,7 @@ public class MqttClient : UpLoadBase
         CollectDeviceRunTimes.Enqueue(collectDeviceRunTime.Adapt<DeviceData>());
     }
 
-    private async Task<OperResult> TryMqttClientAsync(bool reconnect = false)
+    private async Task<OperResult> TryMqttClientAsync(CancellationToken cancellationToken)
     {
         if (_mqttClient?.IsConnected == true)
             return OperResult.CreateSuccessResult();
@@ -540,23 +514,20 @@ public class MqttClient : UpLoadBase
                 await lockobj.LockAsync();
                 if (_mqttClient?.IsConnected == true)
                     return OperResult.CreateSuccessResult();
-                using (var timeoutToken = new CancellationTokenSource(TimeSpan.FromSeconds(driverPropertys.ConnectTimeOut)))
+                using var timeoutToken = new CancellationTokenSource(TimeSpan.FromMilliseconds(driverPropertys.ConnectTimeOut));
+                using CancellationTokenSource StoppingToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutToken.Token);
+                if (_mqttClient?.IsConnected == true)
+                    return OperResult.CreateSuccessResult();
+                if (_mqttClient == null)
+                    return new OperResult("未初始化");
+                var result = await _mqttClient?.ConnectAsync(_mqttClientOptions, StoppingToken.Token);
+                if (result.ResultCode == MqttClientConnectResultCode.Success)
                 {
-                    if (_mqttClient?.IsConnected == true)
-                        return OperResult.CreateSuccessResult();
-                    if (_mqttClient == null)
-                        return new OperResult("未初始化");
-                    var result = await _mqttClient?.ConnectAsync(_mqttClientOptions, timeoutToken.Token);
-                    if (result.ResultCode == MqttClientConnectResultCode.Success)
-                    {
-
-                        return OperResult.CreateSuccessResult();
-
-                    }
-                    else
-                    {
-                        return new OperResult(result.ReasonString);
-                    }
+                    return OperResult.CreateSuccessResult();
+                }
+                else
+                {
+                    return new OperResult(result.ReasonString);
                 }
             }
             catch (Exception ex)

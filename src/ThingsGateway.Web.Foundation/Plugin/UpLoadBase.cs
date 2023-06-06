@@ -12,6 +12,7 @@
 
 using Microsoft.Extensions.Logging;
 
+using System.Linq;
 using System.Threading;
 
 namespace ThingsGateway.Web.Foundation;
@@ -35,7 +36,7 @@ public abstract class UpLoadBase : DriverBase
     }
 
     /// <summary>
-    /// 返回插件的上传变量，一般在<see cref="Init(UploadDevice)"/>后初始化
+    /// 返回插件的上传变量，一般在<see cref="Init(UploadDeviceRunTime)"/>后初始化
     /// </summary>
     public abstract List<CollectVariableRunTime> UploadVariables { get; }
 
@@ -50,20 +51,24 @@ public abstract class UpLoadBase : DriverBase
     /// 开始执行的方法
     /// </summary>
     /// <returns></returns>
-    public abstract Task BeforStartAsync();
+    public abstract Task BeforStartAsync(CancellationToken cancellationToken);
 
     /// <summary>
     /// 循环执行
     /// </summary>
     public abstract Task ExecuteAsync(CancellationToken cancellationToken);
-
+    /// <summary>
+    /// 当前上传设备
+    /// </summary>
+    public UploadDeviceRunTime CurDevice { get; protected set; }
     /// <summary>
     /// 初始化
     /// </summary>
-    public void Init(ILogger logger, UploadDevice device)
+    public void Init(ILogger logger, UploadDeviceRunTime device)
     {
         _logger = logger;
         IsLogOut = device.IsLogOut;
+        CurDevice = device;
         Init(device);
     }
 
@@ -71,7 +76,24 @@ public abstract class UpLoadBase : DriverBase
     /// 初始化
     /// </summary>
     /// <param name="device">设备</param>
-    protected abstract void Init(UploadDevice device);
+    protected abstract void Init(UploadDeviceRunTime device);
 
-
+    /// <summary>
+    /// 获取变量的属性值
+    /// </summary>
+    public virtual string GetPropertyValue(CollectVariableRunTime variableRunTime, string propertyName)
+    {
+        if (variableRunTime == null)
+            return null;
+        if (variableRunTime.VariablePropertys.ContainsKey(CurDevice.Id))
+        {
+            var data = variableRunTime.VariablePropertys[CurDevice.Id].FirstOrDefault(a =>
+                  a.PropertyName == propertyName);
+            if (data != null)
+            {
+                return data.Value;
+            }
+        }
+        return null;
+    }
 }

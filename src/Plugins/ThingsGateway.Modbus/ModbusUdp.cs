@@ -33,19 +33,20 @@ public class ModbusUdp : CollectBase
     public override IThingsGatewayBitConverter ThingsGatewayBitConverter { get => _plc?.ThingsGatewayBitConverter; }
     public override Type DriverDebugUIType => typeof(ModbusUdpDebugDriverPage);
 
-    public override void AfterStop()
+    public override Task AfterStopAsync()
     {
         _plc.Disconnect();
+        return Task.CompletedTask;
     }
 
-    public override Task BeforStartAsync()
+    public override Task BeforStartAsync(CancellationToken cancellationToken)
     {
-        return _plc.ConnectAsync();
+        return _plc.ConnectAsync(cancellationToken);
     }
-
-    public override void Dispose()
+    protected override void Dispose(bool disposing)
     {
         _plc?.Disconnect();
+        base.Dispose(disposing);
     }
 
     public override void InitDataAdapter()
@@ -56,7 +57,7 @@ public class ModbusUdp : CollectBase
     {
         return _plc?.TGUdpSession?.CanSend == true ? OperResult.CreateSuccessResult() : new OperResult("失败");
     }
-    public override bool IsSupportAddressRequest()
+    public override bool IsSupportRequest()
     {
         return true;
     }
@@ -66,9 +67,9 @@ public class ModbusUdp : CollectBase
         return deviceVariables.LoadSourceRead(_logger, ThingsGatewayBitConverter, driverPropertys.MaxPack);
     }
 
-    public override async Task<OperResult> WriteValueAsync(CollectVariableRunTime deviceVariable, string value)
+    public override async Task<OperResult> WriteValueAsync(CollectVariableRunTime deviceVariable, string value, CancellationToken cancellationToken)
     {
-        return await _plc.WriteAsync(deviceVariable.DataType, deviceVariable.VariableAddress, value);
+        return await _plc.WriteAsync(deviceVariable.DataType, deviceVariable.VariableAddress, value, deviceVariable.DataTypeEnum == DataTypeEnum.Bcd, cancellationToken);
     }
 
     protected override void Init(CollectDeviceRunTime device, object client = null)

@@ -125,7 +125,7 @@ namespace ThingsGateway.Web.Rcl
             }
             catch (Exception ex)
             {
-                await PopupService.EnqueueSnackbarAsync(ex, false);
+                await PopupService.EnqueueSnackbarAsync(new(ex.Message, AlertTypes.Error));
             }
             finally
             {

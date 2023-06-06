@@ -6,7 +6,7 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<SatelliteResourceLanguages>zh-Hans</SatelliteResourceLanguages>
 		<!--<PublishReadyToRunComposite>true</PublishReadyToRunComposite>-->
-		<Version>1.5.0</Version>
+		<Version>1.5.1</Version>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<ApplicationIcon>favicon.ico</ApplicationIcon>
 		<Configurations>Debug;Release;KINGVIEW</Configurations>

@@ -12,44 +12,43 @@
 
 using ThingsGateway.Core;
 
-namespace ThingsGateway.Web.Foundation
+namespace ThingsGateway.Web.Foundation;
+
+/// <summary>
+/// 运行日志分页DTO
+/// </summary>
+public class RuntimeLogPageInput : BasePageInput
 {
     /// <summary>
-    /// 运行日志分页DTO
+    /// 日志源
     /// </summary>
-    public class RuntimeLogPageInput : BasePageInput
-    {
-        /// <summary>
-        /// 日志源
-        /// </summary>
-        [Description("日志源")]
-        public string Source { get; set; }
-        /// <summary>
-        /// 日志等级
-        /// </summary>
-        [Description("日志等级")]
-        public string Level { get; set; }
-
-    }
+    [Description("日志源")]
+    public string Source { get; set; }
     /// <summary>
-    /// RPC日志分页DTO
+    /// 日志等级
     /// </summary>
-    public class RpcLogPageInput : BasePageInput
-    {
-        /// <summary>
-        /// 操作源
-        /// </summary>
-        [Description("操作源")]
-        public string Source { get; set; }
-        /// <summary>
-        /// 操作源
-        /// </summary>
-        [Description("操作对象")]
-        public string Object { get; set; }
-        /// <summary>
-        /// 方法
-        /// </summary>
-        [Description("方法")]
-        public string Method { get; set; }
-    }
+    [Description("日志等级")]
+    public string Level { get; set; }
+
+}
+/// <summary>
+/// RPC日志分页DTO
+/// </summary>
+public class RpcLogPageInput : BasePageInput
+{
+    /// <summary>
+    /// 操作源
+    /// </summary>
+    [Description("操作源")]
+    public string Source { get; set; }
+    /// <summary>
+    /// 操作源
+    /// </summary>
+    [Description("操作对象")]
+    public string Object { get; set; }
+    /// <summary>
+    /// 方法
+    /// </summary>
+    [Description("方法")]
+    public string Method { get; set; }
 }

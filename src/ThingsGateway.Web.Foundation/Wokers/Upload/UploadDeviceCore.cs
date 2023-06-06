@@ -100,13 +100,13 @@ public class UploadDeviceCore : DisposableObject
     /// <summary>
     /// 暂停上传
     /// </summary>
-    public void PasueThread(bool enable)
+    public void PasueThread(bool keepOn)
     {
         lock (this)
         {
-            var str = enable == false ? "设备线程上传暂停" : "设备线程上传继续";
+            var str = keepOn == false ? "设备线程上传暂停" : "设备线程上传继续";
             _logger?.LogInformation($"{str}:{_device.Name}");
-            this.Device.Enable = enable;
+            this.Device.KeepOn = keepOn;
         }
     }
     /// <summary>
@@ -183,9 +183,7 @@ public class UploadDeviceCore : DisposableObject
     /// <summary>
     /// 开始前
     /// </summary>
-    /// <param name="client"></param>
-    /// <returns></returns>
-    public async Task<bool> BeforeActionAsync(object client = null)
+    public async Task<bool> BeforeActionAsync(CancellationToken cancellationToken, object client = null)
     {
         try
         {
@@ -206,11 +204,11 @@ public class UploadDeviceCore : DisposableObject
             }
             try
             {
-                if (Device?.Enable == true)
+                if (Device?.KeepOn == true)
                 {
                     //驱动插件执行循环前方法
                     Device.ActiveTime = DateTime.UtcNow;
-                    await _driver?.BeforStartAsync();
+                    await _driver?.BeforStartAsync(cancellationToken);
                 }
             }
             catch (Exception ex)
@@ -240,7 +238,7 @@ public class UploadDeviceCore : DisposableObject
         try
         {
             _logger?.LogInformation($"{_device.Name}上传线程停止中");
-            _driver?.Dispose();
+            _driver?.SafeDispose();
             _pluginService.DeleteDriver(DeviceId, Device.PluginId);
             _logger?.LogInformation($"{_device.Name}上传线程已停止");
             IsExited = true;
@@ -274,15 +272,15 @@ public class UploadDeviceCore : DisposableObject
     /// <summary>
     /// 运行
     /// </summary>
-    public async Task<ThreadRunReturn> RunActionAsync(CancellationTokenSource stoppingToken)
+    public async Task<ThreadRunReturn> RunActionAsync(CancellationToken cancellationToken)
     {
         try
         {
 
-            using CancellationTokenSource StoppingToken = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken.Token, StoppingTokens.LastOrDefault().Token);
+            using CancellationTokenSource StoppingToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, StoppingTokens.LastOrDefault().Token);
             if (_driver == null) return ThreadRunReturn.Continue;
 
-            if (Device?.Enable == false)
+            if (Device?.KeepOn == false)
             {
                 Device.DeviceStatus = DeviceStatusEnum.Pause;
                 return ThreadRunReturn.Continue; ;

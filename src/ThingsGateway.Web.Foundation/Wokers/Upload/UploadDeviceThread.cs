@@ -67,7 +67,7 @@ public class UploadDeviceThread : IDisposable
                 {
                     device.Logger?.LogError(ex, "报文日志添加失败");
                 }
-                await device.BeforeActionAsync();
+                await device.BeforeActionAsync(StoppingToken.Token);
             }
             while (!UploadDeviceCores.All(a => a.IsExited))
             {
@@ -79,20 +79,35 @@ public class UploadDeviceThread : IDisposable
                 {
                     if (device.IsInitSuccess)
                     {
-                        var result = await device.RunActionAsync(StoppingToken);
-                        if (result == ThreadRunReturn.None)
+                        try
                         {
-                            await Task.Delay(CycleInterval);
+                            var result = await device.RunActionAsync(StoppingToken.Token);
+                            if (result == ThreadRunReturn.None)
+                            {
+                                await Task.Delay(CycleInterval);
+                            }
+                            else if (result == ThreadRunReturn.Continue)
+                            {
+                                await Task.Delay(1000);
+                            }
+                            else if (result == ThreadRunReturn.Break)
+                            {
+                                if (!device.IsExited)
+                                    device.FinishAction();
+                            }
                         }
-                        else if (result == ThreadRunReturn.Continue)
+                        catch (TaskCanceledException)
                         {
-                            await Task.Delay(1000);
+
                         }
-                        else if (result == ThreadRunReturn.Break)
+                        catch (ObjectDisposedException)
                         {
-                            if (!device.IsExited)
-                                device.FinishAction();
+
                         }
+
+
+
+
 
 
                     }
@@ -140,7 +155,6 @@ public class UploadDeviceThread : IDisposable
             }
             CancellationTokenSource StoppingToken = StoppingTokens.LastOrDefault();
             StoppingToken?.Cancel();
-            StoppingToken?.SafeDispose();
             bool? taskResult = false;
             try
             {
@@ -161,7 +175,8 @@ public class UploadDeviceThread : IDisposable
                     device.Logger?.LogInformation($"{device.Device.Name}上传线程停止超时，已强制取消");
                 }
             }
-            DeviceTask?.Dispose();
+            StoppingToken?.SafeDispose();
+            DeviceTask?.SafeDispose();
             DeviceTask = null;
             if (StoppingToken != null)
             {
@@ -175,7 +190,7 @@ public class UploadDeviceThread : IDisposable
     public void Dispose()
     {
         StopThread();
-        UploadDeviceCores.ForEach(a => a.Dispose());
+        UploadDeviceCores.ForEach(a => a.SafeDispose());
         UploadDeviceCores.Clear();
     }
 }

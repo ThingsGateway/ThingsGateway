@@ -12,19 +12,18 @@
 
 using Newtonsoft.Json.Linq;
 
-namespace ThingsGateway.Foundation.Extension.Json
+namespace ThingsGateway.Foundation.Extension.Json;
+
+/// <summary>
+/// JsonExtension
+/// </summary>
+public static class JsonExtensions
 {
     /// <summary>
-    /// JsonExtension
+    /// JSON格式化
     /// </summary>
-    public static class JsonExtensions
-    {
-        /// <summary>
-        /// JSON格式化
-        /// </summary>
-        /// <param name="json"></param>
-        /// <returns></returns>
-        public static string FormatJson(this string json)
-        { return JToken.Parse(json).ToString(); }
-    }
+    /// <param name="json"></param>
+    /// <returns></returns>
+    public static string FormatJson(this string json)
+    { return JToken.Parse(json).ToString(); }
 }

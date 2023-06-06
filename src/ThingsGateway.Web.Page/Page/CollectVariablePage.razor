@@ -163,7 +163,7 @@
     {
         if (devId > 0)
         {
-            var data = this.GetBackgroundService<CollectDeviceWorker>().GetDeviceMethods(devId);
+            var data = ServiceExtension.GetBackgroundService<CollectDeviceWorker>().GetDeviceMethods(devId);
             OtherMethods.AddOrUpdate(devId, data);
         }
         else
@@ -586,6 +586,6 @@
     long choiceUploadDeviceId;
     List<DependencyProperty> GetDriverProperties(long driverId, List<DependencyProperty> dependencyProperties)
     {
-        return this.GetBackgroundService<UploadDeviceWorker>().GetVariablePropertys(driverId, dependencyProperties);
+        return ServiceExtension.GetBackgroundService<UploadDeviceWorker>().GetVariablePropertys(driverId, dependencyProperties);
     }
 }

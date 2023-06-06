@@ -45,33 +45,33 @@ public class OPCDAClient : CollectBase
 
     public override System.Type DriverDebugUIType => typeof(OPCDAClientDebugDriverPage);
 
-    public override void AfterStop()
+    public override Task AfterStopAsync()
     {
         PLC?.Disconnect();
+        return Task.CompletedTask;
     }
 
-    public override async Task BeforStartAsync()
+    public override async Task BeforStartAsync(CancellationToken cancellationToken)
     {
         PLC.Connect();
         await Task.CompletedTask;
     }
-
-    public override void Dispose()
+    protected override void Dispose(bool disposing)
     {
         if (PLC != null)
             PLC.DataChangedHandler -= dataChangedHandler;
         PLC?.Disconnect();
-        PLC?.Dispose();
+        PLC?.SafeDispose();
         PLC = null;
+        base.Dispose(disposing);
     }
-
 
     public override OperResult IsConnected()
     {
         return PLC.IsConnected ? OperResult.CreateSuccessResult() : new OperResult("失败");
     }
 
-    public override bool IsSupportAddressRequest()
+    public override bool IsSupportRequest()
     {
         return !driverPropertys.ActiveSubscribe;
     }
@@ -105,7 +105,7 @@ public class OPCDAClient : CollectBase
         return result.Copy<byte[]>();
     }
 
-    public override async Task<OperResult> WriteValueAsync(CollectVariableRunTime deviceVariable, string value)
+    public override async Task<OperResult> WriteValueAsync(CollectVariableRunTime deviceVariable, string value, CancellationToken cancellationToken)
     {
         await Task.CompletedTask;
         var result = PLC.Write(deviceVariable.VariableAddress, value);
@@ -140,7 +140,7 @@ public class OPCDAClient : CollectBase
     {
         try
         {
-            if (!Device.Enable)
+            if (!Device.KeepOn)
             {
                 return;
             }
@@ -149,7 +149,7 @@ public class OPCDAClient : CollectBase
 
             foreach (var data in values)
             {
-                if (!Device.Enable)
+                if (!Device.KeepOn)
                 {
                     return;
                 }

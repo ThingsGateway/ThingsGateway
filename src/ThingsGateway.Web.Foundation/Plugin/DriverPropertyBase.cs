@@ -12,9 +12,8 @@
 
 using System.IO.Ports;
 
+using ThingsGateway.Foundation;
 using ThingsGateway.Foundation.Serial;
-
-using TouchSocket.Sockets;
 
 namespace ThingsGateway.Web.Foundation;
 /// <summary>

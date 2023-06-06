@@ -95,7 +95,7 @@
     protected override async Task OnInitializedAsync()
     {
 
-        AlarmHostService = this.GetBackgroundService<AlarmWorker>();
+        AlarmHostService = ServiceExtension.GetBackgroundService<AlarmWorker>();
         _searchModel.DeviceName = DeviceName;
         await base.OnInitializedAsync();
     }

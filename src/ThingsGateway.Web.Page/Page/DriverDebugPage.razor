@@ -105,7 +105,7 @@
     }
     async Task ImportVaiable(long driverId)
     {
-        var driver = this.GetBackgroundService<CollectDeviceWorker>().GetDebugUI(driverId);
+        var driver = ServiceExtension.GetBackgroundService<CollectDeviceWorker>().GetDebugUI(driverId);
         if (driver == null)
         {
             await PopupService.EnqueueSnackbarAsync("插件未实现调试页面", AlertTypes.Warning);

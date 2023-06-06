@@ -10,59 +10,58 @@
 //------------------------------------------------------------------------------
 #endregion
 
-namespace ThingsGateway.Foundation
+namespace ThingsGateway.Foundation;
+
+/// <summary>
+/// 简单锁，采用 Interlocked , AsyncAutoResetEvent
+/// </summary>
+public sealed class EasyLock : DisposableObject
 {
+    private Lazy<AsyncAutoResetEvent> m_waiterLock = new Lazy<AsyncAutoResetEvent>(() => new AsyncAutoResetEvent(false));
+
+    private int m_waiters = 0;
+
     /// <summary>
-    /// 简单锁，采用Interlocked和AutoResetEvent
+    /// 当前锁是否在等待当中
     /// </summary>
-    public sealed class EasyLock : DisposableObject
+    public bool IsWaitting => (uint)m_waiters > 0;
+    /// <summary>
+    /// 进入锁
+    /// </summary>
+    public void Lock()
     {
-        private Lazy<AsyncAutoResetEvent> m_waiterLock = new Lazy<AsyncAutoResetEvent>(() => new AsyncAutoResetEvent(false));
-
-        private int m_waiters = 0;
-
-        /// <summary>
-        /// 当前锁是否在等待当中
-        /// </summary>
-        public bool IsWaitting => (uint)m_waiters > 0;
-        /// <summary>
-        /// 进入锁
-        /// </summary>
-        public void Lock()
+        if (Interlocked.Increment(ref m_waiters) == 1)
         {
-            if (Interlocked.Increment(ref m_waiters) == 1)
-            {
-                return;
-            }
-            m_waiterLock.Value.WaitOneAsync().GetAwaiter().GetResult();
+            return;
         }
-        /// <summary>
-        /// 进入锁
-        /// </summary>
-        public async Task LockAsync()
+        m_waiterLock.Value.WaitOneAsync().GetAwaiter().GetResult();
+    }
+    /// <summary>
+    /// 进入锁
+    /// </summary>
+    public async Task LockAsync()
+    {
+        if (Interlocked.Increment(ref m_waiters) == 1)
         {
-            if (Interlocked.Increment(ref m_waiters) == 1)
-            {
-                return;
-            }
-            await m_waiterLock.Value.WaitOneAsync();
+            return;
         }
-        /// <summary>
-        /// 离开锁
-        /// </summary>
-        public void UnLock()
+        await m_waiterLock.Value.WaitOneAsync();
+    }
+    /// <summary>
+    /// 离开锁
+    /// </summary>
+    public void UnLock()
+    {
+        if (Interlocked.Decrement(ref m_waiters) == 0)
         {
-            if (Interlocked.Decrement(ref m_waiters) == 0)
-            {
-                return;
-            }
-            m_waiterLock.Value.Set();
+            return;
         }
-        /// <inheritdoc/>
-        protected override void Dispose(bool disposing)
-        {
-            m_waiterLock.Value.Dispose();
-            base.Dispose(disposing);
-        }
+        m_waiterLock.Value.Set();
+    }
+    /// <inheritdoc/>
+    protected override void Dispose(bool disposing)
+    {
+        m_waiterLock.Value.SafeDispose();
+        base.Dispose(disposing);
     }
 }

@@ -10,6 +10,7 @@
 //------------------------------------------------------------------------------
 #endregion
 
+
 namespace ThingsGateway.Web.Foundation;
 
 /// <summary>
@@ -77,6 +78,13 @@ public class CollectDeviceRunTime : CollectDevice
             }
         }
     }
+
+    /// <summary>
+    /// 运行
+    /// </summary>
+    [Description("运行")]
+    public virtual bool KeepOn { get; set; } = true;
+
     private DeviceStatusEnum deviceStatus = DeviceStatusEnum.Default;
     /// <summary>
     /// 设备状态变化事件

@@ -484,7 +484,7 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
                     {
                         var nv = new NameValue() { Name = variable.SymbolicName, Value = value?.ToString() };
 
-                        var result = _rpcCore.InvokeDeviceMethodAsync("OPCUASERVER-" + context1?.OperationContext?.Session?.Identity?.DisplayName, nv).GetAwaiter().GetResult();
+                        var result = _rpcCore.InvokeDeviceMethodAsync("OPCUASERVER-" + context1?.OperationContext?.Session?.Identity?.DisplayName, nv, CancellationToken.None).GetAwaiter().GetResult();
                         if (result.IsSuccess)
                         {
                             return StatusCodes.Good;

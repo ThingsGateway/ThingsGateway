@@ -14,10 +14,13 @@ using Furion.Schedule;
 
 namespace ThingsGateway.Web.Core;
 
+
+/// <inheritdoc cref="IJobPersistence"/>
 public class JobPersistence : IJobPersistence
 {
     private readonly IServiceScope _serviceScope;
 
+    /// <inheritdoc/>
     public JobPersistence(IServiceProvider serviceProvider)
     {
         _serviceScope = serviceProvider.CreateScope();
@@ -44,16 +47,19 @@ public class JobPersistence : IJobPersistence
         return builder;
     }
 
+    /// <inheritdoc/>
     public void Dispose()
     {
         _serviceScope?.Dispose();
     }
 
+    /// <inheritdoc/>
     public void OnChanged(PersistenceContext context)
     {
 
     }
 
+    /// <inheritdoc/>
     public void OnTriggerChanged(PersistenceTriggerContext context)
     {
 

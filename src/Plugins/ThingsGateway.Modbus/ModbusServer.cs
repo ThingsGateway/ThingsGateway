@@ -29,8 +29,6 @@ public class ModbusServer : UpLoadBase
     private Dictionary<ModbusAddress, CollectVariableRunTime> _ModbusTags;
     private ThingsGateway.Foundation.Adapter.Modbus.ModbusServer _plc;
 
-    private UploadDevice curDevice;
-
     private ModbusServerProperty driverPropertys = new();
     private bool IsFirst = true;
     private ConcurrentQueue<(string, CollectVariableRunTime)> Values = new();
@@ -43,19 +41,18 @@ public class ModbusServer : UpLoadBase
     public override VariablePropertyBase VariablePropertys => variablePropertys;
     public override Type DriverDebugUIType => typeof(ModbusServerDebugDriverPage);
 
-    public override async Task BeforStartAsync()
+    public override Task BeforStartAsync(CancellationToken cancellationToken)
     {
-        _plc?.Start();
-        await Task.CompletedTask;
+        return _plc?.ConnectAsync(cancellationToken);
     }
-
-    public override void Dispose()
+    protected override void Dispose(bool disposing)
     {
         _ModbusTags?.Values?.ToList()?.ForEach(a => a.VariableValueChange -= VariableValueChange);
         if (_plc != null)
             _plc.Write -= WriteAsync;
-        _plc?.Stop();
-        _plc?.Dispose();
+        _plc?.Disconnect();
+        _plc?.SafeDispose();
+        base.Dispose(disposing);
     }
 
     public override async Task ExecuteAsync(CancellationToken cancellationToken)
@@ -70,31 +67,16 @@ public class ModbusServer : UpLoadBase
             var type = GetPropertyValue(item.Item2, nameof(ModbusServerVariableProperty.ModbusType));
             if (Enum.TryParse<DataTypeEnum>(type, out DataTypeEnum result))
             {
-                await _plc.WriteAsync(result.GetNetType(), item.Item1, item.Item2.Value?.ToString());
+                await _plc.WriteAsync(result.GetNetType(), item.Item1, item.Item2.Value?.ToString(), result == DataTypeEnum.Bcd, cancellationToken);
             }
             else
             {
-                await _plc.WriteAsync(item.Item2.DataType, item.Item1, item.Item2.Value?.ToString());
+                await _plc.WriteAsync(item.Item2.DataType, item.Item1, item.Item2.Value?.ToString(), item.Item2.DataTypeEnum == DataTypeEnum.Bcd, cancellationToken);
             }
         }
         await Task.Delay(100, cancellationToken);
     }
-    /// <summary>
-    /// 获取变量的属性值
-    /// </summary>
-    public string GetPropertyValue(CollectVariableRunTime variableRunTime, string propertyName)
-    {
-        if (variableRunTime.VariablePropertys.ContainsKey(curDevice.Id))
-        {
-            var data = variableRunTime.VariablePropertys[curDevice.Id].FirstOrDefault(a =>
-                  a.PropertyName == propertyName);
-            if (data != null)
-            {
-                return data.Value;
-            }
-        }
-        return null;
-    }
+
     public override OperResult IsConnected()
     {
         if (_plc?.TcpService?.ServerState == ServerState.Running)
@@ -106,9 +88,8 @@ public class ModbusServer : UpLoadBase
             return new OperResult();
         }
     }
-    protected override void Init(UploadDevice device)
+    protected override void Init(UploadDeviceRunTime device)
     {
-        curDevice = device;
         IPHost iPHost = new IPHost(driverPropertys.Port);
         if (!driverPropertys.IP.IsNullOrEmpty())
         {
@@ -126,18 +107,7 @@ public class ModbusServer : UpLoadBase
         var serviceScope = _scopeFactory.CreateScope();
         var _globalCollectDeviceData = serviceScope.ServiceProvider.GetService<GlobalCollectDeviceData>();
         var tags = _globalCollectDeviceData.CollectVariables.Where(a => a.VariablePropertys.ContainsKey(device.Id))
-            .Where(b => b.VariablePropertys[device.Id].Any(c =>
-            {
-                if (c.PropertyName == nameof(variablePropertys.ServiceAddress))
-                {
-                    if (c.Value != null)
-                        return true;
-                    else
-                        return false;
-                }
-                else
-                    return false;
-            }))
+            .Where(b => !GetPropertyValue(b, nameof(variablePropertys.ServiceAddress)).IsNullOrEmpty())
             .ToList();
 
         tags.ForEach(a =>
@@ -150,27 +120,28 @@ public class ModbusServer : UpLoadBase
             _ModbusTags = tags.ToDictionary(a =>
             {
                 ModbusAddress address = null;
-                address = new ModbusAddress(a.VariablePropertys[device.Id].FirstOrDefault(a => a.PropertyName == nameof(variablePropertys.ServiceAddress)).Value, driverPropertys.Station);
+                address = new ModbusAddress(
+                    GetPropertyValue(a, nameof(variablePropertys.ServiceAddress))
+                    , driverPropertys.Station);
                 return address ?? new ModbusAddress() { AddressStart = -1, Station = -1, ReadFunction = -1 };
             });
         }
-        catch
+        finally
         {
             tags.ForEach(a =>
             {
                 a.VariableValueChange -= VariableValueChange;
             });
             _plc.Write -= WriteAsync;
-            throw;
         }
     }
 
     private void VariableValueChange(CollectVariableRunTime collectVariableRunTime)
     {
-        var property = collectVariableRunTime.VariablePropertys[curDevice.Id].FirstOrDefault(a => a.PropertyName == nameof(variablePropertys.ServiceAddress));
-        if (property != null && collectVariableRunTime.Value != null)
+        var address = GetPropertyValue(collectVariableRunTime, nameof(variablePropertys.ServiceAddress));
+        if (address != null && collectVariableRunTime.Value != null)
         {
-            Values.Enqueue((property.Value, collectVariableRunTime));
+            Values.Enqueue((address, collectVariableRunTime));
         }
     }
 
@@ -183,14 +154,16 @@ public class ModbusServer : UpLoadBase
             var tag = _ModbusTags.FirstOrDefault(a => a.Key?.AddressStart == address.AddressStart && a.Key?.Station == address.Station && a.Key?.ReadFunction == address.ReadFunction);
 
             if (tag.Value == null) return OperResult.CreateSuccessResult();
-            var enable = tag.Value.VariablePropertys[curDevice.Id].FirstOrDefault(a => a.PropertyName == nameof(variablePropertys.VariableRpcEnable))?.Value.ToBoolean() == true && driverPropertys.DeviceRpcEnable;
+            var enable =
+                GetPropertyValue(tag.Value, nameof(variablePropertys.VariableRpcEnable)).ToBoolean()
+                && driverPropertys.DeviceRpcEnable;
             if (!enable) return new OperResult("不允许写入");
-            var result = await rpcCore.InvokeDeviceMethodAsync($"{nameof(ModbusServer)}-{curDevice.Name}-{client.IP + ":" + client.Port}",
+            var result = await rpcCore.InvokeDeviceMethodAsync($"{nameof(ModbusServer)}-{CurDevice.Name}-{client.IP + ":" + client.Port}",
             new()
             {
                 Name = tag.Value.Name,
                 Value = thingsGatewayBitConverter.GetDynamicData(tag.Value.DataType, bytes).ToString()
-            });
+            }, CancellationToken.None);
             return result;
         }
         catch (Exception ex)

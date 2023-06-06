@@ -93,7 +93,7 @@ namespace ThingsGateway.Core
         /// <returns></returns>
         public static IEnumerable<PropertyInfo> GetAllProps(this Type modelType)
         {
-            var cacheKey = $"{nameof(GetAllProps)}-{CultureInfo.CurrentUICulture.Name}-{modelType.FullName}";
+            var cacheKey = $"{nameof(GetAllProps)}-{CultureInfo.CurrentUICulture.Name}-{modelType.FullName}-{modelType.GUID}";
             IEnumerable<PropertyInfo> displayName = BlazorCacheService.GetOrAdd("", cacheKey, entry =>
             {
                 var props = modelType.GetRuntimeProperties().Where(a => a.GetMethod.IsPublic);

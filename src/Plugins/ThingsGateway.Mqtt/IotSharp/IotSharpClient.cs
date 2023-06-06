@@ -44,7 +44,6 @@ public class IotSharpClient : UpLoadBase
 
     private ConcurrentQueue<DeviceData> _collectDeviceRunTimes = new();
     private ConcurrentQueue<VariableData> _collectVariableRunTimes = new();
-    private UploadDevice _curDevice;
     private GlobalCollectDeviceData _globalCollectDeviceData;
 
     private IMqttClient _mqttClient;
@@ -69,38 +68,79 @@ public class IotSharpClient : UpLoadBase
     public override UpDriverPropertyBase DriverPropertys => driverPropertys;
     public override List<CollectVariableRunTime> UploadVariables => _uploadVariables;
     public override VariablePropertyBase VariablePropertys => variablePropertys;
-    public override async Task BeforStartAsync()
+    public override async Task BeforStartAsync(CancellationToken cancellationToken)
     {
         if (_mqttClient != null)
         {
-            var result = await TryMqttClientAsync();
+            var result = await TryMqttClientAsync(cancellationToken);
             if (!result.IsSuccess)
             {
                 _logger?.LogWarning(ToString() + $"-连接MqttServer失败：{result.Message}");
             }
         }
     }
+    private async Task<OperResult> TryMqttClientAsync(CancellationToken cancellationToken)
+    {
+        if (_mqttClient?.IsConnected == true)
+            return OperResult.CreateSuccessResult();
+        return await Cilent();
 
-    public override void Dispose()
+        async Task<OperResult> Cilent()
+        {
+            if (_mqttClient?.IsConnected == true)
+                return OperResult.CreateSuccessResult();
+            try
+            {
+                await lockobj.LockAsync();
+                if (_mqttClient?.IsConnected == true)
+                    return OperResult.CreateSuccessResult();
+                using var timeoutToken = new CancellationTokenSource(TimeSpan.FromMilliseconds(driverPropertys.ConnectTimeOut));
+                using CancellationTokenSource StoppingToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutToken.Token);
+                if (_mqttClient?.IsConnected == true)
+                    return OperResult.CreateSuccessResult();
+                if (_mqttClient == null)
+                    return new OperResult("未初始化");
+                var result = await _mqttClient?.ConnectAsync(_mqttClientOptions, StoppingToken.Token);
+                if (result.ResultCode == MqttClientConnectResultCode.Success)
+                {
+                    return OperResult.CreateSuccessResult();
+                }
+                else
+                {
+                    return new OperResult(result.ReasonString);
+                }
+            }
+            catch (Exception ex)
+            {
+                return new OperResult(ex);
+            }
+            finally
+            {
+                lockobj.UnLock();
+            }
+        }
+    }
+
+    protected override void Dispose(bool disposing)
     {
         try
         {
-            lockobj.Lock();
             _globalCollectDeviceData?.CollectVariables?.ForEach(a => a.VariableValueChange -= VariableValueChange);
 
             _globalCollectDeviceData?.CollectDevices?.ForEach(a =>
             {
                 a.DeviceStatusCahnge -= DeviceStatusCahnge;
             });
-            _mqttClient?.Dispose();
+            _mqttClient?.SafeDispose();
             _mqttClient = null;
         }
-        finally
+        catch (Exception ex)
         {
-            lockobj.UnLock();
+            _logger.LogError(ex, ToString());
         }
 
     }
+
 
     public override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
@@ -127,7 +167,7 @@ public class IotSharpClient : UpLoadBase
                             var variableMessage = new MqttApplicationMessageBuilder()
                             .WithTopic($"devices/{item.Key}/telemetry")
                             .WithPayload(nameValueDict.ToJson()).Build();
-                            var isConnect = await TryMqttClientAsync();
+                            var isConnect = await TryMqttClientAsync(cancellationToken);
                             if (isConnect.IsSuccess)
                                 await _mqttClient.PublishAsync(variableMessage, cancellationToken);
                         }
@@ -220,9 +260,8 @@ public class IotSharpClient : UpLoadBase
         return $" {nameof(IotSharpClient)}-IP:{driverPropertys.IP}-Port:{driverPropertys.Port}-Accesstoken:{driverPropertys.Accesstoken}";
     }
 
-    protected override void Init(UploadDevice device)
+    protected override void Init(UploadDeviceRunTime device)
     {
-        _curDevice = device;
         var mqttFactory = new MqttFactory(new PrivateLogger(_logger));
         _mqttClientOptions = mqttFactory.CreateClientOptionsBuilder()
            .WithClientId(Guid.NewGuid().ToString())
@@ -249,18 +288,7 @@ public class IotSharpClient : UpLoadBase
 
 
         var tags = _globalCollectDeviceData.CollectVariables.Where(a => a.VariablePropertys.ContainsKey(device.Id))
-           .Where(b => b.VariablePropertys[device.Id].Any(c =>
-           {
-               if (c.PropertyName == nameof(variablePropertys.Enable))
-               {
-                   if (c.Value?.GetBoolValue() == true)
-                       return true;
-                   else
-                       return false;
-               }
-               else
-                   return false;
-           }))
+           .Where(b => GetPropertyValue(b, nameof(variablePropertys.Enable)).GetBoolValue())
            .ToList();
 
         _uploadVariables = tags;
@@ -273,35 +301,6 @@ public class IotSharpClient : UpLoadBase
         {
             a.VariableValueChange += VariableValueChange;
         });
-
-        _ = Task.Run(
-          async () =>
-          {
-              await Task.Delay(driverPropertys.ConnectTimeOut * 20);
-              bool lastIsSuccess = _mqttClient?.IsConnected == true;
-              while (_mqttClient != null)
-              {
-                  try
-                  {
-                      var result = await TryMqttClientAsync();
-
-                      if (!result.IsSuccess && lastIsSuccess)
-                      {
-                          lastIsSuccess = false;
-                          _logger?.LogWarning(ToString() + $"-连接MqttServer失败：{result.Message}");
-                      }
-                      else if (result.IsSuccess && !lastIsSuccess)
-                      {
-                          lastIsSuccess = true;
-                          _logger?.LogInformation(ToString() + $"-连接MqttServer成功：{result.Message}");
-                      }
-                  }
-                  finally
-                  {
-                      await Task.Delay(driverPropertys.ConnectTimeOut * 10);
-                  }
-              }
-          });
     }
 
     private async Task _mqttClient_ApplicationMessageReceivedAsync(MqttApplicationMessageReceivedEventArgs e)
@@ -365,21 +364,12 @@ public class IotSharpClient : UpLoadBase
                         var tag = _uploadVariables.FirstOrDefault(a => a.Name == item.Name);
                         if (tag != null)
                         {
-                            var rpcEnable = tag.VariablePropertys[_curDevice.Id]?.Any(c =>
-                            {
-                                if (c.PropertyName == nameof(variablePropertys.VariableRpcEnable))
-                                {
-                                    if (c.Value?.GetBoolValue() == true)
-                                        return true;
-                                    else
-                                        return false;
-                                }
-                                else
-                                    return false;
-                            });
+                            var rpcEnable =
+GetPropertyValue(tag, nameof(variablePropertys.VariableRpcEnable)).ToBoolean()
+&& driverPropertys.DeviceRpcEnable;
                             if (rpcEnable == true)
                             {
-                                var result = await _rpcCore.InvokeDeviceMethodAsync(ToString() + "-" + rpcrequestid, item);
+                                var result = await _rpcCore.InvokeDeviceMethodAsync(ToString() + "-" + rpcrequestid, item, CancellationToken.None);
 
                                 results.Add(item.Name, result);
 
@@ -432,7 +422,7 @@ public class IotSharpClient : UpLoadBase
                 var variableMessage = new MqttApplicationMessageBuilder()
 .WithTopic($"{topic}")
 .WithPayload(rpcResponse.ToJson()).Build();
-                var isConnect = await TryMqttClientAsync();
+                var isConnect = await TryMqttClientAsync(CancellationToken.None);
                 if (isConnect.IsSuccess)
                     await _mqttClient.PublishAsync(variableMessage);
             }
@@ -459,50 +449,6 @@ public class IotSharpClient : UpLoadBase
         _collectDeviceRunTimes.Enqueue(collectDeviceRunTime.Adapt<DeviceData>());
     }
 
-    private async Task<OperResult> TryMqttClientAsync(bool reconnect = false)
-    {
-        if (_mqttClient?.IsConnected == true)
-            return OperResult.CreateSuccessResult();
-        return await Cilent();
-
-        async Task<OperResult> Cilent()
-        {
-            if (_mqttClient?.IsConnected == true)
-                return OperResult.CreateSuccessResult();
-            try
-            {
-                await lockobj.LockAsync();
-                if (_mqttClient?.IsConnected == true)
-                    return OperResult.CreateSuccessResult();
-                using (var timeoutToken = new CancellationTokenSource(TimeSpan.FromSeconds(driverPropertys.ConnectTimeOut)))
-                {
-                    if (_mqttClient?.IsConnected == true)
-                        return OperResult.CreateSuccessResult();
-                    if (_mqttClient == null)
-                        return new OperResult("未初始化");
-                    var result = await _mqttClient?.ConnectAsync(_mqttClientOptions, timeoutToken.Token);
-                    if (result.ResultCode == MqttClientConnectResultCode.Success)
-                    {
-
-                        return OperResult.CreateSuccessResult();
-
-                    }
-                    else
-                    {
-                        return new OperResult(result.ReasonString);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                return new OperResult(ex);
-            }
-            finally
-            {
-                lockobj.UnLock();
-            }
-        }
-    }
 
     private void VariableValueChange(CollectVariableRunTime collectVariableRunTime)
     {

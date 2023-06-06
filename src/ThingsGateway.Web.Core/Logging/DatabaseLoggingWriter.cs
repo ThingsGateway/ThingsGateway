@@ -19,13 +19,8 @@ namespace ThingsGateway.Web.Core
     /// </summary>
     public class DatabaseLoggingWriter : IDatabaseLoggingWriter
     {
-        private readonly SqlSugarScope _db;
 
-        public DatabaseLoggingWriter()
-        {
-            _db = DbContext.Db;
-        }
-
+        /// <inheritdoc/>
         public void Write(LogMessage logMsg, bool flush)
         {
             //获取请求json字符串
@@ -116,7 +111,7 @@ namespace ThingsGateway.Web.Core
                     loggingMonitor.Exception.Type + ":" + loggingMonitor.Exception.Message + "\n" +
                     loggingMonitor.Exception.StackTrace : loggingMonitor.Validation.Message;
             }
-            _db.InsertableWithAttr(devLogOperate).IgnoreColumns(true).ExecuteCommand();//入库
+            DbContext.Db.InsertableWithAttr(devLogOperate).IgnoreColumns(true).ExecuteCommand();//入库
         }
 
         /// <summary>
@@ -179,7 +174,7 @@ namespace ThingsGateway.Web.Core
                 OpAccount = opAccount,
                 VerificatId = verificatId,
             };
-            _db.InsertableWithAttr(devLogVisit).IgnoreColumns(true).ExecuteCommand();//入库
+            DbContext.Db.InsertableWithAttr(devLogVisit).IgnoreColumns(true).ExecuteCommand();//入库
         }
     }
 }

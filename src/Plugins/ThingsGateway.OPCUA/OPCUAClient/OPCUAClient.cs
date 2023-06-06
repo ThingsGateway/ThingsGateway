@@ -56,28 +56,28 @@ public class OPCUAClient : CollectBase
     public override ThingsGatewayBitConverter ThingsGatewayBitConverter { get; } = new(EndianType.Little);
 
     /// <inheritdoc/>
-    public override void AfterStop()
+    public override Task AfterStopAsync()
     {
         PLC?.Disconnect();
+        return Task.CompletedTask;
     }
 
     /// <inheritdoc/>
-    public override async Task BeforStartAsync()
+    public override async Task BeforStartAsync(CancellationToken cancellationToken)
     {
         await PLC?.ConnectAsync();
     }
-
-    /// <inheritdoc/>
-    public override void Dispose()
+    protected override void Dispose(bool disposing)
     {
         if (PLC != null)
         {
             PLC.DataChangedHandler -= dataChangedHandler;
             PLC.OpcStatusChange -= opcStatusChange;
             PLC.Disconnect();
-            PLC.Dispose();
+            PLC.SafeDispose();
             PLC = null;
         }
+        base.Dispose(disposing);
     }
 
     public override void InitDataAdapter()
@@ -90,7 +90,7 @@ public class OPCUAClient : CollectBase
     }
 
     /// <inheritdoc/>
-    public override bool IsSupportAddressRequest()
+    public override bool IsSupportRequest()
     {
         return !driverPropertys.ActiveSubscribe;
     }
@@ -136,7 +136,7 @@ public class OPCUAClient : CollectBase
     }
 
     /// <inheritdoc/>
-    public override async Task<OperResult> WriteValueAsync(CollectVariableRunTime deviceVariable, string value)
+    public override async Task<OperResult> WriteValueAsync(CollectVariableRunTime deviceVariable, string value, CancellationToken cancellationToken)
     {
         await Task.CompletedTask;
         var result = PLC.WriteNode(deviceVariable.VariableAddress, Convert.ChangeType(value, deviceVariable.DataType));
@@ -181,7 +181,7 @@ public class OPCUAClient : CollectBase
     {
         try
         {
-            if (!Device.Enable)
+            if (!Device.KeepOn)
             {
                 return;
             }
@@ -191,7 +191,7 @@ public class OPCUAClient : CollectBase
 
             foreach (var data in values)
             {
-                if (!Device.Enable)
+                if (!Device.KeepOn)
                 {
                     return;
                 }

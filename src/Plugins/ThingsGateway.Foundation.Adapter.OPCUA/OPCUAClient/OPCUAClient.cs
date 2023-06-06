@@ -302,7 +302,7 @@ public class OPCUAClient : DisposableObject
                 // remove
                 dic_subscriptions[key].Delete(true);
                 m_session.RemoveSubscription(dic_subscriptions[key]);
-                dic_subscriptions[key].Dispose();
+                dic_subscriptions[key].SafeDispose();
                 dic_subscriptions[key] = m_subscription;
             }
             else
@@ -418,7 +418,7 @@ public class OPCUAClient : DisposableObject
         // stop any reconnect operation.
         if (m_reConnectHandler != null)
         {
-            m_reConnectHandler.Dispose();
+            m_reConnectHandler.SafeDispose();
             m_reConnectHandler = null;
         }
 
@@ -1191,7 +1191,7 @@ public class OPCUAClient : DisposableObject
             {
                 item.Value.Delete(true);
                 m_session.RemoveSubscription(item.Value);
-                item.Value.Dispose();
+                item.Value.SafeDispose();
             }
             dic_subscriptions.Clear();
         }
@@ -1210,7 +1210,7 @@ public class OPCUAClient : DisposableObject
                 // remove
                 dic_subscriptions[key].Delete(true);
                 m_session.RemoveSubscription(dic_subscriptions[key]);
-                dic_subscriptions[key].Dispose();
+                dic_subscriptions[key].SafeDispose();
                 dic_subscriptions.Remove(key);
             }
         }
@@ -1466,7 +1466,7 @@ public class OPCUAClient : DisposableObject
         }
 
         m_session = m_reConnectHandler.Session;
-        m_reConnectHandler.Dispose();
+        m_reConnectHandler.SafeDispose();
         m_reConnectHandler = null;
 
         // raise any additional notifications.

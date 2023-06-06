@@ -24,6 +24,8 @@ using ThingsGateway.Foundation;
 using ThingsGateway.Foundation.Extension;
 using ThingsGateway.Web.Foundation;
 
+using TouchSocket.Core;
+
 namespace ThingsGateway.RabbitMQ;
 public class RabbitMQClientProperty : UpDriverPropertyBase
 {
@@ -60,7 +62,6 @@ public class RabbitMQClient : UpLoadBase
 
     private ConnectionFactory _connectionFactory;
 
-    private UploadDevice _curDevice;
     private GlobalCollectDeviceData _globalCollectDeviceData;
 
     private IModel _model;
@@ -80,12 +81,11 @@ public class RabbitMQClient : UpLoadBase
 
     public override List<CollectVariableRunTime> UploadVariables => _uploadVariables;
     public override VariablePropertyBase VariablePropertys => variablePropertys;
-    public override async Task BeforStartAsync()
+    public override async Task BeforStartAsync(CancellationToken cancellationToken)
     {
         await Task.CompletedTask;
     }
-
-    public override void Dispose()
+    protected override void Dispose(bool disposing)
     {
         _globalCollectDeviceData?.CollectVariables.ForEach(a => a.VariableValueChange -= VariableValueChange);
 
@@ -93,8 +93,8 @@ public class RabbitMQClient : UpLoadBase
         {
             a.DeviceStatusCahnge -= DeviceStatusCahnge;
         });
-        _model?.Dispose();
-        _connection?.Dispose();
+        _model?.SafeDispose();
+        _connection?.SafeDispose();
     }
 
     public override async Task ExecuteAsync(CancellationToken cancellationToken)
@@ -272,9 +272,8 @@ public class RabbitMQClient : UpLoadBase
         return $" {nameof(RabbitMQClient)} IP:{driverPropertys.IP} Port:{driverPropertys.Port}";
     }
 
-    protected override void Init(UploadDevice device)
+    protected override void Init(UploadDeviceRunTime device)
     {
-        _curDevice = device;
         _connectionFactory = new ConnectionFactory
         {
             HostName = driverPropertys.IP,
@@ -318,7 +317,6 @@ public class RabbitMQClient : UpLoadBase
             a.VariableValueChange += VariableValueChange;
             VariableValueChange(a);
         });
-
 
 
 

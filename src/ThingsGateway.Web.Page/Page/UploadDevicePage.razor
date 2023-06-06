@@ -206,7 +206,7 @@
     }
     List<DependencyProperty> GetDriverProperties(long driverId, long devId)
     {
-        return this.GetBackgroundService<UploadDeviceWorker>().GetDevicePropertys(driverId, devId);
+        return ServiceExtension.GetBackgroundService<UploadDeviceWorker>().GetDevicePropertys(driverId, devId);
     }
     RenderFragment GetRenderFragment(UploadDeviceEditInput context)
     {

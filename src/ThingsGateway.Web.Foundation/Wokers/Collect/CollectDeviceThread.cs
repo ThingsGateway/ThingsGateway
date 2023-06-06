@@ -56,7 +56,7 @@ public class CollectDeviceThread : IDisposable
         CancellationTokenSource StoppingToken = StoppingTokens.Last();
         DeviceTask = new Task<Task>(async () =>
         {
-            await Task.Yield();//
+            await Task.Yield();
             var channelResult = CollectDeviceCores.FirstOrDefault().Driver.GetShareChannel();
             foreach (var device in CollectDeviceCores)
             {
@@ -76,11 +76,11 @@ public class CollectDeviceThread : IDisposable
                 device.IsShareChannel = CollectDeviceCores.Count > 1;
                 if (channelResult.IsSuccess)
                 {
-                    await device.BeforeActionAsync(channelResult.Content);
+                    await device.BeforeActionAsync(StoppingToken.Token, channelResult.Content);
                 }
                 else
                 {
-                    await device.BeforeActionAsync();
+                    await device.BeforeActionAsync(StoppingToken.Token);
                 }
             }
             while (!CollectDeviceCores.All(a => a.IsExited))
@@ -94,27 +94,40 @@ public class CollectDeviceThread : IDisposable
                     if (device.IsInitSuccess)
                     {
                         if (CollectDeviceCores.Count > 1) device.Driver.InitDataAdapter();
-                        var result = await device.RunActionAsync(StoppingToken);
-                        if (result == ThreadRunReturn.None)
+                        try
                         {
-                            await Task.Delay(CycleInterval);
+                            var result = await device.RunActionAsync(StoppingToken.Token);
+                            if (result == ThreadRunReturn.None)
+                            {
+                                await Task.Delay(CycleInterval);
+                            }
+                            else if (result == ThreadRunReturn.Continue)
+                            {
+                                await Task.Delay(1000);
+                            }
+                            else if (result == ThreadRunReturn.Break)
+                            {
+                                if (!device.IsExited)
+                                    await device.FinishActionAsync();
+                            }
                         }
-                        else if (result == ThreadRunReturn.Continue)
+                        catch (TaskCanceledException)
                         {
-                            await Task.Delay(1000);
+
                         }
-                        else if (result == ThreadRunReturn.Break)
+                        catch (ObjectDisposedException)
                         {
-                            if (!device.IsExited)
-                                device.FinishAction();
+
                         }
-                        if (CollectDeviceCores.Count > 1)
-                            await Task.Delay(1000);//对于共享链路设备需延时，避免物理链路比如LORA等设备寻找失败
+
+
+                        //if (CollectDeviceCores.Count > 1)
+                        //await Task.Delay(1000);//对于共享链路设备需延时，避免物理链路比如LORA等设备寻找失败
                     }
                     else
                     {
                         if (!device.IsExited)
-                            device.FinishAction();
+                            await device.FinishActionAsync();
                     }
                 }
 
@@ -156,7 +169,6 @@ public class CollectDeviceThread : IDisposable
             }
             CancellationTokenSource StoppingToken = StoppingTokens.LastOrDefault();
             StoppingToken?.Cancel();
-            StoppingToken?.SafeDispose();
             bool? taskResult = false;
             try
             {
@@ -177,7 +189,9 @@ public class CollectDeviceThread : IDisposable
                     device.Logger?.LogInformation($"{device.Device.Name}采集线程停止超时，已强制取消");
                 }
             }
-            DeviceTask?.Dispose();
+            StoppingToken?.SafeDispose();
+
+            DeviceTask?.SafeDispose();
             DeviceTask = null;
             if (StoppingToken != null)
             {
@@ -191,7 +205,7 @@ public class CollectDeviceThread : IDisposable
     public void Dispose()
     {
         StopThread();
-        CollectDeviceCores.ForEach(a => a.Dispose());
+        CollectDeviceCores.ForEach(a => a.SafeDispose());
         CollectDeviceCores.Clear();
     }
 }

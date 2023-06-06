@@ -29,8 +29,6 @@ namespace ThingsGateway.Web.Foundation;
 /// </summary>
 public abstract class CollectBase : DriverBase
 {
-
-
     /// <inheritdoc cref="CollectBase"/>
     public CollectBase(IServiceScopeFactory scopeFactory) : base(scopeFactory)
     {
@@ -64,13 +62,13 @@ public abstract class CollectBase : DriverBase
                     })
                 .SetBufferLength(1024);
                     var serialClient = TouchSocketConfig.Container.Resolve<SerialClient>();
-                    ((SerialClient)serialClient).Setup(TouchSocketConfig);
+                    (serialClient).Setup(TouchSocketConfig);
                     return OperResult.CreateSuccessResult((object)serialClient);
                 case ShareChannelEnum.TcpClient:
                     TouchSocketConfig.SetRemoteIPHost(new IPHost($"{config.IP}:{config.Port}"))
     .SetBufferLength(1024);
                     var tcpClient = TouchSocketConfig.Container.Resolve<TGTcpClient>();
-                    ((TGTcpClient)tcpClient).Setup(TouchSocketConfig);
+                    (tcpClient).Setup(TouchSocketConfig);
                     return OperResult.CreateSuccessResult((object)tcpClient);
                 case ShareChannelEnum.TGUdpSession:
                     TouchSocketConfig.SetRemoteIPHost(new IPHost($"{config.IP}:{config.Port}"))
@@ -83,6 +81,7 @@ public abstract class CollectBase : DriverBase
         return new OperResult<object>("不支持共享链路");
 
     }
+
     /// <summary>
     /// 通道标识
     /// </summary>
@@ -103,6 +102,7 @@ public abstract class CollectBase : DriverBase
         }
         return null;
     }
+
     /// <summary>
     /// 数据转换器
     /// </summary>
@@ -110,20 +110,21 @@ public abstract class CollectBase : DriverBase
     public abstract IThingsGatewayBitConverter ThingsGatewayBitConverter { get; }
 
 
-
-
     /// <summary>
     /// 结束通讯后执行的方法
     /// </summary>
     /// <returns></returns>
-    public abstract void AfterStop();
+    public abstract Task AfterStopAsync();
 
     /// <summary>
     /// 开始通讯前执行的方法
     /// </summary>
     /// <returns></returns>
-    public abstract Task BeforStartAsync();
-
+    public abstract Task BeforStartAsync(CancellationToken cancellationToken);
+    /// <summary>
+    /// 当前采集设备
+    /// </summary>
+    public CollectDeviceRunTime CurDevice;
     /// <summary>
     /// 初始化
     /// </summary>
@@ -131,13 +132,14 @@ public abstract class CollectBase : DriverBase
     {
         _logger = logger;
         IsLogOut = device.IsLogOut;
+        CurDevice = device;
         Init(device, client);
     }
     /// <summary>
     /// 返回是否支持读取
     /// </summary>
     /// <returns></returns>
-    public abstract bool IsSupportAddressRequest();
+    public abstract bool IsSupportRequest();
 
     /// <summary>
     /// 连读分包，返回实际通讯包信息<see cref="DeviceVariableSourceRead"/> 
@@ -165,10 +167,8 @@ public abstract class CollectBase : DriverBase
     /// <summary>
     /// 写入变量值
     /// </summary>
-    /// <param name="deviceVariable">变量实体</param>
-    /// <param name="value">变量写入值</param>
     /// <returns></returns>
-    public abstract Task<OperResult> WriteValueAsync(CollectVariableRunTime deviceVariable, string value);
+    public abstract Task<OperResult> WriteValueAsync(CollectVariableRunTime deviceVariable, string value, CancellationToken cancellationToken);
 
     /// <summary>
     /// 初始化
@@ -176,6 +176,7 @@ public abstract class CollectBase : DriverBase
     /// <param name="device">设备</param>
     /// <param name="client">链路对象，如TCPClient</param>
     protected abstract void Init(CollectDeviceRunTime device, object client = null);
+
     /// <summary>
     /// 共享链路需重新设置设配器时调用该方法
     /// </summary>

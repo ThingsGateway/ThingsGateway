@@ -77,11 +77,11 @@ namespace ThingsGateway.Foundation.Adapter.OPCDA
             if (node != null)
                 OPCNode = node;
             checkTimer?.Stop();
-            checkTimer?.Dispose();
+            checkTimer?.SafeDispose();
             checkTimer = new Timer(OPCNode.CheckRate);
             checkTimer.Elapsed += checkTimer_Elapsed;
             checkTimer.Start();
-            m_server?.Dispose();
+            m_server?.SafeDispose();
             m_server = new OpcDaClient.Da.OpcServer(OPCNode.OPCName, OPCNode.OPCIP);
         }
 
@@ -394,7 +394,7 @@ namespace ThingsGateway.Foundation.Adapter.OPCDA
             checkTimer.Stop();
             try
             {
-                m_server?.Dispose();
+                m_server?.SafeDispose();
                 m_server = null;
             }
             catch (Exception ex)

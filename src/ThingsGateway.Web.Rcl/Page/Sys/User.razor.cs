@@ -114,7 +114,7 @@ namespace ThingsGateway.Web.Rcl
         private async Task ResetPassword(SysUser sysUser)
         {
             await SysUserService.ResetPassword(sysUser.Id.ToIdInput());
-            await PopupService.EnqueueSnackbarAsync(T("成功"), AlertTypes.Success);
+            await PopupService.EnqueueSnackbarAsync(new(T("成功"), AlertTypes.Success));
         }
 
         private async Task UserStatusChange(SysUser context, bool enable)
@@ -128,7 +128,7 @@ namespace ThingsGateway.Web.Rcl
             }
             catch (Exception ex)
             {
-                await PopupService.EnqueueSnackbarAsync(ex, false);
+                await PopupService.EnqueueSnackbarAsync(new(ex.Message,AlertTypes.Error));
             }
             finally
             {

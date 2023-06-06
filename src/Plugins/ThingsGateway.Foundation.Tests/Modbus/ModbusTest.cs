@@ -106,11 +106,11 @@ namespace ThingsGateway.Foundation.Tests
         }
         public void Dispose()
         {
-            ModbusRtu?.Dispose();
-            ModbusRtuOverTcp?.Dispose();
-            ModbusRtuOverUdp?.Dispose();
-            ModbusTcp?.Dispose();
-            ModbusUdp?.Dispose();
+            ModbusRtu?.SafeDispose();
+            ModbusRtuOverTcp?.SafeDispose();
+            ModbusRtuOverUdp?.SafeDispose();
+            ModbusTcp?.SafeDispose();
+            ModbusUdp?.SafeDispose();
         }
 
 
@@ -141,7 +141,7 @@ namespace ThingsGateway.Foundation.Tests
         public async Task ModbusRtuOverTcpReadTest(string address)
         {
             ModbusRtuOverTcpClient("127.0.0.1:502");
-            await ModbusRtuOverTcp.ConnectAsync();
+            await ModbusRtuOverTcp.ConnectAsync(CancellationToken.None);
             Stopwatch stopwatch = new Stopwatch();
             var byteConverter = ByteConverterHelper.GetTransByAddress(ref address, ModbusRtuOverTcp.ThingsGatewayBitConverter, out int length, out BcdFormat bcdFormat);
             stopwatch.Start();

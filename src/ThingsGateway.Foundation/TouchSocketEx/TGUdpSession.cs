@@ -24,7 +24,7 @@
 //------------------------------------------------------------------------------
 using System.Net;
 
-namespace TouchSocket.Sockets;
+namespace ThingsGateway.Foundation;
 
 /// <summary>
 /// 简单UDP会话。

@@ -10,6 +10,8 @@
 //------------------------------------------------------------------------------
 #endregion
 
+using ThingsGateway.Foundation;
+
 namespace ThingsGateway.Siemens
 {
     public class S7_400 : S7

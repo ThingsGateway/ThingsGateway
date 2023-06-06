@@ -14,7 +14,7 @@
 @using System.Linq.Expressions;
 
 @inject IConfigService ConfigService
-@namespace ThingsGateway.Web.Rcl
+@namespace ThingsGateway.Web.Page
 @attribute [Authorize]
 @attribute [RolePermission]
 @inject UserResoures UserResoures
@@ -149,8 +149,8 @@
     ValueHisWorker ValueHisHostService { get; set; }
     public Config()
     {
-        AlarmHostService = this.GetBackgroundService<AlarmWorker>();
-        ValueHisHostService = this.GetBackgroundService<ValueHisWorker>();
+        AlarmHostService = ServiceExtension.GetBackgroundService<AlarmWorker>();
+        ValueHisHostService = ServiceExtension.GetBackgroundService<ValueHisWorker>();
     }
     private async Task OnAlarmSave()
     {

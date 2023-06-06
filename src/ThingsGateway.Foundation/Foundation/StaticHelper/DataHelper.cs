@@ -9,6 +9,7 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 #endregion
+namespace ThingsGateway.Foundation;
 
 /// <summary>
 /// 有一部分参考来自Hsl7或TouchSocket
@@ -46,17 +47,17 @@ public class DataHelper
         foreach (byte inByte in InBytes)
         {
             if (segment == char.MinValue)
-                stringBuilder.Append(string.Format("{0:X2}", (object)inByte));
+                stringBuilder.Append(string.Format("{0:X2}", inByte));
             else
-                stringBuilder.Append(string.Format("{0:X2}{1}", (object)inByte, (object)segment));
+                stringBuilder.Append(string.Format("{0:X2}{1}", inByte, segment));
             ++num;
-            if (newLineCount > 0 && num >= (long)newLineCount)
+            if (newLineCount > 0 && num >= newLineCount)
             {
                 stringBuilder.Append(Environment.NewLine);
                 num = 0L;
             }
         }
-        if (segment != char.MinValue && stringBuilder.Length > 1 && (int)stringBuilder[stringBuilder.Length - 1] == (int)segment)
+        if (segment != char.MinValue && stringBuilder.Length > 1 && stringBuilder[stringBuilder.Length - 1] == segment)
             stringBuilder.Remove(stringBuilder.Length - 1, 1);
         return stringBuilder.ToString();
     }
@@ -617,7 +618,7 @@ public class DataHelper
             T[] array = arrays[index2];
             if (array != null && array.Length != 0)
             {
-                arrays[index2].CopyTo((Array)objArray, index1);
+                arrays[index2].CopyTo(objArray, index1);
                 index1 += arrays[index2].Length;
             }
         }
@@ -653,6 +654,6 @@ public class DataHelper
             numArray[index] = index != 0 ? numArray[index - 1] + array[index - 1] : address;
         }
 
-        return OperResult.CreateSuccessResult<int[], int[]>(numArray, array);
+        return OperResult.CreateSuccessResult(numArray, array);
     }
 }

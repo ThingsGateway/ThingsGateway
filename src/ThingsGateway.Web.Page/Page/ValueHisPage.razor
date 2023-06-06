@@ -91,7 +91,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        ValueHisHostService = this.GetBackgroundService<ValueHisWorker>();
+        ValueHisHostService = ServiceExtension.GetBackgroundService<ValueHisWorker>();
         _searchModel.DeviceName = DeviceName;
         await base.OnInitializedAsync();
     }

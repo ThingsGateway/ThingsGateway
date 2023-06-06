@@ -18,16 +18,19 @@ using Microsoft.AspNetCore.Components;
 
 namespace ThingsGateway.Web.Core
 {
+    /// <inheritdoc/>
     public class BlazorAuthorizeHandler : AppAuthorizeHandler
     {
         private SysCacheService _sysCacheService;
         private IServiceScope _serviceScope;
+        /// <inheritdoc/>
         public BlazorAuthorizeHandler(SysCacheService sysCacheService, IServiceScopeFactory serviceScopeFactory)
         {
             _sysCacheService = sysCacheService;
             _serviceScope = serviceScopeFactory.CreateScope();
         }
 
+        /// <inheritdoc/>
         public override async Task HandleAsync(AuthorizationHandlerContext context)
         {
             var isAuthenticated = context.User.Identity.IsAuthenticated;
@@ -58,12 +61,7 @@ namespace ThingsGateway.Web.Core
             }
         }
 
-        /// <summary>
-        /// 授权判断逻辑，授权通过返回 true，否则返回 false
-        /// </summary>
-        /// <param name="context"></param>
-        /// <param name="httpContext"></param>
-        /// <returns></returns>
+        /// <inheritdoc/>
         public override async Task<bool> PipelineAsync(AuthorizationHandlerContext context, DefaultHttpContext httpContext)
         {
 
@@ -147,7 +145,6 @@ namespace ThingsGateway.Web.Core
         /// 检查token有效性
         /// </summary>
         /// <param name="context">DefaultHttpContext</param>
-        /// <param name="expire">token有效期/分钟</param>
         /// <returns></returns>
         private bool CheckVerificatFromCache(AuthorizationHandlerContext context)
         {
