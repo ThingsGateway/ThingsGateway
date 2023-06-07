@@ -10,15 +10,16 @@
 //------------------------------------------------------------------------------
 #endregion
 
-namespace OpcDaClient.Da
+using ThingsGateway.Foundation.Adapter.OPCDA.Rcw;
+
+namespace ThingsGateway.Foundation.Adapter.OPCDA.Da;
+
+public class ServerStatus
 {
-    public class ServerStatus
-    {
-        public DateTime StartTime { get; internal set; } = new DateTime(0);
-        public DateTime CurrentTime { get; internal set; } = new DateTime(0);
-        public DateTime LastUpdateTime { get; internal set; } = new DateTime(0);
-        public OpcRcw.Da.OPCSERVERSTATE ServerState { get; internal set; } = OpcRcw.Da.OPCSERVERSTATE.OPC_STATUS_NOCONFIG;
-        public string Version { get; internal set; } = "UNKOWN";
-        public string VendorInfo { get; internal set; } = "UNKOWN";
-    }
+    public DateTime CurrentTime { get; internal set; } = new DateTime(0);
+    public DateTime LastUpdateTime { get; internal set; } = new DateTime(0);
+    public OPCSERVERSTATE ServerState { get; internal set; } = OPCSERVERSTATE.OPC_STATUS_NOCONFIG;
+    public DateTime StartTime { get; internal set; } = new DateTime(0);
+    public string VendorInfo { get; internal set; } = "UNKOWN";
+    public string Version { get; internal set; } = "UNKOWN";
 }

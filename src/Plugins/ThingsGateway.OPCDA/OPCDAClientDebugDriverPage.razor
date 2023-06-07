@@ -13,9 +13,9 @@
 @using BlazorComponent;
 @using Microsoft.AspNetCore.Components.Web;
 @using Microsoft.JSInterop;
-@using OpcDaClient.Da;
 @using ThingsGateway.Core;
 @using ThingsGateway.Foundation;
+@using ThingsGateway.Foundation.Adapter.OPCDA.Da;
 @using ThingsGateway.Foundation.Extension;
 @using ThingsGateway.Foundation.Serial;
 @using ThingsGateway.Web.Foundation;
@@ -118,7 +118,7 @@
 
         base.OnAfterRender(firstRender);
     }
-    private void ValueOut(List<OpcDaClient.Da.ItemReadResult> values)
+    private void ValueOut(List<ItemReadResult> values)
     {
         Messages.Add((Yitter.IdGenerator.YitIdHelper.NextId(), null, values.ToJson().FormatJson()));
         if (Messages.Count > 2500)
@@ -129,7 +129,7 @@
 
     private void Add()
     {
-        var tags = new Dictionary<string, List<OpcDaClient.Da.OpcItem>>();
+        var tags = new Dictionary<string, List<OpcItem>>();
         var tag = new OpcItem(address);
         tags.Add(Yitter.IdGenerator.YitIdHelper.NextId().ToString(), new List<OpcItem>() { tag });
         _plc.AddTags(tags);

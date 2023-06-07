@@ -88,13 +88,13 @@ public class RpcControler : IDynamicApiController
     [Description("重启采集线程")]
     public async Task UpDeviceThread(long id)
     {
-        if(id<=0)
+        if (id <= 0)
         {
-            await _collectDeviceHostService.UpDeviceThreadAsync(id, false);
+            await _collectDeviceHostService.RestartDeviceThreadAsync();
         }
         else
         {
-            await _collectDeviceHostService.RestartDeviceThreadAsync();
+            await _collectDeviceHostService.UpDeviceThreadAsync(id, false);
         }
     }
 

@@ -10,18 +10,27 @@
 //------------------------------------------------------------------------------
 #endregion
 
-namespace ThingsGateway.Foundation.Adapter.OPCDA;
-public class OPCNode
+using ThingsGateway.Web.Foundation;
+
+namespace ThingsGateway.OPCUA;
+
+/// <inheritdoc/>
+public class OPCUAServerProperty : UpDriverPropertyBase
 {
-    public bool ActiveSubscribe { get; set; } = true;
-    public int CheckRate { get; set; } = 600000;
-    public float DeadBand { get; set; } = 0;
-    public int GroupSize { get; set; } = 500;
-    public string OPCIP { get; set; } = "localhost";
-    public string OPCName { get; set; } = "Kepware.KEPServerEX.V6";
-    public int UpdateRate { get; set; } = 1000;
-    public override string ToString()
-    {
-        return $"{(OPCIP.IsNullOrEmpty() ? "localhost" : OPCIP)}:{OPCName}";
-    }
+    /// <summary>
+    /// 服务地址
+    /// </summary>
+    [DeviceProperty("服务地址", "")]
+    public string OpcUaStringUrl { get; set; } = "opc.tcp://127.0.0.1:49321";
+    /// <summary>
+    /// 安全策略
+    /// </summary>
+    [DeviceProperty("安全策略", "")]
+    public bool SecurityPolicy { get; set; }
+    /// <summary>
+    /// 接受不受信任的证书
+    /// </summary>
+    [DeviceProperty("接受不受信任的证书", "")]
+    public bool AutoAcceptUntrustedCertificates { get; set; } = true;
+    
 }

@@ -152,9 +152,7 @@ public class UploadDeviceService : DbRepository<UploadDevice>, IUploadDeviceServ
         var collectDevice = _sysCacheService.Get<List<UploadDevice>>(ThingsGatewayCacheConst.Cache_UploadDevice, "");
         if (collectDevice == null)
         {
-            collectDevice = Context.Queryable<UploadDevice>()
-            .Select((u) => new UploadDevice { Id = u.Id.SelectAll() })
-            .ToList();
+            collectDevice = Context.CopyNew().Queryable<UploadDevice>().ToList();
             if (collectDevice != null)//做个大小写限制
             {
                 //插入Cache
@@ -169,7 +167,7 @@ public class UploadDeviceService : DbRepository<UploadDevice>, IUploadDeviceServ
     {
         if (devId == 0)
         {
-            var devices = GetCacheList().Where(a=>a.Enable);
+            var devices = GetCacheList().Where(a => a.Enable).ToList();
             var runtime = devices.Adapt<List<UploadDeviceRunTime>>();
             using var serviceScope = _scopeFactory.CreateScope();
             var variableService = serviceScope.ServiceProvider.GetService<IVariableService>();
@@ -182,7 +180,7 @@ public class UploadDeviceService : DbRepository<UploadDevice>, IUploadDeviceServ
         }
         else
         {
-            var devices = GetCacheList();
+            var devices = GetCacheList().Where(a => a.Enable).ToList();
             devices = devices.Where(it => it.Id == devId).ToList();
             var runtime = devices.Adapt<List<UploadDeviceRunTime>>();
             using var serviceScope = _scopeFactory.CreateScope();

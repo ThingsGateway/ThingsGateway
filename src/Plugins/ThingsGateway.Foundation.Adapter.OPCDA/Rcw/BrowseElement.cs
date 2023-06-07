@@ -10,100 +10,93 @@
 //------------------------------------------------------------------------------
 #endregion
 
-namespace OpcDaClient.Da
+namespace ThingsGateway.Foundation.Adapter.OPCDA.Rcw;
+
+[Serializable]
+public class BrowseElement : ICloneable
 {
-    [Serializable]
-    public class BrowseElement : ICloneable
+    private bool m_hasChildren;
+    private bool m_isItem;
+    private string m_itemName;
+    private string m_itemPath;
+    private string m_name;
+    private ItemProperty[] m_properties = new ItemProperty[0];
+
+    public bool HasChildren
     {
-        private string m_name;
-
-        private string m_itemName;
-
-        private string m_itemPath;
-
-        private bool m_isItem;
-
-        private bool m_hasChildren;
-
-        private ItemProperty[] m_properties = new ItemProperty[0];
-
-        public string Name
+        get
         {
-            get
-            {
-                return m_name;
-            }
-            set
-            {
-                m_name = value;
-            }
+            return m_hasChildren;
         }
-
-        public string ItemName
+        set
         {
-            get
-            {
-                return m_itemName;
-            }
-            set
-            {
-                m_itemName = value;
-            }
+            m_hasChildren = value;
         }
+    }
 
-        public string ItemPath
+    public bool IsItem
+    {
+        get
         {
-            get
-            {
-                return m_itemPath;
-            }
-            set
-            {
-                m_itemPath = value;
-            }
+            return m_isItem;
         }
+        set
+        {
+            m_isItem = value;
+        }
+    }
 
-        public bool IsItem
+    public string ItemName
+    {
+        get
         {
-            get
-            {
-                return m_isItem;
-            }
-            set
-            {
-                m_isItem = value;
-            }
+            return m_itemName;
         }
+        set
+        {
+            m_itemName = value;
+        }
+    }
 
-        public bool HasChildren
+    public string ItemPath
+    {
+        get
         {
-            get
-            {
-                return m_hasChildren;
-            }
-            set
-            {
-                m_hasChildren = value;
-            }
+            return m_itemPath;
         }
+        set
+        {
+            m_itemPath = value;
+        }
+    }
 
-        public ItemProperty[] Properties
+    public string Name
+    {
+        get
         {
-            get
-            {
-                return m_properties;
-            }
-            set
-            {
-                m_properties = value;
-            }
+            return m_name;
         }
+        set
+        {
+            m_name = value;
+        }
+    }
+    public ItemProperty[] Properties
+    {
+        get
+        {
+            return m_properties;
+        }
+        set
+        {
+            m_properties = value;
+        }
+    }
 
-        public virtual object Clone()
-        {
-            BrowseElement obj = (BrowseElement)MemberwiseClone();
-            obj.m_properties = (ItemProperty[])OpcDaClient.Comn.Convert.Clone(m_properties);
-            return obj;
-        }
+    public virtual object Clone()
+    {
+        BrowseElement obj = (BrowseElement)MemberwiseClone();
+        obj.m_properties = (ItemProperty[])Comn.Convert.Clone(m_properties);
+        return obj;
     }
 }

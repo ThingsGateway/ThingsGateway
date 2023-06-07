@@ -17,6 +17,7 @@
 @using ThingsGateway.Core;
 @using ThingsGateway.Foundation;
 @using ThingsGateway.Foundation.Adapter.OPCDA;
+@using ThingsGateway.Foundation.Adapter.OPCDA.Da;
 @using ThingsGateway.Web.Foundation;
 @using Masa.Blazor
 @using TouchSocket.Core;
@@ -61,7 +62,7 @@
     }
     private OPCNode node = new OPCNode();
     public Action<string> LogAction;
-    public Action<List<OpcDaClient.Da.ItemReadResult>> ValueAction;
+    public Action<List<ItemReadResult>> ValueAction;
     public ThingsGateway.Foundation.Adapter.OPCDA.OPCDAClient OPC;
     private void LogOut(string str)
     {
@@ -76,7 +77,7 @@
 
     }
 
-    private void Info_DataChangedHandler(List<OpcDaClient.Da.ItemReadResult> values)
+    private void Info_DataChangedHandler(List<ItemReadResult> values)
     {
         ValueAction?.Invoke(values);
     }
