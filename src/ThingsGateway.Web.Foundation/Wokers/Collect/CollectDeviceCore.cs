@@ -25,6 +25,7 @@ using ThingsGateway.Foundation;
 
 using TouchSocket.Core;
 
+
 namespace ThingsGateway.Web.Foundation;
 
 /// <summary>
@@ -266,6 +267,12 @@ public class CollectDeviceCore : DisposableObject
     /// </summary>
     public async Task FinishActionAsync()
     {
+        Device.DeviceVariableRunTimes.ForEach(a =>
+        {
+            a.VariablePropertys.Clear();
+            a.VariablePropertys = null;
+        });
+        Device.DeviceVariableRunTimes.Clear();
         _globalCollectDeviceData.CollectDevices.RemoveWhere(it => it.Id == Device.Id);
         try
         {
@@ -672,6 +679,9 @@ public class CollectDeviceCore : DisposableObject
     {
         base.Dispose(disposing);
         StopThread();
+        _device.DeviceVariableRunTimes = null;
+        _device = null;
+        GC.Collect();
     }
 
 

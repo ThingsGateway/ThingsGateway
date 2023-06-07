@@ -133,6 +133,11 @@ public class IotSharpClient : UpLoadBase
             });
             _mqttClient?.SafeDispose();
             _mqttClient = null;
+            _uploadVariables = null;
+            _collectDeviceRunTimes.Clear();
+            _collectVariableRunTimes.Clear();
+            _collectDeviceRunTimes = null;
+            _collectVariableRunTimes = null;
         }
         catch (Exception ex)
         {
@@ -454,21 +459,4 @@ GetPropertyValue(tag, nameof(variablePropertys.VariableRpcEnable)).ToBoolean()
     {
         _collectVariableRunTimes.Enqueue(collectVariableRunTime.Adapt<VariableData>());
     }
-}
-
-public class IotSharpClientProperty : UpDriverPropertyBase
-{
-    [DeviceProperty("IP", "")] public string IP { get; set; } = "127.0.0.1";
-    [DeviceProperty("端口", "")] public int Port { get; set; } = 1883;
-    [DeviceProperty("Accesstoken", "")] public string Accesstoken { get; set; } = "Accesstoken";
-    [DeviceProperty("连接超时时间", "")] public int ConnectTimeOut { get; set; } = 3000;
-    [DeviceProperty("允许Rpc写入", "")] public bool DeviceRpcEnable { get; set; }
-    [DeviceProperty("线程循环间隔", "最小500ms")] public int CycleInterval { get; set; } = 1000;
-}
-public class IotSharpClientVariableProperty : VariablePropertyBase
-{
-    [VariableProperty("启用", "")]
-    public bool Enable { get; set; } = true;
-    [VariableProperty("允许写入", "")]
-    public bool VariableRpcEnable { get; set; } = true;
 }

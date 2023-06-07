@@ -21,6 +21,8 @@ using System.Security.Cryptography.X509Certificates;
 using ThingsGateway.Application;
 using ThingsGateway.Web.Foundation;
 
+using TouchSocket.Core;
+
 namespace ThingsGateway.OPCUA;
 
 /// <summary>
@@ -28,14 +30,19 @@ namespace ThingsGateway.OPCUA;
 /// </summary>
 public partial class ThingsGatewayServer : StandardServer
 {
+    protected override void Dispose(bool disposing)
+    {
+        NodeManager?.SafeDispose();
+        base.Dispose(disposing);
+    }
     /// <summary>
     /// 自定义节点
     /// </summary>
     public ThingsGatewayNodeManager NodeManager;
+    private UploadDevice _device;
     private ILogger _logger;
     private IServiceScope _serviceScope;
     private ICertificateValidator m_userCertificateValidator;
-    private UploadDevice _device;
     /// <inheritdoc cref="ThingsGatewayServer"/>
     public ThingsGatewayServer(UploadDevice device, ILogger logger, IServiceScope serviceScope)
     {
