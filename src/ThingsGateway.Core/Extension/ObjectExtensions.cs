@@ -69,7 +69,7 @@ namespace ThingsGateway.Core
         /// <returns></returns>
         public static IEnumerable<FieldInfo> GetAllFields(this Type modelType)
         {
-            var cacheKey = $"{nameof(GetAllFields)}-{CultureInfo.CurrentUICulture.Name}-{modelType.FullName}";
+            var cacheKey = $"{nameof(GetAllFields)}-{CultureInfo.CurrentUICulture.Name}-{modelType.FullName}-{modelType.TypeHandle.Value}";
             IEnumerable<FieldInfo> displayName = BlazorCacheService.GetOrAdd("", cacheKey, entry =>
             {
                 var fields = modelType.GetRuntimeFields().Where(a => a.IsPublic);
@@ -93,7 +93,7 @@ namespace ThingsGateway.Core
         /// <returns></returns>
         public static IEnumerable<PropertyInfo> GetAllProps(this Type modelType)
         {
-            var cacheKey = $"{nameof(GetAllProps)}-{CultureInfo.CurrentUICulture.Name}-{modelType.FullName}-{modelType.GUID}";
+            var cacheKey = $"{nameof(GetAllProps)}-{CultureInfo.CurrentUICulture.Name}-{modelType.FullName}-{modelType.TypeHandle.Value}";
             IEnumerable<PropertyInfo> displayName = BlazorCacheService.GetOrAdd("", cacheKey, entry =>
             {
                 var props = modelType.GetRuntimeProperties().Where(a => a.GetMethod.IsPublic);
@@ -128,7 +128,7 @@ namespace ThingsGateway.Core
         /// <returns></returns>
         public static string GetDescription(this Type modelType, string fieldName)
         {
-            var cacheKey = $"{nameof(GetDescription)}-{CultureInfo.CurrentUICulture.Name}-{modelType.FullName}-{fieldName}";
+            var cacheKey = $"{nameof(GetDescription)}-{CultureInfo.CurrentUICulture.Name}-{modelType.FullName}-{fieldName}-{modelType.TypeHandle.Value}";
             var displayName = BlazorCacheService.GetOrAdd("", cacheKey, entry =>
             {
                 string dn = null;
