@@ -68,14 +68,19 @@ namespace ThingsGateway.Core
             db.Aop.OnLogExecuting = (sql, pars) =>
             {
                 //如果不是开发环境就打印sql
-                if (App.HostEnvironment.IsDevelopment())
+                if (App.HostEnvironment.IsDevelopment()&& !sql.Contains("tg_log_runtime"))
                 {
                     if (sql.StartsWith("SELECT"))
                     {
                         Console.ForegroundColor = ConsoleColor.Green;
                         WriteSqlLog($"查询{config.ConfigId}库操作");
                     }
-                    if (sql.StartsWith("UPDATE") || sql.StartsWith("INSERT"))
+                    if (sql.StartsWith("UPDATE"))
+                    {
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        WriteSqlLog($"修改{config.ConfigId}库操作");
+                    }
+                    if (sql.StartsWith("INSERT"))
                     {
                         Console.ForegroundColor = ConsoleColor.Blue;
                         WriteSqlLog($"修改{config.ConfigId}库操作");
