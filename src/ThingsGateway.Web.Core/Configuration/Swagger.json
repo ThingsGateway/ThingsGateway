@@ -6,7 +6,7 @@
     "DocExpansionState": "None",
     "GroupOpenApiInfos": [
       {
-        "Group": "ThingsGateway", //分组唯一标识，string 类型，必填
+        "Group": "ThingsGatewayOpenApi", //分组唯一标识，string 类型，必填
         "Order": 99, //分组排序，int 类型，数字越大排前面，默认 0
         "Title": "ThingsGateway物联网关接口", //配置分组标题，string 类型
         "Description": "物联网关Swagger",

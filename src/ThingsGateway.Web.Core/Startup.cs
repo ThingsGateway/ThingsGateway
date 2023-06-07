@@ -10,6 +10,10 @@
 //------------------------------------------------------------------------------
 #endregion
 
+using Furion.SpecificationDocument;
+
+using IGeekFan.AspNetCore.Knife4jUI;
+
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.WebEncoders;
 
@@ -46,7 +50,18 @@ namespace ThingsGateway.Web.Core
             // 限流服务，自行开启
             //app.UseIpRateLimiting();
 
-            app.UseInject("api");
+
+            // 配置Swagger-Knife4UI（路由前缀一致代表独立，不同则代表共存）
+            app.UseKnife4UI(options =>
+            {
+                options.RoutePrefix = "api";
+                foreach (var groupInfo in SpecificationDocumentBuilder.GetOpenApiGroups())
+                {
+                    options.SwaggerEndpoint("/" + groupInfo.RouteTemplate, groupInfo.Title);
+                }
+            });
+
+            app.UseInject("swagger");
 
 
             app.UseRouting();

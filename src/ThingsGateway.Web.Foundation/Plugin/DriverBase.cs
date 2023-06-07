@@ -89,11 +89,11 @@ public abstract class DriverBase : DisposableObject
     /// </summary>
     public void NewMessage(LogType arg1, object arg2, string arg3, Exception arg4)
     {
-        if (arg3.StartsWith("报文-") && arg1 == LogType.Trace)
+        if (arg1 == LogType.Trace && arg3.StartsWith("报文-"))
         {
             Messages.Add(new(YitIdHelper.NextId(), DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff zz") + "-" + arg3));
 
-            if (Messages.Count > 500)
+            if (Messages.Count > 2500)
             {
                 Messages.Clear();
             }
