@@ -31,6 +31,8 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
 {
     private const string ReferenceServer = "https://diego2098.gitee.io/thingsgateway/";
 
+    private TypeAdapterConfig _config;
+    private UploadDevice _device;
     private GlobalCollectDeviceData _globalCollectDeviceData;
 
     /// <summary>
@@ -39,8 +41,6 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
     private Dictionary<NodeId, OPCUATag> _idTags = new Dictionary<NodeId, OPCUATag>();
     private RpcSingletonService _rpcCore;
     private IServiceScope _serviceScope;
-    private UploadDevice _device;
-    private TypeAdapterConfig _config;
     /// <inheritdoc cref="ThingsGatewayNodeManager"/>
     public ThingsGatewayNodeManager(IServiceScope serviceScope, UploadDevice device, IServerInternal server, ApplicationConfiguration configuration) : base(server, configuration, ReferenceServer)
     {
@@ -105,6 +105,38 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
 
     }
 
+    protected override void Dispose(bool disposing)
+    {
+        _idTags.Clear();
+        _idTags = null;
+        base.Dispose(disposing);
+    }
+    /// <summary>
+    /// 获取变量的默认值
+    /// </summary>
+    /// <param name="type"></param>
+    /// <returns></returns>
+    public object GetDefaultValue(Type type)
+    {
+        return type.IsValueType ? Activator.CreateInstance(type) : "";
+    }
+
+    /// <summary>
+    /// 获取变量的属性值
+    /// </summary>
+    public string GetPropertyValue(CollectVariableRunTime variableRunTime, string propertyName)
+    {
+        if (variableRunTime.VariablePropertys.ContainsKey(_device.Id))
+        {
+            var data = variableRunTime.VariablePropertys[_device.Id].FirstOrDefault(a =>
+                  a.PropertyName == propertyName);
+            if (data != null)
+            {
+                return data.Value;
+            }
+        }
+        return null;
+    }
 
     /// <summary>
     /// 读取历史数据
@@ -325,31 +357,6 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
         }
         _idTags.AddOrUpdate(variable.NodeId, variable);
         return variable;
-    }
-    /// <summary>
-    /// 获取变量的默认值
-    /// </summary>
-    /// <param name="type"></param>
-    /// <returns></returns>
-    public object GetDefaultValue(Type type)
-    {
-        return type.IsValueType ? Activator.CreateInstance(type) : "";
-    }
-    /// <summary>
-    /// 获取变量的属性值
-    /// </summary>
-    public string GetPropertyValue(CollectVariableRunTime variableRunTime, string propertyName)
-    {
-        if (variableRunTime.VariablePropertys.ContainsKey(_device.Id))
-        {
-            var data = variableRunTime.VariablePropertys[_device.Id].FirstOrDefault(a =>
-                  a.PropertyName == propertyName);
-            if (data != null)
-            {
-                return data.Value;
-            }
-        }
-        return null;
     }
     /// <summary>
     /// 网关转OPC数据类型

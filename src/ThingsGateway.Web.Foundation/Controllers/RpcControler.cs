@@ -90,7 +90,26 @@ public class RpcControler : IDynamicApiController
     {
         await _collectDeviceHostService.UpDeviceThreadAsync(id, false);
     }
-
+    /// <summary>
+    /// 重启全部线程
+    /// </summary>
+    /// <returns></returns>
+    [HttpPost("restartDeviceThread")]
+    [Description("重启采集线程")]
+    public async Task RestartDeviceThread()
+    {
+        await _collectDeviceHostService.RestartDeviceThreadAsync();
+    }
+    /// <summary>
+    /// GC
+    /// </summary>
+    /// <returns></returns>
+    [HttpPost("gc")]
+    [Description("gc")]
+    public void GCTest()
+    {
+        GC.Collect();
+    }
 }
 
 

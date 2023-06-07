@@ -207,5 +207,6 @@ public class CollectDeviceThread : IDisposable
         StopThread();
         CollectDeviceCores.ForEach(a => a.SafeDispose());
         CollectDeviceCores.Clear();
+
     }
 }

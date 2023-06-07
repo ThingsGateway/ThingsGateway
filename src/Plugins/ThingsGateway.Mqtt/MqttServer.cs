@@ -111,6 +111,11 @@ public class MqttServer : UpLoadBase
         {
             a.DeviceStatusCahnge -= DeviceStatusCahnge;
         });
+        _uploadVariables = null;
+        _collectDeviceRunTimes.Clear();
+        _collectVariableRunTimes.Clear();
+        _collectDeviceRunTimes = null;
+        _collectVariableRunTimes = null;
         base.Dispose(disposing);
     }
 

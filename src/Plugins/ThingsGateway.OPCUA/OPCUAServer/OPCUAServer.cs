@@ -94,6 +94,9 @@ public partial class OPCUAServer : UpLoadBase
     {
         m_server?.Stop();
         m_server?.SafeDispose();
+        _uploadVariables = null;
+        _collectVariableRunTimes.Clear();
+        _collectVariableRunTimes = null;
     }
 
     /// <inheritdoc/>

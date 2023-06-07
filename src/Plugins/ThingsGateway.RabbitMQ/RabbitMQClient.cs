@@ -27,32 +27,6 @@ using ThingsGateway.Web.Foundation;
 using TouchSocket.Core;
 
 namespace ThingsGateway.RabbitMQ;
-public class RabbitMQClientProperty : UpDriverPropertyBase
-{
-
-    [DeviceProperty("IP", "")] public string IP { get; set; } = "localhost";
-    [DeviceProperty("端口", "")] public int Port { get; set; } = 5672;
-
-    [DeviceProperty("账号", "")] public string UserName { get; set; } = "guest";
-    [DeviceProperty("密码", "")] public string Password { get; set; } = "guest";
-    [DeviceProperty("是否发布List", "")] public bool IsList { get; set; } = false;
-    [DeviceProperty("是否声明队列", "")] public bool IsQueueDeclare { get; set; } = false;
-    [DeviceProperty("虚拟Host", "")] public string VirtualHost { get; set; } = ConnectionFactory.DefaultVHost;
-    [DeviceProperty("路由名称", "")] public string RoutingKey { get; set; } = "TG";
-    //[DeviceProperty("交换机名称", "")] public string ExchangeName { get; set; } = "RM";
-    [DeviceProperty("变量队列名称", "")] public string VariableQueueName { get; set; } = "ThingsGateway/Variable";
-    [DeviceProperty("设备队列名称", "")] public string DeviceQueueName { get; set; } = "ThingsGateway/Device";
-    [DeviceProperty("线程循环间隔", "最小500ms")] public int CycleInterval { get; set; } = 1000;
-
-
-    [DeviceProperty("设备实体脚本", "查看文档说明，为空时不起作用")] public string BigTextScriptDeviceModel { get; set; }
-    [DeviceProperty("变量实体脚本", "查看文档说明，为空时不起作用")] public string BigTextScriptVariableModel { get; set; }
-}
-public class RabbitMQClientVariableProperty : VariablePropertyBase
-{
-    [VariableProperty("启用", "")]
-    public bool Enable { get; set; } = true;
-}
 public class RabbitMQClient : UpLoadBase
 {
 
@@ -85,18 +59,6 @@ public class RabbitMQClient : UpLoadBase
     {
         await Task.CompletedTask;
     }
-    protected override void Dispose(bool disposing)
-    {
-        _globalCollectDeviceData?.CollectVariables.ForEach(a => a.VariableValueChange -= VariableValueChange);
-
-        _globalCollectDeviceData?.CollectDevices?.ForEach(a =>
-        {
-            a.DeviceStatusCahnge -= DeviceStatusCahnge;
-        });
-        _model?.SafeDispose();
-        _connection?.SafeDispose();
-    }
-
     public override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
         try
@@ -267,11 +229,28 @@ public class RabbitMQClient : UpLoadBase
     {
         return _connection?.IsOpen == true ? OperResult.CreateSuccessResult() : new OperResult();
     }
+
     public override string ToString()
     {
         return $" {nameof(RabbitMQClient)} IP:{driverPropertys.IP} Port:{driverPropertys.Port}";
     }
 
+    protected override void Dispose(bool disposing)
+    {
+        _globalCollectDeviceData?.CollectVariables.ForEach(a => a.VariableValueChange -= VariableValueChange);
+
+        _globalCollectDeviceData?.CollectDevices?.ForEach(a =>
+        {
+            a.DeviceStatusCahnge -= DeviceStatusCahnge;
+        });
+        _model?.SafeDispose();
+        _connection?.SafeDispose();
+        _uploadVariables = null;
+        _collectDeviceRunTimes.Clear();
+        _collectVariableRunTimes.Clear();
+        _collectDeviceRunTimes = null;
+        _collectVariableRunTimes = null;
+    }
     protected override void Init(UploadDeviceRunTime device)
     {
         _connectionFactory = new ConnectionFactory

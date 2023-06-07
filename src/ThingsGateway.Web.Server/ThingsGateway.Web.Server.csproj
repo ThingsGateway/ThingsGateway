@@ -21,9 +21,10 @@
 
 
 
-	<ItemGroup>
-	  <Content Remove="pm2-windows.json" />
-	</ItemGroup>
+
+
+
+
 
 
 
@@ -34,11 +35,7 @@
 	  <_WebToolingArtifacts Remove="Properties\PublishProfiles\win64_net6.pubxml" />
 	  <_WebToolingArtifacts Remove="Properties\PublishProfiles\win64_net7.pubxml" />
 	</ItemGroup>
-	<ItemGroup>
-	  <None Include="pm2-windows.json">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </None>
-	</ItemGroup>
+
 	<ItemGroup>
 	  <ProjectReference Include="..\ThingsGateway.Web.Core\ThingsGateway.Web.Core.csproj" />
 	</ItemGroup>
@@ -56,5 +53,6 @@
 		<PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="7.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="7.0.0" />
 	</ItemGroup>
+
 	
 </Project>

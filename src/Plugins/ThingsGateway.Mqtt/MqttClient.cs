@@ -30,44 +30,6 @@ using ThingsGateway.Web.Foundation;
 using TouchSocket.Core;
 
 namespace ThingsGateway.Mqtt;
-
-public class MqttClientProperty : UpDriverPropertyBase
-{
-    [DeviceProperty("是否间隔上传", "False时为变化检测上传")] public bool IsInterval { get; set; } = false;
-    [DeviceProperty("上传间隔时间", "最小1000ms")] public int UploadInterval { get; set; } = 1000;
-
-    [DeviceProperty("IP", "")] public string IP { get; set; } = "127.0.0.1";
-
-    [DeviceProperty("端口", "")] public int Port { get; set; } = 1883;
-    [DeviceProperty("账号", "")] public string UserName { get; set; } = "admin";
-    [DeviceProperty("密码", "")] public string Password { get; set; } = "123456";
-    [DeviceProperty("连接Id", "")] public string ConnectId { get; set; } = "ThingsGatewayId";
-
-    [DeviceProperty("连接超时时间", "")] public int ConnectTimeOut { get; set; } = 3000;
-
-    [DeviceProperty("线程循环间隔", "最小500ms")] public int CycleInterval { get; set; } = 1000;
-
-    [DeviceProperty("允许Rpc写入", "")] public bool DeviceRpcEnable { get; set; }
-
-    [DeviceProperty("数据请求RpcTopic", "这个主题接收到任何数据都会把全部的信息发送到变量/设备主题中")] public string QuestRpcTopic { get; set; } = "ThingsGateway/Quest";
-
-
-    [DeviceProperty("设备Topic", "")] public string DeviceTopic { get; set; } = "ThingsGateway/Device";
-    [DeviceProperty("变量Topic", "")] public string VariableTopic { get; set; } = "ThingsGateway/Variable";
-    [DeviceProperty("Rpc返回Topic", "")] public string RpcSubTopic { get; set; } = "ThingsGateway/RpcSub";
-
-    [DeviceProperty("Rpc写入Topic", "")] public string RpcWriteTopic { get; set; } = "ThingsGateway/RpcWrite";
-    [DeviceProperty("设备实体脚本", "查看文档说明，为空时不起作用")] public string BigTextScriptDeviceModel { get; set; }
-
-    [DeviceProperty("变量实体脚本", "查看文档说明，为空时不起作用")] public string BigTextScriptVariableModel { get; set; }
-}
-public class MqttClientVariableProperty : VariablePropertyBase
-{
-    [VariableProperty("启用", "")]
-    public bool Enable { get; set; } = true;
-    [VariableProperty("允许写入", "")]
-    public bool VariableRpcEnable { get; set; } = true;
-}
 public class MqttClient : UpLoadBase
 {
     private List<CollectDeviceRunTime> _collectDevice;
@@ -84,12 +46,12 @@ public class MqttClient : UpLoadBase
 
     private CollectDeviceWorker collectDeviceHostService;
 
-    private ConcurrentQueue<DeviceData> CollectDeviceRunTimes = new();
-    private ConcurrentQueue<VariableData> CollectVariableRunTimes = new();
+    private ConcurrentQueue<DeviceData> _collectDeviceRunTimes = new();
+    private ConcurrentQueue<VariableData> _collectVariableRunTimes = new();
     private MqttClientProperty driverPropertys = new();
 
-    private TimerTick exVariableTimerTick;
     private TimerTick exDeviceTimerTick;
+    private TimerTick exVariableTimerTick;
     private EasyLock lockobj = new();
     private MqttClientVariableProperty variablePropertys = new();
 
@@ -116,26 +78,6 @@ public class MqttClient : UpLoadBase
             }
         }
     }
-    protected override void Dispose(bool disposing)
-    {
-        try
-        {
-            _globalCollectDeviceData?.CollectVariables?.ForEach(a => a.VariableValueChange -= VariableValueChange);
-
-            _globalCollectDeviceData?.CollectDevices?.ForEach(a =>
-            {
-                a.DeviceStatusCahnge -= DeviceStatusCahnge;
-            });
-            _mqttClient?.SafeDispose();
-            _mqttClient = null;
-            base.Dispose(disposing);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, ToString());
-        }
-    }
-
     public override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
         try
@@ -143,7 +85,7 @@ public class MqttClient : UpLoadBase
             if (!driverPropertys.IsInterval)
             {
                 ////变化推送
-                var varList = CollectVariableRunTimes.ToListWithDequeue();
+                var varList = _collectVariableRunTimes.ToListWithDequeue();
                 if (varList?.Count != 0)
                 {
                     //分解List，避免超出mqtt字节大小限制
@@ -232,7 +174,7 @@ public class MqttClient : UpLoadBase
             if (!driverPropertys.IsInterval)
             {
                 ////变化推送
-                var devList = CollectDeviceRunTimes.ToListWithDequeue();
+                var devList = _collectDeviceRunTimes.ToListWithDequeue();
                 if (devList?.Count != 0)
                 {
                     //分解List，避免超出mqtt字节大小限制
@@ -338,11 +280,36 @@ public class MqttClient : UpLoadBase
             return new OperResult();
         }
     }
+
     public override string ToString()
     {
         return $" {nameof(MqttClient)} IP:{driverPropertys.IP} Port:{driverPropertys.Port}";
     }
 
+    protected override void Dispose(bool disposing)
+    {
+        try
+        {
+            _globalCollectDeviceData?.CollectVariables?.ForEach(a => a.VariableValueChange -= VariableValueChange);
+
+            _globalCollectDeviceData?.CollectDevices?.ForEach(a =>
+            {
+                a.DeviceStatusCahnge -= DeviceStatusCahnge;
+            });
+            _mqttClient?.SafeDispose();
+            _mqttClient = null;
+            _uploadVariables = null;
+            _collectDeviceRunTimes.Clear();
+            _collectVariableRunTimes.Clear();
+            _collectDeviceRunTimes = null;
+            _collectVariableRunTimes = null;
+            base.Dispose(disposing);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, ToString());
+        }
+    }
     protected override void Init(UploadDeviceRunTime device)
     {
         var mqttFactory = new MqttFactory(new PrivateLogger(_logger));
@@ -496,7 +463,7 @@ public class MqttClient : UpLoadBase
 
     private void DeviceStatusCahnge(CollectDeviceRunTime collectDeviceRunTime)
     {
-        CollectDeviceRunTimes.Enqueue(collectDeviceRunTime.Adapt<DeviceData>());
+        _collectDeviceRunTimes.Enqueue(collectDeviceRunTime.Adapt<DeviceData>());
     }
 
     private async Task<OperResult> TryMqttClientAsync(CancellationToken cancellationToken)
@@ -543,6 +510,6 @@ public class MqttClient : UpLoadBase
 
     private void VariableValueChange(CollectVariableRunTime collectVariableRunTime)
     {
-        CollectVariableRunTimes.Enqueue(collectVariableRunTime.Adapt<VariableData>());
+        _collectVariableRunTimes.Enqueue(collectVariableRunTime.Adapt<VariableData>());
     }
 }

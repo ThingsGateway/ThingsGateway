@@ -36,25 +36,14 @@ public class ModbusServer : UpLoadBase
     public ModbusServer(IServiceScopeFactory scopeFactory) : base(scopeFactory)
     {
     }
+    public override Type DriverDebugUIType => typeof(ModbusServerDebugDriverPage);
     public override UpDriverPropertyBase DriverPropertys => driverPropertys;
     public override List<CollectVariableRunTime> UploadVariables => _ModbusTags?.Values.ToList();
     public override VariablePropertyBase VariablePropertys => variablePropertys;
-    public override Type DriverDebugUIType => typeof(ModbusServerDebugDriverPage);
-
     public override Task BeforStartAsync(CancellationToken cancellationToken)
     {
         return _plc?.ConnectAsync(cancellationToken);
     }
-    protected override void Dispose(bool disposing)
-    {
-        _ModbusTags?.Values?.ToList()?.ForEach(a => a.VariableValueChange -= VariableValueChange);
-        if (_plc != null)
-            _plc.Write -= WriteAsync;
-        _plc?.Disconnect();
-        _plc?.SafeDispose();
-        base.Dispose(disposing);
-    }
-
     public override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
         if (IsFirst)
@@ -87,6 +76,20 @@ public class ModbusServer : UpLoadBase
         {
             return new OperResult();
         }
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        _ModbusTags?.Values?.ToList()?.ForEach(a => a.VariableValueChange -= VariableValueChange);
+        if (_plc != null)
+            _plc.Write -= WriteAsync;
+        _plc?.Disconnect();
+        _plc?.SafeDispose();
+        _ModbusTags.Clear();
+        _ModbusTags = null;
+        Values.Clear();
+        Values = null;
+        base.Dispose(disposing);
     }
     protected override void Init(UploadDeviceRunTime device)
     {
@@ -172,35 +175,4 @@ public class ModbusServer : UpLoadBase
         }
 
     }
-}
-public class ModbusServerProperty : UpDriverPropertyBase
-{
-
-
-    [DeviceProperty("IP", "")]
-    public string IP { get; set; } = "";
-
-
-    [DeviceProperty("端口", "")]
-    public int Port { get; set; } = 502;
-
-    [DeviceProperty("默认站号", "")]
-    public byte Station { get; set; } = 1;
-    [DeviceProperty("多站点", "")]
-    public bool MulStation { get; set; } = true;
-    [DeviceProperty("默认解析顺序", "")]
-    public DataFormat DataFormat { get; set; }
-    [DeviceProperty("允许写入", "")]
-    public bool DeviceRpcEnable { get; set; }
-}
-
-public class ModbusServerVariableProperty : VariablePropertyBase
-{
-    [VariableProperty("从站变量地址", "")]
-    public string ServiceAddress { get; set; }
-    [VariableProperty("允许写入", "")]
-    public bool VariableRpcEnable { get; set; }
-    [VariableProperty("数据类型", "")]
-    public DataTypeEnum ModbusType { get; set; } = DataTypeEnum.Int16;
-
 }
