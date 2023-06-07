@@ -90,23 +90,28 @@
                         <MCard Height=@("calc(100vh - 320px)") Style="overflow-y:auto;" Flat Class="ml-2 my-4">
 
                             <MVirtualScroll Context="item" Height=@("calc(100vh - 350px)") OverscanCount=2 ItemSize="100" Items="_collectDeviceCores">
+
                                 <ItemContent>
-                                    <MListItem OnClick=@(()=>collectDeviceInfo(item))>
-                                        <MListItemContent>
-                                            <MListItemTitle>
-                                                <MLabel Class=@((item.Device.DeviceStatus==DeviceStatusEnum.OnLine?"green--text":"red--text")+$" text-h6")>
-                                                    <div class="mt-1  d-flex align-center justify-space-between">
-                                                        <span>@item.Device.Name</span>
-                                                        <span class="text-caption">@(item.Device.ActiveTime.Add(JsInitVariables.TimezoneOffset).ToString("yyyy-MM-dd HH:mm:ss fff") + "     " + typeof(DeviceStatusEnum).GetDescription(item.Device.DeviceStatus.ToString()) + "     " + item.Device.DeviceOffMsg)</span>
-                                                    </div>
-                                                </MLabel>
-                                            </MListItemTitle>
-                                        </MListItemContent>
+                                    @if (item.Device != null)
+                                    {
 
-                                    </MListItem>
+                                        <MListItem OnClick=@(()=>collectDeviceInfo(item))>
+                                            <MListItemContent>
+                                                <MListItemTitle>
+                                                    <MLabel Class=@((item.Device.DeviceStatus==DeviceStatusEnum.OnLine?"green--text":"red--text")+$" text-h6")>
+                                                        <div class="mt-1  d-flex align-center justify-space-between">
+                                                            <span>@item.Device.Name</span>
+                                                            <span class="text-caption">@(item.Device.ActiveTime.Add(JsInitVariables.TimezoneOffset).ToString("yyyy-MM-dd HH:mm:ss fff") + "     " + typeof(DeviceStatusEnum).GetDescription(item.Device.DeviceStatus.ToString()) + "     " + item.Device.DeviceOffMsg)</span>
+                                                        </div>
+                                                    </MLabel>
+                                                </MListItemTitle>
+                                            </MListItemContent>
 
-                                    <MDivider></MDivider>
+                                        </MListItem>
 
+                                        <MDivider></MDivider>
+
+                                    }
 
                                 </ItemContent>
                             </MVirtualScroll>
@@ -120,7 +125,7 @@
                     <div style="height: calc(100vh - 300px)">
 
                         <MCard Height=@("300px)") Style="overflow-y:auto" Flat Class="ml-2 my-4">
-                            @if (collectDeviceInfoItem != null)
+                            @if (collectDeviceInfoItem != null && collectDeviceInfoItem?.Device != null)
                             {
                                 var item = collectDeviceInfoItem;
                                 <MCard Flat Elevation="0" Class="ma-2">
@@ -334,23 +339,25 @@
                         <MCard Height=@("calc(100vh - 320px)") Style="overflow-y:auto;" Flat Class="ml-2 my-4">
                             <MVirtualScroll Context="item" Height=@("calc(100vh - 350px)") OverscanCount=2 ItemSize="100" Items="_uploadDeviceCores">
                                 <ItemContent>
-                                    <MListItem OnClick=@(()=>uploadDeviceInfo(item))>
-                                        <MListItemContent>
-                                            <MListItemTitle>
-                                                <MLabel Class=@((item.Device.DeviceStatus==DeviceStatusEnum.OnLine?"green--text":"red--text")+$" text-h6")>
-                                                    <div class="mt-1  d-flex align-center justify-space-between">
-                                                        <span>@item.Device.Name</span>
-                                                        <span class="text-caption">@(item.Device.ActiveTime.Add(JsInitVariables.TimezoneOffset).ToString("yyyy-MM-dd HH:mm:ss fff") + "     " + typeof(DeviceStatusEnum).GetDescription(item.Device.DeviceStatus.ToString()) + "     " + item.Device.DeviceOffMsg)</span>
-                                                    </div>
-                                                </MLabel>
-                                            </MListItemTitle>
-                                        </MListItemContent>
+                                    @if (item.Device != null)
+                                    {
+                                        <MListItem OnClick=@(()=>uploadDeviceInfo(item))>
+                                            <MListItemContent>
+                                                <MListItemTitle>
+                                                    <MLabel Class=@((item.Device.DeviceStatus==DeviceStatusEnum.OnLine?"green--text":"red--text")+$" text-h6")>
+                                                        <div class="mt-1  d-flex align-center justify-space-between">
+                                                            <span>@item.Device.Name</span>
+                                                            <span class="text-caption">@(item.Device.ActiveTime.Add(JsInitVariables.TimezoneOffset).ToString("yyyy-MM-dd HH:mm:ss fff") + "     " + typeof(DeviceStatusEnum).GetDescription(item.Device.DeviceStatus.ToString()) + "     " + item.Device.DeviceOffMsg)</span>
+                                                        </div>
+                                                    </MLabel>
+                                                </MListItemTitle>
+                                            </MListItemContent>
 
-                                    </MListItem>
+                                        </MListItem>
 
-                                    <MDivider></MDivider>
+                                        <MDivider></MDivider>
 
-
+                                    }
                                 </ItemContent>
                             </MVirtualScroll>
                         </MCard>
@@ -361,7 +368,7 @@
                     <div style="height: calc(100vh - 300px)">
 
                         <MCard Height=@("300px)") Style="overflow-y:auto" Flat Class="ml-2 my-4">
-                            @if (uploadDeviceInfoItem != null)
+                            @if (uploadDeviceInfoItem != null && uploadDeviceInfoItem?.Device != null)
                             {
                                 var item = uploadDeviceInfoItem;
                                 <MCard Flat Elevation="0" Class="ma-2">
@@ -651,11 +658,11 @@
     List<UploadDeviceCore> _uploadDeviceCores = new();
     void collectDeviceQuery()
     {
-        _collectDeviceCores = CollectDeviceHostService?.CollectDeviceCores?.WhereIf(!_collectDeviceGroup.IsNullOrEmpty(), a => a.Device.DeviceGroup == _collectDeviceGroup).ToList();
+        _collectDeviceCores = CollectDeviceHostService?.CollectDeviceCores?.WhereIf(!_collectDeviceGroup.IsNullOrEmpty(), a => a.Device?.DeviceGroup == _collectDeviceGroup).ToList();
     }
     void uploadDeviceQuery()
     {
-        _uploadDeviceCores = UploadDeviceHostService?.UploadDeviceCores?.WhereIf(!_uploadDeviceGroup.IsNullOrEmpty(), a => a.Device.DeviceGroup == _uploadDeviceGroup).ToList();
+        _uploadDeviceCores = UploadDeviceHostService?.UploadDeviceCores?.WhereIf(!_uploadDeviceGroup.IsNullOrEmpty(), a => a.Device?.DeviceGroup == _uploadDeviceGroup).ToList();
     }
     protected override async Task OnParametersSetAsync()
     {

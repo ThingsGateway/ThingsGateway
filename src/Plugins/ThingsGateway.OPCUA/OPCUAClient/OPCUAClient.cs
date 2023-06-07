@@ -101,7 +101,7 @@ public class OPCUAClient : CollectBase
         _deviceVariables = deviceVariables;
         if (deviceVariables.Count > 0)
         {
-            var result = PLC.SetTags(deviceVariables.Select(a => a.VariableAddress).ToList());
+            var result = PLC.AddTagsAndSave(deviceVariables.Select(a => a.VariableAddress).ToList());
             var sourVars = result?.Select(
       it =>
       {

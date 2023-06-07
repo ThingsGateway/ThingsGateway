@@ -43,7 +43,7 @@ namespace ThingsGateway.Foundation.Tests
             _opc.OPCNode = new() { OPCUrl = "opc.tcp://127.0.0.1:49320" };
 
             var MonitorNodeTags = new string[] { address };
-            _opc.SetTags(MonitorNodeTags.ToList());
+            _opc.AddTagsAndSave(MonitorNodeTags.ToList());
             _opc.OpcStatusChange += Info_OpcStatusChange;
             _opc.DataChangedHandler = DataReceived;
             await _opc.ConnectAsync();

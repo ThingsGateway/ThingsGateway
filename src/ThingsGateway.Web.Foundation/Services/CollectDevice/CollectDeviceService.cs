@@ -203,9 +203,7 @@ public class CollectDeviceService : DbRepository<CollectDevice>, ICollectDeviceS
         var collectDevice = _sysCacheService.Get<List<CollectDevice>>(ThingsGatewayCacheConst.Cache_CollectDevice, "");
         if (collectDevice == null)
         {
-            collectDevice = Context.Queryable<CollectDevice>()
-            .Select((u) => new CollectDevice { Id = u.Id.SelectAll() })
-            .ToList();
+            collectDevice = Context.CopyNew().Queryable<CollectDevice>().ToList();
             if (collectDevice != null)//做个大小写限制
             {
                 //插入Cache
@@ -220,7 +218,7 @@ public class CollectDeviceService : DbRepository<CollectDevice>, ICollectDeviceS
     {
         if (devId == 0)
         {
-            var devices = GetCacheList().Where(a => a.Enable);
+            var devices = GetCacheList().Where(a => a.Enable).ToList();
             var runtime = devices.Adapt<List<CollectDeviceRunTime>>();
             using var serviceScope = _scopeFactory.CreateScope();
             var variableService = serviceScope.ServiceProvider.GetService<IVariableService>();
@@ -235,7 +233,7 @@ public class CollectDeviceService : DbRepository<CollectDevice>, ICollectDeviceS
         }
         else
         {
-            var devices = GetCacheList();
+            var devices = GetCacheList().Where(a => a.Enable).ToList();
             devices = devices.Where(it => it.Id == devId).ToList();
             var runtime = devices.Adapt<List<CollectDeviceRunTime>>();
             using var serviceScope = _scopeFactory.CreateScope();

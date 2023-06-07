@@ -13,6 +13,8 @@
 using System.Diagnostics;
 
 using ThingsGateway.Foundation.Adapter.OPCDA;
+using ThingsGateway.Foundation.Adapter.OPCDA.Da;
+using ThingsGateway.Foundation.Adapter.OPCDA.Discovery;
 using ThingsGateway.Foundation.Extension.Json;
 
 using Xunit;
@@ -41,7 +43,7 @@ namespace ThingsGateway.Foundation.Tests
         {
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
-            var info = OpcDaClient.Discovery.OpcDiscovery.GetOpcServer(address, "");
+            var info = OpcDiscovery.GetOpcServer(address, "");
             _output.WriteLine(info?.ToJson().FormatJson());
             stopwatch.Stop();
             _output.WriteLine(address + "ºÄÊ±£º" + stopwatch.Elapsed.TotalSeconds);
@@ -53,7 +55,7 @@ namespace ThingsGateway.Foundation.Tests
         {
             _opc = new OPCDAClient(new EasyLogger(Log_Out));
             _opc.Init(new OPCNode() { OPCName = "Kepware.KEPServerEX.V6", CheckRate = 5000, ActiveSubscribe = true });
-            _opc.SetTags(new List<string> { address });
+            _opc.AddTagsAndSave(new List<string> { address });
             _opc.DataChangedHandler += Info_DataChangedHandler;
             _opc.Connect();
             Assert.True(_opc.IsConnected);
@@ -69,7 +71,7 @@ namespace ThingsGateway.Foundation.Tests
             _output.WriteLine(arg1.ToString() + arg2?.ToJson() + arg3?.ToJson() + arg4?.ToJson());
         }
 
-        private void Info_DataChangedHandler(List<OpcDaClient.Da.ItemReadResult> values)
+        private void Info_DataChangedHandler(List<ItemReadResult> values)
         {
             _output.WriteLine(values?.ToJson());
         }

@@ -13,11 +13,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-using OpcDaClient.Da;
-
 using ThingsGateway.Core;
 using ThingsGateway.Foundation;
 using ThingsGateway.Foundation.Adapter.OPCDA;
+using ThingsGateway.Foundation.Adapter.OPCDA.Da;
 using ThingsGateway.Foundation.Extension;
 using ThingsGateway.Web.Foundation;
 
@@ -28,22 +27,25 @@ namespace ThingsGateway.OPCDA;
 
 public class OPCDAClient : CollectBase
 {
-    public override void InitDataAdapter()
-    {
-    }
     internal CollectDeviceRunTime Device;
+
     internal ThingsGateway.Foundation.Adapter.OPCDA.OPCDAClient PLC = null;
+
     private List<CollectVariableRunTime> _deviceVariables = new();
+
     private OPCDAClientProperty driverPropertys = new();
+
     public OPCDAClient(IServiceScopeFactory scopeFactory) : base(scopeFactory)
     {
     }
 
-    public override System.Type DriverImportUIType => typeof(ImportVariable);
-    public override CollectDriverPropertyBase DriverPropertys => driverPropertys;
-    public override ThingsGatewayBitConverter ThingsGatewayBitConverter { get; } = new(EndianType.Little);
-
     public override System.Type DriverDebugUIType => typeof(OPCDAClientDebugDriverPage);
+
+    public override System.Type DriverImportUIType => typeof(ImportVariable);
+
+    public override CollectDriverPropertyBase DriverPropertys => driverPropertys;
+
+    public override ThingsGatewayBitConverter ThingsGatewayBitConverter { get; } = new(EndianType.Little);
 
     public override Task AfterStopAsync()
     {
@@ -56,16 +58,10 @@ public class OPCDAClient : CollectBase
         PLC.Connect();
         await Task.CompletedTask;
     }
-    protected override void Dispose(bool disposing)
-    {
-        if (PLC != null)
-            PLC.DataChangedHandler -= dataChangedHandler;
-        PLC?.Disconnect();
-        PLC?.SafeDispose();
-        PLC = null;
-        base.Dispose(disposing);
-    }
 
+    public override void InitDataAdapter()
+    {
+    }
     public override OperResult IsConnected()
     {
         return PLC.IsConnected ? OperResult.CreateSuccessResult() : new OperResult("失败");
@@ -75,12 +71,13 @@ public class OPCDAClient : CollectBase
     {
         return !driverPropertys.ActiveSubscribe;
     }
+
     public override OperResult<List<DeviceVariableSourceRead>> LoadSourceRead(List<CollectVariableRunTime> deviceVariables)
     {
         _deviceVariables = deviceVariables;
         if (deviceVariables.Count > 0)
         {
-            var result = PLC.SetTags(deviceVariables.Select(a => a.VariableAddress).ToList());
+            var result = PLC.AddTagsAndSave(deviceVariables.Select(a => a.VariableAddress).ToList());
             var sourVars = result?.Select(
       it =>
       {
@@ -112,6 +109,15 @@ public class OPCDAClient : CollectBase
         return result;
     }
 
+    protected override void Dispose(bool disposing)
+    {
+        if (PLC != null)
+            PLC.DataChangedHandler -= dataChangedHandler;
+        PLC?.Disconnect();
+        PLC?.SafeDispose();
+        PLC = null;
+        base.Dispose(disposing);
+    }
     protected override void Init(CollectDeviceRunTime device, object client = null)
     {
         Device = device;
@@ -181,19 +187,4 @@ public class OPCDAClient : CollectBase
             Device.DeviceOffMsg = ex.Message;
         }
     }
-}
-
-public class OPCDAClientProperty : CollectDriverPropertyBase
-{
-    [DeviceProperty("IP", "")] public string OPCIP { get; set; } = "localhost";
-    [DeviceProperty("OPC名称", "")] public string OPCName { get; set; } = "Kepware.KEPServerEX.V6";
-
-    [DeviceProperty("激活订阅", "")] public bool ActiveSubscribe { get; set; } = true;
-    [DeviceProperty("检测重连频率", "")] public int CheckRate { get; set; } = 60000;
-    [DeviceProperty("死区", "")] public float DeadBand { get; set; } = 0;
-    [DeviceProperty("自动分组大小", "")] public int GroupSize { get; set; } = 500;
-    [DeviceProperty("更新频率", "")] public int UpdateRate { get; set; } = 1000;
-    public override bool IsShareChannel { get; set; } = false;
-
-    public override ShareChannelEnum ShareChannel => ShareChannelEnum.None;
 }

@@ -28,22 +28,6 @@ using TouchSocket.Core;
 
 namespace ThingsGateway.OPCUA;
 /// <inheritdoc/>
-public class OPCUAServerProperty : UpDriverPropertyBase
-{
-    /// <summary>
-    /// 服务地址
-    /// </summary>
-    [DeviceProperty("服务地址", "")]
-    public string OpcUaStringUrl { get; set; } = "opc.tcp://127.0.0.1:49321";
-    /// <summary>
-    /// 安全策略
-    /// </summary>
-    [DeviceProperty("安全策略", "")]
-    public bool SecurityPolicy { get; set; }
-
-
-}
-/// <inheritdoc/>
 public class OPCUAServerVariableProperty : VariablePropertyBase
 {
     /// <summary>
@@ -262,7 +246,6 @@ public partial class OPCUAServer : UpLoadBase
         config.ApplicationUri = Utils.Format(@"urn:{0}:thingsgatewayopcuaserver", System.Net.Dns.GetHostName());
 
 
-
         config.ServerConfiguration = new ServerConfiguration()
         {
             // 配置登录的地址
@@ -293,7 +276,7 @@ public partial class OPCUAServer : UpLoadBase
         config.SecurityConfiguration = new SecurityConfiguration()
         {
             AddAppCertToTrustedStore = true,
-            AutoAcceptUntrustedCertificates = true,
+            AutoAcceptUntrustedCertificates = driverPropertys.AutoAcceptUntrustedCertificates,
             RejectSHA1SignedCertificates = false,
             MinimumCertificateKeySize = 1024,
             SuppressNonceValidationErrors = true,
@@ -307,30 +290,30 @@ public partial class OPCUAServer : UpLoadBase
             TrustedPeerCertificates = new CertificateTrustList()
             {
                 StoreType = CertificateStoreType.Directory,
-                StorePath = "%CommonApplicationData%\\ThingsGateway\\pki\\issuer",
+                StorePath = AppContext.BaseDirectory + @"OPCUAServerCertificate\pki\trustedPeer",
             },
 
             TrustedIssuerCertificates = new CertificateTrustList()
             {
                 StoreType = CertificateStoreType.Directory,
-                StorePath = "%CommonApplicationData%\\ThingsGateway\\pki\\issuer",
+                StorePath = AppContext.BaseDirectory + @"OPCUAServerCertificate\pki\trustedIssuer",
             },
 
             RejectedCertificateStore = new CertificateStoreIdentifier()
             {
                 StoreType = CertificateStoreType.Directory,
-                StorePath = "%CommonApplicationData%\\ThingsGateway\\pki\\rejected",
+                StorePath = AppContext.BaseDirectory + @"OPCUAServerCertificate\pki\rejected",
             },
             UserIssuerCertificates = new CertificateTrustList
             {
                 StoreType = CertificateStoreType.Directory,
-                StorePath = "%CommonApplicationData%\\ThingsGateway\\pki\\issuerUser",
+                StorePath = AppContext.BaseDirectory + @"OPCUAServerCertificate\pki\issuerUser",
 
             },
             TrustedUserCertificates = new CertificateTrustList
             {
                 StoreType = CertificateStoreType.Directory,
-                StorePath = "%CommonApplicationData%\\ThingsGateway\\pki\\trustedUser",
+                StorePath = AppContext.BaseDirectory + @"OPCUAServerCertificate\pki\trustedUser",
             }
         };
 

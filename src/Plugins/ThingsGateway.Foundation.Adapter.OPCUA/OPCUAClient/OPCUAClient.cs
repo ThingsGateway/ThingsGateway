@@ -107,28 +107,27 @@ public class OPCUAClient : DisposableObject
                 TrustedIssuerCertificates = new CertificateTrustList
                 {
                     StoreType = CertificateStoreType.Directory,
-                    StorePath = "%CommonApplicationData%\\ThingsGateway\\pki\\issuer",
+                    StorePath = AppContext.BaseDirectory+ @"OPCUAClientCertificate\pki\trustedIssuer",
                 },
                 TrustedPeerCertificates = new CertificateTrustList
                 {
                     StoreType = CertificateStoreType.Directory,
-                    StorePath = "%CommonApplicationData%\\ThingsGateway\\pki\\issuer",
+                    StorePath = AppContext.BaseDirectory+ @"OPCUAClientCertificate\pki\trustedPeer",
                 },
                 RejectedCertificateStore = new CertificateStoreIdentifier
                 {
                     StoreType = CertificateStoreType.Directory,
-                    StorePath = "%CommonApplicationData%\\ThingsGateway\\pki\\rejected",
+                    StorePath = AppContext.BaseDirectory+ @"OPCUAClientCertificate\pki\rejected",
                 },
                 UserIssuerCertificates = new CertificateTrustList
                 {
                     StoreType = CertificateStoreType.Directory,
-                    StorePath = "%CommonApplicationData%\\ThingsGateway\\pki\\issuerUser",
-
+                    StorePath = AppContext.BaseDirectory+ @"OPCUAClientCertificate\pki\issuerUser",
                 },
                 TrustedUserCertificates = new CertificateTrustList
                 {
                     StoreType = CertificateStoreType.Directory,
-                    StorePath = "%CommonApplicationData%\\ThingsGateway\\pki\\trustedUser",
+                    StorePath = AppContext.BaseDirectory+ @"OPCUAClientCertificate\pki\trustedUser",
                 }
 
 
@@ -160,15 +159,6 @@ public class OPCUAClient : DisposableObject
 
         Task.Run(dataChangedHandlerInvoke);
 
-    }
-    public void CertificateValidation(CertificateValidator sender, CertificateValidationEventArgs eventArgs)
-    {
-        if (ServiceResult.IsGood(eventArgs.Error))
-            eventArgs.Accept = true;
-        else if (eventArgs.Error.StatusCode.Code == StatusCodes.BadCertificateUntrusted)
-            eventArgs.Accept = true;
-        else
-            throw new Exception(string.Format("验证证书失败，错误代码:{0}: {1}", eventArgs.Error.Code, eventArgs.Error.AdditionalInfo));
     }
     /// <summary>
     /// 成功连接后或disconnecing从服务器。
@@ -233,8 +223,6 @@ public class OPCUAClient : DisposableObject
     /// </summary>
     public string OPCUAName { get; set; } = "OPCUAClient";
 
-
-
     /// <summary>
     /// 当前活动会话。
     /// </summary>
@@ -242,6 +230,7 @@ public class OPCUAClient : DisposableObject
     {
         get { return m_session; }
     }
+
     /// <summary>
     /// The user identity to use when creating the session.
     /// </summary>
@@ -313,6 +302,18 @@ public class OPCUAClient : DisposableObject
     }
 
     /// <summary>
+    /// 添加节点并保存
+    /// </summary>
+    /// <param name="tags"></param>
+    /// <returns></returns>
+    public Dictionary<string, List<string>> AddTagsAndSave(List<string> tags)
+    {
+        int i = 0;
+        _tagDicts = tags.ChunkTrivialBetter(OPCNode.GroupSize).ToDictionary(a => "default" + (i++));
+        return _tagDicts;
+    }
+
+    /// <summary>
     /// 浏览一个节点的引用
     /// </summary>
     /// <param name="tag">节点值</param>
@@ -374,6 +375,15 @@ public class OPCUAClient : DisposableObject
         return outputArguments.ToArray();
     }
 
+    public void CertificateValidation(CertificateValidator sender, CertificateValidationEventArgs eventArgs)
+    {
+        if (ServiceResult.IsGood(eventArgs.Error))
+            eventArgs.Accept = true;
+        else if (eventArgs.Error.StatusCode.Code == StatusCodes.BadCertificateUntrusted)
+            eventArgs.Accept = true;
+        else
+            throw new Exception(string.Format("验证证书失败，错误代码:{0}: {1}", eventArgs.Error.Code, eventArgs.Error.AdditionalInfo));
+    }
     /// <summary>
     /// connect to server
     /// </summary>
@@ -1214,14 +1224,6 @@ public class OPCUAClient : DisposableObject
                 dic_subscriptions.Remove(key);
             }
         }
-    }
-
-
-    public Dictionary<string, List<string>> SetTags(List<string> tags)
-    {
-        int i = 0;
-        _tagDicts = tags.ChunkTrivialBetter(OPCNode.GroupSize).ToDictionary(a => "default" + (i++));
-        return _tagDicts;
     }
     /// <summary>
     /// write a note to server(you should use try catch)
