@@ -10,7 +10,7 @@
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<ApplicationIcon>favicon.ico</ApplicationIcon>
 		<Configurations>Debug;Release;KINGVIEW</Configurations>
-		<!--<ServerGarbageCollection>false</ServerGarbageCollection>-->
+		<!--<ServerGarbageCollection>false</ServerGarbageCollection>--><!--切换为工作站GC策略-->
 	</PropertyGroup>
 
 
