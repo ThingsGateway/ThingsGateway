@@ -241,7 +241,7 @@
                                                  {
                                                  pauseMessage=!pauseMessage;
                                                  if(pauseMessage)
-                                                 CurMessages= collectDeviceInfoItem.Driver.Messages.ToList();
+                                                 CurMessages= collectDeviceInfoItem.Driver?.Messages.ToList();
                                                  }
                                                  )>
                                                 <MIcon>@((!pauseMessage) ? "mdi-pause" : "mdi-play")</MIcon>
@@ -257,7 +257,7 @@
                                             <MButton Loading=isDownExport Disabled=@(!UserResoures.IsHasButtonWithRole("tgdevicepause")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small
                                                      OnClick=@(async()=>
                                                  {
-                                                 var curMessages= collectDeviceInfoItem.Driver.Messages.ToList();
+                                                 var curMessages= collectDeviceInfoItem.Driver?.Messages.ToList();
                                                  await DownDeviceMessageExport(curMessages);
                                                  }
                                                  )>
@@ -285,7 +285,7 @@
                                 }
                                 else
                                 {
-                                    var item = collectDeviceInfoItem.Driver.Messages;
+                                    var item = collectDeviceInfoItem.Driver?.Messages;
                                     <MRow Class="ml-2 mr-2 d-flex" NoGutters>
                                     <MVirtualScroll Context="itemMessage" Height=@("calc(100vh - 700px)") OverscanCount=2 ItemSize="100" Items="item.OrderByDescending(a=>a.id).ToList()">
                                         <ItemContent>
@@ -463,7 +463,7 @@
                                                  {
                                                  pauseMessage=!pauseMessage;
                                                  if(pauseMessage)
-                                                 CurMessages= uploadDeviceInfoItem.Driver.Messages.ToList();
+                                                 CurMessages= uploadDeviceInfoItem.Driver?.Messages.ToList();
                                                  }
                                                  )>
                                                 <MIcon>@((!pauseMessage) ? "mdi-pause" : "mdi-play")</MIcon>
@@ -479,7 +479,7 @@
                                             <MButton Loading=isDownExport Disabled=@(!UserResoures.IsHasButtonWithRole("tgdevicepause")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small
                                                      OnClick=@(async()=>
                                                  {
-                                                 var curMessages= uploadDeviceInfoItem.Driver.Messages.ToList();
+                                                 var curMessages= uploadDeviceInfoItem.Driver?.Messages.ToList();
                                                  await DownDeviceMessageExport(curMessages);
                                                  }
                                                  )>
@@ -507,7 +507,7 @@
                                 }
                                 else
                                 {
-                                    var item = uploadDeviceInfoItem.Driver.Messages;
+                                    var item = uploadDeviceInfoItem.Driver?.Messages;
                                     <MRow Class="ml-2 mr-2 d-flex" NoGutters>
                                     <MVirtualScroll Context="itemMessage" Height=@("calc(100vh - 700px)") OverscanCount=2 ItemSize="100" Items="item.OrderByDescending(a=>a.id).ToList()">
                                         <ItemContent>
