@@ -279,7 +279,6 @@ public class CollectDeviceCore : DisposableObject
             _logger?.LogInformation($"{_device.Name}采集线程停止中");
             await _driver?.AfterStopAsync();
             _driver?.SafeDispose();
-            _pluginService.DeleteDriver(DeviceId, Device.PluginId);
             _logger?.LogInformation($"{_device.Name}采集线程已停止");
             IsExited = true;
 
@@ -679,9 +678,17 @@ public class CollectDeviceCore : DisposableObject
     {
         base.Dispose(disposing);
         StopThread();
+        _driver = null;
+        Methods=null;
+        Propertys = null;
+        if (Device!=null)
+        {
+            _pluginService.DeleteDriver(DeviceId, Device.PluginId);
+        }
         _device.DeviceVariableRunTimes = null;
         _device = null;
         GC.Collect();
+        GC.WaitForPendingFinalizers();
     }
 
 

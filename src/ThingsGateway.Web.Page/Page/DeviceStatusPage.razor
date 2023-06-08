@@ -98,10 +98,10 @@
                                         <MListItem OnClick=@(()=>collectDeviceInfo(item))>
                                             <MListItemContent>
                                                 <MListItemTitle>
-                                                    <MLabel Class=@((item.Device.DeviceStatus==DeviceStatusEnum.OnLine?"green--text":"red--text")+$" text-h6")>
+                                                    <MLabel Class=@((item.Device?.DeviceStatus==DeviceStatusEnum.OnLine?"green--text":"red--text")+$" text-h6")>
                                                         <div class="mt-1  d-flex align-center justify-space-between">
-                                                            <span>@item.Device.Name</span>
-                                                            <span class="text-caption">@(item.Device.ActiveTime.Add(JsInitVariables.TimezoneOffset).ToString("yyyy-MM-dd HH:mm:ss fff") + "     " + typeof(DeviceStatusEnum).GetDescription(item.Device.DeviceStatus.ToString()) + "     " + item.Device.DeviceOffMsg)</span>
+                                                            <span>@item.Device?.Name</span>
+                                                            <span class="text-caption">@(item.Device?.ActiveTime.Add(JsInitVariables.TimezoneOffset).ToString("yyyy-MM-dd HH:mm:ss fff") + "     " + typeof(DeviceStatusEnum).GetDescription(item.Device?.DeviceStatus.ToString()) + "     " + item.Device?.DeviceOffMsg)</span>
                                                         </div>
                                                     </MLabel>
                                                 </MListItemTitle>
@@ -130,10 +130,10 @@
                                 var item = collectDeviceInfoItem;
                                 <MCard Flat Elevation="0" Class="ma-2">
                                     <MCardSubtitle>
-                                        <MLabel Class=@((item.Device.DeviceStatus==DeviceStatusEnum.OnLine?"green--text":"red--text")+$" text-h6")>
+                                        <MLabel Class=@((item.Device?.DeviceStatus==DeviceStatusEnum.OnLine?"green--text":"red--text")+$" text-h6")>
                                             <div class="mt-1  d-flex align-center justify-space-between">
-                                                <span>@item.Device.Name</span>
-                                                <span class="text-caption">@(item.Device.ActiveTime.Add(JsInitVariables.TimezoneOffset).ToString("yyyy-MM-dd HH:mm:ss fff") + "     " + typeof(DeviceStatusEnum).GetDescription(item.Device.DeviceStatus.ToString()) + "     " + item.Device.DeviceOffMsg)</span>
+                                                <span>@item.Device?.Name</span>
+                                                <span class="text-caption">@(item.Device?.ActiveTime.Add(JsInitVariables.TimezoneOffset).ToString("yyyy-MM-dd HH:mm:ss fff") + "     " + typeof(DeviceStatusEnum).GetDescription(item.Device?.DeviceStatus.ToString()) + "     " + item.Device?.DeviceOffMsg)</span>
                                             </div>
                                         </MLabel>
                                     </MCardSubtitle>
@@ -145,7 +145,7 @@
                                         <MTooltip Bottom Context="tip">
                                             <ActivatorContent>
                                                 <MButton Disabled=@(!UserResoures.IsHasPageWithRole("/tgruntime/collectdevicevariable")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small Loading=isRestart
-                                                         OnClick=@(()=>NavigationManager.NavigateTo("/tgruntime/collectdevicevariable?devicename="+item.Device.Name))>
+                                                         OnClick=@(()=>NavigationManager.NavigateTo("/tgruntime/collectdevicevariable?devicename="+item.Device?.Name))>
                                                     <MIcon>mdi-information-outline</MIcon>
                                                 </MButton>
                                             </ActivatorContent>
@@ -157,12 +157,12 @@
 
                                         <MTooltip Bottom Context="tip">
                                             <ActivatorContent>
-                                                <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("tgdevicepause")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small OnClick=@(()=>Config(item.DeviceId,!item.Device.KeepOn))>
-                                                    <MIcon>@(item.Device.KeepOn ? "mdi-pause" : "mdi-play")</MIcon>
+                                                <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("tgdevicepause")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small OnClick=@(()=>Config(item.DeviceId,!item.Device?.KeepOn))>
+                                                    <MIcon>@(item.Device?.KeepOn==true ? "mdi-pause" : "mdi-play")</MIcon>
                                                     </MButton>
                                                 </ActivatorContent>
                                                 <ChildContent>
-                                                    <span>@(item.Device.KeepOn ? T("暂停") : T("运行"))</span>
+                                                    <span>@(item.Device?.KeepOn == true ? T("暂停") : T("运行"))</span>
                                             </ChildContent>
                                         </MTooltip>
                                         <MTooltip Bottom Context="tip">
@@ -193,20 +193,20 @@
                                     </MSubheader>
                                     <MRow Class="ml-2 mr-2 d-flex" NoGutters>
                                     <MCol Md=6 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
-                                        <span class="text-subtitle-2 grey--text">@item.Device.Description(a=>a.ActiveTime)</span>
-                                        <span class="text-caption">@item.Device.ActiveTime.Add(JsInitVariables.TimezoneOffset).ToString("yyyy-MM-dd HH:mm:ss fff")</span>
+                                        <span class="text-subtitle-2 grey--text">@item.Device?.Description(a=>a.ActiveTime)</span>
+                                        <span class="text-caption">@item.Device?.ActiveTime.Add(JsInitVariables.TimezoneOffset).ToString("yyyy-MM-dd HH:mm:ss fff")</span>
                                     </MCol>
                                     <MCol Md=6 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
-                                        <span class="text-subtitle-2 grey--text">@item.Device.Description(a=>a.SourceVariableNum)</span>
-                                        <span class="text-caption">@item.Device.SourceVariableNum</span>
+                                        <span class="text-subtitle-2 grey--text">@item.Device?.Description(a=>a.SourceVariableNum)</span>
+                                        <span class="text-caption">@item.Device?.SourceVariableNum</span>
                                     </MCol>
                                     <MCol Md=6 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
-                                        <span class="text-subtitle-2 grey--text">@item.Device.Description(a=>a.DeviceVariablesNum)</span>
-                                        <span class="text-caption">@item.Device.DeviceVariablesNum</span>
+                                        <span class="text-subtitle-2 grey--text">@item.Device?.Description(a=>a.DeviceVariablesNum)</span>
+                                        <span class="text-caption">@item.Device?.DeviceVariablesNum</span>
                                     </MCol>
                                     <MCol Md=6 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
-                                        <span class="text-subtitle-2 grey--text">@item.Device.Description(a=>a.MethodVariableNum)</span>
-                                        <span class="text-caption">@item.Device.MethodVariableNum</span>
+                                        <span class="text-subtitle-2 grey--text">@item.Device?.Description(a=>a.MethodVariableNum)</span>
+                                        <span class="text-caption">@item.Device?.MethodVariableNum</span>
                                     </MCol>
 
                                 </MRow>
@@ -216,14 +216,14 @@
                                 </MSubheader>
                                 <MRow Class="ml-2 mr-2 d-flex" NoGutters>
                                     <MCol Md=6 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
-                                        <span class="text-subtitle-2 grey--text">@item.Device.Description(a=>a.PluginName)</span>
-                                        <span class="text-caption">@item.Device.PluginName</span>
+                                        <span class="text-subtitle-2 grey--text">@item.Device?.Description(a=>a.PluginName)</span>
+                                        <span class="text-caption">@item.Device?.PluginName</span>
                                     </MCol>
                                     <MCol Md=6 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
-                                        <span class="text-subtitle-2 grey--text">@item.Device.Description(a=>a.IsLogOut)</span>
-                                        <span class="text-caption">@item.Device.IsLogOut</span>
+                                        <span class="text-subtitle-2 grey--text">@item.Device?.Description(a=>a.IsLogOut)</span>
+                                        <span class="text-caption">@item.Device?.IsLogOut</span>
                                     </MCol>
-                                    @foreach (var property in item.Device.DevicePropertys ?? new())
+                                    @foreach (var property in item.Device?.DevicePropertys ?? new())
                                         {
                                             <MCol Md=6 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
                                                 <span class="text-subtitle-2 grey--text">@property.Description</span>
@@ -344,10 +344,10 @@
                                         <MListItem OnClick=@(()=>uploadDeviceInfo(item))>
                                             <MListItemContent>
                                                 <MListItemTitle>
-                                                    <MLabel Class=@((item.Device.DeviceStatus==DeviceStatusEnum.OnLine?"green--text":"red--text")+$" text-h6")>
+                                                    <MLabel Class=@((item.Device?.DeviceStatus==DeviceStatusEnum.OnLine?"green--text":"red--text")+$" text-h6")>
                                                         <div class="mt-1  d-flex align-center justify-space-between">
-                                                            <span>@item.Device.Name</span>
-                                                            <span class="text-caption">@(item.Device.ActiveTime.Add(JsInitVariables.TimezoneOffset).ToString("yyyy-MM-dd HH:mm:ss fff") + "     " + typeof(DeviceStatusEnum).GetDescription(item.Device.DeviceStatus.ToString()) + "     " + item.Device.DeviceOffMsg)</span>
+                                                            <span>@item.Device?.Name</span>
+                                                            <span class="text-caption">@(item.Device?.ActiveTime.Add(JsInitVariables.TimezoneOffset).ToString("yyyy-MM-dd HH:mm:ss fff") + "     " + typeof(DeviceStatusEnum).GetDescription(item.Device?.DeviceStatus.ToString()) + "     " + item.Device?.DeviceOffMsg)</span>
                                                         </div>
                                                     </MLabel>
                                                 </MListItemTitle>
@@ -373,10 +373,10 @@
                                 var item = uploadDeviceInfoItem;
                                 <MCard Flat Elevation="0" Class="ma-2">
                                     <MCardSubtitle>
-                                        <MLabel Class=@((item.Device.DeviceStatus==DeviceStatusEnum.OnLine?"green--text":"red--text")+$" text-h6")>
+                                        <MLabel Class=@((item.Device?.DeviceStatus==DeviceStatusEnum.OnLine?"green--text":"red--text")+$" text-h6")>
                                             <div class="mt-1  d-flex align-center justify-space-between">
-                                                <span>@item.Device.Name</span>
-                                                <span class="text-caption">@(item.Device.ActiveTime.Add(JsInitVariables.TimezoneOffset).ToString("yyyy-MM-dd HH:mm:ss fff") + "     " + typeof(DeviceStatusEnum).GetDescription(item.Device.DeviceStatus.ToString()) + "     " + item.Device.DeviceOffMsg)</span>
+                                                <span>@item.Device?.Name</span>
+                                                <span class="text-caption">@(item.Device?.ActiveTime.Add(JsInitVariables.TimezoneOffset).ToString("yyyy-MM-dd HH:mm:ss fff") + "     " + typeof(DeviceStatusEnum).GetDescription(item.Device?.DeviceStatus.ToString()) + "     " + item.Device?.DeviceOffMsg)</span>
                                             </div>
                                         </MLabel>
                                     </MCardSubtitle>
@@ -399,12 +399,12 @@
 
                                         <MTooltip Bottom Context="tip">
                                             <ActivatorContent>
-                                                <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("tgdevicepause")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small OnClick=@(()=>UpConfig(item.DeviceId,!item.Device.KeepOn))>
-                                                    <MIcon>@(item.Device.KeepOn ? "mdi-pause" : "mdi-play")</MIcon>
+                                                <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("tgdevicepause")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small OnClick=@(()=>UpConfig(item.DeviceId,!item.Device?.KeepOn))>
+                                                    <MIcon>@(item.Device?.KeepOn==true ? "mdi-pause" : "mdi-play")</MIcon>
                                                     </MButton>
                                                 </ActivatorContent>
                                                 <ChildContent>
-                                                    <span>@(item.Device.KeepOn ? T("暂停") : T("运行"))</span>
+                                                    <span>@(item.Device?.KeepOn == true ? T("暂停") : T("运行"))</span>
                                             </ChildContent>
                                         </MTooltip>
 
@@ -415,12 +415,12 @@
 
                                     <MRow Class="ml-2 mr-2 d-flex" NoGutters>
                                     <MCol Md=6 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
-                                        <span class="text-subtitle-2 grey--text">@item.Device.Description(a=>a.ActiveTime)</span>
-                                        <span class="text-caption">@item.Device.ActiveTime.Add(JsInitVariables.TimezoneOffset).ToString("yyyy-MM-dd HH:mm:ss fff")</span>
+                                        <span class="text-subtitle-2 grey--text">@item.Device?.Description(a=>a.ActiveTime)</span>
+                                        <span class="text-caption">@item.Device?.ActiveTime.Add(JsInitVariables.TimezoneOffset).ToString("yyyy-MM-dd HH:mm:ss fff")</span>
                                     </MCol>
                                     <MCol Md=6 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
-                                        <span class="text-subtitle-2 grey--text">@item.Device.Description(a=>a.UploadVariableNum)</span>
-                                        <span class="text-caption">@item.Device.UploadVariableNum</span>
+                                        <span class="text-subtitle-2 grey--text">@item.Device?.Description(a=>a.UploadVariableNum)</span>
+                                        <span class="text-caption">@item.Device?.UploadVariableNum</span>
                                     </MCol>
                                 </MRow>
                                 <MSubheader>
@@ -428,15 +428,15 @@
                                 </MSubheader>
                                 <MRow Class="ml-2 mr-2 d-flex" NoGutters>
                                     <MCol Md=6 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
-                                        <span class="text-subtitle-2 grey--text">@item.Device.Description(a=>a.PluginName)</span>
-                                        <span class="text-caption">@item.Device.PluginName</span>
+                                        <span class="text-subtitle-2 grey--text">@item.Device?.Description(a=>a.PluginName)</span>
+                                        <span class="text-caption">@item.Device?.PluginName</span>
                                     </MCol>
                                     <MCol Md=6 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
-                                        <span class="text-subtitle-2 grey--text">@item.Device.Description(a=>a.IsLogOut)</span>
-                                        <span class="text-caption">@item.Device.IsLogOut</span>
+                                        <span class="text-subtitle-2 grey--text">@item.Device?.Description(a=>a.IsLogOut)</span>
+                                        <span class="text-caption">@item.Device?.IsLogOut</span>
                                     </MCol>
 
-                                    @foreach (var property in item.Device.DevicePropertys ?? new())
+                                    @foreach (var property in item.Device?.DevicePropertys ?? new())
                                         {
                                             if (!property.PropertyName.Contains("BigText"))
                                             {
@@ -789,22 +789,22 @@
             isRestart = false;
         }
     }
-    async Task Config(long devId, bool isStart)
+    async Task Config(long devId, bool? isStart)
     {
-        var str = isStart ? T("启动") : T("暂停");
+        var str = isStart==true ? T("启动") : T("暂停");
         var confirm = await PopupService.OpenConfirmDialogAsync(str, $"确定{str}?");
         if (confirm)
         {
-            await CollectDeviceHostService.ConfigDeviceThreadAsync(devId, isStart);
+            await CollectDeviceHostService.ConfigDeviceThreadAsync(devId, isStart==true);
         }
     }
-    async Task UpConfig(long devId, bool isStart)
+    async Task UpConfig(long devId, bool? isStart)
     {
-        var str = isStart ? T("启动") : T("暂停");
+        var str = isStart == true ? T("启动") : T("暂停");
         var confirm = await PopupService.OpenConfirmDialogAsync(str, $"确定{str}?");
         if (confirm)
         {
-            await UploadDeviceHostService.ConfigDeviceThreadAsync(devId, isStart);
+            await UploadDeviceHostService.ConfigDeviceThreadAsync(devId, isStart == true);
         }
     }
 
