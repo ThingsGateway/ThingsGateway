@@ -172,7 +172,7 @@ public class PluginSingletonService : ISingleton
     {
         var devId = YitIdHelper.NextId();
         var assemblyLoadContext = new AssemblyLoadContext(devId.ToString(), true);
-        var weakALC = new WeakReference(assemblyLoadContext,  true);
+        var weakALC = new WeakReference(assemblyLoadContext, true);
 
         try
         {

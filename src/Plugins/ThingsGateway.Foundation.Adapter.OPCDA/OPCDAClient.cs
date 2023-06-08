@@ -124,12 +124,12 @@ public class OPCDAClient : DisposableObject
     }
     public OperResult<List<BrowseElement>> GetBrowse(string itemId = null)
     {
-        return this.m_server.Browse(itemId);
+        return this.m_server?.Browse(itemId);
     }
 
     public OperResult<ServerStatus> GetStatus()
     {
-        return this.m_server.GetServerStatus();
+        return this.m_server?.GetServerStatus();
     }
 
     public void Init(OPCNode node = null)

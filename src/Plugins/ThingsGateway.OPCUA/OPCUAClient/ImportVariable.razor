@@ -14,14 +14,15 @@
 @using Microsoft.AspNetCore.Components.Web;
 @namespace ThingsGateway.OPCUA
 @using Opc.Ua;
+@using System.Reflection;
 @using ThingsGateway.Foundation.Adapter.OPCUA;
 @using ThingsGateway.Foundation;
 @using ThingsGateway.Web.Foundation;
 @using Masa.Blazor
-@inherits DriverImportUIBase
+@using Yitter.IdGenerator;
 <MCard Class="ma-0">
     <MCardTitle Class="indigo white--text text-h6">
-        @OPCUAClient.PLC?.OPCNode?.OPCUrl
+        @PLC?.OPCNode?.OPCURL
     </MCardTitle>
     <MRow Class="pa-4"
           Justify="JustifyTypes.SpaceBetween">
@@ -40,7 +41,7 @@
         </MCol>
         <MCol Cols="12" Md="6">
             <MCardText Style="height:500px;overflow-y:auto;">
-                @if (_actived?.Count == 0)
+                @if (_actived?.Count == 0 || _actived?.FirstOrDefault()?.NodeId==null)
                 {
                     <div key="title"
                          class="text-h6 font-weight-light grey--text pa-4 text-center">
@@ -110,6 +111,32 @@
 </MOverlay>
 @code
 {
+    [Inject]
+    IDriverPluginService DriverPluginService { get; set; }
+    public CollectDevice GetImportDevice()
+    {
+        var data =
+               new CollectDevice()
+                   {
+                       Name = PLC.OPCNode.OPCURL,
+                       Id = YitIdHelper.NextId(),
+                       Enable = true,
+                       IsLogOut = true,
+                       DevicePropertys = new(),
+                       PluginId = DriverPluginService.GetIdByName("ThingsGateway.OPCUA.OPCUAClient").ToLong(),
+                   };
+
+        data.DevicePropertys.Add(new() { PropertyName = nameof(OPCUAClientProperty.OPCURL), Value = PLC.OPCNode.OPCURL, Description = typeof(OPCUAClientProperty).GetProperty(nameof(OPCUAClientProperty.OPCURL)).GetCustomAttribute<DevicePropertyAttribute>().Name });
+        data.DevicePropertys.Add(new() { PropertyName = nameof(OPCUAClientProperty.UserName), Value = PLC.UserIdentity.DisplayName, Description = typeof(OPCUAClientProperty).GetProperty(nameof(OPCUAClientProperty.UserName)).GetCustomAttribute<DevicePropertyAttribute>().Name });
+        data.DevicePropertys.Add(new() { PropertyName = nameof(OPCUAClientProperty.Password), Value = "", Description = typeof(OPCUAClientProperty).GetProperty(nameof(OPCUAClientProperty.Password)).GetCustomAttribute<DevicePropertyAttribute>().Name });
+        data.DevicePropertys.Add(new() { PropertyName = nameof(OPCUAClientProperty.IsUseSecurity), Value = PLC.OPCNode.IsUseSecurity.ToString(), Description = typeof(OPCUAClientProperty).GetProperty(nameof(OPCUAClientProperty.IsUseSecurity)).GetCustomAttribute<DevicePropertyAttribute>().Name });
+        data.DevicePropertys.Add(new() { PropertyName = nameof(OPCUAClientProperty.ActiveSubscribe), Value = true.ToString(), Description = typeof(OPCUAClientProperty).GetProperty(nameof(OPCUAClientProperty.ActiveSubscribe)).GetCustomAttribute<DevicePropertyAttribute>().Name });
+        data.DevicePropertys.Add(new() { PropertyName = nameof(OPCUAClientProperty.DeadBand), Value = PLC.OPCNode.DeadBand.ToString(), Description = typeof(OPCUAClientProperty).GetProperty(nameof(OPCUAClientProperty.DeadBand)).GetCustomAttribute<DevicePropertyAttribute>().Name });
+        data.DevicePropertys.Add(new() { PropertyName = nameof(OPCUAClientProperty.GroupSize), Value = PLC.OPCNode.GroupSize.ToString(), Description = typeof(OPCUAClientProperty).GetProperty(nameof(OPCUAClientProperty.GroupSize)).GetCustomAttribute<DevicePropertyAttribute>().Name });
+        data.DevicePropertys.Add(new() { PropertyName = nameof(OPCUAClientProperty.UpdateRate), Value = PLC.OPCNode.UpdateRate.ToString(), Description = typeof(OPCUAClientProperty).GetProperty(nameof(OPCUAClientProperty.UpdateRate)).GetCustomAttribute<DevicePropertyAttribute>().Name });
+        data.DevicePropertys.Add(new() { PropertyName = nameof(OPCUAClientProperty.ReconnectPeriod), Value = PLC.OPCNode.ReconnectPeriod.ToString(), Description = typeof(OPCUAClientProperty).GetProperty(nameof(OPCUAClientProperty.ReconnectPeriod)).GetCustomAttribute<DevicePropertyAttribute>().Name });
+        return data;
+    }
 
     protected override void OnInitialized()
     {
@@ -122,8 +149,7 @@
     }
     private bool overlay = true;
     [Parameter]
-    public override object DriverObj { get; set; }
-    private OPCUAClient OPCUAClient => (OPCUAClient)DriverObj;
+    public ThingsGateway.Foundation.Adapter.OPCUA.OPCUAClient PLC { get; set; }
     private List<OPCUATagModel> Nodes = new();
     private List<ReferenceDescription> _selected { get; set; } = new();
     private List<ReferenceDescription> actived = new();
@@ -136,7 +162,8 @@
             if (actived?.FirstOrDefault() != value?.FirstOrDefault() && value?.Count > 0)
             {
                 actived = value;
-                nodeAttributes = OPCUAClient.PLC.ReadNoteAttributes(actived.FirstOrDefault().NodeId.ToString());
+                if (actived.FirstOrDefault().NodeId != null)
+                    nodeAttributes = PLC.ReadNoteAttributes(actived.FirstOrDefault().NodeId.ToString());
             }
 
         }
@@ -150,20 +177,20 @@
             var sourceId = (NodeId)model.Tag.NodeId;
             model.Nodes = PopulateBranch(sourceId);
         });
-
     }
 
-    public override List<CollectDeviceVariable> GetImportVariableList()
+    public (CollectDevice, List<CollectDeviceVariable>) GetImportVariableList()
     {
+        var device = GetImportDevice();
         var data = _selected.Select(a =>
           {
-              var nodeClass = (OPCUAClient.PLC.ReadNoteAttribute(a.NodeId.ToString(), Attributes.NodeClass).FirstOrDefault().Value).ToString();
+              var nodeClass = (PLC.ReadNoteAttribute(a.NodeId.ToString(), Attributes.NodeClass).FirstOrDefault().Value).ToString();
               if (nodeClass == nameof(NodeClass.Variable))
               {
                   ProtectTypeEnum level = ProtectTypeEnum.ReadOnly;
                   try
                   {
-                      var userAccessLevel = (AccessLevelType)(OPCUAClient.PLC.ReadNoteAttribute(a.NodeId.ToString(), Attributes.UserAccessLevel).FirstOrDefault().Value);
+                      var userAccessLevel = (AccessLevelType)(PLC.ReadNoteAttribute(a.NodeId.ToString(), Attributes.UserAccessLevel).FirstOrDefault().Value);
                       level = (userAccessLevel.HasFlag(AccessLevelType.CurrentRead)) ?
          userAccessLevel.HasFlag(AccessLevelType.CurrentWrite) ?
          ProtectTypeEnum.ReadWrite : ProtectTypeEnum.ReadOnly : ProtectTypeEnum.WriteOnly;
@@ -172,7 +199,7 @@
                   {
 
                   }
-                  var dataTypeId = (Opc.Ua.NodeId)(OPCUAClient.PLC.ReadNoteAttribute(a.NodeId.ToString(), Attributes.DataType).FirstOrDefault().Value);
+                  var dataTypeId = (Opc.Ua.NodeId)(PLC.ReadNoteAttribute(a.NodeId.ToString(), Attributes.DataType).FirstOrDefault().Value);
                   var dataType = Opc.Ua.DataTypes.GetSystemType(dataTypeId, null);
                   var result = Enum.TryParse(typeof(DataTypeEnum), dataType.Name, out object dataTypeEnum);
                   if (!result)
@@ -181,9 +208,9 @@
                   }
                   return new CollectDeviceVariable()
                       {
-                          Name = OPCUAClient.Device.Name + "_" + a.DisplayName.Text,
+                          Name = device.Name + "_" + a.DisplayName.Text,
                           VariableAddress = a.NodeId.ToString(),
-                          DeviceId = OPCUAClient.Device.Id,
+                          DeviceId = device.Id,
                           DataTypeEnum = (DataTypeEnum)dataTypeEnum,
                           Id = Yitter.IdGenerator.YitIdHelper.NextId(),
                           ProtectTypeEnum = level,
@@ -195,11 +222,15 @@
                   return null;
               }
           }).Where(a => a != null).ToList();
-        return data;
+        return (device, data);
     }
 
     private List<OPCUATagModel> PopulateBranch(NodeId sourceId)
     {
+        if (!PLC.Connected)
+        {
+            return new() { new() { Name = "未完成连接", Tag = new(), Nodes = null } };
+        }
         List<OPCUATagModel> nodes = new List<OPCUATagModel>();
         nodes.Add(new OPCUATagModel() { Name = "Browsering..." });
 
@@ -259,7 +290,7 @@
         nodesToBrowse.Add(nodeToBrowse1);
         nodesToBrowse.Add(nodeToBrowse2);
 
-        ReferenceDescriptionCollection references = FormUtils.Browse(OPCUAClient.PLC.Session, nodesToBrowse, false);
+        ReferenceDescriptionCollection references = FormUtils.Browse(PLC.Session, nodesToBrowse, false);
         return references;
     }
 

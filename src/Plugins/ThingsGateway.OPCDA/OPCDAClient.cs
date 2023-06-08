@@ -41,8 +41,6 @@ public class OPCDAClient : CollectBase
 
     public override System.Type DriverDebugUIType => typeof(OPCDAClientDebugDriverPage);
 
-    public override System.Type DriverImportUIType => typeof(ImportVariable);
-
     public override CollectDriverPropertyBase DriverPropertys => driverPropertys;
 
     public override ThingsGatewayBitConverter ThingsGatewayBitConverter { get; } = new(EndianType.Little);

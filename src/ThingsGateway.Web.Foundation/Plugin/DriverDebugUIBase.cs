@@ -149,7 +149,51 @@ public abstract class DriverDebugUIBase : ComponentBase, IDisposable
             isDownExport = false;
         }
     }
+    [Inject]
+    IVariableService VariableService { get; set; }
+    [Inject]
+    ICollectDeviceService CollectDeviceService { get; set; }
 
+    /// <summary>
+    /// 导入变量导出到excel
+    /// </summary>
+    /// <returns></returns>
+    protected async Task DownDeviceExport(CollectDevice data)
+    {
+        try
+        {
+            isDownExport = true;
+            StateHasChanged();
+            using var memoryStream = await CollectDeviceService.ExportFileAsync(new() { data });
+            memoryStream.Seek(0, SeekOrigin.Begin);
+            using var streamRef = new DotNetStreamReference(stream: memoryStream);
+            await JS.InvokeVoidAsync("downloadFileFromStream", $"设备导出{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss fff")}.xlsx", streamRef);
+        }
+        finally
+        {
+            isDownExport = false;
+        }
+    }
+    /// <summary>
+    /// 导入变量导出到excel
+    /// </summary>
+    /// <returns></returns>
+    protected async Task DownDeviceExport(List<CollectDeviceVariable> data)
+    {
+        try
+        {
+            isDownExport = true;
+            StateHasChanged();
+            using var memoryStream = await VariableService.ExportFileAsync(data);
+            memoryStream.Seek(0, SeekOrigin.Begin);
+            using var streamRef = new DotNetStreamReference(stream: memoryStream);
+            await JS.InvokeVoidAsync("downloadFileFromStream", $"变量导出{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss fff")}.xlsx", streamRef);
+        }
+        finally
+        {
+            isDownExport = false;
+        }
+    }
     /// <inheritdoc/>
     protected void LogOut(string str)
     {

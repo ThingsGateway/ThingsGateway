@@ -35,7 +35,7 @@
     </MRow>
     <MRow Justify="JustifyTypes.SpaceBetween" Align="AlignTypes.Center">
         <MCheckbox Class="mx-1 my-1" Label=@node.Description(a=>a.IsUseSecurity) Dense HideDetails="@("auto")" @bind-Value=@node.IsUseSecurity />
-        <MTextField Class="mx-1 my-1" Label=@node.Description(a=>a.OPCUrl) Dense Outlined HideDetails="@("auto")" @bind-Value=@node.OPCUrl />
+        <MTextField Class="mx-1 my-1" Label=@node.Description(a=>a.OPCURL) Dense Outlined HideDetails="@("auto")" @bind-Value=@node.OPCURL />
         <MTextField Class="mx-1 my-1" Label="用户名" Dense Outlined HideDetails="@("auto")" @bind-Value=@username />
         <MTextField Class="mx-1 my-1" Label="密码" Dense Outlined HideDetails="@("auto")" @bind-Value=@password />
         <MButton Class="mx-1 my-1" OnClick=@(Reconnect) Color="primary">

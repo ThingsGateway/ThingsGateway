@@ -679,9 +679,9 @@ public class CollectDeviceCore : DisposableObject
         base.Dispose(disposing);
         StopThread();
         _driver = null;
-        Methods=null;
+        Methods = null;
         Propertys = null;
-        if (Device!=null)
+        if (Device != null)
         {
             _pluginService.DeleteDriver(DeviceId, Device.PluginId);
         }

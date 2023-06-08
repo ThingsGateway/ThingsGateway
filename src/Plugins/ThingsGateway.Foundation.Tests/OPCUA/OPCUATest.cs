@@ -40,7 +40,7 @@ namespace ThingsGateway.Foundation.Tests
             _opc = new OPCUAClient();
             _opc.UserIdentity = new UserIdentity("Administrator", "111111");
             //_opc.UserIdentity = new UserIdentity(new AnonymousIdentityToken());
-            _opc.OPCNode = new() { OPCUrl = "opc.tcp://127.0.0.1:49320" };
+            _opc.OPCNode = new() { OPCURL = "opc.tcp://127.0.0.1:49320" };
 
             var MonitorNodeTags = new string[] { address };
             _opc.AddTagsAndSave(MonitorNodeTags.ToList());
