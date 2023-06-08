@@ -30,9 +30,13 @@ using ThingsGateway.Web.Foundation;
 using TouchSocket.Core;
 
 namespace ThingsGateway.Mqtt;
+
+
 public class MqttClient : UpLoadBase
 {
     private List<CollectDeviceRunTime> _collectDevice;
+    private ConcurrentQueue<DeviceData> _collectDeviceRunTimes = new();
+    private ConcurrentQueue<VariableData> _collectVariableRunTimes = new();
     private GlobalCollectDeviceData _globalCollectDeviceData;
 
     private IMqttClient _mqttClient;
@@ -45,9 +49,6 @@ public class MqttClient : UpLoadBase
     private List<CollectVariableRunTime> _uploadVariables = new();
 
     private CollectDeviceWorker collectDeviceHostService;
-
-    private ConcurrentQueue<DeviceData> _collectDeviceRunTimes = new();
-    private ConcurrentQueue<VariableData> _collectVariableRunTimes = new();
     private MqttClientProperty driverPropertys = new();
 
     private TimerTick exDeviceTimerTick;
