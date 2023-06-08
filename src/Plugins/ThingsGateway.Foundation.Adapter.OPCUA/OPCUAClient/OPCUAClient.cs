@@ -107,27 +107,27 @@ public class OPCUAClient : DisposableObject
                 TrustedIssuerCertificates = new CertificateTrustList
                 {
                     StoreType = CertificateStoreType.Directory,
-                    StorePath = AppContext.BaseDirectory+ @"OPCUAClientCertificate\pki\trustedIssuer",
+                    StorePath = AppContext.BaseDirectory + @"OPCUAClientCertificate\pki\trustedIssuer",
                 },
                 TrustedPeerCertificates = new CertificateTrustList
                 {
                     StoreType = CertificateStoreType.Directory,
-                    StorePath = AppContext.BaseDirectory+ @"OPCUAClientCertificate\pki\trustedPeer",
+                    StorePath = AppContext.BaseDirectory + @"OPCUAClientCertificate\pki\trustedPeer",
                 },
                 RejectedCertificateStore = new CertificateStoreIdentifier
                 {
                     StoreType = CertificateStoreType.Directory,
-                    StorePath = AppContext.BaseDirectory+ @"OPCUAClientCertificate\pki\rejected",
+                    StorePath = AppContext.BaseDirectory + @"OPCUAClientCertificate\pki\rejected",
                 },
                 UserIssuerCertificates = new CertificateTrustList
                 {
                     StoreType = CertificateStoreType.Directory,
-                    StorePath = AppContext.BaseDirectory+ @"OPCUAClientCertificate\pki\issuerUser",
+                    StorePath = AppContext.BaseDirectory + @"OPCUAClientCertificate\pki\issuerUser",
                 },
                 TrustedUserCertificates = new CertificateTrustList
                 {
                     StoreType = CertificateStoreType.Directory,
-                    StorePath = AppContext.BaseDirectory+ @"OPCUAClientCertificate\pki\trustedUser",
+                    StorePath = AppContext.BaseDirectory + @"OPCUAClientCertificate\pki\trustedUser",
                 }
 
 
@@ -389,7 +389,7 @@ public class OPCUAClient : DisposableObject
     /// </summary>
     public async Task ConnectAsync()
     {
-        m_session = await ConnectAsync(OPCNode.OPCUrl);
+        m_session = await ConnectAsync(OPCNode.OPCURL);
     }
 
     /// <summary>

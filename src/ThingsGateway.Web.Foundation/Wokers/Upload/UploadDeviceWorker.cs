@@ -334,7 +334,7 @@ public class UploadDeviceWorker : BackgroundService
             for (int i = 0; i < num; i++)
             {
                 UploadDeviceCore devcore = UploadDeviceCores[i];
-                if(devcore.Device!=null)
+                if (devcore.Device != null)
                 {
                     if (
     (devcore.Device.ActiveTime != DateTime.MinValue && devcore.Device.ActiveTime.AddMinutes(3) <= DateTime.UtcNow)

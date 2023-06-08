@@ -57,7 +57,7 @@ public interface ICollectDeviceService : ITransient
     /// 导出Excel
     /// </summary>
     /// <returns></returns>
-    Task<MemoryStream> ExportFileAsync();
+    Task<MemoryStream> ExportFileAsync(List<CollectDevice> devDatas = null);
     /// <summary>
     /// 获取缓存
     /// </summary>
@@ -110,8 +110,6 @@ public interface ICollectDeviceService : ITransient
     /// <param name="file"></param>
     /// <returns></returns>
     Task<Dictionary<string, ImportPreviewOutputBase>> PreviewAsync(IBrowserFile file);
-
-
 }
 /// <summary>
 /// 设备组/名称树

@@ -158,7 +158,7 @@
                                         <MTooltip Bottom Context="tip">
                                             <ActivatorContent>
                                                 <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("tgdevicepause")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small OnClick=@(()=>Config(item.DeviceId,!item.Device?.KeepOn))>
-                                                    <MIcon>@(item.Device?.KeepOn==true ? "mdi-pause" : "mdi-play")</MIcon>
+                                                    <MIcon>@(item.Device?.KeepOn == true ? "mdi-pause" : "mdi-play")</MIcon>
                                                     </MButton>
                                                 </ActivatorContent>
                                                 <ChildContent>
@@ -176,16 +176,6 @@
                                             </ChildContent>
                                         </MTooltip>
 
-                                        <MTooltip Bottom Context="tip">
-                                            <ActivatorContent>
-                                                <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("tgdevicerestart")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small Loading=isRestart OnClick=@(()=>ImportVaiable(item.DeviceId))>
-                                                    <MIcon>mdi-import</MIcon>
-                                                </MButton>
-                                            </ActivatorContent>
-                                            <ChildContent>
-                                                <span>@T("导入变量")</span>
-                                            </ChildContent>
-                                        </MTooltip>
                                     </MCardActions>
 
                                     <MSubheader>
@@ -400,7 +390,7 @@
                                         <MTooltip Bottom Context="tip">
                                             <ActivatorContent>
                                                 <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("tgdevicepause")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small OnClick=@(()=>UpConfig(item.DeviceId,!item.Device?.KeepOn))>
-                                                    <MIcon>@(item.Device?.KeepOn==true ? "mdi-pause" : "mdi-play")</MIcon>
+                                                    <MIcon>@(item.Device?.KeepOn == true ? "mdi-pause" : "mdi-play")</MIcon>
                                                     </MButton>
                                                 </ActivatorContent>
                                                 <ChildContent>
@@ -538,7 +528,7 @@
 
 
 
-    <MSpeedDial @bind-Value="fab" Direction="top" Class="position-button"
+    <MSpeedDial @bind-Value="fab" Direction="bottom" Class="position-button"
                 Transition="slide-y-reverse-transition">
         <ActivatorContent>
             <MButton Color="blue darken" Dark Small Fab @attributes="@context.Attrs">
@@ -573,7 +563,7 @@
 <style>
     .position-button {
         position: fixed !important;
-        top: 40%;
+        top: 10%;
         right: 0;
         box-shadow: 1px 1px 8px var(--mud-palette-primary);
         background-color: var(--mud-palette-primary);
@@ -582,23 +572,6 @@
 
 </style>
 
-<PModal @bind-Value="IsShowImportVariableList" OnCancel="() => IsShowImportVariableList = false"
-        Title=@T("导入变量") Height=@("700") Persistent
-        MaxWidth="1500" OnSave="DownDeviceExport">
-    <ChildContent>
-        @if (IsShowImportVariableList)
-        {
-            @_importRender
-        }
-    </ChildContent>
-
-
-    <SaveContent Context="save">
-        <MButton Text Color="primary" OnClick="save.Click" Disabled="isDownExport" Loading="isDownExport">
-            <MLabel>@T("导出Excel")</MLabel>
-        </MButton>
-    </SaveContent>
-</PModal>
 
 
 
@@ -678,29 +651,11 @@
     IJSRuntime JS { get; set; }
     [Inject]
     IVariableService VariableService { get; set; }
-    async Task DownDeviceExport()
-    {
-        try
-        {
-            var data = _importRef.GetImportVariableList();
-            isDownExport = true;
-            StateHasChanged();
-            using var memoryStream = await VariableService.ExportFileAsync(data);
-            memoryStream.Seek(0, SeekOrigin.Begin);
-            using var streamRef = new DotNetStreamReference(stream: memoryStream);
-            await JS.InvokeVoidAsync("downloadFileFromStream", $"变量导出{DateTime.UtcNow.Add(JsInitVariables.TimezoneOffset).ToString("yyyy-MM-dd HH:mm:ss fff")}.xlsx", streamRef);
-        }
-        finally
-        {
-            isDownExport = false;
-        }
-    }
     StringNumber tab;
     private System.Timers.Timer DelayTimer;
     private bool fab;
     bool isAllRestart;
     bool isRestart;
-    bool IsShowImportVariableList;
     CollectDeviceWorker CollectDeviceHostService { get; set; }
     UploadDeviceWorker UploadDeviceHostService { get; set; }
     AlarmWorker AlarmHostService { get; set; }
@@ -718,34 +673,11 @@
 
         return base.OnInitializedAsync();
     }
-    private BootstrapDynamicComponent _importComponent;
-    private RenderFragment _importRender;
-    private DriverImportUIBase _importRef;
 
-    async Task ImportVaiable(long devId)
-    {
-        var driver = ServiceExtension.GetBackgroundService<CollectDeviceWorker>().GetImportUI(devId);
-        if (driver?.DriverImportUIType == null)
-        {
-            await PopupService.EnqueueSnackbarAsync("插件未实现导入变量", AlertTypes.Warning);
-            return;
-        }
-        _importComponent = new BootstrapDynamicComponent(driver.DriverImportUIType, new Dictionary<string, object>()
-            {
-                [nameof(DriverImportUIBase.DriverObj)] = driver
-            }
-            );
-        _importRender = _importComponent.Render(a => _importRef = (DriverImportUIBase)a);
-
-        IsShowImportVariableList = true;
-    }
     async Task Restart(long devId)
     {
         try
         {
-            _importComponent = null;
-            _importRef = null;
-            _importRender = null;
             var confirm = await PopupService.OpenConfirmDialogAsync(T("重启"), T("确定重启?"));
             if (confirm)
             {
@@ -768,9 +700,6 @@
     {
         try
         {
-            _importComponent = null;
-            _importRef = null;
-            _importRender = null;
             var confirm = await PopupService.OpenConfirmDialogAsync(T("重启"), T("确定重启?"));
             if (confirm)
             {
@@ -791,11 +720,11 @@
     }
     async Task Config(long devId, bool? isStart)
     {
-        var str = isStart==true ? T("启动") : T("暂停");
+        var str = isStart == true ? T("启动") : T("暂停");
         var confirm = await PopupService.OpenConfirmDialogAsync(str, $"确定{str}?");
         if (confirm)
         {
-            await CollectDeviceHostService.ConfigDeviceThreadAsync(devId, isStart==true);
+            await CollectDeviceHostService.ConfigDeviceThreadAsync(devId, isStart == true);
         }
     }
     async Task UpConfig(long devId, bool? isStart)

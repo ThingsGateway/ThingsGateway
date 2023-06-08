@@ -68,7 +68,7 @@ namespace ThingsGateway.Core
             db.Aop.OnLogExecuting = (sql, pars) =>
             {
                 //如果不是开发环境就打印sql
-                if (App.HostEnvironment.IsDevelopment()&& !sql.Contains("tg_log_runtime"))
+                if (App.HostEnvironment.IsDevelopment() && !sql.Contains("tg_log_runtime"))
                 {
                     if (sql.StartsWith("SELECT"))
                     {

@@ -275,10 +275,12 @@ public class CollectDeviceService : DbRepository<CollectDevice>, ICollectDeviceS
     public const string CollectDeviceSheetName = "采集设备";
     /// <inheritdoc/>
     [OperDesc("导出采集设备表", IsRecordPar = false)]
-    public async Task<MemoryStream> ExportFileAsync()
+    public async Task<MemoryStream> ExportFileAsync(List<CollectDevice> devDatas = null)
     {
-
-        var devDatas = GetCacheList();
+        if (devDatas == null)
+        {
+            devDatas = GetCacheList();
+        }
 
         //总数据
         Dictionary<string, object> sheets = new Dictionary<string, object>();

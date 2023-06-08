@@ -44,9 +44,6 @@ public class OPCUAClient : CollectBase
     }
 
     /// <inheritdoc/>
-    public override Type DriverImportUIType => typeof(ImportVariable);
-
-    /// <inheritdoc/>
     public override Type DriverDebugUIType => typeof(OPCUAClientDebugDriverPage);
 
     /// <inheritdoc/>
@@ -148,7 +145,7 @@ public class OPCUAClient : CollectBase
     {
         Device = device;
         OPCNode oPCNode = new();
-        oPCNode.OPCUrl = driverPropertys.OPCURL;
+        oPCNode.OPCURL = driverPropertys.OPCURL;
         oPCNode.UpdateRate = driverPropertys.UpdateRate;
         oPCNode.DeadBand = driverPropertys.DeadBand;
         oPCNode.GroupSize = driverPropertys.GroupSize;

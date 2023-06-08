@@ -12,15 +12,16 @@
 
 @using BlazorComponent;
 @using Microsoft.AspNetCore.Components.Web;
+@using System.Reflection;
 @using ThingsGateway.Foundation.Adapter.OPCDA;
 @using ThingsGateway.Foundation;
 @using ThingsGateway.Foundation.Adapter.OPCDA.Rcw;
 @using ThingsGateway.Web.Foundation;
 @using Masa.Blazor
-@inherits DriverImportUIBase
+@using Yitter.IdGenerator;
 <MCard Class="ma-0">
     <MCardTitle Class="indigo white--text text-h6">
-        @OPCDAClient.PLC?.OPCNode?.ToString()
+        @PLC?.OPCNode?.ToString()
     </MCardTitle>
     <MRow Class="pa-4"
           Justify="JustifyTypes.SpaceBetween">
@@ -119,16 +120,15 @@
     protected override void OnInitialized()
     {
         Task.Run(async () =>
-    {
-        Nodes = PopulateBranch("");
-        overlay = false;
-        await InvokeAsync(StateHasChanged);
-    });
+        {
+            Nodes = PopulateBranch("");
+            overlay = false;
+            await InvokeAsync(StateHasChanged);
+        });
     }
     private bool overlay = true;
     [Parameter]
-    public override object DriverObj { get; set; }
-    private OPCDAClient OPCDAClient => (OPCDAClient)DriverObj;
+    public ThingsGateway.Foundation.Adapter.OPCDA.OPCDAClient PLC { get; set; }
     private List<OPCDATagModel> Nodes = new();
     private List<BrowseElement> _selected { get; set; } = new();
     private List<BrowseElement> actived = new();
@@ -147,7 +147,8 @@
         }
 
     }
-
+    [Inject]
+    IDriverPluginService DriverPluginService { get; set; }
     private Task PopulateBranchAsync(OPCDATagModel model)
     {
         return Task.Run(() =>
@@ -157,9 +158,32 @@
         });
 
     }
-
-    public override List<CollectDeviceVariable> GetImportVariableList()
+    public CollectDevice GetImportDevice()
     {
+        var data =
+               new CollectDevice()
+                   {
+                       Name = PLC.OPCNode.OPCName + YitIdHelper.NextId().ToString(),
+                       Id = YitIdHelper.NextId(),
+                       Enable = true,
+                       IsLogOut = true,
+                       DevicePropertys = new(),
+                       PluginId = DriverPluginService.GetIdByName("ThingsGateway.OPCDA.OPCDAClient").ToLong(),
+                   };
+
+        data.DevicePropertys.Add(new() { PropertyName = nameof(OPCDAClientProperty.OPCName), Value = PLC.OPCNode.OPCName, Description = typeof(OPCDAClientProperty).GetProperty(nameof(OPCDAClientProperty.OPCName)).GetCustomAttribute<DevicePropertyAttribute>().Name });
+        data.DevicePropertys.Add(new() { PropertyName = nameof(OPCDAClientProperty.OPCIP), Value = PLC.OPCNode.OPCIP, Description = typeof(OPCDAClientProperty).GetProperty(nameof(OPCDAClientProperty.OPCIP)).GetCustomAttribute<DevicePropertyAttribute>().Name });
+        data.DevicePropertys.Add(new() { PropertyName = nameof(OPCDAClientProperty.ActiveSubscribe), Value = PLC.OPCNode.ActiveSubscribe.ToString(), Description = typeof(OPCDAClientProperty).GetProperty(nameof(OPCDAClientProperty.ActiveSubscribe)).GetCustomAttribute<DevicePropertyAttribute>().Name });
+        data.DevicePropertys.Add(new() { PropertyName = nameof(OPCDAClientProperty.CheckRate), Value = PLC.OPCNode.CheckRate.ToString(), Description = typeof(OPCDAClientProperty).GetProperty(nameof(OPCDAClientProperty.CheckRate)).GetCustomAttribute<DevicePropertyAttribute>().Name });
+        data.DevicePropertys.Add(new() { PropertyName = nameof(OPCDAClientProperty.DeadBand), Value = PLC.OPCNode.DeadBand.ToString(), Description = typeof(OPCDAClientProperty).GetProperty(nameof(OPCDAClientProperty.DeadBand)).GetCustomAttribute<DevicePropertyAttribute>().Name });
+        data.DevicePropertys.Add(new() { PropertyName = nameof(OPCDAClientProperty.GroupSize), Value = PLC.OPCNode.GroupSize.ToString(), Description = typeof(OPCDAClientProperty).GetProperty(nameof(OPCDAClientProperty.GroupSize)).GetCustomAttribute<DevicePropertyAttribute>().Name });
+        data.DevicePropertys.Add(new() { PropertyName = nameof(OPCDAClientProperty.UpdateRate), Value = PLC.OPCNode.UpdateRate.ToString(), Description = typeof(OPCDAClientProperty).GetProperty(nameof(OPCDAClientProperty.UpdateRate)).GetCustomAttribute<DevicePropertyAttribute>().Name });
+        return data;
+    }
+
+    public (CollectDevice, List<CollectDeviceVariable>) GetImportVariableList()
+    {
+        var device = GetImportDevice();
         var data = _selected.Select(a =>
           {
               ProtectTypeEnum level = ProtectTypeEnum.ReadOnly;
@@ -175,16 +199,16 @@
               }
               return new CollectDeviceVariable()
                   {
-                      Name = OPCDAClient.Device.Name + "_" + a.Name,
+                      Name = device.Name + "_" + a.Name,
                       VariableAddress = a.ItemName,
-                      DeviceId = OPCDAClient.Device.Id,
+                      DeviceId = device.Id,
                       Id = Yitter.IdGenerator.YitIdHelper.NextId(),
                       ProtectTypeEnum = level,
                       IntervalTime = 1000,
                   };
 
           }).Where(a => a != null).ToList();
-        return data;
+        return (device, data);
     }
 
     private List<OPCDATagModel> PopulateBranch(string sourceId)
@@ -192,8 +216,11 @@
         List<OPCDATagModel> nodes = new List<OPCDATagModel>();
         nodes.Add(new OPCDATagModel() { Name = "Browsering..." });
 
-        var result = OPCDAClient.PLC.GetBrowse(sourceId);
-        if (!result.IsSuccess) return new();
+        var result = PLC.GetBrowse(sourceId);
+        if (!result.IsSuccess) 
+        {
+            return new() { new() { Name = "未完成连接", Tag = new(),Nodes=null } };
+        }
         var references = result.Content;
         List<OPCDATagModel> list = new List<OPCDATagModel>();
         if (references != null)
