@@ -334,26 +334,30 @@ public class UploadDeviceWorker : BackgroundService
             for (int i = 0; i < num; i++)
             {
                 UploadDeviceCore devcore = UploadDeviceCores[i];
-                if (
-                    (devcore.Device.ActiveTime != DateTime.MinValue && devcore.Device.ActiveTime.AddMinutes(3) <= DateTime.UtcNow)
-                    || devcore.IsInitSuccess == false
-                    )
+                if(devcore.Device!=null)
                 {
-                    if (devcore.StoppingTokens.Last().Token.IsCancellationRequested)
-                        continue;
-                    if (devcore.Device.DeviceStatus == DeviceStatusEnum.Pause)
-                        continue;
-                    if (!devcore.IsInitSuccess)
-                        _logger?.LogWarning(devcore.Device.Name + "初始化失败，重启线程中");
-                    else
-                        _logger?.LogWarning(devcore.Device.Name + "上传线程假死，重启线程中");
-                    await UpDeviceThreadAsync(devcore.DeviceId);
+                    if (
+    (devcore.Device.ActiveTime != DateTime.MinValue && devcore.Device.ActiveTime.AddMinutes(3) <= DateTime.UtcNow)
+    || devcore.IsInitSuccess == false
+    )
+                    {
+                        if (devcore.StoppingTokens.Last().Token.IsCancellationRequested)
+                            continue;
+                        if (devcore.Device.DeviceStatus == DeviceStatusEnum.Pause)
+                            continue;
+                        if (!devcore.IsInitSuccess)
+                            _logger?.LogWarning(devcore.Device.Name + "初始化失败，重启线程中");
+                        else
+                            _logger?.LogWarning(devcore.Device.Name + "上传线程假死，重启线程中");
+                        await UpDeviceThreadAsync(devcore.DeviceId);
 
+                    }
+                    else
+                    {
+                        _logger?.LogTrace(devcore.Device.Name + "线程检测正常");
+                    }
                 }
-                else
-                {
-                    _logger?.LogTrace(devcore.Device.Name + "线程检测正常");
-                }
+
             }
             await Task.Delay(100000, stoppingToken);
         }

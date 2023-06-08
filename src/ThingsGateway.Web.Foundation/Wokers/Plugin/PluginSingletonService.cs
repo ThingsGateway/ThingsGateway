@@ -172,6 +172,7 @@ public class PluginSingletonService : ISingleton
     {
         var devId = YitIdHelper.NextId();
         var assemblyLoadContext = new AssemblyLoadContext(devId.ToString(), true);
+        var weakALC = new WeakReference(assemblyLoadContext,  true);
 
         try
         {
@@ -200,10 +201,10 @@ public class PluginSingletonService : ISingleton
             }
             if (assembly != null)
             {
-
-                var driverBase = assembly.GetTypes().Where(x => (typeof(CollectBase).IsAssignableFrom(x)) && x.IsClass && !x.IsAbstract);
-                foreach (var item in driverBase)
+                var collectBase = assembly.GetTypes().Where(x => (typeof(CollectBase).IsAssignableFrom(x)) && x.IsClass && !x.IsAbstract).ToList();
+                for (int i = 0; i < collectBase.Count; i++)
                 {
+                    var item = collectBase[i];
                     if (item != null)
                     {
                         driverPlugins.Add(new DriverPlugin()
@@ -213,15 +214,19 @@ public class PluginSingletonService : ISingleton
                             FilePath = dir.CombinePathOS(mainFile.Name),
                             FileName = mainFileName,
                         });
+                        collectBase[i] = null;
                     }
                     else
                     {
                         //throw Oops.Bah("找不到对应的驱动");
                     }
                 }
-                var upLoadBase = assembly.GetTypes().Where(x => (typeof(UpLoadBase).IsAssignableFrom(x)) && x.IsClass && !x.IsAbstract);
-                foreach (var item in upLoadBase)
+                collectBase.Clear();
+                collectBase = null;
+                var upLoadBase = assembly.GetTypes().Where(x => (typeof(UpLoadBase).IsAssignableFrom(x)) && x.IsClass && !x.IsAbstract).ToList();
+                for (int i = 0; i < upLoadBase.Count; i++)
                 {
+                    var item = upLoadBase[i];
                     if (item != null)
                     {
                         driverPlugins.Add(new DriverPlugin()
@@ -231,13 +236,15 @@ public class PluginSingletonService : ISingleton
                             FileName = mainFileName,
                             DriverTypeEnum = DriverEnum.Upload,
                         });
+                        upLoadBase[i] = null;
                     }
                     else
                     {
                         //throw Oops.Bah("找不到对应的驱动");
                     }
                 }
-
+                upLoadBase.Clear();
+                upLoadBase = null;
             }
             else
             {
@@ -247,11 +254,18 @@ public class PluginSingletonService : ISingleton
             {
                 throw Oops.Bah("找不到对应的驱动");
             }
+            assembly = null;
             return driverPlugins;
         }
         finally
         {
             assemblyLoadContext.Unload();
+            await Task.Delay(20);
+            for (int i = 0; i < 10 && weakALC.IsAlive; i++)
+            {
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+            }
         }
     }
     /// <summary>
@@ -291,12 +305,14 @@ public class PluginSingletonService : ISingleton
         //    if (DeviceOnDriverPluginDict[pluginId].Count == 0)
         //    {
         //        DeviceOnDriverPluginDict.Remove(pluginId);
+        //        DriverPluginDict[pluginId] = null;
         //        DriverPluginDict.Remove(pluginId);
         //        if (pluginGroups.FirstOrDefault(a => a.Key == plugin.FileName).Where(a => DriverPluginDict.ContainsKey(a.Id)).Count() <= 0)
         //        {
         //            var assemblyLoadContext = AssemblyLoadContextDict.GetValueOrDefault(plugin.FileName);
         //            if (assemblyLoadContext != null)
         //            {
+        //                AssemblyDict[plugin.FileName] = null;
         //                AssemblyDict.Remove(plugin.FileName);
         //                AssemblyLoadContextDict.Remove(plugin.FileName);
         //                WeakReference alcWeakRef = new WeakReference(assemblyLoadContext, true);
