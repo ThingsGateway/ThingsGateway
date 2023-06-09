@@ -1,12 +1,12 @@
-#region copyright
+ï»¿#region copyright
 //------------------------------------------------------------------------------
-//  ´Ë´úÂë°æÈ¨ÉùÃ÷ÎªÈ«ÎÄ¼ş¸²¸Ç£¬ÈçÓĞÔ­×÷ÕßÌØ±ğÉùÃ÷£¬»áÔÚÏÂ·½ÊÖ¶¯²¹³ä
-//  ´Ë´úÂë°æÈ¨£¨³ıÌØ±ğÉùÃ÷ÍâµÄ´úÂë£©¹é×÷Õß±¾ÈËDiegoËùÓĞ
-//  Ô´´úÂëÊ¹ÓÃĞ­Òé×ñÑ­±¾²Ö¿âµÄ¿ªÔ´Ğ­Òé¼°¸½¼ÓĞ­Òé
-//  GiteeÔ´´úÂë²Ö¿â£ºhttps://gitee.com/diego2098/ThingsGateway
-//  GithubÔ´´úÂë²Ö¿â£ºhttps://github.com/kimdiego2098/ThingsGateway
-//  Ê¹ÓÃÎÄµµ£ºhttps://diego2098.gitee.io/thingsgateway/
-//  QQÈº£º605534569
+//  æ­¤ä»£ç ç‰ˆæƒå£°æ˜ä¸ºå…¨æ–‡ä»¶è¦†ç›–ï¼Œå¦‚æœ‰åŸä½œè€…ç‰¹åˆ«å£°æ˜ï¼Œä¼šåœ¨ä¸‹æ–¹æ‰‹åŠ¨è¡¥å……
+//  æ­¤ä»£ç ç‰ˆæƒï¼ˆé™¤ç‰¹åˆ«å£°æ˜å¤–çš„ä»£ç ï¼‰å½’ä½œè€…æœ¬äººDiegoæ‰€æœ‰
+//  æºä»£ç ä½¿ç”¨åè®®éµå¾ªæœ¬ä»“åº“çš„å¼€æºåè®®åŠé™„åŠ åè®®
+//  Giteeæºä»£ç ä»“åº“ï¼šhttps://gitee.com/diego2098/ThingsGateway
+//  Githubæºä»£ç ä»“åº“ï¼šhttps://github.com/kimdiego2098/ThingsGateway
+//  ä½¿ç”¨æ–‡æ¡£ï¼šhttps://diego2098.gitee.io/thingsgateway/
+//  QQç¾¤ï¼š605534569
 //------------------------------------------------------------------------------
 #endregion
 
@@ -17,18 +17,18 @@ using System.Linq;
 namespace ThingsGateway.Web.Rcl
 {
     /// <summary>
-    /// ·ÃÎÊÈÕÖ¾Ò³Ãæ
+    /// è®¿é—®æ—¥å¿—é¡µé¢
     /// </summary>
     public partial class Vislog
     {
         private IAppDataTable _datatable;
         private VisitLogPageInput search = new();
         /// <summary>
-        /// ÈÕÖ¾·ÖÀà²Ëµ¥
+        /// æ—¥å¿—åˆ†ç±»èœå•
         /// </summary>
         public List<StringFilters> CategoryFilters { get; set; } = new();
         /// <summary>
-        /// Ö´ĞĞ½á¹û²Ëµ¥
+        /// æ‰§è¡Œç»“æœèœå•
         /// </summary>
         public List<StringFilters> ExeStatus { get; set; } = new();
 
@@ -89,12 +89,12 @@ namespace ThingsGateway.Web.Rcl
         /// <inheritdoc/>
         protected override void OnInitialized()
         {
-            CategoryFilters.Add(new StringFilters() { Key = T("µÇÂ¼"), Value = CateGoryConst.Log_LOGIN });
-            CategoryFilters.Add(new StringFilters() { Key = T("×¢Ïú"), Value = CateGoryConst.Log_LOGOUT });
-            CategoryFilters.Add(new StringFilters() { Key = T("µÚÈı·½µÇÂ¼"), Value = CateGoryConst.Log_OPENAPILOGIN });
-            CategoryFilters.Add(new StringFilters() { Key = T("µÚÈı·½×¢Ïú"), Value = CateGoryConst.Log_OPENAPILOGOUT });
-            ExeStatus.Add(new StringFilters() { Key = T("³É¹¦"), Value = DevLogConst.SUCCESS });
-            ExeStatus.Add(new StringFilters() { Key = T("Ê§°Ü"), Value = DevLogConst.FAIL });
+            CategoryFilters.Add(new StringFilters() { Key = T("ç™»å½•"), Value = CateGoryConst.Log_LOGIN });
+            CategoryFilters.Add(new StringFilters() { Key = T("æ³¨é”€"), Value = CateGoryConst.Log_LOGOUT });
+            CategoryFilters.Add(new StringFilters() { Key = T("ç¬¬ä¸‰æ–¹ç™»å½•"), Value = CateGoryConst.Log_OPENAPILOGIN });
+            CategoryFilters.Add(new StringFilters() { Key = T("ç¬¬ä¸‰æ–¹æ³¨é”€"), Value = CateGoryConst.Log_OPENAPILOGOUT });
+            ExeStatus.Add(new StringFilters() { Key = T("æˆåŠŸ"), Value = DevLogConst.SUCCESS });
+            ExeStatus.Add(new StringFilters() { Key = T("å¤±è´¥"), Value = DevLogConst.FAIL });
             base.OnInitialized();
         }
 
@@ -106,7 +106,7 @@ namespace ThingsGateway.Web.Rcl
 
         private async Task ClearClick()
         {
-            var confirm = await PopupService.OpenConfirmDialogAsync(T("É¾³ı"), T("È·¶¨ ?"));
+            var confirm = await PopupService.OpenConfirmDialogAsync(T("åˆ é™¤"), T("ç¡®å®š ?"));
             if (confirm)
             {
                 await VisitLogService.Delete(CategoryFilters.Select(it => it.Value).ToArray());

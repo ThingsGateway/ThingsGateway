@@ -1,12 +1,12 @@
-#region copyright
+ï»¿#region copyright
 //------------------------------------------------------------------------------
-//  ´Ë´úÂë°æÈ¨ÉùÃ÷ÎªÈ«ÎÄ¼ş¸²¸Ç£¬ÈçÓĞÔ­×÷ÕßÌØ±ğÉùÃ÷£¬»áÔÚÏÂ·½ÊÖ¶¯²¹³ä
-//  ´Ë´úÂë°æÈ¨£¨³ıÌØ±ğÉùÃ÷ÍâµÄ´úÂë£©¹é×÷Õß±¾ÈËDiegoËùÓĞ
-//  Ô´´úÂëÊ¹ÓÃĞ­Òé×ñÑ­±¾²Ö¿âµÄ¿ªÔ´Ğ­Òé¼°¸½¼ÓĞ­Òé
-//  GiteeÔ´´úÂë²Ö¿â£ºhttps://gitee.com/diego2098/ThingsGateway
-//  GithubÔ´´úÂë²Ö¿â£ºhttps://github.com/kimdiego2098/ThingsGateway
-//  Ê¹ÓÃÎÄµµ£ºhttps://diego2098.gitee.io/thingsgateway/
-//  QQÈº£º605534569
+//  æ­¤ä»£ç ç‰ˆæƒå£°æ˜ä¸ºå…¨æ–‡ä»¶è¦†ç›–ï¼Œå¦‚æœ‰åŸä½œè€…ç‰¹åˆ«å£°æ˜ï¼Œä¼šåœ¨ä¸‹æ–¹æ‰‹åŠ¨è¡¥å……
+//  æ­¤ä»£ç ç‰ˆæƒï¼ˆé™¤ç‰¹åˆ«å£°æ˜å¤–çš„ä»£ç ï¼‰å½’ä½œè€…æœ¬äººDiegoæ‰€æœ‰
+//  æºä»£ç ä½¿ç”¨åè®®éµå¾ªæœ¬ä»“åº“çš„å¼€æºåè®®åŠé™„åŠ åè®®
+//  Giteeæºä»£ç ä»“åº“ï¼šhttps://gitee.com/diego2098/ThingsGateway
+//  Githubæºä»£ç ä»“åº“ï¼šhttps://github.com/kimdiego2098/ThingsGateway
+//  ä½¿ç”¨æ–‡æ¡£ï¼šhttps://diego2098.gitee.io/thingsgateway/
+//  QQç¾¤ï¼š605534569
 //------------------------------------------------------------------------------
 #endregion
 
@@ -14,12 +14,12 @@
 namespace ThingsGateway.Web.Entry;
 
 /// <summary>
-/// Æô¶¯
+/// å¯åŠ¨
 /// </summary>
 public class Program
 {
     /// <summary>
-    /// ³ÌĞòÔËĞĞÈë¿Ú
+    /// ç¨‹åºè¿è¡Œå…¥å£
     /// </summary>
     /// <param name="args"></param>
     public static void Main(string[] args)
@@ -28,17 +28,17 @@ public class Program
         System.IO.Directory.SetCurrentDirectory(AppContext.BaseDirectory);
 
 
-#if KINGVIEW //¶ÁÈ¡×éÌ¬Íõ²»ÄÜºóÌ¨Æô¶¯£¬ËùÒÔÕâÀï¶à³öÀ´Ò»¸ö½â¾ö·½°¸ÅäÖÃ
+#if KINGVIEW //è¯»å–ç»„æ€ç‹ä¸èƒ½åå°å¯åŠ¨ï¼Œæ‰€ä»¥è¿™é‡Œå¤šå‡ºæ¥ä¸€ä¸ªè§£å†³æ–¹æ¡ˆé…ç½®
         SevicesExtension.KINGVIEWCONFIG();
 #endif
 
         var builder = WebApplication.CreateBuilder(args);
         builder.WebHost.UseWebRoot("wwwroot");
         builder.WebHost.UseStaticWebAssets();
-        //ĞèÒª·şÎñÊØ»¤¿É°²×°
+        //éœ€è¦æœåŠ¡å®ˆæŠ¤å¯å®‰è£…
         builder.Host.UseWindowsService();
         builder.Host.UseSystemd();
-        //Furion±ãÀû·½·¨
+        //Furionä¾¿åˆ©æ–¹æ³•
         builder.Inject();
         var app = builder.Build();
         app.Run();
