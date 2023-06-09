@@ -1,12 +1,12 @@
-#region copyright
+ï»¿#region copyright
 //------------------------------------------------------------------------------
-//  ´Ë´úÂë°æÈ¨ÉùÃ÷ÎªÈ«ÎÄ¼ş¸²¸Ç£¬ÈçÓĞÔ­×÷ÕßÌØ±ğÉùÃ÷£¬»áÔÚÏÂ·½ÊÖ¶¯²¹³ä
-//  ´Ë´úÂë°æÈ¨£¨³ıÌØ±ğÉùÃ÷ÍâµÄ´úÂë£©¹é×÷Õß±¾ÈËDiegoËùÓĞ
-//  Ô´´úÂëÊ¹ÓÃĞ­Òé×ñÑ­±¾²Ö¿âµÄ¿ªÔ´Ğ­Òé¼°¸½¼ÓĞ­Òé
-//  GiteeÔ´´úÂë²Ö¿â£ºhttps://gitee.com/diego2098/ThingsGateway
-//  GithubÔ´´úÂë²Ö¿â£ºhttps://github.com/kimdiego2098/ThingsGateway
-//  Ê¹ÓÃÎÄµµ£ºhttps://diego2098.gitee.io/thingsgateway/
-//  QQÈº£º605534569
+//  æ­¤ä»£ç ç‰ˆæƒå£°æ˜ä¸ºå…¨æ–‡ä»¶è¦†ç›–ï¼Œå¦‚æœ‰åŸä½œè€…ç‰¹åˆ«å£°æ˜ï¼Œä¼šåœ¨ä¸‹æ–¹æ‰‹åŠ¨è¡¥å……
+//  æ­¤ä»£ç ç‰ˆæƒï¼ˆé™¤ç‰¹åˆ«å£°æ˜å¤–çš„ä»£ç ï¼‰å½’ä½œè€…æœ¬äººDiegoæ‰€æœ‰
+//  æºä»£ç ä½¿ç”¨åè®®éµå¾ªæœ¬ä»“åº“çš„å¼€æºåè®®åŠé™„åŠ åè®®
+//  Giteeæºä»£ç ä»“åº“ï¼šhttps://gitee.com/diego2098/ThingsGateway
+//  Githubæºä»£ç ä»“åº“ï¼šhttps://github.com/kimdiego2098/ThingsGateway
+//  ä½¿ç”¨æ–‡æ¡£ï¼šhttps://diego2098.gitee.io/thingsgateway/
+//  QQç¾¤ï¼š605534569
 //------------------------------------------------------------------------------
 #endregion
 
@@ -31,7 +31,7 @@ namespace ThingsGateway.Web.Rcl.Core
         public Func<AddItem, Task> AddCall { get; set; }
 
         /// <summary>
-        /// »ñµÃ/ÉèÖÃ Ìí¼ÓÄ£°å
+        /// è·å¾—/è®¾ç½® æ·»åŠ æ¨¡æ¿
         /// </summary>
         [Parameter]
         public RenderFragment<AddItem> AddTemplate { get; set; }
@@ -45,7 +45,7 @@ namespace ThingsGateway.Web.Rcl.Core
         [Parameter]
         public bool Dense { get; set; }
         /// <summary>
-        /// »ñµÃ/ÉèÖÃ Ã÷Ï¸ĞĞÄ£°å
+        /// è·å¾—/è®¾ç½® æ˜ç»†è¡Œæ¨¡æ¿
         /// </summary>
         [Parameter]
         public RenderFragment<TItem> DetailRowTemplate { get; set; }
@@ -54,25 +54,25 @@ namespace ThingsGateway.Web.Rcl.Core
         public Func<EditItem, Task> EditCall { get; set; }
 
         /// <summary>
-        /// »ñµÃ/ÉèÖÃ ±à¼­Ä£°å
+        /// è·å¾—/è®¾ç½® ç¼–è¾‘æ¨¡æ¿
         /// </summary>
         [Parameter]
         public RenderFragment<EditItem> EditTemplate { get; set; }
 
         /// <summary>
-        /// ±íÍ·¹ıÂË£¬·µ»ØDataTableHeaderÁĞ±í£¬´«Êä²ÎÊıÒÑ°üº¬È«²¿³õÊ¼±íÍ·Óë±íÍ·±êÌâ
+        /// è¡¨å¤´è¿‡æ»¤ï¼Œè¿”å›DataTableHeaderåˆ—è¡¨ï¼Œä¼ è¾“å‚æ•°å·²åŒ…å«å…¨éƒ¨åˆå§‹è¡¨å¤´ä¸è¡¨å¤´æ ‡é¢˜
         /// </summary>
         [Parameter]
         public Action<List<DataTableHeader<TItem>>> FilterHeaders { get; set; }
 
         /// <summary>
-        /// ±íÍ·¹ıÂËÖ®ºóÖ´ĞĞµÄ·½·¨£¬·µ»ØFilterÖµ£¬tureÔòÏÔÊ¾£¬falseÔòÒş²Ø
+        /// è¡¨å¤´è¿‡æ»¤ä¹‹åæ‰§è¡Œçš„æ–¹æ³•ï¼Œè¿”å›Filterå€¼ï¼Œtureåˆ™æ˜¾ç¤ºï¼Œfalseåˆ™éšè—
         /// </summary>
         [Parameter]
         public Action<List<Filters>> Filters { get; set; }
 
         /// <summary>
-        /// »ñµÃ/ÉèÖÃ Table Header Ä£°å
+        /// è·å¾—/è®¾ç½® Table Header æ¨¡æ¿
         /// </summary>
         [Parameter]
         public RenderFragment<DataTableHeader> HeaderTemplate { get; set; }
@@ -94,13 +94,13 @@ namespace ThingsGateway.Web.Rcl.Core
         public bool IsShowToolbar { get; set; } = true;
 
         /// <summary>
-        /// »ñµÃ/ÉèÖÃ Table Oper Ä£°å
+        /// è·å¾—/è®¾ç½® Table Oper æ¨¡æ¿
         /// </summary>
         [Parameter]
         public RenderFragment<ItemColProps<TItem>> ItemColOperTemplate { get; set; }
 
         /// <summary>
-        /// »ñµÃ/ÉèÖÃ Table Cols Ä£°å
+        /// è·å¾—/è®¾ç½® Table Cols æ¨¡æ¿
         /// </summary>
         [Parameter]
         public RenderFragment<ItemColProps<TItem>> ItemColTemplate { get; set; }
@@ -109,7 +109,7 @@ namespace ThingsGateway.Web.Rcl.Core
         public IEnumerable<TItem> Items { get; set; } = new List<TItem>();
 
         /// <summary>
-        /// »ñµÃ/ÉèÖÃ ÆäËû²Ù×÷À¸Ä£°å
+        /// è·å¾—/è®¾ç½® å…¶ä»–æ“ä½œæ æ¨¡æ¿
         /// </summary>
         [Parameter]
         public RenderFragment<IEnumerable<TItem>> OtherToolbarTemplate { get; set; }
@@ -127,7 +127,7 @@ namespace ThingsGateway.Web.Rcl.Core
         public Func<SearchItem, Task<SqlSugarPagedList<TItem>>> QueryCall { get; set; }
 
         /// <summary>
-        /// »ñµÃ/ÉèÖÃ SearchModel ÊµÀı
+        /// è·å¾—/è®¾ç½® SearchModel å®ä¾‹
         /// </summary>
         [Parameter]
         public SearchItem SearchModel
@@ -137,7 +137,7 @@ namespace ThingsGateway.Web.Rcl.Core
         }
 
         /// <summary>
-        /// »ñµÃ/ÉèÖÃ ²éÑ¯Óë²Ù×÷À¸Ä£°å
+        /// è·å¾—/è®¾ç½® æŸ¥è¯¢ä¸æ“ä½œæ æ¨¡æ¿
         /// </summary>
         [Parameter]
         public RenderFragment<SearchItem> SearchTemplate { get; set; }
@@ -173,7 +173,7 @@ namespace ThingsGateway.Web.Rcl.Core
         private bool EditShow { get; set; }
 
         /// <summary>
-        /// ¹ıÂËÊµÌåÁĞ£¬
+        /// è¿‡æ»¤å®ä½“åˆ—ï¼Œ
         /// </summary>
         private List<Filters> FilterHeaderString { get; set; } = new();
 
@@ -267,7 +267,7 @@ namespace ThingsGateway.Web.Rcl.Core
             if (IsShowOperCol)
             {
                 Headers.Add(new()
-                { Text = T("²Ù×÷"), Value = BlazorConst.TB_Actions, Width = 200 });
+                { Text = T("æ“ä½œ"), Value = BlazorConst.TB_Actions, Width = 200 });
             }
 
             if (FilterHeaders != null)
@@ -332,13 +332,13 @@ namespace ThingsGateway.Web.Rcl.Core
             {
                 if (_selectedItem.Count() <= 0)
                 {
-                    await PopupService.EnqueueSnackbarAsync(T("Ñ¡ÔñÒ»ĞĞºó²ÅÄÜ½øĞĞ²Ù×÷"));
+                    await PopupService.EnqueueSnackbarAsync(T("é€‰æ‹©ä¸€è¡Œåæ‰èƒ½è¿›è¡Œæ“ä½œ"));
                 }
                 else
                 {
                     if (DeleteCall != null)
                     {
-                        var confirm = await OpenConfirmDialog(T("É¾³ı"), T("È·¶¨ ?"));
+                        var confirm = await OpenConfirmDialog(T("åˆ é™¤"), T("ç¡®å®š ?"));
                         if (confirm)
                         {
                             await DeleteCall(_selectedItem);
@@ -362,7 +362,7 @@ namespace ThingsGateway.Web.Rcl.Core
         {
             if (_selectedItem.Count() > 1)
             {
-                await PopupService.EnqueueSnackbarAsync(T("Ö»ÄÜÑ¡ÔñÒ»ĞĞ"));
+                await PopupService.EnqueueSnackbarAsync(T("åªèƒ½é€‰æ‹©ä¸€è¡Œ"));
             }
             else if (_selectedItem.Count() == 1)
             {
@@ -386,7 +386,7 @@ namespace ThingsGateway.Web.Rcl.Core
             }
             else
             {
-                await PopupService.EnqueueSnackbarAsync(T("Ñ¡ÔñÒ»ĞĞºó²ÅÄÜ½øĞĞ²Ù×÷"));
+                await PopupService.EnqueueSnackbarAsync(T("é€‰æ‹©ä¸€è¡Œåæ‰èƒ½è¿›è¡Œæ“ä½œ"));
             }
         }
 
@@ -394,7 +394,7 @@ namespace ThingsGateway.Web.Rcl.Core
         {
             if (_selectedItem.Count() > 1)
             {
-                await PopupService.EnqueueSnackbarAsync(T("Ö»ÄÜÑ¡ÔñÒ»ĞĞ"));
+                await PopupService.EnqueueSnackbarAsync(T("åªèƒ½é€‰æ‹©ä¸€è¡Œ"));
             }
             else if (_selectedItem.Count() == 1)
             {
@@ -403,7 +403,7 @@ namespace ThingsGateway.Web.Rcl.Core
             }
             else
             {
-                await PopupService.EnqueueSnackbarAsync(T("Ñ¡ÔñÒ»ĞĞºó²ÅÄÜ½øĞĞ²Ù×÷"));
+                await PopupService.EnqueueSnackbarAsync(T("é€‰æ‹©ä¸€è¡Œåæ‰èƒ½è¿›è¡Œæ“ä½œ"));
             }
         }
 

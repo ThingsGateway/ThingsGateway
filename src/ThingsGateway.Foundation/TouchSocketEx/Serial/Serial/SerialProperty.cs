@@ -1,12 +1,12 @@
-#region copyright
+ï»¿#region copyright
 //------------------------------------------------------------------------------
-//  ´Ë´úÂë°æÈ¨ÉùÃ÷ÎªÈ«ÎÄ¼ş¸²¸Ç£¬ÈçÓĞÔ­×÷ÕßÌØ±ğÉùÃ÷£¬»áÔÚÏÂ·½ÊÖ¶¯²¹³ä
-//  ´Ë´úÂë°æÈ¨£¨³ıÌØ±ğÉùÃ÷ÍâµÄ´úÂë£©¹é×÷Õß±¾ÈËDiegoËùÓĞ
-//  Ô´´úÂëÊ¹ÓÃĞ­Òé×ñÑ­±¾²Ö¿âµÄ¿ªÔ´Ğ­Òé¼°¸½¼ÓĞ­Òé
-//  GiteeÔ´´úÂë²Ö¿â£ºhttps://gitee.com/diego2098/ThingsGateway
-//  GithubÔ´´úÂë²Ö¿â£ºhttps://github.com/kimdiego2098/ThingsGateway
-//  Ê¹ÓÃÎÄµµ£ºhttps://diego2098.gitee.io/thingsgateway/
-//  QQÈº£º605534569
+//  æ­¤ä»£ç ç‰ˆæƒå£°æ˜ä¸ºå…¨æ–‡ä»¶è¦†ç›–ï¼Œå¦‚æœ‰åŸä½œè€…ç‰¹åˆ«å£°æ˜ï¼Œä¼šåœ¨ä¸‹æ–¹æ‰‹åŠ¨è¡¥å……
+//  æ­¤ä»£ç ç‰ˆæƒï¼ˆé™¤ç‰¹åˆ«å£°æ˜å¤–çš„ä»£ç ï¼‰å½’ä½œè€…æœ¬äººDiegoæ‰€æœ‰
+//  æºä»£ç ä½¿ç”¨åè®®éµå¾ªæœ¬ä»“åº“çš„å¼€æºåè®®åŠé™„åŠ åè®®
+//  Giteeæºä»£ç ä»“åº“ï¼šhttps://gitee.com/diego2098/ThingsGateway
+//  Githubæºä»£ç ä»“åº“ï¼šhttps://github.com/kimdiego2098/ThingsGateway
+//  ä½¿ç”¨æ–‡æ¡£ï¼šhttps://diego2098.gitee.io/thingsgateway/
+//  QQç¾¤ï¼š605534569
 //------------------------------------------------------------------------------
 #endregion
 
@@ -16,37 +16,37 @@ using System.IO.Ports;
 namespace ThingsGateway.Foundation.Serial;
 
 /// <summary>
-/// ´®¿ÚÊôĞÔ
+/// ä¸²å£å±æ€§
 /// </summary>
 public class SerialProperty
 {
     /// <summary>
     /// COM
     /// </summary>
-    [Description("COM¿Ú")]
+    [Description("COMå£")]
     public string PortName { get; set; } = "COM1";
     /// <summary>
-    /// ²¨ÌØÂÊ
+    /// æ³¢ç‰¹ç‡
     /// </summary>
-    [Description("²¨ÌØÂÊ")]
+    [Description("æ³¢ç‰¹ç‡")]
     public int BaudRate { get; set; } = 9600;
     /// <summary>
-    /// Êı¾İÎ»
+    /// æ•°æ®ä½
     /// </summary>
-    [Description("Êı¾İÎ»")]
+    [Description("æ•°æ®ä½")]
     public int DataBits { get; set; } = 8;
     /// <summary>
-    /// Ğ£ÑéÎ»
+    /// æ ¡éªŒä½
     /// </summary>
-    [Description("Ğ£ÑéÎ»")]
+    [Description("æ ¡éªŒä½")]
     public Parity Parity { get; set; } = Parity.None;
     /// <summary>
-    /// Í£Ö¹Î»
+    /// åœæ­¢ä½
     /// </summary>
-    [Description("Í£Ö¹Î»")]
+    [Description("åœæ­¢ä½")]
     public StopBits StopBits { get; set; } = StopBits.One;
     /// <summary>
-    /// ×Ö·û´®×ªÊµÌåÀà£¬ÊôĞÔÓÃ-·Ö¸ô£¬Ğè°´Ë³Ğò
+    /// å­—ç¬¦ä¸²è½¬å®ä½“ç±»ï¼Œå±æ€§ç”¨-åˆ†éš”ï¼Œéœ€æŒ‰é¡ºåº
     /// </summary>
     /// <param name="url"></param>
     /// <returns></returns>
@@ -61,7 +61,7 @@ public class SerialProperty
         return this;
     }
     /// <summary>
-    /// ÊµÌåÀà×ª×Ö·û´®
+    /// å®ä½“ç±»è½¬å­—ç¬¦ä¸²
     /// </summary>
     /// <returns></returns>
     public override string ToString()
