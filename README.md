@@ -13,12 +13,6 @@
 </font>
 </div>
 
-#### 特别声明
-
- **ThingsGateway** 项目已加入 [dotNET China](https://gitee.com/dotnetchina)  组织。<br/>
-
-![dotnetchina](https://gitee.com/dotnetchina/home/raw/master/assets/dotnetchina-raw.png "dotNET China LOGO")
-
 ####  功能亮点
 
 - Blazor Server架构，开发部署更简单
