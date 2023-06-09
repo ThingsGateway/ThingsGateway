@@ -53,6 +53,8 @@
     </MCol>
     </MRow>
     *@
+    @if (!isAllRestart)
+    {
 
     <MTabs @bind-Value="tab">
         <MTab Style="height:50px;">
@@ -527,7 +529,7 @@
     </MTabsItems>
 
 
-
+    }
     <MSpeedDial @bind-Value="fab" Direction="bottom" Class="position-button"
                 Transition="slide-y-reverse-transition">
         <ActivatorContent>
