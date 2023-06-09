@@ -68,7 +68,7 @@ public static class ReadWriteDevicesExHelpers
             return readWriteDevice.WriteAsync(address, Convert.ToDouble(value), cancellationToken);
         else if (type == typeof(string))
         {
-            return readWriteDevice.WriteAsync(address, value, isBcd);
+            return readWriteDevice.WriteAsync(address, value, isBcd, cancellationToken);
         }
         return Task.FromResult(new OperResult($"{type}数据类型未实现写入"));
     }
