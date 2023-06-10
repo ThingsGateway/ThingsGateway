@@ -70,7 +70,7 @@ public class CollectDeviceVariable : MemoryVariable
     /// <summary>
     /// 是否允许远程Rpc写入，不包含Blazor Web页
     /// </summary>
-    [SugarColumn(ColumnName = "RpcWriteEnable", ColumnDescription = "允许远程写入", Length = 200, IsNullable = true)]
+    [SugarColumn(ColumnName = "RpcWriteEnable", ColumnDescription = "允许远程写入", IsNullable = true)]
     [OrderTable(Order = 4)]
     [Excel]
     public bool RpcWriteEnable { get; set; }
