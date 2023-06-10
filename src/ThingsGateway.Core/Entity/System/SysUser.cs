@@ -112,7 +112,7 @@ namespace ThingsGateway.Core
         /// <summary>
         /// 用户状态
         ///</summary>
-        [SugarColumn(ColumnName = "UserStatus", ColumnDescription = "用户状态", Length = 200, IsNullable = true)]
+        [SugarColumn(ColumnName = "UserStatus", ColumnDescription = "用户状态", IsNullable = true)]
         public bool UserStatus { get; set; }
     }
 }
