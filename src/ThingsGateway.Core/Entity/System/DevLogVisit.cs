@@ -70,7 +70,7 @@ namespace ThingsGateway.Core
         /// <summary>
         /// 验证Id
         ///</summary>
-        [SugarColumn(ColumnName = "VerificatId", ColumnDescription = "验证Id", Length = 200)]
+        [SugarColumn(ColumnName = "VerificatId", ColumnDescription = "验证Id")]
         public long VerificatId { get; set; }
     }
 }
