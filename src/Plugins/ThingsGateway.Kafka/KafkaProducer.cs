@@ -82,8 +82,7 @@ public class KafkaProducer : UpLoadBase
                     {
                         if (!cancellationToken.IsCancellationRequested)
                         {
-                            producer.Produce(driverPropertys.VariableTopic, new Message<Null, string> { Value = item.ToJson() }, handler);
-                            producer.Flush(TimeSpan.FromSeconds(3));
+                            await KafKaUp(driverPropertys.VariableTopic, item.ToJson(), cancellationToken);
                         }
                         else
                         {
@@ -96,6 +95,8 @@ public class KafkaProducer : UpLoadBase
                     }
 
                 }
+                producer.Flush(cancellationToken);
+
             }
         }
         catch (Exception ex)
@@ -116,8 +117,7 @@ public class KafkaProducer : UpLoadBase
                     {
                         if (!cancellationToken.IsCancellationRequested)
                         {
-                            producer.Produce(driverPropertys.DeviceTopic, new Message<Null, string> { Value = item.ToJson() }, handler);
-                            producer.Flush(TimeSpan.FromSeconds(3));
+                            await KafKaUp(driverPropertys.DeviceTopic, item.ToJson(), cancellationToken);
                         }
                         else
                         {
@@ -129,6 +129,7 @@ public class KafkaProducer : UpLoadBase
                         _logger.LogWarning(ex, ToString());
                     }
                 }
+                producer.Flush(cancellationToken);
 
             }
         }
@@ -152,6 +153,29 @@ public class KafkaProducer : UpLoadBase
 
         }
 
+    }
+
+    private async Task KafKaUp(string topic, string payLoad, CancellationToken cancellationToken)
+    {
+        var result = await producer.ProduceAsync(topic, new Message<Null, string> { Value = payLoad }, cancellationToken);
+        if (result.Status != PersistenceStatus.Persisted)
+        {
+            await AddCacheData(topic, payLoad);
+        }
+        else
+        {
+            //连接成功时补发缓存数据
+            var cacheData = await GetCacheData();
+            foreach (var item in cacheData)
+            {
+                var result1 = await producer.ProduceAsync(item.Topic, new Message<Null, string> { Value = item.CacheStr }, cancellationToken);
+
+                if (result.Status == PersistenceStatus.Persisted)
+                {
+                    await DeleteCacheData(item.Id);
+                }
+            }
+        }
     }
 
     public override OperResult IsConnected()
