@@ -368,3 +368,7 @@ FodyWeavers.xsd
 /src/*Pro*
 /src/TestResults*/
 /src/ThingsGateway.Web.Server/ThingsGateway.db
+
+/handbook/
+
+
