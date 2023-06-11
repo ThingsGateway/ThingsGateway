@@ -339,6 +339,13 @@ public class VariableService : DbRepository<CollectDeviceVariable>, IVariableSer
         await stream.CopyToAsync(fs);
         var sheetNames = MiniExcel.GetSheetNames(fs);
 
+        var deviceVariables = await GetListAsync();
+        foreach (var item in deviceVariables)
+        {
+            _sysCacheService.Set(ThingsGatewayCacheConst.Cache_DeviceVariableName, item.Name, item.Id);
+            _sysCacheService.Set(ThingsGatewayCacheConst.Cache_DeviceVariableId, item.Id.ToString(), item.Name);
+        }
+
         //导入检验结果
         Dictionary<string, ImportPreviewOutputBase> ImportPreviews = new();
         //设备页
