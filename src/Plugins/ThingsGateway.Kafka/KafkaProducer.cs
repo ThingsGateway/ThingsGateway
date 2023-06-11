@@ -160,7 +160,7 @@ public class KafkaProducer : UpLoadBase
         var result = await producer.ProduceAsync(topic, new Message<Null, string> { Value = payLoad }, cancellationToken);
         if (result.Status != PersistenceStatus.Persisted)
         {
-            await AddCacheData(topic, payLoad);
+            await AddCacheData(topic, payLoad, driverPropertys.CacheMaxCount);
         }
         else
         {

@@ -16,8 +16,7 @@ namespace ThingsGateway.Mqtt;
 
 public class MqttClientProperty : UpDriverPropertyBase
 {
-    [DeviceProperty("是否间隔上传", "False时为变化检测上传")] public bool IsInterval { get; set; } = false;
-    [DeviceProperty("上传间隔时间", "最小1000ms")] public int UploadInterval { get; set; } = 1000;
+
 
     [DeviceProperty("IP", "")] public string IP { get; set; } = "127.0.0.1";
 
@@ -28,7 +27,8 @@ public class MqttClientProperty : UpDriverPropertyBase
 
     [DeviceProperty("连接超时时间", "")] public int ConnectTimeOut { get; set; } = 3000;
 
-    [DeviceProperty("线程循环间隔", "最小500ms")] public int CycleInterval { get; set; } = 1000;
+    [DeviceProperty("线程循环间隔", "最小10ms")] public int CycleInterval { get; set; } = 1000;
+    [DeviceProperty("缓存最大条数", "默认2千条")] public int CacheMaxCount { get; set; }
 
     [DeviceProperty("允许Rpc写入", "")] public bool DeviceRpcEnable { get; set; }
 
@@ -43,4 +43,9 @@ public class MqttClientProperty : UpDriverPropertyBase
     [DeviceProperty("设备实体脚本", "查看文档说明，为空时不起作用")] public string BigTextScriptDeviceModel { get; set; }
 
     [DeviceProperty("变量实体脚本", "查看文档说明，为空时不起作用")] public string BigTextScriptVariableModel { get; set; }
+
+
+    [DeviceProperty("是否间隔上传", "False时为变化检测上传")] public bool IsInterval { get; set; } = false;
+    [DeviceProperty("上传间隔时间", "最小1000ms")] public int UploadInterval { get; set; } = 1000;
+
 }
