@@ -287,12 +287,12 @@ public class MqttClient : UpLoadBase
             var result = await _mqttClient.PublishAsync(variableMessage);
             if (!result.IsSuccess)
             {
-                await AddCacheData(topic, payLoad);
+                await AddCacheData(topic, payLoad, driverPropertys.CacheMaxCount);
             }
         }
         else
         {
-            await AddCacheData(topic, payLoad);
+            await AddCacheData(topic, payLoad, driverPropertys.CacheMaxCount);
         }
     }
 
