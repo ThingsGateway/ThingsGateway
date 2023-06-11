@@ -12,7 +12,10 @@
 
 using Microsoft.Extensions.Logging;
 
+using System.ComponentModel.DataAnnotations;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 
 using TouchSocket.Core;
@@ -95,6 +98,9 @@ public abstract class UpLoadBase : DriverBase
         _logger = logger;
         IsLogOut = device.IsLogOut;
         CurDevice = device;
+        Directory.CreateDirectory("Cache");
+        GetCacheDb().DbMaintenance.CreateDatabase();//创建数据库
+        GetCacheDb().CodeFirst.InitTables(typeof(CacheTable));
         Init(device);
     }
 
@@ -122,4 +128,88 @@ public abstract class UpLoadBase : DriverBase
         }
         return null;
     }
+    /// <summary>
+    /// 获取数据库链接
+    /// </summary>
+    /// <returns></returns>
+    public SqlSugarClient GetCacheDb()
+    {
+        var configureExternalServices = new ConfigureExternalServices
+        {
+            EntityService = (type, column) => // 修改列可空-1、带?问号 2、String类型若没有Required
+            {
+                if ((type.PropertyType.IsGenericType && type.PropertyType.GetGenericTypeDefinition() == typeof(Nullable<>))
+                    || (type.PropertyType == typeof(string) && type.GetCustomAttribute<RequiredAttribute>() == null))
+                    column.IsNullable = true;
+            },
+        };
+
+        var sqlSugarClient = new SqlSugarClient(new ConnectionConfig()
+        {
+            ConnectionString = $"Data Source=Cache/{CurDevice.Id}.db;",//连接字符串
+            DbType = DbType.Sqlite,//数据库类型
+            IsAutoCloseConnection = true, //不设成true要手动close
+            ConfigureExternalServices = configureExternalServices,
+        }
+        );
+        return sqlSugarClient;
+    }
+
+    /// <summary>
+    /// 获取缓存表前十条
+    /// </summary>
+    /// <returns></returns>
+    public async Task<List<CacheTable>> GetCacheData()
+    {
+        var db = GetCacheDb();
+        var data = await db.Queryable<CacheTable>().Take(10).ToListAsync();
+        return data;
+    }
+    /// <summary>
+    /// 增加离线缓存，限制表最大默认2000行
+    /// </summary>
+    /// <returns></returns>
+    public async Task<bool> AddCacheData(string topic, string data, int max = 2000)
+    {
+        var db = GetCacheDb();
+        var count = await db.Queryable<CacheTable>().CountAsync();
+        if (count > max)
+        {
+            var data1 = await db.Queryable<CacheTable>().OrderBy(a => a.Id).Take(count - max).ToListAsync();
+            await db.Deleteable(data1).ExecuteCommandAsync();
+        }
+        var result = await db.Insertable(new CacheTable() { Id = YitIdHelper.NextId(), Topic = topic, CacheStr = data }).ExecuteCommandAsync();
+        return result > 0;
+    }
+    /// <summary>
+    /// 清除离线缓存
+    /// </summary>
+    /// <returns></returns>
+    public async Task<bool> DeleteCacheData(params long[] data)
+    {
+        var db = GetCacheDb();
+        var result = await db.Deleteable<CacheTable>().In(data).ExecuteCommandAsync();
+        return result > 0;
+    }
 }
+/// <summary>
+/// 缓存表
+/// </summary>
+public class CacheTable
+{
+    /// <summary>
+    /// Id
+    /// </summary>
+    [SugarColumn(IsPrimaryKey = true)]
+    public long Id { get; set; }
+    /// <summary>
+    /// Topic
+    /// </summary>
+    public string Topic { get; set; }
+    /// <summary>
+    /// 缓存值
+    /// </summary>
+    [SugarColumn(ColumnDataType = StaticConfig.CodeFirst_BigString)]
+    public string CacheStr { get; set; }
+}
+

@@ -20,6 +20,8 @@ using MQTTnet.Client;
 
 using NewLife.Serialization;
 
+using SqlSugar;
+
 using System.Collections.Concurrent;
 using System.Text;
 
@@ -97,12 +99,8 @@ public class MqttClient : UpLoadBase
                         {
                             if (!cancellationToken.IsCancellationRequested)
                             {
-                                var variableMessage = new MqttApplicationMessageBuilder()
-    .WithTopic($"{driverPropertys.VariableTopic}")
-    .WithPayload(item.GetSciptListValue(driverPropertys.BigTextScriptVariableModel)).Build();
-                                var isConnect = await TryMqttClientAsync(cancellationToken);
-                                if (isConnect.IsSuccess)
-                                    await _mqttClient.PublishAsync(variableMessage, cancellationToken);
+                                await MqttUp($"{driverPropertys.VariableTopic}", item.GetSciptListValue(driverPropertys.BigTextScriptVariableModel), cancellationToken);
+
                             }
                             else
                             {
@@ -135,12 +133,9 @@ public class MqttClient : UpLoadBase
                                 {
                                     if (!cancellationToken.IsCancellationRequested)
                                     {
-                                        var variableMessage = new MqttApplicationMessageBuilder()
-            .WithTopic($"{driverPropertys.VariableTopic}")
-            .WithPayload(item.GetSciptListValue(driverPropertys.BigTextScriptVariableModel)).Build();
-                                        var isConnect = await TryMqttClientAsync(cancellationToken);
-                                        if (isConnect.IsSuccess)
-                                            await _mqttClient.PublishAsync(variableMessage, cancellationToken);
+
+                                        await MqttUp($"{driverPropertys.VariableTopic}", item.GetSciptListValue(driverPropertys.BigTextScriptVariableModel), cancellationToken);
+
                                     }
                                     else
                                     {
@@ -186,12 +181,7 @@ public class MqttClient : UpLoadBase
                         {
                             if (!cancellationToken.IsCancellationRequested)
                             {
-                                var variableMessage = new MqttApplicationMessageBuilder()
-                        .WithTopic($"{driverPropertys.DeviceTopic}")
-                        .WithPayload(item.GetSciptListValue(driverPropertys.BigTextScriptDeviceModel)).Build();
-                                var isConnect = await TryMqttClientAsync(cancellationToken);
-                                if (isConnect.IsSuccess)
-                                    await _mqttClient.PublishAsync(variableMessage);
+                                await MqttUp($"{driverPropertys.DeviceTopic}", item.GetSciptListValue(driverPropertys.BigTextScriptDeviceModel), cancellationToken);
                             }
                             else
                             {
@@ -223,12 +213,7 @@ public class MqttClient : UpLoadBase
                             {
                                 if (!cancellationToken.IsCancellationRequested)
                                 {
-                                    var variableMessage = new MqttApplicationMessageBuilder()
-                            .WithTopic($"{driverPropertys.DeviceTopic}")
-                            .WithPayload(item.GetSciptListValue(driverPropertys.BigTextScriptDeviceModel)).Build();
-                                    var isConnect = await TryMqttClientAsync(cancellationToken);
-                                    if (isConnect.IsSuccess)
-                                        await _mqttClient.PublishAsync(variableMessage);
+                                    await MqttUp($"{driverPropertys.DeviceTopic}", item.GetSciptListValue(driverPropertys.BigTextScriptDeviceModel), cancellationToken);
                                 }
                                 else
                                 {
@@ -269,6 +254,49 @@ public class MqttClient : UpLoadBase
         }
 
     }
+
+    /// <summary>
+    /// 上传mqtt内容，并进行离线缓存
+    /// </summary>
+    /// <param name="topic"></param>
+    /// <param name="payLoad"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    private async Task MqttUp(string topic, string payLoad, CancellationToken cancellationToken)
+    {
+        var variableMessage = new MqttApplicationMessageBuilder()
+.WithTopic(topic)
+.WithPayload(payLoad).Build();
+        var isConnect = await TryMqttClientAsync(cancellationToken);
+        if (isConnect.IsSuccess)
+        {
+            //连接成功时补发缓存数据
+            var cacheData = await GetCacheData();
+            foreach (var item in cacheData)
+            {
+                var cacheMessage = new MqttApplicationMessageBuilder()
+.WithTopic(item.Topic)
+.WithPayload(item.CacheStr).Build();
+                var cacheResult = await _mqttClient.PublishAsync(cacheMessage);
+                if (cacheResult.IsSuccess)
+                {
+                    await DeleteCacheData(item.Id);
+                }
+            }
+
+            var result = await _mqttClient.PublishAsync(variableMessage);
+            if (!result.IsSuccess)
+            {
+                await AddCacheData(topic, payLoad);
+            }
+        }
+        else
+        {
+            await AddCacheData(topic, payLoad);
+        }
+    }
+
+
 
     public override OperResult IsConnected()
     {
