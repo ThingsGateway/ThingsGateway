@@ -89,7 +89,7 @@ http://120.24.62.140:5000/
 
  ####  文档
 
- 使用前请查看Gitee Pages [文档站点](https://diego2098.gitee.io/thingsgateway/)
+ 使用前请查看Gitee Pages [文档站点](https://diego2098.gitee.io/thingsgateway-docs/)
 
  #### 特别鸣谢
 -  Furion：[https://dotnetchina.gitee.io/furion](https://dotnetchina.gitee.io/furion)
@@ -109,7 +109,7 @@ http://120.24.62.140:5000/
 
 #### 开源协议
 
-请仔细阅读 [授权协议](https://diego2098.gitee.io/thingsgateway/docs/)
+请仔细阅读 [授权协议](https://diego2098.gitee.io/thingsgateway-docs/docs/)
 
 
 
