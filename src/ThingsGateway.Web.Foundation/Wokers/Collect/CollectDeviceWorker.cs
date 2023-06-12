@@ -220,7 +220,9 @@ public class CollectDeviceWorker : BackgroundService
     /// </summary>
     private void RemoveAllDeviceThread()
     {
-        foreach (var deviceThread in CollectDeviceThreads)
+        ParallelOptions options = new ParallelOptions();
+        options.MaxDegreeOfParallelism = Environment.ProcessorCount / 2;
+        Parallel.ForEach(CollectDeviceThreads, options, deviceThread =>
         {
             try
             {
@@ -230,7 +232,7 @@ public class CollectDeviceWorker : BackgroundService
             {
                 _logger?.LogError(ex, deviceThread.ToString());
             }
-        }
+        });
         CollectDeviceThreads.Clear();
     }
 
