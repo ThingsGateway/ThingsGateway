@@ -79,15 +79,11 @@ public interface IVariableService : ITransient
     /// <summary>
     /// 根据名称获取ID
     /// </summary>
-    /// <param name="name"></param>
-    /// <returns></returns>
-    long GetIdByName(string name);
+    long GetIdByName(string name, bool onlyCache = true);
     /// <summary>
     /// 根据ID获取名称
     /// </summary>
-    /// <param name="Id"></param>
-    /// <returns></returns>
-    string GetNameById(long Id);
+    string GetNameById(long id, bool onlyCache = true);
     /// <summary>
     /// 导入
     /// </summary>

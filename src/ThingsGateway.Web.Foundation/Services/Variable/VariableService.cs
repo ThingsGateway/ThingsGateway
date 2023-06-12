@@ -16,7 +16,7 @@ using Furion.LinqBuilder;
 using Microsoft.AspNetCore.Components.Forms;
 
 using MiniExcelLibs;
-
+using MiniExcelLibs.OpenXml;
 
 using System.Dynamic;
 using System.IO;
@@ -65,11 +65,11 @@ public class VariableService : DbRepository<CollectDeviceVariable>, IVariableSer
     }
 
     /// <inheritdoc/>
-    public long GetIdByName(string name)
+    public long GetIdByName(string name, bool onlyCache = true)
     {
         //先从Cache拿
         var id = _sysCacheService.Get<long>(ThingsGatewayCacheConst.Cache_DeviceVariableName, name);
-        if (id == 0)
+        if (id == 0 && !onlyCache)
         {
             //单查获取对应ID
             id = Context.Queryable<CollectDeviceVariable>().Where(it => it.Name == name).Select(it => it.Id).First();
@@ -82,11 +82,11 @@ public class VariableService : DbRepository<CollectDeviceVariable>, IVariableSer
         return id;
     }
     /// <inheritdoc/>
-    public string GetNameById(long Id)
+    public string GetNameById(long Id, bool onlyCache = true)
     {
         //先从Cache拿
         var name = _sysCacheService.Get<string>(ThingsGatewayCacheConst.Cache_DeviceVariableId, Id.ToString());
-        if (name.IsNullOrEmpty())
+        if (name.IsNullOrEmpty() && !onlyCache)
         {
             //单查获取用户账号对应ID
             name = Context.Queryable<CollectDeviceVariable>().Where(it => it.Id == Id).Select(it => it.Name).First();
@@ -192,22 +192,26 @@ public class VariableService : DbRepository<CollectDeviceVariable>, IVariableSer
         {
             var deviceVariables = await GetListAsync();
             var runtime = deviceVariables.Adapt<List<CollectVariableRunTime>>();
-            foreach (var device in runtime)
+            ParallelOptions options = new ParallelOptions();
+            options.MaxDegreeOfParallelism = Environment.ProcessorCount / 2;
+            Parallel.ForEach(runtime, options, device =>
             {
                 var deviceName = _collectDeviceService.GetNameById(device.DeviceId);
                 device.DeviceName = deviceName;
-            }
+            });
             return runtime;
         }
         else
         {
             var deviceVariables = await GetListAsync(a => a.DeviceId == devId);
             var runtime = deviceVariables.Adapt<List<CollectVariableRunTime>>();
-            foreach (var device in runtime)
+            ParallelOptions options = new ParallelOptions();
+            options.MaxDegreeOfParallelism = Environment.ProcessorCount / 2;
+            Parallel.ForEach(runtime, options, device =>
             {
                 var deviceName = _collectDeviceService.GetNameById(device.DeviceId);
                 device.DeviceName = deviceName;
-            }
+            });
             return runtime;
         }
 
@@ -219,16 +223,22 @@ public class VariableService : DbRepository<CollectDeviceVariable>, IVariableSer
     #region 导入导出
 
     //查找出列表中的所有重复元素及其重复次数
-    private static Dictionary<string, int> QueryRepeatElementAndCountOfList(IEnumerable<IDictionary<string, object>> list)
+    private static bool QueryRepeatElementAndCountOfList(IEnumerable<IDictionary<string, object>> list)
     {
-        Dictionary<string, int> DicTmp = new Dictionary<string, int>();
-        if (list != null && list.Count() > 0)
+        if (list != null && list.Any(a => a != null))
         {
-            DicTmp = list.GroupBy(x => ((ExpandoObject)x).ConvertToEntity<CollectDeviceVariable>().Name)
-                         .Where(g => g.Count() > 1)
-           .ToDictionary(x => x.Key, y => y.Count());
+            var des = typeof(CollectDeviceVariable).GetDescription(nameof(CollectDeviceVariable.Name));
+            var result = list.GroupBy(x => x[des]?.ToString())
+               .Any(g => g.Count() > 1);
+            return result;
+            // DicTmp = list.GroupBy(x => ((ExpandoObject)x).ConvertToEntity<CollectDeviceVariable>().Name)
+            //              .Where(g => g.Count() > 1)
+            //.ToDictionary(x => x.Key, y => y.Count());
         }
-        return DicTmp;
+        else
+        {
+            return false;
+        }
     }
 
     /// <summary>
@@ -330,6 +340,11 @@ public class VariableService : DbRepository<CollectDeviceVariable>, IVariableSer
         return memoryStream;
     }
 
+    private static IEnumerable<T> Page<T>(IEnumerable<T> en, int pageSize, int page)
+    {
+        return en.Skip(page * pageSize).Take(pageSize);
+    }
+
     /// <inheritdoc/>
     public async Task<Dictionary<string, ImportPreviewOutputBase>> PreviewAsync(IBrowserFile file)
     {
@@ -353,20 +368,24 @@ public class VariableService : DbRepository<CollectDeviceVariable>, IVariableSer
         foreach (var sheetName in sheetNames)
         {
             //单页数据
-            var rows = fs.Query(useHeaderRow: true, sheetName: sheetName).Cast<IDictionary<string, object>>();
+            var rows = fs.Query(useHeaderRow: true, sheetName: sheetName, configuration: new OpenXmlConfiguration { EnableSharedStringCache = false })
+                .Cast<IDictionary<string, object>>();
+
             if (sheetName == CollectDeviceSheetName)
             {
                 ImportPreviewOutput<CollectDeviceVariable> importPreviewOutput = new();
                 ImportPreviews.Add(sheetName, importPreviewOutput);
                 deviceImportPreview = importPreviewOutput;
 
-                var DicTmp = QueryRepeatElementAndCountOfList(rows);
-                if (DicTmp.Count > 0)
+                var result = QueryRepeatElementAndCountOfList(rows);
+                if (result)
                 {
-                    throw new Exception("发现重复名称" + Environment.NewLine + DicTmp.Select(a => a.Key).ToJson());
+                    throw new Exception("发现重复变量名称");
                 }
-                List<CollectDeviceVariable> devices = new List<CollectDeviceVariable>();
-                foreach (var item in rows)
+                ConcurrentList<CollectDeviceVariable> devices = new ConcurrentList<CollectDeviceVariable>();
+                ParallelOptions options = new ParallelOptions();
+                options.MaxDegreeOfParallelism = Environment.ProcessorCount / 2;
+                Parallel.ForEach(rows, options, item =>
                 {
                     var device = ((ExpandoObject)item).ConvertToEntity<CollectDeviceVariable>();
                     devices.Add(device);
@@ -377,7 +396,7 @@ public class VariableService : DbRepository<CollectDeviceVariable>, IVariableSer
                         //找不到对应的设备
                         importPreviewOutput.HasError = true;
                         importPreviewOutput.ErrorStr = "设备名称不存在";
-                        return ImportPreviews;
+                        return;
                     }
                     else
                     {
@@ -385,7 +404,9 @@ public class VariableService : DbRepository<CollectDeviceVariable>, IVariableSer
                         device.DeviceId = _collectDeviceService.GetIdByName(value.Value.ToString()).ToLong();
                         device.Id = this.GetIdByName(device.Name) == 0 ? YitIdHelper.NextId() : this.GetIdByName(device.Name);
                     }
-                }
+
+                });
+
                 importPreviewOutput.Data = devices;
 
             }
