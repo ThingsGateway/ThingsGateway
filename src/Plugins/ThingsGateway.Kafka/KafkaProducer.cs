@@ -172,9 +172,13 @@ public class KafkaProducer : UpLoadBase
 
                 if (result.Status == PersistenceStatus.Persisted)
                 {
+                    logMessage.Trace("报文-" + $"主题：{item.Topic}{Environment.NewLine}负载：{item.CacheStr}");
+
                     await DeleteCacheData(item.Id);
                 }
             }
+            logMessage.Trace("报文-" + $"主题：{topic}{Environment.NewLine}负载：{payLoad}");
+
         }
     }
 

@@ -281,6 +281,7 @@ public class MqttClient : UpLoadBase
                 if (cacheResult.IsSuccess)
                 {
                     await DeleteCacheData(item.Id);
+                    logMessage.Trace("报文-" + $"主题：{item.Topic}{Environment.NewLine}负载：{item.CacheStr}");
                 }
             }
 
@@ -288,6 +289,10 @@ public class MqttClient : UpLoadBase
             if (!result.IsSuccess)
             {
                 await AddCacheData(topic, payLoad, driverPropertys.CacheMaxCount);
+            }
+            else
+            {
+                logMessage.Trace("报文-" + $"主题：{topic}{Environment.NewLine}负载：{payLoad}");
             }
         }
         else
