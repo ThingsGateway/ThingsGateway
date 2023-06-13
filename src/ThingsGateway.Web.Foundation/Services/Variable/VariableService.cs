@@ -270,8 +270,9 @@ public class VariableService : DbRepository<CollectDeviceVariable>, IVariableSer
         List<Dictionary<string, object>> devExports = new();
         //设备附加属性，转成Dict<表名,List<Dict<列名，列数据>>>的形式
         Dictionary<string, List<Dictionary<string, object>>> devicePropertys = new();
-
-        foreach (var devData in devDatas)
+        ParallelOptions options = new ParallelOptions();
+        options.MaxDegreeOfParallelism = Environment.ProcessorCount / 2;
+        Parallel.ForEach(devDatas, options, devData =>
         {
 
             //设备页
@@ -325,7 +326,7 @@ public class VariableService : DbRepository<CollectDeviceVariable>, IVariableSer
 
             }
 
-        }
+        });
 
         //添加设备页
         sheets.Add(CollectDeviceSheetName, devExports);
@@ -455,11 +456,11 @@ public class VariableService : DbRepository<CollectDeviceVariable>, IVariableSer
 
                     var uploadDevice = _uploadDeviceService.GetCacheList().FirstOrDefault(a => a.Name == uploadDevName);
 
-                    if (deviceImportPreview.Data?.Any(it => it.Name == variableName) == true)
+                    if (deviceImportPreview.Data?.Any(it => it.Name == variableName) == true && uploadDevice != null)
                     {
                         var id = this.GetIdByName(variableName);
                         var deviceId = id != 0 ? id : deviceImportPreview.Data.FirstOrDefault(it => it.Name == variableName).Id;
-                        deviceImportPreview.Data.FirstOrDefault(a => a.Id == deviceId).VariablePropertys.AddOrUpdate(uploadDevice.Id, devices);
+                        deviceImportPreview?.Data?.FirstOrDefault(a => a.Id == deviceId)?.VariablePropertys?.AddOrUpdate(uploadDevice.Id, devices);
                     }
 
                 }

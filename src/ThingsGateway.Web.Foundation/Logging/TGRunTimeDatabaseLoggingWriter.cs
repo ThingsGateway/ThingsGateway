@@ -24,12 +24,12 @@ namespace ThingsGateway.Web.Foundation;
 public class TGRunTimeDatabaseLoggingWriter : IDatabaseLoggingWriter
 {
     private readonly SqlSugarScope _db;
-
+    private readonly GlobalCollectDeviceData _globalCollectDeviceData;
     /// <inheritdoc cref="TGRunTimeDatabaseLoggingWriter"/>
-    public TGRunTimeDatabaseLoggingWriter()
+    public TGRunTimeDatabaseLoggingWriter(GlobalCollectDeviceData globalCollectDeviceData)
     {
         _db = DbContext.Db;
-
+        _globalCollectDeviceData = globalCollectDeviceData;
         Task.Factory.StartNew(LogInsertAsync);
     }
     private ConcurrentQueue<RuntimeLog> _logQueues = new();
@@ -71,6 +71,7 @@ public class TGRunTimeDatabaseLoggingWriter : IDatabaseLoggingWriter
             };
             //_db.InsertableWithAttr(logRuntime).ExecuteCommand();//入库
             _logQueues.Enqueue(logRuntime);
+            //_globalCollectDeviceData.RunTimeLogs.Add((logRuntime.LogLevel, logRuntime.LogMessage));
         }
 
 

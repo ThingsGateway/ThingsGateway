@@ -67,7 +67,7 @@ public abstract class DriverBase : DisposableObject
     /// <summary>
     /// 报文信息
     /// </summary>
-    public ConcurrentList<(long id, string message)> Messages { get; set; } = new();
+    public ConcurrentLinkedList<string> Messages { get; set; } = new();
 
     /// <summary>
     /// 是否连接成功
@@ -91,7 +91,7 @@ public abstract class DriverBase : DisposableObject
     {
         if (arg1 == LogType.Trace && arg3.StartsWith("报文-"))
         {
-            Messages.Add(new(YitIdHelper.NextId(), DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff zz") + "-" + arg3));
+            Messages.Add(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff zz") + "-" + arg3);
 
             if (Messages.Count > 2500)
             {

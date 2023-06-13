@@ -67,9 +67,9 @@
 
                     <MRow NoGutters>
 
-                    <MButton Class="mx-1 my-3" Color="primary" OnClick="()=>IsShowImportVariableList=!IsShowImportVariableList">
-                        <span>导入变量</span>
-                    </MButton>
+                        <MButton Class="mx-1 my-3" Color="primary" OnClick="()=>IsShowImportVariableList=!IsShowImportVariableList">
+                            <span>导入变量</span>
+                        </MButton>
 
                     </MRow>
                 </MCol>
@@ -104,9 +104,9 @@
                 @{
                     var item = Messages;
                     <MRow Class="ml-2 mr-2 d-flex" NoGutters>
-                        <MVirtualScroll Context="itemMessage" Height=@("calc(100vh - 500px)") OverscanCount=2 ItemSize="200" Items="item.OrderByDescending(a=>a.id).ToList()">
+                        <MVirtualScroll Context="itemMessage" Height=@("calc(100vh - 500px)") OverscanCount=2 ItemSize="200" Items="item">
                             <ItemContent>
-                                <div title=@itemMessage.message class=@(itemMessage.isRed==null?" black--text ":itemMessage.isRed==true?" red--text ":"green--text ") style="white-space: nowrap !important;overflow: hidden !important; text-overflow: ellipsis !important;">
+                                <div title=@itemMessage.message class=@(itemMessage.level<Microsoft.Extensions.Logging.LogLevel.Information?" black--text ":itemMessage.level>=Microsoft.Extensions.Logging.LogLevel.Warning?" red--text ":"green--text ") style="white-space: nowrap !important;overflow: hidden !important; text-overflow: ellipsis !important;">
                                     @itemMessage.message
                                 </div>
 
@@ -177,10 +177,10 @@
             _plc.AddSubscription("", address, callback);
         else
         {
-            Messages.Add((Yitter.IdGenerator.YitIdHelper.NextId(), null, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss ffff") + "未连接"));
+            Messages.Add((Microsoft.Extensions.Logging.LogLevel.Debug, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss ffff") + "未连接"));
             if (Messages.Count > 2500)
             {
-                Messages.RemoveRange(0, 2000);
+                Messages.Clear();
             }
         }
 
@@ -195,10 +195,10 @@
             type = data.Value.WrappedValue.TypeInfo.ToString(),
             value = data.Value.Value,
         };
-        Messages.Add((Yitter.IdGenerator.YitIdHelper.NextId(), null, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss ffff") + t.ToJson().FormatJson()));
+        Messages.Add((Microsoft.Extensions.Logging.LogLevel.Debug, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss ffff") + t.ToJson().FormatJson()));
         if (Messages.Count > 2500)
         {
-            Messages.RemoveRange(0, 2000);
+            Messages.Clear();
         }
     }
 
@@ -208,10 +208,10 @@
             _plc.RemoveSubscription("");
         else
         {
-            Messages.Add((Yitter.IdGenerator.YitIdHelper.NextId(), null, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss ffff") + "未连接"));
+            Messages.Add((Microsoft.Extensions.Logging.LogLevel.Debug, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss ffff") + "未连接"));
             if (Messages.Count > 2500)
             {
-                Messages.RemoveRange(0, 2000);
+                Messages.Clear();
             }
         }
     }
@@ -220,7 +220,7 @@
         if (_plc.Connected)
         {
             var data = await _plc.ReadNodeAsync(address);
-            Messages.Add((Yitter.IdGenerator.YitIdHelper.NextId(), null, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss ffff") + data.Select(a =>
+            Messages.Add((Microsoft.Extensions.Logging.LogLevel.Debug, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss ffff") + data.Select(a =>
             {
                 return new
                 {
@@ -230,15 +230,15 @@
             }).ToJson().FormatJson()));
             if (Messages.Count > 2500)
             {
-                Messages.RemoveRange(0, 2000);
+                Messages.Clear();
             }
         }
         else
         {
-            Messages.Add((Yitter.IdGenerator.YitIdHelper.NextId(), null, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss ffff") + "未连接"));
+            Messages.Add((Microsoft.Extensions.Logging.LogLevel.Debug, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss ffff") + "未连接"));
             if (Messages.Count > 2500)
             {
-                Messages.RemoveRange(0, 2000);
+                Messages.Clear();
             }
         }
     }
@@ -252,25 +252,25 @@
                 var data = await _plc.WriteNodeAsync(address, Convert.ChangeType(writeValue, dataTypeEnum.GetNetType()));
                 if (data.IsSuccess)
                 {
-                    Messages.Add((Yitter.IdGenerator.YitIdHelper.NextId(), false, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss ffff") + " - 写入成功"));
+                    Messages.Add((Microsoft.Extensions.Logging.LogLevel.Information, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss ffff") + " - 写入成功"));
                 }
                 else
                 {
-                    Messages.Add((Yitter.IdGenerator.YitIdHelper.NextId(), true, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss ffff") + " - 写入失败 " + data.Message));
+                    Messages.Add((Microsoft.Extensions.Logging.LogLevel.Warning, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss ffff") + " - 写入失败 " + data.Message));
                 }
             }
             else
             {
-                Messages.Add((Yitter.IdGenerator.YitIdHelper.NextId(), null, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss ffff") + "未连接"));
+                Messages.Add((Microsoft.Extensions.Logging.LogLevel.Debug, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss ffff") + "未连接"));
                 if (Messages.Count > 2500)
                 {
-                    Messages.RemoveRange(0, 2000);
+                    Messages.Clear();
                 }
             }
         }
         catch (Exception ex)
         {
-            Messages.Add((Yitter.IdGenerator.YitIdHelper.NextId(), true, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss ffff") + " - " + "写入失败：" + ex.Message));
+            Messages.Add((Microsoft.Extensions.Logging.LogLevel.Error, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss ffff") + " - " + "写入失败：" + ex.Message));
         }
     }
     public override void Dispose()

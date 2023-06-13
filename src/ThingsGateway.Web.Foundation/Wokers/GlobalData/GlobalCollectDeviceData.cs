@@ -35,5 +35,8 @@ public class GlobalCollectDeviceData : ISingleton
             return CollectDevices?.SelectMany(it => it.DeviceVariableRunTimes).ToList();
         }
     }
-
+    ///// <summary>
+    ///// 后台实时日志
+    ///// </summary>
+    //public ConcurrentLinkedList<(LogLevel level, string data)> RunTimeLogs { get; set; } = new();
 }

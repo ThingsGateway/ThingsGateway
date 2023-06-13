@@ -314,10 +314,10 @@ public class UploadDeviceWorker : BackgroundService
     /// <inheritdoc/>
     public override async Task StopAsync(CancellationToken cancellationToken)
     {
-        var stoppingToken = new CancellationTokenSource();
+        using var stoppingToken = new CancellationTokenSource();
         _stoppingToken = stoppingToken.Token;
         stoppingToken.Cancel();
-        stoppingToken?.SafeDispose();
+        await Task.Delay(2000);
 
         RemoveAllDeviceThread();
         await base.StopAsync(cancellationToken);
