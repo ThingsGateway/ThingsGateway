@@ -7,10 +7,11 @@
 
 基于Net6/7+Blazor Server的跨平台边缘采集网关，支持南北端插件式开发，
 并拥有较完善的北端Rpc权限管理。
+
+[Github地址](https://github.com/kimdiego2098/ThingsGateway)
+
 <div >
-<font color="#ffcc00">
 如果对您有帮助，请点击右上角⭐Star关注，感谢支持开源！
-</font>
 </div>
 
 ####  功能亮点

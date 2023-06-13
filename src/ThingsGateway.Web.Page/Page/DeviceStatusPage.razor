@@ -276,10 +276,10 @@
                                     {
                                         var item = CurMessages;
                                         <MRow Class="ml-2 mr-2 d-flex" NoGutters>
-                                        <MVirtualScroll Context="itemMessage" Height=@("calc(100vh - 700px)") OverscanCount=2 ItemSize="100" Items="item?.OrderByDescending(a=>a.id).ToList()">
+                                        <MVirtualScroll Context="itemMessage" Height=@("calc(100vh - 700px)") OverscanCount=2 ItemSize="100" Items="item">
                                             <ItemContent>
                                                 <div>
-                                                    @itemMessage.message
+                                                    @itemMessage
                                                 </div>
                                             </ItemContent>
                                         </MVirtualScroll>
@@ -289,10 +289,10 @@
                                     {
                                         var item = collectDeviceInfoItem.Driver?.Messages;
                                         <MRow Class="ml-2 mr-2 d-flex" NoGutters>
-                                        <MVirtualScroll Context="itemMessage" Height=@("calc(100vh - 700px)") OverscanCount=2 ItemSize="100" Items="item?.OrderByDescending(a=>a.id).ToList()">
+                                        <MVirtualScroll Context="itemMessage" TItem="string" Height=@("calc(100vh - 700px)") OverscanCount=2 ItemSize="100" Items="item">
                                             <ItemContent>
                                                 <div>
-                                                    @itemMessage.message
+                                                    @itemMessage
                                                 </div>
                                             </ItemContent>
                                         </MVirtualScroll>
@@ -498,10 +498,10 @@
                                     {
                                         var item = CurMessages;
                                         <MRow Class="ml-2 mr-2 d-flex" NoGutters>
-                                        <MVirtualScroll Context="itemMessage" Height=@("calc(100vh - 700px)") OverscanCount=2 ItemSize="100" Items="item?.OrderByDescending(a=>a.id).ToList()">
+                                        <MVirtualScroll Context="itemMessage" Height=@("calc(100vh - 700px)") OverscanCount=2 ItemSize="100" Items="item">
                                             <ItemContent>
                                                 <div>
-                                                    @itemMessage.message
+                                                    @itemMessage
                                                 </div>
                                             </ItemContent>
                                         </MVirtualScroll>
@@ -511,10 +511,10 @@
                                     {
                                         var item = uploadDeviceInfoItem.Driver?.Messages;
                                         <MRow Class="ml-2 mr-2 d-flex" NoGutters>
-                                        <MVirtualScroll Context="itemMessage" Height=@("calc(100vh - 700px)") OverscanCount=2 ItemSize="100" Items="item?.OrderByDescending(a=>a.id).ToList()">
+                                        <MVirtualScroll Context="itemMessage" TItem="string" Height=@("calc(100vh - 700px)") OverscanCount=2 ItemSize="100" Items="item">
                                             <ItemContent>
                                                 <div>
-                                                    @itemMessage.message
+                                                    @itemMessage
                                                 </div>
                                             </ItemContent>
                                         </MVirtualScroll>
@@ -580,19 +580,19 @@
 
 @code {
     bool pauseMessage;
-    List<(long id, string message)> CurMessages = new();
-    async Task DownDeviceMessageExport(List<(long id, string message)> values)
+    List<string> CurMessages = new();
+    async Task DownDeviceMessageExport(List<string> values)
     {
         try
         {
             isDownExport = true;
             StateHasChanged();
-            var memoryStream = new MemoryStream();
+            using var memoryStream = new MemoryStream();
             StreamWriter writer = new StreamWriter(memoryStream);
 
             foreach (var item in values)
             {
-                writer.WriteLine(item.message);
+                writer.WriteLine(item);
             }
             writer.Flush();
             memoryStream.Seek(0, SeekOrigin.Begin);
@@ -785,7 +785,7 @@
         }
         catch
         {
-            
+
         }
 
     }

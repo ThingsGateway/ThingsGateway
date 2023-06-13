@@ -88,7 +88,6 @@ public class CollectDeviceWorker : BackgroundService
     /// </summary>
     public async Task RestartDeviceThreadAsync()
     {
-
         try
         {
             await easyLock.LockAsync();
@@ -161,7 +160,9 @@ public class CollectDeviceWorker : BackgroundService
     {
         if (!_stoppingToken.IsCancellationRequested)
         {
+            _logger.LogInformation("正在获取采集组态信息");
             var collectDeviceRunTimes = (await _collectDeviceService.GetCollectDeviceRuntimeAsync());
+            _logger.LogInformation("获取采集组态信息完成");
             foreach (var collectDeviceRunTime in collectDeviceRunTimes)
             {
                 if (!_stoppingToken.IsCancellationRequested)
@@ -411,10 +412,9 @@ public class CollectDeviceWorker : BackgroundService
     /// <inheritdoc/>
     public override async Task StopAsync(CancellationToken cancellationToken)
     {
-        var stoppingToken = new CancellationTokenSource();
+        using var stoppingToken = new CancellationTokenSource();
         _stoppingToken = stoppingToken.Token;
         stoppingToken.Cancel();
-        stoppingToken?.SafeDispose();
         await Task.Delay(2000);
         StopOtherHostService();
         RemoveAllDeviceThread();
@@ -423,6 +423,7 @@ public class CollectDeviceWorker : BackgroundService
     /// <inheritdoc/>
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        await Task.Delay(5000);
         await RestartDeviceThreadAsync();
         while (!stoppingToken.IsCancellationRequested)
         {

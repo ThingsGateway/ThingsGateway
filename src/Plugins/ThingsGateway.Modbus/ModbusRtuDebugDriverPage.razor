@@ -101,9 +101,9 @@
                 @{
                     var item = Messages;
                     <MRow Class="ml-2 mr-2 d-flex" NoGutters>
-                        <MVirtualScroll Context="itemMessage" Height=@("calc(100vh - 500px)") OverscanCount=2 ItemSize="100" Items="item.OrderByDescending(a=>a.id).ToList()">
+                        <MVirtualScroll Context="itemMessage" Height=@("calc(100vh - 500px)") OverscanCount=2 ItemSize="100" Items="item">
                             <ItemContent>
-                                <div title=@itemMessage.message class=@(itemMessage.isRed==null?" black--text ":itemMessage.isRed==true?" red--text ":"green--text ") style="white-space: nowrap !important;overflow: hidden !important; text-overflow: ellipsis !important;">
+                                <div title=@itemMessage.message class=@(itemMessage.level<Microsoft.Extensions.Logging.LogLevel.Information?" black--text ":itemMessage.level>=Microsoft.Extensions.Logging.LogLevel.Warning?" red--text ":"green--text ") style="white-space: nowrap !important;overflow: hidden !important; text-overflow: ellipsis !important;">
                                     @itemMessage.message
                                 </div>
 

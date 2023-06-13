@@ -27,6 +27,13 @@
     </MIcon>
 </MButton>
 
+@*<MButton Text Icon="@MasaBlazor.Breakpoint.SmAndDown"
+         MaxHeight="@(UserResoures.Themes.LayoutPrpo.AppBarHeight-8)"
+         OnClick=@OnSettingsClick>
+    <MIcon>
+        mdi-cog
+    </MIcon>
+</MButton>*@
 
 <UserMenu></UserMenu>
 
@@ -34,6 +41,9 @@
 {
     [Parameter]
     public EventCallback<string> LanguageChange { get; set; }
+    
+    //[Parameter]
+    //public EventCallback OnSettingsClick { get; set; }
 
     [Inject]
     UserResoures UserResoures { get; set; }
