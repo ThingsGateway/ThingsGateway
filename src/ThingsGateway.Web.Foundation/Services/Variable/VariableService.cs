@@ -270,11 +270,8 @@ public class VariableService : DbRepository<CollectDeviceVariable>, IVariableSer
         List<Dictionary<string, object>> devExports = new();
         //设备附加属性，转成Dict<表名,List<Dict<列名，列数据>>>的形式
         Dictionary<string, List<Dictionary<string, object>>> devicePropertys = new();
-        ParallelOptions options = new ParallelOptions();
-        options.MaxDegreeOfParallelism = Environment.ProcessorCount / 2;
-        Parallel.ForEach(devDatas, options, devData =>
+        foreach (var devData in devDatas)//Parallel.ForEach无序体验不好
         {
-
             //设备页
             var data = devData.GetType().GetAllProps().Where(a => a.GetCustomAttribute<ExcelAttribute>() != null);
             Dictionary<string, object> devExport = new();
@@ -326,7 +323,7 @@ public class VariableService : DbRepository<CollectDeviceVariable>, IVariableSer
 
             }
 
-        });
+        }
 
         //添加设备页
         sheets.Add(CollectDeviceSheetName, devExports);
@@ -384,9 +381,7 @@ public class VariableService : DbRepository<CollectDeviceVariable>, IVariableSer
                     throw new Exception("发现重复变量名称");
                 }
                 ConcurrentList<CollectDeviceVariable> devices = new ConcurrentList<CollectDeviceVariable>();
-                ParallelOptions options = new ParallelOptions();
-                options.MaxDegreeOfParallelism = Environment.ProcessorCount / 2;
-                Parallel.ForEach(rows, options, item =>
+                foreach (var item in rows)//Parallel.ForEach无序体验不好
                 {
                     var device = ((ExpandoObject)item).ConvertToEntity<CollectDeviceVariable>();
                     devices.Add(device);
@@ -397,7 +392,7 @@ public class VariableService : DbRepository<CollectDeviceVariable>, IVariableSer
                         //找不到对应的设备
                         importPreviewOutput.HasError = true;
                         importPreviewOutput.ErrorStr = "设备名称不存在";
-                        return;
+                        return ImportPreviews;
                     }
                     else
                     {
@@ -406,7 +401,7 @@ public class VariableService : DbRepository<CollectDeviceVariable>, IVariableSer
                         device.Id = this.GetIdByName(device.Name) == 0 ? YitIdHelper.NextId() : this.GetIdByName(device.Name);
                     }
 
-                });
+                }
 
                 importPreviewOutput.Data = devices;
 
