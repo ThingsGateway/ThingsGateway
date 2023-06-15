@@ -179,6 +179,7 @@
         datas.RemoveWhere(it => it.Value == nameof(CollectVariableRunTime.DataType));
         datas.RemoveWhere(it => it.Value == nameof(CollectVariableRunTime.EventTime));
         datas.RemoveWhere(it => it.Value == nameof(CollectVariableRunTime.EventTypeEnum));
+        datas.RemoveWhere(it => it.Value == nameof(CollectVariableRunTime.CollectDeviceRunTime));
 
         datas.RemoveWhere(it => it.Value.Contains("His"));
         datas.RemoveWhere(it => it.Value.Contains("Alarm"));

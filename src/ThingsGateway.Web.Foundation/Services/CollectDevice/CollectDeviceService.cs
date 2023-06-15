@@ -229,23 +229,35 @@ public class CollectDeviceService : DbRepository<CollectDevice>, ICollectDeviceS
                 device.PluginName = pluginName;
                 device.DeviceVariableRunTimes = collectVariableRunTimes.Where(a => a.DeviceId == device.Id).ToList();
             }
+            ParallelOptions options = new ParallelOptions();
+            options.MaxDegreeOfParallelism = Environment.ProcessorCount / 2;
+            Parallel.ForEach(collectVariableRunTimes, options, variable =>
+            {
+                variable.CollectDeviceRunTime = runtime.FirstOrDefault(a => a.Id == variable.DeviceId);
+                variable.DeviceName = runtime.FirstOrDefault(a => a.Id == variable.DeviceId).Name;
+            });
             return runtime;
         }
         else
         {
-            var devices = GetCacheList().Where(a => a.Enable).ToList();
-            devices = devices.Where(it => it.Id == devId).ToList();
-            var runtime = devices.Adapt<List<CollectDeviceRunTime>>();
+            var device = GetCacheList().Where(a => a.Enable).ToList().FirstOrDefault(it => it.Id == devId);
+            var runtime = device.Adapt<CollectDeviceRunTime>();
             using var serviceScope = _scopeFactory.CreateScope();
             var variableService = serviceScope.ServiceProvider.GetService<IVariableService>();
-            foreach (var device in runtime)
+
+            var pluginName = _driverPluginService.GetNameById(device.PluginId);
+            var collectVariableRunTimes = await variableService.GetCollectDeviceVariableRuntimeAsync(devId);
+            runtime.PluginName = pluginName;
+            runtime.DeviceVariableRunTimes = collectVariableRunTimes;
+
+            ParallelOptions options = new ParallelOptions();
+            options.MaxDegreeOfParallelism = Environment.ProcessorCount / 2;
+            Parallel.ForEach(collectVariableRunTimes, options, variable =>
             {
-                var pluginName = _driverPluginService.GetNameById(device.PluginId);
-                var collectVariableRunTimes = await variableService.GetCollectDeviceVariableRuntimeAsync(devId);
-                device.PluginName = pluginName;
-                device.DeviceVariableRunTimes = collectVariableRunTimes;
-            }
-            return runtime;
+                variable.CollectDeviceRunTime = runtime;
+                variable.DeviceName = runtime.Name;
+            });
+            return new() { runtime };
 
         }
 
