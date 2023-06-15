@@ -204,7 +204,7 @@ public class AlarmWorker : BackgroundService
             bool? realTaskResult = false;
             try
             {
-                realTaskResult = realAlarmResult?.Wait(5000);
+                realTaskResult = realAlarmResult?.Wait(10000);
             }
             catch (ObjectDisposedException)
             {
@@ -230,7 +230,7 @@ public class AlarmWorker : BackgroundService
         bool? hisTaskResult = false;
         try
         {
-            hisTaskResult = hisAlarmResult?.Wait(5000);
+            hisTaskResult = hisAlarmResult?.Wait(10000);
         }
         catch (ObjectDisposedException)
         {
@@ -444,7 +444,7 @@ public class AlarmWorker : BackgroundService
                     /***创建/更新单个表***/
                     try
                     {
-                        await sqlSugarClient.Queryable<AlarmHis>().FirstAsync();
+                        await sqlSugarClient.Queryable<AlarmHis>().FirstAsync(StoppingToken.Token);
                     }
                     catch (Exception)
                     {
@@ -465,7 +465,7 @@ public class AlarmWorker : BackgroundService
 
                             try
                             {
-                                await sqlSugarClient.Queryable<AlarmHis>().FirstAsync();
+                                await sqlSugarClient.Queryable<AlarmHis>().FirstAsync(StoppingToken.Token);
                             }
                             catch (Exception)
                             {
@@ -485,7 +485,7 @@ public class AlarmWorker : BackgroundService
                             }
                                 );
                             //插入
-                            await sqlSugarClient.Insertable(hisalarm).ExecuteCommandAsync();
+                            await sqlSugarClient.Insertable(hisalarm).ExecuteCommandAsync(StoppingToken.Token);
 
                             if (StoppingToken.Token.IsCancellationRequested)
                                 break;
