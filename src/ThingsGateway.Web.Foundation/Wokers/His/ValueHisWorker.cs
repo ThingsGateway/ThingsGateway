@@ -173,7 +173,7 @@ public class ValueHisWorker : BackgroundService
                     /***创建/更新单个表***/
                     try
                     {
-                        await sqlSugarClient.Queryable<ValueHis>().FirstAsync();
+                        await sqlSugarClient.Queryable<ValueHis>().FirstAsync(StoppingToken.Token);
                     }
                     catch (Exception)
                     {
@@ -193,7 +193,7 @@ public class ValueHisWorker : BackgroundService
                             await Task.Delay(500, StoppingToken.Token);
                             try
                             {
-                                await sqlSugarClient.Queryable<ValueHis>().FirstAsync();
+                                await sqlSugarClient.Queryable<ValueHis>().FirstAsync(StoppingToken.Token);
                             }
                             catch (Exception)
                             {
@@ -207,13 +207,13 @@ public class ValueHisWorker : BackgroundService
                             //这里直接出队，没做失败重试，后续添加
                             var list = CollectDeviceVariables.ToListWithDequeue();
                             var changelist = ChangeDeviceVariables.ToListWithDequeue();
-                            await sqlSugarClient.Queryable<ValueHis>().FirstAsync();
+                            await sqlSugarClient.Queryable<ValueHis>().FirstAsync(StoppingToken.Token);
                             if (list.Count != 0)
                             {
                                 ////Sql保存
                                 var collecthis = list;
                                 //插入
-                                await sqlSugarClient.Insertable<ValueHis>(collecthis).ExecuteCommandAsync();
+                                await sqlSugarClient.Insertable<ValueHis>(collecthis).ExecuteCommandAsync(StoppingToken.Token);
                             }
 
                             if (changelist.Count != 0)
@@ -221,7 +221,7 @@ public class ValueHisWorker : BackgroundService
                                 ////Sql保存
                                 var changehis = changelist;
                                 //插入
-                                await sqlSugarClient.Insertable<ValueHis>(changehis).ExecuteCommandAsync();
+                                await sqlSugarClient.Insertable<ValueHis>(changehis).ExecuteCommandAsync(StoppingToken.Token);
 
                             }
 
@@ -298,7 +298,7 @@ public class ValueHisWorker : BackgroundService
         bool? hisTaskResult = false;
         try
         {
-            hisTaskResult = hisHisResult?.Wait(5000);
+            hisTaskResult = hisHisResult?.Wait(10000);
         }
         catch (ObjectDisposedException)
         {
