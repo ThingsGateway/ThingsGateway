@@ -50,6 +50,14 @@ public class CollectVariableRunTime : CollectDeviceVariable
     }
 
     /// <summary>
+    /// 所在采集设备
+    /// </summary>
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    [Description("采集设备")]
+    public CollectDeviceRunTime CollectDeviceRunTime { get; set; }
+
+    /// <summary>
     /// 原始值
     /// </summary>
     [Description("原始值")]

@@ -192,26 +192,12 @@ public class VariableService : DbRepository<CollectDeviceVariable>, IVariableSer
         {
             var deviceVariables = await GetListAsync();
             var runtime = deviceVariables.Adapt<List<CollectVariableRunTime>>();
-            ParallelOptions options = new ParallelOptions();
-            options.MaxDegreeOfParallelism = Environment.ProcessorCount / 2;
-            Parallel.ForEach(runtime, options, device =>
-            {
-                var deviceName = _collectDeviceService.GetNameById(device.DeviceId);
-                device.DeviceName = deviceName;
-            });
             return runtime;
         }
         else
         {
             var deviceVariables = await GetListAsync(a => a.DeviceId == devId);
             var runtime = deviceVariables.Adapt<List<CollectVariableRunTime>>();
-            ParallelOptions options = new ParallelOptions();
-            options.MaxDegreeOfParallelism = Environment.ProcessorCount / 2;
-            Parallel.ForEach(runtime, options, device =>
-            {
-                var deviceName = _collectDeviceService.GetNameById(device.DeviceId);
-                device.DeviceName = deviceName;
-            });
             return runtime;
         }
 
