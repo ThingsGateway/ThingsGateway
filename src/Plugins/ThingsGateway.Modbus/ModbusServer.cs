@@ -11,6 +11,7 @@
 #endregion
 
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 using SqlSugar;
 
@@ -85,7 +86,7 @@ public class ModbusServer : UpLoadBase
             _plc.Write -= WriteAsync;
         _plc?.Disconnect();
         _plc?.SafeDispose();
-        _ModbusTags.Clear();
+        _ModbusTags?.Clear();
         _ModbusTags = null;
         Values.Clear();
         Values = null;
@@ -129,8 +130,9 @@ public class ModbusServer : UpLoadBase
                 return address ?? new ModbusAddress() { AddressStart = -1, Station = -1, ReadFunction = -1 };
             });
         }
-        finally
+        catch(Exception ex)
         {
+            _logger.LogWarning(ex,ToString());
             tags.ForEach(a =>
             {
                 a.VariableValueChange -= VariableValueChange;
