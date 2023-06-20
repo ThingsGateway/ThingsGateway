@@ -81,7 +81,10 @@ namespace ThingsGateway.Web.Rcl
                 var ret = str.ToJsonEntity<UnifyResult<LoginOutPut>>();
                 if (ret.Code != 200)
                 {
-                    await captcha?.RefreshCode();
+                    if (captcha != null)
+                    {
+                        await captcha.RefreshCode();
+                    }
                     await PopupService.EnqueueSnackbarAsync(new(T("登录错误") + ": " + ret.Msg.ToString(), AlertTypes.Error));
                 }
                 else
@@ -93,7 +96,10 @@ namespace ThingsGateway.Web.Rcl
             }
             else
             {
-                await captcha?.RefreshCode();
+                if (captcha != null)
+                {
+                    await captcha.RefreshCode();
+                }
                 await PopupService.EnqueueSnackbarAsync(new(T("登录错误"), AlertTypes.Error));
             }
         }

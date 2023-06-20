@@ -222,7 +222,7 @@ public class CollectDeviceWorker : BackgroundService
     private void RemoveAllDeviceThread()
     {
         ParallelOptions options = new ParallelOptions();
-        options.MaxDegreeOfParallelism = Environment.ProcessorCount / 2;
+        options.MaxDegreeOfParallelism = Environment.ProcessorCount / 2 == 0 ? 1 : Environment.ProcessorCount / 2;
         Parallel.ForEach(CollectDeviceThreads, options, deviceThread =>
         {
             try

@@ -230,7 +230,7 @@ public class CollectDeviceService : DbRepository<CollectDevice>, ICollectDeviceS
                 device.DeviceVariableRunTimes = collectVariableRunTimes.Where(a => a.DeviceId == device.Id).ToList();
             }
             ParallelOptions options = new ParallelOptions();
-            options.MaxDegreeOfParallelism = Environment.ProcessorCount / 2;
+            options.MaxDegreeOfParallelism = Environment.ProcessorCount / 2 == 0 ? 1 : Environment.ProcessorCount / 2;
             Parallel.ForEach(collectVariableRunTimes, options, variable =>
             {
                 variable.CollectDeviceRunTime = runtime.FirstOrDefault(a => a.Id == variable.DeviceId);
@@ -251,7 +251,7 @@ public class CollectDeviceService : DbRepository<CollectDevice>, ICollectDeviceS
             runtime.DeviceVariableRunTimes = collectVariableRunTimes;
 
             ParallelOptions options = new ParallelOptions();
-            options.MaxDegreeOfParallelism = Environment.ProcessorCount / 2;
+            options.MaxDegreeOfParallelism = Environment.ProcessorCount / 2 == 0 ? 1 : Environment.ProcessorCount / 2;
             Parallel.ForEach(collectVariableRunTimes, options, variable =>
             {
                 variable.CollectDeviceRunTime = runtime;
