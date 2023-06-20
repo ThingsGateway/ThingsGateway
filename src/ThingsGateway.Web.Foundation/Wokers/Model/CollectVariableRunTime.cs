@@ -257,11 +257,11 @@ public class CollectVariableRunTime : CollectDeviceVariable
     /// <summary>
     /// 报警类型
     /// </summary>
-    public AlarmEnum AlarmTypeEnum { get; set; }
+    public AlarmEnum AlarmTypeEnum { get; set; } = AlarmEnum.None;
     /// <summary>
     /// 事件类型
     /// </summary>
-    public EventEnum EventTypeEnum { get; set; }
+    public EventEnum EventTypeEnum { get; set; } = EventEnum.None;
     /// <summary>
     /// 报警值
     /// </summary>
