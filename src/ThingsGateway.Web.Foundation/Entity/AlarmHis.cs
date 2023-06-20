@@ -125,6 +125,10 @@ public enum AlarmEnum
 public enum EventEnum
 {
     /// <summary>
+    /// 无
+    /// </summary>
+    None,
+    /// <summary>
     /// 报警产生
     /// </summary>
     Alarm,
