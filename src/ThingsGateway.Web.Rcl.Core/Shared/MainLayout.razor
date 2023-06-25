@@ -42,7 +42,7 @@
                              Items="Navs" />
             </MNavigationDrawer>
 
-            <MAppBar Style=@($"{(!(IsMobile||!_drawerOpen)? "left:200px;":"")}") Elevation="1" App Flat ClippedRight Dense ElevateOnScroll Color="barcolor"
+            <MAppBar Style=@($"{(!(IsMobile||_drawerOpen!=true)? "left:200px;":"")}") Elevation="1" App Flat ClippedRight Dense ElevateOnScroll Color="barcolor"
                      MaxHeight="@(UserResoures.Themes.LayoutPrpo.AppBarHeight)" Height="@(UserResoures.Themes.LayoutPrpo.AppBarHeight)">
                 <MButton Class="mr-0" Icon Small=IsMobile OnClick=@(() => _drawerOpen = !_drawerOpen)>
                     <MIcon>mdi-menu</MIcon>
@@ -52,7 +52,7 @@
 
             </MAppBar>
 
-            <MMain Style=@($"{(!(IsMobile||!_drawerOpen)? "padding-left:200px;":"")}")>
+                <MMain Style=@($"{(!(IsMobile||_drawerOpen!=true)? "padding-left:200px;":"")}")>
                 <div class="full-width">
                     <PageTabs @ref="_pageTabs" />
                 </div>

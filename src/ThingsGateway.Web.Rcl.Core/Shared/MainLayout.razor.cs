@@ -18,7 +18,7 @@ namespace ThingsGateway.Web.Rcl
 {
     public partial class MainLayout
     {
-        private bool _drawerOpen = true;
+        private bool? _drawerOpen = true;
 
         [Inject]
         public I18n I18n { get; set; }
