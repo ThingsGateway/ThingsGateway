@@ -91,7 +91,8 @@ namespace ThingsGateway.Web.Rcl
                 {
                     await PopupService.EnqueueSnackbarAsync(new(T("登录成功"), AlertTypes.Success));
                     await Task.Delay(500);
-                    await AjaxService.GotoAsync("/");
+                    await AjaxService.GotoAsync(NavigationManager.Uri);
+
                 }
             }
             else
@@ -103,7 +104,8 @@ namespace ThingsGateway.Web.Rcl
                 await PopupService.EnqueueSnackbarAsync(new(T("登录错误"), AlertTypes.Error));
             }
         }
-
+        [Inject]
+        private NavigationManager NavigationManager { get; set; }
         protected override async Task OnInitializedAsync()
         {
             if (App.HostEnvironment.IsDevelopment())
