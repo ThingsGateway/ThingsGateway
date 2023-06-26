@@ -273,7 +273,7 @@ public class OPCUAClientProperty : CollectDriverPropertyBase
     /// <summary>
     /// 死区
     /// </summary>
-    [DeviceProperty("死区", "")] public float DeadBand { get; set; } = 0;
+    [DeviceProperty("死区", "")] public double DeadBand { get; set; } = 0;
 
     /// <summary>
     /// 自动分组大小
