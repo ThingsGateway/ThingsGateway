@@ -13,6 +13,7 @@
 using CSScriptLib;
 
 using NewLife.Caching;
+using NewLife.Serialization;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -76,7 +77,7 @@ public class CSharpScriptEngine : ISingleton
         var expConverter = new ExpandoObjectConverter();
         dynamic obj = JsonConvert.DeserializeObject<List<ExpandoObject>>(input, expConverter);
         dynamic result = runscript(obj);
-        var json = System.Text.Json.JsonSerializer.Serialize(result);
+        var json = JsonHelper.Default.Write(result);
         return json;
     }
 
@@ -119,7 +120,7 @@ public class CSharpScriptEngine : ISingleton
         var expConverter = new ExpandoObjectConverter();
         dynamic obj = JsonConvert.DeserializeObject<ExpandoObject>(input, expConverter);
         dynamic result = runscript(obj);
-        var json = System.Text.Json.JsonSerializer.Serialize(result);
+        var json = JsonHelper.Default.Write(result);
         return json;
     }
 
