@@ -12,9 +12,9 @@
 
 using Furion.Authorization;
 
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Components;
 
+using System.Security.Claims;
 
 namespace ThingsGateway.Web.Core
 {
@@ -42,8 +42,12 @@ namespace ThingsGateway.Web.Core
                 }
                 else
                 {
+                    if (App.HttpContext != null)
+                    {
+                        var identity = new ClaimsIdentity();
+                        App.HttpContext.User = new ClaimsPrincipal(identity);
+                    }
                     Fail(context);
-                    await App.HttpContext?.SignOutAsync();
                 }
             }
             else
