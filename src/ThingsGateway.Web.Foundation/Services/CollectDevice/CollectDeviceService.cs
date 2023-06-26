@@ -233,8 +233,13 @@ public class CollectDeviceService : DbRepository<CollectDevice>, ICollectDeviceS
             options.MaxDegreeOfParallelism = Environment.ProcessorCount / 2 == 0 ? 1 : Environment.ProcessorCount / 2;
             Parallel.ForEach(collectVariableRunTimes, options, variable =>
             {
-                variable.CollectDeviceRunTime = runtime.FirstOrDefault(a => a.Id == variable.DeviceId);
-                variable.DeviceName = runtime.FirstOrDefault(a => a.Id == variable.DeviceId).Name;
+                var device = runtime.FirstOrDefault(a => a.Id == variable.DeviceId);
+                if (device != null)
+                {
+                    variable.CollectDeviceRunTime = device;
+                    variable.DeviceName = device.Name;
+                }
+
             });
             return runtime;
         }
