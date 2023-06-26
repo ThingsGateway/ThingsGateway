@@ -11,7 +11,8 @@
 #endregion
 
 
-using TouchSocket.Core;
+using NewLife;
+using NewLife.Serialization;
 
 namespace ThingsGateway.Web.Foundation;
 
