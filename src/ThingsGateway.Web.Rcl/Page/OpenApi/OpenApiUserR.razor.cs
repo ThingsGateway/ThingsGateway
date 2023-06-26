@@ -68,10 +68,6 @@ namespace ThingsGateway.Web.Rcl
                         item.Sortable = true;
                         break;
 
-                    case nameof(OpenApiUser.LatestLoginTime):
-                        item.Sortable = true;
-                        break;
-
                     case nameof(OpenApiUser.UserStatus):
                         item.Sortable = true;
                         break;
