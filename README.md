@@ -14,6 +14,12 @@
 如果对您有帮助，请点击右上角⭐Star关注，感谢支持开源！
 </div>
 
+#### 开源说明
+
+Apache 2.0+[附加协议](https://diego2098.gitee.io/thingsgateway-docs/docs/)
+
+Apache 2.0 开源协议的核心内容是以保护和尊重原作者的著作权为主要目的。对使用，复制，修改，商用不做过多限制，但必须包含原著的License信息。
+
 ####  功能亮点
 
 - Blazor Server架构，开发部署更简单
@@ -108,11 +114,7 @@ http://120.24.62.140:5000/
 * 使用OPC相关插件时请遵循OPC基金会的授权规则
 * 使用OPCDA插件时，需安装OPC核心库，[文件地址](https://gitee.com/diego2098/ThingsGateway/attach_files)
 
-#### 开源协议
-
-请仔细阅读 [授权协议](https://diego2098.gitee.io/thingsgateway-docs/docs/)
-
-
+ 
 
 ####  支持作者
  如果对您有帮助，请点击右上角⭐Star关注，感谢支持开源！
