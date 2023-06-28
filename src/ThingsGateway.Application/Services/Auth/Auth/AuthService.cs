@@ -148,7 +148,7 @@ namespace ThingsGateway.Application.Services.Auth
             });
 
             //登录事件参数
-            var logingEvent = new LoginEvent
+            var loginEvent = new LoginEvent
             {
                 Ip = App.HttpContext.GetRemoteIpAddressToIPv4(),
                 Device = device,
@@ -157,9 +157,9 @@ namespace ThingsGateway.Application.Services.Auth
                 VerificatId = sessionid,
             };
 
-            await WriteVerificatToCache(logingEvent);//写入verificat到cache
+            await WriteVerificatToCache(loginEvent);//写入verificat到cache
 
-            await _eventPublisher.PublishAsync(EventSubscriberConst.Login, logingEvent); //发布登录事件总线
+            await _eventPublisher.PublishAsync(EventSubscriberConst.Login, loginEvent); //发布登录事件总线
             return new LoginOutPut { VerificatId = sessionid, Account = sysUser.Account };
         }
 
