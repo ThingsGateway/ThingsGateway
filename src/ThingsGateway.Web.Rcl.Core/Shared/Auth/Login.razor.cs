@@ -91,8 +91,10 @@ namespace ThingsGateway.Web.Rcl
                 {
                     await PopupService.EnqueueSnackbarAsync(new(T("登录成功"), AlertTypes.Success));
                     await Task.Delay(500);
-                    await AjaxService.GotoAsync(NavigationManager.Uri);
-
+                    if (NavigationManager.ToAbsoluteUri(NavigationManager.Uri).AbsolutePath == "/Login")
+                        await AjaxService.GotoAsync("index");
+                    else
+                        await AjaxService.GotoAsync(NavigationManager.Uri);
                 }
             }
             else
