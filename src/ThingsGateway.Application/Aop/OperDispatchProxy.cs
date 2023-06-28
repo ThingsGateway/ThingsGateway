@@ -105,7 +105,7 @@ namespace ThingsGateway.Application
             if (desc == null)
             {
                 var taskT = method.Invoke(Target, args) as Task<T>;
-                var result = await taskT;//如果没有缓存就执行方法返回数据
+                var result = await taskT;
                 return result;//返回结果
             }
             else
@@ -116,7 +116,7 @@ namespace ThingsGateway.Application
                 try
                 {
                     var taskT = method.Invoke(Target, args) as Task<T>;
-                    result = await taskT;//如果没有缓存就执行方法返回数据
+                    result = await taskT;
                 }
                 catch (Exception ex)
                 {
