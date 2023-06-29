@@ -192,6 +192,7 @@
     List<ThingsGateway.Web.Foundation.RuntimeLog> RuntimeLogs;
     [Inject]
     private IOperateLogService OperateLogService { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
         if (UserManager.SuperAdmin)
@@ -202,6 +203,7 @@
 
         DevLogVisits = (await VisitLogService.Page(new() { Size = 5, Account = UserResoures.CurrentUser?.Account })).Records.ToList();
         DevLogOps = (await OperateLogService.Page(new() { Size = 5, Account = UserResoures.CurrentUser?.Account })).Records.ToList();
+
         await base.OnInitializedAsync();
     }
 

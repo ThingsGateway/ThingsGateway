@@ -15,7 +15,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 
 using System.Security.Claims;
 
-namespace ThingsGateway.Application.Services.Auth
+namespace ThingsGateway.Application.Services
 {
     /// <inheritdoc cref="IAuthService"/>
     public class AuthService : IAuthService

@@ -89,7 +89,7 @@ namespace ThingsGateway.Application
             if (sysResources == null)
             {
                 //cache没有就去数据库拿
-                sysResources = await CopyNew().GetListAsync(it => it.Category == category);
+                sysResources = await base.GetListAsync(it => it.Category == category);
                 if (sysResources.Count > 0)
                 {
                     //插入Cache

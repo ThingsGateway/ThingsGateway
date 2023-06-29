@@ -5,7 +5,7 @@
     //"Sqlsugar": [
     //  {
     //    "ConfigId": "Default", //租户ID
-    //    "ConnectionString": "server=localhost;Database=test;Uid=root;Pwd=111111;", //连接字符串
+    //    "ConnectionString": "server=localhost;Database=test1;Uid=root;Pwd=111111;", //连接字符串
     //    "DbType": "MySql", //数据库类型
     //    "IsAutoCloseConnection": true, //是否自动释放
     //    "IsInitDb": true, //是否初始化数据库,适用于codefirst
@@ -15,7 +15,7 @@
     //  },
     //  {
     //    "ConfigId": "ThingsGateway", //租户ID
-    //    "ConnectionString": "server=localhost;Database=test123;Uid=root;Pwd=111111;", //连接字符串
+    //    "ConnectionString": "server=localhost;Database=test122223;Uid=root;Pwd=111111;", //连接字符串
     //    "DbType": "MySql", //数据库类型
     //    "IsAutoCloseConnection": true, //是否自动释放
     //    "IsInitDb": true, //是否初始化数据库,适用于codefirst

@@ -38,12 +38,36 @@ public enum ShareChannelEnum
     /// </summary>
     TGUdpSession
 }
+
+
+/// <summary>
+/// 共享通道
+/// </summary>
+public enum RedundantEnum
+{
+    /// <summary>
+    /// 不支持冗余
+    /// </summary>
+    None,
+    /// <summary>
+    /// 主站
+    /// </summary>
+    Primary,
+    /// <summary>
+    /// 备用
+    /// </summary>
+    Standby,
+}
+
 /// <summary>
 /// <inheritdoc cref="DriverPropertyBase"/><br></br>
 /// 1.5.0版本适配共享通道，支持自定义TCP/UDP/Serial共享<see cref="TGTcpClient"/>,<see cref="TGUdpSession"/>,<see cref="SerialClient"/>
 /// </summary>
 public abstract class CollectDriverPropertyBase : DriverPropertyBase
 {
+
+
+    #region 共享通道配置
     /// <summary>
     /// 是否支持共享通道
     /// </summary>
@@ -53,6 +77,10 @@ public abstract class CollectDriverPropertyBase : DriverPropertyBase
     /// 共享通道类型
     /// </summary>
     public abstract ShareChannelEnum ShareChannel { get; }
+
+
+
+
 
     #region Socket
     /// <summary>
@@ -87,6 +115,8 @@ public abstract class CollectDriverPropertyBase : DriverPropertyBase
     /// 停止位
     /// </summary>
     public virtual StopBits StopBits { get; set; } = StopBits.One;
+
+    #endregion
 
     #endregion
 }
