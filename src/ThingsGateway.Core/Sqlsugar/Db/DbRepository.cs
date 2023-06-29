@@ -22,7 +22,7 @@ namespace ThingsGateway.Core
 
         public DbRepository(ISqlSugarClient context = null) : base(context)//注意这里要有默认值等于null
         {
-            Context = DbContext.Db.GetConnectionScopeWithAttr<T>();//ioc注入的对象
+            Context = DbContext.Db.GetConnectionScopeWithAttr<T>().CopyNew();//ioc注入的对象
             itenant = DbContext.Db;
         }
 

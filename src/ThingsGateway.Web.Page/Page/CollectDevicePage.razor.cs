@@ -26,10 +26,6 @@ namespace ThingsGateway.Web.Page
         [Inject]
         ResourceService ResourceService { get; set; }
 
-        protected override async Task OnInitializedAsync()
-        {
-            await base.OnInitializedAsync();
-        }
         protected override async Task OnParametersSetAsync()
         {
             DriverPlugins = DriverPluginService.GetDriverPluginChildrenList(DriverEnum.Collect);
