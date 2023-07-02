@@ -451,7 +451,11 @@ public class CollectDeviceCore : DisposableObject
             }
             else
             {
-
+                var oper = _driver.IsConnected();
+                if (oper.IsSuccess)
+                {
+                    Device.DeviceStatus = DeviceStatusEnum.OnLine;
+                }
             }
             if (StoppingToken.Token.IsCancellationRequested)
                 return ThreadRunReturn.Break;
