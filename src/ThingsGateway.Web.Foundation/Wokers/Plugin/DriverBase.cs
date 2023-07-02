@@ -41,6 +41,10 @@ public abstract class DriverBase : DisposableObject
         TouchSocketConfig.ConfigureContainer(a => a.RegisterSingleton<ILog>(logMessage));
     }
     /// <summary>
+    /// 当前插件描述
+    /// </summary>
+    public DriverPlugin DriverPlugin { get; set; }
+    /// <summary>
     /// 日志
     /// </summary>
     protected ILogger _logger;

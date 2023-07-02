@@ -77,6 +77,7 @@ public class PluginSingletonService : ISingleton
             {
                 object driver = Activator.CreateInstance(DriverPluginDict[plugin.Id], _scopeFactory);
                 DeviceOnDriverPluginDict[plugin.Id].AddRangeIfNotContains(devId);
+                ((DriverBase)driver).DriverPlugin = plugin;
                 return driver;
             }
             Assembly assembly = null;
@@ -114,6 +115,7 @@ public class PluginSingletonService : ISingleton
                             _logger?.LogInformation($"加载插件 {driverFilePath}-{plugin.AssembleName} 成功");
                             DriverPluginDict.TryAdd(plugin.Id, driverBase);
                             DeviceOnDriverPluginDict.TryAdd(plugin.Id, new() { devId });
+                            ((DriverBase)driver).DriverPlugin = plugin;
                             return driver;
                         }
                         else
@@ -129,6 +131,7 @@ public class PluginSingletonService : ISingleton
                             _logger?.LogInformation($"加载插件 {driverFilePath}-{plugin.AssembleName} 成功");
                             DriverPluginDict.TryAdd(plugin.Id, upLoadBase);
                             DeviceOnDriverPluginDict.TryAdd(plugin.Id, new() { devId });
+                            ((DriverBase)driver).DriverPlugin = plugin;
                             return driver;
                         }
                         else
