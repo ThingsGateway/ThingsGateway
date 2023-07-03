@@ -20,6 +20,7 @@
 		<RepositoryUrl>https://gitee.com/diego2098/ThingsGateway</RepositoryUrl>
 		<PackageOutputPath>$(SolutionDir)</PackageOutputPath>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<Platforms>AnyCPU;x86</Platforms>
 	</PropertyGroup>
 
 	<ItemGroup>

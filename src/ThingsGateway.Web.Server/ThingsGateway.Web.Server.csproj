@@ -11,6 +11,7 @@
 		<ApplicationIcon>favicon.ico</ApplicationIcon>
 		<Configurations>Debug;Release;KINGVIEW</Configurations>
 		<ServerGarbageCollection>false</ServerGarbageCollection>
+		<Platforms>AnyCPU;x86</Platforms>
 		<!--切换为工作站GC策略-->
 	</PropertyGroup>
 

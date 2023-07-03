@@ -5,6 +5,7 @@
 		<TargetFrameworks>net6.0;net7.0</TargetFrameworks>
 		<Version>1.6.1</Version>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+		<Platforms>AnyCPU;x86</Platforms>
 	</PropertyGroup>
 
 

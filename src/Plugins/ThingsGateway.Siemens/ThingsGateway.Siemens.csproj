@@ -11,6 +11,7 @@
 		<CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
 
 
+		<Platforms>AnyCPU;x86</Platforms>
 	</PropertyGroup>
 
 
