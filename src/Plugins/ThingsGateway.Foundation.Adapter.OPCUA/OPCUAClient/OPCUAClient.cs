@@ -283,7 +283,7 @@ public class OPCUAClient : DisposableObject
 
         m_session.AddSubscription(m_subscription);
         m_subscription.Create();
-        foreach (var item in m_subscription.MonitoredItems.Where(a => a.Status.Error.StatusCode == Opc.Ua.StatusCodes.BadFilterNotAllowed))
+        foreach (var item in m_subscription.MonitoredItems.Where(a => a.Status.Error?.StatusCode == Opc.Ua.StatusCodes.BadFilterNotAllowed))
         {
             item.Filter = new DataChangeFilter() { DeadbandValue = OPCNode.DeadBand, DeadbandType = (int)DeadbandType.None, Trigger = DataChangeTrigger.StatusValue };
         }
