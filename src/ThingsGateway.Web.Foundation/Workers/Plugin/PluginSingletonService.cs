@@ -149,7 +149,7 @@ public class PluginSingletonService : ISingleton
                 return null;
             }
 
-            static Assembly GetAssembly(string path, List<string> paths, AssemblyLoadContext assemblyLoadContext)
+            Assembly GetAssembly(string path, List<string> paths, AssemblyLoadContext assemblyLoadContext)
             {
                 Assembly assembly = null;
                 foreach (var item in paths)
@@ -159,7 +159,16 @@ public class PluginSingletonService : ISingleton
                         if (item == path)
                             assembly = assemblyLoadContext.LoadFromStream(fs);
                         else
-                            assemblyLoadContext.LoadFromStream(fs);
+                        {
+                            try
+                            {
+                                assemblyLoadContext.LoadFromStream(fs);
+                            }
+                            catch (Exception ex)
+                            {
+                                _logger.LogWarning($"尝试加载附属程序集{item}失败，如果此程序集为非引用，比如非托管DllImport，可以忽略此警告。错误信息：{(ex.Message)}");
+                            }
+                        }
                     }
                 }
                 return assembly;

@@ -5,6 +5,7 @@
 		<Version>1.6.1</Version>
 		<NoWarn>BL0005;CS0168;</NoWarn>
 		<!--<GenerateDocumentationFile>True</GenerateDocumentationFile>-->
+		<Platforms>AnyCPU;x86</Platforms>
 	</PropertyGroup>
 
 	<ItemGroup>

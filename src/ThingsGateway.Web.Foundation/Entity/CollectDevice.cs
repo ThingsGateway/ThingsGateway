@@ -21,7 +21,22 @@ namespace ThingsGateway.Web.Foundation;
 [Tenant(SqlsugarConst.DB_CustomId)]
 public class CollectDevice : UploadDevice
 {
+    #region 冗余配置
 
+    ///// <summary>
+    ///// 冗余类型
+    ///// </summary>
+    //[SugarColumn(ColumnName = "RedundantEnum", ColumnDescription = "冗余类型")]
+    //[OrderTable(Order = 2)]
+    //[Excel]
+    //public RedundantEnum RedundantEnum { get; set; }
+    ///// <summary>
+    ///// 主/冗余设备Id
+    ///// </summary>
+    //[SugarColumn(ColumnName = "RedundantDeviceId", ColumnDescription = "主/冗余设备Id")]
+    //public long RedundantDeviceId { get; set; }
+
+    #endregion
 
 }
 
