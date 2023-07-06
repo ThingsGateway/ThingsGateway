@@ -54,7 +54,7 @@ namespace ThingsGateway.Web.Rcl.Core
         private IResourceService _resourceService { get; set; }
         public void Dispose()
         {
-            GC.SuppressFinalize(this);
+
         }
         public async Task InitAllAsync()
         {
