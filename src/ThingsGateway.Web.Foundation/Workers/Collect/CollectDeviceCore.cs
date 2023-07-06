@@ -689,8 +689,6 @@ public class CollectDeviceCore : DisposableObject
         {
             _pluginService.DeleteDriver(DeviceId, Device.PluginId);
         }
-        _device.DeviceVariableRunTimes = null;
-        _device = null;
         GC.Collect();
         GC.WaitForPendingFinalizers();
     }

@@ -296,10 +296,6 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
     {
         byte[] bytes = new byte[buffer.Length];
         Array.Copy(buffer, 0, bytes, 0, buffer.Length);
-        if (!IsSameOfSet() && buffer.Length > 1)
-        {
-            bytes = bytes.BytesReverseByWord();
-        }
         return bytes.GetBoolByIndex(offset);
     }
 
