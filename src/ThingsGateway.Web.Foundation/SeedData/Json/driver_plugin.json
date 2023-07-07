@@ -220,6 +220,17 @@
       "IsDelete": "0"
     },
     {
+      "Id": "396802939232518",
+      "AssembleName": "ThingsGateway.Kafka.KafkaProducer",
+      "FileName": "ThingsGateway.Kafka",
+      "DriverTypeEnum": "Upload",
+      "FilePath": "Plugins/ThingsGateway.Kafka/ThingsGateway.Kafka.dll",
+      "CreateTime": "2023-03-17 16:15:19.6697472",
+      "CreateUser": "superAdmin",
+      "CreateUserId": "212725263002001",
+      "IsDelete": "0"
+    },
+    {
       "Id": "321802939232517",
       "AssembleName": "ThingsGateway.OPCUA.OPCUAServer",
       "FileName": "ThingsGateway.OPCUA",
