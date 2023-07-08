@@ -48,7 +48,9 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
             }
 
             string[] strArray = address.Split('.');
-            return (Convert.ToInt32(strArray[0]) * 8) + Convert.ToInt32(strArray[1]);
+            //return (Convert.ToInt32(strArray[0]) * 8) + Convert.ToInt32(strArray[1]);
+            //注意这里实际逻辑报文中不会传输读取bit，全部都是byte以上，所以不需要bit位，并且返回数据需要自行解析bit值
+            return (Convert.ToInt32(strArray[0]) * 8);
         }
 
 
