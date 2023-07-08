@@ -231,9 +231,9 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
             numArray[25] = (byte)(address.DbBlock / 256U);
             numArray[26] = (byte)(address.DbBlock % 256U);
             numArray[27] = (byte)address.DataCode;
-            numArray[28] = (byte)(address.AddressStart / 256 / 256);
-            numArray[29] = (byte)(address.AddressStart / 256);
-            numArray[30] = (byte)(address.AddressStart % 256);
+            numArray[28] = (byte)((address.AddressStart + address.BitCode) / 256 / 256);
+            numArray[29] = (byte)((address.AddressStart + address.BitCode) / 256);
+            numArray[30] = (byte)((address.AddressStart + address.BitCode) % 256);
             //后面跟的是写入的数据信息
             numArray[31] = 0;
             numArray[32] = 3;//Bit:3;Byte:4;Counter或者Timer:9

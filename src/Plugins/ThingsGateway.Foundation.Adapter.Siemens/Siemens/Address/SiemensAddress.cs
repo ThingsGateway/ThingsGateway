@@ -33,7 +33,10 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
         /// 数据块代码
         /// </summary>
         public byte DataCode { get; set; }
-
+        /// <summary>
+        /// bit位偏移
+        /// </summary>
+        public byte BitCode { get; set; }
         /// <summary>
         /// DB块数据信息
         /// </summary>
@@ -48,9 +51,17 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
             }
 
             string[] strArray = address.Split('.');
-            //return (Convert.ToInt32(strArray[0]) * 8) + Convert.ToInt32(strArray[1]);
-            //注意这里实际逻辑报文中不会传输读取bit，全部都是byte以上，所以不需要bit位，并且返回数据需要自行解析bit值
-            return (Convert.ToInt32(strArray[0]) * 8);
+            return Convert.ToInt32(strArray[0]) * 8;
+        }
+
+        public static byte GetBitCode(string address)
+        {
+            if (address.IndexOf('.') < 0)
+            {
+                return 0;
+            }
+            string[] strArray = address.Split('.');
+            return Convert.ToByte(strArray[1]);
         }
 
 
@@ -73,10 +84,12 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
                     if (address.StartsWith("AIX") || address.StartsWith("AIB") || address.StartsWith("AIW") || address.StartsWith("AID"))
                     {
                         s7AddressData.AddressStart = GetAddressStart(address.Substring(3));
+                        s7AddressData.BitCode = GetBitCode(address.Substring(3));
                     }
                     else
                     {
                         s7AddressData.AddressStart = GetAddressStart(address.Substring(2));
+                        s7AddressData.BitCode = GetBitCode(address.Substring(2));
                     }
                 }
                 else if (address.StartsWith("AQ"))
@@ -85,10 +98,12 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
                     if (address.StartsWith("AQX") || address.StartsWith("AQB") || address.StartsWith("AQW") || address.StartsWith("AQD"))
                     {
                         s7AddressData.AddressStart = GetAddressStart(address.Substring(3));
+                        s7AddressData.BitCode = GetBitCode(address.Substring(3));
                     }
                     else
                     {
                         s7AddressData.AddressStart = GetAddressStart(address.Substring(2));
+                        s7AddressData.BitCode = GetBitCode(address.Substring(2));
                     }
                 }
                 else if (address[0] == 'I')
@@ -97,10 +112,12 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
                     if (address.StartsWith("IX") || address.StartsWith("IB") || address.StartsWith("IW") || address.StartsWith("ID"))
                     {
                         s7AddressData.AddressStart = GetAddressStart(address.Substring(2));
+                        s7AddressData.BitCode = GetBitCode(address.Substring(2));
                     }
                     else
                     {
                         s7AddressData.AddressStart = GetAddressStart(address.Substring(1));
+                        s7AddressData.BitCode = GetBitCode(address.Substring(1));
                     }
                 }
                 else if (address[0] == 'Q')
@@ -109,10 +126,12 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
                     if (address.StartsWith("QX") || address.StartsWith("QB") || address.StartsWith("QW") || address.StartsWith("QD"))
                     {
                         s7AddressData.AddressStart = GetAddressStart(address.Substring(2));
+                        s7AddressData.BitCode = GetBitCode(address.Substring(2));
                     }
                     else
                     {
                         s7AddressData.AddressStart = GetAddressStart(address.Substring(1));
+                        s7AddressData.BitCode = GetBitCode(address.Substring(1));
                     }
                 }
                 else if (address[0] == 'M')
@@ -121,10 +140,12 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
                     if (address.StartsWith("MX") || address.StartsWith("MB") || address.StartsWith("MW") || address.StartsWith("MD"))
                     {
                         s7AddressData.AddressStart = GetAddressStart(address.Substring(2));
+                        s7AddressData.BitCode = GetBitCode(address.Substring(2));
                     }
                     else
                     {
                         s7AddressData.AddressStart = GetAddressStart(address.Substring(1));
+                        s7AddressData.BitCode = GetBitCode(address.Substring(1));
                     }
                 }
                 else if (address[0] == 'D' || address.Substring(0, 2) == "DB")
@@ -139,16 +160,19 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
                     }
 
                     s7AddressData.AddressStart = GetAddressStart(address1);
+                    s7AddressData.BitCode = GetBitCode(address1);
                 }
                 else if (address[0] == 'T')
                 {
                     s7AddressData.DataCode = (byte)S7Area.TM;
                     s7AddressData.AddressStart = GetAddressStart(address.Substring(1), true);
+                    s7AddressData.BitCode = GetBitCode(address.Substring(1));
                 }
                 else if (address[0] == 'C')
                 {
                     s7AddressData.DataCode = (byte)S7Area.CT;
                     s7AddressData.AddressStart = GetAddressStart(address.Substring(1), true);
+                    s7AddressData.BitCode = GetBitCode(address.Substring(1));
                 }
                 else
                 {
@@ -162,10 +186,12 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
                     if (address.StartsWith("VB") || address.StartsWith("VW") || address.StartsWith("VD") || address.StartsWith("VX"))
                     {
                         s7AddressData.AddressStart = GetAddressStart(address.Substring(2));
+                        s7AddressData.BitCode = GetBitCode(address.Substring(2));
                     }
                     else
                     {
                         s7AddressData.AddressStart = GetAddressStart(address.Substring(1));
+                        s7AddressData.BitCode = GetBitCode(address.Substring(1));
                     }
                 }
             }
@@ -185,6 +211,7 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
             }
 
             AddressStart = from.Content.AddressStart;
+            BitCode = from.Content.BitCode;
             Length = from.Content.Length;
             DataCode = from.Content.DataCode;
             DbBlock = from.Content.DbBlock;
