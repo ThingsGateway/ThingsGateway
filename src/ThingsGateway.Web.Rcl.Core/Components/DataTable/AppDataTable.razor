@@ -96,54 +96,57 @@
     @if (IsShowToolbar)
     {
         <MSheet Class="ma-2">
-            <MForm Model="SearchModel" EnableValidation EnableI18n @ref="SearchForm">
-                <MCard Outlined Elevation="0" @onkeydown=Enter>
-                    <MRow Class="py-2 px-2" NoGutters Align="AlignTypes.Start">
-                        @if (SearchTemplate is not null)
-                        {
-                            @SearchTemplate(SearchModel)
-                        }
-                        @if (IsShowSearchKey)
-                        {
-                            <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="mx-2 my-1" @bind-Value="SearchModel.SearchKey"
-                                        Outlined Label=@SearchModel.Description(x => x.SearchKey) />
-                        }
-                        @if (ShowQueryButton)
-                        {
-                            @if (IsShowClearSearch)
-                            {
-                                <MButton Color="info" Class="mx-2 my-1" OnClick=ClearClick>@T("清空搜索")</MButton>
-                            }
-                            <MButton Color="info" Class="mx-2 my-1" Loading="QueryLoading" OnClick=QueryClickAsync>@T("查询")</MButton>
-                        }
-                        @if (ShowAddButton)
-                        {
-                            <MButton Color="info" Class="mx-2 my-1" OnClick=@(AddClick)>@T("添加")</MButton>
-                        }
-                        @if (ShowEditButton)
-                        {
-                            <MButton Color="info" Class="mx-2 my-1" OnClick=@(()=>EditClick(selectedItem?.ToArray()))>@T("修改")</MButton>
-                        }
-                        @if (ShowDeleteButton)
-                        {
-                            <MButton Color="error" Loading="DeleteLoading" Class="mx-2 my-1" OnClick=@(()=>DeleteClick(selectedItem?.ToArray()))>@T("删除")</MButton>
-                        }
-                        @if (OtherToolbarTemplate != null)
-                        {
-                            @OtherToolbarTemplate(selectedItem)
-                        }
-                        @if (ShowFilter)
-                        {
-                            <div class="ml-auto mr-2 my-1">
-                                <TableFilter FilterHeaderString="FilterHeaderString"
-                                             ValueChanged="FilterChanged">
-                                </TableFilter>
-                            </div>
-                        }
-                    </MRow>
+            <MCard Outlined Elevation="0" @onkeydown=Enter>
 
-                </MCard>
-            </MForm>
+                <MRow Class="py-2 px-2" NoGutters Align="AlignTypes.Start">
+                    <MForm Model="SearchModel" EnableValidation EnableI18n @ref="SearchForm">
+                        <MRow NoGutters Align="AlignTypes.Start">
+                            @if (SearchTemplate is not null)
+                            {
+                                @SearchTemplate(SearchModel)
+                            }
+                        </MRow>
+                    </MForm>
+                    @if (IsShowSearchKey)
+                    {
+                        <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="mx-2 my-1" @bind-Value="SearchModel.SearchKey"
+                                    Outlined Label=@SearchModel.Description(x => x.SearchKey) />
+                    }
+                    @if (ShowQueryButton)
+                    {
+                        @if (IsShowClearSearch)
+                        {
+                            <MButton Color="info" Class="mx-2 my-1" OnClick=ClearClick>@T("清空搜索")</MButton>
+                        }
+                        <MButton Color="info" Class="mx-2 my-1" Loading="QueryLoading" OnClick=QueryClickAsync>@T("查询")</MButton>
+                    }
+                    @if (ShowAddButton)
+                    {
+                        <MButton Color="info" Class="mx-2 my-1" OnClick=@(AddClick)>@T("添加")</MButton>
+                    }
+                    @if (ShowEditButton)
+                    {
+                        <MButton Color="info" Class="mx-2 my-1" OnClick=@(()=>EditClick(selectedItem?.ToArray()))>@T("修改")</MButton>
+                    }
+                    @if (ShowDeleteButton)
+                    {
+                        <MButton Color="error" Loading="DeleteLoading" Class="mx-2 my-1" OnClick=@(()=>DeleteClick(selectedItem?.ToArray()))>@T("删除")</MButton>
+                    }
+                    @if (OtherToolbarTemplate != null)
+                    {
+                        @OtherToolbarTemplate(selectedItem)
+                    }
+                    @if (ShowFilter)
+                    {
+                        <div class="ml-auto mr-2 my-1">
+                            <TableFilter FilterHeaderString="FilterHeaderString"
+                                         ValueChanged="FilterChanged">
+                            </TableFilter>
+                        </div>
+                    }
+                </MRow>
+
+            </MCard>
 
         </MSheet>
 
@@ -304,16 +307,6 @@
 
                 <MTextField Dense Style="max-width:150px" HideDetails=@("auto") Class="px-1 py-1" @bind-Value="SearchModel.Current"
                                 NumberProps=@(prop=> { prop.Min = 1; prop.Step = 1; }) TValue=int Type="number" Outlined Label=@T("页面跳转") />
-
-                    @*                    <MSelect Class="px-1 py-1" Items=@(ObjectExtensions.GetOrderNum( PageItems.Pages))
-                @bind-Value=@(SearchModel.Current)
-                MenuProps="@(props => { props.Top = true; props.OffsetY = true; })"
-                ItemText=@((u) =>{return T("第 {0} 页",u);})
-                ItemValue=@(u => u)
-                HideDetails="true" Height="30"
-                Dense Style="max-width:150px"
-                Outlined>
-                </MSelect>*@
 
 
                     <MPagination Class="ml-auto mr-1 py-1" Length="PageItems.Pages"
