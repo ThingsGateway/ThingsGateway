@@ -117,8 +117,8 @@ namespace ThingsGateway.Web.Page
         GlobalDeviceData _globalDeviceData { get; set; }
         void collectDeviceQuery()
         {
-            _collectDeviceGroups = _globalDeviceData.CollectDevices.Adapt<List<CollectDevice>>()?.Select(a => a.DeviceGroup)?.Where(a => a != null).Distinct()?.ToList();
-            _collectDeviceCores = CollectDeviceHostService?.CollectDeviceCores?.WhereIf(!_collectDeviceGroup.IsNullOrEmpty(), a => a.Device?.DeviceGroup == _collectDeviceGroup).ToList();
+            _collectDeviceGroups = _globalDeviceData.CollectDevices.Adapt<List<CollectDevice>>()?.Select(a => a.DeviceGroup)?.Where(a => a != null).Distinct()?.ToList() ?? new();
+            _collectDeviceCores = CollectDeviceHostService?.CollectDeviceCores?.WhereIf(!_collectDeviceGroup.IsNullOrEmpty(), a => a.Device?.DeviceGroup == _collectDeviceGroup).ToList()??new();
         }
 
         async Task Config(long devId, bool? isStart)
@@ -216,8 +216,8 @@ namespace ThingsGateway.Web.Page
 
         void uploadDeviceQuery()
         {
-            _uploadDeviceGroups = UploadDeviceHostService.UploadDeviceRunTimes.Adapt<List<CollectDevice>>()?.Select(a => a.DeviceGroup)?.Where(a => a != null).Distinct()?.ToList();
-            _uploadDeviceCores = UploadDeviceHostService?.UploadDeviceCores?.WhereIf(!_uploadDeviceGroup.IsNullOrEmpty(), a => a.Device?.DeviceGroup == _uploadDeviceGroup).ToList();
+            _uploadDeviceGroups = UploadDeviceHostService.UploadDeviceRunTimes.Adapt<List<CollectDevice>>()?.Select(a => a.DeviceGroup)?.Where(a => a != null).Distinct()?.ToList() ?? new();
+            _uploadDeviceCores = UploadDeviceHostService?.UploadDeviceCores?.WhereIf(!_uploadDeviceGroup.IsNullOrEmpty(), a => a.Device?.DeviceGroup == _uploadDeviceGroup).ToList() ?? new();
         }
         async Task UpRestart(long devId)
         {
