@@ -22,11 +22,6 @@
 		<Platforms>AnyCPU;x86</Platforms>
 	</PropertyGroup>
 
-	<ItemGroup>
-	  <Compile Remove="OPC UA Layer\**" />
-	  <EmbeddedResource Remove="OPC UA Layer\**" />
-	  <None Remove="OPC UA Layer\**" />
-	</ItemGroup>
 
 	<ItemGroup>
 	  <None Include="..\..\..\README.md">
