@@ -258,6 +258,10 @@
                                     {
                                         item = collectDeviceInfoItem.Driver?.Messages;
                                     }
+                                    if(item==null)
+                                    {
+                                        item = new List<string>();
+                                    }
                                     <MRow Class="ml-2 mr-2 d-flex" NoGutters>
                                     <MVirtualScroll Context="itemMessage" TItem="string" Height=@("calc(100vh - 600px)") OverscanCount=2 ItemSize="100" Items="item">
                                         <ItemContent>
@@ -480,7 +484,11 @@
                                     }
                                     else if (uploadDeviceInfoItem.Driver != null)
                                     {
-                                        item = uploadDeviceInfoItem.Driver?.Messages;
+                                        item = uploadDeviceInfoItem.Driver?.Messages ?? new();
+                                    }
+                                    if (item == null)
+                                    {
+                                        item = new List<string>();
                                     }
                                     <MRow Class="ml-2 mr-2 d-flex" NoGutters>
                                     <MVirtualScroll Context="itemMessage" TItem="string" Height=@("calc(100vh - 600px)") OverscanCount=2 ItemSize="100" Items="item">
