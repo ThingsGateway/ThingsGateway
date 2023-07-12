@@ -25,6 +25,7 @@ Apache 2.0 开源协议的核心内容是以保护和尊重原作者的著作权
 - Blazor Server架构，开发部署更简单
 - 采集/上传配置完全支持Excel导入导出
 - 插件式驱动，方便驱动二次开发
+- 支持采集通道冗余，上传离线缓存
 - 时序数据库存储
 - 实时/历史报警(Sql转储)，支持布尔/高低限值
 
@@ -39,7 +40,7 @@ http://120.24.62.140:5000/
 > 支持分包解析/订阅
 - Modbus(Rtu/Tcp/Udp)
 - OPCDAClient（支持导入节点）
-- OPCUAClient（支持导入节点）
+- OPCUAClient（支持导入节点，动态类型）
 - 西门子S7协议
 
 #### 社区版上传插件
@@ -109,6 +110,7 @@ http://120.24.62.140:5000/
 -  CodingSeb.ExpressionEvaluator：[https://github.com/codingseb/ExpressionEvaluator](https://github.com/codingseb/ExpressionEvaluator)
 -  Hardware.Info：[https://github.com/Jinjinov/Hardware.Info](https://github.com/Jinjinov/Hardware.Info)
 -  UAParser：[https://github.com/ua-parser/uap-csharp](https://github.com/ua-parser/uap-csharp)
+-  OPCUAWebPlatformUniCT：[https://github.com/OPCUAUniCT/OPCUAWebPlatformUniCT](https://github.com/OPCUAUniCT/OPCUAWebPlatformUniCT)
 
 #### 补充说明
 * 使用OPC相关插件时请遵循OPC基金会的授权规则
