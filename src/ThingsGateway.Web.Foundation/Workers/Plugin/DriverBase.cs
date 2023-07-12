@@ -12,6 +12,7 @@
 
 using Microsoft.Extensions.Logging;
 
+using ThingsGateway.Core;
 using ThingsGateway.Foundation;
 
 using TouchSocket.Core;
@@ -19,16 +20,20 @@ using TouchSocket.Core;
 namespace ThingsGateway.Web.Foundation;
 
 /// <summary>
-/// 插件基类
+/// 插件基类,注意继承的插件的命名空间需要符合<see cref="ExportHelpers.PluginLeftName"/>前置名称
 /// </summary>
 public abstract class DriverBase : DisposableObject
 {
     /// <summary>
-    /// <see cref="TouchSocketConfig"/> 
+    /// 显示报文标识
+    /// </summary>
+    public const string LogMessageHeader = "报文-";
+    /// <summary>
+    /// <inheritdoc cref="TouchSocket.Core.TouchSocketConfig"/>
     /// </summary>
     public TouchSocketConfig TouchSocketConfig;
     /// <summary>
-    /// 底层日志
+    /// 底层日志,如果需要在Blazor界面中显示报文日志，需要输出字符串头部为<see cref="LogMessageHeader"/>的日志
     /// </summary>
     protected LoggerGroup logMessage;
     /// <inheritdoc cref="DriverBase"/>
@@ -37,7 +42,7 @@ public abstract class DriverBase : DisposableObject
         _scopeFactory = scopeFactory;
         TouchSocketConfig = new TouchSocketConfig();
         logMessage = new TouchSocket.Core.LoggerGroup();
-        logMessage.AddLogger(new EasyLogger(Log_Out));
+        logMessage.AddLogger(new TGEasyLogger(Log_Out));
         TouchSocketConfig.ConfigureContainer(a => a.RegisterSingleton<ILog>(logMessage));
     }
     /// <summary>
@@ -61,7 +66,7 @@ public abstract class DriverBase : DisposableObject
     /// <summary>
     /// 调试UI Type，继承实现<see cref="DriverDebugUIBase"/>后，返回继承类的Type，如果不存在，返回null
     /// </summary>
-    public virtual Type DriverDebugUIType { get; }
+    public abstract Type DriverDebugUIType { get; }
 
     /// <summary>
     /// 是否输出日志
@@ -85,7 +90,7 @@ public abstract class DriverBase : DisposableObject
     protected void Log_Out(LogType arg1, object arg2, string arg3, Exception arg4)
     {
         if (IsLogOut)
-            PluginExtension.Log_Out(_logger, arg1, arg2, arg3, arg4);
+            _logger.Log_Out(arg1, arg2, arg3, arg4);
     }
 
     /// <summary>
@@ -93,14 +98,18 @@ public abstract class DriverBase : DisposableObject
     /// </summary>
     public void NewMessage(LogType arg1, object arg2, string arg3, Exception arg4)
     {
-        if (arg1 == LogType.Trace && arg3.StartsWith("报文-"))
+        if (IsLogOut)
         {
-            Messages.Add(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff zz") + "-" + arg3);
-
-            if (Messages.Count > 2500)
+            if (arg3.StartsWith(LogMessageHeader))
             {
-                Messages.Clear();
+                Messages.Add(DateTime.Now.ToDateTimeF() + "-" + arg3);
+
+                if (Messages.Count > 2500)
+                {
+                    Messages.Clear();
+                }
             }
         }
+
     }
 }

@@ -12,30 +12,30 @@
 
 
 using ThingsGateway.Core;
-using ThingsGateway.Web.Foundation;
+namespace ThingsGateway.Web.Foundation;
 /// <summary>
 /// 设备上传DTO
 /// </summary>
 public class DeviceData
 {
     /// <inheritdoc cref="PrimaryIdEntity.Id"/>
-    public long id { get; set; }
+    public long Id { get; set; }
     /// <inheritdoc cref="CollectDeviceRunTime.PluginName"/>
-    public string pluginName { get; set; }
-    /// <inheritdoc cref="CollectDeviceRunTime.DeviceVariablesNum"/>
-    public int deviceVariablesNum { get; set; }
+    public string PluginName { get; set; }
+    /// <inheritdoc cref="CollectDeviceRunTime.DeviceVariableCount"/>
+    public int DeviceVariablesCount { get; set; }
     /// <inheritdoc cref="CollectDeviceRunTime.ActiveTime"/>
-    public DateTime activeTime { get; set; }
+    public DateTime ActiveTime { get; set; }
     /// <inheritdoc cref="CollectDeviceRunTime.DeviceStatus"/>
-    public int deviceStatus { get; set; }
-    /// <inheritdoc cref="CollectDeviceRunTime.DeviceOffMsg"/>
-    public string deviceOffMsg { get; set; }
+    public int DeviceStatus { get; set; }
+    /// <inheritdoc cref="CollectDeviceRunTime.LastErrorMessage"/>
+    public string LastErrorMessage { get; set; }
     /// <inheritdoc cref="UploadDevice.Name"/>
-    public string name { get; set; }
+    public string Name { get; set; }
     /// <inheritdoc cref="UploadDevice.Description"/>
-    public string description { get; set; }
-    /// <inheritdoc cref="CollectDeviceRunTime.KeepOn"/>
-    public bool keepOn { get; set; }
+    public string Description { get; set; }
+    /// <inheritdoc cref="CollectDeviceRunTime.KeepRun"/>
+    public bool KeepRun { get; set; }
 
 }
 

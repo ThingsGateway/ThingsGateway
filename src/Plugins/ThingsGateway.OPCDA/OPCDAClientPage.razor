@@ -23,14 +23,14 @@
 @using TouchSocket.Core;
 @implements IDisposable
 <MCard Class="pa-4" Flat Elevation="0" Rounded="false">
-    <MRow Justify="JustifyTypes.SpaceBetween" Align="AlignTypes.Center">
+    <MRow Justify="JustifyTypes.Start" Align="AlignTypes.Start">
         <MTextField Class="mx-1 my-1" Label=@node.Description(a=>a.GroupSize) Dense Outlined HideDetails="@("auto")" @bind-Value=@node.GroupSize />
         <MTextField Class="mx-1 my-1" Label=@node.Description(a=>a.UpdateRate) Dense Outlined HideDetails="@("auto")" @bind-Value=@node.UpdateRate />
 
         <MTextField Class="mx-1 my-1" Label=@node.Description(a=>a.DeadBand) Dense Outlined HideDetails="@("auto")" @bind-Value=@node.DeadBand />
         <MTextField Class="mx-1 my-1" Label=@node.Description(a=>a.CheckRate) Dense Outlined HideDetails="@("auto")" @bind-Value=@node.CheckRate />
     </MRow>
-    <MRow Justify="JustifyTypes.SpaceBetween" Align="AlignTypes.Center">
+    <MRow Justify="JustifyTypes.Start" Align="AlignTypes.Start">
         <MCheckbox Class="mx-1 my-1" Label=@node.Description(a=>a.ActiveSubscribe) Dense Outlined HideDetails="@("auto")" @bind-Value=@node.ActiveSubscribe />
         <MTextField Class="mx-1 my-1" Label=@node.Description(a=>a.OPCIP) Dense Outlined HideDetails="@("auto")" @bind-Value=@node.OPCIP />
         <MTextField Class="mx-1 my-1" Label=@node.Description(a=>a.OPCName) Dense Outlined HideDetails="@("auto")" @bind-Value=@node.OPCName />
@@ -54,40 +54,3 @@
 
 
 </MCard>
-@code
-{
-    public void Dispose()
-    {
-        OPC.SafeDispose();
-    }
-    private OPCNode node = new OPCNode();
-    public Action<string> LogAction;
-    public Action<List<ItemReadResult>> ValueAction;
-    public ThingsGateway.Foundation.Adapter.OPCDA.OPCDAClient OPC;
-    private void LogOut(string str)
-    {
-        LogAction?.Invoke(str);
-    }
-    protected override void OnInitialized()
-    {
-        OPC = new ThingsGateway.Foundation.Adapter.OPCDA.OPCDAClient(new EasyLogger(LogOut));
-        OPC.DataChangedHandler += Info_DataChangedHandler;
-        OPC.Init(node);
-        base.OnInitialized();
-
-    }
-
-    private void Info_DataChangedHandler(List<ItemReadResult> values)
-    {
-        ValueAction?.Invoke(values);
-    }
-
-    private ThingsGateway.Foundation.Adapter.OPCDA.OPCDAClient GetOPCClient()
-    {
-        //载入配置
-        OPC.Init(node);
-        return OPC;
-    }
-
-
-}

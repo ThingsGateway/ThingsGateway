@@ -39,7 +39,7 @@
                        if(search.DeviceGroup!=a.FirstOrDefault())
                        {
                        search.DeviceGroup=a.FirstOrDefault();
-                       await datatableQuery();
+                       await DatatableQuery();
                        }
                        } )
                        Items="_deviceGroups" ItemText="r=>r" ItemChildren="r=>null"
@@ -68,6 +68,7 @@
                                         Outlined Label=@context.Description(x => x.PluginName) />
                 </SearchTemplate>
                 <OtherToolbarTemplate>
+
                     <MMenu OffsetY Context="menu">
                         <ActivatorContent>
                             <MButton @attributes="@menu.Attrs" Color="primary"
@@ -85,9 +86,25 @@
 
                         </ChildContent>
                     </MMenu>
-                    <MButton Class="my-1  mx-2" Loading=@isDownExport OnClick=DownDeviceExport Color="primary">
-                        @T("导出")
-                    </MButton>
+
+                    <MMenu OffsetY Context="menu">
+                        <ActivatorContent>
+                            <MButton @attributes="@menu.Attrs" Color="primary"
+                                     Icon="@MasaBlazor.Breakpoint.SmAndDown"
+                                     Class="my-1  mx-2 ">
+                                @T("导出")
+                                <AppChevronDown></AppChevronDown>
+                            </MButton>
+                        </ActivatorContent>
+                        <ChildContent>
+                            <MList>
+                                <MListItem OnClick="()=>DownDeviceExport()"> @T("导出全部") </MListItem>
+                                <MListItem OnClick="()=>DownDeviceExport(search)">  @T("导出搜索项") </MListItem>
+                            </MList>
+
+                        </ChildContent>
+                    </MMenu>
+
                     <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("tgcollectdeviceedit")) Class="my-1  mx-2" OnClick="()=>{ ImportExcel.Step=1;  ImportExcel.IsShowImport=true;}" Color="primary">
                         @T("导入")
                     </MButton>
@@ -134,98 +151,10 @@
 
 <ImportExcel @ref=ImportExcel Import="SaveDeviceImport" Preview="DeviceImport" />
 
+
+
 @code {
-    async Task CopyDevice(IEnumerable<CollectDevice> data)
-    {
-        if (data.Count() == 0)
-        {
-            await PopupService.EnqueueSnackbarAsync(@T("需选择一项或多项"), AlertTypes.Warning);
-            return;
-        }
-        await CollectDeviceService.CopyDevAsync(data);
-        await datatableQuery();
-        await PopupService.EnqueueSnackbarAsync("复制成功", AlertTypes.Success);
 
-    }
-    async Task CopyDevAndVar(IEnumerable<CollectDevice> data)
-    {
-
-        if (data.Count() == 0)
-        {
-            await PopupService.EnqueueSnackbarAsync(@T("需选择一项或多项"), AlertTypes.Warning);
-            return;
-        }
-        await CollectDeviceService.CopyDevAndVarAsync(data);
-        await datatableQuery();
-        await PopupService.EnqueueSnackbarAsync("复制成功", AlertTypes.Success);
-
-    }
-}
-@code {
-    string _searchName;
-    List<string> _deviceGroups = new();
-
-    ImportExcel ImportExcel;
-
-    async Task SaveDeviceImport(Dictionary<string, ImportPreviewOutputBase> data)
-    {
-        await CollectDeviceService.ImportAsync(data);
-        await datatableQuery();
-        ImportExcel.IsShowImport = false;
-    }
-    Task<Dictionary<string, ImportPreviewOutputBase>> DeviceImport(IBrowserFile file)
-    {
-        return CollectDeviceService.PreviewAsync(file);
-    }
-
-}
-    @code {
-    [Inject] public JsInitVariables JsInitVariables { get; set; } = default!;
-    [Inject]
-    IJSRuntime JS { get; set; }
-    bool isDownExport;
-    async Task DownDeviceExport()
-    {
-        try
-        {
-            isDownExport = true;
-            StateHasChanged();
-            using var memoryStream = await CollectDeviceService.ExportFileAsync();
-            memoryStream.Seek(0, SeekOrigin.Begin);
-            using var streamRef = new DotNetStreamReference(stream: memoryStream);
-            await JS.InvokeVoidAsync("downloadFileFromStream", $"采集设备导出{DateTime.UtcNow.Add(JsInitVariables.TimezoneOffset).ToString("MM-dd-HH-mm-ss")}.xlsx", streamRef);
-        }
-        finally
-        {
-            isDownExport = false;
-        }
-
-    }
-
-
-    List<DriverPluginCategory> DriverPlugins;
-    StringNumber tab;
-    private async Task DriverValueChanged(CollectDeviceEditInput context, long pluginId)
-    {
-        bool a = false;
-        if (context.PluginId != pluginId && pluginId > 0)
-        {
-            a = true;
-        }
-        if (pluginId > 0)
-            context.PluginId = pluginId;
-        else
-            return;
-        if (context.DevicePropertys == null || context.DevicePropertys?.Count == 0 || a)
-        {
-            context.DevicePropertys = GetDriverProperties(context.PluginId, context.Id);
-            await PopupService.EnqueueSnackbarAsync("插件附加属性已更新", AlertTypes.Success);
-        }
-    }
-    List<DependencyProperty> GetDriverProperties(long driverId, long devId)
-    {
-        return ServiceExtension.GetBackgroundService<CollectDeviceWorker>().GetDevicePropertys(driverId, devId);
-    }
     RenderFragment GetRenderFragment(CollectDeviceEditInput context)
     {
         RenderFragment renderFragment = null;
@@ -260,10 +189,23 @@
                     <MSubheader Class="mt-4 font-weight-black">    @(context.Description(x => x.Enable))  </MSubheader>
                     <EnableSwitch @bind-Value=@context.Enable />
 
-
-
+                    
                     <MSubheader Class="mt-4 font-weight-black">    @(context.Description(x => x.IsLogOut))  </MSubheader>
                     <EnableSwitch @bind-Value=@context.IsLogOut />
+
+
+                    <MSubheader Class="mt-4 font-weight-black">    @(context.Description(x => x.IsRedundant))  </MSubheader>
+                    <EnableSwitch @bind-Value=@context.IsRedundant />
+
+                        <MSubheader Class="font-weight-black">    @context.Description(x=>x.RedundantDeviceId)  </MSubheader>
+                    <MSelect Class="mr-3" @bind-Value=@context.RedundantDeviceId Outlined
+                             Items=@(CollectDevices) OnClick=@(()=>DeviceChanged(context.RedundantDeviceId))
+                                 MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
+                                 ItemText=@((u) =>u.Name) ItemValue=@(u =>u.Id)
+                                 ItemDisabled="u => (u.PluginId!=context.PluginId||u.Id==context.Id)"
+                                 HideDetails=@("auto") Height="30" Dense>
+                        </MSelect>
+
 
                 </MCard>
             </MTabItem>

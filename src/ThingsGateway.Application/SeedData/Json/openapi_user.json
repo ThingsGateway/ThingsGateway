@@ -7,7 +7,7 @@
       "UserStatus": "1",
       "SortCode": "1",
       "IsDelete": "0",
-      "PermissionCodeList": [ "/openApi/collectInfo/collectDeviceList", "/openApi/collectInfo/collectVariableList", "/openApi/collectInfo/realAlarmList", "/openApi/rpc/writeDeviceMethod" ]
+      "PermissionCodeList": [ "/openApi/collectInfo/collectDeviceList", "/openApi/collectInfo/collectVariableList", "/openApi/collectInfo/realAlarmList", "/openApi/rpc/writeDeviceMethod", "/openApi/rpc/writeVariables", "/openApi/rpc/configDeviceThread", "/openApi/rpc/upDeviceThread" ]
     }
   ]
 }

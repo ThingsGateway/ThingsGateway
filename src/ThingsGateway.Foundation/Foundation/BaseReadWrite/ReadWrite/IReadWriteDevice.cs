@@ -36,4 +36,9 @@ public interface IReadWriteDevice : IReadWrite, IDisposable
     /// 一个寄存器所占的字节长度
     /// </summary>
     ushort RegisterByteLength { get; set; }
+    /// <summary>
+    /// 寄存器地址的详细说明
+    /// </summary>
+    /// <returns></returns>
+    string GetAddressDescription();
 }

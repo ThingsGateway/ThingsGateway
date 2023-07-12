@@ -61,27 +61,24 @@ public abstract class CollectBase : DriverBase
                     (serialClient).Setup(TouchSocketConfig);
                     return OperResult.CreateSuccessResult((object)serialClient);
                 case ShareChannelEnum.TcpClient:
-                    TouchSocketConfig.SetRemoteIPHost(new IPHost($"{config.IP}:{config.Port}"))
-    .SetBufferLength(1024);
+                    TouchSocketConfig.SetRemoteIPHost(new IPHost($"{config.IP}:{config.Port}"));
                     var tcpClient = TouchSocketConfig.Container.Resolve<TGTcpClient>();
                     (tcpClient).Setup(TouchSocketConfig);
                     return OperResult.CreateSuccessResult((object)tcpClient);
-                case ShareChannelEnum.TGUdpSession:
-                    TouchSocketConfig.SetRemoteIPHost(new IPHost($"{config.IP}:{config.Port}"))
-    .SetBufferLength(1024);
+                case ShareChannelEnum.UdpSession:
+                    TouchSocketConfig.SetRemoteIPHost(new IPHost($"{config.IP}:{config.Port}"));
                     var udpSession = TouchSocketConfig.BuildWithUdpSession<TGUdpSession>();
                     return OperResult.CreateSuccessResult((object)udpSession);
             }
 
         }
         return new OperResult<object>("不支持共享链路");
-
     }
 
     /// <summary>
     /// 通道标识
     /// </summary>
-    public virtual string ChannelID()
+    public virtual OperResult<string> GetChannelID()
     {
         var config = (CollectDriverPropertyBase)DriverPropertys;
         if (config.IsShareChannel)
@@ -89,14 +86,14 @@ public abstract class CollectBase : DriverBase
             switch (config.ShareChannel)
             {
                 case ShareChannelEnum.SerialClient:
-                    return config.PortName;
+                    return OperResult.CreateSuccessResult(config.PortName);
                 case ShareChannelEnum.TcpClient:
-                case ShareChannelEnum.TGUdpSession:
+                case ShareChannelEnum.UdpSession:
                     var a = new IPHost($"{config.IP}:{config.Port}");
-                    return config.ShareChannel.ToString() + a.ToString();
+                    return OperResult.CreateSuccessResult(config.ShareChannel.ToString() + a.ToString());
             }
         }
-        return null;
+        return new("不支持共享通道");
     }
 
     /// <summary>
@@ -104,7 +101,6 @@ public abstract class CollectBase : DriverBase
     /// </summary>
     /// <returns></returns>
     public abstract IThingsGatewayBitConverter ThingsGatewayBitConverter { get; }
-
 
     /// <summary>
     /// 结束通讯后执行的方法
@@ -135,7 +131,7 @@ public abstract class CollectBase : DriverBase
     /// 返回是否支持读取
     /// </summary>
     /// <returns></returns>
-    public abstract bool IsSupportRequest();
+    public abstract bool IsSupportRequest { get; }
 
     /// <summary>
     /// 连读分包，返回实际通讯包信息<see cref="DeviceVariableSourceRead"/> 
@@ -143,28 +139,43 @@ public abstract class CollectBase : DriverBase
     /// </summary>
     /// <param name="deviceVariables">设备下的全部通讯点位</param>
     /// <returns></returns>
-    public abstract OperResult<List<DeviceVariableSourceRead>> LoadSourceRead(List<CollectVariableRunTime> deviceVariables);
+    public abstract OperResult<List<DeviceVariableSourceRead>> LoadSourceRead(List<DeviceVariableRunTime> deviceVariables);
 
     /// <summary>
     /// 采集驱动读取
     /// </summary>
     public virtual async Task<OperResult<byte[]>> ReadSourceAsync(DeviceVariableSourceRead deviceVariableSourceRead, CancellationToken cancellationToken)
     {
-        ushort length;
-        if (!ushort.TryParse(deviceVariableSourceRead.Length, out length))
-            return new OperResult<byte[]>("解析失败 长度[" + deviceVariableSourceRead.Length + "] 解析失败 :");
-        OperResult<byte[]> read = await ReadAsync(deviceVariableSourceRead.Address, length, cancellationToken);
-        if (!read.IsSuccess)
-            deviceVariableSourceRead.DeviceVariables.ForEach(it => it.SetValue(null));
-        return ReadWriteHelpers.DealWithReadResult(read, content =>
-        ReadWriteHelpers.PraseStructContent(content, deviceVariableSourceRead.DeviceVariables));
+        if (IsSupportRequest)
+        {
+            OperResult<byte[]> read = await ReadAsync(deviceVariableSourceRead.Address, deviceVariableSourceRead.Length, cancellationToken);
+            if (!read.IsSuccess)
+            {
+                deviceVariableSourceRead.DeviceVariables.ForEach(it =>
+                {
+                    var operResult = it.SetValue(null);
+                    if (!operResult.IsSuccess)
+                    {
+                        _logger.LogWarning(operResult.Message);
+                    }
+                });
+            }
+            return ReadWriteHelpers.DealWithReadResult(read, content =>
+            {
+                ReadWriteHelpers.PraseStructContent(content, deviceVariableSourceRead.DeviceVariables);
+            });
+        }
+        else
+        {
+            return new OperResult<byte[]>("不支持默认读取方式");
+        }
     }
 
     /// <summary>
     /// 写入变量值
     /// </summary>
     /// <returns></returns>
-    public abstract Task<OperResult> WriteValueAsync(CollectVariableRunTime deviceVariable, string value, CancellationToken cancellationToken);
+    public abstract Task<OperResult> WriteValueAsync(DeviceVariableRunTime deviceVariable, string value, CancellationToken cancellationToken);
 
     /// <summary>
     /// 初始化

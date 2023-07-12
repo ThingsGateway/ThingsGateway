@@ -21,34 +21,22 @@ namespace ThingsGateway.Foundation.Adapter.Modbus
     {
         public ModbusRtuOverTcpDataHandleAdapter DataHandleAdapter = new();
 
+        private IWaitingClient<TGTcpClient> waitingClient;
+
         public ModbusRtuOverTcp(TGTcpClient tcpClient) : base(tcpClient)
         {
             ThingsGatewayBitConverter = new ThingsGatewayBitConverter(EndianType.Big);
             RegisterByteLength = 2;
             waitingClient = TGTcpClient.GetTGWaitingClient(new());
         }
-        private IWaitingClient<TGTcpClient> waitingClient;
+        public double CacheTimeout { get; set; } = 1;
         public bool Crc16CheckEnable { get; set; }
 
-        public byte Station { get; set; } = 1;
         public int FrameTime { get; set; }
-        public double CacheTimeout { get; set; } = 1;
-        private async Task<ResponsedData> SendThenReturnAsync(OperResult<byte[]> commandResult, CancellationToken token)
+        public byte Station { get; set; } = 1;
+        public override string GetAddressDescription()
         {
-            try
-            {
-                var item = commandResult.Content;
-                await TGTcpClient.EasyLock.LockAsync();
-                await Task.Delay(FrameTime, token);
-
-                var result = await waitingClient.SendThenResponseAsync(item, TimeOut, token);
-                return result;
-
-            }
-            finally
-            {
-                TGTcpClient.EasyLock.UnLock();
-            }
+            return base.GetAddressDescription() + Environment.NewLine + ModbusHelper.GetAddressDescription();
         }
 
         public override async Task<OperResult<byte[]>> ReadAsync(string address, int length, CancellationToken token = default)
@@ -84,6 +72,7 @@ namespace ThingsGateway.Foundation.Adapter.Modbus
             DataHandleAdapter.CacheTimeout = TimeSpan.FromSeconds(CacheTimeout);
             TGTcpClient.SetDataHandlingAdapter(DataHandleAdapter);
         }
+
         public override async Task<OperResult> WriteAsync(string address, byte[] value, CancellationToken token = default)
         {
             try
@@ -134,6 +123,24 @@ namespace ThingsGateway.Foundation.Adapter.Modbus
                 return new OperResult<bool[]>(ex);
             }
             return new OperResult<byte[]>(TouchSocketStatus.UnknownError.GetDescription());
+        }
+
+        private async Task<ResponsedData> SendThenReturnAsync(OperResult<byte[]> commandResult, CancellationToken token)
+        {
+            try
+            {
+                var item = commandResult.Content;
+                await TGTcpClient.EasyLock.LockAsync();
+                await Task.Delay(FrameTime, token);
+
+                var result = await waitingClient.SendThenResponseAsync(item, TimeOut, token);
+                return result;
+
+            }
+            finally
+            {
+                TGTcpClient.EasyLock.UnLock();
+            }
         }
     }
 }

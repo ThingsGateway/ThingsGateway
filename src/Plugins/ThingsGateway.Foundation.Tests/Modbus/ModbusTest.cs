@@ -127,7 +127,7 @@ namespace ThingsGateway.Foundation.Tests
             ModbusRtuClient("COM1-9600-8-0-1");
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
-            var byteConverter = ByteConverterHelper.GetTransByAddress(ref address, ModbusRtu.ThingsGatewayBitConverter, out int length, out BcdFormat bcdFormat);
+            var byteConverter = ByteTransformHelpers.GetTransByAddress(ref address, ModbusRtu.ThingsGatewayBitConverter);
             var test = await ModbusRtu.ReadAsync(address, 1);
             Assert.True(test.IsSuccess, test.Message);
             var data = byteConverter.ToInt16(test.Content, 0);
@@ -143,7 +143,7 @@ namespace ThingsGateway.Foundation.Tests
             ModbusRtuOverTcpClient("127.0.0.1:502");
             await ModbusRtuOverTcp.ConnectAsync(CancellationToken.None);
             Stopwatch stopwatch = new Stopwatch();
-            var byteConverter = ByteConverterHelper.GetTransByAddress(ref address, ModbusRtuOverTcp.ThingsGatewayBitConverter, out int length, out BcdFormat bcdFormat);
+            var byteConverter = ByteTransformHelpers.GetTransByAddress(ref address, ModbusRtuOverTcp.ThingsGatewayBitConverter);
             stopwatch.Start();
             var test = await ModbusRtuOverTcp.ReadAsync(address, 1);
             stopwatch.Stop();
@@ -161,7 +161,7 @@ namespace ThingsGateway.Foundation.Tests
             ModbusRtuOverUdpClient("127.0.0.1:512");
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
-            var byteConverter = ByteConverterHelper.GetTransByAddress(ref address, ModbusRtuOverUdp.ThingsGatewayBitConverter, out int length, out BcdFormat bcdFormat);
+            var byteConverter = ByteTransformHelpers.GetTransByAddress(ref address, ModbusRtuOverUdp.ThingsGatewayBitConverter);
             var test = await ModbusRtuOverUdp.ReadAsync(address, 1);
             Assert.True(test.IsSuccess, test.Message);
             var data = byteConverter.ToInt16(test.Content, 0);
@@ -178,7 +178,7 @@ namespace ThingsGateway.Foundation.Tests
             ModbusTcpClient("127.0.0.1:513");
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
-            var byteConverter = ByteConverterHelper.GetTransByAddress(ref address, ModbusTcp.ThingsGatewayBitConverter, out int length, out BcdFormat bcdFormat);
+            var byteConverter = ByteTransformHelpers.GetTransByAddress(ref address, ModbusTcp.ThingsGatewayBitConverter);
             var test = await ModbusTcp.ReadAsync(address, 1);
             Assert.True(test.IsSuccess, test.Message);
             var data = byteConverter.ToInt16(test.Content, 0);
@@ -195,7 +195,7 @@ namespace ThingsGateway.Foundation.Tests
             ModbusTcpClient("127.0.0.1:513");
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
-            var byteConverter = ByteConverterHelper.GetTransByAddress(ref address, ModbusTcp.ThingsGatewayBitConverter, out int length, out BcdFormat bcdFormat);
+            var byteConverter = ByteTransformHelpers.GetTransByAddress(ref address, ModbusTcp.ThingsGatewayBitConverter);
             var test = await ModbusTcp.ReadAsync(address, 1);
             Assert.True(test.IsSuccess, test.Message);
             var data = byteConverter.ToBoolean(test.Content, 0);
@@ -212,7 +212,7 @@ namespace ThingsGateway.Foundation.Tests
             ModbusUdpClient("127.0.0.1:514");
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
-            var byteConverter = ByteConverterHelper.GetTransByAddress(ref address, ModbusUdp.ThingsGatewayBitConverter, out int length, out BcdFormat bcdFormat);
+            var byteConverter = ByteTransformHelpers.GetTransByAddress(ref address, ModbusUdp.ThingsGatewayBitConverter);
             var test = await ModbusUdp.ReadAsync(address, 1);
             Assert.True(test.IsSuccess, test.Message);
             var data = byteConverter.ToInt16(test.Content, 0);

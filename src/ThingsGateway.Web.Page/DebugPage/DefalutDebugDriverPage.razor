@@ -1,0 +1,131 @@
+﻿@*
+//------------------------------------------------------------------------------
+//  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
+//  此代码版权（除特别声明外的代码）归作者本人Diego所有
+//  源代码使用协议遵循本仓库的开源协议及附加协议
+//  Gitee源代码仓库：https://gitee.com/diego2098/ThingsGateway
+//  Github源代码仓库：https://github.com/kimdiego2098/ThingsGateway
+//  使用文档：https://diego2098.gitee.io/thingsgateway/
+//  QQ群：605534569
+//------------------------------------------------------------------------------
+*@
+
+@using BlazorComponent;
+@using Microsoft.AspNetCore.Components.Web;
+@using Microsoft.JSInterop;
+@using ThingsGateway.Core;
+@using ThingsGateway.Foundation;
+@using ThingsGateway.Foundation.Extension;
+@using ThingsGateway.Foundation.Serial;
+@using ThingsGateway.Web.Foundation;
+@using Masa.Blazor
+@using ThingsGateway.Web.Page;
+@namespace ThingsGateway.Web.Page
+@inherits DriverDebugUIBase
+@{
+    switch (Channel)
+    {
+        case 1:
+            <TcpClientPage @ref=tcpClientPage></TcpClientPage>
+break;
+        case 2:
+            <SerialClientPage @ref=serialClientPage></SerialClientPage>
+break;
+        case 3:
+            <UdpSessionPage @ref=udpSessionPage></UdpSessionPage>
+break;
+        case 4:
+            <TcpServerPage @ref=tcpServerPage></TcpServerPage>
+            break;
+        default:
+            <TcpClientPage @ref=tcpClientPage></TcpClientPage>
+            break;
+
+    }
+
+}
+@if (PLC != null && PLCTemplate!=null)
+{
+    @PLCTemplate(PLC)
+}
+<MCard Class="pa-4" Flat Elevation="0">
+    <MRow Class="my-1" NoGutters>
+
+        <MCol Md="4">
+            <MCard Flat Elevation="0">
+                <MCol Class="my-1 py-1">
+                    <MTooltip Bottom Context="tip">
+                        <ActivatorContent>
+                            <MTextField Class="mx-1 my-1" Label="变量地址" @attributes="@tip.Attrs"  Dense Outlined HideDetails="@("auto")" @bind-Value=@Address />
+                        </ActivatorContent>
+                        <ChildContent>
+                            <span style="white-space: pre-wrap;">@PLC?.GetAddressDescription()</span>
+                        </ChildContent>
+                    </MTooltip>
+                    <MSelect Class="mx-1 my-1" Style="max-width:200px" @bind-Value="DataTypeEnum" Outlined Label="数据类型"
+                             Items=@(typeof(DataTypeEnum).GetEnumList())
+                             MenuProps="@(props => { props.Auto = true; props.OffsetY = true; })"
+                             ItemText=@((u) =>u.des)
+                             ItemValue=@(u =>(DataTypeEnum)u.value)
+                             HideDetails=@("auto") Height="30"
+                             Dense>
+                    </MSelect>
+
+                    <MButton Class="mx-1 my-1" Color="primary" OnClick="Read">
+                        读取
+                    </MButton>
+                    <MTextField Class="mx-1 mt-3 my-1" Label="值" Dense Outlined HideDetails="@("auto")" @bind-Value=@WriteValue />
+                    <MButton Class="mx-1 my-1" Color="primary" OnClick="Write">
+                        写入
+                    </MButton>
+
+                </MCol>
+            </MCard>
+        </MCol>
+
+        <MCol Md="8">
+
+
+            <MCard Height=@("calc(100vh - 420px)") Style="overflow-y:auto;width:100%" Elevation="0" Flat Class="ml-4">
+                <MCardActions>
+                    输出日志
+                    <MSpacer></MSpacer>
+
+                    <MTooltip Bottom Context="tip">
+                        <ActivatorContent>
+                            <MButton Loading=isDownExport Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small
+                                     OnClick=@(async()=>
+                                     {
+                                     await DownDeviceMessageExport(Messages.Select(a=>a.message));
+                                     }
+                                     )>
+                                <MIcon>mdi-export</MIcon>
+                            </MButton>
+                        </ActivatorContent>
+                        <ChildContent>
+                            <span>导出</span>
+                        </ChildContent>
+                    </MTooltip>
+
+                </MCardActions>
+                @{
+                    var item = Messages;
+                    <MRow Class="ml-2 mr-2 d-flex" NoGutters>
+                        <MVirtualScroll Context="itemMessage" Height=@("calc(100vh - 500px)") OverscanCount=2 ItemSize="100" Items="item">
+                            <ItemContent>
+                                <div title=@itemMessage.message class=@(itemMessage.level<Microsoft.Extensions.Logging.LogLevel.Information?" black--text ":itemMessage.level>=Microsoft.Extensions.Logging.LogLevel.Warning?" red--text ":"green--text ") style="white-space: nowrap !important;overflow: hidden !important; text-overflow: ellipsis !important;">
+                                    @itemMessage.message
+                                </div>
+
+                            </ItemContent>
+                        </MVirtualScroll>
+                    </MRow>
+                }
+            </MCard>
+        </MCol>
+
+    </MRow>
+
+</MCard>
+
+

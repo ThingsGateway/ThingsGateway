@@ -100,13 +100,13 @@ public class UploadDeviceCore : DisposableObject
     /// <summary>
     /// 暂停上传
     /// </summary>
-    public void PasueThread(bool keepOn)
+    public void PasueThread(bool keepRun)
     {
         lock (this)
         {
-            var str = keepOn == false ? "设备线程上传暂停" : "设备线程上传继续";
+            var str = keepRun == false ? "设备线程上传暂停" : "设备线程上传继续";
             _logger?.LogInformation($"{str}:{_device.Name}");
-            this.Device.KeepOn = keepOn;
+            this.Device.KeepRun = keepRun;
         }
     }
     /// <summary>
@@ -161,7 +161,7 @@ public class UploadDeviceCore : DisposableObject
         //初始化插件
         _driver.Init(_logger, _device);
         //变量分包
-        _device.UploadVariableNum = _driver.UploadVariables?.Count ?? 0;
+        _device.UploadVariableCount = _driver.UploadVariables?.Count ?? 0;
     }
     /// <summary>
     /// 设置驱动插件的属性值
@@ -183,7 +183,7 @@ public class UploadDeviceCore : DisposableObject
     /// <summary>
     /// 开始前
     /// </summary>
-    public async Task<bool> BeforeActionAsync(CancellationToken cancellationToken, object client = null)
+    public async Task<bool> BeforeActionAsync(CancellationToken cancellationToken)
     {
         try
         {
@@ -198,13 +198,13 @@ public class UploadDeviceCore : DisposableObject
             }
             else
             {
-                Device.DeviceStatus = DeviceStatusEnum.OffLine;
-                Device.DeviceOffMsg = "获取插件失败";
+                Device.ErrorCount = 999;
+                Device.LastErrorMessage = "获取插件失败";
                 return false;
             }
             try
             {
-                if (Device?.KeepOn == true)
+                if (Device?.KeepRun == true)
                 {
                     //驱动插件执行循环前方法
                     Device.ActiveTime = DateTime.UtcNow;
@@ -213,9 +213,9 @@ public class UploadDeviceCore : DisposableObject
             }
             catch (Exception ex)
             {
-                _logger?.LogError(ex, _device.Name + "BeforStart错误");
-                Device.DeviceStatus = DeviceStatusEnum.OffLine;
-                Device.DeviceOffMsg = "开始前发生错误，通常为打开端口失败";
+                _logger?.LogError(ex, _device.Name + "开始前发生错误");
+                Device.ErrorCount = 999;
+                Device.LastErrorMessage = "开始前发生错误：" + ex.Message;
             }
             isInitSuccess = true;
             return isInitSuccess;
@@ -224,8 +224,8 @@ public class UploadDeviceCore : DisposableObject
         catch (Exception ex)
         {
             _logger?.LogError(ex, _device.Name + "初始化失败");
-            Device.DeviceStatus = DeviceStatusEnum.OffLine;
-            Device.DeviceOffMsg = "初始化失败";
+            Device.ErrorCount = 999;
+            Device.LastErrorMessage = "初始化失败：" + ex.Message;
         }
         isInitSuccess = false;
         return isInitSuccess;
@@ -235,13 +235,13 @@ public class UploadDeviceCore : DisposableObject
     /// </summary>
     public void FinishAction()
     {
+        IsExited = true;
         try
         {
             _logger?.LogInformation($"{_device.Name}上传线程停止中");
             _driver?.SafeDispose();
             _pluginService.DeleteDriver(DeviceId, Device.PluginId);
             _logger?.LogInformation($"{_device.Name}上传线程已停止");
-            IsExited = true;
         }
         catch (Exception ex)
         {
@@ -280,15 +280,13 @@ public class UploadDeviceCore : DisposableObject
             using CancellationTokenSource StoppingToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, StoppingTokens.LastOrDefault().Token);
             if (_driver == null) return ThreadRunReturn.Continue;
 
-            if (Device?.KeepOn == false)
+            if (Device?.KeepRun == false)
             {
-                Device.DeviceStatus = DeviceStatusEnum.Pause;
                 return ThreadRunReturn.Continue; ;
             }
             if (StoppingToken.IsCancellationRequested)
                 return ThreadRunReturn.Break;
-            if (Device.DeviceStatus != DeviceStatusEnum.OnLineButNoInitialValue && Device.DeviceStatus != DeviceStatusEnum.OnLine && Device.DeviceStatus != DeviceStatusEnum.OffLine)
-                Device.DeviceStatus = DeviceStatusEnum.OnLineButNoInitialValue;
+
             Device.ActiveTime = DateTime.UtcNow;
             await _driver.ExecuteAsync(StoppingToken.Token);
 
@@ -297,12 +295,12 @@ public class UploadDeviceCore : DisposableObject
             var oper = _driver.IsConnected();
             if (oper.IsSuccess)
             {
-                Device.DeviceStatus = DeviceStatusEnum.OnLine;
+                Device.ErrorCount = 0;
             }
             else
             {
-                Device.DeviceStatus = (Device.DeviceStatus == DeviceStatusEnum.OnLine || Device.DeviceStatus == DeviceStatusEnum.OnLineButNoInitialValue) ? DeviceStatusEnum.OffLine : Device.DeviceStatus;
-                Device.DeviceOffMsg = oper.Message;
+                Device.ErrorCount = 999;
+                Device.LastErrorMessage = oper.Message;
             }
             return ThreadRunReturn.None;
 
@@ -318,6 +316,8 @@ public class UploadDeviceCore : DisposableObject
         catch (Exception ex)
         {
             _logger?.LogWarning(ex, $"上传线程循环异常{_device.Name}");
+            Device.ErrorCount += 1;
+            Device.LastErrorMessage = ex.Message;
             return ThreadRunReturn.None;
         }
     }

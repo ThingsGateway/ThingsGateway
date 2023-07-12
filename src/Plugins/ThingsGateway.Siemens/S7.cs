@@ -39,7 +39,6 @@ public abstract class S7 : CollectBase
     protected S7(IServiceScopeFactory scopeFactory) : base(scopeFactory)
     {
     }
-
     public override IThingsGatewayBitConverter ThingsGatewayBitConverter { get => _plc?.ThingsGatewayBitConverter; }
 
     public override Task AfterStopAsync()
@@ -67,15 +66,12 @@ public abstract class S7 : CollectBase
     {
         return _plc?.TGTcpClient?.CanSend == true ? OperResult.CreateSuccessResult() : new OperResult("失败");
     }
-    public override bool IsSupportRequest()
-    {
-        return true;
-    }
+    public override bool IsSupportRequest => true;
 
-    public override OperResult<List<DeviceVariableSourceRead>> LoadSourceRead(List<CollectVariableRunTime> deviceVariables)
+    public override OperResult<List<DeviceVariableSourceRead>> LoadSourceRead(List<DeviceVariableRunTime> deviceVariables)
     {
         _plc.Connect(CancellationToken.None);
-        var data = deviceVariables.LoadSourceRead(_logger, ThingsGatewayBitConverter, _plc);
+        var data = deviceVariables.LoadSourceRead(_logger, _plc);
         _plc?.Disconnect();
         return data;
     }
@@ -107,9 +103,9 @@ public abstract class S7 : CollectBase
     {
         return _plc?.WriteDateTimeAsync(address, dateTime);
     }
-    public override async Task<OperResult> WriteValueAsync(CollectVariableRunTime deviceVariable, string value, CancellationToken cancellationToken)
+    public override async Task<OperResult> WriteValueAsync(DeviceVariableRunTime deviceVariable, string value, CancellationToken cancellationToken)
     {
-        return await _plc.WriteAsync(deviceVariable.DataType, deviceVariable.VariableAddress, value, deviceVariable.DataTypeEnum == DataTypeEnum.Bcd, cancellationToken);
+        return await _plc.WriteAsync(deviceVariable.VariableAddress, deviceVariable.DataType, value, cancellationToken);
     }
 
     protected override async Task<OperResult<byte[]>> ReadAsync(string address, int length, CancellationToken cancellationToken)

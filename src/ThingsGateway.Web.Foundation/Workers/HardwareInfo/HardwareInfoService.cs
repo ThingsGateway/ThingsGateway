@@ -10,15 +10,17 @@
 //------------------------------------------------------------------------------
 #endregion
 
+using Hardware.Info;
+
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 using System.IO;
-using System.Linq;
 using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Text;
 
+using ThingsGateway.Core;
 
 namespace ThingsGateway.Web.Foundation;
 
@@ -27,7 +29,7 @@ namespace ThingsGateway.Web.Foundation;
 /// </summary>
 public class HardwareInfoService : ISingleton
 {
-    private readonly Hardware.Info.HardwareInfo hardwareInfo;
+    private readonly HardwareInfo hardwareInfo;
 
     private ILogger _logger;
 
@@ -49,48 +51,54 @@ public class HardwareInfoService : ISingleton
         }
         _ = Task.Run(async () =>
          {
-
+             string currentPath = Directory.GetCurrentDirectory();
+             DriveInfo drive = new DriveInfo(Path.GetPathRoot(currentPath));
+             appInfo = new()
+             {
+                 DriveInfo = drive,
+                 HostName = Environment.MachineName, // 主机名称
+                 SystemOs = RuntimeInformation.OSDescription, // 操作系统
+                 OsArchitecture = Environment.OSVersion.Platform.ToString() + " " + RuntimeInformation.OSArchitecture.ToString(), // 系统架构
+                 RemoteIp = await GetIpFromOnlineAsync(), // 外网地址
+                 FrameworkDescription = RuntimeInformation.FrameworkDescription, // NET框架
+                 Environment = App.HostEnvironment.IsDevelopment() ? "Development" : "Production",
+                 Stage = App.HostEnvironment.IsStaging() ? "Stage" : "非Stage", // 是否Stage环境
+                 UpdateTime = DateTime.Now.ToDateTimeF(),
+             };
              while (true)
              {
                  try
                  {
+                     appInfo.UpdateTime = DateTime.Now.ToDateTimeF();
+                     appInfo.RemoteIp = await GetIpFromOnlineAsync();
 
                      hardwareInfo?.RefreshMemoryStatus();
                      hardwareInfo?.RefreshMemoryList();
-                     hardwareInfo?.RefreshDriveList();
+                     //hardwareInfo?.RefreshDriveList();
                      hardwareInfo?.RefreshNetworkAdapterList();
                      hardwareInfo?.RefreshCPUList();
-                     aPPInfo = new()
-                     {
-                         HostName = Environment.MachineName, // 主机名称
-                         SystemOs = RuntimeInformation.OSDescription, // 操作系统
-                         OsArchitecture = Environment.OSVersion.Platform.ToString() + " " + RuntimeInformation.OSArchitecture.ToString(), // 系统架构
-                         RemoteIp = await GetIpFromOnlineAsync(), // 外网地址
-                         FrameworkDescription = RuntimeInformation.FrameworkDescription, // NET框架
-                         Environment = App.HostEnvironment.IsDevelopment() ? "Development" : "Production",
-                         Stage = App.HostEnvironment.IsStaging() ? "Stage" : "非Stage", // 是否Stage环境
-                     };
-                     await Task.Delay(30000);
-                 }
-                 catch
-                 {
 
+                     await Task.Delay(60000);
+                 }
+                 catch (Exception ex)
+                 {
+                     _logger.LogWarning(ex, "获取硬件信息失败");
                  }
              }
          });
 
     }
 
-    private TGAPPInfo aPPInfo = new();
+    private TGAPPInfo appInfo = new();
     /// <summary>
     /// 运行信息获取
     /// </summary>
-    public TGAPPInfo APPInfo => aPPInfo;
+    public TGAPPInfo APPInfo => appInfo;
 
     /// <summary>
     /// 硬件信息获取
     /// </summary>
-    public TGHardwareInfo HardwareInfo => hardwareInfo?.Adapt<TGHardwareInfo>();
+    public HardwareInfo HardwareInfo => hardwareInfo;
 
     /// <summary>
     /// IP地址信息
@@ -158,25 +166,16 @@ public class TGAPPInfo
     /// </summary>
     [Description("操作系统")]
     public string SystemOs { get; set; }
+
+    /// <summary>
+    /// 更新时间
+    /// </summary>
+    [Description("更新时间")]
+    public string UpdateTime { get; set; }
+    /// <summary>
+    /// 当前磁盘信息
+    /// </summary>
+    [Description("当前磁盘信息")]
+    public DriveInfo DriveInfo { get; set; }
 }
 
-/// <inheritdoc/>
-public class TGHardwareInfo
-{
-    /// <inheritdoc/>
-    public List<CPU> CpuList { get; private set; } = new List<CPU>();
-
-    /// <inheritdoc/>
-    public List<Drive> DriveList { get; private set; } = new List<Drive>();
-
-    /// <inheritdoc/>
-    public List<Memory> MemoryList { get; private set; } = new List<Memory>();
-
-    /// <inheritdoc/>
-    public MemoryStatus MemoryStatus { get; private set; } = new MemoryStatus();
-    /// <inheritdoc/>
-    public List<NetworkAdapter> NetworkAdapterList { get; private set; } = new List<NetworkAdapter>();
-
-    /// <inheritdoc/>
-    public List<Volume> VolumeList => DriveList.SelectMany(a => a.PartitionList.SelectMany(b => b.VolumeList)).ToList();
-}

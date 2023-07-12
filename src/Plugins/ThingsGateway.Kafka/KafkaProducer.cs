@@ -29,12 +29,17 @@ namespace ThingsGateway.Kafka;
 
 using System.Collections.Concurrent;
 using System.Runtime.InteropServices;
+
+using ThingsGateway.Foundation.Extension.Enumerator;
+using ThingsGateway.Foundation.Extension.Generic;
+
 public class KafkaProducer : UpLoadBase
 {
-    private GlobalCollectDeviceData _globalCollectDeviceData;
+    private GlobalDeviceData _globalDeviceData;
+    public override Type DriverDebugUIType => null;
 
     private RpcSingletonService _rpcCore;
-    private List<CollectVariableRunTime> _uploadVariables = new();
+    private List<DeviceVariableRunTime> _uploadVariables = new();
     private CollectDeviceWorker collectDeviceHostService;
     private ConcurrentQueue<DeviceData> _collectDeviceRunTimes = new();
     private ConcurrentQueue<VariableData> _collectVariableRunTimes = new();
@@ -53,7 +58,7 @@ public class KafkaProducer : UpLoadBase
     public override DriverPropertyBase DriverPropertys => driverPropertys;
 
 
-    public override List<CollectVariableRunTime> UploadVariables => _uploadVariables;
+    public override List<DeviceVariableRunTime> UploadVariables => _uploadVariables;
 
 
     public override VariablePropertyBase VariablePropertys => variablePropertys;
@@ -75,7 +80,7 @@ public class KafkaProducer : UpLoadBase
             if (varList?.Count != 0)
             {
                 //分解List，避免超出mqtt字节大小限制
-                var varData = varList.ChunkTrivialBetter(500);
+                var varData = varList.ChunkTrivialBetter(10000);
                 foreach (var item in varData)
                 {
                     try
@@ -110,7 +115,7 @@ public class KafkaProducer : UpLoadBase
             if (devList?.Count != 0)
             {
                 //分解List，避免超出mqtt字节大小限制
-                var devData = devList.ChunkTrivialBetter(500);
+                var devData = devList.ChunkTrivialBetter(10000);
                 foreach (var item in devData)
                 {
                     try
@@ -160,24 +165,24 @@ public class KafkaProducer : UpLoadBase
         var result = await producer.ProduceAsync(topic, new Message<Null, string> { Value = payLoad }, cancellationToken);
         if (result.Status != PersistenceStatus.Persisted)
         {
-            await AddCacheData(topic, payLoad, driverPropertys.CacheMaxCount);
+            await CacheDb.AddCacheData(topic, payLoad, driverPropertys.CacheMaxCount);
         }
         else
         {
             //连接成功时补发缓存数据
-            var cacheData = await GetCacheData();
+            var cacheData = await CacheDb.GetCacheData();
             foreach (var item in cacheData)
             {
                 var result1 = await producer.ProduceAsync(item.Topic, new Message<Null, string> { Value = item.CacheStr }, cancellationToken);
 
                 if (result.Status == PersistenceStatus.Persisted)
                 {
-                    logMessage.Trace("报文-" + $"主题：{item.Topic}{Environment.NewLine}负载：{item.CacheStr}");
+                    logMessage.Trace(LogMessageHeader + $"主题：{item.Topic}{Environment.NewLine}负载：{item.CacheStr}");
 
-                    await DeleteCacheData(item.Id);
+                    await CacheDb.DeleteCacheData(item.Id);
                 }
             }
-            logMessage.Trace("报文-" + $"主题：{topic}{Environment.NewLine}负载：{payLoad}");
+            logMessage.Trace(LogMessageHeader + $"主题：{topic}{Environment.NewLine}负载：{payLoad}");
 
         }
     }
@@ -243,16 +248,16 @@ public class KafkaProducer : UpLoadBase
         #endregion
 
         var serviceScope = _scopeFactory.CreateScope();
-        _globalCollectDeviceData = serviceScope.ServiceProvider.GetService<GlobalCollectDeviceData>();
+        _globalDeviceData = serviceScope.ServiceProvider.GetService<GlobalDeviceData>();
         _rpcCore = serviceScope.ServiceProvider.GetService<RpcSingletonService>();
         collectDeviceHostService = serviceScope.GetBackgroundService<CollectDeviceWorker>();
 
-        var tags = _globalCollectDeviceData.CollectVariables.Where(a => a.VariablePropertys.ContainsKey(device.Id))
+        var tags = _globalDeviceData.AllVariables.Where(a => a.VariablePropertys.ContainsKey(device.Id))
            .Where(b => GetPropertyValue(b, nameof(variablePropertys.Enable)).GetBoolValue()).ToList();
 
         _uploadVariables = tags;
 
-        _globalCollectDeviceData.CollectDevices.Where(a => _uploadVariables.Select(b => b.DeviceId).Contains(a.Id)).ForEach(a =>
+        _globalDeviceData.CollectDevices.Where(a => _uploadVariables.Select(b => b.DeviceId).Contains(a.Id)).ForEach(a =>
         {
             a.DeviceStatusCahnge += DeviceStatusCahnge;
         });
@@ -280,7 +285,7 @@ public class KafkaProducer : UpLoadBase
             _logger.LogWarning($"Delivery Error: {r.Error.Reason}");
         }
     }
-    private void VariableValueChange(CollectVariableRunTime collectVariableRunTime)
+    private void VariableValueChange(DeviceVariableRunTime collectVariableRunTime)
     {
         _collectVariableRunTimes.Enqueue(collectVariableRunTime.Adapt<VariableData>());
     }

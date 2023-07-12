@@ -22,6 +22,8 @@ using System.Text;
 
 using ThingsGateway.Foundation;
 using ThingsGateway.Foundation.Extension;
+using ThingsGateway.Foundation.Extension.Enumerator;
+using ThingsGateway.Foundation.Extension.Generic;
 using ThingsGateway.Web.Foundation;
 
 using TouchSocket.Core;
@@ -29,6 +31,7 @@ using TouchSocket.Core;
 namespace ThingsGateway.RabbitMQ;
 public class RabbitMQClient : UpLoadBase
 {
+    public override Type DriverDebugUIType => null;
 
     private ConcurrentQueue<DeviceData> _collectDeviceRunTimes = new();
     private ConcurrentQueue<VariableData> _collectVariableRunTimes = new();
@@ -36,12 +39,12 @@ public class RabbitMQClient : UpLoadBase
 
     private ConnectionFactory _connectionFactory;
 
-    private GlobalCollectDeviceData _globalCollectDeviceData;
+    private GlobalDeviceData _globalDeviceData;
 
     private IModel _model;
 
     private RpcSingletonService _rpcCore;
-    private List<CollectVariableRunTime> _uploadVariables = new();
+    private List<DeviceVariableRunTime> _uploadVariables = new();
     private RabbitMQClientProperty driverPropertys = new();
 
     private RabbitMQClientVariableProperty variablePropertys = new();
@@ -53,7 +56,7 @@ public class RabbitMQClient : UpLoadBase
 
     public string ExchangeName { get; set; } = "";
 
-    public override List<CollectVariableRunTime> UploadVariables => _uploadVariables;
+    public override List<DeviceVariableRunTime> UploadVariables => _uploadVariables;
     public override VariablePropertyBase VariablePropertys => variablePropertys;
     public override async Task BeforStartAsync(CancellationToken cancellationToken)
     {
@@ -95,7 +98,7 @@ public class RabbitMQClient : UpLoadBase
             {
                 if (driverPropertys.IsList)
                 {
-                    var listChunk = varList.ChunkTrivialBetter(500);
+                    var listChunk = varList.ChunkTrivialBetter(10000);
                     foreach (var variables in listChunk)
                     {
                         try
@@ -162,7 +165,7 @@ public class RabbitMQClient : UpLoadBase
             {
                 if (driverPropertys.IsList)
                 {
-                    var listChunk = devList.ChunkTrivialBetter(500);
+                    var listChunk = devList.ChunkTrivialBetter(10000);
                     foreach (var devices in listChunk)
                     {
                         try
@@ -237,9 +240,9 @@ public class RabbitMQClient : UpLoadBase
 
     protected override void Dispose(bool disposing)
     {
-        _globalCollectDeviceData?.CollectVariables.ForEach(a => a.VariableValueChange -= VariableValueChange);
+        _globalDeviceData?.AllVariables.ForEach(a => a.VariableValueChange -= VariableValueChange);
 
-        _globalCollectDeviceData?.CollectDevices?.ForEach(a =>
+        _globalDeviceData?.CollectDevices?.ForEach(a =>
         {
             a.DeviceStatusCahnge -= DeviceStatusCahnge;
         });
@@ -265,11 +268,11 @@ public class RabbitMQClient : UpLoadBase
 
 
         var serviceScope = _scopeFactory.CreateScope();
-        _globalCollectDeviceData = serviceScope.ServiceProvider.GetService<GlobalCollectDeviceData>();
+        _globalDeviceData = serviceScope.ServiceProvider.GetService<GlobalDeviceData>();
         _rpcCore = serviceScope.ServiceProvider.GetService<RpcSingletonService>();
 
 
-        var tags = _globalCollectDeviceData.CollectVariables.Where(a => a.VariablePropertys.ContainsKey(device.Id))
+        var tags = _globalDeviceData.AllVariables.Where(a => a.VariablePropertys.ContainsKey(device.Id))
        .Where(b => b.VariablePropertys[device.Id].Any(c =>
        {
            if (c.PropertyName == nameof(variablePropertys.Enable))
@@ -286,7 +289,7 @@ public class RabbitMQClient : UpLoadBase
 
         _uploadVariables = tags;
 
-        _globalCollectDeviceData.CollectDevices.Where(a => _uploadVariables.Select(b => b.DeviceId).Contains(a.Id)).ForEach(a =>
+        _globalDeviceData.CollectDevices.Where(a => _uploadVariables.Select(b => b.DeviceId).Contains(a.Id)).ForEach(a =>
         {
             a.DeviceStatusCahnge += DeviceStatusCahnge;
             DeviceStatusCahnge(a);
@@ -305,7 +308,7 @@ public class RabbitMQClient : UpLoadBase
         _collectDeviceRunTimes.Enqueue(collectDeviceRunTime.Adapt<DeviceData>());
     }
 
-    private void VariableValueChange(CollectVariableRunTime collectVariableRunTime)
+    private void VariableValueChange(DeviceVariableRunTime collectVariableRunTime)
     {
         _collectVariableRunTimes.Enqueue(collectVariableRunTime.Adapt<VariableData>());
     }

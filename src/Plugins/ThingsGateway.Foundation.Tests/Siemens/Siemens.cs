@@ -45,16 +45,17 @@ namespace ThingsGateway.Foundation.Tests
         [MemberData(nameof(RangeData), "DB", 1, 10)]
         [MemberData(nameof(RangeData), "C", 1, 10)]
         [MemberData(nameof(RangeData), "T", 1, 10)]
+        [MemberData(nameof(RangeData), "Q0.", 1, 10)]
         public async Task SiemensS7PLCReadTest(string address)
         {
             SiemensS7PLCClient("127.0.0.1:102");
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
-            var byteConverter = ByteConverterHelper.GetTransByAddress(ref address, SiemensS7PLC.ThingsGatewayBitConverter, out int length, out BcdFormat bcdFormat);
+            var byteConverter = ByteTransformHelpers.GetTransByAddress(ref address, SiemensS7PLC.ThingsGatewayBitConverter);
             var test = await SiemensS7PLC.ReadAsync(address, 2);
             Assert.True(test.IsSuccess, test.Message);
-            var data = byteConverter.ToInt16(test.Content, 0);
-            _output.WriteLine(data.ToJson());
+            var data = byteConverter.ToBoolean(test.Content, 0);
+            _output.WriteLine(test.Content.ToJson());
             stopwatch.Stop();
             _output.WriteLine(address + "耗时：" + stopwatch.Elapsed.TotalSeconds);
 

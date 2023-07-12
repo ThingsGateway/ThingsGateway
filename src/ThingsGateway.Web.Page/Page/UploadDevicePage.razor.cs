@@ -10,15 +10,30 @@
 //------------------------------------------------------------------------------
 #endregion
 
+using Masa.Blazor;
+
+using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.JSInterop;
+
 using SqlSugar;
+
+using System;
+using System.IO;
 
 namespace ThingsGateway.Web.Page
 {
     public partial class UploadDevicePage
     {
         private IAppDataTable _datatable;
-
-
+        List<string> _deviceGroups = new();
+        string _searchName;
+        List<DriverPluginCategory> DriverPlugins;
+        ImportExcel ImportExcel;
+        private UploadDevicePageInput search = new();
+        StringNumber tab;
+        [Inject] public JsInitVariables JsInitVariables { get; set; } = default!;
+        [Inject]
+        IJSRuntime JS { get; set; }
         [CascadingParameter]
         MainLayout MainLayout { get; set; }
 
@@ -37,6 +52,20 @@ namespace ThingsGateway.Web.Page
             await UploadDeviceService.AddAsync(input);
             _deviceGroups = UploadDeviceService.GetCacheList()?.Select(a => a.DeviceGroup)?.Where(a => a != null).Distinct()?.ToList();
         }
+
+        async Task CopyDevice(IEnumerable<UploadDevice> data)
+        {
+            if (!data.Any())
+            {
+                await PopupService.EnqueueSnackbarAsync(@T("需选择一项或多项"), AlertTypes.Warning);
+                return;
+            }
+
+            await UploadDeviceService.CopyDevAsync(data);
+            await datatableQuery();
+            await PopupService.EnqueueSnackbarAsync("复制成功", AlertTypes.Success);
+        }
+
         private async Task datatableQuery()
         {
             await _datatable?.QueryClickAsync();
@@ -49,6 +78,54 @@ namespace ThingsGateway.Web.Page
             _deviceGroups = UploadDeviceService.GetCacheList()?.Select(a => a.DeviceGroup)?.Where(a => a != null).Distinct()?.ToList();
         }
 
+        Task<Dictionary<string, ImportPreviewOutputBase>> DeviceImport(IBrowserFile file)
+        {
+            return UploadDeviceService.PreviewAsync(file);
+        }
+
+        async Task DownDeviceExport(IEnumerable<UploadDevice> input = null)
+        {
+            try
+            {
+                using var memoryStream = await UploadDeviceService.ExportFileAsync(input?.ToList());
+                memoryStream.Seek(0, SeekOrigin.Begin);
+                using var streamRef = new DotNetStreamReference(stream: memoryStream);
+                await JS.InvokeVoidAsync("downloadFileFromStream", $"上传设备导出{DateTime.UtcNow.Add(JsInitVariables.TimezoneOffset).ToString("MM-dd-HH-mm-ss")}.xlsx", streamRef);
+            }
+            finally
+            {
+            }
+
+        }
+
+        async Task DownDeviceExport(UploadDevicePageInput input)
+        {
+            try
+            {
+                using var memoryStream = await UploadDeviceService.ExportFileAsync(input);
+                memoryStream.Seek(0, SeekOrigin.Begin);
+                using var streamRef = new DotNetStreamReference(stream: memoryStream);
+                await JS.InvokeVoidAsync("downloadFileFromStream", $"上传设备导出{DateTime.UtcNow.Add(JsInitVariables.TimezoneOffset).ToString("MM-dd-HH-mm-ss")}.xlsx", streamRef);
+            }
+            finally
+            {
+            }
+
+        }
+
+        private async Task DriverValueChanged(UploadDeviceEditInput context, long pluginId)
+        {
+            if (pluginId > 0)
+                context.PluginId = pluginId;
+            else
+                return;
+            if (context.DevicePropertys == null || context.DevicePropertys?.Count == 0)
+            {
+                context.DevicePropertys = GetDriverProperties(context.PluginId, context.Id);
+                await PopupService.EnqueueSnackbarAsync("插件附加属性已更新", AlertTypes.Success);
+            }
+
+        }
         private async Task EditCall(UploadDeviceEditInput input)
         {
             await UploadDeviceService.EditAsync(input);
@@ -97,10 +174,22 @@ namespace ThingsGateway.Web.Page
             }
         }
 
+        List<DependencyProperty> GetDriverProperties(long driverId, long devId)
+        {
+            return ServiceExtensions.GetBackgroundService<UploadDeviceWorker>().GetDevicePropertys(driverId, devId);
+        }
+
         private async Task<SqlSugarPagedList<UploadDevice>> QueryCall(UploadDevicePageInput input)
         {
             var data = await UploadDeviceService.PageAsync(input);
             return data;
+        }
+
+        async Task SaveDeviceImport(Dictionary<string, ImportPreviewOutputBase> data)
+        {
+            await UploadDeviceService.ImportAsync(data);
+            await datatableQuery();
+            ImportExcel.IsShowImport = false;
         }
     }
 }

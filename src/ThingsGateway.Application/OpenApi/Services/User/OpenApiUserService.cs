@@ -187,7 +187,7 @@ namespace ThingsGateway.Application
                 .Where(u => u.Id == Id)
                 .Select((u) => new OpenApiUser { Id = u.Id.SelectAll() })
                 .FirstAsync();
-                if (openApiUser != null)//做个大小写限制
+                if (openApiUser != null)
                 {
                     //插入Cache
                     _sysCacheService.Set(CacheConst.Cache_OpenApiUser, openApiUser.Id.ToString(), openApiUser);

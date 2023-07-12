@@ -15,9 +15,9 @@ using ThingsGateway.Core;
 namespace ThingsGateway.Web.Foundation;
 
 /// <summary>
-/// 设备通用表
+/// 上传设备表
 /// </summary>
-[SugarTable("uploaddevice", TableDescription = "设备通用表")]
+[SugarTable("uploadDevice", TableDescription = "上传设备表")]
 [Tenant(SqlsugarConst.DB_CustomId)]
 public class UploadDevice : BaseEntity
 {

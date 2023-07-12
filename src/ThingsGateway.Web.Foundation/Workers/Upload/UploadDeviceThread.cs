@@ -15,6 +15,8 @@ using Microsoft.Extensions.Logging;
 using System.Linq;
 using System.Threading;
 
+using ThingsGateway.Foundation;
+
 using TouchSocket.Core;
 
 namespace ThingsGateway.Web.Foundation;
@@ -60,7 +62,7 @@ public class UploadDeviceThread : IDisposable
                 try
                 {
                     LoggerGroup log = UploadDeviceCores.FirstOrDefault().Driver.TouchSocketConfig.Container.Resolve<ILog>() as LoggerGroup;
-                    var data = new EasyLogger(device.Driver.NewMessage);
+                    var data = new TGEasyLogger(device.Driver.NewMessage);
                     log.AddLogger(device.DeviceId.ToString(), data);
                 }
                 catch (Exception ex)

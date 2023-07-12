@@ -27,7 +27,7 @@ public class UploadDeviceRunTime : UploadDevice
     /// 关联变量数量
     /// </summary>
     [Description("关联变量数量")]
-    public int UploadVariableNum { get; set; }
+    public int UploadVariableCount { get; set; }
 
     /// <summary>
     /// 设备活跃时间
@@ -42,9 +42,12 @@ public class UploadDeviceRunTime : UploadDevice
     {
         get
         {
-            return deviceStatus;
+            if (KeepRun)
+                return deviceStatus;
+            else
+                return DeviceStatusEnum.Pause;
         }
-        set
+        private set
         {
             if (deviceStatus != value)
             {
@@ -52,34 +55,45 @@ public class UploadDeviceRunTime : UploadDevice
             }
         }
     }
+    /// <summary>
+    /// 最后一次失败原因
+    /// </summary>
+    [Description("失败原因")]
+    public string LastErrorMessage { get; set; }
 
     /// <summary>
     /// 运行
     /// </summary>
     [Description("运行")]
-    public virtual bool KeepOn { get; set; } = true;
+    public bool KeepRun { get; set; } = true;
 
-    private DeviceStatusEnum deviceStatus = DeviceStatusEnum.Default;
-
-    private string deviceOffMsg;
-
+    private int errorCount;
     /// <summary>
-    /// 失败原因
+    /// 距上次成功时的读取失败次数,超过3次设备更新为离线，等于0时设备更新为在线
     /// </summary>
-    [Description("失败原因")]
-    public string DeviceOffMsg
+    [Description("失败次数")]
+    public int ErrorCount
     {
         get
         {
-            if (deviceStatus == DeviceStatusEnum.OnLine)
-            {
-                return "";
-            }
-            else
-                return deviceOffMsg;
+            return errorCount;
         }
-
-        set => deviceOffMsg = value;
+        set
+        {
+            errorCount = value;
+            if (errorCount > 3)
+            {
+                DeviceStatus = DeviceStatusEnum.OffLine;
+            }
+            else if (errorCount == 0)
+            {
+                DeviceStatus = DeviceStatusEnum.OnLine;
+            }
+        }
     }
+
+    private DeviceStatusEnum deviceStatus = DeviceStatusEnum.None;
+
+
 }
 

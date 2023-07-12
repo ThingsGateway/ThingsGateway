@@ -5,13 +5,14 @@
 //  源代码使用协议遵循本仓库的开源协议及附加协议
 //  Gitee源代码仓库：https://gitee.com/diego2098/ThingsGateway
 //  Github源代码仓库：https://github.com/kimdiego2098/ThingsGateway
-//  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
+//  使用文档：https://diego2098.gitee.io/thingsgateway/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 #endregion
 
+using Newtonsoft.Json.Linq;
+
 using Opc.Ua;
-using Opc.Ua.Client;
 
 using ThingsGateway.Foundation.Adapter.OPCUA;
 using ThingsGateway.Foundation.Extension.Json;
@@ -34,8 +35,8 @@ namespace ThingsGateway.Foundation.Tests
             _opc?.SafeDispose();
         }
         [Theory]
-        [InlineData("ns=2;s=数据类型示例.8 位设备.K 寄存器.DWord2", typeof(UInt32))] //kep
-        public async Task OpcSubscribeTest(string address, Type type)
+        [InlineData("ns=2;s=数据类型示例.8 位设备.K 寄存器.DWord2")] //kep
+        public async Task OpcSubscribeTest(string address)
         {
             _opc = new OPCUAClient();
             _opc.UserIdentity = new UserIdentity("Administrator", "111111");
@@ -43,28 +44,27 @@ namespace ThingsGateway.Foundation.Tests
             _opc.OPCNode = new() { OPCURL = "opc.tcp://127.0.0.1:49320" };
 
             var MonitorNodeTags = new string[] { address };
-            _opc.AddTagsAndSave(MonitorNodeTags.ToList());
+            _opc.Variables.AddRange(MonitorNodeTags.ToList());
             _opc.OpcStatusChange += Info_OpcStatusChange;
-            _opc.DataChangedHandler = DataReceived;
+            _opc.DataChangedHandler += DataReceived1;
             await _opc.ConnectAsync();
             Assert.True(_opc.Connected);
-            var result = _opc.WriteNode(address, Convert.ChangeType(new Random().Next(100), type));
-            Assert.True(result);
+            var result = await _opc.WriteNodeAsync(address, JToken.Parse(new Random().Next(100).ToString()));
+            Assert.True(result.IsSuccess);
 
             await Task.Delay(2000);
             _opc.Disconnect();
         }
 
-
-
-
-        private void DataReceived(List<(MonitoredItem, MonitoredItemNotification)> obj)
+        private void DataReceived1(List<(NodeId id, DataValue dataValue, JToken jToken)> values)
         {
-            foreach (var item in obj)
+            foreach (var item in values)
             {
-                _output.WriteLine(new { item.Item1.StartNodeId.Identifier, item.Item2.Value.Value }?.ToJson().FormatJson());
+                _output.WriteLine(new { item.id, item.jToken }?.ToJson().FormatJson());
             }
         }
+
+
 
         private void Info_OpcStatusChange(object sender, OPCUAStatusEventArgs e)
         {

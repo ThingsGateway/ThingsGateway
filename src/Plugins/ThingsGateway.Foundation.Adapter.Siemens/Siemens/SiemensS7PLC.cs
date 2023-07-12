@@ -11,11 +11,13 @@
 #endregion
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 using ThingsGateway.Foundation.Extension;
+using ThingsGateway.Foundation.Extension.Generic;
 
 using TouchSocket.Resources;
 
@@ -29,12 +31,12 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
 
         public SiemensS7PLCDataHandleAdapter DataHandleAdapter = new();
         private SiemensEnum _currentPlc = SiemensEnum.S1200;
+        private byte[] ISO_CR;
         private int pdu_length = 0;
         private byte plc_rack = 0;
         private byte plc_slot = 0;
-        private byte[] ISO_CR;
         private byte[] S7_PN;
-        public SiemensEnum CurrentPlc => _currentPlc;
+        private IWaitingClient<TGTcpClient> waitingClient;
         /// <summary>
         /// 传入PLC类型，程序内会改变相应PLC类型的S7协议LocalTSAP， RemoteTSAP等
         /// </summary>
@@ -78,9 +80,45 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
 
             waitingClient = TGTcpClient.GetTGWaitingClient(new());
         }
-        private IWaitingClient<TGTcpClient> waitingClient;
 
+        public SiemensEnum CurrentPlc => _currentPlc;
+        public override string GetAddressDescription()
+        {
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.AppendLine("S7协议寄存器地址格式");
+            stringBuilder.AppendLine("Txxxxx	Timer寄存器，例如T100/T100.1");
+            stringBuilder.AppendLine("Cxxxxx，Counter寄存器，例如C100/C100.1");
+            stringBuilder.AppendLine("AIxxxxx，AI寄存器，例如AI100/AI100.1");
+            stringBuilder.AppendLine("AQxxxxx，AQ寄存器，例如AQ100/AQ100.1");
+            stringBuilder.AppendLine("Ixxxxx，I寄存器，例如I100/I100.1");
+            stringBuilder.AppendLine("Qxxxxx，Q寄存器，例如Q100/Q100.1");
+            stringBuilder.AppendLine("Mxxxxx，M寄存器，例如M100/M100.1");
+            stringBuilder.AppendLine("DBxxxxx，DB寄存器，例如DB100.1/DB100.1.1");
+            stringBuilder.AppendLine("");
 
+            return base.GetAddressDescription() + Environment.NewLine + stringBuilder.ToString();
+        }
+
+        public override int GetBitOffset(string address)
+        {
+            int bitIndex = 0;
+            string[] addressSplits = new string[] { address };
+            if (address.IndexOf('.') > 0)
+            {
+                addressSplits = address.SplitDot();
+                try
+                {
+                    if ((addressSplits.Length == 2 && !address.ToUpper().Contains("DB")) || (addressSplits.Length >= 3 && address.ToUpper().Contains("DB")))
+                        bitIndex = Convert.ToInt32(addressSplits.Last());
+
+                }
+                catch
+                {
+                    return 0;
+                }
+            }
+            return 0;
+        }
         #region 设置
 
         /// <summary>
@@ -214,19 +252,6 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
 
         }
 
-        /// <summary>
-        /// 读取变长字符串
-        /// </summary>
-        public async Task<OperResult<string>> ReadStringAsync(string address, Encoding encoding)
-        {
-            return await SiemensHelper.ReadStringAsync(this, address, encoding);
-        }
-
-        public async Task<OperResult<System.DateTime>> ReadDateTimeAsync(string address)
-        {
-            return ByteTransformHelper.GetResultFromBytes(await ReadAsync(address, 8), ThingsGateway.Foundation.Adapter.Siemens.DateTime.FromByteArray);
-        }
-
         public async Task<OperResult<System.DateTime>> ReadDateAsync(string address)
         {
             return (await this.ReadAsync(address, 2)).
@@ -235,6 +260,18 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
                  );
         }
 
+        public async Task<OperResult<System.DateTime>> ReadDateTimeAsync(string address)
+        {
+            return ByteTransformHelpers.GetResultFromBytes(await ReadAsync(address, 8), ThingsGateway.Foundation.Adapter.Siemens.DateTime.FromByteArray);
+        }
+
+        /// <summary>
+        /// 读取变长字符串
+        /// </summary>
+        public async Task<OperResult<string>> ReadStringAsync(string address, Encoding encoding)
+        {
+            return await SiemensHelper.ReadStringAsync(this, address, encoding);
+        }
         public override void SetDataAdapter()
         {
             DataHandleAdapter = new();
@@ -242,9 +279,10 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
         }
 
 
-        public override Task<OperResult> WriteAsync(string address, string value, Encoding encoding, CancellationToken token = default)
+        public override Task<OperResult> WriteAsync(string address, string value, CancellationToken token = default)
         {
-            return SiemensHelper.WriteAsync(this, address, value, encoding);
+            IThingsGatewayBitConverter transformParameter = ByteTransformHelpers.GetTransByAddress(ref address, ThingsGatewayBitConverter);
+            return SiemensHelper.WriteAsync(this, address, value, transformParameter.Encoding);
         }
 
         public override async Task<OperResult> WriteAsync(string address, byte[] value, CancellationToken token = default)
@@ -307,6 +345,16 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
             }
         }
 
+        public async Task<OperResult> WriteDateAsync(string address, System.DateTime dateTime)
+        {
+            return await base.WriteAsync(address, Convert.ToUInt16((dateTime - ThingsGateway.Foundation.Adapter.Siemens.DateTime.SpecMinimumDateTime).TotalDays));
+        }
+
+        public async Task<OperResult> WriteDateTimeAsync(string address, System.DateTime dateTime)
+        {
+            return await WriteAsync(address, ThingsGateway.Foundation.Adapter.Siemens.DateTime.ToByteArray(dateTime));
+        }
+
         private void Connected(ITcpClient client, MsgEventArgs e)
         {
             try
@@ -332,17 +380,5 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
             }
 
         }
-
-        public async Task<OperResult> WriteDateTimeAsync(string address, System.DateTime dateTime)
-        {
-            return await WriteAsync(address, ThingsGateway.Foundation.Adapter.Siemens.DateTime.ToByteArray(dateTime));
-        }
-
-        public async Task<OperResult> WriteDateAsync(string address, System.DateTime dateTime)
-        {
-            return await base.WriteAsync(address, Convert.ToUInt16((dateTime - ThingsGateway.Foundation.Adapter.Siemens.DateTime.SpecMinimumDateTime).TotalDays));
-        }
-
-
     }
 }

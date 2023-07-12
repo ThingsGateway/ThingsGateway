@@ -20,7 +20,7 @@ public static class AlarmHostServiceHelpers
     /// <summary>
     /// 获取bool报警类型
     /// </summary>
-    public static AlarmEnum GetBoolAlarmCode(CollectVariableRunTime tag, out string limit, out string expressions, out string text)
+    public static AlarmEnum GetBoolAlarmCode(DeviceVariableRunTime tag, out string limit, out string expressions, out string text)
     {
         limit = string.Empty;
         expressions = string.Empty;
@@ -45,7 +45,7 @@ public static class AlarmHostServiceHelpers
     /// <summary>
     /// 获取value报警类型
     /// </summary>
-    public static AlarmEnum GetDecimalAlarmDegree(CollectVariableRunTime tag, out string limit, out string expressions, out string text)
+    public static AlarmEnum GetDecimalAlarmDegree(DeviceVariableRunTime tag, out string limit, out string expressions, out string text)
     {
         limit = string.Empty;
         expressions = string.Empty;

@@ -61,7 +61,7 @@ namespace ThingsGateway.Web.Rcl.Core
 
         //public APPThemeOptions Light { get; set; } = new();
 
-        //public void DefalutThemes()
+        //public void DefaultThemes()
         //{
         //    Dark.UserDefined.Add("barColor", "#1e1e1e");
         //    Dark.Accent = "#FF4081";

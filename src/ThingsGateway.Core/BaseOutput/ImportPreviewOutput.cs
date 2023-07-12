@@ -19,7 +19,7 @@ public class ImportPreviewOutputBase
     /// </summary>
     public bool HasError { get; set; }
     public virtual int DataCount { get; }
-    public string ErrorStr { get; set; }
+    public virtual List<(int row, bool isSuccess, string resultString)> Results { get; set; } = new();
 }
 public class ImportPreviewOutput<T> : ImportPreviewOutputBase where T : class
 {

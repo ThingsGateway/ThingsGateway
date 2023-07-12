@@ -24,6 +24,7 @@ using System.Linq;
 using System.Reflection;
 
 using ThingsGateway.Core;
+using ThingsGateway.Core.Extension;
 
 using TouchSocket.Core;
 
@@ -31,7 +32,7 @@ namespace ThingsGateway.Web.Foundation;
 
 /// <inheritdoc cref="IVariableService"/>
 [Injection(Proxy = typeof(OperDispatchProxy))]
-public class VariableService : DbRepository<CollectDeviceVariable>, IVariableService
+public class VariableService : DbRepository<DeviceVariable>, IVariableService
 {
     private readonly SysCacheService _sysCacheService;
     private readonly ICollectDeviceService _collectDeviceService;
@@ -56,7 +57,7 @@ public class VariableService : DbRepository<CollectDeviceVariable>, IVariableSer
 
     /// <inheritdoc/>
     [OperDesc("添加变量")]
-    public async Task AddAsync(CollectDeviceVariable input)
+    public async Task AddAsync(DeviceVariable input)
     {
         var account_Id = GetIdByName(input.Name);
         if (account_Id > 0)
@@ -65,14 +66,14 @@ public class VariableService : DbRepository<CollectDeviceVariable>, IVariableSer
     }
 
     /// <inheritdoc/>
-    public long GetIdByName(string name, bool onlyCache = true)
+    public long GetIdByName(string name, bool onlyCache = false)
     {
         //先从Cache拿
         var id = _sysCacheService.Get<long>(ThingsGatewayCacheConst.Cache_DeviceVariableName, name);
         if (id == 0 && !onlyCache)
         {
             //单查获取对应ID
-            id = Context.Queryable<CollectDeviceVariable>().Where(it => it.Name == name).Select(it => it.Id).First();
+            id = Context.Queryable<DeviceVariable>().Where(it => it.Name == name).Select(it => it.Id).First();
             if (id != 0)
             {
                 //插入Cache
@@ -89,7 +90,7 @@ public class VariableService : DbRepository<CollectDeviceVariable>, IVariableSer
         if (name.IsNullOrEmpty() && !onlyCache)
         {
             //单查获取用户账号对应ID
-            name = Context.Queryable<CollectDeviceVariable>().Where(it => it.Id == Id).Select(it => it.Name).First();
+            name = Context.Queryable<DeviceVariable>().Where(it => it.Id == Id).Select(it => it.Name).First();
             if (!name.IsNullOrEmpty())
             {
                 //插入Cache
@@ -117,10 +118,20 @@ public class VariableService : DbRepository<CollectDeviceVariable>, IVariableSer
     }
 
     /// <inheritdoc/>
-    [OperDesc("清空变量")]
-    public async Task ClearAsync()
+    [OperDesc("清空设备变量")]
+    public async Task ClearDeviceVariableAsync()
     {
-        var result = await Context.Deleteable<CollectDeviceVariable>().ExecuteCommandAsync() > 0;
+        var result = await Context.Deleteable<DeviceVariable>(a => a.IsMemoryVariable != true || a.IsMemoryVariable == null).ExecuteCommandAsync() > 0;
+        if (result)
+        {
+            DeleteVariableFromCache(null);
+        }
+    }
+    /// <inheritdoc/>
+    [OperDesc("清空中间变量")]
+    public async Task ClearMemoryVariableAsync()
+    {
+        var result = await Context.Deleteable<DeviceVariable>(a => a.IsMemoryVariable == true).ExecuteCommandAsync() > 0;
         if (result)
         {
             DeleteVariableFromCache(null);
@@ -154,7 +165,7 @@ public class VariableService : DbRepository<CollectDeviceVariable>, IVariableSer
 
     /// <inheritdoc/>
     [OperDesc("编辑变量")]
-    public async Task EditAsync(CollectDeviceVariable input)
+    public async Task EditAsync(DeviceVariable input)
     {
         var account_Id = GetIdByName(input.Name);
         if (account_Id > 0 && account_Id != input.Id)
@@ -165,102 +176,134 @@ public class VariableService : DbRepository<CollectDeviceVariable>, IVariableSer
     }
 
     /// <inheritdoc/>
-    public async Task<SqlSugarPagedList<CollectDeviceVariable>> PageAsync(VariablePageInput input)
+    public async Task<SqlSugarPagedList<DeviceVariable>> PageAsync(VariablePageInput input)
+    {
+        var query = GetPage(input);
+        long? uploadDevid = null;
+        if (!string.IsNullOrEmpty(input.UploadDeviceName))
+        {
+            uploadDevid = _uploadDeviceService.GetIdByName(input.UploadDeviceName);
+        }
+        if (!string.IsNullOrEmpty(input.UploadDeviceName))
+        {
+            var pageInfo = await query.ToPagedListAsync(input.Current, input.Size, a => a.VariablePropertys.ContainsKey(uploadDevid ?? 0));//分页
+            return pageInfo;
+
+        }
+        else
+        {
+            var pageInfo = await query.ToPagedListAsync(input.Current, input.Size);//分页
+            return pageInfo;
+        }
+
+    }
+
+    /// <inheritdoc/>
+    private ISugarQueryable<DeviceVariable> GetPage(VariablePageInput input)
     {
         long? devid = 0;
+
         if (!string.IsNullOrEmpty(input.DeviceName))
         {
             devid = _collectDeviceService.GetIdByName(input.DeviceName);
         }
-        var query = Context.Queryable<CollectDeviceVariable>()
+
+        var query = Context.Queryable<DeviceVariable>()
          .WhereIF(!string.IsNullOrEmpty(input.Name), u => u.Name.Contains(input.Name))
          .WhereIF(!string.IsNullOrEmpty(input.VariableAddress), u => u.VariableAddress.Contains(input.VariableAddress))
          .WhereIF(!string.IsNullOrEmpty(input.DeviceName), u => u.DeviceId == (devid ?? 0))
+         .Where(u => u.IsMemoryVariable == input.IsMemoryVariable || (u.IsMemoryVariable == null && input.IsMemoryVariable != true))
          .OrderByIF(!string.IsNullOrEmpty(input.SortField), $"{input.SortField} {input.SortOrder}")
          .OrderBy(u => u.Id)//排序
-         .Select((u) => new CollectDeviceVariable { Id = u.Id.SelectAll() })
+         .Select((u) => new DeviceVariable { Id = u.Id.SelectAll() })
             ;
-        var pageInfo = await query.ToPagedListAsync(input.Current, input.Size);//分页
-        return pageInfo;
+
+        return query;
     }
 
 
     /// <inheritdoc/>
-    public async Task<List<CollectVariableRunTime>> GetCollectDeviceVariableRuntimeAsync(long devId = 0)
+    public async Task<List<DeviceVariableRunTime>> GetDeviceVariableRuntimeAsync(long devId = 0)
     {
         if (devId == 0)
         {
-            var deviceVariables = await GetListAsync();
-            var runtime = deviceVariables.Adapt<List<CollectVariableRunTime>>();
+            var deviceVariables = await GetListAsync(a => a.IsMemoryVariable != true || a.IsMemoryVariable == null);
+            var runtime = deviceVariables.Adapt<List<DeviceVariableRunTime>>();
             return runtime;
         }
         else
         {
-            var deviceVariables = await GetListAsync(a => a.DeviceId == devId);
-            var runtime = deviceVariables.Adapt<List<CollectVariableRunTime>>();
+            var deviceVariables = await GetListAsync(a => a.DeviceId == devId && (a.IsMemoryVariable != true || a.IsMemoryVariable == null));
+            var runtime = deviceVariables.Adapt<List<DeviceVariableRunTime>>();
             return runtime;
         }
 
     }
-
-
-
+    /// <inheritdoc/>
+    public async Task<List<DeviceVariableRunTime>> GetMemoryVariableRuntimeAsync()
+    {
+        var deviceVariables = await GetListAsync(a => a.IsMemoryVariable == true);
+        var runtime = deviceVariables.Adapt<List<DeviceVariableRunTime>>();
+        return runtime;
+    }
 
     #region 导入导出
-
-    //查找出列表中的所有重复元素及其重复次数
-    private static bool QueryRepeatElementAndCountOfList(IEnumerable<IDictionary<string, object>> list)
+    /// <inheritdoc/>
+    public async Task<MemoryStream> ExportFileAsync(VariablePageInput input)
     {
-        if (list != null && list.Any(a => a != null))
+        var query = GetPage(input);
+        long? uploadDevid = null;
+        if (!string.IsNullOrEmpty(input.UploadDeviceName))
         {
-            var des = typeof(CollectDeviceVariable).GetDescription(nameof(CollectDeviceVariable.Name));
-            var result = list.GroupBy(x => x[des]?.ToString())
-               .Any(g => g.Count() > 1);
-            return result;
-            // DicTmp = list.GroupBy(x => ((ExpandoObject)x).ConvertToEntity<CollectDeviceVariable>().Name)
-            //              .Where(g => g.Count() > 1)
-            //.ToDictionary(x => x.Key, y => y.Count());
+            uploadDevid = _uploadDeviceService.GetIdByName(input.UploadDeviceName);
+        }
+        if (!string.IsNullOrEmpty(input.UploadDeviceName))
+        {
+            var data = await query.ToListAsync();
+            if (input.IsMemoryVariable == true)
+            {
+                return await MemoryVariableExportFileAsync(data.Where(a => a.VariablePropertys.ContainsKey(uploadDevid ?? 0)).ToList().Adapt<List<MemoryVariable>>());
+            }
+            else
+            {
+                return await ExportFileAsync(data.Where(a => a.VariablePropertys.ContainsKey(uploadDevid ?? 0)).ToList());
+            }
+
         }
         else
         {
-            return false;
+            var data = await query.ToListAsync();
+            if (input.IsMemoryVariable == true)
+            {
+                return await MemoryVariableExportFileAsync(data.Adapt<List<MemoryVariable>>());
+            }
+            else
+            {
+                return await ExportFileAsync(data);
+            }
         }
+
     }
 
-    /// <summary>
-    /// 插件前置名称
-    /// </summary>
-    public const string PluginLeftName = "ThingsGateway.";
-    /// <summary>
-    /// 设备表名称
-    /// </summary>
-    public const string CollectDeviceSheetName = "变量";
     /// <inheritdoc/>
     [OperDesc("导出变量表", IsRecordPar = false)]
-    public async Task<MemoryStream> ExportFileAsync()
+    public async Task<MemoryStream> MemoryVariableExportFileAsync(List<MemoryVariable> devDatas = null)
     {
-
-        var devDatas = await GetListAsync();
-        return await ExportFileAsync(devDatas);
-    }
-    /// <inheritdoc/>
-    [OperDesc("导出变量表", IsRecordPar = false)]
-    public async Task<MemoryStream> ExportFileAsync(List<CollectDeviceVariable> collectDeviceVariables)
-    {
-
-        var devDatas = collectDeviceVariables;
+        devDatas ??= (await GetListAsync(a => a.IsMemoryVariable == true)).Adapt<List<MemoryVariable>>();
 
         //总数据
         Dictionary<string, object> sheets = new Dictionary<string, object>();
-        //设备页
+        //变量页
         List<Dictionary<string, object>> devExports = new();
-        //设备附加属性，转成Dict<表名,List<Dict<列名，列数据>>>的形式
+        //变量附加属性，转成Dict<表名,List<Dict<列名，列数据>>>的形式
         Dictionary<string, List<Dictionary<string, object>>> devicePropertys = new();
-        foreach (var devData in devDatas)//Parallel.ForEach无序体验不好
+        await devDatas.ForeachAsync(devData =>
         {
-            //设备页
+            #region 变量sheet
+            //变量页
             var data = devData.GetType().GetAllProps().Where(a => a.GetCustomAttribute<ExcelAttribute>() != null);
             Dictionary<string, object> devExport = new();
+
             foreach (var item in data)
             {
                 //描述
@@ -269,50 +312,17 @@ public class VariableService : DbRepository<CollectDeviceVariable>, IVariableSer
                 devExport.Add(desc ?? item.Name, item.GetValue(devData)?.ToString());
             }
 
-            //设备实体没有包含名称，手动插入
-            devExport.Add("设备", _collectDeviceService.GetNameById(devData.DeviceId));
 
-            //添加完整设备信息
+            //添加完整变量信息
             devExports.Add(devExport);
 
+            #endregion
 
-            foreach (var item in devData.VariablePropertys ?? new())
-            {
-                //插件属性
-                //单个设备的行数据
-                Dictionary<string, object> driverInfo = new Dictionary<string, object>();
-                foreach (var item1 in item.Value)
-                {
-                    //添加对应属性数据
-                    driverInfo.Add(item1.Description, item1.Value);
-                }
-
-                //没有包含设备名称，手动插入
-                driverInfo.Add("变量", devData.Name);
-                var uploadDevice = _uploadDeviceService.GetDeviceById(item.Key);
-                if (uploadDevice != null)
-                {
-                    driverInfo.Add("上传设备", uploadDevice?.Name);
-
-                    //插件名称去除首部ThingsGateway.作为表名
-                    var pluginName = _driverPluginService.GetNameById(uploadDevice.PluginId).Replace(PluginLeftName, "");
-                    if (devicePropertys.ContainsKey(pluginName))
-                    {
-                        devicePropertys[pluginName].Add(driverInfo);
-                    }
-                    else
-                    {
-                        devicePropertys.Add(pluginName, new() { driverInfo });
-                    }
-                }
-
-
-            }
-
-        }
+            return Task.CompletedTask;
+        });
 
         //添加设备页
-        sheets.Add(CollectDeviceSheetName, devExports);
+        sheets.Add(ExportHelpers.DeviceVariableSheetName, devExports);
         //添加插件属性页
         foreach (var item in devicePropertys)
         {
@@ -324,10 +334,163 @@ public class VariableService : DbRepository<CollectDeviceVariable>, IVariableSer
         return memoryStream;
     }
 
-    private static IEnumerable<T> Page<T>(IEnumerable<T> en, int pageSize, int page)
+    /// <inheritdoc/>
+    [OperDesc("导出变量表", IsRecordPar = false)]
+    public async Task<MemoryStream> ExportFileAsync(List<DeviceVariable> devDatas = null)
     {
-        return en.Skip(page * pageSize).Take(pageSize);
+        devDatas ??= await GetListAsync(a => a.IsMemoryVariable != true || a.IsMemoryVariable == null);
+
+        //总数据
+        Dictionary<string, object> sheets = new Dictionary<string, object>();
+        //变量页
+        List<Dictionary<string, object>> devExports = new();
+        //变量附加属性，转成Dict<表名,List<Dict<列名，列数据>>>的形式
+        Dictionary<string, List<Dictionary<string, object>>> devicePropertys = new();
+        await devDatas.ForeachAsync(devData =>
+    {
+        #region 变量sheet
+        //变量页
+        var data = devData.GetType().GetAllProps().Where(a => a.GetCustomAttribute<ExcelAttribute>() != null);
+        Dictionary<string, object> devExport = new();
+        //变量实体没有包含设备名称，手动插入
+        devExport.Add(ExportHelpers.DeviceName, _collectDeviceService.GetNameById(devData.DeviceId));
+
+        foreach (var item in data)
+        {
+            //描述
+            var desc = ObjectExtensions.FindDisplayAttribute(item);
+            //数据源增加
+            devExport.Add(desc ?? item.Name, item.GetValue(devData)?.ToString());
+        }
+
+
+        //添加完整变量信息
+        devExports.Add(devExport);
+
+        #endregion
+        #region 上传插件属性
+        foreach (var item in devData.VariablePropertys ?? new())
+        {
+            //插件属性
+            //单个设备的行数据
+            Dictionary<string, object> driverInfo = new Dictionary<string, object>();
+            var uploadDevice = _uploadDeviceService.GetDeviceById(item.Key);
+            driverInfo.Add(ExportHelpers.UploadDeviceSheetName, uploadDevice?.Name);
+            //没有包含变量名称，手动插入
+            driverInfo.Add(ExportHelpers.DeviceVariableSheetName, devData.Name);
+            foreach (var item1 in item.Value)
+            {
+                //添加对应属性数据
+                driverInfo.Add(item1.Description, item1.Value);
+            }
+
+            if (uploadDevice != null)
+            {
+                //插件名称去除首部ThingsGateway.作为表名
+                var pluginName = _driverPluginService.GetNameById(uploadDevice.PluginId).Replace(ExportHelpers.PluginLeftName, "");
+                if (devicePropertys.ContainsKey(pluginName))
+                {
+                    devicePropertys[pluginName].Add(driverInfo);
+                }
+                else
+                {
+                    devicePropertys.Add(pluginName, new() { driverInfo });
+                }
+            }
+
+
+        }
+        #endregion
+
+        return Task.CompletedTask;
+    });
+
+        //添加设备页
+        sheets.Add(ExportHelpers.DeviceVariableSheetName, devExports);
+        //添加插件属性页
+        foreach (var item in devicePropertys)
+        {
+            sheets.Add(item.Key, item.Value);
+        }
+
+        var memoryStream = new MemoryStream();
+        await memoryStream.SaveAsAsync(sheets);
+        return memoryStream;
     }
+
+    /// <inheritdoc/>
+    public async Task<Dictionary<string, ImportPreviewOutputBase>> MemoryVariablePreviewAsync(IBrowserFile file)
+    {
+        _fileService.ImportVerification(file);
+        using var fs = new MemoryStream();
+        using var stream = file.OpenReadStream(512000000);
+        await stream.CopyToAsync(fs);
+        var sheetNames = MiniExcel.GetSheetNames(fs);
+
+        var deviceVariables = await GetListAsync();
+        foreach (var item in deviceVariables)
+        {
+            _sysCacheService.Set(ThingsGatewayCacheConst.Cache_DeviceVariableName, item.Name, item.Id);
+            _sysCacheService.Set(ThingsGatewayCacheConst.Cache_DeviceVariableId, item.Id.ToString(), item.Name);
+        }
+
+        //导入检验结果
+        Dictionary<string, ImportPreviewOutputBase> ImportPreviews = new();
+        //设备页
+        ImportPreviewOutput<DeviceVariable> deviceImportPreview = new();
+        int row = 1;
+        foreach (var sheetName in sheetNames)
+        {
+            //单页数据
+            var rows = fs.Query(useHeaderRow: true, sheetName: sheetName, configuration: new OpenXmlConfiguration { EnableSharedStringCache = false })
+                .Cast<IDictionary<string, object>>();
+
+            if (sheetName == ExportHelpers.DeviceVariableSheetName)
+            {
+                ImportPreviewOutput<DeviceVariable> importPreviewOutput = new();
+                ImportPreviews.Add(sheetName, importPreviewOutput);
+                deviceImportPreview = importPreviewOutput;
+
+
+                List<DeviceVariable> devices = new List<DeviceVariable>();
+                await rows.ForeachAsync(item =>
+                {
+                    try
+                    {
+                        var device = ((ExpandoObject)item).ConvertToEntity<DeviceVariable>(true);
+                        devices.Add(device);
+
+                        //var hasDup = rows.HasDuplicateElements<DeviceVariable>(nameof(DeviceVariable.Name), device.Name);
+                        //var hasName = GetIdByName(device.Name) > 0;
+                        //if (hasDup || hasName)
+                        //{
+                        //    importPreviewOutput.HasError = true;
+                        //    importPreviewOutput.Results.Add((false, "名称重复"));
+                        //    return Task.CompletedTask;
+                        //}
+                        //变量ID都需要手动补录
+                        device.Id = this.GetIdByName(device.Name, true) == 0 ? YitIdHelper.NextId() : this.GetIdByName(device.Name, true);
+                        importPreviewOutput.Results.Add((row++, true, "成功"));
+                        return Task.CompletedTask;
+                    }
+                    catch (Exception ex)
+                    {
+                        importPreviewOutput.HasError = true;
+                        importPreviewOutput.Results.Add((row++, false, ex.Message));
+                        return Task.CompletedTask;
+                    }
+                });
+
+                importPreviewOutput.Data = devices;
+
+            }
+        }
+
+
+
+        return ImportPreviews;
+    }
+
 
     /// <inheritdoc/>
     public async Task<Dictionary<string, ImportPreviewOutputBase>> PreviewAsync(IBrowserFile file)
@@ -348,46 +511,63 @@ public class VariableService : DbRepository<CollectDeviceVariable>, IVariableSer
         //导入检验结果
         Dictionary<string, ImportPreviewOutputBase> ImportPreviews = new();
         //设备页
-        ImportPreviewOutput<CollectDeviceVariable> deviceImportPreview = new();
+        ImportPreviewOutput<DeviceVariable> deviceImportPreview = new();
+        int row = 1;
         foreach (var sheetName in sheetNames)
         {
             //单页数据
             var rows = fs.Query(useHeaderRow: true, sheetName: sheetName, configuration: new OpenXmlConfiguration { EnableSharedStringCache = false })
                 .Cast<IDictionary<string, object>>();
 
-            if (sheetName == CollectDeviceSheetName)
+            if (sheetName == ExportHelpers.DeviceVariableSheetName)
             {
-                ImportPreviewOutput<CollectDeviceVariable> importPreviewOutput = new();
+                ImportPreviewOutput<DeviceVariable> importPreviewOutput = new();
                 ImportPreviews.Add(sheetName, importPreviewOutput);
                 deviceImportPreview = importPreviewOutput;
 
-                var result = QueryRepeatElementAndCountOfList(rows);
-                if (result)
-                {
-                    throw new Exception("发现重复变量名称");
-                }
-                ConcurrentList<CollectDeviceVariable> devices = new ConcurrentList<CollectDeviceVariable>();
-                foreach (var item in rows)//Parallel.ForEach无序体验不好
-                {
-                    var device = ((ExpandoObject)item).ConvertToEntity<CollectDeviceVariable>();
-                    devices.Add(device);
-                    //转化设备名称
-                    var value = item.FirstOrDefault(a => a.Key == "设备");
-                    if (_collectDeviceService.GetIdByName(value.Value.ToString()) == null)
-                    {
-                        //找不到对应的设备
-                        importPreviewOutput.HasError = true;
-                        importPreviewOutput.ErrorStr = "设备名称不存在";
-                        return ImportPreviews;
-                    }
-                    else
-                    {
-                        //插件ID和设备ID都需要手动补录
-                        device.DeviceId = _collectDeviceService.GetIdByName(value.Value.ToString()).ToLong();
-                        device.Id = this.GetIdByName(device.Name) == 0 ? YitIdHelper.NextId() : this.GetIdByName(device.Name);
-                    }
 
-                }
+                List<DeviceVariable> devices = new List<DeviceVariable>();
+                await rows.ForeachAsync(item =>
+                {
+                    try
+                    {
+                        var device = ((ExpandoObject)item).ConvertToEntity<DeviceVariable>(true);
+                        devices.Add(device);
+
+                        //var hasDup = rows.HasDuplicateElements<DeviceVariable>(nameof(DeviceVariable.Name), device.Name);
+                        //var hasName = GetIdByName(device.Name) > 0;
+                        //if (hasDup || hasName)
+                        //{
+                        //    importPreviewOutput.HasError = true;
+                        //    importPreviewOutput.Results.Add((false, "名称重复"));
+                        //    return Task.CompletedTask;
+                        //}
+                        //转化设备名称
+                        var deviceName = item.FirstOrDefault(a => a.Key == ExportHelpers.DeviceName).Value;
+                        if (_collectDeviceService.GetIdByName(deviceName.ToString()) == null)
+                        {
+                            //找不到对应的设备
+                            importPreviewOutput.HasError = true;
+                            importPreviewOutput.Results.Add((row++, false, $"{deviceName}设备不存在"));
+                            return Task.CompletedTask;
+                        }
+                        else
+                        {
+                            //变量ID和设备ID都需要手动补录
+                            device.DeviceId = _collectDeviceService.GetIdByName(deviceName.ToString()).ToLong();
+                            device.Id = this.GetIdByName(device.Name, true) == 0 ? YitIdHelper.NextId() : this.GetIdByName(device.Name, true);
+                        }
+
+                        importPreviewOutput.Results.Add((row++, true, "成功"));
+                        return Task.CompletedTask;
+                    }
+                    catch (Exception ex)
+                    {
+                        importPreviewOutput.HasError = true;
+                        importPreviewOutput.Results.Add((row++, false, ex.Message));
+                        return Task.CompletedTask;
+                    }
+                });
 
                 importPreviewOutput.Data = devices;
 
@@ -395,57 +575,75 @@ public class VariableService : DbRepository<CollectDeviceVariable>, IVariableSer
             else
             {
                 //插件属性需加上前置名称
-                var newName = PluginLeftName + sheetName;
+                var newName = ExportHelpers.PluginLeftName + sheetName;
                 var pluginId = _driverPluginService.GetIdByName(newName);
-                if (pluginId == null)
+
+                try
+                {
+                    if (pluginId == null)
+                    {
+                        deviceImportPreview.HasError = true;
+                        deviceImportPreview.Results.Add((row++, false, $"插件{newName}不存在"));
+                        continue;
+                    }
+
+                    var driverPlugin = _driverPluginService.GetDriverPluginById(pluginId.Value);
+                    using var serviceScope = _scopeFactory.CreateScope();
+                    var pluginSingletonService = serviceScope.ServiceProvider.GetService<PluginSingletonService>();
+                    var driver = (UpLoadBase)pluginSingletonService.GetDriver(YitIdHelper.NextId(), driverPlugin);
+                    var propertys = driver.VariablePropertys.GetType().GetAllProps().Where(a => a.GetCustomAttribute<VariablePropertyAttribute>() != null);
+                    await rows.ForeachAsync(item =>
+                        {
+                            try
+                            {
+
+                                List<DependencyProperty> devices = new List<DependencyProperty>();
+                                foreach (var item1 in item)
+                                {
+                                    var propertyInfo = propertys.FirstOrDefault(p => p.FindDisplayAttribute(a => a.GetCustomAttribute<VariablePropertyAttribute>()?.Description) == item1.Key);
+                                    if (propertyInfo == null)
+                                    {
+                                        //不存在时不报错
+                                    }
+                                    else
+                                    {
+                                        devices.Add(new()
+                                        {
+                                            PropertyName = propertyInfo.Name,
+                                            Description = item1.Key.ToString(),
+                                            Value = item1.Value?.ToString()
+                                        });
+                                    }
+
+                                }
+                                //转化插件名称
+                                var variableName = item.FirstOrDefault(a => a.Key == ExportHelpers.DeviceVariableSheetName).Value?.ToString();
+                                var uploadDevName = item.FirstOrDefault(a => a.Key == ExportHelpers.UploadDeviceSheetName).Value?.ToString();
+
+                                var uploadDevice = _uploadDeviceService.GetCacheList().FirstOrDefault(a => a.Name == uploadDevName);
+
+                                if (deviceImportPreview.Data?.Any(it => it.Name == variableName) == true && uploadDevice != null)
+                                {
+                                    var id = this.GetIdByName(variableName, true);
+                                    var deviceId = id != 0 ? id : deviceImportPreview.Data.FirstOrDefault(it => it.Name == variableName).Id;
+                                    deviceImportPreview?.Data?.FirstOrDefault(a => a.Id == deviceId)?.VariablePropertys?.AddOrUpdate(uploadDevice.Id, devices);
+                                }
+                                deviceImportPreview.Results.Add((row++, true, "成功"));
+                                return Task.CompletedTask;
+                            }
+                            catch (Exception ex)
+                            {
+                                deviceImportPreview.HasError = true;
+                                deviceImportPreview.Results.Add((row++, false, ex.Message));
+                                return Task.CompletedTask;
+                            }
+                        });
+                }
+                catch (Exception ex)
                 {
                     deviceImportPreview.HasError = true;
-                    deviceImportPreview.ErrorStr = deviceImportPreview.ErrorStr + Environment.NewLine + $"设备{newName}不存在";
-                    return ImportPreviews;
+                    deviceImportPreview.Results.Add((row++, false, ex.Message));
                 }
-
-                var driverPlugin = _driverPluginService.GetDriverPluginById(pluginId.Value);
-                using var serviceScope = _scopeFactory.CreateScope();
-                var pluginSingletonService = serviceScope.ServiceProvider.GetService<PluginSingletonService>();
-                var driver = (UpLoadBase)pluginSingletonService.GetDriver(YitIdHelper.NextId(), driverPlugin);
-                var propertys = driver.VariablePropertys.GetType().GetAllProps().Where(a => a.GetCustomAttribute<VariablePropertyAttribute>() != null);
-                foreach (var item in rows)
-                {
-
-                    List<DependencyProperty> devices = new List<DependencyProperty>();
-                    foreach (var item1 in item)
-                    {
-                        var propertyInfo = propertys.FirstOrDefault(p => p.FindDisplayAttribute(a => a.GetCustomAttribute<VariablePropertyAttribute>()?.Name) == item1.Key);
-                        if (propertyInfo == null)
-                        {
-                            //不存在时不报错
-                        }
-                        else
-                        {
-                            devices.Add(new()
-                            {
-                                PropertyName = propertyInfo.Name,
-                                Description = item1.Key.ToString(),
-                                Value = item1.Value?.ToString()
-                            });
-                        }
-
-                    }
-                    //转化插件名称
-                    var variableName = item.FirstOrDefault(a => a.Key == "变量").Value?.ToString();
-                    var uploadDevName = item.FirstOrDefault(a => a.Key == "上传设备").Value?.ToString();
-
-                    var uploadDevice = _uploadDeviceService.GetCacheList().FirstOrDefault(a => a.Name == uploadDevName);
-
-                    if (deviceImportPreview.Data?.Any(it => it.Name == variableName) == true && uploadDevice != null)
-                    {
-                        var id = this.GetIdByName(variableName);
-                        var deviceId = id != 0 ? id : deviceImportPreview.Data.FirstOrDefault(it => it.Name == variableName).Id;
-                        deviceImportPreview?.Data?.FirstOrDefault(a => a.Id == deviceId)?.VariablePropertys?.AddOrUpdate(uploadDevice.Id, devices);
-                    }
-
-                }
-
             }
         }
 
@@ -455,16 +653,16 @@ public class VariableService : DbRepository<CollectDeviceVariable>, IVariableSer
     }
 
     /// <inheritdoc/>
-    [OperDesc("导入采集设备表", IsRecordPar = false)]
+    [OperDesc("导入变量表", IsRecordPar = false)]
     public async Task ImportAsync(Dictionary<string, ImportPreviewOutputBase> input)
     {
-        var collectDevices = new List<CollectDeviceVariable>();
+        var collectDevices = new List<DeviceVariable>();
         foreach (var item in input)
         {
-            if (item.Key == CollectDeviceSheetName)
+            if (item.Key == ExportHelpers.DeviceVariableSheetName)
             {
-                var collectDeviceImports = ((ImportPreviewOutput<CollectDeviceVariable>)item.Value).Data;
-                collectDevices = collectDeviceImports.Adapt<List<CollectDeviceVariable>>();
+                var collectDeviceImports = ((ImportPreviewOutput<DeviceVariable>)item.Value).Data;
+                collectDevices = collectDeviceImports.Adapt<List<DeviceVariable>>();
                 break;
             }
         }
@@ -487,6 +685,8 @@ public class VariableService : DbRepository<CollectDeviceVariable>, IVariableSer
         DeleteVariableFromCache();
 
     }
+
+
 
     #endregion
 

@@ -31,6 +31,10 @@ public interface IThingsGatewayBitConverter
     /// <inheritdoc/>
     [JsonIgnore]
     Encoding Encoding { get; set; }
+    /// <inheritdoc/>
+    BcdFormat? BcdFormat { get; set; }
+    /// <inheritdoc/>
+    int StringLength { get; set; }
     /// <summary>
     /// 获取或设置在解析字符串的时候是否将字节按照字单位反转
     /// </summary>
@@ -45,12 +49,6 @@ public interface IThingsGatewayBitConverter
     #endregion Public Properties
 
     #region GetBytes
-
-    /// <inheritdoc/>
-    byte[] GetBytes(string value, BcdFormat bcdFormat);
-
-    /// <inheritdoc/>
-    byte[] GetBytes(string value, int length, BcdFormat bcdFormat);
 
     /// <summary>
     /// bool变量转化缓存数据，一般来说单bool只能转化为0x01 或是 0x00<br />
@@ -145,14 +143,6 @@ public interface IThingsGatewayBitConverter
     /// <returns>buffer数据</returns>
     byte[] GetBytes(string value);
 
-    /// <summary>
-    /// 使用指定的编码字符串转化缓存数据，指定转换之后的字节长度信息<br />
-    /// </summary>
-    /// <param name="value">等待转化的数据</param>
-    /// <param name="length">转换之后的数据长度</param>
-    /// <returns>buffer数据</returns>
-    byte[] GetBytes(string value, int length);
-
     #endregion GetBytes
 
     /// <summary>
@@ -163,15 +153,7 @@ public interface IThingsGatewayBitConverter
 
     #region ToValue
 
-    /// <summary>
-    /// 从缓存中提取bcdstring结果，使用指定的编码将全部的缓存转为字符串<br />
-    /// </summary>
-    string ToBcdString(byte[] buffer, BcdFormat bcdFormat);
 
-    /// <summary>
-    /// 从缓存中的部分字节数组转化为bcdstring结果，使用指定的编码，指定起始的字节索引，字节长度信息。<br />
-    /// </summary>
-    string ToBcdString(byte[] buffer, int offset, int length, BcdFormat bcdFormat);
 
     /// <summary>
     /// 从缓存中提取出bool结果，需要传入想要提取的位索引，注意：是从0开始的位索引，10则表示 buffer[1] 的第二位。<br />

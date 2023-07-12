@@ -10,10 +10,12 @@
 //------------------------------------------------------------------------------
 #endregion
 
+using ThingsGateway.Foundation;
+
 namespace ThingsGateway.Web.Foundation;
 
 /// <summary>
-/// 设备方法的特性说明
+/// 设备方法的特性说明,注意方法返回值必须继承<see cref="OperResult"/>
 /// <br></br>
 /// 继承<see cref="CollectBase"/>的驱动插件，在需主动暴露的方法中加上这个特性<see cref="DeviceMethodAttribute"/>
 /// </summary>
@@ -23,15 +25,15 @@ public class DeviceMethodAttribute : Attribute
     /// <summary>
     /// 名称
     /// </summary>
-    public string Name { get; }
+    public string Description { get; }
     /// <summary>
     /// 描述
     /// </summary>
-    public string Description { get; }
+    public string Remark { get; }
     /// <inheritdoc cref="DeviceMethodAttribute"/>
-    public DeviceMethodAttribute(string name, string desc = "")
+    public DeviceMethodAttribute(string desc, string remark = "")
     {
-        Name = name;
         Description = desc;
+        Remark = remark;
     }
 }

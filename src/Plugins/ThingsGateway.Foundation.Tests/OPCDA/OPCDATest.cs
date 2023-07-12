@@ -53,9 +53,9 @@ namespace ThingsGateway.Foundation.Tests
         [InlineData("test1.DWord2")] //kep
         public async Task OpcSubscribeTest(string address)
         {
-            _opc = new OPCDAClient(new EasyLogger(Log_Out));
+            _opc = new OPCDAClient(new TGEasyLogger(Log_Out));
             _opc.Init(new OPCNode() { OPCName = "Kepware.KEPServerEX.V6", CheckRate = 5000, ActiveSubscribe = true });
-            _opc.AddTagsAndSave(new List<string> { address });
+            _opc.SetTags(new List<string> { address });
             _opc.DataChangedHandler += Info_DataChangedHandler;
             _opc.Connect();
             Assert.True(_opc.IsConnected);

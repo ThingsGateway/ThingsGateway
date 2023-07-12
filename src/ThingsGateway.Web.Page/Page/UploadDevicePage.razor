@@ -84,9 +84,23 @@
 
                         </ChildContent>
                     </MMenu>
-                    <MButton Class="my-1  mx-2" Loading=@isDownExport OnClick=DownDeviceExport Color="primary">
-                        @T("导出")
-                    </MButton>
+                    <MMenu OffsetY Context="menu">
+                        <ActivatorContent>
+                            <MButton @attributes="@menu.Attrs" Color="primary"
+                                     Icon="@MasaBlazor.Breakpoint.SmAndDown"
+                                     Class="my-1  mx-2 ">
+                                @T("导出")
+                                <AppChevronDown></AppChevronDown>
+                            </MButton>
+                        </ActivatorContent>
+                        <ChildContent>
+                            <MList>
+                                <MListItem OnClick="()=>DownDeviceExport()"> @T("导出全部") </MListItem>
+                                <MListItem OnClick="()=>DownDeviceExport(search)">  @T("导出搜索项") </MListItem>
+                            </MList>
+
+                        </ChildContent>
+                    </MMenu>
                     <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("tguploaddeviceedit")) Class="my-1  mx-2" OnClick="()=>{ ImportExcel.Step=1;  ImportExcel.IsShowImport=true;}" Color="primary">
                         @T("导入")
                     </MButton>
@@ -131,83 +145,10 @@
 
 <ImportExcel @ref=ImportExcel Import="SaveDeviceImport" Preview="DeviceImport" />
 
-@code {
-    async Task CopyDevice(IEnumerable<UploadDevice> data)
-    {
-        if (data.Count() == 0)
-        {
-            await PopupService.EnqueueSnackbarAsync(@T("需选择一项或多项"), AlertTypes.Warning);
-            return;
-        }
-        await UploadDeviceService.CopyDevAsync(data);
-        await datatableQuery();
-        await PopupService.EnqueueSnackbarAsync("复制成功", AlertTypes.Success);
-
-    }
-}
-@code {
-    string _searchName;
-    List<string> _deviceGroups = new();
-    private UploadDevicePageInput search = new();
 
 
-    ImportExcel ImportExcel;
-
-    async Task SaveDeviceImport(Dictionary<string, ImportPreviewOutputBase> data)
-    {
-        await UploadDeviceService.ImportAsync(data);
-        await datatableQuery();
-        ImportExcel.IsShowImport = false;
-    }
-    Task<Dictionary<string, ImportPreviewOutputBase>> DeviceImport(IBrowserFile file)
-    {
-        return UploadDeviceService.PreviewAsync(file);
-    }
-
-}
     @code {
-    [Inject] public JsInitVariables JsInitVariables { get; set; } = default!;
-    [Inject]
-    IJSRuntime JS { get; set; }
-    bool isDownExport;
-    async Task DownDeviceExport()
-    {
-        try
-        {
-            isDownExport = true;
-            StateHasChanged();
-            using var memoryStream = await UploadDeviceService.ExportFileAsync();
-            memoryStream.Seek(0, SeekOrigin.Begin);
-            using var streamRef = new DotNetStreamReference(stream: memoryStream);
-            await JS.InvokeVoidAsync("downloadFileFromStream", $"上传设备导出{DateTime.UtcNow.Add(JsInitVariables.TimezoneOffset).ToString("MM-dd-HH-mm-ss")}.xlsx", streamRef);
-        }
-        finally
-        {
-            isDownExport = false;
-        }
 
-    }
-
-
-    List<DriverPluginCategory> DriverPlugins;
-    StringNumber tab;
-    private async Task DriverValueChanged(UploadDeviceEditInput context, long pluginId)
-    {
-        if (pluginId > 0)
-            context.PluginId = pluginId;
-        else
-            return;
-        if (context.DevicePropertys == null || context.DevicePropertys?.Count == 0)
-        {
-            context.DevicePropertys = GetDriverProperties(context.PluginId, context.Id);
-            await PopupService.EnqueueSnackbarAsync("插件附加属性已更新", AlertTypes.Success);
-        }
-
-    }
-    List<DependencyProperty> GetDriverProperties(long driverId, long devId)
-    {
-        return ServiceExtension.GetBackgroundService<UploadDeviceWorker>().GetDevicePropertys(driverId, devId);
-    }
     RenderFragment GetRenderFragment(UploadDeviceEditInput context)
     {
         RenderFragment renderFragment = null;

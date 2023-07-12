@@ -27,6 +27,7 @@ using System.Text;
 
 using ThingsGateway.Foundation;
 using ThingsGateway.Foundation.Extension;
+using ThingsGateway.Foundation.Extension.Enumerator;
 using ThingsGateway.Web.Foundation;
 
 using TouchSocket.Core;
@@ -39,7 +40,8 @@ public class MqttClient : UpLoadBase
     private List<CollectDeviceRunTime> _collectDevice;
     private ConcurrentQueue<DeviceData> _collectDeviceRunTimes = new();
     private ConcurrentQueue<VariableData> _collectVariableRunTimes = new();
-    private GlobalCollectDeviceData _globalCollectDeviceData;
+    private GlobalDeviceData _globalDeviceData;
+    public override Type DriverDebugUIType => null;
 
     private IMqttClient _mqttClient;
 
@@ -48,7 +50,7 @@ public class MqttClient : UpLoadBase
     private MqttClientSubscribeOptions _mqttSubscribeOptions;
 
     private RpcSingletonService _rpcCore;
-    private List<CollectVariableRunTime> _uploadVariables = new();
+    private List<DeviceVariableRunTime> _uploadVariables = new();
 
     private CollectDeviceWorker collectDeviceHostService;
     private MqttClientProperty driverPropertys = new();
@@ -66,7 +68,7 @@ public class MqttClient : UpLoadBase
     public override UpDriverPropertyBase DriverPropertys => driverPropertys;
 
 
-    public override List<CollectVariableRunTime> UploadVariables => _uploadVariables;
+    public override List<DeviceVariableRunTime> UploadVariables => _uploadVariables;
 
 
     public override VariablePropertyBase VariablePropertys => variablePropertys;
@@ -92,7 +94,7 @@ public class MqttClient : UpLoadBase
                 if (varList?.Count != 0)
                 {
                     //分解List，避免超出mqtt字节大小限制
-                    var varData = varList.ChunkTrivialBetter(500);
+                    var varData = varList.ChunkTrivialBetter(10000);
                     foreach (var item in varData)
                     {
                         try
@@ -126,7 +128,7 @@ public class MqttClient : UpLoadBase
                         if (varList?.Count != 0)
                         {
                             //分解List，避免超出mqtt字节大小限制
-                            var varData = varList.ChunkTrivialBetter(500);
+                            var varData = varList.ChunkTrivialBetter(10000);
                             foreach (var item in varData)
                             {
                                 try
@@ -174,7 +176,7 @@ public class MqttClient : UpLoadBase
                 if (devList?.Count != 0)
                 {
                     //分解List，避免超出mqtt字节大小限制
-                    var devData = devList.ChunkTrivialBetter(500);
+                    var devData = devList.ChunkTrivialBetter(10000);
                     foreach (var item in devData)
                     {
                         try
@@ -206,7 +208,7 @@ public class MqttClient : UpLoadBase
                     if (devList?.Count != 0)
                     {
                         //分解List，避免超出mqtt字节大小限制
-                        var devData = devList.ChunkTrivialBetter(500);
+                        var devData = devList.ChunkTrivialBetter(10000);
                         foreach (var item in devData)
                         {
                             try
@@ -271,7 +273,7 @@ public class MqttClient : UpLoadBase
         if (isConnect.IsSuccess)
         {
             //连接成功时补发缓存数据
-            var cacheData = await GetCacheData();
+            var cacheData = await CacheDb.GetCacheData();
             foreach (var item in cacheData)
             {
                 var cacheMessage = new MqttApplicationMessageBuilder()
@@ -280,24 +282,24 @@ public class MqttClient : UpLoadBase
                 var cacheResult = await _mqttClient.PublishAsync(cacheMessage);
                 if (cacheResult.IsSuccess)
                 {
-                    await DeleteCacheData(item.Id);
-                    logMessage.Trace("报文-" + $"主题：{item.Topic}{Environment.NewLine}负载：{item.CacheStr}");
+                    await CacheDb.DeleteCacheData(item.Id);
+                    logMessage.Trace(LogMessageHeader + $"主题：{item.Topic}{Environment.NewLine}负载：{item.CacheStr}");
                 }
             }
 
             var result = await _mqttClient.PublishAsync(variableMessage);
             if (!result.IsSuccess)
             {
-                await AddCacheData(topic, payLoad, driverPropertys.CacheMaxCount);
+                await CacheDb.AddCacheData(topic, payLoad, driverPropertys.CacheMaxCount);
             }
             else
             {
-                logMessage.Trace("报文-" + $"主题：{topic}{Environment.NewLine}负载：{payLoad}");
+                logMessage.Trace(LogMessageHeader + $"主题：{topic}{Environment.NewLine}负载：{payLoad}");
             }
         }
         else
         {
-            await AddCacheData(topic, payLoad, driverPropertys.CacheMaxCount);
+            await CacheDb.AddCacheData(topic, payLoad, driverPropertys.CacheMaxCount);
         }
     }
 
@@ -324,9 +326,9 @@ public class MqttClient : UpLoadBase
     {
         try
         {
-            _globalCollectDeviceData?.CollectVariables?.ForEach(a => a.VariableValueChange -= VariableValueChange);
+            _globalDeviceData?.AllVariables?.ForEach(a => a.VariableValueChange -= VariableValueChange);
 
-            _globalCollectDeviceData?.CollectDevices?.ForEach(a =>
+            _globalDeviceData?.CollectDevices?.ForEach(a =>
             {
                 a.DeviceStatusCahnge -= DeviceStatusCahnge;
             });
@@ -370,17 +372,17 @@ public class MqttClient : UpLoadBase
         _mqttClient.ConnectedAsync += _mqttClient_ConnectedAsync;
         _mqttClient.ApplicationMessageReceivedAsync += _mqttClient_ApplicationMessageReceivedAsync;
         var serviceScope = _scopeFactory.CreateScope();
-        _globalCollectDeviceData = serviceScope.ServiceProvider.GetService<GlobalCollectDeviceData>();
+        _globalDeviceData = serviceScope.ServiceProvider.GetService<GlobalDeviceData>();
         _rpcCore = serviceScope.ServiceProvider.GetService<RpcSingletonService>();
         collectDeviceHostService = serviceScope.GetBackgroundService<CollectDeviceWorker>();
 
-        var tags = _globalCollectDeviceData.CollectVariables.Where(a => a.VariablePropertys.ContainsKey(device.Id))
+        var tags = _globalDeviceData.AllVariables.Where(a => a.VariablePropertys.ContainsKey(device.Id))
            .Where(b => GetPropertyValue(b, nameof(variablePropertys.Enable)).GetBoolValue())
            .ToList();
 
         _uploadVariables = tags;
 
-        _collectDevice = _globalCollectDeviceData.CollectDevices.Where(a => _uploadVariables.Select(b => b.DeviceId).Contains(a.Id)).ToList();
+        _collectDevice = _globalDeviceData.CollectDevices.Where(a => _uploadVariables.Select(b => b.DeviceId).Contains(a.Id)).ToList();
         if (!driverPropertys.IsInterval)
         {
             _collectDevice.ForEach(a =>
@@ -417,8 +419,8 @@ public class MqttClient : UpLoadBase
         MqttRpcResult mqttRpcResult = new();
         try
         {
-            var nv = rpcData.Adapt<NameValue>();
-            var tag = _uploadVariables.FirstOrDefault(a => a.Name == nv.Name);
+            var nv = rpcData.Adapt<KeyValuePair<string, string>>();
+            var tag = _uploadVariables.FirstOrDefault(a => a.Name == nv.Key);
             if (tag != null)
             {
                 var rpcEnable = GetPropertyValue(tag, nameof(variablePropertys.VariableRpcEnable)).ToBoolean();
@@ -473,8 +475,8 @@ public class MqttClient : UpLoadBase
     {
         //保留消息
         //分解List，避免超出mqtt字节大小限制
-        var varData = _globalCollectDeviceData.CollectVariables.Adapt<List<VariableData>>().ChunkTrivialBetter(500);
-        var devData = _globalCollectDeviceData.CollectVariables.Adapt<List<DeviceData>>().ChunkTrivialBetter(500);
+        var varData = _globalDeviceData.AllVariables.Adapt<List<VariableData>>().ChunkTrivialBetter(10000);
+        var devData = _globalDeviceData.AllVariables.Adapt<List<DeviceData>>().ChunkTrivialBetter(10000);
         var isConnect = await TryMqttClientAsync(cancellationToken);
         foreach (var item in devData)
         {
@@ -542,7 +544,7 @@ public class MqttClient : UpLoadBase
         }
     }
 
-    private void VariableValueChange(CollectVariableRunTime collectVariableRunTime)
+    private void VariableValueChange(DeviceVariableRunTime collectVariableRunTime)
     {
         _collectVariableRunTimes.Enqueue(collectVariableRunTime.Adapt<VariableData>());
     }

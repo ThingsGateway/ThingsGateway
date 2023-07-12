@@ -10,15 +10,32 @@
 //------------------------------------------------------------------------------
 #endregion
 
+using Masa.Blazor;
+
+using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.JSInterop;
+
 using SqlSugar;
+
+using System;
+using System.IO;
 
 namespace ThingsGateway.Web.Page
 {
     public partial class CollectDevicePage
     {
-        private IAppDataTable _datatable;
-        private CollectDevicePageInput search = new();
+        IAppDataTable _datatable;
+        List<string> _deviceGroups = new();
+        string _searchName;
+        List<CollectDevice> CollectDevices = new();
+        List<DriverPluginCategory> DriverPlugins;
+        ImportExcel ImportExcel;
+        CollectDevicePageInput search = new();
+        StringNumber tab;
+        [Inject] public JsInitVariables JsInitVariables { get; set; } = default!;
 
+        [Inject]
+        IJSRuntime JS { get; set; }
 
         [CascadingParameter]
         MainLayout MainLayout { get; set; }
@@ -28,17 +45,45 @@ namespace ThingsGateway.Web.Page
 
         protected override async Task OnParametersSetAsync()
         {
+            CollectDevices = CollectDeviceService.GetCacheList();
+
             DriverPlugins = DriverPluginService.GetDriverPluginChildrenList(DriverEnum.Collect);
             _deviceGroups = CollectDeviceService.GetCacheList()?.Select(a => a.DeviceGroup)?.Where(a => a != null).Distinct()?.ToList();
             await base.OnParametersSetAsync();
         }
-
         private async Task AddCall(CollectDeviceAddInput input)
         {
             await CollectDeviceService.AddAsync(input);
             _deviceGroups = CollectDeviceService.GetCacheList()?.Select(a => a.DeviceGroup)?.Where(a => a != null).Distinct()?.ToList();
         }
-        private async Task datatableQuery()
+
+        async Task CopyDevAndVar(IEnumerable<CollectDevice> data)
+        {
+            if (!data.Any())
+            {
+                await PopupService.EnqueueSnackbarAsync(@T("需选择一项或多项"), AlertTypes.Warning);
+                return;
+            }
+
+            await CollectDeviceService.CopyDevAndVarAsync(data);
+            await DatatableQuery();
+            await PopupService.EnqueueSnackbarAsync("复制成功", AlertTypes.Success);
+        }
+
+        async Task CopyDevice(IEnumerable<CollectDevice> data)
+        {
+            if (!data.Any())
+            {
+                await PopupService.EnqueueSnackbarAsync(@T("需选择一项或多项"), AlertTypes.Warning);
+                return;
+            }
+
+            await CollectDeviceService.CopyDevAsync(data);
+            await DatatableQuery();
+            await PopupService.EnqueueSnackbarAsync("复制成功", AlertTypes.Success);
+        }
+
+        private async Task DatatableQuery()
         {
             await _datatable?.QueryClickAsync();
         }
@@ -48,6 +93,65 @@ namespace ThingsGateway.Web.Page
             await CollectDeviceService.DeleteAsync(input.ToList().ConvertAll(it => new BaseIdInput()
             { Id = it.Id }));
             _deviceGroups = CollectDeviceService.GetCacheList()?.Select(a => a.DeviceGroup)?.Where(a => a != null).Distinct()?.ToList();
+        }
+
+        void DeviceChanged(long devId)
+        {
+            if (devId > 0)
+            {
+
+            }
+        }
+        Task<Dictionary<string, ImportPreviewOutputBase>> DeviceImport(IBrowserFile file)
+        {
+            return CollectDeviceService.PreviewAsync(file);
+        }
+
+        async Task DownDeviceExport(IEnumerable<CollectDevice> input = null)
+        {
+            try
+            {
+                using var memoryStream = await CollectDeviceService.ExportFileAsync(input?.ToList());
+                memoryStream.Seek(0, SeekOrigin.Begin);
+                using var streamRef = new DotNetStreamReference(stream: memoryStream);
+                await JS.InvokeVoidAsync("downloadFileFromStream", $"采集设备导出{DateTime.UtcNow.Add(JsInitVariables.TimezoneOffset).ToString("MM-dd-HH-mm-ss")}.xlsx", streamRef);
+            }
+            finally
+            {
+            }
+
+        }
+        async Task DownDeviceExport(CollectDevicePageInput input)
+        {
+            try
+            {
+                using var memoryStream = await CollectDeviceService.ExportFileAsync(input);
+                memoryStream.Seek(0, SeekOrigin.Begin);
+                using var streamRef = new DotNetStreamReference(stream: memoryStream);
+                await JS.InvokeVoidAsync("downloadFileFromStream", $"采集设备导出{DateTime.UtcNow.Add(JsInitVariables.TimezoneOffset).ToString("MM-dd-HH-mm-ss")}.xlsx", streamRef);
+            }
+            finally
+            {
+            }
+
+        }
+
+        private async Task DriverValueChanged(CollectDeviceEditInput context, long pluginId)
+        {
+            bool a = false;
+            if (context.PluginId != pluginId && pluginId > 0)
+            {
+                a = true;
+            }
+            if (pluginId > 0)
+                context.PluginId = pluginId;
+            else
+                return;
+            if (context.DevicePropertys == null || context.DevicePropertys?.Count == 0 || a)
+            {
+                context.DevicePropertys = GetDriverProperties(context.PluginId, context.Id);
+                await PopupService.EnqueueSnackbarAsync("插件附加属性已更新", AlertTypes.Success);
+            }
         }
 
         private async Task EditCall(CollectDeviceEditInput input)
@@ -64,6 +168,7 @@ namespace ThingsGateway.Web.Page
 
             datas.RemoveWhere(it => it.Value == nameof(CollectDevice.IsDelete));
             datas.RemoveWhere(it => it.Value == nameof(CollectDevice.ExtJson));
+            datas.RemoveWhere(it => it.Value == nameof(CollectDevice.RedundantDeviceId));
             datas.RemoveWhere(it => it.Value == nameof(CollectDevice.Id));
             datas.RemoveWhere(it => it.Value == nameof(CollectDevice.DevicePropertys));
 
@@ -99,10 +204,22 @@ namespace ThingsGateway.Web.Page
             }
         }
 
+        List<DependencyProperty> GetDriverProperties(long driverId, long devId)
+        {
+            return ServiceExtensions.GetBackgroundService<CollectDeviceWorker>().GetDevicePropertys(driverId, devId);
+        }
+
         private async Task<SqlSugarPagedList<CollectDevice>> QueryCall(CollectDevicePageInput input)
         {
             var data = await CollectDeviceService.PageAsync(input);
             return data;
+        }
+
+        async Task SaveDeviceImport(Dictionary<string, ImportPreviewOutputBase> data)
+        {
+            await CollectDeviceService.ImportAsync(data);
+            await DatatableQuery();
+            ImportExcel.IsShowImport = false;
         }
     }
 }

@@ -23,15 +23,15 @@ public class VariablePropertyAttribute : Attribute
     /// <summary>
     /// 变量属性名称
     /// </summary>
-    public string Name { get; }
+    public string Description { get; }
     /// <summary>
     /// 附加说明
     /// </summary>
-    public string Description { get; }
+    public string Remark { get; }
     /// <inheritdoc cref="VariablePropertyAttribute"/>>
-    public VariablePropertyAttribute(string name, string desc = "")
+    public VariablePropertyAttribute(string desc, string remark = "")
     {
-        Name = name;
         Description = desc;
+        Remark = remark;
     }
 }

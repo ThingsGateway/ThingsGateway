@@ -269,7 +269,7 @@ namespace ThingsGateway.Application
                 .Where(u => u.Id == Id)
                 .Select((u) => new SysUser { Id = u.Id.SelectAll() })
                 .FirstAsync();
-                if (sysUser != null)//做个大小写限制
+                if (sysUser != null)
                 {
                     //获取按钮码
                     var buttonCodeList = await GetButtonCodeList(sysUser.Id);

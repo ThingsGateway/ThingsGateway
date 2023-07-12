@@ -11,6 +11,7 @@
 #endregion
 
 using System.ComponentModel;
+using System.Linq;
 
 namespace ThingsGateway.Foundation;
 
@@ -36,7 +37,26 @@ public abstract class ReadWriteDevicesBase : DisposableObject, IReadWriteDevice
     public ushort TimeOut { get; set; } = 3000;
     /// <inheritdoc/>
     public ushort RegisterByteLength { get; set; } = 1;
+    /// <inheritdoc/>
 
+    public virtual int GetBitOffset(string address)
+    {
+        int bitIndex = 0;
+        string[] addressSplits = new string[] { address };
+        if (address.IndexOf('.') > 0)
+        {
+            addressSplits = address.SplitDot();
+            try
+            {
+                bitIndex = Convert.ToInt32(addressSplits.Last());
+            }
+            catch
+            {
+                return 0;
+            }
+        }
+        return bitIndex;
+    }
     /// <inheritdoc/>
     public abstract Task<OperResult<byte[]>> ReadAsync(string address, int length, CancellationToken token = default);
 
@@ -61,7 +81,7 @@ public abstract class ReadWriteDevicesBase : DisposableObject, IReadWriteDevice
     /// <inheritdoc/>
     public virtual Task<OperResult> WriteAsync(string address, short value, CancellationToken token = default)
     {
-        IThingsGatewayBitConverter transformParameter = ByteConverterHelper.GetTransByAddress(ref address, ThingsGatewayBitConverter);
+        IThingsGatewayBitConverter transformParameter = ByteTransformHelpers.GetTransByAddress(ref address, ThingsGatewayBitConverter);
         return WriteAsync(address, transformParameter.GetBytes(value), token);
     }
 
@@ -74,76 +94,76 @@ public abstract class ReadWriteDevicesBase : DisposableObject, IReadWriteDevice
     /// <inheritdoc/>
     public virtual Task<OperResult> WriteAsync(string address, ushort value, CancellationToken token = default)
     {
-        IThingsGatewayBitConverter transformParameter = ByteConverterHelper.GetTransByAddress(ref address, ThingsGatewayBitConverter);
+        IThingsGatewayBitConverter transformParameter = ByteTransformHelpers.GetTransByAddress(ref address, ThingsGatewayBitConverter);
         return WriteAsync(address, transformParameter.GetBytes(value), token);
     }
 
     /// <inheritdoc/>
     public virtual Task<OperResult> WriteAsync(string address, int value, CancellationToken token = default)
     {
-        IThingsGatewayBitConverter transformParameter = ByteConverterHelper.GetTransByAddress(ref address, ThingsGatewayBitConverter);
+        IThingsGatewayBitConverter transformParameter = ByteTransformHelpers.GetTransByAddress(ref address, ThingsGatewayBitConverter);
         return WriteAsync(address, transformParameter.GetBytes(value), token);
     }
 
     /// <inheritdoc/>
     public virtual Task<OperResult> WriteAsync(string address, uint value, CancellationToken token = default)
     {
-        IThingsGatewayBitConverter transformParameter = ByteConverterHelper.GetTransByAddress(ref address, ThingsGatewayBitConverter);
+        IThingsGatewayBitConverter transformParameter = ByteTransformHelpers.GetTransByAddress(ref address, ThingsGatewayBitConverter);
         return WriteAsync(address, transformParameter.GetBytes(value), token);
     }
 
     /// <inheritdoc/>
     public virtual Task<OperResult> WriteAsync(string address, long value, CancellationToken token = default)
     {
-        IThingsGatewayBitConverter transformParameter = ByteConverterHelper.GetTransByAddress(ref address, ThingsGatewayBitConverter);
+        IThingsGatewayBitConverter transformParameter = ByteTransformHelpers.GetTransByAddress(ref address, ThingsGatewayBitConverter);
         return WriteAsync(address, transformParameter.GetBytes(value), token);
     }
 
     /// <inheritdoc/>
     public virtual Task<OperResult> WriteAsync(string address, ulong value, CancellationToken token = default)
     {
-        IThingsGatewayBitConverter transformParameter = ByteConverterHelper.GetTransByAddress(ref address, ThingsGatewayBitConverter);
+        IThingsGatewayBitConverter transformParameter = ByteTransformHelpers.GetTransByAddress(ref address, ThingsGatewayBitConverter);
         return WriteAsync(address, transformParameter.GetBytes(value), token);
     }
 
     /// <inheritdoc/>
     public virtual Task<OperResult> WriteAsync(string address, float value, CancellationToken token = default)
     {
-        IThingsGatewayBitConverter transformParameter = ByteConverterHelper.GetTransByAddress(ref address, ThingsGatewayBitConverter);
+        IThingsGatewayBitConverter transformParameter = ByteTransformHelpers.GetTransByAddress(ref address, ThingsGatewayBitConverter);
         return WriteAsync(address, transformParameter.GetBytes(value), token);
     }
 
     /// <inheritdoc/>
     public virtual Task<OperResult> WriteAsync(string address, double value, CancellationToken token = default)
     {
-        IThingsGatewayBitConverter transformParameter = ByteConverterHelper.GetTransByAddress(ref address, ThingsGatewayBitConverter);
+        IThingsGatewayBitConverter transformParameter = ByteTransformHelpers.GetTransByAddress(ref address, ThingsGatewayBitConverter);
         return WriteAsync(address, transformParameter.GetBytes(value), token);
     }
 
     /// <inheritdoc/>
-    public virtual Task<OperResult> WriteAsync(string address, string value, bool isBcd, CancellationToken token = default)
+    public virtual Task<OperResult> WriteAsync(string address, string value, CancellationToken token = default)
     {
-        IThingsGatewayBitConverter transformParameter = ByteConverterHelper.GetTransByAddress(
-ref address, ThingsGatewayBitConverter, out int length, out BcdFormat bcdFormat);
-        if (isBcd)
-        {
-            byte[] data = transformParameter.GetBytes(value, length, bcdFormat);
-            return WriteAsync(address, data, token);
-        }
-        else
-        {
-            byte[] data = transformParameter.GetBytes(value, length);
-            return WriteAsync(address, data, token);
-        }
+        IThingsGatewayBitConverter transformParameter = ByteTransformHelpers.GetTransByAddress(ref address, ThingsGatewayBitConverter);
+        byte[] data = transformParameter.GetBytes(value);
+        return WriteAsync(address, data, token);
     }
 
     /// <inheritdoc/>
-    public virtual Task<OperResult> WriteAsync(string address, string value, Encoding encoding, CancellationToken token = default)
+    public virtual string GetAddressDescription()
     {
-        IThingsGatewayBitConverter transformParameter = ByteConverterHelper.GetTransByAddress(
-ref address, ThingsGatewayBitConverter, out int length, out BcdFormat bcdFormat);
-        transformParameter.Encoding = encoding;
-        byte[] data = transformParameter.GetBytes(value, length);
-        return WriteAsync(address, data, token);
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.AppendLine("通用格式");
+        stringBuilder.AppendLine("4字节转换格式");
+        stringBuilder.AppendLine("DATA=ABCD;");
+        stringBuilder.AppendLine("举例：");
+        stringBuilder.AppendLine("DATA=ABCD; ，代表大端格式，其中ABCD=>Big-Endian;BADC=>;Big-Endian Byte Swap;CDAB=>Little-Endian Byte Swap;DCBA=>Little-Endian");
+        stringBuilder.AppendLine("字符串长度：");
+        stringBuilder.AppendLine("LEN=1;");
+        stringBuilder.AppendLine("BCD格式：");
+        stringBuilder.AppendLine("BCD=C8421;，其中有C8421;C5421;C2421;C3;Gray");
+        stringBuilder.AppendLine("字符格式：");
+        stringBuilder.AppendLine("TEXT=UTF8;，其中有UTF8;ASCII;Default;Unicode");
+        stringBuilder.AppendLine("");
+        return stringBuilder.ToString();
     }
 }

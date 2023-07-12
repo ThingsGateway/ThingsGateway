@@ -17,7 +17,7 @@ namespace ThingsGateway.Web.Foundation;
 /// <summary>
 /// 运行日志分页DTO
 /// </summary>
-public class RuntimeLogPageInput : BasePageInput
+public class BackendLogPageInput : BasePageInput
 {
     /// <summary>
     /// 日志源

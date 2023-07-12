@@ -24,30 +24,26 @@ namespace ThingsGateway.Web.Foundation;
 public interface IVariableService : ITransient
 {
     /// <summary>
-    /// 数据库DB
-    /// </summary>
-    ISqlSugarClient Context { get; set; }
-    /// <summary>
     /// 添加变量
     /// </summary>
-    /// <param name="input"></param>
-    /// <returns></returns>
-    Task AddAsync(CollectDeviceVariable input);
+    Task AddAsync(DeviceVariable input);
     /// <summary>
-    /// 清空变量
+    /// 清空设备变量
+    /// </summary>
+    Task ClearDeviceVariableAsync();
+    /// <summary>
+    /// 清空中间变量
     /// </summary>
     /// <returns></returns>
-    Task ClearAsync();
+    Task ClearMemoryVariableAsync();
+
     /// <summary>
     /// 删除变量
     /// </summary>
-    /// <param name="input"></param>
-    /// <returns></returns>
     Task DeleteAsync(List<BaseIdInput> input);
     /// <summary>
     /// 删除变量缓存
     /// </summary>
-    /// <param name="ids"></param>
     void DeleteVariableFromCache(List<long> ids = null);
     /// <summary>
     /// 删除变量缓存
@@ -56,30 +52,31 @@ public interface IVariableService : ITransient
     /// <summary>
     /// 编辑变量
     /// </summary>
-    /// <param name="input"></param>
-    /// <returns></returns>
-    Task EditAsync(CollectDeviceVariable input);
+    Task EditAsync(DeviceVariable input);
+
     /// <summary>
     /// 导出
     /// </summary>
-    /// <returns></returns>
-    Task<MemoryStream> ExportFileAsync();
+    Task<MemoryStream> ExportFileAsync(List<DeviceVariable> collectDeviceVariables = null);
     /// <summary>
     /// 导出
     /// </summary>
-    /// <param name="collectDeviceVariables"></param>
-    /// <returns></returns>
-    Task<MemoryStream> ExportFileAsync(List<CollectDeviceVariable> collectDeviceVariables);
+    Task<MemoryStream> ExportFileAsync(VariablePageInput input);
+
     /// <summary>
-    /// 获取变量运行状态DTO
+    /// 获取变量运行状态
     /// </summary>
-    /// <param name="devId"></param>
-    /// <returns></returns>
-    Task<List<CollectVariableRunTime>> GetCollectDeviceVariableRuntimeAsync(long devId = 0);
+    Task<List<DeviceVariableRunTime>> GetDeviceVariableRuntimeAsync(long devId = 0);
     /// <summary>
     /// 根据名称获取ID
     /// </summary>
     long GetIdByName(string name, bool onlyCache = true);
+    /// <summary>
+    /// 获取中间变量运行态
+    /// </summary>
+    /// <returns></returns>
+    Task<List<DeviceVariableRunTime>> GetMemoryVariableRuntimeAsync();
+
     /// <summary>
     /// 根据ID获取名称
     /// </summary>
@@ -87,20 +84,27 @@ public interface IVariableService : ITransient
     /// <summary>
     /// 导入
     /// </summary>
-    /// <param name="input"></param>
-    /// <returns></returns>
     Task ImportAsync(Dictionary<string, ImportPreviewOutputBase> input);
     /// <summary>
-    /// 分页查询
+    /// 导出
     /// </summary>
-    /// <param name="input"></param>
+    /// <param name="devDatas"></param>
     /// <returns></returns>
-    Task<SqlSugarPagedList<CollectDeviceVariable>> PageAsync(VariablePageInput input);
+    Task<MemoryStream> MemoryVariableExportFileAsync(List<MemoryVariable> devDatas = null);
     /// <summary>
-    /// 导入验证
+    /// 导入
     /// </summary>
     /// <param name="file"></param>
     /// <returns></returns>
+    Task<Dictionary<string, ImportPreviewOutputBase>> MemoryVariablePreviewAsync(IBrowserFile file);
+
+    /// <summary>
+    /// 分页查询
+    /// </summary>
+    Task<SqlSugarPagedList<DeviceVariable>> PageAsync(VariablePageInput input);
+    /// <summary>
+    /// 导入验证
+    /// </summary>
     Task<Dictionary<string, ImportPreviewOutputBase>> PreviewAsync(IBrowserFile file);
 
 }

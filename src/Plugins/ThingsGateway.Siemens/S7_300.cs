@@ -19,6 +19,7 @@ namespace ThingsGateway.Siemens
         public S7_300(IServiceScopeFactory scopeFactory) : base(scopeFactory)
         {
         }
+        public override Type DriverDebugUIType => typeof(S7_300DebugDriverPage);
         public override CollectDriverPropertyBase DriverPropertys => driverPropertys;
 
         protected override void Init(CollectDeviceRunTime device, object client = null)

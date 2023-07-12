@@ -20,6 +20,7 @@ namespace ThingsGateway.Siemens
         {
         }
 
+        public override Type DriverDebugUIType => typeof(S7_1200DebugDriverPage);
         public override CollectDriverPropertyBase DriverPropertys => driverPropertys;
 
         protected override void Init(CollectDeviceRunTime device, object client = null)

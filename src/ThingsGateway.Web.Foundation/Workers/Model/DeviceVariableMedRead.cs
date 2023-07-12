@@ -42,7 +42,7 @@ public class DeviceVariableMedRead
     /// <summary>
     /// 需分配的变量
     /// </summary>
-    public CollectVariableRunTime DeviceVariable { get; set; } = new();
+    public DeviceVariableRunTime DeviceVariable { get; set; } = new();
 
     /// <summary>
     /// 方法
@@ -54,7 +54,7 @@ public class DeviceVariableMedRead
     /// </summary>
     public object[] MedObj { get; set; }
     /// <summary>
-    /// 方法参数
+    /// 地址参数，以;分割参数值
     /// </summary>
     public string MedStr { get; set; }
     /// <summary>
@@ -63,5 +63,43 @@ public class DeviceVariableMedRead
     /// <param name="time"></param>
     /// <returns></returns>
     public bool CheckIfRequestAndUpdateTime(DateTime time) => exTimerTick.IsTickHappen(time);
+
+}
+
+/// <summary>
+/// 特殊方法变量信息，不参与轮询执行
+/// </summary>
+public class DeviceVariableMedSource
+{
+    /// <summary>
+    /// 传入连读间隔
+    /// </summary>
+    public DeviceVariableMedSource()
+    {
+        Converter = new TouchSocket.Core.StringConverter();
+        Converter.Add(new StringToEncodingConverter());
+    }
+    /// <summary>
+    /// 字符串转换器，默认支持基础类型和Json。可以自定义。
+    /// </summary>
+    public TouchSocket.Core.StringConverter Converter { get; }
+    /// <summary>
+    /// 需分配的变量
+    /// </summary>
+    public DeviceVariableRunTime DeviceVariable { get; set; } = new();
+
+    /// <summary>
+    /// 方法
+    /// </summary>
+    public Method MedInfo { get; set; }
+
+    /// <summary>
+    /// 方法参数
+    /// </summary>
+    public object[] MedObj { get; set; }
+    /// <summary>
+    /// 地址参数
+    /// </summary>
+    public string MedStr { get; set; }
 
 }

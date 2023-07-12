@@ -15,16 +15,15 @@ using Furion.Logging.Extensions;
 
 using Microsoft.Extensions.Logging;
 
-
 using System.Linq;
 using System.Reflection;
-using System.Text.RegularExpressions;
 using System.Threading;
 
 using ThingsGateway.Foundation;
+using ThingsGateway.Foundation.Extension;
+using ThingsGateway.Foundation.Extension.Generic;
 
 using TouchSocket.Core;
-
 
 namespace ThingsGateway.Web.Foundation;
 
@@ -37,6 +36,14 @@ public class CollectDeviceCore : DisposableObject
     /// 特殊方法变量
     /// </summary>
     public List<DeviceVariableMedRead> DeviceVariableMedReads = new();
+    /// <summary>
+    /// 特殊方法变量,不参与轮询执行
+    /// </summary>
+    public List<DeviceVariableMedSource> DeviceVariableMedSources = new();
+    /// <summary>
+    /// 分包变量
+    /// </summary>
+    public List<DeviceVariableSourceRead> DeviceVariableSourceReads = new();
 
     /// <summary>
     /// 循环线程取消标识
@@ -62,12 +69,6 @@ public class CollectDeviceCore : DisposableObject
     private PluginSingletonService _pluginService;
 
     private IServiceScopeFactory _scopeFactory;
-
-    /// <summary>
-    /// 分包变量
-    /// </summary>
-    private List<DeviceVariableSourceRead> DeviceVariableSourceReads = new();
-
     private bool isInitSuccess = true;
 
     /// <inheritdoc cref="CollectDeviceCore"/>
@@ -78,7 +79,7 @@ public class CollectDeviceCore : DisposableObject
         using var scope = scopeFactory.CreateScope();
 
         _pluginService = scope.ServiceProvider.GetService<PluginSingletonService>();
-        _globalCollectDeviceData = scope.ServiceProvider.GetService<GlobalCollectDeviceData>();
+        _globalDeviceData = scope.ServiceProvider.GetService<GlobalDeviceData>();
         _driverPluginService = scope.ServiceProvider.GetService<IDriverPluginService>();
 
     }
@@ -120,19 +121,20 @@ public class CollectDeviceCore : DisposableObject
 
     private IDriverPluginService _driverPluginService { get; set; }
 
-    /// <inheritdoc cref="GlobalCollectDeviceData"/>
-    private GlobalCollectDeviceData _globalCollectDeviceData { get; set; }
+    /// <inheritdoc cref="GlobalDeviceData"/>
+    private GlobalDeviceData _globalDeviceData { get; set; }
+
     #region 设备子线程采集启动停止
     /// <summary>
     /// 暂停采集
     /// </summary>
-    public void PasueThread(bool keepOn)
+    public void PasueThread(bool keepRun)
     {
         lock (this)
         {
-            var str = keepOn == false ? "设备线程采集暂停" : "设备线程采集继续";
+            var str = keepRun == false ? "设备线程采集暂停" : "设备线程采集继续";
             _logger?.LogInformation($"{str}:{_device.Name}");
-            this.Device.KeepOn = keepOn;
+            this.Device.KeepRun = keepRun;
         }
     }
     /// <summary>
@@ -200,19 +202,19 @@ public class CollectDeviceCore : DisposableObject
 
     #region 核心读写
     /// <summary>
-    /// 是否多个设备共享链路;
-    /// </summary>
-    public bool IsShareChannel;
-    /// <summary>
     /// 已经停止
     /// </summary>
     public bool IsExited;
 
     /// <summary>
+    /// 是否多个设备共享链路;
+    /// </summary>
+    public bool IsShareChannel;
+    /// <summary>
     /// 开始前
     /// </summary>
     /// <returns></returns>
-    public async Task<bool> BeforeActionAsync(CancellationToken cancellationToken, object client = null)
+    internal async Task<bool> BeforeActionAsync(CancellationToken cancellationToken, object client = null)
     {
         try
         {
@@ -224,18 +226,18 @@ public class CollectDeviceCore : DisposableObject
             if (_driver != null)
             {
                 InitDriver(client);
-                Device.SourceVariableNum = DeviceVariableSourceReads.Count;
-                Device.MethodVariableNum = DeviceVariableMedReads.Count;
+                Device.SourceVariableCount = DeviceVariableSourceReads.Count;
+                Device.MethodVariableCount = DeviceVariableMedReads.Count;
             }
             else
             {
-                Device.DeviceStatus = DeviceStatusEnum.OffLine;
-                Device.DeviceOffMsg = "获取插件失败";
+                Device.ErrorCount = 999;
+                Device.LastErrorMessage = "获取插件失败";
                 return false;
             }
             try
             {
-                if (Device?.KeepOn == true)
+                if (Device?.KeepRun == true)
                 {
                     //驱动插件执行循环前方法
                     Device.ActiveTime = DateTime.UtcNow;
@@ -245,9 +247,9 @@ public class CollectDeviceCore : DisposableObject
             }
             catch (Exception ex)
             {
-                _logger?.LogError(ex, _device.Name + "BeforStart错误");
-                Device.DeviceStatus = DeviceStatusEnum.OffLine;
-                Device.DeviceOffMsg = "开始前发生错误，通常为打开端口失败";
+                _logger?.LogError(ex, _device.Name + "开始前发生错误");
+                Device.ErrorCount += 1;
+                Device.LastErrorMessage = "开始前发生错误：" + ex.Message;
             }
             isInitSuccess = true;
             return isInitSuccess;
@@ -256,43 +258,37 @@ public class CollectDeviceCore : DisposableObject
         catch (Exception ex)
         {
             _logger?.LogError(ex, _device.Name + "初始化失败");
-            Device.DeviceStatus = DeviceStatusEnum.OffLine;
-            Device.DeviceOffMsg = "初始化失败";
+            Device.ErrorCount = 999;
+            Device.LastErrorMessage = "初始化失败：" + ex.Message;
         }
         isInitSuccess = false;
         return isInitSuccess;
     }
+
     /// <summary>
     /// 结束后
     /// </summary>
-    public async Task FinishActionAsync()
+    internal async Task FinishActionAsync()
     {
-        Device.DeviceVariableRunTimes.ForEach(a =>
-        {
-            a.VariablePropertys.Clear();
-            a.VariablePropertys = null;
-        });
-        Device.DeviceVariableRunTimes.Clear();
-        _globalCollectDeviceData.CollectDevices.RemoveWhere(it => it.Id == Device.Id);
+        IsExited = true;
+        _globalDeviceData.CollectDevices.RemoveWhere(it => it.Id == Device.Id);
         try
         {
             _logger?.LogInformation($"{_device.Name}采集线程停止中");
             await _driver?.AfterStopAsync();
             _driver?.SafeDispose();
             _logger?.LogInformation($"{_device.Name}采集线程已停止");
-            IsExited = true;
-
         }
         catch (Exception ex)
         {
-            _logger.LogError($"{Device.Name} 释放失败: {ex.Message}");
+            _logger.LogError(ex, $"{Device.Name} 释放失败");
         }
     }
 
     /// <summary>
     /// 初始化，在设备子线程创建或更新时才会执行
     /// </summary>
-    public void Init(CollectDeviceRunTime device)
+    internal void Init(CollectDeviceRunTime device)
     {
         if (device == null) return;
         try
@@ -315,8 +311,8 @@ public class CollectDeviceCore : DisposableObject
             //全局数据更新
             if (isUpDevice)
             {
-                _globalCollectDeviceData.CollectDevices.RemoveWhere(it => it.Id == device.Id);
-                _globalCollectDeviceData.CollectDevices.Add(device);
+                _globalDeviceData.CollectDevices.RemoveWhere(it => it.Id == device.Id);
+                _globalDeviceData.CollectDevices.Add(device);
             }
 
         }
@@ -330,25 +326,23 @@ public class CollectDeviceCore : DisposableObject
     /// <summary>
     /// 运行
     /// </summary>
-    public async Task<ThreadRunReturn> RunActionAsync(CancellationToken cancellationToken)
+    internal async Task<ThreadRunReturn> RunActionAsync(CancellationToken cancellationToken)
     {
         try
         {
-
             using CancellationTokenSource StoppingToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, StoppingTokens.LastOrDefault().Token);
             if (_driver == null) return ThreadRunReturn.Continue;
 
-            if (Device?.KeepOn == false)
+            if (Device?.KeepRun == false)
             {
-                Device.DeviceStatus = DeviceStatusEnum.Pause;
-                return ThreadRunReturn.Continue; ;
+                return ThreadRunReturn.Continue;
             }
-            if (Device.DeviceStatus != DeviceStatusEnum.OnLineButNoInitialValue && Device.DeviceStatus != DeviceStatusEnum.OnLine && Device.DeviceStatus != DeviceStatusEnum.OffLine)
-                Device.DeviceStatus = DeviceStatusEnum.OnLineButNoInitialValue;
-            if (DeviceVariableSourceReads.Count == 0 && Device.DeviceVariableRunTimes.Where(a => a.OtherMethod.IsNullOrEmpty()).Count() > 0)
+
+            if (DeviceVariableSourceReads.Count == 0 && Device.DeviceVariableRunTimes.Where(a => a.OtherMethod.IsNullOrEmpty()).Any())
             {
-                Device.DeviceStatus = DeviceStatusEnum.OnLineButNoInitialValue;
-                Device.DeviceOffMsg = "分包失败，请检查变量地址是否符合规则";
+                Device.ErrorCount = 999;
+                Device.LastErrorMessage = "分包失败，请检查变量地址是否符合规则";
+                return ThreadRunReturn.Continue;
             }
             int deviceMedsVariableSuccessNum = 0;
             int deviceMedsVariableFailedNum = 0;
@@ -359,11 +353,11 @@ public class CollectDeviceCore : DisposableObject
 
             Device.ActiveTime = DateTime.UtcNow;
 
-            if (_driver.IsSupportRequest())
+            if (_driver.IsSupportRequest)
             {
                 foreach (var deviceVariableSourceRead in DeviceVariableSourceReads)
                 {
-                    if (Device?.KeepOn == false)
+                    if (Device?.KeepRun == false)
                     {
                         continue;
                     }
@@ -384,6 +378,7 @@ public class CollectDeviceCore : DisposableObject
                         {
                             _logger?.LogWarning(_device.Name + " - " + " - 采集[" + deviceVariableSourceRead.Address + " -" + deviceVariableSourceRead.Length + "] 数据失败 - " + read?.Message);
                             deviceSourceVariableFailedNum += 1;
+                            Device.LastErrorMessage = read.Message;
                         }
                     }
 
@@ -392,7 +387,7 @@ public class CollectDeviceCore : DisposableObject
 
                 foreach (var deviceVariableMedRead in DeviceVariableMedReads)
                 {
-                    if (Device?.KeepOn == false)
+                    if (Device?.KeepRun == false)
                         continue;
                     if (StoppingToken.IsCancellationRequested)
                         break;
@@ -419,34 +414,12 @@ public class CollectDeviceCore : DisposableObject
 
                 if (deviceMedsVariableFailedNum == 0 && deviceSourceVariableFailedNum == 0 && (deviceMedsVariableSuccessNum != 0 || deviceSourceVariableSuccessNum != 0))
                 {
-                    Device.DeviceStatus = DeviceStatusEnum.OnLine;
-
+                    //只有成功读取一次，失败次数都会清零
+                    Device.ErrorCount = 0;
                 }
                 else if (deviceMedsVariableFailedNum != 0 || deviceSourceVariableFailedNum != 0)
                 {
-                    var oper = _driver.IsConnected();
-
-                    if (oper.IsSuccess)
-                    {
-                        Device.DeviceStatus = DeviceStatusEnum.OnLineButNoInitialValue;
-                    }
-                    else
-                    {
-                        Device.DeviceStatus = DeviceStatusEnum.OffLine;
-                        Device.DeviceOffMsg = oper.Message;
-
-                    }
-                }
-                else
-                {
-
-                    if (DeviceVariableSourceReads.Count == 0 && DeviceVariableMedReads.Count == 0)
-                    {
-                        if (Device.DeviceVariablesNum > 0)
-                            Device.DeviceOffMsg = "分包失败，请检查变量地址是否符合规则";
-                        else
-                            Device.DeviceOffMsg = "无采集变量";
-                    }
+                    Device.ErrorCount += 1;
                 }
             }
             else
@@ -454,7 +427,12 @@ public class CollectDeviceCore : DisposableObject
                 var oper = _driver.IsConnected();
                 if (oper.IsSuccess)
                 {
-                    Device.DeviceStatus = DeviceStatusEnum.OnLine;
+                    Device.ErrorCount = 0;
+                }
+                else
+                {
+                    Device.ErrorCount = 999;
+                    Device.LastErrorMessage = oper.Message;
                 }
             }
             if (StoppingToken.Token.IsCancellationRequested)
@@ -473,6 +451,8 @@ public class CollectDeviceCore : DisposableObject
         catch (Exception ex)
         {
             _logger?.LogWarning(ex, $"采集线程循环异常{_device.Name}");
+            Device.ErrorCount += 1;
+            Device.LastErrorMessage = ex.Message;
             return ThreadRunReturn.None;
         }
     }
@@ -482,12 +462,16 @@ public class CollectDeviceCore : DisposableObject
     #region 分包
 
     /// <summary>
-    /// 传入设备变量列表，执行后赋值<see cref="DeviceVariableSourceReads"/>
+    /// 获取设备变量分包列表/特殊方法列表
     /// </summary>
     /// <param name="collectVariableRunTimes"></param>
-    private void LoadSourceReads(List<CollectVariableRunTime> collectVariableRunTimes)
+    private void LoadSourceReads(List<DeviceVariableRunTime> collectVariableRunTimes)
     {
-        if (collectVariableRunTimes == null || _driver == null) { return; }
+        if (collectVariableRunTimes == null || _driver == null)
+        {
+            _logger?.LogError("初始化未完成，分包失败");
+            return;
+        }
         try
         {
             var tag = collectVariableRunTimes.Where(it => it.ProtectTypeEnum != ProtectTypeEnum.WriteOnly &&
@@ -495,6 +479,8 @@ public class CollectDeviceCore : DisposableObject
             var result = _driver.LoadSourceRead(tag);
             if (result.IsSuccess)
                 DeviceVariableSourceReads = result.Content;
+            else
+                _logger?.LogError("分包失败,错误信息：" + result.Message);
         }
         catch (Exception ex)
         {
@@ -513,11 +499,61 @@ public class CollectDeviceCore : DisposableObject
                 {
                     medResult.MedInfo = new Method(med);
                     medResult.MedStr = item.VariableAddress;
+
+                    //获取实际执行的参数列表
+                    var ps = medResult.MedInfo.Info.GetParameters();
+                    medResult.MedObj = new object[ps.Length];
+
+                    if (!medResult.MedStr.IsNullOrEmpty())
+                    {
+                        string[] strs = medResult.MedStr?.Trim()?.Split(';');
+                        try
+                        {
+                            for (int i = 0; i < ps.Length; i++)
+                            {
+                                if (strs.Length <= i)
+                                {
+                                    throw new($"{medResult.DeviceVariable.Name} 获取执行方法 {medResult.DeviceVariable.OtherMethod} 参数不足{medResult.MedStr}");
+                                }
+                                medResult.MedObj[i] = medResult.Converter.ConvertFrom(strs[i], ps[i].ParameterType);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogWarning(ex, "获取方法参数失败");
+                            continue;
+                        }
+
+                    }
+
                     medResult.DeviceVariable = item;
                     variablesMedResult.Add(medResult);
                 }
             }
             DeviceVariableMedReads = variablesMedResult;
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "获取特殊方法失败");
+        }
+        try
+        {
+            var variablesMed = collectVariableRunTimes.Where(it => !string.IsNullOrEmpty(it.OtherMethod));
+            var tag = variablesMed.Where(it => it.ProtectTypeEnum != ProtectTypeEnum.ReadOnly);
+            var variablesMedResult = new List<DeviceVariableMedSource>();
+            foreach (var item in tag)
+            {
+                var medResult = new DeviceVariableMedSource();
+                var med = Methods.FirstOrDefault(it => it.Name == item.OtherMethod);
+                if (med != null)
+                {
+                    medResult.MedInfo = new Method(med);
+                    medResult.MedStr = item.VariableAddress;
+                    medResult.DeviceVariable = item;
+                    variablesMedResult.Add(medResult);
+                }
+            }
+            DeviceVariableMedSources = variablesMedResult;
         }
         catch (Exception ex)
         {
@@ -533,24 +569,68 @@ public class CollectDeviceCore : DisposableObject
     /// <summary>
     /// 执行特殊方法
     /// </summary>
-    /// <param name="coreMethod"></param>
-    /// <param name="par"></param>
-    /// <returns></returns>
-    public async Task<OperResult> InvokeMedAsync(Method coreMethod, params object[] par)
+    internal async Task<OperResult<object>> InvokeMedAsync(DeviceVariableMedSource deviceVariableMedSource, string value)
     {
-        try
+        OperResult<object> result = new();
+        var method = deviceVariableMedSource.MedInfo;
+        if (method == null)
         {
-            await easyLock.LockAsync();
-            if (IsShareChannel) _driver.InitDataAdapter();
-            return (OperResult)await coreMethod.InvokeObjectAsync(_driver, par);
+            result.ResultCode = ResultCode.Error;
+            result.Message = $"{deviceVariableMedSource.DeviceVariable.Name}找不到执行方法{deviceVariableMedSource.DeviceVariable.OtherMethod}";
+            return result;
         }
-        catch (Exception ex)
+        else
         {
-            return (new OperResult(ex));
-        }
-        finally
-        {
-            easyLock.UnLock();
+            var ps = method.Info.GetParameters();
+            deviceVariableMedSource.MedObj = new object[ps.Length];
+
+            if (!deviceVariableMedSource.MedStr.IsNullOrEmpty() || !value.IsNullOrEmpty())
+            {
+                string[] strs1 = deviceVariableMedSource.MedStr?.Trim()?.Split(';');
+                string[] strs2 = value?.Trim()?.Split(';');
+                var strs = strs1?.SpliceArray(strs2);
+                int index = 0;
+                for (int i = 0; i < ps.Length; i++)
+                {
+                    if (strs.Length <= i)
+                    {
+                        result.ResultCode = ResultCode.Error;
+                        result.Message = $"{deviceVariableMedSource.DeviceVariable.Name} 执行方法 {deviceVariableMedSource.DeviceVariable.OtherMethod} 参数不足{deviceVariableMedSource.MedStr}";
+                        return result;
+                    }
+                    deviceVariableMedSource.MedObj[i] = deviceVariableMedSource.Converter.ConvertFrom(strs[index], ps[i].ParameterType);
+                    index++;
+                }
+            }
+            try
+            {
+                var data = await method.InvokeObjectAsync(_driver, deviceVariableMedSource.MedObj);
+                result = data.Map<OperResult<object>>();
+                if (method.HasReturn && result.IsSuccess)
+                {
+                    var content = deviceVariableMedSource.Converter.ConvertTo(result.Content?.ToString()?.Replace($"\0", ""));
+                    var operResult = deviceVariableMedSource.DeviceVariable.SetValue(content);
+                    if (!operResult.IsSuccess)
+                    {
+                        _logger?.LogWarning(operResult.Message, ToString());
+                    }
+                }
+                else
+                {
+                    var operResult = deviceVariableMedSource.DeviceVariable.SetValue(null);
+                    if (!operResult.IsSuccess)
+                    {
+                        _logger?.LogWarning(operResult.Message, ToString());
+                    }
+                }
+                return result;
+            }
+            catch (Exception ex)
+            {
+                result.ResultCode = ResultCode.Error;
+                result.Message = $"{deviceVariableMedSource.DeviceVariable.Name}执行{deviceVariableMedSource.DeviceVariable.OtherMethod} 方法失败:{ex.Message}";
+                return result;
+            }
         }
 
     }
@@ -559,41 +639,26 @@ public class CollectDeviceCore : DisposableObject
     /// 执行变量写入
     /// </summary>
     /// <returns></returns>
-    public async Task<OperResult> InVokeWriteAsync(CollectVariableRunTime deviceVariable, string value, CancellationToken cancellationToken)
+    internal async Task<OperResult> InVokeWriteAsync(DeviceVariableRunTime deviceVariable, string value, CancellationToken cancellationToken)
     {
         try
         {
             await easyLock.LockAsync();
             if (IsShareChannel) _driver.InitDataAdapter();
-            if (!deviceVariable.WriteExpressions.IsNullOrEmpty() && value != null)
+            if (!deviceVariable.WriteExpressions.IsNullOrEmpty() && !value.IsNullOrEmpty())
             {
-                object data = null;
+                object rawdata = value.GetObjectData();
+                object data;
                 try
                 {
-                    Regex regex = new Regex("^[-+]?[0-9]*\\.?[0-9]+$");
-                    bool match = regex.IsMatch(value);
-
-                    //bool match = NewLife.StringHelper.IsMatch(value, @"^[-+]?[0-9]*\.?[0-9]+$");
-                    if (match)
-                    {
-                        if (value.ToDouble() == 0 && Convert.ToInt32(value) != 0)
-                        {
-                            return (new OperResult(deviceVariable.Name + " 转换写入表达式失败"));
-                        }
-                        data = deviceVariable.WriteExpressions.GetExpressionsResult(value.ToDouble());
-                    }
-                    else
-                    {
-                        data = deviceVariable.WriteExpressions.GetExpressionsResult(value);
-                    }
+                    data = deviceVariable.WriteExpressions.GetExpressionsResult(rawdata);
                     var result = await _driver.WriteValueAsync(deviceVariable, data.ToString(), cancellationToken);
                     return result;
                 }
                 catch (Exception ex)
                 {
-
-                    (deviceVariable.Name + " 转换写入表达式失败：" + ex.Message).LogError();
-                    return (new OperResult(deviceVariable.Name + " 转换写入表达式失败：" + ex.Message));
+                    _logger.LogError(deviceVariable.Name + " 转换写入表达式失败", ex);
+                    return new OperResult(deviceVariable.Name + " 转换写入表达式失败：" + ex.Message);
                 }
             }
             else
@@ -613,10 +678,8 @@ public class CollectDeviceCore : DisposableObject
     }
 
     /// <summary>
-    /// 执行特殊方法，方法参数以";"分割
+    /// 执行轮询特殊方法,并设置变量值
     /// </summary>
-    /// <param name="deviceVariableMedRead"></param>
-    /// <returns></returns>
     private async Task<OperResult<object>> InvokeMedAsync(DeviceVariableMedRead deviceVariableMedRead)
     {
         OperResult<object> result = new();
@@ -629,28 +692,6 @@ public class CollectDeviceCore : DisposableObject
         }
         else
         {
-            if (deviceVariableMedRead.MedObj == null)
-            {
-                var ps = method.Info.GetParameters();
-                deviceVariableMedRead.MedObj = new object[ps.Length];
-
-                if (!deviceVariableMedRead.MedStr.IsNullOrEmpty())
-                {
-                    string[] strs = deviceVariableMedRead.MedStr?.Split(';');
-                    int index = 0;
-                    for (int i = 0; i < ps.Length; i++)
-                    {
-                        if (strs.Length <= i)
-                        {
-                            result.ResultCode = ResultCode.Error;
-                            result.Message = $"{deviceVariableMedRead.DeviceVariable.Name} 执行方法 {deviceVariableMedRead.DeviceVariable.OtherMethod} 参数不足{deviceVariableMedRead.MedStr}";
-                            return result;
-                        }
-                        deviceVariableMedRead.MedObj[i] = deviceVariableMedRead.Converter.ConvertFrom(strs[index], ps[i].ParameterType);
-                        index++;
-                    }
-                }
-            }
             try
             {
                 var data = await method.InvokeObjectAsync(_driver, deviceVariableMedRead.MedObj);
@@ -658,11 +699,19 @@ public class CollectDeviceCore : DisposableObject
                 if (method.HasReturn && result.IsSuccess)
                 {
                     var content = deviceVariableMedRead.Converter.ConvertTo(result.Content?.ToString()?.Replace($"\0", ""));
-                    deviceVariableMedRead.DeviceVariable.SetValue(content);
+                    var operResult = deviceVariableMedRead.DeviceVariable.SetValue(content);
+                    if (!operResult.IsSuccess)
+                    {
+                        _logger?.LogWarning(operResult.Message, ToString());
+                    }
                 }
                 else
                 {
-                    deviceVariableMedRead.DeviceVariable.SetValue(null);
+                    var operResult = deviceVariableMedRead.DeviceVariable.SetValue(null);
+                    if (!operResult.IsSuccess)
+                    {
+                        _logger?.LogWarning(operResult.Message, ToString());
+                    }
                 }
                 return result;
             }
@@ -680,6 +729,7 @@ public class CollectDeviceCore : DisposableObject
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
+        IsExited = true;
         base.Dispose(disposing);
         StopThread();
         _driver = null;

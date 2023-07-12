@@ -27,6 +27,5 @@ global using System.ComponentModel;
 global using System.Threading.Tasks;
 
 global using ThingsGateway.Application;
-global using ThingsGateway.Foundation.Extension;
 
 global using Yitter.IdGenerator;

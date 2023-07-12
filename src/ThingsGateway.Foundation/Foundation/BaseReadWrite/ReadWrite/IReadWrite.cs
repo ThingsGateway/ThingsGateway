@@ -21,9 +21,17 @@ public interface IReadWrite
     /// 日志
     /// </summary>
     ILog Logger { get; }
+    /// <summary>
+    /// 获取变量地址对应的bit偏移
+    /// </summary>
+    /// <param name="address"></param>
+    /// <returns></returns>
+    int GetBitOffset(string address);
 
     /// <summary>
-    /// 异步批量读取字节数组信息，需要指定地址和长度
+    /// 异步批量读取字节数组信息，需要指定地址和长度<br></br>
+    /// 如果需要动态的类型返回，可以使用<see cref="ReadWriteDevicesExHelpers.GetDynamicDataFormDevice(IReadWriteDevice, string, Type, CancellationToken)"/><br></br>
+    /// 如果需要固定的类型返回，可以使用<see cref="ReadWriteDevicesExHelpers.GetInt16DataFormDevice(IReadWriteDevice, string, CancellationToken)"/><br></br>
     /// </summary>
     Task<OperResult<byte[]>> ReadAsync(string address, int length, CancellationToken token = default);
 
@@ -95,10 +103,6 @@ public interface IReadWrite
     /// <summary>
     /// 异步写入字符串信息
     /// </summary>
-    Task<OperResult> WriteAsync(string address, string value, bool isBcd, CancellationToken token = default);
+    Task<OperResult> WriteAsync(string address, string value, CancellationToken token = default);
 
-    /// <summary>
-    /// 异步写入字符串信息
-    /// </summary>
-    Task<OperResult> WriteAsync(string address, string value, Encoding encoding, CancellationToken token = default);
 }

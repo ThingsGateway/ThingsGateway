@@ -34,7 +34,7 @@ public class CollectDeviceWorker : BackgroundService
     private IServiceScopeFactory _scopeFactory;
     private readonly ILogger<CollectDeviceWorker> _logger;
     private ICollectDeviceService _collectDeviceService;
-    private GlobalCollectDeviceData _globalCollectDeviceData;
+    private GlobalDeviceData _globalDeviceData;
     private PluginSingletonService _pluginService;
     /// <inheritdoc/>
     public CollectDeviceWorker(ILogger<CollectDeviceWorker> logger,
@@ -42,9 +42,8 @@ public class CollectDeviceWorker : BackgroundService
     {
         _logger = logger;
         _scopeFactory = scopeFactory;
-        ThreadPool.SetMaxThreads(100000, 100000);
         var serviceScope = scopeFactory.CreateScope();
-        _globalCollectDeviceData = serviceScope.ServiceProvider.GetService<GlobalCollectDeviceData>();
+        _globalDeviceData = serviceScope.ServiceProvider.GetService<GlobalDeviceData>();
         _pluginService = serviceScope.ServiceProvider.GetService<PluginSingletonService>();
         serviceScope.ServiceProvider.GetService<HardwareInfoService>();
         _collectDeviceService = serviceScope.ServiceProvider.GetService<ICollectDeviceService>();
@@ -54,10 +53,7 @@ public class CollectDeviceWorker : BackgroundService
     /// </summary>
     public List<CollectDeviceCore> CollectDeviceCores => CollectDeviceThreads.SelectMany(a => a.CollectDeviceCores).ToList();
 
-    /// <summary>
-    /// 采集设备List
-    /// </summary>
-    public List<CollectDeviceRunTime> CollectDeviceRunTimes => CollectDeviceThreads.SelectMany(a => a.CollectDeviceCores.Select(b => b.Device))?.ToList();
+
     /// <summary>
     /// 设备子线程列表
     /// </summary>
@@ -149,6 +145,59 @@ public class CollectDeviceWorker : BackgroundService
         }
     }
 
+    /// <summary>
+    /// 更新设备线程,切换为冗余通道
+    /// </summary>
+    public async Task UpDeviceRedundantThreadAsync(long devId)
+    {
+        try
+        {
+            await easyLock.LockAsync();
+            if (!_stoppingToken.IsCancellationRequested)
+            {
+                var devThread = CollectDeviceThreads.FirstOrDefault(it => it.CollectDeviceCores.Any(a => a.DeviceId == devId));
+                var devCore = devThread.CollectDeviceCores.FirstOrDefault(a => a.DeviceId == devId);
+                if (devThread == null) { throw Oops.Bah($"更新设备线程失败，不存在{devId}为id的设备"); }
+                //这里先停止采集，操作会使线程取消，需要重新恢复线程
+                devThread.StopThread();
+
+                var dev = devCore.Device;
+                if (dev.IsRedundant)
+                {
+                    if (dev.RedundantEnum == RedundantEnum.Standby)
+                    {
+                        var newDev = (await _collectDeviceService.GetCollectDeviceRuntimeAsync(devId)).FirstOrDefault();
+                        if (dev == null) { _logger.LogError($"更新设备线程失败，不存在{devId}为id的设备"); }
+                        dev.DevicePropertys = newDev.DevicePropertys;
+                        dev.RedundantEnum = RedundantEnum.Primary;
+                        _logger?.LogInformation(dev.Name + "切换到主通道");
+                    }
+                    else
+                    {
+                        var Redundantdev = (await _collectDeviceService.GetCollectDeviceRuntimeAsync(dev.RedundantDeviceId)).FirstOrDefault();
+                        dev.DevicePropertys = Redundantdev.DevicePropertys;
+                        dev.RedundantEnum = RedundantEnum.Standby;
+                        _logger?.LogInformation(dev.Name + "切换到备用通道");
+                    }
+                }
+                devCore.Init(dev);
+                devThread.CollectDeviceCores.Remove(devCore);
+                if (devThread.CollectDeviceCores.Count == 0)
+                {
+                    CollectDeviceThreads.Remove(devThread);
+                }
+                //需判断是否同一通道
+                var newDevThread = DeviceThread(devCore);
+                newDevThread?.StartThread();
+            }
+        }
+        finally
+        {
+            easyLock.UnLock();
+        }
+    }
+
+
     #endregion
 
     #region Private
@@ -163,7 +212,7 @@ public class CollectDeviceWorker : BackgroundService
             _logger.LogInformation("正在获取采集组态信息");
             var collectDeviceRunTimes = (await _collectDeviceService.GetCollectDeviceRuntimeAsync());
             _logger.LogInformation("获取采集组态信息完成");
-            foreach (var collectDeviceRunTime in collectDeviceRunTimes)
+            foreach (var collectDeviceRunTime in collectDeviceRunTimes.Where(a => !collectDeviceRunTimes.Any(b => a.Id == b.RedundantDeviceId && b.IsRedundant)))
             {
                 if (!_stoppingToken.IsCancellationRequested)
                 {
@@ -193,19 +242,19 @@ public class CollectDeviceWorker : BackgroundService
     {
         if (deviceCollectCore.Driver == null)
             return null;
-        var changelID = deviceCollectCore.Driver.ChannelID();
-        if (changelID != null)
+        var changelID = deviceCollectCore.Driver.GetChannelID();
+        if (changelID.IsSuccess)
         {
             foreach (var collectDeviceThread in CollectDeviceThreads)
             {
-                if (collectDeviceThread.ChangelID == changelID)
+                if (collectDeviceThread.ChangelID == changelID.Content)
                 {
                     collectDeviceThread.CollectDeviceCores.Add(deviceCollectCore);
                     return collectDeviceThread;
                 }
             }
         }
-        return NewDeviceThread(deviceCollectCore, changelID);
+        return NewDeviceThread(deviceCollectCore, changelID.Content);
 
         CollectDeviceThread NewDeviceThread(CollectDeviceCore deviceCollectCore, string changelID)
         {
@@ -221,9 +270,7 @@ public class CollectDeviceWorker : BackgroundService
     /// </summary>
     private void RemoveAllDeviceThread()
     {
-        ParallelOptions options = new ParallelOptions();
-        options.MaxDegreeOfParallelism = Environment.ProcessorCount / 2 == 0 ? 1 : Environment.ProcessorCount / 2;
-        Parallel.ForEach(CollectDeviceThreads, options, deviceThread =>
+        CollectDeviceThreads.ParallelForEach(deviceThread =>
         {
             try
             {
@@ -262,28 +309,31 @@ public class CollectDeviceWorker : BackgroundService
     {
         using var scope = _scopeFactory.CreateScope();
         var alarmHostService = scope.GetBackgroundService<AlarmWorker>();
-        var valueHisHostService = scope.GetBackgroundService<ValueHisWorker>();
+        var historyValueService = scope.GetBackgroundService<HistoryValueWorker>();
         alarmHostService?.Start();
-        valueHisHostService?.Start();
+        historyValueService?.Start();
         var uploadDeviceHostService = scope.GetBackgroundService<UploadDeviceWorker>();
         uploadDeviceHostService.StartDeviceThread();
+        var memoryVariableWorker = scope.GetBackgroundService<MemoryVariableWorker>();
+        memoryVariableWorker.Start();
     }
     /// <summary>
     /// 停止其他后台服务
     /// </summary>
     private void StopOtherHostService()
     {
-        if (CollectDeviceRunTimes?.Count > 0)
+        if (_globalDeviceData.CollectDevices?.Count > 0)
         {
             using var scope = _scopeFactory.CreateScope();
 
             var alarmHostService = scope.GetBackgroundService<AlarmWorker>();
-            var valueHisHostService = scope.GetBackgroundService<ValueHisWorker>();
-            alarmHostService?.Stop(CollectDeviceRunTimes);
-            valueHisHostService?.Stop(CollectDeviceRunTimes);
+            var historyValueService = scope.GetBackgroundService<HistoryValueWorker>();
+            alarmHostService?.Stop(_globalDeviceData.CollectDevices);
+            historyValueService?.Stop(_globalDeviceData.CollectDevices);
             var uploadDeviceHostService = scope.GetBackgroundService<UploadDeviceWorker>();
             uploadDeviceHostService.StopDeviceThread();
-
+            var memoryVariableWorker = scope.GetBackgroundService<MemoryVariableWorker>();
+            memoryVariableWorker.Stop();
         }
 
 
@@ -435,6 +485,7 @@ public class CollectDeviceWorker : BackgroundService
                 CollectDeviceCore devcore = CollectDeviceCores[i];
                 if (devcore.Device != null)
                 {
+
                     if (
     (devcore.Device.ActiveTime != DateTime.MinValue && devcore.Device.ActiveTime.AddMinutes(3) <= DateTime.UtcNow)
     || devcore.IsInitSuccess == false
@@ -455,11 +506,21 @@ public class CollectDeviceWorker : BackgroundService
                     {
                         _logger?.LogTrace(devcore.Device.Name + "线程检测正常");
                     }
+
+
+                    if (devcore.Device.DeviceStatus == DeviceStatusEnum.OffLine)
+                    {
+                        if (devcore.Device.IsRedundant)
+                        {
+                            await UpDeviceRedundantThreadAsync(devcore.Device.Id);
+                        }
+                    }
+
                 }
 
             }
 
-            await Task.Delay(100000, stoppingToken);
+            await Task.Delay(10000, stoppingToken);
         }
     }
 

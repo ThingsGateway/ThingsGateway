@@ -36,7 +36,7 @@ public enum ShareChannelEnum
     /// <summary>
     /// UDP
     /// </summary>
-    TGUdpSession
+    UdpSession
 }
 
 
@@ -45,10 +45,6 @@ public enum ShareChannelEnum
 /// </summary>
 public enum RedundantEnum
 {
-    /// <summary>
-    /// 不支持冗余
-    /// </summary>
-    None,
     /// <summary>
     /// 主站
     /// </summary>
@@ -65,8 +61,6 @@ public enum RedundantEnum
 /// </summary>
 public abstract class CollectDriverPropertyBase : DriverPropertyBase
 {
-
-
     #region 共享通道配置
     /// <summary>
     /// 是否支持共享通道
@@ -77,10 +71,6 @@ public abstract class CollectDriverPropertyBase : DriverPropertyBase
     /// 共享通道类型
     /// </summary>
     public abstract ShareChannelEnum ShareChannel { get; }
-
-
-
-
 
     #region Socket
     /// <summary>
@@ -129,7 +119,7 @@ public abstract class UpDriverPropertyBase : DriverPropertyBase
 
 }
 /// <summary>
-/// 上传插件配置项
+/// 插件配置项
 /// 使用<see cref="DevicePropertyAttribute"/>特性标识
 /// <para></para>
 /// 约定：

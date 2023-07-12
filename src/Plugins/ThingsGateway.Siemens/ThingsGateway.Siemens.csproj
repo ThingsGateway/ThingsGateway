@@ -1,11 +1,11 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
 	<PropertyGroup>
 		<LangVersion>latestMajor</LangVersion>
 		<TargetFrameworks>net6.0;net7.0</TargetFrameworks>
 		<!--<GenerateDocumentationFile>True</GenerateDocumentationFile>-->
 		<ImplicitUsings>enable</ImplicitUsings>
-		<Version>1.6.1</Version>
+		<Version>1.7.0</Version>
 		<RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
 		<EnableDynamicLoading>true</EnableDynamicLoading>
 		<CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
@@ -21,9 +21,12 @@
 
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\ThingsGateway.Web.Foundation\ThingsGateway.Web.Foundation.csproj" >
-			<IncludeAssets>Compile</IncludeAssets>
-		</ProjectReference>
+	  <None Remove="S7DebugDriverPage.razor" />
+	</ItemGroup>
+
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\ThingsGateway.Web.Page\ThingsGateway.Web.Page.csproj" />
 		<ProjectReference Include="..\ThingsGateway.Foundation.Adapter.Siemens\ThingsGateway.Foundation.Adapter.Siemens.csproj" />
 	</ItemGroup>
 </Project>

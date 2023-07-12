@@ -25,12 +25,12 @@ namespace ThingsGateway.Web.Foundation;
 public static class ExpressionEvaluatorExtension
 {
     static ExpressionEvaluator ExpressionEvaluator;
-    static GlobalCollectDeviceData GlobalCollectDeviceData;
+    static GlobalDeviceData GlobalCollectDeviceData;
     static ExpressionEvaluatorExtension()
     {
         ExpressionEvaluator = new();
         ExpressionEvaluator.PreEvaluateVariable += Evaluator_PreEvaluateVariable;
-        GlobalCollectDeviceData = App.GetService<GlobalCollectDeviceData>();
+        GlobalCollectDeviceData = App.GetService<GlobalDeviceData>();
     }
     /// <summary>
     /// 计算表达式：例如：raw*100，raw为原始值
@@ -58,7 +58,7 @@ public static class ExpressionEvaluatorExtension
     /// <param name="e"></param>
     public static void Evaluator_PreEvaluateVariable(object sender, VariablePreEvaluationEventArg e)
     {
-        var obj = GlobalCollectDeviceData.CollectVariables.FirstOrDefault(it => it.Name == e.Name);
+        var obj = GlobalCollectDeviceData.AllVariables.FirstOrDefault(it => it.Name == e.Name);
         if (obj == null)
         {
             return;

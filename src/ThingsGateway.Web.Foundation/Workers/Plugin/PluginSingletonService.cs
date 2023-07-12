@@ -22,6 +22,7 @@ using System.Runtime.Loader;
 
 using ThingsGateway.Core;
 using ThingsGateway.Core.Extension;
+using ThingsGateway.Foundation.Extension;
 
 using TouchSocket.Core;
 
@@ -319,7 +320,7 @@ public class PluginSingletonService : ISingleton
         //        DeviceOnDriverPluginDict.Remove(pluginId);
         //        DriverPluginDict[pluginId] = null;
         //        DriverPluginDict.Remove(pluginId);
-        //        if (pluginGroups.FirstOrDefault(a => a.Key == plugin.FileName).Where(a => DriverPluginDict.ContainsKey(a.Id)).Count() <= 0)
+        //        if (pluginGroups.FirstOrDefault(a => a.Key == plugin.FileName).Where(a => !DriverPluginDict.ContainsKey(a.Id)).Any())
         //        {
         //            var assemblyLoadContext = AssemblyLoadContextDict.GetValueOrDefault(plugin.FileName);
         //            if (assemblyLoadContext != null)
@@ -350,8 +351,8 @@ public class PluginSingletonService : ISingleton
               {
                   new DependencyProperty(){
                       PropertyName=it.property.Name,
-                      Description=it.devicePropertyAttribute.Name,
-                      Remark=it.devicePropertyAttribute.Description,
+                      Description=it.devicePropertyAttribute.Description,
+                      Remark=it.devicePropertyAttribute.Remark,
                       Value=it.property.GetValue(driver.DriverPropertys)?.ToString(),
                   }
               });
@@ -386,8 +387,8 @@ public class PluginSingletonService : ISingleton
               {
                   new DependencyProperty(){
                       PropertyName=it.property.Name,
-                      Description=it.devicePropertyAttribute.Name,
-                      Remark=it.devicePropertyAttribute.Description,
+                      Description=it.devicePropertyAttribute.Description,
+                      Remark=it.devicePropertyAttribute.Remark,
                       Value=it.property.GetValue(driver.VariablePropertys)?.ToString(),
                   }
               });
@@ -399,7 +400,7 @@ public class PluginSingletonService : ISingleton
     /// </summary>
     /// <param name="driver"></param>
     /// <returns></returns>
-    public List<MethodInfo> GetMethod(object driver)
+    public List<MethodInfo> GetMethod(DriverBase driver)
     {
         return driver.GetType().GetMethods().Where(
                x => x.GetCustomAttribute(typeof(DeviceMethodAttribute)) != null).ToList();

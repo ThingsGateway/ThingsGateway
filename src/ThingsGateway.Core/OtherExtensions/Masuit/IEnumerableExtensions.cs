@@ -463,20 +463,6 @@ namespace ThingsGateway.Core.Extension
         }
 
         /// <summary>
-        /// 遍历IEnumerable
-        /// </summary>
-        /// <param name="objs"></param>
-        /// <param name="action">回调方法</param>
-        /// <typeparam name="T"></typeparam>
-        public static void ForEach<T>(this IEnumerable<T> objs, Action<T> action)
-        {
-            foreach (var o in objs)
-            {
-                action(o);
-            }
-        }
-
-        /// <summary>
         /// 异步foreach
         /// </summary>
         /// <typeparam name="T"></typeparam>

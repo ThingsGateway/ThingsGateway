@@ -39,7 +39,7 @@ public static class ReadWriteHelpers
     /// <param name="p"></param>
     /// <param name="value"></param>
     /// <returns></returns>
-    public static object ObjToTypeValue(PropertyInfo p, string value)
+    public static object ObjToTypeValue(this PropertyInfo p, string value)
     {
         object _value = null;
         if (p.PropertyType == typeof(bool))
@@ -72,26 +72,25 @@ public static class ReadWriteHelpers
             _value = value;
         else if (p.PropertyType == typeof(IPAddress))
             _value = IPAddress.Parse(value);
-        else if (p.PropertyType.BaseType == typeof(Enum))
+        else if (p.PropertyType.IsEnum)
             _value = Enum.Parse(p.PropertyType, value);
         return _value;
 
     }
+
     /// <summary>
     /// 在返回的字节数组中解析每个变量的值
-    /// 根据每个变量的<see cref="CollectVariableRunTime.Index"/>
+    /// 根据每个变量的<see cref="DeviceVariableRunTime.Index"/>
     /// 不支持变长字符串类型变量，一定不能存在于变量List中
     /// </summary>
     /// <param name="buffer">返回的字节数组</param>
     /// <param name="values">设备变量List</param>
     /// <param name="startIndex">开始序号</param>
-    public static void PraseStructContent(byte[] buffer, IList<CollectVariableRunTime> values, int startIndex = 0)
+    public static void PraseStructContent(byte[] buffer, IList<DeviceVariableRunTime> values, int startIndex = 0)
     {
-        foreach (CollectVariableRunTime organizedVariable in values)
+        foreach (DeviceVariableRunTime organizedVariable in values)
         {
             var deviceValue = organizedVariable;
-            string address = deviceValue.VariableAddress;
-            //从变量地址中获取DataFormat，得到新的ThingsGatewayBitConverter
             IThingsGatewayBitConverter byteConverter = deviceValue.ThingsGatewayBitConverter;
             Type propertyType = organizedVariable.DataType;
             int index = organizedVariable.Index;
@@ -110,74 +109,70 @@ public static class ReadWriteHelpers
             {
                 byte num = byteConverter.ToByte(buffer, index + startIndex);
 
-                organizedVariable.SetValue(num);
+                Set(organizedVariable, num);
             }
             else if (propertyType == typeof(short))
             {
                 short num = byteConverter.ToInt16(buffer, index + startIndex);
-                organizedVariable.SetValue(num);
+                Set(organizedVariable, num);
             }
             else if (propertyType == typeof(ushort))
             {
                 ushort num = byteConverter.ToUInt16(buffer, index + startIndex);
-                organizedVariable.SetValue(num);
+                Set(organizedVariable, num);
             }
             else if (propertyType == typeof(int))
             {
                 int num = byteConverter.ToInt32(buffer, index + startIndex);
-                organizedVariable.SetValue(num);
+                Set(organizedVariable, num);
             }
             else if (propertyType == typeof(uint))
             {
                 uint num = byteConverter.ToUInt32(buffer, index + startIndex);
-                organizedVariable.SetValue(num);
+                Set(organizedVariable, num);
             }
             else if (propertyType == typeof(long))
             {
                 long num = byteConverter.ToInt64(buffer, index + startIndex);
-                organizedVariable.SetValue(num);
+                Set(organizedVariable, num);
             }
             else if (propertyType == typeof(ulong))
             {
                 ulong num = byteConverter.ToUInt64(buffer, index + startIndex);
-                organizedVariable.SetValue(num);
+                Set(organizedVariable, num);
             }
             else if (propertyType == typeof(float))
             {
                 float num = byteConverter.ToSingle(buffer, index + startIndex);
-                organizedVariable.SetValue(num);
+                Set(organizedVariable, num);
             }
             else if (propertyType == typeof(double))
             {
                 double num = byteConverter.ToDouble(buffer, index + startIndex);
-                organizedVariable.SetValue(num);
+                Set(organizedVariable, num);
             }
             else if (propertyType == typeof(bool))
             {
                 bool num = byteConverter.ToBoolean(buffer, index + (startIndex * 8));
-                organizedVariable.SetValue(num);
+                Set(organizedVariable, num);
             }
             else if (propertyType == typeof(string))
             {
-                //从变量地址中获取DataFormat，得到新的ThingsGatewayBitConverter和字符串信息
-                if (deviceValue.DataTypeEnum == DataTypeEnum.String)
-                {
-                    string num = byteConverter.ToString(buffer, index + startIndex, deviceValue.StringLength);
-                    organizedVariable.SetValue(num);
-                }
-                else if (deviceValue.DataTypeEnum == DataTypeEnum.Bcd)
-                {
-                    string num = byteConverter.ToBcdString(buffer, index + startIndex, deviceValue.StringLength, deviceValue.StringBcdFormat);
-                    organizedVariable.SetValue(num);
-                }
-                else if (deviceValue.DataTypeEnum == DataTypeEnum.DateTime)
-                {
-                    DateTime num = DateTime.Parse(byteConverter.ToString(buffer, index + startIndex, deviceValue.StringLength));
-                    organizedVariable.SetValue(num);
-                }
+                string num = byteConverter.ToString(buffer, index + startIndex, byteConverter.StringLength);
+                Set(organizedVariable, num);
 
             }
 
         }
+        static void Set(DeviceVariableRunTime organizedVariable, object num)
+        {
+            var operResult = organizedVariable.SetValue(num); ;
+            if (!operResult.IsSuccess)
+            {
+                throw new Exception(operResult.Message);
+            }
+        }
     }
+
+
 }

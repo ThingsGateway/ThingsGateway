@@ -9,7 +9,7 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 #endregion
-
+using System.Linq;
 namespace ThingsGateway.Core
 {
     /// <summary>
@@ -47,53 +47,25 @@ namespace ThingsGateway.Core
         /// SqlSugar分页扩展
         /// </summary>
         /// <typeparam name="TEntity"></typeparam>
-        /// <typeparam name="TResult"></typeparam>
         /// <param name="queryable"></param>
         /// <param name="pageIndex"></param>
         /// <param name="pageSize"></param>
-        /// <param name="expression"></param>
         /// <returns></returns>
-        public static SqlSugarPagedList<TResult> ToPagedList<TEntity, TResult>(this ISugarQueryable<TEntity> queryable, int pageIndex,
-            int pageSize, Expression<Func<TEntity, TResult>> expression)
+        public static async Task<SqlSugarPagedList<TEntity>> ToPagedListAsync<TEntity>(this ISugarQueryable<TEntity> queryable,
+            int pageIndex, int pageSize)
         {
-            var totalCount = 0;
-            var items = queryable.ToPageList(pageIndex, pageSize, ref totalCount, expression);
+            RefAsync<int> totalCount = 0;
+            var records = await queryable.ToPageListAsync(pageIndex, pageSize, totalCount);
             var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
-            return new SqlSugarPagedList<TResult>
+            return new SqlSugarPagedList<TEntity>
             {
                 Current = pageIndex,
                 Size = pageSize,
-                Records = items,
-                Total = totalCount,
-                Pages = totalPages,
-                HasNextPages = pageIndex < totalPages,
-                HasPrevPages = pageIndex - 1 > 0
-            };
-        }
-
-        /// <summary>
-        /// SqlSugar分页扩展
-        /// </summary>
-        /// <typeparam name="TEntity"></typeparam>
-        /// <param name="queryable"></param>
-        /// <param name="current"></param>
-        /// <param name="size"></param>
-        /// <returns></returns>
-        public static async Task<SqlSugarPagedList<TEntity>> ToPagedListAsync<TEntity>(this ISugarQueryable<TEntity> queryable,
-            int current, int size)
-        {
-            RefAsync<int> totalCount = 0;
-            var records = await queryable.ToPageListAsync(current, size, totalCount);
-            var totalPages = (int)Math.Ceiling(totalCount / (double)size);
-            return new SqlSugarPagedList<TEntity>
-            {
-                Current = current,
-                Size = size,
                 Records = records,
                 Total = (int)totalCount,
                 Pages = totalPages,
-                HasNextPages = current < totalPages,
-                HasPrevPages = current - 1 > 0
+                HasNextPages = pageIndex < totalPages,
+                HasPrevPages = pageIndex - 1 > 0
             };
         }
 
@@ -107,13 +79,14 @@ namespace ThingsGateway.Core
         /// <param name="pageSize"></param>
         /// <param name="expression"></param>
         /// <returns></returns>
-        public static async Task<SqlSugarPagedList<TResult>> ToPagedListAsync<TEntity, TResult>(
-            this ISugarQueryable<TEntity> queryable, int pageIndex, int pageSize, Expression<Func<TEntity, TResult>> expression)
+        public static async Task<SqlSugarPagedList<TEntity>> ToPagedListAsync<TEntity>(
+            this ISugarQueryable<TEntity> queryable, int pageIndex, int pageSize, Func<TEntity, bool> predicate)
         {
             RefAsync<int> totalCount = 0;
-            var items = await queryable.ToPageListAsync(pageIndex, pageSize, totalCount, expression);
+            var items = await queryable.ToPageListAsync(pageIndex, pageSize, totalCount);
+            items = items.Where(predicate).ToList();
             var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
-            return new SqlSugarPagedList<TResult>
+            return new SqlSugarPagedList<TEntity>
             {
                 Current = pageIndex,
                 Size = pageSize,
@@ -124,6 +97,7 @@ namespace ThingsGateway.Core
                 HasPrevPages = pageIndex - 1 > 0
             };
         }
+
     }
 
     /// <summary>

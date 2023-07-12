@@ -121,7 +121,7 @@ namespace ThingsGateway.Core
                     {
                         var id = entityInfo.EntityColumnInfo.PropertyInfo.GetValue(entityInfo.EntityValue);
                         if (id == null || (long)id == 0)
-                            entityInfo.SetValue(Yitter.IdGenerator.YitIdHelper.NextId());
+                            entityInfo.SetValue(YitIdHelper.NextId());
                     }
                     if (entityInfo.PropertyName == nameof(BaseEntity.CreateTime))
                         entityInfo.SetValue(DateTime.UtcNow);
@@ -239,7 +239,7 @@ namespace ThingsGateway.Core
 
         private static void WriteSqlLog(string msg)
         {
-            Console.WriteLine(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss fffffff"));
+            Console.WriteLine(DateTime.Now.ToDateTimeF());
             Console.WriteLine($"=============={msg}==============");
         }
     }

@@ -2,31 +2,6 @@
   //连接字符串配置
   "ConnectionStrings": {
     //Sqlsugar数据库配置
-    //"Sqlsugar": [
-    //  {
-    //    "ConfigId": "Default", //租户ID
-    //    "ConnectionString": "server=localhost;Database=test1;Uid=root;Pwd=111111;", //连接字符串
-    //    "DbType": "MySql", //数据库类型
-    //    "IsAutoCloseConnection": true, //是否自动释放
-    //    "IsInitDb": true, //是否初始化数据库,适用于codefirst
-    //    "IsUnderLine": false, //是否驼峰转下划线
-    //    "IsSeedData": true, //是否初始化种子数据
-    //    "IsUpdateSeedData": false
-    //  },
-    //  {
-    //    "ConfigId": "ThingsGateway", //租户ID
-    //    "ConnectionString": "server=localhost;Database=test122223;Uid=root;Pwd=111111;", //连接字符串
-    //    "DbType": "MySql", //数据库类型
-    //    "IsAutoCloseConnection": true, //是否自动释放
-    //    "IsInitDb": true, //是否初始化数据库,适用于codefirst
-    //    "IsUnderLine": false, //是否驼峰转下划线
-    //    "IsSeedData": true, //是否初始化种子数据
-    //    "IsUpdateSeedData": false
-    //  }
-
-    //]
-
-
     "Sqlsugar": [
       {
         "ConfigId": "Default", //租户ID
@@ -36,7 +11,7 @@
         "IsInitDb": true, //是否初始化数据库,适用于codefirst
         "IsUnderLine": false, //是否驼峰转下划线
         "IsSeedData": true, //是否初始化种子数据
-        "IsUpdateSeedData": false
+        "IsUpdateSeedData": true
       },
       {
         "ConfigId": "ThingsGateway", //租户ID
@@ -46,7 +21,7 @@
         "IsInitDb": true, //是否初始化数据库,适用于codefirst
         "IsUnderLine": false, //是否驼峰转下划线
         "IsSeedData": true, //是否初始化种子数据
-        "IsUpdateSeedData": false
+        "IsUpdateSeedData": true
       }
 
     ]
