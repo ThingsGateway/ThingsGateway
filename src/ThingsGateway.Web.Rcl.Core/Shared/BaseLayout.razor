@@ -41,7 +41,7 @@
     {
         base.OnInitialized();
         MasaBlazor.Breakpoint.MobileBreakpoint = 666;
-        MasaBlazor.Breakpoint.OnUpdate += BreakpointOnOnUpdate;
+        MasaBlazor.BreakpointChanged += BreakpointOnOnUpdate;
     }
 
     private void BreakpointOnOnUpdate(object sender, BreakpointChangedEventArgs e)
@@ -55,6 +55,6 @@
 
     public void Dispose()
     {
-        MasaBlazor.Breakpoint.OnUpdate -= BreakpointOnOnUpdate;
+        MasaBlazor.BreakpointChanged -= BreakpointOnOnUpdate;
     }
 }
