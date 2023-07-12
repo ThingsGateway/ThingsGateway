@@ -245,7 +245,7 @@ namespace ThingsGateway.Web.Rcl.Core
             else
             {
                 Page = SearchModel.Current;
-                if (Items.Count() <= 0)
+                if (!Items.Any())
                     await QueryClickAsync();
             }
 
@@ -330,7 +330,7 @@ namespace ThingsGateway.Web.Rcl.Core
             StateHasChanged();
             try
             {
-                if (_selectedItem.Count() <= 0)
+                if (_selectedItem.Length <= 0)
                 {
                     await PopupService.EnqueueSnackbarAsync(T("选择一行后才能进行操作"));
                 }
@@ -360,11 +360,11 @@ namespace ThingsGateway.Web.Rcl.Core
 
         private async Task DetailClick(params TItem[] _selectedItem)
         {
-            if (_selectedItem.Count() > 1)
+            if (_selectedItem.Length > 1)
             {
                 await PopupService.EnqueueSnackbarAsync(T("只能选择一行"));
             }
-            else if (_selectedItem.Count() == 1)
+            else if (_selectedItem.Length == 1)
             {
                 DetailModel = _selectedItem.FirstOrDefault();
                 var strs = typeof(TItem).GetAllPropsName();
@@ -392,11 +392,11 @@ namespace ThingsGateway.Web.Rcl.Core
 
         private async Task EditClick(params TItem[] _selectedItem)
         {
-            if (_selectedItem.Count() > 1)
+            if (_selectedItem.Length > 1)
             {
                 await PopupService.EnqueueSnackbarAsync(T("只能选择一行"));
             }
-            else if (_selectedItem.Count() == 1)
+            else if (_selectedItem.Length == 1)
             {
                 EditModel = _selectedItem.FirstOrDefault().Adapt<EditItem>();
                 EditShow = true;

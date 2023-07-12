@@ -27,29 +27,29 @@ public class CollectDeviceRunTime : CollectDevice
     /// 设备属性数量
     /// </summary>
     [Description("属性数量")]
-    public int PropertysNum { get => DevicePropertys == null ? 0 : DevicePropertys.Count; }
+    public int PropertysCount { get => DevicePropertys == null ? 0 : DevicePropertys.Count; }
     /// <summary>
     /// 设备变量
     /// </summary>
     [System.Text.Json.Serialization.JsonIgnore]
     [Newtonsoft.Json.JsonIgnore]
-    public List<CollectVariableRunTime> DeviceVariableRunTimes { get; set; }
+    public List<DeviceVariableRunTime> DeviceVariableRunTimes { get; set; }
     /// <summary>
     /// 设备变量数量
     /// </summary>
     [Description("变量数量")]
-    public int DeviceVariablesNum { get => DeviceVariableRunTimes == null ? 0 : DeviceVariableRunTimes.Count; }
+    public int DeviceVariableCount { get => DeviceVariableRunTimes == null ? 0 : DeviceVariableRunTimes.Count; }
 
     /// <summary>
     /// 设备读取分包数量
     /// </summary>
     [Description("分包数量")]
-    public int SourceVariableNum { get; set; }
+    public int SourceVariableCount { get; set; }
     /// <summary>
     /// 设备特殊方法数量
     /// </summary>
     [Description("特殊方法数量")]
-    public int MethodVariableNum { get; set; }
+    public int MethodVariableCount { get; set; }
     /// <summary>
     /// 设备活跃时间
     /// </summary>
@@ -63,14 +63,13 @@ public class CollectDeviceRunTime : CollectDevice
     {
         get
         {
-            return deviceStatus;
+            if (KeepRun)
+                return deviceStatus;
+            else
+                return DeviceStatusEnum.Pause;
         }
-        set
+        private set
         {
-            if (Name == "m1")
-            {
-
-            }
             if (deviceStatus != value)
             {
                 deviceStatus = value;
@@ -78,38 +77,53 @@ public class CollectDeviceRunTime : CollectDevice
             }
         }
     }
-
+    /// <summary>
+    /// 冗余状态
+    /// </summary>
+    [Description("冗余状态")]
+    public RedundantEnum RedundantEnum { get; set; } = RedundantEnum.Primary;
     /// <summary>
     /// 运行
     /// </summary>
     [Description("运行")]
-    public virtual bool KeepOn { get; set; } = true;
+    public bool KeepRun { get; set; } = true;
 
-    private DeviceStatusEnum deviceStatus = DeviceStatusEnum.Default;
+    private int errorCount;
+    /// <summary>
+    /// 距上次成功时的读取失败次数,超过3次设备更新为离线，等于0时设备更新为在线
+    /// </summary>
+    [Description("失败次数")]
+    public int ErrorCount
+    {
+        get
+        {
+            return errorCount;
+        }
+        set
+        {
+            errorCount = value;
+            if (errorCount > 3)
+            {
+                DeviceStatus = DeviceStatusEnum.OffLine;
+            }
+            else if (errorCount == 0)
+            {
+                DeviceStatus = DeviceStatusEnum.OnLine;
+            }
+        }
+    }
+
+    private DeviceStatusEnum deviceStatus = DeviceStatusEnum.None;
     /// <summary>
     /// 设备状态变化事件
     /// </summary>
     public event DelegateOnDeviceChanged DeviceStatusCahnge;
 
-    private string deviceOffMsg;
     /// <summary>
-    /// 失败原因
+    /// 最后一次失败原因
     /// </summary>
-    [Description("失败原因")]
-    public string DeviceOffMsg
-    {
-        get
-        {
-            if (deviceStatus == DeviceStatusEnum.OnLine)
-            {
-                return "";
-            }
-            else
-                return deviceOffMsg;
-        }
-
-        set => deviceOffMsg = value;
-    }
+    [Description("最后一次失败原因")]
+    public string LastErrorMessage { get; set; }
 }
 /// <summary>
 /// 设备变化委托

@@ -50,7 +50,7 @@ namespace ThingsGateway.Core
         {
             try
             {
-                if (json != null && json.StartsWith("{"))
+                if (json != null && (json.StartsWith("{") || json.StartsWith("[")))
                 {
                     return JToken.Parse(json).ToString();
                 }

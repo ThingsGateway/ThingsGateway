@@ -10,13 +10,58 @@
 //------------------------------------------------------------------------------
 #endregion
 
+using Microsoft.JSInterop;
+
+using System;
+using System.IO;
+
 namespace ThingsGateway.Web.Page
 {
     public partial class RpcLogPage
     {
         private IAppDataTable _datatable;
         private RpcLogPageInput search = new();
+        [Inject]
+        public JsInitVariables JsInitVariables { get; set; } = default!;
 
+        [Inject]
+        IJSRuntime JS { get; set; }
+
+        private async Task ClearClick()
+        {
+            var confirm = await PopupService.OpenConfirmDialogAsync(T("删除"), T("确定 ?"));
+            if (confirm)
+            {
+                await RpcLogService.DeleteAsync();
+                await _datatable?.QueryClickAsync();
+            }
+        }
+        async Task DownDeviceExport(IEnumerable<RpcLog> input = null)
+        {
+            try
+            {
+                using var memoryStream = await RpcLogService.ExportFileAsync(input?.ToList());
+                memoryStream.Seek(0, SeekOrigin.Begin);
+                using var streamRef = new DotNetStreamReference(stream: memoryStream);
+                await JS.InvokeVoidAsync("downloadFileFromStream", $"后台日志导出{DateTime.UtcNow.Add(JsInitVariables.TimezoneOffset).ToString("MM-dd-HH-mm-ss")}.xlsx", streamRef);
+            }
+            finally
+            {
+            }
+        }
+        async Task DownDeviceExport(RpcLogPageInput input)
+        {
+            try
+            {
+                using var memoryStream = await RpcLogService.ExportFileAsync(input);
+                memoryStream.Seek(0, SeekOrigin.Begin);
+                using var streamRef = new DotNetStreamReference(stream: memoryStream);
+                await JS.InvokeVoidAsync("downloadFileFromStream", $"后台日志导出{DateTime.UtcNow.Add(JsInitVariables.TimezoneOffset).ToString("MM-dd-HH-mm-ss")}.xlsx", streamRef);
+            }
+            finally
+            {
+            }
+        }
         private void FilterHeaders(List<DataTableHeader<RpcLog>> datas)
         {
             datas.RemoveWhere(it => it.Value == nameof(RpcLog.Id));
@@ -59,16 +104,6 @@ namespace ThingsGateway.Web.Page
         {
             var data = await RpcLogService.PageAsync(input);
             return data;
-        }
-
-        private async Task ClearClick()
-        {
-            var confirm = await PopupService.OpenConfirmDialogAsync(T("删除"), T("确定 ?"));
-            if (confirm)
-            {
-                await RpcLogService.DeleteAsync();
-                await _datatable?.QueryClickAsync();
-            }
         }
     }
 }

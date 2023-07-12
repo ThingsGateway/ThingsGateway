@@ -44,10 +44,9 @@ public class OPCUAServerVariableProperty : VariablePropertyBase
 /// </summary>
 public partial class OPCUAServer : UpLoadBase
 {
-    private List<CollectVariableRunTime> _uploadVariables = new();
-    private OPCUAServerProperty driverPropertys = new();
+    private List<DeviceVariableRunTime> _uploadVariables = new();
     private OPCUAServerVariableProperty _variablePropertys = new();
-
+    private OPCUAServerProperty driverPropertys = new();
     private ApplicationInstance m_application;
     private ApplicationConfiguration m_configuration;
     private ThingsGatewayServer m_server;
@@ -56,17 +55,18 @@ public partial class OPCUAServer : UpLoadBase
     public OPCUAServer(IServiceScopeFactory serviceScopeFactory) : base(serviceScopeFactory)
     {
     }
+    public override Type DriverDebugUIType => null;
+
     /// <inheritdoc/>
     public override UpDriverPropertyBase DriverPropertys => driverPropertys;
 
     /// <inheritdoc/>
-    public override List<CollectVariableRunTime> UploadVariables => _uploadVariables;
+    public override List<DeviceVariableRunTime> UploadVariables => _uploadVariables;
     /// <inheritdoc/>
     public override VariablePropertyBase VariablePropertys => _variablePropertys;
 
 
     private ConcurrentQueue<VariableData> _collectVariableRunTimes { get; set; } = new();
-
     /// <inheritdoc/>
     public override async Task BeforStartAsync(CancellationToken cancellationToken)
     {
@@ -74,15 +74,6 @@ public partial class OPCUAServer : UpLoadBase
         await m_application.CheckApplicationInstanceCertificate(true, 0, 1200);
         await m_application.Start(m_server);
     }
-    protected override void Dispose(bool disposing)
-    {
-        m_server?.Stop();
-        m_server?.SafeDispose();
-        _uploadVariables = null;
-        _collectVariableRunTimes.Clear();
-        _collectVariableRunTimes = null;
-    }
-
     /// <inheritdoc/>
     public override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
@@ -140,6 +131,15 @@ public partial class OPCUAServer : UpLoadBase
             return new OperResult(ex);
         }
     }
+
+    protected override void Dispose(bool disposing)
+    {
+        m_server?.Stop();
+        m_server?.SafeDispose();
+        _uploadVariables = null;
+        _collectVariableRunTimes.Clear();
+        _collectVariableRunTimes = null;
+    }
     /// <inheritdoc/>
     protected override void Init(UploadDeviceRunTime device)
     {
@@ -158,10 +158,10 @@ public partial class OPCUAServer : UpLoadBase
         m_server = new(device, _logger, _scopeFactory.CreateScope());
 
         var serviceScope = _scopeFactory.CreateScope();
-        var _globalCollectDeviceData = serviceScope.ServiceProvider.GetService<GlobalCollectDeviceData>();
+        var _globalDeviceData = serviceScope.ServiceProvider.GetService<GlobalDeviceData>();
 
-        _uploadVariables = _globalCollectDeviceData.CollectVariables;
-        _globalCollectDeviceData.CollectVariables.ForEach(a =>
+        _uploadVariables = _globalDeviceData.AllVariables;
+        _globalDeviceData.AllVariables.ForEach(a =>
         {
             VariableValueChange(a);
             a.VariableValueChange += VariableValueChange;
@@ -330,7 +330,7 @@ public partial class OPCUAServer : UpLoadBase
         return config;
     }
 
-    private void VariableValueChange(CollectVariableRunTime collectVariableRunTime)
+    private void VariableValueChange(DeviceVariableRunTime collectVariableRunTime)
     {
         _collectVariableRunTimes.Enqueue(collectVariableRunTime.Adapt<VariableData>());
     }

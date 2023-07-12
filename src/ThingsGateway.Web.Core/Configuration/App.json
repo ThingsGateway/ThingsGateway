@@ -1,10 +1,10 @@
 {
   "$schema": "https://gitee.com/dotnetchina/Furion/raw/net6/schemas/v3/furion-schema.json",
-  //"Urls": "https://localhost:7101;http://localhost:7100",
+  //"Urls": "https://*:7101;",
   "Logging": {
     "LogLevel": {
       "FileDefault": "Information", //程序日志写入文件等级，不包含网关日志
-      "RunTimeLogCustom": "Information", //网关运行日志存入数据库等级，部署推荐Error
+      "BackendLogDefault": "Information", //网关运行日志存入数据库等级，部署推荐Error
       "Default": "Information", //前提等级
       "Console": "Information", //控制台输出日志等级
       "Microsoft": "Warning",
@@ -12,7 +12,7 @@
     }
   },
   "LogFileEnable": true, //程序日志写入文件
-  "WriteMonitor": true, //程序日志是否包含Monitor
+  "WriteMonitor": true, //程序文件日志是否包含Monitor
   //动态API设备
   "DynamicApiControllerSettings": {
     "LowercaseRoute": false, //是否采用小写路由，bool 类型，默认 true

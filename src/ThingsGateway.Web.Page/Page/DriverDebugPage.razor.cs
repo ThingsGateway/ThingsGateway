@@ -10,14 +10,25 @@
 //------------------------------------------------------------------------------
 #endregion
 
+using Masa.Blazor;
+
 namespace ThingsGateway.Web.Page
 {
     public partial class DriverDebugPage
     {
+        List<DeviceTree> _deviceGroups = new();
+        private BootstrapDynamicComponent _importComponent;
+        private DriverDebugUIBase _importRef;
+        private RenderFragment _importRender;
+        string _searchName;
+        List<DriverPluginCategory> DriverPlugins;
+        bool IsShowTreeView = true;
+        PluginDebugUIInput _searchModel { get; set; } = new();
+        [Inject]
+        IDriverPluginService DriverPluginService { get; set; }
 
         [CascadingParameter]
         MainLayout MainLayout { get; set; }
-
 
         [Inject]
         ResourceService ResourceService { get; set; }
@@ -25,5 +36,28 @@ namespace ThingsGateway.Web.Page
         [Inject]
         IUploadDeviceService UploadDeviceService { get; set; }
 
+        protected override void OnInitialized()
+        {
+            DriverPlugins = DriverPluginService.GetDriverPluginChildrenList();
+            base.OnInitialized();
+        }
+
+        async Task ImportVaiable(long driverId)
+        {
+            var driver = ServiceExtensions.GetBackgroundService<CollectDeviceWorker>().GetDebugUI(driverId);
+            if (driver == null)
+            {
+                await PopupService.EnqueueSnackbarAsync("插件未实现调试页面", AlertTypes.Warning);
+                return;
+            }
+
+            _importComponent = new BootstrapDynamicComponent(driver);
+            _importRender = _importComponent.Render(a => _importRef = (DriverDebugUIBase)a);
+        }
+        class PluginDebugUIInput
+        {
+            public long PluginId { get; set; }
+            public string PluginName { get; set; }
+        }
     }
 }

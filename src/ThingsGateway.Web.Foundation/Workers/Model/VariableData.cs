@@ -11,45 +11,47 @@
 #endregion
 
 
+using Newtonsoft.Json.Linq;
+
 using ThingsGateway.Core;
-using ThingsGateway.Web.Foundation;
+namespace ThingsGateway.Web.Foundation;
 /// <summary>
 /// 上传DTO
 /// </summary>
 public class VariableData
 {
     /// <inheritdoc cref="PrimaryIdEntity.Id"/>
-    public long id { get; set; }
+    public long Id { get; set; }
     /// <inheritdoc cref="MemoryVariable.Name"/>
-    public string name { get; set; }
+    public string Name { get; set; }
     /// <inheritdoc cref="MemoryVariable.Description"/>
-    public object description { get; set; }
-    /// <inheritdoc cref="CollectVariableRunTime.DeviceName"/>
-    public string deviceName { get; set; }
-    /// <inheritdoc cref="CollectVariableRunTime.RawValue"/>
-    public string rawValue { get; set; }
-    /// <inheritdoc cref="CollectVariableRunTime.Value"/>
-    public object value { get; set; }
-    /// <inheritdoc cref="CollectVariableRunTime.ChangeTime"/>
-    public DateTime changeTime { get; set; }
-    /// <inheritdoc cref="CollectVariableRunTime.CollectTime"/>
-    public DateTime collectTime { get; set; }
-    /// <inheritdoc cref="CollectVariableRunTime.Quality"/>
-    public int quality { get; set; }
-    /// <inheritdoc cref="CollectDeviceVariable.ReadExpressions"/>
-    public string readExpressions { get; set; }
-    /// <inheritdoc cref="CollectDeviceVariable.WriteExpressions"/>
-    public string writeExpressions { get; set; }
-    /// <inheritdoc cref="CollectDeviceVariable.IntervalTime"/>
-    public int intervalTime { get; set; }
-    /// <inheritdoc cref="CollectDeviceVariable.OtherMethod"/>
-    public object otherMethod { get; set; }
-    /// <inheritdoc cref="CollectDeviceVariable.VariableAddress"/>
-    public string variableAddress { get; set; }
+    public string Description { get; set; }
+    /// <inheritdoc cref="DeviceVariableRunTime.DeviceName"/>
+    public string DeviceName { get; set; }
+    /// <inheritdoc cref="DeviceVariableRunTime.RawValue"/>
+    public JToken RawValue { get; set; }
+    /// <inheritdoc cref="DeviceVariableRunTime.Value"/>
+    public JToken Value { get; set; }
+    /// <inheritdoc cref="DeviceVariableRunTime.ChangeTime"/>
+    public DateTime ChangeTime { get; set; }
+    /// <inheritdoc cref="DeviceVariableRunTime.CollectTime"/>
+    public DateTime CollectTime { get; set; }
+    /// <inheritdoc cref="DeviceVariableRunTime.IsOnline"/>
+    public bool IsOnline { get; set; }
+    /// <inheritdoc cref="MemoryVariable.ReadExpressions"/>
+    public string ReadExpressions { get; set; }
+    /// <inheritdoc cref="DeviceVariable.WriteExpressions"/>
+    public string WriteExpressions { get; set; }
+    /// <inheritdoc cref="DeviceVariable.IntervalTime"/>
+    public int IntervalTime { get; set; }
+    /// <inheritdoc cref="DeviceVariable.OtherMethod"/>
+    public string OtherMethod { get; set; }
+    /// <inheritdoc cref="DeviceVariable.VariableAddress"/>
+    public string VariableAddress { get; set; }
 
     /// <inheritdoc cref="MemoryVariable.ProtectTypeEnum"/>
-    public int protectTypeEnum { get; set; }
+    public int ProtectTypeEnum { get; set; }
     /// <inheritdoc cref="MemoryVariable.DataTypeEnum"/>
-    public int dataTypeEnum { get; set; }
+    public int DataTypeEnum { get; set; }
 }
 

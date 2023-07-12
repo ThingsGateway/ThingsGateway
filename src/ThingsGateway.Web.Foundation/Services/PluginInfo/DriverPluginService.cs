@@ -79,7 +79,7 @@ public partial class DriverPluginService : DbRepository<DriverPlugin>, IDriverPl
             driverPlugins = Context.Queryable<DriverPlugin>()
             .Select((u) => new DriverPlugin { Id = u.Id.SelectAll() })
             .ToList();
-            if (driverPlugins != null)//做个大小写限制
+            if (driverPlugins != null)
             {
                 //插入Cache
                 _sysCacheService.Set(ThingsGatewayCacheConst.Cache_DriverPlugin, "", driverPlugins);
@@ -94,37 +94,16 @@ public partial class DriverPluginService : DbRepository<DriverPlugin>, IDriverPl
         var data = GetCacheList();
         return data.FirstOrDefault(it => it.Id == Id);
     }
-    /// <inheritdoc/>
-    public List<DriverPluginCategory> GetDriverPluginChildrenList()
-    {
-        var data = GetCacheList();
-        var driverPluginCategories = data.GroupBy(a => a.FileName).Select(it =>
-        {
-            var childrens = new List<DriverPluginCategory>();
-            foreach (var item in it)
-            {
-                childrens.Add(new DriverPluginCategory
-                {
-                    Id = item.Id,
-                    Name = item.AssembleName,
-                }
-                );
-            }
-            return new DriverPluginCategory
-            {
-                Id = YitIdHelper.NextId(),
-                Name = it.Key,
-                Children = childrens,
-            };
-        });
-        return driverPluginCategories.ToList();
-    }
 
     /// <inheritdoc/>
-    public List<DriverPluginCategory> GetDriverPluginChildrenList(DriverEnum driverTypeEnum)
+    public List<DriverPluginCategory> GetDriverPluginChildrenList(DriverEnum? driverTypeEnum = null)
     {
         var data = GetCacheList();
-        var driverPluginCategories = data.Where(a => a.DriverTypeEnum == driverTypeEnum).GroupBy(a => a.FileName).Select(it =>
+        if (driverTypeEnum != null)
+        {
+            data = data.Where(a => a.DriverTypeEnum == driverTypeEnum).ToList();
+        }
+        var driverPluginCategories = data.GroupBy(a => a.FileName).Select(it =>
          {
              var childrens = new List<DriverPluginCategory>();
              foreach (var item in it)

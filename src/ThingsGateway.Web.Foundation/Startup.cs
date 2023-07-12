@@ -23,7 +23,7 @@ public class Startup : AppStartup
     {
 
         //运行日志写入数据库配置
-        services.AddDatabaseLogging<TGRunTimeDatabaseLoggingWriter>(options =>
+        services.AddDatabaseLogging<BackendLogDatabaseLoggingWriter>(options =>
         {
             options.WriteFilter = (logMsg) =>
             {
@@ -36,8 +36,10 @@ public class Startup : AppStartup
 
         //添加采集/上传后台服务
         services.AddHostedService<CollectDeviceWorker>();
+        services.AddHostedService<MemoryVariableWorker>();
         services.AddHostedService<AlarmWorker>();
-        services.AddHostedService<ValueHisWorker>();
+        services.AddHostedService<HistoryValueWorker>();
         services.AddHostedService<UploadDeviceWorker>();
     }
+
 }

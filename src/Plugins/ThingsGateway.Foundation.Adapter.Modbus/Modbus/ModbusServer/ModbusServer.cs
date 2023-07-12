@@ -16,12 +16,34 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using ThingsGateway.Foundation.Extension;
+using ThingsGateway.Foundation.Extension.Generic;
 
 namespace ThingsGateway.Foundation.Adapter.Modbus
 {
     public class ModbusServer : ReadWriteDevicesTcpServerBase
     {
         public ModbusServerDataHandleAdapter DataHandleAdapter = new();
+        /// <summary>
+        /// 继电器
+        /// </summary>
+        public Dictionary<int, ByteBlock> ModbusServer01ByteBlocks = new();
+
+        /// <summary>
+        /// 开关输入
+        /// </summary>
+        public Dictionary<int, ByteBlock> ModbusServer02ByteBlocks = new();
+
+        /// <summary>
+        /// 输入寄存器
+        /// </summary>
+        public Dictionary<int, ByteBlock> ModbusServer03ByteBlocks = new();
+
+        /// <summary>
+        /// 保持寄存器
+        /// </summary>
+        public Dictionary<int, ByteBlock> ModbusServer04ByteBlocks = new();
+
+        public Func<ModbusAddress, byte[], IThingsGatewayBitConverter, SocketClient, Task<OperResult>> Write;
 
         public ModbusServer(TcpService tcpService) : base(tcpService)
         {
@@ -30,35 +52,19 @@ namespace ThingsGateway.Foundation.Adapter.Modbus
         }
 
         /// <summary>
-        /// 默认站点
-        /// </summary>
-        public byte Station { get; set; } = 1;
-        /// <summary>
         /// 多站点
         /// </summary>
         public bool MulStation { get; set; }
 
-        public override void SetDataAdapter(SocketClient client)
+        /// <summary>
+        /// 默认站点
+        /// </summary>
+        public byte Station { get; set; } = 1;
+
+        public override string GetAddressDescription()
         {
-            DataHandleAdapter = new();
-            client.SetDataHandlingAdapter(DataHandleAdapter);
+            return base.GetAddressDescription() + Environment.NewLine + ModbusHelper.GetAddressDescription();
         }
-        /// <summary>
-        /// 保持寄存器
-        /// </summary>
-        public Dictionary<int, ByteBlock> ModbusServer04ByteBlocks = new();
-        /// <summary>
-        /// 输入寄存器
-        /// </summary>
-        public Dictionary<int, ByteBlock> ModbusServer03ByteBlocks = new();
-        /// <summary>
-        /// 开关输入
-        /// </summary>
-        public Dictionary<int, ByteBlock> ModbusServer02ByteBlocks = new();
-        /// <summary>
-        /// 继电器
-        /// </summary>
-        public Dictionary<int, ByteBlock> ModbusServer01ByteBlocks = new();
         public override Task<OperResult<byte[]>> ReadAsync(string address, int length, CancellationToken token = default)
         {
             ModbusAddress mAddress = null;
@@ -127,6 +133,12 @@ namespace ThingsGateway.Foundation.Adapter.Modbus
                     return Task.FromResult(OperResult.CreateSuccessResult(bytes4));
             }
             return Task.FromResult(new OperResult<byte[]>("功能码错误"));
+        }
+
+        public override void SetDataAdapter(SocketClient client)
+        {
+            DataHandleAdapter = new();
+            client.SetDataHandlingAdapter(DataHandleAdapter);
         }
         public override Task<OperResult> WriteAsync(string address, byte[] value, CancellationToken token = default)
         {
@@ -219,6 +231,32 @@ namespace ThingsGateway.Foundation.Adapter.Modbus
                     return Task.FromResult(OperResult.CreateSuccessResult());
             }
             return Task.FromResult(new OperResult("功能码错误"));
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            foreach (var item in ModbusServer01ByteBlocks)
+            {
+                item.Value.SafeDispose();
+            }
+            foreach (var item in ModbusServer02ByteBlocks)
+            {
+                item.Value.SafeDispose();
+            }
+            foreach (var item in ModbusServer03ByteBlocks)
+            {
+                item.Value.SafeDispose();
+            }
+            foreach (var item in ModbusServer04ByteBlocks)
+            {
+                item.Value.SafeDispose();
+            }
+            ModbusServer01ByteBlocks.Clear();
+            ModbusServer02ByteBlocks.Clear();
+            ModbusServer03ByteBlocks.Clear();
+            ModbusServer04ByteBlocks.Clear();
+            Disconnect();
+            base.Dispose(disposing);
         }
 
         protected override async Task ReceivedAsync(SocketClient client, IRequestInfo requestInfo)
@@ -359,34 +397,6 @@ namespace ThingsGateway.Foundation.Adapter.Modbus
             var sendData = modbusServerMessage.ReceivedBytes.SelectMiddle(0, 12);
             sendData[5] = (byte)(sendData.Length - 6);
             client.Send(sendData);
-        }
-
-        public Func<ModbusAddress, byte[], IThingsGatewayBitConverter, SocketClient, Task<OperResult>> Write;
-
-        protected override void Dispose(bool disposing)
-        {
-            foreach (var item in ModbusServer01ByteBlocks)
-            {
-                item.Value.SafeDispose();
-            }
-            foreach (var item in ModbusServer02ByteBlocks)
-            {
-                item.Value.SafeDispose();
-            }
-            foreach (var item in ModbusServer03ByteBlocks)
-            {
-                item.Value.SafeDispose();
-            }
-            foreach (var item in ModbusServer04ByteBlocks)
-            {
-                item.Value.SafeDispose();
-            }
-            ModbusServer01ByteBlocks.Clear();
-            ModbusServer02ByteBlocks.Clear();
-            ModbusServer03ByteBlocks.Clear();
-            ModbusServer04ByteBlocks.Clear();
-            Disconnect();
-            base.Dispose(disposing);
         }
     }
 }

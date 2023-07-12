@@ -33,7 +33,7 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
 
     private TypeAdapterConfig _config;
     private UploadDevice _device;
-    private GlobalCollectDeviceData _globalCollectDeviceData;
+    private GlobalDeviceData _globalDeviceData;
 
     /// <summary>
     /// OPC和网关对应表
@@ -46,9 +46,9 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
     {
         _serviceScope = serviceScope; _device = device;
         _rpcCore = serviceScope.ServiceProvider.GetService<RpcSingletonService>();
-        _globalCollectDeviceData = serviceScope.ServiceProvider.GetService<GlobalCollectDeviceData>();
+        _globalDeviceData = serviceScope.ServiceProvider.GetService<GlobalDeviceData>();
         _config = new TypeAdapterConfig();
-        _config.ForType<ValueHis, DataValue>()
+        _config.ForType<HistoryValue, DataValue>()
 .Map(dest => dest.WrappedValue, (src) => new Variant(src.Value))
 .Map(dest => dest.SourceTimestamp, (src) => DateTime.SpecifyKind(src.CollectTime, DateTimeKind.Utc))
 .Map(dest => dest.StatusCode, (src) => src.Quality == 192 ? StatusCodes.Good : StatusCodes.Bad);
@@ -77,7 +77,7 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
             AddRootNotifier(rootFolder);
 
             //创建设备树
-            var _geviceGroup = global::CollectDeviceServiceHelpers.GetTree(_globalCollectDeviceData.CollectDevices.ToList().Adapt<List<CollectDevice>>());
+            var _geviceGroup = _globalDeviceData.CollectDevices.ToList().Adapt<List<CollectDevice>>().GetTree();
             // 开始寻找设备信息，并计算一些节点信息
             foreach (var item in _geviceGroup)
             {
@@ -124,7 +124,7 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
     /// <summary>
     /// 获取变量的属性值
     /// </summary>
-    public string GetPropertyValue(CollectVariableRunTime variableRunTime, string propertyName)
+    public string GetPropertyValue(DeviceVariableRunTime variableRunTime, string propertyName)
     {
         if (variableRunTime.VariablePropertys.ContainsKey(_device.Id))
         {
@@ -157,7 +157,7 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
             errors[0] = StatusCodes.BadHistoryOperationUnsupported;
             return;
         }
-        var service = _serviceScope.GetBackgroundService<ValueHisWorker>();
+        var service = _serviceScope.GetBackgroundService<HistoryValueWorker>();
         if (!service.StatuString.IsSuccess)
         {
             errors[0] = StatusCodes.BadHistoryOperationUnsupported;
@@ -178,7 +178,7 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
             var historyRead = nodesToRead[i];
             if (_idTags.TryGetValue(historyRead.NodeId, out OPCUATag tag))
             {
-                var data = db.Content.Queryable<ValueHis>()
+                var data = db.Content.Queryable<HistoryValue>()
                     .Where(a => a.Name == tag.SymbolicName)
                     .Where(a => a.CollectTime >= startTime)
                     .Where(a => a.CollectTime <= endTime)
@@ -238,16 +238,16 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
     /// <param name="variable"></param>
     public void UpVariable(VariableData variable)
     {
-        var uaTag = _idTags.Values.FirstOrDefault(it => it.SymbolicName == variable.name);
+        var uaTag = _idTags.Values.FirstOrDefault(it => it.SymbolicName == variable.Name);
         if (uaTag == null) return;
         object initialItemValue = null;
-        initialItemValue = variable.value;
+        initialItemValue = variable.Value;
         if (initialItemValue != null)
         {
-            var code = variable.quality == 192 ? StatusCodes.Good : StatusCodes.Bad;
+            var code = variable.IsOnline ? StatusCodes.Good : StatusCodes.Bad;
             if (code == StatusCodes.Good)
             {
-                ChangeNodeData(uaTag, initialItemValue, variable.changeTime);
+                ChangeNodeData(uaTag, initialItemValue, variable.ChangeTime);
             }
 
             if (uaTag.StatusCode != code)
@@ -267,7 +267,7 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
     /// <param name="name">设备名称</param>
     private void AddTagNode(FolderState fs, string name)
     {
-        var device = _globalCollectDeviceData.CollectDevices.Where(a => a.Name == name).FirstOrDefault();
+        var device = _globalDeviceData.CollectDevices.Where(a => a.Name == name).FirstOrDefault();
         if (device != null)
         {
             foreach (var item in device.DeviceVariableRunTimes)
@@ -325,7 +325,7 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
     /// <summary>
     /// 创建一个值节点，类型需要在创建的时候指定
     /// </summary>
-    private OPCUATag CreateVariable(NodeState parent, CollectVariableRunTime variableRunTime)
+    private OPCUATag CreateVariable(NodeState parent, DeviceVariableRunTime variableRunTime)
     {
         OPCUATag variable = new OPCUATag(parent);
 
@@ -347,7 +347,7 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
         variable.UserAccessLevel = level;
         variable.Historizing = variableRunTime.HisEnable;
         variable.Value = Opc.Ua.TypeInfo.GetDefaultValue(variable.DataType, ValueRanks.Scalar, Server.TypeTree);
-        var code = variableRunTime.Quality == 192 ? StatusCodes.Good : StatusCodes.Bad;
+        var code = variableRunTime.IsOnline ? StatusCodes.Good : StatusCodes.Bad;
         variable.StatusCode = code;
         variable.Timestamp = variableRunTime.CollectTime;
         variable.OnWriteValue = OnWriteDataValue;
@@ -363,13 +363,13 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
     /// </summary>
     /// <param name="variableRunTime"></param>
     /// <returns></returns>
-    private NodeId DataNodeType(CollectVariableRunTime variableRunTime)
+    private NodeId DataNodeType(DeviceVariableRunTime variableRunTime)
     {
         Type tp;
         var str = GetPropertyValue(variableRunTime, nameof(OPCUAServerVariableProperty.DataTypeEnum));
         if (Enum.TryParse<DataTypeEnum>(str, out DataTypeEnum result))
         {
-            tp = result.GetNetType();
+            tp = result.GetSystemType();
         }
         else
         {
@@ -382,11 +382,11 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
             {
                 if (variableRunTime.ReadExpressions.IsNullOrEmpty())
                 {
-                    tp = variableRunTime.DataTypeEnum.GetNetType();
+                    tp = variableRunTime.DataTypeEnum.GetSystemType();
                 }
                 else
                 {
-                    var tp1 = variableRunTime.DataTypeEnum.GetNetType();
+                    var tp1 = variableRunTime.DataTypeEnum.GetSystemType();
                     var data = variableRunTime.ReadExpressions.GetExpressionsResult(GetDefaultValue(tp1));
                     tp = data.GetType();
                 }
@@ -426,13 +426,13 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
     /// </summary>
     /// <param name="variableRunTime"></param>
     /// <returns></returns>
-    private Type NETDataNodeType(CollectVariableRunTime variableRunTime)
+    private Type NETDataNodeType(DeviceVariableRunTime variableRunTime)
     {
         Type tp;
         var str = GetPropertyValue(variableRunTime, nameof(OPCUAServerVariableProperty.DataTypeEnum));
         if (Enum.TryParse<DataTypeEnum>(str, out DataTypeEnum result))
         {
-            tp = result.GetNetType();
+            tp = result.GetSystemType();
         }
         else
         {
@@ -445,11 +445,11 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
             {
                 if (variableRunTime.ReadExpressions.IsNullOrEmpty())
                 {
-                    tp = variableRunTime.DataTypeEnum.GetNetType();
+                    tp = variableRunTime.DataTypeEnum.GetSystemType();
                 }
                 else
                 {
-                    var tp1 = variableRunTime.DataTypeEnum.GetNetType();
+                    var tp1 = variableRunTime.DataTypeEnum.GetSystemType();
                     var data = variableRunTime.ReadExpressions.GetExpressionsResult(GetDefaultValue(tp1));
                     tp = data.GetType();
                 }
@@ -489,7 +489,7 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
                     //仅当指定了值时才将值写入
                     if (variable.Value != null)
                     {
-                        var nv = new NameValue() { Name = variable.SymbolicName, Value = value?.ToString() };
+                        var nv = new KeyValuePair<string, string>(variable.SymbolicName, value?.ToString());
 
                         var result = _rpcCore.InvokeDeviceMethodAsync("OPCUASERVER-" + context1?.OperationContext?.Session?.Identity?.DisplayName, nv, CancellationToken.None).GetAwaiter().GetResult();
                         if (result.IsSuccess)
@@ -513,7 +513,7 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
 
     }
 
-    private byte ProtectTypeTrans(CollectVariableRunTime variableRunTime)
+    private byte ProtectTypeTrans(DeviceVariableRunTime variableRunTime)
     {
         byte result = 0;
         switch (variableRunTime.ProtectTypeEnum)

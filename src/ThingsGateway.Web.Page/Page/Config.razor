@@ -42,7 +42,7 @@
                             case ThingsGatewayConst.Config_Alarm_ConnStr:
                                 <MCol Class="pa-2 px-4" Md=12 Cols="12">
                                     <MSubheader Class="mt-4 font-weight-black"> @item.Remark</MSubheader>
-                                    <MTextField Type="password" Dense Outlined HideDetails="@("auto")" @bind-Value=@item.ConfigValue />
+                                    <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@item.ConfigValue />
                                 </MCol>
                                 break;
                             case ThingsGatewayConst.Config_Alarm_DbType:
@@ -95,7 +95,7 @@
                             case ThingsGatewayConst.Config_His_ConnStr:
                                 <MCol Class="pa-2 px-4" Md=12 Cols="12">
                                     <MSubheader Class="mt-4 font-weight-black"> @item.Remark</MSubheader>
-                                    <MTextField Type="password" Dense Outlined HideDetails="@("auto")" @bind-Value=@item.ConfigValue />
+                                    <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@item.ConfigValue />
                                 </MCol>
                                 break;
                             case ThingsGatewayConst.Config_His_DbType:
@@ -143,35 +143,5 @@
 
 </MCard>
 
-@code {
-    StringNumber tab;
-    AlarmWorker AlarmHostService { get; set; }
-    ValueHisWorker ValueHisHostService { get; set; }
-    public Config()
-    {
-        AlarmHostService = ServiceExtension.GetBackgroundService<AlarmWorker>();
-        ValueHisHostService = ServiceExtension.GetBackgroundService<ValueHisWorker>();
-    }
-    private async Task OnAlarmSave()
-    {
-        var confirm = await PopupService.OpenConfirmDialogAsync(T("确认"), T("保存配置后将重启报警服务，是否确定?"));
-        if (confirm)
-        {
-            await ConfigService.EditBatch(_alarmConfig);
-            AlarmHostService.Restart();
-            await PopupService.EnqueueSnackbarAsync(T("成功"), AlertTypes.Success);
-        }
 
-    }
-    private async Task OnHisSave()
-    {
-        var confirm = await PopupService.OpenConfirmDialogAsync(T("确认"), T("保存配置后将重启历史服务，是否确定?"));
-        if (confirm)
-        {
-            await ConfigService.EditBatch(_hisConfig);
-            ValueHisHostService.Restart();
-            await PopupService.EnqueueSnackbarAsync(T("成功"), AlertTypes.Success);
-        }
-    }
-}
 

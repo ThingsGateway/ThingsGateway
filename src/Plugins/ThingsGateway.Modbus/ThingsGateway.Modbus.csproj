@@ -5,7 +5,7 @@
 		<!--<GenerateDocumentationFile>True</GenerateDocumentationFile>-->
 		<TargetFrameworks>net6.0;net7.0</TargetFrameworks>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<Version>1.6.1</Version>
+		<Version>1.7.0</Version>
 		<RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
 		<EnableDynamicLoading>true</EnableDynamicLoading>
 		<CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
@@ -19,17 +19,9 @@
 	</Target>
 
 
-	<ItemGroup>
-		<PackageReference Include="Masa.Blazor" Version="1.0.0-rc.4">
-			<IncludeAssets>Compile</IncludeAssets>
-		</PackageReference>
-	</ItemGroup>
-	
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\ThingsGateway.Web.Foundation\ThingsGateway.Web.Foundation.csproj">
-			<IncludeAssets>Compile</IncludeAssets>
-		</ProjectReference>
+		<ProjectReference Include="..\..\ThingsGateway.Web.Page\ThingsGateway.Web.Page.csproj" />
 		<ProjectReference Include="..\ThingsGateway.Foundation.Adapter.Modbus\ThingsGateway.Foundation.Adapter.Modbus.csproj">
 		</ProjectReference>
 	</ItemGroup>

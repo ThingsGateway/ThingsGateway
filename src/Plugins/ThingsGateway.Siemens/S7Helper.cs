@@ -13,14 +13,14 @@
 using Microsoft.Extensions.Logging;
 
 using ThingsGateway.Foundation;
-using ThingsGateway.Foundation.Extension;
 
 namespace ThingsGateway.Siemens
 {
     internal static class S7Helper
     {
-        internal static OperResult<List<DeviceVariableSourceRead>> LoadSourceRead(this List<CollectVariableRunTime> deviceVariables, ILogger _logger, IThingsGatewayBitConverter byteConverter, SiemensS7PLC siemensS7Net)
+        internal static OperResult<List<DeviceVariableSourceRead>> LoadSourceRead(this List<DeviceVariableRunTime> deviceVariables, ILogger _logger, SiemensS7PLC siemensS7Net)
         {
+            var byteConverter = siemensS7Net.ThingsGatewayBitConverter;
             var result = new List<DeviceVariableSourceRead>();
             try
             {
@@ -29,50 +29,31 @@ namespace ThingsGateway.Siemens
                 {
                     var address = item.VariableAddress;
 
-                    IThingsGatewayBitConverter transformParameter = ByteConverterHelper.GetTransByAddress(
-                     ref address, byteConverter, out int length, out BcdFormat bCDFormat);
+                    IThingsGatewayBitConverter transformParameter = ByteTransformHelpers.GetTransByAddress(ref address, byteConverter);
                     item.ThingsGatewayBitConverter = transformParameter;
-                    item.StringLength = length;
-                    item.StringBcdFormat = bCDFormat;
-                    item.VariableAddress = address;
+                    //item.VariableAddress = address;
 
-                    int bitIndex = 0;
-                    string[] addressSplits = new string[] { address };
-                    if (address.IndexOf('.') > 0)
-                    {
-                        addressSplits = address.SplitDot();
-                        try
-                        {
-                            if ((addressSplits.Length == 2 && !address.ToUpper().Contains("DB")) || (addressSplits.Length >= 3 && address.ToUpper().Contains("DB")))
-                                bitIndex = Convert.ToInt32(addressSplits.Last());
-
-                        }
-                        catch (Exception ex)
-                        {
-                            _logger?.LogError(ex, "自动分包方法获取Bit失败");
-                        }
-                    }
-                    item.Index = bitIndex;
+                    item.Index = siemensS7Net.GetBitOffset(item.VariableAddress);
                 }
                 //按读取间隔分组
                 var tags = deviceVariables.GroupBy(it => it.IntervalTime);
                 foreach (var item in tags)
                 {
-                    Dictionary<SiemensAddress, CollectVariableRunTime> map = item.ToDictionary(it =>
+                    Dictionary<SiemensAddress, DeviceVariableRunTime> map = item.ToDictionary(it =>
                     {
 
                         var lastLen = it.DataTypeEnum.GetByteLength(); ;
                         if (lastLen <= 0)
                         {
-                            if (it.DataTypeEnum.GetNetType() == typeof(bool))
+                            if (it.DataTypeEnum.GetSystemType() == typeof(bool))
                             {
                                 lastLen = 2;
                             }
-                            else if (it.DataTypeEnum.GetNetType() == typeof(string))
+                            else if (it.DataTypeEnum.GetSystemType() == typeof(string))
                             {
-                                lastLen = it.StringLength;
+                                lastLen = it.ThingsGatewayBitConverter.StringLength;
                             }
-                            else if (it.DataTypeEnum.GetNetType() == typeof(object))
+                            else if (it.DataTypeEnum.GetSystemType() == typeof(object))
                             {
                                 lastLen = 1;
                             }
@@ -123,7 +104,7 @@ namespace ThingsGateway.Siemens
             return OperResult.CreateSuccessResult(result);
         }
 
-        private static OperResult<List<DeviceVariableSourceRead>> LoadSourceRead(Dictionary<SiemensAddress, CollectVariableRunTime> addressList, int functionCode, int timeInterval, SiemensS7PLC siemensS7Net)
+        private static OperResult<List<DeviceVariableSourceRead>> LoadSourceRead(Dictionary<SiemensAddress, DeviceVariableRunTime> addressList, int functionCode, int timeInterval, SiemensS7PLC siemensS7Net)
         {
 
             List<DeviceVariableSourceRead> sourceReads = new List<DeviceVariableSourceRead>();
@@ -181,7 +162,7 @@ namespace ThingsGateway.Siemens
                 var sourceLen = lastAddress + tempAddress.Last().Length - firstAddress;
                 DeviceVariableSourceRead sourceRead = new DeviceVariableSourceRead(timeInterval);
                 sourceRead.Address = tempAddress.OrderBy(it => it.AddressStart).First().ToString();
-                sourceRead.Length = sourceLen.ToString();
+                sourceRead.Length = sourceLen;
                 foreach (var item in tempAddress)
                 {
                     var readNode = addressList[item];

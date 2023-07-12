@@ -23,15 +23,15 @@ public class DevicePropertyAttribute : Attribute
     /// <summary>
     /// 名称
     /// </summary>
-    public string Name { get; }
+    public string Description { get; }
     /// <summary>
     /// 描述
     /// </summary>
-    public string Description { get; }
+    public string Remark { get; }
     /// <inheritdoc cref="DevicePropertyAttribute"/>
-    public DevicePropertyAttribute(string name, string desc = "")
+    public DevicePropertyAttribute(string desc, string remark = "")
     {
-        Name = name;
         Description = desc;
+        Remark = remark;
     }
 }

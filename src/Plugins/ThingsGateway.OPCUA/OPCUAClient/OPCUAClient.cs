@@ -13,8 +13,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
+using Newtonsoft.Json.Linq;
+
 using Opc.Ua;
-using Opc.Ua.Client;
 
 using ThingsGateway.Foundation;
 using ThingsGateway.Foundation.Adapter.OPCUA;
@@ -34,7 +35,7 @@ public class OPCUAClient : CollectBase
 
     internal Foundation.Adapter.OPCUA.OPCUAClient PLC = null;
 
-    private List<CollectVariableRunTime> _deviceVariables = new();
+    private List<DeviceVariableRunTime> _deviceVariables = new();
 
     private OPCUAClientProperty driverPropertys = new();
 
@@ -50,8 +51,10 @@ public class OPCUAClient : CollectBase
     public override CollectDriverPropertyBase DriverPropertys => driverPropertys;
 
     /// <inheritdoc/>
-    public override ThingsGatewayBitConverter ThingsGatewayBitConverter { get; } = new(EndianType.Little);
+    public override bool IsSupportRequest => !driverPropertys.ActiveSubscribe;
 
+    /// <inheritdoc/>
+    public override ThingsGatewayBitConverter ThingsGatewayBitConverter { get; } = new(EndianType.Little);
     /// <inheritdoc/>
     public override Task AfterStopAsync()
     {
@@ -64,6 +67,52 @@ public class OPCUAClient : CollectBase
     {
         await PLC?.ConnectAsync();
     }
+    public override void InitDataAdapter()
+    {
+    }
+
+    /// <inheritdoc/>
+    public override OperResult IsConnected()
+    {
+        return PLC.Connected ? OperResult.CreateSuccessResult() : new OperResult("失败");
+    }
+    /// <inheritdoc/>
+    public override OperResult<List<DeviceVariableSourceRead>> LoadSourceRead(List<DeviceVariableRunTime> deviceVariables)
+    {
+        _deviceVariables = deviceVariables;
+        PLC.Variables.AddRange(deviceVariables.Select(a => a.VariableAddress).ToList());
+        var sourVars = new DeviceVariableSourceRead(driverPropertys.UpdateRate)
+        {
+            Address = "",
+            DeviceVariables = deviceVariables
+        };
+        return OperResult.CreateSuccessResult(new List<DeviceVariableSourceRead>() { sourVars });
+
+    }
+
+    /// <inheritdoc/>
+    public override async Task<OperResult<byte[]>> ReadSourceAsync(DeviceVariableSourceRead deviceVariableSourceRead, CancellationToken cancellationToken)
+    {
+        await Task.CompletedTask;
+        var result = await PLC.ReadJTokenValueAsync(deviceVariableSourceRead.DeviceVariables.Select(a => a.VariableAddress).ToArray(), cancellationToken);
+
+        if (result.Any(a => StatusCode.IsBad(a.Item2)))
+        {
+            return new OperResult<byte[]>($"读取失败");
+        }
+        else
+        {
+            return OperResult.CreateSuccessResult<byte[]>(null);
+        }
+    }
+
+    /// <inheritdoc/>
+    public override async Task<OperResult> WriteValueAsync(DeviceVariableRunTime deviceVariable, string value, CancellationToken cancellationToken)
+    {
+        var result = await PLC.WriteNodeAsync(deviceVariable.VariableAddress, JToken.Parse(value));
+        return result;
+    }
+
     protected override void Dispose(bool disposing)
     {
         if (PLC != null)
@@ -76,70 +125,6 @@ public class OPCUAClient : CollectBase
         }
         base.Dispose(disposing);
     }
-
-    public override void InitDataAdapter()
-    {
-    }
-    /// <inheritdoc/>
-    public override OperResult IsConnected()
-    {
-        return PLC.Connected ? OperResult.CreateSuccessResult() : new OperResult("失败");
-    }
-
-    /// <inheritdoc/>
-    public override bool IsSupportRequest()
-    {
-        return !driverPropertys.ActiveSubscribe;
-    }
-
-    /// <inheritdoc/>
-    public override OperResult<List<DeviceVariableSourceRead>> LoadSourceRead(List<CollectVariableRunTime> deviceVariables)
-    {
-        _deviceVariables = deviceVariables;
-        if (deviceVariables.Count > 0)
-        {
-            var result = PLC.AddTagsAndSave(deviceVariables.Select(a => a.VariableAddress).ToList());
-            var sourVars = result?.Select(
-      it =>
-      {
-          return new DeviceVariableSourceRead(driverPropertys.UpdateRate)
-          {
-              Address = it.Key,
-              DeviceVariables = deviceVariables.Where(a => it.Value.Contains(a.VariableAddress)).ToList()
-          };
-      }).ToList();
-            return OperResult.CreateSuccessResult(sourVars);
-        }
-        else
-        {
-            return OperResult.CreateSuccessResult(new List<DeviceVariableSourceRead>());
-        }
-    }
-
-    /// <inheritdoc/>
-    public override async Task<OperResult<byte[]>> ReadSourceAsync(DeviceVariableSourceRead deviceVariableSourceRead, CancellationToken cancellationToken)
-    {
-        await Task.CompletedTask;
-        var result = await PLC.ReadNodeAsync(deviceVariableSourceRead.DeviceVariables.Select(a => a.VariableAddress).ToArray());
-
-        if (result.Any(a => StatusCode.IsBad(a.StatusCode)))
-        {
-            return new OperResult<byte[]>($"读取失败");
-        }
-        else
-        {
-            return OperResult.CreateSuccessResult<byte[]>(null);
-        }
-    }
-
-    /// <inheritdoc/>
-    public override async Task<OperResult> WriteValueAsync(CollectVariableRunTime deviceVariable, string value, CancellationToken cancellationToken)
-    {
-        await Task.CompletedTask;
-        var result = PLC.WriteNode(deviceVariable.VariableAddress, Convert.ChangeType(value, deviceVariable.DataType));
-        return result ? OperResult.CreateSuccessResult() : new OperResult();
-    }
-
     /// <inheritdoc/>
     protected override void Init(CollectDeviceRunTime device, object client = null)
     {
@@ -174,41 +159,48 @@ public class OPCUAClient : CollectBase
         //不走ReadAsync
         throw new NotImplementedException();
     }
-    private void dataChangedHandler(List<(MonitoredItem monitoredItem, MonitoredItemNotification monitoredItemNotification)> values)
+
+    private void dataChangedHandler(List<(NodeId id, DataValue dataValue, JToken jToken)> values)
     {
         try
         {
-            if (!Device.KeepOn)
+            if (!Device.KeepRun)
             {
                 return;
             }
-            Device.DeviceStatus = DeviceStatusEnum.OnLine;
 
-            logMessage.Trace("报文-" + ToString() + "状态变化:" + Environment.NewLine + values.ToJson().FormatJson());
+            logMessage.Trace(LogMessageHeader + ToString() + "状态变化:" + Environment.NewLine + values.ToJson().FormatJson());
 
             foreach (var data in values)
             {
-                if (!Device.KeepOn)
+                if (!Device.KeepRun)
                 {
                     return;
                 }
 
-                var itemReads = _deviceVariables.Where(it => it.VariableAddress == data.monitoredItem.StartNodeId).ToList();
+                var itemReads = _deviceVariables.Where(it => it.VariableAddress == data.id).ToList();
                 foreach (var item in itemReads)
                 {
-                    var value = data.monitoredItemNotification.Value.Value;
-                    var quality = StatusCode.IsBad(data.monitoredItemNotification.Value.StatusCode) ? 0 : 192;
+                    var value = data.jToken;
+                    var quality = StatusCode.IsGood(data.dataValue.StatusCode);
 
-                    var time = data.monitoredItemNotification.Value.SourceTimestamp;
-                    if (value != null && quality == 192)
+                    var time = data.dataValue.SourceTimestamp;
+                    if (value != null && quality)
                     {
-                        item.SetValue(value, time);
+                        var operResult = item.SetValue(value, time);
+                        if (!operResult.IsSuccess)
+                        {
+                            _logger?.LogWarning(operResult.Message, ToString());
+                        }
                     }
                     else
                     {
-                        item.SetValue(null, time);
-                        Device.DeviceStatus = DeviceStatusEnum.OnLineButNoInitialValue;
-                        Device.DeviceOffMsg = $"{item.Name} 质量为Bad ";
+                        var operResult = item.SetValue(null, time);
+                        if (!operResult.IsSuccess)
+                        {
+                            _logger?.LogWarning(operResult.Message, ToString());
+                        }
+                        Device.LastErrorMessage = $"{item.Name} 质量为Bad ";
                     }
                 }
             }
@@ -216,7 +208,7 @@ public class OPCUAClient : CollectBase
         catch (Exception ex)
         {
             _logger?.LogWarning(ex, ToString());
-            Device.DeviceOffMsg = ex.Message;
+            Device.LastErrorMessage = ex.Message;
         }
     }
     private void opcStatusChange(object sender, OPCUAStatusEventArgs e)
@@ -224,70 +216,13 @@ public class OPCUAClient : CollectBase
         if (e.Error)
         {
             _logger.LogWarning(e.Text);
-            Device.DeviceStatus = DeviceStatusEnum.OnLineButNoInitialValue;
-            Device.DeviceOffMsg = $"{e.Text}";
+            Device.ErrorCount = 999;
+            Device.LastErrorMessage = $"{e.Text}";
         }
         else
         {
+            Device.ErrorCount = 0;
             _logger.LogTrace(e.Text);
         }
     }
-}
-
-/// <inheritdoc/>
-public class OPCUAClientProperty : CollectDriverPropertyBase
-{
-    /// <summary>
-    /// 连接Url
-    /// </summary>
-    [DeviceProperty("连接Url", "")] public string OPCURL { get; set; } = "opc.tcp://127.0.0.1:49320";
-    /// <summary>
-    /// 登录账号
-    /// </summary>
-    [DeviceProperty("登录账号", "为空时将采用匿名方式登录")] public string UserName { get; set; }
-
-
-    /// <summary>
-    /// 登录密码
-    /// </summary>
-    [DeviceProperty("登录密码", "")] public string Password { get; set; }
-
-
-    /// <summary>
-    /// 安全策略
-    /// </summary>
-    [DeviceProperty("安全策略", "True为使用安全策略，False为无")] public bool IsUseSecurity { get; set; } = true;
-
-
-    /// <summary>
-    /// 激活订阅
-    /// </summary>
-    [DeviceProperty("激活订阅", "")] public bool ActiveSubscribe { get; set; } = true;
-
-    /// <summary>
-    /// 更新频率
-    /// </summary>
-    [DeviceProperty("更新频率", "")] public int UpdateRate { get; set; } = 1000;
-
-
-    /// <summary>
-    /// 死区
-    /// </summary>
-    [DeviceProperty("死区", "")] public double DeadBand { get; set; } = 0;
-
-    /// <summary>
-    /// 自动分组大小
-    /// </summary>
-    [DeviceProperty("自动分组大小", "")] public int GroupSize { get; set; } = 500;
-
-
-
-    /// <summary>
-    /// 重连频率
-    /// </summary>
-    [DeviceProperty("重连频率", "")] public int ReconnectPeriod { get; set; } = 5000;
-
-    public override bool IsShareChannel { get; set; } = false;
-    public override ShareChannelEnum ShareChannel => ShareChannelEnum.None;
-
 }

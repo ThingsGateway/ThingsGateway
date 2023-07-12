@@ -24,14 +24,13 @@ using TouchSocket.Core;
 
 namespace ThingsGateway.OPCDA;
 
-
 public class OPCDAClient : CollectBase
 {
     internal CollectDeviceRunTime Device;
 
     internal ThingsGateway.Foundation.Adapter.OPCDA.OPCDAClient PLC = null;
 
-    private List<CollectVariableRunTime> _deviceVariables = new();
+    private List<DeviceVariableRunTime> _deviceVariables = new();
 
     private OPCDAClientProperty driverPropertys = new();
 
@@ -43,6 +42,7 @@ public class OPCDAClient : CollectBase
 
     public override CollectDriverPropertyBase DriverPropertys => driverPropertys;
 
+    public override bool IsSupportRequest => !driverPropertys.ActiveSubscribe;
     public override ThingsGatewayBitConverter ThingsGatewayBitConverter { get; } = new(EndianType.Little);
 
     public override Task AfterStopAsync()
@@ -64,18 +64,12 @@ public class OPCDAClient : CollectBase
     {
         return PLC.IsConnected ? OperResult.CreateSuccessResult() : new OperResult("失败");
     }
-
-    public override bool IsSupportRequest()
-    {
-        return !driverPropertys.ActiveSubscribe;
-    }
-
-    public override OperResult<List<DeviceVariableSourceRead>> LoadSourceRead(List<CollectVariableRunTime> deviceVariables)
+    public override OperResult<List<DeviceVariableSourceRead>> LoadSourceRead(List<DeviceVariableRunTime> deviceVariables)
     {
         _deviceVariables = deviceVariables;
         if (deviceVariables.Count > 0)
         {
-            var result = PLC.AddTagsAndSave(deviceVariables.Select(a => a.VariableAddress).ToList());
+            var result = PLC.SetTags(deviceVariables.Select(a => a.VariableAddress).ToList());
             var sourVars = result?.Select(
       it =>
       {
@@ -96,11 +90,11 @@ public class OPCDAClient : CollectBase
     public override async Task<OperResult<byte[]>> ReadSourceAsync(DeviceVariableSourceRead deviceVariableSourceRead, CancellationToken cancellationToken)
     {
         await Task.CompletedTask;
-        var result = PLC.ReadSub(deviceVariableSourceRead.Address);
+        var result = PLC.ReadGroup(deviceVariableSourceRead.Address);
         return result.Copy<byte[]>();
     }
 
-    public override async Task<OperResult> WriteValueAsync(CollectVariableRunTime deviceVariable, string value, CancellationToken cancellationToken)
+    public override async Task<OperResult> WriteValueAsync(DeviceVariableRunTime deviceVariable, string value, CancellationToken cancellationToken)
     {
         await Task.CompletedTask;
         var result = PLC.Write(deviceVariable.VariableAddress, value);
@@ -144,16 +138,15 @@ public class OPCDAClient : CollectBase
     {
         try
         {
-            if (!Device.KeepOn)
+            if (!Device.KeepRun)
             {
                 return;
             }
-            Device.DeviceStatus = DeviceStatusEnum.OnLine;
-            logMessage.Trace("报文-" + ToString() + "状态变化:" + Environment.NewLine + values.ToJson().FormatJson());
+            logMessage.Trace(LogMessageHeader + ToString() + "状态变化:" + Environment.NewLine + values.ToJson().FormatJson());
 
             foreach (var data in values)
             {
-                if (!Device.KeepOn)
+                if (!Device.KeepRun)
                 {
                     return;
                 }
@@ -166,14 +159,20 @@ public class OPCDAClient : CollectBase
                     var time = data.TimeStamp;
                     if (value != null && quality == 192)
                     {
-                        item.SetValue(value, time);
-
+                        var operResult = item.SetValue(value, time);
+                        if (!operResult.IsSuccess)
+                        {
+                            _logger?.LogWarning(operResult.Message, ToString());
+                        }
                     }
                     else
                     {
-                        item.SetValue(null, time);
-                        Device.DeviceStatus = DeviceStatusEnum.OnLineButNoInitialValue;
-                        Device.DeviceOffMsg = $"{item.Name} 质量为Bad ";
+                        var operResult = item.SetValue(null, time);
+                        if (!operResult.IsSuccess)
+                        {
+                            _logger?.LogWarning(operResult.Message, ToString());
+                        }
+                        Device.LastErrorMessage = $"{item.Name} 质量为Bad ";
                     }
                 }
             }
@@ -181,8 +180,7 @@ public class OPCDAClient : CollectBase
         catch (Exception ex)
         {
             _logger?.LogWarning(ex, ToString());
-            Device.DeviceStatus = DeviceStatusEnum.OnLineButNoInitialValue;
-            Device.DeviceOffMsg = ex.Message;
+            Device.LastErrorMessage = ex.Message;
         }
     }
 }

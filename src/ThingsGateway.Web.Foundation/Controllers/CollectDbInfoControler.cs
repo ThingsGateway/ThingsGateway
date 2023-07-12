@@ -58,7 +58,7 @@ public class CollectDbInfoControler : IDynamicApiController
     /// <returns></returns>
     [HttpGet("variableList")]
     [Description("获取变量信息")]
-    public async Task<SqlSugarPagedList<CollectDeviceVariable>> GetVariableList([FromQuery] VariablePageInput input)
+    public async Task<SqlSugarPagedList<DeviceVariable>> GetVariableList([FromQuery] VariablePageInput input)
     {
         var data = await _variableService.PageAsync(input);
         return data;

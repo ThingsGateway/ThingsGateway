@@ -30,46 +30,25 @@ using System.Text;
 using ThingsGateway.Application;
 using ThingsGateway.Foundation;
 using ThingsGateway.Foundation.Extension;
+using ThingsGateway.Foundation.Extension.Enumerator;
+using ThingsGateway.Foundation.Extension.Generic;
 using ThingsGateway.Web.Foundation;
 
 using TouchSocket.Core;
 
 namespace ThingsGateway.Mqtt;
-
-public class MqttServerProperty : UpDriverPropertyBase
-{
-
-    [DeviceProperty("IP", "留空则全部监听")] public string IP { get; set; } = "";
-    [DeviceProperty("端口", "")] public int Port { get; set; } = 1883;
-    [DeviceProperty("允许连接的ID(前缀)", "")] public string StartWithId { get; set; } = "ThingsGatewayId";
-    [DeviceProperty("允许Rpc写入", "")] public bool DeviceRpcEnable { get; set; }
-    [DeviceProperty("线程循环间隔", "最小10ms")] public int CycleInterval { get; set; } = 1000;
-    [DeviceProperty("设备Topic", "")] public string DeviceTopic { get; set; } = "ThingsGateway/Device";
-    [DeviceProperty("变量Topic", "")] public string VariableTopic { get; set; } = "ThingsGateway/Variable";
-    [DeviceProperty("Rpc返回Topic", "")] public string RpcSubTopic { get; set; } = "ThingsGateway/RpcSub";
-    [DeviceProperty("Rpc写入Topic", "不允许订阅")] public string RpcWriteTopic { get; set; } = "ThingsGateway/RpcWrite";
-    [DeviceProperty("设备实体脚本", "查看文档说明，为空时不起作用")] public string BigTextScriptDeviceModel { get; set; }
-    [DeviceProperty("变量实体脚本", "查看文档说明，为空时不起作用")] public string BigTextScriptVariableModel { get; set; }
-
-}
-public class MqttServerVariableProperty : VariablePropertyBase
-{
-    [VariableProperty("启用", "")]
-    public bool Enable { get; set; } = true;
-    [VariableProperty("允许写入", "")]
-    public bool VariableRpcEnable { get; set; } = true;
-}
 public class MqttServer : UpLoadBase
 {
 
     private ConcurrentQueue<DeviceData> _collectDeviceRunTimes = new();
     private ConcurrentQueue<VariableData> _collectVariableRunTimes = new();
-    private GlobalCollectDeviceData _globalCollectDeviceData;
+    private GlobalDeviceData _globalDeviceData;
 
     private MQTTnet.Server.MqttServer _mqttServer;
+    public override Type DriverDebugUIType => null;
 
     private RpcSingletonService _rpcCore;
-    private List<CollectVariableRunTime> _uploadVariables = new();
+    private List<DeviceVariableRunTime> _uploadVariables = new();
 
     private MqttServerProperty driverPropertys = new();
 
@@ -81,7 +60,7 @@ public class MqttServer : UpLoadBase
     {
     }
     public override UpDriverPropertyBase DriverPropertys => driverPropertys;
-    public override List<CollectVariableRunTime> UploadVariables => _uploadVariables;
+    public override List<DeviceVariableRunTime> UploadVariables => _uploadVariables;
     public override VariablePropertyBase VariablePropertys => variablePropertys;
     public override async Task BeforStartAsync(CancellationToken cancellationToken)
     {
@@ -106,8 +85,8 @@ public class MqttServer : UpLoadBase
             _mqttServer.InterceptingSubscriptionAsync -= _mqttServer_InterceptingSubscriptionAsync; ;
             _mqttServer?.SafeDispose();
         }
-        _globalCollectDeviceData?.CollectVariables?.ForEach(a => a.VariableValueChange -= VariableValueChange);
-        _globalCollectDeviceData?.CollectDevices?.ForEach(a =>
+        _globalDeviceData?.AllVariables?.ForEach(a => a.VariableValueChange -= VariableValueChange);
+        _globalDeviceData?.CollectDevices?.ForEach(a =>
         {
             a.DeviceStatusCahnge -= DeviceStatusCahnge;
         });
@@ -129,7 +108,7 @@ public class MqttServer : UpLoadBase
             if (varList?.Count != 0)
             {
                 //分解List，避免超出mqtt字节大小限制
-                var varData = varList.ChunkTrivialBetter(500);
+                var varData = varList.ChunkTrivialBetter(10000);
                 foreach (var item in varData)
                 {
                     try
@@ -168,7 +147,7 @@ public class MqttServer : UpLoadBase
             if (devList?.Count != 0)
             {
                 //分解List，避免超出mqtt字节大小限制
-                var varData = devList.ChunkTrivialBetter(500);
+                var varData = devList.ChunkTrivialBetter(10000);
                 foreach (var item in varData)
                 {
                     try
@@ -243,16 +222,16 @@ public class MqttServer : UpLoadBase
         _mqttServer = mqttFactory.CreateMqttServer(mqttServerOptions);
 
         var serviceScope = _scopeFactory.CreateScope();
-        _globalCollectDeviceData = serviceScope.ServiceProvider.GetService<GlobalCollectDeviceData>();
+        _globalDeviceData = serviceScope.ServiceProvider.GetService<GlobalDeviceData>();
         _rpcCore = serviceScope.ServiceProvider.GetService<RpcSingletonService>();
 
-        var tags = _globalCollectDeviceData.CollectVariables.Where(a => a.VariablePropertys.ContainsKey(device.Id))
+        var tags = _globalDeviceData.AllVariables.Where(a => a.VariablePropertys.ContainsKey(device.Id))
                 .Where(b => GetPropertyValue(b, nameof(variablePropertys.Enable)).GetBoolValue())
                 .ToList();
 
         _uploadVariables = tags;
 
-        _globalCollectDeviceData.CollectDevices.Where(a => _uploadVariables.Select(b => b.DeviceId).Contains(a.Id)).ForEach(a =>
+        _globalDeviceData.CollectDevices.Where(a => _uploadVariables.Select(b => b.DeviceId).Contains(a.Id)).ForEach(a =>
         {
             a.DeviceStatusCahnge += DeviceStatusCahnge;
         });
@@ -276,8 +255,8 @@ public class MqttServer : UpLoadBase
     {
         //首次连接时的保留消息
         //分解List，避免超出mqtt字节大小限制
-        var varData = _globalCollectDeviceData.CollectVariables.Adapt<List<VariableData>>().ChunkTrivialBetter(500);
-        var devData = _globalCollectDeviceData.CollectVariables.Adapt<List<DeviceData>>().ChunkTrivialBetter(500);
+        var varData = _globalDeviceData.AllVariables.Adapt<List<VariableData>>().ChunkTrivialBetter(10000);
+        var devData = _globalDeviceData.AllVariables.Adapt<List<DeviceData>>().ChunkTrivialBetter(10000);
         List<MqttApplicationMessage> Messages = new();
         foreach (var item in varData)
         {
@@ -335,8 +314,8 @@ public class MqttServer : UpLoadBase
         MqttRpcResult mqttRpcResult = new();
         try
         {
-            var nv = rpcData.Adapt<NameValue>();
-            var tag = _uploadVariables.FirstOrDefault(a => a.Name == nv.Name);
+            var nv = rpcData.Adapt<KeyValuePair<string, string>>();
+            var tag = _uploadVariables.FirstOrDefault(a => a.Name == nv.Key);
             if (tag != null)
             {
                 var rpcEnable = GetPropertyValue(tag, nameof(variablePropertys.VariableRpcEnable)).ToBoolean();
@@ -378,7 +357,7 @@ public class MqttServer : UpLoadBase
         }
     }
 
-    private void VariableValueChange(CollectVariableRunTime collectVariableRunTime)
+    private void VariableValueChange(DeviceVariableRunTime collectVariableRunTime)
     {
         _collectVariableRunTimes.Enqueue(collectVariableRunTime.Adapt<VariableData>());
     }

@@ -17,6 +17,7 @@ using Microsoft.JSInterop;
 using System.IO;
 using System.Timers;
 
+using ThingsGateway.Core;
 using ThingsGateway.Foundation;
 
 using TouchSocket.Core;
@@ -29,24 +30,9 @@ namespace ThingsGateway.Web.Foundation;
 public abstract class DriverDebugUIBase : ComponentBase, IDisposable
 {
     /// <summary>
-    /// 变量地址
-    /// </summary>
-    protected string address = "40001";
-
-    /// <summary>
-    /// 数据类型
-    /// </summary>
-    protected DataTypeEnum dataTypeEnum = DataTypeEnum.Int16;
-
-    /// <summary>
     /// 导出提示
     /// </summary>
     protected bool isDownExport;
-
-    /// <summary>
-    /// 读取长度
-    /// </summary>
-    protected int length = 1;
 
     /// <summary>
     /// 日志缓存
@@ -56,22 +42,30 @@ public abstract class DriverDebugUIBase : ComponentBase, IDisposable
     /// <summary>
     /// 默认读写设备
     /// </summary>
-    protected IReadWriteDevice plc;
-
-    /// <summary>
-    /// 写入值
-    /// </summary>
-    protected string writeValue = "1";
+    public virtual IReadWriteDevice PLC { get; set; }
 
     /// <summary>
     /// 刷新Timer
     /// </summary>
     private System.Timers.Timer DelayTimer;
 
+    /// <summary>
+    /// 变量地址
+    /// </summary>
+    protected virtual string Address { get; set; } = "40001";
+
+    /// <summary>
+    /// 数据类型
+    /// </summary>
+    protected virtual DataTypeEnum DataTypeEnum { get; set; } = DataTypeEnum.Int16;
     /// <inheritdoc/>
     [Inject]
     protected IJSRuntime JS { get; set; }
 
+    /// <summary>
+    /// 写入值
+    /// </summary>
+    protected virtual string WriteValue { get; set; }
     [Inject]
     ICollectDeviceService CollectDeviceService { get; set; }
 
@@ -87,24 +81,25 @@ public abstract class DriverDebugUIBase : ComponentBase, IDisposable
     /// <inheritdoc/>
     public virtual async Task Read()
     {
-        var data = await plc.ReadAsync(address, length);
-        if (data.IsSuccess)
+        try
         {
-            try
+            var data = await PLC.GetDynamicDataFormDevice(Address, DataTypeEnum.GetSystemType());
+            if (data.IsSuccess)
             {
-                var byteConverter = ByteConverterHelper.GetTransByAddress(ref address, plc.ThingsGatewayBitConverter, out int length, out BcdFormat bcdFormat);
-                var value = plc.ThingsGatewayBitConverter.GetDynamicData(dataTypeEnum.GetNetType(), data.Content).ToString();
-                Messages.Add((LogLevel.Information, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss ffff") + " - 对应类型值：" + value + " - 原始字节：" + data.Content.ToHexString(" ")));
+                Messages.Add((LogLevel.Information, DateTime.Now.ToDateTimeF() + " - 对应类型值：" + data.Content));
+
             }
-            catch (Exception ex)
+            else
             {
-                Messages.Add((LogLevel.Warning, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss ffff") + " - 操作成功，但转换数据类型失败 - 原因：" + ex.Message + " - 原始字节：" + data.Content.ToHexString(" ")));
+                Messages.Add((LogLevel.Error, DateTime.Now.ToDateTimeF() + " - " + data.Message));
+
             }
         }
-        else
+        catch (Exception ex)
         {
-            Messages.Add((LogLevel.Error, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss ffff") + " - " + data.Message));
+            Messages.Add((LogLevel.Warning, DateTime.Now.ToDateTimeF() + "错误：" + ex.Message));
         }
+
     }
 
     /// <inheritdoc/>
@@ -112,20 +107,19 @@ public abstract class DriverDebugUIBase : ComponentBase, IDisposable
     {
         try
         {
-            var byteConverter = ByteConverterHelper.GetTransByAddress(ref address, plc.ThingsGatewayBitConverter, out int length, out BcdFormat bcdFormat);
-            var data = await plc.WriteAsync(dataTypeEnum.GetNetType(), address, writeValue, dataTypeEnum == DataTypeEnum.Bcd);
+            var data = await PLC.WriteAsync(Address, DataTypeEnum.GetSystemType(), WriteValue);
             if (data.IsSuccess)
             {
-                Messages.Add((LogLevel.Information, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss ffff") + " - " + data.Message));
+                Messages.Add((LogLevel.Information, DateTime.Now.ToDateTimeF() + " - " + data.Message));
             }
             else
             {
-                Messages.Add((LogLevel.Warning, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss ffff") + " - " + data.Message));
+                Messages.Add((LogLevel.Warning, DateTime.Now.ToDateTimeF() + " - " + data.Message));
             }
         }
         catch (Exception ex)
         {
-            Messages.Add((LogLevel.Error, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss ffff") + " - " + "写入前失败：" + ex.Message));
+            Messages.Add((LogLevel.Error, DateTime.Now.ToDateTimeF() + " - " + "写入前失败：" + ex.Message));
         }
     }
 
@@ -139,10 +133,10 @@ public abstract class DriverDebugUIBase : ComponentBase, IDisposable
         {
             isDownExport = true;
             StateHasChanged();
-            using var memoryStream = await CollectDeviceService.ExportFileAsync(new() { data });
+            using var memoryStream = await CollectDeviceService.ExportFileAsync(new List<CollectDevice>() { data });
             memoryStream.Seek(0, SeekOrigin.Begin);
             using var streamRef = new DotNetStreamReference(stream: memoryStream);
-            await JS.InvokeVoidAsync("downloadFileFromStream", $"设备导出{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss fff")}.xlsx", streamRef);
+            await JS.InvokeVoidAsync("downloadFileFromStream", $"设备导出{DateTime.Now.ToDateTimeF()}.xlsx", streamRef);
         }
         finally
         {
@@ -154,7 +148,7 @@ public abstract class DriverDebugUIBase : ComponentBase, IDisposable
     /// 导入变量导出到excel
     /// </summary>
     /// <returns></returns>
-    protected async Task DownDeviceExport(List<CollectDeviceVariable> data)
+    protected async Task DownDeviceExport(List<DeviceVariable> data)
     {
         try
         {
@@ -163,7 +157,7 @@ public abstract class DriverDebugUIBase : ComponentBase, IDisposable
             using var memoryStream = await VariableService.ExportFileAsync(data);
             memoryStream.Seek(0, SeekOrigin.Begin);
             using var streamRef = new DotNetStreamReference(stream: memoryStream);
-            await JS.InvokeVoidAsync("downloadFileFromStream", $"变量导出{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss fff")}.xlsx", streamRef);
+            await JS.InvokeVoidAsync("downloadFileFromStream", $"变量导出{DateTime.Now.ToDateTimeF()}.xlsx", streamRef);
         }
         finally
         {
@@ -191,7 +185,7 @@ public abstract class DriverDebugUIBase : ComponentBase, IDisposable
             writer.Flush();
             memoryStream.Seek(0, SeekOrigin.Begin);
             using var streamRef = new DotNetStreamReference(stream: memoryStream);
-            await JS.InvokeVoidAsync("downloadFileFromStream", $"导出{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss fff")}.txt", streamRef);
+            await JS.InvokeVoidAsync("downloadFileFromStream", $"导出{DateTime.Now.ToDateTimeF()}.txt", streamRef);
         }
         finally
         {

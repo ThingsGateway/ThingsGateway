@@ -26,6 +26,11 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
     /// <inheritdoc/>
     [JsonIgnore]
     public Encoding Encoding { get; set; }
+    /// <inheritdoc/>
+    public BcdFormat? BcdFormat { get; set; }
+    /// <inheritdoc/>
+    public int StringLength { get; set; }
+
     /// <summary>
     /// 构造函数
     /// </summary>
@@ -67,7 +72,10 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
     {
         ThingsGatewayBitConverter byteConverter = new ThingsGatewayBitConverter(EndianType, dataFormat)
         {
-            IsStringReverseByteWord = IsStringReverseByteWord,
+            IsStringReverseByteWord = this.IsStringReverseByteWord,
+            Encoding = this.Encoding,
+            BcdFormat = this.BcdFormat,
+            StringLength = this.StringLength,
         };
         return byteConverter;
     }
@@ -232,46 +240,38 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
         {
             return null;
         }
-
-        byte[] bytes = Encoding.GetBytes(value);
-        return IsStringReverseByteWord ? bytes.BytesReverseByWord() : bytes;
-    }
-
-    /// <inheritdoc/>
-    public byte[] GetBytes(string value, int length)
-    {
-        if (value == null)
+        if (StringLength != 0)
         {
-            return null;
+            if (BcdFormat != null)
+            {
+                byte[] bytes = DataHelper.GetBytesFromBCD(value, BcdFormat.Value);
+                return IsStringReverseByteWord ? bytes.BytesReverseByWord().ArrayExpandToLength(StringLength) : bytes.ArrayExpandToLength(StringLength);
+            }
+            else
+            {
+                byte[] bytes = Encoding.GetBytes(value);
+                return IsStringReverseByteWord ? bytes.BytesReverseByWord().ArrayExpandToLength(StringLength) : bytes.ArrayExpandToLength(StringLength);
+            }
+
+        }
+        else
+        {
+            if (BcdFormat != null)
+            {
+
+                byte[] bytes = DataHelper.GetBytesFromBCD(value, BcdFormat.Value);
+                return IsStringReverseByteWord ? bytes.BytesReverseByWord() : bytes;
+            }
+            else
+            {
+                byte[] bytes = Encoding.GetBytes(value);
+                return IsStringReverseByteWord ? bytes.BytesReverseByWord() : bytes;
+            }
+
         }
 
-        byte[] bytes = Encoding.GetBytes(value);
-        return IsStringReverseByteWord ? bytes.BytesReverseByWord().ArrayExpandToLength(length) : bytes.ArrayExpandToLength(length);
     }
 
-    /// <inheritdoc/>
-    public byte[] GetBytes(string value, BcdFormat bcdFormat)
-    {
-        if (value == null)
-        {
-            return null;
-        }
-
-        byte[] bytes = DataHelper.GetBytesFromBCD(value, bcdFormat);
-        return IsStringReverseByteWord ? bytes.BytesReverseByWord() : bytes;
-    }
-
-    /// <inheritdoc/>
-    public byte[] GetBytes(string value, int length, BcdFormat bcdFormat)
-    {
-        if (value == null)
-        {
-            return null;
-        }
-
-        byte[] bytes = DataHelper.GetBytesFromBCD(value, bcdFormat);
-        return IsStringReverseByteWord ? bytes.BytesReverseByWord().ArrayExpandToLength(length) : bytes.ArrayExpandToLength(length);
-    }
 
     /// <inheritdoc/>
     public bool IsSameOfSet()
@@ -279,17 +279,7 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
         return !(BitConverter.IsLittleEndian ^ (endianType == EndianType.Little));
     }
 
-    /// <inheritdoc/>
-    public string ToBcdString(byte[] buffer, BcdFormat bcdFormat)
-    {
-        return ToBcdString(buffer, 0, buffer.Length, bcdFormat);
-    }
 
-    /// <inheritdoc/>
-    public string ToBcdString(byte[] buffer, int offset, int length, BcdFormat bcdFormat)
-    {
-        return IsStringReverseByteWord ? DataHelper.GetBCDValue(buffer.SelectMiddle<byte>(offset, length).BytesReverseByWord(), bcdFormat) : DataHelper.GetBCDValue(buffer.SelectMiddle<byte>(offset, length), bcdFormat);
-    }
 
     /// <inheritdoc/>
     public bool ToBoolean(byte[] buffer, int offset)
@@ -373,10 +363,19 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
     public string ToString(byte[] buffer, int offset, int length)
     {
         byte[] numArray = buffer.SelectMiddle<byte>(offset, length);
-        return IsStringReverseByteWord ?
-            Encoding.GetString(numArray.BytesReverseByWord()).TrimEnd().Replace($"\0", "") :
-            Encoding.GetString(numArray).TrimEnd().Replace($"\0", "");
-        ;
+        if (BcdFormat != null)
+        {
+            return IsStringReverseByteWord ? DataHelper.GetBCDValue(buffer.SelectMiddle<byte>(offset, length).BytesReverseByWord(), BcdFormat.Value) : DataHelper.GetBCDValue(buffer.SelectMiddle<byte>(offset, length), BcdFormat.Value);
+
+        }
+        else
+        {
+
+            return IsStringReverseByteWord ?
+                Encoding.GetString(numArray.BytesReverseByWord()).TrimEnd().Replace($"\0", "") :
+                Encoding.GetString(numArray).TrimEnd().Replace($"\0", "");
+
+        }
     }
 
     /// <inheritdoc/>

@@ -29,7 +29,7 @@
 @layout MainLayout
 <MRow NoGutters>
     <MCol Md=@(IsShowTreeView?4:0)>
-        <MCard Show=IsShowTreeView Style="height: calc(100vh - 200px)">
+        <MCard Show=IsShowTreeView Style="height: calc(100vh - 150px) ;border-radius:0px">
             <MCardTitle>
                 <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="mx-2 my-1" @bind-Value="_searchName" Outlined Label=@typeof(CollectDevice).GetDescription(nameof(CollectDevice.PluginId)) />
             </MCardTitle>
@@ -54,8 +54,8 @@
         </MCard>
     </MCol>
     <MCol Md=@(IsShowTreeView?8:12)>
-        <MCard Style="height: calc(100vh - 200px)">
-            <MCard Class="mb-3 pa-2  text-h6" Elevation="0" Flat  Rounded="false">
+        <MCard Style="height: calc(100vh - 150px) ;border-radius:0px">
+            <MCard Class="mb-3 pa-2  text-h6" Elevation="0" Flat Rounded="false">
                 <MRow Align="AlignTypes.Center" Class="mt-1">
                     <MButton Class="mx-1" OnClick=@(async() =>
                              {
@@ -78,40 +78,5 @@
     </MCol>
 
 </MRow>
-@code {
-    bool IsShowTreeView = true;
-    class PluginDebugUIInput
-    {
-        public string PluginName { get; set; }
-        public long PluginId { get; set; }
-    }
-}
 
-@code {
-    string _searchName;
-    List<DeviceTree> _deviceGroups = new();
-    PluginDebugUIInput _searchModel { get; set; } = new();
-    private BootstrapDynamicComponent _importComponent;
-    private RenderFragment _importRender;
-    private DriverDebugUIBase _importRef;
-    List<DriverPluginCategory> DriverPlugins;
-    [Inject]
-    IDriverPluginService DriverPluginService { get; set; }
 
-    protected override void OnInitialized()
-    {
-        DriverPlugins = DriverPluginService.GetDriverPluginChildrenList();
-        base.OnInitialized();
-    }
-    async Task ImportVaiable(long driverId)
-    {
-        var driver = ServiceExtension.GetBackgroundService<CollectDeviceWorker>().GetDebugUI(driverId);
-        if (driver == null)
-        {
-            await PopupService.EnqueueSnackbarAsync("插件未实现调试页面", AlertTypes.Warning);
-            return;
-        }
-        _importComponent = new BootstrapDynamicComponent(driver);
-        _importRender = _importComponent.Render(a => _importRef = (DriverDebugUIBase)a);
-    }
-}

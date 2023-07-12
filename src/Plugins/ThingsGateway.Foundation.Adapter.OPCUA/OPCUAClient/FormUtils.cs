@@ -15,6 +15,8 @@ using Opc.Ua.Client;
 
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace ThingsGateway.Foundation.Adapter.OPCUA;
 /// <summary>
@@ -107,6 +109,131 @@ public class FormUtils
 
                     for (int ii = 0; ii < continuationPoints.Count; ii++)
                     {
+                        // check for error.
+                        if (StatusCode.IsBad(results[ii].StatusCode))
+                        {
+                            continue;
+                        }
+
+                        // check if all references have been fetched.
+                        if (results[ii].References.Count == 0)
+                        {
+                            continue;
+                        }
+
+                        // save results.
+                        references.AddRange(results[ii].References);
+
+                        // check for continuation point.
+                        if (results[ii].ContinuationPoint != null)
+                        {
+                            revisedContiuationPoints.Add(results[ii].ContinuationPoint);
+                        }
+                    }
+
+                    // check if browsing must continue;
+                    revisedContiuationPoints = continuationPoints;
+                }
+
+                // check if unprocessed results exist.
+                nodesToBrowse = unprocessedOperations;
+            }
+
+            // return complete list.
+            return references;
+        }
+        catch (Exception exception)
+        {
+            if (throwOnError)
+            {
+                throw new ServiceResultException(exception, StatusCodes.BadUnexpectedError);
+            }
+
+            return null;
+        }
+    }
+    /// <summary>
+    /// 浏览地址空间
+    /// </summary>
+    /// <param name="session"></param>
+    /// <param name="nodesToBrowse"></param>
+    /// <param name="throwOnError"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    /// <exception cref="ServiceResultException"></exception>
+    public static async Task<ReferenceDescriptionCollection> BrowseAsync(ISession session, BrowseDescriptionCollection nodesToBrowse, bool throwOnError, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            ReferenceDescriptionCollection references = new ReferenceDescriptionCollection();
+            BrowseDescriptionCollection unprocessedOperations = new BrowseDescriptionCollection();
+
+            while (nodesToBrowse.Count > 0)
+            {
+                // start the browse operation.
+
+                var result = await session.BrowseAsync(
+                        null,
+                        null,
+                        0,
+                        nodesToBrowse, cancellationToken);
+                var results = result.Results;
+                var diagnosticInfos = result.DiagnosticInfos;
+                ClientBase.ValidateResponse(results, nodesToBrowse);
+                ClientBase.ValidateDiagnosticInfos(diagnosticInfos, nodesToBrowse);
+
+                ByteStringCollection continuationPoints = new ByteStringCollection();
+
+                for (int ii = 0; ii < nodesToBrowse.Count; ii++)
+                {
+                    // check for error.
+                    if (StatusCode.IsBad(results[ii].StatusCode))
+                    {
+                        // this error indicates that the server does not have enough simultaneously active 
+                        // continuation points. This request will need to be resent after the other operations
+                        // have been completed and their continuation points released.
+                        if (results[ii].StatusCode == StatusCodes.BadNoContinuationPoints)
+                        {
+                            unprocessedOperations.Add(nodesToBrowse[ii]);
+                        }
+
+                        continue;
+                    }
+
+                    // check if all references have been fetched.
+                    if (results[ii].References.Count == 0)
+                    {
+                        continue;
+                    }
+
+                    // save results.
+                    references.AddRange(results[ii].References);
+
+                    // check for continuation point.
+                    if (results[ii].ContinuationPoint != null)
+                    {
+                        continuationPoints.Add(results[ii].ContinuationPoint);
+                    }
+                }
+
+                // process continuation points.
+                ByteStringCollection revisedContiuationPoints = new ByteStringCollection();
+
+                while (continuationPoints.Count > 0)
+                {
+                    // continue browse operation.
+                    var nextResult = await session.BrowseNextAsync(
+                          null,
+                          true,
+                          continuationPoints
+                          , cancellationToken);
+                    results = nextResult.Results;
+                    diagnosticInfos = nextResult.DiagnosticInfos;
+                    ClientBase.ValidateResponse(results, continuationPoints);
+                    ClientBase.ValidateDiagnosticInfos(diagnosticInfos, continuationPoints);
+
+                    for (int ii = 0; ii < continuationPoints.Count; ii++)
+                    {
 
                         // check for error.
                         if (StatusCode.IsBad(results[ii].StatusCode))
@@ -153,15 +280,15 @@ public class FormUtils
     }
 
     /// <summary>
-    /// Browses the address space and returns the references found.
+    /// 浏览地址空间
     /// </summary>
-    /// <param name="session">The session.</param>
-    /// <param name="nodeToBrowse">The NodeId for the starting node.</param>
-    /// <param name="throwOnError">if set to <c>true</c> a exception will be thrown on an error.</param>
-    /// <returns>
-    /// The references found. Null if an error occurred.
-    /// </returns>
-    public static ReferenceDescriptionCollection Browse(ISession session, BrowseDescription nodeToBrowse, bool throwOnError)
+    /// <param name="session"></param>
+    /// <param name="nodeToBrowse"></param>
+    /// <param name="throwOnError"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    /// <exception cref="ServiceResultException"></exception>
+    public static async Task<ReferenceDescriptionCollection> BrowseAsync(ISession session, BrowseDescription nodeToBrowse, bool throwOnError, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -172,17 +299,15 @@ public class FormUtils
             nodesToBrowse.Add(nodeToBrowse);
 
             // start the browse operation.
-            BrowseResultCollection results = null;
-            DiagnosticInfoCollection diagnosticInfos = null;
 
-            session.Browse(
-                null,
-                null,
-                0,
-                nodesToBrowse,
-                out results,
-                out diagnosticInfos);
 
+            var result = await session.BrowseAsync(
+                  null,
+                  null,
+                  0,
+                  nodesToBrowse, cancellationToken);
+            var results = result.Results;
+            var diagnosticInfos = result.DiagnosticInfos;
             ClientBase.ValidateResponse(results, nodesToBrowse);
             ClientBase.ValidateDiagnosticInfos(diagnosticInfos, nodesToBrowse);
 
@@ -210,13 +335,12 @@ public class FormUtils
                 ByteStringCollection continuationPoints = new ByteStringCollection();
                 continuationPoints.Add(results[0].ContinuationPoint);
 
-                session.BrowseNext(
-                    null,
-                    false,
-                    continuationPoints,
-                    out results,
-                    out diagnosticInfos);
-
+                var nextResult = await session.BrowseNextAsync(
+                      null,
+                      false,
+                      continuationPoints, cancellationToken);
+                results = nextResult.Results;
+                diagnosticInfos = nextResult.DiagnosticInfos;
                 ClientBase.ValidateResponse(results, continuationPoints);
                 ClientBase.ValidateDiagnosticInfos(diagnosticInfos, continuationPoints);
             }
@@ -237,15 +361,14 @@ public class FormUtils
     }
 
     /// <summary>
-    /// Browses the address space and returns all of the supertypes of the specified type node.
+    /// 浏览地址空间并返回指定类型的所有节点
     /// </summary>
-    /// <param name="session">The session.</param>
-    /// <param name="typeId">The NodeId for a type node in the address space.</param>
-    /// <param name="throwOnError">if set to <c>true</c> a exception will be thrown on an error.</param>
-    /// <returns>
-    /// The references found. Null if an error occurred.
-    /// </returns>
-    public static ReferenceDescriptionCollection BrowseSuperTypes(ISession session, NodeId typeId, bool throwOnError)
+    /// <param name="session"></param>
+    /// <param name="typeId"></param>
+    /// <param name="throwOnError"></param>
+    /// <returns></returns>
+    /// <exception cref="ServiceResultException"></exception>
+    public static async Task<ReferenceDescriptionCollection> BrowseSuperTypesAsync(ISession session, NodeId typeId, bool throwOnError)
     {
         ReferenceDescriptionCollection supertypes = new ReferenceDescriptionCollection();
 
@@ -261,7 +384,7 @@ public class FormUtils
             nodeToBrowse.NodeClassMask = 0; // the HasSubtype reference already restricts the targets to Types. 
             nodeToBrowse.ResultMask = (uint)BrowseResultMask.All;
 
-            ReferenceDescriptionCollection references = Browse(session, nodeToBrowse, throwOnError);
+            ReferenceDescriptionCollection references = await BrowseAsync(session, nodeToBrowse, throwOnError);
 
             while (references != null && references.Count > 0)
             {
@@ -276,7 +399,7 @@ public class FormUtils
 
                 // get the references for the next level up.
                 nodeToBrowse.NodeId = (NodeId)references[0].NodeId;
-                references = Browse(session, nodeToBrowse, throwOnError);
+                references = await BrowseAsync(session, nodeToBrowse, throwOnError);
             }
 
             // return complete list.
@@ -299,11 +422,11 @@ public class FormUtils
     /// <param name="session">The session.</param>
     /// <param name="fields">The fields.</param>
     /// <param name="instanceId">The node id for the declaration of the field.</param>
-    public static void CollectFieldsForInstance(ISession session, NodeId instanceId, SimpleAttributeOperandCollection fields, List<NodeId> fieldNodeIds)
+    public static async Task CollectFieldsForInstanceAsync(ISession session, NodeId instanceId, SimpleAttributeOperandCollection fields, List<NodeId> fieldNodeIds)
     {
         Dictionary<NodeId, QualifiedNameCollection> foundNodes = new Dictionary<NodeId, QualifiedNameCollection>();
         QualifiedNameCollection parentPath = new QualifiedNameCollection();
-        CollectFields(session, instanceId, parentPath, fields, fieldNodeIds, foundNodes);
+        await CollectFieldsAsync(session, instanceId, parentPath, fields, fieldNodeIds, foundNodes);
     }
 
     /// <summary>
@@ -312,10 +435,10 @@ public class FormUtils
     /// <param name="session">The session.</param>
     /// <param name="fields">The fields.</param>
     /// <param name="fieldNodeIds">The node id for the declaration of the field.</param>
-    public static void CollectFieldsForType(ISession session, NodeId typeId, SimpleAttributeOperandCollection fields, List<NodeId> fieldNodeIds)
+    public static async Task CollectFieldsForType(ISession session, NodeId typeId, SimpleAttributeOperandCollection fields, List<NodeId> fieldNodeIds)
     {
         // get the supertypes.
-        ReferenceDescriptionCollection supertypes = FormUtils.BrowseSuperTypes(session, typeId, false);
+        ReferenceDescriptionCollection supertypes = await FormUtils.BrowseSuperTypesAsync(session, typeId, false);
 
         if (supertypes == null)
         {
@@ -328,11 +451,11 @@ public class FormUtils
 
         for (int ii = supertypes.Count - 1; ii >= 0; ii--)
         {
-            CollectFields(session, (NodeId)supertypes[ii].NodeId, parentPath, fields, fieldNodeIds, foundNodes);
+            await CollectFieldsAsync(session, (NodeId)supertypes[ii].NodeId, parentPath, fields, fieldNodeIds, foundNodes);
         }
 
         // collect the fields for the selected type.
-        CollectFields(session, typeId, parentPath, fields, fieldNodeIds, foundNodes);
+        await CollectFieldsAsync(session, typeId, parentPath, fields, fieldNodeIds, foundNodes);
     }
 
     /// <summary>
@@ -346,7 +469,7 @@ public class FormUtils
     /// <returns>
     /// The event object. Null if the notification is not a valid event type.
     /// </returns>
-    public static BaseEventState ConstructEvent(
+    public static async Task<BaseEventState> ConstructEventAsync(
         ISession session,
         MonitoredItem monitoredItem,
         EventFieldList notification,
@@ -384,7 +507,7 @@ public class FormUtils
         if (knownType == null)
         {
             // browse for the supertypes of the event type.
-            ReferenceDescriptionCollection supertypes = FormUtils.BrowseSuperTypes(session, eventTypeId, false);
+            ReferenceDescriptionCollection supertypes = await FormUtils.BrowseSuperTypesAsync(session, eventTypeId, false);
 
             // can't do anything with unknown types.
             if (supertypes == null)
@@ -507,12 +630,8 @@ public class FormUtils
     }
 
     /// <summary>
-    /// Gets the display text for the specified attribute.
+    /// 指定的属性的显示文本。
     /// </summary>
-    /// <param name="session">The currently active session.</param>
-    /// <param name="attributeId">The id of the attribute.</param>
-    /// <param name="value">The value of the attribute.</param>
-    /// <returns>The attribute formatted as a string.</returns>
     public static string GetAttributeDisplayText(ISession session, uint attributeId, Variant value)
     {
         if (value == Variant.Null)
@@ -697,17 +816,17 @@ public class FormUtils
     }
 
     /// <summary>
-    /// Returns the node ids for a set of relative paths.
+    /// 返回一组相对路径的节点id
     /// </summary>
-    /// <param name="session">An open session with the server to use.</param>
-    /// <param name="startNodeId">The starting node for the relative paths.</param>
-    /// <param name="namespacesUris">The namespace URIs referenced by the relative paths.</param>
-    /// <param name="relativePaths">The relative paths.</param>
-    /// <returns>A collection of local nodes.</returns>
-    public static List<NodeId> TranslateBrowsePaths(
+    /// <param name="session"></param>
+    /// <param name="startNodeId"></param>
+    /// <param name="namespacesUris"></param>
+    /// <param name="relativePaths"></param>
+    /// <returns></returns>
+    public static async Task<List<NodeId>> TranslateBrowsePaths(
         ISession session,
         NodeId startNodeId,
-        NamespaceTable namespacesUris,
+        NamespaceTable namespacesUris, CancellationToken cancellationToken,
         params string[] relativePaths)
     {
         // build the list of browse paths to follow by parsing the relative paths.
@@ -718,13 +837,6 @@ public class FormUtils
             for (int ii = 0; ii < relativePaths.Length; ii++)
             {
                 BrowsePath browsePath = new BrowsePath();
-
-                // The relative paths used indexes in the namespacesUris table. These must be 
-                // converted to indexes used by the server. An error occurs if the relative path
-                // refers to a namespaceUri that the server does not recognize.
-
-                // The relative paths may refer to ReferenceType by their BrowseName. The TypeTree object
-                // allows the parser to look up the server's NodeId for the ReferenceType.
 
                 browsePath.RelativePath = RelativePath.Parse(
                     relativePaths[ii],
@@ -739,15 +851,14 @@ public class FormUtils
         }
 
         // make the call to the server.
-        BrowsePathResultCollection results;
-        DiagnosticInfoCollection diagnosticInfos;
 
-        ResponseHeader responseHeader = session.TranslateBrowsePathsToNodeIds(
+
+        var result = await session.TranslateBrowsePathsToNodeIdsAsync(
             null,
             browsePaths,
-            out results,
-            out diagnosticInfos);
-
+            cancellationToken);
+        BrowsePathResultCollection results = result.Results;
+        DiagnosticInfoCollection diagnosticInfos = result.DiagnosticInfos;
         // ensure that the server returned valid results.
         ClientBase.ValidateResponse(results, browsePaths);
         ClientBase.ValidateDiagnosticInfos(diagnosticInfos, browsePaths);
@@ -799,7 +910,7 @@ public class FormUtils
     /// <param name="fields">The event fields.</param>
     /// <param name="fieldNodeIds">The node id for the declaration of the field.</param>
     /// <param name="foundNodes">The table of found nodes.</param>
-    private static void CollectFields(
+    private static async Task CollectFieldsAsync(
         ISession session,
         NodeId nodeId,
         QualifiedNameCollection parentPath,
@@ -817,7 +928,7 @@ public class FormUtils
         nodeToBrowse.NodeClassMask = (uint)(NodeClass.Object | NodeClass.Variable);
         nodeToBrowse.ResultMask = (uint)BrowseResultMask.All;
 
-        ReferenceDescriptionCollection children = FormUtils.Browse(session, nodeToBrowse, false);
+        ReferenceDescriptionCollection children = await FormUtils.BrowseAsync(session, nodeToBrowse, false);
 
         if (children == null)
         {
@@ -860,19 +971,14 @@ public class FormUtils
             if (!foundNodes.ContainsKey(targetId))
             {
                 foundNodes.Add(targetId, browsePath);
-                CollectFields(session, (NodeId)child.NodeId, browsePath, fields, fieldNodeIds, foundNodes);
+                await CollectFieldsAsync(session, (NodeId)child.NodeId, browsePath, fields, fieldNodeIds, foundNodes);
             }
         }
     }
 
     /// <summary>
-    /// Determines whether the specified select clause contains the browse path.
+    /// 判断指定的select子句包含的浏览路径。
     /// </summary>
-    /// <param name="selectClause">The select clause.</param>
-    /// <param name="browsePath">The browse path.</param>
-    /// <returns>
-    /// 	<c>true</c> if the specified select clause contains path; otherwise, <c>false</c>.
-    /// </returns>
     private static int ContainsPath(SimpleAttributeOperandCollection selectClause, QualifiedNameCollection browsePath)
     {
         for (int ii = 0; ii < selectClause.Count; ii++)
@@ -905,10 +1011,8 @@ public class FormUtils
     }
 
     /// <summary>
-    /// Gets the display text for the access level attribute.
+    ///访问级别属性的显示文本。
     /// </summary>
-    /// <param name="accessLevel">The access level.</param>
-    /// <returns>The access level formatted as a string.</returns>
     private static string GetAccessLevelDisplayText(byte accessLevel)
     {
         StringBuilder buffer = new StringBuilder();
@@ -967,10 +1071,8 @@ public class FormUtils
     }
 
     /// <summary>
-    /// Gets the display text for the event notifier attribute.
+    /// 事件通知属性的显示文本
     /// </summary>
-    /// <param name="eventNotifier">The event notifier.</param>
-    /// <returns>The event notifier formatted as a string.</returns>
     private static string GetEventNotifierDisplayText(byte eventNotifier)
     {
         StringBuilder buffer = new StringBuilder();
@@ -1008,11 +1110,6 @@ public class FormUtils
         return buffer.ToString();
     }
 
-    /// <summary>
-    /// Gets the display text for the value rank attribute.
-    /// </summary>
-    /// <param name="valueRank">The value rank.</param>
-    /// <returns>The value rank formatted as a string.</returns>
     private static string GetValueRankDisplayText(int valueRank)
     {
         switch (valueRank)

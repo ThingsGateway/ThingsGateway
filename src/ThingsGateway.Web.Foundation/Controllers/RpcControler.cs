@@ -45,27 +45,19 @@ public class RpcControler : IDynamicApiController
     }
 
     RpcSingletonService _rpcCore { get; set; }
-    /// <summary>
-    /// 写入变量
-    /// </summary>
-    [HttpPost("writeVariable")]
-    [Description("写入变量")]
-    public Task<OperResult> WriteDeviceMethod(NameValue obj)
-    {
-        return _rpcCore.InvokeDeviceMethodAsync($"WebApi-{UserManager.UserAccount}-{App.HttpContext.Connection.RemoteIpAddress.MapToIPv4()}", obj, CancellationToken.None);
-    }
+
     /// <summary>
     /// 写入多个变量
     /// </summary>
     [HttpPost("writeVariables")]
-    [Description("写入多个变量")]
-    public async Task<Dictionary<string, OperResult>> WriteDeviceMethods(List<NameValue> objs)
+    [Description("写入变量")]
+    public async Task<Dictionary<string, OperResult>> WriteDeviceMethods(Dictionary<string, string> objs)
     {
         Dictionary<string, OperResult> operResultDict = new Dictionary<string, OperResult>();
-        foreach (var obj in objs)
+        foreach (KeyValuePair<string, string> obj in objs)
         {
             var result = await _rpcCore.InvokeDeviceMethodAsync($"WebApi-{UserManager.UserAccount}-{App.HttpContext.Connection.RemoteIpAddress.MapToIPv4()}", obj, CancellationToken.None);
-            operResultDict.Add(obj.Name, result);
+            operResultDict.Add(obj.Key, result);
         }
         return operResultDict;
     }

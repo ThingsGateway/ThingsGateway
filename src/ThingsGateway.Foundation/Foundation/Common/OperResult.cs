@@ -162,7 +162,11 @@ public class OperResult : IRequestInfo, IOperResult
         Message = ex.Message;
         Exception = ex.StackTrace;
     }
-
+    /// <inheritdoc/>
+    public override string ToString()
+    {
+        return Message;
+    }
     /// <summary>
     /// 错误消息
     /// </summary>
@@ -239,4 +243,5 @@ public class OperResult : IRequestInfo, IOperResult
             Message = TouchSocketStatus.Success.GetDescription(),
         };
     }
+
 }

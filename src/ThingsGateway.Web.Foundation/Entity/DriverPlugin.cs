@@ -18,7 +18,7 @@ namespace ThingsGateway.Web.Foundation;
 /// <summary>
 /// 插件信息表
 /// </summary>
-[SugarTable("driver_plugin", TableDescription = "插件信息表")]
+[SugarTable("driverPlugin", TableDescription = "插件信息表")]
 [Tenant(SqlsugarConst.DB_CustomId)]
 public class DriverPlugin : BaseEntity
 {

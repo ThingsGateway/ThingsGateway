@@ -21,6 +21,7 @@ namespace ThingsGateway.Foundation.Adapter.Modbus
     public class ModbusTcp : ReadWriteDevicesTcpClientBase
     {
         public ModbusTcpDataHandleAdapter DataHandleAdapter = new();
+        private IWaitingClient<TGTcpClient> waitingClient;
 
         public ModbusTcp(TGTcpClient tcpClient) : base(tcpClient)
         {
@@ -28,35 +29,23 @@ namespace ThingsGateway.Foundation.Adapter.Modbus
             RegisterByteLength = 2;
             waitingClient = TGTcpClient.GetTGWaitingClient(new());
         }
-        private IWaitingClient<TGTcpClient> waitingClient;
+
+        [Description("组包缓存时间")]
+        public double CacheTimeout { get; set; } = 1;
+
+        [Description("帧前时间")]
+        public int FrameTime { get; set; }
 
         [Description("检测事务标识符")]
         public bool IsCheckMessageId { get; set; }
 
         [Description("站号")]
         public byte Station { get; set; } = 1;
-        [Description("帧前时间")]
-        public int FrameTime { get; set; }
-        [Description("组包缓存时间")]
-        public double CacheTimeout { get; set; } = 1;
-        private async Task<ResponsedData> SendThenReturnAsync(OperResult<byte[]> commandResult, CancellationToken token)
+
+        public override string GetAddressDescription()
         {
-            try
-            {
-                var item = commandResult.Content;
-                await TGTcpClient.EasyLock.LockAsync();
-                await Task.Delay(FrameTime, token);
-
-                var result = await waitingClient.SendThenResponseAsync(item, TimeOut, token);
-                return result;
-
-            }
-            finally
-            {
-                TGTcpClient.EasyLock.UnLock();
-            }
+            return base.GetAddressDescription() + Environment.NewLine + ModbusHelper.GetAddressDescription();
         }
-
         public override async Task<OperResult<byte[]>> ReadAsync(string address, int length, CancellationToken token = default)
         {
             try
@@ -91,6 +80,7 @@ namespace ThingsGateway.Foundation.Adapter.Modbus
             DataHandleAdapter.CacheTimeout = TimeSpan.FromSeconds(CacheTimeout);
             TGTcpClient.SetDataHandlingAdapter(DataHandleAdapter);
         }
+
         public override async Task<OperResult> WriteAsync(string address, byte[] value, CancellationToken token = default)
         {
             try
@@ -143,6 +133,24 @@ namespace ThingsGateway.Foundation.Adapter.Modbus
             }
             return new OperResult<byte[]>(TouchSocketStatus.UnknownError.GetDescription());
 
+        }
+
+        private async Task<ResponsedData> SendThenReturnAsync(OperResult<byte[]> commandResult, CancellationToken token)
+        {
+            try
+            {
+                var item = commandResult.Content;
+                await TGTcpClient.EasyLock.LockAsync();
+                await Task.Delay(FrameTime, token);
+
+                var result = await waitingClient.SendThenResponseAsync(item, TimeOut, token);
+                return result;
+
+            }
+            finally
+            {
+                TGTcpClient.EasyLock.UnLock();
+            }
         }
     }
 }

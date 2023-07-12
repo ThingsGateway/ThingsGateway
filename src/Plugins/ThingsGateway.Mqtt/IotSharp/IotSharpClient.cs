@@ -26,6 +26,8 @@ using System.Collections.Concurrent;
 
 using ThingsGateway.Foundation;
 using ThingsGateway.Foundation.Extension;
+using ThingsGateway.Foundation.Extension.Enumerator;
+using ThingsGateway.Foundation.Extension.Generic;
 using ThingsGateway.Web.Foundation;
 
 using TouchSocket.Core;
@@ -44,7 +46,7 @@ public class IotSharpClient : UpLoadBase
 
     private ConcurrentQueue<DeviceData> _collectDeviceRunTimes = new();
     private ConcurrentQueue<VariableData> _collectVariableRunTimes = new();
-    private GlobalCollectDeviceData _globalCollectDeviceData;
+    private GlobalDeviceData _globalDeviceData;
 
     private IMqttClient _mqttClient;
 
@@ -53,20 +55,20 @@ public class IotSharpClient : UpLoadBase
     private MqttClientSubscribeOptions _mqttSubscribeOptions;
 
     private RpcSingletonService _rpcCore;
-    private List<CollectVariableRunTime> _uploadVariables = new();
+    private List<DeviceVariableRunTime> _uploadVariables = new();
     private CollectDeviceWorker collectDeviceHostService;
 
     private IotSharpClientProperty driverPropertys = new();
 
     private EasyLock lockobj = new();
     private IotSharpClientVariableProperty variablePropertys = new();
-
+    public override Type DriverDebugUIType => null;
     public IotSharpClient(IServiceScopeFactory scopeFactory) : base(scopeFactory)
     {
     }
 
     public override UpDriverPropertyBase DriverPropertys => driverPropertys;
-    public override List<CollectVariableRunTime> UploadVariables => _uploadVariables;
+    public override List<DeviceVariableRunTime> UploadVariables => _uploadVariables;
     public override VariablePropertyBase VariablePropertys => variablePropertys;
     public override async Task BeforStartAsync(CancellationToken cancellationToken)
     {
@@ -125,9 +127,9 @@ public class IotSharpClient : UpLoadBase
     {
         try
         {
-            _globalCollectDeviceData?.CollectVariables?.ForEach(a => a.VariableValueChange -= VariableValueChange);
+            _globalDeviceData?.AllVariables?.ForEach(a => a.VariableValueChange -= VariableValueChange);
 
-            _globalCollectDeviceData?.CollectDevices?.ForEach(a =>
+            _globalDeviceData?.CollectDevices?.ForEach(a =>
             {
                 a.DeviceStatusCahnge -= DeviceStatusCahnge;
             });
@@ -155,8 +157,8 @@ public class IotSharpClient : UpLoadBase
             var varList = _collectVariableRunTimes.ToListWithDequeue();
             if (varList?.Count != 0)
             {
-                //分解List，避免超出mqtt字节大小限制.ChunkTrivialBetter(500)
-                var varData = varList.GroupBy(a => a.deviceName).ToList();
+                //分解List，避免超出mqtt字节大小限制
+                var varData = varList.GroupBy(a => a.DeviceName).ToList();
                 foreach (var item in varData)
                 {
                     try
@@ -165,7 +167,7 @@ public class IotSharpClient : UpLoadBase
                         foreach (var pair in item)
                         {
                             //只用最新的变量值
-                            nameValueDict.AddOrUpdate(pair.name, pair.value);
+                            nameValueDict.AddOrUpdate(pair.Name, pair.Value);
                         }
                         if (!cancellationToken.IsCancellationRequested)
                         {
@@ -201,7 +203,7 @@ public class IotSharpClient : UpLoadBase
             if (devList?.Count != 0)
             {
                 //分解List，避免超出mqtt字节大小限制
-                var devData = devList.ChunkTrivialBetter(500);
+                var devData = devList.ChunkTrivialBetter(10000);
                 foreach (var item in devData)
                 {
                     try
@@ -287,18 +289,18 @@ public class IotSharpClient : UpLoadBase
         _mqttClient.ConnectedAsync += _mqttClient_ConnectedAsync;
         _mqttClient.ApplicationMessageReceivedAsync += _mqttClient_ApplicationMessageReceivedAsync;
         var serviceScope = _scopeFactory.CreateScope();
-        _globalCollectDeviceData = serviceScope.ServiceProvider.GetService<GlobalCollectDeviceData>();
+        _globalDeviceData = serviceScope.ServiceProvider.GetService<GlobalDeviceData>();
         _rpcCore = serviceScope.ServiceProvider.GetService<RpcSingletonService>();
         collectDeviceHostService = serviceScope.GetBackgroundService<CollectDeviceWorker>();
 
 
-        var tags = _globalCollectDeviceData.CollectVariables.Where(a => a.VariablePropertys.ContainsKey(device.Id))
+        var tags = _globalDeviceData.AllVariables.Where(a => a.VariablePropertys.ContainsKey(device.Id))
            .Where(b => GetPropertyValue(b, nameof(variablePropertys.Enable)).GetBoolValue())
            .ToList();
 
         _uploadVariables = tags;
 
-        _globalCollectDeviceData.CollectDevices.Where(a => _uploadVariables.Select(b => b.DeviceId).Contains(a.Id)).ForEach(a =>
+        _globalDeviceData.CollectDevices.Where(a => _uploadVariables.Select(b => b.DeviceId).Contains(a.Id)).ForEach(a =>
         {
             a.DeviceStatusCahnge += DeviceStatusCahnge;
         });
@@ -360,13 +362,13 @@ public class IotSharpClient : UpLoadBase
             else
             {
                 RpcResponse rpcResponse = new();
-                var nameValue = e.ApplicationMessage.ConvertPayloadToString().ToJsonEntity<List<NameValue>>();
+                var nameValue = e.ApplicationMessage.ConvertPayloadToString().ToJsonEntity<List<KeyValuePair<string, string>>>();
                 Dictionary<string, OperResult> results = new();
                 if (nameValue?.Count > 0)
                 {
                     foreach (var item in nameValue)
                     {
-                        var tag = _uploadVariables.FirstOrDefault(a => a.Name == item.Name);
+                        var tag = _uploadVariables.FirstOrDefault(a => a.Name == item.Key);
                         if (tag != null)
                         {
                             var rpcEnable =
@@ -376,18 +378,18 @@ GetPropertyValue(tag, nameof(variablePropertys.VariableRpcEnable)).ToBoolean()
                             {
                                 var result = await _rpcCore.InvokeDeviceMethodAsync(ToString() + "-" + rpcrequestid, item, CancellationToken.None);
 
-                                results.Add(item.Name, result);
+                                results.Add(item.Key, result);
 
                             }
                             else
                             {
-                                results.Add(item.Name, new("权限不足，变量不支持写入"));
+                                results.Add(item.Key, new("权限不足，变量不支持写入"));
                             }
 
                         }
                         else
                         {
-                            results.Add(item.Name, new("不存在该变量"));
+                            results.Add(item.Key, new("不存在该变量"));
                         }
                     }
                     rpcResponse = new()
@@ -455,7 +457,7 @@ GetPropertyValue(tag, nameof(variablePropertys.VariableRpcEnable)).ToBoolean()
     }
 
 
-    private void VariableValueChange(CollectVariableRunTime collectVariableRunTime)
+    private void VariableValueChange(DeviceVariableRunTime collectVariableRunTime)
     {
         _collectVariableRunTimes.Enqueue(collectVariableRunTime.Adapt<VariableData>());
     }

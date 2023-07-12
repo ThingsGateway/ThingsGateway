@@ -86,13 +86,13 @@ namespace ThingsGateway.Core
         /// <param name="relativeday">相对天数</param>
         public static string GetDateTime(this in DateTime dt, int relativeday)
         {
-            return dt.AddDays(relativeday).ToString("yyyy-MM-dd HH:mm:ss");
+            return dt.AddDays(relativeday).ToDateTimeF();
         }
 
         /// <summary>
         /// 返回标准时间格式string
         /// </summary>
-        public static string GetDateTimeF(this in DateTime dt) => dt.ToString("yyyy-MM-dd HH:mm:ss:fffffff");
+        public static string ToDateTimeF(this in DateTime dt) => dt.ToString("yyyy-MM-dd HH:mm:ss:fffffff zz");
 
         /// <summary>本月有多少天</summary>
         /// <param name="_"></param>

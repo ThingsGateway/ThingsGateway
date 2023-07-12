@@ -23,18 +23,20 @@
             <MAvatar Size=40 Color="primary" Class="mx-2 white--text">
                 @UserResoures.CurrentUser?.Account.GetNameLen2()
             </MAvatar>
-            <MLabel>@(T("欢迎回来"))</MLabel>
-                <MLabel Class="mx-3">@UserResoures.CurrentUser?.Account</MLabel>
-            </div>
-        </MRow>
-    </MCard>
+            <MLabel>
+                @(T("欢迎回来"))
+            </MLabel>
+            <MLabel Class="mx-3">@UserResoures.CurrentUser?.Account</MLabel>
+        </div>
+    </MRow>
+</MCard>
 
-    <MCard MinHeight=120 Elevation="1" Class="ma-2">
-        <MCardSubtitle Class="text-subtitle-1">
-            @T("快捷方式")
-        </MCardSubtitle>
-        <MDivider></MDivider>
-        <MRow Class="pa-4" NoGutters Align="AlignTypes.Center" Justify="JustifyTypes.Start">
+<MCard MinHeight=120 Elevation="1" Class="ma-2">
+    <MCardSubtitle Class="text-subtitle-1">
+        @T("快捷方式")
+    </MCardSubtitle>
+    <MDivider></MDivider>
+    <MRow Class="pa-4" NoGutters Align="AlignTypes.Center" Justify="JustifyTypes.Start">
         @foreach (var item in UserResoures.WorkbenchOutputs ?? new())
         {
             <MButton Text Href=@item.Component
@@ -98,7 +100,7 @@
                 </MCardSubtitle>
                 <MDivider></MDivider>
                 <MTimeline AlignTop Dense>
-                @foreach (var item in RuntimeLogs ?? new())
+                @foreach (var item in BackendLogs ?? new())
                     {
                         <MTimelineItem Color="primary"
                                           Small>
@@ -123,7 +125,7 @@
 
 <MRow NoGutters>
     <MCol Md=6 Cols="12">
-        <MCard MinHeight=400 Elevation="1" Class="ma-2">
+        <MCard Style="height:500px;overflow-y:auto;overflow-x:hidden" Elevation="1" Class="ma-2">
             <MCardSubtitle Class="text-subtitle-1">
                 @T("访问日志")
             </MCardSubtitle>
@@ -150,7 +152,7 @@
         </MCard>
     </MCol>
     <MCol Md=6 Cols="12">
-        <MCard MinHeight=400 Elevation="1" Class="ma-2">
+        <MCard Style="height:500px;overflow-y:auto;overflow-x:hidden" Elevation="1" Class="ma-2">
             <MCardSubtitle Class="text-subtitle-1">
                 @T("操作日志")
             </MCardSubtitle>
@@ -178,33 +180,4 @@
     </MCol>
 </MRow>
 
-@code {
-    [Inject] public JsInitVariables JsInitVariables { get; set; } = default!;
-    [Inject]
-    private ThingsGateway.Web.Foundation.IRpcLogService RpcLogService { get; set; }
-    [Inject]
-    private ThingsGateway.Web.Foundation.IRuntimeLogService RuntimeLogService { get; set; }
-    [Inject]
-    private IVisitLogService VisitLogService { get; set; }
-    List<DevLogVisit> DevLogVisits;
-    List<DevLogOperate> DevLogOps;
-    List<ThingsGateway.Web.Foundation.RpcLog> RpcLogs;
-    List<ThingsGateway.Web.Foundation.RuntimeLog> RuntimeLogs;
-    [Inject]
-    private IOperateLogService OperateLogService { get; set; }
 
-    protected override async Task OnInitializedAsync()
-    {
-        if (UserManager.SuperAdmin)
-        {
-            RpcLogs = (await RpcLogService.PageAsync(new() { Size = 5 })).Records.ToList();
-            RuntimeLogs = (await RuntimeLogService.PageAsync(new() { Size = 5 })).Records.ToList();
-        }
-
-        DevLogVisits = (await VisitLogService.Page(new() { Size = 5, Account = UserResoures.CurrentUser?.Account })).Records.ToList();
-        DevLogOps = (await OperateLogService.Page(new() { Size = 5, Account = UserResoures.CurrentUser?.Account })).Records.ToList();
-
-        await base.OnInitializedAsync();
-    }
-
-}

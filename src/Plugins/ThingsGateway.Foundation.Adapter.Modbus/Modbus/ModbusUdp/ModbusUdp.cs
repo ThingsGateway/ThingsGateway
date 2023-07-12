@@ -20,6 +20,7 @@ namespace ThingsGateway.Foundation.Adapter.Modbus
     public class ModbusUdp : ReadWriteDevicesUdpBase
     {
         public ModbusUdpDataHandleAdapter DataHandleAdapter = new();
+        private IWaitingClient<TGUdpSession> waitingClient;
 
         public ModbusUdp(TGUdpSession udpSession) : base(udpSession)
         {
@@ -27,29 +28,17 @@ namespace ThingsGateway.Foundation.Adapter.Modbus
             RegisterByteLength = 2;
             waitingClient = TGUdpSession.GetTGWaitingClient(new());
         }
-        private IWaitingClient<TGUdpSession> waitingClient;
+
+        public int FrameTime { get; set; }
+
         public bool IsCheckMessageId { get => DataHandleAdapter.IsCheckMessageId; set => DataHandleAdapter.IsCheckMessageId = value; }
 
         public byte Station { get; set; } = 1;
-        public int FrameTime { get; set; }
-        private async Task<ResponsedData> SendThenReturnAsync(OperResult<byte[]> commandResult, CancellationToken token)
+
+        public override string GetAddressDescription()
         {
-            try
-            {
-                var item = commandResult.Content;
-                await TGUdpSession.EasyLock.LockAsync();
-                await Task.Delay(FrameTime, token);
-
-                var result = await waitingClient.SendThenResponseAsync(item, TimeOut, token);
-                return result;
-
-            }
-            finally
-            {
-                TGUdpSession.EasyLock.UnLock();
-            }
+            return base.GetAddressDescription() + Environment.NewLine + ModbusHelper.GetAddressDescription();
         }
-
         public override async Task<OperResult<byte[]>> ReadAsync(string address, int length, CancellationToken token = default)
         {
             try
@@ -83,6 +72,7 @@ namespace ThingsGateway.Foundation.Adapter.Modbus
             DataHandleAdapter.IsCheckMessageId = IsCheckMessageId;
             TGUdpSession.SetDataHandlingAdapter(DataHandleAdapter);
         }
+
         public override async Task<OperResult> WriteAsync(string address, byte[] value, CancellationToken token = default)
         {
             try
@@ -137,5 +127,22 @@ namespace ThingsGateway.Foundation.Adapter.Modbus
 
         }
 
+        private async Task<ResponsedData> SendThenReturnAsync(OperResult<byte[]> commandResult, CancellationToken token)
+        {
+            try
+            {
+                var item = commandResult.Content;
+                await TGUdpSession.EasyLock.LockAsync();
+                await Task.Delay(FrameTime, token);
+
+                var result = await waitingClient.SendThenResponseAsync(item, TimeOut, token);
+                return result;
+
+            }
+            finally
+            {
+                TGUdpSession.EasyLock.UnLock();
+            }
+        }
     }
 }

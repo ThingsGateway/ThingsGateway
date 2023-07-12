@@ -12,7 +12,7 @@
 
 using System.Linq;
 
-using ThingsGateway.Web.Foundation;
+namespace ThingsGateway.Web.Foundation;
 
 using TouchSocket.Core;
 

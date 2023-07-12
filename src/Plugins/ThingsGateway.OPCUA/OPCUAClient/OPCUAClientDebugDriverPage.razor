@@ -33,7 +33,7 @@
         <MCol Md="4">
             <MCard Flat Elevation="0">
                 <MCol Class="my-1 py-1">
-                    <MTextField Class="mx-1 my-1" Label="变量地址" Dense Outlined HideDetails="@("auto")" @bind-Value=@address />
+                    <MTextField Class="mx-1 my-1" Label="变量地址" Dense Outlined HideDetails="@("auto")" @bind-Value=@Address />
                     <MRow NoGutters>
                         <MButton Class="mx-1 my-1" Color="primary" OnClick="Add">
                             添加
@@ -44,22 +44,13 @@
                     </MRow>
 
 
-
                     <MButton Class="mx-1 my-1" Color="primary" OnClick="Read">
                         组读取
                     </MButton>
 
 
 
-                    <MTextField Class="mx-1 mt-3 my-1" Label="值" Dense Outlined HideDetails="@("auto")" @bind-Value=@writeValue />
-                    <MSelect Class="mx-1 my-1" Style="max-width:200px" @bind-Value="dataTypeEnum" Outlined Label="数据类型"
-                             Items=@(typeof(DataTypeEnum).GetEnumList())
-                             MenuProps="@(props => { props.Auto = true; props.OffsetY = true; })"
-                             ItemText=@((u) =>u.des)
-                             ItemValue=@(u =>(DataTypeEnum)u.value)
-                             HideDetails=@("auto") Height="30"
-                             Dense>
-                    </MSelect>
+                    <MTextField Class="mx-1 mt-3 my-1" Label="值" Dense Outlined HideDetails="@("auto")" @bind-Value=@WriteValue />
 
                     <MButton Class="mx-1 my-1" Color="primary" OnClick="Write">
                         写入
@@ -139,148 +130,4 @@
     </SaveContent>
 </PModal>
 
-@code {
-    bool IsShowImportVariableList;
-    private ImportVariable importVariable { get; set; }
-}
-@code
-{
-    private OPCUAClientPage tcpClientPage;
-    private ThingsGateway.Foundation.Adapter.OPCUA.OPCUAClient _plc;
 
-    private async Task DownDeviceExport()
-    {
-        var data = importVariable?.GetImportVariableList();
-        if (data != null)
-        {
-            await DownDeviceExport(data?.Item1);
-            await DownDeviceExport(data?.Item2);
-        }
-    }
-
-    protected override void OnAfterRender(bool firstRender)
-    {
-        if (firstRender)
-        {
-            tcpClientPage.LogAction = LogOut;
-            //载入配置
-            _plc = tcpClientPage.OPC;
-            StateHasChanged();
-        }
-
-        base.OnAfterRender(firstRender);
-    }
-
-    private void Add()
-    {
-        if (_plc.Connected)
-            _plc.AddSubscription("", address, callback);
-        else
-        {
-            Messages.Add((Microsoft.Extensions.Logging.LogLevel.Debug, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss ffff") + "未连接"));
-            if (Messages.Count > 2500)
-            {
-                Messages.Clear();
-            }
-        }
-
-
-    }
-    private void callback(string arg1, MonitoredItem arg2, MonitoredItemNotificationEventArgs arg3)
-    {
-        var data = arg3.NotificationValue as MonitoredItemNotification;
-        var t = new
-        {
-            name = arg2.DisplayName,
-            type = data.Value.WrappedValue.TypeInfo.ToString(),
-            value = data.Value.Value,
-        };
-        Messages.Add((Microsoft.Extensions.Logging.LogLevel.Debug, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss ffff") + t.ToJson().FormatJson()));
-        if (Messages.Count > 2500)
-        {
-            Messages.Clear();
-        }
-    }
-
-    private void Remove()
-    {
-        if (_plc.Connected)
-            _plc.RemoveSubscription("");
-        else
-        {
-            Messages.Add((Microsoft.Extensions.Logging.LogLevel.Debug, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss ffff") + "未连接"));
-            if (Messages.Count > 2500)
-            {
-                Messages.Clear();
-            }
-        }
-    }
-    public override async Task Read()
-    {
-        if (_plc.Connected)
-        {
-            var data = await _plc.ReadNodeAsync(address);
-            Messages.Add((Microsoft.Extensions.Logging.LogLevel.Debug, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss ffff") + data.Select(a =>
-            {
-                return new
-                {
-                    code = a.StatusCode,
-                    value = a.Value,
-                };
-            }).ToJson().FormatJson()));
-            if (Messages.Count > 2500)
-            {
-                Messages.Clear();
-            }
-        }
-        else
-        {
-            Messages.Add((Microsoft.Extensions.Logging.LogLevel.Debug, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss ffff") + "未连接"));
-            if (Messages.Count > 2500)
-            {
-                Messages.Clear();
-            }
-        }
-    }
-
-    public override async Task Write()
-    {
-        try
-        {
-            if (_plc.Connected)
-            {
-                var data = await _plc.WriteNodeAsync(address, Convert.ChangeType(writeValue, dataTypeEnum.GetNetType()));
-                if (data.IsSuccess)
-                {
-                    Messages.Add((Microsoft.Extensions.Logging.LogLevel.Information, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss ffff") + " - 写入成功"));
-                }
-                else
-                {
-                    Messages.Add((Microsoft.Extensions.Logging.LogLevel.Warning, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss ffff") + " - 写入失败 " + data.Message));
-                }
-            }
-            else
-            {
-                Messages.Add((Microsoft.Extensions.Logging.LogLevel.Debug, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss ffff") + "未连接"));
-                if (Messages.Count > 2500)
-                {
-                    Messages.Clear();
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            Messages.Add((Microsoft.Extensions.Logging.LogLevel.Error, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss ffff") + " - " + "写入失败：" + ex.Message));
-        }
-    }
-    public override void Dispose()
-    {
-        _plc.SafeDispose();
-        tcpClientPage.SafeDispose();
-        base.Dispose();
-    }
-    public override string ToString()
-    {
-        return nameof(OPCUAClient);
-    }
-}

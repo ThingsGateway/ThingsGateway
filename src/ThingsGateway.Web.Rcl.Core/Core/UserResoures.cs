@@ -111,7 +111,7 @@ namespace ThingsGateway.Web.Rcl.Core
             else
             {
                 //设置默认主题
-                //Themes.DefalutThemes();
+                //Themes.DefaultThemes();
             }
             SetMasaTheme();
         }

@@ -291,8 +291,7 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
 
         #region 字符串
 
-        internal static async Task<OperResult<string>> ReadStringAsync(
-          SiemensS7PLC plc, string address, Encoding encoding)
+        internal static async Task<OperResult<string>> ReadStringAsync(SiemensS7PLC plc, string address, Encoding encoding)
         {
             //先读取一次获取长度，再读取实际值
             if (plc.CurrentPlc != SiemensEnum.S200Smart)

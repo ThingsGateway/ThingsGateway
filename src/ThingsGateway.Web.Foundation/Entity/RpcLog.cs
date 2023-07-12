@@ -17,7 +17,7 @@ namespace ThingsGateway.Web.Foundation;
 /// <summary>
 /// Rpc写入日志
 ///</summary>
-[SugarTable("tg_log_rpc", TableDescription = "RPC操作日志")]
+[SugarTable("rpcLog", TableDescription = "RPC操作日志")]
 [Tenant(SqlsugarConst.DB_Default)]
 public class RpcLog : PrimaryIdEntity
 {

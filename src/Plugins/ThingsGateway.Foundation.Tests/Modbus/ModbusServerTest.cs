@@ -45,11 +45,10 @@ namespace ThingsGateway.Foundation.Tests
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            var byteConverter = ByteConverterHelper.GetTransByAddress(ref address, ModbusServer.ThingsGatewayBitConverter, out int length, out BcdFormat bcdFormat);
-            var test = await ModbusServer.ReadAsync(address, 1);
+            var byteConverter = ByteTransformHelpers.GetTransByAddress(ref address, ModbusServer.ThingsGatewayBitConverter);
+            var test = await ModbusServer.GetDynamicDataFormDevice(address, typeof(Int16));
             Assert.True(test.IsSuccess, test.Message);
-            var data = byteConverter.ToInt16(test.Content, 0);
-            _output.WriteLine(data.ToJson());
+            _output.WriteLine(test.ToJson());
             stopwatch.Stop();
             _output.WriteLine(address + "耗时：" + stopwatch.Elapsed.TotalSeconds);
         }

@@ -2,16 +2,12 @@
 
 	<PropertyGroup>
 		<TargetFrameworks>net6.0;net7.0</TargetFrameworks>
-		<Version>1.6.1</Version>
+		<Version>1.7.0</Version>
 		<NoWarn>BL0005;CS0168;</NoWarn>
 		<!--<GenerateDocumentationFile>True</GenerateDocumentationFile>-->
 		<Platforms>AnyCPU;x86</Platforms>
 	</PropertyGroup>
 
-	<ItemGroup>
-	  <Content Remove="wwwroot\i18n\en-US.json" />
-	  <Content Remove="wwwroot\i18n\zh-CN.json" />
-	</ItemGroup>
 
 	<ItemGroup>
 	  <None Include="wwwroot\i18n\en-US.json">

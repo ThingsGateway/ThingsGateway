@@ -17,6 +17,11 @@ namespace ThingsGateway.Web.Foundation;
 public enum DeviceStatusEnum
 {
     /// <summary>
+    /// 初始化
+    /// </summary>
+    [Description("初始化")]
+    None = 0,
+    /// <summary>
     /// 在线
     /// </summary>
     [Description("在线")]
@@ -31,14 +36,4 @@ public enum DeviceStatusEnum
     /// </summary>
     [Description("暂停")]
     Pause = 3,
-    /// <summary>
-    /// 失败
-    /// </summary>
-    [Description("失败")]
-    OnLineButNoInitialValue = 4,
-    /// <summary>
-    /// 初始化
-    /// </summary>
-    [Description("初始化")]
-    Default = 5,
 }

@@ -12,10 +12,7 @@
 
 using Microsoft.Extensions.Logging;
 
-using System.ComponentModel.DataAnnotations;
-using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 
 using TouchSocket.Core;
@@ -49,11 +46,11 @@ namespace ThingsGateway.Web.Foundation;
 /// 5、<see cref="DisposableObject.Dispose(bool)"/> 结束时调用的方法，实现资源释放方法<br></br>
 /// 网关的数据是如何传入到上传插件的，下面会以Mqtt上传为例<br></br>
 /// 1、如何获取采集变量值？在初始化函数中<see cref="Init(UploadDeviceRunTime)"/>获取全局设备/变量<br></br>
-/// 通过<see cref="DriverBase._scopeFactory"/>获取单例服务<see cref="GlobalCollectDeviceData"/><br></br>
+/// 通过<see cref="DriverBase._scopeFactory"/>获取单例服务<see cref="GlobalDeviceData"/><br></br>
 /// 可以看到在这个单例服务中，已经拥有全部的采集设备与变量<br></br>
-/// 2、如何获取采集变量中的上传属性？UploadBase中封装了通用方法<see cref="UpLoadBase.GetPropertyValue(CollectVariableRunTime, string)"/><br></br>
+/// 2、如何获取采集变量中的上传属性？UploadBase中封装了通用方法<see cref="UpLoadBase.GetPropertyValue(DeviceVariableRunTime, string)"/><br></br>
 /// 比如定义了变量属性Enable，只有设置为true的变量才会用作某逻辑，执行方法GetPropertyValue(tag,"Enable")，也可用硬编码传入propertyName参数<br></br>
-/// 3、如何定义自己的上传实体，第一步中获取获取单例服务<see cref="GlobalCollectDeviceData"/>，在拥有全局变量下，可以使用<see cref="Mapster"/> 或者 手动赋值到DTO实体<br></br>
+/// 3、如何定义自己的上传实体，第一步中获取获取单例服务<see cref="GlobalDeviceData"/>，在拥有全局变量下，可以使用<see cref="Mapster"/> 或者 手动赋值到DTO实体<br></br>
 /// 4、完整的参考可以查看MqttClient插件ThingsGateway\src\Plugins\ThingsGateway.Mqtt\ThingsGateway.Mqtt.csproj<br></br>
 /// </summary>
 public abstract class UpLoadBase : DriverBase
@@ -67,14 +64,12 @@ public abstract class UpLoadBase : DriverBase
     /// <summary>
     /// 返回插件的上传变量，一般在<see cref="Init(UploadDeviceRunTime)"/>后初始化
     /// </summary>
-    public abstract List<CollectVariableRunTime> UploadVariables { get; }
+    public abstract List<DeviceVariableRunTime> UploadVariables { get; }
 
     /// <summary>
     /// 插件配置项 ，继承实现<see cref="VariablePropertyBase"/>后，返回继承类，如果不存在，返回null
     /// </summary>
     public abstract VariablePropertyBase VariablePropertys { get; }
-
-
 
     /// <summary>
     /// 开始执行的方法
@@ -91,6 +86,10 @@ public abstract class UpLoadBase : DriverBase
     /// </summary>
     public UploadDeviceRunTime CurDevice { get; protected set; }
     /// <summary>
+    /// 离线缓存
+    /// </summary>
+    protected CacheDb CacheDb { get; set; }
+    /// <summary>
     /// 初始化
     /// </summary>
     public void Init(ILogger logger, UploadDeviceRunTime device)
@@ -98,9 +97,7 @@ public abstract class UpLoadBase : DriverBase
         _logger = logger;
         IsLogOut = device.IsLogOut;
         CurDevice = device;
-        Directory.CreateDirectory("Cache");
-        GetCacheDb().DbMaintenance.CreateDatabase();//创建数据库
-        GetCacheDb().CodeFirst.InitTables(typeof(CacheTable));
+        CacheDb = new(CurDevice.Id.ToString());
         Init(device);
     }
 
@@ -113,7 +110,7 @@ public abstract class UpLoadBase : DriverBase
     /// <summary>
     /// 获取变量的属性值
     /// </summary>
-    public virtual string GetPropertyValue(CollectVariableRunTime variableRunTime, string propertyName)
+    public virtual string GetPropertyValue(DeviceVariableRunTime variableRunTime, string propertyName)
     {
         if (variableRunTime == null)
             return null;
@@ -128,88 +125,7 @@ public abstract class UpLoadBase : DriverBase
         }
         return null;
     }
-    /// <summary>
-    /// 获取数据库链接
-    /// </summary>
-    /// <returns></returns>
-    public SqlSugarClient GetCacheDb()
-    {
-        var configureExternalServices = new ConfigureExternalServices
-        {
-            EntityService = (type, column) => // 修改列可空-1、带?问号 2、String类型若没有Required
-            {
-                if ((type.PropertyType.IsGenericType && type.PropertyType.GetGenericTypeDefinition() == typeof(Nullable<>))
-                    || (type.PropertyType == typeof(string) && type.GetCustomAttribute<RequiredAttribute>() == null))
-                    column.IsNullable = true;
-            },
-        };
 
-        var sqlSugarClient = new SqlSugarClient(new ConnectionConfig()
-        {
-            ConnectionString = $"Data Source=Cache/{CurDevice.Id}.db;",//连接字符串
-            DbType = DbType.Sqlite,//数据库类型
-            IsAutoCloseConnection = true, //不设成true要手动close
-            ConfigureExternalServices = configureExternalServices,
-        }
-        );
-        return sqlSugarClient;
-    }
+}
 
-    /// <summary>
-    /// 获取缓存表前十条
-    /// </summary>
-    /// <returns></returns>
-    public async Task<List<CacheTable>> GetCacheData()
-    {
-        var db = GetCacheDb();
-        var data = await db.Queryable<CacheTable>().Take(10).ToListAsync();
-        return data;
-    }
-    /// <summary>
-    /// 增加离线缓存，限制表最大默认2000行
-    /// </summary>
-    /// <returns></returns>
-    public async Task<bool> AddCacheData(string topic, string data, int max = 2000)
-    {
-        var db = GetCacheDb();
-        var count = await db.Queryable<CacheTable>().CountAsync();
-        if (count > max)
-        {
-            var data1 = await db.Queryable<CacheTable>().OrderBy(a => a.Id).Take(count - max).ToListAsync();
-            await db.Deleteable(data1).ExecuteCommandAsync();
-        }
-        var result = await db.Insertable(new CacheTable() { Id = YitIdHelper.NextId(), Topic = topic, CacheStr = data }).ExecuteCommandAsync();
-        return result > 0;
-    }
-    /// <summary>
-    /// 清除离线缓存
-    /// </summary>
-    /// <returns></returns>
-    public async Task<bool> DeleteCacheData(params long[] data)
-    {
-        var db = GetCacheDb();
-        var result = await db.Deleteable<CacheTable>().In(data).ExecuteCommandAsync();
-        return result > 0;
-    }
-}
-/// <summary>
-/// 缓存表
-/// </summary>
-public class CacheTable
-{
-    /// <summary>
-    /// Id
-    /// </summary>
-    [SugarColumn(IsPrimaryKey = true)]
-    public long Id { get; set; }
-    /// <summary>
-    /// Topic
-    /// </summary>
-    public string Topic { get; set; }
-    /// <summary>
-    /// 缓存值
-    /// </summary>
-    [SugarColumn(ColumnDataType = StaticConfig.CodeFirst_BigString)]
-    public string CacheStr { get; set; }
-}
 

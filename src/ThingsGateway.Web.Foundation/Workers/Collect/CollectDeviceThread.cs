@@ -15,6 +15,8 @@ using Microsoft.Extensions.Logging;
 using System.Linq;
 using System.Threading;
 
+using ThingsGateway.Foundation;
+
 using TouchSocket.Core;
 
 namespace ThingsGateway.Web.Foundation;
@@ -66,7 +68,7 @@ public class CollectDeviceThread : IDisposable
                 try
                 {
                     LoggerGroup log = CollectDeviceCores.FirstOrDefault().Driver.TouchSocketConfig.Container.Resolve<ILog>() as LoggerGroup;
-                    var data = new EasyLogger(device.Driver.NewMessage);
+                    var data = new TGEasyLogger(device.Driver.NewMessage);
                     log.AddLogger(device.DeviceId.ToString(), data);
                 }
                 catch (Exception ex)
@@ -120,9 +122,6 @@ public class CollectDeviceThread : IDisposable
 
                         }
 
-
-                        //if (CollectDeviceCores.Count > 1)
-                        //await Task.Delay(1000);//对于共享链路设备需延时，避免物理链路比如LORA等设备寻找失败
                     }
                     else
                     {

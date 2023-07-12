@@ -15,26 +15,27 @@ using ThingsGateway.Core;
 namespace ThingsGateway.Web.Foundation;
 
 /// <summary>
-/// 设备通用表
+/// 采集设备表
 /// </summary>
-[SugarTable("collectdevice", TableDescription = "设备通用表")]
+[SugarTable("collectDevice", TableDescription = "采集设备表")]
 [Tenant(SqlsugarConst.DB_CustomId)]
+[SugarIndex("unique_collectdevice_name", nameof(CollectDevice.Name), OrderByType.Asc, true)]
 public class CollectDevice : UploadDevice
 {
     #region 冗余配置
 
-    ///// <summary>
-    ///// 冗余类型
-    ///// </summary>
-    //[SugarColumn(ColumnName = "RedundantEnum", ColumnDescription = "冗余类型")]
-    //[OrderTable(Order = 2)]
-    //[Excel]
-    //public RedundantEnum RedundantEnum { get; set; }
-    ///// <summary>
-    ///// 主/冗余设备Id
-    ///// </summary>
-    //[SugarColumn(ColumnName = "RedundantDeviceId", ColumnDescription = "主/冗余设备Id")]
-    //public long RedundantDeviceId { get; set; }
+    /// <summary>
+    /// 是否冗余
+    /// </summary>
+    [SugarColumn(ColumnName = "IsRedundant", ColumnDescription = "是否冗余")]
+    [OrderTable(Order = 2)]
+    [Excel]
+    public bool IsRedundant { get; set; }
+    /// <summary>
+    /// 冗余设备Id,只能选择相同驱动
+    /// </summary>
+    [SugarColumn(ColumnName = "RedundantDeviceId", ColumnDescription = "冗余设备Id")]
+    public long RedundantDeviceId { get; set; }
 
     #endregion
 

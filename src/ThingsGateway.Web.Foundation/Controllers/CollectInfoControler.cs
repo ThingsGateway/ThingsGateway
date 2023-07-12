@@ -17,8 +17,6 @@ using Microsoft.AspNetCore.Mvc;
 
 using NewLife;
 
-using System.Linq;
-
 using ThingsGateway.Core;
 using ThingsGateway.Core.Extension;
 
@@ -41,12 +39,12 @@ public class CollectInfoControler : IDynamicApiController
     {
         _scopeFactory = scopeFactory;
         var serviceScope = _scopeFactory.CreateScope();
-        _collectDeviceHostService = serviceScope.GetBackgroundService<CollectDeviceWorker>();
+        _globalDeviceData = serviceScope.ServiceProvider.GetService<GlobalDeviceData>();
         _alarmHostService = serviceScope.GetBackgroundService<AlarmWorker>();
     }
 
     AlarmWorker _alarmHostService { get; set; }
-    CollectDeviceWorker _collectDeviceHostService { get; set; }
+    GlobalDeviceData _globalDeviceData { get; set; }
     /// <summary>
     /// 获取设备信息
     /// </summary>
@@ -55,26 +53,21 @@ public class CollectInfoControler : IDynamicApiController
     [Description("获取设备信息")]
     public List<DeviceData> GetCollectDeviceList()
     {
-        return _collectDeviceHostService.CollectDeviceRunTimes.Adapt<List<DeviceData>>();
+        return _globalDeviceData.CollectDevices.Adapt<List<DeviceData>>();
     }
+
     /// <summary>
     /// 获取变量信息
     /// </summary>
     /// <returns></returns>
     [HttpGet("collectVariableList")]
     [Description("获取变量信息")]
-    public async Task<SqlSugarPagedList<VariableData>> GetCollectDeviceList(string name, string devName, int pageIndex = 1, int pageSize = 50)
+    public async Task<SqlSugarPagedList<VariableData>> GetDeviceVariableList([FromQuery] VariablePageInput input)
     {
-        var data = await _collectDeviceHostService.CollectDeviceRunTimes.SelectMany(a => a.DeviceVariableRunTimes)
-            .WhereIf(!name.IsNullOrEmpty(), a => a.Name == name)
-            .WhereIf(!devName.IsNullOrEmpty(), a => a.DeviceName == devName)
-            .ToPagedListAsync(
-            new BasePageInput()
-            {
-                Current = pageIndex,
-                Size = pageSize,
-            }
-            );
+        var data = await _globalDeviceData.AllVariables
+            .WhereIf(!input.Name.IsNullOrEmpty(), a => a.Name == input.Name)
+            .WhereIf(!input.DeviceName.IsNullOrEmpty(), a => a.DeviceName == input.DeviceName)
+            .ToPagedListAsync(input);
         return data.Adapt<SqlSugarPagedList<VariableData>>();
     }
 
@@ -84,18 +77,12 @@ public class CollectInfoControler : IDynamicApiController
     /// <returns></returns>
     [HttpGet("realAlarmList")]
     [Description("获取实时报警信息")]
-    public async Task<SqlSugarPagedList<VariableData>> GetRealAlarmList(string name, string devName, int pageIndex = 1, int pageSize = 50)
+    public async Task<SqlSugarPagedList<VariableData>> GetRealAlarmList([FromQuery] VariablePageInput input)
     {
         var data = await _alarmHostService.RealAlarmDeviceVariables
-            .WhereIf(!name.IsNullOrEmpty(), a => a.Name == name)
-            .WhereIf(!devName.IsNullOrEmpty(), a => a.DeviceName == devName)
-            .ToPagedListAsync(
-            new BasePageInput()
-            {
-                Current = pageIndex,
-                Size = pageSize,
-            }
-            );
+            .WhereIf(!input.Name.IsNullOrEmpty(), a => a.Name == input.Name)
+            .WhereIf(!input.DeviceName.IsNullOrEmpty(), a => a.DeviceName == input.DeviceName)
+            .ToPagedListAsync(input);
         return data.Adapt<SqlSugarPagedList<VariableData>>();
     }
 

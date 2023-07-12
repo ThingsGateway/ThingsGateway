@@ -13,7 +13,7 @@
 namespace ThingsGateway.Foundation;
 
 /// <summary>
-/// 设备地址数据的信息，参考HSL代码思路，对每个协议都建立其变量地址的表示类
+/// 设备地址数据的信息，对每个协议都建立其变量地址的表示类
 /// </summary>
 public class DeviceAddressBase
 {

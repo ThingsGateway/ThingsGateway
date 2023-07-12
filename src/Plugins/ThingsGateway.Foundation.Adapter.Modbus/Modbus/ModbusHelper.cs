@@ -10,12 +10,34 @@
 //------------------------------------------------------------------------------
 #endregion
 
+using System.Text;
+
 using ThingsGateway.Foundation.Extension;
+using ThingsGateway.Foundation.Extension.Generic;
 
 namespace ThingsGateway.Foundation.Adapter.Modbus
 {
     internal class ModbusHelper
     {
+        /// <summary>
+        /// modbus地址格式说明
+        /// </summary>
+        /// <returns></returns>
+        internal static string GetAddressDescription()
+        {
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.AppendLine("Modbus寄存器");
+            stringBuilder.AppendLine("线圈寄存器使用从 00001 开始的地址编号。");
+            stringBuilder.AppendLine("离散输入寄存器使用从 10001 开始的地址编号。");
+            stringBuilder.AppendLine("输入寄存器使用从 30001 开始的地址编号。");
+            stringBuilder.AppendLine("保持寄存器使用从 40001 开始的地址编号。");
+            stringBuilder.AppendLine("举例：");
+            stringBuilder.AppendLine("40001=>保持寄存器第一个寄存器");
+            stringBuilder.AppendLine("额外格式：");
+            stringBuilder.AppendLine("设备站号 ，比如40001;s=2; ，代表设备地址为2的保持寄存器第一个寄存器");
+            stringBuilder.AppendLine("写入功能码 ，比如40001;w=16; ，代表保持寄存器第一个寄存器，写入值时采用0x10功能码，而不是默认的0x06功能码");
+            return stringBuilder.ToString();
+        }
 
         /// <summary>
         /// 添加Crc16
@@ -74,7 +96,7 @@ namespace ThingsGateway.Foundation.Adapter.Modbus
                     return new OperResult<byte[]>(GetDescriptionByErrorCode(response[2]));
                 if (send.Length == 0)
                 {
-                    var result = OperResult.CreateSuccessResult(GenericHelper.ArrayRemoveBegin(response, 3));
+                    var result = OperResult.CreateSuccessResult(GenericHelpers.ArrayRemoveBegin(response, 3));
                     result.Message = "接收数据正确，但主机并没有主动请求数据";
                     result.ResultCode = ResultCode.Canceled;
                     return result;
@@ -84,7 +106,7 @@ namespace ThingsGateway.Foundation.Adapter.Modbus
                 if (send[1] != response[1])
                     return new OperResult<byte[]>(response) { Message = "功能码不一致" };
                 if (response.Length > 3)
-                    return OperResult.CreateSuccessResult(GenericHelper.ArrayRemoveBegin(response, 3));
+                    return OperResult.CreateSuccessResult(GenericHelpers.ArrayRemoveBegin(response, 3));
                 else
                     return new OperResult<byte[]>(response) { Message = "数据长度为0" };
             }

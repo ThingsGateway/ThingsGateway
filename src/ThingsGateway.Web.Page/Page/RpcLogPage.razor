@@ -17,6 +17,7 @@
 @attribute [Authorize]
 @attribute [RolePermission]
 @inject UserResoures UserResoures
+@inject MasaBlazor MasaBlazor
 @inherits CultureComponentBase
 @layout MainLayout
 <AppDataTable @ref="_datatable" TItem="RpcLog" SearchItem="RpcLogPageInput"
@@ -24,7 +25,7 @@
               SearchModel="@search" IsShowOperCol=true
               QueryCall="QueryCall"
               FilterHeaders="FilterHeaders" Filters="Filters" ShowDetailButton
-                ShowQueryButton IsShowSearchKey>
+                ShowQueryButton >
     <SearchTemplate>
         <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="my-1  mx-2 " @bind-Value="context.Source"
                         Outlined Label=@context.Description(x => x.Source) />
@@ -39,6 +40,24 @@
         {
             <MButton Color="error" Class="mx-2 my-1" OnClick=@(ClearClick)>@T("清空")</MButton>
         }
+        <MMenu OffsetY Context="menu">
+            <ActivatorContent>
+                <MButton @attributes="@menu.Attrs" Color="primary"
+                         Icon="@MasaBlazor.Breakpoint.SmAndDown"
+                         Class="my-1  mx-2 ">
+                    @T("导出")
+                    <AppChevronDown></AppChevronDown>
+                </MButton>
+            </ActivatorContent>
+            <ChildContent>
+                <MList>
+                    <MListItem OnClick="()=>DownDeviceExport()"> @T("导出全部") </MListItem>
+                    <MListItem OnClick="()=>DownDeviceExport(search)">  @T("导出搜索项") </MListItem>
+                </MList>
+
+            </ChildContent>
+        </MMenu>
+
     </OtherToolbarTemplate>
 </AppDataTable>
 

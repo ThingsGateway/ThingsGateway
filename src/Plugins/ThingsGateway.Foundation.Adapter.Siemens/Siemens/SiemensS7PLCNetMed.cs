@@ -13,6 +13,7 @@
 using System.Collections.Generic;
 
 using ThingsGateway.Foundation.Extension;
+using ThingsGateway.Foundation.Extension.Generic;
 
 namespace ThingsGateway.Foundation.Adapter.Siemens
 {
@@ -58,7 +59,7 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
         {
             if (siemensAddress.Length <= 19)
             {
-                return ByteTransformHelper.GetResultFromBytes(SiemensHelper.GetReadCommand(siemensAddress), m => new List<byte[]>() { m });
+                return ByteTransformHelpers.GetResultFromBytes(SiemensHelper.GetReadCommand(siemensAddress), m => new List<byte[]>() { m });
             }
 
             List<byte[]> byteList = new List<byte[]>();

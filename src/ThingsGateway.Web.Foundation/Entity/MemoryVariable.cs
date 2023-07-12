@@ -16,8 +16,6 @@ namespace ThingsGateway.Web.Foundation;
 /// <summary>
 /// 内存变量表
 /// </summary>
-[SugarTable("memory_variable", TableDescription = "内存变量表")]
-[Tenant(SqlsugarConst.DB_CustomId)]
 public class MemoryVariable : BaseEntity
 {
     /// <summary>
@@ -51,6 +49,26 @@ public class MemoryVariable : BaseEntity
     [Excel]
     public DataTypeEnum DataTypeEnum { get; set; }
 
+    /// <summary>
+    /// 读取表达式
+    /// </summary>
+    [SugarColumn(ColumnName = "ReadExpressions", ColumnDescription = "读取表达式", Length = 200, IsNullable = true)]
+    [OrderTable(Order = 7)]
+    [Excel]
+    public string ReadExpressions { get; set; }
+
+    /// <summary>
+    /// 是否中间变量
+    /// </summary>
+    [SugarColumn(ColumnName = "IsMemoryVariable", ColumnDescription = "是否中间变量", IsNullable = false)]
+    public virtual bool? IsMemoryVariable { get; set; } = true;
+    /// <summary>
+    /// 是否允许远程Rpc写入，不包含Blazor Web页
+    /// </summary>
+    [SugarColumn(ColumnName = "RpcWriteEnable", ColumnDescription = "允许远程写入", IsNullable = true)]
+    [OrderTable(Order = 4)]
+    [Excel]
+    public bool RpcWriteEnable { get; set; }
     /// <summary>
     /// 变量额外属性Json，通常使用为上传设备,List属性
     /// </summary>
@@ -237,6 +255,7 @@ public class MemoryVariable : BaseEntity
     #endregion
 
     #region 历史
+
     /// <summary>
     /// 存储类型
     /// </summary>
@@ -245,27 +264,14 @@ public class MemoryVariable : BaseEntity
     public HisType HisType { get; set; }
 
     /// <summary>
-    /// 使能
+    /// 历史使能
     /// </summary>
-    [Description("使能")]
-    [SugarColumn(ColumnName = "HisEnable", ColumnDescription = "使能")]
+    [Description("历史使能")]
+    [SugarColumn(ColumnName = "HisEnable", ColumnDescription = "历史使能")]
     [Excel]
     public bool HisEnable { get; set; }
+
     #endregion
 }
 
-/// <summary>
-/// 历史类型
-/// </summary>
-public enum HisType
-{
-    /// <summary>
-    /// 改变存储
-    /// </summary>
-    Change,
-    /// <summary>
-    /// 采集存储
-    /// </summary>
-    Collect,
-}
 

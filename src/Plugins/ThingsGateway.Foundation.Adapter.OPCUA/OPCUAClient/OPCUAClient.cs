@@ -10,6 +10,8 @@
 //------------------------------------------------------------------------------
 #endregion
 
+using Newtonsoft.Json.Linq;
+
 using Opc.Ua;
 using Opc.Ua.Client;
 using Opc.Ua.Configuration;
@@ -17,29 +19,48 @@ using Opc.Ua.Configuration;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 using ThingsGateway.Foundation.Extension;
+using ThingsGateway.Foundation.Extension.Generic;
 
 
 //修改自https://github.com/dathlin/OpcUaHelper 与OPC基金会net库
 
 namespace ThingsGateway.Foundation.Adapter.OPCUA;
+public delegate void DataChangedEventHandler(List<(NodeId id, DataValue dataValue, JToken jToken)> values);
 public class OPCUAClient : DisposableObject
 {
 
-    public Action<List<(MonitoredItem monitoredItem, MonitoredItemNotification monitoredItemNotification)>> DataChangedHandler;
+    #region 属性，变量等
+    /// <summary>
+    /// 当前配置
+    /// </summary>
     public OPCNode OPCNode;
-    private EasyLock _keepAliveLock = new();
-    private Dictionary<string, List<string>> _tagDicts = new();
+
+    /// <summary>
+    /// 当前保存的变量名称列表,需重新连接,订阅生效
+    /// </summary>
+    public List<string> Variables = new();
+    /// <summary>
+    /// 当前的变量名称/OPC变量节点
+    /// </summary>
+    private Dictionary<string, VariableNode> _variableDicts = new();
+    private EasyLock checkLock = new();
+    /// <summary>
+    /// 当前的订阅组，组名称/组
+    /// </summary>
     private Dictionary<string, Subscription> dic_subscriptions;
 
     private ApplicationInstance m_application;
+
     private ApplicationConfiguration m_configuration;
 
     private EventHandler m_ConnectComplete;
 
-    private ConcurrentQueue<(MonitoredItem, MonitoredItemNotification)> m_data = new();
+    private ConcurrentQueue<(NodeId, DataValue, JToken)> m_data = new();
+
     private bool m_IsConnected;
 
     private EventHandler m_KeepAliveComplete;
@@ -59,7 +80,7 @@ public class OPCUAClient : DisposableObject
     /// </summary>
     public OPCUAClient()
     {
-        dic_subscriptions = new Dictionary<string, Subscription>();
+        dic_subscriptions = new();
 
         var certificateValidator = new CertificateValidator();
         certificateValidator.CertificateValidation += CertificateValidation;
@@ -160,6 +181,7 @@ public class OPCUAClient : DisposableObject
         Task.Run(dataChangedHandlerInvoke);
 
     }
+
     /// <summary>
     /// 成功连接后或disconnecing从服务器。
     /// </summary>
@@ -169,6 +191,7 @@ public class OPCUAClient : DisposableObject
         remove { m_ConnectComplete -= value; }
     }
 
+    public event DataChangedEventHandler DataChangedHandler;
     /// <summary>
     /// Raised when a good keep alive from the server arrives.
     /// </summary>
@@ -219,41 +242,27 @@ public class OPCUAClient : DisposableObject
     }
 
     /// <summary>
-    /// a name of application name show on server
+    /// OPCUAClient
     /// </summary>
     public string OPCUAName { get; set; } = "OPCUAClient";
 
     /// <summary>
     /// 当前活动会话。
     /// </summary>
-    public ISession Session
-    {
-        get { return m_session; }
-    }
+    public ISession Session => m_session;
 
     /// <summary>
-    /// The user identity to use when creating the session.
+    /// UserIdentity
     /// </summary>
     public IUserIdentity UserIdentity { get; set; }
 
-    /// <summary>
-    /// 新增一个订阅，需要指定订阅的关键字，订阅的tag名，以及回调方法
-    /// </summary>
-    /// <param name="key">关键字</param>
-    /// <param name="tag">tag</param>
-    /// <param name="callback">回调方法</param>
-    public void AddSubscription(string key, string tag, Action<string, MonitoredItem, MonitoredItemNotificationEventArgs> callback)
-    {
-        AddSubscription(key, new string[] { tag }, callback);
-    }
+    #endregion
 
+    #region 订阅
     /// <summary>
-    /// 新增一批订阅，需要指定订阅的关键字，订阅的tag名数组，以及回调方法
+    /// 新增订阅，需要指定订阅的关键字，订阅的tag名数组，以及回调方法
     /// </summary>
-    /// <param name="key">关键字</param>
-    /// <param name="tags">节点名称数组</param>
-    /// <param name="callback">回调方法</param>
-    public void AddSubscription(string key, string[] tags, Action<string, MonitoredItem, MonitoredItemNotificationEventArgs> callback)
+    public void AddSubscription(string subscriptionName, string[] tags)
     {
         Subscription m_subscription = new Subscription(m_session.DefaultSubscription);
 
@@ -263,7 +272,8 @@ public class OPCUAClient : DisposableObject
         m_subscription.LifetimeCount = uint.MaxValue;
         m_subscription.MaxNotificationsPerPublish = uint.MaxValue;
         m_subscription.Priority = 100;
-        m_subscription.DisplayName = key;
+        m_subscription.DisplayName = subscriptionName;
+        List<MonitoredItem> monitoredItems = new List<MonitoredItem>();
         for (int i = 0; i < tags.Length; i++)
         {
             var item = new MonitoredItem
@@ -274,12 +284,10 @@ public class OPCUAClient : DisposableObject
                 Filter = new DataChangeFilter() { DeadbandValue = OPCNode.DeadBand, DeadbandType = (int)DeadbandType.Absolute, Trigger = DataChangeTrigger.StatusValue },
                 SamplingInterval = OPCNode?.UpdateRate ?? 1000,
             };
-            item.Notification += (MonitoredItem monitoredItem, MonitoredItemNotificationEventArgs args) =>
-            {
-                callback?.Invoke(key, monitoredItem, args);
-            };
-            m_subscription.AddItem(item);
+            item.Notification += callback;
+            monitoredItems.Add(item);
         }
+        m_subscription.AddItems(monitoredItems);
 
         m_session.AddSubscription(m_subscription);
         m_subscription.Create();
@@ -291,39 +299,68 @@ public class OPCUAClient : DisposableObject
 
         lock (dic_subscriptions)
         {
+            if (dic_subscriptions.ContainsKey(subscriptionName))
+            {
+                // remove
+                dic_subscriptions[subscriptionName].Delete(true);
+                m_session.RemoveSubscription(dic_subscriptions[subscriptionName]);
+                dic_subscriptions[subscriptionName].SafeDispose();
+                dic_subscriptions[subscriptionName] = m_subscription;
+            }
+            else
+            {
+                dic_subscriptions.Add(subscriptionName, m_subscription);
+            }
+        }
+    }
+
+    /// <summary>
+    /// 移除所有的订阅消息
+    /// </summary>
+    public void RemoveAllSubscription()
+    {
+        lock (dic_subscriptions)
+        {
+            foreach (var item in dic_subscriptions)
+            {
+                item.Value.Delete(true);
+                m_session.RemoveSubscription(item.Value);
+                item.Value.SafeDispose();
+            }
+            dic_subscriptions.Clear();
+        }
+    }
+
+    /// <summary>
+    /// 移除订阅消息
+    /// </summary>
+    /// <param name="key">组名称</param>
+    public void RemoveSubscription(string key)
+    {
+        lock (dic_subscriptions)
+        {
             if (dic_subscriptions.ContainsKey(key))
             {
                 // remove
                 dic_subscriptions[key].Delete(true);
                 m_session.RemoveSubscription(dic_subscriptions[key]);
                 dic_subscriptions[key].SafeDispose();
-                dic_subscriptions[key] = m_subscription;
-            }
-            else
-            {
-                dic_subscriptions.Add(key, m_subscription);
+                dic_subscriptions.RemoveWhere(a => a.Key == key);
             }
         }
+
     }
 
-    /// <summary>
-    /// 添加节点并保存
-    /// </summary>
-    /// <param name="tags"></param>
-    /// <returns></returns>
-    public Dictionary<string, List<string>> AddTagsAndSave(List<string> tags)
-    {
-        int i = 0;
-        _tagDicts = tags.ChunkTrivialBetter(OPCNode.GroupSize).ToDictionary(a => "default" + (i++));
-        return _tagDicts;
-    }
+    #endregion
 
+
+    #region 其他方法
     /// <summary>
     /// 浏览一个节点的引用
     /// </summary>
     /// <param name="tag">节点值</param>
     /// <returns>引用节点描述</returns>
-    public ReferenceDescription[] BrowseNodeReference(string tag)
+    public async Task<ReferenceDescription[]> BrowseNodeReferenceAsync(string tag)
     {
         NodeId sourceId = new NodeId(tag);
 
@@ -337,7 +374,6 @@ public class OPCUAClient : DisposableObject
         nodeToBrowse1.NodeClassMask = (uint)(NodeClass.Object | NodeClass.Variable | NodeClass.Method);
         nodeToBrowse1.ResultMask = (uint)BrowseResultMask.All;
 
-        // 该节点无论怎么样都读取不到方法
         // find all nodes organized by the node.
         BrowseDescription nodeToBrowse2 = new BrowseDescription();
 
@@ -353,13 +389,16 @@ public class OPCUAClient : DisposableObject
         nodesToBrowse.Add(nodeToBrowse2);
 
         // fetch references from the server.
-        ReferenceDescriptionCollection references = FormUtils.Browse(m_session, nodesToBrowse, false);
+        ReferenceDescriptionCollection references = await FormUtils.BrowseAsync(m_session, nodesToBrowse, false);
 
         return references.ToArray();
     }
 
+
+
+
     /// <summary>
-    /// call a server method
+    /// 调用服务器的方法
     /// </summary>
     /// <param name="tagParent">方法的父节点tag</param>
     /// <param name="tag">方法的节点tag</param>
@@ -380,47 +419,67 @@ public class OPCUAClient : DisposableObject
         return outputArguments.ToArray();
     }
 
-    public void CertificateValidation(CertificateValidator sender, CertificateValidationEventArgs eventArgs)
-    {
-        if (ServiceResult.IsGood(eventArgs.Error))
-            eventArgs.Accept = true;
-        else if (eventArgs.Error.StatusCode.Code == StatusCodes.BadCertificateUntrusted)
-            eventArgs.Accept = true;
-        else
-            throw new Exception(string.Format("验证证书失败，错误代码:{0}: {1}", eventArgs.Error.Code, eventArgs.Error.AdditionalInfo));
-    }
-    /// <summary>
-    /// connect to server
-    /// </summary>
-    public async Task ConnectAsync()
-    {
-        m_session = await ConnectAsync(OPCNode.OPCURL);
-    }
+
 
     /// <summary>
-    /// 删除一个节点的操作，除非服务器配置允许，否则引发异常，成功返回<c>True</c>，否则返回<c>False</c>
+    /// 读取历史数据
     /// </summary>
-    /// <param name="tag">节点文本描述</param>
-    /// <returns>是否删除成功</returns>
-    public bool DeleteExsistNode(string tag)
+    /// <param name="tag">节点的索引</param>
+    /// <param name="start">开始时间</param>
+    /// <param name="end">结束时间</param>
+    /// <param name="count">读取的个数</param>
+    /// <param name="containBound">是否包含边界</param>
+    /// <returns>读取的数据列表</returns>
+    public async Task<List<DataValue>> ReadHistoryRawDataValues(string tag, DateTime start, DateTime end, uint count = 1, bool containBound = false, CancellationToken cancellationToken = default)
     {
-        DeleteNodesItemCollection waitDelete = new DeleteNodesItemCollection();
-
-        DeleteNodesItem nodesItem = new DeleteNodesItem()
+        HistoryReadValueId m_nodeToContinue = new HistoryReadValueId()
         {
             NodeId = new NodeId(tag),
         };
 
-        m_session.DeleteNodes(
-            null,
-            waitDelete,
-            out StatusCodeCollection results,
-            out DiagnosticInfoCollection diagnosticInfos);
+        ReadRawModifiedDetails m_details = new ReadRawModifiedDetails
+        {
+            StartTime = start,
+            EndTime = end,
+            NumValuesPerNode = count,
+            IsReadModified = false,
+            ReturnBounds = containBound
+        };
 
-        ClientBase.ValidateResponse(results, waitDelete);
-        ClientBase.ValidateDiagnosticInfos(diagnosticInfos, waitDelete);
+        HistoryReadValueIdCollection nodesToRead = new HistoryReadValueIdCollection();
+        nodesToRead.Add(m_nodeToContinue);
 
-        return !StatusCode.IsBad(results[0]);
+        var result = await m_session.HistoryReadAsync(
+             null,
+             new ExtensionObject(m_details),
+             TimestampsToReturn.Both,
+             false,
+             nodesToRead,
+             cancellationToken);
+        var results = result.Results;
+        var diagnosticInfos = result.DiagnosticInfos;
+        ClientBase.ValidateResponse(results, nodesToRead);
+        ClientBase.ValidateDiagnosticInfos(diagnosticInfos, nodesToRead);
+
+        if (StatusCode.IsBad(results[0].StatusCode))
+        {
+            throw new ServiceResultException(results[0].StatusCode);
+        }
+
+        HistoryData values = ExtensionObject.ToEncodeable(results[0].HistoryData) as HistoryData;
+        return values.DataValues;
+    }
+
+    #endregion
+
+
+    #region 连接
+    /// <summary>
+    /// 连接到服务器
+    /// </summary>
+    public async Task ConnectAsync()
+    {
+        m_session = await ConnectAsync(OPCNode.OPCURL);
     }
 
     /// <summary>
@@ -447,132 +506,34 @@ public class OPCUAClient : DisposableObject
         // update the client status
         m_IsConnected = false;
 
-        // raise an event.
-        DoConnectComplete(null);
     }
+    #endregion
+
+    #region 读取
 
     /// <summary>
-    /// read History data
+    /// 从服务器或缓存读取节点
     /// </summary>
-    /// <param name="tag">节点的索引</param>
-    /// <param name="start">开始时间</param>
-    /// <param name="end">结束时间</param>
-    /// <param name="count">读取的个数</param>
-    /// <param name="containBound">是否包含边界</param>
-    /// <returns>读取的数据列表</returns>
-    public IEnumerable<DataValue> ReadHistoryRawDataValues(string tag, DateTime start, DateTime end, uint count = 1, bool containBound = false)
+    private Node ReadNode(string nodeIdStr, bool isOnlyServer = true)
     {
-        HistoryReadValueId m_nodeToContinue = new HistoryReadValueId()
+        if (!isOnlyServer)
         {
-            NodeId = new NodeId(tag),
-        };
-
-        ReadRawModifiedDetails m_details = new ReadRawModifiedDetails
-        {
-            StartTime = start,
-            EndTime = end,
-            NumValuesPerNode = count,
-            IsReadModified = false,
-            ReturnBounds = containBound
-        };
-
-        HistoryReadValueIdCollection nodesToRead = new HistoryReadValueIdCollection();
-        nodesToRead.Add(m_nodeToContinue);
-
-        m_session.HistoryRead(
-            null,
-            new ExtensionObject(m_details),
-            TimestampsToReturn.Both,
-            false,
-            nodesToRead,
-            out HistoryReadResultCollection results,
-            out DiagnosticInfoCollection diagnosticInfos);
-
-        ClientBase.ValidateResponse(results, nodesToRead);
-        ClientBase.ValidateDiagnosticInfos(diagnosticInfos, nodesToRead);
-
-        if (StatusCode.IsBad(results[0].StatusCode))
-        {
-            throw new ServiceResultException(results[0].StatusCode);
+            if (_variableDicts.TryGetValue(nodeIdStr, out var value))
+            {
+                return value;
+            }
         }
 
-        HistoryData values = ExtensionObject.ToEncodeable(results[0].HistoryData) as HistoryData;
-        foreach (var value in values.DataValues)
-        {
-            yield return value;
-        }
+        NodeId nodeToRead = new NodeId(nodeIdStr);
+        var node = m_session.ReadNode(nodeToRead);
+        _variableDicts.AddOrUpdate(nodeIdStr, (VariableNode)node);
+        return node;
     }
 
     /// <summary>
-    /// 读取一连串的历史数据，并将其转化成指定的类型
+    /// 从服务器读取值
     /// </summary>
-    /// <param name="tag">节点的索引</param>
-    /// <param name="start">开始时间</param>
-    /// <param name="end">结束时间</param>
-    /// <param name="count">读取的个数</param>
-    /// <param name="containBound">是否包含边界</param>
-    /// <returns>读取的数据列表</returns>
-    public IEnumerable<T> ReadHistoryRawDataValues<T>(string tag, DateTime start, DateTime end, uint count = 1, bool containBound = false)
-    {
-        HistoryReadValueId m_nodeToContinue = new HistoryReadValueId()
-        {
-            NodeId = new NodeId(tag),
-        };
-
-        ReadRawModifiedDetails m_details = new ReadRawModifiedDetails
-        {
-            StartTime = start.ToUniversalTime(),
-            EndTime = end.ToUniversalTime(),
-            NumValuesPerNode = count,
-            IsReadModified = false,
-            ReturnBounds = containBound
-        };
-
-        HistoryReadValueIdCollection nodesToRead = new HistoryReadValueIdCollection();
-        nodesToRead.Add(m_nodeToContinue);
-
-        m_session.HistoryRead(
-            null,
-            new ExtensionObject(m_details),
-            TimestampsToReturn.Both,
-            false,
-            nodesToRead,
-            out HistoryReadResultCollection results,
-            out DiagnosticInfoCollection diagnosticInfos);
-
-        ClientBase.ValidateResponse(results, nodesToRead);
-        ClientBase.ValidateDiagnosticInfos(diagnosticInfos, nodesToRead);
-
-        if (StatusCode.IsBad(results[0].StatusCode))
-        {
-            throw new ServiceResultException(results[0].StatusCode);
-        }
-
-        HistoryData values = ExtensionObject.ToEncodeable(results[0].HistoryData) as HistoryData;
-        foreach (var value in values.DataValues)
-        {
-            yield return (T)value.Value;
-        }
-    }
-
-    /// <summary>
-    /// Read a value node from server
-    /// </summary>
-    /// <typeparam name="T">type of value</typeparam>
-    /// <param name="tag">node id</param>
-    /// <returns>实际值</returns>
-    public T ReadNode<T>(string tag)
-    {
-        var dataValue = ReadNode(new NodeId(tag));
-        return (T)dataValue.FirstOrDefault().Value;
-    }
-
-    /// <summary>
-    /// read several value nodes from server
-    /// </summary>
-    /// <param name="nodeIds">all NodeIds</param>
-    /// <returns>all values</returns>
-    public List<DataValue> ReadNode(params NodeId[] nodeIds)
+    private async Task<List<DataValue>> ReadValueAsync(NodeId[] nodeIds, CancellationToken cancellationToken = default)
     {
         ReadValueIdCollection nodesToRead = new ReadValueIdCollection();
         for (int i = 0; i < nodeIds.Length; i++)
@@ -585,14 +546,14 @@ public class OPCUAClient : DisposableObject
         }
 
         // 读取当前的值
-        m_session.Read(
-            null,
-            0,
-            TimestampsToReturn.Neither,
-            nodesToRead,
-            out DataValueCollection results,
-            out DiagnosticInfoCollection diagnosticInfos);
-
+        var result = await m_session.ReadAsync(
+             null,
+             0,
+             TimestampsToReturn.Neither,
+             nodesToRead,
+             cancellationToken);
+        var results = result.Results;
+        var diagnosticInfos = result.DiagnosticInfos;
         ClientBase.ValidateResponse(results, nodesToRead);
         ClientBase.ValidateDiagnosticInfos(diagnosticInfos, nodesToRead);
 
@@ -600,98 +561,9 @@ public class OPCUAClient : DisposableObject
     }
 
     /// <summary>
-    /// read several value nodes from server
+    /// 从服务器读取值
     /// </summary>
-    /// <param name="tags">所以的节点数组信息</param>
-    /// <returns>all values</returns>
-    public List<T> ReadNode<T>(params string[] tags)
-    {
-        List<T> result = new List<T>();
-        ReadValueIdCollection nodesToRead = new ReadValueIdCollection();
-        for (int i = 0; i < tags.Length; i++)
-        {
-            nodesToRead.Add(new ReadValueId()
-            {
-                NodeId = new NodeId(tags[i]),
-                AttributeId = Attributes.Value
-            });
-        }
-
-        // 读取当前的值
-        m_session.Read(
-            null,
-            0,
-            TimestampsToReturn.Neither,
-            nodesToRead,
-            out DataValueCollection results,
-            out DiagnosticInfoCollection diagnosticInfos);
-
-        ClientBase.ValidateResponse(results, nodesToRead);
-        ClientBase.ValidateDiagnosticInfos(diagnosticInfos, nodesToRead);
-
-        foreach (var item in results)
-        {
-            result.Add((T)item.Value);
-        }
-        return result;
-    }
-
-    /// <summary>
-    /// Read a tag asynchronously
-    /// </summary>
-    /// <typeparam name="T">The type of tag to read</typeparam>
-    /// <param name="tag">tag值</param>
-    /// <returns>The value retrieved from the OPC</returns>
-    public Task<T> ReadNodeAsync<T>(string tag)
-    {
-        ReadValueIdCollection nodesToRead = new ReadValueIdCollection
-            {
-                new ReadValueId()
-                {
-                    NodeId = new NodeId(tag),
-                    AttributeId = Attributes.Value
-                }
-            };
-
-        // Wrap the ReadAsync logic in a TaskCompletionSource, so we can use C# async/await syntax to call it:
-        var taskCompletionSource = new TaskCompletionSource<T>();
-        m_session.BeginRead(
-            requestHeader: null,
-            maxAge: 0,
-            timestampsToReturn: TimestampsToReturn.Neither,
-            nodesToRead: nodesToRead,
-            callback: ar =>
-            {
-                DataValueCollection results;
-                DiagnosticInfoCollection diag;
-                var response = m_session.EndRead(
-                  result: ar,
-                  results: out results,
-                  diagnosticInfos: out diag);
-
-                try
-                {
-                    CheckReturnValue(response.ServiceResult);
-                    CheckReturnValue(results[0].StatusCode);
-                    var val = results[0];
-                    taskCompletionSource.TrySetResult((T)val.Value);
-                }
-                catch (Exception ex)
-                {
-                    taskCompletionSource.TrySetException(ex);
-                }
-            },
-            asyncState: null);
-
-        return taskCompletionSource.Task;
-    }
-
-    /// <summary>
-    /// read several value nodes from server
-    /// </summary>
-    /// <param name="nodeIds">all NodeIds</param>
-    /// <returns>all values</returns>
-    public Task<List<DataValue>> ReadNodeAsync(params NodeId[] nodeIds)
+    private async Task<List<(string, StatusCode, JToken)>> ReadJTokenValueAsync(NodeId[] nodeIds, CancellationToken cancellationToken = default)
     {
         ReadValueIdCollection nodesToRead = new ReadValueIdCollection();
         for (int i = 0; i < nodeIds.Length; i++)
@@ -703,258 +575,110 @@ public class OPCUAClient : DisposableObject
             });
         }
 
-        var taskCompletionSource = new TaskCompletionSource<List<DataValue>>();
         // 读取当前的值
-        m_session.BeginRead(
-            null,
-            0,
-            TimestampsToReturn.Neither,
-            nodesToRead,
-            callback: ar =>
-            {
-                DataValueCollection results;
-                DiagnosticInfoCollection diag;
-                var response = m_session.EndRead(
-                  result: ar,
-                  results: out results,
-                  diagnosticInfos: out diag);
-
-                try
-                {
-                    CheckReturnValue(response.ServiceResult);
-                    taskCompletionSource.TrySetResult(results.ToList());
-                }
-                catch (Exception ex)
-                {
-                    taskCompletionSource.TrySetException(ex);
-                }
-            },
-            asyncState: null);
-
-        return taskCompletionSource.Task;
-    }
-
-    /// <summary>
-    /// read several value nodes from server
-    /// </summary>
-    /// <param name="nodeIds">all NodeIds</param>
-    /// <returns>all values</returns>
-    public Task<List<DataValue>> ReadNodeAsync(params string[] nodeIds)
-    {
-        return ReadNodeAsync(nodeIds.Select(a => new NodeId(a)).ToArray());
-    }
-
-    /// <summary>
-    /// read several value nodes from server
-    /// </summary>
-    /// <param name="tags">all NodeIds</param>
-    /// <returns>all values</returns>
-    public Task<List<T>> ReadNodeAsync<T>(params string[] tags)
-    {
-        ReadValueIdCollection nodesToRead = new ReadValueIdCollection();
-        for (int i = 0; i < tags.Length; i++)
-        {
-            nodesToRead.Add(new ReadValueId()
-            {
-                NodeId = new NodeId(tags[i]),
-                AttributeId = Attributes.Value
-            });
-        }
-
-        var taskCompletionSource = new TaskCompletionSource<List<T>>();
-        // 读取当前的值
-        m_session.BeginRead(
-            null,
-            0,
-            TimestampsToReturn.Neither,
-            nodesToRead,
-            callback: ar =>
-            {
-                DataValueCollection results;
-                DiagnosticInfoCollection diag;
-                var response = m_session.EndRead(
-                  result: ar,
-                  results: out results,
-                  diagnosticInfos: out diag);
-
-                try
-                {
-                    CheckReturnValue(response.ServiceResult);
-                    List<T> result = new List<T>();
-                    foreach (var item in results)
-                    {
-                        result.Add((T)item.Value);
-                    }
-                    taskCompletionSource.TrySetResult(result);
-                }
-                catch (Exception ex)
-                {
-                    taskCompletionSource.TrySetException(ex);
-                }
-            },
-            asyncState: null);
-
-        return taskCompletionSource.Task;
-    }
-
-    /// <summary>
-    /// 读取一个节点的所有属性
-    /// </summary>
-    /// <param name="tag">节点信息</param>
-    /// <returns>节点的特性值</returns>
-    public OPCNodeAttribute[] ReadNoteAttribute(string tag, uint attributesid)
-    {
-        NodeId sourceId = new NodeId(tag);
-        ReadValueIdCollection nodesToRead = new ReadValueIdCollection();
-
-        ReadValueId nodeToRead1 = new ReadValueId();
-        nodeToRead1.NodeId = sourceId;
-        nodeToRead1.AttributeId = attributesid;
-        nodesToRead.Add(nodeToRead1);
-
-        int startOfProperties = nodesToRead.Count;
-
-        // find all of the pror of the node.
-        BrowseDescription nodeToBrowse1 = new BrowseDescription();
-
-        nodeToBrowse1.NodeId = sourceId;
-        nodeToBrowse1.BrowseDirection = BrowseDirection.Forward;
-        nodeToBrowse1.ReferenceTypeId = ReferenceTypeIds.HasProperty;
-        nodeToBrowse1.IncludeSubtypes = true;
-        nodeToBrowse1.NodeClassMask = 0;
-        nodeToBrowse1.ResultMask = (uint)BrowseResultMask.All;
-
-        BrowseDescriptionCollection nodesToBrowse = new BrowseDescriptionCollection();
-        nodesToBrowse.Add(nodeToBrowse1);
-
-        // fetch property references from the server.
-        ReferenceDescriptionCollection references = FormUtils.Browse(m_session, nodesToBrowse, false);
-
-        if (references == null)
-        {
-            return new OPCNodeAttribute[0];
-        }
-
-        for (int ii = 0; ii < references.Count; ii++)
-        {
-            // ignore external references.
-            if (references[ii].NodeId.IsAbsolute)
-            {
-                continue;
-            }
-
-            ReadValueId nodeToRead = new ReadValueId();
-            nodeToRead.NodeId = (NodeId)references[ii].NodeId;
-            nodeToRead.AttributeId = Attributes.Value;
-            nodesToRead.Add(nodeToRead);
-        }
-
-        // read all values.
-        DataValueCollection results = null;
-        DiagnosticInfoCollection diagnosticInfos = null;
-
-        var data = m_session.Read(
-            null,
-            0,
-            TimestampsToReturn.Neither,
-            nodesToRead,
-            out results,
-            out diagnosticInfos);
-
+        var result = await m_session.ReadAsync(
+             null,
+             0,
+             TimestampsToReturn.Neither,
+             nodesToRead,
+             cancellationToken);
+        var results = result.Results;
+        var diagnosticInfos = result.DiagnosticInfos;
         ClientBase.ValidateResponse(results, nodesToRead);
         ClientBase.ValidateDiagnosticInfos(diagnosticInfos, nodesToRead);
-
-        // process results.
-
-        List<OPCNodeAttribute> nodeAttribute = new List<OPCNodeAttribute>();
-        for (int ii = 0; ii < results.Count; ii++)
+        List<(string, StatusCode, JToken)> jTokens = new();
+        for (int i = 0; i < results.Count; i++)
         {
-            OPCNodeAttribute item = new OPCNodeAttribute();
+            var node = (VariableNode)ReadNode(nodeIds[i].ToString(), false);
+            var typeManager = new DataTypeManager(m_session);
+            var opcvalue = typeManager.GetJToken(node, results[i]);
+            jTokens.Add((node.NodeId.ToString(), results[i].StatusCode, opcvalue));
+        }
+        return jTokens.ToList();
+    }
 
-            // process attribute value.
-            if (ii < startOfProperties)
+    /// <summary>
+    /// 从服务器读取值节
+    /// </summary>
+    public async Task<List<(string, StatusCode, JToken)>> ReadJTokenValueAsync(string[] tags, CancellationToken cancellationToken = default)
+    {
+        var result = await ReadJTokenValueAsync(tags.Select(a => new NodeId(a)).ToArray(), cancellationToken);
+        return result;
+    }
+
+    /// <summary>
+    /// 异步写opc标签
+    /// </summary>
+    public async Task<OperResult> WriteNodeAsync(string tag, JToken value, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+
+            WriteValue valueToWrite = new WriteValue()
             {
-                // ignore attributes which are invalid for the node.
-                if (results[ii].StatusCode == StatusCodes.BadAttributeIdInvalid)
-                {
-                    continue;
-                }
-
-                // get the name of the attribute.
-                item.Name = Attributes.GetBrowseName(nodesToRead[ii].AttributeId);
-
-
-                // display any unexpected error.
-                if (StatusCode.IsBad(results[ii].StatusCode))
-                {
-
-                    item.Type = Utils.Format("{0}", Attributes.GetDataTypeId(nodesToRead[ii].AttributeId));
-                    item.Value = Utils.Format("{0}", results[ii].StatusCode);
-                }
-
-                // display the value.
-                else
-                {
-                    TypeInfo typeInfo = TypeInfo.Construct(results[ii].Value);
-                    item.Type = typeInfo.BuiltInType.ToString();
-
-                    if (typeInfo.ValueRank >= ValueRanks.OneOrMoreDimensions)
-                    {
-                        item.Type += "[]";
-                    }
-                    if (item.Name == nameof(Attributes.NodeClass))
-                    {
-                        item.Value = ((NodeClass)results[ii].Value).ToString();
-                    }
-                    else if (item.Name == nameof(Attributes.EventNotifier))
-                    {
-                        item.Value = ((EventNotifierType)results[ii].Value).ToString();
-                    }
-                    else
-                        item.Value = results[ii].Value;//Utils.Format("{0}", results[ii].Value);
-                }
-            }
-
-            // process property value.
-            else
+                NodeId = new NodeId(tag),
+                AttributeId = Attributes.Value,
+            };
+            var node = (VariableNode)ReadNode(tag.ToString(), false);
+            var typeManager = new DataTypeManager(m_session);
+            valueToWrite.Value = typeManager.GetDataValueFromVariableState(value, node);
+            WriteValueCollection valuesToWrite = new WriteValueCollection
             {
-                // ignore properties which are invalid for the node.
-                if (results[ii].StatusCode == StatusCodes.BadNodeIdUnknown)
-                {
-                    continue;
-                }
+                valueToWrite
+            };
 
-                // get the name of the property.
-                item.Name = Utils.Format("{0}", references[ii - startOfProperties]);
+            var result = await m_session.WriteAsync(
+     requestHeader: null,
+     nodesToWrite: valuesToWrite, cancellationToken);
 
-                // display any unexpected error.
-                if (StatusCode.IsBad(results[ii].StatusCode))
-                {
-                    item.Type = String.Empty;
-                    item.Value = Utils.Format("{0}", results[ii].StatusCode);
-                }
-
-                // display the value.
-                else
-                {
-                    TypeInfo typeInfo = TypeInfo.Construct(results[ii].Value);
-
-                    item.Type = typeInfo.BuiltInType.ToString();
-
-                    if (typeInfo.ValueRank >= ValueRanks.OneOrMoreDimensions)
-                    {
-                        item.Type += "[]";
-                    }
-
-                    item.Value = results[ii].Value; //Utils.Format("{0}", results[ii].Value);
-                }
+            ClientBase.ValidateResponse(result.Results, valuesToWrite);
+            ClientBase.ValidateDiagnosticInfos(result.DiagnosticInfos, valuesToWrite);
+            if (!StatusCode.IsGood(result.Results[0]))
+            {
+                return new OperResult(result.Results[0].ToString());
             }
-
-            nodeAttribute.Add(item);
+            return OperResult.CreateSuccessResult();
+        }
+        catch (Exception ex)
+        {
+            return new OperResult(ex);
         }
 
-        return nodeAttribute.ToArray();
     }
+    private void callback(MonitoredItem monitoreditem, MonitoredItemNotificationEventArgs monitoredItemNotificationEventArgs)
+    {
+        VariableNode variableNode = (VariableNode)ReadNode(monitoreditem.StartNodeId.ToString(), false);
+        foreach (var value in monitoreditem.DequeueValues())
+        {
+            var variant = new Variant(value.Value);
+            BuiltInType type = TypeInfo.GetBuiltInType(variableNode.DataType, m_session.SystemContext.TypeTable);
+            var typeManager = new DataTypeManager(monitoreditem.Subscription.Session);
+            var opcvalue = typeManager.GetJToken(variableNode, value);
+            m_data.Enqueue((monitoreditem.StartNodeId, value, opcvalue));
+        }
+    }
+
+    /// <summary>
+    /// 订阅通知线程
+    /// </summary>
+    /// <returns></returns>
+    private async Task dataChangedHandlerInvoke()
+    {
+        while (!DisposedValue)
+        {
+            if (m_data.Count > 0)
+                DataChangedHandler?.Invoke(m_data.ToListWithDequeue());
+            if (OPCNode == null)
+                await Task.Delay(1000);
+            else
+                await Task.Delay(OPCNode.UpdateRate == 0 ? 1000 : OPCNode.UpdateRate);
+        }
+    }
+
+    #endregion
+
+
+    #region 特性
 
     /// <summary>
     /// 读取一个节点的所有属性
@@ -1017,7 +741,7 @@ public class OPCUAClient : DisposableObject
         DataValueCollection results = null;
         DiagnosticInfoCollection diagnosticInfos = null;
 
-        var data = m_session.Read(
+        m_session.Read(
             null,
             0,
             TimestampsToReturn.Neither,
@@ -1047,11 +771,9 @@ public class OPCUAClient : DisposableObject
                 // get the name of the attribute.
                 item.Name = Attributes.GetBrowseName(nodesToRead[ii].AttributeId);
 
-
                 // display any unexpected error.
                 if (StatusCode.IsBad(results[ii].StatusCode))
                 {
-
                     item.Type = Utils.Format("{0}", Attributes.GetDataTypeId(nodesToRead[ii].AttributeId));
                     item.Value = Utils.Format("{0}", results[ii].StatusCode);
                 }
@@ -1060,22 +782,15 @@ public class OPCUAClient : DisposableObject
                 else
                 {
                     TypeInfo typeInfo = TypeInfo.Construct(results[ii].Value);
+
                     item.Type = typeInfo.BuiltInType.ToString();
 
                     if (typeInfo.ValueRank >= ValueRanks.OneOrMoreDimensions)
                     {
                         item.Type += "[]";
                     }
-                    if (item.Name == nameof(Attributes.NodeClass))
-                    {
-                        item.Value = ((NodeClass)results[ii].Value).ToString();
-                    }
-                    else if (item.Name == nameof(Attributes.EventNotifier))
-                    {
-                        item.Value = ((EventNotifierType)results[ii].Value).ToString();
-                    }
-                    else
-                        item.Value = results[ii].Value;//Utils.Format("{0}", results[ii].Value);
+
+                    item.Value = results[ii].Value;//Utils.Format("{0}", results[ii].Value);
                 }
             }
 
@@ -1123,255 +838,72 @@ public class OPCUAClient : DisposableObject
     /// <summary>
     /// 读取一个节点的所有属性
     /// </summary>
-    /// <param name="tag">节点值</param>
-    /// <returns>所有的数据</returns>
-    public DataValue[] ReadNoteDataValueAttributes(string tag)
+    public async Task<OperResult<List<OPCNodeAttribute>>> ReadNoteAttributeAsync(string tag, uint attributesId, CancellationToken cancellationToken = default)
     {
-        NodeId sourceId = new NodeId(tag);
-        ReadValueIdCollection nodesToRead = new ReadValueIdCollection();
-
-        // attempt to read all possible attributes.
-        // 尝试着去读取所有可能的特性
-        for (uint ii = Attributes.NodeId; ii <= Attributes.UserExecutable; ii++)
-        {
-            ReadValueId nodeToRead = new ReadValueId();
-            nodeToRead.NodeId = sourceId;
-            nodeToRead.AttributeId = ii;
-            nodesToRead.Add(nodeToRead);
-        }
-
-        int startOfProperties = nodesToRead.Count;
-
-        // find all of the pror of the node.
-        BrowseDescription nodeToBrowse1 = new BrowseDescription();
-
-        nodeToBrowse1.NodeId = sourceId;
-        nodeToBrowse1.BrowseDirection = BrowseDirection.Forward;
-        nodeToBrowse1.ReferenceTypeId = ReferenceTypeIds.HasProperty;
-        nodeToBrowse1.IncludeSubtypes = true;
-        nodeToBrowse1.NodeClassMask = 0;
-        nodeToBrowse1.ResultMask = (uint)BrowseResultMask.All;
-
         BrowseDescriptionCollection nodesToBrowse = new BrowseDescriptionCollection();
-        nodesToBrowse.Add(nodeToBrowse1);
+        ReadValueIdCollection nodesToRead = new ReadValueIdCollection();
+        NodeId sourceId = new NodeId(tag);
 
-        // fetch property references from the server.
-        ReferenceDescriptionCollection references = FormUtils.Browse(m_session, nodesToBrowse, false);
-
-        if (references == null)
+        ReadValueId nodeToRead = new ReadValueId
         {
-            return new DataValue[0];
-        }
-
-        for (int ii = 0; ii < references.Count; ii++)
-        {
-            // ignore external references.
-            if (references[ii].NodeId.IsAbsolute)
-            {
-                continue;
-            }
-
-            ReadValueId nodeToRead = new ReadValueId();
-            nodeToRead.NodeId = (NodeId)references[ii].NodeId;
-            nodeToRead.AttributeId = Attributes.Value;
-            nodesToRead.Add(nodeToRead);
-        }
-
-        // read all values.
-        DataValueCollection results = null;
-        DiagnosticInfoCollection diagnosticInfos = null;
-
-        m_session.Read(
-            null,
-            0,
-            TimestampsToReturn.Neither,
-            nodesToRead,
-            out results,
-            out diagnosticInfos);
-
-        ClientBase.ValidateResponse(results, nodesToRead);
-        ClientBase.ValidateDiagnosticInfos(diagnosticInfos, nodesToRead);
-
-        return results.ToArray();
-    }
-
-    /// <summary>
-    /// 移除所有的订阅消息
-    /// </summary>
-    public void RemoveAllSubscription()
-    {
-        lock (dic_subscriptions)
-        {
-            foreach (var item in dic_subscriptions)
-            {
-                item.Value.Delete(true);
-                m_session.RemoveSubscription(item.Value);
-                item.Value.SafeDispose();
-            }
-            dic_subscriptions.Clear();
-        }
-    }
-
-    /// <summary>
-    /// 移除订阅消息，如果该订阅消息是批量的，也直接移除
-    /// </summary>
-    /// <param name="key">订阅关键值</param>
-    public void RemoveSubscription(string key)
-    {
-        lock (dic_subscriptions)
-        {
-            if (dic_subscriptions.ContainsKey(key))
-            {
-                // remove
-                dic_subscriptions[key].Delete(true);
-                m_session.RemoveSubscription(dic_subscriptions[key]);
-                dic_subscriptions[key].SafeDispose();
-                dic_subscriptions.Remove(key);
-            }
-        }
-    }
-    /// <summary>
-    /// write a note to server(you should use try catch)
-    /// </summary>
-    /// <typeparam name="T">The type of tag to write on</typeparam>
-    /// <param name="tag">节点名称</param>
-    /// <param name="value">值</param>
-    /// <returns>if success True,otherwise False</returns>
-    public bool WriteNode<T>(string tag, T value)
-    {
-        WriteValue valueToWrite = new WriteValue()
-        {
-            NodeId = new NodeId(tag),
-            AttributeId = Attributes.Value
+            NodeId = sourceId,
+            AttributeId = attributesId
         };
-        valueToWrite.Value.Value = value;
-        valueToWrite.Value.StatusCode = StatusCodes.Good;
-        valueToWrite.Value.ServerTimestamp = DateTime.MinValue;
-        valueToWrite.Value.SourceTimestamp = DateTime.MinValue;
-
-        WriteValueCollection valuesToWrite = new WriteValueCollection
-            {
-                valueToWrite
-            };
-
-        // 写入当前的值
-
-        m_session.Write(
-            null,
-            valuesToWrite,
-            out StatusCodeCollection results,
-            out DiagnosticInfoCollection diagnosticInfos);
-
-        ClientBase.ValidateResponse(results, valuesToWrite);
-        ClientBase.ValidateDiagnosticInfos(diagnosticInfos, valuesToWrite);
-
-        if (StatusCode.IsBad(results[0]))
+        nodesToRead.Add(nodeToRead);
+        BrowseDescription nodeToBrowse = new BrowseDescription
         {
-            throw new ServiceResultException(results[0]);
-        }
-
-        return !StatusCode.IsBad(results[0]);
-    }
-
-    /// <summary>
-    /// Write a value on the specified opc tag asynchronously
-    /// </summary>
-    /// <typeparam name="T">The type of tag to write on</typeparam>
-    /// <param name="tag">The fully-qualified identifier of the tag. You can specify a subfolder by using a comma delimited name. E.g: the tag `foo.bar` writes on the tag `bar` on the folder `foo`</param>
-    /// <param name="value">The value for the item to write</param>
-    public Task<OperResult> WriteNodeAsync<T>(string tag, T value)
-    {
-        WriteValue valueToWrite = new WriteValue()
-        {
-            NodeId = new NodeId(tag),
-            AttributeId = Attributes.Value,
+            NodeId = sourceId,
+            BrowseDirection = BrowseDirection.Forward,
+            ReferenceTypeId = ReferenceTypeIds.HasProperty,
+            IncludeSubtypes = true,
+            NodeClassMask = 0,
+            ResultMask = (uint)BrowseResultMask.All
         };
-        valueToWrite.Value.Value = value;
-        valueToWrite.Value.StatusCode = StatusCodes.Good;
-        valueToWrite.Value.ServerTimestamp = DateTime.MinValue;
-        valueToWrite.Value.SourceTimestamp = DateTime.MinValue;
-        WriteValueCollection valuesToWrite = new WriteValueCollection
-            {
-                valueToWrite
-            };
+        nodesToBrowse.Add(nodeToBrowse);
 
-        // Wrap the WriteAsync logic in a TaskCompletionSource, so we can use C# async/await syntax to call it:
-        var taskCompletionSource = new TaskCompletionSource<OperResult>();
-        m_session.BeginWrite(
-            requestHeader: null,
-            nodesToWrite: valuesToWrite,
-            callback: ar =>
-            {
-                var response = m_session.EndWrite(
-                  result: ar,
-                  results: out StatusCodeCollection results,
-                  diagnosticInfos: out DiagnosticInfoCollection diag);
-
-                try
-                {
-                    ClientBase.ValidateResponse(results, valuesToWrite);
-                    ClientBase.ValidateDiagnosticInfos(diag, valuesToWrite);
-                    taskCompletionSource.SetResult(StatusCode.IsGood(results[0]) ? OperResult.CreateSuccessResult() : new OperResult(results[0].ToString()));
-                }
-                catch (Exception ex)
-                {
-                    taskCompletionSource.TrySetException(ex);
-                }
-            },
-            asyncState: null);
-        return taskCompletionSource.Task;
+        var result1 = await ReadNoteAttributeAsync(nodesToBrowse, nodesToRead, cancellationToken);
+        var result2 = result1.Copy<List<OPCNodeAttribute>>();
+        result2.Content = result1.Content?.Values?.FirstOrDefault()?.ToList();
+        return result2;
     }
 
     /// <summary>
-    /// 所有的节点都写入成功，返回<c>True</c>，否则返回<c>False</c>
+    /// 读取节点的所有属性
     /// </summary>
-    /// <param name="tags">节点名称数组</param>
-    /// <param name="values">节点的值数据</param>
-    /// <returns>所有的是否都写入成功</returns>
-    public bool WriteNodes(string[] tags, object[] values)
+    public async Task<OperResult<Dictionary<string, List<OPCNodeAttribute>>>> ReadNoteAttributeAsync(List<string> tags, CancellationToken cancellationToken)
     {
-        WriteValueCollection valuesToWrite = new WriteValueCollection();
-
-        for (int i = 0; i < tags.Length; i++)
+        BrowseDescriptionCollection nodesToBrowse = new BrowseDescriptionCollection();
+        ReadValueIdCollection nodesToRead = new ReadValueIdCollection();
+        foreach (var tag in tags)
         {
-            if (i < values.Length)
+            NodeId sourceId = new NodeId(tag);
+
+            for (uint ii = Attributes.NodeClass; ii <= Attributes.UserExecutable; ii++)
             {
-                WriteValue valueToWrite = new WriteValue()
-                {
-                    NodeId = new NodeId(tags[i]),
-                    AttributeId = Attributes.Value
-                };
-                valueToWrite.Value.Value = values[i];
-                valueToWrite.Value.StatusCode = StatusCodes.Good;
-                valueToWrite.Value.ServerTimestamp = DateTime.MinValue;
-                valueToWrite.Value.SourceTimestamp = DateTime.MinValue;
-                valuesToWrite.Add(valueToWrite);
+                ReadValueId nodeToRead = new ReadValueId();
+                nodeToRead.NodeId = sourceId;
+                nodeToRead.AttributeId = ii;
+                nodesToRead.Add(nodeToRead);
             }
+            BrowseDescription nodeToBrowse = new BrowseDescription
+            {
+                NodeId = sourceId,
+                BrowseDirection = BrowseDirection.Forward,
+                ReferenceTypeId = ReferenceTypeIds.HasProperty,
+                IncludeSubtypes = true,
+                NodeClassMask = 0,
+                ResultMask = (uint)BrowseResultMask.All
+            };
+            nodesToBrowse.Add(nodeToBrowse);
+
         }
 
-        // 写入当前的值
-
-        m_session.Write(
-            null,
-            valuesToWrite,
-            out StatusCodeCollection results,
-            out DiagnosticInfoCollection diagnosticInfos);
-
-        ClientBase.ValidateResponse(results, valuesToWrite);
-        ClientBase.ValidateDiagnosticInfos(diagnosticInfos, valuesToWrite);
-
-        bool result = true;
-        foreach (var r in results)
-        {
-            if (StatusCode.IsBad(r))
-            {
-                result = false;
-                break;
-            }
-        }
-
-        return result;
+        return await ReadNoteAttributeAsync(nodesToBrowse, nodesToRead, cancellationToken);
     }
+    #endregion
+
+
+
 
 
     protected override void Dispose(bool disposing)
@@ -1380,15 +912,16 @@ public class OPCUAClient : DisposableObject
         base.Dispose(disposing);
     }
 
-    private void callback(string arg1, MonitoredItem arg2, MonitoredItemNotificationEventArgs arg3)
+    #region 私有方法
+
+    private void CertificateValidation(CertificateValidator sender, CertificateValidationEventArgs eventArgs)
     {
-        var data = arg3.NotificationValue as MonitoredItemNotification;
-        m_data.Enqueue((arg2, data));
-    }
-    private void CheckReturnValue(StatusCode status)
-    {
-        if (!StatusCode.IsGood(status))
-            throw new Exception(string.Format("无效值(状态: {0})", status));
+        if (ServiceResult.IsGood(eventArgs.Error))
+            eventArgs.Accept = true;
+        else if (eventArgs.Error.StatusCode.Code == StatusCodes.BadCertificateUntrusted)
+            eventArgs.Accept = true;
+        else
+            throw new Exception(string.Format("验证证书失败，错误代码:{0}: {1}", eventArgs.Error.Code, eventArgs.Error.AdditionalInfo));
     }
 
     /// <summary>
@@ -1431,37 +964,109 @@ public class OPCUAClient : DisposableObject
 
         // raise an event.
         DoConnectComplete(null);
-        //添加订阅
-        foreach (var item in _tagDicts)
-        {
-            AddSubscription(item.Key, item.Value.ToArray(), callback);
-        }
+        //TODO:添加订阅
+        AddSubscription(Guid.NewGuid().ToString(), Variables.ToArray());
         // return the new session.
         return m_session;
     }
 
-    private async Task dataChangedHandlerInvoke()
-    {
-        while (!DisposedValue)
-        {
-            if (m_data.Count > 0)
-                DataChangedHandler?.Invoke(m_data.ToListWithDequeue());
-            if (OPCNode == null)
-                await Task.Delay(1000);
-            else
-                await Task.Delay(OPCNode.UpdateRate == 0 ? 1000 : OPCNode.UpdateRate);
-        }
-    }
-    /// <summary>
-    /// Raises the connect complete event on the main GUI thread.
-    /// </summary>
+
     private void DoConnectComplete(object state)
     {
         m_ConnectComplete?.Invoke(this, null);
     }
 
+    private async Task<OperResult<Dictionary<string, List<OPCNodeAttribute>>>> ReadNoteAttributeAsync(BrowseDescriptionCollection nodesToBrowse, ReadValueIdCollection nodesToRead, CancellationToken cancellationToken)
+    {
+        int startOfProperties = nodesToRead.Count;
+
+
+        ReferenceDescriptionCollection references = await FormUtils.BrowseAsync(m_session, nodesToBrowse, false);
+
+        if (references == null)
+        {
+            return new OperResult<Dictionary<string, List<OPCNodeAttribute>>>("浏览失败");
+        }
+
+        for (int ii = 0; ii < references.Count; ii++)
+        {
+            if (references[ii].NodeId.IsAbsolute)
+            {
+                continue;
+            }
+
+            ReadValueId nodeToRead = new ReadValueId();
+            nodeToRead.NodeId = (NodeId)references[ii].NodeId;
+            nodeToRead.AttributeId = Attributes.Value;
+            nodesToRead.Add(nodeToRead);
+        }
+
+        var result = await m_session.ReadAsync(
+            null,
+            0,
+            TimestampsToReturn.Neither,
+            nodesToRead, cancellationToken);
+
+        ClientBase.ValidateResponse(result.Results, nodesToRead);
+        ClientBase.ValidateDiagnosticInfos(result.DiagnosticInfos, nodesToRead);
+
+        Dictionary<string, List<OPCNodeAttribute>> nodeAttributes = new Dictionary<string, List<OPCNodeAttribute>>();
+        for (int ii = 0; ii < result.Results.Count; ii++)
+        {
+            DataValue nodeValue = result.Results[ii];
+            var nodeToRead = nodesToRead[ii];
+            OPCNodeAttribute item = new OPCNodeAttribute();
+            if (ii < startOfProperties)
+            {
+                if (nodeValue.StatusCode == StatusCodes.BadAttributeIdInvalid)
+                {
+                    continue;
+                }
+
+                item.Name = Attributes.GetBrowseName(nodesToRead[ii].AttributeId);
+                if (StatusCode.IsBad(nodeValue.StatusCode))
+                {
+                    item.Type = Utils.Format("{0}", Attributes.GetDataTypeId(nodesToRead[ii].AttributeId));
+                    item.Value = Utils.Format("{0}", nodeValue.StatusCode);
+                }
+                else
+                {
+                    TypeInfo typeInfo = TypeInfo.Construct(nodeValue.Value);
+                    item.Type = typeInfo.BuiltInType.ToString();
+
+                    if (typeInfo.ValueRank >= ValueRanks.OneOrMoreDimensions)
+                    {
+                        item.Type += "[]";
+                    }
+                    if (item.Name == nameof(Attributes.NodeClass))
+                    {
+                        item.Value = ((NodeClass)nodeValue.Value).ToString();
+                    }
+                    else if (item.Name == nameof(Attributes.EventNotifier))
+                    {
+                        item.Value = ((EventNotifierType)nodeValue.Value).ToString();
+                    }
+                    else
+                        item.Value = nodeValue.Value;
+                }
+            }
+
+
+            if (nodeAttributes.ContainsKey(nodeToRead.NodeId.ToString()))
+            {
+                nodeAttributes[nodeToRead.NodeId.ToString()].Add(item);
+            }
+            else
+            {
+                nodeAttributes.Add(nodeToRead.NodeId.ToString(), new() { item });
+            }
+        }
+
+        return OperResult.CreateSuccessResult(nodeAttributes);
+    }
+
     /// <summary>
-    /// Handles a reconnect event complete from the reconnect handler.
+    /// 连接处理器连接事件处理完成。
     /// </summary>
     private void Server_ReconnectComplete(object sender, EventArgs e)
     {
@@ -1480,13 +1085,11 @@ public class OPCUAClient : DisposableObject
         m_ReconnectComplete?.Invoke(this, e);
 
     }
-    /// <summary>
-    /// Handles a keep alive event from a session.
-    /// </summary>
+
     private void Session_KeepAlive(ISession session, KeepAliveEventArgs e)
     {
-        if (_keepAliveLock.IsWaitting) { return; }
-        _keepAliveLock.Lock();
+        if (checkLock.IsWaitting) { return; }
+        checkLock.Lock();
         try
         {
 
@@ -1526,17 +1129,10 @@ public class OPCUAClient : DisposableObject
         }
         finally
         {
-            _keepAliveLock.UnLock();
+            checkLock.UnLock();
         }
     }
 
-    /// <summary>
-    /// Report the client status
-    /// </summary>
-    /// <param name="error">Whether the status represents an error.</param>
-    /// <param name="time">The time associated with the status.</param>
-    /// <param name="status">The status message.</param>
-    /// <param name="args">Arguments used to format the status message.</param>
     private void UpdateStatus(bool error, DateTime time, string status, params object[] args)
     {
         m_OpcStatusChange?.Invoke(this, new OPCUAStatusEventArgs()
@@ -1547,4 +1143,6 @@ public class OPCUAClient : DisposableObject
         });
     }
 
+
+    #endregion
 }
