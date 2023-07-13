@@ -31,27 +31,21 @@ using TouchSocket.Core;
 namespace ThingsGateway.RabbitMQ;
 public class RabbitMQClient : UpLoadBase
 {
-    public override Type DriverDebugUIType => null;
-
     private ConcurrentQueue<DeviceData> _collectDeviceRunTimes = new();
     private ConcurrentQueue<VariableData> _collectVariableRunTimes = new();
     private IConnection _connection;
-
     private ConnectionFactory _connectionFactory;
-
     private GlobalDeviceData _globalDeviceData;
-
     private IModel _model;
-
     private RpcSingletonService _rpcCore;
     private List<DeviceVariableRunTime> _uploadVariables = new();
     private RabbitMQClientProperty driverPropertys = new();
-
     private RabbitMQClientVariableProperty variablePropertys = new();
-
     public RabbitMQClient(IServiceScopeFactory scopeFactory) : base(scopeFactory)
     {
     }
+
+    public override Type DriverDebugUIType => null;
     public override UpDriverPropertyBase DriverPropertys => driverPropertys;
 
     public string ExchangeName { get; set; } = "";
@@ -105,11 +99,11 @@ public class RabbitMQClient : UpLoadBase
                         {
                             if (!cancellationToken.IsCancellationRequested)
                             {
-                                var data = Encoding.UTF8.GetBytes(variables.GetSciptListValue(driverPropertys.BigTextScriptVariableModel));
+                                var data = variables.GetSciptListValue(driverPropertys.BigTextScriptVariableModel);
                                 // 设置消息持久化
                                 IBasicProperties properties = _model?.CreateBasicProperties();
                                 properties.Persistent = true;
-                                _model?.BasicPublish(ExchangeName, driverPropertys.VariableQueueName, properties, data);
+                                await Publish(driverPropertys.VariableQueueName, data, properties);
                             }
                             else
                             {
@@ -131,11 +125,11 @@ public class RabbitMQClient : UpLoadBase
                         {
                             if (!cancellationToken.IsCancellationRequested)
                             {
-                                var data = Encoding.UTF8.GetBytes(variable.GetSciptListValue(driverPropertys.BigTextScriptVariableModel));
+                                var data = variable.GetSciptListValue(driverPropertys.BigTextScriptVariableModel);
                                 // 设置消息持久化
                                 IBasicProperties properties = _model?.CreateBasicProperties();
                                 properties.Persistent = true;
-                                _model?.BasicPublish(ExchangeName, driverPropertys.VariableQueueName, properties, data);
+                                await Publish(driverPropertys.VariableQueueName, data, properties);
                             }
                             else
                             {
@@ -170,11 +164,11 @@ public class RabbitMQClient : UpLoadBase
                     {
                         try
                         {
-                            var data = Encoding.UTF8.GetBytes(devices.GetSciptListValue(driverPropertys.BigTextScriptDeviceModel));
+                            var data = devices.GetSciptListValue(driverPropertys.BigTextScriptDeviceModel);
                             // 设置消息持久化
                             IBasicProperties properties = _model?.CreateBasicProperties();
                             properties.Persistent = true;
-                            _model?.BasicPublish(ExchangeName, driverPropertys.DeviceQueueName, properties, data);
+                            await Publish(driverPropertys.DeviceQueueName, data, properties);
                         }
                         catch (Exception ex)
                         {
@@ -189,11 +183,11 @@ public class RabbitMQClient : UpLoadBase
                     {
                         try
                         {
-                            var data = Encoding.UTF8.GetBytes(devices.GetSciptListValue(driverPropertys.BigTextScriptDeviceModel));
+                            var data = devices.GetSciptListValue(driverPropertys.BigTextScriptDeviceModel);
                             // 设置消息持久化
                             IBasicProperties properties = _model?.CreateBasicProperties();
                             properties.Persistent = true;
-                            _model?.BasicPublish(ExchangeName, driverPropertys.DeviceQueueName, properties, data);
+                            await Publish(driverPropertys.DeviceQueueName, data, properties);
                         }
                         catch (Exception ex)
                         {
@@ -254,6 +248,7 @@ public class RabbitMQClient : UpLoadBase
         _collectDeviceRunTimes = null;
         _collectVariableRunTimes = null;
     }
+
     protected override void Init(UploadDeviceRunTime device)
     {
         _connectionFactory = new ConnectionFactory
@@ -303,11 +298,43 @@ public class RabbitMQClient : UpLoadBase
 
 
     }
+
     private void DeviceStatusCahnge(CollectDeviceRunTime collectDeviceRunTime)
     {
         _collectDeviceRunTimes.Enqueue(collectDeviceRunTime.Adapt<DeviceData>());
     }
 
+    private async Task Publish(string queueName, string data, IBasicProperties properties)
+    {
+        try
+        {
+            _model?.BasicPublish(ExchangeName, queueName, properties, Encoding.UTF8.GetBytes(data));
+            //连接成功时补发缓存数据
+            var cacheData = await CacheDb.GetCacheData(10);
+            foreach (var item in cacheData)
+            {
+                try
+                {
+                    _model?.BasicPublish(ExchangeName, item.Topic, properties, Encoding.UTF8.GetBytes(item.CacheStr));
+                    logMessage.Trace(LogMessageHeader + $"主题：{item.Topic}{Environment.NewLine}负载：{item.CacheStr}");
+
+                    await CacheDb.DeleteCacheData(item.Id);
+                }
+                catch
+                {
+
+                }
+            }
+            logMessage.Trace(LogMessageHeader + $"主题：{queueName}{Environment.NewLine}负载：{data}");
+
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, ToString());
+            await CacheDb.AddCacheData(queueName, data, driverPropertys.CacheMaxCount);
+        }
+
+    }
     private void VariableValueChange(DeviceVariableRunTime collectVariableRunTime)
     {
         _collectVariableRunTimes.Enqueue(collectVariableRunTime.Adapt<VariableData>());

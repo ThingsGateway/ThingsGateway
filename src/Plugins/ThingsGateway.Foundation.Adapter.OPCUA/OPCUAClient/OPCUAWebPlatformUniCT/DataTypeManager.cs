@@ -698,7 +698,6 @@ public class DataTypeManager
                 var analyzer = new DataTypeAnalyzer(_session);
                 var encodingNodeId = analyzer.GetDataTypeEncodingNodeId(variableNode.DataType);
                 var descriptionNodeId = analyzer.GetDataTypeDescriptionNodeId(encodingNodeId);
-                //TODO: 字典可以实现的缓存以提高性能
                 string dictionary = analyzer.GetDictionary(descriptionNodeId);
 
                 string descriptionId = ReadService(descriptionNodeId, Attributes.Value)[0].Value.ToString();
