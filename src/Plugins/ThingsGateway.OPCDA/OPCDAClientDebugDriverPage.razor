@@ -32,6 +32,13 @@
         <MCol Md="4">
             <MCard Flat Elevation="0">
                 <MCol Class="my-1 py-1">
+                    <MRow NoGutters>
+
+                        <MButton Class="mx-1 my-3" Color="primary" OnClick="()=>IsShowImportVariableList=!IsShowImportVariableList">
+                            <span>导入变量</span>
+                        </MButton>
+
+                    </MRow>
                     <MTextField Class="mx-1 my-1" Label="变量地址" Dense Outlined HideDetails="@("auto")" @bind-Value=@Address />
                     <MRow NoGutters>
                         <MButton Class="mx-1 my-1" Color="primary" OnClick="Add">
@@ -50,13 +57,7 @@
                         写入
                     </MButton>
 
-                    <MRow NoGutters>
 
-                        <MButton Class="mx-1 my-3" Color="primary" OnClick="()=>IsShowImportVariableList=!IsShowImportVariableList">
-                            <span>导入变量</span>
-                        </MButton>
-
-                    </MRow>
 
 
                 </MCol>

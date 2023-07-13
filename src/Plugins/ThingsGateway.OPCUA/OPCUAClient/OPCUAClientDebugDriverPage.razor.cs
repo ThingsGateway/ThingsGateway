@@ -116,15 +116,12 @@ namespace ThingsGateway.OPCUA
             base.OnAfterRender(firstRender);
         }
 
-        private void _plc_DataChangedHandler(List<(NodeId id, DataValue dataValue, Newtonsoft.Json.Linq.JToken jToken)> values)
+        private void _plc_DataChangedHandler((NodeId id, DataValue dataValue, Newtonsoft.Json.Linq.JToken jToken) item)
         {
-            foreach (var item in values)
+            Messages.Add((Microsoft.Extensions.Logging.LogLevel.Debug, DateTime.Now.ToDateTimeF() + (item.id + ":" + item.jToken)));
+            if (Messages.Count > 2500)
             {
-                Messages.Add((Microsoft.Extensions.Logging.LogLevel.Debug, DateTime.Now.ToDateTimeF() + (item.id + ":" + item.jToken)));
-                if (Messages.Count > 2500)
-                {
-                    Messages.Clear();
-                }
+                Messages.Clear();
             }
 
         }

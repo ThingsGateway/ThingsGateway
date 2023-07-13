@@ -10,17 +10,16 @@
 //------------------------------------------------------------------------------
 #endregion
 
-using System.Collections.Concurrent;
+using Newtonsoft.Json.Linq;
+
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Timers;
 
 using ThingsGateway.Foundation.Adapter.OPCDA.Da;
 using ThingsGateway.Foundation.Adapter.OPCDA.Rcw;
-using ThingsGateway.Foundation.Extension;
 using ThingsGateway.Foundation.Extension.Enumerator;
 using ThingsGateway.Foundation.Extension.Generic;
 
@@ -48,18 +47,13 @@ public class OPCDAClient : DisposableObject
     /// </summary>
     private Dictionary<string, List<OpcItem>> ItemDicts = new();
 
-    /// <summary>
-    /// 订阅返回值队列
-    /// </summary>
-    private ConcurrentQueue<ItemReadResult> ItemReadResults = new ConcurrentQueue<ItemReadResult>();
-
     private OpcServer m_server;
     //定义组对象（订阅者）
     public OPCDAClient(ILog logger)
     {
         _logger = logger;
-        Task.Run(dataChangedHandlerInvoke);
     }
+
     public event DataChangedEventHandler DataChangedHandler;
     public bool IsConnected => m_server?.IsConnected == true;
     private List<OpcGroup> Groups => m_server.OpcGroups;
@@ -271,13 +265,14 @@ public class OPCDAClient : DisposableObject
     {
         return OPCNode.ToString();
     }
+
     /// <summary>
     /// 写入值
     /// </summary>
     /// <param name="valueName">写入</param>
     /// <param name="value"></param>
     /// <returns></returns>
-    public OperResult Write(string valueName, object value)
+    public OperResult Write(string valueName, string value)
     {
         if (connect())
         {
@@ -288,18 +283,25 @@ public class OPCDAClient : DisposableObject
                     return new OperResult("不存在该变量" + valueName);
                 var item = group.OpcItems.Where(it => it.ItemID == valueName).FirstOrDefault();
                 int[] serverHandle = new int[1] { item.ServerHandle };
-                object[] Value = new object[1] { value };
                 int[] PErrors = new int[1];
-                group.WriteAsync(Value, serverHandle, out PErrors);
+                var jtoken = JToken.Parse(value);
+                var rank = jtoken.CalculateActualValueRank();
+                object rawWriteValue;
+                switch (rank)
+                {
+                    case -1:
+                        rawWriteValue = ((JValue)jtoken).Value;
+                        break;
+                    default:
+                        var jarray = ((JArray)jtoken);
+                        rawWriteValue = jarray.Select(j => (object)j).ToArray();
+                        break;
+                }
+
+                object[] Value = new object[1] { rawWriteValue };
+                var result = group.Write(Value, serverHandle, out PErrors);
                 //itemvalue.Value = Convert.ChangeType(value, item.RunTimeDataType);
-                if (PErrors != null && PErrors.First() == 0)
-                {
-                    return OperResult.CreateSuccessResult();
-                }
-                else
-                {
-                    return new OperResult();
-                }
+                return result;
             }
             catch (Exception ex)
             {
@@ -433,22 +435,7 @@ public class OPCDAClient : DisposableObject
         }
     }
 
-    /// <summary>
-    /// 订阅通知线程
-    /// </summary>
-    /// <returns></returns>
-    private async Task dataChangedHandlerInvoke()
-    {
-        while (!DisposedValue)
-        {
-            if (ItemReadResults.Count > 0)
-                DataChangedHandler?.Invoke(ItemReadResults.ToListWithDequeue());
-            if (OPCNode == null)
-                await Task.Delay(1000);
-            else
-                await Task.Delay(OPCNode.UpdateRate == 0 ? 1000 : OPCNode.UpdateRate);
-        }
-    }
+
 
     private void disconnect()
     {
@@ -468,10 +455,8 @@ public class OPCDAClient : DisposableObject
     }
     private void Subscription_OnDataChanged(ItemReadResult[] values)
     {
-        for (int i = 0; i < values.Length; i++)
-        {
-            ItemReadResults.Enqueue(values[i]);
-        }
+        DataChangedHandler?.Invoke(values.ToList());
+
     }
 
 }

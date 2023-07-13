@@ -46,7 +46,7 @@ namespace ThingsGateway.Foundation.Tests
             var MonitorNodeTags = new string[] { address };
             _opc.Variables.AddRange(MonitorNodeTags.ToList());
             _opc.OpcStatusChange += Info_OpcStatusChange;
-            _opc.DataChangedHandler += DataReceived1;
+            _opc.DataChangedHandler += DataReceived;
             await _opc.ConnectAsync();
             Assert.True(_opc.Connected);
             var result = await _opc.WriteNodeAsync(address, JToken.Parse(new Random().Next(100).ToString()));
@@ -56,12 +56,9 @@ namespace ThingsGateway.Foundation.Tests
             _opc.Disconnect();
         }
 
-        private void DataReceived1(List<(NodeId id, DataValue dataValue, JToken jToken)> values)
+        private void DataReceived((NodeId id, DataValue dataValue, JToken jToken) item)
         {
-            foreach (var item in values)
-            {
-                _output.WriteLine(new { item.id, item.jToken }?.ToJson().FormatJson());
-            }
+            _output.WriteLine(new { item.id, item.jToken }?.ToJson().FormatJson());
         }
 
 

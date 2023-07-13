@@ -19,7 +19,6 @@ using Opc.Ua;
 
 using ThingsGateway.Foundation;
 using ThingsGateway.Foundation.Adapter.OPCUA;
-using ThingsGateway.Foundation.Extension.Json;
 using ThingsGateway.Web.Foundation;
 
 using TouchSocket.Core;
@@ -160,7 +159,7 @@ public class OPCUAClient : CollectBase
         throw new NotImplementedException();
     }
 
-    private void dataChangedHandler(List<(NodeId id, DataValue dataValue, JToken jToken)> values)
+    private void dataChangedHandler((NodeId id, DataValue dataValue, JToken jToken) data)
     {
         try
         {
@@ -169,9 +168,8 @@ public class OPCUAClient : CollectBase
                 return;
             }
 
-            logMessage.Trace(LogMessageHeader + ToString() + "状态变化:" + Environment.NewLine + values.ToJson().FormatJson());
+            logMessage.Trace(LogMessageHeader + ToString() + "状态变化:" + Environment.NewLine + data.id + ":" + data.jToken.ToString());
 
-            foreach (var data in values)
             {
                 if (!Device.KeepRun)
                 {
