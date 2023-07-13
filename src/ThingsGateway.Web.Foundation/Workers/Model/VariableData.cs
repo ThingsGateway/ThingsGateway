@@ -11,8 +11,6 @@
 #endregion
 
 
-using Newtonsoft.Json.Linq;
-
 using ThingsGateway.Core;
 namespace ThingsGateway.Web.Foundation;
 /// <summary>
@@ -29,9 +27,9 @@ public class VariableData
     /// <inheritdoc cref="DeviceVariableRunTime.DeviceName"/>
     public string DeviceName { get; set; }
     /// <inheritdoc cref="DeviceVariableRunTime.RawValue"/>
-    public JToken RawValue { get; set; }
+    public object RawValue { get; set; }
     /// <inheritdoc cref="DeviceVariableRunTime.Value"/>
-    public JToken Value { get; set; }
+    public object Value { get; set; }
     /// <inheritdoc cref="DeviceVariableRunTime.ChangeTime"/>
     public DateTime ChangeTime { get; set; }
     /// <inheritdoc cref="DeviceVariableRunTime.CollectTime"/>
