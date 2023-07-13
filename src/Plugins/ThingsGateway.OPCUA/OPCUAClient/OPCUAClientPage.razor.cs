@@ -59,13 +59,9 @@ namespace ThingsGateway.OPCUA
             base.OnInitialized();
         }
 
-        private void Info_DataChangedHandler(List<(NodeId id, DataValue dataValue, JToken jToken)> values)
+        private void Info_DataChangedHandler((NodeId id, DataValue dataValue, JToken jToken) item)
         {
-            foreach (var item in values)
-            {
-                LogAction?.Invoke(DateTime.Now.ToDateTimeF() + item.id + ":" + item.jToken);
-            }
-
+            LogAction?.Invoke(DateTime.Now.ToDateTimeF() + item.id + ":" + item.jToken);
         }
 
         private void Info_OpcStatusChange(object sender, OPCUAStatusEventArgs e)

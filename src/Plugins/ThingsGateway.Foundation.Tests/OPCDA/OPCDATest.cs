@@ -59,7 +59,7 @@ namespace ThingsGateway.Foundation.Tests
             _opc.DataChangedHandler += Info_DataChangedHandler;
             _opc.Connect();
             Assert.True(_opc.IsConnected);
-            var result = _opc.Write(address, new Random().Next(100));
+            var result = _opc.Write(address, new Random().Next(100).ToString());
             Assert.True(result.IsSuccess, result.Message);
 
             await Task.Delay(2000);

@@ -16,7 +16,6 @@ using Opc.Ua;
 using Opc.Ua.Client;
 using Opc.Ua.Configuration;
 
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -29,7 +28,7 @@ using ThingsGateway.Foundation.Extension.Generic;
 //修改自https://github.com/dathlin/OpcUaHelper 与OPC基金会net库
 
 namespace ThingsGateway.Foundation.Adapter.OPCUA;
-public delegate void DataChangedEventHandler(List<(NodeId id, DataValue dataValue, JToken jToken)> values);
+public delegate void DataChangedEventHandler((NodeId id, DataValue dataValue, JToken jToken) value);
 public class OPCUAClient : DisposableObject
 {
 
@@ -59,7 +58,6 @@ public class OPCUAClient : DisposableObject
 
     private EventHandler m_ConnectComplete;
 
-    private ConcurrentQueue<(NodeId, DataValue, JToken)> m_data = new();
 
     private bool m_IsConnected;
 
@@ -178,7 +176,6 @@ public class OPCUAClient : DisposableObject
         m_application = new ApplicationInstance();
         m_application.ApplicationConfiguration = m_configuration;
 
-        Task.Run(dataChangedHandlerInvoke);
 
     }
 
@@ -656,7 +653,7 @@ public class OPCUAClient : DisposableObject
                 BuiltInType type = TypeInfo.GetBuiltInType(variableNode.DataType, m_session.SystemContext.TypeTable);
                 var typeManager = new DataTypeManager(monitoreditem.Subscription.Session);
                 var opcvalue = typeManager.GetJToken(variableNode, value);
-                m_data.Enqueue((monitoreditem.StartNodeId, value, opcvalue));
+                DataChangedHandler?.Invoke((monitoreditem.StartNodeId, value, opcvalue));
             }
         }
         catch (Exception ex)
@@ -664,23 +661,6 @@ public class OPCUAClient : DisposableObject
             UpdateStatus(true, DateTime.Now, "订阅事件出错：" + ex.Message);
         }
 
-    }
-
-    /// <summary>
-    /// 订阅通知线程
-    /// </summary>
-    /// <returns></returns>
-    private async Task dataChangedHandlerInvoke()
-    {
-        while (!DisposedValue)
-        {
-            if (m_data.Count > 0)
-                DataChangedHandler?.Invoke(m_data.ToListWithDequeue());
-            if (OPCNode == null)
-                await Task.Delay(1000);
-            else
-                await Task.Delay(OPCNode.UpdateRate == 0 ? 1000 : OPCNode.UpdateRate);
-        }
     }
 
     #endregion

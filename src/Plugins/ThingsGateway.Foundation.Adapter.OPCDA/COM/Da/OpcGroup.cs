@@ -18,6 +18,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 
 using ThingsGateway.Foundation.Adapter.OPCDA.Rcw;
+using ThingsGateway.Foundation.Extension.Json;
 
 namespace ThingsGateway.Foundation.Adapter.OPCDA.Da;
 
@@ -383,7 +384,7 @@ internal class OpcGroup : IOPCDataCallback, IDisposable
             return OperResult.CreateSuccessResult();
         }
     }
-    internal OperResult WriteAsync(object[] values, int[] serverHandle, out int[] errors)
+    internal OperResult Write(object[] values, int[] serverHandle, out int[] errors)
     {
         IntPtr pErrors = IntPtr.Zero;
         errors = new int[values.Length];
@@ -391,10 +392,16 @@ internal class OpcGroup : IOPCDataCallback, IDisposable
         {
             try
             {
-                int cancelId, transactionID = 0;
-                m_Async2IO.Write(values.Length, serverHandle, values, transactionID, out cancelId, out pErrors);
+                m_SyncIO.Write(values.Length, serverHandle, values, out pErrors);
                 Marshal.Copy(pErrors, errors, 0, values.Length);
-                return OperResult.CreateSuccessResult();
+                if (errors.Any(a => a != 0))
+                {
+                    return new("写入错误，代码：" + Environment.NewLine + errors.ToJson().FormatJson());
+                }
+                else
+                {
+                    return OperResult.CreateSuccessResult();
+                }
             }
             catch (COMException ex)
             {

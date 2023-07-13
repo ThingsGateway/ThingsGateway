@@ -13,6 +13,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
+using Newtonsoft.Json.Linq;
+
 using ThingsGateway.Core;
 using ThingsGateway.Foundation;
 using ThingsGateway.Foundation.Adapter.OPCDA;
@@ -30,7 +32,7 @@ public class OPCDAClient : CollectBase
 
     internal ThingsGateway.Foundation.Adapter.OPCDA.OPCDAClient PLC = null;
 
-    private List<DeviceVariableRunTime> _deviceVariables = new();
+    private ConcurrentList<DeviceVariableRunTime> _deviceVariables = new();
 
     private OPCDAClientProperty driverPropertys = new();
 
@@ -66,7 +68,7 @@ public class OPCDAClient : CollectBase
     }
     public override OperResult<List<DeviceVariableSourceRead>> LoadSourceRead(List<DeviceVariableRunTime> deviceVariables)
     {
-        _deviceVariables = deviceVariables;
+        _deviceVariables = new(deviceVariables);
         if (deviceVariables.Count > 0)
         {
             var result = PLC.SetTags(deviceVariables.Select(a => a.VariableAddress).ToList());
@@ -159,7 +161,7 @@ public class OPCDAClient : CollectBase
                     var time = data.TimeStamp;
                     if (value != null && quality == 192)
                     {
-                        var operResult = item.SetValue(value, time);
+                        var operResult = item.SetValue(JToken.FromObject(value), time);
                         if (!operResult.IsSuccess)
                         {
                             _logger?.LogWarning(operResult.Message, ToString());
