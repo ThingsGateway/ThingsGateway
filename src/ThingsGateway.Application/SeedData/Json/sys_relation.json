@@ -242,7 +242,7 @@
       "ExtJson": "{\"ApiUrl\":\"/tgconfig/devicevariable\"}"
     },
     {
-      "Id": "391924286886179",
+      "Id": "179",
       "Category": "SYS_ROLE_HAS_PERMISSION",
       "ObjectId": "212725263001002",
       "TargetId": "/tgconfig/memoryvariable",
