@@ -147,6 +147,51 @@ public class IotSharpClient : UpLoadBase
         }
 
     }
+    /// <summary>
+    /// 上传mqtt内容，并进行离线缓存
+    /// </summary>
+    /// <param name="topic"></param>
+    /// <param name="payLoad"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    private async Task MqttUp(string topic, string payLoad, CancellationToken cancellationToken)
+    {
+        var variableMessage = new MqttApplicationMessageBuilder()
+.WithTopic(topic)
+.WithPayload(payLoad).Build();
+        var isConnect = await TryMqttClientAsync(cancellationToken);
+        if (isConnect.IsSuccess)
+        {
+            //连接成功时补发缓存数据
+            var cacheData = await CacheDb.GetCacheData();
+            foreach (var item in cacheData)
+            {
+                var cacheMessage = new MqttApplicationMessageBuilder()
+.WithTopic(item.Topic)
+.WithPayload(item.CacheStr).Build();
+                var cacheResult = await _mqttClient.PublishAsync(cacheMessage);
+                if (cacheResult.IsSuccess)
+                {
+                    await CacheDb.DeleteCacheData(item.Id);
+                    logMessage.Trace(LogMessageHeader + $"主题：{item.Topic}{Environment.NewLine}负载：{item.CacheStr}");
+                }
+            }
+
+            var result = await _mqttClient.PublishAsync(variableMessage);
+            if (!result.IsSuccess)
+            {
+                await CacheDb.AddCacheData(topic, payLoad, driverPropertys.CacheMaxCount);
+            }
+            else
+            {
+                logMessage.Trace(LogMessageHeader + $"主题：{topic}{Environment.NewLine}负载：{payLoad}");
+            }
+        }
+        else
+        {
+            await CacheDb.AddCacheData(topic, payLoad, driverPropertys.CacheMaxCount);
+        }
+    }
 
 
     public override async Task ExecuteAsync(CancellationToken cancellationToken)
@@ -171,12 +216,7 @@ public class IotSharpClient : UpLoadBase
                         }
                         if (!cancellationToken.IsCancellationRequested)
                         {
-                            var variableMessage = new MqttApplicationMessageBuilder()
-                            .WithTopic($"devices/{item.Key}/telemetry")
-                            .WithPayload(nameValueDict.ToJson()).Build();
-                            var isConnect = await TryMqttClientAsync(cancellationToken);
-                            if (isConnect.IsSuccess)
-                                await _mqttClient.PublishAsync(variableMessage, cancellationToken);
+                            await MqttUp($"devices/{item.Key}/telemetry", nameValueDict.ToJson(), cancellationToken);
                         }
                         else
                         {
@@ -210,11 +250,7 @@ public class IotSharpClient : UpLoadBase
                     {
                         if (!cancellationToken.IsCancellationRequested)
                         {
-                            //        var variableMessage = new MqttApplicationMessageBuilder()
-                            //.WithTopic($"{DeviceTopic}")
-                            //.WithPayload(item.GetSciptListValue(BigTextScriptDeviceModel)).Build();
-                            //        if (_mqttClient.IsConnected)
-                            //            await _mqttClient.PublishAsync(variableMessage);
+
                         }
                         else
                         {

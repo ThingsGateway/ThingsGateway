@@ -952,7 +952,6 @@ public class OPCUAClient : DisposableObject
 
         // raise an event.
         DoConnectComplete(null);
-        //TODO:添加订阅
         AddSubscription(Guid.NewGuid().ToString(), Variables.ToArray());
         // return the new session.
         return m_session;
