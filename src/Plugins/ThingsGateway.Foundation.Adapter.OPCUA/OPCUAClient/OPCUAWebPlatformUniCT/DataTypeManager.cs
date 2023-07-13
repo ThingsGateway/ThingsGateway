@@ -264,12 +264,21 @@ public class DataTypeManager
         }
         else
         {
-            var matrix = (Matrix)value.Value;
-            var arr = matrix.ToArray();
-            var arrStr = JsonConvert.SerializeObject(arr);
-            var jArray = JArray.Parse(arrStr);
-
-            return jArray;
+            try
+            {
+                var arr = (Array)value.Value;
+                var jArray = new JArray(arr);
+                return jArray;
+            }
+            catch
+            {
+                JArray jArr = null;
+                var matrix = (Matrix)value.Value;
+                var arr = matrix.ToArray();
+                var arrStr = JsonConvert.SerializeObject(arr);
+                jArr = JArray.Parse(arrStr);
+                return jArr;
+            }
 
         }
     }
@@ -295,13 +304,27 @@ public class DataTypeManager
         }
         else
         {
-            var matrix = (Matrix)value.Value;
-            var arr = matrix.ToArray();
-            var arrStr = JsonConvert.SerializeObject(arr);
-            var jArr = JArray.Parse(arrStr);
+            try
+            {
+                var bytes = (Byte[])value.Value;
+                int[] byteRepresentations = new int[bytes.Length];
+                for (int i = 0; i < bytes.Length; i++)
+                {
+                    byteRepresentations[i] = Convert.ToInt32(bytes[i]);
+                }
+                var jArray = new JArray(byteRepresentations);
 
-
-            return jArr;
+                return jArray;
+            }
+            catch
+            {
+                JArray jArr = null;
+                var matrix = (Matrix)value.Value;
+                var arr = matrix.ToArray();
+                var arrStr = JsonConvert.SerializeObject(arr);
+                jArr = JArray.Parse(arrStr);
+                return jArr;
+            }
         }
     }
 
@@ -384,34 +407,64 @@ public class DataTypeManager
         }
         else
         {
-            var matrix = (Matrix)value.Value;
-            var diagnInfos = (DiagnosticInfo[])matrix.Elements;
-            var diagnInfoRepresentation = new dynamic[matrix.Elements.Length];
-            for (var i = 0; i < diagnInfos.Length; i++)
+            try
             {
-                var code = new PlatformStatusCode(diagnInfos[i].InnerStatusCode);
-                diagnInfoRepresentation[i] = new
+                var jArray = new JArray();
+
+                var diagnosticInfos = (DiagnosticInfo[])value.Value;
+                foreach (var diagnInfo in diagnosticInfos)
                 {
-                    diagnInfos[i].SymbolicId,
-                    diagnInfos[i].NamespaceUri,
-                    diagnInfos[i].Locale,
-                    diagnInfos[i].LocalizedText,
-                    diagnInfos[i].AdditionalInfo,
-                    InnerStatusCode = new
+                    var code = new PlatformStatusCode(diagnInfo.InnerStatusCode);
+                    jArray.Add(JObject.Parse(JsonConvert.SerializeObject(new
                     {
-                        code.code,
-                        code.structureChanged
-                    },
-                    InnerDiagnosticInfo = GetInnerDiagnosticInfo(diagnInfos[i])
-                };
+                        diagnInfo.SymbolicId,
+                        diagnInfo.NamespaceUri,
+                        diagnInfo.Locale,
+                        diagnInfo.LocalizedText,
+                        diagnInfo.AdditionalInfo,
+                        InnerStatusCode = new
+                        {
+                            code.code,
+                            code.structureChanged
+                        },
+                        InnerDiagnosticInfo = GetInnerDiagnosticInfo(diagnInfo)
+                    })));
+                }
+
+
+                return jArray;
             }
+            catch
+            {
+                JArray jArr = null;
+                var matrix = (Matrix)value.Value;
+                var diagnInfos = (DiagnosticInfo[])matrix.Elements;
+                var diagnInfoRepresentation = new dynamic[matrix.Elements.Length];
+                for (var i = 0; i < diagnInfos.Length; i++)
+                {
+                    var code = new PlatformStatusCode(diagnInfos[i].InnerStatusCode);
+                    diagnInfoRepresentation[i] = new
+                    {
+                        diagnInfos[i].SymbolicId,
+                        diagnInfos[i].NamespaceUri,
+                        diagnInfos[i].Locale,
+                        diagnInfos[i].LocalizedText,
+                        diagnInfos[i].AdditionalInfo,
+                        InnerStatusCode = new
+                        {
+                            code.code,
+                            code.structureChanged
+                        },
+                        InnerDiagnosticInfo = GetInnerDiagnosticInfo(diagnInfos[i])
+                    };
+                }
 
-            var arr = (new Matrix(diagnInfoRepresentation, BuiltInType.DiagnosticInfo, matrix.Dimensions)).ToArray();
-            var arrStr = JsonConvert.SerializeObject(arr);
-            var jArr = JArray.Parse(arrStr);
+                var arr = (new Matrix(diagnInfoRepresentation, BuiltInType.DiagnosticInfo, matrix.Dimensions)).ToArray();
+                var arrStr = JsonConvert.SerializeObject(arr);
+                jArr = JArray.Parse(arrStr);
+                return jArr;
 
-
-            return jArr;
+            }
         }
     }
 
@@ -431,12 +484,23 @@ public class DataTypeManager
         }
         else
         {
-            var matrix = (Matrix)value.Value;
-            var arr = matrix.ToArray();
-            var arrStr = JsonConvert.SerializeObject(arr);
-            var jArr = JArray.Parse(arrStr);
+            JArray jArr = null;
+            try
+            {
+                var arr = (Array)value.Value;
+                jArr = new JArray(arr);
+                return jArr;
+            }
+            catch
+            {
+                var matrix = (Matrix)value.Value;
+                var arr = matrix.ToArray();
+                var arrStr = JsonConvert.SerializeObject(arr);
+                jArr = JArray.Parse(arrStr);
+                return jArr;
+            }
 
-            return jArr;
+
         }
     }
 
@@ -538,34 +602,65 @@ public class DataTypeManager
         }
         else
         {
-            var matrix = (Matrix)value.Value;
-            var expandedNodeIds = (ExpandedNodeId[])matrix.Elements;
-            var expNodeIdRepresentation = new dynamic[matrix.Elements.Length];
-            string NodeId;
-            string NamespaceUri = "";
-            for (int i = 0; i < expandedNodeIds.Length; i++)
+            try
             {
-                if (expandedNodeIds[i].IdType == IdType.Opaque)
-                    NodeId = expandedNodeIds[i].NamespaceIndex + "-" + Convert.ToBase64String((byte[])expandedNodeIds[i].Identifier, 0, ((byte[])expandedNodeIds[i].Identifier).Length);
-                else
-                    NodeId = expandedNodeIds[i].NamespaceIndex + "-" + expandedNodeIds[i].Identifier.ToString();
+                JArray jArray = new JArray();
+                var expandedNodeIds = (ExpandedNodeId[])value.Value;
 
-                NamespaceUri = "";
-                if (expandedNodeIds[i].NamespaceUri != null)
-                    NamespaceUri = expandedNodeIds[i].NamespaceUri;
-                var expNodeId = new
+                string NodeId;
+                string NamespaceUri = "";
+                for (int i = 0; i < expandedNodeIds.Length; i++)
                 {
-                    NodeId,
-                    NamespaceUri,
-                    expandedNodeIds[i].ServerIndex
-                };
-                expNodeIdRepresentation[i] = JObject.Parse(JsonConvert.SerializeObject(expNodeId));
+                    if (expandedNodeIds[i].IdType == IdType.Opaque)
+                        NodeId = expandedNodeIds[i].NamespaceIndex + "-" + Convert.ToBase64String((byte[])expandedNodeIds[i].Identifier, 0, ((byte[])expandedNodeIds[i].Identifier).Length);
+                    else
+                        NodeId = expandedNodeIds[i].NamespaceIndex + "-" + expandedNodeIds[i].Identifier;
+                    NamespaceUri = "";
+                    if (expandedNodeIds[i].NamespaceUri != null)
+                        NamespaceUri = expandedNodeIds[i].NamespaceUri;
+                    var expNodeId = new
+                    {
+                        NodeId,
+                        NamespaceUri,
+                        expandedNodeIds[i].ServerIndex
+                    };
+                    jArray.Add(JObject.Parse(JsonConvert.SerializeObject(expNodeId)));
+                }
+                return jArray;
+            }
+            catch
+            {
+                JArray jArr = null;
+                var matrix = (Matrix)value.Value;
+                var expandedNodeIds = (ExpandedNodeId[])matrix.Elements;
+                var expNodeIdRepresentation = new dynamic[matrix.Elements.Length];
+                string NodeId;
+                string NamespaceUri = "";
+                for (int i = 0; i < expandedNodeIds.Length; i++)
+                {
+                    if (expandedNodeIds[i].IdType == IdType.Opaque)
+                        NodeId = expandedNodeIds[i].NamespaceIndex + "-" + Convert.ToBase64String((byte[])expandedNodeIds[i].Identifier, 0, ((byte[])expandedNodeIds[i].Identifier).Length);
+                    else
+                        NodeId = expandedNodeIds[i].NamespaceIndex + "-" + expandedNodeIds[i].Identifier.ToString();
+
+                    NamespaceUri = "";
+                    if (expandedNodeIds[i].NamespaceUri != null)
+                        NamespaceUri = expandedNodeIds[i].NamespaceUri;
+                    var expNodeId = new
+                    {
+                        NodeId,
+                        NamespaceUri,
+                        expandedNodeIds[i].ServerIndex
+                    };
+                    expNodeIdRepresentation[i] = JObject.Parse(JsonConvert.SerializeObject(expNodeId));
+                }
+
+                var arr = (new Matrix(expNodeIdRepresentation, BuiltInType.ExpandedNodeId, matrix.Dimensions)).ToArray();
+                var arrStr = JsonConvert.SerializeObject(arr);
+                jArr = JArray.Parse(arrStr);
+                return jArr;
             }
 
-            var arr = (new Matrix(expNodeIdRepresentation, BuiltInType.ExpandedNodeId, matrix.Dimensions)).ToArray();
-            var arrStr = JsonConvert.SerializeObject(arr);
-            var jArr = JArray.Parse(arrStr);
-            return jArr;
         }
     }
 
@@ -652,12 +747,23 @@ public class DataTypeManager
         }
         else
         {
-            var matrix = (Matrix)value.Value;
-            var arr = matrix.ToArray();
-            var arrStr = JsonConvert.SerializeObject(arr);
-            var jArr = JArray.Parse(arrStr);
+            try
+            {
+                var arr = (Array)value.Value;
+                var jArray = new JArray(arr);
+                return jArray;
+            }
+            catch
+            {
+                JArray jArr = null;
+                var matrix = (Matrix)value.Value;
+                var arr = matrix.ToArray();
+                var arrStr = JsonConvert.SerializeObject(arr);
+                jArr = JArray.Parse(arrStr);
+                return jArr;
+            }
 
-            return jArr;
+
         }
     }
 
@@ -676,12 +782,23 @@ public class DataTypeManager
         }
         else
         {
-            var matrix = (Matrix)value.Value;
-            var arr = matrix.ToArray();
-            var arrStr = JsonConvert.SerializeObject(arr);
-            var jArr = JArray.Parse(arrStr);
+            try
+            {
+                var arr = (Array)value.Value;
+                var jArray = new JArray(arr);
+                return jArray;
+            }
+            catch
+            {
+                JArray jArr = null;
+                var matrix = (Matrix)value.Value;
+                var arr = matrix.ToArray();
+                var arrStr = JsonConvert.SerializeObject(arr);
+                jArr = JArray.Parse(arrStr);
+                return jArr;
+            }
 
-            return jArr;
+
         }
     }
     private JToken SerializeLocalizedText(VariableNode variableNode, Variant value)
@@ -717,24 +834,48 @@ public class DataTypeManager
         }
         else
         {
-            var matrix = (Matrix)value.Value;
-            var locTexts = (LocalizedText[])matrix.Elements;
-            var locTextsRepresentation = new dynamic[matrix.Elements.Length];
-            for (int i = 0; i < locTexts.Length; i++)
+            try
             {
-                locTextsRepresentation[i] = new
+                var jArray = new JArray();
+
+                var locText = (LocalizedText[])value.Value;
+                for (int i = 0; i < locText.Length; i++)
                 {
-                    locTexts[i].Locale,
-                    locTexts[i].Text
-                };
+                    jArray.Add(JObject.Parse(JsonConvert.SerializeObject(new
+                    {
+                        locText[i].Locale,
+                        locText[i].Text
+                    })));
+                }
+
+
+                return jArray;
+            }
+            catch
+            {
+                JArray jArr = null;
+                var matrix = (Matrix)value.Value;
+                var locTexts = (LocalizedText[])matrix.Elements;
+                var locTextsRepresentation = new dynamic[matrix.Elements.Length];
+                for (int i = 0; i < locTexts.Length; i++)
+                {
+                    locTextsRepresentation[i] = new
+                    {
+                        locTexts[i].Locale,
+                        locTexts[i].Text
+                    };
+                }
+
+                var arr = (new Matrix(locTextsRepresentation, BuiltInType.LocalizedText, matrix.Dimensions)).ToArray();
+                var arrStr = JsonConvert.SerializeObject(arr);
+                jArr = JArray.Parse(arrStr);
+
+                return jArr;
             }
 
-            var arr = (new Matrix(locTextsRepresentation, BuiltInType.LocalizedText, matrix.Dimensions)).ToArray();
-            var arrStr = JsonConvert.SerializeObject(arr);
-            var jArr = JArray.Parse(arrStr);
 
 
-            return jArr;
+
         }
     }
 
@@ -768,21 +909,43 @@ public class DataTypeManager
         }
         else
         {
-            var matrix = (Matrix)value.Value;
-            var nodeIds = (NodeId[])matrix.Elements;
-            string[] nodeIdRepresentations = new string[nodeIds.Length];
-            for (int i = 0; i < nodeIds.Length; i++)
+            try
             {
-                if (nodeIds[i].IdType == IdType.Opaque)
-                    nodeIdRepresentations[i] = nodeIds[i].NamespaceIndex + "-" + Convert.ToBase64String((byte[])nodeIds[i].Identifier, 0, ((byte[])nodeIds[i].Identifier).Length);
-                else
-                    nodeIdRepresentations[i] = nodeIds[i].NamespaceIndex + "-" + nodeIds[i].Identifier.ToString();
-            }
-            var arr = (new Matrix(nodeIdRepresentations, BuiltInType.String, matrix.Dimensions)).ToArray();
-            var arrStr = JsonConvert.SerializeObject(arr);
-            var jArr = JArray.Parse(arrStr);
+                var nodeIds = (NodeId[])value.Value;
+                string[] nodeIdRepresentations = new string[nodeIds.Length];
+                for (int i = 0; i < nodeIds.Length; i++)
+                {
+                    if (nodeIds[i].IdType == IdType.Opaque)
+                        nodeIdRepresentations[i] = nodeIds[i].NamespaceIndex + "-" + Convert.ToBase64String((byte[])nodeIds[i].Identifier, 0, ((byte[])nodeIds[i].Identifier).Length);
+                    else
+                        nodeIdRepresentations[i] = nodeIds[i].NamespaceIndex + "-" + nodeIds[i].Identifier.ToString();
+                }
+                var jArray = new JArray(nodeIdRepresentations);
 
-            return jArr;
+                return jArray;
+            }
+            catch
+            {
+                JArray jArr = null;
+                var matrix = (Matrix)value.Value;
+                var nodeIds = (NodeId[])matrix.Elements;
+                string[] nodeIdRepresentations = new string[nodeIds.Length];
+                for (int i = 0; i < nodeIds.Length; i++)
+                {
+                    if (nodeIds[i].IdType == IdType.Opaque)
+                        nodeIdRepresentations[i] = nodeIds[i].NamespaceIndex + "-" + Convert.ToBase64String((byte[])nodeIds[i].Identifier, 0, ((byte[])nodeIds[i].Identifier).Length);
+                    else
+                        nodeIdRepresentations[i] = nodeIds[i].NamespaceIndex + "-" + nodeIds[i].Identifier.ToString();
+                }
+                var arr = (new Matrix(nodeIdRepresentations, BuiltInType.String, matrix.Dimensions)).ToArray();
+                var arrStr = JsonConvert.SerializeObject(arr);
+                jArr = JArray.Parse(arrStr);
+
+                return jArr;
+            }
+
+
+
         }
     }
 
@@ -805,14 +968,26 @@ public class DataTypeManager
         }
         else
         {
-            var matrix = (Matrix)value.Value;
-            var arr = matrix.ToArray();
+            try
+            {
+                var arr = (Array)((QualifiedName[])value.Value).Select(JObject.FromObject).ToArray();
+                var jArray = new JArray(arr);
 
-            var transformedArr = IterativeCopy<QualifiedName, JObject>(arr, matrix.Dimensions, JObject.FromObject);
-            var arrStr = JsonConvert.SerializeObject(transformedArr);
-            var jArr = JArray.Parse(arrStr);
 
-            return jArr;
+                return jArray;
+            }
+            catch
+            {
+                JArray jArr = null;
+                var matrix = (Matrix)value.Value;
+                var arr = matrix.ToArray();
+
+                var transformedArr = IterativeCopy<QualifiedName, JObject>(arr, matrix.Dimensions, JObject.FromObject);
+                var arrStr = JsonConvert.SerializeObject(transformedArr);
+                jArr = JArray.Parse(arrStr);
+
+                return jArr;
+            }
         }
     }
 
@@ -837,13 +1012,31 @@ public class DataTypeManager
         }
         else
         {
-            var matrix = (Matrix)value.Value;
-            var arr = matrix.ToArray();
-            var arrStr = JsonConvert.SerializeObject(arr);
-            var jArr = JArray.Parse(arrStr);
+            try
+            {
+                var bytes = (SByte[])value.Value;
+                int[] byteRepresentations = new int[bytes.Length];
+                for (int i = 0; i < bytes.Length; i++)
+                {
+                    byteRepresentations[i] = Convert.ToInt32(bytes[i]);
+                }
+                var jArray = new JArray(byteRepresentations);
+
+                return jArray;
+            }
+            catch
+            {
+                JArray jArr = null;
+                var matrix = (Matrix)value.Value;
+                var arr = matrix.ToArray();
+                var arrStr = JsonConvert.SerializeObject(arr);
+                jArr = JArray.Parse(arrStr);
+
+                return jArr;
+
+            }
 
 
-            return jArr;
         }
     }
     private JToken SerializeStatusCode(VariableNode variableNode, Variant value)
@@ -866,14 +1059,27 @@ public class DataTypeManager
         }
         else
         {
-            var matrix = (Matrix)value.Value;
-            var arr = matrix.ToArray();
+            try
+            {
+                var arr = (Array)((StatusCode[])value.Value).Select(val => JObject.FromObject(new PlatformStatusCode(val))).ToArray();
 
-            var transformedArr = IterativeCopy<StatusCode, JObject>(arr, matrix.Dimensions, i => JObject.FromObject(new PlatformStatusCode(i)));
-            var arrStr = JsonConvert.SerializeObject(transformedArr);
-            var jArr = JArray.Parse(arrStr);
+                var jArray = new JArray(arr);
 
-            return jArr;
+                return jArray;
+            }
+            catch
+            {
+                JArray jArr = null;
+                var matrix = (Matrix)value.Value;
+                var arr = matrix.ToArray();
+
+                var transformedArr = IterativeCopy<StatusCode, JObject>(arr, matrix.Dimensions, i => JObject.FromObject(new PlatformStatusCode(i)));
+                var arrStr = JsonConvert.SerializeObject(transformedArr);
+                jArr = JArray.Parse(arrStr);
+
+                return jArr;
+            }
+
         }
     }
 
@@ -893,12 +1099,24 @@ public class DataTypeManager
         }
         else
         {
-            var matrix = (Matrix)value.Value;
-            var arr = matrix.ToArray();
-            var arrStr = JsonConvert.SerializeObject(arr);
-            var jArr = JArray.Parse(arrStr);
+            try
+            {
+                var arr = (Array)value.Value;
+                var jArray = new JArray(arr);
+                return jArray;
+            }
+            catch
+            {
+                JArray jArr = null;
+                var matrix = (Matrix)value.Value;
+                var arr = matrix.ToArray();
+                var arrStr = JsonConvert.SerializeObject(arr);
+                jArr = JArray.Parse(arrStr);
 
-            return jArr;
+                return jArr;
+            }
+
+
         }
     }
     #endregion

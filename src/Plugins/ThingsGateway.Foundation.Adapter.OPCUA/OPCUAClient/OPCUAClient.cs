@@ -647,15 +647,23 @@ public class OPCUAClient : DisposableObject
     }
     private void callback(MonitoredItem monitoreditem, MonitoredItemNotificationEventArgs monitoredItemNotificationEventArgs)
     {
-        VariableNode variableNode = (VariableNode)ReadNode(monitoreditem.StartNodeId.ToString(), false);
-        foreach (var value in monitoreditem.DequeueValues())
+        try
         {
-            var variant = new Variant(value.Value);
-            BuiltInType type = TypeInfo.GetBuiltInType(variableNode.DataType, m_session.SystemContext.TypeTable);
-            var typeManager = new DataTypeManager(monitoreditem.Subscription.Session);
-            var opcvalue = typeManager.GetJToken(variableNode, value);
-            m_data.Enqueue((monitoreditem.StartNodeId, value, opcvalue));
+            VariableNode variableNode = (VariableNode)ReadNode(monitoreditem.StartNodeId.ToString(), false);
+            foreach (var value in monitoreditem.DequeueValues())
+            {
+                var variant = new Variant(value.Value);
+                BuiltInType type = TypeInfo.GetBuiltInType(variableNode.DataType, m_session.SystemContext.TypeTable);
+                var typeManager = new DataTypeManager(monitoreditem.Subscription.Session);
+                var opcvalue = typeManager.GetJToken(variableNode, value);
+                m_data.Enqueue((monitoreditem.StartNodeId, value, opcvalue));
+            }
         }
+        catch (Exception ex)
+        {
+            UpdateStatus(true, DateTime.Now, "订阅事件出错：" + ex.Message);
+        }
+
     }
 
     /// <summary>
