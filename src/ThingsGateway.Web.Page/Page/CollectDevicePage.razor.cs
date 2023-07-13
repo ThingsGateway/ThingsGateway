@@ -42,10 +42,13 @@ namespace ThingsGateway.Web.Page
 
         [Inject]
         ResourceService ResourceService { get; set; }
-
-        protected override async Task OnParametersSetAsync()
+        protected override void OnAfterRender(bool firstRender)
         {
             CollectDevices = CollectDeviceService.GetCacheList();
+            base.OnAfterRender(firstRender);
+        }
+        protected override async Task OnParametersSetAsync()
+        {
 
             DriverPlugins = DriverPluginService.GetDriverPluginChildrenList(DriverEnum.Collect);
             _deviceGroups = CollectDeviceService.GetCacheList()?.Select(a => a.DeviceGroup)?.Where(a => a != null).Distinct()?.ToList();
