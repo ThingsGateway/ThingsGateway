@@ -19,6 +19,7 @@ using Opc.Ua;
 
 using ThingsGateway.Foundation;
 using ThingsGateway.Foundation.Adapter.OPCUA;
+using ThingsGateway.Foundation.Extension.Enumerator;
 using ThingsGateway.Web.Foundation;
 
 using TouchSocket.Core;
@@ -80,12 +81,19 @@ public class OPCUAClient : CollectBase
     {
         _deviceVariables = deviceVariables;
         PLC.Variables.AddRange(deviceVariables.Select(a => a.VariableAddress).ToList());
-        var sourVars = new DeviceVariableSourceRead(driverPropertys.UpdateRate)
+        var dataLists = deviceVariables.ChunkTrivialBetter(500);
+        var dataResult = new List<DeviceVariableSourceRead>();
+        foreach (var variable in dataLists)
         {
-            Address = "",
-            DeviceVariables = deviceVariables
-        };
-        return OperResult.CreateSuccessResult(new List<DeviceVariableSourceRead>() { sourVars });
+            var sourVars = new DeviceVariableSourceRead(driverPropertys.UpdateRate)
+            {
+                Address = "",
+                DeviceVariables = variable
+            };
+            dataResult.Add(sourVars);
+        }
+
+        return OperResult.CreateSuccessResult(dataResult);
 
     }
 
@@ -94,8 +102,50 @@ public class OPCUAClient : CollectBase
     {
         await Task.CompletedTask;
         var result = await PLC.ReadJTokenValueAsync(deviceVariableSourceRead.DeviceVariables.Select(a => a.VariableAddress).ToArray(), cancellationToken);
+        foreach (var data in result)
+        {
+            if (!cancellationToken.IsCancellationRequested)
+            {
+                var data1 = deviceVariableSourceRead.DeviceVariables.Where(a => a.VariableAddress == data.Item1);
 
-        if (result.Any(a => StatusCode.IsBad(a.Item2)))
+                foreach (var item in data1)
+                {
+
+                    object value;
+                    if (data.Item3 is JValue jValue)
+                    {
+                        value = jValue.Value;
+                    }
+                    else
+                    {
+                        value = data.Item3;
+                    }
+                    var quality = StatusCode.IsGood(data.Item2.StatusCode);
+
+                    var time = data.Item2.SourceTimestamp;
+                    if (value != null && quality)
+                    {
+                        var operResult = item.SetValue(value, time);
+                        if (!operResult.IsSuccess)
+                        {
+                            _logger?.LogWarning(operResult.Message, ToString());
+                        }
+                    }
+                    else
+                    {
+                        var operResult = item.SetValue(null, time);
+                        if (!operResult.IsSuccess)
+                        {
+                            _logger?.LogWarning(operResult.Message, ToString());
+                        }
+                        Device.LastErrorMessage = $"{item.Name} 质量为Bad ";
+                    }
+                }
+                logMessage.Trace(LogMessageHeader + ToString() + "状态变化:" + Environment.NewLine + data.Item1 + ":" + data.Item3.ToString());
+
+            }
+        }
+        if (result.Any(a => StatusCode.IsBad(a.Item2.StatusCode)))
         {
             return new OperResult<byte[]>($"读取失败");
         }
@@ -135,6 +185,8 @@ public class OPCUAClient : CollectBase
         oPCNode.GroupSize = driverPropertys.GroupSize;
         oPCNode.ReconnectPeriod = driverPropertys.ReconnectPeriod;
         oPCNode.IsUseSecurity = driverPropertys.IsUseSecurity;
+        oPCNode.ActiveSubscribe = driverPropertys.ActiveSubscribe;
+
         if (PLC == null)
         {
             PLC = new();

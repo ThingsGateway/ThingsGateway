@@ -560,7 +560,7 @@ public class OPCUAClient : DisposableObject
     /// <summary>
     /// 从服务器读取值
     /// </summary>
-    private async Task<List<(string, StatusCode, JToken)>> ReadJTokenValueAsync(NodeId[] nodeIds, CancellationToken cancellationToken = default)
+    private async Task<List<(string, DataValue, JToken)>> ReadJTokenValueAsync(NodeId[] nodeIds, CancellationToken cancellationToken = default)
     {
         ReadValueIdCollection nodesToRead = new ReadValueIdCollection();
         for (int i = 0; i < nodeIds.Length; i++)
@@ -583,21 +583,21 @@ public class OPCUAClient : DisposableObject
         var diagnosticInfos = result.DiagnosticInfos;
         ClientBase.ValidateResponse(results, nodesToRead);
         ClientBase.ValidateDiagnosticInfos(diagnosticInfos, nodesToRead);
-        List<(string, StatusCode, JToken)> jTokens = new();
+        List<(string, DataValue, JToken)> jTokens = new();
         for (int i = 0; i < results.Count; i++)
         {
             var node = (VariableNode)ReadNode(nodeIds[i].ToString(), false);
             var typeManager = new DataTypeManager(m_session);
             var opcvalue = typeManager.GetJToken(node, results[i]);
-            jTokens.Add((node.NodeId.ToString(), results[i].StatusCode, opcvalue));
+            jTokens.Add((node.NodeId.ToString(), results[i], opcvalue));
         }
         return jTokens.ToList();
     }
 
     /// <summary>
-    /// 从服务器读取值节
+    /// 从服务器读取值
     /// </summary>
-    public async Task<List<(string, StatusCode, JToken)>> ReadJTokenValueAsync(string[] tags, CancellationToken cancellationToken = default)
+    public async Task<List<(string, DataValue, JToken)>> ReadJTokenValueAsync(string[] tags, CancellationToken cancellationToken = default)
     {
         var result = await ReadJTokenValueAsync(tags.Select(a => new NodeId(a)).ToArray(), cancellationToken);
         return result;
@@ -952,7 +952,8 @@ public class OPCUAClient : DisposableObject
 
         // raise an event.
         DoConnectComplete(null);
-        AddSubscription(Guid.NewGuid().ToString(), Variables.ToArray());
+        if (OPCNode.ActiveSubscribe)
+            AddSubscription(Guid.NewGuid().ToString(), Variables.ToArray());
         // return the new session.
         return m_session;
     }
