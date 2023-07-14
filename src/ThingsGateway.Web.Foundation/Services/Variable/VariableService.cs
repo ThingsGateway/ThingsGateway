@@ -458,7 +458,6 @@ public class VariableService : DbRepository<DeviceVariable>, IVariableService
                     try
                     {
                         var device = ((ExpandoObject)item).ConvertToEntity<DeviceVariable>(true);
-                        devices.Add(device);
 
                         //var hasDup = rows.HasDuplicateElements<DeviceVariable>(nameof(DeviceVariable.Name), device.Name);
                         //var hasName = GetIdByName(device.Name) > 0;
@@ -469,6 +468,7 @@ public class VariableService : DbRepository<DeviceVariable>, IVariableService
                         //    return Task.CompletedTask;
                         //}
                         //变量ID都需要手动补录
+                        devices.Add(device);
                         device.Id = this.GetIdByName(device.Name, true) == 0 ? YitIdHelper.NextId() : this.GetIdByName(device.Name, true);
                         importPreviewOutput.Results.Add((row++, true, "成功"));
                         return Task.CompletedTask;
@@ -532,7 +532,6 @@ public class VariableService : DbRepository<DeviceVariable>, IVariableService
                     try
                     {
                         var device = ((ExpandoObject)item).ConvertToEntity<DeviceVariable>(true);
-                        devices.Add(device);
 
                         //var hasDup = rows.HasDuplicateElements<DeviceVariable>(nameof(DeviceVariable.Name), device.Name);
                         //var hasName = GetIdByName(device.Name) > 0;
@@ -544,7 +543,7 @@ public class VariableService : DbRepository<DeviceVariable>, IVariableService
                         //}
                         //转化设备名称
                         var deviceName = item.FirstOrDefault(a => a.Key == ExportHelpers.DeviceName).Value;
-                        if (_collectDeviceService.GetIdByName(deviceName.ToString()) == null)
+                        if (_collectDeviceService.GetIdByName(deviceName?.ToString()) == null)
                         {
                             //找不到对应的设备
                             importPreviewOutput.HasError = true;
@@ -558,6 +557,7 @@ public class VariableService : DbRepository<DeviceVariable>, IVariableService
                             device.Id = this.GetIdByName(device.Name, true) == 0 ? YitIdHelper.NextId() : this.GetIdByName(device.Name, true);
                         }
 
+                        devices.Add(device);
                         importPreviewOutput.Results.Add((row++, true, "成功"));
                         return Task.CompletedTask;
                     }
@@ -574,6 +574,9 @@ public class VariableService : DbRepository<DeviceVariable>, IVariableService
             }
             else
             {
+                ImportPreviewOutput<string> importPreviewOutput = new();
+                ImportPreviews.Add(sheetName, importPreviewOutput);
+
                 //插件属性需加上前置名称
                 var newName = ExportHelpers.PluginLeftName + sheetName;
                 var pluginId = _driverPluginService.GetIdByName(newName);
@@ -582,8 +585,8 @@ public class VariableService : DbRepository<DeviceVariable>, IVariableService
                 {
                     if (pluginId == null)
                     {
-                        deviceImportPreview.HasError = true;
-                        deviceImportPreview.Results.Add((row++, false, $"插件{newName}不存在"));
+                        importPreviewOutput.HasError = true;
+                        importPreviewOutput.Results.Add((row++, false, $"插件{newName}不存在"));
                         continue;
                     }
 
@@ -628,21 +631,22 @@ public class VariableService : DbRepository<DeviceVariable>, IVariableService
                                     var deviceId = id != 0 ? id : deviceImportPreview.Data.FirstOrDefault(it => it.Name == variableName).Id;
                                     deviceImportPreview?.Data?.FirstOrDefault(a => a.Id == deviceId)?.VariablePropertys?.AddOrUpdate(uploadDevice.Id, devices);
                                 }
-                                deviceImportPreview.Results.Add((row++, true, "成功"));
+                                importPreviewOutput.Data.Add(string.Empty);
+                                importPreviewOutput.Results.Add((row++, true, "成功"));
                                 return Task.CompletedTask;
                             }
                             catch (Exception ex)
                             {
-                                deviceImportPreview.HasError = true;
-                                deviceImportPreview.Results.Add((row++, false, ex.Message));
+                                importPreviewOutput.HasError = true;
+                                importPreviewOutput.Results.Add((row++, false, ex.Message));
                                 return Task.CompletedTask;
                             }
                         });
                 }
                 catch (Exception ex)
                 {
-                    deviceImportPreview.HasError = true;
-                    deviceImportPreview.Results.Add((row++, false, ex.Message));
+                    importPreviewOutput.HasError = true;
+                    importPreviewOutput.Results.Add((row++, false, ex.Message));
                 }
             }
         }

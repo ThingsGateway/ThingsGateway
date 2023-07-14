@@ -397,7 +397,6 @@ public class CollectDeviceService : DbRepository<CollectDevice>, ICollectDeviceS
                     {
 
                         var device = ((ExpandoObject)item).ConvertToEntity<CollectDevice>(true);
-                        devices.Add(device);
                         //var hasDup = rows.HasDuplicateElements<DeviceVariable>(nameof(UploadDevice.Name), device.Name);
                         //var hasName = GetIdByName(device.Name) > 0;
                         //if (hasDup || hasName)
@@ -409,7 +408,7 @@ public class CollectDeviceService : DbRepository<CollectDevice>, ICollectDeviceS
                         #region 特殊转化名称
                         //转化插件名称
                         var pluginName = item.FirstOrDefault(a => a.Key == ExportHelpers.PluginName).Value;
-                        if (_driverPluginService.GetIdByName(pluginName.ToString()) == null)
+                        if (_driverPluginService.GetIdByName(pluginName?.ToString()) == null)
                         {
                             //找不到对应的插件
                             importPreviewOutput.HasError = true;
@@ -425,6 +424,7 @@ public class CollectDeviceService : DbRepository<CollectDevice>, ICollectDeviceS
                         device.RedundantDeviceId = GetIdByName(redundantDeviceName?.ToString()).ToLong();
                         device.Id = this.GetIdByName(device.Name) ?? YitIdHelper.NextId();
 
+                        devices.Add(device);
                         importPreviewOutput.Results.Add((row++, true, "成功"));
                         return Task.CompletedTask;
                     }
@@ -442,13 +442,15 @@ public class CollectDeviceService : DbRepository<CollectDevice>, ICollectDeviceS
             #endregion
             else
             {
+                ImportPreviewOutput<string> importPreviewOutput = new();
+                ImportPreviews.Add(sheetName, importPreviewOutput);
                 //插件属性需加上前置名称
                 var newName = ExportHelpers.PluginLeftName + sheetName;
                 var pluginId = _driverPluginService.GetIdByName(newName);
                 if (pluginId == null)
                 {
-                    deviceImportPreview.HasError = true;
-                    deviceImportPreview.Results.Add((row++, false, $"插件{newName}不存在"));
+                    importPreviewOutput.HasError = true;
+                    importPreviewOutput.Results.Add((row++, false, $"插件{newName}不存在"));
                     continue;
                 }
 
@@ -461,7 +463,6 @@ public class CollectDeviceService : DbRepository<CollectDevice>, ICollectDeviceS
                 {
                     try
                     {
-
 
                         List<DependencyProperty> devices = new List<DependencyProperty>();
                         foreach (var item1 in item)
@@ -489,13 +490,14 @@ public class CollectDeviceService : DbRepository<CollectDevice>, ICollectDeviceS
                             var deviceId = this.GetIdByName(value.Value.ToString()) ?? deviceImportPreview.Data.FirstOrDefault(it => it.Name == value.Value.ToString()).Id;
                             deviceImportPreview.Data.FirstOrDefault(a => a.Id == deviceId).DevicePropertys = devices;
                         }
-                        deviceImportPreview.Results.Add((row++, true, "成功"));
+                        importPreviewOutput.Data.Add(string.Empty);
+                        importPreviewOutput.Results.Add((row++, true, "成功"));
                         return Task.CompletedTask;
                     }
                     catch (Exception ex)
                     {
-                        deviceImportPreview.HasError = true;
-                        deviceImportPreview.Results.Add((row++, false, ex.Message));
+                        importPreviewOutput.HasError = true;
+                        importPreviewOutput.Results.Add((row++, false, ex.Message));
                         return Task.CompletedTask;
                     }
                 });

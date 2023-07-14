@@ -24,7 +24,7 @@ public class ImportPreviewOutputBase
 public class ImportPreviewOutput<T> : ImportPreviewOutputBase where T : class
 {
     public override int DataCount { get => Data == null ? 0 : Data.Count; }
-    public IList<T> Data { get; set; }
+    public List<T> Data { get; set; } = new();
 }
 
 

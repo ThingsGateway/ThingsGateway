@@ -55,33 +55,33 @@
                 </MStepperContent>
                 <MStepperContent Step="2">
                     <div style="overflow-y:auto">
-  
+
                         @foreach (var item in ImportPreviews)
                         {
                             <MSubheader Class="mt-2 font-weight-black"> @($"{item.Key}，预计导入{item.Value.DataCount}条数据")  </MSubheader>
                             <MSubheader Class=@((item.Value.HasError?"mt-2 red--text":"mt-2 green--text"))> @((item.Value.HasError ? "出现错误" : "验证成功"))  </MSubheader>
 
                             <MVirtualScroll Context="item1" Height=300 OverscanCount=2 ItemSize="60" Items="item.Value.Results">
-                                    <ItemContent>
+                                <ItemContent>
                                     <MListItem>
                                         <MListItemAction>
-                                            <MButton Fab Small Depressed Color="primary">
-                                                @item1.row
-                                            </MButton>
+                                            <MChip Class="ma-2">
+                                                @($"第{item1.row}行")
+                                            </MChip>
                                         </MListItemAction>
-                                       
+
                                         <MListItemContent>
                                             <MListItemTitle Class=@((item1.isSuccess?"green--text":"red--text"))>
                                                 <strong>@item1.resultString</strong>
                                             </MListItemTitle>
                                         </MListItemContent>
 
-                                </MListItem>
+                                    </MListItem>
 
-                                <MDivider></MDivider>
+                                    <MDivider></MDivider>
 
-                                    </ItemContent>
-                                </MVirtualScroll>
+                                </ItemContent>
+                            </MVirtualScroll>
 
                         }
                     </div>
