@@ -530,38 +530,12 @@ public class OPCUAClient : DisposableObject
     /// <summary>
     /// 从服务器读取值
     /// </summary>
-    private async Task<List<DataValue>> ReadValueAsync(NodeId[] nodeIds, CancellationToken cancellationToken = default)
-    {
-        ReadValueIdCollection nodesToRead = new ReadValueIdCollection();
-        for (int i = 0; i < nodeIds.Length; i++)
-        {
-            nodesToRead.Add(new ReadValueId()
-            {
-                NodeId = nodeIds[i],
-                AttributeId = Attributes.Value
-            });
-        }
-
-        // 读取当前的值
-        var result = await m_session.ReadAsync(
-             null,
-             0,
-             TimestampsToReturn.Neither,
-             nodesToRead,
-             cancellationToken);
-        var results = result.Results;
-        var diagnosticInfos = result.DiagnosticInfos;
-        ClientBase.ValidateResponse(results, nodesToRead);
-        ClientBase.ValidateDiagnosticInfos(diagnosticInfos, nodesToRead);
-
-        return results.ToList();
-    }
-
-    /// <summary>
-    /// 从服务器读取值
-    /// </summary>
     private async Task<List<(string, DataValue, JToken)>> ReadJTokenValueAsync(NodeId[] nodeIds, CancellationToken cancellationToken = default)
     {
+        if (m_session == null)
+        {
+            throw new("服务器未初始化连接");
+        }
         ReadValueIdCollection nodesToRead = new ReadValueIdCollection();
         for (int i = 0; i < nodeIds.Length; i++)
         {
