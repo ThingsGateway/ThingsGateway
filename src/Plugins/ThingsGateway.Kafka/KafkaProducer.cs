@@ -173,9 +173,9 @@ public class KafkaProducer : UpLoadBase
             var cacheData = await CacheDb.GetCacheData();
             foreach (var item in cacheData)
             {
-                var result1 = await producer.ProduceAsync(item.Topic, new Message<Null, string> { Value = item.CacheStr }, cancellationToken);
+                var cacheResult = await producer.ProduceAsync(item.Topic, new Message<Null, string> { Value = item.CacheStr }, cancellationToken);
 
-                if (result.Status == PersistenceStatus.Persisted)
+                if (cacheResult.Status == PersistenceStatus.Persisted)
                 {
                     logMessage.Trace(LogMessageHeader + $"主题：{item.Topic}{Environment.NewLine}负载：{item.CacheStr}");
 

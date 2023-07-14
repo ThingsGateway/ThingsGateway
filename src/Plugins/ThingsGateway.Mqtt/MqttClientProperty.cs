@@ -40,9 +40,9 @@ public class MqttClientProperty : UpDriverPropertyBase
     [DeviceProperty("Rpc返回Topic", "")] public string RpcSubTopic { get; set; } = "ThingsGateway/RpcSub";
 
     [DeviceProperty("Rpc写入Topic", "")] public string RpcWriteTopic { get; set; } = "ThingsGateway/RpcWrite";
-    [DeviceProperty("设备实体脚本", "查看文档说明，为空时不起作用")] public string BigTextScriptDeviceModel { get; set; }
+    [DeviceProperty("设备实体脚本", "查看文档说明，为空时默认Json传输")] public string BigTextScriptDeviceModel { get; set; }
 
-    [DeviceProperty("变量实体脚本", "查看文档说明，为空时不起作用")] public string BigTextScriptVariableModel { get; set; }
+    [DeviceProperty("变量实体脚本", "查看文档说明，为空时默认Json传输")] public string BigTextScriptVariableModel { get; set; }
 
 
     [DeviceProperty("是否间隔上传", "False时为变化检测上传")] public bool IsInterval { get; set; } = false;
