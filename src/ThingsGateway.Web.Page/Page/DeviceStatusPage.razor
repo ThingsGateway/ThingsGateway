@@ -356,7 +356,7 @@
                                     <MTooltip Bottom Context="tip">
                                         <ActivatorContent>
                                             <MButton Disabled=@(!UserResoures.IsHasPageWithRole("/tgruntime/devicevariable")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small Loading=isRestart
-                                                     OnClick=@(()=>NavigationManager.NavigateTo("/tgruntime/devicevariable?devicename="+item.Device?.Name))>
+                                                     OnClick=@(()=>NavigationManager.NavigateTo("/tgruntime/devicevariable?uploaddevicename="+item.Device?.Name))>
                                                 <MIcon>mdi-information-outline</MIcon>
                                             </MButton>
                                         </ActivatorContent>
@@ -378,7 +378,7 @@
                                     </MTooltip>
                                     <MTooltip Bottom Context="tip">
                                         <ActivatorContent>
-                                            <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("tgdevicerestart")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small Loading=isRestart OnClick=@(()=>Restart(item.DeviceId))>
+                                            <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("tgdevicerestart")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small Loading=isRestart OnClick=@(()=>UpRestart(item.DeviceId))>
                                                 <MIcon>mdi-restart</MIcon>
                                             </MButton>
                                         </ActivatorContent>

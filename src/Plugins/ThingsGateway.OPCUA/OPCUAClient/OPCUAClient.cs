@@ -179,7 +179,15 @@ public class OPCUAClient : CollectBase
                 var itemReads = _deviceVariables.Where(it => it.VariableAddress == data.id).ToList();
                 foreach (var item in itemReads)
                 {
-                    var value = data.jToken;
+                    object value;
+                    if (data.jToken is JValue jValue)
+                    {
+                        value = jValue.Value;
+                    }
+                    else
+                    {
+                        value = data.jToken;
+                    }
                     var quality = StatusCode.IsGood(data.dataValue.StatusCode);
 
                     var time = data.dataValue.SourceTimestamp;
