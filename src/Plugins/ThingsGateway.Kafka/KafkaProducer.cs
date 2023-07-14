@@ -194,7 +194,7 @@ public class KafkaProducer : UpLoadBase
 
     protected override void Dispose(bool disposing)
     {
-        producer.Dispose();
+        producer?.Dispose();
         _uploadVariables = null;
         _collectDeviceRunTimes.Clear();
         _collectVariableRunTimes.Clear();
@@ -274,17 +274,7 @@ public class KafkaProducer : UpLoadBase
         _collectDeviceRunTimes.Enqueue(collectDeviceRunTime.Adapt<DeviceData>());
     }
 
-    private void handler(DeliveryReport<Null, string> r)
-    {
-        if (!r.Error.IsError)
-        {
-            _logger.LogTrace($"Delivered message to {r.TopicPartitionOffset}");
-        }
-        else
-        {
-            _logger.LogWarning($"Delivery Error: {r.Error.Reason}");
-        }
-    }
+
     private void VariableValueChange(DeviceVariableRunTime collectVariableRunTime)
     {
         _collectVariableRunTimes.Enqueue(collectVariableRunTime.Adapt<VariableData>());
