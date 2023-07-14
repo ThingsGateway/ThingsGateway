@@ -161,7 +161,17 @@ public class OPCDAClient : CollectBase
                     var time = data.TimeStamp;
                     if (value != null && quality == 192)
                     {
-                        var operResult = item.SetValue(JToken.FromObject(value), time);
+                        var jToken = JToken.FromObject(value);
+                        object newValue;
+                        if (jToken is JValue jValue)
+                        {
+                            newValue = jValue.Value;
+                        }
+                        else
+                        {
+                            newValue = jToken;
+                        }
+                        var operResult = item.SetValue(newValue, time);
                         if (!operResult.IsSuccess)
                         {
                             _logger?.LogWarning(operResult.Message, ToString());
