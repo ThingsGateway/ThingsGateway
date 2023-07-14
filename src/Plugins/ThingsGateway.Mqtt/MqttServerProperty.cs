@@ -26,7 +26,7 @@ public class MqttServerProperty : UpDriverPropertyBase
     [DeviceProperty("变量Topic", "")] public string VariableTopic { get; set; } = "ThingsGateway/Variable";
     [DeviceProperty("Rpc返回Topic", "")] public string RpcSubTopic { get; set; } = "ThingsGateway/RpcSub";
     [DeviceProperty("Rpc写入Topic", "不允许订阅")] public string RpcWriteTopic { get; set; } = "ThingsGateway/RpcWrite";
-    [DeviceProperty("设备实体脚本", "查看文档说明，为空时不起作用")] public string BigTextScriptDeviceModel { get; set; }
-    [DeviceProperty("变量实体脚本", "查看文档说明，为空时不起作用")] public string BigTextScriptVariableModel { get; set; }
+    [DeviceProperty("设备实体脚本", "查看文档说明，为空时默认Json传输")] public string BigTextScriptDeviceModel { get; set; }
+    [DeviceProperty("变量实体脚本", "查看文档说明，为空时默认Json传输")] public string BigTextScriptVariableModel { get; set; }
 
 }

@@ -35,6 +35,6 @@ public class RabbitMQClientProperty : UpDriverPropertyBase
 
     [DeviceProperty("缓存最大条数", "默认2千条")] public int CacheMaxCount { get; set; } = 2000;
 
-    [DeviceProperty("设备实体脚本", "查看文档说明，为空时不起作用")] public string BigTextScriptDeviceModel { get; set; }
-    [DeviceProperty("变量实体脚本", "查看文档说明，为空时不起作用")] public string BigTextScriptVariableModel { get; set; }
+    [DeviceProperty("设备实体脚本", "查看文档说明，为空时默认Json传输")] public string BigTextScriptDeviceModel { get; set; }
+    [DeviceProperty("变量实体脚本", "查看文档说明，为空时默认Json传输")] public string BigTextScriptVariableModel { get; set; }
 }
