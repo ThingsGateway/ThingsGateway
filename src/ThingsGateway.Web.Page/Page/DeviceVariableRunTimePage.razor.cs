@@ -32,7 +32,9 @@ namespace ThingsGateway.Web.Page
         [Parameter]
         [SupplyParameterFromQuery]
         public string DeviceName { get; set; }
-
+        [Parameter]
+        [SupplyParameterFromQuery]
+        public string UploadDeviceName { get; set; }
         VariablePageInput _searchModel { get; set; } = new();
         [Inject]
         IUploadDeviceService _uploadDeviceService { get; set; }
@@ -61,6 +63,11 @@ namespace ThingsGateway.Web.Page
             if (_searchModel.DeviceName != DeviceName && !DeviceName.IsNullOrEmpty())
             {
                 _searchModel.DeviceName = DeviceName;
+                await datatableQuery();
+            }
+            if (_searchModel.UploadDeviceName != UploadDeviceName && !UploadDeviceName.IsNullOrEmpty())
+            {
+                _searchModel.UploadDeviceName = UploadDeviceName;
                 await datatableQuery();
             }
 
