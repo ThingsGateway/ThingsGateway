@@ -51,7 +51,7 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
         _config.ForType<HistoryValue, DataValue>()
 .Map(dest => dest.WrappedValue, (src) => new Variant(src.Value))
 .Map(dest => dest.SourceTimestamp, (src) => DateTime.SpecifyKind(src.CollectTime, DateTimeKind.Utc))
-.Map(dest => dest.StatusCode, (src) => src.Quality == 192 ? StatusCodes.Good : StatusCodes.Bad);
+.Map(dest => dest.StatusCode, (src) => src.IsOnline ? StatusCodes.Good : StatusCodes.Bad);
     }
 
 
