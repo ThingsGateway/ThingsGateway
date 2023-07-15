@@ -17,7 +17,7 @@ using Mapster;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-using NewLife.Serialization;
+
 
 using ThingsGateway.Foundation;
 using ThingsGateway.Foundation.Extension;

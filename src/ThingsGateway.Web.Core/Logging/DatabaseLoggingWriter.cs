@@ -10,6 +10,8 @@
 //------------------------------------------------------------------------------
 #endregion
 
+using NewLife.Serialization;
+
 using UAParser;
 
 namespace ThingsGateway.Web.Core

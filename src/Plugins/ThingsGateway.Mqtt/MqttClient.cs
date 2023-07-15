@@ -18,7 +18,7 @@ using Microsoft.Extensions.Logging;
 using MQTTnet;
 using MQTTnet.Client;
 
-using NewLife.Serialization;
+
 
 using SqlSugar;
 
@@ -412,7 +412,7 @@ public class MqttClient : UpLoadBase
             return;
         if (arg.ApplicationMessage.Topic != driverPropertys.RpcWriteTopic)
             return;
-        var rpcData = Encoding.UTF8.GetString(arg.ApplicationMessage.PayloadSegment).ToJsonEntity<MqttRpcNameVaueWithId>();
+        var rpcData = Encoding.UTF8.GetString(arg.ApplicationMessage.PayloadSegment).FromJson<MqttRpcNameVaueWithId>();
         if (rpcData == null)
             return;
 

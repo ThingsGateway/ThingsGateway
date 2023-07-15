@@ -20,7 +20,7 @@ using MQTTnet.Internal;
 using MQTTnet.Protocol;
 using MQTTnet.Server;
 
-using NewLife.Serialization;
+
 
 
 using System.Collections.Concurrent;
@@ -308,7 +308,7 @@ public class MqttServer : UpLoadBase
             return;
         if (arg.ApplicationMessage.Topic != driverPropertys.RpcWriteTopic)
             return;
-        var rpcData = Encoding.UTF8.GetString(arg.ApplicationMessage.PayloadSegment).ToJsonEntity<MqttRpcNameVaueWithId>();
+        var rpcData = Encoding.UTF8.GetString(arg.ApplicationMessage.PayloadSegment).FromJson<MqttRpcNameVaueWithId>();
         if (rpcData == null)
             return;
         MqttRpcResult mqttRpcResult = new();

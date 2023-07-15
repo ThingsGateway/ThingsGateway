@@ -10,6 +10,8 @@
 //------------------------------------------------------------------------------
 #endregion
 
+using NewLife.Serialization;
+
 namespace ThingsGateway.Application
 {
     /// <inheritdoc cref="IRoleService"/>

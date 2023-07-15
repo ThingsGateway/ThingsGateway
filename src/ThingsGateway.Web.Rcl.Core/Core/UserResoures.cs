@@ -14,6 +14,7 @@ using BlazorComponent.I18n;
 
 using Masa.Blazor;
 
+using NewLife.Serialization;
 
 namespace ThingsGateway.Web.Rcl.Core
 {

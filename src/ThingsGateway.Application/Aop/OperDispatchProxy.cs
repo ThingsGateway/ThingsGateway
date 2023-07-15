@@ -13,6 +13,8 @@
 using Furion.Reflection;
 using Furion.Reflection.Extensions;
 
+using NewLife.Serialization;
+
 using UAParser;
 
 namespace ThingsGateway.Application
