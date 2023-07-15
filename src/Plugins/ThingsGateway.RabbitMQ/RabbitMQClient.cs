@@ -92,7 +92,7 @@ public class RabbitMQClient : UpLoadBase
             {
                 if (driverPropertys.IsList)
                 {
-                    var listChunk = varList.ChunkTrivialBetter(10000);
+                    var listChunk = varList.ChunkTrivialBetter(driverPropertys.SplitSize);
                     foreach (var variables in listChunk)
                     {
                         try
@@ -159,7 +159,7 @@ public class RabbitMQClient : UpLoadBase
             {
                 if (driverPropertys.IsList)
                 {
-                    var listChunk = devList.ChunkTrivialBetter(10000);
+                    var listChunk = devList.ChunkTrivialBetter(driverPropertys.SplitSize);
                     foreach (var devices in listChunk)
                     {
                         try

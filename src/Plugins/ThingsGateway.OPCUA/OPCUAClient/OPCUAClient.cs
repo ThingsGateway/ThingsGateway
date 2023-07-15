@@ -81,7 +81,7 @@ public class OPCUAClient : CollectBase
     {
         _deviceVariables = deviceVariables;
         PLC.Variables.AddRange(deviceVariables.Select(a => a.VariableAddress).ToList());
-        var dataLists = deviceVariables.ChunkTrivialBetter(500);
+        var dataLists = deviceVariables.ChunkTrivialBetter(driverPropertys.GroupSize);
         var dataResult = new List<DeviceVariableSourceRead>();
         foreach (var variable in dataLists)
         {
