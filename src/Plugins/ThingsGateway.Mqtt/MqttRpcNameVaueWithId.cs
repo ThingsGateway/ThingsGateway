@@ -15,7 +15,7 @@ namespace ThingsGateway.Mqtt
     public class MqttRpcNameVaueWithId
     {
         public string RpcId { get; set; }
-        public string Name { get; set; }
+        public string Key { get; set; }
         public string Value { get; set; }
     }
     public class MqttRpcResult
