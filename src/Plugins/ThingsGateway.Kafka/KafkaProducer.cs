@@ -29,6 +29,7 @@ namespace ThingsGateway.Kafka;
 
 using System.Collections.Concurrent;
 using System.Runtime.InteropServices;
+using System.Threading;
 
 using ThingsGateway.Foundation.Extension.Enumerator;
 using ThingsGateway.Foundation.Extension.Generic;
@@ -162,29 +163,50 @@ public class KafkaProducer : UpLoadBase
 
     private async Task KafKaUp(string topic, string payLoad, CancellationToken cancellationToken)
     {
-        var result = await producer.ProduceAsync(topic, new Message<Null, string> { Value = payLoad }, cancellationToken);
-        if (result.Status != PersistenceStatus.Persisted)
+        try
         {
-            await CacheDb.AddCacheData(topic, payLoad, driverPropertys.CacheMaxCount);
-        }
-        else
-        {
-            //连接成功时补发缓存数据
-            var cacheData = await CacheDb.GetCacheData();
-            foreach (var item in cacheData)
+            using CancellationTokenSource cancellationTokenSource = new();
+            using CancellationTokenSource stoppingToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationTokenSource.Token, cancellationToken);
+            Task<DeliveryResult<Null, string>> resultTask = producer.ProduceAsync(topic, new Message<Null, string> { Value = payLoad }, stoppingToken.Token);
+            var timeOutResult = await Task.WhenAny(resultTask, Task.Delay(driverPropertys.TimeOut, stoppingToken.Token));
+            if (timeOutResult == resultTask)
             {
-                var cacheResult = await producer.ProduceAsync(item.Topic, new Message<Null, string> { Value = item.CacheStr }, cancellationToken);
-
-                if (cacheResult.Status == PersistenceStatus.Persisted)
+                var result = (timeOutResult as Task<DeliveryResult<Null, string>>).Result;
+                if (result.Status != PersistenceStatus.Persisted)
                 {
-                    logMessage.Trace(LogMessageHeader + $"主题：{item.Topic}{Environment.NewLine}负载：{item.CacheStr}");
+                    await CacheDb.AddCacheData(topic, payLoad, driverPropertys.CacheMaxCount);
+                }
+                else
+                {
+                    //连接成功时补发缓存数据
+                    var cacheData = await CacheDb.GetCacheData();
+                    foreach (var item in cacheData)
+                    {
+                        var cacheResult = await producer.ProduceAsync(item.Topic, new Message<Null, string> { Value = item.CacheStr }, stoppingToken.Token);
 
-                    await CacheDb.DeleteCacheData(item.Id);
+                        if (cacheResult.Status == PersistenceStatus.Persisted)
+                        {
+                            logMessage.Trace(LogMessageHeader + $"主题：{item.Topic}{Environment.NewLine}负载：{item.CacheStr}");
+
+                            await CacheDb.DeleteCacheData(item.Id);
+                        }
+                    }
+                    logMessage.Trace(LogMessageHeader + $"主题：{topic}{Environment.NewLine}负载：{payLoad}");
+
                 }
             }
-            logMessage.Trace(LogMessageHeader + $"主题：{topic}{Environment.NewLine}负载：{payLoad}");
-
+            else
+            {
+                stoppingToken.Cancel();
+            }
         }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, ToString());
+            await CacheDb.AddCacheData(topic, payLoad, driverPropertys.CacheMaxCount);
+        }
+
+
     }
 
     public override OperResult IsConnected()

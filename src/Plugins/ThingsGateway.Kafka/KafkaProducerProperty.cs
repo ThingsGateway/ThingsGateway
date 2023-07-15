@@ -25,6 +25,7 @@ public class KafkaProducerProperty : DriverPropertyBase
     [DeviceProperty("分组ID", "")] public string GroupId { get; set; } = "test-consumer-group";
     [DeviceProperty("客户端ID", "")] public string ClientId { get; set; } = "test-consumer";
     [DeviceProperty("线程循环间隔", "最小10ms")] public int CycleInterval { get; set; } = 1000;
+    [DeviceProperty("发布超时时间", "ms")] public int TimeOut { get; set; } = 5000;
 
     [DeviceProperty("缓存最大条数", "默认2千条")] public int CacheMaxCount { get; set; } = 2000;
 }
