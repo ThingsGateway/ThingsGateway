@@ -5,7 +5,7 @@
 		<TargetFrameworks>net6.0;net7.0</TargetFrameworks>
 		<!--<GenerateDocumentationFile>True</GenerateDocumentationFile>-->
 		<ImplicitUsings>enable</ImplicitUsings>
-		<Version>1.7.1</Version>
+		<Version>1.7.2</Version>
 		<RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
 		<EnableDynamicLoading>true</EnableDynamicLoading>
 		<CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>

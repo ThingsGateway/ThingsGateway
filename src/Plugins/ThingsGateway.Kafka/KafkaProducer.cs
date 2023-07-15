@@ -194,11 +194,11 @@ public class KafkaProducer : UpLoadBase
 
     protected override void Dispose(bool disposing)
     {
-        _globalDeviceData.CollectDevices.Where(a => _uploadVariables.Select(b => b.DeviceId).Contains(a.Id)).ForEach(a =>
+        _globalDeviceData?.CollectDevices.Where(a => _uploadVariables.Select(b => b.DeviceId).Contains(a.Id)).ForEach(a =>
         {
             a.DeviceStatusCahnge -= DeviceStatusCahnge;
         });
-        _uploadVariables.ForEach(a =>
+        _uploadVariables?.ForEach(a =>
         {
             a.VariableValueChange -= VariableValueChange;
         });
