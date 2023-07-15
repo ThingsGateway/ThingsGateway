@@ -438,7 +438,6 @@ public class VariableService : DbRepository<DeviceVariable>, IVariableService
         Dictionary<string, ImportPreviewOutputBase> ImportPreviews = new();
         //设备页
         ImportPreviewOutput<DeviceVariable> deviceImportPreview = new();
-        int row = 1;
         foreach (var sheetName in sheetNames)
         {
             //单页数据
@@ -447,6 +446,7 @@ public class VariableService : DbRepository<DeviceVariable>, IVariableService
 
             if (sheetName == ExportHelpers.DeviceVariableSheetName)
             {
+                int row = 1;
                 ImportPreviewOutput<DeviceVariable> importPreviewOutput = new();
                 ImportPreviews.Add(sheetName, importPreviewOutput);
                 deviceImportPreview = importPreviewOutput;
@@ -512,7 +512,6 @@ public class VariableService : DbRepository<DeviceVariable>, IVariableService
         Dictionary<string, ImportPreviewOutputBase> ImportPreviews = new();
         //设备页
         ImportPreviewOutput<DeviceVariable> deviceImportPreview = new();
-        int row = 1;
         foreach (var sheetName in sheetNames)
         {
             //单页数据
@@ -521,6 +520,7 @@ public class VariableService : DbRepository<DeviceVariable>, IVariableService
 
             if (sheetName == ExportHelpers.DeviceVariableSheetName)
             {
+                int row = 1;
                 ImportPreviewOutput<DeviceVariable> importPreviewOutput = new();
                 ImportPreviews.Add(sheetName, importPreviewOutput);
                 deviceImportPreview = importPreviewOutput;
@@ -574,6 +574,7 @@ public class VariableService : DbRepository<DeviceVariable>, IVariableService
             }
             else
             {
+                int row = 1;
                 ImportPreviewOutput<string> importPreviewOutput = new();
                 ImportPreviews.Add(sheetName, importPreviewOutput);
 

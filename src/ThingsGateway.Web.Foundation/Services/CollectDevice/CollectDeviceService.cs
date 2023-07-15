@@ -377,7 +377,6 @@ public class CollectDeviceService : DbRepository<CollectDevice>, ICollectDeviceS
         Dictionary<string, ImportPreviewOutputBase> ImportPreviews = new();
         //设备页
         ImportPreviewOutput<CollectDevice> deviceImportPreview = new();
-        int row = 1;
         foreach (var sheetName in sheetNames)
         {
             //单页数据
@@ -385,6 +384,7 @@ public class CollectDeviceService : DbRepository<CollectDevice>, ICollectDeviceS
             #region 采集设备sheet
             if (sheetName == ExportHelpers.CollectDeviceSheetName)
             {
+                int row = 1;
                 ImportPreviewOutput<CollectDevice> importPreviewOutput = new();
                 ImportPreviews.Add(sheetName, importPreviewOutput);
                 deviceImportPreview = importPreviewOutput;
@@ -442,6 +442,7 @@ public class CollectDeviceService : DbRepository<CollectDevice>, ICollectDeviceS
             #endregion
             else
             {
+                int row = 1;
                 ImportPreviewOutput<string> importPreviewOutput = new();
                 ImportPreviews.Add(sheetName, importPreviewOutput);
                 //插件属性需加上前置名称
