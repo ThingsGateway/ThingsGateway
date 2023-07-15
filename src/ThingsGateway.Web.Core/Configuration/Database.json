@@ -11,7 +11,7 @@
         "IsInitDb": true, //是否初始化数据库,适用于codefirst
         "IsUnderLine": false, //是否驼峰转下划线
         "IsSeedData": true, //是否初始化种子数据
-        "IsUpdateSeedData": true
+        "IsUpdateSeedData": false
       },
       {
         "ConfigId": "ThingsGateway", //租户ID
@@ -21,7 +21,7 @@
         "IsInitDb": true, //是否初始化数据库,适用于codefirst
         "IsUnderLine": false, //是否驼峰转下划线
         "IsSeedData": true, //是否初始化种子数据
-        "IsUpdateSeedData": true
+        "IsUpdateSeedData": false
       }
 
     ]

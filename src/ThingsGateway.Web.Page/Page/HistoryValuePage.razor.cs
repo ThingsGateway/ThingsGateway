@@ -61,7 +61,7 @@ namespace ThingsGateway.Web.Page
                     case nameof(HistoryValue.Name):
                         item.Sortable = true;
                         break;
-                    case nameof(HistoryValue.Quality):
+                    case nameof(HistoryValue.IsOnline):
                         item.Sortable = true;
                         break;
                     case nameof(HistoryValue.CollectTime):

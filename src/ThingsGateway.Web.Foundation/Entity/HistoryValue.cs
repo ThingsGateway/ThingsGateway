@@ -45,10 +45,10 @@ public class HistoryValue : PrimaryIdEntity
     [Description("变量名称")]
     public string Name { get; set; }
     /// <summary>
-    /// 质量戳
+    /// 是否在线
     /// </summary>
-    [Description("质量戳")]
-    public int Quality { get; set; }
+    [Description("是否在线")]
+    public bool IsOnline { get; set; }
 
     /// <summary>
     /// 变量值
