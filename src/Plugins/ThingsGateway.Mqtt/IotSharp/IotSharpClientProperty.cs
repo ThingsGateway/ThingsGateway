@@ -22,5 +22,6 @@ public class IotSharpClientProperty : UpDriverPropertyBase
     [DeviceProperty("连接超时时间", "")] public int ConnectTimeOut { get; set; } = 3000;
     [DeviceProperty("允许Rpc写入", "")] public bool DeviceRpcEnable { get; set; }
     [DeviceProperty("缓存最大条数", "默认2千条")] public int CacheMaxCount { get; set; } = 2000;
+    [DeviceProperty("列表分割大小", "默认1千条")] public int SplitSize { get; set; } = 1000;
     [DeviceProperty("线程循环间隔", "最小10ms")] public int CycleInterval { get; set; } = 1000;
 }

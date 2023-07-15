@@ -21,6 +21,7 @@ public class MqttServerProperty : UpDriverPropertyBase
     [DeviceProperty("端口", "")] public int Port { get; set; } = 1883;
     [DeviceProperty("允许连接的ID(前缀)", "")] public string StartWithId { get; set; } = "ThingsGatewayId";
     [DeviceProperty("允许Rpc写入", "")] public bool DeviceRpcEnable { get; set; }
+    [DeviceProperty("列表分割大小", "默认1千条")] public int SplitSize { get; set; } = 1000;
     [DeviceProperty("线程循环间隔", "最小10ms")] public int CycleInterval { get; set; } = 1000;
     [DeviceProperty("设备Topic", "")] public string DeviceTopic { get; set; } = "ThingsGateway/Device";
     [DeviceProperty("变量Topic", "")] public string VariableTopic { get; set; } = "ThingsGateway/Variable";

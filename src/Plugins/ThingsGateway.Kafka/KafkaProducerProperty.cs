@@ -27,5 +27,6 @@ public class KafkaProducerProperty : DriverPropertyBase
     [DeviceProperty("线程循环间隔", "最小10ms")] public int CycleInterval { get; set; } = 1000;
     [DeviceProperty("发布超时时间", "ms")] public int TimeOut { get; set; } = 5000;
 
+    [DeviceProperty("列表分割大小", "默认1千条")] public int SplitSize { get; set; } = 1000;
     [DeviceProperty("缓存最大条数", "默认2千条")] public int CacheMaxCount { get; set; } = 2000;
 }

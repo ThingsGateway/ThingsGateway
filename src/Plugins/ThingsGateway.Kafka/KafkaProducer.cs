@@ -81,7 +81,7 @@ public class KafkaProducer : UpLoadBase
             if (varList?.Count != 0)
             {
                 //分解List，避免超出mqtt字节大小限制
-                var varData = varList.ChunkTrivialBetter(10000);
+                var varData = varList.ChunkTrivialBetter(driverPropertys.SplitSize);
                 foreach (var item in varData)
                 {
                     try
@@ -116,7 +116,7 @@ public class KafkaProducer : UpLoadBase
             if (devList?.Count != 0)
             {
                 //分解List，避免超出mqtt字节大小限制
-                var devData = devList.ChunkTrivialBetter(10000);
+                var devData = devList.ChunkTrivialBetter(driverPropertys.SplitSize);
                 foreach (var item in devData)
                 {
                     try

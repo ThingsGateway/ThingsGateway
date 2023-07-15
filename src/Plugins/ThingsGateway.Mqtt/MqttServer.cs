@@ -108,7 +108,7 @@ public class MqttServer : UpLoadBase
             if (varList?.Count != 0)
             {
                 //分解List，避免超出mqtt字节大小限制
-                var varData = varList.ChunkTrivialBetter(10000);
+                var varData = varList.ChunkTrivialBetter(driverPropertys.SplitSize);
                 foreach (var item in varData)
                 {
                     try
@@ -147,7 +147,7 @@ public class MqttServer : UpLoadBase
             if (devList?.Count != 0)
             {
                 //分解List，避免超出mqtt字节大小限制
-                var varData = devList.ChunkTrivialBetter(10000);
+                var varData = devList.ChunkTrivialBetter(driverPropertys.SplitSize);
                 foreach (var item in varData)
                 {
                     try
@@ -255,8 +255,8 @@ public class MqttServer : UpLoadBase
     {
         //首次连接时的保留消息
         //分解List，避免超出mqtt字节大小限制
-        var varData = _globalDeviceData.AllVariables.Adapt<List<VariableData>>().ChunkTrivialBetter(10000);
-        var devData = _globalDeviceData.AllVariables.Adapt<List<DeviceData>>().ChunkTrivialBetter(10000);
+        var varData = _globalDeviceData.AllVariables.Adapt<List<VariableData>>().ChunkTrivialBetter(driverPropertys.SplitSize);
+        var devData = _globalDeviceData.AllVariables.Adapt<List<DeviceData>>().ChunkTrivialBetter(driverPropertys.SplitSize);
         List<MqttApplicationMessage> Messages = new();
         foreach (var item in varData)
         {

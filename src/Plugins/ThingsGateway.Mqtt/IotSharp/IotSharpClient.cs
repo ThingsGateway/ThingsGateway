@@ -243,7 +243,7 @@ public class IotSharpClient : UpLoadBase
             if (devList?.Count != 0)
             {
                 //分解List，避免超出mqtt字节大小限制
-                var devData = devList.ChunkTrivialBetter(10000);
+                var devData = devList.ChunkTrivialBetter(driverPropertys.SplitSize);
                 foreach (var item in devData)
                 {
                     try
