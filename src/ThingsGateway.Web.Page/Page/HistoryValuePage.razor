@@ -62,9 +62,9 @@
     </SearchTemplate>
 
     <ItemColTemplate>
-        @if (context.Header.Value == nameof(context.Item.Quality))
+        @if (context.Header.Value == nameof(context.Item.IsOnline))
         {
-            <EnableChip Value="context.Item.Quality==192" DisabledLabel=@context.Item.Quality.ToString() EnabledLabel=@context.Item.Quality.ToString()>
+            <EnableChip Value="context.Item.IsOnline" DisabledLabel=离线 EnabledLabel=在线>
             </EnableChip>
         }
 

@@ -383,11 +383,8 @@ public class AlarmWorker : BackgroundService
 
     private void DeviceVariableChange(DeviceVariableRunTime variable)
     {
-        if (!IsExited)
-        {
-            //这里不能序列化变量，报警服务需改变同一个变量指向的属性
-            DeviceVariables.Enqueue(variable);
-        }
+        //这里不能序列化变量，报警服务需改变同一个变量指向的属性
+        DeviceVariables.Enqueue(variable);
 
     }
     /// <summary>
@@ -437,6 +434,7 @@ public class AlarmWorker : BackgroundService
         {
             await Task.Yield();//
             _logger?.LogInformation($"历史报警线程开始");
+            IsExited = false;
             try
             {
                 await Task.Delay(500, StoppingToken.Token);

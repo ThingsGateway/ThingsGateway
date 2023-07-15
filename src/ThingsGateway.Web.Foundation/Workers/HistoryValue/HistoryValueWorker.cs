@@ -165,7 +165,7 @@ public class HistoryValueWorker : BackgroundService
         {
             await Task.Yield();//
             _logger?.LogInformation($"历史数据线程开始");
-
+            IsExited = false;
             try
             {
 
