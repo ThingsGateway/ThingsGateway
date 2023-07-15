@@ -22,7 +22,6 @@ global using Microsoft.AspNetCore.Http;
 global using Microsoft.CodeAnalysis;
 global using Microsoft.Extensions.DependencyInjection;
 
-global using NewLife.Serialization;
 
 global using SqlSugar;
 

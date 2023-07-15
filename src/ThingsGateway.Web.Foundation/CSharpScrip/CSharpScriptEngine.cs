@@ -13,7 +13,6 @@
 using CSScriptLib;
 
 using NewLife.Caching;
-using NewLife.Serialization;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -21,6 +20,9 @@ using Newtonsoft.Json.Converters;
 using System.Dynamic;
 using System.Linq;
 using System.Text;
+
+using TouchSocket.Core;
+
 namespace ThingsGateway.Web.Foundation;
 
 /// <summary>
@@ -74,8 +76,8 @@ public class CSharpScriptEngine : ISingleton
         });
         var expConverter = new ExpandoObjectConverter();
         dynamic obj = JsonConvert.DeserializeObject<List<ExpandoObject>>(input, expConverter);
-        dynamic result = runscript(obj);
-        var json = JsonHelper.Default.Write(result);
+        object result = runscript(obj);
+        var json = result.ToJson();
         return json;
     }
 
@@ -114,8 +116,8 @@ public class CSharpScriptEngine : ISingleton
         });
         var expConverter = new ExpandoObjectConverter();
         dynamic obj = JsonConvert.DeserializeObject<ExpandoObject>(input, expConverter);
-        dynamic result = runscript(obj);
-        var json = JsonHelper.Default.Write(result);
+        object result = runscript(obj);
+        var json = result.ToJson();
         return json;
     }
 

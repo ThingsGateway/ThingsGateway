@@ -20,7 +20,7 @@ using Microsoft.Extensions.Logging;
 using MQTTnet;
 using MQTTnet.Client;
 
-using NewLife.Serialization;
+
 
 using System.Collections.Concurrent;
 
@@ -398,7 +398,7 @@ public class IotSharpClient : UpLoadBase
             else
             {
                 RpcResponse rpcResponse = new();
-                var nameValue = e.ApplicationMessage.ConvertPayloadToString().ToJsonEntity<List<KeyValuePair<string, string>>>();
+                var nameValue = e.ApplicationMessage.ConvertPayloadToString().FromJson<List<KeyValuePair<string, string>>>();
                 Dictionary<string, OperResult> results = new();
                 if (nameValue?.Count > 0)
                 {

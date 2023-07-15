@@ -12,6 +12,8 @@
 
 using Microsoft.AspNetCore.Mvc;
 
+using NewLife.Serialization;
+
 using System.Globalization;
 
 namespace ThingsGateway.Application
