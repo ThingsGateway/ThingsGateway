@@ -298,7 +298,6 @@ public class UploadDeviceService : DbRepository<UploadDevice>, IUploadDeviceServ
         Dictionary<string, ImportPreviewOutputBase> ImportPreviews = new();
         //设备页
         ImportPreviewOutput<UploadDevice> deviceImportPreview = new();
-        int row = 1;
         foreach (var sheetName in sheetNames)
         {
             //单页数据
@@ -306,6 +305,7 @@ public class UploadDeviceService : DbRepository<UploadDevice>, IUploadDeviceServ
             #region 上传设备sheet
             if (sheetName == ExportHelpers.UploadDeviceSheetName)
             {
+                int row = 1;
                 ImportPreviewOutput<UploadDevice> importPreviewOutput = new();
                 ImportPreviews.Add(sheetName, importPreviewOutput);
                 deviceImportPreview = importPreviewOutput;
@@ -356,6 +356,7 @@ public class UploadDeviceService : DbRepository<UploadDevice>, IUploadDeviceServ
             #endregion
             else
             {
+                int row = 1;
                 ImportPreviewOutput<string> importPreviewOutput = new();
                 ImportPreviews.Add(sheetName, importPreviewOutput);
                 //插件属性需加上前置名称
