@@ -102,7 +102,7 @@ public abstract class DriverBase : DisposableObject
         {
             if (arg3.StartsWith(LogMessageHeader))
             {
-                Messages.Add(DateTime.Now.ToDateTimeF() + "-" + arg3);
+                Messages.Add(DateTime.Now.ToDateTimeF() + "-" + arg3.Substring(0, Math.Min(arg3.Length, 200)));
 
                 if (Messages.Count > 2500)
                 {
