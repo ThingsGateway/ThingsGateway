@@ -11,17 +11,17 @@
         "Title": "ThingsGateway物联网关接口", //配置分组标题，string 类型
         "Description": "物联网关Swagger",
         "Version": "1.0.0", //配置分组版本，默认 1.0
-        "TermsOfService": "https://gitee.com/dotnetchina/ThingsGateway", //配置相关链接地址，Uri 类型
+        "TermsOfService": "https://gitee.com/diego2098/ThingsGateway", //配置相关链接地址，Uri 类型
         "Contact": {
           //配置联系方式
           "Name": "Diego",
-          "Url": "https://gitee.com/dotnetchina/ThingsGateway",
+          "Url": "https://gitee.com/diego2098/ThingsGateway",
           "Email": "2248356998@qq.com"
         },
         "License": {
           //配置协议，OpenApiLicense 类型
           "Name": "Apache-2.0",
-          "Url": "https://gitee.com/dotnetchina/ThingsGateway/blob/master/LICENSE.txt"
+          "Url": "https://gitee.com/diego2098/ThingsGateway/blob/master/LICENSE.txt"
         }
       },
       {

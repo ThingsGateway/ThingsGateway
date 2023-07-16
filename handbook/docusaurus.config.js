@@ -121,7 +121,7 @@ module.exports = {
         docs: {
           sidebarPath: require.resolve("./sidebars.js"),
           editUrl:
-            "https://gitee.com/dotnetchina/ThingsGateway/tree/master/",
+            "https://gitee.com/dotnetchina/ThingsGateway/tree/master/handbook/",
           showLastUpdateTime: true,
           showLastUpdateAuthor: true,
           sidebarCollapsible: true,
