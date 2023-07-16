@@ -5,7 +5,7 @@
 //  源代码使用协议遵循本仓库的开源协议及附加协议
 //  Gitee源代码仓库：https://gitee.com/diego2098/ThingsGateway
 //  Github源代码仓库：https://github.com/kimdiego2098/ThingsGateway
-//  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
+//  使用文档：https://diego2098.gitee.io/thingsgateway/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 #endregion
@@ -98,7 +98,7 @@ public class OPCUAClient : DisposableObject
             ApplicationType = ApplicationType.Client,
             CertificateValidator = certificateValidator,
             ApplicationUri = Utils.Format(@"urn:{0}:thingsgatewayopcuaclient", System.Net.Dns.GetHostName()),
-            ProductUri = "https://diego2098.gitee.io/thingsgateway-docs/",
+            ProductUri = "https://diego2098.gitee.io/thingsgateway/",
 
             ServerConfiguration = new ServerConfiguration
             {

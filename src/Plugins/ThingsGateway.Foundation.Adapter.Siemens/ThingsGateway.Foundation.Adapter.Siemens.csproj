@@ -12,7 +12,7 @@
 		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
 		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
 		<RunAnalyzersDuringBuild>True</RunAnalyzersDuringBuild>
-		<PackageProjectUrl>https://diego2098.gitee.io/thingsgateway-docs/</PackageProjectUrl>
+		<PackageProjectUrl>https://diego2098.gitee.io/thingsgateway/</PackageProjectUrl>
 		<RepositoryUrl>https://gitee.com/diego2098/ThingsGateway</RepositoryUrl>
 		<PackageOutputPath>$(SolutionDir)</PackageOutputPath>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
