@@ -1,0 +1,76 @@
+---
+id: pluginsiemens
+title: S7采集插件
+---
+
+
+## 一、设备扩展属性
+
+<img src={require('../static/img/docs/pluginsiemens-1.png').default} width="500" />
+
+| 属性           |  说明                    | 默认值/备注|
+| ---------------| --------------------------| ---|
+| IP         | 连接IP              | 127.0.0.1|
+| 端口         | 连接端口              | 102|
+| 连接超时时间         | 建立socket通讯的超时时间（ms）                | 3000|
+| 读写超时时间         | 读取等待中的超时时间（ms）              | 3000|
+| 默认解析顺序         | 4个字节以上的数据解析，可设置为ABCD/BADC/CDBA/DCBA,默认ABCD |ABCD：Big-Endian<br></br>BADC：Big-Endian Byte Swap<br></br>CDAB：Little-Endian Byte Swap<br></br>DCBA：Little-Endian |
+| LocalTSAP         |  手动设置，一般不需要             | 0 |
+| DestTSAP         |   手动设置，一般不需要            | 0|
+
+## 二、变量配置
+
+
+:::tip `说明`
+
+通用格式
+
+4字节转换格式
+
+DATA=ABCD;
+
+举例：
+
+DATA=ABCD; ，代表大端格式，其中
+
+ABCD=>Big-Endian;
+
+BADC=>Big-Endian Byte Swap;
+
+CDAB=>Little-Endian Byte Swap;
+
+DCBA=>Little-Endian
+
+字符串长度：
+
+LEN=1;
+
+BCD格式：
+
+BCD=C8421;，其中有C8421;C5421;C2421;C3;Gray
+
+字符格式：
+
+TEXT=UTF8;，其中有UTF8;ASCII;Default;Unicode
+
+:::
+
+### 变量地址说明
+
+- 1、基本地址
+
+| 地址           |           说明                    |
+| ---------------| --------------------------|
+| Txxxxx         |       Timer寄存器,例如T100/T100.1             |
+| Cxxxxx         |       Counter寄存器,例如C100/C100.1                 |
+| AIxxxxx         |       AI寄存器,例如AI100/AI100.1               |
+| AQxxxxx         |       AQ寄存器,例如AQ100/AQ100.1                |
+| Ixxxxx         |       I寄存器,例如I100/I100.1              |
+| Qxxxxx         |       Q寄存器,例如Q100/Q100.1              |
+| Mxxxxx         |       M寄存器,例如M100/M100.1               |
+| DBxxxxx         |       DB寄存器,例如DB100.1/DB100.1.1               |
+
+### 变量特殊方法说明
+
+<img src={require('../static/img/docs/pluginsiemens-2.png').default} width="500" />
+

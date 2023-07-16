@@ -1,0 +1,57 @@
+---
+id: opcdademo
+title: ThingsGateway(二)采集OPCDA协议
+---
+
+:::tip 文章地址
+
+Gitee源代码仓库：https://gitee.com/diego2098/ThingsGateway
+
+Github源代码仓库：https://github.com/kimdiego2098/ThingsGateway
+
+使用文档：https://diego2098.gitee.io/thingsgateway-docs/
+
+:::
+## 一、前言
+<div align="center"> 
+
+[![NuGet(ThingsGateway)](https://img.shields.io/nuget/v/ThingsGateway.Foundation.svg?label=ThingsGateway.Foundation)](https://www.nuget.org/packages/kimdiego/)
+[![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
+[![star](https://gitee.com/diego2098/ThingsGateway/badge/star.svg)](https://gitee.com/diego2098/ThingsGateway/stargazers) 
+[![star](https://gitee.com/diego2098/ThingsGateway/badge/fork.svg)](https://gitee.com/diego2098/ThingsGateway/members) 
+![star](https://img.shields.io/badge/QQ群-605534569-blue)
+
+</div>  
+
+**ThingsGateway**是国内新生开源项目,归属工业数据采集网关,经过近四个月的洗礼,已经趋于稳定
+
+这篇文章将实测**ThingsGateway**采集OPCDA协议设备,通过动图演示,方便理解
+
+## 二、准备测试环境
+
+1、[ThingsGateway](https://gitee.com/diego2098/ThingsGateway)
+
+2、KepServer
+
+运行ThingsGateway的方法请查看[源文档](https://diego2098.gitee.io/thingsgateway-docs/docs/startguide)
+
+## 三、通讯测试
+
+
+![](/img/opcdademo/opcdademo-1.gif)
+
+有上一篇的基础，这里快速过一遍，新建设备-新建变量-重启运行态
+
+## 四、进阶玩法
+
+:::tip 提示
+
+关于数据转换/冗余/连读等等与上一篇是通用的，这里会介绍特有的功能
+
+:::
+
+### 1、OPC点位浏览器/导出
+
+![](/img/opcdademo/opcdademo-2.gif)
+
+通过驱动调试的导入变量按钮，可以导出所选的OPCITEM

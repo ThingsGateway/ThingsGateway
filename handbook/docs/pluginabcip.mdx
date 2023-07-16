@@ -1,0 +1,69 @@
+---
+id: pluginabcip
+title: 罗克韦尔CIP协议采集插件
+---
+:::tip `Pro版本内容`
+:::
+
+## 一、设备扩展属性
+
+<img src={require('../static/img/docs/pluginabcip-1.png').default} width="500" />
+
+| 属性           |  说明                    | 默认值/备注|
+| ---------------| --------------------------| ---|
+| IP         | 连接IP              | 127.0.0.1|
+| 端口         | 连接端口              | 502|
+| 默认站号         | 默认的站号id            | 1|
+| 读写超时时间         | 读取等待中的超时时间（ms）              | 3000|
+| 帧前时间         | 在发送请求前的延时时间(s)                | 0|
+| 默认解析顺序         | 4个字节以上的数据解析，可设置为ABCD/BADC/CDBA/DCBA,默认ABCD |ABCD：Big-Endian<br></br>BADC：Big-Endian Byte Swap<br></br>CDAB：Little-Endian Byte Swap<br></br>DCBA：Little-Endian |
+| 最大打包长度         | 打包长度              | 64 |
+| 共享链路         | 设为true后，同目标IP端口的设备将共用一个TcpClient              | Flase |
+| Slot         |      插槽        |  |
+| Router         |    路由信息，使用.分割              | Flase |
+
+
+
+## 二、变量配置
+
+:::tip `说明`
+
+通用格式
+
+4字节转换格式
+
+DATA=ABCD;
+
+举例：
+
+DATA=ABCD; ，代表大端格式，其中
+
+ABCD=>Big-Endian;
+
+BADC=>Big-Endian Byte Swap;
+
+CDAB=>Little-Endian Byte Swap;
+
+DCBA=>Little-Endian
+
+字符串长度：
+
+LEN=1;
+
+BCD格式：
+
+BCD=C8421;，其中有C8421;C5421;C2421;C3;Gray
+
+字符格式：
+
+TEXT=UTF8;，其中有UTF8;ASCII;Default;Unicode
+
+:::
+
+### 变量地址说明
+
+- PLC标签点位名称
+
+### 变量特殊方法说明
+
+无特殊方法

@@ -1,0 +1,37 @@
+---
+id: pluginopcuaclient
+title: OPCUA采集插件
+---
+
+
+## 一、设备扩展属性
+
+<img src={require('../static/img/docs/pluginopcuaclient-1.png').default} width="500" />
+
+| 属性           |  说明                    | 默认值/备注|
+| ---------------| --------------------------| ---|
+| OPCURL         | OPCUA URL            | opc.tcp://127.0.0.1:49320|
+| 登录账号         | 为空时采用匿名方式登录              |  |
+| 登录密码         |               |  |
+| 安全策略         | 是否安全认证/证书方式登录                | True|
+| 激活订阅         | 是否采用OPC订阅方式读取变量                | True|
+| 更新频率         | 订阅更新频率或者连读频率              | 1000 |
+| 死区         | OPC死区              | 0|
+| 自动分组大小         | 每隔设定大小分一个OPCGroup              | 500|
+| 重连频率         | 如果断开连接，每隔设定时间重新连接  |5000|
+
+## 二、变量配置
+
+### 变量地址说明
+
+- 变量地址即为 OPC NodeId
+
+### 变量特殊方法说明
+
+- 通过插件调试界面可导出OPC Item
+
+## 三、证书说明
+
+证书可以在软件目录\OPCUAClientCertificate下查看或者导出/复制
+
+<img src={require('../static/img/docs/pluginopcuaclient-3.png').default} width="700" />
