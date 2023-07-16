@@ -1,0 +1,52 @@
+---
+id: startguide
+title: 入门指南
+---
+
+import Tag from "@site/src/components/Tag.js";
+
+## 一、说明
+
+ThingsGateway是基于AspNetCore net6、7/BlazorServer发布的项目。默认开发IDE为VS2022，安装VS时需勾选ASP.NET类别
+
+<img src={require('../static/img/docs/vs2022install.png').default} />
+
+## 二、下载源码
+
+[最新版本](https://gitee.com/diego2098/ThingsGateway) 
+
+
+
+## 三、运行
+
+下面我们将以vs2022作为示例：
+
+:::tip 提示
+
+**注意需要编译解决方案，因为插件与主体没有引用关系**
+
+:::  
+
+<img src={require('../static/img/docs/start-1.png').default} />
+
+1、 vs2022打开解决方案，设置ThingsGateway.Web.Server为启动项目
+
+2、 编译解决方案后直接运行
+
+<img src={require('../static/img/docs/login.png').default} />
+
+:::tip 提示
+
+**调试版本，账密会自动填充为超级管理员账号，默认账户：superAdmin,密码：111111**
+
+:::  
+
+3、关于快速熟悉采集/上传配置
+
+:::tip 提示
+
+在查看案例前，请先查看**第五节-第十节，关于网关的基础内容**
+
+:::  
+- [ModbusTcp采集案例](./modbustcpdemo.mdx) <Tag>Demo</Tag>
+

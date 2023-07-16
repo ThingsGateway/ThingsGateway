@@ -1,0 +1,41 @@
+---
+id: pluginmqttclient
+title: MqttClient
+---
+
+## 一、设备扩展属性
+
+![](/img/docs/pluginmqttclient-1.png)
+
+| 属性           |  说明                    | 默认值/备注|
+| ---------------| --------------------------| ---|
+| IP         | ServerIP,为空时指任意IP              | |
+| 端口         | 连接端口              | 1883|
+| 连接ID         | 连接ID             | ThingsGatewayId |
+| 允许Rpc写入         | 是否允许写入变量              | True |
+| 线程循环间隔         | 上传线程的循环间隔,一般不需要更改(ms)              | 1000 |
+| 列表分割大小         | 发布的实体列表按大小分割              | 1000 |
+| 数据请求RpcTopic         | 该主题接受到任何消息都会发布全部信息到对应的设备/变量主题中              | ThingsGateway/Quest |
+| Rpc写入Topic         | 写入变量的发布Topic              | ThingsGateway/RpcWrite |
+| Rpc返回Topic         | 写入变量的订阅Topic，返回写入结果信息              | ThingsGateway/RpcSub |
+| 变量Topic         | 变量信息订阅Topic              | ThingsGateway/Variable |
+| 设备Topic         | 设备信息订阅Topic              | ThingsGateway/Device |
+
+
+## 二、变量配置
+
+<img src={require('../static/img/docs/pluginmqttclient-2.png').default} width="400" />
+
+
+### 启用
+
+启用变量后才能进行上传
+
+### 允许写入
+
+单独配置变量是否允许写入
+
+
+## 三、实体脚本
+
+移至 [实体脚本](./pluginmqttserver.mdx#三实体脚本) 查看

@@ -1,0 +1,28 @@
+---
+id: pluginopcuaserver
+title: OPCUAServer
+---
+
+## 一、设备扩展属性
+
+<img src={require('../static/img/docs/pluginopcuaserver-1.png').default} width="300" />
+
+| 属性           |  说明                    | 默认值/备注|
+| ---------------| --------------------------| ---|
+| 服务地址         | OPCUA URL格式              |opc:tcp://127.0.0.1:49321|
+| 安全策略         | 启用后将不接受使用匿名登录的客户端，并且可以写入变量 | |
+| 自动接受不受信任的证书         | 自动获取客户端证书并接受              | True |
+
+
+## 二、变量配置
+
+<img src={require('../static/img/docs/pluginopcuaserver-2.png').default} width="300" />
+
+### 数据类型
+
+同变量管理数据类型Enum,需文本输入
+
+## 三、证书说明
+
+证书可以在软件目录\OPCUAServerCertificate下查看或者导出/复制
+

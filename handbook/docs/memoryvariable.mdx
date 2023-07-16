@@ -1,0 +1,72 @@
+---
+id: memoryvariable
+title: 中间变量
+---
+
+:::tip `配置须知`
+
+ 更改采集设备/变量/上传设备/插件等，需要重启线程（网关状态-运行状态-全部重启/单个设备重启）
+
+:::
+
+:::tip `说明`
+
+ThingsGateway里的中间变量是用于中间计算，不与仪表产生直接联系
+
+:::
+
+## 一、添加/修改变量
+
+
+### 1、变量基本属性
+
+![](/img/docs/devicevariable-1.png)
+
+:::tip `说明`
+
+基本属性中定义采集对应协议所需的配置
+
+:::
+|属性名称| 属性描述| 备注|
+|-----------|--------------|-----------------|
+|名称| 当前变量名称，全局唯一(变量)| |
+|描述| 当前变量描述 ||
+|读写权限| 读写/只写/只读 ||
+|读取表达式| 动态解析的表达式|具体可查看 [ExpressionEvaluator WiKi](https://github.com/codingseb/ExpressionEvaluator)|
+|写入表达式| 动态解析的表达式，在写入值时转化|具体可查看 [ExpressionEvaluator WiKi](https://github.com/codingseb/ExpressionEvaluator)|
+|允许远程写入| 对于变量的单独写入使能配置 ||
+
+:::tip `表达式特别说明`
+
+网关还支持表达式的动态传入,除了raw表示该变量读取的原始值外,还支持其他变量的值传入表达式
+举例：
+  ```csharp
+  
+  //新建testInt1中间变量
+  //新建testInt2设备变量
+
+  //在testInt1的读取表达式中定义
+
+    testInt2+3
+    
+  //testInt2读取值为8,输出testInt1=11
+
+  ```
+
+:::
+### 2、变量报警属性
+
+ 移至 [变量管理](./devicevariable.mdx#2变量报警属性) 查看
+
+
+### 3、变量历史属性
+
+ 移至 [变量管理](./devicevariable.mdx#3变量历史属性) 查看
+
+## 二、导入导出变量
+
+ 移至 [采集设备](./collectdevice.mdx#二导入导出采集设备) 查看
+
+
+
+
