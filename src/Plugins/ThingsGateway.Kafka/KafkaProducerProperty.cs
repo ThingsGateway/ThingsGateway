@@ -19,10 +19,9 @@ namespace ThingsGateway.Kafka;
 /// </summary>
 public class KafkaProducerProperty : DriverPropertyBase
 {
-    [DeviceProperty("服务地址", "")] public string BootStrapServers { get; set; } = "127.0.0.1";
+    [DeviceProperty("服务地址", "")] public string BootStrapServers { get; set; } = "127.0.0.1:9092";
     [DeviceProperty("设备主题", "")] public string DeviceTopic { get; set; } = "test1";
     [DeviceProperty("变量主题", "")] public string VariableTopic { get; set; } = "test2";
-    [DeviceProperty("分组ID", "")] public string GroupId { get; set; } = "test-consumer-group";
     [DeviceProperty("客户端ID", "")] public string ClientId { get; set; } = "test-consumer";
     [DeviceProperty("线程循环间隔", "最小10ms")] public int CycleInterval { get; set; } = 1000;
     [DeviceProperty("发布超时时间", "ms")] public int TimeOut { get; set; } = 5000;
