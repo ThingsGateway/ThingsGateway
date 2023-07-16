@@ -53,7 +53,7 @@ module.exports = {
           items: [
             {
               label: "Gitee（主库）",
-              href: "https://gitee.com/dotnetchina/ThingsGateway",
+              href: "https://gitee.com/diego2098/ThingsGateway",
             },
             {
               label: "GitHub",
@@ -93,11 +93,11 @@ module.exports = {
           items: [
             {
               label: "讨论",
-              href: "https://gitee.com/dotnetchina/ThingsGateway/issues",
+              href: "https://gitee.com/diego2098/ThingsGateway/issues",
             },
             {
               label: "看板",
-              href: "https://gitee.com/dotnetchina/ThingsGateway/board",
+              href: "https://gitee.com/diego2098/ThingsGateway/board",
             },
           ],
         },
@@ -106,7 +106,7 @@ module.exports = {
           items: [
             {
               label: "仓库",
-              href: "https://gitee.com/dotnetchina/ThingsGateway",
+              href: "https://gitee.com/diego2098/ThingsGateway",
             },
           ],
         },
@@ -121,7 +121,7 @@ module.exports = {
         docs: {
           sidebarPath: require.resolve("./sidebars.js"),
           editUrl:
-            "https://gitee.com/dotnetchina/ThingsGateway/tree/master/handbook/",
+            "https://gitee.com/diego2098/ThingsGateway/tree/master/handbook/",
           showLastUpdateTime: true,
           showLastUpdateAuthor: true,
           sidebarCollapsible: true,
