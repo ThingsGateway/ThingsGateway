@@ -174,10 +174,16 @@ public class CollectDeviceWorker : BackgroundService
                     }
                     else
                     {
-                        var Redundantdev = (await _collectDeviceService.GetCollectDeviceRuntimeAsync(dev.RedundantDeviceId)).FirstOrDefault();
-                        dev.DevicePropertys = Redundantdev.DevicePropertys;
-                        dev.RedundantEnum = RedundantEnum.Standby;
-                        _logger?.LogInformation(dev.Name + "切换到备用通道");
+                        try
+                        {
+                            var Redundantdev = (await _collectDeviceService.GetCollectDeviceRuntimeAsync(dev.RedundantDeviceId)).FirstOrDefault();
+                            dev.DevicePropertys = Redundantdev.DevicePropertys;
+                            dev.RedundantEnum = RedundantEnum.Standby;
+                            _logger?.LogInformation(dev.Name + "切换到备用通道");
+                        }
+                        catch
+                        {
+                        }
                     }
                 }
                 devCore.Init(dev);
@@ -510,7 +516,7 @@ public class CollectDeviceWorker : BackgroundService
 
                     if (devcore.Device.DeviceStatus == DeviceStatusEnum.OffLine)
                     {
-                        if (devcore.Device.IsRedundant)
+                        if (devcore.Device.IsRedundant && _collectDeviceService.GetCacheList().Any(a => a.Id == devcore.Device.RedundantDeviceId))
                         {
                             await UpDeviceRedundantThreadAsync(devcore.Device.Id);
                         }
