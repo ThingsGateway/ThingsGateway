@@ -26,7 +26,7 @@
 
 #### 开源说明
 
-Apache 2.0+[附加协议](https://diego2098.gitee.io/thingsgateway-docs/docs/)
+Apache 2.0+[附加协议](https://diego2098.gitee.io/thingsgateway/docs/)
 
 Apache 2.0 开源协议的核心内容是以保护和尊重原作者的著作权为主要目的。对使用，复制，修改，商用不做过多限制，但必须包含原著的License信息。
 
@@ -107,7 +107,7 @@ http://120.24.62.140:5000/
 
  ####  文档
 
- 使用前请查看Gitee Pages [文档站点](https://diego2098.gitee.io/thingsgateway-docs/)
+ 使用前请查看Gitee Pages [文档站点](https://diego2098.gitee.io/thingsgateway/)
 
  #### 特别鸣谢
 -  Furion：[https://dotnetchina.gitee.io/furion](https://dotnetchina.gitee.io/furion)
