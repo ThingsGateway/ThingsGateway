@@ -30,7 +30,7 @@ public class OPCUAServerProperty : UpDriverPropertyBase
     /// <summary>
     /// 接受不受信任的证书
     /// </summary>
-    [DeviceProperty("接受不受信任的证书", "")]
+    [DeviceProperty("自动接受不受信任的证书", "")]
     public bool AutoAcceptUntrustedCertificates { get; set; } = true;
 
 }
