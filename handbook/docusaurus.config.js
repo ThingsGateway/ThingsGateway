@@ -2,7 +2,7 @@ module.exports = {
   title: "thingsgateway",
   tagline: "物联网",
   url: "https://diego2098.gitee.io",
-  baseUrl: "/thingsgateway-docs/",
+  baseUrl: "/thingsgateway/",
   onBrokenLinks: "throw",
   onBrokenMarkdownLinks: "warn",
   favicon: "img/favicon.ico",
