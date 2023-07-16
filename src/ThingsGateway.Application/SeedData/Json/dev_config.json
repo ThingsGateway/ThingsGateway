@@ -58,7 +58,7 @@
       "Id": "22222222222229",
       "Category": "SYS_BASE",
       "ConfigKey": "SYS_COPYRIGHT_URL",
-      "ConfigValue": "https://gitee.com/diego2098/ThingsGateway",
+      "ConfigValue": "https://gitee.com/dotnetchina/ThingsGateway",
       "Remark": "系统版权链接地址",
       "SortCode": "6",
       "IsDelete": "0"
