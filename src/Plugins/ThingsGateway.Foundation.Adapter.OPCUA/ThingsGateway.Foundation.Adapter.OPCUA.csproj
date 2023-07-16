@@ -16,7 +16,7 @@
 		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
 		<RunAnalyzersDuringBuild>True</RunAnalyzersDuringBuild>
 		<PackageProjectUrl>https://diego2098.gitee.io/thingsgateway-docs/</PackageProjectUrl>
-		<RepositoryUrl>https://gitee.com/dotnetchina/ThingsGateway</RepositoryUrl>
+		<RepositoryUrl>https://gitee.com/diego2098/ThingsGateway</RepositoryUrl>
 		<PackageOutputPath>$(SolutionDir)</PackageOutputPath>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<Platforms>AnyCPU;x86</Platforms>
