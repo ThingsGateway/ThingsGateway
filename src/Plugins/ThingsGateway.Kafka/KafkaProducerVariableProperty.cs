@@ -21,6 +21,4 @@ public class KafkaProducerVariableProperty : VariablePropertyBase
 {
     [VariableProperty("启用", "")]
     public bool Enable { get; set; } = true;
-    [VariableProperty("允许写入", "")]
-    public bool VariableRpcEnable { get; set; } = true;
 }
