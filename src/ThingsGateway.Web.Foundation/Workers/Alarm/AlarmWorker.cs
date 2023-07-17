@@ -168,7 +168,7 @@ public class AlarmWorker : BackgroundService
     private Task<Task> HisAlarmTask;
     private Task<Task> RealAlarmTask;
     private CacheDb CacheDb { get; set; }
-
+    private EasyLock easyLock { get; set; } = new();
     /// <summary>
     /// 重启服务
     /// </summary>
@@ -180,35 +180,74 @@ public class AlarmWorker : BackgroundService
 
     internal void Start()
     {
-        foreach (var item in _globalDeviceData.CollectDevices)
+        try
         {
-            DeviceChange(item);
-        }
-        StoppingTokens.Add(new());
-        Init();
-        RealAlarmTask.Start();
-        HisAlarmTask.Start();
+            easyLock.Lock();
 
+            foreach (var item in _globalDeviceData.CollectDevices)
+            {
+                DeviceChange(item);
+            }
+            StoppingTokens.Add(new());
+            Init();
+            RealAlarmTask.Start();
+            HisAlarmTask.Start();
+        }
+        finally
+        {
+            easyLock.UnLock();
+
+        }
     }
 
     internal void Stop(IEnumerable<CollectDeviceRunTime> devices)
     {
-        foreach (var device in devices)
+        try
         {
-            device.DeviceStatusCahnge -= DeviceStatusCahnge;
-            device.DeviceVariableRunTimes?.ForEach(v => { v.VariableCollectChange -= DeviceVariableChange; });
-        }
+            easyLock.Lock();
 
-        CancellationTokenSource StoppingToken = StoppingTokens.LastOrDefault();
-        StoppingToken?.Cancel();
-        _logger?.LogInformation($"实时报警线程停止中");
-        var realAlarmResult = RealAlarmTask?.Result;
-        if (realAlarmResult?.Status != TaskStatus.Canceled)
-        {
-            bool? realTaskResult = false;
+            foreach (var device in devices)
+            {
+                device.DeviceStatusCahnge -= DeviceStatusCahnge;
+                device.DeviceVariableRunTimes?.ForEach(v => { v.VariableCollectChange -= DeviceVariableChange; });
+            }
+
+            CancellationTokenSource StoppingToken = StoppingTokens.LastOrDefault();
+            StoppingToken?.Cancel();
+            _logger?.LogInformation($"实时报警线程停止中");
+            var realAlarmResult = RealAlarmTask?.Result;
+            if (realAlarmResult?.Status != TaskStatus.Canceled)
+            {
+                bool? realTaskResult = false;
+                try
+                {
+                    realTaskResult = realAlarmResult?.Wait(10000);
+                }
+                catch (ObjectDisposedException)
+                {
+
+                }
+                catch (Exception ex)
+                {
+                    _logger?.LogWarning(ex, "等待线程停止错误");
+                }
+                if (realTaskResult == true)
+                {
+                    _logger?.LogInformation($"实时报警线程已停止");
+                }
+                else
+                {
+                    _logger?.LogWarning($"实时报警线程停止超时，已强制取消");
+                }
+            }
+            RealAlarmTask?.SafeDispose();
+
+            _logger?.LogInformation($"历史报警线程停止中");
+            var hisAlarmResult = HisAlarmTask?.GetAwaiter().GetResult();
+            bool? hisTaskResult = false;
             try
             {
-                realTaskResult = realAlarmResult?.Wait(10000);
+                hisTaskResult = hisAlarmResult?.Wait(10000);
             }
             catch (ObjectDisposedException)
             {
@@ -218,44 +257,22 @@ public class AlarmWorker : BackgroundService
             {
                 _logger?.LogWarning(ex, "等待线程停止错误");
             }
-            if (realTaskResult == true)
+            if (hisTaskResult == true)
             {
-                _logger?.LogInformation($"实时报警线程已停止");
+                _logger?.LogInformation($"历史报警线程已停止");
             }
             else
             {
-                _logger?.LogWarning($"实时报警线程停止超时，已强制取消");
+                _logger?.LogWarning($"历史报警线程停止超时，已强制取消");
             }
+            HisAlarmTask?.SafeDispose();
+            StoppingToken?.SafeDispose();
+            StoppingTokens.Remove(StoppingToken);
         }
-        RealAlarmTask?.SafeDispose();
-
-        _logger?.LogInformation($"历史报警线程停止中");
-        var hisAlarmResult = HisAlarmTask?.GetAwaiter().GetResult();
-        bool? hisTaskResult = false;
-        try
+        finally
         {
-            hisTaskResult = hisAlarmResult?.Wait(10000);
+            easyLock.UnLock();
         }
-        catch (ObjectDisposedException)
-        {
-
-        }
-        catch (Exception ex)
-        {
-            _logger?.LogWarning(ex, "等待线程停止错误");
-        }
-        if (hisTaskResult == true)
-        {
-            _logger?.LogInformation($"历史报警线程已停止");
-        }
-        else
-        {
-            _logger?.LogWarning($"历史报警线程停止超时，已强制取消");
-        }
-        HisAlarmTask?.SafeDispose();
-        StoppingToken?.SafeDispose();
-        StoppingTokens.Remove(StoppingToken);
-
     }
 
     private void AlarmAnalysis(DeviceVariableRunTime item)
