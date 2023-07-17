@@ -50,14 +50,13 @@ public class OPCUAClient : DisposableObject
     /// <summary>
     /// 当前的订阅组，组名称/组
     /// </summary>
-    private Dictionary<string, Subscription> dic_subscriptions;
+    private Dictionary<string, Subscription> dic_subscriptions = new();
 
-    private ApplicationInstance m_application;
+    private ApplicationInstance m_application = new();
 
     private ApplicationConfiguration m_configuration;
 
     private EventHandler m_ConnectComplete;
-
 
     private bool m_IsConnected;
 
@@ -78,8 +77,6 @@ public class OPCUAClient : DisposableObject
     /// </summary>
     public OPCUAClient()
     {
-        dic_subscriptions = new();
-
         var certificateValidator = new CertificateValidator();
         certificateValidator.CertificateValidation += CertificateValidation;
         SecurityConfiguration securityConfigurationcv = new SecurityConfiguration
@@ -92,7 +89,7 @@ public class OPCUAClient : DisposableObject
         certificateValidator.Update(securityConfigurationcv);
 
         // 构建应用程序配置
-        var configuration = new ApplicationConfiguration
+        m_configuration = new ApplicationConfiguration
         {
             ApplicationName = OPCUAName,
             ApplicationType = ApplicationType.Client,
@@ -171,9 +168,7 @@ public class OPCUAClient : DisposableObject
             DisableHiResClock = true
         };
 
-        configuration.Validate(ApplicationType.Client);
-        m_configuration = configuration;
-        m_application = new ApplicationInstance();
+        m_configuration.Validate(ApplicationType.Client);
         m_application.ApplicationConfiguration = m_configuration;
 
 
@@ -892,7 +887,6 @@ public class OPCUAClient : DisposableObject
     /// <returns>The new session object.</returns>
     private async Task<ISession> ConnectAsync(string serverUrl)
     {
-        // disconnect from existing session.
         Disconnect();
 
         if (m_configuration == null)
@@ -900,13 +894,12 @@ public class OPCUAClient : DisposableObject
             throw new ArgumentNullException("未初始化配置");
         }
         var useSecurity = OPCNode?.IsUseSecurity ?? true;
-        // select the best endpoint.
         EndpointDescription endpointDescription = CoreClientUtils.SelectEndpoint(serverUrl, useSecurity);
         EndpointConfiguration endpointConfiguration = EndpointConfiguration.Create(m_configuration);
 
         ConfiguredEndpoint endpoint = new ConfiguredEndpoint(null, endpointDescription, endpointConfiguration);
+        //创建本地证书
         await m_application.CheckApplicationInstanceCertificate(true, 0, 1200);
-        //var x509 = await m_configuration.SecurityConfiguration.ApplicationCertificate.Find(true);
         m_session = await Opc.Ua.Client.Session.Create(
      m_configuration,
     endpoint,
@@ -918,14 +911,12 @@ public class OPCUAClient : DisposableObject
     new string[] { });
 
 
-        // set up keep alive callback.
         m_session.KeepAlive += new KeepAliveEventHandler(Session_KeepAlive);
 
-        // update the client status
         m_IsConnected = true;
 
-        // raise an event.
-        DoConnectComplete(null);
+        m_ConnectComplete?.Invoke(this, null);
+        //如果是订阅模式，连接时添加订阅组
         if (OPCNode.ActiveSubscribe)
             AddSubscription(Guid.NewGuid().ToString(), Variables.ToArray());
         // return the new session.
@@ -933,15 +924,9 @@ public class OPCUAClient : DisposableObject
     }
 
 
-    private void DoConnectComplete(object state)
-    {
-        m_ConnectComplete?.Invoke(this, null);
-    }
-
     private async Task<OperResult<Dictionary<string, List<OPCNodeAttribute>>>> ReadNoteAttributeAsync(BrowseDescriptionCollection nodesToBrowse, ReadValueIdCollection nodesToRead, CancellationToken cancellationToken)
     {
         int startOfProperties = nodesToRead.Count;
-
 
         ReferenceDescriptionCollection references = await FormUtils.BrowseAsync(m_session, nodesToBrowse, false);
 
@@ -1032,18 +1017,13 @@ public class OPCUAClient : DisposableObject
     /// </summary>
     private void Server_ReconnectComplete(object sender, EventArgs e)
     {
-
-        // ignore callbacks from discarded objects.
         if (!Object.ReferenceEquals(sender, m_reConnectHandler))
         {
             return;
         }
-
         m_session = m_reConnectHandler.Session;
         m_reConnectHandler.SafeDispose();
         m_reConnectHandler = null;
-
-        // raise any additional notifications.
         m_ReconnectComplete?.Invoke(this, e);
 
     }
@@ -1054,23 +1034,19 @@ public class OPCUAClient : DisposableObject
         checkLock.Lock();
         try
         {
-
-            // check for events from discarded sessions.
-            if (!Object.ReferenceEquals(session, m_session))
+            if (session != m_session)
             {
                 return;
             }
 
-            // start reconnect sequence on communication error.
             if (ServiceResult.IsBad(e.Status))
             {
                 if (OPCNode?.ReconnectPeriod <= 0)
                 {
-                    UpdateStatus(true, e.CurrentTime, "连接失败 ({0})", e.Status);
-                    return;
+                    OPCNode.ReconnectPeriod = 5000;
                 }
 
-                UpdateStatus(true, e.CurrentTime, "重新连接中 in {0}s", OPCNode?.ReconnectPeriod);
+                UpdateStatus(true, e.CurrentTime, "心跳检测错误：{0}，重新连接中", e.Status.ToString());
 
                 if (m_reConnectHandler == null)
                 {
@@ -1083,10 +1059,8 @@ public class OPCUAClient : DisposableObject
                 return;
             }
 
-            // update status.
-            UpdateStatus(false, e.CurrentTime, "连接正常 [{0}]", session.Endpoint.EndpointUrl);
+            UpdateStatus(false, e.CurrentTime, "心跳检测正常 [{0}]", session.Endpoint.EndpointUrl);
 
-            // raise any additional notifications.
             m_KeepAliveComplete?.Invoke(this, e);
         }
         finally
