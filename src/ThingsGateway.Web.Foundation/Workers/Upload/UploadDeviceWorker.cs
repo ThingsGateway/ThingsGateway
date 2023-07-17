@@ -150,18 +150,27 @@ public class UploadDeviceWorker : BackgroundService
     /// </summary>
     private void RemoveAllDeviceThread()
     {
-        foreach (var deviceThread in UploadDeviceThreads)
+        try
         {
-            try
+            easyLock.Lock();
+
+            foreach (var deviceThread in UploadDeviceThreads)
             {
-                deviceThread.SafeDispose();
+                try
+                {
+                    deviceThread.SafeDispose();
+                }
+                catch (Exception ex)
+                {
+                    _logger?.LogError(ex, deviceThread.ToString());
+                }
             }
-            catch (Exception ex)
-            {
-                _logger?.LogError(ex, deviceThread.ToString());
-            }
+            UploadDeviceThreads.Clear();
         }
-        UploadDeviceThreads.Clear();
+        finally
+        {
+            easyLock.UnLock();
+        }
     }
 
     /// <summary>
@@ -170,15 +179,24 @@ public class UploadDeviceWorker : BackgroundService
     /// <returns></returns>
     private void StartAllDeviceThreads()
     {
-        if (!_stoppingToken.IsCancellationRequested)
+        try
         {
-            foreach (var item in UploadDeviceThreads)
+            easyLock.Lock();
+
+            if (!_stoppingToken.IsCancellationRequested)
             {
-                if (!_stoppingToken.IsCancellationRequested)
+                foreach (var item in UploadDeviceThreads)
                 {
-                    item.StartThread();
+                    if (!_stoppingToken.IsCancellationRequested)
+                    {
+                        item.StartThread();
+                    }
                 }
             }
+        }
+        finally
+        {
+            easyLock.UnLock();
         }
     }
     /// <summary>
@@ -187,30 +205,38 @@ public class UploadDeviceWorker : BackgroundService
     /// <returns></returns>
     private void CreatAllDeviceThreads()
     {
-        if (!_stoppingToken.IsCancellationRequested)
+        try
         {
-            var uploadDeviceRunTimes = (_uploadDeviceService.GetUploadDeviceRuntime());
-            foreach (var uploadDeviceRunTime in uploadDeviceRunTimes)
-            {
-                if (!_stoppingToken.IsCancellationRequested)
-                {
-                    try
-                    {
-                        UploadDeviceCore deviceUploadCore = new(_scopeFactory);
-                        deviceUploadCore.Init(uploadDeviceRunTime);
-                        DeviceThread(deviceUploadCore);
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError(ex, uploadDeviceRunTime.Name);
+            easyLock.Lock();
 
+            if (!_stoppingToken.IsCancellationRequested)
+            {
+                var uploadDeviceRunTimes = (_uploadDeviceService.GetUploadDeviceRuntime());
+                foreach (var uploadDeviceRunTime in uploadDeviceRunTimes)
+                {
+                    if (!_stoppingToken.IsCancellationRequested)
+                    {
+                        try
+                        {
+                            UploadDeviceCore deviceUploadCore = new(_scopeFactory);
+                            deviceUploadCore.Init(uploadDeviceRunTime);
+                            DeviceThread(deviceUploadCore);
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogError(ex, uploadDeviceRunTime.Name);
+
+                        }
                     }
                 }
+
             }
 
         }
-
-
+        finally
+        {
+            easyLock.UnLock();
+        }
     }
 
     private UploadDeviceThread DeviceThread(UploadDeviceCore deviceUploadCore)

@@ -147,6 +147,7 @@ public class HistoryValueWorker : BackgroundService
     /// </summary>
     public ConcurrentList<CancellationTokenSource> StoppingTokens = new();
     private Task<Task> HistoryValueTask;
+    private EasyLock easyLock { get; set; } = new();
     /// <summary>
     /// 离线缓存
     /// </summary>
@@ -330,55 +331,71 @@ public class HistoryValueWorker : BackgroundService
 
     internal void Start()
     {
-        foreach (var device in _globalDeviceData.CollectDevices)
+        try
         {
-            device.DeviceVariableRunTimes?.Where(a => a.HisEnable == true)?.ForEach(v => { v.VariableCollectChange += DeviceVariableCollectChange; });
-            device.DeviceVariableRunTimes?.Where(a => a.HisEnable == true)?.ForEach(v => { v.VariableValueChange += DeviceVariableValueChange; });
-        }
-        StoppingTokens.Add(new());
-        Init();
-        HistoryValueTask.Start();
+            easyLock.Lock();
 
+            foreach (var device in _globalDeviceData.CollectDevices)
+            {
+                device.DeviceVariableRunTimes?.Where(a => a.HisEnable == true)?.ForEach(v => { v.VariableCollectChange += DeviceVariableCollectChange; });
+                device.DeviceVariableRunTimes?.Where(a => a.HisEnable == true)?.ForEach(v => { v.VariableValueChange += DeviceVariableValueChange; });
+            }
+            StoppingTokens.Add(new());
+            Init();
+            HistoryValueTask.Start();
+        }
+        finally
+        {
+            easyLock.UnLock();
+        }
     }
 
     internal void Stop(IEnumerable<CollectDeviceRunTime> devices)
     {
-        foreach (var device in devices)
-        {
-            device.DeviceVariableRunTimes?.Where(a => a.HisEnable == true)?.ForEach(v => { v.VariableCollectChange -= DeviceVariableCollectChange; });
-            device.DeviceVariableRunTimes?.Where(a => a.HisEnable == true)?.ForEach(v => { v.VariableValueChange -= DeviceVariableValueChange; });
-        }
-
-        CancellationTokenSource StoppingToken = StoppingTokens.LastOrDefault();
-        StoppingToken?.Cancel();
-
-        _logger?.LogInformation($"历史数据线程停止中");
-        var hisHisResult = HistoryValueTask?.GetAwaiter().GetResult();
-        bool? hisTaskResult = false;
         try
         {
-            hisTaskResult = hisHisResult?.Wait(10000);
-        }
-        catch (ObjectDisposedException)
-        {
+            easyLock.Lock();
 
-        }
-        catch (Exception ex)
-        {
-            _logger?.LogInformation(ex, "等待线程停止错误");
-        }
-        if (hisTaskResult == true)
-        {
-            _logger?.LogInformation($"历史数据线程已停止");
-        }
-        else
-        {
-            _logger?.LogInformation($"历史数据线程停止超时，已强制取消");
-        }
-        HistoryValueTask?.SafeDispose();
-        StoppingToken?.SafeDispose();
-        StoppingTokens.Remove(StoppingToken);
+            foreach (var device in devices)
+            {
+                device.DeviceVariableRunTimes?.Where(a => a.HisEnable == true)?.ForEach(v => { v.VariableCollectChange -= DeviceVariableCollectChange; });
+                device.DeviceVariableRunTimes?.Where(a => a.HisEnable == true)?.ForEach(v => { v.VariableValueChange -= DeviceVariableValueChange; });
+            }
 
+            CancellationTokenSource StoppingToken = StoppingTokens.LastOrDefault();
+            StoppingToken?.Cancel();
+
+            _logger?.LogInformation($"历史数据线程停止中");
+            var hisHisResult = HistoryValueTask?.GetAwaiter().GetResult();
+            bool? hisTaskResult = false;
+            try
+            {
+                hisTaskResult = hisHisResult?.Wait(10000);
+            }
+            catch (ObjectDisposedException)
+            {
+
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogInformation(ex, "等待线程停止错误");
+            }
+            if (hisTaskResult == true)
+            {
+                _logger?.LogInformation($"历史数据线程已停止");
+            }
+            else
+            {
+                _logger?.LogInformation($"历史数据线程停止超时，已强制取消");
+            }
+            HistoryValueTask?.SafeDispose();
+            StoppingToken?.SafeDispose();
+            StoppingTokens.Remove(StoppingToken);
+        }
+        finally
+        {
+            easyLock.UnLock();
+        }
     }
     private void DeviceVariableCollectChange(DeviceVariableRunTime variable)
     {
