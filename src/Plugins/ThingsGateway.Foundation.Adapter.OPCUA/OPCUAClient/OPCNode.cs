@@ -18,7 +18,7 @@ public class OPCNode
     public bool ActiveSubscribe { get; set; } = true;
     public int GroupSize { get; set; } = 500;
     public double DeadBand { get; set; } = 0;
-    public int ReconnectPeriod { get; set; } = 5000;
+    public int KeepAliveInterval { get; set; } = 60000;
     public bool IsUseSecurity { get; set; } = true;
 
     public override string ToString()

@@ -63,9 +63,9 @@ public class OPCUAClientProperty : CollectDriverPropertyBase
 
 
     /// <summary>
-    /// 重连频率
+    /// 心跳频率
     /// </summary>
-    [DeviceProperty("重连频率", "")] public int ReconnectPeriod { get; set; } = 5000;
+    [DeviceProperty("心跳频率", "")] public int KeepAliveInterval { get; set; } = 60000;
 
     public override bool IsShareChannel { get; set; } = false;
     public override ShareChannelEnum ShareChannel => ShareChannelEnum.None;

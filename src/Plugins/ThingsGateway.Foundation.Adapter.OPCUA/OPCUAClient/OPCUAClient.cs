@@ -479,7 +479,6 @@ public class OPCUAClient : DisposableObject
     /// </summary>
     public void Disconnect()
     {
-        UpdateStatus(false, DateTime.UtcNow, "断开连接");
 
         // stop any reconnect operation.
         if (m_reConnectHandler != null)
@@ -491,6 +490,7 @@ public class OPCUAClient : DisposableObject
         // disconnect any existing session.
         if (m_session != null)
         {
+            UpdateStatus(false, DateTime.UtcNow, "断开连接");
             m_session.Close(10000);
             m_session = null;
         }
@@ -910,7 +910,9 @@ public class OPCUAClient : DisposableObject
     UserIdentity,
     new string[] { });
 
+        UpdateStatus(false, DateTime.UtcNow, "连接成功");
 
+        m_session.KeepAliveInterval = OPCNode.KeepAliveInterval == 0 ? 60000 : OPCNode.KeepAliveInterval;
         m_session.KeepAlive += new KeepAliveEventHandler(Session_KeepAlive);
 
         m_IsConnected = true;
@@ -1041,19 +1043,15 @@ public class OPCUAClient : DisposableObject
 
             if (ServiceResult.IsBad(e.Status))
             {
-                if (OPCNode?.ReconnectPeriod <= 0)
-                {
-                    OPCNode.ReconnectPeriod = 5000;
-                }
-
                 UpdateStatus(true, e.CurrentTime, "心跳检测错误：{0}，重新连接中", e.Status.ToString());
 
+                // 上次重连未完成前不会再重试
                 if (m_reConnectHandler == null)
                 {
                     m_ReconnectStarting?.Invoke(this, e);
 
                     m_reConnectHandler = new SessionReconnectHandler();
-                    m_reConnectHandler.BeginReconnect(m_session, (OPCNode?.ReconnectPeriod ?? 5000), Server_ReconnectComplete);
+                    m_reConnectHandler.BeginReconnect(m_session, m_session.KeepAliveInterval, Server_ReconnectComplete);
                 }
 
                 return;
