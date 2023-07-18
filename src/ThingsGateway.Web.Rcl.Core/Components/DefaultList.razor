@@ -13,9 +13,9 @@
 @namespace ThingsGateway.Web.Rcl.Core
 @typeparam TItem where TItem : IDefaultItem<TItem>
 
-<MList Expand Dense
-       Nav
-       Class="@ClassString" Style="@StyleString">
+<MList Class="@ClassString" Style="@StyleString"
+       Expand Dense Routable=@Routable
+       Nav  >
     @foreach (var item in Items)
     {
         @*副标题*@
@@ -54,6 +54,8 @@
     [Parameter]
     public RenderFragment<TItem> ItemContent { get; set; }
 
+    [Parameter]
+    public bool Routable { get; set; }
     [Parameter]
     public string ClassString { get; set; }
     [Parameter]
