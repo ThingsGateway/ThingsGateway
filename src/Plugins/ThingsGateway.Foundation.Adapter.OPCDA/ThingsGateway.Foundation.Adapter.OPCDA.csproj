@@ -5,7 +5,7 @@
 		<TargetFrameworks>net4.6.2;net6.0;net7.0</TargetFrameworks>
 		<NoWarn>CA1416;CS8625;1591;</NoWarn>
 		<!--<GenerateDocumentationFile>True</GenerateDocumentationFile>-->
-		<Version>1.7.2</Version>
+		<Version>1.7.3</Version>
 		<Platforms>AnyCPU</Platforms>
 		<OutputType>Library</OutputType>
 		

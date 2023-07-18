@@ -4,7 +4,7 @@
 		<LangVersion>latestMajor</LangVersion>
 		<TargetFrameworks>net4.6.2;net6.0;net7.0</TargetFrameworks>
 		<!--<GenerateDocumentationFile>True</GenerateDocumentationFile>-->
-		<Version>1.7.2</Version>
+		<Version>1.7.3</Version>
 		<Title>ThingsGateway.Foundation.Adapter.Siemens</Title>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<Authors>Diego</Authors>
