@@ -37,7 +37,7 @@
                     </MSystemBar>
                 }
                 <Logo HeightInt=@(IsMobile?UserResoures.Themes.LayoutPrpo.AppBarHeight:UserResoures.Themes.LayoutPrpo.AppBarHeight+UserResoures.Themes.LayoutPrpo.PageTabsHeight) />
-                <DefaultList ClassString="overflow-y-auto"
+                <DefaultList ClassString="overflow-y-auto" Routable
                              StyleString=@($"height: calc(100vh - {UserResoures.Themes.LayoutPrpo.AppBarHeight+UserResoures.Themes.LayoutPrpo.PageTabsHeight}px);")
                              Items="Navs" />
             </MNavigationDrawer>
