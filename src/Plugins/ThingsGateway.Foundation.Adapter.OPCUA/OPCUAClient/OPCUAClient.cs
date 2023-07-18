@@ -283,11 +283,17 @@ public class OPCUAClient : DisposableObject
 
         m_session.AddSubscription(m_subscription);
         m_subscription.Create();
-        foreach (var item in m_subscription.MonitoredItems.Where(a => a.Status.Error?.StatusCode == Opc.Ua.StatusCodes.BadFilterNotAllowed))
+        foreach (var item in m_subscription.MonitoredItems.Where(a => a.Status.Error!=null&& StatusCode.IsBad( a.Status.Error.StatusCode)))
         {
             item.Filter = new DataChangeFilter() { DeadbandValue = OPCNode.DeadBand, DeadbandType = (int)DeadbandType.None, Trigger = DataChangeTrigger.StatusValue };
         }
         m_subscription.ApplyChanges();
+
+        var iserror = m_subscription.MonitoredItems.Any(a => a.Status.Error != null && StatusCode.IsBad(a.Status.Error.StatusCode));
+        if(iserror)
+        {
+            UpdateStatus(iserror, DateTime.UtcNow, m_subscription.MonitoredItems.FirstOrDefault(a => a.Status.Error != null && StatusCode.IsBad(a.Status.Error.StatusCode)).Status.Error.ToString());
+        }
 
         lock (dic_subscriptions)
         {
@@ -903,7 +909,7 @@ public class OPCUAClient : DisposableObject
         m_session = await Opc.Ua.Client.Session.Create(
      m_configuration,
     endpoint,
-    true,
+    false,
     false,
     (string.IsNullOrEmpty(OPCUAName)) ? m_configuration.ApplicationName : OPCUAName,
     60000,
