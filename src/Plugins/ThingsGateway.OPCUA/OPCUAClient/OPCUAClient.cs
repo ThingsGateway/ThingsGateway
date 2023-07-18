@@ -183,7 +183,7 @@ public class OPCUAClient : CollectBase
         oPCNode.UpdateRate = driverPropertys.UpdateRate;
         oPCNode.DeadBand = driverPropertys.DeadBand;
         oPCNode.GroupSize = driverPropertys.GroupSize;
-        oPCNode.ReconnectPeriod = driverPropertys.ReconnectPeriod;
+        oPCNode.KeepAliveInterval = driverPropertys.KeepAliveInterval;
         oPCNode.IsUseSecurity = driverPropertys.IsUseSecurity;
         oPCNode.ActiveSubscribe = driverPropertys.ActiveSubscribe;
 

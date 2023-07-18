@@ -49,7 +49,7 @@ namespace ThingsGateway.OPCUA
             data.DevicePropertys.Add(new() { PropertyName = nameof(OPCUAClientProperty.DeadBand), Value = PLC.OPCNode.DeadBand.ToString(), Description = typeof(OPCUAClientProperty).GetProperty(nameof(OPCUAClientProperty.DeadBand)).GetCustomAttribute<DevicePropertyAttribute>().Description });
             data.DevicePropertys.Add(new() { PropertyName = nameof(OPCUAClientProperty.GroupSize), Value = PLC.OPCNode.GroupSize.ToString(), Description = typeof(OPCUAClientProperty).GetProperty(nameof(OPCUAClientProperty.GroupSize)).GetCustomAttribute<DevicePropertyAttribute>().Description });
             data.DevicePropertys.Add(new() { PropertyName = nameof(OPCUAClientProperty.UpdateRate), Value = PLC.OPCNode.UpdateRate.ToString(), Description = typeof(OPCUAClientProperty).GetProperty(nameof(OPCUAClientProperty.UpdateRate)).GetCustomAttribute<DevicePropertyAttribute>().Description });
-            data.DevicePropertys.Add(new() { PropertyName = nameof(OPCUAClientProperty.ReconnectPeriod), Value = PLC.OPCNode.ReconnectPeriod.ToString(), Description = typeof(OPCUAClientProperty).GetProperty(nameof(OPCUAClientProperty.ReconnectPeriod)).GetCustomAttribute<DevicePropertyAttribute>().Description });
+            data.DevicePropertys.Add(new() { PropertyName = nameof(OPCUAClientProperty.KeepAliveInterval), Value = PLC.OPCNode.KeepAliveInterval.ToString(), Description = typeof(OPCUAClientProperty).GetProperty(nameof(OPCUAClientProperty.KeepAliveInterval)).GetCustomAttribute<DevicePropertyAttribute>().Description });
             return data;
         }
 

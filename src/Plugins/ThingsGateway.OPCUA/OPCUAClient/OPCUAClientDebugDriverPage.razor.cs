@@ -13,7 +13,6 @@
 using Newtonsoft.Json.Linq;
 
 using Opc.Ua;
-using Opc.Ua.Client;
 
 using ThingsGateway.Core;
 
@@ -138,11 +137,6 @@ namespace ThingsGateway.OPCUA
                     Messages.Clear();
                 }
             }
-        }
-
-        private void callback(string arg1, MonitoredItem arg2, MonitoredItemNotificationEventArgs arg3)
-        {
-
         }
 
         private async Task DownDeviceExport()
