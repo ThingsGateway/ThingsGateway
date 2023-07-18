@@ -10,8 +10,6 @@
 //------------------------------------------------------------------------------
 #endregion
 
-using Newtonsoft.Json.Linq;
-
 using Opc.Ua;
 
 using ThingsGateway.Core;
@@ -54,15 +52,10 @@ namespace ThingsGateway.OPCUA
         protected override void OnInitialized()
         {
             OPC = new ThingsGateway.Foundation.Adapter.OPCUA.OPCUAClient();
-            OPC.DataChangedHandler += Info_DataChangedHandler;
             OPC.OpcStatusChange += Info_OpcStatusChange;
             base.OnInitialized();
         }
 
-        private void Info_DataChangedHandler((NodeId id, DataValue dataValue, JToken jToken) item)
-        {
-            LogAction?.Invoke(DateTime.Now.ToDateTimeF() + item.id + ":" + item.jToken);
-        }
 
         private void Info_OpcStatusChange(object sender, OPCUAStatusEventArgs e)
         {
