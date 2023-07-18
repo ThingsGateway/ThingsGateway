@@ -13,14 +13,14 @@
 		<PackageReference Include="Furion.Extras.ObjectMapper.Mapster" Version="4.8.8.38" />
 		<PackageReference Include="Furion.Pure" Version="4.8.8.38" />
 		<PackageReference Include="MiniExcel" Version="1.31.0" />
-		<PackageReference Include="SqlSugarCore" Version="5.1.4.89" />
+		<PackageReference Include="SqlSugarCore" Version="5.1.4.91" />
 		<PackageReference Include="BouncyCastle.NetCore" Version="1.9.0" />
 		<PackageReference Include="NewLife.Core" Version="10.4.2023.707" />
 		<PackageReference Include="UAParser" Version="3.1.47" />
 		<PackageReference Include="Yitter.IdGenerator" Version="1.0.14" />
 		<PackageReference Include="Microsoft.Data.Sqlite" Version="7.0.9" />
 		<PackageReference Include="CodingSeb.ExpressionEvaluator" Version="1.4.39" />
-		<PackageReference Include="Hardware.Info" Version="11.1.0.1" />
+		<PackageReference Include="Hardware.Info" Version="11.1.1" />
 		<PackageReference Include="CS-Script" Version="4.8.1" />
 		<PackageReference Include="IGeekFan.AspNetCore.Knife4jUI" Version="0.0.13" />
 		<!--CS-Script与Furion冲突，直接安装覆盖版本-->
