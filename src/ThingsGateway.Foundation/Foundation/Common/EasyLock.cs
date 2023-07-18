@@ -28,13 +28,13 @@ public sealed class EasyLock : DisposableObject
     /// <summary>
     /// 进入锁
     /// </summary>
-    public void Lock()
+    public void Lock(bool continueOnCapturedContext = false)
     {
         if (Interlocked.Increment(ref m_waiters) == 1)
         {
             return;
         }
-        m_waiterLock.Value.WaitOneAsync().GetAwaiter().GetResult();
+        m_waiterLock.Value.WaitOneAsync().ConfigureAwait(continueOnCapturedContext).GetAwaiter().GetResult();
     }
     /// <summary>
     /// 进入锁

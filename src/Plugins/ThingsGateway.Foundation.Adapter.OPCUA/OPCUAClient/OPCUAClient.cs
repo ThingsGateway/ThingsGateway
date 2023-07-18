@@ -906,7 +906,7 @@ public class OPCUAClient : DisposableObject
     true,
     false,
     (string.IsNullOrEmpty(OPCUAName)) ? m_configuration.ApplicationName : OPCUAName,
-    5000,
+    60000,
     UserIdentity,
     new string[] { });
 
@@ -1023,6 +1023,7 @@ public class OPCUAClient : DisposableObject
         {
             return;
         }
+
         m_session = m_reConnectHandler.Session;
         m_reConnectHandler.SafeDispose();
         m_reConnectHandler = null;
@@ -1033,10 +1034,10 @@ public class OPCUAClient : DisposableObject
     private void Session_KeepAlive(ISession session, KeepAliveEventArgs e)
     {
         if (checkLock.IsWaitting) { return; }
-        checkLock.Lock();
+        checkLock.Lock(true);
         try
         {
-            if (session != m_session)
+            if (!Object.ReferenceEquals(session, m_session))
             {
                 return;
             }
