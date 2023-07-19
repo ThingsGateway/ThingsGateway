@@ -12,7 +12,7 @@
 
 @namespace ThingsGateway.Web.Rcl.Core
 @typeparam TItem where TItem : IDefaultItem<TItem>
-<MListGroup NoAction PrependIcon=@Item.Icon
+<MListGroup NoAction PrependIcon=@Item.Icon Group=_group
             SubGroup="SubGroup">
     <ActivatorContent>
         <NavItemContent Item="Item" />
@@ -52,5 +52,27 @@
     [Parameter]
     public bool SubGroup { get; set; }
 
+    private List<string> _group = new();
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
 
+        _group = GenGroup(Item.Children);
+    }
+
+    List<string> GenGroup(List<TItem> items)
+    {
+        if (items == null || !items.Any()) return new List<string>();
+
+        var groups = new List<string>();
+
+        foreach (var item in items)
+        {
+            groups.AddRange(GenGroup(item.Children));
+            if (item.HasChildren()) continue;
+            groups.Add(item.Href);
+        }
+
+        return groups;
+    }
 }
