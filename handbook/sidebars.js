@@ -63,7 +63,7 @@ module.exports = {
     },
     {
       type: "doc",
-      id:"startguide",
+      id: "startguide",
       label: "04、入门指南",
     },
     {
@@ -214,7 +214,7 @@ module.exports = {
           id: "pluginmodbusserver",
           label: "10.2 ModbusServer"
         },
-        
+
         {
           type: "doc",
           id: "pluginmqttserver",
@@ -259,30 +259,9 @@ module.exports = {
       ]
     },
     {
-      type: "category",
-      label: "12、案例",
-      items: [
-        {
-          type: "doc",
-          id: "modbustcpdemo/modbustcpdemo",
-          label: "12.1 采集ModbusTcp/通用采集教程"
-        },
-        {
-          type: "doc",
-          id: "opcdademo/opcdademo",
-          label: "12.2 采集OPCDA"
-        },
-        {
-          type: "doc",
-          id: "opcuademo/opcuademo",
-          label: "12.3 采集OPCUA"
-        },
-        {
-          type: "doc",
-          id: "modbusserverdemo/modbusserverdemo",
-          label: "12.4 ModbusServer"
-        },
-      ]
+      type: "link",
+      label: "12、案例合集",
+      href: "https://www.cnblogs.com/ThingsGateway/collections/1104"
     },
   ]
 };
