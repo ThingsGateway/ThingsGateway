@@ -11,6 +11,8 @@
 #endregion
 
 
+using ThingsGateway.Core;
+
 namespace ThingsGateway.Web.Foundation;
 
 /// <summary>
@@ -119,11 +121,22 @@ public class CollectDeviceRunTime : CollectDevice
     /// </summary>
     public event DelegateOnDeviceChanged DeviceStatusCahnge;
 
+    private string lastErrorMessage;
     /// <summary>
     /// 最后一次失败原因
     /// </summary>
     [Description("最后一次失败原因")]
-    public string LastErrorMessage { get; set; }
+    public string LastErrorMessage
+    {
+        get
+        {
+            return lastErrorMessage;
+        }
+        set
+        {
+            lastErrorMessage = DateTime.Now.ToDateTimeF() + "-" + value;
+        }
+    }
 }
 /// <summary>
 /// 设备变化委托
