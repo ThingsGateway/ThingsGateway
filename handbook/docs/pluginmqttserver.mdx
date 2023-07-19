@@ -56,9 +56,9 @@ title: MqttServer
     //添加自定义值
     newModelList.Add(new
   {
-      customName=item.name,//变量名称
-      customValue=item.value,//变量值
-      customCollectTime=item.collectTime.ToString("yyyy-MM-dd HH:mm:ss fffffff"), //采集时间，这里格式化为自定义时间格式
+      customName=item.Name,//变量名称
+      customValue=item.Value,//变量值
+      customCollectTime=item.CollectTime.ToString("yyyy-MM-dd HH:mm:ss fffffff"), //采集时间，这里格式化为自定义时间格式
   });
 
   }
