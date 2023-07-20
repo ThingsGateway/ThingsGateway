@@ -34,4 +34,5 @@ public class ModbusServerProperty : UpDriverPropertyBase
     public DataFormat DataFormat { get; set; }
     [DeviceProperty("允许写入", "")]
     public bool DeviceRpcEnable { get; set; }
+    [DeviceProperty("线程循环间隔", "最小10ms")] public int CycleInterval { get; set; } = 100;
 }
