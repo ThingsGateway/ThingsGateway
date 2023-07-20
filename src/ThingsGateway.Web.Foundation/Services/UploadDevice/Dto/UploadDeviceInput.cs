@@ -27,7 +27,10 @@ public class UploadDeviceAddInput : UploadDeviceEditInput
     /// <inheritdoc/>
     [MinValue(1, ErrorMessage = "插件不能为空")]
     public override long PluginId { get; set; }
-
+    /// <inheritdoc/>
+    public override bool IsLogOut { get; set; } = true;
+    /// <inheritdoc/>
+    public override bool Enable { get; set; } = true;
 }
 /// <summary>
 /// 上传设备修改DTO

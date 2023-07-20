@@ -20,9 +20,9 @@
 		<PackageReference Include="Yitter.IdGenerator" Version="1.0.14" />
 		<PackageReference Include="Microsoft.Data.Sqlite" Version="7.0.9" />
 		<PackageReference Include="CodingSeb.ExpressionEvaluator" Version="1.4.39" />
-		<PackageReference Include="Hardware.Info" Version="11.1.1" />
+		<PackageReference Include="Hardware.Info" Version="11.1.1.1" />
 		<PackageReference Include="CS-Script" Version="4.8.1" />
-		<PackageReference Include="IGeekFan.AspNetCore.Knife4jUI" Version="0.0.13" />
+		<PackageReference Include="IGeekFan.AspNetCore.Knife4jUI" Version="0.0.14" />
 		<!--CS-Script与Furion冲突，直接安装覆盖版本-->
 		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.6.0" />
 	</ItemGroup>

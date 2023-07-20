@@ -118,15 +118,23 @@ public class MemoryVariableWorker : BackgroundService
                         var isSuccess = true;
                         foreach (var item in _globalDeviceData.MemoryVariables)
                         {
-                            //变量内部已经做了表达式转换，直接赋值0
-                            var operResult = item.SetValue(0);
-                            if (!operResult.IsSuccess)
+                            if (!item.ReadExpressions.IsNullOrEmpty())
                             {
-                                if (StatuString.IsSuccess)
-                                    _logger?.LogWarning(operResult.Message, ToString());
-                                isSuccess = false;
-                                StatuString = operResult;
+                                //变量内部已经做了表达式转换，直接赋值0
+                                var operResult = item.SetValue(0);
+                                if (!operResult.IsSuccess)
+                                {
+                                    if (StatuString.IsSuccess)
+                                        _logger?.LogWarning(operResult.Message, ToString());
+                                    isSuccess = false;
+                                    StatuString = operResult;
+                                }
                             }
+                            else
+                            {
+
+                            }
+
                         }
                         if (isSuccess)
                             StatuString = OperResult.CreateSuccessResult();
