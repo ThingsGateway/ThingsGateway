@@ -260,15 +260,28 @@ public class KafkaProducer : UpLoadBase
         {
             if (!Library.IsLoaded)
             {
+                string fileEx = ".dll";
                 string osStr = "win-";
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
                     osStr = "win-";
+                    fileEx = ".dll";
+                }
                 else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                {
                     osStr = "linux-";
+                    fileEx = ".so";
+                }
                 else
+                {
+
                     osStr = "osx-";
+                    fileEx = ".dylib";
+                }
                 osStr += RuntimeInformation.ProcessArchitecture.ToString().ToLower();
-                var pathToLibrd = System.IO.Path.Combine(AppContext.BaseDirectory, "Plugins", "ThingsGateway.Kafka", "runtimes", osStr, "native", "librdkafka");
+
+                var pathToLibrd = System.IO.Path.Combine(AppContext.BaseDirectory, "Plugins", "ThingsGateway.Kafka", "runtimes", osStr, "native", $"librdkafka{fileEx}");
+                _logger.LogInformation($"路径：{pathToLibrd}");
                 Library.Load(pathToLibrd);
             }
             producer = producerBuilder.Build();
