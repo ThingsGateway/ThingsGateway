@@ -344,6 +344,8 @@ public static class ReadWriteDevicesExHelpers
     /// </summary>
     public static object GetDynamicDataFormBytes(this IThingsGatewayBitConverter thingsGatewayBitConverter, string address, Type type, byte[] bytes, int offset = 0)
     {
+        if (address == null)
+            address = string.Empty;
         if (type == typeof(bool))
             return thingsGatewayBitConverter.GetBoolDataFormBytes(address, bytes, offset);
         else if (type == typeof(byte))

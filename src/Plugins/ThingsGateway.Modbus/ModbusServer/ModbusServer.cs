@@ -59,7 +59,20 @@ public class ModbusServer : UpLoadBase
                 await _plc.WriteAsync(item.Item1, item.Item2.DataType, item.Item2.Value?.ToString(), cancellationToken);
             }
         }
-        await Task.Delay(100, cancellationToken);
+        if (driverPropertys.CycleInterval > UploadDeviceThread.CycleInterval + 50)
+        {
+            try
+            {
+                await Task.Delay(driverPropertys.CycleInterval - UploadDeviceThread.CycleInterval, cancellationToken);
+            }
+            catch
+            {
+            }
+        }
+        else
+        {
+
+        }
     }
 
     public override OperResult IsConnected()
@@ -160,9 +173,21 @@ public class ModbusServer : UpLoadBase
                 GetPropertyValue(tag.Value, nameof(variablePropertys.VariableRpcEnable)).ToBoolean()
                 && driverPropertys.DeviceRpcEnable;
             if (!enable) return new OperResult("不允许写入");
-            var result = await RpcCore.InvokeDeviceMethodAsync($"{nameof(ModbusServer)}-{CurDevice.Name}-{client.IP + ":" + client.Port}",
-            new(tag.Value.Name, thingsGatewayBitConverter.GetDynamicDataFormBytes(tag.Value.VariableAddress, tag.Value.DataType, bytes).ToString()), CancellationToken.None);
-            return result;
+            var type = GetPropertyValue(tag.Value, nameof(ModbusServerVariableProperty.ModbusType));
+            if (Enum.TryParse<DataTypeEnum>(type, out DataTypeEnum result))
+            {
+                var result1 = await RpcCore.InvokeDeviceMethodAsync($"{nameof(ModbusServer)}-{CurDevice.Name}-{client.IP + ":" + client.Port}",
+           new(tag.Value.Name, thingsGatewayBitConverter.GetDynamicDataFormBytes(tag.Value.VariableAddress ?? string.Empty, result.GetSystemType(), bytes).ToString()), CancellationToken.None);
+
+                return result1;
+            }
+            else
+            {
+                var result1 = await RpcCore.InvokeDeviceMethodAsync($"{nameof(ModbusServer)}-{CurDevice.Name}-{client.IP + ":" + client.Port}",
+new(tag.Value.Name, thingsGatewayBitConverter.GetDynamicDataFormBytes(tag.Value.VariableAddress ?? string.Empty, tag.Value.DataType, bytes).ToString()), CancellationToken.None);
+                return result1;
+
+            }
         }
         catch (Exception ex)
         {
