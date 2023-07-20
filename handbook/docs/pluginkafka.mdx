@@ -3,6 +3,27 @@ id: pluginkafka
 title: Kafka消息生产
 ---
 
+:::tip `须知`
+
+插件使用librdkafka,注意在非windows系统中需按系统安装c库
+
+On Mac OSX, install librdkafka with homebrew:
+```
+$ brew install librdkafka
+```
+On Debian and Ubuntu, install librdkafka from the Confluent APT repositories, see instructions here and then install librdkafka:
+```
+$ apt install librdkafka-dev
+
+```
+On RedHat, CentOS, Fedora, install librdkafka from the Confluent YUM repositories, instructions here and then install librdkafka:
+```
+$ yum install librdkafka-devel
+```
+For other platforms, follow the source building instructions below.
+:::
+
+
 ## 一、设备扩展属性
 
 <img src={require('../static/img/docs/pluginkafka-1.png').default} width="300" />
