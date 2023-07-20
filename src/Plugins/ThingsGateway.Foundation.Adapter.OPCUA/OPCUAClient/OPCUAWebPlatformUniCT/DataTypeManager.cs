@@ -1126,8 +1126,8 @@ public class DataTypeManager
     public DataValue GetDataValueFromVariableState(JToken variableState, VariableNode variableNode)
     {
         int actualValueRank = variableState.CalculateActualValueRank();
-        if (!ValueRanks.IsValid(actualValueRank, variableNode.ValueRank))
-            throw new("Rank of the Value provided does not match the Variable ValueRank");
+        //if (!ValueRanks.IsValid(actualValueRank, variableNode.ValueRank))
+        //    throw new("Rank of the Value provided does not match the Variable ValueRank");
 
         PlatformJsonDecoder platformJsonDecoder;
         var type = TypeInfo.GetBuiltInType(variableNode.DataType, _session.SystemContext.TypeTable);
