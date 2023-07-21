@@ -7,8 +7,8 @@
 [![NuGet(ThingsGateway)](https://img.shields.io/nuget/v/ThingsGateway.Foundation.svg?label=ThingsGateway.Foundation)](https://www.nuget.org/packages/kimdiego/)
 [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 [![star](https://gitee.com/diego2098/ThingsGateway/badge/star.svg)](https://gitee.com/diego2098/ThingsGateway/stargazers) 
-[![star](https://gitee.com/diego2098/ThingsGateway/badge/fork.svg)](https://gitee.com/diego2098/ThingsGateway/members) 
-![star](https://img.shields.io/badge/QQ群-605534569-blue)
+[![fork](https://gitee.com/diego2098/ThingsGateway/badge/fork.svg)](https://gitee.com/diego2098/ThingsGateway/members) 
+![qq](https://img.shields.io/badge/QQ群-605534569-blue)
 
 </div>  
 </div>

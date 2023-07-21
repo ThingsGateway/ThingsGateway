@@ -166,8 +166,10 @@ public class CollectDeviceThread : IDisposable
             {
                 return;
             }
-            CancellationTokenSource StoppingToken = StoppingTokens.LastOrDefault();
-            StoppingToken?.Cancel();
+            foreach (var token in StoppingTokens)
+            {
+                token.Cancel();
+            }
             bool? taskResult = false;
             try
             {
@@ -188,14 +190,14 @@ public class CollectDeviceThread : IDisposable
                     device.Logger?.LogInformation($"{device.Device.Name}采集线程停止超时，已强制取消");
                 }
             }
-            StoppingToken?.SafeDispose();
-
+            foreach (var token in StoppingTokens)
+            {
+                token?.SafeDispose();
+            }
             DeviceTask?.SafeDispose();
             DeviceTask = null;
-            if (StoppingToken != null)
-            {
-                StoppingTokens.Remove(StoppingToken);
-            }
+            StoppingTokens.Clear();
+
         }
     }
     /// <summary>

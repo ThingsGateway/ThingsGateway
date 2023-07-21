@@ -91,6 +91,7 @@ public class CollectDeviceWorker : BackgroundService
             RemoveAllDeviceThread();
             await CreatAllDeviceThreadsAsync();
             StartAllDeviceThreads();
+            _logger.LogInformation("启动其他服务线程");
             StartOtherHostService();
         }
         catch (Exception ex)
@@ -313,7 +314,7 @@ public class CollectDeviceWorker : BackgroundService
     /// </summary>
     private void StartOtherHostService()
     {
-        using var scope = _scopeFactory.CreateScope();
+        var scope = _scopeFactory.CreateScope();
         var alarmHostService = scope.GetBackgroundService<AlarmWorker>();
         var historyValueService = scope.GetBackgroundService<HistoryValueWorker>();
         alarmHostService?.Start();
@@ -330,8 +331,7 @@ public class CollectDeviceWorker : BackgroundService
     {
         if (_globalDeviceData.CollectDevices?.Count > 0)
         {
-            using var scope = _scopeFactory.CreateScope();
-
+            var scope = _scopeFactory.CreateScope();
             var alarmHostService = scope.GetBackgroundService<AlarmWorker>();
             var historyValueService = scope.GetBackgroundService<HistoryValueWorker>();
             alarmHostService?.Stop(_globalDeviceData.CollectDevices);

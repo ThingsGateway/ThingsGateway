@@ -58,7 +58,7 @@ public class UploadDeviceCore : DisposableObject
     {
 
         _scopeFactory = scopeFactory;
-        using var scope = scopeFactory.CreateScope();
+        var scope = scopeFactory.CreateScope();
 
         _pluginService = scope.ServiceProvider.GetService<PluginSingletonService>();
         _driverPluginService = scope.ServiceProvider.GetService<IDriverPluginService>();
@@ -258,7 +258,7 @@ public class UploadDeviceCore : DisposableObject
         try
         {
             _device = device;
-            using var scope = _scopeFactory.CreateScope();
+            var scope = _scopeFactory.CreateScope();
             var loggerFactory = scope.ServiceProvider.GetRequiredService<ILoggerFactory>();
             _logger = loggerFactory.CreateLogger("上传设备:" + _device.Name);
             //更新插件信息

@@ -303,7 +303,7 @@ public class CollectDeviceCore : DisposableObject
                 isUpDevice = true;
             }
             _device = device;
-            using var scope = _scopeFactory.CreateScope();
+            var scope = _scopeFactory.CreateScope();
             var loggerFactory = scope.ServiceProvider.GetRequiredService<ILoggerFactory>();
             _logger = loggerFactory.CreateLogger("采集设备:" + _device.Name);
             //更新插件信息

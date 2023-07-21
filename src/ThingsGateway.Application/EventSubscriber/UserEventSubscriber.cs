@@ -36,7 +36,7 @@ namespace ThingsGateway.Application
         public async Task DeleteUserCacheByRoleIds(EventHandlerExecutingContext context)
         {
             var roleIds = (List<long>)context.Source.Payload;//获取角色ID
-                                                             // 创建新的作用域
+            // 创建新的作用域
             using var scope = _services.CreateScope();
             // 解析角色服务
             var relationService = scope.ServiceProvider.GetRequiredService<IRelationService>();

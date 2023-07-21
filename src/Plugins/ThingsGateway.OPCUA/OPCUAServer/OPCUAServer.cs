@@ -27,16 +27,6 @@ using ThingsGateway.Web.Foundation;
 using TouchSocket.Core;
 
 namespace ThingsGateway.OPCUA;
-/// <inheritdoc/>
-public class OPCUAServerVariableProperty : VariablePropertyBase
-{
-    /// <summary>
-    /// 数据类型
-    /// </summary>
-    [VariableProperty("数据类型", "")]
-    public DataTypeEnum DataTypeEnum { get; set; } = DataTypeEnum.Object;
-
-}
 
 
 /// <summary>
@@ -138,7 +128,6 @@ public partial class OPCUAServer : UpLoadBase
         m_server?.SafeDispose();
         _uploadVariables = null;
         _collectVariableRunTimes.Clear();
-        _collectVariableRunTimes = null;
     }
     /// <inheritdoc/>
     protected override void Init(UploadDeviceRunTime device)
@@ -159,6 +148,7 @@ public partial class OPCUAServer : UpLoadBase
 
         var serviceScope = _scopeFactory.CreateScope();
         var _globalDeviceData = serviceScope.ServiceProvider.GetService<GlobalDeviceData>();
+        _collectVariableRunTimes.Clear();
 
         _uploadVariables = _globalDeviceData.AllVariables;
         _globalDeviceData.AllVariables.ForEach(a =>

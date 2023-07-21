@@ -178,6 +178,7 @@ public class KafkaProducer : UpLoadBase
                 }
                 else
                 {
+                    isSuccess = true;
                     //连接成功时补发缓存数据
                     var cacheData = await CacheDb.GetCacheData();
                     foreach (var item in cacheData)
@@ -198,20 +199,22 @@ public class KafkaProducer : UpLoadBase
             else
             {
                 stoppingToken.Cancel();
+                isSuccess = false;
             }
         }
         catch (Exception ex)
         {
             _logger.LogWarning(ex, ToString());
             await CacheDb.AddCacheData(topic, payLoad, driverPropertys.CacheMaxCount);
+            CurDevice.LastErrorMessage = ex.Message;
         }
 
 
     }
-
+    private bool isSuccess = true;
     public override OperResult IsConnected()
     {
-        return producer == null ? new("初始化失败") : OperResult.CreateSuccessResult();
+        return isSuccess ? new() : OperResult.CreateSuccessResult();
     }
 
     protected override void Dispose(bool disposing)
@@ -249,6 +252,8 @@ public class KafkaProducer : UpLoadBase
         //3、错误日志监视
         producerBuilder.SetErrorHandler((p, msg) =>
         {
+            isSuccess = false;
+            CurDevice.LastErrorMessage = msg.Reason;
             _logger.LogWarning($"Producer_Erro信息：Code：{msg.Code}；Reason：{msg.Reason}；IsError：{msg.IsError}");
         });
         //kafka

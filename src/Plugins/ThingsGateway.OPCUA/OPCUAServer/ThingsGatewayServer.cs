@@ -138,7 +138,7 @@ public partial class ThingsGatewayServer : StandardServer
     /// <inheritdoc/>
     protected override void OnServerStarting(ApplicationConfiguration configuration)
     {
-        _logger.LogInformation("OPCUAServer启动中......");
+        _logger.LogInformation("OPCUAServer正在启动");
         base.OnServerStarting(configuration);
 
         // 由应用程序决定如何验证用户身份令牌。
@@ -149,7 +149,7 @@ public partial class ThingsGatewayServer : StandardServer
     /// <inheritdoc/>
     protected override void OnServerStopping()
     {
-        _logger.LogInformation("OPCUAServer停止中......");
+        _logger.LogInformation("OPCUAServer正在停止");
         base.OnServerStopping();
     }
 
