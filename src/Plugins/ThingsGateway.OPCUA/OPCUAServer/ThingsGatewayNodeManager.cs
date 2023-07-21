@@ -14,6 +14,8 @@ using Mapster;
 
 using Microsoft.Extensions.DependencyInjection;
 
+using Newtonsoft.Json.Linq;
+
 using Opc.Ua;
 using Opc.Ua.Server;
 
@@ -98,7 +100,12 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
                 }
 
             }
-
+            FolderState memoryfs = CreateFolder(null, "ThingsGateway中间变量", "ThingsGateway中间变量");
+            var variableRunTimes = _globalDeviceData.MemoryVariables;
+            foreach (var item in variableRunTimes)
+            {
+                CreateVariable(memoryfs, item);
+            }
             AddPredefinedNode(SystemContext, rootFolder);
 
         }
@@ -108,7 +115,6 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
     protected override void Dispose(bool disposing)
     {
         _idTags.Clear();
-        _idTags = null;
         base.Dispose(disposing);
     }
     /// <summary>
@@ -256,7 +262,6 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
             }
             uaTag.ClearChangeMasks(SystemContext, false);
 
-
         }
     }
 
@@ -285,7 +290,35 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
         object newValue;
         try
         {
-            newValue = Convert.ChangeType(value, tag.NETDataType);
+            if (!tag.IsDataTypeInit && tag.DataType == DataTypeIds.ObjectNode)
+            {
+                if (tag.Value != null)
+                {
+                    tag.IsDataTypeInit = true;
+                    var tp = tag.Value.GetType();
+                    if (tp == typeof(JArray))
+                    {
+                        try
+                        {
+                            tp = ((JValue)((JArray)tag.Value).FirstOrDefault()).Value.GetType();
+                        }
+                        catch
+                        {
+                        }
+                    }
+                    if (tp == typeof(JValue))
+                    {
+                        tp = ((JValue)tag.Value).Value.GetType();
+                    }
+                    tag.DataType = DataNodeType(tp);
+
+                    tag.ClearChangeMasks(SystemContext, false);
+                }
+            }
+
+            //注意OPCUA Value值不能是JToken类型
+            var typeManager = new ServerDataTypeManager(this.Server.MessageContext, this.SystemContext);
+            newValue = typeManager.GetDataValueFromVariableState(JToken.FromObject(value), tag.DataType);
         }
         catch
         {
@@ -338,15 +371,14 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
         variable.DisplayName = new LocalizedText(variableRunTime.Name);
         variable.WriteMask = AttributeWriteMask.DisplayName | AttributeWriteMask.Description;
         variable.UserWriteMask = AttributeWriteMask.DisplayName | AttributeWriteMask.Description;
-        variable.ValueRank = ValueRanks.Scalar;
+        variable.ValueRank = ValueRanks.Any;
         variable.Id = variableRunTime.Id;
         variable.DataType = DataNodeType(variableRunTime);
-        variable.NETDataType = NETDataNodeType(variableRunTime);
         var level = ProtectTypeTrans(variableRunTime);
         variable.AccessLevel = level;
         variable.UserAccessLevel = level;
         variable.Historizing = variableRunTime.HisEnable;
-        variable.Value = Opc.Ua.TypeInfo.GetDefaultValue(variable.DataType, ValueRanks.Scalar, Server.TypeTree);
+        variable.Value = Opc.Ua.TypeInfo.GetDefaultValue(variable.DataType, ValueRanks.Any, Server.TypeTree);
         var code = variableRunTime.IsOnline ? StatusCodes.Good : StatusCodes.Bad;
         variable.StatusCode = code;
         variable.Timestamp = variableRunTime.CollectTime;
@@ -365,98 +397,43 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
     /// <returns></returns>
     private NodeId DataNodeType(DeviceVariableRunTime variableRunTime)
     {
-        Type tp;
+        Type tp = typeof(object);
         var str = GetPropertyValue(variableRunTime, nameof(OPCUAServerVariableProperty.DataTypeEnum));
         if (Enum.TryParse<DataTypeEnum>(str, out DataTypeEnum result))
         {
             tp = result.GetSystemType();
         }
-        else
-        {
 
-            if (variableRunTime.Value != null)
-            {
-                tp = variableRunTime.Value.GetType();
-            }
-            else
-            {
-                if (variableRunTime.ReadExpressions.IsNullOrEmpty())
-                {
-                    tp = variableRunTime.DataTypeEnum.GetSystemType();
-                }
-                else
-                {
-                    var tp1 = variableRunTime.DataTypeEnum.GetSystemType();
-                    var data = variableRunTime.ReadExpressions.GetExpressionsResult(GetDefaultValue(tp1));
-                    tp = data.GetType();
-                }
-            }
-        }
+        return DataNodeType(tp);
+    }
 
+    private static NodeId DataNodeType(Type tp)
+    {
         if (tp == typeof(bool))
             return DataTypeIds.Boolean;
         if (tp == typeof(byte))
             return DataTypeIds.Byte;
         if (tp == typeof(sbyte))
             return DataTypeIds.SByte;
-        if (tp == typeof(Int16))
+        if (tp == typeof(short))
             return DataTypeIds.Int16;
-        if (tp == typeof(UInt16))
+        if (tp == typeof(ushort))
             return DataTypeIds.UInt16;
-        if (tp == typeof(Int32))
+        if (tp == typeof(int))
             return DataTypeIds.Int32;
-        if (tp == typeof(UInt32))
+        if (tp == typeof(uint))
             return DataTypeIds.UInt32;
-        if (tp == typeof(Int64))
+        if (tp == typeof(long))
             return DataTypeIds.Int64;
-        if (tp == typeof(UInt64))
+        if (tp == typeof(ulong))
             return DataTypeIds.UInt64;
         if (tp == typeof(float))
             return DataTypeIds.Float;
-        if (tp == typeof(Double))
+        if (tp == typeof(double))
             return DataTypeIds.Double;
-        if (tp == typeof(String))
+        if (tp == typeof(string))
             return DataTypeIds.String;
-        if (tp == typeof(DateTime))
-            return DataTypeIds.TimeString;
         return DataTypeIds.ObjectNode;
-    }
-    /// <summary>
-    /// 网关转OPC数据类型
-    /// </summary>
-    /// <param name="variableRunTime"></param>
-    /// <returns></returns>
-    private Type NETDataNodeType(DeviceVariableRunTime variableRunTime)
-    {
-        Type tp;
-        var str = GetPropertyValue(variableRunTime, nameof(OPCUAServerVariableProperty.DataTypeEnum));
-        if (Enum.TryParse<DataTypeEnum>(str, out DataTypeEnum result))
-        {
-            tp = result.GetSystemType();
-        }
-        else
-        {
-
-            if (variableRunTime.Value != null)
-            {
-                tp = variableRunTime.Value.GetType();
-            }
-            else
-            {
-                if (variableRunTime.ReadExpressions.IsNullOrEmpty())
-                {
-                    tp = variableRunTime.DataTypeEnum.GetSystemType();
-                }
-                else
-                {
-                    var tp1 = variableRunTime.DataTypeEnum.GetSystemType();
-                    var data = variableRunTime.ReadExpressions.GetExpressionsResult(GetDefaultValue(tp1));
-                    tp = data.GetType();
-                }
-            }
-        }
-
-        return tp;
     }
 
     private ServiceResult OnWriteDataValue(ISystemContext context, NodeState node, NumericRange indexRange, QualifiedName dataEncoding, ref object value, ref StatusCode statusCode, ref DateTime timestamp)
@@ -469,19 +446,6 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
                 return StatusCodes.BadUserAccessDenied;
             }
             OPCUATag variable = node as OPCUATag;
-            // 验证数据类型。
-            //Opc.Ua.TypeInfo typeInfo = Opc.Ua.TypeInfo.IsInstanceOfDataType(
-            //    value,
-            //    variable.DataType,
-            //    variable.ValueRank,
-            //    context.NamespaceUris,
-            //    context.TypeTable);
-
-            //if (typeInfo == null || typeInfo == Opc.Ua.TypeInfo.Unknown)
-            //{
-            //    return StatusCodes.BadTypeMismatch;
-            //}
-            // 检查索引范围。
             if (_idTags.TryGetValue(variable.NodeId, out OPCUATag tag))
             {
                 if (StatusCode.IsGood(variable.StatusCode))

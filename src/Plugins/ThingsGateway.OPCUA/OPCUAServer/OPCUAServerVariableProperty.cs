@@ -5,22 +5,22 @@
 //  源代码使用协议遵循本仓库的开源协议及附加协议
 //  Gitee源代码仓库：https://gitee.com/diego2098/ThingsGateway
 //  Github源代码仓库：https://github.com/kimdiego2098/ThingsGateway
-//  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
+//  使用文档：https://diego2098.gitee.io/thingsgateway/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 #endregion
 
-using Opc.Ua;
-namespace ThingsGateway.OPCUA;
-internal class OPCUATag : BaseDataVariableState
-{
-    public OPCUATag(NodeState parent) : base(parent)
-    {
-    }
+using ThingsGateway.Web.Foundation;
 
-    public bool IsDataTypeInit { get; set; }
+namespace ThingsGateway.OPCUA;
+
+/// <inheritdoc/>
+public class OPCUAServerVariableProperty : VariablePropertyBase
+{
     /// <summary>
-    /// 变量Id
+    /// 数据类型
     /// </summary>
-    public long Id { get; set; }
+    [VariableProperty("数据类型", "")]
+    public DataTypeEnum DataTypeEnum { get; set; } = DataTypeEnum.Object;
+
 }

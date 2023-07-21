@@ -185,8 +185,10 @@ public class MemoryVariableWorker : BackgroundService
 
     internal void Stop()
     {
-        CancellationTokenSource StoppingToken = StoppingTokens.LastOrDefault();
-        StoppingToken?.Cancel();
+        foreach (var token in StoppingTokens)
+        {
+            token.Cancel();
+        }
 
         _logger?.LogInformation($"中间变量计算线程停止中");
         var hisHisResult = MemoryWorkerTask?.GetAwaiter().GetResult();
@@ -212,8 +214,11 @@ public class MemoryVariableWorker : BackgroundService
             _logger?.LogInformation($"历史数据线程停止超时，已强制取消");
         }
         MemoryWorkerTask?.SafeDispose();
-        StoppingToken?.SafeDispose();
-        StoppingTokens.Remove(StoppingToken);
+        foreach (var token in StoppingTokens)
+        {
+            token.SafeDispose();
+        }
+        StoppingTokens.Clear();
 
     }
 

@@ -29,9 +29,12 @@ public class CacheDb
     public CacheDb(string id)
     {
         Id = id;
-        Directory.CreateDirectory("CacheDb");
-        GetCacheDb().DbMaintenance.CreateDatabase();//创建数据库
-        GetCacheDb().CodeFirst.InitTables(typeof(CacheTable));
+        Directory.CreateDirectory(Path.Combine(AppContext.BaseDirectory, "CacheDb"));
+        if (!File.Exists(Path.Combine(AppContext.BaseDirectory, "CacheDb", $"{Id}.db")))
+        {
+            GetCacheDb().DbMaintenance.CreateDatabase();//创建数据库
+            GetCacheDb().CodeFirst.InitTables(typeof(CacheTable));
+        }
     }
     /// <summary>
     /// 获取数据库链接

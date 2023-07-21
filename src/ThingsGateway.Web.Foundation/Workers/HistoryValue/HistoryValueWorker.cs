@@ -147,7 +147,6 @@ public class HistoryValueWorker : BackgroundService
     /// </summary>
     public ConcurrentList<CancellationTokenSource> StoppingTokens = new();
     private Task<Task> HistoryValueTask;
-    private EasyLock easyLock { get; set; } = new();
     /// <summary>
     /// 离线缓存
     /// </summary>
@@ -331,9 +330,8 @@ public class HistoryValueWorker : BackgroundService
 
     internal void Start()
     {
-        try
+        lock (this)
         {
-            easyLock.Lock();
 
             foreach (var device in _globalDeviceData.CollectDevices)
             {
@@ -344,17 +342,13 @@ public class HistoryValueWorker : BackgroundService
             Init();
             HistoryValueTask.Start();
         }
-        finally
-        {
-            easyLock.UnLock();
-        }
+
     }
 
     internal void Stop(IEnumerable<CollectDeviceRunTime> devices)
     {
-        try
+        lock (this)
         {
-            easyLock.Lock();
 
             foreach (var device in devices)
             {
@@ -362,8 +356,10 @@ public class HistoryValueWorker : BackgroundService
                 device.DeviceVariableRunTimes?.Where(a => a.HisEnable == true)?.ForEach(v => { v.VariableValueChange -= DeviceVariableValueChange; });
             }
 
-            CancellationTokenSource StoppingToken = StoppingTokens.LastOrDefault();
-            StoppingToken?.Cancel();
+            foreach (var token in StoppingTokens)
+            {
+                token.Cancel();
+            }
 
             _logger?.LogInformation($"历史数据线程停止中");
             var hisHisResult = HistoryValueTask?.GetAwaiter().GetResult();
@@ -389,12 +385,11 @@ public class HistoryValueWorker : BackgroundService
                 _logger?.LogInformation($"历史数据线程停止超时，已强制取消");
             }
             HistoryValueTask?.SafeDispose();
-            StoppingToken?.SafeDispose();
-            StoppingTokens.Remove(StoppingToken);
-        }
-        finally
-        {
-            easyLock.UnLock();
+            foreach (var token in StoppingTokens)
+            {
+                token.SafeDispose();
+            }
+            StoppingTokens.Clear();
         }
     }
     private void DeviceVariableCollectChange(DeviceVariableRunTime variable)

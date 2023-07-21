@@ -168,7 +168,6 @@ public class AlarmWorker : BackgroundService
     private Task<Task> HisAlarmTask;
     private Task<Task> RealAlarmTask;
     private CacheDb CacheDb { get; set; }
-    private EasyLock easyLock { get; set; } = new();
     /// <summary>
     /// 重启服务
     /// </summary>
@@ -180,9 +179,8 @@ public class AlarmWorker : BackgroundService
 
     internal void Start()
     {
-        try
+        lock (this)
         {
-            easyLock.Lock();
 
             foreach (var item in _globalDeviceData.CollectDevices)
             {
@@ -192,19 +190,13 @@ public class AlarmWorker : BackgroundService
             Init();
             RealAlarmTask.Start();
             HisAlarmTask.Start();
-        }
-        finally
-        {
-            easyLock.UnLock();
 
         }
     }
-
     internal void Stop(IEnumerable<CollectDeviceRunTime> devices)
     {
-        try
+        lock (this)
         {
-            easyLock.Lock();
 
             foreach (var device in devices)
             {
@@ -212,8 +204,10 @@ public class AlarmWorker : BackgroundService
                 device.DeviceVariableRunTimes?.ForEach(v => { v.VariableCollectChange -= DeviceVariableChange; });
             }
 
-            CancellationTokenSource StoppingToken = StoppingTokens.LastOrDefault();
-            StoppingToken?.Cancel();
+            foreach (var token in StoppingTokens)
+            {
+                token.Cancel();
+            }
             _logger?.LogInformation($"实时报警线程停止中");
             var realAlarmResult = RealAlarmTask?.Result;
             if (realAlarmResult?.Status != TaskStatus.Canceled)
@@ -266,12 +260,11 @@ public class AlarmWorker : BackgroundService
                 _logger?.LogWarning($"历史报警线程停止超时，已强制取消");
             }
             HisAlarmTask?.SafeDispose();
-            StoppingToken?.SafeDispose();
-            StoppingTokens.Remove(StoppingToken);
-        }
-        finally
-        {
-            easyLock.UnLock();
+            foreach (var token in StoppingTokens)
+            {
+                token.SafeDispose();
+            }
+            StoppingTokens.Clear();
         }
     }
 
