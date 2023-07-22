@@ -226,7 +226,7 @@ public class KafkaProducer : UpLoadBase
     {
         _globalDeviceData?.CollectDevices.Where(a => _uploadVariables.Select(b => b.DeviceId).Contains(a.Id)).ForEach(a =>
         {
-            a.DeviceStatusCahnge -= DeviceStatusCahnge;
+            a.DeviceStatusChange -= DeviceStatusChange;
         });
         _uploadVariables?.ForEach(a =>
         {
@@ -309,7 +309,7 @@ public class KafkaProducer : UpLoadBase
 
         _globalDeviceData.CollectDevices.Where(a => _uploadVariables.Select(b => b.DeviceId).Contains(a.Id)).ForEach(a =>
         {
-            a.DeviceStatusCahnge += DeviceStatusCahnge;
+            a.DeviceStatusChange += DeviceStatusChange;
         });
         _uploadVariables.ForEach(a =>
         {
@@ -319,7 +319,7 @@ public class KafkaProducer : UpLoadBase
 
     }
 
-    private void DeviceStatusCahnge(CollectDeviceRunTime collectDeviceRunTime)
+    private void DeviceStatusChange(CollectDeviceRunTime collectDeviceRunTime)
     {
         _collectDeviceRunTimes.Enqueue(collectDeviceRunTime.Adapt<DeviceData>());
     }

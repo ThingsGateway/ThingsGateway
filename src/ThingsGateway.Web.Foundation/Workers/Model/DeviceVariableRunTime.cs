@@ -157,12 +157,12 @@ public class DeviceVariableRunTime : DeviceVariable
     /// <summary>
     /// 谨慎使用，务必采用队列等方式
     /// </summary>
-    internal event VariableCahngeEventHandler VariableCollectChange;
+    internal event VariableChangeEventHandler VariableCollectChange;
 
     /// <summary>
     /// 谨慎使用，务必采用队列等方式
     /// </summary>
-    public event VariableCahngeEventHandler VariableValueChange;
+    public event VariableChangeEventHandler VariableValueChange;
 
     private bool isOnline;
     private bool isOnlineChanged;
@@ -256,6 +256,6 @@ public class DeviceVariableRunTime : DeviceVariable
 /// <summary>
 /// 变量变化委托
 /// </summary>
-public delegate void VariableCahngeEventHandler(DeviceVariableRunTime collectVariableRunTime);
+public delegate void VariableChangeEventHandler(DeviceVariableRunTime collectVariableRunTime);
 
 

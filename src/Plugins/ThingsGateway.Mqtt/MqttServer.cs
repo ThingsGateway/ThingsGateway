@@ -88,7 +88,7 @@ public class MqttServer : UpLoadBase
         _globalDeviceData?.AllVariables?.ForEach(a => a.VariableValueChange -= VariableValueChange);
         _globalDeviceData?.CollectDevices?.ForEach(a =>
         {
-            a.DeviceStatusCahnge -= DeviceStatusCahnge;
+            a.DeviceStatusChange -= DeviceStatusChange;
         });
         _uploadVariables = null;
         _collectDeviceRunTimes.Clear();
@@ -237,7 +237,7 @@ public class MqttServer : UpLoadBase
 
         _globalDeviceData.CollectDevices.Where(a => _uploadVariables.Select(b => b.DeviceId).Contains(a.Id)).ForEach(a =>
         {
-            a.DeviceStatusCahnge += DeviceStatusCahnge;
+            a.DeviceStatusChange += DeviceStatusChange;
         });
         _uploadVariables.ForEach(a =>
         {
@@ -301,7 +301,7 @@ public class MqttServer : UpLoadBase
         _logger?.LogInformation(ToString() + "-" + IdWithName[arg.ClientId] + "-客户端已连接成功");
     }
 
-    private void DeviceStatusCahnge(CollectDeviceRunTime collectDeviceRunTime)
+    private void DeviceStatusChange(CollectDeviceRunTime collectDeviceRunTime)
     {
         _collectDeviceRunTimes.Enqueue(collectDeviceRunTime.Adapt<DeviceData>());
     }

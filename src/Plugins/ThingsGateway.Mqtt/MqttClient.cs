@@ -337,7 +337,7 @@ public class MqttClient : UpLoadBase
 
             _globalDeviceData?.CollectDevices?.ForEach(a =>
             {
-                a.DeviceStatusCahnge -= DeviceStatusCahnge;
+                a.DeviceStatusChange -= DeviceStatusChange;
             });
             _mqttClient?.SafeDispose();
             _mqttClient = null;
@@ -394,7 +394,7 @@ public class MqttClient : UpLoadBase
         {
             _collectDevice.ForEach(a =>
             {
-                a.DeviceStatusCahnge += DeviceStatusCahnge;
+                a.DeviceStatusChange += DeviceStatusChange;
             });
             _uploadVariables.ForEach(a =>
             {
@@ -504,7 +504,7 @@ public class MqttClient : UpLoadBase
         }
     }
 
-    private void DeviceStatusCahnge(CollectDeviceRunTime collectDeviceRunTime)
+    private void DeviceStatusChange(CollectDeviceRunTime collectDeviceRunTime)
     {
         _collectDeviceRunTimes.Enqueue(collectDeviceRunTime.Adapt<DeviceData>());
     }
