@@ -245,7 +245,7 @@ public class RabbitMQClient : UpLoadBase
 
         _globalDeviceData?.CollectDevices?.ForEach(a =>
         {
-            a.DeviceStatusCahnge -= DeviceStatusCahnge;
+            a.DeviceStatusChange -= DeviceStatusChange;
         });
         _model?.SafeDispose();
         _connection?.SafeDispose();
@@ -293,8 +293,8 @@ public class RabbitMQClient : UpLoadBase
 
         _globalDeviceData.CollectDevices.Where(a => _uploadVariables.Select(b => b.DeviceId).Contains(a.Id)).ForEach(a =>
         {
-            a.DeviceStatusCahnge += DeviceStatusCahnge;
-            DeviceStatusCahnge(a);
+            a.DeviceStatusChange += DeviceStatusChange;
+            DeviceStatusChange(a);
         });
         _uploadVariables.ForEach(a =>
         {
@@ -306,7 +306,7 @@ public class RabbitMQClient : UpLoadBase
 
     }
 
-    private void DeviceStatusCahnge(CollectDeviceRunTime collectDeviceRunTime)
+    private void DeviceStatusChange(CollectDeviceRunTime collectDeviceRunTime)
     {
         _collectDeviceRunTimes.Enqueue(collectDeviceRunTime.Adapt<DeviceData>());
     }

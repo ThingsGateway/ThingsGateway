@@ -131,7 +131,7 @@ public class IotSharpClient : UpLoadBase
 
             _globalDeviceData?.CollectDevices?.ForEach(a =>
             {
-                a.DeviceStatusCahnge -= DeviceStatusCahnge;
+                a.DeviceStatusChange -= DeviceStatusChange;
             });
             _mqttClient?.SafeDispose();
             _mqttClient = null;
@@ -342,7 +342,7 @@ public class IotSharpClient : UpLoadBase
 
         _globalDeviceData.CollectDevices.Where(a => _uploadVariables.Select(b => b.DeviceId).Contains(a.Id)).ForEach(a =>
         {
-            a.DeviceStatusCahnge += DeviceStatusCahnge;
+            a.DeviceStatusChange += DeviceStatusChange;
         });
         _uploadVariables.ForEach(a =>
         {
@@ -491,7 +491,7 @@ GetPropertyValue(tag, nameof(variablePropertys.VariableRpcEnable)).ToBoolean()
                 .Select(a => a.ToString()).ToJson());
         }
     }
-    private void DeviceStatusCahnge(CollectDeviceRunTime collectDeviceRunTime)
+    private void DeviceStatusChange(CollectDeviceRunTime collectDeviceRunTime)
     {
         _collectDeviceRunTimes.Enqueue(collectDeviceRunTime.Adapt<DeviceData>());
     }

@@ -75,7 +75,7 @@ public class CollectDeviceRunTime : CollectDevice
             if (deviceStatus != value)
             {
                 deviceStatus = value;
-                DeviceStatusCahnge?.Invoke(this);
+                DeviceStatusChange?.Invoke(this);
             }
         }
     }
@@ -119,7 +119,7 @@ public class CollectDeviceRunTime : CollectDevice
     /// <summary>
     /// 设备状态变化事件
     /// </summary>
-    public event DelegateOnDeviceChanged DeviceStatusCahnge;
+    public event DelegateOnDeviceChanged DeviceStatusChange;
 
     private string lastErrorMessage;
     /// <summary>

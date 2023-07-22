@@ -48,7 +48,7 @@ public class AlarmWorker : BackgroundService
     /// <summary>
     /// 报警变化事件
     /// </summary>
-    public event VariableCahngeEventHandler OnAlarmChanged;
+    public event VariableChangeEventHandler OnAlarmChanged;
     /// <summary>
     /// 设备状态变化事件
     /// </summary>
@@ -200,7 +200,7 @@ public class AlarmWorker : BackgroundService
 
             foreach (var device in devices)
             {
-                device.DeviceStatusCahnge -= DeviceStatusCahnge;
+                device.DeviceStatusChange -= DeviceStatusChange;
                 device.DeviceVariableRunTimes?.ForEach(v => { v.VariableCollectChange -= DeviceVariableChange; });
             }
 
@@ -382,11 +382,11 @@ public class AlarmWorker : BackgroundService
 
     private void DeviceChange(CollectDeviceRunTime device)
     {
-        device.DeviceStatusCahnge += DeviceStatusCahnge;
+        device.DeviceStatusChange += DeviceStatusChange;
         device.DeviceVariableRunTimes?.ForEach(v => { v.VariableCollectChange += DeviceVariableChange; });
     }
 
-    private void DeviceStatusCahnge(CollectDeviceRunTime device)
+    private void DeviceStatusChange(CollectDeviceRunTime device)
     {
         OnDeviceStatusChanged?.Invoke(device.Adapt<CollectDeviceRunTime>());
     }
