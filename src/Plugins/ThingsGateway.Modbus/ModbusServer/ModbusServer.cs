@@ -141,6 +141,7 @@ public class ModbusServer : UpLoadBase
         }
         catch (Exception ex)
         {
+            CurDevice.LastErrorMessage = ex.Message;
             _logger.LogWarning(ex, ToString());
             tags.ForEach(a =>
             {

@@ -112,6 +112,7 @@ public class MqttClient : UpLoadBase
                         }
                         catch (Exception ex)
                         {
+                            CurDevice.LastErrorMessage = ex.Message;
                             _logger.LogWarning(ex, ToString());
                         }
 
@@ -147,6 +148,7 @@ public class MqttClient : UpLoadBase
                                 }
                                 catch (Exception ex)
                                 {
+                                    CurDevice.LastErrorMessage = ex.Message;
                                     _logger.LogWarning(ex, ToString());
                                 }
 
@@ -155,6 +157,7 @@ public class MqttClient : UpLoadBase
                     }
                     catch (Exception ex)
                     {
+                        CurDevice.LastErrorMessage = ex.Message;
                         _logger?.LogWarning(ex, ToString());
                     }
 
@@ -165,6 +168,7 @@ public class MqttClient : UpLoadBase
         }
         catch (Exception ex)
         {
+            CurDevice.LastErrorMessage = ex.Message;
             _logger?.LogWarning(ex, ToString());
         }
         try
@@ -192,6 +196,7 @@ public class MqttClient : UpLoadBase
                         }
                         catch (Exception ex)
                         {
+                            CurDevice.LastErrorMessage = ex.Message;
                             _logger.LogWarning(ex, ToString());
                         }
                     }
@@ -224,6 +229,7 @@ public class MqttClient : UpLoadBase
                             }
                             catch (Exception ex)
                             {
+                                CurDevice.LastErrorMessage = ex.Message;
                                 _logger.LogWarning(ex, ToString());
                             }
                         }
@@ -237,6 +243,7 @@ public class MqttClient : UpLoadBase
         }
         catch (Exception ex)
         {
+            CurDevice.LastErrorMessage = ex.Message;
             _logger?.LogWarning(ex, ToString());
         }
 
