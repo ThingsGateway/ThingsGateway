@@ -71,7 +71,7 @@ public abstract class S7 : CollectBase
     public override OperResult<List<DeviceVariableSourceRead>> LoadSourceRead(List<DeviceVariableRunTime> deviceVariables)
     {
         _plc.Connect(CancellationToken.None);
-        var data = deviceVariables.LoadSourceRead(_logger, _plc);
+        var data = deviceVariables.LoadSourceRead(_plc);
         _plc?.Disconnect();
         return data;
     }

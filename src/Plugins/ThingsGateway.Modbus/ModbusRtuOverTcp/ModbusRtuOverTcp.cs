@@ -52,7 +52,7 @@ public class ModbusRtuOverTcp : CollectBase, IDisposable
 
     public override OperResult<List<DeviceVariableSourceRead>> LoadSourceRead(List<DeviceVariableRunTime> deviceVariables)
     {
-        return deviceVariables.LoadSourceRead(_logger, _plc, driverPropertys.MaxPack);
+        return deviceVariables.LoadSourceRead(_plc, driverPropertys.MaxPack);
     }
 
     public override async Task<OperResult> WriteValueAsync(DeviceVariableRunTime deviceVariable, string value, CancellationToken cancellationToken)

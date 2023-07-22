@@ -79,7 +79,7 @@ public class MqttClient : UpLoadBase
             var result = await TryMqttClientAsync(cancellationToken);
             if (!result.IsSuccess)
             {
-                _logger?.LogWarning(ToString() + $"-连接MqttServer失败：{result.Message}");
+                logMessage?.LogWarning(ToString() + $"-连接MqttServer失败：{result.Message}");
             }
         }
     }
@@ -112,8 +112,7 @@ public class MqttClient : UpLoadBase
                         }
                         catch (Exception ex)
                         {
-                            CurDevice.LastErrorMessage = ex.Message;
-                            _logger.LogWarning(ex, ToString());
+                            logMessage?.LogWarning(ex, ToString());
                         }
 
                     }
@@ -148,8 +147,7 @@ public class MqttClient : UpLoadBase
                                 }
                                 catch (Exception ex)
                                 {
-                                    CurDevice.LastErrorMessage = ex.Message;
-                                    _logger.LogWarning(ex, ToString());
+                                    logMessage?.LogWarning(ex, ToString());
                                 }
 
                             }
@@ -157,8 +155,7 @@ public class MqttClient : UpLoadBase
                     }
                     catch (Exception ex)
                     {
-                        CurDevice.LastErrorMessage = ex.Message;
-                        _logger?.LogWarning(ex, ToString());
+                        logMessage?.LogWarning(ex, ToString());
                     }
 
                 }
@@ -168,8 +165,7 @@ public class MqttClient : UpLoadBase
         }
         catch (Exception ex)
         {
-            CurDevice.LastErrorMessage = ex.Message;
-            _logger?.LogWarning(ex, ToString());
+            logMessage?.LogWarning(ex, ToString());
         }
         try
         {
@@ -196,8 +192,7 @@ public class MqttClient : UpLoadBase
                         }
                         catch (Exception ex)
                         {
-                            CurDevice.LastErrorMessage = ex.Message;
-                            _logger.LogWarning(ex, ToString());
+                            logMessage?.LogWarning(ex, ToString());
                         }
                     }
 
@@ -229,8 +224,7 @@ public class MqttClient : UpLoadBase
                             }
                             catch (Exception ex)
                             {
-                                CurDevice.LastErrorMessage = ex.Message;
-                                _logger.LogWarning(ex, ToString());
+                                logMessage?.LogWarning(ex, ToString());
                             }
                         }
 
@@ -243,8 +237,7 @@ public class MqttClient : UpLoadBase
         }
         catch (Exception ex)
         {
-            CurDevice.LastErrorMessage = ex.Message;
-            _logger?.LogWarning(ex, ToString());
+            logMessage?.LogWarning(ex, ToString());
         }
 
         if (driverPropertys.CycleInterval > UploadDeviceThread.CycleInterval + 50)
@@ -350,12 +343,12 @@ public class MqttClient : UpLoadBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, ToString());
+            logMessage?.LogError(ex, ToString());
         }
     }
     protected override void Init(UploadDeviceRunTime device)
     {
-        var mqttFactory = new MqttFactory(new PrivateLogger(_logger));
+        var mqttFactory = new MqttFactory(new PrivateLogger(logMessage));
         _mqttClientOptions = mqttFactory.CreateClientOptionsBuilder()
                         .WithClientId(driverPropertys.ConnectId)
            .WithCredentials(driverPropertys.UserName, driverPropertys.Password)//账密
@@ -451,7 +444,7 @@ public class MqttClient : UpLoadBase
         }
         catch (Exception ex)
         {
-            _logger?.LogWarning(ex, ToString());
+            logMessage?.LogWarning(ex, ToString());
             mqttRpcResult = new() { Message = "Failed", RpcId = rpcData.RpcId, Success = false };
         }
         try
@@ -473,7 +466,7 @@ public class MqttClient : UpLoadBase
         var subResult = await _mqttClient.SubscribeAsync(_mqttSubscribeOptions);
         if (subResult.Items.Any(a => a.ResultCode > (MqttClientSubscribeResultCode)10))
         {
-            _logger.LogError("订阅失败-" + subResult.Items
+            logMessage?.Warning("订阅失败-" + subResult.Items
                 .Where(a => a.ResultCode > (MqttClientSubscribeResultCode)10)
                 .ToJson());
         }
@@ -530,7 +523,6 @@ public class MqttClient : UpLoadBase
                     return OperResult.CreateSuccessResult();
                 if (_mqttClient == null)
                 {
-                    CurDevice.LastErrorMessage = "未初始化";
                     return new OperResult("未初始化");
 
                 }
@@ -541,13 +533,11 @@ public class MqttClient : UpLoadBase
                 }
                 else
                 {
-                    CurDevice.LastErrorMessage = "result.ReasonString";
                     return new OperResult(result.ReasonString);
                 }
             }
             catch (Exception ex)
             {
-                CurDevice.LastErrorMessage = ex.Message;
                 return new OperResult(ex);
             }
             finally

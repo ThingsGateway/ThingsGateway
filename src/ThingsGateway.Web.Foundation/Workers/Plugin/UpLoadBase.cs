@@ -60,6 +60,10 @@ public abstract class UpLoadBase : DriverBase
     public UpLoadBase(IServiceScopeFactory scopeFactory) : base(scopeFactory)
     {
     }
+    /// <summary>
+    /// 当前上传设备
+    /// </summary>
+    public UploadDeviceRunTime CurDevice { get; protected set; }
 
     /// <summary>
     /// 返回插件的上传变量，一般在<see cref="Init(UploadDeviceRunTime)"/>后初始化
@@ -72,6 +76,11 @@ public abstract class UpLoadBase : DriverBase
     public abstract VariablePropertyBase VariablePropertys { get; }
 
     /// <summary>
+    /// 离线缓存
+    /// </summary>
+    protected CacheDb CacheDb { get; set; }
+
+    /// <summary>
     /// 开始执行的方法
     /// </summary>
     /// <returns></returns>
@@ -81,31 +90,6 @@ public abstract class UpLoadBase : DriverBase
     /// 循环执行
     /// </summary>
     public abstract Task ExecuteAsync(CancellationToken cancellationToken);
-    /// <summary>
-    /// 当前上传设备
-    /// </summary>
-    public UploadDeviceRunTime CurDevice { get; protected set; }
-    /// <summary>
-    /// 离线缓存
-    /// </summary>
-    protected CacheDb CacheDb { get; set; }
-    /// <summary>
-    /// 初始化
-    /// </summary>
-    public void Init(ILogger logger, UploadDeviceRunTime device)
-    {
-        _logger = logger;
-        IsLogOut = device.IsLogOut;
-        CurDevice = device;
-        CacheDb = new(CurDevice.Id.ToString());
-        Init(device);
-    }
-
-    /// <summary>
-    /// 初始化
-    /// </summary>
-    /// <param name="device">设备</param>
-    protected abstract void Init(UploadDeviceRunTime device);
 
     /// <summary>
     /// 获取变量的属性值
@@ -126,6 +110,38 @@ public abstract class UpLoadBase : DriverBase
         return null;
     }
 
+    /// <summary>
+    /// 初始化
+    /// </summary>
+    public void Init(ILogger logger, UploadDeviceRunTime device)
+    {
+        _logger = logger;
+        IsLogOut = device.IsLogOut;
+        CurDevice = device;
+        CacheDb = new(CurDevice.Id.ToString());
+        Init(device);
+    }
+
+    /// <summary>
+    /// 初始化
+    /// </summary>
+    /// <param name="device">设备</param>
+    protected abstract void Init(UploadDeviceRunTime device);
+
+    /// <summary>
+    /// 底层日志输出
+    /// </summary>
+    protected override void Log_Out(LogType arg1, object arg2, string arg3, Exception arg4)
+    {
+        if (IsLogOut || arg1 >= LogType.Warning)
+        {
+            _logger.Log_Out(arg1, arg2, arg3, arg4);
+        }
+        if (arg1 >= LogType.Warning)
+        {
+            CurDevice.LastErrorMessage = arg3;
+        }
+    }
 }
 
 

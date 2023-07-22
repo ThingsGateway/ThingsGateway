@@ -77,7 +77,7 @@ public class IotSharpClient : UpLoadBase
             var result = await TryMqttClientAsync(cancellationToken);
             if (!result.IsSuccess)
             {
-                _logger?.LogWarning(ToString() + $"-连接MqttServer失败：{result.Message}");
+                logMessage?.LogWarning(ToString() + $"-连接MqttServer失败：{result.Message}");
             }
         }
     }
@@ -143,7 +143,7 @@ public class IotSharpClient : UpLoadBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, ToString());
+            logMessage?.LogError(ex, ToString());
         }
 
     }
@@ -226,8 +226,7 @@ public class IotSharpClient : UpLoadBase
                     }
                     catch (Exception ex)
                     {
-                        CurDevice.LastErrorMessage = ex.Message;
-                        _logger.LogWarning(ex, ToString());
+                        logMessage?.LogWarning(ex, ToString());
                     }
 
                 }
@@ -235,8 +234,7 @@ public class IotSharpClient : UpLoadBase
         }
         catch (Exception ex)
         {
-            CurDevice.LastErrorMessage = ex.Message;
-            _logger?.LogWarning(ex, ToString());
+            logMessage?.LogWarning(ex, ToString());
         }
         try
         {
@@ -261,8 +259,7 @@ public class IotSharpClient : UpLoadBase
                     }
                     catch (Exception ex)
                     {
-                        CurDevice.LastErrorMessage = ex.Message;
-                        _logger.LogWarning(ex, ToString());
+                        logMessage?.LogWarning(ex, ToString());
                     }
                 }
 
@@ -270,8 +267,7 @@ public class IotSharpClient : UpLoadBase
         }
         catch (Exception ex)
         {
-            CurDevice.LastErrorMessage = ex.Message;
-            _logger?.LogWarning(ex, ToString());
+            logMessage?.LogWarning(ex, ToString());
         }
 
         if (driverPropertys.CycleInterval > UploadDeviceThread.CycleInterval + 50)
@@ -309,7 +305,7 @@ public class IotSharpClient : UpLoadBase
 
     protected override void Init(UploadDeviceRunTime device)
     {
-        var mqttFactory = new MqttFactory(new PrivateLogger(_logger));
+        var mqttFactory = new MqttFactory(new PrivateLogger(logMessage));
         _mqttClientOptions = mqttFactory.CreateClientOptionsBuilder()
            .WithClientId(Guid.NewGuid().ToString())
            .WithCredentials(driverPropertys.Accesstoken)//账密
@@ -486,7 +482,7 @@ GetPropertyValue(tag, nameof(variablePropertys.VariableRpcEnable)).ToBoolean()
 
         if (subResult.Items.Any(a => a.ResultCode > (MqttClientSubscribeResultCode)10))
         {
-            _logger.LogWarning(subResult.Items
+            logMessage?.LogWarning(subResult.Items
                 .Where(a => a.ResultCode > (MqttClientSubscribeResultCode)10)
                 .Select(a => a.ToString()).ToJson());
         }

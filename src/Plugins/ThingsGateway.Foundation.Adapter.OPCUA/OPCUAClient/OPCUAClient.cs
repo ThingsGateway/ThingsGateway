@@ -292,7 +292,8 @@ public class OPCUAClient : DisposableObject
         var iserror = m_subscription.MonitoredItems.Any(a => a.Status.Error != null && StatusCode.IsBad(a.Status.Error.StatusCode));
         if (iserror)
         {
-            UpdateStatus(iserror, DateTime.UtcNow, m_subscription.MonitoredItems.FirstOrDefault(a => a.Status.Error != null && StatusCode.IsBad(a.Status.Error.StatusCode)).Status.Error.ToString());
+            UpdateStatus(iserror, DateTime.UtcNow,
+            "创建以下变量订阅失败" + m_subscription.MonitoredItems.Where(a => a.Status.Error != null && StatusCode.IsBad(a.Status.Error.StatusCode)).Select(a => a.StartNodeId.ToString() + "：" + a.Status.Error.ToString()).ToJson());
         }
 
         lock (dic_subscriptions)

@@ -29,10 +29,60 @@ namespace ThingsGateway.Web.Foundation;
 /// </summary>
 public abstract class CollectBase : DriverBase
 {
+    /// <summary>
+    /// 当前采集设备
+    /// </summary>
+    public CollectDeviceRunTime CurDevice;
+
     /// <inheritdoc cref="CollectBase"/>
     public CollectBase(IServiceScopeFactory scopeFactory) : base(scopeFactory)
     {
 
+    }
+
+    /// <summary>
+    /// 返回是否支持读取
+    /// </summary>
+    /// <returns></returns>
+    public abstract bool IsSupportRequest { get; }
+
+    /// <summary>
+    /// 数据转换器
+    /// </summary>
+    /// <returns></returns>
+    public abstract IThingsGatewayBitConverter ThingsGatewayBitConverter { get; }
+
+    /// <summary>
+    /// 结束通讯后执行的方法
+    /// </summary>
+    /// <returns></returns>
+    public abstract Task AfterStopAsync();
+
+    /// <summary>
+    /// 开始通讯前执行的方法
+    /// </summary>
+    /// <returns></returns>
+    public abstract Task BeforStartAsync(CancellationToken cancellationToken);
+
+    /// <summary>
+    /// 通道标识
+    /// </summary>
+    public virtual OperResult<string> GetChannelID()
+    {
+        var config = (CollectDriverPropertyBase)DriverPropertys;
+        if (config.IsShareChannel)
+        {
+            switch (config.ShareChannel)
+            {
+                case ShareChannelEnum.SerialClient:
+                    return OperResult.CreateSuccessResult(config.PortName);
+                case ShareChannelEnum.TcpClient:
+                case ShareChannelEnum.UdpSession:
+                    var a = new IPHost($"{config.IP}:{config.Port}");
+                    return OperResult.CreateSuccessResult(config.ShareChannel.ToString() + a.ToString());
+            }
+        }
+        return new("不支持共享通道");
     }
 
     /// <summary>
@@ -74,49 +124,6 @@ public abstract class CollectBase : DriverBase
         }
         return new OperResult<object>("不支持共享链路");
     }
-
-    /// <summary>
-    /// 通道标识
-    /// </summary>
-    public virtual OperResult<string> GetChannelID()
-    {
-        var config = (CollectDriverPropertyBase)DriverPropertys;
-        if (config.IsShareChannel)
-        {
-            switch (config.ShareChannel)
-            {
-                case ShareChannelEnum.SerialClient:
-                    return OperResult.CreateSuccessResult(config.PortName);
-                case ShareChannelEnum.TcpClient:
-                case ShareChannelEnum.UdpSession:
-                    var a = new IPHost($"{config.IP}:{config.Port}");
-                    return OperResult.CreateSuccessResult(config.ShareChannel.ToString() + a.ToString());
-            }
-        }
-        return new("不支持共享通道");
-    }
-
-    /// <summary>
-    /// 数据转换器
-    /// </summary>
-    /// <returns></returns>
-    public abstract IThingsGatewayBitConverter ThingsGatewayBitConverter { get; }
-
-    /// <summary>
-    /// 结束通讯后执行的方法
-    /// </summary>
-    /// <returns></returns>
-    public abstract Task AfterStopAsync();
-
-    /// <summary>
-    /// 开始通讯前执行的方法
-    /// </summary>
-    /// <returns></returns>
-    public abstract Task BeforStartAsync(CancellationToken cancellationToken);
-    /// <summary>
-    /// 当前采集设备
-    /// </summary>
-    public CollectDeviceRunTime CurDevice;
     /// <summary>
     /// 初始化
     /// </summary>
@@ -128,10 +135,9 @@ public abstract class CollectBase : DriverBase
         Init(device, client);
     }
     /// <summary>
-    /// 返回是否支持读取
+    /// 共享链路需重新设置适配器时调用该方法
     /// </summary>
-    /// <returns></returns>
-    public abstract bool IsSupportRequest { get; }
+    public abstract void InitDataAdapter();
 
     /// <summary>
     /// 连读分包，返回实际通讯包信息<see cref="DeviceVariableSourceRead"/> 
@@ -140,7 +146,6 @@ public abstract class CollectBase : DriverBase
     /// <param name="deviceVariables">设备下的全部通讯点位</param>
     /// <returns></returns>
     public abstract OperResult<List<DeviceVariableSourceRead>> LoadSourceRead(List<DeviceVariableRunTime> deviceVariables);
-
     /// <summary>
     /// 采集驱动读取
     /// </summary>
@@ -185,10 +190,20 @@ public abstract class CollectBase : DriverBase
     protected abstract void Init(CollectDeviceRunTime device, object client = null);
 
     /// <summary>
-    /// 共享链路需重新设置设配器时调用该方法
+    /// 底层日志输出
     /// </summary>
-    public abstract void InitDataAdapter();
+    protected override void Log_Out(LogType arg1, object arg2, string arg3, Exception arg4)
+    {
+        if (arg1 >= LogType.Warning)
+        {
+            CurDevice.LastErrorMessage = arg3;
+        }
+        if (IsLogOut || arg1 >= LogType.Warning)
+        {
+            _logger.Log_Out(arg1, arg2, arg3, arg4);
+        }
 
+    }
     /// <summary>
     /// 返回全部内容字节数组
     /// <br></br>

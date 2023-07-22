@@ -174,7 +174,7 @@ public class OPCDAClient : CollectBase
                         var operResult = item.SetValue(newValue, time);
                         if (!operResult.IsSuccess)
                         {
-                            _logger?.LogWarning(operResult.Message, ToString());
+                            logMessage?.LogWarning(operResult.Message);
                         }
                     }
                     else
@@ -182,17 +182,15 @@ public class OPCDAClient : CollectBase
                         var operResult = item.SetValue(null, time);
                         if (!operResult.IsSuccess)
                         {
-                            _logger?.LogWarning(operResult.Message, ToString());
+                            logMessage?.LogWarning(operResult.Message);
                         }
-                        Device.LastErrorMessage = $"{item.Name} 质量为Bad ";
                     }
                 }
             }
         }
         catch (Exception ex)
         {
-            _logger?.LogWarning(ex, ToString());
-            Device.LastErrorMessage = ex.Message;
+            logMessage?.LogWarning(ex, ToString());
         }
     }
 }

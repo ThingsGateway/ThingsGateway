@@ -88,7 +88,7 @@ public partial class OPCUAServer : UpLoadBase
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogWarning(ex, ToString());
+                        logMessage.LogWarning(ex, ToString());
                     }
                 }
 
@@ -96,7 +96,7 @@ public partial class OPCUAServer : UpLoadBase
         }
         catch (Exception ex)
         {
-            _logger.LogWarning(ex, ToString());
+            logMessage.LogWarning(ex, ToString());
         }
         if (driverPropertys.CycleInterval > UploadDeviceThread.CycleInterval + 50)
         {
@@ -126,7 +126,6 @@ public partial class OPCUAServer : UpLoadBase
             }
             else
             {
-                CurDevice.LastErrorMessage = result?.ToString();
                 return new OperResult();
             }
         }
@@ -158,7 +157,7 @@ public partial class OPCUAServer : UpLoadBase
             };
         }
 
-        m_server = new(device, _logger, _scopeFactory.CreateScope());
+        m_server = new(device, logMessage, _scopeFactory.CreateScope());
 
         var serviceScope = _scopeFactory.CreateScope();
         var _globalDeviceData = serviceScope.ServiceProvider.GetService<GlobalDeviceData>();
