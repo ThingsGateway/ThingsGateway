@@ -101,7 +101,8 @@ public class KafkaProducer : UpLoadBase
                     }
 
                 }
-                producer.Flush(cancellationToken);
+                if (isSuccess)
+                    producer.Flush(cancellationToken);
 
             }
         }
@@ -135,7 +136,8 @@ public class KafkaProducer : UpLoadBase
                         _logger.LogWarning(ex, ToString());
                     }
                 }
-                producer.Flush(cancellationToken);
+                if (isSuccess)
+                    producer.Flush(cancellationToken);
 
             }
         }
@@ -174,6 +176,7 @@ public class KafkaProducer : UpLoadBase
                 var result = (timeOutResult as Task<DeliveryResult<Null, string>>).Result;
                 if (result.Status != PersistenceStatus.Persisted)
                 {
+                    isSuccess = false;
                     await CacheDb.AddCacheData(topic, payLoad, driverPropertys.CacheMaxCount);
                 }
                 else
