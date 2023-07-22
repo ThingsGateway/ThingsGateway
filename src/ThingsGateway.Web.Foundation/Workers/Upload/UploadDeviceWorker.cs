@@ -386,7 +386,7 @@ public class UploadDeviceWorker : BackgroundService
                 }
 
             }
-            await Task.Delay(100000, stoppingToken);
+            await Task.Delay(300000, stoppingToken);
         }
     }
 

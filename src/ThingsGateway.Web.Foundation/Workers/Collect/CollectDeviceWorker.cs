@@ -527,7 +527,7 @@ public class CollectDeviceWorker : BackgroundService
 
             }
 
-            await Task.Delay(10000, stoppingToken);
+            await Task.Delay(300000, stoppingToken);
         }
     }
 
