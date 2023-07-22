@@ -301,6 +301,7 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
                         try
                         {
                             tp = ((JValue)((JArray)tag.Value).FirstOrDefault()).Value.GetType();
+                            tag.ValueRank = ValueRanks.OneOrMoreDimensions;
                         }
                         catch
                         {
@@ -309,6 +310,7 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
                     if (tp == typeof(JValue))
                     {
                         tp = ((JValue)tag.Value).Value.GetType();
+                        tag.ValueRank = ValueRanks.Scalar;
                     }
                     tag.DataType = DataNodeType(tp);
 
@@ -371,7 +373,7 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
         variable.DisplayName = new LocalizedText(variableRunTime.Name);
         variable.WriteMask = AttributeWriteMask.DisplayName | AttributeWriteMask.Description;
         variable.UserWriteMask = AttributeWriteMask.DisplayName | AttributeWriteMask.Description;
-        variable.ValueRank = ValueRanks.Any;
+        variable.ValueRank = ValueRanks.Scalar;
         variable.Id = variableRunTime.Id;
         variable.DataType = DataNodeType(variableRunTime);
         var level = ProtectTypeTrans(variableRunTime);

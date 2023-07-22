@@ -56,6 +56,8 @@ public class RpcSingletonService : ISingleton
     /// <returns></returns>
     public async Task<OperResult> InvokeDeviceMethodAsync(string sourceDes, KeyValuePair<string, string> item, CancellationToken cancellationToken = default)
     {
+        //避免并发过高，这里延时10ms
+        await Task.Delay(10);
         OperResult data = new();
         {
             var tag = _globalDeviceData.AllVariables.FirstOrDefault(it => it.Name == item.Key);
