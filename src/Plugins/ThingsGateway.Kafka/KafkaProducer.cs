@@ -97,6 +97,7 @@ public class KafkaProducer : UpLoadBase
                     }
                     catch (Exception ex)
                     {
+                        CurDevice.LastErrorMessage = ex.Message;
                         _logger.LogWarning(ex, ToString());
                     }
 
@@ -108,6 +109,7 @@ public class KafkaProducer : UpLoadBase
         }
         catch (Exception ex)
         {
+            CurDevice.LastErrorMessage = ex.Message;
             _logger?.LogWarning(ex, ToString());
         }
         try
@@ -133,6 +135,7 @@ public class KafkaProducer : UpLoadBase
                     }
                     catch (Exception ex)
                     {
+                        CurDevice.LastErrorMessage = ex.Message;
                         _logger.LogWarning(ex, ToString());
                     }
                 }
@@ -143,6 +146,7 @@ public class KafkaProducer : UpLoadBase
         }
         catch (Exception ex)
         {
+            CurDevice.LastErrorMessage = ex.Message;
             _logger?.LogWarning(ex, ToString());
         }
 
@@ -287,7 +291,6 @@ public class KafkaProducer : UpLoadBase
                 osStr += RuntimeInformation.ProcessArchitecture.ToString().ToLower();
 
                 var pathToLibrd = System.IO.Path.Combine(AppContext.BaseDirectory, "Plugins", "ThingsGateway.Kafka", "runtimes", osStr, "native", $"librdkafka{fileEx}");
-                _logger.LogInformation($"路径：{pathToLibrd}");
                 Library.Load(pathToLibrd);
             }
             producer = producerBuilder.Build();

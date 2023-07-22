@@ -128,6 +128,7 @@ public class MqttServer : UpLoadBase
                     }
                     catch (Exception ex)
                     {
+                        CurDevice.LastErrorMessage = ex.Message;
                         _logger.LogWarning(ex, ToString());
                     }
 
@@ -137,6 +138,7 @@ public class MqttServer : UpLoadBase
         }
         catch (Exception ex)
         {
+            CurDevice.LastErrorMessage = ex.Message;
             _logger.LogWarning(ex, ToString());
         }
 
@@ -167,6 +169,7 @@ public class MqttServer : UpLoadBase
                     }
                     catch (Exception ex)
                     {
+                        CurDevice.LastErrorMessage = ex.Message;
                         _logger.LogWarning(ex, ToString());
                     }
 
@@ -177,6 +180,7 @@ public class MqttServer : UpLoadBase
         }
         catch (Exception ex)
         {
+            CurDevice.LastErrorMessage = ex.Message;
             _logger.LogWarning(ex, ToString());
         }
         if (driverPropertys.CycleInterval > UploadDeviceThread.CycleInterval + 50)

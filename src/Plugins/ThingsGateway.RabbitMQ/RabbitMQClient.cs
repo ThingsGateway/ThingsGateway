@@ -82,6 +82,7 @@ public class RabbitMQClient : UpLoadBase
                 }
                 catch (Exception ex)
                 {
+                    CurDevice.LastErrorMessage = ex.Message;
                     _logger.LogWarning(ex, ToString());
                 }
             }
@@ -112,6 +113,7 @@ public class RabbitMQClient : UpLoadBase
                         }
                         catch (Exception ex)
                         {
+                            CurDevice.LastErrorMessage = ex.Message;
                             _logger.LogWarning(ex, ToString());
                         }
 
@@ -139,6 +141,7 @@ public class RabbitMQClient : UpLoadBase
                         }
                         catch (Exception ex)
                         {
+                            CurDevice.LastErrorMessage = ex.Message;
                             _logger.LogWarning(ex, ToString());
                         }
                     }
@@ -149,6 +152,7 @@ public class RabbitMQClient : UpLoadBase
         }
         catch (Exception ex)
         {
+            CurDevice.LastErrorMessage = ex.Message;
             _logger?.LogWarning(ex, ToString());
         }
         try
@@ -172,6 +176,7 @@ public class RabbitMQClient : UpLoadBase
                         }
                         catch (Exception ex)
                         {
+                            CurDevice.LastErrorMessage = ex.Message;
                             _logger.LogWarning(ex, ToString());
                         }
 
@@ -191,6 +196,7 @@ public class RabbitMQClient : UpLoadBase
                         }
                         catch (Exception ex)
                         {
+                            CurDevice.LastErrorMessage = ex.Message;
                             _logger.LogWarning(ex, ToString());
                         }
                     }
@@ -202,6 +208,7 @@ public class RabbitMQClient : UpLoadBase
         }
         catch (Exception ex)
         {
+            CurDevice.LastErrorMessage = ex.Message;
             _logger?.LogWarning(ex, ToString());
         }
 
@@ -330,6 +337,7 @@ public class RabbitMQClient : UpLoadBase
         }
         catch (Exception ex)
         {
+            CurDevice.LastErrorMessage = ex.Message;
             _logger.LogWarning(ex, ToString());
             await CacheDb.AddCacheData(queueName, data, driverPropertys.CacheMaxCount);
         }
