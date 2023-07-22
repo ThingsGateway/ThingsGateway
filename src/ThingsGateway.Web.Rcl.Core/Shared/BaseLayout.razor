@@ -34,7 +34,10 @@
     public bool IsMobile { get; set; }
     protected async override Task OnAfterRenderAsync(bool firstRender)
     {
-        await JsInitVariables.SetTimezoneOffsetAsync();
+        if (firstRender)
+        {
+            await JsInitVariables.SetTimezoneOffsetAsync();
+        }
         await base.OnAfterRenderAsync(firstRender);
     }
     protected override void OnInitialized()
