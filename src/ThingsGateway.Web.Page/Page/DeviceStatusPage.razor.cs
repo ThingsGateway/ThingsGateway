@@ -104,7 +104,10 @@ namespace ThingsGateway.Web.Page
             }
             finally
             {
+                collectDeviceInfoItem = null;
+                uploadDeviceInfoItem = null;
                 isAllRestart = false;
+
             }
         }
 

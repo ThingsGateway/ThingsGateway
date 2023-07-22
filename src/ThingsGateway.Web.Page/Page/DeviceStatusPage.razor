@@ -258,7 +258,7 @@
                                     {
                                         item = collectDeviceInfoItem.Driver?.Messages;
                                     }
-                                    if(item==null)
+                                    if (item == null)
                                     {
                                         item = new List<string>();
                                     }
@@ -368,7 +368,7 @@
 
                                     <MTooltip Bottom Context="tip">
                                         <ActivatorContent>
-                                            <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("tgdevicepause")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small OnClick=@(()=>Config(item.DeviceId,!item.Device?.KeepRun))>
+                                            <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("tgdevicepause")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small OnClick=@(()=>UpConfig(item.DeviceId,!item.Device?.KeepRun))>
                                                 <MIcon>@(item.Device?.KeepRun == true ? "mdi-pause" : "mdi-play")</MIcon>
                                                 </MButton>
                                             </ActivatorContent>
@@ -378,7 +378,7 @@
                                     </MTooltip>
                                     <MTooltip Bottom Context="tip">
                                         <ActivatorContent>
-                                            <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("tgdevicerestart")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small Loading=isRestart OnClick=@(()=>UpRestart(item.DeviceId))>
+                                            <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("tgdevicerestart")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small Loading=isRestart OnClick=@(()=> UpRestart(item.DeviceId))>
                                                 <MIcon>mdi-restart</MIcon>
                                             </MButton>
                                         </ActivatorContent>
