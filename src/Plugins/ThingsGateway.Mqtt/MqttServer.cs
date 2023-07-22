@@ -128,8 +128,7 @@ public class MqttServer : UpLoadBase
                     }
                     catch (Exception ex)
                     {
-                        CurDevice.LastErrorMessage = ex.Message;
-                        _logger.LogWarning(ex, ToString());
+                        logMessage?.LogWarning(ex, ToString());
                     }
 
                 }
@@ -138,8 +137,7 @@ public class MqttServer : UpLoadBase
         }
         catch (Exception ex)
         {
-            CurDevice.LastErrorMessage = ex.Message;
-            _logger.LogWarning(ex, ToString());
+            logMessage?.LogWarning(ex, ToString());
         }
 
         try
@@ -169,8 +167,7 @@ public class MqttServer : UpLoadBase
                     }
                     catch (Exception ex)
                     {
-                        CurDevice.LastErrorMessage = ex.Message;
-                        _logger.LogWarning(ex, ToString());
+                        logMessage?.LogWarning(ex, ToString());
                     }
 
                 }
@@ -180,8 +177,7 @@ public class MqttServer : UpLoadBase
         }
         catch (Exception ex)
         {
-            CurDevice.LastErrorMessage = ex.Message;
-            _logger.LogWarning(ex, ToString());
+            logMessage?.LogWarning(ex, ToString());
         }
         if (driverPropertys.CycleInterval > UploadDeviceThread.CycleInterval + 50)
         {
@@ -217,7 +213,7 @@ public class MqttServer : UpLoadBase
     }
     protected override void Init(UploadDeviceRunTime device)
     {
-        var mqttFactory = new MqttFactory(new PrivateLogger(_logger));
+        var mqttFactory = new MqttFactory(new PrivateLogger(logMessage));
         var mqttServerOptions = mqttFactory.CreateServerOptionsBuilder()
             .WithDefaultEndpointBoundIPAddress(driverPropertys.IP.IsNullOrEmpty() ? null : IPAddress.Parse(driverPropertys.IP))
             .WithDefaultEndpointPort(driverPropertys.Port)
@@ -298,7 +294,7 @@ public class MqttServer : UpLoadBase
             return;
         }
         IdWithName.AddOrUpdate(arg.ClientId, (a) => arg.UserName, (a, b) => arg.UserName);
-        _logger?.LogInformation(ToString() + "-" + IdWithName[arg.ClientId] + "-客户端已连接成功");
+        logMessage?.LogInformation(ToString() + "-" + IdWithName[arg.ClientId] + "-客户端已连接成功");
     }
 
     private void DeviceStatusChange(CollectDeviceRunTime collectDeviceRunTime)
@@ -344,7 +340,7 @@ public class MqttServer : UpLoadBase
 
         catch (Exception ex)
         {
-            _logger?.LogWarning(ex, ToString());
+            logMessage?.LogWarning(ex, ToString());
             mqttRpcResult = new() { Message = "Failed", RpcId = rpcData.RpcId, Success = false };
 
         }

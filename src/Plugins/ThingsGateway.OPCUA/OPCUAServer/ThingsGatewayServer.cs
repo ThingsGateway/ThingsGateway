@@ -40,14 +40,14 @@ public partial class ThingsGatewayServer : StandardServer
     /// </summary>
     public ThingsGatewayNodeManager NodeManager;
     private UploadDevice _device;
-    private ILogger _logger;
+    private ILog logMessage;
     private IServiceScope _serviceScope;
     private ICertificateValidator m_userCertificateValidator;
     /// <inheritdoc cref="ThingsGatewayServer"/>
-    public ThingsGatewayServer(UploadDevice device, ILogger logger, IServiceScope serviceScope)
+    public ThingsGatewayServer(UploadDevice device, ILog logger, IServiceScope serviceScope)
     {
         _device = device;
-        _logger = logger;
+        logMessage = logger;
         _serviceScope = serviceScope;
     }
     /// <inheritdoc/>
@@ -132,13 +132,13 @@ public partial class ThingsGatewayServer : StandardServer
         // 当用户身份改变时请求。
         server.SessionManager.ImpersonateUser += SessionManager_ImpersonateUser;
         base.OnServerStarted(server);
-        _logger.LogInformation("OPCUAServer启动成功");
+        logMessage.LogInformation("OPCUAServer启动成功");
     }
 
     /// <inheritdoc/>
     protected override void OnServerStarting(ApplicationConfiguration configuration)
     {
-        _logger.LogInformation("OPCUAServer正在启动");
+        logMessage.LogInformation("OPCUAServer正在启动");
         base.OnServerStarting(configuration);
 
         // 由应用程序决定如何验证用户身份令牌。
@@ -149,7 +149,7 @@ public partial class ThingsGatewayServer : StandardServer
     /// <inheritdoc/>
     protected override void OnServerStopping()
     {
-        _logger.LogInformation("OPCUAServer正在停止");
+        logMessage.LogInformation("OPCUAServer正在停止");
         base.OnServerStopping();
     }
 

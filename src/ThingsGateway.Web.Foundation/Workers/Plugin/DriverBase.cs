@@ -52,11 +52,11 @@ public abstract class DriverBase : DisposableObject
     /// <summary>
     /// 日志
     /// </summary>
-    protected ILogger _logger;
+    internal ILogger _logger;
     /// <summary>
     /// 服务工厂
     /// </summary>
-    protected IServiceScopeFactory _scopeFactory;
+    protected IServiceScopeFactory _scopeFactory { get; set; }
 
     /// <summary>
     /// 插件配置项 ，继承实现<see cref="DriverPropertyBase"/>后，返回继承类，如果不存在，返回null
@@ -87,10 +87,12 @@ public abstract class DriverBase : DisposableObject
     /// <summary>
     /// 底层日志输出
     /// </summary>
-    protected void Log_Out(LogType arg1, object arg2, string arg3, Exception arg4)
+    protected virtual void Log_Out(LogType arg1, object arg2, string arg3, Exception arg4)
     {
-        if (IsLogOut)
+        if (IsLogOut || arg1 >= LogType.Warning)
+        {
             _logger.Log_Out(arg1, arg2, arg3, arg4);
+        }
     }
 
     /// <summary>

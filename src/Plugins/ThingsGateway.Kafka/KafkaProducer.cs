@@ -97,8 +97,7 @@ public class KafkaProducer : UpLoadBase
                     }
                     catch (Exception ex)
                     {
-                        CurDevice.LastErrorMessage = ex.Message;
-                        _logger.LogWarning(ex, ToString());
+                        logMessage.LogWarning(ex, ToString());
                     }
 
                 }
@@ -109,8 +108,7 @@ public class KafkaProducer : UpLoadBase
         }
         catch (Exception ex)
         {
-            CurDevice.LastErrorMessage = ex.Message;
-            _logger?.LogWarning(ex, ToString());
+            logMessage?.LogWarning(ex, ToString());
         }
         try
         {
@@ -135,8 +133,7 @@ public class KafkaProducer : UpLoadBase
                     }
                     catch (Exception ex)
                     {
-                        CurDevice.LastErrorMessage = ex.Message;
-                        _logger.LogWarning(ex, ToString());
+                        logMessage?.LogWarning(ex, ToString());
                     }
                 }
                 if (isSuccess)
@@ -146,8 +143,7 @@ public class KafkaProducer : UpLoadBase
         }
         catch (Exception ex)
         {
-            CurDevice.LastErrorMessage = ex.Message;
-            _logger?.LogWarning(ex, ToString());
+            logMessage?.LogWarning(ex, ToString());
         }
 
         if (driverPropertys.CycleInterval > UploadDeviceThread.CycleInterval + 50)
@@ -211,9 +207,8 @@ public class KafkaProducer : UpLoadBase
         }
         catch (Exception ex)
         {
-            _logger.LogWarning(ex, ToString());
+            logMessage?.LogWarning(ex, ToString());
             await CacheDb.AddCacheData(topic, payLoad, driverPropertys.CacheMaxCount);
-            CurDevice.LastErrorMessage = ex.Message;
         }
     }
     private bool isSuccess = true;
@@ -257,9 +252,8 @@ public class KafkaProducer : UpLoadBase
         //3、错误日志监视
         producerBuilder.SetErrorHandler((p, msg) =>
         {
-            CurDevice.LastErrorMessage = msg.Reason;
             isSuccess = false;
-            _logger.LogWarning($"Producer_Erro信息：Code：{msg.Code}；Reason：{msg.Reason}；IsError：{msg.IsError}");
+            logMessage?.LogWarning(msg.Reason);
         });
         //kafka
         try

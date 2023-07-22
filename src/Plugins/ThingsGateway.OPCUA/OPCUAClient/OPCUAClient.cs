@@ -128,7 +128,7 @@ public class OPCUAClient : CollectBase
                         var operResult = item.SetValue(value, time);
                         if (!operResult.IsSuccess)
                         {
-                            _logger?.LogWarning(operResult.Message, ToString());
+                            logMessage?.LogWarning(operResult.Message);
                         }
                     }
                     else
@@ -136,9 +136,8 @@ public class OPCUAClient : CollectBase
                         var operResult = item.SetValue(null, time);
                         if (!operResult.IsSuccess)
                         {
-                            _logger?.LogWarning(operResult.Message, ToString());
+                            logMessage?.LogWarning(operResult.Message);
                         }
-                        Device.LastErrorMessage = $"{item.Name} 质量为Bad ";
                     }
                 }
                 logMessage.Trace(LogMessageHeader + ToString() + "状态变化:" + Environment.NewLine + data.Item1 + ":" + data.Item3.ToString());
@@ -248,7 +247,7 @@ public class OPCUAClient : CollectBase
                         var operResult = item.SetValue(value, time);
                         if (!operResult.IsSuccess)
                         {
-                            _logger?.LogWarning(operResult.Message, ToString());
+                            logMessage?.LogWarning(operResult.Message);
                         }
                     }
                     else
@@ -256,31 +255,27 @@ public class OPCUAClient : CollectBase
                         var operResult = item.SetValue(null, time);
                         if (!operResult.IsSuccess)
                         {
-                            _logger?.LogWarning(operResult.Message, ToString());
+                            logMessage?.LogWarning(operResult.Message);
                         }
-                        Device.LastErrorMessage = $"{item.Name} 质量为Bad ";
                     }
                 }
             }
         }
         catch (Exception ex)
         {
-            _logger?.LogWarning(ex, ToString());
-            Device.LastErrorMessage = ex.Message;
+            logMessage?.LogWarning(ex, ToString());
         }
     }
     private void opcStatusChange(object sender, OPCUAStatusEventArgs e)
     {
         if (e.Error)
         {
-            _logger.LogWarning(e.Text);
             Device.ErrorCount = 999;
-            Device.LastErrorMessage = $"{e.Text}";
+            logMessage.LogWarning(e.Text);
         }
         else
         {
             Device.ErrorCount = 0;
-            _logger.LogTrace(e.Text);
         }
     }
 }

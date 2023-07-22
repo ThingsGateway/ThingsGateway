@@ -10,8 +10,6 @@
 //------------------------------------------------------------------------------
 #endregion
 
-using Microsoft.Extensions.Logging;
-
 using ThingsGateway.Foundation;
 using ThingsGateway.Foundation.Adapter.Modbus;
 using ThingsGateway.Foundation.Extension;
@@ -22,86 +20,80 @@ namespace ThingsGateway.Modbus
 {
     internal static class ModbusHelper
     {
-        internal static OperResult<List<DeviceVariableSourceRead>> LoadSourceRead(this List<DeviceVariableRunTime> deviceVariables, ILogger _logger, IReadWriteDevice device, int MaxPack)
+        internal static OperResult<List<DeviceVariableSourceRead>> LoadSourceRead(this List<DeviceVariableRunTime> deviceVariables, IReadWriteDevice device, int MaxPack)
         {
             var byteConverter = device.ThingsGatewayBitConverter;
             var result = new List<DeviceVariableSourceRead>();
-            try
+            //需要先剔除额外信息，比如dataformat等
+            foreach (var item in deviceVariables)
             {
-                //需要先剔除额外信息，比如dataformat等
-                foreach (var item in deviceVariables)
+                var address = item.VariableAddress;
+
+                IThingsGatewayBitConverter transformParameter = ByteTransformHelpers.GetTransByAddress(ref address, byteConverter);
+                item.ThingsGatewayBitConverter = transformParameter;
+                //item.VariableAddress = address;
+                item.Index = device.GetBitOffset(item.VariableAddress);
+            }
+
+            //按读取间隔分组
+            var tags = deviceVariables.GroupBy(it => it.IntervalTime);
+            foreach (var item in tags)
+            {
+                Dictionary<ModbusAddress, DeviceVariableRunTime> map = item.ToDictionary(it =>
                 {
-                    var address = item.VariableAddress;
+                    var lastLen = it.DataTypeEnum.GetByteLength();
+                    if (lastLen <= 0)
+                    {
+                        if (it.DataTypeEnum.GetSystemType() == typeof(bool))
+                        {
+                            lastLen = 2;
+                        }
+                        else if (it.DataTypeEnum.GetSystemType() == typeof(string))
+                        {
+                            lastLen = it.ThingsGatewayBitConverter.StringLength;
+                        }
+                        else if (it.DataTypeEnum.GetSystemType() == typeof(object))
+                        {
+                            lastLen = 2;
+                        }
+                    }
+                    var address = it.VariableAddress;
+                    if (address.IndexOf('.') > 0)
+                    {
+                        var addressSplits = address.SplitDot();
 
-                    IThingsGatewayBitConverter transformParameter = ByteTransformHelpers.GetTransByAddress(ref address, byteConverter);
-                    item.ThingsGatewayBitConverter = transformParameter;
-                    //item.VariableAddress = address;
-                    item.Index = device.GetBitOffset(item.VariableAddress);
-                }
+                        address = addressSplits.RemoveLast(1).ArrayToString(".");
+                    }
 
-                //按读取间隔分组
-                var tags = deviceVariables.GroupBy(it => it.IntervalTime);
-                foreach (var item in tags)
+                    var result = new ModbusAddress(address, (ushort)lastLen);
+                    if (result == null)
+                    {
+                    }
+
+                    return result;
+                });
+
+                //获取变量的地址
+                var modbusAddressList = map.Keys.ToList();
+
+                //获取功能码
+                var functionCodes = modbusAddressList.Select(t => t.ReadFunction).Distinct();
+                foreach (var functionCode in functionCodes)
                 {
-                    Dictionary<ModbusAddress, DeviceVariableRunTime> map = item.ToDictionary(it =>
+                    var modbusAddressSameFunList = modbusAddressList
+                        .Where(t => t.ReadFunction == functionCode).ToList();
+                    var stationNumbers = modbusAddressSameFunList
+                        .Select(t => t.Station).Distinct().ToList();
+                    foreach (var stationNumber in stationNumbers)
                     {
-                        var lastLen = it.DataTypeEnum.GetByteLength();
-                        if (lastLen <= 0)
-                        {
-                            if (it.DataTypeEnum.GetSystemType() == typeof(bool))
-                            {
-                                lastLen = 2;
-                            }
-                            else if (it.DataTypeEnum.GetSystemType() == typeof(string))
-                            {
-                                lastLen = it.ThingsGatewayBitConverter.StringLength;
-                            }
-                            else if (it.DataTypeEnum.GetSystemType() == typeof(object))
-                            {
-                                lastLen = 2;
-                            }
-                        }
-                        var address = it.VariableAddress;
-                        if (address.IndexOf('.') > 0)
-                        {
-                            var addressSplits = address.SplitDot();
-
-                            address = addressSplits.RemoveLast(1).ArrayToString(".");
-                        }
-
-                        var result = new ModbusAddress(address, (ushort)lastLen);
-                        if (result == null)
-                        {
-                        }
-
-                        return result;
-                    });
-
-                    //获取变量的地址
-                    var modbusAddressList = map.Keys.ToList();
-
-                    //获取功能码
-                    var functionCodes = modbusAddressList.Select(t => t.ReadFunction).Distinct();
-                    foreach (var functionCode in functionCodes)
-                    {
-                        var modbusAddressSameFunList = modbusAddressList
-                            .Where(t => t.ReadFunction == functionCode).ToList();
-                        var stationNumbers = modbusAddressSameFunList
-                            .Select(t => t.Station).Distinct().ToList();
-                        foreach (var stationNumber in stationNumbers)
-                        {
-                            var addressList = modbusAddressSameFunList.Where(t => t.Station == stationNumber)
-                                .ToDictionary(t => t, t => map[t]);
-                            var tempResult = LoadSourceRead(addressList, functionCode, item.Key, MaxPack);
-                            result.AddRange(tempResult.Content);
-                        }
+                        var addressList = modbusAddressSameFunList.Where(t => t.Station == stationNumber)
+                            .ToDictionary(t => t, t => map[t]);
+                        var tempResult = LoadSourceRead(addressList, functionCode, item.Key, MaxPack);
+                        result.AddRange(tempResult.Content);
                     }
                 }
             }
-            catch (Exception ex)
-            {
-                _logger?.LogError(ex, "自动分包失败");
-            }
+
             return OperResult.CreateSuccessResult(result);
         }
 

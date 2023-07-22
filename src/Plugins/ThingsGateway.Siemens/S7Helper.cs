@@ -10,97 +10,90 @@
 //------------------------------------------------------------------------------
 #endregion
 
-using Microsoft.Extensions.Logging;
-
 using ThingsGateway.Foundation;
 
 namespace ThingsGateway.Siemens
 {
     internal static class S7Helper
     {
-        internal static OperResult<List<DeviceVariableSourceRead>> LoadSourceRead(this List<DeviceVariableRunTime> deviceVariables, ILogger _logger, SiemensS7PLC siemensS7Net)
+        internal static OperResult<List<DeviceVariableSourceRead>> LoadSourceRead(this List<DeviceVariableRunTime> deviceVariables, SiemensS7PLC siemensS7Net)
         {
             var byteConverter = siemensS7Net.ThingsGatewayBitConverter;
             var result = new List<DeviceVariableSourceRead>();
-            try
+
+            //需要先剔除额外信息，比如dataformat等
+            foreach (var item in deviceVariables)
             {
-                //需要先剔除额外信息，比如dataformat等
-                foreach (var item in deviceVariables)
+                var address = item.VariableAddress;
+
+                IThingsGatewayBitConverter transformParameter = ByteTransformHelpers.GetTransByAddress(ref address, byteConverter);
+                item.ThingsGatewayBitConverter = transformParameter;
+                //item.VariableAddress = address;
+
+                item.Index = siemensS7Net.GetBitOffset(item.VariableAddress);
+            }
+            //按读取间隔分组
+            var tags = deviceVariables.GroupBy(it => it.IntervalTime);
+            foreach (var item in tags)
+            {
+                Dictionary<SiemensAddress, DeviceVariableRunTime> map = item.ToDictionary(it =>
                 {
-                    var address = item.VariableAddress;
 
-                    IThingsGatewayBitConverter transformParameter = ByteTransformHelpers.GetTransByAddress(ref address, byteConverter);
-                    item.ThingsGatewayBitConverter = transformParameter;
-                    //item.VariableAddress = address;
+                    var lastLen = it.DataTypeEnum.GetByteLength(); ;
+                    if (lastLen <= 0)
+                    {
+                        if (it.DataTypeEnum.GetSystemType() == typeof(bool))
+                        {
+                            lastLen = 2;
+                        }
+                        else if (it.DataTypeEnum.GetSystemType() == typeof(string))
+                        {
+                            lastLen = it.ThingsGatewayBitConverter.StringLength;
+                        }
+                        else if (it.DataTypeEnum.GetSystemType() == typeof(object))
+                        {
+                            lastLen = 1;
+                        }
+                    }
 
-                    item.Index = siemensS7Net.GetBitOffset(item.VariableAddress);
-                }
-                //按读取间隔分组
-                var tags = deviceVariables.GroupBy(it => it.IntervalTime);
-                foreach (var item in tags)
+                    var s7Address = SiemensAddress.ParseFrom(it.VariableAddress);
+                    if (s7Address.IsSuccess)
+                    {
+                        if ((s7Address.Content.DataCode == (byte)S7WordLength.Counter || s7Address.Content.DataCode == (byte)S7WordLength.Timer) && lastLen == 1)
+                        {
+                            lastLen = 2;
+                        }
+                    }
+                    //这里把每个变量的应读取长度都写入变量地址实体中
+                    return SiemensAddress.ParseFrom(it.VariableAddress, (ushort)lastLen).Content;
+
+                });
+
+                //获取变量的地址
+                var modbusAddressList = map.Keys.ToList();
+
+                //获取S7数据代码
+                var functionCodes = modbusAddressList.Select(t => t.DataCode).Distinct();
+                foreach (var functionCode in functionCodes)
                 {
-                    Dictionary<SiemensAddress, DeviceVariableRunTime> map = item.ToDictionary(it =>
+                    //相同数据代码的变量集合
+                    var modbusAddressSameFunList = modbusAddressList
+                        .Where(t => t.DataCode == functionCode);
+                    //相同数据代码的变量集合中的不同DB块
+                    var stationNumbers = modbusAddressSameFunList
+                        .Select(t => t.DbBlock).Distinct();
+                    foreach (var stationNumber in stationNumbers)
                     {
-
-                        var lastLen = it.DataTypeEnum.GetByteLength(); ;
-                        if (lastLen <= 0)
-                        {
-                            if (it.DataTypeEnum.GetSystemType() == typeof(bool))
-                            {
-                                lastLen = 2;
-                            }
-                            else if (it.DataTypeEnum.GetSystemType() == typeof(string))
-                            {
-                                lastLen = it.ThingsGatewayBitConverter.StringLength;
-                            }
-                            else if (it.DataTypeEnum.GetSystemType() == typeof(object))
-                            {
-                                lastLen = 1;
-                            }
-                        }
-
-                        var s7Address = SiemensAddress.ParseFrom(it.VariableAddress);
-                        if (s7Address.IsSuccess)
-                        {
-                            if ((s7Address.Content.DataCode == (byte)S7WordLength.Counter || s7Address.Content.DataCode == (byte)S7WordLength.Timer) && lastLen == 1)
-                            {
-                                lastLen = 2;
-                            }
-                        }
-                        //这里把每个变量的应读取长度都写入变量地址实体中
-                        return SiemensAddress.ParseFrom(it.VariableAddress, (ushort)lastLen).Content;
-
-                    });
-
-                    //获取变量的地址
-                    var modbusAddressList = map.Keys.ToList();
-
-                    //获取S7数据代码
-                    var functionCodes = modbusAddressList.Select(t => t.DataCode).Distinct();
-                    foreach (var functionCode in functionCodes)
-                    {
-                        //相同数据代码的变量集合
-                        var modbusAddressSameFunList = modbusAddressList
-                            .Where(t => t.DataCode == functionCode);
-                        //相同数据代码的变量集合中的不同DB块
-                        var stationNumbers = modbusAddressSameFunList
-                            .Select(t => t.DbBlock).Distinct();
-                        foreach (var stationNumber in stationNumbers)
-                        {
-                            var addressList = modbusAddressSameFunList.Where(t => t.DbBlock == stationNumber)
-                                .ToDictionary(t => t, t => map[t]);
-                            //循环对数据代码，站号都一样的变量进行分配连读包
-                            var tempResult = LoadSourceRead(addressList, functionCode, item.Key, siemensS7Net);
-                            //添加到总连读包
-                            result.AddRange(tempResult.Content);
-                        }
+                        var addressList = modbusAddressSameFunList.Where(t => t.DbBlock == stationNumber)
+                            .ToDictionary(t => t, t => map[t]);
+                        //循环对数据代码，站号都一样的变量进行分配连读包
+                        var tempResult = LoadSourceRead(addressList, functionCode, item.Key, siemensS7Net);
+                        //添加到总连读包
+                        result.AddRange(tempResult.Content);
                     }
                 }
             }
-            catch (Exception ex)
-            {
-                _logger?.LogError(ex, "自动分包失败");
-            }
+
             return OperResult.CreateSuccessResult(result);
         }
 
