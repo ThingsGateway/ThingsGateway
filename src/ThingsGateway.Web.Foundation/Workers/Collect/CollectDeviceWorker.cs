@@ -493,11 +493,12 @@ public class CollectDeviceWorker : BackgroundService
                 {
 
                     if (
-    (devcore.Device.ActiveTime != DateTime.MinValue && devcore.Device.ActiveTime.AddMinutes(3) <= DateTime.UtcNow)
+    (devcore.Device.ActiveTime != DateTime.MinValue
+    && devcore.Device.ActiveTime.AddMinutes(3) <= DateTime.UtcNow)
     || devcore.IsInitSuccess == false
     )
                     {
-                        if (devcore.StoppingTokens.Last().Token.IsCancellationRequested)
+                        if (devcore.StoppingTokens.LastOrDefault()?.Token.IsCancellationRequested == true)
                             continue;
                         if (devcore.Device.DeviceStatus == DeviceStatusEnum.Pause)
                             continue;

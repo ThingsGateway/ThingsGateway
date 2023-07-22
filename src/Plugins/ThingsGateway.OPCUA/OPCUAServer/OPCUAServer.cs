@@ -98,7 +98,20 @@ public partial class OPCUAServer : UpLoadBase
         {
             _logger.LogWarning(ex, ToString());
         }
-        await Task.CompletedTask;
+        if (driverPropertys.CycleInterval > UploadDeviceThread.CycleInterval + 50)
+        {
+            try
+            {
+                await Task.Delay(driverPropertys.CycleInterval - UploadDeviceThread.CycleInterval, cancellationToken);
+            }
+            catch
+            {
+            }
+        }
+        else
+        {
+
+        }
     }
 
     /// <inheritdoc/>
@@ -106,14 +119,15 @@ public partial class OPCUAServer : UpLoadBase
     {
         try
         {
-            var result = m_server?.GetStatus();
-            if (result.State == ServerState.Running)
+            var result = m_server?.CurrentInstance.CurrentState;
+            if (result == ServerState.Running)
             {
                 return OperResult.CreateSuccessResult(result);
             }
             else
             {
-                return new OperResult(result.State.ToString());
+                CurDevice.LastErrorMessage = result?.ToString();
+                return new OperResult();
             }
         }
         catch (Exception ex)

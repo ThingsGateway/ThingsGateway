@@ -522,7 +522,11 @@ public class MqttClient : UpLoadBase
                 if (_mqttClient?.IsConnected == true)
                     return OperResult.CreateSuccessResult();
                 if (_mqttClient == null)
+                {
+                    CurDevice.LastErrorMessage = "未初始化";
                     return new OperResult("未初始化");
+
+                }
                 var result = await _mqttClient?.ConnectAsync(_mqttClientOptions, StoppingToken.Token);
                 if (result.ResultCode == MqttClientConnectResultCode.Success)
                 {
@@ -530,11 +534,13 @@ public class MqttClient : UpLoadBase
                 }
                 else
                 {
+                    CurDevice.LastErrorMessage = "result.ReasonString";
                     return new OperResult(result.ReasonString);
                 }
             }
             catch (Exception ex)
             {
+                CurDevice.LastErrorMessage = ex.Message;
                 return new OperResult(ex);
             }
             finally

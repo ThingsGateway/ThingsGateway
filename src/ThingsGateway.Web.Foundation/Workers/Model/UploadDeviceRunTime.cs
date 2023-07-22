@@ -9,6 +9,7 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 #endregion
+using ThingsGateway.Core;
 
 
 namespace ThingsGateway.Web.Foundation;
@@ -55,11 +56,22 @@ public class UploadDeviceRunTime : UploadDevice
             }
         }
     }
+    private string lastErrorMessage;
     /// <summary>
     /// 最后一次失败原因
     /// </summary>
-    [Description("失败原因")]
-    public string LastErrorMessage { get; set; }
+    [Description("最后一次失败原因")]
+    public string LastErrorMessage
+    {
+        get
+        {
+            return lastErrorMessage;
+        }
+        set
+        {
+            lastErrorMessage = DateTime.Now.ToDateTimeF() + "-" + value;
+        }
+    }
 
     /// <summary>
     /// 运行

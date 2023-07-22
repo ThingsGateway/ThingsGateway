@@ -74,7 +74,7 @@ public class OPCUAClient : CollectBase
     /// <inheritdoc/>
     public override OperResult IsConnected()
     {
-        return PLC.Connected ? OperResult.CreateSuccessResult() : new OperResult("失败");
+        return PLC.Connected ? OperResult.CreateSuccessResult() : new OperResult();
     }
     /// <inheritdoc/>
     public override OperResult<List<DeviceVariableSourceRead>> LoadSourceRead(List<DeviceVariableRunTime> deviceVariables)
