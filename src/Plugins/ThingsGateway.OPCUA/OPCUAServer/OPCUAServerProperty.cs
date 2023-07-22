@@ -32,5 +32,6 @@ public class OPCUAServerProperty : UpDriverPropertyBase
     /// </summary>
     [DeviceProperty("自动接受不受信任的证书", "")]
     public bool AutoAcceptUntrustedCertificates { get; set; } = true;
-
+    [DeviceProperty("线程循环间隔", "最小10ms")]
+    public int CycleInterval { get; set; } = 1000;
 }

@@ -198,8 +198,8 @@ public class KafkaProducer : UpLoadBase
             }
             else
             {
-                stoppingToken.Cancel();
                 isSuccess = false;
+                stoppingToken.Cancel();
             }
         }
         catch (Exception ex)
@@ -208,13 +208,11 @@ public class KafkaProducer : UpLoadBase
             await CacheDb.AddCacheData(topic, payLoad, driverPropertys.CacheMaxCount);
             CurDevice.LastErrorMessage = ex.Message;
         }
-
-
     }
     private bool isSuccess = true;
     public override OperResult IsConnected()
     {
-        return isSuccess ? new() : OperResult.CreateSuccessResult();
+        return isSuccess ? OperResult.CreateSuccessResult() : new();
     }
 
     protected override void Dispose(bool disposing)
@@ -252,8 +250,8 @@ public class KafkaProducer : UpLoadBase
         //3、错误日志监视
         producerBuilder.SetErrorHandler((p, msg) =>
         {
-            isSuccess = false;
             CurDevice.LastErrorMessage = msg.Reason;
+            isSuccess = false;
             _logger.LogWarning($"Producer_Erro信息：Code：{msg.Code}；Reason：{msg.Reason}；IsError：{msg.IsError}");
         });
         //kafka

@@ -300,7 +300,6 @@ public class UploadDeviceCore : DisposableObject
             else
             {
                 Device.ErrorCount = 999;
-                Device.LastErrorMessage = oper.Message;
             }
             return ThreadRunReturn.None;
 
