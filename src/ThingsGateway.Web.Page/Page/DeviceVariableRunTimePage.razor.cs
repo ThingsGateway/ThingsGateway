@@ -157,7 +157,7 @@ namespace ThingsGateway.Web.Page
             var data = await _globalDeviceData.AllVariables
                 .WhereIf(!input.DeviceName.IsNullOrEmpty(), a => a.DeviceName == input.DeviceName)
                 .WhereIf(!input.Name.IsNullOrEmpty(), a => a.Name.Contains(input.Name))
-                .WhereIf(!input.VariableAddress.IsNullOrEmpty(), a => a.VariableAddress.Contains(input.VariableAddress))
+                .WhereIf(!input.VariableAddress.IsNullOrEmpty(), a => a.VariableAddress?.Contains(input.VariableAddress)==true)
                 .WhereIf(!input.UploadDeviceName.IsNullOrEmpty(), a => a.VariablePropertys.ContainsKey(uploadDevId ?? 0))
                 .ToList().ToPagedListAsync(input);
             return data;

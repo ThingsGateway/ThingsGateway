@@ -271,7 +271,6 @@ public class CollectDeviceCore : DisposableObject
     internal async Task FinishActionAsync()
     {
         IsExited = true;
-        _globalDeviceData.CollectDevices.RemoveWhere(it => it.Id == Device.Id);
         try
         {
             _logger?.LogInformation($"{_device.Name}采集线程停止中");
