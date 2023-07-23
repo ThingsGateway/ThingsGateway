@@ -111,6 +111,19 @@ public abstract class UpLoadBase : DriverBase
     }
 
     /// <summary>
+    /// 获取设备的属性值
+    /// </summary>
+    public virtual string GetDevicePropertyValue(CollectDeviceRunTime collectDeviceRunTime, string propertyName)
+    {
+
+        if (collectDeviceRunTime == null)
+            return null;
+        return collectDeviceRunTime.DevicePropertys.FirstOrDefault(a => a.PropertyName == propertyName).Value;
+
+    }
+
+
+    /// <summary>
     /// 初始化
     /// </summary>
     public void Init(ILogger logger, UploadDeviceRunTime device)
