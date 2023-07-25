@@ -26,7 +26,8 @@ public class Program
     {
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
         System.IO.Directory.SetCurrentDirectory(AppContext.BaseDirectory);
-
+        ThreadPool.SetMinThreads(2000, 2000);
+        ThreadPool.SetMaxThreads(1000000, 1000000);
 
 #if KINGVIEW //读取组态王不能后台启动，所以这里多出来一个解决方案配置
         SevicesExtension.KINGVIEWCONFIG();

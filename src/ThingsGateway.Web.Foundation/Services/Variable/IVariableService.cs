@@ -70,7 +70,7 @@ public interface IVariableService : ITransient
     /// <summary>
     /// 根据名称获取ID
     /// </summary>
-    long GetIdByName(string name, bool onlyCache = true);
+    long GetIdByName(string name);
     /// <summary>
     /// 获取中间变量运行态
     /// </summary>
@@ -80,7 +80,7 @@ public interface IVariableService : ITransient
     /// <summary>
     /// 根据ID获取名称
     /// </summary>
-    string GetNameById(long id, bool onlyCache = true);
+    string GetNameById(long id);
     /// <summary>
     /// 导入
     /// </summary>

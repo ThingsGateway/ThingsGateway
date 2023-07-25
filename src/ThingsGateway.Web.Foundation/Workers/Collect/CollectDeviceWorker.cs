@@ -93,6 +93,8 @@ public class CollectDeviceWorker : BackgroundService
             StartAllDeviceThreads();
             _logger.LogInformation("启动其他服务线程");
             StartOtherHostService();
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
         }
         catch (Exception ex)
         {
@@ -229,6 +231,7 @@ public class CollectDeviceWorker : BackgroundService
                         deviceCollectCore.Init(collectDeviceRunTime);
 
                         DeviceThread(deviceCollectCore);
+                        await Task.Delay(10);
                     }
                     catch (Exception ex)
                     {
@@ -483,51 +486,61 @@ public class CollectDeviceWorker : BackgroundService
         await RestartDeviceThreadAsync();
         while (!stoppingToken.IsCancellationRequested)
         {
-            //这里不采用CancellationToken控制子线程，直接循环保持，结束时调用子设备线程Dispose
-            //检测设备采集线程假死
-            var num = CollectDeviceCores.Count;
-            for (int i = 0; i < num; i++)
+            try
             {
-                CollectDeviceCore devcore = CollectDeviceCores[i];
-                if (devcore.Device != null)
+
+
+                //这里不采用CancellationToken控制子线程，直接循环保持，结束时调用子设备线程Dispose
+                //检测设备采集线程假死
+                var num = CollectDeviceCores.Count;
+                for (int i = 0; i < num; i++)
                 {
-
-                    if (
-    (devcore.Device.ActiveTime != DateTime.MinValue
-    && devcore.Device.ActiveTime.AddMinutes(3) <= DateTime.UtcNow)
-    || devcore.IsInitSuccess == false
-    )
+                    CollectDeviceCore devcore = CollectDeviceCores[i];
+                    if (devcore.Device != null)
                     {
-                        if (devcore.StoppingTokens.LastOrDefault()?.Token.IsCancellationRequested == true)
-                            continue;
-                        if (devcore.Device.DeviceStatus == DeviceStatusEnum.Pause)
-                            continue;
-                        if (!devcore.IsInitSuccess)
-                            _logger?.LogWarning(devcore.Device.Name + "初始化失败，重启线程中");
-                        else
-                            _logger?.LogWarning(devcore.Device.Name + "采集线程假死，重启线程中");
-                        await UpDeviceThreadAsync(devcore.DeviceId, false);
-                        break;
-                    }
-                    else
-                    {
-                        _logger?.LogTrace(devcore.Device.Name + "线程检测正常");
-                    }
 
-
-                    if (devcore.Device.DeviceStatus == DeviceStatusEnum.OffLine)
-                    {
-                        if (devcore.Device.IsRedundant && _collectDeviceService.GetCacheList().Any(a => a.Id == devcore.Device.RedundantDeviceId))
+                        if (
+        (devcore.Device.ActiveTime != DateTime.MinValue
+        && devcore.Device.ActiveTime.AddMinutes(3) <= DateTime.UtcNow)
+        || devcore.IsInitSuccess == false
+        )
                         {
-                            await UpDeviceRedundantThreadAsync(devcore.Device.Id);
+                            if (devcore.StoppingTokens.LastOrDefault()?.Token.IsCancellationRequested == true)
+                                continue;
+                            if (devcore.Device.DeviceStatus == DeviceStatusEnum.Pause)
+                                continue;
+                            if (!devcore.IsInitSuccess)
+                                _logger?.LogWarning(devcore.Device.Name + "初始化失败，重启线程中");
+                            else
+                                _logger?.LogWarning(devcore.Device.Name + "采集线程假死，重启线程中");
+                            await UpDeviceThreadAsync(devcore.DeviceId, false);
+                            break;
                         }
+                        else
+                        {
+                            _logger?.LogTrace(devcore.Device.Name + "线程检测正常");
+                        }
+
+
+                        if (devcore.Device.DeviceStatus == DeviceStatusEnum.OffLine)
+                        {
+                            if (devcore.Device.IsRedundant && _collectDeviceService.GetCacheList().Any(a => a.Id == devcore.Device.RedundantDeviceId))
+                            {
+                                await UpDeviceRedundantThreadAsync(devcore.Device.Id);
+                            }
+                        }
+
                     }
 
                 }
 
+                await Task.Delay(300000, stoppingToken);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ToString());
             }
 
-            await Task.Delay(300000, stoppingToken);
         }
     }
 

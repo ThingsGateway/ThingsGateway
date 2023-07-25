@@ -15,6 +15,8 @@ using System.Linq;
 using System.Reflection;
 
 using ThingsGateway.Core;
+using ThingsGateway.Foundation.Extension.Generic;
+
 namespace ThingsGateway.Web.Foundation;
 /// <summary>
 /// 动态类型扩展
@@ -31,19 +33,18 @@ public static class ExpandoObjectHelpers
     public static T ConvertToEntity<T>(this ExpandoObject expandoObject, bool filter) where T : new()
     {
         var entity = new T();
-        var properties = typeof(T).GetAllProps().Where(a => !filter || a.GetCustomAttribute<ExcelAttribute>() != null);
+        var properties = typeof(T).GetAllProps().Where(a => !filter || a.GetCustomAttribute<ExcelAttribute>() != null).ToDictionary(a => a.FindDisplayAttribute());
 
-        foreach (var keyValuePair in (IDictionary<string, object>)expandoObject)
+        expandoObject.ForEach(keyValuePair =>
         {
-            var property = properties.FirstOrDefault(p => p.FindDisplayAttribute() == keyValuePair.Key);
-            if (property != null)
+            if (properties.TryGetValue(keyValuePair.Key, out var property))
             {
                 var value = keyValuePair.Value;
                 var objValue = property.ObjToTypeValue(value?.ToString() ?? "");
                 property.SetValue(entity, objValue);
             }
-        }
 
+        });
         return entity;
     }
 

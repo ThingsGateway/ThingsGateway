@@ -48,6 +48,7 @@ namespace ThingsGateway.Web.Page
             {
                 isImport = true;
                 StateHasChanged();
+                ImportPreviews.Clear();
                 ImportPreviews = await Preview.Invoke(file);
                 Step = 2;
             }

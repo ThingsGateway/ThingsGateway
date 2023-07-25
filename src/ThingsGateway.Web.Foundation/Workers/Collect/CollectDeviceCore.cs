@@ -356,6 +356,8 @@ public class CollectDeviceCore : DisposableObject
             {
                 foreach (var deviceVariableSourceRead in DeviceVariableSourceReads)
                 {
+                    await Task.Delay(10);
+
                     if (Device?.KeepRun == false)
                     {
                         continue;
@@ -381,11 +383,11 @@ public class CollectDeviceCore : DisposableObject
                         }
                     }
 
-
                 }
 
                 foreach (var deviceVariableMedRead in DeviceVariableMedReads)
                 {
+                    await Task.Delay(10);
                     if (Device?.KeepRun == false)
                         continue;
                     if (StoppingToken.IsCancellationRequested)
@@ -738,8 +740,7 @@ public class CollectDeviceCore : DisposableObject
         {
             _pluginService.DeleteDriver(DeviceId, Device.PluginId);
         }
-        GC.Collect();
-        GC.WaitForPendingFinalizers();
+
     }
 
 

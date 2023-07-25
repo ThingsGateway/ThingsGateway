@@ -532,10 +532,10 @@ public class AlarmWorker : BackgroundService
                                         _logger.LogWarning(ex, "写入历史报警失败");
 
                                     var cacheDatas = hisalarm.ChunkTrivialBetter(500);
-                                    await cacheDatas.ForeachAsync(async a =>
+                                    foreach (var a in cacheDatas)
                                     {
                                         await CacheDb.AddCacheData("", a.ToJson(), 50000);
-                                    });
+                                    }
                                 }
 
                             }

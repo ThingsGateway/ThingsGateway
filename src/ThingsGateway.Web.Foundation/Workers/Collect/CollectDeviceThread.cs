@@ -84,6 +84,7 @@ public class CollectDeviceThread : IDisposable
                 {
                     await device.BeforeActionAsync(StoppingToken.Token);
                 }
+                await Task.Delay(100, StoppingToken.Token);
             }
             while (!CollectDeviceCores.All(a => a.IsExited))
             {

@@ -21,7 +21,6 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 
-using ThingsGateway.Core.Extension;
 using ThingsGateway.Foundation;
 using ThingsGateway.Foundation.Extension;
 using ThingsGateway.Foundation.Extension.Enumerator;
@@ -245,11 +244,10 @@ public class HistoryValueWorker : BackgroundService
                                     if (LastIsSuccess)
                                         _logger.LogWarning(ex, "写入历史数据失败");
                                     var cacheDatas = collecthis.ChunkTrivialBetter(500);
-                                    await cacheDatas.ForeachAsync(async a =>
-                                     {
-                                         await CacheDb.AddCacheData("", a.ToJson(), 50000);
-                                     });
-
+                                    foreach (var a in cacheDatas)
+                                    {
+                                        await CacheDb.AddCacheData("", a.ToJson(), 50000);
+                                    }
                                 }
                             }
 
@@ -273,10 +271,10 @@ public class HistoryValueWorker : BackgroundService
                                     if (LastIsSuccess)
                                         _logger.LogWarning(ex, "写入历史数据失败");
                                     var cacheDatas = changehis.ChunkTrivialBetter(500);
-                                    await cacheDatas.ForeachAsync(async a =>
+                                    foreach (var a in cacheDatas)
                                     {
                                         await CacheDb.AddCacheData("", a.ToJson(), 50000);
-                                    });
+                                    }
                                 }
                             }
 
