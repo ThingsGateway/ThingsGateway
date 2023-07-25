@@ -96,7 +96,7 @@ namespace ThingsGateway.Web.Core
                 if (user == null) { return false; }
 
                 //超级管理员都能访问
-                if (UserManager.SuperAdmin) return true;
+                if (context.User.Claims.FirstOrDefault(it => it.Type == ClaimConst.IsSuperAdmin)?.Value.ToBoolean() == true) return true;
                 if (context.Resource is RouteData routeData)
                 {
                     // 获取超级管理员特性
