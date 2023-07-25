@@ -82,37 +82,48 @@ public class DeviceVariableRunTime : DeviceVariable
     /// <param name="dateTime"></param>
     public OperResult SetValue(object value, DateTime dateTime = default)
     {
-        if (value != null)
+        try
         {
-            IsOnline = true;
-        }
-        else
-        {
-            IsOnline = false;
+
+            if (value != null)
+            {
+                IsOnline = true;
+            }
+            else
+            {
+                IsOnline = false;
+                RawValue = value;
+                Set(value);
+                return OperResult.CreateSuccessResult();
+            }
             RawValue = value;
-            Set(value);
+            if (!ReadExpressions.IsNullOrEmpty())
+            {
+                object data = null;
+                try
+                {
+                    data = ReadExpressions.GetExpressionsResult(RawValue);
+                    Set(data);
+                }
+                catch (Exception ex)
+                {
+                    Set(null);
+                    return new(Name + " 转换表达式失败：" + ex.Message);
+                }
+            }
+            else
+            {
+                Set(value);
+            }
             return OperResult.CreateSuccessResult();
+
         }
-        RawValue = value;
-        if (!ReadExpressions.IsNullOrEmpty())
+
+        catch (Exception ex)
         {
-            object data = null;
-            try
-            {
-                data = ReadExpressions.GetExpressionsResult(RawValue);
-                Set(data);
-            }
-            catch (Exception ex)
-            {
-                Set(null);
-                return new(Name + " 转换表达式失败：" + ex.Message);
-            }
+            return new(ex);
         }
-        else
-        {
-            Set(value);
-        }
-        return OperResult.CreateSuccessResult();
+
 
         void Set(object data)
         {
