@@ -531,6 +531,13 @@ public class CollectDeviceWorker : BackgroundService
 
                 await Task.Delay(300000, stoppingToken);
             }
+            catch (TaskCanceledException)
+            {
+
+            }
+            catch (ObjectDisposedException)
+            {
+            }
             catch (Exception ex)
             {
                 _logger.LogError(ex, ToString());
