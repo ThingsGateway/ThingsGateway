@@ -144,9 +144,12 @@ public class CollectDeviceCore : DisposableObject
     {
         lock (this)
         {
-            CancellationTokenSource StoppingToken = StoppingTokens.LastOrDefault();
-            StoppingToken?.Cancel();
-            StoppingToken?.SafeDispose();
+            StoppingTokens.ForEach(a =>
+            {
+                a?.Cancel();
+                a?.SafeDispose();
+            });
+            StoppingTokens.Clear();
         }
     }
     #endregion

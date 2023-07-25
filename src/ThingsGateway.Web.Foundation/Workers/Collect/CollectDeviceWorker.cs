@@ -92,8 +92,6 @@ public class CollectDeviceWorker : BackgroundService
             await CreatAllDeviceThreadsAsync();
             StartAllDeviceThreads();
             StartOtherHostService();
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
         }
         catch (Exception ex)
         {
@@ -289,7 +287,7 @@ public class CollectDeviceWorker : BackgroundService
             {
                 _logger?.LogError(ex, deviceThread.ToString());
             }
-        });
+        }, 50);
         CollectDeviceThreads.Clear();
     }
 

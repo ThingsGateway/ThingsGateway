@@ -161,14 +161,19 @@ public abstract class CollectBase : DriverBase
                     var operResult = it.SetValue(null);
                     if (!operResult.IsSuccess)
                     {
-                        _logger.LogWarning(operResult.Message);
+                        _logger.LogWarning("变量值更新失败：" + operResult.Message);
                     }
                 });
+                return read;
             }
-            return ReadWriteHelpers.DealWithReadResult(read, content =>
+            else
             {
-                ReadWriteHelpers.PraseStructContent(content, deviceVariableSourceRead.DeviceVariables);
-            });
+                return ReadWriteHelpers.DealWithReadResult(read, content =>
+                {
+                    ReadWriteHelpers.PraseStructContent(content, deviceVariableSourceRead.DeviceVariables);
+                });
+            }
+
         }
         else
         {
