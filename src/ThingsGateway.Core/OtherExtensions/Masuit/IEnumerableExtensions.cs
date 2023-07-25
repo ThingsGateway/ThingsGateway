@@ -11,7 +11,6 @@
 #endregion
 
 using System.Collections.Concurrent;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 
@@ -473,16 +472,6 @@ namespace ThingsGateway.Core.Extension
         /// <returns></returns>
         public static async Task ForeachAsync<T>(this IEnumerable<T> source, Func<T, Task> action, int maxParallelCount, CancellationToken cancellationToken = default)
         {
-            if (Debugger.IsAttached)
-            {
-                foreach (var item in source)
-                {
-                    await action(item);
-                }
-
-                return;
-            }
-
             var list = new List<Task>();
             foreach (var item in source)
             {
@@ -512,13 +501,7 @@ namespace ThingsGateway.Core.Extension
         /// <returns></returns>
         public static Task ForeachAsync<T>(this IEnumerable<T> source, Func<T, Task> action, CancellationToken cancellationToken = default)
         {
-            if (source is ICollection<T> collection)
-            {
-                return ForeachAsync(collection, action, collection.Count, cancellationToken);
-            }
-
-            var list = source.ToList();
-            return ForeachAsync(list, action, list.Count, cancellationToken);
+            return ForeachAsync(source, action, source.Count(), cancellationToken);
         }
 
         /// <summary>
@@ -621,16 +604,7 @@ namespace ThingsGateway.Core.Extension
         public static async Task ForAsync<T>(this IEnumerable<T> source, Func<T, int, Task> selector, int maxParallelCount, CancellationToken cancellationToken = default)
         {
             int index = 0;
-            if (Debugger.IsAttached)
-            {
-                foreach (var item in source)
-                {
-                    await selector(item, index);
-                    index++;
-                }
 
-                return;
-            }
 
             var list = new List<Task>();
             foreach (var item in source)

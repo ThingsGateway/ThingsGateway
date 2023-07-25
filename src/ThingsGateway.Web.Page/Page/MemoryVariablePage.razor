@@ -396,7 +396,7 @@
                              var data=GetDriverProperties(UploadDevices.FirstOrDefault(a=>a.Id==choiceUploadDeviceId).PluginId,context.VariablePropertys.ContainsKey(choiceUploadDeviceId)?context.VariablePropertys[choiceUploadDeviceId]:null);
                              if(data?.Count>0)
                              {
-                             context.VariablePropertys.AddOrUpdate(choiceUploadDeviceId, data);
+                             context.VariablePropertys.AddOrUpdate(choiceUploadDeviceId,a=> data,(a,b)=>data);
                              }
                              else
                              {

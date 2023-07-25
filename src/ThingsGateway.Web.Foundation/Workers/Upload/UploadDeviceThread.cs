@@ -69,6 +69,7 @@ public class UploadDeviceThread : IDisposable
                 {
                     device.Logger?.LogError(ex, "报文日志添加失败");
                 }
+                await Task.Delay(100, StoppingToken.Token);
                 await device.BeforeActionAsync(StoppingToken.Token);
             }
             while (!UploadDeviceCores.All(a => a.IsExited))

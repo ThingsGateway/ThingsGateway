@@ -354,39 +354,48 @@ public class UploadDeviceWorker : BackgroundService
 
         while (!stoppingToken.IsCancellationRequested)
         {
-            //这里不采用CancellationToken控制子线程，直接循环保持，结束时调用子设备线程Dispose
-            //检测设备上传线程假死
-            var num = UploadDeviceCores.Count;
-            for (int i = 0; i < num; i++)
+            try
             {
-                UploadDeviceCore devcore = UploadDeviceCores[i];
-                if (devcore.Device != null)
+
+
+                //这里不采用CancellationToken控制子线程，直接循环保持，结束时调用子设备线程Dispose
+                //检测设备上传线程假死
+                var num = UploadDeviceCores.Count;
+                for (int i = 0; i < num; i++)
                 {
-                    if (
-    (devcore.Device.ActiveTime != DateTime.MinValue
-    && devcore.Device.ActiveTime.AddMinutes(3) <= DateTime.UtcNow)
-    || devcore.IsInitSuccess == false
-    )
+                    UploadDeviceCore devcore = UploadDeviceCores[i];
+                    if (devcore.Device != null)
                     {
-                        if (devcore.StoppingTokens.LastOrDefault()?.Token.IsCancellationRequested == true)
-                            continue;
-                        if (devcore.Device.DeviceStatus == DeviceStatusEnum.Pause)
-                            continue;
-                        if (!devcore.IsInitSuccess)
-                            _logger?.LogWarning(devcore.Device.Name + "初始化失败，重启线程中");
+                        if (
+        (devcore.Device.ActiveTime != DateTime.MinValue
+        && devcore.Device.ActiveTime.AddMinutes(3) <= DateTime.UtcNow)
+        || devcore.IsInitSuccess == false
+        )
+                        {
+                            if (devcore.StoppingTokens.LastOrDefault()?.Token.IsCancellationRequested == true)
+                                continue;
+                            if (devcore.Device.DeviceStatus == DeviceStatusEnum.Pause)
+                                continue;
+                            if (!devcore.IsInitSuccess)
+                                _logger?.LogWarning(devcore.Device.Name + "初始化失败，重启线程中");
+                            else
+                                _logger?.LogWarning(devcore.Device.Name + "上传线程假死，重启线程中");
+                            await UpDeviceThreadAsync(devcore.DeviceId);
+
+                        }
                         else
-                            _logger?.LogWarning(devcore.Device.Name + "上传线程假死，重启线程中");
-                        await UpDeviceThreadAsync(devcore.DeviceId);
+                        {
+                            _logger?.LogTrace(devcore.Device.Name + "线程检测正常");
+                        }
+                    }
 
-                    }
-                    else
-                    {
-                        _logger?.LogTrace(devcore.Device.Name + "线程检测正常");
-                    }
                 }
-
+                await Task.Delay(300000, stoppingToken);
             }
-            await Task.Delay(300000, stoppingToken);
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ToString());
+            }
         }
     }
 

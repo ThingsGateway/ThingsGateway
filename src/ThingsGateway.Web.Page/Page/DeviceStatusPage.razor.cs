@@ -185,12 +185,16 @@ namespace ThingsGateway.Web.Page
         {
             try
             {
-                if (_collectDeviceCores?.FirstOrDefault()?.Device == null)
+                {
+                    _collectDeviceGroups = _globalDeviceData.CollectDevices.Adapt<List<CollectDevice>>()?.Select(a => a.DeviceGroup)?.Where(a => a != null).Distinct()?.ToList() ?? new();
+                    _collectDeviceCores = CollectDeviceHostService?.CollectDeviceCores?.WhereIf(!_collectDeviceGroup.IsNullOrEmpty(), a => a.Device?.DeviceGroup == _collectDeviceGroup).ToList() ?? new();
+                }
+                if (_collectDeviceCores?.FirstOrDefault()?.Device == null || CollectDeviceHostService?.CollectDeviceCores.Count != _collectDeviceCores.Count)
                 {
                     collectDeviceQuery();
                 }
 
-                if (_uploadDeviceCores?.FirstOrDefault()?.Device == null)
+                if (_uploadDeviceCores?.FirstOrDefault()?.Device == null || UploadDeviceHostService?.UploadDeviceCores.Count != _uploadDeviceCores.Count)
                 {
                     uploadDeviceQuery();
                 }

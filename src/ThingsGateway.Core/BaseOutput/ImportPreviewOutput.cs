@@ -18,13 +18,12 @@ public class ImportPreviewOutputBase
     /// 是否有错误
     /// </summary>
     public bool HasError { get; set; }
-    public virtual int DataCount { get; }
-    public virtual List<(int row, bool isSuccess, string resultString)> Results { get; set; } = new();
+    public int DataCount { get => Results.Count; }
+    public TGConcurrentList<(int row, bool isSuccess, string resultString)> Results { get; set; } = new();
 }
 public class ImportPreviewOutput<T> : ImportPreviewOutputBase where T : class
 {
-    public override int DataCount { get => Data == null ? 0 : Data.Count; }
-    public List<T> Data { get; set; } = new();
+    public Dictionary<string, T> Data { get; set; } = new();
 }
 
 

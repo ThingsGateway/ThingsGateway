@@ -28,7 +28,7 @@ public static class ParallelHelpers
     /// <typeparam name="T"></typeparam>
     /// <param name="source"></param>
     /// <param name="body"></param>
-    public static void ParallelForEach<T>(this IEnumerable<T> source, Action<T> body) where T : class
+    public static void ParallelForEach<T>(this IEnumerable<T> source, Action<T> body)
     {
         Parallel.ForEach(source, _options, variable =>
         {
@@ -36,4 +36,16 @@ public static class ParallelHelpers
         });
     }
 
+    /// <summary>
+    /// 执行<see cref="Parallel.ForEach{TSource}(IEnumerable{TSource}, Action{TSource})"/>
+    /// </summary>
+    public static void ParallelForEach<T>(this IEnumerable<T> source, Action<T> body, int parallelCount)
+    {
+        var options = new ParallelOptions();
+        options.MaxDegreeOfParallelism = parallelCount / 2 == 0 ? 1 : parallelCount;
+        Parallel.ForEach(source, options, variable =>
+        {
+            body(variable);
+        });
+    }
 }

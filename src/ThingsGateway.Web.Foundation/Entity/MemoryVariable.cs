@@ -10,6 +10,8 @@
 //------------------------------------------------------------------------------
 #endregion
 
+using System.Collections.Concurrent;
+
 using ThingsGateway.Core;
 
 namespace ThingsGateway.Web.Foundation;
@@ -73,7 +75,7 @@ public class MemoryVariable : BaseEntity
     /// 变量额外属性Json，通常使用为上传设备,List属性
     /// </summary>
     [SugarColumn(IsJson = true, ColumnName = "VariablePropertys", ColumnDescription = "变量属性Json", IsNullable = true)]
-    public Dictionary<long, List<DependencyProperty>> VariablePropertys { get; set; } = new();
+    public ConcurrentDictionary<long, List<DependencyProperty>> VariablePropertys { get; set; } = new();
 
 
 

@@ -43,13 +43,14 @@ public abstract class S7 : CollectBase
 
     public override Task AfterStopAsync()
     {
-        _plc?.Disconnect();
+        if (_plc != null)
+            _plc?.Disconnect();
         return Task.CompletedTask;
     }
 
     public override async Task BeforStartAsync(CancellationToken cancellationToken)
     {
-        await _plc.ConnectAsync(cancellationToken);
+        await _plc?.ConnectAsync(cancellationToken);
     }
 
     protected override void Dispose(bool disposing)

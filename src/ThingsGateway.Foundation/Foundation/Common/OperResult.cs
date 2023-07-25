@@ -172,7 +172,7 @@ public class OperResult : IRequestInfo, IOperResult
     /// </summary>
     public string Exception { get; set; }
     /// <inheritdoc/>
-    public bool IsSuccess => ResultCode.HasFlag(ResultCode.Success);
+    public bool IsSuccess => ResultCode == ResultCode.Success;
     /// <inheritdoc/>
     public string Message { get; set; }
     /// <inheritdoc/>
