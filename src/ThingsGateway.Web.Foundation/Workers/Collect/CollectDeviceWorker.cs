@@ -91,7 +91,6 @@ public class CollectDeviceWorker : BackgroundService
             RemoveAllDeviceThread();
             await CreatAllDeviceThreadsAsync();
             StartAllDeviceThreads();
-            _logger.LogInformation("启动其他服务线程");
             StartOtherHostService();
             GC.Collect();
             GC.WaitForPendingFinalizers();
@@ -482,13 +481,11 @@ public class CollectDeviceWorker : BackgroundService
     /// <inheritdoc/>
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        await Task.Delay(5000);
         await RestartDeviceThreadAsync();
         while (!stoppingToken.IsCancellationRequested)
         {
             try
             {
-
 
                 //这里不采用CancellationToken控制子线程，直接循环保持，结束时调用子设备线程Dispose
                 //检测设备采集线程假死

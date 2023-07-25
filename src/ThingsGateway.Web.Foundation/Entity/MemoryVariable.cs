@@ -76,8 +76,10 @@ public class MemoryVariable : BaseEntity
     /// </summary>
     [SugarColumn(IsJson = true, ColumnName = "VariablePropertys", ColumnDescription = "变量属性Json", IsNullable = true)]
     public ConcurrentDictionary<long, List<DependencyProperty>> VariablePropertys { get; set; } = new();
-
-
+    /// <summary>
+    /// 导入验证专用
+    /// </summary>
+    internal bool IsUp { get; set; }
 
     #region 报警
     ///// <summary>

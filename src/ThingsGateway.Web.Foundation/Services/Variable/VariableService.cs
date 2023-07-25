@@ -510,7 +510,16 @@ public class VariableService : DbRepository<DeviceVariable>, IVariableService
                        //}
                        //变量ID都需要手动补录
                        variables.Add(variable);
-                       variable.Id = dbVariableDicts.TryGetValue(variable.Name, out var dbvar1) ? dbvar1.Id : YitIdHelper.NextId();
+                       if (dbVariableDicts.TryGetValue(variable.Name, out var dbvar1))
+                       {
+                           variable.Id = dbvar1.Id;
+                           variable.IsUp = true;
+                       }
+                       else
+                       {
+                           variable.Id = YitIdHelper.NextId();
+                           variable.IsUp = false;
+                       }
                        importPreviewOutput.Results.Add((Interlocked.Add(ref row, 1), true, "成功"));
                    }
                    catch (Exception ex)
@@ -690,7 +699,16 @@ public class VariableService : DbRepository<DeviceVariable>, IVariableService
                        {
                            //变量ID和设备ID都需要手动补录
                            variable.DeviceId = deviceId.Value;
-                           variable.Id = dbVariableDicts.TryGetValue(variable.Name, out var dbvar1) ? dbvar1.Id : YitIdHelper.NextId();
+                           if (dbVariableDicts.TryGetValue(variable.Name, out var dbvar1))
+                           {
+                               variable.Id = dbvar1.Id;
+                               variable.IsUp = true;
+                           }
+                           else
+                           {
+                               variable.Id = YitIdHelper.NextId();
+                               variable.IsUp = false;
+                           }
                        }
 
                        variables.Add(variable);
@@ -808,20 +826,20 @@ public class VariableService : DbRepository<DeviceVariable>, IVariableService
     [OperDesc("导入变量表", IsRecordPar = false)]
     public async Task ImportAsync(Dictionary<string, ImportPreviewOutputBase> input)
     {
-        var collectDevices = new List<DeviceVariable>();
+        Dictionary<string, DeviceVariable> variableImports = new();
         foreach (var item in input)
         {
             if (item.Key == ExportHelpers.DeviceVariableSheetName)
             {
-                var collectDeviceImports = ((ImportPreviewOutput<DeviceVariable>)item.Value).Data;
-                collectDevices = collectDeviceImports.Values.ToList();
+                variableImports = ((ImportPreviewOutput<DeviceVariable>)item.Value).Data;
                 break;
             }
         }
-        await Context.Utilities.PageEachAsync(collectDevices, 10000, async pageList =>
-        {
-            await Context.Storageable(pageList).ExecuteCommandAsync();
-        });
+        var upData = variableImports.Values.Where(a => a.IsUp).ToList();
+        var insertData = variableImports.Values.Where(a => !a.IsUp).ToList();
+        Context.Fastest<DeviceVariable>().PageSize(100000).BulkCopy(insertData);
+        Context.Fastest<DeviceVariable>().PageSize(100000).BulkUpdate(upData);
+
         DeleteVariableFromCache();
         await Task.CompletedTask;
     }
