@@ -46,8 +46,10 @@ public class Program
          "##作者信息## Diego QQ 2248356998"));
         Console.ResetColor();
         #endregion
-
         var builder = WebApplication.CreateBuilder(args);
+
+        //注意，在发布生产环境时，必须使用dotnet publish功能，否则会生成staticwebassets.runtime.json，导致文件路径失效闪退
+
         builder.WebHost.UseWebRoot("wwwroot");
         builder.WebHost.UseStaticWebAssets();
         builder.Host.UseWindowsService();

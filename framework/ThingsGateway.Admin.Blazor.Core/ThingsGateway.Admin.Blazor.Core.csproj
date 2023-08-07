@@ -19,5 +19,9 @@
 
 	</ItemGroup>
 	
-
+	<ItemGroup>
+	  <Content Update="wwwroot\**">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	</ItemGroup>
 </Project>
