@@ -202,7 +202,7 @@ public class AuthService : IAuthService
     {
         //获取verificat列表
         List<VerificatInfo> verificatInfos = await _verificatService.GetVerificatIdAsync(loginEvent.SysUser.Id);
-        var verificatTimeout = loginEvent.DateTimeOffset.AddMinutes(loginEvent.Expire);
+        var verificatTimeout = loginEvent.DateTime.AddMinutes(loginEvent.Expire);
         //生成verificat信息
         var verificatInfo = new VerificatInfo
         {

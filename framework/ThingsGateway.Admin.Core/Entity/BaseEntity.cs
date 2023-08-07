@@ -50,7 +50,7 @@ public abstract class BaseEntity : PrimaryKeyEntity
     /// </summary>
     [SugarColumn(ColumnDescription = "创建时间", IsOnlyIgnoreUpdate = true, IsNullable = true)]
     [IgnoreExcel]
-    public virtual DateTimeOffset? CreateTime { get; set; }
+    public virtual DateTime? CreateTime { get; set; }
 
     /// <summary>
     /// 创建人
@@ -78,7 +78,7 @@ public abstract class BaseEntity : PrimaryKeyEntity
     /// </summary>
     [SugarColumn(ColumnDescription = "更新时间", IsOnlyIgnoreInsert = true, IsNullable = true)]
     [IgnoreExcel]
-    public virtual DateTimeOffset? UpdateTime { get; set; }
+    public virtual DateTime? UpdateTime { get; set; }
 
     /// <summary>
     /// 更新人

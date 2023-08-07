@@ -799,7 +799,7 @@ public class Interop
                     if (input.GetType() == typeof(DateTime))
                     {
                         DateTime dateTime = (DateTime)input;
-                        return dateTime != DateTime.MinValue ? (object)dateTime.ToUniversalTime() : (object)dateTime;
+                        return dateTime != DateTime.MinValue ? (object)dateTime.ToLocalTime() : (object)dateTime;
                     }
                 }
             }

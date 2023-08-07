@@ -189,37 +189,38 @@
                 }
                 else
                 {
-
-                    if (context?.Value?.GetType() == typeof(DateTimeOffset))
+                    if (ItemColWithDTTemplate!=null)
                     {
-                        <span>
-                            @(((DateTimeOffset)context.Value).ToOffset(InitTimezone.TimezoneOffset).ToDefaultDateTimeFormat())
-                        </span>
-                    }
-                    else if (context?.Value?.GetType() == typeof(DateTime))
-                    {
-                        <span>
-                            @(((DateTime)context.Value).Add(InitTimezone.TimezoneOffset).ToDefaultDateTimeFormat())
-                        </span>
-                    }
-                    else if (ItemColTemplate != null)
-                    {
-                        @ItemColTemplate(context)
+                        @ItemColWithDTTemplate(context)
                     }
                     else
                     {
-                        @if (context.Header.CellClass?.Contains("text-truncate") == true)
+                        if (context?.Value?.GetType() == typeof(DateTime))
                         {
-                            <span title=@context.Value>
-                                @context.Value
+                            <span>
+                                @(((DateTime)context.Value).ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset))
                             </span>
+                        }
+                        else if (ItemColTemplate != null)
+                        {
+                            @ItemColTemplate(context)
                         }
                         else
                         {
-                            @context.Value
-                        }
+                            @if (context.Header.CellClass?.Contains("text-truncate") == true)
+                            {
+                                <span title=@context.Value>
+                                    @context.Value
+                                </span>
+                            }
+                            else
+                            {
+                                @context.Value
+                            }
 
+                        }
                     }
+                    
 
                 }
             </ItemColContent>

@@ -22,7 +22,7 @@ public class LoginEvent
     /// <summary>
     /// 时间
     /// </summary>
-    public DateTimeOffset DateTimeOffset = SysDateTimeExtensions.CurrentDateTime;
+    public DateTime DateTime = SysDateTimeExtensions.CurrentDateTime;
 
     /// <summary>
     /// 登录设备

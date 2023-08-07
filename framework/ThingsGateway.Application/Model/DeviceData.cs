@@ -23,7 +23,7 @@ public class DeviceData
     /// <inheritdoc cref="CollectDeviceRunTime.DeviceVariableCount"/>
     public int DeviceVariablesCount { get; set; }
     /// <inheritdoc cref="CollectDeviceRunTime.ActiveTime"/>
-    public DateTimeOffset ActiveTime { get; set; }
+    public DateTime ActiveTime { get; set; }
     /// <inheritdoc cref="CollectDeviceRunTime.DeviceStatus"/>
     public int DeviceStatus { get; set; }
     /// <inheritdoc cref="CollectDeviceRunTime.LastErrorMessage"/>

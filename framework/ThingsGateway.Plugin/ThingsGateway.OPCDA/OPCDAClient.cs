@@ -174,7 +174,7 @@ public class OPCDAClient : CollectBase
                 {
                     var value = data.Value;
                     var quality = data.Quality;
-                    var time = new DateTimeOffset(data.TimeStamp);
+                    var time = data.TimeStamp.ToLocalTime();
                     if (value != null && quality == 192)
                     {
                         if (item.DataTypeEnum == DataTypeEnum.Object)

@@ -235,7 +235,7 @@ public class OPCUAClient : CollectBase
             }
             var quality = StatusCode.IsGood(data.dataValue.StatusCode);
 
-            var time = new DateTimeOffset(data.dataValue.SourceTimestamp);
+            var time = data.dataValue.SourceTimestamp.ToLocalTime();
             foreach (var item in itemReads)
             {
                 if (item.DataTypeEnum == DataTypeEnum.Object)

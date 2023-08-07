@@ -95,7 +95,7 @@
                                                     <MLabel Class=@((item.Device?.DeviceStatus==DeviceStatusEnum.OnLine?"green--text":"red--text")+$" text-h6")>
                                                         <div class="mt-1  d-flex align-center justify-space-between" title=@item.Device?.Name>
                                                             <span>@item.Device?.Name</span>
-                                                            <span style="white-space: nowrap !important;overflow: hidden !important; text-overflow: ellipsis !important;" class="text-caption">@(item.Device?.ActiveTime.ToDefaultDateTimeFormat() + "     " + typeof(DeviceStatusEnum).GetDescription(item.Device?.DeviceStatus.ToString()))</span>
+                                                            <span style="white-space: nowrap !important;overflow: hidden !important; text-overflow: ellipsis !important;" class="text-caption">@(item.Device?.ActiveTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset) + "     " + typeof(DeviceStatusEnum).GetDescription(item.Device?.DeviceStatus.ToString()))</span>
                                                         </div>
                                                     </MLabel>
                                                 </MListItemTitle>
@@ -127,7 +127,7 @@
                                         <MLabel Class=@((item.Device?.DeviceStatus==DeviceStatusEnum.OnLine?"green--text":"red--text")+$" text-h6")>
                                             <div class="mt-1  d-flex align-center justify-space-between">
                                                 <span class="mx-3">@item.Device?.Name</span>
-                                                <span style="white-space: nowrap !important;overflow: hidden !important; text-overflow: ellipsis !important;" class="text-caption mx-3">@(item.Device?.ActiveTime.ToDefaultDateTimeFormat() + "     " + typeof(DeviceStatusEnum).GetDescription(item.Device?.DeviceStatus.ToString()))</span>
+                                                <span style="white-space: nowrap !important;overflow: hidden !important; text-overflow: ellipsis !important;" class="text-caption mx-3">@(item.Device?.ActiveTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset) + "     " + typeof(DeviceStatusEnum).GetDescription(item.Device?.DeviceStatus.ToString()))</span>
                                             </div>
                                         </MLabel>
 
@@ -180,7 +180,7 @@
                                     <MRow Class="ml-2 mr-2 d-flex" NoGutters>
                                     <MCol Md=6 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
                                         <span class="text-subtitle-2 grey--text">@item.Device?.Description(a=>a.ActiveTime)</span>
-                                        <span class="text-caption">@item.Device?.ActiveTime.ToDefaultDateTimeFormat()</span>
+                                        <span class="text-caption">@item.Device?.ActiveTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset)</span>
                                     </MCol>
                                     <MCol Md=6 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
                                         <span class="text-subtitle-2 grey--text">@item.Device?.Description(a=>a.SourceVariableCount)</span>
@@ -346,7 +346,7 @@
                                                     <MLabel Class=@((item.Device?.DeviceStatus==DeviceStatusEnum.OnLine?"green--text":"red--text")+$" text-h6")>
                                                         <div class="mt-1  d-flex align-center justify-space-between" title=@item.Device?.Name>
                                                             <span>@item.Device?.Name</span>
-                                                            <span style="white-space: nowrap !important;overflow: hidden !important; text-overflow: ellipsis !important;" class="text-caption">@(item.Device?.ActiveTime.ToDefaultDateTimeFormat() + "     " + typeof(DeviceStatusEnum).GetDescription(item.Device?.DeviceStatus.ToString()))</span>
+                                                            <span style="white-space: nowrap !important;overflow: hidden !important; text-overflow: ellipsis !important;" class="text-caption">@(item.Device?.ActiveTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset) + "     " + typeof(DeviceStatusEnum).GetDescription(item.Device?.DeviceStatus.ToString()))</span>
                                                         </div>
                                                     </MLabel>
                                                 </MListItemTitle>
@@ -378,7 +378,7 @@
                                         <MLabel Class=@((item.Device?.DeviceStatus==DeviceStatusEnum.OnLine?"green--text":"red--text")+$" text-h6")>
                                             <div class="mt-1  d-flex align-center justify-space-between">
                                                 <span class="mx-3">@item.Device?.Name</span>
-                                                <span style="white-space: nowrap !important;overflow: hidden !important; text-overflow: ellipsis !important;" class="text-caption mx-3">@(item.Device?.ActiveTime.ToDefaultDateTimeFormat() + "     " + typeof(DeviceStatusEnum).GetDescription(item.Device?.DeviceStatus.ToString()))</span>
+                                                <span style="white-space: nowrap !important;overflow: hidden !important; text-overflow: ellipsis !important;" class="text-caption mx-3">@(item.Device?.ActiveTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset) + "     " + typeof(DeviceStatusEnum).GetDescription(item.Device?.DeviceStatus.ToString()))</span>
                                             </div>
                                         </MLabel>
 
@@ -432,7 +432,7 @@
                                     <MRow Class="ml-2 mr-2 d-flex" NoGutters>
                                     <MCol Md=6 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
                                         <span class="text-subtitle-2 grey--text">@item.Device?.Description(a=>a.ActiveTime)</span>
-                                        <span class="text-caption">@item.Device?.ActiveTime.ToDefaultDateTimeFormat()</span>
+                                        <span class="text-caption">@item.Device?.ActiveTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset)</span>
                                     </MCol>
                                     <MCol Md=6 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
                                         <span class="text-subtitle-2 grey--text">@item.Device?.Description(a=>a.UploadVariableCount)</span>

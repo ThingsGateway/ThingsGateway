@@ -60,7 +60,7 @@ public class SysUser : BaseEntity
     ///</summary>
     [SugarColumn(ColumnName = "LastLoginTime", ColumnDescription = "上次登录时间", IsNullable = true)]
     [DataTable(Order = 5, IsShow = true, Sortable = true, DefaultFilter = true)]
-    public DateTimeOffset? LastLoginTime { get; set; }
+    public DateTime? LastLoginTime { get; set; }
 
     /// <summary>
     /// 最新登录设备
@@ -81,7 +81,7 @@ public class SysUser : BaseEntity
     ///</summary>
     [SugarColumn(ColumnName = "LatestLoginTime", ColumnDescription = "最新登录时间", IsNullable = true)]
     [DataTable(Order = 8, IsShow = true, Sortable = true, DefaultFilter = false)]
-    public DateTimeOffset? LatestLoginTime { get; set; }
+    public DateTime? LatestLoginTime { get; set; }
 
     /// <summary>
     /// 密码

@@ -71,13 +71,13 @@ public class HistoryAlarm : PrimaryIdEntity
     /// <inheritdoc  cref="DeviceVariableRunTime.AlarmTime"/>
     [SugarColumn(ColumnName = "AlarmTime", ColumnDescription = "报警时间", IsNullable = false)]
     [DataTable(Order = 8, IsShow = true, Sortable = true, CellClass = " table-text-truncate ")]
-    public DateTimeOffset AlarmTime { get; set; }
+    public DateTime AlarmTime { get; set; }
 
 
     /// <inheritdoc  cref="DeviceVariableRunTime.EventTime"/>
     [SugarColumn(ColumnName = "EventTime", ColumnDescription = "事件时间", IsNullable = false)]
     [DataTable(Order = 8, IsShow = true, Sortable = true, CellClass = " table-text-truncate ")]
-    public DateTimeOffset EventTime { get; set; }
+    public DateTime EventTime { get; set; }
 
 
     /// <summary>

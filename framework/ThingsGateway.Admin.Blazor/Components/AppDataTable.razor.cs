@@ -194,6 +194,13 @@ public partial class AppDataTable<TItem, SearchItem, AddItem, EditItem> : IAppDa
     public RenderFragment<ItemColProps<TItem>> ItemColTemplate { get; set; }
 
     /// <summary>
+    /// 独立设置 Table Cols 模板，需自行实现DateTime类型的时区转换
+    /// </summary>
+    [Parameter]
+    public RenderFragment<ItemColProps<TItem>> ItemColWithDTTemplate { get; set; }
+
+
+    /// <summary>
     /// 当前显示项目
     /// </summary>
     [Parameter]
@@ -457,13 +464,9 @@ public partial class AppDataTable<TItem, SearchItem, AddItem, EditItem> : IAppDa
                 if (item != BlazorResourceConst.DataTableActions)
                 {
                     var value = typeof(TItem).GetMemberInfoValue(DetailModel, item);
-                    if (value is DateTimeOffset dt)
+                    if (value is DateTime dt2)
                     {
-                        value = dt.ToOffset(InitTimezone.TimezoneOffset).ToDefaultDateTimeFormat();
-                    }
-                    else if (value is DateTime dt2)
-                    {
-                        value = dt2.Add(InitTimezone.TimezoneOffset).ToDefaultDateTimeFormat();
+                        value = dt2.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset);
                     }
                     keyValuePairs.Add(item, value?.ToString());
                 }
