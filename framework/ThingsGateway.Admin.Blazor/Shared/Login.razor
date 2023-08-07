@@ -1,0 +1,102 @@
+﻿@*
+//------------------------------------------------------------------------------
+//  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
+//  此代码版权（除特别声明外的代码）归作者本人Diego所有
+//  源代码使用协议遵循本仓库的开源协议及附加协议
+//  Gitee源代码仓库：https://gitee.com/diego2098/ThingsGateway
+//  Github源代码仓库：https://github.com/kimdiego2098/ThingsGateway
+//  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
+//  QQ群：605534569
+//------------------------------------------------------------------------------
+*@
+
+@page "/login"
+@layout BaseLayout
+@inherits BaseComponentBase
+@namespace ThingsGateway.Admin.Blazor
+@using BlazorComponent;
+@using Masa.Blazor.Presets;
+
+<Ajax></Ajax>
+@if (IsMobile)
+{
+    <MCard @onkeydown=Enter Height=@("100%") >
+        @GetLoginCore()
+    </MCard>
+}
+else
+{
+    <MRow NoGutters Style="height:100%">
+        <MCol Md=5 Sm=12>
+            <MSheet Elevation=1 Style="width:100%; height:100%;" Class="d-flex align-start flex-column mb-6">
+                <div class="d-flex align-center ml-12 mt-12">
+                    <MAvatar Size="40" Color="teal">
+                        <span class="white--text text-h6">@CONFIG_TITLE?.GetNameLen2()</span>
+                    </MAvatar>
+                    <h1>@CONFIG_TITLE</h1>
+                </div>
+                <div class="d-flex align-center ml-12 mt-12 mb-auto">
+                    <h3>@CONFIG_REMARK</h3>
+                </div>
+                <div class="d-flex align-center pa-2" style="width:100%;height:100%;">
+                    <MImage Src=@(BlazorResourceConst.ResourceUrl+"images/login-left.svg")></MImage>
+                </div>
+            </MSheet>
+
+        </MCol>
+
+        <MCol Md=7 Sm=12 Align="AlignTypes.Center">
+            <MRow Md=6 Sm=12 Justify="JustifyTypes.Center" Align="AlignTypes.Center">
+                <MCard Class="px-16 py-12" @onkeydown=Enter>
+                    @GetLoginCore()
+                </MCard>
+            </MRow>
+        </MCol>
+
+    </MRow>
+
+}
+
+@code {
+
+    RenderFragment GetLoginCore()
+    {
+        RenderFragment ViewSubMenu =
+    @<div class="mt-2 px-2 py-1 mx-auto text-center my-auto" >
+        <MAvatar Size=80>
+            <MImage Src=@UserLogoUrl>
+            </MImage>
+        </MAvatar>
+        <h5 class="mt-2 mb-12">@Welcome 👋</h5>
+        <MTextField TValue="string"
+                    Label=账号
+                            Outlined
+                    HideDetails="@("auto")"
+        @bind-Value=@loginModel.Account>
+        </MTextField>
+        <MTextField TValue="string"
+                    Class="mt-10"
+                    Label="密码"
+                    Type="@(_showPassword ? "text" : "password")"
+                    AppendIcon="@(_showPassword ? "mdi-eye" : "mdi-eye-off")"
+                    OnAppendClick="()=>_showPassword = !_showPassword"
+                            Outlined
+                    HideDetails="@("auto")"
+        @bind-Value=@Password>
+        </MTextField>
+        @if (_showCaptcha)
+        {
+            <PImageCaptcha @ref=captcha @bind-Value="CaptchaValue"
+                           TextFieldClass="mt-10 mx-auto"
+                           Height="60"
+                           Label=验证码 Outlined
+                               OnRefresh="RefreshCode"
+                               ErrorMessage=验证码错误>
+                </PImageCaptcha>
+        }
+        <MButton Class="mt-11 rounded-4" OnClick=LoginAsync Height=46 Width=@("100%") Color="primary">登录</MButton>
+    </div>
+        ;
+        return ViewSubMenu;
+    }
+}

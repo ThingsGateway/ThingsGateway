@@ -1,0 +1,464 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ThingsGateway.Mqtt</name>
+    </assembly>
+    <members>
+        <member name="T:ThingsGateway.Mqtt.IotSharpClient">
+            <summary>
+            参考IotSharpClient.SDK.MQTT
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Mqtt.IotSharpClient.WriteMethod">
+            <summary>
+            rpcmethodname存疑，定为自定义方法，在ThingsGateway上写入变量的方法固定为"Write"
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Mqtt.IotSharpClient.DriverDebugUIType">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.Mqtt.IotSharpClient.DriverPropertys">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.Mqtt.IotSharpClient.UploadVariables">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.Mqtt.IotSharpClient.VariablePropertys">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Mqtt.IotSharpClient.AfterStopAsync">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Mqtt.IotSharpClient.BeforStartAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Mqtt.IotSharpClient.ExecuteAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Mqtt.IotSharpClient.IsConnected">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Mqtt.IotSharpClient.ToString">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Mqtt.IotSharpClient.Dispose(System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Mqtt.IotSharpClient.Init(ThingsGateway.Application.UploadDeviceRunTime)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Mqtt.IotSharpClient.MqttUp(System.String,System.String,System.Threading.CancellationToken)">
+            <summary>
+            上传mqtt内容，并进行离线缓存
+            </summary>
+            <param name="topic"></param>
+            <param name="payLoad"></param>
+            <param name="token"></param>
+            <returns></returns>
+        </member>
+        <member name="T:ThingsGateway.Mqtt.IotSharpClientProperty">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Mqtt.IotSharpClientProperty.IP">
+            <summary>
+            IP
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Mqtt.IotSharpClientProperty.Port">
+            <summary>
+            端口
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Mqtt.IotSharpClientProperty.Accesstoken">
+            <summary>
+            Accesstoken
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Mqtt.IotSharpClientProperty.ConnectTimeOut">
+            <summary>
+            连接超时时间
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Mqtt.IotSharpClientProperty.DeviceRpcEnable">
+            <summary>
+            允许Rpc写入
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Mqtt.IotSharpClientProperty.CacheMaxCount">
+            <summary>
+            缓存最大条数
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Mqtt.IotSharpClientProperty.SplitSize">
+            <summary>
+            列表分割大小
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Mqtt.IotSharpClientProperty.CycleInterval">
+            <summary>
+            线程循环间隔
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Mqtt.IotSharpClientVariableProperty">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Mqtt.IotSharpClientVariableProperty.Enable">
+            <summary>
+            启用
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Mqtt.IotSharpClientVariableProperty.VariableRpcEnable">
+            <summary>
+            允许写入
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Mqtt.MqttClient">
+            <summary>
+            MqttClient
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Mqtt.MqttClient.DriverDebugUIType">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.Mqtt.MqttClient.DriverPropertys">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.Mqtt.MqttClient.UploadVariables">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.Mqtt.MqttClient.VariablePropertys">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Mqtt.MqttClient.AfterStopAsync">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Mqtt.MqttClient.BeforStartAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Mqtt.MqttClient.ExecuteAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Mqtt.MqttClient.IsConnected">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Mqtt.MqttClient.ToString">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Mqtt.MqttClient.Dispose(System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Mqtt.MqttClient.Init(ThingsGateway.Application.UploadDeviceRunTime)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Mqtt.MqttClient.MqttUp(System.String,System.String,System.Threading.CancellationToken)">
+            <summary>
+            上传mqtt内容，并进行离线缓存
+            </summary>
+            <param name="topic"></param>
+            <param name="payLoad"></param>
+            <param name="token"></param>
+            <returns></returns>
+        </member>
+        <member name="T:ThingsGateway.Mqtt.MqttClientProperty">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Mqtt.MqttClientProperty.IP">
+            <summary>
+            IP
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Mqtt.MqttClientProperty.Port">
+            <summary>
+            端口
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Mqtt.MqttClientProperty.UserName">
+            <summary>
+            账号
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Mqtt.MqttClientProperty.Password">
+            <summary>
+            密码
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Mqtt.MqttClientProperty.ConnectId">
+            <summary>
+            连接Id
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Mqtt.MqttClientProperty.ConnectTimeOut">
+            <summary>
+            连接超时时间
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Mqtt.MqttClientProperty.CycleInterval">
+            <summary>
+            线程循环间隔
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Mqtt.MqttClientProperty.CacheMaxCount">
+            <summary>
+            缓存最大条数
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Mqtt.MqttClientProperty.SplitSize">
+            <summary>
+            列表分割大小
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Mqtt.MqttClientProperty.DeviceRpcEnable">
+            <summary>
+            允许Rpc写入
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Mqtt.MqttClientProperty.QuestRpcTopic">
+            <summary>
+            数据请求RpcTopic
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Mqtt.MqttClientProperty.DeviceTopic">
+            <summary>
+            设备Topic
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Mqtt.MqttClientProperty.VariableTopic">
+            <summary>
+            变量Topic
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Mqtt.MqttClientProperty.RpcSubTopic">
+            <summary>
+            Rpc返回Topic
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Mqtt.MqttClientProperty.RpcWriteTopic">
+            <summary>
+            Rpc写入Topic
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Mqtt.MqttClientProperty.BigTextScriptDeviceModel">
+            <summary>
+            设备实体脚本
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Mqtt.MqttClientProperty.BigTextScriptVariableModel">
+            <summary>
+            变量实体脚本
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Mqtt.MqttClientProperty.IsInterval">
+            <summary>
+            是否间隔上传
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Mqtt.MqttClientProperty.UploadInterval">
+            <summary>
+            上传间隔时间
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Mqtt.MqttClientVariableProperty">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Mqtt.MqttClientVariableProperty.Enable">
+            <summary>
+            启用
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Mqtt.MqttClientVariableProperty.VariableRpcEnable">
+            <summary>
+            允许写入
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Mqtt.MqttRpcNameVaueWithId">
+            <summary>
+            MqttRpc传入
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Mqtt.MqttRpcNameVaueWithId.RpcId">
+            <summary>
+            标识
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Mqtt.MqttRpcNameVaueWithId.Key">
+            <summary>
+            通常是变量名称
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Mqtt.MqttRpcNameVaueWithId.Value">
+            <summary>
+            值
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Mqtt.MqttRpcResult">
+            <summary>
+            MqttRpc输出
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Mqtt.MqttRpcResult.RpcId">
+            <summary>
+            标识
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Mqtt.MqttRpcResult.Message">
+            <summary>
+            消息
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Mqtt.MqttRpcResult.Success">
+            <summary>
+            是否成功
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Mqtt.MqttServer">
+            <summary>
+            MqttServer
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Mqtt.MqttServer.DriverDebugUIType">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.Mqtt.MqttServer.DriverPropertys">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.Mqtt.MqttServer.UploadVariables">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.Mqtt.MqttServer.VariablePropertys">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Mqtt.MqttServer.AfterStopAsync">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Mqtt.MqttServer.BeforStartAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Mqtt.MqttServer.ExecuteAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Mqtt.MqttServer.IsConnected">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Mqtt.MqttServer.ToString">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Mqtt.MqttServer.Dispose(System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Mqtt.MqttServer.Init(ThingsGateway.Application.UploadDeviceRunTime)">
+            <inheritdoc/>
+        </member>
+        <member name="T:ThingsGateway.Mqtt.MqttServerProperty">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Mqtt.MqttServerProperty.IP">
+            <summary>
+            IP
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Mqtt.MqttServerProperty.Port">
+            <summary>
+            端口
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Mqtt.MqttServerProperty.StartWithId">
+            <summary>
+            允许连接的ID(前缀)
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Mqtt.MqttServerProperty.DeviceRpcEnable">
+            <summary>
+            允许Rpc写入
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Mqtt.MqttServerProperty.SplitSize">
+            <summary>
+            列表分割大小
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Mqtt.MqttServerProperty.CycleInterval">
+            <summary>
+            线程循环间隔
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Mqtt.MqttServerProperty.DeviceTopic">
+            <summary>
+            设备Topic
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Mqtt.MqttServerProperty.VariableTopic">
+            <summary>
+            变量Topic
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Mqtt.MqttServerProperty.RpcSubTopic">
+            <summary>
+            Rpc返回Topic
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Mqtt.MqttServerProperty.RpcWriteTopic">
+            <summary>
+            Rpc写入Topic
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Mqtt.MqttServerProperty.BigTextScriptDeviceModel">
+            <summary>
+            设备实体脚本
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Mqtt.MqttServerProperty.BigTextScriptVariableModel">
+            <summary>
+            变量实体脚本
+            </summary>
+        </member>
+        <member name="T:IoTSharp.Data.RpcResponse">
+            <summary>
+            Rpc返回
+            </summary>
+        </member>
+        <member name="P:IoTSharp.Data.RpcResponse.DeviceId">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:IoTSharp.Data.RpcResponse.Method">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:IoTSharp.Data.RpcResponse.ResponseId">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:IoTSharp.Data.RpcResponse.Data">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:IoTSharp.Data.RpcResponse.Success">
+            <summary>
+            
+            </summary>
+        </member>
+    </members>
+</doc>

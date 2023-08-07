@@ -1,0 +1,460 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ThingsGateway.Foundation.Adapter.OPCUA</name>
+    </assembly>
+    <members>
+        <member name="M:ThingsGateway.Foundation.Adapter.OPCUA.CollectionExtensions.RemoveWhere``1(System.Collections.Generic.ICollection{``0},System.Func{``0,System.Boolean})">
+            <summary>
+            移除符合条件的元素
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="this"></param>
+            <param name="where"></param>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.OPCUA.CollectionExtensions.SelectAsync``2(System.Collections.Generic.IEnumerable{``0},System.Func{``0,System.Threading.Tasks.Task{``1}})">
+            <summary>
+            异步Select
+            </summary>
+            <typeparam name="T"></typeparam>
+            <typeparam name="TResult"></typeparam>
+            <param name="source"></param>
+            <param name="selector"></param>
+            <returns></returns>
+        </member>
+        <member name="T:ThingsGateway.Foundation.Adapter.OPCUA.FormUtils">
+            <summary>
+            辅助类
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.OPCUA.FormUtils.Browse(Opc.Ua.Client.ISession,Opc.Ua.BrowseDescriptionCollection,System.Boolean)">
+            <summary>
+            Browses the address space and returns the references found.
+            </summary>
+            <param name="session">The session.</param>
+            <param name="nodesToBrowse">The set of browse operations to perform.</param>
+            <param name="throwOnError">if set to <c>true</c> a exception will be thrown on an error.</param>
+            <returns>
+            The references found. Null if an error occurred.
+            </returns>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.OPCUA.FormUtils.BrowseAsync(Opc.Ua.Client.ISession,Opc.Ua.BrowseDescriptionCollection,System.Boolean,System.Threading.CancellationToken)">
+            <summary>
+            浏览地址空间
+            </summary>
+            <param name="session"></param>
+            <param name="nodesToBrowse"></param>
+            <param name="throwOnError"></param>
+            <param name="token"></param>
+            <returns></returns>
+            <exception cref="T:Opc.Ua.ServiceResultException"></exception>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.OPCUA.FormUtils.BrowseAsync(Opc.Ua.Client.ISession,Opc.Ua.BrowseDescription,System.Boolean,System.Threading.CancellationToken)">
+            <summary>
+            浏览地址空间
+            </summary>
+            <param name="session"></param>
+            <param name="nodeToBrowse"></param>
+            <param name="throwOnError"></param>
+            <param name="token"></param>
+            <returns></returns>
+            <exception cref="T:Opc.Ua.ServiceResultException"></exception>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.OPCUA.FormUtils.BrowseSuperTypesAsync(Opc.Ua.Client.ISession,Opc.Ua.NodeId,System.Boolean)">
+            <summary>
+            浏览地址空间并返回指定类型的所有节点
+            </summary>
+            <param name="session"></param>
+            <param name="typeId"></param>
+            <param name="throwOnError"></param>
+            <returns></returns>
+            <exception cref="T:Opc.Ua.ServiceResultException"></exception>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.OPCUA.FormUtils.CollectFieldsForInstanceAsync(Opc.Ua.Client.ISession,Opc.Ua.NodeId,Opc.Ua.SimpleAttributeOperandCollection,System.Collections.Generic.List{Opc.Ua.NodeId})">
+            <summary>
+            Collects the fields for the instance.
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.OPCUA.FormUtils.CollectFieldsForType(Opc.Ua.Client.ISession,Opc.Ua.NodeId,Opc.Ua.SimpleAttributeOperandCollection,System.Collections.Generic.List{Opc.Ua.NodeId})">
+            <summary>
+            Collects the fields for the type.
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.OPCUA.FormUtils.ConstructEventAsync(Opc.Ua.Client.ISession,Opc.Ua.Client.MonitoredItem,Opc.Ua.EventFieldList,System.Collections.Generic.Dictionary{Opc.Ua.NodeId,System.Type},System.Collections.Generic.Dictionary{Opc.Ua.NodeId,Opc.Ua.NodeId})">
+            <summary>
+            Constructs an event object from a notification.
+            </summary>
+            <param name="session">The session.</param>
+            <param name="monitoredItem">The monitored item that produced the notification.</param>
+            <param name="notification">The notification.</param>
+            <param name="knownEventTypes">The known event types.</param>
+            <param name="eventTypeMappings">Mapping between event types and known event types.</param>
+            <returns>
+            The event object. Null if the notification is not a valid event type.
+            </returns>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.OPCUA.FormUtils.DiscoverServers(Opc.Ua.ApplicationConfiguration)">
+            <summary>
+            Discovers the servers on the local machine.
+            </summary>
+            <param name="configuration">The configuration.</param>
+            <returns>A list of server urls.</returns>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.OPCUA.FormUtils.FindEventType(Opc.Ua.Client.MonitoredItem,Opc.Ua.EventFieldList)">
+            <summary>
+            Finds the type of the event for the notification.
+            </summary>
+            <param name="monitoredItem">The monitored item.</param>
+            <param name="notification">The notification.</param>
+            <returns>The NodeId of the EventType.</returns>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.OPCUA.FormUtils.GetAttributeDisplayText(Opc.Ua.Client.ISession,System.UInt32,Opc.Ua.Variant)">
+            <summary>
+            指定的属性的显示文本。
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.OPCUA.FormUtils.SelectEndpoint(System.String,System.Boolean)">
+            <summary>
+            Finds the endpoint that best matches the current settings.
+            </summary>
+            <param name="discoveryUrl">The discovery URL.</param>
+            <param name="useSecurity">if set to <c>true</c> select an endpoint that uses security.</param>
+            <returns>The best available endpoint.</returns>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.OPCUA.FormUtils.TranslateBrowsePaths(Opc.Ua.Client.ISession,Opc.Ua.NodeId,Opc.Ua.NamespaceTable,System.Threading.CancellationToken,System.String[])">
+            <summary>
+            返回一组相对路径的节点id
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.OPCUA.FormUtils.CollectFieldsAsync(Opc.Ua.Client.ISession,Opc.Ua.NodeId,Opc.Ua.QualifiedNameCollection,Opc.Ua.SimpleAttributeOperandCollection,System.Collections.Generic.List{Opc.Ua.NodeId},System.Collections.Generic.Dictionary{Opc.Ua.NodeId,Opc.Ua.QualifiedNameCollection})">
+            <summary>
+            Collects the fields for the instance node.
+            </summary>
+            <param name="session">The session.</param>
+            <param name="nodeId">The node id.</param>
+            <param name="parentPath">The parent path.</param>
+            <param name="fields">The event fields.</param>
+            <param name="fieldNodeIds">The node id for the declaration of the field.</param>
+            <param name="foundNodes">The table of found nodes.</param>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.OPCUA.FormUtils.ContainsPath(Opc.Ua.SimpleAttributeOperandCollection,Opc.Ua.QualifiedNameCollection)">
+            <summary>
+            判断指定的select子句包含的浏览路径。
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.OPCUA.FormUtils.GetAccessLevelDisplayText(System.Byte)">
+             <summary>
+            访问级别属性的显示文本。
+             </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.OPCUA.FormUtils.GetEventNotifierDisplayText(System.Byte)">
+            <summary>
+            事件通知属性的显示文本
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Foundation.Adapter.OPCUA.JsonUtils">
+            <summary>
+            扩展方法
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.OPCUA.JsonUtils.Decode(Opc.Ua.IServiceMessageContext,Opc.Ua.NodeId,Opc.Ua.BuiltInType,System.Int32,Newtonsoft.Json.Linq.JToken)">
+            <summary>
+            解析获取DataValue
+            </summary>
+            <param name="Context"></param>
+            <param name="dataTypeId"></param>
+            <param name="builtInType"></param>
+            <param name="valueRank"></param>
+            <param name="json"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.OPCUA.JsonUtils.DecoderObject(Opc.Ua.IServiceMessageContext,Opc.Ua.NodeId,Opc.Ua.BuiltInType,System.Int32,Newtonsoft.Json.Linq.JToken)">
+            <summary>
+            解析获取object
+            </summary>
+            <param name="Context"></param>
+            <param name="dataTypeId"></param>
+            <param name="builtInType"></param>
+            <param name="valueRank"></param>
+            <param name="json"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.OPCUA.JsonUtils.DecodeRawData(Opc.Ua.JsonDecoder,Opc.Ua.BuiltInType,System.Int32,System.String)">
+            <summary>
+            DecodeRawData
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.OPCUA.JsonUtils.Encode(Opc.Ua.IServiceMessageContext,Opc.Ua.BuiltInType,System.Object)">
+            <summary>
+            OPCUAValue解析为Jtoken
+            </summary>
+            <param name="Context"></param>
+            <param name="type"></param>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.OPCUA.JsonUtils.CreateEncoder(Opc.Ua.IServiceMessageContext,System.IO.Stream,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
+            <summary>
+            CreateEncoder
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.OPCUA.JsonUtils.CalculateActualValueRank(Newtonsoft.Json.Linq.JToken)">
+            <summary>
+            维度
+            </summary>
+            <param name="jToken"></param>
+            <returns></returns>
+        </member>
+        <member name="T:ThingsGateway.Foundation.Adapter.OPCUA.OPCNode">
+            <summary>
+            OPCUAClient配置项
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Adapter.OPCUA.OPCNode.OPCUrl">
+            <summary>
+            OPCUrl
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Adapter.OPCUA.OPCNode.UserName">
+            <summary>
+            登录账号
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Adapter.OPCUA.OPCNode.Password">
+            <summary>
+            登录密码
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Adapter.OPCUA.OPCNode.UpdateRate">
+            <summary>
+            更新间隔
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Adapter.OPCUA.OPCNode.ActiveSubscribe">
+            <summary>
+            是否订阅
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Adapter.OPCUA.OPCNode.GroupSize">
+            <summary>
+            分组大小
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Adapter.OPCUA.OPCNode.DeadBand">
+            <summary>
+            死区
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Adapter.OPCUA.OPCNode.KeepAliveInterval">
+            <summary>
+            KeepAliveInterval/ms
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Adapter.OPCUA.OPCNode.IsUseSecurity">
+            <summary>
+            安全策略
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.OPCUA.OPCNode.ToString">
+            <inheritdoc/>
+        </member>
+        <member name="T:ThingsGateway.Foundation.Adapter.OPCUA.DataChangedEventHandler">
+            <summary>
+            订阅委托
+            </summary>
+            <param name="value"></param>
+        </member>
+        <member name="T:ThingsGateway.Foundation.Adapter.OPCUA.OPCUAClient">
+            <summary>
+            OPCUAClient
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Foundation.Adapter.OPCUA.OPCUAClient.OPCNode">
+            <summary>
+            当前配置
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Foundation.Adapter.OPCUA.OPCUAClient.ProductUri">
+            <summary>
+            ProductUri
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Foundation.Adapter.OPCUA.OPCUAClient.Variables">
+            <summary>
+            当前保存的变量名称列表
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Foundation.Adapter.OPCUA.OPCUAClient._variableDicts">
+            <summary>
+            当前的变量名称/OPC变量节点
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Foundation.Adapter.OPCUA.OPCUAClient.dic_subscriptions">
+            <summary>
+            当前的订阅组，组名称/组
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.OPCUA.OPCUAClient.#ctor(TouchSocket.Core.ILog)">
+            <summary>
+            默认的构造函数，实例化一个新的OPC UA类
+            </summary>
+        </member>
+        <member name="E:ThingsGateway.Foundation.Adapter.OPCUA.OPCUAClient.DataChangedHandler">
+            <summary>
+            订阅
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Adapter.OPCUA.OPCUAClient.AppConfig">
+            <summary>
+            配置信息
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Adapter.OPCUA.OPCUAClient.Connected">
+            <summary>
+            连接状态
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Adapter.OPCUA.OPCUAClient.OPCUAName">
+            <summary>
+            OPCUAClient
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Adapter.OPCUA.OPCUAClient.Session">
+            <summary>
+            当前活动会话。
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.OPCUA.OPCUAClient.AddSubscription(System.String,System.String[])">
+            <summary>
+            新增订阅，需要指定订阅的关键字，订阅的tag名数组，以及回调方法
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.OPCUA.OPCUAClient.RemoveAllSubscription">
+            <summary>
+            移除所有的订阅消息
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.OPCUA.OPCUAClient.RemoveSubscription(System.String)">
+            <summary>
+            移除订阅消息
+            </summary>
+            <param name="subscriptionName">组名称</param>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.OPCUA.OPCUAClient.BrowseNodeReferenceAsync(System.String)">
+            <summary>
+            浏览一个节点的引用
+            </summary>
+            <param name="tag">节点值</param>
+            <returns>引用节点描述</returns>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.OPCUA.OPCUAClient.CallMethodByNodeId(System.String,System.String,System.Object[])">
+            <summary>
+            调用服务器的方法
+            </summary>
+            <param name="tagParent">方法的父节点tag</param>
+            <param name="tag">方法的节点tag</param>
+            <param name="args">传递的参数</param>
+            <returns>输出的结果值</returns>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.OPCUA.OPCUAClient.ReadHistoryRawDataValues(System.String,System.DateTime,System.DateTime,System.UInt32,System.Boolean,System.Threading.CancellationToken)">
+            <summary>
+            读取历史数据
+            </summary>
+            <param name="tag">节点的索引</param>
+            <param name="start">开始时间</param>
+            <param name="end">结束时间</param>
+            <param name="count">读取的个数</param>
+            <param name="containBound">是否包含边界</param>
+            <param name="token">token</param>
+            <returns>读取的数据列表</returns>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.OPCUA.OPCUAClient.ConnectAsync">
+            <summary>
+            连接到服务器
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.OPCUA.OPCUAClient.Disconnect">
+            <summary>
+            断开连接。
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.OPCUA.OPCUAClient.ReadJTokenValueAsync(System.String[],System.Threading.CancellationToken)">
+            <summary>
+            从服务器读取值
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.OPCUA.OPCUAClient.WriteNodeAsync(System.String,Newtonsoft.Json.Linq.JToken,System.Threading.CancellationToken)">
+            <summary>
+            异步写opc标签
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.OPCUA.OPCUAClient.ReadJTokenValueAsync(Opc.Ua.NodeId[],System.Threading.CancellationToken)">
+            <summary>
+            从服务器读取值
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.OPCUA.OPCUAClient.ReadNode(System.String,System.Boolean)">
+            <summary>
+            从服务器或缓存读取节点
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.OPCUA.OPCUAClient.ReadNoteAttributeAsync(System.String,System.UInt32,System.Threading.CancellationToken)">
+            <summary>
+            读取一个节点的所有属性
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.OPCUA.OPCUAClient.ReadNoteAttributeAsync(System.Collections.Generic.List{System.String},System.Threading.CancellationToken)">
+            <summary>
+            读取节点的所有属性
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.OPCUA.OPCUAClient.ReadNoteAttributes(System.String)">
+            <summary>
+            读取一个节点的所有属性
+            </summary>
+            <param name="tag">节点信息</param>
+            <returns>节点的特性值</returns>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.OPCUA.OPCUAClient.Dispose(System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.OPCUA.OPCUAClient.ConnectAsync(System.String)">
+            <summary>
+            Creates a new session.
+            </summary>
+            <returns>The new session object.</returns>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.OPCUA.OPCUAClient.Server_ReconnectComplete(System.Object,System.EventArgs)">
+            <summary>
+            连接处理器连接事件处理完成。
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Foundation.Adapter.OPCUA.OPCNodeAttribute">
+            <summary>
+            读取属性过程中用于描述的
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Adapter.OPCUA.OPCNodeAttribute.Name">
+            <summary>
+            属性的名称
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Adapter.OPCUA.OPCNodeAttribute.StatusCode">
+            <summary>
+            操作结果状态描述
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Adapter.OPCUA.OPCNodeAttribute.Type">
+            <summary>
+            属性的类型描述
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Adapter.OPCUA.OPCNodeAttribute.Value">
+            <summary>
+            属性的值，如果读取错误，返回文本描述
+            </summary>
+        </member>
+    </members>
+</doc>

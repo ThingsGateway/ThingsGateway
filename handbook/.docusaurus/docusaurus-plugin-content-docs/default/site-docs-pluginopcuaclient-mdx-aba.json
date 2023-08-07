@@ -1,0 +1,30 @@
+{
+  "unversionedId": "pluginopcuaclient",
+  "id": "pluginopcuaclient",
+  "title": "OPCUA采集插件",
+  "description": "一、设备扩展属性",
+  "source": "@site/docs/pluginopcuaclient.mdx",
+  "sourceDirName": ".",
+  "slug": "/pluginopcuaclient",
+  "permalink": "/thingsgateway-docs/docs/pluginopcuaclient",
+  "draft": false,
+  "editUrl": "https://gitee.com/diego2098/ThingsGateway/tree/master/handbook/docs/pluginopcuaclient.mdx",
+  "tags": [],
+  "version": "current",
+  "lastUpdatedBy": "2248356998 qq.com",
+  "lastUpdatedAt": 1689499706,
+  "formattedLastUpdatedAt": "Jul 16, 2023",
+  "frontMatter": {
+    "id": "pluginopcuaclient",
+    "title": "OPCUA采集插件"
+  },
+  "sidebar": "docs",
+  "previous": {
+    "title": "OPCDA采集插件",
+    "permalink": "/thingsgateway-docs/docs/pluginopcdaclient"
+  },
+  "next": {
+    "title": "S7采集插件",
+    "permalink": "/thingsgateway-docs/docs/pluginsiemens"
+  }
+}

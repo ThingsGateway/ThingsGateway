@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<!--<GenerateDocumentationFile>True</GenerateDocumentationFile>-->
+		<TargetFrameworks>net462;net6.0;net7.0</TargetFrameworks>
+
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Client" Version="1.4.371.96" />
+	  <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Server" Version="1.4.371.96" />
+	</ItemGroup>
+
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\..\ThingsGateway.Foundation\ThingsGateway.Foundation.csproj" />
+	</ItemGroup>
+
+</Project>

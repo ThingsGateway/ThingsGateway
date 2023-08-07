@@ -1,0 +1,30 @@
+{
+  "unversionedId": "release",
+  "id": "release",
+  "title": "发布",
+  "description": "一、编译解决方案",
+  "source": "@site/docs/release.mdx",
+  "sourceDirName": ".",
+  "slug": "/release",
+  "permalink": "/thingsgateway-docs/docs/release",
+  "draft": false,
+  "editUrl": "https://gitee.com/diego2098/ThingsGateway/tree/master/handbook/docs/release.mdx",
+  "tags": [],
+  "version": "current",
+  "lastUpdatedBy": "2248356998 qq.com",
+  "lastUpdatedAt": 1689499706,
+  "formattedLastUpdatedAt": "Jul 16, 2023",
+  "frontMatter": {
+    "id": "release",
+    "title": "发布"
+  },
+  "sidebar": "docs",
+  "previous": {
+    "title": "Kafka消息生产",
+    "permalink": "/thingsgateway-docs/docs/pluginkafka"
+  },
+  "next": {
+    "title": "发布",
+    "permalink": "/thingsgateway-docs/docs/windowsrelease"
+  }
+}

@@ -1,0 +1,126 @@
+﻿@*
+//------------------------------------------------------------------------------
+//  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
+//  此代码版权（除特别声明外的代码）归作者本人Diego所有
+//  源代码使用协议遵循本仓库的开源协议及附加协议
+//  Gitee源代码仓库：https://gitee.com/diego2098/ThingsGateway
+//  Github源代码仓库：https://github.com/kimdiego2098/ThingsGateway
+//  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
+//  QQ群：605534569
+//------------------------------------------------------------------------------
+*@
+
+@page "/admin/config"
+@using System.Linq.Expressions;
+@using Microsoft.AspNetCore.Authorization;
+@using ThingsGateway.Admin.Application;
+
+@inject IConfigService ConfigService
+@namespace ThingsGateway.Admin.Blazor
+@attribute [Authorize]
+@inject UserResoures UserResoures
+@inherits BaseComponentBase
+@layout MainLayout
+
+
+<MCard Height=@("100%") Elevation="1" Class="pa-2">
+
+    <MTabs @bind-Value="tab">
+        <MTab Value="1" Style="height:50px;">
+            系统配置
+        </MTab>
+        <MTab Value="2">
+            自定义配置
+        </MTab>
+    </MTabs>
+
+    <MTabsItems Value="tab">
+        <MTabItem Value="1">
+            @if (tab == 1)
+            {
+                <MCard Height=@("100%") Flat Class="ml-2 my-4">
+                    <MRow NoGutters>
+
+                    @foreach (var item in _sysConfig)
+                        {
+                            switch (item.ConfigKey)
+                            {
+                                case ConfigConst.CONFIG_REMARK:
+                                    <MCol Class="pa-2 px-4" Md=3 Cols="12">
+                                        <MSubheader Class="mt-4 font-weight-black"> @item.Remark</MSubheader>
+                                        <MTextarea Dense Outlined HideDetails="@("auto")" @bind-Value=@item.ConfigValue />
+                                    </MCol>
+                                    break;
+
+                                default:
+                                    <MCol Class="pa-2 px-4" Md=3 Cols="12">
+                                        <MSubheader Class="mt-4 font-weight-black"> @item.Remark</MSubheader>
+                                        <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@item.ConfigValue />
+                                    </MCol>
+                                    break;
+                            }
+
+                        }
+
+                    </MRow>
+                    <MCardActions>
+                        <MButton OnClick=OnSaveAsync Color="primary">
+                            保存
+                        </MButton>
+                    </MCardActions>
+                </MCard>
+            }
+        </MTabItem>
+
+        <MTabItem Style=@(IsMobile? "height:100%;":$"height: calc(100vh - {BlazorResourceConst.DefaultHeight+50}px)") Value="2">
+            @if (tab == 2)
+            {
+                <AppDataTable @ref="_datatable" TItem="SysConfig" SearchItem="ConfigPageInput"
+                              AddItem="ConfigAddInput" EditItem="ConfigEditInput" SearchModel="@search"
+                              AddCallAsync="AddCallAsync" QueryCallAsync="QueryCallAsync" EditCallAsync="EditCallAsync" DeleteCallAsync="DeleteCallAsync"
+                              IsShowSearchKey IsShowDetailButton IsShowQueryButton
+                              IsShowAddButton=@UserResoures.IsHasButtonWithRole("sysconfigadd")
+                              IsShowDeleteButton=@UserResoures.IsHasButtonWithRole("sysconfigdelete")
+                              IsShowEditButton=@UserResoures.IsHasButtonWithRole("sysconfigedit")>
+                    <AddTemplate>
+                        @GetRenderFragment(context)
+                    </AddTemplate>
+
+                    <EditTemplate>
+                        @GetRenderFragment(context)
+                    </EditTemplate>
+                </AppDataTable>
+            }
+
+        </MTabItem>
+    </MTabsItems>
+
+</MCard>
+
+
+@code {
+
+    RenderFragment GetRenderFragment(ConfigAddInput context)
+    {
+        RenderFragment renderFragment =
+    @<div>
+
+        <MSubheader Class="mt-4 font-weight-black"> @(context.Description(x => x.ConfigKey))  </MSubheader>
+        <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.ConfigKey />
+
+        <MSubheader Class="mt-4 font-weight-black">   @(context.Description(x => x.ConfigValue))</MSubheader>
+            <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.ConfigValue />
+
+        <MSubheader Class="mt-4 font-weight-black">    @(context.Description(x => x.Remark))  </MSubheader>
+        <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.Remark />
+
+        <MSubheader Class="mt-4 mb-5 font-weight-black">@(context.Description(x => x.SortCode)) </MSubheader>
+        <MSlider @bind-Value=@context.SortCode Class="mb-5" TValue=int ThumbLabel="@("always")" Dense />
+    </div>
+
+    ;
+        return renderFragment;
+    }
+
+}
+

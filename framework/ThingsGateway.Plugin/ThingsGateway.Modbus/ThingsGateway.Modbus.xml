@@ -1,0 +1,556 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ThingsGateway.Modbus</name>
+    </assembly>
+    <members>
+        <member name="T:ThingsGateway.Modbus.ModbusRtuOverTcp">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusRtuOverTcp.DriverDebugUIType">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusRtuOverTcp.DriverPropertys">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusRtuOverTcp.IsSupportRequest">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusRtuOverTcp.ThingsGatewayBitConverter">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Modbus.ModbusRtuOverTcp.AfterStopAsync">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Modbus.ModbusRtuOverTcp.BeforStartAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Modbus.ModbusRtuOverTcp.InitDataAdapter">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Modbus.ModbusRtuOverTcp.IsConnected">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Modbus.ModbusRtuOverTcp.LoadSourceRead(System.Collections.Generic.List{ThingsGateway.Application.DeviceVariableRunTime})">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Modbus.ModbusRtuOverTcp.WriteValueAsync(ThingsGateway.Application.DeviceVariableRunTime,Newtonsoft.Json.Linq.JToken,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Modbus.ModbusRtuOverTcp.Dispose(System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Modbus.ModbusRtuOverTcp.Init(ThingsGateway.Application.CollectDeviceRunTime,System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Modbus.ModbusRtuOverTcp.ReadAsync(System.String,System.Int32,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="T:ThingsGateway.Modbus.ModbusRtuOverTcpProperty">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusRtuOverTcpProperty.IP">
+            <summary>
+            IP
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusRtuOverTcpProperty.Port">
+            <summary>
+            端口
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusRtuOverTcpProperty.DataFormat">
+            <summary>
+            默认解析顺序
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusRtuOverTcpProperty.Station">
+            <summary>
+            默认站号
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusRtuOverTcpProperty.ConnectTimeOut">
+            <summary>
+            连接超时时间
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusRtuOverTcpProperty.MaxPack">
+            <summary>
+            最大打包长度
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusRtuOverTcpProperty.Crc16CheckEnable">
+            <summary>
+            CRC检测
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusRtuOverTcpProperty.TimeOut">
+            <summary>
+            读写超时时间
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusRtuOverTcpProperty.FrameTime">
+            <summary>
+            帧前时间ms
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusRtuOverTcpProperty.CacheTimeout">
+            <summary>
+            组包缓存超时ms
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusRtuOverTcpProperty.IsShareChannel">
+            <summary>
+            共享链路
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusRtuOverTcpProperty.ShareChannel">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Modbus.ModbusRtuOverUdp">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusRtuOverUdp.DriverDebugUIType">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusRtuOverUdp.DriverPropertys">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusRtuOverUdp.IsSupportRequest">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusRtuOverUdp.ThingsGatewayBitConverter">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Modbus.ModbusRtuOverUdp.AfterStopAsync">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Modbus.ModbusRtuOverUdp.BeforStartAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Modbus.ModbusRtuOverUdp.InitDataAdapter">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Modbus.ModbusRtuOverUdp.IsConnected">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Modbus.ModbusRtuOverUdp.LoadSourceRead(System.Collections.Generic.List{ThingsGateway.Application.DeviceVariableRunTime})">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Modbus.ModbusRtuOverUdp.WriteValueAsync(ThingsGateway.Application.DeviceVariableRunTime,Newtonsoft.Json.Linq.JToken,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Modbus.ModbusRtuOverUdp.Dispose(System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Modbus.ModbusRtuOverUdp.Init(ThingsGateway.Application.CollectDeviceRunTime,System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Modbus.ModbusRtuOverUdp.ReadAsync(System.String,System.Int32,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="T:ThingsGateway.Modbus.ModbusRtuOverUdpProperty">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusRtuOverUdpProperty.ShareChannel">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Modbus.ModbusRtu">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusRtu.DriverDebugUIType">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusRtu.DriverPropertys">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusRtu.IsSupportRequest">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusRtu.ThingsGatewayBitConverter">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Modbus.ModbusRtu.AfterStopAsync">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Modbus.ModbusRtu.BeforStartAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Modbus.ModbusRtu.Dispose(System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Modbus.ModbusRtu.InitDataAdapter">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Modbus.ModbusRtu.IsConnected">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Modbus.ModbusRtu.LoadSourceRead(System.Collections.Generic.List{ThingsGateway.Application.DeviceVariableRunTime})">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Modbus.ModbusRtu.WriteValueAsync(ThingsGateway.Application.DeviceVariableRunTime,Newtonsoft.Json.Linq.JToken,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Modbus.ModbusRtu.Init(ThingsGateway.Application.CollectDeviceRunTime,System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Modbus.ModbusRtu.ReadAsync(System.String,System.Int32,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="T:ThingsGateway.Modbus.ModbusRtuProperty">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusRtuProperty.PortName">
+            <summary>
+            COM口
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusRtuProperty.BaudRate">
+            <summary>
+            波特率
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusRtuProperty.DataBits">
+            <summary>
+            数据位
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusRtuProperty.StopBits">
+            <summary>
+            停止位
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusRtuProperty.Parity">
+            <summary>
+            校验位
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusRtuProperty.TimeOut">
+            <summary>
+            读写超时时间
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusRtuProperty.Station">
+            <summary>
+            默认站号
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusRtuProperty.Crc16CheckEnable">
+            <summary>
+            CRC检测
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusRtuProperty.DataFormat">
+            <summary>
+            默认解析顺序
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusRtuProperty.FrameTime">
+            <summary>
+            帧前时间ms
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusRtuProperty.CacheTimeout">
+            <summary>
+            组包缓存超时ms
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusRtuProperty.MaxPack">
+            <summary>
+            最大打包长度
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusRtuProperty.IsShareChannel">
+            <summary>
+            共享链路
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusRtuProperty.ShareChannel">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Modbus.ModbusServer">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusServer.DriverDebugUIType">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusServer.DriverPropertys">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusServer.UploadVariables">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusServer.VariablePropertys">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Modbus.ModbusServer.AfterStopAsync">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Modbus.ModbusServer.BeforStartAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Modbus.ModbusServer.ExecuteAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Modbus.ModbusServer.IsConnected">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Modbus.ModbusServer.Dispose(System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Modbus.ModbusServer.Init(ThingsGateway.Application.UploadDeviceRunTime)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Modbus.ModbusServer.VariableValueChange(ThingsGateway.Application.DeviceVariableRunTime)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Modbus.ModbusServer.WriteData(ThingsGateway.Foundation.Adapter.Modbus.ModbusAddress,System.Byte[],ThingsGateway.Foundation.IThingsGatewayBitConverter,TouchSocket.Sockets.SocketClient)">
+            <summary>
+            RPC写入
+            </summary>
+            <param name="address"></param>
+            <param name="bytes"></param>
+            <param name="thingsGatewayBitConverter"></param>
+            <param name="client"></param>
+            <returns></returns>
+        </member>
+        <member name="T:ThingsGateway.Modbus.ModbusServerProperty">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusServerProperty.IP">
+            <summary>
+            IP
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusServerProperty.Port">
+            <summary>
+            端口
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusServerProperty.Station">
+            <summary>
+            默认站号
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusServerProperty.MulStation">
+            <summary>
+            多站点
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusServerProperty.DataFormat">
+            <summary>
+            默认解析顺序
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusServerProperty.DeviceRpcEnable">
+            <summary>
+            允许写入
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusServerProperty.CycleInterval">
+            <summary>
+            线程循环间隔
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Modbus.ModbusServerVariableProperty">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusServerVariableProperty.ServiceAddress">
+            <summary>
+            从站变量地址
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusServerVariableProperty.VariableRpcEnable">
+            <summary>
+            允许写入
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusServerVariableProperty.ModbusType">
+            <summary>
+            数据类型
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Modbus.ModbusTcp">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusTcp.DriverDebugUIType">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusTcp.DriverPropertys">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusTcp.IsSupportRequest">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusTcp.ThingsGatewayBitConverter">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Modbus.ModbusTcp.AfterStopAsync">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Modbus.ModbusTcp.BeforStartAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Modbus.ModbusTcp.InitDataAdapter">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Modbus.ModbusTcp.IsConnected">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Modbus.ModbusTcp.LoadSourceRead(System.Collections.Generic.List{ThingsGateway.Application.DeviceVariableRunTime})">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Modbus.ModbusTcp.WriteValueAsync(ThingsGateway.Application.DeviceVariableRunTime,Newtonsoft.Json.Linq.JToken,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Modbus.ModbusTcp.Dispose(System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Modbus.ModbusTcp.Init(ThingsGateway.Application.CollectDeviceRunTime,System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Modbus.ModbusTcp.ReadAsync(System.String,System.Int32,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="T:ThingsGateway.Modbus.ModbusTcpProperty">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusTcpProperty.IP">
+            <summary>
+            IP
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusTcpProperty.Port">
+            <summary>
+            端口
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusTcpProperty.Station">
+            <summary>
+            默认站号
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusTcpProperty.TimeOut">
+            <summary>
+            读写超时时间
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusTcpProperty.ConnectTimeOut">
+            <summary>
+            连接超时时间
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusTcpProperty.FrameTime">
+            <summary>
+            帧前时间ms
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusTcpProperty.CacheTimeout">
+            <summary>
+            组包缓存超时ms
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusTcpProperty.DataFormat">
+            <summary>
+            默认解析顺序
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusTcpProperty.MaxPack">
+            <summary>
+            最大打包长度
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusTcpProperty.MessageIdCheckEnable">
+            <summary>
+            连接标识检测
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusTcpProperty.IsShareChannel">
+            <summary>
+            共享链路
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusTcpProperty.ShareChannel">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Modbus.ModbusUdp">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusUdp.DriverDebugUIType">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusUdp.DriverPropertys">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusUdp.IsSupportRequest">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusUdp.ThingsGatewayBitConverter">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Modbus.ModbusUdp.AfterStopAsync">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Modbus.ModbusUdp.BeforStartAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Modbus.ModbusUdp.InitDataAdapter">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Modbus.ModbusUdp.IsConnected">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Modbus.ModbusUdp.LoadSourceRead(System.Collections.Generic.List{ThingsGateway.Application.DeviceVariableRunTime})">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Modbus.ModbusUdp.WriteValueAsync(ThingsGateway.Application.DeviceVariableRunTime,Newtonsoft.Json.Linq.JToken,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Modbus.ModbusUdp.Dispose(System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Modbus.ModbusUdp.Init(ThingsGateway.Application.CollectDeviceRunTime,System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Modbus.ModbusUdp.ReadAsync(System.String,System.Int32,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="T:ThingsGateway.Modbus.ModbusUdpProperty">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusUdpProperty.ShareChannel">
+            <inheritdoc/>
+        </member>
+    </members>
+</doc>

@@ -1,0 +1,43 @@
+{
+  "$schema": "https://gitee.com/dotnetchina/Furion/raw/net6/schemas/v3/furion-schema.json",
+  "Urls": "http://*:7200;",
+  "Logging": {
+    "LogLevel": {
+      "File": "Information", //程序日志写入文件等级，不包含网关日志
+      "BackendLog": "Information", //网关运行日志存入数据库等级，部署推荐Error
+      "Default": "Information", //默认等级
+      "Console": "Information", //控制台输出日志等级
+      "Microsoft": "Warning",
+      "Microsoft.Hosting.Lifetime": "Information"
+    },
+    "LogEnable": {
+      "File": true //程序日志写入文件
+    }
+  },
+  //动态API设备
+  "DynamicApiControllerSettings": {
+    "LowercaseRoute": false, //是否采用小写路由，bool 类型，默认 true
+    "KeepName": true, //是否保持原有名称不处理，bool，默认 false
+    "AsLowerCamelCase": true //启用小驼峰命名（首字母小写），默认 false
+  },
+
+  "FriendlyExceptionSettings": {
+    "DefaultErrorMessage": "系统异常，请联系管理员",
+    "HideErrorCode": true
+  },
+
+  //排除特定配置文件
+  "IgnoreConfigurationFiles": [
+    "sys_user.json",
+    "sys_config.json",
+    "sys_relation.json",
+    "sys_resource.json",
+    "sys_role.json",
+    "driver_plugin.json"
+  ],
+
+  "CorsAccessorSettings": {
+    "WithExposedHeaders": [ "Content-Disposition" ], // 如果前端不代理且是axios请求
+    "SignalRSupport": true // 启用 SignalR 跨域支持
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "unversionedId": "startguide",
+  "id": "startguide",
+  "title": "入门指南",
+  "description": "一、说明",
+  "source": "@site/docs/startguide.mdx",
+  "sourceDirName": ".",
+  "slug": "/startguide",
+  "permalink": "/thingsgateway-docs/docs/startguide",
+  "draft": false,
+  "editUrl": "https://gitee.com/diego2098/ThingsGateway/tree/master/handbook/docs/startguide.mdx",
+  "tags": [],
+  "version": "current",
+  "lastUpdatedBy": "Kimdiego2098",
+  "lastUpdatedAt": 1689748467,
+  "formattedLastUpdatedAt": "Jul 19, 2023",
+  "frontMatter": {
+    "id": "startguide",
+    "title": "入门指南"
+  },
+  "sidebar": "docs",
+  "previous": {
+    "title": "Pro版相关",
+    "permalink": "/thingsgateway-docs/docs/enterprise"
+  },
+  "next": {
+    "title": "插件管理",
+    "permalink": "/thingsgateway-docs/docs/pluginconfig"
+  }
+}

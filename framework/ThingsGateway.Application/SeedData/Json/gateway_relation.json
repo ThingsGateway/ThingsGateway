@@ -1,0 +1,319 @@
+{
+  "RECORDS": [
+    {
+      "Id": 445724238577925,
+      "Category": "SYS_ROLE_HAS_RESOURCE",
+      "ObjectId": 212725263001002,
+      "TargetId": "100002002",
+      "ExtJson": "{\"ButtonInfo\":[],\"MenuId\":100002002}"
+    },
+    {
+      "Id": 445724238577926,
+      "Category": "SYS_ROLE_HAS_RESOURCE",
+      "ObjectId": 212725263001002,
+      "TargetId": "100002003",
+      "ExtJson": "{\"ButtonInfo\":[],\"MenuId\":100002003}"
+    },
+    {
+      "Id": 445724238577927,
+      "Category": "SYS_ROLE_HAS_RESOURCE",
+      "ObjectId": 212725263001002,
+      "TargetId": "100002004",
+      "ExtJson": "{\"ButtonInfo\":[],\"MenuId\":100002004}"
+    },
+    {
+      "Id": 445724238577928,
+      "Category": "SYS_ROLE_HAS_RESOURCE",
+      "ObjectId": 212725263001002,
+      "TargetId": "100003001",
+      "ExtJson": "{\"ButtonInfo\":[],\"MenuId\":100003001}"
+    },
+    {
+      "Id": 445724238577929,
+      "Category": "SYS_ROLE_HAS_RESOURCE",
+      "ObjectId": 212725263001002,
+      "TargetId": "100003002",
+      "ExtJson": "{\"ButtonInfo\":[100003002001,100003002002,100003002003,100003002004,100003002005],\"MenuId\":100003002}"
+    },
+    {
+      "Id": 445724238577930,
+      "Category": "SYS_ROLE_HAS_RESOURCE",
+      "ObjectId": 212725263001002,
+      "TargetId": "100003003",
+      "ExtJson": "{\"ButtonInfo\":[],\"MenuId\":100003003}"
+    },
+    {
+      "Id": 445724238577931,
+      "Category": "SYS_ROLE_HAS_RESOURCE",
+      "ObjectId": 212725263001002,
+      "TargetId": "200001001",
+      "ExtJson": "{\"ButtonInfo\":[391877356581125,391877402190085,391877432721669],\"MenuId\":200001001}"
+    },
+    {
+      "Id": 445724238577932,
+      "Category": "SYS_ROLE_HAS_RESOURCE",
+      "ObjectId": 212725263001002,
+      "TargetId": "200001002",
+      "ExtJson": "{\"ButtonInfo\":[391877277679877],\"MenuId\":200001002}"
+    },
+    {
+      "Id": 445724238577933,
+      "Category": "SYS_ROLE_HAS_RESOURCE",
+      "ObjectId": 212725263001002,
+      "TargetId": "200001003",
+      "ExtJson": "{\"ButtonInfo\":[391877521359109,391877554565381,391877580439813],\"MenuId\":200001003}"
+    },
+    {
+      "Id": 445724238577934,
+      "Category": "SYS_ROLE_HAS_RESOURCE",
+      "ObjectId": 212725263001002,
+      "TargetId": "200001101",
+      "ExtJson": "{\"ButtonInfo\":[391877764051205,391877800583429,391877824180485],\"MenuId\":200001101}"
+    },
+    {
+      "Id": 445724238577935,
+      "Category": "SYS_ROLE_HAS_RESOURCE",
+      "ObjectId": 212725263001002,
+      "TargetId": "200001011",
+      "ExtJson": "{\"ButtonInfo\":[],\"MenuId\":200001011}"
+    },
+    {
+      "Id": 445724238577936,
+      "Category": "SYS_ROLE_HAS_RESOURCE",
+      "ObjectId": 212725263001002,
+      "TargetId": "390053150736645",
+      "ExtJson": "{\"ButtonInfo\":[391878193139973,391878242271493],\"MenuId\":390053150736645}"
+    },
+    {
+      "Id": 445724238577937,
+      "Category": "SYS_ROLE_HAS_RESOURCE",
+      "ObjectId": 212725263001002,
+      "TargetId": "200001004",
+      "ExtJson": "{\"ButtonInfo\":[391876932448517,391876995248389],\"MenuId\":200001004}"
+    },
+    {
+      "Id": 445724238577938,
+      "Category": "SYS_ROLE_HAS_RESOURCE",
+      "ObjectId": 212725263001002,
+      "TargetId": "200001903",
+      "ExtJson": "{\"ButtonInfo\":[],\"MenuId\":200001903}"
+    },
+    {
+      "Id": 445724238577939,
+      "Category": "SYS_ROLE_HAS_RESOURCE",
+      "ObjectId": 212725263001002,
+      "TargetId": "200001005",
+      "ExtJson": "{\"ButtonInfo\":[],\"MenuId\":200001005}"
+    },
+    {
+      "Id": 445724238577940,
+      "Category": "SYS_ROLE_HAS_RESOURCE",
+      "ObjectId": 212725263001002,
+      "TargetId": "389854423286021",
+      "ExtJson": "{\"ButtonInfo\":[],\"MenuId\":389854423286021}"
+    },
+    {
+      "Id": 445724238577941,
+      "Category": "SYS_ROLE_HAS_RESOURCE",
+      "ObjectId": 212725263001002,
+      "TargetId": "389854535966981",
+      "ExtJson": "{\"ButtonInfo\":[],\"MenuId\":389854535966981}"
+    },
+    {
+      "Id": 445724238577942,
+      "Category": "SYS_ROLE_HAS_RESOURCE",
+      "ObjectId": 212725263001002,
+      "TargetId": "389854579716357",
+      "ExtJson": "{\"ButtonInfo\":[],\"MenuId\":389854579716357}"
+    },
+    {
+      "Id": 445724238577943,
+      "Category": "SYS_ROLE_HAS_RESOURCE",
+      "ObjectId": 212725263001002,
+      "TargetId": "389854617587973",
+      "ExtJson": "{\"ButtonInfo\":[],\"MenuId\":389854617587973}"
+    },
+    {
+      "Id": 445724238577944,
+      "Category": "SYS_ROLE_HAS_RESOURCE",
+      "ObjectId": 212725263001002,
+      "TargetId": "390107473895685",
+      "ExtJson": "{\"ButtonInfo\":[391876432142597],\"MenuId\":390107473895685}"
+    },
+    {
+      "Id": 445724238577945,
+      "Category": "SYS_ROLE_HAS_RESOURCE",
+      "ObjectId": 212725263001002,
+      "TargetId": "390107521245445",
+      "ExtJson": "{\"ButtonInfo\":[391876531253509],\"MenuId\":390107521245445}"
+    },
+    {
+      "Id": 445724238577946,
+      "Category": "SYS_ROLE_HAS_PERMISSION",
+      "ObjectId": 212725263001002,
+      "TargetId": "/admin/openapisession",
+      "ExtJson": "{\"ApiUrl\":\"/admin/openapisession\"}"
+    },
+    {
+      "Id": 445724238577947,
+      "Category": "SYS_ROLE_HAS_PERMISSION",
+      "ObjectId": 212725263001002,
+      "TargetId": "/admin/openapiuser",
+      "ExtJson": "{\"ApiUrl\":\"/admin/openapiuser\"}"
+    },
+    {
+      "Id": 445724238577948,
+      "Category": "SYS_ROLE_HAS_PERMISSION",
+      "ObjectId": 212725263001002,
+      "TargetId": "/admin/oplog",
+      "ExtJson": "{\"ApiUrl\":\"/admin/oplog\"}"
+    },
+    {
+      "Id": 445724238577949,
+      "Category": "SYS_ROLE_HAS_PERMISSION",
+      "ObjectId": 212725263001002,
+      "TargetId": "/admin/session",
+      "ExtJson": "{\"ApiUrl\":\"/admin/session\"}"
+    },
+    {
+      "Id": 445724238577950,
+      "Category": "SYS_ROLE_HAS_PERMISSION",
+      "ObjectId": 212725263001002,
+      "TargetId": "/admin/vislog",
+      "ExtJson": "{\"ApiUrl\":\"/admin/vislog\"}"
+    },
+    {
+      "Id": 445724238577951,
+      "Category": "SYS_ROLE_HAS_PERMISSION",
+      "ObjectId": 212725263001002,
+      "TargetId": "/gatewaylog/backendlog",
+      "ExtJson": "{\"ApiUrl\":\"/gatewaylog/backendlog\"}"
+    },
+    {
+      "Id": 445724238577952,
+      "Category": "SYS_ROLE_HAS_PERMISSION",
+      "ObjectId": 212725263001002,
+      "TargetId": "/gatewayconfig/collectdevice",
+      "ExtJson": "{\"ApiUrl\":\"/gatewayconfig/collectdevice\"}"
+    },
+    {
+      "Id": 445724238577953,
+      "Category": "SYS_ROLE_HAS_PERMISSION",
+      "ObjectId": 212725263001002,
+      "TargetId": "/gatewayconfig/config",
+      "ExtJson": "{\"ApiUrl\":\"/gatewayconfig/config\"}"
+    },
+    {
+      "Id": 445724238577954,
+      "Category": "SYS_ROLE_HAS_PERMISSION",
+      "ObjectId": 212725263001002,
+      "TargetId": "/gatewayruntime/devicestatus",
+      "ExtJson": "{\"ApiUrl\":\"/gatewayruntime/devicestatus\"}"
+    },
+    {
+      "Id": 445724238577955,
+      "Category": "SYS_ROLE_HAS_PERMISSION",
+      "ObjectId": 212725263001002,
+      "TargetId": "/gatewayconfig/devicevariable",
+      "ExtJson": "{\"ApiUrl\":\"/gatewayconfig/devicevariable\"}"
+    },
+    {
+      "Id": 445724238577956,
+      "Category": "SYS_ROLE_HAS_PERMISSION",
+      "ObjectId": 212725263001002,
+      "TargetId": "/gatewayruntime/devicevariable",
+      "ExtJson": "{\"ApiUrl\":\"/gatewayruntime/devicevariable\"}"
+    },
+    {
+      "Id": 445724238577957,
+      "Category": "SYS_ROLE_HAS_PERMISSION",
+      "ObjectId": 212725263001002,
+      "TargetId": "/gatewayconfig/driverdebug",
+      "ExtJson": "{\"ApiUrl\":\"/gatewayconfig/driverdebug\"}"
+    },
+    {
+      "Id": 445724238577958,
+      "Category": "SYS_ROLE_HAS_PERMISSION",
+      "ObjectId": 212725263001002,
+      "TargetId": "/gatewayconfig/plugin",
+      "ExtJson": "{\"ApiUrl\":\"/gatewayconfig/plugin\"}"
+    },
+    {
+      "Id": 445724238577959,
+      "Category": "SYS_ROLE_HAS_PERMISSION",
+      "ObjectId": 212725263001002,
+      "TargetId": "/gatewayruntime/hardwareinfo",
+      "ExtJson": "{\"ApiUrl\":\"/gatewayruntime/hardwareinfo\"}"
+    },
+    {
+      "Id": 445724238577960,
+      "Category": "SYS_ROLE_HAS_PERMISSION",
+      "ObjectId": 212725263001002,
+      "TargetId": "/gatewayruntime/hisalarm",
+      "ExtJson": "{\"ApiUrl\":\"/gatewayruntime/hisalarm\"}"
+    },
+    {
+      "Id": 445724238577961,
+      "Category": "SYS_ROLE_HAS_PERMISSION",
+      "ObjectId": 212725263001002,
+      "TargetId": "/gatewayruntime/historyvalue",
+      "ExtJson": "{\"ApiUrl\":\"/gatewayruntime/historyvalue\"}"
+    },
+    {
+      "Id": 445724238577962,
+      "Category": "SYS_ROLE_HAS_PERMISSION",
+      "ObjectId": 212725263001002,
+      "TargetId": "/gatewayconfig/memoryvariable",
+      "ExtJson": "{\"ApiUrl\":\"/gatewayconfig/memoryvariable\"}"
+    },
+    {
+      "Id": 445724238577963,
+      "Category": "SYS_ROLE_HAS_PERMISSION",
+      "ObjectId": 212725263001002,
+      "TargetId": "/gatewayruntime/realalarm",
+      "ExtJson": "{\"ApiUrl\":\"/gatewayruntime/realalarm\"}"
+    },
+    {
+      "Id": 445724238577964,
+      "Category": "SYS_ROLE_HAS_PERMISSION",
+      "ObjectId": 212725263001002,
+      "TargetId": "/gatewaylog/rpclog",
+      "ExtJson": "{\"ApiUrl\":\"/gatewaylog/rpclog\"}"
+    },
+    {
+      "Id": 445724238577965,
+      "Category": "SYS_ROLE_HAS_PERMISSION",
+      "ObjectId": 212725263001002,
+      "TargetId": "/gatewayconfig/uploaddevice",
+      "ExtJson": "{\"ApiUrl\":\"/gatewayconfig/uploaddevice\"}"
+    },
+    {
+      "Id": 445724407628037,
+      "Category": "SYS_USER_WORKBENCH_DATA",
+      "ObjectId": 212725263002001,
+      "TargetId": null,
+      "ExtJson": "[200001002,200001011,200001001,200001101,200001003,200001903,390053150736645,200001004,200001005,389854579716357,389854423286021,389854535966981,389854617587973,390107473895685,390107521245445,100001001,100001002,100001003,100001004,100002001,100002002,100002003,100002004,100002010]"
+    },
+    {
+      "Id": 445724430205189,
+      "Category": "Relation_SYS_USER_DEFAULTRAZOR",
+      "ObjectId": 212725263002001,
+      "TargetId": null,
+      "ExtJson": "200001004"
+    },
+    {
+      "Id": 445725177893125,
+      "Category": "SYS_USER_WORKBENCH_DATA",
+      "ObjectId": 201725263002001,
+      "TargetId": null,
+      "ExtJson": "[200001002,200001011,200001001,200001101,200001003,200001903,390053150736645,200001004,200001005,389854579716357,389854423286021,389854535966981,389854617587973,390107473895685,390107521245445,100002002,100002003,100002004,100003001,100003002,100003003]"
+    },
+    {
+      "Id": 445725200273669,
+      "Category": "Relation_SYS_USER_DEFAULTRAZOR",
+      "ObjectId": 201725263002001,
+      "TargetId": null,
+      "ExtJson": "200001004"
+    }
+  ]
+}

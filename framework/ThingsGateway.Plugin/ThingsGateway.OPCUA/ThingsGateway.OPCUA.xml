@@ -1,0 +1,360 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ThingsGateway.OPCUA</name>
+    </assembly>
+    <members>
+        <member name="T:ThingsGateway.OPCUA.ImportVariable">
+            <summary>
+            导入变量
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.OPCUA.ImportVariable.PLC">
+            <summary>
+            opc对象
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.OPCUA.ImportVariable.GetImportVariableListAsync">
+            <summary>
+            获取设备与变量列表
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.OPCUA.ImportVariable.OnInitialized">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.OPCUA.ImportVariable.GetImportDevice">
+            <inheritdoc/>
+        </member>
+        <member name="T:ThingsGateway.OPCUA.OPCUAClient">
+            <summary>
+            OPCUA客户端
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.OPCUA.OPCUAClient.DriverDebugUIType">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.OPCUA.OPCUAClient.DriverPropertys">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.OPCUA.OPCUAClient.IsSupportRequest">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.OPCUA.OPCUAClient.ThingsGatewayBitConverter">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.OPCUA.OPCUAClient.AfterStopAsync">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.OPCUA.OPCUAClient.BeforStartAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.OPCUA.OPCUAClient.InitDataAdapter">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.OPCUA.OPCUAClient.IsConnected">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.OPCUA.OPCUAClient.LoadSourceRead(System.Collections.Generic.List{ThingsGateway.Application.DeviceVariableRunTime})">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.OPCUA.OPCUAClient.ReadSourceAsync(ThingsGateway.Application.DeviceVariableSourceRead,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.OPCUA.OPCUAClient.WriteValueAsync(ThingsGateway.Application.DeviceVariableRunTime,Newtonsoft.Json.Linq.JToken,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.OPCUA.OPCUAClient.Dispose(System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.OPCUA.OPCUAClient.Init(ThingsGateway.Application.CollectDeviceRunTime,System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.OPCUA.OPCUAClient.ReadAsync(System.String,System.Int32,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="T:ThingsGateway.OPCUA.OPCUAClientDebugDriverPage">
+            <summary>
+            OPCUA调试页面
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.OPCUA.OPCUAClientDebugDriverPage.Dispose">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.OPCUA.OPCUAClientDebugDriverPage.ToString">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.OPCUA.OPCUAClientDebugDriverPage.OnAfterRender(System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="T:ThingsGateway.OPCUA.OPCUAClientPage">
+            <summary>
+            OPCUAClientPage
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.OPCUA.OPCUAClientPage.LogAction">
+            <summary>
+            日志输出
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.OPCUA.OPCUAClientPage.OPC">
+            <summary>
+            OPC
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.OPCUA.OPCUAClientPage.Dispose">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.OPCUA.OPCUAClientPage.OnInitialized">
+            <inheritdoc/>
+        </member>
+        <member name="T:ThingsGateway.OPCUA.OPCUAClientProperty">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.OPCUA.OPCUAClientProperty.OPCURL">
+            <summary>
+            连接Url
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.OPCUA.OPCUAClientProperty.UserName">
+            <summary>
+            登录账号
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.OPCUA.OPCUAClientProperty.Password">
+            <summary>
+            登录密码
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.OPCUA.OPCUAClientProperty.IsUseSecurity">
+            <summary>
+            安全策略
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.OPCUA.OPCUAClientProperty.ActiveSubscribe">
+            <summary>
+            激活订阅
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.OPCUA.OPCUAClientProperty.UpdateRate">
+            <summary>
+            更新频率
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.OPCUA.OPCUAClientProperty.DeadBand">
+            <summary>
+            死区
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.OPCUA.OPCUAClientProperty.GroupSize">
+            <summary>
+            自动分组大小
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.OPCUA.OPCUAClientProperty.KeepAliveInterval">
+            <summary>
+            心跳频率
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.OPCUA.OPCUAClientProperty.IsShareChannel">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.OPCUA.OPCUAClientProperty.ShareChannel">
+            <inheritdoc/>
+        </member>
+        <member name="T:ThingsGateway.OPCUA.OPCUAServer">
+            <summary>
+            OPCUA服务端
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.OPCUA.OPCUAServer.DriverDebugUIType">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.OPCUA.OPCUAServer.DriverPropertys">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.OPCUA.OPCUAServer.UploadVariables">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.OPCUA.OPCUAServer.VariablePropertys">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.OPCUA.OPCUAServer.AfterStopAsync">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.OPCUA.OPCUAServer.BeforStartAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.OPCUA.OPCUAServer.ExecuteAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.OPCUA.OPCUAServer.IsConnected">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.OPCUA.OPCUAServer.Dispose(System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.OPCUA.OPCUAServer.Init(ThingsGateway.Application.UploadDeviceRunTime)">
+            <inheritdoc/>
+        </member>
+        <member name="T:ThingsGateway.OPCUA.OPCUAServerProperty">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.OPCUA.OPCUAServerProperty.OpcUaStringUrl">
+            <summary>
+            服务地址
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.OPCUA.OPCUAServerProperty.SecurityPolicy">
+            <summary>
+            安全策略
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.OPCUA.OPCUAServerProperty.AutoAcceptUntrustedCertificates">
+            <summary>
+            接受不受信任的证书
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.OPCUA.OPCUAServerProperty.CycleInterval">
+            <summary>
+            线程循环间隔
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.OPCUA.OPCUAServerVariableProperty">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.OPCUA.OPCUAServerVariableProperty.DataTypeEnum">
+            <summary>
+            数据类型
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.OPCUA.OPCUATag.Id">
+            <summary>
+            变量Id
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.OPCUA.ThingsGatewayNodeManager">
+            <summary>
+            数据节点
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.OPCUA.ThingsGatewayNodeManager.NodeIdTags">
+            <summary>
+            OPC和网关对应表
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.OPCUA.ThingsGatewayNodeManager.#ctor(ThingsGateway.Application.UploadDevice,TouchSocket.Core.ILog,Opc.Ua.Server.IServerInternal,Opc.Ua.ApplicationConfiguration)">
+            <inheritdoc cref="T:ThingsGateway.OPCUA.ThingsGatewayNodeManager"/>
+        </member>
+        <member name="M:ThingsGateway.OPCUA.ThingsGatewayNodeManager.CreateAddressSpace(System.Collections.Generic.IDictionary{Opc.Ua.NodeId,System.Collections.Generic.IList{Opc.Ua.IReference}})">
+            <summary>
+            创建服务目录结构
+            </summary>
+            <param name="externalReferences"></param>
+        </member>
+        <member name="M:ThingsGateway.OPCUA.ThingsGatewayNodeManager.GetPropertyValue(ThingsGateway.Application.DeviceVariableRunTime,System.String)">
+            <summary>
+            获取变量的属性值
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.OPCUA.ThingsGatewayNodeManager.HistoryRead(Opc.Ua.Server.OperationContext,Opc.Ua.HistoryReadDetails,Opc.Ua.TimestampsToReturn,System.Boolean,System.Collections.Generic.IList{Opc.Ua.HistoryReadValueId},System.Collections.Generic.IList{Opc.Ua.HistoryReadResult},System.Collections.Generic.IList{Opc.Ua.ServiceResult})">
+            <summary>
+            读取历史数据
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.OPCUA.ThingsGatewayNodeManager.New(Opc.Ua.ISystemContext,Opc.Ua.NodeState)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.OPCUA.ThingsGatewayNodeManager.UpVariable(ThingsGateway.Application.VariableData)">
+            <summary>
+            更新变量
+            </summary>
+            <param name="variable"></param>
+        </member>
+        <member name="M:ThingsGateway.OPCUA.ThingsGatewayNodeManager.Dispose(System.Boolean)">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <param name="disposing"></param>
+        </member>
+        <member name="M:ThingsGateway.OPCUA.ThingsGatewayNodeManager.AddTagNode(Opc.Ua.FolderState,System.String)">
+            <summary>
+            添加变量节点
+            </summary>
+            <param name="fs">设备组节点</param>
+            <param name="name">设备名称</param>
+        </member>
+        <member name="M:ThingsGateway.OPCUA.ThingsGatewayNodeManager.ChangeNodeData(ThingsGateway.OPCUA.OPCUATag,System.Object,System.DateTimeOffset)">
+            <summary>
+            在服务器端直接更改对应数据节点的值
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.OPCUA.ThingsGatewayNodeManager.CreateFolder(Opc.Ua.NodeState,System.String,System.String)">
+            <summary>
+            创建文件夹
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.OPCUA.ThingsGatewayNodeManager.CreateVariable(Opc.Ua.NodeState,ThingsGateway.Application.DeviceVariableRunTime)">
+            <summary>
+            创建一个值节点，类型需要在创建的时候指定
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.OPCUA.ThingsGatewayNodeManager.DataNodeType(ThingsGateway.Application.DeviceVariableRunTime)">
+            <summary>
+            网关转OPC数据类型
+            </summary>
+            <param name="variableRunTime"></param>
+            <returns></returns>
+        </member>
+        <member name="T:ThingsGateway.OPCUA.ThingsGatewayServer">
+            <summary>
+            UAServer核心实现
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.OPCUA.ThingsGatewayServer.NodeManager">
+            <summary>
+            自定义节点
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.OPCUA.ThingsGatewayServer.#ctor(ThingsGateway.Application.UploadDevice,TouchSocket.Core.ILog)">
+            <inheritdoc cref="T:ThingsGateway.OPCUA.ThingsGatewayServer"/>
+        </member>
+        <member name="M:ThingsGateway.OPCUA.ThingsGatewayServer.GetUserTokenPolicies(Opc.Ua.ApplicationConfiguration,Opc.Ua.EndpointDescription)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.OPCUA.ThingsGatewayServer.CreateMasterNodeManager(Opc.Ua.Server.IServerInternal,Opc.Ua.ApplicationConfiguration)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.OPCUA.ThingsGatewayServer.CreateResourceManager(Opc.Ua.Server.IServerInternal,Opc.Ua.ApplicationConfiguration)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.OPCUA.ThingsGatewayServer.Dispose(System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.OPCUA.ThingsGatewayServer.LoadServerProperties">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.OPCUA.ThingsGatewayServer.OnServerStarted(Opc.Ua.Server.IServerInternal)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.OPCUA.ThingsGatewayServer.OnServerStarting(Opc.Ua.ApplicationConfiguration)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.OPCUA.ThingsGatewayServer.OnServerStopping">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.OPCUA.ThingsGatewayServer.VerifyPassword(Opc.Ua.UserNameIdentityToken)">
+            <summary>
+            从第三方用户中校验
+            </summary>
+            <param name="userNameToken"></param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

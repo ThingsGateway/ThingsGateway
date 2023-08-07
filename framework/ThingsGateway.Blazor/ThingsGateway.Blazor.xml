@@ -1,0 +1,385 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ThingsGateway.Blazor</name>
+    </assembly>
+    <members>
+        <member name="T:ThingsGateway.Blazor.ImportExcel">
+            <summary>
+            导入excel
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Blazor.ImportExcel.Import">
+            <summary>
+            导入
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Blazor.ImportExcel.IsShowImport">
+            <summary>
+            是否显示
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Blazor.ImportExcel.Preview">
+            <summary>
+            预览
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Blazor.ImportExcel.Step">
+            <summary>
+            当前步数
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Blazor.HisPageInput">
+            <summary>
+            历史查询条件
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Blazor.HisPageInput.StartTime">
+            <summary>
+            开始时间
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Blazor.HisPageInput.EndTime">
+            <summary>
+            结束时间
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Blazor.ChannelEnum">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Blazor.ChannelEnum.None">
+            <inheritdoc/>
+        </member>
+        <member name="F:ThingsGateway.Blazor.ChannelEnum.TcpClientEx">
+            <inheritdoc/>
+        </member>
+        <member name="F:ThingsGateway.Blazor.ChannelEnum.SerialPort">
+            <inheritdoc/>
+        </member>
+        <member name="F:ThingsGateway.Blazor.ChannelEnum.UdpSession">
+            <inheritdoc/>
+        </member>
+        <member name="F:ThingsGateway.Blazor.ChannelEnum.TcpServer">
+            <inheritdoc/>
+        </member>
+        <member name="T:ThingsGateway.Blazor.DefalutDebugDriverPage">
+            <inheritdoc/>
+        </member>
+        <member name="F:ThingsGateway.Blazor.DefalutDebugDriverPage.SerialClientPage">
+            <summary>
+            SerialClientPage
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Blazor.DefalutDebugDriverPage.TcpClientPage">
+            <summary>
+            TcpClientPage
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Blazor.DefalutDebugDriverPage.TcpServerPage">
+            <summary>
+            TcpServerPage
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Blazor.DefalutDebugDriverPage.UdpSessionPage">
+            <summary>
+            UdpSessionPage
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Blazor.DefalutDebugDriverPage.Channel">
+            <summary>
+            选择，1-TCPCLIENT，2-串口，3-UDP，4-TCPServer
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Blazor.DefalutDebugDriverPage.Plc">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Blazor.DefalutDebugDriverPage.ChildContent">
+            <summary>
+            模板
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Blazor.DefalutDebugDriverPage.OtherContent">
+            <summary>
+            自定义模板
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Blazor.DefalutDebugDriverPage.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Blazor.DefalutDebugDriverPage.OnAfterRender(System.Boolean)">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <param name="firstRender"></param>
+        </member>
+        <member name="T:ThingsGateway.Blazor.SerialClientPage">
+            <inheritdoc/>
+        </member>
+        <member name="F:ThingsGateway.Blazor.SerialClientPage.LogAction">
+            <summary>
+            日志输出
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Blazor.SerialClientPage.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Blazor.SerialClientPage.GetSerialClient">
+            <summary>
+            获取对象
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Blazor.SerialClientPage.OnInitialized">
+            <inheritdoc/>
+        </member>
+        <member name="T:ThingsGateway.Blazor.TcpClientPage">
+            <inheritdoc/>
+        </member>
+        <member name="F:ThingsGateway.Blazor.TcpClientPage.LogAction">
+            <summary>
+            日志输出
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Blazor.TcpClientPage.IP">
+            <summary>
+            IP
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Blazor.TcpClientPage.Port">
+            <summary>
+            端口
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Blazor.TcpClientPage.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Blazor.TcpClientPage.GetTcpClient">
+            <summary>
+            获取对象
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Blazor.TcpClientPage.OnInitialized">
+            <inheritdoc/>
+        </member>
+        <member name="T:ThingsGateway.Blazor.TcpServerPage">
+            <inheritdoc/>
+        </member>
+        <member name="F:ThingsGateway.Blazor.TcpServerPage.LogAction">
+            <summary>
+            日志输出
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Blazor.TcpServerPage.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Blazor.TcpServerPage.GetTcpServer">
+            <summary>
+            获取对象
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Blazor.TcpServerPage.OnInitialized">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Blazor.UdpSessionPage">
+            <inheritdoc/>
+        </member>
+        <member name="F:ThingsGateway.Blazor.UdpSessionPage.LogAction">
+            <summary>
+            日志输出
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Blazor.UdpSessionPage.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Blazor.UdpSessionPage.GetUdpSession">
+            <summary>
+            获取对象
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Blazor.UdpSessionPage.OnInitialized">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Blazor.BackendLogPage">
+            <summary>
+            后台日志页面
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Blazor.CollectDevicePage">
+            <summary>
+            采集设备页面
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Blazor.CollectDevicePage.OnParametersSetAsync">
+            <inheritdoc/>
+        </member>
+        <member name="T:ThingsGateway.Blazor.ConfigPage">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Blazor.ConfigPage.#ctor">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Blazor.ConfigPage.OnParametersSetAsync">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:ThingsGateway.Blazor.DeviceStatusPage">
+            <summary>
+            设备状态页面
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Blazor.DeviceStatusPage.Dispose">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Blazor.DeviceStatusPage.OnInitialized">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Blazor.DeviceStatusPage.OnParametersSet">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Blazor.DeviceVariablePage">
+            <summary>
+            采集变量页面
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Blazor.DeviceVariablePage.OnParametersSetAsync">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:ThingsGateway.Blazor.DeviceVariableRunTimePage">
+            <summary>
+            实时数据页
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Blazor.DeviceVariableRunTimePage.DeviceName">
+            <summary>
+            设备名称
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Blazor.DeviceVariableRunTimePage.UploadDeviceName">
+            <summary>
+            上传设备名称
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Blazor.DeviceVariableRunTimePage.Dispose">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Blazor.DeviceVariableRunTimePage.OnInitialized">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Blazor.DeviceVariableRunTimePage.OnParametersSetAsync">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:ThingsGateway.Blazor.DriverDebugPage">
+            <summary>
+            调试页面
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Blazor.DriverDebugPage.OnInitialized">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Blazor.DriverDebugPage.ImportVaiableAsync(System.Int64)">
+            <inheritdoc/>
+        </member>
+        <member name="T:ThingsGateway.Blazor.DriverPluginPage">
+            <summary>
+            插件管理页面
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Blazor.HardwareInfoPage">
+            <summary>
+            硬件信息页面
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Blazor.HardwareInfoPage.OnInitialized">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Blazor.HistoryAlarmPage">
+            <summary>
+            历史报警页面
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Blazor.HistoryAlarmPage.OnInitializedAsync">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:ThingsGateway.Blazor.HistoryValuePage">
+            <summary>
+            时序库页面
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Blazor.HistoryValuePage.OnInitializedAsync">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:ThingsGateway.Blazor.MemoryVariablePage">
+            <summary>
+            内存变量页面
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Blazor.MemoryVariablePage.OnParametersSetAsync">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:ThingsGateway.Blazor.RealAlarmPage">
+            <summary>
+            实时报警
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Blazor.RealAlarmPage.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Blazor.RealAlarmPage.OnInitialized">
+            <inheritdoc/>
+        </member>
+        <member name="T:ThingsGateway.Blazor.RpcLogPage">
+            <summary>
+            RPC日志页面
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Blazor.UploadDevicePage">
+            <summary>
+            上传设备页
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Blazor.UploadDevicePage.OnParametersSetAsync">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

@@ -1,0 +1,30 @@
+{
+  "unversionedId": "collectdevice",
+  "id": "collectdevice",
+  "title": "采集设备",
+  "description": "更改采集设备/变量/上传设备/插件等，需要重启线程（网关状态-运行状态-全部重启/单个设备重启）",
+  "source": "@site/docs/collectdevice.mdx",
+  "sourceDirName": ".",
+  "slug": "/collectdevice",
+  "permalink": "/thingsgateway-docs/docs/collectdevice",
+  "draft": false,
+  "editUrl": "https://gitee.com/diego2098/ThingsGateway/tree/master/handbook/docs/collectdevice.mdx",
+  "tags": [],
+  "version": "current",
+  "lastUpdatedBy": "2248356998 qq.com",
+  "lastUpdatedAt": 1689499706,
+  "formattedLastUpdatedAt": "Jul 16, 2023",
+  "frontMatter": {
+    "id": "collectdevice",
+    "title": "采集设备"
+  },
+  "sidebar": "docs",
+  "previous": {
+    "title": "插件调试",
+    "permalink": "/thingsgateway-docs/docs/plugindebug"
+  },
+  "next": {
+    "title": "上传设备",
+    "permalink": "/thingsgateway-docs/docs/uploaddevice"
+  }
+}

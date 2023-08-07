@@ -1,0 +1,2992 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ThingsGateway.Admin.Application</name>
+    </assembly>
+    <members>
+        <member name="T:ThingsGateway.Admin.Application.OperDescAttribute">
+            <summary>
+            操作事件说明特性
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.OperDescAttribute.#ctor(System.String,System.String)">
+            <summary>
+            操作记录标识
+            </summary>
+            <param name="description"></param>
+            <param name="catcategory"></param>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.OperDescAttribute.Catcategory">
+            <summary>
+            分类
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.OperDescAttribute.Description">
+            <summary>
+            说明
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.OperDescAttribute.IsRecordPar">
+            <summary>
+            记录参数，默认位true
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.OperDispatchProxy">
+            <summary>
+            AOP处理操作日志
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.OperDispatchProxy.Services">
+            <summary>
+            服务提供器，可以用来解析服务，如：Services.GetService()
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.OperDispatchProxy.Target">
+            <summary>
+            当前服务实例
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.OperDispatchProxy.Invoke(System.Reflection.MethodInfo,System.Object[])">
+            <summary>
+            方法
+            </summary>
+            <param name="method"></param>
+            <param name="args"></param>
+            <returns></returns>
+            <exception cref="T:System.NotImplementedException"></exception>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.OperDispatchProxy.InvokeAsync(System.Reflection.MethodInfo,System.Object[])">
+            <summary>
+            异步无返回值
+            </summary>
+            <param name="method"></param>
+            <param name="args"></param>
+            <returns></returns>
+            <exception cref="T:System.NotImplementedException"></exception>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.OperDispatchProxy.InvokeAsyncT``1(System.Reflection.MethodInfo,System.Object[])">
+            <summary>
+            异步带返回值
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="method"></param>
+            <param name="args"></param>
+            <returns></returns>
+            <exception cref="T:System.NotImplementedException"></exception>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.AdminConst">
+            <summary>
+            权限操作常量
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Admin.Application.AdminConst.Disable">
+            <summary>
+            禁用操作
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Admin.Application.AdminConst.Enable">
+            <summary>
+            启用操作
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Admin.Application.AdminConst.GrantRole">
+            <summary>
+            用户授权操作
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.CacheConst">
+            <summary>
+            Cache常量
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Admin.Application.CacheConst.LOGIN_CAPTCHA">
+            <summary>
+            登录验证码缓存Key
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Admin.Application.CacheConst.SYS_CONFIGCATEGORY">
+            <summary>
+            配置缓存Key
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Admin.Application.CacheConst.CACHE_OPENAPIUSER">
+            <summary>
+            OpenApi用户表缓存Key
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Admin.Application.CacheConst.CACHE_OPENAPIUSERACCOUNT">
+            <summary>
+            OpenApi关系缓存Key
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Admin.Application.CacheConst.CACHE_OPENAPIUSERVERIFICAT">
+            <summary>
+            UserVerificat缓存Key
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Admin.Application.CacheConst.CACHE_USERVERIFICAT">
+            <summary>
+            UserVerificat缓存Key
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Admin.Application.CacheConst.CACHE_SYSUSER">
+            <summary>
+            用户表缓存Key
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Admin.Application.CacheConst.CAHCE_SYSUSERACCOUNT">
+            <summary>
+            用户表缓存Key
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Admin.Application.CacheConst.CACHE_SYSRELATION">
+            <summary>
+            关系表缓存Key
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Admin.Application.CacheConst.CACHE_SYSRESOURCE">
+            <summary>
+            资源表缓存Key
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Admin.Application.CacheConst.CACHE_SYSROLE">
+            <summary>
+            角色表缓存Key
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.CateGoryConst">
+            <summary>
+            其他分类常量
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Admin.Application.CateGoryConst.ThingsGatewayAdmin">
+            <summary>
+            ThingsGateway.Admin
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Admin.Application.CateGoryConst.ThingsGatewayOpenApi">
+            <summary>
+            ThingsGateway.OpenApi
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Admin.Application.CateGoryConst.Relation_SYS_USER_DEFAULTRAZOR">
+            <summary>
+            用户主页
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Admin.Application.CateGoryConst.Relation_SYS_USER_WORKBENCH_DATA">
+            <summary>
+            用户工作台数据
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Admin.Application.CateGoryConst.Relation_SYS_ROLE_HAS_PERMISSION">
+            <summary>
+            角色有哪些权限
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Admin.Application.CateGoryConst.Relation_SYS_ROLE_HAS_RESOURCE">
+            <summary>
+            角色有哪些资源
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Admin.Application.CateGoryConst.Relation_SYS_USER_HAS_ROLE">
+            <summary>
+            用户有哪些角色
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.ConfigConst">
+            <summary>
+            配置常量
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Admin.Application.ConfigConst.SYS_CONFIGBASEDEFAULT">
+            <summary>
+            系统固定配置
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Admin.Application.ConfigConst.SYS_CONFIGOTHER">
+            <summary>
+            其他自定义配置
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Admin.Application.ConfigConst.CONFIG_COPYRIGHT">
+            <summary>
+            版权标识
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Admin.Application.ConfigConst.CONFIG_COPYRIGHT_URL">
+            <summary>
+            版权跳转url
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Admin.Application.ConfigConst.CONFIG_CAPTCHA_OPEN">
+            <summary>
+            登录验证码开关
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Admin.Application.ConfigConst.CONFIG_PASSWORD">
+            <summary>
+            默认用户密码
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Admin.Application.ConfigConst.CONFIG_REMARK">
+            <summary>
+            登录界面的介绍文本
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Admin.Application.ConfigConst.CONFIG_SINGLE_OPEN">
+            <summary>
+            单用户登录开关
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Admin.Application.ConfigConst.CONFIG_SWAGGER_NAME">
+            <summary>
+            swagger用户
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Admin.Application.ConfigConst.CONFIG_SWAGGER_PASSWORD">
+            <summary>
+            swagger密码
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Admin.Application.ConfigConst.CONFIG_TITLE">
+            <summary>
+            系统标题
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Admin.Application.ConfigConst.CONFIG_VERIFICAT_EXPIRES">
+            <summary>
+            系统登录过期时间
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Admin.Application.ConfigConst.CONFIG_SWAGGERLOGIN_OPEN">
+            <summary>
+            Swagger是否需要登录
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.EventSubscriberConst">
+            <summary>
+            事件总线常量
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Admin.Application.EventSubscriberConst.ClearUserCache">
+            <summary>
+            清除用户缓存
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Admin.Application.EventSubscriberConst.Login">
+            <summary>
+            页面登录
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Admin.Application.EventSubscriberConst.LoginOpenApi">
+            <summary>
+            OpenApi登录
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Admin.Application.EventSubscriberConst.Logout">
+            <summary>
+            后台登出
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Admin.Application.EventSubscriberConst.LogoutOpenApi">
+            <summary>
+            OpenApi登出
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.HubConst">
+            <summary>
+            通讯器常量
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Admin.Application.HubConst.SysHubUrl">
+            <summary>
+            系统HubUrl
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.LogConst">
+            <summary>
+            日志常量
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Admin.Application.LogConst.LOG_LOGIN">
+            <summary>
+            登录
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Admin.Application.LogConst.LOG_LOGOUT">
+            <summary>
+            登出
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Admin.Application.LogConst.LOG_OPENAPILOGIN">
+            <summary>
+            第三方登录
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Admin.Application.LogConst.LOG_OPENAPILOGOUT">
+            <summary>
+            第三方登出
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Admin.Application.LogConst.LOG_OPENAPIOPERATE">
+            <summary>
+            第三方操作来源
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Admin.Application.LogConst.LOG_OPERATE">
+            <summary>
+            操作分类
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Admin.Application.LogConst.LOG_REQMETHOD">
+            <summary>
+            内部操作来源
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Admin.Application.LogConst.LOG_SUCCESS">
+            <summary>
+            操作成功
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Admin.Application.LogConst.LOG_FAIL">
+            <summary>
+            操作失败
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.RoleConst">
+            <summary>
+            角色常量
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Admin.Application.RoleConst.SuperAdmin">
+            <summary>
+            超级管理员
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Admin.Application.RoleConst.Relation_SYS_ROLE_HAS_PERMISSION">
+            <summary>
+            角色有哪些权限
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Admin.Application.RoleConst.Relation_SYS_ROLE_HAS_RESOURCE">
+            <summary>
+            角色有哪些资源
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Admin.Application.RoleConst.Relation_SYS_USER_HAS_ROLE">
+            <summary>
+            用户有哪些角色
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.PermissionUtil">
+            <summary>
+            扩展方法
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.PermissionUtil.OpenApiPermissionTreeSelector">
+            <summary>
+            获取WebApi授权树
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.PermissionUtil.PermissionTreeSelector(System.Collections.Generic.List{System.String})">
+            <summary>
+            获取全部页面权限内容
+            </summary>
+            <param name="routers"></param>
+            <returns></returns>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.SeedDataUtil">
+            <summary>
+            种子数据工具类
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.SeedDataUtil.GetSeedData``1(System.String)">
+            <summary>
+            json转化为种子列表
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="jsonName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.SeedDataUtil.ReadFile(System.String)">
+            <summary>
+            读取文件
+            </summary>
+            <param name="Path"></param>
+            <returns></returns>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.SeedDataRecords`1">
+            <summary>
+            种子数据格式实体类,遵循Navicat导出json格式
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.SeedDataRecords`1.Records">
+            <summary>
+            数据
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.StaticParser">
+            <summary>
+            单例Parser
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.StaticParser.Parser">
+            <summary>
+            单例
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.JobPersistence">
+            <inheritdoc cref="T:Furion.Schedule.IJobPersistence"/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.JobPersistence.#ctor(System.IServiceProvider)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.JobPersistence.Preload">
+            <summary>
+            作业调度服务启动时
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.JobPersistence.OnLoading(Furion.Schedule.SchedulerBuilder)">
+            <summary>
+            作业计划初始化通知
+            </summary>
+            <param name="builder"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.JobPersistence.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.JobPersistence.OnChanged(Furion.Schedule.PersistenceContext)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.JobPersistence.OnTriggerChanged(Furion.Schedule.PersistenceTriggerContext)">
+            <inheritdoc/>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.LogJob">
+            <summary>
+            清理日志作业任务
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.LogJob.ExecuteAsync(Furion.Schedule.JobExecutingContext,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.LoginOpenApiEvent">
+            <summary>
+            登录事件参数
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Admin.Application.LoginOpenApiEvent.DateTimeOffset">
+            <summary>
+            时间
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.LoginOpenApiEvent.Device">
+            <summary>
+            登录设备
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.LoginOpenApiEvent.Expire">
+            <summary>
+            过期时间(分)
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.LoginOpenApiEvent.Ip">
+            <summary>
+            Ip地址
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.LoginOpenApiEvent.OpenApiUser">
+            <summary>
+            用户信息
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.LoginOpenApiEvent.VerificatId">
+            <summary>
+            验证Id
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.OpenApiAuthEventSubscriber">
+            <summary>
+            认证模块事件总线
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.OpenApiAuthEventSubscriber.LoginOpenApi(Furion.EventBus.EventHandlerExecutingContext)">
+            <summary>
+            登录事件
+            </summary>
+            <param name="context"></param>
+            <returns></returns>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.LoginOpenApiInput">
+            <summary>
+            登录输入参数
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.LoginOpenApiInput.Account">
+             <summary>
+             账号
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.LoginOpenApiInput.Password">
+             <summary>
+             密码
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.LoginOpenApiOutput">
+            <summary>
+            登录返回参数
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.LoginOpenApiOutput.Token">
+            <summary>
+            TOKEN
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.IOpenApiAuthService">
+            <summary>
+            登录服务
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IOpenApiAuthService.LoginOpenApiAsync(ThingsGateway.Admin.Application.LoginOpenApiInput)">
+            <summary>
+            登录
+            </summary>
+            <param name="input">登录参数</param>
+            <returns>Token信息</returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IOpenApiAuthService.LogoutAsync">
+            <summary>
+            登出
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.OpenApiAuthService">
+            <inheritdoc cref="T:ThingsGateway.Admin.Application.IOpenApiAuthService"/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.OpenApiAuthService.#ctor(Furion.EventBus.IEventPublisher,ThingsGateway.Admin.Application.IOpenApiUserService,ThingsGateway.Admin.Application.IVerificatService,ThingsGateway.Admin.Application.IConfigService)">
+            <inheritdoc cref="T:ThingsGateway.Admin.Application.IOpenApiAuthService"/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.OpenApiAuthService.LoginOpenApiAsync(ThingsGateway.Admin.Application.LoginOpenApiInput)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.OpenApiAuthService.LogoutAsync">
+            <inheritdoc/>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.OpenApiSessionPageInput">
+            <summary>
+            会话分页查询
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.OpenApiSessionPageInput.Account">
+            <summary>
+            账号
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.OpenApiSessionPageInput.LatestLoginIp">
+            <summary>
+            最新登录IP
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.OpenApiExitVerificatInput">
+            <summary>
+            退出参数
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.OpenApiExitVerificatInput.VerificatIds">
+            <summary>
+            验证ID列表
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.OpenApiSessionOutput">
+            <summary>
+            会话输出
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.OpenApiSessionOutput.Account">
+             <summary>
+             账号
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.OpenApiSessionOutput.LatestLoginIp">
+             <summary>
+             最新登录ip
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.OpenApiSessionOutput.LatestLoginTime">
+             <summary>
+             最新登录时间
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.OpenApiSessionOutput.VerificatCount">
+            <summary>
+            令牌数量
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.OpenApiSessionOutput.VerificatSignList">
+            <summary>
+            令牌信息集合
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.IOpenApiSessionService">
+            <summary>
+            会话管理服务
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IOpenApiSessionService.ExitSessionAsync(System.Int64)">
+            <summary>
+            强退会话
+            </summary>
+            <param name="input">用户ID</param>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IOpenApiSessionService.ExitVerificatAsync(ThingsGateway.Admin.Application.OpenApiExitVerificatInput)">
+            <summary>
+            强退cookie
+            </summary>
+            <param name="input">cookie列表</param>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IOpenApiSessionService.PageAsync(ThingsGateway.Admin.Application.OpenApiSessionPageInput)">
+            <summary>
+            B端会话分页查询
+            </summary>
+            <param name="input">查询参数</param>
+            <returns>B端会话列表</returns>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.OpenApiSessionService">
+            <summary>
+            <inheritdoc cref="T:ThingsGateway.Admin.Application.IOpenApiSessionService"/>
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.OpenApiSessionService.#ctor(ThingsGateway.Admin.Application.IVerificatService)">
+            <inheritdoc cref="T:ThingsGateway.Admin.Application.IOpenApiSessionService"/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.OpenApiSessionService.ExitSessionAsync(System.Int64)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.OpenApiSessionService.ExitVerificatAsync(ThingsGateway.Admin.Application.OpenApiExitVerificatInput)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.OpenApiSessionService.GetVerificatInfos(System.Collections.Generic.List{ThingsGateway.Admin.Core.VerificatInfo}@)">
+            <summary>
+            获取verificat剩余时间信息
+            </summary>
+            <param name="verificatInfos">verificat列表</param>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.OpenApiSessionService.PageAsync(ThingsGateway.Admin.Application.OpenApiSessionPageInput)">
+            <inheritdoc/>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.OpenApiPermissionTreeSelector">
+            <summary>
+            Api授权资源树
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.OpenApiPermissionTreeSelector.ApiName">
+            <summary>
+            接口描述
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.OpenApiPermissionTreeSelector.ApiRoute">
+            <summary>
+            路由名称
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.OpenApiPermissionTreeSelector.Children">
+            <summary>
+            子节点
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.OpenApiPermissionTreeSelector.Id">
+            <summary>
+            ID
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.OpenApiPermissionTreeSelector.ParentId">
+            <summary>
+            父ID
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.OpenApiPermissionTreeSelector.PermissionName">
+            <summary>
+            权限名称
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.OpenApiPermissionTreeSelector.TreeToList(System.Collections.Generic.IList{ThingsGateway.Admin.Application.OpenApiPermissionTreeSelector})">
+            <summary>
+            多个树转列表
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.OpenApiUserAddInput">
+            <summary>
+            添加用户参数
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.OpenApiUserAddInput.Account">
+            <summary>
+            账号
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.OpenApiUserAddInput.Password">
+            <summary>
+            密码
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.OpenApiUserAddInput.UserEnable">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.OpenApiUserEditInput">
+            <summary>
+            编辑用户参数
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.OpenApiUserEditInput.Account">
+            <summary>
+            账号
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.OpenApiUserEditInput.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.OpenApiUserEditInput.Password">
+            <summary>
+            密码
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.OpenApiUserPageInput">
+            <summary>
+            用户分页查询参数
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.OpenApiUserPageInput.Expression">
+            <summary>
+            动态查询条件
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.OpenApiUserGrantPermissionInput">
+            <summary>
+            用户授权参数
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.OpenApiUserGrantPermissionInput.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.OpenApiUserGrantPermissionInput.PermissionList">
+            <summary>
+            授权权限信息
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.IOpenApiUserService">
+            <summary>
+            用户服务
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IOpenApiUserService.AddAsync(ThingsGateway.Admin.Application.OpenApiUserAddInput)">
+            <summary>
+            添加用户
+            </summary>
+            <param name="input">添加参数</param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IOpenApiUserService.DeleteAsync(System.Int64[])">
+            <summary>
+            删除用户
+            </summary>
+            <param name="input">Id列表</param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IOpenApiUserService.DeleteUserFromCache(System.Int64[])">
+            <summary>
+            从cache中删除用户信息
+            </summary>
+            <param name="ids">用户ID列表</param>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IOpenApiUserService.DisableUserAsync(System.Int64)">
+            <summary>
+            禁用用户
+            </summary>
+            <param name="input">用户Id</param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IOpenApiUserService.EditAsync(ThingsGateway.Admin.Application.OpenApiUserEditInput)">
+            <summary>
+            编辑
+            </summary>
+            <param name="input">编辑参数</param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IOpenApiUserService.EnableUserAsync(System.Int64)">
+            <summary>
+            启用用户
+            </summary>
+            <param name="input">用户Id</param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IOpenApiUserService.GetIdByAccountAsync(System.String)">
+             <summary>
+            根据用户账号获取用户ID
+             </summary>
+             <param name="account">用户账号</param>
+             <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IOpenApiUserService.GetUserByAccountAsync(System.String)">
+            <summary>
+            根据账号获取用户信息
+            </summary>
+            <param name="account">用户名</param>
+            <returns>用户信息</returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IOpenApiUserService.GetUsertByIdAsync(System.Int64)">
+            <summary>
+            根据ID获取用户信息
+            </summary>
+            <param name="Id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IOpenApiUserService.GrantRoleAsync(ThingsGateway.Admin.Application.OpenApiUserGrantPermissionInput)">
+            <summary>
+            给用户授权
+            </summary>
+            <param name="input">授权参数</param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IOpenApiUserService.OwnPermissionsAsync(ThingsGateway.Admin.Core.BaseIdInput)">
+            <summary>
+            获取用户拥有权限，返回的是服务方法名称
+            </summary>
+            <param name="input">用户ID</param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IOpenApiUserService.PageAsync(ThingsGateway.Admin.Application.OpenApiUserPageInput)">
+            <summary>
+            用户分页查询
+            </summary>
+            <param name="input">查询参数</param>
+            <returns>用户分页列表</returns>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.OpenApiUserService">
+            <summary>
+            <inheritdoc cref="T:ThingsGateway.Admin.Application.IOpenApiUserService"/>
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.OpenApiUserService.#ctor(ThingsGateway.Admin.Application.IVerificatService)">
+            <inheritdoc cref="T:ThingsGateway.Admin.Application.IOpenApiUserService"/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.OpenApiUserService.AddAsync(ThingsGateway.Admin.Application.OpenApiUserAddInput)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.OpenApiUserService.DeleteAsync(System.Int64[])">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.OpenApiUserService.DeleteUserFromCache(System.Int64[])">
+            <inheritdoc />
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.OpenApiUserService.DisableUserAsync(System.Int64)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.OpenApiUserService.EditAsync(ThingsGateway.Admin.Application.OpenApiUserEditInput)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.OpenApiUserService.EnableUserAsync(System.Int64)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.OpenApiUserService.GetIdByAccountAsync(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.OpenApiUserService.GetUserByAccountAsync(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.OpenApiUserService.GetUsertByIdAsync(System.Int64)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.OpenApiUserService.GrantRoleAsync(ThingsGateway.Admin.Application.OpenApiUserGrantPermissionInput)">
+            <inheritdoc />
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.OpenApiUserService.OwnPermissionsAsync(ThingsGateway.Admin.Core.BaseIdInput)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.OpenApiUserService.PageAsync(ThingsGateway.Admin.Application.OpenApiUserPageInput)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.OpenApiUserService.CheckInputAsync(ThingsGateway.Admin.Core.OpenApiUser)">
+            <summary>
+            检查输入参数
+            </summary>
+            <param name="openApiUser"></param>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.SysConfigSeedData">
+            <summary>
+            系统配置种子数据
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.SysConfigSeedData.SeedData">
+            <inheritdoc/>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.SysRelationSeedData">
+            <summary>
+            关系表种子数据
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.SysRelationSeedData.SeedData">
+            <inheritdoc/>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.SysResourceSeedData">
+            <summary>
+            资源表种子数据
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.SysResourceSeedData.SeedData">
+            <inheritdoc/>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.SysRoleSeedData">
+            <summary>
+            角色种子数据
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.SysRoleSeedData.SeedData">
+            <inheritdoc/>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.SysUserSeedData">
+            <summary>
+            用户表种子数据
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.SysUserSeedData.SeedData">
+            <inheritdoc/>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.ISysHub">
+            <summary>
+            即时通讯集线器
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.ISysHub.Logout(System.Object)">
+            <summary>
+            退出登录
+            </summary>
+            <param name="context"></param>
+            <returns></returns>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.SysHub">
+            <summary>
+            <inheritdoc cref="T:ThingsGateway.Admin.Application.ISysHub"/>
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.SysHub.#ctor(Microsoft.Extensions.Logging.ILogger{ThingsGateway.Admin.Application.ISysHub})">
+            <inheritdoc cref="T:ThingsGateway.Admin.Application.ISysHub"/>
+        </member>
+        <member name="F:ThingsGateway.Admin.Application.SysHub.SYS_TrackingCircuitHandlerid">
+            <summary>
+            分隔符
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.SysHub.OnConnectedAsync">
+            <summary>
+            连接
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.SysHub.OnDisconnectedAsync(System.Exception)">
+            <summary>
+            断开连接
+            </summary>
+            <param name="exception"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.SysHub.UpdateVerificatAsync(System.String,System.Boolean,System.Int64)">
+            <summary>
+            更新cache
+            </summary>
+            <param name="userIdentifier">用户id</param>
+            <param name="verificat">上线时的验证id</param>
+            <param name="isConnect">是否是上线</param>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.UserIdProvider">
+            <summary>
+            用户ID提供器
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.UserIdProvider.GetUserId(Microsoft.AspNetCore.SignalR.HubConnectionContext)">
+            <inheritdoc/>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.Startup">
+            <summary>
+            AppStartup启动类
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.Startup.ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            配置
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.AuthEventSubscriber">
+            <summary>
+            认证模块事件总线
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.AuthEventSubscriber.Login(Furion.EventBus.EventHandlerExecutingContext)">
+            <summary>
+            登录事件
+            </summary>
+            <param name="context"></param>
+            <returns></returns>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.UserEventSubscriber">
+            <summary>
+            用户模块事件总线
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.UserEventSubscriber.#ctor(System.IServiceProvider)">
+            <summary>
+            <inheritdoc cref="T:ThingsGateway.Admin.Application.UserEventSubscriber"/>
+            </summary>
+            <param name="services"></param>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.UserEventSubscriber.DeleteUserCacheByRoleIds(Furion.EventBus.EventHandlerExecutingContext)">
+            <summary>
+            根据角色ID列表清除用户缓存
+            </summary>
+            <param name="context"></param>
+            <returns></returns>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.AuthService">
+            <inheritdoc cref="T:ThingsGateway.Admin.Application.IAuthService"/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.AuthService.#ctor(Furion.EventBus.IEventPublisher,ThingsGateway.Admin.Application.ISysUserService,ThingsGateway.Admin.Application.IConfigService,ThingsGateway.Admin.Application.IVerificatService,ThingsGateway.Admin.Application.INoticeService)">
+            <inheritdoc cref="T:ThingsGateway.Admin.Application.IAuthService"/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.AuthService.GetCaptchaInfo">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.AuthService.GetLoginUserAsync">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.AuthService.LoginAsync(ThingsGateway.Admin.Application.LoginInput)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.AuthService.LogoutAsync">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.AuthService.ValidValidCode(System.String,System.Int64,System.Boolean)">
+            <summary>
+            校验验证码方法
+            </summary>
+            <param name="validCode">验证码</param>
+            <param name="validCodeReqNo">请求号</param>
+            <param name="isDelete">是否从Cache删除</param>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.AuthService.LoginAsync(ThingsGateway.Admin.Core.SysUser,ThingsGateway.Admin.Application.AuthDeviceTypeEnum)">
+            <summary>
+            执行B端登录
+            </summary>
+            <param name="sysUser">用户信息</param>
+            <param name="device">登录设备</param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.AuthService.SetVerificatAsync(ThingsGateway.Admin.Application.LoginEvent)">
+            <summary>
+            写入验证信息到缓存
+            </summary>
+            <param name="loginEvent"></param>
+            <returns></returns>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.LoginInput">
+            <summary>
+            登录输入参数
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.LoginInput.Account">
+             <summary>
+             账号
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.LoginInput.Device">
+            <summary>
+            设备类型，默认PC
+            </summary>
+            <example>0</example>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.LoginInput.Password">
+             <summary>
+             密码
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.ValidCodeInput">
+            <summary>
+            验证码输入
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.ValidCodeInput.ValidCode">
+            <summary>
+            验证码
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.ValidCodeInput.ValidCodeReqNo">
+            <summary>
+            请求号
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.AuthDeviceTypeEnum">
+            <summary>
+            登录设备类型枚举
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Admin.Application.AuthDeviceTypeEnum.PC">
+            <summary>
+            PC端
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Admin.Application.AuthDeviceTypeEnum.APP">
+            <summary>
+            移动端
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Admin.Application.AuthDeviceTypeEnum.Api">
+            <summary>
+            Api
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.BaseLoginOutput">
+            <summary>
+            登录返回参数
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.BaseLoginOutput.Account">
+            <summary>
+            账号
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.BaseLoginOutput.VerificatId">
+            <summary>
+            验证ID
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.ValidCodeOutput">
+            <summary>
+            验证码值返回
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.ValidCodeOutput.CodeValue">
+            <summary>
+            验证码值
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.ValidCodeOutput.ValidCodeReqNo">
+            <summary>
+            验证码请求号
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.LoginOutput">
+            <summary>
+            登录返回参数
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.LoginEvent">
+            <summary>
+            登录事件参数
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Admin.Application.LoginEvent.DateTimeOffset">
+            <summary>
+            时间
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.LoginEvent.Device">
+            <summary>
+            登录设备
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.LoginEvent.Expire">
+            <summary>
+            过期时间(分)
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.LoginEvent.Ip">
+            <summary>
+            Ip地址
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.LoginEvent.SysUser">
+            <summary>
+            用户信息
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.LoginEvent.VerificatId">
+            <summary>
+            验证Id
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.IAuthService">
+            <summary>
+            权限校验服务
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IAuthService.GetCaptchaInfo">
+            <summary>
+            生成验证码
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IAuthService.GetLoginUserAsync">
+            <summary>
+            获取登录用户信息
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IAuthService.LoginAsync(ThingsGateway.Admin.Application.LoginInput)">
+            <summary>
+            登录
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IAuthService.LogoutAsync">
+            <summary>
+            退出登录
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.ButtonService">
+            <summary>
+            <inheritdoc cref="T:ThingsGateway.Admin.Application.IButtonService"/>
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.ButtonService.#ctor(ThingsGateway.Admin.Application.IResourceService,ThingsGateway.Admin.Application.IRelationService)">
+            <inheritdoc cref="T:ThingsGateway.Admin.Application.IButtonService"/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.ButtonService.AddAsync(ThingsGateway.Admin.Application.ButtonAddInput)">
+            <inheritdoc />
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.ButtonService.DeleteAsync(System.Int64[])">
+            <inheritdoc />
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.ButtonService.EditAsync(ThingsGateway.Admin.Application.ButtonEditInput)">
+            <inheritdoc />
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.ButtonService.PageAsync(ThingsGateway.Admin.Application.ButtonPageInput)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.ButtonService.CheckInputAsync(ThingsGateway.Admin.Core.SysResource)">
+            <summary>
+            检查输入参数
+            </summary>
+            <param name="sysResource"></param>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.ButtonAddInput">
+            <summary>
+            添加按钮参数
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.ButtonAddInput.Code">
+            <summary>
+            编码
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.ButtonAddInput.ParentId">
+            <summary>
+            父ID
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.ButtonAddInput.Title">
+            <summary>
+            标题
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.ButtonPageInput">
+            <summary>
+            按钮分页
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.ButtonPageInput.ParentId">
+            <summary>
+            父ID
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.ButtonEditInput">
+            <summary>
+            按钮编辑
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.ButtonEditInput.Id">
+            <summary>
+            ID
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.IButtonService">
+            <summary>
+            权限按钮服务
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IButtonService.AddAsync(ThingsGateway.Admin.Application.ButtonAddInput)">
+            <summary>
+            添加按钮
+            </summary>
+            <param name="input">添加参数</param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IButtonService.DeleteAsync(System.Int64[])">
+            <summary>
+            删除按钮
+            </summary>
+            <param name="input">删除参数</param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IButtonService.EditAsync(ThingsGateway.Admin.Application.ButtonEditInput)">
+            <summary>
+            编辑按钮
+            </summary>
+            <param name="input">编辑参数</param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IButtonService.PageAsync(ThingsGateway.Admin.Application.ButtonPageInput)">
+            <summary>
+            按钮分页查询
+            </summary>
+            <param name="input">查询条件</param>
+            <returns>按钮分页列表</returns>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.ConfigService">
+            <inheritdoc cref="T:ThingsGateway.Admin.Application.IConfigService"/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.ConfigService.EditBatchAsync(System.Collections.Generic.List{ThingsGateway.Admin.Core.SysConfig})">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.ConfigService.AddAsync(ThingsGateway.Admin.Application.ConfigAddInput)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.ConfigService.DeleteAsync(System.Int64[])">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.ConfigService.EditAsync(ThingsGateway.Admin.Application.ConfigEditInput)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.ConfigService.GetByConfigKeyAsync(System.String,System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.ConfigService.GetListByCategoryAsync(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.ConfigService.PageAsync(ThingsGateway.Admin.Application.ConfigPageInput)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.ConfigService.CheckInputAsync(ThingsGateway.Admin.Core.SysConfig)">
+            <summary>
+            检查输入参数，并设置分类为自定义分类
+            </summary>
+            <param name="sysConfig"></param>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.ConfigService.RefreshCache(System.String)">
+            <summary>
+            刷新缓存
+            </summary>
+            <param name="category">分类</param>
+            <returns></returns>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.ConfigAddInput">
+            <summary>
+            添加配置参数
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.ConfigAddInput.Category">
+            <summary>
+            分类
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.ConfigAddInput.ConfigKey">
+            <summary>
+            配置键
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.ConfigAddInput.ConfigValue">
+            <summary>
+            配置值
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.ConfigEditInput">
+            <summary>
+            编辑配置参数
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.ConfigEditInput.Id">
+            <summary>
+            ID
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.ConfigPageInput">
+            <summary>
+            配置分页参数
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.ConfigPageInput.Category">
+            <summary>
+            分类
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.IConfigService">
+            <summary>
+            系统配置服务
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IConfigService.EditBatchAsync(System.Collections.Generic.List{ThingsGateway.Admin.Core.SysConfig})">
+            <summary>
+            批量编辑系统配置
+            </summary>
+            <param name="configs">配置列表</param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IConfigService.AddAsync(ThingsGateway.Admin.Application.ConfigAddInput)">
+            <summary>
+            新增自定义配置
+            </summary>
+            <param name="input">新增参数</param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IConfigService.DeleteAsync(System.Int64[])">
+            <summary>
+            删除自定义配置
+            </summary>
+            <param name="input">删除</param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IConfigService.EditAsync(ThingsGateway.Admin.Application.ConfigEditInput)">
+            <summary>
+            修改自定义配置
+            </summary>
+            <param name="input">修改参数</param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IConfigService.GetByConfigKeyAsync(System.String,System.String)">
+            <summary>
+            根据分类和配置键获配置
+            </summary>
+            <param name="category">分类</param>
+            <param name="configKey">配置键</param>
+            <returns>配置信息</returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IConfigService.GetListByCategoryAsync(System.String)">
+            <summary>
+            根据分类获取配置列表
+            </summary>
+            <param name="category">分类名称</param>
+            <returns>配置列表</returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IConfigService.PageAsync(ThingsGateway.Admin.Application.ConfigPageInput)">
+            <summary>
+            分页查询自定义配置
+            </summary>
+            <param name="input">查询参数</param>
+            <returns>其他配置列表</returns>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.FileService">
+            <summary>
+            <inheritdoc cref="T:ThingsGateway.Admin.Application.IFileService"/>
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.FileService.ImportVerification(Microsoft.AspNetCore.Components.Forms.IBrowserFile,System.Int32,System.String[])">
+            <inheritdoc/>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.IFileService">
+            <summary>
+            文件管理服务
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IFileService.ImportVerification(Microsoft.AspNetCore.Components.Forms.IBrowserFile,System.Int32,System.String[])">
+            <summary>
+            验证上传文件
+            </summary>
+            <param name="file">文件</param>
+            <param name="maxSzie">最大体积(M)</param>
+            <param name="allowTypes">允许上传类型</param>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.MenuAddInput">
+            <summary>
+            添加菜单参数
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.MenuAddInput.Component">
+            <summary>
+            路径
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.MenuAddInput.Icon">
+            <summary>
+            图标
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.MenuAddInput.ParentId">
+            <summary>
+            父ID
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.MenuAddInput.TargetType">
+            <summary>
+            菜单类型
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.MenuAddInput.Title">
+            <summary>
+            标题
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.MenuAddInput.Validate(System.ComponentModel.DataAnnotations.ValidationContext)">
+            <summary>
+            特殊验证
+            </summary>
+            <param name="validationContext"></param>
+            <returns></returns>
+            <exception cref="T:System.NotImplementedException"></exception>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.MenuEditInput">
+            <summary>
+            编辑菜单输入参数
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.MenuEditInput.Id">
+            <summary>
+            ID
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.MenuPageInput">
+            <summary>
+            菜单树查询参数
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.MenuPageInput.ParentId">
+            <summary>
+            父ID
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.IMenuService">
+            <summary>
+            菜单服务
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IMenuService.AddAsync(ThingsGateway.Admin.Application.MenuAddInput)">
+            <summary>
+            添加菜单
+            </summary>
+            <param name="input">添加参数</param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IMenuService.DeleteAsync(System.Int64[])">
+            <summary>
+            删除菜单
+            </summary>
+            <param name="input">删除菜单参数</param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IMenuService.DetailAsync(ThingsGateway.Admin.Core.BaseIdInput)">
+            <summary>
+            详情
+            </summary>
+            <param name="input">id</param>
+            <returns>详细信息</returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IMenuService.EditAsync(ThingsGateway.Admin.Application.MenuEditInput)">
+            <summary>
+            编辑菜单
+            </summary>
+            <param name="input">菜单编辑参数</param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IMenuService.TreeAsync(ThingsGateway.Admin.Application.MenuPageInput)">
+            <summary>
+            根据模块获取菜单树
+            </summary>
+            <param name="input">菜单树查询参数</param>
+            <returns>菜单树列表</returns>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.MenuService">
+            <summary>
+            <inheritdoc cref="T:ThingsGateway.Admin.Application.IMenuService"/>
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.MenuService.#ctor(ThingsGateway.Admin.Application.IResourceService,ThingsGateway.Admin.Application.IRelationService,ThingsGateway.Admin.Application.IRoleService)">
+            <inheritdoc cref="T:ThingsGateway.Admin.Application.IMenuService"/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.MenuService.AddAsync(ThingsGateway.Admin.Application.MenuAddInput)">
+            <inheritdoc />
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.MenuService.DeleteAsync(System.Int64[])">
+            <inheritdoc />
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.MenuService.DetailAsync(ThingsGateway.Admin.Core.BaseIdInput)">
+            <inheritdoc />
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.MenuService.EditAsync(ThingsGateway.Admin.Application.MenuEditInput)">
+            <inheritdoc />
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.MenuService.TreeAsync(ThingsGateway.Admin.Application.MenuPageInput)">
+            <inheritdoc />
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.MenuService.CheckInputAsync(ThingsGateway.Admin.Core.SysResource)">
+            <summary>
+            检查输入参数
+            </summary>
+            <param name="sysResource"></param>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.INoticeService">
+            <summary>
+            通知服务
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.INoticeService.LogoutAsync(System.Int64,System.Collections.Generic.List{ThingsGateway.Admin.Core.VerificatInfo},System.String)">
+            <summary>
+            通知用户下线
+            </summary>
+            <param name="userId">用户ID</param>
+            <param name="verificatInfos">验证列表</param>
+            <param name="message">消息内容</param>
+            <returns></returns>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.NoticeService">
+            <summary>
+            <inheritdoc cref="T:ThingsGateway.Admin.Application.INoticeService"/>
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.NoticeService.LogoutAsync(System.Int64,System.Collections.Generic.List{ThingsGateway.Admin.Core.VerificatInfo},System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.OperateLogPageInput">
+            <summary>
+            操作日志分页输入
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.OperateLogInput">
+            <summary>
+            操作日志分页输入
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.IOperateLogService">
+            <summary>
+            操作日志服务
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IOperateLogService.DeleteAsync(System.String[])">
+            <summary>
+            根据分类删除操作日志
+            </summary>
+            <param name="category">分类名称</param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IOperateLogService.ExportFileAsync(System.Collections.Generic.List{ThingsGateway.Admin.Core.SysOperateLog})">
+            <summary>
+            导出后台日志
+            </summary>
+            <param name="input"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IOperateLogService.ExportFileAsync(ThingsGateway.Admin.Application.OperateLogInput)">
+            <summary>
+            导出后台日志
+            </summary>
+            <param name="input"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IOperateLogService.PageAsync(ThingsGateway.Admin.Application.OperateLogPageInput)">
+            <summary>
+            操作日志分页查询
+            </summary>
+            <param name="input">查询参数</param>
+            <returns>分页列表</returns>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.OperateLogService">
+            <summary>
+            <inheritdoc cref="T:ThingsGateway.Admin.Application.IOperateLogService"/>
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.OperateLogService.DeleteAsync(System.String[])">
+            <inheritdoc />
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.OperateLogService.ExportFileAsync(System.Collections.Generic.List{ThingsGateway.Admin.Core.SysOperateLog})">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.OperateLogService.ExportFileAsync(ThingsGateway.Admin.Application.OperateLogInput)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.OperateLogService.PageAsync(ThingsGateway.Admin.Application.OperateLogPageInput)">
+            <inheritdoc />
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.IRelationService">
+            <summary>
+            关系服务
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IRelationService.GetWorkbenchAsync(System.Int64)">
+            <summary>
+            获取关系表用户工作台
+            </summary>
+            <param name="userId">用户ID</param>
+            <returns>关系表数据</returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IRelationService.GetRelationByCategoryAsync(System.String)">
+            <summary>
+            根据分类获取关系表信息
+            </summary>
+            <param name="category">分类名称</param>
+            <returns>关系表</returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IRelationService.GetRelationListByObjectIdAndCategoryAsync(System.Int64,System.String)">
+            <summary>
+            通过对象ID和分类获取关系列表
+            </summary>
+            <param name="objectId">对象ID</param>
+            <param name="category">分类</param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IRelationService.GetRelationListByObjectIdListAndCategoryAsync(System.Collections.Generic.List{System.Int64},System.String)">
+            <summary>
+            通过对象ID列表和分类获取关系列表
+            </summary>
+            <param name="objectIds">对象ID</param>
+            <param name="category">分类</param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IRelationService.GetRelationListByTargetIdAndCategoryAsync(System.String,System.String)">
+            <summary>
+            通过目标ID和分类获取关系列表
+            </summary>
+            <param name="targetId">目标ID</param>
+            <param name="category">分类</param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IRelationService.GetRelationListByTargetIdListAndCategoryAsync(System.Collections.Generic.List{System.String},System.String)">
+            <summary>
+            通过目标ID列表和分类获取关系列表
+            </summary>
+            <param name="targetIds"></param>
+            <param name="category"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IRelationService.RefreshCache(System.String)">
+            <summary>
+            更新缓存
+            </summary>
+            <param name="category">分类</param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IRelationService.SaveRelationAsync(System.String,System.Int64,System.String,System.String,System.Boolean,System.Boolean)">
+            <summary>
+            保存关系
+            </summary>
+            <param name="category">分类</param>
+            <param name="objectId">对象ID</param>
+            <param name="targetId">目标ID</param>
+            <param name="extJson">拓展信息</param>
+            <param name="clear">是否清除老的数据</param>
+            <param name="refreshCache">是否刷新缓存</param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IRelationService.SaveRelationBatchAsync(System.String,System.Int64,System.Collections.Generic.List{System.String},System.Collections.Generic.List{System.String},System.Boolean)">
+            <summary>
+            批量保存关系
+            </summary>
+            <param name="category">分类</param>
+            <param name="objectId">对象ID</param>
+            <param name="targetIds">目标ID列表</param>
+            <param name="extJsons">拓展信息列表</param>
+            <param name="clear">是否清除老的数据</param>
+            <returns></returns>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.RelationService">
+            <inheritdoc cref="T:ThingsGateway.Admin.Application.IRelationService"/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.RelationService.GetRelationByCategoryAsync(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.RelationService.GetRelationListByObjectIdAndCategoryAsync(System.Int64,System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.RelationService.GetRelationListByObjectIdListAndCategoryAsync(System.Collections.Generic.List{System.Int64},System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.RelationService.GetRelationListByTargetIdAndCategoryAsync(System.String,System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.RelationService.GetRelationListByTargetIdListAndCategoryAsync(System.Collections.Generic.List{System.String},System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.RelationService.GetWorkbenchAsync(System.Int64)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.RelationService.RefreshCache(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.RelationService.SaveRelationAsync(System.String,System.Int64,System.String,System.String,System.Boolean,System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.RelationService.SaveRelationBatchAsync(System.String,System.Int64,System.Collections.Generic.List{System.String},System.Collections.Generic.List{System.String},System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.RoleGrantResourceButton">
+            <summary>
+            角色按钮资源
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.RoleGrantResourceButton.Id">
+            <summary>
+            按钮id
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.RoleGrantResourceButton.Title">
+            <summary>
+            标题
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.RoleGrantResourceMenu">
+            <summary>
+            授权菜单类
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.RoleGrantResourceMenu.Button">
+            <summary>
+            菜单下按钮集合
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.RoleGrantResourceMenu.Id">
+            <summary>
+            菜单id
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.RoleGrantResourceMenu.ParentId">
+            <summary>
+            父id
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.RoleGrantResourceMenu.ParentName">
+            <summary>
+            父名称
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.RoleGrantResourceMenu.Title">
+            <summary>
+            菜单名称
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.PermissionTreeSelector">
+            <summary>
+            Blazor Server的组件路由内容
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.PermissionTreeSelector.ApiRoute">
+            <summary>
+            路由名称
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.IResourceService">
+            <summary>
+            资源服务
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IResourceService.GetaMenuAndSpaListAsync">
+            <summary>
+            获取所有的菜单和模块以及单页面列表，并按分类和排序码排序,不会形成树列表
+            </summary>
+            <returns>所有的菜单和模块以及单页面列表</returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IResourceService.GetChildListById(System.Collections.Generic.List{ThingsGateway.Admin.Core.SysResource},System.Int64,System.Boolean)">
+            <summary>
+            获取子资源
+            </summary>
+            <param name="sysResources"></param>
+            <param name="resId"></param>
+            <param name="isContainOneself"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IResourceService.GetCodeByIdsAsync(System.Collections.Generic.List{System.Int64},ThingsGateway.Admin.Core.ResourceCategoryEnum)">
+            <summary>
+            获取ID获取Code列表
+            </summary>
+            <param name="ids">id列表</param>
+            <param name="category">分类</param>
+            <returns>Code列表</returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IResourceService.GetListByCategoryAsync(ThingsGateway.Admin.Core.ResourceCategoryEnum)">
+            <summary>
+            根据分类获取资源列表
+            </summary>
+            <param name="category">分类名称</param>
+            <returns>资源列表</returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IResourceService.GetListByCategorysAsync(System.Collections.Generic.List{ThingsGateway.Admin.Core.ResourceCategoryEnum})">
+            <summary>
+            资源分类列表,如果是空的则获取全部资源
+            </summary>
+            <param name="categorys">资源分类列表</param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IResourceService.GetResourceChilden(System.Collections.Generic.List{ThingsGateway.Admin.Core.SysResource},System.Int64)">
+            <summary>
+            获取资源所有下级
+            </summary>
+            <param name="resourceList">资源列表</param>
+            <param name="parentId">父ID</param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IResourceService.GetResourceParent(System.Collections.Generic.List{ThingsGateway.Admin.Core.SysResource},System.Int64)">
+            <summary>
+            获取上级
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IResourceService.GetRoleGrantResourceMenusAsync">
+            <summary>
+            获取授权菜单
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IResourceService.RefreshCache(ThingsGateway.Admin.Core.ResourceCategoryEnum)">
+            <summary>
+            刷新缓存
+            </summary>
+            <param name="category">分类名称</param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IResourceService.ResourceListToTree(System.Collections.Generic.List{ThingsGateway.Admin.Core.SysResource},System.Int64)">
+            <summary>
+            构建菜单树形结构
+            </summary>
+            <param name="resourceList">菜单列表</param>
+            <param name="parentId">父ID</param>
+            <returns>菜单形结构</returns>
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IResourceService.ResourceTreeToList(System.Collections.Generic.List{ThingsGateway.Admin.Core.SysResource})">
+            <summary>
+            多个树转列表
+            </summary>
+            <param name="data"></param>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IResourceService.SameLevelMenuPasePageTab(System.Collections.Generic.List{ThingsGateway.Admin.Core.SysResource})">
+            <summary>
+            获取PageTabItems
+            </summary>
+            <param name="nav"></param>
+            <returns></returns>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.PageTabItem">
+            <summary>
+            Tab表示类
+            </summary>
+            <param name="Title">标题</param>
+            <param name="Href">跳转类型</param>
+            <param name="Icon">图标</param>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.PageTabItem.#ctor(System.String,System.String,System.String)">
+            <summary>
+            Tab表示类
+            </summary>
+            <param name="Title">标题</param>
+            <param name="Href">跳转类型</param>
+            <param name="Icon">图标</param>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.PageTabItem.Title">
+            <summary>标题</summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.PageTabItem.Href">
+            <summary>跳转类型</summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.PageTabItem.Icon">
+            <summary>图标</summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.ResourceService">
+            <inheritdoc cref="T:ThingsGateway.Admin.Application.IResourceService"/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.ResourceService.GetaMenuAndSpaListAsync">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.ResourceService.GetChildListById(System.Collections.Generic.List{ThingsGateway.Admin.Core.SysResource},System.Int64,System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.ResourceService.GetCodeByIdsAsync(System.Collections.Generic.List{System.Int64},ThingsGateway.Admin.Core.ResourceCategoryEnum)">
+            <inheritdoc />
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.ResourceService.GetListByCategoryAsync(ThingsGateway.Admin.Core.ResourceCategoryEnum)">
+            <inheritdoc />
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.ResourceService.GetListByCategorysAsync(System.Collections.Generic.List{ThingsGateway.Admin.Core.ResourceCategoryEnum})">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.ResourceService.GetResourceChilden(System.Collections.Generic.List{ThingsGateway.Admin.Core.SysResource},System.Int64)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.ResourceService.GetResourceParent(System.Collections.Generic.List{ThingsGateway.Admin.Core.SysResource},System.Int64)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.ResourceService.GetRoleGrantResourceMenusAsync">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.ResourceService.RefreshCache(ThingsGateway.Admin.Core.ResourceCategoryEnum)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.ResourceService.ResourceListToTree(System.Collections.Generic.List{ThingsGateway.Admin.Core.SysResource},System.Int64)">
+            <inheritdoc />
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.ResourceService.ResourceTreeToList(System.Collections.Generic.List{ThingsGateway.Admin.Core.SysResource})">
+            <inheritdoc />
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.ResourceService.SameLevelMenuPasePageTab(System.Collections.Generic.List{ThingsGateway.Admin.Core.SysResource})">
+            <inheritdoc />
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.ResourceService.GetRoleGrantResourceMenuTitle(System.Collections.Generic.List{ThingsGateway.Admin.Core.SysResource},ThingsGateway.Admin.Core.SysResource)">
+            <summary>
+            获取授权菜单类菜单名称
+            </summary>
+            <param name="menuList">菜单列表</param>
+            <param name="menu">当前菜单</param>
+            <returns></returns>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.GrantResourceInput">
+            <summary>
+            角色授权资源参数
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.GrantResourceInput.GrantInfoList">
+            <summary>
+            授权资源信息
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.GrantResourceInput.Id">
+            <summary>
+            角色Id
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.GrantUserInput">
+            <summary>
+            角色授权用户参数
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.GrantUserInput.GrantInfoList">
+            <summary>
+            授权权限信息
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.GrantUserInput.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.RoleAddInput">
+            <summary>
+            角色添加参数
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.RoleAddInput.Name">
+            <summary>
+            名称
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.RoleEditInput">
+            <summary>
+            角色编辑参数
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.RoleEditInput.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.RolePageInput">
+            <summary>
+            角色查询参数
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.IRoleService">
+            <summary>
+            角色服务
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IRoleService.AddAsync(ThingsGateway.Admin.Application.RoleAddInput)">
+            <summary>
+            添加角色
+            </summary>
+            <param name="input">添加参数</param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IRoleService.DeleteAsync(System.Int64[])">
+            <summary>
+            删除角色
+            </summary>
+            <param name="input">删除参数</param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IRoleService.EditAsync(ThingsGateway.Admin.Application.RoleEditInput)">
+            <summary>
+            编辑角色
+            </summary>
+            <param name="input">编辑角色</param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IRoleService.GetRoleIdListByUserIdAsync(System.Int64)">
+            <summary>
+            根据用户ID获取用户角色Id集合
+            </summary>
+            <param name="userId">用户ID</param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IRoleService.GetRoleListByUserIdAsync(System.Int64)">
+            <summary>
+            根据用户ID获取用户角色集合
+            </summary>
+            <param name="userId">用户ID</param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IRoleService.GrantResourceAsync(ThingsGateway.Admin.Application.GrantResourceInput)">
+            <summary>
+            给角色授权资源
+            </summary>
+            <param name="input">授权参数</param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IRoleService.GrantUserAsync(ThingsGateway.Admin.Application.GrantUserInput)">
+            <summary>
+            给角色授权用户
+            </summary>
+            <param name="input">授权信息</param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IRoleService.OwnResourceAsync(System.Int64)">
+            <summary>
+            角色拥有资源
+            </summary>
+            <param name="input">角色id</param>
+            <returns>角色拥有资源信息</returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IRoleService.OwnUserAsync(System.Int64)">
+            <summary>
+            获取角色下的用户
+            </summary>
+            <param name="input">角色ID</param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IRoleService.PageAsync(ThingsGateway.Admin.Application.RolePageInput)">
+            <summary>
+            分页查询角色
+            </summary>
+            <param name="input">查询参数</param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IRoleService.RefreshCache">
+            <summary>
+            刷新缓存
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IRoleService.RefreshResourceAsync(System.Nullable{System.Int64})">
+            <summary>
+            角色刷新资源
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IRoleService.RoleSelectorAsync(System.String)">
+            <summary>
+            角色选择器
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.RoleService">
+            <inheritdoc cref="T:ThingsGateway.Admin.Application.IRoleService"/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.RoleService.#ctor(ThingsGateway.Admin.Application.IRelationService,ThingsGateway.Admin.Application.IResourceService,Furion.EventBus.IEventPublisher)">
+            <inheritdoc cref="T:ThingsGateway.Admin.Application.IRoleService"/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.RoleService.AddAsync(ThingsGateway.Admin.Application.RoleAddInput)">
+            <inheritdoc />
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.RoleService.DeleteAsync(System.Int64[])">
+            <inheritdoc />
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.RoleService.EditAsync(ThingsGateway.Admin.Application.RoleEditInput)">
+            <inheritdoc />
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.RoleService.GetListAsync">
+            <summary>
+            获取所有角色
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.RoleService.GetRoleIdListByUserIdAsync(System.Int64)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.RoleService.GetRoleListByUserIdAsync(System.Int64)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.RoleService.GrantResourceAsync(ThingsGateway.Admin.Application.GrantResourceInput)">
+            <inheritdoc />
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.RoleService.GrantUserAsync(ThingsGateway.Admin.Application.GrantUserInput)">
+            <inheritdoc />
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.RoleService.OwnResourceAsync(System.Int64)">
+            <inheritdoc />
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.RoleService.OwnUserAsync(System.Int64)">
+            <inheritdoc />
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.RoleService.PageAsync(ThingsGateway.Admin.Application.RolePageInput)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.RoleService.RefreshCache">
+            <inheritdoc />
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.RoleService.RefreshResourceAsync(System.Nullable{System.Int64})">
+            <inheritdoc />
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.RoleService.RoleSelectorAsync(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.RoleService.CheckInput(ThingsGateway.Admin.Core.SysRole)">
+            <summary>
+            检查输入参数
+            </summary>
+            <param name="sysRole"></param>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.RoleService.GetMenuByMenuIds(System.Collections.Generic.List{System.Int64})">
+            <summary>
+            根据菜单ID获取菜单
+            </summary>
+            <param name="menuIds"></param>
+            <returns></returns>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.SessionPageInput">
+            <summary>
+            会话分页查询
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.SessionPageInput.Account">
+            <summary>
+            账号
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.SessionPageInput.LatestLoginIp">
+            <summary>
+            最新登录IP
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.SessionPageInput.Name">
+            <summary>
+            姓名
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.ExitVerificatInput">
+            <summary>
+            退出参数
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.ExitVerificatInput.VerificatIds">
+            <summary>
+            验证ID列表
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.ExitVerificatInput.Id">
+            <summary>
+            用户Id
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.SessionOutput">
+            <summary>
+            会话输出
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.SessionOutput.Account">
+             <summary>
+             账号
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.SessionOutput.LatestLoginIp">
+             <summary>
+             最新登录ip
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.SessionOutput.LatestLoginTime">
+             <summary>
+             最新登录时间
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.SessionOutput.OnlineStatus">
+            <summary>
+            在线状态
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.SessionOutput.VerificatCount">
+            <summary>
+            令牌数量
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.SessionOutput.VerificatSignList">
+            <summary>
+            令牌信息集合
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.ISessionService">
+            <summary>
+            会话管理服务
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.ISessionService.ExitSessionAsync(System.Int64)">
+            <summary>
+            强退会话
+            </summary>
+            <param name="input">用户ID</param>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.ISessionService.ExitVerificatAsync(ThingsGateway.Admin.Application.ExitVerificatInput)">
+            <summary>
+            强退verificat
+            </summary>
+            <param name="input">verificat列表</param>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.ISessionService.PageAsync(ThingsGateway.Admin.Application.SessionPageInput)">
+            <summary>
+            会话分页查询
+            </summary>
+            <param name="input">查询参数</param>
+            <returns>会话列表</returns>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.SessionService">
+            <summary>
+            <inheritdoc cref="T:ThingsGateway.Admin.Application.ISessionService"/>
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.SessionService.#ctor(ThingsGateway.Admin.Application.IVerificatService,ThingsGateway.Admin.Application.INoticeService)">
+            <inheritdoc cref="T:ThingsGateway.Admin.Application.ISessionService"/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.SessionService.ExitSessionAsync(System.Int64)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.SessionService.ExitVerificatAsync(ThingsGateway.Admin.Application.ExitVerificatInput)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.SessionService.PageAsync(ThingsGateway.Admin.Application.SessionPageInput)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.SessionService.GetVerificatInfos(System.Collections.Generic.List{ThingsGateway.Admin.Core.VerificatInfo}@)">
+            <summary>
+            获取verificat剩余时间信息
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.SpaAddInput">
+            <summary>
+            单页输入参数
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.SpaAddInput.Component">
+            <summary>
+            路径
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.SpaAddInput.Icon">
+            <summary>
+            图标
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.SpaAddInput.TargetType">
+            <summary>
+            菜单类型
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.SpaAddInput.Title">
+            <summary>
+            标题
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.SpaPageInput">
+            <summary>
+            单页输入参数
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.SpaPageInput.TargetType">
+            <summary>
+            跳转类型
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.SpaEditInput">
+            <summary>
+            单页修改参数
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.SpaEditInput.Id">
+            <summary>
+            ID
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.ISpaService">
+            <summary>
+            单页服务
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.ISpaService.AddAsync(ThingsGateway.Admin.Application.SpaAddInput)">
+            <summary>
+            添加单页
+            </summary>
+            <param name="input">添加参数</param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.ISpaService.DeleteAsync(System.Int64[])">
+            <summary>
+            删除单页
+            </summary>
+            <param name="input">删除参数</param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.ISpaService.EditAsync(ThingsGateway.Admin.Application.SpaEditInput)">
+            <summary>
+            编辑单页
+            </summary>
+            <param name="input">编辑参数</param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.ISpaService.PageAsync(ThingsGateway.Admin.Application.SpaPageInput)">
+            <summary>
+            分页查询
+            </summary>
+            <param name="input"></param>
+            <returns></returns>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.SpaService">
+            <summary>
+            <inheritdoc cref="T:ThingsGateway.Admin.Application.ISpaService"/>
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.SpaService.#ctor(ThingsGateway.Admin.Application.IResourceService)">
+            <inheritdoc cref="T:ThingsGateway.Admin.Application.ISpaService"/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.SpaService.AddAsync(ThingsGateway.Admin.Application.SpaAddInput)">
+            <inheritdoc />
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.SpaService.DeleteAsync(System.Int64[])">
+            <inheritdoc />
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.SpaService.EditAsync(ThingsGateway.Admin.Application.SpaEditInput)">
+            <inheritdoc />
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.SpaService.PageAsync(ThingsGateway.Admin.Application.SpaPageInput)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.SpaService.CheckInput(ThingsGateway.Admin.Core.SysResource)">
+            <summary>
+            检查输入参数
+            </summary>
+            <param name="sysResource"></param>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.UpdateInfoInput">
+            <summary>
+            编辑个人信息参数
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.UpdateInfoInput.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.PasswordInfoInput">
+            <summary>
+            修改密码
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.PasswordInfoInput.OldPassword">
+            <summary>
+            旧密码
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.PasswordInfoInput.NewPassword">
+            <summary>
+            新密码
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.PasswordInfoInput.ConfirmPassword">
+            <summary>
+            确认密码
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.PasswordInfoInput.Validate(System.ComponentModel.DataAnnotations.ValidationContext)">
+            <inheritdoc/>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.IUserCenterService">
+            <summary>
+            个人信息中心服务
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IUserCenterService.EditPasswordAsync(ThingsGateway.Admin.Application.PasswordInfoInput)">
+            <summary>
+            更改密码
+            </summary>
+            <param name="input"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IUserCenterService.GetLoginDefaultRazorAsync(System.Int64)">
+            <summary>
+            获取个人主页
+            </summary>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IUserCenterService.GetLoginWorkbenchAsync">
+            <summary>
+            获取个人首页快捷方式
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IUserCenterService.GetOwnMenuAsync(System.String)">
+            <summary>
+            获取个人菜单
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IUserCenterService.UpdateUserDefaultRazorAsync(System.Int64,System.Int64)">
+            <summary>
+            设置个人主页
+            </summary>
+            <param name="userId"></param>
+            <param name="defalutRazor"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IUserCenterService.UpdateUserInfoAsync(ThingsGateway.Admin.Application.UpdateInfoInput)">
+            <summary>
+            更新个人信息
+            </summary>
+            <param name="input">信息参数</param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IUserCenterService.UpdateWorkbenchAsync(System.Collections.Generic.List{System.Int64})">
+            <summary>
+            编辑个人工作台
+            </summary>
+            <param name="input">工作台字符串</param>
+            <returns></returns>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.UserCenterService">
+            <inheritdoc cref="T:ThingsGateway.Admin.Application.IUserCenterService"/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.UserCenterService.#ctor(ThingsGateway.Admin.Application.ISysUserService,ThingsGateway.Admin.Application.IRelationService,ThingsGateway.Admin.Application.IResourceService,ThingsGateway.Admin.Application.IVerificatService)">
+            <inheritdoc cref="T:ThingsGateway.Admin.Application.IUserCenterService"/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.UserCenterService.EditPasswordAsync(ThingsGateway.Admin.Application.PasswordInfoInput)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.UserCenterService.GetLoginWorkbenchAsync">
+            <inheritdoc />
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.UserCenterService.GetLoginDefaultRazorAsync(System.Int64)">
+            <inheritdoc />
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.UserCenterService.UpdateUserDefaultRazorAsync(System.Int64,System.Int64)">
+            <inheritdoc />
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.UserCenterService.GetOwnMenuAsync(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.UserCenterService.UpdateUserInfoAsync(ThingsGateway.Admin.Application.UpdateInfoInput)">
+            <inheritdoc />
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.UserCenterService.UpdateWorkbenchAsync(System.Collections.Generic.List{System.Int64})">
+            <inheritdoc />
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.UserCenterService.GetMyParentMenus(System.Collections.Generic.List{ThingsGateway.Admin.Core.SysResource},System.Collections.Generic.List{ThingsGateway.Admin.Core.SysResource})">
+            <summary>
+            获取父菜单集合，已过滤掉同时存在的父节点
+            </summary>
+            <param name="allMenuList">所有菜单列表</param>
+            <param name="myMenus">我的菜单列表</param>
+            <returns></returns>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.UserAddInput">
+            <summary>
+            添加用户参数
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.UserAddInput.Account">
+            <summary>
+            账号
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.UserEditInput">
+            <summary>
+            编辑用户参数
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.UserEditInput.Account">
+            <summary>
+            账号
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.UserEditInput.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.UserPageInput">
+            <summary>
+            用户分页查询参数
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.UserPageInput.Expression">
+            <summary>
+            动态查询条件
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.UserGrantRoleInput">
+            <summary>
+            用户授权角色参数
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.UserGrantRoleInput.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.UserGrantRoleInput.RoleIdList">
+            <summary>
+            授权权限信息
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.UserSelectorOutput">
+            <summary>
+            选择用户输出参数
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.UserSelectorOutput.Account">
+            <summary>
+            账号
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.UserSelectorOutput.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.UserSelectorOutput.Name">
+            <summary>
+            姓名
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.ISysUserService">
+            <summary>
+            用户服务
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.ISysUserService.AddAsync(ThingsGateway.Admin.Application.UserAddInput)">
+            <summary>
+            添加用户
+            </summary>
+            <param name="input">添加参数</param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.ISysUserService.DeleteAsync(System.Int64[])">
+            <summary>
+            删除用户
+            </summary>
+            <param name="input">Id列表</param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.ISysUserService.DeleteUserFromCache(System.Int64[])">
+            <summary>
+            从cache中删除用户信息
+            </summary>
+            <param name="ids">用户ID列表</param>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.ISysUserService.DisableUserAsync(System.Int64)">
+            <summary>
+            禁用用户
+            </summary>
+            <param name="input">用户Id</param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.ISysUserService.EditAsync(ThingsGateway.Admin.Application.UserEditInput)">
+            <summary>
+            编辑
+            </summary>
+            <param name="input">编辑参数</param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.ISysUserService.EnableUserAsync(System.Int64)">
+            <summary>
+            启用用户
+            </summary>
+            <param name="input">用户Id</param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.ISysUserService.GetButtonCodeListAsync(System.Int64)">
+            <summary>
+            根据用户ID获取按钮ID集合
+            </summary>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.ISysUserService.GetIdByAccountAsync(System.String)">
+             <summary>
+            根据用户账号获取用户ID
+             </summary>
+             <param name="account">用户账号</param>
+             <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.ISysUserService.GetUserByAccountAsync(System.String)">
+            <summary>
+            根据账号获取用户信息
+            </summary>
+            <param name="account">用户名</param>
+            <returns>用户信息</returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.ISysUserService.GetUserByIdAsync(System.Int64)">
+            <summary>
+            根据ID获取用户信息
+            </summary>
+            <param name="Id">用户ID</param>
+            <returns>用户信息</returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.ISysUserService.GrantRoleAsync(ThingsGateway.Admin.Application.UserGrantRoleInput)">
+            <summary>
+            给用户授权角色
+            </summary>
+            <param name="input">授权参数</param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.ISysUserService.OwnRoleAsync(ThingsGateway.Admin.Core.BaseIdInput)">
+            <summary>
+            获取用户拥有角色
+            </summary>
+            <param name="input">用户ID</param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.ISysUserService.PageAsync(ThingsGateway.Admin.Application.UserPageInput)">
+            <summary>
+            用户分页查询
+            </summary>
+            <param name="input">查询参数</param>
+            <returns>用户分页列表</returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.ISysUserService.ResetPasswordAsync(System.Int64)">
+            <summary>
+            重置密码
+            </summary>
+            <param name="input">用户Id</param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.ISysUserService.UserSelectorAsync(System.String)">
+            <summary>
+            用户选择器
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.SysUserService">
+            <inheritdoc cref="T:ThingsGateway.Admin.Application.ISysUserService"/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.SysUserService.#ctor(ThingsGateway.Admin.Application.IRelationService,ThingsGateway.Admin.Application.IResourceService,ThingsGateway.Admin.Application.IVerificatService,ThingsGateway.Admin.Application.IRoleService,ThingsGateway.Admin.Application.IConfigService)">
+            <inheritdoc cref="T:ThingsGateway.Admin.Application.ISysUserService"/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.SysUserService.AddAsync(ThingsGateway.Admin.Application.UserAddInput)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.SysUserService.DeleteAsync(System.Int64[])">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.SysUserService.DeleteUserFromCache(System.Int64[])">
+            <inheritdoc />
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.SysUserService.DisableUserAsync(System.Int64)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.SysUserService.EditAsync(ThingsGateway.Admin.Application.UserEditInput)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.SysUserService.EnableUserAsync(System.Int64)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.SysUserService.GetButtonCodeListAsync(System.Int64)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.SysUserService.GetIdByAccountAsync(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.SysUserService.GetPermissionListByUserIdAsync(System.Int64)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.SysUserService.GetUserByAccountAsync(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.SysUserService.GetUserByIdAsync(System.Int64)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.SysUserService.GrantRoleAsync(ThingsGateway.Admin.Application.UserGrantRoleInput)">
+            <inheritdoc />
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.SysUserService.OwnRoleAsync(ThingsGateway.Admin.Core.BaseIdInput)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.SysUserService.PageAsync(ThingsGateway.Admin.Application.UserPageInput)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.SysUserService.ResetPasswordAsync(System.Int64)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.SysUserService.UserSelectorAsync(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.SysUserService.CheckInputAsync(ThingsGateway.Admin.Core.SysUser)">
+            <summary>
+            检查输入参数
+            </summary>
+            <param name="sysUser"></param>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.SysUserService.CheckSelf(System.Int64,System.String)">
+            <summary>
+            检查是否为自己
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.SysUserService.GetDefaultPassWord(System.Boolean)">
+            <summary>
+            获取默认密码
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.IVerificatService">
+            <summary>
+             验证Id服务
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IVerificatService.GetOpenApiVerificatIdAsync(System.Int64)">
+            <summary>
+            获取验证ID
+            </summary>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IVerificatService.GetVerificatIdAsync(System.Int64)">
+            <summary>
+            获取验证ID
+            </summary>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IVerificatService.SetOpenApiVerificatIdAsync(System.Int64,System.Collections.Generic.List{ThingsGateway.Admin.Core.VerificatInfo})">
+            <summary>
+            设置验证ID
+            </summary>
+            <param name="userId"></param>
+            <param name="values"></param>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IVerificatService.SetVerificatIdAsync(System.Int64,System.Collections.Generic.List{ThingsGateway.Admin.Core.VerificatInfo})">
+            <summary>
+            设置验证ID
+            </summary>
+            <param name="userId"></param>
+            <param name="values"></param>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.VerificatService">
+            <inheritdoc cref="T:ThingsGateway.Admin.Application.IVerificatService"/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.VerificatService.GetOpenApiVerificatIdAsync(System.Int64)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.VerificatService.GetVerificatIdAsync(System.Int64)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.VerificatService.SetOpenApiVerificatIdAsync(System.Int64,System.Collections.Generic.List{ThingsGateway.Admin.Core.VerificatInfo})">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.VerificatService.SetVerificatIdAsync(System.Int64,System.Collections.Generic.List{ThingsGateway.Admin.Core.VerificatInfo})">
+            <inheritdoc/>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.VisitLogPageInput">
+            <summary>
+            访问日志分页输入
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.VisitLogPageInput.Account">
+            <summary>
+            账号
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.VisitLogPageInput.Category">
+            <summary>
+            分类
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.VisitLogPageInput.ExeStatus">
+             <summary>
+             执行状态
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.VisitLogInput">
+            <summary>
+            访问日志分页输入
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.VisitLogInput.Account">
+            <summary>
+            账号
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.VisitLogInput.Category">
+            <summary>
+            分类
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Application.VisitLogInput.ExeStatus">
+             <summary>
+             执行状态
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.IVisitLogService">
+            <summary>
+            访问日志服务
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IVisitLogService.DeleteAsync(System.String[])">
+            <summary>
+            根据分类删除
+            </summary>
+            <param name="category">分类名称</param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IVisitLogService.ExportFileAsync(ThingsGateway.Admin.Application.VisitLogInput)">
+            <summary>
+            导出访问日志
+            </summary>
+            <param name="input"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IVisitLogService.ExportFileAsync(System.Collections.Generic.List{ThingsGateway.Admin.Core.SysVisitLog})">
+            <summary>
+            导出访问日志
+            </summary>
+            <param name="input"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.IVisitLogService.PageAsync(ThingsGateway.Admin.Application.VisitLogPageInput)">
+            <summary>
+            访问日志分页查询
+            </summary>
+            <param name="input">查询参数</param>
+            <returns>日志列表</returns>
+        </member>
+        <member name="T:ThingsGateway.Admin.Application.VisitLogService">
+            <summary>
+            <inheritdoc cref="T:ThingsGateway.Admin.Application.IVisitLogService"/>
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.VisitLogService.DeleteAsync(System.String[])">
+            <inheritdoc />
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.VisitLogService.PageAsync(ThingsGateway.Admin.Application.VisitLogPageInput)">
+            <inheritdoc />
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.VisitLogService.ExportFileAsync(System.Collections.Generic.List{ThingsGateway.Admin.Core.SysVisitLog})">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Application.VisitLogService.ExportFileAsync(ThingsGateway.Admin.Application.VisitLogInput)">
+            <inheritdoc/>
+        </member>
+        <member name="T:ThingsGateway.Admin.Core.ResourceConst">
+            <summary>
+            资源表常量
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Admin.Core.ResourceConst.System">
+            <summary>
+            系统内置编码
+            </summary>
+        </member>
+    </members>
+</doc>

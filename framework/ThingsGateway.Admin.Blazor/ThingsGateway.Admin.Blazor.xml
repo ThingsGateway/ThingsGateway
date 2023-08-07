@@ -1,0 +1,358 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ThingsGateway.Admin.Blazor</name>
+    </assembly>
+    <members>
+        <member name="T:ThingsGateway.Admin.Blazor.Core.AppDataTable`4">
+            <summary>
+            通用表格
+            </summary>
+            <typeparam name="TItem"></typeparam>
+            <typeparam name="SearchItem"></typeparam>
+            <typeparam name="AddItem"></typeparam>
+            <typeparam name="EditItem"></typeparam>
+        </member>
+        <member name="P:ThingsGateway.Admin.Blazor.Core.AppDataTable`4.AddCallAsync">
+            <summary>
+            添加项委托
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Blazor.Core.AppDataTable`4.AddTemplate">
+            <summary>
+            获得/设置 添加模板
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Blazor.Core.AppDataTable`4.ClassString">
+            <summary>
+            MSheet.Class
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Blazor.Core.AppDataTable`4.StyleString">
+            <summary>
+            MSheet.Style
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Blazor.Core.AppDataTable`4.DeleteCallAsync">
+            <summary>
+            删除项委托
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Blazor.Core.AppDataTable`4.Dense">
+            <summary>
+            表格紧凑
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Blazor.Core.AppDataTable`4.DetailRowTemplate">
+            <summary>
+            获得/设置 明细行模板
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Blazor.Core.AppDataTable`4.EditCallAsync">
+            <summary>
+            编辑项委托
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Blazor.Core.AppDataTable`4.EditTemplate">
+            <summary>
+            获得/设置 编辑模板
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Blazor.Core.AppDataTable`4.FilterHeaders">
+            <summary>
+            表头过滤，返回DataTableHeader列表，传输参数已包含全部初始表头与表头标题
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Blazor.Core.AppDataTable`4.Filters">
+            <summary>
+            表头过滤之后执行的方法，返回Filter值，ture则显示，false则隐藏
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Blazor.Core.AppDataTable`4.HeaderTemplate">
+            <summary>
+            获得/设置 Table Header 模板
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Blazor.Core.AppDataTable`4.IsMenuOperTemplate">
+            <summary>
+            右侧操作栏以菜单形式显示
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Blazor.Core.AppDataTable`4.IsPage">
+            <summary>
+            是否分页
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Blazor.Core.AppDataTable`4.IsShowAddButton">
+            <summary>
+            是否显示添加按钮
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Blazor.Core.AppDataTable`4.IsShowClearSearch">
+            <summary>
+            是否显示清空搜索
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Blazor.Core.AppDataTable`4.IsShowDeleteButton">
+            <summary>
+            是否显示删除按钮
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Blazor.Core.AppDataTable`4.IsShowDetailButton">
+            <summary>
+            是否显示详情按钮
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Blazor.Core.AppDataTable`4.IsShowEditButton">
+            <summary>
+            是否显示编辑按钮
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Blazor.Core.AppDataTable`4.IsShowFilter">
+            <summary>
+            是否显示过滤
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Blazor.Core.AppDataTable`4.IsShowOperCol">
+            <summary>
+            是否显示右侧操作栏
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Blazor.Core.AppDataTable`4.IsShowQueryButton">
+            <summary>
+            是否显示查询按钮
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Blazor.Core.AppDataTable`4.IsShowSearchKey">
+            <summary>
+            是否显示搜索关键字
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Blazor.Core.AppDataTable`4.IsShowSelect">
+            <summary>
+            是否显示表格多项选择
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Blazor.Core.AppDataTable`4.IsShowToolbar">
+            <summary>
+            是否显示顶部操作工具栏
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Blazor.Core.AppDataTable`4.ItemColOperTemplate">
+            <summary>
+            获得/设置 Table Oper 模板
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Blazor.Core.AppDataTable`4.ItemColTemplate">
+            <summary>
+            获得/设置 Table Cols 模板
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Blazor.Core.AppDataTable`4.Items">
+            <summary>
+            当前显示项目
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Blazor.Core.AppDataTable`4.OtherToolbarTemplate">
+            <summary>
+            获得/设置 其他操作栏模板
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Blazor.Core.AppDataTable`4.PageSizeItems">
+            <summary>
+            分页选择项目
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Blazor.Core.AppDataTable`4.QueryCallAsync">
+            <summary>
+            查询项委托
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Blazor.Core.AppDataTable`4.SearchModel">
+            <summary>
+            获得/设置 SearchModel 实例
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Blazor.Core.AppDataTable`4.SearchTemplate">
+            <summary>
+            获得/设置 查询与操作栏模板
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Admin.Blazor.Core.AppDataTable`4.QueryClickAsync">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Blazor.Core.AppDataTable`4.OnAfterRenderAsync(System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Admin.Blazor.Core.AppDataTable`4.OnInitializedAsync">
+            <inheritdoc/>
+        </member>
+        <member name="T:ThingsGateway.Admin.Blazor.Core.IAppDataTable">
+            <summary>
+            通用表格
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Admin.Blazor.Core.IAppDataTable.QueryClickAsync">
+            <summary>
+            查询刷新
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:ThingsGateway.Admin.Blazor.StringFilters">
+            <summary>
+            键值表示
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Blazor.StringFilters.Key">
+            <summary>
+            键
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Blazor.StringFilters.Value">
+            <summary>
+            值
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Blazor.Base">
+            <summary>
+            Base
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Admin.Blazor.Base.OnAfterRenderAsync(System.Boolean)">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <param name="firstRender"></param>
+            <returns></returns>
+        </member>
+        <member name="T:ThingsGateway.Admin.Blazor.Config">
+            <summary>
+            系统配置页面
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Admin.Blazor.Config.OnParametersSetAsync">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:ThingsGateway.Admin.Blazor.Index">
+            <summary>
+            首页
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Admin.Blazor.Index.OnParametersSetAsync">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:ThingsGateway.Admin.Blazor.Menu">
+            <summary>
+            菜单页面
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Admin.Blazor.Menu.OnParametersSetAsync">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:ThingsGateway.Admin.Blazor.OpenApiSession">
+            <summary>
+            OpenApiSession
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Blazor.OpenApiUserR">
+            <summary>
+            OpenApiUserR
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Blazor.Oplog">
+            <summary>
+            操作日志
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Admin.Blazor.Oplog.OnInitialized">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Blazor.Role">
+            <summary>
+            角色页面
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Blazor.Session">
+            <summary>
+            会话页面
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Blazor.Spa">
+            <summary>
+            SPA
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Blazor.User">
+            <summary>
+            用户界面
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.Blazor.UserCenter">
+            <summary>
+            个人设置
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Admin.Blazor.UserCenter.OnParametersSetAsync">
+            <inheritdoc/>
+        </member>
+        <member name="T:ThingsGateway.Admin.Blazor.Vislog">
+            <summary>
+            访问日志页面
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Blazor.Vislog.CategoryFilters">
+            <summary>
+            日志分类菜单
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Blazor.Vislog.ExeStatus">
+            <summary>
+            执行结果菜单
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Admin.Blazor.Vislog.OnInitialized">
+            <inheritdoc/>
+        </member>
+        <member name="T:ThingsGateway.Admin.Blazor.Login">
+            <summary>
+            登录页面
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Admin.Blazor.Login.OnParametersSetAsync">
+            <inheritdoc/>
+        </member>
+        <member name="T:ThingsGateway.Admin.Blazor.MainLayout">
+            <summary>
+            Layout
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Admin.Blazor.MainLayout.IsMobile">
+            <summary>
+            IsMobile
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Admin.Blazor.MainLayout.StateHasChangedAsync">
+            <summary>
+            页面刷新
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Blazor.MainLayout.OnInitializedAsync">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

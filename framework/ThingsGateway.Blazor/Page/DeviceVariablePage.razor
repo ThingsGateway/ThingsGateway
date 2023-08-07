@@ -1,0 +1,630 @@
+﻿@*
+//------------------------------------------------------------------------------
+//  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
+//  此代码版权（除特别声明外的代码）归作者本人Diego所有
+//  源代码使用协议遵循本仓库的开源协议及附加协议
+//  Gitee源代码仓库：https://gitee.com/diego2098/ThingsGateway
+//  Github源代码仓库：https://github.com/kimdiego2098/ThingsGateway
+//  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
+//  QQ群：605534569
+//------------------------------------------------------------------------------
+*@
+
+@page "/gatewayconfig/devicevariable"
+@namespace ThingsGateway.Blazor
+@using System.Linq.Expressions;
+@using BlazorComponent;
+@using Furion.DataValidation;
+@using Furion;
+@using Mapster;
+@using Masa.Blazor
+@using Masa.Blazor.Presets;
+@using System.IO;
+@using Microsoft.AspNetCore.Authorization;
+@using ThingsGateway.Admin.Blazor.Core;
+@using ThingsGateway.Admin.Blazor;
+@using ThingsGateway.Admin.Core;
+@using ThingsGateway.Application;
+@attribute [Authorize]
+@inherits BaseComponentBase
+@inject UserResoures UserResoures
+@layout MainLayout
+
+@if (IsMobile)
+{
+    @GetAppDataTable()
+
+}
+else
+{
+    <MRow>
+        <MCol Md=2 Cols="12">
+            <MCard Class="ma-2" Height=@("100%")>
+                <MCardTitle>
+                    <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="mx-2 my-1" @bind-Value="_searchName"
+                                Outlined Label=@typeof(CollectDevice).GetDescription(nameof(CollectDevice.DeviceGroup)) />
+                </MCardTitle>
+                <MTreeview Style=@($"height: calc(100vh - {BlazorResourceConst.DefaultHeight+100}px);overflow-y:auto") Dense TItem="DeviceTree" TKey="string" OpenOnClick ActiveChanged=@(async a=>
+                       {
+                       if(search.DeviceName!=a.FirstOrDefault())
+                       {
+                       search.DeviceName=a.FirstOrDefault();
+                       await DatatableQueryAsync();
+                       }
+                       } )
+                           Items="_deviceGroups" ItemText="r=>r.Name" ItemChildren="r=>r.Childrens"
+                           Search="@_searchName"
+                          Activatable ItemKey=@(r=>r.Name)>
+                    <LabelContent>
+                        <span title=@context.Item.Name>
+                            @context.Item.Name
+                        </span>
+                    </LabelContent>
+                </MTreeview>
+            </MCard>
+        </MCol>
+        <MCol Md=10 Cols="12">
+
+            @GetAppDataTable()
+
+        </MCol>
+    </MRow>
+}
+
+<ImportExcel @ref=ImportExcel Import="SaveDeviceImportAsync" Preview="DeviceImportAsync" />
+
+
+
+
+
+@code {
+    RenderFragment GetAppDataTable()
+    {
+        RenderFragment renderFragment =
+    @<AppDataTable @ref="_datatable"
+                       StyleString=@($"height: calc(100vh - {BlazorResourceConst.DefaultHeight+10}px)")
+                       TItem="DeviceVariable" SearchItem="DeviceVariablePageInput"
+                       AddItem="DeviceVariableAddInput" EditItem="VariableEditInput"
+                       IsMenuOperTemplate=false SearchModel="search"
+                       QueryCallAsync="QueryCallAsync" AddCallAsync="AddCallAsync"
+                       EditCallAsync="EditCallAsync" DeleteCallAsync="DeleteCallAsync"
+                                  IsShowDetailButton
+                                  IsShowQueryButton
+                       IsShowAddButton=@UserResoures.IsHasButtonWithRole("gatewayvariableadd")
+                       IsShowDeleteButton=@UserResoures.IsHasButtonWithRole("gatewayvariabledelete")
+                       IsShowEditButton=@UserResoures.IsHasButtonWithRole("gatewayvariableedit")>
+        <SearchTemplate>
+            <MTextField Dense
+                        Style="max-width:200px;" HideDetails=@("auto") Class="my-1  mx-2 " @bind-Value="context.Name"
+                                Clearable
+                                Outlined
+                        Label=@context.Description(x => x.Name) />
+            <MTextField Dense
+                        Style="max-width:200px;" HideDetails=@("auto") Class="my-1  mx-2 " @bind-Value="context.VariableAddress"
+                                Clearable
+                                Outlined
+                        Label=@context.Description(x => x.VariableAddress) />
+            <MTextField Dense
+                        Style="max-width:200px;" HideDetails=@("auto") Class="my-1  mx-2 " @bind-Value="context.DeviceName"
+                                Clearable
+                                Outlined
+                        Label=@context.Description(x => x.DeviceName) />
+            <MTextField Dense
+                        Style="max-width:200px;" HideDetails=@("auto") Class="my-1  mx-2 " @bind-Value="context.UploadDeviceName"
+                                Clearable
+                                Outlined
+                        Label=@context.Description(x => x.UploadDeviceName) />
+        </SearchTemplate>
+        <OtherToolbarTemplate>
+
+            <MMenu OffsetY
+                   Context="menu">
+                <ActivatorContent>
+                    <MButton @attributes="@menu.Attrs" Color="primary"
+                             Class="my-1  mx-2 ">
+                        导出
+                        <AppChevronDown></AppChevronDown>
+                    </MButton>
+                </ActivatorContent>
+                <ChildContent>
+                    <MList>
+                        <MListItem OnClick="()=>DownExportAsync()"> 导出全部 </MListItem>
+                        <MListItem OnClick="()=>DownExportAsync(search)">  导出搜索项 </MListItem>
+                    </MList>
+
+                </ChildContent>
+            </MMenu>
+
+
+
+            <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("gatewayvariableedit")) Class="my-1  mx-2" OnClick="()=>{ ImportExcel.Step=1;  ImportExcel.IsShowImport=true;}" Color="primary">
+                导入
+            </MButton>
+            <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("gatewayvariableedit")) Class="my-1  mx-2" OnClick=ClearAsync Color="primary">
+                清空
+            </MButton>
+        </OtherToolbarTemplate>
+        <AddTemplate>
+            @{
+                var data = CollectDevices.FirstOrDefault();
+                context.DeviceId = context.DeviceId == 0 ? data == null ? 0 : data.Id : context.DeviceId;
+            }
+            @GetRenderFragment(context)
+        </AddTemplate>
+        <EditTemplate>
+            @GetRenderFragment(context)
+        </EditTemplate>
+        <ItemColTemplate>
+            @switch (context.Header.Value)
+            {
+                case nameof(context.Item.DeviceId):
+                    <span title=@context.Value>
+                        @(
+                            App.GetService<ICollectDeviceService>().GetNameById(context.Item.DeviceId)
+                                )
+                    </span>
+                    break;
+                default:
+                    @if (context.Header.CellClass?.Contains("text-truncate") == true)
+                    {
+                        <span title=@context.Value>
+                            @context.Value
+                        </span>
+                    }
+                    else
+                    {
+                        @context.Value
+                    }
+                    break;
+
+            }
+
+        </ItemColTemplate>
+    </AppDataTable>
+    ;
+        return renderFragment;
+    }
+
+    RenderFragment GetRenderFragment(VariableEditInput context)
+    {
+        if (!OtherMethods.ContainsKey(context.DeviceId))
+        {
+            DeviceChanged(context.DeviceId);
+        }
+
+        RenderFragment renderFragment =
+    @<div>
+        <MTabs @bind-Value="tab">
+            <MTab Value=1 Style="height:50px;">   基本属性    </MTab>
+            <MTab Value=2 Style="height:50px;">    报警属性    </MTab>
+            <MTab Value=3 Style="height:50px;">    历史属性    </MTab>
+            <MTab Value=4 Style="height:50px;">    上传属性    </MTab>
+        </MTabs>
+
+        <MTabsItems Value="tab">
+            <MTabItem Value="1">
+                @if (tab == 1)
+                {
+
+                    <MCard Flat Class="ma-2">
+                            <MRow NoGutters Class="my-2" Justify="JustifyTypes.Start">
+                                <MCol Md=12 Cols=12 class="px-1">
+                                    <MSubheader Class="font-weight-black"> @(context.Description(x => x.Name))  </MSubheader>
+                                <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.Name />
+                                </MCol>
+
+
+                                <MCol Md=12 Cols=12 class="px-1">
+                                    <MSubheader Class="font-weight-black">    @(context.Description(x => x.Description))  </MSubheader>
+                                <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.Description />
+                                </MCol>
+
+                                <MCol Md=6 Cols=12 class="px-1">
+                                    <MSubheader Class="font-weight-black">    @context.Description(x=>x.DeviceId)  </MSubheader>
+                                    <MSelect Class="mr-3" @bind-Value=@context.DeviceId Outlined
+                                             Items=@(CollectDevices) OnClick=@(()=>DeviceChanged(context.DeviceId))
+                                             MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
+                                             ItemText=@((u) =>u.Name) ItemValue=@(u =>u.Id)
+                                             ItemDisabled="u => !u.Enable"
+                                             HideDetails=@("auto") Height="30" Dense>
+                                </MSelect>
+                            </MCol>
+
+                            <MCol Md=6 Cols=12 class="px-1">
+                                <MSubheader Class="font-weight-black">    @(context.Description(x => x.IntervalTime))  </MSubheader>
+                                <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.IntervalTime />
+                                </MCol>
+
+
+                                <MCol Md=6 Cols=12 class="px-1">
+                                    <MSubheader Class="font-weight-black"> @(context.Description(x => x.RpcWriteEnable))  </MSubheader>
+                                <MSelect Class="mr-3" @bind-Value=@context.RpcWriteEnable Outlined
+                                             Items=@(new List<bool>(){true,false}) Clearable
+                                             MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
+                                             ItemText=@((u) =>u.ToString()) ItemValue=@(u =>u)
+                                             HideDetails=@("auto") Height="30" Dense>
+                                </MSelect>
+                            </MCol>
+
+                            <MCol Md=6 Cols=12 class="px-1">
+                                <MSubheader Class="font-weight-black">    @(context.Description(x => x.Unit))  </MSubheader>
+                                <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.Unit />
+                                </MCol>
+
+
+
+
+                                <MCol Md=12 Cols=12 class="px-1">
+                                    <MSubheader Class="font-weight-black">    @(context.Description(x => x.VariableAddress))  </MSubheader>
+                                <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.VariableAddress />
+                                </MCol>
+
+
+
+                                <MCol Md=6 Cols=12 class="px-1">
+                                    <MSubheader Class="font-weight-black">    @(context.Description(x => x.ProtectTypeEnum))  </MSubheader>
+                                <MSelect Class="mr-3" @bind-Value="context.ProtectTypeEnum" Outlined
+                                             Items=@(typeof(ProtectTypeEnum).GetEnumList())
+                                             MenuProps="@(props => { props.Auto = true; props.OffsetY = true; })"
+                                             ItemText=@((u) =>u.des)
+                                             ItemValue=@(u =>(ProtectTypeEnum)u.value)
+                                             HideDetails=@("auto") Height="30"
+                                                  Dense>
+                                </MSelect>
+                            </MCol>
+
+
+                            <MCol Md=6 Cols=12 class="px-1">
+                                <MSubheader Class="font-weight-black">    @(context.Description(x => x.DataTypeEnum))  </MSubheader>
+                                <MSelect Class="mr-3" @bind-Value="context.DataTypeEnum" Outlined
+                                             Items=@(typeof(DataTypeEnum).GetEnumList()) Clearable
+                                             MenuProps="@(props => { props.Auto = true; props.OffsetY = true; })"
+                                             ItemText=@((u) =>u.des)
+                                             ItemValue=@(u =>(DataTypeEnum)u.value)
+                                             HideDetails=@("auto") Height="30"
+                                                  Dense>
+                                </MSelect>
+                            </MCol>
+
+                            <MCol Md=6 Cols=12 class="px-1">
+
+                                <MSubheader Class="font-weight-black">    @(context.Description(x => x.ReadExpressions))  </MSubheader>
+                                <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.ReadExpressions />
+                                </MCol>
+                                <MCol Md=6 Cols=12 class="px-1">
+
+                                    <MSubheader Class="font-weight-black">    @(context.Description(x => x.WriteExpressions))  </MSubheader>
+                                <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.WriteExpressions />
+                                </MCol>
+
+
+
+
+                                @if (OtherMethods.ContainsKey(context.DeviceId))
+                            {
+
+                                <MCol Md=12 Cols=12 class="px-1">
+                                    <MSubheader Class="font-weight-black">    @(context.Description(x => x.OtherMethod))  </MSubheader>
+                                    <MSelect Class="mr-3" @bind-Value="context.OtherMethod" Outlined
+                                                 Items=@(OtherMethods[context.DeviceId]) Clearable
+                                                 MenuProps="@(props => { props.Auto = true; props.OffsetY = true; })"
+                                                 ItemText=@((u) =>u)
+                                                 ItemValue=@(u =>u)
+                                                 HideDetails=@("auto") Height="30"
+                                                      Dense>
+                                    </MSelect>
+                                </MCol>
+
+                            }
+
+                        </MRow>
+
+                    </MCard>
+                }
+            </MTabItem>
+
+            <MTabItem Value="2">
+                @if (tab == 2)
+                {
+                    <MCard Flat Class="ma-2">
+                            <MRow NoGutters Class="my-2" Justify="JustifyTypes.Center">
+
+                                <MCol Md=12 Cols=12 class="px-1 py-2">
+                                    <MDivider Center Height="2"></MDivider>
+                                </MCol>
+
+                                <MCol Md=6 Cols=12 class="px-1">
+                                    <MSubheader Class="font-weight-black"> @(context.Description(x => x.BoolCloseAlarmEnable))  </MSubheader>
+                                <MSelect Class="mr-3" @bind-Value=@context.BoolCloseAlarmEnable Outlined
+                                             Items=@(new List<bool>(){true,false}) Clearable
+                                             MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
+                                             ItemText=@((u) =>u.ToString()) ItemValue=@(u =>u)
+                                             HideDetails=@("auto") Height="30" Dense>
+                                </MSelect>
+                            </MCol>
+
+                            <MCol Md=6 Cols=12 class="px-1">
+                                <MSubheader Class="font-weight-black"> @(context.Description(x => x.BoolCloseAlarmText))  </MSubheader>
+                                <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.BoolCloseAlarmText />
+                                </MCol>
+
+                                <MCol Md=12 Cols=12 class="px-1">
+                                    <MSubheader Class="font-weight-black"> @(context.Description(x => x.BoolCloseRestrainExpressions))  </MSubheader>
+                                <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.BoolCloseRestrainExpressions />
+                                </MCol>
+
+                                <MCol Md=12 Cols=12 class="px-1 py-2">
+                                    <MDivider Center Height="2"></MDivider>
+                                </MCol>
+
+                                <MCol Md=6 Cols=12 class="px-1">
+                                    <MSubheader Class="font-weight-black"> @(context.Description(x => x.BoolOpenAlarmEnable))  </MSubheader>
+                                <MSelect Class="mr-3" @bind-Value=@context.BoolOpenAlarmEnable Outlined
+                                             Items=@(new List<bool>(){true,false}) Clearable
+                                             MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
+                                             ItemText=@((u) =>u.ToString()) ItemValue=@(u =>u)
+                                             HideDetails=@("auto") Height="30" Dense>
+                                </MSelect>
+                            </MCol>
+
+
+                            <MCol Md=6 Cols=12 class="px-1">
+                                <MSubheader Class="font-weight-black"> @(context.Description(x => x.BoolOpenAlarmText))  </MSubheader>
+                                <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.BoolOpenAlarmText />
+                                </MCol>
+
+                                <MCol Md=12 Cols=12 class="px-1">
+                                    <MSubheader Class="font-weight-black"> @(context.Description(x => x.BoolOpenRestrainExpressions))  </MSubheader>
+                                <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.BoolOpenRestrainExpressions />
+                                </MCol>
+
+                                <MCol Md=12 Cols=12 class="px-1 py-2">
+                                    <MDivider Center Height="2"></MDivider>
+                                </MCol>
+
+                                <MCol Md=6 Cols=12 class="px-1">
+                                    <MSubheader Class="font-weight-black"> @(context.Description(x => x.HHAlarmEnable))  </MSubheader>
+                                <MSelect Class="mr-3" @bind-Value=@context.HHAlarmEnable Outlined
+                                             Items=@(new List<bool>(){true,false}) Clearable
+                                             MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
+                                             ItemText=@((u) =>u.ToString()) ItemValue=@(u =>u)
+                                             HideDetails=@("auto") Height="30" Dense>
+                                </MSelect>
+                            </MCol>
+
+                            <MCol Md=6 Cols=12 class="px-1">
+                                <MSubheader Class="font-weight-black"> @(context.Description(x => x.HHAlarmText))  </MSubheader>
+                                <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.HHAlarmText />
+                                </MCol>
+
+                                <MCol Md=6 Cols=12 class="px-1">
+                                    <MSubheader Class="font-weight-black"> @(context.Description(x => x.HHAlarmCode))  </MSubheader>
+                                <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.HHAlarmCode />
+                                </MCol>
+
+                                <MCol Md=6 Cols=12 class="px-1">
+                                    <MSubheader Class="font-weight-black"> @(context.Description(x => x.HHRestrainExpressions))  </MSubheader>
+                                <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.HHRestrainExpressions />
+                                </MCol>
+
+                                <MCol Md=12 Cols=12 class="px-1 py-2">
+                                    <MDivider Center Height="2"></MDivider>
+                                </MCol>
+
+
+                                <MCol Md=6 Cols=12 class="px-1">
+                                    <MSubheader Class="font-weight-black"> @(context.Description(x => x.HAlarmEnable))  </MSubheader>
+                                <MSelect Class="mr-3" @bind-Value=@context.HAlarmEnable Outlined
+                                             Items=@(new List<bool>(){true,false}) Clearable
+                                             MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
+                                             ItemText=@((u) =>u.ToString()) ItemValue=@(u =>u)
+                                             HideDetails=@("auto") Height="30" Dense>
+                                </MSelect>
+                            </MCol>
+
+                            <MCol Md=6 Cols=12 class="px-1">
+                                <MSubheader Class="font-weight-black"> @(context.Description(x => x.HAlarmText))  </MSubheader>
+                                <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.HAlarmText />
+                                </MCol>
+
+                                <MCol Md=6 Cols=12 class="px-1">
+                                    <MSubheader Class="font-weight-black"> @(context.Description(x => x.HAlarmCode))  </MSubheader>
+                                <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.HAlarmCode />
+                                </MCol>
+
+                                <MCol Md=6 Cols=12 class="px-1 py-1">
+                                    <MSubheader Class="font-weight-black"> @(context.Description(x => x.HRestrainExpressions))  </MSubheader>
+                                <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.HRestrainExpressions />
+                                </MCol>
+
+                                <MCol Md=12 Cols=12 class="px-1 py-2">
+                                    <MDivider Center Height="2"></MDivider>
+                                </MCol>
+                                <MCol Md=6 Cols=12 class="px-1">
+                                    <MSubheader Class="font-weight-black"> @(context.Description(x => x.LAlarmEnable))  </MSubheader>
+                                <MSelect Class="mr-3" @bind-Value=@context.LAlarmEnable Outlined
+                                             Items=@(new List<bool>(){true,false}) Clearable
+                                             MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
+                                             ItemText=@((u) =>u.ToString()) ItemValue=@(u =>u)
+                                             HideDetails=@("auto") Height="30" Dense>
+                                </MSelect>
+                            </MCol>
+
+                            <MCol Md=6 Cols=12 class="px-1">
+                                <MSubheader Class="font-weight-black"> @(context.Description(x => x.LAlarmText))  </MSubheader>
+                                <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.LAlarmText />
+                                </MCol>
+
+                                <MCol Md=6 Cols=12 class="px-1">
+                                    <MSubheader Class="font-weight-black"> @(context.Description(x => x.LAlarmCode))  </MSubheader>
+                                <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.LAlarmCode />
+                                </MCol>
+
+                                <MCol Md=6 Cols=12 class="px-1">
+                                    <MSubheader Class="font-weight-black"> @(context.Description(x => x.LRestrainExpressions))  </MSubheader>
+                                <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.LRestrainExpressions />
+                                </MCol>
+
+                                <MCol Md=12 Cols=12 class="px-1 py-2">
+                                    <MDivider Center Height="2"></MDivider>
+                                </MCol>
+
+                                <MCol Md=6 Cols=12 class="px-1">
+                                    <MSubheader Class="font-weight-black"> @(context.Description(x => x.LLAlarmEnable))  </MSubheader>
+                                <MSelect Class="mr-3" @bind-Value=@context.LLAlarmEnable Outlined
+                                             Items=@(new List<bool>(){true,false}) Clearable
+                                             MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
+                                             ItemText=@((u) =>u.ToString()) ItemValue=@(u =>u)
+                                             HideDetails=@("auto") Height="30" Dense>
+                                </MSelect>
+                            </MCol>
+
+                            <MCol Md=6 Cols=12 class="px-1">
+                                <MSubheader Class="font-weight-black"> @(context.Description(x => x.LLAlarmText))  </MSubheader>
+                                <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.LLAlarmText />
+                                </MCol>
+
+                                <MCol Md=6 Cols=12 class="px-1">
+                                    <MSubheader Class="font-weight-black"> @(context.Description(x => x.LLAlarmCode))  </MSubheader>
+                                <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.LLAlarmCode />
+                                </MCol>
+
+                                <MCol Md=6 Cols=12 class="px-1">
+                                    <MSubheader Class="font-weight-black"> @(context.Description(x => x.LLRestrainExpressions))  </MSubheader>
+                                <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.LLRestrainExpressions />
+                                </MCol>
+
+
+                            </MRow>
+
+                        </MCard>
+                }
+            </MTabItem>
+
+
+            <MTabItem Value="3">
+                @if (tab == 3)
+                {
+                    <MCard Flat Class="ma-2">
+
+                            <MRow NoGutters Class="my-2" Justify="JustifyTypes.Center">
+                                <MCol Md=12 Cols=12 class="px-1">
+                                    <MSubheader Class="font-weight-black"> @(context.Description(x => x.HisEnable))  </MSubheader>
+                                <MSelect Class="mr-3" @bind-Value=@context.HisEnable Outlined
+                                             Items=@(new List<bool>(){true,false}) Clearable
+                                             MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
+                                             ItemText=@((u) =>u.ToString()) ItemValue=@(u =>u)
+                                             HideDetails=@("auto") Height="30" Dense>
+                                </MSelect>
+                            </MCol>
+
+                            <MCol Md=12 Cols=12 class="px-1">
+                                <MSubheader Class="font-weight-black"> @(context.Description(x => x.HisType))  </MSubheader>
+
+                                <MSelect Class="mr-3" @bind-Value=@context.HisType Outlined
+                                             Items=@(typeof(HisType).GetEnumList()) Clearable
+                                             MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
+                                             ItemText=@((u) =>u.des)
+                                             ItemValue=@(u =>(HisType)u.value)
+                                             HideDetails=@("auto") Height="30"
+                                                  Dense>
+                                </MSelect>
+                            </MCol>
+
+                        </MRow>
+
+                    </MCard>
+                }
+            </MTabItem>
+            <MTabItem Value="4">
+                @if (tab == 4)
+                {
+                    <MCard Flat Class="pa-2">
+                            <MRow Class="px-1 py-6" Align="AlignTypes.Center">
+
+                                <MSelect Class="mr-3" @bind-Value=@choiceUploadDeviceId
+                                              Outlined
+                                         Items=@(UploadDevices)
+                                              Clearable
+                                         MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
+                                         ItemText=@((u) =>u.Name) ItemValue=@(u =>u.Id)
+                                         HideDetails=@("auto") Height="30"
+                                              Dense>
+                            </MSelect>
+                            <MButton Class="my-3" OnClick=@(async() =>
+                             {
+                             if(choiceUploadDeviceId>0)
+                             {
+                             var data=GetDriverProperties(UploadDevices.FirstOrDefault(a=>a.Id==choiceUploadDeviceId).PluginId,context.VariablePropertys.ContainsKey(choiceUploadDeviceId)?context.VariablePropertys[choiceUploadDeviceId]:null);
+                             if(data?.Count>0)
+                             {
+                             context.VariablePropertys.AddOrUpdate(choiceUploadDeviceId,a=> data,(a,b)=>data);
+                             }
+                             else
+                             {
+                             await PopupService.EnqueueSnackbarAsync("此上传设备没有变量上传属性",AlertTypes.Warning);
+                             context.VariablePropertys.Remove(choiceUploadDeviceId);
+                             }
+                             }
+                             else
+                             {
+                             await PopupService.EnqueueSnackbarAsync("需选择上传设备",AlertTypes.Warning);
+                             }
+                             }
+                             ) Color="primary">
+                                添加/刷新属性
+                            </MButton>
+
+                        </MRow>
+                        @if (context.VariablePropertys != null)
+                        {
+                            @foreach (var item in context.VariablePropertys)
+                            {
+                                <MCard Class="pa-2 my-3">
+
+                                    <MSubheader Class="mt-4 font-weight-black">
+                                        @(
+                                            UploadDevices.FirstOrDefault(a => a.Id == item.Key)?.Name ?? "未知"
+                                                )
+                                    </MSubheader>
+                                    @foreach (var property in item.Value ?? new())
+                                    {
+                                        <MSubheader Class="mt-4 font-weight-black"> @property.Description </MSubheader>
+                                        <MTooltip Disabled=string.IsNullOrEmpty(property.Remark)
+                                                            Bottom
+                                                      Context="tip">
+                                                <ActivatorContent>
+                                                    <MTextField @attributes="@tip.Attrs"
+                                                                            Dense
+                                                                            Outlined
+                                                                HideDetails="@("auto")" @bind-Value=@property.Value />
+                                                </ActivatorContent>
+                                                <ChildContent>
+                                                    <span>@property.Remark</span>
+                                                </ChildContent>
+                                            </MTooltip>
+                                    }
+                                    <MCardActions>
+                                        <MButton Class="my-3" OnClick=@(() =>
+                                 {
+                                 context.VariablePropertys.Remove(item.Key);
+                                 }
+                                 ) Color="primary">
+                                            删除
+                                        </MButton>
+                                    </MCardActions>
+                                </MCard>
+                            }
+
+
+                        }
+                    </MCard>
+                }
+            </MTabItem>
+        </MTabsItems>
+
+    </div>
+    ;
+        return renderFragment;
+    }
+}

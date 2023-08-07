@@ -1,0 +1,69 @@
+﻿@*
+//------------------------------------------------------------------------------
+//  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
+//  此代码版权（除特别声明外的代码）归作者本人Diego所有
+//  源代码使用协议遵循本仓库的开源协议及附加协议
+//  Gitee源代码仓库：https://gitee.com/diego2098/ThingsGateway
+//  Github源代码仓库：https://github.com/kimdiego2098/ThingsGateway
+//  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
+//  QQ群：605534569
+//------------------------------------------------------------------------------
+*@
+
+@using BlazorComponent;
+@using Microsoft.AspNetCore.Components.Web;
+@using Microsoft.JSInterop;
+@using ThingsGateway.Admin.Core;
+@using ThingsGateway.Application;
+@using ThingsGateway.Blazor;
+@using ThingsGateway.Foundation.Adapter.Siemens;
+@using ThingsGateway.Foundation;
+@using ThingsGateway.Foundation.Extension;
+@using ThingsGateway.Foundation.Serial;
+@namespace ThingsGateway.Siemens
+@using Masa.Blazor
+<DefalutDebugDriverPage  Channel="ChannelEnum.TcpClientEx" @ref=defalutDebugDriverPage>
+    <MCard Flat Elevation="0">
+        <MRow Class="my-1" NoGutters Justify="JustifyTypes.SpaceBetween" Align="AlignTypes.Center">
+                <MTextField Class="mx-1" Label=@(_plc.Description(x => x.Slot)) Dense Outlined HideDetails="@("auto")" @bind-Value=@_plc.Slot></MTextField>
+                <MTextField Class="mx-1" Label=@(_plc.Description(x => x.Rack)) Dense Outlined HideDetails="@("auto")" @bind-Value=@_plc.Rack></MTextField>
+
+            <MTextField Class="mx-1" Label=@(_plc.Description(x => x.TimeOut)) Dense Outlined HideDetails="@("auto")" @bind-Value=@_plc.TimeOut></MTextField>
+            <MSelect Class="mx-1" Style="max-width:200px" @bind-Value="_plc.DataFormat" Outlined Label="@(_plc.Description(x => x.DataFormat))"
+                     Items=@(typeof(DataFormat).GetEnumList())
+                     MenuProps="@(props => { props.Auto = true; props.OffsetY = true; })"
+                     ItemText=@((u) =>u.des)
+                     ItemValue=@(u =>(DataFormat)u.value)
+                     HideDetails=@("auto") Height="30"
+                  Dense>
+        </MSelect>
+    </MRow>
+</MCard>
+
+</DefalutDebugDriverPage>
+
+
+@code
+{
+    private DefalutDebugDriverPage defalutDebugDriverPage;
+    private ThingsGateway.Foundation.Adapter.Siemens.SiemensS7PLC _plc;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            //载入配置
+            _plc = new ThingsGateway.Foundation.Adapter.Siemens.SiemensS7PLC((TcpClientEx)defalutDebugDriverPage.TcpClientPage.GetTcpClient(), SiemensEnum.S200);
+            defalutDebugDriverPage.Plc = _plc;
+            StateHasChanged();
+        }
+
+        base.OnAfterRender(firstRender);
+    }
+
+
+    public override string ToString()
+    {
+        return nameof(SiemensS7PLC);
+    }
+}

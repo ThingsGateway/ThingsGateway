@@ -1,0 +1,27 @@
+{
+  "unversionedId": "description",
+  "id": "description",
+  "title": "说明",
+  "description": "当前版本",
+  "source": "@site/docs/description.mdx",
+  "sourceDirName": ".",
+  "slug": "/",
+  "permalink": "/thingsgateway-docs/docs/",
+  "draft": false,
+  "editUrl": "https://gitee.com/diego2098/ThingsGateway/tree/master/handbook/docs/description.mdx",
+  "tags": [],
+  "version": "current",
+  "lastUpdatedBy": "2248356998 qq.com",
+  "lastUpdatedAt": 1689499706,
+  "formattedLastUpdatedAt": "Jul 16, 2023",
+  "frontMatter": {
+    "id": "description",
+    "title": "说明",
+    "slug": "/"
+  },
+  "sidebar": "docs",
+  "next": {
+    "title": "历史更新",
+    "permalink": "/thingsgateway-docs/docs/upgrade"
+  }
+}

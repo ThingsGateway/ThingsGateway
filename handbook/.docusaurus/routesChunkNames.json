@@ -1,0 +1,182 @@
+{
+  "/thingsgateway-docs/search-ca8": {
+    "__comp": "1a4e3797",
+    "__context": {
+      "plugin": "25b34da0"
+    }
+  },
+  "/thingsgateway-docs/docs-8b2": {
+    "__comp": "1be78505",
+    "__context": {
+      "plugin": "e34e66ef"
+    },
+    "versionMetadata": "935f2afb"
+  },
+  "/thingsgateway-docs/docs/-ef3": {
+    "__comp": "17896441",
+    "content": "5137840a"
+  },
+  "/thingsgateway-docs/docs/backendlog-ecd": {
+    "__comp": "17896441",
+    "content": "74e9e182"
+  },
+  "/thingsgateway-docs/docs/collectdevice-e6c": {
+    "__comp": "17896441",
+    "content": "6b5f52c5"
+  },
+  "/thingsgateway-docs/docs/devicevariable-3ac": {
+    "__comp": "17896441",
+    "content": "5178350f"
+  },
+  "/thingsgateway-docs/docs/donate-f6f": {
+    "__comp": "17896441",
+    "content": "d22033f9"
+  },
+  "/thingsgateway-docs/docs/enterprise-71c": {
+    "__comp": "17896441",
+    "content": "f05a39b7"
+  },
+  "/thingsgateway-docs/docs/foundation/modbus-cb4": {
+    "__comp": "17896441",
+    "content": "6f635a3d"
+  },
+  "/thingsgateway-docs/docs/foundation/opcda-2c4": {
+    "__comp": "17896441",
+    "content": "9da45bac"
+  },
+  "/thingsgateway-docs/docs/foundation/opcua-a04": {
+    "__comp": "17896441",
+    "content": "ab798fff"
+  },
+  "/thingsgateway-docs/docs/foundation/s7-98e": {
+    "__comp": "17896441",
+    "content": "0af5a0e2"
+  },
+  "/thingsgateway-docs/docs/hardwareinfo-108": {
+    "__comp": "17896441",
+    "content": "28e31f38"
+  },
+  "/thingsgateway-docs/docs/hisalarm-4f4": {
+    "__comp": "17896441",
+    "content": "43dc5fb8"
+  },
+  "/thingsgateway-docs/docs/hisdata-327": {
+    "__comp": "17896441",
+    "content": "40146f88"
+  },
+  "/thingsgateway-docs/docs/linuxrelease-b31": {
+    "__comp": "17896441",
+    "content": "8ced3e65"
+  },
+  "/thingsgateway-docs/docs/memoryvariable-a47": {
+    "__comp": "17896441",
+    "content": "3546ab43"
+  },
+  "/thingsgateway-docs/docs/otherconfig-818": {
+    "__comp": "17896441",
+    "content": "76f0de82"
+  },
+  "/thingsgateway-docs/docs/otherpage-98d": {
+    "__comp": "17896441",
+    "content": "7a4cde18"
+  },
+  "/thingsgateway-docs/docs/pluginabcip-913": {
+    "__comp": "17896441",
+    "content": "e80564fa"
+  },
+  "/thingsgateway-docs/docs/pluginconfig-5cf": {
+    "__comp": "17896441",
+    "content": "ca43e8da"
+  },
+  "/thingsgateway-docs/docs/plugindebug-e87": {
+    "__comp": "17896441",
+    "content": "56125fde"
+  },
+  "/thingsgateway-docs/docs/pluginkafka-6c4": {
+    "__comp": "17896441",
+    "content": "4c99e3f0"
+  },
+  "/thingsgateway-docs/docs/pluginmodbus-939": {
+    "__comp": "17896441",
+    "content": "a426a3b5"
+  },
+  "/thingsgateway-docs/docs/pluginmodbusserver-f24": {
+    "__comp": "17896441",
+    "content": "8e930223"
+  },
+  "/thingsgateway-docs/docs/pluginmqttclient-8e4": {
+    "__comp": "17896441",
+    "content": "a81fc991"
+  },
+  "/thingsgateway-docs/docs/pluginmqttserver-c02": {
+    "__comp": "17896441",
+    "content": "f22f9b4f"
+  },
+  "/thingsgateway-docs/docs/pluginopcdaclient-42a": {
+    "__comp": "17896441",
+    "content": "e86f980e"
+  },
+  "/thingsgateway-docs/docs/pluginopcuaclient-37e": {
+    "__comp": "17896441",
+    "content": "abad1c1c"
+  },
+  "/thingsgateway-docs/docs/pluginopcuaserver-3c2": {
+    "__comp": "17896441",
+    "content": "196f2029"
+  },
+  "/thingsgateway-docs/docs/pluginrabbitmqclient-a46": {
+    "__comp": "17896441",
+    "content": "49c09695"
+  },
+  "/thingsgateway-docs/docs/pluginsiemens-ff9": {
+    "__comp": "17896441",
+    "content": "8fb2cb35"
+  },
+  "/thingsgateway-docs/docs/pluginvigorvs-725": {
+    "__comp": "17896441",
+    "content": "daef9133"
+  },
+  "/thingsgateway-docs/docs/realalarm-408": {
+    "__comp": "17896441",
+    "content": "7bbbeda9"
+  },
+  "/thingsgateway-docs/docs/realdata-ff7": {
+    "__comp": "17896441",
+    "content": "637a4551"
+  },
+  "/thingsgateway-docs/docs/release-1df": {
+    "__comp": "17896441",
+    "content": "85214b50"
+  },
+  "/thingsgateway-docs/docs/rpclog-88d": {
+    "__comp": "17896441",
+    "content": "6a68bc41"
+  },
+  "/thingsgateway-docs/docs/runtimestate-907": {
+    "__comp": "17896441",
+    "content": "5f324ac5"
+  },
+  "/thingsgateway-docs/docs/startguide-764": {
+    "__comp": "17896441",
+    "content": "8aa4b8ad"
+  },
+  "/thingsgateway-docs/docs/upgrade-719": {
+    "__comp": "17896441",
+    "content": "4c79e569"
+  },
+  "/thingsgateway-docs/docs/uploaddevice-067": {
+    "__comp": "17896441",
+    "content": "2bc68b86"
+  },
+  "/thingsgateway-docs/docs/windowsrelease-22f": {
+    "__comp": "17896441",
+    "content": "e58d351b"
+  },
+  "/thingsgateway-docs/-fc9": {
+    "__comp": "c4f5d8e4",
+    "__context": {
+      "plugin": "c776f548"
+    },
+    "config": "5e9f5e1a"
+  }
+}

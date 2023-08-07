@@ -1,0 +1,104 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ThingsGateway.Kafka</name>
+    </assembly>
+    <members>
+        <member name="T:ThingsGateway.Kafka.KafkaProducer">
+            <summary>
+            Kafka消息生产
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Kafka.KafkaProducer.DriverDebugUIType">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.Kafka.KafkaProducer.DriverPropertys">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.Kafka.KafkaProducer.UploadVariables">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.Kafka.KafkaProducer.VariablePropertys">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Kafka.KafkaProducer.AfterStopAsync">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Kafka.KafkaProducer.BeforStartAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Kafka.KafkaProducer.ExecuteAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Kafka.KafkaProducer.IsConnected">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Kafka.KafkaProducer.Dispose(System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Kafka.KafkaProducer.Init(ThingsGateway.Application.UploadDeviceRunTime)">
+            <summary>
+            初始化
+            </summary>
+            <param name="device"></param>
+        </member>
+        <member name="T:ThingsGateway.Kafka.KafkaProducerProperty">
+            <summary>
+            kafka 生产者属性
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Kafka.KafkaProducerProperty.BootStrapServers">
+            <summary>
+            服务地址
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Kafka.KafkaProducerProperty.DeviceTopic">
+            <summary>
+            设备主题
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Kafka.KafkaProducerProperty.VariableTopic">
+            <summary>
+            变量主题
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Kafka.KafkaProducerProperty.ClientId">
+            <summary>
+            客户端ID
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Kafka.KafkaProducerProperty.TimeOut">
+            <summary>
+            发布超时时间
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Kafka.KafkaProducerProperty.SplitSize">
+            <summary>
+            列表分割大小
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Kafka.KafkaProducerProperty.CacheMaxCount">
+            <summary>
+            缓存最大条数
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Kafka.KafkaProducerProperty.CycleInterval">
+            <summary>
+            线程循环间隔
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Kafka.KafkaProducerVariableProperty">
+            <summary>
+            kafka 生产者可变属性
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Kafka.KafkaProducerVariableProperty.Enable">
+            <summary>
+            启用
+            </summary>
+        </member>
+    </members>
+</doc>

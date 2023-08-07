@@ -1,0 +1,162 @@
+﻿@*
+//------------------------------------------------------------------------------
+//  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
+//  此代码版权（除特别声明外的代码）归作者本人Diego所有
+//  源代码使用协议遵循本仓库的开源协议及附加协议
+//  Gitee源代码仓库：https://gitee.com/diego2098/ThingsGateway
+//  Github源代码仓库：https://github.com/kimdiego2098/ThingsGateway
+//  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
+//  QQ群：605534569
+//------------------------------------------------------------------------------
+*@
+
+@page "/gatewayconfig/config"
+@using System.Linq.Expressions;
+@using Masa.Blazor
+@using Microsoft.AspNetCore.Authorization;
+@using ThingsGateway.Admin.Application;
+@using ThingsGateway.Admin.Blazor.Core;
+@using ThingsGateway.Admin.Blazor;
+@using ThingsGateway.Admin.Core;
+@using ThingsGateway.Application;
+
+@inject IConfigService ConfigService
+@namespace ThingsGateway.Blazor
+@attribute [Authorize]
+@inject UserResoures UserResoures
+@inherits BaseComponentBase
+@layout MainLayout
+<MCard Height=@("100%") Elevation="1" Class="pa-2">
+
+    <MTabs @bind-Value="tab">
+        <MTab Style="height:50px;" Value="1">
+            报警转储配置
+        </MTab>
+        <MTab Style="height:50px;" Value="2">
+            历史数据配置
+        </MTab>
+    </MTabs>
+
+    <MTabsItems Value="tab">
+        <MTabItem Value="1">
+            @if (tab == 1)
+            {
+
+                <MCard Style=@($"height: calc(100vh - {BlazorResourceConst.DefaultHeight+100}px);overflow-y:auto")
+                   Flat Class="ml-2 my-4">
+                    <MRow NoGutters>
+                    @foreach (var item in _alarmConfig)
+                        {
+                            switch (item.ConfigKey)
+                            {
+                                case ThingsGatewayConfigConst.Config_Alarm_ConnStr:
+                                    <MCol Class="pa-2 px-4" Md=12 Cols="12">
+                                        <MSubheader Class="mt-4 font-weight-black"> @item.Remark</MSubheader>
+                                        <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@item.ConfigValue />
+                                    </MCol>
+                                    break;
+                                case ThingsGatewayConfigConst.Config_Alarm_DbType:
+                                    <MCol Class="pa-2 px-4" Md=12 Cols="12">
+                                        <MSubheader Class="mt-4 font-weight-black"> @item.Remark</MSubheader>
+                                        <MSelect @bind-Value="item.ConfigValue" Outlined
+                                                 Items=@(typeof(SqlDbType).GetEnumList()) Clearable
+                                                 MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
+                                                 ItemText=@((u) =>u.des) ItemValue=@(u =>u.name)
+                                                 HideDetails="true" Height="30" Dense>
+                                    </MSelect>
+                                </MCol>
+                                    break;
+                                case ThingsGatewayConfigConst.Config_Alarm_Enable:
+                                    <MCol Class="pa-2 px-4" Md=12 Cols="12">
+                                        <MSubheader Class="mt-4 font-weight-black"> @item.Remark</MSubheader>
+                                        <MSelect @bind-Value=@item.ConfigValue Outlined
+                                                 Items=@(new List<bool>(){true,false}) Clearable
+                                                 MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
+                                                 ItemText=@((u) =>u.ToString()) ItemValue=@(u =>u.ToString())
+                                                 HideDetails=@("auto") Height="30" Dense>
+                                    </MSelect>
+
+                                </MCol>
+                                    break;
+                                default:
+                                    <MCol Class="pa-2 px-4" Md=3 Cols="12">
+                                        <MSubheader Class="mt-4 font-weight-black"> @item.Remark</MSubheader>
+                                        <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@item.ConfigValue />
+                                    </MCol>
+                                    break;
+                            }
+
+                        }
+                    </MRow>
+                    <MCardActions>
+                        <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("gatewayalarmconfig")) Class="mt-8" OnClick=OnAlarmSaveAsync Color="primary">
+                            保存
+                        </MButton>
+                    </MCardActions>
+                </MCard>
+            }
+        </MTabItem>
+        <MTabItem Value="2">
+            @if (tab == 2)
+            {
+                <MCard Style=@($"height: calc(100vh - {BlazorResourceConst.DefaultHeight+100}px);overflow-y:auto")
+                   Flat Class="ml-2 my-4">
+                    <MRow NoGutters>
+                    @foreach (var item in _hisConfig)
+                        {
+                            switch (item.ConfigKey)
+                            {
+                                case ThingsGatewayConfigConst.Config_His_ConnStr:
+                                    <MCol Class="pa-2 px-4" Md=12 Cols="12">
+                                        <MSubheader Class="mt-4 font-weight-black"> @item.Remark</MSubheader>
+                                        <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@item.ConfigValue />
+                                    </MCol>
+                                    break;
+                                case ThingsGatewayConfigConst.Config_His_DbType:
+                                    <MCol Class="pa-2 px-4" Md=12 Cols="12">
+                                        <MSubheader Class="mt-4 font-weight-black"> @item.Remark</MSubheader>
+                                        <MSelect @bind-Value="item.ConfigValue" Outlined
+                                                 Items=@(typeof(HisDbType).GetEnumList()) Clearable
+                                                 MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
+                                                 ItemText=@((u) =>u.des) ItemValue=@(u =>u.name)
+                                                 HideDetails="true" Height="30" Dense>
+                                    </MSelect>
+                                </MCol>
+                                    break;
+                                case ThingsGatewayConfigConst.Config_His_Enable:
+                                    <MCol Class="pa-2 px-4" Md=12 Cols="12">
+                                        <MSubheader Class="mt-4 font-weight-black"> @item.Remark</MSubheader>
+                                        <MSelect @bind-Value=@item.ConfigValue Outlined
+                                                 Items=@(new List<bool>(){true,false}) Clearable
+                                                 MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
+                                                 ItemText=@((u) =>u.ToString()) ItemValue=@(u =>u.ToString())
+                                                 HideDetails=@("auto") Height="30" Dense>
+                                    </MSelect>
+
+                                </MCol>
+                                    break;
+                                default:
+                                    <MCol Class="pa-2 px-4" Md=3 Cols="12">
+                                        <MSubheader Class="mt-4 font-weight-black"> @item.Remark</MSubheader>
+                                        <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@item.ConfigValue />
+                                    </MCol>
+                                    break;
+                            }
+
+                        }
+                    </MRow>
+                    <MCardActions>
+                        <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("gatewayhisconfig")) Class="mt-8" OnClick=OnHisSaveAsync Color="primary">
+                            保存
+                        </MButton>
+                    </MCardActions>
+                </MCard>
+            }
+        </MTabItem>
+
+    </MTabsItems>
+
+</MCard>
+
+
+

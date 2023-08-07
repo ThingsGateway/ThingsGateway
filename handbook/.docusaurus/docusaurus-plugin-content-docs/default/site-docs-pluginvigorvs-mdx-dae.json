@@ -1,0 +1,30 @@
+{
+  "unversionedId": "pluginvigorvs",
+  "id": "pluginvigorvs",
+  "title": "丰炜VS系列采集插件",
+  "description": "一、设备扩展属性",
+  "source": "@site/docs/pluginvigorvs.mdx",
+  "sourceDirName": ".",
+  "slug": "/pluginvigorvs",
+  "permalink": "/thingsgateway-docs/docs/pluginvigorvs",
+  "draft": false,
+  "editUrl": "https://gitee.com/diego2098/ThingsGateway/tree/master/handbook/docs/pluginvigorvs.mdx",
+  "tags": [],
+  "version": "current",
+  "lastUpdatedBy": "2248356998 qq.com",
+  "lastUpdatedAt": 1689499706,
+  "formattedLastUpdatedAt": "Jul 16, 2023",
+  "frontMatter": {
+    "id": "pluginvigorvs",
+    "title": "丰炜VS系列采集插件"
+  },
+  "sidebar": "docs",
+  "previous": {
+    "title": "S7采集插件",
+    "permalink": "/thingsgateway-docs/docs/pluginsiemens"
+  },
+  "next": {
+    "title": "罗克韦尔CIP协议采集插件",
+    "permalink": "/thingsgateway-docs/docs/pluginabcip"
+  }
+}

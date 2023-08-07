@@ -1,0 +1,27 @@
+{
+  "unversionedId": "foundation/s7",
+  "id": "foundation/s7",
+  "title": "Siemens S7",
+  "description": "待更新",
+  "source": "@site/docs/foundation/s7.mdx",
+  "sourceDirName": "foundation",
+  "slug": "/foundation/s7",
+  "permalink": "/thingsgateway-docs/docs/foundation/s7",
+  "draft": false,
+  "editUrl": "https://gitee.com/diego2098/ThingsGateway/tree/master/handbook/docs/foundation/s7.mdx",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "id": "s7",
+    "title": "Siemens S7"
+  },
+  "sidebar": "docs",
+  "previous": {
+    "title": "Modbus",
+    "permalink": "/thingsgateway-docs/docs/foundation/modbus"
+  },
+  "next": {
+    "title": "OPCDAClient",
+    "permalink": "/thingsgateway-docs/docs/foundation/opcda"
+  }
+}
