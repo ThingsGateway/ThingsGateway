@@ -18,4 +18,10 @@
 		<PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="7.0.9" />
 
 	</ItemGroup>
+	
+	<ItemGroup>
+	  <Content Update="wwwroot\**">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	</ItemGroup>
 </Project>

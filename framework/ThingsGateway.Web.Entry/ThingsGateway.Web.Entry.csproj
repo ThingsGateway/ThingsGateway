@@ -42,13 +42,12 @@
 	  <Content Update="pm2-windows.json">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </Content>
-	  <Content Update="wwwroot\favicon.ico">
-	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-	  </Content>
-	  <Content Update="wwwroot\favicon.png">
-	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-	  </Content>
 	</ItemGroup>
 
+	<ItemGroup>
+		<Content Update="wwwroot\**">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
 	
 </Project>
