@@ -1196,19 +1196,19 @@
             系统默认使用的当前时间
             </summary>
         </member>
+        <member name="M:ThingsGateway.Admin.Core.SysDateTimeExtensions.ToDefaultDateTimeFormat(System.DateTime@,System.TimeSpan)">
+            <summary>
+            返回yyyy-MM-dd HH:mm:ss:fff zz时间格式字符串
+            </summary>
+        </member>
         <member name="M:ThingsGateway.Admin.Core.SysDateTimeExtensions.ToDefaultDateTimeFormat(System.DateTime@)">
             <summary>
             返回yyyy-MM-dd HH:mm:ss:fff zz时间格式字符串
             </summary>
         </member>
-        <member name="M:ThingsGateway.Admin.Core.SysDateTimeExtensions.ToDefaultDateTimeFormat(System.DateTimeOffset@)">
+        <member name="M:ThingsGateway.Admin.Core.SysDateTimeExtensions.ToFileDateTimeFormat(System.DateTime@)">
             <summary>
             返回yyyy-MM-dd HH:mm:ss:fff zz时间格式字符串
-            </summary>
-        </member>
-        <member name="M:ThingsGateway.Admin.Core.SysDateTimeExtensions.ToFileDateTimeFormat(System.DateTimeOffset@)">
-            <summary>
-            返回yyyy-MM-dd HH-mm-ss-fff zz时间格式字符串
             </summary>
         </member>
         <member name="M:ThingsGateway.Admin.Core.SysDateTimeExtensions.GetDiffTime(System.DateTime@,System.DateTime@)">
@@ -1228,12 +1228,6 @@
             <returns>时间差</returns>
         </member>
         <member name="M:ThingsGateway.Admin.Core.SysDateTimeExtensions.ToLong(System.DateTime,System.Int64)">
-            <summary>
-            ToLong
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:ThingsGateway.Admin.Core.SysDateTimeExtensions.ToLong(System.DateTimeOffset,System.Int64)">
             <summary>
             ToLong
             </summary>

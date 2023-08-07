@@ -75,7 +75,7 @@ public class SysVisitLog : BaseEntity
     ///</summary>
     [SugarColumn(ColumnName = "OpTime", ColumnDescription = "操作时间")]
     [DataTable(Order = 8, IsShow = true, Sortable = true, DefaultFilter = false)]
-    public DateTimeOffset OpTime { get; set; }
+    public DateTime OpTime { get; set; }
 
     /// <summary>
     /// 验证Id

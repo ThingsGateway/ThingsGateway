@@ -24,7 +24,7 @@ public class RpcLog : PrimaryIdEntity
     /// </summary>
     [SugarColumn(ColumnName = "LogTime", ColumnDescription = "日志时间", IsNullable = false)]
     [DataTable(Order = 1, IsShow = true, Sortable = true, CellClass = " table-text-truncate ")]
-    public DateTimeOffset LogTime { get; set; }
+    public DateTime LogTime { get; set; }
 
     /// <summary>
     /// 操作源

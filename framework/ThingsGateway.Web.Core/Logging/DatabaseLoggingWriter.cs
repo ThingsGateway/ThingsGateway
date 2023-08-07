@@ -37,7 +37,7 @@ public class DatabaseLoggingWriter : IDatabaseLoggingWriter
         //转成实体
         var loggingMonitor = jsonString.ToJsonWithT<LoggingMonitorJson>();
         //日志时间赋值
-        loggingMonitor.LogDateTime = logMsg.LogDateTime.ToUniversalTime();
+        loggingMonitor.LogDateTime = logMsg.LogDateTime;
         {
             var operation = logMsg.Context.Get(LoggingConst.Operation).ToString();//获取操作名称
             var client = (ClientInfo)logMsg.Context.Get(LoggingConst.Client);//获取客户端信息
@@ -102,7 +102,7 @@ public class DatabaseLoggingWriter : IDatabaseLoggingWriter
             OpIp = loggingMonitor.RemoteIPv4,
             OpBrowser = clientInfo.UA.Family + clientInfo.UA.Major,
             OpOs = clientInfo.OS.Family + clientInfo.OS.Major,
-            OpTime = loggingMonitor.LogDateTime,
+            OpTime = loggingMonitor.LogDateTime.LocalDateTime,
             OpAccount = opAccount,
             ReqMethod = loggingMonitor.HttpMethod,
             ReqUrl = path,
@@ -179,7 +179,7 @@ public class DatabaseLoggingWriter : IDatabaseLoggingWriter
             OpIp = loggingMonitor.RemoteIPv4,
             OpBrowser = clientInfo.UA.Family + clientInfo.UA.Major,
             OpOs = clientInfo.OS.Family + clientInfo.OS.Major,
-            OpTime = loggingMonitor.LogDateTime,
+            OpTime = loggingMonitor.LogDateTime.LocalDateTime,
             OpAccount = opAccount,
             VerificatId = verificatId,
         };

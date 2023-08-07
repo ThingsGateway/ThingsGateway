@@ -21,26 +21,37 @@ namespace ThingsGateway.Admin.Core;
 public static class SysDateTimeExtensions
 {
     private static readonly DateTime _dt1970 = new(1970, 1, 1);
-    private static readonly DateTimeOffset _dto1970 = new(new DateTime(1970, 1, 1));
 
     /// <summary>
     /// 系统默认使用的当前时间
     /// </summary>
-    public static DateTimeOffset CurrentDateTime => DateTimeOffset.Now;
+    public static DateTime CurrentDateTime => DateTime.Now;
     /// <summary>
     /// 返回yyyy-MM-dd HH:mm:ss:fff zz时间格式字符串
     /// </summary>
-    public static string ToDefaultDateTimeFormat(this in DateTime dt) => dt.ToString("yyyy-MM-dd HH:mm:ss:fff zz");
-
+    public static string ToDefaultDateTimeFormat(this in DateTime dt, TimeSpan offset)
+    {
+        if(dt.Kind==DateTimeKind.Utc)
+            return new DateTimeOffset(dt.ToLocalTime(), offset).ToString("yyyy-MM-dd HH:mm:ss:fff zz");
+        else
+            return new DateTimeOffset(dt, offset).ToString("yyyy-MM-dd HH:mm:ss:fff zz");
+    }
     /// <summary>
     /// 返回yyyy-MM-dd HH:mm:ss:fff zz时间格式字符串
     /// </summary>
-    public static string ToDefaultDateTimeFormat(this in DateTimeOffset dt) => dt.ToString("yyyy-MM-dd HH:mm:ss:fff zz");
-
+    public static string ToDefaultDateTimeFormat(this in DateTime dt)
+    {
+        return dt.ToString("yyyy-MM-dd HH:mm:ss:fff zz");
+    }
     /// <summary>
-    /// 返回yyyy-MM-dd HH-mm-ss-fff zz时间格式字符串
+    /// 返回yyyy-MM-dd HH:mm:ss:fff zz时间格式字符串
     /// </summary>
-    public static string ToFileDateTimeFormat(this in DateTimeOffset dt) => dt.ToString("yyyy-MM-dd HH-mm-ss-fff zz");
+    public static string ToFileDateTimeFormat(this in DateTime dt)
+    {
+        return dt.ToString("yyyy-MM-dd HH-mm-ss-fff zz");
+    }
+    
+    
 
 
     /// <summary>
@@ -164,16 +175,6 @@ public static class SysDateTimeExtensions
         //// 先转UTC时间再相减，以得到绝对时间差
         //return (Int32)(dt.ToUniversalTime() - _dt1970).TotalSeconds;
         return (Int64)(value - _dt1970).TotalMilliseconds;
-
-    }
-    /// <summary>
-    /// ToLong
-    /// </summary>
-    /// <returns></returns>
-    public static long ToLong(this DateTimeOffset value, long defaultValue = 0)
-    {
-        // 特殊处理时间，转Unix毫秒
-        return value == DateTimeOffset.MinValue ? 0 : (Int64)(value - _dto1970).TotalMilliseconds;
 
     }
 

@@ -135,7 +135,7 @@ public class OpenApiAuthService : IOpenApiAuthService, ITransient
     {
         //获取verificat列表
         List<VerificatInfo> verificatInfos = await GetVerificatInfos(loginEvent.OpenApiUser.Id);
-        var verificatTimeout = loginEvent.DateTimeOffset.AddMinutes(loginEvent.Expire);
+        var verificatTimeout = loginEvent.DateTime.AddMinutes(loginEvent.Expire);
         //生成verificat信息
         var verificatInfo = new VerificatInfo
         {

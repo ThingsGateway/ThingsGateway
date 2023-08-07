@@ -42,7 +42,7 @@ public class AuthEventSubscriber : IEventSubscriber, ISingleton
         sysUser.LastLoginTime = sysUser.LatestLoginTime;
         sysUser.LatestLoginDevice = loginEvent.Device.ToString();
         sysUser.LatestLoginIp = loginEvent.Ip;
-        sysUser.LatestLoginTime = loginEvent.DateTimeOffset;
+        sysUser.LatestLoginTime = loginEvent.DateTime;
 
         #endregion 重新赋值属性,设置本次登录信息为最新的信息
 

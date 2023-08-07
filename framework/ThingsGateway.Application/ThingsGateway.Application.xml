@@ -184,7 +184,7 @@
             上次操作时间
             </summary>
         </member>
-        <member name="M:ThingsGateway.Application.TimerTick.IsTickHappen(System.DateTimeOffset)">
+        <member name="M:ThingsGateway.Application.TimerTick.IsTickHappen(System.DateTime)">
             <summary>
             是否触发时间刻度
             </summary>
@@ -1457,7 +1457,7 @@
             距上次成功时的读取失败次数,超过3次设备更新为离线，等于0时设备更新为在线
             </summary>
         </member>
-        <member name="M:ThingsGateway.Application.CollectDeviceRunTime.SetDeviceStatus(System.Nullable{System.DateTimeOffset},System.Nullable{System.Int32},System.String)">
+        <member name="M:ThingsGateway.Application.CollectDeviceRunTime.SetDeviceStatus(System.Nullable{System.DateTime},System.Nullable{System.Int32},System.String)">
             <summary>
             传入设备的状态信息
             </summary>
@@ -1559,7 +1559,7 @@
             地址参数，以;分割参数值
             </summary>
         </member>
-        <member name="M:ThingsGateway.Application.DeviceVariableMethodSource.CheckIfRequestAndUpdateTime(System.DateTimeOffset)">
+        <member name="M:ThingsGateway.Application.DeviceVariableMethodSource.CheckIfRequestAndUpdateTime(System.DateTime)">
             <summary>
             检测是否达到读取间隔
             </summary>
@@ -1601,7 +1601,7 @@
             最近一次值
             </summary>
         </member>
-        <member name="M:ThingsGateway.Application.DeviceVariableRunTime.SetValue(System.Object,System.DateTimeOffset)">
+        <member name="M:ThingsGateway.Application.DeviceVariableRunTime.SetValue(System.Object,System.DateTime)">
             <summary>
             设置变量值与时间，设置为null时只更改质量戳状态
             </summary>
@@ -1725,7 +1725,7 @@
             读取长度
             </summary>
         </member>
-        <member name="M:ThingsGateway.Application.DeviceVariableSourceRead.CheckIfRequestAndUpdateTime(System.DateTimeOffset)">
+        <member name="M:ThingsGateway.Application.DeviceVariableSourceRead.CheckIfRequestAndUpdateTime(System.DateTime)">
             <summary>
             检测是否达到读取间隔
             </summary>
@@ -1772,7 +1772,7 @@
             距上次成功时的读取失败次数,超过3次设备更新为离线，等于0时设备更新为在线
             </summary>
         </member>
-        <member name="M:ThingsGateway.Application.UploadDeviceRunTime.SetDeviceStatus(System.Nullable{System.DateTimeOffset},System.Nullable{System.Int32},System.String)">
+        <member name="M:ThingsGateway.Application.UploadDeviceRunTime.SetDeviceStatus(System.Nullable{System.DateTime},System.Nullable{System.Int32},System.String)">
             <summary>
             传入设备的状态信息
             </summary>
@@ -1951,7 +1951,7 @@
         </member>
         <member name="P:ThingsGateway.Application.DriverBase.DriverDebugUIType">
             <summary>
-            调试UI Type，继承实现<see cref="T:ThingsGateway.Application.DriverDebugUIBase"/>后，返回继承类的Type，如果不存在，返回null
+            调试UI Type，如果不存在，返回null
             </summary>
         </member>
         <member name="P:ThingsGateway.Application.DriverBase.DriverPlugin">
@@ -1994,78 +1994,6 @@
             <summary>
             底层日志输出
             </summary>
-        </member>
-        <member name="T:ThingsGateway.Application.DriverDebugUIBase">
-            <summary>
-            调试UI
-            </summary>
-        </member>
-        <member name="F:ThingsGateway.Application.DriverDebugUIBase.isDownExport">
-            <summary>
-            导出提示
-            </summary>
-        </member>
-        <member name="F:ThingsGateway.Application.DriverDebugUIBase.Messages">
-            <summary>
-            日志缓存
-            </summary>
-        </member>
-        <member name="P:ThingsGateway.Application.DriverDebugUIBase.Plc">
-            <summary>
-            默认读写设备
-            </summary>
-        </member>
-        <member name="P:ThingsGateway.Application.DriverDebugUIBase.Address">
-            <summary>
-            变量地址
-            </summary>
-        </member>
-        <member name="P:ThingsGateway.Application.DriverDebugUIBase.DataTypeEnum">
-            <summary>
-            数据类型
-            </summary>
-        </member>
-        <member name="P:ThingsGateway.Application.DriverDebugUIBase.JS">
-            <inheritdoc/>
-        </member>
-        <member name="P:ThingsGateway.Application.DriverDebugUIBase.WriteValue">
-            <summary>
-            写入值
-            </summary>
-        </member>
-        <member name="M:ThingsGateway.Application.DriverDebugUIBase.Dispose">
-            <inheritdoc/>
-        </member>
-        <member name="M:ThingsGateway.Application.DriverDebugUIBase.ReadAsync">
-            <inheritdoc/>
-        </member>
-        <member name="M:ThingsGateway.Application.DriverDebugUIBase.WriteAsync">
-            <inheritdoc/>
-        </member>
-        <member name="M:ThingsGateway.Application.DriverDebugUIBase.DownDeviceExportAsync(ThingsGateway.Application.CollectDevice)">
-            <summary>
-            导入设备
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:ThingsGateway.Application.DriverDebugUIBase.DownDeviceExportAsync(System.Collections.Generic.List{ThingsGateway.Application.DeviceVariable})">
-            <summary>
-            导入变量
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:ThingsGateway.Application.DriverDebugUIBase.DownDeviceMessageExportAsync(System.Collections.Generic.IEnumerable{System.String})">
-            <summary>
-            导出
-            </summary>
-            <param name="values"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ThingsGateway.Application.DriverDebugUIBase.LogOut(TouchSocket.Core.LogLevel,System.Object,System.String,System.Exception)">
-            <inheritdoc/>
-        </member>
-        <member name="M:ThingsGateway.Application.DriverDebugUIBase.OnInitialized">
-            <inheritdoc/>
         </member>
         <member name="T:ThingsGateway.Application.PluginSingletonService">
             <summary>

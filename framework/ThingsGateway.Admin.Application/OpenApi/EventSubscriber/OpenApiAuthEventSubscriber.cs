@@ -41,7 +41,7 @@ public class OpenApiAuthEventSubscriber : IEventSubscriber, ISingleton
         openApiUser.LastLoginTime = openApiUser.LatestLoginTime;
         openApiUser.LatestLoginDevice = loginEvent.Device.ToString();
         openApiUser.LatestLoginIp = loginEvent.Ip;
-        openApiUser.LatestLoginTime = loginEvent.DateTimeOffset;
+        openApiUser.LatestLoginTime = loginEvent.DateTime;
 
         #endregion 重新赋值属性,设置本次登录信息为最新的信息
 

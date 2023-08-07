@@ -54,7 +54,7 @@ public class OpenApiUser : BaseEntity
     ///</summary>
     [SugarColumn(ColumnName = "LastLoginTime", ColumnDescription = "上次登录时间", IsNullable = true)]
     [DataTable(Order = 10, IsShow = true, Sortable = true, DefaultFilter = true)]
-    public DateTimeOffset? LastLoginTime { get; set; }
+    public DateTime? LastLoginTime { get; set; }
 
     /// <summary>
     /// 最新登录设备
@@ -75,7 +75,7 @@ public class OpenApiUser : BaseEntity
     ///</summary>
     [SugarColumn(ColumnName = "LatestLoginTime", ColumnDescription = "最新登录时间", IsNullable = true)]
     [DataTable(Order = 7, IsShow = true, Sortable = true)]
-    public DateTimeOffset? LatestLoginTime { get; set; }
+    public DateTime? LatestLoginTime { get; set; }
 
     /// <summary>
     /// 密码

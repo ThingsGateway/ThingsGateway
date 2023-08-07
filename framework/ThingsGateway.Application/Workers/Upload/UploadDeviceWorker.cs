@@ -373,7 +373,7 @@ public class UploadDeviceWorker : BackgroundService
                     {
                         //超过30分钟，或者(初始化失败并超过10分钟)会重启
                         if (
-        (devcore.Device.ActiveTime != DateTimeOffset.MinValue
+        (devcore.Device.ActiveTime != DateTime.MinValue
         && devcore.Device.ActiveTime.AddMinutes(30) <= SysDateTimeExtensions.CurrentDateTime)
         || (devcore.IsInitSuccess == false && devcore.Device.ActiveTime.AddMinutes(10) <= SysDateTimeExtensions.CurrentDateTime)
         )

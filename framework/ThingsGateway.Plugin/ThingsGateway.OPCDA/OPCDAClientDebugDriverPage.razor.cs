@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
+using ThingsGateway.Admin.Blazor.Core;
 using ThingsGateway.Admin.Core;
 using ThingsGateway.Blazor;
 using ThingsGateway.Foundation.Adapter.OPCDA.Da;
@@ -70,7 +71,8 @@ public partial class OPCDAClientDebugDriverPage : IDisposable
 
         base.OnAfterRender(firstRender);
     }
-
+    [Inject]
+    private InitTimezone InitTimezone { get; set; }
     private void Add()
     {
         var tags = new Dictionary<string, List<OpcItem>>();
@@ -79,7 +81,7 @@ public partial class OPCDAClientDebugDriverPage : IDisposable
         var result = _plc.AddItems(tags);
         if (!result.IsSuccess)
         {
-            defalutDebugDriverPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Warning, SysDateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat() + " - " + result.Message));
+            defalutDebugDriverPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Warning, SysDateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset) + " - " + result.Message));
         }
     }
 
@@ -107,7 +109,7 @@ public partial class OPCDAClientDebugDriverPage : IDisposable
         }
         else
         {
-            defalutDebugDriverPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Warning, SysDateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat() + " - " + data.Message));
+            defalutDebugDriverPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Warning, SysDateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset) + " - " + data.Message));
         }
 
         return Task.CompletedTask;
@@ -119,7 +121,7 @@ public partial class OPCDAClientDebugDriverPage : IDisposable
 
     private void ValueOut(List<ItemReadResult> values)
     {
-        defalutDebugDriverPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Debug, SysDateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat() + " - " + values.ToJson()));
+        defalutDebugDriverPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Debug, SysDateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset) + " - " + values.ToJson()));
         if (defalutDebugDriverPage.Messages.Count > 2500)
         {
             defalutDebugDriverPage.Messages.Clear();
@@ -133,16 +135,16 @@ public partial class OPCDAClientDebugDriverPage : IDisposable
             var data = _plc.WriteItem(defalutDebugDriverPage.Address, defalutDebugDriverPage.WriteValue);
             if (data.IsSuccess)
             {
-                defalutDebugDriverPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Information, SysDateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat() + " - –¥»Î" + data.Message));
+                defalutDebugDriverPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Information, SysDateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset) + " - –¥»Î" + data.Message));
             }
             else
             {
-                defalutDebugDriverPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Warning, SysDateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat() + " - " + data.Message));
+                defalutDebugDriverPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Warning, SysDateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset) + " - " + data.Message));
             }
         }
         catch (Exception ex)
         {
-            defalutDebugDriverPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Error, SysDateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat() + " - " + "–¥»Î ß∞‹£∫" + ex.Message));
+            defalutDebugDriverPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Error, SysDateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset) + " - " + "–¥»Î ß∞‹£∫" + ex.Message));
         }
 
         return Task.CompletedTask;

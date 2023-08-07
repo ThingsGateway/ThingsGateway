@@ -451,7 +451,7 @@ public class HistoryValueMapper : IRegister
     {
         config.ForType<DeviceVariableRunTime, HistoryValue>()
             .Map(dest => dest.Value, (src) => ValueReturn(src))
-            .Map(dest => dest.CollectTime, (src) => src.CollectTime.UtcDateTime);
+            .Map(dest => dest.CollectTime, (src) => src.CollectTime.ToUniversalTime());//注意sqlsugar插入时无时区，直接utc时间
     }
 
     private static object ValueReturn(DeviceVariableRunTime src)
