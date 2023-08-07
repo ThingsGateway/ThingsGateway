@@ -1,0 +1,104 @@
+﻿@*
+//------------------------------------------------------------------------------
+//  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
+//  此代码版权（除特别声明外的代码）归作者本人Diego所有
+//  源代码使用协议遵循本仓库的开源协议及附加协议
+//  Gitee源代码仓库：https://gitee.com/diego2098/ThingsGateway
+//  Github源代码仓库：https://github.com/kimdiego2098/ThingsGateway
+//  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
+//  QQ群：605534569
+//------------------------------------------------------------------------------
+*@
+
+@page "/usercenter"
+@layout MainLayout
+@inherits BaseComponentBase
+@attribute [Authorize]
+@attribute [IgnoreRolePermission]
+@namespace ThingsGateway.Admin.Blazor
+@using Microsoft.AspNetCore.Authorization;
+@using ThingsGateway.Admin.Application;
+@inject UserResoures UserResoures
+<MCard Elevation="1" Class="ma-3">
+    <MCardSubtitle Class="text-subtitle-1">
+        个人信息
+    </MCardSubtitle>
+    <MDivider></MDivider>
+    <MRow Align="AlignTypes.End" Class="ml-3 mt-6">
+        <MLabel Class="mx-4">@_updateInfoInput.Description(it=>it.Account)</MLabel>
+        <MLabel>@UserResoures.CurrentUser?.Account</MLabel>
+    </MRow>
+    <MRow Align="AlignTypes.End" Class="ml-3 mt-2">
+        <MLabel Class="mx-4">@_updateInfoInput.Description(it=>it.Phone)</MLabel>
+        <MTextField Style="max-width:220px;" Class="mt-3 mr-3" Dense HideDetails="true"
+        @bind-Value=@_updateInfoInput.Phone />
+    </MRow>
+
+    <MRow Align="AlignTypes.End" Class="ml-3 mt-2">
+        <MLabel Class="mx-4">@_updateInfoInput.Description(it=>it.Email)</MLabel>
+        <MTextField Style="max-width:220px;" Class="mt-3 mr-3" Dense HideDetails="true"
+        @bind-Value=@_updateInfoInput.Email />
+    </MRow>
+    <MCardActions>
+        <MButton Class="ml-2 mt-4 mb-2" OnClick=OnUpdateUserInfoAsync Color="primary">
+            保存
+        </MButton>
+    </MCardActions>
+</MCard>
+
+<MCard Elevation="1" Class="ma-3">
+    <MCardSubtitle Class="text-subtitle-1">
+        个人主页设置
+    </MCardSubtitle>
+    <MDivider></MDivider>
+    <MSelect Class="ml-3 mt-6" Items="UserResoures.WorkbenchOutputs" Style="max-width:400px;"
+    @bind-Value="@DefaultMenuId"
+             ItemText="u => u.Title"
+             ItemValue="u => u.Id"
+             Dense
+             Outlined></MSelect>
+
+    <MCardActions>
+        <MButton Class="ml-2 mt-4 mb-2" OnClick=OnDefaultRazorSaveAsync Color="primary">
+            保存
+        </MButton>
+    </MCardActions>
+</MCard>
+
+<MCard Elevation="1" Class="ma-3">
+    <MCardSubtitle Class="text-subtitle-1">
+        修改密码
+    </MCardSubtitle>
+    <MDivider></MDivider>
+    <MForm Model="_passwordInfoInput" EnableValidation Class="ml-3 mt-6">
+
+        <MTextField Label="@_passwordInfoInput.Description(it=>it.OldPassword)" Type="password"
+                    Style="max-width:220px;" Class=" mr-3" Dense @bind-Value=@_passwordInfoInput.OldPassword />
+        <MTextField Label="@_passwordInfoInput.Description(it=>it.NewPassword)" Type="password"
+                    Style="max-width:220px;" Class=" mr-3" Dense @bind-Value=@_passwordInfoInput.NewPassword />
+        <MTextField Label="@_passwordInfoInput.Description(it=>it.ConfirmPassword)" Type="password"
+                    Style="max-width:220px;" Class=" mr-3" Dense @bind-Value=@_passwordInfoInput.ConfirmPassword />
+        <MButton Type="submit" Class="ml-2 mt-4 mb-2" OnClick=@(()=>OnUpdatePasswordInfoAsync(context)) Color="primary"> 保存</MButton>
+    </MForm>
+</MCard>
+
+
+
+<MCard Elevation="1" Class="ma-3">
+    <MCardSubtitle Class="text-subtitle-1">
+        快捷方式
+    </MCardSubtitle>
+    <MDivider></MDivider>
+    <MRow Align="AlignTypes.Center">
+        <MTreeview Class="ml-3 mt-6" Dense OpenAll TItem="SysResource" TKey="long" Selectable @bind-Value="_menusChoice"
+                   OpenOnClick Items="UserResoures.Menus" ItemText="r=>r.Title" ItemChildren="r=>r.Children" ItemKey=@(r=>r.Id) />
+    </MRow>
+
+    <MCardActions>
+        <MButton Class="ml-2 mt-4 mb-2" OnClick=OnShortcutSaveAsync Color="primary">
+            保存
+        </MButton>
+    </MCardActions>
+</MCard>
+
+

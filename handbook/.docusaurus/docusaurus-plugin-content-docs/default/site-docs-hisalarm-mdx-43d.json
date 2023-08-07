@@ -1,0 +1,30 @@
+{
+  "unversionedId": "hisalarm",
+  "id": "hisalarm",
+  "title": "历史报警",
+  "description": "一、页面功能介绍",
+  "source": "@site/docs/hisalarm.mdx",
+  "sourceDirName": ".",
+  "slug": "/hisalarm",
+  "permalink": "/thingsgateway-docs/docs/hisalarm",
+  "draft": false,
+  "editUrl": "https://gitee.com/diego2098/ThingsGateway/tree/master/handbook/docs/hisalarm.mdx",
+  "tags": [],
+  "version": "current",
+  "lastUpdatedBy": "2248356998 qq.com",
+  "lastUpdatedAt": 1689499706,
+  "formattedLastUpdatedAt": "Jul 16, 2023",
+  "frontMatter": {
+    "id": "hisalarm",
+    "title": "历史报警"
+  },
+  "sidebar": "docs",
+  "previous": {
+    "title": "历史数据",
+    "permalink": "/thingsgateway-docs/docs/hisdata"
+  },
+  "next": {
+    "title": "RPC日志",
+    "permalink": "/thingsgateway-docs/docs/rpclog"
+  }
+}

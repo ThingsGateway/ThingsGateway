@@ -1,0 +1,30 @@
+{
+  "unversionedId": "pluginmqttserver",
+  "id": "pluginmqttserver",
+  "title": "MqttServer",
+  "description": "一、设备扩展属性",
+  "source": "@site/docs/pluginmqttserver.mdx",
+  "sourceDirName": ".",
+  "slug": "/pluginmqttserver",
+  "permalink": "/thingsgateway-docs/docs/pluginmqttserver",
+  "draft": false,
+  "editUrl": "https://gitee.com/diego2098/ThingsGateway/tree/master/handbook/docs/pluginmqttserver.mdx",
+  "tags": [],
+  "version": "current",
+  "lastUpdatedBy": "Kimdiego2098",
+  "lastUpdatedAt": 1689760951,
+  "formattedLastUpdatedAt": "Jul 19, 2023",
+  "frontMatter": {
+    "id": "pluginmqttserver",
+    "title": "MqttServer"
+  },
+  "sidebar": "docs",
+  "previous": {
+    "title": "ModbusServer",
+    "permalink": "/thingsgateway-docs/docs/pluginmodbusserver"
+  },
+  "next": {
+    "title": "MqttClient",
+    "permalink": "/thingsgateway-docs/docs/pluginmqttclient"
+  }
+}

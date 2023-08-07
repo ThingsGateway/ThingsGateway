@@ -1,0 +1,30 @@
+{
+  "unversionedId": "pluginabcip",
+  "id": "pluginabcip",
+  "title": "罗克韦尔CIP协议采集插件",
+  "description": "一、设备扩展属性",
+  "source": "@site/docs/pluginabcip.mdx",
+  "sourceDirName": ".",
+  "slug": "/pluginabcip",
+  "permalink": "/thingsgateway-docs/docs/pluginabcip",
+  "draft": false,
+  "editUrl": "https://gitee.com/diego2098/ThingsGateway/tree/master/handbook/docs/pluginabcip.mdx",
+  "tags": [],
+  "version": "current",
+  "lastUpdatedBy": "2248356998 qq.com",
+  "lastUpdatedAt": 1689499706,
+  "formattedLastUpdatedAt": "Jul 16, 2023",
+  "frontMatter": {
+    "id": "pluginabcip",
+    "title": "罗克韦尔CIP协议采集插件"
+  },
+  "sidebar": "docs",
+  "previous": {
+    "title": "丰炜VS系列采集插件",
+    "permalink": "/thingsgateway-docs/docs/pluginvigorvs"
+  },
+  "next": {
+    "title": "OPCUAServer",
+    "permalink": "/thingsgateway-docs/docs/pluginopcuaserver"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "unversionedId": "pluginrabbitmqclient",
+  "id": "pluginrabbitmqclient",
+  "title": "RabbitMQClient",
+  "description": "一、设备扩展属性",
+  "source": "@site/docs/pluginrabbitmqclient.mdx",
+  "sourceDirName": ".",
+  "slug": "/pluginrabbitmqclient",
+  "permalink": "/thingsgateway-docs/docs/pluginrabbitmqclient",
+  "draft": false,
+  "editUrl": "https://gitee.com/diego2098/ThingsGateway/tree/master/handbook/docs/pluginrabbitmqclient.mdx",
+  "tags": [],
+  "version": "current",
+  "lastUpdatedBy": "2248356998 qq.com",
+  "lastUpdatedAt": 1689499706,
+  "formattedLastUpdatedAt": "Jul 16, 2023",
+  "frontMatter": {
+    "id": "pluginrabbitmqclient",
+    "title": "RabbitMQClient"
+  },
+  "sidebar": "docs",
+  "previous": {
+    "title": "MqttClient",
+    "permalink": "/thingsgateway-docs/docs/pluginmqttclient"
+  },
+  "next": {
+    "title": "Kafka消息生产",
+    "permalink": "/thingsgateway-docs/docs/pluginkafka"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "unversionedId": "foundation/opcua",
+  "id": "foundation/opcua",
+  "title": "OPCUAClient",
+  "description": "待更新",
+  "source": "@site/docs/foundation/opcua.mdx",
+  "sourceDirName": "foundation",
+  "slug": "/foundation/opcua",
+  "permalink": "/thingsgateway-docs/docs/foundation/opcua",
+  "draft": false,
+  "editUrl": "https://gitee.com/diego2098/ThingsGateway/tree/master/handbook/docs/foundation/opcua.mdx",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "id": "opcua",
+    "title": "OPCUAClient"
+  },
+  "sidebar": "docs",
+  "previous": {
+    "title": "OPCDAClient",
+    "permalink": "/thingsgateway-docs/docs/foundation/opcda"
+  }
+}

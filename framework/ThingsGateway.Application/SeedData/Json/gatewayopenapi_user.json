@@ -1,0 +1,13 @@
+{
+  "RECORDS": [
+    {
+      "Id": "257755263002001",
+      "Account": "admin",
+      "Password": "7DA385A25A98388E",
+      "UserEnable": "true",
+      "SortCode": "1",
+      "IsDelete": "false",
+      "PermissionCodeList": [ "/openApi/collectInfo/collectDeviceList", "/openApi/collectInfo/collectVariableList", "/openApi/collectInfo/realAlarmList", "/openApi/rpc/writeDeviceMethod", "/openApi/rpc/writeVariables", "/openApi/rpc/configDeviceThread", "/openApi/rpc/upDeviceThread" ]
+    }
+  ]
+}

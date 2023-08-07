@@ -1,0 +1,30 @@
+{
+  "unversionedId": "pluginsiemens",
+  "id": "pluginsiemens",
+  "title": "S7采集插件",
+  "description": "一、设备扩展属性",
+  "source": "@site/docs/pluginsiemens.mdx",
+  "sourceDirName": ".",
+  "slug": "/pluginsiemens",
+  "permalink": "/thingsgateway-docs/docs/pluginsiemens",
+  "draft": false,
+  "editUrl": "https://gitee.com/diego2098/ThingsGateway/tree/master/handbook/docs/pluginsiemens.mdx",
+  "tags": [],
+  "version": "current",
+  "lastUpdatedBy": "2248356998 qq.com",
+  "lastUpdatedAt": 1689499706,
+  "formattedLastUpdatedAt": "Jul 16, 2023",
+  "frontMatter": {
+    "id": "pluginsiemens",
+    "title": "S7采集插件"
+  },
+  "sidebar": "docs",
+  "previous": {
+    "title": "OPCUA采集插件",
+    "permalink": "/thingsgateway-docs/docs/pluginopcuaclient"
+  },
+  "next": {
+    "title": "丰炜VS系列采集插件",
+    "permalink": "/thingsgateway-docs/docs/pluginvigorvs"
+  }
+}

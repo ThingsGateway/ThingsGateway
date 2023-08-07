@@ -1,0 +1,76 @@
+{
+  "RECORDS": [
+    {
+      "Id": "230000000000",
+      "Category": "THINGSGATEWAY_ALARMCONFIG_BASE",
+      "ConfigKey": "CONFIG_ALARM_ENABLE",
+      "ConfigValue": "False",
+      "Remark": "转储使能",
+      "SortCode": "1",
+      "IsDelete": false,
+      "UpdateTime": "2023-03-03 18:50:38.341",
+      "UpdateUser": "admin",
+      "UpdateUserId": "201725263002001"
+    },
+    {
+      "Id": "230000000001",
+      "Category": "THINGSGATEWAY_ALARMCONFIG_BASE",
+      "ConfigKey": "CONFIG_ALARM_DBTYPE",
+      "ConfigValue": "SqlServer",
+      "Remark": "数据库类型",
+      "SortCode": "2",
+      "IsDelete": false,
+      "UpdateTime": "2023-03-03 18:50:38.343",
+      "UpdateUser": "admin",
+      "UpdateUserId": "201725263002001"
+    },
+    {
+      "Id": "230000000002",
+      "Category": "THINGSGATEWAY_ALARMCONFIG_BASE",
+      "ConfigKey": "CONFIG_ALARM_CONNSTR",
+      "ConfigValue": "server=.;uid=sa;pwd=111111;database=test",
+      "Remark": "连接字符串",
+      "SortCode": "2",
+      "IsDelete": false,
+      "UpdateTime": "2023-03-03 18:50:38.343",
+      "UpdateUser": "admin",
+      "UpdateUserId": "201725263002001"
+    },
+    {
+      "Id": "240000000000",
+      "Category": "THINGSGATEWAY_HISCONFIG_BASE",
+      "ConfigKey": "CONFIG_HIS_ENABLE",
+      "ConfigValue": "False",
+      "Remark": "转储使能",
+      "SortCode": "1",
+      "IsDelete": false,
+      "UpdateTime": "2023-02-26 17:38:37.741",
+      "UpdateUser": "superAdmin",
+      "UpdateUserId": "212725263002001"
+    },
+    {
+      "Id": "240000000001",
+      "Category": "THINGSGATEWAY_HISCONFIG_BASE",
+      "ConfigKey": "CONFIG_HIS_DBTYPE",
+      "ConfigValue": "QuestDB",
+      "Remark": "数据库类型",
+      "SortCode": "2",
+      "IsDelete": false,
+      "UpdateTime": "2023-02-26 17:38:37.744",
+      "UpdateUser": "superAdmin",
+      "UpdateUserId": "212725263002001"
+    },
+    {
+      "Id": "240000000002",
+      "Category": "THINGSGATEWAY_HISCONFIG_BASE",
+      "ConfigKey": "CONFIG_HIS_CONNSTR",
+      "ConfigValue": "host=localhost;port=8812;username=admin;password=quest;database=qdb;ServerCompatibilityMode=NoTypeLoading;",
+      "Remark": "连接字符串",
+      "SortCode": "2",
+      "IsDelete": false,
+      "UpdateTime": "2023-02-26 17:38:37.745",
+      "UpdateUser": "superAdmin",
+      "UpdateUserId": "212725263002001"
+    }
+  ]
+}

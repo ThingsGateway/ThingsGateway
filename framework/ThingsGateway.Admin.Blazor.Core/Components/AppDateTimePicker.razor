@@ -1,0 +1,81 @@
+﻿@*
+//------------------------------------------------------------------------------
+//  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
+//  此代码版权（除特别声明外的代码）归作者本人Diego所有
+//  源代码使用协议遵循本仓库的开源协议及附加协议
+//  Gitee源代码仓库：https://gitee.com/diego2098/ThingsGateway
+//  Github源代码仓库：https://github.com/kimdiego2098/ThingsGateway
+//  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
+//  QQ群：605534569
+//------------------------------------------------------------------------------
+*@
+
+@namespace ThingsGateway.Admin.Blazor.Core
+@using BlazorComponent;
+@using Masa.Blazor
+@using ThingsGateway.Admin.Blazor.Core;
+@inherits BaseComponentBase
+
+<MDatePicker Value="_internalDate"
+             ValueChanged="DateChangedAsync"
+             TValue="DateOnly?"
+             NoTitle="NoTitle"
+             Max="@GetMaxDateOnly()"
+             Min="@GetMinDateOnly()">
+    <MRow Dense Align="AlignTypes.Center" Style="width: min-content; padding: 0 12px;">
+        <MCol Cols="4">
+            <MAutocomplete AutoSelectFirst Dense
+                           Label=时
+                           HideDetails="true"
+                           Value="InternalTime.Hour"
+                           ValueChanged="HourChangedAsync"
+                           TValue="int"
+                           TItem="int"
+                           TItemValue="int"
+                           Items="GetHours()"
+                           ItemText="h => h.ToString().PadLeft(2, '0')"
+                           ItemValue="h => h"
+                           MenuProps="menu => menu.MaxHeight = 176">
+            </MAutocomplete>
+        </MCol>
+        <MCol Cols="4">
+            <MAutocomplete AutoSelectFirst Dense
+                           Label=分
+                           HideDetails="true"
+                           Value="InternalTime.Minute"
+                           ValueChanged="MinuteChangedAsync"
+                           TValue="int"
+                           TItem="int"
+                           TItemValue="int"
+                           Items="GetMinutes()"
+                           ItemText="m => m.ToString().PadLeft(2, '0')"
+                           ItemValue="m => m"
+                           MenuProps="menu => menu.MaxHeight = 176">
+            </MAutocomplete>
+        </MCol>
+        <MCol Cols="4">
+            <MAutocomplete AutoSelectFirst Dense
+                           Label=秒
+                           HideDetails="true"
+                           Value="InternalTime.Second"
+                           ValueChanged="SecondChangedAsync"
+                           TValue="int"
+                           TItem="int"
+                           TItemValue="int"
+                           Items="GetSeconds()"
+                           ItemText="s => s.ToString().PadLeft(2, '0')"
+                           ItemValue="s => s"
+                           MenuProps="menu => menu.MaxHeight = 176">
+            </MAutocomplete>
+        </MCol>
+        <MCol Cols="12" Style="display: flex">
+            <MButton Text Color="primary" Disabled="GetNowClickState()" OnClick="OnNowAsync">此刻</MButton>
+            <MSpacer></MSpacer>
+            <MButton Text OnClick="OnResetAsync">重置</MButton>
+            @if (ChildContent != null)
+            {
+                @ChildContent
+            }
+        </MCol>
+    </MRow>
+</MDatePicker>

@@ -1,0 +1,30 @@
+{
+  "unversionedId": "windowsrelease",
+  "id": "windowsrelease",
+  "title": "发布",
+  "description": "一、PM2守护",
+  "source": "@site/docs/windowsrelease.mdx",
+  "sourceDirName": ".",
+  "slug": "/windowsrelease",
+  "permalink": "/thingsgateway-docs/docs/windowsrelease",
+  "draft": false,
+  "editUrl": "https://gitee.com/diego2098/ThingsGateway/tree/master/handbook/docs/windowsrelease.mdx",
+  "tags": [],
+  "version": "current",
+  "lastUpdatedBy": "2248356998 qq.com",
+  "lastUpdatedAt": 1689499706,
+  "formattedLastUpdatedAt": "Jul 16, 2023",
+  "frontMatter": {
+    "id": "windowsrelease",
+    "title": "发布"
+  },
+  "sidebar": "docs",
+  "previous": {
+    "title": "发布",
+    "permalink": "/thingsgateway-docs/docs/release"
+  },
+  "next": {
+    "title": "发布",
+    "permalink": "/thingsgateway-docs/docs/linuxrelease"
+  }
+}

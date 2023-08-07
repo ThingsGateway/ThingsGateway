@@ -1,0 +1,165 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ThingsGateway.OPCDA</name>
+    </assembly>
+    <members>
+        <member name="T:ThingsGateway.OPCDA.ImportVariable">
+            <summary>
+            导入变量
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.OPCDA.ImportVariable.PLC">
+            <summary>
+            opc对象
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.OPCDA.ImportVariable.GetImportVariableList">
+            <summary>
+            获取设备与变量列表
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.OPCDA.ImportVariable.OnInitializedAsync">
+            <inheritdoc/>
+        </member>
+        <member name="T:ThingsGateway.OPCDA.OPCDAClient">
+            <summary>
+            OPCDAClient
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.OPCDA.OPCDAClient.DriverDebugUIType">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.OPCDA.OPCDAClient.DriverPropertys">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.OPCDA.OPCDAClient.IsSupportRequest">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.OPCDA.OPCDAClient.ThingsGatewayBitConverter">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.OPCDA.OPCDAClient.AfterStopAsync">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.OPCDA.OPCDAClient.BeforStartAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.OPCDA.OPCDAClient.InitDataAdapter">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.OPCDA.OPCDAClient.IsConnected">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.OPCDA.OPCDAClient.LoadSourceRead(System.Collections.Generic.List{ThingsGateway.Application.DeviceVariableRunTime})">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.OPCDA.OPCDAClient.ReadSourceAsync(ThingsGateway.Application.DeviceVariableSourceRead,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.OPCDA.OPCDAClient.WriteValueAsync(ThingsGateway.Application.DeviceVariableRunTime,Newtonsoft.Json.Linq.JToken,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.OPCDA.OPCDAClient.Dispose(System.Boolean)">
+            <inheritdoc/>
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.OPCDA.OPCDAClient.Init(ThingsGateway.Application.CollectDeviceRunTime,System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.OPCDA.OPCDAClient.ReadAsync(System.String,System.Int32,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="T:ThingsGateway.OPCDA.OPCDAClientDebugDriverPage">
+            <summary>
+            OPCDA调试页面
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.OPCDA.OPCDAClientDebugDriverPage.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.OPCDA.OPCDAClientDebugDriverPage.ToString">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.OPCDA.OPCDAClientDebugDriverPage.OnAfterRender(System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="T:ThingsGateway.OPCDA.OPCDAClientPage">
+            <summary>
+            OPC
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.OPCDA.OPCDAClientPage.LogAction">
+            <summary>
+            日志输出
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.OPCDA.OPCDAClientPage.OPC">
+            <summary>
+            OPC
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.OPCDA.OPCDAClientPage.ValueAction">
+            <summary>
+            日志输出
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.OPCDA.OPCDAClientPage.Dispose">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.OPCDA.OPCDAClientPage.OnInitialized">
+            <inheritdoc/>
+        </member>
+        <member name="T:ThingsGateway.OPCDA.OPCDAClientProperty">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.OPCDA.OPCDAClientProperty.OPCIP">
+            <summary>
+            OPCIP
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.OPCDA.OPCDAClientProperty.OPCName">
+            <summary>
+            OPC名称
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.OPCDA.OPCDAClientProperty.ActiveSubscribe">
+            <summary>
+            激活订阅
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.OPCDA.OPCDAClientProperty.CheckRate">
+            <summary>
+            检测重连频率/min
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.OPCDA.OPCDAClientProperty.DeadBand">
+            <summary>
+            死区
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.OPCDA.OPCDAClientProperty.GroupSize">
+            <summary>
+            自动分组大小
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.OPCDA.OPCDAClientProperty.IsShareChannel">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.OPCDA.OPCDAClientProperty.ShareChannel">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.OPCDA.OPCDAClientProperty.UpdateRate">
+            <summary>
+            更新频率
+            </summary>
+        </member>
+    </members>
+</doc>

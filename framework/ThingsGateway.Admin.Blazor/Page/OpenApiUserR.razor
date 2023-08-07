@@ -1,0 +1,137 @@
+﻿@*
+//------------------------------------------------------------------------------
+//  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
+//  此代码版权（除特别声明外的代码）归作者本人Diego所有
+//  源代码使用协议遵循本仓库的开源协议及附加协议
+//  Gitee源代码仓库：https://gitee.com/diego2098/ThingsGateway
+//  Github源代码仓库：https://github.com/kimdiego2098/ThingsGateway
+//  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
+//  QQ群：605534569
+//------------------------------------------------------------------------------
+*@
+
+@page "/admin/openapiuser"
+@using System.Linq.Expressions;
+@using Microsoft.AspNetCore.Authorization;
+@using ThingsGateway.Admin.Application;
+@using Masa.Blazor.Presets;
+@inject IOpenApiUserService OpenApiUserService
+@namespace ThingsGateway.Admin.Blazor
+@attribute [Authorize]
+@inject UserResoures UserResoures
+@inherits BaseComponentBase
+@layout MainLayout
+<AppDataTable @ref="_datatable" TItem="OpenApiUser" SearchItem="OpenApiUserPageInput" AddItem="OpenApiUserAddInput" EditItem="OpenApiUserEditInput"
+              SearchModel="@search" Dense
+              QueryCallAsync="QueryCallAsync" AddCallAsync="AddCallAsync"
+              DeleteCallAsync="DeleteCallAsync" EditCallAsync="EditCallAsync"
+                IsShowQueryButton IsShowSearchKey IsShowDetailButton
+              IsShowAddButton=@UserResoures.IsHasButtonWithRole("openapiuseradd")
+              IsShowDeleteButton=@UserResoures.IsHasButtonWithRole("openapiuserdelete")
+              IsShowEditButton=@UserResoures.IsHasButtonWithRole("openapiuseredit")>
+
+    <AddTemplate>
+        @GetRenderFragment(context)
+    </AddTemplate>
+
+    <EditTemplate>
+        @GetRenderFragment(context)
+    </EditTemplate>
+
+    <ItemColOperTemplate>
+        <MList Dense>
+            @if (@UserResoures.IsHasButtonWithRole("openapiuserper"))
+            {
+                <MListItem OnClick="async()=>
+{
+ChoiceUserId=context.Item.Id;
+RolesChoice=OpenApiPermissionTreeSelector.TreeToList( GetRouters()).Where(it=>context.Item.PermissionCodeList?.Contains(it.ApiRoute)==true).ToList() ;
+IsShowRoles=true;
+}">
+                    <MListItemTitle Class="ml-2">Api权限</MListItemTitle>
+                </MListItem>
+            }
+
+        </MList>
+    </ItemColOperTemplate>
+
+    <ItemColTemplate>
+        @switch (context.Header.Value)
+        {
+
+            case nameof(context.Item.UserEnable):
+                <MSimpleCheckbox ValueChanged=@(a=>UserStatusChangeAsync(context.Item,a))
+                              Value="context.Item.UserEnable">
+                </MSimpleCheckbox>
+                break;
+            default:
+                @if (context.Header.CellClass?.Contains("text-truncate") == true)
+                {
+                    <span title=@context.Value>
+                        @context.Value
+                    </span>
+                }
+                else
+                {
+                    @context.Value
+                }
+                break;
+
+        }
+
+    </ItemColTemplate>
+</AppDataTable>
+
+<PDrawer @bind-Value="IsShowRoles" OnCancel="() => IsShowRoles = false"
+         Title=Api权限
+         Width=@(IsMobile?"100%":"500")
+         MaxWidth="500" OnSave="OnRolesSaveAsync">
+    @if (IsShowRoles)
+    {
+        <MCard Flat Class="ma-0 pa-4">
+            <MCardTitle Class="py-2">
+                <MTextField Clearable Dense Style="max-width:200px;" HideDetails=@("auto") Class="my-1 mx-2 ml-3" @bind-Value="SearchName"
+                            Outlined Label=@typeof(OpenApiPermissionTreeSelector).GetDescription(nameof(OpenApiPermissionTreeSelector.ApiName)) />
+            </MCardTitle>
+            <MTreeview Class="my-1" Search="@SearchName" Dense OpenAll TItem="OpenApiPermissionTreeSelector" TKey="OpenApiPermissionTreeSelector" Selectable @bind-Value="RolesChoice" Items="AllRouters"
+                       ItemText="r=>r.PermissionName" ItemChildren="r=>r.Children"
+                       ItemKey=@(r=>r)>
+                <LabelContent>
+                    <span title=@context.Item.PermissionName>
+                        @context.Item.PermissionName
+                    </span>
+                </LabelContent>
+            </MTreeview>
+        </MCard>
+
+    }
+
+</PDrawer>
+
+@code {
+
+    RenderFragment GetRenderFragment(OpenApiUser context)
+    {
+        RenderFragment renderFragment =
+    @<div>
+        <MSubheader Class="mt-4 font-weight-black"> @(context.Description(x => x.Account))  </MSubheader>
+        <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.Account />
+
+        <MSubheader Class="mt-4 font-weight-black"> @(context.Description(x => x.Password))  </MSubheader>
+        <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.Password />
+
+        <MSubheader Class="mt-4 font-weight-black">   @(context.Description(x => x.Phone))</MSubheader>
+            <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.Phone />
+
+        <MSubheader Class="mt-4 font-weight-black">    @(context.Description(x => x.Email))  </MSubheader>
+        <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.Email />
+
+        <MSubheader Class="mt-4 mb-5 font-weight-black">@(context.Description(x => x.SortCode)) </MSubheader>
+        <MSlider @bind-Value=@context.SortCode Class="mb-5" TValue=int ThumbLabel="@("always")" Dense />
+    </div>
+
+    ;
+        return renderFragment;
+    }
+
+}

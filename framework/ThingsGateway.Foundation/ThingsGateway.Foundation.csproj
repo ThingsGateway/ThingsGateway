@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFrameworks>net45;net6.0;net7.0</TargetFrameworks>
+		<OpenApiGenerateDocuments>false</OpenApiGenerateDocuments>
+		<AssemblyOriginatorKeyFile>..\..\snks\ThingsGateway.snk</AssemblyOriginatorKeyFile>
+	</PropertyGroup>
+	
+	<ItemGroup>
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+		<PackageReference Include="TouchSocket" Version="2.0.0-beta.120" />
+	</ItemGroup>
+	<ItemGroup Condition="'$(TargetFramework)'!='net45'">
+		<PackageReference Include="System.IO.Ports" Version="7.0.0" />
+	</ItemGroup>
+	<ItemGroup>
+		<None Include="..\.editorconfig" Link=".editorconfig" />
+	</ItemGroup>
+
+</Project>
+

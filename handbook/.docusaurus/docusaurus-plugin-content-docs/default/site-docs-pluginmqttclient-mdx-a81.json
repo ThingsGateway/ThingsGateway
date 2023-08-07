@@ -1,0 +1,30 @@
+{
+  "unversionedId": "pluginmqttclient",
+  "id": "pluginmqttclient",
+  "title": "MqttClient",
+  "description": "一、设备扩展属性",
+  "source": "@site/docs/pluginmqttclient.mdx",
+  "sourceDirName": ".",
+  "slug": "/pluginmqttclient",
+  "permalink": "/thingsgateway-docs/docs/pluginmqttclient",
+  "draft": false,
+  "editUrl": "https://gitee.com/diego2098/ThingsGateway/tree/master/handbook/docs/pluginmqttclient.mdx",
+  "tags": [],
+  "version": "current",
+  "lastUpdatedBy": "2248356998 qq.com",
+  "lastUpdatedAt": 1689499706,
+  "formattedLastUpdatedAt": "Jul 16, 2023",
+  "frontMatter": {
+    "id": "pluginmqttclient",
+    "title": "MqttClient"
+  },
+  "sidebar": "docs",
+  "previous": {
+    "title": "MqttServer",
+    "permalink": "/thingsgateway-docs/docs/pluginmqttserver"
+  },
+  "next": {
+    "title": "RabbitMQClient",
+    "permalink": "/thingsgateway-docs/docs/pluginrabbitmqclient"
+  }
+}

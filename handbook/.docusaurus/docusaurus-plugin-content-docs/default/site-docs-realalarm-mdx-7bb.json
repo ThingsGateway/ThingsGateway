@@ -1,0 +1,30 @@
+{
+  "unversionedId": "realalarm",
+  "id": "realalarm",
+  "title": "实时报警",
+  "description": "一、页面功能介绍",
+  "source": "@site/docs/realalarm.mdx",
+  "sourceDirName": ".",
+  "slug": "/realalarm",
+  "permalink": "/thingsgateway-docs/docs/realalarm",
+  "draft": false,
+  "editUrl": "https://gitee.com/diego2098/ThingsGateway/tree/master/handbook/docs/realalarm.mdx",
+  "tags": [],
+  "version": "current",
+  "lastUpdatedBy": "2248356998 qq.com",
+  "lastUpdatedAt": 1689499706,
+  "formattedLastUpdatedAt": "Jul 16, 2023",
+  "frontMatter": {
+    "id": "realalarm",
+    "title": "实时报警"
+  },
+  "sidebar": "docs",
+  "previous": {
+    "title": "实时数据",
+    "permalink": "/thingsgateway-docs/docs/realdata"
+  },
+  "next": {
+    "title": "硬件信息",
+    "permalink": "/thingsgateway-docs/docs/hardwareinfo"
+  }
+}

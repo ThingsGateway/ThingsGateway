@@ -1,0 +1,30 @@
+{
+  "unversionedId": "pluginopcdaclient",
+  "id": "pluginopcdaclient",
+  "title": "OPCDA采集插件",
+  "description": "使用OPCDA插件时，需安装OPC核心库",
+  "source": "@site/docs/pluginopcdaclient.mdx",
+  "sourceDirName": ".",
+  "slug": "/pluginopcdaclient",
+  "permalink": "/thingsgateway-docs/docs/pluginopcdaclient",
+  "draft": false,
+  "editUrl": "https://gitee.com/diego2098/ThingsGateway/tree/master/handbook/docs/pluginopcdaclient.mdx",
+  "tags": [],
+  "version": "current",
+  "lastUpdatedBy": "2248356998 qq.com",
+  "lastUpdatedAt": 1689499706,
+  "formattedLastUpdatedAt": "Jul 16, 2023",
+  "frontMatter": {
+    "id": "pluginopcdaclient",
+    "title": "OPCDA采集插件"
+  },
+  "sidebar": "docs",
+  "previous": {
+    "title": "Modbus采集插件",
+    "permalink": "/thingsgateway-docs/docs/pluginmodbus"
+  },
+  "next": {
+    "title": "OPCUA采集插件",
+    "permalink": "/thingsgateway-docs/docs/pluginopcuaclient"
+  }
+}

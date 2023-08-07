@@ -1,0 +1,58 @@
+﻿@*
+//------------------------------------------------------------------------------
+//  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
+//  此代码版权（除特别声明外的代码）归作者本人Diego所有
+//  源代码使用协议遵循本仓库的开源协议及附加协议
+//  Gitee源代码仓库：https://gitee.com/diego2098/ThingsGateway
+//  Github源代码仓库：https://github.com/kimdiego2098/ThingsGateway
+//  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
+//  QQ群：605534569
+//------------------------------------------------------------------------------
+*@
+
+@page "/gatewayconfig/plugin"
+@namespace ThingsGateway.Blazor
+@using System.Linq.Expressions;
+@using BlazorComponent;
+@using Masa.Blazor
+@using Masa.Blazor.Presets;
+@using Microsoft.AspNetCore.Authorization;
+@using ThingsGateway.Admin.Blazor.Core;
+@using ThingsGateway.Admin.Blazor;
+@using ThingsGateway.Admin.Core;
+@using ThingsGateway.Application;
+@inject IDriverPluginService DriverPluginService
+@attribute [Authorize]
+@inherits BaseComponentBase
+@inject UserResoures UserResoures
+@layout MainLayout
+<AppDataTable @ref="_datatable" TItem="DriverPlugin" SearchItem="DriverPluginPageInput"
+              AddItem="DriverPluginAddInput" EditItem="object"
+              SearchModel="@search" IsMenuOperTemplate=false
+              QueryCallAsync="QueryCallAsync" AddCallAsync="AddCallAsync"
+                IsShowDetailButton
+                IsShowQueryButton IsShowClearSearch=false
+              IsShowAddButton=@UserResoures.IsHasButtonWithRole("gatewaypluginadd")>
+
+    <SearchTemplate>
+        <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="my-1  mx-2 " @bind-Value="context.Name" Clearable
+                        Outlined Label=@context.Description(x => x.Name) />
+        <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="my-1  mx-2 " @bind-Value="context.FileName" Clearable
+                        Outlined Label=@context.Description(x => x.FileName) />
+    </SearchTemplate>
+    <AddTemplate>
+
+        <MSubheader Class="mt-4 red--text">   注意：文件名称相同的插件将被覆盖 </MSubheader>
+        <MSubheader Class="font-weight-black">    @(context.Description(x => x.MainFile))  </MSubheader>
+        <MFileInput @bind-Value="context.MainFile" ShowSize></MFileInput>
+
+        <MSubheader Class="mt-4 font-weight-black">    @(context.Description(x => x.OtherFiles))  </MSubheader>
+        <MFileInput @bind-Value="context.OtherFiles" ShowSize Multiple Counter=true></MFileInput>
+
+
+    </AddTemplate>
+
+
+</AppDataTable>
+
+

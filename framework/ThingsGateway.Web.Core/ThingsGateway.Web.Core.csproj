@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OpenApiGenerateDocuments>false</OpenApiGenerateDocuments>
+	</PropertyGroup>
+
+
+	
+	<ItemGroup>
+	  <Content Include="Configuration\App.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Configuration\Database.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Configuration\JWT.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Configuration\Swagger.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	</ItemGroup>
+
+	<ItemGroup>
+		<!--Admin-->
+	  <ProjectReference Include="..\ThingsGateway.Admin.ApiController\ThingsGateway.Admin.ApiController.csproj" />
+	  <ProjectReference Include="..\ThingsGateway.Admin.Blazor\ThingsGateway.Admin.Blazor.csproj" />
+		<!--采集网关-->
+		<ProjectReference Include="..\ThingsGateway.ApiController\ThingsGateway.ApiController.csproj" />
+		<ProjectReference Include="..\ThingsGateway.Blazor\ThingsGateway.Blazor.csproj" />
+
+	</ItemGroup>
+
+</Project>

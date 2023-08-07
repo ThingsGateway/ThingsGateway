@@ -1,0 +1,336 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ThingsGateway.Foundation.Adapter.Siemens</name>
+    </assembly>
+    <members>
+        <member name="T:ThingsGateway.Foundation.Adapter.Siemens.S7Area">
+            <summary>
+            区域
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Foundation.Adapter.Siemens.S7Area.PE">
+            <inheritdoc/>
+        </member>
+        <member name="F:ThingsGateway.Foundation.Adapter.Siemens.S7Area.PA">
+            <inheritdoc/>
+        </member>
+        <member name="F:ThingsGateway.Foundation.Adapter.Siemens.S7Area.MK">
+            <inheritdoc/>
+        </member>
+        <member name="F:ThingsGateway.Foundation.Adapter.Siemens.S7Area.DB">
+            <inheritdoc/>
+        </member>
+        <member name="F:ThingsGateway.Foundation.Adapter.Siemens.S7Area.CT">
+            <inheritdoc/>
+        </member>
+        <member name="F:ThingsGateway.Foundation.Adapter.Siemens.S7Area.TM">
+            <inheritdoc/>
+        </member>
+        <member name="F:ThingsGateway.Foundation.Adapter.Siemens.S7Area.AI">
+            <inheritdoc/>
+        </member>
+        <member name="F:ThingsGateway.Foundation.Adapter.Siemens.S7Area.AQ">
+            <inheritdoc/>
+        </member>
+        <member name="T:ThingsGateway.Foundation.Adapter.Siemens.SiemensAddress">
+            <summary>
+            西门子PLC地址数据信息
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Adapter.Siemens.SiemensAddress.BitCode">
+            <summary>
+            bit位偏移
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Adapter.Siemens.SiemensAddress.DataCode">
+            <summary>
+            数据块代码
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Adapter.Siemens.SiemensAddress.DbBlock">
+            <summary>
+            DB块数据信息
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.Siemens.SiemensAddress.GetAddressStart(System.String,System.Boolean)">
+            <summary>
+            获取起始地址
+            </summary>
+            <param name="address"></param>
+            <param name="isCounterOrTimer"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.Siemens.SiemensAddress.GetBitCode(System.String)">
+            <summary>
+            获取bit
+            </summary>
+            <param name="address"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.Siemens.SiemensAddress.ParseFrom(System.String)">
+            <summary>
+            解析地址
+            </summary>
+            <param name="address"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.Siemens.SiemensAddress.ParseFrom(System.String,System.Int32)">
+            <summary>
+            解析地址
+            </summary>
+            <param name="address"></param>
+            <param name="length"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.Siemens.SiemensAddress.Parse(System.String,System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.Siemens.SiemensAddress.ToString">
+            <inheritdoc />
+        </member>
+        <member name="T:ThingsGateway.Foundation.Adapter.Siemens.DateTime">
+            <summary>
+            https://github.com/S7NetPlus/s7netplus/blob/develop/S7.Net/Types/DateTime.cs
+            Contains the methods to convert between <see cref="T:System.DateTime"/> and S7 representation of datetime values.
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Foundation.Adapter.Siemens.DateTime.SpecMaximumDateTime">
+            <summary>
+            The maximum <see cref="T:System.DateTime"/> value supported by the specification.
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Foundation.Adapter.Siemens.DateTime.SpecMinimumDateTime">
+            <summary>
+            The minimum <see cref="T:System.DateTime"/> value supported by the specification.
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.Siemens.DateTime.FromByteArray(System.Byte[])">
+            <summary>
+            Parses a <see cref="T:System.DateTime"/> value from bytes.
+            </summary>
+            <param name="bytes">Input bytes read from PLC.</param>
+            <returns>A <see cref="T:System.DateTime"/> object representing the value read from PLC.</returns>
+            <exception cref="T:System.ArgumentOutOfRangeException">Thrown when the length of
+              <paramref name="bytes"/> is not 8 or any value in <paramref name="bytes"/>
+              is outside the valid range of values.</exception>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.Siemens.DateTime.ToArray(System.Byte[])">
+            <summary>
+            Parses an array of <see cref="T:System.DateTime"/> values from bytes.
+            </summary>
+            <param name="bytes">Input bytes read from PLC.</param>
+            <returns>An array of <see cref="T:System.DateTime"/> objects representing the values read from PLC.</returns>
+            <exception cref="T:System.ArgumentOutOfRangeException">Thrown when the length of
+              <paramref name="bytes"/> is not a multiple of 8 or any value in
+              <paramref name="bytes"/> is outside the valid range of values.</exception>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.Siemens.DateTime.ToByteArray(System.DateTime)">
+            <summary>
+            Converts a <see cref="T:System.DateTime"/> value to a byte array.
+            </summary>
+            <param name="dateTime">The DateTime value to convert.</param>
+            <returns>A byte array containing the S7 date time representation of <paramref name="dateTime"/>.</returns>
+            <exception cref="T:System.ArgumentOutOfRangeException">Thrown when the value of
+              <paramref name="dateTime"/> is before <see cref="P:SpecMinimumDateTime"/>
+              or after <see cref="P:SpecMaximumDateTime"/>.</exception>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.Siemens.DateTime.ToByteArray(System.DateTime[])">
+            <summary>
+            Converts an array of <see cref="T:System.DateTime"/> values to a byte array.
+            </summary>
+            <param name="dateTimes">The DateTime values to convert.</param>
+            <returns>A byte array containing the S7 date time representations of <paramref name="dateTimes"/>.</returns>
+            <exception cref="T:System.ArgumentOutOfRangeException">Thrown when any value of
+              <paramref name="dateTimes"/> is before <see cref="P:SpecMinimumDateTime"/>
+              or after <see cref="P:SpecMaximumDateTime"/>.</exception>
+        </member>
+        <member name="F:ThingsGateway.Foundation.Adapter.Siemens.SiemensHelper.S7_MULRW_HEADER">
+            <summary>
+            S7连读写请求头(包含ISO头和COTP头) 
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Foundation.Adapter.Siemens.S7WordLength">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Foundation.Adapter.Siemens.S7WordLength.Bit">
+            <inheritdoc/>
+        </member>
+        <member name="F:ThingsGateway.Foundation.Adapter.Siemens.S7WordLength.Byte">
+            <inheritdoc/>
+        </member>
+        <member name="F:ThingsGateway.Foundation.Adapter.Siemens.S7WordLength.Char">
+            <inheritdoc/>
+        </member>
+        <member name="F:ThingsGateway.Foundation.Adapter.Siemens.S7WordLength.Word">
+            <inheritdoc/>
+        </member>
+        <member name="F:ThingsGateway.Foundation.Adapter.Siemens.S7WordLength.Int">
+            <inheritdoc/>
+        </member>
+        <member name="F:ThingsGateway.Foundation.Adapter.Siemens.S7WordLength.DWord">
+            <inheritdoc/>
+        </member>
+        <member name="F:ThingsGateway.Foundation.Adapter.Siemens.S7WordLength.DInt">
+            <inheritdoc/>
+        </member>
+        <member name="F:ThingsGateway.Foundation.Adapter.Siemens.S7WordLength.Real">
+            <inheritdoc/>
+        </member>
+        <member name="F:ThingsGateway.Foundation.Adapter.Siemens.S7WordLength.Counter">
+            <inheritdoc/>
+        </member>
+        <member name="F:ThingsGateway.Foundation.Adapter.Siemens.S7WordLength.Timer">
+            <inheritdoc/>
+        </member>
+        <member name="T:ThingsGateway.Foundation.Adapter.Siemens.SiemensMessage">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Adapter.Siemens.SiemensMessage.HeadBytesLength">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.Siemens.SiemensMessage.CheckHeadBytes(System.Byte[])">
+            <inheritdoc/>
+        </member>
+        <member name="T:ThingsGateway.Foundation.Adapter.Siemens.SiemensEnum">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Foundation.Adapter.Siemens.SiemensEnum.S200">
+            <inheritdoc/>
+        </member>
+        <member name="F:ThingsGateway.Foundation.Adapter.Siemens.SiemensEnum.S200Smart">
+            <inheritdoc/>
+        </member>
+        <member name="F:ThingsGateway.Foundation.Adapter.Siemens.SiemensEnum.S300">
+            <inheritdoc/>
+        </member>
+        <member name="F:ThingsGateway.Foundation.Adapter.Siemens.SiemensEnum.S400">
+            <inheritdoc/>
+        </member>
+        <member name="F:ThingsGateway.Foundation.Adapter.Siemens.SiemensEnum.S1200">
+            <inheritdoc/>
+        </member>
+        <member name="F:ThingsGateway.Foundation.Adapter.Siemens.SiemensEnum.S1500">
+            <inheritdoc/>
+        </member>
+        <member name="T:ThingsGateway.Foundation.Adapter.Siemens.SiemensS7PLC">
+            <summary>
+            相关命令含义源自网络资料/Shrap7/s7netplus
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.Siemens.SiemensS7PLC.#ctor(ThingsGateway.Foundation.TcpClientEx,ThingsGateway.Foundation.Adapter.Siemens.SiemensEnum)">
+            <summary>
+            传入PLC类型，程序内会改变相应PLC类型的S7协议LocalTSAP， RemoteTSAP等
+            </summary>
+            <param name="tcpClient"></param>
+            <param name="siemensPLCEnum"></param>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Adapter.Siemens.SiemensS7PLC.CurrentPlc">
+            <summary>
+            当前PLC类型
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.Siemens.SiemensS7PLC.GetAddressDescription">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.Siemens.SiemensS7PLC.GetBitOffset(System.String)">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <param name="address"></param>
+            <returns></returns>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Adapter.Siemens.SiemensS7PLC.DestTSAP">
+            <summary>
+            远程TSAP，需重新连接
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Adapter.Siemens.SiemensS7PLC.LocalTSAP">
+            <summary>
+            本地TSAP，需重新连接
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Adapter.Siemens.SiemensS7PLC.PDULength">
+            <summary>
+            PDULength
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Adapter.Siemens.SiemensS7PLC.Rack">
+            <summary>
+            机架号，需重新连接
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Adapter.Siemens.SiemensS7PLC.Slot">
+            <summary>
+            槽号，需重新连接
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.Siemens.SiemensS7PLC.ReadAsync(System.String,System.Int32,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.Siemens.SiemensS7PLC.ReadDateAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            读取日期
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.Siemens.SiemensS7PLC.ReadDateTimeAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            读取时间
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.Siemens.SiemensS7PLC.ReadStringAsync(System.String,System.Text.Encoding,System.Threading.CancellationToken)">
+            <summary>
+            读取变长字符串
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.Siemens.SiemensS7PLC.SetDataAdapter">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.Siemens.SiemensS7PLC.WriteAsync(System.String,System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.Siemens.SiemensS7PLC.WriteAsync(System.String,System.Byte[],System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.Siemens.SiemensS7PLC.WriteAsync(System.String,System.Boolean[],System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.Siemens.SiemensS7PLC.WriteDateAsync(System.String,System.DateTime,System.Threading.CancellationToken)">
+            <summary>
+            写入日期
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.Siemens.SiemensS7PLC.WriteDateTimeAsync(System.String,System.DateTime,System.Threading.CancellationToken)">
+            <summary>
+            写入时间
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:ThingsGateway.Foundation.Adapter.Siemens.SiemensS7PLCDataHandleAdapter">
+            <summary>
+            SiemensS7PLCDataHandleAdapter
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.Siemens.SiemensS7PLCDataHandleAdapter.PackCommand(System.Byte[])">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.Siemens.SiemensS7PLCDataHandleAdapter.GetInstance">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.Siemens.SiemensS7PLCDataHandleAdapter.UnpackResponse(ThingsGateway.Foundation.Adapter.Siemens.SiemensMessage,System.Byte[],System.Byte[],System.Byte[])">
+            <inheritdoc/>
+        </member>
+    </members>
+</doc>

@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ThingsGateway.Web.Entry</name>
+    </assembly>
+    <members>
+        <member name="T:ThingsGateway.Web.Entry.Program">
+            <summary>
+            启动
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Web.Entry.Program.Main(System.String[])">
+            <summary>
+            程序运行入口
+            </summary>
+            <param name="args"></param>
+        </member>
+    </members>
+</doc>

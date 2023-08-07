@@ -1,0 +1,30 @@
+{
+  "unversionedId": "hardwareinfo",
+  "id": "hardwareinfo",
+  "title": "硬件信息",
+  "description": "一、页面功能介绍",
+  "source": "@site/docs/hardwareinfo.mdx",
+  "sourceDirName": ".",
+  "slug": "/hardwareinfo",
+  "permalink": "/thingsgateway-docs/docs/hardwareinfo",
+  "draft": false,
+  "editUrl": "https://gitee.com/diego2098/ThingsGateway/tree/master/handbook/docs/hardwareinfo.mdx",
+  "tags": [],
+  "version": "current",
+  "lastUpdatedBy": "2248356998 qq.com",
+  "lastUpdatedAt": 1689499706,
+  "formattedLastUpdatedAt": "Jul 16, 2023",
+  "frontMatter": {
+    "id": "hardwareinfo",
+    "title": "硬件信息"
+  },
+  "sidebar": "docs",
+  "previous": {
+    "title": "实时报警",
+    "permalink": "/thingsgateway-docs/docs/realalarm"
+  },
+  "next": {
+    "title": "历史数据",
+    "permalink": "/thingsgateway-docs/docs/hisdata"
+  }
+}

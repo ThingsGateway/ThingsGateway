@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<!--<GenerateDocumentationFile>True</GenerateDocumentationFile>-->
+		<EnableDynamicLoading>true</EnableDynamicLoading>
+	</PropertyGroup>
+
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+
+		<Exec Command=" set dir=&quot;$(SolutionDir)ThingsGateway.Web.Entry\bin\$(Configuration)\$(TargetFramework)\Plugins\$(AssemblyName)&quot;&#xD;&#xA; if not exist %25dir%25  md %25dir%25  &#xD;&#xA;&#xD;&#xA;copy &quot;$(TargetDir)*Kafka*.dll&quot;  %25dir%25&#xD;&#xA;&#xD;&#xA;xcopy &quot;$(TargetDir)runtimes&quot;  %25dir%25\runtimes\ /s /f /y" />
+	</Target>
+
+	<ItemGroup>
+	  <PackageReference Include="Confluent.Kafka" Version="2.2.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\ThingsGateway.Application\ThingsGateway.Application.csproj" >
+			<IncludeAssets>Compile</IncludeAssets>
+		</ProjectReference>
+	</ItemGroup>
+
+
+</Project>

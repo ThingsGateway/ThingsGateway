@@ -1,0 +1,46 @@
+﻿@*
+//------------------------------------------------------------------------------
+//  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
+//  此代码版权（除特别声明外的代码）归作者本人Diego所有
+//  源代码使用协议遵循本仓库的开源协议及附加协议
+//  Gitee源代码仓库：https://gitee.com/diego2098/ThingsGateway
+//  Github源代码仓库：https://github.com/kimdiego2098/ThingsGateway
+//  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
+//  QQ群：605534569
+//------------------------------------------------------------------------------
+*@
+
+@using BlazorComponent;
+@using Microsoft.AspNetCore.Components.Web;
+@using System.IO.Ports;
+@using System.Collections.Concurrent;
+@using ThingsGateway.Admin.Core;
+@using ThingsGateway.Foundation;
+@using ThingsGateway.Foundation.Adapter.OPCDA;
+@using ThingsGateway.Foundation.Adapter.OPCDA.Da;
+@using Masa.Blazor
+@using TouchSocket.Core;
+@implements IDisposable
+<MCard Class="pa-4" Flat Elevation="0" Rounded="false">
+    <MRow Justify="JustifyTypes.Start" Align="AlignTypes.Start">
+        <MTextField Class="ma-1" Label=@node.Description(a=>a.GroupSize) Dense Outlined HideDetails="@("auto")" @bind-Value=@node.GroupSize />
+        <MTextField Class="ma-1" Label=@node.Description(a=>a.UpdateRate) Dense Outlined HideDetails="@("auto")" @bind-Value=@node.UpdateRate />
+
+        <MTextField Class="ma-1" Label=@node.Description(a=>a.DeadBand) Dense Outlined HideDetails="@("auto")" @bind-Value=@node.DeadBand />
+        <MTextField Class="ma-1" Label=@node.Description(a=>a.CheckRate) Dense Outlined HideDetails="@("auto")" @bind-Value=@node.CheckRate />
+    </MRow>
+    <MRow Justify="JustifyTypes.Start" Align="AlignTypes.Start">
+        <MCheckbox Class="ma-1" Label=@node.Description(a=>a.ActiveSubscribe) Dense Outlined HideDetails="@("auto")" @bind-Value=@node.ActiveSubscribe />
+        <MTextField Class="ma-1" Label=@node.Description(a=>a.OPCIP) Dense Outlined HideDetails="@("auto")" @bind-Value=@node.OPCIP />
+        <MTextField Class="ma-1" Label=@node.Description(a=>a.OPCName) Dense Outlined HideDetails="@("auto")" @bind-Value=@node.OPCName />
+        <MButton Class="ma-1" OnClick=@Connect Color="primary">
+            连接
+        </MButton>
+        <MButton Class="ma-1" OnClick=@DisConnect Color="red">
+            断开
+        </MButton>
+    </MRow>
+
+
+
+</MCard>

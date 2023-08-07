@@ -1,0 +1,30 @@
+{
+  "unversionedId": "pluginopcuaserver",
+  "id": "pluginopcuaserver",
+  "title": "OPCUAServer",
+  "description": "一、设备扩展属性",
+  "source": "@site/docs/pluginopcuaserver.mdx",
+  "sourceDirName": ".",
+  "slug": "/pluginopcuaserver",
+  "permalink": "/thingsgateway-docs/docs/pluginopcuaserver",
+  "draft": false,
+  "editUrl": "https://gitee.com/diego2098/ThingsGateway/tree/master/handbook/docs/pluginopcuaserver.mdx",
+  "tags": [],
+  "version": "current",
+  "lastUpdatedBy": "2248356998 qq.com",
+  "lastUpdatedAt": 1689499706,
+  "formattedLastUpdatedAt": "Jul 16, 2023",
+  "frontMatter": {
+    "id": "pluginopcuaserver",
+    "title": "OPCUAServer"
+  },
+  "sidebar": "docs",
+  "previous": {
+    "title": "罗克韦尔CIP协议采集插件",
+    "permalink": "/thingsgateway-docs/docs/pluginabcip"
+  },
+  "next": {
+    "title": "ModbusServer",
+    "permalink": "/thingsgateway-docs/docs/pluginmodbusserver"
+  }
+}

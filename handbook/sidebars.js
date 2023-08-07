@@ -259,8 +259,34 @@ module.exports = {
       ]
     },
     {
+      type: "category",
+      label: "12、底层驱动文档",
+      items: [
+        {
+          type: "doc",
+          id: "foundation/modbus",
+          label: "12.1 Modbus"
+        },
+        {
+          type: "doc",
+          id: "foundation/s7",
+          label: "12.2 Siemens S7"
+        },
+        {
+          type: "doc",
+          id: "foundation/opcda",
+          label: "12.3 OPCDAClient"
+        },
+        {
+          type: "doc",
+          id: "foundation/opcua",
+          label: "12.4 OPCUAClient"
+        }
+      ]
+    },
+    {
       type: "link",
-      label: "12、案例合集",
+      label: "案例合集",
       href: "https://www.cnblogs.com/ThingsGateway/collections/1104"
     },
   ]

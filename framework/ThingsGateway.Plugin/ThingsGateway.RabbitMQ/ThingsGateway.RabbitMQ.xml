@@ -1,0 +1,144 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ThingsGateway.RabbitMQ</name>
+    </assembly>
+    <members>
+        <member name="T:ThingsGateway.RabbitMQ.RabbitMQClient">
+            <summary>
+            RabbitMQ
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.RabbitMQ.RabbitMQClient.DriverDebugUIType">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.RabbitMQ.RabbitMQClient.DriverPropertys">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.RabbitMQ.RabbitMQClient.UploadVariables">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.RabbitMQ.RabbitMQClient.VariablePropertys">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.RabbitMQ.RabbitMQClient.AfterStopAsync">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.RabbitMQ.RabbitMQClient.BeforStartAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.RabbitMQ.RabbitMQClient.ExecuteAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.RabbitMQ.RabbitMQClient.IsConnected">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.RabbitMQ.RabbitMQClient.ToString">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.RabbitMQ.RabbitMQClient.Dispose(System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.RabbitMQ.RabbitMQClient.Init(ThingsGateway.Application.UploadDeviceRunTime)">
+            <inheritdoc/>
+        </member>
+        <member name="T:ThingsGateway.RabbitMQ.RabbitMQClientProperty">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.RabbitMQ.RabbitMQClientProperty.IP">
+            <summary>
+            IP
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.RabbitMQ.RabbitMQClientProperty.Port">
+            <summary>
+            端口
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.RabbitMQ.RabbitMQClientProperty.UserName">
+            <summary>
+            UserName
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.RabbitMQ.RabbitMQClientProperty.Password">
+            <summary>
+            Password
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.RabbitMQ.RabbitMQClientProperty.IsList">
+            <summary>
+            是否发布List
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.RabbitMQ.RabbitMQClientProperty.IsQueueDeclare">
+            <summary>
+            IsQueueDeclare
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.RabbitMQ.RabbitMQClientProperty.VirtualHost">
+            <summary>
+            VirtualHost
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.RabbitMQ.RabbitMQClientProperty.RoutingKey">
+            <summary>
+            RoutingKey
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.RabbitMQ.RabbitMQClientProperty.ExchangeName">
+            <summary>
+            交换机名称
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.RabbitMQ.RabbitMQClientProperty.VariableQueueName">
+            <summary>
+            变量队列名称
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.RabbitMQ.RabbitMQClientProperty.DeviceQueueName">
+            <summary>
+            设备队列名称
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.RabbitMQ.RabbitMQClientProperty.CycleInterval">
+            <summary>
+            线程循环间隔
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.RabbitMQ.RabbitMQClientProperty.CacheMaxCount">
+            <summary>
+            缓存最大条数
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.RabbitMQ.RabbitMQClientProperty.SplitSize">
+            <summary>
+            列表分割大小
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.RabbitMQ.RabbitMQClientProperty.BigTextScriptDeviceModel">
+            <summary>
+            设备实体脚本
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.RabbitMQ.RabbitMQClientProperty.BigTextScriptVariableModel">
+            <summary>
+            变量实体脚本
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.RabbitMQ.RabbitMQClientVariableProperty">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.RabbitMQ.RabbitMQClientVariableProperty.Enable">
+            <summary>
+            启用
+            </summary>
+        </member>
+    </members>
+</doc>

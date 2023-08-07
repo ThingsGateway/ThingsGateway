@@ -1,6 +1,6 @@
 {
   "name": "thingsgateway",
-  "version": "v1.7",
+  "version": "v2.0",
   "private": true,
   "scripts": {
     "docusaurus": "docusaurus",

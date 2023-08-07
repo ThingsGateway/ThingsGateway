@@ -1,0 +1,30 @@
+<Project>
+	<PropertyGroup>
+		<TargetFrameworks>net6.0;net7.0</TargetFrameworks>
+		<Version>2.0.0.0</Version>
+		<Authors>Diego</Authors>
+		<Product>ThingsGateway</Product>
+		<Copyright>© 2023-present Diego</Copyright>
+		<RepositoryUrl>https://gitee.com/diego2098/ThingsGateway</RepositoryUrl>
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+		<EmbedUntrackedSource>true</EmbedUntrackedSource>
+		<EmbedAllSources>true</EmbedAllSources>
+		<RepositoryType>Gitee</RepositoryType>
+		<IncludeSymbols>true</IncludeSymbols>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+		<SignAssembly>True</SignAssembly>
+		<DelaySign>False</DelaySign>
+		<SatelliteResourceLanguages>zh-Hans</SatelliteResourceLanguages>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<DocumentationFile>$(MSBuildProjectName).xml</DocumentationFile>
+	</PropertyGroup>
+
+	
+	<PropertyGroup>
+		<LangVersion>latest</LangVersion>
+	</PropertyGroup>
+
+
+</Project>

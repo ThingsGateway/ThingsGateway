@@ -1,0 +1,30 @@
+{
+  "unversionedId": "devicevariable",
+  "id": "devicevariable",
+  "title": "变量管理",
+  "description": "更改采集设备/变量/上传设备/插件等，需要重启线程（网关状态-运行状态-全部重启/单个设备重启）",
+  "source": "@site/docs/devicevariable.mdx",
+  "sourceDirName": ".",
+  "slug": "/devicevariable",
+  "permalink": "/thingsgateway-docs/docs/devicevariable",
+  "draft": false,
+  "editUrl": "https://gitee.com/diego2098/ThingsGateway/tree/master/handbook/docs/devicevariable.mdx",
+  "tags": [],
+  "version": "current",
+  "lastUpdatedBy": "2248356998 qq.com",
+  "lastUpdatedAt": 1689499706,
+  "formattedLastUpdatedAt": "Jul 16, 2023",
+  "frontMatter": {
+    "id": "devicevariable",
+    "title": "变量管理"
+  },
+  "sidebar": "docs",
+  "previous": {
+    "title": "上传设备",
+    "permalink": "/thingsgateway-docs/docs/uploaddevice"
+  },
+  "next": {
+    "title": "中间变量",
+    "permalink": "/thingsgateway-docs/docs/memoryvariable"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "unversionedId": "enterprise",
+  "id": "enterprise",
+  "title": "Pro版相关",
+  "description": "注意以下常见版权问题：",
+  "source": "@site/docs/enterprise.mdx",
+  "sourceDirName": ".",
+  "slug": "/enterprise",
+  "permalink": "/thingsgateway-docs/docs/enterprise",
+  "draft": false,
+  "editUrl": "https://gitee.com/diego2098/ThingsGateway/tree/master/handbook/docs/enterprise.mdx",
+  "tags": [],
+  "version": "current",
+  "lastUpdatedBy": "Diego2098",
+  "lastUpdatedAt": 1689510716,
+  "formattedLastUpdatedAt": "Jul 16, 2023",
+  "frontMatter": {
+    "id": "enterprise",
+    "title": "Pro版相关"
+  },
+  "sidebar": "docs",
+  "previous": {
+    "title": "支持作者",
+    "permalink": "/thingsgateway-docs/docs/donate"
+  },
+  "next": {
+    "title": "入门指南",
+    "permalink": "/thingsgateway-docs/docs/startguide"
+  }
+}

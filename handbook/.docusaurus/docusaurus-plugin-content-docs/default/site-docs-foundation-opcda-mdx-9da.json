@@ -1,0 +1,27 @@
+{
+  "unversionedId": "foundation/opcda",
+  "id": "foundation/opcda",
+  "title": "OPCDAClient",
+  "description": "待更新",
+  "source": "@site/docs/foundation/opcda.mdx",
+  "sourceDirName": "foundation",
+  "slug": "/foundation/opcda",
+  "permalink": "/thingsgateway-docs/docs/foundation/opcda",
+  "draft": false,
+  "editUrl": "https://gitee.com/diego2098/ThingsGateway/tree/master/handbook/docs/foundation/opcda.mdx",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "id": "opcda",
+    "title": "OPCDAClient"
+  },
+  "sidebar": "docs",
+  "previous": {
+    "title": "Siemens S7",
+    "permalink": "/thingsgateway-docs/docs/foundation/s7"
+  },
+  "next": {
+    "title": "OPCUAClient",
+    "permalink": "/thingsgateway-docs/docs/foundation/opcua"
+  }
+}

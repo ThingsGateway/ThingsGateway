@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+	<PropertyGroup>
+		<OpenApiGenerateDocuments>false</OpenApiGenerateDocuments>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="..\.editorconfig" Link=".editorconfig" />
+	</ItemGroup>
+	
+	<ItemGroup>
+	  <ProjectReference Include="..\ThingsGateway.Admin.Application\ThingsGateway.Admin.Application.csproj" />
+	</ItemGroup>
+	
+	<ItemGroup>
+
+		<PackageReference Include="Masa.Blazor" Version="1.0.1" />
+		<PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="7.0.9" />
+
+	</ItemGroup>
+</Project>
