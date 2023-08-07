@@ -53,6 +53,7 @@ public class Program
         //}).UseWindowsService().UseSystemd();
 
         var builder = WebApplication.CreateBuilder(args);
+        builder.WebHost.UseWebRoot(string.Empty);
         builder.WebHost.UseStaticWebAssets();
         builder.Host.UseWindowsService();
         builder.Host.UseSystemd();
