@@ -203,9 +203,9 @@
     "53": {
       "js": [
         {
-          "file": "assets/js/935f2afb.079c3229.js",
-          "hash": "0f25bba5a6e4fe70",
-          "publicPath": "/thingsgateway-docs/assets/js/935f2afb.079c3229.js"
+          "file": "assets/js/935f2afb.0f7e606f.js",
+          "hash": "481ecc5141990b51",
+          "publicPath": "/thingsgateway-docs/assets/js/935f2afb.0f7e606f.js"
         }
       ]
     },
@@ -221,9 +221,9 @@
     "179": {
       "js": [
         {
-          "file": "assets/js/main.983c2b82.js",
-          "hash": "59f6f11492f1d646",
-          "publicPath": "/thingsgateway-docs/assets/js/main.983c2b82.js"
+          "file": "assets/js/main.fe6ca657.js",
+          "hash": "35b596252fb7aae3",
+          "publicPath": "/thingsgateway-docs/assets/js/main.fe6ca657.js"
         }
       ]
     },
@@ -284,9 +284,9 @@
     "1303": {
       "js": [
         {
-          "file": "assets/js/runtime~main.3d9c09f6.js",
-          "hash": "0871ba95c4f81542",
-          "publicPath": "/thingsgateway-docs/assets/js/runtime~main.3d9c09f6.js"
+          "file": "assets/js/runtime~main.998dd168.js",
+          "hash": "0b2c7ad12b62da0f",
+          "publicPath": "/thingsgateway-docs/assets/js/runtime~main.998dd168.js"
         }
       ]
     },
@@ -437,9 +437,9 @@
     "4954": {
       "js": [
         {
-          "file": "assets/js/6f635a3d.3a8994ec.js",
-          "hash": "8f16fdd8736ca22a",
-          "publicPath": "/thingsgateway-docs/assets/js/6f635a3d.3a8994ec.js"
+          "file": "assets/js/6f635a3d.034ef8a0.js",
+          "hash": "f7af1b4b22b00fbe",
+          "publicPath": "/thingsgateway-docs/assets/js/6f635a3d.034ef8a0.js"
         }
       ]
     },
@@ -568,9 +568,9 @@
     "8494": {
       "js": [
         {
-          "file": "assets/js/5137840a.07869322.js",
-          "hash": "68f63cccd11c772a",
-          "publicPath": "/thingsgateway-docs/assets/js/5137840a.07869322.js"
+          "file": "assets/js/5137840a.efbb9425.js",
+          "hash": "b288804baeb0408d",
+          "publicPath": "/thingsgateway-docs/assets/js/5137840a.efbb9425.js"
         }
       ]
     },
