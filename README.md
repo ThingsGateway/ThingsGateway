@@ -10,6 +10,10 @@
 
  **ThingsGateway** 存储库同时提供 [**设备采集驱动**](https://www.nuget.org/profiles/KimDiego)
 
+ **ThingsGateway** 存储库同时提供 **基于Blazor的权限框架** 查看 **framework/ThingsGateway.Admin**
+
+
+
 ## 文档
 
 [ThingsGateway](https://diego2098.gitee.io/thingsgateway-docs/) 文档。
