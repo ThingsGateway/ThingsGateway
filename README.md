@@ -1,8 +1,5 @@
-<div align='center'>
 
 # ThingsGateway
-
-</div > 
 
 ## 介绍
 
