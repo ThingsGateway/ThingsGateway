@@ -17,10 +17,14 @@
 	  <_WebToolingArtifacts Remove="Properties\PublishProfiles\win64_net7.pubxml" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <None Include="wwwroot\service-worker.published.js" />
-	</ItemGroup>
+
+
 	
+	<ItemGroup>
+	  <Content Include="Dockerfile">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	</ItemGroup>
 
 	
 	<!--安装服务守护-->
@@ -30,6 +34,14 @@
 	</ItemGroup>
 	<ItemGroup>
 	  <ProjectReference Include="..\ThingsGateway.Web.Core\ThingsGateway.Web.Core.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Content Update="pm2-linux.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="pm2-windows.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
 	</ItemGroup>
 
 	
