@@ -12,7 +12,7 @@
     "autorestart": true,
     "restart_delay": "60",
     "args": [
-      "ThingsGateway.Web.Server.dll",
+      "ThingsGateway.Web.Entry.dll",
       "--urls=http://*:5000"
     ],
     "env": {

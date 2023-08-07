@@ -1,7 +1,7 @@
 {
   "apps": {
     "name": "ThingsGateway",
-    "script": "ThingsGateway.Web.Server.exe",
+    "script": "ThingsGateway.Web.Entryexe",
     "exec_mode": "fork",
     "error_file": "logs/pm2err.log",
     "out_file": "logs/pm2out.log",
