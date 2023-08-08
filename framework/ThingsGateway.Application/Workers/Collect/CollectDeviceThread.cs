@@ -85,6 +85,29 @@ public class CollectDeviceThread : IAsyncDisposable
             easyLock.Release();
         }
     }
+    /// <summary>
+    /// 停止采集前，提前取消Token
+    /// </summary>
+    public virtual async Task BeforeStopThreadAsync()
+    {
+        try
+        {
+            await easyLock.WaitAsync();
+
+            if (DeviceTask == null)
+            {
+                return;
+            }
+            foreach (var token in StoppingTokens)
+            {
+                token.Cancel();
+            }
+        }
+        finally
+        {
+            easyLock.Release();
+        }
+    }
 
     /// <summary>
     /// 停止采集
@@ -173,7 +196,10 @@ public class CollectDeviceThread : IAsyncDisposable
                 foreach (var device in CollectDeviceCores)
                 {
                     try
-                    {//初始化成功才能执行
+                    {
+                        if (stoppingToken.IsCancellationRequested)
+                            break;
+                        //初始化成功才能执行
                         if (device.IsInitSuccess)
                         {
                             //如果是共享通道类型，需要每次转换时切换适配器

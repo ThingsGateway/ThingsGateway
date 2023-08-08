@@ -243,6 +243,17 @@ public class UploadDeviceWorker : BackgroundService
         {
             try
             {
+                await deviceThread.BeforeStopThreadAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogError(ex, deviceThread.ToString());
+            }
+        }, 10);
+        await UploadDeviceThreads.ParallelForEachAsync(async (deviceThread, token) =>
+        {
+            try
+            {
                 await deviceThread.DisposeAsync();
             }
             catch (Exception ex)

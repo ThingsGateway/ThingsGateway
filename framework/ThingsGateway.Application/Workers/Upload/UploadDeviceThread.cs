@@ -74,6 +74,29 @@ public class UploadDeviceThread : IAsyncDisposable
             easyLock.Release();
         }
     }
+    /// <summary>
+    /// 停止采集前，提前取消Token
+    /// </summary>
+    public virtual async Task BeforeStopThreadAsync()
+    {
+        try
+        {
+            await easyLock.WaitAsync();
+
+            if (DeviceTask == null)
+            {
+                return;
+            }
+            foreach (var token in StoppingTokens)
+            {
+                token.Cancel();
+            }
+        }
+        finally
+        {
+            easyLock.Release();
+        }
+    }
 
     /// <summary>
     /// 停止上传
@@ -152,7 +175,10 @@ public class UploadDeviceThread : IAsyncDisposable
                 foreach (var device in UploadDeviceCores)
                 {
                     try
-                    {//初始化成功才能执行
+                    {
+                        if (stoppingToken.IsCancellationRequested)
+                            break;
+                        //初始化成功才能执行
                         if (device.IsInitSuccess)
                         {
 

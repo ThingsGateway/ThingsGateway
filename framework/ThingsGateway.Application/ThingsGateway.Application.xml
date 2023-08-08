@@ -3561,6 +3561,11 @@
             开始采集
             </summary>
         </member>
+        <member name="M:ThingsGateway.Application.CollectDeviceThread.BeforeStopThreadAsync">
+            <summary>
+            停止采集前，提前取消Token
+            </summary>
+        </member>
         <member name="M:ThingsGateway.Application.CollectDeviceThread.StopThreadAsync">
             <summary>
             停止采集
@@ -3932,6 +3937,11 @@
         <member name="M:ThingsGateway.Application.UploadDeviceThread.StartThreadAsync">
             <summary>
             开始上传
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Application.UploadDeviceThread.BeforeStopThreadAsync">
+            <summary>
+            停止采集前，提前取消Token
             </summary>
         </member>
         <member name="M:ThingsGateway.Application.UploadDeviceThread.StopThreadAsync">

@@ -329,6 +329,18 @@ public class CollectDeviceWorker : BackgroundService
     private async Task RemoveAllDeviceThreadAsync()
     {
         await CollectDeviceThreads.ParallelForEachAsync(async (deviceThread, token) =>
+        {
+            try
+            {
+                await deviceThread.BeforeStopThreadAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogError(ex, deviceThread.ToString());
+            }
+        }, 10);
+
+        await CollectDeviceThreads.ParallelForEachAsync(async (deviceThread, token) =>
          {
              try
              {
