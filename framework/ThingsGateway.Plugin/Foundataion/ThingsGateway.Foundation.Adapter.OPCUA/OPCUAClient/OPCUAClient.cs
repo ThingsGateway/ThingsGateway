@@ -454,7 +454,7 @@ public class OPCUAClient : DisposableObject
     /// </summary>
     public async Task ConnectAsync()
     {
-        m_session = await ConnectAsync(OPCNode.OPCUrl);
+        await ConnectAsync(OPCNode.OPCUrl);
     }
 
     /// <summary>
@@ -462,21 +462,24 @@ public class OPCUAClient : DisposableObject
     /// </summary>
     public void Disconnect()
     {
+        PrivateDisconnect();
+        // disconnect any existing session.
+        if (m_session != null)
+        {
+            Log.Debug("断开连接");
+            m_session = null;
+        }
+    }
+
+    private void PrivateDisconnect()
+    {
         // stop any reconnect operation.
         if (m_reConnectHandler != null)
         {
             m_reConnectHandler.SafeDispose();
             m_reConnectHandler = null;
         }
-
-        // disconnect any existing session.
-        if (m_session != null)
-        {
-            Log.Debug("断开连接");
-            m_session.Close(10000);
-            m_session = null;
-        }
-
+        m_session?.Close(10000);
 
 
     }
@@ -859,7 +862,7 @@ public class OPCUAClient : DisposableObject
     /// <returns>The new session object.</returns>
     private async Task<ISession> ConnectAsync(string serverUrl)
     {
-        Disconnect();
+        PrivateDisconnect();
 
         if (m_configuration == null)
         {

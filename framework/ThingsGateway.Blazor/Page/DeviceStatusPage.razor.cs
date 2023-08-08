@@ -199,14 +199,12 @@ public partial class DeviceStatusPage : IDisposable
     //        await MainLayout.StateHasChangedAsync();
     //    }
     //}
-    bool timerR;
     private async Task RunTimerAsync()
     {
         while (await _periodicTimer.WaitForNextTickAsync())
         {
             try
             {
-                timerR = true;
                 {
                     _collectDeviceGroups = GlobalDeviceData.CollectDevices.Adapt<List<CollectDevice>>()?.Select(a => a.DeviceGroup)?.Where(a => a != null).Distinct()?.ToList() ?? new();
                     _collectDeviceCores = CollectDeviceHostService?.CollectDeviceCores?.WhereIF(!_collectDeviceGroup.IsNullOrEmpty(), a => a.Device?.DeviceGroup == _collectDeviceGroup).ToList() ?? new();
@@ -226,7 +224,6 @@ public partial class DeviceStatusPage : IDisposable
             catch
             {
             }
-            timerR = false;
 
         }
     }

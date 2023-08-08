@@ -117,7 +117,6 @@ public partial class DeviceVariableRunTimePage
             }
         }
     }
-    bool timerR;
 
 
     private Task<SqlSugarPagedList<DeviceVariableRunTime>> QueryCallAsync(VariablePageInput input)
@@ -138,13 +137,11 @@ public partial class DeviceVariableRunTimePage
         {
             try
             {
-                timerR = true;
                 await InvokeAsync(StateHasChanged);
             }
             catch
             {
             }
-            timerR = false;
 
         }
     }
