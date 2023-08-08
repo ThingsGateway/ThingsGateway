@@ -38,6 +38,8 @@ public static class LoggerExtensions
     {
         logger.Log(TouchSocket.Core.LogLevel.Warning, null, msg, ex);
     }
+
+
     /// <summary>
     /// 输出警示日志
     /// </summary>

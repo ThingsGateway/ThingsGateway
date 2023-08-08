@@ -74,7 +74,7 @@ public class AlarmWorker : BackgroundService
     public async Task<OperResult<SqlSugarClient>> GetAlarmDbAsync()
     {
         var ConfigService = ServiceHelper.Services.GetService<IConfigService>();
-        var alarmEnable = (await ConfigService.GetByConfigKeyAsync(ThingsGatewayConfigConst.ThingGateway_AlarmConfig_Base, ThingsGatewayConfigConst.Config_Alarm_Enable))?.ConfigValue?.ToBool();
+        var alarmEnable = (await ConfigService.GetByConfigKeyAsync(ThingsGatewayConfigConst.ThingGateway_AlarmConfig_Base, ThingsGatewayConfigConst.Config_Alarm_Enable))?.ConfigValue?.ToBoolean();
         var alarmDbType = (await ConfigService.GetByConfigKeyAsync(ThingsGatewayConfigConst.ThingGateway_AlarmConfig_Base, ThingsGatewayConfigConst.Config_Alarm_DbType))?.ConfigValue;
         var alarmConnstr = (await ConfigService.GetByConfigKeyAsync(ThingsGatewayConfigConst.ThingGateway_AlarmConfig_Base, ThingsGatewayConfigConst.Config_Alarm_ConnStr))?.ConfigValue;
 
@@ -132,14 +132,14 @@ public class AlarmWorker : BackgroundService
         limit = string.Empty;
         expressions = string.Empty;
         text = string.Empty;
-        if (tag.BoolCloseAlarmEnable && tag.Value.ToBool() == false)
+        if (tag.BoolCloseAlarmEnable && tag.Value.ToBoolean() == false)
         {
             limit = false.ToString();
             expressions = tag.BoolCloseRestrainExpressions;
             text = tag.BoolCloseAlarmText;
             return AlarmEnum.Close;
         }
-        if (tag.BoolOpenAlarmEnable && tag.Value.ToBool() == true)
+        if (tag.BoolOpenAlarmEnable && tag.Value.ToBoolean() == true)
         {
             limit = true.ToString();
             expressions = tag.BoolOpenRestrainExpressions;

@@ -97,7 +97,7 @@ public static class StringExtensions
     /// 转换布尔值
     /// </summary>
     /// <returns></returns>
-    public static bool ToBool(this string value, bool defaultValue = false) => value?.ToUpper() switch
+    public static bool ToBoolean(this string value, bool defaultValue = false) => value?.ToUpper() switch
     {
         "1" or "TRUE" => true,
         _ => defaultValue,

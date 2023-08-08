@@ -68,7 +68,7 @@ public class BlazorAuthorizeHandler : AppAuthorizeHandler
 
         //这里鉴别密码是否改变
         var userId = context.User.Claims.FirstOrDefault(it => it.Type == ClaimConst.UserId).Value.ToLong();
-        var isOpenApi = context.User.Claims.FirstOrDefault(it => it.Type == ClaimConst.IsOpenApi)?.Value?.ToBool() == true;
+        var isOpenApi = context.User.Claims.FirstOrDefault(it => it.Type == ClaimConst.IsOpenApi)?.Value?.ToBoolean() == true;
         if (isOpenApi)
         {
             var _openApiUserService = App.GetService<OpenApiUserService>();
@@ -91,7 +91,7 @@ public class BlazorAuthorizeHandler : AppAuthorizeHandler
             if (user == null) { return false; }
 
             //超级管理员都能访问
-            if (context.User.Claims.FirstOrDefault(it => it.Type == ClaimConst.IsSuperAdmin)?.Value.ToBool() == true) return true;
+            if (context.User.Claims.FirstOrDefault(it => it.Type == ClaimConst.IsSuperAdmin)?.Value.ToBoolean() == true) return true;
             if (context.Resource is RouteData routeData)
             {
                 // 获取超级管理员特性
@@ -144,7 +144,7 @@ public class BlazorAuthorizeHandler : AppAuthorizeHandler
     {
         var userId = context.User.Claims.FirstOrDefault(it => it.Type == ClaimConst.UserId).Value;
         var verificatId = context.User.Claims.FirstOrDefault(it => it.Type == ClaimConst.VerificatId)?.Value;
-        var isOpenApi = context.User.Claims.FirstOrDefault(it => it.Type == ClaimConst.IsOpenApi)?.Value?.ToBool(false) == true;
+        var isOpenApi = context.User.Claims.FirstOrDefault(it => it.Type == ClaimConst.IsOpenApi)?.Value?.ToBoolean(false) == true;
         var _verificatService = App.GetService<VerificatService>();
         if (isOpenApi)
         {

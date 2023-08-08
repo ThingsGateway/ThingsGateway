@@ -149,7 +149,7 @@ public class OpenApiAuthService : IOpenApiAuthService, ITransient
         {
             bool isSingle = false;//默认不开启单用户登录
             var singleConfig = await _configService.GetByConfigKeyAsync(ConfigConst.SYS_CONFIGBASEDEFAULT, ConfigConst.CONFIG_SINGLE_OPEN);//获取系统单用户登录选项
-            if (singleConfig != null) isSingle = singleConfig.ConfigValue.ToBool();//如果配置不为空则设置单用户登录选项为系统配置的值
+            if (singleConfig != null) isSingle = singleConfig.ConfigValue.ToBoolean();//如果配置不为空则设置单用户登录选项为系统配置的值
 
             //判断是否单用户登录
             if (isSingle)

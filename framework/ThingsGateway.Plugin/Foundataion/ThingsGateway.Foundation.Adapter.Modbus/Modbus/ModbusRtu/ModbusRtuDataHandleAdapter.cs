@@ -10,7 +10,6 @@
 //------------------------------------------------------------------------------
 #endregion
 
-using ThingsGateway.Foundation.Extension;
 
 namespace ThingsGateway.Foundation.Adapter.Modbus;
 
@@ -41,43 +40,52 @@ public class ModbusRtuDataHandleAdapter : ReadWriteDevicesTcpDataHandleAdapter<M
 
 
     /// <inheritdoc/>
-    protected override OperResult<byte[], FilterResult> UnpackResponse(ModbusRtuMessage request, byte[] send, byte[] body, byte[] response)
+    protected override FilterResult UnpackResponse(ModbusRtuMessage request, byte[] send, byte[] body, byte[] response)
     {
         //理想状态检测
         var result = ModbusHelper.GetModbusRtuData(send, response, Crc16CheckEnable);
         if (result.IsSuccess)
         {
-            return OperResult.CreateSuccessResult(result.Content, FilterResult.Success);
+            request.ResultCode = result.ResultCode;
+            request.Message = result.Message;
+            request.Content = result.Content;
+            return FilterResult.Success;
         }
         else
         {
-            //如果返回错误，具体分析
-            var op = result.Copy<byte[], FilterResult>();
             if (response.Length <= 1)
             {
+                request.ResultCode = result.ResultCode;
+                request.Message = result.Message;
+                request.Content = result.Content;
                 //如果长度不足，返回缓存
-                op.Content2 = FilterResult.Cache;
-                return op;
+                return FilterResult.Cache;
             }
             if (!(response[1] <= 0x10))
             {
+                request.ResultCode = result.ResultCode;
+                request.Message = result.Message;
+                request.Content = result.Content;
                 //功能码不对，返回放弃
-                op.Content2 = FilterResult.Success;
-                return op;
+                return FilterResult.Success;
             }
             else
             {
                 if ((response.Length > response[2] + 4))
                 {
+                    request.ResultCode = result.ResultCode;
+                    request.Message = result.Message;
+                    request.Content = result.Content;
                     //如果长度已经超了，说明这段报文已经不能继续解析了，直接返回放弃
-                    op.Content2 = FilterResult.Success;
-                    return op;
+                    return FilterResult.Success;
                 }
                 else
                 {
+                    request.ResultCode = result.ResultCode;
+                    request.Message = result.Message;
+                    request.Content = result.Content;
                     //否则返回缓存
-                    op.Content2 = FilterResult.Cache;
-                    return op;
+                    return FilterResult.Cache;
                 }
             }
         }

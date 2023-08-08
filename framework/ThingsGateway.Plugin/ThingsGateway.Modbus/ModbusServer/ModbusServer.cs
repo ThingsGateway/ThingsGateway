@@ -193,7 +193,7 @@ public class ModbusServer : UpLoadBase
 
             if (tag.Value == null) return OperResult.CreateSuccessResult();
             var enable =
-                GetPropertyValue(tag.Value, nameof(variablePropertys.VariableRpcEnable)).ToBool()
+                GetPropertyValue(tag.Value, nameof(variablePropertys.VariableRpcEnable)).ToBoolean()
                 && driverPropertys.DeviceRpcEnable;
             if (!enable) return new OperResult("不允许写入");
             var type = GetPropertyValue(tag.Value, nameof(ModbusServerVariableProperty.ModbusType));
