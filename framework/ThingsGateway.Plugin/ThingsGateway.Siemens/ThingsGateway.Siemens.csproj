@@ -2,6 +2,7 @@
 
 	<PropertyGroup>
 		<!--<GenerateDocumentationFile>True</GenerateDocumentationFile>-->
+		<EnableDynamicLoading>true</EnableDynamicLoading>
 	</PropertyGroup>
 
 
@@ -13,7 +14,9 @@
 
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\ThingsGateway.Blazor\ThingsGateway.Blazor.csproj" />
+		<ProjectReference Include="..\..\ThingsGateway.Blazor\ThingsGateway.Blazor.csproj" >
+			<IncludeAssets>Compile</IncludeAssets>
+		</ProjectReference>
 		<ProjectReference Include="..\Foundataion\ThingsGateway.Foundation.Adapter.Siemens\ThingsGateway.Foundation.Adapter.Siemens.csproj" />
 	</ItemGroup>
 

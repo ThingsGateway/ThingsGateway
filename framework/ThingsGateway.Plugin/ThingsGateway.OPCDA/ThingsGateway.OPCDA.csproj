@@ -2,6 +2,7 @@
 
 	<PropertyGroup>
 		<!--<GenerateDocumentationFile>True</GenerateDocumentationFile>-->
+		<EnableDynamicLoading>true</EnableDynamicLoading>
 	</PropertyGroup>
 
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
@@ -9,7 +10,9 @@
 	</Target>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\..\ThingsGateway.Blazor\ThingsGateway.Blazor.csproj" />
+		<ProjectReference Include="..\..\ThingsGateway.Blazor\ThingsGateway.Blazor.csproj" >
+			<IncludeAssets>Compile</IncludeAssets>
+		</ProjectReference>
 	  <ProjectReference Include="..\Foundataion\ThingsGateway.Foundation.Adapter.OPCDA\ThingsGateway.Foundation.Adapter.OPCDA.csproj" />
 	</ItemGroup>
 

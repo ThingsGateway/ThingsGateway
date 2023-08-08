@@ -14,7 +14,9 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\Foundataion\ThingsGateway.Foundation.Adapter.OPCUA\ThingsGateway.Foundation.Adapter.OPCUA.csproj" />
-		<ProjectReference Include="..\..\ThingsGateway.Blazor\ThingsGateway.Blazor.csproj" />
+		<ProjectReference Include="..\..\ThingsGateway.Blazor\ThingsGateway.Blazor.csproj" >
+			<IncludeAssets>Compile</IncludeAssets>
+		</ProjectReference>
 	</ItemGroup>
 
 
