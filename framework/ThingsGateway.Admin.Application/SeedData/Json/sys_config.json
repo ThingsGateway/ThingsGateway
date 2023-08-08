@@ -77,7 +77,7 @@
       "Id": "22222222222232",
       "Category": "SYS_CONFIGBASEDEFAULT",
       "ConfigKey": "CONFIG_SINGLE_OPEN",
-      "ConfigValue": "true",
+      "ConfigValue": "false",
       "Remark": "单用户登录开关",
       "SortCode": "10",
       "IsDelete": "false"
