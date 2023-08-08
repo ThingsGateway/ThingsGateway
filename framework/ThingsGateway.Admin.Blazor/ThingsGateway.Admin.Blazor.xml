@@ -148,6 +148,11 @@
             获得/设置 Table Cols 模板
             </summary>
         </member>
+        <member name="P:ThingsGateway.Admin.Blazor.Core.AppDataTable`4.ItemColWithDTTemplate">
+            <summary>
+            独立设置 Table Cols 模板，需自行实现DateTime类型的时区转换
+            </summary>
+        </member>
         <member name="P:ThingsGateway.Admin.Blazor.Core.AppDataTable`4.Items">
             <summary>
             当前显示项目

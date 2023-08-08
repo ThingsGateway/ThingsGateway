@@ -23,6 +23,7 @@ using Opc.Ua;
 using System;
 using System.Threading.Tasks;
 
+using ThingsGateway.Admin.Blazor.Core;
 using ThingsGateway.Admin.Core;
 using ThingsGateway.Blazor;
 
@@ -41,6 +42,12 @@ public partial class OPCUAClientDebugDriverPage
     bool IsShowImportVariableList;
     private OPCUAClientPage opcUAClientPage;
     private ImportVariable ImportVariable { get; set; }
+    [Inject]
+    private InitTimezone InitTimezone { get; set; }
+
+    [Inject]
+    IPopupService PopupService { get; set; }
+
     /// <summary>
     /// <inheritdoc/>
     /// </summary>
@@ -70,18 +77,15 @@ public partial class OPCUAClientDebugDriverPage
 
         base.OnAfterRender(firstRender);
     }
-
     private void Add()
     {
         if (_plc.Connected)
             _plc.AddSubscription(YitIdHelper.NextId().ToString(), new[] { defalutDebugDriverPage.Address });
         else
         {
-            defalutDebugDriverPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Debug, SysDateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat() + " - " + "未连接"));
+            defalutDebugDriverPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Debug, SysDateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset) + " - " + "未连接"));
         }
     }
-    [Inject]
-    IPopupService PopupService { get; set; }
     private async Task DownDeviceExport()
     {
         var data = await ImportVariable?.GetImportVariableListAsync();
@@ -97,7 +101,7 @@ public partial class OPCUAClientDebugDriverPage
 
     private void Plc_DataChangedHandler((VariableNode variableNode, DataValue dataValue, Newtonsoft.Json.Linq.JToken jToken) item)
     {
-        defalutDebugDriverPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Debug, SysDateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat() + " - " + (item.variableNode.NodeId + ":" + item.jToken)));
+        defalutDebugDriverPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Debug, SysDateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset) + " - " + (item.variableNode.NodeId + ":" + item.jToken)));
         if (defalutDebugDriverPage.Messages.Count > 2500)
         {
             defalutDebugDriverPage.Messages.Clear();
@@ -111,17 +115,17 @@ public partial class OPCUAClientDebugDriverPage
             try
             {
                 var data = await _plc.ReadJTokenValueAsync(new string[] { defalutDebugDriverPage.Address });
-                defalutDebugDriverPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Debug, SysDateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat() + " - " + data.ToJson()));
+                defalutDebugDriverPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Debug, SysDateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset) + " - " + data.ToJson()));
             }
             catch (Exception ex)
             {
 
-                defalutDebugDriverPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Warning, SysDateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat() + " - " + ex.Message));
+                defalutDebugDriverPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Warning, SysDateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset) + " - " + ex.Message));
             }
         }
         else
         {
-            defalutDebugDriverPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Warning, SysDateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat() + " - " + "未连接"));
+            defalutDebugDriverPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Warning, SysDateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset) + " - " + "未连接"));
         }
     }
     private void Remove()
@@ -130,7 +134,7 @@ public partial class OPCUAClientDebugDriverPage
             _plc.RemoveSubscription("");
         else
         {
-            defalutDebugDriverPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Warning, SysDateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat() + " - " + "未连接"));
+            defalutDebugDriverPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Warning, SysDateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset) + " - " + "未连接"));
         }
     }
 
@@ -143,21 +147,21 @@ public partial class OPCUAClientDebugDriverPage
                 var data = await _plc.WriteNodeAsync(defalutDebugDriverPage.Address, JToken.Parse(defalutDebugDriverPage.WriteValue));
                 if (data.IsSuccess)
                 {
-                    defalutDebugDriverPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Information, SysDateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat() + " - " + " - 写入成功"));
+                    defalutDebugDriverPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Information, SysDateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset) + " - " + " - 写入成功"));
                 }
                 else
                 {
-                    defalutDebugDriverPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Warning, SysDateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat() + " - " + " - 写入失败 " + data.Message));
+                    defalutDebugDriverPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Warning, SysDateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset) + " - " + " - 写入失败 " + data.Message));
                 }
             }
             else
             {
-                defalutDebugDriverPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Warning, SysDateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat() + " - " + "未连接"));
+                defalutDebugDriverPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Warning, SysDateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset) + " - " + "未连接"));
             }
         }
         catch (Exception ex)
         {
-            defalutDebugDriverPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Error, SysDateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat() + " - " + " - " + "写入失败：" + ex.Message));
+            defalutDebugDriverPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Error, SysDateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset) + " - " + " - " + "写入失败：" + ex.Message));
         }
     }
 }

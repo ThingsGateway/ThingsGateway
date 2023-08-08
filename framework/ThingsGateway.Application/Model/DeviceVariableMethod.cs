@@ -64,7 +64,7 @@ public class DeviceVariableMethodSource
     /// </summary>
     /// <param name="time"></param>
     /// <returns></returns>
-    public bool CheckIfRequestAndUpdateTime(DateTimeOffset time) => exTimerTick.IsTickHappen(time);
+    public bool CheckIfRequestAndUpdateTime(DateTime time) => exTimerTick.IsTickHappen(time);
 
 }
 

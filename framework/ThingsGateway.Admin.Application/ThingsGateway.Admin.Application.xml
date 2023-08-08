@@ -479,7 +479,7 @@
             登录事件参数
             </summary>
         </member>
-        <member name="F:ThingsGateway.Admin.Application.LoginOpenApiEvent.DateTimeOffset">
+        <member name="F:ThingsGateway.Admin.Application.LoginOpenApiEvent.DateTime">
             <summary>
             时间
             </summary>
@@ -1192,7 +1192,7 @@
             登录事件参数
             </summary>
         </member>
-        <member name="F:ThingsGateway.Admin.Application.LoginEvent.DateTimeOffset">
+        <member name="F:ThingsGateway.Admin.Application.LoginEvent.DateTime">
             <summary>
             时间
             </summary>

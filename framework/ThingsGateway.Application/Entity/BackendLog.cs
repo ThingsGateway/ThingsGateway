@@ -28,7 +28,7 @@ public class BackendLog : PrimaryIdEntity
     /// </summary>
     [SugarColumn(ColumnName = "LogTime", ColumnDescription = "日志时间", IsNullable = false)]
     [DataTable(Order = 1, IsShow = true, Sortable = true)]
-    public DateTimeOffset LogTime { get; set; }
+    public DateTime LogTime { get; set; }
     /// <summary>
     /// 日志级别
     /// </summary>

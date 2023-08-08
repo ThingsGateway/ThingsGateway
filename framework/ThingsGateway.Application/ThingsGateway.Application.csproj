@@ -44,9 +44,5 @@
 	  <ProjectReference Include="..\ThingsGateway.Admin.Application\ThingsGateway.Admin.Application.csproj" />
 	  <ProjectReference Include="..\ThingsGateway.Foundation\ThingsGateway.Foundation.csproj" />
 	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="Workers\Helper\" />
-	</ItemGroup>
 	
 </Project>

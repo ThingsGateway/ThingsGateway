@@ -100,5 +100,5 @@ public class VerificatInfo : PrimaryIdEntity
     /// </summary>
     [Description("超时时间")]
     [DataTable(Order = 5, IsShow = true, Sortable = true)]
-    public DateTimeOffset VerificatTimeout { get; set; }
+    public DateTime VerificatTimeout { get; set; }
 }

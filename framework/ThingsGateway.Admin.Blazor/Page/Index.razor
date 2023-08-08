@@ -66,7 +66,7 @@
                                       Small>
                     <MRow Class="pt-1">
                         <MCol Cols="4">
-                            <span class="text-caption">@item.OpTime.ToDefaultDateTimeFormat()</span>
+                            <span class="text-caption">@item.OpTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset)</span>
                         </MCol>
                         <MCol>
                             <div class="text-body-1">@item.Name</div>
@@ -93,7 +93,7 @@
                                       Small>
                     <MRow Class="pt-1">
                         <MCol Cols="4">
-                            <span class="text-caption">@item.OpTime.ToDefaultDateTimeFormat()</span>
+                            <span class="text-caption">@item.OpTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset)</span>
                         </MCol>
                         <MCol>
                             <div class="text-body-1">@item.Name</div>

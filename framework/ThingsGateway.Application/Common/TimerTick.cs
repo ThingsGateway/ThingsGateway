@@ -34,13 +34,13 @@ public class TimerTick
     /// <summary>
     /// 上次操作时间
     /// </summary>
-    public DateTimeOffset LastTime { get; private set; }
+    public DateTime LastTime { get; private set; }
 
     /// <summary>
     /// 是否触发时间刻度
     /// </summary>
     /// <returns></returns>
-    public bool IsTickHappen(DateTimeOffset currentTime)
+    public bool IsTickHappen(DateTime currentTime)
     {
         var dateTime = LastTime.AddMilliseconds(milliSeconds);
         if (currentTime < dateTime)

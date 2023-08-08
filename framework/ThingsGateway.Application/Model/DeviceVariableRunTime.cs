@@ -82,7 +82,7 @@ public class DeviceVariableRunTime : DeviceVariable
     /// </summary>
     /// <param name="value"></param>
     /// <param name="dateTime"></param>
-    public OperResult SetValue(object value, DateTimeOffset dateTime = default)
+    public OperResult SetValue(object value, DateTime dateTime = default)
     {
         try
         {
@@ -129,7 +129,7 @@ public class DeviceVariableRunTime : DeviceVariable
 
         void Set(object data)
         {
-            DateTimeOffset time;
+            DateTime time;
             if (dateTime == default)
             {
                 time = SysDateTimeExtensions.CurrentDateTime;
@@ -139,22 +139,8 @@ public class DeviceVariableRunTime : DeviceVariable
                 time = dateTime;
             }
             CollectTime = time;
-            if (data?.GetType().IsValueType == true)
             {
-                if (data != _value && LastSetValue != data || isOnlineChanged)
-                {
-                    ChangeTime = time;
-                    if (IsOnline)
-                    {
-                        _value = data;
-                    }
-                    LastSetValue = data;
-                    VariableValueChange?.Invoke(this);
-                }
-            }
-            else
-            {
-                if (data?.ToString() != _value?.ToString() && LastSetValue?.ToString() != data?.ToString() || isOnlineChanged)
+                if ((data?.ToString() != _value?.ToString() && LastSetValue?.ToString() != data?.ToString()) || isOnlineChanged)
                 {
                     ChangeTime = time;
                     if (IsOnline)
@@ -175,13 +161,13 @@ public class DeviceVariableRunTime : DeviceVariable
     /// </summary>
     [Description("变化时间")]
     [DataTable(Order = 2, IsShow = true, Sortable = true)]
-    public DateTimeOffset ChangeTime { get; private set; }
+    public DateTime ChangeTime { get; private set; }
     /// <summary>
     /// 采集时间
     /// </summary>
     [Description("采集时间")]
     [DataTable(Order = 2, IsShow = true, Sortable = true)]
-    public DateTimeOffset CollectTime { get; private set; }
+    public DateTime CollectTime { get; private set; }
 
 
     /// <summary>
@@ -255,11 +241,11 @@ public class DeviceVariableRunTime : DeviceVariable
     /// <summary>
     /// 报警时间
     /// </summary>
-    public DateTimeOffset AlarmTime { get; set; }
+    public DateTime AlarmTime { get; set; }
     /// <summary>
     /// 事件时间
     /// </summary>
-    public DateTimeOffset EventTime { get; set; }
+    public DateTime EventTime { get; set; }
     /// <summary>
     /// 报警类型
     /// </summary>

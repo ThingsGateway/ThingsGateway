@@ -35,7 +35,7 @@ public class UploadDeviceRunTime : UploadDevice
     /// 设备活跃时间
     /// </summary>
     [Description("活跃时间")]
-    public DateTimeOffset ActiveTime { get; private set; } = DateTimeOffset.MinValue;
+    public DateTime ActiveTime { get; private set; } = DateTime.MinValue;
     /// <summary>
     /// 设备状态
     /// </summary>
@@ -113,7 +113,7 @@ public class UploadDeviceRunTime : UploadDevice
     /// <param name="activeTime"></param>
     /// <param name="errorCount"></param>
     /// <param name="lastErrorMessage"></param>
-    public void SetDeviceStatus(DateTimeOffset? activeTime = null, int? errorCount = null, string lastErrorMessage = null)
+    public void SetDeviceStatus(DateTime? activeTime = null, int? errorCount = null, string lastErrorMessage = null)
     {
         if (activeTime != null)
             ActiveTime = activeTime.Value;

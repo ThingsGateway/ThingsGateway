@@ -381,5 +381,77 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="T:ThingsGateway.Application.DriverDebugUIBase">
+            <summary>
+            调试UI
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Application.DriverDebugUIBase.isDownExport">
+            <summary>
+            导出提示
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Application.DriverDebugUIBase.Messages">
+            <summary>
+            日志缓存
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Application.DriverDebugUIBase.Plc">
+            <summary>
+            默认读写设备
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Application.DriverDebugUIBase.Address">
+            <summary>
+            变量地址
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Application.DriverDebugUIBase.DataTypeEnum">
+            <summary>
+            数据类型
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Application.DriverDebugUIBase.JS">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.Application.DriverDebugUIBase.WriteValue">
+            <summary>
+            写入值
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Application.DriverDebugUIBase.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Application.DriverDebugUIBase.ReadAsync">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Application.DriverDebugUIBase.WriteAsync">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Application.DriverDebugUIBase.DownDeviceExportAsync(ThingsGateway.Application.CollectDevice)">
+            <summary>
+            导入设备
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Application.DriverDebugUIBase.DownDeviceExportAsync(System.Collections.Generic.List{ThingsGateway.Application.DeviceVariable})">
+            <summary>
+            导入变量
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Application.DriverDebugUIBase.DownDeviceMessageExportAsync(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            导出
+            </summary>
+            <param name="values"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Application.DriverDebugUIBase.LogOut(TouchSocket.Core.LogLevel,System.Object,System.String,System.Exception)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Application.DriverDebugUIBase.OnInitialized">
+            <inheritdoc/>
+        </member>
     </members>
 </doc>

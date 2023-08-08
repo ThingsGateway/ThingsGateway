@@ -61,8 +61,8 @@ public partial class HistoryValuePage
                 {
                     var query = result.Content.CopyNew().Queryable<HistoryValue>()
                     .WhereIF(!input.Name.IsNullOrEmpty(), a => a.Name.Contains(input.Name))
-                    .WhereIF(input.StartTime != null, a => a.CollectTime >= input.StartTime.Value.ToUniversalTime())
-                    .WhereIF(input.EndTime != null, a => a.CollectTime <= input.EndTime.Value.ToUniversalTime());
+                    .WhereIF(input.StartTime != null, a => a.CollectTime >= input.StartTime.Value)
+                    .WhereIF(input.EndTime != null, a => a.CollectTime <= input.EndTime.Value);
 
                     for (int i = 0; i < input.SortField.Count; i++)
                     {

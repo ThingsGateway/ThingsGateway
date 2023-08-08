@@ -40,7 +40,7 @@ public class SessionOutput : PrimaryKeyEntity
     ///</summary>
     [Description("最新登录时间")]
     [DataTable(Order = 4, IsShow = true, Sortable = true)]
-    public DateTimeOffset? LatestLoginTime { get; set; }
+    public DateTime? LatestLoginTime { get; set; }
 
     /// <summary>
     /// 在线状态
