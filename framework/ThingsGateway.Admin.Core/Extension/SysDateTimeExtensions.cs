@@ -31,8 +31,10 @@ public static class SysDateTimeExtensions
     /// </summary>
     public static string ToDefaultDateTimeFormat(this in DateTime dt, TimeSpan offset)
     {
-        if(dt.Kind==DateTimeKind.Utc)
+        if (dt.Kind == DateTimeKind.Utc)
             return new DateTimeOffset(dt.ToLocalTime(), offset).ToString("yyyy-MM-dd HH:mm:ss:fff zz");
+        else if (dt == DateTime.MinValue || dt == DateTime.MaxValue)
+            return dt.ToString("yyyy-MM-dd HH:mm:ss:fff zz");
         else
             return new DateTimeOffset(dt, offset).ToString("yyyy-MM-dd HH:mm:ss:fff zz");
     }
@@ -50,8 +52,8 @@ public static class SysDateTimeExtensions
     {
         return dt.ToString("yyyy-MM-dd HH-mm-ss-fff zz");
     }
-    
-    
+
+
 
 
     /// <summary>
