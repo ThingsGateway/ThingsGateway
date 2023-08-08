@@ -36,6 +36,34 @@ namespace ThingsGateway.OPCUA;
 /// </summary>
 public class OPCUAClient : CollectBase
 {
+    readonly PeriodicTimer _periodicTimer = new(TimeSpan.FromSeconds(60));
+    /// <summary>
+    /// OPCUA客户端
+    /// </summary>
+    public OPCUAClient()
+    {
+        _ = RunTimerAsync();
+    }
+
+    private async Task RunTimerAsync()
+    {
+        while (await _periodicTimer.WaitForNextTickAsync())
+        {
+            if (PLC != null && PLC.Session == null)
+            {
+                try
+                {
+                    await PLC.ConnectAsync();
+                }
+                catch (Exception ex)
+                {
+                    LogMessage.Exception(ex);
+                }
+            }
+        }
+
+    }
+
     internal CollectDeviceRunTime Device;
 
     internal Foundation.Adapter.OPCUA.OPCUAClient PLC = null;
@@ -73,7 +101,11 @@ public class OPCUAClient : CollectBase
     }
 
     /// <inheritdoc/>
-    public override bool IsConnected() => PLC.Connected;
+    public override bool IsConnected()
+    {
+
+        return PLC.Connected;
+    }
 
     /// <inheritdoc/>
     public override List<DeviceVariableSourceRead> LoadSourceRead(List<DeviceVariableRunTime> deviceVariables)
@@ -99,7 +131,6 @@ public class OPCUAClient : CollectBase
     /// <inheritdoc/>
     public override async Task<OperResult<byte[]>> ReadSourceAsync(DeviceVariableSourceRead deviceVariableSourceRead, CancellationToken token)
     {
-        await Task.CompletedTask;
         var result = await PLC.ReadJTokenValueAsync(deviceVariableSourceRead.DeviceVariables.Select(a => a.VariableAddress).ToArray(), token);
         foreach (var data in result)
         {
@@ -163,6 +194,7 @@ public class OPCUAClient : CollectBase
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
+        _periodicTimer?.Dispose();
         if (PLC != null)
         {
             PLC.DataChangedHandler -= DataChangedHandler;
