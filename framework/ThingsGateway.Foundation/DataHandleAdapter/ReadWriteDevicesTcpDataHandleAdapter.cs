@@ -108,11 +108,8 @@ public abstract class ReadWriteDevicesTcpDataHandleAdapter<TRequest> : CustomDat
     protected virtual FilterResult GetResponse(ByteBlock byteBlock, TRequest request, byte[] body, byte[] bytes)
     {
         var unpackbytes = UnpackResponse(request, request.SendBytes, body, bytes);
-        request.Message = unpackbytes.Message;
-        request.Content = unpackbytes.Content1;
         request.ReceivedBytes = bytes;
-        request.ResultCode = unpackbytes.ResultCode;
-        switch (unpackbytes.Content2)
+        switch (unpackbytes)
         {
             case FilterResult.Cache:
                 return FilterResult.Cache;
@@ -121,15 +118,10 @@ public abstract class ReadWriteDevicesTcpDataHandleAdapter<TRequest> : CustomDat
             case FilterResult.GoOn:
                 byteBlock.Pos = byteBlock.Len;
                 return FilterResult.GoOn;
+            default:
+                byteBlock.Pos = byteBlock.Len;
+                return FilterResult.GoOn;
         }
-
-        //直接放弃
-        byteBlock.Pos = byteBlock.Len;
-        request.ReceivedBytes = bytes;
-        Logger?.Warning(unpackbytes.Message);
-        request.ResultCode = ResultCode.Error;
-        request.Message = unpackbytes.Message;
-        return FilterResult.GoOn;
     }
     /// <summary>
     /// 发送方法,会重新建立<see cref="Request"/>
@@ -156,5 +148,5 @@ public abstract class ReadWriteDevicesTcpDataHandleAdapter<TRequest> : CustomDat
     /// <summary>
     /// 报文拆包
     /// </summary>
-    protected abstract OperResult<byte[], FilterResult> UnpackResponse(TRequest request, byte[] send, byte[] body, byte[] response);
+    protected abstract FilterResult UnpackResponse(TRequest request, byte[] send, byte[] body, byte[] response);
 }

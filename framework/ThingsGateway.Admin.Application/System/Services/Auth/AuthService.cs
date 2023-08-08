@@ -79,7 +79,7 @@ public class AuthService : IAuthService
 
         if (sysBase != null)//如果有这个配置项
         {
-            if (sysBase.ConfigValue.ToBool())//如果需要验证码
+            if (sysBase.ConfigValue.ToBoolean())//如果需要验证码
             {
                 //如果没填验证码，提示验证码不能为空
                 if (input.ValidCode.IsNullOrEmpty() || input.ValidCodeReqNo == 0) throw Oops.Bah("验证码不能为空").StatusCode(410);
@@ -217,7 +217,7 @@ public class AuthService : IAuthService
             bool isSingle = false;//默认不开启单用户登录
 
             var singleConfig = await _configService.GetByConfigKeyAsync(ConfigConst.SYS_CONFIGBASEDEFAULT, ConfigConst.CONFIG_SINGLE_OPEN);//获取系统单用户登录选项
-            if (singleConfig != null) isSingle = singleConfig.ConfigValue.ToBool();//如果配置不为空则设置单用户登录选项为系统配置的值
+            if (singleConfig != null) isSingle = singleConfig.ConfigValue.ToBoolean();//如果配置不为空则设置单用户登录选项为系统配置的值
             if (isSingle)//判断是否单用户登录
             {
                 await _noticeService.LogoutAsync(loginEvent.SysUser.Id, verificatInfos.Where(it => it.Device == loginEvent.Device.ToString()).ToList(), "该账号已在别处登录!");//通知其他用户下线

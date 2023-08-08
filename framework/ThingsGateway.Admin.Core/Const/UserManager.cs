@@ -22,7 +22,7 @@ public class UserManager
     /// <summary>
     /// 是否超级管理员
     /// </summary>
-    public static bool IsSuperAdmin => (App.User?.FindFirst(ClaimConst.IsSuperAdmin)?.Value).ToBool();
+    public static bool IsSuperAdmin => (App.User?.FindFirst(ClaimConst.IsSuperAdmin)?.Value).ToBoolean();
 
     /// <summary>
     /// 当前用户账号

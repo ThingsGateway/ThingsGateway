@@ -330,7 +330,7 @@ public static class ObjectExtensions
     /// 转换布尔值
     /// </summary>
     /// <returns></returns>
-    public static bool ToBool(this object value, bool defaultValue = false) => value?.ToString().ToUpper() switch
+    public static bool ToBoolean(this object value, bool defaultValue = false) => value?.ToString().ToUpper() switch
     {
         "1" or "TRUE" => true,
         _ => defaultValue,
@@ -356,10 +356,22 @@ public static class ObjectExtensions
         {
             return Double.IsNaN(d) ? defaultValue : (Decimal)d;
         }
-        var str = value.ToString();
+        var str = value?.ToString();
         return str.IsNullOrEmpty() ? defaultValue : Decimal.TryParse(str, out var n) ? n : defaultValue;
     }
-
+    /// <summary>
+    /// ToDecimal
+    /// </summary>
+    /// <returns></returns>
+    public static double ToDouble(this object value, double defaultValue = 0)
+    {
+        if (value is Double d)
+        {
+            return Double.IsNaN(d) ? defaultValue : (Double)d;
+        }
+        var str = value?.ToString();
+        return str.IsNullOrEmpty() ? defaultValue : double.TryParse(str, out var n) ? n : defaultValue;
+    }
 
     /// <summary>
     /// JsonElement 转 Object

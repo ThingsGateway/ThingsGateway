@@ -1026,7 +1026,7 @@
             <param name="str"></param>
             <returns></returns>
         </member>
-        <member name="M:ThingsGateway.Admin.Core.ObjectExtensions.ToBool(System.Object,System.Boolean)">
+        <member name="M:ThingsGateway.Admin.Core.ObjectExtensions.ToBoolean(System.Object,System.Boolean)">
             <summary>
             转换布尔值
             </summary>
@@ -1045,6 +1045,12 @@
             <returns></returns>
         </member>
         <member name="M:ThingsGateway.Admin.Core.ObjectExtensions.ToDecimal(System.Object,System.Int32)">
+            <summary>
+            ToDecimal
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.Core.ObjectExtensions.ToDouble(System.Object,System.Double)">
             <summary>
             ToDecimal
             </summary>
@@ -1142,7 +1148,7 @@
             <param name="input"></param>
             <returns></returns>
         </member>
-        <member name="M:ThingsGateway.Admin.Core.StringExtensions.ToBool(System.String,System.Boolean)">
+        <member name="M:ThingsGateway.Admin.Core.StringExtensions.ToBoolean(System.String,System.Boolean)">
             <summary>
             转换布尔值
             </summary>

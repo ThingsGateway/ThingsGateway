@@ -335,7 +335,7 @@ public class IotSharpClient : UpLoadBase
                         if (tag != null)
                         {
                             var rpcEnable =
-GetPropertyValue(tag, nameof(variablePropertys.VariableRpcEnable)).ToBool()
+GetPropertyValue(tag, nameof(variablePropertys.VariableRpcEnable)).ToBoolean()
 && driverPropertys.DeviceRpcEnable;
                             if (rpcEnable == true)
                             {

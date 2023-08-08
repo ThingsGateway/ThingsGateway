@@ -50,35 +50,54 @@ public class ModbusTcpDataHandleAdapter : ReadWriteDevicesTcpDataHandleAdapter<M
     }
 
     /// <inheritdoc/>
-    protected override OperResult<byte[], FilterResult> UnpackResponse(ModbusTcpMessage request, byte[] send, byte[] body, byte[] response)
+    protected override FilterResult UnpackResponse(ModbusTcpMessage request, byte[] send, byte[] body, byte[] response)
     {
         //理想状态检测
         var result = ModbusHelper.GetModbusData(send.RemoveBegin(6), response.RemoveBegin(6));
         if (result.IsSuccess)
         {
-            return OperResult.CreateSuccessResult(result.Content, FilterResult.Success);
+            request.ResultCode = result.ResultCode;
+            request.Message = result.Message;
+            request.Content = result.Content;
+            return FilterResult.Success;
         }
         else
         {
             //如果返回错误，具体分析
             var op = result.Copy<byte[], FilterResult>();
+            if (response.Length == 9)
+            {
+                if (response[7] >= 0x80)//错误码
+                {
+                    request.ResultCode = result.ResultCode;
+                    request.Message = result.Message;
+                    request.Content = result.Content;
+                    return FilterResult.Success;
+                }
+            }
             if (response.Length < 10)
             {
+                request.ResultCode = result.ResultCode;
+                request.Message = result.Message;
+                request.Content = result.Content;
+                return FilterResult.Cache;
                 //如果长度不足，返回缓存
-                op.Content2 = FilterResult.Cache;
-                return op;
             }
             if ((response.Length > response[8] + 9))
             {
+                request.ResultCode = result.ResultCode;
+                request.Message = result.Message;
+                request.Content = result.Content;
+                return FilterResult.Success;
                 //如果长度已经超了，说明这段报文已经不能继续解析了，直接返回放弃
-                op.Content2 = FilterResult.Success;
-                return op;
             }
             else
             {
+                request.ResultCode = result.ResultCode;
+                request.Message = result.Message;
+                request.Content = result.Content;
+                return FilterResult.Cache;
                 //否则返回缓存
-                op.Content2 = FilterResult.Cache;
-                return op;
             }
         }
 

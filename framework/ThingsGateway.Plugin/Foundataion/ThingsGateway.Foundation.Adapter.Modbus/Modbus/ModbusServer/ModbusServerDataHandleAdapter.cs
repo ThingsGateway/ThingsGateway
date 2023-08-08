@@ -10,7 +10,6 @@
 //------------------------------------------------------------------------------
 #endregion
 
-using ThingsGateway.Foundation.Extension;
 using ThingsGateway.Foundation.Extension.Generic;
 
 namespace ThingsGateway.Foundation.Adapter.Modbus;
@@ -69,7 +68,7 @@ public class ModbusServerDataHandleAdapter : ReadWriteDevicesTcpDataHandleAdapte
     }
 
     /// <inheritdoc/>
-    protected override OperResult<byte[], FilterResult> UnpackResponse(ModbusServerMessage request, byte[] send, byte[] body, byte[] response)
+    protected override FilterResult UnpackResponse(ModbusServerMessage request, byte[] send, byte[] body, byte[] response)
     {
         var result = GetModbusData(response.RemoveBegin(6));
         if (result.IsSuccess)
@@ -119,14 +118,15 @@ public class ModbusServerDataHandleAdapter : ReadWriteDevicesTcpDataHandleAdapte
                     Length = ThingsGatewayBitConverter.ToByte(response, 11),
                 };
             }
-
-            return OperResult.CreateSuccessResult(request.Content, FilterResult.Success);
+            request.ResultCode = result.ResultCode;
+            request.Message = result.Message;
+            return FilterResult.Success;
         }
         else
         {
-            var op = result.Copy<byte[], FilterResult>();
-            op.Content2 = FilterResult.Cache;
-            return op;
+            request.ResultCode = result.ResultCode;
+            request.Message = result.Message;
+            return FilterResult.Cache;
         }
     }
 }

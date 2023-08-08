@@ -60,7 +60,7 @@ public class HistoryValueWorker : BackgroundService
     public async Task<OperResult<SqlSugarClient>> GetHisDbAsync()
     {
         var ConfigService = ServiceHelper.Services.GetService<IConfigService>();
-        var hisEnable = (await ConfigService.GetByConfigKeyAsync(ThingsGatewayConfigConst.ThingGateway_HisConfig_Base, ThingsGatewayConfigConst.Config_His_Enable))?.ConfigValue?.ToBool();
+        var hisEnable = (await ConfigService.GetByConfigKeyAsync(ThingsGatewayConfigConst.ThingGateway_HisConfig_Base, ThingsGatewayConfigConst.Config_His_Enable))?.ConfigValue?.ToBoolean();
         var hisDbType = (await ConfigService.GetByConfigKeyAsync(ThingsGatewayConfigConst.ThingGateway_HisConfig_Base, ThingsGatewayConfigConst.Config_His_DbType))?.ConfigValue;
         var hisConnstr = (await ConfigService.GetByConfigKeyAsync(ThingsGatewayConfigConst.ThingGateway_HisConfig_Base, ThingsGatewayConfigConst.Config_His_ConnStr))?.ConfigValue;
 
@@ -458,7 +458,7 @@ public class HistoryValueMapper : IRegister
     {
         if (src.Value?.ToString()?.IsBoolValue() == true)
         {
-            if (src.Value.ToBool())
+            if (src.Value.ToBoolean())
             {
                 return 1;
             }

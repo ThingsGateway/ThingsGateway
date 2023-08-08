@@ -10,7 +10,6 @@
 //------------------------------------------------------------------------------
 #endregion
 
-using ThingsGateway.Foundation.Extension;
 
 namespace ThingsGateway.Foundation.Adapter.Siemens;
 
@@ -35,7 +34,7 @@ public class SiemensS7PLCDataHandleAdapter : ReadWriteDevicesTcpDataHandleAdapte
     }
 
     /// <inheritdoc/>
-    protected override OperResult<byte[], FilterResult> UnpackResponse(SiemensMessage request, byte[] send, byte[] body, byte[] response)
+    protected override FilterResult UnpackResponse(SiemensMessage request, byte[] send, byte[] body, byte[] response)
     {
         var result = new OperResult<byte[]>();
         if (response[2] * 256 + response[3] == 7)
@@ -57,23 +56,29 @@ public class SiemensS7PLCDataHandleAdapter : ReadWriteDevicesTcpDataHandleAdapte
         }
         if (result.IsSuccess)
         {
-            return OperResult.CreateSuccessResult(result.Content, FilterResult.Success);
+            request.ResultCode = result.ResultCode;
+            request.Message = result.Message;
+            request.Content = result.Content;
+            return FilterResult.Success;
         }
         else
         {
             //如果返回错误，具体分析
-            var op = result.Copy<byte[], FilterResult>();
             if (response.Length < 21)
             {
+                request.ResultCode = result.ResultCode;
+                request.Message = result.Message;
+                request.Content = result.Content;
                 //如果长度不足，返回缓存
-                op.Content2 = FilterResult.Cache;
-                return op;
+                return FilterResult.Cache;
             }
             else
             {
+                request.ResultCode = result.ResultCode;
+                request.Message = result.Message;
+                request.Content = result.Content;
                 //如果长度已经超了，说明这段报文已经不能继续解析了，直接返回放弃
-                op.Content2 = FilterResult.Success;
-                return op;
+                return FilterResult.Success;
             }
         }
     }

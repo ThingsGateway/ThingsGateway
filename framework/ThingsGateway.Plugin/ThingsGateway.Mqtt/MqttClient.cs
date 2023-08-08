@@ -415,7 +415,7 @@ public class MqttClient : UpLoadBase
             var tag = _uploadVariables.FirstOrDefault(a => a.Name == nv.Key);
             if (tag != null)
             {
-                var rpcEnable = GetPropertyValue(tag, nameof(variablePropertys.VariableRpcEnable)).ToBool();
+                var rpcEnable = GetPropertyValue(tag, nameof(variablePropertys.VariableRpcEnable)).ToBoolean();
                 if (rpcEnable == true)
                 {
                     var result = await _rpcCore.InvokeDeviceMethodAsync(ToString() + "-" + arg.ClientId, nv);

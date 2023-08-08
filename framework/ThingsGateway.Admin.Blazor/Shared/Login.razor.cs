@@ -133,7 +133,7 @@ public partial class Login
         GetCaptchaInfo();
         CONFIG_TITLE = (await App.GetService<IConfigService>().GetByConfigKeyAsync(ConfigConst.SYS_CONFIGBASEDEFAULT, ConfigConst.CONFIG_TITLE))?.ConfigValue;
         CONFIG_REMARK = (await App.GetService<IConfigService>().GetByConfigKeyAsync(ConfigConst.SYS_CONFIGBASEDEFAULT, ConfigConst.CONFIG_REMARK))?.ConfigValue;
-        _showCaptcha = (await App.GetService<IConfigService>().GetByConfigKeyAsync(ConfigConst.SYS_CONFIGBASEDEFAULT, ConfigConst.CONFIG_CAPTCHA_OPEN))?.ConfigValue?.ToBool() == true;
+        _showCaptcha = (await App.GetService<IConfigService>().GetByConfigKeyAsync(ConfigConst.SYS_CONFIGBASEDEFAULT, ConfigConst.CONFIG_CAPTCHA_OPEN))?.ConfigValue?.ToBoolean() == true;
         Welcome = "欢迎使用" + CONFIG_TITLE + "!";
         await base.OnParametersSetAsync();
     }

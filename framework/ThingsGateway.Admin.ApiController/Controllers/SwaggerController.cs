@@ -46,7 +46,7 @@ namespace ThingsGateway.Admin.Application
         [AllowAnonymous, NonUnify]
         public async Task<int> SwaggerCheckUrlAsync()
         {
-            var enable = (await _configService.GetByConfigKeyAsync(ConfigConst.SYS_CONFIGBASEDEFAULT, ConfigConst.CONFIG_SWAGGERLOGIN_OPEN)).ConfigValue.ToBool();
+            var enable = (await _configService.GetByConfigKeyAsync(ConfigConst.SYS_CONFIGBASEDEFAULT, ConfigConst.CONFIG_SWAGGERLOGIN_OPEN)).ConfigValue.ToBoolean();
             return enable ? 401 : 200;
         }
 

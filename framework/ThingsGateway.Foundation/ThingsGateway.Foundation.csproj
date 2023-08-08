@@ -3,6 +3,11 @@
 	<PropertyGroup>
 		<TargetFrameworks>net45;net6.0;net7.0</TargetFrameworks>
 		<OpenApiGenerateDocuments>false</OpenApiGenerateDocuments>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+		<PackageProjectUrl>https://diego2098.gitee.io/thingsgateway-docs/</PackageProjectUrl>
+		<PackageTags>ThingsGateway;Diego;dotNET China;Blazor;设备采集;边缘网关</PackageTags>
+		<PackageOutputPath>../nupkgs</PackageOutputPath>
 		<AssemblyOriginatorKeyFile>..\..\snks\ThingsGateway.snk</AssemblyOriginatorKeyFile>
 	</PropertyGroup>
 	
