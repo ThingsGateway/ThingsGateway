@@ -21,7 +21,7 @@ using ThingsGateway.Application;
 namespace ThingsGateway.ApiController;
 
 /// <summary>
-/// 后台登录控制器
+/// 文件下载
 /// </summary>
 [ApiDescriptionSettings(CateGoryConst.ThingsGatewayAdmin, Order = 200)]
 [Route("gatewayFile")]
