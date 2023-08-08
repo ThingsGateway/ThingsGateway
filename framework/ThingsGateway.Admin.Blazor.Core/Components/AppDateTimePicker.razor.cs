@@ -294,7 +294,7 @@ public partial class AppDateTimePicker
         Value = dateTime;
         if (ValueChanged.HasDelegate)
         {
-            await ValueChanged.InvokeAsync(dateTime);
+            await ValueChanged.InvokeAsync(DateTime.SpecifyKind(dateTime.Value, DateTimeKind.Utc));
         }
     }
 

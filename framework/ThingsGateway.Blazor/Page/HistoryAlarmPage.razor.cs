@@ -63,8 +63,8 @@ public partial class HistoryAlarmPage
                     var query = result.Content.CopyNew().Queryable<HistoryAlarm>().
                     WhereIF(!input.DeviceName.IsNullOrEmpty(), a => a.DeviceName.Contains(input.DeviceName))
                     .WhereIF(!input.Name.IsNullOrEmpty(), a => a.Name.Contains(input.Name))
-                    .WhereIF(input.StartTime != null, a => a.EventTime >= input.StartTime.Value)
-                    .WhereIF(input.EndTime != null, a => a.EventTime <= input.EndTime.Value);
+                    .WhereIF(input.StartTime != null, a => a.EventTime >= input.StartTime.Value.ToLocalTime())
+                    .WhereIF(input.EndTime != null, a => a.EventTime <= input.EndTime.Value.ToLocalTime());
 
                     for (int i = 0; i < input.SortField.Count; i++)
                     {

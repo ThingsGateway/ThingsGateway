@@ -21,9 +21,9 @@ public class HisPageInput : VariablePageInput
     /// <summary>
     /// 开始时间
     /// </summary>
-    public DateTime? StartTime { get; set; } = DateTime.Now.AddDays(-1);
+    public DateTime? StartTime { get; set; } = DateTime.UtcNow.AddDays(-1);
     /// <summary>
     /// 结束时间
     /// </summary>
-    public DateTime? EndTime { get; set; } = DateTime.Now.AddDays(1);
+    public DateTime? EndTime { get; set; } = DateTime.UtcNow.AddDays(1);
 }
