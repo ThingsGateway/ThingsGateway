@@ -48,7 +48,7 @@ public abstract class DriverBase : DisposableObject
         base.Dispose(disposing);
     }
     /// <summary>
-    /// 调试UI Type，继承实现<see cref="DriverDebugUIBase"/>后，返回继承类的Type，如果不存在，返回null
+    /// 调试UI Type，如果不存在，返回null
     /// </summary>
     public abstract Type DriverDebugUIType { get; }
 

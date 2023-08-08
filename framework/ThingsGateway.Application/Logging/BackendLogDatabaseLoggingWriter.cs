@@ -44,7 +44,7 @@ public class BackendLogDatabaseLoggingWriter : IDatabaseLoggingWriter
                 LogLevel = logMsg.LogLevel,
                 LogMessage = logMsg.State.ToString(),
                 LogSource = logMsg.LogName,
-                LogTime = logMsg.LogDateTime.ToUniversalTime(),
+                LogTime = logMsg.LogDateTime,
                 Exception = logMsg.Exception?.ToString(),
             };
             _logQueues.Enqueue(logRuntime);

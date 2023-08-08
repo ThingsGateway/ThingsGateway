@@ -41,5 +41,5 @@ public class UnifyResult<T>
     /// <summary>
     /// 时间
     /// </summary>
-    public DateTimeOffset Time { get; set; }
+    public DateTime Time { get; set; }
 }

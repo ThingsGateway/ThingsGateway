@@ -165,8 +165,8 @@ src.IsOnline ? StatusCodes.Good : StatusCodes.Bad);
             errors[0] = StatusCodes.BadHistoryOperationUnsupported;
             return;
         }
-        var startTime = readDetail.StartTime.ToUniversalTime();
-        var endTime = readDetail.EndTime.ToUniversalTime();
+        var startTime = readDetail.StartTime;
+        var endTime = readDetail.EndTime;
 
         for (int i = 0; i < nodesToRead.Count; i++)
         {
@@ -314,7 +314,7 @@ src.IsOnline ? StatusCodes.Good : StatusCodes.Bad);
     /// <summary>
     /// 在服务器端直接更改对应数据节点的值
     /// </summary>
-    private void ChangeNodeData(OPCUATag tag, object value, DateTimeOffset dateTime)
+    private void ChangeNodeData(OPCUATag tag, object value, DateTime dateTime)
     {
         object newValue;
         try
@@ -349,7 +349,7 @@ src.IsOnline ? StatusCodes.Good : StatusCodes.Bad);
             newValue = value;
         }
         tag.Value = newValue;
-        tag.Timestamp = dateTime.UtcDateTime;
+        tag.Timestamp = dateTime;
 
 
         void SetDataType(OPCUATag tag, object value)
@@ -447,7 +447,7 @@ src.IsOnline ? StatusCodes.Good : StatusCodes.Bad);
         variable.Value = Opc.Ua.TypeInfo.GetDefaultValue(variable.DataType, ValueRanks.Any, Server.TypeTree);
         var code = variableRunTime.IsOnline ? StatusCodes.Good : StatusCodes.Bad;
         variable.StatusCode = code;
-        variable.Timestamp = variableRunTime.CollectTime.UtcDateTime;
+        variable.Timestamp = variableRunTime.CollectTime;
         variable.OnWriteValue = OnWriteDataValue;
         parent?.AddChild(variable);
         NodeIdTags.AddOrUpdate(variable.NodeId, variable);

@@ -290,7 +290,7 @@
             <param name="fs">设备组节点</param>
             <param name="name">设备名称</param>
         </member>
-        <member name="M:ThingsGateway.OPCUA.ThingsGatewayNodeManager.ChangeNodeData(ThingsGateway.OPCUA.OPCUATag,System.Object,System.DateTimeOffset)">
+        <member name="M:ThingsGateway.OPCUA.ThingsGatewayNodeManager.ChangeNodeData(ThingsGateway.OPCUA.OPCUATag,System.Object,System.DateTime)">
             <summary>
             在服务器端直接更改对应数据节点的值
             </summary>

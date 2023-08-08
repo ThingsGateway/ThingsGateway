@@ -29,9 +29,9 @@ public class VariableData
     /// <inheritdoc cref="DeviceVariableRunTime.Value"/>
     public object Value { get; set; }
     /// <inheritdoc cref="DeviceVariableRunTime.ChangeTime"/>
-    public DateTimeOffset ChangeTime { get; set; }
+    public DateTime ChangeTime { get; set; }
     /// <inheritdoc cref="DeviceVariableRunTime.CollectTime"/>
-    public DateTimeOffset CollectTime { get; set; }
+    public DateTime CollectTime { get; set; }
     /// <inheritdoc cref="DeviceVariableRunTime.IsOnline"/>
     public bool IsOnline { get; set; }
     /// <inheritdoc cref="MemoryVariable.ReadExpressions"/>

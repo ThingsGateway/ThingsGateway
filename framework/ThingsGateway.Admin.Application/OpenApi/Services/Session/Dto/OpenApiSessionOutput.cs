@@ -40,7 +40,7 @@ public class OpenApiSessionOutput : PrimaryKeyEntity
     ///</summary>
     [Description("最新登录时间")]
     [DataTable(Order = 3, IsShow = true, Sortable = true)]
-    public DateTimeOffset? LatestLoginTime { get; set; }
+    public DateTime? LatestLoginTime { get; set; }
 
     /// <summary>
     /// 令牌数量

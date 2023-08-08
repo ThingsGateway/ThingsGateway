@@ -30,6 +30,7 @@
 @inherits BaseComponentBase
 @inject UserResoures UserResoures
 @layout MainLayout
+@inject InitTimezone InitTimezone
 <AppDataTable @ref="_datatable" TItem="HistoryValue" SearchItem="HisPageInput"
               AddItem="object" EditItem="object" IsShowSelect=false
               IsMenuOperTemplate=false
@@ -68,28 +69,38 @@
 
     </SearchTemplate>
 
-    <ItemColTemplate>
-        @switch (context.Header.Value)
+    <ItemColWithDTTemplate>
+        @if (context?.Value?.GetType() == typeof(DateTime))
         {
-            case nameof(context.Item.IsOnline):
-                <EnableChip Value="context.Item.IsOnline" DisabledLabel="离线" EnabledLabel="在线">
-                </EnableChip>
-                break;
-            default:
-                @if (context.Header.CellClass?.Contains("text-truncate") == true)
-                {
-                    <span title=@context.Value>
+            <span>
+                @((DateTime.SpecifyKind((DateTime)context.Value, DateTimeKind.Utc)).ToLocalTime().ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset))
+            </span>
+        }
+        else
+        {
+            @switch (context.Header.Value)
+            {
+                case nameof(context.Item.IsOnline):
+                    <EnableChip Value="context.Item.IsOnline" DisabledLabel="离线" EnabledLabel="在线">
+                    </EnableChip>
+                    break;
+                default:
+                    @if (context.Header.CellClass?.Contains("text-truncate") == true)
+                    {
+                        <span title=@context.Value>
+                            @context.Value
+                        </span>
+                    }
+                    else
+                    {
                         @context.Value
-                    </span>
-                }
-                else
-                {
-                    @context.Value
-                }
-                break;
+                    }
+                    break;
+
+            }
 
         }
-    </ItemColTemplate>
+    </ItemColWithDTTemplate>
 
 </AppDataTable>
 

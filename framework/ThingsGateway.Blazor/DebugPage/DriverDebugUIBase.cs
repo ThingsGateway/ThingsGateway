@@ -14,6 +14,11 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 
+using System.IO;
+using System.Threading;
+
+using ThingsGateway.Admin.Blazor.Core;
+using ThingsGateway.Admin.Core;
 using ThingsGateway.Application.Extensions;
 using ThingsGateway.Foundation;
 
@@ -65,6 +70,8 @@ public abstract class DriverDebugUIBase : ComponentBase, IDisposable
 
     [Inject]
     private IVariableService VariableService { get; set; }
+    [Inject]
+    private InitTimezone InitTimezone { get; set; }
 
     /// <inheritdoc/>
     public virtual void Dispose()
@@ -80,18 +87,18 @@ public abstract class DriverDebugUIBase : ComponentBase, IDisposable
             var data = await Plc.ReadAsync(Address, DataTypeEnum.GetSystemType());
             if (data.IsSuccess)
             {
-                Messages.Add((LogLevel.Information, SysDateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat() + " - 对应类型值：" + data.Content));
+                Messages.Add((LogLevel.Information, SysDateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset) + " - 对应类型值：" + data.Content));
 
             }
             else
             {
-                Messages.Add((LogLevel.Error, SysDateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat() + " - " + data.Message));
+                Messages.Add((LogLevel.Error, SysDateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset) + " - " + data.Message));
 
             }
         }
         catch (Exception ex)
         {
-            Messages.Add((LogLevel.Warning, SysDateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat() + "错误：" + ex.Message));
+            Messages.Add((LogLevel.Warning, SysDateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset) + "错误：" + ex.Message));
         }
 
     }
@@ -104,16 +111,16 @@ public abstract class DriverDebugUIBase : ComponentBase, IDisposable
             var data = await Plc.WriteAsync(Address, DataTypeEnum.GetSystemType(), WriteValue);
             if (data.IsSuccess)
             {
-                Messages.Add((LogLevel.Information, SysDateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat() + " - " + data.Message));
+                Messages.Add((LogLevel.Information, SysDateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset) + " - " + data.Message));
             }
             else
             {
-                Messages.Add((LogLevel.Warning, SysDateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat() + " - " + data.Message));
+                Messages.Add((LogLevel.Warning, SysDateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset) + " - " + data.Message));
             }
         }
         catch (Exception ex)
         {
-            Messages.Add((LogLevel.Error, SysDateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat() + " - " + "写入前失败：" + ex.Message));
+            Messages.Add((LogLevel.Error, SysDateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset) + " - " + "写入前失败：" + ex.Message));
         }
     }
     /// <summary>
@@ -183,7 +190,7 @@ public abstract class DriverDebugUIBase : ComponentBase, IDisposable
     /// <inheritdoc/>
     public void LogOut(TouchSocket.Core.LogLevel logLevel, object source, string message, Exception exception)
     {
-        Messages.Add(((LogLevel)logLevel, SysDateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat() + " - " + message + (exception != null ? exception.Message : "")));
+        Messages.Add(((LogLevel)logLevel, SysDateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset) + " - " + message + (exception != null ? exception.Message : "")));
         if (Messages.Count > 2500)
         {
             Messages.Clear();
