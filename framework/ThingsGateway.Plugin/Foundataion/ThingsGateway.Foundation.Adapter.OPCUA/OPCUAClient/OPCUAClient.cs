@@ -14,6 +14,7 @@ using Newtonsoft.Json.Linq;
 
 using Opc.Ua;
 using Opc.Ua.Client;
+using Opc.Ua.Client.ComplexTypes;
 using Opc.Ua.Configuration;
 
 using System.Collections.Generic;
@@ -892,7 +893,7 @@ public class OPCUAClient : DisposableObject
     60000,
     userIdentity,
     Array.Empty<string>());
-
+        await new ComplexTypeSystem(m_session).Load(false, true).ConfigureAwait(false);
         Log.Debug("连接成功");
 
         m_session.KeepAliveInterval = OPCNode.KeepAliveInterval == 0 ? 60000 : OPCNode.KeepAliveInterval;
