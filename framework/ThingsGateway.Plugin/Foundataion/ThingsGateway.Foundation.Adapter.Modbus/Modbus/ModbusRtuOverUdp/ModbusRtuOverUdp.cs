@@ -72,11 +72,14 @@ public class ModbusRtuOverUdp : ReadWriteDevicesUdpBase
     /// <inheritdoc/>
     public override void SetDataAdapter()
     {
-        ModbusRtuOverUdpDataHandleAdapter DataHandleAdapter = new()
+        ModbusRtuOverUdpDataHandleAdapter dataHandleAdapter = new()
         {
             Crc16CheckEnable = Crc16CheckEnable,
         };
-        UdpSession.SetDataHandlingAdapter(DataHandleAdapter);
+        UdpSession.Config.SetUdpDataHandlingAdapter(() =>
+        {
+            return dataHandleAdapter;
+        });
     }
 
     /// <inheritdoc/>

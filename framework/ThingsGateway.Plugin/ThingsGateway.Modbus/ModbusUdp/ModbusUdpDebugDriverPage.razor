@@ -25,12 +25,12 @@
 <DefalutDebugDriverPage  Channel="ChannelEnum.UdpSession" @ref=defalutDebugDriverPage>
     <MCard Flat Elevation="0">
         <MRow Class="my-1" NoGutters Justify="JustifyTypes.SpaceBetween" Align="AlignTypes.Center">
-            <MCheckbox Class="mx-1" Label=@(_plc.Description(x => x.IsCheckMessageId)) Dense Outlined HideDetails="@("auto")" @bind-Value=@_plc.IsCheckMessageId></MCheckbox>
-            <MTextField Class="mx-1" Label=@(_plc.Description(x => x.FrameTime)) Dense Outlined HideDetails="@("auto")" @bind-Value=@_plc.FrameTime></MTextField>
+            <MCheckbox Class="ma-1" Label=@(_plc.Description(x => x.IsCheckMessageId)) Dense Outlined HideDetails="@("auto")" @bind-Value=@_plc.IsCheckMessageId></MCheckbox>
+            <MTextField Class="ma-1" Label=@(_plc.Description(x => x.FrameTime)) Dense Outlined HideDetails="@("auto")" @bind-Value=@_plc.FrameTime></MTextField>
 
-            <MTextField Class="mx-1" Label=@(_plc.Description(x => x.Station)) Dense Outlined HideDetails="@("auto")" @bind-Value=@_plc.Station></MTextField>
-            <MTextField Class="mx-1" Label=@(_plc.Description(x => x.TimeOut)) Dense Outlined HideDetails="@("auto")" @bind-Value=@_plc.TimeOut></MTextField>
-            <MSelect Class="mx-1" Style="max-width:200px" @bind-Value="_plc.DataFormat" Outlined Label="@(_plc.Description(x => x.DataFormat))"
+            <MTextField Class="ma-1" Label=@(_plc.Description(x => x.Station)) Dense Outlined HideDetails="@("auto")" @bind-Value=@_plc.Station></MTextField>
+            <MTextField Class="ma-1" Label=@(_plc.Description(x => x.TimeOut)) Dense Outlined HideDetails="@("auto")" @bind-Value=@_plc.TimeOut></MTextField>
+            <MSelect Class="ma-1" Style="max-width:200px" @bind-Value="_plc.DataFormat" Outlined Label="@(_plc.Description(x => x.DataFormat))"
                      Items=@(typeof(DataFormat).GetEnumList())
                      MenuProps="@(props => { props.Auto = true; props.OffsetY = true; })"
                      ItemText=@((u) =>u.des)

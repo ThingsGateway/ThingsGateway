@@ -79,12 +79,12 @@ public class ModbusTcp : ReadWriteDevicesTcpClientBase
     /// <inheritdoc/>
     public override void SetDataAdapter()
     {
-        ModbusTcpDataHandleAdapter DataHandleAdapter = new()
+        ModbusTcpDataHandleAdapter dataHandleAdapter = new()
         {
             IsCheckMessageId = IsCheckMessageId,
             CacheTimeout = TimeSpan.FromMilliseconds(CacheTimeout)
         };
-        TcpClientEx.SetDataHandlingAdapter(DataHandleAdapter);
+        TcpClientEx.SetDataHandlingAdapter(dataHandleAdapter);
     }
 
     /// <inheritdoc/>

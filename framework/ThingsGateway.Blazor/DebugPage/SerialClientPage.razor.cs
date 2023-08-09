@@ -78,8 +78,7 @@ public partial class SerialClientPage
     /// <inheritdoc/>
     protected override void OnInitialized()
     {
-        config?.Dispose();
-        config = new TouchSocketConfig();
+        config ??= new TouchSocketConfig();
         var LogMessage = new TouchSocket.Core.LoggerGroup() { LogLevel = TouchSocket.Core.LogLevel.Trace };
         LogMessage.AddLogger(new EasyLogger(LogOut) { LogLevel = TouchSocket.Core.LogLevel.Trace });
         config.ConfigureContainer(a => a.RegisterSingleton<ILog>(LogMessage));
