@@ -115,7 +115,7 @@ public partial class OPCUAClientDebugDriverPage
             try
             {
                 var data = await _plc.ReadJTokenValueAsync(new string[] { defalutDebugDriverPage.Address });
-                defalutDebugDriverPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Debug, SysDateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset) + " - " + data.ToJson()));
+                defalutDebugDriverPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Debug, SysDateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset) + " - " + (data[0].Item1 + ":" + data[0].Item3)));
             }
             catch (Exception ex)
             {
