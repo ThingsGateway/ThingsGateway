@@ -31,11 +31,6 @@ public static class JsonUtils
     /// <summary>
     /// 解析获取DataValue
     /// </summary>
-    /// <param name="Context"></param>
-    /// <param name="dataTypeId"></param>
-    /// <param name="builtInType"></param>
-    /// <param name="valueRank"></param>
-    /// <param name="json"></param>
     /// <returns></returns>
     public static DataValue Decode(
         IServiceMessageContext Context,
@@ -45,6 +40,7 @@ public static class JsonUtils
         JToken json
     )
     {
+
         var data = DecoderObject(Context, dataTypeId, builtInType, valueRank, json);
         var dataValue = new DataValue(new Variant(data));
         return dataValue;
@@ -54,11 +50,6 @@ public static class JsonUtils
     /// <summary>
     /// 解析获取object
     /// </summary>
-    /// <param name="Context"></param>
-    /// <param name="dataTypeId"></param>
-    /// <param name="builtInType"></param>
-    /// <param name="valueRank"></param>
-    /// <param name="json"></param>
     /// <returns></returns>
     public static object DecoderObject(
         IServiceMessageContext Context,
@@ -76,10 +67,9 @@ public static class JsonUtils
                 {
                     Value = new
                     {
-                        TypeId = new { Id = dataTypeId.Identifier },
+                        TypeId = new { Id = dataTypeId.Identifier, Namespace = dataTypeId.NamespaceIndex },
                         Body = json
                     }
-
                 }.ToJson();
                 break;
             case BuiltInType.Variant:

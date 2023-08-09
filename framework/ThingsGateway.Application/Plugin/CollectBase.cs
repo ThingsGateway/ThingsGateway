@@ -17,8 +17,6 @@ using Newtonsoft.Json.Linq;
 using ThingsGateway.Foundation;
 using ThingsGateway.Foundation.Serial;
 
-using TouchSocket.Core;
-
 namespace ThingsGateway.Application;
 /// <summary>
 /// <para></para>

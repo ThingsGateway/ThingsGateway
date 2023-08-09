@@ -161,22 +161,12 @@
             <summary>
             解析获取DataValue
             </summary>
-            <param name="Context"></param>
-            <param name="dataTypeId"></param>
-            <param name="builtInType"></param>
-            <param name="valueRank"></param>
-            <param name="json"></param>
             <returns></returns>
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.OPCUA.JsonUtils.DecoderObject(Opc.Ua.IServiceMessageContext,Opc.Ua.NodeId,Opc.Ua.BuiltInType,System.Int32,Newtonsoft.Json.Linq.JToken)">
             <summary>
             解析获取object
             </summary>
-            <param name="Context"></param>
-            <param name="dataTypeId"></param>
-            <param name="builtInType"></param>
-            <param name="valueRank"></param>
-            <param name="json"></param>
             <returns></returns>
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.OPCUA.JsonUtils.DecodeRawData(Opc.Ua.JsonDecoder,Opc.Ua.BuiltInType,System.Int32,System.String)">

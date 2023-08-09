@@ -12,7 +12,6 @@
 
 global using ThingsGateway.Foundation.Adapter.Siemens;
 
-global using TouchSocket.Core;
 global using TouchSocket.Sockets;
 
 
