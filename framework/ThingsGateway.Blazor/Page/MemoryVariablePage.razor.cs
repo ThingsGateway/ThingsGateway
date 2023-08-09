@@ -96,7 +96,7 @@ public partial class MemoryVariablePage
 
     Task<Dictionary<string, ImportPreviewOutputBase>> DeviceImportAsync(IBrowserFile file)
     {
-        return VariableService.PreviewAsync(file);
+        return VariableService.MemoryVariablePreviewAsync(file);
     }
 
 

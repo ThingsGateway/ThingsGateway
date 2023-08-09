@@ -31,7 +31,7 @@ public class DeviceVariable : MemoryVariable
     public virtual long DeviceId { get; set; }
 
     /// <summary>
-    /// 写入表达式
+    /// 单位
     /// </summary>
     [SugarColumn(ColumnName = "Unit", ColumnDescription = "单位", Length = 200, IsNullable = true)]
     [DataTable(Order = 3, IsShow = true, Sortable = true)]
@@ -59,12 +59,7 @@ public class DeviceVariable : MemoryVariable
     [DataTable(Order = 3, IsShow = true, Sortable = true)]
     public string VariableAddress { get; set; }
 
-    /// <summary>
-    /// 写入表达式
-    /// </summary>
-    [SugarColumn(ColumnName = "WriteExpressions", ColumnDescription = "写入表达式", Length = 200, IsNullable = true)]
-    [DataTable(Order = 7, IsShow = true, Sortable = true)]
-    public string WriteExpressions { get; set; }
+
 
     /// <summary>
     /// 是否中间变量
