@@ -51,7 +51,12 @@ public class MemoryVariable : BaseEntity
     [SugarColumn(ColumnName = "ReadExpressions", ColumnDescription = "读取表达式", Length = 200, IsNullable = true)]
     [DataTable(Order = 7, IsShow = true, Sortable = true, CellClass = " table-text-truncate ")]
     public string ReadExpressions { get; set; }
-
+    /// <summary>
+    /// 写入表达式
+    /// </summary>
+    [SugarColumn(ColumnName = "WriteExpressions", ColumnDescription = "写入表达式", Length = 200, IsNullable = true)]
+    [DataTable(Order = 7, IsShow = true, Sortable = true)]
+    public string WriteExpressions { get; set; }
     /// <summary>
     /// 是否中间变量
     /// </summary>

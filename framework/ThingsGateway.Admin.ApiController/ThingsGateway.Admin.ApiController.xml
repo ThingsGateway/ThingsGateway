@@ -30,7 +30,7 @@
         </member>
         <member name="T:ThingsGateway.Admin.Application.FileController">
             <summary>
-            后台登录控制器
+            文件下载
             </summary>
         </member>
         <member name="M:ThingsGateway.Admin.Application.FileController.#ctor(ThingsGateway.Admin.Application.IFileService,ThingsGateway.Admin.Application.IOperateLogService,ThingsGateway.Admin.Application.IVisitLogService)">

@@ -360,7 +360,7 @@
         </member>
         <member name="P:ThingsGateway.Application.DeviceVariable.Unit">
             <summary>
-            写入表达式
+            单位
             </summary>
         </member>
         <member name="P:ThingsGateway.Application.DeviceVariable.IntervalTime">
@@ -376,11 +376,6 @@
         <member name="P:ThingsGateway.Application.DeviceVariable.VariableAddress">
             <summary>
             变量地址，可能带有额外的信息，比如<see cref="T:ThingsGateway.Foundation.DataFormat"/> ，以;分割
-            </summary>
-        </member>
-        <member name="P:ThingsGateway.Application.DeviceVariable.WriteExpressions">
-            <summary>
-            写入表达式
             </summary>
         </member>
         <member name="P:ThingsGateway.Application.DeviceVariable.IsMemoryVariable">
@@ -522,6 +517,11 @@
         <member name="P:ThingsGateway.Application.MemoryVariable.ReadExpressions">
             <summary>
             读取表达式
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Application.MemoryVariable.WriteExpressions">
+            <summary>
+            写入表达式
             </summary>
         </member>
         <member name="P:ThingsGateway.Application.MemoryVariable.IsMemoryVariable">
@@ -1816,7 +1816,7 @@
             <inheritdoc cref="P:ThingsGateway.Application.MemoryVariable.ReadExpressions"/>
         </member>
         <member name="P:ThingsGateway.Application.VariableData.WriteExpressions">
-            <inheritdoc cref="P:ThingsGateway.Application.DeviceVariable.WriteExpressions"/>
+            <inheritdoc cref="!:DeviceVariable.WriteExpressions"/>
         </member>
         <member name="P:ThingsGateway.Application.VariableData.IntervalTime">
             <inheritdoc cref="P:ThingsGateway.Application.DeviceVariable.IntervalTime"/>
