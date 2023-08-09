@@ -88,6 +88,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Foundataion.Demo", "Foundat
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ModbusDemo", "ThingsGateway.Plugin\Foundataion.Demo\ModbusDemo\ModbusDemo.csproj", "{48D2CA26-E535-413D-8CA9-A4A2AAC6582D}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OPCUAClientDemo", "ThingsGateway.Plugin\Foundataion.Demo\OPCUAClientDemo\OPCUAClientDemo.csproj", "{3F83EF0F-002D-4D06-87A8-739399074DBA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -186,6 +188,10 @@ Global
 		{48D2CA26-E535-413D-8CA9-A4A2AAC6582D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{48D2CA26-E535-413D-8CA9-A4A2AAC6582D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{48D2CA26-E535-413D-8CA9-A4A2AAC6582D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F83EF0F-002D-4D06-87A8-739399074DBA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F83EF0F-002D-4D06-87A8-739399074DBA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F83EF0F-002D-4D06-87A8-739399074DBA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F83EF0F-002D-4D06-87A8-739399074DBA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -220,6 +226,7 @@ Global
 		{E1C327FA-C442-45DD-9265-9EA26573B61E} = {F2DF3BE7-D497-44B3-9CD6-CDDBC4FBD09C}
 		{E733E483-4823-4BD6-BC29-669426386A96} = {86119A5F-5717-42FF-8888-F034B4136A1B}
 		{48D2CA26-E535-413D-8CA9-A4A2AAC6582D} = {E733E483-4823-4BD6-BC29-669426386A96}
+		{3F83EF0F-002D-4D06-87A8-739399074DBA} = {E733E483-4823-4BD6-BC29-669426386A96}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {38B292E0-B3E7-4608-9912-1B057C2A508F}

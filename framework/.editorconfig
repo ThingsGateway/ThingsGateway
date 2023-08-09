@@ -81,6 +81,15 @@ dotnet_diagnostic.CA2208.severity = none
 # IDE0057: 使用范围运算符
 dotnet_diagnostic.IDE0057.severity = none
 
+# IDE0056: 使用索引运算符
+dotnet_diagnostic.IDE0056.severity = none
+
+# CA1830: 最好使用 StringBuilder 的强类型 Append 和 Insert 方法重载
+dotnet_diagnostic.CA1830.severity = none
+
+# CA1847: 将字符型文本用于单个字符查找
+dotnet_diagnostic.CA1847.severity = none
+
 [*.vb]
 #### 命名样式 ####
 

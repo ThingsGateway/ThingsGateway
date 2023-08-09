@@ -89,7 +89,7 @@ public partial class ImportVariable
 
                     var dataTypeId = (Opc.Ua.NodeId)(await PLC.ReadNoteAttributeAsync(a.NodeId.ToString(), Attributes.DataType)).Content.FirstOrDefault().Value;
                     var dataType = Opc.Ua.TypeInfo.GetSystemType(dataTypeId, PLC.Session.Factory);
-                    var result = dataType != null ? Enum.TryParse<DataTypeEnum>(dataType.Name, out dataTypeEnum) : false;
+                    var result = dataType != null && Enum.TryParse<DataTypeEnum>(dataType.Name, out dataTypeEnum);
                     if (!result)
                     {
                         dataTypeEnum = DataTypeEnum.Object;

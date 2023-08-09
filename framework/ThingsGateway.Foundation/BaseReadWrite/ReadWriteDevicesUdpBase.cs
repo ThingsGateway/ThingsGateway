@@ -24,10 +24,8 @@ public abstract class ReadWriteDevicesUdpBase : ReadWriteDevicesClientBase
     /// <inheritdoc cref="ReadWriteDevicesUdpBase"/>
     public ReadWriteDevicesUdpBase(UdpSession udpSession)
     {
-
         UdpSession = udpSession;
         WaitingClientEx = UdpSession.GetWaitingClientEx(new());
-
         SetDataAdapter();
     }
     /// <summary>

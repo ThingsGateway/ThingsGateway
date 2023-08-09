@@ -82,12 +82,12 @@ public class ModbusRtu : ReadWriteDevicesSerialBase
     /// <inheritdoc/>
     public override void SetDataAdapter()
     {
-        ModbusRtuDataHandleAdapter DataHandleAdapter = new()
+        ModbusRtuDataHandleAdapter dataHandleAdapter = new()
         {
             Crc16CheckEnable = Crc16CheckEnable,
             CacheTimeout = TimeSpan.FromMilliseconds(CacheTimeout)
         };
-        SerialClient.SetDataHandlingAdapter(DataHandleAdapter);
+        SerialClient.SetDataHandlingAdapter(dataHandleAdapter);
     }
 
     /// <inheritdoc/>

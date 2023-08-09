@@ -78,12 +78,12 @@ public class ModbusRtuOverTcp : ReadWriteDevicesTcpClientBase
     /// <inheritdoc/>
     public override void SetDataAdapter()
     {
-        ModbusRtuDataHandleAdapter DataHandleAdapter = new()
+        ModbusRtuDataHandleAdapter dataHandleAdapter = new()
         {
             Crc16CheckEnable = Crc16CheckEnable,
             CacheTimeout = TimeSpan.FromMilliseconds(CacheTimeout)
         };
-        TcpClientEx.SetDataHandlingAdapter(DataHandleAdapter);
+        TcpClientEx.SetDataHandlingAdapter(dataHandleAdapter);
     }
 
     /// <inheritdoc/>

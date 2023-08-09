@@ -305,6 +305,8 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
                     foreach (var item in commandResult.Content)
                     {
                         ResponsedData result = await WaitingClientEx.SendThenResponseAsync(item, TimeOut, token);
+                        if (!((MessageBase)result.RequestInfo).IsSuccess)
+                            return OperResult.CreateFailedResult<byte[]>(((MessageBase)result.RequestInfo));
                         bytes.Add(result);
                     }
                     return OperResult.CreateSuccessResult(bytes.ToArray());
@@ -338,7 +340,7 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
                 if (commandResult.IsSuccess)
                 {
                     var result = await WaitingClientEx.SendThenResponseAsync(commandResult.Content, TimeOut, token);
-                    return OperResult.CreateSuccessResult(result);
+                    return (MessageBase)result.RequestInfo;
                 }
                 else
                 {

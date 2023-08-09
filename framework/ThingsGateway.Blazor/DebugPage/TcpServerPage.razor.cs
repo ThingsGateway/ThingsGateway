@@ -67,8 +67,7 @@ public partial class TcpServerPage
     /// <returns></returns>
     public TcpService GetTcpServer()
     {
-        config?.Dispose();
-        config = new TouchSocketConfig();
+        config ??= new TouchSocketConfig();
         var LogMessage = new TouchSocket.Core.LoggerGroup() { LogLevel = TouchSocket.Core.LogLevel.Trace };
         LogMessage.AddLogger(new EasyLogger(LogOut) { LogLevel = TouchSocket.Core.LogLevel.Trace });
         config.ConfigureContainer(a => a.RegisterSingleton<ILog>(LogMessage));

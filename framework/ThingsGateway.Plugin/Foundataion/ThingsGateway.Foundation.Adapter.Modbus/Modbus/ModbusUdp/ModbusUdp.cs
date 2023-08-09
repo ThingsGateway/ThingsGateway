@@ -75,11 +75,14 @@ public class ModbusUdp : ReadWriteDevicesUdpBase
     /// <inheritdoc/>
     public override void SetDataAdapter()
     {
-        ModbusUdpDataHandleAdapter DataHandleAdapter = new()
+        ModbusUdpDataHandleAdapter dataHandleAdapter = new()
         {
             IsCheckMessageId = IsCheckMessageId
         };
-        UdpSession.SetDataHandlingAdapter(DataHandleAdapter);
+        UdpSession.Config.SetUdpDataHandlingAdapter(() =>
+        {
+            return dataHandleAdapter;
+        });
     }
 
     /// <inheritdoc/>

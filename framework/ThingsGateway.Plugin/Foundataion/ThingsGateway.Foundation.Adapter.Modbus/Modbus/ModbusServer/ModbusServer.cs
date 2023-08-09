@@ -78,8 +78,8 @@ public class ModbusServer : ReadWriteDevicesTcpServerBase
     /// <inheritdoc/>
     public override void SetDataAdapter(SocketClient client)
     {
-        ModbusServerDataHandleAdapter DataHandleAdapter = new();
-        client.SetDataHandlingAdapter(DataHandleAdapter);
+        ModbusServerDataHandleAdapter dataHandleAdapter = new();
+        client.SetDataHandlingAdapter(dataHandleAdapter);
     }
 
     /// <inheritdoc/>
