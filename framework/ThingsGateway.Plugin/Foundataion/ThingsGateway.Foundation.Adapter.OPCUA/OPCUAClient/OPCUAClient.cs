@@ -512,6 +512,10 @@ public class OPCUAClient : DisposableObject
                 AttributeId = Attributes.Value,
             };
             var node = (VariableNode)ReadNode(tag.ToString(), false);
+            //var expandedNodeId = NodeId.ToExpandedNodeId(node.DataType, m_session.NamespaceUris);
+            //var type = m_session.Factory.GetSystemType(expandedNodeId);
+            //var data = value.ToObject(type);
+            //var dataValue = new DataValue(new Variant(data));
             var dataValue = JsonUtils.Decode(
                 m_session.MessageContext,
                 node.DataType,
