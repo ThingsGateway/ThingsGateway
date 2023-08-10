@@ -180,8 +180,41 @@ else
             }
 
         </ItemColTemplate>
+
+        <Detailemplate>
+            @{
+                switch (context.Item1.Value)
+                {
+                    case nameof(DeviceVariable.DeviceId):
+                        <tr @key="context.Item1.Text">
+                            <td class="text-start table-minwidth">
+                                @context.Item1.Text
+                            </td>
+                            <td class="text-start ">
+                                <div style="word-break:break-all; white-space:pre-wrap;">
+                                    @(App.GetService<ICollectDeviceService>().GetNameById(context.Item2.ToLong()))
+                                </div>
+                            </td>
+                        </tr>
+                        break;
+                    default:
+                        <tr @key="context.Item1.Text">
+                            <td class="text-start table-minwidth">
+                                @context.Item1.Text
+                            </td>
+                            <td class="text-start ">
+                                <div style="word-break:break-all; white-space:pre-wrap;">
+                                    @context.Item2
+                                </div>
+                            </td>
+                        </tr>
+                        break;
+                }
+
+            }
+        </Detailemplate>
     </AppDataTable>
-    ;
+        ;
         return renderFragment;
     }
 

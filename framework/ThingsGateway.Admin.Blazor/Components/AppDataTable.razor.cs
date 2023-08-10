@@ -93,7 +93,7 @@ public partial class AppDataTable<TItem, SearchItem, AddItem, EditItem> : IAppDa
     /// 获得/设置 详情模板
     /// </summary>
     [Parameter]
-    public RenderFragment<TItem> Detailemplate { get; set; }
+    public RenderFragment<(DataTableHeader<TItem>, string)> Detailemplate { get; set; }
 
     /// <summary>
     /// 表头过滤，返回DataTableHeader列表，传输参数已包含全部初始表头与表头标题
