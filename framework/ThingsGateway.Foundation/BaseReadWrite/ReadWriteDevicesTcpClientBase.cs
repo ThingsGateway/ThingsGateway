@@ -26,7 +26,7 @@ public abstract class ReadWriteDevicesTcpClientBase : ReadWriteDevicesClientBase
     public ReadWriteDevicesTcpClientBase(TcpClientEx tcpClient)
     {
         TcpClientEx = tcpClient;
-        WaitingClientEx = TcpClientEx.GetWaitingClientEx(new());
+        WaitingClientEx = TcpClientEx.GetWaitingClientEx(new() { BreakTrigger = true });
         TcpClientEx.Connecting -= Connecting;
         TcpClientEx.Connected -= Connected;
         TcpClientEx.Disconnecting -= Disconnecting;

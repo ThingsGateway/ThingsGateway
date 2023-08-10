@@ -25,7 +25,7 @@ public abstract class ReadWriteDevicesUdpBase : ReadWriteDevicesClientBase
     public ReadWriteDevicesUdpBase(UdpSession udpSession)
     {
         UdpSession = udpSession;
-        WaitingClientEx = UdpSession.GetWaitingClientEx(new());
+        WaitingClientEx = UdpSession.GetWaitingClientEx(new() { BreakTrigger = true });
         SetDataAdapter();
     }
     /// <summary>

@@ -45,4 +45,9 @@ public class SerialProperty
     /// </summary>
     [Description("停止位")]
     public StopBits StopBits { get; set; } = StopBits.One;
+    /// <inheritdoc/>
+    public override string ToString()
+    {
+        return $"{PortName}[{BaudRate},{DataBits},{StopBits},{Parity}]";
+    }
 }

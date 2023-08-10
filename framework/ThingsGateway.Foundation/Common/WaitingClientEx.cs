@@ -12,6 +12,8 @@
 
 
 
+using ThingsGateway.Foundation.Serial;
+
 namespace ThingsGateway.Foundation;
 
 internal class WaitingClientEx<TClient> : DisposableObject, IWaitingClient<TClient> where TClient : IClient, IDefaultSender, ISender
@@ -52,6 +54,7 @@ internal class WaitingClientEx<TClient> : DisposableObject, IWaitingClient<TClie
     {
         this.Client = default;
         this.m_waitData.SafeDispose();
+        this.m_waitDataAsync.SafeDispose();
         base.Dispose(disposing);
     }
 
@@ -66,7 +69,11 @@ internal class WaitingClientEx<TClient> : DisposableObject, IWaitingClient<TClie
         this.m_breaked = true;
         this.Cancel();
     }
-
+    private void OnSerialClientDisconnected(ISerialClientBase client, DisconnectEventArgs e)
+    {
+        this.m_breaked = true;
+        this.Cancel();
+    }
     private bool OnHandleRawBuffer(ByteBlock byteBlock)
     {
         var responsedData = new ResponsedData(byteBlock.ToArray(), null, true);
@@ -121,7 +128,10 @@ internal class WaitingClientEx<TClient> : DisposableObject, IWaitingClient<TClie
             {
                 tcpClient.Disconnected += this.OnDisconnected;
             }
-
+            if (this.WaitingOptions.BreakTrigger && this.Client is ISerialClientBase serialClient)
+            {
+                serialClient.Disconnected += this.OnSerialClientDisconnected;
+            }
             if (this.WaitingOptions.AdapterFilter == AdapterFilter.AllAdapter || this.WaitingOptions.AdapterFilter == AdapterFilter.WaitAdapter)
             {
                 this.Client.OnHandleReceivedData += this.OnHandleReceivedData;
@@ -179,7 +189,10 @@ internal class WaitingClientEx<TClient> : DisposableObject, IWaitingClient<TClie
             {
                 tcpClient.Disconnected -= this.OnDisconnected;
             }
-
+            if (this.WaitingOptions.BreakTrigger && this.Client is ISerialClientBase serialClient)
+            {
+                serialClient.Disconnected -= this.OnSerialClientDisconnected;
+            }
             if (this.WaitingOptions.AdapterFilter == AdapterFilter.AllAdapter || this.WaitingOptions.AdapterFilter == AdapterFilter.WaitAdapter)
             {
                 this.Client.OnHandleReceivedData -= this.OnHandleReceivedData;
@@ -190,6 +203,8 @@ internal class WaitingClientEx<TClient> : DisposableObject, IWaitingClient<TClie
             }
         }
     }
+
+
 
     public ResponsedData SendThenResponse(byte[] buffer, int timeout = 1000 * 5, CancellationToken token = default)
     {
@@ -216,7 +231,10 @@ internal class WaitingClientEx<TClient> : DisposableObject, IWaitingClient<TClie
             {
                 tcpClient.Disconnected += this.OnDisconnected;
             }
-
+            if (this.WaitingOptions.BreakTrigger && this.Client is ISerialClientBase serialClient)
+            {
+                serialClient.Disconnected += this.OnSerialClientDisconnected;
+            }
             if (this.WaitingOptions.AdapterFilter == AdapterFilter.AllAdapter || this.WaitingOptions.AdapterFilter == AdapterFilter.WaitAdapter)
             {
                 this.Client.OnHandleReceivedData += this.OnHandleReceivedData;
@@ -274,7 +292,10 @@ internal class WaitingClientEx<TClient> : DisposableObject, IWaitingClient<TClie
             {
                 tcpClient.Disconnected -= this.OnDisconnected;
             }
-
+            if (this.WaitingOptions.BreakTrigger && this.Client is ISerialClientBase serialClient)
+            {
+                serialClient.Disconnected -= this.OnSerialClientDisconnected;
+            }
             if (this.WaitingOptions.AdapterFilter == AdapterFilter.AllAdapter || this.WaitingOptions.AdapterFilter == AdapterFilter.WaitAdapter)
             {
                 this.Client.OnHandleReceivedData -= this.OnHandleReceivedData;
