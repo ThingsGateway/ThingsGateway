@@ -73,12 +73,6 @@ public partial class AppDataTable<TItem, SearchItem, AddItem, EditItem> : IAppDa
     public bool Dense { get; set; }
 
     /// <summary>
-    /// 获得/设置 明细行模板
-    /// </summary>
-    [Parameter]
-    public RenderFragment<TItem> DetailRowTemplate { get; set; }
-
-    /// <summary>
     /// 编辑项委托
     /// </summary>
     [Parameter]
