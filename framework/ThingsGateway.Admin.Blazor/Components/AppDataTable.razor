@@ -189,7 +189,7 @@
                 }
                 else
                 {
-                    if (ItemColWithDTTemplate!=null)
+                    if (ItemColWithDTTemplate != null)
                     {
                         @ItemColWithDTTemplate(context)
                     }
@@ -220,7 +220,7 @@
 
                         }
                     }
-                    
+
 
                 }
             </ItemColContent>
@@ -302,7 +302,12 @@
     <MContainer>
         <MSimpleTable Dense FixedHeader>
             <tbody>
-                @if (DetailShow)
+
+                @if (Detailemplate != null && DetailShow)
+                {
+                    @Detailemplate(DetailModel)
+                }
+                else if (DetailShow)
                 {
                     @foreach (var item in Headers)
                     {

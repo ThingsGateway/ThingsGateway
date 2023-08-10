@@ -2288,6 +2288,9 @@
             停止位
             </summary>
         </member>
+        <member name="M:ThingsGateway.Foundation.Serial.SerialProperty.ToString">
+            <inheritdoc/>
+        </member>
         <member name="T:ThingsGateway.Foundation.SerialPortExtensions">
             <summary>
             SocketExtension

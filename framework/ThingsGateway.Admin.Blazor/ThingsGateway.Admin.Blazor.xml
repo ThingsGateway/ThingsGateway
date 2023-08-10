@@ -58,6 +58,11 @@
             获得/设置 编辑模板
             </summary>
         </member>
+        <member name="P:ThingsGateway.Admin.Blazor.Core.AppDataTable`4.Detailemplate">
+            <summary>
+            获得/设置 详情模板
+            </summary>
+        </member>
         <member name="P:ThingsGateway.Admin.Blazor.Core.AppDataTable`4.FilterHeaders">
             <summary>
             表头过滤，返回DataTableHeader列表，传输参数已包含全部初始表头与表头标题
