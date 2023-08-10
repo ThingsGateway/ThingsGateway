@@ -43,11 +43,6 @@
             表格紧凑
             </summary>
         </member>
-        <member name="P:ThingsGateway.Admin.Blazor.Core.AppDataTable`4.DetailRowTemplate">
-            <summary>
-            获得/设置 明细行模板
-            </summary>
-        </member>
         <member name="P:ThingsGateway.Admin.Blazor.Core.AppDataTable`4.EditCallAsync">
             <summary>
             编辑项委托

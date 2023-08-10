@@ -32,7 +32,7 @@
 @layout MainLayout
 
 <MRow NoGutters>
-    <MCol Md=@(IsShowTreeView?4:0)>
+    <MCol Md=@(IsShowTreeView?3:0)>
         <MCard Show=IsShowTreeView Style=@($"height: calc(100vh - {BlazorResourceConst.DefaultHeight}px);border-radius:0px;")>
             <MCardTitle>
                 <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="mx-2 my-1" @bind-Value="_searchName" Outlined Label=@typeof(CollectDevice).GetDescription(nameof(CollectDevice.PluginId)) />
@@ -62,7 +62,7 @@
             </MTreeview>
         </MCard>
     </MCol>
-    <MCol Md=@(IsShowTreeView?8:12)>
+    <MCol Md=@(IsShowTreeView?9:12)>
         <MCard Style=@($"height: calc(100vh - {BlazorResourceConst.DefaultHeight}px);border-radius:0px;")>
             <MCard Class="mb-3 pa-2  text-h6" Elevation="0" Flat Rounded="false">
                 <MRow Align="AlignTypes.Center" Class="mt-1">
