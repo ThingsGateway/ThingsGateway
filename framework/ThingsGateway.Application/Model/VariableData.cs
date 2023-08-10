@@ -20,6 +20,8 @@ public class VariableData
     public long Id { get; set; }
     /// <inheritdoc cref="MemoryVariable.Name"/>
     public string Name { get; set; }
+    /// <inheritdoc cref="DeviceVariable.Unit"/>
+    public string Unit { get; set; }
     /// <inheritdoc cref="MemoryVariable.Description"/>
     public string Description { get; set; }
     /// <inheritdoc cref="DeviceVariableRunTime.DeviceName"/>
@@ -36,7 +38,7 @@ public class VariableData
     public bool IsOnline { get; set; }
     /// <inheritdoc cref="MemoryVariable.ReadExpressions"/>
     public string ReadExpressions { get; set; }
-    /// <inheritdoc cref="DeviceVariable.WriteExpressions"/>
+    /// <inheritdoc cref="MemoryVariable.WriteExpressions"/>
     public string WriteExpressions { get; set; }
     /// <inheritdoc cref="DeviceVariable.IntervalTime"/>
     public int IntervalTime { get; set; }
