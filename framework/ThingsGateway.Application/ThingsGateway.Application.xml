@@ -1791,6 +1791,9 @@
         <member name="P:ThingsGateway.Application.VariableData.Name">
             <inheritdoc cref="P:ThingsGateway.Application.MemoryVariable.Name"/>
         </member>
+        <member name="P:ThingsGateway.Application.VariableData.Unit">
+            <inheritdoc cref="P:ThingsGateway.Application.DeviceVariable.Unit"/>
+        </member>
         <member name="P:ThingsGateway.Application.VariableData.Description">
             <inheritdoc cref="P:ThingsGateway.Application.MemoryVariable.Description"/>
         </member>
@@ -1816,7 +1819,7 @@
             <inheritdoc cref="P:ThingsGateway.Application.MemoryVariable.ReadExpressions"/>
         </member>
         <member name="P:ThingsGateway.Application.VariableData.WriteExpressions">
-            <inheritdoc cref="!:DeviceVariable.WriteExpressions"/>
+            <inheritdoc cref="P:ThingsGateway.Application.MemoryVariable.WriteExpressions"/>
         </member>
         <member name="P:ThingsGateway.Application.VariableData.IntervalTime">
             <inheritdoc cref="P:ThingsGateway.Application.DeviceVariable.IntervalTime"/>
