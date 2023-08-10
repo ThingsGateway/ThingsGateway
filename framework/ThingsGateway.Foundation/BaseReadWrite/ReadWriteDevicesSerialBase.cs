@@ -30,7 +30,7 @@ public abstract class ReadWriteDevicesSerialBase : ReadWriteDevicesClientBase
     public ReadWriteDevicesSerialBase(SerialClient serialClient)
     {
         SerialClient = serialClient;
-        WaitingClientEx = SerialClient.GetWaitingClientEx(new());
+        WaitingClientEx = SerialClient.GetWaitingClientEx(new() { BreakTrigger = true });
 
         SerialClient.Connecting -= Connecting;
         SerialClient.Connected -= Connected;
