@@ -302,12 +302,7 @@
     <MContainer>
         <MSimpleTable Dense FixedHeader>
             <tbody>
-
-                @if (Detailemplate != null && DetailShow)
-                {
-                    @Detailemplate(DetailModel)
-                }
-                else if (DetailShow)
+                @if (DetailShow)
                 {
                     @foreach (var item in Headers)
                     {
@@ -315,16 +310,24 @@
                         {
                             string value = DetailModelPairs[item.Value];
                             {
-                                <tr @key="item.Text">
-                                    <td class="text-start table-minwidth">
-                                        @item.Text
-                                    </td>
-                                    <td class="text-start ">
-                                        <div style="word-break:break-all; white-space:pre-wrap;">
-                                            @value
-                                        </div>
-                                    </td>
-                                </tr>
+                                @if (Detailemplate != null)
+                                {
+                                    @Detailemplate((item,value))
+                                }
+                                else
+                                {
+                                    <tr @key="item.Text">
+                                        <td class="text-start table-minwidth">
+                                            @item.Text
+                                        </td>
+                                        <td class="text-start ">
+                                            <div style="word-break:break-all; white-space:pre-wrap;">
+                                                @value
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                                
                             }
                         }
                     }
