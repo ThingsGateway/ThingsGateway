@@ -445,7 +445,7 @@ public class VariableService : DbRepository<DeviceVariable>, IVariableService
                    try
                    {
                        var variable = ((ExpandoObject)item).ConvertToEntity<DeviceVariable>(true);
-
+                       variable.IsMemoryVariable = true;
                        //变量ID都需要手动补录
                        variables.Add(variable);
                        if (dbVariableDicts.TryGetValue(variable.Name, out var dbvar1))
