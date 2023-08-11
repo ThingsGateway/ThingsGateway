@@ -52,8 +52,8 @@ public class OpenApiSessionService : DbRepository<OpenApiUser>, IOpenApiSessionS
         //获取该用户的verificat信息
         List<VerificatInfo> verificatInfos = await _verificatService.GetOpenApiVerificatIdAsync(input.Id);
         //当前需要踢掉用户的verificat
-        var deleteVerificats = verificatInfos.Where(it => input.VerificatIds.Contains(it.Id)).ToList();
-        await _verificatService.SetOpenApiVerificatIdAsync(input.Id, deleteVerificats);//如果还有verificat则更新verificat
+        var setVerificats = verificatInfos.Where(it => !input.VerificatIds.Contains(it.Id)).ToList();
+        await _verificatService.SetOpenApiVerificatIdAsync(input.Id, setVerificats);//如果还有verificat则更新verificat
     }
 
     /// <summary>
