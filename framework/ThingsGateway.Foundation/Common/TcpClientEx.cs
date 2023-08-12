@@ -29,6 +29,7 @@ using System.Runtime.InteropServices;
 using ThingsGateway.Foundation;
 
 using TouchSocket.Resources;
+using TouchSocket.Sockets;
 
 namespace ThingsGateway.Foundation;
 
@@ -159,7 +160,7 @@ public class TcpClientBaseEx : BaseSocket, ITcpClient
         {
             return;
         }
-        this.PluginsManager.Raise(nameof(ITcpDisconnectedPlguin.OnTcpDisconnected), this, e);
+        this.PluginsManager.Raise(nameof(ITcpDisconnectedPlugin.OnTcpDisconnected), this, e);
     }
 
     /// <summary>
