@@ -207,7 +207,7 @@ public class OPCUAClient : DisposableObject
     /// <summary>
     /// 新增订阅，需要指定订阅的关键字，订阅的tag名数组，以及回调方法
     /// </summary>
-    public void AddSubscription(string subscriptionName, string[] items)
+    public async Task AddSubscriptionAsync(string subscriptionName, string[] items)
     {
         Subscription m_subscription = new(m_session.DefaultSubscription)
         {
@@ -222,14 +222,17 @@ public class OPCUAClient : DisposableObject
         List<MonitoredItem> monitoredItems = new();
         for (int i = 0; i < items.Length; i++)
         {
+            var variableNode = (VariableNode)ReadNode(items[i], false);
             var item = new MonitoredItem
             {
-                StartNodeId = new NodeId(items[i]),
+                StartNodeId = variableNode.NodeId,
                 AttributeId = Attributes.Value,
                 DisplayName = items[i],
                 Filter = new DataChangeFilter() { DeadbandValue = OPCNode.DeadBand, DeadbandType = (int)DeadbandType.Absolute, Trigger = DataChangeTrigger.StatusValue },
                 SamplingInterval = OPCNode?.UpdateRate ?? 1000,
             };
+            await typeSystem.LoadType(variableNode.DataType, true, true);
+
             item.Notification += Callback;
             monitoredItems.Add(item);
         }
@@ -511,15 +514,12 @@ public class OPCUAClient : DisposableObject
                 NodeId = new NodeId(tag),
                 AttributeId = Attributes.Value,
             };
-            var node = (VariableNode)ReadNode(tag.ToString(), false);
-            //var expandedNodeId = NodeId.ToExpandedNodeId(node.DataType, m_session.NamespaceUris);
-            //var type = m_session.Factory.GetSystemType(expandedNodeId);
-            //var data = value.ToObject(type);
-            //var dataValue = new DataValue(new Variant(data));
+            var variableNode = (VariableNode)ReadNode(tag.ToString(), false);
+            await typeSystem.LoadType(variableNode.DataType, true, true);
             var dataValue = JsonUtils.Decode(
                 m_session.MessageContext,
-                node.DataType,
-                TypeInfo.GetBuiltInType(node.DataType, m_session.SystemContext.TypeTable),
+                variableNode.DataType,
+                TypeInfo.GetBuiltInType(variableNode.DataType, m_session.SystemContext.TypeTable),
                 value.CalculateActualValueRank(),
                 value
                 );
@@ -560,6 +560,8 @@ public class OPCUAClient : DisposableObject
         ReadValueIdCollection nodesToRead = new();
         for (int i = 0; i < nodeIds.Length; i++)
         {
+            var variableNode = (VariableNode)ReadNode(nodeIds[i].ToString(), false);
+            await typeSystem.LoadType(variableNode.DataType, true, true);
             nodesToRead.Add(new ReadValueId()
             {
                 NodeId = nodeIds[i],
@@ -581,10 +583,10 @@ public class OPCUAClient : DisposableObject
         List<(string, DataValue, JToken)> jTokens = new();
         for (int i = 0; i < results.Count; i++)
         {
-            var node = (VariableNode)ReadNode(nodeIds[i].ToString(), false);
-            var type = TypeInfo.GetBuiltInType(node.DataType, m_session.SystemContext.TypeTable);
+            var variableNode = (VariableNode)ReadNode(nodeIds[i].ToString(), false);
+            var type = TypeInfo.GetBuiltInType(variableNode.DataType, m_session.SystemContext.TypeTable);
             var jToken = JsonUtils.Encode(m_session.MessageContext, type, results[i].Value);
-            jTokens.Add((node.NodeId.ToString(), results[i], jToken));
+            jTokens.Add((variableNode.NodeId.ToString(), results[i], jToken));
         }
         return jTokens.ToList();
     }
@@ -860,7 +862,7 @@ public class OPCUAClient : DisposableObject
         else
             throw new Exception(string.Format("验证证书失败，错误代码:{0}: {1}", eventArgs.Error.Code, eventArgs.Error.AdditionalInfo));
     }
-
+    private ComplexTypeSystem typeSystem;
     /// <summary>
     /// Creates a new session.
     /// </summary>
@@ -897,7 +899,8 @@ public class OPCUAClient : DisposableObject
     60000,
     userIdentity,
     Array.Empty<string>());
-        await new ComplexTypeSystem(m_session).Load(false, true).ConfigureAwait(false);
+
+        typeSystem = new ComplexTypeSystem(m_session);
         Log.Debug("连接成功");
 
         m_session.KeepAliveInterval = OPCNode.KeepAliveInterval == 0 ? 60000 : OPCNode.KeepAliveInterval;
@@ -905,7 +908,7 @@ public class OPCUAClient : DisposableObject
 
         //如果是订阅模式，连接时添加订阅组
         if (OPCNode.ActiveSubscribe)
-            AddSubscription(Guid.NewGuid().ToString(), Variables.ToArray());
+            await AddSubscriptionAsync(Guid.NewGuid().ToString(), Variables.ToArray());
         return m_session;
     }
 
