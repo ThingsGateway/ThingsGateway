@@ -318,7 +318,7 @@
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.OPCUA.OPCUAClient.AddSubscriptionAsync(System.String,System.String[])">
             <summary>
-            新增订阅，需要指定订阅的关键字，订阅的tag名数组，以及回调方法
+            新增订阅，需要指定订阅组名称，订阅的tag名数组
             </summary>
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.OPCUA.OPCUAClient.RemoveAllSubscription">
