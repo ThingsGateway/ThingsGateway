@@ -13,6 +13,7 @@
 using System.IO.Ports;
 
 using TouchSocket.Resources;
+using TouchSocket.Sockets;
 
 namespace ThingsGateway.Foundation.Serial;
 
@@ -172,7 +173,7 @@ public class SerialClientBase : BaseSerial, ISerialClient
         {
             return;
         }
-        this.PluginsManager.Raise(nameof(ITcpDisconnectedPlguin.OnTcpDisconnected), this, e);
+        this.PluginsManager.Raise(nameof(ITcpDisconnectedPlugin.OnTcpDisconnected), this, e);
     }
     private void PrivateOnDisconnecting(DisconnectEventArgs e)
     {

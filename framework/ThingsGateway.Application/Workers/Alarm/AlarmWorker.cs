@@ -66,7 +66,7 @@ public class AlarmWorker : BackgroundService
     /// </summary>
     public OperResult StatuString { get; set; } = new OperResult("初始化");
     private ConcurrentQueue<DeviceVariableRunTime> DeviceVariables { get; set; } = new();
-    private ConcurrentQueue<DeviceVariableRunTime> HisAlarmDeviceVariables { get; set; } = new();
+    private ConcurrentQueue<HistoryAlarm> HisAlarmDeviceVariables { get; set; } = new();
     /// <summary>
     /// 获取数据库链接
     /// </summary>
@@ -465,7 +465,7 @@ public class AlarmWorker : BackgroundService
         OnAlarmChanged?.Invoke(item.Adapt<DeviceVariableRunTime>());
         if (!IsExited)
         {
-            HisAlarmDeviceVariables.Enqueue(item);
+            HisAlarmDeviceVariables.Enqueue(item.Adapt<HistoryAlarm>());
         }
 
         if (eventEnum == EventEnum.Alarm)
@@ -586,18 +586,20 @@ public class AlarmWorker : BackgroundService
 
                             //缓存值
                             var cacheData = await CacheDb.GetCacheData();
-                            var data = cacheData.SelectMany(a => a.CacheStr.FromJson<List<HistoryAlarm>>()).ToList();
-                            try
+                            if (cacheData.Count > 0)
                             {
-                                var count = await sqlSugarClient.Insertable(data).ExecuteCommandAsync(stoppingToken.Token);
-                                await CacheDb.DeleteCacheData(cacheData.Select(a => a.Id).ToArray());
+                                var data = cacheData.SelectMany(a => a.CacheStr.FromJson<List<HistoryAlarm>>()).ToList();
+                                try
+                                {
+                                    var count = await sqlSugarClient.Insertable(data).ExecuteCommandAsync(stoppingToken.Token);
+                                    await CacheDb.DeleteCacheData(cacheData.Select(a => a.Id).ToArray());
+                                }
+                                catch (Exception ex)
+                                {
+                                    if (isSuccess)
+                                        _logger.LogWarning(ex, "写入历史报警失败");
+                                }
                             }
-                            catch (Exception ex)
-                            {
-                                if (isSuccess)
-                                    _logger.LogWarning(ex, "写入历史报警失败");
-                            }
-
                             if (stoppingToken.Token.IsCancellationRequested)
                                 break;
 
@@ -605,16 +607,15 @@ public class AlarmWorker : BackgroundService
                             var list = HisAlarmDeviceVariables.ToListWithDequeue();
                             if (list.Count != 0)
                             {
-                                var hisalarm = list.Adapt<List<HistoryAlarm>>();
                                 ////Sql保存
-                                hisalarm.ForEach(it =>
+                                list.ForEach(it =>
                                 {
                                     it.Id = YitIdHelper.NextId();
                                 });
                                 //插入
                                 try
                                 {
-                                    await sqlSugarClient.Insertable(hisalarm).ExecuteCommandAsync(stoppingToken.Token);
+                                    await sqlSugarClient.Insertable(list).ExecuteCommandAsync(stoppingToken.Token);
                                     isSuccess = true;
                                 }
                                 catch (Exception ex)
@@ -622,7 +623,7 @@ public class AlarmWorker : BackgroundService
                                     if (isSuccess)
                                         _logger.LogWarning(ex, "写入历史报警失败");
 
-                                    var cacheDatas = hisalarm.ChunkTrivialBetter(500);
+                                    var cacheDatas = list.ChunkTrivialBetter(500);
                                     foreach (var a in cacheDatas)
                                     {
                                         await CacheDb.AddCacheData("", a.ToJson(), 50000);
