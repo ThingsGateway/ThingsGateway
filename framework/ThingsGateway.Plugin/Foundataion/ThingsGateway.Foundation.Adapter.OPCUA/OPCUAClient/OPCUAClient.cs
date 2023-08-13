@@ -205,7 +205,7 @@ public class OPCUAClient : DisposableObject
     #region 订阅
 
     /// <summary>
-    /// 新增订阅，需要指定订阅的关键字，订阅的tag名数组，以及回调方法
+    /// 新增订阅，需要指定订阅组名称，订阅的tag名数组
     /// </summary>
     public async Task AddSubscriptionAsync(string subscriptionName, string[] items)
     {
@@ -222,19 +222,26 @@ public class OPCUAClient : DisposableObject
         List<MonitoredItem> monitoredItems = new();
         for (int i = 0; i < items.Length; i++)
         {
-            var variableNode = (VariableNode)ReadNode(items[i], false);
-            var item = new MonitoredItem
+            try
             {
-                StartNodeId = variableNode.NodeId,
-                AttributeId = Attributes.Value,
-                DisplayName = items[i],
-                Filter = new DataChangeFilter() { DeadbandValue = OPCNode.DeadBand, DeadbandType = (int)DeadbandType.Absolute, Trigger = DataChangeTrigger.StatusValue },
-                SamplingInterval = OPCNode?.UpdateRate ?? 1000,
-            };
-            await typeSystem.LoadType(variableNode.DataType, true, true);
+                var variableNode = (VariableNode)ReadNode(items[i], false);
+                var item = new MonitoredItem
+                {
+                    StartNodeId = variableNode.NodeId,
+                    AttributeId = Attributes.Value,
+                    DisplayName = items[i],
+                    Filter = new DataChangeFilter() { DeadbandValue = OPCNode.DeadBand, DeadbandType = (int)DeadbandType.Absolute, Trigger = DataChangeTrigger.StatusValue },
+                    SamplingInterval = OPCNode?.UpdateRate ?? 1000,
+                };
+                await typeSystem.LoadType(variableNode.DataType, true, true);
 
-            item.Notification += Callback;
-            monitoredItems.Add(item);
+                item.Notification += Callback;
+                monitoredItems.Add(item);
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"初始化{items[i]}变量订阅失败" + ex.Message);
+            }
         }
         m_subscription.AddItems(monitoredItems);
 
