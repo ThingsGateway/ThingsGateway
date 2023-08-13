@@ -77,10 +77,10 @@ public partial class OPCUAClientDebugDriverPage
 
         base.OnAfterRender(firstRender);
     }
-    private void Add()
+    private async Task Add()
     {
         if (_plc.Connected)
-            _plc.AddSubscription(YitIdHelper.NextId().ToString(), new[] { defalutDebugDriverPage.Address });
+            await _plc.AddSubscriptionAsync(YitIdHelper.NextId().ToString(), new[] { defalutDebugDriverPage.Address });
         else
         {
             defalutDebugDriverPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Debug, SysDateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset) + " - " + "Î´Á¬½Ó"));
