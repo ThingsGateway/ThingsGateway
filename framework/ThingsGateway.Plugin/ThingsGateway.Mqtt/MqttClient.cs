@@ -311,7 +311,7 @@ public class MqttClient : UpLoadBase
     {
         var mqttFactory = new MqttFactory(new PrivateLogger(LogMessage));
         _mqttClientOptions = mqttFactory.CreateClientOptionsBuilder()
-                        .WithClientId(driverPropertys.ConnectId)
+           .WithClientId(driverPropertys.ConnectId)
            .WithCredentials(driverPropertys.UserName, driverPropertys.Password)//账密
            .WithTcpServer(driverPropertys.IP, driverPropertys.Port)//服务器
            .WithCleanSession(true)
