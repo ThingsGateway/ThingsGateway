@@ -54,32 +54,9 @@ public class SiemensS7PLCDataHandleAdapter : ReadWriteDevicesTcpDataHandleAdapte
                     break;
             }
         }
-        if (result.IsSuccess)
-        {
-            request.ResultCode = result.ResultCode;
-            request.Message = result.Message;
-            request.Content = result.Content;
-            return FilterResult.Success;
-        }
-        else
-        {
-            //如果返回错误，具体分析
-            if (response.Length < 21)
-            {
-                request.ResultCode = result.ResultCode;
-                request.Message = result.Message;
-                request.Content = result.Content;
-                //如果长度不足，返回缓存
-                return FilterResult.Cache;
-            }
-            else
-            {
-                request.ResultCode = result.ResultCode;
-                request.Message = result.Message;
-                request.Content = result.Content;
-                //如果长度已经超了，说明这段报文已经不能继续解析了，直接返回放弃
-                return FilterResult.Success;
-            }
-        }
+        request.ResultCode = result.ResultCode;
+        request.Message = result.Message;
+        request.Content = result.Content;
+        return FilterResult.Success;
     }
 }

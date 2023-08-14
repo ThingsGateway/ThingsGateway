@@ -1313,6 +1313,11 @@
         <member name="T:ThingsGateway.Foundation.Extension.OperResultExtensions">
             <inheritdoc/>
         </member>
+        <member name="M:ThingsGateway.Foundation.Extension.OperResultExtensions.Copy``2(ThingsGateway.Foundation.OperResult{``0,``1})">
+            <summary>
+            复制信息，包含第一个泛型类
+            </summary>
+        </member>
         <member name="M:ThingsGateway.Foundation.Extension.OperResultExtensions.Copy``1(ThingsGateway.Foundation.OperResult)">
             <summary>
             复制信息，不包含泛型类

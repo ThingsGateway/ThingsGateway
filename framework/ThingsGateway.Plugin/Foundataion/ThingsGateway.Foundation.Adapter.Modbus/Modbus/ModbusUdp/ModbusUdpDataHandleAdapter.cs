@@ -10,6 +10,7 @@
 //------------------------------------------------------------------------------
 #endregion
 
+using ThingsGateway.Foundation.Extension;
 using ThingsGateway.Foundation.Extension.Generic;
 
 namespace ThingsGateway.Foundation.Adapter.Modbus;
@@ -50,6 +51,7 @@ public class ModbusUdpDataHandleAdapter : ReadWriteDevicesUdpDataHandleAdapter<M
     /// <inheritdoc/>
     protected override OperResult<byte[]> UnpackResponse(byte[] send, byte[] response)
     {
-        return ModbusHelper.GetModbusData(send.RemoveBegin(6), response.RemoveBegin(6));
+        var result = ModbusHelper.GetModbusData(send.RemoveBegin(6), response.RemoveBegin(6));
+        return result.Copy();
     }
 }

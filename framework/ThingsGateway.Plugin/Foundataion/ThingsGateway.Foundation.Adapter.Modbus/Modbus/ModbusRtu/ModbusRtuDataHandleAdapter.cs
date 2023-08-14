@@ -48,47 +48,14 @@ public class ModbusRtuDataHandleAdapter : ReadWriteDevicesTcpDataHandleAdapter<M
         {
             request.ResultCode = result.ResultCode;
             request.Message = result.Message;
-            request.Content = result.Content;
-            return FilterResult.Success;
+            request.Content = result.Content1;
         }
         else
         {
-            if (response.Length <= 1)
-            {
-                request.ResultCode = result.ResultCode;
-                request.Message = result.Message;
-                request.Content = result.Content;
-                //如果长度不足，返回缓存
-                return FilterResult.Cache;
-            }
-            if (!(response[1] <= 0x10))
-            {
-                request.ResultCode = result.ResultCode;
-                request.Message = result.Message;
-                request.Content = result.Content;
-                //功能码不对，返回放弃
-                return FilterResult.Success;
-            }
-            else
-            {
-                if ((response.Length > response[2] + 4))
-                {
-                    request.ResultCode = result.ResultCode;
-                    request.Message = result.Message;
-                    request.Content = result.Content;
-                    //如果长度已经超了，说明这段报文已经不能继续解析了，直接返回放弃
-                    return FilterResult.Success;
-                }
-                else
-                {
-                    request.ResultCode = result.ResultCode;
-                    request.Message = result.Message;
-                    request.Content = result.Content;
-                    //否则返回缓存
-                    return FilterResult.Cache;
-                }
-            }
+            request.ResultCode = result.ResultCode;
+            request.Message = result.Message;
         }
+        return result.Content2;
     }
 
 }
