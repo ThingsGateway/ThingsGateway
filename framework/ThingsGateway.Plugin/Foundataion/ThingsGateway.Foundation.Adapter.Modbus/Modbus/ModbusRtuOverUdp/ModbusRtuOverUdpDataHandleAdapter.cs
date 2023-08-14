@@ -10,6 +10,8 @@
 //------------------------------------------------------------------------------
 #endregion
 
+using ThingsGateway.Foundation.Extension;
+
 namespace ThingsGateway.Foundation.Adapter.Modbus;
 
 /// <summary>
@@ -38,6 +40,7 @@ public class ModbusRtuOverUdpDataHandleAdapter : ReadWriteDevicesUdpDataHandleAd
     protected override OperResult<byte[]> UnpackResponse(
               byte[] send, byte[] response)
     {
-        return ModbusHelper.GetModbusRtuData(send, response, Crc16CheckEnable);
+        var result = ModbusHelper.GetModbusRtuData(send, response, Crc16CheckEnable);
+        return result.Copy();
     }
 }

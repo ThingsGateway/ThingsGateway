@@ -15,6 +15,17 @@ namespace ThingsGateway.Foundation.Extension;
 /// <inheritdoc/>
 public static class OperResultExtensions
 {
+    /// <summary>
+    /// 复制信息，包含第一个泛型类
+    /// </summary>
+    public static OperResult<T1> Copy<T1, T2>(this OperResult<T1, T2> result)
+    {
+        OperResult<T1> result1 = new(result.ResultCode, result.Message)
+        {
+            Content = result.Content1
+        };
+        return result1;
+    }
     #region Public Methods
 
     /// <summary>
