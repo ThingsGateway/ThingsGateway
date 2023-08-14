@@ -27,7 +27,7 @@
 		<ProjectReference Include="..\ThingsGateway.Admin.Blazor\ThingsGateway.Admin.Blazor.csproj" />
 
 	</ItemGroup>
-	<ItemGroup Condition="'$(SolutionName)'=='ThingsGateway'">
+	<ItemGroup Condition="'$(SolutionName)'!='ThingsGateway.Admin'">
 		<!--采集网关-->
 		<ProjectReference Include="..\ThingsGateway.ApiController\ThingsGateway.ApiController.csproj" />
 		<ProjectReference Include="..\ThingsGateway.Blazor\ThingsGateway.Blazor.csproj" />
