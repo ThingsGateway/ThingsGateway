@@ -301,7 +301,7 @@ internal partial class SiemensHelper
             {
                 return new OperResult<string>("在PLC中不是字符串类型");
             }
-            var result2 = await plc.ReadAsync(address, 2 + result1.Content[1]);
+            var result2 = await plc.ReadAsync(address, 2 + result1.Content[1], token);
             if (!result2.IsSuccess)
             {
                 return result2.Copy<string>();
