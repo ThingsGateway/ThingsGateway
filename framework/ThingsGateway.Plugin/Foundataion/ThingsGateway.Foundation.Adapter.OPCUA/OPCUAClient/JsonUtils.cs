@@ -124,7 +124,7 @@ public static class JsonUtils
                     case BuiltInType.UInt64: { return decoder.ReadUInt64(fieldName); }
                     case BuiltInType.Float: { return decoder.ReadFloat(fieldName); }
                     case BuiltInType.Double: { return decoder.ReadDouble(fieldName); }
-                    case BuiltInType.String: { return decoder.ReadString(fieldName); }
+                    case BuiltInType.String: { return decoder.ReadField(fieldName, out var token) ? token?.ToString() : null; }
                     case BuiltInType.DateTime: { return decoder.ReadDateTime(fieldName); }
                     case BuiltInType.Guid: { return decoder.ReadGuid(fieldName); }
                     case BuiltInType.ByteString: { return decoder.ReadByteString(fieldName); }
@@ -300,7 +300,7 @@ public static class JsonUtils
                 case BuiltInType.DataValue: { encoder.WriteDataValue(fieldName, (DataValue)value); return; }
                 case BuiltInType.Enumeration:
                     {
-                        if (value.GetType().IsEnum)
+                        if (value?.GetType().IsEnum == true)
                         {
                             encoder.WriteEnumerated(fieldName, (Enum)value);
                         }
