@@ -458,7 +458,7 @@
         </member>
         <member name="T:ThingsGateway.Foundation.Adapter.Modbus.ModbusTcpDataHandleAdapter">
             <summary>
-            <inheritdoc/>
+            ModbusTcpDataHandleAdapter
             </summary>
         </member>
         <member name="P:ThingsGateway.Foundation.Adapter.Modbus.ModbusTcpDataHandleAdapter.IsCheckMessageId">
