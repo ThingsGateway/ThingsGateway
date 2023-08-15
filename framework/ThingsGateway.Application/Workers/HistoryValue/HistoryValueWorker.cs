@@ -167,7 +167,7 @@ public class HistoryValueWorker : BackgroundService
         HistoryValueTask = await Task.Factory.StartNew(async () =>
         {
             _logger?.LogInformation($"历史数据线程开始");
-            IsExited = false;
+            await Task.Yield();//返回线程控制，不再阻塞
             try
             {
                 var result = await GetHisDbAsync();
@@ -191,8 +191,14 @@ public class HistoryValueWorker : BackgroundService
                     }
                     catch (Exception)
                     {
+                        if (stoppingToken.Token.IsCancellationRequested)
+                        {
+                            IsExited = true;
+                            return;
+                        }
                         try
                         {
+                            _logger.LogWarning("连接历史数据表失败，尝试初始化表");
                             sqlSugarClient.CodeFirst.InitTables(typeof(HistoryValue));
                             LastIsSuccess = true;
                             StatuString = OperResult.CreateSuccessResult();
@@ -204,6 +210,7 @@ public class HistoryValueWorker : BackgroundService
                             _logger.LogWarning(ex, "连接历史数据库失败");
                         }
                     }
+                    IsExited = false;
 
                     while (!stoppingToken.Token.IsCancellationRequested)
                     {
@@ -299,7 +306,6 @@ public class HistoryValueWorker : BackgroundService
                             LastIsSuccess = false;
                         }
                     }
-                    IsExited = true;
 
                 }
             }
@@ -317,9 +323,11 @@ public class HistoryValueWorker : BackgroundService
                 IsExited = true;
                 _logger?.LogError(ex, $"历史数据循环异常");
             }
+            IsExited = true;
         }
  , TaskCreationOptions.LongRunning);
     }
+
     /// <summary>
     /// 重启
     /// </summary>

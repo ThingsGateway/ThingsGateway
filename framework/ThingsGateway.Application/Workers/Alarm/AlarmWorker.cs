@@ -536,6 +536,7 @@ public class AlarmWorker : BackgroundService
         HisAlarmTask = await Task.Factory.StartNew(async () =>
         {
             _logger?.LogInformation($"历史报警线程开始");
+            await Task.Yield();//返回线程控制，不再阻塞
             try
             {
                 await Task.Delay(500, stoppingToken.Token);
@@ -561,8 +562,14 @@ public class AlarmWorker : BackgroundService
                     }
                     catch (Exception)
                     {
+                        if (stoppingToken.Token.IsCancellationRequested)
+                        {
+                            IsExited = true;
+                            return;
+                        }
                         try
                         {
+                            _logger.LogWarning("连接历史报警表失败，尝试初始化表");
                             sqlSugarClient.CodeFirst.InitTables(typeof(HistoryAlarm));
                             isSuccess = true;
                             StatuString = OperResult.CreateSuccessResult();
