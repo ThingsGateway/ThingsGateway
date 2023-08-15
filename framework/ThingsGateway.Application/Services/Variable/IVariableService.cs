@@ -55,7 +55,7 @@ public interface IVariableService : ITransient
     /// <summary>
     /// 导出
     /// </summary>
-    Task<MemoryStream> ExportFileAsync(List<DeviceVariable> collectDeviceVariables = null);
+    Task<MemoryStream> ExportFileAsync(List<DeviceVariable> collectDeviceVariables = null, string deviceName = null);
     /// <summary>
     /// 导出
     /// </summary>

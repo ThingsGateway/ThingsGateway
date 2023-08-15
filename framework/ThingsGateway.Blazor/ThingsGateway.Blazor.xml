@@ -428,13 +428,13 @@
         <member name="M:ThingsGateway.Application.DriverDebugUIBase.WriteAsync">
             <inheritdoc/>
         </member>
-        <member name="M:ThingsGateway.Application.DriverDebugUIBase.DownDeviceExportAsync(ThingsGateway.Application.CollectDevice)">
+        <member name="M:ThingsGateway.Application.DriverDebugUIBase.DeviceImportAsync(ThingsGateway.Application.CollectDevice)">
             <summary>
             导入设备
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ThingsGateway.Application.DriverDebugUIBase.DownDeviceExportAsync(System.Collections.Generic.List{ThingsGateway.Application.DeviceVariable})">
+        <member name="M:ThingsGateway.Application.DriverDebugUIBase.DeviceVariableImportAsync(System.Collections.Generic.List{ThingsGateway.Application.DeviceVariable})">
             <summary>
             导入变量
             </summary>
@@ -445,6 +445,18 @@
             导出
             </summary>
             <param name="values"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Application.DriverDebugUIBase.DownDeviceExportAsync(ThingsGateway.Application.CollectDevice)">
+            <summary>
+            导出到excel
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Application.DriverDebugUIBase.DownDeviceVariableExportAsync(System.Collections.Generic.List{ThingsGateway.Application.DeviceVariable},System.String)">
+            <summary>
+            导出到excel
+            </summary>
             <returns></returns>
         </member>
         <member name="M:ThingsGateway.Application.DriverDebugUIBase.LogOut(TouchSocket.Core.LogLevel,System.Object,System.String,System.Exception)">
