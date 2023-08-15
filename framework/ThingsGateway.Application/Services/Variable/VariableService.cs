@@ -318,7 +318,7 @@ public class VariableService : DbRepository<DeviceVariable>, IVariableService
 
     /// <inheritdoc/>
     [OperDesc("导出采集变量表", IsRecordPar = false)]
-    public async Task<MemoryStream> ExportFileAsync(List<DeviceVariable> deviceVariables = null)
+    public async Task<MemoryStream> ExportFileAsync(List<DeviceVariable> deviceVariables = null, string deviceName = null)
     {
         deviceVariables ??= await GetListAsync(a => !a.IsMemoryVariable);
 
@@ -343,7 +343,8 @@ public class VariableService : DbRepository<DeviceVariable>, IVariableService
            );
        Dictionary<string, object> variableExport = new();
        //变量实体没有包含设备名称，手动插入
-       variableExport.Add(ExportHelpers.DeviceName, collectDeviceDicts[devData.DeviceId].Name);
+       var devName = collectDeviceDicts.GetValueOrDefault(devData.DeviceId)?.Name ?? deviceName;
+       variableExport.Add(ExportHelpers.DeviceName, devName);
 
        foreach (var item in data)
        {

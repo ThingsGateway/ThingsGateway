@@ -3175,7 +3175,7 @@
             编辑变量
             </summary>
         </member>
-        <member name="M:ThingsGateway.Application.IVariableService.ExportFileAsync(System.Collections.Generic.List{ThingsGateway.Application.DeviceVariable})">
+        <member name="M:ThingsGateway.Application.IVariableService.ExportFileAsync(System.Collections.Generic.List{ThingsGateway.Application.DeviceVariable},System.String)">
             <summary>
             导出
             </summary>
@@ -3270,7 +3270,7 @@
         <member name="M:ThingsGateway.Application.VariableService.MemoryVariableExportFileAsync(System.Collections.Generic.List{ThingsGateway.Application.MemoryVariable})">
             <inheritdoc/>
         </member>
-        <member name="M:ThingsGateway.Application.VariableService.ExportFileAsync(System.Collections.Generic.List{ThingsGateway.Application.DeviceVariable})">
+        <member name="M:ThingsGateway.Application.VariableService.ExportFileAsync(System.Collections.Generic.List{ThingsGateway.Application.DeviceVariable},System.String)">
             <inheritdoc/>
         </member>
         <member name="M:ThingsGateway.Application.VariableService.MemoryVariablePreviewAsync(Microsoft.AspNetCore.Components.Forms.IBrowserFile)">

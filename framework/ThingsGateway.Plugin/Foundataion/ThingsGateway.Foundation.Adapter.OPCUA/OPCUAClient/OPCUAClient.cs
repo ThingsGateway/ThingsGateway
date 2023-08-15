@@ -320,12 +320,21 @@ public class OPCUAClient : DisposableObject
             VariableNode variableNode = (VariableNode)ReadNode(monitoreditem.StartNodeId.ToString(), false);
             foreach (var value in monitoreditem.DequeueValues())
             {
-                var data = JsonUtils.Encode(m_session.MessageContext, TypeInfo.GetBuiltInType(variableNode.DataType, m_session.SystemContext.TypeTable), value.Value);
-                if (data == null && value.Value != null)
+                if (value.Value != null)
                 {
-                    Log.Warning($"{monitoreditem.StartNodeId}转换出错，原始值String为{value.Value}");
+                    var data = JsonUtils.Encode(m_session.MessageContext, TypeInfo.GetBuiltInType(variableNode.DataType, m_session.SystemContext.TypeTable), value.Value);
+                    if (data == null && value.Value != null)
+                    {
+                        Log.Warning($"{monitoreditem.StartNodeId}转换出错，原始值String为{value.Value}");
+                    }
+                    DataChangedHandler?.Invoke((variableNode, value, data));
                 }
-                DataChangedHandler?.Invoke((variableNode, value, data));
+                else
+                {
+                    var data = JValue.CreateNull();
+                    DataChangedHandler?.Invoke((variableNode, value, data));
+                }
+
             }
         }
         catch (Exception ex)

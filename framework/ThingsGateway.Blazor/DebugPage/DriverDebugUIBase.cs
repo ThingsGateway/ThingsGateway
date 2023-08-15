@@ -127,7 +127,7 @@ public abstract class DriverDebugUIBase : ComponentBase, IDisposable
     /// 导入设备
     /// </summary>
     /// <returns></returns>
-    public async Task DownDeviceExportAsync(CollectDevice data)
+    public async Task DeviceImportAsync(CollectDevice data)
     {
         try
         {
@@ -145,7 +145,7 @@ public abstract class DriverDebugUIBase : ComponentBase, IDisposable
     /// 导入变量
     /// </summary>
     /// <returns></returns>
-    public async Task DownDeviceExportAsync(List<DeviceVariable> data)
+    public async Task DeviceVariableImportAsync(List<DeviceVariable> data)
     {
         try
         {
@@ -158,6 +158,7 @@ public abstract class DriverDebugUIBase : ComponentBase, IDisposable
             isDownExport = false;
         }
     }
+
 
     /// <summary>
     /// 导出
@@ -187,6 +188,51 @@ public abstract class DriverDebugUIBase : ComponentBase, IDisposable
             isDownExport = false;
         }
     }
+
+    /// <summary>
+    /// 导出到excel
+    /// </summary>
+    /// <returns></returns>
+    public async Task DownDeviceExportAsync(CollectDevice data)
+    {
+        try
+        {
+            isDownExport = true;
+            StateHasChanged();
+            using var memoryStream = await CollectDeviceService.ExportFileAsync(new List<CollectDevice>() { data });
+            memoryStream.Seek(0, SeekOrigin.Begin);
+            using var streamRef = new DotNetStreamReference(stream: memoryStream);
+            _helper ??= await JS.InvokeAsync<IJSObjectReference>("import", $"/_content/ThingsGateway.Admin.Blazor.Core/js/downloadFileFromStream.js");
+            await _helper.InvokeVoidAsync("downloadFileFromStream", $"设备导出{SysDateTimeExtensions.CurrentDateTime.ToFileDateTimeFormat()}.xlsx", streamRef);
+        }
+        finally
+        {
+            isDownExport = false;
+        }
+    }
+
+    /// <summary>
+    /// 导出到excel
+    /// </summary>
+    /// <returns></returns>
+    public async Task DownDeviceVariableExportAsync(List<DeviceVariable> data, string devName)
+    {
+        try
+        {
+            isDownExport = true;
+            StateHasChanged();
+            using var memoryStream = await VariableService.ExportFileAsync(data, devName);
+            memoryStream.Seek(0, SeekOrigin.Begin);
+            using var streamRef = new DotNetStreamReference(stream: memoryStream);
+            _helper ??= await JS.InvokeAsync<IJSObjectReference>("import", $"/_content/ThingsGateway.Admin.Blazor.Core/js/downloadFileFromStream.js");
+            await _helper.InvokeVoidAsync("downloadFileFromStream", $"变量导出{SysDateTimeExtensions.CurrentDateTime.ToFileDateTimeFormat()}.xlsx", streamRef);
+        }
+        finally
+        {
+            isDownExport = false;
+        }
+    }
+
     /// <inheritdoc/>
     public void LogOut(TouchSocket.Core.LogLevel logLevel, object source, string message, Exception exception)
     {

@@ -48,8 +48,7 @@
         var controllerTypes = App.EffectiveTypes.
     Where(u => !u.IsInterface && !u.IsAbstract && u.IsClass
     && u.IsDefined(typeof(Microsoft.AspNetCore.Components.RouteAttribute), false))
-    .Where(it => it.Assembly != typeof(BlazorApp).Assembly)
-    ;
+    .Where(it => it.Assembly != typeof(BlazorApp).Assembly);
         var assemblys = controllerTypes?.Select(it => it.Assembly)?.Distinct();
         return assemblys;
     }

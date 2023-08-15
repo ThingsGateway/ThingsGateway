@@ -60,6 +60,25 @@
 <PModal @bind-Value="IsShowImportVariableList" OnCancel="() => IsShowImportVariableList = false"
         Title=导入OPC变量 Height=@("700") Persistent
         MaxWidth="1500" OnSave="DownDeviceExport">
+    <SaveContent Context="save">
+        <MMenu OffsetY Context="menu">
+            <ActivatorContent>
+                <MButton @attributes="@menu.Attrs" Color="primary"
+                         Class="my-1  mx-2 ">
+                    导出
+                    <AppChevronDown></AppChevronDown>
+                </MButton>
+            </ActivatorContent>
+            <ChildContent>
+                <MList>
+                    <MListItem OnClick="()=>DownDeviceExport()" Disabled="save.Loading" Loading="save.Loading">导出到excel</MListItem>
+                    <MListItem OnClick="()=>DeviceImport()" Disabled="save.Loading" Loading="save.Loading">导入到系统</MListItem>
+                </MList>
+
+            </ChildContent>
+        </MMenu>
+
+    </SaveContent>
     <ChildContent>
         @if (IsShowImportVariableList)
         {
@@ -67,11 +86,5 @@
         }
     </ChildContent>
 
-
-    <SaveContent Context="save">
-        <MButton Text Color="primary" OnClick="save.Click" Disabled="defalutDebugDriverPage.isDownExport" Loading="defalutDebugDriverPage.isDownExport">
-            <MLabel>导入</MLabel>
-        </MButton>
-    </SaveContent>
 </PModal>
 

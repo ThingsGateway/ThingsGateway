@@ -95,7 +95,20 @@ public partial class OPCUAClientDebugDriverPage
             return;
         }
         await defalutDebugDriverPage.DownDeviceExportAsync(data.Item1);
-        await defalutDebugDriverPage.DownDeviceExportAsync(data.Item2);
+        await defalutDebugDriverPage.DownDeviceVariableExportAsync(data.Item2, data.Item1.Name);
+        await PopupService.EnqueueSnackbarAsync("成功", AlertTypes.Success);
+    }
+
+    private async Task DeviceImport()
+    {
+        var data = await ImportVariable?.GetImportVariableListAsync();
+        if (data.Item2?.Count == 0)
+        {
+            await PopupService.EnqueueSnackbarAsync("无可用变量", AlertTypes.Warning);
+            return;
+        }
+        await defalutDebugDriverPage.DeviceImportAsync(data.Item1);
+        await defalutDebugDriverPage.DeviceVariableImportAsync(data.Item2);
         await PopupService.EnqueueSnackbarAsync("成功", AlertTypes.Success);
     }
 
