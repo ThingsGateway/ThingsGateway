@@ -19,6 +19,7 @@ using System.Threading.Tasks;
 
 using ThingsGateway.Application;
 using ThingsGateway.Foundation;
+using ThingsGateway.Foundation.Extension;
 
 namespace ThingsGateway.Siemens;
 /// <summary>
@@ -79,53 +80,48 @@ public abstract class Siemens : CollectBase
     /// <see cref="SiemensS7PLC.ReadDateAsync(string,CancellationToken)"/>
     /// </summary>
     /// <returns></returns>
-    [DeviceMethod("ReadDate", "")]
-    public Task<OperResult<System.DateTime>> ReadDateAsync(string address, CancellationToken token)
+    [DeviceMethod("ReadWriteDateAsync", "")]
+    public async Task<OperResult<System.DateTime>> ReadWriteDateAsync(string address, System.DateTime? value = null, CancellationToken token = default)
     {
-        return _plc?.ReadDateAsync(address, token);
+        if (value == null)
+            return await _plc?.ReadDateAsync(address, token);
+        else
+            return (await _plc?.WriteDateAsync(address, value.Value, token)).Copy<System.DateTime>();
+
     }
 
     /// <summary>
     /// <see cref="SiemensS7PLC.ReadDateTimeAsync(string,CancellationToken)"/>
     /// </summary>
     /// <param name="address"></param>
+    /// <param name="value"></param>
     /// <param name="token"></param>
     /// <returns></returns>
-    [DeviceMethod("ReadDateTime", "")]
-    public Task<OperResult<System.DateTime>> ReadDateTimeAsync(string address, CancellationToken token)
+    [DeviceMethod("ReadWriteDateTimeAsync", "")]
+    public async Task<OperResult<System.DateTime>> ReadWriteDateTimeAsync(string address, System.DateTime? value = null, CancellationToken token = default)
     {
-        return _plc?.ReadDateTimeAsync(address, token);
+        if (value == null)
+            return await _plc?.ReadDateTimeAsync(address, token);
+        else
+            return (await _plc?.WriteDateTimeAsync(address, value.Value, token)).Copy<System.DateTime>();
     }
 
     /// <summary>
     /// <see cref="SiemensS7PLC.ReadStringAsync(string,Encoding,CancellationToken)"/>
     /// </summary>
     /// <returns></returns>
-    [DeviceMethod("ReadString", "")]
-    public Task<OperResult<string>> ReadStringAsync(string address, Encoding encoding, CancellationToken token)
+    [DeviceMethod("ReadWriteStringAsync", "")]
+    public async Task<OperResult<string>> ReadWriteStringAsync(string address, Encoding encoding, string value = null, CancellationToken token = default)
     {
-        return _plc?.ReadStringAsync(address, encoding, token);
+        if (value == null)
+            return await _plc?.ReadStringAsync(address, encoding, token);
+        else
+            return (await _plc?.WriteAsync(address, value, token)).Copy<string>();
     }
 
-    /// <summary>
-    /// <see cref="SiemensS7PLC.WriteDateAsync(string,System.DateTime,CancellationToken)"/>
-    /// </summary>
-    /// <returns></returns>
-    [DeviceMethod("WriteDate", "")]
-    public Task<OperResult> WriteDateAsync(string address, System.DateTime dateTime, CancellationToken token)
-    {
-        return _plc?.WriteDateAsync(address, dateTime, token);
-    }
 
-    /// <summary>
-    /// <see cref="SiemensS7PLC.WriteDateTimeAsync(string,System.DateTime,CancellationToken)"/>
-    /// </summary>
-    /// <returns></returns>
-    [DeviceMethod("WriteDateTime", "")]
-    public Task<OperResult> WriteDateTimeAsync(string address, System.DateTime dateTime, CancellationToken token)
-    {
-        return _plc?.WriteDateTimeAsync(address, dateTime, token);
-    }
+
+
 
     /// <inheritdoc/>
     public override async Task<OperResult> WriteValueAsync(DeviceVariableRunTime deviceVariable, JToken value, CancellationToken token)
