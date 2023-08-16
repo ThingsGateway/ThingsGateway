@@ -230,7 +230,7 @@ public class OPCUAClient : DisposableObject
                     StartNodeId = variableNode.NodeId,
                     AttributeId = Attributes.Value,
                     DisplayName = items[i],
-                    Filter = new DataChangeFilter() { DeadbandValue = OPCNode.DeadBand, DeadbandType = (int)DeadbandType.Absolute, Trigger = DataChangeTrigger.StatusValue },
+                    Filter = OPCNode.DeadBand == 0 ? null : new DataChangeFilter() { DeadbandValue = OPCNode.DeadBand, DeadbandType = (int)DeadbandType.Absolute, Trigger = DataChangeTrigger.StatusValue },
                     SamplingInterval = OPCNode?.UpdateRate ?? 1000,
                 };
                 await typeSystem.LoadType(variableNode.DataType, true, true);
@@ -249,7 +249,7 @@ public class OPCUAClient : DisposableObject
         m_subscription.Create();
         foreach (var item in m_subscription.MonitoredItems.Where(a => a.Status.Error != null && StatusCode.IsBad(a.Status.Error.StatusCode)))
         {
-            item.Filter = new DataChangeFilter() { DeadbandValue = OPCNode.DeadBand, DeadbandType = (int)DeadbandType.None, Trigger = DataChangeTrigger.StatusValue };
+            item.Filter = OPCNode.DeadBand == 0 ? null : new DataChangeFilter() { DeadbandValue = OPCNode.DeadBand, DeadbandType = (int)DeadbandType.None, Trigger = DataChangeTrigger.StatusValue };
         }
         m_subscription.ApplyChanges();
 
