@@ -32,7 +32,7 @@ internal static class ModbusHelper
 
             IThingsGatewayBitConverter transformParameter = ByteTransformUtil.GetTransByAddress(ref address, byteConverter);
             item.ThingsGatewayBitConverter = transformParameter;
-            //item.VariableAddress = address;
+            item.VariableAddress = address;
             item.Index = device.GetBitOffset(item.VariableAddress);
         }
 
