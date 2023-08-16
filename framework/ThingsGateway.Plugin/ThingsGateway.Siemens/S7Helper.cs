@@ -33,7 +33,7 @@ namespace ThingsGateway.Siemens
 
                 IThingsGatewayBitConverter transformParameter = ByteTransformUtil.GetTransByAddress(ref address, byteConverter);
                 item.ThingsGatewayBitConverter = transformParameter;
-                //item.VariableAddress = address;
+                item.VariableAddress = address;//需要使用过滤后的地址
 
                 item.Index = siemensS7Net.GetBitOffset(item.VariableAddress);
             }
@@ -53,7 +53,10 @@ namespace ThingsGateway.Siemens
                         }
                         else if (it.DataTypeEnum.GetSystemType() == typeof(string))
                         {
+                            //字符串模式在s7中，第一个字节不属于实际内容
                             lastLen = it.ThingsGatewayBitConverter.StringLength;
+                            it.Index += 1;
+                            it.ThingsGatewayBitConverter.StringLength -= 1;
                         }
                         else if (it.DataTypeEnum.GetSystemType() == typeof(object))
                         {
