@@ -43,7 +43,7 @@ namespace ThingsGateway.Mqtt;
 public class MqttClient : UpLoadBase
 {
     private readonly MqttClientProperty driverPropertys = new();
-    private readonly EasyLock lockobj = new();
+    private readonly EasyLock easyLock = new();
     private readonly MqttClientVariableProperty variablePropertys = new();
     private List<CollectDeviceRunTime> _collectDevice;
     private ConcurrentQueue<DeviceData> _collectDeviceRunTimes = new();
@@ -285,6 +285,7 @@ public class MqttClient : UpLoadBase
     {
         try
         {
+            easyLock.SafeDispose();
             _globalDeviceData?.AllVariables?.ForEach(a => a.VariableValueChange -= VariableValueChange);
 
             _globalDeviceData?.CollectDevices?.ForEach(a =>
@@ -520,7 +521,7 @@ public class MqttClient : UpLoadBase
                 return OperResult.CreateSuccessResult();
             try
             {
-                await lockobj.WaitAsync();
+                await easyLock.WaitAsync();
                 if (_mqttClient?.IsConnected == true)
                     return OperResult.CreateSuccessResult();
                 using var timeoutToken = new CancellationTokenSource(TimeSpan.FromMilliseconds(driverPropertys.ConnectTimeOut));
@@ -548,7 +549,7 @@ public class MqttClient : UpLoadBase
             }
             finally
             {
-                lockobj.Release();
+                easyLock.Release();
             }
         }
     }

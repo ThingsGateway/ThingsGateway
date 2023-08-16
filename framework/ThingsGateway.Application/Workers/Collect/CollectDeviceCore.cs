@@ -269,6 +269,7 @@ public class CollectDeviceCore
         {
             isInitSuccess = false;
             GlobalDeviceData.CollectDevices.RemoveWhere(it => it.Id == Device.Id);
+            easyLock.SafeDispose();
         }
     }
 

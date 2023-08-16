@@ -864,6 +864,7 @@ public class OPCUAClient : DisposableObject
     protected override void Dispose(bool disposing)
     {
         Disconnect();
+        checkLock.SafeDispose();
         base.Dispose(disposing);
     }
 

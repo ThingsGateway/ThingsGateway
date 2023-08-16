@@ -225,7 +225,13 @@ public class UploadDeviceCore
         {
             _logger?.LogError(ex, $"{Device.Name} 释放失败");
         }
-        isInitSuccess = false;
+        finally
+        {
+            isInitSuccess = false;
+            easyLock.SafeDispose();
+        }
+
+
     }
 
     /// <summary>

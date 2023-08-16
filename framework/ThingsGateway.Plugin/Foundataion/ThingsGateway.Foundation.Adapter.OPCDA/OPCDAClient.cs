@@ -349,6 +349,7 @@ public class OPCDAClient : DisposableObject
     protected override void Dispose(bool disposing)
     {
         PrivateDisconnect();
+        checkLock.SafeDispose();
         base.Dispose(disposing);
     }
 

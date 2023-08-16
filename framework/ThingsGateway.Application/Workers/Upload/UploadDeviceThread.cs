@@ -51,6 +51,7 @@ public class UploadDeviceThread : IAsyncDisposable
     public async ValueTask DisposeAsync()
     {
         await StopThreadAsync();
+        easyLock.SafeDispose();
         UploadDeviceCores.Clear();
     }
 

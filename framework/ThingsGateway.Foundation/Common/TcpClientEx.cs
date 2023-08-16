@@ -29,7 +29,6 @@ using System.Runtime.InteropServices;
 using ThingsGateway.Foundation;
 
 using TouchSocket.Resources;
-using TouchSocket.Sockets;
 
 namespace ThingsGateway.Foundation;
 
@@ -347,6 +346,8 @@ public class TcpClientBaseEx : BaseSocket, ITcpClient
         {
             privateEasyLock.Release();
         }
+        privateEasyLock.SafeDispose();
+
         base.Dispose(disposing);
     }
 
