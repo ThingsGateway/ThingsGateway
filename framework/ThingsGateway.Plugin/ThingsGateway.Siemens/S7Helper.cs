@@ -53,10 +53,19 @@ namespace ThingsGateway.Siemens
                         }
                         else if (it.DataTypeEnum.GetSystemType() == typeof(string))
                         {
-                            //字符串模式在s7中，第一个字节不属于实际内容
                             lastLen = it.ThingsGatewayBitConverter.StringLength;
-                            it.Index += 1;
-                            it.ThingsGatewayBitConverter.StringLength -= 1;
+                            if (siemensS7Net.CurrentPlc == SiemensEnum.S200Smart)
+                            {
+                                //字符串在S200Smart中，第一个字节不属于实际内容
+                                it.Index += 1;
+                                it.ThingsGatewayBitConverter.StringLength -= 1;
+                            }
+                            else
+                            {
+                                //字符串在S7中，前两个字节不属于实际内容
+                                it.Index += 2;
+                                it.ThingsGatewayBitConverter.StringLength -= 2;
+                            }
                         }
                         else if (it.DataTypeEnum.GetSystemType() == typeof(object))
                         {
