@@ -117,35 +117,24 @@
         <member name="M:ThingsGateway.Siemens.Siemens.LoadSourceRead(System.Collections.Generic.List{ThingsGateway.Application.DeviceVariableRunTime})">
             <inheritdoc/>
         </member>
-        <member name="M:ThingsGateway.Siemens.Siemens.ReadDateAsync(System.String,System.Threading.CancellationToken)">
+        <member name="M:ThingsGateway.Siemens.Siemens.ReadWriteDateAsync(System.String,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
             <summary>
             <see cref="M:ThingsGateway.Foundation.Adapter.Siemens.SiemensS7PLC.ReadDateAsync(System.String,System.Threading.CancellationToken)"/>
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ThingsGateway.Siemens.Siemens.ReadDateTimeAsync(System.String,System.Threading.CancellationToken)">
+        <member name="M:ThingsGateway.Siemens.Siemens.ReadWriteDateTimeAsync(System.String,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
             <summary>
             <see cref="M:ThingsGateway.Foundation.Adapter.Siemens.SiemensS7PLC.ReadDateTimeAsync(System.String,System.Threading.CancellationToken)"/>
             </summary>
             <param name="address"></param>
+            <param name="value"></param>
             <param name="token"></param>
             <returns></returns>
         </member>
-        <member name="M:ThingsGateway.Siemens.Siemens.ReadStringAsync(System.String,System.Text.Encoding,System.Threading.CancellationToken)">
+        <member name="M:ThingsGateway.Siemens.Siemens.ReadWriteStringAsync(System.String,System.Text.Encoding,System.String,System.Threading.CancellationToken)">
             <summary>
             <see cref="M:ThingsGateway.Foundation.Adapter.Siemens.SiemensS7PLC.ReadStringAsync(System.String,System.Text.Encoding,System.Threading.CancellationToken)"/>
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:ThingsGateway.Siemens.Siemens.WriteDateAsync(System.String,System.DateTime,System.Threading.CancellationToken)">
-            <summary>
-            <see cref="M:ThingsGateway.Foundation.Adapter.Siemens.SiemensS7PLC.WriteDateAsync(System.String,System.DateTime,System.Threading.CancellationToken)"/>
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:ThingsGateway.Siemens.Siemens.WriteDateTimeAsync(System.String,System.DateTime,System.Threading.CancellationToken)">
-            <summary>
-            <see cref="M:ThingsGateway.Foundation.Adapter.Siemens.SiemensS7PLC.WriteDateTimeAsync(System.String,System.DateTime,System.Threading.CancellationToken)"/>
             </summary>
             <returns></returns>
         </member>

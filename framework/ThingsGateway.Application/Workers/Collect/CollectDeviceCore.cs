@@ -330,11 +330,6 @@ public class CollectDeviceCore
                 return ThreadRunReturn.Continue;
             }
 
-            if (DeviceVariableSourceReads.Count == 0 && Device.DeviceVariableRunTimes.Where(a => string.IsNullOrEmpty(a.OtherMethod)).Any())
-            {
-                //无采集变量
-                return ThreadRunReturn.Continue;
-            }
             if (token.IsCancellationRequested)
                 return ThreadRunReturn.Break;
 
@@ -546,6 +541,8 @@ public class CollectDeviceCore
                                     }
                                     else
                                     {
+                                        if (strs.Length <= index)
+                                            continue;
                                         //得到对于的方法参数值
                                         methodResult.MethodObj[i] = methodResult.Converter.ConvertFrom(strs[index], ps[i].ParameterType);
                                         index++;
@@ -668,18 +665,25 @@ public class CollectDeviceCore
                     if (method.HasReturn && result != null && result.IsSuccess)
                     {
                         var content = deviceVariableMethodSource.Converter.ConvertTo(result.Content?.ToString()?.Replace($"\0", ""));
-                        var operResult = deviceVariableMethodSource.DeviceVariable.SetValue(content);
-                        if (!operResult.IsSuccess)
+                        if (isRead)
                         {
-                            _logger?.LogWarning(operResult.Message, ToString());
+                            var operResult = deviceVariableMethodSource.DeviceVariable.SetValue(content);
+                            if (!operResult.IsSuccess)
+                            {
+                                _logger?.LogWarning(operResult.Message, ToString());
+                            }
                         }
+
                     }
                     else
                     {
-                        var operResult = deviceVariableMethodSource.DeviceVariable.SetValue(null);
-                        if (!operResult.IsSuccess)
+                        if (isRead)
                         {
-                            _logger?.LogWarning(operResult.Message, ToString());
+                            var operResult = deviceVariableMethodSource.DeviceVariable.SetValue(null);
+                            if (!operResult.IsSuccess)
+                            {
+                                _logger?.LogWarning(operResult.Message, ToString());
+                            }
                         }
                     }
                     return result;
