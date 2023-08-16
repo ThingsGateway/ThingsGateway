@@ -124,7 +124,7 @@ internal partial class SiemensHelper
         }
 
         byte err = content[21];
-        if (err == byte.MaxValue)
+        if (err != byte.MaxValue)
         {
             return new OperResult<byte[]>((int)content[21] + GetCpuError(content[21]));
         }
