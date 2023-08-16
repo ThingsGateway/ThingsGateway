@@ -49,7 +49,7 @@ public class IotSharpClient : UpLoadBase
     private const string WriteMethod = "WRITE";
 
     private readonly IotSharpClientProperty driverPropertys = new();
-    private readonly EasyLock lockobj = new();
+    private readonly EasyLock easyLock = new();
     private readonly IotSharpClientVariableProperty variablePropertys = new();
     private ConcurrentQueue<DeviceData> _collectDeviceRunTimes = new();
     private ConcurrentQueue<VariableData> _collectVariableRunTimes = new();
@@ -204,6 +204,7 @@ public class IotSharpClient : UpLoadBase
     {
         try
         {
+            easyLock.SafeDispose();
             _globalDeviceData?.AllVariables?.ForEach(a => a.VariableValueChange -= VariableValueChange);
 
             _globalDeviceData?.CollectDevices?.ForEach(a =>
@@ -472,7 +473,7 @@ GetPropertyValue(tag, nameof(variablePropertys.VariableRpcEnable)).ToBoolean()
                 return OperResult.CreateSuccessResult();
             try
             {
-                await lockobj.WaitAsync();
+                await easyLock.WaitAsync();
                 if (_mqttClient?.IsConnected == true)
                     return OperResult.CreateSuccessResult();
                 using var timeoutToken = new CancellationTokenSource(TimeSpan.FromMilliseconds(driverPropertys.ConnectTimeOut));
@@ -497,7 +498,7 @@ GetPropertyValue(tag, nameof(variablePropertys.VariableRpcEnable)).ToBoolean()
             }
             finally
             {
-                lockobj.Release();
+                easyLock.Release();
             }
         }
     }

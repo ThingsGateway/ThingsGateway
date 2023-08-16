@@ -62,6 +62,7 @@ public class CollectDeviceThread : IAsyncDisposable
     public async ValueTask DisposeAsync()
     {
         await StopThreadAsync();
+        easyLock.SafeDispose();
         CollectDeviceCores.Clear();
     }
 
