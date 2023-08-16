@@ -109,7 +109,6 @@ public static class JsonUtils
         {
             if (ValueRank == ValueRanks.Scalar)
             {
-                Type type = TypeInfo.GetSystemType(builtInType, ValueRank);
                 switch (builtInType)
                 {
                     case BuiltInType.Null: { var variant = decoder.ReadVariant(fieldName); return variant.Value; }
@@ -138,7 +137,8 @@ public static class JsonUtils
                     case BuiltInType.DataValue: { return decoder.ReadDataValue(fieldName); }
                     case BuiltInType.Enumeration:
                         {
-                            return type.IsEnum ? decoder.ReadEnumerated(fieldName, type) : (object)decoder.ReadInt32(fieldName);
+                            Type type = TypeInfo.GetSystemType(builtInType, ValueRank);
+                            return type.IsEnum ? decoder.ReadEnumerated(fieldName, type) : decoder.ReadInt32(fieldName);
                         }
                     case BuiltInType.DiagnosticInfo: { return decoder.ReadDiagnosticInfo(fieldName); }
                     case BuiltInType.Variant: { return decoder.ReadVariant(fieldName); }
