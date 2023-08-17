@@ -12,7 +12,7 @@ namespace ModbusDemo
     {
         static async Task Main(string[] args)
         {
-            //await ModbusClientAsync();
+            await ModbusClientAsync();
 
             await ModbusServerAsync();
 

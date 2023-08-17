@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Foundataion\ThingsGateway.Foundation.Adapter.OPCUA\ThingsGateway.Foundation.Adapter.OPCUA.csproj" />
+	  <PackageReference Include="ThingsGateway.Foundation.Adapter.OPCUA" Version="2.0.9" />
   </ItemGroup>
 
 </Project>
