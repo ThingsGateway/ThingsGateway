@@ -529,7 +529,7 @@ public class CollectDeviceCore
 
                         if (!string.IsNullOrEmpty(methodResult.MethodStr))
                         {
-                            string[] strs = methodResult.MethodStr?.Trim()?.Split(';');
+                            string[] strs = methodResult.MethodStr?.Trim()?.TrimEnd(';').Split(';');
                             try
                             {
                                 int index = 0;
@@ -598,8 +598,8 @@ public class CollectDeviceCore
 
                     if (!string.IsNullOrEmpty(deviceVariableMethodSource.MethodStr) || !string.IsNullOrEmpty(value))
                     {
-                        string[] strs1 = deviceVariableMethodSource.MethodStr?.Trim()?.Split(';');
-                        string[] strs2 = value?.Trim()?.Split(';');
+                        string[] strs1 = deviceVariableMethodSource.MethodStr?.Trim()?.TrimEnd(';').Split(';');
+                        string[] strs2 = value?.Trim()?.TrimEnd(';').Split(';');
                         //通过分号分割，并且合并参数
                         var strs = strs1?.SpliceArray(strs2);
                         int index = 0;
