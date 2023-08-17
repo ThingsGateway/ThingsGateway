@@ -113,6 +113,7 @@ public abstract class Siemens : CollectBase
     [DeviceMethod("ReadWriteStringAsync", "")]
     public async Task<OperResult<string>> ReadWriteStringAsync(string address, Encoding encoding, string value = null, CancellationToken token = default)
     {
+        encoding ??= Encoding.UTF8;
         if (value == null)
             return await _plc?.ReadStringAsync(address, encoding, token);
         else
