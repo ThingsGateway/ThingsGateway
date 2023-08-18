@@ -857,5 +857,38 @@
             设置深浅主题统一由这个方法为入口
             </summary>
         </member>
+        <member name="T:BlazorComponent.I18n.CookieStorage">
+            <summary>
+            CookieStorage
+            </summary>
+        </member>
+        <member name="M:BlazorComponent.I18n.CookieStorage.#ctor(Microsoft.JSInterop.IJSRuntime)">
+            <summary>
+            CookieStorage
+            </summary>
+            <param name="jsRuntime"></param>
+        </member>
+        <member name="M:BlazorComponent.I18n.CookieStorage.GetCookieAsync(System.String)">
+            <summary>
+            GetCookieAsync
+            </summary>
+            <param name="key"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorComponent.I18n.CookieStorage.GetCookie(System.String)">
+            <summary>
+            GetCookie
+            </summary>
+            <param name="key"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BlazorComponent.I18n.CookieStorage.SetItemAsync``1(System.String,``0)">
+            <summary>
+            SetItemAsync
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="key"></param>
+            <param name="value"></param>
+        </member>
     </members>
 </doc>
