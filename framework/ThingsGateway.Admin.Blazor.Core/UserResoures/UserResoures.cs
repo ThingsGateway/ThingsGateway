@@ -153,7 +153,7 @@ public class UserResoures : IDisposable
     {
         if (MasaBlazor.Theme.Dark != isDark || isDark == null)
             MasaBlazor.ToggleTheme();
-        _cookieStorage?.SetItemAsync(BlazorResourceConst.ThemeCookieKey, isDark.ToJsonString());
+        _cookieStorage?.SetItemAsync(BlazorResourceConst.ThemeCookieKey, MasaBlazor.Theme.Dark.ToJsonString());
     }
 
     private void InitCookie(IRequestCookieCollection cookies)
