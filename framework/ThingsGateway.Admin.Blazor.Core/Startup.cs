@@ -10,6 +10,8 @@
 //------------------------------------------------------------------------------
 #endregion
 
+using BlazorComponent;
+
 using Furion;
 
 using Masa.Blazor;
@@ -61,6 +63,8 @@ public class Startup : AppStartup
 
 
             });
+            options.Locale = new Locale("zh-CN", "en-US");
+
         });
 
         services.AddScoped<InitTimezone>();
