@@ -19,7 +19,7 @@ namespace ThingsGateway.Foundation;
 internal class WaitingClientEx<TClient> : DisposableObject, IWaitingClient<TClient> where TClient : IClient, IDefaultSender, ISender
 {
     private readonly Func<ResponsedData, bool> m_func;
-    private readonly SemaphoreSlim m_lock = new(1);
+    private readonly EasyLock easyLock = new();
     private readonly WaitData<ResponsedData> m_waitData = new WaitData<ResponsedData>();
     private readonly WaitDataAsync<ResponsedData> m_waitDataAsync = new WaitDataAsync<ResponsedData>();
 
@@ -55,6 +55,7 @@ internal class WaitingClientEx<TClient> : DisposableObject, IWaitingClient<TClie
         this.Client = default;
         this.m_waitData.SafeDispose();
         this.m_waitDataAsync.SafeDispose();
+        this.easyLock.SafeDispose();
         base.Dispose(disposing);
     }
 
@@ -121,7 +122,7 @@ internal class WaitingClientEx<TClient> : DisposableObject, IWaitingClient<TClie
     {
         try
         {
-            m_lock.Wait();
+            easyLock.Wait();
             this.m_breaked = false;
             this.Reset();
             if (this.WaitingOptions.BreakTrigger && this.Client is ITcpClientBase tcpClient)
@@ -184,7 +185,7 @@ internal class WaitingClientEx<TClient> : DisposableObject, IWaitingClient<TClie
         }
         finally
         {
-            m_lock.Release();
+            easyLock.Release();
             if (this.WaitingOptions.BreakTrigger && this.Client is ITcpClientBase tcpClient)
             {
                 tcpClient.Disconnected -= this.OnDisconnected;
@@ -224,7 +225,7 @@ internal class WaitingClientEx<TClient> : DisposableObject, IWaitingClient<TClie
     {
         try
         {
-            await m_lock.WaitAsync();
+            await easyLock.WaitAsync();
             this.m_breaked = false;
             this.Reset();
             if (this.WaitingOptions.BreakTrigger && this.Client is ITcpClientBase tcpClient)
@@ -287,7 +288,7 @@ internal class WaitingClientEx<TClient> : DisposableObject, IWaitingClient<TClie
         }
         finally
         {
-            m_lock.Release();
+            easyLock.Release();
             if (this.WaitingOptions.BreakTrigger && this.Client is ITcpClientBase tcpClient)
             {
                 tcpClient.Disconnected -= this.OnDisconnected;
