@@ -1,12 +1,12 @@
-#region copyright
+ï»¿#region copyright
 //------------------------------------------------------------------------------
-//  ´Ë´úÂë°æÈ¨ÉùÃ÷ÎªÈ«ÎÄ¼ş¸²¸Ç£¬ÈçÓĞÔ­×÷ÕßÌØ±ğÉùÃ÷£¬»áÔÚÏÂ·½ÊÖ¶¯²¹³ä
-//  ´Ë´úÂë°æÈ¨£¨³ıÌØ±ğÉùÃ÷ÍâµÄ´úÂë£©¹é×÷Õß±¾ÈËDiegoËùÓĞ
-//  Ô´´úÂëÊ¹ÓÃĞ­Òé×ñÑ­±¾²Ö¿âµÄ¿ªÔ´Ğ­Òé¼°¸½¼ÓĞ­Òé
-//  GiteeÔ´´úÂë²Ö¿â£ºhttps://gitee.com/diego2098/ThingsGateway
-//  GithubÔ´´úÂë²Ö¿â£ºhttps://github.com/kimdiego2098/ThingsGateway
-//  Ê¹ÓÃÎÄµµ£ºhttps://diego2098.gitee.io/thingsgateway-docs/
-//  QQÈº£º605534569
+//  æ­¤ä»£ç ç‰ˆæƒå£°æ˜ä¸ºå…¨æ–‡ä»¶è¦†ç›–ï¼Œå¦‚æœ‰åŸä½œè€…ç‰¹åˆ«å£°æ˜ï¼Œä¼šåœ¨ä¸‹æ–¹æ‰‹åŠ¨è¡¥å……
+//  æ­¤ä»£ç ç‰ˆæƒï¼ˆé™¤ç‰¹åˆ«å£°æ˜å¤–çš„ä»£ç ï¼‰å½’ä½œè€…æœ¬äººDiegoæ‰€æœ‰
+//  æºä»£ç ä½¿ç”¨åè®®éµå¾ªæœ¬ä»“åº“çš„å¼€æºåè®®åŠé™„åŠ åè®®
+//  Giteeæºä»£ç ä»“åº“ï¼šhttps://gitee.com/diego2098/ThingsGateway
+//  Githubæºä»£ç ä»“åº“ï¼šhttps://github.com/kimdiego2098/ThingsGateway
+//  ä½¿ç”¨æ–‡æ¡£ï¼šhttps://diego2098.gitee.io/thingsgateway-docs/
+//  QQç¾¤ï¼š605534569
 //------------------------------------------------------------------------------
 #endregion
 
@@ -21,7 +21,7 @@ using ThingsGateway.Application;
 
 namespace ThingsGateway.Blazor;
 /// <summary>
-/// µ¼Èëexcel
+/// å¯¼å…¥excel
 /// </summary>
 public partial class ImportExcel
 {
@@ -33,21 +33,21 @@ public partial class ImportExcel
 
     bool isSaveImport;
     /// <summary>
-    /// µ¼Èë
+    /// å¯¼å…¥
     /// </summary>
     [Parameter]
     public Func<Dictionary<string, ImportPreviewOutputBase>, Task> Import { get; set; }
     /// <summary>
-    /// ÊÇ·ñÏÔÊ¾
+    /// æ˜¯å¦æ˜¾ç¤º
     /// </summary>
     public bool IsShowImport { get; set; }
     /// <summary>
-    /// Ô¤ÀÀ
+    /// é¢„è§ˆ
     /// </summary>
     [Parameter]
     public Func<IBrowserFile, Task<Dictionary<string, ImportPreviewOutputBase>>> Preview { get; set; }
     /// <summary>
-    /// µ±Ç°²½Êı
+    /// å½“å‰æ­¥æ•°
     /// </summary>
     public int Step { get; set; }
 
@@ -75,7 +75,7 @@ public partial class ImportExcel
             StateHasChanged();
             await Import.Invoke(ImportPreviews);
             _importFile = null;
-            await PopupService.EnqueueSnackbarAsync("³É¹¦", AlertTypes.Success);
+            await PopupService.EnqueueSnackbarAsync("æˆåŠŸ", AlertTypes.Success);
         }
         finally
         {

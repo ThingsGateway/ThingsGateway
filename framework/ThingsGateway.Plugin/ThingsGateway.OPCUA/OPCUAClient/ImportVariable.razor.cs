@@ -1,12 +1,12 @@
-#region copyright
+ï»¿#region copyright
 //------------------------------------------------------------------------------
-//  ´Ë´úÂë°æÈ¨ÉùÃ÷ÎªÈ«ÎÄ¼ş¸²¸Ç£¬ÈçÓĞÔ­×÷ÕßÌØ±ğÉùÃ÷£¬»áÔÚÏÂ·½ÊÖ¶¯²¹³ä
-//  ´Ë´úÂë°æÈ¨£¨³ıÌØ±ğÉùÃ÷ÍâµÄ´úÂë£©¹é×÷Õß±¾ÈËDiegoËùÓĞ
-//  Ô´´úÂëÊ¹ÓÃĞ­Òé×ñÑ­±¾²Ö¿âµÄ¿ªÔ´Ğ­Òé¼°¸½¼ÓĞ­Òé
-//  GiteeÔ´´úÂë²Ö¿â£ºhttps://gitee.com/diego2098/ThingsGateway
-//  GithubÔ´´úÂë²Ö¿â£ºhttps://github.com/kimdiego2098/ThingsGateway
-//  Ê¹ÓÃÎÄµµ£ºhttps://diego2098.gitee.io/thingsgateway-docs/
-//  QQÈº£º605534569
+//  æ­¤ä»£ç ç‰ˆæƒå£°æ˜ä¸ºå…¨æ–‡ä»¶è¦†ç›–ï¼Œå¦‚æœ‰åŸä½œè€…ç‰¹åˆ«å£°æ˜ï¼Œä¼šåœ¨ä¸‹æ–¹æ‰‹åŠ¨è¡¥å……
+//  æ­¤ä»£ç ç‰ˆæƒï¼ˆé™¤ç‰¹åˆ«å£°æ˜å¤–çš„ä»£ç ï¼‰å½’ä½œè€…æœ¬äººDiegoæ‰€æœ‰
+//  æºä»£ç ä½¿ç”¨åè®®éµå¾ªæœ¬ä»“åº“çš„å¼€æºåè®®åŠé™„åŠ åè®®
+//  Giteeæºä»£ç ä»“åº“ï¼šhttps://gitee.com/diego2098/ThingsGateway
+//  Githubæºä»£ç ä»“åº“ï¼šhttps://github.com/kimdiego2098/ThingsGateway
+//  ä½¿ç”¨æ–‡æ¡£ï¼šhttps://diego2098.gitee.io/thingsgateway-docs/
+//  QQç¾¤ï¼š605534569
 //------------------------------------------------------------------------------
 #endregion
 
@@ -29,7 +29,7 @@ using Yitter.IdGenerator;
 namespace ThingsGateway.OPCUA;
 
 /// <summary>
-/// µ¼Èë±äÁ¿
+/// å¯¼å…¥å˜é‡
 /// </summary>
 public partial class ImportVariable
 {
@@ -41,7 +41,7 @@ public partial class ImportVariable
 
     private bool overlay = true;
     /// <summary>
-    /// opc¶ÔÏó
+    /// opcå¯¹è±¡
     /// </summary>
     [Parameter]
     public ThingsGateway.Foundation.Adapter.OPCUA.OPCUAClient PLC { get; set; }
@@ -67,7 +67,7 @@ public partial class ImportVariable
 
     private List<ReferenceDescription> Selected { get; set; } = new();
     /// <summary>
-    /// »ñÈ¡Éè±¸Óë±äÁ¿ÁĞ±í
+    /// è·å–è®¾å¤‡ä¸å˜é‡åˆ—è¡¨
     /// </summary>
     /// <returns></returns>
     public async Task<(CollectDevice, List<DeviceVariable>)> GetImportVariableListAsync()
@@ -202,7 +202,7 @@ public partial class ImportVariable
     {
         if (!PLC.Connected)
         {
-            return new() { new() { Name = "Î´Íê³ÉÁ¬½Ó", Tag = new(), Nodes = null } };
+            return new() { new() { Name = "æœªå®Œæˆè¿æ¥", Tag = new(), Nodes = null } };
         }
         List<OPCUATagModel> nodes = new()
         {

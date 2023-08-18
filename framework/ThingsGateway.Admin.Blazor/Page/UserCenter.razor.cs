@@ -1,12 +1,12 @@
-#region copyright
+ï»¿#region copyright
 //------------------------------------------------------------------------------
-//  ´Ë´úÂë°æÈ¨ÉùÃ÷ÎªÈ«ÎÄ¼ş¸²¸Ç£¬ÈçÓĞÔ­×÷ÕßÌØ±ğÉùÃ÷£¬»áÔÚÏÂ·½ÊÖ¶¯²¹³ä
-//  ´Ë´úÂë°æÈ¨£¨³ıÌØ±ğÉùÃ÷ÍâµÄ´úÂë£©¹é×÷Õß±¾ÈËDiegoËùÓĞ
-//  Ô´´úÂëÊ¹ÓÃĞ­Òé×ñÑ­±¾²Ö¿âµÄ¿ªÔ´Ğ­Òé¼°¸½¼ÓĞ­Òé
-//  GiteeÔ´´úÂë²Ö¿â£ºhttps://gitee.com/diego2098/ThingsGateway
-//  GithubÔ´´úÂë²Ö¿â£ºhttps://github.com/kimdiego2098/ThingsGateway
-//  Ê¹ÓÃÎÄµµ£ºhttps://diego2098.gitee.io/thingsgateway-docs/
-//  QQÈº£º605534569
+//  æ­¤ä»£ç ç‰ˆæƒå£°æ˜ä¸ºå…¨æ–‡ä»¶è¦†ç›–ï¼Œå¦‚æœ‰åŸä½œè€…ç‰¹åˆ«å£°æ˜ï¼Œä¼šåœ¨ä¸‹æ–¹æ‰‹åŠ¨è¡¥å……
+//  æ­¤ä»£ç ç‰ˆæƒï¼ˆé™¤ç‰¹åˆ«å£°æ˜å¤–çš„ä»£ç ï¼‰å½’ä½œè€…æœ¬äººDiegoæ‰€æœ‰
+//  æºä»£ç ä½¿ç”¨åè®®éµå¾ªæœ¬ä»“åº“çš„å¼€æºåè®®åŠé™„åŠ åè®®
+//  Giteeæºä»£ç ä»“åº“ï¼šhttps://gitee.com/diego2098/ThingsGateway
+//  Githubæºä»£ç ä»“åº“ï¼šhttps://github.com/kimdiego2098/ThingsGateway
+//  ä½¿ç”¨æ–‡æ¡£ï¼šhttps://diego2098.gitee.io/thingsgateway-docs/
+//  QQç¾¤ï¼š605534569
 //------------------------------------------------------------------------------
 #endregion
 
@@ -18,7 +18,7 @@ using ThingsGateway.Admin.Core;
 
 namespace ThingsGateway.Admin.Blazor;
 /// <summary>
-/// ¸öÈËÉèÖÃ
+/// ä¸ªäººè®¾ç½®
 /// </summary>
 public partial class UserCenter
 {
@@ -50,25 +50,25 @@ public partial class UserCenter
     {
         await UserCenterService.UpdateUserDefaultRazorAsync(UserManager.UserId, DefaultMenuId);
         await MainLayout.StateHasChangedAsync();
-        await PopupService.EnqueueSnackbarAsync("³É¹¦", AlertTypes.Success);
+        await PopupService.EnqueueSnackbarAsync("æˆåŠŸ", AlertTypes.Success);
     }
 
     async Task OnShortcutSaveAsync()
     {
         await UserCenterService.UpdateWorkbenchAsync(_menusChoice);
         await MainLayout.StateHasChangedAsync();
-        await PopupService.EnqueueSnackbarAsync("³É¹¦", AlertTypes.Success);
+        await PopupService.EnqueueSnackbarAsync("æˆåŠŸ", AlertTypes.Success);
     }
     async Task OnUpdatePasswordInfoAsync(FormContext context)
     {
         var success = context.Validate();
         if (success)
         {
-            //ÑéÖ¤³É¹¦£¬²Ù×÷ÒµÎñ
+            //éªŒè¯æˆåŠŸï¼Œæ“ä½œä¸šåŠ¡
             _passwordInfoInput.Id = UserResoures.CurrentUser.Id;
             await UserCenterService.EditPasswordAsync(_passwordInfoInput);
             await MainLayout.StateHasChangedAsync();
-            await PopupService.EnqueueSnackbarAsync("³É¹¦£¬½«ÖØĞÂµÇÂ¼", AlertTypes.Success);
+            await PopupService.EnqueueSnackbarAsync("æˆåŠŸï¼Œå°†é‡æ–°ç™»å½•", AlertTypes.Success);
             await Task.Delay(2000);
             NavigationManager.NavigateTo(NavigationManager.Uri);
         }
@@ -78,6 +78,6 @@ public partial class UserCenter
     {
         await UserCenterService.UpdateUserInfoAsync(_updateInfoInput);
         await MainLayout.StateHasChangedAsync();
-        await PopupService.EnqueueSnackbarAsync("³É¹¦", AlertTypes.Success);
+        await PopupService.EnqueueSnackbarAsync("æˆåŠŸ", AlertTypes.Success);
     }
 }

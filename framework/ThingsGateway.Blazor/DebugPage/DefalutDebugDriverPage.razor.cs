@@ -1,12 +1,12 @@
-#region copyright
+ï»¿#region copyright
 //------------------------------------------------------------------------------
-//  ´Ë´úÂë°æÈ¨ÉùÃ÷ÎªÈ«ÎÄ¼ş¸²¸Ç£¬ÈçÓĞÔ­×÷ÕßÌØ±ğÉùÃ÷£¬»áÔÚÏÂ·½ÊÖ¶¯²¹³ä
-//  ´Ë´úÂë°æÈ¨£¨³ıÌØ±ğÉùÃ÷ÍâµÄ´úÂë£©¹é×÷Õß±¾ÈËDiegoËùÓĞ
-//  Ô´´úÂëÊ¹ÓÃĞ­Òé×ñÑ­±¾²Ö¿âµÄ¿ªÔ´Ğ­Òé¼°¸½¼ÓĞ­Òé
-//  GiteeÔ´´úÂë²Ö¿â£ºhttps://gitee.com/diego2098/ThingsGateway
-//  GithubÔ´´úÂë²Ö¿â£ºhttps://github.com/kimdiego2098/ThingsGateway
-//  Ê¹ÓÃÎÄµµ£ºhttps://diego2098.gitee.io/thingsgateway-docs/
-//  QQÈº£º605534569
+//  æ­¤ä»£ç ç‰ˆæƒå£°æ˜ä¸ºå…¨æ–‡ä»¶è¦†ç›–ï¼Œå¦‚æœ‰åŸä½œè€…ç‰¹åˆ«å£°æ˜ï¼Œä¼šåœ¨ä¸‹æ–¹æ‰‹åŠ¨è¡¥å……
+//  æ­¤ä»£ç ç‰ˆæƒï¼ˆé™¤ç‰¹åˆ«å£°æ˜å¤–çš„ä»£ç ï¼‰å½’ä½œè€…æœ¬äººDiegoæ‰€æœ‰
+//  æºä»£ç ä½¿ç”¨åè®®éµå¾ªæœ¬ä»“åº“çš„å¼€æºåè®®åŠé™„åŠ åè®®
+//  Giteeæºä»£ç ä»“åº“ï¼šhttps://gitee.com/diego2098/ThingsGateway
+//  Githubæºä»£ç ä»“åº“ï¼šhttps://github.com/kimdiego2098/ThingsGateway
+//  ä½¿ç”¨æ–‡æ¡£ï¼šhttps://diego2098.gitee.io/thingsgateway-docs/
+//  QQç¾¤ï¼š605534569
 //------------------------------------------------------------------------------
 #endregion
 
@@ -54,7 +54,7 @@ public partial class DefalutDebugDriverPage : DriverDebugUIBase
     /// </summary>
     public UdpSessionPage UdpSessionPage;
     /// <summary>
-    /// Ñ¡Ôñ£¬1-TCPCLIENT£¬2-´®¿Ú£¬3-UDP£¬4-TCPServer
+    /// é€‰æ‹©ï¼Œ1-TCPCLIENTï¼Œ2-ä¸²å£ï¼Œ3-UDPï¼Œ4-TCPServer
     /// </summary>
     [Parameter]
     public ChannelEnum Channel { get; set; }
@@ -65,12 +65,12 @@ public partial class DefalutDebugDriverPage : DriverDebugUIBase
     public override ThingsGateway.Foundation.IReadWriteDevice Plc { get; set; }
 
     /// <summary>
-    /// Ä£°å
+    /// æ¨¡æ¿
     /// </summary>
     [Parameter]
     public RenderFragment ChildContent { get; set; }
     /// <summary>
-    /// ×Ô¶¨ÒåÄ£°å
+    /// è‡ªå®šä¹‰æ¨¡æ¿
     /// </summary>
     [Parameter]
     public RenderFragment OtherContent { get; set; }
@@ -100,7 +100,7 @@ public partial class DefalutDebugDriverPage : DriverDebugUIBase
                 TcpServerPage.LogAction = LogOut;
             if (UdpSessionPage != null)
                 UdpSessionPage.LogAction = LogOut;
-            //ÔØÈëÅäÖÃ
+            //è½½å…¥é…ç½®
             StateHasChanged();
         }
 

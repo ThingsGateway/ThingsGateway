@@ -1,12 +1,12 @@
-#region copyright
+ï»¿#region copyright
 //------------------------------------------------------------------------------
-//  ´Ë´úÂë°æÈ¨ÉùÃ÷ÎªÈ«ÎÄ¼ş¸²¸Ç£¬ÈçÓĞÔ­×÷ÕßÌØ±ğÉùÃ÷£¬»áÔÚÏÂ·½ÊÖ¶¯²¹³ä
-//  ´Ë´úÂë°æÈ¨£¨³ıÌØ±ğÉùÃ÷ÍâµÄ´úÂë£©¹é×÷Õß±¾ÈËDiegoËùÓĞ
-//  Ô´´úÂëÊ¹ÓÃĞ­Òé×ñÑ­±¾²Ö¿âµÄ¿ªÔ´Ğ­Òé¼°¸½¼ÓĞ­Òé
-//  GiteeÔ´´úÂë²Ö¿â£ºhttps://gitee.com/diego2098/ThingsGateway
-//  GithubÔ´´úÂë²Ö¿â£ºhttps://github.com/kimdiego2098/ThingsGateway
-//  Ê¹ÓÃÎÄµµ£ºhttps://diego2098.gitee.io/thingsgateway-docs/
-//  QQÈº£º605534569
+//  æ­¤ä»£ç ç‰ˆæƒå£°æ˜ä¸ºå…¨æ–‡ä»¶è¦†ç›–ï¼Œå¦‚æœ‰åŸä½œè€…ç‰¹åˆ«å£°æ˜ï¼Œä¼šåœ¨ä¸‹æ–¹æ‰‹åŠ¨è¡¥å……
+//  æ­¤ä»£ç ç‰ˆæƒï¼ˆé™¤ç‰¹åˆ«å£°æ˜å¤–çš„ä»£ç ï¼‰å½’ä½œè€…æœ¬äººDiegoæ‰€æœ‰
+//  æºä»£ç ä½¿ç”¨åè®®éµå¾ªæœ¬ä»“åº“çš„å¼€æºåè®®åŠé™„åŠ åè®®
+//  Giteeæºä»£ç ä»“åº“ï¼šhttps://gitee.com/diego2098/ThingsGateway
+//  Githubæºä»£ç ä»“åº“ï¼šhttps://github.com/kimdiego2098/ThingsGateway
+//  ä½¿ç”¨æ–‡æ¡£ï¼šhttps://diego2098.gitee.io/thingsgateway-docs/
+//  QQç¾¤ï¼š605534569
 //------------------------------------------------------------------------------
 #endregion
 
@@ -32,7 +32,7 @@ using Yitter.IdGenerator;
 namespace ThingsGateway.OPCDA;
 
 /// <summary>
-/// OPCDAµ÷ÊÔÒ³Ãæ
+/// OPCDAè°ƒè¯•é¡µé¢
 /// </summary>
 public partial class OPCDAClientDebugDriverPage : IDisposable
 {
@@ -64,7 +64,7 @@ public partial class OPCDAClientDebugDriverPage : IDisposable
         {
             opcDAClientPage.LogAction = defalutDebugDriverPage.LogOut;
             opcDAClientPage.ValueAction = ValueOut;
-            //ÔØÈëÅäÖÃ
+            //è½½å…¥é…ç½®
             _plc = opcDAClientPage.OPC;
             StateHasChanged();
         }
@@ -92,12 +92,12 @@ public partial class OPCDAClientDebugDriverPage : IDisposable
         {
             if (data?.Item2?.Count == 0)
             {
-                await PopupService.EnqueueSnackbarAsync("ÎŞ¿ÉÓÃ±äÁ¿", AlertTypes.Warning);
+                await PopupService.EnqueueSnackbarAsync("æ— å¯ç”¨å˜é‡", AlertTypes.Warning);
                 return;
             }
             await defalutDebugDriverPage.DownDeviceExportAsync(data?.Item1);
             await defalutDebugDriverPage.DownDeviceVariableExportAsync(data?.Item2, data?.Item1.Name);
-            await PopupService.EnqueueSnackbarAsync("³É¹¦", AlertTypes.Success);
+            await PopupService.EnqueueSnackbarAsync("æˆåŠŸ", AlertTypes.Success);
         }
     }
     private async Task DeviceImport()
@@ -107,12 +107,12 @@ public partial class OPCDAClientDebugDriverPage : IDisposable
         {
             if (data?.Item2?.Count == 0)
             {
-                await PopupService.EnqueueSnackbarAsync("ÎŞ¿ÉÓÃ±äÁ¿", AlertTypes.Warning);
+                await PopupService.EnqueueSnackbarAsync("æ— å¯ç”¨å˜é‡", AlertTypes.Warning);
                 return;
             }
             await defalutDebugDriverPage.DeviceImportAsync(data?.Item1);
             await defalutDebugDriverPage.DeviceVariableImportAsync(data?.Item2);
-            await PopupService.EnqueueSnackbarAsync("³É¹¦", AlertTypes.Success);
+            await PopupService.EnqueueSnackbarAsync("æˆåŠŸ", AlertTypes.Success);
         }
     }
 
@@ -150,7 +150,7 @@ public partial class OPCDAClientDebugDriverPage : IDisposable
             var data = _plc.WriteItem(defalutDebugDriverPage.Address, defalutDebugDriverPage.WriteValue);
             if (data.IsSuccess)
             {
-                defalutDebugDriverPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Information, SysDateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset) + " - Ğ´Èë" + data.Message));
+                defalutDebugDriverPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Information, SysDateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset) + " - å†™å…¥" + data.Message));
             }
             else
             {
@@ -159,7 +159,7 @@ public partial class OPCDAClientDebugDriverPage : IDisposable
         }
         catch (Exception ex)
         {
-            defalutDebugDriverPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Error, SysDateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset) + " - " + "Ğ´ÈëÊ§°Ü£º" + ex.Message));
+            defalutDebugDriverPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Error, SysDateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset) + " - " + "å†™å…¥å¤±è´¥ï¼š" + ex.Message));
         }
 
         return Task.CompletedTask;
