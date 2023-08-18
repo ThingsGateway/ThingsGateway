@@ -1,12 +1,12 @@
-#region copyright
+ï»¿#region copyright
 //------------------------------------------------------------------------------
-//  ´Ë´úÂë°æÈ¨ÉùÃ÷ÎªÈ«ÎÄ¼ş¸²¸Ç£¬ÈçÓĞÔ­×÷ÕßÌØ±ğÉùÃ÷£¬»áÔÚÏÂ·½ÊÖ¶¯²¹³ä
-//  ´Ë´úÂë°æÈ¨£¨³ıÌØ±ğÉùÃ÷ÍâµÄ´úÂë£©¹é×÷Õß±¾ÈËDiegoËùÓĞ
-//  Ô´´úÂëÊ¹ÓÃĞ­Òé×ñÑ­±¾²Ö¿âµÄ¿ªÔ´Ğ­Òé¼°¸½¼ÓĞ­Òé
-//  GiteeÔ´´úÂë²Ö¿â£ºhttps://gitee.com/diego2098/ThingsGateway
-//  GithubÔ´´úÂë²Ö¿â£ºhttps://github.com/kimdiego2098/ThingsGateway
-//  Ê¹ÓÃÎÄµµ£ºhttps://diego2098.gitee.io/thingsgateway-docs/
-//  QQÈº£º605534569
+//  æ­¤ä»£ç ç‰ˆæƒå£°æ˜ä¸ºå…¨æ–‡ä»¶è¦†ç›–ï¼Œå¦‚æœ‰åŸä½œè€…ç‰¹åˆ«å£°æ˜ï¼Œä¼šåœ¨ä¸‹æ–¹æ‰‹åŠ¨è¡¥å……
+//  æ­¤ä»£ç ç‰ˆæƒï¼ˆé™¤ç‰¹åˆ«å£°æ˜å¤–çš„ä»£ç ï¼‰å½’ä½œè€…æœ¬äººDiegoæ‰€æœ‰
+//  æºä»£ç ä½¿ç”¨åè®®éµå¾ªæœ¬ä»“åº“çš„å¼€æºåè®®åŠé™„åŠ åè®®
+//  Giteeæºä»£ç ä»“åº“ï¼šhttps://gitee.com/diego2098/ThingsGateway
+//  Githubæºä»£ç ä»“åº“ï¼šhttps://github.com/kimdiego2098/ThingsGateway
+//  ä½¿ç”¨æ–‡æ¡£ï¼šhttps://diego2098.gitee.io/thingsgateway-docs/
+//  QQç¾¤ï¼š605534569
 //------------------------------------------------------------------------------
 #endregion
 
@@ -28,7 +28,7 @@ using ThingsGateway.Application;
 
 namespace ThingsGateway.Blazor;
 /// <summary>
-/// ÊµÊ±Êı¾İÒ³
+/// å®æ—¶æ•°æ®é¡µ
 /// </summary>
 public partial class DeviceVariableRunTimePage
 {
@@ -37,13 +37,13 @@ public partial class DeviceVariableRunTimePage
     List<DeviceTree> _deviceGroups = new();
     string _searchName;
     /// <summary>
-    /// Éè±¸Ãû³Æ
+    /// è®¾å¤‡åç§°
     /// </summary>
     [Parameter]
     [SupplyParameterFromQuery]
     public string DeviceName { get; set; }
     /// <summary>
-    /// ÉÏ´«Éè±¸Ãû³Æ
+    /// ä¸Šä¼ è®¾å¤‡åç§°
     /// </summary>
     [Parameter]
     [SupplyParameterFromQuery]
@@ -157,7 +157,7 @@ public partial class DeviceVariableRunTimePage
     }
     private async Task WriteAsync(DeviceVariableRunTime collectVariableRunTime)
     {
-        // ½«Òì²½·½·¨Ìí¼Óµ½ÊÂ¼ş»Øµ÷ÉÏ
+        // å°†å¼‚æ­¥æ–¹æ³•æ·»åŠ åˆ°äº‹ä»¶å›è°ƒä¸Š
         WriteValueAsync = EventCallback.Factory.Create<string>(this, value => OnWriteValueAsync(collectVariableRunTime, value));
         await PopupService.OpenAsync(typeof(WriteValue), new Dictionary<string, object>()
         {
