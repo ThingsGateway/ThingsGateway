@@ -634,6 +634,9 @@
             EasyLock，使用轻量级SemaphoreSlim锁，只允许一个并发量，并记录并发信息
             </summary>
         </member>
+        <member name="M:ThingsGateway.Foundation.EasyLock.Finalize">
+            <inheritdoc/>
+        </member>
         <member name="P:ThingsGateway.Foundation.EasyLock.LockWaitCount">
             <summary>
             当前正在等待的数量
@@ -643,6 +646,9 @@
             <summary>
             当前锁是否在等待当中
             </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.EasyLock.Dispose">
+            <inheritdoc/>
         </member>
         <member name="M:ThingsGateway.Foundation.EasyLock.Release">
             <summary>
@@ -668,9 +674,6 @@
             <summary>
             进入锁
             </summary>
-        </member>
-        <member name="M:ThingsGateway.Foundation.EasyLock.Dispose(System.Boolean)">
-            <inheritdoc/>
         </member>
         <member name="T:ThingsGateway.Foundation.TcpClientEx">
             <summary>
