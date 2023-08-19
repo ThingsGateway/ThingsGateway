@@ -15,11 +15,15 @@ namespace ThingsGateway.Foundation;
 /// <summary>
 /// EasyLock，使用轻量级SemaphoreSlim锁，只允许一个并发量，并记录并发信息
 /// </summary>
-public sealed class EasyLock : DisposableObject
+public sealed class EasyLock : IDisposable
 {
     private static long lockWaitCount;
     private readonly Lazy<SemaphoreSlim> m_waiterLock = new(() => new SemaphoreSlim(1));
-
+    /// <inheritdoc/>
+    ~EasyLock()
+    {
+        m_waiterLock.Value.SafeDispose();
+    }
     /// <summary>
     /// 当前正在等待的数量
     /// </summary>
@@ -28,6 +32,13 @@ public sealed class EasyLock : DisposableObject
     /// 当前锁是否在等待当中
     /// </summary>
     public bool IsWaitting => m_waiterLock.Value.CurrentCount == 0;
+
+    /// <inheritdoc/>
+    public void Dispose()
+    {
+        m_waiterLock.Value.SafeDispose();
+    }
+
     /// <summary>
     /// 离开锁
     /// </summary>
@@ -73,10 +84,5 @@ public sealed class EasyLock : DisposableObject
         await m_waiterLock.Value.WaitAsync(timeSpan, token);
         Interlocked.Decrement(ref lockWaitCount);
     }
-    /// <inheritdoc/>
-    protected override void Dispose(bool disposing)
-    {
-        m_waiterLock.Value.SafeDispose();
-        base.Dispose(disposing);
-    }
+
 }
