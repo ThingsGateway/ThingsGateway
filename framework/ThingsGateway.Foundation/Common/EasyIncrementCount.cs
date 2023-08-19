@@ -15,7 +15,7 @@ namespace ThingsGateway.Foundation;
 /// <summary>
 /// 自增
 /// </summary>
-public sealed class EasyIncrementCount : DisposableObject
+public sealed class EasyIncrementCount : IDisposable
 {
     private long current = 0;
     private readonly EasyLock easyLock;
@@ -29,6 +29,11 @@ public sealed class EasyIncrementCount : DisposableObject
         current = start;
         IncreaseTick = tick;
         easyLock = new EasyLock();
+    }
+    /// <inheritdoc cref="EasyIncrementCount"/>
+    ~EasyIncrementCount()
+    {
+        easyLock.SafeDispose();
     }
 
     /// <summary>
@@ -117,10 +122,10 @@ public sealed class EasyIncrementCount : DisposableObject
         }
         easyLock.Release();
     }
+
     /// <inheritdoc/>
-    protected override void Dispose(bool disposing)
+    public void Dispose()
     {
         easyLock.SafeDispose();
-        base.Dispose(disposing);
     }
 }

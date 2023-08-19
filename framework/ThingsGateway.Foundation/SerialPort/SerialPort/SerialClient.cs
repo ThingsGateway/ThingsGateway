@@ -13,7 +13,6 @@
 using System.IO.Ports;
 
 using TouchSocket.Resources;
-using TouchSocket.Sockets;
 
 namespace ThingsGateway.Foundation.Serial;
 

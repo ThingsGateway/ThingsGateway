@@ -325,26 +325,30 @@ public class TcpClientBaseEx : BaseSocket, ITcpClient
     /// <param name="disposing"></param>
     protected override void Dispose(bool disposing)
     {
-        try
+        if (!DisposedValue)
         {
-            privateEasyLock.Wait();
-            if (this.m_online)
+            try
             {
-                this.m_online = false;
-                this.MainSocket.TryClose();
-                this.PrivateOnDisconnecting(new DisconnectEventArgs(true, $"{nameof(Dispose)}主动断开"));
 
-                this.MainSocket.SafeDispose();
-                this.m_delaySender.SafeDispose();
-                this.m_workStream.SafeDispose();
-                this.DataHandlingAdapter.SafeDispose();
-                this.PluginsManager.SafeDispose();
-                this.PrivateOnDisconnected(new DisconnectEventArgs(true, $"{nameof(Dispose)}主动断开"));
+                privateEasyLock.Wait();
+                if (this.m_online)
+                {
+                    this.m_online = false;
+                    this.MainSocket.TryClose();
+                    this.PrivateOnDisconnecting(new DisconnectEventArgs(true, $"{nameof(Dispose)}主动断开"));
+
+                    this.MainSocket.SafeDispose();
+                    this.m_delaySender.SafeDispose();
+                    this.m_workStream.SafeDispose();
+                    this.DataHandlingAdapter.SafeDispose();
+                    this.PluginsManager.SafeDispose();
+                    this.PrivateOnDisconnected(new DisconnectEventArgs(true, $"{nameof(Dispose)}主动断开"));
+                }
             }
-        }
-        finally
-        {
-            privateEasyLock.Release();
+            finally
+            {
+                privateEasyLock.Release();
+            }
         }
         privateEasyLock.SafeDispose();
 

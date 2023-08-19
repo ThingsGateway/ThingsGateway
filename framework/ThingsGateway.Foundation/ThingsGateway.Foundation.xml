@@ -588,6 +588,9 @@
         <member name="M:ThingsGateway.Foundation.EasyIncrementCount.#ctor(System.Int64,System.Int64,System.Int32)">
             <inheritdoc cref="T:ThingsGateway.Foundation.EasyIncrementCount"/>
         </member>
+        <member name="M:ThingsGateway.Foundation.EasyIncrementCount.Finalize">
+            <inheritdoc cref="T:ThingsGateway.Foundation.EasyIncrementCount"/>
+        </member>
         <member name="P:ThingsGateway.Foundation.EasyIncrementCount.IncreaseTick">
             <summary>
             Tick
@@ -623,7 +626,7 @@
             重置当前序号的初始值
             </summary>
         </member>
-        <member name="M:ThingsGateway.Foundation.EasyIncrementCount.Dispose(System.Boolean)">
+        <member name="M:ThingsGateway.Foundation.EasyIncrementCount.Dispose">
             <inheritdoc/>
         </member>
         <member name="T:ThingsGateway.Foundation.EasyLock">
