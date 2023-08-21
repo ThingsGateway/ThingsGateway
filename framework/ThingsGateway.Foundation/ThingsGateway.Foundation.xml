@@ -1289,13 +1289,6 @@
             <param name="value"></param>
             <returns></returns>
         </member>
-        <member name="M:ThingsGateway.Foundation.Extension.String.StringExtensions.ByHexStringToInt32(System.String)">
-            <summary>
-            将16进制的字符转换为int32。
-            </summary>
-            <param name="hexString"></param>
-            <returns></returns>
-        </member>
         <member name="M:ThingsGateway.Foundation.Extension.String.StringExtensions.CombinePathOS(System.String,System.String[])">
             <summary>
             <inheritdoc cref="M:System.IO.Path.Combine(System.String[])"/>

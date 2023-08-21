@@ -60,44 +60,91 @@ public class ModbusAddress : DeviceAddressBase
     /// <inheritdoc/>
     public override void Parse(string address, int length)
     {
-        Length = length;
-        if (address.IndexOf(';') < 0)
+        var result = ParseFrom(address, length);
+        if (result.IsSuccess)
         {
-            Address(address);
-
+            Length = result.Content.Length;
+            AddressStart = result.Content.AddressStart;
+            ReadFunction = result.Content.ReadFunction;
+            Station = result.Content.Station;
+            WriteFunction = result.Content.WriteFunction;
         }
-        else
+    }
+    /// <summary>
+    /// 解析地址
+    /// </summary>
+    /// <param name="address"></param>
+    /// <param name="length"></param>
+    /// <returns></returns>
+    public static OperResult<ModbusAddress> ParseFrom(string address, int length)
+    {
+
+        try
         {
-            string[] strArray = address.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
-            for (int index = 0; index < strArray.Length; ++index)
+            ModbusAddress modbusAddress = new ModbusAddress();
+
+            modbusAddress.Length = length;
+            if (address.IndexOf(';') < 0)
             {
-                if (strArray[index].ToUpper().StartsWith("S="))
+                Address(address);
+
+            }
+            else
+            {
+                string[] strArray = address.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
+                for (int index = 0; index < strArray.Length; ++index)
                 {
-                    if (Convert.ToInt16(strArray[index].Substring(2)) > 0)
-                        Station = byte.Parse(strArray[index].Substring(2));
-                }
-                else if (strArray[index].ToUpper().StartsWith("W="))
-                {
-                    if (Convert.ToInt16(strArray[index].Substring(2)) > 0)
-                        this.WriteFunction = byte.Parse(strArray[index].Substring(2));
-                }
-                else if (!strArray[index].Contains("="))
-                {
-                    Address(strArray[index]);
+                    if (strArray[index].ToUpper().StartsWith("S="))
+                    {
+                        if (Convert.ToInt16(strArray[index].Substring(2)) > 0)
+                            modbusAddress.Station = byte.Parse(strArray[index].Substring(2));
+                    }
+                    else if (strArray[index].ToUpper().StartsWith("W="))
+                    {
+                        if (Convert.ToInt16(strArray[index].Substring(2)) > 0)
+                            modbusAddress.WriteFunction = byte.Parse(strArray[index].Substring(2));
+                    }
+                    else if (!strArray[index].Contains("="))
+                    {
+                        Address(strArray[index]);
+                    }
                 }
             }
-        }
 
-        void Address(string address)
+            return OperResult.CreateSuccessResult(modbusAddress);
+
+            void Address(string address)
+            {
+                var readF = ushort.Parse(address.Substring(0, 1));
+                if (readF > 4)
+                    throw new("功能码错误");
+                switch (readF)
+                {
+                    case 0:
+                        modbusAddress.ReadFunction = 1;
+                        break;
+                    case 1:
+                        modbusAddress.ReadFunction = 2;
+                        break;
+                    case 3:
+                        modbusAddress.ReadFunction = 4;
+                        break;
+                    case 4:
+                        modbusAddress.ReadFunction = 3;
+                        break;
+                }
+                modbusAddress.AddressStart = int.Parse(address.Substring(1)) - 1;
+            }
+
+
+        }
+        catch (Exception ex)
         {
-            var readF = ushort.Parse(address.Substring(0, 1));
-            if (readF > 4)
-                throw new("功能码错误");
-            GetFunction(readF);
-            AddressStart = int.Parse(address.Substring(1)) - 1;
+            return new OperResult<ModbusAddress>(ex);
         }
-
     }
+
+
 
     /// <inheritdoc/>
     public override string ToString()
@@ -115,24 +162,6 @@ public class ModbusAddress : DeviceAddressBase
         return stringGeter.ToString();
     }
 
-    private void GetFunction(ushort readF)
-    {
-        switch (readF)
-        {
-            case 0:
-                ReadFunction = 1;
-                break;
-            case 1:
-                ReadFunction = 2;
-                break;
-            case 3:
-                ReadFunction = 4;
-                break;
-            case 4:
-                ReadFunction = 3;
-                break;
-        }
-    }
     private string GetFunctionString(int readF)
     {
         return readF switch

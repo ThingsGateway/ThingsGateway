@@ -56,11 +56,13 @@ public class RabbitMQClientProperty : UpDriverPropertyBase
     /// </summary>
     [DeviceProperty("虚拟Host", "")]
     public string VirtualHost { get; set; } = ConnectionFactory.DefaultVHost;
-    /// <summary>
-    /// RoutingKey
-    /// </summary>
-    [DeviceProperty("路由名称", "")]
-    public string RoutingKey { get; set; } = "TG";
+
+    ///// <summary>
+    ///// RoutingKey
+    ///// </summary>
+    //[DeviceProperty("路由名称", "")]
+    //public string RoutingKey { get; set; } = "TG";
+
     /// <summary>
     /// 交换机名称
     /// </summary>

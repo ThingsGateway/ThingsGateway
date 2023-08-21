@@ -85,11 +85,6 @@
             VirtualHost
             </summary>
         </member>
-        <member name="P:ThingsGateway.RabbitMQ.RabbitMQClientProperty.RoutingKey">
-            <summary>
-            RoutingKey
-            </summary>
-        </member>
         <member name="P:ThingsGateway.RabbitMQ.RabbitMQClientProperty.ExchangeName">
             <summary>
             交换机名称

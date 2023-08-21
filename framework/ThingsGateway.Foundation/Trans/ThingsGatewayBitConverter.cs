@@ -31,11 +31,11 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
     private DataFormat dataFormat;
     /// <inheritdoc/>
     [JsonIgnore]
-    public Encoding Encoding { get; set; } = Encoding.UTF8;
+    public virtual Encoding Encoding { get; set; } = Encoding.UTF8;
     /// <inheritdoc/>
-    public BcdFormat? BcdFormat { get; set; }
+    public virtual BcdFormat? BcdFormat { get; set; }
     /// <inheritdoc/>
-    public int StringLength { get; set; }
+    public virtual int StringLength { get; set; }
 
     /// <summary>
     /// 构造函数
@@ -55,7 +55,7 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
     }
 
     /// <inheritdoc/>
-    public DataFormat DataFormat
+    public virtual DataFormat DataFormat
     {
         get
         {
@@ -69,9 +69,9 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
 
 
     /// <inheritdoc/>
-    public EndianType EndianType => endianType;
+    public virtual EndianType EndianType => endianType;
     /// <inheritdoc/>
-    public bool IsStringReverseByteWord { get; set; }
+    public virtual bool IsStringReverseByteWord { get; set; }
 
     /// <inheritdoc/>
     public virtual IThingsGatewayBitConverter CreateByDateFormat(DataFormat dataFormat)
@@ -86,7 +86,7 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
         return byteConverter;
     }
     /// <inheritdoc/>
-    public byte[] GetBytes(bool value)
+    public virtual byte[] GetBytes(bool value)
     {
         return GetBytes(new bool[1]
         {
@@ -95,13 +95,13 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
     }
 
     /// <inheritdoc/>
-    public byte[] GetBytes(bool[] values)
+    public virtual byte[] GetBytes(bool[] values)
     {
         return values?.BoolArrayToByte();
     }
 
     /// <inheritdoc/>
-    public byte[] GetBytes(short value)
+    public virtual byte[] GetBytes(short value)
     {
         byte[] bytes = BitConverter.GetBytes(value);
         if (!IsSameOfSet())
@@ -111,7 +111,7 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
         return bytes;
     }
     /// <inheritdoc/>
-    public byte[] GetBytes(short[] value)
+    public virtual byte[] GetBytes(short[] value)
     {
         byte[] numArray = new byte[value.Length * 2];
         for (int index = 0; index < value.Length; ++index)
@@ -123,7 +123,7 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
     }
 
     /// <inheritdoc/>
-    public byte[] GetBytes(ushort value)
+    public virtual byte[] GetBytes(ushort value)
     {
         byte[] bytes = BitConverter.GetBytes(value);
         if (!IsSameOfSet())
@@ -133,7 +133,7 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
         return bytes;
     }
     /// <inheritdoc/>
-    public byte[] GetBytes(ushort[] value)
+    public virtual byte[] GetBytes(ushort[] value)
     {
         byte[] numArray = new byte[value.Length * 2];
         for (int index = 0; index < value.Length; ++index)
@@ -144,12 +144,12 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
         return numArray;
     }
     /// <inheritdoc/>
-    public byte[] GetBytes(int value)
+    public virtual byte[] GetBytes(int value)
     {
         return ByteTransDataFormat4(BitConverter.GetBytes(value));
     }
     /// <inheritdoc/>
-    public byte[] GetBytes(int[] value)
+    public virtual byte[] GetBytes(int[] value)
     {
         byte[] numArray = new byte[value.Length * 2];
         for (int index = 0; index < value.Length; ++index)
@@ -160,12 +160,12 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
         return numArray;
     }
     /// <inheritdoc/>
-    public byte[] GetBytes(uint value)
+    public virtual byte[] GetBytes(uint value)
     {
         return ByteTransDataFormat4(BitConverter.GetBytes(value));
     }
     /// <inheritdoc/>
-    public byte[] GetBytes(uint[] value)
+    public virtual byte[] GetBytes(uint[] value)
     {
         byte[] numArray = new byte[value.Length * 2];
         for (int index = 0; index < value.Length; ++index)
@@ -176,12 +176,12 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
         return numArray;
     }
     /// <inheritdoc/>
-    public byte[] GetBytes(long value)
+    public virtual byte[] GetBytes(long value)
     {
         return ByteTransDataFormat8(BitConverter.GetBytes(value));
     }
     /// <inheritdoc/>
-    public byte[] GetBytes(long[] value)
+    public virtual byte[] GetBytes(long[] value)
     {
         byte[] numArray = new byte[value.Length * 2];
         for (int index = 0; index < value.Length; ++index)
@@ -192,12 +192,12 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
         return numArray;
     }
     /// <inheritdoc/>
-    public byte[] GetBytes(ulong value)
+    public virtual byte[] GetBytes(ulong value)
     {
         return ByteTransDataFormat8(BitConverter.GetBytes(value));
     }
     /// <inheritdoc/>
-    public byte[] GetBytes(ulong[] value)
+    public virtual byte[] GetBytes(ulong[] value)
     {
         byte[] numArray = new byte[value.Length * 2];
         for (int index = 0; index < value.Length; ++index)
@@ -208,12 +208,12 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
         return numArray;
     }
     /// <inheritdoc/>
-    public byte[] GetBytes(float value)
+    public virtual byte[] GetBytes(float value)
     {
         return ByteTransDataFormat4(BitConverter.GetBytes(value));
     }
     /// <inheritdoc/>
-    public byte[] GetBytes(float[] value)
+    public virtual byte[] GetBytes(float[] value)
     {
         byte[] numArray = new byte[value.Length * 2];
         for (int index = 0; index < value.Length; ++index)
@@ -224,12 +224,12 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
         return numArray;
     }
     /// <inheritdoc/>
-    public byte[] GetBytes(double value)
+    public virtual byte[] GetBytes(double value)
     {
         return ByteTransDataFormat8(BitConverter.GetBytes(value));
     }
     /// <inheritdoc/>
-    public byte[] GetBytes(double[] value)
+    public virtual byte[] GetBytes(double[] value)
     {
         byte[] numArray = new byte[value.Length * 2];
         for (int index = 0; index < value.Length; ++index)
@@ -240,7 +240,7 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
         return numArray;
     }
     /// <inheritdoc/>
-    public byte[] GetBytes(string value)
+    public virtual byte[] GetBytes(string value)
     {
         if (value == null)
         {
@@ -280,7 +280,7 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
 
 
     /// <inheritdoc/>
-    public bool IsSameOfSet()
+    public virtual bool IsSameOfSet()
     {
         return !(BitConverter.IsLittleEndian ^ (endianType == EndianType.Little));
     }
@@ -288,7 +288,7 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
 
 
     /// <inheritdoc/>
-    public bool ToBoolean(byte[] buffer, int offset)
+    public virtual bool ToBoolean(byte[] buffer, int offset)
     {
         byte[] bytes = new byte[buffer.Length];
         Array.Copy(buffer, 0, bytes, 0, buffer.Length);
@@ -296,7 +296,7 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
     }
 
     /// <inheritdoc/>
-    public byte ToByte(byte[] buffer, int offset)
+    public virtual byte ToByte(byte[] buffer, int offset)
     {
         byte[] bytes = new byte[1];
         Array.Copy(buffer, offset, bytes, 0, bytes.Length);
@@ -304,7 +304,7 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
     }
 
     /// <inheritdoc/>
-    public byte[] ToByte(byte[] buffer, int offset, int length)
+    public virtual byte[] ToByte(byte[] buffer, int offset, int length)
     {
         byte[] bytes = new byte[length];
         Array.Copy(buffer, offset, bytes, 0, bytes.Length);
@@ -317,7 +317,7 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
     /// <param name="buffer"></param>
     /// <param name="offset"></param>
     /// <returns></returns>
-    public double ToDouble(byte[] buffer, int offset)
+    public virtual double ToDouble(byte[] buffer, int offset)
     {
         byte[] bytes = ByteTransDataFormat8(buffer, offset);
 
@@ -325,7 +325,7 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
     }
 
     /// <inheritdoc/>
-    public short ToInt16(byte[] buffer, int offset)
+    public virtual short ToInt16(byte[] buffer, int offset)
     {
         byte[] bytes = new byte[2];
         Array.Copy(buffer, offset, bytes, 0, bytes.Length);
@@ -337,7 +337,7 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
     }
 
     /// <inheritdoc/>
-    public int ToInt32(byte[] buffer, int offset)
+    public virtual int ToInt32(byte[] buffer, int offset)
     {
         byte[] bytes = ByteTransDataFormat4(buffer, offset);
 
@@ -345,14 +345,14 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
     }
 
     /// <inheritdoc/>
-    public long ToInt64(byte[] buffer, int offset)
+    public virtual long ToInt64(byte[] buffer, int offset)
     {
         byte[] bytes = ByteTransDataFormat8(buffer, offset);
         return BitConverter.ToInt64(bytes, 0);
     }
 
     /// <inheritdoc/>
-    public float ToSingle(byte[] buffer, int offset)
+    public virtual float ToSingle(byte[] buffer, int offset)
     {
         byte[] bytes = ByteTransDataFormat4(buffer, offset);
 
@@ -360,13 +360,13 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
     }
 
     /// <inheritdoc/>
-    public string ToString(byte[] buffer)
+    public virtual string ToString(byte[] buffer)
     {
         return ToString(buffer, 0, buffer.Length);
     }
 
     /// <inheritdoc/>
-    public string ToString(byte[] buffer, int offset, int length)
+    public virtual string ToString(byte[] buffer, int offset, int length)
     {
         byte[] numArray = buffer.SelectMiddle(offset, length);
         if (BcdFormat != null)
@@ -385,7 +385,7 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
     }
 
     /// <inheritdoc/>
-    public ushort ToUInt16(byte[] buffer, int offset)
+    public virtual ushort ToUInt16(byte[] buffer, int offset)
     {
         byte[] bytes = new byte[2];
         Array.Copy(buffer, offset, bytes, 0, 2);
@@ -397,7 +397,7 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
     }
 
     /// <inheritdoc/>
-    public uint ToUInt32(byte[] buffer, int offset)
+    public virtual uint ToUInt32(byte[] buffer, int offset)
     {
         byte[] bytes = ByteTransDataFormat4(buffer, offset);
 
@@ -405,7 +405,7 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
     }
 
     /// <inheritdoc/>
-    public ulong ToUInt64(byte[] buffer, int offset)
+    public virtual ulong ToUInt64(byte[] buffer, int offset)
     {
         byte[] bytes = ByteTransDataFormat8(buffer, offset);
         return BitConverter.ToUInt64(bytes, 0);
@@ -508,7 +508,7 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
     }
 
     /// <inheritdoc/>
-    public bool[] ToBoolean(byte[] buffer, int offset, int len)
+    public virtual bool[] ToBoolean(byte[] buffer, int offset, int len)
     {
         bool[] flagArray = new bool[len];
         for (int index = 0; index < len; ++index)
@@ -519,7 +519,7 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
     }
 
     /// <inheritdoc/>
-    public double[] ToDouble(byte[] buffer, int offset, int len)
+    public virtual double[] ToDouble(byte[] buffer, int offset, int len)
     {
         double[] numArray = new double[len];
         for (int index = 0; index < len; ++index)
@@ -530,7 +530,7 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
     }
 
     /// <inheritdoc/>
-    public short[] ToInt16(byte[] buffer, int offset, int len)
+    public virtual short[] ToInt16(byte[] buffer, int offset, int len)
     {
         short[] numArray = new short[len];
         for (int index = 0; index < len; ++index)
@@ -541,7 +541,7 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
     }
 
     /// <inheritdoc/>
-    public int[] ToInt32(byte[] buffer, int offset, int len)
+    public virtual int[] ToInt32(byte[] buffer, int offset, int len)
     {
         int[] numArray = new int[len];
         for (int index = 0; index < len; ++index)
@@ -552,7 +552,7 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
     }
 
     /// <inheritdoc/>
-    public long[] ToInt64(byte[] buffer, int offset, int len)
+    public virtual long[] ToInt64(byte[] buffer, int offset, int len)
     {
         long[] numArray = new long[len];
         for (int index = 0; index < len; ++index)
@@ -562,7 +562,7 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
         return numArray;
     }
     /// <inheritdoc/>
-    public float[] ToSingle(byte[] buffer, int offset, int len)
+    public virtual float[] ToSingle(byte[] buffer, int offset, int len)
     {
         float[] numArray = new float[len];
         for (int index = 0; index < len; ++index)
@@ -573,7 +573,7 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
     }
 
     /// <inheritdoc/>
-    public ushort[] ToUInt16(byte[] buffer, int offset, int len)
+    public virtual ushort[] ToUInt16(byte[] buffer, int offset, int len)
     {
         ushort[] numArray = new ushort[len];
         for (int index = 0; index < len; ++index)
@@ -584,7 +584,7 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
     }
 
     /// <inheritdoc/>
-    public uint[] ToUInt32(byte[] buffer, int offset, int len)
+    public virtual uint[] ToUInt32(byte[] buffer, int offset, int len)
     {
         uint[] numArray = new uint[len];
         for (int index = 0; index < len; ++index)
@@ -595,7 +595,7 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
     }
 
     /// <inheritdoc/>
-    public ulong[] ToUInt64(byte[] buffer, int offset, int len)
+    public virtual ulong[] ToUInt64(byte[] buffer, int offset, int len)
     {
         ulong[] numArray = new ulong[len];
         for (int index = 0; index < len; ++index)
