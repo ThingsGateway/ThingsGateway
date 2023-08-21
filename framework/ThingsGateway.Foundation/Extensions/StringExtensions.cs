@@ -47,19 +47,6 @@ public static class StringExtensions
 
 
     /// <summary>
-    /// 将16进制的字符转换为int32。
-    /// </summary>
-    /// <param name="hexString"></param>
-    /// <returns></returns>
-    public static int ByHexStringToInt32(this string hexString)
-    {
-        if (string.IsNullOrEmpty(hexString))
-        {
-            return default;
-        }
-        return int.Parse(hexString, System.Globalization.NumberStyles.HexNumber);
-    }
-    /// <summary>
     /// <inheritdoc cref="Path.Combine(string[])"/>
     /// 并把\\转为/
     /// </summary>

@@ -38,6 +38,14 @@
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusAddress.Parse(System.String,System.Int32)">
             <inheritdoc/>
         </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusAddress.ParseFrom(System.String,System.Int32)">
+            <summary>
+            解析地址
+            </summary>
+            <param name="address"></param>
+            <param name="length"></param>
+            <returns></returns>
+        </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusAddress.ToString">
             <inheritdoc/>
         </member>
