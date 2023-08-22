@@ -177,17 +177,39 @@ public class DeviceData
 ## 四、RPC写入格式
 
 ```
-    public class MqttRpcNameVaueWithId
-    {
-        public string RpcId { get; set; }
-        public string Key { get; set; }
-        public string Value { get; set; }
-    }
-    public class MqttRpcResult
-    {
-        public string RpcId { get; set; }
-        public string Message { get; set; }
-        public bool Success { get; set; }
-    }
+
+/// <summary>
+/// MqttRpc传入
+/// </summary>
+public class MqttRpcNameVaueWithId
+{
+    /// <summary>
+    /// 标识
+    /// </summary>
+    public string RpcId { get; set; }
+    /// <summary>
+    /// "WriteInfos":{"test":"1"}
+    /// </summary>
+    public Dictionary<string, string> WriteInfos { get; set; } = new();
+}
+/// <summary>
+/// MqttRpc输出
+/// </summary>
+public class MqttRpcResult
+{
+    /// <summary>
+    /// 标识
+    /// </summary>
+    public string RpcId { get; set; }
+    /// <summary>
+    /// 消息
+    /// </summary>
+    public Dictionary<string, OperResult> Message { get; set; } = new();
+    /// <summary>
+    /// 是否成功
+    /// </summary>
+    public bool Success { get; set; }
+}
+
 
 ```

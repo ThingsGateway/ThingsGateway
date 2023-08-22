@@ -276,7 +276,7 @@ export default {
       "@docusaurus/preset-classic",
       {
         "docs": {
-          "sidebarPath": "E:\\Tg\\ThingsGateway\\NewThingsGateway\\handbook\\sidebars.js",
+          "sidebarPath": "E:\\Tg\\ThingsGateway\\ThingsGateway\\handbook\\sidebars.js",
           "editUrl": "https://gitee.com/diego2098/ThingsGateway/tree/master/handbook/",
           "showLastUpdateTime": true,
           "showLastUpdateAuthor": true,
@@ -284,13 +284,13 @@ export default {
           "sidebarCollapsed": true
         },
         "theme": {
-          "customCss": "E:\\Tg\\ThingsGateway\\NewThingsGateway\\handbook\\src\\css\\custom.css"
+          "customCss": "E:\\Tg\\ThingsGateway\\ThingsGateway\\handbook\\src\\css\\custom.css"
         }
       }
     ]
   ],
   "plugins": [
-    "E:\\Tg\\ThingsGateway\\NewThingsGateway\\handbook\\node_modules\\docusaurus-plugin-image-zoom\\src\\index.js"
+    "E:\\Tg\\ThingsGateway\\ThingsGateway\\handbook\\node_modules\\docusaurus-plugin-image-zoom\\src\\index.js"
   ],
   "themes": [
     [
