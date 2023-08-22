@@ -145,6 +145,11 @@
             安全策略
             </summary>
         </member>
+        <member name="P:ThingsGateway.OPCUA.OPCUAClientProperty.SourceTimestampEnable">
+            <summary>
+            是否使用SourceTime
+            </summary>
+        </member>
         <member name="P:ThingsGateway.OPCUA.OPCUAClientProperty.ActiveSubscribe">
             <summary>
             激活订阅
