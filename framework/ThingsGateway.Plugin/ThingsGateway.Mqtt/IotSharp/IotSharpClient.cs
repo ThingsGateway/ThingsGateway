@@ -340,9 +340,7 @@ GetPropertyValue(tag, nameof(variablePropertys.VariableRpcEnable)).ToBoolean()
 && driverPropertys.DeviceRpcEnable;
                             if (rpcEnable == true)
                             {
-                                var result = await _rpcCore.InvokeDeviceMethodAsync(ToString() + "-" + rpcrequestid, item);
 
-                                results.Add(item.Key, result);
 
                             }
                             else
@@ -356,6 +354,12 @@ GetPropertyValue(tag, nameof(variablePropertys.VariableRpcEnable)).ToBoolean()
                             results.Add(item.Key, new("不存在该变量"));
                         }
                     }
+
+                    var result = await _rpcCore.InvokeDeviceMethodAsync(ToString() + "-" + rpcrequestid, nameValue
+                        .Where(a => !results.Any(b => b.Key == a.Key))
+                        .ToDictionary(a => a.Key, a => a.Value));
+
+                    results.AddRange(result);
                     rpcResponse = new()
                     {
                         DeviceId = rpcdevicename,

@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Components;
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 using ThingsGateway.Admin.Blazor.Core;
@@ -147,14 +148,19 @@ public partial class OPCDAClientDebugDriverPage : IDisposable
     {
         try
         {
-            var data = _plc.WriteItem(defalutDebugDriverPage.Address, defalutDebugDriverPage.WriteValue);
-            if (data.IsSuccess)
+            var data = _plc.WriteItem(
+                new()
+                {
+                    {defalutDebugDriverPage.Address, defalutDebugDriverPage.WriteValue }
+                }
+                );
+            if (data.Values.FirstOrDefault().IsSuccess)
             {
-                defalutDebugDriverPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Information, SysDateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset) + " - 写入" + data.Message));
+                defalutDebugDriverPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Information, SysDateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset) + " - 写入" + data.Values.FirstOrDefault().Message));
             }
             else
             {
-                defalutDebugDriverPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Warning, SysDateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset) + " - " + data.Message));
+                defalutDebugDriverPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Warning, SysDateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset) + " - " + data.Values.FirstOrDefault().Message));
             }
         }
         catch (Exception ex)

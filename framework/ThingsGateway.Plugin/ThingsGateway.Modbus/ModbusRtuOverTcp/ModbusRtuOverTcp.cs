@@ -10,8 +10,6 @@
 //------------------------------------------------------------------------------
 #endregion
 
-using Newtonsoft.Json.Linq;
-
 using ThingsGateway.Application;
 using ThingsGateway.Foundation;
 
@@ -22,6 +20,8 @@ public class ModbusRtuOverTcp : CollectBase
 {
 
     private readonly ModbusRtuOverTcpProperty driverPropertys = new();
+    /// <inheritdoc/>
+    protected override IReadWriteDevice PLC => _plc;
     private ThingsGateway.Foundation.Adapter.Modbus.ModbusRtuOverTcp _plc;
     /// <inheritdoc/>
     public override Type DriverDebugUIType => typeof(ModbusRtuOverTcpDebugDriverPage);
@@ -61,11 +61,7 @@ public class ModbusRtuOverTcp : CollectBase
         return deviceVariables.LoadSourceRead(_plc, driverPropertys.MaxPack);
     }
 
-    /// <inheritdoc/>
-    public override async Task<OperResult> WriteValueAsync(DeviceVariableRunTime deviceVariable, JToken value, CancellationToken token)
-    {
-        return await _plc.WriteAsync(deviceVariable.VariableAddress, deviceVariable.DataType, value.ToString(), token);
-    }
+
 
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)

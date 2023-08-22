@@ -21,6 +21,7 @@ using Newtonsoft.Json.Linq;
 using Opc.Ua;
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 using ThingsGateway.Admin.Blazor.Core;
@@ -157,14 +158,19 @@ public partial class OPCUAClientDebugDriverPage
         {
             if (_plc.Connected)
             {
-                var data = await _plc.WriteNodeAsync(defalutDebugDriverPage.Address, JToken.Parse(defalutDebugDriverPage.WriteValue));
-                if (data.IsSuccess)
+                var data = await _plc.WriteNodeAsync(
+                    new()
+                    {
+                        { defalutDebugDriverPage.Address, JToken.Parse(defalutDebugDriverPage.WriteValue)}
+                    }
+                    );
+                if (data.Values.FirstOrDefault().IsSuccess)
                 {
                     defalutDebugDriverPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Information, SysDateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset) + " - " + " - 写入成功"));
                 }
                 else
                 {
-                    defalutDebugDriverPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Warning, SysDateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset) + " - " + " - 写入失败 " + data.Message));
+                    defalutDebugDriverPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Warning, SysDateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset) + " - " + " - 写入失败 " + data.Values.FirstOrDefault().Message));
                 }
             }
             else

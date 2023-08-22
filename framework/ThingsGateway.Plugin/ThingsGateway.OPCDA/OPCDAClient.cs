@@ -35,7 +35,7 @@ public class OPCDAClient : CollectBase
 {
     internal CollectDeviceRunTime Device;
 
-    internal ThingsGateway.Foundation.Adapter.OPCDA.OPCDAClient PLC = null;
+    internal ThingsGateway.Foundation.Adapter.OPCDA.OPCDAClient _plc = null;
 
     private readonly OPCDAClientProperty driverPropertys = new();
     private ConcurrentList<DeviceVariableRunTime> _deviceVariables = new();
@@ -51,16 +51,19 @@ public class OPCDAClient : CollectBase
     public override ThingsGatewayBitConverter ThingsGatewayBitConverter { get; } = new(EndianType.Little);
 
     /// <inheritdoc/>
+    protected override IReadWriteDevice PLC => null;
+
+    /// <inheritdoc/>
     public override Task AfterStopAsync()
     {
-        PLC?.Disconnect();
+        _plc?.Disconnect();
         return Task.CompletedTask;
     }
 
     /// <inheritdoc/>
     public override async Task BeforStartAsync(CancellationToken token)
     {
-        PLC.Connect();
+        _plc.Connect();
         await Task.CompletedTask;
     }
 
@@ -69,14 +72,14 @@ public class OPCDAClient : CollectBase
     {
     }
     /// <inheritdoc/>
-    public override bool IsConnected() => PLC?.IsConnected == true;
+    public override bool IsConnected() => _plc?.IsConnected == true;
     /// <inheritdoc/>
     public override List<DeviceVariableSourceRead> LoadSourceRead(List<DeviceVariableRunTime> deviceVariables)
     {
         _deviceVariables = new(deviceVariables);
         if (deviceVariables.Count > 0)
         {
-            var result = PLC.AddItemsWithSave(deviceVariables.Select(a => a.VariableAddress).ToList());
+            var result = _plc.AddItemsWithSave(deviceVariables.Select(a => a.VariableAddress).ToList());
             var sourVars = result?.Select(
       it =>
       {
@@ -98,26 +101,31 @@ public class OPCDAClient : CollectBase
     public override async Task<OperResult<byte[]>> ReadSourceAsync(DeviceVariableSourceRead deviceVariableSourceRead, CancellationToken token)
     {
         await Task.CompletedTask;
-        var result = PLC.ReadItemsWithGroup(deviceVariableSourceRead.Address);
+        var result = _plc.ReadItemsWithGroup(deviceVariableSourceRead.Address);
         return result.Copy<byte[]>();
     }
 
+
     /// <inheritdoc/>
-    public override Task<OperResult> WriteValueAsync(DeviceVariableRunTime deviceVariable, JToken value, CancellationToken token)
+    public override Task<Dictionary<string, OperResult>> WriteValuesAsync(Dictionary<DeviceVariableRunTime, JToken> writeInfoLists, CancellationToken token)
     {
-        var result = PLC.WriteItem(deviceVariable.VariableAddress, value);
-        return Task.FromResult(result);
+        var result = _plc.WriteItem(writeInfoLists.ToDictionary(a => a.Key.VariableAddress, a => a.Value));
+        return Task.FromResult(result.ToDictionary(a =>
+        {
+            return writeInfoLists.Keys.FirstOrDefault(b => b.VariableAddress == a.Key).Name;
+        }, a => a.Value));
     }
+
 
     /// <inheritdoc/>
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
-        if (PLC != null)
-            PLC.DataChangedHandler -= DataChangedHandler;
-        PLC?.Disconnect();
-        PLC?.SafeDispose();
-        PLC = null;
+        if (_plc != null)
+            _plc.DataChangedHandler -= DataChangedHandler;
+        _plc?.Disconnect();
+        _plc?.SafeDispose();
+        _plc = null;
         base.Dispose(disposing);
     }
     /// <inheritdoc/>
@@ -134,12 +142,12 @@ public class OPCDAClient : CollectBase
             ActiveSubscribe = driverPropertys.ActiveSubscribe,
             CheckRate = driverPropertys.CheckRate
         };
-        if (PLC == null)
+        if (_plc == null)
         {
-            PLC = new(LogMessage);
-            PLC.DataChangedHandler += DataChangedHandler;
+            _plc = new(LogMessage);
+            _plc.DataChangedHandler += DataChangedHandler;
         }
-        PLC.Init(opcNode);
+        _plc.Init(opcNode);
     }
 
     /// <inheritdoc/>

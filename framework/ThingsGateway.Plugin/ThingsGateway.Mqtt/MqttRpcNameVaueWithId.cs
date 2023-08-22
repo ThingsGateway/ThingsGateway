@@ -10,6 +10,10 @@
 //------------------------------------------------------------------------------
 #endregion
 
+using System.Collections.Generic;
+
+using ThingsGateway.Foundation;
+
 namespace ThingsGateway.Mqtt;
 
 /// <summary>
@@ -22,13 +26,9 @@ public class MqttRpcNameVaueWithId
     /// </summary>
     public string RpcId { get; set; }
     /// <summary>
-    /// 通常是变量名称
+    /// "WriteInfos":{"test":"1"}
     /// </summary>
-    public string Key { get; set; }
-    /// <summary>
-    /// 值
-    /// </summary>
-    public string Value { get; set; }
+    public Dictionary<string, string> WriteInfos { get; set; } = new();
 }
 /// <summary>
 /// MqttRpc输出
@@ -42,7 +42,7 @@ public class MqttRpcResult
     /// <summary>
     /// 消息
     /// </summary>
-    public string Message { get; set; }
+    public Dictionary<string, OperResult> Message { get; set; } = new();
     /// <summary>
     /// 是否成功
     /// </summary>

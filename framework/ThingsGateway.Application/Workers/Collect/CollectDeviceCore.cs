@@ -712,52 +712,54 @@ public class CollectDeviceCore
     /// 执行变量写入
     /// </summary>
     /// <returns></returns>
-    internal async Task<OperResult> InVokeWriteAsync(DeviceVariableRunTime deviceVariable, JToken value, CancellationToken token)
+    internal async Task<Dictionary<string, OperResult>> InVokeWriteAsync(Dictionary<DeviceVariableRunTime, JToken> writeInfoLists, CancellationToken token)
     {
         try
         {
             await easyLock.WaitAsync();
             if (IsShareChannel) _driver.InitDataAdapter();
+            Dictionary<string, OperResult> results = new();
+            foreach (var deviceVariable in writeInfoLists.Keys)
+            {
+                if (!string.IsNullOrEmpty(deviceVariable.WriteExpressions))
+                {
+                    var jToken = writeInfoLists[deviceVariable];
+                    object rawdata;
+                    if (jToken is JValue jValue)
+                    {
+                        rawdata = jValue.Value;
+                    }
+                    else
+                    {
+                        rawdata = jToken.ToString();
+                    }
+                    object data;
+                    try
+                    {
+                        data = deviceVariable.WriteExpressions.GetExpressionsResult(rawdata);
+                        writeInfoLists[deviceVariable] = JToken.FromObject(data);
+                    }
+                    catch (Exception ex)
+                    {
+                        results.Add(deviceVariable.Name, new OperResult(deviceVariable.Name + " 转换写入表达式失败：" + ex.Message));
+                    }
+                }
 
-            if (!string.IsNullOrEmpty(deviceVariable.WriteExpressions))
-            {
-                var jToken = value;
-                object rawdata;
-                if (jToken is JValue jValue)
-                {
-                    rawdata = jValue.Value;
-                }
-                else
-                {
-                    rawdata = jToken.ToString();
-                }
-                object data;
-                try
-                {
-                    data = deviceVariable.WriteExpressions.GetExpressionsResult(rawdata);
-                    var result = await _driver.WriteValueAsync(deviceVariable, JToken.FromObject(data), token);
-                    return result;
-                }
-                catch (Exception ex)
-                {
-                    return new OperResult(deviceVariable.Name + " 转换写入表达式失败：" + ex.Message);
-                }
             }
-            else
-            {
-                var result = await _driver.WriteValueAsync(deviceVariable, value, token);
-                return result;
-            }
-        }
-        catch (Exception ex)
-        {
-            return (new OperResult(ex));
+            var result = await _driver.WriteValuesAsync(writeInfoLists.
+                Where(a => !results.Any(b => b.Key == a.Key.Name)).
+               ToDictionary(item => item.Key, item => item.Value),
+                token);
+
+            return result;
         }
         finally
         {
             easyLock.Release();
         }
     }
+
+
 
     /// <summary>
     /// 执行轮询特殊方法,并设置变量值

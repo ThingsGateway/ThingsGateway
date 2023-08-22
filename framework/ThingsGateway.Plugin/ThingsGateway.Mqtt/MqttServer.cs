@@ -260,41 +260,46 @@ public class MqttServer : UpLoadBase
             return;
         if (arg.ApplicationMessage.Topic != driverPropertys.RpcWriteTopic)
             return;
-        var rpcData = Encoding.UTF8.GetString(arg.ApplicationMessage.PayloadSegment).FromJson<MqttRpcNameVaueWithId>();
-        if (rpcData == null)
+        var rpcDatas = Encoding.UTF8.GetString(arg.ApplicationMessage.PayloadSegment).FromJson<MqttRpcNameVaueWithId>();
+        if (rpcDatas == null)
             return;
-        MqttRpcResult mqttRpcResult = new();
+        MqttRpcResult mqttRpcResult = new() { RpcId = rpcDatas.RpcId, Success = true };
         try
         {
-            var nv = rpcData.Adapt<KeyValuePair<string, string>>();
-            var tag = _uploadVariables.FirstOrDefault(a => a.Name == nv.Key);
-            if (tag != null)
+            foreach (var rpcData in rpcDatas.WriteInfos)
             {
-                var rpcEnable = GetPropertyValue(tag, nameof(variablePropertys.VariableRpcEnable)).ToBoolean();
-                if (rpcEnable == true)
+
+                var tag = _uploadVariables.FirstOrDefault(a => a.Name == rpcData.Key);
+                if (tag != null)
                 {
-                    var result = await _rpcCore.InvokeDeviceMethodAsync(ToString() + "-" + IdWithName[arg.ClientId], nv);
+                    var rpcEnable = GetPropertyValue(tag, nameof(variablePropertys.VariableRpcEnable)).ToBoolean();
+                    if (rpcEnable == true)
+                    {
 
-                    mqttRpcResult = new() { Message = result.Message, RpcId = rpcData.RpcId, Success = result.IsSuccess };
-
+                    }
+                    else
+                    {
+                        mqttRpcResult.Success = false;
+                        mqttRpcResult.Message.Add(rpcData.Key, new("权限不足，变量不支持写入"));
+                    }
                 }
                 else
                 {
-                    mqttRpcResult = new() { Message = "权限不足，变量不支持写入", RpcId = rpcData.RpcId, Success = false };
+                    mqttRpcResult.Success = false;
+                    mqttRpcResult.Message.Add(rpcData.Key, new("不存在该变量"));
                 }
+            }
 
-            }
-            else
-            {
-                mqttRpcResult = new() { Message = "不存在该变量", RpcId = rpcData.RpcId, Success = false };
-            }
+            var result = await _rpcCore.InvokeDeviceMethodAsync(ToString() + "-" + arg.ClientId,
+                rpcDatas.WriteInfos.Where(
+                a => !mqttRpcResult.Message.Any(b => b.Key == a.Key)).ToDictionary(a => a.Key, a => a.Value));
+
+            mqttRpcResult.Message.AddRange(result);
+            mqttRpcResult.Success = !mqttRpcResult.Message.Any(a => !a.Value.IsSuccess);
         }
-
         catch (Exception ex)
         {
             LogMessage?.LogWarning(ex, ToString());
-            mqttRpcResult = new() { Message = "Failed", RpcId = rpcData.RpcId, Success = false };
-
         }
         try
         {
@@ -302,7 +307,7 @@ public class MqttServer : UpLoadBase
 .WithTopic($"{driverPropertys.RpcSubTopic}")
 .WithPayload(mqttRpcResult.ToJson()).Build();
             await _mqttServer.InjectApplicationMessage(
-                    new InjectedMqttApplicationMessage(variableMessage));
+                     new InjectedMqttApplicationMessage(variableMessage));
         }
         catch
         {

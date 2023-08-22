@@ -36,6 +36,10 @@ public abstract class CollectBase : DriverBase
     /// </summary>
     /// <returns></returns>
     public abstract bool IsSupportRequest { get; }
+    /// <summary>
+    /// 一般底层驱动，也有可能为null
+    /// </summary>
+    protected abstract IReadWriteDevice PLC { get; }
 
     /// <summary>
     /// 数据转换器
@@ -177,10 +181,22 @@ public abstract class CollectBase : DriverBase
     }
 
     /// <summary>
-    /// 写入变量值
+    /// 批量写入变量值,需返回变量名称/结果
     /// </summary>
     /// <returns></returns>
-    public abstract Task<OperResult> WriteValueAsync(DeviceVariableRunTime deviceVariable, JToken value, CancellationToken token);
+    public virtual async Task<Dictionary<string, OperResult>> WriteValuesAsync(Dictionary<DeviceVariableRunTime, JToken> writeInfoLists, CancellationToken token)
+    {
+        if (PLC == null)
+            throw new("未初始化成功");
+        Dictionary<string, OperResult> operResults = new();
+        foreach (var writeInfo in writeInfoLists)
+        {
+            var result = await PLC.WriteAsync(writeInfo.Key.VariableAddress, writeInfo.Key.DataType, writeInfo.Value.ToString(), token);
+            await Task.Delay(10, token); //防止密集写入
+            operResults.Add(writeInfo.Key.Name, result);
+        }
+        return operResults;
+    }
 
     /// <summary>
     /// 初始化

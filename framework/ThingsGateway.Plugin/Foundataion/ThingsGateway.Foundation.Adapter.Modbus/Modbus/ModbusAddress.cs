@@ -66,7 +66,8 @@ public class ModbusAddress : DeviceAddressBase
             Length = result.Content.Length;
             AddressStart = result.Content.AddressStart;
             ReadFunction = result.Content.ReadFunction;
-            Station = result.Content.Station;
+            if (result.Content.Station > 0)
+                Station = result.Content.Station;
             WriteFunction = result.Content.WriteFunction;
         }
     }
@@ -81,9 +82,10 @@ public class ModbusAddress : DeviceAddressBase
 
         try
         {
-            ModbusAddress modbusAddress = new ModbusAddress();
-
-            modbusAddress.Length = length;
+            ModbusAddress modbusAddress = new()
+            {
+                Length = length
+            };
             if (address.IndexOf(';') < 0)
             {
                 Address(address);

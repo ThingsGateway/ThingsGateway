@@ -89,13 +89,8 @@ public class RpcControler : IDynamicApiController
     [Description("写入变量")]
     public async Task<Dictionary<string, OperResult>> WriteDeviceMethods(Dictionary<string, string> objs)
     {
-        Dictionary<string, OperResult> operResultDict = new();
-        foreach (KeyValuePair<string, string> obj in objs)
-        {
-            var result = await RpcCore.InvokeDeviceMethodAsync($"WebApi-{UserManager.UserAccount}-{App.HttpContext.Connection.RemoteIpAddress.MapToIPv4()}", obj);
-            operResultDict.Add(obj.Key, result);
-        }
-        return operResultDict;
+        var result = await RpcCore.InvokeDeviceMethodAsync($"WebApi-{UserManager.UserAccount}-{App.HttpContext.Connection.RemoteIpAddress.MapToIPv4()}", objs);
+        return result;
     }
 }
 

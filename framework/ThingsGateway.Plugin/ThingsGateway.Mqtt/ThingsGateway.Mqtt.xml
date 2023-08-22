@@ -294,14 +294,9 @@
             标识
             </summary>
         </member>
-        <member name="P:ThingsGateway.Mqtt.MqttRpcNameVaueWithId.Key">
+        <member name="P:ThingsGateway.Mqtt.MqttRpcNameVaueWithId.WriteInfos">
             <summary>
-            通常是变量名称
-            </summary>
-        </member>
-        <member name="P:ThingsGateway.Mqtt.MqttRpcNameVaueWithId.Value">
-            <summary>
-            值
+            "WriteInfos":{"test":"1"}
             </summary>
         </member>
         <member name="T:ThingsGateway.Mqtt.MqttRpcResult">

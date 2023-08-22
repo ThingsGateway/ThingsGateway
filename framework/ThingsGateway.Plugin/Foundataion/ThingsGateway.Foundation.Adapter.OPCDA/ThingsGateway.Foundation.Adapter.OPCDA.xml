@@ -520,12 +520,10 @@
         <member name="M:ThingsGateway.Foundation.Adapter.OPCDA.OPCDAClient.ToString">
             <inheritdoc/>
         </member>
-        <member name="M:ThingsGateway.Foundation.Adapter.OPCDA.OPCDAClient.WriteItem(System.String,Newtonsoft.Json.Linq.JToken)">
+        <member name="M:ThingsGateway.Foundation.Adapter.OPCDA.OPCDAClient.WriteItem(System.Collections.Generic.Dictionary{System.String,Newtonsoft.Json.Linq.JToken})">
             <summary>
-            写入值
+            批量写入值
             </summary>
-            <param name="valueName">写入</param>
-            <param name="value"></param>
             <returns></returns>
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.OPCDA.OPCDAClient.Dispose(System.Boolean)">

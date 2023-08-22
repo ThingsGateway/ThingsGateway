@@ -10,8 +10,6 @@
 //------------------------------------------------------------------------------
 #endregion
 
-using Newtonsoft.Json.Linq;
-
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
@@ -31,6 +29,8 @@ public abstract class Siemens : CollectBase
     /// PLC
     /// </summary>
     protected SiemensS7PLC _plc;
+    /// <inheritdoc/>
+    protected override IReadWriteDevice PLC => _plc;
     /// <summary>
     /// SiemensProperty
     /// </summary>
@@ -124,11 +124,7 @@ public abstract class Siemens : CollectBase
 
 
 
-    /// <inheritdoc/>
-    public override async Task<OperResult> WriteValueAsync(DeviceVariableRunTime deviceVariable, JToken value, CancellationToken token)
-    {
-        return await _plc.WriteAsync(deviceVariable.VariableAddress, deviceVariable.DataType, value.ToString(), token);
-    }
+
 
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
