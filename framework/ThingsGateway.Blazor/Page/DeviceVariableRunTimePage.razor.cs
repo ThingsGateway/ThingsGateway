@@ -149,10 +149,18 @@ public partial class DeviceVariableRunTimePage
     private EventCallback<string> WriteValueAsync;
     private async Task OnWriteValueAsync(DeviceVariableRunTime tag, string value)
     {
-        var data = await RpcCore?.InvokeDeviceMethodAsync($"BLAZOR-{UserResoures.CurrentUser.Account}-{App.HttpContext.Connection.RemoteIpAddress.MapToIPv4()}", new KeyValuePair<string, string>(tag.Name, value), true);
-        if (!data.IsSuccess)
+        var data = await RpcCore?.InvokeDeviceMethodAsync($"BLAZOR-{UserResoures.CurrentUser.Account}-{App.HttpContext.Connection.RemoteIpAddress.MapToIPv4()}",
+
+            new Dictionary<string, string>()
+            {
+
+                { tag.Name, value}
+            }
+
+            , true);
+        if (data.Count > 0 && !data.FirstOrDefault().Value.IsSuccess)
         {
-            throw new(data.Message);
+            throw new(data.FirstOrDefault().Value.Message);
         }
     }
     private async Task WriteAsync(DeviceVariableRunTime collectVariableRunTime)

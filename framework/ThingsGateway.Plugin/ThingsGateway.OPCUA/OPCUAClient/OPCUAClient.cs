@@ -36,7 +36,13 @@ namespace ThingsGateway.OPCUA;
 /// </summary>
 public class OPCUAClient : CollectBase
 {
+    internal Foundation.Adapter.OPCUA.OPCUAClient _plc = null;
+    internal CollectDeviceRunTime Device;
     readonly PeriodicTimer _periodicTimer = new(TimeSpan.FromSeconds(60));
+    private readonly OPCUAClientProperty driverPropertys = new();
+
+    private List<DeviceVariableRunTime> _deviceVariables = new();
+
     /// <summary>
     /// OPCUA客户端
     /// </summary>
@@ -44,33 +50,6 @@ public class OPCUAClient : CollectBase
     {
         _ = RunTimerAsync();
     }
-
-    private async Task RunTimerAsync()
-    {
-        while (await _periodicTimer.WaitForNextTickAsync())
-        {
-            if (PLC != null && PLC.Session == null)
-            {
-                try
-                {
-                    await PLC.ConnectAsync();
-                }
-                catch (Exception ex)
-                {
-                    LogMessage.Exception(ex);
-                }
-            }
-        }
-
-    }
-
-    internal CollectDeviceRunTime Device;
-
-    internal Foundation.Adapter.OPCUA.OPCUAClient PLC = null;
-
-    private List<DeviceVariableRunTime> _deviceVariables = new();
-
-    private readonly OPCUAClientProperty driverPropertys = new();
 
     /// <inheritdoc/>
     public override Type DriverDebugUIType => typeof(OPCUAClientDebugDriverPage);
@@ -83,18 +62,23 @@ public class OPCUAClient : CollectBase
 
     /// <inheritdoc/>
     public override ThingsGatewayBitConverter ThingsGatewayBitConverter { get; } = new(EndianType.Little);
+
+    /// <inheritdoc/>
+    protected override IReadWriteDevice PLC => null;
+
     /// <inheritdoc/>
     public override Task AfterStopAsync()
     {
-        PLC?.Disconnect();
+        _plc?.Disconnect();
         return Task.CompletedTask;
     }
 
     /// <inheritdoc/>
     public override async Task BeforStartAsync(CancellationToken token)
     {
-        await PLC?.ConnectAsync();
+        await _plc?.ConnectAsync();
     }
+
     /// <inheritdoc/>
     public override void InitDataAdapter()
     {
@@ -104,14 +88,14 @@ public class OPCUAClient : CollectBase
     public override bool IsConnected()
     {
 
-        return PLC.Connected;
+        return _plc.Connected;
     }
 
     /// <inheritdoc/>
     public override List<DeviceVariableSourceRead> LoadSourceRead(List<DeviceVariableRunTime> deviceVariables)
     {
         _deviceVariables = deviceVariables;
-        PLC.Variables.AddRange(deviceVariables.Select(a => a.VariableAddress).ToList());
+        _plc.Variables.AddRange(deviceVariables.Select(a => a.VariableAddress).ToList());
         var dataLists = deviceVariables.ChunkTrivialBetter(driverPropertys.GroupSize);
         var dataResult = new List<DeviceVariableSourceRead>();
         foreach (var variable in dataLists)
@@ -131,7 +115,7 @@ public class OPCUAClient : CollectBase
     /// <inheritdoc/>
     public override async Task<OperResult<byte[]>> ReadSourceAsync(DeviceVariableSourceRead deviceVariableSourceRead, CancellationToken token)
     {
-        var result = await PLC.ReadJTokenValueAsync(deviceVariableSourceRead.DeviceVariables.Select(a => a.VariableAddress).ToArray(), token);
+        var result = await _plc.ReadJTokenValueAsync(deviceVariableSourceRead.DeviceVariables.Select(a => a.VariableAddress).ToArray(), token);
         foreach (var data in result)
         {
             if (!token.IsCancellationRequested)
@@ -184,26 +168,33 @@ public class OPCUAClient : CollectBase
         }
     }
 
+
     /// <inheritdoc/>
-    public override async Task<OperResult> WriteValueAsync(DeviceVariableRunTime deviceVariable, JToken value, CancellationToken token)
+    public override async Task<Dictionary<string, OperResult>> WriteValuesAsync(Dictionary<DeviceVariableRunTime, JToken> writeInfoLists, CancellationToken token)
     {
-        var result = await PLC.WriteNodeAsync(deviceVariable.VariableAddress, value, token);
-        return result;
+        var result = await _plc.WriteNodeAsync(writeInfoLists.ToDictionary(a => a.Key.VariableAddress, a => a.Value), token);
+        return result.ToDictionary(a =>
+        {
+            return writeInfoLists.Keys.FirstOrDefault(b => b.VariableAddress == a.Key)?.Name;
+        }
+        , a => a.Value);
+
     }
 
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
         _periodicTimer?.Dispose();
-        if (PLC != null)
+        if (_plc != null)
         {
-            PLC.DataChangedHandler -= DataChangedHandler;
-            PLC.Disconnect();
-            PLC.SafeDispose();
-            PLC = null;
+            _plc.DataChangedHandler -= DataChangedHandler;
+            _plc.Disconnect();
+            _plc.SafeDispose();
+            _plc = null;
         }
         base.Dispose(disposing);
     }
+
     /// <inheritdoc/>
     protected override void Init(CollectDeviceRunTime device, object client = null)
     {
@@ -220,13 +211,13 @@ public class OPCUAClient : CollectBase
             UserName = driverPropertys.UserName,
             Password = driverPropertys.Password
         };
-        if (PLC == null)
+        if (_plc == null)
         {
-            PLC = new(LogMessage);
-            PLC.DataChangedHandler += DataChangedHandler;
+            _plc = new(LogMessage);
+            _plc.DataChangedHandler += DataChangedHandler;
         }
 
-        PLC.OPCNode = opcNode;
+        _plc.OPCNode = opcNode;
     }
 
     /// <inheritdoc/>
@@ -252,7 +243,7 @@ public class OPCUAClient : CollectBase
                 return;
             }
             //尝试固定点位的数据类型
-            var type = TypeInfo.GetSystemType(TypeInfo.GetBuiltInType(data.variableNode.DataType, PLC.Session.SystemContext.TypeTable), data.variableNode.ValueRank);
+            var type = TypeInfo.GetSystemType(TypeInfo.GetBuiltInType(data.variableNode.DataType, _plc.Session.SystemContext.TypeTable), data.variableNode.ValueRank);
 
             var itemReads = _deviceVariables.Where(it => it.VariableAddress == data.variableNode.NodeId).ToList();
 
@@ -295,5 +286,24 @@ public class OPCUAClient : CollectBase
         {
             LogMessage?.LogWarning(ex, ToString());
         }
+    }
+
+    private async Task RunTimerAsync()
+    {
+        while (await _periodicTimer.WaitForNextTickAsync())
+        {
+            if (_plc != null && _plc.Session == null)
+            {
+                try
+                {
+                    await _plc.ConnectAsync();
+                }
+                catch (Exception ex)
+                {
+                    LogMessage.Exception(ex);
+                }
+            }
+        }
+
     }
 }

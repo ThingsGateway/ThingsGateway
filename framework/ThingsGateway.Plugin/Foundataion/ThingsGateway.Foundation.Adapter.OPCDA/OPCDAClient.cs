@@ -301,50 +301,94 @@ public class OPCDAClient : DisposableObject
         return OPCNode?.ToString();
     }
 
+
     /// <summary>
-    /// 写入值
+    /// 批量写入值
     /// </summary>
-    /// <param name="valueName">写入</param>
-    /// <param name="value"></param>
     /// <returns></returns>
-    public OperResult WriteItem(string valueName, JToken value)
+    public Dictionary<string, OperResult> WriteItem(Dictionary<string, JToken> writeInfos)
     {
+        Dictionary<string, OperResult> results = new();
         if (PrivateConnect())
         {
             try
             {
-                var group = Groups.FirstOrDefault(it => it.OpcItems.Any(a => a.ItemID == valueName));
-                if (group == null)
-                    return new OperResult("不存在该变量" + valueName);
-                var item = group.OpcItems.Where(it => it.ItemID == valueName).FirstOrDefault();
-                int[] serverHandle = new int[1] { item.ServerHandle };
-                int[] PErrors = new int[1];
-                var jtoken = value;
-                var rank = jtoken.CalculateActualValueRank();
-                object rawWriteValue;
-                switch (rank)
+                var valueGroup = writeInfos.GroupBy(itemId =>
+                  {
+                      var group = Groups.FirstOrDefault(it => it.OpcItems.Any(a => a.ItemID == itemId.Key));
+                      return group;
+                  }).ToList();
+
+
+
+
+                foreach (var item1 in valueGroup)
                 {
-                    case -1:
-                        rawWriteValue = ((JValue)jtoken).Value;
-                        break;
-                    default:
-                        var jarray = ((JArray)jtoken);
-                        rawWriteValue = jarray.Select(j => (object)j).ToArray();
-                        break;
+                    if (item1.Key == null)
+                    {
+                        foreach (var item2 in item1)
+                        {
+                            results.Add(item2.Key, new OperResult("不存在该变量" + item2.Key));
+                        }
+                    }
+                    else
+                    {
+                        List<int> ServerHandles = new();
+                        List<object> Values = new();
+                        foreach (var item2 in item1)
+                        {
+                            var opcItem = item1.Key.OpcItems.Where(it => it.ItemID == item2.Key).FirstOrDefault();
+                            ServerHandles.Add(opcItem.ServerHandle);
+                            var jtoken = item2.Value;
+                            var rank = jtoken.CalculateActualValueRank();
+                            object rawWriteValue;
+                            switch (rank)
+                            {
+                                case -1:
+                                    rawWriteValue = ((JValue)jtoken).Value;
+                                    break;
+                                default:
+                                    var jarray = ((JArray)jtoken);
+                                    rawWriteValue = jarray.Select(j => (object)j).ToArray();
+                                    break;
+                            }
+
+                            Values.Add(rawWriteValue);
+
+                        }
+
+                        var result = item1.Key.Write(Values.ToArray(), ServerHandles.ToArray(), out var PErrors);
+                        var data = item1.ToList();
+                        for (int i = 0; i < data.Count; i++)
+                        {
+                            results.Add(data[i].Key, PErrors[i] == 0 ? OperResult.CreateSuccessResult() : new OperResult("错误代码：" + PErrors[i]));
+                        }
+                    }
                 }
 
-                object[] Value = new object[1] { rawWriteValue };
-                var result = group.Write(Value, serverHandle, out PErrors);
-                return result;
+                return results;
             }
             catch (Exception ex)
             {
-                return new OperResult(ex.Message);
+                var keys = writeInfos.Keys.ToList();
+                foreach (var item in keys)
+                {
+                    results.AddOrUpdate(item, new(ex));
+                }
+                return results;
+
             }
         }
-        return new OperResult();
+        else
+        {
+            var keys = writeInfos.Keys.ToList();
+            foreach (var item in keys)
+            {
+                results.AddOrUpdate(item, new("未初始化连接"));
+            }
+            return results;
+        }
     }
-
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {

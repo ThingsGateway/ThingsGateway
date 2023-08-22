@@ -1855,6 +1855,11 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="P:ThingsGateway.Application.CollectBase.PLC">
+            <summary>
+            一般底层驱动，也有可能为null
+            </summary>
+        </member>
         <member name="P:ThingsGateway.Application.CollectBase.ThingsGatewayBitConverter">
             <summary>
             数据转换器
@@ -1906,9 +1911,9 @@
             采集驱动读取
             </summary>
         </member>
-        <member name="M:ThingsGateway.Application.CollectBase.WriteValueAsync(ThingsGateway.Application.DeviceVariableRunTime,Newtonsoft.Json.Linq.JToken,System.Threading.CancellationToken)">
+        <member name="M:ThingsGateway.Application.CollectBase.WriteValuesAsync(System.Collections.Generic.Dictionary{ThingsGateway.Application.DeviceVariableRunTime,Newtonsoft.Json.Linq.JToken},System.Threading.CancellationToken)">
             <summary>
-            写入变量值
+            批量写入变量值,需返回变量名称/结果
             </summary>
             <returns></returns>
         </member>
@@ -2242,12 +2247,12 @@
         <member name="M:ThingsGateway.Application.RpcSingletonService.#ctor(Microsoft.Extensions.Logging.ILogger{ThingsGateway.Application.RpcSingletonService})">
             <inheritdoc cref="T:ThingsGateway.Application.RpcSingletonService"/>
         </member>
-        <member name="M:ThingsGateway.Application.RpcSingletonService.InvokeDeviceMethodAsync(System.String,System.Collections.Generic.KeyValuePair{System.String,System.String},System.Boolean,System.Threading.CancellationToken)">
+        <member name="M:ThingsGateway.Application.RpcSingletonService.InvokeDeviceMethodAsync(System.String,System.Collections.Generic.Dictionary{System.String,System.String},System.Boolean,System.Threading.CancellationToken)">
             <summary>
             反向RPC入口方法
             </summary>
             <param name="sourceDes">触发该方法的源说明</param>
-            <param name="item">指定键为变量名称，值为附带方法参数或写入值</param>
+            <param name="items">指定键为变量名称，值为附带方法参数或写入值</param>
             <param name="isBlazor">如果是true，不检查<see cref="P:ThingsGateway.Application.MemoryVariable.RpcWriteEnable"/>字段</param>
             <param name="token"><see cref="T:System.Threading.CancellationToken"/> 取消源</param>
             <returns></returns>
@@ -3505,7 +3510,7 @@
             执行特殊方法
             </summary>
         </member>
-        <member name="M:ThingsGateway.Application.CollectDeviceCore.InVokeWriteAsync(ThingsGateway.Application.DeviceVariableRunTime,Newtonsoft.Json.Linq.JToken,System.Threading.CancellationToken)">
+        <member name="M:ThingsGateway.Application.CollectDeviceCore.InVokeWriteAsync(System.Collections.Generic.Dictionary{ThingsGateway.Application.DeviceVariableRunTime,Newtonsoft.Json.Linq.JToken},System.Threading.CancellationToken)">
             <summary>
             执行变量写入
             </summary>

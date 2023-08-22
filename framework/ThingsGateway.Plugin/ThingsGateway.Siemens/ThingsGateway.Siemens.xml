@@ -88,6 +88,9 @@
             PLC
             </summary>
         </member>
+        <member name="P:ThingsGateway.Siemens.Siemens.PLC">
+            <inheritdoc/>
+        </member>
         <member name="F:ThingsGateway.Siemens.Siemens.driverPropertys">
             <summary>
             SiemensProperty
@@ -137,9 +140,6 @@
             <see cref="M:ThingsGateway.Foundation.Adapter.Siemens.SiemensS7PLC.ReadStringAsync(System.String,System.Text.Encoding,System.Threading.CancellationToken)"/>
             </summary>
             <returns></returns>
-        </member>
-        <member name="M:ThingsGateway.Siemens.Siemens.WriteValueAsync(ThingsGateway.Application.DeviceVariableRunTime,Newtonsoft.Json.Linq.JToken,System.Threading.CancellationToken)">
-            <inheritdoc/>
         </member>
         <member name="M:ThingsGateway.Siemens.Siemens.Dispose(System.Boolean)">
             <inheritdoc/>

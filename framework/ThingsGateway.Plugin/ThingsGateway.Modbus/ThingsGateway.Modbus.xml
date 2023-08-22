@@ -7,6 +7,9 @@
         <member name="T:ThingsGateway.Modbus.ModbusRtuOverTcp">
             <inheritdoc/>
         </member>
+        <member name="P:ThingsGateway.Modbus.ModbusRtuOverTcp.PLC">
+            <inheritdoc/>
+        </member>
         <member name="P:ThingsGateway.Modbus.ModbusRtuOverTcp.DriverDebugUIType">
             <inheritdoc/>
         </member>
@@ -32,9 +35,6 @@
             <inheritdoc/>
         </member>
         <member name="M:ThingsGateway.Modbus.ModbusRtuOverTcp.LoadSourceRead(System.Collections.Generic.List{ThingsGateway.Application.DeviceVariableRunTime})">
-            <inheritdoc/>
-        </member>
-        <member name="M:ThingsGateway.Modbus.ModbusRtuOverTcp.WriteValueAsync(ThingsGateway.Application.DeviceVariableRunTime,Newtonsoft.Json.Linq.JToken,System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
         <member name="M:ThingsGateway.Modbus.ModbusRtuOverTcp.Dispose(System.Boolean)">
@@ -116,6 +116,9 @@
             <inheritdoc/>
             </summary>
         </member>
+        <member name="P:ThingsGateway.Modbus.ModbusRtuOverUdp.PLC">
+            <inheritdoc/>
+        </member>
         <member name="P:ThingsGateway.Modbus.ModbusRtuOverUdp.DriverDebugUIType">
             <inheritdoc/>
         </member>
@@ -143,9 +146,6 @@
         <member name="M:ThingsGateway.Modbus.ModbusRtuOverUdp.LoadSourceRead(System.Collections.Generic.List{ThingsGateway.Application.DeviceVariableRunTime})">
             <inheritdoc/>
         </member>
-        <member name="M:ThingsGateway.Modbus.ModbusRtuOverUdp.WriteValueAsync(ThingsGateway.Application.DeviceVariableRunTime,Newtonsoft.Json.Linq.JToken,System.Threading.CancellationToken)">
-            <inheritdoc/>
-        </member>
         <member name="M:ThingsGateway.Modbus.ModbusRtuOverUdp.Dispose(System.Boolean)">
             <inheritdoc/>
         </member>
@@ -166,6 +166,9 @@
             </summary>
         </member>
         <member name="T:ThingsGateway.Modbus.ModbusRtu">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.Modbus.ModbusRtu.PLC">
             <inheritdoc/>
         </member>
         <member name="P:ThingsGateway.Modbus.ModbusRtu.DriverDebugUIType">
@@ -198,9 +201,6 @@
             <inheritdoc/>
         </member>
         <member name="M:ThingsGateway.Modbus.ModbusRtu.LoadSourceRead(System.Collections.Generic.List{ThingsGateway.Application.DeviceVariableRunTime})">
-            <inheritdoc/>
-        </member>
-        <member name="M:ThingsGateway.Modbus.ModbusRtu.WriteValueAsync(ThingsGateway.Application.DeviceVariableRunTime,Newtonsoft.Json.Linq.JToken,System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
         <member name="M:ThingsGateway.Modbus.ModbusRtu.Init(ThingsGateway.Application.CollectDeviceRunTime,System.Object)">
@@ -400,6 +400,9 @@
             <inheritdoc/>
             </summary>
         </member>
+        <member name="P:ThingsGateway.Modbus.ModbusTcp.PLC">
+            <inheritdoc/>
+        </member>
         <member name="P:ThingsGateway.Modbus.ModbusTcp.DriverDebugUIType">
             <inheritdoc/>
         </member>
@@ -425,9 +428,6 @@
             <inheritdoc/>
         </member>
         <member name="M:ThingsGateway.Modbus.ModbusTcp.LoadSourceRead(System.Collections.Generic.List{ThingsGateway.Application.DeviceVariableRunTime})">
-            <inheritdoc/>
-        </member>
-        <member name="M:ThingsGateway.Modbus.ModbusTcp.WriteValueAsync(ThingsGateway.Application.DeviceVariableRunTime,Newtonsoft.Json.Linq.JToken,System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
         <member name="M:ThingsGateway.Modbus.ModbusTcp.Dispose(System.Boolean)">
@@ -507,6 +507,9 @@
         <member name="T:ThingsGateway.Modbus.ModbusUdp">
             <inheritdoc/>
         </member>
+        <member name="P:ThingsGateway.Modbus.ModbusUdp.PLC">
+            <inheritdoc/>
+        </member>
         <member name="P:ThingsGateway.Modbus.ModbusUdp.DriverDebugUIType">
             <inheritdoc/>
         </member>
@@ -532,9 +535,6 @@
             <inheritdoc/>
         </member>
         <member name="M:ThingsGateway.Modbus.ModbusUdp.LoadSourceRead(System.Collections.Generic.List{ThingsGateway.Application.DeviceVariableRunTime})">
-            <inheritdoc/>
-        </member>
-        <member name="M:ThingsGateway.Modbus.ModbusUdp.WriteValueAsync(ThingsGateway.Application.DeviceVariableRunTime,Newtonsoft.Json.Linq.JToken,System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
         <member name="M:ThingsGateway.Modbus.ModbusUdp.Dispose(System.Boolean)">

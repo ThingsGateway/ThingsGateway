@@ -201,16 +201,25 @@ public class ModbusServer : UpLoadBase
             if (Enum.TryParse<DataTypeEnum>(type, out DataTypeEnum result))
             {
                 var resultTask1 = RpcCore.InvokeDeviceMethodAsync($"{nameof(ModbusServer)}-{CurDevice.Name}-{client.IP + ":" + client.Port}",
-                new(tag.Value.Name, thingsGatewayBitConverter.GetDynamicDataFormBytes(addressStr ?? string.Empty, result.GetSystemType(), bytes).ToString()));
+               new Dictionary<string, string>
+{
+    {tag.Value.Name, thingsGatewayBitConverter.GetDynamicDataFormBytes(addressStr ?? string.Empty, result.GetSystemType(), bytes).ToString()},
+}
+
+                );
                 var result1 = resultTask1.ConfigureAwait(true).GetAwaiter().GetResult();
-                return result1;
+                return result1.FirstOrDefault().Value;
             }
             else
             {
                 var resultTask1 = RpcCore.InvokeDeviceMethodAsync($"{nameof(ModbusServer)}-{CurDevice.Name}-{client.IP + ":" + client.Port}",
-new(tag.Value.Name, thingsGatewayBitConverter.GetDynamicDataFormBytes(addressStr ?? string.Empty, tag.Value.DataType, bytes).ToString()));
+               new Dictionary<string, string>
+{
+    {tag.Value.Name, thingsGatewayBitConverter.GetDynamicDataFormBytes(addressStr ?? string.Empty, result.GetSystemType(), bytes).ToString()},
+}
+                );
                 var result1 = resultTask1.ConfigureAwait(true).GetAwaiter().GetResult();
-                return result1;
+                return result1.FirstOrDefault().Value;
             }
         }
         catch (Exception ex)

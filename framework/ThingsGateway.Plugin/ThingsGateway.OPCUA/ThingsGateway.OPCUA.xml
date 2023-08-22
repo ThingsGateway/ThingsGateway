@@ -50,6 +50,9 @@
         <member name="P:ThingsGateway.OPCUA.OPCUAClient.ThingsGatewayBitConverter">
             <inheritdoc/>
         </member>
+        <member name="P:ThingsGateway.OPCUA.OPCUAClient.PLC">
+            <inheritdoc/>
+        </member>
         <member name="M:ThingsGateway.OPCUA.OPCUAClient.AfterStopAsync">
             <inheritdoc/>
         </member>
@@ -68,7 +71,7 @@
         <member name="M:ThingsGateway.OPCUA.OPCUAClient.ReadSourceAsync(ThingsGateway.Application.DeviceVariableSourceRead,System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
-        <member name="M:ThingsGateway.OPCUA.OPCUAClient.WriteValueAsync(ThingsGateway.Application.DeviceVariableRunTime,Newtonsoft.Json.Linq.JToken,System.Threading.CancellationToken)">
+        <member name="M:ThingsGateway.OPCUA.OPCUAClient.WriteValuesAsync(System.Collections.Generic.Dictionary{ThingsGateway.Application.DeviceVariableRunTime,Newtonsoft.Json.Linq.JToken},System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
         <member name="M:ThingsGateway.OPCUA.OPCUAClient.Dispose(System.Boolean)">

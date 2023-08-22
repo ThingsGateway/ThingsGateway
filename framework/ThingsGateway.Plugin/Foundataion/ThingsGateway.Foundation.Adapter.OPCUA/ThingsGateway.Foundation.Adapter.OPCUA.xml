@@ -375,7 +375,7 @@
             从服务器读取值
             </summary>
         </member>
-        <member name="M:ThingsGateway.Foundation.Adapter.OPCUA.OPCUAClient.WriteNodeAsync(System.String,Newtonsoft.Json.Linq.JToken,System.Threading.CancellationToken)">
+        <member name="M:ThingsGateway.Foundation.Adapter.OPCUA.OPCUAClient.WriteNodeAsync(System.Collections.Generic.Dictionary{System.String,Newtonsoft.Json.Linq.JToken},System.Threading.CancellationToken)">
             <summary>
             异步写opc标签
             </summary>

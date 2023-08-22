@@ -490,16 +490,22 @@ src.IsOnline ? StatusCodes.Good : StatusCodes.Bad);
                     //仅当指定了值时才将值写入
                     if (variable.Value != null)
                     {
-                        var nv = new KeyValuePair<string, string>(variable.SymbolicName, value?.ToString());
 
-                        var result = _rpcCore.InvokeDeviceMethodAsync("OPCUASERVER-" + context1?.OperationContext?.Session?.Identity?.DisplayName, nv).ConfigureAwait(true).GetAwaiter().GetResult();
-                        if (result.IsSuccess)
+                        var result = _rpcCore.InvokeDeviceMethodAsync("OPCUASERVER-" + context1?.OperationContext?.Session?.Identity?.DisplayName,
+                            new()
+                            {
+                                { variable.SymbolicName, value?.ToString() }
+                            }
+
+
+                            ).ConfigureAwait(true).GetAwaiter().GetResult();
+                        if (result.Values.FirstOrDefault().IsSuccess)
                         {
                             return StatusCodes.Good;
                         }
                         else
                         {
-                            return new(StatusCodes.BadWaitingForResponse, result.Message);
+                            return new(StatusCodes.BadWaitingForResponse, result.Values.FirstOrDefault().Message);
                         }
                     }
                 }

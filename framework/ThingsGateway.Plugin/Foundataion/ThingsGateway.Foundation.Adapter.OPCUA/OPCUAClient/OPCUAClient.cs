@@ -521,29 +521,33 @@ public class OPCUAClient : DisposableObject
     /// <summary>
     /// 异步写opc标签
     /// </summary>
-    public async Task<OperResult> WriteNodeAsync(string tag, JToken value, CancellationToken token = default)
+    public async Task<Dictionary<string, OperResult>> WriteNodeAsync(Dictionary<string, JToken> writeInfoLists, CancellationToken token = default)
     {
+        Dictionary<string, OperResult> results = new();
         try
         {
-            WriteValue valueToWrite = new()
+            WriteValueCollection valuesToWrite = new();
+            foreach (var item in writeInfoLists)
             {
-                NodeId = new NodeId(tag),
-                AttributeId = Attributes.Value,
-            };
-            var variableNode = (VariableNode)ReadNode(tag.ToString(), false);
-            await typeSystem.LoadType(variableNode.DataType, true, true);
-            var dataValue = JsonUtils.Decode(
-                m_session.MessageContext,
-                variableNode.DataType,
-                TypeInfo.GetBuiltInType(variableNode.DataType, m_session.SystemContext.TypeTable),
-                value.CalculateActualValueRank(),
-                value
-                );
-            valueToWrite.Value = dataValue;
-            WriteValueCollection valuesToWrite = new()
-            {
-                valueToWrite
-            };
+                WriteValue valueToWrite = new()
+                {
+                    NodeId = new NodeId(item.Key),
+                    AttributeId = Attributes.Value,
+                };
+                var variableNode = (VariableNode)ReadNode(item.Key, false);
+                await typeSystem.LoadType(variableNode.DataType, true, true);
+                var dataValue = JsonUtils.Decode(
+                    m_session.MessageContext,
+                    variableNode.DataType,
+                    TypeInfo.GetBuiltInType(variableNode.DataType, m_session.SystemContext.TypeTable),
+                    item.Value.CalculateActualValueRank(),
+                    item.Value
+                    );
+                valueToWrite.Value = dataValue;
+
+                valuesToWrite.Add(valueToWrite);
+            }
+
 
             var result = await m_session.WriteAsync(
      requestHeader: null,
@@ -551,15 +555,29 @@ public class OPCUAClient : DisposableObject
 
             ClientBase.ValidateResponse(result.Results, valuesToWrite);
             ClientBase.ValidateDiagnosticInfos(result.DiagnosticInfos, valuesToWrite);
-            if (!StatusCode.IsGood(result.Results[0]))
+
+
+            var keys = writeInfoLists.Keys.ToList();
+            for (int i = 0; i < keys.Count; i++)
             {
-                return new OperResult(result.Results[0].ToString());
+                if (!StatusCode.IsGood(result.Results[i]))
+                    results.Add(keys[i], new(result.Results[i].ToString()));
+                else
+                {
+                    results.Add(keys[i], OperResult.CreateSuccessResult());
+                }
             }
-            return OperResult.CreateSuccessResult();
+
+            return results;
         }
         catch (Exception ex)
         {
-            return new OperResult(ex);
+            var keys = writeInfoLists.Keys.ToList();
+            foreach (var item in keys)
+            {
+                results.Add(item, new(ex));
+            }
+            return results;
         }
 
     }
