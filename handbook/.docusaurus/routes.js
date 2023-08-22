@@ -4,12 +4,12 @@ import ComponentCreator from '@docusaurus/ComponentCreator';
 export default [
   {
     path: '/thingsgateway-docs/search',
-    component: ComponentCreator('/thingsgateway-docs/search', 'ca8'),
+    component: ComponentCreator('/thingsgateway-docs/search', '738'),
     exact: true
   },
   {
     path: '/thingsgateway-docs/docs',
-    component: ComponentCreator('/thingsgateway-docs/docs', '8b2'),
+    component: ComponentCreator('/thingsgateway-docs/docs', '8a1'),
     routes: [
       {
         path: '/thingsgateway-docs/docs/',
@@ -255,7 +255,7 @@ export default [
   },
   {
     path: '/thingsgateway-docs/',
-    component: ComponentCreator('/thingsgateway-docs/', 'fc9'),
+    component: ComponentCreator('/thingsgateway-docs/', '8e0'),
     exact: true
   },
   {

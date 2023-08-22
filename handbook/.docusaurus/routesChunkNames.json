@@ -1,14 +1,14 @@
 {
-  "/thingsgateway-docs/search-ca8": {
+  "/thingsgateway-docs/search-738": {
     "__comp": "1a4e3797",
     "__context": {
-      "plugin": "25b34da0"
+      "plugin": "444af13b"
     }
   },
-  "/thingsgateway-docs/docs-8b2": {
+  "/thingsgateway-docs/docs-8a1": {
     "__comp": "1be78505",
     "__context": {
-      "plugin": "e34e66ef"
+      "plugin": "c361d1eb"
     },
     "versionMetadata": "935f2afb"
   },
@@ -172,10 +172,10 @@
     "__comp": "17896441",
     "content": "e58d351b"
   },
-  "/thingsgateway-docs/-fc9": {
+  "/thingsgateway-docs/-8e0": {
     "__comp": "c4f5d8e4",
     "__context": {
-      "plugin": "c776f548"
+      "plugin": "760264af"
     },
     "config": "5e9f5e1a"
   }
