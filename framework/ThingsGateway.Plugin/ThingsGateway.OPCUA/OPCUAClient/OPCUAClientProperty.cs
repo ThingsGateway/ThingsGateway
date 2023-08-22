@@ -43,6 +43,11 @@ public class OPCUAClientProperty : CollectDriverPropertyBase
     [DeviceProperty("安全策略", "True为使用安全策略，False为无")]
     public bool IsUseSecurity { get; set; } = true;
 
+    /// <summary>
+    /// 是否使用SourceTime
+    /// </summary>
+    [DeviceProperty("使用SourceTime", "")]
+    public bool SourceTimestampEnable { get; set; } = true;
 
     /// <summary>
     /// 激活订阅

@@ -257,8 +257,11 @@ public class OPCUAClient : CollectBase
                 value = data.jToken;
             }
             var quality = StatusCode.IsGood(data.dataValue.StatusCode);
-
-            var time = data.dataValue.SourceTimestamp.ToLocalTime();
+            DateTime time = default;
+            if (driverPropertys.SourceTimestampEnable)
+            {
+                time = data.dataValue.SourceTimestamp.ToLocalTime();
+            }
             foreach (var item in itemReads)
             {
                 if (item.DataTypeEnum == DataTypeEnum.Object)
