@@ -317,6 +317,7 @@ public class MqttClient : UpLoadBase
            .WithTcpServer(driverPropertys.IP, driverPropertys.Port)//服务器
            .WithCleanSession(true)
            .WithKeepAlivePeriod(TimeSpan.FromSeconds(120.0))
+           .WithoutThrowOnNonSuccessfulConnectResponse()
            .Build();
         _mqttSubscribeOptions = mqttFactory.CreateSubscribeOptionsBuilder()
             .WithTopicFilter(
