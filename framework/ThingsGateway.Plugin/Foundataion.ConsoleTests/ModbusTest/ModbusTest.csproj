@@ -7,8 +7,9 @@
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
 
+
 	<ItemGroup>
-		<PackageReference Include="ThingsGateway.Foundation.Adapter.Modbus" Version="2.0.9" />
+	  <ProjectReference Include="..\..\Foundataion\ThingsGateway.Foundation.Adapter.Modbus\ThingsGateway.Foundation.Adapter.Modbus.csproj" />
 	</ItemGroup>
 
 </Project>

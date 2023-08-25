@@ -7,8 +7,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+
   <ItemGroup>
-	  <PackageReference Include="ThingsGateway.Foundation.Adapter.OPCUA" Version="2.0.9" />
+    <ProjectReference Include="..\..\Foundataion\ThingsGateway.Foundation.Adapter.OPCUA\ThingsGateway.Foundation.Adapter.OPCUA.csproj" />
   </ItemGroup>
 
 </Project>

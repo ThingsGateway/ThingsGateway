@@ -19,7 +19,10 @@ namespace ModbusDemo
             await oPCUAClient.ConnectAsync();
 
             var testData1 = await oPCUAClient.ReadJTokenValueAsync(new[] { "ns=2;i=2897" });
-            await oPCUAClient.WriteNodeAsync("ns=2;i=2897", testData1.FirstOrDefault().Item3);
+            await oPCUAClient.WriteNodeAsync(new()
+            {
+                {"ns=2;i=2897", testData1.FirstOrDefault().Item3 }
+            });
 
         }
     }
