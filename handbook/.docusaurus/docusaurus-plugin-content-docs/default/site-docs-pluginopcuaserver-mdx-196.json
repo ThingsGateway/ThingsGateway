@@ -20,8 +20,8 @@
   },
   "sidebar": "docs",
   "previous": {
-    "title": "罗克韦尔CIP协议采集插件",
-    "permalink": "/thingsgateway-docs/docs/pluginabcip"
+    "title": "DLT645-2007采集插件",
+    "permalink": "/thingsgateway-docs/docs/plugindlt6452007"
   },
   "next": {
     "title": "ModbusServer",

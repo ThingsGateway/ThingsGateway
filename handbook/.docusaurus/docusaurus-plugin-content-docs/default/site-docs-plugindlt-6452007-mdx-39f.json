@@ -1,0 +1,27 @@
+{
+  "unversionedId": "plugindlt6452007",
+  "id": "plugindlt6452007",
+  "title": "DLT645-2007采集插件",
+  "description": "一、设备扩展属性",
+  "source": "@site/docs/plugindlt6452007.mdx",
+  "sourceDirName": ".",
+  "slug": "/plugindlt6452007",
+  "permalink": "/thingsgateway-docs/docs/plugindlt6452007",
+  "draft": false,
+  "editUrl": "https://gitee.com/diego2098/ThingsGateway/tree/master/handbook/docs/plugindlt6452007.mdx",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "id": "plugindlt6452007",
+    "title": "DLT645-2007采集插件"
+  },
+  "sidebar": "docs",
+  "previous": {
+    "title": "罗克韦尔CIP协议采集插件",
+    "permalink": "/thingsgateway-docs/docs/pluginabcip"
+  },
+  "next": {
+    "title": "OPCUAServer",
+    "permalink": "/thingsgateway-docs/docs/pluginopcuaserver"
+  }
+}

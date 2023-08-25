@@ -9,7 +9,7 @@ export default [
   },
   {
     path: '/thingsgateway-docs/docs',
-    component: ComponentCreator('/thingsgateway-docs/docs', '8a1'),
+    component: ComponentCreator('/thingsgateway-docs/docs', '688'),
     routes: [
       {
         path: '/thingsgateway-docs/docs/',
@@ -128,6 +128,12 @@ export default [
       {
         path: '/thingsgateway-docs/docs/plugindebug',
         component: ComponentCreator('/thingsgateway-docs/docs/plugindebug', 'e87'),
+        exact: true,
+        sidebar: "docs"
+      },
+      {
+        path: '/thingsgateway-docs/docs/plugindlt6452007',
+        component: ComponentCreator('/thingsgateway-docs/docs/plugindlt6452007', 'a37'),
         exact: true,
         sidebar: "docs"
       },

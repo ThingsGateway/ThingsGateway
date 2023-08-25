@@ -111,6 +111,11 @@
               "sidebar": "docs"
             },
             {
+              "id": "plugindlt6452007",
+              "path": "/thingsgateway-docs/docs/plugindlt6452007",
+              "sidebar": "docs"
+            },
+            {
               "id": "pluginkafka",
               "path": "/thingsgateway-docs/docs/pluginkafka",
               "sidebar": "docs"
