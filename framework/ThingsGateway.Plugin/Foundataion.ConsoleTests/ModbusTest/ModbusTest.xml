@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <doc>
     <assembly>
-        <name>OPCUAClientDemo</name>
+        <name>ModbusTest</name>
     </assembly>
     <members>
     </members>
