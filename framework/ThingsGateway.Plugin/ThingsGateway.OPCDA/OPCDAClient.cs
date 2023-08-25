@@ -72,7 +72,12 @@ public class OPCDAClient : CollectBase
     {
     }
     /// <inheritdoc/>
-    public override bool IsConnected() => _plc?.IsConnected == true;
+    public override bool IsConnected()
+    {
+        Device.SetDeviceStatus(SysDateTimeExtensions.CurrentDateTime);
+        return _plc?.IsConnected == true;
+    }
+
     /// <inheritdoc/>
     public override List<DeviceVariableSourceRead> LoadSourceRead(List<DeviceVariableRunTime> deviceVariables)
     {

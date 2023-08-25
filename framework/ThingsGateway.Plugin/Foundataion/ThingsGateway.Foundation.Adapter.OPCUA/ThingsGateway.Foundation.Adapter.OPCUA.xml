@@ -286,6 +286,11 @@
             当前的订阅组，组名称/组
             </summary>
         </member>
+        <member name="P:ThingsGateway.Foundation.Adapter.OPCUA.OPCUAClient.ReConnectHandler">
+            <summary>
+            SessionReconnectHandler
+            </summary>
+        </member>
         <member name="M:ThingsGateway.Foundation.Adapter.OPCUA.OPCUAClient.#ctor(TouchSocket.Core.ILog)">
             <summary>
             默认的构造函数，实例化一个新的OPC UA类

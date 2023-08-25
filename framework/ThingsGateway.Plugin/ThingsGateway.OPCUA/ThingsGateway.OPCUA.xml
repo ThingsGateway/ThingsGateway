@@ -33,11 +33,6 @@
             OPCUA客户端
             </summary>
         </member>
-        <member name="M:ThingsGateway.OPCUA.OPCUAClient.#ctor">
-            <summary>
-            OPCUA客户端
-            </summary>
-        </member>
         <member name="P:ThingsGateway.OPCUA.OPCUAClient.DriverDebugUIType">
             <inheritdoc/>
         </member>
