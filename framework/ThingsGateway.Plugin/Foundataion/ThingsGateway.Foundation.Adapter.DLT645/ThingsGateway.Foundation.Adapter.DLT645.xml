@@ -1,0 +1,462 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ThingsGateway.Foundation.Adapter.DLT645</name>
+    </assembly>
+    <members>
+        <member name="T:ThingsGateway.Foundation.Adapter.DLT645.DataInfo">
+            <summary>
+            解析参数
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Adapter.DLT645.DataInfo.ByteLength">
+            <summary>
+            解析长度
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Adapter.DLT645.DataInfo.Digtal">
+            <summary>
+            小数位
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Adapter.DLT645.DataInfo.IsSigned">
+            <summary>
+            有符号解析
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.DLT645.DLT645Helper.GetDataInfos(System.Byte[])">
+            <summary>
+            获取返回的解析信息
+            </summary>
+            <param name="buffer"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.DLT645.DLT645Helper.GetDLT645_2007Command(System.String,System.Int32,System.Byte,System.String,System.Byte[],System.String[])">
+            <summary>
+            获取DLT645报文
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007">
+            <summary>
+            DLT645_2007
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007.#ctor(ThingsGateway.Foundation.Serial.SerialClient)">
+            <summary>
+            DLT645_2007
+            </summary>
+            <param name="serialClient"></param>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007.CacheTimeout">
+            <summary>
+            组包缓存时间/ms
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007.EnableFEHead">
+            <summary>
+            增加FE FE FE FE的报文头部
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007.FrameTime">
+            <summary>
+            帧前时间ms
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007.OperCode">
+            <summary>
+            写入需操作员代码
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007.Password">
+            <summary>
+            写入密码
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007.Station">
+            <summary>
+            通讯地址BCD码，一般应该是12个字符
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007.GetAddressDescription">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007.ReadAsync(System.String,System.Int32,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007.SetDataAdapter">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007.WriteAsync(System.String,System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007.WriteAsync(System.String,System.Byte[],System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007.WriteAsync(System.String,System.UInt32,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007.WriteAsync(System.String,System.Byte,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007.WriteAsync(System.String,System.Double,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007.WriteAsync(System.String,System.Single,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007.WriteAsync(System.String,System.Int64,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007.WriteAsync(System.String,System.UInt64,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007.WriteAsync(System.String,System.UInt16,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007.WriteAsync(System.String,System.Int16,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007.WriteAsync(System.String,System.Int32,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007.WriteAsync(System.String,System.Boolean[],System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007.BroadcastTime(System.DateTime,System.Threading.CancellationToken)">
+            <summary>
+            广播校时
+            </summary>
+            <param name="dateTime"></param>
+            <param name="token"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007.FreezeAsync(System.DateTime,System.Threading.CancellationToken)">
+            <summary>
+            冻结
+            </summary>
+            <param name="dateTime"></param>
+            <param name="token"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007.ReadDeviceStationAsync(System.Threading.CancellationToken)">
+            <summary>
+            读取通信地址
+            </summary>
+            <param name="token"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007.WriteBaudRateAsync(System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            修改波特率
+            </summary>
+            <param name="baudRate"></param>
+            <param name="token"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007.WriteDeviceStationAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            更新通信地址
+            </summary>
+            <param name="station"></param>
+            <param name="token"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007.WritePasswordAsync(System.Byte,System.String,System.String,System.Threading.CancellationToken)">
+            <summary>
+            修改密码
+            </summary>
+            <param name="level"></param>
+            <param name="oldPassword"></param>
+            <param name="newPassword"></param>
+            <param name="token"></param>
+            <returns></returns>
+        </member>
+        <member name="T:ThingsGateway.Foundation.Adapter.DLT645.ControlCode">
+            <summary>
+            控制码
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Foundation.Adapter.DLT645.ControlCode.Read">
+            <summary>
+            读数据
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Foundation.Adapter.DLT645.ControlCode.ReadSub">
+            <summary>
+            读后续数据
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Foundation.Adapter.DLT645.ControlCode.ReadStation">
+            <summary>
+            读站号
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Foundation.Adapter.DLT645.ControlCode.Write">
+            <summary>
+            写数据
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Foundation.Adapter.DLT645.ControlCode.WriteStation">
+            <summary>
+            写站号
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Foundation.Adapter.DLT645.ControlCode.BroadcastTime">
+            <summary>
+            广播校时
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Foundation.Adapter.DLT645.ControlCode.Freeze">
+            <summary>
+            冻结
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Foundation.Adapter.DLT645.ControlCode.WriteBaudRate">
+            <summary>
+            更新波特率
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Foundation.Adapter.DLT645.ControlCode.WritePassword">
+            <summary>
+            更新密码
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007Address">
+            <summary>
+            DLT645_2007Address
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007Address.#ctor">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007Address.#ctor(System.String,System.UInt16)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007Address.#ctor(System.String,System.Byte[])">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007Address.DataId">
+            <summary>
+            数据标识
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007Address.Reverse">
+            <summary>
+            反转解析
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007Address.Station">
+            <summary>
+            站号信息
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007Address.Parse(System.String,System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007Address.ParseFrom(System.String,System.Int32)">
+            <summary>
+            解析地址
+            </summary>
+            <param name="address"></param>
+            <param name="length"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007Address.ToString">
+            <inheritdoc/>
+        </member>
+        <member name="T:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007BitConverter">
+            <summary>
+            DLT645_2007
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007BitConverter.#ctor(TouchSocket.Core.EndianType)">
+            <summary>
+            DLT645_2007
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007BitConverter.ToDouble(System.Byte[],System.Int32)">
+            <summary>
+            DLT645协议转换double
+            </summary>
+            <param name="buffer">带数据项标识</param>
+            <param name="offset"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007BitConverter.ToString(System.Byte[])">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007BitConverter.ToString(System.Byte[],System.Int32,System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="T:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007DataHandleAdapter">
+            <summary>
+            DLT645_2007DataHandleAdapter
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007DataHandleAdapter.EnableFEHead">
+            <summary>
+            增加FE FE FE FE的报文头部
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007DataHandleAdapter.PackCommand(System.Byte[])">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007DataHandleAdapter.GetInstance">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007DataHandleAdapter.UnpackResponse(ThingsGateway.Foundation.Adapter.Modbus.DLT645_2007Message,System.Byte[],System.Byte[],System.Byte[])">
+            <inheritdoc/>
+        </member>
+        <member name="T:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007OverTcp">
+            <summary>
+            DLT645_2007
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007OverTcp.#ctor(ThingsGateway.Foundation.TcpClientEx)">
+            <summary>
+            DLT645_2007
+            </summary>
+            <param name="tcpClient"></param>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007OverTcp.CacheTimeout">
+            <summary>
+            组包缓存时间/ms
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007OverTcp.EnableFEHead">
+            <summary>
+            增加FE FE FE FE的报文头部
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007OverTcp.FrameTime">
+            <summary>
+            帧前时间ms
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007OverTcp.OperCode">
+            <summary>
+            写入需操作员代码
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007OverTcp.Password">
+            <summary>
+            写入密码
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007OverTcp.Station">
+            <summary>
+            通讯地址BCD码，一般应该是12个字符
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007OverTcp.GetAddressDescription">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007OverTcp.ReadAsync(System.String,System.Int32,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007OverTcp.SetDataAdapter">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007OverTcp.WriteAsync(System.String,System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007OverTcp.WriteAsync(System.String,System.Byte[],System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007OverTcp.WriteAsync(System.String,System.UInt32,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007OverTcp.WriteAsync(System.String,System.Byte,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007OverTcp.WriteAsync(System.String,System.Double,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007OverTcp.WriteAsync(System.String,System.Single,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007OverTcp.WriteAsync(System.String,System.Int64,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007OverTcp.WriteAsync(System.String,System.UInt64,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007OverTcp.WriteAsync(System.String,System.UInt16,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007OverTcp.WriteAsync(System.String,System.Int16,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007OverTcp.WriteAsync(System.String,System.Int32,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007OverTcp.WriteAsync(System.String,System.Boolean[],System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007OverTcp.BroadcastTime(System.DateTime,System.Threading.CancellationToken)">
+            <summary>
+            广播校时
+            </summary>
+            <param name="dateTime"></param>
+            <param name="token"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007OverTcp.FreezeAsync(System.DateTime,System.Threading.CancellationToken)">
+            <summary>
+            冻结
+            </summary>
+            <param name="dateTime"></param>
+            <param name="token"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007OverTcp.ReadDeviceStationAsync(System.Threading.CancellationToken)">
+            <summary>
+            读取通信地址
+            </summary>
+            <param name="token"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007OverTcp.WriteBaudRateAsync(System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            修改波特率
+            </summary>
+            <param name="baudRate"></param>
+            <param name="token"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007OverTcp.WriteDeviceStationAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            更新通信地址
+            </summary>
+            <param name="station"></param>
+            <param name="token"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007OverTcp.WritePasswordAsync(System.Byte,System.String,System.String,System.Threading.CancellationToken)">
+            <summary>
+            修改密码
+            </summary>
+            <param name="level"></param>
+            <param name="oldPassword"></param>
+            <param name="newPassword"></param>
+            <param name="token"></param>
+            <returns></returns>
+        </member>
+        <member name="T:ThingsGateway.Foundation.Adapter.Modbus.DLT645_2007Message">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Adapter.Modbus.DLT645_2007Message.HeadBytesLength">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.Modbus.DLT645_2007Message.CheckHeadBytes(System.Byte[])">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.Modbus.DLT645_2007Message.SendBytesThen">
+            <inheritdoc/>
+        </member>
+    </members>
+</doc>
