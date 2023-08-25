@@ -198,6 +198,11 @@ module.exports = {
           id: "pluginabcip",
           label: "9.6 罗克韦尔CIP"
         },
+        {
+          type: "doc",
+          id: "plugindlt6452007",
+          label: "9.7 DLT645_2007"
+        },
       ]
     },
     {

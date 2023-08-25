@@ -206,6 +206,12 @@
             "label": "9.6 罗克韦尔CIP",
             "href": "/thingsgateway-docs/docs/pluginabcip",
             "docId": "pluginabcip"
+          },
+          {
+            "type": "link",
+            "label": "9.7 DLT645_2007",
+            "href": "/thingsgateway-docs/docs/plugindlt6452007",
+            "docId": "plugindlt6452007"
           }
         ],
         "collapsed": true,
@@ -439,6 +445,12 @@
       "id": "plugindebug",
       "title": "插件调试",
       "description": "一、选择驱动插件",
+      "sidebar": "docs"
+    },
+    "plugindlt6452007": {
+      "id": "plugindlt6452007",
+      "title": "DLT645-2007采集插件",
+      "description": "一、设备扩展属性",
       "sidebar": "docs"
     },
     "pluginkafka": {
