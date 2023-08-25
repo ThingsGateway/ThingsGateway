@@ -433,11 +433,11 @@ public class CollectDeviceCore
                 if (_driver.IsConnected())
                 {
                     //更新设备活动时间
-                    Device.SetDeviceStatus(SysDateTimeExtensions.CurrentDateTime, 0);
+                    Device.SetDeviceStatus(SysDateTimeExtensions.CurrentDateTime, errorCount: 0);
                 }
                 else
                 {
-                    Device.SetDeviceStatus(SysDateTimeExtensions.CurrentDateTime, 999);
+                    Device.SetDeviceStatus(errorCount: 999);
                 }
             }
 

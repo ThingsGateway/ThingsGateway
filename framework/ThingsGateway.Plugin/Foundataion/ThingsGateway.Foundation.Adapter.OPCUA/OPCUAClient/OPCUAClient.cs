@@ -69,7 +69,10 @@ public class OPCUAClient : DisposableObject
     private readonly ApplicationInstance m_application = new();
 
     private readonly ApplicationConfiguration m_configuration;
-
+    /// <summary>
+    /// SessionReconnectHandler
+    /// </summary>
+    public SessionReconnectHandler ReConnectHandler => m_reConnectHandler;
     private SessionReconnectHandler m_reConnectHandler;
     private ISession m_session;
     /// <summary>

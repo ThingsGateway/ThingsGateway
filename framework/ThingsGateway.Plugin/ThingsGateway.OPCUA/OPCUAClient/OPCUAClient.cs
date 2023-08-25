@@ -22,6 +22,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
+using ThingsGateway.Admin.Core;
 using ThingsGateway.Application;
 using ThingsGateway.Foundation;
 using ThingsGateway.Foundation.Adapter.OPCUA;
@@ -38,18 +39,10 @@ public class OPCUAClient : CollectBase
 {
     internal Foundation.Adapter.OPCUA.OPCUAClient _plc = null;
     internal CollectDeviceRunTime Device;
-    readonly PeriodicTimer _periodicTimer = new(TimeSpan.FromSeconds(60));
     private readonly OPCUAClientProperty driverPropertys = new();
 
     private List<DeviceVariableRunTime> _deviceVariables = new();
 
-    /// <summary>
-    /// OPCUA客户端
-    /// </summary>
-    public OPCUAClient()
-    {
-        _ = RunTimerAsync();
-    }
 
     /// <inheritdoc/>
     public override Type DriverDebugUIType => typeof(OPCUAClientDebugDriverPage);
@@ -87,8 +80,11 @@ public class OPCUAClient : CollectBase
     /// <inheritdoc/>
     public override bool IsConnected()
     {
-
-        return _plc.Connected;
+        if (_plc.Session != null)
+        {
+            Device.SetDeviceStatus(SysDateTimeExtensions.CurrentDateTime);
+        }
+        return _plc?.Connected == true;
     }
 
     /// <inheritdoc/>
@@ -184,7 +180,6 @@ public class OPCUAClient : CollectBase
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
-        _periodicTimer?.Dispose();
         if (_plc != null)
         {
             _plc.DataChangedHandler -= DataChangedHandler;
@@ -291,22 +286,4 @@ public class OPCUAClient : CollectBase
         }
     }
 
-    private async Task RunTimerAsync()
-    {
-        while (await _periodicTimer.WaitForNextTickAsync())
-        {
-            if (_plc != null && _plc.Session == null)
-            {
-                try
-                {
-                    await _plc.ConnectAsync();
-                }
-                catch (Exception ex)
-                {
-                    LogMessage.Exception(ex);
-                }
-            }
-        }
-
-    }
 }
