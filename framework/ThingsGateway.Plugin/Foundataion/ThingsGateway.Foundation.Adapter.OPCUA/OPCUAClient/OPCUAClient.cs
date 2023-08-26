@@ -83,14 +83,6 @@ public class OPCUAClient : DisposableObject
         Log = log;
         var certificateValidator = new CertificateValidator();
         certificateValidator.CertificateValidation += CertificateValidation;
-        SecurityConfiguration securityConfigurationcv = new()
-        {
-            UseValidatedCertificates = true,
-            AutoAcceptUntrustedCertificates = true,//自动接受证书
-            RejectSHA1SignedCertificates = false,
-            MinimumCertificateKeySize = 1024,
-        };
-        certificateValidator.Update(securityConfigurationcv);
 
         // 构建应用程序配置
         m_configuration = new ApplicationConfiguration
@@ -110,10 +102,11 @@ public class OPCUAClient : DisposableObject
 
             },
 
-            SecurityConfiguration = new SecurityConfiguration
+        SecurityConfiguration = new SecurityConfiguration
             {
-                AutoAcceptUntrustedCertificates = true,
-                RejectSHA1SignedCertificates = false,
+                UseValidatedCertificates = true,
+                AutoAcceptUntrustedCertificates = true,//自动接受证书
+            RejectSHA1SignedCertificates = false,
                 MinimumCertificateKeySize = 1024,
                 SuppressNonceValidationErrors = true,
 
@@ -171,6 +164,8 @@ public class OPCUAClient : DisposableObject
             },
             DisableHiResClock = true
         };
+
+        certificateValidator.Update(m_configuration);
 
         m_configuration.Validate(ApplicationType.Client);
         m_application.ApplicationConfiguration = m_configuration;
@@ -493,6 +488,55 @@ public class OPCUAClient : DisposableObject
             m_session = null;
         }
     }
+    private ComplexTypeSystem typeSystem;
+    /// <summary>
+    /// Creates a new session.
+    /// </summary>
+    /// <returns>The new session object.</returns>
+    private async Task<ISession> ConnectAsync(string serverUrl)
+    {
+        PrivateDisconnect();
+
+        if (m_configuration == null)
+        {
+            throw new ArgumentNullException("未初始化配置");
+        }
+        var useSecurity = OPCNode?.IsUseSecurity ?? true;
+        EndpointDescription endpointDescription = CoreClientUtils.SelectEndpoint(m_configuration, serverUrl, useSecurity, 10000);
+        EndpointConfiguration endpointConfiguration = EndpointConfiguration.Create(m_configuration);
+        ConfiguredEndpoint endpoint = new(null, endpointDescription, endpointConfiguration);
+        UserIdentity userIdentity;
+        if (!OPCNode.UserName.IsNullOrEmpty())
+        {
+            userIdentity = new UserIdentity(OPCNode.UserName, OPCNode.Password);
+        }
+        else
+        {
+            userIdentity = new UserIdentity(new AnonymousIdentityToken());
+        }
+        //创建本地证书
+        await m_application.CheckApplicationInstanceCertificate(true, 0, 1200);
+        m_session = await Opc.Ua.Client.Session.Create(
+     m_configuration,
+    endpoint,
+    false,
+    OPCNode.CheckDomain,
+    (string.IsNullOrEmpty(OPCUAName)) ? m_configuration.ApplicationName : OPCUAName,
+    60000,
+    userIdentity,
+    Array.Empty<string>());
+
+        typeSystem = new ComplexTypeSystem(m_session);
+        Log.Debug("连接成功");
+
+        m_session.KeepAliveInterval = OPCNode.KeepAliveInterval == 0 ? 60000 : OPCNode.KeepAliveInterval;
+        m_session.KeepAlive += new KeepAliveEventHandler(Session_KeepAlive);
+
+        //如果是订阅模式，连接时添加订阅组
+        if (OPCNode.ActiveSubscribe)
+            await AddSubscriptionAsync(Guid.NewGuid().ToString(), Variables.ToArray());
+        return m_session;
+    }
 
     private void PrivateDisconnect()
     {
@@ -502,8 +546,8 @@ public class OPCUAClient : DisposableObject
             m_reConnectHandler.SafeDispose();
             m_reConnectHandler = null;
         }
+        m_session.KeepAlive -= Session_KeepAlive;
         m_session?.Close(10000);
-
 
     }
     #endregion
@@ -899,55 +943,6 @@ public class OPCUAClient : DisposableObject
             eventArgs.Accept = true;
         else
             throw new Exception(string.Format("验证证书失败，错误代码:{0}: {1}", eventArgs.Error.Code, eventArgs.Error.AdditionalInfo));
-    }
-    private ComplexTypeSystem typeSystem;
-    /// <summary>
-    /// Creates a new session.
-    /// </summary>
-    /// <returns>The new session object.</returns>
-    private async Task<ISession> ConnectAsync(string serverUrl)
-    {
-        PrivateDisconnect();
-
-        if (m_configuration == null)
-        {
-            throw new ArgumentNullException("未初始化配置");
-        }
-        var useSecurity = OPCNode?.IsUseSecurity ?? true;
-        EndpointDescription endpointDescription = CoreClientUtils.SelectEndpoint(serverUrl, useSecurity);
-        EndpointConfiguration endpointConfiguration = EndpointConfiguration.Create(m_configuration);
-        UserIdentity userIdentity;
-        ConfiguredEndpoint endpoint = new(null, endpointDescription, endpointConfiguration);
-        if (!OPCNode.UserName.IsNullOrEmpty())
-        {
-            userIdentity = new UserIdentity(OPCNode.UserName, OPCNode.Password);
-        }
-        else
-        {
-            userIdentity = new UserIdentity(new AnonymousIdentityToken());
-        }
-        //创建本地证书
-        await m_application.CheckApplicationInstanceCertificate(true, 0, 1200);
-        m_session = await Opc.Ua.Client.Session.Create(
-     m_configuration,
-    endpoint,
-    false,
-    false,
-    (string.IsNullOrEmpty(OPCUAName)) ? m_configuration.ApplicationName : OPCUAName,
-    60000,
-    userIdentity,
-    Array.Empty<string>());
-
-        typeSystem = new ComplexTypeSystem(m_session);
-        Log.Debug("连接成功");
-
-        m_session.KeepAliveInterval = OPCNode.KeepAliveInterval == 0 ? 60000 : OPCNode.KeepAliveInterval;
-        m_session.KeepAlive += new KeepAliveEventHandler(Session_KeepAlive);
-
-        //如果是订阅模式，连接时添加订阅组
-        if (OPCNode.ActiveSubscribe)
-            await AddSubscriptionAsync(Guid.NewGuid().ToString(), Variables.ToArray());
-        return m_session;
     }
 
 
