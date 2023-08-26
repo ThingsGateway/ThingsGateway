@@ -211,7 +211,7 @@ public class OPCDAClient : CollectBase
                     }
                     else
                     {
-                        var operResult = item.SetValue(null, time);
+                        var operResult = item.SetValue(null, time, quality == 192?true:false);
                         if (!operResult.IsSuccess)
                         {
                             LogMessage?.LogWarning(operResult.Message);

@@ -130,10 +130,10 @@ public class OPCUAClient : CollectBase
                     {
                         value = data.Item3;
                     }
-                    var quality = StatusCode.IsGood(data.Item2.StatusCode);
+                    var isGood = StatusCode.IsGood(data.Item2.StatusCode);
 
                     var time = data.Item2.SourceTimestamp;
-                    if (value != null && quality)
+                    if (value != null && isGood)
                     {
                         var operResult = item.SetValue(value, time);
                         if (!operResult.IsSuccess)
@@ -143,7 +143,7 @@ public class OPCUAClient : CollectBase
                     }
                     else
                     {
-                        var operResult = item.SetValue(null, time);
+                        var operResult = item.SetValue(null, time, isGood);
                         if (!operResult.IsSuccess)
                         {
                             LogMessage?.LogWarning(operResult.Message);
@@ -252,7 +252,7 @@ public class OPCUAClient : CollectBase
             {
                 value = data.jToken;
             }
-            var quality = StatusCode.IsGood(data.dataValue.StatusCode);
+            var isGood = StatusCode.IsGood(data.dataValue.StatusCode);
             DateTime time = default;
             if (driverPropertys.SourceTimestampEnable)
             {
@@ -263,7 +263,7 @@ public class OPCUAClient : CollectBase
                 if (item.DataTypeEnum == DataTypeEnum.Object)
                     if (type.Namespace.StartsWith("System"))
                         try { item.DataTypeEnum = Enum.Parse<DataTypeEnum>(type.Name); } catch { }
-                if (value != null && quality)
+                if (value != null && isGood)
                 {
                     var operResult = item.SetValue(value, time);
                     if (!operResult.IsSuccess)
@@ -273,7 +273,7 @@ public class OPCUAClient : CollectBase
                 }
                 else
                 {
-                    var operResult = item.SetValue(null, time);
+                    var operResult = item.SetValue(null, time, isGood);
                     if (!operResult.IsSuccess)
                     {
                         LogMessage?.LogWarning(operResult.Message);

@@ -135,6 +135,11 @@
             登录密码
             </summary>
         </member>
+        <member name="P:ThingsGateway.OPCUA.OPCUAClientProperty.CheckDomain">
+            <summary>
+            检查域
+            </summary>
+        </member>
         <member name="P:ThingsGateway.OPCUA.OPCUAClientProperty.IsUseSecurity">
             <summary>
             安全策略

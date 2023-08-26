@@ -1601,12 +1601,13 @@
             最近一次值
             </summary>
         </member>
-        <member name="M:ThingsGateway.Application.DeviceVariableRunTime.SetValue(System.Object,System.DateTime)">
+        <member name="M:ThingsGateway.Application.DeviceVariableRunTime.SetValue(System.Object,System.DateTime,System.Boolean)">
             <summary>
             设置变量值与时间，设置为null时只更改质量戳状态
             </summary>
             <param name="value"></param>
             <param name="dateTime"></param>
+            <param name="isOnline"></param>
         </member>
         <member name="P:ThingsGateway.Application.DeviceVariableRunTime.ChangeTime">
             <summary>
