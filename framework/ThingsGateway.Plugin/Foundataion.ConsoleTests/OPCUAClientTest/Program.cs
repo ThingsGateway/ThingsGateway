@@ -12,7 +12,7 @@ namespace ModbusDemo
             {
                 OPCNode = new()
                 {
-                    OPCUrl = "opc.tcp://desktop-p5gb4iq:50001/StandardServer",
+                    OPCUrl = "opc.tcp://127.0.0.1:49320",
                     IsUseSecurity = true,
                 }
             };

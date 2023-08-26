@@ -546,8 +546,12 @@ public class OPCUAClient : DisposableObject
             m_reConnectHandler.SafeDispose();
             m_reConnectHandler = null;
         }
-        m_session.KeepAlive -= Session_KeepAlive;
-        m_session?.Close(10000);
+        if(m_session!=null)
+        {
+            m_session.KeepAlive -= Session_KeepAlive;
+            m_session.Close(10000);
+        }
+
 
     }
     #endregion
