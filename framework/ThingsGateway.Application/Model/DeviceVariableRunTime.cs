@@ -82,18 +82,15 @@ public class DeviceVariableRunTime : DeviceVariable
     /// </summary>
     /// <param name="value"></param>
     /// <param name="dateTime"></param>
-    public OperResult SetValue(object value, DateTime dateTime = default)
+    /// <param name="isOnline"></param>
+    public OperResult SetValue(object value, DateTime dateTime = default,bool isOnline=true)
     {
         try
         {
+            IsOnline = isOnline;
 
-            if (value != null)
+            if (!IsOnline)
             {
-                IsOnline = true;
-            }
-            else
-            {
-                IsOnline = false;
                 RawValue = value;
                 Set(value);
                 return OperResult.CreateSuccessResult();

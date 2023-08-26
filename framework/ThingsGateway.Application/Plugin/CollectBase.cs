@@ -157,7 +157,7 @@ public abstract class CollectBase : DriverBase
             {
                 deviceVariableSourceRead.DeviceVariables.ForEach(it =>
                 {
-                    var operResult = it.SetValue(null);
+                    var operResult = it.SetValue(null,isOnline:false);
                     if (!operResult.IsSuccess)
                     {
                         _logger.LogWarning("变量值更新失败：" + operResult.Message);
