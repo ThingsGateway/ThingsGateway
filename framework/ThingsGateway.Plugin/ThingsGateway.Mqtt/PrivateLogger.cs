@@ -32,19 +32,19 @@ namespace ThingsGateway.Mqtt
             switch (logLevel)
             {
                 case MqttNetLogLevel.Verbose:
-                    LogMessage?.Log(LogLevel.Trace, source,string.Format( message,parameters), exception);
+                    LogMessage?.Log(LogLevel.Trace, source, message != null ? (parameters != null ? message != null ? (parameters != null ? string.Format(message, parameters) : message) : string.Empty : message) : string.Empty, exception);
                     break;
 
                 case MqttNetLogLevel.Info:
-                    LogMessage?.Log(LogLevel.Info, source, string.Format(message, parameters), exception);
+                    LogMessage?.Log(LogLevel.Info, source, message != null ? (parameters != null ? string.Format(message, parameters) : message) : string.Empty, exception);
                     break;
 
                 case MqttNetLogLevel.Warning:
-                    LogMessage?.Log(LogLevel.Warning, source, string.Format(message, parameters), exception);
+                    LogMessage?.Log(LogLevel.Warning, source, message != null ? (parameters != null ? string.Format(message, parameters) : message) : string.Empty, exception);
                     break;
 
                 case MqttNetLogLevel.Error:
-                    LogMessage?.Log(LogLevel.Warning, source, string.Format(message, parameters), exception);
+                    LogMessage?.Log(LogLevel.Warning, source, message != null ? (parameters != null ? string.Format(message, parameters) : message) : string.Empty, exception);
                     break;
             }
         }
