@@ -33,7 +33,8 @@
         <MTextField Class="ma-1" Label=@node.Description(a=>a.KeepAliveInterval) Dense Outlined HideDetails="@("auto")" @bind-Value=@node.KeepAliveInterval />
     </MRow>
     <MRow Justify="JustifyTypes.SpaceBetween" Align="AlignTypes.Center">
-        <MCheckbox Class="ma-1" Label=@node.Description(a=>a.IsUseSecurity) Dense HideDetails="@("auto")" @bind-Value=@node.IsUseSecurity />
+         <MCheckbox Class="ma-1" Label=@node.Description(a=>a.IsUseSecurity) Dense HideDetails="@("auto")" @bind-Value=@node.IsUseSecurity />
+         <MCheckbox Class="ma-1" Label=@node.Description(a=>a.CheckDomain) Dense HideDetails="@("auto")" @bind-Value=@node.CheckDomain />
         <MTextField Class="ma-1" Label=@node.Description(a=>a.OPCUrl) Dense Outlined HideDetails="@("auto")" @bind-Value=@node.OPCUrl />
         <MTextField Class="ma-1" Label=@node.Description(a=>a.UserName) Dense Outlined HideDetails="@("auto")" @bind-Value=@node.UserName />
         <MTextField Class="ma-1" Label=@node.Description(a=>a.Password) Dense Outlined HideDetails="@("auto")" @bind-Value=@node.Password />

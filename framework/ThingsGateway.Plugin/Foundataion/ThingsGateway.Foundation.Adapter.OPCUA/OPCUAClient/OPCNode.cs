@@ -34,7 +34,12 @@ public class OPCNode
     /// </summary>
     [Description("登录密码")]
     public string Password { get; set; }
-
+    /// <summary>
+    /// 检查域
+    /// </summary>
+    [Description("检查域")]
+    public bool CheckDomain { get; set; }
+    
     /// <summary>
     /// 更新间隔
     /// </summary>

@@ -217,6 +217,11 @@
             登录密码
             </summary>
         </member>
+        <member name="P:ThingsGateway.Foundation.Adapter.OPCUA.OPCNode.CheckDomain">
+            <summary>
+            检查域
+            </summary>
+        </member>
         <member name="P:ThingsGateway.Foundation.Adapter.OPCUA.OPCNode.UpdateRate">
             <summary>
             更新间隔
@@ -375,6 +380,12 @@
             断开连接。
             </summary>
         </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.OPCUA.OPCUAClient.ConnectAsync(System.String)">
+            <summary>
+            Creates a new session.
+            </summary>
+            <returns>The new session object.</returns>
+        </member>
         <member name="M:ThingsGateway.Foundation.Adapter.OPCUA.OPCUAClient.ReadJTokenValueAsync(System.String[],System.Threading.CancellationToken)">
             <summary>
             从服务器读取值
@@ -414,12 +425,6 @@
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.OPCUA.OPCUAClient.Dispose(System.Boolean)">
             <inheritdoc/>
-        </member>
-        <member name="M:ThingsGateway.Foundation.Adapter.OPCUA.OPCUAClient.ConnectAsync(System.String)">
-            <summary>
-            Creates a new session.
-            </summary>
-            <returns>The new session object.</returns>
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.OPCUA.OPCUAClient.Server_ReconnectComplete(System.Object,System.EventArgs)">
             <summary>

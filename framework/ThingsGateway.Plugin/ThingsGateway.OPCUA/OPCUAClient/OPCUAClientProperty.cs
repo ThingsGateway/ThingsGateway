@@ -11,6 +11,8 @@
 #endregion
 
 
+using System.ComponentModel;
+
 using ThingsGateway.Application;
 
 namespace ThingsGateway.OPCUA;
@@ -36,6 +38,11 @@ public class OPCUAClientProperty : CollectDriverPropertyBase
     [DeviceProperty("登录密码", "")]
     public string Password { get; set; }
 
+    /// <summary>
+    /// 检查域
+    /// </summary>
+    [DeviceProperty("检查域", "默认false")]
+    public bool CheckDomain { get; set; }
 
     /// <summary>
     /// 安全策略
