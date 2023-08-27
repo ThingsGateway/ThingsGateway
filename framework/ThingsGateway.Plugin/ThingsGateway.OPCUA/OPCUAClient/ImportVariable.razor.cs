@@ -73,6 +73,15 @@ public partial class ImportVariable
     public async Task<(CollectDevice, List<DeviceVariable>)> GetImportVariableListAsync()
     {
         var device = GetImportDevice();
+        //动态加载子项时，导出内容需要添加手动加载代码
+        foreach (var node in Selected)
+        {
+            List<OPCUATagModel> nodes = await PopulateBranchAsync((NodeId)node.NodeId, true);
+            if (nodes.Count > 0)
+            {
+                Selected.AddRange(nodes.Select(a => a.Tag).Where(a => a != null).ToList());
+            }
+        }
         var data = (await SelectAsync(Selected, async a =>
         {
             var nodeClass = (await PLC.ReadNoteAttributeAsync(a.NodeId.ToString(), Attributes.NodeClass)).Content.FirstOrDefault().Value.ToString();
@@ -192,14 +201,13 @@ public partial class ImportVariable
         ReferenceDescriptionCollection references = await FormUtils.BrowseAsync(PLC.Session, nodesToBrowse, false);
         return references;
     }
-
     private async Task PopulateBranchAsync(OPCUATagModel model)
     {
         var sourceId = (NodeId)model.Tag.NodeId;
         model.Nodes = await PopulateBranchAsync(sourceId);
     }
 
-    private async Task<List<OPCUATagModel>> PopulateBranchAsync(NodeId sourceId)
+    private async Task<List<OPCUATagModel>> PopulateBranchAsync(NodeId sourceId, bool isAll = false)
     {
         if (!PLC.Connected)
         {
@@ -222,22 +230,30 @@ public partial class ImportVariable
                     Name = Utils.Format("{0}", target),
                     Tag = target
                 };
-                if (target.NodeClass != NodeClass.Variable)
+                //if (target.NodeClass != NodeClass.Variable)
                 {
                     var data = await GetReferenceDescriptionCollectionAsync((NodeId)target.NodeId);
                     if (data != null && data.Count > 0)
                     {
-                        child.Nodes = await PopulateBranchAsync((NodeId)target.NodeId);
+                        if (isAll)
+                        {
+                            child.Nodes = new();
+                        }
+                        else
+                        {
+                            child.Nodes = await PopulateBranchAsync((NodeId)target.NodeId);
+
+                        }
                     }
                     else
                     {
                         child.Nodes = null;
                     }
                 }
-                else
-                {
-                    child.Nodes = null;
-                }
+                //else
+                //{
+                //    child.Nodes = null;
+                //}
                 list.Add(child);
             }
         }
