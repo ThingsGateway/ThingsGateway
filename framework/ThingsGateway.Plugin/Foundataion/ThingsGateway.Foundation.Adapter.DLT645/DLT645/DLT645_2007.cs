@@ -70,7 +70,24 @@ public class DLT645_2007 : ReadWriteDevicesSerialBase
     [Description("通讯地址")]
     public string Station { get; set; }
     /// <inheritdoc/>
-    public override string GetAddressDescription() => base.GetAddressDescription() + Environment.NewLine;
+    public override string GetAddressDescription()
+    {
+
+        var str = """
+            查看附带文档或者相关资料，下面列举一下常见的数据标识地址 
+            
+            地址                       说明                    
+            -----------------------------------------
+            02010100    A相电压
+            02020100    A相电流
+            02030000    瞬时总有功功率
+            00000000    (当前)组合有功总电能
+            00010000    (当前)正向有功总电能
+            
+            """;
+        return base.GetAddressDescription() + Environment.NewLine + str;
+    }
+
     /// <inheritdoc/>
     public override async Task<OperResult<byte[]>> ReadAsync(string address, int length, CancellationToken token = default)
     {
