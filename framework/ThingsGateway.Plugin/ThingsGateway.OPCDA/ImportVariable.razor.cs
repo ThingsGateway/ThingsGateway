@@ -68,9 +68,18 @@ public partial class ImportVariable
     public (CollectDevice, List<DeviceVariable>) GetImportVariableList()
     {
         var device = GetImportDevice();
+        //动态加载子项时，导出内容需要添加手动加载代码
+        foreach (var node in Selected.ToList())
+        {
+            var nodes = PopulateBranch(node.ItemName, true);
+            if (nodes.Count > 0)
+            {
+                Selected.AddRange(nodes.SelectMany(a => a.GetAllTags()).Select(a => a.Tag).Where(a => a != null).ToList());
+            }
+        }
         var data = Selected.Select(a =>
         {
-            if (string.IsNullOrEmpty(a.ItemName))
+            if (!a.IsItem || string.IsNullOrEmpty(a.ItemName))
             {
                 return null;
             }
@@ -132,7 +141,7 @@ public partial class ImportVariable
         return data;
     }
 
-    private List<OPCDATagModel> PopulateBranch(string sourceId)
+    private List<OPCDATagModel> PopulateBranch(string sourceId, bool isAll = false)
     {
         List<OPCDATagModel> nodes = new()
         {
@@ -164,9 +173,13 @@ public partial class ImportVariable
                     Name = target.Name,
                     Tag = target
                 };
+
                 if (target.HasChildren)
                 {
-                    child.Nodes = PopulateBranch(target.ItemName);
+                    if (isAll)
+                        child.Nodes = PopulateBranch(target.ItemName);
+                    else
+                        child.Nodes = new();
                 }
                 else
                 {
@@ -197,5 +210,21 @@ public partial class ImportVariable
         internal string NodeId => (Tag?.ItemName)?.ToString();
         internal List<OPCDATagModel> Nodes { get; set; } = new();
         internal BrowseElement Tag { get; set; }
+        public List<OPCDATagModel> GetAllTags()
+        {
+            List<OPCDATagModel> allTags = new List<OPCDATagModel>();
+            GetAllTagsRecursive(this, allTags);
+            return allTags;
+        }
+
+        private void GetAllTagsRecursive(OPCDATagModel parentTag, List<OPCDATagModel> allTags)
+        {
+            allTags.Add(parentTag);
+            if (parentTag.Nodes != null)
+                foreach (OPCDATagModel childTag in parentTag.Nodes)
+                {
+                    GetAllTagsRecursive(childTag, allTags);
+                }
+        }
     }
 }
