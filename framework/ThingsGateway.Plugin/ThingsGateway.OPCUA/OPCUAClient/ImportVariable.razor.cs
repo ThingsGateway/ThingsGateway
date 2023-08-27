@@ -74,12 +74,12 @@ public partial class ImportVariable
     {
         var device = GetImportDevice();
         //动态加载子项时，导出内容需要添加手动加载代码
-        foreach (var node in Selected)
+        foreach (var node in Selected.ToList())
         {
             List<OPCUATagModel> nodes = await PopulateBranchAsync((NodeId)node.NodeId, true);
             if (nodes.Count > 0)
             {
-                Selected.AddRange(nodes.Select(a => a.Tag).Where(a => a != null).ToList());
+                Selected.AddRange(nodes.SelectMany(a => a.GetAllTags()).Select(a => a.Tag).Where(a => a != null).ToList());
             }
         }
         var data = (await SelectAsync(Selected, async a =>
@@ -275,5 +275,23 @@ public partial class ImportVariable
         internal string NodeId => (Tag.NodeId).ToString();
         internal List<OPCUATagModel> Nodes { get; set; } = new();
         internal ReferenceDescription Tag { get; set; }
+
+        public List<OPCUATagModel> GetAllTags()
+        {
+            List<OPCUATagModel> allTags = new List<OPCUATagModel>();
+            GetAllTagsRecursive(this, allTags);
+            return allTags;
+        }
+
+        private void GetAllTagsRecursive(OPCUATagModel parentTag, List<OPCUATagModel> allTags)
+        {
+            allTags.Add(parentTag);
+
+            if (parentTag.Nodes != null)
+                foreach (OPCUATagModel childTag in parentTag.Nodes)
+                {
+                    GetAllTagsRecursive(childTag, allTags);
+                }
+        }
     }
 }
