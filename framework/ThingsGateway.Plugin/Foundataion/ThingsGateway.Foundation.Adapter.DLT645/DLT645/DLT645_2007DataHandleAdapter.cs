@@ -62,6 +62,18 @@ public class DLT645_2007DataHandleAdapter : ReadWriteDevicesTcpDataHandleAdapter
                 }
             }
         }
+        int sendHeadCodeIndex = 0;
+        if (send != null)
+        {
+            for (int index = 0; index < send.Length; index++)
+            {
+                if (send[index] == 0x68)
+                {
+                    sendHeadCodeIndex = index;
+                    break;
+                }
+            }
+        }
 
         //帧起始符 地址域  帧起始符 控制码 数据域长度共10个字节
         if (headCodeIndex < 0 || headCodeIndex + 10 > response.Length)
@@ -88,6 +100,47 @@ public class DLT645_2007DataHandleAdapter : ReadWriteDevicesTcpDataHandleAdapter
                 request.ResultCode = ResultCode.Fail;
                 return FilterResult.Success;
             }
+
+            if (
+                (response[headCodeIndex + 1] != send[sendHeadCodeIndex + 1]) ||
+                (response[headCodeIndex + 2] != send[sendHeadCodeIndex + 2]) ||
+                (response[headCodeIndex + 3] != send[sendHeadCodeIndex + 3]) ||
+                (response[headCodeIndex + 4] != send[sendHeadCodeIndex + 4]) ||
+                (response[headCodeIndex + 5] != send[sendHeadCodeIndex + 5]) ||
+                (response[headCodeIndex + 6] != send[sendHeadCodeIndex + 6])
+                )//设备地址不符合时，返回错误
+            {
+
+                if (
+                (response[headCodeIndex + 1] == 0xAA) &&
+                (response[headCodeIndex + 2] == 0xAA) &&
+                (response[headCodeIndex + 3] == 0xAA) &&
+                (response[headCodeIndex + 4] == 0xAA) &&
+                (response[headCodeIndex + 5] == 0xAA) &&
+                (response[headCodeIndex + 6] == 0xAA)
+                )//读写通讯地址例外
+                {
+
+                }
+                else
+                {
+                    request.Message = "返回地址不符合规则";
+                    request.ResultCode = ResultCode.Fail;
+                    return FilterResult.Success;
+                }
+
+            }
+
+
+
+            if ((response[headCodeIndex + 8] != send[sendHeadCodeIndex + 8] + 0x80))//控制码不符合时，返回错误
+            {
+                request.Message = "返回控制码：" + $"0x{response[headCodeIndex + 8]:X2}，请求控制码：" + $"0x{send[sendHeadCodeIndex + 8]:X2}，不符合规则";
+                request.ResultCode = ResultCode.Fail;
+                return FilterResult.Success;
+            }
+
+
             if ((response[headCodeIndex + 8] & 0x40) == 0x40)//控制码bit6为1时，返回错误
             {
                 byte byte1 = (byte)(response[headCodeIndex + 10] - 0x33);
