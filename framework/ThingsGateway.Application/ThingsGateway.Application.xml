@@ -2583,6 +2583,16 @@
             运行日志分页DTO
             </summary>
         </member>
+        <member name="P:ThingsGateway.Application.BackendLogPageInput.StartTime">
+            <summary>
+            开始时间
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Application.BackendLogPageInput.EndTime">
+            <summary>
+            结束时间
+            </summary>
+        </member>
         <member name="P:ThingsGateway.Application.BackendLogPageInput.Source">
             <summary>
             日志源
@@ -2611,6 +2621,16 @@
         <member name="T:ThingsGateway.Application.RpcLogPageInput">
             <summary>
             RPC日志分页DTO
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Application.RpcLogPageInput.StartTime">
+            <summary>
+            开始时间
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Application.RpcLogPageInput.EndTime">
+            <summary>
+            结束时间
             </summary>
         </member>
         <member name="P:ThingsGateway.Application.RpcLogPageInput.Source">
