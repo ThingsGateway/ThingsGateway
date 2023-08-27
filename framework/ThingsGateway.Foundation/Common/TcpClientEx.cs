@@ -26,8 +26,6 @@ using System.Net.Security;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
 
-using ThingsGateway.Foundation;
-
 using TouchSocket.Resources;
 
 namespace ThingsGateway.Foundation;
@@ -65,18 +63,14 @@ public class TcpClientBaseEx : BaseSocket, ITcpClient
     /// </summary>
     public TcpClientBaseEx()
     {
-        this.Protocol = Protocol.TCP;
+        this.Protocol = Protocol.Tcp;
     }
 
     #region 变量
-
     private DelaySender m_delaySender;
-    private bool m_useDelaySender;
     private Stream m_workStream;
     private int m_bufferRate = 1;
     private volatile bool m_online;
-    private Socket m_mainSocket;
-
     #endregion 变量
 
     #region 事件
@@ -233,13 +227,13 @@ public class TcpClientBaseEx : BaseSocket, ITcpClient
     public TouchSocketConfig Config { get; private set; }
 
     /// <inheritdoc/>
-    public TcpDataHandlingAdapter DataHandlingAdapter { get; private set; }
+    public SingleStreamDataHandlingAdapter DataHandlingAdapter { get; private set; }
 
     /// <inheritdoc/>
     public string IP { get; private set; }
 
     /// <inheritdoc/>
-    public Socket MainSocket { get => this.m_mainSocket; }
+    public Socket MainSocket { get; private set; }
 
     /// <inheritdoc/>
     public bool Online { get => this.m_online; }
@@ -269,7 +263,7 @@ public class TcpClientBaseEx : BaseSocket, ITcpClient
     public bool IsClient => true;
 
     #endregion 属性
-
+    private EasyLock EasyLock { get; set; } = new();
     #region 断开操作
 
     /// <inheritdoc/>
@@ -277,7 +271,7 @@ public class TcpClientBaseEx : BaseSocket, ITcpClient
     {
         try
         {
-            privateEasyLock.Wait();
+            EasyLock.Wait();
             if (this.m_online)
             {
                 this.PrivateOnDisconnecting(new DisconnectEventArgs(true, msg));
@@ -294,7 +288,7 @@ public class TcpClientBaseEx : BaseSocket, ITcpClient
         }
         finally
         {
-            privateEasyLock.Release();
+            EasyLock.Release();
         }
     }
 
@@ -302,7 +296,7 @@ public class TcpClientBaseEx : BaseSocket, ITcpClient
     {
         try
         {
-            privateEasyLock.Wait();
+            EasyLock.Wait();
             if (this.m_online)
             {
                 this.m_online = false;
@@ -315,7 +309,7 @@ public class TcpClientBaseEx : BaseSocket, ITcpClient
         }
         finally
         {
-            privateEasyLock.Release();
+            EasyLock.Release();
         }
     }
 
@@ -330,7 +324,7 @@ public class TcpClientBaseEx : BaseSocket, ITcpClient
             try
             {
 
-                privateEasyLock.Wait();
+                EasyLock.Wait();
                 if (this.m_online)
                 {
                     this.m_online = false;
@@ -347,10 +341,10 @@ public class TcpClientBaseEx : BaseSocket, ITcpClient
             }
             finally
             {
-                privateEasyLock.Release();
+                EasyLock.Release();
             }
         }
-        privateEasyLock.SafeDispose();
+        EasyLock.SafeDispose();
 
         base.Dispose(disposing);
     }
@@ -358,7 +352,6 @@ public class TcpClientBaseEx : BaseSocket, ITcpClient
     #endregion 断开操作
 
     #region Connect
-    private EasyLock privateEasyLock { get; set; } = new();
     /// <summary>
     /// 建立Tcp的连接。
     /// </summary>
@@ -371,7 +364,7 @@ public class TcpClientBaseEx : BaseSocket, ITcpClient
     {
         try
         {
-            privateEasyLock.Wait();
+            EasyLock.Wait();
             if (this.m_online)
             {
                 return;
@@ -382,13 +375,12 @@ public class TcpClientBaseEx : BaseSocket, ITcpClient
             }
             if (this.Config == null)
             {
-                throw new ArgumentNullException("配置文件不能为空。");
+                throw new ArgumentNullException(nameof(this.Config), "配置文件不能为空。");
             }
-            var iPHost = this.Config.GetValue(TouchSocketConfigExtension.RemoteIPHostProperty) ?? throw new ArgumentNullException("iPHost不能为空。");
+            var iPHost = this.Config.GetValue(TouchSocketConfigExtension.RemoteIPHostProperty) ?? throw new ArgumentNullException(nameof(IPHost), "iPHost不能为空。");
             this.MainSocket.SafeDispose();
             var socket = this.CreateSocket(iPHost);
-            var args = new ConnectingEventArgs(this.MainSocket);
-            this.PrivateOnConnecting(args);
+            this.PrivateOnConnecting(new ConnectingEventArgs(socket));
             if (timeout == 5000)
             {
                 socket.Connect(iPHost.Host, iPHost.Port);
@@ -406,15 +398,6 @@ public class TcpClientBaseEx : BaseSocket, ITcpClient
                     throw new TimeoutException();
                 }
             }
-            if (this.Config.GetValue(TouchSocketConfigExtension.DelaySenderProperty) is DelaySenderOption senderOption)
-            {
-                this.m_useDelaySender = true;
-                this.m_delaySender.SafeDispose();
-                this.m_delaySender = new DelaySender(this.MainSocket, senderOption.QueueLength, this.OnDelaySenderError)
-                {
-                    DelayLength = senderOption.DelayLength
-                };
-            }
             this.m_online = true;
             this.SetSocket(socket);
             this.BeginReceive();
@@ -422,24 +405,24 @@ public class TcpClientBaseEx : BaseSocket, ITcpClient
         }
         finally
         {
-            privateEasyLock.Release();
+            EasyLock.Release();
         }
     }
 
     /// <summary>
     /// 建立Tcp的连接。
     /// </summary>
-    /// <param name="timeOut"></param>
+    /// <param name="timeout"></param>
     /// <param name="token"></param>
     /// <exception cref="ObjectDisposedException"></exception>
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="Exception"></exception>
     /// <exception cref="TimeoutException"></exception>
-    public async Task TcpConnectAsync(int timeOut, CancellationToken token = default)
+    public async Task TcpConnectAsync(int timeout, CancellationToken token = default)
     {
         try
         {
-            await privateEasyLock.WaitAsync();
+            await EasyLock.WaitAsync();
             if (this.m_online)
             {
                 return;
@@ -459,7 +442,7 @@ public class TcpClientBaseEx : BaseSocket, ITcpClient
             this.PrivateOnConnecting(args);
 
 #if (NET6_0_OR_GREATER)
-            using CancellationTokenSource cancellationTokenSource = new(timeOut);
+            using CancellationTokenSource cancellationTokenSource = new(timeout);
             using CancellationTokenSource stoppingToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationTokenSource.Token, token);
             try
             {
@@ -477,7 +460,7 @@ public class TcpClientBaseEx : BaseSocket, ITcpClient
             using CancellationTokenSource cancellationTokenSource = new();
             using CancellationTokenSource stoppingToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationTokenSource.Token, token);
             var task = Task.Factory.FromAsync(socket.BeginConnect(iPHost.EndPoint, null, null), socket.EndConnect);
-            var result = await Task.WhenAny(task, Task.Delay(timeOut, stoppingToken.Token));
+            var result = await Task.WhenAny(task, Task.Delay(timeout, stoppingToken.Token));
             if (result == task)
             {
                 cancellationTokenSource.Cancel();
@@ -502,20 +485,11 @@ public class TcpClientBaseEx : BaseSocket, ITcpClient
         }
         finally
         {
-            privateEasyLock.Release();
+            EasyLock.Release();
         }
 
         void success(Socket socket)
         {
-            if (this.Config.GetValue(TouchSocketConfigExtension.DelaySenderProperty) is DelaySenderOption senderOption)
-            {
-                this.m_useDelaySender = true;
-                this.m_delaySender.SafeDispose();
-                this.m_delaySender = new DelaySender(this.MainSocket, senderOption.QueueLength, this.OnDelaySenderError)
-                {
-                    DelayLength = senderOption.DelayLength
-                };
-            }
             this.m_online = true;
             this.SetSocket(socket);
             this.BeginReceive();
@@ -523,20 +497,19 @@ public class TcpClientBaseEx : BaseSocket, ITcpClient
         }
     }
 
-
     /// <inheritdoc/>
     public virtual ITcpClient Connect(int timeout = 5000)
     {
         this.TcpConnect(timeout);
         return this;
     }
+
     /// <inheritdoc/>
-    public virtual async Task<ITcpClient> ConnectAsync(int timeOut = 5000)
+    public async Task<ITcpClient> ConnectAsync(int timeout = 5000)
     {
-        await TcpConnectAsync(timeOut);
+        await TcpConnectAsync(timeout);
         return this;
     }
-
     #endregion
 
     /// <inheritdoc/>
@@ -548,7 +521,7 @@ public class TcpClientBaseEx : BaseSocket, ITcpClient
     }
 
     /// <inheritdoc/>
-    public virtual void SetDataHandlingAdapter(TcpDataHandlingAdapter adapter)
+    public virtual void SetDataHandlingAdapter(SingleStreamDataHandlingAdapter adapter)
     {
         if (!this.CanSetDataHandlingAdapter)
         {
@@ -703,7 +676,7 @@ public class TcpClientBaseEx : BaseSocket, ITcpClient
     /// 设置适配器，该方法不会检验<see cref="CanSetDataHandlingAdapter"/>的值。
     /// </summary>
     /// <param name="adapter"></param>
-    protected void SetAdapter(TcpDataHandlingAdapter adapter)
+    protected void SetAdapter(SingleStreamDataHandlingAdapter adapter)
     {
         this.ThrowIfDisposed();
         if (adapter is null)
@@ -749,7 +722,7 @@ public class TcpClientBaseEx : BaseSocket, ITcpClient
         }
         else
         {
-            if (this.ReceiveType == ReceiveType.Auto)
+            if (this.ReceiveType == ReceiveType.Iocp)
             {
                 var eventArgs = new SocketAsyncEventArgs();
                 eventArgs.Completed += this.EventArgs_Completed;
@@ -761,6 +734,39 @@ public class TcpClientBaseEx : BaseSocket, ITcpClient
                 {
                     this.ProcessReceived(eventArgs);
                 }
+            }
+            else if (this.ReceiveType == ReceiveType.Bio)
+            {
+                new Thread(BeginBio)
+                {
+                    IsBackground = true
+                }
+                .Start();
+            }
+        }
+    }
+
+    private void BeginBio()
+    {
+        while (true)
+        {
+            var byteBlock = new ByteBlock(this.BufferLength);
+            try
+            {
+                var r = this.MainSocket.Receive(byteBlock.Buffer);
+                if (r == 0)
+                {
+                    this.BreakOut("远程终端主动关闭");
+                    return;
+                }
+
+                byteBlock.SetLength(r);
+                this.HandleBuffer(byteBlock);
+            }
+            catch (Exception ex)
+            {
+                this.BreakOut(ex.Message);
+                return;
             }
         }
     }
@@ -802,32 +808,46 @@ public class TcpClientBaseEx : BaseSocket, ITcpClient
 
     private Socket CreateSocket(IPHost iPHost)
     {
-        var socket = new Socket(iPHost.EndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp)
+        Socket socket;
+        if (iPHost.HostNameType == UriHostNameType.Dns)
         {
-            ReceiveBufferSize = this.BufferLength,
-            SendBufferSize = this.BufferLength,
-            SendTimeout = this.Config.GetValue(TouchSocketConfigExtension.SendTimeoutProperty)
-        };
-
+            socket = new Socket(SocketType.Stream, ProtocolType.Tcp)
+            {
+                ReceiveBufferSize = this.BufferLength,
+                SendBufferSize = this.BufferLength,
+                SendTimeout = this.Config.GetValue(TouchSocketConfigExtension.SendTimeoutProperty)
+            };
+        }
+        else
+        {
+            socket = new Socket(iPHost.EndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp)
+            {
+                ReceiveBufferSize = this.BufferLength,
+                SendBufferSize = this.BufferLength,
+                SendTimeout = this.Config.GetValue(TouchSocketConfigExtension.SendTimeoutProperty)
+            };
+        }
+        if (this.Config.GetValue(TouchSocketConfigExtension.KeepAliveValueProperty) is KeepAliveValue keepAliveValue)
+        {
 #if NET45_OR_GREATER
-        var keepAliveValue = this.Config.GetValue(TouchSocketConfigExtension.KeepAliveValueProperty);
-        if (keepAliveValue.Enable)
-        {
+
             socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.KeepAlive, true);
             socket.IOControl(IOControlCode.KeepAliveValues, keepAliveValue.KeepAliveTime, null);
-        }
 #else
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-        {
-            var keepAliveValue = Config.GetValue(TouchSocketConfigExtension.KeepAliveValueProperty);
-            if (keepAliveValue.Enable)
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.KeepAlive, true);
                 socket.IOControl(IOControlCode.KeepAliveValues, keepAliveValue.KeepAliveTime, null);
             }
-        }
 #endif
-        socket.SetSocketOption(SocketOptionLevel.Tcp, SocketOptionName.NoDelay, this.Config.GetValue<bool>(TouchSocketConfigExtension.NoDelayProperty));
+        }
+
+        var noDelay = this.Config.GetValue(TouchSocketConfigExtension.NoDelayProperty);
+        if (noDelay != null)
+        {
+            socket.SetSocketOption(SocketOptionLevel.Tcp, SocketOptionName.NoDelay, noDelay);
+        }
+
         if (this.Config.GetValue(TouchSocketConfigExtension.BindIPHostProperty) != null)
         {
             if (this.Config.GetValue(TouchSocketConfigExtension.ReuseAddressProperty))
@@ -961,14 +981,12 @@ public class TcpClientBaseEx : BaseSocket, ITcpClient
             {
                 length += item.Count;
             }
-            using (var byteBlock = new ByteBlock(length))
+            using var byteBlock = new ByteBlock(length);
+            foreach (var item in transferBytes)
             {
-                foreach (var item in transferBytes)
-                {
-                    byteBlock.Write(item.Array, item.Offset, item.Count);
-                }
-                this.DataHandlingAdapter.SendInput(byteBlock.Buffer, 0, byteBlock.Len);
+                byteBlock.Write(item.Array, item.Offset, item.Count);
             }
+            this.DataHandlingAdapter.SendInput(byteBlock.Buffer, 0, byteBlock.Len);
         }
     }
 
@@ -1048,9 +1066,9 @@ public class TcpClientBaseEx : BaseSocket, ITcpClient
             }
             else
             {
-                if (this.m_useDelaySender && length < TouchSocketUtility.BigDataBoundary)
+                if (this.m_delaySender != null && length < m_delaySender.DelayLength)
                 {
-                    this.m_delaySender.Send(new QueueDataBytes(buffer, offset, length));
+                    this.m_delaySender.Send(QueueDataBytes.CreateNew(buffer, offset, length));
                 }
                 else
                 {
@@ -1092,7 +1110,12 @@ public class TcpClientBaseEx : BaseSocket, ITcpClient
 
         this.IP = socket.RemoteEndPoint.GetIP();
         this.Port = socket.RemoteEndPoint.GetPort();
-        this.m_mainSocket = socket;
+        this.MainSocket = socket;
+        var delaySenderOption = this.Config.GetValue(TouchSocketConfigExtension.DelaySenderProperty);
+        if (delaySenderOption != null)
+        {
+            this.m_delaySender = new DelaySender(socket, delaySenderOption, this.OnDelaySenderError);
+        }
     }
 
     private void ProcessReceived(SocketAsyncEventArgs e)

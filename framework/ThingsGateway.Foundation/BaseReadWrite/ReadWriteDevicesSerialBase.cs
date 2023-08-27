@@ -22,47 +22,47 @@ public abstract class ReadWriteDevicesSerialBase : ReadWriteDevicesClientBase
     /// <summary>
     /// WaitingClientEx
     /// </summary>
-    public virtual IWaitingClient<SerialClient> WaitingClientEx { get; }
+    public virtual IWaitingClient<SerialsSession> WaitingClientEx { get; }
     /// <summary>
     /// <inheritdoc cref="ReadWriteDevicesSerialBase"/>
     /// </summary>
-    /// <param name="serialClient"></param>
-    public ReadWriteDevicesSerialBase(SerialClient serialClient)
+    /// <param name="serialSession"></param>
+    public ReadWriteDevicesSerialBase(SerialsSession serialSession)
     {
-        SerialClient = serialClient;
-        WaitingClientEx = SerialClient.GetWaitingClientEx(new() { BreakTrigger = true });
+        SerialsSession = serialSession;
+        WaitingClientEx = SerialsSession.GetWaitingClientEx(new() { BreakTrigger = true });
 
-        SerialClient.Connecting -= Connecting;
-        SerialClient.Connected -= Connected;
-        SerialClient.Disconnecting -= Disconnecting;
-        SerialClient.Disconnected -= Disconnected;
-        SerialClient.Connecting += Connecting;
-        SerialClient.Connected += Connected;
-        SerialClient.Disconnecting += Disconnecting;
-        SerialClient.Disconnected += Disconnected;
-        Logger = SerialClient.Logger;
+        SerialsSession.Connecting -= Connecting;
+        SerialsSession.Connected -= Connected;
+        SerialsSession.Disconnecting -= Disconnecting;
+        SerialsSession.Disconnected -= Disconnected;
+        SerialsSession.Connecting += Connecting;
+        SerialsSession.Connected += Connected;
+        SerialsSession.Disconnecting += Disconnecting;
+        SerialsSession.Disconnected += Disconnected;
+        Logger = SerialsSession.Logger;
     }
     /// <summary>
     /// 串口管理对象
     /// </summary>
-    public SerialClient SerialClient { get; }
+    public SerialsSession SerialsSession { get; }
 
     /// <inheritdoc/>
     public override void Connect(CancellationToken token)
     {
-        SerialClient.Connect();
+        SerialsSession.Connect();
     }
 
     /// <inheritdoc/>
     public override Task ConnectAsync(CancellationToken token)
     {
-        return SerialClient.ConnectAsync();
+        return SerialsSession.ConnectAsync();
     }
 
     /// <inheritdoc/>
     public override void Disconnect()
     {
-        SerialClient.Close();
+        SerialsSession.Close();
     }
 
     /// <inheritdoc/>
@@ -71,7 +71,7 @@ public abstract class ReadWriteDevicesSerialBase : ReadWriteDevicesClientBase
         try
         {
             waitingOptions ??= new WaitingOptions { ThrowBreakException = true, AdapterFilter = AdapterFilter.NoneAll };
-            ResponsedData result = SerialClient.GetWaitingClientEx(waitingOptions).SendThenResponse(data, TimeOut, token);
+            ResponsedData result = SerialsSession.GetWaitingClientEx(waitingOptions).SendThenResponse(data, TimeOut, token);
             return OperResult.CreateSuccessResult(result.Data);
         }
         catch (Exception ex)
@@ -86,7 +86,7 @@ public abstract class ReadWriteDevicesSerialBase : ReadWriteDevicesClientBase
         try
         {
             waitingOptions ??= new WaitingOptions { ThrowBreakException = true, AdapterFilter = AdapterFilter.NoneAll };
-            ResponsedData result = await SerialClient.GetWaitingClientEx(waitingOptions).SendThenResponseAsync(data, TimeOut, token);
+            ResponsedData result = await SerialsSession.GetWaitingClientEx(waitingOptions).SendThenResponseAsync(data, TimeOut, token);
             return OperResult.CreateSuccessResult(result.Data);
         }
         catch (Exception ex)
@@ -98,37 +98,37 @@ public abstract class ReadWriteDevicesSerialBase : ReadWriteDevicesClientBase
     /// <inheritdoc/>
     public override string ToString()
     {
-        return SerialClient.SerialProperty.ToString();
+        return SerialsSession.SerialProperty.ToString();
     }
 
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
-        SerialClient.Connecting -= Connecting;
-        SerialClient.Connected -= Connected;
-        SerialClient.Disconnecting -= Disconnecting;
-        SerialClient.Disconnected -= Disconnected;
-        SerialClient.Close();
-        SerialClient.SafeDispose();
+        SerialsSession.Connecting -= Connecting;
+        SerialsSession.Connected -= Connected;
+        SerialsSession.Disconnecting -= Disconnecting;
+        SerialsSession.Disconnected -= Disconnected;
+        SerialsSession.Close();
+        SerialsSession.SafeDispose();
         base.Dispose(disposing);
     }
-    private void Connected(ISerialClient client, ConnectedEventArgs e)
+    private void Connected(ISerialSession client, ConnectedEventArgs e)
     {
         Logger?.Debug(client.SerialProperty.ToString() + "连接成功");
     }
 
-    private void Connecting(ISerialClient client, SerialConnectingEventArgs e)
+    private void Connecting(ISerialSession client, SerialConnectingEventArgs e)
     {
         Logger?.Debug(client.SerialProperty.ToString() + "正在连接");
         SetDataAdapter();
     }
 
-    private void Disconnected(ISerialClientBase client, DisconnectEventArgs e)
+    private void Disconnected(ISerialSessionBase client, DisconnectEventArgs e)
     {
         Logger?.Debug(client.SerialProperty.ToString() + "断开连接-" + e.Message);
     }
 
-    private void Disconnecting(ISerialClientBase client, DisconnectEventArgs e)
+    private void Disconnecting(ISerialSessionBase client, DisconnectEventArgs e)
     {
         Logger?.Debug(client.SerialProperty.ToString() + "正在主动断开连接-" + e.Message);
     }

@@ -73,7 +73,7 @@ public class DLT645_2007 : CollectBase
     /// <inheritdoc/>
     public override bool IsConnected()
     {
-        return _plc?.SerialClient?.CanSend == true;
+        return _plc?.SerialsSession?.CanSend == true;
     }
     /// <inheritdoc/>
     public override List<DeviceVariableSourceRead> LoadSourceRead(List<DeviceVariableRunTime> deviceVariables)
@@ -95,11 +95,11 @@ public class DLT645_2007 : CollectBase
                 StopBits = driverPropertys.StopBits,
             })
                 .SetBufferLength(1024);
-            client = new SerialClient();
-            ((SerialClient)client).Setup(FoundataionConfig);
+            client = new SerialsSession();
+            ((SerialsSession)client).Setup(FoundataionConfig);
         }
         //载入配置
-        _plc = new((SerialClient)client)
+        _plc = new((SerialsSession)client)
         {
             FrameTime = driverPropertys.FrameTime,
             CacheTimeout = driverPropertys.CacheTimeout,

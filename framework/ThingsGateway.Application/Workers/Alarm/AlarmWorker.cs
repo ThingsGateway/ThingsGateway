@@ -595,7 +595,7 @@ public class AlarmWorker : BackgroundService
                             var cacheData = await CacheDb.GetCacheData();
                             if (cacheData.Count > 0)
                             {
-                                var data = cacheData.SelectMany(a => a.CacheStr.FromJson<List<HistoryAlarm>>()).ToList();
+                                var data = cacheData.SelectMany(a => a.CacheStr.FromJsonString<List<HistoryAlarm>>()).ToList();
                                 try
                                 {
                                     var count = await sqlSugarClient.Insertable(data).ExecuteCommandAsync(stoppingToken.Token);
@@ -633,7 +633,7 @@ public class AlarmWorker : BackgroundService
                                     var cacheDatas = list.ChunkTrivialBetter(500);
                                     foreach (var a in cacheDatas)
                                     {
-                                        await CacheDb.AddCacheData("", a.ToJson(), 50000);
+                                        await CacheDb.AddCacheData("", a.ToJsonString(), 50000);
                                     }
                                 }
 

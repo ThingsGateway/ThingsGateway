@@ -406,7 +406,7 @@ public class MqttClient : UpLoadBase
             return;
         if (arg.ApplicationMessage.Topic != driverPropertys.RpcWriteTopic)
             return;
-        var rpcDatas = Encoding.UTF8.GetString(arg.ApplicationMessage.PayloadSegment).FromJson<MqttRpcNameVaueWithId>();
+        var rpcDatas = Encoding.UTF8.GetString(arg.ApplicationMessage.PayloadSegment).FromJsonString<MqttRpcNameVaueWithId>();
         if (rpcDatas == null)
             return;
 
@@ -453,7 +453,7 @@ public class MqttClient : UpLoadBase
         {
             var variableMessage = new MqttApplicationMessageBuilder()
 .WithTopic($"{driverPropertys.RpcSubTopic}")
-.WithPayload(mqttRpcResult.ToJson()).Build();
+.WithPayload(mqttRpcResult.ToJsonString()).Build();
             var isConnect = await TryMqttClientAsync(CancellationToken.None);
             if (isConnect.IsSuccess)
                 await _mqttClient.PublishAsync(variableMessage);
@@ -470,7 +470,7 @@ public class MqttClient : UpLoadBase
         {
             LogMessage?.Warning("订阅失败-" + subResult.Items
                 .Where(a => a.ResultCode > (MqttClientSubscribeResultCode)10)
-                .ToJson());
+                .ToJsonString());
         }
     }
     /// <summary>

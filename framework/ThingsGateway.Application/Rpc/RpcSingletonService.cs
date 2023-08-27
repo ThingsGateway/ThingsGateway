@@ -19,6 +19,7 @@ using Newtonsoft.Json.Linq;
 
 using System.Collections.Concurrent;
 
+using ThingsGateway.Admin.Core.JsonExtensions;
 using ThingsGateway.Foundation;
 using ThingsGateway.Foundation.Extension.ConcurrentQueue;
 

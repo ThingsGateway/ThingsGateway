@@ -41,11 +41,11 @@
             DLT645_2007
             </summary>
         </member>
-        <member name="M:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007.#ctor(ThingsGateway.Foundation.Serial.SerialClient)">
+        <member name="M:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007.#ctor(ThingsGateway.Foundation.Serial.SerialsSession)">
             <summary>
             DLT645_2007
             </summary>
-            <param name="serialClient"></param>
+            <param name="serialSession"></param>
         </member>
         <member name="P:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007.CacheTimeout">
             <summary>

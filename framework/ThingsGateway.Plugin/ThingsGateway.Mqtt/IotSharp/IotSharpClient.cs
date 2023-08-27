@@ -118,7 +118,7 @@ public class IotSharpClient : UpLoadBase
                         }
                         if (!token.IsCancellationRequested)
                         {
-                            await MqttUp($"devices/{item.Key}/telemetry", nameValueDict.ToJson(), token);
+                            await MqttUp($"devices/{item.Key}/telemetry", nameValueDict.ToJsonString(), token);
                         }
                         else
                         {
@@ -326,7 +326,7 @@ public class IotSharpClient : UpLoadBase
             else
             {
                 RpcResponse rpcResponse = new();
-                var nameValue = e.ApplicationMessage.ConvertPayloadToString().FromJson<List<KeyValuePair<string, string>>>();
+                var nameValue = e.ApplicationMessage.ConvertPayloadToString().FromJsonString<List<KeyValuePair<string, string>>>();
                 Dictionary<string, OperResult> results = new();
                 if (nameValue?.Count > 0)
                 {
@@ -345,13 +345,13 @@ GetPropertyValue(tag, nameof(variablePropertys.VariableRpcEnable)).ToBoolean()
                             }
                             else
                             {
-                                results.Add(item.Key, new("权限不足，变量不支持写入"));
+                                results.Add(item.Key, new OperResult("权限不足，变量不支持写入"));
                             }
 
                         }
                         else
                         {
-                            results.Add(item.Key, new("不存在该变量"));
+                            results.Add(item.Key, new OperResult("不存在该变量"));
                         }
                     }
 
@@ -366,7 +366,7 @@ GetPropertyValue(tag, nameof(variablePropertys.VariableRpcEnable)).ToBoolean()
                         ResponseId = rpcrequestid,
                         Method = rpcmethodname,
                         Success = !results.Any(a => !a.Value.IsSuccess),
-                        Data = results.ToJson()
+                        Data = results.ToJsonString()
                     };
                 }
                 else
@@ -396,7 +396,7 @@ GetPropertyValue(tag, nameof(variablePropertys.VariableRpcEnable)).ToBoolean()
 
                 var variableMessage = new MqttApplicationMessageBuilder()
 .WithTopic($"{topic}")
-.WithPayload(rpcResponse.ToJson()).Build();
+.WithPayload(rpcResponse.ToJsonString()).Build();
                 var isConnect = await TryMqttClientAsync(CancellationToken.None);
                 if (isConnect.IsSuccess)
                     await _mqttClient.PublishAsync(variableMessage);
@@ -416,7 +416,7 @@ GetPropertyValue(tag, nameof(variablePropertys.VariableRpcEnable)).ToBoolean()
         {
             LogMessage?.LogWarning(subResult.Items
                 .Where(a => a.ResultCode > (MqttClientSubscribeResultCode)10)
-                .Select(a => a.ToString()).ToJson());
+                .Select(a => a.ToString()).ToJsonString());
         }
     }
     /// <summary>

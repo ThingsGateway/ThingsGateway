@@ -24,8 +24,8 @@ public class ModbusRtu : ReadWriteDevicesSerialBase
     /// <summary>
     /// ModbusRtu
     /// </summary>
-    /// <param name="serialClient"></param>
-    public ModbusRtu(SerialClient serialClient) : base(serialClient)
+    /// <param name="serialSession"></param>
+    public ModbusRtu(SerialsSession serialSession) : base(serialSession)
     {
         ThingsGatewayBitConverter = new ThingsGatewayBitConverter(EndianType.Big);
         RegisterByteLength = 2;
@@ -87,7 +87,7 @@ public class ModbusRtu : ReadWriteDevicesSerialBase
             Crc16CheckEnable = Crc16CheckEnable,
             CacheTimeout = TimeSpan.FromMilliseconds(CacheTimeout)
         };
-        SerialClient.SetDataHandlingAdapter(dataHandleAdapter);
+        SerialsSession.SetDataHandlingAdapter(dataHandleAdapter);
     }
 
     /// <inheritdoc/>

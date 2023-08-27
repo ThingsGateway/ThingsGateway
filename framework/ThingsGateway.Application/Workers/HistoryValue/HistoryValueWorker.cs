@@ -224,7 +224,7 @@ public class HistoryValueWorker : BackgroundService
 
                             //缓存值
                             var cacheData = await CacheDb.GetCacheData();
-                            var data = cacheData.SelectMany(a => a.CacheStr.FromJson<List<HistoryValue>>()).ToList();
+                            var data = cacheData.SelectMany(a => a.CacheStr.FromJsonString<List<HistoryValue>>()).ToList();
                             try
                             {
                                 var count = await sqlSugarClient.Insertable(data).ExecuteCommandAsync(stoppingToken.Token);
@@ -257,7 +257,7 @@ public class HistoryValueWorker : BackgroundService
                                     var cacheDatas = collecthis.ChunkTrivialBetter(500);
                                     foreach (var a in cacheDatas)
                                     {
-                                        await CacheDb.AddCacheData("", a.ToJson(), 50000);
+                                        await CacheDb.AddCacheData("", a.ToJsonString(), 50000);
                                     }
                                 }
                             }
@@ -284,7 +284,7 @@ public class HistoryValueWorker : BackgroundService
                                     var cacheDatas = changehis.ChunkTrivialBetter(500);
                                     foreach (var a in cacheDatas)
                                     {
-                                        await CacheDb.AddCacheData("", a.ToJson(), 50000);
+                                        await CacheDb.AddCacheData("", a.ToJsonString(), 50000);
                                     }
                                 }
                             }

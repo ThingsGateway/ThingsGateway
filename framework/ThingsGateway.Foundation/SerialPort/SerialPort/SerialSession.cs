@@ -10,19 +10,31 @@
 //------------------------------------------------------------------------------
 #endregion
 
+//------------------------------------------------------------------------------
+//  此代码版权（除特别声明或在XREF结尾的命名空间的代码）归作者本人若汝棋茗所有
+//  源代码使用协议遵循本仓库的开源协议及附加协议，若本仓库没有设置，则按MIT开源协议授权
+//  CSDN博客：https://blog.csdn.net/qq_40374647
+//  哔哩哔哩视频：https://space.bilibili.com/94253567
+//  Gitee源代码仓库：https://gitee.com/RRQM_Home
+//  Github源代码仓库：https://github.com/RRQM
+//  API首页：http://rrqm_home.gitee.io/touchsocket/
+//  交流QQ群：234762506
+//  感谢您的下载和使用
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 using System.IO.Ports;
 
 using TouchSocket.Resources;
 
 namespace ThingsGateway.Foundation.Serial;
 
-/// <inheritdoc cref="SerialClientBase"/>
-public class SerialClient : SerialClientBase
+/// <inheritdoc cref="SerialSessionBase"/>
+public class SerialsSession : SerialSessionBase
 {
     /// <summary>
     /// 接收到数据
     /// </summary>
-    public ReceivedEventHandler<SerialClient> Received { get; set; }
+    public ReceivedEventHandler<SerialsSession> Received { get; set; }
 
     /// <summary>
     /// 接收数据
@@ -39,38 +51,46 @@ public class SerialClient : SerialClientBase
 /// <summary>
 /// 串口管理
 /// </summary>
-public class SerialClientBase : BaseSerial, ISerialClient
+public class SerialSessionBase : BaseSerial, ISerialSession
 {
-    static readonly Protocol SerialPort = new("SerialPort");
+    static readonly Protocol SerialPort = new("SerialSession");
     /// <summary>
     /// 构造函数
     /// </summary>
-    public SerialClientBase()
+    public SerialSessionBase()
     {
         this.Protocol = SerialPort;
     }
 
     #region 变量
-
-    private int m_bufferRate = 1;
     private SerialDelaySender m_delaySender;
-    private SerialPort m_mainSerialPort;
+    private int m_bufferRate = 1;
     private volatile bool m_online;
-    private bool m_useDelaySender;
     #endregion 变量
 
     #region 事件
 
     /// <inheritdoc/>
-    public ConnectedEventHandler<ISerialClient> Connected { get; set; }
+    public ConnectedEventHandler<ISerialSession> Connected { get; set; }
     /// <inheritdoc/>
-    public SerialConnectingEventHandler<ISerialClient> Connecting { get; set; }
+    public SerialConnectingEventHandler<ISerialSession> Connecting { get; set; }
 
     /// <inheritdoc/>
-    public DisconnectEventHandler<ISerialClientBase> Disconnected { get; set; }
+    public DisconnectEventHandler<ISerialSessionBase> Disconnected { get; set; }
 
     /// <inheritdoc/>
-    public DisconnectEventHandler<ISerialClientBase> Disconnecting { get; set; }
+    public DisconnectEventHandler<ISerialSessionBase> Disconnecting { get; set; }
+
+    private void PrivateOnConnected(object o)
+    {
+        var e = (ConnectedEventArgs)o;
+        this.OnConnected(e);
+        if (e.Handled)
+        {
+            return;
+        }
+        this.PluginsManager.Raise(nameof(ITcpConnectedPlugin.OnTcpConnected), this, e);
+    }
 
     /// <summary>
     /// 已经建立Tcp连接
@@ -86,6 +106,23 @@ public class SerialClientBase : BaseSerial, ISerialClient
         {
             this.Logger.Log(LogLevel.Error, this, $"在事件{nameof(this.Connected)}中发生错误。", ex);
         }
+    }
+
+    private void PrivateOnConnecting(SerialConnectingEventArgs e)
+    {
+        this.LastReceivedTime = DateTime.Now;
+        this.LastSendTime = DateTime.Now;
+        if (this.CanSetDataHandlingAdapter)
+        {
+            this.SetDataHandlingAdapter(this.Config.GetValue(TouchSocketConfigExtension.TcpDataHandlingAdapterProperty).Invoke());
+        }
+
+        this.OnConnecting(e);
+        if (e.Handled)
+        {
+            return;
+        }
+        this.PluginsManager.Raise(nameof(ITcpConnectingPlugin.OnTcpConnecting), this, e);
     }
 
     /// <summary>
@@ -104,6 +141,16 @@ public class SerialClientBase : BaseSerial, ISerialClient
         }
     }
 
+    private void PrivateOnDisconnected(DisconnectEventArgs e)
+    {
+        this.OnDisconnected(e);
+        if (e.Handled)
+        {
+            return;
+        }
+        this.PluginsManager.Raise(nameof(ITcpDisconnectedPlugin.OnTcpDisconnected), this, e);
+    }
+
     /// <summary>
     /// 断开连接。在客户端未设置连接状态时，不会触发
     /// </summary>
@@ -118,6 +165,16 @@ public class SerialClientBase : BaseSerial, ISerialClient
         {
             this.Logger.Log(LogLevel.Error, this, $"在事件{nameof(this.Disconnected)}中发生错误。", ex);
         }
+    }
+
+    private void PrivateOnDisconnecting(DisconnectEventArgs e)
+    {
+        this.OnDisconnecting(e);
+        if (e.Handled)
+        {
+            return;
+        }
+        this.PluginsManager.Raise(nameof(ITcpDisconnectingPlugin.OnTcpDisconnecting), this, e);
     }
 
     /// <summary>
@@ -139,71 +196,9 @@ public class SerialClientBase : BaseSerial, ISerialClient
         }
     }
 
-    private void PrivateOnConnected(object o)
-    {
-        var e = (ConnectedEventArgs)o;
-        this.OnConnected(e);
-        if (e.Handled)
-        {
-            return;
-        }
-        this.PluginsManager.Raise(nameof(ITcpConnectedPlugin.OnTcpConnected), this, e);
-    }
-    private void PrivateOnConnecting(SerialConnectingEventArgs e)
-    {
-        this.LastReceivedTime = DateTime.Now;
-        this.LastSendTime = DateTime.Now;
-        if (this.CanSetDataHandlingAdapter)
-        {
-            this.SetDataHandlingAdapter(this.Config.GetValue(TouchSocketConfigExtension.TcpDataHandlingAdapterProperty).Invoke());
-        }
-
-        this.OnConnecting(e);
-        if (e.Handled)
-        {
-            return;
-        }
-        this.PluginsManager.Raise(nameof(ITcpConnectingPlugin.OnTcpConnecting), this, e);
-    }
-    private void PrivateOnDisconnected(DisconnectEventArgs e)
-    {
-        this.OnDisconnected(e);
-        if (e.Handled)
-        {
-            return;
-        }
-        this.PluginsManager.Raise(nameof(ITcpDisconnectedPlugin.OnTcpDisconnected), this, e);
-    }
-    private void PrivateOnDisconnecting(DisconnectEventArgs e)
-    {
-        this.OnDisconnecting(e);
-        if (e.Handled)
-        {
-            return;
-        }
-        this.PluginsManager.Raise(nameof(ITcpDisconnectingPlugin.OnTcpDisconnecting), this, e);
-    }
     #endregion 事件
 
     #region 属性
-
-    /// <inheritdoc/>
-    public bool CanSend => this.m_online;
-
-    /// <inheritdoc/>
-    public virtual bool CanSetDataHandlingAdapter => true;
-
-    /// <inheritdoc/>
-    public TouchSocketConfig Config { get; private set; }
-
-    /// <inheritdoc/>
-    public IContainer Container { get; private set; }
-
-    /// <inheritdoc/>
-    public TcpDataHandlingAdapter DataHandlingAdapter { get; private set; }
-
-    /// <inheritdoc/>
-    public bool IsClient => true;
 
     /// <inheritdoc/>
     public DateTime LastReceivedTime { get; private set; }
@@ -212,24 +207,50 @@ public class SerialClientBase : BaseSerial, ISerialClient
     public DateTime LastSendTime { get; private set; }
 
     /// <inheritdoc/>
-    public SerialPort MainSerialPort { get => this.m_mainSerialPort; }
-
-    /// <inheritdoc/>
     public Func<ByteBlock, bool> OnHandleRawBuffer { get; set; }
 
     /// <inheritdoc/>
     public Func<ByteBlock, IRequestInfo, bool> OnHandleReceivedData { get; set; }
+
     /// <inheritdoc/>
+    public IContainer Container { get; private set; }
+
+    /// <inheritdoc/>
+    public virtual bool CanSetDataHandlingAdapter => true;
+
+    /// <inheritdoc/>
+    public TouchSocketConfig Config { get; private set; }
+
+    /// <inheritdoc/>
+    public SingleStreamDataHandlingAdapter DataHandlingAdapter { get; private set; }
+
+
+    /// <summary>
+    /// <inheritdoc/>
+    /// </summary>
+    public SerialProperty SerialProperty { get; private set; }
+    /// <inheritdoc/>
+    public SerialPort MainSerialPort { get; private set; }
+
     /// <inheritdoc/>
     public bool Online { get => this.m_online; }
+
+    /// <inheritdoc/>
+    public bool CanSend => this.m_online;
+
     /// <inheritdoc/>
     public IPluginsManager PluginsManager { get; private set; }
+
+
+    /// <inheritdoc/>
+    public ReceiveType ReceiveType { get; private set; }
+
 
     /// <inheritdoc/>
     public Protocol Protocol { get; set; }
 
-    /// <inheritdoc/>
-    public ReceiveType ReceiveType { get; private set; }
+
+
     #endregion 属性
 
     #region 断开操作
@@ -250,6 +271,21 @@ public class SerialClientBase : BaseSerial, ISerialClient
                 this.m_delaySender.SafeDispose();
                 this.DataHandlingAdapter.SafeDispose();
                 this.PrivateOnDisconnected(new DisconnectEventArgs(true, msg));
+            }
+        }
+    }
+
+    private void BreakOut(string msg)
+    {
+        lock (this.SyncRoot)
+        {
+            if (this.m_online)
+            {
+                this.m_online = false;
+                this.MainSerialPort.SafeDispose();
+                this.m_delaySender.SafeDispose();
+                this.DataHandlingAdapter.SafeDispose();
+                this.PrivateOnDisconnected(new DisconnectEventArgs(false, msg));
             }
         }
     }
@@ -278,48 +314,13 @@ public class SerialClientBase : BaseSerial, ISerialClient
         base.Dispose(disposing);
     }
 
-    private void BreakOut(string msg)
-    {
-        lock (this.SyncRoot)
-        {
-            if (this.m_online)
-            {
-                this.m_online = false;
-                this.MainSerialPort.SafeDispose();
-                this.m_delaySender.SafeDispose();
-                this.DataHandlingAdapter.SafeDispose();
-                this.PrivateOnDisconnected(new DisconnectEventArgs(false, msg));
-            }
-        }
-    }
     #endregion 断开操作
 
     #region Connect
-    /// <inheritdoc/>
-    public virtual ISerialClient Connect(int timeout = 5000)
-    {
-        this.TcpConnect(timeout);
-        return this;
-    }
-
-    /// <inheritdoc/>
-    public Task<ISerialClient> ConnectAsync(int timeout = 5000)
-    {
-        return Task.Run(() =>
-        {
-            return this.Connect(timeout);
-        });
-    }
-
     /// <summary>
-    /// 建立Tcp的连接。
+    /// 打开串口
     /// </summary>
-    /// <param name="timeout"></param>
-    /// <exception cref="ObjectDisposedException"></exception>
-    /// <exception cref="ArgumentNullException"></exception>
-    /// <exception cref="Exception"></exception>
-    /// <exception cref="TimeoutException"></exception>
-    protected void TcpConnect(int timeout)
+    protected void Open()
     {
         lock (this.SyncRoot)
         {
@@ -337,42 +338,42 @@ public class SerialClientBase : BaseSerial, ISerialClient
             }
             var serialProperty = this.Config.GetValue(SerialConfigExtension.SerialProperty) ?? throw new ArgumentNullException("串口配置不能为空。");
 
-            this.m_mainSerialPort.SafeDispose();
-            m_mainSerialPort = this.CreateSerial(serialProperty);
+            this.MainSerialPort.SafeDispose();
+            var serialPort = this.CreateSerial(serialProperty);
             var args = new SerialConnectingEventArgs(this.MainSerialPort);
             this.PrivateOnConnecting(args);
-            m_mainSerialPort.Open();
+            serialPort.Open();
 
             this.m_online = true;
-            this.SetSerialPort(m_mainSerialPort);
-
-
-            if (Config.GetValue(TouchSocketConfigExtension.DelaySenderProperty) is DelaySenderOption senderOption)
-            {
-                m_useDelaySender = true;
-                m_delaySender.SafeDispose();
-                m_delaySender = new SerialDelaySender(MainSerialPort, senderOption.QueueLength, this.OnDelaySenderError)
-                {
-                    DelayLength = senderOption.DelayLength
-                };
-            }
+            this.SetSerialPort(serialPort);
 
 
             this.BeginReceive();
             this.PrivateOnConnected(new ConnectedEventArgs());
-
         }
+    }
+
+    /// <inheritdoc/>
+    public virtual ISerialSession Connect()
+    {
+        this.Open();
+        return this;
+    }
+
+    /// <inheritdoc/>
+    public Task<ISerialSession> ConnectAsync()
+    {
+        return Task.Run(() =>
+        {
+            return this.Connect();
+        });
     }
     #endregion
 
 
-    /// <summary>
-    /// <inheritdoc/>
-    /// </summary>
-    public SerialProperty SerialProperty { get; private set; }
 
     /// <inheritdoc/>
-    public virtual void SetDataHandlingAdapter(TcpDataHandlingAdapter adapter)
+    public virtual void SetDataHandlingAdapter(SingleStreamDataHandlingAdapter adapter)
     {
         if (!this.CanSetDataHandlingAdapter)
         {
@@ -383,7 +384,7 @@ public class SerialClientBase : BaseSerial, ISerialClient
     }
 
     /// <inheritdoc/>
-    public ISerialClient Setup(TouchSocketConfig config)
+    public ISerialSession Setup(TouchSocketConfig config)
     {
         if (config == null)
         {
@@ -399,6 +400,67 @@ public class SerialClientBase : BaseSerial, ISerialClient
         this.PluginsManager.Raise(nameof(ILoadedConfigPlugin.OnLoadedConfig), this, new ConfigEventArgs(config));
 
         return this;
+    }
+
+    private void BuildConfig(TouchSocketConfig config)
+    {
+        this.Config = config;
+
+        if (!(config.GetValue(TouchSocketCoreConfigExtension.ContainerProperty) is IContainer container))
+        {
+            container = new Container();
+        }
+
+        if (!container.IsRegistered(typeof(ILog)))
+        {
+            container.RegisterSingleton<ILog, LoggerGroup>();
+        }
+
+        if (!(config.GetValue(TouchSocketCoreConfigExtension.PluginsManagerProperty) is IPluginsManager pluginsManager))
+        {
+            pluginsManager = new PluginsManager(container);
+        }
+
+        if (container.IsRegistered(typeof(IPluginsManager)))
+        {
+            pluginsManager = container.Resolve<IPluginsManager>();
+        }
+        else
+        {
+            container.RegisterSingleton<IPluginsManager>(pluginsManager);
+        }
+
+        if (config.GetValue(TouchSocketCoreConfigExtension.ConfigureContainerProperty) is Action<IContainer> actionContainer)
+        {
+            actionContainer.Invoke(container);
+        }
+
+        if (config.GetValue(TouchSocketCoreConfigExtension.ConfigurePluginsProperty) is Action<IPluginsManager> actionPluginsManager)
+        {
+            pluginsManager.Enable = true;
+            actionPluginsManager.Invoke(pluginsManager);
+        }
+        this.Container = container;
+        this.PluginsManager = pluginsManager;
+    }
+
+    private void PrivateHandleReceivedData(ByteBlock byteBlock, IRequestInfo requestInfo)
+    {
+        if (this.OnHandleReceivedData?.Invoke(byteBlock, requestInfo) == false)
+        {
+            return;
+        }
+
+        if (this.HandleReceivedData(byteBlock, requestInfo))
+        {
+            return;
+        }
+
+        if (this.PluginsManager.Enable)
+        {
+            var args = new ReceivedDataEventArgs(byteBlock, requestInfo);
+            this.PluginsManager.Raise(nameof(ITcpReceivedPlugin.OnTcpReceived), this, args);
+        }
     }
 
     /// <summary>
@@ -458,7 +520,7 @@ public class SerialClientBase : BaseSerial, ISerialClient
     /// 设置适配器，该方法不会检验<see cref="CanSetDataHandlingAdapter"/>的值。
     /// </summary>
     /// <param name="adapter"></param>
-    protected void SetAdapter(TcpDataHandlingAdapter adapter)
+    protected void SetAdapter(SingleStreamDataHandlingAdapter adapter)
     {
         this.ThrowIfDisposed();
         if (adapter is null)
@@ -480,7 +542,8 @@ public class SerialClientBase : BaseSerial, ISerialClient
 
     private void BeginReceive()
     {
-        if (this.ReceiveType == ReceiveType.Auto)
+
+        if (this.ReceiveType == ReceiveType.Iocp)
         {
             SerialReceivedEventArgs eventArgs = new();
             var byteBlock = BytePool.Default.GetByteBlock(this.BufferLength);
@@ -492,50 +555,15 @@ public class SerialClientBase : BaseSerial, ISerialClient
             }
             MainSerialPort.DataReceived += this.EventArgs_Completed;
         }
+        else if (this.ReceiveType == ReceiveType.Bio)
+        {
+            new Thread(BeginBio)
+            {
+                IsBackground = true
+            }
+            .Start();
+        }
     }
-
-    private void BuildConfig(TouchSocketConfig config)
-    {
-        this.Config = config;
-
-        if (!(config.GetValue(TouchSocketCoreConfigExtension.ContainerProperty) is IContainer container))
-        {
-            container = new Container();
-        }
-
-        if (!container.IsRegistered(typeof(ILog)))
-        {
-            container.RegisterSingleton<ILog, LoggerGroup>();
-        }
-
-        if (!(config.GetValue(TouchSocketCoreConfigExtension.PluginsManagerProperty) is IPluginsManager pluginsManager))
-        {
-            pluginsManager = new PluginsManager(container);
-        }
-
-        if (container.IsRegistered(typeof(IPluginsManager)))
-        {
-            pluginsManager = container.Resolve<IPluginsManager>();
-        }
-        else
-        {
-            container.RegisterSingleton<IPluginsManager>(pluginsManager);
-        }
-
-        if (config.GetValue(TouchSocketCoreConfigExtension.ConfigureContainerProperty) is Action<IContainer> actionContainer)
-        {
-            actionContainer.Invoke(container);
-        }
-
-        if (config.GetValue(TouchSocketCoreConfigExtension.ConfigurePluginsProperty) is Action<IPluginsManager> actionPluginsManager)
-        {
-            pluginsManager.Enable = true;
-            actionPluginsManager.Invoke(pluginsManager);
-        }
-        this.Container = container;
-        this.PluginsManager = pluginsManager;
-    }
-
     private SerialPort CreateSerial(SerialProperty serialProperty)
     {
         SerialPort serialPort = new(serialProperty.PortName, serialProperty.BaudRate, serialProperty.Parity, serialProperty.DataBits, serialProperty.StopBits)
@@ -565,7 +593,84 @@ public class SerialClientBase : BaseSerial, ISerialClient
             this.BreakOut(ex.Message);
         }
     }
+    private void BeginBio()
+    {
+        while (true)
+        {
+            var byteBlock = new ByteBlock(this.BufferLength);
+            try
+            {
+                int r = MainSerialPort.Read(byteBlock.Buffer, 0, MainSerialPort.BytesToRead);
+                if (r == 0)
+                {
+                    this.BreakOut("远程终端主动关闭");
+                    return;
+                }
 
+                byteBlock.SetLength(r);
+                this.HandleBuffer(byteBlock);
+            }
+            catch (Exception ex)
+            {
+                this.BreakOut(ex.Message);
+                return;
+            }
+        }
+    }
+
+    private void ProcessReceived(SerialReceivedEventArgs e)
+    {
+        if (!this.m_online)
+        {
+            e.UserToken.SafeDispose();
+            return;
+        }
+        if (MainSerialPort.BytesToRead > 0)
+        {
+            byte[] buffer = new byte[2048];
+            var byteBlock = (ByteBlock)e.UserToken;
+            int num = MainSerialPort.Read(buffer, 0, MainSerialPort.BytesToRead);
+            byteBlock.Write(buffer, byteBlock.Len, num);
+            this.HandleBuffer(byteBlock);
+            try
+            {
+                var newByteBlock = BytePool.Default.GetByteBlock(Math.Min(this.BufferLength * this.m_bufferRate, 1024 * 1024));
+                newByteBlock.SetLength(num);
+                e.UserToken = newByteBlock;
+
+                if (MainSerialPort.BytesToRead > 0)
+                {
+                    this.m_bufferRate += 2;
+                    this.ProcessReceived(e);
+                }
+            }
+            catch (Exception ex)
+            {
+                e.UserToken.SafeDispose();
+                this.BreakOut(ex.Message);
+            }
+        }
+        else
+        {
+            e.UserToken.SafeDispose();
+            this.BreakOut("远程终端主动关闭");
+        }
+    }
+
+    private void SetSerialPort(SerialPort serialPort)
+    {
+        if (serialPort == null)
+        {
+            return;
+        }
+
+        this.MainSerialPort = serialPort;
+        var delaySenderOption = this.Config.GetValue(TouchSocketConfigExtension.DelaySenderProperty);
+        if (delaySenderOption != null)
+        {
+            this.m_delaySender = new SerialDelaySender(MainSerialPort, delaySenderOption, this.OnDelaySenderError);
+        }
+    }
     /// <summary>
     /// 处理数据
     /// </summary>
@@ -603,24 +708,6 @@ public class SerialClientBase : BaseSerial, ISerialClient
         }
     }
 
-    private void PrivateHandleReceivedData(ByteBlock byteBlock, IRequestInfo requestInfo)
-    {
-        if (this.OnHandleReceivedData?.Invoke(byteBlock, requestInfo) == false)
-        {
-            return;
-        }
-
-        if (this.HandleReceivedData(byteBlock, requestInfo))
-        {
-            return;
-        }
-
-        if (this.PluginsManager.Enable)
-        {
-            var args = new ReceivedDataEventArgs(byteBlock, requestInfo);
-            this.PluginsManager.Raise(nameof(ITcpReceivedPlugin.OnTcpReceived), this, args);
-        }
-    }
     #region 发送
 
     #region 同步发送
@@ -771,9 +858,9 @@ public class SerialClientBase : BaseSerial, ISerialClient
         }
         if (this.HandleSendingData(buffer, offset, length))
         {
-            if (this.m_useDelaySender && length < TouchSocketUtility.BigDataBoundary)
+            if (this.m_delaySender != null && length < m_delaySender.DelayLength)
             {
-                this.m_delaySender.Send(new QueueDataBytes(buffer, offset, length));
+                this.m_delaySender.Send(QueueDataBytes.CreateNew(buffer, offset, length));
             }
             else
             {
@@ -803,52 +890,5 @@ public class SerialClientBase : BaseSerial, ISerialClient
 
     #endregion 发送
 
-    private void ProcessReceived(SerialReceivedEventArgs e)
-    {
-        if (!this.m_online)
-        {
-            e.UserToken.SafeDispose();
-            return;
-        }
-        if (MainSerialPort.BytesToRead > 0)
-        {
-            byte[] buffer = new byte[2048];
-            var byteBlock = (ByteBlock)e.UserToken;
-            int num = MainSerialPort.Read(buffer, 0, MainSerialPort.BytesToRead);
-            byteBlock.Write(buffer, byteBlock.Len, num);
-            this.HandleBuffer(byteBlock);
-            try
-            {
-                var newByteBlock = BytePool.Default.GetByteBlock(Math.Min(this.BufferLength * this.m_bufferRate, 1024 * 1024));
-                newByteBlock.SetLength(num);
-                e.UserToken = newByteBlock;
 
-                if (MainSerialPort.BytesToRead > 0)
-                {
-                    this.m_bufferRate += 2;
-                    this.ProcessReceived(e);
-                }
-            }
-            catch (Exception ex)
-            {
-                e.UserToken.SafeDispose();
-                this.BreakOut(ex.Message);
-            }
-        }
-        else
-        {
-            e.UserToken.SafeDispose();
-            this.BreakOut("远程终端主动关闭");
-        }
-    }
-
-    private void SetSerialPort(SerialPort serialPort)
-    {
-        if (serialPort == null)
-        {
-            return;
-        }
-
-        this.m_mainSerialPort = serialPort;
-    }
 }

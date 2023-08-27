@@ -9,7 +9,18 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 #endregion
-
+//------------------------------------------------------------------------------
+//  此代码版权（除特别声明或在XREF结尾的命名空间的代码）归作者本人若汝棋茗所有
+//  源代码使用协议遵循本仓库的开源协议及附加协议，若本仓库没有设置，则按MIT开源协议授权
+//  CSDN博客：https://blog.csdn.net/qq_40374647
+//  哔哩哔哩视频：https://space.bilibili.com/94253567
+//  Gitee源代码仓库：https://gitee.com/RRQM_Home
+//  Github源代码仓库：https://github.com/RRQM
+//  API首页：http://rrqm_home.gitee.io/touchsocket/
+//  交流QQ群：234762506
+//  感谢您的下载和使用
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 using System.IO.Ports;
 
 namespace ThingsGateway.Foundation.Serial;
@@ -28,18 +39,22 @@ public sealed class SerialDelaySender : DisposableObject
     /// <summary>
     /// 延迟发送器
     /// </summary>
-    public SerialDelaySender(SerialPort serialPort, int queueLength, Action<Exception> onError)
+    /// <param name="serialPort"></param>
+    /// <param name="onError"></param>
+    /// <param name="delaySenderOption"></param>
+    public SerialDelaySender(SerialPort serialPort, DelaySenderOption delaySenderOption, Action<Exception> onError)
     {
+        this.DelayLength = delaySenderOption.DelayLength;
         this.m_serial = serialPort;
         this.m_onError = onError;
-        this.m_queueDatas = new IntelligentDataQueue<QueueDataBytes>(queueLength);
+        this.m_queueDatas = new IntelligentDataQueue<QueueDataBytes>(delaySenderOption.QueueLength);
         this.m_lockSlim = new ReaderWriterLockSlim();
     }
 
     /// <summary>
-    /// 延迟包最大尺寸，默认1024*512字节。
+    /// 延迟包最大尺寸。
     /// </summary>
-    public int DelayLength { get; set; } = 1024 * 512;
+    public int DelayLength { get; private set; }
 
     /// <summary>
     /// 是否处于发送状态

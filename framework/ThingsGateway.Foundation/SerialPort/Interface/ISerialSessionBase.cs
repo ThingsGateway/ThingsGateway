@@ -17,7 +17,7 @@ namespace ThingsGateway.Foundation.Serial;
 /// <summary>
 /// 串口连接接口。
 /// </summary>
-public interface ISerialClientBase : IClient, ISender, IDefaultSender, IPluginObject, IRequsetInfoSender
+public interface ISerialSessionBase : IClient, ISender, IDefaultSender, IPluginObject, IRequsetInfoSender
 {
     /// <summary>
     /// 是否允许自由调用<see cref="SetDataHandlingAdapter"/>进行赋值。
@@ -32,24 +32,19 @@ public interface ISerialClientBase : IClient, ISender, IDefaultSender, IPluginOb
     /// <summary>
     /// 数据处理适配器
     /// </summary>
-    TcpDataHandlingAdapter DataHandlingAdapter { get; }
+    SingleStreamDataHandlingAdapter DataHandlingAdapter { get; }
 
     /// <summary>
     /// 断开连接
     /// </summary>
-    DisconnectEventHandler<ISerialClientBase> Disconnected { get; set; }
+    DisconnectEventHandler<ISerialSessionBase> Disconnected { get; set; }
 
     /// <summary>
     /// 即将断开连接(仅主动断开时有效)。
     /// <para>
     /// </para>
     /// </summary>
-    DisconnectEventHandler<ISerialClientBase> Disconnecting { get; set; }
-
-    /// <summary>
-    /// 表示是否为客户端。
-    /// </summary>
-    bool IsClient { get; }
+    DisconnectEventHandler<ISerialSessionBase> Disconnecting { get; set; }
 
     /// <summary>
     /// 主通信器
@@ -77,5 +72,5 @@ public interface ISerialClientBase : IClient, ISender, IDefaultSender, IPluginOb
     /// 设置数据处理适配器
     /// </summary>
     /// <param name="adapter"></param>
-    void SetDataHandlingAdapter(TcpDataHandlingAdapter adapter);
+    void SetDataHandlingAdapter(SingleStreamDataHandlingAdapter adapter);
 }

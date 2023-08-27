@@ -393,7 +393,7 @@ public class CollectDeviceCore
                         var read = await InvokeMethodAsync(deviceVariableMethodRead, token);
                         if (read.IsSuccess)
                         {
-                            _logger?.LogTrace(_device.Name + "执行方法[" + deviceVariableMethodRead.MethodInfo.Name + "] 成功" + read.Content.ToJson());
+                            _logger?.LogTrace(_device.Name + "执行方法[" + deviceVariableMethodRead.MethodInfo.Name + "] 成功" + read.Content.ToJsonString());
                             deviceMethodsVariableSuccessNum += 1;
                         }
                         else

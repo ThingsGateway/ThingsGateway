@@ -850,19 +850,19 @@
             <param name="this"></param>
             <param name="values"></param>
         </member>
-        <member name="T:ThingsGateway.Admin.Core.JsonExtensions">
+        <member name="T:ThingsGateway.Admin.Core.JsonExtensions.JsonExtensions">
             <summary>
             对象拓展
             </summary>
         </member>
-        <member name="M:ThingsGateway.Admin.Core.JsonExtensions.ToJsonString(System.Object)">
+        <member name="M:ThingsGateway.Admin.Core.JsonExtensions.JsonExtensions.ToJsonString(System.Object)">
             <summary>
             转换为Json
             </summary>
             <param name="item"></param>
             <returns></returns>
         </member>
-        <member name="M:ThingsGateway.Admin.Core.JsonExtensions.ToJsonWithT``1(System.String)">
+        <member name="M:ThingsGateway.Admin.Core.JsonExtensions.JsonExtensions.ToJsonWithT``1(System.String)">
             <summary>
             从字符串到json
             </summary>

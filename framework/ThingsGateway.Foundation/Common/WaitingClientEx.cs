@@ -70,7 +70,7 @@ internal class WaitingClientEx<TClient> : DisposableObject, IWaitingClient<TClie
         this.m_breaked = true;
         this.Cancel();
     }
-    private void OnSerialClientDisconnected(ISerialClientBase client, DisconnectEventArgs e)
+    private void OnSerialSessionDisconnected(ISerialSessionBase client, DisconnectEventArgs e)
     {
         this.m_breaked = true;
         this.Cancel();
@@ -129,9 +129,9 @@ internal class WaitingClientEx<TClient> : DisposableObject, IWaitingClient<TClie
             {
                 tcpClient.Disconnected += this.OnDisconnected;
             }
-            if (this.WaitingOptions.BreakTrigger && this.Client is ISerialClientBase serialClient)
+            if (this.WaitingOptions.BreakTrigger && this.Client is ISerialSessionBase serialSession)
             {
-                serialClient.Disconnected += this.OnSerialClientDisconnected;
+                serialSession.Disconnected += this.OnSerialSessionDisconnected;
             }
             if (this.WaitingOptions.AdapterFilter == AdapterFilter.AllAdapter || this.WaitingOptions.AdapterFilter == AdapterFilter.WaitAdapter)
             {
@@ -190,9 +190,9 @@ internal class WaitingClientEx<TClient> : DisposableObject, IWaitingClient<TClie
             {
                 tcpClient.Disconnected -= this.OnDisconnected;
             }
-            if (this.WaitingOptions.BreakTrigger && this.Client is ISerialClientBase serialClient)
+            if (this.WaitingOptions.BreakTrigger && this.Client is ISerialSessionBase serialSession)
             {
-                serialClient.Disconnected -= this.OnSerialClientDisconnected;
+                serialSession.Disconnected -= this.OnSerialSessionDisconnected;
             }
             if (this.WaitingOptions.AdapterFilter == AdapterFilter.AllAdapter || this.WaitingOptions.AdapterFilter == AdapterFilter.WaitAdapter)
             {
@@ -232,9 +232,9 @@ internal class WaitingClientEx<TClient> : DisposableObject, IWaitingClient<TClie
             {
                 tcpClient.Disconnected += this.OnDisconnected;
             }
-            if (this.WaitingOptions.BreakTrigger && this.Client is ISerialClientBase serialClient)
+            if (this.WaitingOptions.BreakTrigger && this.Client is ISerialSessionBase serialSession)
             {
-                serialClient.Disconnected += this.OnSerialClientDisconnected;
+                serialSession.Disconnected += this.OnSerialSessionDisconnected;
             }
             if (this.WaitingOptions.AdapterFilter == AdapterFilter.AllAdapter || this.WaitingOptions.AdapterFilter == AdapterFilter.WaitAdapter)
             {
@@ -293,9 +293,9 @@ internal class WaitingClientEx<TClient> : DisposableObject, IWaitingClient<TClie
             {
                 tcpClient.Disconnected -= this.OnDisconnected;
             }
-            if (this.WaitingOptions.BreakTrigger && this.Client is ISerialClientBase serialClient)
+            if (this.WaitingOptions.BreakTrigger && this.Client is ISerialSessionBase serialSession)
             {
-                serialClient.Disconnected -= this.OnSerialClientDisconnected;
+                serialSession.Disconnected -= this.OnSerialSessionDisconnected;
             }
             if (this.WaitingOptions.AdapterFilter == AdapterFilter.AllAdapter || this.WaitingOptions.AdapterFilter == AdapterFilter.WaitAdapter)
             {

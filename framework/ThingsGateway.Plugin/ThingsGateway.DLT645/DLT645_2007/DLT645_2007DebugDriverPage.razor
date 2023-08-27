@@ -55,7 +55,7 @@
         if (firstRender)
         {
             //载入配置
-            _plc = new ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007((SerialClient)defalutDebugDriverPage.SerialClientPage.GetSerialClient());
+            _plc = new ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007((SerialsSession)defalutDebugDriverPage.SerialSessionPage.GetSerialSession());
             defalutDebugDriverPage.Plc = _plc;
         }
         base.OnAfterRender(firstRender);

@@ -38,9 +38,9 @@ public enum ChannelEnum
 public partial class DefalutDebugDriverPage : DriverDebugUIBase
 {
     /// <summary>
-    /// SerialClientPage
+    /// SerialSessionPage
     /// </summary>
-    public SerialClientPage SerialClientPage;
+    public SerialSessionPage SerialSessionPage;
     /// <summary>
     /// TcpClientPage
     /// </summary>
@@ -79,7 +79,7 @@ public partial class DefalutDebugDriverPage : DriverDebugUIBase
     {
         Plc?.SafeDispose();
         TcpClientPage?.SafeDispose();
-        SerialClientPage?.SafeDispose();
+        SerialSessionPage?.SafeDispose();
         TcpServerPage?.SafeDispose();
         UdpSessionPage?.SafeDispose();
         base.Dispose();
@@ -94,8 +94,8 @@ public partial class DefalutDebugDriverPage : DriverDebugUIBase
         {
             if (TcpClientPage != null)
                 TcpClientPage.LogAction = LogOut;
-            if (SerialClientPage != null)
-                SerialClientPage.LogAction = LogOut;
+            if (SerialSessionPage != null)
+                SerialSessionPage.LogAction = LogOut;
             if (TcpServerPage != null)
                 TcpServerPage.LogAction = LogOut;
             if (UdpSessionPage != null)

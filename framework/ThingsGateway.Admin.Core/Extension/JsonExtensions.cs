@@ -12,7 +12,7 @@
 
 using Furion.DependencyInjection;
 
-namespace ThingsGateway.Admin.Core;
+namespace ThingsGateway.Admin.Core.JsonExtensions;
 
 /// <summary>
 /// 对象拓展

@@ -237,13 +237,13 @@
             WaitingClientEx
             </summary>
         </member>
-        <member name="M:ThingsGateway.Foundation.ReadWriteDevicesSerialBase.#ctor(ThingsGateway.Foundation.Serial.SerialClient)">
+        <member name="M:ThingsGateway.Foundation.ReadWriteDevicesSerialBase.#ctor(ThingsGateway.Foundation.Serial.SerialsSession)">
             <summary>
             <inheritdoc cref="T:ThingsGateway.Foundation.ReadWriteDevicesSerialBase"/>
             </summary>
-            <param name="serialClient"></param>
+            <param name="serialSession"></param>
         </member>
-        <member name="P:ThingsGateway.Foundation.ReadWriteDevicesSerialBase.SerialClient">
+        <member name="P:ThingsGateway.Foundation.ReadWriteDevicesSerialBase.SerialsSession">
             <summary>
             串口管理对象
             </summary>
@@ -351,7 +351,7 @@
         <member name="M:ThingsGateway.Foundation.ReadWriteDevicesTcpServerBase.Dispose(System.Boolean)">
             <inheritdoc/>
         </member>
-        <member name="M:ThingsGateway.Foundation.ReadWriteDevicesTcpServerBase.Received(TouchSocket.Sockets.SocketClient,TouchSocket.Sockets.IRequestInfo)">
+        <member name="M:ThingsGateway.Foundation.ReadWriteDevicesTcpServerBase.Received(TouchSocket.Sockets.SocketClient,TouchSocket.Core.IRequestInfo)">
             <summary>
             接收解析
             </summary>
@@ -685,7 +685,7 @@
             接收到数据
             </summary>
         </member>
-        <member name="M:ThingsGateway.Foundation.TcpClientEx.HandleReceivedData(TouchSocket.Core.ByteBlock,TouchSocket.Sockets.IRequestInfo)">
+        <member name="M:ThingsGateway.Foundation.TcpClientEx.HandleReceivedData(TouchSocket.Core.ByteBlock,TouchSocket.Core.IRequestInfo)">
             <summary>
             接收数据
             </summary>
@@ -821,7 +821,7 @@
             <summary>
             建立Tcp的连接。
             </summary>
-            <param name="timeOut"></param>
+            <param name="timeout"></param>
             <param name="token"></param>
             <exception cref="T:System.ObjectDisposedException"></exception>
             <exception cref="T:System.ArgumentNullException"></exception>
@@ -837,7 +837,7 @@
         <member name="M:ThingsGateway.Foundation.TcpClientBaseEx.GetStream">
             <inheritdoc/>
         </member>
-        <member name="M:ThingsGateway.Foundation.TcpClientBaseEx.SetDataHandlingAdapter(TouchSocket.Sockets.TcpDataHandlingAdapter)">
+        <member name="M:ThingsGateway.Foundation.TcpClientBaseEx.SetDataHandlingAdapter(TouchSocket.Core.SingleStreamDataHandlingAdapter)">
             <inheritdoc/>
         </member>
         <member name="M:ThingsGateway.Foundation.TcpClientBaseEx.Setup(System.String)">
@@ -846,7 +846,7 @@
         <member name="M:ThingsGateway.Foundation.TcpClientBaseEx.Setup(TouchSocket.Core.TouchSocketConfig)">
             <inheritdoc/>
         </member>
-        <member name="M:ThingsGateway.Foundation.TcpClientBaseEx.HandleReceivedData(TouchSocket.Core.ByteBlock,TouchSocket.Sockets.IRequestInfo)">
+        <member name="M:ThingsGateway.Foundation.TcpClientBaseEx.HandleReceivedData(TouchSocket.Core.ByteBlock,TouchSocket.Core.IRequestInfo)">
             <summary>
             处理已接收到的数据。
             </summary>
@@ -875,7 +875,7 @@
             </summary>
             <param name="ex"></param>
         </member>
-        <member name="M:ThingsGateway.Foundation.TcpClientBaseEx.SetAdapter(TouchSocket.Sockets.TcpDataHandlingAdapter)">
+        <member name="M:ThingsGateway.Foundation.TcpClientBaseEx.SetAdapter(TouchSocket.Core.SingleStreamDataHandlingAdapter)">
             <summary>
             设置适配器，该方法不会检验<see cref="P:ThingsGateway.Foundation.TcpClientBaseEx.CanSetDataHandlingAdapter"/>的值。
             </summary>
@@ -886,13 +886,13 @@
             处理数据
             </summary>
         </member>
-        <member name="M:ThingsGateway.Foundation.TcpClientBaseEx.Send(TouchSocket.Sockets.IRequestInfo)">
+        <member name="M:ThingsGateway.Foundation.TcpClientBaseEx.Send(TouchSocket.Core.IRequestInfo)">
             <summary>
             <inheritdoc/>
             </summary>
             <param name="requestInfo"></param>
             <exception cref="T:TouchSocket.Sockets.NotConnectedException"></exception>
-            <exception cref="T:TouchSocket.Sockets.OverlengthException"></exception>
+            <exception cref="T:TouchSocket.Core.OverlengthException"></exception>
             <exception cref="T:System.Exception"></exception>
         </member>
         <member name="M:ThingsGateway.Foundation.TcpClientBaseEx.Send(System.Byte[],System.Int32,System.Int32)">
@@ -903,7 +903,7 @@
             <param name="offset"><inheritdoc/></param>
             <param name="length"><inheritdoc/></param>
             <exception cref="T:TouchSocket.Sockets.NotConnectedException"><inheritdoc/></exception>
-            <exception cref="T:TouchSocket.Sockets.OverlengthException"><inheritdoc/></exception>
+            <exception cref="T:TouchSocket.Core.OverlengthException"><inheritdoc/></exception>
             <exception cref="T:System.Exception"><inheritdoc/></exception>
         </member>
         <member name="M:ThingsGateway.Foundation.TcpClientBaseEx.Send(System.Collections.Generic.IList{System.ArraySegment{System.Byte}})">
@@ -912,7 +912,7 @@
             </summary>
             <param name="transferBytes"><inheritdoc/></param>
             <exception cref="T:TouchSocket.Sockets.NotConnectedException"><inheritdoc/></exception>
-            <exception cref="T:TouchSocket.Sockets.OverlengthException"><inheritdoc/></exception>
+            <exception cref="T:TouchSocket.Core.OverlengthException"><inheritdoc/></exception>
             <exception cref="T:System.Exception"><inheritdoc/></exception>
         </member>
         <member name="M:ThingsGateway.Foundation.TcpClientBaseEx.SendAsync(System.Byte[],System.Int32,System.Int32)">
@@ -923,16 +923,16 @@
             <param name="offset"><inheritdoc/></param>
             <param name="length"><inheritdoc/></param>
             <exception cref="T:TouchSocket.Sockets.NotConnectedException"><inheritdoc/></exception>
-            <exception cref="T:TouchSocket.Sockets.OverlengthException"><inheritdoc/></exception>
+            <exception cref="T:TouchSocket.Core.OverlengthException"><inheritdoc/></exception>
             <exception cref="T:System.Exception"><inheritdoc/></exception>
         </member>
-        <member name="M:ThingsGateway.Foundation.TcpClientBaseEx.SendAsync(TouchSocket.Sockets.IRequestInfo)">
+        <member name="M:ThingsGateway.Foundation.TcpClientBaseEx.SendAsync(TouchSocket.Core.IRequestInfo)">
             <summary>
             <inheritdoc/>
             </summary>
             <param name="requestInfo"></param>
             <exception cref="T:TouchSocket.Sockets.NotConnectedException"></exception>
-            <exception cref="T:TouchSocket.Sockets.OverlengthException"></exception>
+            <exception cref="T:TouchSocket.Core.OverlengthException"></exception>
             <exception cref="T:System.Exception"></exception>
         </member>
         <member name="M:ThingsGateway.Foundation.TcpClientBaseEx.SendAsync(System.Collections.Generic.IList{System.ArraySegment{System.Byte}})">
@@ -941,7 +941,7 @@
             </summary>
             <param name="transferBytes"><inheritdoc/></param>
             <exception cref="T:TouchSocket.Sockets.NotConnectedException"><inheritdoc/></exception>
-            <exception cref="T:TouchSocket.Sockets.OverlengthException"><inheritdoc/></exception>
+            <exception cref="T:TouchSocket.Core.OverlengthException"><inheritdoc/></exception>
             <exception cref="T:System.Exception"><inheritdoc/></exception>
         </member>
         <member name="M:ThingsGateway.Foundation.TcpClientBaseEx.DefaultSend(System.Byte[],System.Int32,System.Int32)">
@@ -952,7 +952,7 @@
             <param name="offset"><inheritdoc/></param>
             <param name="length"><inheritdoc/></param>
             <exception cref="T:TouchSocket.Sockets.NotConnectedException"><inheritdoc/></exception>
-            <exception cref="T:TouchSocket.Sockets.OverlengthException"><inheritdoc/></exception>
+            <exception cref="T:TouchSocket.Core.OverlengthException"><inheritdoc/></exception>
             <exception cref="T:System.Exception"><inheritdoc/></exception>
         </member>
         <member name="M:ThingsGateway.Foundation.TcpClientBaseEx.DefaultSendAsync(System.Byte[],System.Int32,System.Int32)">
@@ -963,7 +963,7 @@
             <param name="offset"><inheritdoc/></param>
             <param name="length"><inheritdoc/></param>
             <exception cref="T:TouchSocket.Sockets.NotConnectedException"><inheritdoc/></exception>
-            <exception cref="T:TouchSocket.Sockets.OverlengthException"><inheritdoc/></exception>
+            <exception cref="T:TouchSocket.Core.OverlengthException"><inheritdoc/></exception>
             <exception cref="T:System.Exception"><inheritdoc/></exception>
         </member>
         <member name="T:ThingsGateway.Foundation.WaitingClientExExtension">
@@ -1037,9 +1037,9 @@
         <member name="M:ThingsGateway.Foundation.ReadWriteDevicesTcpDataHandleAdapter`1.GetResponse(TouchSocket.Core.ByteBlock,`0,System.Byte[],System.Byte[])">
             <summary>
             解包获取实际数据包
-            <para>当不满足解析条件时，请返回<see cref="F:TouchSocket.Sockets.FilterResult.Cache"/>，此时会保存<see cref="P:TouchSocket.Core.ByteBlock.CanReadLen"/>的数据</para>
-            <para>当数据部分异常时，请移动<see cref="P:TouchSocket.Core.ByteBlock.Pos"/>到指定位置，然后返回<see cref="F:TouchSocket.Sockets.FilterResult.GoOn"/></para>
-            <para>当完全满足解析条件时，请返回<see cref="F:TouchSocket.Sockets.FilterResult.Success"/>最后将<see cref="P:TouchSocket.Core.ByteBlock.Pos"/>移至指定位置。</para>
+            <para>当不满足解析条件时，请返回<see cref="F:TouchSocket.Core.FilterResult.Cache"/>，此时会保存<see cref="P:TouchSocket.Core.ByteBlock.CanReadLen"/>的数据</para>
+            <para>当数据部分异常时，请移动<see cref="P:TouchSocket.Core.ByteBlock.Pos"/>到指定位置，然后返回<see cref="F:TouchSocket.Core.FilterResult.GoOn"/></para>
+            <para>当完全满足解析条件时，请返回<see cref="F:TouchSocket.Core.FilterResult.Success"/>最后将<see cref="P:TouchSocket.Core.ByteBlock.Pos"/>移至指定位置。</para>
             </summary>
         </member>
         <member name="M:ThingsGateway.Foundation.ReadWriteDevicesTcpDataHandleAdapter`1.GoSend(System.Byte[])">
@@ -1105,7 +1105,7 @@
         <member name="M:ThingsGateway.Foundation.ReadWriteDevicesUdpDataHandleAdapter`1.PreviewSend(System.Net.EndPoint,System.Collections.Generic.IList{System.ArraySegment{System.Byte}})">
             <inheritdoc/>
         </member>
-        <member name="M:ThingsGateway.Foundation.ReadWriteDevicesUdpDataHandleAdapter`1.PreviewSend(TouchSocket.Sockets.IRequestInfo)">
+        <member name="M:ThingsGateway.Foundation.ReadWriteDevicesUdpDataHandleAdapter`1.PreviewSend(TouchSocket.Core.IRequestInfo)">
             <inheritdoc/>
         </member>
         <member name="M:ThingsGateway.Foundation.ReadWriteDevicesUdpDataHandleAdapter`1.Reset">
@@ -1838,95 +1838,89 @@
             <param name="value"></param>
             <returns></returns>
         </member>
-        <member name="T:ThingsGateway.Foundation.Serial.ISerialClient">
+        <member name="T:ThingsGateway.Foundation.Serial.ISerialSession">
             <summary>
-            <inheritdoc cref="T:ThingsGateway.Foundation.Serial.ISerialClientBase"/>
+            <inheritdoc cref="T:ThingsGateway.Foundation.Serial.ISerialSessionBase"/>
             </summary>
         </member>
-        <member name="P:ThingsGateway.Foundation.Serial.ISerialClient.Connected">
+        <member name="P:ThingsGateway.Foundation.Serial.ISerialSession.Connected">
             <summary>
-            成功连接到服务器
+            成功打开串口
             </summary>
         </member>
-        <member name="P:ThingsGateway.Foundation.Serial.ISerialClient.Connecting">
+        <member name="P:ThingsGateway.Foundation.Serial.ISerialSession.Connecting">
             <summary>
-            准备连接的时候
+            准备连接串口的时候
             </summary>
         </member>
-        <member name="M:ThingsGateway.Foundation.Serial.ISerialClient.Connect(System.Int32)">
+        <member name="M:ThingsGateway.Foundation.Serial.ISerialSession.Connect">
             <summary>
             连接串口
             </summary>
-            <exception cref="T:System.TimeoutException"></exception>
             <exception cref="T:System.Exception"></exception>
         </member>
-        <member name="M:ThingsGateway.Foundation.Serial.ISerialClient.Setup(TouchSocket.Core.TouchSocketConfig)">
+        <member name="M:ThingsGateway.Foundation.Serial.ISerialSession.Setup(TouchSocket.Core.TouchSocketConfig)">
             <summary>
             配置服务器
             </summary>
             <param name="config"></param>
             <exception cref="T:System.Exception"></exception>
         </member>
-        <member name="T:ThingsGateway.Foundation.Serial.ISerialClientBase">
+        <member name="T:ThingsGateway.Foundation.Serial.ISerialSessionBase">
             <summary>
             串口连接接口。
             </summary>
         </member>
-        <member name="P:ThingsGateway.Foundation.Serial.ISerialClientBase.CanSetDataHandlingAdapter">
+        <member name="P:ThingsGateway.Foundation.Serial.ISerialSessionBase.CanSetDataHandlingAdapter">
             <summary>
-            是否允许自由调用<see cref="M:ThingsGateway.Foundation.Serial.ISerialClientBase.SetDataHandlingAdapter(TouchSocket.Sockets.TcpDataHandlingAdapter)"/>进行赋值。
+            是否允许自由调用<see cref="M:ThingsGateway.Foundation.Serial.ISerialSessionBase.SetDataHandlingAdapter(TouchSocket.Core.SingleStreamDataHandlingAdapter)"/>进行赋值。
             </summary>
         </member>
-        <member name="P:ThingsGateway.Foundation.Serial.ISerialClientBase.Config">
+        <member name="P:ThingsGateway.Foundation.Serial.ISerialSessionBase.Config">
             <summary>
             客户端配置
             </summary>
         </member>
-        <member name="P:ThingsGateway.Foundation.Serial.ISerialClientBase.DataHandlingAdapter">
+        <member name="P:ThingsGateway.Foundation.Serial.ISerialSessionBase.DataHandlingAdapter">
             <summary>
             数据处理适配器
             </summary>
         </member>
-        <member name="P:ThingsGateway.Foundation.Serial.ISerialClientBase.Disconnected">
+        <member name="P:ThingsGateway.Foundation.Serial.ISerialSessionBase.Disconnected">
             <summary>
             断开连接
             </summary>
         </member>
-        <member name="P:ThingsGateway.Foundation.Serial.ISerialClientBase.Disconnecting">
+        <member name="P:ThingsGateway.Foundation.Serial.ISerialSessionBase.Disconnecting">
             <summary>
             即将断开连接(仅主动断开时有效)。
             <para>
             </para>
             </summary>
         </member>
-        <member name="P:ThingsGateway.Foundation.Serial.ISerialClientBase.IsClient">
-            <summary>
-            表示是否为客户端。
-            </summary>
-        </member>
-        <member name="P:ThingsGateway.Foundation.Serial.ISerialClientBase.MainSerialPort">
+        <member name="P:ThingsGateway.Foundation.Serial.ISerialSessionBase.MainSerialPort">
             <summary>
             主通信器
             </summary>
         </member>
-        <member name="P:ThingsGateway.Foundation.Serial.ISerialClientBase.ReceiveType">
+        <member name="P:ThingsGateway.Foundation.Serial.ISerialSessionBase.ReceiveType">
             <summary>
             接收模式
             </summary>
         </member>
-        <member name="P:ThingsGateway.Foundation.Serial.ISerialClientBase.SerialProperty">
+        <member name="P:ThingsGateway.Foundation.Serial.ISerialSessionBase.SerialProperty">
             <summary>
             串口描述
             </summary>
         </member>
-        <member name="M:ThingsGateway.Foundation.Serial.ISerialClientBase.Close(System.String)">
+        <member name="M:ThingsGateway.Foundation.Serial.ISerialSessionBase.Close(System.String)">
             <summary>
             关闭客户端。
             </summary>
             <param name="msg"></param>
             <exception cref="T:System.Exception"></exception>
         </member>
-        <member name="M:ThingsGateway.Foundation.Serial.ISerialClientBase.SetDataHandlingAdapter(TouchSocket.Sockets.TcpDataHandlingAdapter)">
+        <member name="M:ThingsGateway.Foundation.Serial.ISerialSessionBase.SetDataHandlingAdapter(TouchSocket.Core.SingleStreamDataHandlingAdapter)">
             <summary>
             设置数据处理适配器
             </summary>
@@ -1965,285 +1959,22 @@
             <param name="value"></param>
             <returns></returns>
         </member>
-        <member name="T:ThingsGateway.Foundation.Serial.SerialClient">
-            <inheritdoc cref="T:ThingsGateway.Foundation.Serial.SerialClientBase"/>
-        </member>
-        <member name="P:ThingsGateway.Foundation.Serial.SerialClient.Received">
-            <summary>
-            接收到数据
-            </summary>
-        </member>
-        <member name="M:ThingsGateway.Foundation.Serial.SerialClient.HandleReceivedData(TouchSocket.Core.ByteBlock,TouchSocket.Sockets.IRequestInfo)">
-            <summary>
-            接收数据
-            </summary>
-            <param name="byteBlock"></param>
-            <param name="requestInfo"></param>
-        </member>
-        <member name="T:ThingsGateway.Foundation.Serial.SerialClientBase">
-            <summary>
-            串口管理
-            </summary>
-        </member>
-        <member name="M:ThingsGateway.Foundation.Serial.SerialClientBase.#ctor">
-            <summary>
-            构造函数
-            </summary>
-        </member>
-        <member name="P:ThingsGateway.Foundation.Serial.SerialClientBase.Connected">
-            <inheritdoc/>
-        </member>
-        <member name="P:ThingsGateway.Foundation.Serial.SerialClientBase.Connecting">
-            <inheritdoc/>
-        </member>
-        <member name="P:ThingsGateway.Foundation.Serial.SerialClientBase.Disconnected">
-            <inheritdoc/>
-        </member>
-        <member name="P:ThingsGateway.Foundation.Serial.SerialClientBase.Disconnecting">
-            <inheritdoc/>
-        </member>
-        <member name="M:ThingsGateway.Foundation.Serial.SerialClientBase.OnConnected(TouchSocket.Sockets.ConnectedEventArgs)">
-            <summary>
-            已经建立Tcp连接
-            </summary>
-            <param name="e"></param>
-        </member>
-        <member name="M:ThingsGateway.Foundation.Serial.SerialClientBase.OnConnecting(ThingsGateway.Foundation.Serial.SerialConnectingEventArgs)">
-            <summary>
-            准备连接的时候，此时已初始化Socket，但是并未建立Tcp连接
-            </summary>
-            <param name="e"></param>
-        </member>
-        <member name="M:ThingsGateway.Foundation.Serial.SerialClientBase.OnDisconnected(TouchSocket.Sockets.DisconnectEventArgs)">
-            <summary>
-            断开连接。在客户端未设置连接状态时，不会触发
-            </summary>
-            <param name="e"></param>
-        </member>
-        <member name="M:ThingsGateway.Foundation.Serial.SerialClientBase.OnDisconnecting(TouchSocket.Sockets.DisconnectEventArgs)">
-            <summary>
-            即将断开连接(仅主动断开时有效)。
-            <para>
-            当主动调用Close断开时。
-            </para>
-            </summary>
-            <param name="e"></param>
-        </member>
-        <member name="P:ThingsGateway.Foundation.Serial.SerialClientBase.CanSend">
-            <inheritdoc/>
-        </member>
-        <member name="P:ThingsGateway.Foundation.Serial.SerialClientBase.CanSetDataHandlingAdapter">
-            <inheritdoc/>
-        </member>
-        <member name="P:ThingsGateway.Foundation.Serial.SerialClientBase.Config">
-            <inheritdoc/>
-        </member>
-        <member name="P:ThingsGateway.Foundation.Serial.SerialClientBase.Container">
-            <inheritdoc/>
-        </member>
-        <member name="P:ThingsGateway.Foundation.Serial.SerialClientBase.DataHandlingAdapter">
-            <inheritdoc/>
-        </member>
-        <member name="P:ThingsGateway.Foundation.Serial.SerialClientBase.IsClient">
-            <inheritdoc/>
-        </member>
-        <member name="P:ThingsGateway.Foundation.Serial.SerialClientBase.LastReceivedTime">
-            <inheritdoc/>
-        </member>
-        <member name="P:ThingsGateway.Foundation.Serial.SerialClientBase.LastSendTime">
-            <inheritdoc/>
-        </member>
-        <member name="P:ThingsGateway.Foundation.Serial.SerialClientBase.MainSerialPort">
-            <inheritdoc/>
-        </member>
-        <member name="P:ThingsGateway.Foundation.Serial.SerialClientBase.OnHandleRawBuffer">
-            <inheritdoc/>
-        </member>
-        <member name="P:ThingsGateway.Foundation.Serial.SerialClientBase.OnHandleReceivedData">
-            <inheritdoc/>
-        </member>
-        <member name="P:ThingsGateway.Foundation.Serial.SerialClientBase.Online">
-            <inheritdoc/>
-            <inheritdoc/>
-        </member>
-        <member name="P:ThingsGateway.Foundation.Serial.SerialClientBase.PluginsManager">
-            <inheritdoc/>
-        </member>
-        <member name="P:ThingsGateway.Foundation.Serial.SerialClientBase.Protocol">
-            <inheritdoc/>
-        </member>
-        <member name="P:ThingsGateway.Foundation.Serial.SerialClientBase.ReceiveType">
-            <inheritdoc/>
-        </member>
-        <member name="M:ThingsGateway.Foundation.Serial.SerialClientBase.Close(System.String)">
-            <inheritdoc/>
-        </member>
-        <member name="M:ThingsGateway.Foundation.Serial.SerialClientBase.Dispose(System.Boolean)">
-            <summary>
-            <inheritdoc/>
-            </summary>
-            <param name="disposing"></param>
-        </member>
-        <member name="M:ThingsGateway.Foundation.Serial.SerialClientBase.Connect(System.Int32)">
-            <inheritdoc/>
-        </member>
-        <member name="M:ThingsGateway.Foundation.Serial.SerialClientBase.ConnectAsync(System.Int32)">
-            <inheritdoc/>
-        </member>
-        <member name="M:ThingsGateway.Foundation.Serial.SerialClientBase.TcpConnect(System.Int32)">
-            <summary>
-            建立Tcp的连接。
-            </summary>
-            <param name="timeout"></param>
-            <exception cref="T:System.ObjectDisposedException"></exception>
-            <exception cref="T:System.ArgumentNullException"></exception>
-            <exception cref="T:System.Exception"></exception>
-            <exception cref="T:System.TimeoutException"></exception>
-        </member>
-        <member name="P:ThingsGateway.Foundation.Serial.SerialClientBase.SerialProperty">
-            <summary>
-            <inheritdoc/>
-            </summary>
-        </member>
-        <member name="M:ThingsGateway.Foundation.Serial.SerialClientBase.SetDataHandlingAdapter(TouchSocket.Sockets.TcpDataHandlingAdapter)">
-            <inheritdoc/>
-        </member>
-        <member name="M:ThingsGateway.Foundation.Serial.SerialClientBase.Setup(TouchSocket.Core.TouchSocketConfig)">
-            <inheritdoc/>
-        </member>
-        <member name="M:ThingsGateway.Foundation.Serial.SerialClientBase.HandleReceivedData(TouchSocket.Core.ByteBlock,TouchSocket.Sockets.IRequestInfo)">
-            <summary>
-            处理已接收到的数据。
-            </summary>
-            <param name="byteBlock">以二进制流形式传递</param>
-            <param name="requestInfo">以解析的数据对象传递</param>
-            <returns>如果返回<see langword="true"/>则表示数据已被处理，且不会再向下传递。</returns>
-        </member>
-        <member name="M:ThingsGateway.Foundation.Serial.SerialClientBase.HandleSendingData(System.Byte[],System.Int32,System.Int32)">
-            <summary>
-            当即将发送时，如果覆盖父类方法，则不会触发插件。
-            </summary>
-            <param name="buffer">数据缓存区</param>
-            <param name="offset">偏移</param>
-            <param name="length">长度</param>
-            <returns>返回值表示是否允许发送</returns>
-        </member>
-        <member name="M:ThingsGateway.Foundation.Serial.SerialClientBase.LoadConfig(TouchSocket.Core.TouchSocketConfig)">
-            <summary>
-            加载配置
-            </summary>
-            <param name="config"></param>
-        </member>
-        <member name="M:ThingsGateway.Foundation.Serial.SerialClientBase.OnDelaySenderError(System.Exception)">
-            <summary>
-            在延迟发生错误
-            </summary>
-            <param name="ex"></param>
-        </member>
-        <member name="M:ThingsGateway.Foundation.Serial.SerialClientBase.SetAdapter(TouchSocket.Sockets.TcpDataHandlingAdapter)">
-            <summary>
-            设置适配器，该方法不会检验<see cref="P:ThingsGateway.Foundation.Serial.SerialClientBase.CanSetDataHandlingAdapter"/>的值。
-            </summary>
-            <param name="adapter"></param>
-        </member>
-        <member name="M:ThingsGateway.Foundation.Serial.SerialClientBase.HandleBuffer(TouchSocket.Core.ByteBlock)">
-            <summary>
-            处理数据
-            </summary>
-        </member>
-        <member name="M:ThingsGateway.Foundation.Serial.SerialClientBase.Send(TouchSocket.Sockets.IRequestInfo)">
-            <summary>
-            <inheritdoc/>
-            </summary>
-            <param name="requestInfo"></param>
-            <exception cref="T:TouchSocket.Sockets.NotConnectedException"></exception>
-            <exception cref="T:TouchSocket.Sockets.OverlengthException"></exception>
-            <exception cref="T:System.Exception"></exception>
-        </member>
-        <member name="M:ThingsGateway.Foundation.Serial.SerialClientBase.Send(System.Byte[],System.Int32,System.Int32)">
-            <summary>
-            <inheritdoc/>
-            </summary>
-            <param name="buffer"><inheritdoc/></param>
-            <param name="offset"><inheritdoc/></param>
-            <param name="length"><inheritdoc/></param>
-            <exception cref="T:TouchSocket.Sockets.NotConnectedException"><inheritdoc/></exception>
-            <exception cref="T:TouchSocket.Sockets.OverlengthException"><inheritdoc/></exception>
-            <exception cref="T:System.Exception"><inheritdoc/></exception>
-        </member>
-        <member name="M:ThingsGateway.Foundation.Serial.SerialClientBase.Send(System.Collections.Generic.IList{System.ArraySegment{System.Byte}})">
-            <summary>
-            <inheritdoc/>
-            </summary>
-            <param name="transferBytes"><inheritdoc/></param>
-            <exception cref="T:TouchSocket.Sockets.NotConnectedException"><inheritdoc/></exception>
-            <exception cref="T:TouchSocket.Sockets.OverlengthException"><inheritdoc/></exception>
-            <exception cref="T:System.Exception"><inheritdoc/></exception>
-        </member>
-        <member name="M:ThingsGateway.Foundation.Serial.SerialClientBase.SendAsync(System.Byte[],System.Int32,System.Int32)">
-            <summary>
-            <inheritdoc/>
-            </summary>
-            <param name="buffer"><inheritdoc/></param>
-            <param name="offset"><inheritdoc/></param>
-            <param name="length"><inheritdoc/></param>
-            <exception cref="T:TouchSocket.Sockets.NotConnectedException"><inheritdoc/></exception>
-            <exception cref="T:TouchSocket.Sockets.OverlengthException"><inheritdoc/></exception>
-            <exception cref="T:System.Exception"><inheritdoc/></exception>
-        </member>
-        <member name="M:ThingsGateway.Foundation.Serial.SerialClientBase.SendAsync(TouchSocket.Sockets.IRequestInfo)">
-            <summary>
-            <inheritdoc/>
-            </summary>
-            <param name="requestInfo"></param>
-            <exception cref="T:TouchSocket.Sockets.NotConnectedException"></exception>
-            <exception cref="T:TouchSocket.Sockets.OverlengthException"></exception>
-            <exception cref="T:System.Exception"></exception>
-        </member>
-        <member name="M:ThingsGateway.Foundation.Serial.SerialClientBase.SendAsync(System.Collections.Generic.IList{System.ArraySegment{System.Byte}})">
-            <summary>
-            <inheritdoc/>
-            </summary>
-            <param name="transferBytes"><inheritdoc/></param>
-            <exception cref="T:TouchSocket.Sockets.NotConnectedException"><inheritdoc/></exception>
-            <exception cref="T:TouchSocket.Sockets.OverlengthException"><inheritdoc/></exception>
-            <exception cref="T:System.Exception"><inheritdoc/></exception>
-        </member>
-        <member name="M:ThingsGateway.Foundation.Serial.SerialClientBase.DefaultSend(System.Byte[],System.Int32,System.Int32)">
-            <summary>
-            <inheritdoc/>
-            </summary>
-            <param name="buffer"><inheritdoc/></param>
-            <param name="offset"><inheritdoc/></param>
-            <param name="length"><inheritdoc/></param>
-            <exception cref="T:TouchSocket.Sockets.NotConnectedException"><inheritdoc/></exception>
-            <exception cref="T:TouchSocket.Sockets.OverlengthException"><inheritdoc/></exception>
-            <exception cref="T:System.Exception"><inheritdoc/></exception>
-        </member>
-        <member name="M:ThingsGateway.Foundation.Serial.SerialClientBase.DefaultSendAsync(System.Byte[],System.Int32,System.Int32)">
-            <summary>
-            <inheritdoc/>
-            </summary>
-            <param name="buffer"><inheritdoc/></param>
-            <param name="offset"><inheritdoc/></param>
-            <param name="length"><inheritdoc/></param>
-            <exception cref="T:TouchSocket.Sockets.NotConnectedException"><inheritdoc/></exception>
-            <exception cref="T:TouchSocket.Sockets.OverlengthException"><inheritdoc/></exception>
-            <exception cref="T:System.Exception"><inheritdoc/></exception>
-        </member>
         <member name="T:ThingsGateway.Foundation.Serial.SerialDelaySender">
             <summary>
             延迟发送器
             </summary>
         </member>
-        <member name="M:ThingsGateway.Foundation.Serial.SerialDelaySender.#ctor(System.IO.Ports.SerialPort,System.Int32,System.Action{System.Exception})">
+        <member name="M:ThingsGateway.Foundation.Serial.SerialDelaySender.#ctor(System.IO.Ports.SerialPort,TouchSocket.Sockets.DelaySenderOption,System.Action{System.Exception})">
             <summary>
             延迟发送器
             </summary>
+            <param name="serialPort"></param>
+            <param name="onError"></param>
+            <param name="delaySenderOption"></param>
         </member>
         <member name="P:ThingsGateway.Foundation.Serial.SerialDelaySender.DelayLength">
             <summary>
-            延迟包最大尺寸，默认1024*512字节。
+            延迟包最大尺寸。
             </summary>
         </member>
         <member name="P:ThingsGateway.Foundation.Serial.SerialDelaySender.Sending">
@@ -2294,6 +2025,263 @@
         </member>
         <member name="M:ThingsGateway.Foundation.Serial.SerialProperty.ToString">
             <inheritdoc/>
+        </member>
+        <member name="T:ThingsGateway.Foundation.Serial.SerialsSession">
+            <inheritdoc cref="T:ThingsGateway.Foundation.Serial.SerialSessionBase"/>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Serial.SerialsSession.Received">
+            <summary>
+            接收到数据
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Serial.SerialsSession.HandleReceivedData(TouchSocket.Core.ByteBlock,TouchSocket.Core.IRequestInfo)">
+            <summary>
+            接收数据
+            </summary>
+            <param name="byteBlock"></param>
+            <param name="requestInfo"></param>
+        </member>
+        <member name="T:ThingsGateway.Foundation.Serial.SerialSessionBase">
+            <summary>
+            串口管理
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Serial.SerialSessionBase.#ctor">
+            <summary>
+            构造函数
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Serial.SerialSessionBase.Connected">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Serial.SerialSessionBase.Connecting">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Serial.SerialSessionBase.Disconnected">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Serial.SerialSessionBase.Disconnecting">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Serial.SerialSessionBase.OnConnected(TouchSocket.Sockets.ConnectedEventArgs)">
+            <summary>
+            已经建立Tcp连接
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Serial.SerialSessionBase.OnConnecting(ThingsGateway.Foundation.Serial.SerialConnectingEventArgs)">
+            <summary>
+            准备连接的时候，此时已初始化Socket，但是并未建立Tcp连接
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Serial.SerialSessionBase.OnDisconnected(TouchSocket.Sockets.DisconnectEventArgs)">
+            <summary>
+            断开连接。在客户端未设置连接状态时，不会触发
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Serial.SerialSessionBase.OnDisconnecting(TouchSocket.Sockets.DisconnectEventArgs)">
+            <summary>
+            即将断开连接(仅主动断开时有效)。
+            <para>
+            当主动调用Close断开时。
+            </para>
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Serial.SerialSessionBase.LastReceivedTime">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Serial.SerialSessionBase.LastSendTime">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Serial.SerialSessionBase.OnHandleRawBuffer">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Serial.SerialSessionBase.OnHandleReceivedData">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Serial.SerialSessionBase.Container">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Serial.SerialSessionBase.CanSetDataHandlingAdapter">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Serial.SerialSessionBase.Config">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Serial.SerialSessionBase.DataHandlingAdapter">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Serial.SerialSessionBase.SerialProperty">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Serial.SerialSessionBase.MainSerialPort">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Serial.SerialSessionBase.Online">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Serial.SerialSessionBase.CanSend">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Serial.SerialSessionBase.PluginsManager">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Serial.SerialSessionBase.ReceiveType">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Serial.SerialSessionBase.Protocol">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Serial.SerialSessionBase.Close(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Serial.SerialSessionBase.Dispose(System.Boolean)">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <param name="disposing"></param>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Serial.SerialSessionBase.Open">
+            <summary>
+            打开串口
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Serial.SerialSessionBase.Connect">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Serial.SerialSessionBase.ConnectAsync">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Serial.SerialSessionBase.SetDataHandlingAdapter(TouchSocket.Core.SingleStreamDataHandlingAdapter)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Serial.SerialSessionBase.Setup(TouchSocket.Core.TouchSocketConfig)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Serial.SerialSessionBase.HandleReceivedData(TouchSocket.Core.ByteBlock,TouchSocket.Core.IRequestInfo)">
+            <summary>
+            处理已接收到的数据。
+            </summary>
+            <param name="byteBlock">以二进制流形式传递</param>
+            <param name="requestInfo">以解析的数据对象传递</param>
+            <returns>如果返回<see langword="true"/>则表示数据已被处理，且不会再向下传递。</returns>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Serial.SerialSessionBase.HandleSendingData(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            当即将发送时，如果覆盖父类方法，则不会触发插件。
+            </summary>
+            <param name="buffer">数据缓存区</param>
+            <param name="offset">偏移</param>
+            <param name="length">长度</param>
+            <returns>返回值表示是否允许发送</returns>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Serial.SerialSessionBase.LoadConfig(TouchSocket.Core.TouchSocketConfig)">
+            <summary>
+            加载配置
+            </summary>
+            <param name="config"></param>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Serial.SerialSessionBase.OnDelaySenderError(System.Exception)">
+            <summary>
+            在延迟发生错误
+            </summary>
+            <param name="ex"></param>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Serial.SerialSessionBase.SetAdapter(TouchSocket.Core.SingleStreamDataHandlingAdapter)">
+            <summary>
+            设置适配器，该方法不会检验<see cref="P:ThingsGateway.Foundation.Serial.SerialSessionBase.CanSetDataHandlingAdapter"/>的值。
+            </summary>
+            <param name="adapter"></param>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Serial.SerialSessionBase.HandleBuffer(TouchSocket.Core.ByteBlock)">
+            <summary>
+            处理数据
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Serial.SerialSessionBase.Send(TouchSocket.Core.IRequestInfo)">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <param name="requestInfo"></param>
+            <exception cref="T:TouchSocket.Sockets.NotConnectedException"></exception>
+            <exception cref="T:TouchSocket.Core.OverlengthException"></exception>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Serial.SerialSessionBase.Send(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <param name="buffer"><inheritdoc/></param>
+            <param name="offset"><inheritdoc/></param>
+            <param name="length"><inheritdoc/></param>
+            <exception cref="T:TouchSocket.Sockets.NotConnectedException"><inheritdoc/></exception>
+            <exception cref="T:TouchSocket.Core.OverlengthException"><inheritdoc/></exception>
+            <exception cref="T:System.Exception"><inheritdoc/></exception>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Serial.SerialSessionBase.Send(System.Collections.Generic.IList{System.ArraySegment{System.Byte}})">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <param name="transferBytes"><inheritdoc/></param>
+            <exception cref="T:TouchSocket.Sockets.NotConnectedException"><inheritdoc/></exception>
+            <exception cref="T:TouchSocket.Core.OverlengthException"><inheritdoc/></exception>
+            <exception cref="T:System.Exception"><inheritdoc/></exception>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Serial.SerialSessionBase.SendAsync(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <param name="buffer"><inheritdoc/></param>
+            <param name="offset"><inheritdoc/></param>
+            <param name="length"><inheritdoc/></param>
+            <exception cref="T:TouchSocket.Sockets.NotConnectedException"><inheritdoc/></exception>
+            <exception cref="T:TouchSocket.Core.OverlengthException"><inheritdoc/></exception>
+            <exception cref="T:System.Exception"><inheritdoc/></exception>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Serial.SerialSessionBase.SendAsync(TouchSocket.Core.IRequestInfo)">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <param name="requestInfo"></param>
+            <exception cref="T:TouchSocket.Sockets.NotConnectedException"></exception>
+            <exception cref="T:TouchSocket.Core.OverlengthException"></exception>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Serial.SerialSessionBase.SendAsync(System.Collections.Generic.IList{System.ArraySegment{System.Byte}})">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <param name="transferBytes"><inheritdoc/></param>
+            <exception cref="T:TouchSocket.Sockets.NotConnectedException"><inheritdoc/></exception>
+            <exception cref="T:TouchSocket.Core.OverlengthException"><inheritdoc/></exception>
+            <exception cref="T:System.Exception"><inheritdoc/></exception>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Serial.SerialSessionBase.DefaultSend(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <param name="buffer"><inheritdoc/></param>
+            <param name="offset"><inheritdoc/></param>
+            <param name="length"><inheritdoc/></param>
+            <exception cref="T:TouchSocket.Sockets.NotConnectedException"><inheritdoc/></exception>
+            <exception cref="T:TouchSocket.Core.OverlengthException"><inheritdoc/></exception>
+            <exception cref="T:System.Exception"><inheritdoc/></exception>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Serial.SerialSessionBase.DefaultSendAsync(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <param name="buffer"><inheritdoc/></param>
+            <param name="offset"><inheritdoc/></param>
+            <param name="length"><inheritdoc/></param>
+            <exception cref="T:TouchSocket.Sockets.NotConnectedException"><inheritdoc/></exception>
+            <exception cref="T:TouchSocket.Core.OverlengthException"><inheritdoc/></exception>
+            <exception cref="T:System.Exception"><inheritdoc/></exception>
         </member>
         <member name="T:ThingsGateway.Foundation.SerialPortExtensions">
             <summary>

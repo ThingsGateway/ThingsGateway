@@ -29,12 +29,12 @@ namespace DLT645Test
                 PortName = "COM1"
             }).SetBufferLength(1024);
 
-            var serialClient = new SerialClient();//链路对象
-            serialClient.Setup(config);
+            var serialSession = new SerialsSession();//链路对象
+            serialSession.Setup(config);
 
             //创建协议对象,构造函数需要传入对应链路对象
 
-            DLT645_2007 dlt6452007 = new(serialClient)//传入链路
+            DLT645_2007 dlt6452007 = new(serialSession)//传入链路
             {
                 //协议配置
                 DataFormat = DataFormat.ABCD,
@@ -47,7 +47,7 @@ namespace DLT645Test
 
             #region 读写测试
             //测试读取写入
-            Console.WriteLine("dlt6452007：" + dlt6452007.SerialClient.SerialProperty.ToJson());
+            Console.WriteLine("dlt6452007：" + dlt6452007.SerialsSession.SerialProperty.ToJsonString());
             await TestAsync(dlt6452007);
             #endregion
 
