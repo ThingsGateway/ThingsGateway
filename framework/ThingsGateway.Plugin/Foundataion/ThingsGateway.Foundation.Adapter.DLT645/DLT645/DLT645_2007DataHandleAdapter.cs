@@ -141,6 +141,8 @@ public class DLT645_2007DataHandleAdapter : ReadWriteDevicesTcpDataHandleAdapter
             }
 
 
+
+
             if ((response[headCodeIndex + 8] & 0x40) == 0x40)//控制码bit6为1时，返回错误
             {
                 byte byte1 = (byte)(response[headCodeIndex + 10] - 0x33);
@@ -149,12 +151,34 @@ public class DLT645_2007DataHandleAdapter : ReadWriteDevicesTcpDataHandleAdapter
                 request.ResultCode = ResultCode.Fail;
                 return FilterResult.Success;
             }
-            else
+
+            if (send[sendHeadCodeIndex + 8] == (byte)ControlCode.Read ||
+    send[sendHeadCodeIndex + 8] == (byte)ControlCode.Write
+    )
             {
-                request.Content = response.RemoveBegin(headCodeIndex + 10).RemoveLast(response.Length + 2 - len - headCodeIndex);
-                request.ResultCode = ResultCode.Success;
-                return FilterResult.Success;
+                //数据标识不符合时，返回错误
+                if (
+                (response[headCodeIndex + 10] == send[sendHeadCodeIndex + 10]) &&
+                (response[headCodeIndex + 11] == send[sendHeadCodeIndex + 11]) &&
+                (response[headCodeIndex + 12] == send[sendHeadCodeIndex + 12]) &&
+                (response[headCodeIndex + 13] == send[sendHeadCodeIndex + 13])
+                )
+                {
+
+                }
+                else
+                {
+                    request.Message = "返回数据标识不符合规则";
+                    request.ResultCode = ResultCode.Fail;
+                    return FilterResult.Success;
+                }
+
             }
+
+
+            request.Content = response.RemoveBegin(headCodeIndex + 10).RemoveLast(response.Length + 2 - len - headCodeIndex);
+            request.ResultCode = ResultCode.Success;
+            return FilterResult.Success;
 
         }
         else
