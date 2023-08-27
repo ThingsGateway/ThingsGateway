@@ -212,7 +212,7 @@ public partial class ImportVariable
         internal BrowseElement Tag { get; set; }
         public List<OPCDATagModel> GetAllTags()
         {
-            List<OPCDATagModel> allTags = new List<OPCDATagModel>();
+            List<OPCDATagModel> allTags = new();
             GetAllTagsRecursive(this, allTags);
             return allTags;
         }

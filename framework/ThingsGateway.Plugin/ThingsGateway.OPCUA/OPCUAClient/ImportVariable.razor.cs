@@ -278,7 +278,7 @@ public partial class ImportVariable
 
         public List<OPCUATagModel> GetAllTags()
         {
-            List<OPCUATagModel> allTags = new List<OPCUATagModel>();
+            List<OPCUATagModel> allTags = new();
             GetAllTagsRecursive(this, allTags);
             return allTags;
         }

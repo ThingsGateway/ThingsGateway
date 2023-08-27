@@ -102,11 +102,11 @@ public class OPCUAClient : DisposableObject
 
             },
 
-        SecurityConfiguration = new SecurityConfiguration
+            SecurityConfiguration = new SecurityConfiguration
             {
                 UseValidatedCertificates = true,
                 AutoAcceptUntrustedCertificates = true,//自动接受证书
-            RejectSHA1SignedCertificates = false,
+                RejectSHA1SignedCertificates = false,
                 MinimumCertificateKeySize = 1024,
                 SuppressNonceValidationErrors = true,
 
@@ -222,7 +222,7 @@ public class OPCUAClient : DisposableObject
         {
             try
             {
-                var variableNode = (VariableNode)ReadNode(items[i], false);
+                var variableNode = await ReadNodeAsync(items[i], false);
                 var item = new MonitoredItem
                 {
                     StartNodeId = variableNode.NodeId,
@@ -231,8 +231,6 @@ public class OPCUAClient : DisposableObject
                     Filter = OPCNode.DeadBand == 0 ? null : new DataChangeFilter() { DeadbandValue = OPCNode.DeadBand, DeadbandType = (int)DeadbandType.Absolute, Trigger = DataChangeTrigger.StatusValue },
                     SamplingInterval = OPCNode?.UpdateRate ?? 1000,
                 };
-                await typeSystem.LoadType(variableNode.DataType, true, true);
-
                 item.Notification += Callback;
                 monitoredItems.Add(item);
             }
@@ -311,11 +309,11 @@ public class OPCUAClient : DisposableObject
 
     }
 
-    private void Callback(MonitoredItem monitoreditem, MonitoredItemNotificationEventArgs monitoredItemNotificationEventArgs)
+    private async void Callback(MonitoredItem monitoreditem, MonitoredItemNotificationEventArgs monitoredItemNotificationEventArgs)
     {
         try
         {
-            VariableNode variableNode = (VariableNode)ReadNode(monitoreditem.StartNodeId.ToString(), false);
+            var variableNode = await ReadNodeAsync(monitoreditem.StartNodeId.ToString(), false);
             foreach (var value in monitoreditem.DequeueValues())
             {
                 if (value.Value != null)
@@ -546,7 +544,7 @@ public class OPCUAClient : DisposableObject
             m_reConnectHandler.SafeDispose();
             m_reConnectHandler = null;
         }
-        if(m_session!=null)
+        if (m_session != null)
         {
             m_session.KeepAlive -= Session_KeepAlive;
             m_session.Close(10000);
@@ -585,8 +583,7 @@ public class OPCUAClient : DisposableObject
                     NodeId = new NodeId(item.Key),
                     AttributeId = Attributes.Value,
                 };
-                var variableNode = (VariableNode)ReadNode(item.Key, false);
-                await typeSystem.LoadType(variableNode.DataType, true, true);
+                var variableNode = await ReadNodeAsync(item.Key, false, token);
                 var dataValue = JsonUtils.Decode(
                     m_session.MessageContext,
                     variableNode.DataType,
@@ -645,8 +642,6 @@ public class OPCUAClient : DisposableObject
         ReadValueIdCollection nodesToRead = new();
         for (int i = 0; i < nodeIds.Length; i++)
         {
-            var variableNode = (VariableNode)ReadNode(nodeIds[i].ToString(), false);
-            await typeSystem.LoadType(variableNode.DataType, true, true);
             nodesToRead.Add(new ReadValueId()
             {
                 NodeId = nodeIds[i],
@@ -668,7 +663,7 @@ public class OPCUAClient : DisposableObject
         List<(string, DataValue, JToken)> jTokens = new();
         for (int i = 0; i < results.Count; i++)
         {
-            var variableNode = (VariableNode)ReadNode(nodeIds[i].ToString(), false);
+            var variableNode = await ReadNodeAsync(nodeIds[i].ToString(), false, token);
             var type = TypeInfo.GetBuiltInType(variableNode.DataType, m_session.SystemContext.TypeTable);
             var jToken = JsonUtils.Encode(m_session.MessageContext, type, results[i].Value);
             jTokens.Add((variableNode.NodeId.ToString(), results[i], jToken));
@@ -679,7 +674,7 @@ public class OPCUAClient : DisposableObject
     /// <summary>
     /// 从服务器或缓存读取节点
     /// </summary>
-    private Node ReadNode(string nodeIdStr, bool isOnlyServer = true)
+    private async Task<VariableNode> ReadNodeAsync(string nodeIdStr, bool isOnlyServer = true, CancellationToken token = default)
     {
         if (!isOnlyServer)
         {
@@ -690,8 +685,9 @@ public class OPCUAClient : DisposableObject
         }
 
         NodeId nodeToRead = new(nodeIdStr);
-        var node = m_session.ReadNode(nodeToRead);
-        _variableDicts.AddOrUpdate(nodeIdStr, (VariableNode)node);
+        var node = (VariableNode)await m_session.ReadNodeAsync(nodeToRead, token);
+        await typeSystem.LoadType(node.DataType, true, true);
+        _variableDicts.AddOrUpdate(nodeIdStr, node);
         return node;
     }
     #endregion

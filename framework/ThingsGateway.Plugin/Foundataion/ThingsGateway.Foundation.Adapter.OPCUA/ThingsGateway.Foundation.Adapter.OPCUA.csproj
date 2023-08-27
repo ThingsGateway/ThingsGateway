@@ -2,14 +2,14 @@
 
 	<PropertyGroup>
 		<!--<GenerateDocumentationFile>True</GenerateDocumentationFile>-->
-		<TargetFrameworks>net462;net6.0;net7.0</TargetFrameworks>
+		<TargetFrameworks>net48;net6.0;net7.0</TargetFrameworks>
 
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Client" Version="1.4.371.96" />
-	  <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Client.ComplexTypes" Version="1.4.371.96" />
-	  <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Server" Version="1.4.371.96" />
+	  <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Client" Version="1.4.372.56" />
+	  <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Client.ComplexTypes" Version="1.4.372.56" />
+	  <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Server" Version="1.4.372.56" />
 	</ItemGroup>
 
 
