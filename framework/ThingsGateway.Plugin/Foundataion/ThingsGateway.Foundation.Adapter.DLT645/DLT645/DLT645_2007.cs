@@ -26,8 +26,8 @@ public class DLT645_2007 : ReadWriteDevicesSerialBase
     /// <summary>
     /// DLT645_2007
     /// </summary>
-    /// <param name="serialClient"></param>
-    public DLT645_2007(SerialClient serialClient) : base(serialClient)
+    /// <param name="serialSession"></param>
+    public DLT645_2007(SerialsSession serialSession) : base(serialSession)
     {
         ThingsGatewayBitConverter = new DLT645_2007BitConverter(EndianType.Big);
         RegisterByteLength = 2;
@@ -102,7 +102,7 @@ public class DLT645_2007 : ReadWriteDevicesSerialBase
         {
             EnableFEHead = EnableFEHead
         };
-        SerialClient.SetDataHandlingAdapter(dataHandleAdapter);
+        SerialsSession.SetDataHandlingAdapter(dataHandleAdapter);
     }
     /// <inheritdoc/>
     public override async Task<OperResult> WriteAsync(string address, string value, CancellationToken token = default)
@@ -182,7 +182,7 @@ public class DLT645_2007 : ReadWriteDevicesSerialBase
             var commandResult = DLT645Helper.GetDLT645_2007Command((byte)ControlCode.BroadcastTime, str.ByHexStringToBytes().Reverse().ToArray(), "999999999999".ByHexStringToBytes());
             if (commandResult.IsSuccess)
             {
-                SerialClient.Send(commandResult.Content);
+                SerialsSession.Send(commandResult.Content);
                 return OperResult.CreateSuccessResult();
             }
             else

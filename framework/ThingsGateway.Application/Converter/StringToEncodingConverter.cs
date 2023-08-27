@@ -80,7 +80,7 @@ public class StringToEncodingConverter : IConverter<string>
     {
         try
         {
-            source = target.ToJson();
+            source = target.ToJsonString();
             return true;
         }
         catch (Exception)

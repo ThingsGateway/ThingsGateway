@@ -21,7 +21,7 @@ using Newtonsoft.Json.Converters;
 using System.Dynamic;
 using System.Text;
 
-using TouchSocket.Core;
+using ThingsGateway.Admin.Core.JsonExtensions;
 
 namespace ThingsGateway.Application;
 /// <summary>
@@ -76,7 +76,7 @@ public class CSharpScriptEngine : ISingleton
         var expConverter = new ExpandoObjectConverter();
         dynamic obj = JsonConvert.DeserializeObject<List<ExpandoObject>>(input, expConverter);
         object result = runscript(obj);
-        var json = result.ToJson();
+        var json = result.ToJsonString();
         return json;
     }
 
@@ -116,7 +116,7 @@ public class CSharpScriptEngine : ISingleton
         var expConverter = new ExpandoObjectConverter();
         dynamic obj = JsonConvert.DeserializeObject<ExpandoObject>(input, expConverter);
         object result = runscript(obj);
-        var json = result.ToJson();
+        var json = result.ToJsonString();
         return json;
     }
 
@@ -136,7 +136,7 @@ public static class CSharpScriptEngineExtension
     /// </summary>
     public static string GetSciptListValue<T>(this T datas, string script) where T : class
     {
-        var inPut = datas.ToJson();
+        var inPut = datas.ToJsonString();
         if (!string.IsNullOrEmpty(script))
         {
             //执行脚本，获取新实体
@@ -154,7 +154,7 @@ public static class CSharpScriptEngineExtension
     /// </summary>
     public static string GetSciptValue<T>(this T datas, string script) where T : class
     {
-        var inPut = datas.ToJson();
+        var inPut = datas.ToJsonString();
         if (!string.IsNullOrEmpty(script))
         {
             //执行脚本，获取新实体

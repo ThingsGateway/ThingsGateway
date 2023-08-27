@@ -17,7 +17,7 @@ using TouchSocket.Core;
 namespace ThingsGateway.Blazor;
 
 /// <inheritdoc/>
-public partial class SerialClientPage
+public partial class SerialSessionPage
 {
     /// <summary>
     /// 日志输出
@@ -28,18 +28,18 @@ public partial class SerialClientPage
 
     private readonly SerialProperty serialProperty = new();
 
-    private SerialClient SerialClient { get; set; } = new();
+    private SerialsSession SerialsSession { get; set; } = new();
 
     /// <inheritdoc/>
     public void Dispose()
     {
-        SerialClient.SafeDispose();
+        SerialsSession.SafeDispose();
     }
     /// <summary>
     /// 获取对象
     /// </summary>
     /// <returns></returns>
-    public SerialClient GetSerialClient()
+    public SerialsSession GetSerialSession()
     {
         config?.Dispose();
         config = new TouchSocketConfig();
@@ -48,15 +48,15 @@ public partial class SerialClientPage
         config.ConfigureContainer(a => a.RegisterSingleton<ILog>(LogMessage));
         config.SetSerialProperty(serialProperty);
         //载入配置
-        SerialClient.Setup(config);
-        return SerialClient;
+        SerialsSession.Setup(config);
+        return SerialsSession;
     }
     private async Task ConnectAsync()
     {
         try
         {
-            SerialClient.Close();
-            await GetSerialClient().ConnectAsync();
+            SerialsSession.Close();
+            await GetSerialSession().ConnectAsync();
         }
         catch (Exception ex)
         {
@@ -68,7 +68,7 @@ public partial class SerialClientPage
     {
         try
         {
-            SerialClient.Close();
+            SerialsSession.Close();
         }
         catch (Exception ex)
         {
@@ -82,8 +82,8 @@ public partial class SerialClientPage
         var LogMessage = new TouchSocket.Core.LoggerGroup() { LogLevel = TouchSocket.Core.LogLevel.Trace };
         LogMessage.AddLogger(new EasyLogger(LogOut) { LogLevel = TouchSocket.Core.LogLevel.Trace });
         config.ConfigureContainer(a => a.RegisterSingleton<ILog>(LogMessage));
-        SerialClient = new SerialClient();
-        SerialClient.Setup(config);
+        SerialsSession = new SerialsSession();
+        SerialsSession.Setup(config);
         base.OnInitialized();
     }
 

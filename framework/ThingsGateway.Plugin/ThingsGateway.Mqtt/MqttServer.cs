@@ -260,7 +260,7 @@ public class MqttServer : UpLoadBase
             return;
         if (arg.ApplicationMessage.Topic != driverPropertys.RpcWriteTopic)
             return;
-        var rpcDatas = Encoding.UTF8.GetString(arg.ApplicationMessage.PayloadSegment).FromJson<MqttRpcNameVaueWithId>();
+        var rpcDatas = Encoding.UTF8.GetString(arg.ApplicationMessage.PayloadSegment).FromJsonString<MqttRpcNameVaueWithId>();
         if (rpcDatas == null)
             return;
         MqttRpcResult mqttRpcResult = new() { RpcId = rpcDatas.RpcId, Success = true };
@@ -280,13 +280,13 @@ public class MqttServer : UpLoadBase
                     else
                     {
                         mqttRpcResult.Success = false;
-                        mqttRpcResult.Message.Add(rpcData.Key, new("权限不足，变量不支持写入"));
+                        mqttRpcResult.Message.Add(rpcData.Key, new OperResult("权限不足，变量不支持写入"));
                     }
                 }
                 else
                 {
                     mqttRpcResult.Success = false;
-                    mqttRpcResult.Message.Add(rpcData.Key, new("不存在该变量"));
+                    mqttRpcResult.Message.Add(rpcData.Key, new OperResult("不存在该变量"));
                 }
             }
 
@@ -305,7 +305,7 @@ public class MqttServer : UpLoadBase
         {
             var variableMessage = new MqttApplicationMessageBuilder()
 .WithTopic($"{driverPropertys.RpcSubTopic}")
-.WithPayload(mqttRpcResult.ToJson()).Build();
+.WithPayload(mqttRpcResult.ToJsonString()).Build();
             await _mqttServer.InjectApplicationMessage(
                      new InjectedMqttApplicationMessage(variableMessage));
         }

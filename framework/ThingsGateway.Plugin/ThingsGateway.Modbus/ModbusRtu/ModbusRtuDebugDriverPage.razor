@@ -53,7 +53,7 @@
         if (firstRender)
         {
             //载入配置
-            _plc = new ThingsGateway.Foundation.Adapter.Modbus.ModbusRtu((SerialClient)defalutDebugDriverPage.SerialClientPage.GetSerialClient());
+            _plc = new ThingsGateway.Foundation.Adapter.Modbus.ModbusRtu((SerialsSession)defalutDebugDriverPage.SerialSessionPage.GetSerialSession());
             defalutDebugDriverPage.Plc = _plc;
         }
         base.OnAfterRender(firstRender);

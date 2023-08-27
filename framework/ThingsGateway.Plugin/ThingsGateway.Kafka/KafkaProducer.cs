@@ -92,7 +92,7 @@ public class KafkaProducer : UpLoadBase
                     {
                         if (!token.IsCancellationRequested)
                         {
-                            await KafKaUp(driverPropertys.VariableTopic, item.ToJson(), token);
+                            await KafKaUp(driverPropertys.VariableTopic, item.ToJsonString(), token);
                         }
                         else
                         {
@@ -128,7 +128,7 @@ public class KafkaProducer : UpLoadBase
                     {
                         if (!token.IsCancellationRequested)
                         {
-                            await KafKaUp(driverPropertys.DeviceTopic, item.ToJson(), token);
+                            await KafKaUp(driverPropertys.DeviceTopic, item.ToJsonString(), token);
                         }
                         else
                         {

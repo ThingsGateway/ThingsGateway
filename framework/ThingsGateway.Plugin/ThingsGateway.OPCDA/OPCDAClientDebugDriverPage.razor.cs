@@ -137,7 +137,7 @@ public partial class OPCDAClientDebugDriverPage : IDisposable
 
     private void ValueOut(List<ItemReadResult> values)
     {
-        defalutDebugDriverPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Debug, SysDateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset) + " - " + values.ToJson()));
+        defalutDebugDriverPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Debug, SysDateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset) + " - " + values.ToJsonString()));
         if (defalutDebugDriverPage.Messages.Count > 2500)
         {
             defalutDebugDriverPage.Messages.Clear();

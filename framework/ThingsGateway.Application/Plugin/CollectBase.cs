@@ -102,9 +102,9 @@ public abstract class CollectBase : DriverBase
                         StopBits = config.StopBits,
                     };
                     FoundataionConfig.SetValue(SerialConfigExtension.SerialProperty, data);
-                    var serialClient = new SerialClient();
-                    (serialClient).Setup(FoundataionConfig);
-                    return OperResult.CreateSuccessResult((object)serialClient);
+                    var serialSession = new SerialsSession();
+                    (serialSession).Setup(FoundataionConfig);
+                    return OperResult.CreateSuccessResult((object)serialSession);
                 case ShareChannelEnum.TcpClientEx:
                     FoundataionConfig.SetRemoteIPHost(new IPHost($"{config.IP}:{config.Port}"));
                     var tcpClient = new TcpClientEx();

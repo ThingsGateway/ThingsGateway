@@ -401,7 +401,7 @@
             从服务器读取值
             </summary>
         </member>
-        <member name="M:ThingsGateway.Foundation.Adapter.OPCUA.OPCUAClient.ReadNode(System.String,System.Boolean)">
+        <member name="M:ThingsGateway.Foundation.Adapter.OPCUA.OPCUAClient.ReadNodeAsync(System.String,System.Boolean,System.Threading.CancellationToken)">
             <summary>
             从服务器或缓存读取节点
             </summary>

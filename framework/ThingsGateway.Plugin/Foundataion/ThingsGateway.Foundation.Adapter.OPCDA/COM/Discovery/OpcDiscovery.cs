@@ -75,7 +75,7 @@ public class OpcDiscovery
                 {
                     return new OperResult<ServerInfo>($"无法创建OPCServer连接，请检查OPC名称是否一致，以下为Host{host}中的OPC列表:"
                         + Environment.NewLine +
-                      JToken.Parse(serverInfos.ToJson()).ToString()
+                      JToken.Parse(serverInfos.ToJsonString()).ToString()
                         );
                 }
                 return OperResult.CreateSuccessResult(result);

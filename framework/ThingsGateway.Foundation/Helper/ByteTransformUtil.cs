@@ -82,7 +82,7 @@ public class ByteTransformUtil
     /// </summary>
     public static IThingsGatewayBitConverter GetTransByAddress(ref string address, IThingsGatewayBitConverter defaultTransform)
     {
-        var hasCache = _cache.TryGetValue(address + defaultTransform.ToJson(), out IThingsGatewayBitConverter thingsGatewayBitConverter);
+        var hasCache = _cache.TryGetValue(address + defaultTransform.ToJsonString(), out IThingsGatewayBitConverter thingsGatewayBitConverter);
         if (hasCache)
         {
             return thingsGatewayBitConverter;
@@ -187,7 +187,7 @@ public class ByteTransformUtil
             {
                 converter.StringLength = length.Value;
             }
-            _cache.SetCache(address + defaultTransform.ToJson(), converter);
+            _cache.SetCache(address + defaultTransform.ToJsonString(), converter);
             return converter;
         }
 

@@ -70,7 +70,7 @@ public static class JsonUtils
                         TypeId = new { Id = dataTypeId.Identifier, Namespace = dataTypeId.NamespaceIndex },
                         Body = json
                     }
-                }.ToJson();
+                }.ToJsonString();
                 break;
             case BuiltInType.Variant:
                 var type = TypeInfo.GetDataTypeId(GetSystemType(json.Type));
@@ -82,13 +82,13 @@ public static class JsonUtils
                         Body = json
                     }
 
-                }.ToJson();
+                }.ToJsonString();
                 break;
             default:
                 newData = new
                 {
                     Value = json
-                }.ToJson();
+                }.ToJsonString();
                 break;
         }
 

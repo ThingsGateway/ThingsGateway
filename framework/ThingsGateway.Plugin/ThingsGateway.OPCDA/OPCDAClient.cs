@@ -169,7 +169,7 @@ public class OPCDAClient : CollectBase
             {
                 return;
             }
-            LogMessage.Trace(FoundationConst.LogMessageHeader + ToString() + "状态变化:" + Environment.NewLine + values?.ToJson());
+            LogMessage.Trace(FoundationConst.LogMessageHeader + ToString() + "状态变化:" + Environment.NewLine + values?.ToJsonString());
 
             foreach (var data in values)
             {
@@ -211,7 +211,7 @@ public class OPCDAClient : CollectBase
                     }
                     else
                     {
-                        var operResult = item.SetValue(null, time, quality == 192?true:false);
+                        var operResult = item.SetValue(null, time, quality == 192);
                         if (!operResult.IsSuccess)
                         {
                             LogMessage?.LogWarning(operResult.Message);

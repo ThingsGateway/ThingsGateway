@@ -15,6 +15,7 @@ using Furion.Logging;
 
 using ThingsGateway.Admin.Application;
 using ThingsGateway.Admin.Core;
+using ThingsGateway.Admin.Core.JsonExtensions;
 
 using UAParser;
 
@@ -91,7 +92,7 @@ public class DatabaseLoggingWriter : IDatabaseLoggingWriter
         //获取结果json字符串
         var resultJson = string.Empty;
         if (loggingMonitor.ReturnInformation != null)
-            resultJson = loggingMonitor.ReturnInformation.Value == null ? null : loggingMonitor.ReturnInformation.Value.ToJsonString();
+            resultJson = loggingMonitor.ReturnInformation.Value?.ToJsonString();
 
         //操作日志表实体
         var sysLogOperate = new SysOperateLog

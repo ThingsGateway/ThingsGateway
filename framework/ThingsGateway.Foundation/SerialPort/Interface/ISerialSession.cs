@@ -13,32 +13,31 @@
 namespace ThingsGateway.Foundation.Serial;
 
 /// <summary>
-/// <inheritdoc cref="ISerialClientBase"/>
+/// <inheritdoc cref="ISerialSessionBase"/>
 /// </summary>
-public interface ISerialClient : ISerialClientBase, IClientSender, IPluginObject
+public interface ISerialSession : ISerialSessionBase, IClientSender, IPluginObject
 {
     /// <summary>
-    /// 成功连接到服务器
+    /// 成功打开串口
     /// </summary>
-    ConnectedEventHandler<ISerialClient> Connected { get; set; }
+    ConnectedEventHandler<ISerialSession> Connected { get; set; }
 
     /// <summary>
-    /// 准备连接的时候
+    /// 准备连接串口的时候
     /// </summary>
-    SerialConnectingEventHandler<ISerialClient> Connecting { get; set; }
+    SerialConnectingEventHandler<ISerialSession> Connecting { get; set; }
 
     /// <summary>
     /// 连接串口
     /// </summary>
-    /// <exception cref="TimeoutException"></exception>
     /// <exception cref="Exception"></exception>
-    ISerialClient Connect(int timeout = 5000);
+    ISerialSession Connect();
 
     /// <summary>
     /// 配置服务器
     /// </summary>
     /// <param name="config"></param>
     /// <exception cref="Exception"></exception>
-    ISerialClient Setup(TouchSocketConfig config);
+    ISerialSession Setup(TouchSocketConfig config);
 
 }

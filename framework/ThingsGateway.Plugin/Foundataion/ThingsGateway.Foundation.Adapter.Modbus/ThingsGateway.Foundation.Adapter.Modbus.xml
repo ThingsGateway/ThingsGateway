@@ -239,11 +239,11 @@
             ModbusRtu
             </summary>
         </member>
-        <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusRtu.#ctor(ThingsGateway.Foundation.Serial.SerialClient)">
+        <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusRtu.#ctor(ThingsGateway.Foundation.Serial.SerialsSession)">
             <summary>
             ModbusRtu
             </summary>
-            <param name="serialClient"></param>
+            <param name="serialSession"></param>
         </member>
         <member name="P:ThingsGateway.Foundation.Adapter.Modbus.ModbusRtu.CacheTimeout">
             <summary>
@@ -378,7 +378,7 @@
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusServer.Dispose(System.Boolean)">
             <inheritdoc/>
         </member>
-        <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusServer.Received(TouchSocket.Sockets.SocketClient,TouchSocket.Sockets.IRequestInfo)">
+        <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusServer.Received(TouchSocket.Sockets.SocketClient,TouchSocket.Core.IRequestInfo)">
             <inheritdoc/>
         </member>
         <member name="T:ThingsGateway.Foundation.Adapter.Modbus.ModbusServerDataHandleAdapter">

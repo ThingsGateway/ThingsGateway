@@ -67,12 +67,12 @@ namespace ModbusDemo
             var tcpClient2 = new TcpClientEx();//链路对象
             var udpSession1 = new UdpSession();//链路对象
             var udpSession2 = new UdpSession();//链路对象
-            var serialClient = new SerialClient();//链路对象
+            var serialSession = new SerialsSession();//链路对象
             tcpClient1.Setup(config);
             tcpClient2.Setup(config);
             udpSession1.Setup(config);
             udpSession2.Setup(config);
-            serialClient.Setup(config);
+            serialSession.Setup(config);
 
             //创建协议对象,构造函数需要传入对应链路对象
 
@@ -108,7 +108,7 @@ namespace ModbusDemo
                 TimeOut = 3000,
                 IsCheckMessageId = true
             };
-            ModbusRtu modbusRtu = new(serialClient)//传入链路
+            ModbusRtu modbusRtu = new(serialSession)//传入链路
             {
                 //协议配置
                 DataFormat = DataFormat.ABCD,
@@ -134,7 +134,7 @@ namespace ModbusDemo
             //测试读取写入
             Console.WriteLine("modbusTcp：" + modbusTcp.TcpClientEx.RemoteIPHost);
             await TestAsync(modbusTcp);
-            Console.WriteLine("modbusRtu：" + modbusRtu.SerialClient.SerialProperty.ToJson());
+            Console.WriteLine("modbusRtu：" + modbusRtu.SerialsSession.SerialProperty.ToJsonString());
             await TestAsync(modbusRtu);
             Console.WriteLine("modbusRtuOvrTcp：" + modbusRtuOvrTcp.TcpClientEx.RemoteIPHost);
             await TestAsync(modbusRtuOvrTcp);

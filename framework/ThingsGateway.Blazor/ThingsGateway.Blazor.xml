@@ -67,9 +67,9 @@
         <member name="T:ThingsGateway.Blazor.DefalutDebugDriverPage">
             <inheritdoc/>
         </member>
-        <member name="F:ThingsGateway.Blazor.DefalutDebugDriverPage.SerialClientPage">
+        <member name="F:ThingsGateway.Blazor.DefalutDebugDriverPage.SerialSessionPage">
             <summary>
-            SerialClientPage
+            SerialSessionPage
             </summary>
         </member>
         <member name="F:ThingsGateway.Blazor.DefalutDebugDriverPage.TcpClientPage">
@@ -116,24 +116,24 @@
             </summary>
             <param name="firstRender"></param>
         </member>
-        <member name="T:ThingsGateway.Blazor.SerialClientPage">
+        <member name="T:ThingsGateway.Blazor.SerialSessionPage">
             <inheritdoc/>
         </member>
-        <member name="F:ThingsGateway.Blazor.SerialClientPage.LogAction">
+        <member name="F:ThingsGateway.Blazor.SerialSessionPage.LogAction">
             <summary>
             日志输出
             </summary>
         </member>
-        <member name="M:ThingsGateway.Blazor.SerialClientPage.Dispose">
+        <member name="M:ThingsGateway.Blazor.SerialSessionPage.Dispose">
             <inheritdoc/>
         </member>
-        <member name="M:ThingsGateway.Blazor.SerialClientPage.GetSerialClient">
+        <member name="M:ThingsGateway.Blazor.SerialSessionPage.GetSerialSession">
             <summary>
             获取对象
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ThingsGateway.Blazor.SerialClientPage.OnInitialized">
+        <member name="M:ThingsGateway.Blazor.SerialSessionPage.OnInitialized">
             <inheritdoc/>
         </member>
         <member name="T:ThingsGateway.Blazor.TcpClientPage">
