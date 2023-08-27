@@ -44,6 +44,8 @@ public class RpcLogService : DbRepository<RpcLog>, IRpcLogService
     private ISugarQueryable<RpcLog> GetPage(RpcLogPageInput input)
     {
         var query = Context.Queryable<RpcLog>()
+                           .WhereIF(input.StartTime != null, a => a.LogTime >= input.StartTime.Value.ToLocalTime())
+                           .WhereIF(input.EndTime != null, a => a.LogTime <= input.EndTime.Value.ToLocalTime())
                            .WhereIF(!string.IsNullOrEmpty(input.Source), it => it.OperateSource.Contains(input.Source))
                            .WhereIF(!string.IsNullOrEmpty(input.Object), it => it.OperateObject.Contains(input.Object))
                            .WhereIF(!string.IsNullOrEmpty(input.Method), it => it.OperateMethod.Contains(input.Method));

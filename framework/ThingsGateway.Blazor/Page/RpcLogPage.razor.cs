@@ -29,7 +29,8 @@ public partial class RpcLogPage
     [Inject]
     AjaxService AjaxService { get; set; }
 
-
+    [Inject]
+    InitTimezone InitTimezone { get; set; }
     private async Task ClearClickAsync()
     {
         var confirm = await PopupService.OpenConfirmDialogAsync("删除", "确定 ?");

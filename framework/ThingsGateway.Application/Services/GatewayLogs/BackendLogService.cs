@@ -86,6 +86,8 @@ public class BackendLogService : DbRepository<BackendLog>, IBackendLogService
     private ISugarQueryable<BackendLog> GetPage(BackendLogPageInput input)
     {
         var query = Context.Queryable<BackendLog>()
+                           .WhereIF(input.StartTime != null, a => a.LogTime >= input.StartTime.Value.ToLocalTime())
+                           .WhereIF(input.EndTime != null, a => a.LogTime <= input.EndTime.Value.ToLocalTime())
                            .WhereIF(!string.IsNullOrEmpty(input.Source), it => it.LogSource.Contains(input.Source))
                            .WhereIF(!string.IsNullOrEmpty(input.Level), it => it.LogLevel.ToString().Contains(input.Level));
         for (int i = 0; i < input.SortField.Count; i++)

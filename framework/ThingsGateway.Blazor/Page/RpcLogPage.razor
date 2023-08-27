@@ -30,6 +30,31 @@
               QueryCallAsync="QueryCallAsync"
                 IsShowDetailButton IsShowQueryButton>
     <SearchTemplate>
+
+        
+        <MMenu CloseOnContentClick="false" OffsetY Context="menu">
+            <ActivatorContent>
+                <MTextField Dense Readonly Style="max-width:200px;" HideDetails=@("auto") Class="my-1  mx-2 "
+                            Value="context.StartTime.Value.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset)"
+                @attributes="menu.Attrs" Outlined Label=@context.Description(x => x.StartTime) />
+            </ActivatorContent>
+            <ChildContent>
+                <AppDateTimePicker @bind-Value="context.StartTime"></AppDateTimePicker>
+            </ChildContent>
+        </MMenu>
+
+        <MMenu CloseOnContentClick="false" OffsetY Context="menu">
+            <ActivatorContent>
+                <MTextField Dense Readonly Style="max-width:200px;" HideDetails=@("auto") Class="my-1  mx-2 "
+                            Value="context.EndTime.Value.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset)" Clearable
+                @attributes="menu.Attrs" Outlined Label=@context.Description(x => x.EndTime) />
+            </ActivatorContent>
+            <ChildContent>
+                <AppDateTimePicker @bind-Value="context.EndTime"></AppDateTimePicker>
+            </ChildContent>
+        </MMenu>
+
+
         <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="my-1  mx-2 " @bind-Value="context.Source"
                         Outlined Label=@context.Description(x => x.Source) />
         <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="my-1  mx-2 " @bind-Value="context.Object"

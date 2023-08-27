@@ -20,6 +20,15 @@ namespace ThingsGateway.Application;
 public class BackendLogPageInput : BasePageInput
 {
     /// <summary>
+    /// 开始时间
+    /// </summary>
+    public DateTime? StartTime { get; set; } = DateTime.UtcNow.AddDays(-1);
+    /// <summary>
+    /// 结束时间
+    /// </summary>
+    public DateTime? EndTime { get; set; } = DateTime.UtcNow.AddDays(1);
+
+    /// <summary>
     /// 日志源
     /// </summary>
     [Description("日志源")]
@@ -55,6 +64,14 @@ public class BackendLogInput
 /// </summary>
 public class RpcLogPageInput : BasePageInput
 {
+    /// <summary>
+    /// 开始时间
+    /// </summary>
+    public DateTime? StartTime { get; set; } = DateTime.UtcNow.AddDays(-1);
+    /// <summary>
+    /// 结束时间
+    /// </summary>
+    public DateTime? EndTime { get; set; } = DateTime.UtcNow.AddDays(1);
     /// <summary>
     /// 操作源
     /// </summary>
