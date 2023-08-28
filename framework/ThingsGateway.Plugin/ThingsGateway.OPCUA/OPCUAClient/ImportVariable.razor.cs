@@ -236,14 +236,9 @@ public partial class ImportVariable
                     if (data != null && data.Count > 0)
                     {
                         if (isAll)
-                        {
-                            child.Nodes = new();
-                        }
-                        else
-                        {
                             child.Nodes = await PopulateBranchAsync((NodeId)target.NodeId);
-
-                        }
+                        else
+                            child.Nodes = new();
                     }
                     else
                     {
