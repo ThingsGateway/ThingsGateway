@@ -837,6 +837,12 @@
         <member name="M:ThingsGateway.Foundation.TcpClientBaseEx.GetStream">
             <inheritdoc/>
         </member>
+        <member name="P:ThingsGateway.Foundation.TcpClientBaseEx.ReceiveBufferSize">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.Foundation.TcpClientBaseEx.SendBufferSize">
+            <inheritdoc/>
+        </member>
         <member name="M:ThingsGateway.Foundation.TcpClientBaseEx.SetDataHandlingAdapter(TouchSocket.Core.SingleStreamDataHandlingAdapter)">
             <inheritdoc/>
         </member>
@@ -1820,23 +1826,20 @@
             串口基接口
             </summary>
         </member>
-        <member name="P:ThingsGateway.Foundation.Serial.ISerial.BufferLength">
+        <member name="P:ThingsGateway.Foundation.Serial.ISerial.SendBufferSize">
             <summary>
-            数据交互缓存池限制
+            发送缓存区大小。最小值=1024。
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Serial.ISerial.ReceiveBufferSize">
+            <summary>
+            接收缓存区大小。最小值=1024。
             </summary>
         </member>
         <member name="P:ThingsGateway.Foundation.Serial.ISerial.Logger">
             <summary>
             日志记录器
             </summary>
-        </member>
-        <member name="M:ThingsGateway.Foundation.Serial.ISerial.SetBufferLength(System.Int32)">
-            <summary>
-            设置数据交互缓存池尺寸，min=1024 byte。
-            一般情况下该值用于三个方面，包括：发送、接收缓存，及内存池的默认申请。
-            </summary>
-            <param name="value"></param>
-            <returns></returns>
         </member>
         <member name="T:ThingsGateway.Foundation.Serial.ISerialSession">
             <summary>
@@ -1936,28 +1939,14 @@
             同步根。
             </summary>
         </member>
-        <member name="M:ThingsGateway.Foundation.Serial.BaseSerial.#ctor">
-            <summary>
-            通讯基类
-            </summary>
+        <member name="P:ThingsGateway.Foundation.Serial.BaseSerial.SendBufferSize">
+            <inheritdoc/>
         </member>
-        <member name="P:ThingsGateway.Foundation.Serial.BaseSerial.BufferLength">
-            <summary>
-            数据交互缓存池限制，min=1024 byte
-            </summary>
+        <member name="P:ThingsGateway.Foundation.Serial.BaseSerial.ReceiveBufferSize">
+            <inheritdoc/>
         </member>
         <member name="P:ThingsGateway.Foundation.Serial.BaseSerial.Logger">
-            <summary>
-            日志记录器
-            </summary>
-        </member>
-        <member name="M:ThingsGateway.Foundation.Serial.BaseSerial.SetBufferLength(System.Int32)">
-            <summary>
-            设置数据交互缓存池尺寸，min=1024 byte。
-            一般情况下该值用于三个方面，包括：socket的发送、接收缓存，及内存池的默认申请。
-            </summary>
-            <param name="value"></param>
-            <returns></returns>
+            <inheritdoc/>
         </member>
         <member name="T:ThingsGateway.Foundation.Serial.SerialDelaySender">
             <summary>
@@ -2155,6 +2144,12 @@
             <inheritdoc/>
         </member>
         <member name="M:ThingsGateway.Foundation.Serial.SerialSessionBase.ConnectAsync">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Serial.SerialSessionBase.ReceiveBufferSize">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Serial.SerialSessionBase.SendBufferSize">
             <inheritdoc/>
         </member>
         <member name="M:ThingsGateway.Foundation.Serial.SerialSessionBase.SetDataHandlingAdapter(TouchSocket.Core.SingleStreamDataHandlingAdapter)">

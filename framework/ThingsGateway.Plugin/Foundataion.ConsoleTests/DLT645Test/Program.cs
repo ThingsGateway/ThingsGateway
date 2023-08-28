@@ -27,7 +27,7 @@ namespace DLT645Test
             .SetSerialProperty(new SerialProperty() //串口链路才需要
             {
                 PortName = "COM1"
-            }).SetBufferLength(1024);
+            });
 
             var serialSession = new SerialsSession();//链路对象
             serialSession.Setup(config);

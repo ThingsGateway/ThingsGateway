@@ -60,12 +60,27 @@ public class SerialSessionBase : BaseSerial, ISerialSession
     public SerialSessionBase()
     {
         this.Protocol = SerialPort;
+        this.m_receiveCounter = new ValueCounter
+        {
+            Period = TimeSpan.FromSeconds(1),
+            OnPeriod = this.OnReceivePeriod
+        };
+        this.m_sendCounter = new ValueCounter
+        {
+            Period = TimeSpan.FromSeconds(1),
+            OnPeriod = this.OnSendPeriod
+        };
     }
 
+
     #region 变量
+
     private SerialDelaySender m_delaySender;
-    private int m_bufferRate = 1;
+    private long m_bufferRate = 1;
     private volatile bool m_online;
+    ValueCounter m_receiveCounter;
+    ValueCounter m_sendCounter;
+
     #endregion 变量
 
     #region 事件
@@ -110,8 +125,6 @@ public class SerialSessionBase : BaseSerial, ISerialSession
 
     private void PrivateOnConnecting(SerialConnectingEventArgs e)
     {
-        this.LastReceivedTime = DateTime.Now;
-        this.LastSendTime = DateTime.Now;
         if (this.CanSetDataHandlingAdapter)
         {
             this.SetDataHandlingAdapter(this.Config.GetValue(TouchSocketConfigExtension.TcpDataHandlingAdapterProperty).Invoke());
@@ -201,10 +214,10 @@ public class SerialSessionBase : BaseSerial, ISerialSession
     #region 属性
 
     /// <inheritdoc/>
-    public DateTime LastReceivedTime { get; private set; }
+    public DateTime LastReceivedTime => this.m_receiveCounter.LastIncrement;
 
     /// <inheritdoc/>
-    public DateTime LastSendTime { get; private set; }
+    public DateTime LastSendTime => this.m_sendCounter.LastIncrement;
 
     /// <inheritdoc/>
     public Func<ByteBlock, bool> OnHandleRawBuffer { get; set; }
@@ -370,7 +383,43 @@ public class SerialSessionBase : BaseSerial, ISerialSession
     }
     #endregion
 
+    private void OnReceivePeriod(long value)
+    {
+        this.ReceiveBufferSize = TouchSocketUtility.HitBufferLength(value);
+    }
 
+    private void OnSendPeriod(long value)
+    {
+        this.SendBufferSize = TouchSocketUtility.HitBufferLength(value);
+    }
+
+    /// <inheritdoc/>
+    public override int ReceiveBufferSize
+    {
+        get => base.ReceiveBufferSize;
+        set
+        {
+            base.ReceiveBufferSize = value;
+            if (this.MainSerialPort != null && !MainSerialPort.IsOpen)
+            {
+                this.MainSerialPort.ReadBufferSize = base.ReceiveBufferSize;
+            }
+        }
+    }
+
+    /// <inheritdoc/>
+    public override int SendBufferSize
+    {
+        get => base.SendBufferSize;
+        set
+        {
+            base.SendBufferSize = value;
+            if (this.MainSerialPort != null && !MainSerialPort.IsOpen)
+            {
+                this.MainSerialPort.WriteBufferSize = base.SendBufferSize;
+            }
+        }
+    }
 
     /// <inheritdoc/>
     public virtual void SetDataHandlingAdapter(SingleStreamDataHandlingAdapter adapter)
@@ -499,10 +548,6 @@ public class SerialSessionBase : BaseSerial, ISerialSession
     protected virtual void LoadConfig(TouchSocketConfig config)
     {
         this.SerialProperty = config.GetValue(SerialConfigExtension.SerialProperty);
-        if (config.GetValue(TouchSocketConfigExtension.BufferLengthProperty) is int value)
-        {
-            this.SetBufferLength(value);
-        }
         this.Logger ??= this.Container.Resolve<ILog>();
         this.ReceiveType = config.GetValue(TouchSocketConfigExtension.ReceiveTypeProperty);
     }
@@ -546,7 +591,7 @@ public class SerialSessionBase : BaseSerial, ISerialSession
         if (this.ReceiveType == ReceiveType.Iocp)
         {
             SerialReceivedEventArgs eventArgs = new();
-            var byteBlock = BytePool.Default.GetByteBlock(this.BufferLength);
+            var byteBlock = BytePool.Default.GetByteBlock(this.ReceiveBufferSize);
             byteBlock.SetLength(0);
             eventArgs.UserToken = byteBlock;
             if (this.MainSerialPort.BytesToRead > 0)
@@ -580,7 +625,7 @@ public class SerialSessionBase : BaseSerial, ISerialSession
         {
             this.m_bufferRate = 1;
             SerialReceivedEventArgs eventArgs = new();
-            var newByteBlock = BytePool.Default.GetByteBlock(Math.Min(this.BufferLength * this.m_bufferRate, 1024 * 1024));
+            var newByteBlock = BytePool.Default.GetByteBlock((int)Math.Min(this.ReceiveBufferSize * this.m_bufferRate, TouchSocketUtility.MaxBufferLength));
             newByteBlock.SetLength(0);
             eventArgs.UserToken = newByteBlock;
             if (MainSerialPort.BytesToRead > 0)
@@ -597,7 +642,7 @@ public class SerialSessionBase : BaseSerial, ISerialSession
     {
         while (true)
         {
-            var byteBlock = new ByteBlock(this.BufferLength);
+            var byteBlock = BytePool.Default.GetByteBlock(this.ReceiveBufferSize);
             try
             {
                 int r = MainSerialPort.Read(byteBlock.Buffer, 0, MainSerialPort.BytesToRead);
@@ -634,7 +679,7 @@ public class SerialSessionBase : BaseSerial, ISerialSession
             this.HandleBuffer(byteBlock);
             try
             {
-                var newByteBlock = BytePool.Default.GetByteBlock(Math.Min(this.BufferLength * this.m_bufferRate, 1024 * 1024));
+                var newByteBlock = BytePool.Default.GetByteBlock((int)Math.Min(this.ReceiveBufferSize * this.m_bufferRate, TouchSocketUtility.MaxBufferLength));
                 newByteBlock.SetLength(num);
                 e.UserToken = newByteBlock;
 
@@ -678,7 +723,7 @@ public class SerialSessionBase : BaseSerial, ISerialSession
     {
         try
         {
-            this.LastReceivedTime = DateTime.Now;
+            this.m_receiveCounter.Increment(byteBlock.Length);
             if (this.OnHandleRawBuffer?.Invoke(byteBlock) == false)
             {
                 return;
@@ -867,7 +912,7 @@ public class SerialSessionBase : BaseSerial, ISerialSession
                 this.MainSerialPort.AbsoluteSend(buffer, offset, length);
             }
 
-            this.LastSendTime = DateTime.Now;
+            this.m_sendCounter.Increment(length);
         }
     }
 

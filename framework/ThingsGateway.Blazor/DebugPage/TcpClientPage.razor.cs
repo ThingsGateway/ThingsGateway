@@ -82,7 +82,7 @@ public partial class TcpClientPage
         var LogMessage = new TouchSocket.Core.LoggerGroup() { LogLevel = TouchSocket.Core.LogLevel.Trace };
         LogMessage.AddLogger(new EasyLogger(LogOut) { LogLevel = TouchSocket.Core.LogLevel.Trace });
         config.ConfigureContainer(a => a.RegisterSingleton<ILog>(LogMessage));
-        config.SetRemoteIPHost(new IPHost(IP + ":" + Port)).SetBufferLength(300);
+        config.SetRemoteIPHost(new IPHost(IP + ":" + Port));
         //载入配置
         TcpClientEx.Setup(config);
         return TcpClientEx;
@@ -96,7 +96,7 @@ public partial class TcpClientPage
         var LogMessage = new TouchSocket.Core.LoggerGroup() { LogLevel = TouchSocket.Core.LogLevel.Trace };
         LogMessage.AddLogger(new EasyLogger(LogOut) { LogLevel = TouchSocket.Core.LogLevel.Trace });
         config.ConfigureContainer(a => a.RegisterSingleton<ILog>(LogMessage));
-        config.SetRemoteIPHost(new IPHost(IP + ":" + Port)).SetBufferLength(300);
+        config.SetRemoteIPHost(new IPHost(IP + ":" + Port));
         TcpClientEx = new TcpClientEx();
         TcpClientEx.Setup(config);
         base.OnInitialized();

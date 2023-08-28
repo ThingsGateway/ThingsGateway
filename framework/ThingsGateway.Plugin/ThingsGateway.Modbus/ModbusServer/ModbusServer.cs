@@ -122,7 +122,7 @@ public class ModbusServer : UpLoadBase
         {
             iPHost = new IPHost($"{driverPropertys.IP}:{driverPropertys.Port}");
         }
-        FoundataionConfig.SetListenIPHosts(new IPHost[] { iPHost }).SetBufferLength(1024);
+        FoundataionConfig.SetListenIPHosts(new IPHost[] { iPHost });
         var service = new TcpService();
         service.Setup(FoundataionConfig);
         //载入配置

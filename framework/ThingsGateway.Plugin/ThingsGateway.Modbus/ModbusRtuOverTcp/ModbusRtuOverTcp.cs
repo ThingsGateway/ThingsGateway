@@ -75,7 +75,7 @@ public class ModbusRtuOverTcp : CollectBase
         if (client == null)
         {
             FoundataionConfig.SetRemoteIPHost(new IPHost($"{driverPropertys.IP}:{driverPropertys.Port}"))
-                .SetBufferLength(1024);
+                ;
             client = new TcpClientEx();
             ((TcpClientEx)client).Setup(FoundataionConfig);
         }

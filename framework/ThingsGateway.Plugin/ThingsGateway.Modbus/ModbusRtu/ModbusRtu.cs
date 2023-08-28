@@ -87,7 +87,7 @@ public class ModbusRtu : CollectBase
                 Parity = driverPropertys.Parity,
                 StopBits = driverPropertys.StopBits,
             })
-                .SetBufferLength(1024);
+                ;
             client = new SerialsSession();
             ((SerialsSession)client).Setup(FoundataionConfig);
         }
