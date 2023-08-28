@@ -675,7 +675,7 @@ public class SerialSessionBase : BaseSerial, ISerialSession
             byte[] buffer = new byte[2048];
             var byteBlock = (ByteBlock)e.UserToken;
             int num = MainSerialPort.Read(buffer, 0, MainSerialPort.BytesToRead);
-            byteBlock.Write(buffer, byteBlock.Len, num);
+            byteBlock.Write(buffer, 0, num);
             this.HandleBuffer(byteBlock);
             try
             {

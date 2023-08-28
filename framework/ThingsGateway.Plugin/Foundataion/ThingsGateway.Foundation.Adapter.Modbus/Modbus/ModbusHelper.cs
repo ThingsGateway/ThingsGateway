@@ -124,6 +124,13 @@ internal class ModbusHelper
     {
         if (response.Length < 3)
             return new OperResult<byte[], FilterResult>("数据长度不足" + response.ToHexString()) { Content2 = FilterResult.Cache };
+
+        if (response[1] >= 0x80)//错误码
+            return new OperResult<byte[], FilterResult>(GetDescriptionByErrorCode(response[2])) { Content2 = FilterResult.Success };
+        if ((response.Length < response[2] + 5))
+            return new OperResult<byte[], FilterResult>("数据长度不足" + response.ToHexString()) { Content2 = FilterResult.Cache };
+
+
         var data = response.SelectMiddle(0, response[2] + 5);
         if (crcCheck && !EasyCRC16.CheckCRC16(data))
             return new OperResult<byte[], FilterResult>("Crc校验失败" + DataTransUtil.ByteToHexString(data, ' ')) { Content2 = FilterResult.Success };

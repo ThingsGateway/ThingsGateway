@@ -84,7 +84,13 @@ public abstract class ReadWriteDevicesTcpDataHandleAdapter<TRequest> : CustomDat
                 byteBlock.Read(out byte[] body, request.BodyLength);
 
                 var bytes = request.HeadBytes.SpliceArray(body);
-                return GetResponse(byteBlock, request, body, bytes);
+
+                var result = GetResponse(byteBlock, request, body, bytes);
+                if (result == FilterResult.Cache)
+                {
+                    byteBlock.Pos = pos;//回退游标
+                }
+                return result;
             }
             else
             {
