@@ -38,6 +38,14 @@
             The references found. Null if an error occurred.
             </returns>
         </member>
+        <member name="M:ThingsGateway.Foundation.Adapter.OPCUA.FormUtils.PrepareBrowseNext(Opc.Ua.BrowseResultCollection)">
+            <summary>
+            Create the continuation point collection from the browse result
+            collection for the BrowseNext service.
+            </summary>
+            <param name="browseResultCollection">The browse result collection to use.</param>
+            <returns>The collection of continuation points for the BrowseNext service.</returns>
+        </member>
         <member name="M:ThingsGateway.Foundation.Adapter.OPCUA.FormUtils.BrowseAsync(Opc.Ua.Client.ISession,Opc.Ua.BrowseDescriptionCollection,System.Boolean,System.Threading.CancellationToken)">
             <summary>
             浏览地址空间

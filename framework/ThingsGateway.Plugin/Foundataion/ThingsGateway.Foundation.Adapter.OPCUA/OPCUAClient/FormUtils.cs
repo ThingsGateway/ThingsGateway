@@ -14,6 +14,7 @@ using Opc.Ua;
 using Opc.Ua.Client;
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -150,6 +151,26 @@ public class FormUtils
             return null;
         }
     }
+
+    /// <summary>
+    /// Create the continuation point collection from the browse result
+    /// collection for the BrowseNext service.
+    /// </summary>
+    /// <param name="browseResultCollection">The browse result collection to use.</param>
+    /// <returns>The collection of continuation points for the BrowseNext service.</returns>
+    private static ByteStringCollection PrepareBrowseNext(BrowseResultCollection browseResultCollection)
+    {
+        var continuationPoints = new ByteStringCollection();
+        foreach (var browseResult in browseResultCollection)
+        {
+            if (browseResult.ContinuationPoint != null)
+            {
+                continuationPoints.Add(browseResult.ContinuationPoint);
+            }
+        }
+        return continuationPoints;
+    }
+
     /// <summary>
     /// 浏览地址空间
     /// </summary>
@@ -180,10 +201,17 @@ public class FormUtils
                 ClientBase.ValidateResponse(results, nodesToBrowse);
                 ClientBase.ValidateDiagnosticInfos(diagnosticInfos, nodesToBrowse);
 
-                ByteStringCollection continuationPoints = new();
+                var continuationPoints = PrepareBrowseNext(result.Results);
 
                 for (int ii = 0; ii < nodesToBrowse.Count; ii++)
                 {
+
+                    // check if all references have been fetched.
+                    if (results[ii].References.Count == 0)
+                    {
+                        continue;
+                    }
+
                     // check for error.
                     if (StatusCode.IsBad(results[ii].StatusCode))
                     {
@@ -198,31 +226,20 @@ public class FormUtils
                         continue;
                     }
 
-                    // check if all references have been fetched.
-                    if (results[ii].References.Count == 0)
-                    {
-                        continue;
-                    }
+
 
                     // save results.
                     references.AddRange(results[ii].References);
 
-                    // check for continuation point.
-                    if (results[ii].ContinuationPoint != null)
-                    {
-                        continuationPoints.Add(results[ii].ContinuationPoint);
-                    }
                 }
 
-                // process continuation points.
-                ByteStringCollection revisedContiuationPoints = new();
 
-                while (continuationPoints.Count > 0)
+                while (continuationPoints.Any())
                 {
                     // continue browse operation.
                     var nextResult = await session.BrowseNextAsync(
                           null,
-                          true,
+                          false,
                           continuationPoints
                           , token);
                     results = nextResult.Results;
@@ -232,6 +249,11 @@ public class FormUtils
 
                     for (int ii = 0; ii < continuationPoints.Count; ii++)
                     {
+                        // check if all references have been fetched.
+                        if (results[ii].References.Count == 0)
+                        {
+                            continue;
+                        }
 
                         // check for error.
                         if (StatusCode.IsBad(results[ii].StatusCode))
@@ -239,24 +261,16 @@ public class FormUtils
                             continue;
                         }
 
-                        // check if all references have been fetched.
-                        if (results[ii].References.Count == 0)
-                        {
-                            continue;
-                        }
+
 
                         // save results.
                         references.AddRange(results[ii].References);
 
-                        // check for continuation point.
-                        if (results[ii].ContinuationPoint != null)
-                        {
-                            revisedContiuationPoints.Add(results[ii].ContinuationPoint);
-                        }
+
                     }
 
                     // check if browsing must continue;
-                    revisedContiuationPoints = continuationPoints;
+                    continuationPoints = PrepareBrowseNext(nextResult.Results);
                 }
 
                 // check if unprocessed results exist.
