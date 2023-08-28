@@ -18,21 +18,18 @@ namespace ThingsGateway.Foundation.Serial;
 public interface ISerial : IDisposable
 {
     /// <summary>
-    /// 数据交互缓存池限制
+    /// 发送缓存区大小。最小值=1024。
     /// </summary>
-    int BufferLength { get; }
+    int SendBufferSize { get; set; }
+
+    /// <summary>
+    /// 接收缓存区大小。最小值=1024。
+    /// </summary>
+    int ReceiveBufferSize { get; set; }
 
     /// <summary>
     /// 日志记录器
     /// </summary>
-    ILog Logger { get; }
-
-    /// <summary>
-    /// 设置数据交互缓存池尺寸，min=1024 byte。
-    /// 一般情况下该值用于三个方面，包括：发送、接收缓存，及内存池的默认申请。
-    /// </summary>
-    /// <param name="value"></param>
-    /// <returns></returns>
-    int SetBufferLength(int value);
+    ILog Logger { get; set; }
 
 }

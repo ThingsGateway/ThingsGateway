@@ -20,39 +20,22 @@ public abstract class BaseSerial : DependencyObject, ISerial
     /// <summary>
     /// 同步根。
     /// </summary>
-    protected readonly object SyncRoot;
+    protected readonly object SyncRoot = new object();
+    private int m_receiveBufferSize = 1024 * 64;
+    private int m_sendBufferSize = 1024 * 64;
 
-    /// <summary>
-    /// 通讯基类
-    /// </summary>
-    public BaseSerial()
+    /// <inheritdoc/>
+    public virtual int SendBufferSize
     {
-        this.SyncRoot = new object();
+        get => m_sendBufferSize;
+        set => m_sendBufferSize = value < 1024 ? 1024 : value;
     }
-
-    /// <summary>
-    /// 数据交互缓存池限制，min=1024 byte
-    /// </summary>
-    public int BufferLength { get; private set; } = 64 * 1024;
-
-    /// <summary>
-    /// 日志记录器
-    /// </summary>
+    /// <inheritdoc/>
+    public virtual int ReceiveBufferSize
+    {
+        get => m_receiveBufferSize;
+        set => m_receiveBufferSize = value < 1024 ? 1024 : value;
+    }
+    /// <inheritdoc/>
     public ILog Logger { get; set; }
-
-    /// <summary>
-    /// 设置数据交互缓存池尺寸，min=1024 byte。
-    /// 一般情况下该值用于三个方面，包括：socket的发送、接收缓存，及内存池的默认申请。
-    /// </summary>
-    /// <param name="value"></param>
-    /// <returns></returns>
-    public virtual int SetBufferLength(int value)
-    {
-        if (value < 1024)
-        {
-            value = 1024;
-        }
-        this.BufferLength = value;
-        return this.BufferLength;
-    }
 }

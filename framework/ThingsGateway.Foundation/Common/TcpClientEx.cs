@@ -64,13 +64,25 @@ public class TcpClientBaseEx : BaseSocket, ITcpClient
     public TcpClientBaseEx()
     {
         this.Protocol = Protocol.Tcp;
+        this.m_receiveCounter = new ValueCounter
+        {
+            Period = TimeSpan.FromSeconds(1),
+            OnPeriod = this.OnReceivePeriod
+        };
+        this.m_sendCounter = new ValueCounter
+        {
+            Period = TimeSpan.FromSeconds(1),
+            OnPeriod = this.OnSendPeriod
+        };
     }
 
     #region 变量
     private DelaySender m_delaySender;
     private Stream m_workStream;
-    private int m_bufferRate = 1;
+    private long m_bufferRate = 1;
     private volatile bool m_online;
+    ValueCounter m_receiveCounter;
+    ValueCounter m_sendCounter;
     #endregion 变量
 
     #region 事件
@@ -115,8 +127,6 @@ public class TcpClientBaseEx : BaseSocket, ITcpClient
 
     private void PrivateOnConnecting(ConnectingEventArgs e)
     {
-        this.LastReceivedTime = DateTime.Now;
-        this.LastSendTime = DateTime.Now;
         if (this.CanSetDataHandlingAdapter)
         {
             this.SetDataHandlingAdapter(this.Config.GetValue(TouchSocketConfigExtension.TcpDataHandlingAdapterProperty).Invoke());
@@ -206,10 +216,10 @@ public class TcpClientBaseEx : BaseSocket, ITcpClient
     #region 属性
 
     /// <inheritdoc/>
-    public DateTime LastReceivedTime { get; private set; }
+    public DateTime LastReceivedTime => this.m_receiveCounter.LastIncrement;
 
     /// <inheritdoc/>
-    public DateTime LastSendTime { get; private set; }
+    public DateTime LastSendTime => this.m_sendCounter.LastIncrement;
 
     /// <inheritdoc/>
     public Func<ByteBlock, bool> OnHandleRawBuffer { get; set; }
@@ -520,6 +530,44 @@ public class TcpClientBaseEx : BaseSocket, ITcpClient
         return this.m_workStream;
     }
 
+    private void OnReceivePeriod(long value)
+    {
+        this.ReceiveBufferSize = TouchSocketUtility.HitBufferLength(value);
+    }
+
+    private void OnSendPeriod(long value)
+    {
+        this.SendBufferSize = TouchSocketUtility.HitBufferLength(value);
+    }
+
+    /// <inheritdoc/>
+    public override int ReceiveBufferSize
+    {
+        get => base.ReceiveBufferSize;
+        set
+        {
+            base.ReceiveBufferSize = value;
+            if (this.MainSocket != null)
+            {
+                this.MainSocket.ReceiveBufferSize = base.ReceiveBufferSize;
+            }
+        }
+    }
+
+    /// <inheritdoc/>
+    public override int SendBufferSize
+    {
+        get => base.SendBufferSize;
+        set
+        {
+            base.SendBufferSize = value;
+            if (this.MainSocket != null)
+            {
+                this.MainSocket.SendBufferSize = base.SendBufferSize;
+            }
+        }
+    }
+
     /// <inheritdoc/>
     public virtual void SetDataHandlingAdapter(SingleStreamDataHandlingAdapter adapter)
     {
@@ -655,10 +703,6 @@ public class TcpClientBaseEx : BaseSocket, ITcpClient
     protected virtual void LoadConfig(TouchSocketConfig config)
     {
         this.RemoteIPHost = config.GetValue(TouchSocketConfigExtension.RemoteIPHostProperty);
-        if (config.GetValue(TouchSocketConfigExtension.BufferLengthProperty) is int value)
-        {
-            this.SetBufferLength(value);
-        }
         this.Logger ??= this.Container.Resolve<ILog>();
         this.ReceiveType = config.GetValue(TouchSocketConfigExtension.ReceiveTypeProperty);
     }
@@ -727,7 +771,7 @@ public class TcpClientBaseEx : BaseSocket, ITcpClient
                 var eventArgs = new SocketAsyncEventArgs();
                 eventArgs.Completed += this.EventArgs_Completed;
 
-                var byteBlock = BytePool.Default.GetByteBlock(this.BufferLength);
+                var byteBlock = BytePool.Default.GetByteBlock(this.ReceiveBufferSize);
                 eventArgs.UserToken = byteBlock;
                 eventArgs.SetBuffer(byteBlock.Buffer, 0, byteBlock.Capacity);
                 if (!this.MainSocket.ReceiveAsync(eventArgs))
@@ -750,7 +794,7 @@ public class TcpClientBaseEx : BaseSocket, ITcpClient
     {
         while (true)
         {
-            var byteBlock = new ByteBlock(this.BufferLength);
+            var byteBlock = new ByteBlock(this.ReceiveBufferSize);
             try
             {
                 var r = this.MainSocket.Receive(byteBlock.Buffer);
@@ -773,7 +817,7 @@ public class TcpClientBaseEx : BaseSocket, ITcpClient
 
     private void BeginSsl()
     {
-        var byteBlock = new ByteBlock(this.BufferLength);
+        var byteBlock = new ByteBlock(this.ReceiveBufferSize);
         try
         {
             this.m_workStream.BeginRead(byteBlock.Buffer, 0, byteBlock.Capacity, this.EndSsl, byteBlock);
@@ -813,8 +857,6 @@ public class TcpClientBaseEx : BaseSocket, ITcpClient
         {
             socket = new Socket(SocketType.Stream, ProtocolType.Tcp)
             {
-                ReceiveBufferSize = this.BufferLength,
-                SendBufferSize = this.BufferLength,
                 SendTimeout = this.Config.GetValue(TouchSocketConfigExtension.SendTimeoutProperty)
             };
         }
@@ -822,8 +864,6 @@ public class TcpClientBaseEx : BaseSocket, ITcpClient
         {
             socket = new Socket(iPHost.EndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp)
             {
-                ReceiveBufferSize = this.BufferLength,
-                SendBufferSize = this.BufferLength,
                 SendTimeout = this.Config.GetValue(TouchSocketConfigExtension.SendTimeoutProperty)
             };
         }
@@ -831,8 +871,8 @@ public class TcpClientBaseEx : BaseSocket, ITcpClient
         {
 #if NET45_OR_GREATER
 
-            socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.KeepAlive, true);
-            socket.IOControl(IOControlCode.KeepAliveValues, keepAliveValue.KeepAliveTime, null);
+                socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.KeepAlive, true);
+                socket.IOControl(IOControlCode.KeepAliveValues, keepAliveValue.KeepAliveTime, null);
 #else
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
@@ -880,7 +920,7 @@ public class TcpClientBaseEx : BaseSocket, ITcpClient
     {
         try
         {
-            this.LastReceivedTime = DateTime.Now;
+            this.m_receiveCounter.Increment(byteBlock.Length);
             if (this.OnHandleRawBuffer?.Invoke(byteBlock) == false)
             {
                 return;
@@ -1075,8 +1115,7 @@ public class TcpClientBaseEx : BaseSocket, ITcpClient
                     this.MainSocket.AbsoluteSend(buffer, offset, length);
                 }
             }
-
-            this.LastSendTime = DateTime.Now;
+            this.m_sendCounter.Increment(length);
         }
     }
 
@@ -1138,7 +1177,7 @@ public class TcpClientBaseEx : BaseSocket, ITcpClient
             this.HandleBuffer(byteBlock);
             try
             {
-                var newByteBlock = BytePool.Default.GetByteBlock(Math.Min(this.BufferLength * this.m_bufferRate, 1024 * 1024));
+                var newByteBlock = BytePool.Default.GetByteBlock((int)Math.Min(this.ReceiveBufferSize * this.m_bufferRate, TouchSocketUtility.MaxBufferLength));
                 e.UserToken = newByteBlock;
                 e.SetBuffer(newByteBlock.Buffer, 0, newByteBlock.Capacity);
 

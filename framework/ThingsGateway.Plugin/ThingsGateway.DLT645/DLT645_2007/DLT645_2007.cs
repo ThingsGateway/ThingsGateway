@@ -94,7 +94,7 @@ public class DLT645_2007 : CollectBase
                 Parity = driverPropertys.Parity,
                 StopBits = driverPropertys.StopBits,
             })
-                .SetBufferLength(1024);
+                ;
             client = new SerialsSession();
             ((SerialsSession)client).Setup(FoundataionConfig);
         }

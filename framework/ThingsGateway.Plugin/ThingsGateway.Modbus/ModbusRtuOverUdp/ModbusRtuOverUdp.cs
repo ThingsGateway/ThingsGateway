@@ -80,7 +80,7 @@ public class ModbusRtuOverUdp : CollectBase
         {
             FoundataionConfig.SetRemoteIPHost(new IPHost($"{driverPropertys.IP}:{driverPropertys.Port}"))
                 .SetBindIPHost(new IPHost(0))
-                .SetBufferLength(1024);
+                ;
 
             client = new UdpSession();
             ((UdpSession)client).Setup(FoundataionConfig);

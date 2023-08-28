@@ -71,7 +71,7 @@ public partial class UdpSessionPage : IDisposable
         var LogMessage = new TouchSocket.Core.LoggerGroup() { LogLevel = TouchSocket.Core.LogLevel.Trace };
         LogMessage.AddLogger(new EasyLogger(LogOut) { LogLevel = TouchSocket.Core.LogLevel.Trace });
         config.ConfigureContainer(a => a.RegisterSingleton<ILog>(LogMessage));
-        config.SetRemoteIPHost(new IPHost(ip + ":" + port)).SetBufferLength(300);
+        config.SetRemoteIPHost(new IPHost(ip + ":" + port));
         config.SetBindIPHost(new IPHost(0));
         //载入配置
         UdpSession.Setup(config);
@@ -88,7 +88,7 @@ public partial class UdpSessionPage : IDisposable
         var LogMessage = new TouchSocket.Core.LoggerGroup() { LogLevel = TouchSocket.Core.LogLevel.Trace };
         LogMessage.AddLogger(new EasyLogger(LogOut) { LogLevel = TouchSocket.Core.LogLevel.Trace });
         config.ConfigureContainer(a => a.RegisterSingleton<ILog>(LogMessage));
-        config.SetRemoteIPHost(new IPHost(ip + ":" + port)).SetBufferLength(300);
+        config.SetRemoteIPHost(new IPHost(ip + ":" + port));
         config.SetBindIPHost(new IPHost(0));
         UdpSession = new UdpSession();
         UdpSession.Setup(config);

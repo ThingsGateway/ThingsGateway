@@ -72,7 +72,6 @@ public partial class TcpServerPage
         LogMessage.AddLogger(new EasyLogger(LogOut) { LogLevel = TouchSocket.Core.LogLevel.Trace });
         config.ConfigureContainer(a => a.RegisterSingleton<ILog>(LogMessage));
         config.SetListenIPHosts(new IPHost[] { new IPHost(ip + ":" + port) });
-        config.SetBufferLength(300);
         //载入配置
         TcpServer.Setup(config);
         return TcpServer;
@@ -88,7 +87,6 @@ public partial class TcpServerPage
         LogMessage.AddLogger(new EasyLogger(LogOut) { LogLevel = TouchSocket.Core.LogLevel.Trace });
         config.ConfigureContainer(a => a.RegisterSingleton<ILog>(LogMessage));
         config.SetListenIPHosts(new IPHost[] { new IPHost(ip + ":" + port) });
-        config.SetBufferLength(300);
         TcpServer = new TcpService();
         TcpServer.Setup(config);
         base.OnInitialized();

@@ -61,7 +61,7 @@ namespace ModbusDemo
             .SetSerialProperty(new SerialProperty() //串口链路才需要
             {
                 PortName = "COM1"
-            }).SetBufferLength(1024);
+            });
 
             var tcpClient1 = new TcpClientEx();//链路对象
             var tcpClient2 = new TcpClientEx();//链路对象
