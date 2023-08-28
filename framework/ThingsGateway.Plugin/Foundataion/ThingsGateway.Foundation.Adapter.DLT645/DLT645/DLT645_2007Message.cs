@@ -22,13 +22,13 @@ public class DLT645_2007Message : MessageBase, IMessage
     /// <inheritdoc/>
     public override bool CheckHeadBytes(byte[] head)
     {
+        BodyLength = -1;
         return true;
     }
 
     /// <inheritdoc/>
     protected override void SendBytesThen()
     {
-        BodyLength = -1;
     }
 
 }
