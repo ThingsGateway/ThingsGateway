@@ -10,6 +10,8 @@
 //------------------------------------------------------------------------------
 #endregion
 
+using Furion;
+
 using Microsoft.Extensions.Logging;
 
 using Newtonsoft.Json.Linq;
@@ -157,7 +159,7 @@ public abstract class CollectBase : DriverBase
             {
                 deviceVariableSourceRead.DeviceVariables.ForEach(it =>
                 {
-                    var operResult = it.SetValue(null,isOnline:false);
+                    var operResult = it.SetValue(null, isOnline: false);
                     if (!operResult.IsSuccess)
                     {
                         _logger.LogWarning("变量值更新失败：" + operResult.Message);
@@ -218,6 +220,31 @@ public abstract class CollectBase : DriverBase
         {
             _logger.Log_Out(arg1, arg2, arg3, arg4);
         }
+    }
+
+    internal override void NewMessage(TouchSocket.Core.LogLevel arg1, object arg2, string arg3, Exception arg4)
+    {
+        if (IsSaveLog)
+        {
+            if (arg3.StartsWith(FoundationConst.LogMessageHeader))
+            {
+                var customLevel = App.GetConfig<Microsoft.Extensions.Logging.LogLevel?>("Logging:LogLevel:BackendLog") ?? Microsoft.Extensions.Logging.LogLevel.Trace;
+                if ((byte)arg1 < (byte)customLevel)
+                {
+                    var logRuntime = new BackendLog
+                    {
+                        LogLevel = (Microsoft.Extensions.Logging.LogLevel)arg1,
+                        LogMessage = arg3,
+                        LogSource = "采集设备:" + CurDevice.Name,
+                        LogTime = SysDateTimeExtensions.CurrentDateTime,
+                        Exception = null,
+                    };
+                    _logQueues.Enqueue(logRuntime);
+                }
+            }
+
+        }
+        base.NewMessage(arg1, arg2, arg3, arg4);
     }
 
     /// <summary>
