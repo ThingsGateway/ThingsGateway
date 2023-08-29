@@ -75,30 +75,33 @@
                                         (item.Value.HasError ? "出现错误" : "验证成功")
                                         )
                                 </MSubheader>
-
-                                <MVirtualScroll Context="item1" Height=300 OverscanCount=2 ItemSize="60" Items="item.Value.Results">
-                                    <ItemContent>
-                                        <MListItem>
-                                            <MListItemAction>
-                                                <MChip Class="ma-2">
-                                                    @(
+                                if (item.Value.HasError)
+                                {
+                                    <MVirtualScroll Context="item1" Height=300 OverscanCount=2 ItemSize="60" Items="item.Value.Results.Where(a=>!a.isSuccess).ToList()">
+                                        <ItemContent>
+                                            <MListItem>
+                                                <MListItemAction>
+                                                    <MChip Class="ma-2">
+                                                        @(
                                             $"第{item1.row}行"
                                             )
-                                                </MChip>
-                                            </MListItemAction>
+                                                    </MChip>
+                                                </MListItemAction>
 
-                                            <MListItemContent>
-                                                <MListItemTitle Class=@((item1.isSuccess?"green--text":"red--text"))>
-                                                    <strong>@item1.resultString</strong>
-                                                </MListItemTitle>
-                                            </MListItemContent>
+                                                <MListItemContent>
+                                                    <MListItemTitle Class=@((item1.isSuccess?"green--text":"red--text"))>
+                                                        <strong>@item1.resultString</strong>
+                                                    </MListItemTitle>
+                                                </MListItemContent>
 
-                                        </MListItem>
+                                            </MListItem>
 
-                                        <MDivider></MDivider>
+                                            <MDivider></MDivider>
 
-                                    </ItemContent>
-                                </MVirtualScroll>
+                                        </ItemContent>
+                                    </MVirtualScroll>
+                                }
+                                
 
                             }
 
