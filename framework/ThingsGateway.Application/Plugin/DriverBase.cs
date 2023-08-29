@@ -12,7 +12,10 @@
 
 using Microsoft.Extensions.Logging;
 
+using System.Collections.Concurrent;
+
 using ThingsGateway.Foundation;
+using ThingsGateway.Foundation.Extension.ConcurrentQueue;
 
 using TouchSocket.Core;
 
@@ -40,6 +43,7 @@ public abstract class DriverBase : DisposableObject
         LogMessage = new LoggerGroup() { LogLevel = TouchSocket.Core.LogLevel.Trace };
         LogMessage.AddLogger(new EasyLogger(Log_Out) { LogLevel = TouchSocket.Core.LogLevel.Trace });
         FoundataionConfig.ConfigureContainer(a => a.RegisterSingleton<ILog>(LogMessage));
+        Task.Factory.StartNew(LogInsertAsync);
     }
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
@@ -67,6 +71,12 @@ public abstract class DriverBase : DisposableObject
     /// </summary>
     public bool IsLogOut { get; set; }
 
+
+    /// <summary>
+    /// 是否存储报文
+    /// </summary>
+    public bool IsSaveLog { get; set; }
+
     /// <summary>
     /// 报文信息
     /// </summary>
@@ -82,11 +92,14 @@ public abstract class DriverBase : DisposableObject
     /// </summary>
     /// <returns></returns>
     public abstract bool IsConnected();
-
+    /// <summary>
+    /// 存储日志队列
+    /// </summary>
+    protected ConcurrentQueue<BackendLog> _logQueues = new();
     /// <summary>
     /// 设备报文
     /// </summary>
-    internal void NewMessage(TouchSocket.Core.LogLevel arg1, object arg2, string arg3, Exception arg4)
+    internal virtual void NewMessage(TouchSocket.Core.LogLevel arg1, object arg2, string arg3, Exception arg4)
     {
         if (IsLogOut)
         {
@@ -101,6 +114,27 @@ public abstract class DriverBase : DisposableObject
             }
         }
 
+    }
+    private async Task LogInsertAsync()
+    {
+        var db = DbContext.Db.CopyNew();
+        while (!DisposedValue)
+        {
+            if (_logQueues.Count > 0)
+            {
+                try
+                {
+                    var data = _logQueues.ToListWithDequeue();
+                    await db.InsertableWithAttr(data).ExecuteCommandAsync();//入库
+                }
+                catch
+                {
+                }
+
+            }
+
+            await Task.Delay(5000);
+        }
     }
 
     /// <summary>

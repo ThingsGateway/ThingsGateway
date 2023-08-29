@@ -1978,6 +1978,11 @@
             是否输出日志
             </summary>
         </member>
+        <member name="P:ThingsGateway.Application.DriverBase.IsSaveLog">
+            <summary>
+            是否存储报文
+            </summary>
+        </member>
         <member name="P:ThingsGateway.Application.DriverBase.Messages">
             <summary>
             报文信息
@@ -1993,6 +1998,11 @@
             是否连接成功，如果是上传设备，会直接影响到上传设备的运行状态，如果是采集设备并且不支持读取，需要自更新在线状态
             </summary>
             <returns></returns>
+        </member>
+        <member name="F:ThingsGateway.Application.DriverBase._logQueues">
+            <summary>
+            存储日志队列
+            </summary>
         </member>
         <member name="M:ThingsGateway.Application.DriverBase.NewMessage(TouchSocket.Core.LogLevel,System.Object,System.String,System.Exception)">
             <summary>

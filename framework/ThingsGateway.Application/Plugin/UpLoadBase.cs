@@ -14,6 +14,8 @@ using Furion;
 
 using Microsoft.Extensions.Logging;
 
+using ThingsGateway.Foundation;
+
 using TouchSocket.Core;
 
 namespace ThingsGateway.Application;
@@ -153,6 +155,32 @@ public abstract class UpLoadBase : DriverBase
             _logger.Log_Out(arg1, arg2, arg3, arg4);
         }
     }
+
+    internal override void NewMessage(TouchSocket.Core.LogLevel arg1, object arg2, string arg3, Exception arg4)
+    {
+        if (IsSaveLog)
+        {
+            if (arg3.StartsWith(FoundationConst.LogMessageHeader))
+            {
+                var customLevel = App.GetConfig<Microsoft.Extensions.Logging.LogLevel?>("Logging:LogLevel:BackendLog") ?? Microsoft.Extensions.Logging.LogLevel.Trace;
+                if ((byte)arg1 < (byte)customLevel)
+                {
+                    var logRuntime = new BackendLog
+                    {
+                        LogLevel = (Microsoft.Extensions.Logging.LogLevel)arg1,
+                        LogMessage = arg3,
+                        LogSource = "上传设备:" + CurDevice.Name,
+                        LogTime = SysDateTimeExtensions.CurrentDateTime,
+                        Exception = null,
+                    };
+                    _logQueues.Enqueue(logRuntime);
+                }
+            }
+
+        }
+        base.NewMessage(arg1, arg2, arg3, arg4);
+    }
+
 }
 
 

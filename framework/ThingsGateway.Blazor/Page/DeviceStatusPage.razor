@@ -255,6 +255,23 @@
 
                                         <MTooltip Bottom Context="tip">
                                             <ActivatorContent>
+                                                <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("gatewaydevicepause")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small
+                                                         OnClick=@(()=>
+                                                 {
+                                                 if(collectDeviceInfoItem.Driver!=null)
+                                                 collectDeviceInfoItem.Driver.IsSaveLog=! collectDeviceInfoItem.Driver.IsSaveLog;
+                                                 }
+                                                 )>
+                                                    <MIcon>@((collectDeviceInfoItem.Driver?.IsSaveLog==true) ? "mdi-pause" : "mdi-play")</MIcon>
+                                                    </MButton>
+                                                </ActivatorContent>
+                                                <ChildContent>
+                                                    <span>@((collectDeviceInfoItem.Driver?.IsSaveLog != true) ? "存入数据库，注意若交互频繁，可能导致数据库太大" : "不存入数据库")</span>
+                                            </ChildContent>
+                                        </MTooltip>
+
+                                        <MTooltip Bottom Context="tip">
+                                            <ActivatorContent>
                                                 <MButton Loading=isDownExport Disabled=@(!UserResoures.IsHasButtonWithRole("gatewaydevicepause")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small
                                                          OnClick=@(async()=>
                                                  {
