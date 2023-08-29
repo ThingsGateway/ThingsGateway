@@ -33,7 +33,7 @@ public class OPCDAClientProperty : CollectDriverPropertyBase
     /// <summary>
     /// 检测重连频率/min
     /// </summary>
-    [DeviceProperty("检测重连频率/min", "")] public int CheckRate { get; set; } = 60000;
+    [DeviceProperty("检测重连频率/min", "")] public int CheckRate { get; set; } = 10;
     /// <summary>
     /// 死区
     /// </summary>
