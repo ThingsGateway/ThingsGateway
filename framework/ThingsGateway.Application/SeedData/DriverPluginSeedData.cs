@@ -22,6 +22,9 @@ public class DriverPluginSeedData : ISqlSugarEntitySeedData<DriverPlugin>
     /// <inheritdoc/>
     public IEnumerable<DriverPlugin> SeedData()
     {
-        return SeedDataUtil.GetSeedData<DriverPlugin>("driver_plugin.json");
+        return SeedDataUtil.GetSeedData<DriverPlugin>("driver_plugin.json")
+            .Concat(SeedDataUtil.GetSeedData<DriverPlugin>("pro_driver_plugin.json"))
+            .Concat(SeedDataUtil.GetSeedData<DriverPlugin>("custom_driver_plugin.json"))
+            ;
     }
 }

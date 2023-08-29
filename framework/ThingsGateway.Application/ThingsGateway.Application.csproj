@@ -6,7 +6,7 @@
 
 	<ItemGroup>
 	  <None Remove="SeedData\Json\driver_plugin.json" />
-	  <None Remove="SeedData\Json\gatewayopenapi_user.json" />
+	  <None Remove="SeedData\Json\gateway_openapi_user.json" />
 	  <None Remove="SeedData\Json\gateway_relation.json" />
 	</ItemGroup>
 
@@ -24,7 +24,7 @@
 	  <Content Include="SeedData\Json\gateway_resource.json">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>
-	  <Content Include="SeedData\Json\gatewayopenapi_user.json">
+	  <Content Include="SeedData\Json\gateway_openapi_user.json">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>
 	  <Content Include="SeedData\Json\gateway_relation.json">
