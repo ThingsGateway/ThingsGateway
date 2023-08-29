@@ -519,8 +519,12 @@ public class OPCDAClient : DisposableObject
         {
             if (IsConnected)
                 _logger?.Trace($"{m_server.Host + " - " + m_server.Name} - 断开连接");
-            checkTimer.Enabled = false;
-            checkTimer.Stop();
+            if (checkTimer != null)
+            {
+                checkTimer.Enabled = false;
+                checkTimer.Stop();
+            }
+
             try
             {
                 m_server?.SafeDispose();
