@@ -24,6 +24,8 @@ public static class ReadWriteDevicesExHelpers
     /// <returns></returns>
     public static bool GetBoolValue(this string value)
     {
+        if (value == null)
+            return false;
         if (value == "1")
             return true;
         if (value == "0")
