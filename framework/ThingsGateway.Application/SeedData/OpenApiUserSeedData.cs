@@ -22,6 +22,6 @@ public class OpenApiUserSeedData : ISqlSugarEntitySeedData<OpenApiUser>
     /// <inheritdoc/>
     public IEnumerable<OpenApiUser> SeedData()
     {
-        return SeedDataUtil.GetSeedData<OpenApiUser>("gatewayopenapi_user.json");
+        return SeedDataUtil.GetSeedData<OpenApiUser>("gateway_openapi_user.json");
     }
 }
