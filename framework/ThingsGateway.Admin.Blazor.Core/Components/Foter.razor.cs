@@ -14,6 +14,8 @@ using Microsoft.AspNetCore.Components;
 
 using System.Reflection;
 
+using ThingsGateway.Admin.Core;
+
 namespace ThingsGateway.Admin.Blazor.Core;
 /// <summary>
 /// Foter
@@ -40,7 +42,12 @@ public partial class Foter
     /// <inheritdoc/>
     protected override async Task OnParametersSetAsync()
     {
-        Version = "v" + Assembly.GetExecutingAssembly().GetName().Version.ToString();
+        var assembly = Assembly.GetEntryAssembly();
+        if (assembly != null)
+        {
+            Version = $"v{assembly.GetName().Version}      {new System.IO.FileInfo(assembly.Location).LastWriteTime.ToDefaultDateTimeFormat()}";
+        }
+
         await base.OnParametersSetAsync();
     }
 
