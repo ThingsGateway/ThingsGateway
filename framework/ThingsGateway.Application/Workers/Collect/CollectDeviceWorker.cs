@@ -95,10 +95,13 @@ public class CollectDeviceWorker : BackgroundService
             await RemoveAllDeviceThreadAsync();
             //创建全部采集线程
             await CreatAllDeviceThreadsAsync();
-            //开始全部采集线程
-            await StartAllDeviceThreadsAsync();
+
             //开始其他后台服务
             await StartOtherHostService();
+
+            //开始全部采集线程
+            await StartAllDeviceThreadsAsync();
+
         }
         catch (Exception ex)
         {

@@ -332,20 +332,51 @@ public static class ObjectExtensions
     /// <returns></returns>
     public static bool ToBoolean(this object value, bool defaultValue = false) => value?.ToString().ToUpper() switch
     {
+        "0" or "FALSE" => false,
         "1" or "TRUE" => true,
         _ => defaultValue,
     };
+
     /// <summary>
     /// ToLong
     /// </summary>
     /// <returns></returns>
-    public static long ToLong(this object value, long defaultValue = 0) => value == null || value.ToString().IsNullOrEmpty() ? defaultValue : Int64.TryParse(value.ToString(), out var n) ? n : defaultValue;
+    public static long ToLong(this object value, long defaultValue = 0)
+    {
+        if (value == null || value.ToString().IsNullOrEmpty())
+        {
+            return defaultValue;
+        }
+        else
+        {
+            if (value is bool boolValue)
+            {
+                return boolValue ? 1 : 0;
+            }
+            return Int64.TryParse(value.ToString(), out var n) ? n : defaultValue;
+        }
+    }
 
     /// <summary>
     /// ToInt
     /// </summary>
     /// <returns></returns>
-    public static int ToInt(this object value, int defaultValue = 0) => value == null || value.ToString().IsNullOrEmpty() ? defaultValue : Int32.TryParse(value.ToString(), out var n) ? n : defaultValue;
+    public static int ToInt(this object value, int defaultValue = 0)
+    {
+        if (value == null || value.ToString().IsNullOrEmpty())
+        {
+            return defaultValue;
+        }
+        else
+        {
+            if (value is bool boolValue)
+            {
+                return boolValue ? 1 : 0;
+            }
+            return int.TryParse(value.ToString(), out int n) ? n : defaultValue;
+        }
+    }
+
     /// <summary>
     /// ToDecimal
     /// </summary>
@@ -357,7 +388,18 @@ public static class ObjectExtensions
             return Double.IsNaN(d) ? defaultValue : (Decimal)d;
         }
         var str = value?.ToString();
-        return str.IsNullOrEmpty() ? defaultValue : Decimal.TryParse(str, out var n) ? n : defaultValue;
+        if (str.IsNullOrEmpty())
+        {
+            return defaultValue;
+        }
+        else
+        {
+            if (value is bool boolValue)
+            {
+                return boolValue ? 1 : 0;
+            }
+            return Decimal.TryParse(str, out var n) ? n : defaultValue;
+        }
     }
     /// <summary>
     /// ToDecimal
@@ -370,7 +412,18 @@ public static class ObjectExtensions
             return Double.IsNaN(d) ? defaultValue : (Double)d;
         }
         var str = value?.ToString();
-        return str.IsNullOrEmpty() ? defaultValue : double.TryParse(str, out var n) ? n : defaultValue;
+        if (str.IsNullOrEmpty())
+        {
+            return (double)defaultValue;
+        }
+        else
+        {
+            if (value is bool boolValue)
+            {
+                return boolValue ? 1 : 0;
+            }
+            return (double)(double.TryParse(str, out var n) ? n : defaultValue);
+        }
     }
 
     /// <summary>
