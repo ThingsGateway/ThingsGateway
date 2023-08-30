@@ -262,7 +262,7 @@
                                                  collectDeviceInfoItem.Driver.IsSaveLog=! collectDeviceInfoItem.Driver.IsSaveLog;
                                                  }
                                                  )>
-                                                    <MIcon>@((collectDeviceInfoItem.Driver?.IsSaveLog==true) ? "mdi-pause" : "mdi-play")</MIcon>
+                                                    <MIcon>@((collectDeviceInfoItem.Driver?.IsSaveLog == true) ? "mdi-pause" : "mdi-play")</MIcon>
                                                     </MButton>
                                                 </ActivatorContent>
                                                 <ChildContent>
@@ -424,6 +424,10 @@
                                                     <span>@(item.Device?.KeepRun == true ? "暂停" : "运行")</span>
                                             </ChildContent>
                                         </MTooltip>
+
+
+
+
                                         <MTooltip Bottom Context="tip">
                                             <ActivatorContent>
                                                 <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("gatewaydevicerestart")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small Loading=isRestart OnClick=@(()=> UpRestartAsync(item.DeviceId))>
@@ -512,7 +516,22 @@
                                                     <span>@((!pauseMessage) ? "暂停日志" : "运行日志")</span>
                                             </ChildContent>
                                         </MTooltip>
-
+                                        <MTooltip Bottom Context="tip">
+                                            <ActivatorContent>
+                                                <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("gatewaydevicepause")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small
+                                                         OnClick=@(()=>
+                                                 {
+                                                 if(uploadDeviceInfoItem.Driver!=null)
+                                                 uploadDeviceInfoItem.Driver.IsSaveLog=! uploadDeviceInfoItem.Driver.IsSaveLog;
+                                                 }
+                                                 )>
+                                                    <MIcon>@((uploadDeviceInfoItem.Driver?.IsSaveLog == true) ? "mdi-pause" : "mdi-play")</MIcon>
+                                                    </MButton>
+                                                </ActivatorContent>
+                                                <ChildContent>
+                                                    <span>@((uploadDeviceInfoItem.Driver?.IsSaveLog != true) ? "存入数据库，注意若交互频繁，可能导致数据库太大" : "不存入数据库")</span>
+                                            </ChildContent>
+                                        </MTooltip>
                                         <MTooltip Bottom Context="tip">
                                             <ActivatorContent>
                                                 <MButton Loading=isDownExport Disabled=@(!UserResoures.IsHasButtonWithRole("gatewaydevicepause")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small
