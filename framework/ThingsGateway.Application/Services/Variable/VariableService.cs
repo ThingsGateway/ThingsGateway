@@ -129,11 +129,11 @@ public class VariableService : DbRepository<DeviceVariable>, IVariableService
         {
             uploadDevid = _uploadDeviceService.GetIdByName(input.UploadDeviceName);
         }
+
         if (!string.IsNullOrEmpty(input.UploadDeviceName))
         {
-            var pageInfo = await query.ToPagedListAsync(input.Current, input.Size, a => a.VariablePropertys.ContainsKey(uploadDevid ?? 0));//分页
+            var pageInfo = await query.ToPagedListAsync(input.Current, input.Size, a => SqlFunc.JsonLike(a.VariablePropertys, uploadDevid.ToString()));//分页
             return pageInfo;
-
         }
         else
         {
