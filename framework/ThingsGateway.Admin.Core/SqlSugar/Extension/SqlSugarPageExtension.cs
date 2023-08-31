@@ -12,6 +12,8 @@
 
 using SqlSugar;
 
+using System.Linq.Expressions;
+
 namespace ThingsGateway.Admin.Core;
 
 /// <summary>
@@ -55,12 +57,14 @@ public static class SqlSugarPageExtension
     /// <param name="whereExpression"></param>
     /// <returns></returns>
     public static async Task<SqlSugarPagedList<TEntity>> ToPagedListAsync<TEntity>(this ISugarQueryable<TEntity> queryable,
-        int pageIndex, int pageSize, Func<TEntity, bool> whereExpression = null)
+        int pageIndex, int pageSize, Expression<Func<TEntity, bool>> whereExpression = null)
     {
 
         RefAsync<int> totalCount = 0;
+        if (whereExpression != null)
+            queryable = queryable.Where(whereExpression);
         var records = await queryable.ToPageListAsync(pageIndex, pageSize, totalCount);
-        records = whereExpression != null ? records.Where(whereExpression).ToList() : records;
+        //records = whereExpression != null ? records.Where(whereExpression).ToList() : records;
         var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
         return new SqlSugarPagedList<TEntity>
         {

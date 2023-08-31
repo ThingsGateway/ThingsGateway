@@ -1495,7 +1495,7 @@
             <param name="size"></param>
             <returns></returns>
         </member>
-        <member name="M:ThingsGateway.Admin.Core.SqlSugarPageExtension.ToPagedListAsync``1(SqlSugar.ISugarQueryable{``0},System.Int32,System.Int32,System.Func{``0,System.Boolean})">
+        <member name="M:ThingsGateway.Admin.Core.SqlSugarPageExtension.ToPagedListAsync``1(SqlSugar.ISugarQueryable{``0},System.Int32,System.Int32,System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}})">
             <summary>
             SqlSugar分页扩展
             </summary>
