@@ -1948,40 +1948,6 @@
         <member name="P:ThingsGateway.Foundation.Serial.BaseSerial.Logger">
             <inheritdoc/>
         </member>
-        <member name="T:ThingsGateway.Foundation.Serial.SerialDelaySender">
-            <summary>
-            延迟发送器
-            </summary>
-        </member>
-        <member name="M:ThingsGateway.Foundation.Serial.SerialDelaySender.#ctor(System.IO.Ports.SerialPort,TouchSocket.Sockets.DelaySenderOption,System.Action{System.Exception})">
-            <summary>
-            延迟发送器
-            </summary>
-            <param name="serialPort"></param>
-            <param name="onError"></param>
-            <param name="delaySenderOption"></param>
-        </member>
-        <member name="P:ThingsGateway.Foundation.Serial.SerialDelaySender.DelayLength">
-            <summary>
-            延迟包最大尺寸。
-            </summary>
-        </member>
-        <member name="P:ThingsGateway.Foundation.Serial.SerialDelaySender.Sending">
-            <summary>
-            是否处于发送状态
-            </summary>
-        </member>
-        <member name="M:ThingsGateway.Foundation.Serial.SerialDelaySender.Send(TouchSocket.Core.QueueDataBytes)">
-            <summary>
-            发送
-            </summary>
-        </member>
-        <member name="M:ThingsGateway.Foundation.Serial.SerialDelaySender.Dispose(System.Boolean)">
-            <summary>
-            释放
-            </summary>
-            <param name="disposing"></param>
-        </member>
         <member name="T:ThingsGateway.Foundation.Serial.SerialProperty">
             <summary>
             串口属性

@@ -1153,7 +1153,7 @@ public class TcpClientBaseEx : BaseSocket, ITcpClient
         var delaySenderOption = this.Config.GetValue(TouchSocketConfigExtension.DelaySenderProperty);
         if (delaySenderOption != null)
         {
-            this.m_delaySender = new DelaySender(socket, delaySenderOption, this.OnDelaySenderError);
+            this.m_delaySender = new DelaySender(delaySenderOption, this.MainSocket.AbsoluteSend);
         }
     }
 

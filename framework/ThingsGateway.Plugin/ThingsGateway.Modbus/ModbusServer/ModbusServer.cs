@@ -67,6 +67,8 @@ public class ModbusServer : UpLoadBase
         var list = Values.ToListWithDequeue();
         foreach (var item in list)
         {
+            if (token.IsCancellationRequested)
+                break;
             var type = GetPropertyValue(item.Item2, nameof(ModbusServerVariableProperty.ModbusType));
             if (Enum.TryParse<DataTypeEnum>(type, out DataTypeEnum result))
             {
@@ -110,7 +112,7 @@ public class ModbusServer : UpLoadBase
         _plc?.SafeDispose();
         _ModbusTags?.Clear();
         _ModbusTags = null;
-        Values.Clear();
+        Values?.Clear();
         Values = null;
         base.Dispose(disposing);
     }
