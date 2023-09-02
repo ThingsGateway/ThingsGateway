@@ -1837,6 +1837,46 @@
         <member name="P:ThingsGateway.Application.VariableData.DataTypeEnum">
             <inheritdoc cref="P:ThingsGateway.Application.MemoryVariable.DataTypeEnum"/>
         </member>
+        <member name="T:ThingsGateway.Application.MqttBrokerConfig">
+            <summary>
+            MqttBrokerConfig
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Application.MqttBrokerConfig.IsMqttBroker">
+            <summary>
+            是否启用管理网关
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Application.MqttBrokerConfig.MqttBrokerIP">
+            <summary>
+            MqttBrokerIP
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Application.MqttBrokerConfig.MqttBrokerPort">
+            <summary>
+            MqttBrokerPort
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Application.MqttBrokerWorker">
+            <summary>
+            MqttBroker
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Application.MqttBrokerWorker.#ctor(Microsoft.Extensions.Logging.ILogger{ThingsGateway.Application.MqttBrokerWorker},System.IServiceProvider)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Application.MqttBrokerWorker.StartAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Application.MqttBrokerWorker.StopAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Application.MqttBrokerWorker.Init">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Application.MqttBrokerWorker.ExecuteAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
         <member name="T:ThingsGateway.Application.CollectBase">
             <summary>
             <para></para>

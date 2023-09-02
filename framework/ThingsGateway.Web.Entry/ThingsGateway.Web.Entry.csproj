@@ -8,6 +8,12 @@
 	</PropertyGroup>
 
 
+	<ItemGroup>
+	  <None Remove="WindowsServiceCreate.bat" />
+	  <None Remove="WindowsServiceDelete.bat" />
+	</ItemGroup>
+
+
 
 	
 	<ItemGroup>
@@ -23,6 +29,12 @@
 	<ItemGroup>
 	  <Content Include="Dockerfile">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="WindowsServiceCreate.bat">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="WindowsServiceDelete.bat">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>
 	</ItemGroup>
 

@@ -47,7 +47,6 @@ public class MqttServer : UpLoadBase
 {
 
     private readonly MqttServerProperty driverPropertys = new();
-    private readonly ConcurrentDictionary<string, string> IdWithName = new();
     private readonly MqttClientVariableProperty variablePropertys = new();
     private ConcurrentQueue<DeviceData> _collectDeviceRunTimes = new();
     private ConcurrentQueue<VariableData> _collectVariableRunTimes = new();
@@ -365,8 +364,7 @@ public class MqttServer : UpLoadBase
             arg.ReasonCode = MqttConnectReasonCode.BadUserNameOrPassword;
             return;
         }
-        IdWithName.AddOrUpdate(arg.ClientId, (a) => arg.UserName, (a, b) => arg.UserName);
-        LogMessage?.LogInformation(ToString() + "-" + IdWithName[arg.ClientId] + "-客户端已连接成功");
+        LogMessage?.LogInformation(ToString() + "-" + arg.ClientId + "-客户端已连接成功");
     }
     private void VariableValueChange(DeviceVariableRunTime collectVariableRunTime)
     {

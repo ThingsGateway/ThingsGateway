@@ -75,7 +75,7 @@ public class SerialSessionBase : BaseSerial, ISerialSession
 
     #region 变量
 
-    private SerialDelaySender m_delaySender;
+    private DelaySender m_delaySender;
     private long m_bufferRate = 1;
     private volatile bool m_online;
     ValueCounter m_receiveCounter;
@@ -713,7 +713,7 @@ public class SerialSessionBase : BaseSerial, ISerialSession
         var delaySenderOption = this.Config.GetValue(TouchSocketConfigExtension.DelaySenderProperty);
         if (delaySenderOption != null)
         {
-            this.m_delaySender = new SerialDelaySender(MainSerialPort, delaySenderOption, this.OnDelaySenderError);
+            this.m_delaySender = new DelaySender(delaySenderOption, this.MainSerialPort.AbsoluteSend);
         }
     }
     /// <summary>
