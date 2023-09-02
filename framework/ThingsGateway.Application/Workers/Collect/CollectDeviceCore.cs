@@ -677,9 +677,9 @@ public class CollectDeviceCore
                     }
                     else
                     {
-                        if (isRead&& !result.IsSuccess)
+                        if (isRead && !result.IsSuccess)
                         {
-                            var operResult = deviceVariableMethodSource.DeviceVariable.SetValue(null,isOnline: false);
+                            var operResult = deviceVariableMethodSource.DeviceVariable.SetValue(null, isOnline: false);
                             if (!operResult.IsSuccess)
                             {
                                 _logger?.LogWarning(operResult.Message, ToString());

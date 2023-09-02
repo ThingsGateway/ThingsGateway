@@ -33,14 +33,14 @@ public partial class Session
         var confirm = await PopupService.OpenConfirmDialogAsync("警告", "确定 ?");
         if (confirm)
         {
-            await SessionService.ExitSessionAsync(id);
+            await App.GetService<SessionService>().ExitSessionAsync(id);
         }
     }
 
 
     private Task<SqlSugarPagedList<SessionOutput>> SessionQueryCallAsync(SessionPageInput input)
     {
-        return SessionService.PageAsync(input);
+        return App.GetService<SessionService>().PageAsync(input);
     }
 
     private async Task ShowVerificatListAsync(List<VerificatInfo> verificatInfos)
@@ -58,7 +58,7 @@ public partial class Session
             VerificatIds = verificats.Select(it => it.Id).ToList(),
             Id = verificats.First().UserId
         };
-        await SessionService.ExitVerificatAsync(send);
+        await App.GetService<SessionService>().ExitVerificatAsync(send);
         _verificatInfos.RemoveWhere(it => send.VerificatIds.Contains(it.Id));
     }
 

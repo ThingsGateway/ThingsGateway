@@ -14,6 +14,7 @@
 @namespace ThingsGateway.Blazor
 @using System.Linq.Expressions;
 @using BlazorComponent;
+@using Furion;
 @using Mapster;
 @using Masa.Blazor
 @using Masa.Blazor.Presets;
@@ -22,11 +23,11 @@
 @using ThingsGateway.Admin.Blazor.Core;
 @using ThingsGateway.Admin.Blazor;
 @using ThingsGateway.Application;
-@inject ICollectDeviceService CollectDeviceService
+ 
 @attribute [Authorize]
 @inherits BaseComponentBase
 @inject UserResoures UserResoures
-@inject IDriverPluginService DriverPluginService
+ 
 @layout MainLayout
 @using ThingsGateway.Admin.Core;
 @if (IsMobile)
@@ -172,7 +173,7 @@ else
                 case nameof(context.Item.PluginId):
                         <span title=@context.Value>
                         @(
-                            DriverPluginService.GetNameById(context.Item.PluginId)
+                            App.GetService<DriverPluginService>().GetNameById(context.Item.PluginId)
                                 )
                     </span>
                     break;

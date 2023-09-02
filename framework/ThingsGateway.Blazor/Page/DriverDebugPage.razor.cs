@@ -12,6 +12,8 @@
 
 using BlazorComponent;
 
+using Furion;
+
 using Masa.Blazor;
 
 using Microsoft.AspNetCore.Components;
@@ -33,14 +35,13 @@ public partial class DriverDebugPage
     List<DriverPluginCategory> DriverPlugins;
     bool IsShowTreeView = true;
     PluginDebugUIInput SearchModel { get; set; } = new();
-    [Inject]
-    IDriverPluginService DriverPluginService { get; set; }
+
     /// <summary>
     /// <inheritdoc/>
     /// </summary>
     protected override void OnInitialized()
     {
-        DriverPlugins = DriverPluginService.GetDriverPluginChildrenList();
+        DriverPlugins = App.GetService<DriverPluginService>().GetDriverPluginChildrenList();
         base.OnInitialized();
     }
 

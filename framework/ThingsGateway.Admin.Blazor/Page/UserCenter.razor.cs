@@ -33,8 +33,7 @@ public partial class UserCenter
     [Inject]
     NavigationManager NavigationManager { get; set; }
 
-    [Inject]
-    IUserCenterService UserCenterService { get; set; }
+
 
     /// <inheritdoc/>
     protected override async Task OnParametersSetAsync()
@@ -48,14 +47,14 @@ public partial class UserCenter
 
     async Task OnDefaultRazorSaveAsync()
     {
-        await UserCenterService.UpdateUserDefaultRazorAsync(UserManager.UserId, DefaultMenuId);
+        await App.GetService<UserCenterService>().UpdateUserDefaultRazorAsync(UserManager.UserId, DefaultMenuId);
         await MainLayout.StateHasChangedAsync();
         await PopupService.EnqueueSnackbarAsync("成功", AlertTypes.Success);
     }
 
     async Task OnShortcutSaveAsync()
     {
-        await UserCenterService.UpdateWorkbenchAsync(_menusChoice);
+        await App.GetService<UserCenterService>().UpdateWorkbenchAsync(_menusChoice);
         await MainLayout.StateHasChangedAsync();
         await PopupService.EnqueueSnackbarAsync("成功", AlertTypes.Success);
     }
@@ -66,7 +65,7 @@ public partial class UserCenter
         {
             //验证成功，操作业务
             _passwordInfoInput.Id = UserResoures.CurrentUser.Id;
-            await UserCenterService.EditPasswordAsync(_passwordInfoInput);
+            await App.GetService<UserCenterService>().EditPasswordAsync(_passwordInfoInput);
             await MainLayout.StateHasChangedAsync();
             await PopupService.EnqueueSnackbarAsync("成功，将重新登录", AlertTypes.Success);
             await Task.Delay(2000);
@@ -76,7 +75,7 @@ public partial class UserCenter
 
     async Task OnUpdateUserInfoAsync()
     {
-        await UserCenterService.UpdateUserInfoAsync(_updateInfoInput);
+        await App.GetService<UserCenterService>().UpdateUserInfoAsync(_updateInfoInput);
         await MainLayout.StateHasChangedAsync();
         await PopupService.EnqueueSnackbarAsync("成功", AlertTypes.Success);
     }

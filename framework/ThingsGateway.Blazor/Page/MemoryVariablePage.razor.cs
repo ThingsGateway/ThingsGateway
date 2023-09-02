@@ -45,11 +45,6 @@ public partial class MemoryVariablePage
     [Inject]
     AjaxService AjaxService { get; set; }
 
-    [Inject]
-    InitTimezone InitTimezone { get; set; }
-
-    [Inject]
-    IVariableService VariableService { get; set; }
     /// <summary>
     /// <inheritdoc/>
     /// </summary>
@@ -70,7 +65,7 @@ public partial class MemoryVariablePage
 
     private async Task AddCallAsync(MemoryVariableAddInput input)
     {
-        await VariableService.AddAsync(input);
+        await App.GetService<VariableService>().AddAsync(input);
     }
 
     private async Task ClearAsync()
@@ -78,7 +73,7 @@ public partial class MemoryVariablePage
         var confirm = await PopupService.OpenConfirmDialogAsync("确认", "清空?");
         if (confirm)
         {
-            await VariableService.ClearMemoryVariableAsync();
+            await App.GetService<VariableService>().ClearMemoryVariableAsync();
         }
         await DatatableQueryAsync();
 
@@ -91,12 +86,12 @@ public partial class MemoryVariablePage
 
     private async Task DeleteCallAsync(IEnumerable<DeviceVariable> input)
     {
-        await VariableService.DeleteAsync(input.Select(a => a.Id).ToArray());
+        await App.GetService<VariableService>().DeleteAsync(input.Select(a => a.Id).ToArray());
     }
 
     Task<Dictionary<string, ImportPreviewOutputBase>> DeviceImportAsync(IBrowserFile file)
     {
-        return VariableService.MemoryVariablePreviewAsync(file);
+        return App.GetService<VariableService>().MemoryVariablePreviewAsync(file);
     }
 
 
@@ -108,7 +103,7 @@ public partial class MemoryVariablePage
 
     private async Task EditCallAsync(MemoryVariableAddInput input)
     {
-        await VariableService.EditAsync(input);
+        await App.GetService<VariableService>().EditAsync(input);
     }
 
 
@@ -119,12 +114,12 @@ public partial class MemoryVariablePage
 
     private async Task<SqlSugarPagedList<DeviceVariable>> QueryCallAsync(MemoryVariablePageInput input)
     {
-        var data = await VariableService.PageAsync(input);
+        var data = await App.GetService<VariableService>().PageAsync(input);
         return data;
     }
     async Task SaveDeviceImportAsync(Dictionary<string, ImportPreviewOutputBase> data)
     {
-        await VariableService.ImportAsync(data);
+        await App.GetService<VariableService>().ImportAsync(data);
         await DatatableQueryAsync();
         ImportExcel.IsShowImport = false;
     }

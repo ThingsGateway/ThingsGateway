@@ -40,10 +40,6 @@ public partial class Login
     AjaxService AjaxService { get; set; }
 
 
-    [Inject]
-    IAuthService AuthService { get; set; }
-
-
 
     string UserLogoUrl { get; set; } = BlazorResourceConst.ResourceUrl + "images/defaultUser.svg";
 
@@ -65,12 +61,7 @@ public partial class Login
         }
     }
     private PImageCaptcha captcha;
-    [Inject]
-    IUserCenterService UserCenterService { get; set; }
-    [Inject]
-    IResourceService ResourceService { get; set; }
-    [Inject]
-    ISysUserService SysUserService { get; set; }
+
     private async Task LoginAsync()
     {
         loginModel.ValidCodeReqNo = CaptchaInfo.ValidCodeReqNo;
@@ -102,9 +93,9 @@ public partial class Login
             {
                 await PopupService.EnqueueSnackbarAsync(new("登录成功", AlertTypes.Success));
                 await Task.Delay(500);
-                var userId = await SysUserService.GetIdByAccountAsync(loginModel.Account);
-                var data = await UserCenterService.GetLoginDefaultRazorAsync(userId);
-                var sameLevelMenus = await ResourceService.GetaMenuAndSpaListAsync();
+                var userId = await App.GetService<SysUserService>().GetIdByAccountAsync(loginModel.Account);
+                var data = await App.GetService<UserCenterService>().GetLoginDefaultRazorAsync(userId);
+                var sameLevelMenus = await App.GetService<ResourceService>().GetaMenuAndSpaListAsync();
                 if (NavigationManager.ToAbsoluteUri(NavigationManager.Uri).AbsolutePath == "/Login" || NavigationManager.ToAbsoluteUri(NavigationManager.Uri).AbsolutePath == "/")
                     await AjaxService.GotoAsync(sameLevelMenus.FirstOrDefault(a => a.Id == data)?.Component ?? "index");
                 else
@@ -141,12 +132,12 @@ public partial class Login
 
     private void GetCaptchaInfo()
     {
-        CaptchaInfo = AuthService.GetCaptchaInfo();
+        CaptchaInfo = App.GetService<AuthService>().GetCaptchaInfo();
     }
 
     private Task<string> RefreshCode()
     {
-        CaptchaInfo = AuthService.GetCaptchaInfo();
+        CaptchaInfo = App.GetService<AuthService>().GetCaptchaInfo();
         return Task.FromResult(CaptchaInfo.CodeValue);
     }
 }

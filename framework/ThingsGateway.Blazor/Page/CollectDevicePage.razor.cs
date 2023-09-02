@@ -57,8 +57,8 @@ public partial class CollectDevicePage
 
     private async Task AddCallAsync(CollectDeviceAddInput input)
     {
-        await CollectDeviceService.AddAsync(input);
-        CollectDevices = CollectDeviceService.GetCacheList();
+        await App.GetService<CollectDeviceService>().AddAsync(input);
+        CollectDevices = App.GetService<CollectDeviceService>().GetCacheList();
         _deviceGroups = CollectDevices?.Select(a => a.DeviceGroup)?.Where(a => a != null).Distinct()?.ToList();
         await MainLayout.StateHasChangedAsync();
     }
@@ -71,7 +71,7 @@ public partial class CollectDevicePage
             return;
         }
 
-        await CollectDeviceService.CopyDevAndVarAsync(data);
+        await App.GetService<CollectDeviceService>().CopyDevAndVarAsync(data);
         await DatatableQueryAsync();
         await PopupService.EnqueueSnackbarAsync("复制成功", AlertTypes.Success);
         await MainLayout.StateHasChangedAsync();
@@ -85,7 +85,7 @@ public partial class CollectDevicePage
             return;
         }
 
-        await CollectDeviceService.CopyDevAsync(data);
+        await App.GetService<CollectDeviceService>().CopyDevAsync(data);
         await DatatableQueryAsync();
         await PopupService.EnqueueSnackbarAsync("复制成功", AlertTypes.Success);
         await MainLayout.StateHasChangedAsync();
@@ -98,15 +98,15 @@ public partial class CollectDevicePage
 
     private async Task DeleteCallAsync(IEnumerable<CollectDevice> input)
     {
-        await CollectDeviceService.DeleteAsync(input.Select(a => a.Id).ToArray());
-        CollectDevices = CollectDeviceService.GetCacheList();
+        await App.GetService<CollectDeviceService>().DeleteAsync(input.Select(a => a.Id).ToArray());
+        CollectDevices = App.GetService<CollectDeviceService>().GetCacheList();
         _deviceGroups = CollectDevices?.Select(a => a.DeviceGroup)?.Where(a => a != null).Distinct()?.ToList();
         await MainLayout.StateHasChangedAsync();
     }
 
     Task<Dictionary<string, ImportPreviewOutputBase>> DeviceImportAsync(IBrowserFile file)
     {
-        return CollectDeviceService.PreviewAsync(file);
+        return App.GetService<CollectDeviceService>().PreviewAsync(file);
     }
     async Task DownExportAsync(CollectDevicePageInput input = null)
     {
@@ -133,8 +133,8 @@ public partial class CollectDevicePage
 
     private async Task EditCallAsync(CollectDeviceEditInput input)
     {
-        await CollectDeviceService.EditAsync(input);
-        CollectDevices = CollectDeviceService.GetCacheList();
+        await App.GetService<CollectDeviceService>().EditAsync(input);
+        CollectDevices = App.GetService<CollectDeviceService>().GetCacheList();
         _deviceGroups = CollectDevices?.Select(a => a.DeviceGroup)?.Where(a => a != null).Distinct()?.ToList();
         await MainLayout.StateHasChangedAsync();
     }
@@ -147,13 +147,13 @@ public partial class CollectDevicePage
 
     private async Task<SqlSugarPagedList<CollectDevice>> QueryCallAsync(CollectDevicePageInput input)
     {
-        var data = await CollectDeviceService.PageAsync(input);
+        var data = await App.GetService<CollectDeviceService>().PageAsync(input);
         return data;
     }
 
     async Task SaveDeviceImportAsync(Dictionary<string, ImportPreviewOutputBase> data)
     {
-        await CollectDeviceService.ImportAsync(data);
+        await App.GetService<CollectDeviceService>().ImportAsync(data);
         await DatatableQueryAsync();
         ImportExcel.IsShowImport = false;
         await MainLayout.StateHasChangedAsync();

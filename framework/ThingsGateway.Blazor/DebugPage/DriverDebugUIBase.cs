@@ -10,6 +10,8 @@
 //------------------------------------------------------------------------------
 #endregion
 
+using Furion;
+
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
@@ -65,11 +67,7 @@ public abstract class DriverDebugUIBase : ComponentBase, IDisposable
     /// 写入值
     /// </summary>
     public virtual string WriteValue { get; set; }
-    [Inject]
-    private ICollectDeviceService CollectDeviceService { get; set; }
 
-    [Inject]
-    private IVariableService VariableService { get; set; }
     [Inject]
     private InitTimezone InitTimezone { get; set; }
 
@@ -133,7 +131,7 @@ public abstract class DriverDebugUIBase : ComponentBase, IDisposable
         {
             isDownExport = true;
             StateHasChanged();
-            await CollectDeviceService.AddAsync(data);
+            await App.GetService<CollectDeviceService>().AddAsync(data);
         }
         finally
         {
@@ -151,7 +149,7 @@ public abstract class DriverDebugUIBase : ComponentBase, IDisposable
         {
             isDownExport = true;
             StateHasChanged();
-            await VariableService.AddBatchAsync(data);
+            await App.GetService<VariableService>().AddBatchAsync(data);
         }
         finally
         {
@@ -199,7 +197,7 @@ public abstract class DriverDebugUIBase : ComponentBase, IDisposable
         {
             isDownExport = true;
             StateHasChanged();
-            using var memoryStream = await CollectDeviceService.ExportFileAsync(new List<CollectDevice>() { data });
+            using var memoryStream = await App.GetService<CollectDeviceService>().ExportFileAsync(new List<CollectDevice>() { data });
             memoryStream.Seek(0, SeekOrigin.Begin);
             using var streamRef = new DotNetStreamReference(stream: memoryStream);
             _helper ??= await JS.InvokeAsync<IJSObjectReference>("import", $"/_content/ThingsGateway.Admin.Blazor.Core/js/downloadFileFromStream.js");
@@ -221,7 +219,7 @@ public abstract class DriverDebugUIBase : ComponentBase, IDisposable
         {
             isDownExport = true;
             StateHasChanged();
-            using var memoryStream = await VariableService.ExportFileAsync(data, devName);
+            using var memoryStream = await App.GetService<VariableService>().ExportFileAsync(data, devName);
             memoryStream.Seek(0, SeekOrigin.Begin);
             using var streamRef = new DotNetStreamReference(stream: memoryStream);
             _helper ??= await JS.InvokeAsync<IJSObjectReference>("import", $"/_content/ThingsGateway.Admin.Blazor.Core/js/downloadFileFromStream.js");

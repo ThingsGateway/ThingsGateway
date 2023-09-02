@@ -10,6 +10,8 @@
 //------------------------------------------------------------------------------
 #endregion
 
+using Furion;
+
 using Mapster;
 
 using Microsoft.AspNetCore.Components;
@@ -36,7 +38,7 @@ public partial class RpcLogPage
         var confirm = await PopupService.OpenConfirmDialogAsync("删除", "确定 ?");
         if (confirm)
         {
-            await RpcLogService.DeleteAsync();
+            await App.GetService<RpcLogService>().DeleteAsync();
             await _datatable?.QueryClickAsync();
         }
     }
@@ -54,7 +56,7 @@ public partial class RpcLogPage
 
     private async Task<SqlSugarPagedList<RpcLog>> QueryCallAsync(RpcLogPageInput input)
     {
-        var data = await RpcLogService.PageAsync(input);
+        var data = await App.GetService<RpcLogService>().PageAsync(input);
         return data;
     }
 }

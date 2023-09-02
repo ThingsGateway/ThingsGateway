@@ -871,8 +871,8 @@ public class TcpClientBaseEx : BaseSocket, ITcpClient
         {
 #if NET45_OR_GREATER
 
-                socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.KeepAlive, true);
-                socket.IOControl(IOControlCode.KeepAliveValues, keepAliveValue.KeepAliveTime, null);
+            socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.KeepAlive, true);
+            socket.IOControl(IOControlCode.KeepAliveValues, keepAliveValue.KeepAliveTime, null);
 #else
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {

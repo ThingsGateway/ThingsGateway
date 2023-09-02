@@ -24,14 +24,12 @@
 @using ThingsGateway.Admin.Core;
 @using ThingsGateway.Application;
 @using TouchSocket.Core;
-@inject ICollectDeviceService CollectDeviceService
-@inject IUploadDeviceService UploadDeviceService
-
+ 
 @attribute [Authorize]
 @inherits BaseComponentBase
 @inject UserResoures UserResoures
 @inject NavigationManager NavigationManager
-@inject IDriverPluginService DriverPluginService
+ 
 @layout MainLayout
 <MSheet Style="overflow:auto">
 

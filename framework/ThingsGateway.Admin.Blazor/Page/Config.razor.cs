@@ -41,26 +41,26 @@ public partial class Config
     MainLayout MainLayout { get; set; }
     private Task AddCallAsync(ConfigAddInput input)
     {
-        return ConfigService.AddAsync(input);
+        return App.GetService<ConfigService>().AddAsync(input);
     }
 
     private Task DeleteCallAsync(IEnumerable<SysConfig> sysConfigs)
     {
-        return ConfigService.DeleteAsync(sysConfigs.Select(a => a.Id).ToArray());
+        return App.GetService<ConfigService>().DeleteAsync(sysConfigs.Select(a => a.Id).ToArray());
     }
     private Task EditCallAsync(ConfigEditInput sysConfigs)
     {
-        return ConfigService.EditAsync(sysConfigs);
+        return App.GetService<ConfigService>().EditAsync(sysConfigs);
     }
 
     private async Task OnSaveAsync()
     {
-        await ConfigService.EditBatchAsync(_sysConfig);
+        await App.GetService<ConfigService>().EditBatchAsync(_sysConfig);
         await MainLayout.StateHasChangedAsync();
         await PopupService.EnqueueSnackbarAsync("成功", AlertTypes.Success);
     }
     private Task<SqlSugarPagedList<SysConfig>> QueryCallAsync(ConfigPageInput input)
     {
-        return ConfigService.PageAsync(input);
+        return App.GetService<ConfigService>().PageAsync(input);
     }
 }

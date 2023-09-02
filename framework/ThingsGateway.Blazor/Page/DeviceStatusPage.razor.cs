@@ -73,8 +73,6 @@ public partial class DeviceStatusPage : IDisposable
 
     UploadDeviceWorker UploadDeviceHostService { get; set; }
     StringNumber Uppanel { get; set; }
-    [Inject]
-    IVariableService VariableService { get; set; }
 
     /// <summary>
     /// <inheritdoc/>
