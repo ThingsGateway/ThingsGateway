@@ -10,6 +10,8 @@
 //------------------------------------------------------------------------------
 #endregion
 
+using Furion;
+
 using Microsoft.AspNetCore.Components;
 
 using System.Collections.Generic;
@@ -56,8 +58,6 @@ public partial class ImportVariable
         }
     }
 
-    [Inject]
-    IDriverPluginService DriverPluginService { get; set; }
 
     private List<BrowseElement> Selected { get; set; } = new();
 
@@ -129,7 +129,7 @@ public partial class ImportVariable
             Enable = true,
             IsLogOut = true,
             DevicePropertys = new(),
-            PluginId = DriverPluginService.GetIdByName(nameof(OPCDAClient)).ToLong(),
+            PluginId = App.GetService<DriverPluginService>().GetIdByName(nameof(OPCDAClient)).ToLong(),
         };
         data.DevicePropertys.Add(new() { PropertyName = nameof(OPCDAClientProperty.OPCName), Value = PLC.OPCNode.OPCName, Description = typeof(OPCDAClientProperty).GetProperty(nameof(OPCDAClientProperty.OPCName)).GetCustomAttribute<DevicePropertyAttribute>().Description });
         data.DevicePropertys.Add(new() { PropertyName = nameof(OPCDAClientProperty.OPCIP), Value = PLC.OPCNode.OPCIP, Description = typeof(OPCDAClientProperty).GetProperty(nameof(OPCDAClientProperty.OPCIP)).GetCustomAttribute<DevicePropertyAttribute>().Description });

@@ -10,6 +10,8 @@
 //------------------------------------------------------------------------------
 #endregion
 
+using Furion;
+
 using Microsoft.AspNetCore.Components;
 
 using Opc.Ua;
@@ -62,8 +64,7 @@ public partial class ImportVariable
 
     }
 
-    [Inject]
-    IDriverPluginService DriverPluginService { get; set; }
+
 
     private List<ReferenceDescription> Selected { get; set; } = new();
     /// <summary>
@@ -155,7 +156,7 @@ public partial class ImportVariable
             Enable = true,
             IsLogOut = true,
             DevicePropertys = new(),
-            PluginId = DriverPluginService.GetIdByName(nameof(OPCUAClient)).ToLong(),
+            PluginId = App.GetService<DriverPluginService>().GetIdByName(nameof(OPCUAClient)).ToLong(),
         };
 
         data.DevicePropertys.Add(new() { PropertyName = nameof(OPCUAClientProperty.OPCURL), Value = PLC.OPCNode.OPCUrl, Description = typeof(OPCUAClientProperty).GetProperty(nameof(OPCUAClientProperty.OPCURL)).GetCustomAttribute<DevicePropertyAttribute>().Description });
@@ -236,9 +237,9 @@ public partial class ImportVariable
                     if (data != null && data.Count > 0)
                     {
                         if (isAll)
-                        child.Nodes = await PopulateBranchAsync((NodeId)target.NodeId);
-                    else
-                        child.Nodes = new();
+                            child.Nodes = await PopulateBranchAsync((NodeId)target.NodeId);
+                        else
+                            child.Nodes = new();
                     }
                     else
                     {

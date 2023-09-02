@@ -83,7 +83,7 @@ public class DeviceVariableRunTime : DeviceVariable
     /// <param name="value"></param>
     /// <param name="dateTime"></param>
     /// <param name="isOnline"></param>
-    public OperResult SetValue(object value, DateTime dateTime = default,bool isOnline=true)
+    public OperResult SetValue(object value, DateTime dateTime = default, bool isOnline = true)
     {
         try
         {

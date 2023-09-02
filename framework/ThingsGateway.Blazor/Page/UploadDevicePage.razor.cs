@@ -44,16 +44,10 @@ public partial class UploadDevicePage
     StringNumber tab;
     [Inject]
     AjaxService AjaxService { get; set; }
-    [Inject]
-    IDriverPluginService DriverPluginService { get; set; }
 
-    [Inject]
-    InitTimezone InitTimezone { get; set; }
 
     [CascadingParameter]
     MainLayout MainLayout { get; set; }
-    [Inject]
-    IUploadDeviceService UploadDeviceService { get; set; }
 
     /// <summary>
     /// <inheritdoc/>
@@ -67,8 +61,8 @@ public partial class UploadDevicePage
     }
     private async Task AddCallAsync(UploadDeviceAddInput input)
     {
-        await UploadDeviceService.AddAsync(input);
-        _deviceGroups = UploadDeviceService.GetCacheList()?.Select(a => a.DeviceGroup)?.Where(a => a != null).Distinct()?.ToList();
+        await App.GetService<UploadDeviceService>().AddAsync(input);
+        _deviceGroups = App.GetService<UploadDeviceService>().GetCacheList()?.Select(a => a.DeviceGroup)?.Where(a => a != null).Distinct()?.ToList();
         await MainLayout.StateHasChangedAsync();
     }
 
@@ -80,7 +74,7 @@ public partial class UploadDevicePage
             return;
         }
 
-        await UploadDeviceService.CopyDevAsync(data);
+        await App.GetService<UploadDeviceService>().CopyDevAsync(data);
         await DatatableQuery();
         await PopupService.EnqueueSnackbarAsync("复制成功", AlertTypes.Success);
         await MainLayout.StateHasChangedAsync();
@@ -93,14 +87,14 @@ public partial class UploadDevicePage
 
     private async Task DeleteCallAsync(IEnumerable<UploadDevice> input)
     {
-        await UploadDeviceService.DeleteAsync(input.Select(a => a.Id).ToArray());
-        _deviceGroups = UploadDeviceService.GetCacheList()?.Select(a => a.DeviceGroup)?.Where(a => a != null).Distinct()?.ToList();
+        await App.GetService<UploadDeviceService>().DeleteAsync(input.Select(a => a.Id).ToArray());
+        _deviceGroups = App.GetService<UploadDeviceService>().GetCacheList()?.Select(a => a.DeviceGroup)?.Where(a => a != null).Distinct()?.ToList();
         await MainLayout.StateHasChangedAsync();
     }
 
     Task<Dictionary<string, ImportPreviewOutputBase>> DeviceImportAsync(IBrowserFile file)
     {
-        return UploadDeviceService.PreviewAsync(file);
+        return App.GetService<UploadDeviceService>().PreviewAsync(file);
     }
     async Task DownExportAsync(UploadDevicePageInput input = null)
     {
@@ -128,8 +122,8 @@ public partial class UploadDevicePage
     }
     private async Task EditCallAsync(UploadDeviceEditInput input)
     {
-        await UploadDeviceService.EditAsync(input);
-        _deviceGroups = UploadDeviceService.GetCacheList()?.Select(a => a.DeviceGroup)?.Where(a => a != null).Distinct()?.ToList();
+        await App.GetService<UploadDeviceService>().EditAsync(input);
+        _deviceGroups = App.GetService<UploadDeviceService>().GetCacheList()?.Select(a => a.DeviceGroup)?.Where(a => a != null).Distinct()?.ToList();
         await MainLayout.StateHasChangedAsync();
     }
 
@@ -141,13 +135,13 @@ public partial class UploadDevicePage
 
     private async Task<SqlSugarPagedList<UploadDevice>> QueryCallAsync(UploadDevicePageInput input)
     {
-        var data = await UploadDeviceService.PageAsync(input);
+        var data = await App.GetService<UploadDeviceService>().PageAsync(input);
         return data;
     }
 
     async Task SaveDeviceImportAsync(Dictionary<string, ImportPreviewOutputBase> data)
     {
-        await UploadDeviceService.ImportAsync(data);
+        await App.GetService<UploadDeviceService>().ImportAsync(data);
         await DatatableQuery();
         ImportExcel.IsShowImport = false;
         await MainLayout.StateHasChangedAsync();

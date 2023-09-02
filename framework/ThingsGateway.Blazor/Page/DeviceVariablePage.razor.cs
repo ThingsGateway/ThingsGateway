@@ -53,8 +53,6 @@ public partial class DeviceVariablePage
     [Inject]
     AjaxService AjaxService { get; set; }
 
-    [Inject]
-    IVariableService VariableService { get; set; }
 
     /// <summary>
     /// <inheritdoc/>
@@ -70,7 +68,7 @@ public partial class DeviceVariablePage
     }
     private async Task AddCallAsync(DeviceVariableAddInput input)
     {
-        await VariableService.AddAsync(input);
+        await App.GetService<VariableService>().AddAsync(input);
     }
 
     private async Task ClearAsync()
@@ -78,7 +76,7 @@ public partial class DeviceVariablePage
         var confirm = await PopupService.OpenConfirmDialogAsync("确认", "清空?");
         if (confirm)
         {
-            await VariableService.ClearDeviceVariableAsync();
+            await App.GetService<VariableService>().ClearDeviceVariableAsync();
         }
         await DatatableQueryAsync();
 
@@ -91,7 +89,7 @@ public partial class DeviceVariablePage
 
     private async Task DeleteCallAsync(IEnumerable<DeviceVariable> input)
     {
-        await VariableService.DeleteAsync(input.Select(a => a.Id).ToArray());
+        await App.GetService<VariableService>().DeleteAsync(input.Select(a => a.Id).ToArray());
     }
 
     void DeviceChanged(long devId)
@@ -107,7 +105,7 @@ public partial class DeviceVariablePage
 
     Task<Dictionary<string, ImportPreviewOutputBase>> DeviceImportAsync(IBrowserFile file)
     {
-        return VariableService.PreviewAsync(file);
+        return App.GetService<VariableService>().PreviewAsync(file);
     }
     async Task DownExportAsync(DeviceVariablePageInput input = null)
     {
@@ -116,7 +114,7 @@ public partial class DeviceVariablePage
 
     private async Task EditCallAsync(VariableEditInput input)
     {
-        await VariableService.EditAsync(input);
+        await App.GetService<VariableService>().EditAsync(input);
     }
 
     List<DependencyProperty> GetDriverProperties(long driverId, List<DependencyProperty> dependencyProperties)
@@ -126,13 +124,13 @@ public partial class DeviceVariablePage
 
     private async Task<SqlSugarPagedList<DeviceVariable>> QueryCallAsync(DeviceVariablePageInput input)
     {
-        var data = await VariableService.PageAsync(input);
+        var data = await App.GetService<VariableService>().PageAsync(input);
         return data;
     }
 
     async Task SaveDeviceImportAsync(Dictionary<string, ImportPreviewOutputBase> data)
     {
-        await VariableService.ImportAsync(data);
+        await App.GetService<VariableService>().ImportAsync(data);
         await DatatableQueryAsync();
         ImportExcel.IsShowImport = false;
     }

@@ -10,6 +10,8 @@
 //------------------------------------------------------------------------------
 #endregion
 
+using Furion;
+
 using Mapster;
 
 using Microsoft.AspNetCore.Components;
@@ -37,7 +39,7 @@ public partial class BackendLogPage
         var confirm = await PopupService.OpenConfirmDialogAsync("删除", "确定 ?");
         if (confirm)
         {
-            await BackendLogService.DeleteAsync();
+            await App.GetService<BackendLogService>().DeleteAsync();
             await _datatable?.QueryClickAsync();
         }
     }
@@ -56,7 +58,7 @@ public partial class BackendLogPage
 
     private async Task<SqlSugarPagedList<BackendLog>> QueryCallAsync(BackendLogPageInput input)
     {
-        var data = await BackendLogService.PageAsync(input);
+        var data = await App.GetService<BackendLogService>().PageAsync(input);
         return data;
     }
 }

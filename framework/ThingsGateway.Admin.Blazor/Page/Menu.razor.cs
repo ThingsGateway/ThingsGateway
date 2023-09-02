@@ -29,14 +29,11 @@ public partial class Menu
     long buttonParentId;
     bool IsShowButtonList;
     List<SysResource> MenuCatalog = new();
-    [Inject]
-    IButtonService ButtonService { get; set; }
+
 
     [CascadingParameter]
     MainLayout MainLayout { get; set; }
 
-    [Inject]
-    IResourceService ResourceService { get; set; }
     /// <summary>
     /// <inheritdoc/>
     /// </summary>
@@ -52,23 +49,23 @@ public partial class Menu
     private async Task AddCallAsync(MenuAddInput input)
     {
         input.ParentId = search.ParentId;
-        await MenuService.AddAsync(input);
+        await App.GetService<MenuService>().AddAsync(input);
         await NavChangeAsync();
     }
     private async Task ButtonAddCallAsync(ButtonAddInput input)
     {
         input.ParentId = buttonParentId;
-        await ButtonService.AddAsync(input);
+        await App.GetService<ButtonService>().AddAsync(input);
     }
 
     private Task ButtonDeleteCallAsync(IEnumerable<SysResource> input)
     {
-        return ButtonService.DeleteAsync(input.Select(a => a.Id).ToArray());
+        return App.GetService<ButtonService>().DeleteAsync(input.Select(a => a.Id).ToArray());
     }
 
     private Task ButtonEditCallAsync(ButtonEditInput input)
     {
-        return ButtonService.EditAsync(input);
+        return App.GetService<ButtonService>().EditAsync(input);
 
     }
 
@@ -92,7 +89,7 @@ public partial class Menu
     private async Task<SqlSugarPagedList<SysResource>> ButtonQueryCallAsync(ButtonPageInput input)
     {
         input.ParentId = buttonParentId;
-        var data = await ButtonService.PageAsync(input);
+        var data = await App.GetService<ButtonService>().PageAsync(input);
         return data;
     }
 
@@ -103,13 +100,13 @@ public partial class Menu
 
     private async Task DeleteCallAsync(IEnumerable<SysResource> input)
     {
-        await MenuService.DeleteAsync(input.Select(a => a.Id).ToArray());
+        await App.GetService<MenuService>().DeleteAsync(input.Select(a => a.Id).ToArray());
         await NavChangeAsync();
 
     }
     private async Task EditCallAsync(MenuEditInput input)
     {
-        await MenuService.EditAsync(input);
+        await App.GetService<MenuService>().EditAsync(input);
         await NavChangeAsync();
 
     }
@@ -117,9 +114,9 @@ public partial class Menu
     private async Task<List<SysResource>> GetMenuCatalogAsync()
     {
         //获取所有菜单
-        List<SysResource> sysResources = await ResourceService.GetListByCategoryAsync(ResourceCategoryEnum.MENU);
+        List<SysResource> sysResources = await App.GetService<ResourceService>().GetListByCategoryAsync(ResourceCategoryEnum.MENU);
         sysResources = sysResources.Where(it => it.TargetType == TargetTypeEnum.None).ToList();
-        MenuCatalog = ResourceService.ResourceListToTree(sysResources);
+        MenuCatalog = App.GetService<ResourceService>().ResourceListToTree(sysResources);
         return MenuCatalog;
     }
 
@@ -130,7 +127,7 @@ public partial class Menu
     }
     private async Task<SqlSugarPagedList<SysResource>> QueryCallAsync(MenuPageInput input)
     {
-        var data = await MenuService.TreeAsync(input);
+        var data = await App.GetService<MenuService>().TreeAsync(input);
         return data.ToPagedList(input);
     }
 

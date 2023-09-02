@@ -10,6 +10,8 @@
 //------------------------------------------------------------------------------
 #endregion
 
+using Furion;
+
 using ThingsGateway.Admin.Blazor.Core;
 using ThingsGateway.Admin.Core;
 using ThingsGateway.Application;
@@ -25,12 +27,12 @@ public partial class DriverPluginPage
 
     private async Task AddCallAsync(DriverPluginAddInput input)
     {
-        await DriverPluginService.AddAsync(input);
+        await App.GetService<DriverPluginService>().AddAsync(input);
     }
 
     private async Task<SqlSugarPagedList<DriverPlugin>> QueryCallAsync(DriverPluginPageInput input)
     {
-        var data = await DriverPluginService.PageAsync(input);
+        var data = await App.GetService<DriverPluginService>().PageAsync(input);
         return data;
     }
 }

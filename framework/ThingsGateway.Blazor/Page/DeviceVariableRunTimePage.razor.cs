@@ -52,8 +52,6 @@ public partial class DeviceVariableRunTimePage
     GlobalDeviceData GlobalDeviceData { get; set; }
 
     VariablePageInput SearchModel { get; set; } = new();
-    [Inject]
-    IUploadDeviceService UploadDeviceService { get; set; }
 
     CollectDeviceWorker CollectDeviceHostService { get; set; }
     [Inject]
@@ -121,7 +119,7 @@ public partial class DeviceVariableRunTimePage
 
     private Task<SqlSugarPagedList<DeviceVariableRunTime>> QueryCallAsync(VariablePageInput input)
     {
-        var uploadDevId = UploadDeviceService.GetIdByName(input.UploadDeviceName);
+        var uploadDevId = App.GetService<UploadDeviceService>().GetIdByName(input.UploadDeviceName);
         var data = GlobalDeviceData.AllVariables
             .WhereIF(!input.DeviceName.IsNullOrEmpty(), a => a.DeviceName == input.DeviceName)
             .WhereIF(!input.Name.IsNullOrEmpty(), a => a.Name.Contains(input.Name))

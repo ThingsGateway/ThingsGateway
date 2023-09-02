@@ -5,10 +5,10 @@
     "SqlSugar": [
       {
         "ConfigId": "Default", //ID
-        //"ConnectionString": "server=localhost;Database=test;Uid=root;Pwd=111111;AllowLoadLocalInfile=true;", //连接字符串
-        //"DbType": "MySql", //数据库类型
-        "ConnectionString": "Data Source=Default.db;", //连接字符串
-        "DbType": "Sqlite", //数据库类型
+        "ConnectionString": "server=localhost;Database=test;Uid=root;Pwd=111111;AllowLoadLocalInfile=true;", //连接字符串
+        "DbType": "MySql", //数据库类型
+        //"ConnectionString": "Data Source=Default.db;", //连接字符串
+        //"DbType": "Sqlite", //数据库类型
         "IsAutoCloseConnection": true, //是否自动释放
         "IsInitDb": true, //是否初始化数据库,适用于codefirst
         "IsUnderLine": false, //是否驼峰转下划线
@@ -17,10 +17,10 @@
       },
       {
         "ConfigId": "ThingsGateway", //ID
-        //"ConnectionString": "server=localhost;Database=test;Uid=root;Pwd=111111;AllowLoadLocalInfile=true;", //连接字符串
-        //"DbType": "MySql", //数据库类型
-        "ConnectionString": "Data Source=ThingsGateway.db", //连接字符串
-        "DbType": "Sqlite", //数据库类型
+        "ConnectionString": "server=localhost;Database=test;Uid=root;Pwd=111111;AllowLoadLocalInfile=true;", //连接字符串
+        "DbType": "MySql", //数据库类型
+        //"ConnectionString": "Data Source=ThingsGateway.db", //连接字符串
+        //"DbType": "Sqlite", //数据库类型
         "IsAutoCloseConnection": true, //是否自动释放
         "IsInitDb": true, //是否初始化数据库,适用于codefirst
         "IsUnderLine": false, //是否驼峰转下划线

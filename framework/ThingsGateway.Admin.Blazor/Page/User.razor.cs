@@ -34,21 +34,20 @@ public partial class User
     [CascadingParameter]
     MainLayout MainLayout { get; set; }
 
-    [Inject]
-    IRoleService SysRoleService { get; set; }
+
     private Task AddCallAsync(UserAddInput input)
     {
-        return SysUserService.AddAsync(input);
+        return App.GetService<SysUserService>().AddAsync(input);
     }
     private async Task DeleteCallAsync(IEnumerable<SysUser> users)
     {
-        await SysUserService.DeleteAsync(users.Select(a => a.Id).ToArray());
+        await App.GetService<SysUserService>().DeleteAsync(users.Select(a => a.Id).ToArray());
         await MainLayout.StateHasChangedAsync();
     }
 
     private async Task EditCallAsync(UserEditInput users)
     {
-        await SysUserService.EditAsync(users);
+        await App.GetService<SysUserService>().EditAsync(users);
         await MainLayout.StateHasChangedAsync();
     }
 
@@ -59,7 +58,7 @@ public partial class User
             UserGrantRoleInput userGrantRoleInput = new();
             userGrantRoleInput.Id = ChoiceUserId;
             userGrantRoleInput.RoleIdList = RolesChoice.Select(it => it.Id).ToList();
-            await SysUserService.GrantRoleAsync(userGrantRoleInput);
+            await App.GetService<SysUserService>().GrantRoleAsync(userGrantRoleInput);
             IsShowRoles = false;
         }
         catch (Exception ex)
@@ -71,20 +70,20 @@ public partial class User
     }
     private Task<SqlSugarPagedList<SysUser>> QueryCallAsync(UserPageInput input)
     {
-        return SysUserService.PageAsync(input);
+        return App.GetService<SysUserService>().PageAsync(input);
     }
 
     private async Task ResetPasswordAsync(SysUser sysUser)
     {
-        await SysUserService.ResetPasswordAsync(sysUser.Id);
+        await App.GetService<SysUserService>().ResetPasswordAsync(sysUser.Id);
         await PopupService.EnqueueSnackbarAsync(new("成功", AlertTypes.Success));
         await MainLayout.StateHasChangedAsync();
     }
 
     private async Task RoleInitAsync()
     {
-        AllRoles = await SysRoleService.RoleSelectorAsync();
-        var data = await SysRoleService.GetRoleIdListByUserIdAsync(ChoiceUserId);
+        AllRoles = await App.GetService<RoleService>().RoleSelectorAsync();
+        var data = await App.GetService<RoleService>().GetRoleIdListByUserIdAsync(ChoiceUserId);
         RolesChoice = AllRoles.Where(a => data.Contains(a.Id)).ToList();
     }
     private async Task UserStatusChangeAsync(SysUser context, bool enable)
@@ -92,9 +91,9 @@ public partial class User
         try
         {
             if (enable)
-                await SysUserService.EnableUserAsync(context.Id);
+                await App.GetService<SysUserService>().EnableUserAsync(context.Id);
             else
-                await SysUserService.DisableUserAsync(context.Id);
+                await App.GetService<SysUserService>().DisableUserAsync(context.Id);
         }
         finally
         {

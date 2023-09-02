@@ -19,7 +19,6 @@ using ThingsGateway.Foundation;
 using ThingsGateway.Foundation.Serial;
 
 using TouchSocket.Core;
-using TouchSocket.Sockets;
 
 namespace ThingsGateway.DLT645;
 

@@ -56,7 +56,7 @@ public partial class ConfigPage
         var confirm = await PopupService.OpenConfirmDialogAsync("确认", "保存配置后将重启报警服务，是否确定?");
         if (confirm)
         {
-            await ConfigService.EditBatchAsync(_alarmConfig);
+            await App.GetService<ConfigService>().EditBatchAsync(_alarmConfig);
             await AlarmHostService.RestartAsync();
             await PopupService.EnqueueSnackbarAsync("成功", AlertTypes.Success);
         }
@@ -67,7 +67,7 @@ public partial class ConfigPage
         var confirm = await PopupService.OpenConfirmDialogAsync("确认", "保存配置后将重启历史服务，是否确定?");
         if (confirm)
         {
-            await ConfigService.EditBatchAsync(_hisConfig);
+            await App.GetService<ConfigService>().EditBatchAsync(_hisConfig);
             await HistoryValueHostService.RestartAsync();
             await PopupService.EnqueueSnackbarAsync("成功", AlertTypes.Success);
         }

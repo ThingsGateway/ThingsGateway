@@ -44,7 +44,7 @@ public partial class Oplog
         var confirm = await PopupService.OpenConfirmDialogAsync("删除", "确定 ?");
         if (confirm)
         {
-            await OperateLogService.DeleteAsync(CategoryFilters.Select(it => it.Value).ToArray());
+            await App.GetService<OperateLogService>().DeleteAsync(CategoryFilters.Select(it => it.Value).ToArray());
             await _datatable?.QueryClickAsync();
         }
     }
@@ -54,7 +54,7 @@ public partial class Oplog
         input.Account = search.Account;
         input.Category = search.Category;
         input.ExeStatus = search.ExeStatus;
-        return OperateLogService.PageAsync(input);
+        return App.GetService<OperateLogService>().PageAsync(input);
     }
     [Inject]
     AjaxService AjaxService { get; set; }

@@ -51,14 +51,14 @@ public partial class Vislog
         var confirm = await PopupService.OpenConfirmDialogAsync("删除", "确定 ?");
         if (confirm)
         {
-            await VisitLogService.DeleteAsync(CategoryFilters.Select(it => it.Value).ToArray());
+            await App.GetService<VisitLogService>().DeleteAsync(CategoryFilters.Select(it => it.Value).ToArray());
             await _datatable?.QueryClickAsync();
         }
     }
 
     private async Task<SqlSugarPagedList<SysVisitLog>> QueryCallAsync(VisitLogPageInput input)
     {
-        var data = await VisitLogService.PageAsync(input);
+        var data = await App.GetService<VisitLogService>().PageAsync(input);
         return data;
     }
     [Inject]

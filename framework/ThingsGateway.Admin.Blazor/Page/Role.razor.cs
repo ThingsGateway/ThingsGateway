@@ -38,27 +38,23 @@ public partial class Role
     [CascadingParameter]
     MainLayout MainLayout { get; set; }
 
-    [Inject]
-    IResourceService ResourceService { get; set; }
+
 
     private string SearchKey { get; set; }
 
-    [Inject]
-    ISysUserService SysUserService { get; set; }
-
     private Task AddCallAsync(RoleAddInput input)
     {
-        return SysRoleService.AddAsync(input);
+        return App.GetService<RoleService>().AddAsync(input);
     }
     private async Task DeleteCallAsync(IEnumerable<SysRole> sysRoles)
     {
-        await SysRoleService.DeleteAsync(sysRoles.Select(a => a.Id).ToArray());
+        await App.GetService<RoleService>().DeleteAsync(sysRoles.Select(a => a.Id).ToArray());
         await MainLayout.StateHasChangedAsync();
     }
 
     private async Task EditCallAsync(RoleEditInput input)
     {
-        await SysRoleService.EditAsync(input);
+        await App.GetService<RoleService>().EditAsync(input);
         await MainLayout.StateHasChangedAsync();
     }
     private async Task OnRoleHasResuorcesSaveAsync(ModalActionEventArgs args)
@@ -69,7 +65,7 @@ public partial class Role
             var data = new List<SysResource>();
             userGrantRoleInput.Id = ChoiceRoleId;
             userGrantRoleInput.GrantInfoList = RoleHasResuorces;
-            await SysRoleService.GrantResourceAsync(userGrantRoleInput);
+            await App.GetService<RoleService>().GrantResourceAsync(userGrantRoleInput);
             IsShowResuorces = false;
         }
         catch (Exception ex)
@@ -86,7 +82,7 @@ public partial class Role
             GrantUserInput userGrantRoleInput = new();
             userGrantRoleInput.Id = ChoiceRoleId;
             userGrantRoleInput.GrantInfoList = UsersChoice.Select(it => it.Id).ToList();
-            await SysRoleService.GrantUserAsync(userGrantRoleInput);
+            await App.GetService<RoleService>().GrantUserAsync(userGrantRoleInput);
             IsShowUsers = false;
         }
         catch (Exception ex)
@@ -99,19 +95,19 @@ public partial class Role
 
     private Task<SqlSugarPagedList<SysRole>> QueryCallAsync(RolePageInput input)
     {
-        return SysRoleService.PageAsync(input);
+        return App.GetService<RoleService>().PageAsync(input);
     }
 
     private async Task ResuorceInitAsync()
     {
-        ResTreeSelectors = (await ResourceService.GetRoleGrantResourceMenusAsync());
-        RoleHasResuorces = (await SysRoleService.OwnResourceAsync(ChoiceRoleId))?.GrantInfoList;
+        ResTreeSelectors = (await App.GetService<ResourceService>().GetRoleGrantResourceMenusAsync());
+        RoleHasResuorces = (await App.GetService<RoleService>().OwnResourceAsync(ChoiceRoleId))?.GrantInfoList;
     }
 
     private async Task<List<UserSelectorOutput>> UserInitAsync()
     {
-        AllUsers = await SysUserService.UserSelectorAsync(SearchKey);
-        var data = await SysRoleService.OwnUserAsync(ChoiceRoleId);
+        AllUsers = await App.GetService<SysUserService>().UserSelectorAsync(SearchKey);
+        var data = await App.GetService<RoleService>().OwnUserAsync(ChoiceRoleId);
         UsersChoice = AllUsers.Where(a => data.Contains(a.Id)).ToList();
         return AllUsers;
     }

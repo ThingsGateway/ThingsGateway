@@ -39,7 +39,7 @@ public class OPCNode
     /// </summary>
     [Description("检查域")]
     public bool CheckDomain { get; set; }
-    
+
     /// <summary>
     /// 更新间隔
     /// </summary>

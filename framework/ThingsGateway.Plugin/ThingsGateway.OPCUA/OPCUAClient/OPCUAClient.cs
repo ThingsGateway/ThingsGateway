@@ -206,7 +206,7 @@ public class OPCUAClient : CollectBase
             UserName = driverPropertys.UserName,
             Password = driverPropertys.Password,
             CheckDomain = driverPropertys.CheckDomain,
-        }; 
+        };
         if (_plc == null)
         {
             _plc = new(LogMessage);

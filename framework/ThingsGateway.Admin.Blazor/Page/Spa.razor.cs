@@ -27,23 +27,23 @@ public partial class Spa
 
     private async Task AddCallAsync(SpaAddInput input)
     {
-        await SpaService.AddAsync(input);
+        await App.GetService<SpaService>().AddAsync(input);
         await MainLayout.StateHasChangedAsync();
     }
     private async Task DeleteCallAsync(IEnumerable<SysResource> input)
     {
-        await SpaService.DeleteAsync(input.Select(a => a.Id).ToArray());
+        await App.GetService<SpaService>().DeleteAsync(input.Select(a => a.Id).ToArray());
         await MainLayout.StateHasChangedAsync();
     }
 
     private async Task EditCallAsync(SpaEditInput input)
     {
-        await SpaService.EditAsync(input);
+        await App.GetService<SpaService>().EditAsync(input);
         await MainLayout.StateHasChangedAsync();
     }
 
     private Task<SqlSugarPagedList<SysResource>> QueryCallAsync(SpaPageInput input)
     {
-        return SpaService.PageAsync(input);
+        return App.GetService<SpaService>().PageAsync(input);
     }
 }
