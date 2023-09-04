@@ -64,10 +64,10 @@ public class UploadDeviceService : DbRepository<UploadDevice>, IUploadDeviceServ
     [OperDesc("复制上传设备")]
     public async Task CopyDevAsync(IEnumerable<UploadDevice> input)
     {
-        var newId = YitIdHelper.NextId();
         var newDevs = input.Adapt<List<UploadDevice>>();
         newDevs.ForEach(a =>
         {
+            var newId = YitIdHelper.NextId();
             a.Id = newId;
             a.Name = "Copy-" + a.Name + "-" + newId.ToString();
         });
