@@ -72,7 +72,7 @@ public class MemoryVariable : BaseEntity
     /// <summary>
     /// 变量额外属性Json，通常使用为上传设备,List属性
     /// </summary>
-    [SugarColumn(IsJson = true, ColumnName = "VariablePropertys", ColumnDescription = "变量属性Json", IsNullable = true)]
+    [SugarColumn(IsJson = true, ColumnName = "VariablePropertys", ColumnDataType = StaticConfig.CodeFirst_BigString, ColumnDescription = "变量属性Json", IsNullable = true)]
     [IgnoreExcel]
     public ConcurrentDictionary<long, List<DependencyProperty>> VariablePropertys { get; set; } = new();
     /// <summary>

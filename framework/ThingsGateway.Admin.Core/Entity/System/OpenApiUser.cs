@@ -86,7 +86,7 @@ public class OpenApiUser : BaseEntity
     /// <summary>
     /// 权限码集合
     /// </summary>
-    [SugarColumn(ColumnName = "PermissionCodeList", ColumnDescription = "权限json", IsJson = true, IsNullable = true)]
+    [SugarColumn(ColumnName = "PermissionCodeList", ColumnDescription = "权限json", ColumnDataType = StaticConfig.CodeFirst_BigString, IsJson = true, IsNullable = true)]
     public List<string> PermissionCodeList { get; set; }
 
     /// <summary>
