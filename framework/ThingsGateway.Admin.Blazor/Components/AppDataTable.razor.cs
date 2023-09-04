@@ -282,6 +282,7 @@ public partial class AppDataTable<TItem, SearchItem, AddItem, EditItem> : IAppDa
             {
                 SearchModel.Size = PageItems.Total;
             }
+            selectedItem = new List<TItem>();
         }
         catch (Exception ex)
         {
