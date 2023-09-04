@@ -206,6 +206,8 @@ public class CollectDeviceCore
     {
         try
         {
+            Device.SetDeviceStatus(SysDateTimeExtensions.CurrentDateTime);
+
             if (_device == null)
             {
                 _logger?.LogError(nameof(CollectDeviceRunTime) + "设备不能为null");
@@ -287,6 +289,8 @@ public class CollectDeviceCore
         {
             bool isUpDevice = Device != device;
             _device = device;
+            Device.SetDeviceStatus(SysDateTimeExtensions.CurrentDateTime);
+
             _logger = ServiceHelper.Services.GetService<ILoggerFactory>().CreateLogger("采集设备:" + _device.Name);
             //更新插件信息
             CreatDriver();
