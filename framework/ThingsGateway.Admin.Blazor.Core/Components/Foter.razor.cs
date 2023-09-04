@@ -45,7 +45,7 @@ public partial class Foter
         var assembly = Assembly.GetEntryAssembly();
         if (assembly != null)
         {
-            Version = $"v{assembly.GetName().Version}      {new System.IO.FileInfo(assembly.Location).LastWriteTime.ToDefaultDateTimeFormat()}";
+            Version = $"v{assembly.GetName().Version}";
         }
 
         await base.OnParametersSetAsync();
