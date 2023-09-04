@@ -65,7 +65,7 @@ public class UploadDevice : BaseEntity
     /// <summary>
     /// 设备属性Json
     /// </summary>
-    [SugarColumn(IsJson = true, ColumnName = "DevicePropertys", ColumnDescription = "设备属性Json", IsNullable = true)]
+    [SugarColumn(IsJson = true, ColumnName = "DevicePropertys", ColumnDataType = StaticConfig.CodeFirst_BigString, ColumnDescription = "设备属性Json", IsNullable = true)]
     [IgnoreExcel]
     public List<DependencyProperty> DevicePropertys { get; set; }
 

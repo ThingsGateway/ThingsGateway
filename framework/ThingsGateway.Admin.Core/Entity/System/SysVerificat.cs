@@ -31,7 +31,7 @@ public class SysVerificat : PrimaryIdEntity
     /// <summary>
     /// 会话信息列表
     /// </summary>
-    [SugarColumn(IsJson = true)]
+    [SugarColumn(ColumnName = "VerificatInfos", ColumnDescription = "会话信息列表", ColumnDataType = StaticConfig.CodeFirst_BigString, IsJson = true, IsNullable = true)]
     public List<VerificatInfo> VerificatInfos { get; set; }
 }
 
