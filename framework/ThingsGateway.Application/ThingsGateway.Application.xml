@@ -1397,6 +1397,189 @@
         <member name="M:ThingsGateway.Application.BackendLogDatabaseLoggingWriter.Write(Furion.Logging.LogMessage,System.Boolean)">
             <inheritdoc/>
         </member>
+        <member name="T:ThingsGateway.Application.ManageGatewayConfig">
+            <summary>
+            ManageGatewayConfig
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Application.ManageGatewayConfig.Enable">
+            <summary>
+            是否管理网关
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Application.ManageGatewayConfig.MqttBrokerIP">
+            <summary>
+            MqttBrokerIP
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Application.ManageGatewayConfig.MqttBrokerPort">
+            <summary>
+            MqttBrokerPort
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Application.ManageGatewayConfig.UserName">
+            <summary>
+            UserName
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Application.ManageGatewayConfig.Password">
+            <summary>
+            Password
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Application.ManageGatewayConfig.DBDownTopic">
+            <summary>
+            DBDownTopic，Rpc返回为{DBDownTopic}/Return
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Application.ManageGatewayConfig.DBUploadTopic">
+            <summary>
+            DBUploadTopic，Rpc返回为{DBUploadTopic}/Return
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Application.ManageGatewayConfig.WriteRpcTopic">
+            <summary>
+            WriteRpcTopic，Rpc返回为{WriteRpcTopic}/Return
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Application.MqttDB">
+            <summary>
+            用于Mqtt Json传输，上传/下载配置信息
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Application.MqttDB.GatewayId">
+            <summary>
+            标识
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Application.MqttDB.CollectDevices">
+            <summary>
+            采集设备
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Application.MqttDB.IsCollectDevicesFullUp">
+            <summary>
+            true=>删除全部后增加
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Application.MqttDB.UploadDevices">
+            <summary>
+            上传设备
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Application.MqttDB.IsUploadDevicesFullUp">
+            <summary>
+            true=>删除全部后增加
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Application.MqttDB.DeviceVariables">
+            <summary>
+            变量
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Application.MqttDB.IsDeviceVariablesFullUp">
+            <summary>
+            true=>删除全部后增加
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Application.MqttDB.SysConfigs">
+            <summary>
+            配置项
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Application.ManageMqttRpcFrom">
+            <summary>
+            MqttRpc传入
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Application.ManageMqttRpcFrom.GatewayId">
+            <summary>
+            标识
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Application.ManageMqttRpcFrom.RpcId">
+            <summary>
+            标识
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Application.ManageMqttRpcFrom.WriteInfos">
+            <summary>
+            "WriteInfos":{"test":"1"}
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Application.ManageMqttRpcResult">
+            <summary>
+            MqttRpc输出
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Application.ManageMqttRpcResult.GatewayId">
+            <summary>
+            标识
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Application.ManageMqttRpcResult.RpcId">
+            <summary>
+            标识
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Application.ManageMqttRpcResult.Message">
+            <summary>
+            消息
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Application.ManageMqttRpcResult.Success">
+            <summary>
+            是否成功
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Application.ManageGatewayWorker">
+            <summary>
+            设备采集报警后台服务
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Application.ManageGatewayWorker.#ctor(Microsoft.Extensions.Logging.ILoggerFactory)">
+            <inheritdoc cref="T:ThingsGateway.Application.ManageGatewayWorker"/>
+        </member>
+        <member name="P:ThingsGateway.Application.ManageGatewayWorker.RealAlarmStatuString">
+            <summary>
+            服务状态
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Application.ManageGatewayWorker.HisAlarmStatuString">
+            <summary>
+            服务状态
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Application.ManageGatewayWorker.ReadAlarmStatuString">
+            <summary>
+            服务状态
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Application.ManageGatewayWorker.StartAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Application.ManageGatewayWorker.StopAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Application.ManageGatewayWorker.ExecuteAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="F:ThingsGateway.Application.ManageGatewayWorker.restartLock">
+            <summary>
+            全部重启锁
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Application.ManageGatewayWorker.RestartAsync">
+            <summary>
+            重启
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Application.ManageGatewayWorker.InitAsync">
+            <summary>
+            初始化
+            </summary>
+        </member>
         <member name="T:ThingsGateway.Application.CollectDeviceRunTime">
             <summary>
             采集设备状态表示
@@ -1836,46 +2019,6 @@
         </member>
         <member name="P:ThingsGateway.Application.VariableData.DataTypeEnum">
             <inheritdoc cref="P:ThingsGateway.Application.MemoryVariable.DataTypeEnum"/>
-        </member>
-        <member name="T:ThingsGateway.Application.MqttBrokerConfig">
-            <summary>
-            MqttBrokerConfig
-            </summary>
-        </member>
-        <member name="P:ThingsGateway.Application.MqttBrokerConfig.IsMqttBroker">
-            <summary>
-            是否启用管理网关
-            </summary>
-        </member>
-        <member name="P:ThingsGateway.Application.MqttBrokerConfig.MqttBrokerIP">
-            <summary>
-            MqttBrokerIP
-            </summary>
-        </member>
-        <member name="P:ThingsGateway.Application.MqttBrokerConfig.MqttBrokerPort">
-            <summary>
-            MqttBrokerPort
-            </summary>
-        </member>
-        <member name="T:ThingsGateway.Application.MqttBrokerWorker">
-            <summary>
-            MqttBroker
-            </summary>
-        </member>
-        <member name="M:ThingsGateway.Application.MqttBrokerWorker.#ctor(Microsoft.Extensions.Logging.ILogger{ThingsGateway.Application.MqttBrokerWorker},System.IServiceProvider)">
-            <inheritdoc/>
-        </member>
-        <member name="M:ThingsGateway.Application.MqttBrokerWorker.StartAsync(System.Threading.CancellationToken)">
-            <inheritdoc/>
-        </member>
-        <member name="M:ThingsGateway.Application.MqttBrokerWorker.StopAsync(System.Threading.CancellationToken)">
-            <inheritdoc/>
-        </member>
-        <member name="M:ThingsGateway.Application.MqttBrokerWorker.Init">
-            <inheritdoc/>
-        </member>
-        <member name="M:ThingsGateway.Application.MqttBrokerWorker.ExecuteAsync(System.Threading.CancellationToken)">
-            <inheritdoc/>
         </member>
         <member name="T:ThingsGateway.Application.CollectBase">
             <summary>

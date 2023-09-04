@@ -44,6 +44,7 @@ public class Startup : AppStartup
         services.AddHostedService<AlarmWorker>();
         services.AddHostedService<HistoryValueWorker>();
         services.AddHostedService<UploadDeviceWorker>();
+        services.AddHostedService<ManageGatewayWorker>();
     }
 
 }
