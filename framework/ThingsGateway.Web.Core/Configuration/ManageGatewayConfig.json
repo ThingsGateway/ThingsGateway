@@ -1,4 +1,26 @@
 {
   "$schema": "https://gitee.com/dotnetchina/Furion/raw/net6/schemas/v3/furion-schema.json",
+  "ManageGatewayConfig": {
+    "Enable": true,
+    "MqttBrokerIP": null,
+    "MqttBrokerPort": 7300,
+    "UserName": "admin",
+    "Password": "111111",
+    "WriteRpcTopic": "WriteRpcTopic",
+    "DBDownTopic": "DBDownTopic",
+    "DBUploadTopic": "DBUploadTopic",
+    "PrivateWriteRpcTopic": "PrivateWriteRpcTopic"
+  },
+  "ClientGatewayConfig": {
+    "GatewayId": "GatewayId",
+    "Enable": true,
+    "MqttBrokerIP": "127.0.0.1",
+    "MqttBrokerPort": 7300,
+    "UserName": "admin",
+    "Password": "111111",
+    "DBDownTopic": "DBDownTopic",
+    "DBUploadTopic": "DBUploadTopic",
+    "PrivateWriteRpcTopic": "PrivateWriteRpcTopic"
+  }
 
 }

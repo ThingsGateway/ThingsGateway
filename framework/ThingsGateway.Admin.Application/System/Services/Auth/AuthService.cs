@@ -88,8 +88,7 @@ public class AuthService : IAuthService
         }
 
         var password = DESCEncryption.Decrypt(input.Password, DESCKeyConst.DESCKey);  // 解密
-        var userInfo = await _userService.GetUserByAccountAsync(input.Account);//获取用户信息
-        if (userInfo == null) throw Oops.Bah("用户不存在");//用户不存在
+        var userInfo = await _userService.GetUserByAccountAsync(input.Account) ?? throw Oops.Bah("用户不存在");//获取用户信息
         if (userInfo.Password != password) throw Oops.Bah("账号密码错误");//账号密码错误
         return await LoginAsync(userInfo, input.Device);
     }

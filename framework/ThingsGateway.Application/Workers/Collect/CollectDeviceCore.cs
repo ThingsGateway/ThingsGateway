@@ -10,6 +10,7 @@
 //------------------------------------------------------------------------------
 #endregion
 
+using Furion;
 using Furion.FriendlyException;
 using Furion.Logging.Extensions;
 
@@ -79,7 +80,7 @@ public class CollectDeviceCore
     {
         _pluginService = ServiceHelper.Services.GetService<PluginSingletonService>();
         GlobalDeviceData = ServiceHelper.Services.GetService<GlobalDeviceData>();
-        DriverPluginService = ServiceHelper.Services.GetService<IDriverPluginService>();
+        DriverPluginService = App.GetService<IDriverPluginService>();
     }
 
     /// <summary>

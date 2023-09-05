@@ -394,19 +394,19 @@ public class MqttClient : UpLoadBase
         _collectDeviceRunTimes.Enqueue(collectDeviceRunTime.Adapt<DeviceData>());
     }
 
-    private async Task MqttClient_ApplicationMessageReceivedAsync(MqttApplicationMessageReceivedEventArgs arg)
+    private async Task MqttClient_ApplicationMessageReceivedAsync(MqttApplicationMessageReceivedEventArgs args)
     {
-        if (arg.ApplicationMessage.Topic == driverPropertys.QuestRpcTopic && arg.ApplicationMessage.PayloadSegment.Count > 0)
+        if (args.ApplicationMessage.Topic == driverPropertys.QuestRpcTopic && args.ApplicationMessage.PayloadSegment.Count > 0)
         {
             await AllPublishAsync(CancellationToken.None);
             return;
         }
 
-        if (!driverPropertys.DeviceRpcEnable || string.IsNullOrEmpty(arg.ClientId))
+        if (!driverPropertys.DeviceRpcEnable || string.IsNullOrEmpty(args.ClientId))
             return;
-        if (arg.ApplicationMessage.Topic != driverPropertys.RpcWriteTopic)
+        if (args.ApplicationMessage.Topic != driverPropertys.RpcWriteTopic)
             return;
-        var rpcDatas = Encoding.UTF8.GetString(arg.ApplicationMessage.PayloadSegment).FromJsonString<MqttRpcNameVaueWithId>();
+        var rpcDatas = Encoding.UTF8.GetString(args.ApplicationMessage.PayloadSegment).FromJsonString<MqttRpcNameVaueWithId>();
         if (rpcDatas == null)
             return;
 
@@ -437,7 +437,7 @@ public class MqttClient : UpLoadBase
                 }
             }
 
-            var result = await _rpcCore.InvokeDeviceMethodAsync(ToString() + "-" + arg.ClientId,
+            var result = await _rpcCore.InvokeDeviceMethodAsync(ToString() + "-" + args.ClientId,
                 rpcDatas.WriteInfos.Where(
                 a => !mqttRpcResult.Message.Any(b => b.Key == a.Key)).ToDictionary(a => a.Key, a => a.Value));
 
@@ -470,7 +470,15 @@ public class MqttClient : UpLoadBase
         {
             LogMessage?.Warning("订阅失败-" + subResult.Items
                 .Where(a => a.ResultCode > (MqttClientSubscribeResultCode)10)
-                .ToJsonString());
+                .Select(a =>
+                new
+                {
+                    Topic = a.TopicFilter.Topic,
+                    ResultCode = a.ResultCode.ToString()
+                }
+                )
+                .ToJsonString()
+                );
         }
     }
     /// <summary>

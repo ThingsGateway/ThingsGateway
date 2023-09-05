@@ -10,6 +10,7 @@
 //------------------------------------------------------------------------------
 #endregion
 
+using Furion;
 using Furion.Logging.Extensions;
 
 using Mapster;
@@ -59,7 +60,7 @@ public class HistoryValueWorker : BackgroundService
     /// <returns></returns>
     public async Task<OperResult<SqlSugarClient>> GetHisDbAsync()
     {
-        var ConfigService = ServiceHelper.Services.GetService<IConfigService>();
+        var ConfigService = App.GetService<IConfigService>();
         var hisEnable = (await ConfigService.GetByConfigKeyAsync(ThingsGatewayConfigConst.ThingGateway_HisConfig_Base, ThingsGatewayConfigConst.Config_His_Enable))?.ConfigValue?.ToBoolean();
         var hisDbType = (await ConfigService.GetByConfigKeyAsync(ThingsGatewayConfigConst.ThingGateway_HisConfig_Base, ThingsGatewayConfigConst.Config_His_DbType))?.ConfigValue;
         var hisConnstr = (await ConfigService.GetByConfigKeyAsync(ThingsGatewayConfigConst.ThingGateway_HisConfig_Base, ThingsGatewayConfigConst.Config_His_ConnStr))?.ConfigValue;

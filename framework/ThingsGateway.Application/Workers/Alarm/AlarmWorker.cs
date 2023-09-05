@@ -10,6 +10,7 @@
 //------------------------------------------------------------------------------
 #endregion
 
+using Furion;
 using Furion.Logging.Extensions;
 
 using Mapster;
@@ -73,7 +74,7 @@ public class AlarmWorker : BackgroundService
     /// <returns></returns>
     public async Task<OperResult<SqlSugarClient>> GetAlarmDbAsync()
     {
-        var ConfigService = ServiceHelper.Services.GetService<IConfigService>();
+        var ConfigService = App.GetService<IConfigService>();
         var alarmEnable = (await ConfigService.GetByConfigKeyAsync(ThingsGatewayConfigConst.ThingGateway_AlarmConfig_Base, ThingsGatewayConfigConst.Config_Alarm_Enable))?.ConfigValue?.ToBoolean();
         var alarmDbType = (await ConfigService.GetByConfigKeyAsync(ThingsGatewayConfigConst.ThingGateway_AlarmConfig_Base, ThingsGatewayConfigConst.Config_Alarm_DbType))?.ConfigValue;
         var alarmConnstr = (await ConfigService.GetByConfigKeyAsync(ThingsGatewayConfigConst.ThingGateway_AlarmConfig_Base, ThingsGatewayConfigConst.Config_Alarm_ConnStr))?.ConfigValue;

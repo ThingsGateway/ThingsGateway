@@ -10,6 +10,7 @@
 //------------------------------------------------------------------------------
 #endregion
 
+using Furion;
 using Furion.FriendlyException;
 using Furion.Logging.Extensions;
 
@@ -41,7 +42,7 @@ public class UploadDeviceWorker : BackgroundService
         _logger = logger;
 
         _pluginService = ServiceHelper.Services.GetService<PluginSingletonService>();
-        _uploadDeviceService = ServiceHelper.Services.GetService<IUploadDeviceService>();
+        _uploadDeviceService = App.GetService<IUploadDeviceService>();
     }
     /// <summary>
     /// 上传设备List
@@ -294,7 +295,7 @@ public class UploadDeviceWorker : BackgroundService
     /// <returns></returns>
     public List<DependencyProperty> GetDevicePropertys(long driverId, long devId = 0)
     {
-        var driverPluginService = ServiceHelper.Services.GetService<IDriverPluginService>();
+        var driverPluginService = App.GetService<IDriverPluginService>();
         var driverPlugin = driverPluginService.GetDriverPluginById(driverId);
 
         var driver = _pluginService.GetDriver(driverPlugin);
@@ -325,7 +326,7 @@ public class UploadDeviceWorker : BackgroundService
     /// <returns></returns>
     public List<DependencyProperty> GetVariablePropertys(long driverId, List<DependencyProperty> dependencyProperties = null)
     {
-        var driverPluginService = ServiceHelper.Services.GetService<IDriverPluginService>();
+        var driverPluginService = App.GetService<IDriverPluginService>();
         var driverPlugin = driverPluginService.GetDriverPluginById(driverId);
         var driver = (UpLoadBase)_pluginService.GetDriver(driverPlugin);
         var Propertys = _pluginService.GetDriverVariableProperties(driver);
