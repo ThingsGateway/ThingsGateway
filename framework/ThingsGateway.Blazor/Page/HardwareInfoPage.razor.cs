@@ -49,5 +49,10 @@ public partial class HardwareInfoPage
 
         }
     }
-
+    /// <inheritdoc/>
+    public override void Dispose()
+    {
+        _periodicTimer?.Dispose();
+        base.Dispose();
+    }
 }
