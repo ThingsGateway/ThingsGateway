@@ -10,6 +10,7 @@
 //------------------------------------------------------------------------------
 #endregion
 
+using Furion;
 using Furion.Logging.Extensions;
 
 using Microsoft.Extensions.DependencyInjection;
@@ -100,7 +101,7 @@ public class MemoryVariableWorker : BackgroundService
             _logger?.LogInformation($"中间变量计算线程开始");
             try
             {
-                var variableService = ServiceHelper.Services.GetService<IVariableService>();
+                var variableService = App.GetService<IVariableService>();
                 var data = await variableService.GetMemoryVariableRuntimeAsync();
                 _globalDeviceData.MemoryVariables = new(data);
                 StatuString = OperResult.CreateSuccessResult();

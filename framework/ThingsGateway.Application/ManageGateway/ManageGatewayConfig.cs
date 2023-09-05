@@ -45,60 +45,142 @@ public class ManageGatewayConfig
     public string Password { get; set; }
 
 
-    /// <summary>
-    /// DBDownTopic，Rpc返回为{DBDownTopic}/Return
-    /// </summary>
-    public string DBDownTopic { get; set; }
-
-    /// <summary>
-    /// DBUploadTopic，Rpc返回为{DBUploadTopic}/Return
-    /// </summary>
-    public string DBUploadTopic { get; set; }
 
     /// <summary>
     /// WriteRpcTopic，Rpc返回为{WriteRpcTopic}/Return
     /// </summary>
     public string WriteRpcTopic { get; set; }
+
+
+
+    /// <summary>
+    /// DBDownTopic
+    /// </summary>
+    public string DBDownTopic { get; set; }
+
+    /// <summary>
+    /// DBUploadTopic
+    /// </summary>
+    public string DBUploadTopic { get; set; }
+
+    /// <summary>
+    /// PrivateWriteRpcTopic
+    /// </summary>
+    public string PrivateWriteRpcTopic { get; set; }
+
 }
 
-
 /// <summary>
-/// 用于Mqtt Json传输，上传/下载配置信息
+/// ClientGatewayConfig
 /// </summary>
-public class MqttDB
+public class ClientGatewayConfig
 {
     /// <summary>
     /// 标识
     /// </summary>
     public string GatewayId { get; set; }
     /// <summary>
+    /// 启用
+    /// </summary>
+    public bool Enable { get; set; }
+    /// <summary>
+    /// MqttBrokerIP
+    /// </summary>
+    public string MqttBrokerIP { get; set; }
+
+    /// <summary>
+    /// MqttBrokerPort
+    /// </summary>
+    public int MqttBrokerPort { get; set; }
+
+    /// <summary>
+    /// UserName
+    /// </summary>
+    public string UserName { get; set; }
+
+    /// <summary>
+    /// Password
+    /// </summary>
+    public string Password { get; set; }
+
+    /// <summary>
+    /// DBDownTopic
+    /// </summary>
+    public string DBDownTopic { get; set; }
+
+    /// <summary>
+    /// DBUploadTopic
+    /// </summary>
+    public string DBUploadTopic { get; set; }
+
+    /// <summary>
+    /// PrivateWriteRpcTopic
+    /// </summary>
+    public string PrivateWriteRpcTopic { get; set; }
+
+}
+/// <summary>
+/// 用于Mqtt Json传输，上传/下载配置信息
+/// </summary>
+public class MqttDBUploadRpcResult
+{
+
+    /// <summary>
     /// 采集设备
     /// </summary>
-    public List<CollectDevice> CollectDevices { get; set; }
+    public List<CollectDevice> CollectDevices { get; set; } = new();
+
+    /// <summary>
+    /// 上传设备
+    /// </summary>
+    public List<UploadDevice> UploadDevices { get; set; } = new();
+
+    /// <summary>
+    /// 变量
+    /// </summary>
+    public List<DeviceVariable> DeviceVariables { get; set; } = new();
+
+}
+/// <summary>
+/// 用于Mqtt Json传输，上传/下载配置信息
+/// </summary>
+public class MqttDBDownRpc
+{
+
+    /// <summary>
+    /// 采集设备
+    /// </summary>
+    public List<CollectDevice> CollectDevices { get; set; } = new();
+
+    /// <summary>
+    /// 上传设备
+    /// </summary>
+    public List<UploadDevice> UploadDevices { get; set; } = new();
+
+    /// <summary>
+    /// 变量
+    /// </summary>
+    public List<DeviceVariable> DeviceVariables { get; set; } = new();
+
     /// <summary>
     /// true=>删除全部后增加
     /// </summary>
     public bool IsCollectDevicesFullUp { get; set; }
     /// <summary>
-    /// 上传设备
-    /// </summary>
-    public List<UploadDevice> UploadDevices { get; set; }
-    /// <summary>
     /// true=>删除全部后增加
     /// </summary>
     public bool IsUploadDevicesFullUp { get; set; }
     /// <summary>
-    /// 变量
-    /// </summary>
-    public List<DeviceVariable> DeviceVariables { get; set; }
-    /// <summary>
     /// true=>删除全部后增加
     /// </summary>
     public bool IsDeviceVariablesFullUp { get; set; }
+
     /// <summary>
-    /// 配置项
+    /// 是否立即重启，使配置生效
     /// </summary>
-    public List<SysConfig> SysConfigs { get; set; }
+    public bool IsRestart { get; set; }
+
+
 }
 
 
@@ -107,10 +189,7 @@ public class MqttDB
 /// </summary>
 public class ManageMqttRpcFrom
 {
-    /// <summary>
-    /// 标识
-    /// </summary>
-    public string GatewayId { get; set; }
+
     /// <summary>
     /// 标识
     /// </summary>
@@ -125,10 +204,7 @@ public class ManageMqttRpcFrom
 /// </summary>
 public class ManageMqttRpcResult
 {
-    /// <summary>
-    /// 标识
-    /// </summary>
-    public string GatewayId { get; set; }
+
     /// <summary>
     /// 标识
     /// </summary>

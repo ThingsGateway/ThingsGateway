@@ -10,6 +10,7 @@
 //------------------------------------------------------------------------------
 #endregion
 
+using Furion;
 using Furion.FriendlyException;
 using Furion.Logging.Extensions;
 
@@ -57,7 +58,7 @@ public class UploadDeviceCore
     public UploadDeviceCore()
     {
         _pluginService = ServiceHelper.Services.GetService<PluginSingletonService>();
-        DriverPluginService = ServiceHelper.Services.GetService<IDriverPluginService>();
+        DriverPluginService = App.GetService<IDriverPluginService>();
     }
 
     /// <summary>

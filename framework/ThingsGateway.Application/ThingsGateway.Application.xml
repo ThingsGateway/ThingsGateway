@@ -1427,74 +1427,139 @@
             Password
             </summary>
         </member>
-        <member name="P:ThingsGateway.Application.ManageGatewayConfig.DBDownTopic">
-            <summary>
-            DBDownTopic，Rpc返回为{DBDownTopic}/Return
-            </summary>
-        </member>
-        <member name="P:ThingsGateway.Application.ManageGatewayConfig.DBUploadTopic">
-            <summary>
-            DBUploadTopic，Rpc返回为{DBUploadTopic}/Return
-            </summary>
-        </member>
         <member name="P:ThingsGateway.Application.ManageGatewayConfig.WriteRpcTopic">
             <summary>
             WriteRpcTopic，Rpc返回为{WriteRpcTopic}/Return
             </summary>
         </member>
-        <member name="T:ThingsGateway.Application.MqttDB">
+        <member name="P:ThingsGateway.Application.ManageGatewayConfig.DBDownTopic">
             <summary>
-            用于Mqtt Json传输，上传/下载配置信息
+            DBDownTopic
             </summary>
         </member>
-        <member name="P:ThingsGateway.Application.MqttDB.GatewayId">
+        <member name="P:ThingsGateway.Application.ManageGatewayConfig.DBUploadTopic">
+            <summary>
+            DBUploadTopic
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Application.ManageGatewayConfig.PrivateWriteRpcTopic">
+            <summary>
+            PrivateWriteRpcTopic
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Application.ClientGatewayConfig">
+            <summary>
+            ClientGatewayConfig
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Application.ClientGatewayConfig.GatewayId">
             <summary>
             标识
             </summary>
         </member>
-        <member name="P:ThingsGateway.Application.MqttDB.CollectDevices">
+        <member name="P:ThingsGateway.Application.ClientGatewayConfig.Enable">
+            <summary>
+            启用
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Application.ClientGatewayConfig.MqttBrokerIP">
+            <summary>
+            MqttBrokerIP
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Application.ClientGatewayConfig.MqttBrokerPort">
+            <summary>
+            MqttBrokerPort
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Application.ClientGatewayConfig.UserName">
+            <summary>
+            UserName
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Application.ClientGatewayConfig.Password">
+            <summary>
+            Password
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Application.ClientGatewayConfig.DBDownTopic">
+            <summary>
+            DBDownTopic
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Application.ClientGatewayConfig.DBUploadTopic">
+            <summary>
+            DBUploadTopic
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Application.ClientGatewayConfig.PrivateWriteRpcTopic">
+            <summary>
+            PrivateWriteRpcTopic
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Application.MqttDBUploadRpcResult">
+            <summary>
+            用于Mqtt Json传输，上传/下载配置信息
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Application.MqttDBUploadRpcResult.CollectDevices">
             <summary>
             采集设备
             </summary>
         </member>
-        <member name="P:ThingsGateway.Application.MqttDB.IsCollectDevicesFullUp">
-            <summary>
-            true=>删除全部后增加
-            </summary>
-        </member>
-        <member name="P:ThingsGateway.Application.MqttDB.UploadDevices">
+        <member name="P:ThingsGateway.Application.MqttDBUploadRpcResult.UploadDevices">
             <summary>
             上传设备
             </summary>
         </member>
-        <member name="P:ThingsGateway.Application.MqttDB.IsUploadDevicesFullUp">
-            <summary>
-            true=>删除全部后增加
-            </summary>
-        </member>
-        <member name="P:ThingsGateway.Application.MqttDB.DeviceVariables">
+        <member name="P:ThingsGateway.Application.MqttDBUploadRpcResult.DeviceVariables">
             <summary>
             变量
             </summary>
         </member>
-        <member name="P:ThingsGateway.Application.MqttDB.IsDeviceVariablesFullUp">
+        <member name="T:ThingsGateway.Application.MqttDBDownRpc">
+            <summary>
+            用于Mqtt Json传输，上传/下载配置信息
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Application.MqttDBDownRpc.CollectDevices">
+            <summary>
+            采集设备
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Application.MqttDBDownRpc.UploadDevices">
+            <summary>
+            上传设备
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Application.MqttDBDownRpc.DeviceVariables">
+            <summary>
+            变量
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Application.MqttDBDownRpc.IsCollectDevicesFullUp">
             <summary>
             true=>删除全部后增加
             </summary>
         </member>
-        <member name="P:ThingsGateway.Application.MqttDB.SysConfigs">
+        <member name="P:ThingsGateway.Application.MqttDBDownRpc.IsUploadDevicesFullUp">
             <summary>
-            配置项
+            true=>删除全部后增加
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Application.MqttDBDownRpc.IsDeviceVariablesFullUp">
+            <summary>
+            true=>删除全部后增加
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Application.MqttDBDownRpc.IsRestart">
+            <summary>
+            是否立即重启，使配置生效
             </summary>
         </member>
         <member name="T:ThingsGateway.Application.ManageMqttRpcFrom">
             <summary>
             MqttRpc传入
-            </summary>
-        </member>
-        <member name="P:ThingsGateway.Application.ManageMqttRpcFrom.GatewayId">
-            <summary>
-            标识
             </summary>
         </member>
         <member name="P:ThingsGateway.Application.ManageMqttRpcFrom.RpcId">
@@ -1510,11 +1575,6 @@
         <member name="T:ThingsGateway.Application.ManageMqttRpcResult">
             <summary>
             MqttRpc输出
-            </summary>
-        </member>
-        <member name="P:ThingsGateway.Application.ManageMqttRpcResult.GatewayId">
-            <summary>
-            标识
             </summary>
         </member>
         <member name="P:ThingsGateway.Application.ManageMqttRpcResult.RpcId">
@@ -1534,23 +1594,18 @@
         </member>
         <member name="T:ThingsGateway.Application.ManageGatewayWorker">
             <summary>
-            设备采集报警后台服务
+            ManageGatewayWorker
             </summary>
         </member>
         <member name="M:ThingsGateway.Application.ManageGatewayWorker.#ctor(Microsoft.Extensions.Logging.ILoggerFactory)">
             <inheritdoc cref="T:ThingsGateway.Application.ManageGatewayWorker"/>
         </member>
-        <member name="P:ThingsGateway.Application.ManageGatewayWorker.RealAlarmStatuString">
+        <member name="P:ThingsGateway.Application.ManageGatewayWorker.ManageStatuString">
             <summary>
             服务状态
             </summary>
         </member>
-        <member name="P:ThingsGateway.Application.ManageGatewayWorker.HisAlarmStatuString">
-            <summary>
-            服务状态
-            </summary>
-        </member>
-        <member name="P:ThingsGateway.Application.ManageGatewayWorker.ReadAlarmStatuString">
+        <member name="P:ThingsGateway.Application.ManageGatewayWorker.ClientStatuString">
             <summary>
             服务状态
             </summary>
@@ -1579,6 +1634,24 @@
             <summary>
             初始化
             </summary>
+        </member>
+        <member name="M:ThingsGateway.Application.ManageGatewayWorker.RpcDataExecuteAsync(System.String,System.String,System.Byte[],System.Int32,MQTTnet.Protocol.MqttQualityOfServiceLevel,System.Threading.CancellationToken)">
+            <summary>
+            RPC请求子网关并返回，需要传入子网关ID，作为Topic参数一部分
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Application.ManageGatewayWorker.GetClientGatewayDB(System.String,System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            获取子网关的配置信息
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Application.ManageGatewayWorker.SetClientGatewayDB(System.String,ThingsGateway.Application.MqttDBDownRpc,System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            下载配置信息到子网关
+            </summary>
+            <returns></returns>
         </member>
         <member name="T:ThingsGateway.Application.CollectDeviceRunTime">
             <summary>

@@ -10,6 +10,7 @@
 //------------------------------------------------------------------------------
 #endregion
 
+using Furion;
 using Furion.FriendlyException;
 using Furion.Logging.Extensions;
 
@@ -38,7 +39,7 @@ public class CollectDeviceWorker : BackgroundService
         ServiceHelper.Services = serviceProvider;
         _logger = logger;
         _pluginService = ServiceHelper.Services.GetService<PluginSingletonService>();
-        _collectDeviceService = ServiceHelper.Services.GetService<ICollectDeviceService>();
+        _collectDeviceService = App.GetService<ICollectDeviceService>();
     }
     /// <summary>
     /// 读取未停止的采集设备List
@@ -414,7 +415,7 @@ public class CollectDeviceWorker : BackgroundService
     /// <returns></returns>
     public Type GetDebugUI(long driverId)
     {
-        var driverPluginService = ServiceHelper.Services.GetService<IDriverPluginService>();
+        var driverPluginService = App.GetService<IDriverPluginService>();
         var driverPlugin = driverPluginService.GetDriverPluginById(driverId);
         var driver = _pluginService.GetDriver(driverPlugin);
         driver?.SafeDispose();
@@ -428,7 +429,7 @@ public class CollectDeviceWorker : BackgroundService
     /// <returns></returns>
     public List<string> GetDeviceMethods(long devId)
     {
-        var driverPluginService = ServiceHelper.Services.GetService<IDriverPluginService>();
+        var driverPluginService = App.GetService<IDriverPluginService>();
         var driverId = _collectDeviceService.GetDeviceById(devId).PluginId;
         var driverPlugin = driverPluginService.GetDriverPluginById(driverId);
         var driver = (CollectBase)_pluginService.GetDriver(driverPlugin);
@@ -445,7 +446,7 @@ public class CollectDeviceWorker : BackgroundService
     /// <returns></returns>
     public List<DependencyProperty> GetDevicePropertys(long driverId, long devId = 0)
     {
-        var driverPluginService = ServiceHelper.Services.GetService<IDriverPluginService>();
+        var driverPluginService = App.GetService<IDriverPluginService>();
         var driverPlugin = driverPluginService.GetDriverPluginById(driverId);
         var driver = _pluginService.GetDriver(driverPlugin);
         var Propertys = _pluginService.GetDriverProperties(driver);
