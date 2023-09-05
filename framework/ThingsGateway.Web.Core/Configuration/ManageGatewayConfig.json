@@ -1,26 +1,26 @@
 {
   "$schema": "https://gitee.com/dotnetchina/Furion/raw/net6/schemas/v3/furion-schema.json",
   "ManageGatewayConfig": {
-    "Enable": true,
-    "MqttBrokerIP": null,
-    "MqttBrokerPort": 7300,
-    "UserName": "admin",
-    "Password": "111111",
+    "Enable": true, //是否启用
+    "MqttBrokerIP": "127.0.0.1", //管理服务IP
+    "MqttBrokerPort": 7300, //管理服务端口
+    "UserName": "admin", //管理服务用户名
+    "Password": "111111", //管理服务端口
+    "DBDownTopic": "DBDownTopic", //下发网关配置的主题
+    "DBUploadTopic": "DBUploadTopic", //子网关上传配置信息的主题
     "WriteRpcTopic": "WriteRpcTopic",
-    "DBDownTopic": "DBDownTopic",
-    "DBUploadTopic": "DBUploadTopic",
     "PrivateWriteRpcTopic": "PrivateWriteRpcTopic"
   },
   "ClientGatewayConfig": {
-    "GatewayId": "GatewayId",
-    "Enable": true,
-    "MqttBrokerIP": "127.0.0.1",
-    "MqttBrokerPort": 7300,
-    "UserName": "admin",
-    "Password": "111111",
-    "DBDownTopic": "DBDownTopic",
-    "DBUploadTopic": "DBUploadTopic",
-    "PrivateWriteRpcTopic": "PrivateWriteRpcTopic"
+    "GatewayId": "GatewayId", //子网关ID，需要唯一，也用于MqttClientID
+    "Enable": true, //是否启用
+    "MqttBrokerIP": "127.0.0.1", //管理服务IP
+    "MqttBrokerPort": 7300, //管理服务端口
+    "UserName": "admin", //管理服务用户名
+    "Password": "111111", //管理服务端口
+    "DBDownTopic": "DBDownTopic", //下发网关配置的主题
+    "DBUploadTopic": "DBUploadTopic", //子网关上传配置信息的主题
+    "PrivateWriteRpcTopic": "PrivateWriteRpcTopic" 
   }
 
 }
