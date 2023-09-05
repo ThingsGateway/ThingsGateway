@@ -321,6 +321,9 @@
             <inheritdoc/>
             </summary>
         </member>
+        <member name="M:ThingsGateway.Blazor.HardwareInfoPage.Dispose">
+            <inheritdoc/>
+        </member>
         <member name="T:ThingsGateway.Blazor.HistoryAlarmPage">
             <summary>
             历史报警页面

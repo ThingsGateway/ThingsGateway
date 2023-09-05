@@ -30,7 +30,9 @@ public class BaseComponentBase : ComponentBase, IDisposable
     /// </summary>
     public virtual void Dispose()
     {
+
     }
+
     /// <summary>
     /// InvokeAsync(StateHasChanged)
     /// </summary>
