@@ -86,23 +86,41 @@ public class ManageGatewayWorker : BackgroundService
         {
             try
             {
-                //持续重连
-                await TryMqttClientAsync(stoppingToken);
+                if (_mqttClient != null)
+                {
+                    //持续重连
+                    var result = await TryMqttClientAsync(stoppingToken);
+                    if (result.IsSuccess)
+                    {
+                        _clientLogger.LogDebug("连接正常：" + result.Message);
+                    }
+                    else
+                    {
+                        _clientLogger.LogWarning("连接错误：" + result.Message);
+                    }
+                }
 
-                await Task.Delay(5000, stoppingToken);
+                await Task.Delay(10000, stoppingToken);
 
 
+                if (_mqttServer != null)
+                {
+                    //TODO:test code
+                    var mqttClientStatuses = await _mqttServer.GetClientsAsync();
 
-                //TODO:test code
-                var mqttClientStatuses = await _mqttServer.GetClientsAsync();
+                    if (mqttClientStatuses.FirstOrDefault() is MqttClientStatus mqttClientStatus)
+                    {
+                        //获取子网关信息
+                        var getClientGatewayDBResult = await GetClientGatewayDB(mqttClientStatus.Id);
 
-                //获取子网关信息
-                var getClientGatewayDBResult = await GetClientGatewayDB(mqttClientStatuses.First().Id);
+                        //下发子网关配置
+                        var mqttDBDownRpc = new MqttDBDownRpc();
+                        mqttDBDownRpc.IsRestart = true;
+                        var setClientGatewayDBResult = await SetClientGatewayDB(mqttClientStatus.Id, mqttDBDownRpc);
 
-                //下发子网关配置
-                var mqttDBDownRpc = new MqttDBDownRpc();
-                mqttDBDownRpc.IsRestart = true;
-                var setClientGatewayDBResult = await SetClientGatewayDB(mqttClientStatuses.First().Id, mqttDBDownRpc);
+                    }
+
+                }
 
 
 
@@ -204,8 +222,8 @@ public class ManageGatewayWorker : BackgroundService
             _manageGatewayConfig = App.GetConfig<ManageGatewayConfig>("ManageGatewayConfig");
             if (_manageGatewayConfig?.Enable != true)
             {
-                ClientStatuString = new OperResult($"已退出：不启用管理功能");
-                return;
+                ManageStatuString = new OperResult($"已退出：不启用管理功能");
+                _manageLogger.LogWarning("已退出：不启用管理功能");
             }
             else
             {
@@ -236,8 +254,8 @@ public class ManageGatewayWorker : BackgroundService
             _clientGatewayConfig = App.GetConfig<ClientGatewayConfig>("ClientGatewayConfig");
             if (_clientGatewayConfig?.Enable != true)
             {
-                ManageStatuString = new OperResult($"已退出：不启用子网关功能");
-                return;
+                ClientStatuString = new OperResult($"已退出：不启用子网关功能");
+                _clientLogger.LogWarning("已退出：不启用子网关功能");
             }
             else
             {
