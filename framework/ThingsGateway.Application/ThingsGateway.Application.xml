@@ -1404,7 +1404,7 @@
         </member>
         <member name="P:ThingsGateway.Application.ManageGatewayConfig.Enable">
             <summary>
-            是否管理网关
+            启用
             </summary>
         </member>
         <member name="P:ThingsGateway.Application.ManageGatewayConfig.MqttBrokerIP">
