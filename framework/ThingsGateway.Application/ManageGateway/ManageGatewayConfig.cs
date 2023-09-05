@@ -21,7 +21,7 @@ namespace ThingsGateway.Application;
 public class ManageGatewayConfig
 {
     /// <summary>
-    /// 是否管理网关
+    /// 启用
     /// </summary>
     public bool Enable { get; set; }
     /// <summary>

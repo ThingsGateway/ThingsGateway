@@ -7,6 +7,9 @@
 
 
 	<ItemGroup>
+		<Content Include="Configuration\ManageGatewayConfig.json">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
 		<Content Include="Configuration\App.json">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
