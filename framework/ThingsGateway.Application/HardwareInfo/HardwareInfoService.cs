@@ -113,9 +113,8 @@ public class HardwareInfoService : ISingleton
         try
         {
             var url = "http://myip.ipip.net";
-            using var httpClient = new HttpClient();
-            using var stream = await httpClient.GetStreamAsync(url);
-            using var streamReader = new StreamReader(stream, Encoding.UTF8);
+            var stream = await new HttpClient().GetStreamAsync(url);
+            var streamReader = new StreamReader(stream, Encoding.UTF8);
             var html = streamReader.ReadToEnd();
             return html.Replace("当前 IP：", "").Replace("来自于：", "");
         }
