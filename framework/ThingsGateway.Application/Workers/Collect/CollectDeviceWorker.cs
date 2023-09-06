@@ -452,8 +452,8 @@ public class CollectDeviceWorker : BackgroundService
         var Propertys = _pluginService.GetDriverProperties(driver);
         if (devId != 0)
         {
-            var devcore = CollectDeviceCores.FirstOrDefault(it => it.Device.Id == devId);
-            devcore?.Device?.DevicePropertys?.ForEach(it =>
+            var devcore = App.GetService<CollectDeviceService>().GetDeviceById(devId);
+            devcore?.DevicePropertys?.ForEach(it =>
             {
                 var dependencyProperty = Propertys.FirstOrDefault(a => a.PropertyName == it.PropertyName);
                 if (dependencyProperty != null)

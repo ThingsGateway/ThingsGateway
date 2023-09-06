@@ -302,8 +302,8 @@ public class UploadDeviceWorker : BackgroundService
         var Propertys = _pluginService.GetDriverProperties(driver);
         if (devId != 0)
         {
-            var devcore = UploadDeviceCores.FirstOrDefault(it => it.Device.Id == devId);
-            devcore?.Device?.DevicePropertys?.ForEach(it =>
+            var devcore = App.GetService<UploadDeviceService>().GetDeviceById(devId);
+            devcore?.DevicePropertys?.ForEach(it =>
             {
                 var dependencyProperty = Propertys.FirstOrDefault(a => a.PropertyName == it.PropertyName);
                 if (dependencyProperty != null)

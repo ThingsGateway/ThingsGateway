@@ -1841,7 +1841,7 @@
         </member>
         <member name="P:ThingsGateway.Application.DeviceVariableRunTime.LastSetValue">
             <summary>
-            最近一次值
+            上次值
             </summary>
         </member>
         <member name="M:ThingsGateway.Application.DeviceVariableRunTime.SetValue(System.Object,System.DateTime,System.Boolean)">
