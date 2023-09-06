@@ -140,11 +140,14 @@ public class DeviceVariableRunTime : DeviceVariable
                 if ((data?.ToString() != _value?.ToString() && LastSetValue?.ToString() != data?.ToString()) || isOnlineChanged)
                 {
                     ChangeTime = time;
+
+                    LastSetValue = _value;
+
                     if (IsOnline)
                     {
                         _value = data;
                     }
-                    LastSetValue = data;
+
                     VariableValueChange?.Invoke(this);
                 }
             }
