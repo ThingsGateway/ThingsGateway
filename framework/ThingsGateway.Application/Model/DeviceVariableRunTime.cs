@@ -71,9 +71,9 @@ public class DeviceVariableRunTime : DeviceVariable
     [DataTable(Order = 3, IsShow = true, Sortable = false, CellClass = " table-text-truncate ")]
     public object Value { get => _value; private set => _value = value; }
     /// <summary>
-    /// 最近一次值
+    /// 上次值
     /// </summary>
-    [Description("最近一次值")]
+    [Description("上次值")]
     [DataTable(Order = 3, IsShow = true, Sortable = false, CellClass = " table-text-truncate ")]
     public object LastSetValue { get; private set; }
 
