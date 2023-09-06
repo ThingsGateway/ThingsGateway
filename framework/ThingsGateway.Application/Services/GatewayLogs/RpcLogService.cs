@@ -90,6 +90,7 @@ public class RpcLogService : DbRepository<RpcLog>, IRpcLogService
 
         var memoryStream = new MemoryStream();
         await memoryStream.SaveAsAsync(sheets);
+        memoryStream.Seek(0, SeekOrigin.Begin);
         return memoryStream;
     }
 

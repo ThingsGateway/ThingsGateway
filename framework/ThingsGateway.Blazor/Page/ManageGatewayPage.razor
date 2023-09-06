@@ -1,0 +1,198 @@
+﻿@*
+//------------------------------------------------------------------------------
+//  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
+//  此代码版权（除特别声明外的代码）归作者本人Diego所有
+//  源代码使用协议遵循本仓库的开源协议及附加协议
+//  Gitee源代码仓库：https://gitee.com/diego2098/ThingsGateway
+//  Github源代码仓库：https://github.com/kimdiego2098/ThingsGateway
+//  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
+//  QQ群：605534569
+//------------------------------------------------------------------------------
+*@
+
+@page "/gatewayconfig/manage"
+@namespace ThingsGateway.Blazor
+@using System.Linq.Expressions;
+@using BlazorComponent;
+@using MQTTnet.Server;
+@using Mapster;
+@using Masa.Blazor.Presets;
+@using System.IO;
+@using Masa.Blazor;
+@using Microsoft.AspNetCore.Authorization;
+@using ThingsGateway.Admin.Blazor.Core;
+@using ThingsGateway.Admin.Blazor;
+@using ThingsGateway.Admin.Core;
+@using ThingsGateway.Application;
+@using TouchSocket.Core;
+@attribute [Authorize]
+@inject MasaBlazor MasaBlazor
+@inherits BaseComponentBase
+@inject UserResoures UserResoures
+@inject NavigationManager NavigationManager
+@layout MainLayout
+
+<MRow NoGutters>
+    <MExpansionPanels @bind-Values="panel"
+                            Multiple>
+        <MExpansionPanel Value="1">
+            <MExpansionPanelHeader>
+                @($"子网关服务信息-{ManageGatewayWorker.ClientStatuString.Message}")
+            </MExpansionPanelHeader>
+            <MExpansionPanelContent>
+                @{
+                    var config = ManageGatewayWorker.ClientGatewayConfig;
+                }
+                @if (config != null)
+                {
+
+                    <MDescriptions Title="子网关服务配置信息" Bordered="true">
+                        <MDescriptionsItem Label=@config.Description(a=>a.Enable)>@config.Enable</MDescriptionsItem>
+                        <MDescriptionsItem Label=@config.Description(a=>a.GatewayId)>@config.GatewayId</MDescriptionsItem>
+                        <MDescriptionsItem Label=@config.Description(a=>a.MqttBrokerIP)>@config.MqttBrokerIP</MDescriptionsItem>
+                        <MDescriptionsItem Label=@config.Description(a=>a.MqttBrokerPort)>@config.MqttBrokerPort</MDescriptionsItem>
+                        <MDescriptionsItem Label=@config.Description(a=>a.UserName)>@config.UserName</MDescriptionsItem>
+                        <MDescriptionsItem Label=@config.Description(a=>a.Password)>@config.Password</MDescriptionsItem>
+                        <MDescriptionsItem Label=@config.Description(a=>a.DBDownTopic)>@config.DBDownTopic</MDescriptionsItem>
+                        <MDescriptionsItem Label=@config.Description(a=>a.DBUploadTopic)>@config.DBUploadTopic</MDescriptionsItem>
+                        <MDescriptionsItem Label=@config.Description(a=>a.WriteRpcTopic)>@config.WriteRpcTopic</MDescriptionsItem>
+
+                    </MDescriptions>
+
+
+
+
+
+                }
+
+
+            </MExpansionPanelContent>
+        </MExpansionPanel>
+
+        <MExpansionPanel Value="2">
+            <MExpansionPanelHeader>
+                @($"管理服务信息-{ManageGatewayWorker.ManageStatuString.Message}")
+
+            </MExpansionPanelHeader>
+            <MExpansionPanelContent>
+                @{
+                    var config = ManageGatewayWorker.ManageGatewayConfig;
+                }
+                @if (config != null)
+                {
+                    <MDescriptions Title="管理服务配置信息" Bordered="true">
+                        <MDescriptionsItem Label=@config.Description(a=>a.Enable)>@config.Enable</MDescriptionsItem>
+                        <MDescriptionsItem Label=@config.Description(a=>a.MqttBrokerIP)>@config.MqttBrokerIP</MDescriptionsItem>
+                        <MDescriptionsItem Label=@config.Description(a=>a.MqttBrokerPort)>@config.MqttBrokerPort</MDescriptionsItem>
+                        <MDescriptionsItem Label=@config.Description(a=>a.UserName)>@config.UserName</MDescriptionsItem>
+                        <MDescriptionsItem Label=@config.Description(a=>a.Password)>@config.Password</MDescriptionsItem>
+                        <MDescriptionsItem Label=@config.Description(a=>a.DBDownTopic)>@config.DBDownTopic</MDescriptionsItem>
+                        <MDescriptionsItem Label=@config.Description(a=>a.DBUploadTopic)>@config.DBUploadTopic</MDescriptionsItem>
+                        <MDescriptionsItem Label=@config.Description(a=>a.WriteRpcTopic)>@config.WriteRpcTopic</MDescriptionsItem>
+
+                    </MDescriptions>
+                }
+                <MCard Flat Class="ma-0" Style="min-height:1000px">
+                    <div class="m-descriptions-header__title my-2">
+                        当前服务下的子网关
+                    </div>
+                    <MRow NoGutters>
+                        <MCol Md=3>
+
+                            <MTreeview Dense TItem="MqttClientStatus"
+                                       TKey="MqttClientStatus" OpenOnClick @bind-Active=CurClients
+                                       Items="MqttClientStatuses" ItemText=@(r=>r.Id) ItemChildren="r=> null"
+                                       Activatable ItemKey=@(r=>r)>
+                                <LabelContent>
+                                    <span title=@context.Item.Id>
+                                        @(context.Item.Id + "-" + context.Item.Endpoint)
+                                    </span>
+                                </LabelContent>
+                            </MTreeview>
+                        </MCol>
+                        <MCol Md=9>
+                            @if (CurClients != null && CurClients.Count > 0)
+                            {
+                                var CurClient = CurClients.FirstOrDefault();
+                                <MCard Flat Class="ml-4">
+                                    <MDescriptions Title="当前选择的子网关" Bordered="true">
+                                        <MDescriptionsItem Label=@CurClient.Description(a=>a.Id)>@CurClient.Id</MDescriptionsItem>
+                                        <MDescriptionsItem Label=@CurClient.Description(a=>a.Endpoint)>@CurClient.Endpoint</MDescriptionsItem>
+
+                                    </MDescriptions>
+                                    <MDivider></MDivider>
+                                    <MRow>
+                                        <MCol Cols="12" Md="12">
+                                            <div class="m-descriptions-header__title my-2">
+                                                导出子网关配置信息
+                                            </div>
+                                        </MCol>
+                                        <MCol Cols="12" Md="12">
+
+
+                                            <MButton Loading=isDownExport Disabled=@(!UserResoures.IsHasButtonWithRole("gatewaydevicepause")) Class="ma-2"
+                                                     OnClick=@(()=>DBUpload(CurClient))>
+                                                导出
+                                            </MButton>
+
+                                        </MCol>
+                                    </MRow>
+                                    <MDivider></MDivider>
+                                    <MRow>
+                                        <MCol Cols="12" Md="12">
+                                            <div class="m-descriptions-header__title my-2">
+                                                下发子网关配置信息
+                                            </div>
+                                        </MCol>
+                                        <MCol Cols="12" Md="12">
+                                            <MFileInput Label="采集设备Excel" @bind-Value="_importCollectDevicesFile" Style="width:60%;" ShowSize></MFileInput>
+                                            <MSwitch Label=@typeof(MqttDBDownRpc).GetDescription(nameof(MqttDBDownRpc.IsCollectDevicesFullUp)) @bind-Value=@IsCollectDevicesFullUp />
+                                        </MCol>
+                                        <MCol Cols="12" Md="12">
+                                            <MFileInput Label="上传设备Excel" @bind-Value="_importUploadDevicesFile" Style="width:60%;" ShowSize></MFileInput>
+                                            <MSwitch Label=@typeof(MqttDBDownRpc).GetDescription(nameof(MqttDBDownRpc.IsUploadDevicesFullUp)) @bind-Value=@IsUploadDevicesFullUp />
+                                        </MCol>
+                                        <MCol Cols="12" Md="12">
+                                            <MFileInput Label="变量Excel" @bind-Value="_importDeviceVariablesFile" Style="width:60%;" ShowSize></MFileInput>
+                                            <MSwitch Label=@typeof(MqttDBDownRpc).GetDescription(nameof(MqttDBDownRpc.IsDeviceVariablesFullUp)) @bind-Value=@IsDeviceVariablesFullUp />
+                                        </MCol>
+                                        <MCol Cols="12" Md="12">
+                                            <MSwitch Label=@typeof(MqttDBDownRpc).GetDescription(nameof(MqttDBDownRpc.IsRestart)) @bind-Value=@IsRestart />
+                                        </MCol>
+                                        <MCol Cols="12" Md="12">
+
+                                            <MButton Loading=isDownExport Disabled=@(!UserResoures.IsHasButtonWithRole("gatewaydevicepause")) Class="ma-2"
+                                                     OnClick=@(()=>DBDown(CurClient))>
+                                                下发
+                                            </MButton>
+                                        </MCol>
+
+                                    </MRow>
+                                    <MDivider></MDivider>
+
+
+
+                                </MCard>
+                            }
+
+
+                        </MCol>
+
+                    </MRow>
+                </MCard>
+
+            </MExpansionPanelContent>
+        </MExpansionPanel>
+
+
+
+    </MExpansionPanels>
+
+
+
+
+
+
+</MRow>
+
+

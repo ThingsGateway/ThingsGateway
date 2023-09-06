@@ -8,8 +8,7 @@
     "Password": "111111", //管理服务端口
     "DBDownTopic": "DBDownTopic", //下发网关配置的主题
     "DBUploadTopic": "DBUploadTopic", //子网关上传配置信息的主题
-    "WriteRpcTopic": "WriteRpcTopic",
-    "PrivateWriteRpcTopic": "PrivateWriteRpcTopic"
+    "WriteRpcTopic": "WriteRpcTopic"
   },
   "ClientGatewayConfig": {
     "GatewayId": "GatewayId", //子网关ID，需要唯一，也用于MqttClientID
@@ -20,7 +19,7 @@
     "Password": "111111", //管理服务端口
     "DBDownTopic": "DBDownTopic", //下发网关配置的主题
     "DBUploadTopic": "DBUploadTopic", //子网关上传配置信息的主题
-    "PrivateWriteRpcTopic": "PrivateWriteRpcTopic"
+    "WriteRpcTopic": "WriteRpcTopic"
   }
 
 }

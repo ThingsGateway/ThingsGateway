@@ -346,6 +346,32 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="T:ThingsGateway.Blazor.ManageGatewayPage">
+            <summary>
+            ManageGatewayPage
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Blazor.ManageGatewayPage.OnInitialized">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Blazor.ManageGatewayPage.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Blazor.ManageGatewayPage.DBUpload(MQTTnet.Server.MqttClientStatus)">
+            <summary>
+            获取子网关配置，导出excel
+            </summary>
+            <param name="mqttClientStatus"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Blazor.ManageGatewayPage.DBDown(MQTTnet.Server.MqttClientStatus)">
+            <summary>
+            下发子网关配置
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:ThingsGateway.Blazor.MemoryVariablePage">
             <summary>
             内存变量页面

@@ -51,7 +51,6 @@ public class FileController : IDynamicApiController
     public async Task<IActionResult> DownloadOperateLogAsync([FromQuery] OperateLogInput input)
     {
         var memoryStream = await _operateLogService.ExportFileAsync(input);
-        memoryStream.Seek(0, SeekOrigin.Begin);
         var data = new FileStreamResult(memoryStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
         {
             FileDownloadName = $"operateLog{SysDateTimeExtensions.CurrentDateTime.ToFileDateTimeFormat()}.xlsx"
@@ -66,7 +65,6 @@ public class FileController : IDynamicApiController
     public async Task<IActionResult> DownloadVisitLogAsync([FromQuery] VisitLogInput input)
     {
         var memoryStream = await _visitLogService.ExportFileAsync(input);
-        memoryStream.Seek(0, SeekOrigin.Begin);
         var data = new FileStreamResult(memoryStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
         {
             FileDownloadName = $"operateLog{SysDateTimeExtensions.CurrentDateTime.ToFileDateTimeFormat()}.xlsx"

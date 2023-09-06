@@ -11,6 +11,8 @@
 #endregion
 
 
+using System.ComponentModel;
+
 using ThingsGateway.Foundation;
 
 namespace ThingsGateway.Application;
@@ -23,100 +25,65 @@ public class ManageGatewayConfig
     /// <summary>
     /// 启用
     /// </summary>
+    [Description("启用")]
     public bool Enable { get; set; }
     /// <summary>
     /// MqttBrokerIP
     /// </summary>
+    [Description("Mqtt-Tcp IP")]
     public string MqttBrokerIP { get; set; }
 
     /// <summary>
     /// MqttBrokerPort
     /// </summary>
+    [Description("Mqtt-Tcp 端口")]
     public int MqttBrokerPort { get; set; }
 
     /// <summary>
     /// UserName
     /// </summary>
+    [Description("Mqtt用户名")]
     public string UserName { get; set; }
 
     /// <summary>
     /// Password
     /// </summary>
+    [Description("Mqtt密码")]
     public string Password { get; set; }
 
 
-
     /// <summary>
-    /// WriteRpcTopic，Rpc返回为{WriteRpcTopic}/Return
+    /// WriteRpcTopic，Rpc返回为{WriteRpcTopic}/Return，只有这个topic才开放外部订阅权限
     /// </summary>
+    [Description("变量写入Rpc主题")]
     public string WriteRpcTopic { get; set; }
-
-
 
     /// <summary>
     /// DBDownTopic
     /// </summary>
+    [Description("配置下发Rpc主题")]
     public string DBDownTopic { get; set; }
 
     /// <summary>
     /// DBUploadTopic
     /// </summary>
+    [Description("配置上传Rpc主题")]
     public string DBUploadTopic { get; set; }
 
-    /// <summary>
-    /// PrivateWriteRpcTopic
-    /// </summary>
-    public string PrivateWriteRpcTopic { get; set; }
+
 
 }
 
 /// <summary>
 /// ClientGatewayConfig
 /// </summary>
-public class ClientGatewayConfig
+public class ClientGatewayConfig : ManageGatewayConfig
 {
     /// <summary>
     /// 标识
     /// </summary>
+    [Description("子网关标识ID")]
     public string GatewayId { get; set; }
-    /// <summary>
-    /// 启用
-    /// </summary>
-    public bool Enable { get; set; }
-    /// <summary>
-    /// MqttBrokerIP
-    /// </summary>
-    public string MqttBrokerIP { get; set; }
-
-    /// <summary>
-    /// MqttBrokerPort
-    /// </summary>
-    public int MqttBrokerPort { get; set; }
-
-    /// <summary>
-    /// UserName
-    /// </summary>
-    public string UserName { get; set; }
-
-    /// <summary>
-    /// Password
-    /// </summary>
-    public string Password { get; set; }
-
-    /// <summary>
-    /// DBDownTopic
-    /// </summary>
-    public string DBDownTopic { get; set; }
-
-    /// <summary>
-    /// DBUploadTopic
-    /// </summary>
-    public string DBUploadTopic { get; set; }
-
-    /// <summary>
-    /// PrivateWriteRpcTopic
-    /// </summary>
-    public string PrivateWriteRpcTopic { get; set; }
 
 }
 /// <summary>
@@ -146,38 +113,41 @@ public class MqttDBUploadRpcResult
 /// </summary>
 public class MqttDBDownRpc
 {
-
     /// <summary>
     /// 采集设备
     /// </summary>
-    public List<CollectDevice> CollectDevices { get; set; } = new();
+    public byte[] CollectDevices { get; set; }
 
     /// <summary>
     /// 上传设备
     /// </summary>
-    public List<UploadDevice> UploadDevices { get; set; } = new();
+    public byte[] UploadDevices { get; set; }
 
     /// <summary>
     /// 变量
     /// </summary>
-    public List<DeviceVariable> DeviceVariables { get; set; } = new();
+    public byte[] DeviceVariables { get; set; }
 
     /// <summary>
     /// true=>删除全部后增加
     /// </summary>
+    [Description("是否删除原采集设备表")]
     public bool IsCollectDevicesFullUp { get; set; }
     /// <summary>
     /// true=>删除全部后增加
     /// </summary>
+    [Description("是否删除原上传设备表")]
     public bool IsUploadDevicesFullUp { get; set; }
     /// <summary>
     /// true=>删除全部后增加
     /// </summary>
+    [Description("是否删除原变量表")]
     public bool IsDeviceVariablesFullUp { get; set; }
 
     /// <summary>
     /// 是否立即重启，使配置生效
     /// </summary>
+    [Description("是否重启子网关线程")]
     public bool IsRestart { get; set; }
 
 
@@ -189,6 +159,10 @@ public class MqttDBDownRpc
 /// </summary>
 public class ManageMqttRpcFrom
 {
+    /// <summary>
+    /// 标识
+    /// </summary>
+    public string GatewayId { get; set; }
 
     /// <summary>
     /// 标识
@@ -204,7 +178,10 @@ public class ManageMqttRpcFrom
 /// </summary>
 public class ManageMqttRpcResult
 {
-
+    /// <summary>
+    /// 标识
+    /// </summary>
+    public string GatewayId { get; set; }
     /// <summary>
     /// 标识
     /// </summary>

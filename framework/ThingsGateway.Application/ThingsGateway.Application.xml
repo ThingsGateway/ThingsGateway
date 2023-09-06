@@ -1429,7 +1429,7 @@
         </member>
         <member name="P:ThingsGateway.Application.ManageGatewayConfig.WriteRpcTopic">
             <summary>
-            WriteRpcTopic，Rpc返回为{WriteRpcTopic}/Return
+            WriteRpcTopic，Rpc返回为{WriteRpcTopic}/Return，只有这个topic才开放外部订阅权限
             </summary>
         </member>
         <member name="P:ThingsGateway.Application.ManageGatewayConfig.DBDownTopic">
@@ -1442,11 +1442,6 @@
             DBUploadTopic
             </summary>
         </member>
-        <member name="P:ThingsGateway.Application.ManageGatewayConfig.PrivateWriteRpcTopic">
-            <summary>
-            PrivateWriteRpcTopic
-            </summary>
-        </member>
         <member name="T:ThingsGateway.Application.ClientGatewayConfig">
             <summary>
             ClientGatewayConfig
@@ -1455,46 +1450,6 @@
         <member name="P:ThingsGateway.Application.ClientGatewayConfig.GatewayId">
             <summary>
             标识
-            </summary>
-        </member>
-        <member name="P:ThingsGateway.Application.ClientGatewayConfig.Enable">
-            <summary>
-            启用
-            </summary>
-        </member>
-        <member name="P:ThingsGateway.Application.ClientGatewayConfig.MqttBrokerIP">
-            <summary>
-            MqttBrokerIP
-            </summary>
-        </member>
-        <member name="P:ThingsGateway.Application.ClientGatewayConfig.MqttBrokerPort">
-            <summary>
-            MqttBrokerPort
-            </summary>
-        </member>
-        <member name="P:ThingsGateway.Application.ClientGatewayConfig.UserName">
-            <summary>
-            UserName
-            </summary>
-        </member>
-        <member name="P:ThingsGateway.Application.ClientGatewayConfig.Password">
-            <summary>
-            Password
-            </summary>
-        </member>
-        <member name="P:ThingsGateway.Application.ClientGatewayConfig.DBDownTopic">
-            <summary>
-            DBDownTopic
-            </summary>
-        </member>
-        <member name="P:ThingsGateway.Application.ClientGatewayConfig.DBUploadTopic">
-            <summary>
-            DBUploadTopic
-            </summary>
-        </member>
-        <member name="P:ThingsGateway.Application.ClientGatewayConfig.PrivateWriteRpcTopic">
-            <summary>
-            PrivateWriteRpcTopic
             </summary>
         </member>
         <member name="T:ThingsGateway.Application.MqttDBUploadRpcResult">
@@ -1562,6 +1517,11 @@
             MqttRpc传入
             </summary>
         </member>
+        <member name="P:ThingsGateway.Application.ManageMqttRpcFrom.GatewayId">
+            <summary>
+            标识
+            </summary>
+        </member>
         <member name="P:ThingsGateway.Application.ManageMqttRpcFrom.RpcId">
             <summary>
             标识
@@ -1575,6 +1535,11 @@
         <member name="T:ThingsGateway.Application.ManageMqttRpcResult">
             <summary>
             MqttRpc输出
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Application.ManageMqttRpcResult.GatewayId">
+            <summary>
+            标识
             </summary>
         </member>
         <member name="P:ThingsGateway.Application.ManageMqttRpcResult.RpcId">
@@ -1597,15 +1562,20 @@
             ManageGatewayWorker
             </summary>
         </member>
+        <member name="F:ThingsGateway.Application.ManageGatewayWorker.restartLock">
+            <summary>
+            全部重启锁
+            </summary>
+        </member>
         <member name="M:ThingsGateway.Application.ManageGatewayWorker.#ctor(Microsoft.Extensions.Logging.ILoggerFactory)">
             <inheritdoc cref="T:ThingsGateway.Application.ManageGatewayWorker"/>
         </member>
-        <member name="P:ThingsGateway.Application.ManageGatewayWorker.ManageStatuString">
+        <member name="P:ThingsGateway.Application.ManageGatewayWorker.ClientStatuString">
             <summary>
             服务状态
             </summary>
         </member>
-        <member name="P:ThingsGateway.Application.ManageGatewayWorker.ClientStatuString">
+        <member name="P:ThingsGateway.Application.ManageGatewayWorker.ManageStatuString">
             <summary>
             服务状态
             </summary>
@@ -1619,10 +1589,11 @@
         <member name="M:ThingsGateway.Application.ManageGatewayWorker.ExecuteAsync(System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
-        <member name="F:ThingsGateway.Application.ManageGatewayWorker.restartLock">
+        <member name="M:ThingsGateway.Application.ManageGatewayWorker.GetClientGatewayDBAsync(System.String,System.Int32,System.Threading.CancellationToken)">
             <summary>
-            全部重启锁
+            获取子网关的配置信息
             </summary>
+            <returns></returns>
         </member>
         <member name="M:ThingsGateway.Application.ManageGatewayWorker.RestartAsync">
             <summary>
@@ -1630,28 +1601,44 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ThingsGateway.Application.ManageGatewayWorker.InitAsync">
-            <summary>
-            初始化
-            </summary>
-        </member>
         <member name="M:ThingsGateway.Application.ManageGatewayWorker.RpcDataExecuteAsync(System.String,System.String,System.Byte[],System.Int32,MQTTnet.Protocol.MqttQualityOfServiceLevel,System.Threading.CancellationToken)">
             <summary>
             RPC请求子网关并返回，需要传入子网关ID，作为Topic参数一部分
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ThingsGateway.Application.ManageGatewayWorker.GetClientGatewayDB(System.String,System.Int32,System.Threading.CancellationToken)">
-            <summary>
-            获取子网关的配置信息
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:ThingsGateway.Application.ManageGatewayWorker.SetClientGatewayDB(System.String,ThingsGateway.Application.MqttDBDownRpc,System.Int32,System.Threading.CancellationToken)">
+        <member name="M:ThingsGateway.Application.ManageGatewayWorker.SetClientGatewayDBAsync(System.String,ThingsGateway.Application.MqttDBDownRpc,System.Int32,System.Threading.CancellationToken)">
             <summary>
             下载配置信息到子网关
             </summary>
             <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Application.ManageGatewayWorker.WriteVariableAsync(ThingsGateway.Application.ManageMqttRpcFrom,System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            写入变量到子网关
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Application.ManageGatewayWorker.GetClientGatewayAsync">
+            <summary>
+            获取子网关列表
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="F:ThingsGateway.Application.ManageGatewayWorker.ClientGatewayConfig">
+            <summary>
+            ClientGatewayConfig
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Application.ManageGatewayWorker.ManageGatewayConfig">
+            <summary>
+            ManageGatewayConfig
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Application.ManageGatewayWorker.InitAsync">
+            <summary>
+            初始化
+            </summary>
         </member>
         <member name="T:ThingsGateway.Application.CollectDeviceRunTime">
             <summary>
@@ -2618,6 +2605,9 @@
         <member name="M:ThingsGateway.Application.CollectDeviceService.PreviewAsync(Microsoft.AspNetCore.Components.Forms.IBrowserFile)">
             <inheritdoc/>
         </member>
+        <member name="M:ThingsGateway.Application.CollectDeviceService.PreviewAsync(System.IO.MemoryStream)">
+            <inheritdoc/>
+        </member>
         <member name="M:ThingsGateway.Application.CollectDeviceService.ImportAsync(System.Collections.Generic.Dictionary{System.String,ThingsGateway.Application.ImportPreviewOutputBase})">
             <inheritdoc/>
         </member>
@@ -3315,6 +3305,9 @@
         <member name="M:ThingsGateway.Application.UploadDeviceService.PreviewAsync(Microsoft.AspNetCore.Components.Forms.IBrowserFile)">
             <inheritdoc/>
         </member>
+        <member name="M:ThingsGateway.Application.UploadDeviceService.PreviewAsync(System.IO.MemoryStream)">
+            <inheritdoc/>
+        </member>
         <member name="T:ThingsGateway.Application.VariableAddInput">
             <summary>
             添加变量DTO
@@ -3569,6 +3562,9 @@
             <inheritdoc/>
         </member>
         <member name="M:ThingsGateway.Application.VariableService.PreviewAsync(Microsoft.AspNetCore.Components.Forms.IBrowserFile)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Application.VariableService.PreviewAsync(System.IO.MemoryStream,System.Collections.Generic.List{ThingsGateway.Application.CollectDevice},System.Collections.Generic.List{ThingsGateway.Application.UploadDevice})">
             <inheritdoc/>
         </member>
         <member name="M:ThingsGateway.Application.VariableService.ImportAsync(System.Collections.Generic.Dictionary{System.String,ThingsGateway.Application.ImportPreviewOutputBase})">

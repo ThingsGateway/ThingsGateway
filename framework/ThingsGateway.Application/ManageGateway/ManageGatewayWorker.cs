@@ -13,6 +13,8 @@
 using Furion;
 using Furion.Logging.Extensions;
 
+using Mapster;
+
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -37,9 +39,20 @@ namespace ThingsGateway.Application;
 /// </summary>
 public class ManageGatewayWorker : BackgroundService
 {
+    private readonly ILogger _clientLogger;
     private readonly ILogger _logger;
     private readonly ILogger _manageLogger;
-    private readonly ILogger _clientLogger;
+    /// <summary>
+    /// 全部重启锁
+    /// </summary>
+    private readonly EasyLock restartLock = new();
+
+    private IMqttClient _mqttClient;
+
+    private MqttServer _mqttServer;
+
+    private MqttClientSubscribeOptions _mqttSubscribeOptions;
+
     /// <inheritdoc cref="ManageGatewayWorker"/>
     public ManageGatewayWorker(ILoggerFactory loggerFactory)
     {
@@ -50,17 +63,12 @@ public class ManageGatewayWorker : BackgroundService
     /// <summary>
     /// 服务状态
     /// </summary>
-    public OperResult ManageStatuString { get; set; } = new OperResult("初始化");
+    public OperResult ClientStatuString { get; set; } = new OperResult("初始化");
+
     /// <summary>
     /// 服务状态
     /// </summary>
-    public OperResult ClientStatuString { get; set; } = new OperResult("初始化");
-
-    private MqttServer _mqttServer;
-    private IMqttClient _mqttClient;
-    private MqttClientSubscribeOptions _mqttSubscribeOptions;
-
-
+    public OperResult ManageStatuString { get; set; } = new OperResult("初始化");
     #region worker服务
     /// <inheritdoc/>
     public override async Task StartAsync(CancellationToken token)
@@ -93,34 +101,56 @@ public class ManageGatewayWorker : BackgroundService
                     if (result.IsSuccess)
                     {
                         _clientLogger.LogDebug("连接正常：" + result.Message);
+                        ClientStatuString.ResultCode = ResultCode.Success;
+                        ClientStatuString.Message = "连接正常：" + result.Message;
+
                     }
                     else
                     {
                         _clientLogger.LogWarning("连接错误：" + result.Message);
+                        ClientStatuString.ResultCode = ResultCode.Fail;
+                        ClientStatuString.Message = "连接错误：" + result.Message;
                     }
                 }
 
                 await Task.Delay(10000, stoppingToken);
 
 
-                if (_mqttServer != null)
-                {
-                    //TODO:test code
-                    var mqttClientStatuses = await _mqttServer.GetClientsAsync();
+                //if (_mqttServer != null)
+                //{
+                //    //TODO:test code
+                //    var mqttClientStatuses = await _mqttServer.GetClientsAsync();
 
-                    if (mqttClientStatuses.FirstOrDefault() is MqttClientStatus mqttClientStatus)
-                    {
-                        //获取子网关信息
-                        var getClientGatewayDBResult = await GetClientGatewayDB(mqttClientStatus.Id);
+                //    if (mqttClientStatuses.FirstOrDefault() is MqttClientStatus mqttClientStatus)
+                //    {
+                //        //获取子网关信息
+                //        var getClientGatewayDBResult = await GetClientGatewayDBAsync(mqttClientStatus.Id);
 
-                        //下发子网关配置
-                        var mqttDBDownRpc = new MqttDBDownRpc();
-                        mqttDBDownRpc.IsRestart = true;
-                        var setClientGatewayDBResult = await SetClientGatewayDB(mqttClientStatus.Id, mqttDBDownRpc);
+                //        //下发子网关配置
+                //        var mqttDBDownRpc = new MqttDBDownRpc
+                //        {
+                //            IsRestart = true
+                //        };
+                //        var setClientGatewayDBResult = await SetClientGatewayDBAsync(mqttClientStatus.Id, mqttDBDownRpc);
 
-                    }
+                //        //下发子网关配置
+                //        var manageMqttRpcFrom = new ManageMqttRpcFrom
+                //        {
+                //            WriteInfos = new Dictionary<string, string>()
+                //            {
+                //                {
+                //                "test41","123"
+                //                }
+                //            },
+                //            GatewayId = "GatewayId",
+                //            RpcId = "123456",
+                //        };
 
-                }
+                //        var WriteVariableResult = await WriteVariableAsync(manageMqttRpcFrom);
+
+                //    }
+
+                //}
 
 
 
@@ -141,12 +171,25 @@ public class ManageGatewayWorker : BackgroundService
 
 
     #endregion
-
-
     /// <summary>
-    /// 全部重启锁
+    /// 获取子网关的配置信息
     /// </summary>
-    private readonly EasyLock restartLock = new();
+    /// <returns></returns>
+    public async Task<OperResult<MqttDBUploadRpcResult>> GetClientGatewayDBAsync(string gatewayId, int timeOut = 3000, CancellationToken token = default)
+    {
+        try
+        {
+            var buffer = Encoding.UTF8.GetBytes(string.Empty);
+            var response = await RpcDataExecuteAsync(gatewayId, ClientGatewayConfig.DBUploadTopic, buffer, timeOut, MqttQualityOfServiceLevel.AtMostOnce, token);
+            var data = Encoding.UTF8.GetString(response).FromJsonString<MqttDBUploadRpcResult>();
+            return OperResult.CreateSuccessResult(data);
+        }
+        catch (Exception ex)
+        {
+            return new OperResult<MqttDBUploadRpcResult>(ex);
+        }
+
+    }
 
     /// <summary>
     /// 重启
@@ -157,6 +200,107 @@ public class ManageGatewayWorker : BackgroundService
         await StopAsync();
         await StartAsync();
     }
+
+    /// <summary>
+    /// RPC请求子网关并返回，需要传入子网关ID，作为Topic参数一部分
+    /// </summary>
+    /// <returns></returns>
+    public async Task<byte[]> RpcDataExecuteAsync(string gatewayId, string topic, byte[] payload, int timeOut, MqttQualityOfServiceLevel qualityOfServiceLevel, CancellationToken token = default)
+    {
+        var responseTopic = GetRpcReturnTopic(gatewayId, topic);
+        var requestTopic = GetRpcTopic(gatewayId, topic);
+
+        try
+        {
+            using WaitDataAsync<byte[]> waitDataAsync = new();
+            if (!_waitingCalls.TryAdd(responseTopic, waitDataAsync))
+            {
+                throw new InvalidOperationException();
+            }
+            waitDataAsync.SetCancellationToken(token);
+
+            //请求子网关的数据
+            var message = new MqttApplicationMessageBuilder().WithTopic(requestTopic).WithPayload(payload).Build();
+            await _mqttServer.InjectApplicationMessage(new InjectedMqttApplicationMessage(message), token);
+
+            var result = await waitDataAsync.WaitAsync(timeOut);
+            switch (result)
+            {
+                case WaitDataStatus.SetRunning:
+                    return waitDataAsync.WaitResult;
+                case WaitDataStatus.Overtime:
+                    throw new TimeoutException();
+                case WaitDataStatus.Canceled:
+                    {
+                        throw new Exception("等待已终止。可能是客户端已掉线，或者被注销。");
+                    }
+                case WaitDataStatus.Default:
+                case WaitDataStatus.Disposed:
+                default:
+                    throw new Exception(ThingsGatewayStatus.UnknownError.GetDescription());
+            }
+        }
+        finally
+        {
+            _waitingCalls.Remove(responseTopic);
+
+        }
+    }
+
+    /// <summary>
+    /// 下载配置信息到子网关
+    /// </summary>
+    /// <returns></returns>
+    public async Task<OperResult<OperResult>> SetClientGatewayDBAsync(string gatewayId, MqttDBDownRpc mqttDBRpc, int timeOut = 3000, CancellationToken token = default)
+    {
+        try
+        {
+            var buffer = Encoding.UTF8.GetBytes(mqttDBRpc?.ToJsonString() ?? string.Empty);
+            var response = await RpcDataExecuteAsync(gatewayId, ClientGatewayConfig.DBDownTopic, buffer, timeOut, MqttQualityOfServiceLevel.AtMostOnce, token);
+            var data = Encoding.UTF8.GetString(response).FromJsonString<OperResult>();
+            return OperResult.CreateSuccessResult(data);
+        }
+        catch (Exception ex)
+        {
+            return new OperResult<OperResult>(ex);
+        }
+
+    }
+
+    /// <summary>
+    /// 写入变量到子网关
+    /// </summary>
+    /// <returns></returns>
+    public async Task<OperResult<ManageMqttRpcResult>> WriteVariableAsync(ManageMqttRpcFrom manageMqttRpcFrom, int timeOut = 3000, CancellationToken token = default)
+    {
+        try
+        {
+            var payload = Encoding.UTF8.GetBytes(manageMqttRpcFrom?.ToJsonString() ?? string.Empty);
+            var requestTopic = ManageGatewayConfig.WriteRpcTopic;
+            var responseTopic = GetRpcReturnTopic(ManageGatewayConfig.WriteRpcTopic);
+            var key = GetRpcReturnIdTopic(manageMqttRpcFrom.GatewayId, requestTopic, manageMqttRpcFrom.RpcId);
+
+            ManageMqttRpcResult result = await RpcWriteExecuteAsync(timeOut, payload, requestTopic, key, token);
+
+            return OperResult.CreateSuccessResult(result);
+        }
+        catch (Exception ex)
+        {
+            return new OperResult<ManageMqttRpcResult>(ex);
+        }
+
+    }
+
+    /// <summary>
+    /// 获取子网关列表
+    /// </summary>
+    /// <returns></returns>
+    public async Task<List<MqttClientStatus>> GetClientGatewayAsync()
+    {
+        var data = await _mqttServer.GetClientsAsync();
+        return data.ToList();
+    }
+
 
     internal async Task StartAsync()
     {
@@ -208,10 +352,176 @@ public class ManageGatewayWorker : BackgroundService
 
 
     #region 核心实现
-    ManageGatewayConfig _manageGatewayConfig;
-    ClientGatewayConfig _clientGatewayConfig;
-
+    readonly ConcurrentDictionary<string, WaitDataAsync<byte[]>> _waitingCalls = new();
+    readonly ConcurrentDictionary<string, WaitDataAsync<ManageMqttRpcResult>> _writerRpcResultWaitingCalls = new();
+    private readonly EasyLock clientLock = new();
+    /// <summary>
+    /// ClientGatewayConfig
+    /// </summary>
+    public ClientGatewayConfig ClientGatewayConfig;
+    /// <summary>
+    /// ManageGatewayConfig
+    /// </summary>
+    public ManageGatewayConfig ManageGatewayConfig;
     private MqttClientOptions _mqttClientOptions;
+    RpcSingletonService _rpcCore;
+
+    private async Task DBDownTopicMethod(MqttApplicationMessageReceivedEventArgs args)
+    {
+        var mqttDBRpc = args.ApplicationMessage.PayloadSegment.Count > 0 ? Encoding.UTF8.GetString(args.ApplicationMessage.PayloadSegment).FromJsonString<MqttDBDownRpc>() : null;
+        if (mqttDBRpc != null)
+        {
+            OperResult result = new();
+            var collectDeviceService = App.GetService<CollectDeviceService>();
+            var variableService = App.GetService<VariableService>();
+            var uploadDeviceService = App.GetService<UploadDeviceService>();
+
+            collectDeviceService.Context = variableService.Context = uploadDeviceService.Context;
+            var itenant = collectDeviceService.Context.AsTenant();
+            //事务
+            var dbResult = await itenant.UseTranAsync(async () =>
+            {
+
+                if (mqttDBRpc.IsCollectDevicesFullUp)
+                {
+                    await collectDeviceService.AsDeleteable().ExecuteCommandAsync();
+                }
+                var collectDevices = new List<CollectDevice>();
+
+
+                if (mqttDBRpc.CollectDevices != null && mqttDBRpc.CollectDevices.Length > 0)
+                {
+                    MemoryStream stream = new(mqttDBRpc.CollectDevices);
+                    var previewResult = await collectDeviceService.PreviewAsync(stream);
+                    if (previewResult.FirstOrDefault().Value.HasError)
+                    {
+                        throw new(previewResult.Select(a => a.Value.Results.Where(a => !a.isSuccess).ToList()).ToList().ToJsonString());
+                    }
+                    foreach (var item in previewResult)
+                    {
+                        if (item.Key == ExportHelpers.CollectDeviceSheetName)
+                        {
+                            var collectDeviceImports = ((ImportPreviewOutput<CollectDevice>)item.Value).Data;
+                            collectDevices = collectDeviceImports.Values.Adapt<List<CollectDevice>>();
+                            break;
+                        }
+                    }
+                    await collectDeviceService.ImportAsync(previewResult);
+
+                }
+
+                if (mqttDBRpc.IsUploadDevicesFullUp)
+                {
+                    await uploadDeviceService.AsDeleteable().ExecuteCommandAsync();
+
+                }
+                var uploadDevices = new List<UploadDevice>();
+
+                if (mqttDBRpc.UploadDevices != null && mqttDBRpc.UploadDevices.Length > 0)
+                {
+                    MemoryStream stream1 = new(mqttDBRpc.UploadDevices);
+                    var previewResult1 = await uploadDeviceService.PreviewAsync(stream1);
+                    if (previewResult1.FirstOrDefault().Value.HasError)
+                    {
+                        throw new(previewResult1.Select(a => a.Value.Results.Where(a => !a.isSuccess).ToList()).ToList().ToJsonString());
+                    }
+                    foreach (var item in previewResult1)
+                    {
+                        if (item.Key == ExportHelpers.UploadDeviceSheetName)
+                        {
+                            var uploadDeviceImports = ((ImportPreviewOutput<UploadDevice>)item.Value).Data;
+                            uploadDevices = uploadDeviceImports.Values.Adapt<List<UploadDevice>>();
+                            break;
+                        }
+                    }
+                    await uploadDeviceService.ImportAsync(previewResult1);
+
+                }
+
+                if (mqttDBRpc.IsDeviceVariablesFullUp)
+                {
+                    await variableService.AsDeleteable().ExecuteCommandAsync();
+
+                }
+                if (mqttDBRpc.DeviceVariables != null && mqttDBRpc.DeviceVariables.Length > 0)
+                {
+                    MemoryStream stream2 = new(mqttDBRpc.DeviceVariables);
+                    var previewResult2 = await variableService.PreviewAsync(stream2, collectDevices, uploadDevices);
+                    if (previewResult2.FirstOrDefault().Value.HasError)
+                    {
+                        throw new(previewResult2.Select(a => a.Value.Results.Where(a => !a.isSuccess).ToList()).ToList().ToJsonString());
+                    }
+                    await variableService.ImportAsync(previewResult2);
+                }
+            });
+            CacheStatic.Cache.Remove(ThingsGatewayCacheConst.Cache_CollectDevice);//cache删除
+            CacheStatic.Cache.Remove(ThingsGatewayCacheConst.Cache_UploadDevice);//cache删除
+
+            if (dbResult.IsSuccess)//如果成功了
+            {
+                _clientLogger.LogInformation("子网关接收配置，并保存至数据库-执行成功");
+                result = OperResult.CreateSuccessResult();
+                if (mqttDBRpc.IsRestart)
+                {
+                    _clientLogger.LogInformation("子网关接收配置，并重启");
+                    await ServiceHelper.GetBackgroundService<CollectDeviceWorker>().RestartDeviceThreadAsync();
+                }
+            }
+            else
+            {
+                //写日志
+                result.Message = dbResult.ErrorMessage;
+            }
+
+            var variableMessage = new MqttApplicationMessageBuilder()
+    .WithTopic(GetRpcReturnTopic(args.ApplicationMessage.Topic))
+    .WithPayload(result.ToJsonString()).Build();
+            if (_mqttClient.IsConnected)
+                await _mqttClient.PublishAsync(variableMessage);
+        }
+    }
+
+    private async Task DBUploadTopicMethod(MqttApplicationMessageReceivedEventArgs args)
+    {
+        MqttDBUploadRpcResult result = new();
+        var collectDeviceService = App.GetService<CollectDeviceService>();
+        var variableService = App.GetService<VariableService>();
+        var uploadDeviceService = App.GetService<UploadDeviceService>();
+        result.CollectDevices = collectDeviceService.GetCacheList(false);
+        result.DeviceVariables = await variableService.GetListAsync();
+        result.UploadDevices = uploadDeviceService.GetCacheList(false);
+
+        var variableMessage = new MqttApplicationMessageBuilder()
+.WithTopic(GetRpcReturnTopic(args.ApplicationMessage.Topic))
+.WithPayload(result.ToJsonString()).Build();
+        if (_mqttClient.IsConnected)
+            await _mqttClient.PublishAsync(variableMessage);
+    }
+
+    private string GetRpcReturnIdTopic(string gatewayId, string topic, string rpcId)
+    {
+        var responseTopic = $"{gatewayId}/{topic}/rpc/Return/rpcId";
+        return responseTopic;
+    }
+
+    private string GetRpcReturnTopic(string gatewayId, string topic)
+    {
+        var responseTopic = $"{gatewayId}/{topic}/rpc/Return";
+        return responseTopic;
+    }
+
+    private string GetRpcReturnTopic(string requestTopic)
+    {
+        var responseTopic = $"{requestTopic}/Return";
+        return responseTopic;
+    }
+
+    private string GetRpcTopic(string gatewayId, string topic)
+    {
+        var requestTopic = $"{gatewayId}/{topic}/rpc";
+        return requestTopic;
+    }
+
     /// <summary>
     /// 初始化
     /// </summary>
@@ -219,8 +529,8 @@ public class ManageGatewayWorker : BackgroundService
     {
         try
         {
-            _manageGatewayConfig = App.GetConfig<ManageGatewayConfig>("ManageGatewayConfig");
-            if (_manageGatewayConfig?.Enable != true)
+            ManageGatewayConfig = App.GetConfig<ManageGatewayConfig>("ManageGatewayConfig");
+            if (ManageGatewayConfig?.Enable != true)
             {
                 ManageStatuString = new OperResult($"已退出：不启用管理功能");
                 _manageLogger.LogWarning("已退出：不启用管理功能");
@@ -229,8 +539,8 @@ public class ManageGatewayWorker : BackgroundService
             {
                 var mqttFactory = new MqttFactory(new MqttNetLogger(_manageLogger));
                 var mqttServerOptions = mqttFactory.CreateServerOptionsBuilder()
-                    .WithDefaultEndpointBoundIPAddress(string.IsNullOrEmpty(_manageGatewayConfig.MqttBrokerIP) ? null : IPAddress.Parse(_manageGatewayConfig.MqttBrokerIP))
-                    .WithDefaultEndpointPort(_manageGatewayConfig.MqttBrokerPort)
+                    .WithDefaultEndpointBoundIPAddress(string.IsNullOrEmpty(ManageGatewayConfig.MqttBrokerIP) ? null : IPAddress.Parse(ManageGatewayConfig.MqttBrokerIP))
+                    .WithDefaultEndpointPort(ManageGatewayConfig.MqttBrokerPort)
                     .WithDefaultEndpoint()
                     .Build();
                 _mqttServer = mqttFactory.CreateMqttServer(mqttServerOptions);
@@ -241,18 +551,20 @@ public class ManageGatewayWorker : BackgroundService
 
                     await _mqttServer.StartAsync();
                 }
+                ManageStatuString = OperResult.CreateSuccessResult();
 
             }
         }
         catch (Exception ex)
         {
             _manageLogger.LogError(ex, "初始化失败");
+            ManageStatuString = new($"初始化失败-{ex.Message}");
         }
 
         try
         {
-            _clientGatewayConfig = App.GetConfig<ClientGatewayConfig>("ClientGatewayConfig");
-            if (_clientGatewayConfig?.Enable != true)
+            ClientGatewayConfig = App.GetConfig<ClientGatewayConfig>("ClientGatewayConfig");
+            if (ClientGatewayConfig?.Enable != true)
             {
                 ClientStatuString = new OperResult($"已退出：不启用子网关功能");
                 _clientLogger.LogWarning("已退出：不启用子网关功能");
@@ -261,9 +573,9 @@ public class ManageGatewayWorker : BackgroundService
             {
                 var mqttFactory = new MqttFactory(new MqttNetLogger(_clientLogger));
                 _mqttClientOptions = mqttFactory.CreateClientOptionsBuilder()
-                  .WithCredentials(_clientGatewayConfig.UserName, _clientGatewayConfig.Password)//账密
-                  .WithTcpServer(_clientGatewayConfig.MqttBrokerIP, _clientGatewayConfig.MqttBrokerPort)//服务器
-                  .WithClientId(_clientGatewayConfig.GatewayId)
+                  .WithCredentials(ClientGatewayConfig.UserName, ClientGatewayConfig.Password)//账密
+                  .WithTcpServer(ClientGatewayConfig.MqttBrokerIP, ClientGatewayConfig.MqttBrokerPort)//服务器
+                  .WithClientId(ClientGatewayConfig.GatewayId)
                   .WithCleanSession(true)
                   .WithKeepAlivePeriod(TimeSpan.FromSeconds(120.0))
                   .WithoutThrowOnNonSuccessfulConnectResponse()
@@ -272,19 +584,19 @@ public class ManageGatewayWorker : BackgroundService
                     .WithTopicFilter(
                         f =>
                         {
-                            f.WithTopic(GetRpcTopic(_clientGatewayConfig.GatewayId, _clientGatewayConfig.PrivateWriteRpcTopic));
+                            f.WithTopic(ClientGatewayConfig.WriteRpcTopic);
                             f.WithAtMostOnceQoS();
                         })
                       .WithTopicFilter(
                         f =>
                         {
-                            f.WithTopic(GetRpcTopic(_clientGatewayConfig.GatewayId, _clientGatewayConfig.DBDownTopic));
+                            f.WithTopic(GetRpcTopic(ClientGatewayConfig.GatewayId, ClientGatewayConfig.DBDownTopic));
                             f.WithAtMostOnceQoS();
                         })
                                         .WithTopicFilter(
                         f =>
                         {
-                            f.WithTopic(GetRpcTopic(_clientGatewayConfig.GatewayId, _clientGatewayConfig.DBUploadTopic));
+                            f.WithTopic(GetRpcTopic(ClientGatewayConfig.GatewayId, ClientGatewayConfig.DBUploadTopic));
                             f.WithAtMostOnceQoS();
                         })
                     .Build();
@@ -301,8 +613,99 @@ public class ManageGatewayWorker : BackgroundService
         }
 
     }
+    private async Task MqttClient_ApplicationMessageReceivedAsync(MqttApplicationMessageReceivedEventArgs args)
+    {
+        if (args.ApplicationMessage.Topic == GetRpcTopic(ClientGatewayConfig.GatewayId, ClientGatewayConfig.DBUploadTopic))
+        {
+            _clientLogger.LogInformation("子网关配置上传");
+            await DBUploadTopicMethod(args);
+            return;
+        }
+        if (args.ApplicationMessage.Topic == GetRpcTopic(ClientGatewayConfig.GatewayId, ClientGatewayConfig.DBDownTopic))
+        {
 
-    private EasyLock clientLock = new();
+            _clientLogger.LogInformation("子网关接收配置，并保存至数据库");
+            await DBDownTopicMethod(args);
+
+            return;
+        }
+        if (args.ApplicationMessage.Topic == ClientGatewayConfig.WriteRpcTopic)
+        {
+
+            await WriteRpcTopicMethod(args);
+
+            return;
+        }
+    }
+
+    private async Task MqttClient_ConnectedAsync(MqttClientConnectedEventArgs args)
+    {
+        var subResult = await _mqttClient.SubscribeAsync(_mqttSubscribeOptions);
+        if (subResult.Items.Any(a => a.ResultCode > (MqttClientSubscribeResultCode)10))
+        {
+            _clientLogger?.LogWarning("订阅失败-" + subResult.Items
+                .Where(a => a.ResultCode > (MqttClientSubscribeResultCode)10)
+                .Select(a =>
+                new
+                {
+                    Topic = a.TopicFilter.Topic,
+                    ResultCode = a.ResultCode.ToString()
+                }
+                )
+                .ToJsonString()
+                );
+        }
+    }
+
+    private Task MqttServer_InterceptingPublishAsync(InterceptingPublishEventArgs eventArgs)
+    {
+        if (eventArgs.ApplicationMessage.Topic == GetRpcReturnTopic(ManageGatewayConfig.WriteRpcTopic))
+        {
+            if (_writerRpcResultWaitingCalls.Count > 0)
+            {
+                var payloadBuffer = eventArgs.ApplicationMessage.PayloadSegment.ToArray();
+                var manageMqttRpcResult = Encoding.UTF8.GetString(payloadBuffer).FromJsonString<ManageMqttRpcResult>();
+                var key = GetRpcReturnIdTopic(manageMqttRpcResult.GatewayId, ManageGatewayConfig.WriteRpcTopic, manageMqttRpcResult.RpcId);
+                if (!_writerRpcResultWaitingCalls.TryRemove(key, out var writeRpcResultAsync))
+                {
+                    return CompletedTask.Instance;
+                }
+                writeRpcResultAsync.Set(manageMqttRpcResult);
+
+            }
+
+        }
+        else
+        {
+
+            if (!_waitingCalls.TryRemove(eventArgs.ApplicationMessage.Topic, out var awaitable))
+            {
+                return CompletedTask.Instance;
+            }
+
+            var payloadBuffer = eventArgs.ApplicationMessage.PayloadSegment.ToArray();
+            awaitable.Set(payloadBuffer);
+        }
+
+        return CompletedTask.Instance;
+    }
+
+    private Task MqttServer_ValidatingConnectionAsync(ValidatingConnectionEventArgs arg)
+    {
+        if (ManageGatewayConfig.UserName != arg.UserName)
+        {
+            arg.ReasonCode = MqttConnectReasonCode.BadUserNameOrPassword;
+            return CompletedTask.Instance;
+        }
+        if (ManageGatewayConfig.Password != arg.Password)
+        {
+            arg.ReasonCode = MqttConnectReasonCode.BadUserNameOrPassword;
+            return CompletedTask.Instance;
+        }
+        _manageLogger?.LogInformation(ToString() + "-" + arg.ClientId + "-客户端已连接成功");
+        return CompletedTask.Instance;
+    }
+
     private async Task<OperResult> TryMqttClientAsync(CancellationToken token)
     {
         if (_mqttClient?.IsConnected == true)
@@ -346,188 +749,33 @@ public class ManageGatewayWorker : BackgroundService
             }
         }
     }
-
-    private async Task MqttClient_ApplicationMessageReceivedAsync(MqttApplicationMessageReceivedEventArgs args)
+    private async Task WriteRpcTopicMethod(MqttApplicationMessageReceivedEventArgs args)
     {
-        if (args.ApplicationMessage.Topic == GetRpcTopic(_clientGatewayConfig.GatewayId, _clientGatewayConfig.DBUploadTopic))
+        var manageMqttRpcFrom = args.ApplicationMessage.PayloadSegment.Count > 0 ? Encoding.UTF8.GetString(args.ApplicationMessage.PayloadSegment).FromJsonString<ManageMqttRpcFrom>() : null;
+        if (manageMqttRpcFrom != null && manageMqttRpcFrom.GatewayId == ClientGatewayConfig.GatewayId)
         {
-
-            await DBUploadTopicMethod(args);
-            return;
-        }
-        if (args.ApplicationMessage.Topic == GetRpcTopic(_clientGatewayConfig.GatewayId, _clientGatewayConfig.DBDownTopic))
-        {
-
-            await DBDownTopicMethod(args);
-
-            return;
-        }
-    }
-
-    private async Task DBUploadTopicMethod(MqttApplicationMessageReceivedEventArgs args)
-    {
-        MqttDBUploadRpcResult result = new();
-        var collectDeviceService = App.GetService<CollectDeviceService>();
-        var variableService = App.GetService<VariableService>();
-        var uploadDeviceService = App.GetService<UploadDeviceService>();
-        result.CollectDevices = collectDeviceService.GetCacheList(false);
-        result.DeviceVariables = await variableService.GetListAsync();
-        result.UploadDevices = uploadDeviceService.GetCacheList(false);
-
-        var variableMessage = new MqttApplicationMessageBuilder()
-.WithTopic(GetRpcReturnTopic(args.ApplicationMessage.Topic))
-.WithPayload(result.ToJsonString()).Build();
-        if (_mqttClient.IsConnected)
-            await _mqttClient.PublishAsync(variableMessage);
-    }
-    private async Task DBDownTopicMethod(MqttApplicationMessageReceivedEventArgs args)
-    {
-        var mqttDBRpc = args.ApplicationMessage.PayloadSegment.Count > 0 ? Encoding.UTF8.GetString(args.ApplicationMessage.PayloadSegment).FromJsonString<MqttDBDownRpc>() : null;
-        if (mqttDBRpc != null)
-        {
-            OperResult result = new();
-            var collectDeviceService = App.GetService<CollectDeviceService>();
-            var variableService = App.GetService<VariableService>();
-            var uploadDeviceService = App.GetService<UploadDeviceService>();
-
-            collectDeviceService.Context = variableService.Context = uploadDeviceService.Context;
-            var itenant = collectDeviceService.Context.AsTenant();
-            //事务
-            var dbResult = await itenant.UseTranAsync(async () =>
-            {
-                if (mqttDBRpc.IsCollectDevicesFullUp)
-                {
-                    await collectDeviceService.AsDeleteable().ExecuteCommandAsync();
-                    await collectDeviceService.InsertRangeAsync(mqttDBRpc.CollectDevices);
-                }
-                else
-                {
-                    await collectDeviceService.Context.Storageable(mqttDBRpc.CollectDevices).ExecuteCommandAsync();
-                }
-                if (mqttDBRpc.IsUploadDevicesFullUp)
-                {
-                    await uploadDeviceService.AsDeleteable().ExecuteCommandAsync();
-                    await uploadDeviceService.InsertRangeAsync(mqttDBRpc.UploadDevices);
-                }
-                else
-                {
-                    await uploadDeviceService.Context.Storageable(mqttDBRpc.UploadDevices).ExecuteCommandAsync();
-                }
-                if (mqttDBRpc.IsDeviceVariablesFullUp)
-                {
-                    await variableService.AsDeleteable().ExecuteCommandAsync();
-                    await variableService.InsertRangeAsync(mqttDBRpc.DeviceVariables);
-                }
-                else
-                {
-                    await variableService.Context.Storageable(mqttDBRpc.DeviceVariables).ExecuteCommandAsync();
-                }
-            });
-            if (dbResult.IsSuccess)//如果成功了
-            {
-                result = OperResult.CreateSuccessResult();
-                if (mqttDBRpc.IsRestart)
-                {
-                    await ServiceHelper.GetBackgroundService<CollectDeviceWorker>().RestartDeviceThreadAsync();
-                }
-            }
-            else
-            {
-                //写日志
-                result.Message = dbResult.ErrorMessage;
-            }
+            ManageMqttRpcResult mqttRpcResult = new() { RpcId = manageMqttRpcFrom.RpcId, GatewayId = manageMqttRpcFrom.GatewayId };
+            _rpcCore ??= App.GetService<RpcSingletonService>();
+            var result = await _rpcCore.InvokeDeviceMethodAsync("子网关RPC" + "-" + args.ClientId,
+    manageMqttRpcFrom.WriteInfos.Where(
+    a => !mqttRpcResult.Message.Any(b => b.Key == a.Key)).ToDictionary(a => a.Key, a => a.Value));
+            mqttRpcResult.Message.AddRange(result);
+            mqttRpcResult.Success = !mqttRpcResult.Message.Any(a => !a.Value.IsSuccess);
 
             var variableMessage = new MqttApplicationMessageBuilder()
     .WithTopic(GetRpcReturnTopic(args.ApplicationMessage.Topic))
-    .WithPayload(result.ToJsonString()).Build();
+    .WithPayload(mqttRpcResult.ToJsonString()).Build();
             if (_mqttClient.IsConnected)
                 await _mqttClient.PublishAsync(variableMessage);
         }
     }
-
-    private async Task MqttClient_ConnectedAsync(MqttClientConnectedEventArgs args)
-    {
-        var subResult = await _mqttClient.SubscribeAsync(_mqttSubscribeOptions);
-        if (subResult.Items.Any(a => a.ResultCode > (MqttClientSubscribeResultCode)10))
-        {
-            _clientLogger?.LogWarning("订阅失败-" + subResult.Items
-                .Where(a => a.ResultCode > (MqttClientSubscribeResultCode)10)
-                .Select(a =>
-                new
-                {
-                    Topic = a.TopicFilter.Topic,
-                    ResultCode = a.ResultCode.ToString()
-                }
-                )
-                .ToJsonString()
-                );
-        }
-    }
-
-    readonly ConcurrentDictionary<string, WaitDataAsync<byte[]>> _waitingCalls = new();
-
-
-    private string GetRpcReturnTopic(string gatewayId, string topic)
-    {
-        var responseTopic = $"{gatewayId}/{topic}/rpcReturn";
-        return responseTopic;
-    }
-    private string GetRpcReturnTopic(string requestTopic)
-    {
-        var responseTopic = $"{requestTopic}Return";
-        return responseTopic;
-    }
-    private string GetRpcTopic(string gatewayId, string topic)
-    {
-        var requestTopic = $"{gatewayId}/{topic}/rpc";
-        return requestTopic;
-    }
-
-
-    private Task MqttServer_InterceptingPublishAsync(InterceptingPublishEventArgs eventArgs)
-    {
-        if (!_waitingCalls.TryRemove(eventArgs.ApplicationMessage.Topic, out var awaitable))
-        {
-            return CompletedTask.Instance;
-        }
-
-        var payloadBuffer = eventArgs.ApplicationMessage.PayloadSegment.ToArray();
-        awaitable.Set(payloadBuffer);
-
-        return CompletedTask.Instance;
-    }
-
-    private Task MqttServer_ValidatingConnectionAsync(ValidatingConnectionEventArgs arg)
-    {
-        if (_manageGatewayConfig.UserName != arg.UserName)
-        {
-            arg.ReasonCode = MqttConnectReasonCode.BadUserNameOrPassword;
-            return CompletedTask.Instance;
-        }
-        if (_manageGatewayConfig.Password != arg.Password)
-        {
-            arg.ReasonCode = MqttConnectReasonCode.BadUserNameOrPassword;
-            return CompletedTask.Instance;
-        }
-        _manageLogger?.LogInformation(ToString() + "-" + arg.ClientId + "-客户端已连接成功");
-        return CompletedTask.Instance;
-    }
     #endregion
-
-
-    /// <summary>
-    /// RPC请求子网关并返回，需要传入子网关ID，作为Topic参数一部分
-    /// </summary>
-    /// <returns></returns>
-    public async Task<byte[]> RpcDataExecuteAsync(string gatewayId, string topic, byte[] payload, int timeOut, MqttQualityOfServiceLevel qualityOfServiceLevel, CancellationToken token = default)
+    private async Task<ManageMqttRpcResult> RpcWriteExecuteAsync(int timeOut, byte[] payload, string requestTopic, string key, CancellationToken token)
     {
-        var responseTopic = GetRpcReturnTopic(gatewayId, topic);
-        var requestTopic = GetRpcTopic(gatewayId, topic);
-
         try
         {
-            using WaitDataAsync<byte[]> waitDataAsync = new();
-            if (!_waitingCalls.TryAdd(responseTopic, waitDataAsync))
+            using WaitDataAsync<ManageMqttRpcResult> waitDataAsync = new();
+            if (!_writerRpcResultWaitingCalls.TryAdd(key, waitDataAsync))
             {
                 throw new InvalidOperationException();
             }
@@ -556,49 +804,8 @@ public class ManageGatewayWorker : BackgroundService
         }
         finally
         {
-            _waitingCalls.Remove(responseTopic);
+            _writerRpcResultWaitingCalls.Remove(key);
 
         }
     }
-
-    /// <summary>
-    /// 获取子网关的配置信息
-    /// </summary>
-    /// <returns></returns>
-    public async Task<OperResult<MqttDBUploadRpcResult>> GetClientGatewayDB(string gatewayId, int timeOut = 3000, CancellationToken token = default)
-    {
-        try
-        {
-            var buffer = Encoding.UTF8.GetBytes(string.Empty);
-            var response = await RpcDataExecuteAsync(gatewayId, _clientGatewayConfig.DBUploadTopic, buffer, timeOut, MqttQualityOfServiceLevel.AtMostOnce, token);
-            var data = Encoding.UTF8.GetString(response).FromJsonString<MqttDBUploadRpcResult>();
-            return OperResult.CreateSuccessResult(data);
-        }
-        catch (Exception ex)
-        {
-            return new OperResult<MqttDBUploadRpcResult>(ex);
-        }
-
-    }
-
-    /// <summary>
-    /// 下载配置信息到子网关
-    /// </summary>
-    /// <returns></returns>
-    public async Task<OperResult<OperResult>> SetClientGatewayDB(string gatewayId, MqttDBDownRpc mqttDBRpc, int timeOut = 3000, CancellationToken token = default)
-    {
-        try
-        {
-            var buffer = Encoding.UTF8.GetBytes(mqttDBRpc?.ToJsonString() ?? string.Empty);
-            var response = await RpcDataExecuteAsync(gatewayId, _clientGatewayConfig.DBDownTopic, buffer, timeOut, MqttQualityOfServiceLevel.AtMostOnce, token);
-            var data = Encoding.UTF8.GetString(response).FromJsonString<OperResult>();
-            return OperResult.CreateSuccessResult(data);
-        }
-        catch (Exception ex)
-        {
-            return new OperResult<OperResult>(ex);
-        }
-
-    }
-
 }
