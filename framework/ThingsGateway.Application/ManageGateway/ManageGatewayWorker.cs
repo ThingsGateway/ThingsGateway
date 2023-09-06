@@ -297,8 +297,15 @@ public class ManageGatewayWorker : BackgroundService
     /// <returns></returns>
     public async Task<List<MqttClientStatus>> GetClientGatewayAsync()
     {
-        var data = await _mqttServer.GetClientsAsync();
-        return data.ToList();
+        if (_mqttServer != null)
+        {
+            var data = await _mqttServer.GetClientsAsync();
+            return data.ToList();
+        }
+        else
+        {
+            return new List<MqttClientStatus>();
+        }
     }
 
 

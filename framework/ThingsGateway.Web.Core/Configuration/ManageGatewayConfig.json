@@ -1,7 +1,7 @@
 {
   "$schema": "https://gitee.com/dotnetchina/Furion/raw/net6/schemas/v3/furion-schema.json",
   "ManageGatewayConfig": {
-    "Enable": true, //是否启用管理服务
+    "Enable": false, //是否启用管理服务
     "MqttBrokerIP": "127.0.0.1", //管理服务IP
     "MqttBrokerPort": 7300, //管理服务端口
     "UserName": "admin", //管理服务用户名
@@ -12,7 +12,7 @@
   },
   "ClientGatewayConfig": {
     "GatewayId": "GatewayId", //子网关ID，需要唯一，也用于MqttClientID
-    "Enable": false, //是否连接管理服务
+    "Enable": true, //是否连接管理服务
     "MqttBrokerIP": "127.0.0.1", //管理服务IP
     "MqttBrokerPort": 7300, //管理服务端口
     "UserName": "admin", //管理服务用户名
