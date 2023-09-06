@@ -77,7 +77,7 @@ public class SerialSessionBase : BaseSerial, ISerialSession
 
     private DelaySender m_delaySender;
     private long m_bufferRate = 1;
-    private volatile bool m_online;
+    private bool m_online => MainSerialPort?.IsOpen == true;
     ValueCounter m_receiveCounter;
     ValueCounter m_sendCounter;
 
@@ -277,7 +277,6 @@ public class SerialSessionBase : BaseSerial, ISerialSession
             {
                 this.PrivateOnDisconnecting(new DisconnectEventArgs(true, msg));
 
-                this.m_online = false;
                 this.MainSerialPort.TryClose();
 
                 this.MainSerialPort.SafeDispose();
@@ -294,7 +293,7 @@ public class SerialSessionBase : BaseSerial, ISerialSession
         {
             if (this.m_online)
             {
-                this.m_online = false;
+
                 this.MainSerialPort.SafeDispose();
                 this.m_delaySender.SafeDispose();
                 this.DataHandlingAdapter.SafeDispose();
@@ -313,7 +312,7 @@ public class SerialSessionBase : BaseSerial, ISerialSession
         {
             if (this.m_online)
             {
-                this.m_online = false;
+
                 this.MainSerialPort.TryClose();
                 this.PrivateOnDisconnecting(new DisconnectEventArgs(true, $"{nameof(Dispose)}主动断开"));
 
@@ -357,7 +356,7 @@ public class SerialSessionBase : BaseSerial, ISerialSession
             this.PrivateOnConnecting(args);
             serialPort.Open();
 
-            this.m_online = true;
+
             this.SetSerialPort(serialPort);
 
 
