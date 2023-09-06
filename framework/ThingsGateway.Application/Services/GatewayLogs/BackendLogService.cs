@@ -63,6 +63,7 @@ public class BackendLogService : DbRepository<BackendLog>, IBackendLogService
 
         var memoryStream = new MemoryStream();
         await memoryStream.SaveAsAsync(sheets);
+        memoryStream.Seek(0, SeekOrigin.Begin);
         return memoryStream;
     }
 

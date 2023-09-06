@@ -61,7 +61,6 @@ public class FileController : IDynamicApiController
     public async Task<IActionResult> DownloadRpcLogAsync([FromQuery] RpcLogInput input)
     {
         var memoryStream = await _rpcLogService.ExportFileAsync(input);
-        memoryStream.Seek(0, SeekOrigin.Begin);
         var data = new FileStreamResult(memoryStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
         {
             FileDownloadName = $"rpcLog{SysDateTimeExtensions.CurrentDateTime.ToFileDateTimeFormat()}.xlsx"
@@ -76,7 +75,6 @@ public class FileController : IDynamicApiController
     public async Task<IActionResult> DownloadBackendLogAsync([FromQuery] BackendLogInput input)
     {
         var memoryStream = await _backendLogService.ExportFileAsync(input);
-        memoryStream.Seek(0, SeekOrigin.Begin);
         var data = new FileStreamResult(memoryStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
         {
             FileDownloadName = $"backendLog{SysDateTimeExtensions.CurrentDateTime.ToFileDateTimeFormat()}.xlsx"
@@ -93,7 +91,6 @@ public class FileController : IDynamicApiController
     public async Task<IActionResult> DownloadCollectDeviceAsync([FromQuery] CollectDeviceInput input)
     {
         var memoryStream = await _collectDeviceService.ExportFileAsync(input);
-        memoryStream.Seek(0, SeekOrigin.Begin);
         var data = new FileStreamResult(memoryStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
         {
             FileDownloadName = $"collectDevice{SysDateTimeExtensions.CurrentDateTime.ToFileDateTimeFormat()}.xlsx"
@@ -108,7 +105,6 @@ public class FileController : IDynamicApiController
     public async Task<IActionResult> DownloadUploadDeviceAsync([FromQuery] UploadDeviceInput input)
     {
         var memoryStream = await _uploadDeviceService.ExportFileAsync(input);
-        memoryStream.Seek(0, SeekOrigin.Begin);
         var data = new FileStreamResult(memoryStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
         {
             FileDownloadName = $"uploadDevice{SysDateTimeExtensions.CurrentDateTime.ToFileDateTimeFormat()}.xlsx"
@@ -123,7 +119,6 @@ public class FileController : IDynamicApiController
     public async Task<IActionResult> DownloadDeviceVariableAsync([FromQuery] DeviceVariableInput input)
     {
         var memoryStream = await _variableService.ExportFileAsync(input);
-        memoryStream.Seek(0, SeekOrigin.Begin);
         var data = new FileStreamResult(memoryStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
         {
             FileDownloadName = $"deviceVariable{SysDateTimeExtensions.CurrentDateTime.ToFileDateTimeFormat()}.xlsx"
@@ -138,7 +133,6 @@ public class FileController : IDynamicApiController
     public async Task<IActionResult> DownloadMemoryVariableAsync([FromQuery] MemoryVariableInput input)
     {
         var memoryStream = await _variableService.ExportFileAsync(input);
-        memoryStream.Seek(0, SeekOrigin.Begin);
         var data = new FileStreamResult(memoryStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
         {
             FileDownloadName = $"memoryVariable{SysDateTimeExtensions.CurrentDateTime.ToFileDateTimeFormat()}.xlsx"

@@ -198,7 +198,6 @@ public abstract class DriverDebugUIBase : ComponentBase, IDisposable
             isDownExport = true;
             StateHasChanged();
             using var memoryStream = await App.GetService<CollectDeviceService>().ExportFileAsync(new List<CollectDevice>() { data });
-            memoryStream.Seek(0, SeekOrigin.Begin);
             using var streamRef = new DotNetStreamReference(stream: memoryStream);
             _helper ??= await JS.InvokeAsync<IJSObjectReference>("import", $"/_content/ThingsGateway.Admin.Blazor.Core/js/downloadFileFromStream.js");
             await _helper.InvokeVoidAsync("downloadFileFromStream", $"设备导出{SysDateTimeExtensions.CurrentDateTime.ToFileDateTimeFormat()}.xlsx", streamRef);
@@ -220,7 +219,6 @@ public abstract class DriverDebugUIBase : ComponentBase, IDisposable
             isDownExport = true;
             StateHasChanged();
             using var memoryStream = await App.GetService<VariableService>().ExportFileAsync(data, devName);
-            memoryStream.Seek(0, SeekOrigin.Begin);
             using var streamRef = new DotNetStreamReference(stream: memoryStream);
             _helper ??= await JS.InvokeAsync<IJSObjectReference>("import", $"/_content/ThingsGateway.Admin.Blazor.Core/js/downloadFileFromStream.js");
             await _helper.InvokeVoidAsync("downloadFileFromStream", $"变量导出{SysDateTimeExtensions.CurrentDateTime.ToFileDateTimeFormat()}.xlsx", streamRef);

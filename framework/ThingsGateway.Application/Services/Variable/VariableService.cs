@@ -313,6 +313,7 @@ public class VariableService : DbRepository<DeviceVariable>, IVariableService
 
         var memoryStream = new MemoryStream();
         await memoryStream.SaveAsAsync(sheets);
+        memoryStream.Seek(0, SeekOrigin.Begin);
         return memoryStream;
     }
 
@@ -406,6 +407,7 @@ public class VariableService : DbRepository<DeviceVariable>, IVariableService
 
         var memoryStream = new MemoryStream();
         await memoryStream.SaveAsAsync(sheets);
+        memoryStream.Seek(0, SeekOrigin.Begin);
         return memoryStream;
     }
 
@@ -571,15 +573,21 @@ public class VariableService : DbRepository<DeviceVariable>, IVariableService
         return ImportPreviews;
     }
 
-
     /// <inheritdoc/>
     public async Task<Dictionary<string, ImportPreviewOutputBase>> PreviewAsync(IBrowserFile file)
     {
         _fileService.ImportVerification(file);
-        using var fs = new MemoryStream();
-        using var stream = file.OpenReadStream(512000000);
-        await stream.CopyToAsync(fs);
-        var sheetNames = MiniExcel.GetSheetNames(fs);
+        using var stream = new MemoryStream();
+        using var fs = file.OpenReadStream(512000000);
+        await fs.CopyToAsync(stream);
+        return await PreviewAsync(stream);
+    }
+
+    /// <inheritdoc/>
+    public async Task<Dictionary<string, ImportPreviewOutputBase>> PreviewAsync(MemoryStream stream, List<CollectDevice> memCollectDevices = null, List<UploadDevice> memUploadDevices = null)
+    {
+
+        var sheetNames = MiniExcel.GetSheetNames(stream);
 
         var dbVariables = await Context.Queryable<DeviceVariable>().Select(it => new { it.Id, it.Name }).ToListAsync();
         //转为字典，提高查找效率
@@ -591,7 +599,7 @@ public class VariableService : DbRepository<DeviceVariable>, IVariableService
         foreach (var sheetName in sheetNames)
         {
             //单页数据
-            var rows = fs.Query(useHeaderRow: true, sheetName: sheetName, configuration: new OpenXmlConfiguration { EnableSharedStringCache = false })
+            var rows = stream.Query(useHeaderRow: true, sheetName: sheetName, configuration: new OpenXmlConfiguration { EnableSharedStringCache = false })
                 .Cast<IDictionary<string, object>>();
 
             if (sheetName == ExportHelpers.DeviceVariableSheetName)
@@ -600,7 +608,10 @@ public class VariableService : DbRepository<DeviceVariable>, IVariableService
                 ImportPreviewOutput<DeviceVariable> importPreviewOutput = new();
                 ImportPreviews.Add(sheetName, importPreviewOutput);
                 deviceImportPreview = importPreviewOutput;
-                var cacheDeviceDicts = _collectDeviceService.GetCacheList(false).ToDictionary(a => a.Name);
+
+                var cacheDeviceDicts = memCollectDevices == null ? _collectDeviceService.GetCacheList(false).ToDictionary(a => a.Name) :
+                    _collectDeviceService.GetCacheList(false).Concat(memCollectDevices).ToDictionary(a => a.Name)
+                    ;
                 //线程安全
                 var variables = new ConcurrentList<DeviceVariable>();
                 //并行注意线程安全
@@ -679,7 +690,9 @@ public class VariableService : DbRepository<DeviceVariable>, IVariableService
                         .Where(a => a.GetCustomAttribute<VariablePropertyAttribute>() != null)
                         .ToDictionary(a => a.FindDisplayAttribute(a => a.GetCustomAttribute<VariablePropertyAttribute>()?.Description));
 
-                    var cacheUpdeviceDicts = _uploadDeviceService.GetCacheList(false).ToDictionary(a => a.Name);
+                    var cacheUpdeviceDicts = memUploadDevices == null ? _uploadDeviceService.GetCacheList(false).ToDictionary(a => a.Name) :
+                    _uploadDeviceService.GetCacheList(false).Concat(memUploadDevices).ToDictionary(a => a.Name)
+                        ;
                     rows.ParallelForEach(item =>
                        {
                            try

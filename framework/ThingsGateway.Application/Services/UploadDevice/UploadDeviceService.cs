@@ -284,6 +284,7 @@ public class UploadDeviceService : DbRepository<UploadDevice>, IUploadDeviceServ
 
         var memoryStream = new MemoryStream();
         await memoryStream.SaveAsAsync(sheets);
+        memoryStream.Seek(0, SeekOrigin.Begin);
         return memoryStream;
     }
 
@@ -305,15 +306,19 @@ public class UploadDeviceService : DbRepository<UploadDevice>, IUploadDeviceServ
         CacheStatic.Cache.Remove(ThingsGatewayCacheConst.Cache_UploadDevice);//cache删除
 
     }
-
     /// <inheritdoc/>
     public async Task<Dictionary<string, ImportPreviewOutputBase>> PreviewAsync(IBrowserFile file)
     {
         _fileService.ImportVerification(file);
-        using var fs = new MemoryStream();
-        using var stream = file.OpenReadStream(512000000);
-        await stream.CopyToAsync(fs);
-        var sheetNames = MiniExcel.GetSheetNames(fs);
+        using var stream = new MemoryStream();
+        using var fs = file.OpenReadStream(512000000);
+        await fs.CopyToAsync(stream);
+        return await PreviewAsync(stream);
+    }
+    /// <inheritdoc/>
+    public Task<Dictionary<string, ImportPreviewOutputBase>> PreviewAsync(MemoryStream stream)
+    {
+        var sheetNames = MiniExcel.GetSheetNames(stream);
         var deviceDicts = GetCacheList(false).ToDictionary(a => a.Name);
         var pluginDicts = _driverPluginService.GetCacheList(false).ToDictionary(a => a.AssembleName);
 
@@ -324,7 +329,7 @@ public class UploadDeviceService : DbRepository<UploadDevice>, IUploadDeviceServ
         foreach (var sheetName in sheetNames)
         {
             //单页数据
-            var rows = (fs.Query(useHeaderRow: true, sheetName: sheetName)).Cast<IDictionary<string, object>>();
+            var rows = (stream.Query(useHeaderRow: true, sheetName: sheetName)).Cast<IDictionary<string, object>>();
             #region 上传设备sheet
             if (sheetName == ExportHelpers.UploadDeviceSheetName)
             {
@@ -434,7 +439,7 @@ public class UploadDeviceService : DbRepository<UploadDevice>, IUploadDeviceServ
 
 
 
-        return ImportPreviews;
+        return Task.FromResult(ImportPreviews);
     }
     #endregion
 }
