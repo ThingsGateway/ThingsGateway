@@ -155,7 +155,7 @@ public partial class DeviceStatusPage : IDisposable
             isDownExport = true;
             StateHasChanged();
             using var memoryStream = new MemoryStream();
-            StreamWriter writer = new(memoryStream);
+            using StreamWriter writer = new(memoryStream);
             foreach (var item in values)
             {
                 writer.WriteLine(item);

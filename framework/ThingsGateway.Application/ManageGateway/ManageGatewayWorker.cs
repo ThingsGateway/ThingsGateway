@@ -543,7 +543,7 @@ public class ManageGatewayWorker : BackgroundService
 
                 if (mqttDBRpc.CollectDevices != null && mqttDBRpc.CollectDevices.Length > 0)
                 {
-                    MemoryStream stream = new(mqttDBRpc.CollectDevices);
+                    using MemoryStream stream = new(mqttDBRpc.CollectDevices);
                     var previewResult = await collectDeviceService.PreviewAsync(stream);
                     if (previewResult.FirstOrDefault().Value.HasError)
                     {
@@ -571,7 +571,7 @@ public class ManageGatewayWorker : BackgroundService
 
                 if (mqttDBRpc.UploadDevices != null && mqttDBRpc.UploadDevices.Length > 0)
                 {
-                    MemoryStream stream1 = new(mqttDBRpc.UploadDevices);
+                    using MemoryStream stream1 = new(mqttDBRpc.UploadDevices);
                     var previewResult1 = await uploadDeviceService.PreviewAsync(stream1);
                     if (previewResult1.FirstOrDefault().Value.HasError)
                     {
@@ -597,7 +597,7 @@ public class ManageGatewayWorker : BackgroundService
                 }
                 if (mqttDBRpc.DeviceVariables != null && mqttDBRpc.DeviceVariables.Length > 0)
                 {
-                    MemoryStream stream2 = new(mqttDBRpc.DeviceVariables);
+                    using MemoryStream stream2 = new(mqttDBRpc.DeviceVariables);
                     var previewResult2 = await variableService.PreviewAsync(stream2, collectDevices, uploadDevices);
                     if (previewResult2.FirstOrDefault().Value.HasError)
                     {
