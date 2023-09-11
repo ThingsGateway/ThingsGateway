@@ -1601,12 +1601,6 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ThingsGateway.Application.ManageGatewayWorker.RpcDataExecuteAsync(System.String,System.String,System.Byte[],System.Int32,MQTTnet.Protocol.MqttQualityOfServiceLevel,System.Threading.CancellationToken)">
-            <summary>
-            RPC请求子网关并返回，需要传入子网关ID，作为Topic参数一部分
-            </summary>
-            <returns></returns>
-        </member>
         <member name="M:ThingsGateway.Application.ManageGatewayWorker.SetClientGatewayDBAsync(System.String,ThingsGateway.Application.MqttDBDownRpc,System.Int32,System.Threading.CancellationToken)">
             <summary>
             下载配置信息到子网关
@@ -1625,6 +1619,17 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:ThingsGateway.Application.ManageGatewayWorker.RpcDataExecuteAsync(System.String,System.String,System.Byte[],System.Int32,MQTTnet.Protocol.MqttQualityOfServiceLevel,System.Threading.CancellationToken)">
+            <summary>
+            RPC请求子网关并返回，需要传入子网关ID，作为Topic参数一部分
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Application.ManageGatewayWorker.InitAsync">
+            <summary>
+            初始化
+            </summary>
+        </member>
         <member name="F:ThingsGateway.Application.ManageGatewayWorker.ClientGatewayConfig">
             <summary>
             ClientGatewayConfig
@@ -1633,11 +1638,6 @@
         <member name="F:ThingsGateway.Application.ManageGatewayWorker.ManageGatewayConfig">
             <summary>
             ManageGatewayConfig
-            </summary>
-        </member>
-        <member name="M:ThingsGateway.Application.ManageGatewayWorker.InitAsync">
-            <summary>
-            初始化
             </summary>
         </member>
         <member name="T:ThingsGateway.Application.CollectDeviceRunTime">
