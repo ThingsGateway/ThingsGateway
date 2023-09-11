@@ -251,18 +251,18 @@ public class ManageGatewayWorker : BackgroundService
     /// 下载配置信息到子网关
     /// </summary>
     /// <returns></returns>
-    public async Task<OperResult<OperResult>> SetClientGatewayDBAsync(string gatewayId, MqttDBDownRpc mqttDBRpc, int timeOut = 3000, CancellationToken token = default)
+    public async Task<OperResult> SetClientGatewayDBAsync(string gatewayId, MqttDBDownRpc mqttDBRpc, int timeOut = 3000, CancellationToken token = default)
     {
         try
         {
             var buffer = Encoding.UTF8.GetBytes(mqttDBRpc?.ToJsonString() ?? string.Empty);
             var response = await RpcDataExecuteAsync(gatewayId, ClientGatewayConfig.DBDownTopic, buffer, timeOut, MqttQualityOfServiceLevel.AtMostOnce, token);
             var data = Encoding.UTF8.GetString(response).FromJsonString<OperResult>();
-            return OperResult.CreateSuccessResult(data);
+            return data;
         }
         catch (Exception ex)
         {
-            return new OperResult<OperResult>(ex);
+            return new OperResult(ex);
         }
 
     }
@@ -554,7 +554,7 @@ public class ManageGatewayWorker : BackgroundService
                 if (_mqttServer != null)
                 {
                     _mqttServer.ValidatingConnectionAsync += MqttServer_ValidatingConnectionAsync;//认证
-                    _mqttServer.InterceptingPublishAsync += MqttServer_InterceptingPublishAsync;//认证
+                    _mqttServer.InterceptingPublishAsync += MqttServer_InterceptingPublishAsync;//消息
 
                     await _mqttServer.StartAsync();
                 }
@@ -668,7 +668,7 @@ public class ManageGatewayWorker : BackgroundService
     {
         if (eventArgs.ApplicationMessage.Topic == GetRpcReturnTopic(ManageGatewayConfig.WriteRpcTopic))
         {
-            if (_writerRpcResultWaitingCalls.Count > 0)
+            if (!_writerRpcResultWaitingCalls.IsEmpty)
             {
                 var payloadBuffer = eventArgs.ApplicationMessage.PayloadSegment.ToArray();
                 var manageMqttRpcResult = Encoding.UTF8.GetString(payloadBuffer).FromJsonString<ManageMqttRpcResult>();

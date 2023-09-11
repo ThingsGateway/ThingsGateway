@@ -35,7 +35,7 @@ namespace ThingsGateway.Blazor;
 /// </summary>
 public partial class ManageGatewayPage
 {
-    List<StringNumber> panel { get; set; } = new();
+    List<StringNumber> Panel { get; set; } = new();
 
     readonly PeriodicTimer _periodicTimer = new(TimeSpan.FromSeconds(5));
     ManageGatewayWorker ManageGatewayWorker { get; set; }
@@ -45,7 +45,7 @@ public partial class ManageGatewayPage
     protected override void OnInitialized()
     {
         ManageGatewayWorker = ServiceHelper.GetBackgroundService<ManageGatewayWorker>();
-        panel.Add("2");
+        Panel.Add("2");
         _ = RunTimerAsync();
         base.OnInitialized();
     }
@@ -158,11 +158,13 @@ public partial class ManageGatewayPage
     /// <returns></returns>
     private async Task DBDown(MqttClientStatus mqttClientStatus)
     {
-        MqttDBDownRpc rpc = new MqttDBDownRpc();
-        rpc.IsCollectDevicesFullUp = IsCollectDevicesFullUp;
-        rpc.IsDeviceVariablesFullUp = IsDeviceVariablesFullUp;
-        rpc.IsUploadDevicesFullUp = IsUploadDevicesFullUp;
-        rpc.IsRestart = IsRestart;
+        MqttDBDownRpc rpc = new()
+        {
+            IsCollectDevicesFullUp = IsCollectDevicesFullUp,
+            IsDeviceVariablesFullUp = IsDeviceVariablesFullUp,
+            IsUploadDevicesFullUp = IsUploadDevicesFullUp,
+            IsRestart = IsRestart
+        };
 
         if (_importCollectDevicesFile != null)
         {
@@ -193,11 +195,7 @@ public partial class ManageGatewayPage
         var data = await ManageGatewayWorker.SetClientGatewayDBAsync(mqttClientStatus.Id, rpc);
         if (data.IsSuccess)
         {
-            if (data.Content.IsSuccess)
-                await PopupService.EnqueueSnackbarAsync("下发成功", AlertTypes.Success);
-            else
-                await PopupService.EnqueueSnackbarAsync(data.Content.Message, AlertTypes.Error);
-
+            await PopupService.EnqueueSnackbarAsync("下发成功", AlertTypes.Success);
         }
         else
         {
