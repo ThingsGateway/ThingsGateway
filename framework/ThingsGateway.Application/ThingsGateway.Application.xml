@@ -1250,50 +1250,50 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="T:ThingsGateway.Application.TGAPPInfo">
+        <member name="T:ThingsGateway.Application.APPInfo">
             <inheritdoc/>
         </member>
-        <member name="P:ThingsGateway.Application.TGAPPInfo.Environment">
+        <member name="P:ThingsGateway.Application.APPInfo.Environment">
             <summary>
             主机环境
             </summary>
         </member>
-        <member name="P:ThingsGateway.Application.TGAPPInfo.FrameworkDescription">
+        <member name="P:ThingsGateway.Application.APPInfo.FrameworkDescription">
             <summary>
             NET框架
             </summary>
         </member>
-        <member name="P:ThingsGateway.Application.TGAPPInfo.HostName">
+        <member name="P:ThingsGateway.Application.APPInfo.HostName">
             <summary>
             主机名称
             </summary>
         </member>
-        <member name="P:ThingsGateway.Application.TGAPPInfo.OsArchitecture">
+        <member name="P:ThingsGateway.Application.APPInfo.OsArchitecture">
             <summary>
             系统架构
             </summary>
         </member>
-        <member name="P:ThingsGateway.Application.TGAPPInfo.RemoteIp">
+        <member name="P:ThingsGateway.Application.APPInfo.RemoteIp">
             <summary>
             外网地址
             </summary>
         </member>
-        <member name="P:ThingsGateway.Application.TGAPPInfo.Stage">
+        <member name="P:ThingsGateway.Application.APPInfo.Stage">
             <summary>
             Stage环境
             </summary>
         </member>
-        <member name="P:ThingsGateway.Application.TGAPPInfo.SystemOs">
+        <member name="P:ThingsGateway.Application.APPInfo.SystemOs">
             <summary>
             操作系统
             </summary>
         </member>
-        <member name="P:ThingsGateway.Application.TGAPPInfo.UpdateTime">
+        <member name="P:ThingsGateway.Application.APPInfo.UpdateTime">
             <summary>
             更新时间
             </summary>
         </member>
-        <member name="P:ThingsGateway.Application.TGAPPInfo.DriveInfo">
+        <member name="P:ThingsGateway.Application.APPInfo.DriveInfo">
             <summary>
             当前磁盘信息
             </summary>
