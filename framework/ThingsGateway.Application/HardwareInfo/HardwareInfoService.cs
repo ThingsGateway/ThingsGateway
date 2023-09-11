@@ -97,11 +97,12 @@ public class HardwareInfoService : ISingleton
        , TaskCreationOptions.LongRunning);
 
     }
-    private TGAPPInfo appInfo = new();
+
+    private APPInfo appInfo = new();
     /// <summary>
     /// 运行信息获取
     /// </summary>
-    public TGAPPInfo APPInfo => appInfo;
+    public APPInfo APPInfo => appInfo;
 
 
     /// <summary>
@@ -128,7 +129,7 @@ public class HardwareInfoService : ISingleton
 }
 
 /// <inheritdoc/>
-public class TGAPPInfo
+public class APPInfo
 {
     /// <summary>
     /// 主机环境
