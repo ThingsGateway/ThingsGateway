@@ -30,7 +30,7 @@ public class CollectDeviceThread : IAsyncDisposable
     /// <summary>
     /// CancellationTokenSources
     /// </summary>
-    public ConcurrentList<CancellationTokenSource> StoppingTokens = new();
+    private ConcurrentList<CancellationTokenSource> StoppingTokens = new();
 
     /// <summary>
     /// 线程
@@ -165,7 +165,7 @@ public class CollectDeviceThread : IAsyncDisposable
     /// </summary>
     protected async Task InitTaskAsync()
     {
-        CancellationTokenSource stoppingToken = StoppingTokens.Last();
+        var stoppingToken = StoppingTokens.Last().Token;
         DeviceTask = await Task.Factory.StartNew(async () =>
         {
             var channelResult = CollectDeviceCores.FirstOrDefault().Driver.GetShareChannel();
@@ -184,11 +184,11 @@ public class CollectDeviceThread : IAsyncDisposable
                 device.IsShareChannel = CollectDeviceCores.Count > 1;
                 if (channelResult.IsSuccess)
                 {
-                    await device.BeforeActionAsync(stoppingToken.Token, channelResult.Content);
+                    await device.BeforeActionAsync(stoppingToken, channelResult.Content);
                 }
                 else
                 {
-                    await device.BeforeActionAsync(stoppingToken.Token);
+                    await device.BeforeActionAsync(stoppingToken);
                 }
             }
 
@@ -206,7 +206,7 @@ public class CollectDeviceThread : IAsyncDisposable
                             //如果是共享通道类型，需要每次转换时切换适配器
                             if (device.IsShareChannel) device.Driver.InitDataAdapter();
 
-                            var result = await device.RunActionAsync(stoppingToken.Token);
+                            var result = await device.RunActionAsync(stoppingToken);
                             if (result == ThreadRunReturn.None)
                             {
                                 await Task.Delay(CycleInterval);
@@ -224,7 +224,7 @@ public class CollectDeviceThread : IAsyncDisposable
                         }
                         else
                         {
-                            await Task.Delay(1000, stoppingToken.Token);
+                            await Task.Delay(1000, stoppingToken);
                         }
                     }
                     catch (TaskCanceledException)

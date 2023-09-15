@@ -234,7 +234,7 @@ public class AlarmWorker : BackgroundService
     /// <summary>
     /// 循环线程取消标识
     /// </summary>
-    public ConcurrentList<CancellationTokenSource> StoppingTokens = new();
+    private ConcurrentList<CancellationTokenSource> StoppingTokens = new();
     /// <summary>
     /// 全部重启锁
     /// </summary>
@@ -498,24 +498,24 @@ public class AlarmWorker : BackgroundService
     private async Task InitAsync()
     {
         CacheDb = new("HistoryAlarmCache");
-        CancellationTokenSource stoppingToken = StoppingTokens.Last();
+        var stoppingToken = StoppingTokens.Last().Token;
         RealAlarmTask = await Task.Factory.StartNew(async () =>
         {
             _logger?.LogInformation($"实时报警线程开始");
-            while (!stoppingToken.Token.IsCancellationRequested)
+            while (!stoppingToken.IsCancellationRequested)
             {
                 try
                 {
-                    await Task.Delay(500, stoppingToken.Token);
+                    await Task.Delay(500, stoppingToken);
                     var list = DeviceVariables.ToListWithDequeue();
                     foreach (var item in list)
                     {
-                        if (stoppingToken.Token.IsCancellationRequested)
+                        if (stoppingToken.IsCancellationRequested)
                             break;
                         if (!item.AlarmEnable) continue;
                         AlarmAnalysis(item);
                     }
-                    if (stoppingToken.Token.IsCancellationRequested)
+                    if (stoppingToken.IsCancellationRequested)
                         break;
                 }
                 catch (TaskCanceledException)
@@ -540,7 +540,7 @@ public class AlarmWorker : BackgroundService
             await Task.Yield();//返回线程控制，不再阻塞
             try
             {
-                await Task.Delay(500, stoppingToken.Token);
+                await Task.Delay(500, stoppingToken);
 
                 var result = await GetAlarmDbAsync();
                 if (!result.IsSuccess)
@@ -557,13 +557,13 @@ public class AlarmWorker : BackgroundService
                     /***创建/更新单个表***/
                     try
                     {
-                        await sqlSugarClient.Queryable<HistoryAlarm>().FirstAsync(stoppingToken.Token);
+                        await sqlSugarClient.Queryable<HistoryAlarm>().FirstAsync(stoppingToken);
                         isSuccess = true;
                         StatuString = OperResult.CreateSuccessResult();
                     }
                     catch (Exception)
                     {
-                        if (stoppingToken.Token.IsCancellationRequested)
+                        if (stoppingToken.IsCancellationRequested)
                         {
                             IsExited = true;
                             return;
@@ -583,13 +583,13 @@ public class AlarmWorker : BackgroundService
                         }
                     }
 
-                    while (!stoppingToken.Token.IsCancellationRequested)
+                    while (!stoppingToken.IsCancellationRequested)
                     {
                         try
                         {
-                            await Task.Delay(500, stoppingToken.Token);
+                            await Task.Delay(500, stoppingToken);
 
-                            if (stoppingToken.Token.IsCancellationRequested)
+                            if (stoppingToken.IsCancellationRequested)
                                 break;
 
                             //缓存值
@@ -599,7 +599,7 @@ public class AlarmWorker : BackgroundService
                                 var data = cacheData.SelectMany(a => a.CacheStr.FromJsonString<List<HistoryAlarm>>()).ToList();
                                 try
                                 {
-                                    var count = await sqlSugarClient.Insertable(data).ExecuteCommandAsync(stoppingToken.Token);
+                                    var count = await sqlSugarClient.Insertable(data).ExecuteCommandAsync(stoppingToken);
                                     await CacheDb.DeleteCacheData(cacheData.Select(a => a.Id).ToArray());
                                 }
                                 catch (Exception ex)
@@ -608,7 +608,7 @@ public class AlarmWorker : BackgroundService
                                         _logger.LogWarning(ex, "写入历史报警失败");
                                 }
                             }
-                            if (stoppingToken.Token.IsCancellationRequested)
+                            if (stoppingToken.IsCancellationRequested)
                                 break;
 
 
@@ -623,7 +623,7 @@ public class AlarmWorker : BackgroundService
                                 //插入
                                 try
                                 {
-                                    await sqlSugarClient.Insertable(list).ExecuteCommandAsync(stoppingToken.Token);
+                                    await sqlSugarClient.Insertable(list).ExecuteCommandAsync(stoppingToken);
                                     isSuccess = true;
                                 }
                                 catch (Exception ex)

@@ -45,7 +45,7 @@ public class CollectDeviceWorker : BackgroundService
     /// 读取未停止的采集设备List
     /// </summary>
     public List<CollectDeviceCore> CollectDeviceCores => CollectDeviceThreads
-        .Where(a => !a.StoppingTokens.Any(b => b.IsCancellationRequested))
+        .Where(a => a.CollectDeviceCores.Any(b => b.Device != null))
         .SelectMany(a => a.CollectDeviceCores).ToList();
 
     /// <summary>

@@ -48,7 +48,7 @@ public class UploadDeviceWorker : BackgroundService
     /// 上传设备List
     /// </summary>
     public List<UploadDeviceCore> UploadDeviceCores => UploadDeviceThreads
-        .Where(a => !a.StoppingTokens.Any(b => b.IsCancellationRequested))
+        .Where(a => a.UploadDeviceCores.Any(b => b.Device != null))
         .SelectMany(a => a.UploadDeviceCores).ToList();
     /// <summary>
     /// 全部设备子线程
