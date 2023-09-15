@@ -1139,7 +1139,7 @@
             表达式扩展
             </summary>
         </member>
-        <member name="M:ThingsGateway.Application.Extensions.ExpressionEvaluatorExtensions.GetExpressionsResult(System.String,System.Object)">
+        <member name="M:ThingsGateway.Application.Extensions.ExpressionEvaluatorExtensions.GetExpressionsResult(System.String,CodingSeb.ExpressionEvaluator.ExpressionEvaluator,System.Object)">
             <summary>
             计算表达式：例如：raw*100，raw为原始值
             </summary>
@@ -1812,6 +1812,11 @@
         <member name="T:ThingsGateway.Application.DeviceVariableRunTime">
             <summary>
             变量运行状态表示
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Application.DeviceVariableRunTime.#ctor">
+            <summary>
+            <inheritdoc/>
             </summary>
         </member>
         <member name="P:ThingsGateway.Application.DeviceVariableRunTime.DeviceName">

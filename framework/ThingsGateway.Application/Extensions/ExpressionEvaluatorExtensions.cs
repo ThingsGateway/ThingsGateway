@@ -22,29 +22,28 @@ namespace ThingsGateway.Application.Extensions;
 [System.Security.SecuritySafeCritical]
 public static class ExpressionEvaluatorExtensions
 {
-    private static readonly ExpressionEvaluator ExpressionEvaluator;
     private static readonly GlobalDeviceData GlobalDeviceData;
     static ExpressionEvaluatorExtensions()
     {
-        ExpressionEvaluator = new();
-        ExpressionEvaluator.PreEvaluateVariable += Evaluator_PreEvaluateVariable;
+
         GlobalDeviceData = ServiceHelper.Services.GetService<GlobalDeviceData>();
     }
     /// <summary>
     /// 计算表达式：例如：raw*100，raw为原始值
     /// </summary>
-    public static object GetExpressionsResult(this string expressions, object rawvalue)
+    public static object GetExpressionsResult(this string expressions, ExpressionEvaluator expressionEvaluator, object rawvalue)
     {
+
         if (expressions.IsNullOrEmpty())
         {
             return rawvalue;
         }
-        ExpressionEvaluator.Variables = new Dictionary<string, object>()
+        expressionEvaluator.Variables = new Dictionary<string, object>()
             {
               { "Raw", rawvalue},
               { "raw", rawvalue},
             };
-        var value = ExpressionEvaluator.Evaluate(expressions);
+        var value = expressionEvaluator.Evaluate(expressions);
         return value;
     }
 

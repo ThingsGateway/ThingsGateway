@@ -10,6 +10,8 @@
 //------------------------------------------------------------------------------
 #endregion
 
+using CodingSeb.ExpressionEvaluator;
+
 using Mapster;
 
 using System.ComponentModel;
@@ -24,6 +26,13 @@ namespace ThingsGateway.Application;
 /// </summary>
 public class DeviceVariableRunTime : DeviceVariable
 {
+    /// <summary>
+    /// <inheritdoc/>
+    /// </summary>
+    public DeviceVariableRunTime()
+    {
+        expressionEvaluator.PreEvaluateVariable += ExpressionEvaluatorExtensions.Evaluator_PreEvaluateVariable;
+    }
     /// <summary>
     /// 设备名称
     /// </summary>
@@ -87,6 +96,7 @@ public class DeviceVariableRunTime : DeviceVariable
     {
         try
         {
+
             IsOnline = isOnline;
 
             if (!IsOnline)
@@ -101,7 +111,7 @@ public class DeviceVariableRunTime : DeviceVariable
                 object data = null;
                 try
                 {
-                    data = ReadExpressions.GetExpressionsResult(RawValue);
+                    data = ReadExpressions.GetExpressionsResult(expressionEvaluator, RawValue);
                     Set(data);
                 }
                 catch (Exception ex)
@@ -137,7 +147,7 @@ public class DeviceVariableRunTime : DeviceVariable
             }
             CollectTime = time;
             {
-                if ((data?.ToString() != _value?.ToString() ) || isOnlineChanged)
+                if ((data?.ToString() != _value?.ToString()) || isOnlineChanged)
                 {
                     ChangeTime = time;
 
@@ -179,7 +189,7 @@ public class DeviceVariableRunTime : DeviceVariable
     /// 谨慎使用，务必采用队列等方式
     /// </summary>
     public event VariableChangeEventHandler VariableValueChange;
-
+    private ExpressionEvaluator expressionEvaluator = new();
     private bool isOnline;
     private bool isOnlineChanged;
     /// <summary>

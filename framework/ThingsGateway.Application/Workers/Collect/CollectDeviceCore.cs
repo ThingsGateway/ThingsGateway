@@ -10,6 +10,8 @@
 //------------------------------------------------------------------------------
 #endregion
 
+using CodingSeb.ExpressionEvaluator;
+
 using Furion;
 using Furion.FriendlyException;
 using Furion.Logging.Extensions;
@@ -721,6 +723,8 @@ public class CollectDeviceCore
     {
         try
         {
+            ExpressionEvaluator expressionEvaluator = new();
+            expressionEvaluator.PreEvaluateVariable += ExpressionEvaluatorExtensions.Evaluator_PreEvaluateVariable;
             await easyLock.WaitAsync();
             if (IsShareChannel) _driver.InitDataAdapter();
             Dictionary<string, OperResult> results = new();
@@ -741,7 +745,7 @@ public class CollectDeviceCore
                     object data;
                     try
                     {
-                        data = deviceVariable.WriteExpressions.GetExpressionsResult(rawdata);
+                        data = deviceVariable.WriteExpressions.GetExpressionsResult(expressionEvaluator, rawdata);
                         writeInfoLists[deviceVariable] = JToken.FromObject(data);
                     }
                     catch (Exception ex)

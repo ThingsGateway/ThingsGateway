@@ -10,6 +10,8 @@
 //------------------------------------------------------------------------------
 #endregion
 
+using CodingSeb.ExpressionEvaluator;
+
 using Furion;
 using Furion.Logging.Extensions;
 
@@ -49,6 +51,7 @@ public class AlarmWorker : BackgroundService
     {
         _logger = logger;
         _globalDeviceData = ServiceHelper.Services.GetService<GlobalDeviceData>();
+        expressionEvaluator.PreEvaluateVariable += ExpressionEvaluatorExtensions.Evaluator_PreEvaluateVariable;
     }
     /// <summary>
     /// 报警变化事件
@@ -372,6 +375,7 @@ public class AlarmWorker : BackgroundService
             restartLock.Release();
         }
     }
+    private ExpressionEvaluator expressionEvaluator = new();
 
     private void AlarmAnalysis(DeviceVariableRunTime item)
     {
@@ -397,7 +401,7 @@ public class AlarmWorker : BackgroundService
             //需更新报警，不管是否存在
             if (!string.IsNullOrEmpty(ex))
             {
-                var data = ex.GetExpressionsResult(item.Value);
+                var data = ex.GetExpressionsResult(expressionEvaluator, item.Value);
                 if (data is bool result)
                 {
                     if (result)
