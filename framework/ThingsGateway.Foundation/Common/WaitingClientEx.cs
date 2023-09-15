@@ -20,8 +20,8 @@ internal class WaitingClientEx<TClient> : DisposableObject, IWaitingClient<TClie
 {
     private readonly Func<ResponsedData, bool> m_func;
     private readonly EasyLock easyLock = new();
-    private readonly WaitData<ResponsedData> m_waitData = new();
-    private readonly WaitDataAsync<ResponsedData> m_waitDataAsync = new();
+    private readonly WaitDataEx<ResponsedData> m_waitData = new();
+    private readonly WaitDataExAsync<ResponsedData> m_waitDataAsync = new();
 
     private volatile bool m_breaked;
 
