@@ -128,6 +128,7 @@ namespace TouchSocket.Core
             this.m_status = WaitDataStatus.Disposed;
             this.WaitResult = default;
             this.m_waitHandle.SafeDispose();
+            this.registration.Dispose();
             base.Dispose(disposing);
         }
     }
