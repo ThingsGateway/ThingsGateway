@@ -84,7 +84,7 @@ public class MemoryVariableWorker : BackgroundService
     /// <summary>
     /// 循环线程取消标识
     /// </summary>
-    public ConcurrentList<CancellationTokenSource> StoppingTokens = new();
+    private ConcurrentList<CancellationTokenSource> StoppingTokens = new();
     private Task MemoryWorkerTask;
     /// <summary>
     /// 全部重启锁
@@ -95,7 +95,7 @@ public class MemoryVariableWorker : BackgroundService
     /// </summary>
     public async Task InitAsync()
     {
-        CancellationTokenSource stoppingToken = StoppingTokens.Last();
+        var stoppingToken = StoppingTokens.Last().Token;
         MemoryWorkerTask = await Task.Factory.StartNew(async () =>
         {
             _logger?.LogInformation($"中间变量计算线程开始");
@@ -105,13 +105,13 @@ public class MemoryVariableWorker : BackgroundService
                 var data = await variableService.GetMemoryVariableRuntimeAsync();
                 _globalDeviceData.MemoryVariables = new(data);
                 StatuString = OperResult.CreateSuccessResult();
-                while (!stoppingToken.Token.IsCancellationRequested)
+                while (!stoppingToken.IsCancellationRequested)
                 {
                     try
                     {
-                        await Task.Delay(500, stoppingToken.Token);
+                        await Task.Delay(500, stoppingToken);
 
-                        if (stoppingToken.Token.IsCancellationRequested)
+                        if (stoppingToken.IsCancellationRequested)
                             break;
                         var isSuccess = true;
                         foreach (var item in _globalDeviceData.MemoryVariables)

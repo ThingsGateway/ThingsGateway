@@ -26,7 +26,7 @@ public class UploadDeviceThread : IAsyncDisposable
     /// <summary>
     /// CancellationTokenSources
     /// </summary>
-    public ConcurrentList<CancellationTokenSource> StoppingTokens = new();
+    private ConcurrentList<CancellationTokenSource> StoppingTokens = new();
 
     /// <summary>
     /// 线程
@@ -154,7 +154,7 @@ public class UploadDeviceThread : IAsyncDisposable
     /// </summary>
     protected async Task InitTaskAsync()
     {
-        CancellationTokenSource stoppingToken = StoppingTokens.Last();
+        var stoppingToken = StoppingTokens.Last().Token;
         DeviceTask = await Task.Factory.StartNew(async () =>
         {
             LoggerGroup log = UploadDeviceCores.FirstOrDefault().Driver.LogMessage;
@@ -168,7 +168,7 @@ public class UploadDeviceThread : IAsyncDisposable
                 //添加通道报文到每个设备
                 var data = new EasyLogger(device.Driver.NewMessage) { LogLevel = TouchSocket.Core.LogLevel.Trace };
                 log.AddLogger(data);
-                await device.BeforeActionAsync(stoppingToken.Token);
+                await device.BeforeActionAsync(stoppingToken);
             }
 
             while (!stoppingToken.IsCancellationRequested)
@@ -183,7 +183,7 @@ public class UploadDeviceThread : IAsyncDisposable
                         if (device.IsInitSuccess)
                         {
 
-                            var result = await device.RunActionAsync(stoppingToken.Token);
+                            var result = await device.RunActionAsync(stoppingToken);
                             if (result == ThreadRunReturn.None)
                             {
                                 await Task.Delay(CycleInterval);

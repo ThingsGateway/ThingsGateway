@@ -145,7 +145,7 @@ public class HistoryValueWorker : BackgroundService
     /// <summary>
     /// 循环线程取消标识
     /// </summary>
-    public ConcurrentList<CancellationTokenSource> StoppingTokens = new();
+    private ConcurrentList<CancellationTokenSource> StoppingTokens = new();
     /// <summary>
     /// 全部重启锁
     /// </summary>
@@ -164,7 +164,7 @@ public class HistoryValueWorker : BackgroundService
     private async Task InitAsync()
     {
         CacheDb = new("HistoryValueCache");
-        CancellationTokenSource stoppingToken = StoppingTokens.Last();
+        var stoppingToken = StoppingTokens.Last().Token;
         HistoryValueTask = await Task.Factory.StartNew(async () =>
         {
             _logger?.LogInformation($"历史数据线程开始");
@@ -186,13 +186,13 @@ public class HistoryValueWorker : BackgroundService
                     /***创建/更新单个表***/
                     try
                     {
-                        await sqlSugarClient.Queryable<HistoryValue>().FirstAsync(stoppingToken.Token);
+                        await sqlSugarClient.Queryable<HistoryValue>().FirstAsync(stoppingToken);
                         LastIsSuccess = true;
                         StatuString = OperResult.CreateSuccessResult();
                     }
                     catch (Exception)
                     {
-                        if (stoppingToken.Token.IsCancellationRequested)
+                        if (stoppingToken.IsCancellationRequested)
                         {
                             IsExited = true;
                             return;
@@ -213,14 +213,14 @@ public class HistoryValueWorker : BackgroundService
                     }
                     IsExited = false;
 
-                    while (!stoppingToken.Token.IsCancellationRequested)
+                    while (!stoppingToken.IsCancellationRequested)
                     {
                         try
                         {
-                            await Task.Delay(500, stoppingToken.Token);
+                            await Task.Delay(500, stoppingToken);
 
 
-                            if (stoppingToken.Token.IsCancellationRequested)
+                            if (stoppingToken.IsCancellationRequested)
                                 break;
 
                             //缓存值
@@ -228,7 +228,7 @@ public class HistoryValueWorker : BackgroundService
                             var data = cacheData.SelectMany(a => a.CacheStr.FromJsonString<List<HistoryValue>>()).ToList();
                             try
                             {
-                                var count = await sqlSugarClient.Insertable(data).ExecuteCommandAsync(stoppingToken.Token);
+                                var count = await sqlSugarClient.Insertable(data).ExecuteCommandAsync(stoppingToken);
                                 await CacheDb.DeleteCacheData(cacheData.Select(a => a.Id).ToArray());
                             }
                             catch (Exception ex)
@@ -237,7 +237,7 @@ public class HistoryValueWorker : BackgroundService
                                     _logger.LogWarning(ex, "写入历史数据失败");
                             }
 
-                            if (stoppingToken.Token.IsCancellationRequested)
+                            if (stoppingToken.IsCancellationRequested)
                                 break;
                             var collectList = DeviceVariables.ToListWithDequeue();
                             if (collectList.Count != 0)
@@ -248,7 +248,7 @@ public class HistoryValueWorker : BackgroundService
                                 //插入
                                 try
                                 {
-                                    count = await sqlSugarClient.Insertable(collecthis).ExecuteCommandAsync(stoppingToken.Token);
+                                    count = await sqlSugarClient.Insertable(collecthis).ExecuteCommandAsync(stoppingToken);
                                     LastIsSuccess = true;
                                 }
                                 catch (Exception ex)
@@ -264,7 +264,7 @@ public class HistoryValueWorker : BackgroundService
                             }
 
 
-                            if (stoppingToken.Token.IsCancellationRequested)
+                            if (stoppingToken.IsCancellationRequested)
                                 break;
                             var changeList = ChangeDeviceVariables.ToListWithDequeue();
                             if (changeList.Count != 0)
@@ -275,7 +275,7 @@ public class HistoryValueWorker : BackgroundService
                                 //插入
                                 try
                                 {
-                                    count = await sqlSugarClient.Insertable(changehis).ExecuteCommandAsync(stoppingToken.Token);
+                                    count = await sqlSugarClient.Insertable(changehis).ExecuteCommandAsync(stoppingToken);
                                     LastIsSuccess = true;
                                 }
                                 catch (Exception ex)
