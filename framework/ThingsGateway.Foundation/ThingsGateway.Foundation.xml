@@ -2745,5 +2745,116 @@
         <member name="M:ThingsGateway.Foundation.ThingsGatewayBitConverter.ToUInt64(System.Byte[],System.Int32,System.Int32)">
             <inheritdoc/>
         </member>
+        <member name="T:TouchSocket.Core.WaitDataEx`1">
+            <summary>
+            等待数据对象
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:TouchSocket.Core.WaitDataEx`1.#ctor">
+            <summary>
+            WaitData
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Core.WaitDataEx`1.Status">
+            <inheritdoc/>
+        </member>
+        <member name="P:TouchSocket.Core.WaitDataEx`1.WaitResult">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Core.WaitDataEx`1.Cancel">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Core.WaitDataEx`1.Reset">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Core.WaitDataEx`1.Set">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Core.WaitDataEx`1.Set(`0)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Core.WaitDataEx`1.SetCancellationToken(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Core.WaitDataEx`1.SetResult(`0)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Core.WaitDataEx`1.Wait(System.TimeSpan)">
+            <summary>
+            等待指定时间
+            </summary>
+            <param name="timeSpan"></param>
+        </member>
+        <member name="M:TouchSocket.Core.WaitDataEx`1.Wait(System.Int32)">
+            <summary>
+            等待指定毫秒
+            </summary>
+            <param name="millisecond"></param>
+        </member>
+        <member name="M:TouchSocket.Core.WaitDataEx`1.Dispose(System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="T:TouchSocket.Core.WaitDataEx">
+            <summary>
+            等待数据对象
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Core.WaitDataExAsync`1">
+            <summary>
+            等待数据对象
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:TouchSocket.Core.WaitDataExAsync`1.#ctor">
+            <summary>
+            构造函数
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Core.WaitDataExAsync`1.Status">
+            <inheritdoc/>
+        </member>
+        <member name="P:TouchSocket.Core.WaitDataExAsync`1.WaitResult">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Core.WaitDataExAsync`1.Cancel">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Core.WaitDataExAsync`1.Reset">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Core.WaitDataExAsync`1.Set">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Core.WaitDataExAsync`1.Set(`0)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Core.WaitDataExAsync`1.SetCancellationToken(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Core.WaitDataExAsync`1.SetResult(`0)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Core.WaitDataExAsync`1.WaitAsync(System.TimeSpan)">
+            <summary>
+            等待指定时间
+            </summary>
+            <param name="timeSpan"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Core.WaitDataExAsync`1.WaitAsync(System.Int32)">
+            <summary>
+            等待指定毫秒
+            </summary>
+            <param name="millisecond"></param>
+        </member>
+        <member name="M:TouchSocket.Core.WaitDataExAsync`1.Dispose(System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="T:TouchSocket.Core.WaitDataExAsync">
+            <summary>
+            等待数据对象
+            </summary>
+        </member>
     </members>
 </doc>
