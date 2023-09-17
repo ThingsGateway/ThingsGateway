@@ -104,11 +104,10 @@ public partial class UploadDevicePage
     {
         if (pluginId <= 0)
             return;
-        if (context.DevicePropertys == null || context.DevicePropertys?.Count == 0)
+        if (context.DevicePropertys == null || context.DevicePropertys?.Count == 0 || context.PluginId != pluginId)
         {
             try
             {
-                context.PluginId = pluginId;
                 context.DevicePropertys = GetDriverProperties(pluginId, context.Id);
                 await PopupService.EnqueueSnackbarAsync("插件附加属性已更新", AlertTypes.Success);
 
@@ -118,6 +117,7 @@ public partial class UploadDevicePage
                 await PopupService.EnqueueSnackbarAsync(ex.Message, AlertTypes.Error);
             }
         }
+        context.PluginId = pluginId;
 
     }
     private async Task EditCallAsync(UploadDeviceEditInput input)
