@@ -104,4 +104,16 @@ public class RabbitMQClientProperty : UpDriverPropertyBase
     /// </summary>
     [DeviceProperty("变量实体脚本", "查看文档说明，为空时默认Json传输")]
     public string BigTextScriptVariableModel { get; set; }
+
+    /// <summary>
+    /// 是否间隔上传
+    /// </summary>
+    [DeviceProperty("是否间隔上传", "False时为变化检测上传")]
+    public bool IsInterval { get; set; } = false;
+    /// <summary>
+    /// 上传间隔时间
+    /// </summary>
+    [DeviceProperty("上传间隔时间", "最小1000ms")]
+    public int UploadInterval { get; set; } = 1000;
+
 }

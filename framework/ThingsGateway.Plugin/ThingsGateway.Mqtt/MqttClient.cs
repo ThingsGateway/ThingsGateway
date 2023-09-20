@@ -215,7 +215,7 @@ public class MqttClient : UpLoadBase
             {
                 if (exDeviceTimerTick.IsTickHappen())
                 {
-                    var devList = _collectDevice.Adapt<List<DeviceData>>(); ;
+                    var devList = _collectDevice.Adapt<List<DeviceData>>();
                     if (devList?.Count != 0)
                     {
                         //分解List，避免超出mqtt字节大小限制
@@ -391,7 +391,8 @@ public class MqttClient : UpLoadBase
 
     private void DeviceStatusChange(CollectDeviceRunTime collectDeviceRunTime)
     {
-        _collectDeviceRunTimes.Enqueue(collectDeviceRunTime.Adapt<DeviceData>());
+        if (driverPropertys?.IsInterval != true)
+            _collectDeviceRunTimes.Enqueue(collectDeviceRunTime.Adapt<DeviceData>());
     }
 
     private async Task MqttClient_ApplicationMessageReceivedAsync(MqttApplicationMessageReceivedEventArgs args)
@@ -573,6 +574,7 @@ public class MqttClient : UpLoadBase
 
     private void VariableValueChange(DeviceVariableRunTime collectVariableRunTime)
     {
-        _collectVariableRunTimes.Enqueue(collectVariableRunTime.Adapt<VariableData>());
+        if (driverPropertys?.IsInterval != true)
+            _collectVariableRunTimes.Enqueue(collectVariableRunTime.Adapt<VariableData>());
     }
 }

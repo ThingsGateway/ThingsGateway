@@ -125,6 +125,16 @@
             变量实体脚本
             </summary>
         </member>
+        <member name="P:ThingsGateway.RabbitMQ.RabbitMQClientProperty.IsInterval">
+            <summary>
+            是否间隔上传
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.RabbitMQ.RabbitMQClientProperty.UploadInterval">
+            <summary>
+            上传间隔时间
+            </summary>
+        </member>
         <member name="T:ThingsGateway.RabbitMQ.RabbitMQClientVariableProperty">
             <summary>
             <inheritdoc/>

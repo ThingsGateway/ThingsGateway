@@ -90,6 +90,16 @@
             线程循环间隔
             </summary>
         </member>
+        <member name="P:ThingsGateway.Kafka.KafkaProducerProperty.IsInterval">
+            <summary>
+            是否间隔上传
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Kafka.KafkaProducerProperty.UploadInterval">
+            <summary>
+            上传间隔时间
+            </summary>
+        </member>
         <member name="T:ThingsGateway.Kafka.KafkaProducerVariableProperty">
             <summary>
             kafka 生产者可变属性

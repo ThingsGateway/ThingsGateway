@@ -57,7 +57,8 @@ public class KafkaProducer : UpLoadBase
     /// <inheritdoc/>
     public override DriverPropertyBase DriverPropertys => driverPropertys;
 
-
+    private TimerTick exVariableTimerTick;
+    private TimerTick exDeviceTimerTick;
     /// <inheritdoc/>
     public override List<DeviceVariableRunTime> UploadVariables => _uploadVariables;
 
@@ -80,33 +81,79 @@ public class KafkaProducer : UpLoadBase
     {
         try
         {
-            ////变化推送
-            var varList = _collectVariableRunTimes.ToListWithDequeue();
-            if (varList?.Count != 0)
+            if (!driverPropertys.IsInterval)
             {
-                //分解List，避免超出mqtt字节大小限制
-                var varData = varList.ChunkTrivialBetter(driverPropertys.SplitSize);
-                foreach (var item in varData)
+                ////变化推送
+                var varList = _collectVariableRunTimes.ToListWithDequeue();
+                if (varList?.Count != 0)
+                {
+                    //分解List，避免超出mqtt字节大小限制
+                    var varData = varList.ChunkTrivialBetter(driverPropertys.SplitSize);
+                    foreach (var item in varData)
+                    {
+                        try
+                        {
+                            if (!token.IsCancellationRequested)
+                            {
+                                await KafKaUp(driverPropertys.VariableTopic, item.ToJsonString(), token);
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            LogMessage.LogWarning(ex, ToString());
+                        }
+
+                    }
+                    if (isSuccess)
+                        producer.Flush(token);
+
+                }
+            }
+            else
+            {
+                if (exVariableTimerTick.IsTickHappen())
                 {
                     try
                     {
-                        if (!token.IsCancellationRequested)
+                        var varList = _uploadVariables.Adapt<List<VariableData>>();
+                        if (varList?.Count != 0)
                         {
-                            await KafKaUp(driverPropertys.VariableTopic, item.ToJsonString(), token);
-                        }
-                        else
-                        {
-                            break;
+                            //分解List，避免超出mqtt字节大小限制
+                            var varData = varList.ChunkTrivialBetter(driverPropertys.SplitSize);
+                            foreach (var item in varData)
+                            {
+                                try
+                                {
+                                    if (!token.IsCancellationRequested)
+                                    {
+                                        await KafKaUp(driverPropertys.VariableTopic, item.ToJsonString(), token);
+                                    }
+                                    else
+                                    {
+                                        break;
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    LogMessage.LogWarning(ex, ToString());
+                                }
+
+                            }
+                            if (isSuccess)
+                                producer.Flush(token);
+
                         }
                     }
                     catch (Exception ex)
                     {
-                        LogMessage.LogWarning(ex, ToString());
+                        LogMessage?.LogWarning(ex, ToString());
                     }
 
                 }
-                if (isSuccess)
-                    producer.Flush(token);
 
             }
         }
@@ -116,32 +163,70 @@ public class KafkaProducer : UpLoadBase
         }
         try
         {
-            ////变化推送
-            var devList = _collectDeviceRunTimes.ToListWithDequeue();
-            if (devList?.Count != 0)
+            if (!driverPropertys.IsInterval)
             {
-                //分解List，避免超出mqtt字节大小限制
-                var devData = devList.ChunkTrivialBetter(driverPropertys.SplitSize);
-                foreach (var item in devData)
+                ////变化推送
+                var devList = _collectDeviceRunTimes.ToListWithDequeue();
+                if (devList?.Count != 0)
                 {
-                    try
+                    //分解List，避免超出mqtt字节大小限制
+                    var devData = devList.ChunkTrivialBetter(driverPropertys.SplitSize);
+                    foreach (var item in devData)
                     {
-                        if (!token.IsCancellationRequested)
+                        try
                         {
-                            await KafKaUp(driverPropertys.DeviceTopic, item.ToJsonString(), token);
+                            if (!token.IsCancellationRequested)
+                            {
+                                await KafKaUp(driverPropertys.DeviceTopic, item.ToJsonString(), token);
+                            }
+                            else
+                            {
+                                break;
+                            }
                         }
-                        else
+                        catch (Exception ex)
                         {
-                            break;
+                            LogMessage?.LogWarning(ex, ToString());
                         }
                     }
-                    catch (Exception ex)
-                    {
-                        LogMessage?.LogWarning(ex, ToString());
-                    }
+                    if (isSuccess)
+                        producer.Flush(token);
+
                 }
-                if (isSuccess)
-                    producer.Flush(token);
+            }
+            else
+            {
+                if (exDeviceTimerTick.IsTickHappen())
+                {
+                    var devList = _collectDevice.Adapt<List<DeviceData>>();
+                    if (devList?.Count != 0)
+                    {
+                        //分解List，避免超出mqtt字节大小限制
+                        var devData = devList.ChunkTrivialBetter(driverPropertys.SplitSize);
+                        foreach (var item in devData)
+                        {
+                            try
+                            {
+                                if (!token.IsCancellationRequested)
+                                {
+                                    await KafKaUp(driverPropertys.DeviceTopic, item.ToJsonString(), token);
+                                }
+                                else
+                                {
+                                    break;
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                LogMessage?.LogWarning(ex, ToString());
+                            }
+                        }
+                        if (isSuccess)
+                            producer.Flush(token);
+
+                    }
+
+                }
 
             }
         }
@@ -176,7 +261,7 @@ public class KafkaProducer : UpLoadBase
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
-        _globalDeviceData?.CollectDevices.Where(a => _uploadVariables.Select(b => b.DeviceId).Contains(a.Id)).ForEach(a =>
+        _collectDevice.Where(a => _uploadVariables.Select(b => b.DeviceId).Contains(a.Id)).ForEach(a =>
         {
             a.DeviceStatusChange -= DeviceStatusChange;
         });
@@ -190,6 +275,7 @@ public class KafkaProducer : UpLoadBase
         _collectVariableRunTimes.Clear();
         base.Dispose(disposing);
     }
+    private List<CollectDeviceRunTime> _collectDevice;
 
     /// <summary>
     /// 初始化
@@ -255,7 +341,9 @@ public class KafkaProducer : UpLoadBase
 
         _uploadVariables = tags;
 
-        _globalDeviceData.CollectDevices.Where(a => _uploadVariables.Select(b => b.DeviceId).Contains(a.Id)).ForEach(a =>
+        _collectDevice = _globalDeviceData.CollectDevices.Where(a => _uploadVariables.Select(b => b.DeviceId).Contains(a.Id)).ToList();
+
+        _collectDevice.ForEach(a =>
         {
             a.DeviceStatusChange += DeviceStatusChange;
         });
@@ -263,13 +351,16 @@ public class KafkaProducer : UpLoadBase
         {
             a.VariableValueChange += VariableValueChange;
         });
-
+        if (driverPropertys.UploadInterval <= 1000) driverPropertys.UploadInterval = 1000;
+        exVariableTimerTick = new(driverPropertys.UploadInterval);
+        exDeviceTimerTick = new(driverPropertys.UploadInterval);
 
     }
 
     private void DeviceStatusChange(CollectDeviceRunTime collectDeviceRunTime)
     {
-        _collectDeviceRunTimes.Enqueue(collectDeviceRunTime.Adapt<DeviceData>());
+        if (driverPropertys?.IsInterval != true)
+            _collectDeviceRunTimes.Enqueue(collectDeviceRunTime.Adapt<DeviceData>());
     }
 
     private async Task KafKaUp(string topic, string payLoad, CancellationToken token)
@@ -322,6 +413,7 @@ public class KafkaProducer : UpLoadBase
     }
     private void VariableValueChange(DeviceVariableRunTime collectVariableRunTime)
     {
-        _collectVariableRunTimes.Enqueue(collectVariableRunTime.Adapt<VariableData>());
+        if (driverPropertys?.IsInterval != true)
+            _collectVariableRunTimes.Enqueue(collectVariableRunTime.Adapt<VariableData>());
     }
 }
