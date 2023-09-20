@@ -12,7 +12,7 @@
 		<PackageReference Include="Furion.Extras.Authentication.JwtBearer" Version="4.8.8.43" />
 		<PackageReference Include="Furion.Extras.ObjectMapper.Mapster" Version="4.8.8.43" />
 		<PackageReference Include="Furion.Pure" Version="4.8.8.43" />
-		<PackageReference Include="SqlSugarCore" Version="5.1.4.105" />
+		<PackageReference Include="SqlSugarCore" Version="5.1.4.106" />
 		<PackageReference Include="UAParser" Version="3.1.47" />
 		<PackageReference Include="Yitter.IdGenerator" Version="1.0.14" />
 		<PackageReference Include="MiniExcel" Version="1.31.2" />
