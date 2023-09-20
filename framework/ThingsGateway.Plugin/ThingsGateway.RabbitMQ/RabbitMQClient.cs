@@ -72,6 +72,10 @@ public class RabbitMQClient : UpLoadBase
     {
         return Task.CompletedTask;
     }
+
+    private TimerTick exDeviceTimerTick;
+
+    private TimerTick exVariableTimerTick;
     /// <inheritdoc/>
     public override async Task ExecuteAsync(CancellationToken token)
     {
@@ -101,65 +105,138 @@ public class RabbitMQClient : UpLoadBase
                 }
             }
 
-            ////变化推送
-            var varList = _collectVariableRunTimes.ToListWithDequeue();
-            if (varList?.Count != 0)
+            if (!driverPropertys.IsInterval)
             {
-                if (driverPropertys.IsList)
+                ////变化推送
+                var varList = _collectVariableRunTimes.ToListWithDequeue();
+                if (varList?.Count != 0)
                 {
-                    var listChunk = varList.ChunkTrivialBetter(driverPropertys.SplitSize);
-                    foreach (var variables in listChunk)
+                    if (driverPropertys.IsList)
                     {
-                        try
+                        var listChunk = varList.ChunkTrivialBetter(driverPropertys.SplitSize);
+                        foreach (var variables in listChunk)
                         {
-                            if (!token.IsCancellationRequested)
+                            try
                             {
-                                var data = variables.GetSciptListValue(driverPropertys.BigTextScriptVariableModel);
-                                // 设置消息持久化
-                                IBasicProperties properties = _model?.CreateBasicProperties();
-                                properties.Persistent = true;
-                                await Publish(driverPropertys.VariableQueueName, data, properties);
+                                if (!token.IsCancellationRequested)
+                                {
+                                    var data = variables.GetSciptListValue(driverPropertys.BigTextScriptVariableModel);
+                                    // 设置消息持久化
+                                    IBasicProperties properties = _model?.CreateBasicProperties();
+                                    await Publish(driverPropertys.VariableQueueName, data, properties);
+                                }
+                                else
+                                {
+                                    break;
+                                }
                             }
-                            else
+                            catch (Exception ex)
                             {
-                                break;
+                                LogMessage?.LogWarning(ex, ToString());
                             }
+
                         }
-                        catch (Exception ex)
+                    }
+                    else
+                    {
+                        foreach (var variable in varList)
                         {
-                            LogMessage?.LogWarning(ex, ToString());
+                            try
+                            {
+                                if (!token.IsCancellationRequested)
+                                {
+                                    var data = variable.GetSciptListValue(driverPropertys.BigTextScriptVariableModel);
+                                    // 设置消息持久化
+                                    IBasicProperties properties = _model?.CreateBasicProperties();
+                                    await Publish(driverPropertys.VariableQueueName, data, properties);
+                                }
+                                else
+                                {
+                                    break;
+                                }
+
+                            }
+                            catch (Exception ex)
+                            {
+                                LogMessage?.LogWarning(ex, ToString());
+                            }
                         }
 
                     }
+
                 }
-                else
+            }
+            else
+            {
+                if (exVariableTimerTick.IsTickHappen())
                 {
-                    foreach (var variable in varList)
+                    try
                     {
-                        try
+                        var varList = _uploadVariables.Adapt<List<VariableData>>();
+                        if (varList?.Count != 0)
                         {
-                            if (!token.IsCancellationRequested)
+                            if (driverPropertys.IsList)
                             {
-                                var data = variable.GetSciptListValue(driverPropertys.BigTextScriptVariableModel);
-                                // 设置消息持久化
-                                IBasicProperties properties = _model?.CreateBasicProperties();
-                                properties.Persistent = true;
-                                await Publish(driverPropertys.VariableQueueName, data, properties);
+                                var listChunk = varList.ChunkTrivialBetter(driverPropertys.SplitSize);
+                                foreach (var variables in listChunk)
+                                {
+                                    try
+                                    {
+                                        if (!token.IsCancellationRequested)
+                                        {
+                                            var data = variables.GetSciptListValue(driverPropertys.BigTextScriptVariableModel);
+                                            // 设置消息持久化
+                                            IBasicProperties properties = _model?.CreateBasicProperties();
+                                            await Publish(driverPropertys.VariableQueueName, data, properties);
+                                        }
+                                        else
+                                        {
+                                            break;
+                                        }
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        LogMessage?.LogWarning(ex, ToString());
+                                    }
+
+                                }
                             }
                             else
                             {
-                                break;
+                                foreach (var variable in varList)
+                                {
+                                    try
+                                    {
+                                        if (!token.IsCancellationRequested)
+                                        {
+                                            var data = variable.GetSciptListValue(driverPropertys.BigTextScriptVariableModel);
+                                            // 设置消息持久化
+                                            IBasicProperties properties = _model?.CreateBasicProperties();
+                                            await Publish(driverPropertys.VariableQueueName, data, properties);
+                                        }
+                                        else
+                                        {
+                                            break;
+                                        }
+
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        LogMessage?.LogWarning(ex, ToString());
+                                    }
+                                }
+
                             }
 
                         }
-                        catch (Exception ex)
-                        {
-                            LogMessage?.LogWarning(ex, ToString());
-                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        LogMessage?.LogWarning(ex, ToString());
                     }
 
-                }
 
+                }
             }
         }
         catch (Exception ex)
@@ -168,46 +245,98 @@ public class RabbitMQClient : UpLoadBase
         }
         try
         {
-            ////变化推送
-            var devList = _collectDeviceRunTimes.ToListWithDequeue();
-            if (devList?.Count != 0)
+            if (!driverPropertys.IsInterval)
             {
-                if (driverPropertys.IsList)
+                ////变化推送
+                var devList = _collectDeviceRunTimes.ToListWithDequeue();
+                if (devList?.Count != 0)
                 {
-                    var listChunk = devList.ChunkTrivialBetter(driverPropertys.SplitSize);
-                    foreach (var devices in listChunk)
+                    if (driverPropertys.IsList)
                     {
-                        try
+                        var listChunk = devList.ChunkTrivialBetter(driverPropertys.SplitSize);
+                        foreach (var devices in listChunk)
                         {
-                            var data = devices.GetSciptListValue(driverPropertys.BigTextScriptDeviceModel);
-                            // 设置消息持久化
-                            IBasicProperties properties = _model?.CreateBasicProperties();
-                            properties.Persistent = true;
-                            await Publish(driverPropertys.DeviceQueueName, data, properties);
+                            try
+                            {
+                                var data = devices.GetSciptListValue(driverPropertys.BigTextScriptDeviceModel);
+                                // 设置消息持久化
+                                IBasicProperties properties = _model?.CreateBasicProperties();
+                                await Publish(driverPropertys.DeviceQueueName, data, properties);
+                            }
+                            catch (Exception ex)
+                            {
+                                LogMessage?.LogWarning(ex, ToString());
+                            }
+
                         }
-                        catch (Exception ex)
+                    }
+                    else
+                    {
+                        foreach (var devices in devList)
                         {
-                            LogMessage?.LogWarning(ex, ToString());
+                            try
+                            {
+                                var data = devices.GetSciptListValue(driverPropertys.BigTextScriptDeviceModel);
+                                // 设置消息持久化
+                                IBasicProperties properties = _model?.CreateBasicProperties();
+                                await Publish(driverPropertys.DeviceQueueName, data, properties);
+                            }
+                            catch (Exception ex)
+                            {
+                                LogMessage?.LogWarning(ex, ToString());
+                            }
                         }
 
                     }
+
                 }
-                else
+
+            }
+            else
+            {
+                if (exDeviceTimerTick.IsTickHappen())
                 {
-                    foreach (var devices in devList)
+                    var devList = _collectDevice.Adapt<List<DeviceData>>();
+                    if (devList?.Count != 0)
                     {
-                        try
+                        if (driverPropertys.IsList)
                         {
-                            var data = devices.GetSciptListValue(driverPropertys.BigTextScriptDeviceModel);
-                            // 设置消息持久化
-                            IBasicProperties properties = _model?.CreateBasicProperties();
-                            properties.Persistent = true;
-                            await Publish(driverPropertys.DeviceQueueName, data, properties);
+                            var listChunk = devList.ChunkTrivialBetter(driverPropertys.SplitSize);
+                            foreach (var devices in listChunk)
+                            {
+                                try
+                                {
+                                    var data = devices.GetSciptListValue(driverPropertys.BigTextScriptDeviceModel);
+                                    // 设置消息持久化
+                                    IBasicProperties properties = _model?.CreateBasicProperties();
+                                    await Publish(driverPropertys.DeviceQueueName, data, properties);
+                                }
+                                catch (Exception ex)
+                                {
+                                    LogMessage?.LogWarning(ex, ToString());
+                                }
+
+                            }
                         }
-                        catch (Exception ex)
+                        else
                         {
-                            LogMessage?.LogWarning(ex, ToString());
+                            foreach (var devices in devList)
+                            {
+                                try
+                                {
+                                    var data = devices.GetSciptListValue(driverPropertys.BigTextScriptDeviceModel);
+                                    // 设置消息持久化
+                                    IBasicProperties properties = _model?.CreateBasicProperties();
+                                    await Publish(driverPropertys.DeviceQueueName, data, properties);
+                                }
+                                catch (Exception ex)
+                                {
+                                    LogMessage?.LogWarning(ex, ToString());
+                                }
+                            }
+
                         }
+
                     }
 
                 }
@@ -255,7 +384,7 @@ public class RabbitMQClient : UpLoadBase
     {
         _globalDeviceData?.AllVariables.ForEach(a => a.VariableValueChange -= VariableValueChange);
 
-        _globalDeviceData?.CollectDevices?.ForEach(a =>
+        _collectDevice?.ForEach(a =>
         {
             a.DeviceStatusChange -= DeviceStatusChange;
         });
@@ -267,6 +396,7 @@ public class RabbitMQClient : UpLoadBase
         _collectDeviceRunTimes = null;
         _collectVariableRunTimes = null;
     }
+    private List<CollectDeviceRunTime> _collectDevice;
 
     /// <inheritdoc/>
     protected override void Init(UploadDeviceRunTime device)
@@ -303,7 +433,9 @@ public class RabbitMQClient : UpLoadBase
 
         _uploadVariables = tags;
 
-        _globalDeviceData.CollectDevices.Where(a => _uploadVariables.Select(b => b.DeviceId).Contains(a.Id)).ForEach(a =>
+        _collectDevice = _globalDeviceData.CollectDevices.Where(a => _uploadVariables.Select(b => b.DeviceId).Contains(a.Id)).ToList();
+
+        _collectDevice.ForEach(a =>
         {
             a.DeviceStatusChange += DeviceStatusChange;
             DeviceStatusChange(a);
@@ -314,20 +446,32 @@ public class RabbitMQClient : UpLoadBase
             VariableValueChange(a);
         });
 
-
+        if (driverPropertys.UploadInterval <= 1000) driverPropertys.UploadInterval = 1000;
+        exVariableTimerTick = new(driverPropertys.UploadInterval);
+        exDeviceTimerTick = new(driverPropertys.UploadInterval);
 
     }
 
     private void DeviceStatusChange(CollectDeviceRunTime collectDeviceRunTime)
     {
-        _collectDeviceRunTimes.Enqueue(collectDeviceRunTime.Adapt<DeviceData>());
+        if (driverPropertys?.IsInterval != true)
+            _collectDeviceRunTimes.Enqueue(collectDeviceRunTime.Adapt<DeviceData>());
     }
 
     private async Task Publish(string queueName, string data, IBasicProperties properties)
     {
         try
         {
-            _model?.BasicPublish(driverPropertys.ExchangeName, queueName, properties, Encoding.UTF8.GetBytes(data));
+            if (properties != null)
+                properties.Persistent = true;
+            if (_model != null)
+                _model.BasicPublish(driverPropertys.ExchangeName, queueName, properties, Encoding.UTF8.GetBytes(data));
+            else
+            {
+                await CacheDb.AddCacheData(queueName, data, driverPropertys.CacheMaxCount);
+                return;
+            }
+
             //连接成功时补发缓存数据
             var cacheData = await CacheDb.GetCacheData(10);
             foreach (var item in cacheData)
@@ -356,6 +500,7 @@ public class RabbitMQClient : UpLoadBase
     }
     private void VariableValueChange(DeviceVariableRunTime collectVariableRunTime)
     {
-        _collectVariableRunTimes.Enqueue(collectVariableRunTime.Adapt<VariableData>());
+        if (driverPropertys?.IsInterval != true)
+            _collectVariableRunTimes.Enqueue(collectVariableRunTime.Adapt<VariableData>());
     }
 }

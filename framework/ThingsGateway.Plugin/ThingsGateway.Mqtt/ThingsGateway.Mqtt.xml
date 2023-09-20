@@ -104,6 +104,16 @@
             线程循环间隔
             </summary>
         </member>
+        <member name="P:ThingsGateway.Mqtt.IotSharpClientProperty.IsInterval">
+            <summary>
+            是否间隔上传
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Mqtt.IotSharpClientProperty.UploadInterval">
+            <summary>
+            上传间隔时间
+            </summary>
+        </member>
         <member name="T:ThingsGateway.Mqtt.IotSharpClientVariableProperty">
             <summary>
             <inheritdoc/>

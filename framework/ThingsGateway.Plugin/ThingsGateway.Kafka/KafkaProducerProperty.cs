@@ -59,4 +59,15 @@ public class KafkaProducerProperty : UpDriverPropertyBase
     /// </summary>
     [DeviceProperty("线程循环间隔", "最小10ms")]
     public int CycleInterval { get; set; } = 1000;
+
+    /// <summary>
+    /// 是否间隔上传
+    /// </summary>
+    [DeviceProperty("是否间隔上传", "False时为变化检测上传")]
+    public bool IsInterval { get; set; } = false;
+    /// <summary>
+    /// 上传间隔时间
+    /// </summary>
+    [DeviceProperty("上传间隔时间", "最小1000ms")]
+    public int UploadInterval { get; set; } = 1000;
 }
