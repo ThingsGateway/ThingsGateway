@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+	
+	<ItemGroup>
+		<PackageReference Include="Masa.Blazor" Version="1.0.4" />
+	</ItemGroup>
+
+	
+	<ItemGroup>
+	  <ProjectReference Include="..\..\Foundation\ThingsGateway.Foundation\ThingsGateway.Foundation.csproj" />
+	  <ProjectReference Include="..\ThingsGateway.Core\ThingsGateway.Core.csproj" />
+	</ItemGroup>
+
+	
+	
+	<ItemGroup>
+	  <Content Update="wwwroot\**">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	</ItemGroup>
+</Project>

@@ -1,0 +1,59 @@
+﻿@*
+//------------------------------------------------------------------------------
+//  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
+//  此代码版权（除特别声明外的代码）归作者本人Diego所有
+//  源代码使用协议遵循本仓库的开源协议及附加协议
+//  Gitee源代码仓库：https://gitee.com/diego2098/ThingsGateway
+//  Github源代码仓库：https://github.com/kimdiego2098/ThingsGateway
+//  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
+//  QQ群：605534569
+//------------------------------------------------------------------------------
+*@
+
+@page "/ModbusTcp"
+
+@using BlazorComponent;
+@using Microsoft.AspNetCore.Components.Web;
+@using Microsoft.JSInterop;
+@using Masa.Blazor;
+@namespace ThingsGateway.Foundation.Demo
+
+<TcpClientPage @ref=TcpClientPage></TcpClientPage>
+
+<MCard Elevation="1" Rounded="false" Class="pa-2" Style="width:100%">
+    <div class="mb-4">驱动配置</div>
+    <MRow Justify="JustifyTypes.Start" Align="AlignTypes.Center">
+        @if (_plc != null)
+        {
+
+            <MTextField Class="ma-1" Outlined Style="max-width:100px" Label=@(_plc.DescriptionWithOutSugar(x => x.FrameTime)) Dense HideDetails="@("auto")" @bind-Value=@_plc.FrameTime></MTextField>
+            <MTextField Class="ma-1" Outlined Style="max-width:100px" Label=@(_plc.DescriptionWithOutSugar(x => x.CacheTimeout)) Dense HideDetails="@("auto")" @bind-Value=@_plc.CacheTimeout></MTextField>
+
+            <MTextField Class="ma-1" Outlined Style="max-width:100px" Label=@(_plc.DescriptionWithOutSugar(x => x.Station)) Dense HideDetails="@("auto")" @bind-Value=@_plc.Station></MTextField>
+            <MTextField Class="ma-1" Outlined Style="max-width:100px" Label=@(_plc.DescriptionWithOutSugar(x => x.TimeOut)) Dense HideDetails="@("auto")" @bind-Value=@_plc.TimeOut></MTextField>
+
+            <MSelect Class="ma-1" Outlined Style="max-width:200px" @bind-Value="_plc.DataFormat" Label="@(_plc.DescriptionWithOutSugar(x => x.DataFormat))"
+                     Items=@(typeof(DataFormat).GetEnumListWithOutSugar())
+                     MenuProps="@(props => { props.Auto = true; props.OffsetY = true; })"
+                     ItemText=@((u) =>u.Description)
+                     ItemValue=@(u =>(DataFormat)u.Value)
+                     HideDetails=@("auto") Height="30"
+                  Dense>
+        </MSelect>
+
+            <MCheckbox Class="ma-1" Style="max-width:200px" Label=@(_plc.DescriptionWithOutSugar(x => x.IsCheckMessageId)) Dense HideDetails="@("auto")" @bind-Value=@_plc.IsCheckMessageId></MCheckbox>
+
+        }
+    </MRow>
+</MCard>
+
+
+<DriverDebugUIPage @ref=driverDebugUIPage Sections="_sections">
+
+</DriverDebugUIPage>
+
+
+@code {
+    private readonly List<(string Code, string Language)> _sections = new();
+
+}

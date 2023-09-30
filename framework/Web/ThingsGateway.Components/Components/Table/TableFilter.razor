@@ -1,0 +1,72 @@
+﻿@*
+//------------------------------------------------------------------------------
+//  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
+//  此代码版权（除特别声明外的代码）归作者本人Diego所有
+//  源代码使用协议遵循本仓库的开源协议及附加协议
+//  Gitee源代码仓库：https://gitee.com/diego2098/ThingsGateway
+//  Github源代码仓库：https://github.com/kimdiego2098/ThingsGateway
+//  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
+//  QQ群：605534569
+//------------------------------------------------------------------------------
+*@
+
+@namespace ThingsGateway.Components
+@using BlazorComponent;
+@using Masa.Blazor
+@inherits BaseComponentBase
+<MMenu OffsetY CloseOnClick=true CloseOnContentClick=false>
+    <ActivatorContent>
+        <MButton @attributes="@context.Attrs" Icon="@IsMobile"
+                 Class="mr-2 px-0 px-md-2 mdi-col"
+                  Text>
+            <MIcon>mdi-table-column-plus-after</MIcon>
+            <AppChevronDown></AppChevronDown>
+        </MButton>
+    </ActivatorContent>
+    <ChildContent>
+        <MSheet MaxWidth="400">
+            <MContainer>
+                <MRow NoGutters>
+                    @{
+                        int index = 0;
+                    }
+                    @foreach (var item in FilterHeaderString)
+                    {
+                        <MCol>
+                            <MCheckbox TValue=bool ValueChanged="((a)=>Change(item.Title,a))"
+                                       Value=item.Value
+                                       Label=@item.Title
+                                       HideDetails="true"
+                                       Color="primary"></MCheckbox>
+                        </MCol>
+                        if (index % 2 == 1)
+                        {
+                            <MResponsive Width="@("100%")"></MResponsive>
+                        }
+                        else if (index == FilterHeaderString.Count - 1)
+                        {
+                            index = 0;
+                            break;
+                        }
+                        index++;
+                    }
+
+                </MRow>
+            </MContainer>
+        </MSheet>
+
+    </ChildContent>
+</MMenu>
+
+@code {
+    [Parameter]
+    public List<Filters> FilterHeaderString { get; set; }
+    [Parameter]
+    public EventCallback ValueChanged { get; set; }
+    private async Task Change(string title, bool value)
+    {
+        var data = FilterHeaderString.FirstOrDefault(it => it.Title == title);
+        data.Value = value;
+        await ValueChanged.InvokeAsync();
+    }
+}
