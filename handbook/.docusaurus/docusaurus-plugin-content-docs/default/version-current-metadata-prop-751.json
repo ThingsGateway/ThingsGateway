@@ -372,19 +372,19 @@
     "foundation/opcda": {
       "id": "foundation/opcda",
       "title": "OPCDAClient",
-      "description": "待更新",
+      "description": "查看ThingsGateway.Foundation.DEMO项目代码",
       "sidebar": "docs"
     },
     "foundation/opcua": {
       "id": "foundation/opcua",
       "title": "OPCUAClient",
-      "description": "待更新",
+      "description": "查看ThingsGateway.Foundation.DEMO项目代码",
       "sidebar": "docs"
     },
     "foundation/s7": {
       "id": "foundation/s7",
       "title": "Siemens S7",
-      "description": "待更新",
+      "description": "查看ThingsGateway.Foundation.DEMO项目代码",
       "sidebar": "docs"
     },
     "hardwareinfo": {
