@@ -7,7 +7,7 @@
 
  **ThingsGateway** 存储库同时提供 [**设备采集驱动**](https://www.nuget.org/packages?q=Tags%3A%22ThingsGateway%22)
 
- **ThingsGateway** 存储库同时提供 **基于Blazor的权限框架** 查看 [**ThingsGateway.Admin**](https://gitee.com/dotnetchina/ThingsGateway/blob/master/framework/ThingsGateway.Admin.sln)
+ **ThingsGateway** 存储库同时提供 **基于Blazor的权限框架** 查看 **ThingsGateway - Admin**
 
 
 ## 文档
