@@ -34,7 +34,7 @@
 		<Compile Include="..\..\PluginProGasCustom\ThingsGateway.Plugin.GasCustom\Page\GasCustomSerialDebugPage.razor.cs" Link="Pages\GasCustom\GasCustomSerialDebugPage.razor.cs" />
 		<Compile Include="..\..\PluginProGasCustom\ThingsGateway.Plugin.GasCustom\Page\GasCustomSerialOverTcpDebugPage.razor.cs" Link="Pages\GasCustom\GasCustomSerialOverTcpDebugPage.razor.cs" />
 		<Content Include="..\..\PluginProGasCustom\ThingsGateway.Plugin.GasCustom\Page\GasCustomSerialDebugPage.razor" Link="Pages\GasCustom\GasCustomSerialDebugPage.razor" />
-		<Content Include="..\..\PluginProGasCustom\ThingsGateway.Plugin.GasCustom\Page\GasCustomSerialOverTcpDebugPage.razor" Link="GasCustom\Vigor\GasCustomSerialOverTcpDebugPage.razor" />
+		<Content Include="..\..\PluginProGasCustom\ThingsGateway.Plugin.GasCustom\Page\GasCustomSerialOverTcpDebugPage.razor" Link="Pages\GasCustom\GasCustomSerialOverTcpDebugPage.razor" />
 		<ProjectReference Include="..\..\PluginProGasCustom\ThingsGateway.Foundation.Adapter.GasCustom\ThingsGateway.Foundation.Adapter.GasCustom.csproj" />
 
 
