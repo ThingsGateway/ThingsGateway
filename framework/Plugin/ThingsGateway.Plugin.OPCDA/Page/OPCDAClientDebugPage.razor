@@ -1,0 +1,134 @@
+﻿@*
+//------------------------------------------------------------------------------
+//  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
+//  此代码版权（除特别声明外的代码）归作者本人Diego所有
+//  源代码使用协议遵循本仓库的开源协议及附加协议
+//  Gitee源代码仓库：https://gitee.com/diego2098/ThingsGateway
+//  Github源代码仓库：https://github.com/kimdiego2098/ThingsGateway
+//  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
+//  QQ群：605534569
+//------------------------------------------------------------------------------
+*@
+
+@page "/OPCDAClient"
+
+@namespace ThingsGateway.Foundation.Demo
+@using BlazorComponent;
+@using Microsoft.AspNetCore.Components.Web;
+@using Masa.Blazor.Presets;
+@using Microsoft.JSInterop;
+
+
+@using ThingsGateway.Foundation;
+@using ThingsGateway.Foundation.Adapter.OPCDA.Da;
+@using ThingsGateway.Foundation.Extension;
+@using ThingsGateway.Foundation.Serial;
+@using Masa.Blazor
+
+
+
+<OPCDAClientPage @ref=opcDAClientPage></OPCDAClientPage>
+
+
+
+
+
+<DriverDebugUIPage @ref=driverDebugUIPage Sections="_sections" ShowDefaultOtherContent=false>
+    <ReadWriteContent>
+        <div class="my-1 py-1">
+
+            <MTextarea Class="mx-1 my-1" Label="变量地址" Dense Outlined HideDetails="@("auto")" @bind-Value=@driverDebugUIPage.Address />
+
+            <MButton Class="mx-1 my-1" Color="primary" OnClick="Add">
+                添加
+            </MButton>
+            <MButton Class="mx-1 my-1" Color="primary" OnClick="Remove">
+                移除
+            </MButton>
+            <MButton Class="mx-1 my-1" Color="primary" OnClick="ReadAsync">
+                组读取
+            </MButton>
+
+            <MTextarea Class="mx-1 mt-3 my-1" Label="值" Dense Outlined HideDetails="@("auto")" @bind-Value=@driverDebugUIPage.WriteValue />
+            <MButton Class="mx-1 my-1" Color="primary" OnClick="WriteAsync">
+                写入
+            </MButton>
+
+            <MButton Class="mx-1 my-3" Color="accent" OnClick="()=>IsShowImportVariableList=!IsShowImportVariableList">
+                <span>查看OPC节点空间</span>
+            </MButton>
+
+        </div>
+
+
+
+        <MCol Class="my-1 py-1">
+            <MRow NoGutters>
+
+
+
+            </MRow>
+
+        </MCol>
+
+    </ReadWriteContent>
+</DriverDebugUIPage>
+
+
+@{
+    #if Plugin
+    <PModal @bind-Value="IsShowImportVariableList" OnCancel="() => IsShowImportVariableList = false"
+            Title=导入OPC变量 Height=@("700") Persistent
+            MaxWidth="1500"
+            OnSave="DownDeviceExport">
+
+        <SaveContent Context="save">
+
+        <MMenu OffsetY Context="menu">
+            <ActivatorContent>
+                <MButton @attributes="@menu.Attrs" Color="primary" Class="my-1  mx-2 " Disabled="isDownLoading" Loading="isDownLoading">
+                    导出
+                    <AppChevronDown></AppChevronDown>
+                </MButton>
+            </ActivatorContent>
+            <ChildContent>
+                <MList>
+                    <MListItem  Color="primary" OnClick="DownDeviceExport" Disabled="isDownLoading" Loading="isDownLoading">  导出到excel </MListItem>
+                    <MListItem Color="primary" OnClick="DeviceImport" Disabled="isDownLoading" Loading="isDownLoading">导入到系统</MListItem>
+                </MList>
+
+            </ChildContent>
+        </MMenu>
+
+        </SaveContent>
+
+        <ChildContent>
+            @if (IsShowImportVariableList)
+            {
+                <OPCDAImportVariable @ref=ImportVariable PLC="_plc"></OPCDAImportVariable>
+            }
+        </ChildContent>
+
+    </PModal>
+
+    #else
+        <PModal @bind-Value="IsShowImportVariableList" OnCancel="() => IsShowImportVariableList = false"
+            Title=浏览OPC变量 Height=@("700") Persistent
+            MaxWidth="1500">
+
+        <ChildContent>
+            @if (IsShowImportVariableList)
+            {
+                <OPCDAImportVariable @ref=ImportVariable PLC="_plc"></OPCDAImportVariable>
+            }
+        </ChildContent>
+
+    </PModal>
+    #endif
+    }
+
+
+@code {
+    private readonly List<(string Code, string Language)> _sections = new();
+
+}

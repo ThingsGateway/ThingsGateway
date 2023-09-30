@@ -1,0 +1,76 @@
+{
+  "RECORDS": [
+    {
+      "Id": "455089736876293",
+      "FileName": "ThingsGateway.Plugin.AllenBradleyCip",
+      "AssembleName": "AllenBradleyCipTcp",
+      "DriverTypeEnum": "Collect",
+      "FilePath": "Plugins/ThingsGateway.Plugin.AllenBradleyCip/ThingsGateway.Plugin.AllenBradleyCip.dll",
+      "CreateTime": "2023-08-29 09:04:54.8352722",
+      "CreateUser": "superAdmin",
+      "CreateUserId": "212725263002001",
+      "IsDelete": false,
+      "SortCode": "0"
+    },
+    {
+      "Id": "455089767559429",
+      "FileName": "ThingsGateway.Plugin.Omron",
+      "AssembleName": "OmronFinsTcp",
+      "DriverTypeEnum": "Collect",
+      "FilePath": "Plugins/ThingsGateway.Plugin.Omron/ThingsGateway.Plugin.Omron.dll",
+      "CreateTime": "2023-08-29 09:05:02.305",
+      "CreateUser": "superAdmin",
+      "CreateUserId": "212725263002001",
+      "IsDelete": false,
+      "SortCode": "0"
+    },
+    {
+      "Id": "455089767559430",
+      "FileName": "ThingsGateway.Plugin.Omron",
+      "AssembleName": "OmronFinsUdp",
+      "DriverTypeEnum": "Collect",
+      "FilePath": "Plugins/ThingsGateway.Plugin.Omron/ThingsGateway.Plugin.Omron.dll",
+      "CreateTime": "2023-08-29 09:05:02.305",
+      "CreateUser": "superAdmin",
+      "CreateUserId": "212725263002001",
+      "IsDelete": false,
+      "SortCode": "0"
+    },
+    {
+      "Id": "455089791172869",
+      "FileName": "ThingsGateway.Plugin.SECS",
+      "AssembleName": "SECSTcp",
+      "DriverTypeEnum": "Collect",
+      "FilePath": "Plugins/ThingsGateway.Plugin.SECS/ThingsGateway.Plugin.SECS.dll",
+      "CreateTime": "2023-08-29 09:05:08.0701176",
+      "CreateUser": "superAdmin",
+      "CreateUserId": "212725263002001",
+      "IsDelete": false,
+      "SortCode": "0"
+    },
+    {
+      "Id": "455089818636549",
+      "FileName": "ThingsGateway.Plugin.Vigor",
+      "AssembleName": "VigorSerial",
+      "DriverTypeEnum": "Collect",
+      "FilePath": "Plugins/ThingsGateway.Plugin.Vigor/ThingsGateway.Plugin.Vigor.dll",
+      "CreateTime": "2023-08-29 09:05:14.775",
+      "CreateUser": "superAdmin",
+      "CreateUserId": "212725263002001",
+      "IsDelete": false,
+      "SortCode": "0"
+    },
+    {
+      "Id": "455089818636550",
+      "FileName": "ThingsGateway.Plugin.Vigor",
+      "AssembleName": "VigorSerialOverTcp",
+      "DriverTypeEnum": "Collect",
+      "FilePath": "Plugins/ThingsGateway.Plugin.Vigor/ThingsGateway.Plugin.Vigor.dll",
+      "CreateTime": "2023-08-29 09:05:14.775",
+      "CreateUser": "superAdmin",
+      "CreateUserId": "212725263002001",
+      "IsDelete": false,
+      "SortCode": "0"
+    }
+  ]
+}

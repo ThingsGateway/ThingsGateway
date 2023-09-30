@@ -1,0 +1,75 @@
+﻿@*
+//------------------------------------------------------------------------------
+//  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
+//  此代码版权（除特别声明外的代码）归作者本人Diego所有
+//  源代码使用协议遵循本仓库的开源协议及附加协议
+//  Gitee源代码仓库：https://gitee.com/diego2098/ThingsGateway
+//  Github源代码仓库：https://github.com/kimdiego2098/ThingsGateway
+//  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
+//  QQ群：605534569
+//------------------------------------------------------------------------------
+*@
+
+@inherits BaseComponentBase
+@namespace ThingsGateway.Admin.Blazor
+@using Masa.Blazor
+@inject UserResoures UserResoures
+@*一个完整的AppBar栏，包含手机与电脑的显示切换*@
+
+@if (!IsMobile)
+{
+    <Breadcrumb SysResources="BreadcrumbSysResources" />
+    <MSpacer />
+    <Search SysResources="SearchSysResources" />
+    <AppbarButtons />
+}
+else
+{
+    <MSpacer />
+    <Logo CONFIG_COPYRIGHT=@CONFIG_COPYRIGHT CONFIG_TITLE=@CONFIG_TITLE HeightInt=@(IsMobile?BlazorResourceConst.AppBarHeight:BlazorResourceConst.AppBarHeight+BlazorResourceConst.PageTabsHeight)></Logo>
+
+    <MDialog Class="pa-1">
+        <ActivatorContent>
+            <MButton Class="mr-0" Icon Small=IsMobile
+            @attributes="@context.Attrs">
+                <MIcon>mdi-magnify</MIcon>
+            </MButton>
+        </ActivatorContent>
+        <ChildContent>
+            <MSheet Class="d-flex  align-center justify-center" Height=@BlazorResourceConst.AppBarHeight>
+                <Search />
+            </MSheet>
+        </ChildContent>
+    </MDialog>
+}
+@code {
+    /// <summary>
+    /// 链接
+    /// </summary>
+    [Parameter]
+    public string CONFIG_COPYRIGHT_URL { get; set; }
+
+    /// <summary>
+    /// 版权
+    /// </summary>
+    [Parameter]
+    public string CONFIG_COPYRIGHT { get; set; }
+
+    /// <summary>
+    /// 标题
+    /// </summary>
+    [Parameter]
+    public string CONFIG_TITLE { get; set; }
+
+    /// <summary>
+    /// 当前的菜单与单页列表
+    /// </summary>
+    [Parameter]
+    public List<SysResource> BreadcrumbSysResources { get; set; } = new();
+    /// <summary>
+    /// 当前的菜单与单页列表
+    /// </summary>
+    [Parameter]
+    public List<SysResource> SearchSysResources { get; set; } = new();
+
+}

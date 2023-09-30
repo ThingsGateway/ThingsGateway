@@ -1,0 +1,79 @@
+﻿@*
+//------------------------------------------------------------------------------
+//  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
+//  此代码版权（除特别声明外的代码）归作者本人Diego所有
+//  源代码使用协议遵循本仓库的开源协议及附加协议
+//  Gitee源代码仓库：https://gitee.com/diego2098/ThingsGateway
+//  Github源代码仓库：https://github.com/kimdiego2098/ThingsGateway
+//  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
+//  QQ群：605534569
+//------------------------------------------------------------------------------
+*@
+
+@inject IJSRuntime JSRuntime
+@namespace ThingsGateway.Components
+@using Masa.Blazor
+
+<MHover>
+    <div Class="app-code @Class" @attributes="@context.Attrs">
+        @if (FileNameExists)
+        {
+            <MToolbar Dense Class="px-1 elevation-0 text-body-2 rounded-t" Dark Color="#323d6f">
+                <MIcon Class="mr-1">mdi-file-tree</MIcon>
+                @FileName
+            </MToolbar>
+        }
+
+        <MSyntaxHighlight Class="@($"white--text overflow-x-auto overflow-y-hidden pa-4 ma-0 {ComputedClass}")"
+                          Code="@Code"
+                          Language="@Language"
+                          OnHighlighted="OnHighlighted">
+        </MSyntaxHighlight>
+        <FadeTransition>
+            <AppCopyButton Show="@context.Hover" Content="@Code" Class="mr-4 mt-2"></AppCopyButton>
+        </FadeTransition>
+    </div>
+</MHover>
+
+@code {
+
+    [Parameter]
+    public string Class { get; set; }
+    
+    [Parameter]
+    [EditorRequired]
+    public string Code { get; set; }
+
+    [Parameter]
+    [EditorRequired]
+    public string Language { get; set; }
+
+    [Parameter]
+    public string FileName { get; set; }
+
+    [Parameter]
+    public bool RoundedTop0 { get; set; }
+
+    private bool FileNameExists => !string.IsNullOrWhiteSpace(FileName);
+
+    private string ComputedClass
+    {
+        get
+        {
+            if (RoundedTop0 || FileNameExists)
+            {
+                return "rounded-b";
+            }
+
+            return "rounded";
+        }
+    }
+    private IJSObjectReference JSObjectReference;
+    private async Task OnHighlighted(ElementReference elementReference)
+    {
+        if (JSObjectReference == null)
+            JSObjectReference = await JSRuntime.LoadModuleAsync("Components/AppCode.razor");
+        await JSObjectReference.InvokeVoidAsync("prismHighlightLines", elementReference);
+    }
+
+}

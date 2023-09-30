@@ -1,0 +1,204 @@
+﻿@*
+//------------------------------------------------------------------------------
+//  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
+//  此代码版权（除特别声明外的代码）归作者本人Diego所有
+//  源代码使用协议遵循本仓库的开源协议及附加协议
+//  Gitee源代码仓库：https://gitee.com/diego2098/ThingsGateway
+//  Github源代码仓库：https://github.com/kimdiego2098/ThingsGateway
+//  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
+//  QQ群：605534569
+//------------------------------------------------------------------------------
+*@
+
+@page "/admin/role"
+@using System.Linq.Expressions;
+@using BlazorComponent;
+@using Masa.Blazor.Presets;
+@using Microsoft.AspNetCore.Authorization;
+@using ThingsGateway.Admin.Application;
+ 
+@namespace ThingsGateway.Admin.Blazor
+@attribute [Authorize]
+@inject UserResoures UserResoures
+@inherits BaseComponentBase
+@layout MainLayout
+<AppDataTable @ref="_datatable" TItem="SysRole" SearchItem="RolePageInput" AddItem="RoleAddInput" EditItem="RoleEditInput" DescFunc=@(memberInfo=>memberInfo.GetCustomAttribute<SqlSugar.SugarColumn>(true)?.ColumnDescription)
+              SearchModel="@search" IsShowSearchKey
+              QueryCallAsync="QueryCallAsync" AddCallAsync="AddCallAsync"
+              EditCallAsync="EditCallAsync" DeleteCallAsync="DeleteCallAsync"
+                IsShowQueryButton
+              IsShowAddButton=@UserResoures.IsHasButtonWithRole("sysroleadd")
+              IsShowDeleteButton=@UserResoures.IsHasButtonWithRole("sysroledelete")
+              IsShowEditButton=@UserResoures.IsHasButtonWithRole("sysroleedit")>
+
+    <AddTemplate>
+        @GetRenderFragment(context)
+
+    </AddTemplate>
+
+    <EditTemplate>
+        @GetRenderFragment(context)
+    </EditTemplate>
+
+    <ItemColOperTemplate>
+        <MList Dense>
+            @if (@UserResoures.IsHasButtonWithRole("sysroleperresuorce"))
+            {
+                <MListItem OnClick="async()=>
+                    {
+                    ChoiceRoleId=context.Item.Id;
+                    await ResuorceInitAsync();
+                    IsShowResuorces=true;
+                    }">
+                    <MListItemTitle Class="ml-2">资源权限</MListItemTitle>
+                </MListItem>
+
+            }
+            @if (@UserResoures.IsHasButtonWithRole("sysroleperuser"))
+            {
+                <MListItem OnClick="async()=>
+                    {
+                    ChoiceRoleId=context.Item.Id;
+                    await UserInitAsync();
+                    IsShowUsers=true;
+                    }">
+                    <MListItemTitle Class="ml-2">授权用户</MListItemTitle>
+                </MListItem>
+
+            }
+        </MList>
+    </ItemColOperTemplate>
+
+</AppDataTable>
+
+<PDrawer @bind-Value="IsShowResuorces" OnCancel="() => IsShowResuorces = false"
+         Title=资源授权
+         Width=@(IsMobile?"100%":"600")
+         MaxWidth="600" OnSave="OnRoleHasResuorcesSaveAsync">
+    @if (IsShowResuorces)
+    {
+        <MSheet Outlined Class="ma-0 pa-2">
+            <MRow Align="AlignTypes.Center">
+                <MCol>  <MLabel Class="ml-4 font-weight-black">菜单</MLabel>  </MCol>
+                <MDivider Vertical />
+                <MCol>  <MLabel Class="ml-4 font-weight-black">按钮</MLabel>    </MCol>
+            </MRow>
+        </MSheet>
+        @foreach (var menu in ResTreeSelectors)
+        {
+            <MSheet Outlined Class="ma-0 pa-4">
+                <MRow Align="AlignTypes.Center">
+                    <MCol>
+                        <MListItem IsActive=@(RoleHasResuorces.Any(it=>it.MenuId==menu.Id))>
+                            <ItemContent>
+                                <MListItemContent>
+                                    <MListItemTitle>@menu.Title</MListItemTitle>
+                                </MListItemContent>
+                                <MListItemAction>
+                                    <MCheckbox TValue=bool Value="@context.Active" ValueChanged=@(enable=>
+                                       {
+                                       if(!enable)
+                                       RoleHasResuorces.RemoveWhere(it=>it.MenuId==menu.Id);
+                                       else if(!RoleHasResuorces.Any(it=>it.MenuId==menu.Id))
+                                       RoleHasResuorces.Add(new() {MenuId=menu.Id});
+                                       }
+                                       )></MCheckbox>
+                                </MListItemAction>
+                            </ItemContent>
+                        </MListItem>
+                    </MCol>
+                    <MDivider Vertical />
+                    <MCol>
+                        @GetButtonCore(menu)
+                    </MCol>
+
+                </MRow>
+
+            </MSheet>
+        }
+
+    }
+
+</PDrawer>
+
+<PDrawer @bind-Value="IsShowUsers" OnCancel="() => IsShowUsers = false"
+         Title=授权用户
+         Width=@(IsMobile?"100%":"500")
+         MaxWidth="500" OnSave="OnUsersSaveAsync">
+
+    <MCard Flat Class="ma-0 pa-4">
+        <MCardTitle Class="py-2">
+            <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="my-1 mx-2 ml-6" @bind-Value="SearchKey"
+                        Outlined Label=@typeof(SysUser).GetDescription(nameof(SysUser.Account)) />
+        </MCardTitle>
+        <MTreeview Class="my-1" Dense OpenAll TItem="UserSelectorOutput" TKey="UserSelectorOutput" Selectable @bind-Value="UsersChoice"
+        Items="AllUsers" ItemText="r=>r.Account" ItemChildren="r=>null"
+                   ItemKey=@(r=>r)>
+            <LabelContent>
+                <span title=@context.Item.Account>
+                    @context.Item.Account
+                </span>
+            </LabelContent>
+        </MTreeview>
+    </MCard>
+
+</PDrawer>
+
+
+@code {
+    RenderFragment GetButtonCore(RoleGrantResourceMenu menu)
+    {
+        RenderFragment ViewSubMenu = null;
+
+        foreach (var button in menu.Button ?? new())
+        {
+            ViewSubMenu +=
+    @<MListItem Class="ml-6" IsActive=@(RoleHasResuorces.FirstOrDefault(it=>it.MenuId==menu.Id)?.ButtonInfo?.Contains(button.Id)==true)>
+        <ItemContent>
+            <MListItemContent>
+                <MListItemTitle>@button.Title</MListItemTitle>
+            </MListItemContent>
+            <MListItemAction>
+                <MCheckbox TValue=bool Value="@context.Active" ValueChanged=@(a=>
+                       {
+                       if(!a)
+                       {
+                       RoleHasResuorces.FirstOrDefault(it=>it.MenuId==menu.Id)?.ButtonInfo?.RemoveWhere(it=>it==button.Id);
+                       }
+                       else
+                       {
+                       if( !(RoleHasResuorces.FirstOrDefault(it=>it.MenuId==menu.Id)?.ButtonInfo?.Any(it=>it==button.Id)==true))
+                       {
+                       if(!RoleHasResuorces.Any(it=>it.MenuId==menu.Id))
+                       {
+                       RoleHasResuorces.Add(new() {MenuId=menu.Id});
+                       }
+                       RoleHasResuorces.FirstOrDefault(it=>it.MenuId==menu.Id).ButtonInfo.Add(button.Id);
+                       }
+                       }
+                       })></MCheckbox>
+            </MListItemAction>
+        </ItemContent>
+    </MListItem>
+    ;
+        }
+
+        return ViewSubMenu;
+    }
+
+    RenderFragment GetRenderFragment(RoleAddInput context)
+    {
+        RenderFragment renderFragment =
+    @<div>
+        <MSubheader Class="mt-4 font-weight-black">    @(context.Description(x => x.Name))  </MSubheader>
+        <MTextField Dense Outlined HideDetails="@("auto")" @bind-Value=@context.Name />
+
+        <MSubheader Class="mt-4 mb-5 font-weight-black">@(context.Description(x => x.SortCode)) </MSubheader>
+        <MSlider @bind-Value=@context.SortCode Class="mb-5" TValue=int ThumbLabel="@("always")" Dense />
+    </div>
+    ;
+        return renderFragment;
+    }
+
+}
+

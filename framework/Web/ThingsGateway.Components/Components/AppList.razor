@@ -1,0 +1,63 @@
+﻿@*
+//------------------------------------------------------------------------------
+//  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
+//  此代码版权（除特别声明外的代码）归作者本人Diego所有
+//  源代码使用协议遵循本仓库的开源协议及附加协议
+//  Gitee源代码仓库：https://gitee.com/diego2098/ThingsGateway
+//  Github源代码仓库：https://github.com/kimdiego2098/ThingsGateway
+//  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
+//  QQ群：605534569
+//------------------------------------------------------------------------------
+*@
+
+@namespace ThingsGateway.Components
+@using Masa.Blazor
+ 
+<MList Class="@ClassString" Style="@StyleString"
+       Expand Dense Routable=@Routable
+       Nav  >
+    @foreach (var item in Items)
+    {
+        @*副标题*@
+        if (item.Heading is not null)
+        {
+            <MSubheader Class="text--primary font-weight-black ">@item.Heading</MSubheader>
+        }
+        @*分割线*@
+        else if (item.Divider)
+        {
+            <MDivider Class="mt-3 mb-2 ml-2 mr-n2" />
+        }
+        @*子菜单*@
+        else if (item.HasChildren())
+        {
+            <AppListGroup Item="item" />
+        }
+        else if (ItemContent != null)
+        {
+            @ItemContent.Invoke(item)
+        }
+        @*默认实现菜单*@
+        else
+        {
+            <AppListItem Item="item" />
+        }
+    }
+
+</MList>
+
+@code {
+
+    [Parameter]
+    public List<NavItem> Items { get; set; } = new();
+
+    [Parameter]
+    public RenderFragment<NavItem> ItemContent { get; set; }
+
+    [Parameter]
+    public bool Routable { get; set; }
+    [Parameter]
+    public string ClassString { get; set; }
+    [Parameter]
+    public string StyleString { get; set; }
+}

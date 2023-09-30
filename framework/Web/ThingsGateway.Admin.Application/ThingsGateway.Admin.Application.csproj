@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<ItemGroup>
+		<Content Include="SeedData\Json\sys_config.json">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="SeedData\Json\sys_relation.json">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="SeedData\Json\sys_resource.json">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="SeedData\Json\sys_role.json">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="SeedData\Json\sys_user.json">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\ThingsGateway.Admin.Core\ThingsGateway.Admin.Core.csproj" />
+		<PackageReference Include="MiniExcel" Version="1.31.2" />
+	</ItemGroup>
+
+</Project>

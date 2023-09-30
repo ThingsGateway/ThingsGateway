@@ -1,0 +1,11 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<ItemGroup>
+		<PackageReference Include="CodingSeb.ExpressionEvaluator" Version="1.4.40" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\ThingsGateway.Admin.Core\ThingsGateway.Admin.Core.csproj" />
+	</ItemGroup>
+	
+</Project>
