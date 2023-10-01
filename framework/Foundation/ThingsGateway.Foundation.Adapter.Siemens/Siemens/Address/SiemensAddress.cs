@@ -57,7 +57,7 @@ public class SiemensAddress : DeviceAddressBase
     /// <summary>
     /// IsWString，默认是true，如果不是WString,需要填写W=false;
     /// </summary>
-    public bool IsWString { get; set; }
+    public bool IsWString { get; set; } = true;
     /// <summary>
     /// 获取起始地址
     /// </summary>
@@ -112,7 +112,7 @@ public class SiemensAddress : DeviceAddressBase
         {
             if (strArr[index].StartsWith("W="))
             {
-                s7AddressData.IsWString = strArr[index].Substring(2).GetBoolValue();
+                s7AddressData.IsWString = strArr[index].Substring(2).ToBoolean(true);
             }
             else if (!strArr[index].Contains("="))
             {
