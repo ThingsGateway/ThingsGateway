@@ -322,6 +322,7 @@ public static class StringExtensions
     /// <returns></returns>
     public static bool ToBoolean(this string value, bool defaultValue = false) => value?.ToUpper() switch
     {
+        "0" or "FALSE" => false,
         "1" or "TRUE" => true,
         _ => defaultValue,
     };
