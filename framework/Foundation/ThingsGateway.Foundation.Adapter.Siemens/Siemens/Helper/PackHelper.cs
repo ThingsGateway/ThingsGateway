@@ -28,8 +28,7 @@ internal static class PackHelper
 
             IThingsGatewayBitConverter transformParameter = ByteTransformUtil.GetTransByAddress(ref address, byteConverter);
             item.ThingsGatewayBitConverter = transformParameter;
-            item.VariableAddress = address;//需要使用过滤后的地址
-
+            //item.VariableAddress = address;//需要使用过滤后的地址
             item.Index = siemensS7Net.GetBitOffset(item.VariableAddress);
         }
         //按读取间隔分组
@@ -38,43 +37,55 @@ internal static class PackHelper
         {
             Dictionary<SiemensAddress, T2> map = item.ToDictionary(it =>
             {
-
-                var lastLen = it.DataTypeEnum.GetByteLength();
-                if (lastLen <= 0)
-                {
-                    switch (it.DataTypeEnum)
-                    {
-                        case DataTypeEnum.String:
-                            if (it.ThingsGatewayBitConverter.Length == null)
-                            {
-                                throw new("数据类型为字符串时，必须指定字符串长度，才能进行打包");
-                            }
-                            else
-                            {
-                                if (siemensS7Net.CurrentPlc == SiemensEnum.S200Smart)
-                                {
-                                    //字符串在S200Smart中，第一个字节不属于实际内容
-                                    it.Index += 1;
-                                    //it.ThingsGatewayBitConverter.StringLength -= 1;
-                                    lastLen = it.ThingsGatewayBitConverter.Length.Value + 1;
-                                }
-                                else
-                                {
-                                    //字符串在S7中，前两个字节不属于实际内容
-                                    it.Index += 2;
-                                    //it.ThingsGatewayBitConverter.StringLength -= 2;
-                                    lastLen = it.ThingsGatewayBitConverter.Length.Value + 2;
-                                }
-                            }
-                            break;
-                        default:
-                            lastLen = 1;
-                            break;
-                    }
-                }
                 try
                 {
                     var s7Address = SiemensAddress.ParseFrom(it.VariableAddress);
+                    var lastLen = it.DataTypeEnum.GetByteLength();
+                    if (lastLen <= 0)
+                    {
+                        switch (it.DataTypeEnum)
+                        {
+                            case DataTypeEnum.String:
+                                if (it.ThingsGatewayBitConverter.Length == null)
+                                {
+                                    throw new("数据类型为字符串时，必须指定字符串长度，才能进行打包");
+                                }
+                                else
+                                {
+                                    if (siemensS7Net.CurrentPlc == SiemensEnum.S200Smart)
+                                    {
+                                        if (s7Address.IsWString)
+                                        {
+                                            //字符串在S200Smart中，第一个字节不属于实际内容
+                                            it.Index += 1;
+                                            lastLen = it.ThingsGatewayBitConverter.Length.Value + 1;
+                                        }
+                                        else
+                                        {
+                                            lastLen = it.ThingsGatewayBitConverter.Length.Value;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (s7Address.IsWString)
+                                        {
+                                            //字符串在S7中，前两个字节不属于实际内容
+                                            it.Index += 2;
+                                            lastLen = it.ThingsGatewayBitConverter.Length.Value + 2;
+                                        }
+                                        else
+                                        {
+                                            lastLen = it.ThingsGatewayBitConverter.Length.Value;
+                                        }
+                                    }
+                                }
+                                break;
+                            default:
+                                lastLen = 1;
+                                break;
+                        }
+                    }
+
                     if ((s7Address.DataCode == (byte)S7WordLength.Counter || s7Address.DataCode == (byte)S7WordLength.Timer) && lastLen == 1)
                     {
                         lastLen = 2;
