@@ -41,8 +41,15 @@ public partial class DriverDebugPage
         {
             foreach (var item in (deviceGroup.Children ?? new()).ToArray())
             {
-                var driver = BackgroundServiceUtil.GetBackgroundService<CollectDeviceWorker>().GetDebugUI(item.Id);
-                if (driver == null)
+                try
+                {
+                    var driver = BackgroundServiceUtil.GetBackgroundService<CollectDeviceWorker>().GetDebugUI(item.Id);
+                    if (driver == null)
+                    {
+                        deviceGroup.Children.Remove(item);
+                    }
+                }
+                catch
                 {
                     deviceGroup.Children.Remove(item);
                 }
