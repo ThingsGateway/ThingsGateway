@@ -682,13 +682,635 @@ public class OPCUAClient : IDisposable
         }
 
         NodeId nodeToRead = new(nodeIdStr);
-        var node = (VariableNode)await m_session.ReadNodeAsync(nodeToRead, cancellationToken);
-        await typeSystem.LoadType(node.DataType, true, true);
+        var node = (VariableNode)await ReadNodeAsync(nodeToRead, NodeClass.Unspecified, false, cancellationToken);
+        await typeSystem.LoadType(node.DataType, true, false);
         _variableDicts.AddOrUpdate(nodeIdStr, node);
         return node;
     }
-    #endregion
 
+
+
+
+    #endregion
+    #region session
+
+    /// <inheritdoc/>
+    public Task<Node> ReadNodeAsync(
+        NodeId nodeId,
+        CancellationToken ct = default)
+    {
+        return ReadNodeAsync(nodeId, NodeClass.Unspecified, true, ct);
+    }
+
+    /// <inheritdoc/>
+    public async Task<Node> ReadNodeAsync(
+        NodeId nodeId,
+        NodeClass nodeClass,
+        bool optionalAttributes = true,
+        CancellationToken ct = default)
+    {
+        // build list of attributes.
+        var attributes = CreateAttributes(nodeClass, optionalAttributes);
+
+        // build list of values to read.
+        ReadValueIdCollection itemsToRead = new ReadValueIdCollection();
+        foreach (uint attributeId in attributes.Keys)
+        {
+            ReadValueId itemToRead = new ReadValueId
+            {
+                NodeId = nodeId,
+                AttributeId = attributeId
+            };
+            itemsToRead.Add(itemToRead);
+        }
+
+        // read from server.
+        ReadResponse readResponse = await m_session.ReadAsync(
+            null,
+            0,
+            TimestampsToReturn.Neither,
+            itemsToRead, ct).ConfigureAwait(false);
+
+        DataValueCollection values = readResponse.Results;
+        DiagnosticInfoCollection diagnosticInfos = readResponse.DiagnosticInfos;
+
+        ClientBase.ValidateResponse(values, itemsToRead);
+        ClientBase.ValidateDiagnosticInfos(diagnosticInfos, itemsToRead);
+
+        return ProcessReadResponse(readResponse.ResponseHeader, attributes, itemsToRead, values, diagnosticInfos);
+    }
+
+    /// <summary>
+    /// Creates a Node based on the read response.
+    /// </summary>
+    private Node ProcessReadResponse(
+        ResponseHeader responseHeader,
+        IDictionary<uint, DataValue> attributes,
+        ReadValueIdCollection itemsToRead,
+        DataValueCollection values,
+        DiagnosticInfoCollection diagnosticInfos)
+    {
+        // process results.
+        int? nodeClass = null;
+
+        for (int ii = 0; ii < itemsToRead.Count; ii++)
+        {
+            uint attributeId = itemsToRead[ii].AttributeId;
+
+            // the node probably does not exist if the node class is not found.
+            if (attributeId == Attributes.NodeClass)
+            {
+                if (!DataValue.IsGood(values[ii]))
+                {
+                    throw ServiceResultException.Create(values[ii].StatusCode, ii, diagnosticInfos, responseHeader.StringTable);
+                }
+
+                // check for valid node class.
+                nodeClass = values[ii].Value as int?;
+
+                if (nodeClass == null)
+                {
+                    throw ServiceResultException.Create(StatusCodes.BadUnexpectedError, "Node does not have a valid value for NodeClass: {0}.", values[ii].Value);
+                }
+            }
+            else
+            {
+                if (!DataValue.IsGood(values[ii]))
+                {
+                    // check for unsupported attributes.
+                    if (values[ii].StatusCode == StatusCodes.BadAttributeIdInvalid)
+                    {
+                        continue;
+                    }
+
+                    // ignore errors on optional attributes
+                    if (StatusCode.IsBad(values[ii].StatusCode))
+                    {
+                        if (attributeId == Attributes.AccessRestrictions ||
+                            attributeId == Attributes.Description ||
+                            attributeId == Attributes.RolePermissions ||
+                            attributeId == Attributes.UserRolePermissions ||
+                            attributeId == Attributes.UserWriteMask ||
+                            attributeId == Attributes.WriteMask)
+                        {
+                            continue;
+                        }
+                    }
+
+                    // all supported attributes must be readable.
+                    if (attributeId != Attributes.Value)
+                    {
+                        throw ServiceResultException.Create(values[ii].StatusCode, ii, diagnosticInfos, responseHeader.StringTable);
+                    }
+                }
+            }
+
+            attributes[attributeId] = values[ii];
+        }
+
+        Node node;
+        DataValue value;
+        switch ((NodeClass)nodeClass.Value)
+        {
+            default:
+                {
+                    throw ServiceResultException.Create(StatusCodes.BadUnexpectedError, "Node does not have a valid value for NodeClass: {0}.", nodeClass.Value);
+                }
+
+            case NodeClass.Object:
+                {
+                    ObjectNode objectNode = new ObjectNode();
+
+                    value = attributes[Attributes.EventNotifier];
+
+                    if (value == null)
+                    {
+                        throw ServiceResultException.Create(StatusCodes.BadUnexpectedError, "Object does not support the EventNotifier attribute.");
+                    }
+
+                    objectNode.EventNotifier = (byte)value.GetValue(typeof(byte));
+                    node = objectNode;
+                    break;
+                }
+
+            case NodeClass.ObjectType:
+                {
+                    ObjectTypeNode objectTypeNode = new ObjectTypeNode();
+
+                    value = attributes[Attributes.IsAbstract];
+
+                    if (value == null)
+                    {
+                        throw ServiceResultException.Create(StatusCodes.BadUnexpectedError, "ObjectType does not support the IsAbstract attribute.");
+                    }
+
+                    objectTypeNode.IsAbstract = (bool)value.GetValue(typeof(bool));
+                    node = objectTypeNode;
+                    break;
+                }
+
+            case NodeClass.Variable:
+                {
+                    VariableNode variableNode = new VariableNode();
+
+                    // DataType Attribute
+                    value = attributes[Attributes.DataType];
+
+                    if (value == null)
+                    {
+                        throw ServiceResultException.Create(StatusCodes.BadUnexpectedError, "Variable does not support the DataType attribute.");
+                    }
+
+                    variableNode.DataType = (NodeId)value.GetValue(typeof(NodeId));
+
+                    // ValueRank Attribute
+                    value = attributes[Attributes.ValueRank];
+
+                    if (value == null)
+                    {
+                        throw ServiceResultException.Create(StatusCodes.BadUnexpectedError, "Variable does not support the ValueRank attribute.");
+                    }
+
+                    variableNode.ValueRank = (int)value.GetValue(typeof(int));
+
+                    // ArrayDimensions Attribute
+                    value = attributes[Attributes.ArrayDimensions];
+
+                    if (value != null)
+                    {
+                        if (value.Value == null)
+                        {
+                            variableNode.ArrayDimensions = Array.Empty<uint>();
+                        }
+                        else
+                        {
+                            variableNode.ArrayDimensions = (uint[])value.GetValue(typeof(uint[]));
+                        }
+                    }
+
+                    // AccessLevel Attribute
+                    value = attributes[Attributes.AccessLevel];
+
+                    if (value == null)
+                    {
+                        throw ServiceResultException.Create(StatusCodes.BadUnexpectedError, "Variable does not support the AccessLevel attribute.");
+                    }
+
+                    variableNode.AccessLevel = (byte)value.GetValue(typeof(byte));
+
+                    // UserAccessLevel Attribute
+                    value = attributes[Attributes.UserAccessLevel];
+
+                    if (value == null)
+                    {
+                        throw ServiceResultException.Create(StatusCodes.BadUnexpectedError, "Variable does not support the UserAccessLevel attribute.");
+                    }
+
+                    variableNode.UserAccessLevel = (byte)value.GetValue(typeof(byte));
+
+                    // Historizing Attribute
+                    value = attributes[Attributes.Historizing];
+
+                    if (value == null)
+                    {
+                        throw ServiceResultException.Create(StatusCodes.BadUnexpectedError, "Variable does not support the Historizing attribute.");
+                    }
+
+                    variableNode.Historizing = (bool)value.GetValue(typeof(bool));
+
+                    // MinimumSamplingInterval Attribute
+                    value = attributes[Attributes.MinimumSamplingInterval];
+
+                    if (value != null)
+                    {
+                        variableNode.MinimumSamplingInterval = Convert.ToDouble(attributes[Attributes.MinimumSamplingInterval].Value);
+                    }
+
+                    // AccessLevelEx Attribute
+                    value = attributes[Attributes.AccessLevelEx];
+
+                    if (value != null)
+                    {
+                        variableNode.AccessLevelEx = (uint)value.GetValue(typeof(uint));
+                    }
+
+                    node = variableNode;
+                    break;
+                }
+
+            case NodeClass.VariableType:
+                {
+                    VariableTypeNode variableTypeNode = new VariableTypeNode();
+
+                    // IsAbstract Attribute
+                    value = attributes[Attributes.IsAbstract];
+
+                    if (value == null)
+                    {
+                        throw ServiceResultException.Create(StatusCodes.BadUnexpectedError, "VariableType does not support the IsAbstract attribute.");
+                    }
+
+                    variableTypeNode.IsAbstract = (bool)value.GetValue(typeof(bool));
+
+                    // DataType Attribute
+                    value = attributes[Attributes.DataType];
+
+                    if (value == null)
+                    {
+                        throw ServiceResultException.Create(StatusCodes.BadUnexpectedError, "VariableType does not support the DataType attribute.");
+                    }
+
+                    variableTypeNode.DataType = (NodeId)value.GetValue(typeof(NodeId));
+
+                    // ValueRank Attribute
+                    value = attributes[Attributes.ValueRank];
+
+                    if (value == null)
+                    {
+                        throw ServiceResultException.Create(StatusCodes.BadUnexpectedError, "VariableType does not support the ValueRank attribute.");
+                    }
+
+                    variableTypeNode.ValueRank = (int)value.GetValue(typeof(int));
+
+                    // ArrayDimensions Attribute
+                    value = attributes[Attributes.ArrayDimensions];
+
+                    if (value != null && value.Value != null)
+                    {
+                        variableTypeNode.ArrayDimensions = (uint[])value.GetValue(typeof(uint[]));
+                    }
+
+                    node = variableTypeNode;
+                    break;
+                }
+
+            case NodeClass.Method:
+                {
+                    MethodNode methodNode = new MethodNode();
+
+                    // Executable Attribute
+                    value = attributes[Attributes.Executable];
+
+                    if (value == null)
+                    {
+                        throw ServiceResultException.Create(StatusCodes.BadUnexpectedError, "Method does not support the Executable attribute.");
+                    }
+
+                    methodNode.Executable = (bool)value.GetValue(typeof(bool));
+
+                    // UserExecutable Attribute
+                    value = attributes[Attributes.UserExecutable];
+
+                    if (value == null)
+                    {
+                        throw ServiceResultException.Create(StatusCodes.BadUnexpectedError, "Method does not support the UserExecutable attribute.");
+                    }
+
+                    methodNode.UserExecutable = (bool)value.GetValue(typeof(bool));
+
+                    node = methodNode;
+                    break;
+                }
+
+            case NodeClass.DataType:
+                {
+                    DataTypeNode dataTypeNode = new DataTypeNode();
+
+                    // IsAbstract Attribute
+                    value = attributes[Attributes.IsAbstract];
+
+                    if (value == null)
+                    {
+                        throw ServiceResultException.Create(StatusCodes.BadUnexpectedError, "DataType does not support the IsAbstract attribute.");
+                    }
+
+                    dataTypeNode.IsAbstract = (bool)value.GetValue(typeof(bool));
+
+                    // DataTypeDefinition Attribute
+                    value = attributes[Attributes.DataTypeDefinition];
+
+                    if (value != null)
+                    {
+                        dataTypeNode.DataTypeDefinition = value.Value as ExtensionObject;
+                    }
+
+                    node = dataTypeNode;
+                    break;
+                }
+
+            case NodeClass.ReferenceType:
+                {
+                    ReferenceTypeNode referenceTypeNode = new ReferenceTypeNode();
+
+                    // IsAbstract Attribute
+                    value = attributes[Attributes.IsAbstract];
+
+                    if (value == null)
+                    {
+                        throw ServiceResultException.Create(StatusCodes.BadUnexpectedError, "ReferenceType does not support the IsAbstract attribute.");
+                    }
+
+                    referenceTypeNode.IsAbstract = (bool)value.GetValue(typeof(bool));
+
+                    // Symmetric Attribute
+                    value = attributes[Attributes.Symmetric];
+
+                    if (value == null)
+                    {
+                        throw ServiceResultException.Create(StatusCodes.BadUnexpectedError, "ReferenceType does not support the Symmetric attribute.");
+                    }
+
+                    referenceTypeNode.Symmetric = (bool)value.GetValue(typeof(bool));
+
+                    // InverseName Attribute
+                    value = attributes[Attributes.InverseName];
+
+                    if (value != null && value.Value != null)
+                    {
+                        referenceTypeNode.InverseName = (LocalizedText)value.GetValue(typeof(LocalizedText));
+                    }
+
+                    node = referenceTypeNode;
+                    break;
+                }
+
+            case NodeClass.View:
+                {
+                    ViewNode viewNode = new ViewNode();
+
+                    // EventNotifier Attribute
+                    value = attributes[Attributes.EventNotifier];
+
+                    if (value == null)
+                    {
+                        throw ServiceResultException.Create(StatusCodes.BadUnexpectedError, "View does not support the EventNotifier attribute.");
+                    }
+
+                    viewNode.EventNotifier = (byte)value.GetValue(typeof(byte));
+
+                    // ContainsNoLoops Attribute
+                    value = attributes[Attributes.ContainsNoLoops];
+
+                    if (value == null)
+                    {
+                        throw ServiceResultException.Create(StatusCodes.BadUnexpectedError, "View does not support the ContainsNoLoops attribute.");
+                    }
+
+                    viewNode.ContainsNoLoops = (bool)value.GetValue(typeof(bool));
+
+                    node = viewNode;
+                    break;
+                }
+        }
+
+        // NodeId Attribute
+        value = attributes[Attributes.NodeId];
+
+        if (value == null)
+        {
+            throw ServiceResultException.Create(StatusCodes.BadUnexpectedError, "Node does not support the NodeId attribute.");
+        }
+
+        node.NodeId = (NodeId)value.GetValue(typeof(NodeId));
+        node.NodeClass = (NodeClass)nodeClass.Value;
+
+        // BrowseName Attribute
+        value = attributes[Attributes.BrowseName];
+
+        if (value == null)
+        {
+            throw ServiceResultException.Create(StatusCodes.BadUnexpectedError, "Node does not support the BrowseName attribute.");
+        }
+
+        node.BrowseName = (QualifiedName)value.GetValue(typeof(QualifiedName));
+
+        // DisplayName Attribute
+        value = attributes[Attributes.DisplayName];
+
+        if (value == null)
+        {
+            throw ServiceResultException.Create(StatusCodes.BadUnexpectedError, "Node does not support the DisplayName attribute.");
+        }
+
+        node.DisplayName = (LocalizedText)value.GetValue(typeof(LocalizedText));
+
+        // all optional attributes follow
+
+        // Description Attribute
+        if (attributes.TryGetValue(Attributes.Description, out value) &&
+            value != null && value.Value != null)
+        {
+            node.Description = (LocalizedText)value.GetValue(typeof(LocalizedText));
+        }
+
+        // WriteMask Attribute
+        if (attributes.TryGetValue(Attributes.WriteMask, out value) &&
+            value != null)
+        {
+            node.WriteMask = (uint)value.GetValue(typeof(uint));
+        }
+
+        // UserWriteMask Attribute
+        if (attributes.TryGetValue(Attributes.UserWriteMask, out value) &&
+            value != null)
+        {
+            node.UserWriteMask = (uint)value.GetValue(typeof(uint));
+        }
+
+        // RolePermissions Attribute
+        if (attributes.TryGetValue(Attributes.RolePermissions, out value) &&
+            value != null)
+        {
+            ExtensionObject[] rolePermissions = value.Value as ExtensionObject[];
+
+            if (rolePermissions != null)
+            {
+                node.RolePermissions = new RolePermissionTypeCollection();
+
+                foreach (ExtensionObject rolePermission in rolePermissions)
+                {
+                    node.RolePermissions.Add(rolePermission.Body as RolePermissionType);
+                }
+            }
+        }
+
+        // UserRolePermissions Attribute
+        if (attributes.TryGetValue(Attributes.UserRolePermissions, out value) &&
+            value != null)
+        {
+            ExtensionObject[] userRolePermissions = value.Value as ExtensionObject[];
+
+            if (userRolePermissions != null)
+            {
+                node.UserRolePermissions = new RolePermissionTypeCollection();
+
+                foreach (ExtensionObject rolePermission in userRolePermissions)
+                {
+                    node.UserRolePermissions.Add(rolePermission.Body as RolePermissionType);
+                }
+            }
+        }
+
+        // AccessRestrictions Attribute
+        if (attributes.TryGetValue(Attributes.AccessRestrictions, out value) &&
+            value != null)
+        {
+            node.AccessRestrictions = (ushort)value.GetValue(typeof(ushort));
+        }
+
+        return node;
+    }
+
+
+    /// <summary>
+    /// Create a dictionary of attributes to read for a nodeclass.
+    /// </summary>
+    private IDictionary<uint, DataValue> CreateAttributes(NodeClass nodeclass = NodeClass.Unspecified, bool optionalAttributes = true)
+    {
+        // Attributes to read for all types of nodes
+        var attributes = new SortedDictionary<uint, DataValue>() {
+                { Attributes.NodeId, null },
+                { Attributes.NodeClass, null },
+                { Attributes.BrowseName, null },
+                { Attributes.DisplayName, null },
+            };
+
+        switch (nodeclass)
+        {
+            case NodeClass.Object:
+                attributes.Add(Attributes.EventNotifier, null);
+                break;
+
+            case NodeClass.Variable:
+                attributes.Add(Attributes.DataType, null);
+                attributes.Add(Attributes.ValueRank, null);
+                attributes.Add(Attributes.ArrayDimensions, null);
+                attributes.Add(Attributes.AccessLevel, null);
+                attributes.Add(Attributes.UserAccessLevel, null);
+                attributes.Add(Attributes.Historizing, null);
+                attributes.Add(Attributes.MinimumSamplingInterval, null);
+                attributes.Add(Attributes.AccessLevelEx, null);
+                break;
+
+            case NodeClass.Method:
+                attributes.Add(Attributes.Executable, null);
+                attributes.Add(Attributes.UserExecutable, null);
+                break;
+
+            case NodeClass.ObjectType:
+                attributes.Add(Attributes.IsAbstract, null);
+                break;
+
+            case NodeClass.VariableType:
+                attributes.Add(Attributes.IsAbstract, null);
+                attributes.Add(Attributes.DataType, null);
+                attributes.Add(Attributes.ValueRank, null);
+                attributes.Add(Attributes.ArrayDimensions, null);
+                break;
+
+            case NodeClass.ReferenceType:
+                attributes.Add(Attributes.IsAbstract, null);
+                attributes.Add(Attributes.Symmetric, null);
+                attributes.Add(Attributes.InverseName, null);
+                break;
+
+            case NodeClass.DataType:
+                attributes.Add(Attributes.IsAbstract, null);
+                attributes.Add(Attributes.DataTypeDefinition, null);
+                break;
+
+            case NodeClass.View:
+                attributes.Add(Attributes.EventNotifier, null);
+                attributes.Add(Attributes.ContainsNoLoops, null);
+                break;
+
+            default:
+                // build complete list of attributes.
+                attributes = new SortedDictionary<uint, DataValue> {
+                        { Attributes.NodeId, null },
+                        { Attributes.NodeClass, null },
+                        { Attributes.BrowseName, null },
+                        { Attributes.DisplayName, null },
+                        //{ Attributes.Description, null },
+                        //{ Attributes.WriteMask, null },
+                        //{ Attributes.UserWriteMask, null },
+                        { Attributes.DataType, null },
+                        { Attributes.ValueRank, null },
+                        { Attributes.ArrayDimensions, null },
+                        { Attributes.AccessLevel, null },
+                        { Attributes.UserAccessLevel, null },
+                        { Attributes.MinimumSamplingInterval, null },
+                        { Attributes.Historizing, null },
+                        { Attributes.EventNotifier, null },
+                        { Attributes.Executable, null },
+                        { Attributes.UserExecutable, null },
+                        { Attributes.IsAbstract, null },
+                        { Attributes.InverseName, null },
+                        { Attributes.Symmetric, null },
+                        { Attributes.ContainsNoLoops, null },
+                        { Attributes.DataTypeDefinition, null },
+                        //{ Attributes.RolePermissions, null },
+                        //{ Attributes.UserRolePermissions, null },
+                        //{ Attributes.AccessRestrictions, null },
+                        { Attributes.AccessLevelEx, null }
+                    };
+                break;
+        }
+
+        if (optionalAttributes)
+        {
+            attributes.Add(Attributes.Description, null);
+            attributes.Add(Attributes.WriteMask, null);
+            attributes.Add(Attributes.UserWriteMask, null);
+            attributes.Add(Attributes.RolePermissions, null);
+            attributes.Add(Attributes.UserRolePermissions, null);
+            attributes.Add(Attributes.AccessRestrictions, null);
+        }
+
+        return attributes;
+    }
+
+    #endregion
 
     #region 特性
 
