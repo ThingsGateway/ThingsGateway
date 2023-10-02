@@ -59,6 +59,18 @@
       "CreateUserId": "212725263002001",
       "IsDelete": false,
       "SortCode": "0"
+    },
+    {
+      "Id": "455090791870726",
+      "FileName": "ThingsGateway.Plugin.LEIDIANAPI",
+      "AssembleName": "LEIDIANAPI",
+      "DriverTypeEnum": "Collect",
+      "FilePath": "Plugins/ThingsGateway.Plugin.LEIDIANAPI/ThingsGateway.Plugin.LEIDIANAPI.dll",
+      "CreateTime": "2023-08-29 09:09:12.3812926",
+      "CreateUser": "superAdmin",
+      "CreateUserId": "212725263002001",
+      "IsDelete": false,
+      "SortCode": "0"
     }
   ]
 }
