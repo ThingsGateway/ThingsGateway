@@ -478,8 +478,11 @@ public class AlarmWorker : BackgroundService
 
         if (eventEnum == EventEnum.Alarm)
         {
-            RealAlarmDeviceVariables.RemoveWhere(it => it.Id == item.Id);
-            RealAlarmDeviceVariables.Add(item);
+            lock (RealAlarmDeviceVariables)
+            {
+                RealAlarmDeviceVariables.RemoveWhere(it => it.Id == item.Id);
+                RealAlarmDeviceVariables.Add(item);
+            }
         }
         else
         {
