@@ -16,6 +16,8 @@ using Furion;
 
 using Mapster;
 
+using Masa.Blazor;
+
 using Microsoft.AspNetCore.Components;
 
 using SqlSugar;
@@ -154,6 +156,11 @@ public partial class DeviceVariableRunTimePage
         if (data.Count > 0 && !data.FirstOrDefault().Value.IsSuccess)
         {
             throw new(data.FirstOrDefault().Value.Message);
+        }
+        else
+        {
+            await PopupService.EnqueueSnackbarAsync(data.ToJsonString(true), AlertTypes.Info);
+
         }
     }
     private async Task WriteAsync(DeviceVariableRunTime collectVariableRunTime)

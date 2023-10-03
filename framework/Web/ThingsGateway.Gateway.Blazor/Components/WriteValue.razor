@@ -23,26 +23,26 @@
 
 @inject MasaBlazor MasaBlazor
 <MDialog Persistent Value="Visible" Width=500 Fullscreen=MasaBlazor.Breakpoint.Mobile>
-    <MCard Flat>
+     <MCard Flat>
         <MSubheader Class="pt-4 font-weight-black"> 写入值 </MSubheader>
         <MTextarea Class="pa-4" Dense Outlined HideDetails="@("auto")" @bind-Value=@Content />
 
-        <MCardActions>
-            <MButton Class="pa-3" OnClick=ValueChanged Color="primary">
-                写入
-            </MButton>
-            <MButton Class="pa-3" OnClick=ClosePopupAsync Color="red">
-                取消
-            </MButton>
-        </MCardActions>
+         <MCardActions>
+             <MButton Class="pa-3" OnClick=ValueChanged Color="primary">
+                 写入
+             </MButton>
+             <MButton Class="pa-3" OnClick=ClosePopupAsync Color="red">
+                 取消
+             </MButton>
+         </MCardActions>
 
-    </MCard>
-</MDialog>
-<MDialog Value="Visible" MaxWidth="360">
+     </MCard>
+ </MDialog>
+ <MDialog Value="Visible" MaxWidth="360">
 
-</MDialog>
+ </MDialog>
 
-@code {
+ @code {
     [Parameter, EditorRequired]
     public string Content { get; set; }
     [Inject]
@@ -54,7 +54,7 @@
         try
         {
             await OnSaveAsync.InvokeAsync(Content);
-            await InvokeAsync(async () => await PopupService.EnqueueSnackbarAsync("成功", AlertTypes.Success));
+            //await InvokeAsync(async () => await PopupService.EnqueueSnackbarAsync("成功", AlertTypes.Success));
             await ClosePopupAsync();
         }
         catch (Exception ex)
