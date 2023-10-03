@@ -49,6 +49,18 @@
       "SortCode": "0"
     },
     {
+      "Id": "455089791172870",
+      "FileName": "ThingsGateway.Plugin.TS550",
+      "AssembleName": "TS550Serial",
+      "DriverTypeEnum": "Collect",
+      "FilePath": "Plugins/ThingsGateway.Plugin.TS550/ThingsGateway.Plugin.TS550.dll",
+      "CreateTime": "2023-08-29 09:05:08.0701176",
+      "CreateUser": "superAdmin",
+      "CreateUserId": "212725263002001",
+      "IsDelete": false,
+      "SortCode": "0"
+    },
+    {
       "Id": "455089818636549",
       "FileName": "ThingsGateway.Plugin.Vigor",
       "AssembleName": "VigorSerial",

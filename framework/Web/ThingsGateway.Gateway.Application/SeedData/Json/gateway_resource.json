@@ -96,23 +96,6 @@
       "UpdateUserId": "212725263002001"
     },
     {
-      "Id": "200001904",
-      "Title": "管理网关",
-      "Icon": "mdi-database-sync-outline",
-      "Component": "/gatewayconfig/manage",
-      "Category": "MENU",
-      "ParentId": "200001",
-      "SortCode": "3",
-      "TargetType": "SELF",
-      "CreateTime": "2023-02-26 01:02:12.089",
-      "CreateUser": "superAdmin",
-      "CreateUserId": "212725263002001",
-      "IsDelete": false,
-      "UpdateTime": "2023-03-03 18:01:49.2309339",
-      "UpdateUser": "superAdmin",
-      "UpdateUserId": "212725263002001"
-    },
-    {
       "Id": "200001004",
       "Title": "运行状态",
       "Icon": "mdi-transit-connection-horizontal",
