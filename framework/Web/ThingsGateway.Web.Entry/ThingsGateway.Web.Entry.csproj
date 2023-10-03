@@ -4,6 +4,7 @@
 	<PropertyGroup>
 		<ApplicationIcon>wwwroot\favicon.ico</ApplicationIcon>
 		<ServerGarbageCollection>false</ServerGarbageCollection>
+		<!--<PlatformTarget>x86</PlatformTarget>-->
 	</PropertyGroup>
 
 

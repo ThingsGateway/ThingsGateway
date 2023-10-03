@@ -123,8 +123,8 @@ public class RpcSingletonService : ISingleton
                     }
                     else
                     {
-                        WriteVariables.Add(dev, new());
-                        WriteVariables[dev].Add(tag, item.Value);
+                        WriteMethods.Add(dev, new());
+                        WriteMethods[dev].Add(tag, item.Value);
                     }
                 }
             }
