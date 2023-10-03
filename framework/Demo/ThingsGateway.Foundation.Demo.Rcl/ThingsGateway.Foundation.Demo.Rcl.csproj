@@ -31,11 +31,11 @@
 		<ProjectReference Include="..\..\FoundationPro\ThingsGateway.Foundation.Adapter.Vigor\ThingsGateway.Foundation.Adapter.Vigor.csproj" />
 
 
-		<Compile Include="..\..\PluginProGasCustom\ThingsGateway.Plugin.GasCustom\Page\GasCustomSerialDebugPage.razor.cs" Link="Pages\GasCustom\GasCustomSerialDebugPage.razor.cs" />
-		<Compile Include="..\..\PluginProGasCustom\ThingsGateway.Plugin.GasCustom\Page\GasCustomSerialOverTcpDebugPage.razor.cs" Link="Pages\GasCustom\GasCustomSerialOverTcpDebugPage.razor.cs" />
-		<Content Include="..\..\PluginProGasCustom\ThingsGateway.Plugin.GasCustom\Page\GasCustomSerialDebugPage.razor" Link="Pages\GasCustom\GasCustomSerialDebugPage.razor" />
-		<Content Include="..\..\PluginProGasCustom\ThingsGateway.Plugin.GasCustom\Page\GasCustomSerialOverTcpDebugPage.razor" Link="Pages\GasCustom\GasCustomSerialOverTcpDebugPage.razor" />
-		<ProjectReference Include="..\..\PluginProGasCustom\ThingsGateway.Foundation.Adapter.GasCustom\ThingsGateway.Foundation.Adapter.HZW_QTJC_01.csproj" />
+		<Compile Include="..\..\PluginProAF2021\ThingsGateway.Plugin.HZW_QTJC_01\Page\HZW_QTJC_01SerialDebugPage.razor.cs" Link="Pages\HZW_QTJC_01\HZW_QTJC_01SerialDebugPage.razor.cs" />
+		<Compile Include="..\..\PluginProAF2021\ThingsGateway.Plugin.HZW_QTJC_01\Page\HZW_QTJC_01SerialOverTcpDebugPage.razor.cs" Link="Pages\HZW_QTJC_01\HZW_QTJC_01SerialOverTcpDebugPage.razor.cs" />
+		<Content Include="..\..\PluginProAF2021\ThingsGateway.Plugin.HZW_QTJC_01\Page\HZW_QTJC_01SerialDebugPage.razor" Link="Pages\HZW_QTJC_01\HZW_QTJC_01SerialDebugPage.razor" />
+		<Content Include="..\..\PluginProAF2021\ThingsGateway.Plugin.HZW_QTJC_01\Page\HZW_QTJC_01SerialOverTcpDebugPage.razor" Link="Pages\HZW_QTJC_01\HZW_QTJC_01SerialOverTcpDebugPage.razor" />
+		<ProjectReference Include="..\..\PluginProAF2021\ThingsGateway.Foundation.Adapter.HZW_QTJC_01\ThingsGateway.Foundation.Adapter.HZW_QTJC_01.csproj" />
 
 
 		
