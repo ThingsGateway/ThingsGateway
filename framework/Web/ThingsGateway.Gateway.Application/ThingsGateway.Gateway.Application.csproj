@@ -32,7 +32,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="Hardware.Info" Version="100.0.0" />
-		<PackageReference Include="CS-Script" Version="4.8.1" />
+		<PackageReference Include="CS-Script" Version="4.8.3" />
 		<!--CS-Script与Furion冲突，直接安装覆盖版本-->
 		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.7.0" />
 		<PackageReference Include="MQTTnet" Version="4.3.1.873" />
