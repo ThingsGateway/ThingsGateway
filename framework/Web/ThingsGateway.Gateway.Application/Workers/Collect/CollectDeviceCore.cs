@@ -599,10 +599,12 @@ public class CollectDeviceCore
 
                     if (!string.IsNullOrEmpty(deviceVariableMethodSource.MethodStr) || !string.IsNullOrEmpty(value))
                     {
-                        string[] strs1 = deviceVariableMethodSource.MethodStr?.Trim()?.TrimEnd(';').Split(';');
+                        string[] strs1 = new string[0];
+                        if (!string.IsNullOrEmpty(deviceVariableMethodSource.MethodStr))
+                            strs1 = deviceVariableMethodSource.MethodStr?.Trim()?.TrimEnd(';').Split(';');
                         string[] strs2 = value?.Trim()?.TrimEnd(';').Split(';');
                         //通过分号分割，并且合并参数
-                        var strs = strs1?.SpliceArray(strs2);
+                        var strs = GenericExtensions.SpliceArray(strs1, strs2);
                         int index = 0;
                         for (int i = 0; i < ps.Length; i++)
                         {
@@ -612,6 +614,13 @@ public class CollectDeviceCore
                             }
                             else
                             {
+                                if (strs.Length <= i)
+                                {
+                                    if (ps[i].HasDefaultValue)
+                                    {
+                                        break;
+                                    }
+                                }
                                 //得到对于的方法参数值
                                 deviceVariableMethodSource.MethodObj[i] = deviceVariableMethodSource.Converter.ConvertFrom(strs[index], ps[i].ParameterType);
                                 index++;
@@ -662,7 +671,17 @@ public class CollectDeviceCore
                             break;
                     }
 
-                    result = data?.Adapt<OperResult<string>>();
+                    var result1 = data?.Adapt<OperResult<object>>();
+                    Type type = result1.Content?.GetType();
+                    if (type == null || type.IsPrimitive || type == typeof(string))
+                    {
+                        result = data?.Adapt<OperResult<string>>();
+                    }
+                    else
+                    {
+                        result = new(result1);
+                        result.Content = result1.Content?.ToJsonString();
+                    }
                     if (method.HasReturn && result != null && result.IsSuccess)
                     {
                         var content = deviceVariableMethodSource.Converter.ConvertTo(result.Content?.ToString()?.Replace($"\0", ""));

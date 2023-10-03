@@ -178,6 +178,10 @@ public static class GenericExtensions
     /// <inheritdoc cref="DataTransUtil.SpliceArray" />
     public static T[] SpliceArray<T>(this T[] value, params T[][] arrays)
     {
+        if (value == null)
+        {
+            value = new T[0];
+        }
         List<T[]> objArrayList = new(arrays.Length + 1)
         {
             value
