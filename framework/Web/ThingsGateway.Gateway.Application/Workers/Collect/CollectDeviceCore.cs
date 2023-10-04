@@ -275,7 +275,7 @@ public class CollectDeviceCore
     /// <summary>
     /// 初始化
     /// </summary>
-    internal bool Init(CollectDeviceRunTime device)
+    internal bool Init(CollectDeviceRunTime device, bool upDevice = false)
     {
         if (device == null)
         {
@@ -292,10 +292,13 @@ public class CollectDeviceCore
             //更新插件信息
             CreatDriver();
             //全局数据更新
-            if (isUpDevice)
+            if (isUpDevice || upDevice)
             {
-                GlobalDeviceData.CollectDevices.RemoveWhere(it => it.Id == device.Id);
-                GlobalDeviceData.CollectDevices.Add(device);
+                lock (GlobalDeviceData.CollectDevices)
+                {
+                    GlobalDeviceData.CollectDevices.RemoveWhere(it => it.Id == device.Id);
+                    GlobalDeviceData.CollectDevices.Add(device);
+                }
             }
             return true;
         }

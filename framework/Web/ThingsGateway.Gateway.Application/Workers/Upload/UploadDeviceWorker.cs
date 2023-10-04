@@ -153,6 +153,13 @@ public class UploadDeviceWorker : BackgroundService
                     {
                         UploadDeviceThreads.Remove(devThread);
                     }
+                    else
+                    {
+                        foreach (var item in devThread.UploadDeviceCores)
+                        {
+                            item.Init(item.Device);
+                        }
+                    }
                 }
                 else
                 {
@@ -165,7 +172,13 @@ public class UploadDeviceWorker : BackgroundService
                     {
                         UploadDeviceThreads.Remove(devThread);
                     }
-
+                    else
+                    {
+                        foreach (var item in devThread.UploadDeviceCores)
+                        {
+                            item.Init(item.Device);
+                        }
+                    }
                     //需判断是否同一通道
                     var newDevThread = DeviceThread(devCore);
                     await newDevThread.StartThreadAsync();
