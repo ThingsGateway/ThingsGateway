@@ -682,7 +682,7 @@ public class OPCUAClient : IDisposable
         }
 
         NodeId nodeToRead = new(nodeIdStr);
-        var node = (VariableNode)await ReadNodeAsync(nodeToRead, NodeClass.Unspecified, false, cancellationToken);
+        var node = (VariableNode)await ReadNodeAsync(nodeToRead, NodeClass.Variable, false, cancellationToken);
         await typeSystem.LoadType(node.DataType, true, false);
         _variableDicts.AddOrUpdate(nodeIdStr, node);
         return node;
@@ -692,15 +692,9 @@ public class OPCUAClient : IDisposable
 
 
     #endregion
-    #region session
 
-    /// <inheritdoc/>
-    public Task<Node> ReadNodeAsync(
-        NodeId nodeId,
-        CancellationToken ct = default)
-    {
-        return ReadNodeAsync(nodeId, NodeClass.Unspecified, true, ct);
-    }
+
+    #region session
 
     /// <inheritdoc/>
     public async Task<Node> ReadNodeAsync(
