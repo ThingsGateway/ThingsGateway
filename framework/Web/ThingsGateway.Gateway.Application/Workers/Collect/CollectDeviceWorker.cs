@@ -132,7 +132,6 @@ public class CollectDeviceWorker : BackgroundService
                 if (devThread == null) { throw Oops.Bah($"更新设备线程失败，不存在{devId}为id的设备"); }
                 //这里先停止采集，操作会使线程取消，需要重新恢复线程
                 await devThread.StopThreadAsync();
-
                 CollectDeviceRunTime dev = isUpdateDb ? (await App.GetService<ICollectDeviceService>().GetCollectDeviceRuntimeAsync(devId)).FirstOrDefault() : devCore.Device;
 
                 if (dev == null)
@@ -154,6 +153,14 @@ public class CollectDeviceWorker : BackgroundService
                     if (devThread.CollectDeviceCores.Count == 0)
                     {
                         CollectDeviceThreads.Remove(devThread);
+                    }
+                    else
+                    {
+                        //单个设备重启时，注意同一线程的其他设备也会停止，需要重新初始化
+                        foreach (var item in devThread.CollectDeviceCores)
+                        {
+                            item.Init(item.Device, true);
+                        }
                     }
 
                     //需判断是否同一通道
@@ -392,6 +399,14 @@ public class CollectDeviceWorker : BackgroundService
                 if (devThread.CollectDeviceCores.Count == 0)
                 {
                     CollectDeviceThreads.Remove(devThread);
+                }
+                else
+                {
+                    //单个设备重启时，注意同一线程的其他设备也会停止，需要重新初始化
+                    foreach (var item in devThread.CollectDeviceCores)
+                    {
+                        item.Init(item.Device, true);
+                    }
                 }
                 //需判断是否同一通道
                 var newDevThread = DeviceThread(devCore);
