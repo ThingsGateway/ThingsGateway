@@ -11,14 +11,13 @@
 		<SignAssembly>True</SignAssembly>
 		<DelaySign>False</DelaySign>
 		<SatelliteResourceLanguages>zh-Hans</SatelliteResourceLanguages>
-		<EnableDynamicLoading>true</EnableDynamicLoading>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 
 	</PropertyGroup>
 
-	<PropertyGroup>
+	<!--<PropertyGroup>
 		<EnableDynamicLoading>true</EnableDynamicLoading>
-	</PropertyGroup>
+	</PropertyGroup>-->
 
 	<ItemGroup>
 
