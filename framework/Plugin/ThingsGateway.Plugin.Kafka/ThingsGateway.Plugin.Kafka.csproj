@@ -9,10 +9,10 @@
 	  <PackageReference Include="Confluent.Kafka" Version="2.2.0" />
 	</ItemGroup>
 
-	<ItemGroup>
-		<ProjectReference Include="..\..\Web\ThingsGateway.Gateway.Application\ThingsGateway.Gateway.Application.csproj" />
-		
-	</ItemGroup>
+	<PropertyGroup>
+		<EnableDynamicLoading>true</EnableDynamicLoading>
+	</PropertyGroup>
+	
 
 
 </Project>

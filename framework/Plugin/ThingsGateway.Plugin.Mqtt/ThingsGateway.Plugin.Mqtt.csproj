@@ -9,12 +9,6 @@
 	</Target>
 
 
-	<ItemGroup>
-		<ProjectReference Include="..\..\Web\ThingsGateway.Gateway.Application\ThingsGateway.Gateway.Application.csproj" />
-	</ItemGroup>
-
-
-
 
 
 
