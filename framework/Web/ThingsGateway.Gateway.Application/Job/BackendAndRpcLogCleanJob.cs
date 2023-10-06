@@ -10,6 +10,7 @@
 //------------------------------------------------------------------------------
 #endregion
 
+using Furion;
 using Furion.Schedule;
 
 namespace ThingsGateway.Gateway.Application;
@@ -25,7 +26,7 @@ public class BackendAndRpcLogCleanJob : IJob
     public async Task ExecuteAsync(JobExecutingContext context, CancellationToken stoppingToken)
     {
         var db = DbContext.Db.CopyNew();
-        var daysAgo = 30; // 删除30天以前
+        var daysAgo = App.GetConfig<int?>("Logging:LogJob:DaysAgo") ?? 30;
         await db.DeleteableWithAttr<BackendLog>().Where(u => u.LogTime < DateTimeExtensions.CurrentDateTime.AddDays(-daysAgo)).ExecuteCommandAsync();
         await db.DeleteableWithAttr<RpcLog>().Where(u => u.LogTime < DateTimeExtensions.CurrentDateTime.AddDays(-daysAgo)).ExecuteCommandAsync();
     }

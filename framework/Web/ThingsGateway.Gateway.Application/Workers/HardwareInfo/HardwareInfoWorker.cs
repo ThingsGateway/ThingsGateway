@@ -111,17 +111,21 @@ public class HardwareInfoWorker : BackgroundService
         APPInfo.Environment = App.HostEnvironment.IsDevelopment() ? "Development" : "Production";
         APPInfo.Stage = App.HostEnvironment.IsStaging() ? "Stage" : "非Stage"; // 是否Stage环境
         APPInfo.UpdateTime = DateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat();
+        var enable = App.GetConfig<bool?>("HardwareInfo:Enable") ?? true;
+
         while (!stoppingToken.IsCancellationRequested)
         {
             try
             {
                 APPInfo.UpdateTime = DateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat();
                 APPInfo.RemoteIp = await GetIpFromOnlineAsync();
-
-                HardwareInfo?.RefreshMemoryStatus();
-                HardwareInfo?.RefreshMemoryList();
-                HardwareInfo?.RefreshNetworkAdapterList();
-                HardwareInfo?.RefreshCPUList();
+                if (enable)
+                {
+                    HardwareInfo?.RefreshMemoryStatus();
+                    HardwareInfo?.RefreshMemoryList();
+                    HardwareInfo?.RefreshNetworkAdapterList();
+                    HardwareInfo?.RefreshCPUList();
+                }
                 //10秒更新一次
                 await Task.Delay(10000, stoppingToken);
             }
