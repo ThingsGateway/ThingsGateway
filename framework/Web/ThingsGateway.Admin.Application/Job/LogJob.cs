@@ -10,6 +10,7 @@
 //------------------------------------------------------------------------------
 #endregion
 
+using Furion;
 using Furion.Schedule;
 
 namespace ThingsGateway.Admin.Application;
@@ -25,7 +26,7 @@ public class LogJob : IJob
     public async Task ExecuteAsync(JobExecutingContext context, CancellationToken stoppingToken)
     {
         var db = DbContext.Db.CopyNew();
-        var daysAgo = 30; // 删除30天以前
+        var daysAgo = App.GetConfig<int?>("Logging:LogJob:DaysAgo") ?? 30;
         await db.DeleteableWithAttr<SysVisitLog>().Where(u => u.CreateTime < DateTimeExtensions.CurrentDateTime.AddDays(-daysAgo)).ExecuteCommandAsync(stoppingToken); // 删除访问日志
         await db.DeleteableWithAttr<SysOperateLog>().Where(u => u.CreateTime < DateTimeExtensions.CurrentDateTime.AddDays(-daysAgo)).ExecuteCommandAsync(stoppingToken); // 删除操作日志
     }

@@ -159,6 +159,8 @@ public class UploadDeviceWorker : BackgroundService
                         {
                             item.Init(item.Device);
                         }
+                        await devThread.StartThreadAsync();
+
                     }
                 }
                 else

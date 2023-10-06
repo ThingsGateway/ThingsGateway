@@ -142,6 +142,21 @@ public class CollectDeviceWorker : BackgroundService
                     {
                         CollectDeviceThreads.Remove(devThread);
                     }
+                    else
+                    {
+                        //单个设备重启时，注意同一线程的其他设备也会停止，需要重新初始化
+                        foreach (var item in devThread.CollectDeviceCores)
+                        {
+                            item.Init(item.Device, true);
+                        }
+
+                        await devThread.StartThreadAsync();
+
+                        //如果是组态更改过了，需要重新获取变量/设备运行态的值
+                        if (isUpdateDb)
+                            await StartOtherHostService();
+
+                    }
                 }
                 else
                 {
