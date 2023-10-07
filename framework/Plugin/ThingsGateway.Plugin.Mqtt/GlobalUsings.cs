@@ -10,6 +10,9 @@
 //------------------------------------------------------------------------------
 #endregion
 
+global using ThingsGateway.Components;
 global using ThingsGateway.Foundation;
+global using ThingsGateway.Foundation.Serial;
+global using ThingsGateway.Foundation.Sockets;
 global using ThingsGateway.Gateway.Application;
 global using ThingsGateway.Gateway.Core;
