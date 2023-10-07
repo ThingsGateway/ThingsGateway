@@ -45,6 +45,13 @@
 
 	<ItemGroup>
 		<Compile Include="..\..\Plugin\ThingsGateway.Plugin.DLT645\Page\DLT645_2007DebugPage.razor.cs" Link="Pages\DLT645\DLT645_2007DebugPage.razor.cs" />
+		<Compile Include="..\..\Plugin\ThingsGateway.Plugin.Mqtt\MqttRpcNameVaueWithId.cs" Link="Pages\Mqtt\MqttRpcNameVaueWithId.cs" />
+		<Compile Include="..\..\Plugin\ThingsGateway.Plugin.Mqtt\Page\MqttClientDebugPage.razor.cs" Link="Pages\Mqtt\MqttClientDebugPage.razor.cs" />
+		<Compile Include="..\..\Plugin\ThingsGateway.Plugin.Mqtt\Page\MqttClientPage.razor.cs" Link="Pages\Mqtt\MqttClientPage.razor.cs" />
+		<Compile Include="..\..\Plugin\ThingsGateway.Plugin.Mqtt\PrivateLogger.cs" Link="Pages\Mqtt\PrivateLogger.cs" />
+		<Compile Include="..\..\Plugin\ThingsGateway.Plugin.Mqtt\RpcClass\MqttRpcClient.cs" Link="Pages\Mqtt\MqttRpcClient.cs" />
+		<Compile Include="..\..\Plugin\ThingsGateway.Plugin.Mqtt\RpcClass\MqttRpcClientExtensions.cs" Link="Pages\Mqtt\MqttRpcClientExtensions.cs" />
+		<Compile Include="..\..\Plugin\ThingsGateway.Plugin.Mqtt\RpcClass\MqttRpcTopicPair.cs" Link="Pages\Mqtt\MqttRpcTopicPair.cs" />
 		<Content Include="..\..\Plugin\ThingsGateway.Plugin.DLT645\Page\DLT645_2007DebugPage.razor" Link="Pages\DLT645\DLT645_2007DebugPage.razor" />
 		<Compile Include="..\..\Plugin\ThingsGateway.Plugin.DLT645\Page\DLT645_2007OverTcpDebugPage.razor.cs" Link="Pages\DLT645\DLT645_2007OverTcpDebugPage.razor.cs" />
 		<Content Include="..\..\Plugin\ThingsGateway.Plugin.DLT645\Page\DLT645_2007OverTcpDebugPage.razor" Link="Pages\DLT645\DLT645_2007OverTcpDebugPage.razor" />
@@ -114,6 +121,18 @@
 		<Content Update="wwwroot\**">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
+	</ItemGroup>
+
+
+	<ItemGroup>
+	  <Folder Include="Pages\Mqtt\" />
+	</ItemGroup>
+
+
+	<ItemGroup>
+	  <Content Include="..\..\Plugin\ThingsGateway.Plugin.Mqtt\Page\MqttClientDebugPage.razor" Link="Pages\Mqtt\MqttClientDebugPage.razor" />
+	  <Content Include="..\..\Plugin\ThingsGateway.Plugin.Mqtt\Page\MqttClientPage.razor" Link="Pages\Mqtt\MqttClientPage.razor" />
+		<PackageReference Include="MQTTnet" Version="4.3.1.873" />
 	</ItemGroup>
 
 

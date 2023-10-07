@@ -22,6 +22,7 @@ using MQTTnet.Client;
 using System.Collections.Concurrent;
 using System.Text;
 
+using ThingsGateway.Foundation.Demo;
 using ThingsGateway.Foundation.Extension.ConcurrentQueue;
 using ThingsGateway.Foundation.Extension.Generic;
 using ThingsGateway.Foundation.Extension.String;
@@ -55,7 +56,7 @@ public class MqttClient : UpLoadBase
 
     private TimerTick exVariableTimerTick;
     /// <inheritdoc/>
-    public override Type DriverDebugUIType => null;
+    public override Type DriverDebugUIType => typeof(MqttClientDebugPage);
     /// <inheritdoc/>
     public override UpDriverPropertyBase DriverPropertys => driverPropertys;
 

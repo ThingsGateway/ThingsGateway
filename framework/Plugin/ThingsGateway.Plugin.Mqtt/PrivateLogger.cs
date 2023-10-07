@@ -12,6 +12,8 @@
 
 using MQTTnet.Diagnostics;
 
+using ThingsGateway.Foundation;
+
 namespace ThingsGateway.Plugin.Mqtt
 {
     internal class PrivateLogger : IMqttNetLogger
