@@ -440,9 +440,7 @@ public class TcpClientBase : BaseSocket, ITcpClient
             {
                 throw new TimeoutException("连接超时");
             }
-            {
-                success(socket);
-            }
+            success(socket);
 
 #else
             using CancellationTokenSource cancellationTokenSource = new();
@@ -465,10 +463,9 @@ public class TcpClientBase : BaseSocket, ITcpClient
             else
             {
                 socket?.SafeDispose();
-                socket.Close();
+                throw new TimeoutException("连接超时");
             }
 #endif
-
 
         }
         finally

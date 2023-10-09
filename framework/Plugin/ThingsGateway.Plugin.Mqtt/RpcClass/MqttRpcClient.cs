@@ -50,7 +50,7 @@ namespace MQTTnet.Extensions.Rpc
             _waitingCalls.Clear();
         }
 
-        public async Task<byte[]> ExecuteAsync(TimeSpan timeout, MqttRpcTopicPair mqttRpcTopicPair, byte[] payload, MqttQualityOfServiceLevel qualityOfServiceLevel)
+        public async Task<byte[]> ExecuteAsync(MqttRpcTopicPair mqttRpcTopicPair, byte[] payload, MqttQualityOfServiceLevel qualityOfServiceLevel, TimeSpan timeout)
         {
             using var timeoutToken = new CancellationTokenSource(timeout);
             try
@@ -135,6 +135,7 @@ namespace MQTTnet.Extensions.Rpc
             }
 
             var payloadBuffer = eventArgs.ApplicationMessage.PayloadSegment.ToArray();
+
             awaitable.TrySetResult(payloadBuffer);
 
             // Set this message to handled to that other code can avoid execution etc.
