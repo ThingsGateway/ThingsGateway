@@ -27,7 +27,6 @@ namespace ThingsGateway.Web.Core
     /// </summary>
     public class LoggingMonitorComponent : IServiceComponent
     {
-        private Parser Parser = Parser.GetDefault();
         /// <inheritdoc/>
         public void Load(IServiceCollection services, ComponentContext componentContext)
         {
@@ -42,8 +41,9 @@ namespace ThingsGateway.Web.Core
                       //获取头
                       var userAgent = httpContext.Request.Headers["User-Agent"];
                       if (string.IsNullOrEmpty(userAgent)) userAgent = "Other";//如果没有这个头就指定一个
+                      var uaParser = Parser.GetDefault();
                       //获取客户端信息
-                      var client = Parser.Parse(userAgent);
+                      var client = uaParser.Parse(userAgent);
                       // 获取控制器/操作描述器
                       var controllerActionDescriptor = context.ActionDescriptor as ControllerActionDescriptor;
                       //操作名称默认是控制器名加方法名,自定义操作名称要在action上加Description特性

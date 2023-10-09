@@ -28,7 +28,7 @@ namespace MQTTnet.Extensions.Rpc
 
             var buffer = Encoding.UTF8.GetBytes(payload ?? string.Empty);
 
-            return client.ExecuteAsync(timeout, mqttRpcTopicPair, buffer, qualityOfServiceLevel);
+            return client.ExecuteAsync(mqttRpcTopicPair, buffer, qualityOfServiceLevel, timeout);
         }
     }
 }

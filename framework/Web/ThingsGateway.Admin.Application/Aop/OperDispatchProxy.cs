@@ -28,7 +28,7 @@ namespace ThingsGateway.Admin.Application;
 /// </summary>
 public class OperDispatchProxy : AspectDispatchProxy, IDispatchProxy
 {
-    static readonly Parser Parser = Parser.GetDefault();
+
 
     /// <summary>
     /// 服务提供器，可以用来解析服务，如：Services.GetService()
@@ -180,7 +180,8 @@ public class OperDispatchProxy : AspectDispatchProxy, IDispatchProxy
         ClientInfo clientInfo = null;
         if (str.HasValue)
         {
-            clientInfo = Parser.Parse(str);
+            var uaParser = Parser.GetDefault();
+            clientInfo = uaParser.Parse(str);
         }
 
         StringBuilder stringBuilder = new();
