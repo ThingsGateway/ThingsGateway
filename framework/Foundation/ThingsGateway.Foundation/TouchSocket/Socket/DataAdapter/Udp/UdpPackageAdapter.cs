@@ -193,7 +193,7 @@ namespace ThingsGateway.Foundation.Sockets
             {
                 return false;
             }
-            var crc = ThingsGateway.Foundation.Crc.Crc16(byteBlock.Buffer, 0, byteBlock.Len);
+            var crc = ThingsGateway.Foundation.Core.Crc.Crc16(byteBlock.Buffer, 0, byteBlock.Len);
             return crc[0] == this.Crc[0] && crc[1] == this.Crc[1];
         }
     }

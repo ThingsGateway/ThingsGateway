@@ -261,7 +261,7 @@
             DLT645_2007
             </summary>
         </member>
-        <member name="M:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007BitConverter.#ctor(ThingsGateway.Foundation.EndianType)">
+        <member name="M:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007BitConverter.#ctor(ThingsGateway.Foundation.Core.EndianType)">
             <summary>
             DLT645_2007
             </summary>
@@ -304,7 +304,7 @@
             DLT645_2007
             </summary>
         </member>
-        <member name="M:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007OverTcp.#ctor(ThingsGateway.Foundation.TcpClient)">
+        <member name="M:ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007OverTcp.#ctor(ThingsGateway.Foundation.Core.TcpClient)">
             <summary>
             DLT645_2007
             </summary>

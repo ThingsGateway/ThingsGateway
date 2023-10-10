@@ -10,6 +10,8 @@
 //------------------------------------------------------------------------------
 #endregion
 
+using ThingsGateway.Foundation.Resources;
+
 namespace ThingsGateway.Foundation.Dmtp.Rpc
 {
     /// <summary>

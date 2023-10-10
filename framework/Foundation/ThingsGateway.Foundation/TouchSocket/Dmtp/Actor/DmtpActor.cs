@@ -13,6 +13,8 @@
 using System.Collections.Concurrent;
 using System.Text;
 
+using ThingsGateway.Foundation.Resources;
+
 namespace ThingsGateway.Foundation.Dmtp
 {
     /// <summary>
@@ -149,7 +151,7 @@ namespace ThingsGateway.Foundation.Dmtp
         /// <exception cref="Exception"></exception>
         /// <exception cref="TokenVerifyException"></exception>
         /// <exception cref="TimeoutException"></exception>
-        public virtual void Handshake(string verifyToken, string id, int timeout, Metadata metadata, CancellationToken cancellationToken)
+        public virtual void Handshake(string verifyToken, string id, int timeout, Metadata metadata, CancellationToken token)
         {
             if (this.IsHandshaked)
             {
@@ -173,7 +175,7 @@ namespace ThingsGateway.Foundation.Dmtp
             };
 
             var waitData = this.WaitHandlePool.GetWaitData(waitVerify);
-            waitData.SetCancellationToken(cancellationToken);
+            waitData.SetCancellationToken(token);
 
             try
             {
@@ -225,7 +227,7 @@ namespace ThingsGateway.Foundation.Dmtp
         /// <exception cref="Exception"></exception>
         /// <exception cref="TokenVerifyException"></exception>
         /// <exception cref="TimeoutException"></exception>
-        public virtual async Task HandshakeAsync(string verifyToken, string id, int timeout, Metadata metadata, CancellationToken cancellationToken)
+        public virtual async Task HandshakeAsync(string verifyToken, string id, int timeout, Metadata metadata, CancellationToken token)
         {
             if (this.IsHandshaked)
             {
@@ -247,7 +249,7 @@ namespace ThingsGateway.Foundation.Dmtp
                 Metadata = args.Metadata
             };
             var waitData = this.WaitHandlePool.GetWaitDataAsync(waitVerify);
-            waitData.SetCancellationToken(cancellationToken);
+            waitData.SetCancellationToken(token);
 
             try
             {

@@ -24,7 +24,7 @@
 //------------------------------------------------------------------------------
 using System.Runtime.CompilerServices;
 
-namespace ThingsGateway.Foundation
+namespace ThingsGateway.Foundation.Core
 {
     /// <summary>
     /// 将基数据类型转换为指定端的一个字节数组，

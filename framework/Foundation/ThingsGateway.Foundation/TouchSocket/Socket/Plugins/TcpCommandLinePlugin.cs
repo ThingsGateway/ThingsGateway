@@ -27,15 +27,15 @@ using System.Reflection;
 namespace ThingsGateway.Foundation.Sockets
 {
     /// <summary>
-    /// TCP命令行插件。
+    /// Tcp命令行插件。
     /// </summary>
     public abstract class TcpCommandLinePlugin : PluginBase, ITcpReceivedPlugin
     {
         private readonly ILog m_logger;
-        private readonly Dictionary<string, Method> m_pairs = new Dictionary<string, ThingsGateway.Foundation.Method>();
+        private readonly Dictionary<string, Method> m_pairs = new Dictionary<string, Method>();
 
         /// <summary>
-        /// TCP命令行插件。
+        /// Tcp命令行插件。
         /// </summary>
         /// <param name="logger"></param>
         /// <exception cref="ArgumentNullException"></exception>
@@ -71,7 +71,7 @@ namespace ThingsGateway.Foundation.Sockets
         }
 
         /// <inheritdoc/>
-        public Task OnTcpReceived(ITcpClientBase client, ReceivedDataEventArgs e)
+        public async Task OnTcpReceived(ITcpClientBase client, ReceivedDataEventArgs e)
         {
             try
             {
@@ -97,7 +97,21 @@ namespace ThingsGateway.Foundation.Sockets
 
                     try
                     {
-                        var result = method.Invoke(this, os);
+                        object result;
+                        switch (method.TaskType)
+                        {
+                            case TaskReturnType.Task:
+                                await method.InvokeAsync(this, os);
+                                result = default;
+                                break;
+                            case TaskReturnType.TaskObject:
+                                result = await method.InvokeObjectAsync(this, os);
+                                break;
+                            case TaskReturnType.None:
+                            default:
+                                result = method.Invoke(this, os);
+                                break;
+                        }
                         if (method.HasReturn)
                         {
                             client.Send(this.Converter.ConvertTo(result));
@@ -117,7 +131,7 @@ namespace ThingsGateway.Foundation.Sockets
                 this.m_logger.Log(LogLevel.Error, this, ex.Message, ex);
             }
 
-            return e.InvokeNext();
+            await e.InvokeNext();
         }
     }
 }

@@ -11,7 +11,7 @@
 #endregion
 
 using Newtonsoft.Json.Linq;
-namespace ThingsGateway.Foundation;
+namespace ThingsGateway.Foundation.Core;
 /// <summary>
 /// JTokenUtil
 /// </summary>

@@ -10,6 +10,7 @@
 //------------------------------------------------------------------------------
 #endregion
 
+using System.Diagnostics;
 using System.Net.Security;
 using System.Net.Sockets;
 
@@ -18,29 +19,34 @@ namespace ThingsGateway.Foundation.Sockets
     /// <summary>
     /// Tcp核心
     /// </summary>
-    public class TcpCore : SocketAsyncEventArgs, IDisposable
+    public class TcpCore : SocketAsyncEventArgs, IDisposable, ISender
     {
         private const string m_msg1 = "远程终端主动关闭";
 
         #region 字段
 
+        /// <summary>
+        /// 同步根
+        /// </summary>
+        public readonly object SyncRoot = new object();
+
         private long m_bufferRate;
         private bool m_disposedValue;
+        private SpinLock m_lock;
+        private volatile bool m_online;
         private int m_receiveBufferSize = 64 * 1024;
         private ValueCounter m_receiveCounter;
         private int m_sendBufferSize = 1024 * 64;
         private ValueCounter m_sendCounter;
-        private Stream m_workStream;
-
+        private readonly SemaphoreSlim m_semaphore = new SemaphoreSlim(1, 1);
         #endregion 字段
 
         /// <summary>
-        /// 创建一个Tcp核心
+        /// Tcp核心
         /// </summary>
-        /// <param name="socket"></param>
-        public TcpCore(Socket socket)
+        public TcpCore()
         {
-            this.Socket = socket;
+            this.m_lock = new SpinLock(Debugger.IsAttached);
             this.m_receiveCounter = new ValueCounter
             {
                 Period = TimeSpan.FromSeconds(1),
@@ -62,15 +68,23 @@ namespace ThingsGateway.Foundation.Sockets
             this.Dispose(disposing: false);
         }
 
+        /// <inheritdoc/>
+        public bool CanSend => this.m_online;
+
         /// <summary>
-        /// 当关闭的时候
+        /// 当中断Tcp的时候。当为<see langword="true"/>时，意味着是调用<see cref="Close(string)"/>。当为<see langword="false"/>时，则是其他中断。
         /// </summary>
-        public Action<TcpCore, string> OnClose { get; set; }
+        public Action<TcpCore, bool, string> OnBreakOut { get; set; }
 
         /// <summary>
         /// 当发生异常的时候
         /// </summary>
         public Action<TcpCore, Exception> OnException { get; set; }
+
+        /// <summary>
+        /// 在线状态
+        /// </summary>
+        public bool Online { get => this.m_online; }
 
         /// <summary>
         /// 当收到数据的时候
@@ -82,13 +96,18 @@ namespace ThingsGateway.Foundation.Sockets
         /// </summary>
         public int ReceiveBufferSize
         {
-            get => m_receiveBufferSize;
+            get => this.m_receiveBufferSize;
             set
             {
-                m_receiveBufferSize = value;
+                this.m_receiveBufferSize = value;
                 this.Socket.ReceiveBufferSize = value;
             }
         }
+
+        /// <summary>
+        /// 接收计数器
+        /// </summary>
+        public ValueCounter ReceiveCounter { get => this.m_receiveCounter; }
 
         /// <summary>
         /// 发送缓存池（可以设定初始值，运行时的值会根据流速自动调整）
@@ -104,9 +123,19 @@ namespace ThingsGateway.Foundation.Sockets
         }
 
         /// <summary>
+        /// 发送计数器
+        /// </summary>
+        public ValueCounter SendCounter { get => this.m_sendCounter; }
+
+        /// <summary>
         /// Socket
         /// </summary>
-        public Socket Socket { get; }
+        public Socket Socket { get; private set; }
+
+        /// <summary>
+        /// 提供一个用于客户端-服务器通信的流，该流使用安全套接字层 (SSL) 安全协议对服务器和（可选）客户端进行身份验证。
+        /// </summary>
+        public SslStream SslStream { get; private set; }
 
         /// <summary>
         /// 是否启用了Ssl
@@ -122,7 +151,7 @@ namespace ThingsGateway.Foundation.Sockets
             var sslStream = (sslOption.CertificateValidationCallback != null) ? new SslStream(new NetworkStream(this.Socket, false), false, sslOption.CertificateValidationCallback) : new SslStream(new NetworkStream(this.Socket, false), false);
             sslStream.AuthenticateAsServer(sslOption.Certificate);
 
-            this.m_workStream = sslStream;
+            this.SslStream = sslStream;
             this.UseSsl = true;
         }
 
@@ -141,7 +170,7 @@ namespace ThingsGateway.Foundation.Sockets
             {
                 sslStream.AuthenticateAsClient(sslOption.TargetHost, sslOption.ClientCertificates, sslOption.SslProtocols, sslOption.CheckCertificateRevocation);
             }
-            this.m_workStream = sslStream;
+            this.SslStream = sslStream;
             this.UseSsl = true;
         }
 
@@ -155,7 +184,7 @@ namespace ThingsGateway.Foundation.Sockets
             var sslStream = (sslOption.CertificateValidationCallback != null) ? new SslStream(new NetworkStream(this.Socket, false), false, sslOption.CertificateValidationCallback) : new SslStream(new NetworkStream(this.Socket, false), false);
             await sslStream.AuthenticateAsServerAsync(sslOption.Certificate);
 
-            this.m_workStream = sslStream;
+            this.SslStream = sslStream;
             this.UseSsl = true;
         }
 
@@ -175,7 +204,7 @@ namespace ThingsGateway.Foundation.Sockets
             {
                 await sslStream.AuthenticateAsClientAsync(sslOption.TargetHost, sslOption.ClientCertificates, sslOption.SslProtocols, sslOption.CheckCertificateRevocation);
             }
-            this.m_workStream = sslStream;
+            this.SslStream = sslStream;
             this.UseSsl = true;
         }
 
@@ -200,7 +229,7 @@ namespace ThingsGateway.Foundation.Sockets
         /// </para>
         /// </summary>
         /// <returns></returns>
-        public async Task BeginSslReceive()
+        public virtual async Task BeginSslReceive()
         {
             if (!this.UseSsl)
             {
@@ -211,10 +240,10 @@ namespace ThingsGateway.Foundation.Sockets
                 var byteBlock = new ByteBlock(this.ReceiveBufferSize);
                 try
                 {
-                    var r = await Task<int>.Factory.FromAsync(this.m_workStream.BeginRead, this.m_workStream.EndRead, byteBlock.Buffer, 0, byteBlock.Capacity, default);
+                    var r = await Task<int>.Factory.FromAsync(this.SslStream.BeginRead, this.SslStream.EndRead, byteBlock.Buffer, 0, byteBlock.Capacity, default);
                     if (r == 0)
                     {
-                        this.Close(m_msg1);
+                        this.PrivateBreakOut(false, m_msg1);
                         return;
                     }
 
@@ -224,9 +253,18 @@ namespace ThingsGateway.Foundation.Sockets
                 catch (Exception ex)
                 {
                     byteBlock.Dispose();
-                    this.Close(ex.Message);
+                    this.PrivateBreakOut(false, ex.Message);
                 }
             }
+        }
+
+        /// <summary>
+        /// 请求关闭
+        /// </summary>
+        /// <param name="msg"></param>
+        public virtual void Close(string msg)
+        {
+            this.PrivateBreakOut(true, msg);
         }
 
         /// <summary>
@@ -237,6 +275,38 @@ namespace ThingsGateway.Foundation.Sockets
             // 不要更改此代码。请将清理代码放入“Dispose(bool disposing)”方法中
             this.Dispose(disposing: true);
             GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// 重置环境，并设置新的<see cref="Socket"/>。
+        /// </summary>
+        /// <param name="socket"></param>
+        public virtual void Reset(Socket socket)
+        {
+            if (socket is null)
+            {
+                throw new ArgumentNullException(nameof(socket));
+            }
+
+            if (!socket.Connected)
+            {
+                throw new Exception("新的Socket必须在连接状态。");
+            }
+            this.Reset();
+            this.m_online = true;
+            this.Socket = socket;
+        }
+
+        /// <summary>
+        /// 重置环境。
+        /// </summary>
+        public virtual void Reset()
+        {
+            this.m_receiveCounter.Reset();
+            this.m_sendCounter.Reset();
+            this.SslStream?.Dispose();
+            this.SslStream = null;
+            this.Socket = null;
         }
 
         /// <summary>
@@ -252,22 +322,113 @@ namespace ThingsGateway.Foundation.Sockets
         {
             if (this.UseSsl)
             {
-                this.m_workStream.Write(buffer, offset, length);
+                this.SslStream.Write(buffer, offset, length);
             }
             else
             {
-                this.Socket.AbsoluteSend(buffer, offset, length);
+                var lockTaken = false;
+                try
+                {
+                    this.m_lock.Enter(ref lockTaken);
+                    while (length > 0)
+                    {
+                        var r = this.Socket.Send(buffer, offset, length, SocketFlags.None);
+                        if (r == 0 && length > 0)
+                        {
+                            throw new Exception("发送数据不完全");
+                        }
+                        offset += r;
+                        length -= r;
+                    }
+                }
+                finally
+                {
+                    if (lockTaken) this.m_lock.Exit(false);
+                }
             }
             this.m_sendCounter.Increment(length);
         }
 
         /// <summary>
-        /// 当关闭的时候
+        /// 异步发送数据。
+        /// <para>
+        /// 内部会根据是否启用Ssl，进行直接发送，还是Ssl发送。
+        /// </para>
         /// </summary>
-        /// <param name="msg"></param>
-        protected virtual void Close(string msg)
+        /// <param name="buffer"></param>
+        /// <param name="offset"></param>
+        /// <param name="length"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public virtual async Task SendAsync(byte[] buffer, int offset, int length)
         {
-            this.OnClose?.Invoke(this, msg);
+#if NET6_0_OR_GREATER
+            if (this.UseSsl)
+            {
+                await this.SslStream.WriteAsync(new ReadOnlyMemory<byte>(buffer, offset, length), CancellationToken.None);
+            }
+            else
+            {
+                try
+                {
+                    await this.m_semaphore.WaitAsync();
+
+                    while (length > 0)
+                    {
+                        var r = await this.Socket.SendAsync(new ArraySegment<byte>(buffer, offset, length), SocketFlags.None, CancellationToken.None);
+                        if (r == 0 && length > 0)
+                        {
+                            throw new Exception("发送数据不完全");
+                        }
+                        offset += r;
+                        length -= r;
+                    }
+                }
+                finally
+                {
+                    this.m_semaphore.Release();
+                }
+            }
+#else
+            if (this.UseSsl)
+            {
+                await this.SslStream.WriteAsync(buffer, offset, length, CancellationToken.None);
+            }
+            else
+            {
+                try
+                {
+                    await this.m_semaphore.WaitAsync();
+
+                    while (length > 0)
+                    {
+                        var r = this.Socket.Send(buffer, offset, length, SocketFlags.None);
+                        if (r == 0 && length > 0)
+                        {
+                            throw new Exception("发送数据不完全");
+                        }
+                        offset += r;
+                        length -= r;
+                    }
+                }
+                finally
+                {
+                    this.m_semaphore.Release();
+                }
+            }
+#endif
+
+            this.m_sendCounter.Increment(length);
+        }
+
+        /// <summary>
+        /// 当中断Tcp时。
+        /// </summary>
+        /// <param name="manual">当为<see langword="true"/>时，意味着是调用<see cref="Close(string)"/>。当为<see langword="false"/>时，则是其他中断。</param>
+        /// <param name="msg"></param>
+        protected virtual void BreakOut(bool manual, string msg)
+        {
+            this.OnBreakOut?.Invoke(this, manual, msg);
         }
 
         /// <summary>
@@ -276,7 +437,7 @@ namespace ThingsGateway.Foundation.Sockets
         /// <param name="disposing"></param>
         protected virtual void Dispose(bool disposing)
         {
-            if (!m_disposedValue)
+            if (!this.m_disposedValue)
             {
                 if (disposing)
                 {
@@ -284,7 +445,6 @@ namespace ThingsGateway.Foundation.Sockets
 
                 this.m_disposedValue = true;
             }
-
             base.Dispose();
         }
 
@@ -309,8 +469,7 @@ namespace ThingsGateway.Foundation.Sockets
                 }
                 catch (Exception ex)
                 {
-                    e.SafeDispose();
-                    this.Close(ex.Message);
+                    this.PrivateBreakOut(false, ex.Message);
                 }
             }
         }
@@ -351,12 +510,23 @@ namespace ThingsGateway.Foundation.Sockets
             this.SendBufferSize = TouchSocketUtility.HitBufferLength(value);
         }
 
+        private void PrivateBreakOut(bool manual, string msg)
+        {
+            lock (this.SyncRoot)
+            {
+                if (this.m_online)
+                {
+                    this.m_online = false;
+                    this.BreakOut(manual, msg);
+                }
+            }
+        }
+
         private void ProcessReceived(SocketAsyncEventArgs e)
         {
             if (e.SocketError != SocketError.Success)
             {
-                e.SafeDispose();
-                this.Close(e.SocketError.ToString());
+                this.PrivateBreakOut(false, e.SocketError.ToString());
                 return;
             }
             else if (e.BytesTransferred > 0)
@@ -378,14 +548,12 @@ namespace ThingsGateway.Foundation.Sockets
                 }
                 catch (Exception ex)
                 {
-                    e.SafeDispose();
-                    this.Close(ex.Message);
+                    this.PrivateBreakOut(false, ex.Message);
                 }
             }
             else
             {
-                e.SafeDispose();
-                this.Close(m_msg1);
+                this.PrivateBreakOut(false, m_msg1);
             }
         }
     }

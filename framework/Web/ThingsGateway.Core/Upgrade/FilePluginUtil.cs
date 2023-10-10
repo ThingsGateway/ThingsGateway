@@ -10,7 +10,6 @@
 //------------------------------------------------------------------------------
 #endregion
 
-using ThingsGateway.Foundation.Sockets;
 namespace ThingsGateway.Core;
 /// <summary>
 /// DmtpTypeEnum

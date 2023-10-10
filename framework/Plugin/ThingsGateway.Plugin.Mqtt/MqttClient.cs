@@ -22,7 +22,6 @@ using MQTTnet.Client;
 using System.Collections.Concurrent;
 using System.Text;
 
-using ThingsGateway.Foundation.Demo;
 using ThingsGateway.Foundation.Extension.ConcurrentQueue;
 using ThingsGateway.Foundation.Extension.Generic;
 using ThingsGateway.Foundation.Extension.String;

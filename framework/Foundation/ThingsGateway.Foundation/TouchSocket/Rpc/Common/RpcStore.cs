@@ -471,8 +471,6 @@ namespace ThingsGateway.Foundation.Rpc
             var methodInstances = CodeGenerator.GetMethodInstances(serverFromType, rpcServer.GetType());
             foreach (var item in methodInstances)
             {
-                item.IsSingleton = true;
-                //item.ServerFactory = new RpcServerFactory(this.Container);
                 item.ServerFactory = this.Container.Resolve<IRpcServerFactory>() ?? throw new ArgumentNullException($"{nameof(IRpcServerFactory)}");
             }
             this.m_serverTypes.TryAdd(serverFromType, new List<MethodInstance>(methodInstances));
@@ -510,21 +508,18 @@ namespace ThingsGateway.Foundation.Rpc
                 }
             }
 
-            bool singleton;
+
             if (typeof(ITransientRpcServer).IsAssignableFrom(serverFromType))
             {
-                singleton = false;
                 this.Container.RegisterTransient(serverFromType, serverToType);
             }
             else
             {
-                singleton = true;
                 this.Container.RegisterSingleton(serverFromType, serverToType);
             }
             var methodInstances = CodeGenerator.GetMethodInstances(serverFromType, serverToType);
             foreach (var item in methodInstances)
             {
-                item.IsSingleton = singleton;
                 item.ServerFactory = this.Container.Resolve<IRpcServerFactory>() ?? throw new ArgumentNullException($"{nameof(IRpcServerFactory)}");
             }
 

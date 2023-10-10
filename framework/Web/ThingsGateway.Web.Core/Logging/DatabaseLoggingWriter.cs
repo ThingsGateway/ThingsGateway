@@ -14,7 +14,6 @@ using Furion.Logging;
 
 using ThingsGateway.Admin.Application;
 using ThingsGateway.Admin.Core;
-using ThingsGateway.Foundation;
 using ThingsGateway.Foundation.Extension.String;
 
 using UAParser;

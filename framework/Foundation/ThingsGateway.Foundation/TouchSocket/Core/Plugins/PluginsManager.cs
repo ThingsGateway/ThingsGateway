@@ -24,7 +24,7 @@
 //------------------------------------------------------------------------------
 using System.Reflection;
 
-namespace ThingsGateway.Foundation
+namespace ThingsGateway.Foundation.Core
 {
     /// <summary>
     /// 表示插件管理器。

@@ -24,7 +24,7 @@
 //------------------------------------------------------------------------------
 using System.Xml;
 
-namespace ThingsGateway.Foundation
+namespace ThingsGateway.Foundation.Core
 {
     /// <summary>
     /// xml主类

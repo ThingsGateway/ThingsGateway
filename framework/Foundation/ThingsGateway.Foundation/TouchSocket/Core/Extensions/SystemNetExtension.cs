@@ -25,7 +25,7 @@
 
 using System.Net;
 
-namespace ThingsGateway.Foundation
+namespace ThingsGateway.Foundation.Core
 {
     /// <summary>
     /// 其他扩展

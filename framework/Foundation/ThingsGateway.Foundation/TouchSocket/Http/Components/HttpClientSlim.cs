@@ -17,8 +17,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using ThingsGateway.Foundation;
-using ThingsGateway.Foundation;
+using ThingsGateway.Foundation.Core;
+using ThingsGateway.Foundation.Sockets;
+
 
 namespace ThingsGateway.Foundation.Http
 {

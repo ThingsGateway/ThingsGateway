@@ -12,6 +12,8 @@
 
 using System.Collections.Concurrent;
 
+using ThingsGateway.Foundation.Resources;
+
 namespace ThingsGateway.Foundation.Dmtp.FileTransfer
 {
     /// <summary>

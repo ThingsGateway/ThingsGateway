@@ -24,7 +24,7 @@
 //------------------------------------------------------------------------------
 using System.Runtime.CompilerServices;
 
-namespace ThingsGateway.Foundation
+namespace ThingsGateway.Foundation.Core
 {
     /// <summary>
     /// 具有释放的对象。

@@ -43,7 +43,7 @@ namespace ThingsGateway.Foundation.WebApi
         /// </summary>
         public StringConverter StringConverter { get; }
 
-        #region RPC调用
+        #region Rpc调用
 
         ///<inheritdoc/>
         public object Invoke(Type returnType, string invokeKey, IInvokeOption invokeOption, ref object[] parameters, Type[] types)
@@ -205,6 +205,6 @@ namespace ThingsGateway.Foundation.WebApi
             });
         }
 
-        #endregion RPC调用
+        #endregion Rpc调用
     }
 }

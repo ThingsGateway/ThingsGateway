@@ -28,7 +28,7 @@ namespace ThingsGateway.Foundation.WebApi
     /// <summary>
     /// 表示WebApi路由。
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true, Inherited = true)]
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method | AttributeTargets.Interface, AllowMultiple = true, Inherited = true)]
     public class RouterAttribute : Attribute
     {
         /// <summary>

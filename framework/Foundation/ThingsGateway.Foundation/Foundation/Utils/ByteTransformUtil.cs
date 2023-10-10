@@ -12,7 +12,7 @@
 
 using System.Text;
 
-namespace ThingsGateway.Foundation;
+namespace ThingsGateway.Foundation.Core;
 
 /// <summary>
 /// 所有数据转换类的静态辅助方法

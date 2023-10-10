@@ -441,7 +441,7 @@
             当前保存的需订阅列表
             </summary>
         </member>
-        <member name="M:ThingsGateway.Foundation.Adapter.OPCDA.OPCDAClient.#ctor(ThingsGateway.Foundation.ILog)">
+        <member name="M:ThingsGateway.Foundation.Adapter.OPCDA.OPCDAClient.#ctor(ThingsGateway.Foundation.Core.ILog)">
             <summary>
             <inheritdoc/>
             </summary>

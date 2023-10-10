@@ -406,7 +406,7 @@
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusServer.WriteAsync(System.String,System.Boolean[],System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
-        <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusServer.Received(ThingsGateway.Foundation.Sockets.SocketClient,ThingsGateway.Foundation.IRequestInfo)">
+        <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusServer.Received(ThingsGateway.Foundation.Sockets.SocketClient,ThingsGateway.Foundation.Core.IRequestInfo)">
             <inheritdoc/>
         </member>
         <member name="T:ThingsGateway.Foundation.Adapter.Modbus.ModbusServerDataHandleAdapter">
@@ -598,7 +598,7 @@
             PackHelper
             </summary>
         </member>
-        <member name="M:ThingsGateway.Foundation.Adapter.Modbus.PackHelper.ModbusLoadSourceRead``2(ThingsGateway.Foundation.IReadWrite,System.Collections.Generic.List{``1},System.Int32)">
+        <member name="M:ThingsGateway.Foundation.Adapter.Modbus.PackHelper.ModbusLoadSourceRead``2(ThingsGateway.Foundation.Core.IReadWrite,System.Collections.Generic.List{``1},System.Int32)">
             <summary>
             打包变量，添加到<see href="deviceVariableSourceReads"></see>
             </summary>

@@ -12,7 +12,7 @@
 
 using Newtonsoft.Json;
 
-namespace ThingsGateway.Foundation;
+namespace ThingsGateway.Foundation.Core;
 
 /// <inheritdoc/>
 public class OperResult<T> : OperResult, IOperResult<T>

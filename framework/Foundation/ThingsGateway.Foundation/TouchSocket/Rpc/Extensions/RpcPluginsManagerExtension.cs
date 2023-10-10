@@ -23,7 +23,7 @@
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-namespace ThingsGateway.Foundation
+namespace ThingsGateway.Foundation.Core
 {
     /// <summary>
     /// RpcPluginsManagerExtension

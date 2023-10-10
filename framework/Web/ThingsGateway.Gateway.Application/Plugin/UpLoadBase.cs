@@ -138,7 +138,7 @@ public abstract class UpLoadBase : DriverBase
         LogSource = "上传设备：" + CurrentDevice.Name;
         Init(device);
     }
-    internal override void NewMessage(ThingsGateway.Foundation.LogLevel arg1, object arg2, string arg3, Exception arg4)
+    internal override void NewMessage(ThingsGateway.Foundation.Core.LogLevel arg1, object arg2, string arg3, Exception arg4)
     {
         if (IsSaveLog)
         {
@@ -171,13 +171,13 @@ public abstract class UpLoadBase : DriverBase
     /// <summary>
     /// 底层日志输出
     /// </summary>
-    protected override void Log_Out(ThingsGateway.Foundation.LogLevel arg1, object arg2, string arg3, Exception arg4)
+    protected override void Log_Out(ThingsGateway.Foundation.Core.LogLevel arg1, object arg2, string arg3, Exception arg4)
     {
-        if (arg1 >= ThingsGateway.Foundation.LogLevel.Warning)
+        if (arg1 >= ThingsGateway.Foundation.Core.LogLevel.Warning)
         {
             CurrentDevice.SetDeviceStatus(lastErrorMessage: arg3);
         }
-        if (IsLogOut || arg1 >= ThingsGateway.Foundation.LogLevel.Warning)
+        if (IsLogOut || arg1 >= ThingsGateway.Foundation.Core.LogLevel.Warning)
         {
             _logger.Log_Out(arg1, arg2, arg3, arg4);
         }

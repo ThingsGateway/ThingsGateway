@@ -19,8 +19,6 @@ using Microsoft.Extensions.Logging;
 using ThingsGateway.Foundation.Dmtp;
 using ThingsGateway.Foundation.Dmtp.FileTransfer;
 using ThingsGateway.Foundation.Dmtp.Rpc;
-using ThingsGateway.Foundation.Rpc;
-using ThingsGateway.Foundation.Sockets;
 
 using Yitter.IdGenerator;
 
@@ -126,7 +124,7 @@ public partial class UpgradeWorker : BackgroundService
         }
 
     }
-    private void LogOut(ThingsGateway.Foundation.LogLevel logLevel, object source, string message, Exception exception)
+    private void LogOut(ThingsGateway.Foundation.Core.LogLevel logLevel, object source, string message, Exception exception)
     {
         _logger?.Log_Out(logLevel, source, message, exception);
     }

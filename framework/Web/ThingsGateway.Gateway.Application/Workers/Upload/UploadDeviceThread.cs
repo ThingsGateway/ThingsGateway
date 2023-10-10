@@ -162,7 +162,7 @@ public class UploadDeviceThread : IAsyncDisposable
                 }
 
                 //添加通道报文到每个设备
-                var data = new EasyLogger(device.Driver.NewMessage) { LogLevel = ThingsGateway.Foundation.LogLevel.Trace };
+                var data = new EasyLogger(device.Driver.NewMessage) { LogLevel = ThingsGateway.Foundation.Core.LogLevel.Trace };
                 log.AddLogger(data);
                 await device.BeforeActionAsync(stoppingToken);
             }

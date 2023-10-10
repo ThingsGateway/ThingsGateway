@@ -10,7 +10,7 @@
 //------------------------------------------------------------------------------
 #endregion
 
-namespace ThingsGateway.Foundation
+namespace ThingsGateway.Foundation.Core
 {
     /// <summary>
     /// 插件泛型基础事件委托
@@ -22,7 +22,7 @@ namespace ThingsGateway.Foundation
     public delegate void PluginEventHandler<TClient, TEventArgs>(TClient client, TEventArgs e) where TEventArgs : PluginEventArgs;
 
     /// <summary>
-    /// ThingsGateway.Foundation基础泛型事件委托
+    /// ThingsGateway.Foundation.Core基础泛型事件委托
     /// </summary>
     /// <typeparam name="TClient"></typeparam>
     /// <typeparam name="TEventArgs"></typeparam>

@@ -12,7 +12,7 @@
 
 using ThingsGateway.Foundation.Extension.Generic;
 
-namespace ThingsGateway.Foundation;
+namespace ThingsGateway.Foundation.Core;
 
 /// <inheritdoc/>
 public static class ByteExtensions

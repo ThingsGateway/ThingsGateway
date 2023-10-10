@@ -20,6 +20,6 @@ global using ThingsGateway.Admin.Application;
 global using ThingsGateway.Admin.Core;
 global using ThingsGateway.Components;
 global using ThingsGateway.Core;
-global using ThingsGateway.Foundation;
+global using ThingsGateway.Foundation.Core;
 global using ThingsGateway.Gateway.Application;
 global using ThingsGateway.Gateway.Core;

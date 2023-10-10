@@ -25,7 +25,7 @@
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 
-namespace ThingsGateway.Foundation
+namespace ThingsGateway.Foundation.Core
 {
     /// <summary>
     /// 文件操作

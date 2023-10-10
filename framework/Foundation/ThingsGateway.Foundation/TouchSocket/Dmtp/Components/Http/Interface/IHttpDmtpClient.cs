@@ -20,17 +20,17 @@ namespace ThingsGateway.Foundation.Dmtp
         /// <summary>
         /// 建立Tcp，并发送Http请求，最后完成Dmtp握手连接。
         /// </summary>
-        /// <param name="cancellationToken"></param>
+        /// <param name="token"></param>
         /// <param name="timeout"></param>
         /// <returns></returns>
-        IHttpDmtpClient Connect(CancellationToken cancellationToken, int timeout = 5000);
+        IHttpDmtpClient Connect(CancellationToken token, int timeout = 5000);
 
         /// <summary>
         /// 建立Tcp，并发送Http请求，最后完成Dmtp握手连接。
         /// </summary>
-        /// <param name="cancellationToken"></param>
+        /// <param name="token"></param>
         /// <param name="timeout"></param>
         /// <returns></returns>
-        Task<IHttpDmtpClient> ConnectAsync(CancellationToken cancellationToken, int timeout = 5000);
+        Task<IHttpDmtpClient> ConnectAsync(CancellationToken token, int timeout = 5000);
     }
 }

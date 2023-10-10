@@ -25,7 +25,7 @@
 using System.Collections.Concurrent;
 using System.Reflection;
 
-namespace ThingsGateway.Foundation
+namespace ThingsGateway.Foundation.Core
 {
     /// <summary>
     /// 表示属性

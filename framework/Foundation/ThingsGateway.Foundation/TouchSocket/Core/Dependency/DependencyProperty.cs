@@ -25,7 +25,7 @@
 
 using System.Diagnostics;
 
-namespace ThingsGateway.Foundation
+namespace ThingsGateway.Foundation.Core
 {
     /// <summary>
     /// 依赖项属性

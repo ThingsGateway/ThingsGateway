@@ -48,7 +48,7 @@ namespace ThingsGateway.Foundation.Rpc
         {
             try
             {
-                return (IRpcServer)this.m_container.Resolve(callContext.MethodInstance.ServerType);
+                return (IRpcServer)this.m_container.Resolve(callContext.MethodInstance.ServerFromType);
             }
             catch (System.Exception ex)
             {

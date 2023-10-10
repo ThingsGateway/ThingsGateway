@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+	  <DefineConstants>$(DefineConstants);ThingsGateway</DefineConstants>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Furion.Extras.Authentication.JwtBearer" Version="4.8.8.45" />
+		<PackageReference Include="Furion.Extras.ObjectMapper.Mapster" Version="4.8.8.45" />
+		<PackageReference Include="Furion.Pure" Version="4.8.8.45" />
+		<PackageReference Include="SqlSugarCore" Version="5.1.4.108" />
+		<PackageReference Include="UAParser" Version="3.1.47" />
+		<PackageReference Include="Yitter.IdGenerator" Version="1.0.14" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\..\Foundation\ThingsGateway.Foundation.Core\ThingsGateway.Foundation.Core.csproj" />
+	  <ProjectReference Include="..\ThingsGateway.Core\ThingsGateway.Core.csproj" />
+	</ItemGroup>
+	
+</Project>

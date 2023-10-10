@@ -23,7 +23,7 @@
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-namespace ThingsGateway.Foundation
+namespace ThingsGateway.Foundation.Core
 {
     /// <summary>
     /// 用户自定义固定包头内存池解析器，使用该适配器时，接收方收到的数据中，<see cref="ByteBlock"/>将为null，同时<see cref="IRequestInfo"/>将实现为TFixedHeaderRequestInfo。
@@ -79,6 +79,11 @@ namespace ThingsGateway.Foundation
                 byteBlock.Read(out var header, this.HeaderLength);
                 if (requestInfo.OnParsingHeader(header))
                 {
+                    if (requestInfo.BodyLength > this.MaxPackageSize)
+                    {
+                        this.OnError($"接收的BodyLength={requestInfo.BodyLength},大于设定的MaxPackageSize={this.MaxPackageSize}");
+                        return FilterResult.GoOn;
+                    }
                     request = requestInfo;
                     if (requestInfo.BodyLength > byteBlock.CanReadLen)//body不满足解析，开始缓存，然后保存对象
                     {

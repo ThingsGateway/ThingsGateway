@@ -128,10 +128,10 @@ namespace ThingsGateway.Foundation.WebApi
                 var attrs = methodInstance.Info.GetCustomAttributes(typeof(RouterAttribute), true);
                 if (attrs.Length > 0)
                 {
-                    foreach (RouterAttribute item in attrs)
+                    foreach (var item in attrs.Cast<RouterAttribute>())
                     {
                         var url = item.RouteTemple.ToLower()
-                            .Replace("[api]", methodInstance.ServerType.Name)
+                            .Replace("[api]", methodInstance.ServerFromType.Name)
                             .Replace("[action]", webApiAttribute.GetMethodName(methodInstance, false)).ToLower();
 
                         if (!urls.Contains(url))
@@ -142,13 +142,13 @@ namespace ThingsGateway.Foundation.WebApi
                 }
                 else
                 {
-                    attrs = methodInstance.ServerType.GetCustomAttributes(typeof(RouterAttribute), true);
+                    attrs = methodInstance.ServerFromType.GetCustomAttributes(typeof(RouterAttribute), true);
                     if (attrs.Length > 0)
                     {
-                        foreach (RouterAttribute item in attrs)
+                        foreach (var item in attrs.Cast<RouterAttribute>())
                         {
                             var url = item.RouteTemple.ToLower()
-                                .Replace("[api]", methodInstance.ServerType.Name)
+                                .Replace("[api]", methodInstance.ServerFromType.Name)
                                 .Replace("[action]", webApiAttribute.GetMethodName(methodInstance, false)).ToLower();
 
                             if (!urls.Contains(url))

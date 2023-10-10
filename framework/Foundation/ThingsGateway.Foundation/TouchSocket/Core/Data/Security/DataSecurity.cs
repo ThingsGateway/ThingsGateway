@@ -25,7 +25,7 @@
 using System.Security.Cryptography;
 using System.Text;
 
-namespace ThingsGateway.Foundation
+namespace ThingsGateway.Foundation.Core
 {
     /// <summary>
     /// 数据安全加密

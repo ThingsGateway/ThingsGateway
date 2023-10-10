@@ -10,7 +10,7 @@
 //------------------------------------------------------------------------------
 #endregion
 
-namespace ThingsGateway.Foundation;
+namespace ThingsGateway.Foundation.Core;
 
 /// <summary>
 /// HSL摘录，用于CRC16验证的类

@@ -24,7 +24,7 @@
 //------------------------------------------------------------------------------
 using ThingsGateway.Foundation.WebApi;
 
-namespace ThingsGateway.Foundation
+namespace ThingsGateway.Foundation.Core
 {
     /// <summary>
     /// WebApiPluginsManagerExtension

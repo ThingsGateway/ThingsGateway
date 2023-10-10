@@ -27,7 +27,7 @@ using System.Globalization;
 using System.Reflection;
 using System.Text;
 
-namespace ThingsGateway.Foundation
+namespace ThingsGateway.Foundation.Core
 {
     /// <summary>
     /// 为System提供扩展。
@@ -212,7 +212,7 @@ namespace ThingsGateway.Foundation
         public static string GetDeterminantName(this MethodInfo methodInfo)
         {
             var stringBuilder = new StringBuilder();
-            stringBuilder.Append($"{methodInfo.DeclaringType?.Namespace}.{methodInfo.DeclaringType?.Name}.{methodInfo.Name}(");
+            stringBuilder.Append($"{methodInfo.DeclaringType?.Namespace}.{methodInfo.DeclaringType?.Name}.{methodInfo.GetName()}(");
 
             foreach (var item in methodInfo.GetParameters())
             {

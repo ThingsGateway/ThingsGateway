@@ -12,7 +12,7 @@
 
 using System.Diagnostics;
 
-using ThingsGateway.Foundation;
+using ThingsGateway.Foundation.Core;
 
 namespace ThingsGateway.Upgrade
 {

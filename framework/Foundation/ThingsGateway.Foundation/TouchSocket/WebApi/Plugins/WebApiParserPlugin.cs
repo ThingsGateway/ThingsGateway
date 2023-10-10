@@ -91,7 +91,7 @@ namespace ThingsGateway.Foundation.WebApi
         /// </summary>
         public RpcStore RpcStore { get; private set; }
 
-        private Task OnHttpGet(IHttpSocketClient client, HttpContextEventArgs e)
+        private async Task OnHttpGet(IHttpSocketClient client, HttpContextEventArgs e)
         {
             if (this.GetRouteMap.TryGetMethodInstance(e.Context.Request.RelativeURL, out var methodInstance))
             {
@@ -156,12 +156,12 @@ namespace ThingsGateway.Foundation.WebApi
                     {
                         transientRpcServer.CallContext = callContext;
                     }
-                    invokeResult = RpcStore.Execute(rpcServer, ps, callContext);
+                    invokeResult = await RpcStore.ExecuteAsync(rpcServer, ps, callContext);
                 }
 
                 if (e.Context.Response.Responsed)
                 {
-                    return EasyTask.CompletedTask;
+                    return;
                 }
                 var httpResponse = e.Context.Response;
                 switch (invokeResult.Status)
@@ -203,10 +203,10 @@ namespace ThingsGateway.Foundation.WebApi
                     client.TryShutdown(SocketShutdown.Both);
                 }
             }
-            return e.InvokeNext();
+            await e.InvokeNext();
         }
 
-        private Task OnHttpPost(IHttpSocketClient client, HttpContextEventArgs e)
+        private async Task OnHttpPost(IHttpSocketClient client, HttpContextEventArgs e)
         {
             if (this.PostRouteMap.TryGetMethodInstance(e.Context.Request.RelativeURL, out var methodInstance))
             {
@@ -287,12 +287,12 @@ namespace ThingsGateway.Foundation.WebApi
                     {
                         transientRpcServer.CallContext = callContext;
                     }
-                    invokeResult = RpcStore.Execute(rpcServer, ps, callContext);
+                    invokeResult = await RpcStore.ExecuteAsync(rpcServer, ps, callContext);
                 }
 
                 if (e.Context.Response.Responsed)
                 {
-                    return EasyTask.CompletedTask;
+                    return;
                 }
                 var httpResponse = e.Context.Response;
                 switch (invokeResult.Status)
@@ -334,7 +334,7 @@ namespace ThingsGateway.Foundation.WebApi
                     client.TryShutdown(SocketShutdown.Both);
                 }
             }
-            return e.InvokeNext();
+            await e.InvokeNext();
         }
 
         private Task OnHttpRequest(object sender, PluginEventArgs args)
@@ -356,7 +356,7 @@ namespace ThingsGateway.Foundation.WebApi
             }
         }
 
-        #region RPC解析器
+        #region Rpc解析器
 
         void IRpcParser.OnRegisterServer(MethodInstance[] methodInstances)
         {
@@ -408,6 +408,6 @@ namespace ThingsGateway.Foundation.WebApi
             }
         }
 
-        #endregion RPC解析器
+        #endregion Rpc解析器
     }
 }

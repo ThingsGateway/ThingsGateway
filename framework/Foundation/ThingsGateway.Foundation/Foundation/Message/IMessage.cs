@@ -10,7 +10,7 @@
 //------------------------------------------------------------------------------
 #endregion
 
-namespace ThingsGateway.Foundation;
+namespace ThingsGateway.Foundation.Core;
 
 /// <summary>
 /// 采集返回消息

@@ -23,10 +23,10 @@
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-namespace ThingsGateway.Foundation
+namespace ThingsGateway.Foundation.Core
 {
     /// <summary>
-    /// 普通TCP数据处理器，该适配器不对数据做任何处理。
+    /// 普通Tcp数据处理器，该适配器不对数据做任何处理。
     /// </summary>
     public class NormalDataHandlingAdapter : SingleStreamDataHandlingAdapter
     {

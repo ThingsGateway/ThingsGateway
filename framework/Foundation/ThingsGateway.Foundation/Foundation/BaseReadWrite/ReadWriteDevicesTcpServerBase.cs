@@ -12,7 +12,7 @@
 
 using System.ComponentModel;
 
-namespace ThingsGateway.Foundation;
+namespace ThingsGateway.Foundation.Core;
 
 /// <summary>
 /// 服务设备

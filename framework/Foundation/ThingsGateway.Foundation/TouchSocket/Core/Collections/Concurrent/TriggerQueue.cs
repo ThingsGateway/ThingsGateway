@@ -24,7 +24,7 @@
 //------------------------------------------------------------------------------
 using System.Collections.Concurrent;
 
-namespace ThingsGateway.Foundation
+namespace ThingsGateway.Foundation.Core
 {
     /// <summary>
     /// 触发器队列

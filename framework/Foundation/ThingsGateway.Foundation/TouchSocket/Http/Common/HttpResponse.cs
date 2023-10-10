@@ -158,6 +158,27 @@ namespace ThingsGateway.Foundation.Http
         }
 
         /// <summary>
+        /// 构建数据并回应。
+        /// <para>该方法仅在具有Client实例时有效。</para>
+        /// </summary>
+        public async Task AnswerAsync()
+        {
+            if (this.Responsed)
+            {
+                return;
+            }
+            using (var byteBlock = new ByteBlock())
+            {
+                this.Build(byteBlock);
+                if (this.m_client.CanSend)
+                {
+                    await this.m_client.DefaultSendAsync(byteBlock);
+                }
+                this.Responsed = true;
+            }
+        }
+
+        /// <summary>
         ///  构建响应数据。
         /// <para>当数据较大时，不建议这样操作，可直接<see cref="WriteContent(byte[], int, int)"/></para>
         /// </summary>

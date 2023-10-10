@@ -24,7 +24,7 @@
 //------------------------------------------------------------------------------
 using System.Text;
 
-namespace ThingsGateway.Foundation
+namespace ThingsGateway.Foundation.Core
 {
     /// <summary>
     /// 终止字符数据包处理适配器，支持以任意字符、字节数组结尾的数据包。

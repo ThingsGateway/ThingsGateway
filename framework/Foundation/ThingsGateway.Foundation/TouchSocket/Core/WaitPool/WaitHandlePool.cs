@@ -25,7 +25,7 @@
 
 using System.Collections.Concurrent;
 
-namespace ThingsGateway.Foundation
+namespace ThingsGateway.Foundation.Core
 {
     /// <summary>
     /// 等待处理数据

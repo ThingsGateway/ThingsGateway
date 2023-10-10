@@ -10,7 +10,7 @@
 //------------------------------------------------------------------------------
 #endregion
 
-namespace ThingsGateway.Foundation;
+namespace ThingsGateway.Foundation.Core;
 
 /// <summary>
 /// EasyLock，使用轻量级SemaphoreSlim锁，只允许一个并发量，并记录并发信息

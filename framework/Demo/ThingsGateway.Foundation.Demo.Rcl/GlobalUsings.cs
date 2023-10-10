@@ -15,5 +15,7 @@ global using System.Threading;
 global using System.Threading.Tasks;
 
 global using ThingsGateway.Components;
+global using ThingsGateway.Foundation.Core;
 global using ThingsGateway.Foundation.Serial;
 global using ThingsGateway.Foundation.Sockets;
+

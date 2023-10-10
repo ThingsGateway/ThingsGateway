@@ -24,7 +24,7 @@
 //------------------------------------------------------------------------------
 using System.Collections;
 
-namespace ThingsGateway.Foundation
+namespace ThingsGateway.Foundation.Core
 {
     /// <summary>
     /// 常量

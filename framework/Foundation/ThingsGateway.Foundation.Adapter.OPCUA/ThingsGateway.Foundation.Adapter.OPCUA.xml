@@ -304,7 +304,7 @@
             SessionReconnectHandler
             </summary>
         </member>
-        <member name="M:ThingsGateway.Foundation.Adapter.OPCUA.OPCUAClient.#ctor(ThingsGateway.Foundation.ILog)">
+        <member name="M:ThingsGateway.Foundation.Adapter.OPCUA.OPCUAClient.#ctor(ThingsGateway.Foundation.Core.ILog)">
             <summary>
             默认的构造函数，实例化一个新的OPC UA类
             </summary>

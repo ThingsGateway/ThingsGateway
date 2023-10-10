@@ -24,7 +24,7 @@
 //------------------------------------------------------------------------------
 using System.Linq.Expressions;
 
-namespace ThingsGateway.Foundation
+namespace ThingsGateway.Foundation.Core
 {
     /// <summary>
     /// 表达式复制

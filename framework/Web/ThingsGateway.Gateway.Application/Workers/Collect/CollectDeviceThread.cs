@@ -174,7 +174,7 @@ public class CollectDeviceThread : IAsyncDisposable
                 }
 
                 //添加通道报文到每个设备
-                var data = new EasyLogger(device.Driver.NewMessage) { LogLevel = ThingsGateway.Foundation.LogLevel.Trace };
+                var data = new EasyLogger(device.Driver.NewMessage) { LogLevel = ThingsGateway.Foundation.Core.LogLevel.Trace };
                 log.AddLogger(data);
                 //传入是否共享通道
                 device.IsShareChannel = CollectDeviceCores.Count > 1;

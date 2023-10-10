@@ -191,7 +191,7 @@ namespace ThingsGateway.Foundation.Http
         /// <list type="number">
         /// <item>Connection:keep-alive</item>
         /// <item>Pragma:no-cache</item>
-        /// <item>UserAgent:ThingsGateway.Foundation</item>
+        /// <item>UserAgent:ThingsGateway.Foundation.Http</item>
         /// <item>Accept:*/*</item>
         /// <item>AcceptEncoding:deflate, br</item>
         /// </list>
@@ -202,7 +202,7 @@ namespace ThingsGateway.Foundation.Http
         {
             request.Headers.Add(HttpHeaders.Connection, "keep-alive");
             request.Headers.Add(HttpHeaders.Pragma, "no-cache");
-            request.Headers.Add(HttpHeaders.UserAgent, "ThingsGateway.Foundation");
+            request.Headers.Add(HttpHeaders.UserAgent, "ThingsGateway.Foundation.Http");
             request.Headers.Add(HttpHeaders.Accept, "*/*");
             request.Headers.Add(HttpHeaders.AcceptEncoding, "deflate, br");
             return request;
@@ -390,7 +390,7 @@ namespace ThingsGateway.Foundation.Http
         {
             response.StatusCode = status;
             response.StatusMessage = msg;
-            response.Headers.Add(HttpHeaders.Server, $"ThingsGateway.Foundation {HttpBase.ServerVersion}");
+            response.Headers.Add(HttpHeaders.Server, $"ThingsGateway.Foundation.Http {HttpBase.ServerVersion}");
             response.Headers.Add(HttpHeaders.Date, DateTime.Now.ToGMTString("r"));
             return response;
         }

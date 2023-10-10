@@ -12,7 +12,7 @@
 
 using ThingsGateway.Foundation.Extension.Generic;
 
-namespace ThingsGateway.Foundation;
+namespace ThingsGateway.Foundation.Core;
 
 /// <summary>
 /// TCP/Serial适配器基类

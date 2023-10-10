@@ -26,7 +26,7 @@
 using System.Diagnostics;
 using System.Text;
 
-namespace ThingsGateway.Foundation
+namespace ThingsGateway.Foundation.Core
 {
     /// <summary>
     /// 字节块流

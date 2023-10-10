@@ -26,7 +26,7 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Reflection;
 
-namespace ThingsGateway.Foundation
+namespace ThingsGateway.Foundation.Core
 {
     /// <summary>
     /// IOC容器
@@ -91,6 +91,7 @@ namespace ThingsGateway.Foundation
                     {
                         return descriptor.ImplementationFactory.Invoke(this);
                     }
+
                     if (descriptor.Lifetime == Lifetime.Singleton)
                     {
                         if (descriptor.ToInstance != null)
@@ -107,22 +108,23 @@ namespace ThingsGateway.Foundation
                             {
                                 if (descriptor.ToType.IsGenericType)
                                 {
-                                    return (descriptor.ToInstance = this.Create(descriptor.ToType.MakeGenericType(fromType.GetGenericArguments()), ps));
+                                    return (descriptor.ToInstance = this.Create(descriptor, descriptor.ToType.MakeGenericType(fromType.GetGenericArguments()), ps));
                                 }
                                 else
                                 {
-                                    return (descriptor.ToInstance = this.Create(descriptor.ToType, ps));
+                                    return (descriptor.ToInstance = this.Create(descriptor, descriptor.ToType, ps));
                                 }
                             }
                         }
                     }
+
                     if (descriptor.ToType.IsGenericType)
                     {
-                        return this.Create(descriptor.ToType.MakeGenericType(fromType.GetGenericArguments()), ps);
+                        return this.Create(descriptor, descriptor.ToType.MakeGenericType(fromType.GetGenericArguments()), ps);
                     }
                     else
                     {
-                        return this.Create(descriptor.ToType, ps);
+                        return this.Create(descriptor, descriptor.ToType, ps);
                     }
                 }
             }
@@ -141,10 +143,10 @@ namespace ThingsGateway.Foundation
                     }
                     lock (descriptor)
                     {
-                        return descriptor.ToInstance ??= this.Create(descriptor.ToType, ps);
+                        return descriptor.ToInstance ??= this.Create(descriptor, descriptor.ToType, ps);
                     }
                 }
-                return this.Create(descriptor.ToType, ps);
+                return this.Create(descriptor, descriptor.ToType, ps);
             }
             else
             {
@@ -170,13 +172,7 @@ namespace ThingsGateway.Foundation
             this.m_registrations.TryRemove(k, out _);
         }
 
-        /// <summary>
-        /// <inheritdoc/>
-        /// </summary>
-        /// <param name="toType"></param>
-        /// <param name="ops"></param>
-        /// <returns></returns>
-        private object Create(Type toType, object[] ops)
+        private object Create(DependencyDescriptor descriptor, Type toType, object[] ops)
         {
             var ctor = toType.GetConstructors().FirstOrDefault(x => x.IsDefined(typeof(DependencyInjectAttribute), true));
             if (ctor is null)
@@ -291,6 +287,7 @@ namespace ThingsGateway.Foundation
                     item.Invoke(instance, ps);
                 }
             }
+            descriptor.OnResolved?.Invoke(instance);
             return instance;
         }
 

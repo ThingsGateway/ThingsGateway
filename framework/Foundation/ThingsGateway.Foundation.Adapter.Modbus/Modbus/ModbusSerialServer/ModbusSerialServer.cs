@@ -11,7 +11,6 @@
 #endregion
 
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 
 using ThingsGateway.Foundation.Extension.Bool;
 using ThingsGateway.Foundation.Extension.Generic;

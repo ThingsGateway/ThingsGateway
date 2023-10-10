@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command=" set dir=&quot;$(SolutionDir)Web\ThingsGateway.Web.Entry\bin\$(Configuration)\$(TargetFramework)\&quot;&#xD;&#xA; if not exist %25dir%25  md %25dir%25  &#xD;&#xA;copy &quot;$(TargetDir)*&quot;  %25dir%25&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;" />
+  </Target>
+
+
+  <ItemGroup>
+    <None Remove="StartCommand.txt" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <Compile Include="..\..\Foundation\ThingsGateway.Foundation.Core\Foundation\Utils\FileUtil.cs" Link="FileUtil.cs" />
+    <Compile Include="..\..\Foundation\ThingsGateway.Foundation.Core\TouchSocket\Core\Extensions\DateTimeExtensions.cs" Link="DateTimeExtensions.cs" />
+    <Compile Include="..\..\Foundation\ThingsGateway.Foundation.Core\TouchSocket\Core\IO\DirectoryUtility.cs" Link="DirectoryUtility.cs" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <Content Include="StartCommand.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+</Project>

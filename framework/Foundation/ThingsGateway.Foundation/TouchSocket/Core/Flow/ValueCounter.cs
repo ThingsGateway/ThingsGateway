@@ -10,7 +10,7 @@
 //------------------------------------------------------------------------------
 #endregion
 
-namespace ThingsGateway.Foundation
+namespace ThingsGateway.Foundation.Core
 {
     /// <summary>
     /// 值类型计数器。
@@ -46,6 +46,15 @@ namespace ThingsGateway.Foundation
         /// 计数周期。
         /// </summary>
         public TimeSpan Period { get; set; }
+
+        /// <summary>
+        /// 重置<see cref="Count"/>和<see cref="LastIncrement"/>
+        /// </summary>
+        public void Reset()
+        {
+            this.m_count = 0;
+            this.m_lastIncrement = default;
+        }
 
         /// <summary>
         /// 累计增加计数

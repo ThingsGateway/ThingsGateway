@@ -36,6 +36,7 @@ namespace ThingsGateway.Foundation.Rpc
         internal static readonly List<Assembly> m_ignoreAssemblies = new List<Assembly>();
         internal static readonly List<Type> m_ignoreTypes = new List<Type>();
         internal static readonly Dictionary<Type, string> m_proxyType = new Dictionary<Type, string>();
+
         private const BindingFlags m_methodFlags = BindingFlags.Default | BindingFlags.Instance | BindingFlags.Public;
 
         /// <summary>
@@ -171,9 +172,9 @@ namespace ThingsGateway.Foundation.Rpc
             codeString.AppendLine("*/");
             codeString.AppendLine("#pragma warning disable");
             codeString.AppendLine("using System;");
-            codeString.AppendLine("using ThingsGateway.Foundation;");
-            codeString.AppendLine("using ThingsGateway.Foundation;");
-            codeString.AppendLine("using ThingsGateway.Foundation;");
+            codeString.AppendLine("using ThingsGateway.Foundation.Core;");
+            codeString.AppendLine("using ThingsGateway.Foundation.Sockets;");
+            codeString.AppendLine("using ThingsGateway.Foundation.Rpc;");
             codeString.AppendLine("using System.Collections.Generic;");
             codeString.AppendLine("using System.Diagnostics;");
             codeString.AppendLine("using System.Text;");
@@ -390,6 +391,53 @@ namespace ThingsGateway.Foundation.Rpc
         }
 
         /// <summary>
+        /// 获取函数唯一Id
+        /// </summary>
+        /// <param name="method"></param>
+        /// <returns></returns>
+        public static string GetMethodId(MethodInfo method)
+        {
+            var stringBuilder = new StringBuilder();
+            stringBuilder.Append(method.GetName());
+            foreach (var item in method.GetParameters())
+            {
+                stringBuilder.Append(item.ParameterType.FullName);
+            }
+
+            return stringBuilder.ToString();
+        }
+
+        /// <summary>
+        /// 获取Method
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="methods"></param>
+        public static void GetMethodInfos(Type type, ref Dictionary<string, MethodInfo> methods)
+        {
+            foreach (var item in type.GetInterfaces())
+            {
+                GetMethodInfos(item, ref methods);
+            }
+            foreach (var method in type.GetMethods(m_methodFlags))
+            {
+                if (method.IsGenericMethod)
+                {
+                    continue;
+                }
+                if (methods.ContainsKey(GetMethodId(method)))
+                {
+                    continue;
+                }
+
+                var attributes = method.GetCustomAttributes<RpcAttribute>(true);
+                if (attributes.Any())
+                {
+                    methods.Add(GetMethodId(method), method);
+                }
+            }
+        }
+
+        /// <summary>
         /// 从类型获取函数实例
         /// </summary>
         /// <typeparam name="TServer"></typeparam>
@@ -420,10 +468,7 @@ namespace ThingsGateway.Foundation.Rpc
             var instances = new List<MethodInstance>();
 
             var fromMethodInfos = new Dictionary<string, MethodInfo>();
-            GetMethodInfos(serverFromType, ref fromMethodInfos);
-
-            var toMethodInfos = new Dictionary<string, MethodInfo>();
-            GetMethodInfos(serverToType, ref toMethodInfos);
+            GetMethodInfos(serverToType, ref fromMethodInfos);
 
             foreach (var method in fromMethodInfos.Values)
             {
@@ -432,84 +477,9 @@ namespace ThingsGateway.Foundation.Rpc
                     continue;
                 }
                 var attributes = method.GetCustomAttributes<RpcAttribute>(true);
-                if (attributes.Count() > 0)
+                if (attributes.Any())
                 {
-                    var methodInstance = new MethodInstance(method, serverToType)
-                    {
-                        ServerType = serverFromType,
-                        IsEnable = true,
-                        Parameters = method.GetParameters()
-                    };
-                    if (!toMethodInfos.TryGetValue(GetMethodId(method), out var toMethod))
-                    {
-                        throw new InvalidOperationException($"没有找到方法{method.Name}的实现");
-                    }
-
-                    var actionFilters = new List<IRpcActionFilter>();
-
-                    foreach (var item in method.GetCustomAttributes(true))
-                    {
-                        if (item is IRpcActionFilter filter)
-                        {
-                            actionFilters.Add(filter);
-                        }
-                    }
-
-                    foreach (var item in serverFromType.GetCustomAttributes(true))
-                    {
-                        if (item is IRpcActionFilter filter)
-                        {
-                            actionFilters.Add(filter);
-                        }
-                    }
-
-                    if (serverFromType != serverToType)
-                    {
-                        foreach (var item in toMethod.GetCustomAttributes(true))
-                        {
-                            if (item is IRpcActionFilter filter)
-                            {
-                                actionFilters.Add(filter);
-                            }
-                        }
-
-                        foreach (var item in serverToType.GetCustomAttributes(true))
-                        {
-                            if (item is IRpcActionFilter filter)
-                            {
-                                actionFilters.Add(filter);
-                            }
-                        }
-                    }
-                    if (actionFilters.Count > 0)
-                    {
-                        methodInstance.Filters = actionFilters.ToArray();
-                    }
-                    foreach (var item in attributes)
-                    {
-                        methodInstance.MethodFlags |= item.MethodFlags;
-                    }
-                    if (methodInstance.MethodFlags.HasFlag(MethodFlags.IncludeCallContext))
-                    {
-                        if (methodInstance.Parameters.Length == 0 || !typeof(ICallContext).IsAssignableFrom(methodInstance.Parameters[0].ParameterType))
-                        {
-                            throw new RpcException($"函数：{method}，标识包含{MethodFlags.IncludeCallContext}时，必须包含{nameof(ICallContext)}或其派生类参数，且为第一参数。");
-                        }
-                    }
-                    var names = new List<string>();
-                    foreach (var parameterInfo in methodInstance.Parameters)
-                    {
-                        names.Add(parameterInfo.Name);
-                    }
-                    methodInstance.ParameterNames = names.ToArray();
-                    var parameters = method.GetParameters();
-                    var types = new List<Type>();
-                    foreach (var parameter in parameters)
-                    {
-                        types.Add(parameter.ParameterType.GetRefOutType());
-                    }
-                    methodInstance.ParameterTypes = types.ToArray();
-                    instances.Add(methodInstance);
+                    instances.Add(new MethodInstance(method, serverFromType, serverToType));
                 }
             }
 
@@ -545,36 +515,6 @@ namespace ThingsGateway.Foundation.Rpc
         public static bool TryGetProxyTypeName(Type type, out string className)
         {
             return m_proxyType.TryGetValue(type, out className);
-        }
-
-        private static string GetMethodId(MethodInfo method)
-        {
-            var stringBuilder = new StringBuilder();
-            stringBuilder.Append(method.Name);
-            foreach (var item in method.GetParameters())
-            {
-                stringBuilder.Append(item.ParameterType.FullName);
-            }
-
-            return stringBuilder.ToString();
-        }
-
-        private static void GetMethodInfos(Type type, ref Dictionary<string, MethodInfo> infos)
-        {
-            if (type.IsInterface)
-            {
-                foreach (var item in type.GetInterfaces())
-                {
-                    GetMethodInfos(item, ref infos);
-                }
-            }
-            foreach (var item in type.GetMethods(m_methodFlags))
-            {
-                if (!infos.ContainsKey(GetMethodId(item)))
-                {
-                    infos.Add(GetMethodId(item), item);
-                }
-            }
         }
     }
 }

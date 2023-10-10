@@ -17,4 +17,4 @@ global using System.Threading;
 global using System.Threading.Tasks;
 
 global using ThingsGateway.Core;
-global using ThingsGateway.Foundation;
+global using ThingsGateway.Foundation.Core;

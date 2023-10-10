@@ -11,7 +11,7 @@
 #endregion
 
 using System.Text;
-namespace ThingsGateway.Foundation;
+namespace ThingsGateway.Foundation.Core;
 /// <summary>
 /// FileUtil
 /// </summary>

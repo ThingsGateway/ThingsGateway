@@ -10,6 +10,6 @@
 //------------------------------------------------------------------------------
 #endregion
 
-global using ThingsGateway.Foundation;
+global using ThingsGateway.Foundation.Core;
 global using ThingsGateway.Gateway.Application;
 global using ThingsGateway.Gateway.Core;

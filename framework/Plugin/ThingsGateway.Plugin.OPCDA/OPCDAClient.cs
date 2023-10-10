@@ -14,7 +14,6 @@ using Newtonsoft.Json.Linq;
 
 using ThingsGateway.Foundation.Adapter.OPCDA;
 using ThingsGateway.Foundation.Adapter.OPCDA.Da;
-using ThingsGateway.Foundation.Demo;
 
 namespace ThingsGateway.Plugin.OPCDA;
 /// <summary>

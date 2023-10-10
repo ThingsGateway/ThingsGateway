@@ -25,7 +25,7 @@
 
 using System.ComponentModel;
 
-namespace ThingsGateway.Foundation.Dmtp
+namespace ThingsGateway.Foundation.Resources
 {
     /// <summary>
     /// TouchSocketDmtpStatus

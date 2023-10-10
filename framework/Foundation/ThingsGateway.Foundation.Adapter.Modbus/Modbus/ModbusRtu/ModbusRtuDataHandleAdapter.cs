@@ -10,7 +10,6 @@
 //------------------------------------------------------------------------------
 #endregion
 
-
 using ThingsGateway.Foundation.Extension.Generic;
 
 namespace ThingsGateway.Foundation.Adapter.Modbus;

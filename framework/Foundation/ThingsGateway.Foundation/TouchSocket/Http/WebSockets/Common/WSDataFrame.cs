@@ -39,6 +39,31 @@ namespace ThingsGateway.Foundation.Http.WebSockets
         public bool FIN { get; set; }
 
         /// <summary>
+        /// 是否是二进制数据类型
+        /// </summary>
+        public bool IsBinary => this.Opcode == WSDataType.Binary;
+
+        /// <summary>
+        /// 是否是关闭请求
+        /// </summary>
+        public bool IsClose => this.Opcode == WSDataType.Close;
+
+        /// <summary>
+        /// 是否是Ping
+        /// </summary>
+        public bool IsPing => this.Opcode == WSDataType.Ping;
+
+        /// <summary>
+        /// 是否是Pong
+        /// </summary>
+        public bool IsPong => this.Opcode == WSDataType.Pong;
+
+        /// <summary>
+        /// 是否是文本类型
+        /// </summary>
+        public bool IsText => this.Opcode == WSDataType.Text;
+
+        /// <summary>
         /// 计算掩码
         /// </summary>
         public bool Mask { get; set; }

@@ -49,7 +49,9 @@ namespace ThingsGateway.Foundation.Dmtp
         }
 
         #region 字段
-
+#pragma warning disable CS0414
+        private bool m_allowRoute;
+#pragma warning restore CS0414
         private ClientWebSocket m_client;
         private Func<string, IDmtpActor> m_findDmtpActor;
         private ValueCounter m_receiveCounter;
@@ -79,10 +81,10 @@ namespace ThingsGateway.Foundation.Dmtp
         public IDmtpActor DmtpActor { get => this.m_dmtpActor; }
 
         /// <inheritdoc/>
-        public string Id => this.m_dmtpActor.Id;
+        public string Id => this.m_dmtpActor?.Id;
 
         /// <inheritdoc/>
-        public bool IsHandshaked => this.m_dmtpActor.IsHandshaked;
+        public bool IsHandshaked { get; private set; }
 
         /// <inheritdoc/>
         public DateTime LastReceivedTime => this.m_receiveCounter.LastIncrement;
@@ -160,6 +162,7 @@ namespace ThingsGateway.Foundation.Dmtp
                 this.m_dmtpActor.Handshake(this.Config.GetValue(DmtpConfigExtension.VerifyTokenProperty),
                     this.Config.GetValue(DmtpConfigExtension.DefaultIdProperty),
                     timeout, this.Config.GetValue(DmtpConfigExtension.MetadataProperty), CancellationToken.None);
+                this.IsHandshaked = true;
             }
             finally
             {
@@ -168,7 +171,7 @@ namespace ThingsGateway.Foundation.Dmtp
         }
 
         /// <inheritdoc/>
-        public async Task ConnectAsync(CancellationToken cancellationToken, int timeout = 5000)
+        public async Task ConnectAsync(CancellationToken token, int timeout = 5000)
         {
             try
             {
@@ -182,7 +185,7 @@ namespace ThingsGateway.Foundation.Dmtp
                 {
                     this.m_client.SafeDispose();
                     this.m_client = new ClientWebSocket();
-                    await this.m_client.ConnectAsync(this.RemoteIPHost, cancellationToken);
+                    await this.m_client.ConnectAsync(this.RemoteIPHost, token);
 
                     this.m_dmtpActor = new SealedDmtpActor(false)
                     {
@@ -206,7 +209,8 @@ namespace ThingsGateway.Foundation.Dmtp
 
                 this.m_dmtpActor.Handshake(this.Config.GetValue(DmtpConfigExtension.VerifyTokenProperty),
                     this.Config.GetValue(DmtpConfigExtension.DefaultIdProperty),
-                    timeout, this.Config.GetValue(DmtpConfigExtension.MetadataProperty), cancellationToken);
+                    timeout, this.Config.GetValue(DmtpConfigExtension.MetadataProperty), token);
+                this.IsHandshaked = true;
             }
             finally
             {
@@ -293,6 +297,7 @@ namespace ThingsGateway.Foundation.Dmtp
 
             if (this.Container.IsRegistered(typeof(IDmtpRouteService)))
             {
+                this.m_allowRoute = true;
                 this.m_findDmtpActor = this.Container.Resolve<IDmtpRouteService>().FindDmtpActor;
             }
         }
@@ -344,6 +349,7 @@ namespace ThingsGateway.Foundation.Dmtp
             {
                 if (this.IsHandshaked)
                 {
+                    this.IsHandshaked = false;
                     this.m_client.CloseAsync(WebSocketCloseStatus.NormalClosure, msg, CancellationToken.None);
                     this.m_client.SafeDispose();
                     this.DmtpActor.SafeDispose();

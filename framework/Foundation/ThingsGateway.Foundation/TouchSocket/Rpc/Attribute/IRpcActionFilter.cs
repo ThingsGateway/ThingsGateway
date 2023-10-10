@@ -26,13 +26,13 @@
 namespace ThingsGateway.Foundation.Rpc
 {
     /// <summary>
-    /// RPC行为过滤器。
+    /// Rpc行为过滤器。
     /// </summary>
     public interface IRpcActionFilter
     {
         /// <summary>
         /// 成功执行Rpc后。
-        /// <para>如果修改<paramref name="invokeResult"/>的InvokeStatus，或Result。则会影响RPC最终结果</para>
+        /// <para>如果修改<paramref name="invokeResult"/>的InvokeStatus，或Result。则会影响Rpc最终结果</para>
         /// </summary>
         /// <param name="callContext"></param>
         /// <param name="parameters"></param>
@@ -41,7 +41,7 @@ namespace ThingsGateway.Foundation.Rpc
 
         /// <summary>
         /// 执行Rpc遇见异常。
-        /// <para>如果修改<paramref name="invokeResult"/>的InvokeStatus，或Result。则会影响RPC最终结果</para>
+        /// <para>如果修改<paramref name="invokeResult"/>的InvokeStatus，或Result。则会影响Rpc最终结果</para>
         /// </summary>
         /// <param name="callContext"></param>
         /// <param name="parameters"></param>
@@ -51,7 +51,7 @@ namespace ThingsGateway.Foundation.Rpc
 
         /// <summary>
         /// 在执行Rpc之前。
-        /// <para>当<paramref name="invokeResult"/>的InvokeStatus不为<see cref="InvokeStatus.Ready"/>。则不会执行RPC</para>
+        /// <para>当<paramref name="invokeResult"/>的InvokeStatus不为<see cref="InvokeStatus.Ready"/>。则不会执行Rpc</para>
         /// <para>同时，当<paramref name="invokeResult"/>的InvokeStatus为<see cref="InvokeStatus.Success"/>。会直接返回结果</para>
         /// </summary>
         /// <param name="callContext"></param>

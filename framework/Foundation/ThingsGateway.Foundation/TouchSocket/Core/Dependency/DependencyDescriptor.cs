@@ -23,7 +23,7 @@
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-namespace ThingsGateway.Foundation
+namespace ThingsGateway.Foundation.Core
 {
     /// <summary>
     /// 注入依赖对象
@@ -42,6 +42,13 @@ namespace ThingsGateway.Foundation
             this.Lifetime = Lifetime.Singleton;
             this.ToType = instance.GetType();
         }
+        /// <summary>
+        /// 在获取到注册时触发委托。
+        /// <para>
+        /// 在单例实例注册时，不会触发。在单例注册时，只会触发一次，在瞬态注册时，会每次都触发。
+        /// </para>
+        /// </summary>
+        public Action<object> OnResolved { get; set; }
 
         /// <summary>
         /// 初始化一个完整的服务注册

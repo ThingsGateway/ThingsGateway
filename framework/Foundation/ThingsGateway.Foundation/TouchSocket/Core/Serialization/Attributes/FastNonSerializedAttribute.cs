@@ -23,13 +23,13 @@
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-namespace ThingsGateway.Foundation
+namespace ThingsGateway.Foundation.Core
 {
     /// <summary>
     /// 忽略的Fast序列化
     /// </summary>
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
-    public class FastNonSerializedAttribute : Attribute
+    public sealed class FastNonSerializedAttribute : Attribute
     {
     }
 }

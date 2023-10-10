@@ -222,7 +222,7 @@
             相关命令含义源自网络资料/Shrap7/s7netplus
             </summary>
         </member>
-        <member name="M:ThingsGateway.Foundation.Adapter.Siemens.SiemensS7PLC.#ctor(ThingsGateway.Foundation.TcpClient,ThingsGateway.Foundation.Adapter.Siemens.SiemensEnum)">
+        <member name="M:ThingsGateway.Foundation.Adapter.Siemens.SiemensS7PLC.#ctor(ThingsGateway.Foundation.Core.TcpClient,ThingsGateway.Foundation.Adapter.Siemens.SiemensEnum)">
             <summary>
             传入PLC类型，程序内会改变相应PLC类型的S7协议LocalTSAP， RemoteTSAP等
             </summary>

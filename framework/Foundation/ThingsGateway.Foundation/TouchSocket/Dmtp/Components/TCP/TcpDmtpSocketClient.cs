@@ -225,7 +225,8 @@ namespace ThingsGateway.Foundation.Dmtp
                 await Task.Delay(this.VerifyTimeout);
                 if (!this.IsHandshaked)
                 {
-                    this.Close("Handshak验证超时");
+                    this.TryShutdown();
+                    base.Close("Handshak验证超时");
                 }
             });
         }

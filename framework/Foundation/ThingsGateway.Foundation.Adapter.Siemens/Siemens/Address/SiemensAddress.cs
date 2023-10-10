@@ -10,7 +10,7 @@
 //------------------------------------------------------------------------------
 #endregion
 
-using ThingsGateway.Foundation.Extension.String;
+using ThingsGateway.Foundation.Extension;
 
 namespace ThingsGateway.Foundation.Adapter.Siemens;
 /// <summary>

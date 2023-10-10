@@ -73,6 +73,10 @@ public class TcpClientBase : BaseSocket, ITcpClient
             Period = TimeSpan.FromSeconds(1),
             OnPeriod = this.OnSendPeriod
         };
+        this.m_tcpCore = new InternalTcpCore()
+        {
+            OnReceived = this.HandleBuffer
+        };
     }
 
     #region 变量
@@ -83,6 +87,7 @@ public class TcpClientBase : BaseSocket, ITcpClient
     private volatile bool m_online;
     private ValueCounter m_receiveCounter;
     private ValueCounter m_sendCounter;
+    private InternalTcpCore m_tcpCore;
 
     #endregion 变量
 
@@ -921,7 +926,25 @@ public class TcpClientBase : BaseSocket, ITcpClient
             byteBlock.Dispose();
         }
     }
+    private void HandleBuffer(TcpCore core, ByteBlock byteBlock)
+    {
+        this.ThrowIfDisposed();
+        if (this.OnHandleRawBuffer?.Invoke(byteBlock) == false)
+        {
+            return;
+        }
 
+        if (this.PluginsManager.Enable && this.PluginsManager.Raise(nameof(ITcpReceivingPlugin.OnTcpReceiving), this, new ByteBlockEventArgs(byteBlock)))
+        {
+            return;
+        }
+        if (this.DataHandlingAdapter == null)
+        {
+            this.Logger.Error(this, TouchSocketResource.NullDataAdapter.GetDescription());
+            return;
+        }
+        this.DataHandlingAdapter.ReceivedInput(byteBlock);
+    }
     #region 发送
 
     #region 同步发送

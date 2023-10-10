@@ -23,7 +23,7 @@
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-namespace ThingsGateway.Foundation.Rpc
+namespace ThingsGateway.Foundation.Resources
 {
     /// <summary>
     /// TouchSocketRpc资源枚举

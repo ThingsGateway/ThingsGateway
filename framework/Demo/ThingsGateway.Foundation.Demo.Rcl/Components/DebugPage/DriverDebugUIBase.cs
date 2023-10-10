@@ -12,6 +12,8 @@
 
 using Microsoft.AspNetCore.Components;
 
+using ThingsGateway.Components;
+
 namespace ThingsGateway.Foundation.Demo;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 /// <summary>
@@ -69,7 +71,7 @@ public abstract class DriverDebugUIBase : ComponentBase, IDisposable
         _periodicTimer?.Dispose();
     }
     /// <inheritdoc/>
-    public void LogOut(ThingsGateway.Foundation.LogLevel logLevel, object source, string message, Exception exception)
+    public void LogOut(ThingsGateway.Foundation.Core.LogLevel logLevel, object source, string message, Exception exception)
     {
         Messages.Add(((LogLevel)logLevel,
             $"{DateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset)} - {message} {exception}"));

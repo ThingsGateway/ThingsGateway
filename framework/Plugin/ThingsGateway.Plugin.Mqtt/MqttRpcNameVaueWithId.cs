@@ -12,8 +12,6 @@
 
 using System.Collections.Generic;
 
-using ThingsGateway.Foundation;
-
 namespace ThingsGateway.Plugin.Mqtt;
 
 /// <summary>

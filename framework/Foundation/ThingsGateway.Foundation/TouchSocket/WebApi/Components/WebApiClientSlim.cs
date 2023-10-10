@@ -19,10 +19,11 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-using ThingsGateway.Foundation;
+using ThingsGateway.Foundation.Core;
 using ThingsGateway.Foundation.Rpc;
 using ThingsGateway.Foundation.Sockets;
 
+using HttpClient = System.Net.Http.HttpClient;
 using HttpMethod = System.Net.Http.HttpMethod;
 
 namespace ThingsGateway.Foundation.WebApi
@@ -36,7 +37,7 @@ namespace ThingsGateway.Foundation.WebApi
         /// 使用<see cref="HttpClient"/>为基础的WebApi客户端。
         /// </summary>
         /// <param name="httpClient"></param>
-        public WebApiClientSlim(System.Net.Http.HttpClient httpClient = default) : base(httpClient)
+        public WebApiClientSlim(HttpClient httpClient = default) : base(httpClient)
         {
             this.StringConverter = new StringConverter();
         }

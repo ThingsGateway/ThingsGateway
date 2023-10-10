@@ -11,10 +11,8 @@
 #endregion
 
 using System.Diagnostics;
-using System.IO;
 
 using ThingsGateway.Core;
-using ThingsGateway.Foundation;
 using ThingsGateway.Foundation.Dmtp;
 using ThingsGateway.Foundation.Dmtp.FileTransfer;
 using ThingsGateway.Foundation.Dmtp.Rpc;
@@ -115,7 +113,7 @@ public partial class UpgradeManger
     /// <summary>
     /// 底层日志输出
     /// </summary>
-    private void LogOut(ThingsGateway.Foundation.LogLevel logLevel, object source, string message, Exception exception)
+    private void LogOut(ThingsGateway.Foundation.Core.LogLevel logLevel, object source, string message, Exception exception)
     {
         Messages.Add(((Microsoft.Extensions.Logging.LogLevel)logLevel,
             $"{DateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat()} - {message} {exception}"));

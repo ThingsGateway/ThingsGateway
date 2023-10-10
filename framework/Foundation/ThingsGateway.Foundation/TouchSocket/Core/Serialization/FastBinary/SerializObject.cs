@@ -24,14 +24,19 @@
 //------------------------------------------------------------------------------
 using System.Reflection;
 
-namespace ThingsGateway.Foundation
+namespace ThingsGateway.Foundation.Core
 {
-    internal class SerializObject
+    internal sealed class SerializObject
     {
-        private MemberInfo[] m_MemberInfos;
         private FieldInfo[] m_fieldInfos;
+        private MemberInfo[] m_memberInfos;
         private PropertyInfo[] m_properties;
-        public IFastBinaryConverter Converter { get; set; }
+
+        public SerializObject(Type type, IFastBinaryConverter converter)
+        {
+            this.Type = type;
+            this.Converter = converter;
+        }
 
         public SerializObject(Type type)
         {
@@ -110,13 +115,10 @@ namespace ThingsGateway.Foundation
             this.IsStruct = type.IsStruct();
         }
 
-        public bool IsStruct { get; private set; }
-
         public Method AddMethod { get; private set; }
-
         public Type[] ArgTypes { get; private set; }
-
         public Type ArrayType { get; private set; }
+        public IFastBinaryConverter Converter { get; private set; }
 
         public FieldInfo[] FieldInfos
         {
@@ -127,26 +129,25 @@ namespace ThingsGateway.Foundation
             }
         }
 
+        public Dictionary<string, FieldInfo> FieldInfosDic { get; private set; }
+        public InstanceType InstanceType { get; private set; }
+        public bool IsStruct { get; private set; }
+        public MemberAccessor MemberAccessor { get; private set; }
+
         public MemberInfo[] MemberInfos
         {
             get
             {
-                if (this.m_MemberInfos == null)
+                if (this.m_memberInfos == null)
                 {
                     var infos = new List<MemberInfo>();
                     infos.AddRange(this.FieldInfosDic.Values);
                     infos.AddRange(this.PropertiesDic.Values);
-                    this.m_MemberInfos = infos.ToArray();
+                    this.m_memberInfos = infos.ToArray();
                 }
-                return this.m_MemberInfos;
+                return this.m_memberInfos;
             }
         }
-
-        public Dictionary<string, FieldInfo> FieldInfosDic { get; private set; }
-
-        public InstanceType InstanceType { get; private set; }
-
-        public MemberAccessor MemberAccessor { get; private set; }
 
         public PropertyInfo[] Properties
         {
@@ -181,9 +182,7 @@ namespace ThingsGateway.Foundation
             return type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.Default)
                           .Where(p =>
                           {
-                              return p.IsDefined(typeof(FastSerializedAttribute), true)
-                                  ? true
-                                  : p.CanWrite &&
+                              return p.IsDefined(typeof(FastSerializedAttribute), true) || p.CanWrite &&
                               p.CanRead &&
                               (!p.IsDefined(typeof(FastNonSerializedAttribute), true) &&
                               (p.SetMethod.GetParameters().Length == 1) &&
