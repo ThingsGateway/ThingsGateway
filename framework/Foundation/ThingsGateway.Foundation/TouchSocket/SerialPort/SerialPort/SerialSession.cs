@@ -10,18 +10,6 @@
 //------------------------------------------------------------------------------
 #endregion
 
-//------------------------------------------------------------------------------
-//  此代码版权（除特别声明或在XREF结尾的命名空间的代码）归作者本人若汝棋茗所有
-//  源代码使用协议遵循本仓库的开源协议及附加协议，若本仓库没有设置，则按MIT开源协议授权
-//  CSDN博客：https://blog.csdn.net/qq_40374647
-//  哔哩哔哩视频：https://space.bilibili.com/94253567
-//  Gitee源代码仓库：https://gitee.com/RRQM_Home
-//  Github源代码仓库：https://github.com/RRQM
-//  API首页：http://rrqm_home.gitee.io/touchsocket/
-//  交流QQ群：234762506
-//  感谢您的下载和使用
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
 using System.IO.Ports;
 
 namespace ThingsGateway.Foundation.Serial;
@@ -76,8 +64,8 @@ public class SerialSessionBase : BaseSerial, ISerialSession
     private DelaySender m_delaySender;
     private long m_bufferRate = 1;
     private bool m_online => MainSerialPort?.IsOpen == true;
-    ValueCounter m_receiveCounter;
-    ValueCounter m_sendCounter;
+    private ValueCounter m_receiveCounter;
+    private ValueCounter m_sendCounter;
 
     #endregion 变量
 
@@ -115,7 +103,7 @@ public class SerialSessionBase : BaseSerial, ISerialSession
         {
             this.Connected?.Invoke(this, e);
         }
-        catch (System.Exception ex)
+        catch (Exception ex)
         {
             this.Logger.Log(LogLevel.Error, this, $"在事件{nameof(this.Connected)}中发生错误。", ex);
         }
@@ -267,11 +255,6 @@ public class SerialSessionBase : BaseSerial, ISerialSession
     #region 断开操作
 
     /// <inheritdoc/>
-    public override string ToString()
-    {
-        return SerialProperty?.ToString();
-    }
-    /// <inheritdoc/>
     public virtual void Close(string msg = TouchSocketCoreUtility.Empty)
     {
         lock (this.SyncRoot)
@@ -354,7 +337,7 @@ public class SerialSessionBase : BaseSerial, ISerialSession
             var serialProperty = this.Config.GetValue(SerialConfigExtension.SerialProperty) ?? throw new ArgumentNullException("串口配置不能为空。");
 
             this.MainSerialPort.SafeDispose();
-            var serialPort = this.CreateSerial(serialProperty);
+            var serialPort = CreateSerial(serialProperty);
             var args = new SerialConnectingEventArgs(this.MainSerialPort);
             this.PrivateOnConnecting(args);
             serialPort.Open();
@@ -604,14 +587,14 @@ public class SerialSessionBase : BaseSerial, ISerialSession
         }
         else if (this.ReceiveType == ReceiveType.Bio)
         {
-            new Thread(BeginBio)
+            new Thread(this.BeginBio)
             {
                 IsBackground = true
             }
             .Start();
         }
     }
-    private SerialPort CreateSerial(SerialProperty serialProperty)
+    private static SerialPort CreateSerial(SerialProperty serialProperty)
     {
         SerialPort serialPort = new(serialProperty.PortName, serialProperty.BaudRate, serialProperty.Parity, serialProperty.DataBits, serialProperty.StopBits)
         {
@@ -644,7 +627,7 @@ public class SerialSessionBase : BaseSerial, ISerialSession
     {
         while (true)
         {
-            var byteBlock = BytePool.Default.GetByteBlock(this.ReceiveBufferSize);
+            var byteBlock = new ByteBlock(this.ReceiveBufferSize);
             try
             {
                 int r = MainSerialPort.Read(byteBlock.Buffer, 0, MainSerialPort.BytesToRead);
@@ -665,59 +648,7 @@ public class SerialSessionBase : BaseSerial, ISerialSession
         }
     }
 
-    private void ProcessReceived(SerialReceivedEventArgs e)
-    {
-        if (!this.m_online)
-        {
-            e.UserToken.SafeDispose();
-            return;
-        }
-        if (MainSerialPort.BytesToRead > 0)
-        {
-            byte[] buffer = new byte[2048];
-            var byteBlock = (ByteBlock)e.UserToken;
-            int num = MainSerialPort.Read(buffer, 0, MainSerialPort.BytesToRead);
-            byteBlock.Write(buffer, 0, num);
-            this.HandleBuffer(byteBlock);
-            try
-            {
-                var newByteBlock = BytePool.Default.GetByteBlock((int)Math.Min(this.ReceiveBufferSize * this.m_bufferRate, TouchSocketUtility.MaxBufferLength));
-                newByteBlock.SetLength(num);
-                e.UserToken = newByteBlock;
 
-                if (MainSerialPort.BytesToRead > 0)
-                {
-                    this.m_bufferRate += 2;
-                    this.ProcessReceived(e);
-                }
-            }
-            catch (Exception ex)
-            {
-                e.UserToken.SafeDispose();
-                this.BreakOut(ex.Message);
-            }
-        }
-        else
-        {
-            e.UserToken.SafeDispose();
-            this.BreakOut("远程终端主动关闭");
-        }
-    }
-
-    private void SetSerialPort(SerialPort serialPort)
-    {
-        if (serialPort == null)
-        {
-            return;
-        }
-
-        this.MainSerialPort = serialPort;
-        var delaySenderOption = this.Config.GetValue(TouchSocketConfigExtension.DelaySenderProperty);
-        if (delaySenderOption != null)
-        {
-            this.m_delaySender = new DelaySender(delaySenderOption, this.MainSerialPort.AbsoluteSend);
-        }
-    }
     /// <summary>
     /// 处理数据
     /// </summary>
@@ -905,7 +836,7 @@ public class SerialSessionBase : BaseSerial, ISerialSession
         }
         if (this.HandleSendingData(buffer, offset, length))
         {
-            if (this.m_delaySender != null && length < m_delaySender.DelayLength)
+            if (this.m_delaySender != null && length < this.m_delaySender.DelayLength)
             {
                 this.m_delaySender.Send(QueueDataBytes.CreateNew(buffer, offset, length));
             }
@@ -938,4 +869,63 @@ public class SerialSessionBase : BaseSerial, ISerialSession
     #endregion 发送
 
 
+    private void ProcessReceived(SerialReceivedEventArgs e)
+    {
+        if (!this.m_online)
+        {
+            e.UserToken.SafeDispose();
+            return;
+        }
+        if (MainSerialPort.BytesToRead > 0)
+        {
+            byte[] buffer = new byte[2048];
+            var byteBlock = (ByteBlock)e.UserToken;
+            int num = MainSerialPort.Read(buffer, 0, MainSerialPort.BytesToRead);
+            byteBlock.Write(buffer, 0, num);
+            byteBlock.SetLength(num);
+            this.HandleBuffer(byteBlock);
+            try
+            {
+                var newByteBlock = BytePool.Default.GetByteBlock((int)Math.Min(this.ReceiveBufferSize * this.m_bufferRate, TouchSocketUtility.MaxBufferLength));
+                newByteBlock.SetLength(0);
+                e.UserToken = newByteBlock;
+
+                if (MainSerialPort.BytesToRead > 0)
+                {
+                    this.m_bufferRate += 2;
+                    this.ProcessReceived(e);
+                }
+            }
+            catch (Exception ex)
+            {
+                e.UserToken.SafeDispose();
+                this.BreakOut(ex.Message);
+            }
+        }
+        else
+        {
+            e.UserToken.SafeDispose();
+            this.BreakOut("远程终端主动关闭");
+        }
+    }
+
+    private void SetSerialPort(SerialPort serialPort)
+    {
+        if (serialPort == null)
+        {
+            return;
+        }
+
+        this.MainSerialPort = serialPort;
+        var delaySenderOption = this.Config.GetValue(TouchSocketConfigExtension.DelaySenderProperty);
+        if (delaySenderOption != null)
+        {
+            this.m_delaySender = new DelaySender(delaySenderOption, this.MainSerialPort.AbsoluteSend);
+        }
+    }
+    /// <inheritdoc/>
+    public override string ToString()
+    {
+        return SerialProperty?.ToString();
+    }
 }

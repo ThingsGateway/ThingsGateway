@@ -91,9 +91,17 @@ internal class ModbusHelper
 
             if (response[1] >= 0x80)//错误码
                 return new OperResult<byte[], FilterResult>(GetDescriptionByErrorCode(response[2])) { Content2 = FilterResult.Success };
-            if ((response.Length < response[2] + 3))
-                return new OperResult<byte[], FilterResult>("数据长度不足" + response.ToHexString()) { Content2 = FilterResult.Cache };
+            if (response[1] <= 0x05)
+            {
+                if ((response.Length < response[2] + 3))
+                    return new OperResult<byte[], FilterResult>("数据长度不足" + response.ToHexString()) { Content2 = FilterResult.Cache };
+            }
+            else
+            {
+                if ((response.Length < 6))
+                    return new OperResult<byte[], FilterResult>("数据长度不足" + response.ToHexString()) { Content2 = FilterResult.Cache };
 
+            }
 
             if (send.Length == 0)
             {
@@ -126,14 +134,19 @@ internal class ModbusHelper
 
         if (response[1] >= 0x80)//错误码
             return new OperResult<byte[], FilterResult>(GetDescriptionByErrorCode(response[2])) { Content2 = FilterResult.Success };
-        if ((response.Length < response[2] + 5))
-            return new OperResult<byte[], FilterResult>("数据长度不足" + response.ToHexString()) { Content2 = FilterResult.Cache };
+        if (response[1] <= 0x05)
+        {
+            if ((response.Length < response[2] + 5))
+                return new OperResult<byte[], FilterResult>("数据长度不足" + response.ToHexString()) { Content2 = FilterResult.Cache };
 
-        if (response[2] == 0)
+        }
+        else
         {
             if ((response.Length < 8))
                 return new OperResult<byte[], FilterResult>("数据长度不足" + response.ToHexString()) { Content2 = FilterResult.Cache };
+
         }
+
 
         var data = response.SelectMiddle(0, response[2] != 0 ? response[2] + 5 : 8);
         if (crcCheck && !EasyCRC16.CheckCRC16(data))
