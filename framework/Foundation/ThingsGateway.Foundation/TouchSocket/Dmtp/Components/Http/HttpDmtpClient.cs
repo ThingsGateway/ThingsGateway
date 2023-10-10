@@ -91,7 +91,7 @@ namespace ThingsGateway.Foundation.Dmtp
         }
 
         /// <inheritdoc/>
-        public virtual IHttpDmtpClient Connect(CancellationToken cancellationToken, int timeout = 5000)
+        public virtual IHttpDmtpClient Connect(CancellationToken token, int timeout = 5000)
         {
             lock (this.SyncRoot)
             {
@@ -110,13 +110,13 @@ namespace ThingsGateway.Foundation.Dmtp
                 request.Headers.Add(HttpHeaders.Upgrade, DmtpUtility.Dmtp.ToLower());
 
                 request.AsMethod(DmtpUtility.Dmtp);
-                var response = this.RequestContent(request, timeout: timeout, cancellationToken: cancellationToken);
+                var response = this.RequestContent(request, timeout: timeout, token: token);
                 if (response.StatusCode == 101)
                 {
                     this.SwitchProtocolToDmtp();
                     this.m_smtpActor.Handshake(this.Config.GetValue(DmtpConfigExtension.VerifyTokenProperty),
                         this.Config.GetValue(DmtpConfigExtension.DefaultIdProperty),
-                        timeout, this.Config.GetValue(DmtpConfigExtension.MetadataProperty), cancellationToken);
+                        timeout, this.Config.GetValue(DmtpConfigExtension.MetadataProperty), token);
                     return this;
                 }
                 else
@@ -173,7 +173,7 @@ namespace ThingsGateway.Foundation.Dmtp
         }
 
         /// <inheritdoc/>
-        public virtual async Task<IHttpDmtpClient> ConnectAsync(CancellationToken cancellationToken, int timeout = 5000)
+        public virtual async Task<IHttpDmtpClient> ConnectAsync(CancellationToken token, int timeout = 5000)
         {
             try
             {
@@ -193,13 +193,13 @@ namespace ThingsGateway.Foundation.Dmtp
                 request.Headers.Add(HttpHeaders.Upgrade, DmtpUtility.Dmtp.ToLower());
 
                 request.AsMethod(DmtpUtility.Dmtp);
-                var response = this.RequestContent(request, timeout: timeout, cancellationToken: cancellationToken);
+                var response = this.RequestContent(request, timeout: timeout, token: token);
                 if (response.StatusCode == 101)
                 {
                     this.SwitchProtocolToDmtp();
                     await this.m_smtpActor.HandshakeAsync(this.Config.GetValue(DmtpConfigExtension.VerifyTokenProperty),
                          this.Config.GetValue(DmtpConfigExtension.DefaultIdProperty),
-                         timeout, this.Config.GetValue(DmtpConfigExtension.MetadataProperty), cancellationToken);
+                         timeout, this.Config.GetValue(DmtpConfigExtension.MetadataProperty), token);
                     return this;
                 }
                 else

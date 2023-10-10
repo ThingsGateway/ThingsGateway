@@ -20,4 +20,4 @@ global using System.Threading.Tasks;
 
 global using ThingsGateway.Admin.Core;
 global using ThingsGateway.Core;
-global using ThingsGateway.Foundation;
+global using ThingsGateway.Foundation.Core;

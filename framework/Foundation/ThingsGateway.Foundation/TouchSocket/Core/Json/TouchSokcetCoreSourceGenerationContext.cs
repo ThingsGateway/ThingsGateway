@@ -13,7 +13,7 @@
 #if NET6_0_OR_GREATER
 using System.Text.Json.Serialization;
 
-namespace ThingsGateway.Foundation
+namespace ThingsGateway.Foundation.Core
 {
     /// <summary>
     /// TouchSokcetCoreSourceGenerationContext

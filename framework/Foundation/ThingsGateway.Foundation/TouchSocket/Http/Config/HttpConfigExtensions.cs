@@ -23,7 +23,7 @@
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-namespace ThingsGateway.Foundation.Http
+namespace ThingsGateway.Foundation.Sockets
 {
     /// <summary>
     /// HttpConfigExtensions

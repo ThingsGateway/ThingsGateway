@@ -10,7 +10,6 @@
 //------------------------------------------------------------------------------
 #endregion
 
-using System.Collections.Generic;
 
 namespace ThingsGateway.Foundation.Adapter.Siemens;
 

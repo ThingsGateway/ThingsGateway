@@ -10,6 +10,8 @@
 //------------------------------------------------------------------------------
 #endregion
 
+using ThingsGateway.Foundation.Resources;
+
 namespace ThingsGateway.Foundation.Dmtp.FileTransfer
 {
     /// <summary>
@@ -589,137 +591,137 @@ namespace ThingsGateway.Foundation.Dmtp.FileTransfer
         #region Id传输
 
         /// <inheritdoc/>
-        public FinishedResult FinishedFileResourceInfo(string targetId, FileResourceInfo fileResourceInfo, ResultCode code, Metadata metadata = default, int timeout = 5000, CancellationToken cancellationToken = default)
+        public FinishedResult FinishedFileResourceInfo(string targetId, FileResourceInfo fileResourceInfo, ResultCode code, Metadata metadata = default, int timeout = 5000, CancellationToken token = default)
         {
             if (string.IsNullOrEmpty(targetId))
             {
-                return this.PrivateFinishedFileResourceInfo(targetId, fileResourceInfo, code, metadata, timeout, cancellationToken);
+                return this.PrivateFinishedFileResourceInfo(targetId, fileResourceInfo, code, metadata, timeout, token);
             }
 
             if (this.DmtpActor.AllowRoute && this.TryFindDmtpFileTransferActor(targetId, out var rpcActor))
             {
-                return rpcActor.FinishedFileResourceInfo(fileResourceInfo, code, metadata, timeout, cancellationToken);
+                return rpcActor.FinishedFileResourceInfo(fileResourceInfo, code, metadata, timeout, token);
             }
             else
             {
-                return this.PrivateFinishedFileResourceInfo(targetId, fileResourceInfo, code, metadata, timeout, cancellationToken);
+                return this.PrivateFinishedFileResourceInfo(targetId, fileResourceInfo, code, metadata, timeout, token);
             }
         }
 
         /// <inheritdoc/>
-        public Task<FinishedResult> FinishedFileResourceInfoAsync(string targetId, FileResourceInfo fileResourceInfo, ResultCode code, Metadata metadata = default, int timeout = 5000, CancellationToken cancellationToken = default)
+        public Task<FinishedResult> FinishedFileResourceInfoAsync(string targetId, FileResourceInfo fileResourceInfo, ResultCode code, Metadata metadata = default, int timeout = 5000, CancellationToken token = default)
         {
             return Task.Run(() =>
             {
-                return this.FinishedFileResourceInfo(targetId, fileResourceInfo, code, metadata, timeout, cancellationToken);
+                return this.FinishedFileResourceInfo(targetId, fileResourceInfo, code, metadata, timeout, token);
             });
         }
 
         /// <inheritdoc/>
-        public FileResourceInfoResult PullFileResourceInfo(string targetId, string path, Metadata metadata = default, int fileSectionSize = 1024 * 512, int timeout = 5000, CancellationToken cancellationToken = default)
+        public FileResourceInfoResult PullFileResourceInfo(string targetId, string path, Metadata metadata = default, int fileSectionSize = 1024 * 512, int timeout = 5000, CancellationToken token = default)
         {
             if (string.IsNullOrEmpty(targetId))
             {
-                return this.PrivatePullFileResourceInfo(targetId, path, metadata, fileSectionSize, timeout, cancellationToken);
+                return this.PrivatePullFileResourceInfo(targetId, path, metadata, fileSectionSize, timeout, token);
             }
 
             if (this.DmtpActor.AllowRoute && this.TryFindDmtpFileTransferActor(targetId, out var rpcActor))
             {
-                return rpcActor.PullFileResourceInfo(path, metadata, fileSectionSize, timeout, cancellationToken);
+                return rpcActor.PullFileResourceInfo(path, metadata, fileSectionSize, timeout, token);
             }
             else
             {
-                return this.PrivatePullFileResourceInfo(targetId, path, metadata, fileSectionSize, timeout, cancellationToken);
+                return this.PrivatePullFileResourceInfo(targetId, path, metadata, fileSectionSize, timeout, token);
             }
         }
 
         /// <inheritdoc/>
-        public Task<FileResourceInfoResult> PullFileResourceInfoAsync(string targetId, string path, Metadata metadata = default, int fileSectionSize = 1024 * 512, int timeout = 5000, CancellationToken cancellationToken = default)
+        public Task<FileResourceInfoResult> PullFileResourceInfoAsync(string targetId, string path, Metadata metadata = default, int fileSectionSize = 1024 * 512, int timeout = 5000, CancellationToken token = default)
         {
             return Task.Run(() =>
             {
-                return this.PullFileResourceInfo(targetId, path, metadata, timeout, fileSectionSize, cancellationToken);
+                return this.PullFileResourceInfo(targetId, path, metadata, timeout, fileSectionSize, token);
             });
         }
 
         /// <inheritdoc/>
-        public FileSectionResult PullFileSection(string targetId, FileSection fileSection, int timeout = 5000, CancellationToken cancellationToken = default)
+        public FileSectionResult PullFileSection(string targetId, FileSection fileSection, int timeout = 5000, CancellationToken token = default)
         {
             if (string.IsNullOrEmpty(targetId))
             {
-                return this.PrivatePullFileSection(targetId, fileSection, timeout, cancellationToken);
+                return this.PrivatePullFileSection(targetId, fileSection, timeout, token);
             }
 
             if (this.DmtpActor.AllowRoute && this.TryFindDmtpFileTransferActor(targetId, out var rpcActor))
             {
-                return rpcActor.PullFileSection(fileSection, timeout, cancellationToken);
+                return rpcActor.PullFileSection(fileSection, timeout, token);
             }
             else
             {
-                return this.PrivatePullFileSection(targetId, fileSection, timeout, cancellationToken);
+                return this.PrivatePullFileSection(targetId, fileSection, timeout, token);
             }
         }
 
         /// <inheritdoc/>
-        public Task<FileSectionResult> PullFileSectionAsync(string targetId, FileSection fileSection, int timeout = 5000, CancellationToken cancellationToken = default)
+        public Task<FileSectionResult> PullFileSectionAsync(string targetId, FileSection fileSection, int timeout = 5000, CancellationToken token = default)
         {
             return Task.Run(() =>
             {
-                return this.PullFileSection(targetId, fileSection, timeout, cancellationToken);
+                return this.PullFileSection(targetId, fileSection, timeout, token);
             });
         }
 
         /// <inheritdoc/>
-        public Result PushFileResourceInfo(string targetId, string savePath, FileResourceLocator fileResourceLocator, Metadata metadata = default, int timeout = 5000, CancellationToken cancellationToken = default)
+        public Result PushFileResourceInfo(string targetId, string savePath, FileResourceLocator fileResourceLocator, Metadata metadata = default, int timeout = 5000, CancellationToken token = default)
         {
             if (string.IsNullOrEmpty(targetId))
             {
-                return this.PrivatePushFileResourceInfo(targetId, savePath, fileResourceLocator, metadata, timeout, cancellationToken);
+                return this.PrivatePushFileResourceInfo(targetId, savePath, fileResourceLocator, metadata, timeout, token);
             }
 
             if (this.DmtpActor.AllowRoute && this.TryFindDmtpFileTransferActor(targetId, out var rpcActor))
             {
-                return rpcActor.PushFileResourceInfo(savePath, fileResourceLocator, metadata, timeout, cancellationToken);
+                return rpcActor.PushFileResourceInfo(savePath, fileResourceLocator, metadata, timeout, token);
             }
             else
             {
-                return this.PrivatePushFileResourceInfo(targetId, savePath, fileResourceLocator, metadata, timeout, cancellationToken);
+                return this.PrivatePushFileResourceInfo(targetId, savePath, fileResourceLocator, metadata, timeout, token);
             }
         }
 
         /// <inheritdoc/>
-        public Task<Result> PushFileResourceInfoAsync(string targetId, string savePath, FileResourceLocator fileResourceLocator, Metadata metadata = default, int timeout = 5000, CancellationToken cancellationToken = default)
+        public Task<Result> PushFileResourceInfoAsync(string targetId, string savePath, FileResourceLocator fileResourceLocator, Metadata metadata = default, int timeout = 5000, CancellationToken token = default)
         {
             return Task.Run(() =>
             {
-                return this.PushFileResourceInfo(targetId, savePath, fileResourceLocator, metadata, timeout, cancellationToken);
+                return this.PushFileResourceInfo(targetId, savePath, fileResourceLocator, metadata, timeout, token);
             });
         }
 
         /// <inheritdoc/>
-        public Task<Result> PushFileSectionAsync(string targetId, FileResourceLocator fileResourceLocator, FileSection fileSection, int timeout = 5000, CancellationToken cancellationToken = default)
+        public Task<Result> PushFileSectionAsync(string targetId, FileResourceLocator fileResourceLocator, FileSection fileSection, int timeout = 5000, CancellationToken token = default)
         {
             return Task.Run(() =>
             {
-                return this.PushFileSection(targetId, fileResourceLocator, fileSection, timeout, cancellationToken);
+                return this.PushFileSection(targetId, fileResourceLocator, fileSection, timeout, token);
             });
         }
 
         /// <inheritdoc/>
-        public Result PushFileSection(string targetId, FileResourceLocator fileResourceLocator, FileSection fileSection, int timeout = 5000, CancellationToken cancellationToken = default)
+        public Result PushFileSection(string targetId, FileResourceLocator fileResourceLocator, FileSection fileSection, int timeout = 5000, CancellationToken token = default)
         {
             if (string.IsNullOrEmpty(targetId))
             {
-                return this.PrivatePushFileSection(targetId, fileResourceLocator, fileSection, timeout, cancellationToken);
+                return this.PrivatePushFileSection(targetId, fileResourceLocator, fileSection, timeout, token);
             }
 
             if (this.DmtpActor.AllowRoute && this.TryFindDmtpFileTransferActor(targetId, out var rpcActor))
             {
-                return rpcActor.PushFileSection(fileResourceLocator, fileSection, timeout, cancellationToken);
+                return rpcActor.PushFileSection(fileResourceLocator, fileSection, timeout, token);
             }
             else
             {
-                return this.PrivatePushFileSection(targetId, fileResourceLocator, fileSection, timeout, cancellationToken);
+                return this.PrivatePushFileSection(targetId, fileResourceLocator, fileSection, timeout, token);
             }
         }
 
@@ -729,83 +731,83 @@ namespace ThingsGateway.Foundation.Dmtp.FileTransfer
 
         /// <inheritdoc/>
 
-        public FinishedResult FinishedFileResourceInfo(FileResourceInfo fileResourceInfo, ResultCode code, Metadata metadata = default, int timeout = 5000, CancellationToken cancellationToken = default)
+        public FinishedResult FinishedFileResourceInfo(FileResourceInfo fileResourceInfo, ResultCode code, Metadata metadata = default, int timeout = 5000, CancellationToken token = default)
         {
-            return this.PrivateFinishedFileResourceInfo(default, fileResourceInfo, code, metadata, timeout, cancellationToken);
+            return this.PrivateFinishedFileResourceInfo(default, fileResourceInfo, code, metadata, timeout, token);
         }
 
         /// <inheritdoc/>
-        public Task<FinishedResult> FinishedFileResourceInfoAsync(FileResourceInfo fileResourceInfo, ResultCode code, Metadata metadata = default, int timeout = 5000, CancellationToken cancellationToken = default)
+        public Task<FinishedResult> FinishedFileResourceInfoAsync(FileResourceInfo fileResourceInfo, ResultCode code, Metadata metadata = default, int timeout = 5000, CancellationToken token = default)
         {
             return Task.Run(() =>
             {
-                return this.FinishedFileResourceInfo(fileResourceInfo, code, metadata, timeout, cancellationToken);
+                return this.FinishedFileResourceInfo(fileResourceInfo, code, metadata, timeout, token);
             });
         }
 
         /// <inheritdoc/>
-        public FileResourceInfoResult PullFileResourceInfo(string path, Metadata metadata = default, int fileSectionSize = 1024 * 512, int timeout = 5000, CancellationToken cancellationToken = default)
+        public FileResourceInfoResult PullFileResourceInfo(string path, Metadata metadata = default, int fileSectionSize = 1024 * 512, int timeout = 5000, CancellationToken token = default)
         {
-            return this.PrivatePullFileResourceInfo(default, path, metadata, fileSectionSize, timeout, cancellationToken);
+            return this.PrivatePullFileResourceInfo(default, path, metadata, fileSectionSize, timeout, token);
         }
 
         /// <inheritdoc/>
-        public Task<FileResourceInfoResult> PullFileResourceInfoAsync(string path, Metadata metadata = default, int fileSectionSize = 1024 * 512, int timeout = 5000, CancellationToken cancellationToken = default)
+        public Task<FileResourceInfoResult> PullFileResourceInfoAsync(string path, Metadata metadata = default, int fileSectionSize = 1024 * 512, int timeout = 5000, CancellationToken token = default)
         {
             return Task.Run(() =>
             {
-                return this.PullFileResourceInfo(path, metadata, fileSectionSize, timeout, cancellationToken);
+                return this.PullFileResourceInfo(path, metadata, fileSectionSize, timeout, token);
             });
         }
 
         /// <inheritdoc/>
-        public FileSectionResult PullFileSection(FileSection fileSection, int timeout = 5000, CancellationToken cancellationToken = default)
+        public FileSectionResult PullFileSection(FileSection fileSection, int timeout = 5000, CancellationToken token = default)
         {
-            return this.PrivatePullFileSection(default, fileSection, timeout, cancellationToken);
+            return this.PrivatePullFileSection(default, fileSection, timeout, token);
         }
 
         /// <inheritdoc/>
-        public Task<FileSectionResult> PullFileSectionAsync(FileSection fileSection, int timeout = 5000, CancellationToken cancellationToken = default)
+        public Task<FileSectionResult> PullFileSectionAsync(FileSection fileSection, int timeout = 5000, CancellationToken token = default)
         {
             return Task.Run(() =>
             {
-                return this.PullFileSection(fileSection, timeout, cancellationToken);
+                return this.PullFileSection(fileSection, timeout, token);
             });
         }
 
         /// <inheritdoc/>
-        public Result PushFileResourceInfo(string savePath, FileResourceLocator fileResourceLocator, Metadata metadata = default, int timeout = 5000, CancellationToken cancellationToken = default)
+        public Result PushFileResourceInfo(string savePath, FileResourceLocator fileResourceLocator, Metadata metadata = default, int timeout = 5000, CancellationToken token = default)
         {
-            return this.PrivatePushFileResourceInfo(default, savePath, fileResourceLocator, metadata, timeout, cancellationToken);
+            return this.PrivatePushFileResourceInfo(default, savePath, fileResourceLocator, metadata, timeout, token);
         }
 
         /// <inheritdoc/>
-        public Task<Result> PushFileResourceInfoAsync(string savePath, FileResourceLocator fileResourceLocator, Metadata metadata = default, int timeout = 5000, CancellationToken cancellationToken = default)
+        public Task<Result> PushFileResourceInfoAsync(string savePath, FileResourceLocator fileResourceLocator, Metadata metadata = default, int timeout = 5000, CancellationToken token = default)
         {
             return Task.Run(() =>
             {
-                return this.PushFileResourceInfo(savePath, fileResourceLocator, metadata, timeout, cancellationToken);
+                return this.PushFileResourceInfo(savePath, fileResourceLocator, metadata, timeout, token);
             });
         }
 
         /// <inheritdoc/>
-        public Result PushFileSection(FileResourceLocator fileResourceLocator, FileSection fileSection, int timeout = 5000, CancellationToken cancellationToken = default)
+        public Result PushFileSection(FileResourceLocator fileResourceLocator, FileSection fileSection, int timeout = 5000, CancellationToken token = default)
         {
-            return this.PrivatePushFileSection(default, fileResourceLocator, fileSection, timeout, cancellationToken);
+            return this.PrivatePushFileSection(default, fileResourceLocator, fileSection, timeout, token);
         }
 
         /// <inheritdoc/>
-        public Task<Result> PushFileSectionAsync(FileResourceLocator fileResourceLocator, FileSection fileSection, int timeout = 5000, CancellationToken cancellationToken = default)
+        public Task<Result> PushFileSectionAsync(FileResourceLocator fileResourceLocator, FileSection fileSection, int timeout = 5000, CancellationToken token = default)
         {
             return Task.Run(() =>
             {
-                return this.PushFileSection(fileResourceLocator, fileSection, timeout, cancellationToken);
+                return this.PushFileSection(fileResourceLocator, fileSection, timeout, token);
             });
         }
 
         #region Private
 
-        private FinishedResult PrivateFinishedFileResourceInfo(string targetId, FileResourceInfo fileResourceInfo, ResultCode code, Metadata metadata = default, int timeout = 5000, CancellationToken cancellationToken = default)
+        private FinishedResult PrivateFinishedFileResourceInfo(string targetId, FileResourceInfo fileResourceInfo, ResultCode code, Metadata metadata = default, int timeout = 5000, CancellationToken token = default)
         {
             var waitFinishedPackage = new WaitFinishedPackage()
             {
@@ -824,7 +826,7 @@ namespace ThingsGateway.Foundation.Dmtp.FileTransfer
             {
                 waitFinishedPackage.Package(byteBlock);
                 this.DmtpActor.Send(this.m_finishedFileResourceInfo_Request, byteBlock);
-                waitData.SetCancellationToken(cancellationToken);
+                waitData.SetCancellationToken(token);
 
                 waitData.Wait(timeout);
 
@@ -875,7 +877,7 @@ namespace ThingsGateway.Foundation.Dmtp.FileTransfer
             }
         }
 
-        private FileResourceInfoResult PrivatePullFileResourceInfo(string targetId, string path, Metadata metadata = default, int fileSectionSize = 1024 * 512, int timeout = 5000, CancellationToken cancellationToken = default)
+        private FileResourceInfoResult PrivatePullFileResourceInfo(string targetId, string path, Metadata metadata = default, int fileSectionSize = 1024 * 512, int timeout = 5000, CancellationToken token = default)
         {
             var waitFileResource = new WaitFileResource()
             {
@@ -894,7 +896,7 @@ namespace ThingsGateway.Foundation.Dmtp.FileTransfer
             {
                 waitFileResource.Package(byteBlock);
                 this.DmtpActor.Send(this.m_pullFileResourceInfo_Request, byteBlock);
-                waitData.SetCancellationToken(cancellationToken);
+                waitData.SetCancellationToken(token);
 
                 waitData.Wait(timeout);
 
@@ -944,7 +946,7 @@ namespace ThingsGateway.Foundation.Dmtp.FileTransfer
             }
         }
 
-        private FileSectionResult PrivatePullFileSection(string targetId, FileSection fileSection, int timeout = 5000, CancellationToken cancellationToken = default)
+        private FileSectionResult PrivatePullFileSection(string targetId, FileSection fileSection, int timeout = 5000, CancellationToken token = default)
         {
             fileSection.Status = FileSectionStatus.Transfering;
             var waitFileSection = new WaitFileSection()
@@ -962,7 +964,7 @@ namespace ThingsGateway.Foundation.Dmtp.FileTransfer
             {
                 waitFileSection.Package(byteBlock);
                 this.DmtpActor.Send(this.m_pullFileSection_Request, byteBlock);
-                waitData.SetCancellationToken(cancellationToken);
+                waitData.SetCancellationToken(token);
 
                 waitData.Wait(timeout);
 
@@ -1016,7 +1018,7 @@ namespace ThingsGateway.Foundation.Dmtp.FileTransfer
             }
         }
 
-        private Result PrivatePushFileResourceInfo(string targetId, string savePath, FileResourceLocator fileResourceLocator, Metadata metadata = default, int timeout = 5000, CancellationToken cancellationToken = default)
+        private Result PrivatePushFileResourceInfo(string targetId, string savePath, FileResourceLocator fileResourceLocator, Metadata metadata = default, int timeout = 5000, CancellationToken token = default)
         {
             var fileResourceInfo = fileResourceLocator.FileResourceInfo;
 
@@ -1040,7 +1042,7 @@ namespace ThingsGateway.Foundation.Dmtp.FileTransfer
             {
                 waitFileResource.Package(byteBlock);
                 this.DmtpActor.Send(this.m_pushFileResourceInfo_Request, byteBlock);
-                waitData.SetCancellationToken(cancellationToken);
+                waitData.SetCancellationToken(token);
 
                 waitData.Wait(timeout);
 
@@ -1090,7 +1092,7 @@ namespace ThingsGateway.Foundation.Dmtp.FileTransfer
             }
         }
 
-        private Result PrivatePushFileSection(string targetId, FileResourceLocator fileResourceLocator, FileSection fileSection, int timeout = 5000, CancellationToken cancellationToken = default)
+        private Result PrivatePushFileSection(string targetId, FileResourceLocator fileResourceLocator, FileSection fileSection, int timeout = 5000, CancellationToken token = default)
         {
             fileSection.Status = FileSectionStatus.Transfering;
             using var fileSectionResult = fileResourceLocator.ReadFileSection(fileSection);
@@ -1115,7 +1117,7 @@ namespace ThingsGateway.Foundation.Dmtp.FileTransfer
             {
                 waitFileSection.Package(byteBlock);
                 this.DmtpActor.Send(this.m_pushFileSection_Request, byteBlock);
-                waitData.SetCancellationToken(cancellationToken);
+                waitData.SetCancellationToken(token);
 
                 waitData.Wait(timeout);
 
@@ -1524,80 +1526,80 @@ namespace ThingsGateway.Foundation.Dmtp.FileTransfer
         #region 小文件
 
         /// <inheritdoc/>
-        public PullSmallFileResult PullSmallFile(string targetId, string path, Metadata metadata = null, int timeout = 5000, CancellationToken cancellationToken = default)
+        public PullSmallFileResult PullSmallFile(string targetId, string path, Metadata metadata = null, int timeout = 5000, CancellationToken token = default)
         {
             if (this.DmtpActor.AllowRoute && this.TryFindDmtpFileTransferActor(targetId, out var actor))
             {
-                return actor.PullSmallFile(path, metadata, timeout, cancellationToken);
+                return actor.PullSmallFile(path, metadata, timeout, token);
             }
             else
             {
-                return this.PrivatePullSmallFile(targetId, path, metadata, timeout, cancellationToken);
+                return this.PrivatePullSmallFile(targetId, path, metadata, timeout, token);
             }
         }
 
         /// <inheritdoc/>
-        public PullSmallFileResult PullSmallFile(string path, Metadata metadata = null, int timeout = 5000, CancellationToken cancellationToken = default)
+        public PullSmallFileResult PullSmallFile(string path, Metadata metadata = null, int timeout = 5000, CancellationToken token = default)
         {
-            return this.PrivatePullSmallFile(default, path, metadata, timeout, cancellationToken);
+            return this.PrivatePullSmallFile(default, path, metadata, timeout, token);
         }
 
         /// <inheritdoc/>
-        public Task<PullSmallFileResult> PullSmallFileAsync(string targetId, string path, Metadata metadata = null, int timeout = 5000, CancellationToken cancellationToken = default)
+        public Task<PullSmallFileResult> PullSmallFileAsync(string targetId, string path, Metadata metadata = null, int timeout = 5000, CancellationToken token = default)
         {
             return Task.Run(() =>
             {
-                return this.PullSmallFile(targetId, path, metadata, timeout, cancellationToken);
+                return this.PullSmallFile(targetId, path, metadata, timeout, token);
             });
         }
 
         /// <inheritdoc/>
-        public Task<PullSmallFileResult> PullSmallFileAsync(string path, Metadata metadata = null, int timeout = 5000, CancellationToken cancellationToken = default)
+        public Task<PullSmallFileResult> PullSmallFileAsync(string path, Metadata metadata = null, int timeout = 5000, CancellationToken token = default)
         {
             return Task.Run(() =>
             {
-                return this.PullSmallFile(path, metadata, timeout, cancellationToken);
+                return this.PullSmallFile(path, metadata, timeout, token);
             });
         }
 
         /// <inheritdoc/>
-        public Result PushSmallFile(string targetId, string savePath, FileInfo fileInfo, Metadata metadata = null, int timeout = 5000, CancellationToken cancellationToken = default)
+        public Result PushSmallFile(string targetId, string savePath, FileInfo fileInfo, Metadata metadata = null, int timeout = 5000, CancellationToken token = default)
         {
             if (this.DmtpActor.AllowRoute && this.TryFindDmtpFileTransferActor(targetId, out var rpcActor))
             {
-                return rpcActor.PushSmallFile(savePath, fileInfo, metadata, timeout, cancellationToken);
+                return rpcActor.PushSmallFile(savePath, fileInfo, metadata, timeout, token);
             }
             else
             {
-                return this.PrivatePushSmallFile(targetId, savePath, fileInfo, metadata, timeout, cancellationToken);
+                return this.PrivatePushSmallFile(targetId, savePath, fileInfo, metadata, timeout, token);
             }
         }
 
         /// <inheritdoc/>
-        public Result PushSmallFile(string savePath, FileInfo fileInfo, Metadata metadata = null, int timeout = 5000, CancellationToken cancellationToken = default)
+        public Result PushSmallFile(string savePath, FileInfo fileInfo, Metadata metadata = null, int timeout = 5000, CancellationToken token = default)
         {
-            return this.PrivatePushSmallFile(default, savePath, fileInfo, metadata, timeout, cancellationToken);
+            return this.PrivatePushSmallFile(default, savePath, fileInfo, metadata, timeout, token);
         }
 
         /// <inheritdoc/>
-        public Task<Result> PushSmallFileAsync(string targetId, string savePath, FileInfo fileInfo, Metadata metadata = null, int timeout = 5000, CancellationToken cancellationToken = default)
+        public Task<Result> PushSmallFileAsync(string targetId, string savePath, FileInfo fileInfo, Metadata metadata = null, int timeout = 5000, CancellationToken token = default)
         {
             return Task.Run(() =>
             {
-                return this.PushSmallFile(targetId, savePath, fileInfo, metadata, timeout, cancellationToken);
+                return this.PushSmallFile(targetId, savePath, fileInfo, metadata, timeout, token);
             });
         }
 
         /// <inheritdoc/>
-        public Task<Result> PushSmallFileAsync(string savePath, FileInfo fileInfo, Metadata metadata = null, int timeout = 5000, CancellationToken cancellationToken = default)
+        public Task<Result> PushSmallFileAsync(string savePath, FileInfo fileInfo, Metadata metadata = null, int timeout = 5000, CancellationToken token = default)
         {
             return Task.Run(() =>
             {
-                return this.PushSmallFile(savePath, fileInfo, metadata, timeout, cancellationToken);
+                return this.PushSmallFile(savePath, fileInfo, metadata, timeout, token);
             });
         }
 
-        private PullSmallFileResult PrivatePullSmallFile(string targetId, string path, Metadata metadata = null, int timeout = 5000, CancellationToken cancellationToken = default)
+        private PullSmallFileResult PrivatePullSmallFile(string targetId, string path, Metadata metadata = null, int timeout = 5000, CancellationToken token = default)
         {
             var waitSmallFilePackage = new WaitSmallFilePackage()
             {
@@ -1615,7 +1617,7 @@ namespace ThingsGateway.Foundation.Dmtp.FileTransfer
             {
                 waitSmallFilePackage.Package(byteBlock);
                 this.DmtpActor.Send(this.m_pullSmallFile_Request, byteBlock);
-                waitData.SetCancellationToken(cancellationToken);
+                waitData.SetCancellationToken(token);
 
                 waitData.Wait(timeout);
 
@@ -1666,7 +1668,7 @@ namespace ThingsGateway.Foundation.Dmtp.FileTransfer
             }
         }
 
-        private Result PrivatePushSmallFile(string targetId, string savePath, FileInfo fileInfo, Metadata metadata = null, int timeout = 5000, CancellationToken cancellationToken = default)
+        private Result PrivatePushSmallFile(string targetId, string savePath, FileInfo fileInfo, Metadata metadata = null, int timeout = 5000, CancellationToken token = default)
         {
             if (!File.Exists(fileInfo.FullName))
             {
@@ -1702,7 +1704,7 @@ namespace ThingsGateway.Foundation.Dmtp.FileTransfer
 
                 waitSmallFilePackage.Package(byteBlock);
                 this.DmtpActor.Send(this.m_pushSmallFile_Request, byteBlock);
-                waitData.SetCancellationToken(cancellationToken);
+                waitData.SetCancellationToken(token);
 
                 waitData.Wait(timeout);
 

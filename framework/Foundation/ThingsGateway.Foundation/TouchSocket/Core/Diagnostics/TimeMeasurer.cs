@@ -24,7 +24,7 @@
 //------------------------------------------------------------------------------
 using System.Diagnostics;
 
-namespace ThingsGateway.Foundation
+namespace ThingsGateway.Foundation.Core
 {
     /// <summary>
     /// 时间测量器

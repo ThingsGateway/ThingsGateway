@@ -22,7 +22,7 @@
 //  感谢您的下载和使用
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-namespace ThingsGateway.Foundation.Dmtp
+namespace ThingsGateway.Foundation.Resources
 {
     /// <summary>
     /// TouchSocketDmtpResourceExtension

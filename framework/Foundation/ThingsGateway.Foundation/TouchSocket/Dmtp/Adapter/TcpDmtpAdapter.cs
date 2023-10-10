@@ -47,6 +47,10 @@ namespace ThingsGateway.Foundation.Dmtp
             {
                 throw new Exception($"无法将{nameof(requestInfo)}转换为{nameof(DmtpMessage)}");
             }
+            if (message.BodyByteBlock != null && message.BodyByteBlock.Length > this.MaxPackageSize)
+            {
+                throw new Exception("发送的BodyLength={requestInfo.BodyLength},大于设定的MaxPackageSize={this.MaxPackageSize}");
+            }
             using (var byteBlock = new ByteBlock(message.GetLength()))
             {
                 message.Build(byteBlock);

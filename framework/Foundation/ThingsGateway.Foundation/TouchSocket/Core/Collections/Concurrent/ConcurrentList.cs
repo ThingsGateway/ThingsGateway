@@ -24,7 +24,7 @@
 //------------------------------------------------------------------------------
 using System.Collections;
 
-namespace ThingsGateway.Foundation
+namespace ThingsGateway.Foundation.Core
 {
     /// <summary>
     /// 线程安全的List，其基本操作和List一致。

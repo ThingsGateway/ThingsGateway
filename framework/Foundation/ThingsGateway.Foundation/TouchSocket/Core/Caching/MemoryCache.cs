@@ -25,7 +25,7 @@
 using System.Collections;
 using System.Collections.Concurrent;
 
-namespace ThingsGateway.Foundation
+namespace ThingsGateway.Foundation.Core
 {
     /// <summary>
     /// 一个简单的内存缓存

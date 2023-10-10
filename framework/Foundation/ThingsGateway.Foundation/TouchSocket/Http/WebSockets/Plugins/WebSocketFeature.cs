@@ -30,7 +30,7 @@ namespace ThingsGateway.Foundation.Http.WebSockets
     /// <para>此组件只能挂载在<see cref="HttpService"/>中</para>
     /// </summary>
     [PluginOption(Singleton = true, NotRegister = false)]
-    public class WebSocketFeature : PluginBase, ITcpReceivedPlugin, IHttpPlugin
+    public sealed class WebSocketFeature : PluginBase, ITcpReceivedPlugin, IHttpPlugin, ITcpDisconnectedPlugin
     {
         /// <summary>
         /// 表示是否完成WS握手
@@ -101,26 +101,42 @@ namespace ThingsGateway.Foundation.Http.WebSockets
                 if (this.VerifyConnection.Invoke(client, e.Context))
                 {
                     e.Handled = true;
-                    client.SwitchProtocolToWebSocket(e.Context);
+                    _ = client.SwitchProtocolToWebSocket(e.Context);
                     return;
                 }
             }
             await e.InvokeNext();
         }
 
+        /// <summary>
         /// <inheritdoc/>
-        public Task OnTcpReceived(ITcpClientBase client, ReceivedDataEventArgs e)
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="e"></param>
+        /// <returns></returns>
+        public async Task OnTcpDisconnected(ITcpClientBase client, DisconnectEventArgs e)
+        {
+            client.SetValue(HandshakedProperty, false);
+            if (client.TryGetValue(WebSocketClientExtensions.WebSocketProperty, out var internalWebSocket))
+            {
+                _ = internalWebSocket.TryInputReceiveAsync(null);
+            }
+            await e.InvokeNext();
+        }
+
+        /// <inheritdoc/>
+        public async Task OnTcpReceived(ITcpClientBase client, ReceivedDataEventArgs e)
         {
             if (client.Protocol == Protocol.WebSocket)
             {
                 if (e.RequestInfo is WSDataFrame dataFrame)
                 {
                     e.Handled = true;
-                    this.OnHandleWSDataFrame(client, new WSDataFrameEventArgs(dataFrame));
-                    return EasyTask.CompletedTask;
+                    await this.OnHandleWSDataFrame(client, dataFrame);
+                    return;
                 }
             }
-            return e.InvokeNext();
+            await e.InvokeNext();
         }
 
         /// <summary>
@@ -156,27 +172,28 @@ namespace ThingsGateway.Foundation.Http.WebSockets
             return this;
         }
 
-        /// <summary>
-        /// 处理WS数据帧。覆盖父类方法将不会触发插件。
-        /// </summary>
-        /// <param name="client"></param>
-        /// <param name="e"></param>
-        protected virtual void OnHandleWSDataFrame(ITcpClientBase client, WSDataFrameEventArgs e)
+        private async Task OnHandleWSDataFrame(ITcpClientBase client, WSDataFrame dataFrame)
         {
-            if (this.AutoClose && e.DataFrame.Opcode == WSDataType.Close)
+            if (this.AutoClose && dataFrame.IsClose)
             {
-                var msg = e.DataFrame.PayloadData?.ToString();
-                this.m_pluginsManager.Raise(nameof(IWebSocketClosingPlugin.OnWebSocketClosing), client, new MsgPermitEventArgs() { Message = msg });
+                var msg = dataFrame.PayloadData?.ToString();
+                await this.m_pluginsManager.RaiseAsync(nameof(IWebSocketClosingPlugin.OnWebSocketClosing), client, new MsgPermitEventArgs() { Message = msg });
                 client.Close(msg);
                 return;
             }
-            if (this.AutoPong && e.DataFrame.Opcode == WSDataType.Ping)
+            if (this.AutoPong && dataFrame.IsPing)
             {
                 ((HttpSocketClient)client).PongWS();
                 return;
             }
-
-            this.m_pluginsManager.Raise(nameof(IWebSocketReceivedPlugin.OnWebSocketReceived), client, e);
+            if (client.TryGetValue(WebSocketClientExtensions.WebSocketProperty, out var internalWebSocket))
+            {
+                if (await internalWebSocket.TryInputReceiveAsync(dataFrame))
+                {
+                    return;
+                }
+            }
+            await this.m_pluginsManager.RaiseAsync(nameof(IWebSocketReceivedPlugin.OnWebSocketReceived), client, new WSDataFrameEventArgs(dataFrame));
         }
 
         private bool ThisVerifyConnection(IHttpSocketClient client, HttpContext context)

@@ -24,7 +24,7 @@ namespace ThingsGateway.Gateway.Application;
 public abstract class DriverBase : DisposableObject
 {
     /// <summary>
-    /// <inheritdoc cref="ThingsGateway.Foundation.TouchSocketConfig"/>
+    /// <inheritdoc cref="ThingsGateway.Foundation.Core.TouchSocketConfig"/>
     /// </summary>
     public TouchSocketConfig FoundataionConfig;
 
@@ -42,8 +42,8 @@ public abstract class DriverBase : DisposableObject
     public DriverBase()
     {
         FoundataionConfig = new TouchSocketConfig();
-        LogMessage = new LoggerGroup() { LogLevel = ThingsGateway.Foundation.LogLevel.Trace };
-        LogMessage.AddLogger(new EasyLogger(Log_Out) { LogLevel = ThingsGateway.Foundation.LogLevel.Trace });
+        LogMessage = new LoggerGroup() { LogLevel = ThingsGateway.Foundation.Core.LogLevel.Trace };
+        LogMessage.AddLogger(new EasyLogger(Log_Out) { LogLevel = ThingsGateway.Foundation.Core.LogLevel.Trace });
         FoundataionConfig.ConfigureContainer(a => a.RegisterSingleton<ILog>(LogMessage));
         _ = Task.Factory.StartNew(LogInsertAsync);
     }
@@ -93,7 +93,7 @@ public abstract class DriverBase : DisposableObject
     /// <summary>
     /// 设备报文
     /// </summary>
-    internal virtual void NewMessage(ThingsGateway.Foundation.LogLevel arg1, object arg2, string arg3, Exception arg4)
+    internal virtual void NewMessage(ThingsGateway.Foundation.Core.LogLevel arg1, object arg2, string arg3, Exception arg4)
     {
         if (IsLogOut)
         {
@@ -119,9 +119,9 @@ public abstract class DriverBase : DisposableObject
     /// <summary>
     /// 底层日志输出
     /// </summary>
-    protected virtual void Log_Out(ThingsGateway.Foundation.LogLevel arg1, object arg2, string arg3, Exception arg4)
+    protected virtual void Log_Out(ThingsGateway.Foundation.Core.LogLevel arg1, object arg2, string arg3, Exception arg4)
     {
-        if (IsLogOut || arg1 >= ThingsGateway.Foundation.LogLevel.Warning)
+        if (IsLogOut || arg1 >= ThingsGateway.Foundation.Core.LogLevel.Warning)
         {
             _logger.Log_Out(arg1, arg2, arg3, arg4);
         }

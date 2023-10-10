@@ -121,23 +121,23 @@ namespace ThingsGateway.Foundation.Sockets
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int HitBufferLength(long value)
         {
-            if (value < 1024 * 1024)
+            if (value < 1024 * 100)
             {
                 return 1024;
             }
-            else if (value < 1024 * 1024 * 10)
+            else if (value < 1024 * 512)
             {
                 return 1024 * 10;
             }
-            else if (value < 1024 * 1024 * 50)
+            else if (value < 1024 * 1024)
             {
                 return 1024 * 64;
             }
-            else if (value < 1024 * 1024 * 100)
+            else if (value < 1024 * 1024 * 50)
             {
                 return 1024 * 512;
             }
-            else if (value < 1024 * 1024 * 500)
+            else if (value < 1024 * 1024 * 100)
             {
                 return 1024 * 1024;
             }

@@ -11,7 +11,8 @@
 #endregion
 
 global using ThingsGateway.Components;
-global using ThingsGateway.Foundation;
+global using ThingsGateway.Foundation.Core;
+global using ThingsGateway.Foundation.Demo;
 global using ThingsGateway.Foundation.Serial;
 global using ThingsGateway.Foundation.Sockets;
 global using ThingsGateway.Gateway.Application;

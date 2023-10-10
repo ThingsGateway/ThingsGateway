@@ -93,7 +93,7 @@ namespace ThingsGateway.Foundation.Dmtp
         }
 
         /// <inheritdoc/>
-        public virtual ITcpDmtpClient Connect(CancellationToken cancellationToken, int timeout = 5000)
+        public virtual ITcpDmtpClient Connect(CancellationToken token, int timeout = 5000)
         {
             lock (this.SyncRoot)
             {
@@ -107,7 +107,7 @@ namespace ThingsGateway.Foundation.Dmtp
                 }
 
                 this.m_smtpActor.Handshake(this.Config.GetValue(DmtpConfigExtension.VerifyTokenProperty),
-                    this.Config.GetValue(DmtpConfigExtension.DefaultIdProperty), timeout, this.Config.GetValue(DmtpConfigExtension.MetadataProperty), cancellationToken);
+                    this.Config.GetValue(DmtpConfigExtension.DefaultIdProperty), timeout, this.Config.GetValue(DmtpConfigExtension.MetadataProperty), token);
                 return this;
             }
         }
@@ -142,7 +142,7 @@ namespace ThingsGateway.Foundation.Dmtp
         }
 
         /// <inheritdoc/>
-        public virtual async Task<ITcpDmtpClient> ConnectAsync(CancellationToken cancellationToken, int timeout = 5000)
+        public virtual async Task<ITcpDmtpClient> ConnectAsync(CancellationToken token, int timeout = 5000)
         {
             try
             {
@@ -157,7 +157,7 @@ namespace ThingsGateway.Foundation.Dmtp
                 }
 
                 await this.m_smtpActor.HandshakeAsync(this.Config.GetValue(DmtpConfigExtension.VerifyTokenProperty),
-                     this.Config.GetValue(DmtpConfigExtension.DefaultIdProperty), timeout, this.Config.GetValue(DmtpConfigExtension.MetadataProperty), cancellationToken);
+                     this.Config.GetValue(DmtpConfigExtension.DefaultIdProperty), timeout, this.Config.GetValue(DmtpConfigExtension.MetadataProperty), token);
                 return this;
             }
             finally

@@ -29,7 +29,7 @@
 //using System.Text;
 //using System.Threading.Tasks;
 
-//namespace ThingsGateway.Foundation
+//namespace ThingsGateway.Foundation.Core
 //{
 //    /// <summary>
 //    /// 异常助手

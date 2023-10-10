@@ -15,7 +15,7 @@ using System.Text;
 
 using ThingsGateway.Foundation.Extension.String;
 
-namespace ThingsGateway.Foundation;
+namespace ThingsGateway.Foundation.Core;
 
 
 

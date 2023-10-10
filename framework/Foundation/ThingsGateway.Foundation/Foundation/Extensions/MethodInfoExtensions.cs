@@ -12,7 +12,7 @@
 
 using System.Reflection;
 
-namespace ThingsGateway.Foundation;
+namespace ThingsGateway.Foundation.Core;
 
 /// <summary>
 /// Method Info 拓展

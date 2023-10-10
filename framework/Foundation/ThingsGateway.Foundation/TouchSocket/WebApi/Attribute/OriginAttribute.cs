@@ -28,7 +28,7 @@ namespace ThingsGateway.Foundation.WebApi
     /// <summary>
     /// 跨域相关设置
     /// </summary>
-    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class | AttributeTargets.Interface, AllowMultiple = false)]
     public sealed class OriginAttribute : RpcActionFilterAttribute
     {
         /// <summary>

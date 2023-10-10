@@ -12,7 +12,7 @@
 
 using System.Diagnostics;
 
-namespace ThingsGateway.Foundation
+namespace ThingsGateway.Foundation.Core
 {
     /// <summary>
     /// 插件事件类

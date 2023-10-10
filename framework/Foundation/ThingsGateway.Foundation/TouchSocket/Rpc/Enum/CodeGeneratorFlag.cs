@@ -32,63 +32,39 @@ namespace ThingsGateway.Foundation.Rpc
     public enum CodeGeneratorFlag
     {
         /// <summary>
-        /// 生成同步代码（源代码生成无效）
-        /// </summary>
-        [Obsolete("该值已被弃用，请使用颗粒度更小的配置", true)]
-        Sync = 1,
-
-        /// <summary>
-        /// 生成异步代码（源代码生成无效）
-        /// </summary>
-        [Obsolete("该值已被弃用，请使用颗粒度更小的配置", true)]
-        Async = 2,
-
-        /// <summary>
         /// 生成扩展同步代码
         /// </summary>
-        ExtensionSync = 4,
+        ExtensionSync = 1,
 
         /// <summary>
         /// 生成扩展异步代码
         /// </summary>
-        ExtensionAsync = 8,
-
-        /// <summary>
-        /// 包含接口（源代码生成无效）
-        /// </summary>
-        [Obsolete("该值已被弃用，请使用颗粒度更小的配置", true)]
-        IncludeInterface = 16,
-
-        /// <summary>
-        /// 包含实例（源代码生成无效）
-        /// </summary>
-        [Obsolete("该值已被弃用，请使用颗粒度更小的配置", true)]
-        IncludeInstance = 32,
+        ExtensionAsync = 2,
 
         /// <summary>
         /// 包含扩展（源代码生成无效）
         /// </summary>
         [Obsolete("该值已被弃用，请使用颗粒度更小的配置", true)]
-        IncludeExtension = 64,
+        IncludeExtension = 4,
 
         /// <summary>
         /// 生成实例类同步代码（源代码生成无效）
         /// </summary>
-        InstanceSync = 128,
+        InstanceSync = 8,
 
         /// <summary>
         /// 生成实例类异步代码（源代码生成无效）
         /// </summary>
-        InstanceAsync = 256,
+        InstanceAsync = 16,
 
         /// <summary>
         /// 生成接口同步代码
         /// </summary>
-        InterfaceSync = 512,
+        InterfaceSync = 32,
 
         /// <summary>
         /// 生成接口异步代码
         /// </summary>
-        InterfaceAsync = 1024,
+        InterfaceAsync = 64,
     }
 }

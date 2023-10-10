@@ -25,7 +25,7 @@
 
 using System.ComponentModel;
 
-namespace ThingsGateway.Foundation.Http
+namespace ThingsGateway.Foundation.Resources
 {
     /// <summary>
     /// TouchSocketHttp资源枚举

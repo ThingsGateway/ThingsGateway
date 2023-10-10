@@ -13,7 +13,7 @@
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace ThingsGateway.Foundation
+namespace ThingsGateway.Foundation.Core
 {
     /// <summary>
     /// 动态成员访问器

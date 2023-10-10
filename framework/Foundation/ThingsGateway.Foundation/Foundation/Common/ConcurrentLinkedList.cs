@@ -12,7 +12,7 @@
 
 using System.Collections;
 
-namespace ThingsGateway.Foundation;
+namespace ThingsGateway.Foundation.Core;
 
 /// <summary>
 /// 线程安全的LinkedList

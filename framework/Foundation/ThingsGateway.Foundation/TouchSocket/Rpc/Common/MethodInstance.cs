@@ -39,70 +39,151 @@ namespace ThingsGateway.Foundation.Rpc
         /// 实例化一个Rpc调用函数，并在方法声明的类上操作
         /// </summary>
         /// <param name="methodInfo"></param>
-        public MethodInstance(MethodInfo methodInfo) : this(methodInfo, methodInfo.DeclaringType)
+        public MethodInstance(MethodInfo methodInfo) : this(methodInfo, methodInfo.DeclaringType, methodInfo.DeclaringType)
         {
-
         }
+
         /// <summary>
         /// 实例化一个Rpc调用函数，并在指定类上操作
         /// </summary>
-        /// <param name="methodInfo"></param>
-        /// <param name="serverType"></param>
-        public MethodInstance(MethodInfo methodInfo, Type serverType) : base(methodInfo, false)
+        /// <param name="method"></param>
+        /// <param name="serverFromType"></param>
+        /// <param name="serverToType"></param>
+        public MethodInstance(MethodInfo method, Type serverFromType, Type serverToType) : base(method, false)
         {
-            var name = $"{serverType.Name}{methodInfo.Name}Func";
-            var property = serverType.GetProperty(name, BindingFlags.NonPublic | BindingFlags.Static);
+            this.ServerFromType = serverFromType;
+            this.ServerToType = serverToType;
+
+            this.Parameters = method.GetParameters();
+
+            var name = $"{serverToType.Name}{method.Name}Func";
+            var property = serverToType.GetProperty(name, BindingFlags.NonPublic | BindingFlags.Static);
             if (property == null)
             {
                 if (GlobalEnvironment.DynamicBuilderType == DynamicBuilderType.IL)
                 {
-                    this.m_invoker = this.CreateILInvoker(methodInfo);
+                    this.m_invoker = this.CreateILInvoker(method);
                 }
                 else if (GlobalEnvironment.DynamicBuilderType == DynamicBuilderType.Expression)
                 {
-                    this.m_invoker = this.CreateExpressionInvoker(methodInfo);
+                    this.m_invoker = this.CreateExpressionInvoker(method);
                 }
             }
             else
             {
                 this.m_invoker = (Func<object, object[], object>)property.GetValue(null);
             }
+
+            var fromMethodInfos = new Dictionary<string, MethodInfo>();
+            CodeGenerator.GetMethodInfos(ServerFromType, ref fromMethodInfos);
+
+            var toMethodInfos = new Dictionary<string, MethodInfo>();
+            CodeGenerator.GetMethodInfos(ServerToType, ref toMethodInfos);
+
+            var attributes = method.GetCustomAttributes<RpcAttribute>(true);
+            if (attributes.Any())
+            {
+                if (!toMethodInfos.TryGetValue(CodeGenerator.GetMethodId(method), out var toMethod))
+                {
+                    throw new InvalidOperationException($"没有找到方法{method.Name}的实现");
+                }
+
+                var actionFilters = new List<IRpcActionFilter>();
+
+                foreach (var item in method.GetCustomAttributes(true))
+                {
+                    if (item is IRpcActionFilter filter)
+                    {
+                        actionFilters.Add(filter);
+                    }
+                }
+
+                foreach (var item in ServerFromType.GetCustomAttributes(true))
+                {
+                    if (item is IRpcActionFilter filter)
+                    {
+                        actionFilters.Add(filter);
+                    }
+                }
+
+                if (ServerFromType != ServerToType)
+                {
+                    foreach (var item in toMethod.GetCustomAttributes(true))
+                    {
+                        if (item is IRpcActionFilter filter)
+                        {
+                            actionFilters.Add(filter);
+                        }
+                    }
+
+                    foreach (var item in ServerToType.GetCustomAttributes(true))
+                    {
+                        if (item is IRpcActionFilter filter)
+                        {
+                            actionFilters.Add(filter);
+                        }
+                    }
+                }
+                if (actionFilters.Count > 0)
+                {
+                    this.Filters = actionFilters.ToArray();
+                }
+                foreach (var item in attributes)
+                {
+                    this.MethodFlags |= item.MethodFlags;
+                }
+                if (this.MethodFlags.HasFlag(MethodFlags.IncludeCallContext))
+                {
+                    if (this.Parameters.Length == 0 || !typeof(ICallContext).IsAssignableFrom(this.Parameters[0].ParameterType))
+                    {
+                        throw new RpcException($"函数：{method}，标识包含{MethodFlags.IncludeCallContext}时，必须包含{nameof(ICallContext)}或其派生类参数，且为第一参数。");
+                    }
+                }
+                var names = new List<string>();
+                foreach (var parameterInfo in this.Parameters)
+                {
+                    names.Add(parameterInfo.Name);
+                }
+                this.ParameterNames = names.ToArray();
+                var parameters = method.GetParameters();
+                var types = new List<Type>();
+                foreach (var parameter in parameters)
+                {
+                    types.Add(parameter.ParameterType.GetRefOutType());
+                }
+                this.ParameterTypes = types.ToArray();
+            }
         }
 
         /// <summary>
         /// 筛选器
         /// </summary>
-        public IRpcActionFilter[] Filters { get; set; }
+        public IRpcActionFilter[] Filters { get; private set; }
 
         /// <summary>
         /// 是否可用
         /// </summary>
-        public bool IsEnable { get; set; }
-
-        /// <summary>
-        /// 是否为单例
-        /// </summary>
-        public bool IsSingleton { get; internal set; }
+        public bool IsEnable { get; set; } = true;
 
         /// <summary>
         /// 函数标识
         /// </summary>
-        public MethodFlags MethodFlags { get; internal set; }
+        public MethodFlags MethodFlags { get; private set; }
 
         /// <summary>
         /// 参数名集合
         /// </summary>
-        public string[] ParameterNames { get; internal set; }
+        public string[] ParameterNames { get; private set; }
 
         /// <summary>
         /// 参数集合
         /// </summary>
-        public ParameterInfo[] Parameters { get; internal set; }
+        public ParameterInfo[] Parameters { get; private set; }
 
         /// <summary>
         /// 参数类型集合，已处理out及ref，无参数时为空集合，
         /// </summary>
-        public Type[] ParameterTypes { get; internal set; }
+        public Type[] ParameterTypes { get; private set; }
 
         /// <summary>
         /// Rpc属性集合
@@ -122,13 +203,18 @@ namespace ThingsGateway.Foundation.Rpc
         public IRpcServerFactory ServerFactory { get; internal set; }
 
         /// <summary>
+        /// 注册类型
+        /// </summary>
+        public Type ServerFromType { get; private set; }
+
+        /// <summary>
         /// Rpc服务属性集合
         /// </summary>
         public RpcAttribute[] ServerRpcAttributes
         {
             get
             {
-                this.m_serverRpcAttributes ??= this.ServerType.GetCustomAttributes<RpcAttribute>(true).ToArray();
+                this.m_serverRpcAttributes ??= this.ServerFromType.GetCustomAttributes<RpcAttribute>(true).ToArray();
                 return this.m_serverRpcAttributes;
             }
         }
@@ -136,7 +222,7 @@ namespace ThingsGateway.Foundation.Rpc
         /// <summary>
         /// 实例类型
         /// </summary>
-        public Type ServerType { get; internal set; }
+        public Type ServerToType { get; private set; }
 
         /// <summary>
         /// 获取指定类型属性标签

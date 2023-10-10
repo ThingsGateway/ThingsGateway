@@ -25,7 +25,7 @@
 
 using Newtonsoft.Json;
 
-namespace ThingsGateway.Foundation
+namespace ThingsGateway.Foundation.Core
 {
     /// <summary>
     /// String类型数据转换器

@@ -13,7 +13,7 @@
 using System.Collections;
 using System.Collections.Concurrent;
 
-namespace ThingsGateway.Foundation
+namespace ThingsGateway.Foundation.Core
 {
     /// <summary>
     /// 手动IOC容器
@@ -69,7 +69,7 @@ namespace ThingsGateway.Foundation
         /// <exception cref="Exception"></exception>
         public object Resolve(Type fromType, object[] ps = null, string key = "")
         {
-            if (fromType.FullName == "ThingsGateway.Foundation.IContainer")
+            if (fromType.FullName == "ThingsGateway.Foundation.Core.IContainer")
             {
                 return this;
             }

@@ -40,9 +40,9 @@ namespace ThingsGateway.Foundation.Dmtp
         /// <summary>
         /// 异步连接
         /// </summary>
-        /// <param name="cancellationToken"></param>
+        /// <param name="token"></param>
         /// <param name="timeout"></param>
         /// <returns></returns>
-        Task ConnectAsync(CancellationToken cancellationToken, int timeout = 5000);
+        Task ConnectAsync(CancellationToken token, int timeout = 5000);
     }
 }

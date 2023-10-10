@@ -17,7 +17,7 @@ global using System.Linq;
 global using System.Threading;
 global using System.Threading.Tasks;
 
-global using ThingsGateway.Foundation;
+global using ThingsGateway.Foundation.Core;
 global using ThingsGateway.Foundation.Http;
 global using ThingsGateway.Foundation.Rpc;
 global using ThingsGateway.Foundation.Serial;

@@ -1,0 +1,5 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\ThingsGateway.Foundation.Core\ThingsGateway.Foundation.Core.csproj" />
+  </ItemGroup>
+</Project>

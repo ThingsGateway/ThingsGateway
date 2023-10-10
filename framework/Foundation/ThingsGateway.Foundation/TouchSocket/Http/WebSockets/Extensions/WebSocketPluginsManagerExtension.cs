@@ -22,10 +22,9 @@
 //  感谢您的下载和使用
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-
 using ThingsGateway.Foundation.Http.WebSockets;
 
-namespace ThingsGateway.Foundation.Http
+namespace ThingsGateway.Foundation.Core
 {
     /// <summary>
     /// WebSocketPluginsManagerExtension

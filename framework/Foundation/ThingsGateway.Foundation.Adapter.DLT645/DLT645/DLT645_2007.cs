@@ -10,7 +10,6 @@
 //------------------------------------------------------------------------------
 #endregion
 
-using System.Collections.Generic;
 using System.ComponentModel;
 
 using ThingsGateway.Foundation.Extension.Generic;

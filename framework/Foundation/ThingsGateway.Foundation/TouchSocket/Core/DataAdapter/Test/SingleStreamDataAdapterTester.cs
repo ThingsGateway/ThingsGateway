@@ -24,7 +24,7 @@
 //------------------------------------------------------------------------------
 using System.Diagnostics;
 
-namespace ThingsGateway.Foundation
+namespace ThingsGateway.Foundation.Core
 {
     /// <summary>
     ///单线程状况的流式数据处理适配器测试

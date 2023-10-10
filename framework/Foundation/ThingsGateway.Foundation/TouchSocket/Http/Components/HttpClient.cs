@@ -22,6 +22,7 @@
 //  感谢您的下载和使用
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
+using ThingsGateway.Foundation.Resources;
 
 namespace ThingsGateway.Foundation.Http
 {
@@ -118,9 +119,9 @@ namespace ThingsGateway.Foundation.Http
         /// <param name="request"><inheritdoc/></param>
         /// <param name="onlyRequest"><inheritdoc/></param>
         /// <param name="timeout"><inheritdoc/></param>
-        /// <param name="cancellationToken"><inheritdoc/></param>
+        /// <param name="token"><inheritdoc/></param>
         /// <returns></returns>
-        public HttpResponse Request(HttpRequest request, bool onlyRequest = false, int timeout = 10 * 1000, CancellationToken cancellationToken = default)
+        public HttpResponse Request(HttpRequest request, bool onlyRequest = false, int timeout = 10 * 1000, CancellationToken token = default)
         {
             lock (this.m_requestLocker)
             {
@@ -130,7 +131,7 @@ namespace ThingsGateway.Foundation.Http
                     request.Build(byteBlock);
 
                     this.m_waitData.Reset();
-                    this.m_waitData.SetCancellationToken(cancellationToken);
+                    this.m_waitData.SetCancellationToken(token);
 
                     this.DefaultSend(byteBlock);
                     if (onlyRequest)
@@ -163,9 +164,9 @@ namespace ThingsGateway.Foundation.Http
         /// <param name="request"></param>
         /// <param name="onlyRequest"></param>
         /// <param name="timeout"></param>
-        /// <param name="cancellationToken"></param>
+        /// <param name="token"></param>
         /// <returns></returns>
-        public HttpResponse RequestContent(HttpRequest request, bool onlyRequest = false, int timeout = 10 * 1000, CancellationToken cancellationToken = default)
+        public HttpResponse RequestContent(HttpRequest request, bool onlyRequest = false, int timeout = 10 * 1000, CancellationToken token = default)
         {
             lock (this.m_requestLocker)
             {
@@ -175,7 +176,7 @@ namespace ThingsGateway.Foundation.Http
                     request.Build(byteBlock);
 
                     this.m_waitData.Reset();
-                    this.m_waitData.SetCancellationToken(cancellationToken);
+                    this.m_waitData.SetCancellationToken(token);
 
                     this.DefaultSend(byteBlock);
                     if (onlyRequest)

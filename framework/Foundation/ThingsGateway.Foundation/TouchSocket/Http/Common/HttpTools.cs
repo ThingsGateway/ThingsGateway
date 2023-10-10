@@ -38,7 +38,7 @@ namespace ThingsGateway.Foundation.Http
         /// <returns></returns>
         public static string GetContentTypeFromExtension(string extension)
         {
-            if (m_provider.TryGetContentType(extension, out string result))
+            if (m_provider.TryGetContentType(extension, out var result))
             {
                 return result;
             }

@@ -33,17 +33,17 @@ namespace ThingsGateway.Foundation.Http.WebSockets
         /// <summary>
         /// 连接到ws服务器
         /// </summary>
-        /// <param name="cancellationToken"></param>
+        /// <param name="token"></param>
         /// <param name="timeout"></param>
         /// <returns></returns>
-        ITcpClient Connect(CancellationToken cancellationToken, int timeout = 5000);
+        ITcpClient Connect(CancellationToken token, int timeout = 5000);
 
         /// <summary>
         /// 异步连接到ws服务器
         /// </summary>
-        /// <param name="cancellationToken"></param>
+        /// <param name="token"></param>
         /// <param name="timeout"></param>
         /// <returns></returns>
-        Task<ITcpClient> ConnectAsync(CancellationToken cancellationToken, int timeout = 5000);
+        Task<ITcpClient> ConnectAsync(CancellationToken token, int timeout = 5000);
     }
 }

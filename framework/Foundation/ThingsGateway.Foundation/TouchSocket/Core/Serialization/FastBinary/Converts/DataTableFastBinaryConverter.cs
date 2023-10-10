@@ -12,7 +12,7 @@
 
 using System.Data;
 
-namespace ThingsGateway.Foundation
+namespace ThingsGateway.Foundation.Core
 {
     internal class DataTableFastBinaryConverter : FastBinaryConverter<DataTable>
     {

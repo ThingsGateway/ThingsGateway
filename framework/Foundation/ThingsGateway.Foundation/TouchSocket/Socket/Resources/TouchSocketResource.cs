@@ -28,7 +28,7 @@ using System.ComponentModel;
 namespace ThingsGateway.Foundation.Sockets
 {
     /// <summary>
-    /// ThingsGateway.Foundation资源枚举
+    /// ThingsGateway.Foundation.Core资源枚举
     /// </summary>
     public enum TouchSocketResource
     {

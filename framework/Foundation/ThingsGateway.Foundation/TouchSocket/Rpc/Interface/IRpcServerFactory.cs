@@ -36,6 +36,6 @@ namespace ThingsGateway.Foundation.Rpc
         /// <param name="callContext"></param>
         /// <param name="ps"></param>
         /// <returns></returns>
-        public IRpcServer Create(ICallContext callContext, object[] ps);
+        IRpcServer Create(ICallContext callContext, object[] ps);
     }
 }

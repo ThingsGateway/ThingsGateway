@@ -25,7 +25,7 @@
 using System.Collections.Specialized;
 using System.Diagnostics;
 
-namespace ThingsGateway.Foundation
+namespace ThingsGateway.Foundation.Core
 {
     /// <summary>
     /// NameValueCollectionDebugView

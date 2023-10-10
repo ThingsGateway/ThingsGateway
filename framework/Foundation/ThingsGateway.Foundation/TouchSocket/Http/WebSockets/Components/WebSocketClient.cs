@@ -66,9 +66,9 @@ namespace ThingsGateway.Foundation.Http.WebSockets
         /// <inheritdoc/>
         /// </summary>
         /// <param name="timeout"></param>
-        /// <param name="cancellationToken"></param>
+        /// <param name="token"></param>
         /// <returns></returns>
-        public virtual ITcpClient Connect(CancellationToken cancellationToken, int timeout = 5000)
+        public virtual ITcpClient Connect(CancellationToken token, int timeout = 5000)
         {
             lock (this.SyncRoot)
             {
@@ -82,7 +82,7 @@ namespace ThingsGateway.Foundation.Http.WebSockets
                 var request = WSTools.GetWSRequest(this.RemoteIPHost.Host, url, this.GetWebSocketVersion(), out var base64Key);
                 this.OnHandshaking(new HttpContextEventArgs(new HttpContext(request)));
 
-                var response = this.Request(request, timeout: timeout, cancellationToken: cancellationToken);
+                var response = this.Request(request, timeout: timeout, token: token);
                 if (response.StatusCode != 101)
                 {
                     throw new WebSocketConnectException($"协议升级失败，信息：{response.StatusMessage}，更多信息请捕获WebSocketConnectException异常，获得HttpContext得知。", new HttpContext(request, response));
@@ -105,14 +105,14 @@ namespace ThingsGateway.Foundation.Http.WebSockets
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
-        /// <param name="cancellationToken"></param>
+        /// <param name="token"></param>
         /// <param name="timeout"></param>
         /// <returns></returns>
-        public Task<ITcpClient> ConnectAsync(CancellationToken cancellationToken, int timeout = 5000)
+        public Task<ITcpClient> ConnectAsync(CancellationToken token, int timeout = 5000)
         {
             return Task.Run(() =>
             {
-                return this.Connect(cancellationToken, timeout);
+                return this.Connect(token, timeout);
             });
         }
 
@@ -157,7 +157,7 @@ namespace ThingsGateway.Foundation.Http.WebSockets
             }
             finally
             {
-                m_semaphoreSlim.Release();
+                this.m_semaphoreSlim.Release();
             }
         }
 
@@ -189,10 +189,7 @@ namespace ThingsGateway.Foundation.Http.WebSockets
         {
             this.Handshaked?.Invoke(this, e);
 
-            if (this.PluginsManager.Raise(nameof(IWebSocketHandshakedPlugin.OnWebSocketHandshaked), this, e))
-            {
-                return;
-            }
+            _ = this.PluginsManager.RaiseAsync(nameof(IWebSocketHandshakedPlugin.OnWebSocketHandshaked), this, e);
         }
 
         /// <summary>
@@ -245,6 +242,10 @@ namespace ThingsGateway.Foundation.Http.WebSockets
         protected override void OnDisconnected(DisconnectEventArgs e)
         {
             this.SetValue(WebSocketFeature.HandshakedProperty, false);
+            if (this.TryGetValue(WebSocketClientExtensions.WebSocketProperty, out var internalWebSocket))
+            {
+                _ = internalWebSocket.TryInputReceiveAsync(null);
+            }
             base.OnDisconnected(e);
         }
 
@@ -254,6 +255,14 @@ namespace ThingsGateway.Foundation.Http.WebSockets
         /// <param name="dataFrame"></param>
         protected virtual void OnHandleWSDataFrame(WSDataFrame dataFrame)
         {
+            if (this.TryGetValue(WebSocketClientExtensions.WebSocketProperty, out var internalWebSocket))
+            {
+                if (internalWebSocket.TryInputReceiveAsync(dataFrame).ConfigureAwait(false).GetAwaiter().GetResult())
+                {
+                    return;
+                }
+            }
+
             if (this.PluginsManager.Enable)
             {
                 this.PluginsManager.Raise(nameof(IWebSocketReceivedPlugin.OnWebSocketReceived), this, new WSDataFrameEventArgs(dataFrame));

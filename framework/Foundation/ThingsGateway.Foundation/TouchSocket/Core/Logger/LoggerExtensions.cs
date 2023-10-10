@@ -10,7 +10,7 @@
 //------------------------------------------------------------------------------
 #endregion
 
-namespace ThingsGateway.Foundation;
+namespace ThingsGateway.Foundation.Core;
 
 /// <summary>
 /// <inheritdoc/>
@@ -290,7 +290,7 @@ public static class LoggerExtensions
     /// </summary>
     public static void LogError(this ILog logger, Exception ex, string msg)
     {
-        logger.Log(ThingsGateway.Foundation.LogLevel.Error, null, msg, ex);
+        logger.Log(ThingsGateway.Foundation.Core.LogLevel.Error, null, msg, ex);
     }
 
 
@@ -299,7 +299,7 @@ public static class LoggerExtensions
     /// </summary>
     public static void LogWarning(this ILog logger, Exception ex, string msg)
     {
-        logger.Log(ThingsGateway.Foundation.LogLevel.Warning, null, msg, ex);
+        logger.Log(ThingsGateway.Foundation.Core.LogLevel.Warning, null, msg, ex);
     }
 
 
@@ -308,14 +308,14 @@ public static class LoggerExtensions
     /// </summary>
     public static void LogWarning(this ILog logger, string msg)
     {
-        logger.Log(ThingsGateway.Foundation.LogLevel.Warning, null, msg, null);
+        logger.Log(ThingsGateway.Foundation.Core.LogLevel.Warning, null, msg, null);
     }
     /// <summary>
     /// 输出提示日志
     /// </summary>
     public static void LogInformation(this ILog logger, string msg)
     {
-        logger.Log(ThingsGateway.Foundation.LogLevel.Info, null, msg, null);
+        logger.Log(ThingsGateway.Foundation.Core.LogLevel.Info, null, msg, null);
     }
 
 

@@ -21,7 +21,7 @@ using Newtonsoft.Json.Converters;
 #endif
 using System.Text;
 
-namespace ThingsGateway.Foundation;
+namespace ThingsGateway.Foundation.Core;
 
 
 

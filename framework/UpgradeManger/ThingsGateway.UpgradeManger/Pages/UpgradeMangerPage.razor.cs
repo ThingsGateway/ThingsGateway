@@ -18,15 +18,9 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.JSInterop;
 
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-
 using ThingsGateway.Core;
-using ThingsGateway.Foundation;
 using ThingsGateway.Foundation.Dmtp;
 using ThingsGateway.Foundation.Dmtp.Rpc;
-using ThingsGateway.Foundation.Rpc;
 
 namespace ThingsGateway.UpgradeManger;
 

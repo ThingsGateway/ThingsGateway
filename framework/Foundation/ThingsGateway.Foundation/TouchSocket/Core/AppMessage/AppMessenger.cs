@@ -23,7 +23,9 @@
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-namespace ThingsGateway.Foundation
+using System.Collections.Concurrent;
+
+namespace ThingsGateway.Foundation.Core
 {
     /// <summary>
     /// 消息通知类。内部全为弱引用。
@@ -31,8 +33,7 @@ namespace ThingsGateway.Foundation
     public class AppMessenger
     {
         private static AppMessenger m_instance;
-        private readonly ReaderWriterLockSlim m_lockSlim = new ReaderWriterLockSlim();
-        private readonly Dictionary<string, List<MessageInstance>> m_tokenAndInstance = new Dictionary<string, List<MessageInstance>>();
+        private readonly ConcurrentDictionary<string, List<MessageInstance>> m_tokenAndInstance = new ConcurrentDictionary<string, List<MessageInstance>>();
 
         /// <summary>
         /// 默认单例实例
@@ -65,42 +66,38 @@ namespace ThingsGateway.Foundation
         /// <summary>
         /// 添加
         /// </summary>
-        /// <param name="cancellationToken"></param>
+        /// <param name="token"></param>
         /// <param name="messageInstance"></param>
         /// <exception cref="MessageRegisteredException"></exception>
-        public void Add(string cancellationToken, MessageInstance messageInstance)
+        public void Add(string token, MessageInstance messageInstance)
         {
-            using (var writeLock = new WriteLock(this.m_lockSlim))
+
+            if (this.m_tokenAndInstance.TryGetValue(token, out var value))
             {
-                if (this.m_tokenAndInstance.ContainsKey(cancellationToken))
+                if (!this.AllowMultiple)
                 {
-                    if (!this.AllowMultiple)
-                    {
-                        throw new MessageRegisteredException(TouchSocketCoreResource.TokenExisted.GetDescription(cancellationToken));
-                    }
-                    this.m_tokenAndInstance[cancellationToken].Add(messageInstance);
+                    throw new MessageRegisteredException(TouchSocketCoreResource.TokenExisted.GetDescription(token));
                 }
-                else
-                {
-                    this.m_tokenAndInstance.Add(cancellationToken, new List<MessageInstance>()
+
+                value.Add(messageInstance);
+            }
+            else
+            {
+                this.m_tokenAndInstance.TryAdd(token, new List<MessageInstance>()
                     {
                      messageInstance
                     });
-                }
             }
         }
 
         /// <summary>
         /// 判断能否触发该消息，意味着该消息是否已经注册。
         /// </summary>
-        /// <param name="cancellationToken"></param>
+        /// <param name="token"></param>
         /// <returns></returns>
-        public bool CanSendMessage(string cancellationToken)
+        public bool CanSendMessage(string token)
         {
-            using (var readLock = new ReadLock(this.m_lockSlim))
-            {
-                return this.m_tokenAndInstance.ContainsKey(cancellationToken);
-            }
+            return this.m_tokenAndInstance.ContainsKey(token);
         }
 
         /// <summary>
@@ -108,34 +105,25 @@ namespace ThingsGateway.Foundation
         /// </summary>
         public void Clear()
         {
-            using (var writeLock = new WriteLock(this.m_lockSlim))
-            {
-                this.m_tokenAndInstance.Clear();
-            }
+            this.m_tokenAndInstance.Clear();
         }
 
         /// <summary>
         /// 获取所有消息
         /// </summary>
         /// <returns></returns>
-        public string[] GetAllMessage()
+        public IEnumerable<string> GetAllMessage()
         {
-            using (var readLock = new ReadLock(this.m_lockSlim))
-            {
-                return this.m_tokenAndInstance.Keys.ToArray();
-            }
+            return this.m_tokenAndInstance.Keys;
         }
 
         /// <summary>
         /// 移除
         /// </summary>
-        /// <param name="cancellationToken"></param>
-        public void Remove(string cancellationToken)
+        /// <param name="token"></param>
+        public void Remove(string token)
         {
-            using (var writeLock = new WriteLock(this.m_lockSlim))
-            {
-                this.m_tokenAndInstance.Remove(cancellationToken);
-            }
+            this.m_tokenAndInstance.TryRemove(token, out _);
         }
 
         /// <summary>
@@ -144,132 +132,105 @@ namespace ThingsGateway.Foundation
         /// <param name="messageObject"></param>
         public void Remove(IMessageObject messageObject)
         {
-            using (var writeLock = new WriteLock(this.m_lockSlim))
-            {
-                var key = new List<string>();
+            var key = new List<string>();
 
-                foreach (var item in this.m_tokenAndInstance.Keys)
+            foreach (var item in this.m_tokenAndInstance.Keys)
+            {
+                foreach (var item2 in this.m_tokenAndInstance[item].ToArray())
                 {
-                    foreach (var item2 in this.m_tokenAndInstance[item].ToArray())
+                    if (messageObject == item2.MessageObject)
                     {
-                        if (messageObject == item2.MessageObject)
+                        this.m_tokenAndInstance[item].Remove(item2);
+                        if (this.m_tokenAndInstance[item].Count == 0)
                         {
-                            this.m_tokenAndInstance[item].Remove(item2);
-                            if (this.m_tokenAndInstance[item].Count == 0)
-                            {
-                                key.Add(item);
-                            }
+                            key.Add(item);
                         }
                     }
                 }
+            }
 
-                foreach (var item in key)
-                {
-                    this.m_tokenAndInstance.Remove(item);
-                }
+            foreach (var item in key)
+            {
+                this.m_tokenAndInstance.TryRemove(item, out _);
             }
         }
 
         /// <summary>
         /// 发送消息
         /// </summary>
-        /// <param name="cancellationToken"></param>
+        /// <param name="token"></param>
         /// <param name="parameters"></param>
         /// <exception cref="MessageNotFoundException"></exception>
-        public Task SendAsync(string cancellationToken, params object[] parameters)
+        public async Task SendAsync(string token, params object[] parameters)
         {
-            return Task.Run(() =>
-             {
-                 using (var readLock = new ReadLock(this.m_lockSlim))
-                 {
-                     if (this.m_tokenAndInstance.TryGetValue(cancellationToken, out var list))
-                     {
-                         var clear = new List<MessageInstance>();
+            if (this.m_tokenAndInstance.TryGetValue(token, out var list))
+            {
+                var clear = new List<MessageInstance>();
 
-                         foreach (var item in list)
-                         {
-                             if (!item.Info.IsStatic && !item.WeakReference.TryGetTarget(out _))
-                             {
-                                 clear.Add(item);
-                                 continue;
-                             }
-                             try
-                             {
-                                 item.Invoke(item.MessageObject, parameters);
-                             }
-                             catch
-                             {
-                             }
-                         }
+                foreach (var item in list)
+                {
+                    if (!item.Info.IsStatic && !item.WeakReference.TryGetTarget(out _))
+                    {
+                        clear.Add(item);
+                        continue;
+                    }
+                    await item.InvokeAsync(item.MessageObject, parameters);
+                }
 
-                         foreach (var item in clear)
-                         {
-                             list.Remove(item);
-                         }
-                     }
-                     else
-                     {
-                         throw new MessageNotFoundException(TouchSocketCoreResource.MessageNotFound.GetDescription(cancellationToken));
-                     }
-                 }
-             });
+                foreach (var item in clear)
+                {
+                    list.Remove(item);
+                }
+            }
+            else
+            {
+                throw new MessageNotFoundException(TouchSocketCoreResource.MessageNotFound.GetDescription(token));
+            }
         }
 
         /// <summary>
         /// 发送消息，当多播时，只返回最后一个返回值
         /// </summary>
         /// <typeparam name="T">返回值类型</typeparam>
-        /// <param name="cancellationToken"></param>
+        /// <param name="token"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
         /// <exception cref="MessageNotFoundException"></exception>
-        public Task<T> SendAsync<T>(string cancellationToken, params object[] parameters)
+        public async Task<T> SendAsync<T>(string token, params object[] parameters)
         {
-            return Task.Run(() =>
-             {
-                 using (var readLock = new ReadLock(this.m_lockSlim))
-                 {
-                     if (this.m_tokenAndInstance.TryGetValue(cancellationToken, out var list))
-                     {
-                         T result = default;
-                         var clear = new List<MessageInstance>();
-                         for (var i = 0; i < list.Count; i++)
-                         {
-                             var item = list[i];
-                             if (!item.Info.IsStatic && !item.WeakReference.TryGetTarget(out _))
-                             {
-                                 clear.Add(item);
-                                 continue;
-                             }
+            if (this.m_tokenAndInstance.TryGetValue(token, out var list))
+            {
+                T result = default;
+                var clear = new List<MessageInstance>();
+                for (var i = 0; i < list.Count; i++)
+                {
+                    var item = list[i];
+                    if (!item.Info.IsStatic && !item.WeakReference.TryGetTarget(out _))
+                    {
+                        clear.Add(item);
+                        continue;
+                    }
 
-                             try
-                             {
-                                 if (i == list.Count - 1)
-                                 {
-                                     result = (T)item.Invoke(item.MessageObject, parameters);
-                                 }
-                                 else
-                                 {
-                                     item.Invoke(item.MessageObject, parameters);
-                                 }
-                             }
-                             catch
-                             {
-                             }
-                         }
+                    if (i == list.Count - 1)
+                    {
+                        result = await item.InvokeAsync<T>(item.MessageObject, parameters);
+                    }
+                    else
+                    {
+                        await item.InvokeAsync<T>(item.MessageObject, parameters);
+                    }
+                }
 
-                         foreach (var item in clear)
-                         {
-                             list.Remove(item);
-                         }
-                         return result;
-                     }
-                     else
-                     {
-                         throw new MessageNotFoundException(TouchSocketCoreResource.MessageNotFound.GetDescription(cancellationToken));
-                     }
-                 }
-             });
+                foreach (var item in clear)
+                {
+                    list.Remove(item);
+                }
+                return result;
+            }
+            else
+            {
+                throw new MessageNotFoundException(TouchSocketCoreResource.MessageNotFound.GetDescription(token));
+            }
         }
     }
 }

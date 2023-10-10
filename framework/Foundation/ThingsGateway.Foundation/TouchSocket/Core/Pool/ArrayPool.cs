@@ -16,7 +16,7 @@ using System.Diagnostics;
 using System.Numerics;
 #endif
 
-namespace ThingsGateway.Foundation
+namespace ThingsGateway.Foundation.Core
 {
     /// <summary>
     /// 提供一个数组对象的池化容器。

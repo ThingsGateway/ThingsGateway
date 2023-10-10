@@ -14,7 +14,7 @@ using System.Net;
 
 using ThingsGateway.Foundation.Extension.Generic;
 
-namespace ThingsGateway.Foundation;
+namespace ThingsGateway.Foundation.Core;
 
 /// <summary>
 /// UDP适配器基类

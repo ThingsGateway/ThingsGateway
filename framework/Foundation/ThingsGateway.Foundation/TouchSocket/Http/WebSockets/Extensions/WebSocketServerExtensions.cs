@@ -35,7 +35,7 @@ namespace ThingsGateway.Foundation.Http.WebSockets
         /// </summary>
         /// <param name="client"></param>
         /// <param name="httpContext">Http上下文</param>
-        public static bool SwitchProtocolToWebSocket<TClient>(this TClient client, HttpContext httpContext) where TClient : IHttpSocketClient
+        public static async Task<bool> SwitchProtocolToWebSocket<TClient>(this TClient client, HttpContext httpContext) where TClient : IHttpSocketClient
         {
             if (client.Protocol == Protocol.WebSocket)
             {
@@ -49,7 +49,7 @@ namespace ThingsGateway.Foundation.Http.WebSockets
                     {
                         IsPermitOperation = true
                     };
-                    client.PluginsManager.Raise(nameof(IWebSocketHandshakingPlugin.OnWebSocketHandshaking), client, args);
+                    await client.PluginsManager.RaiseAsync(nameof(IWebSocketHandshakingPlugin.OnWebSocketHandshaking), client, args);
                     if (args.Context.Response.Responsed)
                     {
                         return false;
@@ -63,9 +63,9 @@ namespace ThingsGateway.Foundation.Http.WebSockets
                         using (var byteBlock = new ByteBlock())
                         {
                             args.Context.Response.Build(byteBlock);
-                            client.DefaultSend(byteBlock);
+                            await client.DefaultSendAsync(byteBlock);
                         }
-                        client.PluginsManager.Raise(nameof(IWebSocketHandshakedPlugin.OnWebSocketHandshaked), client, new HttpContextEventArgs(httpContext));
+                        await client.PluginsManager.RaiseAsync(nameof(IWebSocketHandshakedPlugin.OnWebSocketHandshaked), client, new HttpContextEventArgs(httpContext));
                         return true;
                     }
                     else
@@ -74,7 +74,7 @@ namespace ThingsGateway.Foundation.Http.WebSockets
                         using (var byteBlock = new ByteBlock())
                         {
                             args.Context.Response.Build(byteBlock);
-                            client.DefaultSend(byteBlock);
+                            await client.DefaultSendAsync(byteBlock);
                         }
 
                         client.Close("主动拒绝WebSocket连接");
@@ -86,19 +86,6 @@ namespace ThingsGateway.Foundation.Http.WebSockets
                 }
             }
             return false;
-        }
-
-        /// <summary>
-        /// 转化Protocol协议标识为<see cref="Protocol.WebSocket"/>
-        /// </summary>
-        /// <param name="client"></param>
-        /// <param name="httpContext">Http上下文</param>
-        public static Task<bool> SwitchProtocolToWebSocketAsync<TClient>(this TClient client, HttpContext httpContext) where TClient : HttpSocketClient
-        {
-            return Task.Run(() =>
-             {
-                 return SwitchProtocolToWebSocket(client, httpContext);
-             });
         }
     }
 }

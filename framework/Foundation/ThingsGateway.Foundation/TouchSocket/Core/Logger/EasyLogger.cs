@@ -24,7 +24,7 @@
 //------------------------------------------------------------------------------
 using System.Text;
 
-namespace ThingsGateway.Foundation
+namespace ThingsGateway.Foundation.Core
 {
     /// <summary>
     /// 一个简单的委托日志

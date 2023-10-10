@@ -24,7 +24,7 @@
 //------------------------------------------------------------------------------
 using System.Text;
 
-namespace ThingsGateway.Foundation
+namespace ThingsGateway.Foundation.Core
 {
     /// <summary>
     /// MD5相关操作类

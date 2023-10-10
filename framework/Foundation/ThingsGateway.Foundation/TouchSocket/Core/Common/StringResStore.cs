@@ -25,7 +25,7 @@
 using System.Collections.Concurrent;
 using System.ComponentModel;
 
-namespace ThingsGateway.Foundation
+namespace ThingsGateway.Foundation.Core
 {
     /// <summary>
     /// 字符串资源字典

@@ -24,29 +24,29 @@ public static class LogExtensions
     /// <summary>
     /// <see cref="LoggerGroup"/> 日志输出
     /// </summary>
-    public static void Log_Out(this ILogger logger, ThingsGateway.Foundation.LogLevel arg1, object arg2, string arg3, Exception arg4)
+    public static void Log_Out(this ILogger logger, ThingsGateway.Foundation.Core.LogLevel arg1, object arg2, string arg3, Exception arg4)
     {
         switch (arg1)
         {
-            case ThingsGateway.Foundation.LogLevel.None:
+            case ThingsGateway.Foundation.Core.LogLevel.None:
                 logger?.Log(Microsoft.Extensions.Logging.LogLevel.None, 0, arg4, arg3);
                 break;
-            case ThingsGateway.Foundation.LogLevel.Trace:
+            case ThingsGateway.Foundation.Core.LogLevel.Trace:
                 logger?.Log(Microsoft.Extensions.Logging.LogLevel.Trace, 0, arg4, arg3);
                 break;
-            case ThingsGateway.Foundation.LogLevel.Debug:
+            case ThingsGateway.Foundation.Core.LogLevel.Debug:
                 logger?.Log(Microsoft.Extensions.Logging.LogLevel.Debug, 0, arg4, arg3);
                 break;
-            case ThingsGateway.Foundation.LogLevel.Info:
+            case ThingsGateway.Foundation.Core.LogLevel.Info:
                 logger?.Log(Microsoft.Extensions.Logging.LogLevel.Information, 0, arg4, arg3);
                 break;
-            case ThingsGateway.Foundation.LogLevel.Warning:
+            case ThingsGateway.Foundation.Core.LogLevel.Warning:
                 logger?.Log(Microsoft.Extensions.Logging.LogLevel.Warning, 0, arg4, arg3);
                 break;
-            case ThingsGateway.Foundation.LogLevel.Error:
+            case ThingsGateway.Foundation.Core.LogLevel.Error:
                 logger?.Log(Microsoft.Extensions.Logging.LogLevel.Error, 0, arg4, arg3);
                 break;
-            case ThingsGateway.Foundation.LogLevel.Critical:
+            case ThingsGateway.Foundation.Core.LogLevel.Critical:
                 logger?.Log(Microsoft.Extensions.Logging.LogLevel.Critical, 0, arg4, arg3);
                 break;
             default:

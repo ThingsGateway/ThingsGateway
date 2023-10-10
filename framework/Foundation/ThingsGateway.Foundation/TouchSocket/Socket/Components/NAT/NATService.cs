@@ -27,11 +27,10 @@ using System.Net.Sockets;
 namespace ThingsGateway.Foundation.Sockets
 {
     /// <summary>
-    /// TCP端口转发服务器
+    /// Tcp端口转发服务器
     /// </summary>
     public class NATService : TcpService<NATSocketClient>
     {
-
         /// <inheritdoc/>
         protected override NATSocketClient GetClientInstence(Socket socket, TcpNetworkMonitor monitor)
         {

@@ -504,7 +504,7 @@ namespace ThingsGateway.Foundation.Sockets
             {
                 case ReceiveType.Iocp:
                     {
-#if NET45_OR_GREATER||NET5_0_OR_GREATER
+#if NET45_OR_GREATER||NET6_0_OR_GREATER
                         for (var i = 0; i < threadCount; i++)
                         {
                             var eventArg = new SocketAsyncEventArgs();

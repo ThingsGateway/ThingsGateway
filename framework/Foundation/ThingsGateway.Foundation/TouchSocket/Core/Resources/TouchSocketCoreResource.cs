@@ -25,7 +25,7 @@
 
 using System.ComponentModel;
 
-namespace ThingsGateway.Foundation
+namespace ThingsGateway.Foundation.Core
 {
     /// <summary>
     /// TouchSocketCore资源枚举

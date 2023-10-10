@@ -24,7 +24,7 @@
 //------------------------------------------------------------------------------
 using System.Text;
 
-namespace ThingsGateway.Foundation
+namespace ThingsGateway.Foundation.Core
 {
     /// <summary>
     /// 文件日志记录器

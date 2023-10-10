@@ -24,7 +24,7 @@
 //------------------------------------------------------------------------------
 using System.IO.Compression;
 
-namespace ThingsGateway.Foundation
+namespace ThingsGateway.Foundation.Core
 {
     /// <summary>
     /// Gzip操作类
