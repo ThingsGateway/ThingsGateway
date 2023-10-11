@@ -53,7 +53,7 @@
 
             </MAppBar>
 
-            <MMain Style=@($"{(!(IsMobile||_drawerOpen!=true)? "padding-left:200px;":"")}")>
+             <MMain Style=@($"{(!(IsMobile||_drawerOpen!=true)? "padding-left:200px;":"")}")>
                 <div class="full-width">
                     <PageTabs @ref="_pageTabs" PageTabItems="PageTabItems" />
                 </div>
@@ -63,7 +63,7 @@
                         @Body
                     </PPageContainer>
                 </MCard>
-                <MSheet Class="d-flex justify-center align-center rounded-0" Style=@($"height: {BlazorResourceConst.FooterHeight}px;")>
+                 <MSheet Class="d-flex justify-center align-center rounded-0" Style=@($"height: {BlazorResourceConst.FooterHeight}px; ")>
                     <Foter CONFIG_COPYRIGHT=@CONFIG_COPYRIGHT CONFIG_COPYRIGHT_URL=@CONFIG_COPYRIGHT_URL CONFIG_TITLE=@CONFIG_TITLE></Foter>
                 </MSheet>
             </MMain>
