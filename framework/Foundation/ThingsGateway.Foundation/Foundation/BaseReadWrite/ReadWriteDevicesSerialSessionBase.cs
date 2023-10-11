@@ -25,7 +25,7 @@ public abstract class ReadWriteDevicesSerialSessionBase : ReadWriteDevicesBase
     {
         SerialSession = serialSession;
         WaitingClientEx = SerialSession.GetWaitingClientEx(new() { BreakTrigger = true });
-        SerialSession.Received += Received;
+        SerialSession.Received -= Received;
         SerialSession.Connecting -= Connecting;
         SerialSession.Connected -= Connected;
         SerialSession.Disconnecting -= Disconnecting;
@@ -34,6 +34,7 @@ public abstract class ReadWriteDevicesSerialSessionBase : ReadWriteDevicesBase
         SerialSession.Connected += Connected;
         SerialSession.Disconnecting += Disconnecting;
         SerialSession.Disconnected += Disconnected;
+        SerialSession.Received += Received;
         Logger = SerialSession.Logger;
     }
     /// <summary>
@@ -86,11 +87,12 @@ public abstract class ReadWriteDevicesSerialSessionBase : ReadWriteDevicesBase
     /// <inheritdoc/>
     public override void Dispose()
     {
+        Disconnect();
+        SerialSession.Received -= Received;
         SerialSession.Connecting -= Connecting;
         SerialSession.Connected -= Connected;
         SerialSession.Disconnecting -= Disconnecting;
         SerialSession.Disconnected -= Disconnected;
-        Disconnect();
         if (CascadeDisposal)
             SerialSession.SafeDispose();
     }
