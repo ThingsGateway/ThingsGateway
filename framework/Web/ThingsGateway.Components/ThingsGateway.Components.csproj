@@ -2,7 +2,8 @@
 
 	
 	<ItemGroup>
-		<PackageReference Include="Masa.Blazor" Version="1.0.4" />
+		<PackageReference Include="Masa.Blazor" Version="1.1.0" />
+		<PackageReference Include="Masa.Blazor.SomethingSkia" Version="1.1.0" />
 	</ItemGroup>
 
 	
