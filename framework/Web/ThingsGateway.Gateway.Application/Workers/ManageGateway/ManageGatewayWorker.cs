@@ -105,7 +105,10 @@ public class ManageGatewayWorker : BackgroundService
                     }
                     else
                     {
-                        _clientLogger.LogWarning($"连接错误：{result.Message}");
+                        if (ClientStatuString.IsSuccess)
+                        {
+                            _clientLogger.LogWarning($"连接错误：{result.Message}");
+                        }
                         ClientStatuString.ErrorCode = 999;
                         ClientStatuString.Message = $"连接错误：{result.Message}";
                     }
