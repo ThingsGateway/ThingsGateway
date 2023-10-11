@@ -72,11 +72,11 @@ public abstract class ReadWriteDevicesTcpClientBase : ReadWriteDevicesBase
     /// <inheritdoc/>
     public override void Dispose()
     {
+        Disconnect();
         TcpClient.Connecting -= Connecting;
         TcpClient.Connected -= Connected;
         TcpClient.Disconnecting -= Disconnecting;
         TcpClient.Disconnected -= Disconnected;
-        Disconnect();
         if (CascadeDisposal)
             TcpClient.SafeDispose();
     }

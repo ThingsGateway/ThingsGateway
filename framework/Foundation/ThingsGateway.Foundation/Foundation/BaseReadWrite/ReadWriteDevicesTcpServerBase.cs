@@ -23,9 +23,14 @@ public abstract class ReadWriteDevicesTcpServerBase : ReadWriteDevicesBase
     public ReadWriteDevicesTcpServerBase(TcpService tcpService)
     {
         TcpService = tcpService;
+        TcpService.Received -= Received;
+        TcpService.Connecting -= Connecting;
+        TcpService.Connected -= Connected;
+        TcpService.Disconnecting -= Disconnecting;
+        TcpService.Disconnected -= Disconnected;
+        TcpService.Received += Received;
         TcpService.Connecting += Connecting;
         TcpService.Connected += Connected;
-        TcpService.Received += Received;
         TcpService.Disconnecting += Disconnecting;
         TcpService.Disconnected += Disconnected;
         Logger = TcpService.Logger;
@@ -63,11 +68,12 @@ public abstract class ReadWriteDevicesTcpServerBase : ReadWriteDevicesBase
     /// <inheritdoc/>
     public override void Dispose()
     {
+        Disconnect();
+        TcpService.Received -= Received;
         TcpService.Connecting -= Connecting;
         TcpService.Connected -= Connected;
         TcpService.Disconnecting -= Disconnecting;
         TcpService.Disconnected -= Disconnected;
-        Disconnect();
         if (CascadeDisposal)
             TcpService.SafeDispose();
     }
