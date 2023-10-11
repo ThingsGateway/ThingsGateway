@@ -60,7 +60,6 @@ public partial class DeviceStatusPage : IDisposable
     MainLayout MainLayout { get; set; }
 
     MemoryVariableWorker MemoryVariableWorker { get; set; }
-    StringNumber Panel { get; set; }
 
     UploadDeviceWorker UploadDeviceHostService { get; set; }
     StringNumber Uppanel { get; set; }

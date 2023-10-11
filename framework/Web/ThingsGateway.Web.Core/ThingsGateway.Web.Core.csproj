@@ -1,10 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 
-	<ItemGroup>
-	  <None Remove="Configuration\UpgradeConfig.json" />
-	</ItemGroup>
-
 
 	<ItemGroup>
 		<Content Include="Configuration\App.json">
@@ -15,6 +11,9 @@
 		</Content>
 		<Content Include="Configuration\JWT.json">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Configuration\ManageGatewayConfig.json">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
 		<Content Include="Configuration\Swagger.json">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

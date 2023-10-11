@@ -29,33 +29,33 @@
 else
 {
     <MRow NoGutters Style="height:100%">
-        <MCol Md=5 Sm=12>
-            <MSheet Elevation=1 Style="width:100%; height:100%;" Class="d-flex align-start flex-column mb-6">
-                <div class="d-flex align-center ml-12 mt-12">
-                    <MAvatar Size="40" Color="teal">
-                        <span class="white--text text-h6">@CONFIG_TITLE?.GetNameLen2()</span>
-                    </MAvatar>
-                    <h1>@CONFIG_TITLE</h1>
-                </div>
-                <div class="d-flex align-center ml-12 mt-12 mb-auto">
-                    <h3>@CONFIG_REMARK</h3>
-                </div>
-                <div class="d-flex align-center pa-2" style="width:100%;height:100%;">
-                    <MImage Src=@(BlazorResourceConst.ResourceUrl+"images/login-left.svg")></MImage>
-                </div>
-            </MSheet>
+         <MCol Md=7 Sm=12>
+             <MSheet Elevation=1 Style="width:100%; height:100%;" Class="d-flex align-start flex-column mb-6">
+                 <div class="d-flex align-center ml-12 mt-12">
+                     <MAvatar Size="40" Color="teal">
+                         <span class="white--text text-h6">@CONFIG_TITLE?.GetNameLen2()</span>
+                     </MAvatar>
+                     <h1>@CONFIG_TITLE</h1>
+                 </div>
+                 <div class="d-flex align-center ml-12 mt-12 mb-auto">
+                     <h3>@CONFIG_REMARK</h3>
+                 </div>
+                 <div class="d-flex align-center pa-2" style="width:100%;height:100%;">
+                     <MImage Src=@(BlazorResourceConst.ResourceUrl+"images/login-left.svg")></MImage>
+                 </div>
+             </MSheet>
 
-        </MCol>
+         </MCol>
 
-        <MCol Md=7 Sm=12 Align="AlignTypes.Center">
-            <MRow Md=6 Sm=12 Justify="JustifyTypes.Center" Align="AlignTypes.Center">
-                <MCard Class="px-16 py-12" @onkeydown=Enter>
-                    @GetLoginCore()
-                </MCard>
-            </MRow>
-        </MCol>
+         <MCol Md=5 Sm=12 Align="AlignTypes.Center">
+             <MRow Md=6 Sm=12 Justify="JustifyTypes.Center" Align="AlignTypes.Center">
+                 <MCard Class="px-16 py-12" @onkeydown=Enter>
+                     @GetLoginCore()
+                 </MCard>
+             </MRow>
+         </MCol>
 
-    </MRow>
+     </MRow>
 
 }
 
@@ -73,30 +73,29 @@ else
         <MTextField TValue="string"
                     Label=账号
                             Outlined
-                    HideDetails="@("auto")"
-        @bind-Value=@loginModel.Account>
-        </MTextField>
-        <MTextField TValue="string"
-                    Class="mt-10"
-                    Label="密码"
-                    Type="@(_showPassword ? "text" : "password")"
-                    AppendIcon="@(_showPassword ? "mdi-eye" : "mdi-eye-off")"
-                    OnAppendClick="()=>_showPassword = !_showPassword"
+                     HideDetails="@("auto")"
+         @bind-Value=@loginModel.Account>
+         </MTextField>
+         <MTextField TValue="string"
+                     Class="mt-5"
+                     Label="密码"
+                     Type="@(_showPassword ? "text" : "password")"
+                     AppendIcon="@(_showPassword ? "mdi-eye" : "mdi-eye-off")"
+                     OnAppendClick="()=>_showPassword = !_showPassword"
                             Outlined
-                    HideDetails="@("auto")"
-        @bind-Value=@Password>
-        </MTextField>
-        @if (_showCaptcha)
+                     HideDetails="@("auto")"
+         @bind-Value=@Password>
+         </MTextField>
+         @if (_showCaptcha)
         {
             <PImageCaptcha @ref=captcha @bind-Value="CaptchaValue"
-                           TextFieldClass="mt-10 mx-auto"
-                           Height="60"
-                           Label=验证码 Outlined
-                               OnRefresh="RefreshCode"
-                               ErrorMessage=验证码错误>
-                </PImageCaptcha>
+                           TextFieldClass="mt-5 mx-auto"
+                           Label=验证码 Outlined Dense
+                                OnRefresh="RefreshCode"
+                                ErrorMessage=验证码错误>
+                 </PImageCaptcha>
         }
-        <MButton Class="mt-11 rounded-4" OnClick=LoginAsync Height=46 Width=@("100%") Color="primary">登录</MButton>
+        <MButton Class="mt-8 rounded-4" OnClick=LoginAsync Height=45 Width=@("100%") Color="primary">登录</MButton>
     </div>
         ;
         return ViewSubMenu;
@@ -190,8 +189,8 @@ else
     protected override async Task OnParametersSetAsync()
     {
 #if DEBUG
-        loginModel.Account = "superAdmin";
-        Password = "111111";
+    loginModel.Account = "superAdmin";
+    Password = "111111";
 #endif
         GetCaptchaInfo();
         CONFIG_TITLE = (await App.GetService<IConfigService>().GetByConfigKeyAsync(ConfigConst.SYS_CONFIGBASEDEFAULT, ConfigConst.CONFIG_TITLE))?.ConfigValue;

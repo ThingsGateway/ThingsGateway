@@ -16,6 +16,7 @@ using Masa.Blazor;
 using Masa.Blazor.Presets;
 
 using Microsoft.Extensions.DependencyInjection;
+
 namespace ThingsGateway.Components;
 
 /// <summary>
