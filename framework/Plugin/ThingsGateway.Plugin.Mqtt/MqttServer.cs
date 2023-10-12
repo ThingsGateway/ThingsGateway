@@ -159,6 +159,19 @@ public class MqttServer : UpLoadBase
         {
             LogMessage?.LogWarning(ex, ToString());
         }
+
+        try
+        {
+            var data = GetRetainedMessages();
+            foreach (var item in data)
+            {
+                await _mqttServer.UpdateRetainedMessageAsync(item);
+            }
+        }
+        catch (Exception ex)
+        {
+            LogMessage?.LogWarning(ex, ToString());
+        }
         if (driverPropertys.CycleInterval > UploadDeviceThread.CycleInterval + 50)
         {
             try
@@ -315,10 +328,17 @@ public class MqttServer : UpLoadBase
 
     private Task MqttServer_LoadingRetainedMessageAsync(LoadingRetainedMessagesEventArgs arg)
     {
+        List<MqttApplicationMessage> Messages = GetRetainedMessages();
+        arg.LoadedRetainedMessages = Messages;
+        return CompletedTask.Instance;
+    }
+
+    private List<MqttApplicationMessage> GetRetainedMessages()
+    {
         //首次连接时的保留消息
         //分解List，避免超出mqtt字节大小限制
         var varData = _globalDeviceData.AllVariables.Adapt<List<VariableData>>().ChunkTrivialBetter(driverPropertys.SplitSize);
-        var devData = _globalDeviceData.AllVariables.Adapt<List<DeviceData>>().ChunkTrivialBetter(driverPropertys.SplitSize);
+        var devData = _globalDeviceData.CollectDevices.Adapt<List<DeviceData>>().ChunkTrivialBetter(driverPropertys.SplitSize);
         List<MqttApplicationMessage> Messages = new();
         foreach (var item in varData)
         {
@@ -332,8 +352,8 @@ public class MqttServer : UpLoadBase
 .WithTopic($"{driverPropertys.DeviceTopic}")
 .WithPayload(item.GetSciptListValue(driverPropertys.BigTextScriptDeviceModel)).Build());
         }
-        arg.LoadedRetainedMessages = Messages;
-        return CompletedTask.Instance;
+
+        return Messages;
     }
 
     private async Task MqttServer_ValidatingConnectionAsync(ValidatingConnectionEventArgs arg)

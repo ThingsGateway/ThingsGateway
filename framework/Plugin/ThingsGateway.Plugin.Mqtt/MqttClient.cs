@@ -358,7 +358,7 @@ public class MqttClient : UpLoadBase
         //保留消息
         //分解List，避免超出mqtt字节大小限制
         var varData = _globalDeviceData.AllVariables.Adapt<List<VariableData>>().ChunkTrivialBetter(driverPropertys.SplitSize);
-        var devData = _globalDeviceData.AllVariables.Adapt<List<DeviceData>>().ChunkTrivialBetter(driverPropertys.SplitSize);
+        var devData = _globalDeviceData.CollectDevices.Adapt<List<DeviceData>>().ChunkTrivialBetter(driverPropertys.SplitSize);
         var isConnect = await TryMqttClientAsync(cancellationToken);
         foreach (var item in devData)
         {
