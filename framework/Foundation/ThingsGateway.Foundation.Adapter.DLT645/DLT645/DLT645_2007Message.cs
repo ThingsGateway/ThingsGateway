@@ -20,15 +20,12 @@ public class DLT645_2007Message : MessageBase, IMessage
     public override int HeadBytesLength => -1;
 
     /// <inheritdoc/>
-    public override bool CheckHeadBytes(byte[] head)
+    public override bool CheckHeadBytes(byte[] heads)
     {
         BodyLength = -1;
         return true;
     }
 
-    /// <inheritdoc/>
-    protected override void SendBytesThen()
-    {
-    }
+
 
 }

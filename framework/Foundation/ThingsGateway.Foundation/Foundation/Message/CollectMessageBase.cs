@@ -43,7 +43,7 @@ public abstract class MessageBase : OperResult<byte[]>, IMessage
     }
 
     /// <inheritdoc/>
-    public abstract bool CheckHeadBytes(byte[] head);
+    public abstract bool CheckHeadBytes(byte[] heads);
 
     /// <summary>
     /// 写入<see cref="SendBytes"/>后触发此方法
