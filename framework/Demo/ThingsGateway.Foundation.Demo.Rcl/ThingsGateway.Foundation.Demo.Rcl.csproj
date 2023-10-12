@@ -4,6 +4,14 @@
 		<DefineConstants>Pro</DefineConstants>
 	</PropertyGroup>
 	<ItemGroup Condition="'$(SolutionName)'=='ThingsGateway - Pro'">
+
+
+
+		<Compile Include="..\..\PluginPro\ThingsGateway.Plugin.Melsec\Page\QnA3E_BinaryDebugPage.razor.cs" Link="Pages\Melsec\QnA3E_BinaryDebugPage.razor.cs" />
+		<Content Include="..\..\PluginPro\ThingsGateway.Plugin.Melsec\Page\QnA3E_BinaryDebugPage.razor" Link="Pages\Melsec\QnA3E_BinaryDebugPage.razor" />
+		<ProjectReference Include="..\..\FoundationPro\ThingsGateway.Foundation.Adapter.Melsec\ThingsGateway.Foundation.Adapter.Melsec.csproj" />
+
+		
 		
 		<Compile Include="..\..\PluginPro\ThingsGateway.Plugin.AllenBradleyCip\Page\AllenBradleyCipTcpDebugPage.razor.cs" Link="Pages\ABCIP\AllenBradleyCipTcpDebugPage.razor.cs" />
 		<Content Include="..\..\PluginPro\ThingsGateway.Plugin.AllenBradleyCip\Page\AllenBradleyCipTcpDebugPage.razor" Link="Pages\ABCIP\AllenBradleyCipTcpDebugPage.razor" />

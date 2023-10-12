@@ -11,6 +11,7 @@
 #endregion
 
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace ThingsGateway.Components;
 
@@ -42,12 +43,13 @@ public class InitTimezone : IDisposable
     /// </summary>
     /// <param name="jsRuntime"></param>
     /// <param name="storage"></param>
-    /// <param name="httpContextAccessor"></param>
-    public InitTimezone(IJSRuntime jsRuntime, CookieStorage storage, IHttpContextAccessor httpContextAccessor)
+    /// <param name="serviceProvider"></param>
+    public InitTimezone(IJSRuntime jsRuntime, CookieStorage storage, IServiceProvider serviceProvider)
     {
+        IHttpContextAccessor httpContextAccessor = serviceProvider.GetService<IHttpContextAccessor>();
         _jsRuntime = jsRuntime;
         _storage = storage;
-        var httpContext = httpContextAccessor.HttpContext;
+        var httpContext = httpContextAccessor?.HttpContext;
         if (httpContext is not null)
         {
             var timezoneOffsetResult = httpContext.Request.Cookies[_timezoneOffsetKey];

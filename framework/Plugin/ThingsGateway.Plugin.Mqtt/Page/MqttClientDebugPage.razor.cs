@@ -31,8 +31,6 @@ public partial class MqttClientDebugPage : IDisposable
 {
     private DriverDebugUIPage driverDebugUIPage;
     private MqttClientPage mqttClientPage;
-    [Inject]
-    private InitTimezone InitTimezone { get; set; }
 
     [Inject]
     IPopupService PopupService { get; set; }
