@@ -51,7 +51,7 @@ public interface IMessage : IOperResult, IRequestInfo
     /// <summary>
     /// 检查头子节的合法性,并赋值<see cref="BodyLength"/><br />
     /// </summary>
-    /// <param name="head">接收的头子节</param>
+    /// <param name="heads">接收的头子节</param>
     /// <returns>是否成功的结果</returns>
-    bool CheckHeadBytes(byte[] head);
+    bool CheckHeadBytes(byte[] heads);
 }

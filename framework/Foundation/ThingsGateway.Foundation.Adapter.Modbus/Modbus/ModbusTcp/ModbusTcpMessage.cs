@@ -23,10 +23,10 @@ public class ModbusTcpMessage : MessageBase, IMessage
     /// </summary>
     public bool IsCheckMessageId { get; set; } = false;
     /// <inheritdoc/>
-    public override bool CheckHeadBytes(byte[] head)
+    public override bool CheckHeadBytes(byte[] heads)
     {
-        if (head == null || head.Length <= 0) return false;
-        HeadBytes = head;
+        if (heads == null || heads.Length <= 0) return false;
+        HeadBytes = heads;
 
         int num = (HeadBytes[4] * 256) + HeadBytes[5];
         BodyLength = num;
