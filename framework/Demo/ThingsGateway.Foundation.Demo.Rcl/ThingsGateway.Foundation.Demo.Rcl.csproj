@@ -115,12 +115,20 @@
 	</ItemGroup>
 
 
-	<ItemGroup>
-		<ProjectReference Include="..\..\Foundation\ThingsGateway.Foundation.Adapter.DLT645\ThingsGateway.Foundation.Adapter.DLT645.csproj" />
+	<ItemGroup >
+		<PackageReference Include="ThingsGateway.Foundation.Adapter.DLT645" Version="*" />
+		<PackageReference Include="ThingsGateway.Foundation.Adapter.Modbus" Version="*" />
+		<PackageReference Include="ThingsGateway.Foundation.Adapter.OPCDA" Version="*" />
+		<PackageReference Include="ThingsGateway.Foundation.Adapter.OPCUA" Version="*" />
+		<PackageReference Include="ThingsGateway.Foundation.Adapter.Siemens" Version="*" />
+		<!--<ProjectReference Include="..\..\Foundation\ThingsGateway.Foundation.Adapter.DLT645\ThingsGateway.Foundation.Adapter.DLT645.csproj" />
 		<ProjectReference Include="..\..\Foundation\ThingsGateway.Foundation.Adapter.Modbus\ThingsGateway.Foundation.Adapter.Modbus.csproj" />
 		<ProjectReference Include="..\..\Foundation\ThingsGateway.Foundation.Adapter.OPCDA\ThingsGateway.Foundation.Adapter.OPCDA.csproj" />
 		<ProjectReference Include="..\..\Foundation\ThingsGateway.Foundation.Adapter.OPCUA\ThingsGateway.Foundation.Adapter.OPCUA.csproj" />
-		<ProjectReference Include="..\..\Foundation\ThingsGateway.Foundation.Adapter.Siemens\ThingsGateway.Foundation.Adapter.Siemens.csproj" />
+		<ProjectReference Include="..\..\Foundation\ThingsGateway.Foundation.Adapter.Siemens\ThingsGateway.Foundation.Adapter.Siemens.csproj" />-->
+
+	</ItemGroup>
+	<ItemGroup >
 		<ProjectReference Include="..\..\Web\ThingsGateway.Components\ThingsGateway.Components.csproj" />
 	</ItemGroup>
 
@@ -131,10 +139,6 @@
 		</Content>
 	</ItemGroup>
 
-
-	<ItemGroup>
-	  <Folder Include="Pages\Mqtt\" />
-	</ItemGroup>
 
 
 	<ItemGroup>
