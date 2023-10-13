@@ -30,16 +30,16 @@ namespace ThingsGateway.Foundation.Sockets
     /// </summary>
     public interface IClient : IDependencyObject, IDisposable, ISocket
     {
+        /// <summary>
+        /// 获取一个同步数据接收器
+        /// </summary>
+        /// <returns></returns>
+        IReceiver CreateReceiver();
 
         /// <summary>
-        /// 处理未经过适配器的数据。返回值表示是否继续向下传递。
+        /// 移除同步数据接收器
         /// </summary>
-        Func<ByteBlock, bool> OnHandleRawBuffer { get; set; }
-
-        /// <summary>
-        /// 处理经过适配器后的数据。返回值表示是否继续向下传递。
-        /// </summary>
-        Func<ByteBlock, IRequestInfo, bool> OnHandleReceivedData { get; set; }
+        void ClearReceiver();
 
         /// <summary>
         /// 终端协议

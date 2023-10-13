@@ -53,9 +53,9 @@ public interface ISerialSessionBase : IClient, ISender, IDefaultSender, IPluginO
 
 
     /// <summary>
-    /// 接收模式
+    /// 判断是否在线
     /// </summary>
-    public ReceiveType ReceiveType { get; }
+    bool Online { get; }
 
     /// <summary>
     /// 串口描述

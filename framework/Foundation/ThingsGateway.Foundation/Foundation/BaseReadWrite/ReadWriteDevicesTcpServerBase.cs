@@ -77,57 +77,54 @@ public abstract class ReadWriteDevicesTcpServerBase : ReadWriteDevicesBase
         if (CascadeDisposal)
             TcpService.SafeDispose();
     }
+    /// <summary>
+    /// 接收解析
+    /// </summary>
+    /// <param name="client"></param>
+    /// <param name="e"></param>
+    /// <returns></returns>
+    protected virtual Task Received(SocketClient client, ReceivedDataEventArgs e)
+    {
+        return EasyTask.CompletedTask;
+    }
 
     /// <inheritdoc/>
     public override string ToString()
     {
         return TcpService.ServerName;
     }
-    /// <summary>
-    /// 接收解析
-    /// </summary>
-    protected virtual void Received(SocketClient client, IRequestInfo requestInfo)
-    {
 
-    }
     /// <summary>
     /// <inheritdoc/>
     /// </summary>
     /// <param name="client"></param>
     /// <param name="e"></param>
-    protected virtual void Connected(SocketClient client, ConnectedEventArgs e)
+    protected virtual Task Connected(SocketClient client, ConnectedEventArgs e)
     {
         Logger?.Debug(client.IP + ":" + client.Port + "连接成功");
+        return EasyTask.CompletedTask;
     }
 
     /// <inheritdoc/>
-    protected virtual void Connecting(SocketClient client, ConnectingEventArgs e)
+    protected virtual Task Connecting(SocketClient client, ConnectingEventArgs e)
     {
         Logger?.Debug(client.IP + ":" + client.Port + "正在连接");
         SetDataAdapter(client);
+        return EasyTask.CompletedTask;
     }
 
     /// <inheritdoc/>
-    protected virtual void Disconnected(ITcpClientBase client, DisconnectEventArgs e)
+    protected virtual Task Disconnected(ITcpClientBase client, DisconnectEventArgs e)
     {
         Logger?.Debug(client.IP + ":" + client.Port + "断开连接-" + e.Message);
+        return EasyTask.CompletedTask;
     }
 
     /// <inheritdoc/>
-    protected virtual void Disconnecting(ITcpClientBase client, DisconnectEventArgs e)
+    protected virtual Task Disconnecting(ITcpClientBase client, DisconnectEventArgs e)
     {
         Logger?.Debug(client.IP + ":" + client.Port + "正在主动断开连接-" + e.Message);
+        return EasyTask.CompletedTask;
     }
 
-    private void Received(SocketClient client, ByteBlock byteBlock, IRequestInfo requestInfo)
-    {
-        try
-        {
-            Received(client, requestInfo);
-        }
-        catch (Exception ex)
-        {
-            Logger.Exception(this, ex);
-        }
-    }
 }

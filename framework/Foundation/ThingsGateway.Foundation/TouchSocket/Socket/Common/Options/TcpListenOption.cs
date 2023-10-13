@@ -33,11 +33,6 @@ namespace ThingsGateway.Foundation.Sockets
         public int SendTimeout { get; set; }
 
         /// <summary>
-        /// 接收类型
-        /// </summary>
-        public ReceiveType ReceiveType { get; set; } = ReceiveType.Iocp;
-
-        /// <summary>
         /// 是否使用地址复用
         /// </summary>
         public bool ReuseAddress { get; set; }

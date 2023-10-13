@@ -88,6 +88,7 @@ public partial class UpgradeWorker : BackgroundService
             TcpDmtpClient.Connected = (client, e) =>
             {
                 TcpDmtpClient.ResetId(config.Name ?? YitIdHelper.NextId().ToString());
+                return EasyTask.CompletedTask;
             };
             while (!stoppingToken.IsCancellationRequested)
             {
@@ -95,7 +96,7 @@ public partial class UpgradeWorker : BackgroundService
                 {
                     try
                     {
-                        await TcpDmtpClient.ConnectAsync();
+                        await TcpDmtpClient.ConnectAsync(5000, stoppingToken);
                         StatuString.ErrorCode = 0;
                         StatuString.Message = "成功";
                     }

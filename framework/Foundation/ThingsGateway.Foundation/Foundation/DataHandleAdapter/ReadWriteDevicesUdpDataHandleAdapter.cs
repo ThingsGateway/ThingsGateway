@@ -128,11 +128,6 @@ public abstract class ReadWriteDevicesUdpDataHandleAdapter<TRequest> : UdpDataHa
     {
         throw new System.NotImplementedException();//因为设置了不支持拼接发送，所以该方法可以不实现。
     }
-    /// <inheritdoc/>
-    protected override void PreviewSend(IRequestInfo requestInfo)
-    {
-        throw new System.NotImplementedException();//因为设置了不支持，所以该方法可以不实现。
-    }
 
     /// <inheritdoc/>
     protected override void Reset()

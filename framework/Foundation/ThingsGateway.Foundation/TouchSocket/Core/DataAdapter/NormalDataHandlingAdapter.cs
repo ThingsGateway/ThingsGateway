@@ -78,6 +78,24 @@ namespace ThingsGateway.Foundation.Core
             throw new System.NotImplementedException();
         }
 
+        /// <inheritdoc/>
+        protected override Task PreviewSendAsync(IRequestInfo requestInfo)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc/>
+        protected override Task PreviewSendAsync(byte[] buffer, int offset, int length)
+        {
+            return this.GoSendAsync(buffer, offset, length);
+        }
+
+        /// <inheritdoc/>
+        protected override Task PreviewSendAsync(IList<ArraySegment<byte>> transferBytes)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// <inheritdoc/>
         /// </summary>

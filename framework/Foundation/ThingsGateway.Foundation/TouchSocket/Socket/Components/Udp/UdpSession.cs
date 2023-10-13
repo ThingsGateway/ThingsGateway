@@ -36,17 +36,20 @@ namespace ThingsGateway.Foundation.Sockets
         /// <summary>
         /// 当收到数据时
         /// </summary>
-        public UdpReceivedEventHandler Received { get; set; }
+        public UdpReceivedEventHandler<UdpSession> Received { get; set; }
 
-        /// <summary>
         /// <inheritdoc/>
-        /// </summary>
-        /// <param name="remoteEndPoint"></param>
-        /// <param name="byteBlock"></param>
-        /// <param name="requestInfo"></param>
-        protected override void HandleReceivedData(EndPoint remoteEndPoint, ByteBlock byteBlock, IRequestInfo requestInfo)
+        protected override async Task ReceivedData(UdpReceivedDataEventArgs e)
         {
-            this.Received?.Invoke(remoteEndPoint, byteBlock, requestInfo);
+            if (this.Received != null)
+            {
+                await this.Received.Invoke(this, e);
+                if (e.Handled)
+                {
+                    return;
+                }
+            }
+            await base.ReceivedData(e);
         }
     }
 
@@ -69,16 +72,6 @@ namespace ThingsGateway.Foundation.Sockets
             this.ReceiveBufferSize = 1024 * 64;
             this.SendBufferSize = 1024 * 64;
         }
-
-        /// <summary>
-        /// 处理未经过适配器的数据。返回值表示是否继续向下传递。
-        /// </summary>
-        public Func<ByteBlock, bool> OnHandleRawBuffer { get; set; }
-
-        /// <summary>
-        /// 处理经过适配器后的数据。返回值表示是否继续向下传递。
-        /// </summary>
-        public Func<ByteBlock, IRequestInfo, bool> OnHandleReceivedData { get; set; }
 
         /// <summary>
         /// <inheritdoc/>
@@ -342,7 +335,6 @@ namespace ThingsGateway.Foundation.Sockets
                 this.PluginsManager.Raise(nameof(IServerStartedPlugin.OnServerStarted), this, new ServiceStateEventArgs(this.ServerState, ex) { Message = ex.Message });
                 throw;
             }
-
         }
 
         /// <summary>
@@ -391,11 +383,9 @@ namespace ThingsGateway.Foundation.Sockets
         /// <summary>
         /// 处理已接收到的数据。
         /// </summary>
-        /// <param name="remoteEndPoint"></param>
-        /// <param name="byteBlock">以二进制流形式传递</param>
-        /// <param name="requestInfo">以解析的数据对象传递</param>
-        protected virtual void HandleReceivedData(EndPoint remoteEndPoint, ByteBlock byteBlock, IRequestInfo requestInfo)
+        protected virtual Task ReceivedData(UdpReceivedDataEventArgs e)
         {
+            return this.PluginsManager.RaiseAsync(nameof(IUdpReceivedPlugin.OnUdpReceived), this, e);
         }
 
         /// <summary>
@@ -492,7 +482,7 @@ namespace ThingsGateway.Foundation.Sockets
             }
 #endif
 
-            #endregion
+            #endregion Windows下UDP连接被重置错误10054
 
             this.PreviewBind(socket);
 
@@ -500,55 +490,48 @@ namespace ThingsGateway.Foundation.Sockets
 
             this.Monitor = new UdpNetworkMonitor(iPHost, socket);
 
-            switch (this.Config.GetValue(TouchSocketConfigExtension.ReceiveTypeProperty))
+
+#if NET45_OR_GREATER || NET6_0_OR_GREATER
+            for (var i = 0; i < threadCount; i++)
             {
-                case ReceiveType.Iocp:
-                    {
-#if NET45_OR_GREATER||NET6_0_OR_GREATER
-                        for (var i = 0; i < threadCount; i++)
-                        {
-                            var eventArg = new SocketAsyncEventArgs();
-                            this.m_socketAsyncs.Add(eventArg);
-                            eventArg.Completed += this.IO_Completed;
-                            var byteBlock = new ByteBlock(this.ReceiveBufferSize);
-                            eventArg.UserToken = byteBlock;
-                            eventArg.SetBuffer(byteBlock.Buffer, 0, byteBlock.Capacity);
-                            eventArg.RemoteEndPoint = iPHost.EndPoint;
-                            if (!socket.ReceiveFromAsync(eventArg))
-                            {
-                                this.ProcessReceive(socket, eventArg);
-                            }
-                        }
-#else
-                        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                        {
-                            for (var i = 0; i < threadCount; i++)
-                            {
-                                var eventArg = new SocketAsyncEventArgs();
-                                this.m_socketAsyncs.Add(eventArg);
-                                eventArg.Completed += this.IO_Completed;
-                                var byteBlock = new ByteBlock(this.ReceiveBufferSize);
-                                eventArg.UserToken = byteBlock;
-                                eventArg.SetBuffer(byteBlock.Buffer, 0, byteBlock.Capacity);
-                                eventArg.RemoteEndPoint = iPHost.EndPoint;
-                                if (!socket.ReceiveFromAsync(eventArg))
-                                {
-                                    this.ProcessReceive(socket, eventArg);
-                                }
-                            }
-                        }
-                        else
-                        {
-                            var thread = new Thread(this.Received);
-                            thread.IsBackground = true;
-                            thread.Start();
-                        }
-#endif
-                        break;
-                    }
-                default:
-                    throw new Exception("UDP中只支持Auto模式");
+                var eventArg = new SocketAsyncEventArgs();
+                this.m_socketAsyncs.Add(eventArg);
+                eventArg.Completed += this.IO_Completed;
+                var byteBlock = new ByteBlock(this.ReceiveBufferSize);
+                eventArg.UserToken = byteBlock;
+                eventArg.SetBuffer(byteBlock.Buffer, 0, byteBlock.Capacity);
+                eventArg.RemoteEndPoint = iPHost.EndPoint;
+                if (!socket.ReceiveFromAsync(eventArg))
+                {
+                    this.ProcessReceive(socket, eventArg);
+                }
             }
+#else
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                for (var i = 0; i < threadCount; i++)
+                {
+                    var eventArg = new SocketAsyncEventArgs();
+                    this.m_socketAsyncs.Add(eventArg);
+                    eventArg.Completed += this.IO_Completed;
+                    var byteBlock = new ByteBlock(this.ReceiveBufferSize);
+                    eventArg.UserToken = byteBlock;
+                    eventArg.SetBuffer(byteBlock.Buffer, 0, byteBlock.Capacity);
+                    eventArg.RemoteEndPoint = iPHost.EndPoint;
+                    if (!socket.ReceiveFromAsync(eventArg))
+                    {
+                        this.ProcessReceive(socket, eventArg);
+                    }
+                }
+            }
+            else
+            {
+                var thread = new Thread(this.Received);
+                thread.IsBackground = true;
+                thread.Start();
+            }
+#endif
+
         }
 
         private void Received()
@@ -577,10 +560,6 @@ namespace ThingsGateway.Foundation.Sockets
             try
             {
                 this.LastReceivedTime = DateTime.Now;
-                if (this.OnHandleRawBuffer?.Invoke(byteBlock) == false)
-                {
-                    return;
-                }
                 if (this.DisposedValue)
                 {
                     return;
@@ -609,21 +588,14 @@ namespace ThingsGateway.Foundation.Sockets
 
         private void PrivateHandleReceivedData(EndPoint remoteEndPoint, ByteBlock byteBlock, IRequestInfo requestInfo)
         {
-            if (this.OnHandleReceivedData?.Invoke(byteBlock, requestInfo) == false)
+            if (this.m_receiver != null)
             {
-                return;
-            }
-
-            if (this.PluginsManager.Enable)
-            {
-                var args = new UdpReceivedDataEventArgs(remoteEndPoint, byteBlock, requestInfo);
-                this.PluginsManager.Raise(nameof(IUdpReceivedPlugin.OnUdpReceived), this, args);
-                if (args.Handled)
+                if (this.m_receiver.TryInputReceive(byteBlock, requestInfo))
                 {
                     return;
                 }
             }
-            this.HandleReceivedData(remoteEndPoint, byteBlock, requestInfo);
+            this.ReceivedData(new UdpReceivedDataEventArgs(remoteEndPoint, byteBlock, requestInfo)).GetFalseAwaitResult();
         }
 
         #region 向默认远程同步发送
@@ -663,7 +635,7 @@ namespace ThingsGateway.Foundation.Sockets
             {
                 throw new NotSupportedException($"当前适配器不支持对象发送。");
             }
-            this.DataHandlingAdapter.SendInput(requestInfo);
+            //this.DataHandlingAdapter.SendInput(requestInfo);
         }
 
         #endregion 向默认远程同步发送
@@ -682,9 +654,9 @@ namespace ThingsGateway.Foundation.Sockets
         public virtual Task SendAsync(byte[] buffer, int offset, int length)
         {
             return Task.Run(() =>
-              {
-                  this.Send(buffer, offset, length);
-              });
+            {
+                this.Send(buffer, offset, length);
+            });
         }
 
         /// <summary>
@@ -737,9 +709,9 @@ namespace ThingsGateway.Foundation.Sockets
         public virtual Task SendAsync(EndPoint remoteEP, byte[] buffer, int offset, int length)
         {
             return Task.Run(() =>
-             {
-                 this.Send(remoteEP, buffer, offset, length);
-             });
+            {
+                this.Send(remoteEP, buffer, offset, length);
+            });
         }
 
         #endregion 向设置的远程异步发送
@@ -906,5 +878,23 @@ namespace ThingsGateway.Foundation.Sockets
         }
 
         #endregion 组合发送
+
+        #region Receiver
+
+        private Receiver m_receiver;
+
+        /// <inheritdoc/>
+        public IReceiver CreateReceiver()
+        {
+            return this.m_receiver ??= new Receiver(this);
+        }
+
+        /// <inheritdoc/>
+        public void ClearReceiver()
+        {
+            this.m_receiver = null;
+        }
+
+        #endregion
     }
 }

@@ -63,9 +63,11 @@ namespace ThingsGateway.Foundation.Core
         /// <returns></returns>
         public static SingleStreamDataAdapterTester CreateTester(SingleStreamDataHandlingAdapter adapter, int bufferLength = 1024, Action<ByteBlock, IRequestInfo> receivedCallBack = default)
         {
-            var tester = new SingleStreamDataAdapterTester();
-            tester.m_adapter = adapter;
-            tester.m_bufferLength = bufferLength;
+            var tester = new SingleStreamDataAdapterTester
+            {
+                m_adapter = adapter,
+                m_bufferLength = bufferLength
+            };
             adapter.SendCallBack = tester.SendCallback;
             adapter.ReceivedCallBack = tester.OnReceived;
             tester.m_receivedCallBack = receivedCallBack;
@@ -129,7 +131,7 @@ namespace ThingsGateway.Foundation.Core
         {
             while (!this.m_dispose)
             {
-                if (this.tryGet(out var byteBlocks))
+                if (this.TryGet(out var byteBlocks))
                 {
                     foreach (var block in byteBlocks)
                     {
@@ -163,7 +165,7 @@ namespace ThingsGateway.Foundation.Core
             this.m_asyncBytes.Enqueue(asyncByte);
         }
 
-        private bool tryGet(out List<ByteBlock> byteBlocks)
+        private bool TryGet(out List<ByteBlock> byteBlocks)
         {
             byteBlocks = new List<ByteBlock>();
             ByteBlock block = null;

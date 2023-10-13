@@ -190,7 +190,7 @@ public class ModbusSerialServer : UpLoadBase
     /// <param name="thingsGatewayBitConverter"></param>
     /// <param name="client"></param>
     /// <returns></returns>
-    private OperResult WriteData(ModbusAddress address, byte[] bytes, IThingsGatewayBitConverter thingsGatewayBitConverter, SerialSession client)
+    private async Task<OperResult> WriteData(ModbusAddress address, byte[] bytes, IThingsGatewayBitConverter thingsGatewayBitConverter, SerialSession client)
     {
         try
         {
@@ -205,7 +205,7 @@ public class ModbusSerialServer : UpLoadBase
             var addressStr = GetPropertyValue(tag.Value, nameof(ModbusSerialServerVariableProperty.ServiceAddress));
             if (Enum.TryParse<DataTypeEnum>(type, out DataTypeEnum result))
             {
-                var resultTask1 = RpcCore.InvokeDeviceMethodAsync($"{nameof(ModbusSerialServer)}-{CurrentDevice.Name}",
+                var result1 = await RpcCore.InvokeDeviceMethodAsync($"{nameof(ModbusSerialServer)}-{CurrentDevice.Name}",
                new Dictionary<string, string>
 {
     {
@@ -216,12 +216,11 @@ public class ModbusSerialServer : UpLoadBase
 }
 
                 );
-                var result1 = resultTask1.ConfigureAwait(true).GetAwaiter().GetResult();
                 return result1.FirstOrDefault().Value;
             }
             else
             {
-                var resultTask1 = RpcCore.InvokeDeviceMethodAsync($"{nameof(ModbusSerialServer)}-{CurrentDevice.Name}",
+                var result1 = await RpcCore.InvokeDeviceMethodAsync($"{nameof(ModbusSerialServer)}-{CurrentDevice.Name}",
                new Dictionary<string, string>
 {
     {
@@ -230,7 +229,6 @@ public class ModbusSerialServer : UpLoadBase
                    },
 }
                 );
-                var result1 = resultTask1.ConfigureAwait(true).GetAwaiter().GetResult();
                 return result1.FirstOrDefault().Value;
             }
         }

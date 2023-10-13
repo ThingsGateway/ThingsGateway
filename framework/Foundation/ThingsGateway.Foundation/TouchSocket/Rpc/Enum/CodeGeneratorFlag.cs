@@ -42,12 +42,6 @@ namespace ThingsGateway.Foundation.Rpc
         ExtensionAsync = 2,
 
         /// <summary>
-        /// 包含扩展（源代码生成无效）
-        /// </summary>
-        [Obsolete("该值已被弃用，请使用颗粒度更小的配置", true)]
-        IncludeExtension = 4,
-
-        /// <summary>
         /// 生成实例类同步代码（源代码生成无效）
         /// </summary>
         InstanceSync = 8,

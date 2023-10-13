@@ -31,7 +31,7 @@ namespace ThingsGateway.Foundation.Sockets
     public class NATSocketClient : SocketClient
     {
         internal Action<NATSocketClient, ITcpClient, DisconnectEventArgs> m_internalDis;
-        internal Func<NATSocketClient, ITcpClient, ByteBlock, IRequestInfo, byte[]> m_internalTargetClientRev;
+        internal Func<NATSocketClient, ITcpClient, ReceivedDataEventArgs, byte[]> m_internalTargetClientRev;
         private readonly ConcurrentList<ITcpClient> m_targetClients = new ConcurrentList<ITcpClient>();
 
         /// <summary>
@@ -100,18 +100,19 @@ namespace ThingsGateway.Foundation.Sockets
         /// <inheritdoc/>
         /// </summary>
         /// <param name="e"></param>
-        protected override void OnDisconnected(DisconnectEventArgs e)
+        protected override async Task OnDisconnected(DisconnectEventArgs e)
         {
             foreach (var client in this.m_targetClients)
             {
                 client.TryShutdown();
                 client.SafeDispose();
             }
-            base.OnDisconnected(e);
+            await base.OnDisconnected(e);
         }
 
-        private void TcpClient_Disconnected(ITcpClientBase client, DisconnectEventArgs e)
+        private async Task TcpClient_Disconnected(ITcpClientBase client, DisconnectEventArgs e)
         {
+            await EasyTask.CompletedTask;
             foreach (var item in client.PluginsManager.Plugins)
             {
                 if (typeof(ReconnectionPlugin<>) == item.GetType().GetGenericTypeDefinition())
@@ -125,8 +126,9 @@ namespace ThingsGateway.Foundation.Sockets
             this.m_internalDis?.Invoke(this, (ITcpClient)client, e);
         }
 
-        private void TcpClient_Received(TcpClient client, ByteBlock byteBlock, IRequestInfo requestInfo)
+        private async Task TcpClient_Received(TcpClient client, ReceivedDataEventArgs e)
         {
+            await EasyTask.CompletedTask;
             if (this.DisposedValue)
             {
                 return;
@@ -134,7 +136,7 @@ namespace ThingsGateway.Foundation.Sockets
 
             try
             {
-                var data = this.m_internalTargetClientRev?.Invoke(this, client, byteBlock, requestInfo);
+                var data = this.m_internalTargetClientRev?.Invoke(this, client, e);
                 if (data != null)
                 {
                     if (this.CanSend)

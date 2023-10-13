@@ -19,5 +19,20 @@
 		<PackageReference Include="System.IO.Ports" Version="7.0.0" />
 	</ItemGroup>
 
+
+	<ItemGroup>
+		<EmbeddedResource Include="TouchSocket\WebApi.Swagger\api\favicon-16x16.png" />
+		<EmbeddedResource Include="TouchSocket\WebApi.Swagger\api\favicon-32x32.png" />
+		<EmbeddedResource Include="TouchSocket\WebApi.Swagger\api\index.html" />
+		<EmbeddedResource Include="TouchSocket\WebApi.Swagger\api\oauth2-redirect.html" />
+		<EmbeddedResource Include="TouchSocket\WebApi.Swagger\api\openapi.json" />
+		<EmbeddedResource Include="TouchSocket\WebApi.Swagger\api\swagger-ui-bundle.js" />
+		<EmbeddedResource Include="TouchSocket\WebApi.Swagger\api\swagger-ui-es-bundle-core.js" />
+		<EmbeddedResource Include="TouchSocket\WebApi.Swagger\api\swagger-ui-es-bundle.js" />
+		<EmbeddedResource Include="TouchSocket\WebApi.Swagger\api\swagger-ui-standalone-preset.js" />
+		<EmbeddedResource Include="TouchSocket\WebApi.Swagger\api\swagger-ui.css" />
+		<EmbeddedResource Include="TouchSocket\WebApi.Swagger\api\swagger-ui.js" />
+	</ItemGroup>
+
 </Project>
 

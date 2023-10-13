@@ -10,7 +10,6 @@
 //------------------------------------------------------------------------------
 #endregion
 
-
 using System.ComponentModel;
 
 namespace ThingsGateway.Gateway.Application;

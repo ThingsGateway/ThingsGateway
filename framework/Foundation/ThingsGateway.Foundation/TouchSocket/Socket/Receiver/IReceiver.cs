@@ -10,28 +10,27 @@
 //------------------------------------------------------------------------------
 #endregion
 
-namespace ThingsGateway.Foundation.Http
+namespace ThingsGateway.Foundation.Sockets
 {
     /// <summary>
-    /// IHttpDeletePlugin
+    /// IReceiver
     /// </summary>
-    [Obsolete("该插件已被弃用，请考虑使用“IHttpPlugin”插件代替使用。本插件将在正式版发布时直接移除。", true)]
-    public interface IHttpDeletePlugin<in TClient> : IPlugin where TClient : IHttpSocketClient
+    public interface IReceiver : IDisposable
     {
         /// <summary>
-        /// 在收到Delete时
+        /// 异步等待并读取
         /// </summary>
-        /// <param name="client"></param>
-        /// <param name="e"></param>
+        /// <param name="token"></param>
         /// <returns></returns>
-        Task OnHttpDelete(TClient client, HttpContextEventArgs e);
-    }
+        Task<ReceiverResult> ReadAsync(CancellationToken token);
 
-    /// <summary>
-    /// IHttpDeletePlugin
-    /// </summary>
-    [Obsolete("该插件已被弃用，请考虑使用“IHttpPlugin”插件代替使用。本插件将在正式版发布时直接移除。", true)]
-    public interface IHttpDeletePlugin : IHttpDeletePlugin<IHttpSocketClient>
-    {
+#if NET6_0_OR_GREATER
+        /// <summary>
+        /// 值异步等待并读取
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public ValueTask<ReceiverResult> ValueReadAsync(CancellationToken token);
+#endif
     }
 }

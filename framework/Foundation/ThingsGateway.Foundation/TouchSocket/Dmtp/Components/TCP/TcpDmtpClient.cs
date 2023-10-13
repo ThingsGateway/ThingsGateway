@@ -38,22 +38,23 @@ namespace ThingsGateway.Foundation.Dmtp
             this.Protocol = DmtpUtility.DmtpProtocol;
         }
 
+        /// <inheritdoc/>
+        public IDmtpActor DmtpActor { get => this.m_smtpActor; }
+
         /// <inheritdoc cref="IDmtpActor.Id"/>
         public string Id => this.DmtpActor.Id;
 
         #region 字段
 
+        private readonly SemaphoreSlim m_semaphore = new SemaphoreSlim(1, 1);
         private bool m_allowRoute;
         private Func<string, IDmtpActor> m_findDmtpActor;
         private SealedDmtpActor m_smtpActor;
-        private readonly SemaphoreSlim m_semaphore = new SemaphoreSlim(1, 1);
+
         #endregion 字段
 
         /// <inheritdoc cref="IDmtpActor.IsHandshaked"/>
         public bool IsHandshaked => this.DmtpActor != null && this.DmtpActor.IsHandshaked;
-
-        /// <inheritdoc/>
-        public IDmtpActor DmtpActor { get => this.m_smtpActor; }
 
         /// <summary>
         /// 发送<see cref="IDmtpActor"/>关闭消息。
@@ -153,7 +154,7 @@ namespace ThingsGateway.Foundation.Dmtp
                 }
                 if (!this.Online)
                 {
-                    await base.ConnectAsync(timeout);
+                    await base.ConnectAsync(timeout, token);
                 }
 
                 await this.m_smtpActor.HandshakeAsync(this.Config.GetValue(DmtpConfigExtension.VerifyTokenProperty),
@@ -236,20 +237,6 @@ namespace ThingsGateway.Foundation.Dmtp
         }
 
         /// <inheritdoc/>
-        protected override bool HandleReceivedData(ByteBlock byteBlock, IRequestInfo requestInfo)
-        {
-            var message = (DmtpMessage)requestInfo;
-            if (!this.m_smtpActor.InputReceivedData(message))
-            {
-                if (this.PluginsManager.Enable)
-                {
-                    this.PluginsManager.Raise(nameof(IDmtpReceivedPlugin.OnDmtpReceived), this, new DmtpMessageEventArgs(message));
-                }
-            }
-            return false;
-        }
-
-        /// <inheritdoc/>
         protected override void LoadConfig(TouchSocketConfig config)
         {
             config.SetTcpDataHandlingAdapter(() => new TcpDmtpAdapter());
@@ -274,13 +261,30 @@ namespace ThingsGateway.Foundation.Dmtp
         }
 
         /// <inheritdoc/>
-        protected override void OnDisconnected(DisconnectEventArgs e)
+        protected override async Task OnDisconnected(DisconnectEventArgs e)
         {
-            base.OnDisconnected(e);
+            await base.OnDisconnected(e);
             this.DmtpActor.Close(false, e.Message);
         }
 
+        /// <inheritdoc/>
+        protected override async Task ReceivedData(ReceivedDataEventArgs e)
+        {
+            var message = (DmtpMessage)e.RequestInfo;
+            if (!this.m_smtpActor.InputReceivedData(message))
+            {
+                await this.PluginsManager.RaiseAsync(nameof(IDmtpReceivedPlugin.OnDmtpReceived), this, new DmtpMessageEventArgs(message));
+            }
+
+            await base.ReceivedData(e);
+        }
+
         #region 内部委托绑定
+
+        private void DmtpActorSend(DmtpActor actor, ArraySegment<byte>[] transferBytes)
+        {
+            base.Send(transferBytes);
+        }
 
         private void OnDmtpActorClose(DmtpActor actor, string msg)
         {
@@ -328,11 +332,6 @@ namespace ThingsGateway.Foundation.Dmtp
                 return;
             }
             this.OnRouting(e);
-        }
-
-        private void DmtpActorSend(DmtpActor actor, ArraySegment<byte>[] transferBytes)
-        {
-            base.Send(transferBytes);
         }
 
         #endregion 内部委托绑定

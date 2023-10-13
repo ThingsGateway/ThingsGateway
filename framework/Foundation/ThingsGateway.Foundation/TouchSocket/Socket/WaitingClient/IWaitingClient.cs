@@ -28,7 +28,7 @@ namespace ThingsGateway.Foundation.Sockets
     /// <summary>
     /// 等待型客户端。
     /// </summary>
-    public interface IWaitingClient<TClient> : IWaitSender, IDisposable where TClient : IClient, IDefaultSender, ISender
+    public interface IWaitingClient<TClient> : IWaitSender, IDisposable where TClient : IClient, ISender
     {
         /// <summary>
         /// 等待设置。

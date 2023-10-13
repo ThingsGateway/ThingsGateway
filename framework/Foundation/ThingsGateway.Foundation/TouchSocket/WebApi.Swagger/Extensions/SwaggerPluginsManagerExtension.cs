@@ -10,26 +10,21 @@
 //------------------------------------------------------------------------------
 #endregion
 
-namespace ThingsGateway.Foundation.Core
+namespace ThingsGateway.Foundation.WebApi.Swagger
 {
     /// <summary>
-    /// 单线程状况的流式数据处理适配器的装饰器。
+    /// SwaggerPluginsManagerExtension
     /// </summary>
-    public class SingleStreamDecorator
+    public static class SwaggerPluginsManagerExtension
     {
-        private readonly SingleStreamDataHandlingAdapter m_adapter;
         /// <summary>
-        /// 单线程状况的流式数据处理适配器的装饰器。
+        /// 使用<see cref="SwaggerPlugin"/>插件。
         /// </summary>
-        public SingleStreamDecorator(SingleStreamDataHandlingAdapter adapter)
+        /// <param name="pluginsManager"></param>
+        /// <returns></returns>
+        public static SwaggerPlugin UseSwagger(this IPluginsManager pluginsManager)
         {
-            adapter.ReceivedCallBack = this.ReceivedCallBack;
-            this.m_adapter = adapter;
-        }
-
-        private void ReceivedCallBack(ByteBlock block, IRequestInfo info)
-        {
-
+            return pluginsManager.Add<SwaggerPlugin>();
         }
     }
 }

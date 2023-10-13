@@ -23,7 +23,6 @@
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 using System.Diagnostics;
-using System.Net.Security;
 using System.Net.Sockets;
 
 namespace ThingsGateway.Foundation.Sockets
@@ -40,24 +39,26 @@ namespace ThingsGateway.Foundation.Sockets
         public SocketClient()
         {
             this.Protocol = Protocol.Tcp;
-            this.m_receiveCounter = new ValueCounter
-            {
-                Period = TimeSpan.FromSeconds(1),
-                OnPeriod = this.OnReceivePeriod
-            };
-            m_sendCounter = new ValueCounter
-            {
-                Period = TimeSpan.FromSeconds(1),
-                OnPeriod = this.OnSendPeriod
-            };
+            //this.m_receiveCounter = new ValueCounter
+            //{
+            //    Period = TimeSpan.FromSeconds(1),
+            //    OnPeriod = this.OnReceivePeriod
+            //};
+            //m_sendCounter = new ValueCounter
+            //{
+            //    Period = TimeSpan.FromSeconds(1),
+            //    OnPeriod = this.OnSendPeriod
+            //};
         }
 
         #region 变量
-        private ValueCounter m_receiveCounter;
-        private ValueCounter m_sendCounter;
-        private long m_bufferRate = 1;
+
+        //private ValueCounter m_receiveCounter;
+        //private ValueCounter m_sendCounter;
+        //private long m_bufferRate = 1;
         private DelaySender m_delaySender;
-        private Stream m_workStream;
+
+        private TcpCore m_tcpCore;
 
         #endregion 变量
 
@@ -88,6 +89,15 @@ namespace ThingsGateway.Foundation.Sockets
         public bool IsClient => false;
 
         /// <inheritdoc/>
+        public DateTime LastReceivedTime => this.GetTcpCore().ReceiveCounter.LastIncrement;
+
+        /// <inheritdoc/>
+        public DateTime LastSendTime => this.GetTcpCore().SendCounter.LastIncrement;
+
+        /// <inheritdoc/>
+        public TcpListenOption ListenOption { get; private set; }
+
+        /// <inheritdoc/>
         public Socket MainSocket { get; private set; }
 
         /// <inheritdoc/>
@@ -103,34 +113,16 @@ namespace ThingsGateway.Foundation.Sockets
         public Protocol Protocol { get; set; }
 
         /// <inheritdoc/>
-        public TcpListenOption ListenOption { get; private set; }
-
-        /// <inheritdoc/>
-        public ReceiveType ReceiveType { get; private set; }
-
-        /// <inheritdoc/>
         public TcpServiceBase Service { get; private set; }
-
-        /// <inheritdoc/>
-        public bool UseSsl { get; private set; }
-
-        /// <inheritdoc/>
-        public DateTime LastReceivedTime => this.m_receiveCounter.LastIncrement;
-
-        /// <inheritdoc/>
-        public DateTime LastSendTime => this.m_sendCounter.LastIncrement;
-
-        /// <inheritdoc/>
-        public Func<ByteBlock, bool> OnHandleRawBuffer { get; set; }
-
-        /// <inheritdoc/>
-        public Func<ByteBlock, IRequestInfo, bool> OnHandleReceivedData { get; set; }
 
         /// <inheritdoc/>
         public string ServiceIP { get; private set; }
 
         /// <inheritdoc/>
         public int ServicePort { get; private set; }
+
+        /// <inheritdoc/>
+        public bool UseSsl { get; private set; }
 
         #endregion 属性
 
@@ -140,71 +132,50 @@ namespace ThingsGateway.Foundation.Sockets
         {
             try
             {
-                if (this.ReceiveType == ReceiveType.Iocp)
-                {
-                    var eventArgs = new SocketAsyncEventArgs();
-                    eventArgs.Completed += this.EventArgs_Completed;
-                    var byteBlock = BytePool.Default.GetByteBlock(this.ReceiveBufferSize);
-                    eventArgs.UserToken = byteBlock;
-                    eventArgs.SetBuffer(byteBlock.Buffer, 0, byteBlock.Capacity);
-                    if (!this.MainSocket.ReceiveAsync(eventArgs))
-                    {
-                        this.ProcessReceived(eventArgs);
-                    }
-                }
+                this.m_tcpCore.BeginIocpReceive();
+                //if (this.ReceiveType == ReceiveType.Iocp)
+                //{
+                //    //var eventArgs = new SocketAsyncEventArgs();
+                //    //eventArgs.Completed += this.EventArgs_Completed;
+                //    //var byteBlock = BytePool.Default.GetByteBlock(this.ReceiveBufferSize);
+                //    //eventArgs.UserToken = byteBlock;
+                //    //eventArgs.SetBuffer(byteBlock.Buffer, 0, byteBlock.Capacity);
+                //    //if (!this.MainSocket.ReceiveAsync(eventArgs))
+                //    //{
+                //    //    this.ProcessReceived(eventArgs);
+                //    //}
+
+                //}
             }
             catch (Exception ex)
             {
-                this.BreakOut(ex.Message, false);
+                this.BreakOut(default, false, ex.Message);
             }
         }
 
-        internal void BeginReceiveSsl(ServiceSslOption sslOption)
+        internal Task AuthenticateAsync(ServiceSslOption sslOption)
         {
-            var sslStream = (sslOption.CertificateValidationCallback != null) ? new SslStream(new NetworkStream(this.MainSocket, false), false, sslOption.CertificateValidationCallback) : new SslStream(new NetworkStream(this.MainSocket, false), false);
-            sslStream.AuthenticateAsServer(sslOption.Certificate);
-            this.m_workStream = sslStream;
-            this.UseSsl = true;
-            if (this.ReceiveType == ReceiveType.Iocp)
-            {
-                this.BeginSsl();
-            }
+            return this.m_tcpCore.AuthenticateAsync(sslOption);
+        }
+        internal Task BeginReceiveSsl()
+        {
+            return this.m_tcpCore.BeginSslReceive();
         }
 
-        internal void InternalConnected(ConnectedEventArgs e)
+        internal Task InternalConnected(ConnectedEventArgs e)
         {
             this.Online = true;
-
-            this.OnConnected(e);
-
-            if (e.Handled)
-            {
-                return;
-            }
-
-
-            if (this.PluginsManager.Enable && this.PluginsManager.Raise(nameof(ITcpConnectedPlugin.OnTcpConnected), this, e))
-            {
-                return;
-            }
+            return this.OnConnected(e);
         }
 
-        internal void InternalConnecting(ConnectingEventArgs e)
+        internal Task InternalConnecting(ConnectingEventArgs e)
         {
-            this.OnConnecting(e);
-            if (e.Handled)
-            {
-                return;
-            }
-            if (this.PluginsManager.Enable && this.PluginsManager.Raise(nameof(ITcpConnectingPlugin.OnTcpConnecting), this, e))
-            {
-                return;
-            }
+            return this.OnConnecting(e);
         }
 
-        internal void InternalInitialized()
+        internal Task InternalInitialized()
         {
-            this.OnInitialized();
+            return this.OnInitialized();
         }
 
         internal void InternalSetConfig(TouchSocketConfig config)
@@ -223,15 +194,15 @@ namespace ThingsGateway.Foundation.Sockets
             this.Id = id;
         }
 
-        internal void InternalSetPluginsManager(IPluginsManager pluginsManager)
-        {
-            this.PluginsManager = pluginsManager;
-        }
-
         internal void InternalSetListenOption(TcpListenOption option)
         {
             this.ListenOption = option;
-            this.ReceiveType = option.ReceiveType;
+            //this.ReceiveType = option.ReceiveType;
+        }
+
+        internal void InternalSetPluginsManager(IPluginsManager pluginsManager)
+        {
+            this.PluginsManager = pluginsManager;
         }
 
         internal void InternalSetService(TcpServiceBase serviceBase)
@@ -239,17 +210,67 @@ namespace ThingsGateway.Foundation.Sockets
             this.Service = serviceBase;
         }
 
-        internal void InternalSetSocket(Socket mainSocket)
+        internal void InternalSetSocket(Socket socket)
         {
-            this.MainSocket = mainSocket ?? throw new ArgumentNullException(nameof(mainSocket));
-            this.IP = mainSocket.RemoteEndPoint.GetIP();
-            this.Port = mainSocket.RemoteEndPoint.GetPort();
-            this.ServiceIP = mainSocket.LocalEndPoint.GetIP();
-            this.ServicePort = mainSocket.LocalEndPoint.GetPort();
+            this.MainSocket = socket ?? throw new ArgumentNullException(nameof(socket));
+            this.IP = socket.RemoteEndPoint.GetIP();
+            this.Port = socket.RemoteEndPoint.GetPort();
+            this.ServiceIP = socket.LocalEndPoint.GetIP();
+            this.ServicePort = socket.LocalEndPoint.GetPort();
 
             if (this.Config.GetValue(TouchSocketConfigExtension.DelaySenderProperty) is DelaySenderOption senderOption)
             {
                 this.m_delaySender = new DelaySender(senderOption, this.MainSocket.AbsoluteSend);
+            }
+
+            var tcpCore = this.Service.RentTcpCore();
+            tcpCore.Reset(socket);
+            tcpCore.OnReceived = this.HandleReceived;
+            tcpCore.OnBreakOut = this.BreakOut;
+            this.m_tcpCore = tcpCore;
+        }
+
+        private void BreakOut(TcpCore core, bool manual, string msg)
+        {
+            if (this.GetSocketCliectCollection().TryRemove(this.Id, out _))
+            {
+                if (this.Online)
+                {
+                    this.Online = false;
+                    this.MainSocket.SafeDispose();
+                    this.m_delaySender.SafeDispose();
+                    this.DataHandlingAdapter.SafeDispose();
+                    Task.Factory.StartNew(this.PrivateOnDisconnected, new DisconnectEventArgs(manual, msg));
+                }
+            }
+
+            base.Dispose(true);
+        }
+
+        private void HandleReceived(TcpCore core, ByteBlock byteBlock)
+        {
+            try
+            {
+                if (this.DisposedValue)
+                {
+                    return;
+                }
+
+                if (this.ReceivingData(byteBlock).ConfigureAwait(false).GetAwaiter().GetResult())
+                {
+                    return;
+                }
+
+                if (this.DataHandlingAdapter == null)
+                {
+                    this.Logger.Error(this, TouchSocketResource.NullDataAdapter.GetDescription());
+                    return;
+                }
+                this.DataHandlingAdapter.ReceivedInput(byteBlock);
+            }
+            catch (Exception ex)
+            {
+                this.Logger.Log(LogLevel.Error, this, "在处理数据时发生错误", ex);
             }
         }
 
@@ -264,43 +285,74 @@ namespace ThingsGateway.Foundation.Sockets
         public DisconnectEventHandler<ITcpClientBase> Disconnecting { get; set; }
 
         /// <summary>
-        /// 当客户端完整建立TCP连接。
+        /// 当客户端完整建立Tcp连接。
         /// </summary>
         /// <param name="e"></param>
-        protected virtual void OnConnected(ConnectedEventArgs e)
+        protected virtual async Task OnConnected(ConnectedEventArgs e)
         {
-            this.Service.OnInternalConnected(this, e);
+            if (await this.PluginsManager.RaiseAsync(nameof(ITcpConnectedPlugin.OnTcpConnected), this, e))
+            {
+                return;
+            }
+            await this.Service.OnInternalConnected(this, e);
         }
 
         /// <summary>
         /// 客户端正在连接。
         /// </summary>
-        protected virtual void OnConnecting(ConnectingEventArgs e)
+        protected virtual async Task OnConnecting(ConnectingEventArgs e)
         {
-            this.Service.OnInternalConnecting(this, e);
+            if (await this.PluginsManager.RaiseAsync(nameof(ITcpConnectingPlugin.OnTcpConnecting), this, e))
+            {
+                return;
+            }
+            await this.Service.OnInternalConnecting(this, e);
         }
 
         /// <summary>
         /// 客户端已断开连接。
         /// </summary>
         /// <param name="e"></param>
-        protected virtual void OnDisconnected(DisconnectEventArgs e)
+        protected virtual async Task OnDisconnected(DisconnectEventArgs e)
         {
-            this.Disconnected?.Invoke(this, e);
+            if (this.Disconnected != null)
+            {
+                await this.Disconnected.Invoke(this, e);
+                if (e.Handled)
+                {
+                    return;
+                }
+            }
+
+            if (await this.PluginsManager.RaiseAsync(nameof(ITcpDisconnectedPlugin.OnTcpDisconnected), this, e))
+            {
+                return;
+            }
+            await this.Service.OnInternalDisconnected(this, e);
         }
 
         /// <summary>
         /// 即将断开连接(仅主动断开时有效)。
-        /// <para>
-        /// 当主动调用Close断开时。
-        /// </para>
         /// </summary>
         /// <param name="e"></param>
-        protected virtual void OnDisconnecting(DisconnectEventArgs e)
+        protected virtual async Task OnDisconnecting(DisconnectEventArgs e)
         {
             try
             {
-                this.Disconnecting?.Invoke(this, e);
+                if (this.Disconnecting != null)
+                {
+                    await this.Disconnecting.Invoke(this, e);
+                    if (e.Handled)
+                    {
+                        return;
+                    }
+                }
+
+                if (await this.PluginsManager.RaiseAsync(nameof(ITcpDisconnectingPlugin.OnTcpDisconnecting), this, e))
+                {
+                    return;
+                }
+                await this.Service.OnInternalDisconnecting(this, e);
             }
             catch (Exception ex)
             {
@@ -311,42 +363,33 @@ namespace ThingsGateway.Foundation.Sockets
         /// <summary>
         /// 当初始化完成时，执行在<see cref="OnConnecting(ConnectingEventArgs)"/>之前。
         /// </summary>
-        protected virtual void OnInitialized()
+        protected virtual Task OnInitialized()
         {
+            return EasyTask.CompletedTask;
         }
 
-        private void PrivateOnDisconnected(DisconnectEventArgs e)
+        private Task PrivateOnDisconnecting(object obj)
         {
-            this.OnDisconnected(e);
-            if (e.Handled)
-            {
-                return;
-            }
-
-            if (this.PluginsManager.Enable && this.PluginsManager.Raise(nameof(ITcpDisconnectedPlugin.OnTcpDisconnected), this, e))
-            {
-                return;
-            }
-
-            if (!e.Handled)
-            {
-                this.Service.OnInternalDisconnected(this, e);
-            }
+            return this.OnDisconnecting((DisconnectEventArgs)obj);
         }
 
-        private void PrivateOnDisconnecting(DisconnectEventArgs e)
+        private async Task PrivateOnDisconnected(object obj)
         {
-            this.OnDisconnecting(e);
-            if (e.Handled)
+            this.m_receiver?.TryInputReceive(default, default);
+            var e = (DisconnectEventArgs)obj;
+            try
             {
-                return;
+                await this.OnDisconnected(e);
             }
-
-            if (this.PluginsManager.Enable && this.PluginsManager.Raise(nameof(ITcpDisconnectingPlugin.OnTcpDisconnecting), this, e))
+            catch (Exception)
             {
-                return;
             }
-            this.Service.OnInternalDisconnecting(this, e);
+            finally
+            {
+                var tcp = this.m_tcpCore;
+                this.m_tcpCore = null;
+                this.Service?.ReturnTcpCore(tcp);
+            }
         }
 
         #endregion 事件&委托
@@ -354,60 +397,35 @@ namespace ThingsGateway.Foundation.Sockets
         /// <inheritdoc/>
         public override int ReceiveBufferSize
         {
-            get => base.ReceiveBufferSize;
+            get => this.GetTcpCore().ReceiveBufferSize;
             set
             {
-                base.ReceiveBufferSize = value;
-                if (this.MainSocket != null)
-                {
-                    this.MainSocket.ReceiveBufferSize = base.ReceiveBufferSize;
-                }
+                this.GetTcpCore().ReceiveBufferSize = value;
             }
         }
 
         /// <inheritdoc/>
         public override int SendBufferSize
         {
-            get => base.SendBufferSize;
+            get => this.GetTcpCore().SendBufferSize;
             set
             {
-                base.SendBufferSize = value;
-                if (this.MainSocket != null)
-                {
-                    this.MainSocket.SendBufferSize = base.SendBufferSize;
-                }
+                this.GetTcpCore().SendBufferSize = value;
             }
-        }
-
-        private void OnSendPeriod(long value)
-        {
-            this.SendBufferSize = TouchSocketUtility.HitBufferLength(value);
-        }
-        private void OnReceivePeriod(long value)
-        {
-            this.ReceiveBufferSize = TouchSocketUtility.HitBufferLength(value);
         }
 
         /// <inheritdoc/>
         public virtual void Close(string msg = TouchSocketCoreUtility.Empty)
         {
-
             lock (this.SyncRoot)
             {
                 if (this.Online)
                 {
+                    Task.Factory.StartNew(this.PrivateOnDisconnecting, new DisconnectEventArgs(true, msg));
                     this.MainSocket.TryClose();
-                    this.PrivateOnDisconnecting(new DisconnectEventArgs(true, msg));
+                    this.BreakOut(default, true, msg);
                 }
-                this.BreakOut(msg, true);
             }
-        }
-
-        /// <inheritdoc/>
-        public Stream GetStream()
-        {
-            this.m_workStream ??= new NetworkStream(this.MainSocket, true);
-            return this.m_workStream;
         }
 
         /// <summary>
@@ -440,6 +458,7 @@ namespace ThingsGateway.Foundation.Sockets
         /// <param name="newId"></param>
         protected void DirectResetId(string newId)
         {
+            this.ThrowIfDisposed();
             if (string.IsNullOrEmpty(newId))
             {
                 throw new ArgumentException($"“{nameof(newId)}”不能为 null 或空。", nameof(newId));
@@ -455,11 +474,7 @@ namespace ThingsGateway.Foundation.Sockets
                 socketClient.Id = newId;
                 if (this.GetSocketCliectCollection().TryAdd(socketClient))
                 {
-                    if (this.PluginsManager.Enable)
-                    {
-                        var e = new IdChangedEventArgs(oldId, newId);
-                        this.PluginsManager.Raise(nameof(IIdChangedPlugin.OnIdChanged), socketClient, e);
-                    }
+                    this.IdChanged(oldId, newId).ConfigureAwait(false).GetAwaiter().GetResult();
                     return;
                 }
                 else
@@ -488,41 +503,71 @@ namespace ThingsGateway.Foundation.Sockets
             {
                 if (this.Online)
                 {
-                    this.PrivateOnDisconnecting(new DisconnectEventArgs(true, $"{nameof(Dispose)}主动断开"));
+                    Task.Factory.StartNew(this.PrivateOnDisconnecting, new DisconnectEventArgs(true, $"{nameof(Dispose)}主动断开"));
+                    this.BreakOut(default, true, $"{nameof(Dispose)}主动断开");
                 }
-                this.BreakOut($"{nameof(Dispose)}主动断开", true);
+
                 base.Dispose(disposing);
             }
         }
 
         /// <summary>
-        /// 处理已接收到的数据。
-        /// <para>根据不同的数据处理适配器，会传递不同的数据</para>
-        /// </summary>
-        /// <param name="byteBlock">以二进制流形式传递</param>
-        /// <param name="requestInfo">以解析的数据对象传递</param>
-        /// <returns>如果返回<see langword="true"/>则表示数据已被处理，且不会再向下传递。</returns>
-        protected virtual bool HandleReceivedData(ByteBlock byteBlock, IRequestInfo requestInfo)
-        {
-            return false;
-        }
-
-        /// <summary>
-        /// 当即将发送时。
+        /// 当即将发送时，如果覆盖父类方法，则不会触发插件。
         /// </summary>
         /// <param name="buffer">数据缓存区</param>
         /// <param name="offset">偏移</param>
         /// <param name="length">长度</param>
         /// <returns>返回值表示是否允许发送</returns>
-        protected virtual bool HandleSendingData(byte[] buffer, int offset, int length)
+        protected virtual async Task<bool> SendingData(byte[] buffer, int offset, int length)
         {
-            if (this.PluginsManager.Enable)
+            if (this.PluginsManager.GetPluginCount(nameof(ITcpSendingPlugin.OnTcpSending)) > 0)
             {
                 var args = new SendingEventArgs(buffer, offset, length);
-                this.PluginsManager.Raise(nameof(ITcpSendingPlugin.OnTcpSending), this, args);
+                await this.PluginsManager.RaiseAsync(nameof(ITcpSendingPlugin.OnTcpSending), this, args).ConfigureAwait(false);
                 return args.IsPermitOperation;
             }
             return true;
+        }
+
+        /// <summary>
+        /// 当Id更新的时候触发
+        /// </summary>
+        /// <param name="oldId"></param>
+        /// <param name="newId"></param>
+        /// <returns></returns>
+        protected Task IdChanged(string oldId, string newId)
+        {
+            return this.PluginsManager.RaiseAsync(nameof(IIdChangedPlugin.OnIdChanged), this, new IdChangedEventArgs(oldId, newId));
+        }
+
+        /// <summary>
+        /// 当收到适配器处理的数据时。
+        /// </summary>
+        /// <returns>如果返回<see langword="true"/>则表示数据已被处理，且不会再向下传递。</returns>
+        protected virtual async Task ReceivedData(ReceivedDataEventArgs e)
+        {
+            await this.PluginsManager.RaiseAsync(nameof(ITcpReceivedPlugin.OnTcpReceived), this, e);
+
+            if (e.Handled)
+            {
+                return;
+            }
+
+            await this.Service.OnInternalReceivedData(this, e);
+        }
+
+        /// <summary>
+        /// 当收到原始数据
+        /// </summary>
+        /// <param name="byteBlock"></param>
+        /// <returns>如果返回<see langword="true"/>则表示数据已被处理，且不会再向下传递。</returns>
+        protected virtual Task<bool> ReceivingData(ByteBlock byteBlock)
+        {
+            if (this.PluginsManager.GetPluginCount(nameof(ITcpReceivingPlugin.OnTcpReceiving)) > 0)
+            {
+                return this.PluginsManager.RaiseAsync(nameof(ITcpReceivingPlugin.OnTcpReceiving), this, new ByteBlockEventArgs(byteBlock));
+            }
+            return Task.FromResult(false);
         }
 
         /// <summary>
@@ -545,237 +590,51 @@ namespace ThingsGateway.Foundation.Sockets
             adapter.OnLoaded(this);
             adapter.ReceivedCallBack = this.PrivateHandleReceivedData;
             adapter.SendCallBack = this.DefaultSend;
+            adapter.SendAsyncCallBack = this.DefaultSendAsync;
             this.DataHandlingAdapter = adapter;
-        }
-
-        private void BeginSsl()
-        {
-            if (!this.DisposedValue)
-            {
-                var byteBlock = new ByteBlock(this.ReceiveBufferSize);
-                try
-                {
-                    this.m_workStream.BeginRead(byteBlock.Buffer, 0, byteBlock.Capacity, this.EndSsl, byteBlock);
-                }
-                catch (Exception ex)
-                {
-                    byteBlock.SafeDispose();
-                    this.BreakOut(ex.Message, false);
-                }
-            }
-        }
-
-        private void BreakOut(string msg, bool manual)
-        {
-            lock (this.SyncRoot)
-            {
-                if (this.GetSocketCliectCollection().TryRemove(this.Id, out _))
-                {
-                    if (this.Online)
-                    {
-                        this.Online = false;
-                        this.MainSocket.SafeDispose();
-                        this.m_delaySender.SafeDispose();
-                        this.DataHandlingAdapter.SafeDispose();
-                        this.PrivateOnDisconnected(new DisconnectEventArgs(manual, msg));
-                    }
-                }
-
-                base.Dispose(true);
-            }
-        }
-
-        private void EndSsl(IAsyncResult result)
-        {
-            var byteBlock = (ByteBlock)result.AsyncState;
-            try
-            {
-                var r = this.m_workStream.EndRead(result);
-                if (r == 0)
-                {
-                    this.BreakOut("远程终端主动关闭", false);
-                    return;
-                }
-                byteBlock.SetLength(r);
-
-                this.HandleBuffer(byteBlock);
-                this.BeginSsl();
-            }
-            catch (Exception ex)
-            {
-                byteBlock.SafeDispose();
-                this.BreakOut(ex.Message, false);
-            }
-        }
-
-        private void EventArgs_Completed(object sender, SocketAsyncEventArgs e)
-        {
-            try
-            {
-                this.m_bufferRate = 1;
-                this.ProcessReceived(e);
-            }
-            catch (Exception ex)
-            {
-                e.SafeDispose();
-                this.BreakOut(ex.Message, false);
-            }
         }
 
         private SocketClientCollection GetSocketCliectCollection()
         {
-            return this.Service?.SocketClients as SocketClientCollection;
+            return this.Service.SocketClients as SocketClientCollection;
         }
 
-        private void HandleBuffer(ByteBlock byteBlock)
+        private TcpCore GetTcpCore()
         {
-            try
-            {
-                if (this.DisposedValue)
-                {
-                    return;
-                }
-                this.m_receiveCounter.Increment(byteBlock.Length);
-                if (this.OnHandleRawBuffer?.Invoke(byteBlock) == false)
-                {
-                    return;
-                }
-                if (this.PluginsManager.Enable && this.PluginsManager.Raise(nameof(ITcpReceivingPlugin.OnTcpReceiving), this, new ByteBlockEventArgs(byteBlock)))
-                {
-                    return;
-                }
-                if (this.DataHandlingAdapter == null)
-                {
-                    this.Logger.Error(this, TouchSocketResource.NullDataAdapter.GetDescription());
-                    return;
-                }
-                this.DataHandlingAdapter.ReceivedInput(byteBlock);
-            }
-            catch (Exception ex)
-            {
-                this.Logger.Log(LogLevel.Error, this, "在处理数据时发生错误", ex);
-            }
-            finally
-            {
-                byteBlock.Dispose();
-            }
+            this.ThrowIfDisposed();
+            return this.m_tcpCore ?? throw new ObjectDisposedException(this.GetType().Name);
         }
 
         private void PrivateHandleReceivedData(ByteBlock byteBlock, IRequestInfo requestInfo)
         {
-            if (this.OnHandleReceivedData?.Invoke(byteBlock, requestInfo) == false)
+            if (this.m_receiver != null)
             {
-                return;
-            }
-
-            if (this.HandleReceivedData(byteBlock, requestInfo))
-            {
-                return;
-            }
-
-            if (this.PluginsManager.GetPluginCount(nameof(ITcpReceivedPlugin.OnTcpReceived)) > 0 && this.PluginsManager.Raise(nameof(ITcpReceivedPlugin.OnTcpReceived), this, new ReceivedDataEventArgs(byteBlock, requestInfo)))
-            {
-                return;
-            }
-
-            this.Service.OnInternalReceivedData(this, byteBlock, requestInfo);
-        }
-
-        private void ProcessReceived(SocketAsyncEventArgs e)
-        {
-            if (this.DisposedValue)
-            {
-                e.SafeDispose();
-                return;
-            }
-
-            if (e.SocketError != SocketError.Success)
-            {
-                e.SafeDispose();
-                this.BreakOut(e.SocketError.ToString(), false);
-            }
-            else if (e.BytesTransferred > 0)
-            {
-                var byteBlock = (ByteBlock)e.UserToken;
-                byteBlock.SetLength(e.BytesTransferred);
-                this.HandleBuffer(byteBlock);
-                try
+                if (this.m_receiver.TryInputReceive(byteBlock, requestInfo))
                 {
-                    var newByteBlock = new ByteBlock((int)Math.Min(this.ReceiveBufferSize * this.m_bufferRate, TouchSocketUtility.MaxBufferLength));
-                    e.UserToken = newByteBlock;
-                    e.SetBuffer(newByteBlock.Buffer, 0, newByteBlock.Capacity);
-
-                    if (!this.MainSocket.ReceiveAsync(e))
-                    {
-                        this.m_bufferRate += 2;
-                        this.ProcessReceived(e);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    this.BreakOut(ex.Message, false);
+                    return;
                 }
             }
-            else
-            {
-                e.SafeDispose();
-                this.BreakOut("远程主机主动断开连接", false);
-            }
+            this.ReceivedData(new ReceivedDataEventArgs(byteBlock, requestInfo)).GetFalseAwaitResult();
         }
 
         #region 发送
 
-        /// <summary>
         /// <inheritdoc/>
-        /// </summary>
-        /// <param name="buffer"></param>
-        /// <param name="offset"></param>
-        /// <param name="length"></param>
-        /// <exception cref="NotConnectedException"></exception>
-        /// <exception cref="OverlengthException"></exception>
-        /// <exception cref="Exception"></exception>
         public void DefaultSend(byte[] buffer, int offset, int length)
         {
-            if (!this.CanSend)
+            if (this.SendingData(buffer, offset, length).GetFalseAwaitResult())
             {
-                throw new NotConnectedException(TouchSocketResource.NotConnected.GetDescription());
-            }
-            if (this.HandleSendingData(buffer, offset, length))
-            {
-                if (this.UseSsl)
-                {
-                    this.m_workStream.Write(buffer, offset, length);
-                }
-                else
-                {
-                    if (this.m_delaySender != null && length < this.m_delaySender.DelayLength)
-                    {
-                        this.m_delaySender.Send(QueueDataBytes.CreateNew(buffer, offset, length));
-                    }
-                    else
-                    {
-                        this.MainSocket.AbsoluteSend(buffer, offset, length);
-                    }
-                }
-                this.m_sendCounter.Increment(length);
+                this.GetTcpCore().Send(buffer, offset, length);
             }
         }
 
-        /// <summary>
         /// <inheritdoc/>
-        /// </summary>
-        /// <param name="buffer"><inheritdoc/></param>
-        /// <param name="offset"><inheritdoc/></param>
-        /// <param name="length"><inheritdoc/></param>
-        /// <exception cref="NotConnectedException"><inheritdoc/></exception>
-        /// <exception cref="OverlengthException"><inheritdoc/></exception>
-        /// <exception cref="Exception"><inheritdoc/></exception>
-        public Task DefaultSendAsync(byte[] buffer, int offset, int length)
+        public async Task DefaultSendAsync(byte[] buffer, int offset, int length)
         {
-            return Task.Run(() =>
+            if (await this.SendingData(buffer, offset, length))
             {
-                this.DefaultSend(buffer, offset, length);
-            });
+                await this.GetTcpCore().SendAsync(buffer, offset, length);
+            }
         }
 
         #region 同步发送
@@ -789,10 +648,7 @@ namespace ThingsGateway.Foundation.Sockets
         /// <exception cref="Exception"></exception>
         public virtual void Send(IRequestInfo requestInfo)
         {
-            if (this.DisposedValue)
-            {
-                return;
-            }
+            this.ThrowIfDisposed();
             if (this.DataHandlingAdapter == null)
             {
                 throw new ArgumentNullException(nameof(this.DataHandlingAdapter), TouchSocketResource.NullDataAdapter.GetDescription());
@@ -815,10 +671,7 @@ namespace ThingsGateway.Foundation.Sockets
         /// <exception cref="Exception"></exception>
         public virtual void Send(byte[] buffer, int offset, int length)
         {
-            if (this.DisposedValue)
-            {
-                return;
-            }
+            this.ThrowIfDisposed();
             if (this.DataHandlingAdapter == null)
             {
                 throw new ArgumentNullException(nameof(this.DataHandlingAdapter), TouchSocketResource.NullDataAdapter.GetDescription());
@@ -832,10 +685,7 @@ namespace ThingsGateway.Foundation.Sockets
         /// <param name="transferBytes"></param>
         public virtual void Send(IList<ArraySegment<byte>> transferBytes)
         {
-            if (this.DisposedValue)
-            {
-                return;
-            }
+            this.ThrowIfDisposed();
             if (this.DataHandlingAdapter == null)
             {
                 throw new ArgumentNullException(nameof(this.DataHandlingAdapter), TouchSocketResource.NullDataAdapter.GetDescription());
@@ -867,7 +717,7 @@ namespace ThingsGateway.Foundation.Sockets
         #region 异步发送
 
         /// <summary>
-        /// IOCP发送
+        /// <inheritdoc/>
         /// </summary>
         /// <param name="buffer"></param>
         /// <param name="offset"></param>
@@ -877,10 +727,12 @@ namespace ThingsGateway.Foundation.Sockets
         /// <exception cref="Exception"></exception>
         public virtual Task SendAsync(byte[] buffer, int offset, int length)
         {
-            return Task.Run(() =>
+            this.ThrowIfDisposed();
+            if (this.DataHandlingAdapter == null)
             {
-                this.Send(buffer, offset, length);
-            });
+                throw new ArgumentNullException(nameof(this.DataHandlingAdapter), TouchSocketResource.NullDataAdapter.GetDescription());
+            }
+            return this.DataHandlingAdapter.SendInputAsync(buffer, offset, length);
         }
 
         /// <summary>
@@ -892,22 +744,51 @@ namespace ThingsGateway.Foundation.Sockets
         /// <exception cref="Exception"></exception>
         public virtual Task SendAsync(IRequestInfo requestInfo)
         {
-            return Task.Run(() =>
+            this.ThrowIfDisposed();
+            if (this.DataHandlingAdapter == null)
             {
-                this.Send(requestInfo);
-            });
+                throw new ArgumentNullException(nameof(this.DataHandlingAdapter), TouchSocketResource.NullDataAdapter.GetDescription());
+            }
+            if (!this.DataHandlingAdapter.CanSendRequestInfo)
+            {
+                throw new NotSupportedException($"当前适配器不支持对象发送。");
+            }
+            return this.DataHandlingAdapter.SendInputAsync(requestInfo);
         }
 
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
         /// <param name="transferBytes"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
         public virtual Task SendAsync(IList<ArraySegment<byte>> transferBytes)
         {
-            return Task.Run(() =>
+            this.ThrowIfDisposed();
+            if (this.DataHandlingAdapter == null)
             {
-                this.Send(transferBytes);
-            });
+                throw new ArgumentNullException(nameof(this.DataHandlingAdapter), TouchSocketResource.NullDataAdapter.GetDescription());
+            }
+            if (this.DataHandlingAdapter.CanSplicingSend)
+            {
+                return this.DataHandlingAdapter.SendInputAsync(transferBytes);
+            }
+            else
+            {
+                var length = 0;
+                foreach (var item in transferBytes)
+                {
+                    length += item.Count;
+                }
+                using (var byteBlock = new ByteBlock(length))
+                {
+                    foreach (var item in transferBytes)
+                    {
+                        byteBlock.Write(item.Array, item.Offset, item.Count);
+                    }
+                    return this.DataHandlingAdapter.SendInputAsync(byteBlock.Buffer, 0, byteBlock.Len);
+                }
+            }
         }
 
         #endregion 异步发送
@@ -970,13 +851,22 @@ namespace ThingsGateway.Foundation.Sockets
 
         #endregion 发送
 
-        /// <summary>
+        #region Receiver
+
+        private Receiver m_receiver;
+
         /// <inheritdoc/>
-        /// </summary>
-        /// <returns></returns>
-        public override string ToString()
+        public IReceiver CreateReceiver()
         {
-            return this.GetIPPort();
+            return this.m_receiver ??= new Receiver(this);
         }
+
+        /// <inheritdoc/>
+        public void ClearReceiver()
+        {
+            this.m_receiver = null;
+        }
+
+        #endregion
     }
 }

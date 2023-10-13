@@ -24,7 +24,7 @@ public abstract class ReadWriteDevicesSerialSessionBase : ReadWriteDevicesBase
     public ReadWriteDevicesSerialSessionBase(SerialSession serialSession)
     {
         SerialSession = serialSession;
-        WaitingClientEx = SerialSession.GetWaitingClientEx(new() { BreakTrigger = true });
+        WaitingClientEx = SerialSession.GetWaitingClient(new() { ThrowBreakException = true });
         SerialSession.Received -= Received;
         SerialSession.Connecting -= Connecting;
         SerialSession.Connected -= Connected;
@@ -40,21 +40,15 @@ public abstract class ReadWriteDevicesSerialSessionBase : ReadWriteDevicesBase
     /// <summary>
     /// 接收解析
     /// </summary>
-    protected virtual void Received(ByteBlock byteBlock, IRequestInfo requestInfo)
+    /// <param name="client"></param>
+    /// <param name="e"></param>
+    /// <returns></returns>
+    protected virtual Task Received(SerialSession client, ReceivedDataEventArgs e)
     {
+        return EasyTask.CompletedTask;
+    }
 
-    }
-    private void Received(SerialSession client, ByteBlock byteBlock, IRequestInfo requestInfo)
-    {
-        try
-        {
-            Received(byteBlock, requestInfo);
-        }
-        catch (Exception ex)
-        {
-            Logger.Exception(this, ex);
-        }
-    }
+
 
     /// <summary>
     /// 串口管理对象
@@ -102,8 +96,8 @@ public abstract class ReadWriteDevicesSerialSessionBase : ReadWriteDevicesBase
     {
         try
         {
-            waitingOptions ??= new WaitingOptions { BreakTrigger = true, ThrowBreakException = true, AdapterFilter = AdapterFilter.NoneAll };
-            ResponsedData result = SerialSession.GetWaitingClientEx(waitingOptions).SendThenResponse(data, TimeOut, cancellationToken);
+            waitingOptions ??= new WaitingOptions { ThrowBreakException = true };
+            ResponsedData result = SerialSession.GetWaitingClient(waitingOptions).SendThenResponse(data, TimeOut, cancellationToken);
             return OperResult.CreateSuccessResult(result.Data);
         }
         catch (Exception ex)
@@ -117,8 +111,8 @@ public abstract class ReadWriteDevicesSerialSessionBase : ReadWriteDevicesBase
     {
         try
         {
-            waitingOptions ??= new WaitingOptions { ThrowBreakException = true, AdapterFilter = AdapterFilter.NoneAll };
-            ResponsedData result = await SerialSession.GetWaitingClientEx(waitingOptions).SendThenResponseAsync(data, TimeOut, cancellationToken);
+            waitingOptions ??= new WaitingOptions { ThrowBreakException = true };
+            ResponsedData result = await SerialSession.GetWaitingClient(waitingOptions).SendThenResponseAsync(data, TimeOut, cancellationToken);
             return OperResult.CreateSuccessResult(result.Data);
         }
         catch (Exception ex)
@@ -132,24 +126,34 @@ public abstract class ReadWriteDevicesSerialSessionBase : ReadWriteDevicesBase
     {
         return SerialSession.SerialProperty.ToString();
     }
-    private void Connected(ISerialSession client, ConnectedEventArgs e)
+    /// <summary>
+    /// Connected
+    /// </summary>
+    /// <param name="client"></param>
+    /// <param name="e"></param>
+    /// <returns></returns>
+    protected virtual Task Connected(ISerialSession client, ConnectedEventArgs e)
     {
         Logger?.Debug(client.SerialProperty.ToString() + "连接成功");
+        SetDataAdapter();
+        return EasyTask.CompletedTask;
     }
 
-    private void Connecting(ISerialSession client, SerialConnectingEventArgs e)
+    private Task Connecting(ISerialSession client, SerialConnectingEventArgs e)
     {
         Logger?.Debug(client.SerialProperty.ToString() + "正在连接");
-        SetDataAdapter();
+        return EasyTask.CompletedTask;
     }
 
-    private void Disconnected(ISerialSessionBase client, DisconnectEventArgs e)
+    private Task Disconnected(ISerialSessionBase client, DisconnectEventArgs e)
     {
         Logger?.Debug(client.SerialProperty.ToString() + "断开连接-" + e.Message);
+        return EasyTask.CompletedTask;
     }
 
-    private void Disconnecting(ISerialSessionBase client, DisconnectEventArgs e)
+    private Task Disconnecting(ISerialSessionBase client, DisconnectEventArgs e)
     {
         Logger?.Debug(client.SerialProperty.ToString() + "正在主动断开连接-" + e.Message);
+        return EasyTask.CompletedTask;
     }
 }

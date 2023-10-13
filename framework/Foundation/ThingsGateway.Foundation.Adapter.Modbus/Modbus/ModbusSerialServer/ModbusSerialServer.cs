@@ -24,7 +24,7 @@ public class ModbusSerialServer : ReadWriteDevicesSerialSessionBase
     /// <summary>
     /// 接收外部写入时，传出变量地址/写入字节组/转换规则/客户端
     /// </summary>
-    public Func<ModbusAddress, byte[], IThingsGatewayBitConverter, SerialSession, OperResult> WriteData;
+    public Func<ModbusAddress, byte[], IThingsGatewayBitConverter, SerialSession, Task<OperResult>> WriteData;
 
     /// <summary>
     /// 继电器
@@ -267,12 +267,13 @@ public class ModbusSerialServer : ReadWriteDevicesSerialSessionBase
     {
         return Task.FromResult(Write(address, value));
     }
+
     /// <inheritdoc/>
-    protected override void Received(ByteBlock byteBlock, IRequestInfo requestInfo)
+    protected override async Task Received(SerialSession client, ReceivedDataEventArgs e)
     {
         try
         {
-
+            var requestInfo = e.RequestInfo;
             //接收外部报文
             if (requestInfo is ModbusSerialServerMessage modbusServerMessage)
             {
@@ -312,7 +313,7 @@ public class ModbusSerialServer : ReadWriteDevicesSerialSessionBase
                         if (WriteData != null)
                         {
                             // 接收外部写入时，传出变量地址/写入字节组/转换规则/客户端
-                            if ((WriteData(modbusServerMessage.CurModbusAddress, modbusServerMessage.Content, ThingsGatewayBitConverter, SerialSession)).IsSuccess)
+                            if ((await WriteData(modbusServerMessage.CurModbusAddress, modbusServerMessage.Content, ThingsGatewayBitConverter, SerialSession)).IsSuccess)
                             {
                                 var result = Write(modbusServerMessage.CurModbusAddress.ToString(), coreData.ByteToBoolArray(modbusServerMessage.Length));
                                 if (result.IsSuccess)
@@ -349,7 +350,7 @@ public class ModbusSerialServer : ReadWriteDevicesSerialSessionBase
                         if (WriteData != null)
                         {
 
-                            if ((WriteData(modbusServerMessage.CurModbusAddress, modbusServerMessage.Content, ThingsGatewayBitConverter, SerialSession)).IsSuccess)
+                            if ((await WriteData(modbusServerMessage.CurModbusAddress, modbusServerMessage.Content, ThingsGatewayBitConverter, SerialSession)).IsSuccess)
                             {
                                 var result = Write(modbusServerMessage.CurModbusAddress.ToString(), coreData);
                                 if (result.IsSuccess)

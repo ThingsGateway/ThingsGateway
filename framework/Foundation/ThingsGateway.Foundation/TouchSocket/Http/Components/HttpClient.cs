@@ -213,14 +213,11 @@ namespace ThingsGateway.Foundation.Http
             base.Dispose(disposing);
         }
 
-        /// <summary>
+
         /// <inheritdoc/>
-        /// </summary>
-        /// <param name="byteBlock"></param>
-        /// <param name="requestInfo"></param>
-        protected override bool HandleReceivedData(ByteBlock byteBlock, IRequestInfo requestInfo)
+        protected override Task ReceivedData(ReceivedDataEventArgs e)
         {
-            if (requestInfo is HttpResponse response)
+            if (e.RequestInfo is HttpResponse response)
             {
                 if (this.m_getContent)
                 {
@@ -229,18 +226,18 @@ namespace ThingsGateway.Foundation.Http
                 this.m_waitData.Set(response);
             }
 
-            return false;
+            return base.ReceivedData(e);
         }
 
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
         /// <param name="e"></param>
-        protected override void OnConnecting(ConnectingEventArgs e)
+        protected override async Task OnConnecting(ConnectingEventArgs e)
         {
             this.Protocol = Protocol.Http;
             this.SetDataHandlingAdapter(new HttpClientDataHandlingAdapter());
-            base.OnConnecting(e);
+            await base.OnConnecting(e);
         }
     }
 }

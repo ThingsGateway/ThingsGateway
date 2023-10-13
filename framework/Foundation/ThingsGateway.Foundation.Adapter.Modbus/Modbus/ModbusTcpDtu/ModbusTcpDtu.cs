@@ -84,15 +84,6 @@ public class ModbusTcpDtu : ReadWriteDevicesTcpServerBase
             return new OperResult<byte[]>(ex);
         }
     }
-    /// <summary>
-    /// <inheritdoc/>
-    /// </summary>
-    /// <param name="client"></param>
-    /// <param name="e"></param>
-    protected override void Connecting(SocketClient client, ConnectingEventArgs e)
-    {
-        Logger?.Debug(client.IP + ":" + client.Port + "正在连接");
-    }
 
     /// <inheritdoc/>
     public override void SetDataAdapter(object socketClient = null)
@@ -195,7 +186,7 @@ public class ModbusTcpDtu : ReadWriteDevicesTcpServerBase
                 var item = commandResult.Content;
                 if (FrameTime != 0)
                     Thread.Sleep(FrameTime);
-                var WaitingClientEx = client.GetWaitingClientEx(new() { BreakTrigger = true });
+                var WaitingClientEx = client.GetWaitingClient(new() { ThrowBreakException = true });
                 var result = WaitingClientEx.SendThenResponse(item, TimeOut, cancellationToken);
                 return (MessageBase)result.RequestInfo;
             }
@@ -222,7 +213,7 @@ public class ModbusTcpDtu : ReadWriteDevicesTcpServerBase
 
                 var item = commandResult.Content;
                 await Task.Delay(FrameTime, cancellationToken);
-                var WaitingClientEx = client.GetWaitingClientEx(new() { BreakTrigger = true });
+                var WaitingClientEx = client.GetWaitingClient(new() { ThrowBreakException = true });
                 var result = await WaitingClientEx.SendThenResponseAsync(item, TimeOut, cancellationToken);
                 return (MessageBase)result.RequestInfo;
             }

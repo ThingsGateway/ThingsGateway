@@ -70,10 +70,9 @@ namespace ThingsGateway.Foundation.Core
         /// <inheritdoc/>
         /// </summary>
         /// <param name="fromType"></param>
-        /// <param name="ps"></param>
         /// <param name="key"></param>
         /// <returns></returns>
-        public object Resolve(Type fromType, object[] ps = null, string key = "")
+        public object Resolve(Type fromType, string key = "")
         {
             if (fromType == typeof(IContainer))
             {
@@ -108,11 +107,11 @@ namespace ThingsGateway.Foundation.Core
                             {
                                 if (descriptor.ToType.IsGenericType)
                                 {
-                                    return (descriptor.ToInstance = this.Create(descriptor, descriptor.ToType.MakeGenericType(fromType.GetGenericArguments()), ps));
+                                    return (descriptor.ToInstance = this.Create(descriptor, descriptor.ToType.MakeGenericType(fromType.GetGenericArguments())));
                                 }
                                 else
                                 {
-                                    return (descriptor.ToInstance = this.Create(descriptor, descriptor.ToType, ps));
+                                    return descriptor.ToInstance = this.Create(descriptor, descriptor.ToType);
                                 }
                             }
                         }
@@ -120,11 +119,11 @@ namespace ThingsGateway.Foundation.Core
 
                     if (descriptor.ToType.IsGenericType)
                     {
-                        return this.Create(descriptor, descriptor.ToType.MakeGenericType(fromType.GetGenericArguments()), ps);
+                        return this.Create(descriptor, descriptor.ToType.MakeGenericType(fromType.GetGenericArguments()));
                     }
                     else
                     {
-                        return this.Create(descriptor, descriptor.ToType, ps);
+                        return this.Create(descriptor, descriptor.ToType);
                     }
                 }
             }
@@ -143,10 +142,10 @@ namespace ThingsGateway.Foundation.Core
                     }
                     lock (descriptor)
                     {
-                        return descriptor.ToInstance ??= this.Create(descriptor, descriptor.ToType, ps);
+                        return descriptor.ToInstance ??= this.Create(descriptor, descriptor.ToType);
                     }
                 }
-                return this.Create(descriptor, descriptor.ToType, ps);
+                return this.Create(descriptor, descriptor.ToType);
             }
             else
             {
@@ -172,7 +171,7 @@ namespace ThingsGateway.Foundation.Core
             this.m_registrations.TryRemove(k, out _);
         }
 
-        private object Create(DependencyDescriptor descriptor, Type toType, object[] ops)
+        private object Create(DependencyDescriptor descriptor, Type toType)
         {
             var ctor = toType.GetConstructors().FirstOrDefault(x => x.IsDefined(typeof(DependencyInjectAttribute), true));
             if (ctor is null)
@@ -198,28 +197,21 @@ namespace ThingsGateway.Foundation.Core
             {
                 for (var i = 0; i < parameters.Length; i++)
                 {
-                    if (ops != null && ops.Length - 1 >= i)
+                    if (parameters[i].ParameterType.IsPrimitive || parameters[i].ParameterType == typeof(string))
                     {
-                        ps[i] = ops[i];
+                        ps[i] = parameters[i].HasDefaultValue ? parameters[i].DefaultValue : default;
                     }
                     else
                     {
-                        if (parameters[i].ParameterType.IsPrimitive || parameters[i].ParameterType == typeof(string))
+                        if (parameters[i].IsDefined(typeof(DependencyInjectAttribute), true))
                         {
-                            ps[i] = parameters[i].HasDefaultValue ? parameters[i].DefaultValue : default;
+                            var attribute = parameters[i].GetCustomAttribute<DependencyInjectAttribute>();
+                            var type = attribute.Type ?? parameters[i].ParameterType;
+                            ps[i] = this.Resolve(type, attribute.Key);
                         }
                         else
                         {
-                            if (parameters[i].IsDefined(typeof(DependencyInjectAttribute), true))
-                            {
-                                var attribute = parameters[i].GetCustomAttribute<DependencyInjectAttribute>();
-                                var type = attribute.Type ?? parameters[i].ParameterType;
-                                ps[i] = this.Resolve(type, default, attribute.Key);
-                            }
-                            else
-                            {
-                                ps[i] = this.Resolve(parameters[i].ParameterType, null);
-                            }
+                            ps[i] = this.Resolve(parameters[i].ParameterType, null);
                         }
                     }
                 }
@@ -239,7 +231,7 @@ namespace ThingsGateway.Foundation.Core
                         {
                             var attribute = item.GetCustomAttribute<DependencyInjectAttribute>();
                             var type = attribute.Type ?? item.PropertyType;
-                            obj = this.Resolve(type, default, attribute.Key);
+                            obj = this.Resolve(type, attribute.Key);
                         }
                         else
                         {
@@ -259,28 +251,21 @@ namespace ThingsGateway.Foundation.Core
                     ps = new object[parameters.Length];
                     for (var i = 0; i < ps.Length; i++)
                     {
-                        if (ops != null && ops.Length - 1 >= i)
+                        if (parameters[i].ParameterType.IsPrimitive || parameters[i].ParameterType == typeof(string))
                         {
-                            ps[i] = ops[i];
+                            ps[i] = parameters[i].HasDefaultValue ? parameters[i].DefaultValue : default;
                         }
                         else
                         {
-                            if (parameters[i].ParameterType.IsPrimitive || parameters[i].ParameterType == typeof(string))
+                            if (parameters[i].IsDefined(typeof(DependencyInjectAttribute), true))
                             {
-                                ps[i] = parameters[i].HasDefaultValue ? parameters[i].DefaultValue : default;
+                                var attribute = parameters[i].GetCustomAttribute<DependencyInjectAttribute>();
+                                var type = attribute.Type ?? parameters[i].ParameterType;
+                                ps[i] = this.Resolve(type, attribute.Key);
                             }
                             else
                             {
-                                if (parameters[i].IsDefined(typeof(DependencyInjectAttribute), true))
-                                {
-                                    var attribute = parameters[i].GetCustomAttribute<DependencyInjectAttribute>();
-                                    var type = attribute.Type ?? parameters[i].ParameterType;
-                                    ps[i] = this.Resolve(type, default, attribute.Key);
-                                }
-                                else
-                                {
-                                    ps[i] = this.Resolve(parameters[i].ParameterType, null);
-                                }
+                                ps[i] = this.Resolve(parameters[i].ParameterType, null);
                             }
                         }
                     }

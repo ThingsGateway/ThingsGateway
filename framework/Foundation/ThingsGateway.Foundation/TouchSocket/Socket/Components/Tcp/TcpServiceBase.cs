@@ -22,6 +22,7 @@
 //  感谢您的下载和使用
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
+using System.Collections.Concurrent;
 
 namespace ThingsGateway.Foundation.Sockets
 {
@@ -122,29 +123,64 @@ namespace ThingsGateway.Foundation.Sockets
         /// <returns></returns>
         public abstract IService Stop();
 
-        internal void OnInternalConnected(ISocketClient socketClient, ConnectedEventArgs e)
+        private ConcurrentStack<TcpCore> m_tcpCores = new ConcurrentStack<TcpCore>();
+
+        /// <summary>
+        /// 租用TcpCore
+        /// </summary>
+        /// <returns></returns>
+        public TcpCore RentTcpCore()
         {
-            this.OnClientConnected(socketClient, e);
+            if (this.m_tcpCores.TryPop(out var tcpCore))
+            {
+                return tcpCore;
+            }
+
+            return new InternalTcpCore();
         }
 
-        internal void OnInternalConnecting(ISocketClient socketClient, ConnectingEventArgs e)
+        /// <inheritdoc/>
+        protected override void Dispose(bool disposing)
         {
-            this.OnClientConnecting(socketClient, e);
+            while (this.m_tcpCores.TryPop(out var tcpCore))
+            {
+                tcpCore.SafeDispose();
+            }
+            base.Dispose(disposing);
         }
 
-        internal void OnInternalDisconnected(ISocketClient socketClient, DisconnectEventArgs e)
+        /// <summary>
+        /// 归还TcpCore
+        /// </summary>
+        /// <param name="tcpCore"></param>
+        public void ReturnTcpCore(TcpCore tcpCore)
         {
-            this.OnClientDisconnected(socketClient, e);
+            this.m_tcpCores.Push(tcpCore);
         }
 
-        internal void OnInternalDisconnecting(ISocketClient socketClient, DisconnectEventArgs e)
+        internal Task OnInternalConnected(ISocketClient socketClient, ConnectedEventArgs e)
         {
-            this.OnClientDisconnecting(socketClient, e);
+            return this.OnClientConnected(socketClient, e);
         }
 
-        internal void OnInternalReceivedData(ISocketClient socketClient, ByteBlock byteBlock, IRequestInfo requestInfo)
+        internal Task OnInternalConnecting(ISocketClient socketClient, ConnectingEventArgs e)
         {
-            this.OnClientReceivedData(socketClient, byteBlock, requestInfo);
+            return this.OnClientConnecting(socketClient, e);
+        }
+
+        internal Task OnInternalDisconnected(ISocketClient socketClient, DisconnectEventArgs e)
+        {
+            return this.OnClientDisconnected(socketClient, e);
+        }
+
+        internal Task OnInternalDisconnecting(ISocketClient socketClient, DisconnectEventArgs e)
+        {
+            return this.OnClientDisconnecting(socketClient, e);
+        }
+
+        internal Task OnInternalReceivedData(ISocketClient socketClient, ReceivedDataEventArgs e)
+        {
+            return this.OnClientReceivedData(socketClient, e);
         }
 
         /// <summary>
@@ -152,39 +188,35 @@ namespace ThingsGateway.Foundation.Sockets
         /// </summary>
         /// <param name="socketClient"></param>
         /// <param name="e"></param>
-        protected abstract void OnClientConnected(ISocketClient socketClient, ConnectedEventArgs e);
+        protected abstract Task OnClientConnected(ISocketClient socketClient, ConnectedEventArgs e);
 
         /// <summary>
         /// 客户端请求连接
         /// </summary>
         /// <param name="socketClient"></param>
         /// <param name="e"></param>
-        protected abstract void OnClientConnecting(ISocketClient socketClient, ConnectingEventArgs e);
+        protected abstract Task OnClientConnecting(ISocketClient socketClient, ConnectingEventArgs e);
 
         /// <summary>
         /// 客户端断开连接
         /// </summary>
         /// <param name="socketClient"></param>
         /// <param name="e"></param>
-        protected abstract void OnClientDisconnected(ISocketClient socketClient, DisconnectEventArgs e);
+        protected abstract Task OnClientDisconnected(ISocketClient socketClient, DisconnectEventArgs e);
 
         /// <summary>
         /// 即将断开连接(仅主动断开时有效)。
-        /// <para>
-        /// 当主动调用Close断开时，可通过<see cref="MsgPermitEventArgs.IsPermitOperation"/>终止断开行为。
-        /// </para>
         /// </summary>
         /// <param name="socketClient"></param>
         /// <param name="e"></param>
-        protected abstract void OnClientDisconnecting(ISocketClient socketClient, DisconnectEventArgs e);
+        protected abstract Task OnClientDisconnecting(ISocketClient socketClient, DisconnectEventArgs e);
 
         /// <summary>
         /// 收到数据时
         /// </summary>
         /// <param name="socketClient"></param>
-        /// <param name="byteBlock"></param>
-        /// <param name="requestInfo"></param>
-        protected abstract void OnClientReceivedData(ISocketClient socketClient, ByteBlock byteBlock, IRequestInfo requestInfo);
+        /// <param name="e"></param>
+        protected abstract Task OnClientReceivedData(ISocketClient socketClient, ReceivedDataEventArgs e);
 
         #region Id发送
 

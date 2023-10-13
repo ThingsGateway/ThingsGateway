@@ -22,27 +22,37 @@
 //  感谢您的下载和使用
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
+using ThingsGateway.Foundation.Http.WebSockets;
+
 namespace ThingsGateway.Foundation.Sockets
 {
     /// <summary>
-    /// 接收类型
+    /// WebSocketConfigExtensions
     /// </summary>
-    public enum ReceiveType : byte
+    public static class WebSocketConfigExtension
     {
         /// <summary>
-        /// 在该模式下，不会投递接收申请，用户可通过<see cref="ITcpClientBase.GetStream"/>，获取到流以后，自己处理接收。
-        /// <para>注意：连接端不会感知主动断开</para>
+        /// 构建WebSocketClient类客户端，并连接
         /// </summary>
-        None,
+        /// <typeparam name="TClient"></typeparam>
+        /// <param name="config"></param>
+        /// <returns></returns>
+        public static TClient BuildWithWebSocketClient<TClient>(this TouchSocketConfig config) where TClient : IWebSocketClient
+        {
+            var client = Activator.CreateInstance<TClient>();
+            client.Setup(config);
+            client.Connect();
+            return client;
+        }
 
         /// <summary>
-        /// 该模式下会使用Iocp自动接收数据，然后主动触发。
+        /// 构建WebSocketClient类客户端，并连接
         /// </summary>
-        Iocp,
-
-        /// <summary>
-        /// 该模式下，会使用同步阻塞模式接收数据。注意：使用该模式时，每个回话连接会独占一个线程。
-        /// </summary>
-        Bio
+        /// <param name="config"></param>
+        /// <returns></returns>
+        public static WebSocketClient BuildWithWebSocketClient(this TouchSocketConfig config)
+        {
+            return BuildWithWebSocketClient<WebSocketClient>(config);
+        }
     }
 }

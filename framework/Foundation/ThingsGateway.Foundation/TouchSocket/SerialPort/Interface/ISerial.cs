@@ -15,21 +15,7 @@ namespace ThingsGateway.Foundation.Serial;
 /// <summary>
 /// 串口基接口
 /// </summary>
-public interface ISerial : IDisposable
+public interface ISerial : ISocket
 {
-    /// <summary>
-    /// 发送缓存区大小。最小值=1024。
-    /// </summary>
-    int SendBufferSize { get; set; }
-
-    /// <summary>
-    /// 接收缓存区大小。最小值=1024。
-    /// </summary>
-    int ReceiveBufferSize { get; set; }
-
-    /// <summary>
-    /// 日志记录器
-    /// </summary>
-    ILog Logger { get; set; }
 
 }
