@@ -212,6 +212,12 @@
             "label": "9.7 DLT645_2007",
             "href": "/thingsgateway-docs/docs/plugindlt6452007",
             "docId": "plugindlt6452007"
+          },
+          {
+            "type": "link",
+            "label": "9.8 三菱QnA3E",
+            "href": "/thingsgateway-docs/docs/pluginmc3e",
+            "docId": "pluginmc3e"
           }
         ],
         "collapsed": true,
@@ -457,6 +463,12 @@
       "id": "pluginkafka",
       "title": "Kafka消息生产",
       "description": "插件使用librdkafka,注意在非windows系统中需按系统安装c库",
+      "sidebar": "docs"
+    },
+    "pluginmc3e": {
+      "id": "pluginmc3e",
+      "title": "三菱QnA3E采集插件",
+      "description": "一、设备扩展属性",
       "sidebar": "docs"
     },
     "pluginmodbus": {

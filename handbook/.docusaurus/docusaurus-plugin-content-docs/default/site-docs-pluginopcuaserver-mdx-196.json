@@ -20,8 +20,8 @@
   },
   "sidebar": "docs",
   "previous": {
-    "title": "DLT645-2007采集插件",
-    "permalink": "/thingsgateway-docs/docs/plugindlt6452007"
+    "title": "三菱QnA3E采集插件",
+    "permalink": "/thingsgateway-docs/docs/pluginmc3e"
   },
   "next": {
     "title": "ModbusServer",

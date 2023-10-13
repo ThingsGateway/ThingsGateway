@@ -5,7 +5,7 @@
       "plugin": "b792992d"
     }
   },
-  "/thingsgateway-docs/docs-b45": {
+  "/thingsgateway-docs/docs-89d": {
     "__comp": "1be78505",
     "__context": {
       "plugin": "3f659ef2"
@@ -99,6 +99,10 @@
   "/thingsgateway-docs/docs/pluginkafka-6c4": {
     "__comp": "17896441",
     "content": "4c99e3f0"
+  },
+  "/thingsgateway-docs/docs/pluginmc3e-f8d": {
+    "__comp": "17896441",
+    "content": "aa2a52e0"
   },
   "/thingsgateway-docs/docs/pluginmodbus-939": {
     "__comp": "17896441",

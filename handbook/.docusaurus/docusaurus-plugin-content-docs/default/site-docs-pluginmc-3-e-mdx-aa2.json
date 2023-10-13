@@ -1,0 +1,27 @@
+{
+  "unversionedId": "pluginmc3e",
+  "id": "pluginmc3e",
+  "title": "三菱QnA3E采集插件",
+  "description": "一、设备扩展属性",
+  "source": "@site/docs/pluginmc3e.mdx",
+  "sourceDirName": ".",
+  "slug": "/pluginmc3e",
+  "permalink": "/thingsgateway-docs/docs/pluginmc3e",
+  "draft": false,
+  "editUrl": "https://gitee.com/diego2098/ThingsGateway/tree/master/handbook/docs/pluginmc3e.mdx",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "id": "pluginmc3e",
+    "title": "三菱QnA3E采集插件"
+  },
+  "sidebar": "docs",
+  "previous": {
+    "title": "DLT645-2007采集插件",
+    "permalink": "/thingsgateway-docs/docs/plugindlt6452007"
+  },
+  "next": {
+    "title": "OPCUAServer",
+    "permalink": "/thingsgateway-docs/docs/pluginopcuaserver"
+  }
+}
