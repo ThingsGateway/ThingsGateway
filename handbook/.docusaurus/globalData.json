@@ -121,6 +121,11 @@
               "sidebar": "docs"
             },
             {
+              "id": "pluginmc3e",
+              "path": "/thingsgateway-docs/docs/pluginmc3e",
+              "sidebar": "docs"
+            },
+            {
               "id": "pluginmodbus",
               "path": "/thingsgateway-docs/docs/pluginmodbus",
               "sidebar": "docs"

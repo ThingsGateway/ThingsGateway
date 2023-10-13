@@ -203,6 +203,13 @@ module.exports = {
           id: "plugindlt6452007",
           label: "9.7 DLT645_2007"
         },
+        {
+          type: "doc",
+          id: "pluginmc3e",
+          label: "9.8 三菱QnA3E"
+        },
+        
+
       ]
     },
     {

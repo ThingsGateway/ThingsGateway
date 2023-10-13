@@ -24,7 +24,7 @@
     "permalink": "/thingsgateway-docs/docs/pluginabcip"
   },
   "next": {
-    "title": "OPCUAServer",
-    "permalink": "/thingsgateway-docs/docs/pluginopcuaserver"
+    "title": "三菱QnA3E采集插件",
+    "permalink": "/thingsgateway-docs/docs/pluginmc3e"
   }
 }
