@@ -69,14 +69,6 @@ namespace ThingsGateway.Foundation.Core
             this.Owner = owner;
         }
 
-        /// <summary>
-        /// 发送数据的切入点，该方法由框架自动调用。
-        /// </summary>
-        /// <param name="requestInfo"></param>
-        public void SendInput(IRequestInfo requestInfo)
-        {
-            this.PreviewSend(requestInfo);
-        }
 
         /// <summary>
         /// 在解析时发生错误。
@@ -96,11 +88,6 @@ namespace ThingsGateway.Foundation.Core
             }
         }
 
-        /// <summary>
-        /// 当发送数据前预先处理数据
-        /// </summary>
-        /// <param name="requestInfo"></param>
-        protected abstract void PreviewSend(IRequestInfo requestInfo);
 
         /// <summary>
         /// 重置解析器到初始状态，一般在<see cref="OnError(string, bool, bool)"/>被触发时，由返回值指示是否调用。

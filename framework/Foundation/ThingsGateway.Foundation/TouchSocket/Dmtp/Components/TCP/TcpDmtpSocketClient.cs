@@ -40,11 +40,11 @@ namespace ThingsGateway.Foundation.Dmtp
             this.Protocol = DmtpUtility.DmtpProtocol;
         }
 
-        /// <inheritdoc cref="IDmtpActor.IsHandshaked"/>
-        public bool IsHandshaked => this.DmtpActor != null && this.DmtpActor.IsHandshaked;
-
         /// <inheritdoc/>
         public IDmtpActor DmtpActor { get => this.m_smtpActor; }
+
+        /// <inheritdoc cref="IDmtpActor.IsHandshaked"/>
+        public bool IsHandshaked => this.DmtpActor != null && this.DmtpActor.IsHandshaked;
 
         /// <summary>
         /// 验证超时时间,默认为3000ms
@@ -201,26 +201,23 @@ namespace ThingsGateway.Foundation.Dmtp
         }
 
         /// <inheritdoc/>
-        protected override bool HandleReceivedData(ByteBlock byteBlock, IRequestInfo requestInfo)
+        protected override async Task ReceivedData(ReceivedDataEventArgs e)
         {
-            var message = (DmtpMessage)requestInfo;
+            var message = (DmtpMessage)e.RequestInfo;
             if (!this.m_smtpActor.InputReceivedData(message))
             {
-                if (this.PluginsManager.Enable)
-                {
-                    this.PluginsManager.Raise(nameof(IDmtpReceivedPlugin.OnDmtpReceived), this, new DmtpMessageEventArgs(message));
-                }
+                await this.PluginsManager.RaiseAsync(nameof(IDmtpReceivedPlugin.OnDmtpReceived), this, new DmtpMessageEventArgs(message));
             }
-            return false;
+            await base.ReceivedData(e);
         }
 
         /// <inheritdoc/>
-        protected override void OnConnected(ConnectedEventArgs e)
+        protected override async Task OnConnected(ConnectedEventArgs e)
         {
             this.m_smtpActor.Id = this.Id;
-            base.OnConnected(e);
+            await base.OnConnected(e);
 
-            Task.Run(async () =>
+            _ = Task.Run(async () =>
             {
                 await Task.Delay(this.VerifyTimeout);
                 if (!this.IsHandshaked)
@@ -232,20 +229,20 @@ namespace ThingsGateway.Foundation.Dmtp
         }
 
         /// <inheritdoc/>
-        protected override void OnDisconnected(DisconnectEventArgs e)
+        protected override async Task OnDisconnected(DisconnectEventArgs e)
         {
             this.DmtpActor.Close(false, e.Message);
-            base.OnDisconnected(e);
-        }
-
-        private void ThisOnResetId(DmtpActor rpcActor, WaitSetId waitSetId)
-        {
-            this.DirectResetId(waitSetId.NewId);
+            await base.OnDisconnected(e);
         }
 
         private void ThisDmtpActorOutputSend(DmtpActor actor, ArraySegment<byte>[] transferBytes)
         {
             base.Send(transferBytes);
+        }
+
+        private void ThisOnResetId(DmtpActor rpcActor, WaitSetId waitSetId)
+        {
+            this.DirectResetId(waitSetId.NewId);
         }
 
         #region 发送

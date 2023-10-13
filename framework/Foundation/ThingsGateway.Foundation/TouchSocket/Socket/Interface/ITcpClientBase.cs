@@ -23,13 +23,12 @@
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-using System.Net.Security;
 using System.Net.Sockets;
 
 namespace ThingsGateway.Foundation.Sockets
 {
     /// <summary>
-    /// TCP终端基础接口。
+    /// Tcp终端基础接口。
     /// <para>
     /// 注意：该接口并不仅表示客户端。<see cref="SocketClient"/>也实现了该接口。
     /// </para>
@@ -80,7 +79,7 @@ namespace ThingsGateway.Foundation.Sockets
 
         /// <summary>
         /// 判断是否在线
-        /// <para>该属性仅表示TCP状态是否在线</para>
+        /// <para>该属性仅表示Tcp状态是否在线</para>
         /// </summary>
         bool Online { get; }
 
@@ -89,10 +88,7 @@ namespace ThingsGateway.Foundation.Sockets
         /// </summary>
         int Port { get; }
 
-        /// <summary>
-        /// 接收模式
-        /// </summary>
-        public ReceiveType ReceiveType { get; }
+
 
         /// <summary>
         /// 使用Ssl加密
@@ -106,11 +102,7 @@ namespace ThingsGateway.Foundation.Sockets
         /// <exception cref="Exception"></exception>
         void Close(string msg = TouchSocketCoreUtility.Empty);
 
-        /// <summary>
-        /// 获取流，在正常模式下为<see cref="NetworkStream"/>，在Ssl模式下为<see cref="SslStream"/>。
-        /// </summary>
-        /// <returns></returns>
-        Stream GetStream();
+
 
         /// <summary>
         /// 设置数据处理适配器

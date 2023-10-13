@@ -67,7 +67,6 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
                     break;
 
             }
-            tcpClient.Connected += Connected;
 
         }
         /// <summary>
@@ -293,8 +292,8 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
         /// <inheritdoc/>
         public override void SetDataAdapter(object socketClient = null)
         {
-            SiemensS7PLCDataHandleAdapter DataHandleAdapter = new();
-            TcpClient.SetDataHandlingAdapter(DataHandleAdapter);
+            SiemensS7PLCDataHandleAdapter dataHandleAdapter = new();
+            TcpClient.SetDataHandlingAdapter(dataHandleAdapter);
         }
 
 
@@ -476,17 +475,20 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
         }
         #endregion
 
-        private void Connected(ITcpClient client, ConnectedEventArgs e)
+        /// <inheritdoc/>
+        protected override async Task Connected(ITcpClient client, ConnectedEventArgs e)
         {
             try
             {
-                var result1 = SendThenResponse(ISO_CR);
+                NormalDataHandlingAdapter dataHandleAdapter = new();
+                TcpClient.SetDataHandlingAdapter(dataHandleAdapter);
+                var result1 = await SendThenResponseAsync(ISO_CR);
                 if (!result1.IsSuccess)
                 {
                     Logger?.Warning($"{client.IP} : {client.Port}：ISO_TP握手失败-{result1.Message}");
                     return;
                 }
-                var result2 = SendThenResponse(S7_PN);
+                var result2 = await SendThenResponseAsync(S7_PN);
                 if (!result2.IsSuccess)
                 {
                     Logger?.Warning($"{client.IP} : {client.Port}：PDU初始化失败-{result2.Message}");
@@ -499,7 +501,11 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
             {
                 Logger.Exception(ex);
             }
-
+            finally
+            {
+                SetDataAdapter();
+            }
+            await base.Connected(client, e);
         }
     }
 }

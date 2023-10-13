@@ -10,7 +10,6 @@
 //------------------------------------------------------------------------------
 #endregion
 
-
 namespace ThingsGateway.Foundation.Adapter.DLT645;
 
 internal static class PackHelper

@@ -27,11 +27,10 @@ using System.Net.Sockets;
 namespace ThingsGateway.Foundation.Sockets
 {
     /// <summary>
-    /// TCP泛型服务器，由使用者自己指定<see cref="SocketClient"/>类型。
+    /// Tcp泛型服务器，由使用者自己指定<see cref="SocketClient"/>类型。
     /// </summary>
     public class TcpService<TClient> : TcpServiceBase, ITcpService<TClient> where TClient : SocketClient, new()
     {
-
         /// <summary>
         /// 构造函数
         /// </summary>
@@ -102,25 +101,17 @@ namespace ThingsGateway.Foundation.Sockets
 
         /// <summary>
         /// 即将断开连接(仅主动断开时有效)。
-        /// <para>
-        /// 当主动调用Close断开时，可通过<see cref="MsgPermitEventArgs.IsPermitOperation"/>终止断开行为。
-        /// </para>
         /// </summary>
         public DisconnectEventHandler<TClient> Disconnecting { get; set; }
 
         /// <summary>
-        /// 当客户端Id被修改时触发。
-        /// </summary>
-        public IdChangedEventHandler<TClient> IdChanged { get; set; }
-
-        /// <summary>
         /// <inheritdoc/>
         /// </summary>
         /// <param name="socketClient"></param>
         /// <param name="e"></param>
-        protected override sealed void OnClientConnected(ISocketClient socketClient, ConnectedEventArgs e)
+        protected override sealed Task OnClientConnected(ISocketClient socketClient, ConnectedEventArgs e)
         {
-            this.OnConnected((TClient)socketClient, e);
+            return this.OnConnected((TClient)socketClient, e);
         }
 
         /// <summary>
@@ -128,9 +119,9 @@ namespace ThingsGateway.Foundation.Sockets
         /// </summary>
         /// <param name="socketClient"></param>
         /// <param name="e"></param>
-        protected override sealed void OnClientConnecting(ISocketClient socketClient, ConnectingEventArgs e)
+        protected override sealed Task OnClientConnecting(ISocketClient socketClient, ConnectingEventArgs e)
         {
-            this.OnConnecting((TClient)socketClient, e);
+            return this.OnConnecting((TClient)socketClient, e);
         }
 
         /// <summary>
@@ -138,9 +129,9 @@ namespace ThingsGateway.Foundation.Sockets
         /// </summary>
         /// <param name="socketClient"></param>
         /// <param name="e"></param>
-        protected override sealed void OnClientDisconnected(ISocketClient socketClient, DisconnectEventArgs e)
+        protected override sealed Task OnClientDisconnected(ISocketClient socketClient, DisconnectEventArgs e)
         {
-            this.OnDisconnected((TClient)socketClient, e);
+            return this.OnDisconnected((TClient)socketClient, e);
         }
 
         /// <summary>
@@ -148,20 +139,19 @@ namespace ThingsGateway.Foundation.Sockets
         /// </summary>
         /// <param name="socketClient"></param>
         /// <param name="e"></param>
-        protected override sealed void OnClientDisconnecting(ISocketClient socketClient, DisconnectEventArgs e)
+        protected override sealed Task OnClientDisconnecting(ISocketClient socketClient, DisconnectEventArgs e)
         {
-            this.OnDisconnecting((TClient)socketClient, e);
+            return this.OnDisconnecting((TClient)socketClient, e);
         }
 
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
         /// <param name="socketClient"></param>
-        /// <param name="byteBlock"></param>
-        /// <param name="requestInfo"></param>
-        protected override sealed void OnClientReceivedData(ISocketClient socketClient, ByteBlock byteBlock, IRequestInfo requestInfo)
+        /// <param name="e"></param>
+        protected override sealed Task OnClientReceivedData(ISocketClient socketClient, ReceivedDataEventArgs e)
         {
-            this.OnReceived((TClient)socketClient, byteBlock, requestInfo);
+            return this.OnReceived((TClient)socketClient, e);
         }
 
         /// <summary>
@@ -169,9 +159,13 @@ namespace ThingsGateway.Foundation.Sockets
         /// </summary>
         /// <param name="socketClient"></param>
         /// <param name="e"></param>
-        protected virtual void OnConnected(TClient socketClient, ConnectedEventArgs e)
+        protected virtual Task OnConnected(TClient socketClient, ConnectedEventArgs e)
         {
-            this.Connected?.Invoke(socketClient, e);
+            if (this.Connected != null)
+            {
+                return this.Connected.Invoke(socketClient, e);
+            }
+            return EasyTask.CompletedTask;
         }
 
         /// <summary>
@@ -179,9 +173,13 @@ namespace ThingsGateway.Foundation.Sockets
         /// </summary>
         /// <param name="socketClient"></param>
         /// <param name="e"></param>
-        protected virtual void OnConnecting(TClient socketClient, ConnectingEventArgs e)
+        protected virtual Task OnConnecting(TClient socketClient, ConnectingEventArgs e)
         {
-            this.Connecting?.Invoke(socketClient, e);
+            if (this.Connecting != null)
+            {
+                return this.Connecting.Invoke(socketClient, e);
+            }
+            return EasyTask.CompletedTask;
         }
 
         /// <summary>
@@ -189,32 +187,37 @@ namespace ThingsGateway.Foundation.Sockets
         /// </summary>
         /// <param name="socketClient"></param>
         /// <param name="e"></param>
-        protected virtual void OnDisconnected(TClient socketClient, DisconnectEventArgs e)
+        protected virtual Task OnDisconnected(TClient socketClient, DisconnectEventArgs e)
         {
-            this.Disconnected?.Invoke(socketClient, e);
+            if (this.Disconnected != null)
+            {
+                return this.Disconnected.Invoke(socketClient, e);
+            }
+            return EasyTask.CompletedTask;
         }
 
         /// <summary>
         /// 即将断开连接(仅主动断开时有效)。
-        /// <para>
-        /// 当主动调用Close断开时，可通过<see cref="MsgPermitEventArgs.IsPermitOperation"/>终止断开行为。
-        /// </para>
         /// </summary>
         /// <param name="socketClient"></param>
         /// <param name="e"></param>
-        protected virtual void OnDisconnecting(TClient socketClient, DisconnectEventArgs e)
+        protected virtual Task OnDisconnecting(TClient socketClient, DisconnectEventArgs e)
         {
-            this.Disconnecting?.Invoke(socketClient, e);
+            if (this.Disconnected != null)
+            {
+                return this.Disconnecting.Invoke(socketClient, e);
+            }
+            return EasyTask.CompletedTask;
         }
 
         /// <summary>
         /// 当收到适配器数据。
         /// </summary>
         /// <param name="socketClient"></param>
-        /// <param name="byteBlock"></param>
-        /// <param name="requestInfo"></param>
-        protected virtual void OnReceived(TClient socketClient, ByteBlock byteBlock, IRequestInfo requestInfo)
+        /// <param name="e"></param>
+        protected virtual Task OnReceived(TClient socketClient, ReceivedDataEventArgs e)
         {
+            return EasyTask.CompletedTask;
         }
 
         #endregion 事件
@@ -223,7 +226,6 @@ namespace ThingsGateway.Foundation.Sockets
         {
             return Interlocked.Increment(ref this.m_nextId).ToString();
         }
-
 
         /// <summary>
         /// 获取下一个新Id
@@ -363,7 +365,6 @@ namespace ThingsGateway.Foundation.Sockets
         /// <inheritdoc/>
         public override IService Setup(TouchSocketConfig config)
         {
-
             if (config == null)
             {
                 throw new ArgumentNullException(nameof(config));
@@ -434,7 +435,6 @@ namespace ThingsGateway.Foundation.Sockets
                             ReuseAddress = this.Config.GetValue(TouchSocketConfigExtension.ReuseAddressProperty),
                             NoDelay = this.Config.GetValue(TouchSocketConfigExtension.NoDelayProperty),
                             Adapter = this.Config.GetValue(TouchSocketConfigExtension.TcpDataHandlingAdapterProperty),
-                            ReceiveType = this.Config.GetValue(TouchSocketConfigExtension.ReceiveTypeProperty)
                         };
                         option.Backlog = this.Config.GetValue(TouchSocketConfigExtension.BacklogProperty) ?? option.Backlog;
                         option.SendTimeout = this.Config.GetValue(TouchSocketConfigExtension.SendTimeoutProperty);
@@ -540,11 +540,11 @@ namespace ThingsGateway.Foundation.Sockets
                 this.Clear();
 
                 this.m_serverState = ServerState.Disposed;
-                if (this.PluginsManager?.Enable == true)
+                if (this.PluginsManager.Enable)
                 {
                     this.m_pluginsManager.Raise(nameof(IServerStopedPlugin.OnServerStoped), this, new ServiceStateEventArgs(this.m_serverState, default));
                 }
-                this.PluginsManager?.SafeDispose();
+                this.PluginsManager.SafeDispose();
             }
             base.Dispose(disposing);
         }
@@ -691,7 +691,7 @@ namespace ThingsGateway.Foundation.Sockets
             return new NormalDataHandlingAdapter();
         }
 
-        private void OnClientSocketInit(object obj)
+        private async Task OnClientSocketInit(object obj)
         {
             var tuple = (Tuple<Socket, TcpNetworkMonitor>)obj;
             var socket = tuple.Item1;
@@ -717,30 +717,35 @@ namespace ThingsGateway.Foundation.Sockets
                 {
                     client.SetDataHandlingAdapter(this.GetAdapter(monitor));
                 }
-                client.InternalInitialized();
+
+                await client.InternalInitialized();
 
                 var args = new ConnectingEventArgs(socket)
                 {
                     Id = this.GetNextNewId()
                 };
-                client.InternalConnecting(args);//Connecting
+                await client.InternalConnecting(args);//Connecting
                 if (args.IsPermitOperation)
                 {
                     client.InternalSetId(args.Id);
-                    if (!client.MainSocket.Connected)
+                    if (!socket.Connected)
                     {
-                        client.MainSocket.SafeDispose();
+                        socket.SafeDispose();
                         return;
                     }
                     if (this.m_socketClients.TryAdd(client))
                     {
-                        client.InternalConnected(new ConnectedEventArgs());
-
+                        _ = client.InternalConnected(new ConnectedEventArgs());
+                        if (!socket.Connected)
+                        {
+                            return;
+                        }
                         if (monitor.Option.UseSsl)
                         {
                             try
                             {
-                                client.BeginReceiveSsl(monitor.Option.ServiceSslOption);
+                                await client.AuthenticateAsync(monitor.Option.ServiceSslOption);
+                                _ = client.BeginReceiveSsl();
                             }
                             catch (Exception ex)
                             {
@@ -772,7 +777,7 @@ namespace ThingsGateway.Foundation.Sockets
     }
 
     /// <summary>
-    /// TCP服务器
+    /// Tcp服务器
     /// </summary>
     public class TcpService : TcpService<SocketClient>
     {
@@ -781,16 +786,14 @@ namespace ThingsGateway.Foundation.Sockets
         /// </summary>
         public ReceivedEventHandler<SocketClient> Received { get; set; }
 
-        /// <summary>
         /// <inheritdoc/>
-        /// </summary>
-        /// <param name="socketClient"></param>
-        /// <param name="byteBlock"></param>
-        /// <param name="requestInfo"></param>
-        protected override void OnReceived(SocketClient socketClient, ByteBlock byteBlock, IRequestInfo requestInfo)
+        protected override Task OnReceived(SocketClient socketClient, ReceivedDataEventArgs e)
         {
-            this.Received?.Invoke(socketClient, byteBlock, requestInfo);
-            base.OnReceived(socketClient, byteBlock, requestInfo);
+            if (this.Received != null)
+            {
+                return this.Received.Invoke(socketClient, e);
+            }
+            return EasyTask.CompletedTask;
         }
     }
 }

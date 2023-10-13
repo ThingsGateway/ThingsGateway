@@ -96,42 +96,55 @@ namespace ThingsGateway.Foundation.Dmtp
             base.Dispose(disposing);
         }
 
+        ///// <inheritdoc/>
+        //protected override bool HandleReceivedData(ByteBlock byteBlock, IRequestInfo requestInfo)
+        //{
+        //    if (this.Protocol == DmtpUtility.DmtpProtocol && requestInfo is DmtpMessage message)
+        //    {
+        //        if (!this.m_smtpActor.InputReceivedData(message))
+        //        {
+        //            if (this.PluginsManager.Enable)
+        //            {
+        //                this.PluginsManager.Raise(nameof(IDmtpReceivedPlugin.OnDmtpReceived), this, new DmtpMessageEventArgs(message));
+        //            }
+        //        }
+
+        //        return false;
+        //    }
+        //    else
+        //    {
+        //        return base.HandleReceivedData(byteBlock, requestInfo);
+        //    }
+        //}
+
         /// <inheritdoc/>
-        protected override bool HandleReceivedData(ByteBlock byteBlock, IRequestInfo requestInfo)
+        protected override async Task ReceivedData(ReceivedDataEventArgs e)
         {
-            if (this.Protocol == DmtpUtility.DmtpProtocol && requestInfo is DmtpMessage message)
+            if (this.Protocol == DmtpUtility.DmtpProtocol && e.RequestInfo is DmtpMessage message)
             {
                 if (!this.m_smtpActor.InputReceivedData(message))
                 {
-                    if (this.PluginsManager.Enable)
-                    {
-                        this.PluginsManager.Raise(nameof(IDmtpReceivedPlugin.OnDmtpReceived), this, new DmtpMessageEventArgs(message));
-                    }
+                    await this.PluginsManager.RaiseAsync(nameof(IDmtpReceivedPlugin.OnDmtpReceived), this, new DmtpMessageEventArgs(message));
                 }
-
-                return false;
             }
-            else
-            {
-                return base.HandleReceivedData(byteBlock, requestInfo);
-            }
+            await base.ReceivedData(e);
         }
 
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
         /// <param name="e"></param>
-        protected override void OnDisconnected(DisconnectEventArgs e)
+        protected override async Task OnDisconnected(DisconnectEventArgs e)
         {
             this.DmtpActor?.Close(false, e.Message);
-            base.OnDisconnected(e);
+            await base.OnDisconnected(e);
         }
 
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
         /// <param name="request"></param>
-        protected override void OnReceivedHttpRequest(HttpRequest request)
+        protected override async Task OnReceivedHttpRequest(HttpRequest request)
         {
             if (request.IsMethod(DmtpUtility.Dmtp) && request.IsUpgrade() &&
                 string.Equals(request.Headers.Get(HttpHeaders.Upgrade), DmtpUtility.Dmtp, StringComparison.OrdinalIgnoreCase))
@@ -142,7 +155,7 @@ namespace ThingsGateway.Foundation.Dmtp
                 this.DefaultSend(new HttpResponse().SetStatus(101, "Switching Protocols").BuildAsBytes());
                 return;
             }
-            base.OnReceivedHttpRequest(request);
+            await base.OnReceivedHttpRequest(request);
         }
 
         private void SetRpcActor(DmtpActor actor)

@@ -19,7 +19,7 @@ namespace ThingsGateway.Foundation.Serial;
 /// <typeparam name="TClient"></typeparam>
 /// <param name="client"></param>
 /// <param name="e"></param>
-public delegate void SerialConnectingEventHandler<TClient>(TClient client, SerialConnectingEventArgs e);
+public delegate Task SerialConnectingEventHandler<TClient>(TClient client, SerialConnectingEventArgs e);
 
 /// <summary>
 /// 客户端连接事件。

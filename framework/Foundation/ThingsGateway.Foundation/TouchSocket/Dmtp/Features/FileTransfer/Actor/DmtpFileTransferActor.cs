@@ -1507,7 +1507,7 @@ namespace ThingsGateway.Foundation.Dmtp.FileTransfer
                     waitFileSection.Message = ex.Message;
                 }
 
-                waitFileSection.Value.Dispose();
+                waitFileSection.Value.SafeDispose();
                 waitFileSection.Value = default;
                 using (var byteBlock = new ByteBlock())
                 {

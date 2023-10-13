@@ -39,34 +39,35 @@ namespace ThingsGateway.Foundation.Http
         }
 
         /// <inheritdoc/>
-        protected override void OnConnecting(ConnectingEventArgs e)
+        protected override async Task OnConnecting(ConnectingEventArgs e)
         {
             this.SetDataHandlingAdapter(new HttpServerDataHandlingAdapter());
-            base.OnConnecting(e);
+            await base.OnConnecting(e);
         }
 
         /// <inheritdoc/>
-        protected override bool HandleReceivedData(ByteBlock byteBlock, IRequestInfo requestInfo)
+        protected override async Task ReceivedData(ReceivedDataEventArgs e)
         {
-            if (requestInfo is HttpRequest request)
+            if (e.RequestInfo is HttpRequest request)
             {
-                this.OnReceivedHttpRequest(request);
+                await this.OnReceivedHttpRequest(request);
             }
-
-            return false;
+            await base.ReceivedData(e);
         }
 
         /// <summary>
         /// 当收到到Http请求时。覆盖父类方法将不会触发插件。
         /// </summary>
-        protected virtual void OnReceivedHttpRequest(HttpRequest request)
+        protected virtual Task OnReceivedHttpRequest(HttpRequest request)
         {
             if (this.PluginsManager.GetPluginCount(nameof(IHttpPlugin.OnHttpRequest)) > 0)
             {
                 var e = new HttpContextEventArgs(new HttpContext(request));
 
-                this.PluginsManager.Raise(nameof(IHttpPlugin.OnHttpRequest), this, e);
+                return this.PluginsManager.RaiseAsync(nameof(IHttpPlugin.OnHttpRequest), this, e);
             }
+
+            return EasyTask.CompletedTask;
         }
     }
 }

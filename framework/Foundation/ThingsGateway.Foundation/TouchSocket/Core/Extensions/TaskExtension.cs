@@ -22,6 +22,7 @@
 //  感谢您的下载和使用
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
+
 namespace ThingsGateway.Foundation.Core
 {
     /// <summary>
@@ -29,5 +30,24 @@ namespace ThingsGateway.Foundation.Core
     /// </summary>
     public static class TaskExtension
     {
+        /// <summary>
+        /// 同步获取配置ConfigureAwait为false时的结果。
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="task"></param>
+        /// <returns></returns>
+        public static T GetFalseAwaitResult<T>(this Task<T> task)
+        {
+            return task.ConfigureAwait(false).GetAwaiter().GetResult();
+        }
+
+        /// <summary>
+        /// 同步配置ConfigureAwait为false时的执行。
+        /// </summary>
+        /// <param name="task"></param>
+        public static void GetFalseAwaitResult(this Task task)
+        {
+            task.ConfigureAwait(false).GetAwaiter().GetResult();
+        }
     }
 }

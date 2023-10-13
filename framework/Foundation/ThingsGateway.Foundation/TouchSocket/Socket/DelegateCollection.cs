@@ -22,67 +22,57 @@
 //  感谢您的下载和使用
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-using System.Net;
 
-/// <summary>
-/// 显示信息
-/// </summary>
-/// <param name="client"></param>
-/// <param name="e"></param>
-public delegate void MessageEventHandler<TClient>(TClient client, MsgPermitEventArgs e);
+namespace ThingsGateway.Foundation.Sockets
+{
+    /// <summary>
+    /// Connected
+    /// </summary>
+    /// <typeparam name="TClient"></typeparam>
+    /// <param name="client"></param>
+    /// <param name="e"></param>
+    public delegate Task ConnectedEventHandler<TClient>(TClient client, ConnectedEventArgs e);
 
-/// <summary>
-/// 普通通知
-/// </summary>
-/// <typeparam name="TClient"></typeparam>
-/// <param name="client"></param>
-/// <param name="e"></param>
-public delegate void TouchSocketEventHandler<TClient>(TClient client, PluginEventArgs e);
+    /// <summary>
+    /// Connecting
+    /// </summary>
+    /// <typeparam name="TClient"></typeparam>
+    /// <param name="client"></param>
+    /// <param name="e"></param>
+    public delegate Task ConnectingEventHandler<TClient>(TClient client, ConnectingEventArgs e);
 
-/// <summary>
-/// Id修改通知
-/// </summary>
-/// <typeparam name="TClient"></typeparam>
-/// <param name="client"></param>
-/// <param name="e"></param>
-public delegate void IdChangedEventHandler<TClient>(TClient client, IdChangedEventArgs e);
+    /// <summary>
+    /// 客户端断开连接
+    /// </summary>
+    /// <typeparam name="TClient"></typeparam>
+    /// <param name="client"></param>
+    /// <param name="e"></param>
+    public delegate Task DisconnectEventHandler<TClient>(TClient client, DisconnectEventArgs e);
 
-/// <summary>
-/// Connecting
-/// </summary>
-/// <typeparam name="TClient"></typeparam>
-/// <param name="client"></param>
-/// <param name="e"></param>
-public delegate void ConnectingEventHandler<TClient>(TClient client, ConnectingEventArgs e);
+    /// <summary>
+    /// 显示信息
+    /// </summary>
+    /// <param name="client"></param>
+    /// <param name="e"></param>
+    public delegate void MessageEventHandler<TClient>(TClient client, MsgPermitEventArgs e);
 
-/// <summary>
-/// Connected
-/// </summary>
-/// <typeparam name="TClient"></typeparam>
-/// <param name="client"></param>
-/// <param name="e"></param>
-public delegate void ConnectedEventHandler<TClient>(TClient client, ConnectedEventArgs e);
+    /// <summary>
+    /// 接收数据
+    /// </summary>
+    /// <param name="client"></param>
+    /// <param name="e"></param>
+    public delegate Task ReceivedEventHandler<TClient>(TClient client, ReceivedDataEventArgs e);
 
-/// <summary>
-/// 客户端断开连接
-/// </summary>
-/// <typeparam name="TClient"></typeparam>
-/// <param name="client"></param>
-/// <param name="e"></param>
-public delegate void DisconnectEventHandler<TClient>(TClient client, DisconnectEventArgs e);
+    /// <summary>
+    /// 普通通知
+    /// </summary>
+    /// <typeparam name="TClient"></typeparam>
+    /// <param name="client"></param>
+    /// <param name="e"></param>
+    public delegate void TouchSocketEventHandler<TClient>(TClient client, PluginEventArgs e);
 
-/// <summary>
-/// 接收数据
-/// </summary>
-/// <param name="client"></param>
-/// <param name="byteBlock"></param>
-/// <param name="requestInfo"></param>
-public delegate void ReceivedEventHandler<TClient>(TClient client, ByteBlock byteBlock, IRequestInfo requestInfo);
-
-/// <summary>
-/// UDP接收
-/// </summary>
-/// <param name="endpoint"></param>
-/// <param name="byteBlock"></param>
-/// <param name="requestInfo"></param>
-public delegate void UdpReceivedEventHandler(EndPoint endpoint, ByteBlock byteBlock, IRequestInfo requestInfo);
+    /// <summary>
+    /// Udp接收
+    /// </summary>
+    public delegate Task UdpReceivedEventHandler<TClient>(TClient client, UdpReceivedDataEventArgs e);
+}

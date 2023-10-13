@@ -102,9 +102,10 @@ public partial class UpgradeManger
         service.Connecting = (client, e) =>
         {
             service.Logger.Info($"{client.GetIPPort()}：Connecting");
+            return EasyTask.CompletedTask;
         };//有客户端正在连接
-        service.Connected = (client, e) => { service.Logger.Info($"{client.GetIPPort()}：Connected"); };//有客户端连接
-        service.Disconnected = (client, e) => { service.Logger.Info($"{client.GetIPPort()}：Disconnected"); };//有客户端断开连接
+        service.Connected = (client, e) => { service.Logger.Info($"{client.GetIPPort()}：Connected"); return EasyTask.CompletedTask; };//有客户端连接
+        service.Disconnected = (client, e) => { service.Logger.Info($"{client.GetIPPort()}：Disconnected"); return EasyTask.CompletedTask; };//有客户端断开连接
         service.Setup(config);
         return service;
 

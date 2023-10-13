@@ -183,6 +183,70 @@ namespace ThingsGateway.Foundation.Core
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc/>
+        protected override Task PreviewSendAsync(IRequestInfo requestInfo)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc/>
+        protected override async Task PreviewSendAsync(byte[] buffer, int offset, int length)
+        {
+            var dataLen = length - offset;
+            if (dataLen > this.FixedSize)
+            {
+                throw new OverlengthException("发送的数据包长度大于FixedSize");
+            }
+            var byteBlock = new ByteBlock(this.FixedSize);
+
+            byteBlock.Write(buffer, offset, length);
+            for (var i = byteBlock.Pos; i < this.FixedSize; i++)
+            {
+                byteBlock.Buffer[i] = 0;
+            }
+            byteBlock.SetLength(this.FixedSize);
+            try
+            {
+                await this.GoSendAsync(byteBlock.Buffer, 0, byteBlock.Len);
+            }
+            finally
+            {
+                byteBlock.Dispose();
+            }
+        }
+
+        /// <inheritdoc/>
+        protected override async Task PreviewSendAsync(IList<ArraySegment<byte>> transferBytes)
+        {
+            var length = 0;
+            foreach (var item in transferBytes)
+            {
+                length += item.Count;
+            }
+
+            if (length > this.FixedSize)
+            {
+                throw new OverlengthException("发送的数据包长度大于FixedSize");
+            }
+            var byteBlock = new ByteBlock(this.FixedSize);
+
+            foreach (var item in transferBytes)
+            {
+                byteBlock.Write(item.Array, item.Offset, item.Count);
+            }
+
+            Array.Clear(byteBlock.Buffer, byteBlock.Pos, this.FixedSize);
+            byteBlock.SetLength(this.FixedSize);
+            try
+            {
+                await this.GoSendAsync(byteBlock.Buffer, 0, byteBlock.Len);
+            }
+            finally
+            {
+                byteBlock.Dispose();
+            }
+        }
+
         /// <summary>
         /// <inheritdoc/>
         /// </summary>

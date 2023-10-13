@@ -68,7 +68,14 @@ namespace ThingsGateway.Foundation.Http.WebSockets
         /// <param name="token"></param>
         /// <returns></returns>
         Task<WebSocketReceiveResult> ReadAsync(CancellationToken token);
-
+#if NET6_0_OR_GREATER
+        /// <summary>
+        /// 值异步等待读取数据
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public ValueTask<WebSocketReceiveResult> ValueReadAsync(CancellationToken token);
+#endif
         /// <summary>
         /// 采用WebSocket协议，发送WS数据。发送结束后，请及时释放<see cref="WSDataFrame"/>
         /// </summary>

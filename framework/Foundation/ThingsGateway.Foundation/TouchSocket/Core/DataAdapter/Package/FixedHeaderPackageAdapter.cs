@@ -242,6 +242,131 @@ namespace ThingsGateway.Foundation.Core
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc/>
+        protected override Task PreviewSendAsync(IRequestInfo requestInfo)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc/>
+        protected override async Task PreviewSendAsync(byte[] buffer, int offset, int length)
+        {
+            if (length < this.MinPackageSize)
+            {
+                throw new Exception("发送数据小于设定值，相同解析器可能无法收到有效数据，已终止发送");
+            }
+
+            if (length > this.MaxPackageSize)
+            {
+                throw new Exception("发送数据大于设定值，相同解析器可能无法收到有效数据，已终止发送");
+            }
+
+            ByteBlock byteBlock = null;
+            byte[] lenBytes = null;
+
+            switch (this.FixedHeaderType)
+            {
+                case FixedHeaderType.Byte:
+                    {
+                        var dataLen = (byte)(length - offset);
+                        byteBlock = new ByteBlock(dataLen + 1);
+                        lenBytes = new byte[] { dataLen };
+                        break;
+                    }
+                case FixedHeaderType.Ushort:
+                    {
+                        var dataLen = (ushort)(length - offset);
+                        byteBlock = new ByteBlock(dataLen + 2);
+                        lenBytes = TouchSocketBitConverter.Default.GetBytes(dataLen);
+                        break;
+                    }
+                case FixedHeaderType.Int:
+                    {
+                        var dataLen = length - offset;
+                        byteBlock = new ByteBlock(dataLen + 4);
+                        lenBytes = TouchSocketBitConverter.Default.GetBytes(dataLen);
+                        break;
+                    }
+            }
+
+            try
+            {
+                byteBlock.Write(lenBytes);
+                byteBlock.Write(buffer, offset, length);
+                await this.GoSendAsync(byteBlock.Buffer, 0, byteBlock.Len);
+            }
+            finally
+            {
+                byteBlock.Dispose();
+            }
+        }
+
+        /// <inheritdoc/>
+        protected override async Task PreviewSendAsync(IList<ArraySegment<byte>> transferBytes)
+        {
+            if (transferBytes.Count == 0)
+            {
+                return;
+            }
+
+            var length = 0;
+            foreach (var item in transferBytes)
+            {
+                length += item.Count;
+            }
+
+            if (length < this.MinPackageSize)
+            {
+                throw new Exception("发送数据小于设定值，相同解析器可能无法收到有效数据，已终止发送");
+            }
+
+            if (length > this.MaxPackageSize)
+            {
+                throw new Exception("发送数据大于设定值，相同解析器可能无法收到有效数据，已终止发送");
+            }
+
+            ByteBlock byteBlock = null;
+            byte[] lenBytes = null;
+
+            switch (this.FixedHeaderType)
+            {
+                case FixedHeaderType.Byte:
+                    {
+                        var dataLen = (byte)length;
+                        byteBlock = new ByteBlock(dataLen + 1);
+                        lenBytes = new byte[] { dataLen };
+                        break;
+                    }
+                case FixedHeaderType.Ushort:
+                    {
+                        var dataLen = (ushort)length;
+                        byteBlock = new ByteBlock(dataLen + 2);
+                        lenBytes = TouchSocketBitConverter.Default.GetBytes(dataLen);
+                        break;
+                    }
+                case FixedHeaderType.Int:
+                    {
+                        byteBlock = new ByteBlock(length + 4);
+                        lenBytes = TouchSocketBitConverter.Default.GetBytes(length);
+                        break;
+                    }
+            }
+
+            try
+            {
+                byteBlock.Write(lenBytes);
+                foreach (var item in transferBytes)
+                {
+                    byteBlock.Write(item.Array, item.Offset, item.Count);
+                }
+                await this.GoSendAsync(byteBlock.Buffer, 0, byteBlock.Len);
+            }
+            finally
+            {
+                byteBlock.Dispose();
+            }
+        }
+
         /// <summary>
         /// <inheritdoc/>
         /// </summary>

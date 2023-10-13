@@ -34,10 +34,9 @@ namespace ThingsGateway.Foundation.Core
         /// 创建目标类型的对应实例。
         /// </summary>
         /// <param name="fromType"></param>
-        /// <param name="ps"></param>
         /// <param name="key"></param>
         /// <returns></returns>
-        object Resolve(Type fromType, object[] ps = null, string key = "");
+        object Resolve(Type fromType, string key = "");
 
         /// <summary>
         /// 判断某类型是否已经注册

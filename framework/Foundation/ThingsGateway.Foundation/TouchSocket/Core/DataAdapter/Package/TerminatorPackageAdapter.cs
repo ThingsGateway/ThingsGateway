@@ -240,5 +240,64 @@ namespace ThingsGateway.Foundation.Core
                 byteBlock.Dispose();
             }
         }
+
+        /// <inheritdoc/>
+        protected override Task PreviewSendAsync(IRequestInfo requestInfo)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc/>
+        protected override async Task PreviewSendAsync(byte[] buffer, int offset, int length)
+        {
+            if (length > this.MaxPackageSize)
+            {
+                throw new Exception("发送的数据长度大于适配器设定的最大值，接收方可能会抛弃。");
+            }
+            var dataLen = length - offset + this.m_terminatorCode.Length;
+            var byteBlock = new ByteBlock(dataLen);
+            byteBlock.Write(buffer, offset, length);
+            byteBlock.Write(this.m_terminatorCode);
+
+            try
+            {
+                await this.GoSendAsync(byteBlock.Buffer, 0, byteBlock.Len);
+            }
+            finally
+            {
+                byteBlock.Dispose();
+            }
+        }
+
+        /// <inheritdoc/>
+        protected override async Task PreviewSendAsync(IList<ArraySegment<byte>> transferBytes)
+        {
+            var length = 0;
+            foreach (var item in transferBytes)
+            {
+                length += item.Count;
+            }
+            if (length > this.MaxPackageSize)
+            {
+                throw new Exception("发送的数据长度大于适配器设定的最大值，接收方可能会抛弃。");
+            }
+            var dataLen = length + this.m_terminatorCode.Length;
+            var byteBlock = new ByteBlock(dataLen);
+            foreach (var item in transferBytes)
+            {
+                byteBlock.Write(item.Array, item.Offset, item.Count);
+            }
+
+            byteBlock.Write(this.m_terminatorCode);
+
+            try
+            {
+                await this.GoSendAsync(byteBlock.Buffer, 0, byteBlock.Len);
+            }
+            finally
+            {
+                byteBlock.Dispose();
+            }
+        }
     }
 }

@@ -381,35 +381,11 @@ namespace ThingsGateway.Foundation.Core
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="container"></param>
-        /// <param name="ps"></param>
         /// <param name="key"></param>
         /// <returns></returns>
-        public static T Resolve<T>(this IContainer container, object[] ps, string key = "")
+        public static T Resolve<T>(this IContainer container, string key = "")
         {
-            return (T)container.Resolve(typeof(T), ps, key);
-        }
-
-        /// <summary>
-        /// 创建类型对应的实例
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="container"></param>
-        /// <returns></returns>
-        public static T Resolve<T>(this IContainer container)
-        {
-            return Resolve<T>(container, null);
-        }
-
-        /// <summary>
-        /// 创建类型对应的实例
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="container"></param>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        public static T Resolve<T>(this IContainer container, string key)
-        {
-            return Resolve<T>(container, null, key);
+            return (T)container.Resolve(typeof(T), key);
         }
 
         /// <summary>
@@ -461,7 +437,7 @@ namespace ThingsGateway.Foundation.Core
                             {
                                 var attribute = parameters[i].GetCustomAttribute<DependencyInjectAttribute>();
                                 var type = attribute.Type ?? parameters[i].ParameterType;
-                                ps[i] = container.Resolve(type, default, attribute.Key);
+                                ps[i] = container.Resolve(type, attribute.Key);
                             }
                             else
                             {
@@ -492,42 +468,17 @@ namespace ThingsGateway.Foundation.Core
         /// <summary>
         ///  尝试创建类型对应的实例，如果类型没有注册，则会返回null或者默认值类型。
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="container"></param>
-        /// <param name="ps"></param>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        public static T TryResolve<T>(this IContainer container, object[] ps, string key = "")
-        {
-            return (T)container.TryResolve(typeof(T), ps, key);
-        }
-
-        /// <summary>
-        ///  尝试创建类型对应的实例，如果类型没有注册，则会返回null或者默认值类型。
-        /// </summary>
         /// <param name="container"></param>
         /// <param name="fromType"></param>
-        /// <param name="ps"></param>
         /// <param name="key"></param>
         /// <returns></returns>
-        public static object TryResolve(this IContainer container, Type fromType, object[] ps, string key = "")
+        public static object TryResolve(this IContainer container, Type fromType, string key = "")
         {
             if (container.IsRegistered(fromType))
             {
-                return container.Resolve(fromType, ps, key);
+                return container.Resolve(fromType, key);
             }
             return default;
-        }
-
-        /// <summary>
-        ///  尝试创建类型对应的实例，如果类型没有注册，则会返回null或者默认值类型。
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="container"></param>
-        /// <returns></returns>
-        public static T TryResolve<T>(this IContainer container)
-        {
-            return TryResolve<T>(container, null);
         }
 
         /// <summary>
@@ -537,9 +488,9 @@ namespace ThingsGateway.Foundation.Core
         /// <param name="container"></param>
         /// <param name="key"></param>
         /// <returns></returns>
-        public static T TryResolve<T>(this IContainer container, string key)
+        public static T TryResolve<T>(this IContainer container, string key = "")
         {
-            return TryResolve<T>(container, null, key);
+            return (T)TryResolve(container, typeof(T), key);
         }
 
         #endregion Resolve

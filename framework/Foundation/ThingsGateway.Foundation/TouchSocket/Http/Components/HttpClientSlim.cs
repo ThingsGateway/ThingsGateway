@@ -20,6 +20,8 @@ using System.Threading.Tasks;
 using ThingsGateway.Foundation.Core;
 using ThingsGateway.Foundation.Sockets;
 
+using HttpClient = System.Net.Http.HttpClient;
+using HttpMethod = System.Net.Http.HttpMethod;
 
 namespace ThingsGateway.Foundation.Http
 {
@@ -98,16 +100,6 @@ namespace ThingsGateway.Foundation.Http
             this.PluginsManager.Raise(nameof(ILoadedConfigPlugin.OnLoadedConfig), this, new ConfigEventArgs(config));
 
             return this;
-        }
-
-        /// <summary>
-        /// 配置
-        /// </summary>
-        /// <param name="remoteIPHost"></param>
-        /// <returns></returns>
-        public HttpClientSlim Setup(string remoteIPHost)
-        {
-            return this.Setup(new TouchSocketConfig().SetRemoteIPHost(remoteIPHost));
         }
 
         private void BuildConfig(TouchSocketConfig config)

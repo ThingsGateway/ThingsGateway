@@ -122,18 +122,39 @@ namespace ThingsGateway.Foundation.Sockets
         /// <inheritdoc cref="ITcpClient.Connect(int)"/>
         public static TClient Connect<TClient>(this TClient client, string ipHost, int timeout = 5000) where TClient : ITcpClient
         {
-            client.Setup(ipHost);
+            TouchSocketConfig config;
+            if (client.Config == null)
+            {
+                config = new TouchSocketConfig();
+                config.SetRemoteIPHost(ipHost);
+                client.Setup(config);
+            }
+            else
+            {
+                config = client.Config;
+                config.SetRemoteIPHost(ipHost);
+            }
             client.Connect(timeout);
             return client;
         }
 
         /// <inheritdoc cref="ITcpClient.ConnectAsync(int)"/>
-        public static Task<TClient> ConnectAsync<TClient>(this TClient client, string ipHost, int timeout = 5000) where TClient : ITcpClient
+        public static async Task<TClient> ConnectAsync<TClient>(this TClient client, string ipHost, int timeout = 5000) where TClient : ITcpClient
         {
-            return Task.Run(() =>
+            TouchSocketConfig config;
+            if (client.Config == null)
             {
-                return Connect(client, ipHost, timeout);
-            });
+                config = new TouchSocketConfig();
+                config.SetRemoteIPHost(ipHost);
+                client.Setup(config);
+            }
+            else
+            {
+                config = client.Config;
+                config.SetRemoteIPHost(ipHost);
+            }
+            await client.ConnectAsync(timeout);
+            return client;
         }
 
         /// <summary>

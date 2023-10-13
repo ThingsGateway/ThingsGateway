@@ -39,10 +39,14 @@ namespace ThingsGateway.Foundation.Http.WebSockets
         /// <inheritdoc/>
         /// </summary>
         /// <param name="dataFrame"></param>
-        protected override void OnHandleWSDataFrame(WSDataFrame dataFrame)
+        protected override async Task OnReceivedWSDataFrame(WSDataFrame dataFrame)
         {
-            this.Received?.Invoke(this, dataFrame);
-            base.OnHandleWSDataFrame(dataFrame);
+            if (this.Received != null)
+            {
+                await this.Received.Invoke(this, dataFrame);
+            }
+
+            await base.OnReceivedWSDataFrame(dataFrame);
         }
     }
 
@@ -211,20 +215,44 @@ namespace ThingsGateway.Foundation.Http.WebSockets
 
         #endregion 事件
 
+        ///// <inheritdoc/>
+        //protected override bool HandleReceivedData(ByteBlock byteBlock, IRequestInfo requestInfo)
+        //{
+        //    if (this.GetHandshaked())
+        //    {
+        //        var dataFrame = (WSDataFrame)requestInfo;
+        //        this.OnReceivedWSDataFrame(dataFrame);
+        //    }
+        //    else
+        //    {
+        //        if (requestInfo is HttpResponse response)
+        //        {
+        //            response.Flag = false;
+        //            base.HandleReceivedData(byteBlock, requestInfo);
+        //            SpinWait.SpinUntil(() =>
+        //            {
+        //                return (bool)response.Flag;
+        //            }, 3000);
+        //        }
+        //    }
+
+        //    return false;
+        //}
+
         /// <inheritdoc/>
-        protected override bool HandleReceivedData(ByteBlock byteBlock, IRequestInfo requestInfo)
+        protected override async Task ReceivedData(ReceivedDataEventArgs e)
         {
             if (this.GetHandshaked())
             {
-                var dataFrame = (WSDataFrame)requestInfo;
-                this.OnHandleWSDataFrame(dataFrame);
+                var dataFrame = (WSDataFrame)e.RequestInfo;
+                await this.OnReceivedWSDataFrame(dataFrame);
             }
             else
             {
-                if (requestInfo is HttpResponse response)
+                if (e.RequestInfo is HttpResponse response)
                 {
                     response.Flag = false;
-                    base.HandleReceivedData(byteBlock, requestInfo);
+                    await base.ReceivedData(e);
                     SpinWait.SpinUntil(() =>
                     {
                         return (bool)response.Flag;
@@ -232,32 +260,32 @@ namespace ThingsGateway.Foundation.Http.WebSockets
                 }
             }
 
-            return false;
+            await base.ReceivedData(e);
         }
 
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
         /// <param name="e"></param>
-        protected override void OnDisconnected(DisconnectEventArgs e)
+        protected override async Task OnDisconnected(DisconnectEventArgs e)
         {
             this.SetValue(WebSocketFeature.HandshakedProperty, false);
-            if (this.TryGetValue(WebSocketClientExtensions.WebSocketProperty, out var internalWebSocket))
+            if (this.TryGetValue(WebSocketClientExtension.WebSocketProperty, out var internalWebSocket))
             {
                 _ = internalWebSocket.TryInputReceiveAsync(null);
             }
-            base.OnDisconnected(e);
+            await base.OnDisconnected(e);
         }
 
         /// <summary>
         /// 当收到WS数据时。
         /// </summary>
         /// <param name="dataFrame"></param>
-        protected virtual void OnHandleWSDataFrame(WSDataFrame dataFrame)
+        protected virtual async Task OnReceivedWSDataFrame(WSDataFrame dataFrame)
         {
-            if (this.TryGetValue(WebSocketClientExtensions.WebSocketProperty, out var internalWebSocket))
+            if (this.TryGetValue(WebSocketClientExtension.WebSocketProperty, out var internalWebSocket))
             {
-                if (internalWebSocket.TryInputReceiveAsync(dataFrame).ConfigureAwait(false).GetAwaiter().GetResult())
+                if (await internalWebSocket.TryInputReceiveAsync(dataFrame))
                 {
                     return;
                 }
@@ -265,7 +293,7 @@ namespace ThingsGateway.Foundation.Http.WebSockets
 
             if (this.PluginsManager.Enable)
             {
-                this.PluginsManager.Raise(nameof(IWebSocketReceivedPlugin.OnWebSocketReceived), this, new WSDataFrameEventArgs(dataFrame));
+                await this.PluginsManager.RaiseAsync(nameof(IWebSocketReceivedPlugin.OnWebSocketReceived), this, new WSDataFrameEventArgs(dataFrame));
             }
         }
     }

@@ -184,7 +184,7 @@ namespace ThingsGateway.Foundation.Dmtp
                 }
                 if (!this.Online)
                 {
-                    await base.ConnectAsync(timeout);
+                    await base.ConnectAsync(timeout, token);
                 }
 
                 var request = new HttpRequest()
@@ -223,20 +223,20 @@ namespace ThingsGateway.Foundation.Dmtp
         }
 
         /// <inheritdoc/>
-        protected override bool HandleReceivedData(ByteBlock byteBlock, IRequestInfo requestInfo)
+        protected override async Task ReceivedData(ReceivedDataEventArgs e)
         {
-            if (this.Protocol == DmtpUtility.DmtpProtocol && requestInfo is DmtpMessage message)
+            if (this.Protocol == DmtpUtility.DmtpProtocol && e.RequestInfo is DmtpMessage message)
             {
                 if (!this.m_smtpActor.InputReceivedData(message))
                 {
                     if (this.PluginsManager.Enable)
                     {
-                        this.PluginsManager.Raise(nameof(IDmtpReceivedPlugin.OnDmtpReceived), this, new DmtpMessageEventArgs(message));
+                        await this.PluginsManager.RaiseAsync(nameof(IDmtpReceivedPlugin.OnDmtpReceived), this, new DmtpMessageEventArgs(message));
                     }
                 }
-                return false;
+                return;
             }
-            return base.HandleReceivedData(byteBlock, requestInfo);
+            await base.ReceivedData(e);
         }
 
         /// <inheritdoc/>
@@ -251,9 +251,9 @@ namespace ThingsGateway.Foundation.Dmtp
         }
 
         /// <inheritdoc/>
-        protected override void OnDisconnected(DisconnectEventArgs e)
+        protected override async Task OnDisconnected(DisconnectEventArgs e)
         {
-            base.OnDisconnected(e);
+            await base.OnDisconnected(e);
             this.DmtpActor.Close(false, e.Message);
         }
 

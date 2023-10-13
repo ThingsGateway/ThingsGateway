@@ -143,11 +143,32 @@ public abstract class ReadWriteDevicesTcpDataHandleAdapter<TRequest> : CustomDat
         GoSend(bytes, 0, bytes.Length);
         Logger?.Trace($"{FoundationConst.LogMessageHeader}{ToString()}- 发送:{Request.SendBytes.ToHexString(' ')}");
     }
+    /// <summary>
+    /// 发送方法,会重新建立<see cref="Request"/>
+    /// </summary>
+    protected async Task GoSendAsync(byte[] item)
+    {
+        byte[] bytes;
+        if (IsSendPackCommand)
+            bytes = PackCommand(item);
+        else
+            bytes = item;
+        Request = GetInstance();
+        Request.SendBytes = bytes;
+        await GoSendAsync(bytes, 0, bytes.Length);
+        Logger?.Trace($"{FoundationConst.LogMessageHeader}{ToString()}- 发送:{Request.SendBytes.ToHexString(' ')}");
+    }
 
     /// <inheritdoc/>
     protected override void PreviewSend(byte[] buffer, int offset, int length)
     {
         GoSend(buffer);
+    }
+
+    /// <inheritdoc/>
+    protected override Task PreviewSendAsync(byte[] buffer, int offset, int length)
+    {
+        return GoSendAsync(buffer);
     }
 
     /// <summary>

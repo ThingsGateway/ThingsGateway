@@ -10,33 +10,33 @@
 //------------------------------------------------------------------------------
 #endregion
 
-namespace ThingsGateway.Foundation.Core
+namespace ThingsGateway.Foundation.WebApi.Swagger
 {
     /// <summary>
-    /// 适配器数据
+    /// Swagger描述特性
     /// </summary>
-    public ref struct AdapterData
+    [AttributeUsage(AttributeTargets.Class)]
+    public sealed class SwaggerDescriptionAttribute : Attribute
     {
         /// <summary>
-        /// 适配器数据
+        /// Swagger描述特性
         /// </summary>
-        /// <param name="byteBlock"></param>
-        /// <param name="requestInfo"></param>
-        public AdapterData(ByteBlock byteBlock, IRequestInfo requestInfo)
+        /// <param name="groups"></param>
+        public SwaggerDescriptionAttribute(params string[] groups)
         {
-            this.ByteBlock = byteBlock;
-            this.RequestInfo = requestInfo;
+            this.Groups = groups;
         }
 
         /// <summary>
-        /// ByteBlock
+        /// Swagger描述特性
         /// </summary>
-        public ByteBlock ByteBlock { get; private set; }
+        public SwaggerDescriptionAttribute()
+        {
+        }
 
         /// <summary>
-        /// RequestInfo
+        /// 分组
         /// </summary>
-        public IRequestInfo RequestInfo { get; private set; }
-
+        public string[] Groups { get; set; }
     }
 }

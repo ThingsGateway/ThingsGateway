@@ -75,20 +75,20 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
         }
 
         /// <inheritdoc/>
-        protected override void HandleReceivedData(EndPoint remoteEndPoint, ByteBlock byteBlock, IRequestInfo requestInfo)
+        protected override async Task ReceivedData(UdpReceivedDataEventArgs e)
         {
-            var client = this.PrivateGetUdpDmtpClient(remoteEndPoint);
+            var client = this.PrivateGetUdpDmtpClient(e.EndPoint);
             if (client == null)
             {
                 return;
             }
 
-            var message = DmtpMessage.CreateFrom(byteBlock);
+            var message = DmtpMessage.CreateFrom(e.ByteBlock);
             if (!client.InputReceivedData(message))
             {
                 if (this.PluginsManager.Enable)
                 {
-                    this.PluginsManager.Raise(nameof(IDmtpReceivedPlugin.OnDmtpReceived), client, new DmtpMessageEventArgs(message));
+                    await this.PluginsManager.RaiseAsync(nameof(IDmtpReceivedPlugin.OnDmtpReceived), client, new DmtpMessageEventArgs(message));
                 }
             }
         }

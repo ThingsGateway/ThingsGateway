@@ -22,8 +22,18 @@ namespace ThingsGateway.Foundation.Sockets
         /// <inheritdoc cref="IService.Start"/>
         public static TService Start<TService>(this TService service, params IPHost[] iPHosts) where TService : ITcpService
         {
-            service.Setup(new TouchSocketConfig()
-                .SetListenIPHosts(iPHosts));
+            TouchSocketConfig config;
+            if (service.Config == null)
+            {
+                config = new TouchSocketConfig();
+                config.SetListenIPHosts(iPHosts);
+                service.Setup(config);
+            }
+            else
+            {
+                config = service.Config;
+                config.SetListenIPHosts(iPHosts);
+            }
             service.Start();
             return service;
         }
@@ -35,8 +45,18 @@ namespace ThingsGateway.Foundation.Sockets
         /// <inheritdoc cref="IService.Start"/>
         public static TService Start<TService>(this TService service, IPHost iPHost) where TService : IUdpSession
         {
-            service.Setup(new TouchSocketConfig()
-                .SetBindIPHost(iPHost));
+            TouchSocketConfig config;
+            if (service.Config == null)
+            {
+                config = new TouchSocketConfig();
+                config.SetBindIPHost(iPHost);
+                service.Setup(config);
+            }
+            else
+            {
+                config = service.Config;
+                config.SetBindIPHost(iPHost);
+            }
             service.Start();
             return service;
         }

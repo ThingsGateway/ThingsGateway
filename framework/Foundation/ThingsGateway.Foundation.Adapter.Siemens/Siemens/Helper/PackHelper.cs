@@ -10,7 +10,6 @@
 //------------------------------------------------------------------------------
 #endregion
 
-
 namespace ThingsGateway.Foundation.Adapter.Siemens;
 
 internal static class PackHelper

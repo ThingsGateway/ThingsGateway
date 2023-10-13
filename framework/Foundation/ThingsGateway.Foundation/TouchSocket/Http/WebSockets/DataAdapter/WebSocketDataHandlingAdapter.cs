@@ -28,7 +28,7 @@ namespace ThingsGateway.Foundation.Http.WebSockets
     /// <summary>
     /// WebSocket适配器
     /// </summary>
-    public class WebSocketDataHandlingAdapter : SingleStreamDataHandlingAdapter
+    public sealed class WebSocketDataHandlingAdapter : SingleStreamDataHandlingAdapter
     {
         private WSDataFrame m_dataFrameTemp;
 
@@ -41,16 +41,6 @@ namespace ThingsGateway.Foundation.Http.WebSockets
         /// 临时包
         /// </summary>
         private ByteBlock m_tempByteBlock;
-
-        /// <summary>
-        /// <inheritdoc/>
-        /// </summary>
-        public override bool CanSendRequestInfo => false;
-
-        /// <summary>
-        /// <inheritdoc/>
-        /// </summary>
-        public override bool CanSplicingSend => false;
 
         /// <summary>
         /// 解码
@@ -181,35 +171,6 @@ namespace ThingsGateway.Foundation.Http.WebSockets
                     this.m_surPlusLength -= r;
                 }
             }
-        }
-
-        /// <summary>
-        /// 当发送数据前处理数据
-        /// </summary>
-        /// <param name="buffer"></param>
-        /// <param name="offset"></param>
-        /// <param name="length"></param>
-        protected override void PreviewSend(byte[] buffer, int offset, int length)
-        {
-            this.GoSend(buffer, offset, length);
-        }
-
-        /// <summary>
-        /// <inheritdoc/>
-        /// </summary>
-        /// <param name="transferBytes"></param>
-        protected override void PreviewSend(IList<ArraySegment<byte>> transferBytes)
-        {
-            throw new System.NotImplementedException();//因为设置了不支持拼接发送，所以该方法可以不实现。
-        }
-
-        /// <summary>
-        /// <inheritdoc/>
-        /// </summary>
-        /// <param name="requestInfo"></param>
-        protected override void PreviewSend(IRequestInfo requestInfo)
-        {
-            throw new NotImplementedException();
         }
 
         /// <summary>

@@ -23,7 +23,7 @@ public abstract class ReadWriteDevicesTcpClientBase : ReadWriteDevicesBase
     public ReadWriteDevicesTcpClientBase(TcpClient tcpClient)
     {
         TcpClient = tcpClient;
-        WaitingClientEx = TcpClient.GetWaitingClientEx(new() { BreakTrigger = true });
+        WaitingClientEx = TcpClient.GetWaitingClient(new() { ThrowBreakException = true });
         TcpClient.Connecting -= Connecting;
         TcpClient.Connected -= Connected;
         TcpClient.Disconnecting -= Disconnecting;
@@ -59,7 +59,7 @@ public abstract class ReadWriteDevicesTcpClientBase : ReadWriteDevicesBase
     /// <inheritdoc/>
     public override Task ConnectAsync(CancellationToken cancellationToken)
     {
-        return TcpClient.ConnectAsync(ConnectTimeOut);
+        return TcpClient.ConnectAsync(ConnectTimeOut, cancellationToken);
     }
 
     /// <inheritdoc/>
@@ -86,8 +86,8 @@ public abstract class ReadWriteDevicesTcpClientBase : ReadWriteDevicesBase
     {
         try
         {
-            waitingOptions ??= new WaitingOptions { BreakTrigger = true, ThrowBreakException = true, AdapterFilter = AdapterFilter.NoneAll };
-            ResponsedData result = TcpClient.GetWaitingClientEx(waitingOptions).SendThenResponse(data, TimeOut, cancellationToken);
+            waitingOptions ??= new WaitingOptions { ThrowBreakException = true, };
+            ResponsedData result = TcpClient.GetWaitingClient(waitingOptions).SendThenResponse(data, TimeOut, cancellationToken);
             return OperResult.CreateSuccessResult(result.Data);
         }
         catch (Exception ex)
@@ -101,8 +101,8 @@ public abstract class ReadWriteDevicesTcpClientBase : ReadWriteDevicesBase
     {
         try
         {
-            waitingOptions ??= new WaitingOptions { ThrowBreakException = true, AdapterFilter = AdapterFilter.NoneAll };
-            ResponsedData result = await TcpClient.GetWaitingClientEx(waitingOptions).SendThenResponseAsync(data, TimeOut, cancellationToken);
+            waitingOptions ??= new WaitingOptions { ThrowBreakException = true };
+            ResponsedData result = await TcpClient.GetWaitingClient(waitingOptions).SendThenResponseAsync(data, TimeOut, cancellationToken);
             return OperResult.CreateSuccessResult(result.Data);
         }
         catch (Exception ex)
@@ -116,24 +116,34 @@ public abstract class ReadWriteDevicesTcpClientBase : ReadWriteDevicesBase
     {
         return TcpClient.RemoteIPHost.ToString();
     }
-    private void Connected(ITcpClient client, ConnectedEventArgs e)
+    /// <summary>
+    /// Connected
+    /// </summary>
+    /// <param name="client"></param>
+    /// <param name="e"></param>
+    /// <returns></returns>
+    protected virtual Task Connected(ITcpClient client, ConnectedEventArgs e)
     {
         Logger?.Debug(client.RemoteIPHost.ToString() + "连接成功");
+        SetDataAdapter();
+        return EasyTask.CompletedTask;
     }
 
-    private void Connecting(ITcpClient client, ConnectingEventArgs e)
+    private Task Connecting(ITcpClient client, ConnectingEventArgs e)
     {
         Logger?.Debug(client.RemoteIPHost.ToString() + "正在连接");
-        SetDataAdapter();
+        return EasyTask.CompletedTask;
     }
 
-    private void Disconnected(ITcpClientBase client, DisconnectEventArgs e)
+    private Task Disconnected(ITcpClientBase client, DisconnectEventArgs e)
     {
         Logger?.Debug(client.IP + ":" + client.Port + "断开连接-" + e.Message);
+        return EasyTask.CompletedTask;
     }
 
-    private void Disconnecting(ITcpClientBase client, DisconnectEventArgs e)
+    private Task Disconnecting(ITcpClientBase client, DisconnectEventArgs e)
     {
         Logger?.Debug(client.IP + ":" + client.Port + "正在主动断开连接-" + e.Message);
+        return EasyTask.CompletedTask;
     }
 }

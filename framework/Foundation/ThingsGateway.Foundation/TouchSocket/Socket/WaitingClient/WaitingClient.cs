@@ -10,353 +10,279 @@
 //------------------------------------------------------------------------------
 #endregion
 
-namespace ThingsGateway.Foundation.Sockets;
+//------------------------------------------------------------------------------
+//  此代码版权（除特别声明或在XREF结尾的命名空间的代码）归作者本人若汝棋茗所有
+//  源代码使用协议遵循本仓库的开源协议及附加协议，若本仓库没有设置，则按MIT开源协议授权
+//  CSDN博客：https://blog.csdn.net/qq_40374647
+//  哔哩哔哩视频：https://space.bilibili.com/94253567
+//  Gitee源代码仓库：https://gitee.com/RRQM_Home
+//  Github源代码仓库：https://github.com/RRQM
+//  API首页：http://rrqm_home.gitee.io/touchsocket/
+//  交流QQ群：234762506
+//  感谢您的下载和使用
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-internal class WaitingClient<TClient> : DisposableObject, IWaitingClient<TClient> where TClient : IClient, IDefaultSender, ISender
+namespace ThingsGateway.Foundation.Sockets
 {
-    private readonly Func<ResponsedData, bool> m_func;
-    private readonly EasyLock easyLock = new();
-    private readonly WaitData<ResponsedData> m_waitData = new();
-    private readonly WaitDataAsync<ResponsedData> m_waitDataAsync = new();
-
-    private volatile bool m_breaked;
-
-    public WaitingClient(TClient client, WaitingOptions waitingOptions, Func<ResponsedData, bool> func)
+    internal class WaitingClient<TClient> : DisposableObject, IWaitingClient<TClient> where TClient : IClient, ISender
     {
-        this.Client = client ?? throw new ArgumentNullException(nameof(client));
-        this.WaitingOptions = waitingOptions;
-        this.m_func = func;
-    }
+        private readonly Func<ResponsedData, bool> m_func;
+        private readonly SemaphoreSlim m_semaphoreSlim = new SemaphoreSlim(1, 1);
+        private volatile bool m_breaked;
+        private CancellationTokenSource m_cancellation;
 
-    public WaitingClient(TClient client, WaitingOptions waitingOptions)
-    {
-        this.Client = client ?? throw new ArgumentNullException(nameof(client));
-        this.WaitingOptions = waitingOptions;
-    }
-
-    public bool CanSend
-    {
-        get
+        public WaitingClient(TClient client, WaitingOptions waitingOptions, Func<ResponsedData, bool> func)
         {
-            return this.Client is ITcpClientBase tcpClient ? tcpClient.CanSend : this.Client is IUdpSession;
-        }
-    }
-
-    public TClient Client { get; private set; }
-
-    public WaitingOptions WaitingOptions { get; set; }
-
-    protected override void Dispose(bool disposing)
-    {
-        this.Client = default;
-        this.m_waitData.SafeDispose();
-        this.m_waitDataAsync.SafeDispose();
-        base.Dispose(disposing);
-    }
-
-    private void Cancel()
-    {
-        this.m_waitData.Cancel();
-        this.m_waitDataAsync.Cancel();
-    }
-
-    private void OnDisconnected(ITcpClientBase client, DisconnectEventArgs e)
-    {
-        this.m_breaked = true;
-        this.Cancel();
-    }
-    private void OnSerialSessionDisconnected(ISerialSessionBase client, DisconnectEventArgs e)
-    {
-        this.m_breaked = true;
-        this.Cancel();
-    }
-    private bool OnHandleRawBuffer(ByteBlock byteBlock)
-    {
-        var responsedData = new ResponsedData(byteBlock.ToArray(), null, true);
-        if (this.m_func == null || this.m_func.Invoke(responsedData))
-        {
-            return !this.Set(responsedData);
-        }
-        else
-        {
-            return true;
-        }
-    }
-
-    private bool OnHandleReceivedData(ByteBlock byteBlock, IRequestInfo requestInfo)
-    {
-        ResponsedData responsedData;
-        if (byteBlock != null)
-        {
-            responsedData = new ResponsedData(byteBlock.ToArray(), requestInfo, false);
-        }
-        else
-        {
-            responsedData = new ResponsedData(null, requestInfo, false);
+            this.Client = client ?? throw new ArgumentNullException(nameof(client));
+            this.WaitingOptions = waitingOptions;
+            this.m_func = func;
         }
 
-        if (this.m_func == null || this.m_func.Invoke(responsedData))
+        public WaitingClient(TClient client, WaitingOptions waitingOptions)
         {
-            return !this.Set(responsedData);
+            this.Client = client ?? throw new ArgumentNullException(nameof(client));
+            this.WaitingOptions = waitingOptions;
         }
-        else
+
+        public bool CanSend
         {
-            return true;
-        }
-    }
-
-    private void Reset()
-    {
-        this.m_waitData.Reset();
-        this.m_waitDataAsync.Reset();
-    }
-
-    #region 同步Response
-
-    public ResponsedData SendThenResponse(byte[] buffer, int offset, int length, int timeout = 1000 * 5, CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            easyLock.Wait();
-            this.m_breaked = false;
-            this.Reset();
-            if (this.WaitingOptions.BreakTrigger && this.Client is ITcpClientBase tcpClient)
+            get
             {
-                tcpClient.Disconnected += this.OnDisconnected;
+                return this.Client is ITcpClientBase tcpClient ? tcpClient.CanSend : this.Client is ISerialSessionBase serialSession ? serialSession.CanSend : this.Client is IUdpSession;
             }
-            if (this.WaitingOptions.BreakTrigger && this.Client is ISerialSessionBase serialSession)
-            {
-                serialSession.Disconnected += this.OnSerialSessionDisconnected;
-            }
-            if (this.WaitingOptions.AdapterFilter == AdapterFilter.AllAdapter || this.WaitingOptions.AdapterFilter == AdapterFilter.WaitAdapter)
-            {
-                this.Client.OnHandleReceivedData += this.OnHandleReceivedData;
-            }
-            else
-            {
-                this.Client.OnHandleRawBuffer += this.OnHandleRawBuffer;
-            }
+        }
 
-            if (this.WaitingOptions.RemoteIPHost != null && this.Client is IUdpSession session)
+        public TClient Client { get; private set; }
+
+        public WaitingOptions WaitingOptions { get; set; }
+
+        protected override void Dispose(bool disposing)
+        {
+            this.Client = default;
+            this.Cancel();
+            base.Dispose(disposing);
+        }
+
+        private void Cancel()
+        {
+            this.m_cancellation.Cancel();
+        }
+
+        #region 同步Response
+
+        public ResponsedData SendThenResponse(byte[] buffer, int offset, int length, int timeout = 1000 * 5, CancellationToken token = default)
+        {
+            try
             {
-                if (this.WaitingOptions.AdapterFilter == AdapterFilter.AllAdapter || this.WaitingOptions.AdapterFilter == AdapterFilter.SendAdapter)
+                this.m_semaphoreSlim.Wait();
+                this.m_breaked = false;
+                if (token.CanBeCanceled)
                 {
-                    session.Send(this.WaitingOptions.RemoteIPHost.EndPoint, buffer, offset, length);
+                    using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(timeout);
+                    m_cancellation = CancellationTokenSource.CreateLinkedTokenSource(cancellationTokenSource.Token, token);
                 }
                 else
                 {
-                    session.DefaultSend(this.WaitingOptions.RemoteIPHost.EndPoint, buffer, offset, length);
+                    m_cancellation = new CancellationTokenSource(timeout);
                 }
-            }
-            else
-            {
-                if (this.WaitingOptions.AdapterFilter == AdapterFilter.AllAdapter || this.WaitingOptions.AdapterFilter == AdapterFilter.SendAdapter)
+                using (m_cancellation)
                 {
-                    this.Client.Send(buffer, offset, length);
-                }
-                else
-                {
-                    this.Client.DefaultSend(buffer, offset, length);
-                }
-            }
-
-            this.m_waitData.SetCancellationToken(cancellationToken);
-            switch (this.m_waitData.Wait(timeout))
-            {
-                case WaitDataStatus.SetRunning:
-                    return this.m_waitData.WaitResult;
-
-                case WaitDataStatus.Overtime:
-                    throw new TimeoutException();
-                case WaitDataStatus.Canceled:
+                    if (this.WaitingOptions.RemoteIPHost != null && this.Client is IUdpSession session)
                     {
-                        return this.WaitingOptions.ThrowBreakException && this.m_breaked ? throw new Exception("等待已终止。可能是客户端已掉线，或者被注销。") : (ResponsedData)default;
+                        using (var receiver = session.CreateReceiver())
+                        {
+                            session.Send(this.WaitingOptions.RemoteIPHost.EndPoint, buffer, offset, length);
+
+                            while (true)
+                            {
+                                using (var receiverResult = receiver.ReadAsync(m_cancellation.Token).GetFalseAwaitResult())
+                                {
+                                    var response = new ResponsedData(receiverResult.ByteBlock?.ToArray(), receiverResult.RequestInfo);
+                                }
+                            }
+                        }
                     }
-                case WaitDataStatus.Default:
-                case WaitDataStatus.Disposed:
-                default:
-                    throw new Exception("未知错误");
-            }
-        }
-        finally
-        {
-            easyLock.Release();
-            if (this.WaitingOptions.BreakTrigger && this.Client is ITcpClientBase tcpClient)
-            {
-                tcpClient.Disconnected -= this.OnDisconnected;
-            }
-            if (this.WaitingOptions.BreakTrigger && this.Client is ISerialSessionBase serialSession)
-            {
-                serialSession.Disconnected -= this.OnSerialSessionDisconnected;
-            }
-            if (this.WaitingOptions.AdapterFilter == AdapterFilter.AllAdapter || this.WaitingOptions.AdapterFilter == AdapterFilter.WaitAdapter)
-            {
-                this.Client.OnHandleReceivedData -= this.OnHandleReceivedData;
-            }
-            else
-            {
-                this.Client.OnHandleRawBuffer -= this.OnHandleRawBuffer;
-            }
-        }
-    }
-
-
-
-    public ResponsedData SendThenResponse(byte[] buffer, int timeout = 1000 * 5, CancellationToken cancellationToken = default)
-    {
-        return this.SendThenResponse(buffer, 0, buffer.Length, timeout, cancellationToken);
-    }
-
-    public ResponsedData SendThenResponse(ByteBlock byteBlock, int timeout = 1000 * 5, CancellationToken cancellationToken = default)
-    {
-        return this.SendThenResponse(byteBlock.Buffer, 0, byteBlock.Len, timeout, cancellationToken);
-    }
-
-    #endregion 同步Response
-
-    #region Response异步
-
-    public async Task<ResponsedData> SendThenResponseAsync(byte[] buffer, int offset, int length, int timeout = 1000 * 5, CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            await easyLock.WaitAsync();
-            this.m_breaked = false;
-            this.Reset();
-            if (this.WaitingOptions.BreakTrigger && this.Client is ITcpClientBase tcpClient)
-            {
-                tcpClient.Disconnected += this.OnDisconnected;
-            }
-            if (this.WaitingOptions.BreakTrigger && this.Client is ISerialSessionBase serialSession)
-            {
-                serialSession.Disconnected += this.OnSerialSessionDisconnected;
-            }
-            if (this.WaitingOptions.AdapterFilter == AdapterFilter.AllAdapter || this.WaitingOptions.AdapterFilter == AdapterFilter.WaitAdapter)
-            {
-                this.Client.OnHandleReceivedData += this.OnHandleReceivedData;
-            }
-            else
-            {
-                this.Client.OnHandleRawBuffer += this.OnHandleRawBuffer;
-            }
-
-            if (this.WaitingOptions.RemoteIPHost != null && this.Client is IUdpSession session)
-            {
-                if (this.WaitingOptions.AdapterFilter == AdapterFilter.AllAdapter || this.WaitingOptions.AdapterFilter == AdapterFilter.SendAdapter)
-                {
-                    session.Send(this.WaitingOptions.RemoteIPHost.EndPoint, buffer, offset, length);
-                }
-                else
-                {
-                    session.DefaultSend(this.WaitingOptions.RemoteIPHost.EndPoint, buffer, offset, length);
-                }
-            }
-            else
-            {
-                if (this.WaitingOptions.AdapterFilter == AdapterFilter.AllAdapter || this.WaitingOptions.AdapterFilter == AdapterFilter.SendAdapter)
-                {
-                    this.Client.Send(buffer, offset, length);
-                }
-                else
-                {
-                    this.Client.DefaultSend(buffer, offset, length);
-                }
-            }
-
-            this.m_waitDataAsync.SetCancellationToken(cancellationToken);
-            switch (await this.m_waitDataAsync.WaitAsync(timeout))
-            {
-                case WaitDataStatus.SetRunning:
-                    return this.m_waitData.WaitResult;
-
-                case WaitDataStatus.Overtime:
-                    throw new TimeoutException();
-                case WaitDataStatus.Canceled:
+                    else
                     {
-                        return this.WaitingOptions.ThrowBreakException && this.m_breaked ? throw new Exception("等待已终止。可能是客户端已掉线，或者被注销。") : (ResponsedData)default;
+                        using (var receiver = this.Client.CreateReceiver())
+                        {
+                            this.Client.Send(buffer, offset, length);
+                            while (true)
+                            {
+                                using (var receiverResult = receiver.ReadAsync(m_cancellation.Token).GetFalseAwaitResult())
+                                {
+                                    if (receiverResult.IsClosed)
+                                    {
+                                        this.m_breaked = true;
+                                        this.Cancel();
+                                    }
+                                    var response = new ResponsedData(receiverResult.ByteBlock?.ToArray(), receiverResult.RequestInfo);
+
+                                    if (this.m_func == null)
+                                    {
+                                        return response;
+                                    }
+                                    else
+                                    {
+                                        if (this.m_func.Invoke(response))
+                                        {
+                                            return response;
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
-                case WaitDataStatus.Default:
-                case WaitDataStatus.Disposed:
-                default:
-                    throw new Exception("未知错误");
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                return this.WaitingOptions.ThrowBreakException && this.m_breaked ? throw new Exception("等待已终止。可能是客户端已掉线，或者被注销。") : throw new TimeoutException();
+            }
+            finally
+            {
+                this.m_semaphoreSlim.Release();
             }
         }
-        finally
+
+        public ResponsedData SendThenResponse(byte[] buffer, int timeout = 1000 * 5, CancellationToken token = default)
         {
-            easyLock.Release();
-            if (this.WaitingOptions.BreakTrigger && this.Client is ITcpClientBase tcpClient)
+            return this.SendThenResponse(buffer, 0, buffer.Length, timeout, token);
+        }
+
+        public ResponsedData SendThenResponse(ByteBlock byteBlock, int timeout = 1000 * 5, CancellationToken token = default)
+        {
+            return this.SendThenResponse(byteBlock.Buffer, 0, byteBlock.Len, timeout, token);
+        }
+
+        #endregion 同步Response
+
+        #region Response异步
+
+        public async Task<ResponsedData> SendThenResponseAsync(byte[] buffer, int offset, int length, int timeout = 1000 * 5, CancellationToken token = default)
+        {
+            try
             {
-                tcpClient.Disconnected -= this.OnDisconnected;
+                await this.m_semaphoreSlim.WaitAsync();
+                this.m_breaked = false;
+                if (token.CanBeCanceled)
+                {
+                    using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(timeout);
+                    m_cancellation = CancellationTokenSource.CreateLinkedTokenSource(cancellationTokenSource.Token, token);
+                }
+                else
+                {
+                    m_cancellation = new CancellationTokenSource(timeout);
+                }
+                using (m_cancellation)
+                {
+                    if (this.WaitingOptions.RemoteIPHost != null && this.Client is IUdpSession session)
+                    {
+                        using (var receiver = session.CreateReceiver())
+                        {
+                            await session.SendAsync(this.WaitingOptions.RemoteIPHost.EndPoint, buffer, offset, length);
+
+                            while (true)
+                            {
+                                using (var receiverResult = await receiver.ReadAsync(m_cancellation.Token))
+                                {
+                                    var response = new ResponsedData(receiverResult.ByteBlock?.ToArray(), receiverResult.RequestInfo);
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        using (var receiver = this.Client.CreateReceiver())
+                        {
+                            await this.Client.SendAsync(buffer, offset, length);
+                            while (true)
+                            {
+                                using (var receiverResult = await receiver.ReadAsync(m_cancellation.Token))
+                                {
+                                    if (receiverResult.IsClosed)
+                                    {
+                                        this.m_breaked = true;
+                                        this.Cancel();
+                                    }
+                                    var response = new ResponsedData(receiverResult.ByteBlock?.ToArray(), receiverResult.RequestInfo);
+
+                                    if (this.m_func == null)
+                                    {
+                                        return response;
+                                    }
+                                    else
+                                    {
+                                        if (this.m_func.Invoke(response))
+                                        {
+                                            return response;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
-            if (this.WaitingOptions.BreakTrigger && this.Client is ISerialSessionBase serialSession)
+            catch (OperationCanceledException)
             {
-                serialSession.Disconnected -= this.OnSerialSessionDisconnected;
+                return this.WaitingOptions.ThrowBreakException && this.m_breaked ? throw new Exception("等待已终止。可能是客户端已掉线，或者被注销。") : throw new TimeoutException();
             }
-            if (this.WaitingOptions.AdapterFilter == AdapterFilter.AllAdapter || this.WaitingOptions.AdapterFilter == AdapterFilter.WaitAdapter)
+            finally
             {
-                this.Client.OnHandleReceivedData -= this.OnHandleReceivedData;
-            }
-            else
-            {
-                this.Client.OnHandleRawBuffer -= this.OnHandleRawBuffer;
+                this.m_semaphoreSlim.Release();
             }
         }
-    }
 
-    public Task<ResponsedData> SendThenResponseAsync(byte[] buffer, int timeout = 1000 * 5, CancellationToken cancellationToken = default)
-    {
-        return this.SendThenResponseAsync(buffer, 0, buffer.Length, timeout, cancellationToken);
-    }
+        public Task<ResponsedData> SendThenResponseAsync(byte[] buffer, int timeout = 1000 * 5, CancellationToken token = default)
+        {
+            return this.SendThenResponseAsync(buffer, 0, buffer.Length, timeout, token);
+        }
 
-    public Task<ResponsedData> SendThenResponseAsync(ByteBlock byteBlock, int timeout = 1000 * 5, CancellationToken cancellationToken = default)
-    {
-        return this.SendThenResponseAsync(byteBlock.Buffer, 0, byteBlock.Len, timeout, cancellationToken);
-    }
+        public Task<ResponsedData> SendThenResponseAsync(ByteBlock byteBlock, int timeout = 1000 * 5, CancellationToken token = default)
+        {
+            return this.SendThenResponseAsync(byteBlock.Buffer, 0, byteBlock.Len, timeout, token);
+        }
 
-    #endregion Response异步
+        #endregion Response异步
 
-    #region 字节同步
+        #region 字节同步
 
-    public byte[] SendThenReturn(byte[] buffer, int offset, int length, int timeout = 1000 * 5, CancellationToken cancellationToken = default)
-    {
-        return this.SendThenResponse(buffer, offset, length, timeout, cancellationToken).Data;
-    }
+        public byte[] SendThenReturn(byte[] buffer, int offset, int length, int timeout = 1000 * 5, CancellationToken token = default)
+        {
+            return this.SendThenResponse(buffer, offset, length, timeout, token).Data;
+        }
 
-    public byte[] SendThenReturn(byte[] buffer, int timeout = 1000 * 5, CancellationToken cancellationToken = default)
-    {
-        return this.SendThenReturn(buffer, 0, buffer.Length, timeout, cancellationToken);
-    }
+        public byte[] SendThenReturn(byte[] buffer, int timeout = 1000 * 5, CancellationToken token = default)
+        {
+            return this.SendThenReturn(buffer, 0, buffer.Length, timeout, token);
+        }
 
-    public byte[] SendThenReturn(ByteBlock byteBlock, int timeout = 1000 * 5, CancellationToken cancellationToken = default)
-    {
-        return this.SendThenReturn(byteBlock.Buffer, 0, byteBlock.Len, timeout, cancellationToken);
-    }
+        public byte[] SendThenReturn(ByteBlock byteBlock, int timeout = 1000 * 5, CancellationToken token = default)
+        {
+            return this.SendThenReturn(byteBlock.Buffer, 0, byteBlock.Len, timeout, token);
+        }
 
-    #endregion 字节同步
+        #endregion 字节同步
 
-    #region 字节异步
+        #region 字节异步
 
-    public async Task<byte[]> SendThenReturnAsync(byte[] buffer, int offset, int length, int timeout = 1000 * 5, CancellationToken cancellationToken = default)
-    {
-        return (await this.SendThenResponseAsync(buffer, offset, length, timeout, cancellationToken)).Data;
-    }
+        public async Task<byte[]> SendThenReturnAsync(byte[] buffer, int offset, int length, int timeout = 1000 * 5, CancellationToken token = default)
+        {
+            return (await this.SendThenResponseAsync(buffer, offset, length, timeout, token)).Data;
+        }
 
-    public async Task<byte[]> SendThenReturnAsync(byte[] buffer, int timeout = 1000 * 5, CancellationToken cancellationToken = default)
-    {
-        return (await this.SendThenResponseAsync(buffer, 0, buffer.Length, timeout, cancellationToken)).Data;
-    }
+        public async Task<byte[]> SendThenReturnAsync(byte[] buffer, int timeout = 1000 * 5, CancellationToken token = default)
+        {
+            return (await this.SendThenResponseAsync(buffer, 0, buffer.Length, timeout, token)).Data;
+        }
 
-    public async Task<byte[]> SendThenReturnAsync(ByteBlock byteBlock, int timeout = 1000 * 5, CancellationToken cancellationToken = default)
-    {
-        return (await this.SendThenResponseAsync(byteBlock.Buffer, 0, byteBlock.Len, timeout, cancellationToken)).Data;
-    }
+        public async Task<byte[]> SendThenReturnAsync(ByteBlock byteBlock, int timeout = 1000 * 5, CancellationToken token = default)
+        {
+            return (await this.SendThenResponseAsync(byteBlock.Buffer, 0, byteBlock.Len, timeout, token)).Data;
+        }
 
-    #endregion 字节异步
-
-    private bool Set(ResponsedData responsedData)
-    {
-        this.m_waitData.Set(responsedData);
-        this.m_waitDataAsync.Set(responsedData);
-        return true;
+        #endregion 字节异步
     }
 }

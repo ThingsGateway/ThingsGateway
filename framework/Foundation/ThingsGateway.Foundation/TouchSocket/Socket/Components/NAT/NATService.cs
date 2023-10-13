@@ -44,23 +44,22 @@ namespace ThingsGateway.Foundation.Sockets
         /// 在NAT服务器收到数据时。
         /// </summary>
         /// <param name="socketClient"></param>
-        /// <param name="byteBlock"></param>
-        /// <param name="requestInfo"></param>
+        /// <param name="e"></param>
         /// <returns>需要转发的数据。</returns>
-        protected virtual byte[] OnNATReceived(NATSocketClient socketClient, ByteBlock byteBlock, IRequestInfo requestInfo)
+        protected virtual byte[] OnNATReceived(NATSocketClient socketClient, ReceivedDataEventArgs e)
         {
-            return byteBlock?.ToArray();
+            return e.ByteBlock?.ToArray();
         }
 
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
         /// <param name="socketClient"></param>
-        /// <param name="byteBlock"></param>
-        /// <param name="requestInfo"></param>
-        protected override sealed void OnReceived(NATSocketClient socketClient, ByteBlock byteBlock, IRequestInfo requestInfo)
+        /// <param name="e"></param>
+        protected override sealed async Task OnReceived(NATSocketClient socketClient, ReceivedDataEventArgs e)
         {
-            var data = this.OnNATReceived(socketClient, byteBlock, requestInfo);
+            await EasyTask.CompletedTask;
+            var data = this.OnNATReceived(socketClient, e);
             if (data != null)
             {
                 socketClient.SendToTargetClient(data, 0, data.Length);
@@ -82,12 +81,11 @@ namespace ThingsGateway.Foundation.Sockets
         /// </summary>
         /// <param name="socketClient"></param>
         /// <param name="tcpClient"></param>
-        /// <param name="byteBlock"></param>
-        /// <param name="requestInfo"></param>
+        /// <param name="e"></param>
         /// <returns></returns>
-        protected virtual byte[] OnTargetClientReceived(NATSocketClient socketClient, ITcpClient tcpClient, ByteBlock byteBlock, IRequestInfo requestInfo)
+        protected virtual byte[] OnTargetClientReceived(NATSocketClient socketClient, ITcpClient tcpClient, ReceivedDataEventArgs e)
         {
-            return byteBlock?.ToArray();
+            return e.ByteBlock?.ToArray();
         }
     }
 }
