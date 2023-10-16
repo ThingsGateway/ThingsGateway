@@ -201,7 +201,7 @@ public class ModbusTcpServer : UpLoadBase
             var addressStr = GetPropertyValue(tag.Value, nameof(ModbusTcpServerVariableProperty.ServiceAddress));
             if (Enum.TryParse<DataTypeEnum>(type, out DataTypeEnum result))
             {
-                var result1 = await RpcCore.InvokeDeviceMethodAsync($"{nameof(ModbusTcpServer)}-{CurrentDevice.Name}-{client.IP + ":" + client.Port}",
+                var result1 = await RpcCore.InvokeDeviceMethodAsync($"{nameof(ModbusTcpServer)}-{CurrentDevice.Name}-{$"{client.IP}:{client.Port}"}",
                new Dictionary<string, string>
 {
     {
@@ -216,7 +216,7 @@ public class ModbusTcpServer : UpLoadBase
             }
             else
             {
-                var result1 = await RpcCore.InvokeDeviceMethodAsync($"{nameof(ModbusTcpServer)}-{CurrentDevice.Name}-{client.IP + ":" + client.Port}",
+                var result1 = await RpcCore.InvokeDeviceMethodAsync($"{nameof(ModbusTcpServer)}-{CurrentDevice.Name}-{$"{client.IP}:{client.Port}"}",
                new Dictionary<string, string>
 {
     {
@@ -230,7 +230,7 @@ public class ModbusTcpServer : UpLoadBase
         }
         catch (Exception ex)
         {
-            return new OperResult(ex.Message);
+            return new OperResult(ex);
         }
 
     }

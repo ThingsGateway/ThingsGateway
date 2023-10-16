@@ -147,15 +147,15 @@ public class ModbusAddress : DeviceAddressBase
         StringBuilder stringGeter = new();
         if (Station > 0)
         {
-            stringGeter.Append("s=" + Station.ToString() + ";");
+            stringGeter.Append($"s={Station.ToString()};");
         }
         if (WriteFunction > 0)
         {
-            stringGeter.Append("w=" + WriteFunction.ToString() + ";");
+            stringGeter.Append($"w={WriteFunction.ToString()};");
         }
         if (!string.IsNullOrEmpty(SocketId))
         {
-            stringGeter.Append("id=" + SocketId + ";");
+            stringGeter.Append($"id={SocketId};");
         }
         stringGeter.Append(GetFunctionString(ReadFunction) + (AddressStart + 1).ToString());
         return stringGeter.ToString();

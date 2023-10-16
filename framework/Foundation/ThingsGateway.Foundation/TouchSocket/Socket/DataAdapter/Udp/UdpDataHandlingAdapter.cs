@@ -55,7 +55,7 @@ namespace ThingsGateway.Foundation.Sockets
             }
             catch (Exception ex)
             {
-                this.OnError(ex.Message);
+                this.OnError(ex.ToString());
             }
         }
 

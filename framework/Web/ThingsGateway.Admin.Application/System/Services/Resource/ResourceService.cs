@@ -251,7 +251,7 @@ public class ResourceService : DbRepository<SysResource>, IResourceService
         if (parentList.Count > 0)
         {
             var titles = parentList.Select(it => it.Title).ToList();//提取出父级的name
-            var title = string.Join("- ", titles) + $"-{menu.Title}";//根据-分割,转换成字符串并在最后加上菜单的title
+            var title = $"{string.Join("- ", titles)}-{menu.Title}";//根据-分割,转换成字符串并在最后加上菜单的title
             return title;
         }
         else

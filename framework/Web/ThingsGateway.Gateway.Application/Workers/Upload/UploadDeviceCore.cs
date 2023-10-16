@@ -122,7 +122,7 @@ public class UploadDeviceCore
             }
             catch (Exception ex)
             {
-                throw Oops.Oh($"创建插件失败：{ex.Message}");
+                throw Oops.Oh($"创建插件失败：{ex}");
             }
 
         }

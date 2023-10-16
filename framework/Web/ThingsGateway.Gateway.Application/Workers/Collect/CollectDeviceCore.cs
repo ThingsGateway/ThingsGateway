@@ -155,7 +155,7 @@ public class CollectDeviceCore
             }
             catch (Exception ex)
             {
-                throw Oops.Oh($"创建插件失败：{ex.Message}");
+                throw Oops.Oh($"创建插件失败：{ex}");
             }
 
         }
@@ -714,7 +714,7 @@ public class CollectDeviceCore
                 catch (Exception ex)
                 {
                     result.ErrorCode = 999;
-                    result.Message = $"{deviceVariableMethodSource.DeviceVariable.Name}执行{deviceVariableMethodSource.DeviceVariable.OtherMethod} 方法失败:{ex.Message}";
+                    result.Message = $"{deviceVariableMethodSource.DeviceVariable.Name}执行{deviceVariableMethodSource.DeviceVariable.OtherMethod} 方法失败:{ex}";
                     return result;
                 }
 
@@ -764,7 +764,7 @@ public class CollectDeviceCore
                     }
                     catch (Exception ex)
                     {
-                        results.Add(deviceVariable.Name, new OperResult(deviceVariable.Name + " 转换写入表达式失败：" + ex.Message));
+                        results.Add(deviceVariable.Name, new OperResult($"{deviceVariable.Name} 转换写入表达式失败：{ex}"));
                     }
                 }
 

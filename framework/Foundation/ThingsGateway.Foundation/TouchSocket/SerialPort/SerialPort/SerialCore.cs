@@ -42,7 +42,7 @@ public class SerialCore : IDisposable, ISender
     private ValueCounter m_receiveCounter;
     private int m_sendBufferSize = BufferSize;
     private ValueCounter m_sendCounter;
-    private readonly SemaphoreSlim m_semaphore = new SemaphoreSlim(1, 1);
+    private readonly EasyLock m_semaphore = new EasyLock();
     #endregion 字段
 
     /// <summary>
@@ -171,7 +171,7 @@ public class SerialCore : IDisposable, ISender
         }
         catch (Exception ex)
         {
-            this.PrivateBreakOut(false, ex.Message);
+            this.PrivateBreakOut(false, ex.ToString());
         }
     }
 
@@ -389,7 +389,7 @@ public class SerialCore : IDisposable, ISender
             }
             catch (Exception ex)
             {
-                this.PrivateBreakOut(false, ex.Message);
+                this.PrivateBreakOut(false, ex.ToString());
             }
         }
     }

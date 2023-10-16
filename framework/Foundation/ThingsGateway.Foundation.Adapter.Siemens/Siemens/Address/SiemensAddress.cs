@@ -250,44 +250,44 @@ public class SiemensAddress : DeviceAddressBase
     {
         if (DataCode == (byte)S7Area.TM)
         {
-            return "T" + Address.ToString() + (IsWString ? ";W=true;" : ";W=false;");
+            return $"T{Address.ToString()}{(IsWString ? ";W=true;" : ";W=false;")}";
         }
         if (DataCode == (byte)S7Area.CT)
         {
-            return "C" + Address.ToString() + (IsWString ? ";W=true;" : ";W=false;");
+            return $"C{Address.ToString()}{(IsWString ? ";W=true;" : ";W=false;")}";
         }
 
         if (DataCode == (byte)S7Area.AI)
         {
-            return "AI" + GetStringAddress(AddressStart) + (IsWString ? ";W=true;" : ";W=false;");
+            return $"AI{GetStringAddress(AddressStart)}{(IsWString ? ";W=true;" : ";W=false;")}";
         }
 
         if (DataCode == (byte)S7Area.AQ)
         {
-            return "AQ" + GetStringAddress(AddressStart) + (IsWString ? ";W=true;" : ";W=false;");
+            return $"AQ{GetStringAddress(AddressStart)}{(IsWString ? ";W=true;" : ";W=false;")}";
         }
 
         if (DataCode == (byte)S7Area.PE)
         {
-            return "I" + GetStringAddress(AddressStart) + (IsWString ? ";W=true;" : ";W=false;");
+            return $"I{GetStringAddress(AddressStart)}{(IsWString ? ";W=true;" : ";W=false;")}";
         }
 
         if (DataCode == (byte)S7Area.PA)
         {
-            return "Q" + GetStringAddress(AddressStart) + (IsWString ? ";W=true;" : ";W=false;");
+            return $"Q{GetStringAddress(AddressStart)}{(IsWString ? ";W=true;" : ";W=false;")}";
         }
 
         if (DataCode == (byte)S7Area.MK)
         {
-            return "M" + GetStringAddress(AddressStart) + (IsWString ? ";W=true;" : ";W=false;");
+            return $"M{GetStringAddress(AddressStart)}{(IsWString ? ";W=true;" : ";W=false;")}";
         }
 
-        return DataCode == (byte)S7Area.DB ? "DB" + DbBlock.ToString() + "." + GetStringAddress(AddressStart) + (IsWString ? ";W=true;" : ";W=false;") : Address.ToString() + (IsWString ? ";W=true;" : ";W=false;");
+        return DataCode == (byte)S7Area.DB ? $"DB{DbBlock.ToString()}.{GetStringAddress(AddressStart)}{(IsWString ? ";W=true;" : ";W=false;")}" : Address.ToString() + (IsWString ? ";W=true;" : ";W=false;");
     }
 
     private static string GetStringAddress(int addressStart)
     {
-        return addressStart % 8 == 0 ? (addressStart / 8).ToString() : string.Format("{0}.{1}", addressStart / 8, addressStart % 8);
+        return addressStart % 8 == 0 ? (addressStart / 8).ToString() : $"{addressStart / 8}.{addressStart % 8}";
     }
 
 }

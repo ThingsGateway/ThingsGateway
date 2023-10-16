@@ -173,7 +173,7 @@ namespace ThingsGateway.Foundation.Sockets
             }
             catch (Exception ex)
             {
-                return new Result(ResultCode.Exception, ex.Message);
+                return new Result(ResultCode.Exception, ex.ToString());
             }
         }
 
@@ -193,7 +193,7 @@ namespace ThingsGateway.Foundation.Sockets
             }
             catch (Exception ex)
             {
-                return new Result(ResultCode.Exception, ex.Message);
+                return new Result(ResultCode.Exception, ex.ToString());
             }
         }
 

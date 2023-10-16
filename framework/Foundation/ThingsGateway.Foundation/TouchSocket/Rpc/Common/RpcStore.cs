@@ -130,7 +130,7 @@ namespace ThingsGateway.Foundation.Rpc
             catch (TargetInvocationException ex)
             {
                 invokeResult.Status = InvokeStatus.InvocationException;
-                invokeResult.Message = ex.InnerException != null ? "函数内部发生异常，信息：" + ex.InnerException.Message : "函数内部发生异常，信息：未知";
+                invokeResult.Message = ex.InnerException != null ? $"函数内部发生异常，信息：{ex.InnerException.Message}" : "函数内部发生异常，信息：未知";
                 if (callContext.MethodInstance.Filters != null)
                 {
                     for (var i = 0; i < callContext.MethodInstance.Filters.Length; i++)
@@ -223,7 +223,7 @@ namespace ThingsGateway.Foundation.Rpc
             catch (TargetInvocationException ex)
             {
                 invokeResult.Status = InvokeStatus.InvocationException;
-                invokeResult.Message = ex.InnerException != null ? "函数内部发生异常，信息：" + ex.InnerException.Message : "函数内部发生异常，信息：未知";
+                invokeResult.Message = ex.InnerException != null ? $"函数内部发生异常，信息：{ex.InnerException.Message}" : "函数内部发生异常，信息：未知";
                 if (callContext.MethodInstance.Filters != null)
                 {
                     for (var i = 0; i < callContext.MethodInstance.Filters.Length; i++)

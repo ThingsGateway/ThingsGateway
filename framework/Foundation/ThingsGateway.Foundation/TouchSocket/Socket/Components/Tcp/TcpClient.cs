@@ -71,7 +71,7 @@ namespace ThingsGateway.Foundation.Sockets
 
         private DelaySender m_delaySender;
         private volatile bool m_online;
-        private readonly SemaphoreSlim m_semaphore = new SemaphoreSlim(1, 1);
+        private readonly EasyLock m_semaphore = new();
         private readonly InternalTcpCore m_tcpCore;
         #endregion 变量
 
@@ -334,10 +334,7 @@ namespace ThingsGateway.Foundation.Sockets
                 var iPHost = this.Config.GetValue(TouchSocketConfigExtension.RemoteIPHostProperty) ?? throw new ArgumentNullException(nameof(IPHost), "iPHost不能为空。");
                 this.MainSocket.SafeDispose();
                 var socket = this.CreateSocket(iPHost);
-                this.PrivateOnConnecting(new ConnectingEventArgs(socket))
-                    .ConfigureAwait(false)
-                    .GetAwaiter()
-                    .GetResult();
+                this.PrivateOnConnecting(new ConnectingEventArgs(socket)).GetFalseAwaitResult();
                 if (timeout == 5000)
                 {
                     socket.Connect(iPHost.Host, iPHost.Port);

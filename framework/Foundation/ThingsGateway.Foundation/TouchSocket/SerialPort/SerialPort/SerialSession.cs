@@ -57,7 +57,7 @@ public class SerialSessionBase : BaseSerial, ISerialSession
 
     private DelaySender m_delaySender;
     private bool m_online => MainSerialPort?.IsOpen == true;
-    private readonly SemaphoreSlim m_semaphore = new SemaphoreSlim(1, 1);
+    private readonly EasyLock m_semaphore = new();
     private readonly InternalSerialCore m_serialCore;
     #endregion 变量
 

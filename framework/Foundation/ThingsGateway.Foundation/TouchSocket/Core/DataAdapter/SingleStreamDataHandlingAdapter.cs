@@ -87,7 +87,7 @@ namespace ThingsGateway.Foundation.Core
             }
             catch (Exception ex)
             {
-                this.OnError(ex.Message);
+                this.OnError(ex.ToString());
             }
         }
 

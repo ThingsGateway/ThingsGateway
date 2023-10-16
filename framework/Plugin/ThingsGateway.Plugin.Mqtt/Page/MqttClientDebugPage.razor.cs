@@ -88,12 +88,12 @@ f =>
 .Build();
 
             await mqttClientPage.MqttClient.SubscribeAsync(mqttSubscribeOptions, CancellationToken.None);
-            driverDebugUIPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Information, DateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(driverDebugUIPage.InitTimezone.TimezoneOffset) + " - " + $"订阅{driverDebugUIPage.Address}成功"));
+            driverDebugUIPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Information, $"{DateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(driverDebugUIPage.InitTimezone.TimezoneOffset)} - 订阅{driverDebugUIPage.Address}成功"));
 
         }
         catch (Exception ex)
         {
-            driverDebugUIPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Error, DateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(driverDebugUIPage.InitTimezone.TimezoneOffset) + " - " + ex.Message));
+            driverDebugUIPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Error, $"{DateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(driverDebugUIPage.InitTimezone.TimezoneOffset)} - {ex}"));
         }
 
     }
@@ -106,12 +106,12 @@ f =>
 .Build();
 
             await mqttClientPage.MqttClient.UnsubscribeAsync(mqttSubscribeOptions, CancellationToken.None);
-            driverDebugUIPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Information, DateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(driverDebugUIPage.InitTimezone.TimezoneOffset) + " - " + $"取消订阅{driverDebugUIPage.Address}成功"));
+            driverDebugUIPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Information, $"{DateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(driverDebugUIPage.InitTimezone.TimezoneOffset)} - 取消订阅{driverDebugUIPage.Address}成功"));
         }
         catch (Exception ex)
         {
 
-            driverDebugUIPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Error, DateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(driverDebugUIPage.InitTimezone.TimezoneOffset) + " - " + ex.Message));
+            driverDebugUIPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Error, $"{DateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(driverDebugUIPage.InitTimezone.TimezoneOffset)} - {ex}"));
         }
 
     }
@@ -125,11 +125,11 @@ f =>
 .WithTopic($"{PublishTopic}")
 .WithPayload(PublishValue).Build();
             await mqttClientPage.MqttClient.PublishAsync(devMessage, CancellationToken.None);
-            driverDebugUIPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Information, DateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(driverDebugUIPage.InitTimezone.TimezoneOffset) + " - " + $"发布{PublishTopic}成功"));
+            driverDebugUIPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Information, $"{DateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(driverDebugUIPage.InitTimezone.TimezoneOffset)} - 发布{PublishTopic}成功"));
         }
         catch (Exception ex)
         {
-            driverDebugUIPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Error, DateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(driverDebugUIPage.InitTimezone.TimezoneOffset) + " - " + ex.Message));
+            driverDebugUIPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Error, $"{DateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(driverDebugUIPage.InitTimezone.TimezoneOffset)} - {ex}"));
         }
 
     }
@@ -141,11 +141,11 @@ f =>
             using MqttRpcClient mqttRpcClient = new(mqttClientPage.MqttClient);
             var data = await mqttRpcClient.ExecuteAsync(MqttRpcTopicPair, driverDebugUIPage.WriteValue, MQTTnet.Protocol.MqttQualityOfServiceLevel.AtMostOnce, TimeSpan.FromSeconds(10));
             var str = Encoding.UTF8.GetString(data);
-            driverDebugUIPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Information, DateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(driverDebugUIPage.InitTimezone.TimezoneOffset) + " - " + str));
+            driverDebugUIPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Information, $"{DateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(driverDebugUIPage.InitTimezone.TimezoneOffset)} - {str}"));
         }
         catch (Exception ex)
         {
-            driverDebugUIPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Error, DateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(driverDebugUIPage.InitTimezone.TimezoneOffset) + " - " + ex.Message));
+            driverDebugUIPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Error, $"{DateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(driverDebugUIPage.InitTimezone.TimezoneOffset)} - {ex}"));
         }
 
     }

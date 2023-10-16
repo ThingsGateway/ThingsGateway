@@ -444,7 +444,7 @@ public class DLT645_2007 : ReadWriteDevicesSerialSessionBase
 
             if (Station.IsNullOrEmpty()) Station = string.Empty;
             if (Station.Length < 12) Station = Station.PadLeft(12, '0');
-            string str = $"04000C{(level + 1):D2}";
+            string str = $"04000C{level + 1:D2}";
 
             var commandResult = DLT645Helper.GetDLT645_2007Command((byte)ControlCode.WritePassword,
                 str.ByHexStringToBytes().Reverse().ToArray()

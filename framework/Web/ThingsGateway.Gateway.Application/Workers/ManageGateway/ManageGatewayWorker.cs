@@ -726,7 +726,7 @@ public class ManageGatewayWorker : BackgroundService
             arg.ReasonCode = MqttConnectReasonCode.BadUserNameOrPassword;
             return CompletedTask.Instance;
         }
-        _manageLogger?.LogInformation(ToString() + "-" + arg.ClientId + "-客户端已连接成功");
+        _manageLogger?.LogInformation($"{ToString()}-{arg.ClientId}-客户端已连接成功");
         return CompletedTask.Instance;
     }
 
@@ -780,7 +780,7 @@ public class ManageGatewayWorker : BackgroundService
         {
             ManageMqttRpcResult mqttRpcResult = new() { RpcId = manageMqttRpcFrom.RpcId, GatewayId = manageMqttRpcFrom.GatewayId };
             _rpcCore ??= App.GetService<RpcSingletonService>();
-            var result = await _rpcCore.InvokeDeviceMethodAsync("子网关RPC" + "-" + args.ClientId,
+            var result = await _rpcCore.InvokeDeviceMethodAsync($"子网关RPC-{args.ClientId}",
     manageMqttRpcFrom.WriteInfos.Where(
     a => !mqttRpcResult.Message.Any(b => b.Key == a.Key)).ToDictionary(a => a.Key, a => a.Value));
             mqttRpcResult.Message.AddRange(result);

@@ -80,7 +80,7 @@ public partial class OPCUAClientDebugPage
             await _plc.AddSubscriptionAsync(Guid.NewGuid().ToString(), new[] { driverDebugUIPage.Address });
         else
         {
-            driverDebugUIPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Debug, DateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset) + " - " + "未连接"));
+            driverDebugUIPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Debug, $"{DateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset)} - 未连接"));
         }
     }
 
@@ -186,7 +186,7 @@ public partial class OPCUAClientDebugPage
             {
 
                 driverDebugUIPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Warning,
-                        $"{DateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset)}  - {ex.Message}"));
+                        $"{DateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset)}  - {ex}"));
             }
         }
         else
@@ -234,7 +234,7 @@ public partial class OPCUAClientDebugPage
         catch (Exception ex)
         {
             driverDebugUIPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Error,
-                        $"{DateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset)}  - {ex.Message}"));
+                        $"{DateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset)}  - {ex}"));
         }
     }
 }

@@ -23,7 +23,7 @@ public abstract class ReadWriteDevicesTcpClientBase : ReadWriteDevicesBase
     public ReadWriteDevicesTcpClientBase(TcpClient tcpClient)
     {
         TcpClient = tcpClient;
-        WaitingClientEx = TcpClient.GetWaitingClient(new() { ThrowBreakException = true });
+        WaitingClientEx = TcpClient.CreateWaitingClient(new() { ThrowBreakException = true });
         TcpClient.Connecting -= Connecting;
         TcpClient.Connected -= Connected;
         TcpClient.Disconnecting -= Disconnecting;
@@ -87,7 +87,7 @@ public abstract class ReadWriteDevicesTcpClientBase : ReadWriteDevicesBase
         try
         {
             waitingOptions ??= new WaitingOptions { ThrowBreakException = true, };
-            ResponsedData result = TcpClient.GetWaitingClient(waitingOptions).SendThenResponse(data, TimeOut, cancellationToken);
+            ResponsedData result = TcpClient.CreateWaitingClient(waitingOptions).SendThenResponse(data, TimeOut, cancellationToken);
             return OperResult.CreateSuccessResult(result.Data);
         }
         catch (Exception ex)
@@ -102,7 +102,7 @@ public abstract class ReadWriteDevicesTcpClientBase : ReadWriteDevicesBase
         try
         {
             waitingOptions ??= new WaitingOptions { ThrowBreakException = true };
-            ResponsedData result = await TcpClient.GetWaitingClient(waitingOptions).SendThenResponseAsync(data, TimeOut, cancellationToken);
+            ResponsedData result = await TcpClient.CreateWaitingClient(waitingOptions).SendThenResponseAsync(data, TimeOut, cancellationToken);
             return OperResult.CreateSuccessResult(result.Data);
         }
         catch (Exception ex)
@@ -137,13 +137,13 @@ public abstract class ReadWriteDevicesTcpClientBase : ReadWriteDevicesBase
 
     private Task Disconnected(ITcpClientBase client, DisconnectEventArgs e)
     {
-        Logger?.Debug(client.IP + ":" + client.Port + "断开连接-" + e.Message);
+        Logger?.Debug($"{client.IP}:{client.Port}断开连接-{e.Message}");
         return EasyTask.CompletedTask;
     }
 
     private Task Disconnecting(ITcpClientBase client, DisconnectEventArgs e)
     {
-        Logger?.Debug(client.IP + ":" + client.Port + "正在主动断开连接-" + e.Message);
+        Logger?.Debug($"{client.IP}:{client.Port}正在主动断开连接-{e.Message}");
         return EasyTask.CompletedTask;
     }
 }

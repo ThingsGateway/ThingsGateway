@@ -134,7 +134,7 @@ public class DLT645_2007DataHandleAdapter : ReadWriteDevicesTcpDataHandleAdapter
 
             if ((response[headCodeIndex + 8] != send[sendHeadCodeIndex + 8] + 0x80))//控制码不符合时，返回错误
             {
-                request.Message = "返回控制码：" + $"0x{response[headCodeIndex + 8]:X2}，请求控制码：" + $"0x{send[sendHeadCodeIndex + 8]:X2}，不符合规则";
+                request.Message = $"返回控制码：0x{response[headCodeIndex + 8]:X2}，请求控制码：0x{send[sendHeadCodeIndex + 8]:X2}，不符合规则";
                 request.ErrorCode = 999;
                 return FilterResult.Success;
             }
@@ -146,7 +146,7 @@ public class DLT645_2007DataHandleAdapter : ReadWriteDevicesTcpDataHandleAdapter
             {
                 byte byte1 = (byte)(response[headCodeIndex + 10] - 0x33);
                 var error = DLT645Helper.Get2007ErrorMessage(byte1);
-                request.Message = "异常控制码：" + $"0x{response[headCodeIndex + 8]:X2}，错误信息：{error}";
+                request.Message = $"异常控制码：0x{response[headCodeIndex + 8]:X2}，错误信息：{error}";
                 request.ErrorCode = 999;
                 return FilterResult.Success;
             }

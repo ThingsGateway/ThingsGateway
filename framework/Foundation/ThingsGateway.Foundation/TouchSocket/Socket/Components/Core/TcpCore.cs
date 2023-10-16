@@ -35,14 +35,13 @@ public class TcpCore : SocketAsyncEventArgs, IDisposable, ISender
     public readonly object SyncRoot = new object();
 
     private long m_bufferRate;
-    private bool m_disposedValue;
     private SpinLock m_lock;
     private volatile bool m_online;
     private int m_receiveBufferSize = BufferSize;
     private ValueCounter m_receiveCounter;
     private int m_sendBufferSize = BufferSize;
     private ValueCounter m_sendCounter;
-    private readonly SemaphoreSlim m_semaphore = new SemaphoreSlim(1, 1);
+    private readonly EasyLock m_semaphore = new();
     #endregion 字段
 
     /// <summary>
@@ -62,14 +61,6 @@ public class TcpCore : SocketAsyncEventArgs, IDisposable, ISender
             Period = TimeSpan.FromSeconds(1),
             OnPeriod = this.OnSendPeriod
         };
-    }
-
-    /// <summary>
-    /// 析构函数
-    /// </summary>
-    ~TcpCore()
-    {
-        this.Dispose(disposing: false);
     }
 
     /// <inheritdoc/>
@@ -104,7 +95,6 @@ public class TcpCore : SocketAsyncEventArgs, IDisposable, ISender
         set
         {
             this.m_receiveBufferSize = value;
-            this.Socket.ReceiveBufferSize = value;
         }
     }
 
@@ -122,7 +112,6 @@ public class TcpCore : SocketAsyncEventArgs, IDisposable, ISender
         set
         {
             this.m_sendBufferSize = value;
-            this.Socket.SendBufferSize = value;
         }
     }
 
@@ -257,7 +246,7 @@ public class TcpCore : SocketAsyncEventArgs, IDisposable, ISender
             catch (Exception ex)
             {
                 byteBlock.Dispose();
-                this.PrivateBreakOut(false, ex.Message);
+                this.PrivateBreakOut(false, ex.ToString());
             }
         }
     }
@@ -271,15 +260,6 @@ public class TcpCore : SocketAsyncEventArgs, IDisposable, ISender
         this.PrivateBreakOut(true, msg);
     }
 
-    /// <summary>
-    /// 释放对象
-    /// </summary>
-    public new void Dispose()
-    {
-        // 不要更改此代码。请将清理代码放入“Dispose(bool disposing)”方法中
-        this.Dispose(disposing: true);
-        GC.SuppressFinalize(this);
-    }
 
     /// <summary>
     /// 重置环境，并设置新的<see cref="Socket"/>。
@@ -444,23 +424,6 @@ public class TcpCore : SocketAsyncEventArgs, IDisposable, ISender
     }
 
     /// <summary>
-    /// 释放对象
-    /// </summary>
-    /// <param name="disposing"></param>
-    protected virtual void Dispose(bool disposing)
-    {
-        if (!this.m_disposedValue)
-        {
-            if (disposing)
-            {
-            }
-
-            this.m_disposedValue = true;
-        }
-        base.Dispose();
-    }
-
-    /// <summary>
     /// 当发生异常的时候
     /// </summary>
     /// <param name="ex"></param>
@@ -481,7 +444,7 @@ public class TcpCore : SocketAsyncEventArgs, IDisposable, ISender
             }
             catch (Exception ex)
             {
-                this.PrivateBreakOut(false, ex.Message);
+                this.PrivateBreakOut(false, ex.ToString());
             }
         }
     }
@@ -560,7 +523,7 @@ public class TcpCore : SocketAsyncEventArgs, IDisposable, ISender
             }
             catch (Exception ex)
             {
-                this.PrivateBreakOut(false, ex.Message);
+                this.PrivateBreakOut(false, ex.ToString());
             }
         }
         else

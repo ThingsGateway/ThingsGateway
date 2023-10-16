@@ -32,7 +32,7 @@ public static class JTokenUtil
         }
         catch (Exception)
         {
-            tagValue = JToken.Parse("\"" + item + "\"");
+            tagValue = JToken.Parse($"\"{item}\"");
         }
 
         return tagValue;

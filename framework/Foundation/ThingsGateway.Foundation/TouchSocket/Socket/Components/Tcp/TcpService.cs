@@ -477,7 +477,7 @@ namespace ThingsGateway.Foundation.Sockets
             {
                 this.m_serverState = ServerState.Exception;
 
-                this.m_pluginsManager.Raise(nameof(IServerStartedPlugin.OnServerStarted), this, new ServiceStateEventArgs(this.m_serverState, ex) { Message = ex.Message });
+                this.m_pluginsManager.Raise(nameof(IServerStartedPlugin.OnServerStarted), this, new ServiceStateEventArgs(this.m_serverState, ex) { Message = ex.ToString() });
                 throw;
             }
         }

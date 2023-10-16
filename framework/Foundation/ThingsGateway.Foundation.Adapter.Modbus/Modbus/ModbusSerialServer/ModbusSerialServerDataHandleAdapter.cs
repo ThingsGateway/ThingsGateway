@@ -57,7 +57,7 @@ public class ModbusSerialServerDataHandleAdapter : ReadWriteDevicesTcpDataHandle
         }
         catch (Exception ex)
         {
-            return new OperResult<byte[]>(ex.Message);
+            return new OperResult<byte[]>(ex);
         }
     }
 

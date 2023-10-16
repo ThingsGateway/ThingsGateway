@@ -101,14 +101,14 @@ public abstract class ReadWriteDevicesTcpServerBase : ReadWriteDevicesBase
     /// <param name="e"></param>
     protected virtual Task Connected(SocketClient client, ConnectedEventArgs e)
     {
-        Logger?.Debug(client.IP + ":" + client.Port + "连接成功");
+        Logger?.Debug($"{client.IP}:{client.Port}连接成功");
         return EasyTask.CompletedTask;
     }
 
     /// <inheritdoc/>
     protected virtual Task Connecting(SocketClient client, ConnectingEventArgs e)
     {
-        Logger?.Debug(client.IP + ":" + client.Port + "正在连接");
+        Logger?.Debug($"{client.IP}:{client.Port}正在连接");
         SetDataAdapter(client);
         return EasyTask.CompletedTask;
     }
@@ -116,14 +116,14 @@ public abstract class ReadWriteDevicesTcpServerBase : ReadWriteDevicesBase
     /// <inheritdoc/>
     protected virtual Task Disconnected(ITcpClientBase client, DisconnectEventArgs e)
     {
-        Logger?.Debug(client.IP + ":" + client.Port + "断开连接-" + e.Message);
+        Logger?.Debug($"{client.IP}:{client.Port}断开连接-{e.Message}");
         return EasyTask.CompletedTask;
     }
 
     /// <inheritdoc/>
     protected virtual Task Disconnecting(ITcpClientBase client, DisconnectEventArgs e)
     {
-        Logger?.Debug(client.IP + ":" + client.Port + "正在主动断开连接-" + e.Message);
+        Logger?.Debug($"{client.IP}:{client.Port}正在主动断开连接-{e.Message}");
         return EasyTask.CompletedTask;
     }
 

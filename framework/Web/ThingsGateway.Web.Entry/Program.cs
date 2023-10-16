@@ -36,8 +36,8 @@ public class Program
         Console.WriteLine(TP.Wrapper("ThingsGateway边缘网关",
          "设备采集，多向扩展",
          "##作者## Diego",
-         "##当前版本## " + Assembly.GetExecutingAssembly().GetName().Version,
-         "##文档地址## " + @"https://diego2098.gitee.io/thingsgateway-docs/",
+         $"##当前版本## {Assembly.GetExecutingAssembly().GetName().Version}",
+         "##文档地址## https://diego2098.gitee.io/thingsgateway-docs/",
          "##作者信息## Diego QQ 2248356998"));
         Console.ResetColor();
         #endregion

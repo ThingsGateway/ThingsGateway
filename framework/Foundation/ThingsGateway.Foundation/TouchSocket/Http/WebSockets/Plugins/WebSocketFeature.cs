@@ -101,7 +101,7 @@ namespace ThingsGateway.Foundation.Http.WebSockets
                 if (await this.VerifyConnection.Invoke(client, e.Context))
                 {
                     e.Handled = true;
-                    _ = client.SwitchProtocolToWebSocket(e.Context);
+                    await client.SwitchProtocolToWebSocket(e.Context);
                     return;
                 }
             }
