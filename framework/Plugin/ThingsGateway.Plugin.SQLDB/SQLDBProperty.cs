@@ -20,7 +20,7 @@ public class SQLDBProperty : UpDriverPropertyBase
     [DeviceProperty("实时表名称", "")] public string ReadDBTableName { get; set; } = "ReadDBTableName";
 
     [DeviceProperty("数据库类型", "MySql/SqlServer")] public DbType DbType { get; set; } = DbType.MySql;
-    [DeviceProperty("链接字符串", "")] public string ConnectStr { get; set; } = "server=localhost;Database=test;Uid=root;Pwd=111111;";
+    [DeviceProperty("链接字符串", "")] public string ConnectStr { get; set; } = "server=localhost;Database=test;Uid=root;Pwd=111111;AllowLoadLocalInfile=true;";
     [DeviceProperty("是否间隔插入", "False时将每次变化写入")] public bool IsInterval { get; set; } = true;
     [DeviceProperty("间隔时间", "秒，实时表时代表更新间隔，历史表时代表插入间隔")] public int IntervalTime { get; set; } = 10;
     [DeviceProperty("缓存最大条数", "默认2千条")] public int CacheMaxCount { get; set; } = 2000;

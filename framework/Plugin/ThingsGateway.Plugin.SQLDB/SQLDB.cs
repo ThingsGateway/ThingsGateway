@@ -80,7 +80,9 @@ public class SQLDB : UpLoadBase
                     var varList = _uploadVariables.ToList().Adapt<List<SQLRealValue>>();
                     if (varList?.Count != 0)
                     {
-                        var result = await db.Storageable(varList).As(driverPropertys.ReadDBTableName).ExecuteCommandAsync();
+                        //var result = await db.Storageable(varList).As(driverPropertys.ReadDBTableName).ExecuteCommandAsync(cancellationToken);
+                        await db.Fastest<SQLRealValue>().AS(driverPropertys.ReadDBTableName).PageSize(100000).BulkUpdateAsync(varList);
+
                     }
                 }
                 catch (Exception ex)
