@@ -86,7 +86,7 @@ public partial class OPCDAClientDebugPage : IDisposable
         }
         catch (Exception ex)
         {
-            driverDebugUIPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Warning, DateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset) + " - " + ex.Message));
+            driverDebugUIPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Warning, $"{DateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset)} - {ex}"));
         }
     }
 
@@ -182,7 +182,7 @@ public partial class OPCDAClientDebugPage : IDisposable
         }
         catch (Exception ex)
         {
-            driverDebugUIPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Warning, DateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset) + " - " + ex.Message));
+            driverDebugUIPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Warning, $"{DateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset)} - {ex}"));
         }
 
         return Task.CompletedTask;
@@ -228,7 +228,7 @@ public partial class OPCDAClientDebugPage : IDisposable
         }
         catch (Exception ex)
         {
-            driverDebugUIPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Error, DateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset) + " - " + "写入失败：" + ex.Message));
+            driverDebugUIPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Error, $"{DateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset)} - 写入失败：{ex}"));
         }
 
         return Task.CompletedTask;

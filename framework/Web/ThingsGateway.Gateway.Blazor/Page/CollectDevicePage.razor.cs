@@ -122,7 +122,7 @@ public partial class CollectDevicePage
             }
             catch (Exception ex)
             {
-                await PopupService.EnqueueSnackbarAsync(ex.Message, AlertTypes.Error);
+                await PopupService.EnqueueSnackbarAsync(ex);
             }
         }
         context.PluginId = pluginId;

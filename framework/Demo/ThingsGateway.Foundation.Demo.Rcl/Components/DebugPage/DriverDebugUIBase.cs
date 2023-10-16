@@ -101,7 +101,7 @@ public abstract class DriverDebugUIBase : ComponentBase, IDisposable
         catch (Exception ex)
         {
             Messages.Add((LogLevel.Error,
-            $"{DateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset)} - 错误：{ex.Message}"));
+            $"{DateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset)} - 错误：{ex}"));
         }
 
     }
@@ -126,7 +126,7 @@ public abstract class DriverDebugUIBase : ComponentBase, IDisposable
         catch (Exception ex)
         {
             Messages.Add((LogLevel.Error,
-            $"{DateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset)} - 写入前失败：{ex.Message}"));
+            $"{DateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset)} - 写入前失败：{ex}"));
         }
     }
 

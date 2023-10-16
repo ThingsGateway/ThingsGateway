@@ -121,7 +121,7 @@ namespace ThingsGateway.Foundation.Sockets
                     {
                         if (this.ReturnException)
                         {
-                            client.Send(ex.Message);
+                            client.Send(ex.ToString());
                         }
                     }
                 }

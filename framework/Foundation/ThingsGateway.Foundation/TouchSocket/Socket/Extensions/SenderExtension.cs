@@ -24,7 +24,6 @@
 //------------------------------------------------------------------------------
 using System.Net;
 using System.Text;
-
 namespace ThingsGateway.Foundation.Sockets
 {
     /// <summary>
@@ -358,5 +357,145 @@ namespace ThingsGateway.Foundation.Sockets
         }
 
         #endregion IUdpClientSender
+
+        #region IWaitSender
+        /// <summary>
+        /// 发送字节流
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="msg"></param>
+        /// <param name="timeout"></param>
+        /// <exception cref="NotConnectedException">客户端没有连接</exception>
+        /// <exception cref="OverlengthException">发送数据超长</exception>
+        /// <exception cref="Exception">其他异常</exception>
+        /// <returns>返回的数据</returns>
+        public static byte[] SendThenReturn(this IWaitSender client, string msg, int timeout = 5000)
+        {
+            using (var tokenSource = new CancellationTokenSource(timeout))
+            {
+                return client.SendThenReturn(Encoding.UTF8.GetBytes(msg), tokenSource.Token);
+            }
+        }
+
+        /// <summary>
+        /// 发送字节流
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="buffer">数据缓存区</param>
+        /// <param name="timeout"></param>
+        /// <exception cref="NotConnectedException">客户端没有连接</exception>
+        /// <exception cref="OverlengthException">发送数据超长</exception>
+        /// <exception cref="Exception">其他异常</exception>
+        /// <returns>返回的数据</returns>
+        public static byte[] SendThenReturn(this IWaitSender client, byte[] buffer, int timeout = 5000)
+        {
+            using (var tokenSource = new CancellationTokenSource(timeout))
+            {
+                return client.SendThenReturn(buffer, 0, buffer.Length, tokenSource.Token);
+            }
+        }
+
+        /// <summary>
+        /// 发送流中的有效数据
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="byteBlock">数据块载体</param>
+        /// <param name="timeout"></param>
+        /// <exception cref="NotConnectedException">客户端没有连接</exception>
+        /// <exception cref="OverlengthException">发送数据超长</exception>
+        /// <exception cref="Exception">其他异常</exception>
+        /// <returns>返回的数据</returns>
+        public static byte[] SendThenReturn(this IWaitSender client, ByteBlock byteBlock, int timeout = 5000)
+        {
+            using (var tokenSource = new CancellationTokenSource(timeout))
+            {
+                return client.SendThenReturn(byteBlock.Buffer, 0, byteBlock.Len, tokenSource.Token);
+            }
+        }
+
+
+        /// <summary>
+        /// 异步发送
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="buffer">数据缓存区</param>
+        /// <param name="timeout"></param>
+        /// <exception cref="NotConnectedException">客户端没有连接</exception>
+        /// <exception cref="OverlengthException">发送数据超长</exception>
+        /// <exception cref="Exception">其他异常</exception>
+        /// <returns>返回的数据</returns>
+        public static Task<byte[]> SendThenReturnAsync(this IWaitSender client, byte[] buffer, int timeout = 5000)
+        {
+            using (var tokenSource = new CancellationTokenSource(timeout))
+            {
+                return client.SendThenReturnAsync(buffer, 0, buffer.Length, tokenSource.Token);
+            }
+        }
+
+        /// <summary>
+        /// 异步发送
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="msg"></param>
+        /// <param name="timeout"></param>
+        /// <exception cref="NotConnectedException">客户端没有连接</exception>
+        /// <exception cref="OverlengthException">发送数据超长</exception>
+        /// <exception cref="Exception">其他异常</exception>
+        /// <returns>返回的数据</returns>
+        public static Task<byte[]> SendThenReturnAsync(this IWaitSender client, string msg, int timeout = 5000)
+        {
+            using (var tokenSource = new CancellationTokenSource(timeout))
+            {
+                return client.SendThenReturnAsync(Encoding.UTF8.GetBytes(msg), tokenSource.Token);
+            }
+        }
+
+        /// <summary>
+        /// 发送字节流
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="buffer">数据缓存区</param>
+        /// <param name="token">取消令箭</param>
+        /// <exception cref="NotConnectedException">客户端没有连接</exception>
+        /// <exception cref="OverlengthException">发送数据超长</exception>
+        /// <exception cref="Exception">其他异常</exception>
+        /// <returns>返回的数据</returns>
+        public static byte[] SendThenReturn(this IWaitSender client, byte[] buffer, CancellationToken token)
+        {
+            return client.SendThenReturn(buffer, 0, buffer.Length, token);
+        }
+
+        /// <summary>
+        /// 发送流中的有效数据
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="byteBlock">数据块载体</param>
+        /// <param name="token">取消令箭</param>
+        /// <exception cref="NotConnectedException">客户端没有连接</exception>
+        /// <exception cref="OverlengthException">发送数据超长</exception>
+        /// <exception cref="Exception">其他异常</exception>
+        /// <returns>返回的数据</returns>
+        public static byte[] SendThenReturn(this IWaitSender client, ByteBlock byteBlock, CancellationToken token)
+        {
+            return client.SendThenReturn(byteBlock.Buffer, 0, byteBlock.Len, token);
+        }
+
+
+        /// <summary>
+        /// 异步发送
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="buffer">数据缓存区</param>
+        /// <param name="token">取消令箭</param>
+        /// <exception cref="NotConnectedException">客户端没有连接</exception>
+        /// <exception cref="OverlengthException">发送数据超长</exception>
+        /// <exception cref="Exception">其他异常</exception>
+        /// <returns>返回的数据</returns>
+        public static Task<byte[]> SendThenReturnAsync(this IWaitSender client, byte[] buffer, CancellationToken token)
+        {
+            return client.SendThenReturnAsync(buffer, 0, buffer.Length, token);
+        }
+        #endregion
+
     }
 }

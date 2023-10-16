@@ -135,6 +135,21 @@ namespace ThingsGateway.Foundation.Sockets
         }
 
         /// <summary>
+        /// 每个周期可执行的委托。返回值为True标识客户端存活。返回False，表示失活，立即重连。返回null时，表示跳过此次检验。
+        /// </summary>
+        /// <param name="actionForCheck"></param>
+        /// <returns></returns>
+        public ReconnectionPlugin<TClient> SetActionForCheck(Func<TClient, int, bool?> actionForCheck)
+        {
+            this.ActionForCheck = async (c, i) =>
+            {
+                await EasyTask.CompletedTask;
+                return actionForCheck.Invoke(c, i);
+            };
+            return this;
+        }
+
+        /// <summary>
         /// 设置连接动作
         /// </summary>
         /// <param name="tryConnect"></param>
@@ -142,6 +157,21 @@ namespace ThingsGateway.Foundation.Sockets
         public ReconnectionPlugin<TClient> SetConnectAction(Func<TClient, Task<bool>> tryConnect)
         {
             this.ActionForConnect = tryConnect;
+            return this;
+        }
+
+        /// <summary>
+        /// 设置连接动作
+        /// </summary>
+        /// <param name="tryConnect"></param>
+        /// <returns>无论如何，只要返回True，则结束本轮尝试</returns>
+        public ReconnectionPlugin<TClient> SetConnectAction(Func<TClient, bool> tryConnect)
+        {
+            this.ActionForConnect = async (c) =>
+            {
+                await EasyTask.CompletedTask;
+                return tryConnect.Invoke(c);
+            };
             return this;
         }
 

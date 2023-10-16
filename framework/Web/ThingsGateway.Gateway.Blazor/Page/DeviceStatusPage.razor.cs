@@ -154,7 +154,7 @@ public partial class DeviceStatusPage : IDisposable
         }
         catch (Exception ex)
         {
-            await PopupService.EnqueueSnackbarAsync(ex.Message, AlertTypes.Warning);
+            await PopupService.EnqueueSnackbarAsync(ex);
         }
         finally
         {
@@ -228,7 +228,7 @@ public partial class DeviceStatusPage : IDisposable
         }
         catch (Exception ex)
         {
-            await PopupService.EnqueueSnackbarAsync(ex.Message, AlertTypes.Warning);
+            await PopupService.EnqueueSnackbarAsync(ex);
         }
         finally
         {

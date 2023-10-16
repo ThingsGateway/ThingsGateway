@@ -48,7 +48,7 @@ public sealed class LoggingFileComponent : IServiceComponent
                     //每天创建一个日志文件
                     services.AddLogging(builder =>
                    {
-                       var fileName = "logs/" + level.ToString() + "/{0:yyyy}-{0:MM}-{0:dd}{0:zz}.log";
+                       var fileName = $"logs/{level}/{{0:yyyy}}-{{0:MM}}-{{0:dd}}{{0:zz}}.log";
                        builder.AddFile(fileName, options =>
                        {
                            SetLogOptions(options, level);//日志格式化

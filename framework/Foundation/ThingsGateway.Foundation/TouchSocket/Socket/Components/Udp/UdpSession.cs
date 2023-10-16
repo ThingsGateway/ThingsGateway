@@ -332,7 +332,7 @@ namespace ThingsGateway.Foundation.Sockets
             catch (Exception ex)
             {
                 this.ServerState = ServerState.Exception;
-                this.PluginsManager.Raise(nameof(IServerStartedPlugin.OnServerStarted), this, new ServiceStateEventArgs(this.ServerState, ex) { Message = ex.Message });
+                this.PluginsManager.Raise(nameof(IServerStartedPlugin.OnServerStarted), this, new ServiceStateEventArgs(this.ServerState, ex) { Message = ex.ToString() });
                 throw;
             }
         }

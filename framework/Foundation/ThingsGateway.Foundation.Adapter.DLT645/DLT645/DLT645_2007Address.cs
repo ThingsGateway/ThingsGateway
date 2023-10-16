@@ -92,15 +92,15 @@ public class DLT645_2007Address : DeviceAddressBase
         StringBuilder stringGeter = new();
         if (Station.Length > 0)
         {
-            stringGeter.Append("s=" + Station.Reverse().ToArray().ToHexString() + ";");
+            stringGeter.Append($"s={Station.Reverse().ToArray().ToHexString()};");
         }
         if (DataId.Length > 0)
         {
-            stringGeter.Append(DataId.Reverse().ToArray().ToHexString() + ";");
+            stringGeter.Append($"{DataId.Reverse().ToArray().ToHexString()};");
         }
         if (!Reverse)
         {
-            stringGeter.Append("s=" + Reverse.ToString() + ";");
+            stringGeter.Append($"s={Reverse.ToString()};");
         }
         return stringGeter.ToString();
     }

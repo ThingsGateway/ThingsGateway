@@ -142,7 +142,7 @@ namespace ThingsGateway.Foundation.WebApi
                     catch (Exception ex)
                     {
                         invokeResult.Status = InvokeStatus.Exception;
-                        invokeResult.Message = ex.Message;
+                        invokeResult.Message = ex.ToString();
                     }
                 }
                 else
@@ -273,7 +273,7 @@ namespace ThingsGateway.Foundation.WebApi
                     catch (Exception ex)
                     {
                         invokeResult.Status = InvokeStatus.Exception;
-                        invokeResult.Message = ex.Message;
+                        invokeResult.Message = ex.ToString();
                     }
                 }
                 else

@@ -660,7 +660,7 @@ public class AlarmWorker : BackgroundService
                         catch (Exception ex)
                         {
                             if (isSuccess)
-                                _logger?.LogWarning($"历史报警循环异常：{ex.Message}");
+                                _logger?.LogWarning($"历史报警循环异常：{ex}");
                             StatuString = new OperResult(ex);
                             isSuccess = false;
                         }
@@ -681,7 +681,7 @@ public class AlarmWorker : BackgroundService
             catch (Exception ex)
             {
                 IsExited = true;
-                _logger?.LogError($"历史报警异常：{ex.Message}");
+                _logger?.LogError($"历史报警异常：{ex}");
             }
         }
  , TaskCreationOptions.LongRunning);

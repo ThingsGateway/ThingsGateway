@@ -49,7 +49,7 @@ public partial class DriverDebugUIPage : DriverDebugUIBase
                 }
                 catch (Exception ex)
                 {
-                    Messages.Add((Microsoft.Extensions.Logging.LogLevel.Warning, DateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset) + " - " + ex.Message));
+                    Messages.Add((Microsoft.Extensions.Logging.LogLevel.Warning, DateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset) + " - " + ex));
                 }
 
             }

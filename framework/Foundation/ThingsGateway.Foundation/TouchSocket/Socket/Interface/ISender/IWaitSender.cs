@@ -36,37 +36,14 @@ namespace ThingsGateway.Foundation.Sockets
         /// <param name="buffer">数据缓存区</param>
         /// <param name="offset">偏移</param>
         /// <param name="length">长度</param>
-        /// <param name="timeout">超时时间</param>
-        /// <param name="cancellationToken">取消令箭</param>
+        /// <param name="token">取消令箭</param>
         /// <exception cref="NotConnectedException">客户端没有连接</exception>
         /// <exception cref="OverlengthException">发送数据超长</exception>
         /// <exception cref="Exception">其他异常</exception>
         /// <returns>返回的数据</returns>
-        byte[] SendThenReturn(byte[] buffer, int offset, int length, int timeout = 1000 * 5, CancellationToken cancellationToken = default);
+        byte[] SendThenReturn(byte[] buffer, int offset, int length, CancellationToken token);
 
-        /// <summary>
-        /// 发送字节流
-        /// </summary>
-        /// <param name="buffer">数据缓存区</param>
-        /// <param name="timeout">超时时间</param>
-        /// <param name="cancellationToken">取消令箭</param>
-        /// <exception cref="NotConnectedException">客户端没有连接</exception>
-        /// <exception cref="OverlengthException">发送数据超长</exception>
-        /// <exception cref="Exception">其他异常</exception>
-        /// <returns>返回的数据</returns>
-        byte[] SendThenReturn(byte[] buffer, int timeout = 1000 * 5, CancellationToken cancellationToken = default);
 
-        /// <summary>
-        /// 发送流中的有效数据
-        /// </summary>
-        /// <param name="byteBlock">数据块载体</param>
-        /// <param name="timeout">超时时间</param>
-        /// <param name="cancellationToken">取消令箭</param>
-        /// <exception cref="NotConnectedException">客户端没有连接</exception>
-        /// <exception cref="OverlengthException">发送数据超长</exception>
-        /// <exception cref="Exception">其他异常</exception>
-        /// <returns>返回的数据</returns>
-        byte[] SendThenReturn(ByteBlock byteBlock, int timeout = 1000 * 5, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// 异步发送
@@ -74,36 +51,13 @@ namespace ThingsGateway.Foundation.Sockets
         /// <param name="buffer">数据缓存区</param>
         /// <param name="offset">偏移</param>
         /// <param name="length">长度</param>
-        /// <param name="timeout">超时时间</param>
-        /// <param name="cancellationToken">取消令箭</param>
+        /// <param name="token">取消令箭</param>
         /// <exception cref="NotConnectedException">客户端没有连接</exception>
         /// <exception cref="OverlengthException">发送数据超长</exception>
         /// <exception cref="Exception">其他异常</exception>
         /// <returns>返回的数据</returns>
-        Task<byte[]> SendThenReturnAsync(byte[] buffer, int offset, int length, int timeout = 1000 * 5, CancellationToken cancellationToken = default);
+        Task<byte[]> SendThenReturnAsync(byte[] buffer, int offset, int length, CancellationToken token);
 
-        /// <summary>
-        /// 异步发送
-        /// </summary>
-        /// <param name="buffer">数据缓存区</param>
-        /// <param name="timeout">超时时间</param>
-        /// <param name="cancellationToken">取消令箭</param>
-        /// <exception cref="NotConnectedException">客户端没有连接</exception>
-        /// <exception cref="OverlengthException">发送数据超长</exception>
-        /// <exception cref="Exception">其他异常</exception>
-        /// <returns>返回的数据</returns>
-        Task<byte[]> SendThenReturnAsync(byte[] buffer, int timeout = 1000 * 5, CancellationToken cancellationToken = default);
 
-        /// <summary>
-        /// 异步发送
-        /// </summary>
-        /// <param name="byteBlock">数据块载体</param>
-        /// <param name="timeout">超时时间</param>
-        /// <param name="cancellationToken">取消令箭</param>
-        /// <exception cref="NotConnectedException">客户端没有连接</exception>
-        /// <exception cref="OverlengthException">发送数据超长</exception>
-        /// <exception cref="Exception">其他异常</exception>
-        /// <returns>返回的数据</returns>
-        Task<byte[]> SendThenReturnAsync(ByteBlock byteBlock, int timeout = 1000 * 5, CancellationToken cancellationToken = default);
     }
 }

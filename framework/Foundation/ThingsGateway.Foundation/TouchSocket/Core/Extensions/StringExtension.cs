@@ -182,7 +182,7 @@ namespace ThingsGateway.Foundation.Core
             }
             if (!flag && !converter.CanConvertTo(destinationType))
             {
-                throw new InvalidOperationException("无法转换成类型：" + value.ToString() + "==>" + destinationType);
+                throw new InvalidOperationException($"无法转换成类型：{value.ToString()}==>{destinationType}");
             }
             try
             {
@@ -190,7 +190,7 @@ namespace ThingsGateway.Foundation.Core
             }
             catch (Exception e)
             {
-                throw new InvalidOperationException(" 类型转换出错：" + value.ToString() + "==>" + destinationType, e);
+                throw new InvalidOperationException($" 类型转换出错：{value.ToString()}==>{destinationType}", e);
             }
             return returnValue;
         }

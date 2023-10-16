@@ -133,7 +133,7 @@ namespace ThingsGateway.Foundation.Core
             catch (Exception ex)
             {
                 fileStorage = null;
-                msg = ex.Message;
+                msg = ex.ToString();
                 return false;
             }
         }

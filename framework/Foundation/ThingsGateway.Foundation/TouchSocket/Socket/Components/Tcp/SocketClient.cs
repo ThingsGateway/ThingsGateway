@@ -149,7 +149,7 @@ namespace ThingsGateway.Foundation.Sockets
             }
             catch (Exception ex)
             {
-                this.BreakOut(default, false, ex.Message);
+                this.BreakOut(default, false, ex.ToString());
             }
         }
 

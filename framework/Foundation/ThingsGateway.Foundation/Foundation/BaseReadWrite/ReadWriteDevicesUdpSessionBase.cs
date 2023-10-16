@@ -22,7 +22,7 @@ public abstract class ReadWriteDevicesUdpSessionBase : ReadWriteDevicesBase
     {
         UdpSession = udpSession;
         SetDataAdapter();
-        WaitingClientEx = UdpSession.GetWaitingClient(new() { ThrowBreakException = true });
+        WaitingClientEx = UdpSession.CreateWaitingClient(new() { ThrowBreakException = true });
     }
 
     /// <summary>
@@ -65,7 +65,7 @@ public abstract class ReadWriteDevicesUdpSessionBase : ReadWriteDevicesBase
         try
         {
             waitingOptions ??= new WaitingOptions { ThrowBreakException = true };
-            ResponsedData result = UdpSession.GetWaitingClient(waitingOptions).SendThenResponse(data, TimeOut, cancellationToken);
+            ResponsedData result = UdpSession.CreateWaitingClient(waitingOptions).SendThenResponse(data, TimeOut, cancellationToken);
             return OperResult.CreateSuccessResult(result.Data);
         }
         catch (Exception ex)
@@ -80,7 +80,7 @@ public abstract class ReadWriteDevicesUdpSessionBase : ReadWriteDevicesBase
         try
         {
             waitingOptions ??= new WaitingOptions { ThrowBreakException = true };
-            ResponsedData result = await UdpSession.GetWaitingClient(waitingOptions).SendThenResponseAsync(data, TimeOut, cancellationToken);
+            ResponsedData result = await UdpSession.CreateWaitingClient(waitingOptions).SendThenResponseAsync(data, TimeOut, cancellationToken);
             return OperResult.CreateSuccessResult(result.Data);
         }
         catch (Exception ex)

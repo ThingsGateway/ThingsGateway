@@ -134,7 +134,7 @@ namespace ThingsGateway.Foundation.Core
                         string path = null;
                         while (true)
                         {
-                            path = Path.Combine(dir, $"{count:0000}" + ".log");
+                            path = Path.Combine(dir, $"{count:0000}.log");
                             if (!File.Exists(path))
                             {
                                 this.m_writer = FilePool.GetWriter(path);

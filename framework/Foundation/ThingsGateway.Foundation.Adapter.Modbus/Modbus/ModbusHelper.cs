@@ -117,7 +117,7 @@ internal class ModbusHelper
         }
         catch (Exception ex)
         {
-            return new OperResult<byte[], FilterResult>(ex.Message) { Content2 = FilterResult.Success };
+            return new OperResult<byte[], FilterResult>(ex) { Content2 = FilterResult.Success };
         }
     }
     /// <summary>
@@ -165,7 +165,7 @@ internal class ModbusHelper
         }
         catch (Exception ex)
         {
-            return new OperResult<byte[]>(ex.Message);
+            return new OperResult<byte[]>(ex);
         }
     }
     /// <summary>
@@ -185,7 +185,7 @@ internal class ModbusHelper
         }
         catch (Exception ex)
         {
-            return new OperResult<byte[]>(ex.Message);
+            return new OperResult<byte[]>(ex);
         }
     }
 
@@ -207,7 +207,7 @@ internal class ModbusHelper
         }
         catch (Exception ex)
         {
-            return new OperResult<byte[]>(ex.Message);
+            return new OperResult<byte[]>(ex);
         }
     }
     /// <summary>
@@ -244,7 +244,7 @@ internal class ModbusHelper
         }
         catch (Exception ex)
         {
-            return new OperResult<byte[]>(ex.Message);
+            return new OperResult<byte[]>(ex);
         }
     }
 
@@ -296,7 +296,7 @@ internal class ModbusHelper
         }
         catch (Exception ex)
         {
-            return new OperResult<byte[]>(ex.Message);
+            return new OperResult<byte[]>(ex);
         }
     }
 

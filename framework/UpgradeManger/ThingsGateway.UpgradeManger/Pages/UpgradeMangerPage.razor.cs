@@ -224,8 +224,7 @@ public partial class UpgradeMangerPage
         }
         catch (Exception ex)
         {
-
-            await PopupService.EnqueueSnackbarAsync(ex.Message, AlertTypes.Error);
+            await PopupService.EnqueueSnackbarAsync(ex);
         }
         finally
         {

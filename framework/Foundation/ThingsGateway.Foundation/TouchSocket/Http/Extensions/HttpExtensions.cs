@@ -374,7 +374,7 @@ namespace ThingsGateway.Foundation.Http
         /// <returns></returns>
         public static TResponse SetContentTypeFromFileName<TResponse>(this TResponse response, string fileName) where TResponse : HttpResponse
         {
-            var contentDisposition = "attachment;" + "filename=" + System.Web.HttpUtility.UrlEncode(fileName);
+            var contentDisposition = $"attachment;filename={System.Web.HttpUtility.UrlEncode(fileName)}";
             response.Headers.Add(HttpHeaders.ContentDisposition, contentDisposition);
             return response;
         }
@@ -429,7 +429,7 @@ namespace ThingsGateway.Foundation.Http
             using (var reader = FilePool.GetReader(filePath))
             {
                 response.SetContentTypeByExtension(Path.GetExtension(filePath));
-                var contentDisposition = "attachment;" + "filename=" + System.Web.HttpUtility.UrlEncode(fileName ?? Path.GetFileName(filePath));
+                var contentDisposition = $"attachment;filename={System.Web.HttpUtility.UrlEncode(fileName ?? Path.GetFileName(filePath))}";
                 response.Headers.Add(HttpHeaders.ContentDisposition, contentDisposition);
                 response.Headers.Add(HttpHeaders.AcceptRanges, "bytes");
 
@@ -526,7 +526,7 @@ namespace ThingsGateway.Foundation.Http
             using (var reader = FilePool.GetReader(filePath))
             {
                 context.Response.SetContentTypeByExtension(Path.GetExtension(filePath));
-                var contentDisposition = "attachment;" + "filename=" + System.Web.HttpUtility.UrlEncode(fileName ?? Path.GetFileName(filePath));
+                var contentDisposition = $"attachment;filename={System.Web.HttpUtility.UrlEncode(fileName ?? Path.GetFileName(filePath))}";
                 context.Response.Headers.Add(HttpHeaders.ContentDisposition, contentDisposition);
                 context.Response.Headers.Add(HttpHeaders.AcceptRanges, "bytes");
 

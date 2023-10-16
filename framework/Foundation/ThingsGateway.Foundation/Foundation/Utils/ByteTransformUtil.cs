@@ -28,7 +28,7 @@ public class ByteTransformUtil
         }
         catch (Exception ex)
         {
-            return new OperResult<TResult>(string.Format("{0} {1} : Length({2}) {3}", "转换失败", result.Content.ToHexString(), result.Content.Length, ex.Message));
+            return new OperResult<TResult>(string.Format("{0} {1} : Length({2}) {3}", "转换失败", result.Content.ToHexString(), result.Content.Length, ex));
         }
     }
 

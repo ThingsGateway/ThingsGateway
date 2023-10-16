@@ -72,7 +72,7 @@ namespace ThingsGateway.Foundation.Core
                     }
                     catch (Exception ex)
                     {
-                        this.OnError(ex.Message, false, true);
+                        this.OnError(ex.ToString(), false, true);
                     }
                 }
                 return FilterResult.GoOn;
@@ -121,7 +121,7 @@ namespace ThingsGateway.Foundation.Core
                         }
                         catch (Exception ex)
                         {
-                            this.OnError(ex.Message, false, true);
+                            this.OnError(ex.ToString(), false, true);
                         }
                     }
                     return FilterResult.GoOn;

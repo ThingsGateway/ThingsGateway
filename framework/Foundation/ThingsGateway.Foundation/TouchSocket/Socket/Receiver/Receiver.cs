@@ -18,7 +18,7 @@ namespace ThingsGateway.Foundation.Sockets
     public class Receiver : DisposableObject, IReceiver
     {
         private readonly IClient m_client;
-        private readonly AutoResetEvent m_resetEventForComplateRead = new AutoResetEvent(false);
+        private readonly EasyLock m_resetEventForComplateRead = new EasyLock(false);
         private readonly AsyncAutoResetEvent m_resetEventForRead = new AsyncAutoResetEvent(false);
         private ByteBlock m_byteBlock;
         private IRequestInfo m_requestInfo;
@@ -64,7 +64,7 @@ namespace ThingsGateway.Foundation.Sockets
             {
                 return true;
             }
-            if (this.m_resetEventForComplateRead.WaitOne(TimeSpan.FromSeconds(10)))
+            if (this.m_resetEventForComplateRead.Wait(TimeSpan.FromSeconds(10), CancellationToken.None))
             {
                 return true;
             }
@@ -75,7 +75,7 @@ namespace ThingsGateway.Foundation.Sockets
         protected override void Dispose(bool disposing)
         {
             this.m_client.ClearReceiver();
-            this.m_resetEventForComplateRead.SafeDispose();
+            //this.m_resetEventForComplateRead.SafeDispose();
             this.m_resetEventForRead.SafeDispose();
             this.m_byteBlock = null;
             base.Dispose(disposing);
@@ -85,7 +85,7 @@ namespace ThingsGateway.Foundation.Sockets
         {
             this.m_byteBlock = default;
             this.m_requestInfo = default;
-            this.m_resetEventForComplateRead.Set();
+            this.m_resetEventForComplateRead.Release();
         }
     }
 }

@@ -234,7 +234,7 @@ public class ModbusSerialServer : UpLoadBase
         }
         catch (Exception ex)
         {
-            return new OperResult(ex.Message);
+            return new OperResult(ex);
         }
 
     }

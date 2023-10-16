@@ -249,7 +249,7 @@ public class OPCUAClient : IDisposable
         {
             _logAction?.Invoke(3, this, $"创建以下变量订阅失败：{Environment.NewLine}{m_subscription.MonitoredItems.Where(
                 a => a.Status.Error != null && StatusCode.IsBad(a.Status.Error.StatusCode))
-                .Select(a => a.StartNodeId.ToString() + "：" + a.Status.Error.ToString()).ToJsonString()}", null);
+                .Select(a => $"{a.StartNodeId.ToString()}：{a.Status.Error.ToString()}").ToJsonString()}", null);
         }
 
         lock (dic_subscriptions)

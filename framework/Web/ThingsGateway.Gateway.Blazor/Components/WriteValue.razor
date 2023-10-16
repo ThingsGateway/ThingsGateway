@@ -59,7 +59,7 @@
         }
         catch (Exception ex)
         {
-            await InvokeAsync(async () => await PopupService.EnqueueSnackbarAsync(ex.Message, AlertTypes.Warning));
+            await InvokeAsync(async () => await PopupService.EnqueueSnackbarAsync(ex));
         }
 
     }

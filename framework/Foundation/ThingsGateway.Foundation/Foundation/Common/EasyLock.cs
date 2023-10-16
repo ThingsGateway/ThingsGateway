@@ -20,6 +20,12 @@ public sealed class EasyLock
     private static long lockWaitCount;
     private readonly SemaphoreSlim m_waiterLock = new SemaphoreSlim(1);
     /// <inheritdoc/>
+    public EasyLock(bool initialState = true)
+    {
+        if (!initialState)
+            m_waiterLock.Wait();
+    }
+    /// <inheritdoc/>
     ~EasyLock()
     {
         m_waiterLock.SafeDispose();
@@ -54,11 +60,12 @@ public sealed class EasyLock
     /// <summary>
     /// 进入锁
     /// </summary>
-    public void Wait(TimeSpan timeSpan, CancellationToken cancellationToken)
+    public bool Wait(TimeSpan timeSpan, CancellationToken cancellationToken)
     {
         Interlocked.Increment(ref lockWaitCount);
-        m_waiterLock.Wait(timeSpan, cancellationToken);
+        var data = m_waiterLock.Wait(timeSpan, cancellationToken);
         Interlocked.Decrement(ref lockWaitCount);
+        return data;
     }
 
     /// <summary>
@@ -73,11 +80,12 @@ public sealed class EasyLock
     /// <summary>
     /// 进入锁
     /// </summary>
-    public async Task WaitAsync(TimeSpan timeSpan, CancellationToken cancellationToken)
+    public async Task<bool> WaitAsync(TimeSpan timeSpan, CancellationToken cancellationToken)
     {
         Interlocked.Increment(ref lockWaitCount);
-        await m_waiterLock.WaitAsync(timeSpan, cancellationToken);
+        var data = await m_waiterLock.WaitAsync(timeSpan, cancellationToken);
         Interlocked.Decrement(ref lockWaitCount);
+        return data;
     }
 
 }
