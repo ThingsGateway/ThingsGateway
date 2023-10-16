@@ -11,6 +11,9 @@
   "editUrl": "https://gitee.com/diego2098/ThingsGateway/tree/master/handbook/docs/pluginmc3e.mdx",
   "tags": [],
   "version": "current",
+  "lastUpdatedBy": "Kimdiego2098",
+  "lastUpdatedAt": 1697169111,
+  "formattedLastUpdatedAt": "Oct 13, 2023",
   "frontMatter": {
     "id": "pluginmc3e",
     "title": "三菱QnA3E采集插件"
