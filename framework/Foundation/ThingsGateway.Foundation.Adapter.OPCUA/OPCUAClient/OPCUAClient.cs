@@ -200,7 +200,7 @@ public class OPCUAClient : IDisposable
     /// <summary>
     /// 新增订阅，需要指定订阅组名称，订阅的tag名数组
     /// </summary>
-    public async Task AddSubscriptionAsync(string subscriptionName, string[] items, bool isSafed = true)
+    public async Task AddSubscriptionAsync(string subscriptionName, string[] items, bool loadType = true)
     {
         Subscription m_subscription = new(m_session.DefaultSubscription)
         {
@@ -213,14 +213,14 @@ public class OPCUAClient : IDisposable
             DisplayName = subscriptionName
         };
         List<MonitoredItem> monitoredItems = new();
-        var variableNodes = isSafed ? await ReadNodesAsync(items) : null;
+        var variableNodes = loadType ? await ReadNodesAsync(items) : null;
         for (int i = 0; i < items.Length; i++)
         {
             try
             {
                 var item = new MonitoredItem
                 {
-                    StartNodeId = isSafed ? variableNodes[i].NodeId : items[i],
+                    StartNodeId = loadType ? variableNodes[i].NodeId : items[i],
                     AttributeId = Attributes.Value,
                     DisplayName = items[i],
                     Filter = OPCNode.DeadBand == 0 ? null : new DataChangeFilter() { DeadbandValue = OPCNode.DeadBand, DeadbandType = (int)DeadbandType.Absolute, Trigger = DataChangeTrigger.StatusValue },
@@ -532,7 +532,7 @@ public class OPCUAClient : IDisposable
 
         //如果是订阅模式，连接时添加订阅组
         if (OPCNode.ActiveSubscribe)
-            await AddSubscriptionAsync(Guid.NewGuid().ToString(), Variables.ToArray(), OPCNode.IsSafed);
+            await AddSubscriptionAsync(Guid.NewGuid().ToString(), Variables.ToArray(), OPCNode.LoadType);
         return m_session;
     }
 
@@ -682,7 +682,8 @@ public class OPCUAClient : IDisposable
         }
         NodeId nodeToRead = new(nodeIdStr);
         var node = (VariableNode)await m_session.ReadNodeAsync(nodeToRead, NodeClass.Variable, false, cancellationToken);
-        await typeSystem.LoadType(node.DataType);
+        if (OPCNode.LoadType)
+            await typeSystem.LoadType(node.DataType);
         _variableDicts.AddOrUpdate(nodeIdStr, node);
         return node;
     }

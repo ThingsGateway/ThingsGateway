@@ -71,9 +71,10 @@ public class OPCNode
     [Description("安全策略")]
     public bool IsUseSecurity { get; set; } = false;
     /// <summary>
-    /// 使用安全订阅
+    /// 加载服务端数据类型
     /// </summary>
-    public bool IsSafed { get; set; } = true;
+    [Description("加载服务端数据类型")]
+    public bool LoadType { get; set; } = true;
     /// <inheritdoc/>
     public override string ToString()
     {
