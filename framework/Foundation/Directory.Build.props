@@ -1,6 +1,6 @@
 <Project>
 	<PropertyGroup>
-		<Version>3.0.0.12</Version>
+		<Version>3.0.0.13</Version>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<LangVersion>latest</LangVersion>
 		<TargetFrameworks>net45;netstandard2.0;net6.0;net7.0</TargetFrameworks>
