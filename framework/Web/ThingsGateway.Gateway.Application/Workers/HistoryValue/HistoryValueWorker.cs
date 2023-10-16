@@ -99,8 +99,79 @@ public class HistoryValueWorker : BackgroundService
             IsAutoCloseConnection = true, //不设成true要手动close
             ConfigureExternalServices = configureExternalServices,
         });
+        AopSetting(sqlSugarClient);
         return OperResult.CreateSuccessResult(sqlSugarClient);
     }
+
+
+    #region db
+
+    /// <summary>
+    /// Aop设置
+    /// </summary>
+    /// <param name="db"></param>
+    private static void AopSetting(SqlSugarClient db)
+    {
+        var config = db.CurrentConnectionConfig;
+
+        // 设置超时时间
+        db.Ado.CommandTimeOut = 30;
+
+        // 打印SQL语句
+        db.Aop.OnLogExecuting = (sql, pars) =>
+        {
+            //如果不是开发环境就打印sql
+            if (App.HostEnvironment.IsDevelopment())
+            {
+                if (sql.StartsWith("SELECT"))
+                {
+                    Console.ForegroundColor = ConsoleColor.Green;
+                }
+                if (sql.StartsWith("UPDATE"))
+                {
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                }
+                if (sql.StartsWith("INSERT"))
+                {
+                    Console.ForegroundColor = ConsoleColor.Blue;
+                }
+                if (sql.StartsWith("DELETE"))
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                }
+                WriteSqlLog(UtilMethods.GetSqlString(config.DbType, sql, pars));
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.WriteLine();
+            }
+        };
+        //异常
+        db.Aop.OnError = (ex) =>
+        {
+            //如果不是开发环境就打印日志
+            if (App.WebHostEnvironment.IsDevelopment())
+            {
+                if (ex.Parametres == null) return;
+                Console.ForegroundColor = ConsoleColor.Red;
+                var pars = db.Utilities.SerializeObject(((SugarParameter[])ex.Parametres).ToDictionary(it => it.ParameterName, it => it.Value));
+                WriteSqlLogError(UtilMethods.GetSqlString(config.DbType, ex.Sql, (SugarParameter[])ex.Parametres));
+                Console.ForegroundColor = ConsoleColor.White;
+            }
+        };
+
+    }
+    private static void WriteSqlLog(string msg)
+    {
+        Console.WriteLine("【Sql执行时间】：" + DateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat());
+        Console.WriteLine("【Sql语句】：" + msg + Environment.NewLine);
+    }
+    private static void WriteSqlLogError(string msg)
+    {
+        Console.WriteLine("【Sql执行错误时间】：" + DateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat());
+        Console.WriteLine("【Sql语句】：" + msg + Environment.NewLine);
+    }
+
+    #endregion
+
 
     #region worker服务
     private EasyLock easyLock = new();
@@ -327,6 +398,7 @@ public class HistoryValueWorker : BackgroundService
                         try
                         {
                             _logger.LogWarning("连接历史数据表失败，尝试初始化表");
+                            sqlSugarClient.DbMaintenance.CreateDatabase();
                             sqlSugarClient.CodeFirst.InitTables(typeof(HistoryValue));
                             LastIsSuccess = true;
                             StatuString = OperResult.CreateSuccessResult();
@@ -467,7 +539,8 @@ public class HistoryValueMapper : IRegister
     {
         config.ForType<DeviceVariableRunTime, HistoryValue>()
             .Map(dest => dest.Value, (src) => ValueReturn(src))
-            .Map(dest => dest.CollectTime, (src) => src.CollectTime.ToUniversalTime());//注意sqlsugar插入时无时区，直接utc时间
+            .Map(dest => dest.CollectTime, (src) => src.CollectTime.ToUniversalTime())//注意sqlsugar插入时无时区，直接utc时间
+            .Map(dest => dest.CreateTime, (src) => DateTime.UtcNow);//注意sqlsugar插入时无时区，直接utc时间
     }
 
     private static object ValueReturn(DeviceVariableRunTime src)

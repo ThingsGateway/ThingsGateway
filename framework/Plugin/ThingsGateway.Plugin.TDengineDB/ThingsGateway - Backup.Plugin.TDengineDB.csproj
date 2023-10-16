@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	 
+	
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+
+		<Exec Command=" set dir=&quot;$(SolutionDir)Web\ThingsGateway.Web.Entry\bin\$(Configuration)\$(TargetFramework)\Plugins\$(AssemblyName)&quot;&#xD;&#xA; if not exist %25dir%25  md %25dir%25  &#xD;&#xA;copy &quot;$(TargetDir)*TDengineDB*.dll&quot;  %25dir%25&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;" />
+	
+	</Target>
+
+	<PropertyGroup>
+		<EnableDynamicLoading>true</EnableDynamicLoading>
+	</PropertyGroup>
+
+
+	<ItemGroup>
+	  <PackageReference Include="SqlSugar.TDengineCore" Version="2.8.0" />
+	</ItemGroup>
+
+  
+
+</Project>

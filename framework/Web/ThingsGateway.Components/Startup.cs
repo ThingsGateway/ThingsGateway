@@ -38,6 +38,9 @@ public static class Startup
                         { nameof(PEnqueuedSnackbars.Position), SnackPosition.TopCenter }
                     }
                 },
+
+
+
         { nameof(MErrorHandler), new Dictionary<string, object>() { { nameof(MErrorHandler.ShowDetail), true } } },
 
         { nameof(MIcon), new Dictionary<string, object>() { { nameof(MIcon.Dense), true } } },
@@ -49,7 +52,7 @@ public static class Startup
         { nameof(MDescriptions), new Dictionary<string, object>() { { nameof(MDescriptions.Dense), true } } },
         { nameof(MRow), new Dictionary<string, object>() { { nameof(MRow.Dense), true } } },
         { "MAutocomplete", new Dictionary<string, object>() { { "Dense", true } } },
-        { "MCascader", new Dictionary<string, object>() { { "Dense", true } } },
+        { "MCascader", new Dictionary<string, object>() { { "Dense", true },{ "Outlined", true } } },
         { "MCheckbox", new Dictionary<string, object>() { { "Dense", true } } },
         { "MFileInput", new Dictionary<string, object>() { { "Dense", true } } },
         { "MRadioGroup", new Dictionary<string, object>() { { "Dense", true } } },
