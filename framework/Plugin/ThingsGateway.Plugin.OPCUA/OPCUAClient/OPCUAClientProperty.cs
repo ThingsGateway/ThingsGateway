@@ -10,6 +10,7 @@
 //------------------------------------------------------------------------------
 #endregion
 
+
 namespace ThingsGateway.Plugin.OPCUA;
 
 /// <inheritdoc/>
@@ -50,6 +51,12 @@ public class OPCUAClientProperty : CollectDriverPropertyBase
     /// </summary>
     [DeviceProperty("使用SourceTime", "")]
     public bool SourceTimestampEnable { get; set; } = true;
+
+    /// <summary>
+    /// 加载服务端数据类型
+    /// </summary>
+    [DeviceProperty("加载服务端数据类型")]
+    public bool LoadType { get; set; } = true;
 
     /// <summary>
     /// 激活订阅
