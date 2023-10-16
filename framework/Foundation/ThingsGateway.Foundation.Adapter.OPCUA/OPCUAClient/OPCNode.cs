@@ -1,4 +1,4 @@
-﻿#region copyright
+#region copyright
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -70,6 +70,10 @@ public class OPCNode
     /// </summary>
     [Description("安全策略")]
     public bool IsUseSecurity { get; set; } = false;
+    /// <summary>
+    /// 使用安全订阅
+    /// </summary>
+    public bool IsSafed { get; set; } = true;
     /// <inheritdoc/>
     public override string ToString()
     {
