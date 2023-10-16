@@ -498,9 +498,9 @@ namespace ThingsGateway.Foundation.Sockets
             this.Clear();
 
             this.m_serverState = ServerState.Stopped;
-            if (this.PluginsManager.Enable)
+            if (this.PluginsManager?.Enable == true)
             {
-                this.m_pluginsManager.Raise(nameof(IServerStopedPlugin.OnServerStoped), this, new ServiceStateEventArgs(this.m_serverState, default));
+                this.m_pluginsManager?.Raise(nameof(IServerStopedPlugin.OnServerStoped), this, new ServiceStateEventArgs(this.m_serverState, default));
             }
             return this;
         }
@@ -540,11 +540,11 @@ namespace ThingsGateway.Foundation.Sockets
                 this.Clear();
 
                 this.m_serverState = ServerState.Disposed;
-                if (this.PluginsManager.Enable)
+                if (this.PluginsManager?.Enable == true)
                 {
-                    this.m_pluginsManager.Raise(nameof(IServerStopedPlugin.OnServerStoped), this, new ServiceStateEventArgs(this.m_serverState, default));
+                    this.m_pluginsManager?.Raise(nameof(IServerStopedPlugin.OnServerStoped), this, new ServiceStateEventArgs(this.m_serverState, default));
                 }
-                this.PluginsManager.SafeDispose();
+                this.PluginsManager?.SafeDispose();
             }
             base.Dispose(disposing);
         }
