@@ -1,4 +1,4 @@
-﻿#region copyright
+#region copyright
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -200,7 +200,7 @@ public class OPCUAClient : IDisposable
     /// <summary>
     /// 新增订阅，需要指定订阅组名称，订阅的tag名数组
     /// </summary>
-    public async Task AddSubscriptionAsync(string subscriptionName, string[] items)
+    public async Task AddSubscriptionAsync(string subscriptionName, string[] items, bool isSafed = true)
     {
         Subscription m_subscription = new(m_session.DefaultSubscription)
         {
@@ -213,14 +213,14 @@ public class OPCUAClient : IDisposable
             DisplayName = subscriptionName
         };
         List<MonitoredItem> monitoredItems = new();
-        var variableNodes = await ReadNodesAsync(items);
+        var variableNodes = isSafed ? await ReadNodesAsync(items) : null;
         for (int i = 0; i < items.Length; i++)
         {
             try
             {
                 var item = new MonitoredItem
                 {
-                    StartNodeId = variableNodes[i].NodeId,
+                    StartNodeId = isSafed ? variableNodes[i].NodeId : items[i],
                     AttributeId = Attributes.Value,
                     DisplayName = items[i],
                     Filter = OPCNode.DeadBand == 0 ? null : new DataChangeFilter() { DeadbandValue = OPCNode.DeadBand, DeadbandType = (int)DeadbandType.Absolute, Trigger = DataChangeTrigger.StatusValue },
@@ -532,7 +532,7 @@ public class OPCUAClient : IDisposable
 
         //如果是订阅模式，连接时添加订阅组
         if (OPCNode.ActiveSubscribe)
-            await AddSubscriptionAsync(Guid.NewGuid().ToString(), Variables.ToArray());
+            await AddSubscriptionAsync(Guid.NewGuid().ToString(), Variables.ToArray(), OPCNode.IsSafed);
         return m_session;
     }
 
