@@ -10,35 +10,28 @@
 //------------------------------------------------------------------------------
 #endregion
 
+using SqlSugar;
+
 using System.ComponentModel;
 
 namespace ThingsGateway.Gateway.Core;
 /// <summary>
 /// 历史数据表
 /// </summary>
-[IgnoreSqlTable]
 [SugarTable("historyValue", TableDescription = "历史数据表")]
-public class HistoryValue : PrimaryIdEntity
+public class QuestDBHistoryValue
 {
-    /// <summary>
-    /// 忽略Id，无实际上传字段
-    /// </summary>
-    [SugarColumn(IsIgnore = true)]
-    public override long Id { get; set; }
-
     /// <summary>
     /// 采集时间
     /// </summary>
     [TimeDbSplitField(DateType.Month)]
     [Description("采集时间")]
-    [DataTable(Order = 1, IsShow = true, Sortable = true, CellClass = " table-text-truncate ")]
     public DateTime CollectTime { get; set; }
 
     /// <summary>
     /// 上传时间
     /// </summary>
     [Description("上传时间")]
-    [DataTable(Order = 1, IsShow = true, Sortable = true, CellClass = " table-text-truncate ")]
     public DateTime CreateTime { get; set; }
 
     /// <summary>
@@ -46,7 +39,6 @@ public class HistoryValue : PrimaryIdEntity
     /// </summary>
     [SugarColumn(ColumnDataType = "symbol")]
     [Description("设备名称")]
-    [DataTable(Order = 2, IsShow = true, Sortable = true, CellClass = " table-text-truncate ")]
     public string DeviceName { get; set; }
 
     /// <summary>
@@ -54,20 +46,17 @@ public class HistoryValue : PrimaryIdEntity
     /// </summary>
     [SugarColumn(ColumnDataType = "symbol")]
     [Description("变量名称")]
-    [DataTable(Order = 2, IsShow = true, Sortable = true, CellClass = " table-text-truncate ")]
     public string Name { get; set; }
 
     /// <summary>
     /// 是否在线
     /// </summary>
     [Description("是否在线")]
-    [DataTable(Order = 3, IsShow = true, Sortable = true, CellClass = " table-text-truncate ")]
     public bool IsOnline { get; set; }
 
     /// <summary>
     /// 变量值
     /// </summary>
     [Description("变量值")]
-    [DataTable(Order = 4, IsShow = true, Sortable = true, CellClass = " table-text-truncate ")]
     public double Value { get; set; }
 }
