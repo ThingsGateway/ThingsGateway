@@ -18,6 +18,7 @@ namespace ThingsGateway.Plugin.SQLDB;
 [SugarTable("historyValue_{year}{month}{day}", TableDescription = "设备采集历史表")]//3个变量必须要有
 [SugarIndex("index_Name", nameof(SQLHistoryValue.Name), OrderByType.Desc)]
 [SugarIndex("index_DeviceName", nameof(SQLHistoryValue.DeviceName), OrderByType.Desc)]
+[SugarIndex("index_CollectTime", nameof(SQLHistoryValue.CollectTime), OrderByType.Desc)]
 public class SQLHistoryValue
 {
     [SugarColumn(ColumnDescription = "Id", IsPrimaryKey = true)]
