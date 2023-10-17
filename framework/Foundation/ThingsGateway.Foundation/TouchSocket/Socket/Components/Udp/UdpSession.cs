@@ -69,9 +69,13 @@ namespace ThingsGateway.Foundation.Sockets
             this.Protocol = Protocol.Udp;
             var socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
             this.Monitor = new UdpNetworkMonitor(null, socket);
-            this.ReceiveBufferSize = 1024 * 64;
-            this.SendBufferSize = 1024 * 64;
         }
+
+        /// <inheritdoc/>
+        public override int ReceiveBufferSize => 64 * 1024;
+
+        /// <inheritdoc/>
+        public override int SendBufferSize => 64 * 1024;
 
         /// <summary>
         /// <inheritdoc/>

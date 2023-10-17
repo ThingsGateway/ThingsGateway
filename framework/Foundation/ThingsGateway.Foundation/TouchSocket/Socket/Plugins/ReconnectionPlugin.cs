@@ -31,6 +31,24 @@ namespace ThingsGateway.Foundation.Sockets
     [PluginOption(Singleton = true, NotRegister = true)]
     public sealed class ReconnectionPlugin<TClient> : PluginBase where TClient : class, ITcpClient
     {
+        /// <summary>
+        /// 重连插件
+        /// </summary>
+        public ReconnectionPlugin()
+        {
+            this.ActionForConnect = async (c) =>
+            {
+                try
+                {
+                    await c.ConnectAsync();
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                }
+            };
+        }
         /// <inheritdoc/>
         protected override void Loaded(IPluginsManager pluginsManager)
         {

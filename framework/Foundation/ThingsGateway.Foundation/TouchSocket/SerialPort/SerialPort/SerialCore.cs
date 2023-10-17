@@ -24,9 +24,14 @@ internal sealed class InternalSerialCore : SerialCore
 public class SerialCore : IDisposable, ISender
 {
     /// <summary>
-    /// 初始缓存大小
+    /// 最小缓存尺寸
     /// </summary>
-    public const int BufferSize = 1024 * 10;
+    public int MinBufferSize { get; set; } = 1024 * 10;
+
+    /// <summary>
+    /// 最大缓存尺寸
+    /// </summary>
+    public int MaxBufferSize { get; set; } = 1024 * 1024 * 10;
     #region 字段
 
     /// <summary>
@@ -35,14 +40,15 @@ public class SerialCore : IDisposable, ISender
     public readonly object SyncRoot = new object();
 
     private long m_bufferRate;
-    private bool m_disposedValue;
     private SpinLock m_lock;
-    private bool m_online => MainSerialPort?.IsOpen == true;
-    private int m_receiveBufferSize = BufferSize;
+    private bool m_online => m_serialPort?.IsOpen == true;
+    private int m_receiveBufferSize = 1024 * 10;
     private ValueCounter m_receiveCounter;
-    private int m_sendBufferSize = BufferSize;
+    private int m_sendBufferSize = 1024 * 10;
     private ValueCounter m_sendCounter;
     private readonly EasyLock m_semaphore = new EasyLock();
+    private SerialPort m_serialPort;
+
     #endregion 字段
 
     /// <summary>
@@ -69,7 +75,7 @@ public class SerialCore : IDisposable, ISender
     /// </summary>
     ~SerialCore()
     {
-        this.Dispose(disposing: false);
+        this.SafeDispose();
     }
 
     /// <inheritdoc/>
@@ -100,19 +106,11 @@ public class SerialCore : IDisposable, ISender
     public Action<SerialCore, ByteBlock> OnReceived { get; set; }
 
     /// <summary>
-    /// 接收缓存池（可以设定初始值，运行时的值会根据流速自动调整）
+    /// 接收缓存池,运行时的值会根据流速自动调整
     /// </summary>
     public int ReceiveBufferSize
     {
         get => this.m_receiveBufferSize;
-        set
-        {
-            this.m_receiveBufferSize = value;
-            if (this.MainSerialPort != null && !MainSerialPort.IsOpen)
-            {
-                this.MainSerialPort.ReadBufferSize = value;
-            }
-        }
     }
 
     /// <summary>
@@ -121,19 +119,11 @@ public class SerialCore : IDisposable, ISender
     public ValueCounter ReceiveCounter { get => this.m_receiveCounter; }
 
     /// <summary>
-    /// 发送缓存池（可以设定初始值，运行时的值会根据流速自动调整）
+    /// 发送缓存池,运行时的值会根据流速自动调整
     /// </summary>
     public int SendBufferSize
     {
         get => this.m_sendBufferSize;
-        set
-        {
-            this.m_sendBufferSize = value;
-            if (this.MainSerialPort != null && !MainSerialPort.IsOpen)
-            {
-                this.MainSerialPort.WriteBufferSize = value;
-            }
-        }
     }
 
     /// <summary>
@@ -144,7 +134,7 @@ public class SerialCore : IDisposable, ISender
     /// <summary>
     /// SerialPort
     /// </summary>
-    public SerialPort MainSerialPort { get; private set; }
+    public SerialPort MainSerialPort { get => this.m_serialPort; }
 
 
     /// <summary>
@@ -155,11 +145,12 @@ public class SerialCore : IDisposable, ISender
         var byteBlock = BytePool.Default.GetByteBlock(this.ReceiveBufferSize);
         this.UserToken = byteBlock;
         byteBlock.SetLength(0);
-        if (this.MainSerialPort.BytesToRead > 0)
+        if (this.m_serialPort.BytesToRead > 0)
         {
+            this.m_bufferRate += 2;
             this.ProcessReceived();
         }
-        MainSerialPort.DataReceived += MainSerialPort_DataReceived;
+        m_serialPort.DataReceived += MainSerialPort_DataReceived;
     }
 
     private void MainSerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
@@ -189,12 +180,12 @@ public class SerialCore : IDisposable, ISender
     /// </summary>
     public void Dispose()
     {
-        this.Dispose(disposing: true);
         GC.SuppressFinalize(this);
+        UserToken.SafeDispose();
     }
 
     /// <summary>
-    /// 重置环境，并设置新的<see cref="MainSerialPort"/>。
+    /// 重置环境，并设置新的<see cref="m_serialPort"/>。
     /// </summary>
     /// <param name="socket"></param>
     public virtual void Reset(SerialPort socket)
@@ -209,7 +200,7 @@ public class SerialCore : IDisposable, ISender
             throw new Exception("新的SerialPort必须在连接状态。");
         }
         this.Reset();
-        this.MainSerialPort = socket;
+        this.m_serialPort = socket;
     }
 
     /// <summary>
@@ -219,14 +210,14 @@ public class SerialCore : IDisposable, ISender
     {
         this.m_receiveCounter.Reset();
         this.m_sendCounter.Reset();
-        this.MainSerialPort = null;
+        this.m_serialPort = null;
         this.OnReceived = null;
         this.OnBreakOut = null;
         this.UserToken = null;
         this.m_bufferRate = 1;
         this.m_lock = new SpinLock();
-        this.m_receiveBufferSize = BufferSize;
-        this.m_sendBufferSize = BufferSize;
+        this.m_receiveBufferSize = this.MinBufferSize;
+        this.m_sendBufferSize = this.MinBufferSize;
     }
 
     /// <summary>
@@ -244,7 +235,7 @@ public class SerialCore : IDisposable, ISender
         try
         {
             this.m_lock.Enter(ref lockTaken);
-            this.MainSerialPort.Write(buffer, offset, length);
+            this.m_serialPort.Write(buffer, offset, length);
         }
         finally
         {
@@ -267,7 +258,7 @@ public class SerialCore : IDisposable, ISender
         {
             await this.m_semaphore.WaitAsync();
 
-            this.MainSerialPort.Write(buffer, offset, length);
+            this.m_serialPort.Write(buffer, offset, length);
         }
         finally
         {
@@ -287,22 +278,7 @@ public class SerialCore : IDisposable, ISender
         this.OnBreakOut?.Invoke(this, manual, msg);
     }
 
-    /// <summary>
-    /// 释放对象
-    /// </summary>
-    /// <param name="disposing"></param>
-    protected virtual void Dispose(bool disposing)
-    {
-        if (!this.m_disposedValue)
-        {
-            if (disposing)
-            {
-            }
 
-            this.m_disposedValue = true;
-        }
-        UserToken.SafeDispose();
-    }
 
     /// <summary>
     /// 当发生异常的时候
@@ -341,12 +317,20 @@ public class SerialCore : IDisposable, ISender
 
     private void OnReceivePeriod(long value)
     {
-        this.ReceiveBufferSize = TouchSocketUtility.HitBufferLength(value);
+        this.m_receiveBufferSize = Math.Max(TouchSocketUtility.HitBufferLength(value), this.MinBufferSize);
+        if (this.MainSerialPort != null && !MainSerialPort.IsOpen)
+        {
+            this.MainSerialPort.ReadBufferSize = this.m_receiveBufferSize;
+        }
     }
 
     private void OnSendPeriod(long value)
     {
-        this.SendBufferSize = TouchSocketUtility.HitBufferLength(value);
+        this.m_sendBufferSize = Math.Max(TouchSocketUtility.HitBufferLength(value), this.MinBufferSize);
+        if (this.MainSerialPort != null && !MainSerialPort.IsOpen)
+        {
+            this.MainSerialPort.WriteBufferSize = this.m_sendBufferSize;
+        }
     }
 
     private void PrivateBreakOut(bool manual, string msg)
@@ -367,21 +351,21 @@ public class SerialCore : IDisposable, ISender
             UserToken?.SafeDispose();
             return;
         }
-        if (MainSerialPort.BytesToRead > 0)
+        if (m_serialPort.BytesToRead > 0)
         {
             var byteBlock = UserToken;
-            byte[] buffer = BytePool.Default.Rent(MainSerialPort.BytesToRead);
-            int num = MainSerialPort.Read(buffer, 0, MainSerialPort.BytesToRead);
+            byte[] buffer = BytePool.Default.Rent(m_serialPort.BytesToRead);
+            int num = m_serialPort.Read(buffer, 0, m_serialPort.BytesToRead);
             byteBlock.Write(buffer, 0, num);
             byteBlock.SetLength(num);
             this.HandleBuffer(byteBlock);
             try
             {
-                var newByteBlock = BytePool.Default.GetByteBlock((int)Math.Min(this.ReceiveBufferSize * this.m_bufferRate, TouchSocketUtility.MaxBufferLength));
+                var newByteBlock = BytePool.Default.GetByteBlock((int)Math.Min(this.ReceiveBufferSize * this.m_bufferRate, this.MaxBufferSize));
                 newByteBlock.SetLength(0);
                 UserToken = newByteBlock;
 
-                if (MainSerialPort.BytesToRead > 0)
+                if (m_serialPort.BytesToRead > 0)
                 {
                     this.m_bufferRate += 2;
                     this.ProcessReceived();
