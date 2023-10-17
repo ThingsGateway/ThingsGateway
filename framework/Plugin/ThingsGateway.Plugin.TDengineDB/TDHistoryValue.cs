@@ -25,7 +25,7 @@ public class TDHistoryValue : STable
     /// <summary>
     /// 上传时间
     /// </summary>
-    [SugarColumn(InsertServerTime = true)]
+    [SugarColumn(IsPrimaryKey = true, InsertServerTime = true)]
     [Description("上传时间")]
     public DateTime CreateTime { get; set; }
 
