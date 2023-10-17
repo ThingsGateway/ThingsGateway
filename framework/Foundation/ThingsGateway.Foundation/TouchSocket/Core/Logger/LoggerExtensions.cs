@@ -292,7 +292,13 @@ public static class LoggerExtensions
     {
         logger.Log(ThingsGateway.Foundation.Core.LogLevel.Error, null, msg, ex);
     }
-
+    /// <summary>
+    /// 输出错误日志
+    /// </summary>
+    public static void LogError(this ILog logger, Exception ex)
+    {
+        logger.Log(ThingsGateway.Foundation.Core.LogLevel.Error, null, ex.Message, ex);
+    }
 
     /// <summary>
     /// 输出警示日志
@@ -301,7 +307,13 @@ public static class LoggerExtensions
     {
         logger.Log(ThingsGateway.Foundation.Core.LogLevel.Warning, null, msg, ex);
     }
-
+    /// <summary>
+    /// 输出警示日志
+    /// </summary>
+    public static void LogWarning(this ILog logger, Exception ex)
+    {
+        logger.Log(ThingsGateway.Foundation.Core.LogLevel.Warning, null, ex.Message, ex);
+    }
 
     /// <summary>
     /// 输出警示日志

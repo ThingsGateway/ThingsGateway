@@ -162,7 +162,7 @@ public class ModbusSerialServer : UpLoadBase
         }
         catch (Exception ex)
         {
-            LogMessage?.LogWarning(ex, ToString());
+            LogMessage?.LogWarning(ex);
             tags.ForEach(a =>
             {
                 a.VariableValueChange -= VariableValueChange;

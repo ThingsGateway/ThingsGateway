@@ -124,7 +124,7 @@ public class IotSharpClient : UpLoadBase
                         }
                         catch (Exception ex)
                         {
-                            LogMessage?.LogWarning(ex, ToString());
+                            LogMessage?.LogWarning(ex);
                         }
 
                     }
@@ -163,7 +163,7 @@ public class IotSharpClient : UpLoadBase
                                 }
                                 catch (Exception ex)
                                 {
-                                    LogMessage?.LogWarning(ex, ToString());
+                                    LogMessage?.LogWarning(ex);
                                 }
 
                             }
@@ -171,7 +171,7 @@ public class IotSharpClient : UpLoadBase
                     }
                     catch (Exception ex)
                     {
-                        LogMessage?.LogWarning(ex, ToString());
+                        LogMessage?.LogWarning(ex);
                     }
 
                 }
@@ -180,7 +180,7 @@ public class IotSharpClient : UpLoadBase
         }
         catch (Exception ex)
         {
-            LogMessage?.LogWarning(ex, ToString());
+            LogMessage?.LogWarning(ex);
         }
         try
         {
@@ -207,7 +207,7 @@ public class IotSharpClient : UpLoadBase
                         }
                         catch (Exception ex)
                         {
-                            LogMessage?.LogWarning(ex, ToString());
+                            LogMessage?.LogWarning(ex);
                         }
                     }
 
@@ -237,7 +237,7 @@ public class IotSharpClient : UpLoadBase
                             }
                             catch (Exception ex)
                             {
-                                LogMessage?.LogWarning(ex, ToString());
+                                LogMessage?.LogWarning(ex);
                             }
                         }
 
@@ -250,7 +250,7 @@ public class IotSharpClient : UpLoadBase
         }
         catch (Exception ex)
         {
-            LogMessage?.LogWarning(ex, ToString());
+            LogMessage?.LogWarning(ex);
         }
 
         if (driverPropertys.CycleInterval > UploadDeviceThread.CycleInterval + 50)
@@ -301,7 +301,7 @@ public class IotSharpClient : UpLoadBase
         }
         catch (Exception ex)
         {
-            LogMessage?.LogError(ex, ToString());
+            LogMessage?.LogError(ex);
         }
 
     }

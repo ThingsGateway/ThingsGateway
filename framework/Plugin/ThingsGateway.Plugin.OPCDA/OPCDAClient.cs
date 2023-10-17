@@ -230,7 +230,7 @@ public class OPCDAClient : CollectBase
         }
         catch (Exception ex)
         {
-            LogMessage?.LogWarning(ex, ToString());
+            LogMessage?.LogWarning(ex);
         }
     }
 }

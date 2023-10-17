@@ -100,7 +100,7 @@ public class QuestDB : UpLoadBase
                 }
                 catch (Exception ex)
                 {
-                    LogMessage?.LogWarning(ex, ToString());
+                    LogMessage?.LogWarning(ex);
                 }
 
             }
@@ -118,7 +118,7 @@ public class QuestDB : UpLoadBase
                     }
                     catch (Exception ex)
                     {
-                        LogMessage?.LogWarning(ex, ToString());
+                        LogMessage?.LogWarning(ex);
                     }
 
                 }
@@ -149,7 +149,7 @@ public class QuestDB : UpLoadBase
         }
         catch (Exception ex)
         {
-            LogMessage.LogError(ex, ToString());
+            LogMessage?.LogError(ex);
         }
 
         base.Dispose(disposing);
@@ -299,7 +299,7 @@ public class QuestDB : UpLoadBase
                 }
                 catch (Exception ex)
                 {
-                    LogMessage.LogWarning(ex, ToString());
+                                                LogMessage.LogWarning(ex);
                 }
 
 
@@ -308,7 +308,7 @@ public class QuestDB : UpLoadBase
         }
         catch (Exception ex)
         {
-            LogMessage.LogWarning(ex, ToString());
+                                        LogMessage.LogWarning(ex);
             await CacheDb.AddCacheData("", dbInserts.ToJsonString(), driverPropertys.CacheMaxCount);
         }
 

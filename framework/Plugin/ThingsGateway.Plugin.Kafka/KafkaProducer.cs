@@ -98,7 +98,7 @@ public class KafkaProducer : UpLoadBase
                         }
                         catch (Exception ex)
                         {
-                            LogMessage.LogWarning(ex, ToString());
+                            LogMessage.LogWarning(ex);
                         }
 
                     }
@@ -133,7 +133,7 @@ public class KafkaProducer : UpLoadBase
                                 }
                                 catch (Exception ex)
                                 {
-                                    LogMessage.LogWarning(ex, ToString());
+                                    LogMessage.LogWarning(ex);
                                 }
 
                             }
@@ -144,7 +144,7 @@ public class KafkaProducer : UpLoadBase
                     }
                     catch (Exception ex)
                     {
-                        LogMessage?.LogWarning(ex, ToString());
+                        LogMessage?.LogWarning(ex);
                     }
 
                 }
@@ -153,7 +153,7 @@ public class KafkaProducer : UpLoadBase
         }
         catch (Exception ex)
         {
-            LogMessage?.LogWarning(ex, ToString());
+            LogMessage?.LogWarning(ex);
         }
         try
         {
@@ -180,7 +180,7 @@ public class KafkaProducer : UpLoadBase
                         }
                         catch (Exception ex)
                         {
-                            LogMessage?.LogWarning(ex, ToString());
+                            LogMessage?.LogWarning(ex);
                         }
                     }
                     if (isSuccess)
@@ -212,7 +212,7 @@ public class KafkaProducer : UpLoadBase
                             }
                             catch (Exception ex)
                             {
-                                LogMessage?.LogWarning(ex, ToString());
+                                LogMessage?.LogWarning(ex);
                             }
                         }
                         if (isSuccess)
@@ -226,7 +226,7 @@ public class KafkaProducer : UpLoadBase
         }
         catch (Exception ex)
         {
-            LogMessage?.LogWarning(ex, ToString());
+            LogMessage?.LogWarning(ex);
         }
 
         if (driverPropertys.CycleInterval > UploadDeviceThread.CycleInterval + 50)
@@ -401,7 +401,7 @@ public class KafkaProducer : UpLoadBase
         }
         catch (Exception ex)
         {
-            LogMessage?.LogWarning(ex, ToString());
+            LogMessage?.LogWarning(ex);
             await CacheDb.AddCacheData(topic, payLoad, driverPropertys.CacheMaxCount);
         }
     }

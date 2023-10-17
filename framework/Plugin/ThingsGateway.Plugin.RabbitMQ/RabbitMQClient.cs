@@ -93,7 +93,7 @@ public class RabbitMQClient : UpLoadBase
                 }
                 catch (Exception ex)
                 {
-                    LogMessage?.LogWarning(ex, ToString());
+                    LogMessage?.LogWarning(ex);
                 }
             }
 
@@ -124,7 +124,7 @@ public class RabbitMQClient : UpLoadBase
                             }
                             catch (Exception ex)
                             {
-                                LogMessage?.LogWarning(ex, ToString());
+                                LogMessage?.LogWarning(ex);
                             }
 
                         }
@@ -150,7 +150,7 @@ public class RabbitMQClient : UpLoadBase
                             }
                             catch (Exception ex)
                             {
-                                LogMessage?.LogWarning(ex, ToString());
+                                LogMessage?.LogWarning(ex);
                             }
                         }
 
@@ -188,7 +188,7 @@ public class RabbitMQClient : UpLoadBase
                                     }
                                     catch (Exception ex)
                                     {
-                                        LogMessage?.LogWarning(ex, ToString());
+                                        LogMessage?.LogWarning(ex);
                                     }
 
                                 }
@@ -214,7 +214,7 @@ public class RabbitMQClient : UpLoadBase
                                     }
                                     catch (Exception ex)
                                     {
-                                        LogMessage?.LogWarning(ex, ToString());
+                                        LogMessage?.LogWarning(ex);
                                     }
                                 }
 
@@ -224,7 +224,7 @@ public class RabbitMQClient : UpLoadBase
                     }
                     catch (Exception ex)
                     {
-                        LogMessage?.LogWarning(ex, ToString());
+                        LogMessage?.LogWarning(ex);
                     }
 
 
@@ -233,7 +233,7 @@ public class RabbitMQClient : UpLoadBase
         }
         catch (Exception ex)
         {
-            LogMessage?.LogWarning(ex, ToString());
+            LogMessage?.LogWarning(ex);
         }
         try
         {
@@ -257,7 +257,7 @@ public class RabbitMQClient : UpLoadBase
                             }
                             catch (Exception ex)
                             {
-                                LogMessage?.LogWarning(ex, ToString());
+                                LogMessage?.LogWarning(ex);
                             }
 
                         }
@@ -275,7 +275,7 @@ public class RabbitMQClient : UpLoadBase
                             }
                             catch (Exception ex)
                             {
-                                LogMessage?.LogWarning(ex, ToString());
+                                LogMessage?.LogWarning(ex);
                             }
                         }
 
@@ -305,7 +305,7 @@ public class RabbitMQClient : UpLoadBase
                                 }
                                 catch (Exception ex)
                                 {
-                                    LogMessage?.LogWarning(ex, ToString());
+                                    LogMessage?.LogWarning(ex);
                                 }
 
                             }
@@ -323,7 +323,7 @@ public class RabbitMQClient : UpLoadBase
                                 }
                                 catch (Exception ex)
                                 {
-                                    LogMessage?.LogWarning(ex, ToString());
+                                    LogMessage?.LogWarning(ex);
                                 }
                             }
 
@@ -338,7 +338,7 @@ public class RabbitMQClient : UpLoadBase
         }
         catch (Exception ex)
         {
-            LogMessage?.LogWarning(ex, ToString());
+            LogMessage?.LogWarning(ex);
         }
 
         if (driverPropertys.CycleInterval > UploadDeviceThread.CycleInterval + 50)
@@ -482,7 +482,7 @@ public class RabbitMQClient : UpLoadBase
         }
         catch (Exception ex)
         {
-            LogMessage?.LogWarning(ex, ToString());
+            LogMessage?.LogWarning(ex);
             await CacheDb.AddCacheData(queueName, data, driverPropertys.CacheMaxCount);
         }
 

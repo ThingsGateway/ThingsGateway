@@ -114,7 +114,7 @@ public class MqttClient : UpLoadBase
                         }
                         catch (Exception ex)
                         {
-                            LogMessage?.LogWarning(ex, ToString());
+                            LogMessage?.LogWarning(ex);
                         }
 
                     }
@@ -149,7 +149,7 @@ public class MqttClient : UpLoadBase
                                 }
                                 catch (Exception ex)
                                 {
-                                    LogMessage?.LogWarning(ex, ToString());
+                                    LogMessage?.LogWarning(ex);
                                 }
 
                             }
@@ -157,7 +157,7 @@ public class MqttClient : UpLoadBase
                     }
                     catch (Exception ex)
                     {
-                        LogMessage?.LogWarning(ex, ToString());
+                        LogMessage?.LogWarning(ex);
                     }
 
                 }
@@ -167,7 +167,7 @@ public class MqttClient : UpLoadBase
         }
         catch (Exception ex)
         {
-            LogMessage?.LogWarning(ex, ToString());
+            LogMessage?.LogWarning(ex);
         }
         try
         {
@@ -194,7 +194,7 @@ public class MqttClient : UpLoadBase
                         }
                         catch (Exception ex)
                         {
-                            LogMessage?.LogWarning(ex, ToString());
+                            LogMessage?.LogWarning(ex);
                         }
                     }
 
@@ -226,7 +226,7 @@ public class MqttClient : UpLoadBase
                             }
                             catch (Exception ex)
                             {
-                                LogMessage?.LogWarning(ex, ToString());
+                                LogMessage?.LogWarning(ex);
                             }
                         }
 
@@ -239,7 +239,7 @@ public class MqttClient : UpLoadBase
         }
         catch (Exception ex)
         {
-            LogMessage?.LogWarning(ex, ToString());
+            LogMessage?.LogWarning(ex);
         }
 
         if (driverPropertys.CycleInterval > UploadDeviceThread.CycleInterval + 50)
@@ -293,7 +293,7 @@ public class MqttClient : UpLoadBase
         }
         catch (Exception ex)
         {
-            LogMessage?.LogError(ex, ToString());
+            LogMessage?.LogError(ex);
         }
     }
 
@@ -438,7 +438,7 @@ public class MqttClient : UpLoadBase
         }
         catch (Exception ex)
         {
-            LogMessage?.LogWarning(ex, ToString());
+            LogMessage?.LogWarning(ex);
         }
         try
         {
