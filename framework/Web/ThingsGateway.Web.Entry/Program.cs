@@ -46,6 +46,8 @@ public class Program
 
         //注意，在发布生产环境时，必须使用dotnet publish功能，否则会生成staticwebassets.runtime.json，导致文件路径失效闪退
 
+        //注意，单文件发布目前是不支持的，原因是因为sugar的td驱动不支持单文件发布(或者还有其他问题)，如果你没有用到TDengine插件，也可以用单文件发布
+
         builder.WebHost.UseWebRoot("wwwroot");
         builder.WebHost.UseStaticWebAssets();
         builder.Host.UseWindowsService();

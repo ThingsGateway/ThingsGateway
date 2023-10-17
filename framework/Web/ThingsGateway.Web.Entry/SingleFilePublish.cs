@@ -30,16 +30,18 @@ public class SingleFilePublish : ISingleFilePublish
     {
         return new[]
         {
-        "ThingsGateway.Web.Core",
+        "ThingsGateway.Foundation",
+        "ThingsGateway.Components",
+        "ThingsGateway.Core",
         "ThingsGateway.Admin.ApiController",
         "ThingsGateway.Admin.Application",
         "ThingsGateway.Admin.Blazor",
         "ThingsGateway.Admin.Core",
         "ThingsGateway.Gateway.ApiController",
-        "ThingsGateway.Application",
+        "ThingsGateway.Gateway.Application",
         "ThingsGateway.Gateway.Blazor",
-        "ThingsGateway.Components",
-        "ThingsGateway.Foundation",
+        "ThingsGateway.Gateway.Core",
+        "ThingsGateway.Web.Core",
     };
     }
 }
