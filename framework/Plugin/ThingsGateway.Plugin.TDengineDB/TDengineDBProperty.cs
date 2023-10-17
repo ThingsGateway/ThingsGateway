@@ -11,13 +11,10 @@
 #endregion
 
 
-using SqlSugar;
-
 namespace ThingsGateway.Plugin.SQLDB;
 
 public class TDengineDBProperty : UpDriverPropertyBase
 {
-    [DeviceProperty("数据库类型", "QuestDB/TDengine,主要TD需要手动建库，并指定超级表")] public DbType DbType { get; set; } = DbType.TDengine;
     [DeviceProperty("链接字符串", "")] public string ConnectStr { get; set; } = "Host=localhost;Port=6030;Username=root;Password=taosdata;Database=test";
     [DeviceProperty("是否间隔插入", "False时将每次变化写入")] public bool IsInterval { get; set; } = true;
     [DeviceProperty("间隔时间", "秒，实时表时代表更新间隔，历史表时代表插入间隔")] public int IntervalTime { get; set; } = 10;
