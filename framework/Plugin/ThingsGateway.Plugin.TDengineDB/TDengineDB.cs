@@ -267,7 +267,7 @@ public class TDengineDB : UpLoadBase
         var sqlSugarClient = new SqlSugarClient(new ConnectionConfig()
         {
             ConnectionString = driverPropertys.ConnectStr,//连接字符串
-            DbType = driverPropertys.DbType,//数据库类型
+            DbType = DbType.TDengine,//数据库类型
             IsAutoCloseConnection = true, //不设成true要手动close
             ConfigureExternalServices = configureExternalServices,
         }

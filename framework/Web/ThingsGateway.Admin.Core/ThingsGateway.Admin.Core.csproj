@@ -13,7 +13,14 @@
 		<PackageReference Include="UAParser" Version="3.1.47" />
 		<PackageReference Include="Yitter.IdGenerator" Version="1.0.14" />
 	</ItemGroup>
-
+	
+	<ItemGroup>
+		<Content Update="SqlSugar.TDengineCore.dll">
+			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+			<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+		</Content>
+	</ItemGroup>
+	
 	<ItemGroup>
 		<ProjectReference Include="..\..\Foundation\ThingsGateway.Foundation\ThingsGateway.Foundation.csproj" />
 		<ProjectReference Include="..\ThingsGateway.Core\ThingsGateway.Core.csproj" />
