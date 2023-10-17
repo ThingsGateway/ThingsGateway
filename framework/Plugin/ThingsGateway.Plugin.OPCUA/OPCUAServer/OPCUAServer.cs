@@ -90,7 +90,7 @@ public partial class OPCUAServer : UpLoadBase
                     }
                     catch (Exception ex)
                     {
-                        LogMessage.LogWarning(ex, ToString());
+                                                    LogMessage.LogWarning(ex);
                     }
                 }
 
@@ -98,7 +98,7 @@ public partial class OPCUAServer : UpLoadBase
         }
         catch (Exception ex)
         {
-            LogMessage.LogWarning(ex, ToString());
+                                        LogMessage.LogWarning(ex);
         }
         if (driverPropertys.CycleInterval > UploadDeviceThread.CycleInterval + 50)
         {

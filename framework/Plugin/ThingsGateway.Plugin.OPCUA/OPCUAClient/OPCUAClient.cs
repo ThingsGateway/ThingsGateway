@@ -283,7 +283,7 @@ public class OPCUAClient : CollectBase
         }
         catch (Exception ex)
         {
-            LogMessage?.LogWarning(ex, ToString());
+            LogMessage?.LogWarning(ex);
         }
     }
 

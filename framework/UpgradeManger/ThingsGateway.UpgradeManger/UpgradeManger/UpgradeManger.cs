@@ -74,7 +74,7 @@ public partial class UpgradeManger
             }
             catch (Exception ex)
             {
-                LogMessage.LogError(ex, ToString());
+                LogMessage?.LogError(ex);
             }
         }
         TcpDmtpService.Dispose();

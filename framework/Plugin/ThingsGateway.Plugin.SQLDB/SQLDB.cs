@@ -87,7 +87,7 @@ public class SQLDB : UpLoadBase
                 }
                 catch (Exception ex)
                 {
-                    LogMessage?.LogWarning(ex, ToString());
+                    LogMessage?.LogWarning(ex);
                 }
             }
 
@@ -109,7 +109,7 @@ public class SQLDB : UpLoadBase
                 }
                 catch (Exception ex)
                 {
-                    LogMessage?.LogWarning(ex, ToString());
+                    LogMessage?.LogWarning(ex);
                 }
 
             }
@@ -127,7 +127,7 @@ public class SQLDB : UpLoadBase
                     }
                     catch (Exception ex)
                     {
-                        LogMessage?.LogWarning(ex, ToString());
+                        LogMessage?.LogWarning(ex);
                     }
 
                 }
@@ -185,7 +185,7 @@ public class SQLDB : UpLoadBase
         }
         catch (Exception ex)
         {
-            LogMessage.LogError(ex, ToString());
+            LogMessage?.LogError(ex);
         }
 
         base.Dispose(disposing);
@@ -307,7 +307,7 @@ public class SQLDB : UpLoadBase
                 }
                 catch (Exception ex)
                 {
-                    LogMessage.LogWarning(ex, ToString());
+                                                LogMessage.LogWarning(ex);
                 }
 
 
@@ -316,7 +316,7 @@ public class SQLDB : UpLoadBase
         }
         catch (Exception ex)
         {
-            LogMessage.LogWarning(ex, ToString());
+                                        LogMessage.LogWarning(ex);
             await CacheDb.AddCacheData("", dbInserts.ToJsonString(), driverPropertys.CacheMaxCount);
         }
 
