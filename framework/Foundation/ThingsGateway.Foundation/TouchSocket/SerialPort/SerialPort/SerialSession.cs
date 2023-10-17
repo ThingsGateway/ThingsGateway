@@ -204,10 +204,10 @@ public class SerialSessionBase : BaseSerial, ISerialSession
     #region 属性
 
     /// <inheritdoc/>
-    public DateTime LastReceivedTime => this.GetTcpCore().ReceiveCounter.LastIncrement;
+    public DateTime LastReceivedTime => this.GetSerialCore().ReceiveCounter.LastIncrement;
 
     /// <inheritdoc/>
-    public DateTime LastSendTime => this.GetTcpCore().SendCounter.LastIncrement;
+    public DateTime LastSendTime => this.GetSerialCore().SendCounter.LastIncrement;
 
     /// <inheritdoc/>
     public IContainer Container { get; private set; }
@@ -321,7 +321,7 @@ public class SerialSessionBase : BaseSerial, ISerialSession
 
     private void BeginReceive()
     {
-        this.GetTcpCore().BeginIocpReceive();
+        this.GetSerialCore().BeginIocpReceive();
     }
 
 
@@ -375,32 +375,22 @@ public class SerialSessionBase : BaseSerial, ISerialSession
         }
     }
 
-    private SerialCore GetTcpCore()
+    private SerialCore GetSerialCore()
     {
         this.ThrowIfDisposed();
         return this.m_serialCore ?? throw new ObjectDisposedException(this.GetType().Name);
     }
 
-
-
     /// <inheritdoc/>
     public override int ReceiveBufferSize
     {
-        get => this.GetTcpCore().ReceiveBufferSize;
-        set
-        {
-            this.GetTcpCore().ReceiveBufferSize = value;
-        }
+        get => this.GetSerialCore().ReceiveBufferSize;
     }
 
     /// <inheritdoc/>
     public override int SendBufferSize
     {
-        get => this.GetTcpCore().SendBufferSize;
-        set
-        {
-            this.GetTcpCore().SendBufferSize = value;
-        }
+        get => this.GetSerialCore().SendBufferSize;
     }
 
     /// <inheritdoc/>
@@ -728,7 +718,7 @@ public class SerialSessionBase : BaseSerial, ISerialSession
     {
         if (this.SendingData(buffer, offset, length).GetFalseAwaitResult())
         {
-            this.GetTcpCore().Send(buffer, offset, length);
+            this.GetSerialCore().Send(buffer, offset, length);
         }
     }
 
@@ -737,7 +727,7 @@ public class SerialSessionBase : BaseSerial, ISerialSession
     {
         if (await this.SendingData(buffer, offset, length))
         {
-            await this.GetTcpCore().SendAsync(buffer, offset, length);
+            await this.GetSerialCore().SendAsync(buffer, offset, length);
         }
     }
 

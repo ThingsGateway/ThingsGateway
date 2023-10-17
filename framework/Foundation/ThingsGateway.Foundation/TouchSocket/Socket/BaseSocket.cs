@@ -35,22 +35,11 @@ namespace ThingsGateway.Foundation.Sockets
         /// </summary>
         protected readonly object SyncRoot = new object();
 
-        private int m_receiveBufferSize = 1024 * 10;
-        private int m_sendBufferSize = 1024 * 10;
+        /// <inheritdoc/>
+        public abstract int SendBufferSize { get; }
 
         /// <inheritdoc/>
-        public virtual int SendBufferSize
-        {
-            get => this.m_sendBufferSize;
-            set => this.m_sendBufferSize = value < 1024 ? 1024 : value;
-        }
-
-        /// <inheritdoc/>
-        public virtual int ReceiveBufferSize
-        {
-            get => this.m_receiveBufferSize;
-            set => this.m_receiveBufferSize = value < 1024 ? 1024 : value;
-        }
+        public abstract int ReceiveBufferSize { get; }
 
         /// <inheritdoc/>
         public ILog Logger { get; set; }

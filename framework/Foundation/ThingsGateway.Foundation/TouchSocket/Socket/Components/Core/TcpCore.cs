@@ -24,9 +24,15 @@ public class TcpCore : SocketAsyncEventArgs, IDisposable, ISender
     private const string m_msg1 = "远程终端主动关闭";
 
     /// <summary>
-    /// 初始缓存大小
+    /// 最小缓存尺寸
     /// </summary>
-    public const int BufferSize = 1024 * 10;
+    public int MinBufferSize { get; set; } = 1024 * 10;
+
+    /// <summary>
+    /// 最大缓存尺寸
+    /// </summary>
+    public int MaxBufferSize { get; set; } = 1024 * 1024 * 10;
+
     #region 字段
 
     /// <summary>
@@ -37,10 +43,11 @@ public class TcpCore : SocketAsyncEventArgs, IDisposable, ISender
     private long m_bufferRate;
     private SpinLock m_lock;
     private volatile bool m_online;
-    private int m_receiveBufferSize = BufferSize;
+    private int m_receiveBufferSize = 1024 * 10;
     private ValueCounter m_receiveCounter;
-    private int m_sendBufferSize = BufferSize;
+    private int m_sendBufferSize = 1024 * 10;
     private ValueCounter m_sendCounter;
+    private Socket m_socket;
     private readonly EasyLock m_semaphore = new();
     #endregion 字段
 
@@ -87,15 +94,11 @@ public class TcpCore : SocketAsyncEventArgs, IDisposable, ISender
     public Action<TcpCore, ByteBlock> OnReceived { get; set; }
 
     /// <summary>
-    /// 接收缓存池（可以设定初始值，运行时的值会根据流速自动调整）
+    /// 接收缓存池,运行时的值会根据流速自动调整
     /// </summary>
     public int ReceiveBufferSize
     {
         get => this.m_receiveBufferSize;
-        set
-        {
-            this.m_receiveBufferSize = value;
-        }
     }
 
     /// <summary>
@@ -104,15 +107,11 @@ public class TcpCore : SocketAsyncEventArgs, IDisposable, ISender
     public ValueCounter ReceiveCounter { get => this.m_receiveCounter; }
 
     /// <summary>
-    /// 发送缓存池（可以设定初始值，运行时的值会根据流速自动调整）
+    /// 发送缓存池,运行时的值会根据流速自动调整
     /// </summary>
     public int SendBufferSize
     {
         get => this.m_sendBufferSize;
-        set
-        {
-            this.m_sendBufferSize = value;
-        }
     }
 
     /// <summary>
@@ -123,7 +122,7 @@ public class TcpCore : SocketAsyncEventArgs, IDisposable, ISender
     /// <summary>
     /// Socket
     /// </summary>
-    public Socket Socket { get; private set; }
+    public Socket Socket { get => this.m_socket; }
 
     /// <summary>
     /// 提供一个用于客户端-服务器通信的流，该流使用安全套接字层 (SSL) 安全协议对服务器和（可选）客户端进行身份验证。
@@ -141,7 +140,7 @@ public class TcpCore : SocketAsyncEventArgs, IDisposable, ISender
     /// <param name="sslOption"></param>
     public virtual void Authenticate(ServiceSslOption sslOption)
     {
-        var sslStream = (sslOption.CertificateValidationCallback != null) ? new SslStream(new NetworkStream(this.Socket, false), false, sslOption.CertificateValidationCallback) : new SslStream(new NetworkStream(this.Socket, false), false);
+        var sslStream = (sslOption.CertificateValidationCallback != null) ? new SslStream(new NetworkStream(this.m_socket, false), false, sslOption.CertificateValidationCallback) : new SslStream(new NetworkStream(this.m_socket, false), false);
         sslStream.AuthenticateAsServer(sslOption.Certificate);
 
         this.SslStream = sslStream;
@@ -154,7 +153,7 @@ public class TcpCore : SocketAsyncEventArgs, IDisposable, ISender
     /// <param name="sslOption"></param>
     public virtual void Authenticate(ClientSslOption sslOption)
     {
-        var sslStream = (sslOption.CertificateValidationCallback != null) ? new SslStream(new NetworkStream(this.Socket, false), false, sslOption.CertificateValidationCallback) : new SslStream(new NetworkStream(this.Socket, false), false);
+        var sslStream = (sslOption.CertificateValidationCallback != null) ? new SslStream(new NetworkStream(this.m_socket, false), false, sslOption.CertificateValidationCallback) : new SslStream(new NetworkStream(this.m_socket, false), false);
         if (sslOption.ClientCertificates == null)
         {
             sslStream.AuthenticateAsClient(sslOption.TargetHost);
@@ -174,7 +173,7 @@ public class TcpCore : SocketAsyncEventArgs, IDisposable, ISender
     /// <returns></returns>
     public virtual async Task AuthenticateAsync(ServiceSslOption sslOption)
     {
-        var sslStream = (sslOption.CertificateValidationCallback != null) ? new SslStream(new NetworkStream(this.Socket, false), false, sslOption.CertificateValidationCallback) : new SslStream(new NetworkStream(this.Socket, false), false);
+        var sslStream = (sslOption.CertificateValidationCallback != null) ? new SslStream(new NetworkStream(this.m_socket, false), false, sslOption.CertificateValidationCallback) : new SslStream(new NetworkStream(this.m_socket, false), false);
         await sslStream.AuthenticateAsServerAsync(sslOption.Certificate);
 
         this.SslStream = sslStream;
@@ -188,7 +187,7 @@ public class TcpCore : SocketAsyncEventArgs, IDisposable, ISender
     /// <returns></returns>
     public virtual async Task AuthenticateAsync(ClientSslOption sslOption)
     {
-        var sslStream = (sslOption.CertificateValidationCallback != null) ? new SslStream(new NetworkStream(this.Socket, false), false, sslOption.CertificateValidationCallback) : new SslStream(new NetworkStream(this.Socket, false), false);
+        var sslStream = (sslOption.CertificateValidationCallback != null) ? new SslStream(new NetworkStream(this.m_socket, false), false, sslOption.CertificateValidationCallback) : new SslStream(new NetworkStream(this.m_socket, false), false);
         if (sslOption.ClientCertificates == null)
         {
             await sslStream.AuthenticateAsClientAsync(sslOption.TargetHost);
@@ -209,8 +208,9 @@ public class TcpCore : SocketAsyncEventArgs, IDisposable, ISender
         var byteBlock = BytePool.Default.GetByteBlock(this.ReceiveBufferSize);
         this.UserToken = byteBlock;
         this.SetBuffer(byteBlock.Buffer, 0, byteBlock.Capacity);
-        if (!this.Socket.ReceiveAsync(this))
+        if (!this.m_socket.ReceiveAsync(this))
         {
+            this.m_bufferRate += 2;
             this.ProcessReceived(this);
         }
     }
@@ -278,7 +278,7 @@ public class TcpCore : SocketAsyncEventArgs, IDisposable, ISender
         }
         this.Reset();
         this.m_online = true;
-        this.Socket = socket;
+        this.m_socket = socket;
     }
 
     /// <summary>
@@ -290,14 +290,14 @@ public class TcpCore : SocketAsyncEventArgs, IDisposable, ISender
         this.m_sendCounter.Reset();
         this.SslStream?.Dispose();
         this.SslStream = null;
-        this.Socket = null;
+        this.m_socket = null;
         this.OnReceived = null;
         this.OnBreakOut = null;
         this.UserToken = null;
         this.m_bufferRate = 1;
         this.m_lock = new SpinLock();
-        this.m_receiveBufferSize = BufferSize;
-        this.m_sendBufferSize = BufferSize;
+        this.m_receiveBufferSize = this.MinBufferSize;
+        this.m_sendBufferSize = this.MinBufferSize;
         this.m_online = false;
     }
 
@@ -324,7 +324,7 @@ public class TcpCore : SocketAsyncEventArgs, IDisposable, ISender
                 this.m_lock.Enter(ref lockTaken);
                 while (length > 0)
                 {
-                    var r = this.Socket.Send(buffer, offset, length, SocketFlags.None);
+                    var r = this.m_socket.Send(buffer, offset, length, SocketFlags.None);
                     if (r == 0 && length > 0)
                     {
                         throw new Exception("发送数据不完全");
@@ -367,7 +367,7 @@ public class TcpCore : SocketAsyncEventArgs, IDisposable, ISender
 
                 while (length > 0)
                 {
-                    var r = await this.Socket.SendAsync(new ArraySegment<byte>(buffer, offset, length), SocketFlags.None, CancellationToken.None);
+                    var r = await this.m_socket.SendAsync(new ArraySegment<byte>(buffer, offset, length), SocketFlags.None, CancellationToken.None);
                     if (r == 0 && length > 0)
                     {
                         throw new Exception("发送数据不完全");
@@ -394,7 +394,7 @@ public class TcpCore : SocketAsyncEventArgs, IDisposable, ISender
 
                 while (length > 0)
                 {
-                    var r = this.Socket.Send(buffer, offset, length, SocketFlags.None);
+                    var r = this.m_socket.Send(buffer, offset, length, SocketFlags.None);
                     if (r == 0 && length > 0)
                     {
                         throw new Exception("发送数据不完全");
@@ -477,12 +477,20 @@ public class TcpCore : SocketAsyncEventArgs, IDisposable, ISender
 
     private void OnReceivePeriod(long value)
     {
-        this.ReceiveBufferSize = TouchSocketUtility.HitBufferLength(value);
+        this.m_receiveBufferSize = Math.Max(TouchSocketUtility.HitBufferLength(value), this.MinBufferSize);
+        if (this.m_socket != null)
+        {
+            this.m_socket.ReceiveBufferSize = this.m_receiveBufferSize;
+        }
     }
 
     private void OnSendPeriod(long value)
     {
-        this.SendBufferSize = TouchSocketUtility.HitBufferLength(value);
+        this.m_sendBufferSize = Math.Max(TouchSocketUtility.HitBufferLength(value), this.MinBufferSize);
+        if (this.m_socket != null)
+        {
+            this.m_socket.SendBufferSize = this.m_sendBufferSize;
+        }
     }
 
     private void PrivateBreakOut(bool manual, string msg)
@@ -511,11 +519,11 @@ public class TcpCore : SocketAsyncEventArgs, IDisposable, ISender
             this.HandleBuffer(byteBlock);
             try
             {
-                var newByteBlock = BytePool.Default.GetByteBlock((int)Math.Min(this.ReceiveBufferSize * this.m_bufferRate, TouchSocketUtility.MaxBufferLength));
+                var newByteBlock = BytePool.Default.GetByteBlock((int)Math.Min(this.ReceiveBufferSize * this.m_bufferRate, this.MaxBufferSize));
                 e.UserToken = newByteBlock;
                 e.SetBuffer(newByteBlock.Buffer, 0, newByteBlock.Capacity);
 
-                if (!this.Socket.ReceiveAsync(e))
+                if (!this.m_socket.ReceiveAsync(e))
                 {
                     this.m_bufferRate += 2;
                     this.ProcessReceived(e);
