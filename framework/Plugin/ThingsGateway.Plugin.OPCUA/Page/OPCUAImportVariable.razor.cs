@@ -43,6 +43,11 @@ public partial class OPCUAImportVariable
     /// </summary>
     [Parameter]
     public ThingsGateway.Foundation.Adapter.OPCUA.OPCUAClient PLC { get; set; }
+    /// <summary>
+    /// 是否显示子变量
+    /// </summary>
+    [Parameter]
+    public bool IsShowSubvariable { get; set; }
 
     private List<ReferenceDescription> Actived
     {
@@ -73,7 +78,7 @@ public partial class OPCUAImportVariable
         //动态加载子项时，导出内容需要添加手动加载代码
         foreach (var node in Selected.ToList())
         {
-            List<OPCUATagModel> nodes = await PopulateBranchAsync((NodeId)node.NodeId, true);
+            List<OPCUATagModel> nodes = await PopulateBranchAsync((NodeId)node.NodeId, true, IsShowSubvariable);
             if (nodes.Count > 0)
             {
                 Selected.AddRange(nodes.SelectMany(a => a.GetAllTags()).Select(a => a.Tag).Where(a => a != null).ToList());
@@ -165,7 +170,7 @@ public partial class OPCUAImportVariable
     {
         Task.Run(async () =>
         {
-            Nodes = await PopulateBranchAsync(ObjectIds.ObjectsFolder);
+            Nodes = await PopulateBranchAsync(ObjectIds.ObjectsFolder, isShowSubvariable: IsShowSubvariable);
             overlay = false;
             await InvokeAsync(StateHasChanged);
         });
@@ -206,10 +211,10 @@ public partial class OPCUAImportVariable
     private async Task PopulateBranchAsync(OPCUATagModel model)
     {
         var sourceId = (NodeId)model.Tag.NodeId;
-        model.Nodes = await PopulateBranchAsync(sourceId);
+        model.Nodes = await PopulateBranchAsync(sourceId, isShowSubvariable: IsShowSubvariable);
     }
 
-    private async Task<List<OPCUATagModel>> PopulateBranchAsync(NodeId sourceId, bool isAll = false)
+    private async Task<List<OPCUATagModel>> PopulateBranchAsync(NodeId sourceId, bool isAll = false, bool isShowSubvariable = false)
     {
         if (!PLC.Connected)
         {
@@ -232,13 +237,13 @@ public partial class OPCUAImportVariable
                     Name = Utils.Format("{0}", target),
                     Tag = target
                 };
-                //if (target.NodeClass != NodeClass.Variable)
+                if (isShowSubvariable || target.NodeClass != NodeClass.Variable)
                 {
                     var data = await GetReferenceDescriptionCollectionAsync((NodeId)target.NodeId);
                     if (data != null && data.Count > 0)
                     {
                         if (isAll)
-                            child.Nodes = await PopulateBranchAsync((NodeId)target.NodeId);
+                            child.Nodes = await PopulateBranchAsync((NodeId)target.NodeId, isShowSubvariable: IsShowSubvariable);
                         else
                             child.Nodes = new();
                     }
@@ -247,10 +252,32 @@ public partial class OPCUAImportVariable
                         child.Nodes = null;
                     }
                 }
-                //else
+                else
+                {
+                    child.Nodes = null;
+                }
+
+
+
+                ////if (target.NodeClass != NodeClass.Variable)  //这个判断注释后会让子节点也是变量的情况下无法加载
                 //{
-                //    child.Nodes = null;
+                //    var data = await GetReferenceDescriptionCollectionAsync((NodeId)target.NodeId);
+                //    if (data != null && data.Count > 0)
+                //    {
+                //        if (isAll)
+                //            child.Nodes = await PopulateBranchAsync((NodeId)target.NodeId);
+                //        else
+                //            child.Nodes = new();
+                //    }
+                //    else
+                //    {
+                //        child.Nodes = null;
+                //    }
                 //}
+                ////else
+                ////{
+                ////    child.Nodes = null;
+                ////}
                 list.Add(child);
             }
         }
