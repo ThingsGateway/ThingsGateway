@@ -31,6 +31,12 @@ namespace ThingsGateway.Foundation.Sockets
     /// </summary>
     public class TcpService<TClient> : TcpServiceBase, ITcpService<TClient> where TClient : SocketClient, new()
     {
+        /// <inheritdoc/>
+        public override int SendBufferSize => 1024 * 1024 * 10;
+
+        /// <inheritdoc/>
+        public override int ReceiveBufferSize => 1024 * 1024 * 10;
+
         /// <summary>
         /// 构造函数
         /// </summary>
