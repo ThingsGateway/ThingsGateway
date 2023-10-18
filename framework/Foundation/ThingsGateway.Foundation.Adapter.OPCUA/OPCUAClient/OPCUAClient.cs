@@ -1193,7 +1193,7 @@ public class OPCUAClient : IDisposable
             }
 
             // update status.
-            UpdateStatus(false, e.CurrentTime, "Connected [{0}]", session.Endpoint.EndpointUrl);
+            UpdateStatus(false, e.CurrentTime, "Session_KeepAlive Connected [{0}]", session.Endpoint.EndpointUrl);
 
             // raise any additional notifications.
             m_KeepAliveComplete?.Invoke(this, e);
