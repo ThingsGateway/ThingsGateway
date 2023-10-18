@@ -22,9 +22,15 @@ namespace ThingsGateway.Foundation.Adapter.OPCUA;
 public class OpcUaStatusEventArgs
 {
     /// <summary>
-    /// 是否异常
+    /// 日志等级，<br></br>
+    /// 更为详细的步骤型日志输出 Trace = 0,<br></br>
+    /// 调试信息日志Debug = 1,<br></br>
+    /// 消息类日志输出 Info = 2,<br></br>
+    /// 警告类日志输出 Warning = 3,<br></br>
+    /// 错误类日志输出 Error = 4,<br></br>
+    /// 不可控中断类日输出Critical = 5,
     /// </summary>
-    public bool Error { get; set; }
+    public int LogLevel { get; set; }
     /// <summary>
     /// 时间
     /// </summary>
@@ -34,14 +40,6 @@ public class OpcUaStatusEventArgs
     /// </summary>
     public string Text { get; set; }
 
-    /// <summary>
-    /// 转化为字符串
-    /// </summary>
-    /// <returns></returns>
-    public override string ToString()
-    {
-        return $"{(Error ? "[异常]" : "[正常]")}{Time.ToString("yyyy-MM-dd HH:mm:ss zz")}{Text}";
-    }
 }
 
 /// <summary>

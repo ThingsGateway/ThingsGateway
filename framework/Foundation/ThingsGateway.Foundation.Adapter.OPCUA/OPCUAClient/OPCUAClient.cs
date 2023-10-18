@@ -280,7 +280,7 @@ public class OPCUAClient : IDisposable
             }
             catch (Exception ex)
             {
-                UpdateStatus(true, DateTime.Now, $"初始化{items[i]}变量订阅失败，错误原因：{ex}");
+                UpdateStatus(3, DateTime.Now, $"初始化{items[i]}变量订阅失败，错误原因：{ex}");
             }
         }
         m_subscription.AddItems(monitoredItems);
@@ -296,7 +296,7 @@ public class OPCUAClient : IDisposable
         var isError = m_subscription.MonitoredItems.Any(a => a.Status.Error != null && StatusCode.IsBad(a.Status.Error.StatusCode));
         if (isError)
         {
-            UpdateStatus(true, DateTime.Now, $"创建以下变量订阅失败：{Environment.NewLine}{m_subscription.MonitoredItems.Where(
+            UpdateStatus(3, DateTime.Now, $"创建以下变量订阅失败：{Environment.NewLine}{m_subscription.MonitoredItems.Where(
                 a => a.Status.Error != null && StatusCode.IsBad(a.Status.Error.StatusCode))
                 .Select(a => $"{a.StartNodeId.ToString()}：{a.Status.Error.ToString()}").ToJsonString()}");
         }
@@ -358,29 +358,33 @@ public class OPCUAClient : IDisposable
     {
         try
         {
-            var variableNode = ReadNode(monitoreditem.StartNodeId.ToString(), false);
-            foreach (var value in monitoreditem.DequeueValues())
+            if (m_session != null)
             {
-                if (value.Value != null)
+                var variableNode = ReadNode(monitoreditem.StartNodeId.ToString(), false);
+                foreach (var value in monitoreditem.DequeueValues())
                 {
-                    var data = JsonUtils.Encode(m_session.MessageContext, TypeInfo.GetBuiltInType(variableNode.DataType, m_session.SystemContext.TypeTable), value.Value);
-                    if (data == null && value.Value != null)
+                    if (value.Value != null)
                     {
-                        UpdateStatus(true, DateTime.Now, $"{monitoreditem.StartNodeId}转换出错，原始值String为{value.Value}");
-                        var data1 = JsonUtils.Encode(m_session.MessageContext, TypeInfo.GetBuiltInType(variableNode.DataType, m_session.SystemContext.TypeTable), value.Value);
+                        var data = JsonUtils.Encode(m_session.MessageContext, TypeInfo.GetBuiltInType(variableNode.DataType, m_session.SystemContext.TypeTable), value.Value);
+                        if (data == null && value.Value != null)
+                        {
+                            UpdateStatus(3, DateTime.Now, $"{monitoreditem.StartNodeId}转换出错，原始值String为{value.Value}");
+                            var data1 = JsonUtils.Encode(m_session.MessageContext, TypeInfo.GetBuiltInType(variableNode.DataType, m_session.SystemContext.TypeTable), value.Value);
+                        }
+                        DataChangedHandler?.Invoke((variableNode, value, data));
                     }
-                    DataChangedHandler?.Invoke((variableNode, value, data));
-                }
-                else
-                {
-                    var data = JValue.CreateNull();
-                    DataChangedHandler?.Invoke((variableNode, value, data));
+                    else
+                    {
+                        var data = JValue.CreateNull();
+                        DataChangedHandler?.Invoke((variableNode, value, data));
+                    }
                 }
             }
+
         }
         catch (Exception ex)
         {
-            UpdateStatus(true, DateTime.Now, $"{monitoreditem.StartNodeId}订阅处理错误，错误原因：" + ex);
+            UpdateStatus(3, DateTime.Now, $"{monitoreditem.StartNodeId}订阅处理错误，错误原因：" + ex);
         }
     }
 
@@ -576,6 +580,8 @@ public class OPCUAClient : IDisposable
         // raise an event.
         DoConnectComplete(true);
 
+        UpdateStatus(2, DateTime.UtcNow, "Connected");
+
         //如果是订阅模式，连接时添加订阅组
         if (OPCNode.ActiveSubscribe)
             await AddSubscriptionAsync(Guid.NewGuid().ToString(), Variables.ToArray(), OPCNode.LoadType);
@@ -584,9 +590,8 @@ public class OPCUAClient : IDisposable
 
     private void PrivateDisconnect()
     {
-        bool state = m_session != null ? m_session.Connected : false;
+        bool state = m_session?.Connected == true;
 
-        UpdateStatus(false, DateTime.UtcNow, "Disconnected");
 
         if (m_reConnectHandler != null)
         {
@@ -599,9 +604,12 @@ public class OPCUAClient : IDisposable
             m_session.Close(10000);
         }
 
-        // raise an event.
         if (state)
+        {
+            UpdateStatus(2, DateTime.UtcNow, "Disconnected");
             DoConnectComplete(false);
+        }
+
     }
 
     #endregion
@@ -778,7 +786,7 @@ public class OPCUAClient : IDisposable
             }
             else
             {
-                UpdateStatus(true, DateTime.Now, $"获取服务器节点信息失败{nodes.Item2[i]}");
+                UpdateStatus(3, DateTime.Now, $"获取服务器节点信息失败{nodes.Item2[i]}");
             }
         }
         return nodes.Item1.ToList();
@@ -1149,15 +1157,15 @@ public class OPCUAClient : IDisposable
     /// <summary>
     /// Report the client status
     /// </summary>
-    /// <param name="error">Whether the status represents an error.</param>
+    /// <param name="logLevel">Whether the status represents an error. </param>
     /// <param name="time">The time associated with the status.</param>
     /// <param name="status">The status message.</param>
     /// <param name="args">Arguments used to format the status message.</param>
-    private void UpdateStatus(bool error, DateTime time, string status, params object[] args)
+    private void UpdateStatus(int logLevel, DateTime time, string status, params object[] args)
     {
         m_OpcStatusChange?.Invoke(this, new OpcUaStatusEventArgs()
         {
-            Error = error,
+            LogLevel = logLevel,
             Time = time.ToLocalTime(),
             Text = String.Format(status, args),
         });
@@ -1176,11 +1184,11 @@ public class OPCUAClient : IDisposable
             {
                 if (m_session.KeepAliveInterval <= 0)
                 {
-                    UpdateStatus(true, e.CurrentTime, "Communication Error ({0})", e.Status);
+                    UpdateStatus(3, e.CurrentTime, "Communication Error ({0})", e.Status);
                     return;
                 }
 
-                UpdateStatus(true, e.CurrentTime, "Reconnecting in {0}s", m_session.KeepAliveInterval / 1000);
+                UpdateStatus(3, e.CurrentTime, "Reconnecting in {0}s", m_session.KeepAliveInterval / 1000);
 
                 if (m_reConnectHandler == null)
                 {
@@ -1193,7 +1201,7 @@ public class OPCUAClient : IDisposable
             }
 
             // update status.
-            UpdateStatus(false, e.CurrentTime, "Session_KeepAlive Connected [{0}]", session.Endpoint.EndpointUrl);
+            UpdateStatus(0, e.CurrentTime, "Session_KeepAlive Connected [{0}]", session.Endpoint.EndpointUrl);
 
             // raise any additional notifications.
             m_KeepAliveComplete?.Invoke(this, e);
