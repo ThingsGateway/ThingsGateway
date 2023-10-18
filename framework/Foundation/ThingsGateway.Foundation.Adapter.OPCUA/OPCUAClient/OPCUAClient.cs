@@ -69,7 +69,7 @@ public class OPCUAClient : IDisposable
     private SessionReconnectHandler m_reConnectHandler;
     private EventHandler m_ReconnectComplete;
     private EventHandler m_ReconnectStarting;
-    private EventHandler m_KeepAliveComplete;
+    private EventHandler<KeepAliveEventArgs> m_KeepAliveComplete;
     private EventHandler<bool> m_ConnectComplete;
     private EventHandler<OpcUaStatusEventArgs> m_OpcStatusChange;
 
@@ -195,7 +195,7 @@ public class OPCUAClient : IDisposable
     /// <summary>
     /// Raised when a good keep alive from the server arrives.
     /// </summary>
-    public event EventHandler KeepAliveComplete
+    public event EventHandler<KeepAliveEventArgs> KeepAliveComplete
     {
         add { m_KeepAliveComplete += value; }
         remove { m_KeepAliveComplete -= value; }
