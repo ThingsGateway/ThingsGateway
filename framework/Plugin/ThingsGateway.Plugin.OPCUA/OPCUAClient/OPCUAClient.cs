@@ -216,8 +216,7 @@ public class OPCUAClient : CollectBase
 
     private void _plc_OpcStatusChange(object sender, OpcUaStatusEventArgs e)
     {
-        if (e.Error)
-            Log_Out(LogLevel.Warning, null, e.Text, null);
+        Log_Out((LogLevel)e.LogLevel, null, e.Text, null);
     }
 
     /// <inheritdoc/>
