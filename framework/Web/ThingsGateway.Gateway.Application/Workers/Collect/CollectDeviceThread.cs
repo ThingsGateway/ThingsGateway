@@ -164,6 +164,7 @@ public class CollectDeviceThread : IAsyncDisposable
         var stoppingToken = StoppingTokens.Last().Token;
         DeviceTask = await Task.Factory.StartNew(async () =>
         {
+            await Task.Yield();
             var channelResult = CollectDeviceCores.FirstOrDefault().Driver.GetShareChannel();
             LoggerGroup log = CollectDeviceCores.FirstOrDefault().Driver.LogMessage;
             foreach (var device in CollectDeviceCores)
