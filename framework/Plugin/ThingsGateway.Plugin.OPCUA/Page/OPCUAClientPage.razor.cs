@@ -50,7 +50,8 @@ public partial class OPCUAClientPage
 
     private void OPC_OpcStatusChange(object sender, OpcUaStatusEventArgs e)
     {
-        LogAction?.Invoke(e.Error ? LogLevel.Warning : LogLevel.Info, null, e.Text, null);
+        if (e.Error)
+            LogAction?.Invoke(LogLevel.Warning, null, e.Text, null);
     }
 
     private async Task ConnectAsync()
