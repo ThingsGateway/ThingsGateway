@@ -25,12 +25,10 @@ public class OpcUaStatusEventArgs
     /// 是否异常
     /// </summary>
     public bool Error { get; set; }
-
     /// <summary>
     /// 时间
     /// </summary>
     public DateTime Time { get; set; }
-
     /// <summary>
     /// 文本
     /// </summary>
@@ -42,7 +40,7 @@ public class OpcUaStatusEventArgs
     /// <returns></returns>
     public override string ToString()
     {
-        return Error ? "[异常]" : "[正常]" + Time.ToString("  yyyy-MM-dd HH:mm:ss  ") + Text;
+        return $"{(Error ? "[异常]" : "[正常]")}{Time.ToString("yyyy-MM-dd HH:mm:ss zz")}{Text}";
     }
 }
 

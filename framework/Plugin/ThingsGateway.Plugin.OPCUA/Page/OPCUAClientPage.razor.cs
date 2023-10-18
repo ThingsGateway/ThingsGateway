@@ -36,14 +36,21 @@ public partial class OPCUAClientPage
     /// </summary>
     public void Dispose()
     {
+        OPC.OpcStatusChange -= OPC_OpcStatusChange;
         OPC.SafeDispose();
     }
 
     /// <inheritdoc/>
     protected override void OnInitialized()
     {
-        OPC = new ThingsGateway.Foundation.Adapter.OPCUA.OPCUAClient(LogOut);
+        OPC = new ThingsGateway.Foundation.Adapter.OPCUA.OPCUAClient();
+        OPC.OpcStatusChange += OPC_OpcStatusChange;
         base.OnInitialized();
+    }
+
+    private void OPC_OpcStatusChange(object sender, OpcUaStatusEventArgs e)
+    {
+        LogAction?.Invoke(e.Error ? LogLevel.Warning : LogLevel.Info, null, e.Text, null);
     }
 
     private async Task ConnectAsync()
@@ -74,7 +81,5 @@ public partial class OPCUAClientPage
         OPC.OPCNode = node;
         return OPC;
     }
-
-    private void LogOut(byte logLevel, object source, string message, Exception exception) => LogAction?.Invoke((LogLevel)logLevel, source, message, exception);
 
 }
