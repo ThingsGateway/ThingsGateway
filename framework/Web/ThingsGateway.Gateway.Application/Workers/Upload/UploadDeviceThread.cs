@@ -153,6 +153,7 @@ public class UploadDeviceThread : IAsyncDisposable
         var stoppingToken = StoppingTokens.Last().Token;
         DeviceTask = await Task.Factory.StartNew(async () =>
         {
+            await Task.Yield();
             LoggerGroup log = UploadDeviceCores.FirstOrDefault().Driver.LogMessage;
             foreach (var device in UploadDeviceCores)
             {
@@ -225,5 +226,7 @@ public class UploadDeviceThread : IAsyncDisposable
 
         }
  , TaskCreationOptions.LongRunning);
+
+
     }
 }
