@@ -1,4 +1,5 @@
 #region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using Newtonsoft.Json.Linq;
@@ -17,22 +19,23 @@ using Opc.Ua.Client;
 using Opc.Ua.Client.ComplexTypes;
 using Opc.Ua.Configuration;
 
-
 //修改自https://github.com/dathlin/OpcUaHelper 与OPC基金会net库
 
 namespace ThingsGateway.Foundation.Adapter.OPCUA;
+
 /// <summary>
 /// 订阅委托
 /// </summary>
 /// <param name="value"></param>
 public delegate void DataChangedEventHandler((VariableNode variableNode, DataValue dataValue, JToken jToken) value);
+
 /// <summary>
 /// OPCUAClient
 /// </summary>
 public class OPCUAClient : IDisposable
 {
-
     #region 属性，变量等
+
     /// <summary>
     /// 当前配置
     /// </summary>
@@ -48,30 +51,35 @@ public class OPCUAClient : IDisposable
     /// </summary>
     public List<string> Variables = new();
 
-    private readonly Action<byte, object, string, Exception> _logAction;
-
     /// <summary>
     /// 当前的变量名称/OPC变量节点
     /// </summary>
     private readonly Dictionary<string, VariableNode> _variableDicts = new();
+
     private readonly object checkLock = new();
+
     /// <summary>
     /// 当前的订阅组，组名称/组
     /// </summary>
     private readonly Dictionary<string, Subscription> dic_subscriptions = new();
+
     private readonly ApplicationInstance m_application = new();
 
     private readonly ApplicationConfiguration m_configuration;
     private SessionReconnectHandler m_reConnectHandler;
+    private EventHandler m_ReconnectComplete;
+    private EventHandler m_ReconnectStarting;
+    private EventHandler m_KeepAliveComplete;
+    private EventHandler<bool> m_ConnectComplete;
+    private EventHandler<OpcUaStatusEventArgs> m_OpcStatusChange;
 
     private ISession m_session;
 
     /// <summary>
     /// 默认的构造函数，实例化一个新的OPC UA类
     /// </summary>
-    public OPCUAClient(Action<byte, object, string, Exception> log)
+    public OPCUAClient()
     {
-        _logAction = log;
         var certificateValidator = new CertificateValidator();
         certificateValidator.CertificateValidation += CertificateValidation;
 
@@ -90,7 +98,6 @@ public class OPCUAClient : IDisposable
                 MaxMessageQueueSize = 1000000,
                 MaxNotificationQueueSize = 1000000,
                 MaxPublishRequestCount = 10000000,
-
             },
 
             SecurityConfiguration = new SecurityConfiguration
@@ -133,8 +140,6 @@ public class OPCUAClient : IDisposable
                     StoreType = CertificateStoreType.Directory,
                     StorePath = AppContext.BaseDirectory + @"OPCUAClientCertificate\pki\trustedUser",
                 }
-
-
             },
 
             TransportQuotas = new TransportQuotas
@@ -160,8 +165,6 @@ public class OPCUAClient : IDisposable
 
         m_configuration.Validate(ApplicationType.Client);
         m_application.ApplicationConfiguration = m_configuration;
-
-
     }
 
     /// <summary>
@@ -188,6 +191,52 @@ public class OPCUAClient : IDisposable
     /// SessionReconnectHandler
     /// </summary>
     public SessionReconnectHandler ReConnectHandler => m_reConnectHandler;
+
+    /// <summary>
+    /// Raised when a good keep alive from the server arrives.
+    /// </summary>
+    public event EventHandler KeepAliveComplete
+    {
+        add { m_KeepAliveComplete += value; }
+        remove { m_KeepAliveComplete -= value; }
+    }
+
+    /// <summary>
+    /// Raised when a reconnect operation starts.
+    /// </summary>
+    public event EventHandler ReconnectStarting
+    {
+        add { m_ReconnectStarting += value; }
+        remove { m_ReconnectStarting -= value; }
+    }
+
+    /// <summary>
+    /// Raised when a reconnect operation completes.
+    /// </summary>
+    public event EventHandler ReconnectComplete
+    {
+        add { m_ReconnectComplete += value; }
+        remove { m_ReconnectComplete -= value; }
+    }
+
+    /// <summary>
+    /// Raised after successfully connecting to or disconnecing from a server.
+    /// </summary>
+    public event EventHandler<bool> ConnectComplete
+    {
+        add { m_ConnectComplete += value; }
+        remove { m_ConnectComplete -= value; }
+    }
+
+    /// <summary>
+    /// Raised after the client status change
+    /// </summary>
+    public event EventHandler<OpcUaStatusEventArgs> OpcStatusChange
+    {
+        add { m_OpcStatusChange += value; }
+        remove { m_OpcStatusChange -= value; }
+    }
+
     /// <summary>
     /// 当前活动会话。
     /// </summary>
@@ -231,7 +280,7 @@ public class OPCUAClient : IDisposable
             }
             catch (Exception ex)
             {
-                _logAction?.Invoke(3, this, $"初始化{items[i]}变量订阅失败", ex);
+                UpdateStatus(true, DateTime.Now, $"初始化{items[i]}变量订阅失败");
             }
         }
         m_subscription.AddItems(monitoredItems);
@@ -247,9 +296,9 @@ public class OPCUAClient : IDisposable
         var isError = m_subscription.MonitoredItems.Any(a => a.Status.Error != null && StatusCode.IsBad(a.Status.Error.StatusCode));
         if (isError)
         {
-            _logAction?.Invoke(3, this, $"创建以下变量订阅失败：{Environment.NewLine}{m_subscription.MonitoredItems.Where(
+            UpdateStatus(true, DateTime.Now, $"创建以下变量订阅失败：{Environment.NewLine}{m_subscription.MonitoredItems.Where(
                 a => a.Status.Error != null && StatusCode.IsBad(a.Status.Error.StatusCode))
-                .Select(a => $"{a.StartNodeId.ToString()}：{a.Status.Error.ToString()}").ToJsonString()}", null);
+                .Select(a => $"{a.StartNodeId.ToString()}：{a.Status.Error.ToString()}").ToJsonString()}");
         }
 
         lock (dic_subscriptions)
@@ -281,7 +330,6 @@ public class OPCUAClient : IDisposable
                 item.Value.Delete(true);
                 m_session.RemoveSubscription(item.Value);
                 try { item.Value.Dispose(); } catch { }
-
             }
             dic_subscriptions.Clear();
         }
@@ -304,7 +352,6 @@ public class OPCUAClient : IDisposable
                 dic_subscriptions.RemoveWhere(a => a.Key == subscriptionName);
             }
         }
-
     }
 
     private void Callback(MonitoredItem monitoreditem, MonitoredItemNotificationEventArgs monitoredItemNotificationEventArgs)
@@ -319,7 +366,7 @@ public class OPCUAClient : IDisposable
                     var data = JsonUtils.Encode(m_session.MessageContext, TypeInfo.GetBuiltInType(variableNode.DataType, m_session.SystemContext.TypeTable), value.Value);
                     if (data == null && value.Value != null)
                     {
-                        _logAction?.Invoke(3, this, $"{monitoreditem.StartNodeId}转换出错，原始值String为{value.Value}", null);
+                        UpdateStatus(true, DateTime.Now, $"{monitoreditem.StartNodeId}转换出错，原始值String为{value.Value}");
                         var data1 = JsonUtils.Encode(m_session.MessageContext, TypeInfo.GetBuiltInType(variableNode.DataType, m_session.SystemContext.TypeTable), value.Value);
                     }
                     DataChangedHandler?.Invoke((variableNode, value, data));
@@ -329,14 +376,12 @@ public class OPCUAClient : IDisposable
                     var data = JValue.CreateNull();
                     DataChangedHandler?.Invoke((variableNode, value, data));
                 }
-
             }
         }
         catch (Exception ex)
         {
-            _logAction?.Invoke(3, this, $"{monitoreditem.StartNodeId}订阅处理错误", ex);
+            UpdateStatus(true, DateTime.Now, $"{monitoreditem.StartNodeId}订阅处理错误");
         }
-
     }
 
     #endregion
@@ -462,8 +507,8 @@ public class OPCUAClient : IDisposable
 
     #endregion
 
-
     #region 连接
+
     private ComplexTypeSystem typeSystem;
 
     /// <summary>
@@ -472,7 +517,6 @@ public class OPCUAClient : IDisposable
     public async Task ConnectAsync()
     {
         await ConnectAsync(OPCNode.OPCUrl);
-        _logAction?.Invoke(1, this, $"连接成功", null);
     }
 
     /// <summary>
@@ -484,10 +528,10 @@ public class OPCUAClient : IDisposable
         // disconnect any existing session.
         if (m_session != null)
         {
-            _logAction?.Invoke(1, this, $"主动断开连接", null);
             m_session = null;
         }
     }
+
     /// <summary>
     /// Creates a new session.
     /// </summary>
@@ -516,19 +560,21 @@ public class OPCUAClient : IDisposable
         //创建本地证书
         await m_application.CheckApplicationInstanceCertificate(true, 0, 1200);
         m_session = await Opc.Ua.Client.Session.Create(
-     m_configuration,
-    endpoint,
-    false,
-    OPCNode.CheckDomain,
-    (string.IsNullOrEmpty(OPCUAName)) ? m_configuration.ApplicationName : OPCUAName,
-    60000,
-    userIdentity,
-    Array.Empty<string>());
-
+        m_configuration,
+        endpoint,
+        false,
+        OPCNode.CheckDomain,
+        (string.IsNullOrEmpty(OPCUAName)) ? m_configuration.ApplicationName : OPCUAName,
+        60000,
+        userIdentity,
+        Array.Empty<string>());
         typeSystem = new ComplexTypeSystem(m_session);
 
         m_session.KeepAliveInterval = OPCNode.KeepAliveInterval == 0 ? 60000 : OPCNode.KeepAliveInterval;
         m_session.KeepAlive += new KeepAliveEventHandler(Session_KeepAlive);
+
+        // raise an event.
+        DoConnectComplete(true);
 
         //如果是订阅模式，连接时添加订阅组
         if (OPCNode.ActiveSubscribe)
@@ -538,6 +584,10 @@ public class OPCUAClient : IDisposable
 
     private void PrivateDisconnect()
     {
+        bool state = m_session != null ? m_session.Connected : false;
+
+        UpdateStatus(false, DateTime.UtcNow, "Disconnected");
+
         if (m_reConnectHandler != null)
         {
             try { m_reConnectHandler.Dispose(); } catch { }
@@ -549,8 +599,11 @@ public class OPCUAClient : IDisposable
             m_session.Close(10000);
         }
 
-
+        // raise an event.
+        if (state)
+            DoConnectComplete(false);
     }
+
     #endregion
 
     #region 读取/写入
@@ -593,14 +646,12 @@ public class OPCUAClient : IDisposable
                 valuesToWrite.Add(valueToWrite);
             }
 
-
             var result = await m_session.WriteAsync(
      requestHeader: null,
      nodesToWrite: valuesToWrite, cancellationToken);
 
             ClientBase.ValidateResponse(result.Results, valuesToWrite);
             ClientBase.ValidateDiagnosticInfos(result.DiagnosticInfos, valuesToWrite);
-
 
             var keys = writeInfoLists.Keys.ToList();
             for (int i = 0; i < keys.Count; i++)
@@ -624,7 +675,6 @@ public class OPCUAClient : IDisposable
             }
             return results;
         }
-
     }
 
     /// <summary>
@@ -706,7 +756,6 @@ public class OPCUAClient : IDisposable
         return node;
     }
 
-
     /// <summary>
     /// 从服务器读取节点
     /// </summary>
@@ -729,17 +778,13 @@ public class OPCUAClient : IDisposable
             }
             else
             {
-                _logAction?.Invoke(3, this, $"获取服务器节点信息失败{nodes.Item2[i]}", null);
+                UpdateStatus(true, DateTime.Now, $"获取服务器节点信息失败{nodes.Item2[i]}");
             }
         }
         return nodes.Item1.ToList();
     }
 
-
-
     #endregion
-
-
 
     #region 特性
 
@@ -805,7 +850,6 @@ public class OPCUAClient : IDisposable
                 ResultMask = (uint)BrowseResultMask.All
             };
             nodesToBrowse.Add(nodeToBrowse);
-
         }
 
         return await ReadNoteAttributeAsync(nodesToBrowse, nodesToRead, cancellationToken);
@@ -968,10 +1012,8 @@ public class OPCUAClient : IDisposable
 
         return nodeAttribute.ToArray();
     }
+
     #endregion
-
-
-
 
     /// <inheritdoc/>
     public void Dispose()
@@ -990,7 +1032,6 @@ public class OPCUAClient : IDisposable
         else
             throw new Exception(string.Format("验证证书失败，错误代码:{0}: {1}", eventArgs.Error.Code, eventArgs.Error.AdditionalInfo));
     }
-
 
     private async Task<Dictionary<string, List<OPCNodeAttribute>>> ReadNoteAttributeAsync(BrowseDescriptionCollection nodesToBrowse, ReadValueIdCollection nodesToRead, CancellationToken cancellationToken)
     {
@@ -1068,7 +1109,6 @@ public class OPCUAClient : IDisposable
                 }
             }
 
-
             if (nodeAttributes.ContainsKey(nodeToRead.NodeId.ToString()))
             {
                 nodeAttributes[nodeToRead.NodeId.ToString()].Add(item);
@@ -1086,21 +1126,47 @@ public class OPCUAClient : IDisposable
     /// </summary>
     private void Server_ReconnectComplete(object sender, EventArgs e)
     {
-        if (!Object.ReferenceEquals(sender, m_reConnectHandler))
+        try
         {
-            return;
+            if (!Object.ReferenceEquals(sender, m_reConnectHandler))
+            {
+                return;
+            }
+
+            m_session = m_reConnectHandler.Session;
+            m_reConnectHandler.Dispose();
+            m_reConnectHandler = null;
+
+            // raise any additional notifications.
+            m_ReconnectComplete?.Invoke(this, e);
         }
+        catch (Exception)
+        {
+            throw;
+        }
+    }
 
-        m_session = m_reConnectHandler.Session;
-        m_reConnectHandler = null;
-
+    /// <summary>
+    /// Report the client status
+    /// </summary>
+    /// <param name="error">Whether the status represents an error.</param>
+    /// <param name="time">The time associated with the status.</param>
+    /// <param name="status">The status message.</param>
+    /// <param name="args">Arguments used to format the status message.</param>
+    private void UpdateStatus(bool error, DateTime time, string status, params object[] args)
+    {
+        m_OpcStatusChange?.Invoke(this, new OpcUaStatusEventArgs()
+        {
+            Error = error,
+            Time = time.ToLocalTime(),
+            Text = String.Format(status, args),
+        });
     }
 
     private void Session_KeepAlive(ISession session, KeepAliveEventArgs e)
     {
         lock (checkLock)
         {
-
             if (!Object.ReferenceEquals(session, m_session))
             {
                 return;
@@ -1108,22 +1174,39 @@ public class OPCUAClient : IDisposable
 
             if (ServiceResult.IsBad(e.Status))
             {
-                _logAction?.Invoke(3, this, $"心跳检测错误：{e.Status}", null);
+                if (m_session.KeepAliveInterval <= 0)
+                {
+                    UpdateStatus(true, e.CurrentTime, "Communication Error ({0})", e.Status);
+                    return;
+                }
+
+                UpdateStatus(true, e.CurrentTime, "Reconnecting in {0}s", m_session.KeepAliveInterval / 1000);
 
                 if (m_reConnectHandler == null)
                 {
+                    m_ReconnectStarting?.Invoke(this, e);
+
                     m_reConnectHandler = new SessionReconnectHandler();
                     m_reConnectHandler.BeginReconnect(m_session, m_session.KeepAliveInterval, Server_ReconnectComplete);
                 }
-
                 return;
             }
 
+            // update status.
+            UpdateStatus(false, e.CurrentTime, "Connected [{0}]", session.Endpoint.EndpointUrl);
 
+            // raise any additional notifications.
+            m_KeepAliveComplete?.Invoke(this, e);
         }
     }
 
-
+    /// <summary>
+    /// Raises the connect complete event on the main GUI thread.
+    /// </summary>
+    private void DoConnectComplete(bool state)
+    {
+        m_ConnectComplete?.Invoke(this, state);
+    }
 
     #endregion
 }
