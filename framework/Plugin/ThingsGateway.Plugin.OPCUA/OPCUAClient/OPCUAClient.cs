@@ -177,6 +177,8 @@ public class OPCUAClient : CollectBase
         if (_plc != null)
         {
             _plc.DataChangedHandler -= DataChangedHandler;
+            _plc.OpcStatusChange -= _plc_OpcStatusChange;
+
             _plc.Disconnect();
             _plc.SafeDispose();
             _plc = null;
@@ -204,11 +206,17 @@ public class OPCUAClient : CollectBase
         };
         if (_plc == null)
         {
-            _plc = new((arg1, arg2, arg3, arg4) => Log_Out((LogLevel)arg1, arg2, arg3, arg4));
+            _plc = new();
+            _plc.OpcStatusChange += _plc_OpcStatusChange;
             _plc.DataChangedHandler += DataChangedHandler;
         }
 
         _plc.OPCNode = opcNode;
+    }
+
+    private void _plc_OpcStatusChange(object sender, OpcUaStatusEventArgs e)
+    {
+        Log_Out(e.Error ? LogLevel.Warning : LogLevel.Info, null, e.Text, null);
     }
 
     /// <inheritdoc/>

@@ -280,7 +280,7 @@ public class OPCUAClient : IDisposable
             }
             catch (Exception ex)
             {
-                UpdateStatus(true, DateTime.Now, $"初始化{items[i]}变量订阅失败");
+                UpdateStatus(true, DateTime.Now, $"初始化{items[i]}变量订阅失败，错误原因：{ex}");
             }
         }
         m_subscription.AddItems(monitoredItems);
@@ -380,7 +380,7 @@ public class OPCUAClient : IDisposable
         }
         catch (Exception ex)
         {
-            UpdateStatus(true, DateTime.Now, $"{monitoreditem.StartNodeId}订阅处理错误");
+            UpdateStatus(true, DateTime.Now, $"{monitoreditem.StartNodeId}订阅处理错误，错误原因：" + ex);
         }
     }
 
