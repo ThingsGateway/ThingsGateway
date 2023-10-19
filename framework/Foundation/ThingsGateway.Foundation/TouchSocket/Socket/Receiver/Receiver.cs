@@ -22,7 +22,13 @@ namespace ThingsGateway.Foundation.Sockets
         private readonly AsyncAutoResetEvent m_resetEventForRead = new AsyncAutoResetEvent(false);
         private ByteBlock m_byteBlock;
         private IRequestInfo m_requestInfo;
-
+        /// <summary>
+        /// Receiver
+        /// </summary>
+        ~Receiver()
+        {
+            this.Dispose(false);
+        }
         /// <summary>
         /// Receiver
         /// </summary>
@@ -74,9 +80,15 @@ namespace ThingsGateway.Foundation.Sockets
         /// <inheritdoc/>
         protected override void Dispose(bool disposing)
         {
-            this.m_client.ClearReceiver();
-            //this.m_resetEventForComplateRead.SafeDispose();
-            this.m_resetEventForRead.SafeDispose();
+            if (disposing)
+            {
+                this.m_client.ClearReceiver();
+            }
+            else
+            {
+                this.m_resetEventForRead.SafeDispose();
+            }
+
             this.m_byteBlock = null;
             base.Dispose(disposing);
         }

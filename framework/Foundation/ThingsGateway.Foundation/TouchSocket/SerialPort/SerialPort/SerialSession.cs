@@ -760,7 +760,15 @@ public class SerialSessionBase : BaseSerial, ISerialSession
         this.m_serialCore.Reset(serialPort);
         this.m_serialCore.OnReceived = this.HandleReceived;
         this.m_serialCore.OnBreakOut = this.BreakOut;
+        if (this.Config.GetValue(TouchSocketConfigExtension.MinBufferSizeProperty) is int minValue)
+        {
+            this.m_serialCore.MinBufferSize = minValue;
+        }
 
+        if (this.Config.GetValue(TouchSocketConfigExtension.MaxBufferSizeProperty) is int maxValue)
+        {
+            this.m_serialCore.MaxBufferSize = maxValue;
+        }
     }
 
     private void HandleReceived(SerialCore core, ByteBlock byteBlock)

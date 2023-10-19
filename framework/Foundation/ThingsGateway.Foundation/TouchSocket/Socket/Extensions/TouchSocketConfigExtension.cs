@@ -52,6 +52,54 @@ namespace ThingsGateway.Foundation.Sockets
 
 
         /// <summary>
+        /// 最小缓存池尺寸
+        /// 所需类型<see cref="int"/>
+        /// </summary>
+        public static readonly DependencyProperty<int?> MinBufferSizeProperty = DependencyProperty<int?>.Register("MinBufferSize", default);
+
+        /// <summary>
+        /// 最大缓存池尺寸
+        /// 所需类型<see cref="int"/>
+        /// </summary>
+        public static readonly DependencyProperty<int?> MaxBufferSizeProperty = DependencyProperty<int?>.Register("MinBufferSize", default);
+
+        /// <summary>
+        /// 最小缓存容量，默认缺省。
+        /// <list type="number">
+        /// </list>
+        /// </summary>
+        /// <param name="config"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static TouchSocketConfig MinBufferSize(this TouchSocketConfig config, int value)
+        {
+            if (value < 1024)
+            {
+                throw new ArgumentOutOfRangeException(nameof(value), value, "数值不能小于1024");
+            }
+            config.SetValue(MinBufferSizeProperty, value);
+            return config;
+        }
+
+        /// <summary>
+        /// 最大缓存容量，默认缺省。
+        /// <list type="number">
+        /// </list>
+        /// </summary>
+        /// <param name="config"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static TouchSocketConfig MaxBufferSize(this TouchSocketConfig config, int value)
+        {
+            if (value < 1024)
+            {
+                throw new ArgumentOutOfRangeException(nameof(value), value, "数值不能小于1024");
+            }
+            config.SetValue(MaxBufferSizeProperty, value);
+            return config;
+        }
+
+        /// <summary>
         /// 发送超时设定，单位毫秒，默认为0。意为禁用该配置。
         /// </summary>
         /// <param name="config"></param>
