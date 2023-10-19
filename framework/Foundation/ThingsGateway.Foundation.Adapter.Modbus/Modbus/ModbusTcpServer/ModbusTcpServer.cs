@@ -104,62 +104,75 @@ public class ModbusTcpServer : ReadWriteDevicesTcpServerBase
         return PackHelper.LoadSourceRead<T, T2>(this, deviceVariables, maxPack);
 
     }
+
+    EasyLock easyLock = new();
+
     /// <inheritdoc/>
     public override OperResult<byte[]> Read(string address, int length, CancellationToken cancellationToken = default)
     {
-        ModbusAddress mAddress;
         try
         {
-            mAddress = ModbusAddress.ParseFrom(address, Station);
-        }
-        catch (Exception ex)
-        {
-            return new OperResult<byte[]>(ex);
-        }
-        if (MulStation)
-        {
-            Init(mAddress);
-        }
-        else
-        {
-            if (Station != mAddress.Station)
+            easyLock.Wait();
+
+            ModbusAddress mAddress;
+            try
             {
-                return new OperResult<byte[]>("地址错误");
+                mAddress = ModbusAddress.ParseFrom(address, Station);
             }
-            Init(mAddress);
+            catch (Exception ex)
+            {
+                return new OperResult<byte[]>(ex);
+            }
+            if (MulStation)
+            {
+                Init(mAddress);
+            }
+            else
+            {
+                if (Station != mAddress.Station)
+                {
+                    return new OperResult<byte[]>("地址错误");
+                }
+                Init(mAddress);
 
+            }
+
+            var ModbusServer01ByteBlock = ModbusServer01ByteBlocks[mAddress.Station];
+            var ModbusServer02ByteBlock = ModbusServer02ByteBlocks[mAddress.Station];
+            var ModbusServer03ByteBlock = ModbusServer03ByteBlocks[mAddress.Station];
+            var ModbusServer04ByteBlock = ModbusServer04ByteBlocks[mAddress.Station];
+            int len = mAddress.ReadFunction == 2 || mAddress.ReadFunction == 1 ? length : length * RegisterByteLength;
+            switch (mAddress.ReadFunction)
+            {
+                case 1:
+                    byte[] bytes0 = new byte[len];
+                    ModbusServer01ByteBlock.Pos = mAddress.AddressStart;
+                    ModbusServer01ByteBlock.Read(bytes0);
+                    return OperResult.CreateSuccessResult(bytes0);
+                case 2:
+                    byte[] bytes1 = new byte[len];
+                    ModbusServer02ByteBlock.Pos = mAddress.AddressStart;
+                    ModbusServer02ByteBlock.Read(bytes1);
+                    return OperResult.CreateSuccessResult(bytes1);
+                case 3:
+
+                    byte[] bytes3 = new byte[len];
+                    ModbusServer03ByteBlock.Pos = mAddress.AddressStart * RegisterByteLength;
+                    ModbusServer03ByteBlock.Read(bytes3);
+                    return OperResult.CreateSuccessResult(bytes3);
+                case 4:
+                    byte[] bytes4 = new byte[len];
+                    ModbusServer04ByteBlock.Pos = mAddress.AddressStart * RegisterByteLength;
+                    ModbusServer04ByteBlock.Read(bytes4);
+                    return OperResult.CreateSuccessResult(bytes4);
+            }
+            return new OperResult<byte[]>("功能码错误");
         }
-
-        var ModbusServer01ByteBlock = ModbusServer01ByteBlocks[mAddress.Station];
-        var ModbusServer02ByteBlock = ModbusServer02ByteBlocks[mAddress.Station];
-        var ModbusServer03ByteBlock = ModbusServer03ByteBlocks[mAddress.Station];
-        var ModbusServer04ByteBlock = ModbusServer04ByteBlocks[mAddress.Station];
-        int len = mAddress.ReadFunction == 2 || mAddress.ReadFunction == 1 ? length : length * RegisterByteLength;
-        switch (mAddress.ReadFunction)
+        finally
         {
-            case 1:
-                byte[] bytes0 = new byte[len];
-                ModbusServer01ByteBlock.Pos = mAddress.AddressStart;
-                ModbusServer01ByteBlock.Read(bytes0);
-                return OperResult.CreateSuccessResult(bytes0);
-            case 2:
-                byte[] bytes1 = new byte[len];
-                ModbusServer02ByteBlock.Pos = mAddress.AddressStart;
-                ModbusServer02ByteBlock.Read(bytes1);
-                return OperResult.CreateSuccessResult(bytes1);
-            case 3:
 
-                byte[] bytes3 = new byte[len];
-                ModbusServer03ByteBlock.Pos = mAddress.AddressStart * RegisterByteLength;
-                ModbusServer03ByteBlock.Read(bytes3);
-                return OperResult.CreateSuccessResult(bytes3);
-            case 4:
-                byte[] bytes4 = new byte[len];
-                ModbusServer04ByteBlock.Pos = mAddress.AddressStart * RegisterByteLength;
-                ModbusServer04ByteBlock.Read(bytes4);
-                return OperResult.CreateSuccessResult(bytes4);
+            easyLock.Release();
         }
-        return new OperResult<byte[]>("功能码错误");
     }
 
     /// <inheritdoc/>
@@ -193,84 +206,104 @@ public class ModbusTcpServer : ReadWriteDevicesTcpServerBase
     /// <inheritdoc/>
     public override OperResult Write(string address, byte[] value, CancellationToken cancellationToken = default)
     {
-        ModbusAddress mAddress;
         try
         {
-            mAddress = ModbusAddress.ParseFrom(address, Station);
-        }
-        catch (Exception ex)
-        {
-            return new OperResult(ex);
-        }
-        if (MulStation)
-        {
-            Init(mAddress);
-        }
-        else
-        {
-            if (Station != mAddress.Station)
+            easyLock.Wait();
+            ModbusAddress mAddress;
+            try
             {
-                return new OperResult("地址错误");
+                mAddress = ModbusAddress.ParseFrom(address, Station);
             }
-            Init(mAddress);
+            catch (Exception ex)
+            {
+                return new OperResult(ex);
+            }
+            if (MulStation)
+            {
+                Init(mAddress);
+            }
+            else
+            {
+                if (Station != mAddress.Station)
+                {
+                    return new OperResult("地址错误");
+                }
+                Init(mAddress);
+            }
+            var ModbusServer03ByteBlock = ModbusServer03ByteBlocks[mAddress.Station];
+            var ModbusServer04ByteBlock = ModbusServer04ByteBlocks[mAddress.Station];
+            switch (mAddress.ReadFunction)
+            {
+                case 3:
+                    ModbusServer03ByteBlock.Pos = mAddress.AddressStart * RegisterByteLength;
+                    ModbusServer03ByteBlock.Write(value);
+                    return OperResult.CreateSuccessResult();
+                case 4:
+                    ModbusServer04ByteBlock.Pos = mAddress.AddressStart * RegisterByteLength;
+                    ModbusServer04ByteBlock.Write(value);
+                    return OperResult.CreateSuccessResult();
+            }
+            return new OperResult("功能码错误");
+
         }
-        var ModbusServer03ByteBlock = ModbusServer03ByteBlocks[mAddress.Station];
-        var ModbusServer04ByteBlock = ModbusServer04ByteBlocks[mAddress.Station];
-        switch (mAddress.ReadFunction)
+        finally
         {
-            case 3:
-                ModbusServer03ByteBlock.Pos = mAddress.AddressStart * RegisterByteLength;
-                ModbusServer03ByteBlock.Write(value);
-                return OperResult.CreateSuccessResult();
-            case 4:
-                ModbusServer04ByteBlock.Pos = mAddress.AddressStart * RegisterByteLength;
-                ModbusServer04ByteBlock.Write(value);
-                return OperResult.CreateSuccessResult();
+
+            easyLock.Release();
         }
-        return new OperResult("功能码错误");
     }
 
     /// <inheritdoc/>
     public override OperResult Write(string address, bool[] value, CancellationToken cancellationToken = default)
     {
-        ModbusAddress mAddress;
         try
         {
-            mAddress = ModbusAddress.ParseFrom(address, Station);
-        }
-        catch (Exception ex)
-        {
-            return (new OperResult(ex));
-        }
-        if (MulStation)
-        {
-            Init(mAddress);
-
-        }
-        else
-        {
-            if (Station != mAddress.Station)
+            easyLock.Wait();
+            ModbusAddress mAddress;
+            try
             {
-                return (new OperResult("地址错误"));
+                mAddress = ModbusAddress.ParseFrom(address, Station);
             }
-            Init(mAddress);
+            catch (Exception ex)
+            {
+                return (new OperResult(ex));
+            }
+            if (MulStation)
+            {
+                Init(mAddress);
+
+            }
+            else
+            {
+                if (Station != mAddress.Station)
+                {
+                    return (new OperResult("地址错误"));
+                }
+                Init(mAddress);
+
+            }
+
+            var ModbusServer01ByteBlock = ModbusServer01ByteBlocks[mAddress.Station];
+            var ModbusServer02ByteBlock = ModbusServer02ByteBlocks[mAddress.Station];
+            switch (mAddress.ReadFunction)
+            {
+                case 1:
+                    ModbusServer01ByteBlock.Pos = mAddress.AddressStart;
+                    ModbusServer01ByteBlock.Write(value.BoolArrayToByte());
+                    return (OperResult.CreateSuccessResult());
+                case 2:
+                    ModbusServer02ByteBlock.Pos = mAddress.AddressStart;
+                    ModbusServer02ByteBlock.Write(value.BoolArrayToByte());
+                    return (OperResult.CreateSuccessResult());
+            }
+            return new OperResult("功能码错误");
 
         }
-
-        var ModbusServer01ByteBlock = ModbusServer01ByteBlocks[mAddress.Station];
-        var ModbusServer02ByteBlock = ModbusServer02ByteBlocks[mAddress.Station];
-        switch (mAddress.ReadFunction)
+        finally
         {
-            case 1:
-                ModbusServer01ByteBlock.Pos = mAddress.AddressStart;
-                ModbusServer01ByteBlock.Write(value.BoolArrayToByte());
-                return (OperResult.CreateSuccessResult());
-            case 2:
-                ModbusServer02ByteBlock.Pos = mAddress.AddressStart;
-                ModbusServer02ByteBlock.Write(value.BoolArrayToByte());
-                return (OperResult.CreateSuccessResult());
+
+            easyLock.Release();
         }
-        return new OperResult("功能码错误");
     }
 
     /// <inheritdoc/>
