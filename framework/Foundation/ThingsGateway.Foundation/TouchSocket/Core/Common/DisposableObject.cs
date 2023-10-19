@@ -27,8 +27,7 @@ using System.Runtime.CompilerServices;
 namespace ThingsGateway.Foundation.Core
 {
     /// <summary>
-    /// 具有释放的对象。
-    /// 并未实现析构函数相关。
+    /// 具有释放的对象。内部实现了GC.SuppressFinalize，但不包括析构函数相关。
     /// </summary>
     public partial class DisposableObject : IDisposable
     {
@@ -65,11 +64,12 @@ namespace ThingsGateway.Foundation.Core
         }
 
         /// <summary>
-        /// 释放资源。
+        /// 释放资源。内部已经处理了<see cref="GC.SuppressFinalize(object)"/>
         /// </summary>
         public void Dispose()
         {
             this.Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }
