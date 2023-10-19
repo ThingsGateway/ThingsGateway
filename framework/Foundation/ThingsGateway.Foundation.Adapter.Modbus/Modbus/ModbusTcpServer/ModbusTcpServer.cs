@@ -429,13 +429,9 @@ public class ModbusTcpServer : ReadWriteDevicesTcpServerBase
 
     private void Init(ModbusAddress mAddress)
     {
-        if (ModbusServer01ByteBlocks.TryAdd(mAddress.Station, new(1024 * 128)))
-            ModbusServer01ByteBlocks[mAddress.Station].SetLength(1024 * 128);
-        if (ModbusServer02ByteBlocks.TryAdd(mAddress.Station, new(1024 * 128)))
-            ModbusServer02ByteBlocks[mAddress.Station].SetLength(1024 * 128);
-        if (ModbusServer03ByteBlocks.TryAdd(mAddress.Station, new(1024 * 128)))
-            ModbusServer03ByteBlocks[mAddress.Station].SetLength(1024 * 128);
-        if (ModbusServer04ByteBlocks.TryAdd(mAddress.Station, new(1024 * 128)))
-            ModbusServer04ByteBlocks[mAddress.Station].SetLength(1024 * 128);
+        ModbusServer01ByteBlocks.GetOrAdd(mAddress.Station, a => new ByteBlock(1024 * 128));
+        ModbusServer02ByteBlocks.GetOrAdd(mAddress.Station, a => new ByteBlock(1024 * 128));
+        ModbusServer03ByteBlocks.GetOrAdd(mAddress.Station, a => new ByteBlock(1024 * 128));
+        ModbusServer04ByteBlocks.GetOrAdd(mAddress.Station, a => new ByteBlock(1024 * 128));
     }
 }
