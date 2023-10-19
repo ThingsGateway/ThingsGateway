@@ -227,9 +227,9 @@
     "179": {
       "js": [
         {
-          "file": "assets/js/main.cf42840d.js",
-          "hash": "41e8aa8c7cbe401b",
-          "publicPath": "/thingsgateway-docs/assets/js/main.cf42840d.js"
+          "file": "assets/js/main.90bffab9.js",
+          "hash": "6774eb8ed9189628",
+          "publicPath": "/thingsgateway-docs/assets/js/main.90bffab9.js"
         }
       ]
     },
@@ -299,9 +299,9 @@
     "1303": {
       "js": [
         {
-          "file": "assets/js/runtime~main.2b19bbf8.js",
-          "hash": "e48e0c0408aa1c4e",
-          "publicPath": "/thingsgateway-docs/assets/js/runtime~main.2b19bbf8.js"
+          "file": "assets/js/runtime~main.2d62406a.js",
+          "hash": "fc67bb23388f4a51",
+          "publicPath": "/thingsgateway-docs/assets/js/runtime~main.2d62406a.js"
         }
       ]
     },
@@ -398,9 +398,9 @@
     "3371": {
       "js": [
         {
-          "file": "assets/js/d22033f9.6a725d32.js",
-          "hash": "edd7fef77b05ef57",
-          "publicPath": "/thingsgateway-docs/assets/js/d22033f9.6a725d32.js"
+          "file": "assets/js/d22033f9.838d285d.js",
+          "hash": "b8c8ee41012bac15",
+          "publicPath": "/thingsgateway-docs/assets/js/d22033f9.838d285d.js"
         }
       ]
     },
@@ -619,9 +619,9 @@
     "8707": {
       "js": [
         {
-          "file": "assets/js/4c79e569.5c5c0d05.js",
-          "hash": "e9c712a478ed50e6",
-          "publicPath": "/thingsgateway-docs/assets/js/4c79e569.5c5c0d05.js"
+          "file": "assets/js/4c79e569.b07342bd.js",
+          "hash": "c0362a85c0105049",
+          "publicPath": "/thingsgateway-docs/assets/js/4c79e569.b07342bd.js"
         }
       ]
     },
