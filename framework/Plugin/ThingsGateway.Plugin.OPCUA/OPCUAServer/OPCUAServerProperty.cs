@@ -10,6 +10,8 @@
 //------------------------------------------------------------------------------
 #endregion
 
+using Opc.Ua;
+
 namespace ThingsGateway.Plugin.OPCUA;
 
 /// <inheritdoc/>
@@ -18,8 +20,21 @@ public class OPCUAServerProperty : UpDriverPropertyBase
     /// <summary>
     /// 服务地址
     /// </summary>
-    [DeviceProperty("服务地址", "")]
+    [DeviceProperty("服务地址", "分号分割数组，可设置多个url")]
     public string OpcUaStringUrl { get; set; } = "opc.tcp://127.0.0.1:49321";
+    /// <summary>
+    /// SubjectName
+    /// </summary>
+    [DeviceProperty("SubjectName", "")]
+    public string SubjectName { get; set; } = "CN=ThingsGateway OPCUAServer, C=CN, S=GUANGZHOU, O=ThingsGateway, DC=" + System.Net.Dns.GetHostName();
+
+    /// <summary>
+    /// ApplicationUri
+    /// </summary>
+    [DeviceProperty("ApplicationUri", "")]
+    public string ApplicationUri { get; set; } = Utils.Format(@"urn:{0}:thingsgatewayopcuaserver", System.Net.Dns.GetHostName());
+
+
     /// <summary>
     /// 安全策略
     /// </summary>
