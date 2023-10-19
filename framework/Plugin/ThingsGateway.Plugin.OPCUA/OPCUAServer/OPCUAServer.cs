@@ -63,7 +63,7 @@ public partial class OPCUAServer : UpLoadBase
     public override async Task BeforStartAsync(CancellationToken cancellationToken)
     {
         // 启动服务器。
-        await m_application.CheckApplicationInstanceCertificate(true, 0, 1200);
+        await m_application.CheckApplicationInstanceCertificate(false, 0, 1200);
         await m_application.Start(m_server);
     }
     /// <inheritdoc/>
@@ -90,7 +90,7 @@ public partial class OPCUAServer : UpLoadBase
                     }
                     catch (Exception ex)
                     {
-                                                    LogMessage.LogWarning(ex);
+                        LogMessage.LogWarning(ex);
                     }
                 }
 
@@ -98,7 +98,7 @@ public partial class OPCUAServer : UpLoadBase
         }
         catch (Exception ex)
         {
-                                        LogMessage.LogWarning(ex);
+            LogMessage.LogWarning(ex);
         }
         if (driverPropertys.CycleInterval > UploadDeviceThread.CycleInterval + 50)
         {
@@ -138,9 +138,13 @@ public partial class OPCUAServer : UpLoadBase
         _uploadVariables = null;
         CollectVariableRunTimes.Clear();
     }
+
     /// <inheritdoc/>
     protected override void Init(UploadDeviceRunTime device)
     {
+        ApplicationInstance.MessageDlg = new ApplicationMessageDlg(LogMessage);//默认返回true
+
+        //Utils.SetLogger(new OPCUALogger(LogMessage)); //调试用途
         m_application = new ApplicationInstance();
         m_configuration = GetDefaultConfiguration();
         m_configuration.Validate(ApplicationType.Server).GetAwaiter().GetResult();
@@ -169,7 +173,7 @@ public partial class OPCUAServer : UpLoadBase
     private ApplicationConfiguration GetDefaultConfiguration()
     {
         ApplicationConfiguration config = new();
-        string url = driverPropertys.OpcUaStringUrl;
+        var urls = driverPropertys.OpcUaStringUrl.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
         // 签名及加密验证
         ServerSecurityPolicyCollection policies = new();
         var userTokens = new UserTokenPolicyCollection();
@@ -242,13 +246,14 @@ public partial class OPCUAServer : UpLoadBase
 
         config.ApplicationName = "ThingsGateway OPCUAServer";
         config.ApplicationType = ApplicationType.Server;
-        config.ApplicationUri = Utils.Format(@"urn:{0}:thingsgatewayopcuaserver", System.Net.Dns.GetHostName());
+        config.ApplicationUri = driverPropertys.ApplicationUri;
 
 
         config.ServerConfiguration = new ServerConfiguration()
         {
             // 配置登录的地址
-            BaseAddresses = new string[] { url },
+            BaseAddresses = urls,
+
             SecurityPolicies = policies,
             UserTokenPolicies = userTokens,
             ShutdownDelay = 1,
@@ -269,7 +274,7 @@ public partial class OPCUAServer : UpLoadBase
             MaxNotificationQueueSize = 100,       // 为每个被监视项目保存在队列中的最大证书数
             MaxNotificationsPerPublish = 1000,    // 每次发布的最大通知数
             MinMetadataSamplingInterval = 1000,   // 元数据的最小采样间隔
-            MaxRegistrationInterval = 30000,   // 两次注册尝试之间的最大时间（以毫秒为单位）
+            MaxRegistrationInterval = -1,   // 两次注册尝试之间的最大时间（以毫秒为单位）//不提供注册
 
         };
         config.SecurityConfiguration = new SecurityConfiguration()
@@ -283,7 +288,8 @@ public partial class OPCUAServer : UpLoadBase
             {
                 StoreType = CertificateStoreType.X509Store,
                 StorePath = "CurrentUser\\UAServer_ThingsGateway",
-                SubjectName = "CN=ThingsGateway OPCUAServer, C=CN, S=GUANGZHOU, O=ThingsGateway, DC=" + System.Net.Dns.GetHostName(),
+                SubjectName = driverPropertys.SubjectName,
+                //ValidationOptions = CertificateValidationOptions.SuppressHostNameInvalid,
             },
 
             TrustedPeerCertificates = new CertificateTrustList()
@@ -323,7 +329,7 @@ public partial class OPCUAServer : UpLoadBase
 
 
         config.CertificateValidator = new CertificateValidator();
-        config.CertificateValidator.Update(config);
+        config.CertificateValidator.Update(config).GetAwaiter().GetResult();
         config.Extensions = new XmlElementCollection();
 
         return config;
