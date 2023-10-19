@@ -6,7 +6,7 @@ export const language = ["en","zh"];
 export const removeDefaultStopWordFilter = false;
 export const removeDefaultStemmer = false;
 export { default as Mark } from "E:\\Tg\\ThingsGateway\\ThingsGateway-DEV\\handbook\\node_modules\\mark.js\\dist\\mark.js"
-export const searchIndexUrl = "search-index{dir}.json?_=5f24d3ee";
+export const searchIndexUrl = "search-index{dir}.json?_=264c6792";
 export const searchResultLimits = 8;
 export const searchResultContextMaxLength = 50;
 export const explicitSearchResultPath = true;
