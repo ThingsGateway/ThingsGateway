@@ -72,7 +72,7 @@ namespace ThingsGateway.Foundation.Http.WebSockets
             {
                 return new WebSocketReceiveResult(this.ComplateRead, null);
             }
-            await this.m_resetEventForRead.WaitOneAsync(token);
+            await this.m_resetEventForRead.WaitOneAsync(token).ConfigureFalseAwait();
             return new WebSocketReceiveResult(this.ComplateRead, this.m_dataFrame);
         }
 #if NET6_0_OR_GREATER
@@ -82,7 +82,7 @@ namespace ThingsGateway.Foundation.Http.WebSockets
             {
                 return new WebSocketReceiveResult(this.ComplateRead, null);
             }
-            await this.m_resetEventForRead.WaitOneAsync(token);
+            await this.m_resetEventForRead.WaitOneAsync(token).ConfigureFalseAwait();
             return new WebSocketReceiveResult(this.ComplateRead, this.m_dataFrame);
         }
 #endif
@@ -146,7 +146,7 @@ namespace ThingsGateway.Foundation.Http.WebSockets
             {
                 return true;
             }
-            if (await this.m_resetEventForComplateRead.WaitOneAsync(TimeSpan.FromSeconds(10)))
+            if (await this.m_resetEventForComplateRead.WaitOneAsync(TimeSpan.FromSeconds(10)).ConfigureFalseAwait())
             {
                 return true;
             }

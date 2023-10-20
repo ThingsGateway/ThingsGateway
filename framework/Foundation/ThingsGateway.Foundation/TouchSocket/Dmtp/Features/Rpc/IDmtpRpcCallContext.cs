@@ -22,6 +22,9 @@
 //  感谢您的下载和使用
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
+using System.Threading;
+using ThingsGateway.Foundation.Core;
+using ThingsGateway.Foundation.Rpc;
 
 namespace ThingsGateway.Foundation.Dmtp.Rpc
 {

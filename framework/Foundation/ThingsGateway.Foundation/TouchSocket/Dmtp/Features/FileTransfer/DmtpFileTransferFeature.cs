@@ -10,6 +10,7 @@
 //------------------------------------------------------------------------------
 #endregion
 
+
 namespace ThingsGateway.Foundation.Dmtp.FileTransfer
 {
     /// <summary>
@@ -48,7 +49,7 @@ namespace ThingsGateway.Foundation.Dmtp.FileTransfer
         /// <inheritdoc/>
         public Task OnDmtpHandshaking(IDmtpActorObject client, DmtpVerifyEventArgs e)
         {
-            var smtpFileTransferActor = new DmtpFileTransferActor(client.DmtpActor)
+            var dmtpFileTransferActor = new DmtpFileTransferActor(client.DmtpActor)
             {
                 FileController = this.m_fileResourceController,
                 OnFileTransfering = this.OnFileTransfering,
@@ -56,25 +57,25 @@ namespace ThingsGateway.Foundation.Dmtp.FileTransfer
                 RootPath = this.RootPath,
                 MaxSmallFileLength = this.MaxSmallFileLength
             };
-            smtpFileTransferActor.SetProtocolFlags(this.StartProtocol);
-            client.DmtpActor.SetDmtpFileTransferActor(smtpFileTransferActor);
+            dmtpFileTransferActor.SetProtocolFlags(this.StartProtocol);
+            client.DmtpActor.SetDmtpFileTransferActor(dmtpFileTransferActor);
 
             return e.InvokeNext();
         }
 
         /// <inheritdoc/>
-        public Task OnDmtpReceived(IDmtpActorObject client, DmtpMessageEventArgs e)
+        public async Task OnDmtpReceived(IDmtpActorObject client, DmtpMessageEventArgs e)
         {
-            if (client.DmtpActor.GetDmtpFileTransferActor() is DmtpFileTransferActor smtpFileTransferActor)
+            if (client.DmtpActor.GetDmtpFileTransferActor() is DmtpFileTransferActor dmtpFileTransferActor)
             {
-                if (smtpFileTransferActor.InputReceivedData(e.DmtpMessage))
+                if (await dmtpFileTransferActor.InputReceivedData(e.DmtpMessage))
                 {
                     e.Handled = true;
-                    return EasyTask.CompletedTask;
+                    return;
                 }
             }
 
-            return e.InvokeNext();
+            await e.InvokeNext();
         }
 
         /// <inheritdoc cref="IDmtpFileTransferActor.MaxSmallFileLength"/>

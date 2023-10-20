@@ -27,42 +27,47 @@ namespace ThingsGateway.Foundation.Dmtp
         /// <summary>
         /// 请求关闭
         /// </summary>
-        public Action<DmtpActor, string> OnClose { get; set; }
+        public Func<DmtpActor, string, Task> Closed { get; set; }
 
         /// <summary>
         /// 当创建通道时
         /// </summary>
-        public Action<DmtpActor, CreateChannelEventArgs> OnCreateChannel { get; set; }
+        public Func<DmtpActor, CreateChannelEventArgs, Task> CreatedChannel { get; set; }
 
         /// <summary>
         /// 查找其他IDmtpActor
         /// </summary>
-        public Func<string, IDmtpActor> OnFindDmtpActor { get; set; }
+        public Func<string, Task<IDmtpActor>> FindDmtpActor { get; set; }
 
         /// <summary>
         /// 在完成握手连接时
         /// </summary>
-        public Action<DmtpActor, DmtpVerifyEventArgs> OnHandshaked { get; set; }
+        public Func<DmtpActor, DmtpVerifyEventArgs, Task> Handshaked { get; set; }
 
         /// <summary>
         /// 握手
         /// </summary>
-        public Action<DmtpActor, DmtpVerifyEventArgs> OnHandshaking { get; set; }
+        public Func<DmtpActor, DmtpVerifyEventArgs, Task> Handshaking { get; set; }
 
         /// <summary>
         /// 重设Id
         /// </summary>
-        public Action<DmtpActor, WaitSetId> OnResetId { get; set; }
+        public Func<DmtpActor, IdChangedEventArgs, Task> IdChanged { get; set; }
 
         /// <summary>
         /// 当需要路由的时候
         /// </summary>
-        public Action<DmtpActor, PackageRouterEventArgs> OnRouting { get; set; }
+        public Func<DmtpActor, PackageRouterEventArgs, Task> Routing { get; set; }
 
         /// <summary>
         /// 发送数据接口
         /// </summary>
         public Action<DmtpActor, ArraySegment<byte>[]> OutputSend { get; set; }
+
+        /// <summary>
+        /// 异步发送数据接口
+        /// </summary>
+        public Func<DmtpActor, ArraySegment<byte>[], Task> OutputSendAsync { get; set; }
 
         #endregion 委托
 
@@ -119,29 +124,22 @@ namespace ThingsGateway.Foundation.Dmtp
         }
 
         /// <inheritdoc/>
-        public virtual void Close(bool sendClose, string message)
+        public void Close(string msg)
+        {
+            this.OnClosed(true, msg);
+        }
+
+        /// <inheritdoc/>
+        public bool SendClose(string msg)
         {
             try
             {
-                if (this.IsHandshaked)
-                {
-                    try
-                    {
-                        if (sendClose)
-                        {
-                            this.SendString(0, message);
-                        }
-                    }
-                    catch
-                    {
-                    }
-                    this.IsHandshaked = false;
-                    this.WaitHandlePool.CancelAll();
-                    this.OnClose?.Invoke(this, message);
-                }
+                this.SendString(0, msg);
+                return true;
             }
             catch
             {
+                return false;
             }
         }
 
@@ -165,7 +163,7 @@ namespace ThingsGateway.Foundation.Dmtp
                 Metadata = metadata
             };
 
-            this.OnHandshaking?.Invoke(this, args);
+            this.OnHandshaking(args).GetFalseAwaitResult();
 
             var waitVerify = new WaitVerify()
             {
@@ -189,7 +187,8 @@ namespace ThingsGateway.Foundation.Dmtp
                             {
                                 this.Id = verifyResult.Id;
                                 this.IsHandshaked = true;
-                                this.PrivateHandshaked(new DmtpVerifyEventArgs()
+
+                                Task.Factory.StartNew(this.PrivateOnHandshaked, new DmtpVerifyEventArgs()
                                 {
                                     Id = verifyResult.Id,
                                     Metadata = verifyResult.Metadata,
@@ -201,18 +200,15 @@ namespace ThingsGateway.Foundation.Dmtp
                             else
                             {
                                 verifyResult.Handle = true;
-                                this.Close(false, verifyResult.Message);
                                 throw new TokenVerifyException(verifyResult.Message);
                             }
                         }
                     case WaitDataStatus.Overtime:
-                        this.Close(false, TouchSocketDmtpStatus.Overtime.GetDescription());
                         throw new TimeoutException(TouchSocketDmtpStatus.Overtime.GetDescription());
                     case WaitDataStatus.Canceled:
                     case WaitDataStatus.Disposed:
                     default:
-                        this.Close(false, null);
-                        return;
+                        throw new OperationCanceledException();
                 }
             }
             finally
@@ -240,7 +236,7 @@ namespace ThingsGateway.Foundation.Dmtp
                 Metadata = metadata
             };
 
-            this.OnHandshaking?.Invoke(this, args);
+            await this.OnHandshaking(args).ConfigureFalseAwait();
 
             var waitVerify = new WaitVerify()
             {
@@ -253,8 +249,8 @@ namespace ThingsGateway.Foundation.Dmtp
 
             try
             {
-                this.SendJsonObject(P1_Handshake_Request, waitVerify);
-                switch (await waitData.WaitAsync(timeout))
+                await this.SendJsonObjectAsync(P1_Handshake_Request, waitVerify).ConfigureFalseAwait();
+                switch (await waitData.WaitAsync(timeout).ConfigureFalseAwait())
                 {
                     case WaitDataStatus.SetRunning:
                         {
@@ -263,7 +259,7 @@ namespace ThingsGateway.Foundation.Dmtp
                             {
                                 this.Id = verifyResult.Id;
                                 this.IsHandshaked = true;
-                                this.PrivateHandshaked(new DmtpVerifyEventArgs()
+                                _ = Task.Factory.StartNew(this.PrivateOnHandshaked, new DmtpVerifyEventArgs()
                                 {
                                     Id = verifyResult.Id,
                                     Metadata = verifyResult.Metadata,
@@ -275,18 +271,15 @@ namespace ThingsGateway.Foundation.Dmtp
                             else
                             {
                                 verifyResult.Handle = true;
-                                this.Close(false, verifyResult.Message);
                                 throw new TokenVerifyException(verifyResult.Message);
                             }
                         }
                     case WaitDataStatus.Overtime:
-                        this.Close(false, TouchSocketDmtpStatus.Overtime.GetDescription());
                         throw new TimeoutException(TouchSocketDmtpStatus.Overtime.GetDescription());
                     case WaitDataStatus.Canceled:
                     case WaitDataStatus.Disposed:
                     default:
-                        this.Close(false, null);
-                        return;
+                        throw new OperationCanceledException();
                 }
             }
             finally
@@ -294,6 +287,100 @@ namespace ThingsGateway.Foundation.Dmtp
                 this.WaitHandlePool.Destroy(waitData);
             }
         }
+
+        #region 委托触发
+
+        /// <summary>
+        /// 当关闭后
+        /// </summary>
+        /// <param name="manual"></param>
+        /// <param name="msg"></param>
+        protected virtual Task OnClosed(bool manual, string msg)
+        {
+            if (this.IsHandshaked)
+            {
+                this.IsHandshaked = false;
+                this.WaitHandlePool.CancelAll();
+            }
+
+            if (manual)
+            {
+                return EasyTask.CompletedTask;
+            }
+            if (this.Closed != null)
+            {
+                return this.Closed.Invoke(this, msg);
+            }
+            return EasyTask.CompletedTask;
+        }
+
+
+        /// <summary>
+        /// 正在握手连接
+        /// </summary>
+        /// <param name="e"></param>
+        /// <returns></returns>
+        protected virtual Task OnHandshaking(DmtpVerifyEventArgs e)
+        {
+            if (this.Handshaking != null)
+            {
+                return this.Handshaking.Invoke(this, e);
+            }
+            return EasyTask.CompletedTask;
+        }
+
+        /// <summary>
+        /// 握手连接完成
+        /// </summary>
+        /// <param name="e"></param>
+        /// <returns></returns>
+        protected virtual Task OnHandshaked(DmtpVerifyEventArgs e)
+        {
+            if (this.Handshaked != null)
+            {
+                return this.Handshaked.Invoke(this, e);
+            }
+            return EasyTask.CompletedTask;
+        }
+
+        /// <summary>
+        /// 当Id修改时
+        /// </summary>
+        /// <param name="e"></param>
+        /// <returns></returns>
+        protected virtual Task OnIdChanged(IdChangedEventArgs e)
+        {
+            if (this.IdChanged != null)
+            {
+                return this.IdChanged.Invoke(this, e);
+            }
+            return EasyTask.CompletedTask;
+        }
+
+        /// <summary>
+        /// 当完成创建通道时
+        /// </summary>
+        /// <param name="e"></param>
+        /// <returns></returns>
+        protected virtual Task OnCreatedChannel(CreateChannelEventArgs e)
+        {
+            if (this.CreatedChannel != null)
+            {
+                return this.CreatedChannel.Invoke(this, e);
+            }
+            return EasyTask.CompletedTask;
+        }
+
+        private void PrivateOnHandshaked(object obj)
+        {
+            this.OnHandshaked((DmtpVerifyEventArgs)obj);
+        }
+
+        private void PrivateOnCreatedChannel(object obj)
+        {
+            this.OnCreatedChannel((CreateChannelEventArgs)obj);
+        }
+        #endregion
 
         #region const
 
@@ -368,7 +455,7 @@ namespace ThingsGateway.Foundation.Dmtp
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
-        public virtual bool InputReceivedData(DmtpMessage message)
+        public virtual async Task<bool> InputReceivedData(DmtpMessage message)
         {
             this.LastActiveTime = DateTime.Now;
             var byteBlock = message.BodyByteBlock;
@@ -376,7 +463,7 @@ namespace ThingsGateway.Foundation.Dmtp
             {
                 case P0_Close:
                     {
-                        this.Close(false, message.GetBodyString());
+                        _ = this.OnClosed(false, message.GetBodyString());
                         return true;
                     }
                 case P1_Handshake_Request:
@@ -391,11 +478,11 @@ namespace ThingsGateway.Foundation.Dmtp
                                 Metadata = waitVerify.Metadata,
                                 Id = waitVerify.Id,
                             };
-                            this.OnHandshaking?.Invoke(this, args);
+                            await this.OnHandshaking(args).ConfigureFalseAwait();
 
                             if (args.Id.HasValue())
                             {
-                                this.OnResetId?.Invoke(this, new WaitSetId(this.Id, args.Id));
+                                await this.OnIdChanged(new IdChangedEventArgs(this.Id, args.Id)).ConfigureFalseAwait();
                                 this.Id = args.Id;
                             }
 
@@ -403,24 +490,23 @@ namespace ThingsGateway.Foundation.Dmtp
                             {
                                 waitVerify.Id = this.Id;
                                 waitVerify.Status = 1;
-                                this.SendJsonObject(P2_Handshake_Response, waitVerify);
+                                await this.SendJsonObjectAsync(P2_Handshake_Response, waitVerify).ConfigureFalseAwait();
                                 this.IsHandshaked = true;
                                 args.Message = "Success";
-
-                                Task.Factory.StartNew(this.PrivateHandshaked, args);
+                                _ = Task.Factory.StartNew(this.PrivateOnHandshaked, args);
                             }
                             else//不允许连接
                             {
                                 waitVerify.Status = 2;
                                 waitVerify.Message = args.Message;
-                                this.SendJsonObject(P2_Handshake_Response, waitVerify);
-                                this.Close(false, args.Message);
+                                await this.SendJsonObjectAsync(P2_Handshake_Response, waitVerify).ConfigureFalseAwait();
+                                _ = this.OnClosed(false, args.Message);
                             }
                         }
                         catch (Exception ex)
                         {
                             this.Logger.Error(this, $"在protocol={message.ProtocolFlags}中发生错误。信息:{ex.Message}");
-                            this.Close(false, ex.Message);
+                            _ = this.OnClosed(false, ex.Message);
                         }
                         return true;
                     }
@@ -449,7 +535,7 @@ namespace ThingsGateway.Foundation.Dmtp
                             var waitSetId = this.ResolveJsonObject<WaitSetId>(message.GetBodyString());
                             try
                             {
-                                this.OnResetId?.Invoke(this, waitSetId);
+                                await this.OnIdChanged(new IdChangedEventArgs(waitSetId.OldId, waitSetId.NewId)).ConfigureFalseAwait();
                                 this.Id = waitSetId.NewId;
                                 waitSetId.Status = 1;
                             }
@@ -458,7 +544,7 @@ namespace ThingsGateway.Foundation.Dmtp
                                 waitSetId.Status = 2;
                                 waitSetId.Message = ex.Message;
                             }
-                            this.SendJsonObject(P4_ResetId_Response, waitSetId);
+                            await this.SendJsonObjectAsync(P4_ResetId_Response, waitSetId).ConfigureFalseAwait();
                         }
                         catch (Exception ex)
                         {
@@ -486,11 +572,12 @@ namespace ThingsGateway.Foundation.Dmtp
 
                             if (this.AllowRoute && waitPing.Route)
                             {
-                                if (this.TryRoute(RouteType.Ping, waitPing))
+
+                                if (await this.TryRoute(new PackageRouterEventArgs(RouteType.Ping, waitPing)).ConfigureFalseAwait())
                                 {
-                                    if (this.TryFindDmtpActor(waitPing.TargetId, out var actor))
+                                    if (await this.TryFindDmtpActor(waitPing.TargetId).ConfigureFalseAwait() is DmtpActor actor)
                                     {
-                                        actor.Send(P5_Ping_Request, byteBlock);
+                                        await actor.SendAsync(P5_Ping_Request, byteBlock).ConfigureFalseAwait();
                                         return true;
                                     }
                                     else
@@ -508,7 +595,7 @@ namespace ThingsGateway.Foundation.Dmtp
                                 waitPing.Status = TouchSocketDmtpStatus.Success.ToValue();
                             }
                             waitPing.SwitchId();
-                            this.SendJsonObject(P6_Ping_Response, waitPing);
+                            await this.SendJsonObjectAsync(P6_Ping_Response, waitPing).ConfigureFalseAwait();
                         }
                         catch (Exception ex)
                         {
@@ -524,9 +611,9 @@ namespace ThingsGateway.Foundation.Dmtp
 
                             if (this.AllowRoute && waitPing.Route)
                             {
-                                if (this.TryFindDmtpActor(waitPing.TargetId, out var actor))
+                                if (await this.TryFindDmtpActor(waitPing.TargetId).ConfigureFalseAwait() is DmtpActor actor)
                                 {
-                                    actor.Send(P6_Ping_Response, byteBlock);
+                                    await actor.SendAsync(P6_Ping_Response, byteBlock).ConfigureFalseAwait();
                                 }
                             }
                             else
@@ -548,11 +635,11 @@ namespace ThingsGateway.Foundation.Dmtp
                             waitCreateChannel.UnpackageRouter(byteBlock);
                             if (this.AllowRoute && waitCreateChannel.Route)
                             {
-                                if (this.TryRoute(RouteType.CreateChannel, waitCreateChannel))
+                                if (await this.TryRoute(new PackageRouterEventArgs(RouteType.CreateChannel, waitCreateChannel)).ConfigureFalseAwait())
                                 {
-                                    if (this.TryFindDmtpActor(waitCreateChannel.TargetId, out var actor))
+                                    if (await this.TryFindDmtpActor(waitCreateChannel.TargetId).ConfigureFalseAwait() is DmtpActor actor)
                                     {
-                                        actor.Send(P7_CreateChannel_Request, byteBlock);
+                                        await actor.SendAsync(P7_CreateChannel_Request, byteBlock).ConfigureFalseAwait();
                                         return true;
                                     }
                                     else
@@ -593,7 +680,7 @@ namespace ThingsGateway.Foundation.Dmtp
                             waitCreateChannel.SwitchId();
                             byteBlock.Reset();
                             waitCreateChannel.Package(byteBlock);
-                            this.Send(P8_CreateChannel_Response, byteBlock);
+                            await this.SendAsync(P8_CreateChannel_Response, byteBlock).ConfigureFalseAwait();
                         }
                         catch (Exception ex)
                         {
@@ -609,9 +696,9 @@ namespace ThingsGateway.Foundation.Dmtp
                             waitCreateChannel.UnpackageRouter(byteBlock);
                             if (this.AllowRoute && waitCreateChannel.Route)
                             {
-                                if (this.TryFindDmtpActor(waitCreateChannel.TargetId, out var actor))
+                                if (await this.TryFindDmtpActor(waitCreateChannel.TargetId).ConfigureFalseAwait() is DmtpActor actor)
                                 {
-                                    actor.Send(P8_CreateChannel_Response, byteBlock);
+                                    await actor.SendAsync(P8_CreateChannel_Response, byteBlock).ConfigureFalseAwait();
                                     return true;
                                 }
                             }
@@ -635,9 +722,9 @@ namespace ThingsGateway.Foundation.Dmtp
                             channelPackage.UnpackageRouter(byteBlock);
                             if (this.AllowRoute && channelPackage.Route)
                             {
-                                if (this.TryFindDmtpActor(channelPackage.TargetId, out var actor))
+                                if (await this.TryFindDmtpActor(channelPackage.TargetId).ConfigureFalseAwait() is DmtpActor actor)
                                 {
-                                    actor.Send(P9_ChannelPackage, byteBlock);
+                                    await actor.SendAsync(P9_ChannelPackage, byteBlock).ConfigureFalseAwait();
                                 }
                                 else
                                 {
@@ -648,7 +735,7 @@ namespace ThingsGateway.Foundation.Dmtp
                                     channelPackage.DataType = ChannelDataType.DisposeOrder;
                                     byteBlock.Reset();
                                     channelPackage.Package(byteBlock);
-                                    this.Send(P9_ChannelPackage, byteBlock);
+                                    await this.SendAsync(P9_ChannelPackage, byteBlock).ConfigureFalseAwait();
                                 }
                             }
                             else
@@ -683,7 +770,7 @@ namespace ThingsGateway.Foundation.Dmtp
         /// <inheritdoc/>
         public virtual bool Ping(string targetId, int timeout = 5000)
         {
-            if (this.AllowRoute && this.TryFindDmtpActor(targetId, out var actor))
+            if (this.AllowRoute && this.TryFindDmtpActor(targetId).GetFalseAwaitResult() is DmtpActor actor)
             {
                 return actor.Ping(timeout);
             }
@@ -697,15 +784,15 @@ namespace ThingsGateway.Foundation.Dmtp
         }
 
         /// <inheritdoc/>
-        public virtual Task<bool> PingAsync(string targetId, int timeout = 5000)
+        public virtual async Task<bool> PingAsync(string targetId, int timeout = 5000)
         {
-            if (this.AllowRoute && this.TryFindDmtpActor(targetId, out var actor))
+            if (this.AllowRoute && await this.TryFindDmtpActor(targetId).ConfigureFalseAwait() is DmtpActor actor)
             {
-                return actor.PingAsync(timeout);
+                return await actor.PingAsync(timeout).ConfigureFalseAwait();
             }
             else
             {
-                return this.PrivatePingAsync(targetId, timeout);
+                return await this.PrivatePingAsync(targetId, timeout).ConfigureFalseAwait();
             }
         }
 
@@ -724,7 +811,7 @@ namespace ThingsGateway.Foundation.Dmtp
                     {
                         if (waitData.WaitResult.Status == 1)
                         {
-                            this.OnResetId?.Invoke(this, new WaitSetId(this.Id, id));
+                            this.OnIdChanged(new IdChangedEventArgs(this.Id, id)).GetFalseAwaitResult();
                             this.Id = id;
                         }
                         else
@@ -754,13 +841,13 @@ namespace ThingsGateway.Foundation.Dmtp
 
             this.SendJsonObject(P3_ResetId_Request, waitSetId);
 
-            switch (await waitData.WaitAsync(5000))
+            switch (await waitData.WaitAsync(5000).ConfigureFalseAwait())
             {
                 case WaitDataStatus.SetRunning:
                     {
                         if (waitData.WaitResult.Status == 1)
                         {
-                            this.OnResetId?.Invoke(this, new WaitSetId(this.Id, id));
+                            await this.OnIdChanged(new IdChangedEventArgs(this.Id, id)).ConfigureFalseAwait();
                             this.Id = id;
                         }
                         else
@@ -801,6 +888,17 @@ namespace ThingsGateway.Foundation.Dmtp
             this.Send(protocol, bytes, 0, bytes.Length);
         }
 
+        private Task SendJsonObjectAsync<T>(ushort protocol, in T obj)
+        {
+#if NET6_0_OR_GREATER
+            var bytes = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(obj, typeof(T), TouchSokcetDmtpSourceGenerationContext.Default);
+#else
+            var bytes = SerializeConvert.JsonSerializeToBytes(obj);
+#endif
+
+            return this.SendAsync(protocol, bytes, 0, bytes.Length);
+        }
+
         private T ResolveJsonObject<T>(string json)
         {
 #if NET6_0_OR_GREATER
@@ -836,57 +934,39 @@ namespace ThingsGateway.Foundation.Dmtp
         }
 
         /// <inheritdoc/>
-        public virtual bool TryFindDmtpActor(string targetId, out DmtpActor actor)
+        public virtual async Task<DmtpActor> TryFindDmtpActor(string targetId)
         {
             if (targetId == this.Id)
             {
-                actor = this;
-                return true;
+                return this;
             }
-            if (this.OnFindDmtpActor?.Invoke(targetId) is DmtpActor newActor)
+            if (this.FindDmtpActor != null)
             {
-                actor = newActor;
-                return true;
+                if (await this.FindDmtpActor.Invoke(targetId).ConfigureFalseAwait() is DmtpActor newActor)
+                {
+                    return newActor;
+                }
             }
 
-            actor = default;
-            return false;
+            return default;
         }
 
         /// <inheritdoc/>
-        public virtual bool TryRoute(RouteType routerType, RouterPackage routerPackage)
+        public virtual async Task<bool> TryRoute(PackageRouterEventArgs e)
         {
             try
             {
-                var args = new PackageRouterEventArgs(routerType, routerPackage);
-                this.OnRouting?.Invoke(this, args);
-                return args.IsPermitOperation;
+                if (this.Routing != null)
+                {
+                    await this.Routing.Invoke(this, e).ConfigureFalseAwait();
+                    return e.IsPermitOperation;
+                }
+                return false;
             }
             catch
             {
                 return false;
             }
-        }
-
-        /// <inheritdoc/>
-        public virtual bool TryRoute(RouteType routerType, WaitRouterPackage routerPackage)
-        {
-            try
-            {
-                var args = new PackageRouterEventArgs(routerType, routerPackage);
-                this.OnRouting?.Invoke(this, args);
-                routerPackage.Message = args.Message;
-                return args.IsPermitOperation;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        private void PrivateHandshaked(object obj)
-        {
-            this.OnHandshaked?.Invoke(this, (DmtpVerifyEventArgs)obj);
         }
 
         private bool PrivatePing(string targetId, int timeout)
@@ -942,7 +1022,7 @@ namespace ThingsGateway.Foundation.Dmtp
             try
             {
                 this.SendJsonObject(P5_Ping_Request, waitPing);
-                switch (await waitData.WaitAsync(timeout))
+                switch (await waitData.WaitAsync(timeout).ConfigureFalseAwait())
                 {
                     case WaitDataStatus.SetRunning:
                         {
@@ -979,16 +1059,15 @@ namespace ThingsGateway.Foundation.Dmtp
         /// <param name="disposing"></param>
         protected override void Dispose(bool disposing)
         {
-            this.OnClose = null;
-            this.OnRouting = null;
-            this.OnFindDmtpActor = null;
-            this.OnHandshaked = null;
-            this.OnHandshaking = null;
-            this.OnResetId = null;
-
+            this.Closed = null;
+            this.Routing = null;
+            this.FindDmtpActor = null;
+            this.Handshaked = null;
+            this.Handshaking = null;
+            this.IdChanged = null;
             this.OutputSend = null;
+            this.OnClosed(true, nameof(Dispose));
             this.WaitHandlePool.SafeDispose();
-            this.Close(false, nameof(Dispose));
             base.Dispose(disposing);
         }
 
@@ -1005,7 +1084,7 @@ namespace ThingsGateway.Foundation.Dmtp
             new ArraySegment<byte>(TouchSocketBitConverter.BigEndian.GetBytes(length)),
             new ArraySegment<byte>(buffer,offset,length)
            };
-            this.OutputSend?.Invoke(this, transferBytes);
+            this.OutputSend.Invoke(this, transferBytes);
             this.LastActiveTime = DateTime.Now;
         }
 
@@ -1022,10 +1101,20 @@ namespace ThingsGateway.Foundation.Dmtp
         /// <inheritdoc/>
         public virtual Task SendAsync(ushort protocol, byte[] buffer, int offset, int length)
         {
-            return Task.Run(() =>
+            var transferBytes = new ArraySegment<byte>[]
             {
-                this.Send(protocol, buffer, offset, length);
-            });
+            new ArraySegment<byte>(TouchSocketBitConverter.BigEndian.GetBytes(protocol)),
+            new ArraySegment<byte>(TouchSocketBitConverter.BigEndian.GetBytes(length)),
+            new ArraySegment<byte>(buffer,offset,length)
+            };
+            this.LastActiveTime = DateTime.Now;
+            return this.OutputSendAsync.Invoke(this, transferBytes);
+        }
+
+        /// <inheritdoc/>
+        public virtual Task SendAsync(ushort protocol, ByteBlock byteBlock)
+        {
+            return this.SendAsync(protocol, byteBlock.Buffer, 0, byteBlock.Len);
         }
 
         #endregion 协议异步发送
@@ -1059,7 +1148,7 @@ namespace ThingsGateway.Foundation.Dmtp
             {
                 throw new ArgumentException($"“{nameof(targetId)}”不能为 null 或空。", nameof(targetId));
             }
-            if (this.AllowRoute && this.TryFindDmtpActor(targetId, out var actor))
+            if (this.AllowRoute && this.TryFindDmtpActor(targetId).GetFalseAwaitResult() is DmtpActor actor)
             {
                 return actor.CreateChannel(id, metadata);
             }
@@ -1077,7 +1166,7 @@ namespace ThingsGateway.Foundation.Dmtp
                 throw new ArgumentException($"“{nameof(targetId)}”不能为 null 或空。", nameof(targetId));
             }
 
-            if (this.AllowRoute && this.TryFindDmtpActor(targetId, out var actor))
+            if (this.AllowRoute && this.TryFindDmtpActor(targetId).GetFalseAwaitResult() is DmtpActor actor)
             {
                 return actor.CreateChannel(metadata);
             }
@@ -1100,37 +1189,37 @@ namespace ThingsGateway.Foundation.Dmtp
         }
 
         /// <inheritdoc/>
-        public virtual Task<IDmtpChannel> CreateChannelAsync(string targetId, int id, Metadata metadata = default)
+        public virtual async Task<IDmtpChannel> CreateChannelAsync(string targetId, int id, Metadata metadata = default)
         {
             if (string.IsNullOrEmpty(targetId))
             {
                 throw new ArgumentException($"“{nameof(targetId)}”不能为 null 或空。", nameof(targetId));
             }
-            if (this.AllowRoute && this.TryFindDmtpActor(targetId, out var actor))
+            if (this.AllowRoute && await this.TryFindDmtpActor(targetId).ConfigureFalseAwait() is DmtpActor actor)
             {
-                return actor.CreateChannelAsync(id, metadata);
+                return await actor.CreateChannelAsync(id, metadata).ConfigureFalseAwait();
             }
             else
             {
-                return this.PrivateCreateChannelAsync(targetId, false, id, metadata);
+                return await this.PrivateCreateChannelAsync(targetId, false, id, metadata).ConfigureFalseAwait();
             }
         }
 
         /// <inheritdoc/>
-        public virtual Task<IDmtpChannel> CreateChannelAsync(string targetId, Metadata metadata = default)
+        public virtual async Task<IDmtpChannel> CreateChannelAsync(string targetId, Metadata metadata = default)
         {
             if (string.IsNullOrEmpty(targetId))
             {
                 throw new ArgumentException($"“{nameof(targetId)}”不能为 null 或空。", nameof(targetId));
             }
 
-            if (this.AllowRoute && this.TryFindDmtpActor(targetId, out var actor))
+            if (this.AllowRoute && await this.TryFindDmtpActor(targetId).ConfigureFalseAwait() is DmtpActor actor)
             {
-                return actor.CreateChannelAsync(metadata);
+                return await actor.CreateChannelAsync(metadata).ConfigureFalseAwait();
             }
             else
             {
-                return this.PrivateCreateChannelAsync(targetId, true, 0, metadata);
+                return await this.PrivateCreateChannelAsync(targetId, true, 0, metadata).ConfigureFalseAwait();
             }
         }
 
@@ -1208,9 +1297,14 @@ namespace ThingsGateway.Foundation.Dmtp
                                         var channel = new InternalChannel(this, targetId, result.Metadata);
                                         channel.SetId(result.ChannelId);
                                         channel.SetUsing();
-                                        return this.m_userChannels.TryAdd(result.ChannelId, channel)
-                                            ? (IDmtpChannel)channel
-                                            : throw new Exception(TouchSocketDmtpStatus.UnknownError.GetDescription());
+                                        if (this.m_userChannels.TryAdd(result.ChannelId, channel))
+                                        {
+                                            return channel;
+                                        }
+                                        else
+                                        {
+                                            throw new Exception(TouchSocketDmtpStatus.UnknownError.GetDescription());
+                                        }
                                     }
                                 case TouchSocketDmtpStatus.ClientNotFind:
                                     {
@@ -1269,8 +1363,8 @@ namespace ThingsGateway.Foundation.Dmtp
             try
             {
                 waitCreateChannel.Package(byteBlock);
-                this.Send(P7_CreateChannel_Request, byteBlock);
-                switch (await waitData.WaitAsync(10 * 1000))
+                await this.SendAsync(P7_CreateChannel_Request, byteBlock).ConfigureFalseAwait();
+                switch (await waitData.WaitAsync(10 * 1000).ConfigureFalseAwait())
                 {
                     case WaitDataStatus.SetRunning:
                         {
@@ -1282,9 +1376,14 @@ namespace ThingsGateway.Foundation.Dmtp
                                         var channel = new InternalChannel(this, targetId, result.Metadata);
                                         channel.SetId(result.ChannelId);
                                         channel.SetUsing();
-                                        return this.m_userChannels.TryAdd(result.ChannelId, channel)
-                                            ? (IDmtpChannel)channel
-                                            : throw new Exception(TouchSocketDmtpStatus.UnknownError.GetDescription());
+                                        if (this.m_userChannels.TryAdd(result.ChannelId, channel))
+                                        {
+                                            return channel;
+                                        }
+                                        else
+                                        {
+                                            throw new Exception(TouchSocketDmtpStatus.UnknownError.GetDescription());
+                                        }
                                     }
                                 case TouchSocketDmtpStatus.ClientNotFind:
                                     {
@@ -1333,7 +1432,7 @@ namespace ThingsGateway.Foundation.Dmtp
                 channel.SetId(id);
                 if (this.m_userChannels.TryAdd(id, channel))
                 {
-                    Task.Factory.StartNew(this.ThisRequestCreateChannel, new CreateChannelEventArgs(id, metadata));
+                    Task.Factory.StartNew(this.PrivateOnCreatedChannel, new CreateChannelEventArgs(id, metadata));
                     return true;
                 }
                 else
@@ -1344,16 +1443,6 @@ namespace ThingsGateway.Foundation.Dmtp
             }
         }
 
-        private void ThisRequestCreateChannel(object state)
-        {
-            try
-            {
-                this.OnCreateChannel?.Invoke(this, (CreateChannelEventArgs)state);
-            }
-            catch
-            {
-            }
-        }
 
         #endregion IDmtpChannel
     }

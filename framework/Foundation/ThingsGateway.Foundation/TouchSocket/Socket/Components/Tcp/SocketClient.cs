@@ -149,7 +149,7 @@ namespace ThingsGateway.Foundation.Sockets
             }
             catch (Exception ex)
             {
-                this.BreakOut(default, false, ex.ToString());
+                this.BreakOut(false, ex.ToString());
             }
         }
 
@@ -226,7 +226,7 @@ namespace ThingsGateway.Foundation.Sockets
             var tcpCore = this.Service.RentTcpCore();
             tcpCore.Reset(socket);
             tcpCore.OnReceived = this.HandleReceived;
-            tcpCore.OnBreakOut = this.BreakOut;
+            tcpCore.OnBreakOut = this.TcpCoreBreakOut;
             if (this.Config.GetValue(TouchSocketConfigExtension.MinBufferSizeProperty) is int minValue)
             {
                 tcpCore.MinBufferSize = minValue;
@@ -239,7 +239,17 @@ namespace ThingsGateway.Foundation.Sockets
             this.m_tcpCore = tcpCore;
         }
 
-        private void BreakOut(TcpCore core, bool manual, string msg)
+        private void TcpCoreBreakOut(TcpCore core, bool manual, string msg)
+        {
+            this.BreakOut(manual, msg);
+        }
+
+        /// <summary>
+        /// 中断连接
+        /// </summary>
+        /// <param name="manual"></param>
+        /// <param name="msg"></param>
+        protected void BreakOut(bool manual, string msg)
         {
             if (this.GetSocketCliectCollection().TryRemove(this.Id, out _))
             {
@@ -397,7 +407,7 @@ namespace ThingsGateway.Foundation.Sockets
             {
                 var tcp = this.m_tcpCore;
                 this.m_tcpCore = null;
-                this.Service?.ReturnTcpCore(tcp);
+                this.Service.ReturnTcpCore(tcp);
             }
         }
 
@@ -424,7 +434,7 @@ namespace ThingsGateway.Foundation.Sockets
                 {
                     Task.Factory.StartNew(this.PrivateOnDisconnecting, new DisconnectEventArgs(true, msg));
                     this.MainSocket.TryClose();
-                    this.BreakOut(default, true, msg);
+                    this.BreakOut(true, msg);
                 }
             }
         }
@@ -505,7 +515,7 @@ namespace ThingsGateway.Foundation.Sockets
                 if (this.Online)
                 {
                     Task.Factory.StartNew(this.PrivateOnDisconnecting, new DisconnectEventArgs(true, $"{nameof(Dispose)}主动断开"));
-                    this.BreakOut(default, true, $"{nameof(Dispose)}主动断开");
+                    this.BreakOut(true, $"{nameof(Dispose)}主动断开");
                 }
 
                 base.Dispose(disposing);

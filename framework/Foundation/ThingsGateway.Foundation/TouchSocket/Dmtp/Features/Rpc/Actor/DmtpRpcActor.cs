@@ -36,10 +36,10 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
         /// <summary>
         /// 创建一个DmtpRpcActor
         /// </summary>
-        /// <param name="smtpActor"></param>
-        public DmtpRpcActor(IDmtpActor smtpActor)
+        /// <param name="dmtpActor"></param>
+        public DmtpRpcActor(IDmtpActor dmtpActor)
         {
-            this.DmtpActor = smtpActor;
+            this.DmtpActor = dmtpActor;
         }
 
         /// <inheritdoc/>
@@ -69,7 +69,7 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
-        public bool InputReceivedData(DmtpMessage message)
+        public async Task<bool> InputReceivedData(DmtpMessage message)
         {
             var byteBlock = message.BodyByteBlock;
 
@@ -77,14 +77,13 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
             {
                 try
                 {
-                    //Console.WriteLine(byteBlock.Len);
                     var rpcPackage = new DmtpRpcPackage();
                     rpcPackage.UnpackageRouter(byteBlock);
                     if (rpcPackage.Route && this.DmtpActor.AllowRoute)
                     {
-                        if (this.DmtpActor.TryRoute(RouteType.Rpc, rpcPackage))
+                        if (await this.DmtpActor.TryRoute(new PackageRouterEventArgs(RouteType.Rpc, rpcPackage)).ConfigureFalseAwait())
                         {
-                            if (this.DmtpActor.TryFindDmtpActor(rpcPackage.TargetId, out var actor))
+                            if (await this.DmtpActor.TryFindDmtpActor(rpcPackage.TargetId).ConfigureFalseAwait() is DmtpActor actor)
                             {
                                 actor.Send(this.m_invoke_Request, byteBlock);
                                 return true;
@@ -108,8 +107,7 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
                     else
                     {
                         rpcPackage.UnpackageBody(byteBlock);
-                        Task.Factory.StartNew(this.InvokeThis, rpcPackage);
-                        //this.InvokeThis(rpcPackage);
+                        _ = Task.Factory.StartNew(this.InvokeThis, rpcPackage);
                     }
                 }
                 catch (Exception ex)
@@ -126,7 +124,7 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
                     rpcPackage.UnpackageRouter(byteBlock);
                     if (this.DmtpActor.AllowRoute && rpcPackage.Route)
                     {
-                        if (this.DmtpActor.TryFindDmtpActor(rpcPackage.TargetId, out var actor))
+                        if (await this.DmtpActor.TryFindDmtpActor(rpcPackage.TargetId).ConfigureFalseAwait() is DmtpActor actor)
                         {
                             actor.Send(this.m_invoke_Response, byteBlock);
                         }
@@ -151,7 +149,7 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
                     canceledPackage.UnpackageRouter(byteBlock);
                     if (this.DmtpActor.AllowRoute && canceledPackage.Route)
                     {
-                        if (this.DmtpActor.TryFindDmtpActor(canceledPackage.TargetId, out var actor))
+                        if (await this.DmtpActor.TryFindDmtpActor(canceledPackage.TargetId).ConfigureFalseAwait() is DmtpActor actor)
                         {
                             actor.Send(this.m_cancelInvoke, byteBlock);
                         }
@@ -203,7 +201,7 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
             try
             {
                 var rpcPackage = (DmtpRpcPackage)o;
-                //Console.WriteLine(rpcPackage.MethodName);
+
                 var psData = rpcPackage.ParametersBytes;
                 if (rpcPackage.Feedback == FeedbackType.WaitSend)
                 {
@@ -227,7 +225,7 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
 
                 var invokeResult = new InvokeResult();
                 object[] ps = null;
-                var methodInstance = this.GetInvokeMethod?.Invoke(rpcPackage.MethodName);
+                var methodInstance = this.GetInvokeMethod.Invoke(rpcPackage.MethodName);
                 DmtpRpcCallContext callContext = null;
                 if (methodInstance != null)
                 {
@@ -283,7 +281,7 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
                     {
                         transientRpcServer.CallContext = callContext;
                     }
-                    invokeResult = await RpcStore.ExecuteAsync(rpcServer, ps, callContext);
+                    invokeResult = await RpcStore.ExecuteAsync(rpcServer, ps, callContext).ConfigureFalseAwait();
                 }
 
                 if (rpcPackage.Feedback == FeedbackType.OnlySend)
@@ -369,24 +367,20 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
             }
         }
 
-        private bool TryFindDmtpRpcActor(string targetId, out DmtpRpcActor rpcActor)
+        private async Task<DmtpRpcActor> TryFindDmtpRpcActor(string targetId)
         {
             if (targetId == this.DmtpActor.Id)
             {
-                rpcActor = this;
-                return true;
+                return this;
             }
-            if (this.DmtpActor.TryFindDmtpActor(targetId, out var smtpActor))
+            if (await this.DmtpActor.TryFindDmtpActor(targetId).ConfigureFalseAwait() is DmtpActor dmtpActor)
             {
-                if (smtpActor.GetDmtpRpcActor() is DmtpRpcActor newActor)
+                if (dmtpActor.GetDmtpRpcActor() is DmtpRpcActor newActor)
                 {
-                    rpcActor = newActor;
-                    return true;
+                    return newActor;
                 }
             }
-
-            rpcActor = default;
-            return false;
+            return default;
         }
 
         #region Rpc
@@ -504,8 +498,6 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
 
             var waitData = this.DmtpActor.WaitHandlePool.GetWaitData(rpcPackage);
 
-
-
             try
             {
                 using (var byteBlock = new ByteBlock())
@@ -531,7 +523,6 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
                     rpcPackage.Package(byteBlock);
                     this.DmtpActor.Send(this.m_invoke_Request, byteBlock.Buffer, 0, byteBlock.Len);
                 }
-
 
                 switch (invokeOption.FeedbackType)
                 {
@@ -689,8 +680,6 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
 
             var waitData = this.DmtpActor.WaitHandlePool.GetWaitData(rpcPackage);
 
-
-
             try
             {
                 using (var byteBlock = new ByteBlock())
@@ -721,7 +710,6 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
 
                     this.DmtpActor.Send(this.m_invoke_Request, byteBlock.Buffer, 0, byteBlock.Len);
                 }
-
 
                 switch (invokeOption.FeedbackType)
                 {
@@ -779,8 +767,6 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
 
             var waitData = this.DmtpActor.WaitHandlePool.GetWaitDataAsync(rpcPackage);
 
-
-
             try
             {
                 using (var byteBlock = new ByteBlock())
@@ -818,7 +804,7 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
 
                     case FeedbackType.WaitSend:
                         {
-                            switch (await waitData.WaitAsync(invokeOption.Timeout))
+                            switch (await waitData.WaitAsync(invokeOption.Timeout).ConfigureFalseAwait())
                             {
                                 case WaitDataStatus.SetRunning:
                                     break;
@@ -832,7 +818,7 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
                         }
                     case FeedbackType.WaitInvoke:
                         {
-                            switch (await waitData.WaitAsync(invokeOption.Timeout))
+                            switch (await waitData.WaitAsync(invokeOption.Timeout).ConfigureFalseAwait())
                             {
                                 case WaitDataStatus.SetRunning:
                                     {
@@ -898,7 +884,6 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
                     this.DmtpActor.Send(this.m_invoke_Request, byteBlock.Buffer, 0, byteBlock.Len);
                 }
 
-
                 switch (invokeOption.FeedbackType)
                 {
                     case FeedbackType.OnlySend:
@@ -907,7 +892,7 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
                         }
                     case FeedbackType.WaitSend:
                         {
-                            switch (await waitData.WaitAsync(invokeOption.Timeout))
+                            switch (await waitData.WaitAsync(invokeOption.Timeout).ConfigureFalseAwait())
                             {
                                 case WaitDataStatus.Overtime:
                                     {
@@ -918,7 +903,7 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
                         }
                     case FeedbackType.WaitInvoke:
                         {
-                            switch (await waitData.WaitAsync(invokeOption.Timeout))
+                            switch (await waitData.WaitAsync(invokeOption.Timeout).ConfigureFalseAwait())
                             {
                                 case WaitDataStatus.SetRunning:
                                     {
@@ -961,7 +946,7 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
                 throw new ArgumentException($"“{nameof(invokeKey)}”不能为 null 或空。", nameof(invokeKey));
             }
 
-            if (this.DmtpActor.AllowRoute && this.TryFindDmtpRpcActor(targetId, out var actor))
+            if (this.DmtpActor.AllowRoute && this.TryFindDmtpRpcActor(targetId).GetFalseAwaitResult() is DmtpRpcActor actor)
             {
                 actor.Invoke(invokeKey, invokeOption, parameters);
                 return;
@@ -976,7 +961,6 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
             };
 
             var waitData = this.DmtpActor.WaitHandlePool.GetReverseWaitData(rpcPackage);
-
 
             try
             {
@@ -1008,7 +992,6 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
 
                     this.DmtpActor.Send(this.m_invoke_Request, byteBlock.Buffer, 0, byteBlock.Len);
                 }
-
 
                 switch (invokeOption.FeedbackType)
                 {
@@ -1069,9 +1052,9 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
                 throw new ArgumentException($"“{nameof(invokeKey)}”不能为 null 或空。", nameof(invokeKey));
             }
 
-            if (this.DmtpActor.AllowRoute && this.TryFindDmtpRpcActor(targetId, out var rpcActor))
+            if (this.DmtpActor.AllowRoute && this.TryFindDmtpRpcActor(targetId).GetFalseAwaitResult() is DmtpRpcActor actor)
             {
-                return rpcActor.Invoke(returnType, invokeKey, invokeOption, parameters);
+                return actor.Invoke(returnType, invokeKey, invokeOption, parameters);
             }
 
             var rpcPackage = new DmtpRpcPackage
@@ -1084,10 +1067,8 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
 
             var waitData = this.DmtpActor.WaitHandlePool.GetReverseWaitData(rpcPackage);
 
-
             try
             {
-
                 using (var byteBlock = new ByteBlock())
                 {
                     if (invokeOption == default)
@@ -1115,7 +1096,6 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
                     rpcPackage.Package(byteBlock);
                     this.DmtpActor.Send(this.m_invoke_Request, byteBlock.Buffer, 0, byteBlock.Len);
                 }
-
 
                 switch (invokeOption.FeedbackType)
                 {
@@ -1175,9 +1155,9 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
                 throw new ArgumentException($"“{nameof(invokeKey)}”不能为 null 或空。", nameof(invokeKey));
             }
 
-            if (this.DmtpActor.AllowRoute && this.TryFindDmtpRpcActor(targetId, out var rpcActor))
+            if (this.DmtpActor.AllowRoute && this.TryFindDmtpRpcActor(targetId).GetFalseAwaitResult() is DmtpRpcActor actor)
             {
-                rpcActor.Invoke(invokeKey, invokeOption, ref parameters, types);
+                actor.Invoke(invokeKey, invokeOption, ref parameters, types);
                 return;
             }
 
@@ -1190,7 +1170,6 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
             };
 
             var waitData = this.DmtpActor.WaitHandlePool.GetReverseWaitData(rpcPackage);
-
 
             try
             {
@@ -1218,7 +1197,6 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
 
                     this.DmtpActor.Send(this.m_invoke_Request, byteBlock.Buffer, 0, byteBlock.Len);
                 }
-
 
                 switch (invokeOption.FeedbackType)
                 {
@@ -1289,9 +1267,9 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
                 throw new ArgumentException($"“{nameof(invokeKey)}”不能为 null 或空。", nameof(invokeKey));
             }
 
-            if (this.DmtpActor.AllowRoute && this.TryFindDmtpRpcActor(targetId, out var rpcActor))
+            if (this.DmtpActor.AllowRoute && this.TryFindDmtpRpcActor(targetId).GetFalseAwaitResult() is DmtpRpcActor actor)
             {
-                return rpcActor.Invoke(returnType, invokeKey, invokeOption, ref parameters, types);
+                return actor.Invoke(returnType, invokeKey, invokeOption, ref parameters, types);
             }
 
             var rpcPackage = new DmtpRpcPackage
@@ -1303,7 +1281,6 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
             };
 
             var waitData = this.DmtpActor.WaitHandlePool.GetReverseWaitData(rpcPackage);
-
 
             try
             {
@@ -1329,7 +1306,6 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
                     rpcPackage.Package(byteBlock);
                     this.DmtpActor.Send(this.m_invoke_Request, byteBlock.Buffer, 0, byteBlock.Len);
                 }
-
 
                 switch (invokeOption.FeedbackType)
                 {
@@ -1400,9 +1376,9 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
                 throw new ArgumentException($"“{nameof(invokeKey)}”不能为 null 或空。", nameof(invokeKey));
             }
 
-            if (this.DmtpActor.AllowRoute && this.TryFindDmtpRpcActor(targetId, out var actor))
+            if (this.DmtpActor.AllowRoute && await this.TryFindDmtpRpcActor(targetId).ConfigureFalseAwait() is DmtpRpcActor actor)
             {
-                await actor.InvokeAsync(invokeKey, invokeOption, parameters);
+                await actor.InvokeAsync(invokeKey, invokeOption, parameters).ConfigureFalseAwait();
                 return;
             }
 
@@ -1415,7 +1391,6 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
             };
 
             var waitData = this.DmtpActor.WaitHandlePool.GetReverseWaitDataAsync(rpcPackage);
-
 
             try
             {
@@ -1448,7 +1423,6 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
                     this.DmtpActor.Send(this.m_invoke_Request, byteBlock.Buffer, 0, byteBlock.Len);
                 }
 
-
                 switch (invokeOption.FeedbackType)
                 {
                     case FeedbackType.OnlySend:
@@ -1456,7 +1430,7 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
 
                     case FeedbackType.WaitSend:
                         {
-                            switch (await waitData.WaitAsync(invokeOption.Timeout))
+                            switch (await waitData.WaitAsync(invokeOption.Timeout).ConfigureFalseAwait())
                             {
                                 case WaitDataStatus.SetRunning:
                                     break;
@@ -1470,7 +1444,7 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
                         }
                     case FeedbackType.WaitInvoke:
                         {
-                            switch (await waitData.WaitAsync(invokeOption.Timeout))
+                            switch (await waitData.WaitAsync(invokeOption.Timeout).ConfigureFalseAwait())
                             {
                                 case WaitDataStatus.SetRunning:
                                     {
@@ -1508,9 +1482,9 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
                 throw new ArgumentException($"“{nameof(invokeKey)}”不能为 null 或空。", nameof(invokeKey));
             }
 
-            if (this.DmtpActor.AllowRoute && this.TryFindDmtpRpcActor(targetId, out var rpcActor))
+            if (this.DmtpActor.AllowRoute && await this.TryFindDmtpRpcActor(targetId).ConfigureFalseAwait() is DmtpRpcActor actor)
             {
-                return await rpcActor.InvokeAsync(returnType, invokeKey, invokeOption, parameters);
+                return await actor.InvokeAsync(returnType, invokeKey, invokeOption, parameters).ConfigureFalseAwait();
             }
 
             var rpcPackage = new DmtpRpcPackage
@@ -1553,8 +1527,6 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
                     this.DmtpActor.Send(this.m_invoke_Request, byteBlock.Buffer, 0, byteBlock.Len);
                 }
 
-
-
                 switch (invokeOption.FeedbackType)
                 {
                     case FeedbackType.OnlySend:
@@ -1563,7 +1535,7 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
                         }
                     case FeedbackType.WaitSend:
                         {
-                            switch (await waitData.WaitAsync(invokeOption.Timeout))
+                            switch (await waitData.WaitAsync(invokeOption.Timeout).ConfigureFalseAwait())
                             {
                                 case WaitDataStatus.Overtime:
                                     {
@@ -1574,7 +1546,7 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
                         }
                     case FeedbackType.WaitInvoke:
                         {
-                            switch (await waitData.WaitAsync(invokeOption.Timeout))
+                            switch (await waitData.WaitAsync(invokeOption.Timeout).ConfigureFalseAwait())
                             {
                                 case WaitDataStatus.SetRunning:
                                     {

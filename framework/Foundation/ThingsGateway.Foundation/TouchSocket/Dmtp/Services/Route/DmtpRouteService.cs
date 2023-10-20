@@ -10,6 +10,9 @@
 //------------------------------------------------------------------------------
 #endregion
 
+using System;
+using System.Threading.Tasks;
+
 namespace ThingsGateway.Foundation.Dmtp
 {
     /// <summary>
@@ -18,8 +21,8 @@ namespace ThingsGateway.Foundation.Dmtp
     public class DmtpRouteService : IDmtpRouteService
     {
         /// <summary>
-        /// 查找路由的委托
+        /// <inheritdoc/>
         /// </summary>
-        public Func<string, IDmtpActor> FindDmtpActor { get; set; }
+        public Func<string, Task<IDmtpActor>> FindDmtpActor { get ; set ; }
     }
 }

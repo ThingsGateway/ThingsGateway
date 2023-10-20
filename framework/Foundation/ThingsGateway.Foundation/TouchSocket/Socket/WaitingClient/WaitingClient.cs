@@ -28,7 +28,6 @@ namespace ThingsGateway.Foundation.Sockets
     internal class WaitingClient<TClient> : DisposableObject, IWaitingClient<TClient> where TClient : IClient, ISender
     {
         private readonly EasyLock m_semaphoreSlim = new();
-        private volatile bool m_breaked;
         private CancellationTokenSource m_cancellationTokenSource;
 
 
@@ -75,8 +74,7 @@ namespace ThingsGateway.Foundation.Sockets
         {
             try
             {
-                this.m_semaphoreSlim.Wait();
-                this.m_breaked = false;
+                this.m_semaphoreSlim.Wait(token);
                 if (token.CanBeCanceled)
                 {
                     this.m_cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(token);
@@ -85,7 +83,7 @@ namespace ThingsGateway.Foundation.Sockets
                 {
                     this.m_cancellationTokenSource = new CancellationTokenSource(5000);
                 }
-                using (m_cancellationTokenSource)
+                using (this.m_cancellationTokenSource)
                 {
                     if (this.WaitingOptions.RemoteIPHost != null && this.Client is IUdpSession session)
                     {
@@ -113,7 +111,6 @@ namespace ThingsGateway.Foundation.Sockets
                                 {
                                     if (receiverResult.IsClosed)
                                     {
-                                        this.m_breaked = true;
                                         this.Cancel();
                                     }
                                     var response = new ResponsedData(receiverResult.ByteBlock?.ToArray(), receiverResult.RequestInfo);
@@ -135,10 +132,6 @@ namespace ThingsGateway.Foundation.Sockets
                     }
                 }
             }
-            catch (OperationCanceledException)
-            {
-                return this.WaitingOptions.ThrowBreakException && this.m_breaked ? throw new Exception("等待已终止。可能是客户端已掉线，或者被注销。") : throw new TimeoutException();
-            }
             finally
             {
                 this.m_cancellationTokenSource = null;
@@ -156,8 +149,7 @@ namespace ThingsGateway.Foundation.Sockets
         {
             try
             {
-                await this.m_semaphoreSlim.WaitAsync();
-                this.m_breaked = false;
+                await this.m_semaphoreSlim.WaitAsync(token);
                 if (token.CanBeCanceled)
                 {
                     this.m_cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(token);
@@ -166,7 +158,7 @@ namespace ThingsGateway.Foundation.Sockets
                 {
                     this.m_cancellationTokenSource = new CancellationTokenSource(5000);
                 }
-                using (m_cancellationTokenSource)
+                using (this.m_cancellationTokenSource)
                 {
                     if (this.WaitingOptions.RemoteIPHost != null && this.Client is IUdpSession session)
                     {
@@ -194,7 +186,6 @@ namespace ThingsGateway.Foundation.Sockets
                                 {
                                     if (receiverResult.IsClosed)
                                     {
-                                        this.m_breaked = true;
                                         this.Cancel();
                                     }
                                     var response = new ResponsedData(receiverResult.ByteBlock?.ToArray(), receiverResult.RequestInfo);
@@ -215,10 +206,6 @@ namespace ThingsGateway.Foundation.Sockets
                         }
                     }
                 }
-            }
-            catch (OperationCanceledException)
-            {
-                return this.WaitingOptions.ThrowBreakException && this.m_breaked ? throw new Exception("等待已终止。可能是客户端已掉线，或者被注销。") : throw new TimeoutException();
             }
             finally
             {

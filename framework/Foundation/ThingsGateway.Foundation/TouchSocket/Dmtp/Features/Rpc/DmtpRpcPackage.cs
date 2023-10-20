@@ -108,10 +108,10 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
 
         internal void LoadInvokeOption(IInvokeOption option)
         {
-            if (option is DmtpInvokeOption smtpInvokeOption)
+            if (option is DmtpInvokeOption dmtpInvokeOption)
             {
-                this.Feedback = smtpInvokeOption.FeedbackType;
-                this.SerializationType = smtpInvokeOption.SerializationType;
+                this.Feedback = dmtpInvokeOption.FeedbackType;
+                this.SerializationType = dmtpInvokeOption.SerializationType;
             }
             else if (option is InvokeOption invokeOption)
             {

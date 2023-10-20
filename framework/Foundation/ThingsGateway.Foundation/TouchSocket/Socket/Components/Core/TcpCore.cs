@@ -10,7 +10,6 @@
 //------------------------------------------------------------------------------
 #endregion
 
-using System.Diagnostics;
 using System.Net.Security;
 using System.Net.Sockets;
 
@@ -41,14 +40,13 @@ public class TcpCore : SocketAsyncEventArgs, IDisposable, ISender
     public readonly object SyncRoot = new object();
 
     private long m_bufferRate;
-    private SpinLock m_lock;
     private volatile bool m_online;
     private int m_receiveBufferSize = 1024 * 10;
     private ValueCounter m_receiveCounter;
     private int m_sendBufferSize = 1024 * 10;
     private ValueCounter m_sendCounter;
     private Socket m_socket;
-    private readonly EasyLock m_semaphore = new();
+    private readonly EasyLock m_semaphoreForSend = new();
     #endregion 字段
 
     /// <summary>
@@ -56,7 +54,6 @@ public class TcpCore : SocketAsyncEventArgs, IDisposable, ISender
     /// </summary>
     public TcpCore()
     {
-        this.m_lock = new SpinLock(Debugger.IsAttached);
         this.m_receiveCounter = new ValueCounter
         {
             Period = TimeSpan.FromSeconds(1),
@@ -295,7 +292,6 @@ public class TcpCore : SocketAsyncEventArgs, IDisposable, ISender
         this.OnBreakOut = null;
         this.UserToken = null;
         this.m_bufferRate = 1;
-        this.m_lock = new SpinLock();
         this.m_receiveBufferSize = this.MinBufferSize;
         this.m_sendBufferSize = this.MinBufferSize;
         this.m_online = false;
@@ -318,10 +314,9 @@ public class TcpCore : SocketAsyncEventArgs, IDisposable, ISender
         }
         else
         {
-            var lockTaken = false;
             try
             {
-                this.m_lock.Enter(ref lockTaken);
+                this.m_semaphoreForSend.Wait();
                 while (length > 0)
                 {
                     var r = this.m_socket.Send(buffer, offset, length, SocketFlags.None);
@@ -335,7 +330,7 @@ public class TcpCore : SocketAsyncEventArgs, IDisposable, ISender
             }
             finally
             {
-                if (lockTaken) this.m_lock.Exit(false);
+                this.m_semaphoreForSend.Release();
             }
         }
         this.m_sendCounter.Increment(length);
@@ -363,7 +358,7 @@ public class TcpCore : SocketAsyncEventArgs, IDisposable, ISender
         {
             try
             {
-                await this.m_semaphore.WaitAsync();
+                await this.m_semaphoreForSend.WaitAsync();
 
                 while (length > 0)
                 {
@@ -378,7 +373,7 @@ public class TcpCore : SocketAsyncEventArgs, IDisposable, ISender
             }
             finally
             {
-                this.m_semaphore.Release();
+                this.m_semaphoreForSend.Release();
             }
         }
 #else
@@ -390,7 +385,7 @@ public class TcpCore : SocketAsyncEventArgs, IDisposable, ISender
         {
             try
             {
-                await this.m_semaphore.WaitAsync();
+                await this.m_semaphoreForSend.WaitAsync();
 
                 while (length > 0)
                 {
@@ -405,7 +400,7 @@ public class TcpCore : SocketAsyncEventArgs, IDisposable, ISender
             }
             finally
             {
-                this.m_semaphore.Release();
+                this.m_semaphoreForSend.Release();
             }
         }
 #endif

@@ -23,7 +23,7 @@ public abstract class ReadWriteDevicesTcpClientBase : ReadWriteDevicesBase
     public ReadWriteDevicesTcpClientBase(TcpClient tcpClient)
     {
         TcpClient = tcpClient;
-        WaitingClientEx = TcpClient.CreateWaitingClient(new() { ThrowBreakException = true });
+        WaitingClientEx = TcpClient.CreateWaitingClient(new() { });
         TcpClient.Connecting -= Connecting;
         TcpClient.Connected -= Connected;
         TcpClient.Disconnecting -= Disconnecting;
@@ -86,7 +86,7 @@ public abstract class ReadWriteDevicesTcpClientBase : ReadWriteDevicesBase
     {
         try
         {
-            waitingOptions ??= new WaitingOptions { ThrowBreakException = true, };
+            waitingOptions ??= new WaitingOptions { };
             ResponsedData result = TcpClient.CreateWaitingClient(waitingOptions).SendThenResponse(data, TimeOut, cancellationToken);
             return OperResult.CreateSuccessResult(result.Data);
         }
@@ -101,7 +101,7 @@ public abstract class ReadWriteDevicesTcpClientBase : ReadWriteDevicesBase
     {
         try
         {
-            waitingOptions ??= new WaitingOptions { ThrowBreakException = true };
+            waitingOptions ??= new WaitingOptions { };
             ResponsedData result = await TcpClient.CreateWaitingClient(waitingOptions).SendThenResponseAsync(data, TimeOut, cancellationToken);
             return OperResult.CreateSuccessResult(result.Data);
         }

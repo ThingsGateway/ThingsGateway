@@ -12,7 +12,6 @@
 
 #if NET6_0_OR_GREATER
 using System.Text.Json.Serialization;
-
 using ThingsGateway.Foundation.Core;
 
 namespace ThingsGateway.Foundation.Dmtp

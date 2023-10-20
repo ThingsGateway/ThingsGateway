@@ -10,7 +10,6 @@
 //------------------------------------------------------------------------------
 #endregion
 
-using System.Diagnostics;
 using System.IO.Ports;
 
 namespace ThingsGateway.Foundation.Serial;
@@ -40,13 +39,12 @@ public class SerialCore : IDisposable, ISender
     public readonly object SyncRoot = new object();
 
     private long m_bufferRate;
-    private SpinLock m_lock;
     private bool m_online => m_serialPort?.IsOpen == true;
     private int m_receiveBufferSize = 1024 * 10;
     private ValueCounter m_receiveCounter;
     private int m_sendBufferSize = 1024 * 10;
     private ValueCounter m_sendCounter;
-    private readonly EasyLock m_semaphore = new EasyLock();
+    private readonly EasyLock m_semaphoreForSend = new EasyLock();
     private SerialPort m_serialPort;
 
     #endregion 字段
@@ -56,7 +54,6 @@ public class SerialCore : IDisposable, ISender
     /// </summary>
     public SerialCore()
     {
-        this.m_lock = new SpinLock(Debugger.IsAttached);
         this.m_receiveCounter = new ValueCounter
         {
             Period = TimeSpan.FromSeconds(1),
@@ -215,7 +212,6 @@ public class SerialCore : IDisposable, ISender
         this.OnBreakOut = null;
         this.UserToken = null;
         this.m_bufferRate = 1;
-        this.m_lock = new SpinLock();
         this.m_receiveBufferSize = this.MinBufferSize;
         this.m_sendBufferSize = this.MinBufferSize;
     }
@@ -231,15 +227,14 @@ public class SerialCore : IDisposable, ISender
     /// <param name="length"></param>
     public virtual void Send(byte[] buffer, int offset, int length)
     {
-        var lockTaken = false;
         try
         {
-            this.m_lock.Enter(ref lockTaken);
+            this.m_semaphoreForSend.Wait();
             this.m_serialPort.Write(buffer, offset, length);
         }
         finally
         {
-            if (lockTaken) this.m_lock.Exit(false);
+            this.m_semaphoreForSend.Release();
         }
         this.m_sendCounter.Increment(length);
     }
@@ -256,13 +251,13 @@ public class SerialCore : IDisposable, ISender
     {
         try
         {
-            await this.m_semaphore.WaitAsync();
+            await this.m_semaphoreForSend.WaitAsync();
 
             this.m_serialPort.Write(buffer, offset, length);
         }
         finally
         {
-            this.m_semaphore.Release();
+            this.m_semaphoreForSend.Release();
         }
 
         this.m_sendCounter.Increment(length);

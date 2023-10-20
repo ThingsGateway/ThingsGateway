@@ -255,7 +255,7 @@ public class SerialSessionBase : BaseSerial, ISerialSession
             {
                 Task.Factory.StartNew(this.PrivateOnDisconnecting, new DisconnectEventArgs(true, msg));
                 this.MainSerialPort.TryClose();
-                this.BreakOut(default, true, msg);
+                this.BreakOut(true, msg);
             }
         }
     }
@@ -272,7 +272,7 @@ public class SerialSessionBase : BaseSerial, ISerialSession
             if (this.m_online)
             {
                 Task.Factory.StartNew(this.PrivateOnDisconnecting, new DisconnectEventArgs(true, $"{nameof(Dispose)}主动断开"));
-                this.BreakOut(default, true, $"{nameof(Dispose)}主动断开");
+                this.BreakOut(true, $"{nameof(Dispose)}主动断开");
             }
         }
         base.Dispose(disposing);
@@ -361,7 +361,16 @@ public class SerialSessionBase : BaseSerial, ISerialSession
 
     #endregion
 
-    private void BreakOut(SerialCore core, bool manual, string msg)
+    private void SerialCoreBreakOut(SerialCore core, bool manual, string msg)
+    {
+        this.BreakOut(manual, msg);
+    }
+    /// <summary>
+    /// BreakOut。
+    /// </summary>
+    /// <param name="manual"></param>
+    /// <param name="msg"></param>
+    protected void BreakOut(bool manual, string msg)
     {
         lock (this.SyncRoot)
         {
@@ -759,7 +768,7 @@ public class SerialSessionBase : BaseSerial, ISerialSession
         }
         this.m_serialCore.Reset(serialPort);
         this.m_serialCore.OnReceived = this.HandleReceived;
-        this.m_serialCore.OnBreakOut = this.BreakOut;
+        this.m_serialCore.OnBreakOut = this.SerialCoreBreakOut;
         if (this.Config.GetValue(TouchSocketConfigExtension.MinBufferSizeProperty) is int minValue)
         {
             this.m_serialCore.MinBufferSize = minValue;

@@ -10,6 +10,12 @@
 //------------------------------------------------------------------------------
 #endregion
 
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using ThingsGateway.Foundation.Core;
+
 namespace ThingsGateway.Foundation.Dmtp
 {
     /// <summary>
@@ -17,16 +23,21 @@ namespace ThingsGateway.Foundation.Dmtp
     /// </summary>
     public class TcpDmtpAdapter : CustomFixedHeaderByteBlockDataHandlingAdapter<DmtpMessage>
     {
-        private SpinLock m_locker = new SpinLock();
+        private readonly SemaphoreSlim m_locker = new SemaphoreSlim(1, 1);
 
         /// <inheritdoc/>
         public override bool CanSendRequestInfo => true;
 
         /// <inheritdoc/>
-        public override bool CanSplicingSend => false;
+        public override bool CanSplicingSend => true;
 
         /// <inheritdoc/>
         public override int HeaderLength => 6;
+
+        /// <summary>
+        /// 最大拼接
+        /// </summary>
+        public const int MaxSplicing = 1024 * 64;
 
         /// <inheritdoc/>
         protected override DmtpMessage GetInstance()
@@ -39,6 +50,25 @@ namespace ThingsGateway.Foundation.Dmtp
         {
             request.SafeDispose();
         }
+
+        /// <inheritdoc/>
+        protected override async Task PreviewSendAsync(IRequestInfo requestInfo)
+        {
+            if (!(requestInfo is DmtpMessage message))
+            {
+                throw new Exception($"无法将{nameof(requestInfo)}转换为{nameof(DmtpMessage)}");
+            }
+            if (message.BodyByteBlock != null && message.BodyByteBlock.Length > this.MaxPackageSize)
+            {
+                throw new Exception("发送的BodyLength={requestInfo.BodyLength},大于设定的MaxPackageSize={this.MaxPackageSize}");
+            }
+            using (var byteBlock = new ByteBlock(message.GetLength()))
+            {
+                message.Build(byteBlock);
+                await this.GoSendAsync(byteBlock.Buffer, 0, byteBlock.Len);
+            }
+        }
+
 
         /// <inheritdoc/>
         protected override void PreviewSend(IRequestInfo requestInfo)
@@ -56,6 +86,54 @@ namespace ThingsGateway.Foundation.Dmtp
                 message.Build(byteBlock);
                 this.GoSend(byteBlock.Buffer, 0, byteBlock.Len);
             }
+        }
+
+        /// <inheritdoc/>
+        protected override async Task PreviewSendAsync(IList<ArraySegment<byte>> transferBytes)
+        {
+            if (transferBytes.Count == 0)
+            {
+                return;
+            }
+
+            var length = 0;
+            foreach (var item in transferBytes)
+            {
+                length += item.Count;
+            }
+
+            if (length > this.MaxPackageSize)
+            {
+                throw new Exception("发送数据大于设定值，相同解析器可能无法收到有效数据，已终止发送");
+            }
+            if (length > this.MaxPackageSize)
+            {
+                try
+                {
+
+                    await this.m_locker.WaitAsync();
+                    foreach (var item in transferBytes)
+                    {
+                        await this.GoSendAsync(item.Array, item.Offset, item.Count);
+                    }
+                }
+                finally
+                {
+                    this.m_locker.Release();
+                }
+            }
+            else
+            {
+                using (var byteBlock = new ByteBlock(length))
+                {
+                    foreach (var item in transferBytes)
+                    {
+                        byteBlock.Write(item.Array, item.Offset, item.Count);
+                    }
+                    await this.GoSendAsync(byteBlock.Buffer, 0, byteBlock.Len);
+                }
+            }
+
         }
 
         /// <inheritdoc/>
@@ -77,20 +155,31 @@ namespace ThingsGateway.Foundation.Dmtp
                 throw new Exception("发送数据大于设定值，相同解析器可能无法收到有效数据，已终止发送");
             }
 
-            var lockTaken = false;
-            try
+            if (length > this.MaxPackageSize)
             {
-                this.m_locker.Enter(ref lockTaken);
-                foreach (var item in transferBytes)
+                try
                 {
-                    this.GoSend(item.Array, item.Offset, item.Count);
+
+                    this.m_locker.Wait();
+                    foreach (var item in transferBytes)
+                    {
+                        this.GoSend(item.Array, item.Offset, item.Count);
+                    }
+                }
+                finally
+                {
+                    this.m_locker.Release();
                 }
             }
-            finally
+            else
             {
-                if (lockTaken)
+                using (var byteBlock = new ByteBlock(length))
                 {
-                    this.m_locker.Exit(false);
+                    foreach (var item in transferBytes)
+                    {
+                        byteBlock.Write(item.Array, item.Offset, item.Count);
+                    }
+                    this.GoSend(byteBlock.Buffer, 0, byteBlock.Len);
                 }
             }
         }
