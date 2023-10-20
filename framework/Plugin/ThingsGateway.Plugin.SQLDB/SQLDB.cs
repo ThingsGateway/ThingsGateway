@@ -67,6 +67,8 @@ public class SQLDB : UpLoadBase
         await Task.CompletedTask;
     }
 
+    private bool readDBInitSuccess;
+
     public override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
         var db = GetHisDbAsync();
@@ -75,14 +77,33 @@ public class SQLDB : UpLoadBase
         {
             if (exRealTimerTick.IsTickHappen())
             {
+
                 try
                 {
                     var varList = _uploadVariables.ToList().Adapt<List<SQLRealValue>>();
+
+                    if (!readDBInitSuccess)
+                    {
+                        //事务
+                        var result = db.UseTran(() =>
+                        {
+                            db.Storageable(varList).As(driverPropertys.ReadDBTableName).PageSize(10000).ExecuteSqlBulkCopy();
+                            //db.Fastest<SQLRealValue>().AS(driverPropertys.ReadDBTableName).PageSize(100000).BulkMerge(varList);
+                        });
+                        if (result.IsSuccess)//如果成功了
+                        {
+                            readDBInitSuccess = true;
+                        }
+                        else
+                        {
+                            throw new(result.ErrorMessage);
+                        }
+                    }
+
                     if (varList?.Count != 0)
                     {
                         //var result = await db.Storageable(varList).As(driverPropertys.ReadDBTableName).ExecuteCommandAsync(cancellationToken);
-                        await db.Fastest<SQLRealValue>().AS(driverPropertys.ReadDBTableName).PageSize(100000).BulkUpdateAsync(varList);
-
+                        db.Fastest<SQLRealValue>().AS(driverPropertys.ReadDBTableName).PageSize(100000).BulkUpdate(varList);
                     }
                 }
                 catch (Exception ex)
@@ -180,6 +201,7 @@ public class SQLDB : UpLoadBase
     {
         try
         {
+            readDBInitSuccess = false;
             _globalDeviceData?.AllVariables?.ForEach(a => a.VariableValueChange -= VariableValueChange);
             _uploadVariables = null;
         }
@@ -307,7 +329,7 @@ public class SQLDB : UpLoadBase
                 }
                 catch (Exception ex)
                 {
-                                                LogMessage.LogWarning(ex);
+                    LogMessage.LogWarning(ex);
                 }
 
 
@@ -316,7 +338,7 @@ public class SQLDB : UpLoadBase
         }
         catch (Exception ex)
         {
-                                        LogMessage.LogWarning(ex);
+            LogMessage.LogWarning(ex);
             await CacheDb.AddCacheData("", dbInserts.ToJsonString(), driverPropertys.CacheMaxCount);
         }
 
