@@ -299,7 +299,7 @@ public class TDengineDB : UpLoadBase
                 }
                 catch (Exception ex)
                 {
-                                                LogMessage.LogWarning(ex);
+                    LogMessage.LogWarning(ex);
                 }
 
 
@@ -308,7 +308,7 @@ public class TDengineDB : UpLoadBase
         }
         catch (Exception ex)
         {
-                                        LogMessage.LogWarning(ex);
+            LogMessage.LogWarning(ex);
             await CacheDb.AddCacheData("", dbInserts.ToJsonString(), driverPropertys.CacheMaxCount);
         }
 

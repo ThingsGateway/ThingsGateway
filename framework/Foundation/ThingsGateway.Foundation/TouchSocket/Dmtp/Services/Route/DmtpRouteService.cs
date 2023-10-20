@@ -10,8 +10,6 @@
 //------------------------------------------------------------------------------
 #endregion
 
-using System;
-using System.Threading.Tasks;
 
 namespace ThingsGateway.Foundation.Dmtp
 {
@@ -23,6 +21,6 @@ namespace ThingsGateway.Foundation.Dmtp
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
-        public Func<string, Task<IDmtpActor>> FindDmtpActor { get ; set ; }
+        public Func<string, Task<IDmtpActor>> FindDmtpActor { get; set; }
     }
 }

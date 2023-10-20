@@ -9,12 +9,37 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 #endregion
-
-using System;
-using System.Collections.Generic;
-using System.Threading;
+/* 项目“ThingsGateway.Foundation (netstandard2.0)”的未合并的更改
+在此之前:
 using System.Threading.Tasks;
 using ThingsGateway.Foundation.Core;
+在此之后:
+using System.Threading.Tasks;
+
+using ThingsGateway.Foundation.Core;
+*/
+
+/* 项目“ThingsGateway.Foundation (net45)”的未合并的更改
+在此之前:
+using System.Threading.Tasks;
+using ThingsGateway.Foundation.Core;
+在此之后:
+using System.Threading.Tasks;
+
+using ThingsGateway.Foundation.Core;
+*/
+
+/* 项目“ThingsGateway.Foundation (net6.0)”的未合并的更改
+在此之前:
+using System.Threading.Tasks;
+using ThingsGateway.Foundation.Core;
+在此之后:
+using System.Threading.Tasks;
+
+using ThingsGateway.Foundation.Core;
+*/
+
+
 
 namespace ThingsGateway.Foundation.Dmtp
 {
