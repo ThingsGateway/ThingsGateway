@@ -186,7 +186,7 @@ public class ModbusTcpDtu : ReadWriteDevicesTcpServerBase
                 var item = commandResult.Content;
                 if (FrameTime != 0)
                     Thread.Sleep(FrameTime);
-                var WaitingClientEx = client.CreateWaitingClient(new() {  });
+                var WaitingClientEx = client.CreateWaitingClient(new() { });
                 var result = WaitingClientEx.SendThenResponse(item, TimeOut, cancellationToken);
                 return (MessageBase)result.RequestInfo;
             }
@@ -213,7 +213,7 @@ public class ModbusTcpDtu : ReadWriteDevicesTcpServerBase
 
                 var item = commandResult.Content;
                 await Task.Delay(FrameTime, cancellationToken);
-                var WaitingClientEx = client.CreateWaitingClient(new() {  });
+                var WaitingClientEx = client.CreateWaitingClient(new() { });
                 var result = await WaitingClientEx.SendThenResponseAsync(item, TimeOut, cancellationToken);
                 return (MessageBase)result.RequestInfo;
             }

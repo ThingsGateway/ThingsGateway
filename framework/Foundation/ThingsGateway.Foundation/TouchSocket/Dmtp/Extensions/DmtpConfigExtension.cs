@@ -10,8 +10,6 @@
 //------------------------------------------------------------------------------
 #endregion
 
-using ThingsGateway.Foundation.Core;
-using ThingsGateway.Foundation.Sockets;
 
 namespace ThingsGateway.Foundation.Dmtp
 {
