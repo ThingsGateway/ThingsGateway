@@ -24,7 +24,7 @@ public abstract class ReadWriteDevicesSerialSessionBase : ReadWriteDevicesBase
     public ReadWriteDevicesSerialSessionBase(SerialSession serialSession)
     {
         SerialSession = serialSession;
-        WaitingClientEx = SerialSession.CreateWaitingClient(new() { ThrowBreakException = true });
+        WaitingClientEx = SerialSession.CreateWaitingClient(new() { });
         SerialSession.Received -= Received;
         SerialSession.Connecting -= Connecting;
         SerialSession.Connected -= Connected;
@@ -96,7 +96,7 @@ public abstract class ReadWriteDevicesSerialSessionBase : ReadWriteDevicesBase
     {
         try
         {
-            waitingOptions ??= new WaitingOptions { ThrowBreakException = true };
+            waitingOptions ??= new WaitingOptions { };
             ResponsedData result = SerialSession.CreateWaitingClient(waitingOptions).SendThenResponse(data, TimeOut, cancellationToken);
             return OperResult.CreateSuccessResult(result.Data);
         }
@@ -111,7 +111,7 @@ public abstract class ReadWriteDevicesSerialSessionBase : ReadWriteDevicesBase
     {
         try
         {
-            waitingOptions ??= new WaitingOptions { ThrowBreakException = true };
+            waitingOptions ??= new WaitingOptions { };
             ResponsedData result = await SerialSession.CreateWaitingClient(waitingOptions).SendThenResponseAsync(data, TimeOut, cancellationToken);
             return OperResult.CreateSuccessResult(result.Data);
         }

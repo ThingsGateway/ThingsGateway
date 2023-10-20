@@ -22,10 +22,10 @@ namespace ThingsGateway.Foundation.Dmtp.Redis
         /// <summary>
         /// DmtpRedisActor
         /// </summary>
-        /// <param name="smtpActor"></param>
-        public DmtpRedisActor(IDmtpActor smtpActor)
+        /// <param name="dmtpActor"></param>
+        public DmtpRedisActor(IDmtpActor dmtpActor)
         {
-            this.DmtpActor = smtpActor;
+            this.DmtpActor = dmtpActor;
         }
 
         /// <inheritdoc/>
@@ -241,7 +241,7 @@ namespace ThingsGateway.Foundation.Dmtp.Redis
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
-        public bool InputReceivedData(DmtpMessage message)
+        public async Task<bool> InputReceivedData(DmtpMessage message)
         {
             if (message.ProtocolFlags == this.m_redis_Request)
             {
@@ -311,7 +311,7 @@ namespace ThingsGateway.Foundation.Dmtp.Redis
                 using (var byteBlock = new ByteBlock())
                 {
                     waitResult.Package(byteBlock);
-                    this.DmtpActor.Send(this.m_redis_Response, byteBlock);
+                    await this.DmtpActor.SendAsync(this.m_redis_Response, byteBlock);
                 }
                 return true;
             }

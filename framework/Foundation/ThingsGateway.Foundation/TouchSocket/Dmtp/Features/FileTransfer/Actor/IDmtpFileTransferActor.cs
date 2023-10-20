@@ -22,6 +22,10 @@
 //  感谢您的下载和使用
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+using ThingsGateway.Foundation.Core;
 
 namespace ThingsGateway.Foundation.Dmtp.FileTransfer
 {

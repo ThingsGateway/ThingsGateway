@@ -42,11 +42,11 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
         /// <summary>
         /// 从<see cref="DmtpActor"/>中获取<see cref="IDmtpRpcActor"/>
         /// </summary>
-        /// <param name="smtpActor"></param>
+        /// <param name="dmtpActor"></param>
         /// <returns></returns>
-        public static IDmtpRpcActor GetDmtpRpcActor(this IDmtpActor smtpActor)
+        public static IDmtpRpcActor GetDmtpRpcActor(this IDmtpActor dmtpActor)
         {
-            return smtpActor.GetValue(DmtpRpcActorProperty);
+            return dmtpActor.GetValue(DmtpRpcActorProperty);
         }
 
         /// <summary>
@@ -57,12 +57,12 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
         /// <exception cref="ArgumentNullException"></exception>
         public static IDmtpRpcActor GetDmtpRpcActor(this IDmtpActorObject client)
         {
-            var smtpRpcActor = client.DmtpActor.GetDmtpRpcActor();
-            if (smtpRpcActor is null)
+            var dmtpRpcActor = client.DmtpActor.GetDmtpRpcActor();
+            if (dmtpRpcActor is null)
             {
-                throw new ArgumentNullException(nameof(smtpRpcActor), TouchSocketDmtpResource.DmtpRpcActorArgumentNull.GetDescription());
+                throw new ArgumentNullException(nameof(dmtpRpcActor), TouchSocketDmtpResource.DmtpRpcActorArgumentNull.GetDescription());
             }
-            return smtpRpcActor;
+            return dmtpRpcActor;
         }
 
         /// <summary>
@@ -73,22 +73,22 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
         /// <exception cref="ArgumentNullException"></exception>
         public static TDmtpRpcActor GetDmtpRpcActor<TDmtpRpcActor>(this IDmtpActorObject client) where TDmtpRpcActor : IDmtpRpcActor
         {
-            var smtpRpcActor = client.DmtpActor.GetDmtpRpcActor();
-            if (smtpRpcActor is null)
+            var dmtpRpcActor = client.DmtpActor.GetDmtpRpcActor();
+            if (dmtpRpcActor is null)
             {
-                throw new ArgumentNullException(nameof(smtpRpcActor), TouchSocketDmtpResource.DmtpRpcActorArgumentNull.GetDescription());
+                throw new ArgumentNullException(nameof(dmtpRpcActor), TouchSocketDmtpResource.DmtpRpcActorArgumentNull.GetDescription());
             }
-            return (TDmtpRpcActor)smtpRpcActor;
+            return (TDmtpRpcActor)dmtpRpcActor;
         }
 
         /// <summary>
         /// 向<see cref="DmtpActor"/>中设置<see cref="IDmtpRpcActor"/>
         /// </summary>
-        /// <param name="smtpActor"></param>
-        /// <param name="smtpRpcActor"></param>
-        internal static void SetDmtpRpcActor(this IDmtpActor smtpActor, IDmtpRpcActor smtpRpcActor)
+        /// <param name="dmtpActor"></param>
+        /// <param name="dmtpRpcActor"></param>
+        internal static void SetDmtpRpcActor(this IDmtpActor dmtpActor, IDmtpRpcActor dmtpRpcActor)
         {
-            smtpActor.SetValue(DmtpRpcActorProperty, smtpRpcActor);
+            dmtpActor.SetValue(DmtpRpcActorProperty, dmtpRpcActor);
         }
 
         #region 插件扩展

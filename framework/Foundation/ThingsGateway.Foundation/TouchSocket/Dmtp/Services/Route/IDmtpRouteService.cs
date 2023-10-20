@@ -10,6 +10,7 @@
 //------------------------------------------------------------------------------
 #endregion
 
+
 namespace ThingsGateway.Foundation.Dmtp
 {
     /// <summary>
@@ -20,6 +21,6 @@ namespace ThingsGateway.Foundation.Dmtp
         /// <summary>
         /// 查找其他IDmtpActor
         /// </summary>
-        Func<string, IDmtpActor> FindDmtpActor { get; set; }
+        Func<string, Task<IDmtpActor>> FindDmtpActor { get; set; }
     }
 }

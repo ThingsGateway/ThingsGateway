@@ -22,6 +22,8 @@
 //  感谢您的下载和使用
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
+using System.Threading.Tasks;
+using ThingsGateway.Foundation.Core;
 
 namespace ThingsGateway.Foundation.Dmtp.Redis
 {
@@ -58,30 +60,30 @@ namespace ThingsGateway.Foundation.Dmtp.Redis
         /// <inheritdoc/>
         public Task OnDmtpHandshaking(IDmtpActorObject client, DmtpVerifyEventArgs e)
         {
-            var smtpRedisActor = new DmtpRedisActor(client.DmtpActor)
+            var dmtpRedisActor = new DmtpRedisActor(client.DmtpActor)
             {
                 ICache = this.ICache,
                 Converter = this.Converter
             };
 
-            smtpRedisActor.SetProtocolFlags(this.StartProtocol);
-            client.DmtpActor.SetStmpRedisActor(smtpRedisActor);
+            dmtpRedisActor.SetProtocolFlags(this.StartProtocol);
+            client.DmtpActor.SetStmpRedisActor(dmtpRedisActor);
 
             return e.InvokeNext();
         }
 
         /// <inheritdoc/>
-        public Task OnDmtpReceived(IDmtpActorObject client, DmtpMessageEventArgs e)
+        public async Task OnDmtpReceived(IDmtpActorObject client, DmtpMessageEventArgs e)
         {
             if (client.DmtpActor.GetDmtpRedisActor() is DmtpRedisActor redisClient)
             {
-                if (redisClient.InputReceivedData(e.DmtpMessage))
+                if (await redisClient.InputReceivedData(e.DmtpMessage))
                 {
                     e.Handled = true;
-                    return EasyTask.CompletedTask;
+                    return;
                 }
             }
-            return e.InvokeNext();
+            await e.InvokeNext();
         }
 
         /// <summary>

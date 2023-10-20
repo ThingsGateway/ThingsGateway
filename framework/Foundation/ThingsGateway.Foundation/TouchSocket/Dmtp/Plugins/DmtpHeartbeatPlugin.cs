@@ -58,7 +58,7 @@ namespace ThingsGateway.Foundation.Dmtp
                         failedCount++;
                         if (failedCount > this.MaxFailCount)
                         {
-                            client.DmtpActor.Close(true, "自动心跳失败次数达到最大，已断开连接。");
+                            client.DmtpActor.Close("自动心跳失败次数达到最大，已断开连接。");
                         }
                     }
                 }

@@ -280,7 +280,7 @@ namespace ThingsGateway.Foundation.Sockets
                 {
                     Task.Factory.StartNew(this.PrivateOnDisconnecting, new DisconnectEventArgs(true, msg));
                     this.MainSocket.TryClose();
-                    this.BreakOut(default, true, msg);
+                    this.BreakOut(true, msg);
                 }
             }
         }
@@ -297,7 +297,7 @@ namespace ThingsGateway.Foundation.Sockets
                 if (this.m_online)
                 {
                     Task.Factory.StartNew(this.PrivateOnDisconnecting, new DisconnectEventArgs(true, $"{nameof(Dispose)}主动断开"));
-                    this.BreakOut(default, true, $"{nameof(Dispose)}主动断开");
+                    this.BreakOut(true, $"{nameof(Dispose)}主动断开");
                 }
             }
             base.Dispose(disposing);
@@ -502,7 +502,17 @@ namespace ThingsGateway.Foundation.Sockets
         {
             return this.GetIPPort();
         }
-        private void BreakOut(TcpCore core, bool manual, string msg)
+
+        private void TcpCoreBreakOut(TcpCore core, bool manual, string msg)
+        {
+            this.BreakOut(manual, msg);
+        }
+        /// <summary>
+        /// BreakOut。
+        /// </summary>
+        /// <param name="manual"></param>
+        /// <param name="msg"></param>
+        protected void BreakOut(bool manual, string msg)
         {
             lock (this.SyncRoot)
             {
@@ -935,7 +945,7 @@ namespace ThingsGateway.Foundation.Sockets
             }
             this.m_tcpCore.Reset(socket);
             this.m_tcpCore.OnReceived = this.HandleReceived;
-            this.m_tcpCore.OnBreakOut = this.BreakOut;
+            this.m_tcpCore.OnBreakOut = this.TcpCoreBreakOut;
             if (this.Config.GetValue(TouchSocketConfigExtension.MinBufferSizeProperty) is int minValue)
             {
                 this.m_tcpCore.MinBufferSize = minValue;

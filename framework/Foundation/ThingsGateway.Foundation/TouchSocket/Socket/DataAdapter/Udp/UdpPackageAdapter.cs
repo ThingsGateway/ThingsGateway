@@ -204,7 +204,7 @@ namespace ThingsGateway.Foundation.Sockets
     public class UdpPackageAdapter : UdpDataHandlingAdapter
     {
         private readonly SnowflakeIdGenerator m_iDGenerator;
-        private readonly ConcurrentDictionary<long, UdpPackage> revStore;
+        private readonly ConcurrentDictionary<long, UdpPackage> m_revStore;
         private int m_mtu = 1472;
 
         /// <summary>
@@ -212,7 +212,7 @@ namespace ThingsGateway.Foundation.Sockets
         /// </summary>
         public UdpPackageAdapter()
         {
-            this.revStore = new ConcurrentDictionary<long, UdpPackage>();
+            this.m_revStore = new ConcurrentDictionary<long, UdpPackage>();
             this.m_iDGenerator = new SnowflakeIdGenerator(4);
         }
 
@@ -250,17 +250,17 @@ namespace ThingsGateway.Foundation.Sockets
             var udpFrame = new UdpFrame();
             if (udpFrame.Parse(byteBlock.Buffer, 0, byteBlock.Len))
             {
-                var udpPackage = this.revStore.GetOrAdd(udpFrame.Id, (i) => new UdpPackage(i, this.Timeout, this.revStore));
+                var udpPackage = this.m_revStore.GetOrAdd(udpFrame.Id, (i) => new UdpPackage(i, this.Timeout, this.m_revStore));
                 udpPackage.Add(udpFrame);
                 if (udpPackage.Length > this.MaxPackageSize)
                 {
-                    this.revStore.TryRemove(udpPackage.Id, out _);
+                    this.m_revStore.TryRemove(udpPackage.Id, out _);
                     this.Logger?.Error("数据长度大于设定的最大值。");
                     return;
                 }
                 if (udpPackage.IsComplated)
                 {
-                    if (this.revStore.TryRemove(udpPackage.Id, out _))
+                    if (this.m_revStore.TryRemove(udpPackage.Id, out _))
                     {
                         using (var block = new ByteBlock(udpPackage.Length))
                         {

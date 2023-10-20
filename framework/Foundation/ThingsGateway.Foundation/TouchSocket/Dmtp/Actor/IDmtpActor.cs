@@ -152,9 +152,8 @@ namespace ThingsGateway.Foundation.Dmtp
         /// <summary>
         /// 关闭
         /// </summary>
-        /// <param name="sendClose">是否发送close报文</param>
         /// <param name="message">传递消息</param>
-        void Close(bool sendClose, string message);
+        void Close(string message);
 
         /// <summary>
         /// 向当前对点发送一个Ping报文，并且等待回应。
@@ -227,6 +226,14 @@ namespace ThingsGateway.Foundation.Dmtp
         Task SendAsync(ushort protocol, byte[] buffer, int offset, int length);
 
         /// <summary>
+        /// 异步发送字节块
+        /// </summary>
+        /// <param name="protocol"></param>
+        /// <param name="byteBlock"></param>
+        /// <returns></returns>
+        Task SendAsync(ushort protocol, ByteBlock byteBlock);
+
+        /// <summary>
         /// 以Fast序列化，发送小（64K）对象。接收方需要使用ReadObject读取对象。
         /// </summary>
         /// <param name="protocol"></param>
@@ -260,25 +267,20 @@ namespace ThingsGateway.Foundation.Dmtp
         /// 尝试获取指定Id的DmtpActor。一般此方法仅在Service下有效。
         /// </summary>
         /// <param name="targetId"></param>
-        /// <param name="actor"></param>
         /// <returns></returns>
-        bool TryFindDmtpActor(string targetId, out DmtpActor actor);
+        Task<DmtpActor> TryFindDmtpActor(string targetId);
 
         /// <summary>
-        /// 尝试请求路由，触发路由相关插件。
+        /// 尝试请求路由，触发路由相关插件。并在路由失败时向<see cref="MsgPermitEventArgs.Message"/>中传递消息。
         /// </summary>
-        /// <param name="routerType"></param>
-        /// <param name="routerPackage"></param>
         /// <returns></returns>
-        bool TryRoute(RouteType routerType, RouterPackage routerPackage);
+        Task<bool> TryRoute(PackageRouterEventArgs e);
 
         /// <summary>
-        /// 尝试请求路由，触发路由相关插件。并在路由失败时向<see cref="MsgRouterPackage.Message"/>中传递消息。
+        /// 发送Close请求
         /// </summary>
-        /// <param name="routerType"></param>
-        /// <param name="routerPackage"></param>
-        /// <returns></returns>
-        bool TryRoute(RouteType routerType, WaitRouterPackage routerPackage);
+        /// <param name="msg"></param>
+        bool SendClose(string msg);
 
         #endregion 方法
     }

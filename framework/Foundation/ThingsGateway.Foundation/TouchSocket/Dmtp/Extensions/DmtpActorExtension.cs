@@ -10,6 +10,9 @@
 //------------------------------------------------------------------------------
 #endregion
 
+using System.Threading.Tasks;
+using ThingsGateway.Foundation.Core;
+
 namespace ThingsGateway.Foundation.Dmtp
 {
     /// <summary>

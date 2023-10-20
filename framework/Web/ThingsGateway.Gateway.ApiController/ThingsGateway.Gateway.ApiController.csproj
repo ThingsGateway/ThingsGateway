@@ -2,6 +2,7 @@
 
 	<PropertyGroup>
 		<DocumentationFile>$(MSBuildProjectName).xml</DocumentationFile>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 	</PropertyGroup>
 	
 	<ItemGroup>

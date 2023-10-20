@@ -51,10 +51,10 @@ public sealed class EasyLock
     /// <summary>
     /// 进入锁
     /// </summary>
-    public void Wait()
+    public void Wait(CancellationToken cancellationToken = default)
     {
         Interlocked.Increment(ref lockWaitCount);
-        m_waiterLock.Wait();
+        m_waiterLock.Wait(cancellationToken);
         Interlocked.Decrement(ref lockWaitCount);
     }
     /// <summary>
@@ -71,10 +71,10 @@ public sealed class EasyLock
     /// <summary>
     /// 进入锁
     /// </summary>
-    public async Task WaitAsync()
+    public async Task WaitAsync(CancellationToken cancellationToken = default)
     {
         Interlocked.Increment(ref lockWaitCount);
-        await m_waiterLock.WaitAsync();
+        await m_waiterLock.WaitAsync(cancellationToken);
         Interlocked.Decrement(ref lockWaitCount);
     }
     /// <summary>

@@ -48,21 +48,21 @@ namespace ThingsGateway.Foundation.Dmtp.FileTransfer
         /// <summary>
         /// 从<see cref="DmtpActor"/>中获取<see cref="IDmtpFileTransferActor"/>
         /// </summary>
-        /// <param name="smtpActor"></param>
+        /// <param name="dmtpActor"></param>
         /// <returns></returns>
-        public static IDmtpFileTransferActor GetDmtpFileTransferActor(this IDmtpActor smtpActor)
+        public static IDmtpFileTransferActor GetDmtpFileTransferActor(this IDmtpActor dmtpActor)
         {
-            return smtpActor.GetValue(DmtpFileTransferActorProperty);
+            return dmtpActor.GetValue(DmtpFileTransferActorProperty);
         }
 
         /// <summary>
         /// 向<see cref="DmtpActor"/>中设置<see cref="DmtpFileTransferActor"/>
         /// </summary>
-        /// <param name="smtpActor"></param>
-        /// <param name="smtpRpcActor"></param>
-        internal static void SetDmtpFileTransferActor(this IDmtpActor smtpActor, DmtpFileTransferActor smtpRpcActor)
+        /// <param name="dmtpActor"></param>
+        /// <param name="dmtpRpcActor"></param>
+        internal static void SetDmtpFileTransferActor(this IDmtpActor dmtpActor, DmtpFileTransferActor dmtpRpcActor)
         {
-            smtpActor.SetValue(DmtpFileTransferActorProperty, smtpRpcActor);
+            dmtpActor.SetValue(DmtpFileTransferActorProperty, dmtpRpcActor);
         }
 
         /// <summary>

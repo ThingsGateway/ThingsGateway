@@ -30,7 +30,7 @@ namespace ThingsGateway.Foundation.Dmtp
     /// </summary>
     public partial class TcpDmtpSocketClient : SocketClient, ITcpDmtpSocketClient
     {
-        private DmtpActor m_smtpActor;
+        private DmtpActor m_dmtpActor;
 
         /// <summary>
         /// TcpDmtpSocketClient
@@ -41,7 +41,7 @@ namespace ThingsGateway.Foundation.Dmtp
         }
 
         /// <inheritdoc/>
-        public IDmtpActor DmtpActor { get => this.m_smtpActor; }
+        public IDmtpActor DmtpActor { get => this.m_dmtpActor; }
 
         /// <inheritdoc cref="IDmtpActor.IsHandshaked"/>
         public bool IsHandshaked => this.DmtpActor != null && this.DmtpActor.IsHandshaked;
@@ -58,36 +58,23 @@ namespace ThingsGateway.Foundation.Dmtp
 
         #region 内部委托绑定
 
-        private void OnDmtpActorClose(DmtpActor actor, string msg)
+        private Task OnDmtpActorClose(DmtpActor actor, string msg)
         {
-            base.Close(msg);
+            base.BreakOut(false, msg);
+            return EasyTask.CompletedTask;
         }
 
-        private void OnDmtpActorCreateChannel(DmtpActor actor, CreateChannelEventArgs e)
+        private Task OnDmtpActorCreateChannel(DmtpActor actor, CreateChannelEventArgs e)
         {
-            this.OnCreateChannel(e);
-            if (e.Handled)
-            {
-                return;
-            }
-
-            this.PluginsManager.Raise(nameof(IDmtpCreateChannelPlugin.OnCreateChannel), this, e);
+            return this.OnCreateChannel(e);
         }
 
-        private void OnDmtpActorHandshaked(DmtpActor actor, DmtpVerifyEventArgs e)
+        private Task OnDmtpActorHandshaked(DmtpActor actor, DmtpVerifyEventArgs e)
         {
-            this.OnHandshaked(e);
-            if (e.Handled)
-            {
-                return;
-            }
-            if (this.PluginsManager.Enable && this.PluginsManager.Raise(nameof(IDmtpHandshakedPlugin.OnDmtpHandshaked), this, e))
-            {
-                return;
-            }
+            return this.OnHandshaked(e);
         }
 
-        private void OnDmtpActorHandshaking(DmtpActor actor, DmtpVerifyEventArgs e)
+        private async Task OnDmtpActorHandshaking(DmtpActor actor, DmtpVerifyEventArgs e)
         {
             if (e.Token == this.VerifyToken)
             {
@@ -98,25 +85,12 @@ namespace ThingsGateway.Foundation.Dmtp
                 e.Message = "Token不受理";
             }
 
-            this.OnHandshaking(e);
-            if (e.Handled)
-            {
-                return;
-            }
-            this.PluginsManager.Raise(nameof(IDmtpHandshakingPlugin.OnDmtpHandshaking), this, e);
+            await this.OnHandshaking(e).ConfigureFalseAwait();
         }
 
-        private void OnDmtpActorRouting(DmtpActor actor, PackageRouterEventArgs e)
+        private Task OnDmtpActorRouting(DmtpActor actor, PackageRouterEventArgs e)
         {
-            this.OnRouting(e);
-            if (e.Handled)
-            {
-                return;
-            }
-            if (this.PluginsManager.Enable && this.PluginsManager.Raise(nameof(IDmtpRoutingPlugin.OnDmtpRouting), this, e))
-            {
-                return;
-            }
+            return this.OnRouting(e);
         }
 
         #endregion 内部委托绑定
@@ -127,99 +101,138 @@ namespace ThingsGateway.Foundation.Dmtp
         /// 当创建通道
         /// </summary>
         /// <param name="e"></param>
-        protected virtual void OnCreateChannel(CreateChannelEventArgs e)
+        protected virtual async Task OnCreateChannel(CreateChannelEventArgs e)
         {
+            if (e.Handled)
+            {
+                return;
+            }
+
+            await this.PluginsManager.RaiseAsync(nameof(IDmtpCreateChannelPlugin.OnCreateChannel), this, e).ConfigureFalseAwait();
         }
 
         /// <summary>
         /// 在完成握手连接时
         /// </summary>
         /// <param name="e"></param>
-        protected virtual void OnHandshaked(DmtpVerifyEventArgs e)
+        protected virtual async Task OnHandshaked(DmtpVerifyEventArgs e)
         {
+            if (e.Handled)
+            {
+                return;
+            }
+            await this.PluginsManager.RaiseAsync(nameof(IDmtpHandshakedPlugin.OnDmtpHandshaked), this, e).ConfigureFalseAwait();
         }
 
         /// <summary>
         /// 在验证Token时
         /// </summary>
         /// <param name="e">参数</param>
-        protected virtual void OnHandshaking(DmtpVerifyEventArgs e)
+        protected virtual async Task OnHandshaking(DmtpVerifyEventArgs e)
         {
+            if (e.Handled)
+            {
+                return;
+            }
+            await this.PluginsManager.RaiseAsync(nameof(IDmtpHandshakingPlugin.OnDmtpHandshaking), this, e).ConfigureFalseAwait();
         }
 
         /// <summary>
         /// 在需要转发路由包时。
         /// </summary>
         /// <param name="e"></param>
-        protected virtual void OnRouting(PackageRouterEventArgs e)
+        protected virtual async Task OnRouting(PackageRouterEventArgs e)
         {
+            if (e.Handled)
+            {
+                return;
+            }
+            await this.PluginsManager.RaiseAsync(nameof(IDmtpRoutingPlugin.OnDmtpRouting), this, e);
         }
 
         #endregion 事件
 
-        /// <inheritdoc/>
+        #region 断开
+
+        /// <summary>
+        /// 发送<see cref="IDmtpActor"/>关闭消息。
+        /// </summary>
+        /// <param name="msg"></param>
+        /// <returns></returns>
         public override void Close(string msg = "")
         {
-            this.m_smtpActor.Close(true, msg);
+            this.m_dmtpActor?.SendClose(msg);
+            this.m_dmtpActor?.Close(msg);
+            base.Close(msg);
         }
+
+        /// <inheritdoc/>
+        protected override void Dispose(bool disposing)
+        {
+            this.m_dmtpActor?.SafeDispose();
+            base.Dispose(disposing);
+        }
+
+        /// <inheritdoc/>
+        protected override async Task OnDisconnected(DisconnectEventArgs e)
+        {
+            this.m_dmtpActor?.Close(e.Message);
+            await base.OnDisconnected(e).ConfigureFalseAwait();
+        }
+
+        #endregion 断开
 
         #region ResetId
 
         ///<inheritdoc cref="IDmtpActor.ResetId(string)"/>
         public override void ResetId(string id)
         {
-            this.m_smtpActor.ResetId(id);
+            this.m_dmtpActor.ResetId(id);
         }
 
         ///<inheritdoc cref="IDmtpActor.ResetIdAsync(string)"/>
         public Task ResetIdAsync(string newId)
         {
-            return this.m_smtpActor.ResetIdAsync(newId);
+            return this.m_dmtpActor.ResetIdAsync(newId);
         }
 
         #endregion ResetId
 
         internal void SetDmtpActor(DmtpActor actor)
         {
-            actor.OnResetId = this.ThisOnResetId;
+            actor.IdChanged = this.ThisOnResetId;
             actor.OutputSend = this.ThisDmtpActorOutputSend;
+            actor.OutputSendAsync = this.ThisDmtpActorOutputSendAsync;
             actor.Client = this;
-            actor.OnClose = this.OnDmtpActorClose;
-            actor.OnRouting = this.OnDmtpActorRouting;
-            actor.OnHandshaked = this.OnDmtpActorHandshaked;
-            actor.OnHandshaking = this.OnDmtpActorHandshaking;
-            actor.OnCreateChannel = this.OnDmtpActorCreateChannel;
+            actor.Closed = this.OnDmtpActorClose;
+            actor.Routing = this.OnDmtpActorRouting;
+            actor.Handshaked = this.OnDmtpActorHandshaked;
+            actor.Handshaking = this.OnDmtpActorHandshaking;
+            actor.CreatedChannel = this.OnDmtpActorCreateChannel;
             actor.Logger = this.Logger;
-            this.m_smtpActor = actor;
-        }
-
-        /// <inheritdoc/>
-        protected override void Dispose(bool disposing)
-        {
-            this.DmtpActor.SafeDispose();
-            base.Dispose(disposing);
+            this.m_dmtpActor = actor;
         }
 
         /// <inheritdoc/>
         protected override async Task ReceivedData(ReceivedDataEventArgs e)
         {
             var message = (DmtpMessage)e.RequestInfo;
-            if (!this.m_smtpActor.InputReceivedData(message))
+            if (!await this.m_dmtpActor.InputReceivedData(message).ConfigureFalseAwait())
             {
-                await this.PluginsManager.RaiseAsync(nameof(IDmtpReceivedPlugin.OnDmtpReceived), this, new DmtpMessageEventArgs(message));
+                await this.PluginsManager.RaiseAsync(nameof(IDmtpReceivedPlugin.OnDmtpReceived), this, new DmtpMessageEventArgs(message)).ConfigureFalseAwait();
             }
-            await base.ReceivedData(e);
+            await base.ReceivedData(e).ConfigureFalseAwait();
         }
 
         /// <inheritdoc/>
         protected override async Task OnConnected(ConnectedEventArgs e)
         {
-            this.m_smtpActor.Id = this.Id;
-            await base.OnConnected(e);
+            this.m_dmtpActor.Id = this.Id;
+            await base.OnConnected(e).ConfigureFalseAwait();
 
             _ = Task.Run(async () =>
             {
-                await Task.Delay(this.VerifyTimeout);
+                await Task.Delay(this.VerifyTimeout).ConfigureFalseAwait();
                 if (!this.IsHandshaked)
                 {
                     this.TryShutdown();
@@ -228,21 +241,20 @@ namespace ThingsGateway.Foundation.Dmtp
             });
         }
 
-        /// <inheritdoc/>
-        protected override async Task OnDisconnected(DisconnectEventArgs e)
-        {
-            this.DmtpActor.Close(false, e.Message);
-            await base.OnDisconnected(e);
-        }
-
         private void ThisDmtpActorOutputSend(DmtpActor actor, ArraySegment<byte>[] transferBytes)
         {
             base.Send(transferBytes);
         }
 
-        private void ThisOnResetId(DmtpActor rpcActor, WaitSetId waitSetId)
+        private Task ThisDmtpActorOutputSendAsync(DmtpActor actor, ArraySegment<byte>[] transferBytes)
         {
-            this.DirectResetId(waitSetId.NewId);
+            return base.SendAsync(transferBytes);
+        }
+
+        private Task ThisOnResetId(DmtpActor rpcActor, IdChangedEventArgs e)
+        {
+            this.DirectResetId(e.NewId);
+            return EasyTask.CompletedTask;
         }
 
         #region 发送

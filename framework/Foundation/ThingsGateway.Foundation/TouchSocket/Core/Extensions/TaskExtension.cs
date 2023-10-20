@@ -23,6 +23,8 @@
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
+using System.Runtime.CompilerServices;
+
 namespace ThingsGateway.Foundation.Core
 {
     /// <summary>
@@ -49,5 +51,27 @@ namespace ThingsGateway.Foundation.Core
         {
             task.ConfigureAwait(false).GetAwaiter().GetResult();
         }
+
+
+        /// <summary>
+        /// 配置ConfigureAwait为false。
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="task"></param>
+        /// <returns></returns>
+        public static ConfiguredTaskAwaitable<T> ConfigureFalseAwait<T>(this Task<T> task)
+        {
+            return task.ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// 配置ConfigureAwait为false。
+        /// </summary>
+        /// <param name="task"></param>
+        public static ConfiguredTaskAwaitable ConfigureFalseAwait(this Task task)
+        {
+            return task.ConfigureAwait(false);
+        }
+
     }
 }
