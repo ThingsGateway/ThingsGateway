@@ -10,7 +10,6 @@
 //------------------------------------------------------------------------------
 #endregion
 
-
 namespace ThingsGateway.Foundation.Dmtp.Rpc
 {
     /// <summary>

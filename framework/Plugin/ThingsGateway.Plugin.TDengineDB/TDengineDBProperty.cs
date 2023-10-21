@@ -10,7 +10,6 @@
 //------------------------------------------------------------------------------
 #endregion
 
-
 namespace ThingsGateway.Plugin.SQLDB;
 
 public class TDengineDBProperty : UpDriverPropertyBase

@@ -10,7 +10,6 @@
 //------------------------------------------------------------------------------
 #endregion
 
-
 namespace ThingsGateway.Plugin.OPCUA;
 
 /// <inheritdoc/>
