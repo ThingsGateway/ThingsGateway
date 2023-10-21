@@ -14,6 +14,8 @@ using Furion.Templates;
 
 using System.Reflection;
 
+using ThingsGateway.Admin.Core;
+
 namespace ThingsGateway.Web.Entry;
 
 /// <summary>
@@ -54,12 +56,15 @@ public class Program
         builder.Host.UseSystemd();
 
 #if AF2021
+
         builder.WebHost.UseKestrel(
     o =>
     {
-        o.ListenAnyIP(1893, a => MQTTnet.AspNetCore.ConnectionBuilderExtensions.UseMqtt(a));
+        var config = Furion.App.GetConfig<MqttConfig>("MqttConfig", true);
 
-        o.ListenAnyIP(7200); // Default HTTP pipeline
+        o.ListenAnyIP(config.Port, a => MQTTnet.AspNetCore.ConnectionBuilderExtensions.UseMqtt(a));
+
+        o.ListenAnyIP(config.WebSocketPort); // Default HTTP pipeline
     });
 #endif
 
