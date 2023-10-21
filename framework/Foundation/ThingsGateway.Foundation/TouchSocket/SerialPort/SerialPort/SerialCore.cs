@@ -215,6 +215,17 @@ public class SerialCore : IDisposable, ISender
         this.m_receiveBufferSize = this.MinBufferSize;
         this.m_sendBufferSize = this.MinBufferSize;
     }
+    /// <summary>
+    /// 判断，当不在连接状态时触发异常。
+    /// </summary>
+    /// <exception cref="NotConnectedException"></exception>
+    protected void ThrowIfNotConnected()
+    {
+        if (!this.m_online)
+        {
+            throw new NotConnectedException();
+        }
+    }
 
     /// <summary>
     /// 发送数据。
@@ -227,6 +238,7 @@ public class SerialCore : IDisposable, ISender
     /// <param name="length"></param>
     public virtual void Send(byte[] buffer, int offset, int length)
     {
+        this.ThrowIfNotConnected();
         try
         {
             this.m_semaphoreForSend.Wait();
@@ -249,6 +261,7 @@ public class SerialCore : IDisposable, ISender
     /// <exception cref="Exception"></exception>
     public virtual async Task SendAsync(byte[] buffer, int offset, int length)
     {
+        this.ThrowIfNotConnected();
         try
         {
             await this.m_semaphoreForSend.WaitAsync();

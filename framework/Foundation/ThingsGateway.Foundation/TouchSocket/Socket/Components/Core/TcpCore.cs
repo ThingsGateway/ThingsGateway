@@ -296,7 +296,17 @@ public class TcpCore : SocketAsyncEventArgs, IDisposable, ISender
         this.m_sendBufferSize = this.MinBufferSize;
         this.m_online = false;
     }
-
+    /// <summary>
+    /// 判断，当不在连接状态时触发异常。
+    /// </summary>
+    /// <exception cref="NotConnectedException"></exception>
+    protected void ThrowIfNotConnected()
+    {
+        if (!this.m_online)
+        {
+            throw new NotConnectedException();
+        }
+    }
     /// <summary>
     /// 发送数据。
     /// <para>
@@ -308,6 +318,7 @@ public class TcpCore : SocketAsyncEventArgs, IDisposable, ISender
     /// <param name="length"></param>
     public virtual void Send(byte[] buffer, int offset, int length)
     {
+        this.ThrowIfNotConnected();
         if (this.UseSsl)
         {
             this.SslStream.Write(buffer, offset, length);
@@ -349,6 +360,7 @@ public class TcpCore : SocketAsyncEventArgs, IDisposable, ISender
     /// <exception cref="Exception"></exception>
     public virtual async Task SendAsync(byte[] buffer, int offset, int length)
     {
+        this.ThrowIfNotConnected();
 #if NET6_0_OR_GREATER
         if (this.UseSsl)
         {
