@@ -63,6 +63,26 @@ public class PluginSingletonService : ISingleton
     {
         lock (this)
         {
+            //添加默认上下文中继承类获取
+            switch (plugin.DriverTypeEnum)
+            {
+                case DriverEnum.Collect:
+                    var driverType = App.EffectiveTypes.Where(x => (typeof(CollectBase).IsAssignableFrom(x)) && x.IsClass && !x.IsAbstract).FirstOrDefault(it => it.Name == plugin.AssembleName);
+                    if (driverType != null)
+                    {
+                        return GetDriver(plugin, driverType);
+                    }
+                    break;
+                case DriverEnum.Upload:
+                    var upLoadType = App.EffectiveTypes.Where(x => (typeof(UpLoadBase).IsAssignableFrom(x)) && x.IsClass && !x.IsAbstract).FirstOrDefault(it => it.Name == plugin.AssembleName);
+                    if (upLoadType != null)
+                    {
+                        return GetDriver(plugin, upLoadType);
+                    }
+                    break;
+            }
+
+
             //先判断是否已经拥有插件模块
             if (DriverPluginDict.ContainsKey(plugin.Id))
             {

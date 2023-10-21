@@ -33,4 +33,11 @@
 		<ProjectReference Include="..\ThingsGateway.Gateway.ApiController\ThingsGateway.Gateway.ApiController.csproj" />
 		<ProjectReference Include="..\ThingsGateway.Gateway.Blazor\ThingsGateway.Gateway.Blazor.csproj" />
 	</ItemGroup>
+
+
+
+	<ItemGroup Condition="'$(SolutionName)'=='ThingsGateway - Pro - AF2021' OR '$(SolutionName)'=='ThingsGateway - Pro'">
+		<ProjectReference Include="..\..\PluginProAF2021\ThingsGateway.LK.Application\ThingsGateway.LK.Application.csproj" />
+	</ItemGroup>
+	
 </Project>

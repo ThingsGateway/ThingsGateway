@@ -53,6 +53,16 @@ public class Program
         builder.Host.UseWindowsService();
         builder.Host.UseSystemd();
 
+#if AF2021
+        builder.WebHost.UseKestrel(
+    o =>
+    {
+        o.ListenAnyIP(1893, a => MQTTnet.AspNetCore.ConnectionBuilderExtensions.UseMqtt(a));
+
+        o.ListenAnyIP(7200); // Default HTTP pipeline
+    });
+#endif
+
         //Furion便利方法
         builder.Inject();
         var app = builder.Build();
