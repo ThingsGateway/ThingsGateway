@@ -34,7 +34,7 @@ namespace ThingsGateway.Foundation.Sockets
         /// <summary>
         /// 构造函数
         /// </summary>
-        public NotConnectedException()
+        public NotConnectedException() : this(TouchSocketResource.NotConnected.GetDescription())
         { }
 
         /// <summary>

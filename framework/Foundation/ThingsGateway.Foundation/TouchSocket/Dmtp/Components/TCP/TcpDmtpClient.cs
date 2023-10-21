@@ -42,7 +42,7 @@ namespace ThingsGateway.Foundation.Dmtp
         public IDmtpActor DmtpActor { get => this.m_dmtpActor; }
 
         /// <inheritdoc cref="IDmtpActor.Id"/>
-        public string Id => this.DmtpActor.Id;
+        public string Id => this.m_dmtpActor.Id;
 
         #region 字段
 
@@ -54,7 +54,7 @@ namespace ThingsGateway.Foundation.Dmtp
         #endregion 字段
 
         /// <inheritdoc cref="IDmtpActor.IsHandshaked"/>
-        public bool IsHandshaked => this.DmtpActor != null && this.DmtpActor.IsHandshaked;
+        public bool IsHandshaked => this.m_dmtpActor != null && this.m_dmtpActor.IsHandshaked;
 
         #region 断开
 
@@ -65,15 +65,21 @@ namespace ThingsGateway.Foundation.Dmtp
         /// <returns></returns>
         public override void Close(string msg = "")
         {
-            this.m_dmtpActor?.SendClose(msg);
-            this.m_dmtpActor?.Close(msg);
+            if (this.IsHandshaked)
+            {
+                this.m_dmtpActor?.SendClose(msg);
+                this.m_dmtpActor?.Close(msg);
+            }
             base.Close(msg);
         }
 
         /// <inheritdoc/>
         protected override void Dispose(bool disposing)
         {
-            this.m_dmtpActor?.SafeDispose();
+            if (this.IsHandshaked)
+            {
+                this.m_dmtpActor?.SafeDispose();
+            }
             base.Dispose(disposing);
         }
 

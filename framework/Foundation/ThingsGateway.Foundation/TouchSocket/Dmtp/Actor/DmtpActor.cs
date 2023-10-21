@@ -123,25 +123,6 @@ namespace ThingsGateway.Foundation.Dmtp
         {
         }
 
-        /// <inheritdoc/>
-        public void Close(string msg)
-        {
-            this.OnClosed(true, msg);
-        }
-
-        /// <inheritdoc/>
-        public bool SendClose(string msg)
-        {
-            try
-            {
-                this.SendString(0, msg);
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
 
         /// <summary>
         /// 建立对点
@@ -1051,7 +1032,7 @@ namespace ThingsGateway.Foundation.Dmtp
             }
         }
 
-        #region 重写
+        #region 断开
 
         /// <summary>
         /// <inheritdoc/>
@@ -1070,7 +1051,25 @@ namespace ThingsGateway.Foundation.Dmtp
             this.WaitHandlePool.SafeDispose();
             base.Dispose(disposing);
         }
+        /// <inheritdoc/>
+        public void Close(string msg)
+        {
+            this.OnClosed(true, msg);
+        }
 
+        /// <inheritdoc/>
+        public bool SendClose(string msg)
+        {
+            try
+            {
+                this.SendString(0, msg);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
         #endregion 重写
 
         #region 协议同步发送
