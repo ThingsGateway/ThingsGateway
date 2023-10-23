@@ -256,7 +256,8 @@ public class MqttServer : UpLoadBase
     }
     private void Log_LogMessagePublished(object sender, MqttNetLogMessagePublishedEventArgs e)
     {
-        LogMessage.LogOut(e.LogMessage.Level, e.LogMessage.Source, e.LogMessage.Message, e.LogMessage.Exception);
+        if (e.LogMessage.Exception is not ArgumentNullException)
+            LogMessage.LogOut(e.LogMessage.Level, e.LogMessage.Source, e.LogMessage.Message, e.LogMessage.Exception);
     }
     private void DeviceStatusChange(CollectDeviceRunTime collectDeviceRunTime)
     {
