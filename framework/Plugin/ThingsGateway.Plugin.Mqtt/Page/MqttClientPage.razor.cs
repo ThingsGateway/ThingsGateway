@@ -12,10 +12,9 @@
 
 using MQTTnet;
 using MQTTnet.Client;
+using MQTTnet.Diagnostics;
 
 using System.Text;
-
-using ThingsGateway.Plugin.Mqtt;
 
 namespace ThingsGateway.Foundation.Demo;
 /// <summary>
@@ -56,14 +55,19 @@ public partial class MqttClientPage
     /// <inheritdoc/>
     protected override void OnInitialized()
     {
-        MqttFactory = new MqttFactory(new PrivateLogger(new EasyLogger(LogAction) { LogLevel = LogLevel.Trace }));
+        var log = new MqttNetEventLogger();
+        log.LogMessagePublished += Log_LogMessagePublished;
+        MqttFactory = new MqttFactory(log);
 
 
         MqttClient = MqttFactory.CreateMqttClient();
         MqttClient.ApplicationMessageReceivedAsync += MqttClient_ApplicationMessageReceivedAsync;
         base.OnInitialized();
     }
-
+    private void Log_LogMessagePublished(object sender, MqttNetLogMessagePublishedEventArgs e)
+    {
+        new EasyLogger(LogAction) { LogLevel = LogLevel.Trace }.LogOut(e.LogMessage.Level, e.LogMessage.Source, e.LogMessage.Message, e.LogMessage.Exception);
+    }
     private async Task Connect()
     {
         try

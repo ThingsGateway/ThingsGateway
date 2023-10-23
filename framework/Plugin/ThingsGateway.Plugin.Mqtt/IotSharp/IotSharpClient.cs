@@ -20,6 +20,7 @@ using Microsoft.Extensions.Logging;
 
 using MQTTnet;
 using MQTTnet.Client;
+using MQTTnet.Diagnostics;
 
 using System.Collections.Concurrent;
 
@@ -310,7 +311,9 @@ public class IotSharpClient : UpLoadBase
     /// <inheritdoc/>
     protected override void Init(UploadDeviceRunTime device)
     {
-        var mqttFactory = new MqttFactory(new PrivateLogger(LogMessage));
+        var log = new MqttNetEventLogger();
+        log.LogMessagePublished += Log_LogMessagePublished;
+        var mqttFactory = new MqttFactory(log);
         _mqttClientOptions = mqttFactory.CreateClientOptionsBuilder()
            .WithClientId(Guid.NewGuid().ToString())
            .WithCredentials(driverPropertys.Accesstoken)//账密
@@ -353,6 +356,11 @@ public class IotSharpClient : UpLoadBase
         if (driverPropertys.UploadInterval <= 1000) driverPropertys.UploadInterval = 1000;
         exVariableTimerTick = new(driverPropertys.UploadInterval);
         exDeviceTimerTick = new(driverPropertys.UploadInterval);
+    }
+
+    private void Log_LogMessagePublished(object sender, MqttNetLogMessagePublishedEventArgs e)
+    {
+        LogMessage.LogOut(e.LogMessage.Level, e.LogMessage.Source, e.LogMessage.Message, e.LogMessage.Exception);
     }
 
     private void DeviceStatusChange(CollectDeviceRunTime collectDeviceRunTime)
