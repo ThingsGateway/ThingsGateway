@@ -14,8 +14,6 @@ using Furion.Templates;
 
 using System.Reflection;
 
-using ThingsGateway.Admin.Core;
-
 namespace ThingsGateway.Web.Entry;
 
 /// <summary>
@@ -60,7 +58,7 @@ public class Program
         builder.WebHost.UseKestrel(
     o =>
     {
-        var config = Furion.App.GetConfig<MqttConfig>("MqttConfig", true);
+        var config = Furion.App.GetConfig<LK.Application.MqttConfig>("MqttConfig", true);
 
         o.ListenAnyIP(config.Port, a => MQTTnet.AspNetCore.ConnectionBuilderExtensions.UseMqtt(a));
 

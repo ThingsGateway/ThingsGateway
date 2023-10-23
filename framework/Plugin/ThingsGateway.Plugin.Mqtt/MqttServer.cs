@@ -17,6 +17,7 @@ using Mapster;
 using Microsoft.Extensions.Logging;
 
 using MQTTnet;
+using MQTTnet.Diagnostics;
 using MQTTnet.Internal;
 using MQTTnet.Protocol;
 using MQTTnet.Server;
@@ -224,7 +225,9 @@ public class MqttServer : UpLoadBase
     /// <inheritdoc/>
     protected override void Init(UploadDeviceRunTime device)
     {
-        var mqttFactory = new MqttFactory(new PrivateLogger(LogMessage));
+        var log = new MqttNetEventLogger();
+        log.LogMessagePublished += Log_LogMessagePublished;
+        var mqttFactory = new MqttFactory(log);
         var mqttServerOptions = mqttFactory.CreateServerOptionsBuilder()
             .WithDefaultEndpointBoundIPAddress(string.IsNullOrEmpty(driverPropertys.IP) ? null : IPAddress.Parse(driverPropertys.IP))
             .WithDefaultEndpointPort(driverPropertys.Port)
@@ -251,7 +254,10 @@ public class MqttServer : UpLoadBase
         });
 
     }
-
+    private void Log_LogMessagePublished(object sender, MqttNetLogMessagePublishedEventArgs e)
+    {
+        LogMessage.LogOut(e.LogMessage.Level, e.LogMessage.Source, e.LogMessage.Message, e.LogMessage.Exception);
+    }
     private void DeviceStatusChange(CollectDeviceRunTime collectDeviceRunTime)
     {
         _collectDeviceRunTimes.Enqueue(collectDeviceRunTime.Adapt<DeviceData>());

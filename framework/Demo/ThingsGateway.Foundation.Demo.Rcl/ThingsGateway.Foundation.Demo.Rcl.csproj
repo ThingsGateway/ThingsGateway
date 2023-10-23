@@ -56,10 +56,10 @@
 		<Compile Include="..\..\Plugin\ThingsGateway.Plugin.Mqtt\MqttRpcNameVaueWithId.cs" Link="Pages\Mqtt\MqttRpcNameVaueWithId.cs" />
 		<Compile Include="..\..\Plugin\ThingsGateway.Plugin.Mqtt\Page\MqttClientDebugPage.razor.cs" Link="Pages\Mqtt\MqttClientDebugPage.razor.cs" />
 		<Compile Include="..\..\Plugin\ThingsGateway.Plugin.Mqtt\Page\MqttClientPage.razor.cs" Link="Pages\Mqtt\MqttClientPage.razor.cs" />
-		<Compile Include="..\..\Plugin\ThingsGateway.Plugin.Mqtt\PrivateLogger.cs" Link="Pages\Mqtt\PrivateLogger.cs" />
 		<Compile Include="..\..\Plugin\ThingsGateway.Plugin.Mqtt\RpcClass\MqttRpcClient.cs" Link="Pages\Mqtt\MqttRpcClient.cs" />
 		<Compile Include="..\..\Plugin\ThingsGateway.Plugin.Mqtt\RpcClass\MqttRpcClientExtensions.cs" Link="Pages\Mqtt\MqttRpcClientExtensions.cs" />
 		<Compile Include="..\..\Plugin\ThingsGateway.Plugin.Mqtt\RpcClass\MqttRpcTopicPair.cs" Link="Pages\Mqtt\MqttRpcTopicPair.cs" />
+		<Compile Include="..\..\Web\ThingsGateway.Gateway.Application\Workers\ManageGateway\MqttLoggerExtensions.cs" Link="Pages\Mqtt\MqttLoggerExtensions.cs" />
 		<Content Include="..\..\Plugin\ThingsGateway.Plugin.DLT645\Page\DLT645_2007DebugPage.razor" Link="Pages\DLT645\DLT645_2007DebugPage.razor" />
 		<Compile Include="..\..\Plugin\ThingsGateway.Plugin.DLT645\Page\DLT645_2007OverTcpDebugPage.razor.cs" Link="Pages\DLT645\DLT645_2007OverTcpDebugPage.razor.cs" />
 		<Content Include="..\..\Plugin\ThingsGateway.Plugin.DLT645\Page\DLT645_2007OverTcpDebugPage.razor" Link="Pages\DLT645\DLT645_2007OverTcpDebugPage.razor" />
@@ -115,7 +115,7 @@
 	</ItemGroup>
 
 
-	<ItemGroup >
+	<ItemGroup>
 		<!--<PackageReference Include="ThingsGateway.Foundation.Adapter.DLT645" Version="*" />
 		<PackageReference Include="ThingsGateway.Foundation.Adapter.Modbus" Version="*" />
 		<PackageReference Include="ThingsGateway.Foundation.Adapter.OPCDA" Version="*" />
@@ -128,7 +128,7 @@
 		<ProjectReference Include="..\..\Foundation\ThingsGateway.Foundation.Adapter.Siemens\ThingsGateway.Foundation.Adapter.Siemens.csproj" />
 
 	</ItemGroup>
-	<ItemGroup >
+	<ItemGroup>
 		<ProjectReference Include="..\..\Web\ThingsGateway.Components\ThingsGateway.Components.csproj" />
 	</ItemGroup>
 

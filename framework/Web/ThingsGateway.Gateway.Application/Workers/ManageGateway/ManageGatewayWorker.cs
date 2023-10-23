@@ -20,6 +20,7 @@ using Microsoft.Extensions.Logging;
 
 using MQTTnet;
 using MQTTnet.Client;
+using MQTTnet.Diagnostics;
 using MQTTnet.Internal;
 using MQTTnet.Protocol;
 using MQTTnet.Server;
@@ -392,7 +393,9 @@ public class ManageGatewayWorker : BackgroundService
             }
             else
             {
-                var mqttFactory = new MqttFactory(new MqttNetLogger(_manageLogger));
+                var log = new MqttNetEventLogger();
+                log.LogMessagePublished += ServerLog_LogMessagePublished;
+                var mqttFactory = new MqttFactory(log);
                 var mqttServerOptions = mqttFactory.CreateServerOptionsBuilder()
                     .WithDefaultEndpointBoundIPAddress(string.IsNullOrEmpty(ManageGatewayConfig.MqttBrokerIP) ? null : IPAddress.Parse(ManageGatewayConfig.MqttBrokerIP))
                     .WithDefaultEndpointPort(ManageGatewayConfig.MqttBrokerPort)
@@ -426,7 +429,9 @@ public class ManageGatewayWorker : BackgroundService
             }
             else
             {
-                var mqttFactory = new MqttFactory(new MqttNetLogger(_clientLogger));
+                var log = new MqttNetEventLogger();
+                log.LogMessagePublished += Log_LogMessagePublished;
+                var mqttFactory = new MqttFactory(log);
                 _mqttClientOptions = mqttFactory.CreateClientOptionsBuilder()
                   .WithCredentials(ClientGatewayConfig.UserName, ClientGatewayConfig.Password)//账密
                   .WithTcpServer(ClientGatewayConfig.MqttBrokerIP, ClientGatewayConfig.MqttBrokerPort)//服务器
@@ -467,6 +472,14 @@ public class ManageGatewayWorker : BackgroundService
             _clientLogger.LogError(ex, "初始化失败");
         }
 
+    }
+    private void Log_LogMessagePublished(object sender, MqttNetLogMessagePublishedEventArgs e)
+    {
+        _clientLogger.LogOut(e.LogMessage.Level, e.LogMessage.Source, e.LogMessage.Message, e.LogMessage.Exception);
+    }
+    private void ServerLog_LogMessagePublished(object sender, MqttNetLogMessagePublishedEventArgs e)
+    {
+        _manageLogger.LogOut(e.LogMessage.Level, e.LogMessage.Source, e.LogMessage.Message, e.LogMessage.Exception);
     }
 
     /// <summary>
