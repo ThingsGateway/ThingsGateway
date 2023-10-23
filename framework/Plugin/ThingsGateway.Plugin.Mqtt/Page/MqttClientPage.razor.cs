@@ -16,6 +16,8 @@ using MQTTnet.Diagnostics;
 
 using System.Text;
 
+using ThingsGateway.Gateway.Application;
+
 namespace ThingsGateway.Foundation.Demo;
 /// <summary>
 /// MqttClientPage
