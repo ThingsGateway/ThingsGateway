@@ -10,6 +10,7 @@
 //------------------------------------------------------------------------------
 #endregion
 
+using System.Globalization;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -114,17 +115,47 @@ public static class StringExtensions
         else if (propertyType == typeof(sbyte))
             _value = sbyte.Parse(value);
         else if (propertyType == typeof(short))
-            _value = short.Parse(value);
+        {
+            if (value.StartsWith("0x", StringComparison.OrdinalIgnoreCase))
+                _value = short.Parse(value.Substring(2), NumberStyles.HexNumber);
+            else
+                _value = short.Parse(value);
+        }
         else if (propertyType == typeof(ushort))
-            _value = ushort.Parse(value);
+        {
+            if (value.StartsWith("0x", StringComparison.OrdinalIgnoreCase))
+                _value = ushort.Parse(value.Substring(2), NumberStyles.HexNumber);
+            else
+                _value = ushort.Parse(value);
+        }
         else if (propertyType == typeof(int))
-            _value = int.Parse(value);
+        {
+            if (value.StartsWith("0x", StringComparison.OrdinalIgnoreCase))
+                _value = int.Parse(value.Substring(2), NumberStyles.HexNumber);
+            else
+                _value = int.Parse(value);
+        }
         else if (propertyType == typeof(uint))
-            _value = uint.Parse(value);
+        {
+            if (value.StartsWith("0x", StringComparison.OrdinalIgnoreCase))
+                _value = uint.Parse(value.Substring(2), NumberStyles.HexNumber);
+            else
+                _value = uint.Parse(value);
+        }
         else if (propertyType == typeof(long))
-            _value = long.Parse(value);
+        {
+            if (value.StartsWith("0x", StringComparison.OrdinalIgnoreCase))
+                _value = long.Parse(value.Substring(2), NumberStyles.HexNumber);
+            else
+                _value = long.Parse(value);
+        }
         else if (propertyType == typeof(ulong))
-            _value = ulong.Parse(value);
+        {
+            if (value.StartsWith("0x", StringComparison.OrdinalIgnoreCase))
+                _value = ulong.Parse(value.Substring(2), NumberStyles.HexNumber);
+            else
+                _value = ulong.Parse(value);
+        }
         else if (propertyType == typeof(float))
             _value = float.Parse(value);
         else if (propertyType == typeof(double))
@@ -142,7 +173,6 @@ public static class StringExtensions
         else if (propertyType.IsEnum)
             _value = Enum.Parse(propertyType, value);
         return _value;
-
     }
 
 
