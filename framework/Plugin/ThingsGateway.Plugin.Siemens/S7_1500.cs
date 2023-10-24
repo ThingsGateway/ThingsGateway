@@ -42,9 +42,13 @@ namespace ThingsGateway.Plugin.Siemens
             {
                 _plc.LocalTSAP = driverPropertys.LocalTSAP;
             }
-            if (driverPropertys.DestTSAP != 0)
+            if (driverPropertys.Rack != 0)
             {
-                _plc.DestTSAP = driverPropertys.DestTSAP;
+                _plc.Rack = driverPropertys.Rack;
+            }
+            if (driverPropertys.Slot != 0)
+            {
+                _plc.Slot = driverPropertys.Slot;
             }
         }
 

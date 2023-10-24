@@ -123,34 +123,7 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
         #region 设置
 
         /// <summary>
-        /// 远程TSAP，需重新连接
-        /// </summary>
-        public int DestTSAP
-        {
-            get
-            {
-                return
-                    _currentPlc == SiemensEnum.S200 || _currentPlc == SiemensEnum.S200Smart ?
-                    (ISO_CR[17] * 256) + ISO_CR[18] :
-                    (ISO_CR[20] * 256) + ISO_CR[21];
-            }
-            set
-            {
-                if (_currentPlc == SiemensEnum.S200 || _currentPlc == SiemensEnum.S200Smart)
-                {
-                    ISO_CR[17] = BitConverter.GetBytes(value)[1];
-                    ISO_CR[18] = BitConverter.GetBytes(value)[0];
-                }
-                else
-                {
-                    ISO_CR[20] = BitConverter.GetBytes(value)[1];
-                    ISO_CR[21] = BitConverter.GetBytes(value)[0];
-                }
-            }
-        }
-
-        /// <summary>
-        /// 本地TSAP，需重新连接
+        /// 本地TSAP
         /// </summary>
         public int LocalTSAP
         {

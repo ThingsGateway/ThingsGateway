@@ -37,13 +37,19 @@ public class SiemensProperty : CollectDriverPropertyBase
     /// </summary>
     [DeviceProperty("默认解析顺序", "")] public DataFormat DataFormat { get; set; }
     /// <summary>
-    /// DestTSAP
+    /// Rack
     /// </summary>
-    [DeviceProperty("DestTSAP", "为0时不写入，通常默认0即可")] public int DestTSAP { get; set; } = 0;
+    [DeviceProperty("机架号", "为0时不写入")] public byte Rack { get; set; } = 0;
+    /// <summary>
+    /// Slot
+    /// </summary>
+    [DeviceProperty("槽位号", "为0时不写入")] public byte Slot { get; set; } = 0;
+
     /// <summary>
     /// LocalTSAP
     /// </summary>
     [DeviceProperty("LocalTSAP", "为0时不写入，通常默认0即可")] public int LocalTSAP { get; set; } = 0;
+
     /// <summary>
     /// <inheritdoc/>
     /// </summary>
