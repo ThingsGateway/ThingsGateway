@@ -63,7 +63,7 @@ namespace ThingsGateway.Foundation.WebApi
         public override string GetInvokenKey(MethodInstance methodInstance)
         {
             var i = 0;
-            if (methodInstance.MethodFlags.HasFlag(MethodFlags.IncludeCallContext))
+            if (methodInstance.IncludeCallContext)
             {
                 i = 1;
             }

@@ -240,7 +240,7 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
                                 DmtpRpcPackage = rpcPackage
                             };
                             this.TryAdd(rpcPackage.Sign, callContext);
-                            if (methodInstance.MethodFlags.HasFlag(MethodFlags.IncludeCallContext))
+                            if (methodInstance.IncludeCallContext)
                             {
                                 ps = new object[methodInstance.ParameterTypes.Length];
                                 ps[0] = callContext;
@@ -314,7 +314,7 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
                                 rpcPackage.ParametersBytes = new List<byte[]>();
 
                                 var i = 0;
-                                if (methodInstance.MethodFlags.HasFlag(MethodFlags.IncludeCallContext))
+                                if (methodInstance.IncludeCallContext)
                                 {
                                     i = 1;
                                 }

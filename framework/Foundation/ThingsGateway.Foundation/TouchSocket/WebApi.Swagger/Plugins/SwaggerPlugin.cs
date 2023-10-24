@@ -251,7 +251,7 @@ namespace ThingsGateway.Foundation.WebApi.Swagger
                     Summary = methodInstance.GetDescription()
                 };
                 var i = 0;
-                if (methodInstance.MethodFlags.HasFlag(MethodFlags.IncludeCallContext))
+                if (methodInstance.IncludeCallContext)
                 {
                     i = 1;
                 }
@@ -312,7 +312,7 @@ namespace ThingsGateway.Foundation.WebApi.Swagger
                 };
 
                 var i = 0;
-                if (methodInstance.MethodFlags.HasFlag(MethodFlags.IncludeCallContext))
+                if (methodInstance.IncludeCallContext)
                 {
                     i = 1;
                 }
@@ -333,7 +333,7 @@ namespace ThingsGateway.Foundation.WebApi.Swagger
                 openApiPathValue.Parameters = parameters.Count > 0 ? parameters : default;
 
                 ParameterInfo parameterInfo = null;
-                if (methodInstance.MethodFlags.HasFlag(MethodFlags.IncludeCallContext))
+                if (methodInstance.IncludeCallContext)
                 {
                     if (methodInstance.Parameters.Length > 1)
                     {

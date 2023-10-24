@@ -11,6 +11,7 @@
 #endregion
 
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 #if NET6_0_OR_GREATER
 using System.Numerics;
@@ -55,12 +56,11 @@ namespace ThingsGateway.Foundation.Core
             }
 
             var capacity = 0L;
-            var poolId = this.Id;
             var maxBuckets = SelectBucketIndex(maxArrayLength);
             var buckets = new Bucket[maxBuckets + 1];
             for (var i = 0; i < buckets.Length; i++)
             {
-                buckets[i] = new Bucket(GetMaxSizeForBucket(i), maxArraysPerBucket, poolId);
+                buckets[i] = new Bucket(GetMaxSizeForBucket(i), maxArraysPerBucket);
                 long num = GetMaxSizeForBucket(i) * maxArraysPerBucket;
                 capacity += num;
             }
@@ -183,16 +183,19 @@ namespace ThingsGateway.Foundation.Core
         /// </summary>
         /// <param name="size"></param>
         /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int HitSize(int size)
         {
             return GetMaxSizeForBucket(SelectBucketIndex(size));
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static int GetMaxSizeForBucket(int binIndex)
         {
             return 16 << binIndex;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static int SelectBucketIndex(int bufferSize)
         {
 #if NET6_0_OR_GREATER
@@ -208,18 +211,16 @@ namespace ThingsGateway.Foundation.Core
             internal readonly int m_bufferLength;
             private readonly int m_numberOfBuffers;
             private T[][] m_buffers;
-            private readonly int m_poolId;
 
             private int m_index;
             private SpinLock m_lock;
 
-            internal Bucket(int bufferLength, int numberOfBuffers, int poolId)
+            internal Bucket(int bufferLength, int numberOfBuffers)
             {
                 this.m_lock = new SpinLock(Debugger.IsAttached);
                 this.m_buffers = new T[numberOfBuffers][];
                 this.m_bufferLength = bufferLength;
                 this.m_numberOfBuffers = numberOfBuffers;
-                this.m_poolId = poolId;
             }
 
             public void Clear()

@@ -111,7 +111,7 @@ namespace ThingsGateway.Foundation.WebApi
                     {
                         ps = new object[methodInstance.Parameters.Length];
                         var i = 0;
-                        if (methodInstance.MethodFlags.HasFlag(MethodFlags.IncludeCallContext))
+                        if (methodInstance.IncludeCallContext)
                         {
                             ps[i] = callContext;
                             i++;
@@ -227,7 +227,7 @@ namespace ThingsGateway.Foundation.WebApi
                         int index;
                         ps = new object[methodInstance.Parameters.Length];
                         var i = 0;
-                        if (methodInstance.MethodFlags.HasFlag(MethodFlags.IncludeCallContext))
+                        if (methodInstance.IncludeCallContext)
                         {
                             ps[i] = callContext;
                             i++;
@@ -263,7 +263,7 @@ namespace ThingsGateway.Foundation.WebApi
                         if (index >= 0)
                         {
                             var str = e.Context.Request.GetBody();
-                            if (methodInstance.MethodFlags.HasFlag(MethodFlags.IncludeCallContext))
+                            if (methodInstance.IncludeCallContext)
                             {
                                 index++;
                             }

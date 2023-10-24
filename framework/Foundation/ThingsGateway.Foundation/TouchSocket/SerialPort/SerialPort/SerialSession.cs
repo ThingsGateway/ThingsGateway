@@ -727,6 +727,11 @@ public class SerialSessionBase : BaseSerial, ISerialSession
     {
         if (this.SendingData(buffer, offset, length).GetFalseAwaitResult())
         {
+            if (this.m_delaySender != null)
+            {
+                this.m_delaySender.Send(new QueueDataBytes(buffer, offset, length));
+                return;
+            }
             this.GetSerialCore().Send(buffer, offset, length);
         }
     }
