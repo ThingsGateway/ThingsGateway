@@ -189,7 +189,7 @@ namespace ThingsGateway.Foundation.Core
         /// <returns></returns>
         public static IEnumerable<string> GetTupleElementNames(this ParameterInfo parameter)
         {
-            return ((dynamic)parameter.GetCustomAttribute(Type.GetType("System.Runtime.CompilerServices.TupleElementNamesAttribute")))?.TransformNames;
+            return (IEnumerable<string>)DynamicMethodMemberAccessor.Default.GetValue(parameter.GetCustomAttribute(Type.GetType("System.Runtime.CompilerServices.TupleElementNamesAttribute")), "TransformNames");
         }
 
         /// <summary>
@@ -199,7 +199,7 @@ namespace ThingsGateway.Foundation.Core
         /// <returns></returns>
         public static IEnumerable<string> GetTupleElementNames(this MemberInfo memberInfo)
         {
-            return ((dynamic)memberInfo.GetCustomAttribute(Type.GetType("System.Runtime.CompilerServices.TupleElementNamesAttribute")))?.TransformNames;
+            return (IEnumerable<string>)DynamicMethodMemberAccessor.Default.GetValue(memberInfo.GetCustomAttribute(Type.GetType("System.Runtime.CompilerServices.TupleElementNamesAttribute")), "TransformNames");
         }
         #endregion
 

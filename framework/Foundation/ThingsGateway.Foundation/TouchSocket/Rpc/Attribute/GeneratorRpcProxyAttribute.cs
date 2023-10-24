@@ -13,7 +13,7 @@
 namespace ThingsGateway.Foundation.Rpc
 {
     /// <summary>
-    /// 标识该接口将自动生成调用的扩展方法静态类
+    /// 标识该接口将自动生成调用的代理类
     /// </summary>
     [AttributeUsage(AttributeTargets.Interface, Inherited = false, AllowMultiple = false)]
     public sealed class GeneratorRpcProxyAttribute : Attribute
@@ -39,7 +39,7 @@ namespace ThingsGateway.Foundation.Rpc
         public string Namespace { get; set; }
 
         /// <summary>
-        /// 生成的类名，不要包含“I”，生成接口时会自动家。
+        /// 生成的类名，不要包含“I”，生成接口时会自动添加。
         /// </summary>
         public string ClassName { get; set; }
 
@@ -47,11 +47,6 @@ namespace ThingsGateway.Foundation.Rpc
         /// 生成代码
         /// </summary>
         public CodeGeneratorFlag GeneratorFlag { get; set; }
-
-        /// <summary>
-        /// 函数标识
-        /// </summary>
-        public MethodFlags MethodFlags { get; set; }
 
         /// <summary>
         /// 继承接口

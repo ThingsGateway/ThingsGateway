@@ -39,7 +39,6 @@ namespace ThingsGateway.Foundation.Rpc
         /// </summary>
         public RpcAttribute()
         {
-            this.MethodFlags = MethodFlags.None;
             this.Exceptions.Add(typeof(TimeoutException), "调用超时");
             this.Exceptions.Add(typeof(RpcInvokeException), "Rpc调用异常");
             this.Exceptions.Add(typeof(Exception), "其他异常");
@@ -71,11 +70,6 @@ namespace ThingsGateway.Foundation.Rpc
         /// 调用键。
         /// </summary>
         public string InvokeKey { get; set; }
-
-        /// <summary>
-        /// 函数标识
-        /// </summary>
-        public MethodFlags MethodFlags { get; set; }
 
         /// <summary>
         /// 是否仅以函数名调用，当为True是，调用时仅需要传入方法名即可。
@@ -122,25 +116,25 @@ namespace ThingsGateway.Foundation.Rpc
 
                 codeString.Append("public static ");
                 codeString.Append(this.GetReturn(methodInstance, false));
-                codeString.Append(" ");
+                codeString.Append(' ');
                 codeString.Append(this.GetMethodName(methodInstance, false));
                 codeString.Append("<TClient>(");//方法参数
 
                 codeString.Append($"this TClient client");
 
-                codeString.Append(",");
+                codeString.Append(',');
                 for (var i = 0; i < parametersStr.Count; i++)
                 {
                     if (i > 0)
                     {
-                        codeString.Append(",");
+                        codeString.Append(',');
                     }
 
                     codeString.Append(parametersStr[i]);
                 }
                 if (parametersStr.Count > 0)
                 {
-                    codeString.Append(",");
+                    codeString.Append(',');
                 }
                 codeString.Append(this.GetInvokeOption());
                 codeString.AppendLine(") where TClient:");
@@ -149,7 +143,7 @@ namespace ThingsGateway.Foundation.Rpc
                 {
                     if (i > 0)
                     {
-                        codeString.Append(",");
+                        codeString.Append(',');
                     }
 
                     codeString.Append(InterfaceTypes[i].FullName);
@@ -159,7 +153,7 @@ namespace ThingsGateway.Foundation.Rpc
                 if (parametersStr.Count > 0)
                 {
                     codeString.Append($"object[] parameters = new object[]");
-                    codeString.Append("{");
+                    codeString.Append('{');
 
                     foreach (var parameter in parameters)
                     {
@@ -173,7 +167,7 @@ namespace ThingsGateway.Foundation.Rpc
                         }
                         if (parameter != parameters[parameters.Length - 1])
                         {
-                            codeString.Append(",");
+                            codeString.Append(',');
                         }
                     }
                     codeString.AppendLine("};");
@@ -181,13 +175,13 @@ namespace ThingsGateway.Foundation.Rpc
                     if (isOut || isRef)
                     {
                         codeString.Append($"Type[] types = new Type[]");
-                        codeString.Append("{");
+                        codeString.Append('{');
                         foreach (var parameter in parameters)
                         {
                             codeString.Append($"typeof({this.GetProxyParameterName(parameter)})");
                             if (parameter != parameters[parameters.Length - 1])
                             {
-                                codeString.Append(",");
+                                codeString.Append(',');
                             }
                         }
                         codeString.AppendLine("};");
@@ -199,7 +193,7 @@ namespace ThingsGateway.Foundation.Rpc
                     if (parametersStr.Count == 0)
                     {
                         codeString.Append(string.Format("{0} returnData=({0})client.Invoke", this.GetProxyParameterName(methodInstance.Info.ReturnParameter)));
-                        codeString.Append("(");
+                        codeString.Append('(');
                         codeString.Append(string.Format("typeof({0}),", this.GetProxyParameterName(methodInstance.Info.ReturnParameter)));
                         codeString.Append($"\"{this.GetInvokenKey(methodInstance)}\"");
                         codeString.AppendLine(",invokeOption, null);");
@@ -207,7 +201,7 @@ namespace ThingsGateway.Foundation.Rpc
                     else if (isOut || isRef)
                     {
                         codeString.Append(string.Format("{0} returnData=({0})client.Invoke", this.GetProxyParameterName(methodInstance.Info.ReturnParameter)));
-                        codeString.Append("(");
+                        codeString.Append('(');
                         codeString.Append(string.Format("typeof({0}),", this.GetProxyParameterName(methodInstance.Info.ReturnParameter)));
                         codeString.Append($"\"{this.GetInvokenKey(methodInstance)}\"");
                         codeString.AppendLine(",invokeOption,ref parameters,types);");
@@ -215,7 +209,7 @@ namespace ThingsGateway.Foundation.Rpc
                     else
                     {
                         codeString.Append(string.Format("{0} returnData=({0})client.Invoke", this.GetProxyParameterName(methodInstance.Info.ReturnParameter)));
-                        codeString.Append("(");
+                        codeString.Append('(');
                         codeString.Append(string.Format("typeof({0}),", this.GetProxyParameterName(methodInstance.Info.ReturnParameter)));
                         codeString.Append($"\"{this.GetInvokenKey(methodInstance)}\"");
                         codeString.AppendLine(",invokeOption, parameters);");
@@ -275,12 +269,12 @@ namespace ThingsGateway.Foundation.Rpc
             }
 
             //以下生成异步
-            if (this.GeneratorFlag.HasFlag(CodeGeneratorFlag.ExtensionAsync) && !isOut && !isRef)//没有out或者ref
+            if (this.GeneratorFlag.HasFlag(CodeGeneratorFlag.ExtensionAsync) /*&& !isOut && !isRef*/)
             {
                 codeString.AppendLine("///<summary>");
                 codeString.AppendLine($"///{description}");
                 codeString.AppendLine("///</summary>");
-                if (methodInstance.HasReturn)
+                if (methodInstance.HasReturn && !isOut && !isRef)
                 {
                     codeString.Append("public static async ");
                 }
@@ -289,24 +283,24 @@ namespace ThingsGateway.Foundation.Rpc
                     codeString.Append("public static ");
                 }
                 codeString.Append(this.GetReturn(methodInstance, true));
-                codeString.Append(" ");
+                codeString.Append(' ');
                 codeString.Append(this.GetMethodName(methodInstance, true));
                 codeString.Append("<TClient>(");//方法参数
 
                 codeString.Append($"this TClient client");
 
-                codeString.Append(",");
+                codeString.Append(',');
                 for (var i = 0; i < parametersStr.Count; i++)
                 {
                     if (i > 0)
                     {
-                        codeString.Append(",");
+                        codeString.Append(',');
                     }
                     codeString.Append(parametersStr[i]);
                 }
                 if (parametersStr.Count > 0)
                 {
-                    codeString.Append(",");
+                    codeString.Append(',');
                 }
                 codeString.Append(this.GetInvokeOption());
                 codeString.AppendLine(") where TClient:");
@@ -315,7 +309,7 @@ namespace ThingsGateway.Foundation.Rpc
                 {
                     if (i > 0)
                     {
-                        codeString.Append(",");
+                        codeString.Append(',');
                     }
 
                     codeString.Append(InterfaceTypes[i].FullName);
@@ -326,16 +320,39 @@ namespace ThingsGateway.Foundation.Rpc
                 if (parametersStr.Count > 0)
                 {
                     codeString.Append($"object[] parameters = new object[]");
-                    codeString.Append("{");
+                    codeString.Append('{');
+
                     foreach (var parameter in parameters)
                     {
-                        codeString.Append(parameter.Name);
+                        if (parameter.ParameterType.Name.Contains("&") && parameter.IsOut)
+                        {
+                            codeString.Append($"default({this.GetProxyParameterName(parameter)})");
+                        }
+                        else
+                        {
+                            codeString.Append(parameter.Name);
+                        }
                         if (parameter != parameters[parameters.Length - 1])
                         {
-                            codeString.Append(",");
+                            codeString.Append(',');
                         }
                     }
                     codeString.AppendLine("};");
+
+                    if (isOut || isRef)
+                    {
+                        codeString.Append($"Type[] types = new Type[]");
+                        codeString.Append('{');
+                        foreach (var parameter in parameters)
+                        {
+                            codeString.Append($"typeof({this.GetProxyParameterName(parameter)})");
+                            if (parameter != parameters[parameters.Length - 1])
+                            {
+                                codeString.Append(',');
+                            }
+                        }
+                        codeString.AppendLine("};");
+                    }
                 }
 
                 if (methodInstance.HasReturn)
@@ -343,15 +360,23 @@ namespace ThingsGateway.Foundation.Rpc
                     if (parametersStr.Count == 0)
                     {
                         codeString.Append(string.Format("return ({0}) await client.InvokeAsync", this.GetProxyParameterName(methodInstance.Info.ReturnParameter)));
-                        codeString.Append("(");
+                        codeString.Append('(');
                         codeString.Append(string.Format("typeof({0}),", this.GetProxyParameterName(methodInstance.Info.ReturnParameter)));
                         codeString.Append($"\"{this.GetInvokenKey(methodInstance)}\"");
                         codeString.AppendLine(",invokeOption, null);");
                     }
+                    else if (isOut || isRef)
+                    {
+                        codeString.Append(string.Format("{0} returnData=({0})client.Invoke", this.GetProxyParameterName(methodInstance.Info.ReturnParameter)));
+                        codeString.Append('(');
+                        codeString.Append(string.Format("typeof({0}),", this.GetProxyParameterName(methodInstance.Info.ReturnParameter)));
+                        codeString.Append($"\"{this.GetInvokenKey(methodInstance)}\"");
+                        codeString.AppendLine(",invokeOption,ref parameters,types);");
+                    }
                     else
                     {
                         codeString.Append(string.Format("return ({0}) await client.InvokeAsync", this.GetProxyParameterName(methodInstance.Info.ReturnParameter)));
-                        codeString.Append("(");
+                        codeString.Append('(');
                         codeString.Append(string.Format("typeof({0}),", this.GetProxyParameterName(methodInstance.Info.ReturnParameter)));
                         codeString.Append($"\"{this.GetInvokenKey(methodInstance)}\"");
                         codeString.AppendLine(",invokeOption, parameters);");
@@ -365,6 +390,12 @@ namespace ThingsGateway.Foundation.Rpc
                         codeString.Append($"\"{this.GetInvokenKey(methodInstance)}\"");
                         codeString.AppendLine(",invokeOption, null);");
                     }
+                    else if (isOut || isRef)
+                    {
+                        codeString.Append("client.Invoke(");
+                        codeString.Append($"\"{this.GetInvokenKey(methodInstance)}\"");
+                        codeString.AppendLine(",invokeOption,ref parameters,types);");
+                    }
                     else
                     {
                         codeString.Append("return client.InvokeAsync(");
@@ -372,6 +403,43 @@ namespace ThingsGateway.Foundation.Rpc
                         codeString.AppendLine(",invokeOption, parameters);");
                     }
                 }
+
+                if (isOut || isRef)
+                {
+                    codeString.AppendLine("if(parameters!=null)");
+                    codeString.AppendLine("{");
+                    for (var i = 0; i < parameters.Length; i++)
+                    {
+                        codeString.AppendLine(string.Format("{0}=({1})parameters[{2}];", parameters[i].Name, this.GetProxyParameterName(parameters[i]), i));
+                    }
+                    codeString.AppendLine("}");
+                    if (isOut)
+                    {
+                        codeString.AppendLine("else");
+                        codeString.AppendLine("{");
+                        for (var i = 0; i < parameters.Length; i++)
+                        {
+                            if (parameters[i].IsOut)
+                            {
+                                codeString.AppendLine(string.Format("{0}=default({1});", parameters[i].Name, this.GetProxyParameterName(parameters[i])));
+                            }
+                        }
+                        codeString.AppendLine("}");
+                    }
+                }
+
+                if (isOut || isRef)
+                {
+                    if (methodInstance.HasReturn)
+                    {
+                        codeString.AppendLine(string.Format("return Task.FromResult<{0}>(returnData);", this.GetProxyParameterName(methodInstance.Info.ReturnParameter)));
+                    }
+                    else
+                    {
+                        codeString.AppendLine(string.Format("return  EasyTask.CompletedTask;"));
+                    }
+                }
+
                 codeString.AppendLine("}");
             }
             return codeString.ToString();
@@ -409,21 +477,21 @@ namespace ThingsGateway.Foundation.Rpc
 
                 codeString.Append("public ");
                 codeString.Append(this.GetReturn(methodInstance, false));
-                codeString.Append(" ");
+                codeString.Append(' ');
                 codeString.Append(this.GetMethodName(methodInstance, false));
-                codeString.Append("(");//方法参数
+                codeString.Append('(');//方法参数
 
                 for (var i = 0; i < parametersStr.Count; i++)
                 {
                     if (i > 0)
                     {
-                        codeString.Append(",");
+                        codeString.Append(',');
                     }
                     codeString.Append(parametersStr[i]);
                 }
                 if (parametersStr.Count > 0)
                 {
-                    codeString.Append(",");
+                    codeString.Append(',');
                 }
                 codeString.Append(this.GetInvokeOption());
                 codeString.AppendLine(")");
@@ -438,7 +506,7 @@ namespace ThingsGateway.Foundation.Rpc
                 if (parametersStr.Count > 0)
                 {
                     codeString.Append($"object[] parameters = new object[]");
-                    codeString.Append("{");
+                    codeString.Append('{');
 
                     foreach (var parameter in parameters)
                     {
@@ -452,7 +520,7 @@ namespace ThingsGateway.Foundation.Rpc
                         }
                         if (parameter != parameters[parameters.Length - 1])
                         {
-                            codeString.Append(",");
+                            codeString.Append(',');
                         }
                     }
                     codeString.AppendLine("};");
@@ -460,13 +528,13 @@ namespace ThingsGateway.Foundation.Rpc
                     if (isOut || isRef)
                     {
                         codeString.Append($"Type[] types = new Type[]");
-                        codeString.Append("{");
+                        codeString.Append('{');
                         foreach (var parameter in parameters)
                         {
                             codeString.Append($"typeof({this.GetProxyParameterName(parameter)})");
                             if (parameter != parameters[parameters.Length - 1])
                             {
-                                codeString.Append(",");
+                                codeString.Append(',');
                             }
                         }
                         codeString.AppendLine("};");
@@ -478,7 +546,7 @@ namespace ThingsGateway.Foundation.Rpc
                     if (parametersStr.Count == 0)
                     {
                         codeString.Append(string.Format("{0} returnData=({0})Client.Invoke", this.GetProxyParameterName(methodInstance.Info.ReturnParameter)));
-                        codeString.Append("(");
+                        codeString.Append('(');
                         codeString.Append(string.Format("typeof({0}),", this.GetProxyParameterName(methodInstance.Info.ReturnParameter)));
                         codeString.Append($"\"{this.GetInvokenKey(methodInstance)}\"");
                         codeString.AppendLine(",invokeOption, null);");
@@ -554,12 +622,12 @@ namespace ThingsGateway.Foundation.Rpc
             }
 
             //以下生成异步
-            if (this.GeneratorFlag.HasFlag(CodeGeneratorFlag.InstanceAsync) && !isOut && !isRef)//没有out或者ref
+            if (this.GeneratorFlag.HasFlag(CodeGeneratorFlag.InstanceAsync))
             {
                 codeString.AppendLine("///<summary>");
                 codeString.AppendLine($"///{description}");
                 codeString.AppendLine("///</summary>");
-                if (methodInstance.HasReturn)
+                if (methodInstance.HasReturn && (!isOut && !isRef))
                 {
                     codeString.Append("public async ");
                 }
@@ -568,21 +636,21 @@ namespace ThingsGateway.Foundation.Rpc
                     codeString.Append("public ");
                 }
                 codeString.Append(this.GetReturn(methodInstance, true));
-                codeString.Append(" ");
+                codeString.Append(' ');
                 codeString.Append(this.GetMethodName(methodInstance, true));
-                codeString.Append("(");//方法参数
+                codeString.Append('(');//方法参数
 
                 for (var i = 0; i < parametersStr.Count; i++)
                 {
                     if (i > 0)
                     {
-                        codeString.Append(",");
+                        codeString.Append(',');
                     }
                     codeString.Append(parametersStr[i]);
                 }
                 if (parametersStr.Count > 0)
                 {
-                    codeString.Append(",");
+                    codeString.Append(',');
                 }
                 codeString.Append(this.GetInvokeOption());
                 codeString.AppendLine(")");
@@ -597,16 +665,39 @@ namespace ThingsGateway.Foundation.Rpc
                 if (parametersStr.Count > 0)
                 {
                     codeString.Append($"object[] parameters = new object[]");
-                    codeString.Append("{");
+                    codeString.Append('{');
+
                     foreach (var parameter in parameters)
                     {
-                        codeString.Append(parameter.Name);
+                        if (parameter.ParameterType.Name.Contains("&") && parameter.IsOut)
+                        {
+                            codeString.Append($"default({this.GetProxyParameterName(parameter)})");
+                        }
+                        else
+                        {
+                            codeString.Append(parameter.Name);
+                        }
                         if (parameter != parameters[parameters.Length - 1])
                         {
-                            codeString.Append(",");
+                            codeString.Append(',');
                         }
                     }
                     codeString.AppendLine("};");
+
+                    if (isOut || isRef)
+                    {
+                        codeString.Append($"Type[] types = new Type[]");
+                        codeString.Append('{');
+                        foreach (var parameter in parameters)
+                        {
+                            codeString.Append($"typeof({this.GetProxyParameterName(parameter)})");
+                            if (parameter != parameters[parameters.Length - 1])
+                            {
+                                codeString.Append(',');
+                            }
+                        }
+                        codeString.AppendLine("};");
+                    }
                 }
 
                 if (methodInstance.HasReturn)
@@ -614,15 +705,23 @@ namespace ThingsGateway.Foundation.Rpc
                     if (parametersStr.Count == 0)
                     {
                         codeString.Append(string.Format("return ({0}) await Client.InvokeAsync", this.GetProxyParameterName(methodInstance.Info.ReturnParameter)));
-                        codeString.Append("(");
+                        codeString.Append('(');
                         codeString.Append(string.Format("typeof({0}),", this.GetProxyParameterName(methodInstance.Info.ReturnParameter)));
                         codeString.Append($"\"{this.GetInvokenKey(methodInstance)}\"");
                         codeString.AppendLine(",invokeOption, null);");
                     }
+                    else if (isOut || isRef)
+                    {
+                        codeString.Append(string.Format("{0} returnData=({0})Client.Invoke", this.GetProxyParameterName(methodInstance.Info.ReturnParameter)));
+                        codeString.Append('(');
+                        codeString.Append(string.Format("typeof({0}),", this.GetProxyParameterName(methodInstance.Info.ReturnParameter)));
+                        codeString.Append($"\"{this.GetInvokenKey(methodInstance)}\"");
+                        codeString.AppendLine(",invokeOption,ref parameters,types);");
+                    }
                     else
                     {
                         codeString.Append(string.Format("return ({0}) await Client.InvokeAsync", this.GetProxyParameterName(methodInstance.Info.ReturnParameter)));
-                        codeString.Append("(");
+                        codeString.Append('(');
                         codeString.Append(string.Format("typeof({0}),", this.GetProxyParameterName(methodInstance.Info.ReturnParameter)));
                         codeString.Append($"\"{this.GetInvokenKey(methodInstance)}\"");
                         codeString.AppendLine(",invokeOption, parameters);");
@@ -636,6 +735,12 @@ namespace ThingsGateway.Foundation.Rpc
                         codeString.Append($"\"{this.GetInvokenKey(methodInstance)}\"");
                         codeString.AppendLine(",invokeOption, null);");
                     }
+                    else if (isOut || isRef)
+                    {
+                        codeString.Append("Client.Invoke(");
+                        codeString.Append($"\"{this.GetInvokenKey(methodInstance)}\"");
+                        codeString.AppendLine(",invokeOption,ref parameters,types);");
+                    }
                     else
                     {
                         codeString.Append("return Client.InvokeAsync(");
@@ -643,8 +748,46 @@ namespace ThingsGateway.Foundation.Rpc
                         codeString.AppendLine(",invokeOption, parameters);");
                     }
                 }
+
+                if (isOut || isRef)
+                {
+                    codeString.AppendLine("if(parameters!=null)");
+                    codeString.AppendLine("{");
+                    for (var i = 0; i < parameters.Length; i++)
+                    {
+                        codeString.AppendLine(string.Format("{0}=({1})parameters[{2}];", parameters[i].Name, this.GetProxyParameterName(parameters[i]), i));
+                    }
+                    codeString.AppendLine("}");
+                    if (isOut)
+                    {
+                        codeString.AppendLine("else");
+                        codeString.AppendLine("{");
+                        for (var i = 0; i < parameters.Length; i++)
+                        {
+                            if (parameters[i].IsOut)
+                            {
+                                codeString.AppendLine(string.Format("{0}=default({1});", parameters[i].Name, this.GetProxyParameterName(parameters[i])));
+                            }
+                        }
+                        codeString.AppendLine("}");
+                    }
+                }
+
+                if (isOut || isRef)
+                {
+                    if (methodInstance.HasReturn)
+                    {
+                        codeString.AppendLine(string.Format("return Task.FromResult<{0}>(returnData);", this.GetProxyParameterName(methodInstance.Info.ReturnParameter)));
+                    }
+                    else
+                    {
+                        codeString.AppendLine(string.Format("return  EasyTask.CompletedTask;"));
+                    }
+                }
                 codeString.AppendLine("}");
             }
+
+
             return codeString.ToString();
         }
 
@@ -669,26 +812,26 @@ namespace ThingsGateway.Foundation.Rpc
                 }
 
                 codeString.Append(this.GetReturn(methodInstance, false));
-                codeString.Append(" ");
+                codeString.Append(' ');
                 codeString.Append(this.GetMethodName(methodInstance, false));
-                codeString.Append("(");//方法参数
+                codeString.Append('(');//方法参数
                 for (var i = 0; i < parameters.Count; i++)
                 {
                     if (i > 0)
                     {
-                        codeString.Append(",");
+                        codeString.Append(',');
                     }
                     codeString.Append(parameters[i]);
                 }
                 if (parameters.Count > 0)
                 {
-                    codeString.Append(",");
+                    codeString.Append(',');
                 }
                 codeString.Append(this.GetInvokeOption());
                 codeString.AppendLine(");");
             }
 
-            if (this.GeneratorFlag.HasFlag(CodeGeneratorFlag.InterfaceAsync) && !isOut && !isRef)//没有out或者ref
+            if (this.GeneratorFlag.HasFlag(CodeGeneratorFlag.InterfaceAsync))
             {
                 codeString.AppendLine("///<summary>");
                 codeString.AppendLine($"///{description}");
@@ -699,21 +842,21 @@ namespace ThingsGateway.Foundation.Rpc
                 }
 
                 codeString.Append(this.GetReturn(methodInstance, true));
-                codeString.Append(" ");
+                codeString.Append(' ');
                 codeString.Append(this.GetMethodName(methodInstance, true));
-                codeString.Append("(");//方法参数
+                codeString.Append('(');//方法参数
 
                 for (var i = 0; i < parameters.Count; i++)
                 {
                     if (i > 0)
                     {
-                        codeString.Append(",");
+                        codeString.Append(',');
                     }
                     codeString.Append(parameters[i]);
                 }
                 if (parameters.Count > 0)
                 {
-                    codeString.Append(",");
+                    codeString.Append(',');
                 }
                 codeString.Append(this.GetInvokeOption());
                 codeString.AppendLine(");");
@@ -774,7 +917,7 @@ namespace ThingsGateway.Foundation.Rpc
             isOut = false;
             isRef = false;
 
-            if (methodInstance.MethodFlags.HasFlag(MethodFlags.IncludeCallContext))
+            if (methodInstance.IncludeCallContext)
             {
                 var infos = new List<ParameterInfo>(methodInstance.Parameters);
                 infos.RemoveAt(0);

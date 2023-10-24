@@ -59,12 +59,7 @@ namespace ThingsGateway.Foundation.Dmtp.FileTransfer
         /// </summary>
         public int TryCount { get; set; } = 10;
 
-        /// <summary>
-        /// 设置结果状态
-        /// </summary>
-        /// <param name="result"></param>
-        /// <returns></returns>
-        public Result SetResult(Result result)
+        internal Result SetResult(Result result)
         {
             this.Result = result;
             return result;

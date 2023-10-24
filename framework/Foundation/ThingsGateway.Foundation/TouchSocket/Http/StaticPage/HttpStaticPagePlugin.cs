@@ -37,6 +37,10 @@ namespace ThingsGateway.Foundation.Http
         public HttpStaticPagePlugin()
         {
             this.FileCache = new FileCachePool();
+            this.SetNavigateAction(request =>
+            {
+                return request.RelativeURL;
+            });
         }
 
         /// <summary>
@@ -81,15 +85,45 @@ namespace ThingsGateway.Foundation.Http
             this.FileCache.Clear();
         }
 
+        /// <summary>
+        /// 重新导航
+        /// </summary>
+        public Func<HttpRequest, Task<string>> NavigateAction { get; set; }
+
+        /// <summary>
+        /// 设定重新导航
+        /// </summary>
+        /// <param name="func"></param>
+        /// <returns></returns>
+        public HttpStaticPagePlugin SetNavigateAction(Func<HttpRequest, Task<string>> func)
+        {
+            this.NavigateAction = func;
+            return this;
+        }
+
+        /// <summary>
+        /// 设定重新导航
+        /// </summary>
+        /// <param name="func"></param>
+        /// <returns></returns>
+        public HttpStaticPagePlugin SetNavigateAction(Func<HttpRequest, string> func)
+        {
+            this.NavigateAction = (request) =>
+            {
+                return Task.FromResult(func(request));
+            };
+            return this;
+        }
         /// <inheritdoc/>
         public async Task OnHttpRequest(IHttpSocketClient client, HttpContextEventArgs e)
         {
-            if (this.FileCache.Find(e.Context.Request.RelativeURL, out var data))
+            var url = await this.NavigateAction.Invoke(e.Context.Request);
+            if (this.FileCache.Find(url, out var data))
             {
                 e.Context.Response.SetStatus();
-                if (this.ContentTypeProvider?.TryGetContentType(e.Context.Request.RelativeURL, out var result) != true)
+                if (this.ContentTypeProvider?.TryGetContentType(url, out var result) != true)
                 {
-                    result = HttpTools.GetContentTypeFromExtension(e.Context.Request.RelativeURL);
+                    result = HttpTools.GetContentTypeFromExtension(url);
                 }
                 e.Context.Response.ContentType = result;
                 e.Context.Response.SetContentLength(data.Length)

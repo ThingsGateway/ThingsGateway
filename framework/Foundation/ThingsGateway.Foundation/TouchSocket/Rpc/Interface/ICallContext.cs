@@ -34,8 +34,8 @@ namespace ThingsGateway.Foundation.Rpc
         /// 调用此服务的主体。
         /// <para>
         /// <list type="bullet">
-        /// <item>当该服务在<see cref="ITcpService"/>及派生中调用时，该值一般为<see cref="ISocketClient"/>对象。</item>
-        /// <item>当该服务在<see cref="ITcpClient"/>及派生中调用时，该值一般为<see cref="ITcpClient"/>对象。</item>
+        /// <item>当该服务在ITcpService及派生中调用时，该值一般为ISocketClient对象。</item>
+        /// <item>当该服务在ITcpClient及派生中调用时，该值一般为ITcpClient对象。</item>
         /// </list>
         /// </para>
         /// </summary>

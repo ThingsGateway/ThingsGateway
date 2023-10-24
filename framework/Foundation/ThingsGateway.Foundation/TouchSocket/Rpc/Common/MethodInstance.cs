@@ -75,10 +75,10 @@ namespace ThingsGateway.Foundation.Rpc
             }
 
             var fromMethodInfos = new Dictionary<string, MethodInfo>();
-            CodeGenerator.GetMethodInfos(ServerFromType, ref fromMethodInfos);
+            CodeGenerator.GetMethodInfos(this.ServerFromType, ref fromMethodInfos);
 
             var toMethodInfos = new Dictionary<string, MethodInfo>();
-            CodeGenerator.GetMethodInfos(ServerToType, ref toMethodInfos);
+            CodeGenerator.GetMethodInfos(this.ServerToType, ref toMethodInfos);
 
             var attributes = method.GetCustomAttributes<RpcAttribute>(true);
             if (attributes.Any())
@@ -98,7 +98,7 @@ namespace ThingsGateway.Foundation.Rpc
                     }
                 }
 
-                foreach (var item in ServerFromType.GetCustomAttributes(true))
+                foreach (var item in this.ServerFromType.GetCustomAttributes(true))
                 {
                     if (item is IRpcActionFilter filter)
                     {
@@ -106,7 +106,7 @@ namespace ThingsGateway.Foundation.Rpc
                     }
                 }
 
-                if (ServerFromType != ServerToType)
+                if (this.ServerFromType != this.ServerToType)
                 {
                     foreach (var item in toMethod.GetCustomAttributes(true))
                     {
@@ -116,7 +116,7 @@ namespace ThingsGateway.Foundation.Rpc
                         }
                     }
 
-                    foreach (var item in ServerToType.GetCustomAttributes(true))
+                    foreach (var item in this.ServerToType.GetCustomAttributes(true))
                     {
                         if (item is IRpcActionFilter filter)
                         {
@@ -128,17 +128,23 @@ namespace ThingsGateway.Foundation.Rpc
                 {
                     this.Filters = actionFilters.ToArray();
                 }
-                foreach (var item in attributes)
+                //foreach (var item in attributes)
+                //{
+                //    this.MethodFlags |= item.MethodFlags;
+                //}
+                //if (this.MethodFlags.HasFlag(MethodFlags.IncludeCallContext))
+                //{
+                //    if (this.Parameters.Length == 0 || !typeof(ICallContext).IsAssignableFrom(this.Parameters[0].ParameterType))
+                //    {
+                //        throw new RpcException($"函数：{method}，标识包含{MethodFlags.IncludeCallContext}时，必须包含{nameof(ICallContext)}或其派生类参数，且为第一参数。");
+                //    }
+                //}
+
+                if (this.Parameters.Length > 0 && typeof(ICallContext).IsAssignableFrom(this.Parameters[0].ParameterType))
                 {
-                    this.MethodFlags |= item.MethodFlags;
+                    this.IncludeCallContext = true;
                 }
-                if (this.MethodFlags.HasFlag(MethodFlags.IncludeCallContext))
-                {
-                    if (this.Parameters.Length == 0 || !typeof(ICallContext).IsAssignableFrom(this.Parameters[0].ParameterType))
-                    {
-                        throw new RpcException($"函数：{method}，标识包含{MethodFlags.IncludeCallContext}时，必须包含{nameof(ICallContext)}或其派生类参数，且为第一参数。");
-                    }
-                }
+
                 var names = new List<string>();
                 foreach (var parameterInfo in this.Parameters)
                 {
@@ -156,6 +162,11 @@ namespace ThingsGateway.Foundation.Rpc
         }
 
         /// <summary>
+        /// 是否包含调用上下文
+        /// </summary>
+        public bool IncludeCallContext { get; private set; }
+
+        /// <summary>
         /// 筛选器
         /// </summary>
         public IRpcActionFilter[] Filters { get; private set; }
@@ -164,11 +175,6 @@ namespace ThingsGateway.Foundation.Rpc
         /// 是否可用
         /// </summary>
         public bool IsEnable { get; set; } = true;
-
-        /// <summary>
-        /// 函数标识
-        /// </summary>
-        public MethodFlags MethodFlags { get; private set; }
 
         /// <summary>
         /// 参数名集合
