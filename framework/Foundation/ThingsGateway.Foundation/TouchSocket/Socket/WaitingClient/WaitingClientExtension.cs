@@ -91,8 +91,15 @@ namespace ThingsGateway.Foundation.Sockets
         public static ResponsedData SendThenResponse<TClient>(this IWaitingClient<TClient> client, byte[] buffer, int timeout, CancellationToken token)
             where TClient : IClient, ISender
         {
-            using CancellationTokenSource cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(new CancellationTokenSource(timeout).Token, token);
-            return client.SendThenResponse(buffer, 0, buffer.Length, cancellationTokenSource.Token);
+            if (token.CanBeCanceled)
+            {
+                using CancellationTokenSource cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(new CancellationTokenSource(timeout).Token, token);
+                return client.SendThenResponse(buffer, 0, buffer.Length, cancellationTokenSource.Token);
+            }
+            else
+            {
+                return client.SendThenResponse(buffer, 0, buffer.Length, token);
+            }
         }
         /// <summary>
         /// 发送数据并等待
@@ -105,11 +112,11 @@ namespace ThingsGateway.Foundation.Sockets
         /// <exception cref="OverlengthException">发送数据超长</exception>
         /// <exception cref="Exception">其他异常</exception>
         /// <returns>返回的数据</returns>
-        public static Task<ResponsedData> SendThenResponseAsync<TClient>(this IWaitingClient<TClient> client, byte[] buffer, int timeout, CancellationToken token)
+        public static async Task<ResponsedData> SendThenResponseAsync<TClient>(this IWaitingClient<TClient> client, byte[] buffer, int timeout, CancellationToken token)
             where TClient : IClient, ISender
         {
             using CancellationTokenSource cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(new CancellationTokenSource(timeout).Token, token);
-            return client.SendThenResponseAsync(buffer, 0, buffer.Length, cancellationTokenSource.Token);
+            return await client.SendThenResponseAsync(buffer, 0, buffer.Length, cancellationTokenSource.Token);
         }
 
         /// <summary>
