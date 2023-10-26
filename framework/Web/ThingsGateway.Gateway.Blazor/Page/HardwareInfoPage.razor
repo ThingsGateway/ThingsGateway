@@ -89,30 +89,37 @@
 
             <MRow NoGutters>
                 <MCol Md=11 Cols="12" Class="ml-2 mr-2 d-flex justify-space-around">
-                    @foreach (var item in HardwareInfoWorker.HardwareInfo.CpuList)
+                    @{
+                        var hardwareInfo = HardwareInfoWorker.HardwareInfo;
+                    }
+                    @if (hardwareInfo != null)
                     {
 
-                        <div class="ml-2 mr-2 d-flex flex-column  align-center">
-                            <MProgressCircular Value=@(item.PercentProcessorTime<=100?item.PercentProcessorTime:100) Size="200" Width="12" Class="ma-4" Color=@(item.PercentProcessorTime>70?"red":"green")>
-                                <div class="ml-2 mr-2 d-flex flex-column align-center">
-                                    @((item.PercentProcessorTime).ToString("F0") + " %")
+                        @foreach (var item in HardwareInfoWorker.HardwareInfo.CpuList)
+                        {
 
-                                    <div class="mt-1  d-flex align-center justify-space-between">
-                                        <span class="text-subtitle-2 grey--text mx-2">内核</span>
-                                        <span class="text-caption">@item.NumberOfCores</span>
+                            <div class="ml-2 mr-2 d-flex flex-column  align-center">
+                                <MProgressCircular Value=@(item.PercentProcessorTime<=100?item.PercentProcessorTime:100) Size="200" Width="12" Class="ma-4" Color=@(item.PercentProcessorTime>70?"red":"green")>
+                                    <div class="ml-2 mr-2 d-flex flex-column align-center">
+                                        @((item.PercentProcessorTime).ToString("F0") + " %")
+
+                                        <div class="mt-1  d-flex align-center justify-space-between">
+                                            <span class="text-subtitle-2 grey--text mx-2">内核</span>
+                                            <span class="text-caption">@item.NumberOfCores</span>
+                                        </div>
+                                        <div class="mt-1  d-flex align-center justify-space-between">
+                                            <span class="text-subtitle-2 grey--text mx-2">逻辑处理器</span>
+                                            <span class="text-caption">@item.NumberOfLogicalProcessors</span>
+                                        </div>
                                     </div>
-                                    <div class="mt-1  d-flex align-center justify-space-between">
-                                        <span class="text-subtitle-2 grey--text mx-2">逻辑处理器</span>
-                                        <span class="text-caption">@item.NumberOfLogicalProcessors</span>
-                                    </div>
+                                </MProgressCircular>
+
+                                <div class="mt-1  d-flex align-center justify-space-between">
+                                    <span class="text-caption">@item.Name</span>
                                 </div>
-                            </MProgressCircular>
-
-                            <div class="mt-1  d-flex align-center justify-space-between">
-                                <span class="text-caption">@item.Name</span>
                             </div>
-                        </div>
 
+                        }
                     }
 
                 </MCol>
@@ -135,35 +142,39 @@
             <MRow NoGutters>
                 <MCol Md=5 Cols="12" Class="ml-2 mr-2 d-flex justify-space-around">
                     @{
-                        var memoryStatus = HardwareInfoWorker.HardwareInfo.MemoryStatus;
+                        var memoryStatus = HardwareInfoWorker.HardwareInfo?.MemoryStatus;
                     }
-                    <div class="ml-2 mr-2 d-flex flex-column  align-center">
-                        <MProgressCircular Value=@(memoryStatus.TotalPhysical>memoryStatus.AvailablePhysical?100 - (memoryStatus.AvailablePhysical * 100.00 / memoryStatus.TotalPhysical):100)
-                                           Size="200" Width="12" Class="ma-4" Color=@(memoryStatus.AvailablePhysical * 100.00 / memoryStatus.TotalPhysical<20?"red":"green")>
-                            <div class="ml-2 mr-2 d-flex flex-column align-center">
-                                @((100 - (memoryStatus.AvailablePhysical * 100.00 / memoryStatus.TotalPhysical)).ToString("F2") + " %")
-                                <div class="mt-1  d-flex align-center justify-space-between">
-                                    <span class="text-caption grey--text mx-2">可用</span>
-                                    <span class="text-caption ">@((memoryStatus.AvailablePhysical / 1024.00 / 1024 / 1024).ToString("F2") + " GB")</span>
+                    @if (memoryStatus != null)
+                    {
+                        <div class="ml-2 mr-2 d-flex flex-column  align-center">
+                            <MProgressCircular Value=@(memoryStatus.TotalPhysical>memoryStatus.AvailablePhysical?100 - (memoryStatus.AvailablePhysical * 100.00 / memoryStatus.TotalPhysical):100)
+                                               Size="200" Width="12" Class="ma-4" Color=@(memoryStatus.AvailablePhysical * 100.00 / memoryStatus.TotalPhysical<20?"red":"green")>
+                                <div class="ml-2 mr-2 d-flex flex-column align-center">
+                                    @((100 - (memoryStatus.AvailablePhysical * 100.00 / memoryStatus.TotalPhysical)).ToString("F2") + " %")
+                                    <div class="mt-1  d-flex align-center justify-space-between">
+                                        <span class="text-caption grey--text mx-2">可用</span>
+                                        <span class="text-caption ">@((memoryStatus.AvailablePhysical / 1024.00 / 1024 / 1024).ToString("F2") + " GB")</span>
+                                    </div>
+                                    <div class="mt-1  d-flex align-center justify-space-between">
+                                        <span class="text-caption grey--text mx-2">总</span>
+                                        <span class="text-caption ">@((memoryStatus.TotalPhysical / 1024.00 / 1024 / 1024).ToString("F2") + " GB")</span>
+                                    </div>
                                 </div>
-                                <div class="mt-1  d-flex align-center justify-space-between">
-                                    <span class="text-caption grey--text mx-2">总</span>
-                                    <span class="text-caption ">@((memoryStatus.TotalPhysical / 1024.00 / 1024 / 1024).ToString("F2") + " GB")</span>
-                                </div>
-                            </div>
-                        </MProgressCircular>
+                            </MProgressCircular>
 
-                        <div class="mt-1  d-flex align-center justify-space-between">
-                            <span class="text-caption">内存占用率</span>
+                            <div class="mt-1  d-flex align-center justify-space-between">
+                                <span class="text-caption">内存占用率</span>
+                            </div>
                         </div>
-                    </div>
+
+                    }
                 </MCol>
 
                 <MDivider Class="mx-2" Vertical></MDivider>
 
 
-                <MCol Md=4 Cols="12" Class="pl-2 pr-2 d-flex justify-space-around">
-                    @if (HardwareInfoWorker.APPInfo.DriveInfo != null)
+                 <MCol Md=4 Cols="12" Class="pl-2 pr-2 d-flex justify-space-around">
+                     @if (HardwareInfoWorker.APPInfo.DriveInfo != null)
                     {
                         var drive = HardwareInfoWorker.APPInfo.DriveInfo;
                         <div class="ml-2 mr-2 d-flex flex-column  align-center">
@@ -207,46 +218,52 @@
             </MCardSubtitle>
             <MDivider></MDivider>
             <MRow NoGutters>
-                @foreach (var network in HardwareInfoWorker.HardwareInfo.NetworkAdapterList ?? new())
+                @{
+                    var networkAdapterList = HardwareInfoWorker.HardwareInfo?.NetworkAdapterList;
+                }
+                @if (networkAdapterList != null)
                 {
-                    <MCol Md=3 Cols="12" Class="pa-5 d-flex flex-column justify-center">
 
-                        <div class="d-flex align-center justify-center">
-                            <MIcon>
-                                mdi-swap-vertical
-                            </MIcon>
-                            <div>
-                                <div class="mt-1  d-flex align-center justify-space-between">
-                                    <span class="text-subtitle-2 grey--text mx-2">上行</span>
-                                    <span class="text-caption">@((network.BytesReceivedPersec / 1024.00 / 1024).ToString("F2") + " MB")</span>
+                    @foreach (var network in networkAdapterList ?? new())
+                    {
+                        <MCol Md=3 Cols="12" Class="pa-5 d-flex flex-column justify-center">
 
-                                </div>
-                                <div class="mt-1  d-flex align-center justify-space-between">
-                                    <span class="text-subtitle-2 grey--text mx-2">下行</span>
-                                    <span class="text-caption">@((network.BytesSentPersec / 1024.00 / 1024).ToString("F2") + " MB")</span>
-                                </div>
-
-                            </div>
-                        </div>
-                        <div class="d-flex align-center justify-center">
-                            <span class="text-caption">@network.MACAddress</span>
-                        </div>
-                        <div class="d-flex align-center justify-center">
-                            <span class="text-caption">@network.NetConnectionID</span>
-                        </div>
-                        @foreach (var item in network.IPAddressList)
-                        {
                             <div class="d-flex align-center justify-center">
-                                <span class="text-caption">@item.ToString()</span>
+                                <MIcon>
+                                    mdi-swap-vertical
+                                </MIcon>
+                                <div>
+                                    <div class="mt-1  d-flex align-center justify-space-between">
+                                        <span class="text-subtitle-2 grey--text mx-2">上行</span>
+                                        <span class="text-caption">@((network.BytesReceivedPersec / 1024.00 / 1024).ToString("F2") + " MB")</span>
+
+                                    </div>
+                                    <div class="mt-1  d-flex align-center justify-space-between">
+                                        <span class="text-subtitle-2 grey--text mx-2">下行</span>
+                                        <span class="text-caption">@((network.BytesSentPersec / 1024.00 / 1024).ToString("F2") + " MB")</span>
+                                    </div>
+
+                                </div>
                             </div>
-                        }
+                            <div class="d-flex align-center justify-center">
+                                <span class="text-caption">@network.MACAddress</span>
+                            </div>
+                            <div class="d-flex align-center justify-center">
+                                <span class="text-caption">@network.NetConnectionID</span>
+                            </div>
+                            @foreach (var item in network.IPAddressList)
+                            {
+                                <div class="d-flex align-center justify-center">
+                                    <span class="text-caption">@item.ToString()</span>
+                                </div>
+                            }
 
-                    </MCol>
+                        </MCol>
 
+
+                    }
 
                 }
-
-
             </MRow>
 
 
