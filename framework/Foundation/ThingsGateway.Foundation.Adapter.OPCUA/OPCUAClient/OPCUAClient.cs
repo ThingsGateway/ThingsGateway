@@ -518,7 +518,7 @@ public class OPCUAClient : IDisposable
     /// </summary>
     public async Task ConnectAsync()
     {
-        await ConnectAsync(OPCNode.OPCUrl);
+        await ConnectAsync(OPCNode.OPCUrl).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -560,7 +560,7 @@ public class OPCUAClient : IDisposable
             userIdentity = new UserIdentity(new AnonymousIdentityToken());
         }
         //创建本地证书
-        await m_application.CheckApplicationInstanceCertificate(true, 0, 1200);
+        await m_application.CheckApplicationInstanceCertificate(true, 0, 1200).ConfigureAwait(false);
         m_session = await Opc.Ua.Client.Session.Create(
         m_configuration,
         endpoint,
@@ -569,7 +569,7 @@ public class OPCUAClient : IDisposable
         (string.IsNullOrEmpty(OPCUAName)) ? m_configuration.ApplicationName : OPCUAName,
         60000,
         userIdentity,
-        Array.Empty<string>());
+        Array.Empty<string>()).ConfigureAwait(false);
         typeSystem = new ComplexTypeSystem(m_session);
 
         m_session.KeepAliveInterval = OPCNode.KeepAliveInterval == 0 ? 60000 : OPCNode.KeepAliveInterval;
