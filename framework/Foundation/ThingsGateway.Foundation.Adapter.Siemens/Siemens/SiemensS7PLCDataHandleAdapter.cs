@@ -35,10 +35,10 @@ public class SiemensS7PLCDataHandleAdapter : ReadWriteDevicesTcpDataHandleAdapte
     /// <inheritdoc/>
     protected override FilterResult UnpackResponse(SiemensMessage request, byte[] send, byte[] body, byte[] response)
     {
-        var result = new OperResult<byte[]>();
+        var result = new OperResult<byte[], FilterResult>();
         if (response[2] * 256 + response[3] == 7)
         {
-            result = new OperResult<byte[]>() { Content = response };
+            result = new() { Content = response, Content2 = FilterResult.Success };
         }
         else
         {
@@ -56,6 +56,6 @@ public class SiemensS7PLCDataHandleAdapter : ReadWriteDevicesTcpDataHandleAdapte
         request.ErrorCode = result.ErrorCode;
         request.Message = result.Message;
         request.Content = result.Content;
-        return FilterResult.Success;
+        return result.Content2;
     }
 }

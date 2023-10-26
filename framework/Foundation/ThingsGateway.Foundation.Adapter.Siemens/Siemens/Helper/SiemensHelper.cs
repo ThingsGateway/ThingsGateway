@@ -36,10 +36,41 @@ internal partial class SiemensHelper
     //    return OperResult.CreateSuccessResult<byte[]>(numArray);
     //}
 
-    internal static OperResult<byte[]> AnalysisReadByte(byte[] sends, byte[] content)
+    internal static OperResult<byte[], FilterResult> AnalysisReadByte(byte[] sends, byte[] content)
     {
         int length = 0;
         int itemLen = (sends.Length - 19) / 12;
+
+        //添加错误代码校验
+        if (content[17] + content[18] > 0)
+        {
+            return new($"PLC返回错误，错误类型{content[17].ToString("X2")}错误代码：{content[18].ToString("X2")}")
+            {
+                Content2 = FilterResult.Success
+            };
+        }
+        if (content.Length < 21)
+        {
+            return new($"长度不足")
+            {
+                Content2 = FilterResult.Cache
+            };
+        }
+        if (content.Length < 25 + content[20])
+        {
+            return new($"长度不足")
+            {
+                Content2 = FilterResult.Cache
+            };
+        }
+        //添加返回代码校验
+        if (content[21] != 0xff)
+        {
+            return new($"PLC返回错误，返回代码{content[21].ToString("X2")}")
+            {
+                Content2 = FilterResult.Success
+            };
+        }
 
         for (int index = 0; index < itemLen; index++)
         {
@@ -53,9 +84,9 @@ internal partial class SiemensHelper
             }
         }
 
-        if (content.Length < 21 || content[20] != itemLen)
+        if (content[20] != itemLen)
         {
-            return new OperResult<byte[]>("数据块长度校验失败");
+            return new("数据块长度校验失败");
         }
 
         byte[] dataArray = new byte[length];
@@ -105,29 +136,39 @@ internal partial class SiemensHelper
                 }
                 else
                 {
-                    return new OperResult<byte[]>((int)content[index2] + GetCpuError(content[index2]));
+                    return new((int)content[index2] + GetCpuError(content[index2]))
+                    {
+                        Content2 = FilterResult.Success
+                    };
                 }
             }
         }
-        return OperResult.CreateSuccessResult(dataArray);
+        return OperResult.CreateSuccessResult(dataArray, FilterResult.Success);
 
     }
 
-    internal static OperResult<byte[]> AnalysisWrite(byte[] content)
+    internal static OperResult<byte[], FilterResult> AnalysisWrite(byte[] content)
     {
         if (content.Length < 22)
         {
-            return new OperResult<byte[]>() { Message = "未知错误" };
+            return new()
+            {
+                Message = "长度不足",
+                Content2 = FilterResult.Success
+            };
         }
 
         byte err = content[21];
         if (err != byte.MaxValue)
         {
-            return new OperResult<byte[]>((int)content[21] + GetCpuError(content[21]));
+            return new($"错误代码：{(int)content[21]}描述：{GetCpuError(content[21])}")
+            {
+                Content2 = FilterResult.Success
+            };
         }
         else
         {
-            return OperResult.CreateSuccessResult(content);
+            return OperResult.CreateSuccessResult(content, FilterResult.Success);
         }
 
     }
