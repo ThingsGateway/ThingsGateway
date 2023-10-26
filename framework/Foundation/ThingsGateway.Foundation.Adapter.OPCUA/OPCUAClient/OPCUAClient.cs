@@ -518,7 +518,7 @@ public class OPCUAClient : IDisposable
     /// </summary>
     public async Task ConnectAsync()
     {
-        await ConnectAsync(OPCNode.OPCUrl).ConfigureAwait(false);
+        await ConnectAsync(OPCNode.OPCUrl);
     }
 
     /// <summary>
@@ -547,6 +547,7 @@ public class OPCUAClient : IDisposable
             throw new ArgumentNullException("未初始化配置");
         }
         var useSecurity = OPCNode?.IsUseSecurity ?? true;
+
         EndpointDescription endpointDescription = CoreClientUtils.SelectEndpoint(m_configuration, serverUrl, useSecurity, 10000);
         EndpointConfiguration endpointConfiguration = EndpointConfiguration.Create(m_configuration);
         ConfiguredEndpoint endpoint = new(null, endpointDescription, endpointConfiguration);
@@ -560,7 +561,7 @@ public class OPCUAClient : IDisposable
             userIdentity = new UserIdentity(new AnonymousIdentityToken());
         }
         //创建本地证书
-        await m_application.CheckApplicationInstanceCertificate(true, 0, 1200).ConfigureAwait(false);
+        await m_application.CheckApplicationInstanceCertificate(true, 0, 1200);
         m_session = await Opc.Ua.Client.Session.Create(
         m_configuration,
         endpoint,
@@ -569,7 +570,8 @@ public class OPCUAClient : IDisposable
         (string.IsNullOrEmpty(OPCUAName)) ? m_configuration.ApplicationName : OPCUAName,
         60000,
         userIdentity,
-        Array.Empty<string>()).ConfigureAwait(false);
+        Array.Empty<string>()
+        ).ConfigureAwait(false);
         typeSystem = new ComplexTypeSystem(m_session);
 
         m_session.KeepAliveInterval = OPCNode.KeepAliveInterval == 0 ? 60000 : OPCNode.KeepAliveInterval;
@@ -739,7 +741,7 @@ public class OPCUAClient : IDisposable
         NodeId nodeToRead = new(nodeIdStr);
         var node = (VariableNode)await m_session.ReadNodeAsync(nodeToRead, NodeClass.Variable, false, cancellationToken);
         if (OPCNode.LoadType)
-            await typeSystem.LoadType(node.DataType);
+            await typeSystem.LoadType(node.DataType).ConfigureAwait(false);
         _variableDicts.AddOrUpdate(nodeIdStr, node);
         return node;
     }
@@ -779,7 +781,7 @@ public class OPCUAClient : IDisposable
             if (StatusCode.IsGood(nodes.Item2[i].StatusCode))
             {
                 var node = ((VariableNode)nodes.Item1[i]);
-                await typeSystem.LoadType(node.DataType);
+                await typeSystem.LoadType(node.DataType).ConfigureAwait(false);
                 _variableDicts.AddOrUpdate(nodeIdStrs[i], node);
             }
             else
