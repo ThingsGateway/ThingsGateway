@@ -102,23 +102,28 @@ public class HardwareInfoWorker : BackgroundService
         string currentPath = Directory.GetCurrentDirectory();
         DriveInfo drive = new(Path.GetPathRoot(currentPath));
 
+        var remoteIpEnable = App.GetConfig<bool?>("HardwareInfo:RemoteIpEnable") ?? true;
+        var enable = App.GetConfig<bool?>("HardwareInfo:Enable") ?? true;
+        var timeInterval = App.GetConfig<int?>("HardwareInfo:TimeInterval") ?? 10000;
+        if (timeInterval < 5000) timeInterval = 5000;
         APPInfo.DriveInfo = drive;
         APPInfo.HostName = Environment.MachineName; // 主机名称
         APPInfo.SystemOs = RuntimeInformation.OSDescription; // 操作系统
         APPInfo.OsArchitecture = Environment.OSVersion.Platform.ToString() + " " + RuntimeInformation.OSArchitecture.ToString(); // 系统架构
-        APPInfo.RemoteIp = await GetIpFromOnlineAsync(); // 外网地址
+        if (remoteIpEnable)
+            APPInfo.RemoteIp = await GetIpFromOnlineAsync(); // 外网地址
         APPInfo.FrameworkDescription = RuntimeInformation.FrameworkDescription; // NET框架
         APPInfo.Environment = App.HostEnvironment.IsDevelopment() ? "Development" : "Production";
         APPInfo.Stage = App.HostEnvironment.IsStaging() ? "Stage" : "非Stage"; // 是否Stage环境
         APPInfo.UpdateTime = DateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat();
-        var enable = App.GetConfig<bool?>("HardwareInfo:Enable") ?? true;
 
         while (!stoppingToken.IsCancellationRequested)
         {
             try
             {
                 APPInfo.UpdateTime = DateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat();
-                APPInfo.RemoteIp = await GetIpFromOnlineAsync();
+                if (remoteIpEnable)
+                    APPInfo.RemoteIp = await GetIpFromOnlineAsync();
                 if (enable)
                 {
                     HardwareInfo?.RefreshMemoryStatus();
@@ -127,7 +132,7 @@ public class HardwareInfoWorker : BackgroundService
                     HardwareInfo?.RefreshCPUList();
                 }
                 //10秒更新一次
-                await Task.Delay(10000, stoppingToken);
+                await Task.Delay(timeInterval, stoppingToken);
             }
             catch (TaskCanceledException)
             {

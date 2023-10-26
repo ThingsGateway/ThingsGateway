@@ -21,7 +21,9 @@
   },
 
   "HardwareInfo": {
-    "Enable": true //启用硬件信息获取,部分系统/硬件不支持相关方法，设为false
+    "Enable": true, //启用硬件信息获取, 部分系统/硬件不支持相关方法，设为false
+    "RemoteIpEnable": true, //是否获取外网IP地址
+    "TimeInterval": 10000 //更新间隔ms
   },
 
     //动态API设备
