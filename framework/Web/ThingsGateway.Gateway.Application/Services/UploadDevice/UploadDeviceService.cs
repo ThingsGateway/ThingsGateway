@@ -278,6 +278,26 @@ public class UploadDeviceService : DbRepository<UploadDevice>, IUploadDeviceServ
         //添加插件属性页
         foreach (var item in devicePropertys)
         {
+            HashSet<string> allKeys = new HashSet<string>();
+            foreach (var dict in item.Value)
+            {
+                foreach (var key in dict.Keys)
+                {
+                    allKeys.Add(key);
+                }
+            }
+            foreach (var dict in item.Value)
+            {
+                foreach (var key in allKeys)
+                {
+                    if (!dict.ContainsKey(key))
+                    {
+                        // 添加缺失的键，并设置默认值
+                        dict.Add(key, null);
+                    }
+                }
+            }
+
             sheets.Add(item.Key, item.Value);
         }
 
