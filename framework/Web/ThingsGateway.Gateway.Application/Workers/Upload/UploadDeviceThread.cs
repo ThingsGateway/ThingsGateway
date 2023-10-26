@@ -165,7 +165,7 @@ public class UploadDeviceThread : IAsyncDisposable
                 //添加通道报文到每个设备
                 var data = new EasyLogger(device.Driver.NewMessage) { LogLevel = ThingsGateway.Foundation.Core.LogLevel.Trace };
                 log.AddLogger(data);
-                await device.BeforeActionAsync(stoppingToken);
+                await device.BeforeActionAsync(stoppingToken).ConfigureAwait(false);
             }
 
             while (!stoppingToken.IsCancellationRequested)
@@ -180,7 +180,7 @@ public class UploadDeviceThread : IAsyncDisposable
                         if (device.IsInitSuccess)
                         {
 
-                            var result = await device.RunActionAsync(stoppingToken);
+                            var result = await device.RunActionAsync(stoppingToken).ConfigureAwait(false);
                             if (result == ThreadRunReturn.None)
                             {
                                 await Task.Delay(CycleInterval);
@@ -221,7 +221,7 @@ public class UploadDeviceThread : IAsyncDisposable
             {
                 //如果插件还没释放，执行一次结束函数
                 if (!device.Driver.DisposedValue)
-                    await device.FinishActionAsync();
+                    await device.FinishActionAsync().ConfigureAwait(false);
             }
 
         }

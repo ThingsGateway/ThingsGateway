@@ -181,11 +181,11 @@ public class CollectDeviceThread : IAsyncDisposable
                 device.IsShareChannel = CollectDeviceCores.Count > 1;
                 if (channelResult.IsSuccess)
                 {
-                    await device.BeforeActionAsync(stoppingToken, channelResult.Content);
+                    await device.BeforeActionAsync(stoppingToken, channelResult.Content).ConfigureAwait(false);
                 }
                 else
                 {
-                    await device.BeforeActionAsync(stoppingToken);
+                    await device.BeforeActionAsync(stoppingToken).ConfigureAwait(false);
                 }
             }
 
@@ -203,7 +203,7 @@ public class CollectDeviceThread : IAsyncDisposable
                             //如果是共享通道类型，需要每次转换时切换适配器
                             if (device.IsShareChannel) device.Driver.InitDataAdapter();
 
-                            var result = await device.RunActionAsync(stoppingToken);
+                            var result = await device.RunActionAsync(stoppingToken).ConfigureAwait(false);
                             if (result == ThreadRunReturn.None)
                             {
                                 await Task.Delay(CycleInterval);
@@ -243,7 +243,7 @@ public class CollectDeviceThread : IAsyncDisposable
             {
                 //如果插件还没释放，执行一次结束函数
                 if (!device.Driver.DisposedValue)
-                    await device.FinishActionAsync();
+                    await device.FinishActionAsync().ConfigureAwait(false);
             }
 
         }
