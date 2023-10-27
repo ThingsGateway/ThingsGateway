@@ -180,6 +180,13 @@ public abstract class ReadWriteDevicesTcpDataHandleAdapter<TRequest> : CustomDat
     /// <inheritdoc/>
     public override string ToString()
     {
-        return Owner.ToString();
+        if (Owner is SocketClient client)
+        {
+            return client.GetIPPort();
+        }
+        else
+        {
+            return Owner.ToString();
+        }
     }
 }
