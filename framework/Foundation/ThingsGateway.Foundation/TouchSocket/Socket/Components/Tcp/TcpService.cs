@@ -493,6 +493,11 @@ namespace ThingsGateway.Foundation.Sockets
         /// </summary>
         public override IService Stop()
         {
+            foreach (var item in m_monitors)
+            {
+                Logger.Info($"{item.Option.IpHost}停止成功");
+            }
+
             foreach (var item in this.m_monitors)
             {
                 item.Socket.SafeDispose();
@@ -603,6 +608,7 @@ namespace ThingsGateway.Foundation.Sockets
             foreach (var item in optionList)
             {
                 this.AddListen(item);
+                Logger.Info($"{item.IpHost}启动成功");
             }
         }
 
