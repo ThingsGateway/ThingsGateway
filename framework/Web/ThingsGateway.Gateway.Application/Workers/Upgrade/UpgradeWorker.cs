@@ -70,6 +70,8 @@ public partial class UpgradeWorker : BackgroundService
         if (config == null || (!config.ConfigEnable && !config.FileEnable))
         {
             _logger.LogInformation("不启用自动更新");
+            StatuString.ErrorCode = 999;
+            StatuString.Message = "已退出：不启用自动更新功能";
             while (!stoppingToken.IsCancellationRequested)
             {
                 try
