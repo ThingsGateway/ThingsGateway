@@ -91,8 +91,8 @@
         <MRow Class="ml-2 mr-2 d-flex" NoGutters>
         <MVirtualScroll Context="itemMessage" Height=@(Height) OverscanCount=2 ItemSize="100" Items="item">
             <ItemContent>
-                <div title=@itemMessage.message class=@(itemMessage.level<Microsoft.Extensions.Logging.LogLevel.Information?MasaBlazor.Theme.Dark? " while--text ":"black--text":itemMessage.level>=Microsoft.Extensions.Logging.LogLevel.Warning?" red--text ":"green--text ") style="white-space: nowrap !important;overflow: hidden !important; text-overflow: ellipsis !important;">
-                    @itemMessage.message
+                    <div title=@itemMessage.message.Substring(0, Math.Min(itemMessage.message.Length, 500)) class=@(itemMessage.level<Microsoft.Extensions.Logging.LogLevel.Information?MasaBlazor.Theme.Dark? " while--text ":"black--text":itemMessage.level>=Microsoft.Extensions.Logging.LogLevel.Warning?" red--text ":"green--text ") style="white-space: nowrap !important;overflow: hidden !important; text-overflow: ellipsis !important;">
+                        @itemMessage.message.Substring(0, Math.Min(itemMessage.message.Length, 500))
                 </div>
             </ItemContent>
         </MVirtualScroll>
@@ -108,8 +108,8 @@
         <MRow Class="ml-2 mr-2 d-flex" NoGutters>
         <MVirtualScroll Context="itemMessage" Height=@(Height) OverscanCount=2 ItemSize="100" Items="item">
             <ItemContent>
-                <div title=@itemMessage style="white-space: nowrap !important;overflow: hidden !important; text-overflow: ellipsis !important;">
-                    @itemMessage
+                    <div title=@itemMessage.Substring(0, Math.Min(itemMessage.Length, 500)) style="white-space: nowrap !important;overflow: hidden !important; text-overflow: ellipsis !important;">
+                        @itemMessage.Substring(0, Math.Min(itemMessage.Length, 500))
                 </div>
             </ItemContent>
         </MVirtualScroll>

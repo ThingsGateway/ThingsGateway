@@ -99,7 +99,7 @@ public abstract class DriverBase : DisposableObject
         {
             if (arg3.StartsWith(FoundationConst.LogMessageHeader))
             {
-                Messages.Add(DateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat() + " - " + arg3.Substring(0, Math.Min(arg3.Length, 200)));
+                Messages.Add(DateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat() + " - " + arg3);
 
                 if (Messages.Count > 2500)
                 {

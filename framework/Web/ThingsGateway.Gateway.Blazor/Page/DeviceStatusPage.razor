@@ -447,7 +447,7 @@
                                     ICollection<string> item = null;
                                     if (uploadDeviceInfoItem.Driver != null)
                                     {
-                                        item = uploadDeviceInfoItem.Driver?.Messages ?? new();
+                                        item = uploadDeviceInfoItem.Driver?.Messages;
                                     }
                                     if (item == null)
                                     {
