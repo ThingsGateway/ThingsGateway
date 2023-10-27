@@ -42,60 +42,61 @@
         <MTab Value="3">
             其他服务状态
         </MTab>
-        <MButton Class="position-button"  Disabled=@(!UserResoures.IsHasButtonWithRole("gatewaydevicerestart")) Color="red" Dark Fab XSmall Loading=isAllRestart OnClick="AllRestartAsync">
-            <MIcon>   mdi-restart   </MIcon>
-        </MButton>
-    </MTabs>
-    <MTabsItems Value="tab">
-        <MTabItem Value="1">
-            @if (tab == 1)
+        <MButton Class="position-button" Disabled=@(!UserResoures.IsHasButtonWithRole("gatewaydevicerestart")) Color="red" Dark Fab XSmall Loading=isAllRestart OnClick="AllRestartAsync">
+             <MIcon>   mdi-restart   </MIcon>
+         </MButton>
+     </MTabs>
+     <MTabsItems Value="tab">
+         <MTabItem Value="1">
+             @if (tab == 1)
             {
                 <MRow NoGutters>
-                <MCol Md=2 Cols="12">
+                 <MCol Md=2 Cols="12">
 
-                    <MCard Class="ma-2" Style=@($"height: calc(100vh - {BlazorResourceConst.DefaultHeight + 80}px );")>
-                        <MCardTitle>
-                            <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="mx-2 my-1" @bind-Value="_collectDeviceGroupSearchName"
+                     <MCard Class="ma-2" Style=@($"height: calc(100vh - {BlazorResourceConst.DefaultHeight + 80}px );")>
+                         <MCardTitle>
+                             <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="mx-2 my-1" @bind-Value="_collectDeviceGroupSearchName"
                                             Outlined Label=@typeof(CollectDevice).GetDescription(nameof(CollectDevice.DeviceGroup)) />
-                            </MCardTitle>
+                             </MCardTitle>
 
-                            <MTreeview Style=@($"height: calc(100vh - {BlazorResourceConst.DefaultHeight + 240}px; overflow-y:auto)") Dense TItem="string" TKey="string" ActiveChanged=@(async a=>
+                             <MTreeview Style=@($"height: calc(100vh - {BlazorResourceConst.DefaultHeight + 240}px; overflow-y:auto)") Dense TItem="string" TKey="string" ActiveChanged=@(async a=>
                                    {
                                    if(_collectDeviceGroup!=a.FirstOrDefault())
                                    {
                                    _collectDeviceGroup=a.FirstOrDefault(); CollectDeviceQuery();
                                    }
                                    } )
-                                       Items="_collectDeviceGroups" ItemText="r=>r" ItemChildren="r=>null"
-                                       Search="@_collectDeviceGroupSearchName"
+                                        Items="_collectDeviceGroups" ItemText="r=>r" ItemChildren="r=>null"
+                                        Search="@_collectDeviceGroupSearchName"
                                       Activatable ItemKey=@(r=>r)>
-                                <LabelContent>
-                                    <span title=@context.Item>
-                                        @context.Item
-                                    </span>
-                                </LabelContent>
-                            </MTreeview>
-                        </MCard>
-                    </MCol>
-                    <MCol Md=3 Cols="12">
-                        <MCard Height=@($"calc(100vh - {BlazorResourceConst.DefaultHeight + 80}px; )") Style="overflow-y:auto;" Flat Class="ml-2 my-4">
+                                 <LabelContent>
+                                     <span title=@context.Item>
+                                         @context.Item
+                                     </span>
+                                 </LabelContent>
+                             </MTreeview>
+                         </MCard>
+                     </MCol>
+                     <MCol Md=3 Cols="12">
+                         <MCard Height=@($"calc(100vh - {BlazorResourceConst.DefaultHeight + 80}px; )") Style="overflow-y:auto;" Flat Class="ml-2 my-4">
 
-                            <MVirtualScroll Context="item" Height=@($"calc(100vh - {BlazorResourceConst.DefaultHeight+100}px)") OverscanCount=2 ItemSize="60" Items="_collectDeviceCores">
+                             <MVirtualScroll Context="item" Height=@($"calc(100vh - {BlazorResourceConst.DefaultHeight+100}px)") OverscanCount=2 ItemSize="60" Items="_collectDeviceCores">
 
-                                <ItemContent>
-                                    @if (item.Device != null)
+                                 <ItemContent>
+                                     @if (item.Device != null)
                                     {
 
                                         <MListItem OnClick=@(()=>CollectDeviceInfo(item))>
                                             <MListItemContent>
-                                                <MListItemTitle>
-                                                    <MLabel Class=@((item.Device?.DeviceStatus==DeviceStatusEnum.OnLine?"green--text":"red--text")+$" text-h6")>
-                                                        <div class="mt-1  d-flex align-center justify-space-between" title=@item.Device?.Name>
-                                                            <span>@item.Device?.Name</span>
-                                                            <span style="white-space: nowrap !important;overflow: hidden !important; text-overflow: ellipsis !important;" class="text-caption">@(item.Device?.ActiveTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset) + "     " + typeof(DeviceStatusEnum).GetDescription(item.Device?.DeviceStatus.ToString()))</span>
-                                                        </div>
-                                                    </MLabel>
-                                                </MListItemTitle>
+                                                <MLabel Class=@((item.Device?.DeviceStatus==DeviceStatusEnum.OnLine?"green--text":"red--text")+$" text-h6")>
+                                                    <div class="mt-1  d-flex align-start justify-start" style="white-space: nowrap !important;overflow: hidden !important; text-overflow: ellipsis !important;" title=@item.Device?.Name>
+                                                        <span>@item.Device?.Name</span>
+
+                                                    </div>
+                                                    <div style="white-space: nowrap !important;overflow: hidden !important; text-overflow: ellipsis !important;" class="text-caption">
+                                                        @(item.Device?.ActiveTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset) + "     " + typeof(DeviceStatusEnum).GetDescription(item.Device?.DeviceStatus.ToString()))
+                                                    </div>
+                                                </MLabel>
                                             </MListItemContent>
 
                                         </MListItem>
@@ -113,39 +114,39 @@
                     </MCol>
                     <MCol Md=7 Cols="12">
                         <MCard Style=@($"height: calc(100vh - {BlazorResourceConst.DefaultHeight + 80}px); overflow:auto)") Flat Elevation="0">
-                            @if (collectDeviceInfoItem != null && collectDeviceInfoItem?.Device != null)
+                             @if (collectDeviceInfoItem != null && collectDeviceInfoItem?.Device != null)
                             {
                                 var item = collectDeviceInfoItem;
                                 <MCard Style="height:100px;overflow:auto;" Flat Class="ml-4 my-4 ma-2" Elevation="0">
 
-                                    <MCardActions>
-                                        <div class="mr-12"></div>
+                                     <MCardActions>
+                                         <div class="mr-12"></div>
 
-                                        <MLabel Class=@((item.Device?.DeviceStatus==DeviceStatusEnum.OnLine?"green--text":"red--text")+$" text-h6")>
-                                            <div class="mt-1  d-flex align-center justify-space-between">
-                                                <span class="mx-3">@item.Device?.Name</span>
-                                                <span style="white-space: nowrap !important;overflow: hidden !important; text-overflow: ellipsis !important;" class="text-caption mx-3">@(item.Device?.ActiveTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset) + "     " + typeof(DeviceStatusEnum).GetDescription(item.Device?.DeviceStatus.ToString()))</span>
+                                         <MLabel Class=@((item.Device?.DeviceStatus==DeviceStatusEnum.OnLine?"green--text":"red--text")+$" text-h6")>
+                                             <div class="mt-1  d-flex align-center justify-space-between">
+                                                 <span class="mx-3">@item.Device?.Name</span>
+                                                 <span style="white-space: nowrap !important;overflow: hidden !important; text-overflow: ellipsis !important;" class="text-caption mx-3">@(item.Device?.ActiveTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset) + "     " + typeof(DeviceStatusEnum).GetDescription(item.Device?.DeviceStatus.ToString()))</span>
                                             </div>
                                         </MLabel>
 
                                         <MSpacer></MSpacer>
                                         <MTooltip Bottom Context="tip">
-                                            <ActivatorContent>
-                                                <MButton Disabled=@(!UserResoures.IsHasPageWithRole("/gatewayruntime/devicevariable")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small Loading=isRestart
-                                                         OnClick=@(()=>NavigationManager.NavigateTo("/gatewayruntime/devicevariable?devicename="+item.Device?.Name))>
-                                                    <MIcon>mdi-information-outline</MIcon>
-                                                </MButton>
-                                            </ActivatorContent>
-                                            <ChildContent>
-                                                <span>相关变量</span>
-                                            </ChildContent>
-                                        </MTooltip>
+                                             <ActivatorContent>
+                                                 <MButton Disabled=@(!UserResoures.IsHasPageWithRole("/gatewayruntime/devicevariable")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small Loading=isRestart
+                                                          OnClick=@(()=>NavigationManager.NavigateTo("/gatewayruntime/devicevariable?devicename="+item.Device?.Name))>
+                                                     <MIcon>mdi-information-outline</MIcon>
+                                                 </MButton>
+                                             </ActivatorContent>
+                                             <ChildContent>
+                                                 <span>相关变量</span>
+                                             </ChildContent>
+                                         </MTooltip>
 
 
-                                        <MTooltip Bottom Context="tip">
-                                            <ActivatorContent>
-                                                <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("gatewaydevicepause")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small OnClick=@(()=>ConfigAsync(item.DeviceId,!item.Device?.KeepRun))>
-                                                    <MIcon>@(item.Device?.KeepRun == true ? "mdi-pause" : "mdi-play")</MIcon>
+                                         <MTooltip Bottom Context="tip">
+                                             <ActivatorContent>
+                                                 <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("gatewaydevicepause")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small OnClick=@(()=>ConfigAsync(item.DeviceId,!item.Device?.KeepRun))>
+                                                     <MIcon>@(item.Device?.KeepRun == true ? "mdi-pause" : "mdi-play")</MIcon>
                                                     </MButton>
                                                 </ActivatorContent>
                                                 <ChildContent>
@@ -154,62 +155,62 @@
                                         </MTooltip>
 
                                         <MTooltip Bottom Context="tip">
-                                            <ActivatorContent>
-                                                <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("gatewaydevicerestart")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small Loading=isRestart OnClick=@(()=>RestartAsync(item.DeviceId))>
-                                                    <MIcon>mdi-restart</MIcon>
-                                                </MButton>
-                                            </ActivatorContent>
-                                            <ChildContent>
-                                                <span>重启</span>
-                                            </ChildContent>
-                                        </MTooltip>
+                                             <ActivatorContent>
+                                                 <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("gatewaydevicerestart")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small Loading=isRestart OnClick=@(()=>RestartAsync(item.DeviceId))>
+                                                     <MIcon>mdi-restart</MIcon>
+                                                 </MButton>
+                                             </ActivatorContent>
+                                             <ChildContent>
+                                                 <span>重启</span>
+                                             </ChildContent>
+                                         </MTooltip>
 
-                                    </MCardActions>
+                                     </MCardActions>
 
 
-                                </MCard>
+                                 </MCard>
 
                                 <MCard Style="height:200px;overflow:auto;" Flat Class="ml-4 my-4 ma-2" Elevation="0">
 
-                                    <MSubheader>
-                                        运行状态
-                                    </MSubheader>
-                                    <MRow Class="ml-2 mr-2 d-flex" NoGutters>
-                                    <MCol Md=6 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
-                                        <span class="text-subtitle-2 grey--text">@item.Device?.Description(a=>a.ActiveTime)</span>
-                                        <span class="text-caption">@item.Device?.ActiveTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset)</span>
-                                    </MCol>
-                                    <MCol Md=6 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
-                                        <span class="text-subtitle-2 grey--text">@item.Device?.Description(a=>a.SourceVariableCount)</span>
-                                        <span class="text-caption">@item.Device?.SourceVariableCount</span>
-                                    </MCol>
-                                    <MCol Md=6 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
-                                        <span class="text-subtitle-2 grey--text">@item.Device?.Description(a=>a.DeviceVariableCount)</span>
-                                        <span class="text-caption">@item.Device?.DeviceVariableCount</span>
-                                    </MCol>
-                                    <MCol Md=6 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
-                                        <span class="text-subtitle-2 grey--text">@item.Device?.Description(a=>a.MethodVariableCount)</span>
-                                        <span class="text-caption">@item.Device?.MethodVariableCount</span>
-                                    </MCol>
-                                    <MCol Md=12 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
-                                        <span class="text-subtitle-2 grey--text">@item.Device?.Description(a=>a.LastErrorMessage)</span>
-                                        <span class="text-caption red--text">@item.Device?.LastErrorMessage</span>
-                                    </MCol>
-                                </MRow>
+                                     <MSubheader>
+                                         运行状态
+                                     </MSubheader>
+                                     <MRow Class="ml-2 mr-2 d-flex" NoGutters>
+                                     <MCol Md=6 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
+                                         <span class="text-subtitle-2 grey--text">@item.Device?.Description(a=>a.ActiveTime)</span>
+                                         <span class="text-caption">@item.Device?.ActiveTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset)</span>
+                                     </MCol>
+                                     <MCol Md=6 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
+                                         <span class="text-subtitle-2 grey--text">@item.Device?.Description(a=>a.SourceVariableCount)</span>
+                                         <span class="text-caption">@item.Device?.SourceVariableCount</span>
+                                     </MCol>
+                                     <MCol Md=6 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
+                                         <span class="text-subtitle-2 grey--text">@item.Device?.Description(a=>a.DeviceVariableCount)</span>
+                                         <span class="text-caption">@item.Device?.DeviceVariableCount</span>
+                                     </MCol>
+                                     <MCol Md=6 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
+                                         <span class="text-subtitle-2 grey--text">@item.Device?.Description(a=>a.MethodVariableCount)</span>
+                                         <span class="text-caption">@item.Device?.MethodVariableCount</span>
+                                     </MCol>
+                                     <MCol Md=12 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
+                                         <span class="text-subtitle-2 grey--text">@item.Device?.Description(a=>a.LastErrorMessage)</span>
+                                         <span class="text-caption red--text">@item.Device?.LastErrorMessage</span>
+                                     </MCol>
+                                 </MRow>
 
-                                <MSubheader>
-                                    配置信息
-                                </MSubheader>
-                                <MRow Class="ml-2 mr-2 d-flex" NoGutters>
-                                    <MCol Md=6 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
-                                        <span class="text-subtitle-2 grey--text">@item.Device?.Description(a=>a.PluginName)</span>
-                                        <span class="text-caption">@item.Device?.PluginName</span>
-                                    </MCol>
-                                    <MCol Md=6 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
-                                        <span class="text-subtitle-2 grey--text">@item.Device?.Description(a=>a.IsLogOut)</span>
-                                        <span class="text-caption">@item.Device?.IsLogOut</span>
-                                    </MCol>
-                                    @foreach (var property in item.Device?.DevicePropertys ?? new())
+                                 <MSubheader>
+                                     配置信息
+                                 </MSubheader>
+                                 <MRow Class="ml-2 mr-2 d-flex" NoGutters>
+                                     <MCol Md=6 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
+                                         <span class="text-subtitle-2 grey--text">@item.Device?.Description(a=>a.PluginName)</span>
+                                         <span class="text-caption">@item.Device?.PluginName</span>
+                                     </MCol>
+                                     <MCol Md=6 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
+                                         <span class="text-subtitle-2 grey--text">@item.Device?.Description(a=>a.IsLogOut)</span>
+                                         <span class="text-caption">@item.Device?.IsLogOut</span>
+                                     </MCol>
+                                     @foreach (var property in item.Device?.DevicePropertys ?? new())
                                         {
                                             <MCol Md=6 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
                                                 <span class="text-subtitle-2 grey--text">@property.Description</span>
@@ -225,7 +226,7 @@
                             }
 
                             <MCard Flat Class="ml-4">
-                                @if (collectDeviceInfoItem != null && collectDeviceInfoItem?.Device != null)
+                                 @if (collectDeviceInfoItem != null && collectDeviceInfoItem?.Device != null)
                                 {
                                     ICollection<string> item = null;
                                     if (collectDeviceInfoItem.Driver != null)
@@ -240,15 +241,15 @@
                                     <ConsoleTxt MessageStrings="item" Height=@($"calc(100vh - {BlazorResourceConst.DefaultHeight+480}px)")>
 
                                         <MTooltip Bottom Context="tip">
-                                            <ActivatorContent>
-                                                <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("gatewaydevicepause")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small
-                                                         OnClick=@(()=>
+                                             <ActivatorContent>
+                                                 <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("gatewaydevicepause")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small
+                                                          OnClick=@(()=>
                                                  {
                                                  if(collectDeviceInfoItem.Driver!=null)
                                                  collectDeviceInfoItem.Driver.IsSaveLog=! collectDeviceInfoItem.Driver.IsSaveLog;
                                                  }
                                                  )>
-                                                    <MIcon>@((collectDeviceInfoItem.Driver?.IsSaveLog == true) ? "mdi-pause" : "mdi-play")</MIcon>
+                                                     <MIcon>@((collectDeviceInfoItem.Driver?.IsSaveLog == true) ? "mdi-pause" : "mdi-play")</MIcon>
                                                     </MButton>
                                                 </ActivatorContent>
                                                 <ChildContent>
@@ -277,44 +278,46 @@
                             <MCardTitle>
                                 <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="mx-2 my-1" @bind-Value="_uploadDeviceGroupSearchName"
                                             Outlined Label=@typeof(UploadDevice).GetDescription(nameof(UploadDevice.DeviceGroup)) />
-                            </MCardTitle>
-                            <MTreeview Style=@($"height: calc(100vh - {BlazorResourceConst.DefaultHeight+240}px);overflow-y:auto") Dense TItem="string" TKey="string" ActiveChanged=@(async a=>
+                             </MCardTitle>
+                             <MTreeview Style=@($"height: calc(100vh - {BlazorResourceConst.DefaultHeight+240}px);overflow-y:auto") Dense TItem="string" TKey="string" ActiveChanged=@(async a=>
                                    {
                                    if(_uploadDeviceGroup!=a.FirstOrDefault())
                                    {
                                    _uploadDeviceGroup=a.FirstOrDefault(); UploadDeviceQuery();
                                    }
                                    } )
-                                       Items="_uploadDeviceGroups" ItemText="r=>r" ItemChildren="r=>null"
-                                       Search="@_uploadDeviceGroupSearchName"
+                                        Items="_uploadDeviceGroups" ItemText="r=>r" ItemChildren="r=>null"
+                                        Search="@_uploadDeviceGroupSearchName"
                                       Activatable ItemKey=@(r=>r)>
-                                <LabelContent>
-                                    <span title=@context.Item>
-                                        @context.Item
-                                    </span>
-                                </LabelContent>
-                            </MTreeview>
-                        </MCard>
-                    </MCol>
-                    <MCol Md=3 Cols="12">
-                        <MCard Height=@($"calc(100vh - {BlazorResourceConst.DefaultHeight+80}px)") Style="overflow-y:auto;" Flat Class="ml-2 my-4">
+                                 <LabelContent>
+                                     <span title=@context.Item>
+                                         @context.Item
+                                     </span>
+                                 </LabelContent>
+                             </MTreeview>
+                         </MCard>
+                     </MCol>
+                     <MCol Md=3 Cols="12">
+                         <MCard Height=@($"calc(100vh - {BlazorResourceConst.DefaultHeight+80}px)") Style="overflow-y:auto;" Flat Class="ml-2 my-4">
 
-                            <MVirtualScroll Context="item" Height=@($"calc(100vh - {BlazorResourceConst.DefaultHeight+100}px)") OverscanCount=2 ItemSize="60" Items="_uploadDeviceCores">
+                             <MVirtualScroll Context="item" Height=@($"calc(100vh - {BlazorResourceConst.DefaultHeight+100}px)") OverscanCount=2 ItemSize="60" Items="_uploadDeviceCores">
 
-                                <ItemContent>
-                                    @if (item.Device != null)
+                                 <ItemContent>
+                                     @if (item.Device != null)
                                     {
 
                                         <MListItem OnClick=@(()=>UploadDeviceInfo(item))>
                                             <MListItemContent>
-                                                <MListItemTitle>
-                                                    <MLabel Class=@((item.Device?.DeviceStatus==DeviceStatusEnum.OnLine?"green--text":"red--text")+$" text-h6")>
-                                                        <div class="mt-1  d-flex align-center justify-space-between" title=@item.Device?.Name>
-                                                            <span>@item.Device?.Name</span>
-                                                            <span style="white-space: nowrap !important;overflow: hidden !important; text-overflow: ellipsis !important;" class="text-caption">@(item.Device?.ActiveTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset) + "     " + typeof(DeviceStatusEnum).GetDescription(item.Device?.DeviceStatus.ToString()))</span>
-                                                        </div>
-                                                    </MLabel>
-                                                </MListItemTitle>
+                                                <MLabel Class=@((item.Device?.DeviceStatus==DeviceStatusEnum.OnLine?"green--text":"red--text")+$" text-h6")>
+                                                    <div class="mt-1  d-flex align-start justify-start" style="white-space: nowrap !important;overflow: hidden !important; text-overflow: ellipsis !important;" title=@item.Device?.Name>
+                                                        <span>@item.Device?.Name</span>
+
+                                                    </div>
+                                                    <div style="white-space: nowrap !important;overflow: hidden !important; text-overflow: ellipsis !important;" class="text-caption">
+                                                        @(item.Device?.ActiveTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset) + "     " + typeof(DeviceStatusEnum).GetDescription(item.Device?.DeviceStatus.ToString()))
+                                                    </div>
+                                                </MLabel>
+
                                             </MListItemContent>
 
                                         </MListItem>
@@ -332,39 +335,39 @@
                     </MCol>
                     <MCol Md=7 Cols="12">
                         <MCard Style=@($"height: calc(100vh - {BlazorResourceConst.DefaultHeight + 80}px); overflow:auto)") Flat Elevation="0">
-                            @if (uploadDeviceInfoItem != null && uploadDeviceInfoItem?.Device != null)
+                             @if (uploadDeviceInfoItem != null && uploadDeviceInfoItem?.Device != null)
                             {
                                 var item = uploadDeviceInfoItem;
                                 <MCard Style="height:100px;overflow:auto;" Flat Class="ml-4 my-4 ma-2" Elevation="0">
 
-                                    <MCardActions>
-                                        <div class="mr-12"></div>
+                                     <MCardActions>
+                                         <div class="mr-12"></div>
 
-                                        <MLabel Class=@((item.Device?.DeviceStatus==DeviceStatusEnum.OnLine?"green--text":"red--text")+$" text-h6")>
-                                            <div class="mt-1  d-flex align-center justify-space-between">
-                                                <span class="mx-3">@item.Device?.Name</span>
-                                                <span style="white-space: nowrap !important;overflow: hidden !important; text-overflow: ellipsis !important;" class="text-caption mx-3">@(item.Device?.ActiveTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset) + "     " + typeof(DeviceStatusEnum).GetDescription(item.Device?.DeviceStatus.ToString()))</span>
+                                         <MLabel Class=@((item.Device?.DeviceStatus==DeviceStatusEnum.OnLine?"green--text":"red--text")+$" text-h6")>
+                                             <div class="mt-1  d-flex align-center justify-space-between">
+                                                 <span class="mx-3">@item.Device?.Name</span>
+                                                 <span style="white-space: nowrap !important;overflow: hidden !important; text-overflow: ellipsis !important;" class="text-caption mx-3">@(item.Device?.ActiveTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset) + "     " + typeof(DeviceStatusEnum).GetDescription(item.Device?.DeviceStatus.ToString()))</span>
                                             </div>
                                         </MLabel>
 
                                         <MSpacer></MSpacer>
                                         <MTooltip Bottom Context="tip">
-                                            <ActivatorContent>
-                                                <MButton Disabled=@(!UserResoures.IsHasPageWithRole("/gatewayruntime/devicevariable")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small Loading=isRestart
-                                                         OnClick=@(()=>NavigationManager.NavigateTo("/gatewayruntime/devicevariable?uploaddevicename="+item.Device?.Name))>
-                                                    <MIcon>mdi-information-outline</MIcon>
-                                                </MButton>
-                                            </ActivatorContent>
-                                            <ChildContent>
-                                                <span>相关变量</span>
-                                            </ChildContent>
-                                        </MTooltip>
+                                             <ActivatorContent>
+                                                 <MButton Disabled=@(!UserResoures.IsHasPageWithRole("/gatewayruntime/devicevariable")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small Loading=isRestart
+                                                          OnClick=@(()=>NavigationManager.NavigateTo("/gatewayruntime/devicevariable?uploaddevicename="+item.Device?.Name))>
+                                                     <MIcon>mdi-information-outline</MIcon>
+                                                 </MButton>
+                                             </ActivatorContent>
+                                             <ChildContent>
+                                                 <span>相关变量</span>
+                                             </ChildContent>
+                                         </MTooltip>
 
 
-                                        <MTooltip Bottom Context="tip">
-                                            <ActivatorContent>
-                                                <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("gatewaydevicepause")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small OnClick=@(()=>UpConfigAsync(item.DeviceId,!item.Device?.KeepRun))>
-                                                    <MIcon>@(item.Device?.KeepRun == true ? "mdi-pause" : "mdi-play")</MIcon>
+                                         <MTooltip Bottom Context="tip">
+                                             <ActivatorContent>
+                                                 <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("gatewaydevicepause")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small OnClick=@(()=>UpConfigAsync(item.DeviceId,!item.Device?.KeepRun))>
+                                                     <MIcon>@(item.Device?.KeepRun == true ? "mdi-pause" : "mdi-play")</MIcon>
                                                     </MButton>
                                                 </ActivatorContent>
                                                 <ChildContent>
@@ -376,56 +379,56 @@
 
 
                                         <MTooltip Bottom Context="tip">
-                                            <ActivatorContent>
-                                                <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("gatewaydevicerestart")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small Loading=isRestart OnClick=@(()=> UpRestartAsync(item.DeviceId))>
-                                                    <MIcon>mdi-restart</MIcon>
-                                                </MButton>
-                                            </ActivatorContent>
-                                            <ChildContent>
-                                                <span>重启</span>
-                                            </ChildContent>
-                                        </MTooltip>
+                                             <ActivatorContent>
+                                                 <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("gatewaydevicerestart")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small Loading=isRestart OnClick=@(()=> UpRestartAsync(item.DeviceId))>
+                                                     <MIcon>mdi-restart</MIcon>
+                                                 </MButton>
+                                             </ActivatorContent>
+                                             <ChildContent>
+                                                 <span>重启</span>
+                                             </ChildContent>
+                                         </MTooltip>
 
-                                    </MCardActions>
-
-
+                                     </MCardActions>
 
 
-                                </MCard>
+
+
+                                 </MCard>
                                 <MCard Style="height:200px;overflow:auto;" Flat Class="ml-4 my-4 ma-2" Elevation="0">
 
 
-                                    <MSubheader>
-                                        运行状态
-                                    </MSubheader>
-                                    <MRow Class="ml-2 mr-2 d-flex" NoGutters>
-                                    <MCol Md=6 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
-                                        <span class="text-subtitle-2 grey--text">@item.Device?.Description(a=>a.ActiveTime)</span>
-                                        <span class="text-caption">@item.Device?.ActiveTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset)</span>
-                                    </MCol>
-                                    <MCol Md=6 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
-                                        <span class="text-subtitle-2 grey--text">@item.Device?.Description(a=>a.UploadVariableCount)</span>
-                                        <span class="text-caption">@item.Device?.UploadVariableCount</span>
-                                    </MCol>
-                                    <MCol Md=12 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
-                                        <span class="text-subtitle-2 grey--text">@item.Device?.Description(a=>a.LastErrorMessage)</span>
-                                        <span class="text-caption red--text">@item.Device?.LastErrorMessage</span>
-                                    </MCol>
-                                </MRow>
+                                     <MSubheader>
+                                         运行状态
+                                     </MSubheader>
+                                     <MRow Class="ml-2 mr-2 d-flex" NoGutters>
+                                     <MCol Md=6 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
+                                         <span class="text-subtitle-2 grey--text">@item.Device?.Description(a=>a.ActiveTime)</span>
+                                         <span class="text-caption">@item.Device?.ActiveTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset)</span>
+                                     </MCol>
+                                     <MCol Md=6 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
+                                         <span class="text-subtitle-2 grey--text">@item.Device?.Description(a=>a.UploadVariableCount)</span>
+                                         <span class="text-caption">@item.Device?.UploadVariableCount</span>
+                                     </MCol>
+                                     <MCol Md=12 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
+                                         <span class="text-subtitle-2 grey--text">@item.Device?.Description(a=>a.LastErrorMessage)</span>
+                                         <span class="text-caption red--text">@item.Device?.LastErrorMessage</span>
+                                     </MCol>
+                                 </MRow>
 
-                                <MSubheader>
-                                    配置信息
-                                </MSubheader>
-                                <MRow Class="ml-2 mr-2 d-flex" NoGutters>
-                                    <MCol Md=6 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
-                                        <span class="text-subtitle-2 grey--text">@item.Device?.Description(a=>a.PluginName)</span>
-                                        <span class="text-caption">@item.Device?.PluginName</span>
-                                    </MCol>
-                                    <MCol Md=6 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
-                                        <span class="text-subtitle-2 grey--text">@item.Device?.Description(a=>a.IsLogOut)</span>
-                                        <span class="text-caption">@item.Device?.IsLogOut</span>
-                                    </MCol>
-                                    @foreach (var property in item.Device?.DevicePropertys ?? new())
+                                 <MSubheader>
+                                     配置信息
+                                 </MSubheader>
+                                 <MRow Class="ml-2 mr-2 d-flex" NoGutters>
+                                     <MCol Md=6 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
+                                         <span class="text-subtitle-2 grey--text">@item.Device?.Description(a=>a.PluginName)</span>
+                                         <span class="text-caption">@item.Device?.PluginName</span>
+                                     </MCol>
+                                     <MCol Md=6 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
+                                         <span class="text-subtitle-2 grey--text">@item.Device?.Description(a=>a.IsLogOut)</span>
+                                         <span class="text-caption">@item.Device?.IsLogOut</span>
+                                     </MCol>
+                                     @foreach (var property in item.Device?.DevicePropertys ?? new())
                                         {
                                             <MCol Md=6 Cols="12" Class="px-4 mt-1  d-flex align-center justify-space-between">
                                                 <span class="text-subtitle-2 grey--text">@property.Description</span>
@@ -440,7 +443,7 @@
                             }
 
                             <MCard Flat Class="ml-4">
-                                @if (uploadDeviceInfoItem != null && uploadDeviceInfoItem?.Device != null)
+                                 @if (uploadDeviceInfoItem != null && uploadDeviceInfoItem?.Device != null)
                                 {
 
 
@@ -456,15 +459,15 @@
                                     <ConsoleTxt MessageStrings="item" Height=@($"calc(100vh - {BlazorResourceConst.DefaultHeight+480}px)")>
 
                                         <MTooltip Bottom Context="tip">
-                                            <ActivatorContent>
-                                                <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("gatewaydevicepause")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small
-                                                         OnClick=@(()=>
+                                             <ActivatorContent>
+                                                 <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("gatewaydevicepause")) Class="mx-2" @attributes="@tip.Attrs" Dark Fab Small
+                                                          OnClick=@(()=>
                                                  {
                                                  if(uploadDeviceInfoItem.Driver!=null)
                                                  uploadDeviceInfoItem.Driver.IsSaveLog=! uploadDeviceInfoItem.Driver.IsSaveLog;
                                                  }
                                                  )>
-                                                    <MIcon>@((uploadDeviceInfoItem.Driver?.IsSaveLog == true) ? "mdi-pause" : "mdi-play")</MIcon>
+                                                     <MIcon>@((uploadDeviceInfoItem.Driver?.IsSaveLog == true) ? "mdi-pause" : "mdi-play")</MIcon>
                                                     </MButton>
                                                 </ActivatorContent>
                                                 <ChildContent>
@@ -489,46 +492,46 @@
             @if (tab == 3)
             {
                 <MRow NoGutters>
-                <MCard Class="ml-2 my-3" Style="width:100%" Elevation="1">
-                    <MCardSubtitle Class=@((AlarmHostService.StatuString.IsSuccess?"green--text":"red--text")+$" text-subtitle-2")>
-                        <div class="mt-1  d-flex align-center justify-space-between">
-                            <span>历史报警服务状态</span>
-                            <span class="text-caption">@AlarmHostService.StatuString.Message</span>
-                        </div>
-                    </MCardSubtitle>
-                </MCard>
-            </MRow>
+                 <MCard Class="ml-2 my-3" Style="width:100%" Elevation="1">
+                     <MCardSubtitle Class=@((AlarmHostService.StatuString.IsSuccess?"green--text":"red--text")+$" text-subtitle-2")>
+                         <div class="mt-1  d-flex align-center justify-space-between">
+                             <span>历史报警服务状态</span>
+                             <span class="text-caption">@AlarmHostService.StatuString.Message</span>
+                         </div>
+                     </MCardSubtitle>
+                 </MCard>
+             </MRow>
                 <MRow NoGutters>
-                <MCard Class="ml-2 my-3" Style="width:100%" Elevation="1">
-                    <MCardSubtitle Class=@((HistoryValueHostService.StatuString.IsSuccess?"green--text":"red--text")+$" text-subtitle-2")>
-                        <div class="mt-1  d-flex align-center justify-space-between">
-                            <span>历史数据服务状态</span>
-                            <span class="text-caption">@HistoryValueHostService.StatuString.Message</span>
-                        </div>
-                    </MCardSubtitle>
-                </MCard>
-            </MRow>
+                 <MCard Class="ml-2 my-3" Style="width:100%" Elevation="1">
+                     <MCardSubtitle Class=@((HistoryValueHostService.StatuString.IsSuccess?"green--text":"red--text")+$" text-subtitle-2")>
+                         <div class="mt-1  d-flex align-center justify-space-between">
+                             <span>历史数据服务状态</span>
+                             <span class="text-caption">@HistoryValueHostService.StatuString.Message</span>
+                         </div>
+                     </MCardSubtitle>
+                 </MCard>
+             </MRow>
                 <MRow NoGutters>
-                <MCard Class="ml-2 my-3" Style="width:100%" Elevation="1">
-                    <MCardSubtitle Class=@((MemoryVariableWorker.StatuString.IsSuccess?"green--text":"red--text")+$" text-subtitle-2")>
-                        <div class="mt-1  d-flex align-center justify-space-between">
-                            <span>中间变量计算服务状态</span>
-                            <span class="text-caption">@MemoryVariableWorker.StatuString.Message</span>
-                        </div>
-                    </MCardSubtitle>
-                </MCard>
-            </MRow>
-                      
+                 <MCard Class="ml-2 my-3" Style="width:100%" Elevation="1">
+                     <MCardSubtitle Class=@((MemoryVariableWorker.StatuString.IsSuccess?"green--text":"red--text")+$" text-subtitle-2")>
+                         <div class="mt-1  d-flex align-center justify-space-between">
+                             <span>中间变量计算服务状态</span>
+                             <span class="text-caption">@MemoryVariableWorker.StatuString.Message</span>
+                         </div>
+                     </MCardSubtitle>
+                 </MCard>
+             </MRow>
+
                 <MRow NoGutters>
-                <MCard Class="ml-2 my-3" Style="width:100%" Elevation="1">
+                 <MCard Class="ml-2 my-3" Style="width:100%" Elevation="1">
                      <MCardSubtitle Class=@((UpgradeWorker.StatuString.IsSuccess?"green--text":"red--text")+$" text-subtitle-2")>
-                        <div class="mt-1  d-flex align-center justify-space-between">
-                            <span>自动更新服务状态</span>
+                         <div class="mt-1  d-flex align-center justify-space-between">
+                             <span>自动更新服务状态</span>
                              <span class="text-caption">@UpgradeWorker.StatuString.Message</span>
-                        </div>
-                    </MCardSubtitle>
-                </MCard>
-            </MRow>
+                         </div>
+                     </MCardSubtitle>
+                 </MCard>
+             </MRow>
             }
 
         </MTabItem>
