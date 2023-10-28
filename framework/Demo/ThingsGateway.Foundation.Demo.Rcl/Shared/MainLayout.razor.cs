@@ -207,19 +207,27 @@ public partial class MainLayout
     ]
   },
   {
-    "Title": "GasCustom",
+    "Title": "HZW_QTJC_01",
     "Children": [
       {
-        "Href": "/GasCustomSerial",
-        "Title": "GasCustomSerial"
+        "Href": "/HZW_QTJC_01Serial",
+        "Title": "HZW_QTJC_01Serial"
       },
       {
-        "Href": "/GasCustomSerialOverTcp",
-        "Title": "GasCustomSerialOverTcp"
+        "Href": "/HZW_QTJC_01SerialOverTcp",
+        "Title": "HZW_QTJC_01SerialOverTcp"
+      }
+    ]
+  },
+  {
+    "Title": "LQTCP",
+    "Children": [
+      {
+        "Href": "/LQTCP",
+        "Title": "LQTCP"
       }
     ]
   }
-
 ]
 
 

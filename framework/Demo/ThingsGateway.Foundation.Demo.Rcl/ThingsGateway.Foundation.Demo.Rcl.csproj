@@ -45,8 +45,12 @@
 		<Content Include="..\..\PluginProAF2021\ThingsGateway.Plugin.HZW_QTJC_01\Page\HZW_QTJC_01SerialOverTcpDebugPage.razor" Link="Pages\HZW_QTJC_01\HZW_QTJC_01SerialOverTcpDebugPage.razor" />
 		<ProjectReference Include="..\..\PluginProAF2021\ThingsGateway.Foundation.Adapter.HZW_QTJC_01\ThingsGateway.Foundation.Adapter.HZW_QTJC_01.csproj" />
 
+		<Compile Include="..\..\PluginProAF2021\ThingsGateway.Plugin.LQTCP\Page\LQTCPDebugPage.razor.cs" Link="Pages\LQTCP\LQTCPDebugPage.razor.cs" />
+		<Content Include="..\..\PluginProAF2021\ThingsGateway.Plugin.LQTCP\Page\LQTCPDebugPage.razor" Link="Pages\LQTCP\LQTCPDebugPage.razor" />
+		<ProjectReference Include="..\..\PluginProAF2021\ThingsGateway.Foundation.Adapter.LQTCP\ThingsGateway.Foundation.Adapter.LQTCP.csproj" />
 
-		
+
+
 	</ItemGroup>
 
 

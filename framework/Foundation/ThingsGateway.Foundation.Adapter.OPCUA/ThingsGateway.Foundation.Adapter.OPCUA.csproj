@@ -7,8 +7,8 @@
 
 	<ItemGroup>
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-		<PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Client" Version="1.4.372.56" />
-		<PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Client.ComplexTypes" Version="1.4.372.56" />
+		<PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Client" Version="1.4.372.76" />
+		<PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Client.ComplexTypes" Version="1.4.372.76" />
 	</ItemGroup>
 
 </Project>
