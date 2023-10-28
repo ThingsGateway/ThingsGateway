@@ -59,7 +59,7 @@ public partial class OPCUAClientPage
         try
         {
             OPC.Disconnect();
-            await GetOPCClient().ConnectAsync();
+            await GetOPCClient().ConnectAsync(CancellationToken.None);
         }
         catch (Exception ex)
         {
