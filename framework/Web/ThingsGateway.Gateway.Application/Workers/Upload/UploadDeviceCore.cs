@@ -166,6 +166,7 @@ public class UploadDeviceCore
     {
         try
         {
+            if (cancellationToken.IsCancellationRequested) return;
             if (_device == null)
             {
                 _logger?.LogError($"{nameof(UploadDeviceRunTime)}不能为null");
@@ -265,6 +266,8 @@ public class UploadDeviceCore
     {
         try
         {
+            if (cancellationToken.IsCancellationRequested)
+                return ThreadRunReturn.Break;
             if (_device == null)
             {
                 _logger?.LogError($"{nameof(UploadDeviceRunTime)}不能为null");

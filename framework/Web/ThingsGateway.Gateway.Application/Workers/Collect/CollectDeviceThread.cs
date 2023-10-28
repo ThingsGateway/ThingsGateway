@@ -83,7 +83,6 @@ public class CollectDeviceThread : IAsyncDisposable
     public async ValueTask DisposeAsync()
     {
         await StopThreadAsync();
-        CollectDeviceCores.Clear();
     }
 
     /// <summary>
@@ -125,7 +124,7 @@ public class CollectDeviceThread : IAsyncDisposable
             }
             try
             {
-                await DeviceTask.WaitAsync(TimeSpan.FromSeconds(10));
+                await DeviceTask.WaitAsync(CancellationToken.None);
             }
             catch (ObjectDisposedException)
             {
@@ -136,6 +135,7 @@ public class CollectDeviceThread : IAsyncDisposable
                 foreach (var device in CollectDeviceCores)
                 {
                     device.Logger?.LogInformation($"{device.Device.Name}采集线程停止超时，已强制取消");
+                    await device.FinishActionAsync();
                 }
             }
             catch (Exception ex)
@@ -164,88 +164,102 @@ public class CollectDeviceThread : IAsyncDisposable
         var stoppingToken = StoppingTokens.Last().Token;
         DeviceTask = await Task.Factory.StartNew(async () =>
         {
-            //await Task.Yield();
-            var channelResult = CollectDeviceCores.FirstOrDefault().Driver.GetShareChannel();
-            LoggerGroup log = CollectDeviceCores.FirstOrDefault().Driver.LogMessage;
-            foreach (var device in CollectDeviceCores)
+            try
             {
-                if (device.Driver == null)
-                {
-                    continue;
-                }
-
-                //添加通道报文到每个设备
-                var data = new EasyLogger(device.Driver.NewMessage) { LogLevel = ThingsGateway.Foundation.Core.LogLevel.Trace };
-                log.AddLogger(data);
-                //传入是否共享通道
-                device.IsShareChannel = CollectDeviceCores.Count > 1;
-                if (channelResult.IsSuccess)
-                {
-                    await device.BeforeActionAsync(stoppingToken, channelResult.Content);
-                }
-                else
-                {
-                    await device.BeforeActionAsync(stoppingToken);
-                }
-            }
-
-            while (!stoppingToken.IsCancellationRequested)
-            {
+                var channelResult = CollectDeviceCores.FirstOrDefault().Driver.GetShareChannel();
+                LoggerGroup log = CollectDeviceCores.FirstOrDefault().Driver.LogMessage;
                 foreach (var device in CollectDeviceCores)
                 {
-                    try
+                    if (device.Driver == null)
                     {
-                        if (stoppingToken.IsCancellationRequested)
-                            break;
-                        //初始化成功才能执行
-                        if (device.IsInitSuccess)
-                        {
-                            //如果是共享通道类型，需要每次转换时切换适配器
-                            if (device.IsShareChannel) device.Driver.InitDataAdapter();
-
-                            var result = await device.RunActionAsync(stoppingToken);
-                            if (result == ThreadRunReturn.None)
-                            {
-                                await Task.Delay(CycleInterval);
-                            }
-                            else if (result == ThreadRunReturn.Continue)
-                            {
-                                await Task.Delay(1000);
-                            }
-                            else if (result == ThreadRunReturn.Break)
-                            {
-                                //当线程返回Break，直接跳出循环
-                                break;
-                            }
-
-                        }
-                        else
-                        {
-                            await Task.Delay(1000, stoppingToken);
-                        }
+                        continue;
                     }
-                    catch (TaskCanceledException)
-                    {
 
-                    }
-                    catch (ObjectDisposedException)
+                    //添加通道报文到每个设备
+                    var data = new EasyLogger(device.Driver.NewMessage) { LogLevel = ThingsGateway.Foundation.Core.LogLevel.Trace };
+                    log.AddLogger(data);
+                    //传入是否共享通道
+                    device.IsShareChannel = CollectDeviceCores.Count > 1;
+                    if (channelResult.IsSuccess)
                     {
-
+                        await device.BeforeActionAsync(stoppingToken, channelResult.Content);
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        log.Exception(ex);
+                        await device.BeforeActionAsync(stoppingToken);
                     }
                 }
-            }
-            //注意插件结束函数不能使用取消传播作为条件
-            foreach (var device in CollectDeviceCores)
-            {
-                //如果插件还没释放，执行一次结束函数
-                if (!device.Driver.DisposedValue)
-                    await device.FinishActionAsync();
-            }
 
+                while (!stoppingToken.IsCancellationRequested)
+                {
+                    foreach (var device in CollectDeviceCores)
+                    {
+                        try
+                        {
+                            if (stoppingToken.IsCancellationRequested)
+                                break;
+                            //初始化成功才能执行
+                            if (device.IsInitSuccess)
+                            {
+                                //如果是共享通道类型，需要每次转换时切换适配器
+                                if (device.IsShareChannel) device.Driver.InitDataAdapter();
+
+                                var result = await device.RunActionAsync(stoppingToken);
+                                if (result == ThreadRunReturn.None)
+                                {
+                                    await Task.Delay(CycleInterval);
+                                }
+                                else if (result == ThreadRunReturn.Continue)
+                                {
+                                    await Task.Delay(1000);
+                                }
+                                else if (result == ThreadRunReturn.Break)
+                                {
+                                    //当线程返回Break，直接跳出循环
+                                    break;
+                                }
+
+                            }
+                            else
+                            {
+                                await Task.Delay(1000, stoppingToken);
+                            }
+                        }
+                        catch (TaskCanceledException)
+                        {
+
+                        }
+                        catch (ObjectDisposedException)
+                        {
+
+                        }
+                        catch (Exception ex)
+                        {
+                            log.Exception(ex);
+                        }
+                    }
+                }
+                //注意插件结束函数不能使用取消传播作为条件
+                await Stop(stoppingToken);
+            }
+            finally
+            {
+                //await Task.Yield();
+                await Stop(stoppingToken);
+            }
+            async Task Stop(CancellationToken stoppingToken)
+            {
+                if (stoppingToken.IsCancellationRequested)
+                {
+                    foreach (var device in CollectDeviceCores)
+                    {
+                        //如果插件还没释放，执行一次结束函数
+                        if (!device.Driver.DisposedValue)
+                            await device.FinishActionAsync();
+                    }
+                    CollectDeviceCores.Clear();
+                }
+            }
         }
  , TaskCreationOptions.LongRunning);
     }

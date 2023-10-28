@@ -56,7 +56,7 @@ public class OPCUAClient : CollectBase
     /// <inheritdoc/>
     public override async Task BeforStartAsync(CancellationToken cancellationToken)
     {
-        await _plc?.ConnectAsync();
+        await _plc?.ConnectAsync(cancellationToken);
     }
 
     /// <inheritdoc/>

@@ -203,6 +203,7 @@ public class CollectDeviceCore
     {
         try
         {
+            if (cancellationToken.IsCancellationRequested) return;
             Device.SetDeviceStatus(DateTimeExtensions.CurrentDateTime);
 
             if (_device == null)
@@ -317,6 +318,9 @@ public class CollectDeviceCore
     {
         try
         {
+            if (cancellationToken.IsCancellationRequested)
+                return ThreadRunReturn.Break;
+
             if (_device == null)
             {
                 _logger?.LogError($"{nameof(CollectDeviceRunTime)}不能为null");
