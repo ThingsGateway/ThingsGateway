@@ -22,7 +22,6 @@ namespace ThingsGateway.Plugin.OPCDA;
 public class OPCDAClient : CollectBase
 {
     internal ThingsGateway.Foundation.Adapter.OPCDA.OPCDAClient _plc = null;
-    internal CollectDeviceRunTime Device;
     private readonly OPCDAClientProperty driverPropertys = new();
     private ConcurrentList<DeviceVariableRunTime> _deviceVariables = new();
     /// <inheritdoc/>
@@ -60,7 +59,7 @@ public class OPCDAClient : CollectBase
     /// <inheritdoc/>
     public override bool IsConnected()
     {
-        Device.SetDeviceStatus(DateTimeExtensions.CurrentDateTime);
+        CurrentDevice.SetDeviceStatus(DateTimeExtensions.CurrentDateTime);
         return _plc?.IsConnected == true;
     }
 
@@ -137,7 +136,7 @@ public class OPCDAClient : CollectBase
     /// <inheritdoc/>
     protected override void Init(CollectDeviceRunTime device, object client = null)
     {
-        Device = device;
+        CurrentDevice = device;
         OPCNode opcNode = new()
         {
             OPCIP = driverPropertys.OPCIP,
@@ -166,7 +165,7 @@ public class OPCDAClient : CollectBase
     {
         try
         {
-            if (!Device.KeepRun)
+            if (!CurrentDevice.KeepRun)
             {
                 return;
             }
@@ -174,7 +173,7 @@ public class OPCDAClient : CollectBase
 
             foreach (var data in values)
             {
-                if (!Device.KeepRun)
+                if (!CurrentDevice.KeepRun)
                 {
                     return;
                 }
@@ -226,7 +225,6 @@ public class OPCDAClient : CollectBase
                     }
                 }
             }
-            CurrentDevice.SetDeviceStatus(DateTimeExtensions.CurrentDateTime, 0);
         }
         catch (Exception ex)
         {

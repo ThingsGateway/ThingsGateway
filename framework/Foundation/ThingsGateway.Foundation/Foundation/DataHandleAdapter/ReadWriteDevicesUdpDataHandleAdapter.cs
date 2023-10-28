@@ -11,6 +11,7 @@
 #endregion
 
 using System.Net;
+using System.Text;
 
 using ThingsGateway.Foundation.Extension.Generic;
 
@@ -21,6 +22,13 @@ namespace ThingsGateway.Foundation.Core;
 /// </summary>
 public abstract class ReadWriteDevicesUdpDataHandleAdapter<TRequest> : UdpDataHandlingAdapter where TRequest : class, IMessage
 {
+
+
+    /// <summary>
+    /// 报文输出时采用字符串还是HexString
+    /// </summary>
+    public virtual bool IsHexData { get; set; } = true;
+
     /// <inheritdoc cref="ReadWriteDevicesUdpDataHandleAdapter{TRequest}"/>
     public ReadWriteDevicesUdpDataHandleAdapter()
     {
@@ -68,13 +76,13 @@ public abstract class ReadWriteDevicesUdpDataHandleAdapter<TRequest> : UdpDataHa
         Request = GetInstance();
         Request.SendBytes = bytes;
         GoSend(endPoint, bytes, 0, bytes.Length);
-        Logger?.Trace($"{FoundationConst.LogMessageHeader}{ToString()}- 发送:{Request.SendBytes.ToHexString(' ')}");
+        Logger?.Trace($"{FoundationConst.LogMessageHeader}{ToString()}- 发送:{(IsHexData ? Request.SendBytes.ToHexString(' ') : Encoding.UTF8.GetString(Request.SendBytes))}");
     }
     /// <inheritdoc/>
     protected override void PreviewReceived(EndPoint remoteEndPoint, ByteBlock byteBlock)
     {
         var allBytes = byteBlock.ToArray(0, byteBlock.Len);
-        Logger?.Trace($"{FoundationConst.LogMessageHeader}{ToString()}- 接收:{allBytes.ToHexString(' ')}");
+        Logger?.Trace($"{FoundationConst.LogMessageHeader}{ToString()}- 接收:{(IsHexData ? allBytes.ToHexString(' ') : Encoding.UTF8.GetString(allBytes))}");
 
         if (Request?.SendBytes == null)
         {
