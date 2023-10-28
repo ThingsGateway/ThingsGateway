@@ -32,7 +32,6 @@ internal class Program
         AppDomain.CurrentDomain.UnhandledException += (sender, error) =>
         {
         };
-
         app.Run();
     }
 }

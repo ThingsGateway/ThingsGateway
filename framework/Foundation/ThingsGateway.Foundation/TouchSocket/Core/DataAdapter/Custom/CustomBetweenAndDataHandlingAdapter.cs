@@ -103,12 +103,12 @@ namespace ThingsGateway.Foundation.Core
                 {
                     return FilterResult.Cache;
                 }
-                if (!requestInfo.OnParsingStartCode(byteBlock.ToArray(byteBlock.Pos, this.StartCode.Length)))
+                if (!requestInfo.OnParsingStartCode(byteBlock.ToArray(byteBlock.Pos + indexStart + 1 - this.StartCode.Length, this.StartCode.Length)))
                 {
-                    byteBlock.Pos += this.StartCode.Length;
+                    byteBlock.Pos += indexStart;
                     return FilterResult.GoOn;
                 }
-                byteBlock.Pos += this.StartCode.Length;
+                byteBlock.Pos += indexStart + 1;
                 request = requestInfo;
 
                 int len;

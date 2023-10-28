@@ -28,7 +28,7 @@
 	
 	
 	<ItemGroup>
-		<PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Server" Version="1.4.372.56" />
+		<PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Server" Version="1.4.372.76" />
 		<ProjectReference Include="..\..\Foundation\ThingsGateway.Foundation.Adapter.OPCUA\ThingsGateway.Foundation.Adapter.OPCUA.csproj" />
 		<ProjectReference Include="..\..\Web\ThingsGateway.Components\ThingsGateway.Components.csproj">
 			<Private>false</Private>

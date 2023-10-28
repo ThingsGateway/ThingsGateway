@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<ApplicationIcon>favicon.ico</ApplicationIcon>
+		<TargetFrameworks>net7.0-windows</TargetFrameworks>
+		<UseWindowsForms>true</UseWindowsForms>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <None Remove="favicon.ico" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Include="favicon.ico">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	    <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+	    <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+	  </Content>
+	</ItemGroup>
+
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebView.WindowsForms" Version="7.0.86" />
+	</ItemGroup>
+
+
+	<ItemGroup>
+	  <ProjectReference Include="..\ThingsGateway.Foundation.Demo.Rcl\ThingsGateway.Foundation.Demo.Rcl.csproj" />
+	</ItemGroup>
+
+
+
+</Project>
