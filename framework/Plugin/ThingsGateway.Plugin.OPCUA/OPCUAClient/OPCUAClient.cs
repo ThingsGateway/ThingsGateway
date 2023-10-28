@@ -25,7 +25,7 @@ namespace ThingsGateway.Plugin.OPCUA;
 public class OPCUAClient : CollectBase
 {
     internal Foundation.Adapter.OPCUA.OPCUAClient _plc = null;
-    internal CollectDeviceRunTime Device;
+
     private readonly OPCUAClientProperty driverPropertys = new();
 
     private List<DeviceVariableRunTime> _deviceVariables = new();
@@ -69,7 +69,7 @@ public class OPCUAClient : CollectBase
     {
         if (_plc.Session != null)
         {
-            Device.SetDeviceStatus(DateTimeExtensions.CurrentDateTime);
+            CurrentDevice.SetDeviceStatus(DateTimeExtensions.CurrentDateTime);
         }
         return _plc?.Connected == true;
     }
@@ -189,7 +189,6 @@ public class OPCUAClient : CollectBase
     /// <inheritdoc/>
     protected override void Init(CollectDeviceRunTime device, object client = null)
     {
-        Device = device;
         OPCNode opcNode = new()
         {
             OPCUrl = driverPropertys.OPCURL,
@@ -230,14 +229,14 @@ public class OPCUAClient : CollectBase
     {
         try
         {
-            if (!Device.KeepRun)
+            if (!CurrentDevice.KeepRun)
             {
                 return;
             }
 
             LogMessage.Trace($"{FoundationConst.LogMessageHeader}{ToString()} 状态变化: {Environment.NewLine} {data.variableNode.NodeId} : {data.jToken?.ToString()}");
 
-            if (!Device.KeepRun)
+            if (!CurrentDevice.KeepRun)
             {
                 return;
             }

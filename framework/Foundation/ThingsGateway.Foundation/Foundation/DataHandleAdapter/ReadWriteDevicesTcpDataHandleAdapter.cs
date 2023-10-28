@@ -10,6 +10,8 @@
 //------------------------------------------------------------------------------
 #endregion
 
+using System.Text;
+
 using ThingsGateway.Foundation.Extension.Generic;
 
 namespace ThingsGateway.Foundation.Core;
@@ -19,6 +21,10 @@ namespace ThingsGateway.Foundation.Core;
 /// </summary>
 public abstract class ReadWriteDevicesTcpDataHandleAdapter<TRequest> : CustomDataHandlingAdapter<TRequest> where TRequest : class, IMessage
 {
+    /// <summary>
+    /// 报文输出时采用字符串还是HexString
+    /// </summary>
+    public virtual bool IsHexData { get; set; } = true;
     /// <inheritdoc cref="ReadWriteDevicesTcpDataHandleAdapter{TRequest}"/>
     public ReadWriteDevicesTcpDataHandleAdapter()
     {
@@ -46,7 +52,7 @@ public abstract class ReadWriteDevicesTcpDataHandleAdapter<TRequest> : CustomDat
     {
         //获取全部内容
         var allBytes = byteBlock.ToArray(0, byteBlock.Len);
-        Logger?.Trace($"{FoundationConst.LogMessageHeader}{ToString()}- 接收:{allBytes.ToHexString(' ')}");
+        Logger?.Trace($"{FoundationConst.LogMessageHeader}{ToString()}- 接收:{(IsHexData ? allBytes.ToHexString(' ') : Encoding.UTF8.GetString(allBytes))}");
         //缓存/不缓存解析一样，因为游标已经归0
         {
             request = Request;
@@ -131,7 +137,7 @@ public abstract class ReadWriteDevicesTcpDataHandleAdapter<TRequest> : CustomDat
     /// <summary>
     /// 发送方法,会重新建立<see cref="Request"/>
     /// </summary>
-    protected void GoSend(byte[] item)
+    protected virtual void GoSend(byte[] item)
     {
         byte[] bytes;
         if (IsSendPackCommand)
@@ -141,12 +147,12 @@ public abstract class ReadWriteDevicesTcpDataHandleAdapter<TRequest> : CustomDat
         Request = GetInstance();
         Request.SendBytes = bytes;
         GoSend(bytes, 0, bytes.Length);
-        Logger?.Trace($"{FoundationConst.LogMessageHeader}{ToString()}- 发送:{Request.SendBytes.ToHexString(' ')}");
+        Logger?.Trace($"{FoundationConst.LogMessageHeader}{ToString()}- 发送:{(IsHexData ? Request.SendBytes.ToHexString(' ') : Encoding.UTF8.GetString(Request.SendBytes))}");
     }
     /// <summary>
     /// 发送方法,会重新建立<see cref="Request"/>
     /// </summary>
-    protected async Task GoSendAsync(byte[] item)
+    protected virtual async Task GoSendAsync(byte[] item)
     {
         byte[] bytes;
         if (IsSendPackCommand)

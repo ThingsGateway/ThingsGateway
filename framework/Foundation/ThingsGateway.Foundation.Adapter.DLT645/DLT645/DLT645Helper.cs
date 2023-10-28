@@ -35,12 +35,7 @@ public class DataInfo
 }
 internal static class DLT645Helper
 {
-    internal static byte[] BytesAdd(this byte[] bytes, int value)
-    {
-        for (int index = 0; index < bytes.Length; ++index)
-            bytes[index] = (byte)(bytes[index] + value);
-        return bytes;
-    }
+
 
     internal static string Get2007ErrorMessage(byte buffer)
     {

@@ -227,7 +227,20 @@ public partial class MainLayout
         "Title": "LQTCP"
       }
     ]
-  }
+  },
+  {
+    "Title": "KELID2008",
+    "Children": [
+      {
+        "Href": "/KELID2008",
+        "Title": "KELID2008"
+      },
+      {
+        "Href": "/KELID2008OverTcp",
+        "Title": "KELID2008OverTcp"
+      }
+    ]
+  },
 ]
 
 

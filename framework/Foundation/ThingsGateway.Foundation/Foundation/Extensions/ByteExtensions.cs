@@ -10,6 +10,8 @@
 //------------------------------------------------------------------------------
 #endregion
 
+using System.Text;
+
 using ThingsGateway.Foundation.Extension.Generic;
 
 namespace ThingsGateway.Foundation.Core;
@@ -17,6 +19,39 @@ namespace ThingsGateway.Foundation.Core;
 /// <inheritdoc/>
 public static class ByteExtensions
 {
+    /// <summary>
+    /// 获取异或校验
+    /// </summary>
+    /// <param name="data"></param>
+    /// <param name="left"></param>
+    /// <param name="right"></param>
+    /// <returns></returns>
+    public static byte[] GetAsciiXOR(this byte[] data, int left, int right)
+    {
+        int tmp = data[left];
+        for (int i = left + 1; i < data.Length - right; i++)
+        {
+            tmp = (tmp ^ data[i]);
+        }
+
+        byte[] fcs = new byte[2];
+        fcs[0] = Encoding.ASCII.GetBytes(((byte)tmp).ToString("X2"))[0];
+        fcs[1] = Encoding.ASCII.GetBytes(((byte)tmp).ToString("X2"))[1];
+        return fcs;
+    }
+
+    /// <summary>
+    /// 数组内容分别相加某个数字
+    /// </summary>
+    /// <param name="bytes"></param>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public static byte[] BytesAdd(this byte[] bytes, int value)
+    {
+        for (int index = 0; index < bytes.Length; ++index)
+            bytes[index] = (byte)(bytes[index] + value);
+        return bytes;
+    }
     /// <summary>
     /// 获取byte数据类型的第offset位，是否为True<br />
     /// </summary>

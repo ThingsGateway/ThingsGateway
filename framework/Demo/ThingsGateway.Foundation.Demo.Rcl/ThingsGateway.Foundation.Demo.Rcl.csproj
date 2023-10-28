@@ -50,6 +50,12 @@
 		<ProjectReference Include="..\..\PluginProAF2021\ThingsGateway.Foundation.Adapter.LQTCP\ThingsGateway.Foundation.Adapter.LQTCP.csproj" />
 
 
+		<Compile Include="..\..\PluginProAF2021\ThingsGateway.Plugin.KELID2008\Page\KELID2008DebugPage.razor.cs" Link="Pages\KELID2008\KELID2008DebugPage.razor.cs" />
+		<Compile Include="..\..\PluginProAF2021\ThingsGateway.Plugin.KELID2008\Page\KELID2008OverTcpDebugPage.razor.cs" Link="Pages\KELID2008\KELID2008OverTcpDebugPage.razor.cs" />
+		<Content Include="..\..\PluginProAF2021\ThingsGateway.Plugin.KELID2008\Page\KELID2008DebugPage.razor" Link="Pages\KELID2008\KELID2008DebugPage.razor" />
+		<Content Include="..\..\PluginProAF2021\ThingsGateway.Plugin.KELID2008\Page\KELID2008OverTcpDebugPage.razor" Link="Pages\KELID2008\KELID2008OverTcpDebugPage.razor" />
+		<ProjectReference Include="..\..\PluginProAF2021\ThingsGateway.Foundation.Adapter.KELID2008\ThingsGateway.Foundation.Adapter.KELID2008.csproj" />
+
 
 	</ItemGroup>
 
