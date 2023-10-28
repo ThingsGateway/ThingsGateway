@@ -47,7 +47,7 @@
 		<ProjectReference Include="..\ThingsGateway.Web.Core\ThingsGateway.Web.Core.csproj" />
 	</ItemGroup>
 
-	<PropertyGroup Condition="'$(SolutionName)'=='ThingsGateway - Pro' OR '$(SolutionName)'=='ThingsGateway - Pro - AF2021'">
+	<PropertyGroup Condition="'$(SolutionName)'=='ThingsGateway - Pro - AF2021'">
 		<DefineConstants>AF2021</DefineConstants>
 	</PropertyGroup>
 	
