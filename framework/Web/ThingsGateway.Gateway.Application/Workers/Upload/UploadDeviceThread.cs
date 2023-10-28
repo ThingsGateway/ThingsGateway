@@ -72,7 +72,6 @@ public class UploadDeviceThread : IAsyncDisposable
     public async ValueTask DisposeAsync()
     {
         await StopThreadAsync();
-        UploadDeviceCores.Clear();
     }
 
     /// <summary>
@@ -114,7 +113,7 @@ public class UploadDeviceThread : IAsyncDisposable
             }
             try
             {
-                await DeviceTask.WaitAsync(TimeSpan.FromSeconds(10));
+                await DeviceTask.WaitAsync(CancellationToken.None);
             }
             catch (ObjectDisposedException)
             {
@@ -125,6 +124,7 @@ public class UploadDeviceThread : IAsyncDisposable
                 foreach (var device in UploadDeviceCores)
                 {
                     device.Logger?.LogInformation($"{device.Device.Name}上传线程停止超时，已强制取消");
+                    await device.FinishActionAsync();
                 }
             }
             catch (Exception ex)
@@ -153,77 +153,92 @@ public class UploadDeviceThread : IAsyncDisposable
         var stoppingToken = StoppingTokens.Last().Token;
         DeviceTask = await Task.Factory.StartNew(async () =>
         {
-            //await Task.Yield();
-            LoggerGroup log = UploadDeviceCores.FirstOrDefault().Driver.LogMessage;
-            foreach (var device in UploadDeviceCores)
+            try
             {
-                if (device.Driver == null)
-                {
-                    continue;
-                }
-
-                //添加通道报文到每个设备
-                var data = new EasyLogger(device.Driver.NewMessage) { LogLevel = ThingsGateway.Foundation.Core.LogLevel.Trace };
-                log.AddLogger(data);
-                await device.BeforeActionAsync(stoppingToken);
-            }
-
-            while (!stoppingToken.IsCancellationRequested)
-            {
+                //await Task.Yield();
+                LoggerGroup log = UploadDeviceCores.FirstOrDefault().Driver.LogMessage;
                 foreach (var device in UploadDeviceCores)
                 {
-                    try
+                    if (device.Driver == null)
                     {
-                        if (stoppingToken.IsCancellationRequested)
-                            break;
-                        //初始化成功才能执行
-                        if (device.IsInitSuccess)
-                        {
+                        continue;
+                    }
 
-                            var result = await device.RunActionAsync(stoppingToken);
-                            if (result == ThreadRunReturn.None)
+                    //添加通道报文到每个设备
+                    var data = new EasyLogger(device.Driver.NewMessage) { LogLevel = ThingsGateway.Foundation.Core.LogLevel.Trace };
+                    log.AddLogger(data);
+                    await device.BeforeActionAsync(stoppingToken);
+                }
+
+                while (!stoppingToken.IsCancellationRequested)
+                {
+                    foreach (var device in UploadDeviceCores)
+                    {
+                        try
+                        {
+                            if (stoppingToken.IsCancellationRequested)
+                                break;
+                            //初始化成功才能执行
+                            if (device.IsInitSuccess)
                             {
-                                await Task.Delay(CycleInterval);
+
+                                var result = await device.RunActionAsync(stoppingToken);
+                                if (result == ThreadRunReturn.None)
+                                {
+                                    await Task.Delay(CycleInterval);
+                                }
+                                else if (result == ThreadRunReturn.Continue)
+                                {
+                                    await Task.Delay(1000);
+                                }
+                                else if (result == ThreadRunReturn.Break)
+                                {
+                                    //当线程返回Break，直接跳出循环
+                                    break;
+                                }
+
+
                             }
-                            else if (result == ThreadRunReturn.Continue)
+                            else
                             {
                                 await Task.Delay(1000);
                             }
-                            else if (result == ThreadRunReturn.Break)
-                            {
-                                //当线程返回Break，直接跳出循环
-                                break;
-                            }
-
-
                         }
-                        else
+                        catch (TaskCanceledException)
                         {
-                            await Task.Delay(1000);
+
                         }
-                    }
-                    catch (TaskCanceledException)
-                    {
+                        catch (ObjectDisposedException)
+                        {
 
-                    }
-                    catch (ObjectDisposedException)
-                    {
-
-                    }
-                    catch (Exception ex)
-                    {
-                        log.Exception(ex);
+                        }
+                        catch (Exception ex)
+                        {
+                            log.Exception(ex);
+                        }
                     }
                 }
+                //注意插件结束函数不能使用取消传播作为条件
+                await Stop(stoppingToken);
             }
-            //注意插件结束函数不能使用取消传播作为条件
-            foreach (var device in UploadDeviceCores)
+            finally
             {
-                //如果插件还没释放，执行一次结束函数
-                if (!device.Driver.DisposedValue)
-                    await device.FinishActionAsync();
+                //await Task.Yield();
+                await Stop(stoppingToken);
             }
-
+            async Task Stop(CancellationToken stoppingToken)
+            {
+                if (stoppingToken.IsCancellationRequested)
+                {
+                    foreach (var device in UploadDeviceCores)
+                    {
+                        //如果插件还没释放，执行一次结束函数
+                        if (!device.Driver.DisposedValue)
+                            await device.FinishActionAsync();
+                    }
+                    UploadDeviceCores.Clear();
+                }
+            }
         }
  , TaskCreationOptions.LongRunning);
 

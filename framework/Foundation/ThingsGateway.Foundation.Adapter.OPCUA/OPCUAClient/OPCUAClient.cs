@@ -516,9 +516,9 @@ public class OPCUAClient : IDisposable
     /// <summary>
     /// 连接到服务器
     /// </summary>
-    public async Task ConnectAsync()
+    public async Task ConnectAsync(CancellationToken cancellationToken)
     {
-        await ConnectAsync(OPCNode.OPCUrl);
+        await ConnectAsync(OPCNode.OPCUrl, cancellationToken);
     }
 
     /// <summary>
@@ -538,7 +538,7 @@ public class OPCUAClient : IDisposable
     /// Creates a new session.
     /// </summary>
     /// <returns>The new session object.</returns>
-    private async Task<ISession> ConnectAsync(string serverUrl)
+    private async Task<ISession> ConnectAsync(string serverUrl, CancellationToken cancellationToken)
     {
         PrivateDisconnect();
 
@@ -570,7 +570,7 @@ public class OPCUAClient : IDisposable
         (string.IsNullOrEmpty(OPCUAName)) ? m_configuration.ApplicationName : OPCUAName,
         60000,
         userIdentity,
-        Array.Empty<string>()
+        Array.Empty<string>(), cancellationToken
         ).ConfigureAwait(false);
         typeSystem = new ComplexTypeSystem(m_session);
 
