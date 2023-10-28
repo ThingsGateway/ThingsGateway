@@ -36,8 +36,8 @@
 
 
 
-	<ItemGroup Condition="'$(SolutionName)'=='ThingsGateway - Pro - AF2021' OR '$(SolutionName)'=='ThingsGateway - Pro'">
-		<ProjectReference Include="..\..\PluginProAF2021\ThingsGateway.LK.Application\ThingsGateway.LK.Application.csproj" />
+	<ItemGroup Condition="'$(SolutionName)'=='ThingsGateway - Pro - AF2021'">
+		<ProjectReference Include="..\..\PluginProAF2021\ThingsGateway.Gateway.LK\ThingsGateway.Gateway.LK.csproj" />
 	</ItemGroup>
 	
 </Project>

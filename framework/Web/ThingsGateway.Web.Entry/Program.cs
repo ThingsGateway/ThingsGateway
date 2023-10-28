@@ -58,11 +58,11 @@ public class Program
         builder.WebHost.UseKestrel(
     o =>
     {
-        var config = Furion.App.GetConfig<LK.Application.MqttConfig>("MqttConfig", true);
+        var config = Furion.App.GetConfig<ThingsGateway.Gateway.LK.MqttConfig>("MqttConfig", true);
 
         o.ListenAnyIP(config.Port, a => MQTTnet.AspNetCore.ConnectionBuilderExtensions.UseMqtt(a));
 
-        o.ListenAnyIP(config.WebSocketPort); // Default HTTP pipeline
+        o.ListenAnyIP(config.WebSocketPort);
     });
 #endif
 
