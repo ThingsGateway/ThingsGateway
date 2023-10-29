@@ -194,7 +194,7 @@ internal class ReverseCallbackServer : RpcServer
     {
         //EasyLock.Wait();//不会释放，由外部程序直接关闭软件 //TODO:暂时注释
         _logger.LogInformation("准备更新软件，程序将退出");
-        //TODO:启动控制台程序，用于文件转移/验证/覆盖原文件/重新启动/失败恢复等
+        //启动控制台程序，用于文件转移/验证/覆盖原文件/重新启动/失败恢复等
         var path = FilePluginUtil.GetFileTempPath(_TcpClientBase);
         ProcessStart(path);
         _appLifetime.StopApplication();//停止程序

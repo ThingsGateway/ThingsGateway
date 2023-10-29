@@ -59,10 +59,11 @@ public class Program
     o =>
     {
         var config = Furion.App.GetConfig<ThingsGateway.Gateway.LK.MqttConfig>("MqttConfig", true);
-
-        o.ListenAnyIP(config.Port, a => MQTTnet.AspNetCore.ConnectionBuilderExtensions.UseMqtt(a));
-
-        o.ListenAnyIP(config.WebSocketPort);
+        if (config.Enable)
+        {
+            o.ListenAnyIP(config.Port, a => MQTTnet.AspNetCore.ConnectionBuilderExtensions.UseMqtt(a));
+            o.ListenAnyIP(config.WebSocketPort);
+        }
     });
 #endif
 
