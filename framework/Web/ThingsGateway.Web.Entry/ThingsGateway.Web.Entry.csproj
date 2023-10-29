@@ -50,5 +50,7 @@
 	<PropertyGroup Condition="'$(SolutionName)'=='ThingsGateway - Pro - AF2021'">
 		<DefineConstants>AF2021</DefineConstants>
 	</PropertyGroup>
-	
+	<PropertyGroup Condition="'$(SolutionName)'=='ThingsGateway - Pro'">
+		<DefineConstants>AF2021</DefineConstants>
+	</PropertyGroup>
 </Project>
