@@ -111,6 +111,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{C39748E6-3
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Gateway", "Gateway", "{05A88744-64D9-4959-8A97-5189F327BBBE}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThingsGateway.Foundation.Demo.Winform", "Demo\ThingsGateway.Foundation.Demo.Winform\ThingsGateway.Foundation.Demo.Winform.csproj", "{231AEEA6-F914-4F32-AFF6-D554E6C855CF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -249,6 +251,10 @@ Global
 		{2C827B2C-75DF-413B-9AB2-2D1B438AC082}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2C827B2C-75DF-413B-9AB2-2D1B438AC082}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2C827B2C-75DF-413B-9AB2-2D1B438AC082}.Release|Any CPU.Build.0 = Release|Any CPU
+		{231AEEA6-F914-4F32-AFF6-D554E6C855CF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{231AEEA6-F914-4F32-AFF6-D554E6C855CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{231AEEA6-F914-4F32-AFF6-D554E6C855CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{231AEEA6-F914-4F32-AFF6-D554E6C855CF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -288,6 +294,7 @@ Global
 		{5854938A-F669-40F4-A54C-EC2651730B73} = {9EB46BB6-D4EA-4B06-95EE-6C971E653030}
 		{C39748E6-34AC-4C4A-AEC7-7D807FFB4813} = {9EB46BB6-D4EA-4B06-95EE-6C971E653030}
 		{05A88744-64D9-4959-8A97-5189F327BBBE} = {9EB46BB6-D4EA-4B06-95EE-6C971E653030}
+		{231AEEA6-F914-4F32-AFF6-D554E6C855CF} = {95008B83-0324-4A7C-80DE-2BBDDD1A9099}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C49B2D3E-6818-4E28-91B7-6E4E7E264BBB}
