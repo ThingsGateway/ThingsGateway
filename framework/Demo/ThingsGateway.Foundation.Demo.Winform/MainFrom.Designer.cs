@@ -51,7 +51,7 @@ namespace ThingsGateway.Foundation.Demo.Winform
             // 
             blazorWebView1.Dock = DockStyle.Fill;
             blazorWebView1.Location = new Point(0, 0);
-            blazorWebView1.Margin = new Padding(4, 4, 4, 4);
+            blazorWebView1.Margin = new Padding(4);
             blazorWebView1.Name = "blazorWebView1";
             blazorWebView1.Size = new Size(1029, 529);
             blazorWebView1.TabIndex = 0;
@@ -64,9 +64,10 @@ namespace ThingsGateway.Foundation.Demo.Winform
             ClientSize = new Size(1029, 529);
             Controls.Add(blazorWebView1);
             Icon = (Icon)resources.GetObject("$this.Icon");
-            Margin = new Padding(4, 4, 4, 4);
+            Margin = new Padding(4);
             Name = "MainFrom";
             Text = "Form1";
+            FormClosed += MainFrom_FormClosed;
             ResumeLayout(false);
         }
 

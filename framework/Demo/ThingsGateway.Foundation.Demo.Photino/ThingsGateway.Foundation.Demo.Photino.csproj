@@ -2,6 +2,7 @@
 
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
+		<TargetFrameworks>net6.0;net7.0</TargetFrameworks>
 		<ApplicationIcon>favicon.ico</ApplicationIcon>
 	</PropertyGroup>
 
@@ -25,6 +26,19 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\ThingsGateway.Foundation.Demo.Rcl\ThingsGateway.Foundation.Demo.Rcl.csproj" />
+	</ItemGroup>
+
+
+	<ItemGroup>
+	  <Content Update="wwwroot\favicon.ico">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\favicon.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\index.html">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
 	</ItemGroup>
 
 

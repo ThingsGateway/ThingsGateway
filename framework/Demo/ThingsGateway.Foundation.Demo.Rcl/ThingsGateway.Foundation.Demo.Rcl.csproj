@@ -1,18 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
+	<PropertyGroup>
+		<TargetFrameworks>net6.0;net7.0</TargetFrameworks>
+	</PropertyGroup>
+
 	<PropertyGroup Condition="'$(SolutionName)'=='ThingsGateway - Pro'">
 		<DefineConstants>Pro</DefineConstants>
 	</PropertyGroup>
-	<ItemGroup Condition="'$(SolutionName)'=='ThingsGateway - Pro'">
-
-
+	<ItemGroup Condition="'$(SolutionName)'=='ThingsGateway - Pro' AND '$(Configuration)' == 'Debug'">
 
 		<Compile Include="..\..\PluginPro\ThingsGateway.Plugin.Melsec\Page\QnA3E_BinaryDebugPage.razor.cs" Link="Pages\Melsec\QnA3E_BinaryDebugPage.razor.cs" />
 		<Content Include="..\..\PluginPro\ThingsGateway.Plugin.Melsec\Page\QnA3E_BinaryDebugPage.razor" Link="Pages\Melsec\QnA3E_BinaryDebugPage.razor" />
 		<ProjectReference Include="..\..\FoundationPro\ThingsGateway.Foundation.Adapter.Melsec\ThingsGateway.Foundation.Adapter.Melsec.csproj" />
 
-		
-		
+
 		<Compile Include="..\..\PluginPro\ThingsGateway.Plugin.AllenBradleyCip\Page\AllenBradleyCipTcpDebugPage.razor.cs" Link="Pages\ABCIP\AllenBradleyCipTcpDebugPage.razor.cs" />
 		<Content Include="..\..\PluginPro\ThingsGateway.Plugin.AllenBradleyCip\Page\AllenBradleyCipTcpDebugPage.razor" Link="Pages\ABCIP\AllenBradleyCipTcpDebugPage.razor" />
 		<ProjectReference Include="..\..\FoundationPro\ThingsGateway.Foundation.Adapter.AllenBradleyCip\ThingsGateway.Foundation.Adapter.AllenBradleyCip.csproj" />
@@ -45,24 +46,26 @@
 		<Content Include="..\..\PluginProAF2021\ThingsGateway.Plugin.HZW_QTJC_01\Page\HZW_QTJC_01SerialOverTcpDebugPage.razor" Link="Pages\HZW_QTJC_01\HZW_QTJC_01SerialOverTcpDebugPage.razor" />
 		<ProjectReference Include="..\..\PluginProAF2021\ThingsGateway.Foundation.Adapter.HZW_QTJC_01\ThingsGateway.Foundation.Adapter.HZW_QTJC_01.csproj" />
 
-		<Compile Include="..\..\PluginProAF2021\ThingsGateway.Plugin.LQTCP\Page\LQTCPDebugPage.razor.cs" Link="Pages\LQTCP\LQTCPDebugPage.razor.cs" />
-		<Content Include="..\..\PluginProAF2021\ThingsGateway.Plugin.LQTCP\Page\LQTCPDebugPage.razor" Link="Pages\LQTCP\LQTCPDebugPage.razor" />
-		<ProjectReference Include="..\..\PluginProAF2021\ThingsGateway.Foundation.Adapter.LQTCP\ThingsGateway.Foundation.Adapter.LQTCP.csproj" />
-
-
-		<Compile Include="..\..\PluginProAF2021\ThingsGateway.Plugin.KELID2008\Page\KELID2008DebugPage.razor.cs" Link="Pages\KELID2008\KELID2008DebugPage.razor.cs" />
-		<Compile Include="..\..\PluginProAF2021\ThingsGateway.Plugin.KELID2008\Page\KELID2008OverTcpDebugPage.razor.cs" Link="Pages\KELID2008\KELID2008OverTcpDebugPage.razor.cs" />
-		<Content Include="..\..\PluginProAF2021\ThingsGateway.Plugin.KELID2008\Page\KELID2008DebugPage.razor" Link="Pages\KELID2008\KELID2008DebugPage.razor" />
-		<Content Include="..\..\PluginProAF2021\ThingsGateway.Plugin.KELID2008\Page\KELID2008OverTcpDebugPage.razor" Link="Pages\KELID2008\KELID2008OverTcpDebugPage.razor" />
-		<ProjectReference Include="..\..\PluginProAF2021\ThingsGateway.Foundation.Adapter.KELID2008\ThingsGateway.Foundation.Adapter.KELID2008.csproj" />
 
 
 	</ItemGroup>
 
+	<ItemGroup Condition="'$(SolutionName)'=='ThingsGateway - Pro' ">
+		<Compile Include="..\..\PluginProAF2021\ThingsGateway.Plugin.LQTCP\Page\LQTCPDebugPage.razor.cs" Link="Pages\LQTCP\LQTCPDebugPage.razor.cs" />
+	<Content Include="..\..\PluginProAF2021\ThingsGateway.Plugin.LQTCP\Page\LQTCPDebugPage.razor" Link="Pages\LQTCP\LQTCPDebugPage.razor" />
+	<ProjectReference Include="..\..\PluginProAF2021\ThingsGateway.Foundation.Adapter.LQTCP\ThingsGateway.Foundation.Adapter.LQTCP.csproj" />
+
+
+	<Compile Include="..\..\PluginProAF2021\ThingsGateway.Plugin.KELID2008\Page\KELID2008DebugPage.razor.cs" Link="Pages\KELID2008\KELID2008DebugPage.razor.cs" />
+	<Compile Include="..\..\PluginProAF2021\ThingsGateway.Plugin.KELID2008\Page\KELID2008OverTcpDebugPage.razor.cs" Link="Pages\KELID2008\KELID2008OverTcpDebugPage.razor.cs" />
+	<Content Include="..\..\PluginProAF2021\ThingsGateway.Plugin.KELID2008\Page\KELID2008DebugPage.razor" Link="Pages\KELID2008\KELID2008DebugPage.razor" />
+	<Content Include="..\..\PluginProAF2021\ThingsGateway.Plugin.KELID2008\Page\KELID2008OverTcpDebugPage.razor" Link="Pages\KELID2008\KELID2008OverTcpDebugPage.razor" />
+	<ProjectReference Include="..\..\PluginProAF2021\ThingsGateway.Foundation.Adapter.KELID2008\ThingsGateway.Foundation.Adapter.KELID2008.csproj" />
+	</ItemGroup>
 
 
 	<ItemGroup>
-		<Compile Include="..\..\Plugin\ThingsGateway.Plugin.DLT645\Page\DLT645_2007DebugPage.razor.cs" Link="Pages\DLT645\DLT645_2007DebugPage.razor.cs" />
+
 		<Compile Include="..\..\Plugin\ThingsGateway.Plugin.Mqtt\MqttRpcNameVaueWithId.cs" Link="Pages\Mqtt\MqttRpcNameVaueWithId.cs" />
 		<Compile Include="..\..\Plugin\ThingsGateway.Plugin.Mqtt\Page\MqttClientDebugPage.razor.cs" Link="Pages\Mqtt\MqttClientDebugPage.razor.cs" />
 		<Compile Include="..\..\Plugin\ThingsGateway.Plugin.Mqtt\Page\MqttClientPage.razor.cs" Link="Pages\Mqtt\MqttClientPage.razor.cs" />
@@ -70,11 +73,18 @@
 		<Compile Include="..\..\Plugin\ThingsGateway.Plugin.Mqtt\RpcClass\MqttRpcClientExtensions.cs" Link="Pages\Mqtt\MqttRpcClientExtensions.cs" />
 		<Compile Include="..\..\Plugin\ThingsGateway.Plugin.Mqtt\RpcClass\MqttRpcTopicPair.cs" Link="Pages\Mqtt\MqttRpcTopicPair.cs" />
 		<Compile Include="..\..\Web\ThingsGateway.Gateway.Application\Workers\ManageGateway\MqttLoggerExtensions.cs" Link="Pages\Mqtt\MqttLoggerExtensions.cs" />
+		<Content Include="..\..\Plugin\ThingsGateway.Plugin.Mqtt\Page\MqttClientDebugPage.razor" Link="Pages\Mqtt\MqttClientDebugPage.razor" />
+		<Content Include="..\..\Plugin\ThingsGateway.Plugin.Mqtt\Page\MqttClientPage.razor" Link="Pages\Mqtt\MqttClientPage.razor" />
+		<PackageReference Include="MQTTnet" Version="4.3.1.873" />
+		
+		
+		<Compile Include="..\..\Plugin\ThingsGateway.Plugin.DLT645\Page\DLT645_2007DebugPage.razor.cs" Link="Pages\DLT645\DLT645_2007DebugPage.razor.cs" />
+
 		<Content Include="..\..\Plugin\ThingsGateway.Plugin.DLT645\Page\DLT645_2007DebugPage.razor" Link="Pages\DLT645\DLT645_2007DebugPage.razor" />
 		<Compile Include="..\..\Plugin\ThingsGateway.Plugin.DLT645\Page\DLT645_2007OverTcpDebugPage.razor.cs" Link="Pages\DLT645\DLT645_2007OverTcpDebugPage.razor.cs" />
 		<Content Include="..\..\Plugin\ThingsGateway.Plugin.DLT645\Page\DLT645_2007OverTcpDebugPage.razor" Link="Pages\DLT645\DLT645_2007OverTcpDebugPage.razor" />
 
-		
+
 		<Compile Include="..\..\Plugin\ThingsGateway.Plugin.Modbus\Page\ModbusRtuDebugPage.razor.cs" Link="Pages\Modbus\ModbusRtuDebugPage.razor.cs" />
 		<Content Include="..\..\Plugin\ThingsGateway.Plugin.Modbus\Page\ModbusRtuDebugPage.razor" Link="Pages\Modbus\ModbusRtuDebugPage.razor" />
 		<Compile Include="..\..\Plugin\ThingsGateway.Plugin.Modbus\Page\ModbusRtuOverTcpDebugPage.razor.cs" Link="Pages\Modbus\ModbusRtuOverTcpDebugPage.razor.cs" />
@@ -143,20 +153,7 @@
 	</ItemGroup>
 
 
-	<ItemGroup>
-		<Content Update="wwwroot\**">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-	</ItemGroup>
-
-
-
-	<ItemGroup>
-	  <Content Include="..\..\Plugin\ThingsGateway.Plugin.Mqtt\Page\MqttClientDebugPage.razor" Link="Pages\Mqtt\MqttClientDebugPage.razor" />
-	  <Content Include="..\..\Plugin\ThingsGateway.Plugin.Mqtt\Page\MqttClientPage.razor" Link="Pages\Mqtt\MqttClientPage.razor" />
-		<PackageReference Include="MQTTnet" Version="4.3.1.873" />
-	</ItemGroup>
-
+ 
 
 
 </Project>
