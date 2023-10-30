@@ -497,9 +497,21 @@ namespace ThingsGateway.Foundation.Sockets
             {
                 Logger.Info($"{item.Option.IpHost}停止成功");
             }
+            foreach (var item in GetClients())
+            {
+                try
+                {
+                    item.MainSocket?.Shutdown(SocketShutdown.Both);
+                    item.SafeDispose();
+                }
+                catch
+                {
 
+                }
+            }
             foreach (var item in this.m_monitors)
             {
+
                 item.Socket.SafeDispose();
                 item.SocketAsyncEvent.SafeDispose();
             }
@@ -540,6 +552,18 @@ namespace ThingsGateway.Foundation.Sockets
 
             if (disposing)
             {
+                foreach (var item in GetClients())
+                {
+                    try
+                    {
+                        item.MainSocket?.Shutdown(SocketShutdown.Both);
+                        item.SafeDispose();
+                    }
+                    catch
+                    {
+
+                    }
+                }
                 foreach (var item in this.m_monitors)
                 {
                     item.Socket.SafeDispose();

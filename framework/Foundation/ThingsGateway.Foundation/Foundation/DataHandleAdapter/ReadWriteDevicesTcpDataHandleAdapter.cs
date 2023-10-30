@@ -162,7 +162,7 @@ public abstract class ReadWriteDevicesTcpDataHandleAdapter<TRequest> : CustomDat
         Request = GetInstance();
         Request.SendBytes = bytes;
         await GoSendAsync(bytes, 0, bytes.Length);
-        Logger?.Trace($"{FoundationConst.LogMessageHeader}{ToString()}- 发送:{Request.SendBytes.ToHexString(' ')}");
+        Logger?.Trace($"{FoundationConst.LogMessageHeader}{ToString()}- 发送:{(IsHexData ? Request.SendBytes.ToHexString(' ') : Encoding.UTF8.GetString(Request.SendBytes))}");
     }
 
     /// <inheritdoc/>

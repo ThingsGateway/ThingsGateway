@@ -32,5 +32,10 @@ namespace ThingsGateway.Foundation.Demo.Winform
             this.Text = "ThingsGateway.Foundation.Demo";
             blazorWebView1.RootComponents.Add<ThingsGateway.Foundation.Demo.App>("#app");
         }
+
+        private void MainFrom_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Application.Exit();
+        }
     }
 }
