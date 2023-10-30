@@ -39,7 +39,7 @@
 		<ProjectReference Include="..\..\PluginProAF2021\ThingsGateway.Gateway.LK\ThingsGateway.Gateway.LK.csproj" />
 	</ItemGroup>
 	
-	<ItemGroup Condition="'$(SolutionName)'=='ThingsGateway - Pro' AND  '$(Configuration)' == 'Release'">
+	<ItemGroup Condition="'$(SolutionName)'=='ThingsGateway - Pro' AND  '$(Configuration)' == 'Debug'">
 		<ProjectReference Include="..\..\PluginProAF2021\ThingsGateway.Gateway.LK\ThingsGateway.Gateway.LK.csproj" />
 	</ItemGroup>
 	
