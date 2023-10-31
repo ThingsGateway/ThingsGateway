@@ -290,8 +290,7 @@ public class CollectDeviceCore
             Device.SetDeviceStatus(DateTimeExtensions.CurrentDateTime);
 
             _logger = App.GetService<ILoggerFactory>().CreateLogger("采集设备：" + _device.Name);
-            //更新插件信息
-            CreatDriver();
+
             //全局数据更新
             if (isUpDevice || upDevice)
             {
@@ -301,6 +300,8 @@ public class CollectDeviceCore
                     GlobalDeviceData.CollectDevices.Add(device);
                 }
             }
+            //更新插件信息
+            CreatDriver();
             return true;
         }
         catch (Exception ex)
@@ -364,25 +365,33 @@ public class CollectDeviceCore
                     {
                         try
                         {
-                            await easyLock.WaitAsync();
-                            var read = await _driver.ReadSourceAsync(deviceVariableSourceRead, cancellationToken);
-                            if (read != null && read.IsSuccess)
+                            if (!_driver.IsAsync)
                             {
-                                _logger?.LogTrace($"{_device.Name} - 采集[{deviceVariableSourceRead.VariableAddress} - {deviceVariableSourceRead.Length}] 数据成功 - {read.Content?.ToHexString(' ')}");
-                                deviceVariableSourceRead.LastSuccess = true;
-                                deviceSourceVariableSuccessNum += 1;
+                                await easyLock.WaitAsync();
+                                var read = await _driver.ReadSourceAsync(deviceVariableSourceRead, cancellationToken);
+                                if (read != null && read.IsSuccess)
+                                {
+                                    _logger?.LogTrace($"{_device.Name} - 采集[{deviceVariableSourceRead.VariableAddress} - {deviceVariableSourceRead.Length}] 数据成功 - {read.Content?.ToHexString(' ')}");
+                                    deviceVariableSourceRead.LastSuccess = true;
+                                    deviceSourceVariableSuccessNum += 1;
+                                }
+                                else
+                                {
+                                    _logger?.LogWarning($"{_device?.Name} - 采集[{deviceVariableSourceRead?.VariableAddress} - {deviceVariableSourceRead?.Length}] 数据失败 - {read?.Message}");
+                                    deviceVariableSourceRead.LastSuccess = false;
+                                    deviceSourceVariableFailedNum += 1;
+                                    Device.SetDeviceStatus(null, Device.ErrorCount + deviceSourceVariableFailedNum, read?.Message);
+                                }
                             }
                             else
                             {
-                                _logger?.LogWarning($"{_device?.Name} - 采集[{deviceVariableSourceRead?.VariableAddress} - {deviceVariableSourceRead?.Length}] 数据失败 - {read?.Message}");
-                                deviceVariableSourceRead.LastSuccess = false;
-                                deviceSourceVariableFailedNum += 1;
-                                Device.SetDeviceStatus(null, Device.ErrorCount + deviceSourceVariableFailedNum, read?.Message);
+                                _ = _driver.ReadSourceAsync(deviceVariableSourceRead, cancellationToken);
                             }
                         }
                         finally
                         {
-                            easyLock.Release();
+                            if (!_driver.IsAsync)
+                                easyLock.Release();
                         }
                     }
                 }

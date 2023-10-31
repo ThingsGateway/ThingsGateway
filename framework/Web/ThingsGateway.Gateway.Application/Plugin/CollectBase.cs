@@ -37,6 +37,10 @@ public abstract class CollectBase : DriverBase
     /// </summary>
     /// <returns></returns>
     public abstract bool IsSupportRequest { get; }
+    /// <summary>
+    /// 返回是否多线程读取
+    /// </summary>
+    public virtual bool IsAsync => false;
 
     /// <summary>
     /// 数据转换器
