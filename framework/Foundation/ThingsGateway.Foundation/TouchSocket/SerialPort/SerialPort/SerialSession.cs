@@ -52,7 +52,14 @@ public class SerialSessionBase : BaseSerial, ISerialSession
         this.Protocol = SerialPort;
         this.m_serialCore = new InternalSerialCore();
     }
-
+    /// <summary>
+    /// <inheritdoc/>
+    /// </summary>
+    /// <returns></returns>
+    public override string ToString()
+    {
+        return SerialProperty?.ToString();
+    }
     #region 变量
 
     private DelaySender m_delaySender;
