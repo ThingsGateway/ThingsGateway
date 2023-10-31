@@ -47,7 +47,7 @@ public class OPCUAClient : IDisposable
     /// <summary>
     /// 当前保存的变量名称列表
     /// </summary>
-    public List<string> Variables = new();
+    public List<List<string>> Variables = new();
 
     /// <summary>
     /// 当前的变量名称/OPC变量节点
@@ -584,7 +584,12 @@ public class OPCUAClient : IDisposable
 
         //如果是订阅模式，连接时添加订阅组
         if (OPCNode.ActiveSubscribe)
-            await AddSubscriptionAsync(Guid.NewGuid().ToString(), Variables.ToArray(), OPCNode.LoadType);
+        {
+            foreach (var item in Variables)
+            {
+                await AddSubscriptionAsync(Guid.NewGuid().ToString(), item.ToArray(), OPCNode.LoadType);
+            }
+        }
         return m_session;
     }
 
