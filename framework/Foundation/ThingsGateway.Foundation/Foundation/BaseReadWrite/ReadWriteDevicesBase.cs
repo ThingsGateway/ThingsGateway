@@ -54,7 +54,7 @@ public abstract class ReadWriteDevicesBase : IReadWrite
 
     /// <inheritdoc/>
     [Description("读写超时时间")]
-    public ushort TimeOut { get; set; } = 3000;
+    public int TimeOut { get; set; } = 3000;
 
     /// <inheritdoc/>
     public bool CascadeDisposal { get; set; } = true;

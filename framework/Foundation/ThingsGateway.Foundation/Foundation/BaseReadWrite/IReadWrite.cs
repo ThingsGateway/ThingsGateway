@@ -207,7 +207,7 @@ public interface IReadWrite : IDisposable
     /// <summary>
     /// 读写超时时间
     /// </summary>
-    ushort TimeOut { get; set; }
+    int TimeOut { get; set; }
 
     /// <summary>
     /// 一个寄存器所占的字节长度
