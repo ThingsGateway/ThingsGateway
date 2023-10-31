@@ -78,8 +78,9 @@ public class OPCUAClient : CollectBase
     public override List<DeviceVariableSourceRead> LoadSourceRead(List<DeviceVariableRunTime> deviceVariables)
     {
         _deviceVariables = deviceVariables;
-        _plc.Variables.AddRange(deviceVariables.Select(a => a.VariableAddress).ToList());
-        var dataLists = deviceVariables.ChunkTrivialBetter(driverPropertys.GroupSize);
+        List<List<DeviceVariableRunTime>> dataLists = deviceVariables.ChunkTrivialBetter(driverPropertys.GroupSize);
+        _plc.Variables = new();
+        _plc.Variables.AddRange(dataLists.Select(a => a.Select(a => a.VariableAddress).ToList()).ToList());
         var dataResult = new List<DeviceVariableSourceRead>();
         foreach (var variable in dataLists)
         {
