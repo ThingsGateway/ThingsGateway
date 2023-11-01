@@ -81,7 +81,10 @@ public class PluginSingletonService : ISingleton
                     }
                     break;
             }
-
+            if (plugin.FilePath.IsNullOrEmpty() || plugin.FilePath == "默认")
+            {
+                throw new Exception($"加载本地程序 {plugin.AssembleName} 失败，{plugin.AssembleName}不存在");
+            }
 
             //先判断是否已经拥有插件模块
             if (DriverPluginDict.ContainsKey(plugin.Id))
