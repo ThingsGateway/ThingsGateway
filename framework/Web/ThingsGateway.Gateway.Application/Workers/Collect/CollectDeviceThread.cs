@@ -166,6 +166,10 @@ public class CollectDeviceThread : IAsyncDisposable
         {
             try
             {
+                if (CollectDeviceCores.FirstOrDefault().Driver == null)
+                {
+                    return;
+                }
                 var channelResult = CollectDeviceCores.FirstOrDefault().Driver.GetShareChannel();
                 LoggerGroup log = CollectDeviceCores.FirstOrDefault().Driver.LogMessage;
                 foreach (var device in CollectDeviceCores)

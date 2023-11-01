@@ -156,6 +156,11 @@ public class UploadDeviceThread : IAsyncDisposable
             try
             {
                 //await Task.Yield();
+                if (UploadDeviceCores.FirstOrDefault().Driver == null)
+                {
+                    return;
+                }
+
                 LoggerGroup log = UploadDeviceCores.FirstOrDefault().Driver.LogMessage;
                 foreach (var device in UploadDeviceCores)
                 {
