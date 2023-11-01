@@ -324,9 +324,10 @@ namespace ThingsGateway.Foundation.WebApi
                     return default;
                 }
 
+                var str = await response.Content.ReadAsStringAsync();
                 if (response.IsSuccessStatusCode)
                 {
-                    return this.StringConverter.ConvertFrom(await response.Content.ReadAsStringAsync(), returnType);
+                    return this.StringConverter.ConvertFrom(str, returnType);
                 }
                 else if ((int)response.StatusCode == 422)
                 {
@@ -334,7 +335,7 @@ namespace ThingsGateway.Foundation.WebApi
                 }
                 else
                 {
-                    throw new RpcException(response.ReasonPhrase);
+                    throw new RpcException(str);
                 }
             }
         }
