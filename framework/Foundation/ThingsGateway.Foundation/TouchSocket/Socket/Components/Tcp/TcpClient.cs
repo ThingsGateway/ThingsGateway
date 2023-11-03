@@ -38,17 +38,13 @@ namespace ThingsGateway.Foundation.Sockets
         public ReceivedEventHandler<TcpClient> Received { get; set; }
 
         /// <inheritdoc/>
-        protected override async Task ReceivedData(ReceivedDataEventArgs e)
+        protected override Task ReceivedData(ReceivedDataEventArgs e)
         {
             if (this.Received != null)
             {
-                await this.Received.Invoke(this, e);
-                if (e.Handled)
-                {
-                    return;
-                }
+                return this.Received.Invoke(this, e);
             }
-            await base.ReceivedData(e);
+            return base.ReceivedData(e);
         }
     }
 
@@ -56,15 +52,14 @@ namespace ThingsGateway.Foundation.Sockets
     /// Tcp客户端
     /// </summary>
     [System.Diagnostics.DebuggerDisplay("{IP}:{Port}")]
-    public class TcpClientBase : BaseSocket, ITcpClient
+    public class TcpClientBase : SetupConfigObject, ITcpClient
     {
         /// <summary>
-        /// 构造函数
+        /// Tcp客户端
         /// </summary>
         public TcpClientBase()
         {
             this.Protocol = Protocol.Tcp;
-            this.m_tcpCore = new InternalTcpCore();
         }
 
         #region 变量
@@ -72,7 +67,7 @@ namespace ThingsGateway.Foundation.Sockets
         private DelaySender m_delaySender;
         private volatile bool m_online;
         private readonly EasyLock m_semaphore = new();
-        private readonly InternalTcpCore m_tcpCore;
+        private readonly InternalTcpCore m_tcpCore = new InternalTcpCore();
         #endregion 变量
 
         #region 事件
@@ -223,14 +218,10 @@ namespace ThingsGateway.Foundation.Sockets
         /// <inheritdoc/>
         public DateTime LastSendTime => this.GetTcpCore().SendCounter.LastIncrement;
 
-        /// <inheritdoc/>
-        public IContainer Container { get; private set; }
 
         /// <inheritdoc/>
         public virtual bool CanSetDataHandlingAdapter => true;
 
-        /// <inheritdoc/>
-        public TouchSocketConfig Config { get; private set; }
 
         /// <inheritdoc/>
         public SingleStreamDataHandlingAdapter DataHandlingAdapter { get; private set; }
@@ -247,8 +238,6 @@ namespace ThingsGateway.Foundation.Sockets
         /// <inheritdoc/>
         public bool CanSend => this.m_online;
 
-        /// <inheritdoc/>
-        public IPluginsManager PluginsManager { get; private set; }
 
         /// <inheritdoc/>
         public int Port { get; private set; }
@@ -274,7 +263,7 @@ namespace ThingsGateway.Foundation.Sockets
         /// <inheritdoc/>
         public virtual void Close(string msg = TouchSocketCoreUtility.Empty)
         {
-            lock (this.SyncRoot)
+            lock (this.GetTcpCore())
             {
                 if (this.m_online)
                 {
@@ -292,7 +281,7 @@ namespace ThingsGateway.Foundation.Sockets
         /// <param name="disposing"></param>
         protected override void Dispose(bool disposing)
         {
-            lock (this.SyncRoot)
+            lock (this.GetTcpCore())
             {
                 if (this.m_online)
                 {
@@ -311,22 +300,22 @@ namespace ThingsGateway.Foundation.Sockets
         /// 建立Tcp的连接。
         /// </summary>
         /// <param name="timeout"></param>
+        /// <param name="token"></param>
         /// <exception cref="ObjectDisposedException"></exception>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="Exception"></exception>
         /// <exception cref="TimeoutException"></exception>
-        protected void TcpConnect(int timeout)
+        protected void TcpConnect(int timeout, CancellationToken token = default)
         {
-            lock (this.SyncRoot)
+            try
             {
+                ThrowIfDisposed();
+                this.m_semaphore.Wait(token);
                 if (this.m_online)
                 {
                     return;
                 }
-                if (this.DisposedValue)
-                {
-                    throw new ObjectDisposedException(this.GetType().FullName);
-                }
+
                 if (this.Config == null)
                 {
                     throw new ArgumentNullException(nameof(this.Config), "配置文件不能为空。");
@@ -335,30 +324,25 @@ namespace ThingsGateway.Foundation.Sockets
                 this.MainSocket.SafeDispose();
                 var socket = this.CreateSocket(iPHost);
                 this.PrivateOnConnecting(new ConnectingEventArgs(socket)).GetFalseAwaitResult();
-                if (timeout == 5000)
+
+                var task = Task.Run(() =>
                 {
                     socket.Connect(iPHost.Host, iPHost.Port);
-                }
-                else
+                }, token);
+                task.ConfigureFalseAwait();
+                if (!task.Wait(timeout, token))
                 {
-                    var task = Task.Run(() =>
-                    {
-                        socket.Connect(iPHost.Host, iPHost.Port);
-                    });
-                    task.ConfigureAwait(false);
-                    if (!task.Wait(timeout))
-                    {
-                        socket.SafeDispose();
-                        throw new TimeoutException();
-                    }
+                    socket.SafeDispose();
+                    throw new TimeoutException();
                 }
                 this.m_online = true;
                 this.SetSocket(socket);
                 this.BeginReceive();
-                this.PrivateOnConnected(new ConnectedEventArgs())
-                    .ConfigureAwait(false)
-                    .GetAwaiter()
-                    .GetResult();
+                this.PrivateOnConnected(new ConnectedEventArgs()).ConfigureAwait(false).GetAwaiter().GetResult();
+            }
+            finally
+            {
+                this.m_semaphore.Release();
             }
         }
 
@@ -383,15 +367,13 @@ namespace ThingsGateway.Foundation.Sockets
         {
             try
             {
+                ThrowIfDisposed();
                 await this.m_semaphore.WaitAsync();
                 if (this.m_online)
                 {
                     return;
                 }
-                if (this.DisposedValue)
-                {
-                    throw new ObjectDisposedException(this.GetType().FullName);
-                }
+
                 if (this.Config == null)
                 {
                     throw new ArgumentNullException(nameof(this.Config), "配置文件不能为空。");
@@ -458,23 +440,15 @@ namespace ThingsGateway.Foundation.Sockets
 
 
         /// <inheritdoc/>
-        public virtual ITcpClient Connect(int timeout = 5000)
+        public virtual void Connect(int timeout, CancellationToken cancellationToken)
         {
-            this.TcpConnect(timeout);
-            return this;
+            this.TcpConnect(timeout, cancellationToken);
         }
 
         /// <inheritdoc/>
-        public virtual async Task<ITcpClient> ConnectAsync(int timeout = 5000)
+        public virtual async Task ConnectAsync(int timeout, CancellationToken cancellationToken)
         {
-            await this.TcpConnectAsync(timeout);
-            return this;
-        }
-        /// <inheritdoc/>
-        public virtual async Task<ITcpClient> ConnectAsync(int timeout, CancellationToken cancellationToken)
-        {
-            await TcpConnectAsync(timeout, cancellationToken);
-            return this;
+            await this.TcpConnectAsync(timeout, cancellationToken);
         }
 
         #endregion Connect
@@ -514,7 +488,7 @@ namespace ThingsGateway.Foundation.Sockets
         /// <param name="msg"></param>
         protected void BreakOut(bool manual, string msg)
         {
-            lock (this.SyncRoot)
+            lock (this.GetTcpCore())
             {
                 if (this.m_online)
                 {
@@ -535,18 +509,6 @@ namespace ThingsGateway.Foundation.Sockets
 
 
         /// <inheritdoc/>
-        public override int ReceiveBufferSize
-        {
-            get => this.GetTcpCore().ReceiveBufferSize;
-        }
-
-        /// <inheritdoc/>
-        public override int SendBufferSize
-        {
-            get => this.GetTcpCore().SendBufferSize;
-        }
-
-        /// <inheritdoc/>
         public virtual void SetDataHandlingAdapter(SingleStreamDataHandlingAdapter adapter)
         {
             if (!this.CanSetDataHandlingAdapter)
@@ -555,67 +517,6 @@ namespace ThingsGateway.Foundation.Sockets
             }
 
             this.SetAdapter(adapter);
-        }
-
-        /// <inheritdoc/>
-        public ITcpClient Setup(TouchSocketConfig config)
-        {
-            if (config == null)
-            {
-                throw new ArgumentNullException(nameof(config));
-            }
-
-            this.ThrowIfDisposed();
-
-            this.BuildConfig(config);
-
-            this.PluginsManager.Raise(nameof(ILoadingConfigPlugin.OnLoadingConfig), this, new ConfigEventArgs(config));
-            this.LoadConfig(this.Config);
-            this.PluginsManager.Raise(nameof(ILoadedConfigPlugin.OnLoadedConfig), this, new ConfigEventArgs(config));
-
-            return this;
-        }
-
-        private void BuildConfig(TouchSocketConfig config)
-        {
-            this.Config = config;
-
-            if (!(config.GetValue(TouchSocketCoreConfigExtension.ContainerProperty) is IContainer container))
-            {
-                container = new Container();
-            }
-
-            if (!container.IsRegistered(typeof(ILog)))
-            {
-                container.RegisterSingleton<ILog, LoggerGroup>();
-            }
-
-            if (!(config.GetValue(TouchSocketCoreConfigExtension.PluginsManagerProperty) is IPluginsManager pluginsManager))
-            {
-                pluginsManager = new PluginsManager(container);
-            }
-
-            if (container.IsRegistered(typeof(IPluginsManager)))
-            {
-                pluginsManager = container.Resolve<IPluginsManager>();
-            }
-            else
-            {
-                container.RegisterSingleton<IPluginsManager>(pluginsManager);
-            }
-
-            if (config.GetValue(TouchSocketCoreConfigExtension.ConfigureContainerProperty) is Action<IContainer> actionContainer)
-            {
-                actionContainer.Invoke(container);
-            }
-
-            if (config.GetValue(TouchSocketCoreConfigExtension.ConfigurePluginsProperty) is Action<IPluginsManager> actionPluginsManager)
-            {
-                pluginsManager.Enable = true;
-                actionPluginsManager.Invoke(pluginsManager);
-            }
-            this.Container = container;
-            this.PluginsManager = pluginsManager;
         }
 
         private void PrivateHandleReceivedData(ByteBlock byteBlock, IRequestInfo requestInfo)
@@ -653,17 +554,14 @@ namespace ThingsGateway.Foundation.Sockets
             if (this.PluginsManager.GetPluginCount(nameof(ITcpSendingPlugin.OnTcpSending)) > 0)
             {
                 var args = new SendingEventArgs(buffer, offset, length);
-                await this.PluginsManager.RaiseAsync(nameof(ITcpSendingPlugin.OnTcpSending), this, args).ConfigureAwait(false);
+                await this.PluginsManager.RaiseAsync(nameof(ITcpSendingPlugin.OnTcpSending), this, args).ConfigureFalseAwait();
                 return args.IsPermitOperation;
             }
             return true;
         }
 
-        /// <summary>
-        /// 加载配置
-        /// </summary>
-        /// <param name="config"></param>
-        protected virtual void LoadConfig(TouchSocketConfig config)
+        /// <inheritdoc/>
+        protected override void LoadConfig(TouchSocketConfig config)
         {
             this.RemoteIPHost = config.GetValue(TouchSocketConfigExtension.RemoteIPHostProperty);
             this.Logger ??= this.Container.Resolve<ILog>();

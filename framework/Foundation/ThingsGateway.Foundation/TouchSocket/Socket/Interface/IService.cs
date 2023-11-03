@@ -28,7 +28,7 @@ namespace ThingsGateway.Foundation.Sockets
     /// <summary>
     /// 服务器接口
     /// </summary>
-    public interface IService : IDisposable
+    public interface IService : IDisposable, ISetupConfigObject
     {
         /// <summary>
         /// 服务器状态
@@ -36,22 +36,9 @@ namespace ThingsGateway.Foundation.Sockets
         ServerState ServerState { get; }
 
         /// <summary>
-        /// 获取服务器配置
-        /// </summary>
-        TouchSocketConfig Config { get; }
-
-        /// <summary>
         /// 名称
         /// </summary>
         string ServerName { get; }
-
-        /// <summary>
-        /// 配置服务器
-        /// </summary>
-        /// <param name="serverConfig">配置</param>
-        /// <exception cref="Exception"></exception>
-        /// <returns>设置的服务实例</returns>
-        IService Setup(TouchSocketConfig serverConfig);
 
         /// <summary>
         /// 启动

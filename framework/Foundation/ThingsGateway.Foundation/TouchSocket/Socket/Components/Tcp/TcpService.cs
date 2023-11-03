@@ -31,31 +31,22 @@ namespace ThingsGateway.Foundation.Sockets
     /// </summary>
     public class TcpService<TClient> : TcpServiceBase, ITcpService<TClient> where TClient : SocketClient, new()
     {
-        /// <inheritdoc/>
-        public override int SendBufferSize => 1024 * 1024 * 10;
-
-        /// <inheritdoc/>
-        public override int ReceiveBufferSize => 1024 * 1024 * 10;
 
         /// <summary>
-        /// 构造函数
+        /// Tcp泛型服务器，由使用者自己指定<see cref="SocketClient"/>类型。
         /// </summary>
         public TcpService()
         {
-            this.m_socketClients = new SocketClientCollection();
             this.m_getDefaultNewId = this.GetDefaultNewId;
         }
 
         #region 变量
 
         private readonly List<TcpNetworkMonitor> m_monitors = new List<TcpNetworkMonitor>();
-        private readonly SocketClientCollection m_socketClients;
-        private TouchSocketConfig m_config;
-        private IContainer m_container;
+        private readonly SocketClientCollection m_socketClients = new SocketClientCollection();
         private Func<string> m_getDefaultNewId;
         private int m_maxCount;
         private long m_nextId;
-        private IPluginsManager m_pluginsManager;
         private ServerState m_serverState;
 
         #endregion 变量
@@ -63,19 +54,10 @@ namespace ThingsGateway.Foundation.Sockets
         #region 属性
 
         /// <inheritdoc/>
-        public override TouchSocketConfig Config => this.m_config;
-
-        /// <inheritdoc/>
-        public override IContainer Container => this.m_container;
-
-        /// <inheritdoc/>
         public override int MaxCount => this.m_maxCount;
 
         /// <inheritdoc/>
         public override IEnumerable<TcpNetworkMonitor> Monitors => this.m_monitors.ToArray();
-
-        /// <inheritdoc/>
-        public override IPluginsManager PluginsManager => this.m_pluginsManager;
 
         /// <inheritdoc/>
         public override string ServerName => this.Config?.GetValue(TouchSocketConfigExtension.ServerNameProperty);
@@ -368,37 +350,6 @@ namespace ThingsGateway.Foundation.Sockets
             }
         }
 
-        /// <inheritdoc/>
-        public override IService Setup(TouchSocketConfig config)
-        {
-            if (config == null)
-            {
-                throw new ArgumentNullException(nameof(config));
-            }
-
-            this.ThrowIfDisposed();
-
-            this.BuildConfig(config);
-
-            this.m_pluginsManager.Raise(nameof(ILoadingConfigPlugin.OnLoadingConfig), this, new ConfigEventArgs(config));
-            this.LoadConfig(this.m_config);
-            this.m_pluginsManager.Raise(nameof(ILoadedConfigPlugin.OnLoadedConfig), this, new ConfigEventArgs(config));
-
-            this.Logger ??= this.m_container.Resolve<ILog>();
-            return this;
-        }
-
-        /// <summary>
-        /// <inheritdoc/>
-        /// </summary>
-        /// <param name="port"></param>
-        public override IService Setup(int port)
-        {
-            var serviceConfig = new TouchSocketConfig();
-            serviceConfig.SetListenIPHosts(new IPHost[] { new IPHost(port) });
-            return this.Setup(serviceConfig);
-        }
-
         /// <summary>
         ///<inheritdoc/>
         /// </summary>
@@ -417,7 +368,7 @@ namespace ThingsGateway.Foundation.Sockets
         /// <exception cref="System.Exception"></exception>
         public override IService Start()
         {
-            if (this.m_config is null)
+            if (this.Config is null)
             {
                 throw new ArgumentNullException(nameof(this.Config), "Config为null，请先执行Setup");
             }
@@ -476,14 +427,14 @@ namespace ThingsGateway.Foundation.Sockets
                 }
                 this.m_serverState = ServerState.Running;
 
-                this.m_pluginsManager.Raise(nameof(IServerStartedPlugin.OnServerStarted), this, new ServiceStateEventArgs(this.m_serverState, default));
+                this.PluginsManager.Raise(nameof(IServerStartedPlugin.OnServerStarted), this, new ServiceStateEventArgs(this.m_serverState, default));
                 return this;
             }
             catch (Exception ex)
             {
                 this.m_serverState = ServerState.Exception;
 
-                this.m_pluginsManager.Raise(nameof(IServerStartedPlugin.OnServerStarted), this, new ServiceStateEventArgs(this.m_serverState, ex) { Message = ex.ToString() });
+                this.PluginsManager.Raise(nameof(IServerStartedPlugin.OnServerStarted), this, new ServiceStateEventArgs(this.m_serverState, ex) { Message = ex.Message });
                 throw;
             }
         }
@@ -521,10 +472,8 @@ namespace ThingsGateway.Foundation.Sockets
             this.Clear();
 
             this.m_serverState = ServerState.Stopped;
-            if (this.PluginsManager?.Enable == true)
-            {
-                this.m_pluginsManager?.Raise(nameof(IServerStopedPlugin.OnServerStoped), this, new ServiceStateEventArgs(this.m_serverState, default));
-            }
+            this.PluginsManager.Raise(nameof(IServerStopedPlugin.OnServerStoped), this, new ServiceStateEventArgs(this.m_serverState, default));
+
             return this;
         }
 
@@ -575,10 +524,8 @@ namespace ThingsGateway.Foundation.Sockets
                 this.Clear();
 
                 this.m_serverState = ServerState.Disposed;
-                if (this.PluginsManager?.Enable == true)
-                {
-                    this.m_pluginsManager?.Raise(nameof(IServerStopedPlugin.OnServerStoped), this, new ServiceStateEventArgs(this.m_serverState, default));
-                }
+                this.PluginsManager.Raise(nameof(IServerStopedPlugin.OnServerStoped), this, new ServiceStateEventArgs(this.m_serverState, default));
+
                 this.PluginsManager?.SafeDispose();
             }
             base.Dispose(disposing);
@@ -593,11 +540,8 @@ namespace ThingsGateway.Foundation.Sockets
             return new TClient();
         }
 
-        /// <summary>
-        /// 加载配置
-        /// </summary>
-        /// <param name="config"></param>
-        protected virtual void LoadConfig(TouchSocketConfig config)
+        /// <inheritdoc/>
+        protected override void LoadConfig(TouchSocketConfig config)
         {
             if (config.GetValue(TouchSocketConfigExtension.GetDefaultNewIdProperty) is Func<string> fun)
             {
@@ -636,48 +580,6 @@ namespace ThingsGateway.Foundation.Sockets
             }
         }
 
-        private void BuildConfig(TouchSocketConfig config)
-        {
-            this.m_config = config;
-
-            if (!(config.GetValue(TouchSocketCoreConfigExtension.ContainerProperty) is IContainer container))
-            {
-                container = new Container();
-            }
-
-            if (!container.IsRegistered(typeof(ILog)))
-            {
-                container.RegisterSingleton<ILog, LoggerGroup>();
-            }
-
-            if (!(config.GetValue(TouchSocketCoreConfigExtension.PluginsManagerProperty) is IPluginsManager pluginsManager))
-            {
-                pluginsManager = new PluginsManager(container);
-            }
-
-            if (container.IsRegistered(typeof(IPluginsManager)))
-            {
-                pluginsManager = container.Resolve<IPluginsManager>();
-            }
-            else
-            {
-                container.RegisterSingleton<IPluginsManager>(pluginsManager);
-            }
-
-            if (config.GetValue(TouchSocketCoreConfigExtension.ConfigureContainerProperty) is Action<IContainer> actionContainer)
-            {
-                actionContainer.Invoke(container);
-            }
-
-            if (config.GetValue(TouchSocketCoreConfigExtension.ConfigurePluginsProperty) is Action<IPluginsManager> actionPluginsManager)
-            {
-                pluginsManager.Enable = true;
-                actionPluginsManager.Invoke(pluginsManager);
-            }
-
-            this.m_container = container;
-            this.m_pluginsManager = pluginsManager;
-        }
 
         private void OnAccepted(SocketAsyncEventArgs e)
         {
@@ -706,8 +608,9 @@ namespace ThingsGateway.Foundation.Sockets
                         this.OnAccepted(e);
                     }
                 }
-                catch
+                catch (Exception ex)
                 {
+                    this.Logger.Exception(ex);
                     e.SafeDispose();
                     return;
                 }
@@ -742,12 +645,11 @@ namespace ThingsGateway.Foundation.Sockets
                 socket.SendTimeout = monitor.Option.SendTimeout;
 
                 var client = this.GetClientInstence(socket, monitor);
-                client.InternalSetConfig(this.m_config);
-                client.InternalSetContainer(this.m_container);
+                client.InternalSetContainer(this.Container);
                 client.InternalSetService(this);
                 client.InternalSetListenOption(monitor.Option);
                 client.InternalSetSocket(socket);
-                client.InternalSetPluginsManager(this.m_pluginsManager);
+                client.InternalSetPluginsManager(this.PluginsManager);
 
                 if (client.CanSetDataHandlingAdapter)
                 {

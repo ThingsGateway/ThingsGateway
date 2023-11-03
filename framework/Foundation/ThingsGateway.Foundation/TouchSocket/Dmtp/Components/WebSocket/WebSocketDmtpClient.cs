@@ -29,7 +29,7 @@ namespace ThingsGateway.Foundation.Dmtp
     /// <summary>
     /// WebSocketDmtpClient
     /// </summary>
-    public class WebSocketDmtpClient : BaseSocket, IWebSocketDmtpClient
+    public class WebSocketDmtpClient : SetupConfigObject, IWebSocketDmtpClient
     {
         /// <summary>
         /// WebSocketDmtpClient
@@ -66,13 +66,7 @@ namespace ThingsGateway.Foundation.Dmtp
         /// <inheritdoc/>
         public bool CanSend => this.m_client.State == WebSocketState.Open;
 
-        /// <summary>
-        /// 客户端配置
-        /// </summary>
-        public TouchSocketConfig Config { get; private set; }
 
-        /// <inheritdoc/>
-        public IContainer Container { get; private set; }
 
         /// <summary>
         /// 断开连接
@@ -94,20 +88,14 @@ namespace ThingsGateway.Foundation.Dmtp
         /// <inheritdoc/>
         public DateTime LastSendTime => this.m_sendCounter.LastIncrement;
 
-        /// <inheritdoc/>
-        public IPluginsManager PluginsManager { get; private set; }
 
         /// <inheritdoc/>
         public Protocol Protocol { get; set; } = DmtpUtility.DmtpProtocol;
 
-        /// <inheritdoc/>
-        public override int ReceiveBufferSize => this.m_receiveBufferSize;
 
         /// <inheritdoc/>
         public IPHost RemoteIPHost { get; private set; }
 
-        /// <inheritdoc/>
-        public override int SendBufferSize => this.m_sendBufferSize;
 
         /// <summary>
         /// 发送<see cref="IDmtpActor"/>关闭消息。
@@ -165,9 +153,9 @@ namespace ThingsGateway.Foundation.Dmtp
                     _ = this.BeginReceive();
                 }
 
-                this.m_dmtpActor.Handshake(this.Config.GetValue(DmtpConfigExtension.VerifyTokenProperty),
-                    this.Config.GetValue(DmtpConfigExtension.DefaultIdProperty),
-                    timeout, this.Config.GetValue(DmtpConfigExtension.MetadataProperty), token);
+                this.m_dmtpActor.Handshake(this.Config.GetValue(DmtpConfigExtension.DmtpOptionProperty).VerifyToken,
+                   this.Config.GetValue(DmtpConfigExtension.DmtpOptionProperty).Id,
+                   timeout, this.Config.GetValue(DmtpConfigExtension.DmtpOptionProperty).Metadata, token);
                 this.IsHandshaked = true;
             }
             finally
@@ -194,28 +182,6 @@ namespace ThingsGateway.Foundation.Dmtp
             this.DmtpActor.ResetId(newId);
         }
 
-        /// <summary>
-        /// 配置
-        /// </summary>
-        /// <param name="config"></param>
-        /// <exception cref="Exception"></exception>
-        public IWebSocketDmtpClient Setup(TouchSocketConfig config)
-        {
-            if (config == null)
-            {
-                throw new ArgumentNullException(nameof(config));
-            }
-
-            this.ThrowIfDisposed();
-
-            this.BuildConfig(config);
-
-            this.PluginsManager.Raise(nameof(ILoadingConfigPlugin.OnLoadingConfig), this, new ConfigEventArgs(config));
-            this.LoadConfig(this.Config);
-            this.PluginsManager.Raise(nameof(ILoadedConfigPlugin.OnLoadedConfig), this, new ConfigEventArgs(config));
-
-            return this;
-        }
 
         /// <inheritdoc/>
         protected override void Dispose(bool disposing)
@@ -236,11 +202,9 @@ namespace ThingsGateway.Foundation.Dmtp
         /// 加载配置
         /// </summary>
         /// <param name="config"></param>
-        protected virtual void LoadConfig(TouchSocketConfig config)
+        protected override void LoadConfig(TouchSocketConfig config)
         {
             this.RemoteIPHost = config.GetValue(TouchSocketConfigExtension.RemoteIPHostProperty);
-            this.Logger ??= this.Container.Resolve<ILog>();
-
             if (this.Container.IsRegistered(typeof(IDmtpRouteService)))
             {
                 this.m_findDmtpActor = this.Container.Resolve<IDmtpRouteService>().FindDmtpActor;
@@ -266,7 +230,7 @@ namespace ThingsGateway.Foundation.Dmtp
             {
                 while (true)
                 {
-                    using (var byteBlock = new ByteBlock(this.ReceiveBufferSize))
+                    using (var byteBlock = new ByteBlock(this.m_receiveBufferSize))
                     {
                         var result = await this.m_client.ReceiveAsync(new ArraySegment<byte>(byteBlock.Buffer, 0, byteBlock.Capacity), default);
                         if (result.Count == 0)
@@ -290,7 +254,7 @@ namespace ThingsGateway.Foundation.Dmtp
 
         private void BreakOut(string msg, bool manual)
         {
-            lock (this.SyncRoot)
+            lock (this.m_semaphoreForConnect)
             {
                 if (this.IsHandshaked)
                 {
@@ -304,47 +268,6 @@ namespace ThingsGateway.Foundation.Dmtp
             }
         }
 
-        private void BuildConfig(TouchSocketConfig config)
-        {
-            this.Config = config;
-
-            if (!(config.GetValue(TouchSocketCoreConfigExtension.ContainerProperty) is IContainer container))
-            {
-                container = new Container();
-            }
-
-            if (!container.IsRegistered(typeof(ILog)))
-            {
-                container.RegisterSingleton<ILog, LoggerGroup>();
-            }
-
-            if (!(config.GetValue(TouchSocketCoreConfigExtension.PluginsManagerProperty) is IPluginsManager pluginsManager))
-            {
-                pluginsManager = new PluginsManager(container);
-            }
-
-            if (container.IsRegistered(typeof(IPluginsManager)))
-            {
-                pluginsManager = container.Resolve<IPluginsManager>();
-            }
-            else
-            {
-                container.RegisterSingleton<IPluginsManager>(pluginsManager);
-            }
-
-            if (config.GetValue(TouchSocketCoreConfigExtension.ConfigureContainerProperty) is Action<IContainer> actionContainer)
-            {
-                actionContainer.Invoke(container);
-            }
-
-            if (config.GetValue(TouchSocketCoreConfigExtension.ConfigurePluginsProperty) is Action<IPluginsManager> actionPluginsManager)
-            {
-                pluginsManager.Enable = true;
-                actionPluginsManager.Invoke(pluginsManager);
-            }
-            this.Container = container;
-            this.PluginsManager = pluginsManager;
-        }
 
         private void OnReceivePeriod(long value)
         {

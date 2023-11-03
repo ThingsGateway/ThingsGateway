@@ -28,7 +28,7 @@ namespace ThingsGateway.Foundation.Dmtp
     /// <summary>
     /// IWebSocketDmtpClient
     /// </summary>
-    public interface IWebSocketDmtpClient : IWebSocketDmtpClientBase
+    public interface IWebSocketDmtpClient : IWebSocketDmtpClientBase, ISetupConfigObject
     {
         /// <summary>
         /// 异步连接

@@ -53,7 +53,19 @@ namespace ThingsGateway.Foundation.Sockets
         {
             return pluginsManager.Add<CheckClearPlugin<TClient>>();
         }
-
+        #region Reconnection
+        /// <summary>
+        /// 使用断线重连。
+        /// </summary>
+        /// <typeparam name="TClient"></typeparam>
+        /// <param name="pluginsManager"></param>
+        /// <returns></returns>
+        public static ReconnectionPlugin<TClient> UseReconnection<TClient>(this IPluginsManager pluginsManager) where TClient : class, ITcpClient
+        {
+            var reconnectionPlugin = new ReconnectionPlugin<TClient>();
+            pluginsManager.Add(reconnectionPlugin);
+            return reconnectionPlugin;
+        }
         /// <summary>
         /// 使用断线重连。
         /// <para>该效果仅客户端在完成首次连接，且为被动断开时有效。</para>
@@ -66,7 +78,6 @@ namespace ThingsGateway.Foundation.Sockets
         /// <returns></returns>
         public static ReconnectionPlugin<ITcpClient> UseReconnection(this IPluginsManager pluginsManager, int tryCount = 10, bool printLog = false, int sleepTime = 1000, Action<ITcpClient> successCallback = null)
         {
-            var first = true;
             var reconnectionPlugin = new ReconnectionPlugin<ITcpClient>();
             reconnectionPlugin.SetConnectAction(async client =>
             {
@@ -81,13 +92,8 @@ namespace ThingsGateway.Foundation.Sockets
                         }
                         else
                         {
-                            if (first)
-                            {
-                                await Task.Delay(500);
-                                first = false;
-                            }
-                            client.Connect();
-                            first = true;
+                            await Task.Delay(1000);
+                            await client.ConnectAsync();
                         }
                         successCallback?.Invoke(client);
                         return true;
@@ -108,18 +114,6 @@ namespace ThingsGateway.Foundation.Sockets
         }
 
         /// <summary>
-        /// 使用指定刻度爱你类型的断线重连
-        /// </summary>
-        /// <param name="pluginsManager"></param>
-        /// <returns></returns>
-        public static ReconnectionPlugin<TClient> UseReconnection<TClient>(this IPluginsManager pluginsManager) where TClient : class, ITcpClient
-        {
-            var reconnectionPlugin = new ReconnectionPlugin<TClient>();
-            pluginsManager.Add(reconnectionPlugin);
-            return reconnectionPlugin;
-        }
-
-        /// <summary>
         /// 使用断线重连。
         /// <para>该效果仅客户端在完成首次连接，且为被动断开时有效。</para>
         /// </summary>
@@ -132,7 +126,6 @@ namespace ThingsGateway.Foundation.Sockets
             Func<ITcpClient, int, Exception, bool> failCallback = default,
             Action<ITcpClient> successCallback = default)
         {
-            var first = true;
             var reconnectionPlugin = new ReconnectionPlugin<ITcpClient>();
             reconnectionPlugin.SetConnectAction(async client =>
             {
@@ -147,13 +140,8 @@ namespace ThingsGateway.Foundation.Sockets
                         }
                         else
                         {
-                            if (first)
-                            {
-                                await Task.Delay(500);
-                                first = false;
-                            }
-                            client.Connect();
-                            first = true;
+                            await Task.Delay(1000);
+                            await client.ConnectAsync();
                         }
 
                         successCallback?.Invoke(client);
@@ -172,6 +160,7 @@ namespace ThingsGateway.Foundation.Sockets
             pluginsManager.Add(reconnectionPlugin);
             return reconnectionPlugin;
         }
+        #endregion
 
     }
 }

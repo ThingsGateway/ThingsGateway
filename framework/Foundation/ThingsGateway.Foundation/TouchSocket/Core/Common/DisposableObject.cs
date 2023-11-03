@@ -72,4 +72,28 @@ namespace ThingsGateway.Foundation.Core
             GC.SuppressFinalize(this);
         }
     }
+#if NET6_0_OR_GREATER
+    public partial class DisposableObject : IAsyncDisposable
+    {
+        /// <summary>
+        /// 异步释放资源。内部已经处理了<see cref="GC.SuppressFinalize(object)"/>
+        /// </summary>
+        /// <returns></returns>
+        public async ValueTask DisposeAsync()
+        {
+            await DisposeAsyncCore().ConfigureAwait(false);
+            Dispose(disposing: false);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// 异步释放资源。注意：此方法仅在调用<see cref="IAsyncDisposable.DisposeAsync"/>时有效。
+        /// </summary>
+        /// <returns></returns>
+        protected virtual ValueTask DisposeAsyncCore()
+        {
+            return ValueTask.CompletedTask;
+        }
+    }
+#endif
 }

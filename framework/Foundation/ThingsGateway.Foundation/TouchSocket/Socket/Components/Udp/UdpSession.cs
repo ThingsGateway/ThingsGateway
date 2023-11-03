@@ -56,7 +56,7 @@ namespace ThingsGateway.Foundation.Sockets
     /// <summary>
     /// UDP基类服务器。
     /// </summary>
-    public class UdpSessionBase : BaseSocket, IUdpSession, IPluginObject
+    public class UdpSessionBase : SetupConfigObject, IUdpSession, IPluginObject
     {
         private readonly ConcurrentList<SocketAsyncEventArgs> m_socketAsyncs;
 
@@ -71,11 +71,6 @@ namespace ThingsGateway.Foundation.Sockets
             this.Monitor = new UdpNetworkMonitor(null, socket);
         }
 
-        /// <inheritdoc/>
-        public override int ReceiveBufferSize => 64 * 1024;
-
-        /// <inheritdoc/>
-        public override int SendBufferSize => 64 * 1024;
 
         /// <summary>
         /// <inheritdoc/>
@@ -86,16 +81,6 @@ namespace ThingsGateway.Foundation.Sockets
         /// <inheritdoc/>
         /// </summary>
         public virtual bool CanSetDataHandlingAdapter => true;
-
-        /// <summary>
-        /// 获取配置
-        /// </summary>
-        public TouchSocketConfig Config { get; private set; }
-
-        /// <summary>
-        /// <inheritdoc/>
-        /// </summary>
-        public IContainer Container { get; private set; }
 
         /// <summary>
         /// <inheritdoc/>
@@ -116,11 +101,6 @@ namespace ThingsGateway.Foundation.Sockets
         /// 监听器
         /// </summary>
         public UdpNetworkMonitor Monitor { get; private set; }
-
-        /// <summary>
-        /// <inheritdoc/>
-        /// </summary>
-        public IPluginsManager PluginsManager { get; private set; }
 
         /// <summary>
         /// <inheritdoc/>
@@ -210,82 +190,6 @@ namespace ThingsGateway.Foundation.Sockets
             }
 
             this.SetAdapter(adapter);
-        }
-
-        /// <summary>
-        /// <inheritdoc/>
-        /// </summary>
-        /// <param name="config"></param>
-        /// <returns></returns>
-        public IService Setup(TouchSocketConfig config)
-        {
-            if (config == null)
-            {
-                throw new ArgumentNullException(nameof(config));
-            }
-
-            this.ThrowIfDisposed();
-
-            this.BuildConfig(config);
-
-            this.PluginsManager.Raise(nameof(ILoadingConfigPlugin.OnLoadingConfig), this, new ConfigEventArgs(config));
-            this.LoadConfig(this.Config);
-            this.PluginsManager.Raise(nameof(ILoadedConfigPlugin.OnLoadedConfig), this, new ConfigEventArgs(config));
-            return this;
-        }
-
-        private void BuildConfig(TouchSocketConfig config)
-        {
-            this.Config = config;
-
-            if (!(config.GetValue(TouchSocketCoreConfigExtension.ContainerProperty) is IContainer container))
-            {
-                container = new Container();
-            }
-
-            if (!container.IsRegistered(typeof(ILog)))
-            {
-                container.RegisterSingleton<ILog, LoggerGroup>();
-            }
-
-            if (!(config.GetValue(TouchSocketCoreConfigExtension.PluginsManagerProperty) is IPluginsManager pluginsManager))
-            {
-                pluginsManager = new PluginsManager(container);
-            }
-
-            if (container.IsRegistered(typeof(IPluginsManager)))
-            {
-                pluginsManager = container.Resolve<IPluginsManager>();
-            }
-            else
-            {
-                container.RegisterSingleton<IPluginsManager>(pluginsManager);
-            }
-
-            if (config.GetValue(TouchSocketCoreConfigExtension.ConfigureContainerProperty) is Action<IContainer> actionContainer)
-            {
-                actionContainer.Invoke(container);
-            }
-
-            if (config.GetValue(TouchSocketCoreConfigExtension.ConfigurePluginsProperty) is Action<IPluginsManager> actionPluginsManager)
-            {
-                pluginsManager.Enable = true;
-                actionPluginsManager.Invoke(pluginsManager);
-            }
-
-            this.Container = container;
-            this.PluginsManager = pluginsManager;
-        }
-
-        /// <summary>
-        /// 通过端口配置
-        /// </summary>
-        /// <param name="port"></param>
-        public IService Setup(int port)
-        {
-            var serverConfig = new TouchSocketConfig();
-            serverConfig.SetBindIPHost(new IPHost(port));
-            return this.Setup(serverConfig);
         }
 
         /// <summary>
@@ -405,11 +309,8 @@ namespace ThingsGateway.Foundation.Sockets
             return true;
         }
 
-        /// <summary>
-        /// 加载配置
-        /// </summary>
-        /// <param name="config"></param>
-        protected virtual void LoadConfig(TouchSocketConfig config)
+        /// <inheritdoc/>
+        protected override void LoadConfig(TouchSocketConfig config)
         {
             this.Logger = this.Container.Resolve<ILog>();
             this.RemoteIPHost = config.GetValue(TouchSocketConfigExtension.RemoteIPHostProperty);
@@ -448,10 +349,7 @@ namespace ThingsGateway.Foundation.Sockets
 
             if (this.Config != null)
             {
-                if (this.Config.GetValue(DataHandlingAdapterExtension.MaxPackageSizeProperty) is int v1)
-                {
-                    adapter.MaxPackageSize = v1;
-                }
+                adapter.Config(this.Config);
             }
             adapter.Logger = this.Logger;
             adapter.OnLoaded(this);
@@ -501,7 +399,7 @@ namespace ThingsGateway.Foundation.Sockets
                 var eventArg = new SocketAsyncEventArgs();
                 this.m_socketAsyncs.Add(eventArg);
                 eventArg.Completed += this.IO_Completed;
-                var byteBlock = new ByteBlock(this.ReceiveBufferSize);
+                var byteBlock = new ByteBlock(1024 * 64);
                 eventArg.UserToken = byteBlock;
                 eventArg.SetBuffer(byteBlock.Buffer, 0, byteBlock.Capacity);
                 eventArg.RemoteEndPoint = iPHost.EndPoint;
@@ -518,7 +416,7 @@ namespace ThingsGateway.Foundation.Sockets
                     var eventArg = new SocketAsyncEventArgs();
                     this.m_socketAsyncs.Add(eventArg);
                     eventArg.Completed += this.IO_Completed;
-                    var byteBlock = new ByteBlock(this.ReceiveBufferSize);
+                    var byteBlock = new ByteBlock(1024 * 64);
                     eventArg.UserToken = byteBlock;
                     eventArg.SetBuffer(byteBlock.Buffer, 0, byteBlock.Capacity);
                     eventArg.RemoteEndPoint = iPHost.EndPoint;
@@ -734,7 +632,7 @@ namespace ThingsGateway.Foundation.Sockets
 
                 this.HandleBuffer(e.RemoteEndPoint, byteBlock);
 
-                var newByteBlock = new ByteBlock(this.ReceiveBufferSize);
+                var newByteBlock = new ByteBlock(1024 * 64);
                 e.UserToken = newByteBlock;
                 e.SetBuffer(newByteBlock.Buffer, 0, newByteBlock.Buffer.Length);
 

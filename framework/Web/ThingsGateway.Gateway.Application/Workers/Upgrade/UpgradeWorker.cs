@@ -137,7 +137,8 @@ public partial class UpgradeWorker : BackgroundService
         TcpDmtpClient client = new TcpDmtpClient();
         var config = new TouchSocketConfig()
                .SetRemoteIPHost(autoUpdateConfig.UpdateServerUri)
-               .SetVerifyToken(autoUpdateConfig.VerifyToken)
+               .SetDmtpOption(
+            new DmtpOption() { VerifyToken = autoUpdateConfig.VerifyToken })
                .ConfigureContainer(a =>
                {
                    a.AddEasyLogger(LogOut);

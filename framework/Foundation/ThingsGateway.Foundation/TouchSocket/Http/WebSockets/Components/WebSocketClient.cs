@@ -35,18 +35,14 @@ namespace ThingsGateway.Foundation.Http.WebSockets
         /// </summary>
         public WSDataFrameEventHandler<WebSocketClient> Received { get; set; }
 
-        /// <summary>
         /// <inheritdoc/>
-        /// </summary>
-        /// <param name="dataFrame"></param>
-        protected override async Task OnReceivedWSDataFrame(WSDataFrame dataFrame)
+        protected override Task OnReceivedWSDataFrame(WSDataFrameEventArgs e)
         {
             if (this.Received != null)
             {
-                await this.Received.Invoke(this, dataFrame);
+                return this.Received.Invoke(this, e);
             }
-
-            await base.OnReceivedWSDataFrame(dataFrame);
+            return base.OnReceivedWSDataFrame(e);
         }
     }
 
@@ -56,35 +52,27 @@ namespace ThingsGateway.Foundation.Http.WebSockets
     public class WebSocketClientBase : HttpClientBase, IWebSocketClient
     {
         #region Connect
-
         /// <summary>
-        /// 请求连接到WebSocket。
-        /// </summary>
-        /// <returns></returns>
-        public override ITcpClient Connect(int timeout = 5000)
-        {
-            return this.Connect(default, timeout);
-        }
-
-        /// <summary>
-        /// <inheritdoc/>
+        /// 连接到ws服务器
         /// </summary>
         /// <param name="timeout"></param>
         /// <param name="token"></param>
-        /// <returns></returns>
-        public virtual ITcpClient Connect(CancellationToken token, int timeout = 5000)
+        /// <exception cref="WebSocketConnectException"></exception>
+        public override void Connect(int timeout, CancellationToken token)
         {
-            lock (this.SyncRoot)
+            try
             {
+                this.m_semaphoreSlim.Wait(token);
                 if (!this.Online)
                 {
-                    base.Connect(timeout);
+                    base.Connect(timeout, token);
                 }
 
                 var iPHost = this.Config.GetValue(TouchSocketConfigExtension.RemoteIPHostProperty);
                 var url = iPHost.PathAndQuery;
                 var request = WSTools.GetWSRequest(this.RemoteIPHost.Host, url, this.GetWebSocketVersion(), out var base64Key);
-                this.OnHandshaking(new HttpContextEventArgs(new HttpContext(request)));
+                this.OnHandshaking(new HttpContextEventArgs(new HttpContext(request)))
+                    .GetFalseAwaitResult();
 
                 var response = this.Request(request, timeout: timeout, token: token);
                 if (response.StatusCode != 101)
@@ -101,47 +89,32 @@ namespace ThingsGateway.Foundation.Http.WebSockets
                 this.SetAdapter(new WebSocketDataHandlingAdapter());
                 this.SetValue(WebSocketFeature.HandshakedProperty, true);
                 response.Flag = true;
-                this.OnHandshaked(new HttpContextEventArgs(new HttpContext(request, response)));
-                return this;
+                Task.Factory.StartNew(PrivateOnHandshaked, new HttpContextEventArgs(new HttpContext(request, response)));
+            }
+            finally
+            {
+                this.m_semaphoreSlim.Release();
             }
         }
 
-        /// <summary>
         /// <inheritdoc/>
-        /// </summary>
-        /// <param name="token"></param>
-        /// <param name="timeout"></param>
-        /// <returns></returns>
-        public Task<ITcpClient> ConnectAsync(CancellationToken token, int timeout = 5000)
-        {
-            return Task.Run(() =>
-            {
-                return this.Connect(token, timeout);
-            });
-        }
-
-        /// <summary>
-        /// 请求连接到WebSocket。
-        /// </summary>
-        /// <param name="timeout"></param>
-        /// <returns></returns>
-        /// <exception cref="WebSocketConnectException"></exception>
-        public override async Task<ITcpClient> ConnectAsync(int timeout = 5000)
+        public override async Task ConnectAsync(int timeout, CancellationToken token)
         {
             try
             {
-                await this.m_semaphoreSlim.WaitAsync();
+                await this.m_semaphoreSlim.WaitAsync(timeout, token);
                 if (!this.Online)
                 {
-                    await base.ConnectAsync(timeout);
+                    await base.ConnectAsync(timeout, token);
                 }
 
                 var iPHost = this.Config.GetValue(TouchSocketConfigExtension.RemoteIPHostProperty);
                 var url = iPHost.PathAndQuery;
                 var request = WSTools.GetWSRequest(this.RemoteIPHost.Host, url, this.GetWebSocketVersion(), out var base64Key);
-                this.OnHandshaking(new HttpContextEventArgs(new HttpContext(request)));
 
-                var response = this.Request(request, false, timeout, CancellationToken.None);
+                await this.OnHandshaking(new HttpContextEventArgs(new HttpContext(request)));
+
+                var response = await this.RequestAsync(request, timeout: timeout, token: token);
                 if (response.StatusCode != 101)
                 {
                     throw new WebSocketConnectException($"协议升级失败，信息：{response.StatusMessage}，更多信息请捕获WebSocketConnectException异常，获得HttpContext得知。", new HttpContext(request, response));
@@ -156,15 +129,13 @@ namespace ThingsGateway.Foundation.Http.WebSockets
                 this.SetAdapter(new WebSocketDataHandlingAdapter());
                 this.SetValue(WebSocketFeature.HandshakedProperty, true);
                 response.Flag = true;
-                this.OnHandshaked(new HttpContextEventArgs(new HttpContext(request, response)));
-                return this;
+                _ = Task.Factory.StartNew(PrivateOnHandshaked, new HttpContextEventArgs(new HttpContext(request, response)));
             }
             finally
             {
                 this.m_semaphoreSlim.Release();
             }
         }
-
         #endregion Connect
 
         #region 字段
@@ -185,59 +156,54 @@ namespace ThingsGateway.Foundation.Http.WebSockets
         /// </summary>
         public HttpContextEventHandler<WebSocketClientBase> Handshaking { get; set; }
 
+        private Task PrivateOnHandshaked(object obj)
+        {
+            return this.OnHandshaked((HttpContextEventArgs)obj);
+        }
+
         /// <summary>
         /// 表示完成握手后。
         /// </summary>
         /// <param name="e"></param>
-        protected virtual void OnHandshaked(HttpContextEventArgs e)
+        protected virtual async Task OnHandshaked(HttpContextEventArgs e)
         {
-            this.Handshaked?.Invoke(this, e);
-
-            _ = this.PluginsManager.RaiseAsync(nameof(IWebSocketHandshakedPlugin.OnWebSocketHandshaked), this, e);
+            if (e.Handled)
+            {
+                return;
+            }
+            if (this.Handshaked != null)
+            {
+                await this.Handshaked.Invoke(this, e);
+                if (e.Handled)
+                {
+                    return;
+                }
+            }
+            await this.PluginsManager.RaiseAsync(nameof(IWebSocketHandshakedPlugin.OnWebSocketHandshaked), this, e);
         }
 
         /// <summary>
         /// 表示在即将握手连接时。
         /// </summary>
         /// <param name="e"></param>
-        protected virtual void OnHandshaking(HttpContextEventArgs e)
+        protected virtual async Task OnHandshaking(HttpContextEventArgs e)
         {
-            this.Handshaking?.Invoke(this, e);
             if (e.Handled)
             {
                 return;
             }
-            if (this.PluginsManager.Raise(nameof(IWebSocketHandshakingPlugin.OnWebSocketHandshaking), this, e))
+            if (this.Handshaking != null)
             {
-                return;
+                await this.Handshaking.Invoke(this, e).ConfigureFalseAwait();
+                if (e.Handled)
+                {
+                    return;
+                }
             }
+            await this.PluginsManager.RaiseAsync(nameof(IWebSocketHandshakingPlugin.OnWebSocketHandshaking), this, e).ConfigureFalseAwait();
         }
 
         #endregion 事件
-
-        ///// <inheritdoc/>
-        //protected override bool HandleReceivedData(ByteBlock byteBlock, IRequestInfo requestInfo)
-        //{
-        //    if (this.GetHandshaked())
-        //    {
-        //        var dataFrame = (WSDataFrame)requestInfo;
-        //        this.OnReceivedWSDataFrame(dataFrame);
-        //    }
-        //    else
-        //    {
-        //        if (requestInfo is HttpResponse response)
-        //        {
-        //            response.Flag = false;
-        //            base.HandleReceivedData(byteBlock, requestInfo);
-        //            SpinWait.SpinUntil(() =>
-        //            {
-        //                return (bool)response.Flag;
-        //            }, 3000);
-        //        }
-        //    }
-
-        //    return false;
-        //}
 
         /// <inheritdoc/>
         protected override async Task ReceivedData(ReceivedDataEventArgs e)
@@ -245,7 +211,15 @@ namespace ThingsGateway.Foundation.Http.WebSockets
             if (this.GetHandshaked())
             {
                 var dataFrame = (WSDataFrame)e.RequestInfo;
-                await this.OnReceivedWSDataFrame(dataFrame);
+
+                if (this.TryGetValue(WebSocketClientExtension.WebSocketProperty, out var internalWebSocket))
+                {
+                    if (await internalWebSocket.TryInputReceiveAsync(dataFrame).ConfigureFalseAwait())
+                    {
+                        return;
+                    }
+                }
+                await this.OnReceivedWSDataFrame(new WSDataFrameEventArgs(dataFrame));
             }
             else
             {
@@ -280,21 +254,11 @@ namespace ThingsGateway.Foundation.Http.WebSockets
         /// <summary>
         /// 当收到WS数据时。
         /// </summary>
-        /// <param name="dataFrame"></param>
-        protected virtual async Task OnReceivedWSDataFrame(WSDataFrame dataFrame)
+        /// <param name="e"></param>
+        /// <returns></returns>
+        protected virtual async Task OnReceivedWSDataFrame(WSDataFrameEventArgs e)
         {
-            if (this.TryGetValue(WebSocketClientExtension.WebSocketProperty, out var internalWebSocket))
-            {
-                if (await internalWebSocket.TryInputReceiveAsync(dataFrame))
-                {
-                    return;
-                }
-            }
-
-            if (this.PluginsManager.Enable)
-            {
-                await this.PluginsManager.RaiseAsync(nameof(IWebSocketReceivedPlugin.OnWebSocketReceived), this, new WSDataFrameEventArgs(dataFrame));
-            }
+            await this.PluginsManager.RaiseAsync(nameof(IWebSocketReceivedPlugin.OnWebSocketReceived), this, e).ConfigureFalseAwait();
         }
     }
 }

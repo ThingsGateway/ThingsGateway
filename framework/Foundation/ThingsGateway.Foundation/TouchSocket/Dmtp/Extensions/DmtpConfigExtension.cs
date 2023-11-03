@@ -18,77 +18,20 @@ namespace ThingsGateway.Foundation.Dmtp
     public static class DmtpConfigExtension
     {
         /// <summary>
-        /// 默认使用Id。
+        /// 设置Dmtp相关配置。
         /// </summary>
-        public static readonly DependencyProperty<string> DefaultIdProperty =
-            DependencyProperty<string>.Register("DefaultId", null);
+        public static readonly DependencyProperty<DmtpOption> DmtpOptionProperty =
+            DependencyProperty<DmtpOption>.Register("DmtpOption", new DmtpOption());
 
         /// <summary>
-        /// DmtpClient连接时的元数据, 所需类型<see cref="Metadata"/>
-        /// </summary>
-        public static readonly DependencyProperty<Metadata> MetadataProperty = DependencyProperty<Metadata>.Register("Metadata", null);
-
-        /// <summary>
-        /// 验证超时时间,默认为3000ms, 所需类型<see cref="int"/>
-        /// </summary>
-        public static readonly DependencyProperty<int> VerifyTimeoutProperty =
-            DependencyProperty<int>.Register("VerifyTimeout", 3000);
-
-        /// <summary>
-        /// 连接令箭,当为null或空时，重置为默认值“rrqm”, 所需类型<see cref="string"/>
-        /// </summary>
-        public static readonly DependencyProperty<string> VerifyTokenProperty =
-            DependencyProperty<string>.Register("VerifyToken", "rrqm");
-
-        /// <summary>
-        /// 设置默认的使用Id。仅在DmtpRpc组件适用。
-        /// <para>
-        /// 使用该功能时，仅在服务器的Handshaking之后生效。且如果id重复，则会连接失败。
-        /// </para>
+        /// 设置Dmtp相关配置。
         /// </summary>
         /// <param name="config"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        public static TouchSocketConfig SetDefaultId(this TouchSocketConfig config, string value)
+        public static TouchSocketConfig SetDmtpOption(this TouchSocketConfig config, DmtpOption value)
         {
-            config.SetValue(DefaultIdProperty, value);
-            return config;
-        }
-
-        /// <summary>
-        /// 设置DmtpClient连接时的元数据
-        /// <para>仅适用于DmtpClient系类</para>
-        /// </summary>
-        /// <param name="config"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public static TouchSocketConfig SetMetadata(this TouchSocketConfig config, Metadata value)
-        {
-            config.SetValue(MetadataProperty, value);
-            return config;
-        }
-
-        /// <summary>
-        /// 验证超时时间,默认为3000ms.
-        /// </summary>
-        /// <param name="config"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public static TouchSocketConfig SetVerifyTimeout(this TouchSocketConfig config, int value)
-        {
-            config.SetValue(VerifyTimeoutProperty, value);
-            return config;
-        }
-
-        /// <summary>
-        /// 连接令箭，当为null或空时，重置为默认值“rrqm”
-        /// </summary>
-        /// <param name="config"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public static TouchSocketConfig SetVerifyToken(this TouchSocketConfig config, string value)
-        {
-            config.SetValue(VerifyTokenProperty, value);
+            config.SetValue(DmtpOptionProperty, value);
             return config;
         }
 
@@ -183,32 +126,6 @@ namespace ThingsGateway.Foundation.Dmtp
 
         #endregion 创建HttpDmtp
 
-        //#region 创建UdpTouchRpc
 
-        ///// <summary>
-        ///// 构建UdpTouchRpc类
-        ///// </summary>
-        ///// <typeparam name="TClient"></typeparam>
-        ///// <param name="config"></param>
-        ///// <returns></returns>
-        //public static TClient BuildWithUdpTouchRpc<TClient>(this TouchSocketConfig config) where TClient : IUdpTouchRpc
-        //{
-        //    TClient client = Activator.CreateInstance<TClient>();
-        //    client.Setup(config);
-        //    client.Start();
-        //    return client;
-        //}
-
-        ///// <summary>
-        ///// 构建UdpTouchRpc类客户端
-        ///// </summary>
-        ///// <param name="config"></param>
-        ///// <returns></returns>
-        //public static UdpTouchRpc BuildWithUdpTouchRpc(this TouchSocketConfig config)
-        //{
-        //    return BuildWithUdpTouchRpc<UdpTouchRpc>(config);
-        //}
-
-        //#endregion 创建UdpTouchRpc
     }
 }

@@ -1,4 +1,4 @@
-﻿#region copyright
+#region copyright
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -23,31 +23,37 @@
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-namespace ThingsGateway.Foundation.Core
+namespace ThingsGateway.Foundation.Sockets
 {
     /// <summary>
-    /// 单线程流式适配器配置
+    /// 握手状态。
     /// </summary>
-    public class SingleStreamAdapterOption
+    public enum HandshakeStatus : byte
     {
         /// <summary>
-        /// 适配器数据包缓存启用。默认为缺省（null），如果有正常值会在设置适配器时，直接作用于<see cref="SingleStreamDataHandlingAdapter.CacheTimeout"/>
+        /// 标识没有任何操作
         /// </summary>
-        public bool? CacheTimeoutEnable { get; set; } = true;
+        None,
 
         /// <summary>
-        /// 适配器数据包缓存时长。默认为缺省（null）。当该值有效时会在设置适配器时，直接作用于<see cref="SingleStreamDataHandlingAdapter.CacheTimeout"/>
+        /// 标识正在握手
         /// </summary>
-        public int? CacheTimeout { get; set; }
+        Handshaking,
 
         /// <summary>
-        /// 适配器数据包最大值。默认缺省（null），当该值有效时会在设置适配器时，直接作用于<see cref="DataHandlingAdapter.MaxPackageSize"/>
+        /// 标识已经完成握手
         /// </summary>
-        public int? MaxPackageSize { get; set; }
+        Handshaked,
 
         /// <summary>
-        ///  适配器数据包缓存策略。默认缺省（null），当该值有效时会在设置适配器时，直接作用于<see cref="SingleStreamDataHandlingAdapter.UpdateCacheTimeWhenRev"/>
+        /// 标识正在执行关闭
         /// </summary>
-        public bool? UpdateCacheTimeWhenRev { get; set; }
+        Closing,
+
+        /// <summary>
+        /// 标识已经关闭
+        /// </summary>
+        Closed
     }
+
 }

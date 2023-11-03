@@ -243,12 +243,12 @@ public class SerialCore : IDisposable, ISender
         {
             this.m_semaphoreForSend.Wait();
             this.m_serialPort.Write(buffer, offset, length);
+            this.m_sendCounter.Increment(length);
         }
         finally
         {
             this.m_semaphoreForSend.Release();
         }
-        this.m_sendCounter.Increment(length);
     }
 
     /// <summary>
@@ -267,13 +267,13 @@ public class SerialCore : IDisposable, ISender
             await this.m_semaphoreForSend.WaitAsync();
 
             this.m_serialPort.Write(buffer, offset, length);
+            this.m_sendCounter.Increment(length);
         }
         finally
         {
             this.m_semaphoreForSend.Release();
         }
 
-        this.m_sendCounter.Increment(length);
     }
 
     /// <summary>

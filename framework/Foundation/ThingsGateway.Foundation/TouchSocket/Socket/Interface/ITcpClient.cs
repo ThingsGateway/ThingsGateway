@@ -28,7 +28,7 @@ namespace ThingsGateway.Foundation.Sockets
     /// <summary>
     /// Tcp客户端终端接口
     /// </summary>
-    public interface ITcpClient : ITcpClientBase, IClientSender, IPluginObject
+    public interface ITcpClient : ITcpClientBase, IClientSender, IPluginObject, ISetupConfigObject, IConnectObject
     {
         /// <summary>
         /// 成功连接到服务器
@@ -45,25 +45,5 @@ namespace ThingsGateway.Foundation.Sockets
         /// </summary>
         IPHost RemoteIPHost { get; }
 
-        /// <summary>
-        /// 连接服务器
-        /// </summary>
-        /// <exception cref="TimeoutException"></exception>
-        /// <exception cref="Exception"></exception>
-        ITcpClient Connect(int timeout = 5000);
-
-        /// <summary>
-        /// 异步连接服务器
-        /// </summary>
-        /// <exception cref="TimeoutException"></exception>
-        /// <exception cref="Exception"></exception>
-        Task<ITcpClient> ConnectAsync(int timeout = 5000);
-
-        /// <summary>
-        /// 配置服务器
-        /// </summary>
-        /// <param name="config"></param>
-        /// <exception cref="Exception"></exception>
-        ITcpClient Setup(TouchSocketConfig config);
     }
 }

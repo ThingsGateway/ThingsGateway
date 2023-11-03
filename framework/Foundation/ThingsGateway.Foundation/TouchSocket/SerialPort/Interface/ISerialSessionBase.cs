@@ -17,17 +17,12 @@ namespace ThingsGateway.Foundation.Serial;
 /// <summary>
 /// 串口连接接口。
 /// </summary>
-public interface ISerialSessionBase : IClient, ISender, IDefaultSender, IPluginObject, IRequsetInfoSender
+public interface ISerialSessionBase : IClient, ISender, IDefaultSender, IPluginObject, IRequsetInfoSender, IConfigObject, IOnlineClient
 {
     /// <summary>
     /// 是否允许自由调用<see cref="SetDataHandlingAdapter"/>进行赋值。
     /// </summary>
     bool CanSetDataHandlingAdapter { get; }
-
-    /// <summary>
-    /// 客户端配置
-    /// </summary>
-    TouchSocketConfig Config { get; }
 
     /// <summary>
     /// 数据处理适配器
@@ -51,11 +46,6 @@ public interface ISerialSessionBase : IClient, ISender, IDefaultSender, IPluginO
     /// </summary>
     SerialPort MainSerialPort { get; }
 
-
-    /// <summary>
-    /// 判断是否在线
-    /// </summary>
-    bool Online { get; }
 
     /// <summary>
     /// 串口描述

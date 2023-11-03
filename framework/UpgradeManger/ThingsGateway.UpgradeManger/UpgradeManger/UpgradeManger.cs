@@ -84,7 +84,7 @@ public partial class UpgradeManger
     {
         var config = new TouchSocketConfig()
        .SetListenIPHosts(autoUpdateConfig.UpdateServerUri)
-       .SetVerifyToken(autoUpdateConfig.VerifyToken)
+       .SetDmtpOption(new DmtpOption() { VerifyToken = autoUpdateConfig.VerifyToken })
        .ConfigureContainer(a =>
        {
            a.AddLogger(LogMessage);

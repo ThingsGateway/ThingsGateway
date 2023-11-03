@@ -38,24 +38,17 @@ namespace ThingsGateway.Foundation.Http
     /// </summary>
     public class HttpClientBase : TcpClientBase, IHttpClient
     {
-        private readonly object m_requestLocker = new object();
-        private readonly WaitData<HttpResponse> m_waitData;
+        #region 字段
+
+        private readonly SemaphoreSlim m_semaphoreForRequest = new SemaphoreSlim(1, 1);
+        private readonly WaitData<HttpResponse> m_waitData = new WaitData<HttpResponse>();
+        private readonly WaitDataAsync<HttpResponse> m_waitDataAsync = new WaitDataAsync<HttpResponse>();
         private bool m_getContent;
 
-        /// <summary>
-        /// 构造函数
-        /// </summary>
-        public HttpClientBase()
-        {
-            this.m_waitData = new WaitData<HttpResponse>();
-        }
+        #endregion 字段
 
-        /// <summary>
         /// <inheritdoc/>
-        /// </summary>
-        /// <param name="timeout"></param>
-        /// <returns></returns>
-        public override ITcpClient Connect(int timeout = 5000)
+        public override void Connect(int timeout, CancellationToken token)
         {
             if (this.Config.GetValue(HttpConfigExtensions.HttpProxyProperty) is HttpProxy httpProxy)
             {
@@ -65,13 +58,13 @@ namespace ThingsGateway.Foundation.Http
                 try
                 {
                     this.Config.SetRemoteIPHost(proxyHost);
-                    base.Connect(timeout);
+                    base.Connect(timeout, token);
                     var request = new HttpRequest();
                     request.InitHeaders()
                         .SetHost(remoteHost.Host)
-                        .SetUrl(remoteHost.Host, true)
+                        .SetProxyHost(remoteHost.Host)
                         .AsMethod("CONNECT");
-                    var response = this.Request(request, timeout: timeout);
+                    var response = this.Request(request, false, timeout, token);
                     if (response.IsProxyAuthenticationRequired)
                     {
                         if (credential is null)
@@ -90,10 +83,10 @@ namespace ThingsGateway.Foundation.Http
                         if (!response.KeepAlive)
                         {
                             base.Close("代理要求关闭连接，随后重写连接。");
-                            base.Connect(timeout);
+                            base.Connect(timeout, token);
                         }
 
-                        response = this.Request(request, timeout: timeout);
+                        response = this.Request(request, false, timeout, token);
                     }
 
                     if (response.StatusCode != 200)
@@ -108,37 +101,85 @@ namespace ThingsGateway.Foundation.Http
             }
             else
             {
-                base.Connect(timeout);
+                base.Connect(timeout, token);
             }
-            return this;
         }
 
-        /// <summary>
         /// <inheritdoc/>
-        /// </summary>
-        /// <param name="request"><inheritdoc/></param>
-        /// <param name="onlyRequest"><inheritdoc/></param>
-        /// <param name="timeout"><inheritdoc/></param>
-        /// <param name="token"><inheritdoc/></param>
-        /// <returns></returns>
+        public override async Task ConnectAsync(int timeout, CancellationToken token)
+        {
+            if (this.Config.GetValue(HttpConfigExtensions.HttpProxyProperty) is HttpProxy httpProxy)
+            {
+                var proxyHost = httpProxy.Host;
+                var credential = httpProxy.Credential;
+                var remoteHost = this.Config.GetValue(TouchSocketConfigExtension.RemoteIPHostProperty);
+                try
+                {
+                    this.Config.SetRemoteIPHost(proxyHost);
+                    await base.ConnectAsync(timeout, token);
+                    var request = new HttpRequest();
+                    request.InitHeaders()
+                        .SetHost(remoteHost.Host)
+                        .SetProxyHost(remoteHost.Host)
+                        .AsMethod("CONNECT");
+                    var response = await this.RequestAsync(request, false, timeout, token);
+                    if (response.IsProxyAuthenticationRequired)
+                    {
+                        if (credential is null)
+                        {
+                            throw new Exception("未指定代理的凭据。");
+                        }
+                        var authHeader = response.Headers.Get(HttpHeaders.ProxyAuthenticate);
+                        if (authHeader.IsNullOrEmpty())
+                        {
+                            throw new Exception("未指定代理身份验证质询。");
+                        }
+
+                        var ares = new AuthenticationChallenge(authHeader, credential);
+
+                        request.Headers.Add(HttpHeaders.ProxyAuthorization, ares.ToString());
+                        if (!response.KeepAlive)
+                        {
+                            base.Close("代理要求关闭连接，随后重写连接。");
+                            await base.ConnectAsync(timeout, token);
+                        }
+
+                        response = await this.RequestAsync(request, timeout: timeout);
+                    }
+
+                    if (response.StatusCode != 200)
+                    {
+                        throw new Exception(response.StatusMessage);
+                    }
+                }
+                finally
+                {
+                    this.Config.SetRemoteIPHost(remoteHost);
+                }
+            }
+            else
+            {
+                await base.ConnectAsync(timeout, token);
+            }
+        }
+
+        /// <inheritdoc/>
         public HttpResponse Request(HttpRequest request, bool onlyRequest = false, int timeout = 10 * 1000, CancellationToken token = default)
         {
-            lock (this.m_requestLocker)
+            try
             {
+                this.m_semaphoreForRequest.Wait(token);
                 this.m_getContent = false;
                 using (var byteBlock = new ByteBlock())
                 {
                     request.Build(byteBlock);
 
-                    this.m_waitData.Reset();
-                    this.m_waitData.SetCancellationToken(token);
-
+                    this.Reset(token);
                     this.DefaultSend(byteBlock);
                     if (onlyRequest)
                     {
                         return default;
                     }
-
                     switch (this.m_waitData.Wait(timeout))
                     {
                         case WaitDataStatus.SetRunning:
@@ -147,8 +188,7 @@ namespace ThingsGateway.Foundation.Http
                         case WaitDataStatus.Overtime:
                             throw new TimeoutException(TouchSocketHttpResource.Overtime.GetDescription());
                         case WaitDataStatus.Canceled:
-                            return default;
-
+                            throw new OperationCanceledException();
                         case WaitDataStatus.Default:
                         case WaitDataStatus.Disposed:
                         default:
@@ -156,27 +196,62 @@ namespace ThingsGateway.Foundation.Http
                     }
                 }
             }
+            finally
+            {
+                this.m_semaphoreForRequest.Release();
+            }
         }
 
-        /// <summary>
         /// <inheritdoc/>
-        /// </summary>
-        /// <param name="request"></param>
-        /// <param name="onlyRequest"></param>
-        /// <param name="timeout"></param>
-        /// <param name="token"></param>
-        /// <returns></returns>
+        public async Task<HttpResponse> RequestAsync(HttpRequest request, bool onlyRequest = false, int timeout = 10 * 1000, CancellationToken token = default)
+        {
+            try
+            {
+                await this.m_semaphoreForRequest.WaitAsync(timeout, token);
+                this.m_getContent = false;
+                using (var byteBlock = new ByteBlock())
+                {
+                    request.Build(byteBlock);
+
+                    this.Reset(token);
+                    await this.DefaultSendAsync(byteBlock);
+                    if (onlyRequest)
+                    {
+                        return default;
+                    }
+                    switch (await this.m_waitDataAsync.WaitAsync(timeout))
+                    {
+                        case WaitDataStatus.SetRunning:
+                            return this.m_waitDataAsync.WaitResult;
+                        case WaitDataStatus.Overtime:
+                            throw new TimeoutException(TouchSocketHttpResource.Overtime.GetDescription());
+                        case WaitDataStatus.Canceled:
+                            throw new OperationCanceledException();
+                        case WaitDataStatus.Default:
+                        case WaitDataStatus.Disposed:
+                        default:
+                            throw new Exception(TouchSocketHttpResource.UnknownError.GetDescription());
+                    }
+                }
+            }
+            finally
+            {
+                this.m_semaphoreForRequest.Release();
+            }
+        }
+
+        /// <inheritdoc/>
         public HttpResponse RequestContent(HttpRequest request, bool onlyRequest = false, int timeout = 10 * 1000, CancellationToken token = default)
         {
-            lock (this.m_requestLocker)
+            try
             {
+                this.m_semaphoreForRequest.Wait(token);
                 this.m_getContent = true;
                 using (var byteBlock = new ByteBlock())
                 {
                     request.Build(byteBlock);
 
-                    this.m_waitData.Reset();
-                    this.m_waitData.SetCancellationToken(token);
+                    this.Reset(token);
 
                     this.DefaultSend(byteBlock);
                     if (onlyRequest)
@@ -188,18 +263,60 @@ namespace ThingsGateway.Foundation.Http
                     {
                         case WaitDataStatus.SetRunning:
                             return this.m_waitData.WaitResult;
-
                         case WaitDataStatus.Overtime:
                             throw new TimeoutException(TouchSocketHttpResource.Overtime.GetDescription());
                         case WaitDataStatus.Canceled:
-                            return default;
-
+                            throw new OperationCanceledException();
                         case WaitDataStatus.Default:
                         case WaitDataStatus.Disposed:
                         default:
                             throw new Exception(TouchSocketHttpResource.UnknownError.GetDescription());
                     }
                 }
+            }
+            finally
+            {
+                this.m_semaphoreForRequest.Release();
+            }
+        }
+
+        /// <inheritdoc/>
+        public async Task<HttpResponse> RequestContentAsync(HttpRequest request, bool onlyRequest = false, int timeout = 10 * 1000, CancellationToken token = default)
+        {
+            try
+            {
+                await this.m_semaphoreForRequest.WaitAsync(timeout, token);
+                this.m_getContent = true;
+                using (var byteBlock = new ByteBlock())
+                {
+                    request.Build(byteBlock);
+
+                    this.Reset(token);
+
+                    await this.DefaultSendAsync(byteBlock);
+                    if (onlyRequest)
+                    {
+                        return default;
+                    }
+
+                    switch (await this.m_waitDataAsync.WaitAsync(timeout))
+                    {
+                        case WaitDataStatus.SetRunning:
+                            return this.m_waitData.WaitResult;
+                        case WaitDataStatus.Overtime:
+                            throw new TimeoutException(TouchSocketHttpResource.Overtime.GetDescription());
+                        case WaitDataStatus.Canceled:
+                            throw new OperationCanceledException();
+                        case WaitDataStatus.Default:
+                        case WaitDataStatus.Disposed:
+                        default:
+                            throw new Exception(TouchSocketHttpResource.UnknownError.GetDescription());
+                    }
+                }
+            }
+            finally
+            {
+                this.m_semaphoreForRequest.Release();
             }
         }
 
@@ -213,6 +330,24 @@ namespace ThingsGateway.Foundation.Http
             base.Dispose(disposing);
         }
 
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        /// <param name="e"></param>
+        protected override async Task OnConnecting(ConnectingEventArgs e)
+        {
+            this.Protocol = Protocol.Http;
+            this.SetDataHandlingAdapter(new HttpClientDataHandlingAdapter());
+            await base.OnConnecting(e);
+        }
+
+        /// <inheritdoc/>
+        protected override async Task OnDisconnected(DisconnectEventArgs e)
+        {
+            this.m_waitData.Cancel();
+            this.m_waitDataAsync.Cancel();
+            await base.OnDisconnected(e);
+        }
 
         /// <inheritdoc/>
         protected override Task ReceivedData(ReceivedDataEventArgs e)
@@ -223,21 +358,24 @@ namespace ThingsGateway.Foundation.Http
                 {
                     response.TryGetContent(out _);
                 }
-                this.m_waitData.Set(response);
+                this.Set(response);
             }
 
             return base.ReceivedData(e);
         }
 
-        /// <summary>
-        /// <inheritdoc/>
-        /// </summary>
-        /// <param name="e"></param>
-        protected override async Task OnConnecting(ConnectingEventArgs e)
+        private void Reset(CancellationToken token)
         {
-            this.Protocol = Protocol.Http;
-            this.SetDataHandlingAdapter(new HttpClientDataHandlingAdapter());
-            await base.OnConnecting(e);
+            this.m_waitData.Reset();
+            this.m_waitDataAsync.Reset();
+            this.m_waitData.SetCancellationToken(token);
+            this.m_waitDataAsync.SetCancellationToken(token);
+        }
+
+        private void Set(HttpResponse response)
+        {
+            this.m_waitData.Set(response);
+            this.m_waitDataAsync.Set(response);
         }
     }
 }

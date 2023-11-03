@@ -10,7 +10,6 @@
 //------------------------------------------------------------------------------
 #endregion
 
-
 using System.Drawing;
 
 namespace ThingsGateway.Foundation.Demo.Winform

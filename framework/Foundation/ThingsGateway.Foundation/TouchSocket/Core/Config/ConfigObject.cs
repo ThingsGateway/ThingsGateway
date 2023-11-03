@@ -1,4 +1,4 @@
-#region copyright
+﻿#region copyright
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -10,12 +10,17 @@
 //------------------------------------------------------------------------------
 #endregion
 
-namespace ThingsGateway.Foundation.Serial;
-
-/// <summary>
-/// 串口基接口
-/// </summary>
-public interface ISerial : ISocket
+namespace ThingsGateway.Foundation.Core
 {
+    /// <summary>
+    /// 具有配置设置的对象
+    /// </summary>
+    public abstract class ConfigObject : DependencyObject, IConfigObject
+    {
+        /// <inheritdoc/>
+        public abstract TouchSocketConfig Config { get; }
 
+        /// <inheritdoc/>
+        public ILog Logger { get; set; }
+    }
 }

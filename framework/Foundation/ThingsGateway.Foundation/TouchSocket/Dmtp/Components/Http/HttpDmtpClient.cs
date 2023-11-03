@@ -35,13 +35,13 @@ namespace ThingsGateway.Foundation.Dmtp
         private bool m_allowRoute;
         private Func<string, Task<IDmtpActor>> m_findDmtpActor;
         private DmtpActor m_dmtpActor;
-        private readonly SemaphoreSlim m_semaphore = new SemaphoreSlim(1, 1);
+        private readonly SemaphoreSlim m_semaphoreForConnect = new SemaphoreSlim(1, 1);
         #endregion 字段
 
         /// <inheritdoc cref="IDmtpActor.Id"/>
         public string Id => this.m_dmtpActor.Id;
 
-        /// <inheritdoc cref="IDmtpActor.IsHandshaked"/>
+        /// <inheritdoc cref="IHandshakeObject.IsHandshaked"/>
         public bool IsHandshaked => this.m_dmtpActor != null && this.m_dmtpActor.IsHandshaked;
 
         /// <inheritdoc/>
@@ -50,22 +50,23 @@ namespace ThingsGateway.Foundation.Dmtp
         #region 连接
 
         /// <summary>
-        /// 建立Tcp连接，并且执行握手。
+        /// 使用基于Http升级的协议，连接Dmtp服务器
         /// </summary>
         /// <param name="timeout"></param>
-        /// <returns></returns>
+        /// <param name="token"></param>
         /// <exception cref="Exception"></exception>
-        public override ITcpClient Connect(int timeout = 5000)
+        public override void Connect(int timeout, CancellationToken token)
         {
-            lock (this.SyncRoot)
+            try
             {
+                this.m_semaphoreForConnect.Wait(token);
                 if (this.IsHandshaked)
                 {
-                    return this;
+                    return;
                 }
                 if (!this.Online)
                 {
-                    base.Connect(timeout);
+                    base.Connect(timeout, token);
                 }
 
                 var request = new HttpRequest()
@@ -78,72 +79,41 @@ namespace ThingsGateway.Foundation.Dmtp
                 if (response.StatusCode == 101)
                 {
                     this.SwitchProtocolToDmtp();
-                    this.m_dmtpActor.Handshake(this.Config.GetValue(DmtpConfigExtension.VerifyTokenProperty),
-                        this.Config.GetValue(DmtpConfigExtension.DefaultIdProperty),
-                        timeout, this.Config.GetValue(DmtpConfigExtension.MetadataProperty), CancellationToken.None);
-                    return this;
+                    this.m_dmtpActor.Handshake(
+
+                        this.Config.GetValue(DmtpConfigExtension.DmtpOptionProperty).VerifyToken, this.Config.GetValue(DmtpConfigExtension.DmtpOptionProperty).Id, timeout, this.Config.GetValue(DmtpConfigExtension.DmtpOptionProperty).Metadata, token);
+                    return;
                 }
                 else
                 {
                     throw new Exception(response.StatusMessage);
                 }
             }
-        }
-
-        /// <inheritdoc/>
-        public virtual IHttpDmtpClient Connect(CancellationToken token, int timeout = 5000)
-        {
-            lock (this.SyncRoot)
+            finally
             {
-                if (this.IsHandshaked)
-                {
-                    return this;
-                }
-                if (!this.Online)
-                {
-                    base.Connect(timeout);
-                }
-
-                var request = new HttpRequest()
-                    .SetHost(this.RemoteIPHost.Host);
-                request.Headers.Add(HttpHeaders.Connection, "upgrade");
-                request.Headers.Add(HttpHeaders.Upgrade, DmtpUtility.Dmtp.ToLower());
-
-                request.AsMethod(DmtpUtility.Dmtp);
-                var response = this.RequestContent(request, timeout: timeout, token: token);
-                if (response.StatusCode == 101)
-                {
-                    this.SwitchProtocolToDmtp();
-                    this.m_dmtpActor.Handshake(this.Config.GetValue(DmtpConfigExtension.VerifyTokenProperty),
-                        this.Config.GetValue(DmtpConfigExtension.DefaultIdProperty),
-                        timeout, this.Config.GetValue(DmtpConfigExtension.MetadataProperty), token);
-                    return this;
-                }
-                else
-                {
-                    throw new Exception(response.StatusMessage);
-                }
+                this.m_semaphoreForConnect.Release();
             }
         }
 
         /// <summary>
-        /// 建立Tcp连接，并且执行握手。
+        /// 异步使用基于Http升级的协议，连接Dmtp服务器
         /// </summary>
         /// <param name="timeout"></param>
+        /// <param name="token"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public override async Task<ITcpClient> ConnectAsync(int timeout = 5000)
+        public override async Task ConnectAsync(int timeout, CancellationToken token)
         {
             try
             {
-                await this.m_semaphore.WaitAsync();
+                await this.m_semaphoreForConnect.WaitAsync(timeout, token);
                 if (this.IsHandshaked)
                 {
-                    return this;
+                    return;
                 }
                 if (!this.Online)
                 {
-                    await base.ConnectAsync(timeout);
+                    await base.ConnectAsync(timeout, token);
                 }
 
                 var request = new HttpRequest()
@@ -152,14 +122,12 @@ namespace ThingsGateway.Foundation.Dmtp
                 request.Headers.Add(HttpHeaders.Upgrade, DmtpUtility.Dmtp.ToLower());
 
                 request.AsMethod(DmtpUtility.Dmtp);
-                var response = this.RequestContent(request);
+                var response = await this.RequestContentAsync(request);
                 if (response.StatusCode == 101)
                 {
                     this.SwitchProtocolToDmtp();
-                    await this.m_dmtpActor.HandshakeAsync(this.Config.GetValue(DmtpConfigExtension.VerifyTokenProperty),
-                         this.Config.GetValue(DmtpConfigExtension.DefaultIdProperty),
-                         timeout, this.Config.GetValue(DmtpConfigExtension.MetadataProperty), CancellationToken.None);
-                    return this;
+                    await this.m_dmtpActor.HandshakeAsync(this.Config.GetValue(DmtpConfigExtension.DmtpOptionProperty).VerifyToken, this.Config.GetValue(DmtpConfigExtension.DmtpOptionProperty).Id, timeout, this.Config.GetValue(DmtpConfigExtension.DmtpOptionProperty).Metadata, token);
+                    return;
                 }
                 else
                 {
@@ -168,48 +136,7 @@ namespace ThingsGateway.Foundation.Dmtp
             }
             finally
             {
-                this.m_semaphore.Release();
-            }
-        }
-
-        /// <inheritdoc/>
-        public virtual async Task<IHttpDmtpClient> ConnectAsync(CancellationToken token, int timeout = 5000)
-        {
-            try
-            {
-                await this.m_semaphore.WaitAsync();
-                if (this.IsHandshaked)
-                {
-                    return this;
-                }
-                if (!this.Online)
-                {
-                    await base.ConnectAsync(timeout);
-                }
-
-                var request = new HttpRequest()
-                    .SetHost(this.RemoteIPHost.Host);
-                request.Headers.Add(HttpHeaders.Connection, "upgrade");
-                request.Headers.Add(HttpHeaders.Upgrade, DmtpUtility.Dmtp.ToLower());
-
-                request.AsMethod(DmtpUtility.Dmtp);
-                var response = this.RequestContent(request, timeout: timeout, token: token);
-                if (response.StatusCode == 101)
-                {
-                    this.SwitchProtocolToDmtp();
-                    await this.m_dmtpActor.HandshakeAsync(this.Config.GetValue(DmtpConfigExtension.VerifyTokenProperty),
-                         this.Config.GetValue(DmtpConfigExtension.DefaultIdProperty),
-                         timeout, this.Config.GetValue(DmtpConfigExtension.MetadataProperty), token);
-                    return this;
-                }
-                else
-                {
-                    throw new Exception(response.StatusMessage);
-                }
-            }
-            finally
-            {
-                this.m_semaphore.Release();
+                this.m_semaphoreForConnect.Release();
             }
         }
 

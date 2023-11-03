@@ -15,7 +15,7 @@ namespace ThingsGateway.Foundation.Serial;
 /// <summary>
 /// <inheritdoc cref="ISerialSessionBase"/>
 /// </summary>
-public interface ISerialSession : ISerialSessionBase, IClientSender, IPluginObject
+public interface ISerialSession : ISerialSessionBase, IClientSender, IPluginObject, ISetupConfigObject
 {
     /// <summary>
     /// 成功打开串口
@@ -32,12 +32,5 @@ public interface ISerialSession : ISerialSessionBase, IClientSender, IPluginObje
     /// </summary>
     /// <exception cref="Exception"></exception>
     ISerialSession Connect();
-
-    /// <summary>
-    /// 配置服务器
-    /// </summary>
-    /// <param name="config"></param>
-    /// <exception cref="Exception"></exception>
-    ISerialSession Setup(TouchSocketConfig config);
 
 }

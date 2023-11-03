@@ -32,7 +32,7 @@ namespace ThingsGateway.Foundation.Http.WebSockets
     public class WebSocketConnectException : Exception
     {
         /// <summary>
-        ///构造函数
+        /// WebSocket连接异常
         /// </summary>
         /// <param name="mes"></param>
         /// <param name="context"></param>

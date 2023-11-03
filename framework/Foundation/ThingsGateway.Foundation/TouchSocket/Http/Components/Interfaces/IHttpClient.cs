@@ -41,6 +41,16 @@ namespace ThingsGateway.Foundation.Http
         HttpResponse Request(HttpRequest request, bool onlyRequest = false, int timeout = 10 * 1000, CancellationToken token = default);
 
         /// <summary>
+        /// 发起请求
+        /// </summary>
+        /// <param name="request">请求体</param>
+        /// <param name="onlyRequest">仅仅请求，而不等待结果</param>
+        /// <param name="timeout">等待超时时间</param>
+        /// <param name="token">结束等待令箭</param>
+        /// <returns></returns>
+        Task<HttpResponse> RequestAsync(HttpRequest request, bool onlyRequest = false, int timeout = 10000, CancellationToken token = default);
+
+        /// <summary>
         /// 发起请求，并获取数据体
         /// </summary>
         /// <param name="request">请求体</param>
@@ -49,5 +59,15 @@ namespace ThingsGateway.Foundation.Http
         /// <param name="token">结束等待令箭</param>
         /// <returns></returns>
         public HttpResponse RequestContent(HttpRequest request, bool onlyRequest = false, int timeout = 10 * 1000, CancellationToken token = default);
+
+        /// <summary>
+        /// 发起请求，并获取数据体
+        /// </summary>
+        /// <param name="request">请求体</param>
+        /// <param name="onlyRequest">仅仅请求，而不等待结果</param>
+        /// <param name="timeout">等待超时时间</param>
+        /// <param name="token">结束等待令箭</param>
+        /// <returns></returns>
+        Task<HttpResponse> RequestContentAsync(HttpRequest request, bool onlyRequest = false, int timeout = 10000, CancellationToken token = default);
     }
 }

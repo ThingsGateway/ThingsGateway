@@ -40,14 +40,14 @@ namespace ThingsGateway.Foundation.Dmtp
         public bool IsHandshaked => this.DmtpActor != null && this.DmtpActor.IsHandshaked;
 
         /// <summary>
-        /// 验证超时时间,默认为3000ms
+        /// 验证超时时间
         /// </summary>
-        public int VerifyTimeout => this.Config.GetValue(DmtpConfigExtension.VerifyTimeoutProperty);
+        public TimeSpan VerifyTimeout => this.Config.GetValue(DmtpConfigExtension.DmtpOptionProperty).VerifyTimeout;
 
         /// <summary>
         /// 连接令箭
         /// </summary>
-        public string VerifyToken => this.Config.GetValue(DmtpConfigExtension.VerifyTokenProperty);
+        public string VerifyToken => this.Config.GetValue(DmtpConfigExtension.DmtpOptionProperty).VerifyToken;
 
         #region 断开
 

@@ -96,5 +96,45 @@ namespace ThingsGateway.Foundation.Core
             this.m_dp.Clear();
             base.Dispose(disposing);
         }
+
+
+        /// <summary>
+        /// 将当前对象的依赖项克隆到目标对象中
+        /// </summary>
+        /// <param name="dependencyObject">目标对象</param>
+        /// <param name="overwrite">当目标对象中存在相同依赖项时，是或否覆盖</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="ObjectDisposedException"></exception>
+        protected void CloneTo(DependencyObject dependencyObject, bool overwrite)
+        {
+            if (dependencyObject is null)
+            {
+                throw new ArgumentNullException(nameof(dependencyObject));
+            }
+
+            if (dependencyObject.DisposedValue)
+            {
+                throw new ObjectDisposedException(nameof(dependencyObject));
+            }
+
+            this.ThrowIfDisposed();
+
+            foreach (var item in this.m_dp)
+            {
+                if (dependencyObject.m_dp.ContainsKey(item.Key))
+                {
+                    if (overwrite)
+                    {
+                        dependencyObject.m_dp.Remove(item.Key);
+                        dependencyObject.m_dp.Add(item.Key, item.Value);
+                    }
+                }
+                else
+                {
+                    dependencyObject.m_dp.Add(item.Key, item.Value);
+                }
+            }
+        }
     }
+
 }

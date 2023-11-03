@@ -51,7 +51,7 @@ namespace ThingsGateway.Foundation.Http.WebSockets
         /// <summary>
         /// 获取显式WebSocket终端。
         /// <para>
-        /// 
+        ///
         /// </para>
         /// </summary>
         /// <param name="client"></param>
@@ -76,7 +76,9 @@ namespace ThingsGateway.Foundation.Http.WebSockets
         {
             client.RemoveValue(WebSocketProperty);
         }
-        #endregion
+
+        #endregion DependencyProperty
+
         /// <summary>
         /// 发送Close报文。
         /// </summary>
@@ -174,7 +176,6 @@ namespace ThingsGateway.Foundation.Http.WebSockets
         }
 
         #region 同步发送
-
 
         /// <summary>
         /// 采用WebSocket协议，发送二进制流数据。
