@@ -86,11 +86,11 @@ namespace ThingsGateway.Foundation.WebApi
                     break;
             }
 
-            this.PluginsManager.Raise(nameof(IWebApiPlugin.OnRequest), this, new WebApiEventArgs(request, default));
+            this.PluginsManager?.Raise(nameof(IWebApiPlugin.OnRequest), this, new WebApiEventArgs(request, default));
 
             var response = this.RequestContent(request, false, invokeOption.Timeout, invokeOption.Token);
 
-            this.PluginsManager.Raise(nameof(IWebApiPlugin.OnResponse), this, new WebApiEventArgs(request, response));
+            this.PluginsManager?.Raise(nameof(IWebApiPlugin.OnResponse), this, new WebApiEventArgs(request, response));
 
             if (invokeOption.FeedbackType != FeedbackType.WaitInvoke)
             {
@@ -152,9 +152,9 @@ namespace ThingsGateway.Foundation.WebApi
                     break;
             }
 
-            this.PluginsManager.Raise(nameof(IWebApiPlugin.OnRequest), this, new WebApiEventArgs(request, default));
+            this.PluginsManager?.Raise(nameof(IWebApiPlugin.OnRequest), this, new WebApiEventArgs(request, default));
             var response = this.RequestContent(request, false, invokeOption.Timeout, invokeOption.Token);
-            this.PluginsManager.Raise(nameof(IWebApiPlugin.OnResponse), this, new WebApiEventArgs(request, response));
+            this.PluginsManager?.Raise(nameof(IWebApiPlugin.OnResponse), this, new WebApiEventArgs(request, response));
 
             if (invokeOption.FeedbackType != FeedbackType.WaitInvoke)
             {

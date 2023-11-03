@@ -289,7 +289,7 @@ namespace ThingsGateway.Foundation.Dmtp
             var message = (DmtpMessage)requestInfo;
             if (!this.m_dmtpActor.InputReceivedData(message).GetFalseAwaitResult())
             {
-                this.PluginsManager.Raise(nameof(IDmtpReceivedPlugin.OnDmtpReceived), this, new DmtpMessageEventArgs(message));
+                this.PluginsManager?.Raise(nameof(IDmtpReceivedPlugin.OnDmtpReceived), this, new DmtpMessageEventArgs(message));
             }
         }
 
