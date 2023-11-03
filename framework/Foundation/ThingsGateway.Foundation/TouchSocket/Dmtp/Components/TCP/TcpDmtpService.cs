@@ -48,7 +48,7 @@ namespace ThingsGateway.Foundation.Dmtp
         /// <summary>
         /// 连接令箭
         /// </summary>
-        public string VerifyToken => this.Config?.GetValue(DmtpConfigExtension.VerifyTokenProperty);
+        public string VerifyToken => this.Config.GetValue(DmtpConfigExtension.DmtpOptionProperty).VerifyToken;
 
         /// <inheritdoc/>
         protected override void LoadConfig(TouchSocketConfig config)

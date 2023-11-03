@@ -23,10 +23,13 @@
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-/// <summary>
-/// HTTP上下文事件委托
-/// </summary>
-/// <typeparam name="TClient"></typeparam>
-/// <param name="client"></param>
-/// <param name="e"></param>
-public delegate void HttpContextEventHandler<TClient>(TClient client, HttpContextEventArgs e);
+namespace ThingsGateway.Foundation.Http
+{
+    /// <summary>
+    /// HTTP上下文事件委托
+    /// </summary>
+    /// <typeparam name="TClient"></typeparam>
+    /// <param name="client"></param>
+    /// <param name="e"></param>
+    public delegate Task HttpContextEventHandler<TClient>(TClient client, HttpContextEventArgs e);
+}

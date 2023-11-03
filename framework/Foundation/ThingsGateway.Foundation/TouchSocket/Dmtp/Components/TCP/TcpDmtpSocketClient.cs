@@ -43,18 +43,18 @@ namespace ThingsGateway.Foundation.Dmtp
         /// <inheritdoc/>
         public IDmtpActor DmtpActor { get => this.m_dmtpActor; }
 
-        /// <inheritdoc cref="IDmtpActor.IsHandshaked"/>
+        /// <inheritdoc cref="IHandshakeObject.IsHandshaked"/>
         public bool IsHandshaked => this.DmtpActor != null && this.DmtpActor.IsHandshaked;
 
         /// <summary>
         /// 验证超时时间,默认为3000ms
         /// </summary>
-        public int VerifyTimeout => this.Config.GetValue(DmtpConfigExtension.VerifyTimeoutProperty);
+        public TimeSpan VerifyTimeout => this.Config.GetValue(DmtpConfigExtension.DmtpOptionProperty).VerifyTimeout;
 
         /// <summary>
         /// 连接令箭
         /// </summary>
-        public string VerifyToken => this.Config.GetValue(DmtpConfigExtension.VerifyTokenProperty);
+        public string VerifyToken => this.Config.GetValue(DmtpConfigExtension.DmtpOptionProperty).VerifyToken;
 
         #region 内部委托绑定
 

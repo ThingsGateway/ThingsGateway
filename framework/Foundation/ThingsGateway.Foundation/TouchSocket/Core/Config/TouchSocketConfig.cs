@@ -28,8 +28,22 @@ namespace ThingsGateway.Foundation.Core
     /// <summary>
     /// 配置文件基类
     /// </summary>
-    public class TouchSocketConfig : DependencyObject
+    public class TouchSocketConfig : DependencyObject, ICloneable
     {
+        /// <summary>
+        /// 克隆配置依赖项，并返回一个新的克隆对象。
+        /// </summary>
+        /// <returns></returns>
+        public TouchSocketConfig Clone()
+        {
+            var config = new TouchSocketConfig();
+            this.CloneTo(config, true);
+            return config;
+        }
 
+        object ICloneable.Clone()
+        {
+            return this.Clone();
+        }
     }
 }

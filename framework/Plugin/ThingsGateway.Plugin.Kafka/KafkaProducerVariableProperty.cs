@@ -9,6 +9,7 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 #endregion
+
 namespace ThingsGateway.Plugin.Kafka;
 
 /// <summary>

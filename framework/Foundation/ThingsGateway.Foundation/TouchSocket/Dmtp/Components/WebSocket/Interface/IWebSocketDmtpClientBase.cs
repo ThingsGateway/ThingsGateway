@@ -22,14 +22,5 @@ namespace ThingsGateway.Foundation.Dmtp
         /// </summary>
         string Id { get; }
 
-        /// <summary>
-        /// 加载到当前客户端的配置
-        /// </summary>
-        TouchSocketConfig Config { get; }
-
-        /// <summary>
-        /// 是否已完成<see cref="IDmtpActor.IsHandshaked"/>
-        /// </summary>
-        bool IsHandshaked { get; }
     }
 }

@@ -46,14 +46,14 @@ namespace ThingsGateway.Foundation.Dmtp
 
         #region 字段
 
-        private readonly SemaphoreSlim m_semaphore = new SemaphoreSlim(1, 1);
+        private readonly SemaphoreSlim m_semaphoreForConnect = new SemaphoreSlim(1, 1);
         private bool m_allowRoute;
         private SealedDmtpActor m_dmtpActor;
         private Func<string, Task<IDmtpActor>> m_findDmtpActor;
 
         #endregion 字段
 
-        /// <inheritdoc cref="IDmtpActor.IsHandshaked"/>
+        /// <inheritdoc cref="IHandshakeObject.IsHandshaked"/>
         public bool IsHandshaked => this.m_dmtpActor != null && this.m_dmtpActor.IsHandshaked;
 
         #region 断开
@@ -95,98 +95,60 @@ namespace ThingsGateway.Foundation.Dmtp
         #region 连接
 
         /// <summary>
-        /// 建立Tcp连接，并且执行握手。
+        /// 进行Dmtp协议的握手连接
         /// </summary>
         /// <param name="timeout"></param>
+        /// <param name="token"></param>
         /// <returns></returns>
-        public override ITcpClient Connect(int timeout = 5000)
+        public override void Connect(int timeout, CancellationToken token)
         {
-            lock (this.SyncRoot)
+            try
             {
+                this.m_semaphoreForConnect.Wait(token);
                 if (this.IsHandshaked)
                 {
-                    return this;
+                    return;
                 }
                 if (!this.Online)
                 {
-                    base.Connect(timeout);
+                    base.Connect(timeout, token);
                 }
 
-                this.m_dmtpActor.Handshake(this.Config.GetValue(DmtpConfigExtension.VerifyTokenProperty),
-                    this.Config.GetValue(DmtpConfigExtension.DefaultIdProperty), timeout, this.Config.GetValue(DmtpConfigExtension.MetadataProperty), CancellationToken.None);
-                return this;
+                this.m_dmtpActor.Handshake(this.Config.GetValue(DmtpConfigExtension.DmtpOptionProperty).VerifyToken,
+                    this.Config.GetValue(DmtpConfigExtension.DmtpOptionProperty).Id, timeout, this.Config.GetValue(DmtpConfigExtension.DmtpOptionProperty).Metadata, token);
             }
-        }
-
-        /// <inheritdoc/>
-        public virtual ITcpDmtpClient Connect(CancellationToken token, int timeout = 5000)
-        {
-            lock (this.SyncRoot)
+            finally
             {
-                if (this.IsHandshaked)
-                {
-                    return this;
-                }
-                if (!this.Online)
-                {
-                    base.Connect(timeout);
-                }
-
-                this.m_dmtpActor.Handshake(this.Config.GetValue(DmtpConfigExtension.VerifyTokenProperty),
-                    this.Config.GetValue(DmtpConfigExtension.DefaultIdProperty), timeout, this.Config.GetValue(DmtpConfigExtension.MetadataProperty), token);
-                return this;
+                this.m_semaphoreForConnect.Release();
             }
         }
 
         /// <summary>
-        /// 建立Tcp连接，并且执行握手。
+        /// 异步进行Dmtp协议的握手连接
         /// </summary>
         /// <param name="timeout"></param>
+        /// <param name="token"></param>
         /// <returns></returns>
-        public override async Task<ITcpClient> ConnectAsync(int timeout = 5000)
+        public override async Task ConnectAsync(int timeout, CancellationToken token)
         {
             try
             {
-                await this.m_semaphore.WaitAsync();
+                await this.m_semaphoreForConnect.WaitAsync(timeout, token);
                 if (this.IsHandshaked)
                 {
-                    return this;
+                    return;
                 }
                 if (!this.Online)
                 {
-                    await base.ConnectAsync(timeout).ConfigureFalseAwait();
+                    await base.ConnectAsync(timeout, token);
                 }
 
-                await this.m_dmtpActor.HandshakeAsync(this.Config.GetValue(DmtpConfigExtension.VerifyTokenProperty), this.Config.GetValue(DmtpConfigExtension.DefaultIdProperty), timeout, this.Config.GetValue(DmtpConfigExtension.MetadataProperty), CancellationToken.None).ConfigureFalseAwait();
-                return this;
+                await this.m_dmtpActor.HandshakeAsync(this.Config.GetValue(DmtpConfigExtension.DmtpOptionProperty).VerifyToken,
+                     this.Config.GetValue(DmtpConfigExtension.DmtpOptionProperty).Id, timeout, this.Config.GetValue(DmtpConfigExtension.DmtpOptionProperty).Metadata, token);
             }
             finally
             {
-                this.m_semaphore.Release();
-            }
-        }
-
-        /// <inheritdoc/>
-        public virtual async Task<ITcpDmtpClient> ConnectAsync(CancellationToken token, int timeout = 5000)
-        {
-            try
-            {
-                await this.m_semaphore.WaitAsync();
-                if (this.IsHandshaked)
-                {
-                    return this;
-                }
-                if (!this.Online)
-                {
-                    await base.ConnectAsync(timeout).ConfigureFalseAwait();
-                }
-
-                await this.m_dmtpActor.HandshakeAsync(this.Config.GetValue(DmtpConfigExtension.VerifyTokenProperty), this.Config.GetValue(DmtpConfigExtension.DefaultIdProperty), timeout, this.Config.GetValue(DmtpConfigExtension.MetadataProperty), token).ConfigureFalseAwait();
-                return this;
-            }
-            finally
-            {
-                this.m_semaphore.Release();
+                this.m_semaphoreForConnect.Release();
             }
         }
 

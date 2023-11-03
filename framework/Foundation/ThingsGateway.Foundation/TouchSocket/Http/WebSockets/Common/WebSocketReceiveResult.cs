@@ -30,11 +30,10 @@ namespace ThingsGateway.Foundation.Http.WebSockets
             this.DataFrame = dataFrame;
         }
 
-
         /// <inheritdoc/>
         public void Dispose()
         {
-            m_disAction?.Invoke();
+            this.m_disAction?.Invoke();
         }
 
         /// <summary>

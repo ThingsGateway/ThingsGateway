@@ -50,26 +50,11 @@ namespace ThingsGateway.Foundation.Sockets
     public delegate Task DisconnectEventHandler<TClient>(TClient client, DisconnectEventArgs e);
 
     /// <summary>
-    /// 显示信息
-    /// </summary>
-    /// <param name="client"></param>
-    /// <param name="e"></param>
-    public delegate void MessageEventHandler<TClient>(TClient client, MsgPermitEventArgs e);
-
-    /// <summary>
     /// 接收数据
     /// </summary>
     /// <param name="client"></param>
     /// <param name="e"></param>
     public delegate Task ReceivedEventHandler<TClient>(TClient client, ReceivedDataEventArgs e);
-
-    /// <summary>
-    /// 普通通知
-    /// </summary>
-    /// <typeparam name="TClient"></typeparam>
-    /// <param name="client"></param>
-    /// <param name="e"></param>
-    public delegate void TouchSocketEventHandler<TClient>(TClient client, PluginEventArgs e);
 
     /// <summary>
     /// Udp接收

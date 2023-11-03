@@ -29,6 +29,6 @@ namespace ThingsGateway.Foundation.Http.WebSockets
     /// 收到WebSocket数据
     /// </summary>
     /// <param name="client"></param>
-    /// <param name="dataFrame"></param>
-    public delegate Task WSDataFrameEventHandler<TClient>(TClient client, WSDataFrame dataFrame);
+    /// <param name="e"></param>
+    public delegate Task WSDataFrameEventHandler<TClient>(TClient client, WSDataFrameEventArgs e);
 }

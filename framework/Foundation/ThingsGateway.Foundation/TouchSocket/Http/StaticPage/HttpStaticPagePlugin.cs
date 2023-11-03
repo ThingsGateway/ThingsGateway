@@ -114,6 +114,7 @@ namespace ThingsGateway.Foundation.Http
             };
             return this;
         }
+
         /// <inheritdoc/>
         public async Task OnHttpRequest(IHttpSocketClient client, HttpContextEventArgs e)
         {

@@ -24,24 +24,20 @@ public class SerialSession : SerialSessionBase
     public ReceivedEventHandler<SerialSession> Received { get; set; }
 
     /// <inheritdoc/>
-    protected override async Task ReceivedData(ReceivedDataEventArgs e)
+    protected override Task ReceivedData(ReceivedDataEventArgs e)
     {
         if (this.Received != null)
         {
-            await this.Received.Invoke(this, e);
-            if (e.Handled)
-            {
-                return;
-            }
+            return this.Received.Invoke(this, e);
         }
-        await base.ReceivedData(e);
+        return base.ReceivedData(e);
     }
 }
 
 /// <summary>
 /// 串口管理
 /// </summary>
-public class SerialSessionBase : BaseSerial, ISerialSession
+public class SerialSessionBase : SetupConfigObject, ISerialSession
 {
     static readonly Protocol SerialPort = new("SerialSession");
     /// <summary>
@@ -50,7 +46,6 @@ public class SerialSessionBase : BaseSerial, ISerialSession
     public SerialSessionBase()
     {
         this.Protocol = SerialPort;
-        this.m_serialCore = new InternalSerialCore();
     }
     /// <summary>
     /// <inheritdoc/>
@@ -65,7 +60,7 @@ public class SerialSessionBase : BaseSerial, ISerialSession
     private DelaySender m_delaySender;
     private bool m_online => MainSerialPort?.IsOpen == true;
     private readonly EasyLock m_semaphore = new();
-    private readonly InternalSerialCore m_serialCore;
+    private readonly InternalSerialCore m_serialCore = new();
     #endregion 变量
 
     #region 事件
@@ -82,9 +77,9 @@ public class SerialSessionBase : BaseSerial, ISerialSession
     /// <inheritdoc/>
     public DisconnectEventHandler<ISerialSessionBase> Disconnecting { get; set; }
 
-    private Task PrivateOnConnected(object o)
+    private Task PrivateOnConnected(ConnectedEventArgs o)
     {
-        return this.OnConnected((ConnectedEventArgs)o);
+        return this.OnConnected(o);
     }
 
     /// <summary>
@@ -217,13 +212,7 @@ public class SerialSessionBase : BaseSerial, ISerialSession
     public DateTime LastSendTime => this.GetSerialCore().SendCounter.LastIncrement;
 
     /// <inheritdoc/>
-    public IContainer Container { get; private set; }
-
-    /// <inheritdoc/>
     public virtual bool CanSetDataHandlingAdapter => true;
-
-    /// <inheritdoc/>
-    public TouchSocketConfig Config { get; private set; }
 
     /// <inheritdoc/>
     public SingleStreamDataHandlingAdapter DataHandlingAdapter { get; private set; }
@@ -240,11 +229,6 @@ public class SerialSessionBase : BaseSerial, ISerialSession
     public bool CanSend => this.m_online;
 
     /// <inheritdoc/>
-    public IPluginsManager PluginsManager { get; private set; }
-
-
-
-    /// <inheritdoc/>
     public Protocol Protocol { get; set; }
 
 
@@ -256,7 +240,7 @@ public class SerialSessionBase : BaseSerial, ISerialSession
     /// <inheritdoc/>
     public virtual void Close(string msg = TouchSocketCoreUtility.Empty)
     {
-        lock (this.SyncRoot)
+        lock (this.GetSerialCore())
         {
             if (this.m_online)
             {
@@ -274,7 +258,7 @@ public class SerialSessionBase : BaseSerial, ISerialSession
     /// <param name="disposing"></param>
     protected override void Dispose(bool disposing)
     {
-        lock (this.SyncRoot)
+        lock (this.GetSerialCore())
         {
             if (this.m_online)
             {
@@ -294,8 +278,10 @@ public class SerialSessionBase : BaseSerial, ISerialSession
     /// </summary>
     protected void Open()
     {
-        lock (this.SyncRoot)
+        try
         {
+            ThrowIfDisposed();
+            this.m_semaphore.Wait();
             if (this.m_online)
             {
                 return;
@@ -311,17 +297,18 @@ public class SerialSessionBase : BaseSerial, ISerialSession
             var serialProperty = this.Config.GetValue(SerialConfigExtension.SerialProperty) ?? throw new ArgumentNullException("串口配置不能为空。");
             this.MainSerialPort.SafeDispose();
             var serialPort = CreateSerial(serialProperty);
-            this.PrivateOnConnecting(new(serialPort))
-                .ConfigureAwait(false)
-                .GetAwaiter()
-                .GetResult();
+            this.PrivateOnConnecting(new(serialPort)).ConfigureAwait(false).GetAwaiter().GetResult();
 
             serialPort.Open();
 
             this.SetSerialPort(serialPort);
             this.BeginReceive();
 
-            Task.Factory.StartNew(this.PrivateOnConnected, new ConnectedEventArgs());
+            this.PrivateOnConnected(new()).ConfigureAwait(false).GetAwaiter().GetResult();
+        }
+        finally
+        {
+            this.m_semaphore.Release();
         }
     }
 
@@ -379,7 +366,7 @@ public class SerialSessionBase : BaseSerial, ISerialSession
     /// <param name="msg"></param>
     protected void BreakOut(bool manual, string msg)
     {
-        lock (this.SyncRoot)
+        lock (this.GetSerialCore())
         {
             if (this.m_online)
             {
@@ -397,17 +384,6 @@ public class SerialSessionBase : BaseSerial, ISerialSession
         return this.m_serialCore ?? throw new ObjectDisposedException(this.GetType().Name);
     }
 
-    /// <inheritdoc/>
-    public override int ReceiveBufferSize
-    {
-        get => this.GetSerialCore().ReceiveBufferSize;
-    }
-
-    /// <inheritdoc/>
-    public override int SendBufferSize
-    {
-        get => this.GetSerialCore().SendBufferSize;
-    }
 
     /// <inheritdoc/>
     public virtual void SetDataHandlingAdapter(SingleStreamDataHandlingAdapter adapter)
@@ -420,66 +396,6 @@ public class SerialSessionBase : BaseSerial, ISerialSession
         this.SetAdapter(adapter);
     }
 
-    /// <inheritdoc/>
-    public ISerialSession Setup(TouchSocketConfig config)
-    {
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
-
-        this.ThrowIfDisposed();
-
-        this.BuildConfig(config);
-
-        this.PluginsManager.Raise(nameof(ILoadingConfigPlugin.OnLoadingConfig), this, new ConfigEventArgs(config));
-        this.LoadConfig(this.Config);
-        this.PluginsManager.Raise(nameof(ILoadedConfigPlugin.OnLoadedConfig), this, new ConfigEventArgs(config));
-
-        return this;
-    }
-
-    private void BuildConfig(TouchSocketConfig config)
-    {
-        this.Config = config;
-
-        if (!(config.GetValue(TouchSocketCoreConfigExtension.ContainerProperty) is IContainer container))
-        {
-            container = new Container();
-        }
-
-        if (!container.IsRegistered(typeof(ILog)))
-        {
-            container.RegisterSingleton<ILog, LoggerGroup>();
-        }
-
-        if (!(config.GetValue(TouchSocketCoreConfigExtension.PluginsManagerProperty) is IPluginsManager pluginsManager))
-        {
-            pluginsManager = new PluginsManager(container);
-        }
-
-        if (container.IsRegistered(typeof(IPluginsManager)))
-        {
-            pluginsManager = container.Resolve<IPluginsManager>();
-        }
-        else
-        {
-            container.RegisterSingleton<IPluginsManager>(pluginsManager);
-        }
-
-        if (config.GetValue(TouchSocketCoreConfigExtension.ConfigureContainerProperty) is Action<IContainer> actionContainer)
-        {
-            actionContainer.Invoke(container);
-        }
-
-        if (config.GetValue(TouchSocketCoreConfigExtension.ConfigurePluginsProperty) is Action<IPluginsManager> actionPluginsManager)
-        {
-            pluginsManager.Enable = true;
-            actionPluginsManager.Invoke(pluginsManager);
-        }
-        this.Container = container;
-        this.PluginsManager = pluginsManager;
-    }
 
     private void PrivateHandleReceivedData(ByteBlock byteBlock, IRequestInfo requestInfo)
     {
@@ -521,11 +437,8 @@ public class SerialSessionBase : BaseSerial, ISerialSession
         return true;
     }
 
-    /// <summary>
-    /// 加载配置
-    /// </summary>
-    /// <param name="config"></param>
-    protected virtual void LoadConfig(TouchSocketConfig config)
+    /// <inheritdoc/>
+    protected override void LoadConfig(TouchSocketConfig config)
     {
         this.SerialProperty = config.GetValue(SerialConfigExtension.SerialProperty);
         this.Logger ??= this.Container.Resolve<ILog>();

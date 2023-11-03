@@ -10,9 +10,6 @@
 //------------------------------------------------------------------------------
 #endregion
 
-
-
-
 namespace ThingsGateway.Foundation.Dmtp
 {
     /// <summary>

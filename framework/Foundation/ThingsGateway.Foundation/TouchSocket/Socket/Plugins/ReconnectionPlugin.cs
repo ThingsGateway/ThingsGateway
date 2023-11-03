@@ -31,6 +31,8 @@ namespace ThingsGateway.Foundation.Sockets
     [PluginOption(Singleton = true, NotRegister = true)]
     public sealed class ReconnectionPlugin<TClient> : PluginBase where TClient : class, ITcpClient
     {
+        private bool m_polling;
+
         /// <summary>
         /// 重连插件
         /// </summary>
@@ -48,15 +50,12 @@ namespace ThingsGateway.Foundation.Sockets
                     return false;
                 }
             };
+
+            this.ActionForCheck = (c, i) =>
+            {
+                return Task.FromResult<bool?>(c.Online);
+            };
         }
-        /// <inheritdoc/>
-        protected override void Loaded(IPluginsManager pluginsManager)
-        {
-            base.Loaded(pluginsManager);
-            pluginsManager.Add<object, ConfigEventArgs>(nameof(ILoadedConfigPlugin.OnLoadedConfig), this.OnLoadedConfig);
-            pluginsManager.Add<TClient, DisconnectEventArgs>(nameof(ITcpDisconnectedPlugin.OnTcpDisconnected), this.OnTcpDisconnected);
-        }
-        private bool m_polling;
 
         /// <summary>
         /// 每个周期可执行的委托。用于检验客户端活性。返回true表示存活，返回
@@ -72,6 +71,85 @@ namespace ThingsGateway.Foundation.Sockets
         /// 检验时间间隔
         /// </summary>
         public TimeSpan Tick { get; set; } = TimeSpan.FromSeconds(1);
+
+        /// <summary>
+        /// 每个周期可执行的委托。返回值为True标识客户端存活。返回False，表示失活，立即重连。返回null时，表示跳过此次检验。
+        /// </summary>
+        /// <param name="actionForCheck"></param>
+        /// <returns></returns>
+        public ReconnectionPlugin<TClient> SetActionForCheck(Func<TClient, int, Task<bool?>> actionForCheck)
+        {
+            this.ActionForCheck = actionForCheck;
+            return this;
+        }
+
+        /// <summary>
+        /// 每个周期可执行的委托。返回值为True标识客户端存活。返回False，表示失活，立即重连。返回null时，表示跳过此次检验。
+        /// </summary>
+        /// <param name="actionForCheck"></param>
+        /// <returns></returns>
+        public ReconnectionPlugin<TClient> SetActionForCheck(Func<TClient, int, bool?> actionForCheck)
+        {
+            this.ActionForCheck = async (c, i) =>
+            {
+                await EasyTask.CompletedTask;
+                return actionForCheck.Invoke(c, i);
+            };
+            return this;
+        }
+
+        /// <summary>
+        /// 设置连接动作
+        /// </summary>
+        /// <param name="tryConnect"></param>
+        /// <returns>无论如何，只要返回True，则结束本轮尝试</returns>
+        public ReconnectionPlugin<TClient> SetConnectAction(Func<TClient, Task<bool>> tryConnect)
+        {
+            this.ActionForConnect = tryConnect;
+            return this;
+        }
+
+        /// <summary>
+        /// 设置连接动作
+        /// </summary>
+        /// <param name="tryConnect"></param>
+        /// <returns>无论如何，只要返回True，则结束本轮尝试</returns>
+        public ReconnectionPlugin<TClient> SetConnectAction(Func<TClient, bool> tryConnect)
+        {
+            this.ActionForConnect = (c) =>
+            {
+                return Task.FromResult(tryConnect.Invoke(c));
+            };
+            return this;
+        }
+
+        /// <summary>
+        /// 检验时间间隔
+        /// </summary>
+        /// <param name="tick"></param>
+        /// <returns></returns>
+        public ReconnectionPlugin<TClient> SetTick(TimeSpan tick)
+        {
+            this.Tick = tick;
+            return this;
+        }
+
+        /// <summary>
+        /// 使用轮询保持活性。
+        /// </summary>
+        public ReconnectionPlugin<TClient> UsePolling()
+        {
+            this.m_polling = true;
+            return this;
+        }
+
+        /// <inheritdoc/>
+        protected override void Loaded(IPluginsManager pluginsManager)
+        {
+            base.Loaded(pluginsManager);
+            pluginsManager.Add<object, ConfigEventArgs>(nameof(ILoadedConfigPlugin.OnLoadedConfig), this.OnLoadedConfig);
+            pluginsManager.Add<TClient, DisconnectEventArgs>(nameof(ITcpDisconnectedPlugin.OnTcpDisconnected), this.OnTcpDisconnected);
+        }
 
         private Task OnLoadedConfig(object sender, ConfigEventArgs e)
         {
@@ -120,9 +198,10 @@ namespace ThingsGateway.Foundation.Sockets
             return e.InvokeNext();
         }
 
-        private Task OnTcpDisconnected(TClient client, DisconnectEventArgs e)
+        private async Task OnTcpDisconnected(TClient client, DisconnectEventArgs e)
         {
-            Task.Run(async () =>
+            await e.InvokeNext();
+            _ = Task.Run(async () =>
             {
                 if (e.Manual)
                 {
@@ -137,84 +216,6 @@ namespace ThingsGateway.Foundation.Sockets
                     }
                 }
             });
-
-            return e.InvokeNext();
-        }
-
-        /// <summary>
-        /// 每个周期可执行的委托。返回值为True标识客户端存活。返回False，表示失活，立即重连。返回null时，表示跳过此次检验。
-        /// </summary>
-        /// <param name="actionForCheck"></param>
-        /// <returns></returns>
-        public ReconnectionPlugin<TClient> SetActionForCheck(Func<TClient, int, Task<bool?>> actionForCheck)
-        {
-            this.ActionForCheck = actionForCheck;
-            return this;
-        }
-
-        /// <summary>
-        /// 每个周期可执行的委托。返回值为True标识客户端存活。返回False，表示失活，立即重连。返回null时，表示跳过此次检验。
-        /// </summary>
-        /// <param name="actionForCheck"></param>
-        /// <returns></returns>
-        public ReconnectionPlugin<TClient> SetActionForCheck(Func<TClient, int, bool?> actionForCheck)
-        {
-            this.ActionForCheck = async (c, i) =>
-            {
-                await EasyTask.CompletedTask;
-                return actionForCheck.Invoke(c, i);
-            };
-            return this;
-        }
-
-        /// <summary>
-        /// 设置连接动作
-        /// </summary>
-        /// <param name="tryConnect"></param>
-        /// <returns>无论如何，只要返回True，则结束本轮尝试</returns>
-        public ReconnectionPlugin<TClient> SetConnectAction(Func<TClient, Task<bool>> tryConnect)
-        {
-            this.ActionForConnect = tryConnect;
-            return this;
-        }
-
-        /// <summary>
-        /// 设置连接动作
-        /// </summary>
-        /// <param name="tryConnect"></param>
-        /// <returns>无论如何，只要返回True，则结束本轮尝试</returns>
-        public ReconnectionPlugin<TClient> SetConnectAction(Func<TClient, bool> tryConnect)
-        {
-            this.ActionForConnect = async (c) =>
-            {
-                await EasyTask.CompletedTask;
-                return tryConnect.Invoke(c);
-            };
-            return this;
-        }
-
-        /// <summary>
-        /// 检验时间间隔
-        /// </summary>
-        /// <param name="tick"></param>
-        /// <returns></returns>
-        public ReconnectionPlugin<TClient> SetTick(TimeSpan tick)
-        {
-            this.Tick = tick;
-            return this;
-        }
-
-        /// <summary>
-        /// 使用轮询保持活性。
-        /// </summary>
-        public ReconnectionPlugin<TClient> UsePolling()
-        {
-            this.ActionForCheck = (client, failCount) =>
-            {
-                return Task.FromResult(client?.Online);
-            };
-            this.m_polling = true;
-            return this;
         }
     }
 }

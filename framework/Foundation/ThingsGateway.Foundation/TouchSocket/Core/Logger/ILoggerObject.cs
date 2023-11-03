@@ -23,23 +23,13 @@
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-namespace ThingsGateway.Foundation.Sockets
+namespace ThingsGateway.Foundation.Core
 {
     /// <summary>
-    /// Socket基接口
+    /// 具有日志记录器的对象接口
     /// </summary>
-    public interface ISocket : IDisposable
+    public interface ILoggerObject
     {
-        /// <summary>
-        /// 发送缓存区大小。最小值=1024。
-        /// </summary>
-        int SendBufferSize { get; }
-
-        /// <summary>
-        /// 接收缓存区大小。最小值=1024。
-        /// </summary>
-        int ReceiveBufferSize { get; }
-
         /// <summary>
         /// 日志记录器
         /// </summary>

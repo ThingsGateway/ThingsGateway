@@ -30,20 +30,5 @@ namespace ThingsGateway.Foundation.Http.WebSockets
     /// </summary>
     public interface IWebSocketClient : IHttpClient
     {
-        /// <summary>
-        /// 连接到ws服务器
-        /// </summary>
-        /// <param name="token"></param>
-        /// <param name="timeout"></param>
-        /// <returns></returns>
-        ITcpClient Connect(CancellationToken token, int timeout = 5000);
-
-        /// <summary>
-        /// 异步连接到ws服务器
-        /// </summary>
-        /// <param name="token"></param>
-        /// <param name="timeout"></param>
-        /// <returns></returns>
-        Task<ITcpClient> ConnectAsync(CancellationToken token, int timeout = 5000);
     }
 }

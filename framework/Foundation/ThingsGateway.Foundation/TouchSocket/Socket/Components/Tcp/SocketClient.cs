@@ -31,7 +31,7 @@ namespace ThingsGateway.Foundation.Sockets
     /// SocketClient
     /// </summary>
     [DebuggerDisplay("Id={Id},IPAdress={IP}:{Port}")]
-    public class SocketClient : BaseSocket, ISocketClient
+    public class SocketClient : ConfigObject, ISocketClient
     {
         /// <summary>
         /// 构造函数
@@ -57,8 +57,6 @@ namespace ThingsGateway.Foundation.Sockets
         /// <inheritdoc/>
         public virtual bool CanSetDataHandlingAdapter => true;
 
-        /// <inheritdoc/>
-        public TouchSocketConfig Config { get; private set; }
 
         /// <inheritdoc/>
         public IContainer Container { get; private set; }
@@ -110,7 +108,8 @@ namespace ThingsGateway.Foundation.Sockets
 
         /// <inheritdoc/>
         public bool UseSsl { get; private set; }
-
+        /// <inheritdoc/>
+        public override TouchSocketConfig Config => this.Service?.Config;
         #endregion 属性
 
         #region Internal
@@ -152,10 +151,7 @@ namespace ThingsGateway.Foundation.Sockets
             return this.OnInitialized();
         }
 
-        internal void InternalSetConfig(TouchSocketConfig config)
-        {
-            this.Config = config;
-        }
+
 
         internal void InternalSetContainer(IContainer container)
         {
@@ -234,7 +230,6 @@ namespace ThingsGateway.Foundation.Sockets
                 }
             }
 
-            base.Dispose(true);
         }
 
         private void HandleReceived(TcpCore core, ByteBlock byteBlock)
@@ -378,6 +373,7 @@ namespace ThingsGateway.Foundation.Sockets
                 var tcp = this.m_tcpCore;
                 this.m_tcpCore = null;
                 this.Service.ReturnTcpCore(tcp);
+                base.Dispose(true);
             }
         }
         private Task PrivateOnDisconnecting(object obj)
@@ -386,22 +382,11 @@ namespace ThingsGateway.Foundation.Sockets
         }
         #endregion 事件&委托
 
-        /// <inheritdoc/>
-        public override int ReceiveBufferSize
-        {
-            get => this.GetTcpCore().ReceiveBufferSize;
-        }
-
-        /// <inheritdoc/>
-        public override int SendBufferSize
-        {
-            get => this.GetTcpCore().SendBufferSize;
-        }
 
         /// <inheritdoc/>
         public virtual void Close(string msg = TouchSocketCoreUtility.Empty)
         {
-            lock (this.SyncRoot)
+            lock (this.GetTcpCore())
             {
                 if (this.Online)
                 {
@@ -483,7 +468,7 @@ namespace ThingsGateway.Foundation.Sockets
         /// <inheritdoc/>
         protected override void Dispose(bool disposing)
         {
-            lock (this.SyncRoot)
+            lock (this.GetTcpCore())
             {
                 if (this.Online)
                 {
@@ -491,7 +476,6 @@ namespace ThingsGateway.Foundation.Sockets
                     this.BreakOut(true, $"{nameof(Dispose)}主动断开");
                 }
 
-                base.Dispose(disposing);
             }
         }
 

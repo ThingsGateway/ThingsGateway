@@ -26,22 +26,26 @@
 namespace ThingsGateway.Foundation.Sockets
 {
     /// <summary>
-    /// 通讯基类
+    /// 具有连接动作的对象
     /// </summary>
-    public abstract class BaseSocket : DependencyObject, ISocket
+    public interface IConnectObject
     {
         /// <summary>
-        /// 同步根。
+        /// 连接
         /// </summary>
-        protected readonly object SyncRoot = new object();
+        /// <param name="timeout">最大等待时间</param>
+        /// <param name="token">可取消令箭</param>
+        /// <exception cref="TimeoutException"></exception>
+        /// <exception cref="Exception"></exception>
+        void Connect(int timeout, CancellationToken token);
 
-        /// <inheritdoc/>
-        public abstract int SendBufferSize { get; }
-
-        /// <inheritdoc/>
-        public abstract int ReceiveBufferSize { get; }
-
-        /// <inheritdoc/>
-        public ILog Logger { get; set; }
+        /// <summary>
+        /// 异步连接
+        /// </summary>
+        /// <param name="timeout">最大等待时间</param>
+        /// <param name="token">可取消令箭</param>
+        /// <exception cref="TimeoutException"></exception>
+        /// <exception cref="Exception"></exception>
+        Task ConnectAsync(int timeout, CancellationToken token);
     }
 }

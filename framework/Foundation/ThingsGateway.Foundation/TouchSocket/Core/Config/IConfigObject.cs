@@ -1,4 +1,4 @@
-#region copyright
+﻿#region copyright
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -10,24 +10,16 @@
 //------------------------------------------------------------------------------
 #endregion
 
-namespace ThingsGateway.Foundation.Serial;
-
-/// <summary>
-/// 通讯基类
-/// </summary>
-public abstract class BaseSerial : DependencyObject, ISerial
+namespace ThingsGateway.Foundation.Core
 {
     /// <summary>
-    /// 同步根。
+    /// 具有配置的对象接口
     /// </summary>
-    protected readonly object SyncRoot = new object();
-
-    /// <inheritdoc/>
-    public abstract int SendBufferSize { get; }
-
-    /// <inheritdoc/>
-    public abstract int ReceiveBufferSize { get; }
-
-    /// <inheritdoc/>
-    public ILog Logger { get; set; }
+    public interface IConfigObject : IDependencyObject, ILoggerObject
+    {
+        /// <summary>
+        /// 设置项
+        /// </summary>
+        TouchSocketConfig Config { get; }
+    }
 }
