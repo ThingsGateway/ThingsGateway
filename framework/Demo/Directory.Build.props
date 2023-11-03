@@ -1,6 +1,6 @@
 <Project>
 	<PropertyGroup>
-		<Version>3.0.0.28</Version>
+		<Version>3.0.1.0</Version>
 		<LangVersion>latest</LangVersion>
 		<Authors>Diego</Authors>
 		<Product>ThingsGateway</Product>
