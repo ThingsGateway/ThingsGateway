@@ -369,6 +369,10 @@ public class AlarmWorker : BackgroundService
                 cancellationToken.SafeDispose();
             }
             StoppingTokens.Clear();
+
+            HisAlarmDeviceVariables.Clear();
+            DeviceVariables.Clear();
+            RealAlarmDeviceVariables.Clear();
         }
         catch (Exception ex)
         {
@@ -521,6 +525,7 @@ public class AlarmWorker : BackgroundService
                         if (stoppingToken.IsCancellationRequested)
                             break;
                         if (!item.AlarmEnable) continue;
+                        if (!item.IsOnline) continue;
                         AlarmAnalysis(item);
                     }
                     if (stoppingToken.IsCancellationRequested)
@@ -601,26 +606,6 @@ public class AlarmWorker : BackgroundService
                             if (stoppingToken.IsCancellationRequested)
                                 break;
 
-                            //缓存值
-                            var cacheData = await CacheDb.GetCacheData();
-                            if (cacheData.Count > 0)
-                            {
-                                var data = cacheData.SelectMany(a => a.CacheStr.FromJsonString<List<HistoryAlarm>>()).ToList();
-                                try
-                                {
-                                    var count = await sqlSugarClient.Insertable(data).ExecuteCommandAsync(stoppingToken);
-                                    await CacheDb.DeleteCacheData(cacheData.Select(a => a.Id).ToArray());
-                                }
-                                catch (Exception ex)
-                                {
-                                    if (isSuccess)
-                                        _logger.LogWarning(ex, "写入历史报警失败");
-                                }
-                            }
-                            if (stoppingToken.IsCancellationRequested)
-                                break;
-
-
                             if (list.Count != 0)
                             {
                                 ////Sql保存
@@ -642,13 +627,34 @@ public class AlarmWorker : BackgroundService
                                     var cacheDatas = list.ChunkTrivialBetter(500);
                                     foreach (var a in cacheDatas)
                                     {
-                                        await CacheDb.AddCacheData("", a.ToJsonString(), 50000);
+                                        await CacheDb.AddCacheData("", a.ToJsonString(), 5000);
                                     }
+                                    isSuccess = false;
                                 }
 
                             }
 
-
+                            if (isSuccess)
+                            {
+                                //缓存值
+                                var cacheData = await CacheDb.GetCacheData();
+                                if (cacheData.Count > 0)
+                                {
+                                    var data = cacheData.SelectMany(a => a.CacheStr.FromJsonString<List<HistoryAlarm>>()).ToList();
+                                    try
+                                    {
+                                        var count = await sqlSugarClient.Insertable(data).ExecuteCommandAsync(stoppingToken);
+                                        await CacheDb.DeleteCacheData(cacheData.Select(a => a.Id).ToArray());
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        if (isSuccess)
+                                            _logger.LogWarning(ex, "写入历史报警失败");
+                                    }
+                                }
+                            }
+                            if (stoppingToken.IsCancellationRequested)
+                                break;
                         }
                         catch (TaskCanceledException)
                         {

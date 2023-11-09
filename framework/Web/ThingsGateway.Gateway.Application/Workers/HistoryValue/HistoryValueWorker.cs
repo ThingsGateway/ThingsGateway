@@ -329,6 +329,9 @@ public class HistoryValueWorker : BackgroundService
                 cancellationToken.SafeDispose();
             }
             StoppingTokens.Clear();
+
+            ChangeDeviceVariables.Clear();
+            DeviceVariables.Clear();
         }
         catch (Exception ex)
         {
@@ -418,27 +421,12 @@ public class HistoryValueWorker : BackgroundService
                         {
                             await Task.Delay(500, stoppingToken);
 
-
                             if (stoppingToken.IsCancellationRequested)
                                 break;
 
-                            //缓存值
-                            var cacheData = await CacheDb.GetCacheData();
-                            var data = cacheData.SelectMany(a => a.CacheStr.FromJsonString<List<HistoryValue>>()).ToList();
-                            try
-                            {
-                                var count = await sqlSugarClient.Insertable(data).ExecuteCommandAsync(stoppingToken);
-                                await CacheDb.DeleteCacheData(cacheData.Select(a => a.Id).ToArray());
-                            }
-                            catch (Exception ex)
-                            {
-                                if (LastIsSuccess)
-                                    _logger.LogWarning(ex, "写入历史数据失败");
-                            }
-
-                            if (stoppingToken.IsCancellationRequested)
-                                break;
                             var collectList = DeviceVariables.ToListWithDequeue();
+                            var changeList = ChangeDeviceVariables.ToListWithDequeue();
+
                             if (collectList.Count != 0)
                             {
                                 ////Sql保存
@@ -457,15 +445,14 @@ public class HistoryValueWorker : BackgroundService
                                     var cacheDatas = collecthis.ChunkTrivialBetter(500);
                                     foreach (var a in cacheDatas)
                                     {
-                                        await CacheDb.AddCacheData("", a.ToJsonString(), 50000);
+                                        await CacheDb.AddCacheData("", a.ToJsonString(), 5000);
                                     }
+                                    LastIsSuccess = false;
                                 }
                             }
 
-
                             if (stoppingToken.IsCancellationRequested)
                                 break;
-                            var changeList = ChangeDeviceVariables.ToListWithDequeue();
                             if (changeList.Count != 0)
                             {
                                 ////Sql保存
@@ -484,12 +471,31 @@ public class HistoryValueWorker : BackgroundService
                                     var cacheDatas = changehis.ChunkTrivialBetter(500);
                                     foreach (var a in cacheDatas)
                                     {
-                                        await CacheDb.AddCacheData("", a.ToJsonString(), 50000);
+                                        await CacheDb.AddCacheData("", a.ToJsonString(), 5000);
                                     }
+                                    LastIsSuccess = false;
                                 }
                             }
 
+                            if (LastIsSuccess)
+                            {
+                                //缓存值
+                                var cacheData = await CacheDb.GetCacheData();
+                                var data = cacheData.SelectMany(a => a.CacheStr.FromJsonString<List<HistoryValue>>()).ToList();
+                                try
+                                {
+                                    var count = await sqlSugarClient.Insertable(data).ExecuteCommandAsync(stoppingToken);
+                                    await CacheDb.DeleteCacheData(cacheData.Select(a => a.Id).ToArray());
+                                }
+                                catch (Exception ex)
+                                {
+                                    if (LastIsSuccess)
+                                        _logger.LogWarning(ex, "写入历史数据失败");
+                                }
+                            }
 
+                            if (stoppingToken.IsCancellationRequested)
+                                break;
                         }
                         catch (TaskCanceledException)
                         {
