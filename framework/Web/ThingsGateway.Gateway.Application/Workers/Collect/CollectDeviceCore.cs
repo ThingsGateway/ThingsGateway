@@ -269,7 +269,10 @@ public class CollectDeviceCore
         finally
         {
             isInitSuccess = false;
-            GlobalDeviceData.CollectDevices.RemoveWhere(it => it.Id == Device.Id);
+            lock (GlobalDeviceData.CollectDevices)
+            {
+                GlobalDeviceData.CollectDevices.RemoveWhere(it => it.Id == Device.Id);
+            }
         }
     }
 
@@ -292,12 +295,19 @@ public class CollectDeviceCore
             _logger = App.GetService<ILoggerFactory>().CreateLogger("采集设备：" + _device.Name);
 
             //全局数据更新
-            if (isUpDevice || upDevice)
+            //if (isUpDevice || upDevice)
             {
                 lock (GlobalDeviceData.CollectDevices)
                 {
-                    GlobalDeviceData.CollectDevices.RemoveWhere(it => it.Id == device.Id);
-                    GlobalDeviceData.CollectDevices.Add(device);
+                    if (GlobalDeviceData.CollectDevices.Any(a => a.Id == device.Id))
+                    {
+                        GlobalDeviceData.CollectDevices.RemoveWhere(it => it.Id == device.Id);
+                        GlobalDeviceData.CollectDevices.Add(device);
+                    }
+                    else
+                    {
+                        GlobalDeviceData.CollectDevices.Add(device);
+                    }
                 }
             }
             //更新插件信息
