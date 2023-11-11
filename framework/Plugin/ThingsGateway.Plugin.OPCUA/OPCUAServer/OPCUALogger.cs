@@ -48,10 +48,9 @@ public partial class OPCUAServer
             else
             {
                 var message = formatter(state, exception);
-                _log.Log((Foundation.Core.LogLevel)(byte)logLevel, state, message, exception);
-                if (logLevel > Microsoft.Extensions.Logging.LogLevel.Information)
+                if (logLevel > Microsoft.Extensions.Logging.LogLevel.Warning)
                 {
-
+                    _log.Log((Foundation.Core.LogLevel)(byte)logLevel, state, message, exception);
                 }
             }
         }

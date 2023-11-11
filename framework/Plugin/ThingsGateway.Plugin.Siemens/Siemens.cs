@@ -113,18 +113,13 @@ public abstract class Siemens : CollectBase
             return new(await _plc?.WriteAsync(address, value, cancellationToken));
     }
 
-
-
-
-
-
-
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
         _plc?.Disconnect();
         base.Dispose(disposing);
     }
+
     /// <inheritdoc/>
     protected override async Task<OperResult<byte[]>> ReadAsync(string address, int length, CancellationToken cancellationToken)
     {
