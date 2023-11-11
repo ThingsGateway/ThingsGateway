@@ -459,6 +459,7 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
                 if (!result1.IsSuccess)
                 {
                     Logger?.Warning($"{client.IP} : {client.Port}：ISO_TP握手失败-{result1.Message}");
+                    TcpClient.Close();
                     return;
                 }
                 var result2 = await SendThenResponseAsync(S7_PN);
