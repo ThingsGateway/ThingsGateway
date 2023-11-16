@@ -113,7 +113,7 @@ public class UploadDeviceThread : IAsyncDisposable
             }
             try
             {
-                await DeviceTask.WaitAsync(CancellationToken.None);
+                await DeviceTask.WaitAsync(TimeSpan.FromMinutes(3));
             }
             catch (ObjectDisposedException)
             {
