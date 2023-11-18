@@ -1,0 +1,205 @@
+﻿@*
+//------------------------------------------------------------------------------
+//  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
+//  此代码版权（除特别声明外的代码）归作者本人Diego所有
+//  源代码使用协议遵循本仓库的开源协议及附加协议
+//  Gitee源代码仓库：https://gitee.com/diego2098/ThingsGateway
+//  Github源代码仓库：https://github.com/kimdiego2098/ThingsGateway
+//  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
+//  QQ群：605534569
+//------------------------------------------------------------------------------
+*@
+
+@using BlazorComponent;
+@using Microsoft.AspNetCore.Components.Web;
+@using Microsoft.JSInterop;
+@using ThingsGateway.Foundation.Core;
+@using Masa.Blazor;
+@namespace ThingsGateway.Foundation.Demo
+@inherits DriverDebugUIBase
+
+<MCard Elevation="1" Rounded="false" Class=" pa-2" Style="width:100%">
+    <MRow Class="my-1" Justify="JustifyTypes.Start" Align="AlignTypes.Start" NoGutters>
+
+        <MCol Md="5">
+            <MTabs @bind-Value="tab" Class="ma-2">
+                <MTab Value=1>   读写测试    </MTab>
+                <MTab Value=2>    特殊功能    </MTab>
+                <MTab Value=3>    代码示例    </MTab>
+            </MTabs>
+
+            <MTabsItems Value="tab">
+                <MTabItem Value="1">
+                    @if (tab == 1)
+                    {
+                        @if (ReadWriteContent == null)
+                        {
+
+                            <div class="my-1 py-1">
+                                <MTooltip Bottom Context="tip">
+                                    <ActivatorContent>
+                                        <MTextarea Class="mx-1 my-1" Label="变量地址" @attributes="@tip.Attrs" Dense Outlined HideDetails="@("auto")" @bind-Value=@Address />
+                                    </ActivatorContent>
+                                    <ChildContent>
+                                        <span style="white-space: pre-wrap;">@Plc?.GetAddressDescription()</span>
+                                    </ChildContent>
+                                </MTooltip>
+                                <MRow Class="my-1" Justify="JustifyTypes.Start" Align="AlignTypes.Start" NoGutters>
+                                <MTextField Class="mx-1 my-1" Style="max-width:200px" Label="读取长度" Dense Outlined HideDetails="@("auto")" @bind-Value=@Length />
+                                    <MSelect Class="mx-1 my-1" Style="max-width:200px" @bind-Value="DataTypeEnum" Outlined Label="数据类型"
+                                             Items=@(typeof(DataTypeEnum).GetEnumList())
+                                             MenuProps="@(props => { props.Auto = true; props.OffsetY = true; })"
+                                             ItemText=@((u) =>u.Description)
+                                             ItemValue=@(u =>(DataTypeEnum)u.Value)
+                                             HideDetails=@("auto") Height="30"
+                                              Dense>
+                                </MSelect>
+                            </MRow>
+
+                            <MButton Class="mx-1 my-1" Color="primary" OnClick="ReadAsync">
+                                读取
+                            </MButton>
+                            <MTextarea Class="mx-1 mt-3 my-1" Label="值" Dense Outlined HideDetails="@("auto")" @bind-Value=@WriteValue />
+                                <MButton Class="mx-1 my-1" Color="primary" OnClick="WriteAsync">
+                                    写入
+                                </MButton>
+
+                            </div>
+
+                        }
+                        else
+                        {
+                            @ReadWriteContent
+                        }
+                    }
+                </MTabItem>
+
+                <MTabItem Value="2">
+                    @if (tab == 2)
+                    {
+                        @if (ShowDefaultOtherContent)
+                        {
+                            <MSubheader>
+                                连读打包
+                            </MSubheader>
+                            <MContainer>
+
+                                @foreach (var item in DeviceVariableRunTimes)
+                                {
+                                    <MRow Dense Align="AlignTypes.Center">
+                                        <MTextField Class="ma-1" Outlined Style="min-width:100px" Label=@(item.Description(x => x.Address)) Dense HideDetails="@("auto")" @bind-Value=@item.Address></MTextField>
+                                        <MSelect Class="mx-1 my-1" Style="max-width:120px" @bind-Value="item.DataTypeEnum" Outlined Label=@(item.Description(x => x.DataTypeEnum))
+                                                 Items=@(typeof(DataTypeEnum).GetEnumList())
+                                                 MenuProps="@(props => { props.Auto = true; props.OffsetY = true; })"
+                                                 ItemText=@((u) =>u.Description)
+                                                 ItemValue=@(u =>(DataTypeEnum)u.Value)
+                                                 HideDetails=@("auto") Height="30"
+                                              Dense>
+                                    </MSelect>
+
+                                    <MTextField Class="ma-1" Outlined Style="max-width:100px" Label=@(item.Description(x => x.IntervalTime)) Dense HideDetails="@("auto")" @bind-Value=@item.IntervalTime></MTextField>
+
+                                        <MTextField Class="ma-1" Outlined Style="max-width:100px" Label=实时值 Readonly ClearIcon="" Dense HideDetails="@("auto")" Value=item.Value?.ToJsonString()></MTextField>
+
+                                    </MRow>
+                                }
+                                <MRow Dense>
+                                <MTextField Class="ma-1" Outlined Style="max-width:100px" Label="打包长度" Dense HideDetails="@("auto")" @bind-Value=@MaxPack></MTextField>
+                                    <MButton Class="ma-1" Color="primary" OnClick="MulReadAsync">
+                                        读取
+                                    </MButton>
+                                </MRow>
+                            </MContainer>
+
+                        }
+
+                        @if (OtherContent != null)
+                        {
+                            <MSheet Style="height:100%;overflow-y:auto">
+                                @OtherContent
+                            </MSheet>
+                        }
+
+
+
+
+
+
+                    }
+                </MTabItem>
+
+
+                <MTabItem Value="3">
+                    @if (tab == 3)
+                    {
+                        @if (CodeContent != null)
+                            @CodeContent
+                        else
+                        {
+
+                            <MRow Align="AlignTypes.Center">
+                                <MContainer>
+
+                                    <MItemGroup @bind-Value="_selected" Class="shrink mr-6" Mandatory>
+                                    @{
+
+                                            int index = 0;
+
+                                        }
+                                        <MRow>
+
+                                            @foreach (var item in Sections)
+                                            {
+                                                <MItem Value="@(index++)">
+                                                    <div>
+                                                        <MButton IsActive="@context.Active" Icon OnClick="@context.Toggle">
+                                                            <MIcon>mdi-record</MIcon>
+                                                        </MButton>
+                                                    </div>
+                                                </MItem>
+                                            }
+                                        </MRow>
+                                    </MItemGroup>
+                                </MContainer>
+
+                                <MCol>
+                                    <MWindow Value="_selected" Vertical Class="elevation-1 grey lighten-5 rounded-b" Style=@($"height:450px;overflow:auto")>
+                                        @{
+                                            int index = 0;
+                                        }
+                                        @foreach (var item in Sections)
+                                        {
+                                            <MWindowItem Value="@(index++)">
+                                                <AppCode RoundedTop0 Code="@item.Code" Language="@item.Language" />
+                                            </MWindowItem>
+                                        }
+                                    </MWindow>
+                                </MCol>
+                            </MRow>
+
+
+                        }
+
+
+                    }
+                </MTabItem>
+            </MTabsItems>
+
+        </MCol>
+
+        <MCol Md="7">
+            <MCard Style="overflow-y:auto;width:100%" Elevation="0" Flat Class="ml-4">
+                <ConsoleTxt Messages="Messages" Height=500></ConsoleTxt>
+            </MCard>
+        </MCol>
+
+    </MRow>
+
+</MCard>
+
+
+@code {
+    StringNumber tab;
+}
+
+

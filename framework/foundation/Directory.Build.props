@@ -1,0 +1,53 @@
+<Project>
+	<PropertyGroup>
+		<Version>4.0.0.0</Version>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+		<LangVersion>latest</LangVersion>
+		<TargetFrameworks>net45;netstandard2.0;net6.0;net8.0;</TargetFrameworks>
+		<Description>
+			ThingsGateway.Foundation是工业设备通讯类库，归属于ThingsGateway边缘网关项目，说明文档：https://diego2098.gitee.io/thingsgateway-docs/
+		</Description>
+		<Authors>Diego</Authors>
+		<Product>ThingsGateway</Product>
+		<Copyright>© 2023-present Diego</Copyright>
+		<RepositoryUrl>https://gitee.com/diego2098/ThingsGateway</RepositoryUrl>
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+		<EmbedUntrackedSource>true</EmbedUntrackedSource>
+		<EmbedAllSources>true</EmbedAllSources>
+		<RepositoryType>Gitee</RepositoryType>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageIcon>icon.png</PackageIcon>
+		<IncludeSymbols>true</IncludeSymbols>
+		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+		<PackageProjectUrl>https://diego2098.gitee.io/thingsgateway-docs/</PackageProjectUrl>
+		<PackageTags>ThingsGateway;Diego;dotNET China;Blazor;设备采集;边缘网关</PackageTags>
+		<SignAssembly>True</SignAssembly>
+		<DelaySign>False</DelaySign>
+		<SatelliteResourceLanguages>zh-Hans</SatelliteResourceLanguages>
+		<PackageOutputPath>..\..\nupkgs</PackageOutputPath>
+		<AssemblyOriginatorKeyFile>..\..\..\snks/ThingsGateway.snk</AssemblyOriginatorKeyFile>
+	</PropertyGroup>
+
+	<PropertyGroup>
+	</PropertyGroup>
+
+
+	<ItemGroup>
+		<None Include="..\..\..\README.md" Pack="true" PackagePath="\" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="..\..\..\icon.png">
+			<Pack>True</Pack>
+			<PackagePath></PackagePath>
+		</None>
+	</ItemGroup>
+
+	<PropertyGroup Condition="'$(Configuration)' == 'Release'">
+		<DebugSymbols>True</DebugSymbols>
+		<DebugType>Embedded</DebugType>
+		<EmbedAllSources>True</EmbedAllSources>
+	</PropertyGroup>
+	
+</Project>

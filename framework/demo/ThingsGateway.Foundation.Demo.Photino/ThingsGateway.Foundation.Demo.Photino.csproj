@@ -1,0 +1,46 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFrameworks>net6.0;net8.0;</TargetFrameworks>
+		<ApplicationIcon>favicon.ico</ApplicationIcon>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <None Remove="favicon.ico" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Include="favicon.ico">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	    <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+	    <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+	  </Content>
+	</ItemGroup>
+
+
+	<ItemGroup>
+		<PackageReference Include="Photino.Blazor" Version="2.6.0" />
+	</ItemGroup>
+
+
+	<ItemGroup>
+	  <ProjectReference Include="..\ThingsGateway.Foundation.Demo.Rcl\ThingsGateway.Foundation.Demo.Rcl.csproj" />
+	</ItemGroup>
+
+
+	<ItemGroup>
+	  <Content Update="wwwroot\favicon.ico">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\favicon.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\index.html">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	</ItemGroup>
+
+
+
+</Project>

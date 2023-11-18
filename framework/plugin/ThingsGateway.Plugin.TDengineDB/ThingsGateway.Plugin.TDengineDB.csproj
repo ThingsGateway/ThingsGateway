@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	 
+	
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+
+		<Exec Command=" set dir=&quot;$(SolutionDir)web\ThingsGateway.Web.Entry\bin\$(Configuration)\$(TargetFramework)\Plugins\$(AssemblyName)&quot;&#xD;&#xA; if not exist %25dir%25  md %25dir%25  &#xD;&#xA;copy &quot;$(TargetDir)*ThingsGateway.Plugin.TDengineDB*.dll&quot;  %25dir%25&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;" />
+	
+	</Target>
+
+  
+
+</Project>
