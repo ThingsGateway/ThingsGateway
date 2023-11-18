@@ -1,0 +1,48 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+		<Exec Command=" set dir=&quot;$(SolutionDir)web\ThingsGateway.Web.Entry\bin\$(Configuration)\$(TargetFramework)\Plugins\$(AssemblyName)&quot;&#xD;&#xA; if not exist %25dir%25  md %25dir%25  &#xD;&#xA;copy &quot;$(TargetDir)*DLT645*.dll&quot;  %25dir%25&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;" />
+	</Target>
+
+
+
+
+	<ItemGroup>
+		<Compile Include="..\..\Demo\ThingsGateway.Foundation.Demo.Rcl\Components\DebugPage\DriverDebugUIBase.cs" Link="DebugPage\DriverDebugUIBase.cs" />
+		<Compile Include="..\..\Demo\ThingsGateway.Foundation.Demo.Rcl\Components\DebugPage\DriverDebugUIPage.razor.cs" Link="DebugPage\DriverDebugUIPage.razor.cs" />
+		<Compile Include="..\..\Demo\ThingsGateway.Foundation.Demo.Rcl\Components\DebugPage\SerialSessionPage.razor.cs" Link="DebugPage\SerialSessionPage.razor.cs" />
+		<Compile Include="..\..\Demo\ThingsGateway.Foundation.Demo.Rcl\Components\DebugPage\TcpClientPage.razor.cs" Link="DebugPage\TcpClientPage.razor.cs" />
+		<Compile Include="..\..\Demo\ThingsGateway.Foundation.Demo.Rcl\Components\DebugPage\TcpServerPage.razor.cs" Link="DebugPage\TcpServerPage.razor.cs" />
+		<Compile Include="..\..\Demo\ThingsGateway.Foundation.Demo.Rcl\Components\DebugPage\UdpSessionPage.razor.cs" Link="DebugPage\UdpSessionPage.razor.cs" />
+
+		<Content Include="..\..\Demo\ThingsGateway.Foundation.Demo.Rcl\Components\DebugPage\DriverDebugUIPage.razor" Link="DebugPage\DriverDebugUIPage.razor" />
+		<Content Include="..\..\Demo\ThingsGateway.Foundation.Demo.Rcl\Components\DebugPage\SerialSessionPage.razor" Link="DebugPage\SerialSessionPage.razor" />
+		<Content Include="..\..\Demo\ThingsGateway.Foundation.Demo.Rcl\Components\DebugPage\TcpClientPage.razor" Link="DebugPage\TcpClientPage.razor" />
+		<Content Include="..\..\Demo\ThingsGateway.Foundation.Demo.Rcl\Components\DebugPage\TcpServerPage.razor" Link="DebugPage\TcpServerPage.razor" />
+		<Content Include="..\..\Demo\ThingsGateway.Foundation.Demo.Rcl\Components\DebugPage\UdpSessionPage.razor" Link="DebugPage\UdpSessionPage.razor" />
+
+	</ItemGroup>
+
+
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\foundation\ThingsGateway.Foundation.Adapter.DLT645\ThingsGateway.Foundation.Adapter.DLT645.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+
+		<ProjectReference Include="..\..\gateway\ThingsGateway.Gateway.Blazor\ThingsGateway.Gateway.Blazor.csproj" >
+			<Private>false</Private>
+			<CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+			<ExcludeAssets>runtime</ExcludeAssets>
+		</ProjectReference>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Include="..\..\demo\ThingsGateway.Foundation.Demo.Rcl\Pages\DLT645\DLT645_2007DebugPage.razor" Link="Page\DLT645_2007DebugPage.razor" />
+		<Content Include="..\..\demo\ThingsGateway.Foundation.Demo.Rcl\Pages\DLT645\DLT645_2007OverTcpDebugPage.razor" Link="Page\DLT645_2007OverTcpDebugPage.razor" />
+		<Compile Include="..\..\demo\ThingsGateway.Foundation.Demo.Rcl\Pages\DLT645\DLT645_2007DebugPage.razor.cs" Link="Page\DLT645_2007DebugPage.razor.cs" />
+		<Compile Include="..\..\demo\ThingsGateway.Foundation.Demo.Rcl\Pages\DLT645\DLT645_2007OverTcpDebugPage.razor.cs" Link="Page\DLT645_2007OverTcpDebugPage.razor.cs" />
+	</ItemGroup>
+
+
+</Project>
