@@ -22,13 +22,13 @@ namespace MQTTnet.Extensions.Rpc
 {
     public static class MqttRpcClientExtensions
     {
-        public static Task<byte[]> ExecuteAsync(this MqttRpcClient client, MqttRpcTopicPair mqttRpcTopicPair, string payload, MqttQualityOfServiceLevel qualityOfServiceLevel, TimeSpan timeout)
+        public static async Task<byte[]> ExecuteAsync(this MqttRpcClient client, MqttRpcTopicPair mqttRpcTopicPair, string payload, MqttQualityOfServiceLevel qualityOfServiceLevel, TimeSpan timeout)
         {
             if (client == null) throw new ArgumentNullException(nameof(client));
 
             var buffer = Encoding.UTF8.GetBytes(payload ?? string.Empty);
 
-            return client.ExecuteAsync(mqttRpcTopicPair, buffer, qualityOfServiceLevel, timeout);
+            return await client.ExecuteAsync(mqttRpcTopicPair, buffer, qualityOfServiceLevel, timeout);
         }
     }
 }

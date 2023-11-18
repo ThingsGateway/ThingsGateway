@@ -10,10 +10,6 @@
 //------------------------------------------------------------------------------
 #endregion
 
-using Furion;
-
-using Mapster;
-
 using Newtonsoft.Json.Linq;
 
 using Opc.Ua;
@@ -30,31 +26,23 @@ namespace ThingsGateway.Plugin.OPCUA;
 public class ThingsGatewayNodeManager : CustomNodeManager2
 {
     private const string ReferenceServer = "https://diego2098.gitee.io/thingsgateway-docs/";
-    private readonly TypeAdapterConfig _config;
-    private readonly UploadDevice _device;
-    private readonly GlobalDeviceData _globalDeviceData;
-    private readonly RpcSingletonService _rpcCore;
-    private readonly ILog LogMessage;
+    private UpLoadBase _upLoadBase;
+    //private readonly TypeAdapterConfig _config;
     /// <summary>
     /// OPC和网关对应表
     /// </summary>
     private readonly Dictionary<NodeId, OPCUATag> NodeIdTags = new();
     /// <inheritdoc cref="ThingsGatewayNodeManager"/>
-    public ThingsGatewayNodeManager(UploadDevice device, ILog log, IServerInternal server, ApplicationConfiguration configuration) : base(server, configuration, ReferenceServer)
+    public ThingsGatewayNodeManager(UpLoadBase upLoadBase, IServerInternal server, ApplicationConfiguration configuration) : base(server, configuration, ReferenceServer)
     {
-        _device = device;
-        LogMessage = log;
-        _rpcCore = App.GetService<RpcSingletonService>();
-        _globalDeviceData = App.GetService<GlobalDeviceData>();
-        _config = new TypeAdapterConfig();
-        _config.ForType<HistoryValue, DataValue>()
-.Map(dest => dest.WrappedValue, (src) => new Variant(src.Value))
-.Map(dest => dest.SourceTimestamp, src => DateTime.SpecifyKind(src.CollectTime, DateTimeKind.Utc))
-.Map(dest => dest.StatusCode, (src) =>
-src.IsOnline ? StatusCodes.Good : StatusCodes.Bad);
+        _upLoadBase = upLoadBase;
+        //_config = new TypeAdapterConfig();
+        //_config.ForType<HistoryValue, DataValue>()
+        //.Map(dest => dest.WrappedValue, (src) => new Variant(src.Value))
+        //.Map(dest => dest.SourceTimestamp, src => DateTime.SpecifyKind(src.CollectTime, DateTimeKind.Utc))
+        //.Map(dest => dest.StatusCode, (src) =>
+        //src.IsOnline ? StatusCodes.Good : StatusCodes.Bad);
     }
-
-
 
     /// <summary>
     /// 创建服务目录结构
@@ -76,132 +64,106 @@ src.IsOnline ? StatusCodes.Good : StatusCodes.Bad);
             AddRootNotifier(rootFolder);
 
             //创建设备树
-            var _geviceGroup = _globalDeviceData.CollectDevices.ToList().Adapt<List<CollectDevice>>().GetTree();
+            var _geviceGroup = _upLoadBase.CurrentDevice.DeviceVariableRunTimes
+                .GroupBy(a => { if (a.DeviceName.IsNullOrEmpty()) return "内存变量"; else return a.DeviceName; });
             // 开始寻找设备信息，并计算一些节点信息
             foreach (var item in _geviceGroup)
             {
                 //设备树会有两层
-                FolderState fs = CreateFolder(rootFolder, item.Name, item.Name);
+                FolderState fs = CreateFolder(rootFolder, item.Key, item.Key);
                 fs.AddReference(ReferenceTypes.Organizes, true, ObjectIds.ObjectsFolder);
                 fs.EventNotifier = EventNotifiers.SubscribeToEvents;
-                if (item.Childrens?.Count > 0)
+                if (item?.Count() > 0)
                 {
-                    foreach (var item2 in item.Childrens)
+                    foreach (var item2 in item)
                     {
-                        AddTagNode(fs, item2.Name);
+                        CreateVariable(fs, item2);
                     }
                 }
-                else
-                {
-                    AddTagNode(fs, item.Name);
-                }
-
-            }
-            FolderState memoryfs = CreateFolder(null, "ThingsGateway中间变量", "ThingsGateway中间变量");
-            var variableRunTimes = _globalDeviceData.MemoryVariables;
-            foreach (var item in variableRunTimes)
-            {
-                CreateVariable(memoryfs, item);
             }
             AddPredefinedNode(SystemContext, rootFolder);
 
         }
 
     }
-    /// <summary>
-    /// 获取变量的属性值
-    /// </summary>
-    public string GetPropertyValue(DeviceVariableRunTime variableRunTime, string propertyName)
-    {
-        if (variableRunTime.VariablePropertys.ContainsKey(_device.Id))
-        {
-            var data = variableRunTime.VariablePropertys[_device.Id].FirstOrDefault(a =>
-                  a.PropertyName == propertyName);
-            if (data != null)
-            {
-                return data.Value;
-            }
-        }
-        return null;
-    }
 
     /// <summary>
     /// 读取历史数据
     /// </summary>
-    public override void HistoryRead(OperationContext context,
-        HistoryReadDetails details,
-        TimestampsToReturn timestampsToReturn,
-        bool releaseContinuationPoints,
-        IList<HistoryReadValueId> nodesToRead,
-        IList<HistoryReadResult> results,
-        IList<ServiceResult> errors)
-    {
-        base.HistoryRead(context, details, timestampsToReturn, releaseContinuationPoints, nodesToRead, results, errors);
-        //必须带有时间范围
-        if (details is not ReadRawModifiedDetails readDetail || readDetail.StartTime == DateTime.MinValue || readDetail.EndTime == DateTime.MinValue)
-        {
-            errors[0] = StatusCodes.BadHistoryOperationUnsupported;
-            return;
-        }
-        var service = BackgroundServiceUtil.GetBackgroundService<HistoryValueWorker>();
-        if (!service.StatuString.IsSuccess)
-        {
-            errors[0] = StatusCodes.BadHistoryOperationUnsupported;
-            return;
-        }
+    //public override void HistoryRead(OperationContext context,
+    //    HistoryReadDetails details,
+    //    TimestampsToReturn timestampsToReturn,
+    //    bool releaseContinuationPoints,
+    //    IList<HistoryReadValueId> nodesToRead,
+    //    IList<HistoryReadResult> results,
+    //    IList<ServiceResult> errors)
+    //{
+    //    base.HistoryRead(context, details, timestampsToReturn, releaseContinuationPoints, nodesToRead, results, errors);
+    //    //必须带有时间范围
+    //    if (details is not ReadRawModifiedDetails readDetail || readDetail.StartTime == DateTime.MinValue || readDetail.EndTime == DateTime.MinValue)
+    //    {
+    //        errors[0] = StatusCodes.BadHistoryOperationUnsupported;
+    //        return;
+    //    }
+    //    var service = BackgroundServiceUtil.GetBackgroundService<HistoryValueWorker>();
+    //    if (!service.StatuString.IsSuccess)
+    //    {
+    //        errors[0] = StatusCodes.BadHistoryOperationUnsupported;
+    //        return;
+    //    }
 
-        var db = service.GetHisDbAsync().GetAwaiter().GetResult();
-        if (!db.IsSuccess)
-        {
-            errors[0] = StatusCodes.BadHistoryOperationUnsupported;
-            return;
-        }
-        var startTime = readDetail.StartTime;
-        var endTime = readDetail.EndTime;
+    //    var db = service.GetHisDbAsync().GetAwaiter().GetResult();
+    //    if (!db.IsSuccess)
+    //    {
+    //        errors[0] = StatusCodes.BadHistoryOperationUnsupported;
+    //        return;
+    //    }
+    //    var startTime = readDetail.StartTime;
+    //    var endTime = readDetail.EndTime;
 
-        for (int i = 0; i < nodesToRead.Count; i++)
-        {
-            var historyRead = nodesToRead[i];
-            if (NodeIdTags.TryGetValue(historyRead.NodeId, out OPCUATag tag))
-            {
-                var data = db.Content.Queryable<HistoryValue>()
-                    .Where(a => a.Name == tag.SymbolicName)
-                    .Where(a => a.CollectTime >= startTime)
-                    .Where(a => a.CollectTime <= endTime)
-                    .ToList();
+    //    for (int i = 0; i < nodesToRead.Count; i++)
+    //    {
+    //        var historyRead = nodesToRead[i];
+    //        if (NodeIdTags.TryGetValue(historyRead.NodeId, out OPCUATag tag))
+    //        {
+    //            var data = db.Content.Queryable<HistoryValue>()
+    //                .Where(a => a.Name == tag.SymbolicName)
+    //                .Where(a => a.CollectTime >= startTime)
+    //                .Where(a => a.CollectTime <= endTime)
+    //                .ToList();
 
-                if (data.Count > 0)
-                {
+    //            if (data.Count > 0)
+    //            {
 
-                    var hisDataValue = data.Adapt<List<DataValue>>(_config);
-                    HistoryData hisData = new();
-                    hisData.DataValues.AddRange(hisDataValue);
-                    errors[i] = StatusCodes.Good;
-                    //切记Processed设为true，否则客户端会报错
-                    historyRead.Processed = true;
-                    results[i] = new HistoryReadResult()
-                    {
-                        StatusCode = StatusCodes.Good,
-                        HistoryData = new ExtensionObject(hisData)
-                    };
-                }
-                else
-                {
-                    results[i] = new HistoryReadResult()
-                    {
-                        StatusCode = StatusCodes.GoodNoData
-                    };
-                }
-            }
-            else
-            {
-                results[i] = new HistoryReadResult()
-                {
-                    StatusCode = StatusCodes.BadNotFound
-                };
-            }
-        }
-    }
+    //                var hisDataValue = data.Adapt<List<DataValue>>(_config);
+    //                HistoryData hisData = new();
+    //                hisData.DataValues.AddRange(hisDataValue);
+    //                errors[i] = StatusCodes.Good;
+    //                //切记Processed设为true，否则客户端会报错
+    //                historyRead.Processed = true;
+    //                results[i] = new HistoryReadResult()
+    //                {
+    //                    StatusCode = StatusCodes.Good,
+    //                    HistoryData = new ExtensionObject(hisData)
+    //                };
+    //            }
+    //            else
+    //            {
+    //                results[i] = new HistoryReadResult()
+    //                {
+    //                    StatusCode = StatusCodes.GoodNoData
+    //                };
+    //            }
+    //        }
+    //        else
+    //        {
+    //            results[i] = new HistoryReadResult()
+    //            {
+    //                StatusCode = StatusCodes.BadNotFound
+    //            };
+    //        }
+    //    }
+    //}
 
     /// <inheritdoc/>
     public override NodeId New(ISystemContext context, NodeState node)
@@ -285,23 +247,8 @@ src.IsOnline ? StatusCodes.Good : StatusCodes.Bad);
         return DataTypeIds.String;
     }
 
-    /// <summary>
-    /// 添加变量节点
-    /// </summary>
-    /// <param name="fs">设备组节点</param>
-    /// <param name="name">设备名称</param>
-    private void AddTagNode(FolderState fs, string name)
-    {
-        var device = _globalDeviceData.CollectDevices.Where(a => a.Name == name).FirstOrDefault();
-        if (device != null)
-        {
-            foreach (var item in device.DeviceVariableRunTimes)
-            {
-                CreateVariable(fs, item);
-            }
-        }
-    }
 
+    private volatile bool success = true;
     /// <summary>
     /// 在服务器端直接更改对应数据节点的值
     /// </summary>
@@ -333,10 +280,13 @@ src.IsOnline ? StatusCodes.Good : StatusCodes.Bad);
                 jToken
                 );
             newValue = dataValue;
+            success = true;
         }
         catch (Exception ex)
         {
-            LogMessage.LogWarning(ex, "转化值错误");
+            if (success)
+                _upLoadBase.LogMessage.LogWarning(ex, "转化值错误");
+            success = false;
             newValue = value;
         }
         tag.Value = newValue;
@@ -434,7 +384,7 @@ src.IsOnline ? StatusCodes.Good : StatusCodes.Bad);
         var level = ProtectTypeTrans(variableRunTime);
         variable.AccessLevel = level;
         variable.UserAccessLevel = level;
-        variable.Historizing = variableRunTime.HisEnable;
+        variable.Historizing = false;//历史存储状态
         variable.Value = Opc.Ua.TypeInfo.GetDefaultValue(variable.DataType, ValueRanks.Any, Server.TypeTree);
         var code = variableRunTime.IsOnline ? StatusCodes.Good : StatusCodes.Bad;
         variable.StatusCode = code;
@@ -451,9 +401,9 @@ src.IsOnline ? StatusCodes.Good : StatusCodes.Bad);
     /// <returns></returns>
     private NodeId DataNodeType(DeviceVariableRunTime variableRunTime)
     {
-        var str = GetPropertyValue(variableRunTime, nameof(OPCUAServerVariableProperty.DataTypeEnum));
+        var str = variableRunTime.GetPropertyValue(_upLoadBase.DeviceId, nameof(OPCUAServerVariableProperty.DataTypeEnum))?.Value ?? "";
         Type tp;
-        if (Enum.TryParse<DataTypeEnum>(str, out DataTypeEnum result))
+        if (Enum.TryParse(str, out DataTypeEnum result))
         {
             tp = result.GetSystemType();
         }
@@ -482,7 +432,7 @@ src.IsOnline ? StatusCodes.Good : StatusCodes.Bad);
                     if (variable.Value != null)
                     {
 
-                        var result = _rpcCore.InvokeDeviceMethodAsync("OPCUASERVER-" + context1?.OperationContext?.Session?.Identity?.DisplayName,
+                        var result = _upLoadBase.RpcSingletonService.InvokeDeviceMethodAsync("OPCUASERVER-" + context1?.OperationContext?.Session?.Identity?.DisplayName,
                             new()
                             {
                                 { variable.SymbolicName, value?.ToString() }
@@ -520,10 +470,10 @@ src.IsOnline ? StatusCodes.Good : StatusCodes.Bad);
             ProtectTypeEnum.ReadWrite => (byte)(result | AccessLevels.CurrentReadOrWrite),
             _ => (byte)(result | AccessLevels.CurrentRead),
         };
-        if (variableRunTime.HisEnable)
-        {
-            result = (byte)(result | AccessLevels.HistoryRead);
-        }
+        //if (variableRunTime.HisEnable)
+        //{
+        //    result = (byte)(result | AccessLevels.HistoryRead);
+        //}
         return result;
     }
 

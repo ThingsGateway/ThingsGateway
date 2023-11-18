@@ -28,7 +28,7 @@ namespace ThingsGateway.Foundation.Sockets
     /// <summary>
     /// 服务器辅助类接口
     /// </summary>
-    public interface ISocketClient : ITcpClientBase, IClientSender, IIdSender, IIdRequsetInfoSender
+    public interface ISocketClient : ISenderClient, ITcpClientBase, IClientSender, IIdSender, IIdRequsetInfoSender
     {
         /// <summary>
         /// 重新设置Id

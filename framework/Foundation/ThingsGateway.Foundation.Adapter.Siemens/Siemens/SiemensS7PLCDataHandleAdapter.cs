@@ -15,7 +15,7 @@ namespace ThingsGateway.Foundation.Adapter.Siemens;
 /// <summary>
 /// SiemensS7PLCDataHandleAdapter
 /// </summary>
-public class SiemensS7PLCDataHandleAdapter : ReadWriteDevicesTcpDataHandleAdapter<SiemensMessage>
+internal class SiemensS7PLCDataHandleAdapter : ReadWriteDevicesSingleStreamDataHandleAdapter<SiemensMessage>
 {
     /// <inheritdoc/>
     public override byte[] PackCommand(byte[] command)

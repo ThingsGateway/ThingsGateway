@@ -19,7 +19,7 @@ namespace ThingsGateway.Foundation.Adapter.OPCDA.Discovery;
 /// <summary>
 /// OpcDiscovery
 /// </summary>
-public class OpcDiscovery
+internal class OpcDiscovery
 {
     private static readonly Guid CATID_OPC_DA10 = new("63D5F430-CFE4-11d1-B2C8-0060083BA1FB");
 

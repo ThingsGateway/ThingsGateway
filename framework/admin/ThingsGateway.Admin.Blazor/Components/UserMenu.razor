@@ -1,0 +1,77 @@
+﻿@*
+//------------------------------------------------------------------------------
+//  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
+//  此代码版权（除特别声明外的代码）归作者本人Diego所有
+//  源代码使用协议遵循本仓库的开源协议及附加协议
+//  Gitee源代码仓库：https://gitee.com/diego2098/ThingsGateway
+//  Github源代码仓库：https://github.com/kimdiego2098/ThingsGateway
+//  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
+//  QQ群：605534569
+//------------------------------------------------------------------------------
+*@
+
+@namespace ThingsGateway.Admin.Blazor
+@using BlazorComponent;
+@using Masa.Blazor
+@using ThingsGateway.Admin.Core;
+
+@inherits BaseComponentBase
+<Ajax></Ajax>
+<MMenu OffsetY>
+    <ActivatorContent>
+        <MButton @attributes="@context.Attrs" Color="primary"
+                 MaxHeight="@(BlazorResourceConst.AppBarHeight-8)"
+                 Icon="@IsMobile"
+                 Class="mr-2 text-h6"
+                  Text>
+            @UserResoures.CurrentUser?.Account.GetNameLen2()
+            <AppChevronDown></AppChevronDown>
+        </MButton>
+    </ActivatorContent>
+    <ChildContent>
+        <MSheet Class="d-flex flex-column  justify-center">
+            <MLabel Class=" ma-2 my-3 text-subtitle-1" Color="primary">@UserResoures.CurrentUser?.Account</MLabel>
+                <MDivider></MDivider>
+                <MListItem Target="_self" Href="/usercenter" Link> 个人中心 </MListItem>
+            <MListItem OnClick="LogoutAsync">  注销 </MListItem>
+        </MSheet>
+    </ChildContent>
+</MMenu>
+
+
+@code {
+    [Inject]
+    NavigationManager NavigationManager { get; set; }
+    [Inject]
+    private UserResoures UserResoures { get; set; }
+
+    [Inject]
+    private AjaxService AjaxService { get; set; }
+    /// <summary>
+    /// <inheritdoc/>
+    /// </summary>
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+    }
+
+    private async Task LogoutAsync()
+    {
+        var ajaxOption = new AjaxOption
+            {
+                Url = "/auth/b/logout",
+            };
+        var str = await AjaxService.GetMessageAsync(ajaxOption);
+        var ret = str?.FromJsonString<UnifyResult<string>>();
+        if (ret?.Code != 200)
+        {
+            await PopupService.EnqueueSnackbarAsync("注销失败", AlertTypes.Error);
+        }
+        else
+        {
+            await PopupService.EnqueueSnackbarAsync("注销成功", AlertTypes.Success);
+            await Task.Delay(500);
+            NavigationManager.NavigateTo(NavigationManager.Uri, true);
+        }
+    }
+}

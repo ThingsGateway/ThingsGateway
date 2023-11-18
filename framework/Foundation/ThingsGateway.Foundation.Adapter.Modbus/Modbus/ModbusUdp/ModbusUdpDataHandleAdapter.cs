@@ -16,9 +16,9 @@ namespace ThingsGateway.Foundation.Adapter.Modbus;
 /// <summary>
 /// <inheritdoc/>
 /// </summary>
-public class ModbusUdpDataHandleAdapter : ReadWriteDevicesUdpDataHandleAdapter<ModbusTcpMessage>
+internal class ModbusUdpDataHandleAdapter : ReadWriteDevicesUdpDataHandleAdapter<ModbusTcpMessage>
 {
-    private readonly EasyIncrementCount easyIncrementCount = new(ushort.MaxValue);
+    private readonly IncrementCount easyIncrementCount = new(ushort.MaxValue);
 
     /// <summary>
     /// 检测事务标识符

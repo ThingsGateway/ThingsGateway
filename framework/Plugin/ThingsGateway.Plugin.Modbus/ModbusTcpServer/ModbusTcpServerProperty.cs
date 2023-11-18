@@ -14,19 +14,19 @@ namespace ThingsGateway.Plugin.Modbus;
 /// <summary>
 /// <inheritdoc/>
 /// </summary>
-public class ModbusTcpServerProperty : UpDriverPropertyBase
+public class ModbusTcpServerProperty : DriverPropertyBase
 {
     /// <summary>
     /// IP
     /// </summary>
     [DeviceProperty("IP", "")]
-    public string IP { get; set; } = "";
+    public override string IP { get; set; } = "";
 
     /// <summary>
     /// 端口
     /// </summary>
     [DeviceProperty("端口", "")]
-    public int Port { get; set; } = 502;
+    public override int Port { get; set; } = 502;
     /// <summary>
     /// 默认站号
     /// </summary>
@@ -50,8 +50,8 @@ public class ModbusTcpServerProperty : UpDriverPropertyBase
     /// <summary>
     /// 组包缓存超时ms
     /// </summary>
-    [DeviceProperty("组包缓存超时", "某些设备性能较弱，报文间需要间隔较长时间，可以设置更长的组包缓存，默认1s")]
-    public int CacheTimeout { get; set; } = 1;
+    [DeviceProperty("组包缓存超时", "某些设备性能较弱，报文间需要间隔较长时间，可以设置更长的组包缓存，默认1000ms")]
+    public int CacheTimeout { get; set; } = 1000;
     /// <summary>
     /// 线程循环间隔
     /// </summary>

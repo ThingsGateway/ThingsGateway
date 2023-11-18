@@ -44,7 +44,7 @@ public static class DataTypeExtensions
     }
 
     /// <summary>
-    /// 获取实际字节长度，不能确定返回0
+    /// 获取实际字节长度，不能确定返回0，bool返回1
     /// </summary>
     /// <param name="coreDataType"></param>
     /// <returns></returns>

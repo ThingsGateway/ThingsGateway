@@ -14,7 +14,7 @@ namespace ThingsGateway.Plugin.OPCDA;
 /// <summary>
 /// <inheritdoc/>
 /// </summary>
-public class OPCDAClientProperty : CollectDriverPropertyBase
+public class OPCDAClientProperty : DriverPropertyBase
 {
     /// <summary>
     /// OPCIP
@@ -41,13 +41,14 @@ public class OPCDAClientProperty : CollectDriverPropertyBase
     /// </summary>
     [DeviceProperty("自动分组大小", "")] public int GroupSize { get; set; } = 500;
     /// <summary>
+    /// 更新频率
+    /// </summary>
+    [DeviceProperty("更新频率", "")] public int UpdateRate { get; set; } = 1000;
+    /// <summary>
     /// <inheritdoc/>
     /// </summary>
     public override bool IsShareChannel { get; set; } = false;
     /// <inheritdoc/>
     public override ChannelEnum ShareChannel => ChannelEnum.None;
-    /// <summary>
-    /// 更新频率
-    /// </summary>
-    [DeviceProperty("更新频率", "")] public int UpdateRate { get; set; } = 1000;
+
 }

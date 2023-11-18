@@ -24,13 +24,51 @@ using System.Text.Encodings.Web;
 using System.Text.Json.Serialization;
 using System.Text.Unicode;
 
+using ThingsGateway.Admin.Application;
 using ThingsGateway.Admin.Core;
 
 namespace ThingsGateway.Web.Core;
 
 /// <inheritdoc/>
+[AppStartup(99999)]
 public class Startup : AppStartup
 {
+    /// <inheritdoc/>
+    public void ConfigureServices(IServiceCollection services)
+    {
+        // 允许跨域
+        services.AddCorsAccessor();
+
+        services.Configure<WebEncoderOptions>(options => options.TextEncoderSettings = new TextEncoderSettings(UnicodeRanges.All));
+
+        //认证组件
+        services.AddComponent<AuthComponent>();
+
+        //启动LoggingMonitor操作日志写入数据库组件
+        services.AddComponent<LoggingMonitorComponent>();
+
+        //启动Web设置SignalRComponent组件
+        services.AddComponent<SignalRComponent>();
+
+
+        services.AddRazorPages();
+        services.AddControllers()//循环引用
+            .AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+                options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+            }
+            )
+            .AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore)
+         .AddFriendlyException()
+         .AddInjectWithUnifyResult<UnifyResultProvider>();//规范化
+
+        services.AddServerSideBlazor().AddHubOptions(options => options.MaximumReceiveMessageSize = 64 * 1024);
+        services.AddHealthChecks();
+
+    }
+
+
     /// <inheritdoc/>
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
@@ -66,39 +104,5 @@ public class Startup : AppStartup
             endpoints.MapBlazorHub();
             endpoints.MapFallbackToPage("/_Host");
         });
-    }
-
-    /// <inheritdoc/>
-    public void ConfigureServices(IServiceCollection services)
-    {
-        // 允许跨域
-        services.AddCorsAccessor();
-
-        services.Configure<WebEncoderOptions>(options => options.TextEncoderSettings = new TextEncoderSettings(UnicodeRanges.All));
-
-        //认证组件
-        services.AddComponent<AuthComponent>();
-
-        //启动LoggingMonitor操作日志写入数据库组件
-        services.AddComponent<LoggingMonitorComponent>();
-
-        //启动Web设置SignalRComponent组件
-        services.AddComponent<SignalRComponent>();
-
-        services.AddRazorPages();
-        services.AddControllers()//循环引用
-            .AddJsonOptions(options =>
-            {
-                options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
-                options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-            }
-            )
-            .AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore)
-         .AddFriendlyException()
-         .AddInjectWithUnifyResult<UnifyResultProvider>();//规范化
-
-        services.AddServerSideBlazor().AddHubOptions(options => options.MaximumReceiveMessageSize = 64 * 1024);
-        services.AddHealthChecks();
-
     }
 }

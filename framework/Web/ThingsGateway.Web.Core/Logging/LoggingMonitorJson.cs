@@ -10,7 +10,7 @@
 //------------------------------------------------------------------------------
 #endregion
 
-namespace ThingsGateway.Web.Core
+namespace ThingsGateway.Admin.Application
 {
     /// <summary>
     /// 认证信息

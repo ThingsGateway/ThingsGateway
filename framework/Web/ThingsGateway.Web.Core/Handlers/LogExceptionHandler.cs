@@ -23,15 +23,16 @@ namespace ThingsGateway.Web.Core
     public class LogExceptionHandler : IGlobalExceptionHandler, ISingleton
     {
         /// <inheritdoc/>
-        public Task OnExceptionAsync(ExceptionContext context)
+        public async Task OnExceptionAsync(ExceptionContext context)
         {
+            await Task.CompletedTask;
             if (context.Filters.Any(it => it is LoggingMonitorAttribute))
             {
-                return Task.CompletedTask;
+                return;
             }
             //OPENAPI异常已经被LoggingMonitor捕获，
             //其他异常一般都会在程序内直接处理，所以这里先备用，不存在实际代码
-            return Task.CompletedTask;
+            return;
         }
     }
 }

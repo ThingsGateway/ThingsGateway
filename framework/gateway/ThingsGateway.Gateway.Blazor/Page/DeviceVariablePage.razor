@@ -1,0 +1,575 @@
+﻿@*
+//------------------------------------------------------------------------------
+//  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
+//  此代码版权（除特别声明外的代码）归作者本人Diego所有
+//  源代码使用协议遵循本仓库的开源协议及附加协议
+//  Gitee源代码仓库：https://gitee.com/diego2098/ThingsGateway
+//  Github源代码仓库：https://github.com/kimdiego2098/ThingsGateway
+//  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
+//  QQ群：605534569
+//------------------------------------------------------------------------------
+*@
+
+@page "/gatewayconfig/devicevariable"
+@namespace ThingsGateway.Gateway.Blazor
+@using System.Linq.Expressions;
+@using BlazorComponent;
+@using Furion.DataValidation;
+@using Furion;
+@using Mapster;
+@using Masa.Blazor
+@using Masa.Blazor.Presets;
+@using System.IO;
+@using Microsoft.AspNetCore.Authorization;
+
+@using ThingsGateway.Admin.Blazor;
+@using ThingsGateway.Admin.Core;
+
+@attribute [Authorize]
+@inherits BaseComponentBase
+@inject UserResoures UserResoures
+@layout MainLayout
+
+@if (IsMobile)
+{
+    @GetAppDataTable()
+
+}
+else
+{
+    <MRow>
+        <MCol Md=2 Cols="12">
+            <MCard Class="ma-2" Height=@("100%")>
+                <MCardTitle>
+                    <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="mx-2 my-1" @bind-Value="_searchName"
+                                Outlined Label=@typeof(CollectDevice).GetDescription(nameof(CollectDevice.DeviceGroup)) />
+                 </MCardTitle>
+                 <MTreeview Style=@($"height: calc(100vh - {BlazorResourceConst.DefaultHeight+100}px);overflow-y:auto") Dense TItem="DeviceTree" TKey="string" OpenOnClick ActiveChanged=@(async a=>
+                       {
+                       if(_search.DeviceName!=a.FirstOrDefault())
+                       {
+                       _search.DeviceName=a.FirstOrDefault();
+                       await DatatableQueryAsync();
+                       }
+                       } )
+                            Items="_deviceGroups" ItemText="r=>r.Name" ItemChildren="r=>r.Childrens"
+                            Search="@_searchName"
+                          Activatable ItemKey=@(r=>r.Name)>
+                     <LabelContent>
+                         <span title=@context.Item.Name>
+                             @context.Item.Name
+                        </span>
+                    </LabelContent>
+                </MTreeview>
+            </MCard>
+        </MCol>
+        <MCol Md=10 Cols="12">
+
+            @GetAppDataTable()
+
+        </MCol>
+    </MRow>
+}
+
+<ImportExcel @ref=_importExcel Import="SaveDeviceImportAsync" Preview="DeviceImportAsync" />
+
+
+
+
+
+@code {
+    RenderFragment GetAppDataTable()
+    {
+        RenderFragment renderFragment =
+    @<AppDataTable @ref="_datatable" AddWidth=@("80%") EditWidth=@("80%") DetailWidth=@("80%")
+                       StyleString=@($"height: calc(100vh - {BlazorResourceConst.DefaultHeight+10}px)")
+                       TItem="DeviceVariable" SearchItem="DeviceVariablePageInput"
+                       AddItem="DeviceVariableAddInput" EditItem="VariableEditInput"
+                       IsMenuOperTemplate=false SearchModel="_search"
+                       QueryCallAsync="QueryCallAsync" AddCallAsync="AddCallAsync"
+                       EditCallAsync="EditCallAsync" DeleteCallAsync="DeleteCallAsync"
+                       IsShowDetailButton
+                       IsShowQueryButton
+                       IsShowAddButton=@UserResoures.IsHasButtonWithRole("gatewayvariableadd")
+                       IsShowDeleteButton=@UserResoures.IsHasButtonWithRole("gatewayvariabledelete")
+                       IsShowEditButton=@UserResoures.IsHasButtonWithRole("gatewayvariableedit")>
+        <SearchTemplate>
+            <MTextField Dense
+                        Style="max-width:200px;" HideDetails=@("auto") Class="my-1  mx-2 " @bind-Value="context.Name"
+                        Clearable
+                        Outlined
+                        Label=@context.Description(x => x.Name) />
+            <MTextField Dense
+                        Style="max-width:200px;" HideDetails=@("auto") Class="my-1  mx-2 " @bind-Value="context.Address"
+                        Clearable
+                        Outlined
+                        Label=@context.Description(x => x.Address) />
+            <MTextField Dense
+                        Style="max-width:200px;" HideDetails=@("auto") Class="my-1  mx-2 " @bind-Value="context.DeviceName"
+                        Clearable
+                        Outlined
+                        Label=@context.Description(x => x.DeviceName) />
+            <MTextField Dense
+                        Style="max-width:200px;" HideDetails=@("auto") Class="my-1  mx-2 " @bind-Value="context.UploadDeviceName"
+                        Clearable
+                        Outlined
+                        Label=@context.Description(x => x.UploadDeviceName) />
+        </SearchTemplate>
+        <OtherToolbarTemplate>
+
+            <MMenu OffsetY
+                   Context="menu">
+                <ActivatorContent>
+                    <MButton @attributes="@menu.Attrs" Color="primary"
+                             Class="my-1  mx-2 ">
+                        导出
+                        <AppChevronDown></AppChevronDown>
+                    </MButton>
+                </ActivatorContent>
+                <ChildContent>
+                    <MList>
+                        <MListItem OnClick="()=>DownExportAsync()"> 导出全部 </MListItem>
+                        <MListItem OnClick="()=>DownExportAsync(_search)">  导出搜索项 </MListItem>
+                    </MList>
+
+                </ChildContent>
+            </MMenu>
+
+
+
+            <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("gatewayvariableedit")) Class="my-1  mx-2" OnClick="()=>{ _importExcel.Step=1;  _importExcel.IsShowImport=true;}" Color="primary">
+                导入
+            </MButton>
+            <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("gatewayvariableedit")) Class="my-1  mx-2" OnClick=ClearAsync Color="primary">
+                清空
+            </MButton>
+        </OtherToolbarTemplate>
+        <AddTemplate>
+            @{
+        var data = _collectDevices.FirstOrDefault();
+        context.DeviceId = context.DeviceId == 0 ? data == null ? 0 : data.Id : context.DeviceId;
+            }
+            @GetRenderFragment(context)
+        </AddTemplate>
+        <EditTemplate>
+            @GetRenderFragment(context)
+        </EditTemplate>
+        <ItemColTemplate>
+            @switch (context.Header.Value)
+        {
+        case nameof(context.Item.DeviceId):
+            <span title=@context.Value>
+                @(
+            _serviceScope.ServiceProvider.GetService<CollectDeviceService>().GetNameById(context.Item.DeviceId)
+                )
+            </span>
+        break;
+        default:
+            @if (context.Header.CellClass?.Contains("text-truncate") == true)
+        {
+            <span title=@context.Value>
+                @context.Value
+            </span>
+        }
+        else
+        {
+            @context.Value
+        }
+        break;
+
+        }
+
+        </ItemColTemplate>
+
+        <Detailemplate>
+            @{
+        switch (context.Item1.Value)
+        {
+        case nameof(DeviceVariable.DeviceId):
+                <tr @key="context.Item1.Text">
+                    <td class="text-start table-minwidth">
+                        @context.Item1.Text
+                    </td>
+                    <td class="text-start ">
+                        <div style="word-break:break-all; white-space:pre-wrap;">
+                            @(_serviceScope.ServiceProvider.GetService<CollectDeviceService>().GetNameById(context.Item2.ToLong()))
+                        </div>
+                    </td>
+                </tr>
+        break;
+        default:
+                <tr @key="context.Item1.Text">
+                    <td class="text-start table-minwidth">
+                        @context.Item1.Text
+                    </td>
+                    <td class="text-start ">
+                        <div style="word-break:break-all; white-space:pre-wrap;">
+                            @context.Item2
+                        </div>
+                    </td>
+                </tr>
+        break;
+        }
+
+            }
+        </Detailemplate>
+    </AppDataTable>
+    ;
+        return renderFragment;
+    }
+
+    RenderFragment GetRenderFragment(VariableEditInput context)
+    {
+        if (!_otherMethods.ContainsKey(context.DeviceId))
+        {
+            DeviceChanged(context.DeviceId);
+        }
+
+        RenderFragment renderFragment =
+    @<div>
+        <div class="mt-3">
+            <span class="ml-1  font-weight-black">基础属性设置</span>
+        </div>
+
+        <MRow Class="mt-3">
+            <MCol Md=3 Sm=12>
+                <MTextField Dense Outlined HideDetails="@("auto")" Color="primary" @bind-Value=@context.Name Label="@(context.Description(x => x.Name))" />
+            </MCol>
+
+            <MCol Md=3 Sm=12>
+                <MTextField Dense Outlined HideDetails="@("auto")" Color="primary" @bind-Value=@context.Description Label="@(context.Description(x => x.Description))" />
+            </MCol>
+            <MCol Md=3 Sm=12>
+                <MTextField Dense Outlined HideDetails="@("auto")" Color="primary" @bind-Value=@context.Unit Label="@(context.Description(x => x.Unit))" />
+            </MCol>
+
+            <MCol Md=3 Sm=12>
+                <MSelect @bind-Value="context.ProtectTypeEnum" Outlined Color="primary"
+                         Items=@(typeof(ProtectTypeEnum).GetEnumList()) Label=@(context.Description(x => x.ProtectTypeEnum))
+                         MenuProps="@(props => { props.Auto = true; props.OffsetY = true; })"
+                         ItemText=@((u) =>u.Description)
+                         ItemValue=@(u =>(ProtectTypeEnum)u.Value)
+                         HideDetails=@("auto") Height="30"
+                         Dense>
+                </MSelect>
+            </MCol>
+
+
+            <MCol Md=3 Sm=12>
+                <MSelect @bind-Value="context.DataTypeEnum" Outlined Color="primary"
+                         Items=@(typeof(DataTypeEnum).GetEnumList()) Clearable Label=@(context.Description(x => x.DataTypeEnum))
+                         MenuProps="@(props => { props.Auto = true; props.OffsetY = true; })"
+                         ItemText=@((u) =>u.Description)
+                         ItemValue=@(u =>(DataTypeEnum)u.Value)
+                         HideDetails=@("auto") Height="30"
+                         Dense>
+                </MSelect>
+            </MCol>
+
+            <MCol Md=3 Sm=12>
+
+                <MTextField Dense Outlined HideDetails="@("auto")" Color="primary" @bind-Value=@context.ReadExpressions Label="@(context.Description(x => x.ReadExpressions))" />
+            </MCol>
+            <MCol Md=3 Sm=12>
+                <MTextField Dense Outlined HideDetails="@("auto")" Color="primary" @bind-Value=@context.WriteExpressions Label="@(context.Description(x => x.WriteExpressions))" />
+            </MCol>
+
+            <MCol Md=3 Sm=12>
+                <MSelect @bind-Value=@context.RpcWriteEnable Outlined Color="primary"
+                         Items=@(new List<bool>(){true,false}) Clearable Label=@(context.Description(x => x.RpcWriteEnable))
+                         MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
+                         ItemText=@((u) =>u.ToString()) ItemValue=@(u =>u)
+                         HideDetails=@("auto") Height="30" Dense>
+                </MSelect>
+            </MCol>
+
+        </MRow>
+        <div class="mt-3">
+            <span class="ml-1  font-weight-black">采集属性设置</span>
+        </div>
+        <MRow Class="mt-3">
+            <MCol Md=3 Sm=12>
+
+                <MSelect @bind-Value=@context.DeviceId Outlined Label=@(context.Description(x => x.DeviceId)) Color="primary"
+                         Items=@(_collectDevices) OnClick=@(()=>DeviceChanged(context.DeviceId))
+                         MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
+                         ItemText=@((u) =>u.Name) ItemValue=@(u =>u.Id)
+                         ItemDisabled="u => !u.Enable" Clearable
+                         HideDetails=@("auto") Height="30" Dense>
+                </MSelect>
+
+            </MCol>
+
+            <MCol Md=3 Sm=12>
+                <MTextField Dense Outlined HideDetails="@("auto")" Color="primary" @bind-Value=@context.Address Label="@(context.Description(x => x.Address))" />
+            </MCol>
+            <MCol Md=3 Sm=12>
+                <MTextField Dense Outlined HideDetails="@("auto")" Color="primary" @bind-Value=@context.IntervalTime Label="@(context.Description(x => x.IntervalTime))" />
+            </MCol>
+
+
+            @if (_otherMethods.ContainsKey(context.DeviceId))
+        {
+
+            <MCol Md=3 Sm=12>
+                <MSelect @bind-Value="context.OtherMethod" Outlined Label=@(context.Description(x => x.OtherMethod)) Color="primary"
+                         Items=@(_otherMethods[context.DeviceId]) Clearable
+                         MenuProps="@(props => { props.Auto = true; props.OffsetY = true; })"
+                         ItemText=@((u) =>u)
+                         ItemValue=@(u =>u)
+                         HideDetails=@("auto") Height="30"
+                         Dense>
+                </MSelect>
+            </MCol>
+
+        }
+
+        </MRow>
+
+        <div class="mt-3">
+            <span class="ml-1  font-weight-black">实时报警设置</span>
+        </div>
+        <MRow Class="mt-3">
+            <MCol Md=3 Sm=12>
+
+                <MSelect @bind-Value=@context.BoolCloseAlarmEnable Outlined Label=@(context.Description(x => x.BoolCloseAlarmEnable)) Color="primary"
+                         Items=@(new List<bool>(){true,false}) Clearable
+                         MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
+                         ItemText=@((u) =>u.ToString()) ItemValue=@(u =>u)
+                         HideDetails=@("auto") Height="30" Dense>
+                </MSelect>
+            </MCol>
+
+            <MCol Md=3 Sm=12>
+                <MTextField Dense Outlined HideDetails="@("auto")" Color="primary" @bind-Value=@context.BoolCloseAlarmText Label="@(context.Description(x => x.BoolCloseAlarmText))" />
+            </MCol>
+
+
+            <MCol Md=3 Sm=12>
+                <MTextField Dense Outlined HideDetails="@("auto")" Color="primary" @bind-Value=@context.BoolCloseRestrainExpressions Label="@(context.Description(x => x.BoolCloseRestrainExpressions))" />
+            </MCol>
+
+
+        </MRow>
+
+        <MRow Class="mt-3">
+            <MCol Md=3 Sm=12>
+                <MSelect @bind-Value=@context.BoolOpenAlarmEnable Outlined Label=@(context.Description(x => x.BoolOpenAlarmEnable)) Color="primary"
+                         Items=@(new List<bool>(){true,false}) Clearable
+                         MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
+                         ItemText=@((u) =>u.ToString()) ItemValue=@(u =>u)
+                         HideDetails=@("auto") Height="30" Dense>
+                </MSelect>
+            </MCol>
+            <MCol Md=3 Sm=12>
+                <MTextField Dense Outlined HideDetails="@("auto")" Color="primary" @bind-Value=@context.BoolOpenAlarmText Label="@(context.Description(x => x.BoolOpenAlarmText))" />
+            </MCol>
+
+            <MCol Md=3 Sm=12>
+                <MTextField Dense Outlined HideDetails="@("auto")" Color="primary" @bind-Value=@context.BoolOpenRestrainExpressions Label="@(context.Description(x => x.BoolOpenRestrainExpressions))" />
+            </MCol>
+
+        </MRow>
+        <MRow Class="mt-3">
+
+            <MCol Md=3 Sm=12>
+                <MSelect @bind-Value=@context.HHAlarmEnable Outlined Label=@(context.Description(x => x.HHAlarmEnable)) Color="primary"
+                         Items=@(new List<bool>(){true,false}) Clearable
+                         MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
+                         ItemText=@((u) =>u.ToString()) ItemValue=@(u =>u)
+                         HideDetails=@("auto") Height="30" Dense>
+                </MSelect>
+            </MCol>
+
+            <MCol Md=3 Cols=12 class="px-1">
+                <MTextField Dense Outlined HideDetails="@("auto")" Color="primary" @bind-Value=@context.HHAlarmText Label="@(context.Description(x => x.HHAlarmText))" />
+            </MCol>
+
+            <MCol Md=3 Cols=12 class="px-1">
+                <MTextField Dense Outlined HideDetails="@("auto")" Color="primary" @bind-Value=@context.HHAlarmCode Label="@(context.Description(x => x.HHAlarmCode))" />
+            </MCol>
+
+            <MCol Md=3 Cols=12 class="px-1">
+                <MTextField Dense Outlined HideDetails="@("auto")" Color="primary" @bind-Value=@context.HHRestrainExpressions Label="@(context.Description(x => x.HHRestrainExpressions))" />
+            </MCol>
+
+
+        </MRow>
+        <MRow Class="mt-3">
+
+            <MCol Md=3 Sm=12>
+                <MSelect @bind-Value=@context.HAlarmEnable Outlined Label=@(context.Description(x => x.HAlarmEnable)) Color="primary"
+                         Items=@(new List<bool>(){true,false}) Clearable
+                         MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
+                         ItemText=@((u) =>u.ToString()) ItemValue=@(u =>u)
+                         HideDetails=@("auto") Height="30" Dense>
+                </MSelect>
+            </MCol>
+
+            <MCol Md=3 Cols=12 class="px-1">
+                <MTextField Dense Outlined HideDetails="@("auto")" Color="primary" @bind-Value=@context.HAlarmText Label="@(context.Description(x => x.HAlarmText))" />
+            </MCol>
+
+            <MCol Md=3 Cols=12 class="px-1">
+                <MTextField Dense Outlined HideDetails="@("auto")" Color="primary" @bind-Value=@context.HAlarmCode Label="@(context.Description(x => x.HAlarmCode))" />
+            </MCol>
+
+            <MCol Md=3 Cols=12 class="px-1">
+                <MTextField Dense Outlined HideDetails="@("auto")" Color="primary" @bind-Value=@context.HRestrainExpressions Label="@(context.Description(x => x.HRestrainExpressions))" />
+            </MCol>
+
+
+        </MRow>
+        <MRow Class="mt-3">
+
+            <MCol Md=3 Sm=12>
+                <MSelect @bind-Value=@context.LAlarmEnable Outlined Label=@(context.Description(x => x.LAlarmEnable)) Color="primary"
+                         Items=@(new List<bool>(){true,false}) Clearable
+                         MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
+                         ItemText=@((u) =>u.ToString()) ItemValue=@(u =>u)
+                         HideDetails=@("auto") Height="30" Dense>
+                </MSelect>
+            </MCol>
+
+            <MCol Md=3 Cols=12 class="px-1">
+                <MTextField Dense Outlined HideDetails="@("auto")" Color="primary" @bind-Value=@context.LAlarmText Label="@(context.Description(x => x.LAlarmText))" />
+            </MCol>
+
+            <MCol Md=3 Cols=12 class="px-1">
+                <MTextField Dense Outlined HideDetails="@("auto")" Color="primary" @bind-Value=@context.LAlarmCode Label="@(context.Description(x => x.LAlarmCode))" />
+            </MCol>
+
+            <MCol Md=3 Cols=12 class="px-1">
+                <MTextField Dense Outlined HideDetails="@("auto")" Color="primary" @bind-Value=@context.LRestrainExpressions Label="@(context.Description(x => x.LRestrainExpressions))" />
+            </MCol>
+
+
+        </MRow>
+        <MRow Class="mt-3">
+
+            <MCol Md=3 Sm=12>
+                <MSelect @bind-Value=@context.LLAlarmEnable Outlined Label=@(context.Description(x => x.LLAlarmEnable)) Color="primary"
+                         Items=@(new List<bool>(){true,false}) Clearable
+                         MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
+                         ItemText=@((u) =>u.ToString()) ItemValue=@(u =>u)
+                         HideDetails=@("auto") Height="30" Dense>
+                </MSelect>
+            </MCol>
+
+            <MCol Md=3 Cols=12 class="px-1">
+                <MTextField Dense Outlined HideDetails="@("auto")" Color="primary" @bind-Value=@context.LLAlarmText Label="@(context.Description(x => x.LLAlarmText))" />
+            </MCol>
+
+            <MCol Md=3 Cols=12 class="px-1">
+                <MTextField Dense Outlined HideDetails="@("auto")" Color="primary" @bind-Value=@context.LLAlarmCode Label="@(context.Description(x => x.LLAlarmCode))" />
+            </MCol>
+
+            <MCol Md=3 Cols=12 class="px-1">
+                <MTextField Dense Outlined HideDetails="@("auto")" Color="primary" @bind-Value=@context.LLRestrainExpressions Label="@(context.Description(x => x.LLRestrainExpressions))" />
+            </MCol>
+
+
+        </MRow>
+
+        <div class="mt-3">
+            <span class="ml-1  font-weight-black">上传业务相关</span>
+        </div>
+        <MRow Class="mt-3">
+
+            <MCol Md=3 Sm=12>
+                <MSelect @bind-Value=@_choiceUploadDeviceId Label=@(typeof(Device).GetDescription(nameof(Device.Name)))
+                         Outlined Clearable
+                         Items=@(_uploadDevices)
+                         MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
+                         ItemText=@((u) =>u.Name) ItemValue=@(u =>u.Id)
+                         HideDetails=@("auto") Height="30"
+                         Dense>
+                </MSelect>
+            </MCol>
+            <MCol Md=2 Sm=12>
+                <MButton OnClick=@(async() =>
+                     {
+                     if(_choiceUploadDeviceId>0)
+                     {
+                     var data=GetDriverProperties(_uploadDevices.FirstOrDefault(a=>a.Id==_choiceUploadDeviceId).PluginName,context.VariablePropertys.ContainsKey(_choiceUploadDeviceId)?context.VariablePropertys[_choiceUploadDeviceId]:null);
+                     if(data.Count>0)
+                     {
+                     context.VariablePropertys.AddOrUpdate(_choiceUploadDeviceId,a=> data,(a,b)=>data);
+                     }
+                     else
+                     {
+                     context.VariablePropertys.AddOrUpdate(_choiceUploadDeviceId,a=> data,(a,b)=>data);
+                     }
+                     }
+                     else
+                     {
+                     await PopupService.EnqueueSnackbarAsync("需选择上传设备",AlertTypes.Warning);
+                     }
+                     }
+                     ) Color="primary">
+                    添加/刷新属性
+                </MButton>
+            </MCol>
+        </MRow>
+        @if (context.VariablePropertys != null)
+    {
+        @foreach (var item in context.VariablePropertys)
+    {
+        <MCard Class="my-3">
+            <MCardActions>
+                @{
+            var data=_uploadDevices.FirstOrDefault(a => a.Id == item.Key);
+            if(data!=null)
+                    @($"{data.Name}({data.PluginName})")
+                }
+                <MSpacer></MSpacer>
+                <MButton Class="my-3" OnClick=@(() =>
+                     {
+                     context.VariablePropertys.Remove(item.Key);
+                     }
+                     ) Color="primary">
+                    删除
+                </MButton>
+            </MCardActions>
+            <MRow Class="mt-3">
+                @foreach (var property in item.Value ?? new())
+            {
+            int md=3;
+                @if (property.PropertyName.Contains("BigText"))
+            {
+            md=12;
+            }
+                <MCol Md=md Sm=12 Class="ma-2">
+                    <MTooltip Disabled=@(property.Remark==null||property.Remark?.IsNullOrEmpty()==true) Bottom Context="tip">
+                        <ActivatorContent>
+                            @if (property.PropertyName.Contains("BigText"))
+                        {
+                            <MTextarea MinHeight="100" AutoGrow @attributes="@tip.Attrs" Color="primary"
+                                       Dense Outlined HideDetails="@("auto")" @bind-Value=@property.Value Label="@property.Description" />
+                        }
+                        else
+                        {
+                            <MTextField Type="@(property.PropertyName.Contains("Password") ? "password" : "text")" @attributes="@tip.Attrs" Color="primary"
+                                        Dense Outlined HideDetails="@("auto")" @bind-Value=@property.Value Label="@property.Description" />
+                        }
+                        </ActivatorContent>
+                        <ChildContent>
+                            <span>@property.Remark</span>
+                        </ChildContent>
+                    </MTooltip>
+                </MCol>
+            }
+
+            </MRow>
+
+        </MCard>
+    }
+
+
+    }
+
+    </div>
+    ;
+        return renderFragment;
+    }
+}

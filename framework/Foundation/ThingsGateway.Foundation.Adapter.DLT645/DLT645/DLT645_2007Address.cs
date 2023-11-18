@@ -50,7 +50,7 @@ public class DLT645_2007Address : DeviceAddressBase
     /// <returns></returns>
     public static DLT645_2007Address ParseFrom(string address)
     {
-        DLT645_2007Address dLT645_2007Address = new();
+        DLT645_2007Address dlt645_2007Address = new();
         byte[] array;
         array = new byte[0];
         if (address.IndexOf(';') < 0)
@@ -59,7 +59,7 @@ public class DLT645_2007Address : DeviceAddressBase
         }
         else
         {
-            string[] strArray = address.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
+            string[] strArray = address.SplitStringBySemicolon();
 
             for (int index = 0; index < strArray.Length; ++index)
             {
@@ -69,11 +69,11 @@ public class DLT645_2007Address : DeviceAddressBase
                     if (station.IsNullOrEmpty()) station = string.Empty;
                     if (station.Length < 12)
                         station = station.PadLeft(12, '0');
-                    dLT645_2007Address.Station = station.ByHexStringToBytes().Reverse().ToArray();
+                    dlt645_2007Address.Station = station.ByHexStringToBytes().Reverse().ToArray();
                 }
                 else if (strArray[index].Contains("r="))
                 {
-                    dLT645_2007Address.Reverse = strArray[index].Substring(2).GetBoolValue();
+                    dlt645_2007Address.Reverse = strArray[index].Substring(2).ToBool(false);
                 }
                 else if (!strArray[index].Contains("="))
                 {
@@ -81,8 +81,8 @@ public class DLT645_2007Address : DeviceAddressBase
                 }
             }
         }
-        dLT645_2007Address.DataId = array;
-        return dLT645_2007Address;
+        dlt645_2007Address.DataId = array;
+        return dlt645_2007Address;
 
     }
 
@@ -100,7 +100,7 @@ public class DLT645_2007Address : DeviceAddressBase
         }
         if (!Reverse)
         {
-            stringGeter.Append($"s={Reverse.ToString()};");
+            stringGeter.Append($"s={Reverse};");
         }
         return stringGeter.ToString();
     }

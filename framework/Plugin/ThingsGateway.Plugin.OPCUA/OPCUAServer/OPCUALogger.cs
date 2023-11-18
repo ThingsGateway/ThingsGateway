@@ -15,43 +15,40 @@ using Microsoft.Extensions.Logging;
 namespace ThingsGateway.Plugin.OPCUA;
 
 
-public partial class OPCUAServer
+internal class OPCUALogger : ILogger
 {
-    private class OPCUALogger : ILogger
+    private ILog _log;
+    public OPCUALogger(ILog log)
     {
-        private ILog _log;
-        public OPCUALogger(ILog log)
-        {
-            _log = log;
+        _log = log;
 
-        }
-        /// <summary>
-        /// Set the log level
-        /// </summary>
-        public Microsoft.Extensions.Logging.LogLevel LogLevel { get; set; } = Microsoft.Extensions.Logging.LogLevel.Trace;
-        /// <inheritdoc/>
-        public IDisposable BeginScope<TState>(TState state) => default;
-        /// <inheritdoc/>
-        public bool IsEnabled(Microsoft.Extensions.Logging.LogLevel logLevel) => logLevel >= LogLevel;
-        /// <inheritdoc/>
-        public void Log<TState>(
-            Microsoft.Extensions.Logging.LogLevel logLevel,
-            EventId eventId,
-            TState state,
-            Exception exception,
-            Func<TState, Exception, string> formatter)
+    }
+    /// <summary>
+    /// Set the log level
+    /// </summary>
+    public Microsoft.Extensions.Logging.LogLevel LogLevel { get; set; } = Microsoft.Extensions.Logging.LogLevel.Trace;
+    /// <inheritdoc/>
+    public IDisposable BeginScope<TState>(TState state) => default;
+    /// <inheritdoc/>
+    public bool IsEnabled(Microsoft.Extensions.Logging.LogLevel logLevel) => logLevel >= LogLevel;
+    /// <inheritdoc/>
+    public void Log<TState>(
+        Microsoft.Extensions.Logging.LogLevel logLevel,
+        EventId eventId,
+        TState state,
+        Exception exception,
+        Func<TState, Exception, string> formatter)
+    {
+        if (!IsEnabled(logLevel))
         {
-            if (!IsEnabled(logLevel))
+            return;
+        }
+        else
+        {
+            var message = formatter(state, exception);
+            if (logLevel > Microsoft.Extensions.Logging.LogLevel.Warning)
             {
-                return;
-            }
-            else
-            {
-                var message = formatter(state, exception);
-                if (logLevel > Microsoft.Extensions.Logging.LogLevel.Warning)
-                {
-                    _log.Log((Foundation.Core.LogLevel)(byte)logLevel, state, message, exception);
-                }
+                _log.Log((Foundation.Core.LogLevel)(byte)logLevel, state, message, exception);
             }
         }
     }

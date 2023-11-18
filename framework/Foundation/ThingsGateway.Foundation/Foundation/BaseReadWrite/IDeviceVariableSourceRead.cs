@@ -12,24 +12,24 @@
 
 namespace ThingsGateway.Foundation.Core;
 /// <summary>
-/// 打包读取变量
+/// IDeviceVariableSourceRead
 /// </summary>
 public interface IDeviceVariableSourceRead<T> where T : IDeviceVariableRunTime
 {
     /// <summary>
-    /// 变量地址
+    /// 执行间隔Tick
     /// </summary>
-    TimerTick TimerTick { get; set; }
+    TimerTick IntervalTimeTick { get; set; }
     /// <summary>
     /// 变量地址
     /// </summary>
-    string VariableAddress { get; set; }
+    string Address { get; set; }
     /// <summary>
     /// 长度
     /// </summary>
     int Length { get; set; }
     /// <summary>
-    /// 打包读取变量
+    /// 已打包变量
     /// </summary>
     List<T> DeviceVariableRunTimes { get; set; }
 }

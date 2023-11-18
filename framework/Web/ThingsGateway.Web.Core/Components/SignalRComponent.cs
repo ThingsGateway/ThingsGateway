@@ -13,9 +13,7 @@
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 
-using ThingsGateway.Admin.Application;
-
-namespace ThingsGateway.Web.Core;
+namespace ThingsGateway.Admin.Application;
 
 /// <summary>
 /// SignalR组件

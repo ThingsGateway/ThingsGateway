@@ -200,17 +200,18 @@ public static class EnumeratorExtensions
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="source"></param>
-    /// <param name="chunksize"></param>
+    /// <param name="chunkSize"></param>
     /// <returns></returns>
-    public static List<List<T>> ChunkTrivialBetter<T>(this IEnumerable<T> source, int chunksize)
+    public static List<List<T>> ChunkBetter<T>(this IEnumerable<T> source, int chunkSize)
     {
         var pos = 0;
         List<List<T>> n = new();
         while (source.Skip(pos).Any())
         {
-            n.Add(source.Skip(pos).Take(chunksize).ToList());
-            pos += chunksize;
+            n.Add(source.Skip(pos).Take(chunkSize).ToList());
+            pos += chunkSize;
         }
         return n;
     }
+
 }

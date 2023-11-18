@@ -131,21 +131,6 @@ namespace ThingsGateway.Foundation.Core
             return -1;
         }
 
-        /// <summary>
-        /// 字节数组转16进制字符
-        /// </summary>
-        /// <param name="buffer"></param>
-        /// <param name="offset"></param>
-        /// <param name="length"></param>
-        /// <param name="splite"></param>
-        /// <returns></returns>
-        public static string ByBytesToHexString(this byte[] buffer, int offset, int length, string splite = default)
-        {
-            return string.IsNullOrEmpty(splite)
-                ? BitConverter.ToString(buffer, offset, length).Replace("-", string.Empty)
-                : BitConverter.ToString(buffer, offset, length).Replace("-", splite);
-        }
-
         #endregion 字节数组扩展
     }
 }

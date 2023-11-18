@@ -17,8 +17,9 @@ namespace ThingsGateway.Foundation.Demo;
 public partial class MainLayout
 {
 
-    private List<NavItem> Navs { get; set; } = new();
-    private List<PageTabItem> pageTabItems { get; set; } = new();
+    private List<NavItem> _navs { get; set; } = new();
+    private List<PageTabItem> _pageTabItems { get; set; } = new();
+
     protected override void OnInitialized()
     {
         var dataString =
@@ -69,28 +70,8 @@ public partial class MainLayout
     "Title": "Siemens",
     "Children": [
       {
-        "Href": "/S7_1500",
-        "Title": "S7_1500"
-      },
-      {
-        "Href": "/S7_1200",
-        "Title": "S7_1200"
-      },
-      {
-        "Href": "/S7_200",
-        "Title": "S7_200"
-      },
-      {
-        "Href": "/S7_200SMART",
-        "Title": "S7_200SMART"
-      },
-      {
-        "Href": "/S7_300",
-        "Title": "S7_400"
-      },
-      {
-        "Href": "/S7_400",
-        "Title": "S7_400"
+        "Href": "/Siemens",
+        "Title": "Siemens"
       }
     ]
   },
@@ -138,7 +119,7 @@ public partial class MainLayout
 
 
 """;
-        Navs = dataString.FromJsonString<List<NavItem>>();
+        _navs = dataString.FromJsonString<List<NavItem>>();
 
 #if Pro
         var dataStringPro =
@@ -247,7 +228,7 @@ public partial class MainLayout
 """;
         Navs.AddRange(dataStringPro.FromJsonString<List<NavItem>>());
 #endif
-        pageTabItems = Navs.PasePageTabItem();
+        _pageTabItems = _navs.PasePageTabItem();
         base.OnInitialized();
     }
 }

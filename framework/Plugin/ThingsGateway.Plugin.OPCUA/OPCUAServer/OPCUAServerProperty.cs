@@ -15,8 +15,9 @@ using Opc.Ua;
 namespace ThingsGateway.Plugin.OPCUA;
 
 /// <inheritdoc/>
-public class OPCUAServerProperty : UpDriverPropertyBase
+public class OPCUAServerProperty : DriverPropertyBase
 {
+    [DeviceProperty("是否选择全部变量", "")] public bool IsAllVariable { get; set; } = false;
     /// <summary>
     /// 服务地址
     /// </summary>
@@ -26,13 +27,13 @@ public class OPCUAServerProperty : UpDriverPropertyBase
     /// SubjectName
     /// </summary>
     [DeviceProperty("SubjectName", "")]
-    public string SubjectName { get; set; } = "CN=ThingsGateway OPCUAServer, C=CN, S=GUANGZHOU, O=ThingsGateway, DC=" + System.Net.Dns.GetHostName();
+    public string BigTextSubjectName { get; set; } = "CN=ThingsGateway OPCUAServer, C=CN, S=GUANGZHOU, O=ThingsGateway, DC=" + System.Net.Dns.GetHostName();
 
     /// <summary>
     /// ApplicationUri
     /// </summary>
     [DeviceProperty("ApplicationUri", "")]
-    public string ApplicationUri { get; set; } = Utils.Format(@"urn:{0}:thingsgatewayopcuaserver", System.Net.Dns.GetHostName());
+    public string BigTextApplicationUri { get; set; } = Utils.Format(@"urn:{0}:thingsgatewayopcuaserver", System.Net.Dns.GetHostName());
 
 
     /// <summary>

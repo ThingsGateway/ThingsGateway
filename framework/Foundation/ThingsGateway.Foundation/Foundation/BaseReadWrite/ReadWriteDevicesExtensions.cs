@@ -26,95 +26,89 @@ public static class ReadWriteDevicesExtensions
     /// <param name="values">设备变量List</param>
     /// <param name="plc">设备</param>
     /// <param name="buffer">返回的字节数组</param>
-    /// <param name="startIndex">开始序号</param>
-    public static void PraseStructContent<T>(this IList<T> values, IReadWrite plc, byte[] buffer, int startIndex = 0) where T : IDeviceVariableRunTime
+    /// <returns>解析结果</returns>
+    public static void PraseStructContent<T>(this IList<T> values, IReadWrite plc, byte[] buffer) where T : IDeviceVariableRunTime
     {
-        foreach (IDeviceVariableRunTime organizedVariable in values)
+        foreach (var organizedVariable in values)
         {
-            var deviceValue = organizedVariable;
-            IThingsGatewayBitConverter byteConverter = deviceValue.ThingsGatewayBitConverter;
+            IThingsGatewayBitConverter byteConverter = organizedVariable.ThingsGatewayBitConverter;
             var dataType = organizedVariable.DataTypeEnum;
-            int index = organizedVariable.Index;
+            var index = organizedVariable.Index;
             switch (dataType)
             {
                 case DataTypeEnum.String:
-                    Set(organizedVariable, byteConverter.ToString(buffer, index + startIndex, byteConverter.Length ?? 1));
+                    Set(organizedVariable, byteConverter.ToString(buffer, index, byteConverter.Length ?? 1));
                     break;
                 case DataTypeEnum.Boolean:
                     Set(organizedVariable,
-                         byteConverter.Length > 1 ?
-                        byteConverter.ToBoolean(buffer, index + (startIndex * 8), byteConverter.Length.Value, plc.IsBitReverse(organizedVariable.VariableAddress)) :
-                        byteConverter.ToBoolean(buffer, index + (startIndex * 8), plc.IsBitReverse(organizedVariable.VariableAddress))
-                        );
+                     byteConverter.Length > 1 ?
+                    byteConverter.ToBoolean(buffer, index, byteConverter.Length.Value, plc.BitReverse(organizedVariable.Address)) :
+                    byteConverter.ToBoolean(buffer, index, plc.BitReverse(organizedVariable.Address))
+                    );
                     break;
                 case DataTypeEnum.Byte:
                     Set(organizedVariable,
-                        byteConverter.Length > 1 ?
-                        byteConverter.ToByte(buffer, index + (startIndex), byteConverter.Length.Value) :
-                        byteConverter.ToByte(buffer, index + startIndex));
+                    byteConverter.Length > 1 ?
+                    byteConverter.ToByte(buffer, index, byteConverter.Length.Value) :
+                    byteConverter.ToByte(buffer, index));
                     break;
                 case DataTypeEnum.Int16:
                     Set(organizedVariable,
-                         byteConverter.Length > 1 ?
-                        byteConverter.ToInt16(buffer, index + (startIndex), byteConverter.Length.Value) :
-                        byteConverter.ToInt16(buffer, index + startIndex));
+                     byteConverter.Length > 1 ?
+                    byteConverter.ToInt16(buffer, index, byteConverter.Length.Value) :
+                    byteConverter.ToInt16(buffer, index));
                     break;
                 case DataTypeEnum.UInt16:
                     Set(organizedVariable,
-                         byteConverter.Length > 1 ?
-                        byteConverter.ToUInt16(buffer, index + (startIndex), byteConverter.Length.Value) :
-                        byteConverter.ToUInt16(buffer, index + startIndex));
+                     byteConverter.Length > 1 ?
+                    byteConverter.ToUInt16(buffer, index, byteConverter.Length.Value) :
+                    byteConverter.ToUInt16(buffer, index));
                     break;
                 case DataTypeEnum.Int32:
                     Set(organizedVariable,
-                         byteConverter.Length > 1 ?
-                        byteConverter.ToInt32(buffer, index + (startIndex), byteConverter.Length.Value) :
-                        byteConverter.ToInt32(buffer, index + startIndex));
+                     byteConverter.Length > 1 ?
+                    byteConverter.ToInt32(buffer, index, byteConverter.Length.Value) :
+                    byteConverter.ToInt32(buffer, index));
                     break;
                 case DataTypeEnum.UInt32:
                     Set(organizedVariable,
-                         byteConverter.Length > 1 ?
-                        byteConverter.ToUInt32(buffer, index + (startIndex), byteConverter.Length.Value) :
-                        byteConverter.ToUInt32(buffer, index + startIndex));
+                     byteConverter.Length > 1 ?
+                    byteConverter.ToUInt32(buffer, index, byteConverter.Length.Value) :
+                    byteConverter.ToUInt32(buffer, index));
                     break;
                 case DataTypeEnum.Int64:
                     Set(organizedVariable,
-                         byteConverter.Length > 1 ?
-                        byteConverter.ToInt64(buffer, index + (startIndex), byteConverter.Length.Value) :
-                        byteConverter.ToInt64(buffer, index + startIndex));
+                     byteConverter.Length > 1 ?
+                    byteConverter.ToInt64(buffer, index, byteConverter.Length.Value) :
+                    byteConverter.ToInt64(buffer, index));
                     break;
                 case DataTypeEnum.UInt64:
                     Set(organizedVariable,
-                         byteConverter.Length > 1 ?
-                        byteConverter.ToUInt64(buffer, index + (startIndex), byteConverter.Length.Value) :
-                        byteConverter.ToUInt64(buffer, index + startIndex));
+                     byteConverter.Length > 1 ?
+                    byteConverter.ToUInt64(buffer, index, byteConverter.Length.Value) :
+                    byteConverter.ToUInt64(buffer, index));
                     break;
                 case DataTypeEnum.Single:
                     Set(organizedVariable,
-                         byteConverter.Length > 1 ?
-                        byteConverter.ToSingle(buffer, index + (startIndex), byteConverter.Length.Value) :
-                        byteConverter.ToSingle(buffer, index + startIndex));
+                     byteConverter.Length > 1 ?
+                    byteConverter.ToSingle(buffer, index, byteConverter.Length.Value) :
+                    byteConverter.ToSingle(buffer, index));
                     break;
                 case DataTypeEnum.Double:
                     Set(organizedVariable,
-                         byteConverter.Length > 1 ?
-                        byteConverter.ToDouble(buffer, index + (startIndex), byteConverter.Length.Value) :
-                        byteConverter.ToDouble(buffer, index + startIndex));
+                     byteConverter.Length > 1 ?
+                    byteConverter.ToDouble(buffer, index, byteConverter.Length.Value) :
+                    byteConverter.ToDouble(buffer, index));
                     break;
                 default:
+                    Set(organizedVariable, byteConverter.ToString(buffer, index, byteConverter.Length ?? 1));
                     break;
             }
-
         }
         static void Set(IDeviceVariableRunTime organizedVariable, object num)
         {
-            var operResult = organizedVariable.SetValue(num); ;
-            if (!operResult.IsSuccess)
-            {
-                throw new Exception(operResult.Message);
-            }
+            organizedVariable.SetValue(num);
         }
-
     }
 
 

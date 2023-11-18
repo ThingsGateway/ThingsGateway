@@ -26,8 +26,9 @@ public class PackHelper
     /// <param name="device"></param>
     /// <param name="deviceVariables"></param>
     /// <param name="maxPack">最大打包长度</param>
+    /// <param name="defaultIntervalTime">默认间隔时间</param>
     /// <returns></returns>
-    public static List<T> LoadSourceRead<T, T2>(IReadWrite device, List<T2> deviceVariables, int maxPack) where T : IDeviceVariableSourceRead<IDeviceVariableRunTime>, new() where T2 : IDeviceVariableRunTime, new()
+    public static List<T> LoadSourceRead<T, T2>(IReadWrite device, List<T2> deviceVariables, int maxPack, int defaultIntervalTime) where T : IDeviceVariableSourceRead<IDeviceVariableRunTime>, new() where T2 : IDeviceVariableRunTime, new()
     {
         if (deviceVariables == null)
             throw new ArgumentNullException(nameof(deviceVariables));
@@ -37,13 +38,13 @@ public class PackHelper
         //需要先剔除额外信息，比如dataformat等
         foreach (var item in deviceVariables)
         {
-            var address = item.VariableAddress;
+            var address = item.Address;
             IThingsGatewayBitConverter transformParameter = ByteTransformUtil.GetTransByAddress(ref address, byteConverter);
             item.ThingsGatewayBitConverter = transformParameter;
-            //item.VariableAddress = address;
-            item.Index = device.GetBitOffset(item.VariableAddress);
+            //item.Address = address;
+            item.Index = device.GetBitOffset(item.Address);
         }
-        var deviceVariableRunTimeGroups = deviceVariables.GroupBy(it => it.IntervalTime);
+        var deviceVariableRunTimeGroups = deviceVariables.GroupBy(it => it.IntervalTime ?? defaultIntervalTime);
         foreach (var group in deviceVariableRunTimeGroups)
         {
             Dictionary<ModbusAddress, T2> map = group.ToDictionary(it =>
@@ -66,10 +67,10 @@ public class PackHelper
                     lastLen *= it.ThingsGatewayBitConverter.Length.Value;
                 }
 
-                var address = it.VariableAddress;
+                var address = it.Address;
                 if (address.IndexOf('.') > 0)
                 {
-                    var addressSplits = address.SplitDot();
+                    var addressSplits = address.SplitStringByDelimiter();
                     address = addressSplits.RemoveLast(1).ArrayToString(".");
                 }
                 var result = ModbusAddress.ParseFrom(address);
@@ -133,9 +134,9 @@ public class PackHelper
 
             T sourceRead = new()
             {
-                TimerTick = new TimerTick(intervalTime),
+                IntervalTimeTick = new TimerTick(intervalTime),
                 //这里只需要根据地址排序的第一个地址，作为实际打包报文中的起始地址
-                VariableAddress = startAddress.ToString(),
+                Address = startAddress.ToString(),
                 Length = sourceLen
             };
             foreach (var item in tempAddressEnd)

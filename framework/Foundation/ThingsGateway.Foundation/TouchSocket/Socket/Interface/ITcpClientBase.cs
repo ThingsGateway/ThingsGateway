@@ -33,7 +33,7 @@ namespace ThingsGateway.Foundation.Sockets
     /// 注意：该接口并不仅表示客户端。<see cref="SocketClient"/>也实现了该接口。
     /// </para>
     /// </summary>
-    public interface ITcpClientBase : IClient, ISender, IDefaultSender, IPluginObject, IRequsetInfoSender, IConfigObject, IOnlineClient
+    public interface ITcpClientBase : ISenderClient, IClient, ISender, IDefaultSender, IPluginObject, IRequsetInfoSender, IConfigObject, IOnlineClient
     {
         /// <summary>
         /// 是否允许自由调用<see cref="SetDataHandlingAdapter"/>进行赋值。

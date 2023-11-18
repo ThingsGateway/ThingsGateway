@@ -28,17 +28,12 @@ namespace ThingsGateway.Foundation.Core
     /// <summary>
     /// 等待返回类
     /// </summary>
-    public interface IWaitResult
+    public interface IWaitResult : IWaitHandle
     {
         /// <summary>
         /// 消息
         /// </summary>
         string Message { get; set; }
-
-        /// <summary>
-        /// 标记
-        /// </summary>
-        long Sign { get; set; }
 
         /// <summary>
         /// 状态

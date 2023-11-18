@@ -31,6 +31,8 @@ namespace ThingsGateway.Foundation.Rpc
     public abstract class RpcActionFilterAttribute : Attribute, IRpcActionFilter
     {
         /// <inheritdoc/>
+        public virtual Type[] MutexAccessTypes => new Type[] { };
+        /// <inheritdoc/>
         public virtual Task<InvokeResult> ExecutedAsync(ICallContext callContext, object[] parameters, InvokeResult invokeResult)
         {
             return Task.FromResult(invokeResult);

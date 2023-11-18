@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.0" />
+	</ItemGroup>
+
+
+	<ItemGroup>
+		<ProjectReference Include="..\ThingsGateway.Components\ThingsGateway.Components.csproj" />
+		<ProjectReference Include="..\ThingsGateway.Admin.Application\ThingsGateway.Admin.Application.csproj" />
+	</ItemGroup>
+</Project>

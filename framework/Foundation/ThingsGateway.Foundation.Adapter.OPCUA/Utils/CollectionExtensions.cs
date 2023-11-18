@@ -35,9 +35,9 @@ internal static class CollectionExtensions
     /// <param name="source"></param>
     /// <param name="selector"></param>
     /// <returns></returns>
-    internal static Task<TResult[]> SelectAsync<T, TResult>(this IEnumerable<T> source, Func<T, Task<TResult>> selector)
+    internal static async Task<TResult[]> SelectAsync<T, TResult>(this IEnumerable<T> source, Func<T, Task<TResult>> selector)
     {
-        return Task.WhenAll(source.Select(selector));
+        return await Task.WhenAll(source.Select(selector));
     }
 
 }

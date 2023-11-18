@@ -15,7 +15,7 @@ namespace ThingsGateway.Foundation.Adapter.Modbus;
 /// <summary>
 /// <inheritdoc/>
 /// </summary>
-public class ModbusRtuOverUdpDataHandleAdapter : ReadWriteDevicesUdpDataHandleAdapter<ModbusRtuMessage>
+internal class ModbusRtuOverUdpDataHandleAdapter : ReadWriteDevicesUdpDataHandleAdapter<ModbusRtuMessage>
 {
     /// <summary>
     /// 检测CRC

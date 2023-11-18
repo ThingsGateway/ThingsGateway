@@ -20,19 +20,73 @@ public partial class TcpServerPage : IDisposable
     /// </summary>
     public Action<LogLevel, object, string, Exception> LogAction;
 
-    private TouchSocketConfig config;
+    private TouchSocketConfig _config;
 
-    private string ip = "127.0.0.1";
+    private string _ip = "127.0.0.1";
 
-    private int port = 502;
+    private int _port = 502;
 
-    private TcpService TcpServer { get; set; } = new();
+    private TcpService _tcpServer { get; set; } = new();
+
+    /// <summary>
+    /// <inheritdoc/>
+    /// </summary>
+    public void Dispose()
+    {
+        _tcpServer.SafeDispose();
+    }
+
+    /// <summary>
+    /// 获取对象
+    /// </summary>
+    /// <returns></returns>
+    public TcpService GetTcpServer()
+    {
+        _config ??= new TouchSocketConfig();
+        var LogMessage = new LoggerGroup() { LogLevel = LogLevel.Trace };
+        LogMessage.AddLogger(new EasyLogger(LogOut) { LogLevel = LogLevel.Trace });
+        _config.ConfigureContainer(a => a.RegisterSingleton<ILog>(LogMessage));
+        _config.SetListenIPHosts(new IPHost[] { new IPHost(_ip + ":" + _port) });
+        //载入配置
+        _tcpServer.Setup(_config);
+        return _tcpServer;
+    }
+
+    internal void StateHasChangedAsync()
+    {
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// <inheritdoc/>
+    /// </summary>
+    /// <param name="firstRender"></param>
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var LogMessage = new LoggerGroup() { LogLevel = LogLevel.Trace };
+            LogMessage.AddLogger(new EasyLogger(LogOut) { LogLevel = LogLevel.Trace });
+            _config.ConfigureContainer(a => a.RegisterSingleton<ILog>(LogMessage));
+            _config.SetListenIPHosts(new IPHost[] { new IPHost(_ip + ":" + _port) });
+            _tcpServer.Setup(_config);
+        }
+        base.OnAfterRender(firstRender);
+    }
+
+    /// <inheritdoc/>
+    protected override void OnInitialized()
+    {
+        _config ??= new TouchSocketConfig();
+
+        base.OnInitialized();
+    }
 
     private void Connect()
     {
         try
         {
-            TcpServer.Stop();
+            _tcpServer.Stop();
             GetTcpServer().Start();
         }
         catch (Exception ex)
@@ -46,63 +100,12 @@ public partial class TcpServerPage : IDisposable
     {
         try
         {
-            TcpServer.Stop();
+            _tcpServer.Stop();
         }
         catch (Exception ex)
         {
             LogAction?.Invoke(LogLevel.Error, null, null, ex);
         }
     }
-    /// <summary>
-    /// 获取对象
-    /// </summary>
-    /// <returns></returns>
-    public TcpService GetTcpServer()
-    {
-        config ??= new TouchSocketConfig();
-        var LogMessage = new LoggerGroup() { LogLevel = LogLevel.Trace };
-        LogMessage.AddLogger(new EasyLogger(LogOut) { LogLevel = LogLevel.Trace });
-        config.ConfigureContainer(a => a.RegisterSingleton<ILog>(LogMessage));
-        config.SetListenIPHosts(new IPHost[] { new IPHost(ip + ":" + port) });
-        //载入配置
-        TcpServer.Setup(config);
-        return TcpServer;
-    }
-
-    /// <inheritdoc/>
-    protected override void OnInitialized()
-    {
-        config ??= new TouchSocketConfig();
-
-        base.OnInitialized();
-    }
-    /// <summary>
-    /// <inheritdoc/>
-    /// </summary>
-    /// <param name="firstRender"></param>
-    protected override void OnAfterRender(bool firstRender)
-    {
-        if (firstRender)
-        {
-            var LogMessage = new LoggerGroup() { LogLevel = LogLevel.Trace };
-            LogMessage.AddLogger(new EasyLogger(LogOut) { LogLevel = LogLevel.Trace });
-            config.ConfigureContainer(a => a.RegisterSingleton<ILog>(LogMessage));
-            config.SetListenIPHosts(new IPHost[] { new IPHost(ip + ":" + port) });
-            TcpServer.Setup(config);
-        }
-        base.OnAfterRender(firstRender);
-    }
-
     private void LogOut(LogLevel logLevel, object source, string message, Exception exception) => LogAction?.Invoke(logLevel, source, message, exception);
-    /// <summary>
-    /// <inheritdoc/>
-    /// </summary>
-    public void Dispose()
-    {
-        TcpServer.SafeDispose();
-    }
-    internal void StateHasChangedAsync()
-    {
-        StateHasChanged();
-    }
 }

@@ -14,8 +14,11 @@ namespace ThingsGateway.Plugin.Siemens;
 /// <summary>
 /// <inheritdoc/>
 /// </summary>
-public class SiemensProperty : CollectDriverPropertyBase
+public class SiemensProperty : DriverPropertyBase
 {
+    [DeviceProperty("S7PLC类型", "S200,S200Smart,S300,S400,S1200,S1500")]
+    public SiemensEnum SiemensEnum { get; internal set; }
+
     /// <summary>
     /// IP
     /// </summary>
@@ -58,4 +61,5 @@ public class SiemensProperty : CollectDriverPropertyBase
     /// <inheritdoc/>
     /// </summary>
     public override ChannelEnum ShareChannel => ChannelEnum.None;
+
 }

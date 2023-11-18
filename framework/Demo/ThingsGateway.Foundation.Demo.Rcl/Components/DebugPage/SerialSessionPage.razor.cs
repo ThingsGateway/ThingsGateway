@@ -20,11 +20,17 @@ public partial class SerialSessionPage : IDisposable
     /// </summary>
     public Action<LogLevel, object, string, Exception> LogAction;
 
-    private TouchSocketConfig config;
+    private readonly SerialProperty _serialProperty = new();
+    private TouchSocketConfig _config;
+    private SerialSession _serialSession { get; set; } = new();
 
-    private readonly SerialProperty serialProperty = new();
-
-    private SerialSession SerialSession { get; set; } = new();
+    /// <summary>
+    /// <inheritdoc/>
+    /// </summary>
+    public void Dispose()
+    {
+        _serialSession.SafeDispose();
+    }
 
     /// <summary>
     /// 获取对象
@@ -32,20 +38,49 @@ public partial class SerialSessionPage : IDisposable
     /// <returns></returns>
     public SerialSession GetSerialSession()
     {
-        config ??= new TouchSocketConfig();
+        _config ??= new TouchSocketConfig();
         var LogMessage = new LoggerGroup() { LogLevel = LogLevel.Trace };
         LogMessage.AddLogger(new EasyLogger(LogOut) { LogLevel = LogLevel.Trace });
-        config.ConfigureContainer(a => a.RegisterSingleton<ILog>(LogMessage));
-        config.SetSerialProperty(serialProperty);
+        _config.ConfigureContainer(a => a.RegisterSingleton<ILog>(LogMessage));
+        _config.SetSerialProperty(_serialProperty);
         //载入配置
-        SerialSession.Setup(config);
-        return SerialSession;
+        _serialSession.Setup(_config);
+        return _serialSession;
     }
+    internal void StateHasChangedAsync()
+    {
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// <inheritdoc/>
+    /// </summary>
+    /// <param name="firstRender"></param>
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var LogMessage = new LoggerGroup() { LogLevel = LogLevel.Trace };
+            LogMessage.AddLogger(new EasyLogger(LogOut) { LogLevel = LogLevel.Trace });
+            _config.ConfigureContainer(a => a.RegisterSingleton<ILog>(LogMessage));
+            _serialSession.Setup(_config);
+        }
+        base.OnAfterRender(firstRender);
+    }
+
+    /// <inheritdoc/>
+    protected override void OnInitialized()
+    {
+        _config ??= new TouchSocketConfig();
+
+        base.OnInitialized();
+    }
+
     private async Task ConnectAsync()
     {
         try
         {
-            SerialSession.Close();
+            _serialSession.Close();
             await GetSerialSession().ConnectAsync();
         }
         catch (Exception ex)
@@ -58,49 +93,12 @@ public partial class SerialSessionPage : IDisposable
     {
         try
         {
-            SerialSession.Close();
+            _serialSession.Close();
         }
         catch (Exception ex)
         {
             LogAction?.Invoke(LogLevel.Error, null, null, ex);
         }
     }
-
-    /// <inheritdoc/>
-    protected override void OnInitialized()
-    {
-        config ??= new TouchSocketConfig();
-
-        base.OnInitialized();
-    }
-
-
-    /// <summary>
-    /// <inheritdoc/>
-    /// </summary>
-    /// <param name="firstRender"></param>
-    protected override void OnAfterRender(bool firstRender)
-    {
-        if (firstRender)
-        {
-            var LogMessage = new LoggerGroup() { LogLevel = LogLevel.Trace };
-            LogMessage.AddLogger(new EasyLogger(LogOut) { LogLevel = LogLevel.Trace });
-            config.ConfigureContainer(a => a.RegisterSingleton<ILog>(LogMessage));
-            SerialSession.Setup(config);
-        }
-        base.OnAfterRender(firstRender);
-    }
-
     private void LogOut(LogLevel logLevel, object source, string message, Exception exception) => LogAction?.Invoke(logLevel, source, message, exception);
-    /// <summary>
-    /// <inheritdoc/>
-    /// </summary>
-    public void Dispose()
-    {
-        SerialSession.SafeDispose();
-    }
-    internal void StateHasChangedAsync()
-    {
-        StateHasChanged();
-    }
 }

@@ -17,7 +17,7 @@ namespace ThingsGateway.Plugin.DLT645;
 /// <summary>
 /// <inheritdoc/>
 /// </summary>
-public class DLT645_2007Property : CollectDriverPropertyBase
+public class DLT645_2007Property : DriverPropertyBase
 {
     /// <summary>
     /// COM口
@@ -92,8 +92,6 @@ public class DLT645_2007Property : CollectDriverPropertyBase
     public int CacheTimeout { get; set; } = 1000;
 
 
-
-
     /// <summary>
     /// 共享链路
     /// </summary>
@@ -102,7 +100,7 @@ public class DLT645_2007Property : CollectDriverPropertyBase
     /// <summary>
     /// <inheritdoc/>
     /// </summary>
-    public override ChannelEnum ShareChannel => ChannelEnum.SerialPort;
+    public override ChannelEnum ShareChannel => ChannelEnum.SerialSession;
 
 
 }

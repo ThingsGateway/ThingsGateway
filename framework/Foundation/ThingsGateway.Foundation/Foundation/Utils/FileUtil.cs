@@ -18,7 +18,7 @@ namespace ThingsGateway.Foundation.Core;
 public static class FileUtil
 {
     /// <summary>
-    /// 读取文件
+    /// 传入路径，读取文件
     /// </summary>
     /// <param name="Path"></param>
     /// <returns></returns>

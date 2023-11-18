@@ -19,7 +19,7 @@ namespace ThingsGateway.Foundation.Adapter.DLT645;
 /// <summary>
 /// DLT645_2007DataHandleAdapter
 /// </summary>
-public class DLT645_2007DataHandleAdapter : ReadWriteDevicesTcpDataHandleAdapter<DLT645_2007Message>
+internal class DLT645_2007DataHandleAdapter : ReadWriteDevicesSingleStreamDataHandleAdapter<DLT645_2007Message>
 {
     /// <summary>
     /// 增加FE FE FE FE的报文头部

@@ -5,15 +5,27 @@
 
   "Logging": {
     "LogLevel": {
-      "File": "Information", //程序日志写入文件等级，不包含网关日志
-      "BackendLog": "Information", //网关运行日志存入数据库等级，部署推荐Warning
-      "Default": "Information", //默认等级
-      "Console": "Information", //控制台输出日志等级
+      "Default": "Information", 
       "Microsoft": "Warning",
       "Microsoft.Hosting.Lifetime": "Information"
     },
-    "LogEnable": {
-      "File": true //程序日志写入文件
+    "EventLog": {
+      "LogLevel": {
+        "Default": "Warning",
+        "Microsoft.Hosting.Lifetime": "Warning"
+      } //windows事件输出日志等级
+    },
+    "Console": {
+      "LogLevel": {
+        "Default": "Information",
+        "Microsoft": "Warning",
+        "Microsoft.Hosting.Lifetime": "Warning"
+      } //控制台输出日志等级
+    },
+    "BackendLog": {
+      "LogLevel": {
+        "Default": "Warning"
+      } //网关运行日志存入数据库等级，部署推荐Warning
     },
     "LogJob": {
       "DaysAgo": 30 //删除多少天前的日志，任务会间隔24小时执行一次
@@ -26,31 +38,29 @@
     "TimeInterval": 10000 //更新间隔ms
   },
 
-    //动态API设备
-    "DynamicApiControllerSettings": {
-      "LowercaseRoute": false, //是否采用小写路由，bool 类型，默认 true
-      "KeepName": true, //是否保持原有名称不处理，bool，默认 false
-      "AsLowerCamelCase": true //启用小驼峰命名（首字母小写），默认 false
-    },
+  //动态API设备
+  "DynamicApiControllerSettings": {
+    "LowercaseRoute": false, //是否采用小写路由，bool 类型，默认 true
+    "KeepName": true, //是否保持原有名称不处理，bool，默认 false
+    "AsLowerCamelCase": true //启用小驼峰命名（首字母小写），默认 false
+  },
 
-    "FriendlyExceptionSettings": {
-      "DefaultErrorMessage": "系统异常，请联系管理员",
-      "HideErrorCode": true
-    },
+  "FriendlyExceptionSettings": {
+    "DefaultErrorMessage": "系统异常，请联系管理员",
+    "HideErrorCode": true
+  },
 
-    //排除特定配置文件
-    "IgnoreConfigurationFiles": [
-      "Navs.json",
-      "sys_user.json",
-      "sys_config.json",
-      "sys_relation.json",
-      "sys_resource.json",
-      "sys_role.json",
-      "driver_plugin.json"
-    ],
+  //排除特定配置文件
+  "IgnoreConfigurationFiles": [
+    "sys_user.json",
+    "sys_config.json",
+    "sys_relation.json",
+    "sys_resource.json",
+    "sys_role.json"
+  ],
 
-    "CorsAccessorSettings": {
-      "WithExposedHeaders": [ "Content-Disposition" ], // 如果前端不代理且是axios请求
-      "SignalRSupport": true // 启用 SignalR 跨域支持
-    }
+  "CorsAccessorSettings": {
+    "WithExposedHeaders": [ "Content-Disposition" ], // 如果前端不代理且是axios请求
+    "SignalRSupport": true // 启用 SignalR 跨域支持
   }
+}

@@ -23,10 +23,9 @@ namespace ThingsGateway.Foundation.Core;
 /// </summary>
 public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
 {
-
     private readonly EndianType endianType;
 
-    private DataFormat dataFormat;
+    private DataFormat? dataFormat;
     /// <inheritdoc/>
     [Newtonsoft.Json.JsonIgnore]
 #if NET6_0_OR_GREATER
@@ -56,7 +55,7 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
     }
 
     /// <inheritdoc/>
-    public virtual DataFormat DataFormat
+    public virtual DataFormat? DataFormat
     {
         get
         {
@@ -288,7 +287,6 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
     }
 
 
-
     /// <inheritdoc/>
     public virtual bool ToBoolean(byte[] buffer, int offset, bool isReverse = false)
     {
@@ -441,28 +439,29 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
         byte[] numArray = new byte[4];
         switch (DataFormat)
         {
-            case DataFormat.ABCD:
+            case Core.DataFormat.ABCD:
+            case null:
                 numArray[0] = value[offset + 3];
                 numArray[1] = value[offset + 2];
                 numArray[2] = value[offset + 1];
                 numArray[3] = value[offset];
                 break;
 
-            case DataFormat.BADC:
+            case Core.DataFormat.BADC:
                 numArray[0] = value[offset + 2];
                 numArray[1] = value[offset + 3];
                 numArray[2] = value[offset];
                 numArray[3] = value[offset + 1];
                 break;
 
-            case DataFormat.CDAB:
+            case Core.DataFormat.CDAB:
                 numArray[0] = value[offset + 1];
                 numArray[1] = value[offset];
                 numArray[2] = value[offset + 3];
                 numArray[3] = value[offset + 2];
                 break;
 
-            case DataFormat.DCBA:
+            case Core.DataFormat.DCBA:
                 numArray[0] = value[offset];
                 numArray[1] = value[offset + 1];
                 numArray[2] = value[offset + 2];
@@ -481,7 +480,8 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
         byte[] numArray = new byte[8];
         switch (DataFormat)
         {
-            case DataFormat.ABCD:
+            case Core.DataFormat.ABCD:
+            case null:
                 numArray[0] = value[offset + 7];
                 numArray[1] = value[offset + 6];
                 numArray[2] = value[offset + 5];
@@ -492,7 +492,7 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
                 numArray[7] = value[offset];
                 break;
 
-            case DataFormat.BADC:
+            case Core.DataFormat.BADC:
                 numArray[0] = value[offset + 6];
                 numArray[1] = value[offset + 7];
                 numArray[2] = value[offset + 4];
@@ -503,7 +503,7 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
                 numArray[7] = value[offset + 1];
                 break;
 
-            case DataFormat.CDAB:
+            case Core.DataFormat.CDAB:
                 numArray[0] = value[offset + 1];
                 numArray[1] = value[offset];
                 numArray[2] = value[offset + 3];
@@ -514,7 +514,7 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
                 numArray[7] = value[offset + 6];
                 break;
 
-            case DataFormat.DCBA:
+            case Core.DataFormat.DCBA:
                 numArray[0] = value[offset];
                 numArray[1] = value[offset + 1];
                 numArray[2] = value[offset + 2];

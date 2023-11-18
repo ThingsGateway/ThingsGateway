@@ -16,27 +16,84 @@ namespace ThingsGateway.Foundation.Demo;
 public partial class UdpSessionPage : IDisposable
 {
     /// <summary>
+    /// IP
+    /// </summary>
+    public string _ip = "127.0.0.1";
+
+    /// <summary>
+    /// Port
+    /// </summary>
+    public int _port = 502;
+
+    /// <summary>
     /// 日志输出
     /// </summary>
     public Action<LogLevel, object, string, Exception> LogAction;
 
-    private TouchSocketConfig config;
-    /// <summary>
-    /// IP
-    /// </summary>
-    public string IP = "127.0.0.1";
-    /// <summary>
-    /// Port
-    /// </summary>
-    public int Port = 502;
+    private TouchSocketConfig _config;
+    private UdpSession _udpSession { get; set; } = new();
 
-    private UdpSession UdpSession { get; set; } = new();
+    /// <summary>
+    /// <inheritdoc/>
+    /// </summary>
+    public void Dispose()
+    {
+        _udpSession.SafeDispose();
+    }
+
+    /// <summary>
+    /// 获取对象
+    /// </summary>
+    /// <returns></returns>
+    public UdpSession GetUdpSession()
+    {
+        _config ??= new TouchSocketConfig();
+        var LogMessage = new LoggerGroup() { LogLevel = LogLevel.Trace };
+        LogMessage.AddLogger(new EasyLogger(LogOut) { LogLevel = LogLevel.Trace });
+        _config.ConfigureContainer(a => a.RegisterSingleton<ILog>(LogMessage));
+        _config.SetRemoteIPHost(new IPHost(_ip + ":" + _port));
+        _config.SetBindIPHost(new IPHost(0));
+        //载入配置
+        _udpSession.Setup(_config);
+        return _udpSession;
+    }
+
+    internal void StateHasChangedAsync()
+    {
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// <inheritdoc/>
+    /// </summary>
+    /// <param name="firstRender"></param>
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var LogMessage = new LoggerGroup() { LogLevel = LogLevel.Trace };
+            LogMessage.AddLogger(new EasyLogger(LogOut) { LogLevel = LogLevel.Trace });
+            _config.ConfigureContainer(a => a.RegisterSingleton<ILog>(LogMessage));
+            _config.SetRemoteIPHost(new IPHost(_ip + ":" + _port));
+            _config.SetBindIPHost(new IPHost(0));
+            _udpSession.Setup(_config);
+        }
+        base.OnAfterRender(firstRender);
+    }
+
+    /// <inheritdoc/>
+    protected override void OnInitialized()
+    {
+        _config ??= new TouchSocketConfig();
+
+        base.OnInitialized();
+    }
 
     private void Connect()
     {
         try
         {
-            UdpSession.Stop();
+            _udpSession.Stop();
             GetUdpSession().Start();
         }
         catch (Exception ex)
@@ -49,7 +106,7 @@ public partial class UdpSessionPage : IDisposable
     {
         try
         {
-            UdpSession.Stop();
+            _udpSession.Stop();
         }
         catch (Exception ex)
         {
@@ -57,57 +114,5 @@ public partial class UdpSessionPage : IDisposable
             LogAction?.Invoke(LogLevel.Error, null, null, ex);
         }
     }
-    /// <summary>
-    /// 获取对象
-    /// </summary>
-    /// <returns></returns>
-    public UdpSession GetUdpSession()
-    {
-        config ??= new TouchSocketConfig();
-        var LogMessage = new LoggerGroup() { LogLevel = LogLevel.Trace };
-        LogMessage.AddLogger(new EasyLogger(LogOut) { LogLevel = LogLevel.Trace });
-        config.ConfigureContainer(a => a.RegisterSingleton<ILog>(LogMessage));
-        config.SetRemoteIPHost(new IPHost(IP + ":" + Port));
-        config.SetBindIPHost(new IPHost(0));
-        //载入配置
-        UdpSession.Setup(config);
-        return UdpSession;
-    }
-    /// <inheritdoc/>
-    protected override void OnInitialized()
-    {
-        config ??= new TouchSocketConfig();
-
-        base.OnInitialized();
-    }
-    /// <summary>
-    /// <inheritdoc/>
-    /// </summary>
-    /// <param name="firstRender"></param>
-    protected override void OnAfterRender(bool firstRender)
-    {
-        if (firstRender)
-        {
-            var LogMessage = new LoggerGroup() { LogLevel = LogLevel.Trace };
-            LogMessage.AddLogger(new EasyLogger(LogOut) { LogLevel = LogLevel.Trace });
-            config.ConfigureContainer(a => a.RegisterSingleton<ILog>(LogMessage));
-            config.SetRemoteIPHost(new IPHost(IP + ":" + Port));
-            config.SetBindIPHost(new IPHost(0));
-            UdpSession.Setup(config);
-        }
-        base.OnAfterRender(firstRender);
-    }
     private void LogOut(LogLevel logLevel, object source, string message, Exception exception) => LogAction?.Invoke(logLevel, source, message, exception);
-
-    /// <summary>
-    /// <inheritdoc/>
-    /// </summary>
-    public void Dispose()
-    {
-        UdpSession.SafeDispose();
-    }
-    internal void StateHasChangedAsync()
-    {
-        StateHasChanged();
-    }
 }

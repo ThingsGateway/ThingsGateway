@@ -1,9 +1,9 @@
 <Project>
 	<PropertyGroup>
-		<Version>3.0.1.0</Version>
+		<Version>4.0.0.0</Version>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<LangVersion>latest</LangVersion>
-		<TargetFrameworks>net45;netstandard2.0;net6.0;net7.0</TargetFrameworks>
+		<TargetFrameworks>net45;netstandard2.0;net6.0;net8.0;</TargetFrameworks>
 		<Description>
 			ThingsGateway.Foundation是工业设备通讯类库，归属于ThingsGateway边缘网关项目，说明文档：https://diego2098.gitee.io/thingsgateway-docs/
 		</Description>
@@ -25,8 +25,8 @@
 		<SignAssembly>True</SignAssembly>
 		<DelaySign>False</DelaySign>
 		<SatelliteResourceLanguages>zh-Hans</SatelliteResourceLanguages>
-		<PackageOutputPath>../../nupkgs</PackageOutputPath>
-		<AssemblyOriginatorKeyFile>../../../snks/ThingsGateway.snk</AssemblyOriginatorKeyFile>
+		<PackageOutputPath>..\..\nupkgs</PackageOutputPath>
+		<AssemblyOriginatorKeyFile>..\..\..\snks/ThingsGateway.snk</AssemblyOriginatorKeyFile>
 	</PropertyGroup>
 
 	<PropertyGroup>

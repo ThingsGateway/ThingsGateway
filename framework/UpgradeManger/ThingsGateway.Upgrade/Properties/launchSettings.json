@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "ThingsGateway.Upgrade": {
-      "commandName": "Project",
-      "commandLineArgs": "E:\\Tg\\ThingsGateway\\ThingsGateway-DEV\\framework\\Web\\ThingsGateway.Web.Entry\\bin\\Debug\\net6.0\\FileTemp\\tcp---127.0.0.1-7400-"
-    }
-  }
-}

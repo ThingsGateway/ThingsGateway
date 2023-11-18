@@ -221,6 +221,7 @@ namespace ThingsGateway.Foundation.Core
             {
                 throw new ObjectDisposedException(this.GetType().FullName);
             }
+
             var len = this.m_length - this.m_position > length ? length : this.CanReadLen;
             Array.Copy(this.Buffer, this.m_position, buffer, offset, len);
             this.m_position += len;

@@ -17,7 +17,7 @@ namespace ThingsGateway.Plugin.Modbus;
 /// <summary>
 /// <inheritdoc/>
 /// </summary>
-public class ModbusRtuProperty : CollectDriverPropertyBase
+public class ModbusRtuProperty : DriverPropertyBase
 {
     /// <summary>
     /// COM口
@@ -78,7 +78,7 @@ public class ModbusRtuProperty : CollectDriverPropertyBase
     /// <summary>
     /// 组包缓存超时ms
     /// </summary>
-    [DeviceProperty("组包缓存超时ms", "某些设备性能较弱，报文间需要间隔较长时间，可以设置更长的组包缓存，默认1s")]
+    [DeviceProperty("组包缓存超时ms", "某些设备性能较弱，报文间需要间隔较长时间，可以设置更长的组包缓存，默认1000ms")]
     public int CacheTimeout { get; set; } = 1000;
 
     /// <summary>
@@ -86,7 +86,6 @@ public class ModbusRtuProperty : CollectDriverPropertyBase
     /// </summary>
     [DeviceProperty("最大打包长度", "")]
     public ushort MaxPack { get; set; } = 100;
-
 
     /// <summary>
     /// 共享链路
@@ -96,7 +95,7 @@ public class ModbusRtuProperty : CollectDriverPropertyBase
     /// <summary>
     /// <inheritdoc/>
     /// </summary>
-    public override ChannelEnum ShareChannel => ChannelEnum.SerialPort;
+    public override ChannelEnum ShareChannel => ChannelEnum.SerialSession;
 
 
 }

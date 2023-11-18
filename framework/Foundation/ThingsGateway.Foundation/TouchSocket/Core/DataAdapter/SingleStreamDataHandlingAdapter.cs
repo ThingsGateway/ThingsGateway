@@ -251,9 +251,9 @@ namespace ThingsGateway.Foundation.Core
         /// <param name="offset"></param>
         /// <param name="length"></param>
         /// <returns></returns>
-        protected Task GoSendAsync(byte[] buffer, int offset, int length)
+        protected async Task GoSendAsync(byte[] buffer, int offset, int length)
         {
-            return this.SendAsyncCallBack.Invoke(buffer, offset, length);
+            await this.SendAsyncCallBack.Invoke(buffer, offset, length);
         }
 
         /// <summary>

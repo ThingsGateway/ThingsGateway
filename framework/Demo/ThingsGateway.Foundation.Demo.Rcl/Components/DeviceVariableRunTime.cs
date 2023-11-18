@@ -19,10 +19,10 @@ public class DeviceVariableRunTime : IDeviceVariableRunTime
 {
     /// <inheritdoc/>
     [Description("读取间隔")]
-    public int IntervalTime { get; set; }
+    public int? IntervalTime { get; set; }
     /// <inheritdoc/>
     [Description("变量地址")]
-    public string VariableAddress { get; set; }
+    public string Address { get; set; }
     /// <inheritdoc/>
     public int Index { get; set; }
     /// <inheritdoc/>
@@ -33,10 +33,16 @@ public class DeviceVariableRunTime : IDeviceVariableRunTime
     /// <inheritdoc/>
     [Description("实时值")]
     public object Value { get; set; }
+
+    public bool IsOnline { get; set; }
+
+    public string LastErrorMessage { get; set; }
+
     /// <inheritdoc/>
-    public OperResult SetValue(object value, DateTime dateTime = default, bool isOnline = true)
+    public OperResult SetValue(object value, DateTime dateTime = default, string lastErrorMessage = null)
     {
         Value = value;
         return OperResult.CreateSuccessResult();
     }
+
 }

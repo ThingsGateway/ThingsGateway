@@ -27,10 +27,13 @@ namespace ThingsGateway.Foundation.Sockets
 {
     internal class WaitingClient<TClient> : DisposableObject, IWaitingClient<TClient> where TClient : IClient, ISender
     {
-        private readonly EasyLock m_semaphoreSlim = new();
+        ~WaitingClient()
+        {
+            this.Dispose(false);
+        }
+
+        private readonly SemaphoreSlim m_semaphoreSlim = new SemaphoreSlim(1, 1);
         private CancellationTokenSource m_cancellationTokenSource;
-
-
 
         public WaitingClient(TClient client, WaitingOptions waitingOptions)
         {
@@ -50,25 +53,7 @@ namespace ThingsGateway.Foundation.Sockets
 
         public WaitingOptions WaitingOptions { get; set; }
 
-        protected override void Dispose(bool disposing)
-        {
-            this.Cancel();
-            this.Client = default;
-            base.Dispose(disposing);
-        }
-
-        private void Cancel()
-        {
-            try
-            {
-                this.m_cancellationTokenSource?.Cancel();
-            }
-            catch
-            {
-            }
-        }
-
-        #region 同步Response
+        #region 发送
 
         public ResponsedData SendThenResponse(byte[] buffer, int offset, int length, CancellationToken token = default)
         {
@@ -139,17 +124,11 @@ namespace ThingsGateway.Foundation.Sockets
             }
         }
 
-
-
-        #endregion 同步Response
-
-        #region Response异步
-
         public async Task<ResponsedData> SendThenResponseAsync(byte[] buffer, int offset, int length, CancellationToken token = default)
         {
             try
             {
-                await this.m_semaphoreSlim.WaitAsync(token);
+                await this.m_semaphoreSlim.WaitAsync();
                 if (token.CanBeCanceled)
                 {
                     this.m_cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(token);
@@ -168,7 +147,7 @@ namespace ThingsGateway.Foundation.Sockets
 
                             while (true)
                             {
-                                using (var receiverResult = await receiver.ReadAsync(m_cancellationTokenSource.Token))
+                                using (var receiverResult = await receiver.ReadAsync(this.m_cancellationTokenSource.Token))
                                 {
                                     var response = new ResponsedData(receiverResult.ByteBlock?.ToArray(), receiverResult.RequestInfo);
                                 }
@@ -214,12 +193,6 @@ namespace ThingsGateway.Foundation.Sockets
             }
         }
 
-
-
-
-
-        #endregion Response异步
-
         public byte[] SendThenReturn(byte[] buffer, int offset, int length, CancellationToken token = default)
         {
             return this.SendThenResponse(buffer, offset, length, token).Data;
@@ -230,6 +203,24 @@ namespace ThingsGateway.Foundation.Sockets
             return (await this.SendThenResponseAsync(buffer, offset, length, token)).Data;
         }
 
+        #endregion 发送
 
+        protected override void Dispose(bool disposing)
+        {
+            this.Cancel();
+            this.Client = default;
+            base.Dispose(disposing);
+        }
+
+        private void Cancel()
+        {
+            try
+            {
+                this.m_cancellationTokenSource?.SafeDispose();
+            }
+            catch
+            {
+            }
+        }
     }
 }

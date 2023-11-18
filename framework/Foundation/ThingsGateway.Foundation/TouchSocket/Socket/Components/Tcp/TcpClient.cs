@@ -338,7 +338,7 @@ namespace ThingsGateway.Foundation.Sockets
                 this.m_online = true;
                 this.SetSocket(socket);
                 this.BeginReceive();
-                this.PrivateOnConnected(new ConnectedEventArgs()).ConfigureAwait(false).GetAwaiter().GetResult();
+                _ = Task.Factory.StartNew(this.PrivateOnConnected, new ConnectedEventArgs());
             }
             finally
             {
@@ -394,7 +394,7 @@ namespace ThingsGateway.Foundation.Sockets
                 {
                     throw new TimeoutException("连接超时");
                 }
-                await SuccessAsync(socket);
+                Success(socket);
 #else
 
                 using CancellationTokenSource cancellationTokenSource = new();
@@ -411,7 +411,7 @@ namespace ThingsGateway.Foundation.Sockets
                     }
                     else
                     {
-                        await SuccessAsync(socket);
+                        Success(socket);
                     }
                 }
                 else
@@ -424,12 +424,12 @@ namespace ThingsGateway.Foundation.Sockets
 
 
 #endif
-                async Task SuccessAsync(Socket socket)
+                void Success(Socket socket)
                 {
                     this.m_online = true;
                     this.SetSocket(socket);
                     this.BeginReceive();
-                    await (this.PrivateOnConnected(new ConnectedEventArgs()));
+                    _ = Task.Factory.StartNew(this.PrivateOnConnected, new ConnectedEventArgs());
                 }
             }
             finally

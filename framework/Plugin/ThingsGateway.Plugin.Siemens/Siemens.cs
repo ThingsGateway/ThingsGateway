@@ -16,7 +16,7 @@ namespace ThingsGateway.Plugin.Siemens;
 /// <summary>
 /// S7
 /// </summary>
-public abstract class Siemens : CollectBase
+public class Siemens : CollectBase
 {
     /// <summary>
     /// PLC
@@ -25,49 +25,61 @@ public abstract class Siemens : CollectBase
     /// <summary>
     /// SiemensProperty
     /// </summary>
-    protected SiemensProperty driverPropertys = new();
+    protected SiemensProperty _driverPropertys = new();
 
     /// <inheritdoc/>
-    public override bool IsSupportRequest => true;
+    protected override IReadWrite _readWrite => _plc;
 
-    /// <inheritdoc/>
-    public override IThingsGatewayBitConverter ThingsGatewayBitConverter { get => _plc?.ThingsGatewayBitConverter; }
-
-    /// <inheritdoc/>
-    protected override IReadWrite PLC => _plc;
     /// <summary>
     /// <inheritdoc/>
     /// </summary>
-    /// <returns></returns>
-    public override Task AfterStopAsync()
+    public override Type DriverDebugUIType => typeof(SiemensDebugPage);
+    public override Type DriverUIType => null;
+
+    /// <inheritdoc/>
+    public override DriverPropertyBase DriverPropertys => _driverPropertys;
+    /// <inheritdoc/>
+    protected override void Init(ISenderClient client = null)
     {
-        if (_plc != null)
-            _plc?.Disconnect();
-        return Task.CompletedTask;
+        if (client == null)
+        {
+            FoundataionConfig.SetRemoteIPHost(new IPHost($"{_driverPropertys.IP}:{_driverPropertys.Port}"))
+                ;
+            client = new TcpClient();
+            ((TcpClient)client).Setup(FoundataionConfig);
+        }
+        //载入配置
+        _plc = new((TcpClient)client)
+        {
+            DataFormat = _driverPropertys.DataFormat,
+            ConnectTimeOut = _driverPropertys.ConnectTimeOut,
+            TimeOut = _driverPropertys.TimeOut,
+            SiemensEnum = _driverPropertys.SiemensEnum
+        };
+        if (_driverPropertys.LocalTSAP != 0)
+        {
+            _plc.LocalTSAP = _driverPropertys.LocalTSAP;
+        }
+        if (_driverPropertys.Rack != 0)
+        {
+            _plc.Rack = _driverPropertys.Rack;
+        }
+        if (_driverPropertys.Slot != 0)
+        {
+            _plc.Slot = _driverPropertys.Slot;
+        }
+        base.Init(client);
     }
 
-    /// <inheritdoc/>
-    public override async Task BeforStartAsync(CancellationToken cancellationToken)
+    protected override List<DeviceVariableSourceRead> ProtectedLoadSourceRead(List<DeviceVariableRunTime> deviceVariables)
     {
-        await _plc?.ConnectAsync(cancellationToken);
-    }
-
-    /// <inheritdoc/>
-    public override void InitDataAdapter()
-    {
-        _plc.SetDataAdapter();
-    }
-
-    /// <inheritdoc/>
-    public override bool IsConnected() => _plc?.TcpClient?.CanSend == true;
-
-    /// <inheritdoc/>
-    public override List<DeviceVariableSourceRead> LoadSourceRead(List<DeviceVariableRunTime> deviceVariables)
-    {
-        _plc.Connect(CancellationToken.None);
-        var data = _plc.LoadSourceRead<DeviceVariableSourceRead, DeviceVariableRunTime>(deviceVariables, 0);
-        _plc?.Disconnect();
-        return data;
+        try { _plc.Connect(CancellationToken.None); } catch { }
+        try
+        {
+            var data = _plc.LoadSourceRead<DeviceVariableSourceRead, DeviceVariableRunTime>(deviceVariables, 0, CurrentDevice.IntervalTime);
+            return data;
+        }
+        finally { _plc.Disconnect(); }
     }
 
     /// <summary>
@@ -111,19 +123,6 @@ public abstract class Siemens : CollectBase
             return await _plc?.ReadStringAsync(address, encoding, cancellationToken);
         else
             return new(await _plc?.WriteAsync(address, value, cancellationToken));
-    }
-
-    /// <inheritdoc/>
-    protected override void Dispose(bool disposing)
-    {
-        _plc?.Disconnect();
-        base.Dispose(disposing);
-    }
-
-    /// <inheritdoc/>
-    protected override async Task<OperResult<byte[]>> ReadAsync(string address, int length, CancellationToken cancellationToken)
-    {
-        return await _plc.ReadAsync(address, length, cancellationToken);
     }
 
 }

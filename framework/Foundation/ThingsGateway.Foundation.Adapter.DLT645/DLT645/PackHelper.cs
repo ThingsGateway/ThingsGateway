@@ -14,25 +14,34 @@ namespace ThingsGateway.Foundation.Adapter.DLT645;
 
 internal static class PackHelper
 {
-    public static List<T> LoadSourceRead<T, T2>(IReadWrite device, List<T2> deviceVariables, int maxPack) where T : IDeviceVariableSourceRead<IDeviceVariableRunTime>, new() where T2 : IDeviceVariableRunTime, new()
+    /// <summary>
+    /// 打包变量，添加到<see href="deviceVariableSourceReads"></see>
+    /// </summary>
+    /// <param name="device"></param>
+    /// <param name="deviceVariables"></param>
+    /// <param name="maxPack">最大打包长度</param>
+    /// <param name="defaultIntervalTime">默认间隔时间</param>
+    /// <returns></returns>
+    public static List<T> LoadSourceRead<T, T2>(IReadWrite device, List<T2> deviceVariables, int maxPack, int defaultIntervalTime) where T : IDeviceVariableSourceRead<IDeviceVariableRunTime>, new() where T2 : IDeviceVariableRunTime, new()
     {
         var byteConverter = device.ThingsGatewayBitConverter;
         var result = new List<T>();
         //需要先剔除额外信息，比如dataformat等
         foreach (var item in deviceVariables)
         {
-            var address = item.VariableAddress;
+            var address = item.Address;
 
             IThingsGatewayBitConverter transformParameter = ByteTransformUtil.GetTransByAddress(ref address, byteConverter);
             item.ThingsGatewayBitConverter = transformParameter;
-            //item.VariableAddress = address;
-            item.Index = device.GetBitOffset(item.VariableAddress);
+            //item.Address = address;
+            item.Index = device.GetBitOffset(item.Address);
 
             result.Add(new()
             {
                 DeviceVariableRunTimes = new() { item },
-                VariableAddress = address,
+                Address = address,
                 Length = 1,
+                IntervalTimeTick = new(item.IntervalTime ?? defaultIntervalTime)
             });
         }
         return result;

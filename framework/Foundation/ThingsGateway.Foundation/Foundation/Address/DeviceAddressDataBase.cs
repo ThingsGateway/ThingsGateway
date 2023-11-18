@@ -18,10 +18,9 @@ namespace ThingsGateway.Foundation.Core;
 public abstract class DeviceAddressBase
 {
     /// <summary>
-    /// 起始地址
+    /// 地址
     /// </summary>
     public string Address { get; set; }
-
 
     /// <summary>
     /// 实体类转换为字符串

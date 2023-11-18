@@ -30,16 +30,66 @@ public partial class DriverDebugUIPage : DriverDebugUIBase
     /// MaxPack
     /// </summary>
     public int MaxPack = 100;
+    private StringNumber _selected = 0;
+
+    /// <inheritdoc/>
+    ~DriverDebugUIPage()
+    {
+        this.SafeDispose();
+    }
+
+    /// <summary>
+    /// 自定义模板
+    /// </summary>
+    [Parameter]
+    public RenderFragment CodeContent { get; set; }
+
+    /// <summary>
+    /// 自定义模板
+    /// </summary>
+    [Parameter]
+    public RenderFragment OtherContent { get; set; }
+
+    /// <summary>
+    /// <inheritdoc/>
+    /// </summary>
+    public override IReadWrite Plc { get; set; }
+
+    /// <summary>
+    /// 自定义模板
+    /// </summary>
+    [Parameter]
+    public RenderFragment ReadWriteContent { get; set; }
+
+    /// <summary>
+    /// Sections
+    /// </summary>
+    [Parameter]
+    public List<(string Code, string Language)> Sections { get; set; } = new();
+
+    /// <summary>
+    /// ShowDefaultOtherContent
+    /// </summary>
+    [Parameter]
+    public bool ShowDefaultOtherContent { get; set; } = true;
+
+    /// <inheritdoc/>
+    public override void Dispose()
+    {
+        Plc?.SafeDispose();
+        base.Dispose();
+    }
+
     /// <summary>
     /// MulReadAsync
     /// </summary>
     /// <returns></returns>
     public async Task MulReadAsync()
     {
-        var deviceVariableSourceReads = Plc.LoadSourceRead<DeviceVariableSourceRead, DeviceVariableRunTime>(DeviceVariableRunTimes, MaxPack);
+        var deviceVariableSourceReads = Plc.LoadSourceRead<DeviceVariableSourceRead, DeviceVariableRunTime>(DeviceVariableRunTimes, MaxPack, 1000);
         foreach (var item in deviceVariableSourceReads)
         {
-            var result = await Plc.ReadAsync(item.VariableAddress, item.Length);
+            var result = await Plc.ReadAsync(item.Address, item.Length);
             if (result.IsSuccess)
             {
                 try
@@ -57,20 +107,14 @@ public partial class DriverDebugUIPage : DriverDebugUIBase
                 Messages.Add((Microsoft.Extensions.Logging.LogLevel.Warning, DateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset) + " - " + result.Message));
         }
     }
-
-    private StringNumber _selected = 0;
     /// <summary>
-    /// Sections
+    /// <inheritdoc/>
     /// </summary>
-    [Parameter]
-    public List<(string Code, string Language)> Sections { get; set; } = new();
-
-    /// <summary>
-    /// ShowDefaultOtherContent
-    /// </summary>
-    [Parameter]
-    public bool ShowDefaultOtherContent { get; set; } = true;
-
+    /// <param name="firstRender"></param>
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+    }
 
     /// <inheritdoc/>
     protected override void OnInitialized()
@@ -80,25 +124,25 @@ public partial class DriverDebugUIPage : DriverDebugUIBase
                                 new DeviceVariableRunTime()
                                 {
                                     DataTypeEnum=DataTypeEnum.Int16,
-                                    VariableAddress="40001",
+                                    Address="40001",
                                     IntervalTime=1000,
                                 },
                                    new DeviceVariableRunTime()
                                 {
                                     DataTypeEnum=DataTypeEnum.Int16,
-                                    VariableAddress="40011",
+                                    Address="40011",
                                     IntervalTime=1000,
                                 },
                                    new DeviceVariableRunTime()
                                 {
                                     DataTypeEnum=DataTypeEnum.Int16,
-                                    VariableAddress="40031",
+                                    Address="40031",
                                     IntervalTime=1000,
                                 },
                                    new DeviceVariableRunTime()
                                 {
                                     DataTypeEnum=DataTypeEnum.Int16,
-                                    VariableAddress="40101",
+                                    Address="40101",
                                     IntervalTime=1000,
                                 },
             };
@@ -110,7 +154,7 @@ public partial class DriverDebugUIPage : DriverDebugUIBase
                     /// <inheritdoc/>
                     public TimerTick TimerTick { get; set; }
                     /// <inheritdoc/>
-                    public string VariableAddress { get; set; }
+                    public string Address { get; set; }
                     /// <inheritdoc/>
                     public int Length { get; set; }
                     /// <inheritdoc/>
@@ -124,7 +168,7 @@ public partial class DriverDebugUIPage : DriverDebugUIBase
                     public int IntervalTime { get; set; }
                     /// <inheritdoc/>
                     [Description("变量地址")]
-                    public string VariableAddress { get; set; }
+                    public string Address { get; set; }
                     /// <inheritdoc/>
                     public int Index { get; set; }
                     /// <inheritdoc/>
@@ -151,25 +195,25 @@ public partial class DriverDebugUIPage : DriverDebugUIBase
                                 new DeviceVariableRunTime()
                                 {
                                     DataTypeEnum=DataTypeEnum.Int16,
-                                    VariableAddress="40001",
+                                    Address="40001",
                                     IntervalTime=1000,
                                 },
                                    new DeviceVariableRunTime()
                                 {
                                     DataTypeEnum=DataTypeEnum.Int16,
-                                    VariableAddress="40011",
+                                    Address="40011",
                                     IntervalTime=1000,
                                 },
                                    new DeviceVariableRunTime()
                                 {
                                     DataTypeEnum=DataTypeEnum.Int16,
-                                    VariableAddress="40031",
+                                    Address="40031",
                                     IntervalTime=1000,
                                 },
                                    new DeviceVariableRunTime()
                                 {
                                     DataTypeEnum=DataTypeEnum.Int16,
-                                    VariableAddress="40101",
+                                    Address="40101",
                                     IntervalTime=1000,
                                 },
                 };
@@ -178,7 +222,7 @@ public partial class DriverDebugUIPage : DriverDebugUIBase
                 var deviceVariableSourceReads = Plc.LoadSourceRead<DeviceVariableSourceRead, DeviceVariableRunTime>(DeviceVariableRunTimes, MaxPack);
                 foreach (var item in deviceVariableSourceReads)
                 {
-                    var result = await Plc.ReadAsync(item.VariableAddress, item.Length);
+                    var result = await Plc.ReadAsync(item.Address, item.Length);
                     if (result.IsSuccess)
                     {
                         item.DeviceVariableRunTimes.PraseStructContent(result.Content);
@@ -190,47 +234,5 @@ public partial class DriverDebugUIPage : DriverDebugUIBase
                 
 """, "csharp"));
         base.OnInitialized();
-    }
-
-    /// <summary>
-    /// 自定义模板
-    /// </summary>
-    [Parameter]
-    public RenderFragment ReadWriteContent { get; set; }
-    /// <summary>
-    /// 自定义模板
-    /// </summary>
-    [Parameter]
-    public RenderFragment OtherContent { get; set; }
-    /// <summary>
-    /// 自定义模板
-    /// </summary>
-    [Parameter]
-    public RenderFragment CodeContent { get; set; }
-
-    /// <inheritdoc/>
-    ~DriverDebugUIPage()
-    {
-        this.SafeDispose();
-    }
-
-    /// <summary>
-    /// <inheritdoc/>
-    /// </summary>
-    public override IReadWrite Plc { get; set; }
-
-    /// <inheritdoc/>
-    public override void Dispose()
-    {
-        Plc?.SafeDispose();
-        base.Dispose();
-    }
-    /// <summary>
-    /// <inheritdoc/>
-    /// </summary>
-    /// <param name="firstRender"></param>
-    protected override void OnAfterRender(bool firstRender)
-    {
-        base.OnAfterRender(firstRender);
     }
 }

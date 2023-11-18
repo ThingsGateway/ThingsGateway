@@ -29,20 +29,24 @@ public interface IThingsGatewayBitConverter
     /// <summary>
     /// 4字节数据转换规则
     /// </summary>
-    DataFormat DataFormat { get; set; }
+    DataFormat? DataFormat { get; set; }
     /// <summary>
     /// 指定大小端。
     /// </summary>
     EndianType EndianType { get; }
-    /// <inheritdoc/>
+    /// <summary>
+    /// 当前的字符串编码类型
+    /// </summary>
 #if NET6_0_OR_GREATER
     [System.Text.Json.Serialization.JsonConverter(typeof(EncodingConverter))]
-    [JsonProperty(ItemConverterType = typeof(EncodingConverter))]
+    [JsonProperty(ItemConverterType = typeof(NewtonsoftEncodingConverter))]
 #else
-    [JsonProperty(ItemConverterType = typeof(EncodingConverter))]
+    [JsonProperty(ItemConverterType = typeof(NewtonsoftEncodingConverter))]
 #endif
     Encoding Encoding { get; set; }
-    /// <inheritdoc/>
+    /// <summary>
+    /// 当前的BCD编码类型
+    /// </summary>
     BcdFormat? BcdFormat { get; set; }
     /// <summary>
     /// 字符串长度，或者是数组长度

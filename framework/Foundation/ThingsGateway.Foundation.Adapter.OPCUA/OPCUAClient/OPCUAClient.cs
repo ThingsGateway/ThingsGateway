@@ -37,7 +37,7 @@ public class OPCUAClient : IDisposable
     /// <summary>
     /// 当前配置
     /// </summary>
-    public OPCNode OPCNode;
+    public OPCUANode OPCNode;
 
     /// <summary>
     /// ProductUri

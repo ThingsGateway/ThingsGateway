@@ -24,7 +24,7 @@
                 <Logo CONFIG_COPYRIGHT=@CONFIG_COPYRIGHT  CONFIG_TITLE=@CONFIG_TITLE HeightInt=@(IsMobile?BlazorResourceConst.AppBarHeight:BlazorResourceConst.AppBarHeight+BlazorResourceConst.PageTabsHeight) />
                 <AppList ClassString="overflow-y-auto" Routable
                          StyleString=@($"height: calc(100vh - {BlazorResourceConst.AppBarHeight+BlazorResourceConst.PageTabsHeight}px);")
-                         Items="Navs" />
+                         Items="_navs" />
             </MNavigationDrawer>
 
             <MAppBar Color="barcolor" Style=@($"{(!(IsMobile||_drawerOpen!=true)? "left:200px;":"")}") Elevation="1" App Flat ClippedRight Dense ElevateOnScroll
@@ -37,7 +37,7 @@
 
             <MMain Style=@($"{(!(IsMobile||_drawerOpen!=true)? "padding-left:200px;":"")}")>
                 <div class="full-width">
-                    <PageTabs @ref="_pageTabs" PageTabItems="pageTabItems" />
+                    <PageTabs @ref="_pageTabs" PageTabItems="_pageTabItems" />
                 </div>
                 <MDivider Center></MDivider>
                 <MCard Flat Class="overflow-y-auto overflow-x-hidden ma-auto pa-0 rounded-0" Style=@($"height: calc(100vh - {BlazorResourceConst.AppBarHeight+BlazorResourceConst.PageTabsHeight+BlazorResourceConst.FooterHeight}px);")>

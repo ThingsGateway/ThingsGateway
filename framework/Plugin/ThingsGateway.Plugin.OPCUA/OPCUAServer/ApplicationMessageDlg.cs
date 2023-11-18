@@ -15,25 +15,22 @@ using Opc.Ua.Configuration;
 namespace ThingsGateway.Plugin.OPCUA;
 
 
-public partial class OPCUAServer
+public class ApplicationMessageDlg : IApplicationMessageDlg
 {
-    public class ApplicationMessageDlg : IApplicationMessageDlg
+    private string message = string.Empty;
+    private ILog _log;
+    public ApplicationMessageDlg(ILog log)
     {
-        private string message = string.Empty;
-        private ILog _log;
-        public ApplicationMessageDlg(ILog log)
-        {
-            _log = log;
-        }
-        public override void Message(string text, bool ask)
-        {
-            message = text;
-        }
+        _log = log;
+    }
+    public override void Message(string text, bool ask)
+    {
+        message = text;
+    }
 
-        public override async Task<bool> ShowAsync()
-        {
-            _log.Warning(message);
-            return await Task.FromResult(true);
-        }
+    public override async Task<bool> ShowAsync()
+    {
+        _log.Warning(message);
+        return await Task.FromResult(true);
     }
 }

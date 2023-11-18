@@ -31,6 +31,7 @@ namespace ThingsGateway.Foundation.Demo.Winform
             {
                 components.Dispose();
             }
+            blazorWebView1.Dispose();
             base.Dispose(disposing);
         }
 
@@ -68,6 +69,7 @@ namespace ThingsGateway.Foundation.Demo.Winform
             Text = "Form1";
             FormClosed += MainFrom_FormClosed;
             ResumeLayout(false);
+            
         }
 
         #endregion

@@ -87,58 +87,7 @@ namespace ThingsGateway.Foundation.Rpc
                 {
                     throw new InvalidOperationException($"没有找到方法{method.Name}的实现");
                 }
-
-                var actionFilters = new List<IRpcActionFilter>();
-
-                foreach (var item in method.GetCustomAttributes(true))
-                {
-                    if (item is IRpcActionFilter filter)
-                    {
-                        actionFilters.Add(filter);
-                    }
-                }
-
-                foreach (var item in this.ServerFromType.GetCustomAttributes(true))
-                {
-                    if (item is IRpcActionFilter filter)
-                    {
-                        actionFilters.Add(filter);
-                    }
-                }
-
-                if (this.ServerFromType != this.ServerToType)
-                {
-                    foreach (var item in toMethod.GetCustomAttributes(true))
-                    {
-                        if (item is IRpcActionFilter filter)
-                        {
-                            actionFilters.Add(filter);
-                        }
-                    }
-
-                    foreach (var item in this.ServerToType.GetCustomAttributes(true))
-                    {
-                        if (item is IRpcActionFilter filter)
-                        {
-                            actionFilters.Add(filter);
-                        }
-                    }
-                }
-                if (actionFilters.Count > 0)
-                {
-                    this.Filters = actionFilters.ToArray();
-                }
-                //foreach (var item in attributes)
-                //{
-                //    this.MethodFlags |= item.MethodFlags;
-                //}
-                //if (this.MethodFlags.HasFlag(MethodFlags.IncludeCallContext))
-                //{
-                //    if (this.Parameters.Length == 0 || !typeof(ICallContext).IsAssignableFrom(this.Parameters[0].ParameterType))
-                //    {
-                //        throw new RpcException($"函数：{method}，标识包含{MethodFlags.IncludeCallContext}时，必须包含{nameof(ICallContext)}或其派生类参数，且为第一参数。");
-                //    }
-                //}
+                this.Filters = this.GetActionFilters(method, toMethod);
 
                 if (this.Parameters.Length > 0 && typeof(ICallContext).IsAssignableFrom(this.Parameters[0].ParameterType))
                 {
@@ -162,14 +111,15 @@ namespace ThingsGateway.Foundation.Rpc
         }
 
         /// <summary>
+        /// 筛选器
+        /// </summary>
+        public IRpcActionFilter[] Filters { get; }
+
+        /// <summary>
         /// 是否包含调用上下文
         /// </summary>
         public bool IncludeCallContext { get; private set; }
 
-        /// <summary>
-        /// 筛选器
-        /// </summary>
-        public IRpcActionFilter[] Filters { get; private set; }
 
         /// <summary>
         /// 是否可用
@@ -264,6 +214,83 @@ namespace ThingsGateway.Foundation.Rpc
         public string GetDescription()
         {
             return this.Info.GetCustomAttribute<DescriptionAttribute>()?.Description;
+        }
+
+        private void AddActionFilter(IRpcActionFilter filter, ref List<IRpcActionFilter> filters)
+        {
+            foreach (var item in filters)
+            {
+                if (item.GetType() == filter.GetType())
+                {
+                    //同一类型
+                    return;
+                }
+
+                foreach (var item2 in item.MutexAccessTypes)
+                {
+                    if (item2.IsAssignableFrom(filter.GetType()))
+                    {
+                        return;
+                    }
+                }
+            }
+
+            filters.Add(filter);
+        }
+
+        private IRpcActionFilter[] GetActionFilters(MethodInfo method, MethodInfo toMethod)
+        {
+            var actionFilters = new List<IRpcActionFilter>();
+
+            //注册方法
+            foreach (var item in method.GetCustomAttributes(true))
+            {
+                if (item is IRpcActionFilter filter)
+                {
+                    this.AddActionFilter(filter, ref actionFilters);
+                }
+            }
+
+            //实现方法
+            if (this.ServerFromType != this.ServerToType)
+            {
+                foreach (var item in toMethod.GetCustomAttributes(true))
+                {
+                    if (item is IRpcActionFilter filter)
+                    {
+                        this.AddActionFilter(filter, ref actionFilters);
+                    }
+                }
+            }
+
+            //注册类
+            foreach (var item in this.ServerFromType.GetCustomAttributes(true))
+            {
+                if (item is IRpcActionFilter filter)
+                {
+                    this.AddActionFilter(filter, ref actionFilters);
+                }
+            }
+
+            //实现类
+            if (this.ServerFromType != this.ServerToType)
+            {
+                foreach (var item in this.ServerToType.GetCustomAttributes(true))
+                {
+                    if (item is IRpcActionFilter filter)
+                    {
+                        this.AddActionFilter(filter, ref actionFilters);
+                    }
+                }
+            }
+            if (actionFilters.Count > 0)
+            {
+                return actionFilters.ToArray();
+            }
+            else
+            {
+                return new IRpcActionFilter[0];
+            }
         }
     }
 }
