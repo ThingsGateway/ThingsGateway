@@ -24,12 +24,17 @@ public abstract class ReadWriteDevicesUdpSessionBase : ReadWriteDevicesBase
         SetDataAdapter();
         WaitingClientEx = UdpSession.CreateWaitingClient(new() { });
     }
-
+    /// <inheritdoc/>
+    public override ChannelEnum ChannelEnum => ChannelEnum.UdpSession;
     /// <summary>
     /// Socket管理对象
     /// </summary>
     public UdpSession UdpSession { get; }
-
+    /// <inheritdoc/>
+    public override bool IsConnected()
+    {
+        return UdpSession?.CanSend == true;
+    }
     /// <summary>
     /// WaitingClientEx
     /// </summary>
@@ -45,10 +50,11 @@ public abstract class ReadWriteDevicesUdpSessionBase : ReadWriteDevicesBase
     {
         return Task.FromResult(UdpSession.Start());
     }
+
     /// <inheritdoc/>
     public override void Disconnect()
     {
-        if (CascadeDisposal)
+        if (CascadeDisposal && IsConnected())
             UdpSession.Stop();
     }
 
@@ -56,41 +62,36 @@ public abstract class ReadWriteDevicesUdpSessionBase : ReadWriteDevicesBase
     public override void Dispose()
     {
         Disconnect();
-        if (CascadeDisposal)
+        if (CascadeDisposal && !UdpSession.DisposedValue)
             UdpSession.SafeDispose();
     }
-    /// <inheritdoc/>
-    public OperResult<byte[]> SendThenResponse(byte[] data, WaitingOptions waitingOptions = null, CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            waitingOptions ??= new WaitingOptions { };
-            ResponsedData result = UdpSession.CreateWaitingClient(waitingOptions).SendThenResponse(data, TimeOut, cancellationToken);
-            return OperResult.CreateSuccessResult(result.Data);
-        }
-        catch (Exception ex)
-        {
-            return new OperResult<byte[]>(ex);
-        }
-    }
 
-    /// <inheritdoc/>
-    public async Task<OperResult<byte[]>> SendThenResponseAsync(byte[] data, WaitingOptions waitingOptions = null, CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            waitingOptions ??= new WaitingOptions { };
-            ResponsedData result = await UdpSession.CreateWaitingClient(waitingOptions).SendThenResponseAsync(data, TimeOut, cancellationToken);
-            return OperResult.CreateSuccessResult(result.Data);
-        }
-        catch (Exception ex)
-        {
-            return new OperResult<byte[]>(ex);
-        }
-    }
     /// <inheritdoc/>
     public override string ToString()
     {
         return UdpSession.RemoteIPHost.ToString();
+    }
+
+    /// <inheritdoc/>
+    public override Task<ResponsedData> GetResponsedDataAsync(byte[] item, int timeout, CancellationToken cancellationToken, ISenderClient senderClient = default)
+    {
+        if (senderClient == default)
+            return WaitingClientEx.SendThenResponseAsync(item, TimeOut, cancellationToken);
+        else
+            return senderClient.CreateWaitingClient(new()).SendThenResponseAsync(item, TimeOut, cancellationToken);
+    }
+
+    /// <inheritdoc/>
+    public override ResponsedData GetResponsedData(byte[] item, int timeout, CancellationToken cancellationToken, ISenderClient senderClient = default)
+    {
+        if (senderClient == default)
+            return WaitingClientEx.SendThenResponse(item, TimeOut, cancellationToken);
+        else
+            return senderClient.CreateWaitingClient(new()).SendThenResponse(item, TimeOut, cancellationToken);
+    }
+    /// <inheritdoc/>
+    public override void Send(byte[] command, string id = default)
+    {
+        UdpSession.Send(command);
     }
 }

@@ -20,7 +20,7 @@ using System.Reflection;
 
 using UAParser;
 
-namespace ThingsGateway.Web.Core
+namespace ThingsGateway.Admin.Application
 {
     /// <summary>
     /// LoggingMonitor操作日志写入数据库插件

@@ -25,6 +25,8 @@
 
 using Newtonsoft.Json;
 
+using ThingsGateway.Foundation.Extension.String;
+
 namespace ThingsGateway.Foundation.Core
 {
     /// <summary>
@@ -37,8 +39,51 @@ namespace ThingsGateway.Foundation.Core
         /// </summary>
         public StringConverter()
         {
+            this.Add(new StringToClassConverter());
             this.Add(new StringToPrimitiveConverter());
             this.Add(new JsonStringToClassConverter());
+        }
+    }
+    /// <summary>
+    /// String值转换为基础类型。
+    /// </summary>
+    public class StringToClassConverter : IConverter<string>
+    {
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        public int Order { get; set; }
+
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="targetType"></param>
+        /// <param name="target"></param>
+        /// <returns></returns>
+        public bool TryConvertFrom(string source, Type targetType, out object target)
+        {
+            return StringExtensions.GetTypeValue(targetType, source, out target);
+        }
+
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        /// <param name="target"></param>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        public bool TryConvertTo(object target, out string source)
+        {
+            if (target != null)
+            {
+                var targetType = target.GetType();
+                return StringExtensions.GetTypeStringValue(targetType, target, out source);
+            }
+            else
+            {
+                source = null;
+                return true;
+            }
         }
     }
 
@@ -86,7 +131,11 @@ namespace ThingsGateway.Foundation.Core
                     return true;
                 }
             }
-
+            else
+            {
+                source = null;
+                return true;
+            }
             source = null;
             return false;
         }

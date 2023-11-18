@@ -14,7 +14,7 @@ namespace ThingsGateway.Foundation.Adapter.Modbus;
 /// <summary>
 /// <inheritdoc/>
 /// </summary>
-public class ModbusTcpMessage : MessageBase, IMessage
+internal class ModbusTcpMessage : MessageBase, IMessage
 {
     /// <inheritdoc/>
     public override int HeadBytesLength => 6;
@@ -29,6 +29,7 @@ public class ModbusTcpMessage : MessageBase, IMessage
         HeadBytes = heads;
 
         int num = (HeadBytes[4] * 256) + HeadBytes[5];
+        if (num > 0xff + 3) return false;
         BodyLength = num;
 
         if (!IsCheckMessageId)

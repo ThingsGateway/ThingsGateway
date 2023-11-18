@@ -1,0 +1,132 @@
+﻿@*
+//------------------------------------------------------------------------------
+//  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
+//  此代码版权（除特别声明外的代码）归作者本人Diego所有
+//  源代码使用协议遵循本仓库的开源协议及附加协议
+//  Gitee源代码仓库：https://gitee.com/diego2098/ThingsGateway
+//  Github源代码仓库：https://github.com/kimdiego2098/ThingsGateway
+//  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
+//  QQ群：605534569
+//------------------------------------------------------------------------------
+*@
+
+@namespace ThingsGateway.Gateway.Blazor
+@using System.Linq.Expressions;
+@using BlazorComponent;
+@using Furion.DataValidation;
+@using Mapster;
+@using Masa.Blazor
+@using Masa.Blazor.Presets;
+@using System.IO;
+@inherits BaseComponentBase
+@inject UserResoures UserResoures
+
+<PDrawer @bind-Value="IsShowImport" OnCancel="() => IsShowImport = false"
+         Title=导入 Persistent
+         MaxWidth="1000">
+    @if (IsShowImport)
+    {
+        <MStepper NonLinear  Value="Step">
+            <MStepperHeader>
+                <MStepperStep Editable Step="1" Complete="Step==2" OnClick="()=>{Step=1;_importFile=null;}">
+                    导入表格
+                </MStepperStep>
+                <MDivider></MDivider>
+                <MStepperStep Step="2">
+                    验证结果
+                </MStepperStep>
+                <MDivider></MDivider>
+                <MStepperStep Step="3">
+                    确认导入
+                </MStepperStep>
+            </MStepperHeader>
+
+            <MStepperItems>
+                <MStepperContent Step="1">
+                    @if (Step == 1)
+                    {
+
+                        <MFileInput @bind-Value="_importFile" Style="width:60%;" ShowSize></MFileInput>
+
+                        <MLabel Class="my-3 green--text">数据量较大时(大于1万)，所需导入时间可能超过1分钟，请耐心等待 </MLabel>
+
+                        <div class="mt-6">
+                            <MButton Color="primary" Loading=@_isImport OnClick="()=>DeviceImport(_importFile)">下一步</MButton>
+                        </div>
+                    }
+
+
+                </MStepperContent>
+                <MStepperContent Step="2">
+                    @if (Step == 2)
+                    {
+                        <div style="overflow-y:auto">
+
+                            @foreach (var item in _importPreviews)
+                            {
+                                <MSubheader Class="mt-2 font-weight-black">
+                                    @(
+                                        $"{item.Key}，预计导入{item.Value.DataCount}条数据"
+                                        )
+                                </MSubheader>
+                                <MSubheader Class=@((item.Value.HasError?"mt-2 red--text":"mt-2 green--text"))>
+                                    @(
+                                        (item.Value.HasError ? "出现错误" : "验证成功")
+                                        )
+                                </MSubheader>
+                                if (item.Value.HasError)
+                                {
+                                    <MVirtualScroll Context="item1" Height=300 OverscanCount=2 ItemSize="60" Items="item.Value.Results.Where(a=>!a.isSuccess).ToList()">
+                                        <ItemContent>
+                                            <MListItem>
+                                                <MListItemAction>
+                                                    <MChip Class="ma-2">
+                                                        @(
+                                            $"第{item1.row}行"
+                                            )
+                                                    </MChip>
+                                                </MListItemAction>
+
+                                                <MListItemContent>
+                                                    <MListItemTitle Class=@((item1.isSuccess?"green--text":"red--text"))>
+                                                        <strong>@item1.resultString</strong>
+                                                    </MListItemTitle>
+                                                </MListItemContent>
+
+                                            </MListItem>
+
+                                            <MDivider></MDivider>
+
+                                        </ItemContent>
+                                    </MVirtualScroll>
+                                }
+                                
+
+                            }
+
+                        </div>
+                        <div class="mt-6">
+                            <MButton Color="primary" Disabled=@_importPreviews.Any(it=>it.Value.HasError) OnClick="()=>Step=3">下一步</MButton>
+                        </div>
+                    }
+
+                </MStepperContent>
+                <MStepperContent Step="3">
+                    @if (Step == 3)
+                    {
+                        <MLabel Class="my-3 green--text">数据量较大时(大于1万)，所需导入时间可能超过1分钟，请耐心等待" </MLabel>
+
+                        <div class="mt-6">
+                            <MButton Color="primary" Loading=@_isSaveImport OnClick="SaveDeviceImport">上传</MButton>
+                        </div>
+                    }
+                </MStepperContent>
+            </MStepperItems>
+        </MStepper>
+    }
+
+</PDrawer>
+
+
+
+

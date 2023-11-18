@@ -13,32 +13,40 @@
 namespace ThingsGateway.Foundation.Core;
 
 /// <summary>
-/// 打包读取变量
+/// IDeviceVariableRunTime
 /// </summary>
 public interface IDeviceVariableRunTime
 {
     /// <summary>
     /// 执行间隔
     /// </summary>
-    int IntervalTime { get; set; }
+    int? IntervalTime { get; set; }
     /// <summary>
     /// 变量地址
     /// </summary>
-    string VariableAddress { get; set; }
+    string Address { get; set; }
     /// <summary>
-    /// Index
+    /// 偏移量，注意如果是布尔类型，Index应该为bit的偏移
     /// </summary>
     int Index { get; set; }
     /// <summary>
     /// 赋值
     /// </summary>
-    OperResult SetValue(object value, DateTime dateTime = default, bool isOnline = true);
+    OperResult SetValue(object value, DateTime dateTime = default, string lastErrorMessage = null);
     /// <summary>
-    /// IThingsGatewayBitConverter
+    /// 数据转换规则
     /// </summary>
     IThingsGatewayBitConverter ThingsGatewayBitConverter { get; set; }
     /// <summary>
     /// 数据类型
     /// </summary>
     DataTypeEnum DataTypeEnum { get; set; }
+    /// <summary>
+    /// 是否在线
+    /// </summary>
+    bool IsOnline { get; }
+    /// <summary>
+    /// 离线原因
+    /// </summary>
+    string LastErrorMessage { get; }
 }

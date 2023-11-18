@@ -33,17 +33,14 @@ public partial class ThingsGatewayServer : StandardServer
     /// </summary>
     public ThingsGatewayNodeManager NodeManager;
 
-    private readonly UploadDevice _device;
-
-    private readonly ILog LogMessage;
+    private readonly UpLoadBase _upLoadBase;
 
     private ICertificateValidator m_userCertificateValidator;
 
     /// <inheritdoc cref="ThingsGatewayServer"/>
-    public ThingsGatewayServer(UploadDevice device, ILog logger)
+    public ThingsGatewayServer(UpLoadBase upLoadBase)
     {
-        _device = device;
-        LogMessage = logger;
+        _upLoadBase = upLoadBase;
     }
 
     /// <inheritdoc/>
@@ -75,7 +72,7 @@ public partial class ThingsGatewayServer : StandardServer
     {
         IList<INodeManager> nodeManagers = new List<INodeManager>();
         // 创建自定义节点管理器.
-        NodeManager = new ThingsGatewayNodeManager(_device, LogMessage, server, configuration);
+        NodeManager = new ThingsGatewayNodeManager(_upLoadBase, server, configuration);
         nodeManagers.Add(NodeManager);
         // 创建主节点管理器.
         var masterNodeManager = new MasterNodeManager(server, configuration, null, nodeManagers.ToArray());
@@ -134,13 +131,13 @@ public partial class ThingsGatewayServer : StandardServer
         // 当用户身份改变时请求。
         server.SessionManager.ImpersonateUser += SessionManager_ImpersonateUser;
         base.OnServerStarted(server);
-        LogMessage.LogInformation("OPCUAServer启动成功");
+        _upLoadBase.LogMessage.LogInformation("OPCUAServer启动成功");
     }
 
     /// <inheritdoc/>
     protected override void OnServerStarting(ApplicationConfiguration configuration)
     {
-        LogMessage.LogInformation("OPCUAServer正在启动");
+        _upLoadBase.LogMessage.LogInformation("OPCUAServer正在启动");
         base.OnServerStarting(configuration);
 
         // 由应用程序决定如何验证用户身份令牌。
@@ -151,7 +148,7 @@ public partial class ThingsGatewayServer : StandardServer
     /// <inheritdoc/>
     protected override void OnServerStopping()
     {
-        LogMessage.LogInformation("OPCUAServer正在停止");
+        _upLoadBase.LogMessage.LogInformation("OPCUAServer正在停止");
         base.OnServerStopping();
     }
 

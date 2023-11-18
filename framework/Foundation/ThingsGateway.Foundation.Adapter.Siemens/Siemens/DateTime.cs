@@ -16,7 +16,7 @@ namespace ThingsGateway.Foundation.Adapter.Siemens;
 /// https://github.com/S7NetPlus/s7netplus/blob/develop/S7.Net/Types/DateTime.cs
 /// Contains the methods to convert between <see cref="T:System.DateTime"/> and S7 representation of datetime values.
 /// </summary>
-public static class DateTime
+internal static class DateTime
 {
     /// <summary>
     /// The maximum <see cref="T:System.DateTime"/> value supported by the specification.

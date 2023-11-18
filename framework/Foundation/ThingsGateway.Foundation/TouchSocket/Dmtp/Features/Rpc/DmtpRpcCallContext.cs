@@ -31,18 +31,33 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
     public class DmtpRpcCallContext : IDmtpRpcCallContext
     {
         private CancellationTokenSource m_tokenSource;
+        /// <summary>
+        /// DmtpRpcCallContext
+        /// </summary>
+        /// <param name="caller"></param>
+        /// <param name="methodInstance"></param>
+        /// <param name="dmtpRpcPackage"></param>
+        public DmtpRpcCallContext(object caller, MethodInstance methodInstance, DmtpRpcPackage dmtpRpcPackage)
+        {
+            this.Caller = caller;
+            this.MethodInstance = methodInstance;
+            this.DmtpRpcPackage = dmtpRpcPackage;
+        }
 
         /// <inheritdoc/>
-        public object Caller { get; internal set; }
+        public Metadata Metadata => this.DmtpRpcPackage.Metadata;
 
         /// <inheritdoc/>
-        public MethodInstance MethodInstance { get; internal set; }
+        public object Caller { get; }
+
+        /// <inheritdoc/>
+        public MethodInstance MethodInstance { get; }
 
         /// <inheritdoc/>
         public SerializationType SerializationType => this.DmtpRpcPackage == null ? (SerializationType)byte.MaxValue : this.DmtpRpcPackage.SerializationType;
 
         /// <inheritdoc/>
-        public DmtpRpcPackage DmtpRpcPackage { get; internal set; }
+        public DmtpRpcPackage DmtpRpcPackage { get; }
 
         /// <inheritdoc/>
         public CancellationTokenSource TokenSource

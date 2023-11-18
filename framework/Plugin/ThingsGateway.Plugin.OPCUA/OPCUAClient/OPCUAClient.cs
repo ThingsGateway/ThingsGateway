@@ -15,6 +15,7 @@ using Newtonsoft.Json.Linq;
 using Opc.Ua;
 
 using ThingsGateway.Foundation.Adapter.OPCUA;
+using ThingsGateway.Foundation.Demo;
 using ThingsGateway.Foundation.Extension.Generic;
 
 namespace ThingsGateway.Plugin.OPCUA;
@@ -24,92 +25,69 @@ namespace ThingsGateway.Plugin.OPCUA;
 /// </summary>
 public class OPCUAClient : CollectBase
 {
-    internal Foundation.Adapter.OPCUA.OPCUAClient _plc = null;
+    internal ThingsGateway.Foundation.Adapter.OPCUA.OPCUAClient _plc = null;
 
-    private readonly OPCUAClientProperty driverPropertys = new();
-
-    private List<DeviceVariableRunTime> _deviceVariables = new();
-
+    private readonly OPCUAClientProperty _driverPropertys = new();
 
     /// <inheritdoc/>
     public override Type DriverDebugUIType => typeof(OPCUAClientDebugPage);
 
     /// <inheritdoc/>
-    public override CollectDriverPropertyBase DriverPropertys => driverPropertys;
-
+    public override DriverPropertyBase DriverPropertys => _driverPropertys;
     /// <inheritdoc/>
-    public override bool IsSupportRequest => !driverPropertys.ActiveSubscribe;
-
-    /// <inheritdoc/>
-    public override ThingsGatewayBitConverter ThingsGatewayBitConverter { get; } = new(EndianType.Little);
-
-    /// <inheritdoc/>
-    protected override IReadWrite PLC => null;
-
+    protected override IReadWrite _readWrite => null;
+    public override Type DriverUIType => null;
+    private CancellationToken _token;
+    protected override async Task ProtectedBeforStartAsync(CancellationToken cancellationToken)
+    {
+        _token = cancellationToken;
+        await _plc?.ConnectAsync(cancellationToken);
+        await base.ProtectedBeforStartAsync(cancellationToken);
+    }
     /// <inheritdoc/>
     public override Task AfterStopAsync()
     {
         _plc?.Disconnect();
         return Task.CompletedTask;
     }
-
-    /// <inheritdoc/>
-    public override async Task BeforStartAsync(CancellationToken cancellationToken)
+    protected override string GetAddressDescription()
     {
-        await _plc?.ConnectAsync(cancellationToken);
+        return "OPCUA ItemName";
     }
-
-    /// <inheritdoc/>
-    public override void InitDataAdapter()
+    public override bool IsConnected() => _plc?.Connected == true;
+    protected override List<DeviceVariableSourceRead> ProtectedLoadSourceRead(List<DeviceVariableRunTime> deviceVariables)
     {
-    }
-
-    /// <inheritdoc/>
-    public override bool IsConnected()
-    {
-        if (_plc.Session != null)
-        {
-            CurrentDevice.SetDeviceStatus(DateTimeExtensions.CurrentDateTime);
-        }
-        return _plc?.Connected == true;
-    }
-
-    /// <inheritdoc/>
-    public override List<DeviceVariableSourceRead> LoadSourceRead(List<DeviceVariableRunTime> deviceVariables)
-    {
-        _deviceVariables = deviceVariables;
-        List<List<DeviceVariableRunTime>> dataLists = deviceVariables.ChunkTrivialBetter(driverPropertys.GroupSize);
+        var dataLists = deviceVariables.ChunkBetter(_driverPropertys.GroupSize);
         _plc.Variables = new();
-        _plc.Variables.AddRange(dataLists.Select(a => a.Select(a => a.VariableAddress).ToList()).ToList());
+        _plc.Variables.AddRange(dataLists.Select(a => a.Select(a => a.Address).ToList()).ToList());
         var dataResult = new List<DeviceVariableSourceRead>();
         foreach (var variable in dataLists)
         {
             var sourVars = new DeviceVariableSourceRead()
             {
-                TimerTick = new(driverPropertys.UpdateRate),
-                VariableAddress = "",
+                IntervalTimeTick = new(_driverPropertys.UpdateRate),
+                Address = "",
                 DeviceVariableRunTimes = new(variable)
             };
             dataResult.Add(sourVars);
         }
 
         return dataResult;
-
     }
+
 
     /// <inheritdoc/>
     public override async Task<OperResult<byte[]>> ReadSourceAsync(DeviceVariableSourceRead deviceVariableSourceRead, CancellationToken cancellationToken)
     {
-        var result = await _plc.ReadJTokenValueAsync(deviceVariableSourceRead.DeviceVariableRunTimes.Select(a => a.VariableAddress).ToArray(), cancellationToken);
+        var result = await _plc.ReadJTokenValueAsync(deviceVariableSourceRead.DeviceVariableRunTimes.Select(a => a.Address).ToArray(), cancellationToken);
         foreach (var data in result)
         {
             if (!cancellationToken.IsCancellationRequested)
             {
-                var data1 = deviceVariableSourceRead.DeviceVariableRunTimes.Where(a => a.VariableAddress == data.Item1);
+                var data1 = deviceVariableSourceRead.DeviceVariableRunTimes.Where(a => a.Address == data.Item1);
 
                 foreach (var item in data1)
                 {
-
                     object value;
                     if (data.Item3 is JValue jValue)
                     {
@@ -124,23 +102,14 @@ public class OPCUAClient : CollectBase
                     var time = data.Item2.SourceTimestamp;
                     if (value != null && isGood)
                     {
-                        var operResult = item.SetValue(value, time);
-                        if (!operResult.IsSuccess)
-                        {
-                            LogMessage?.LogWarning(operResult.Message);
-                        }
+                        item.SetValue(value, time);
                     }
                     else
                     {
-                        var operResult = item.SetValue(null, time, isGood);
-                        if (!operResult.IsSuccess)
-                        {
-                            LogMessage?.LogWarning(operResult.Message);
-                        }
+                        item.SetValue(null, time, data.Item2.StatusCode.ToString());
                     }
                 }
                 LogMessage.Trace($"{FoundationConst.LogMessageHeader} {ToString()} 状态变化:{Environment.NewLine}{data.Item1} : {data.Item3}");
-
             }
         }
         if (result.Any(a => StatusCode.IsBad(a.Item2.StatusCode)))
@@ -157,10 +126,10 @@ public class OPCUAClient : CollectBase
     /// <inheritdoc/>
     public override async Task<Dictionary<string, OperResult>> WriteValuesAsync(Dictionary<DeviceVariableRunTime, JToken> writeInfoLists, CancellationToken cancellationToken)
     {
-        var result = await _plc.WriteNodeAsync(writeInfoLists.ToDictionary(a => a.Key.VariableAddress, a => a.Value), cancellationToken);
+        var result = await _plc.WriteNodeAsync(writeInfoLists.ToDictionary(a => a.Key.Address, a => a.Value), cancellationToken);
         return result.ToDictionary(a =>
         {
-            return writeInfoLists.Keys.FirstOrDefault(b => b.VariableAddress == a.Key)?.Name;
+            return writeInfoLists.Keys.FirstOrDefault(b => b.Address == a.Key)?.Name;
         }
         , a =>
         {
@@ -169,6 +138,28 @@ public class OPCUAClient : CollectBase
             else
                 return OperResult.CreateSuccessResult();
         });
+
+    }
+    protected override async Task ProtectedExecuteAsync(CancellationToken cancellationToken)
+    {
+        if (_driverPropertys.ActiveSubscribe)
+        {
+            //获取设备连接状态
+            if (IsConnected())
+            {
+                //更新设备活动时间
+                CurrentDevice.SetDeviceStatus(DateTimeExtensions.CurrentDateTime, 0);
+            }
+            else
+            {
+                //if (!IsUploadBase)
+                CurrentDevice.SetDeviceStatus(DateTimeExtensions.CurrentDateTime, 999);
+            }
+        }
+        else
+        {
+            await base.ProtectedExecuteAsync(cancellationToken);
+        }
 
     }
 
@@ -182,27 +173,25 @@ public class OPCUAClient : CollectBase
 
             _plc.Disconnect();
             _plc.SafeDispose();
-            _plc = null;
         }
         base.Dispose(disposing);
     }
-
     /// <inheritdoc/>
-    protected override void Init(CollectDeviceRunTime device, object client = null)
+    protected override void Init(ISenderClient client = null)
     {
-        OPCNode opcNode = new()
+        OPCUANode opcNode = new()
         {
-            OPCUrl = driverPropertys.OPCURL,
-            UpdateRate = driverPropertys.UpdateRate,
-            DeadBand = driverPropertys.DeadBand,
-            GroupSize = driverPropertys.GroupSize,
-            KeepAliveInterval = driverPropertys.KeepAliveInterval,
-            IsUseSecurity = driverPropertys.IsUseSecurity,
-            ActiveSubscribe = driverPropertys.ActiveSubscribe,
-            UserName = driverPropertys.UserName,
-            Password = driverPropertys.Password,
-            CheckDomain = driverPropertys.CheckDomain,
-            LoadType = driverPropertys.LoadType,
+            OPCUrl = _driverPropertys.OPCURL,
+            UpdateRate = _driverPropertys.UpdateRate,
+            DeadBand = _driverPropertys.DeadBand,
+            GroupSize = _driverPropertys.GroupSize,
+            KeepAliveInterval = _driverPropertys.KeepAliveInterval,
+            IsUseSecurity = _driverPropertys.IsUseSecurity,
+            ActiveSubscribe = _driverPropertys.ActiveSubscribe,
+            UserName = _driverPropertys.UserName,
+            Password = _driverPropertys.Password,
+            CheckDomain = _driverPropertys.CheckDomain,
+            LoadType = _driverPropertys.LoadType,
         };
         if (_plc == null)
         {
@@ -212,28 +201,25 @@ public class OPCUAClient : CollectBase
         }
 
         _plc.OPCNode = opcNode;
+        base.Init();
     }
+
 
     private void _plc_OpcStatusChange(object sender, OpcUaStatusEventArgs e)
     {
         Log_Out((LogLevel)e.LogLevel, null, e.Text, null);
     }
 
-    /// <inheritdoc/>
-    protected override Task<OperResult<byte[]>> ReadAsync(string address, int length, CancellationToken cancellationToken)
-    {
-        //不走ReadAsync
-        throw new NotImplementedException();
-    }
+    private volatile bool success = true;
 
     private void DataChangedHandler((VariableNode variableNode, DataValue dataValue, JToken jToken) data)
     {
         try
         {
             if (!CurrentDevice.KeepRun)
-            {
                 return;
-            }
+            if (_token.IsCancellationRequested)
+                return;
 
             LogMessage.Trace($"{FoundationConst.LogMessageHeader}{ToString()} 状态变化: {Environment.NewLine} {data.variableNode.NodeId} : {data.jToken?.ToString()}");
 
@@ -244,7 +230,7 @@ public class OPCUAClient : CollectBase
             //尝试固定点位的数据类型
             var type = TypeInfo.GetSystemType(TypeInfo.GetBuiltInType(data.variableNode.DataType, _plc.Session.SystemContext.TypeTable), data.variableNode.ValueRank);
 
-            var itemReads = _deviceVariables.Where(it => it.VariableAddress == data.variableNode.NodeId).ToList();
+            var itemReads = CurrentDevice.DeviceVariableRunTimes.Where(it => it.Address == data.variableNode.NodeId).ToList();
 
             object value;
             if (data.jToken is JValue jValue)
@@ -257,12 +243,16 @@ public class OPCUAClient : CollectBase
             }
             var isGood = StatusCode.IsGood(data.dataValue.StatusCode);
             DateTime time = default;
-            if (driverPropertys.SourceTimestampEnable)
+            if (_driverPropertys.SourceTimestampEnable)
             {
                 time = data.dataValue.SourceTimestamp.ToLocalTime();
             }
             foreach (var item in itemReads)
             {
+                if (!CurrentDevice.KeepRun)
+                    return;
+                if (_token.IsCancellationRequested)
+                    return;
                 if (item.DataTypeEnum == DataTypeEnum.Object)
                     if (type.Namespace.StartsWith("System"))
                     {
@@ -273,25 +263,21 @@ public class OPCUAClient : CollectBase
                     }
                 if (value != null && isGood)
                 {
-                    var operResult = item.SetValue(value, time);
-                    if (!operResult.IsSuccess)
-                    {
-                        LogMessage?.LogWarning(operResult.Message);
-                    }
+                    item.SetValue(value, time);
                 }
                 else
                 {
-                    var operResult = item.SetValue(null, time, isGood);
-                    if (!operResult.IsSuccess)
-                    {
-                        LogMessage?.LogWarning(operResult.Message);
-                    }
+                    item.SetValue(null, time, data.dataValue.StatusCode.ToString());
                 }
             }
+            success = true;
+
         }
         catch (Exception ex)
         {
-            LogMessage?.LogWarning(ex);
+            if (success)
+                LogMessage?.LogWarning(ex);
+            success = false;
         }
     }
 

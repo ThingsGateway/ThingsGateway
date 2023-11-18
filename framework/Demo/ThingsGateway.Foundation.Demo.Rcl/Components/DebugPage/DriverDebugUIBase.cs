@@ -12,8 +12,6 @@
 
 using Microsoft.AspNetCore.Components;
 
-using ThingsGateway.Components;
-
 namespace ThingsGateway.Foundation.Demo;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 /// <summary>
@@ -34,11 +32,16 @@ public abstract class DriverDebugUIBase : ComponentBase, IDisposable
         this.SafeDispose();
     }
 
-
     /// <summary>
     /// 变量地址
     /// </summary>
     public virtual string Address { get; set; } = "40001";
+
+    /// <summary>
+    /// <inheritdoc/>
+    /// </summary>
+    [Inject]
+    public InitTimezone InitTimezone { get; set; }
 
     /// <summary>
     /// 长度
@@ -58,13 +61,6 @@ public abstract class DriverDebugUIBase : ComponentBase, IDisposable
     /// 数据类型
     /// </summary>
     protected virtual DataTypeEnum DataTypeEnum { get; set; } = DataTypeEnum.Int16;
-
-    /// <summary>
-    /// <inheritdoc/>
-    /// </summary>
-    [Inject]
-    public InitTimezone InitTimezone { get; set; }
-
     /// <inheritdoc/>
     public virtual void Dispose()
     {

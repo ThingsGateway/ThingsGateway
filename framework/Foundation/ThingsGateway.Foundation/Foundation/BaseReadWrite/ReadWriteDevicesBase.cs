@@ -10,6 +10,7 @@
 //------------------------------------------------------------------------------
 #endregion
 
+using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Text;
 
@@ -24,30 +25,32 @@ namespace ThingsGateway.Foundation.Core;
 /// </summary>
 public abstract class ReadWriteDevicesBase : IReadWrite
 {
-
     #region 属性
+
     /// <inheritdoc/>
-    [Description("组包缓存时间ms")]
+    [Description("组包缓存时间(ms)")]
     public int CacheTimeout { get; set; } = 1000;
 
     /// <inheritdoc/>
     [Description("数据解析规则")]
-    public DataFormat DataFormat
+    public DataFormat? DataFormat
     {
         get => ThingsGatewayBitConverter.DataFormat;
         set => ThingsGatewayBitConverter.DataFormat = value;
     }
-
+    /// <inheritdoc/>
+    [Description("通道类型")]
+    public abstract ChannelEnum ChannelEnum { get; }
 
     /// <inheritdoc/>
-    [Description("帧前时间ms")]
+    [Description("发送延时(ms)")]
     public int FrameTime { get; set; }
 
     /// <inheritdoc/>
     public ILog Logger { get; protected set; }
 
     /// <inheritdoc/>
-    public ushort RegisterByteLength { get; protected set; } = 1;
+    public virtual int RegisterByteLength { get; protected set; } = 1;
 
     /// <inheritdoc/>
     public IThingsGatewayBitConverter ThingsGatewayBitConverter { get; protected set; } = new ThingsGatewayBitConverter(EndianType.Big);
@@ -57,7 +60,37 @@ public abstract class ReadWriteDevicesBase : IReadWrite
     public int TimeOut { get; set; } = 3000;
 
     /// <inheritdoc/>
-    public bool CascadeDisposal { get; set; } = true;
+    public virtual bool CascadeDisposal { get; set; } = true;
+
+    #endregion
+
+    #region 连接，设置
+    /// <inheritdoc/>
+    public abstract bool IsConnected();
+    /// <summary>
+    /// 连接操作
+    /// </summary>
+    public abstract void Connect(CancellationToken cancellationToken);
+
+    /// <inheritdoc cref="Connect"/>
+    public abstract Task ConnectAsync(CancellationToken cancellationToken);
+
+    /// <summary>
+    /// 断开操作
+    /// </summary>
+    public abstract void Disconnect();
+
+    /// <summary>
+    /// 设置适配器
+    /// </summary>
+    public abstract void SetDataAdapter(ISocketClient socketClient = default);
+
+    /// <inheritdoc/>
+    public abstract void Dispose();
+
+    /// <inheritdoc/>
+    public abstract List<T> LoadSourceRead<T, T2>(List<T2> deviceVariables, int maxPack, int defaultIntervalTime) where T : IDeviceVariableSourceRead<IDeviceVariableRunTime>, new() where T2 : IDeviceVariableRunTime, new();
+
 
     /// <inheritdoc/>
     public virtual string GetAddressDescription()
@@ -71,37 +104,36 @@ public abstract class ReadWriteDevicesBase : IReadWrite
         stringBuilder.AppendLine("BCD格式：");
         stringBuilder.AppendLine("  BCD=C8421;，其中有C8421;C5421;C2421;C3;Gray");
         stringBuilder.AppendLine("字符格式：");
-        stringBuilder.AppendLine("  TEXT=UTF8;，其中有UTF8;ASCII;Default;Unicode");
+        stringBuilder.AppendLine("  TEXT=UTF-8;，其中有UTF-8;ASCII;Default;Unicode");
         stringBuilder.AppendLine("");
         return stringBuilder.ToString();
     }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// 获取bit偏移量
+    /// </summary>
+    /// <param name="address"></param>
+    /// <returns></returns>
     public virtual int GetBitOffset(string address)
     {
         int bitIndex = 0;
         if (address?.IndexOf('.') > 0)
-            bitIndex = address.SplitDot().Last().ToInt();
+            bitIndex = address.SplitStringByDelimiter().Last().ToInt();
         return bitIndex;
     }
+
     /// <inheritdoc/>
-    public virtual bool IsBitReverse(string address)
+    public virtual bool BitReverse(string address)
     {
         return address?.IndexOf('.') > 0;
     }
 
-    /// <summary>
-    /// 获取数据类型对应的寄存器长度
-    /// </summary>
-    /// <param name="address">寄存器地址</param>
-    /// <param name="length">读取数量</param>
-    /// <param name="typeLength">读取数据类型对应的字节长度</param>
-    /// <param name="isBool">isBool</param>
-    /// <returns></returns>
-    protected virtual int GetLength(string address, int length, int typeLength, bool isBool = false)
+
+    /// <inheritdoc/>
+    public virtual int GetLength(string address, int length, int typeLength, bool isBool = false)
     {
         var result = Math.Ceiling((double)length * typeLength / RegisterByteLength);
-        if (isBool && IsBitReverse(address))
+        if (isBool && BitReverse(address))
         {
             var data = Math.Ceiling((double)length / RegisterByteLength / 8);
             return (int)data;
@@ -111,6 +143,56 @@ public abstract class ReadWriteDevicesBase : IReadWrite
             return (int)result;
         }
     }
+
+    /// <inheritdoc/>
+    public abstract void Send(byte[] command, string id = default);
+
+    /// <inheritdoc/>
+    public virtual T SendThenReturn<T>(byte[] command, CancellationToken cancellationToken, ISenderClient senderClient = default) where T : OperResult<byte[]>, new()
+    {
+        var item = command;
+        if (FrameTime != 0)
+            Thread.Sleep(FrameTime);
+        var result = GetResponsedData(item, TimeOut, cancellationToken, senderClient);
+        return (T)result.RequestInfo;
+    }
+    /// <inheritdoc/>
+    public virtual async Task<T> SendThenReturnAsync<T>(byte[] command, CancellationToken cancellationToken, ISenderClient senderClient = default) where T : OperResult<byte[]>, new()
+    {
+        var item = command;
+        await Task.Delay(FrameTime, cancellationToken);
+        var result = await GetResponsedDataAsync(item, TimeOut, cancellationToken, senderClient);
+        return (T)result.RequestInfo;
+    }
+    /// <inheritdoc/>
+    public virtual Task<ResponsedData> GetResponsedDataAsync(byte[] item, int timeout, CancellationToken cancellationToken, ISenderClient senderClient = default)
+    {
+        return Task.FromResult(new ResponsedData());
+    }
+
+    /// <inheritdoc/>
+    public virtual ResponsedData GetResponsedData(byte[] item, int timeout, CancellationToken cancellationToken, ISenderClient senderClient = default)
+    {
+        return (new ResponsedData());
+    }
+
+    /// <summary>
+    /// 等待数据
+    /// </summary>
+    protected ConcurrentDictionary<int, WaitDataAsync<MessageBase>> WaitDatas { get; set; } = new();
+    /// <summary>
+    /// 设置等待数据
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="lQTCPMessage"></param>
+    protected virtual void SetWaitData(int id, MessageBase lQTCPMessage)
+    {
+        if (WaitDatas.TryGetValue(id, out var waitDataAsync))
+        {
+            waitDataAsync.Set(lQTCPMessage);
+        }
+    }
+
     #endregion
 
     #region 读取
@@ -120,9 +202,8 @@ public abstract class ReadWriteDevicesBase : IReadWrite
     /// <inheritdoc/>
     public abstract Task<OperResult<byte[]>> ReadAsync(string address, int length, CancellationToken cancellationToken = default);
 
-    /// <summary>
-    /// 根据数据类型从设备中获取实际值，返回object
-    /// </summary>
+
+    /// <inheritdoc/>
     public async Task<IOperResult<object>> ReadAsync(string address, int length, DataTypeEnum dataType, CancellationToken cancellationToken = default)
     {
         return dataType switch
@@ -142,9 +223,7 @@ public abstract class ReadWriteDevicesBase : IReadWrite
         };
     }
 
-    /// <summary>
-    /// 根据数据类型从设备中获取实际值，返回object
-    /// </summary>
+    /// <inheritdoc/>
     public IOperResult<object> Read(string address, int length, DataTypeEnum dataType, CancellationToken cancellationToken = default)
     {
         return dataType switch
@@ -164,14 +243,13 @@ public abstract class ReadWriteDevicesBase : IReadWrite
         };
     }
 
-    #region 其他数据类型读取
     /// <inheritdoc/>
     public async Task<OperResult<Boolean[]>> ReadBooleanAsync(string address, int length, CancellationToken cancellationToken = default)
     {
         IThingsGatewayBitConverter transformParameter = ByteTransformUtil.GetTransByAddress(ref address, ThingsGatewayBitConverter);
 
         var result = await ReadAsync(address, GetLength(address, length, RegisterByteLength, true), cancellationToken);
-        return result.OperResultFrom(() => transformParameter.ToBoolean(result.Content, GetBitOffset(address), length, IsBitReverse(address)));
+        return result.OperResultFrom(() => transformParameter.ToBoolean(result.Content, GetBitOffset(address), length, BitReverse(address)));
     }
     /// <inheritdoc/>
     public async Task<OperResult<Int16[]>> ReadInt16Async(string address, int length, CancellationToken cancellationToken = default)
@@ -239,16 +317,12 @@ public abstract class ReadWriteDevicesBase : IReadWrite
         return result.OperResultFrom(() => transformParameter.ToString(result.Content));
     }
 
-
-    #endregion
-
-    #region 其他数据类型读取
     /// <inheritdoc/>
     public OperResult<Boolean[]> ReadBoolean(string address, int length, CancellationToken cancellationToken = default)
     {
         IThingsGatewayBitConverter transformParameter = ByteTransformUtil.GetTransByAddress(ref address, ThingsGatewayBitConverter);
         var result = Read(address, GetLength(address, length, RegisterByteLength, true), cancellationToken);
-        return result.OperResultFrom(() => transformParameter.ToBoolean(result.Content, GetBitOffset(address), length, IsBitReverse(address)));
+        return result.OperResultFrom(() => transformParameter.ToBoolean(result.Content, GetBitOffset(address), length, BitReverse(address)));
     }
     /// <inheritdoc/>
     public OperResult<Int16[]> ReadInt16(string address, int length, CancellationToken cancellationToken = default)
@@ -306,7 +380,6 @@ public abstract class ReadWriteDevicesBase : IReadWrite
         IThingsGatewayBitConverter transformParameter = ByteTransformUtil.GetTransByAddress(ref address, ThingsGatewayBitConverter);
         var result = Read(address, GetLength(address, length, 8), cancellationToken);
         return result.OperResultFrom(() => transformParameter.ToDouble(result.Content, 0, length));
-        //return global::ReadWriteDevicesExtensionsHelpers.OperResultFrom<double[]>(result, (Func<double[]>)(() => transformParameter.ToDouble(result.Content, 0, length)));
     }
 
     /// <inheritdoc/>
@@ -320,12 +393,10 @@ public abstract class ReadWriteDevicesBase : IReadWrite
 
     #endregion
 
-    #endregion
+    #region 写入
 
-    /// <summary>
-    /// 根据数据类型写入设备
-    /// </summary>
-    /// <returns></returns>
+
+    /// <inheritdoc/>
     public async Task<OperResult> WriteAsync(string address, string value, int length, DataTypeEnum dataType, CancellationToken cancellationToken = default)
     {
         try
@@ -335,7 +406,7 @@ public abstract class ReadWriteDevicesBase : IReadWrite
                 return dataType switch
                 {
                     DataTypeEnum.String => await WriteAsync(address, value, cancellationToken),
-                    DataTypeEnum.Boolean => await WriteAsync(address, value.GetBoolValue(), cancellationToken),
+                    DataTypeEnum.Boolean => await WriteAsync(address, value.ToBool(false), cancellationToken),
                     DataTypeEnum.Byte => await WriteAsync(address, Convert.ToByte(value), cancellationToken),
                     DataTypeEnum.Int16 => await WriteAsync(address, Convert.ToInt16(value), cancellationToken),
                     DataTypeEnum.UInt16 => await WriteAsync(address, Convert.ToUInt16(value), cancellationToken),
@@ -375,10 +446,7 @@ public abstract class ReadWriteDevicesBase : IReadWrite
 
     }
 
-    /// <summary>
-    /// 根据数据类型写入设备
-    /// </summary>
-    /// <returns></returns>
+    /// <inheritdoc/>
     public OperResult Write(string address, string value, DataTypeEnum dataType, CancellationToken cancellationToken = default)
     {
         try
@@ -386,7 +454,7 @@ public abstract class ReadWriteDevicesBase : IReadWrite
             return dataType switch
             {
                 DataTypeEnum.String => Write(address, value, cancellationToken),
-                DataTypeEnum.Boolean => Write(address, value.GetBoolValue(), cancellationToken),
+                DataTypeEnum.Boolean => Write(address, value.ToBool(false), cancellationToken),
                 DataTypeEnum.Byte => Write(address, Convert.ToByte(value), cancellationToken),
                 DataTypeEnum.Int16 => Write(address, Convert.ToInt16(value), cancellationToken),
                 DataTypeEnum.UInt16 => Write(address, Convert.ToUInt16(value), cancellationToken),
@@ -406,7 +474,6 @@ public abstract class ReadWriteDevicesBase : IReadWrite
 
     }
 
-    #region 异步写入
 
     /// <inheritdoc/>
     public abstract Task<OperResult> WriteAsync(string address, byte[] value, CancellationToken cancellationToken = default);
@@ -490,9 +557,6 @@ public abstract class ReadWriteDevicesBase : IReadWrite
         return WriteAsync(address, transformParameter.GetBytes(value), cancellationToken);
     }
 
-    #endregion
-
-    #region 连续多写
 
     /// <inheritdoc/>
     public virtual Task<OperResult> WriteAsync(string address, short[] value, CancellationToken cancellationToken = default)
@@ -550,9 +614,7 @@ public abstract class ReadWriteDevicesBase : IReadWrite
         return WriteAsync(address, transformParameter.GetBytes(value), cancellationToken);
     }
 
-    #endregion
 
-    #region 连续多写
 
 
     /// <inheritdoc/>
@@ -611,9 +673,6 @@ public abstract class ReadWriteDevicesBase : IReadWrite
         return Write(address, transformParameter.GetBytes(value), cancellationToken);
     }
 
-    #endregion
-
-    #region 同步写入
 
     /// <inheritdoc/>
     public abstract OperResult Write(string address, byte[] value, CancellationToken cancellationToken = default);
@@ -696,35 +755,11 @@ public abstract class ReadWriteDevicesBase : IReadWrite
         return Write(address, transformParameter.GetBytes(value), cancellationToken);
     }
 
+
+
     #endregion
 
 
-    #region 连接/断开
 
-    /// <summary>
-    /// 连接操作
-    /// </summary>
-    public abstract void Connect(CancellationToken cancellationToken);
-
-    /// <inheritdoc cref="Connect"/>
-    public abstract Task ConnectAsync(CancellationToken cancellationToken);
-
-    /// <summary>
-    /// 断开操作
-    /// </summary>
-    public abstract void Disconnect();
-
-    /// <summary>
-    /// 设置适配器
-    /// </summary>
-    public abstract void SetDataAdapter(object socketClient = null);
-
-    /// <inheritdoc/>
-    public abstract void Dispose();
-
-    #endregion
-
-    /// <inheritdoc/>
-    public abstract List<T> LoadSourceRead<T, T2>(List<T2> deviceVariables, int maxPack) where T : IDeviceVariableSourceRead<IDeviceVariableRunTime>, new() where T2 : IDeviceVariableRunTime, new();
 
 }

@@ -63,6 +63,10 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
         /// 序列化类型
         /// </summary>
         public SerializationType SerializationType { get; private set; }
+        /// <summary>
+        /// 元数据
+        /// </summary>
+        public Metadata Metadata { get; internal set; }
 
         /// <inheritdoc/>
         public override void PackageBody(in ByteBlock byteBlock)
@@ -86,6 +90,7 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
             {
                 byteBlock.Write((byte)0);
             }
+            byteBlock.WritePackage(this.Metadata);
         }
 
         /// <inheritdoc/>
@@ -104,6 +109,12 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
             {
                 this.ParametersBytes.Add(byteBlock.ReadBytesPackage());
             }
+            if (!byteBlock.ReadIsNull())
+            {
+                var package = new Metadata();
+                package.Unpackage(byteBlock);
+                this.Metadata = package;
+            }
         }
 
         internal void LoadInvokeOption(IInvokeOption option)
@@ -112,6 +123,7 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
             {
                 this.Feedback = dmtpInvokeOption.FeedbackType;
                 this.SerializationType = dmtpInvokeOption.SerializationType;
+                this.Metadata = dmtpInvokeOption.Metadata;
             }
             else if (option is InvokeOption invokeOption)
             {

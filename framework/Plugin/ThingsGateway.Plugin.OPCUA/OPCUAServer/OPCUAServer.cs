@@ -10,8 +10,6 @@
 //------------------------------------------------------------------------------
 #endregion
 
-using Furion;
-
 using Mapster;
 
 using Microsoft.Extensions.Logging;
@@ -31,44 +29,113 @@ namespace ThingsGateway.Plugin.OPCUA;
 /// </summary>
 public partial class OPCUAServer : UpLoadBase
 {
-    private List<DeviceVariableRunTime> _uploadVariables = new();
+    private readonly OPCUAServerProperty _driverPropertys = new();
     private readonly OPCUAServerVariableProperty _variablePropertys = new();
-    private readonly OPCUAServerProperty driverPropertys = new();
     private ApplicationInstance m_application;
     private ApplicationConfiguration m_configuration;
     private ThingsGatewayServer m_server;
+    private volatile bool success = true;
 
     /// <inheritdoc/>
     public override Type DriverDebugUIType => null;
 
     /// <inheritdoc/>
-    public override UpDriverPropertyBase DriverPropertys => driverPropertys;
+    public override DriverPropertyBase DriverPropertys => _driverPropertys;
 
-    /// <inheritdoc/>
-    public override List<DeviceVariableRunTime> UploadVariables => _uploadVariables;
+    public override Type DriverUIType => null;
+
     /// <inheritdoc/>
     public override VariablePropertyBase VariablePropertys => _variablePropertys;
 
+    protected override IReadWrite _readWrite => null;
 
     private ConcurrentQueue<VariableData> CollectVariableRunTimes { get; set; } = new();
 
-    /// <inheritdoc/>
-    public override Task AfterStopAsync()
+    public override void Init(DeviceRunTime device)
     {
-        m_application.Stop();
-        return Task.CompletedTask;
+        base.Init(device);
+        if (_driverPropertys.IsAllVariable)
+        {
+            device.DeviceVariableRunTimes = _globalDeviceData.AllVariables;
+            CollectDevices = _globalDeviceData.CollectDevices.ToList();
+        }
+        else
+        {
+            var variables = _globalDeviceData.AllVariables.Where(a =>
+  a.VariablePropertys.ContainsKey(device.Id)).ToList();
+            device.DeviceVariableRunTimes = variables;
+            CollectDevices = _globalDeviceData.CollectDevices.Where(a => device.DeviceVariableRunTimes.Select(b => b.DeviceId).Contains(a.Id)).ToList();
+        }
+    }
+    /// <inheritdoc/>
+    public override bool IsConnected() => m_server?.CurrentInstance.CurrentState == Opc.Ua.ServerState.Running;
+
+    /// <inheritdoc/>
+    protected override void Dispose(bool disposing)
+    {
+        _globalDeviceData.AllVariables.ForEach(a =>
+        {
+            a.VariableValueChange -= VariableValueChange;
+        });
+        m_server?.SafeDispose();
+        CollectVariableRunTimes.Clear();
+        base.Dispose(disposing);
     }
 
     /// <inheritdoc/>
-    public override async Task BeforStartAsync(CancellationToken cancellationToken)
+    protected override void Init(ISenderClient client = null)
+    {
+        ApplicationInstance.MessageDlg = new ApplicationMessageDlg(LogMessage);//默认返回true
+
+        //Utils.SetLogger(new OPCUALogger(LogMessage)); //调试用途
+        m_application = new ApplicationInstance();
+        m_configuration = GetDefaultConfiguration();
+        m_configuration.Validate(ApplicationType.Server).GetAwaiter().GetResult();
+        m_application.ApplicationConfiguration = m_configuration;
+        if (m_configuration.SecurityConfiguration.AutoAcceptUntrustedCertificates)
+        {
+            m_configuration.CertificateValidator.CertificateValidation += (s, e) =>
+            {
+                e.Accept = (e.Error.StatusCode == StatusCodes.BadCertificateUntrusted);
+            };
+        }
+
+        m_server = new(this);
+
+        CollectVariableRunTimes.Clear();
+        CurrentDevice.DeviceVariableRunTimes.ForEach(a =>
+        {
+            VariableValueChange(a);
+            a.VariableValueChange += VariableValueChange;
+        });
+
+    }
+
+    protected override Task ProtectedAfterStopAsync()
+    {
+        m_application.Stop();
+        return base.ProtectedAfterStopAsync();
+    }
+
+    protected override async Task ProtectedBeforStartAsync(CancellationToken cancellationToken)
     {
         // 启动服务器。
         await m_application.CheckApplicationInstanceCertificate(false, 0, 1200);
         await m_application.Start(m_server);
+        await base.ProtectedBeforStartAsync(cancellationToken);
     }
-    /// <inheritdoc/>
-    public override async Task ExecuteAsync(CancellationToken cancellationToken)
+    protected override async Task ProtectedExecuteAsync(CancellationToken cancellationToken)
     {
+        //获取设备连接状态
+        if (IsConnected())
+        {
+            //更新设备活动时间
+            CurrentDevice.SetDeviceStatus(DateTimeExtensions.CurrentDateTime, 0);
+        }
+        else
+        {
+            CurrentDevice.SetDeviceStatus(DateTimeExtensions.CurrentDateTime, 999);
+        }
         try
         {
             ////变化推送
@@ -95,89 +162,25 @@ public partial class OPCUAServer : UpLoadBase
                 }
 
             }
+            success = true;
         }
         catch (Exception ex)
         {
-            LogMessage.LogWarning(ex);
+            if (success)
+                LogMessage.LogWarning(ex);
+            success = false;
         }
-        if (driverPropertys.CycleInterval > UploadDeviceThread.CycleInterval + 50)
-        {
-            try
-            {
-                await Task.Delay(driverPropertys.CycleInterval - UploadDeviceThread.CycleInterval, cancellationToken);
-            }
-            catch
-            {
-            }
-        }
-        else
-        {
 
-        }
+        await Delay(_driverPropertys.CycleInterval, cancellationToken);
     }
-
-    /// <inheritdoc/>
-    public override bool IsConnected()
-    {
-
-        var result = m_server?.CurrentInstance.CurrentState;
-        if (result == Opc.Ua.ServerState.Running)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-    /// <inheritdoc/>
-    protected override void Dispose(bool disposing)
-    {
-        m_server?.SafeDispose();
-        _uploadVariables = null;
-        CollectVariableRunTimes.Clear();
-    }
-
-    /// <inheritdoc/>
-    protected override void Init(UploadDeviceRunTime device)
-    {
-        ApplicationInstance.MessageDlg = new ApplicationMessageDlg(LogMessage);//默认返回true
-
-        //Utils.SetLogger(new OPCUALogger(LogMessage)); //调试用途
-        m_application = new ApplicationInstance();
-        m_configuration = GetDefaultConfiguration();
-        m_configuration.Validate(ApplicationType.Server).GetAwaiter().GetResult();
-        m_application.ApplicationConfiguration = m_configuration;
-        if (m_configuration.SecurityConfiguration.AutoAcceptUntrustedCertificates)
-        {
-            m_configuration.CertificateValidator.CertificateValidation += (s, e) =>
-            {
-                e.Accept = (e.Error.StatusCode == StatusCodes.BadCertificateUntrusted);
-            };
-        }
-
-        m_server = new(device, LogMessage);
-
-        var _globalDeviceData = App.GetService<GlobalDeviceData>();
-        CollectVariableRunTimes.Clear();
-
-        _uploadVariables = _globalDeviceData.AllVariables;
-        _globalDeviceData.AllVariables.ForEach(a =>
-        {
-            VariableValueChange(a);
-            a.VariableValueChange += VariableValueChange;
-        });
-    }
-
     private ApplicationConfiguration GetDefaultConfiguration()
     {
         ApplicationConfiguration config = new();
-        var urls = driverPropertys.OpcUaStringUrl.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
+        var urls = _driverPropertys.OpcUaStringUrl.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
         // 签名及加密验证
         ServerSecurityPolicyCollection policies = new();
         var userTokens = new UserTokenPolicyCollection();
-        if (driverPropertys.SecurityPolicy)
+        if (_driverPropertys.SecurityPolicy)
         {
             policies.Add(new ServerSecurityPolicy()
             {
@@ -246,7 +249,7 @@ public partial class OPCUAServer : UpLoadBase
 
         config.ApplicationName = "ThingsGateway OPCUAServer";
         config.ApplicationType = ApplicationType.Server;
-        config.ApplicationUri = driverPropertys.ApplicationUri;
+        config.ApplicationUri = _driverPropertys.BigTextApplicationUri;
 
 
         config.ServerConfiguration = new ServerConfiguration()
@@ -280,7 +283,7 @@ public partial class OPCUAServer : UpLoadBase
         config.SecurityConfiguration = new SecurityConfiguration()
         {
             AddAppCertToTrustedStore = true,
-            AutoAcceptUntrustedCertificates = driverPropertys.AutoAcceptUntrustedCertificates,
+            AutoAcceptUntrustedCertificates = _driverPropertys.AutoAcceptUntrustedCertificates,
             RejectSHA1SignedCertificates = false,
             MinimumCertificateKeySize = 1024,
             SuppressNonceValidationErrors = true,
@@ -288,7 +291,7 @@ public partial class OPCUAServer : UpLoadBase
             {
                 StoreType = CertificateStoreType.X509Store,
                 StorePath = "CurrentUser\\UAServer_ThingsGateway",
-                SubjectName = driverPropertys.SubjectName,
+                SubjectName = _driverPropertys.BigTextSubjectName,
                 //ValidationOptions = CertificateValidationOptions.SuppressHostNameInvalid,
             },
 
@@ -337,6 +340,8 @@ public partial class OPCUAServer : UpLoadBase
 
     private void VariableValueChange(DeviceVariableRunTime collectVariableRunTime)
     {
+        if (!CurrentDevice.KeepRun)
+            return;
         CollectVariableRunTimes.Enqueue(collectVariableRunTime.Adapt<VariableData>());
     }
 }

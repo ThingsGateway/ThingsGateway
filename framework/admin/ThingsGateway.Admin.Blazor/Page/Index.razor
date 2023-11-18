@@ -1,0 +1,112 @@
+﻿@*
+//------------------------------------------------------------------------------
+//  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
+//  此代码版权（除特别声明外的代码）归作者本人Diego所有
+//  源代码使用协议遵循本仓库的开源协议及附加协议
+//  Gitee源代码仓库：https://gitee.com/diego2098/ThingsGateway
+//  Github源代码仓库：https://github.com/kimdiego2098/ThingsGateway
+//  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
+//  QQ群：605534569
+//------------------------------------------------------------------------------
+*@
+
+@page "/index"
+@layout MainLayout
+@inherits BaseComponentBase
+@attribute [Authorize]
+@attribute [IgnoreRolePermission]
+@using Masa.Blazor.Presets
+@using Microsoft.AspNetCore.Authorization;
+@namespace ThingsGateway.Admin.Blazor
+@inject UserResoures UserResoures;
+<MCard Flat Class="ma-2">
+    <MRow NoGutters Align="AlignTypes.Center" Justify="JustifyTypes.SpaceBetween">
+        <div class="d-flex align-center justify-center ma-2">
+            <MAvatar Size=40 Color="primary" Class="mx-2 white--text">
+                @UserResoures.CurrentUser?.Account.GetNameLen2()
+            </MAvatar>
+            <MLabel>
+                欢迎回来
+            </MLabel>
+            <MLabel Class="mx-3">@UserResoures.CurrentUser?.Account</MLabel>
+        </div>
+    </MRow>
+</MCard>
+
+<MCard MinHeight=120 Elevation="1" Class="ma-2">
+    <MCardSubtitle Class="text-subtitle-1">
+        快捷方式
+    </MCardSubtitle>
+    <MDivider></MDivider>
+    <MRow Class="pa-4" NoGutters Align="AlignTypes.Center" Justify="JustifyTypes.Start">
+        @foreach (var item in UserResoures.WorkbenchOutputs ?? new())
+        {
+            <MButton Text Href=@item.Component
+                     Target=@(item.TargetType==TargetTypeEnum.SELF?"_self":"_blank") Class="ma-2 text-subtitle px-2">
+                <MIcon Left Size="25" Color="primary">@item.Icon</MIcon>
+                @item.Title
+            </MButton>
+        }
+    </MRow>
+
+</MCard>
+
+
+<MRow NoGutters>
+    <MCol Md=6 Cols="12">
+        <MCard Style="height:500px;overflow-y:auto;overflow-x:hidden" Elevation="1" Class="ma-2">
+            <MCardSubtitle Class="text-subtitle-1">
+                访问日志
+            </MCardSubtitle>
+            <MDivider></MDivider>
+            <MTimeline AlignTop Dense>
+                @foreach (var item in _sysVisitLogs ?? new())
+                {
+                    <MTimelineItem Color="primary"
+                                      Small>
+                    <MRow Class="pt-1">
+                        <MCol Cols="4">
+                            <span class="text-caption">@item.OpTime.ToDefaultDateTimeFormat(_initTimezone.TimezoneOffset)</span>
+                        </MCol>
+                        <MCol>
+                            <div class="text-body-1">@item.Name</div>
+                            <div class="text-caption">@item.OpIp</div>
+                        </MCol>
+                    </MRow>
+                </MTimelineItem>
+
+                }
+
+            </MTimeline>
+        </MCard>
+    </MCol>
+    <MCol Md=6 Cols="12">
+        <MCard Style="height:500px;overflow-y:auto;overflow-x:hidden" Elevation="1" Class="ma-2">
+            <MCardSubtitle Class="text-subtitle-1">
+                操作日志
+            </MCardSubtitle>
+            <MDivider></MDivider>
+            <MTimeline AlignTop Dense>
+                @foreach (var item in _sysOperateLogs ?? new())
+                {
+                    <MTimelineItem Color="primary"
+                                      Small>
+                    <MRow Class="pt-1">
+                        <MCol Cols="4">
+                            <span class="text-caption">@item.OpTime.ToDefaultDateTimeFormat(_initTimezone.TimezoneOffset)</span>
+                        </MCol>
+                        <MCol>
+                            <div class="text-body-1">@item.Name</div>
+                            <div class="text-caption">@item.OpIp</div>
+                        </MCol>
+                    </MRow>
+                </MTimelineItem>
+
+                }
+
+            </MTimeline>
+        </MCard>
+    </MCol>
+</MRow>
+
+

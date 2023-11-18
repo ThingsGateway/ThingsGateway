@@ -14,22 +14,19 @@
 using System.Text.Json.Serialization;
 using System.Text.Json;
 
-#else
+
+#endif
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-#endif
 using System.Text;
 
 namespace ThingsGateway.Foundation.Core;
 
-
-
-
 #if NET6_0_OR_GREATER
 
 /// <inheritdoc/>
-public class EncodingConverter : JsonConverter<Encoding>
+public class EncodingConverter : System.Text.Json.Serialization.JsonConverter<Encoding>
 {
     /// <inheritdoc/>
     public override Encoding Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
@@ -46,9 +43,10 @@ public class EncodingConverter : JsonConverter<Encoding>
         writer.WriteStringValue(value.WebName);
     }
 }
-#else
+#endif
+
 /// <inheritdoc/>
-public class EncodingConverter : CustomCreationConverter<Encoding>
+public class NewtonsoftEncodingConverter : CustomCreationConverter<Encoding>
 {
     /// <inheritdoc/>
     public override Encoding Create(Type objectType)
@@ -58,7 +56,7 @@ public class EncodingConverter : CustomCreationConverter<Encoding>
     }
 
     /// <inheritdoc/>
-    public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+    public override object ReadJson(JsonReader reader, Type objectType, object existingValue, Newtonsoft.Json.JsonSerializer serializer)
     {
         if (reader.TokenType == JsonToken.String)
         {
@@ -70,7 +68,7 @@ public class EncodingConverter : CustomCreationConverter<Encoding>
     }
 
     /// <inheritdoc/>
-    public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+    public override void WriteJson(JsonWriter writer, object value, Newtonsoft.Json.JsonSerializer serializer)
     {
         if (value is Encoding encoding)
         {
@@ -84,4 +82,3 @@ public class EncodingConverter : CustomCreationConverter<Encoding>
     }
 }
 
-#endif

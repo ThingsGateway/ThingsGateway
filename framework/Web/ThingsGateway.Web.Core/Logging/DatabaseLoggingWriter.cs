@@ -12,19 +12,22 @@
 
 using Furion.Logging;
 
-using ThingsGateway.Admin.Application;
 using ThingsGateway.Admin.Core;
 using ThingsGateway.Foundation.Extension.String;
 
 using UAParser;
 
-namespace ThingsGateway.Web.Core;
+namespace ThingsGateway.Admin.Application;
 
 /// <summary>
 /// 数据库写入器
 /// </summary>
 public class DatabaseLoggingWriter : IDatabaseLoggingWriter
 {
+    public DatabaseLoggingWriter()
+    {
+
+    }
     /// <summary>
     /// 此方法只会写入经由MVCFilter捕捉的方法日志，对于BlazorServer的内部操作，由<see cref="OperDispatchProxy"/>执行
     /// </summary>

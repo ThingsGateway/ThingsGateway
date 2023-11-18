@@ -1,0 +1,175 @@
+{
+  "RECORDS": [
+    {
+      "Id": "391876432142597",
+      "Title": "清空",
+      "Category": "BUTTON",
+      "Code": "gatewayrpclogclear",
+      "ParentId": "390107473895685",
+      "SortCode": "1",
+      "TargetType": "None",
+      "CreateTime": "2023-03-03 18:09:19.0789355",
+      "CreateUser": "superAdmin",
+      "CreateUserId": "212725263002001",
+      "IsDelete": false
+    },
+    {
+      "Id": "391876531253509",
+      "Title": "清空",
+      "Category": "BUTTON",
+      "Code": "gatewaybackendlogclear",
+      "ParentId": "390107521245445",
+      "SortCode": "2",
+      "TargetType": "None",
+      "CreateTime": "2023-03-03 18:09:43.2483009",
+      "CreateUser": "superAdmin",
+      "CreateUserId": "212725263002001",
+      "IsDelete": false
+    },
+    {
+      "Id": "391876932448517",
+      "Title": "采集设备暂停",
+      "Category": "BUTTON",
+      "Code": "gatewaydevicepause",
+      "ParentId": "200001004",
+      "TargetType": "None",
+      "CreateTime": "2023-03-03 18:11:21.2313178",
+      "CreateUser": "superAdmin",
+      "CreateUserId": "212725263002001",
+      "IsDelete": false
+    },
+    {
+      "Id": "391876995248389",
+      "Title": "设备重启",
+      "Category": "BUTTON",
+      "Code": "gatewaydevicerestart",
+      "ParentId": "200001004",
+      "TargetType": "None",
+      "CreateTime": "2023-03-03 18:11:36.5638931",
+      "CreateUser": "superAdmin",
+      "CreateUserId": "212725263002001",
+      "IsDelete": false
+    },
+    {
+      "Id": "391877277679877",
+      "Title": "添加",
+      "Category": "BUTTON",
+      "Code": "gatewaypluginadd",
+      "ParentId": "200001002",
+      "TargetType": "None",
+      "CreateTime": "2023-03-03 18:12:45.5166707",
+      "CreateUser": "superAdmin",
+      "CreateUserId": "212725263002001",
+      "IsDelete": false
+    },
+    {
+      "Id": "391877356581125",
+      "Title": "添加",
+      "Category": "BUTTON",
+      "Code": "gatewaycollectdeviceadd",
+      "ParentId": "200001001",
+      "TargetType": "None",
+      "CreateTime": "2023-03-03 18:13:04.7786123",
+      "CreateUser": "superAdmin",
+      "CreateUserId": "212725263002001",
+      "IsDelete": false
+    },
+    {
+      "Id": "391877402190085",
+      "Title": "修改",
+      "Category": "BUTTON",
+      "Code": "gatewaycollectdeviceedit",
+      "ParentId": "200001001",
+      "TargetType": "None",
+      "CreateTime": "2023-03-03 18:13:15.9140326",
+      "CreateUser": "superAdmin",
+      "CreateUserId": "212725263002001",
+      "IsDelete": false
+    },
+    {
+      "Id": "391877432721669",
+      "Title": "删除",
+      "Category": "BUTTON",
+      "Code": "gatewaycollectdevicedelete",
+      "ParentId": "200001001",
+      "TargetType": "None",
+      "CreateTime": "2023-03-03 18:13:23.3685636",
+      "CreateUser": "superAdmin",
+      "CreateUserId": "212725263002001",
+      "IsDelete": false
+    },
+    {
+      "Id": "391877521359109",
+      "Title": "添加",
+      "Category": "BUTTON",
+      "Code": "gatewayvariableadd",
+      "ParentId": "200001003",
+      "TargetType": "None",
+      "CreateTime": "2023-03-03 18:13:45.0088195",
+      "CreateUser": "superAdmin",
+      "CreateUserId": "212725263002001",
+      "IsDelete": false
+    },
+    {
+      "Id": "391877554565381",
+      "Title": "修改",
+      "Category": "BUTTON",
+      "Code": "gatewayvariableedit",
+      "ParentId": "200001003",
+      "TargetType": "None",
+      "CreateTime": "2023-03-03 18:13:53.1151901",
+      "CreateUser": "superAdmin",
+      "CreateUserId": "212725263002001",
+      "IsDelete": false
+    },
+    {
+      "Id": "391877580439813",
+      "Title": "删除",
+      "Category": "BUTTON",
+      "Code": "gatewayvariabledelete",
+      "ParentId": "200001003",
+      "TargetType": "None",
+      "CreateTime": "2023-03-03 18:13:59.4322888",
+      "CreateUser": "superAdmin",
+      "CreateUserId": "212725263002001",
+      "IsDelete": false
+    },
+    {
+      "Id": "391877764051205",
+      "Title": "添加",
+      "Category": "BUTTON",
+      "Code": "gatewayuploaddeviceadd",
+      "ParentId": "200001101",
+      "TargetType": "None",
+      "CreateTime": "2023-03-03 18:14:44.259772",
+      "CreateUser": "superAdmin",
+      "CreateUserId": "212725263002001",
+      "IsDelete": false
+    },
+    {
+      "Id": "391877800583429",
+      "Title": "修改",
+      "Category": "BUTTON",
+      "Code": "gatewayuploaddeviceedit",
+      "ParentId": "200001101",
+      "TargetType": "None",
+      "CreateTime": "2023-03-03 18:14:53.178319",
+      "CreateUser": "superAdmin",
+      "CreateUserId": "212725263002001",
+      "IsDelete": false
+    },
+    {
+      "Id": "391877824180485",
+      "Title": "删除",
+      "Category": "BUTTON",
+      "Code": "gatewayuploaddevicedelete",
+      "ParentId": "200001101",
+      "TargetType": "None",
+      "CreateTime": "2023-03-03 18:14:58.9389864",
+      "CreateUser": "superAdmin",
+      "CreateUserId": "212725263002001",
+      "IsDelete": false
+    }
+
+  ]
+}

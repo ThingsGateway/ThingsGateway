@@ -50,5 +50,10 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
         /// DmtpRpc序列化类型
         /// </summary>
         public SerializationType SerializationType { get; set; } = SerializationType.FastBinary;
+
+        /// <summary>
+        /// 元数据
+        /// </summary>
+        public Metadata Metadata { get; set; }
     }
 }

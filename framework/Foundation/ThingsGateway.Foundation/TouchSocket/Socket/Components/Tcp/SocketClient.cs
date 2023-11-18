@@ -486,9 +486,9 @@ namespace ThingsGateway.Foundation.Sockets
         /// <param name="oldId"></param>
         /// <param name="newId"></param>
         /// <returns></returns>
-        protected Task IdChanged(string oldId, string newId)
+        protected async Task IdChanged(string oldId, string newId)
         {
-            return this.PluginsManager.RaiseAsync(nameof(IIdChangedPlugin.OnIdChanged), this, new IdChangedEventArgs(oldId, newId));
+            await this.PluginsManager.RaiseAsync(nameof(IIdChangedPlugin.OnIdChanged), this, new IdChangedEventArgs(oldId, newId));
         }
 
         /// <summary>

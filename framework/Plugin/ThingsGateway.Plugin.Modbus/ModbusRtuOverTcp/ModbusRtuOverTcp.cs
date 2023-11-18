@@ -10,69 +10,33 @@
 //------------------------------------------------------------------------------
 #endregion
 
+using ThingsGateway.Foundation.Demo;
+
 namespace ThingsGateway.Plugin.Modbus;
 
 /// <inheritdoc/>
 public class ModbusRtuOverTcp : CollectBase
 {
 
-    private readonly ModbusRtuOverTcpProperty driverPropertys = new();
-    /// <inheritdoc/>
-    protected override IReadWrite PLC => _plc;
+    private readonly ModbusRtuOverTcpProperty _driverPropertys = new();
     private ThingsGateway.Foundation.Adapter.Modbus.ModbusRtuOverTcp _plc;
+
     /// <inheritdoc/>
     public override Type DriverDebugUIType => typeof(ModbusRtuOverTcpDebugPage);
-    /// <inheritdoc/>
-    public override CollectDriverPropertyBase DriverPropertys => driverPropertys;
-    /// <inheritdoc/>
-    public override bool IsSupportRequest => true;
-    /// <inheritdoc/>
-    public override IThingsGatewayBitConverter ThingsGatewayBitConverter { get => _plc?.ThingsGatewayBitConverter; }
-    /// <inheritdoc/>
-    public override Task AfterStopAsync()
-    {
-        _plc?.Disconnect();
-        return Task.CompletedTask;
-    }
 
     /// <inheritdoc/>
-    public override async Task BeforStartAsync(CancellationToken cancellationToken)
-    {
-        await _plc?.ConnectAsync(cancellationToken);
-    }
-    /// <inheritdoc/>
-    public override void InitDataAdapter()
-    {
-        _plc.SetDataAdapter();
-    }
+    public override DriverPropertyBase DriverPropertys => _driverPropertys;
+
+    public override Type DriverUIType => null;
 
     /// <inheritdoc/>
-    public override bool IsConnected()
-    {
-        return _plc?.TcpClient?.CanSend == true;
-    }
-
+    protected override IReadWrite _readWrite => _plc;
     /// <inheritdoc/>
-    public override List<DeviceVariableSourceRead> LoadSourceRead(List<DeviceVariableRunTime> deviceVariables)
-    {
-        return _plc.LoadSourceRead<DeviceVariableSourceRead, DeviceVariableRunTime>(deviceVariables, driverPropertys.MaxPack);
-    }
-
-
-
-    /// <inheritdoc/>
-    protected override void Dispose(bool disposing)
-    {
-        _plc?.Disconnect();
-        _plc?.SafeDispose();
-        base.Dispose(disposing);
-    }
-    /// <inheritdoc/>
-    protected override void Init(CollectDeviceRunTime device, object client = null)
+    protected override void Init(ISenderClient client = null)
     {
         if (client == null)
         {
-            FoundataionConfig.SetRemoteIPHost(new IPHost($"{driverPropertys.IP}:{driverPropertys.Port}"))
+            FoundataionConfig.SetRemoteIPHost(new IPHost($"{_driverPropertys.IP}:{_driverPropertys.Port}"))
                 ;
             client = new TcpClient();
             ((TcpClient)client).Setup(FoundataionConfig);
@@ -80,19 +44,20 @@ public class ModbusRtuOverTcp : CollectBase
         //载入配置
         _plc = new((TcpClient)client)
         {
-            Crc16CheckEnable = driverPropertys.Crc16CheckEnable,
-            FrameTime = driverPropertys.FrameTime,
-            CacheTimeout = driverPropertys.CacheTimeout,
-            DataFormat = driverPropertys.DataFormat,
-            ConnectTimeOut = driverPropertys.ConnectTimeOut,
-            Station = driverPropertys.Station,
-            TimeOut = driverPropertys.TimeOut
+            Crc16CheckEnable = _driverPropertys.Crc16CheckEnable,
+            FrameTime = _driverPropertys.FrameTime,
+            CacheTimeout = _driverPropertys.CacheTimeout,
+            DataFormat = _driverPropertys.DataFormat,
+            ConnectTimeOut = _driverPropertys.ConnectTimeOut,
+            Station = _driverPropertys.Station,
+            TimeOut = _driverPropertys.TimeOut
         };
-    }
-    /// <inheritdoc/>
-    protected override async Task<OperResult<byte[]>> ReadAsync(string address, int length, CancellationToken cancellationToken)
-    {
-        return await _plc.ReadAsync(address, length, cancellationToken);
+        base.Init(client);
     }
 
+    /// <inheritdoc/>
+    protected override List<DeviceVariableSourceRead> ProtectedLoadSourceRead(List<DeviceVariableRunTime> deviceVariables)
+    {
+        return _plc.LoadSourceRead<DeviceVariableSourceRead, DeviceVariableRunTime>(deviceVariables, _driverPropertys.MaxPack, CurrentDevice.IntervalTime);
+    }
 }

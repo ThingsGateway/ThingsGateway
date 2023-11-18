@@ -12,7 +12,6 @@
 
 using System.Text;
 
-using ThingsGateway.Foundation.Extension;
 using ThingsGateway.Foundation.Extension.String;
 
 namespace ThingsGateway.Foundation.Adapter.Modbus;
@@ -54,7 +53,7 @@ public class ModbusAddress : DeviceAddressBase
     /// <summary>
     /// BitIndex
     /// </summary>
-    public int BitIndex => (int)(Address.SplitDot().LastOrDefault().ToInt());
+    public int BitIndex => (int)(Address.SplitStringByDelimiter().LastOrDefault().ToInt());
 
     /// <summary>
     /// 读取功能码
@@ -88,7 +87,7 @@ public class ModbusAddress : DeviceAddressBase
         }
         else
         {
-            string[] strArray = address.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
+            string[] strArray = address.SplitStringBySemicolon();
             for (int index = 0; index < strArray.Length; ++index)
             {
                 if (strArray[index].ToUpper().StartsWith("S="))

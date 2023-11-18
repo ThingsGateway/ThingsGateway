@@ -18,7 +18,7 @@ namespace ThingsGateway.Foundation.Adapter.DLT645;
 /// <summary>
 /// 解析参数
 /// </summary>
-public class DataInfo
+internal class DataInfo
 {
     /// <summary>
     /// 解析长度

@@ -17,7 +17,7 @@ namespace ThingsGateway.Foundation.Adapter.Modbus;
 /// <summary>
 /// Rtu适配器
 /// </summary>
-public class ModbusRtuDataHandleAdapter : ReadWriteDevicesTcpDataHandleAdapter<ModbusRtuMessage>
+internal class ModbusRtuDataHandleAdapter : ReadWriteDevicesSingleStreamDataHandleAdapter<ModbusRtuMessage>
 {
     /// <summary>
     /// 检测CRC

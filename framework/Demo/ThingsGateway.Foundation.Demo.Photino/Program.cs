@@ -23,6 +23,8 @@ internal class Program
 
         var appBuilder = PhotinoBlazorAppBuilder.CreateDefault(args);
 
+        Serve.RunNative();
+
         appBuilder.RootComponents.Add<App>("#app");
 
         appBuilder.Services.ThingsGatewayComponentsConfigureServices();

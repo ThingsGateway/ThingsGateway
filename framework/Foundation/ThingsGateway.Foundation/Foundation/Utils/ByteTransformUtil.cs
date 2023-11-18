@@ -12,6 +12,8 @@
 
 using System.Text;
 
+using ThingsGateway.Foundation.Extension.String;
+
 namespace ThingsGateway.Foundation.Core;
 
 /// <summary>
@@ -19,7 +21,13 @@ namespace ThingsGateway.Foundation.Core;
 /// </summary>
 public class ByteTransformUtil
 {
-    /// <inheritdoc/>
+    /// <summary>
+    /// 转换对应类型
+    /// </summary>
+    /// <typeparam name="TResult"></typeparam>
+    /// <param name="result"></param>
+    /// <param name="translator"></param>
+    /// <returns></returns>
     public static OperResult<TResult> GetResultFromBytes<TResult>(OperResult<byte[]> result, Func<byte[], TResult> translator)
     {
         try
@@ -46,7 +54,8 @@ public class ByteTransformUtil
         if (address.IsNullOrEmpty()) return defaultTransform;
         address = address.Trim().ToUpper();
 
-        var strs = address.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
+
+        var strs = address.SplitStringBySemicolon();
 
         DataFormat? dataFormat = null;
         Encoding encoding = null;
@@ -57,27 +66,13 @@ public class ByteTransformUtil
         {
             if (str.StartsWith("DATA="))
             {
-                Dictionary<string, DataFormat> formatMappings = new Dictionary<string, DataFormat>
-    {
-        { "DATA=ABCD", DataFormat.ABCD },
-        { "DATA=BADC", DataFormat.BADC },
-        { "DATA=DCBA", DataFormat.DCBA },
-        { "DATA=CDAB", DataFormat.CDAB }
-    };
-                if (formatMappings.TryGetValue(str, out var data))
-                    dataFormat = data;
+                var dataFormatName = str.Remove(5);
+                try { if (Enum.TryParse<DataFormat>(dataFormatName, out var dataFormat1)) dataFormat = dataFormat1; } catch { }
             }
             else if (str.StartsWith("TEXT="))
             {
-                var encodingMappings = new Dictionary<string, Encoding>
-    {
-        { "TEXT=UTF8", Encoding.UTF8 },
-        { "TEXT=ASCII", Encoding.ASCII },
-        { "TEXT=Default", Encoding.Default },
-        { "TEXT=Unicode", Encoding.Unicode }
-    };
-                if (encodingMappings.TryGetValue(str, out var enc))
-                    encoding = enc;
+                var encodingName = str.Remove(5);
+                try { encoding = Encoding.GetEncoding(encodingName); } catch { }
             }
             else if (str.StartsWith("LEN="))
             {
@@ -86,21 +81,8 @@ public class ByteTransformUtil
             }
             else if (str.StartsWith("BCD="))
             {
-                var bcdStr = str.Substring(4);
-
-                var bcdMappings = new Dictionary<string, BcdFormat>
-            {
-                { "C8421", BcdFormat.C8421 },
-                { "C2421", BcdFormat.C2421 },
-                { "C3", BcdFormat.C3 },
-                { "C5421", BcdFormat.C5421 },
-                { "Gray", BcdFormat.Gray }
-            };
-
-                if (bcdMappings.TryGetValue(bcdStr, out var bcd))
-                {
-                    bcdFormat = bcd;
-                }
+                var bcdName = str.Remove(4);
+                try { if (Enum.TryParse<BcdFormat>(bcdName, out var bcdFormat1)) bcdFormat = bcdFormat1; } catch { }
             }
             else
             {
@@ -112,6 +94,11 @@ public class ByteTransformUtil
         }
 
         address = sb.ToString();
+
+        if (bcdFormat == null && length == null && encoding == null && dataFormat == null)
+        {
+            return defaultTransform;
+        }
 
         var converter = defaultTransform.CopyNew();
 

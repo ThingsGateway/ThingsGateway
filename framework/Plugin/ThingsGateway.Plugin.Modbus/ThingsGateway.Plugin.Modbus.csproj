@@ -3,9 +3,15 @@
 
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
 
-		<Exec Command=" set dir=&quot;$(SolutionDir)Web\ThingsGateway.Web.Entry\bin\$(Configuration)\$(TargetFramework)\Plugins\$(AssemblyName)&quot;&#xD;&#xA; if not exist %25dir%25  md %25dir%25  &#xD;&#xA;copy &quot;$(TargetDir)*Modbus*.dll&quot;  %25dir%25&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;" />
+		<Exec Command=" set dir=&quot;$(SolutionDir)web\ThingsGateway.Web.Entry\bin\$(Configuration)\$(TargetFramework)\Plugins\$(AssemblyName)&quot;&#xD;&#xA; if not exist %25dir%25  md %25dir%25  &#xD;&#xA;copy &quot;$(TargetDir)*Modbus*.dll&quot;  %25dir%25&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;" />
 
 	</Target>
+
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\foundation\ThingsGateway.Foundation.Adapter.Modbus\ThingsGateway.Foundation.Adapter.Modbus.csproj" />
+	</ItemGroup>
+
 
 	<ItemGroup>
 		<Compile Include="..\..\Demo\ThingsGateway.Foundation.Demo.Rcl\Components\DebugPage\DriverDebugUIBase.cs" Link="DebugPage\DriverDebugUIBase.cs" />
@@ -14,27 +20,42 @@
 		<Compile Include="..\..\Demo\ThingsGateway.Foundation.Demo.Rcl\Components\DebugPage\TcpClientPage.razor.cs" Link="DebugPage\TcpClientPage.razor.cs" />
 		<Compile Include="..\..\Demo\ThingsGateway.Foundation.Demo.Rcl\Components\DebugPage\TcpServerPage.razor.cs" Link="DebugPage\TcpServerPage.razor.cs" />
 		<Compile Include="..\..\Demo\ThingsGateway.Foundation.Demo.Rcl\Components\DebugPage\UdpSessionPage.razor.cs" Link="DebugPage\UdpSessionPage.razor.cs" />
+
 		<Content Include="..\..\Demo\ThingsGateway.Foundation.Demo.Rcl\Components\DebugPage\DriverDebugUIPage.razor" Link="DebugPage\DriverDebugUIPage.razor" />
 		<Content Include="..\..\Demo\ThingsGateway.Foundation.Demo.Rcl\Components\DebugPage\SerialSessionPage.razor" Link="DebugPage\SerialSessionPage.razor" />
 		<Content Include="..\..\Demo\ThingsGateway.Foundation.Demo.Rcl\Components\DebugPage\TcpClientPage.razor" Link="DebugPage\TcpClientPage.razor" />
 		<Content Include="..\..\Demo\ThingsGateway.Foundation.Demo.Rcl\Components\DebugPage\TcpServerPage.razor" Link="DebugPage\TcpServerPage.razor" />
 		<Content Include="..\..\Demo\ThingsGateway.Foundation.Demo.Rcl\Components\DebugPage\UdpSessionPage.razor" Link="DebugPage\UdpSessionPage.razor" />
 
+	</ItemGroup>
 
-
+	<ItemGroup>
+		<Compile Include="..\..\demo\ThingsGateway.Foundation.Demo.Rcl\Pages\Modbus\ModbusRtuDebugPage.razor.cs" Link="Page\ModbusRtuDebugPage.razor.cs" />
+		<Compile Include="..\..\demo\ThingsGateway.Foundation.Demo.Rcl\Pages\Modbus\ModbusRtuOverTcpDebugPage.razor.cs" Link="Page\ModbusRtuOverTcpDebugPage.razor.cs" />
+		<Compile Include="..\..\demo\ThingsGateway.Foundation.Demo.Rcl\Pages\Modbus\ModbusRtuOverUdpDebugPage.razor.cs" Link="Page\ModbusRtuOverUdpDebugPage.razor.cs" />
+		<Compile Include="..\..\demo\ThingsGateway.Foundation.Demo.Rcl\Pages\Modbus\ModbusSerialServerDebugPage.razor.cs" Link="Page\ModbusSerialServerDebugPage.razor.cs" />
+		<Compile Include="..\..\demo\ThingsGateway.Foundation.Demo.Rcl\Pages\Modbus\ModbusTcpDebugPage.razor.cs" Link="Page\ModbusTcpDebugPage.razor.cs" />
+		<Compile Include="..\..\demo\ThingsGateway.Foundation.Demo.Rcl\Pages\Modbus\ModbusTcpDtuDebugPage.razor.cs" Link="Page\ModbusTcpDtuDebugPage.razor.cs" />
+		<Compile Include="..\..\demo\ThingsGateway.Foundation.Demo.Rcl\Pages\Modbus\ModbusTcpServerDebugPage.razor.cs" Link="Page\ModbusTcpServerDebugPage.razor.cs" />
+		<Compile Include="..\..\demo\ThingsGateway.Foundation.Demo.Rcl\Pages\Modbus\ModbusUdpDebugPage.razor.cs" Link="Page\ModbusUdpDebugPage.razor.cs" />
+		<Content Include="..\..\demo\ThingsGateway.Foundation.Demo.Rcl\Pages\Modbus\ModbusRtuDebugPage.razor" Link="Page\ModbusRtuDebugPage.razor" />
+		<Content Include="..\..\demo\ThingsGateway.Foundation.Demo.Rcl\Pages\Modbus\ModbusRtuOverTcpDebugPage.razor" Link="Page\ModbusRtuOverTcpDebugPage.razor" />
+		<Content Include="..\..\demo\ThingsGateway.Foundation.Demo.Rcl\Pages\Modbus\ModbusRtuOverUdpDebugPage.razor" Link="Page\ModbusRtuOverUdpDebugPage.razor" />
+		<Content Include="..\..\demo\ThingsGateway.Foundation.Demo.Rcl\Pages\Modbus\ModbusSerialServerDebugPage.razor" Link="Page\ModbusSerialServerDebugPage.razor" />
+		<Content Include="..\..\demo\ThingsGateway.Foundation.Demo.Rcl\Pages\Modbus\ModbusTcpDebugPage.razor" Link="Page\ModbusTcpDebugPage.razor" />
+		<Content Include="..\..\demo\ThingsGateway.Foundation.Demo.Rcl\Pages\Modbus\ModbusTcpDtuDebugPage.razor" Link="Page\ModbusTcpDtuDebugPage.razor" />
+		<Content Include="..\..\demo\ThingsGateway.Foundation.Demo.Rcl\Pages\Modbus\ModbusTcpServerDebugPage.razor" Link="Page\ModbusTcpServerDebugPage.razor" />
+		<Content Include="..\..\demo\ThingsGateway.Foundation.Demo.Rcl\Pages\Modbus\ModbusUdpDebugPage.razor" Link="Page\ModbusUdpDebugPage.razor" />
 	</ItemGroup>
 
 
-
-
 	<ItemGroup>
-		<ProjectReference Include="..\..\Foundation\ThingsGateway.Foundation.Adapter.Modbus\ThingsGateway.Foundation.Adapter.Modbus.csproj" />
-		<ProjectReference Include="..\..\Web\ThingsGateway.Components\ThingsGateway.Components.csproj">
+
+		<ProjectReference Include="..\..\gateway\ThingsGateway.Gateway.Blazor\ThingsGateway.Gateway.Blazor.csproj" >
 			<Private>false</Private>
 			<CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
 			<ExcludeAssets>runtime</ExcludeAssets>
 		</ProjectReference>
 	</ItemGroup>
-
 
 </Project>

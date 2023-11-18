@@ -10,12 +10,14 @@
 //------------------------------------------------------------------------------
 #endregion
 
+using ThingsGateway.Foundation.Demo;
+
 namespace ThingsGateway.Plugin.Modbus;
 
 /// <inheritdoc/>
 public class ModbusUdp : CollectBase
 {
-    private readonly ModbusUdpProperty driverPropertys = new();
+    private readonly ModbusUdpProperty _driverPropertys = new();
 
     private ThingsGateway.Foundation.Adapter.Modbus.ModbusUdp _plc;
 
@@ -23,61 +25,19 @@ public class ModbusUdp : CollectBase
     public override Type DriverDebugUIType => typeof(ModbusUdpDebugPage);
 
     /// <inheritdoc/>
-    public override CollectDriverPropertyBase DriverPropertys => driverPropertys;
+    public override DriverPropertyBase DriverPropertys => _driverPropertys;
+
+    public override Type DriverUIType => null;
 
     /// <inheritdoc/>
-    public override bool IsSupportRequest => true;
+    protected override IReadWrite _readWrite => _plc;
 
     /// <inheritdoc/>
-    public override IThingsGatewayBitConverter ThingsGatewayBitConverter { get => _plc?.ThingsGatewayBitConverter; }
-
-    /// <inheritdoc/>
-    protected override IReadWrite PLC => _plc;
-    /// <inheritdoc/>
-    public override Task AfterStopAsync()
-    {
-        _plc.Disconnect();
-        return Task.CompletedTask;
-    }
-
-    /// <inheritdoc/>
-    public override Task BeforStartAsync(CancellationToken cancellationToken)
-    {
-        return _plc.ConnectAsync(cancellationToken);
-    }
-    /// <inheritdoc/>
-    public override void InitDataAdapter()
-    {
-        _plc.SetDataAdapter();
-    }
-
-    /// <inheritdoc/>
-    public override bool IsConnected()
-    {
-        return _plc?.UdpSession?.CanSend == true;
-    }
-
-    /// <inheritdoc/>
-    public override List<DeviceVariableSourceRead> LoadSourceRead(List<DeviceVariableRunTime> deviceVariables)
-    {
-        return _plc.LoadSourceRead<DeviceVariableSourceRead, DeviceVariableRunTime>(deviceVariables, driverPropertys.MaxPack);
-    }
-
-
-
-    /// <inheritdoc/>
-    protected override void Dispose(bool disposing)
-    {
-        _plc?.Disconnect();
-        _plc?.SafeDispose();
-        base.Dispose(disposing);
-    }
-    /// <inheritdoc/>
-    protected override void Init(CollectDeviceRunTime device, object client = null)
+    protected override void Init(ISenderClient client = null)
     {
         if (client == null)
         {
-            FoundataionConfig.SetRemoteIPHost(new IPHost($"{driverPropertys.IP}:{driverPropertys.Port}"))
+            FoundataionConfig.SetRemoteIPHost(new IPHost($"{_driverPropertys.IP}:{_driverPropertys.Port}"))
                 .SetBindIPHost(new IPHost(0))
                 ;
             client = new UdpSession();
@@ -86,16 +46,19 @@ public class ModbusUdp : CollectBase
         //载入配置
         _plc = new((UdpSession)client)
         {
-            DataFormat = driverPropertys.DataFormat,
-            FrameTime = driverPropertys.FrameTime,
-            Station = driverPropertys.Station,
-            TimeOut = driverPropertys.TimeOut,
-            IsCheckMessageId = driverPropertys.MessageIdCheckEnable
+            DataFormat = _driverPropertys.DataFormat,
+            FrameTime = _driverPropertys.FrameTime,
+            Station = _driverPropertys.Station,
+            TimeOut = _driverPropertys.TimeOut,
+            IsCheckMessageId = _driverPropertys.MessageIdCheckEnable
         };
+
+        base.Init(client);
     }
+
     /// <inheritdoc/>
-    protected override async Task<OperResult<byte[]>> ReadAsync(string address, int length, CancellationToken cancellationToken)
+    protected override List<DeviceVariableSourceRead> ProtectedLoadSourceRead(List<DeviceVariableRunTime> deviceVariables)
     {
-        return await _plc.ReadAsync(address, length, cancellationToken);
+        return _plc.LoadSourceRead<DeviceVariableSourceRead, DeviceVariableRunTime>(deviceVariables, _driverPropertys.MaxPack, CurrentDevice.IntervalTime);
     }
 }

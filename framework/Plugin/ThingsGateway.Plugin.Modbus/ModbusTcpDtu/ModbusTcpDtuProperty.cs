@@ -14,7 +14,7 @@ namespace ThingsGateway.Plugin.Modbus;
 /// <summary>
 /// <inheritdoc/>
 /// </summary>
-public class ModbusTcpDtuProperty : CollectDriverPropertyBase
+public class ModbusTcpDtuProperty : DriverPropertyBase
 {
     /// <summary>
     /// IP
@@ -37,11 +37,6 @@ public class ModbusTcpDtuProperty : CollectDriverPropertyBase
     [DeviceProperty("读写超时时间", "")]
     public ushort TimeOut { get; set; } = 3000;
     /// <summary>
-    /// 连接超时时间
-    /// </summary>
-    [DeviceProperty("连接超时时间", "")]
-    public ushort ConnectTimeOut { get; set; } = 3000;
-    /// <summary>
     /// 帧前时间ms
     /// </summary>
     [DeviceProperty("帧前时间ms", "某些设备性能较弱，报文间需要间隔较长时间")]
@@ -49,8 +44,8 @@ public class ModbusTcpDtuProperty : CollectDriverPropertyBase
     /// <summary>
     /// 组包缓存超时ms
     /// </summary>
-    [DeviceProperty("组包缓存超时ms", "某些设备性能较弱，报文间需要间隔较长时间，可以设置更长的组包缓存，默认1s")]
-    public int CacheTimeout { get; set; } = 1;
+    [DeviceProperty("组包缓存超时ms", "某些设备性能较弱，报文间需要间隔较长时间，可以设置更长的组包缓存，默认1000ms")]
+    public int CacheTimeout { get; set; } = 1000;
     /// <summary>
     /// 默认解析顺序
     /// </summary>

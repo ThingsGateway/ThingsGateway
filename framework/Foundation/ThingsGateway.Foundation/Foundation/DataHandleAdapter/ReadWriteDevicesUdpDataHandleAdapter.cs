@@ -23,7 +23,6 @@ namespace ThingsGateway.Foundation.Core;
 public abstract class ReadWriteDevicesUdpDataHandleAdapter<TRequest> : UdpDataHandlingAdapter where TRequest : class, IMessage
 {
 
-
     /// <summary>
     /// 报文输出时采用字符串还是HexString
     /// </summary>

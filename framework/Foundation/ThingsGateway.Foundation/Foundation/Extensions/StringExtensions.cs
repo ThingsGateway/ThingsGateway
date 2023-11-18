@@ -25,12 +25,12 @@ public static class StringExtensions
     /// </summary>
     /// <param name="value"></param>
     /// <returns></returns>
-    public static bool GetBoolValue(this string value)
+    public static bool? ToBool(this string value)
     {
         switch (value)
         {
             case null:
-                return false;
+                return null;
             case "1":
                 return true;
             case "0":
@@ -45,58 +45,28 @@ public static class StringExtensions
                 return false;
             case "ON":
                 return true;
+            case "OFF":
+                return false;
             default:
-                return (!(value == "OFF")) && (bool.TryParse(value, out bool parseBool) && parseBool);
+                if (bool.TryParse(value, out bool parseBool))
+                {
+                    return parseBool;
+                }
+                else
+                {
+                    return null;
+                }
         }
     }
-
     /// <summary>
-    /// 是否布尔值，对于TRUE/FALSE/ON/OFF也返回True
+    /// 转换布尔值
     /// </summary>
     /// <param name="value"></param>
+    /// <param name="defaultValue">默认值</param>
     /// <returns></returns>
-    public static bool IsBoolValue(this string value)
+    public static bool ToBool(this string value, bool defaultValue)
     {
-        if (value == "1")
-            return true;
-        if (value == "0")
-            return true;
-        value = value.ToUpper();
-        if (value == "TRUE")
-            return true;
-        if (value == "FALSE")
-            return true;
-        if (value == "ON")
-            return true;
-        if (value == "OFF")
-            return true;
-        return bool.TryParse(value, out _);
-    }
-    /// <summary>
-    /// 获取Double/Bool/String
-    /// </summary>
-    /// <returns></returns>
-    public static object GetObjectData(this string value)
-    {
-        //判断数值类型
-        Regex regex = new("^[-+]?[0-9]*\\.?[0-9]+$");
-        bool match = regex.IsMatch(value);
-        if (match)
-        {
-            if (value.ToDouble() == 0 && Convert.ToInt64(value) != 0)
-            {
-                throw new("转换失败");
-            }
-            return value.ToDouble();
-        }
-        else if (value.IsBoolValue())
-        {
-            return value.GetBoolValue();
-        }
-        else
-        {
-            return value;
-        }
+        return ToBool(value) ?? defaultValue;
     }
 
     /// <summary>
@@ -104,77 +74,131 @@ public static class StringExtensions
     /// </summary>
     /// <param name="propertyType"></param>
     /// <param name="value"></param>
+    /// <param name="objResult"></param>
     /// <returns></returns>
-    public static object ObjToTypeValue(this Type propertyType, string value)
+    public static bool GetTypeValue(this Type propertyType, string value, out object objResult)
     {
-        object _value = null;
         if (propertyType == typeof(bool))
-            _value = value.GetBoolValue();
+            objResult = value.ToBool(false);
         else if (propertyType == typeof(byte))
-            _value = byte.Parse(value);
+            objResult = byte.Parse(value);
         else if (propertyType == typeof(sbyte))
-            _value = sbyte.Parse(value);
+            objResult = sbyte.Parse(value);
         else if (propertyType == typeof(short))
         {
             if (value.StartsWith("0x", StringComparison.OrdinalIgnoreCase))
-                _value = short.Parse(value.Substring(2), NumberStyles.HexNumber);
+                objResult = short.Parse(value.Substring(2), NumberStyles.HexNumber);
             else
-                _value = short.Parse(value);
+                objResult = short.Parse(value);
         }
         else if (propertyType == typeof(ushort))
         {
             if (value.StartsWith("0x", StringComparison.OrdinalIgnoreCase))
-                _value = ushort.Parse(value.Substring(2), NumberStyles.HexNumber);
+                objResult = ushort.Parse(value.Substring(2), NumberStyles.HexNumber);
             else
-                _value = ushort.Parse(value);
+                objResult = ushort.Parse(value);
         }
         else if (propertyType == typeof(int))
         {
             if (value.StartsWith("0x", StringComparison.OrdinalIgnoreCase))
-                _value = int.Parse(value.Substring(2), NumberStyles.HexNumber);
+                objResult = int.Parse(value.Substring(2), NumberStyles.HexNumber);
             else
-                _value = int.Parse(value);
+                objResult = int.Parse(value);
         }
         else if (propertyType == typeof(uint))
         {
             if (value.StartsWith("0x", StringComparison.OrdinalIgnoreCase))
-                _value = uint.Parse(value.Substring(2), NumberStyles.HexNumber);
+                objResult = uint.Parse(value.Substring(2), NumberStyles.HexNumber);
             else
-                _value = uint.Parse(value);
+                objResult = uint.Parse(value);
         }
         else if (propertyType == typeof(long))
         {
             if (value.StartsWith("0x", StringComparison.OrdinalIgnoreCase))
-                _value = long.Parse(value.Substring(2), NumberStyles.HexNumber);
+                objResult = long.Parse(value.Substring(2), NumberStyles.HexNumber);
             else
-                _value = long.Parse(value);
+                objResult = long.Parse(value);
         }
         else if (propertyType == typeof(ulong))
         {
             if (value.StartsWith("0x", StringComparison.OrdinalIgnoreCase))
-                _value = ulong.Parse(value.Substring(2), NumberStyles.HexNumber);
+                objResult = ulong.Parse(value.Substring(2), NumberStyles.HexNumber);
             else
-                _value = ulong.Parse(value);
+                objResult = ulong.Parse(value);
         }
         else if (propertyType == typeof(float))
-            _value = float.Parse(value);
+            objResult = float.Parse(value);
         else if (propertyType == typeof(double))
-            _value = double.Parse(value);
+            objResult = double.Parse(value);
         else if (propertyType == typeof(decimal))
-            _value = decimal.Parse(value);
+            objResult = decimal.Parse(value);
         else if (propertyType == typeof(DateTime))
-            _value = DateTime.Parse(value);
+            objResult = DateTime.Parse(value);
         else if (propertyType == typeof(DateTimeOffset))
-            _value = DateTimeOffset.Parse(value);
+            objResult = DateTimeOffset.Parse(value);
         else if (propertyType == typeof(string))
-            _value = value;
+            objResult = value;
         else if (propertyType == typeof(IPAddress))
-            _value = IPAddress.Parse(value);
+            objResult = IPAddress.Parse(value);
         else if (propertyType.IsEnum)
-            _value = Enum.Parse(propertyType, value);
-        return _value;
+            objResult = Enum.Parse(propertyType, value);
+        else
+        {
+            objResult = null;
+            return false;
+        }
+        return true;
     }
-
+    /// <summary>
+    /// 根据<see cref="Type"/> 数据类型转化返回值类型
+    /// </summary>
+    /// <param name="propertyType"></param>
+    /// <param name="value"></param>
+    /// <param name="objResult"></param>
+    /// <returns></returns>
+    public static bool GetTypeStringValue(this Type propertyType, object value, out string objResult)
+    {
+        if (propertyType == typeof(bool))
+            objResult = value.ToString();
+        else if (propertyType == typeof(byte))
+            objResult = value.ToString();
+        else if (propertyType == typeof(sbyte))
+            objResult = value.ToString();
+        else if (propertyType == typeof(short))
+            objResult = value.ToString();
+        else if (propertyType == typeof(ushort))
+            objResult = value.ToString();
+        else if (propertyType == typeof(int))
+            objResult = value.ToString();
+        else if (propertyType == typeof(uint))
+            objResult = value.ToString();
+        else if (propertyType == typeof(long))
+            objResult = value.ToString();
+        else if (propertyType == typeof(ulong))
+            objResult = value.ToString();
+        else if (propertyType == typeof(float))
+            objResult = value.ToString();
+        else if (propertyType == typeof(double))
+            objResult = value.ToString();
+        else if (propertyType == typeof(decimal))
+            objResult = value.ToString();
+        else if (propertyType == typeof(DateTime))
+            objResult = value.ToString();
+        else if (propertyType == typeof(DateTimeOffset))
+            objResult = value.ToString();
+        else if (propertyType == typeof(string))
+            objResult = value.ToString();
+        else if (propertyType == typeof(IPAddress))
+            objResult = value.ToString();
+        else if (propertyType.IsEnum)
+            objResult = value.ToString();
+        else
+        {
+            objResult = null;
+            return false;
+        }
+        return true;
+    }
 
     /// <summary>
     /// 将字符串数组转换成字符串
@@ -221,8 +245,8 @@ public static class StringExtensions
     }
 
     /// <summary>
-    /// <inheritdoc cref="Path.Combine(string[])"/>
-    /// 并把\\转为/
+    /// <inheritdoc cref="Path.Combine(string[])"/> <br></br>
+    /// 并把\转为/
     /// </summary>
     public static string CombinePathOS(this string path, params string[] ps)
     {
@@ -308,16 +332,27 @@ public static class StringExtensions
     public static bool MatchPhoneNumber(this string s) => !string.IsNullOrEmpty(s) && Regex.IsMatch(s, @"^1[3456789][0-9]{9}$");
 
     /// <summary>
-    /// 根据英文小数点进行切割字符串，去除空白的字符<br />
+    /// 根据英文小数点进行切割字符串，去除空白的字符
     /// </summary>
-    /// <param name="str">字符串本身</param>
-    public static string[] SplitDot(this string str)
+    public static string[] SplitStringByDelimiter(this string str)
     {
         return str.Split(new char[1]
 {
   '.'
 }, StringSplitOptions.RemoveEmptyEntries);
     }
+
+    /// <summary>
+    /// 根据英文分号割字符串，去除空白的字符
+    /// </summary>
+    public static string[] SplitStringBySemicolon(this string str)
+    {
+        return str.Split(new char[1]
+{
+  ';'
+}, StringSplitOptions.RemoveEmptyEntries);
+    }
+
 
     /// <summary>
     /// 只按第一个匹配项分割
@@ -347,17 +382,6 @@ public static class StringExtensions
     }
 
     /// <summary>
-    /// 转换布尔值
-    /// </summary>
-    /// <returns></returns>
-    public static bool ToBoolean(this string value, bool defaultValue = false) => value?.ToUpper() switch
-    {
-        "0" or "FALSE" => false,
-        "1" or "TRUE" => true,
-        _ => defaultValue,
-    };
-
-    /// <summary>
     /// ToDecimal
     /// </summary>
     /// <returns></returns>
@@ -371,7 +395,14 @@ public static class StringExtensions
     {
         return value.IsNullOrEmpty() ? defaultValue : int.TryParse(value, out int n) ? n : defaultValue;
     }
-
+    /// <summary>
+    /// ToUInt
+    /// </summary>
+    /// <returns></returns>
+    public static uint ToUInt(this string value, uint defaultValue = 0)
+    {
+        return value.IsNullOrEmpty() ? defaultValue : uint.TryParse(value, out uint n) ? n : defaultValue;
+    }
 
     /// <summary>
     /// ToLong

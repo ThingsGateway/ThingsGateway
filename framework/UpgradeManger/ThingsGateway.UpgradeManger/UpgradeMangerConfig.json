@@ -1,4 +1,0 @@
-{
-  "UpdateServerUri": "127.0.0.1:7400", //管理服务IP
-  "VerifyToken": "ThingsGateway" //验证Token
-}

@@ -15,22 +15,22 @@
 @using Microsoft.AspNetCore.Components.Web;
 @using System.IO.Ports;
 @using Masa.Blazor
-<MCard Elevation="1" Rounded="false" Class="pa-2" Style="width:100%">
+<MCard Flat Class="pa-2 my-1" Style="width:100%">
     <div class="mb-4">通道配置</div>
     <MRow Justify="JustifyTypes.Start" Align="AlignTypes.Center">
-        <MTextField Style="max-width:100px" Class="ma-1" Outlined Label=@(serialProperty.DescriptionWithOutSugar(x => x.PortName)) Dense HideDetails="@("auto")" @bind-Value=@serialProperty.PortName />
-        <MTextField Style="max-width:100px" Class="ma-1" Outlined Label=@(serialProperty.DescriptionWithOutSugar(x => x.BaudRate)) Dense HideDetails="@("auto")" @bind-Value=@serialProperty.BaudRate />
-        <MTextField Style="max-width:100px" Class="ma-1" Outlined Label=@(serialProperty.DescriptionWithOutSugar(x => x.DataBits)) Dense HideDetails="@("auto")" @bind-Value=@serialProperty.DataBits />
-        <MSelect Class="ma-1 " Style="max-width:200px" Outlined @bind-Value="serialProperty.Parity" Label="@(serialProperty.DescriptionWithOutSugar(x => x.Parity))"
-                 Items=@(typeof(Parity).GetEnumListWithOutSugar())
+        <MTextField Style="max-width:100px" Class="ma-1" Outlined Label=@(_serialProperty.Description(x => x.PortName)) Dense HideDetails="@("auto")" @bind-Value=@_serialProperty.PortName />
+        <MTextField Style="max-width:100px" Class="ma-1" Outlined Label=@(_serialProperty.Description(x => x.BaudRate)) Dense HideDetails="@("auto")" @bind-Value=@_serialProperty.BaudRate />
+        <MTextField Style="max-width:100px" Class="ma-1" Outlined Label=@(_serialProperty.Description(x => x.DataBits)) Dense HideDetails="@("auto")" @bind-Value=@_serialProperty.DataBits />
+        <MSelect Class="ma-1 " Style="max-width:200px" Outlined @bind-Value="_serialProperty.Parity" Label="@(_serialProperty.Description(x => x.Parity))"
+                 Items=@(typeof(Parity).GetEnumList())
                  MenuProps="@(props => { props.Auto = true; props.OffsetY = true; })"
                  ItemText=@((u) =>u.Description)
                  ItemValue=@(u =>(Parity)u.Value)
                  HideDetails=@("auto") Height="30"
                  Dense>
         </MSelect>
-        <MSelect Class="ma-1 " Style="max-width:200px" Outlined @bind-Value="serialProperty.StopBits" Label="@(serialProperty.DescriptionWithOutSugar(x => x.StopBits))"
-                 Items=@(typeof(StopBits).GetEnumListWithOutSugar())
+        <MSelect Class="ma-1 " Style="max-width:200px" Outlined @bind-Value="_serialProperty.StopBits" Label="@(_serialProperty.Description(x => x.StopBits))"
+                 Items=@(typeof(StopBits).GetEnumList())
                  MenuProps="@(props => { props.Auto = true; props.OffsetY = true; })"
                  ItemText=@((u) =>u.Description)
                  ItemValue=@(u =>(StopBits)u.Value)

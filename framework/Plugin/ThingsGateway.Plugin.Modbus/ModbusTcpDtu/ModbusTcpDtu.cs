@@ -10,6 +10,8 @@
 //------------------------------------------------------------------------------
 #endregion
 
+using ThingsGateway.Foundation.Demo;
+
 namespace ThingsGateway.Plugin.Modbus;
 
 /// <summary>
@@ -17,89 +19,47 @@ namespace ThingsGateway.Plugin.Modbus;
 /// </summary>
 public class ModbusTcpDtu : CollectBase
 {
-    /// <inheritdoc/>
-    protected override IReadWrite PLC => _plc;
+    private readonly ModbusTcpDtuProperty _driverPropertys = new();
+
     private ThingsGateway.Foundation.Adapter.Modbus.ModbusTcpDtu _plc;
 
-    private readonly ModbusTcpProperty driverPropertys = new();
+    /// <inheritdoc/>
+    public override Type DriverDebugUIType => typeof(ModbusTcpDtuDebugPage);
 
     /// <inheritdoc/>
-    public override Type DriverDebugUIType => typeof(ModbusTcpDebugPage);
+    public override DriverPropertyBase DriverPropertys => _driverPropertys;
+
+    public override Type DriverUIType => null;
 
     /// <inheritdoc/>
-    public override CollectDriverPropertyBase DriverPropertys => driverPropertys;
+    protected override IReadWrite _readWrite => _plc;
     /// <inheritdoc/>
-    public override bool IsSupportRequest => true;
-    /// <inheritdoc/>
-    public override IThingsGatewayBitConverter ThingsGatewayBitConverter { get => _plc?.ThingsGatewayBitConverter; }
-
-    /// <inheritdoc/>
-    public override Task AfterStopAsync()
+    protected override void Init(ISenderClient client = null)
     {
-        _plc?.Disconnect();
-        return Task.CompletedTask;
-    }
-
-    /// <inheritdoc/>
-    public override async Task BeforStartAsync(CancellationToken cancellationToken)
-    {
-        await _plc?.ConnectAsync(cancellationToken);
-    }
-    /// <inheritdoc/>
-    public override void InitDataAdapter()
-    {
-        _plc.SetDataAdapter();
-    }
-
-    /// <inheritdoc/>
-    public override bool IsConnected()
-    {
-        return _plc?.TcpService?.ServerState == ServerState.Running;
-    }
-
-    /// <inheritdoc/>
-    public override List<DeviceVariableSourceRead> LoadSourceRead(List<DeviceVariableRunTime> deviceVariables)
-    {
-        return _plc.LoadSourceRead<DeviceVariableSourceRead, DeviceVariableRunTime>(deviceVariables, driverPropertys.MaxPack);
-    }
-
-
-    /// <inheritdoc/>
-    protected override void Dispose(bool disposing)
-    {
-        _plc?.Disconnect();
-        _plc?.SafeDispose();
-        base.Dispose(disposing);
-    }
-    /// <inheritdoc/>
-    protected override void Init(CollectDeviceRunTime device, object client = null)
-    {
-        if (client == null)
+        IPHost iPHost = new(_driverPropertys.Port);
+        if (!string.IsNullOrEmpty(_driverPropertys.IP))
         {
-            IPHost iPHost = new(driverPropertys.Port);
-            if (!string.IsNullOrEmpty(driverPropertys.IP))
-            {
-                iPHost = new IPHost($"{driverPropertys.IP}:{driverPropertys.Port}");
-            }
-            FoundataionConfig.SetListenIPHosts(new IPHost[] { iPHost });
-            client = new TcpService();
-            ((TcpService)client).Setup(FoundataionConfig);
+            iPHost = new IPHost($"{_driverPropertys.IP}:{_driverPropertys.Port}");
         }
+        FoundataionConfig.SetListenIPHosts(new IPHost[] { iPHost });
+        var client1 = new TcpService();
+        ((TcpService)client1).Setup(FoundataionConfig);
         //载入配置
         _plc = new((TcpService)client)
         {
-            DataFormat = driverPropertys.DataFormat,
-            FrameTime = driverPropertys.FrameTime,
-            CacheTimeout = driverPropertys.CacheTimeout,
-            ConnectTimeOut = driverPropertys.ConnectTimeOut,
-            Station = driverPropertys.Station,
-            TimeOut = driverPropertys.TimeOut,
-            IsCheckMessageId = driverPropertys.MessageIdCheckEnable
+            DataFormat = _driverPropertys.DataFormat,
+            FrameTime = _driverPropertys.FrameTime,
+            CacheTimeout = _driverPropertys.CacheTimeout,
+            Station = _driverPropertys.Station,
+            TimeOut = _driverPropertys.TimeOut,
+            IsCheckMessageId = _driverPropertys.MessageIdCheckEnable
         };
+        base.Init(client);
     }
+
     /// <inheritdoc/>
-    protected override async Task<OperResult<byte[]>> ReadAsync(string address, int length, CancellationToken cancellationToken)
+    protected override List<DeviceVariableSourceRead> ProtectedLoadSourceRead(List<DeviceVariableRunTime> deviceVariables)
     {
-        return await _plc.ReadAsync(address, length, cancellationToken);
+        return _plc.LoadSourceRead<DeviceVariableSourceRead, DeviceVariableRunTime>(deviceVariables, _driverPropertys.MaxPack, CurrentDevice.IntervalTime);
     }
 }

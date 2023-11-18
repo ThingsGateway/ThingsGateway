@@ -16,6 +16,7 @@ using Furion.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 
 using System.Security.Claims;
 
@@ -28,6 +29,11 @@ namespace ThingsGateway.Web.Core;
 /// <inheritdoc/>
 public class BlazorAuthorizeHandler : AppAuthorizeHandler
 {
+    private readonly IServiceScope _serviceScope;
+    public BlazorAuthorizeHandler(IServiceScopeFactory serviceScopeFactory)
+    {
+        _serviceScope = serviceScopeFactory.CreateScope();
+    }
     /// <inheritdoc/>
     public override async Task HandleAsync(AuthorizationHandlerContext context)
     {
@@ -69,10 +75,10 @@ public class BlazorAuthorizeHandler : AppAuthorizeHandler
 
         //这里鉴别密码是否改变
         var userId = context.User.Claims.FirstOrDefault(it => it.Type == ClaimConst.UserId).Value.ToLong();
-        var isOpenApi = context.User.Claims.FirstOrDefault(it => it.Type == ClaimConst.IsOpenApi)?.Value?.ToBoolean() == true;
+        var isOpenApi = context.User.Claims.FirstOrDefault(it => it.Type == ClaimConst.IsOpenApi)?.Value?.ToBool() == true;
         if (isOpenApi)
         {
-            var _openApiUserService = App.GetService<OpenApiUserService>();
+            var _openApiUserService = _serviceScope.ServiceProvider.GetService<OpenApiUserService>();
             var user = await _openApiUserService.GetUsertByIdAsync(userId);
             if (user == null) { return false; }
             // 此处已经自动验证 Jwt Verificat的有效性了，无需手动验证
@@ -87,12 +93,12 @@ public class BlazorAuthorizeHandler : AppAuthorizeHandler
         }
         else
         {
-            var _sysUserService = App.GetService<SysUserService>();
+            var _sysUserService = _serviceScope.ServiceProvider.GetService<SysUserService>();
             var user = await _sysUserService.GetUserByIdAsync(userId);
             if (user == null) { return false; }
 
             //超级管理员都能访问
-            if (context.User.Claims.FirstOrDefault(it => it.Type == ClaimConst.IsSuperAdmin)?.Value.ToBoolean() == true) return true;
+            if (context.User.Claims.FirstOrDefault(it => it.Type == ClaimConst.IsSuperAdmin)?.Value.ToBool() == true) return true;
             if (context.Resource is RouteData routeData)
             {
                 // 获取超级管理员特性
@@ -145,8 +151,8 @@ public class BlazorAuthorizeHandler : AppAuthorizeHandler
     {
         var userId = context.User.Claims.FirstOrDefault(it => it.Type == ClaimConst.UserId).Value;
         var verificatId = context.User.Claims.FirstOrDefault(it => it.Type == ClaimConst.VerificatId)?.Value;
-        var isOpenApi = context.User.Claims.FirstOrDefault(it => it.Type == ClaimConst.IsOpenApi)?.Value?.ToBoolean(false) == true;
-        var _verificatService = App.GetService<VerificatService>();
+        var isOpenApi = context.User.Claims.FirstOrDefault(it => it.Type == ClaimConst.IsOpenApi)?.Value?.ToBool(false) == true;
+        var _verificatService = _serviceScope.ServiceProvider.GetService<VerificatService>();
         if (isOpenApi)
         {
             var openapiverificat = await _verificatService.GetOpenApiVerificatIdAsync(userId.ToLong());

@@ -38,7 +38,7 @@ public class ModbusRtuOverUdp : ReadWriteDevicesUdpSessionBase
     /// <inheritdoc/>
     public override string GetAddressDescription()
     {
-        return base.GetAddressDescription() + Environment.NewLine + ModbusHelper.GetAddressDescription();
+        return $"{base.GetAddressDescription()}{Environment.NewLine}{ModbusHelper.GetAddressDescription()}";
     }
     /// <inheritdoc/>
     public override OperResult<byte[]> Read(string address, int length, CancellationToken cancellationToken = default)
@@ -47,7 +47,8 @@ public class ModbusRtuOverUdp : ReadWriteDevicesUdpSessionBase
         {
             Connect(cancellationToken);
             var commandResult = ModbusHelper.GetReadModbusCommand(address, length, Station);
-            return SendThenReturn(commandResult, cancellationToken);
+            if (!commandResult.IsSuccess) return commandResult;
+            return SendThenReturn<ModbusRtuMessage>(commandResult.Content, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -62,7 +63,8 @@ public class ModbusRtuOverUdp : ReadWriteDevicesUdpSessionBase
         {
             await ConnectAsync(cancellationToken);
             var commandResult = ModbusHelper.GetReadModbusCommand(address, length, Station);
-            return await SendThenReturnAsync(commandResult, cancellationToken);
+            if (!commandResult.IsSuccess) return commandResult;
+            return await SendThenReturnAsync<ModbusRtuMessage>(commandResult.Content, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -71,7 +73,7 @@ public class ModbusRtuOverUdp : ReadWriteDevicesUdpSessionBase
     }
 
     /// <inheritdoc/>
-    public override void SetDataAdapter(object socketClient = null)
+    public override void SetDataAdapter(ISocketClient socketClient = default)
     {
         ModbusRtuOverUdpDataHandleAdapter dataHandleAdapter = new()
         {
@@ -85,10 +87,9 @@ public class ModbusRtuOverUdp : ReadWriteDevicesUdpSessionBase
     }
 
     /// <inheritdoc/>
-    public override List<T> LoadSourceRead<T, T2>(List<T2> deviceVariables, int maxPack)
+    public override List<T> LoadSourceRead<T, T2>(List<T2> deviceVariables, int maxPack, int defaultIntervalTime)
     {
-        return PackHelper.LoadSourceRead<T, T2>(this, deviceVariables, maxPack);
-
+        return PackHelper.LoadSourceRead<T, T2>(this, deviceVariables, maxPack, defaultIntervalTime);
     }
 
     /// <inheritdoc/>
@@ -98,7 +99,8 @@ public class ModbusRtuOverUdp : ReadWriteDevicesUdpSessionBase
         {
             Connect(cancellationToken);
             var commandResult = ModbusHelper.GetWriteModbusCommand(address, value, Station);
-            return SendThenReturn(commandResult, cancellationToken);
+            if (!commandResult.IsSuccess) return commandResult;
+            return SendThenReturn<ModbusRtuMessage>(commandResult.Content, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -113,7 +115,8 @@ public class ModbusRtuOverUdp : ReadWriteDevicesUdpSessionBase
         {
             Connect(cancellationToken);
             var commandResult = ModbusHelper.GetWriteBoolModbusCommand(address, value, Station);
-            return SendThenReturn(commandResult, cancellationToken);
+            if (!commandResult.IsSuccess) return commandResult;
+            return SendThenReturn<ModbusRtuMessage>(commandResult.Content, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -128,7 +131,8 @@ public class ModbusRtuOverUdp : ReadWriteDevicesUdpSessionBase
         {
             await ConnectAsync(cancellationToken);
             var commandResult = ModbusHelper.GetWriteModbusCommand(address, value, Station);
-            return await SendThenReturnAsync(commandResult, cancellationToken);
+            if (!commandResult.IsSuccess) return commandResult;
+            return await SendThenReturnAsync<ModbusRtuMessage>(commandResult.Content, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -143,7 +147,8 @@ public class ModbusRtuOverUdp : ReadWriteDevicesUdpSessionBase
         {
             await ConnectAsync(cancellationToken);
             var commandResult = ModbusHelper.GetWriteBoolModbusCommand(address, value, Station);
-            return await SendThenReturnAsync(commandResult, cancellationToken);
+            if (!commandResult.IsSuccess) return commandResult;
+            return await SendThenReturnAsync<ModbusRtuMessage>(commandResult.Content, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -151,34 +156,5 @@ public class ModbusRtuOverUdp : ReadWriteDevicesUdpSessionBase
         }
     }
 
-    private OperResult<byte[]> SendThenReturn(OperResult<byte[]> commandResult, CancellationToken cancellationToken)
-    {
-        if (commandResult.IsSuccess)
-        {
-            var item = commandResult.Content;
-            if (FrameTime != 0)
-                Thread.Sleep(FrameTime);
-            var result = WaitingClientEx.SendThenResponse(item, TimeOut, cancellationToken);
-            return (MessageBase)result.RequestInfo;
-        }
-        else
-        {
-            return new OperResult<byte[]>(commandResult.Message);
-        }
-    }
 
-    private async Task<OperResult<byte[]>> SendThenReturnAsync(OperResult<byte[]> commandResult, CancellationToken cancellationToken)
-    {
-        if (commandResult.IsSuccess)
-        {
-            var item = commandResult.Content;
-            await Task.Delay(FrameTime, cancellationToken);
-            var result = await WaitingClientEx.SendThenResponseAsync(item, TimeOut, cancellationToken);
-            return (MessageBase)result.RequestInfo;
-        }
-        else
-        {
-            return new OperResult<byte[]>(commandResult.Message);
-        }
-    }
 }

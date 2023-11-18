@@ -34,7 +34,8 @@ public abstract class ReadWriteDevicesTcpClientBase : ReadWriteDevicesBase
         TcpClient.Disconnected += Disconnected;
         Logger = TcpClient.Logger;
     }
-
+    /// <inheritdoc/>
+    public override ChannelEnum ChannelEnum => ChannelEnum.TcpClient;
     /// <summary>
     /// 连接超时时间
     /// </summary>
@@ -51,6 +52,11 @@ public abstract class ReadWriteDevicesTcpClientBase : ReadWriteDevicesBase
     /// </summary>
     public virtual IWaitingClient<TcpClient> WaitingClientEx { get; }
     /// <inheritdoc/>
+    public override bool IsConnected()
+    {
+        return TcpClient?.CanSend == true;
+    }
+    /// <inheritdoc/>
     public override void Connect(CancellationToken cancellationToken)
     {
         TcpClient.Connect(ConnectTimeOut);
@@ -65,7 +71,7 @@ public abstract class ReadWriteDevicesTcpClientBase : ReadWriteDevicesBase
     /// <inheritdoc/>
     public override void Disconnect()
     {
-        if (CascadeDisposal)
+        if (CascadeDisposal && IsConnected())
             TcpClient.Close();
     }
 
@@ -77,38 +83,8 @@ public abstract class ReadWriteDevicesTcpClientBase : ReadWriteDevicesBase
         TcpClient.Connected -= Connected;
         TcpClient.Disconnecting -= Disconnecting;
         TcpClient.Disconnected -= Disconnected;
-        if (CascadeDisposal)
+        if (CascadeDisposal && !TcpClient.DisposedValue)
             TcpClient.SafeDispose();
-    }
-
-    /// <inheritdoc/>
-    public OperResult<byte[]> SendThenResponse(byte[] data, WaitingOptions waitingOptions = null, CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            waitingOptions ??= new WaitingOptions { };
-            ResponsedData result = TcpClient.CreateWaitingClient(waitingOptions).SendThenResponse(data, TimeOut, cancellationToken);
-            return OperResult.CreateSuccessResult(result.Data);
-        }
-        catch (Exception ex)
-        {
-            return new OperResult<byte[]>(ex);
-        }
-    }
-
-    /// <inheritdoc/>
-    public async Task<OperResult<byte[]>> SendThenResponseAsync(byte[] data, WaitingOptions waitingOptions = null, CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            waitingOptions ??= new WaitingOptions { };
-            ResponsedData result = await TcpClient.CreateWaitingClient(waitingOptions).SendThenResponseAsync(data, TimeOut, cancellationToken);
-            return OperResult.CreateSuccessResult(result.Data);
-        }
-        catch (Exception ex)
-        {
-            return new OperResult<byte[]>(ex);
-        }
     }
 
     /// <inheritdoc/>
@@ -117,7 +93,7 @@ public abstract class ReadWriteDevicesTcpClientBase : ReadWriteDevicesBase
         return TcpClient.RemoteIPHost.ToString();
     }
     /// <summary>
-    /// Connected
+    /// 连接成功
     /// </summary>
     /// <param name="client"></param>
     /// <param name="e"></param>
@@ -125,25 +101,48 @@ public abstract class ReadWriteDevicesTcpClientBase : ReadWriteDevicesBase
     protected virtual Task Connected(ITcpClient client, ConnectedEventArgs e)
     {
         Logger?.Debug(client.RemoteIPHost.ToString() + "连接成功");
-        SetDataAdapter();
         return EasyTask.CompletedTask;
     }
 
-    private Task Connecting(ITcpClient client, ConnectingEventArgs e)
+    private async Task Connecting(ITcpClient client, ConnectingEventArgs e)
     {
         Logger?.Debug(client.RemoteIPHost.ToString() + "正在连接");
-        return EasyTask.CompletedTask;
+        SetDataAdapter();
+        await EasyTask.CompletedTask;
     }
 
-    private Task Disconnected(ITcpClientBase client, DisconnectEventArgs e)
+    private async Task Disconnected(ITcpClientBase client, DisconnectEventArgs e)
     {
         Logger?.Debug($"{client.IP}:{client.Port}断开连接-{e.Message}");
-        return EasyTask.CompletedTask;
+        await EasyTask.CompletedTask;
     }
 
-    private Task Disconnecting(ITcpClientBase client, DisconnectEventArgs e)
+    private async Task Disconnecting(ITcpClientBase client, DisconnectEventArgs e)
     {
         Logger?.Debug($"{client.IP}:{client.Port}正在主动断开连接-{e.Message}");
-        return EasyTask.CompletedTask;
+        await EasyTask.CompletedTask;
+    }
+
+    /// <inheritdoc/>
+    public override Task<ResponsedData> GetResponsedDataAsync(byte[] item, int timeout, CancellationToken cancellationToken, ISenderClient senderClient = default)
+    {
+        if (senderClient == default)
+            return WaitingClientEx.SendThenResponseAsync(item, TimeOut, cancellationToken);
+        else
+            return senderClient.CreateWaitingClient(new()).SendThenResponseAsync(item, TimeOut, cancellationToken);
+    }
+
+    /// <inheritdoc/>
+    public override ResponsedData GetResponsedData(byte[] item, int timeout, CancellationToken cancellationToken, ISenderClient senderClient = default)
+    {
+        if (senderClient == default)
+            return WaitingClientEx.SendThenResponse(item, TimeOut, cancellationToken);
+        else
+            return senderClient.CreateWaitingClient(new()).SendThenResponse(item, TimeOut, cancellationToken);
+    }
+    /// <inheritdoc/>
+    public override void Send(byte[] command, string id = default)
+    {
+        TcpClient.Send(command);
     }
 }

@@ -26,7 +26,41 @@ public class DLT645_2007BitConverter : ThingsGatewayBitConverter
     public DLT645_2007BitConverter(EndianType endianType) : base(endianType)
     {
     }
-
+    /// <inheritdoc/>
+    public override short ToInt16(byte[] buffer, int offset)
+    {
+        return Convert.ToInt16(this.ToString(buffer, offset, buffer.Length));
+    }
+    /// <inheritdoc/>
+    public override ushort ToUInt16(byte[] buffer, int offset)
+    {
+        return Convert.ToUInt16(this.ToString(buffer, offset, buffer.Length));
+    }
+    /// <inheritdoc/>
+    public override float ToSingle(byte[] buffer, int offset)
+    {
+        return Convert.ToSingle(this.ToString(buffer, offset, buffer.Length));
+    }
+    /// <inheritdoc/>
+    public override long ToInt64(byte[] buffer, int offset)
+    {
+        return Convert.ToInt64(this.ToString(buffer, offset, buffer.Length));
+    }
+    /// <inheritdoc/>
+    public override int ToInt32(byte[] buffer, int offset)
+    {
+        return Convert.ToInt32(this.ToString(buffer, offset, buffer.Length));
+    }
+    /// <inheritdoc/>
+    public override uint ToUInt32(byte[] buffer, int offset)
+    {
+        return Convert.ToUInt32(this.ToString(buffer, offset, buffer.Length));
+    }
+    /// <inheritdoc/>
+    public override ulong ToUInt64(byte[] buffer, int offset)
+    {
+        return Convert.ToUInt64(this.ToString(buffer, offset, buffer.Length));
+    }
     /// <summary>
     /// DLT645协议转换double
     /// </summary>

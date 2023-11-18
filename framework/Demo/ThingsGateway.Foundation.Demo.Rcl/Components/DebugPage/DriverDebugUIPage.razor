@@ -47,7 +47,7 @@
                                 <MRow Class="my-1" Justify="JustifyTypes.Start" Align="AlignTypes.Start" NoGutters>
                                 <MTextField Class="mx-1 my-1" Style="max-width:200px" Label="读取长度" Dense Outlined HideDetails="@("auto")" @bind-Value=@Length />
                                     <MSelect Class="mx-1 my-1" Style="max-width:200px" @bind-Value="DataTypeEnum" Outlined Label="数据类型"
-                                             Items=@(typeof(DataTypeEnum).GetEnumListWithOutSugar())
+                                             Items=@(typeof(DataTypeEnum).GetEnumList())
                                              MenuProps="@(props => { props.Auto = true; props.OffsetY = true; })"
                                              ItemText=@((u) =>u.Description)
                                              ItemValue=@(u =>(DataTypeEnum)u.Value)
@@ -87,9 +87,9 @@
                                 @foreach (var item in DeviceVariableRunTimes)
                                 {
                                     <MRow Dense Align="AlignTypes.Center">
-                                        <MTextField Class="ma-1" Outlined Style="min-width:100px" Label=@(item.DescriptionWithOutSugar(x => x.VariableAddress)) Dense HideDetails="@("auto")" @bind-Value=@item.VariableAddress></MTextField>
-                                        <MSelect Class="mx-1 my-1" Style="max-width:120px" @bind-Value="item.DataTypeEnum" Outlined Label=@(item.DescriptionWithOutSugar(x => x.DataTypeEnum))
-                                                 Items=@(typeof(DataTypeEnum).GetEnumListWithOutSugar())
+                                        <MTextField Class="ma-1" Outlined Style="min-width:100px" Label=@(item.Description(x => x.Address)) Dense HideDetails="@("auto")" @bind-Value=@item.Address></MTextField>
+                                        <MSelect Class="mx-1 my-1" Style="max-width:120px" @bind-Value="item.DataTypeEnum" Outlined Label=@(item.Description(x => x.DataTypeEnum))
+                                                 Items=@(typeof(DataTypeEnum).GetEnumList())
                                                  MenuProps="@(props => { props.Auto = true; props.OffsetY = true; })"
                                                  ItemText=@((u) =>u.Description)
                                                  ItemValue=@(u =>(DataTypeEnum)u.Value)
@@ -97,7 +97,7 @@
                                               Dense>
                                     </MSelect>
 
-                                    <MTextField Class="ma-1" Outlined Style="max-width:100px" Label=@(item.DescriptionWithOutSugar(x => x.IntervalTime)) Dense HideDetails="@("auto")" @bind-Value=@item.IntervalTime></MTextField>
+                                    <MTextField Class="ma-1" Outlined Style="max-width:100px" Label=@(item.Description(x => x.IntervalTime)) Dense HideDetails="@("auto")" @bind-Value=@item.IntervalTime></MTextField>
 
                                         <MTextField Class="ma-1" Outlined Style="max-width:100px" Label=实时值 Readonly ClearIcon="" Dense HideDetails="@("auto")" Value=item.Value?.ToJsonString()></MTextField>
 

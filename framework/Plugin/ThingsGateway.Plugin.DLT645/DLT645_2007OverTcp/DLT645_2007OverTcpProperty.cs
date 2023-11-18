@@ -15,7 +15,7 @@ namespace ThingsGateway.Plugin.DLT645;
 /// <summary>
 /// <inheritdoc/>
 /// </summary>
-public class DLT645_2007OverTcpProperty : CollectDriverPropertyBase
+public class DLT645_2007OverTcpProperty : DriverPropertyBase
 {
     /// <summary>
     /// IP

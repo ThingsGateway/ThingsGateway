@@ -18,9 +18,9 @@ namespace ThingsGateway.Foundation.Demo;
 public class DeviceVariableSourceRead : IDeviceVariableSourceRead<IDeviceVariableRunTime>
 {
     /// <inheritdoc/>
-    public TimerTick TimerTick { get; set; }
+    public TimerTick IntervalTimeTick { get; set; }
     /// <inheritdoc/>
-    public string VariableAddress { get; set; }
+    public string Address { get; set; }
     /// <inheritdoc/>
     public int Length { get; set; }
     /// <inheritdoc/>

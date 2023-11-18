@@ -30,6 +30,15 @@ namespace ThingsGateway.Foundation.Rpc
     /// </summary>
     public interface IRpcActionFilter
     {
+
+        /// <summary>
+        /// 互斥访问类型。
+        /// <para>
+        /// 当互斥访问类型或其派生类和本类型同时添加特性时，只有优先级更高的会生效。
+        /// </para>
+        /// </summary>
+        Type[] MutexAccessTypes { get; }
+
         /// <summary>
         /// 成功执行Rpc后。
         /// <para>如果修改<paramref name="invokeResult"/>的InvokeStatus，或Result。则会影响Rpc最终结果</para>

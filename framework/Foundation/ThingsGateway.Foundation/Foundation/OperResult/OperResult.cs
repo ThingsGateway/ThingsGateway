@@ -285,6 +285,4 @@ public static class OperResultExtensions
         return !result.IsSuccess ? new(result) : func(result.Content);
     }
 
-
-
 }

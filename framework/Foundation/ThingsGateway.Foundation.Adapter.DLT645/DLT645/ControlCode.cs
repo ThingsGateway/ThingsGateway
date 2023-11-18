@@ -15,7 +15,7 @@ namespace ThingsGateway.Foundation.Adapter.DLT645;
 /// <summary>
 /// 控制码
 /// </summary>
-public enum ControlCode : byte
+internal enum ControlCode : byte
 {
     /// <summary>
     /// 读数据

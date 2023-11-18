@@ -10,99 +10,60 @@
 //------------------------------------------------------------------------------
 #endregion
 
+using ThingsGateway.Foundation.Demo;
+
 namespace ThingsGateway.Plugin.Modbus;
 
 /// <inheritdoc/>
 public class ModbusRtu : CollectBase
 {
-    private readonly ModbusRtuProperty driverPropertys = new();
+    private readonly ModbusRtuProperty _driverPropertys = new();
     /// <inheritdoc/>
-    protected override IReadWrite PLC => _plc;
+    protected override IReadWrite _readWrite => _plc;
     private ThingsGateway.Foundation.Adapter.Modbus.ModbusRtu _plc;
+
     /// <inheritdoc/>
     public override Type DriverDebugUIType => typeof(ModbusRtuDebugPage);
+    /// <inheritdoc/>
+    public override Type DriverUIType => null;
+
+    /// <inheritdoc/>
+    public override DriverPropertyBase DriverPropertys => _driverPropertys;
 
 
     /// <inheritdoc/>
-    public override CollectDriverPropertyBase DriverPropertys => driverPropertys;
-
-    /// <summary>
-    /// <inheritdoc/>
-    /// </summary>
-    public override bool IsSupportRequest => true;
-
-    /// <inheritdoc/>
-    public override IThingsGatewayBitConverter ThingsGatewayBitConverter { get => _plc?.ThingsGatewayBitConverter; }
-
-    /// <inheritdoc/>
-    public override Task AfterStopAsync()
+    protected override List<DeviceVariableSourceRead> ProtectedLoadSourceRead(List<DeviceVariableRunTime> deviceVariables)
     {
-        _plc?.Disconnect();
-        return Task.CompletedTask;
+        return _plc.LoadSourceRead<DeviceVariableSourceRead, DeviceVariableRunTime>(deviceVariables, _driverPropertys.MaxPack, CurrentDevice.IntervalTime);
     }
 
     /// <inheritdoc/>
-    public override async Task BeforStartAsync(CancellationToken cancellationToken)
-    {
-        await _plc?.ConnectAsync(cancellationToken);
-    }
-    /// <inheritdoc/>
-    protected override void Dispose(bool disposing)
-    {
-        _plc?.Disconnect();
-        _plc?.SafeDispose();
-        base.Dispose(disposing);
-    }
-
-    /// <inheritdoc/>
-    public override void InitDataAdapter()
-    {
-        _plc.SetDataAdapter();
-    }
-    /// <inheritdoc/>
-    public override bool IsConnected()
-    {
-        return _plc?.SerialSession?.CanSend == true;
-    }
-    /// <inheritdoc/>
-    public override List<DeviceVariableSourceRead> LoadSourceRead(List<DeviceVariableRunTime> deviceVariables)
-    {
-        return _plc.LoadSourceRead<DeviceVariableSourceRead, DeviceVariableRunTime>(deviceVariables, driverPropertys.MaxPack);
-    }
-
-    /// <inheritdoc/>
-    protected override void Init(CollectDeviceRunTime device, object client = null)
+    protected override void Init(ISenderClient client = null)
     {
         if (client == null)
         {
             FoundataionConfig.SetSerialProperty(new()
             {
-                PortName = driverPropertys.PortName,
-                BaudRate = driverPropertys.BaudRate,
-                DataBits = driverPropertys.DataBits,
-                Parity = driverPropertys.Parity,
-                StopBits = driverPropertys.StopBits,
-            })
-                ;
+                PortName = _driverPropertys.PortName,
+                BaudRate = _driverPropertys.BaudRate,
+                DataBits = _driverPropertys.DataBits,
+                Parity = _driverPropertys.Parity,
+                StopBits = _driverPropertys.StopBits,
+            });
             client = new SerialSession();
             ((SerialSession)client).Setup(FoundataionConfig);
         }
         //载入配置
         _plc = new((SerialSession)client)
         {
-            Crc16CheckEnable = driverPropertys.Crc16CheckEnable,
-            FrameTime = driverPropertys.FrameTime,
-            CacheTimeout = driverPropertys.CacheTimeout,
-            DataFormat = driverPropertys.DataFormat,
-            Station = driverPropertys.Station,
-            TimeOut = driverPropertys.TimeOut
+            Crc16CheckEnable = _driverPropertys.Crc16CheckEnable,
+            FrameTime = _driverPropertys.FrameTime,
+            CacheTimeout = _driverPropertys.CacheTimeout,
+            DataFormat = _driverPropertys.DataFormat,
+            Station = _driverPropertys.Station,
+            TimeOut = _driverPropertys.TimeOut
         };
-    }
-
-    /// <inheritdoc/>
-    protected override async Task<OperResult<byte[]>> ReadAsync(string address, int length, CancellationToken cancellationToken)
-    {
-        return await _plc.ReadAsync(address, length, cancellationToken);
+        base.Init(client);
     }
 
 }

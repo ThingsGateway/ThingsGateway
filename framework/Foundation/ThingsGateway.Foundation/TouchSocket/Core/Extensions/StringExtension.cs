@@ -190,7 +190,7 @@ namespace ThingsGateway.Foundation.Core
             }
             catch (Exception e)
             {
-                throw new InvalidOperationException($" 类型转换出错：{value.ToString()}==>{destinationType}", e);
+                throw new InvalidOperationException($" 类型转换出错：{value}==>{destinationType}", e);
             }
             return returnValue;
         }

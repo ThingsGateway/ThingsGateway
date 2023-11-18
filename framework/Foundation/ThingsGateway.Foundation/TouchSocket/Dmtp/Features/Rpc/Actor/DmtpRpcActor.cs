@@ -233,12 +233,8 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
                     {
                         if (methodInstance.IsEnable)
                         {
-                            callContext = new DmtpRpcCallContext()
-                            {
-                                Caller = this.DmtpActor.Client,
-                                MethodInstance = methodInstance,
-                                DmtpRpcPackage = rpcPackage
-                            };
+                            callContext = new DmtpRpcCallContext(this.DmtpActor.Client, methodInstance, rpcPackage);
+
                             this.TryAdd(rpcPackage.Sign, callContext);
                             if (methodInstance.IncludeCallContext)
                             {
@@ -468,10 +464,6 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
                                     throw new Exception(e.Message);
                                 }
                             }
-                            else
-                            {
-                                parameters = null;
-                            }
                             return this.SerializationSelector.DeserializeParameter(resultContext.SerializationType, resultContext.ReturnParameterBytes, returnType);
                         }
                     default:
@@ -542,10 +534,6 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
                                 {
                                     parameters[i] = this.SerializationSelector.DeserializeParameter(resultContext.SerializationType, resultContext.ParametersBytes[i], types[i]);
                                 }
-                            }
-                            else
-                            {
-                                parameters = null;
                             }
                             break;
                         }
@@ -1093,10 +1081,6 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
                                     parameters[i] = this.SerializationSelector.DeserializeParameter(resultContext.SerializationType, resultContext.ParametersBytes[i], types[i]);
                                 }
                             }
-                            else
-                            {
-                                parameters = null;
-                            }
                             return;
                         }
 
@@ -1185,10 +1169,6 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
                                 {
                                     parameters[i] = this.SerializationSelector.DeserializeParameter(resultContext.SerializationType, resultContext.ParametersBytes[i], types[i]);
                                 }
-                            }
-                            else
-                            {
-                                parameters = null;
                             }
                             return this.SerializationSelector.DeserializeParameter(resultContext.SerializationType, resultContext.ReturnParameterBytes, returnType);
                         }

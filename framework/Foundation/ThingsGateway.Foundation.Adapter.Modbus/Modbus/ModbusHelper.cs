@@ -24,7 +24,7 @@ internal class ModbusHelper
     /// </summary>
     internal static byte[] AddCrc(byte[] command)
     {
-        return EasyCRC16.CRC16(command);
+        return CRC16Utils.CRC16(command);
     }
 
     /// <summary>
@@ -149,7 +149,7 @@ internal class ModbusHelper
 
 
         var data = response.SelectMiddle(0, response[2] != 0 ? response[2] + 5 : 8);
-        if (crcCheck && !EasyCRC16.CheckCRC16(data))
+        if (crcCheck && !CRC16Utils.CheckCRC16(data))
             return new OperResult<byte[], FilterResult>("Crc校验失败" + DataTransUtil.ByteToHexString(data, ' ')) { Content2 = FilterResult.Success };
         return GetModbusData(send, data.RemoveLast(2));
     }

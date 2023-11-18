@@ -51,6 +51,59 @@ namespace ThingsGateway.Foundation.Sockets
         /// </summary>
         /// <param name="client"></param>
         /// <param name="buffer">数据缓存区</param>
+        /// <param name="timeout">超时时间</param>
+        /// <param name="token">取消令箭</param>
+        /// <exception cref="NotConnectedException">客户端没有连接</exception>
+        /// <exception cref="OverlengthException">发送数据超长</exception>
+        /// <exception cref="Exception">其他异常</exception>
+        /// <returns>返回的数据</returns>
+        public static ResponsedData SendThenResponse<TClient>(this IWaitingClient<TClient> client, byte[] buffer, int timeout, CancellationToken token)
+            where TClient : IClient, ISender
+        {
+            if (token.CanBeCanceled)
+            {
+                using var timeoutToken = new CancellationTokenSource(timeout);
+                using CancellationTokenSource cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(timeoutToken.Token, token);
+                return client.SendThenResponse(buffer, 0, buffer.Length, cancellationTokenSource.Token);
+            }
+            else
+            {
+                using var timeoutToken = new CancellationTokenSource(timeout);
+                return client.SendThenResponse(buffer, 0, buffer.Length, timeoutToken.Token);
+            }
+        }
+        /// <summary>
+        /// 发送数据并等待
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="buffer">数据缓存区</param>
+        /// <param name="timeout">超时时间</param>
+        /// <param name="token">取消令箭</param>
+        /// <exception cref="NotConnectedException">客户端没有连接</exception>
+        /// <exception cref="OverlengthException">发送数据超长</exception>
+        /// <exception cref="Exception">其他异常</exception>
+        /// <returns>返回的数据</returns>
+        public static async Task<ResponsedData> SendThenResponseAsync<TClient>(this IWaitingClient<TClient> client, byte[] buffer, int timeout, CancellationToken token)
+            where TClient : IClient, ISender
+        {
+            if (token.CanBeCanceled)
+            {
+                using var timeoutToken = new CancellationTokenSource(timeout);
+                using CancellationTokenSource cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(timeoutToken.Token, token);
+                return await client.SendThenResponseAsync(buffer, cancellationTokenSource.Token);
+            }
+            else
+            {
+                using var timeoutToken = new CancellationTokenSource(timeout);
+                return await client.SendThenResponseAsync(buffer, timeoutToken.Token);
+            }
+        }
+
+        /// <summary>
+        /// 发送数据并等待
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="buffer">数据缓存区</param>
         /// <param name="token">取消令箭</param>
         /// <exception cref="NotConnectedException">客户端没有连接</exception>
         /// <exception cref="OverlengthException">发送数据超长</exception>
@@ -76,47 +129,6 @@ namespace ThingsGateway.Foundation.Sockets
             where TClient : IClient, ISender
         {
             return client.SendThenResponse(Encoding.UTF8.GetBytes(msg), token);
-        }
-        /// <summary>
-        /// 发送数据并等待
-        /// </summary>
-        /// <param name="client"></param>
-        /// <param name="buffer">数据缓存区</param>
-        /// <param name="timeout">超时时间</param>
-        /// <param name="token">取消令箭</param>
-        /// <exception cref="NotConnectedException">客户端没有连接</exception>
-        /// <exception cref="OverlengthException">发送数据超长</exception>
-        /// <exception cref="Exception">其他异常</exception>
-        /// <returns>返回的数据</returns>
-        public static ResponsedData SendThenResponse<TClient>(this IWaitingClient<TClient> client, byte[] buffer, int timeout, CancellationToken token)
-            where TClient : IClient, ISender
-        {
-            if (token.CanBeCanceled)
-            {
-                using CancellationTokenSource cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(new CancellationTokenSource(timeout).Token, token);
-                return client.SendThenResponse(buffer, 0, buffer.Length, cancellationTokenSource.Token);
-            }
-            else
-            {
-                return client.SendThenResponse(buffer, 0, buffer.Length, token);
-            }
-        }
-        /// <summary>
-        /// 发送数据并等待
-        /// </summary>
-        /// <param name="client"></param>
-        /// <param name="buffer">数据缓存区</param>
-        /// <param name="timeout">超时时间</param>
-        /// <param name="token">取消令箭</param>
-        /// <exception cref="NotConnectedException">客户端没有连接</exception>
-        /// <exception cref="OverlengthException">发送数据超长</exception>
-        /// <exception cref="Exception">其他异常</exception>
-        /// <returns>返回的数据</returns>
-        public static async Task<ResponsedData> SendThenResponseAsync<TClient>(this IWaitingClient<TClient> client, byte[] buffer, int timeout, CancellationToken token)
-            where TClient : IClient, ISender
-        {
-            using CancellationTokenSource cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(new CancellationTokenSource(timeout).Token, token);
-            return await client.SendThenResponseAsync(buffer, 0, buffer.Length, cancellationTokenSource.Token);
         }
 
         /// <summary>
@@ -199,10 +211,10 @@ namespace ThingsGateway.Foundation.Sockets
         /// <exception cref="OverlengthException">发送数据超长</exception>
         /// <exception cref="Exception">其他异常</exception>
         /// <returns>返回的数据</returns>
-        public static Task<ResponsedData> SendThenResponseAsync<TClient>(this IWaitingClient<TClient> client, byte[] buffer, CancellationToken token)
+        public static async Task<ResponsedData> SendThenResponseAsync<TClient>(this IWaitingClient<TClient> client, byte[] buffer, CancellationToken token)
             where TClient : IClient, ISender
         {
-            return client.SendThenResponseAsync(buffer, 0, buffer.Length, token);
+            return await client.SendThenResponseAsync(buffer, 0, buffer.Length, token);
         }
 
         /// <summary>
@@ -215,10 +227,10 @@ namespace ThingsGateway.Foundation.Sockets
         /// <exception cref="OverlengthException">发送数据超长</exception>
         /// <exception cref="Exception">其他异常</exception>
         /// <returns>返回的数据</returns>
-        public static Task<ResponsedData> SendThenResponseAsync<TClient>(this IWaitingClient<TClient> client, string msg, CancellationToken token)
+        public static async Task<ResponsedData> SendThenResponseAsync<TClient>(this IWaitingClient<TClient> client, string msg, CancellationToken token)
             where TClient : IClient, ISender
         {
-            return client.SendThenResponseAsync(Encoding.UTF8.GetBytes(msg), token);
+            return await client.SendThenResponseAsync(Encoding.UTF8.GetBytes(msg), token);
         }
 
         /// <summary>
@@ -231,12 +243,12 @@ namespace ThingsGateway.Foundation.Sockets
         /// <exception cref="OverlengthException">发送数据超长</exception>
         /// <exception cref="Exception">其他异常</exception>
         /// <returns>返回的数据</returns>
-        public static Task<ResponsedData> SendThenResponseAsync<TClient>(this IWaitingClient<TClient> client, byte[] buffer, int timeout = 5000)
+        public static async Task<ResponsedData> SendThenResponseAsync<TClient>(this IWaitingClient<TClient> client, byte[] buffer, int timeout = 5000)
             where TClient : IClient, ISender
         {
             using (var tokenSource = new CancellationTokenSource(timeout))
             {
-                return client.SendThenResponseAsync(buffer, 0, buffer.Length, tokenSource.Token);
+                return await client.SendThenResponseAsync(buffer, 0, buffer.Length, tokenSource.Token);
             }
         }
 
@@ -250,14 +262,15 @@ namespace ThingsGateway.Foundation.Sockets
         /// <exception cref="OverlengthException">发送数据超长</exception>
         /// <exception cref="Exception">其他异常</exception>
         /// <returns>返回的数据</returns>
-        public static Task<ResponsedData> SendThenResponseAsync<TClient>(this IWaitingClient<TClient> client, string msg, int timeout = 5000)
+        public static async Task<ResponsedData> SendThenResponseAsync<TClient>(this IWaitingClient<TClient> client, string msg, int timeout = 5000)
             where TClient : IClient, ISender
         {
             using (var tokenSource = new CancellationTokenSource(timeout))
             {
-                return client.SendThenResponseAsync(Encoding.UTF8.GetBytes(msg), tokenSource.Token);
+                return await client.SendThenResponseAsync(Encoding.UTF8.GetBytes(msg), tokenSource.Token);
             }
         }
+
         #endregion 发送
     }
 }

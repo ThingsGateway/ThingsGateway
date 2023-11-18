@@ -87,8 +87,7 @@ namespace ThingsGateway.Foundation.Core
                 var list = this.SearchPluginMethod(plugin);
 
                 var pairs = new List<string>();
-                var methodInfos = plugin.GetType()
-                    .GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly | BindingFlags.NonPublic);
+                var methodInfos = plugin.GetType().GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
                 foreach (var methodInfo in methodInfos)
                 {
                     if (methodInfo.GetParameters().Length == 2 && typeof(PluginEventArgs).IsAssignableFrom(methodInfo.GetParameters()[1].ParameterType) && methodInfo.ReturnType == typeof(Task))

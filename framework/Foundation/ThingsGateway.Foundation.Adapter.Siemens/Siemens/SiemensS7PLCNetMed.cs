@@ -16,61 +16,45 @@ namespace ThingsGateway.Foundation.Adapter.Siemens;
 
 public partial class SiemensS7PLC : ReadWriteDevicesTcpClientBase
 {
-    private static OperResult<byte[]> GetWriteBitCommand(string address, bool data)
+    private static byte[] GetWriteBitCommand(string address, bool data)
     {
-        try
-        {
-            var result = SiemensAddress.ParseFrom(address);
-            return SiemensHelper.GetWriteBitCommand(result, data);
 
-        }
-        catch (Exception ex)
-        {
-            return new(ex);
-        }
-
+        var result = SiemensAddress.ParseFrom(address);
+        return SiemensHelper.GetWriteBitCommand(result, data);
     }
 
 
-    private OperResult<List<byte[]>> GetReadByteCommand(string address, int length)
+    private List<byte[]> GetReadByteCommand(string address, int length)
     {
-        try
+
+        var from = SiemensAddress.ParseFrom(address, length);
+        ushort num1 = 0;
+        var listBytes = new List<byte[]>();
+        while (num1 < length)
         {
-            var from = SiemensAddress.ParseFrom(address, length);
-            ushort num1 = 0;
-            var listBytes = new List<byte[]>();
-            while (num1 < length)
+            //pdu长度，重复生成报文，直至全部生成
+            ushort num2 = (ushort)Math.Min(length - num1, pdu_length);
+            from.Length = num2;
+            var result = GetReadByteCommand(new SiemensAddress[1] { from });
+            listBytes.AddRange(result);
+            num1 += num2;
+            if (from.DataCode == (byte)S7WordLength.Timer || from.DataCode == (byte)S7WordLength.Counter)
             {
-                //pdu长度，重复生成报文，直至全部生成
-                ushort num2 = (ushort)Math.Min(length - num1, pdu_length);
-                from.Length = num2;
-                var result = GetReadByteCommand(new SiemensAddress[1] { from });
-                if (!result.IsSuccess) return new(result);
-                listBytes.AddRange(result.Content);
-                num1 += num2;
-                if (from.DataCode == (byte)S7WordLength.Timer || from.DataCode == (byte)S7WordLength.Counter)
-                {
-                    from.Address += num2 / 2;
-                }
-                else
-                {
-                    from.Address += num2 * 8;
-                }
+                from.Address += num2 / 2;
             }
-            return OperResult.CreateSuccessResult(listBytes);
+            else
+            {
+                from.Address += num2 * 8;
+            }
         }
-        catch (Exception ex)
-        {
-            return new OperResult<List<byte[]>>(ex);
-        }
-
+        return listBytes;
     }
 
-    private OperResult<List<byte[]>> GetReadByteCommand(SiemensAddress[] siemensAddress)
+    private List<byte[]> GetReadByteCommand(SiemensAddress[] siemensAddress)
     {
         if (siemensAddress.Length <= 19)
         {
-            return ByteTransformUtil.GetResultFromBytes(SiemensHelper.GetReadCommand(siemensAddress), m => new List<byte[]>() { m });
+            return new List<byte[]>() { SiemensHelper.GetReadCommand(siemensAddress) };
         }
 
         List<byte[]> byteList = new();
@@ -78,33 +62,24 @@ public partial class SiemensS7PLC : ReadWriteDevicesTcpClientBase
         for (int index = 0; index < s7AddressDataArrayList.Count; ++index)
         {
             var result = GetReadByteCommand(s7AddressDataArrayList[index]);
-            if (!result.IsSuccess)
-            {
-                return result;
-            }
-            byteList.AddRange(result.Content);
+            byteList.AddRange(result);
         }
-        return OperResult.CreateSuccessResult(byteList);
+        return byteList;
     }
 
-    private OperResult<List<byte[]>> GetWriteByteCommand(string address, byte[] value)
+    private List<byte[]> GetWriteByteCommand(string address, byte[] value)
     {
-        try
-        {
-            var s_Address = SiemensAddress.ParseFrom(address);
 
-            return GetWriteByteCommand(s_Address, value);
-        }
-        catch (Exception ex)
-        {
-            return new(ex);
-        }
+        var s_Address = SiemensAddress.ParseFrom(address);
+
+        return GetWriteByteCommand(s_Address, value);
+
     }
     /// <summary>
-    /// DefalutConverter
+    /// DefaultConverter
     /// </summary>
-    public static ThingsGatewayBitConverter DefalutConverter = new(BitConverter.IsLittleEndian ? EndianType.Little : EndianType.Big);
-    private OperResult<List<byte[]>> GetWriteByteCommand(SiemensAddress address, byte[] value)
+    public static ThingsGatewayBitConverter DefaultConverter = new(BitConverter.IsLittleEndian ? EndianType.Little : EndianType.Big);
+    private List<byte[]> GetWriteByteCommand(SiemensAddress address, byte[] value)
     {
         int length1 = value.Length;
         ushort index = 0;
@@ -113,17 +88,13 @@ public partial class SiemensS7PLC : ReadWriteDevicesTcpClientBase
         {
             //pdu长度，重复生成报文，直至全部生成
             ushort length2 = (ushort)Math.Min(length1 - index, pdu_length);
-            byte[] data = DefalutConverter.ToByte(value, index, length2);
-            OperResult<byte[]> result1 = SiemensHelper.GetWriteByteCommand(address, data);
-            if (!result1.IsSuccess)
-            {
-                return new(result1);
-            }
-            bytes.Add(result1.Content);
+            byte[] data = DefaultConverter.ToByte(value, index, length2);
+            var result1 = SiemensHelper.GetWriteByteCommand(address, data);
+            bytes.Add(result1);
             index += length2;
             address.Address += length2 * 8;
         }
-        return OperResult.CreateSuccessResult(bytes);
+        return bytes;
     }
 
 }

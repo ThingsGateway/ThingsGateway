@@ -13,7 +13,7 @@
 namespace ThingsGateway.Plugin.OPCUA;
 
 /// <inheritdoc/>
-public class OPCUAClientProperty : CollectDriverPropertyBase
+public class OPCUAClientProperty : DriverPropertyBase
 {
     /// <summary>
     /// 连接Url

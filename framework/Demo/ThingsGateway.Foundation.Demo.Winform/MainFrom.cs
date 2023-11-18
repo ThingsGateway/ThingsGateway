@@ -13,6 +13,9 @@
 using Microsoft.AspNetCore.Components.WebView.WindowsForms;
 using Microsoft.Extensions.DependencyInjection;
 
+using System.Diagnostics;
+using System.Threading.Tasks;
+
 using ThingsGateway.Components;
 
 namespace ThingsGateway.Foundation.Demo.Winform
@@ -23,9 +26,14 @@ namespace ThingsGateway.Foundation.Demo.Winform
         {
             InitializeComponent();
 
-            var services = new ServiceCollection();
-            services.AddWindowsFormsBlazorWebView();
-            services.ThingsGatewayComponentsConfigureServices();
+            IServiceCollection services = null;
+
+            Serve.RunNative(a =>
+            {
+                services = a;
+                services.AddWindowsFormsBlazorWebView();
+                services.ThingsGatewayComponentsConfigureServices();
+            });
 
             blazorWebView1.HostPage = "wwwroot/index.html";
             blazorWebView1.Services = services.BuildServiceProvider();
@@ -35,7 +43,14 @@ namespace ThingsGateway.Foundation.Demo.Winform
 
         private void MainFrom_FormClosed(object sender, FormClosedEventArgs e)
         {
-            Application.Exit();
+
+            Task.Run(() => { MessageBox.Show("释放资源中，稍候自动退出程序..."); });
+            Task.Run(async () =>
+            {
+                await Task.Delay(3000);
+                Process.GetCurrentProcess().Kill();
+            });
+
         }
     }
 }

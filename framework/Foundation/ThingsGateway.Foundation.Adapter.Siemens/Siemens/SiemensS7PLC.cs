@@ -10,6 +10,7 @@
 //------------------------------------------------------------------------------
 #endregion
 
+using System.ComponentModel;
 using System.Text;
 
 using ThingsGateway.Foundation.Extension.Generic;
@@ -22,9 +23,45 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
     /// </summary>
     public partial class SiemensS7PLC : ReadWriteDevicesTcpClientBase
     {
-        private readonly SiemensEnum _currentPlc = SiemensEnum.S1200;
-        private readonly byte[] ISO_CR;
-        private readonly byte[] S7_PN;
+        private SiemensEnum siemensEnum = SiemensEnum.S1200;
+        /// <summary>
+        /// S7类型
+        /// </summary>
+        [Description("S7类型")]
+        public SiemensEnum SiemensEnum
+        {
+            get { return siemensEnum; }
+            set
+            {
+                siemensEnum = value;
+                switch (siemensEnum)
+                {
+                    case SiemensEnum.S1200:
+                        ISO_CR[21] = 0x00;
+                        break;
+                    case SiemensEnum.S300:
+                        ISO_CR[21] = 0x02;
+                        break;
+                    case SiemensEnum.S400:
+                        ISO_CR[21] = 0x03;
+                        ISO_CR[17] = 0x00;
+                        break;
+                    case SiemensEnum.S1500:
+                        ISO_CR[21] = 0x00;
+                        break;
+                    case SiemensEnum.S200Smart:
+                        ISO_CR = SiemensHelper.ISO_CR200SMART;
+                        S7_PN = SiemensHelper.S7200SMART_PN;
+                        break;
+                    case SiemensEnum.S200:
+                        ISO_CR = SiemensHelper.ISO_CR200;
+                        S7_PN = SiemensHelper.S7200_PN;
+                        break;
+                }
+            }
+        }
+        private byte[] ISO_CR;
+        private byte[] S7_PN;
         private int pdu_length = 100;
         private byte plc_rack = 0;
         private byte plc_slot = 0;
@@ -32,47 +69,15 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
         /// 传入PLC类型，程序内会改变相应PLC类型的S7协议LocalTSAP， RemoteTSAP等
         /// </summary>
         /// <param name="tcpClient"></param>
-        /// <param name="siemensPLCEnum"></param>
-        public SiemensS7PLC(TcpClient tcpClient, SiemensEnum siemensPLCEnum) : base(tcpClient)
+        public SiemensS7PLC(TcpClient tcpClient) : base(tcpClient)
         {
-            _currentPlc = siemensPLCEnum;
             RegisterByteLength = 1;
             ThingsGatewayBitConverter = new ThingsGatewayBitConverter(EndianType.Big);
             ISO_CR = new byte[22];
             S7_PN = new byte[25];
             Array.Copy(SiemensHelper.ISO_CR, ISO_CR, ISO_CR.Length);
             Array.Copy(SiemensHelper.S7_PN, S7_PN, S7_PN.Length);
-            switch (siemensPLCEnum)
-            {
-                case SiemensEnum.S1200:
-                    ISO_CR[21] = 0x00;
-                    break;
-                case SiemensEnum.S300:
-                    ISO_CR[21] = 0x02;
-                    break;
-                case SiemensEnum.S400:
-                    ISO_CR[21] = 0x03;
-                    ISO_CR[17] = 0x00;
-                    break;
-                case SiemensEnum.S1500:
-                    ISO_CR[21] = 0x00;
-                    break;
-                case SiemensEnum.S200Smart:
-                    ISO_CR = SiemensHelper.ISO_CR200SMART;
-                    S7_PN = SiemensHelper.S7200SMART_PN;
-                    break;
-                case SiemensEnum.S200:
-                    ISO_CR = SiemensHelper.ISO_CR200;
-                    S7_PN = SiemensHelper.S7200_PN;
-                    break;
-
-            }
-
         }
-        /// <summary>
-        /// 当前PLC类型
-        /// </summary>
-        public SiemensEnum CurrentPlc => _currentPlc;
         /// <inheritdoc/>
         public override string GetAddressDescription()
         {
@@ -87,19 +92,15 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
             stringBuilder.AppendLine("Mxxxxx，M寄存器，例如M100/M100.1");
             stringBuilder.AppendLine("DBxxxxx，DB寄存器，例如DB100.1/DB100.1.1");
             stringBuilder.AppendLine("");
-
             return base.GetAddressDescription() + Environment.NewLine + stringBuilder.ToString();
         }
-        /// <summary>
+
         /// <inheritdoc/>
-        /// </summary>
-        /// <param name="address"></param>
-        /// <returns></returns>
         public override int GetBitOffset(string address)
         {
             if (address.IndexOf('.') > 0)
             {
-                string[] addressSplits = address.SplitDot();
+                string[] addressSplits = address.SplitStringByDelimiter();
                 try
                 {
                     int bitIndex = 0;
@@ -115,7 +116,7 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
             return 0;
         }
         /// <inheritdoc/>
-        public override bool IsBitReverse(string address)
+        public override bool BitReverse(string address)
         {
             return false;
         }
@@ -130,13 +131,13 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
             get
             {
                 return
-                    _currentPlc == SiemensEnum.S200 || _currentPlc == SiemensEnum.S200Smart ?
+                    siemensEnum == SiemensEnum.S200 || siemensEnum == SiemensEnum.S200Smart ?
                     (ISO_CR[13] * 256) + ISO_CR[14] :
                     (ISO_CR[16] * 256) + ISO_CR[17];
             }
             set
             {
-                if (_currentPlc == SiemensEnum.S200 || _currentPlc == SiemensEnum.S200Smart)
+                if (siemensEnum == SiemensEnum.S200 || siemensEnum == SiemensEnum.S200Smart)
                 {
                     ISO_CR[13] = BitConverter.GetBytes(value)[1];
                     ISO_CR[14] = BitConverter.GetBytes(value)[0];
@@ -162,7 +163,7 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
             set
             {
                 plc_rack = value;
-                if (_currentPlc == SiemensEnum.S200 || _currentPlc == SiemensEnum.S200Smart)
+                if (siemensEnum == SiemensEnum.S200 || siemensEnum == SiemensEnum.S200Smart)
                 {
                     return;
                 }
@@ -180,7 +181,7 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
             set
             {
                 plc_slot = value;
-                if (_currentPlc == SiemensEnum.S200 || _currentPlc == SiemensEnum.S200Smart)
+                if (siemensEnum == SiemensEnum.S200 || siemensEnum == SiemensEnum.S200Smart)
                 {
                     return;
                 }
@@ -191,9 +192,9 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
         #endregion
 
         /// <inheritdoc/>
-        public override List<T> LoadSourceRead<T, T2>(List<T2> deviceVariables, int maxPack)
+        public override List<T> LoadSourceRead<T, T2>(List<T2> deviceVariables, int maxPack, int defaultIntervalTime)
         {
-            return PackHelper.LoadSourceRead<T, T2>(this, deviceVariables, maxPack);
+            return PackHelper.LoadSourceRead<T, T2>(this, deviceVariables, maxPack, defaultIntervalTime);
         }
 
         /// <inheritdoc/>
@@ -203,28 +204,20 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
             {
                 Connect(cancellationToken);
                 var commandResult = GetReadByteCommand(address, length);
-                if (commandResult.IsSuccess)
+                List<byte> bytes = new();
+                foreach (var item in commandResult)
                 {
-                    List<byte> bytes = new();
-                    foreach (var item in commandResult.Content)
-                    {
-                        var result = WaitingClientEx.SendThenResponse(item, TimeOut, cancellationToken);
-                        if (((MessageBase)result.RequestInfo).IsSuccess)
-                            bytes.AddRange(((MessageBase)result.RequestInfo).Content);
-                        else
-                            return new(((MessageBase)result.RequestInfo));
-                    }
-                    return OperResult.CreateSuccessResult(bytes.ToArray());
+                    var result = SendThenReturn<SiemensMessage>(item, cancellationToken);
+                    if (result.IsSuccess)
+                        bytes.AddRange(result.Content);
+                    else
+                        return result;
                 }
-
-                else
-                {
-                    return new(commandResult);
-                }
+                return OperResult.CreateSuccessResult(bytes.ToArray());
             }
             catch (Exception ex)
             {
-                return new OperResult<byte[]>(ex);
+                return new(ex);
             }
         }
 
@@ -235,24 +228,16 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
             {
                 await ConnectAsync(cancellationToken);
                 var commandResult = GetReadByteCommand(address, length);
-                if (commandResult.IsSuccess)
+                List<byte> bytes = new();
+                foreach (var item in commandResult)
                 {
-                    List<byte> bytes = new();
-                    foreach (var item in commandResult.Content)
-                    {
-                        var result = await WaitingClientEx.SendThenResponseAsync(item, TimeOut, cancellationToken);
-                        if (((MessageBase)result.RequestInfo).IsSuccess)
-                            bytes.AddRange(((MessageBase)result.RequestInfo).Content);
-                        else
-                            return new(((MessageBase)result.RequestInfo));
-                    }
-                    return OperResult.CreateSuccessResult(bytes.ToArray());
+                    var result = await SendThenReturnAsync<SiemensMessage>(item, cancellationToken);
+                    if (result.IsSuccess)
+                        bytes.AddRange(result.Content);
+                    else
+                        return result;
                 }
-
-                else
-                {
-                    return new(commandResult);
-                }
+                return OperResult.CreateSuccessResult(bytes.ToArray());
             }
             catch (Exception ex)
             {
@@ -263,7 +248,7 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
 
 
         /// <inheritdoc/>
-        public override void SetDataAdapter(object socketClient = null)
+        public override void SetDataAdapter(ISocketClient socketClient = default)
         {
             SiemensS7PLCDataHandleAdapter dataHandleAdapter = new();
             TcpClient.SetDataHandlingAdapter(dataHandleAdapter);
@@ -277,22 +262,13 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
             {
                 Connect(cancellationToken);
                 var commandResult = GetWriteByteCommand(address, value);
-                if (commandResult.IsSuccess)
+                foreach (var item in commandResult)
                 {
-                    List<ResponsedData> bytes = new();
-                    foreach (var item in commandResult.Content)
-                    {
-                        ResponsedData result = WaitingClientEx.SendThenResponse(item, TimeOut, cancellationToken);
-                        if (!((MessageBase)result.RequestInfo).IsSuccess)
-                            return new(((MessageBase)result.RequestInfo));
-                        bytes.Add(result);
-                    }
-                    return OperResult.CreateSuccessResult(bytes.ToArray());
+                    var result = SendThenReturn<SiemensMessage>(item, cancellationToken);
+                    if (!result.IsSuccess)
+                        return result;
                 }
-                else
-                {
-                    return new(commandResult);
-                }
+                return OperResult.CreateSuccessResult();
             }
             catch (Exception ex)
             {
@@ -312,15 +288,7 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
                 Connect(cancellationToken);
 
                 var commandResult = GetWriteBitCommand(address, value[0]);
-                if (commandResult.IsSuccess)
-                {
-                    var result = WaitingClientEx.SendThenResponse(commandResult.Content, TimeOut, cancellationToken);
-                    return (MessageBase)result.RequestInfo;
-                }
-                else
-                {
-                    return new(commandResult);
-                }
+                return SendThenReturn<SiemensMessage>(commandResult, cancellationToken);
             }
             catch (Exception ex)
             {
@@ -345,22 +313,13 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
             {
                 await ConnectAsync(cancellationToken);
                 var commandResult = GetWriteByteCommand(address, value);
-                if (commandResult.IsSuccess)
+                foreach (var item in commandResult)
                 {
-                    List<ResponsedData> bytes = new();
-                    foreach (var item in commandResult.Content)
-                    {
-                        ResponsedData result = await WaitingClientEx.SendThenResponseAsync(item, TimeOut, cancellationToken);
-                        if (!((MessageBase)result.RequestInfo).IsSuccess)
-                            return new(((MessageBase)result.RequestInfo));
-                        bytes.Add(result);
-                    }
-                    return OperResult.CreateSuccessResult(bytes.ToArray());
+                    var result = await SendThenReturnAsync<SiemensMessage>(item, cancellationToken);
+                    if (!result.IsSuccess)
+                        return result;
                 }
-                else
-                {
-                    return new(commandResult);
-                }
+                return OperResult.CreateSuccessResult();
             }
             catch (Exception ex)
             {
@@ -380,15 +339,7 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
                 await ConnectAsync(cancellationToken);
 
                 var commandResult = GetWriteBitCommand(address, value[0]);
-                if (commandResult.IsSuccess)
-                {
-                    var result = await WaitingClientEx.SendThenResponseAsync(commandResult.Content, TimeOut, cancellationToken);
-                    return (MessageBase)result.RequestInfo;
-                }
-                else
-                {
-                    return new(commandResult);
-                }
+                return await SendThenReturnAsync<SiemensMessage>(commandResult, cancellationToken);
             }
             catch (Exception ex)
             {
@@ -447,7 +398,12 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
             return await WriteAsync(address, ThingsGateway.Foundation.Adapter.Siemens.DateTime.ToByteArray(dateTime), cancellationToken);
         }
         #endregion
-
+        /// <inheritdoc/>
+        public override void Dispose()
+        {
+            TcpClient.Connected -= Connected;
+            base.Dispose();
+        }
         /// <inheritdoc/>
         protected override async Task Connected(ITcpClient client, ConnectedEventArgs e)
         {
@@ -455,21 +411,28 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
             {
                 NormalDataHandlingAdapter dataHandleAdapter = new();
                 TcpClient.SetDataHandlingAdapter(dataHandleAdapter);
-                var result1 = await SendThenResponseAsync(ISO_CR);
-                if (!result1.IsSuccess)
+                try
                 {
-                    Logger?.Warning($"{client.IP} : {client.Port}：ISO_TP握手失败-{result1.Message}");
+                    await GetResponsedDataAsync(ISO_CR, TimeOut, CancellationToken.None);
+                }
+                catch (Exception ex)
+                {
+                    Logger?.Warning($"{client.IP} : {client.Port}：ISO_TP握手失败-{ex.Message}");
                     TcpClient.Close();
                     return;
                 }
-                var result2 = await SendThenResponseAsync(S7_PN);
-                if (!result2.IsSuccess)
+                try
                 {
-                    Logger?.Warning($"{client.IP} : {client.Port}：PDU初始化失败-{result2.Message}");
+                    var result2 = await GetResponsedDataAsync(S7_PN, TimeOut, CancellationToken.None);
+                    pdu_length = ThingsGatewayBitConverter.ToUInt16(result2.Data.SelectLast(2), 0);
+                    pdu_length = pdu_length < 200 ? 200 : pdu_length;
+                }
+                catch (Exception ex)
+                {
+                    Logger?.LogInformation($"{client.IP} : {client.Port}：PDU初始化失败-{ex.Message}");
                     return;
                 }
-                pdu_length = ThingsGatewayBitConverter.ToUInt16(result2.Content.SelectLast(2), 0);
-                pdu_length = pdu_length < 200 ? 200 : pdu_length;
+
             }
             catch (Exception ex)
             {
@@ -477,9 +440,8 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
             }
             finally
             {
-                SetDataAdapter();
+                await base.Connected(client, e);
             }
-            await base.Connected(client, e);
         }
     }
 }

@@ -18,12 +18,12 @@
 @using ThingsGateway.Foundation.Core;
 @using Masa.Blazor
 
-<MCard Elevation="1" Rounded="false" Class="pa-2" Style="width:100%">
+<MCard Flat Class="pa-2 my-1" Style="width:100%">
     <div class="mb-4">通道配置</div>
     <MRow Justify="JustifyTypes.Start" Align="AlignTypes.Center">
 
-        <MTextField Class="ma-1" Style="max-width:100px" Label="IP地址" Dense Outlined HideDetails="@("auto")" @bind-Value=@ip />
-        <MTextField Class="ma-1" Style="max-width:100px" Label="端口" Dense Outlined HideDetails="@("auto")" @bind-Value=@port />
+        <MTextField Class="ma-1" Style="max-width:100px" Label="IP地址" Dense Outlined HideDetails="@("auto")" @bind-Value=@_ip />
+         <MTextField Class="ma-1" Style="max-width:100px" Label="端口" Dense Outlined HideDetails="@("auto")" @bind-Value=@_port />
 
         <MButton Class="ma-1" OnClick=@Connect Color="primary">
             启动

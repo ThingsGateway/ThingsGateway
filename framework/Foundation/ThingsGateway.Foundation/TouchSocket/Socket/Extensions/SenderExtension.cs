@@ -72,9 +72,9 @@ namespace ThingsGateway.Foundation.Sockets
         /// <typeparam name="TClient"></typeparam>
         /// <param name="client"></param>
         /// <param name="buffer"></param>
-        public static Task SendAsync<TClient>(this TClient client, byte[] buffer) where TClient : ISender
+        public static async Task SendAsync<TClient>(this TClient client, byte[] buffer) where TClient : ISender
         {
-            return client.SendAsync(buffer, 0, buffer.Length);
+            await client.SendAsync(buffer, 0, buffer.Length);
         }
 
         /// <summary>
@@ -83,9 +83,9 @@ namespace ThingsGateway.Foundation.Sockets
         /// <typeparam name="TClient"></typeparam>
         /// <param name="client"></param>
         /// <param name="value"></param>
-        public static Task SendAsync<TClient>(this TClient client, string value) where TClient : ISender
+        public static async Task SendAsync<TClient>(this TClient client, string value) where TClient : ISender
         {
-            return client.SendAsync(Encoding.UTF8.GetBytes(value));
+            await client.SendAsync(Encoding.UTF8.GetBytes(value));
         }
 
         #endregion ISend
@@ -131,9 +131,9 @@ namespace ThingsGateway.Foundation.Sockets
         /// <typeparam name="TClient"></typeparam>
         /// <param name="client"></param>
         /// <param name="value"></param>
-        public static Task DefaultSendAsync<TClient>(this TClient client, string value) where TClient : IDefaultSender
+        public static async Task DefaultSendAsync<TClient>(this TClient client, string value) where TClient : IDefaultSender
         {
-            return client.DefaultSendAsync(Encoding.UTF8.GetBytes(value));
+            await client.DefaultSendAsync(Encoding.UTF8.GetBytes(value));
         }
 
         /// <summary>
@@ -142,9 +142,9 @@ namespace ThingsGateway.Foundation.Sockets
         /// <typeparam name="TClient"></typeparam>
         /// <param name="client"></param>
         /// <param name="buffer"></param>
-        public static Task DefaultSendAsync<TClient>(this TClient client, byte[] buffer) where TClient : IDefaultSender
+        public static async Task DefaultSendAsync<TClient>(this TClient client, byte[] buffer) where TClient : IDefaultSender
         {
-            return client.DefaultSendAsync(buffer, 0, buffer.Length);
+            await client.DefaultSendAsync(buffer, 0, buffer.Length);
         }
 
         #endregion IDefaultSender
@@ -194,9 +194,9 @@ namespace ThingsGateway.Foundation.Sockets
         /// <param name="client"></param>
         /// <param name="id"></param>
         /// <param name="value"></param>
-        public static Task SendAsync<TClient>(this TClient client, string id, string value) where TClient : IIdSender
+        public static async Task SendAsync<TClient>(this TClient client, string id, string value) where TClient : IIdSender
         {
-            return client.SendAsync(id, Encoding.UTF8.GetBytes(value));
+            await client.SendAsync(id, Encoding.UTF8.GetBytes(value));
         }
 
         /// <summary>
@@ -206,9 +206,9 @@ namespace ThingsGateway.Foundation.Sockets
         /// <param name="client"></param>
         /// <param name="id"></param>
         /// <param name="buffer"></param>
-        public static Task SendAsync<TClient>(this TClient client, string id, byte[] buffer) where TClient : IIdSender
+        public static async Task SendAsync<TClient>(this TClient client, string id, byte[] buffer) where TClient : IIdSender
         {
-            return client.SendAsync(id, buffer, 0, buffer.Length);
+            await client.SendAsync(id, buffer, 0, buffer.Length);
         }
 
         #endregion IIdSender
@@ -253,9 +253,9 @@ namespace ThingsGateway.Foundation.Sockets
         /// <param name="client"></param>
         /// <param name="endPoint"></param>
         /// <param name="value"></param>
-        public static Task DefaultSendAsync<TClient>(this TClient client, EndPoint endPoint, string value) where TClient : IUdpDefaultSender
+        public static async Task DefaultSendAsync<TClient>(this TClient client, EndPoint endPoint, string value) where TClient : IUdpDefaultSender
         {
-            return client.DefaultSendAsync(endPoint, Encoding.UTF8.GetBytes(value));
+            await client.DefaultSendAsync(endPoint, Encoding.UTF8.GetBytes(value));
         }
 
         /// <summary>
@@ -266,10 +266,10 @@ namespace ThingsGateway.Foundation.Sockets
         /// <param name="buffer">数据缓存区</param>
         /// <exception cref="OverlengthException">发送数据超长</exception>
         /// <exception cref="Exception">其他异常</exception>
-        public static Task DefaultSendAsync<TClient>(this TClient client, EndPoint endPoint, byte[] buffer)
+        public static async Task DefaultSendAsync<TClient>(this TClient client, EndPoint endPoint, byte[] buffer)
             where TClient : IUdpDefaultSender
         {
-            return client.DefaultSendAsync(endPoint, buffer, 0, buffer.Length);
+            await client.DefaultSendAsync(endPoint, buffer, 0, buffer.Length);
         }
 
         /// <summary>
@@ -280,10 +280,10 @@ namespace ThingsGateway.Foundation.Sockets
         /// <param name="byteBlock"></param>
         /// <exception cref="OverlengthException">发送数据超长</exception>
         /// <exception cref="Exception">其他异常</exception>
-        public static Task DefaultSendAsync<TClient>(this TClient client, EndPoint endPoint, ByteBlock byteBlock)
+        public static async Task DefaultSendAsync<TClient>(this TClient client, EndPoint endPoint, ByteBlock byteBlock)
             where TClient : IUdpDefaultSender
         {
-            return client.DefaultSendAsync(endPoint, byteBlock.Buffer, 0, byteBlock.Len);
+            await client.DefaultSendAsync(endPoint, byteBlock.Buffer, 0, byteBlock.Len);
         }
 
         #endregion IUdpDefaultSender
@@ -337,9 +337,9 @@ namespace ThingsGateway.Foundation.Sockets
         /// <param name="client"></param>
         /// <param name="endPoint"></param>
         /// <param name="value"></param>
-        public static Task SendAsync<TClient>(this TClient client, EndPoint endPoint, string value) where TClient : IUdpClientSender
+        public static async Task SendAsync<TClient>(this TClient client, EndPoint endPoint, string value) where TClient : IUdpClientSender
         {
-            return client.SendAsync(endPoint, Encoding.UTF8.GetBytes(value));
+            await client.SendAsync(endPoint, Encoding.UTF8.GetBytes(value));
         }
 
         /// <summary>
@@ -350,15 +350,16 @@ namespace ThingsGateway.Foundation.Sockets
         /// <param name="buffer">数据缓存区</param>
         /// <exception cref="OverlengthException">发送数据超长</exception>
         /// <exception cref="Exception">其他异常</exception>
-        public static Task SendAsync<TClient>(this TClient client, EndPoint endPoint, byte[] buffer)
+        public static async Task SendAsync<TClient>(this TClient client, EndPoint endPoint, byte[] buffer)
             where TClient : IUdpClientSender
         {
-            return client.SendAsync(endPoint, buffer, 0, buffer.Length);
+            await client.SendAsync(endPoint, buffer, 0, buffer.Length);
         }
 
         #endregion IUdpClientSender
 
         #region IWaitSender
+
         /// <summary>
         /// 发送字节流
         /// </summary>
@@ -413,7 +414,6 @@ namespace ThingsGateway.Foundation.Sockets
             }
         }
 
-
         /// <summary>
         /// 异步发送
         /// </summary>
@@ -424,11 +424,11 @@ namespace ThingsGateway.Foundation.Sockets
         /// <exception cref="OverlengthException">发送数据超长</exception>
         /// <exception cref="Exception">其他异常</exception>
         /// <returns>返回的数据</returns>
-        public static Task<byte[]> SendThenReturnAsync(this IWaitSender client, byte[] buffer, int timeout = 5000)
+        public static async Task<byte[]> SendThenReturnAsync(this IWaitSender client, byte[] buffer, int timeout = 5000)
         {
             using (var tokenSource = new CancellationTokenSource(timeout))
             {
-                return client.SendThenReturnAsync(buffer, 0, buffer.Length, tokenSource.Token);
+                return await client.SendThenReturnAsync(buffer, 0, buffer.Length, tokenSource.Token);
             }
         }
 
@@ -442,11 +442,11 @@ namespace ThingsGateway.Foundation.Sockets
         /// <exception cref="OverlengthException">发送数据超长</exception>
         /// <exception cref="Exception">其他异常</exception>
         /// <returns>返回的数据</returns>
-        public static Task<byte[]> SendThenReturnAsync(this IWaitSender client, string msg, int timeout = 5000)
+        public static async Task<byte[]> SendThenReturnAsync(this IWaitSender client, string msg, int timeout = 5000)
         {
             using (var tokenSource = new CancellationTokenSource(timeout))
             {
-                return client.SendThenReturnAsync(Encoding.UTF8.GetBytes(msg), tokenSource.Token);
+                return await client.SendThenReturnAsync(Encoding.UTF8.GetBytes(msg), tokenSource.Token);
             }
         }
 
@@ -480,7 +480,6 @@ namespace ThingsGateway.Foundation.Sockets
             return client.SendThenReturn(byteBlock.Buffer, 0, byteBlock.Len, token);
         }
 
-
         /// <summary>
         /// 异步发送
         /// </summary>
@@ -491,11 +490,11 @@ namespace ThingsGateway.Foundation.Sockets
         /// <exception cref="OverlengthException">发送数据超长</exception>
         /// <exception cref="Exception">其他异常</exception>
         /// <returns>返回的数据</returns>
-        public static Task<byte[]> SendThenReturnAsync(this IWaitSender client, byte[] buffer, CancellationToken token)
+        public static async Task<byte[]> SendThenReturnAsync(this IWaitSender client, byte[] buffer, CancellationToken token)
         {
-            return client.SendThenReturnAsync(buffer, 0, buffer.Length, token);
+            return await client.SendThenReturnAsync(buffer, 0, buffer.Length, token);
         }
-        #endregion
 
+        #endregion IWaitSender
     }
 }

@@ -25,8 +25,9 @@ public class Program
     /// 程序运行入口
     /// </summary>
     /// <param name="args"></param>
-    public static Task Main(string[] args)
+    public static async Task Main(string[] args)
     {
+        ThreadPool.SetMinThreads(1000, 1000);
         //当前工作目录设为程序集的基目录
         System.IO.Directory.SetCurrentDirectory(AppContext.BaseDirectory);
         #region 控制台输出Logo
@@ -70,7 +71,7 @@ public class Program
         //Furion便利方法
         builder.Inject();
         var app = builder.Build();
-        return app.RunAsync();
+        await app.RunAsync();
 
     }
 
