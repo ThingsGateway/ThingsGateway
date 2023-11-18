@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\admin\ThingsGateway.Components\ThingsGateway.Components.csproj" />
+		<ProjectReference Include="..\..\Foundation\ThingsGateway.Foundation.Adapter.DLT645\ThingsGateway.Foundation.Adapter.DLT645.csproj" />
+		<ProjectReference Include="..\..\Foundation\ThingsGateway.Foundation.Adapter.Modbus\ThingsGateway.Foundation.Adapter.Modbus.csproj" />
+		<ProjectReference Include="..\..\foundation\ThingsGateway.Foundation.Adapter.OPCDA\ThingsGateway.Foundation.Adapter.OPCDA.csproj" />
+		<ProjectReference Include="..\..\foundation\ThingsGateway.Foundation.Adapter.OPCUA\ThingsGateway.Foundation.Adapter.OPCUA.csproj" />
+		<ProjectReference Include="..\..\Foundation\ThingsGateway.Foundation.Adapter.Siemens\ThingsGateway.Foundation.Adapter.Siemens.csproj" />
+
+	</ItemGroup>
+	
+
+</Project>
