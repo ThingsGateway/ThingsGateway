@@ -1,0 +1,39 @@
+# Unit 文件描述
+[Unit]
+Description=thingsgateway service
+
+# Service 配置参数
+[Service]
+Type=notify
+KillSignal=SIGINT
+KillMode=mixed
+
+# 自启动项目所在的位置路径
+WorkingDirectory=/root/ThingsGateway
+
+# 自启动项目的命令
+ExecStart=/usr/bin/dotnet ThingsGateway.Web.Entry.dll
+Restart=always
+RestartSec=120
+User=www-data
+TimeoutStopSec=90
+
+# Development 开发环境，Production 生产环境
+Environment=ASPNETCORE_ENVIRONMENT=Production
+Environment=DOTNET_PRINT_TELEMETRY_MESSAGE=false
+
+[Install]
+WantedBy=multi-user.target
+
+
+# 加载服务配置文件
+# systemctl daemon-reload
+# 将服务设置为开机启动
+# systemctl enable thingsgateway.service
+# 启动服务
+# systemctl start thingsgateway.service
+# 查看服务状态
+# systemctl status thingsgateway.service
+
+# 查看日志
+# sudo journalctl -fu thingsgateway.service 

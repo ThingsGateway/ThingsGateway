@@ -1,0 +1,29 @@
+<Project>
+	<PropertyGroup>
+		<Version>4.0.0.0</Version>
+		<LangVersion>latest</LangVersion>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<TargetFrameworks>net6.0;net8.0;</TargetFrameworks>
+		<Authors>Diego</Authors>
+		<Product>ThingsGateway</Product>
+		<Copyright>© 2023-present Diego</Copyright>
+		<RepositoryUrl>https://gitee.com/diego2098/ThingsGateway</RepositoryUrl>
+		<SignAssembly>True</SignAssembly>
+		<DelaySign>False</DelaySign>
+		<SatelliteResourceLanguages>zh-Hans</SatelliteResourceLanguages>
+
+	</PropertyGroup>
+
+	<!--<PropertyGroup>
+		<EnableDynamicLoading>true</EnableDynamicLoading>
+	</PropertyGroup>-->
+
+	<ItemGroup>
+
+		<ProjectReference Include="..\..\gateway\ThingsGateway.Gateway.Application\ThingsGateway.Gateway.Application.csproj" >
+			<Private>false</Private>
+			<CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+			<ExcludeAssets>runtime</ExcludeAssets>
+		</ProjectReference>
+	</ItemGroup>
+</Project>
