@@ -74,8 +74,8 @@ public class CollectDeviceWorker : DeviceWorker
     {
         var alarmHostService = BackgroundServiceUtil.GetBackgroundService<AlarmWorker>();
         var uploadDeviceHostService = BackgroundServiceUtil.GetBackgroundService<UploadDeviceWorker>();
-        await alarmHostService.StartAsync();
         await uploadDeviceHostService.StartAsync();
+        await alarmHostService.StartAsync();
     }
 
     /// <summary>
