@@ -59,7 +59,7 @@ public partial class TDengineDB : UpLoadBaseWithCache<DeviceData, TDHistoryValue
     {
         _config = new TypeAdapterConfig();
         _config.ForType<DeviceVariableRunTime, TDHistoryValue>()
-            .Map(dest => dest.Value, (src) => ValueReturn(src));
+            .Map(dest => dest.Value, src => src.Value == null ? string.Empty : src.Value.ToString() ?? string.Empty);
         base.Init(client);
     }
 

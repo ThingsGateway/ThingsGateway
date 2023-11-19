@@ -58,5 +58,5 @@ public class TDHistoryValue : STable
     /// </summary>
     [Description("变量值")]
     [SugarColumn(Length = 18, DecimalDigits = 2)]
-    public double Value { get; set; }
+    public string Value { get; set; }
 }

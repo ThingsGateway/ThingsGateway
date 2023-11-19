@@ -17,7 +17,7 @@ using System.Text;
 namespace ThingsGateway.Gateway.Application;
 
 /// <summary>
-/// <see cref="HistoryValue"/> Master规则
+/// <see cref="Encoding"/> Master规则
 /// </summary>
 public class EncodingMapper : IRegister
 {
