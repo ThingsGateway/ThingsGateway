@@ -72,6 +72,7 @@ public class ModbusTcpServer : UpLoadBase
             DataFormat = _driverPropertys.DataFormat,
             Station = _driverPropertys.Station,
             CacheTimeout = _driverPropertys.CacheTimeout,
+            WriteMemory = _driverPropertys.WriteMemory,
             MulStation = _driverPropertys.MulStation
         };
 

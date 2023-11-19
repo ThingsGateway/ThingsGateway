@@ -236,15 +236,17 @@ internal static class ModbusServerHelpers
                         if ((await modbusServer.OnWriteData(modbusServerMessage.ModbusAddress, modbusServerMessage.Content, modbusServer.ThingsGatewayBitConverter, client)).IsSuccess)
                         {
                             WriteSuccess(modbusServer.IsRtu, client, modbusServerMessage);
-                            //var result = modbusServer.Write(modbusServerMessage.ModbusAddress.ToString(), coreData.ByteToBoolArray(modbusServerMessage.Length));
-                            //if (result.IsSuccess)
-                            //{
-                            //    WriteSuccess(modbusServer, modbusServerMessage);
-                            //}
-                            //else
-                            //{
-                            //    WriteError(modbusServer, modbusServerMessage);
-                            //}
+                            if (modbusServer.WriteMemory)
+                            {
+                                var result = modbusServer.Write(modbusServerMessage.ModbusAddress.ToString(), coreData.ByteToBoolArray(modbusServerMessage.Length));
+                                if (result.IsSuccess)
+                                    WriteSuccess(modbusServer.IsRtu, client, modbusServerMessage);
+                                else
+                                    WriteError(modbusServer.IsRtu, client, modbusServerMessage);
+                            }
+                            else
+                                WriteSuccess(modbusServer.IsRtu, client, modbusServerMessage);
+
                         }
                         else
                         {
@@ -273,16 +275,16 @@ internal static class ModbusServerHelpers
 
                         if ((await modbusServer.OnWriteData(modbusServerMessage.ModbusAddress, modbusServerMessage.Content, modbusServer.ThingsGatewayBitConverter, client)).IsSuccess)
                         {
-                            WriteSuccess(modbusServer.IsRtu, client, modbusServerMessage);
-                            //var result = modbusServer.Write(modbusServerMessage.ModbusAddress.ToString(), coreData);
-                            //if (result.IsSuccess)
-                            //{
-                            //    WriteSuccess(modbusServer, modbusServerMessage);
-                            //}
-                            //else
-                            //{
-                            //    WriteError(modbusServer, modbusServerMessage);
-                            //}
+                            if (modbusServer.WriteMemory)
+                            {
+                                var result = modbusServer.Write(modbusServerMessage.ModbusAddress.ToString(), coreData);
+                                if (result.IsSuccess)
+                                    WriteSuccess(modbusServer.IsRtu, client, modbusServerMessage);
+                                else
+                                    WriteError(modbusServer.IsRtu, client, modbusServerMessage);
+                            }
+                            else
+                                WriteSuccess(modbusServer.IsRtu, client, modbusServerMessage);
                         }
                         else
                         {

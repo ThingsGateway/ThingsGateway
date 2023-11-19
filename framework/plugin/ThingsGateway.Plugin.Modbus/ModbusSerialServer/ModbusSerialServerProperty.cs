@@ -67,6 +67,11 @@ public class ModbusSerialServerProperty : DriverPropertyBase
     [DeviceProperty("允许写入", "")]
     public bool DeviceRpcEnable { get; set; }
     /// <summary>
+    /// 立即写入内存
+    /// </summary>
+    [DeviceProperty("立即写入内存", "")]
+    public bool WriteMemory { get; set; }
+    /// <summary>
     /// 组包缓存超时ms
     /// </summary>
     [DeviceProperty("组包缓存超时", "某些设备性能较弱，报文间需要间隔较长时间，可以设置更长的组包缓存，默认1000ms")]

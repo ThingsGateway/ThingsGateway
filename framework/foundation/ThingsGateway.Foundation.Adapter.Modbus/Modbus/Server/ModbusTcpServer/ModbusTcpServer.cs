@@ -19,11 +19,6 @@ namespace ThingsGateway.Foundation.Adapter.Modbus;
 /// </summary>
 public class ModbusTcpServer : ReadWriteDevicesTcpServerBase, IModbusServer
 {
-    /// <summary>
-    /// 读写锁
-    /// </summary>
-    public EasyLock EasyLock { get; } = new();
-
     /// <inheritdoc/>
     public ModbusTcpServer(TcpService tcpService) : base(tcpService)
     {
@@ -31,6 +26,10 @@ public class ModbusTcpServer : ReadWriteDevicesTcpServerBase, IModbusServer
         RegisterByteLength = 2;
     }
 
+    /// <summary>
+    /// 读写锁
+    /// </summary>
+    public EasyLock EasyLock { get; } = new();
     /// <inheritdoc/>
     public bool IsRtu => false;
 
@@ -69,6 +68,10 @@ public class ModbusTcpServer : ReadWriteDevicesTcpServerBase, IModbusServer
     /// </summary>
     [Description("默认站点")]
     public byte Station { get; set; } = 1;
+    /// <summary>
+    /// <inheritdoc/>
+    /// </summary>
+    public bool WriteMemory { get; set; }
 
 
 
@@ -107,30 +110,12 @@ public class ModbusTcpServer : ReadWriteDevicesTcpServerBase, IModbusServer
     /// <inheritdoc/>
     public void Init(ModbusAddress mAddress)
     {
-        ModbusServer01ByteBlocks.GetOrAdd(mAddress.Station, a =>
-        {
-            var data = new ByteBlock(ushort.MaxValue * 2);
-            data.SetLength(ushort.MaxValue * 2);
-            return data;
-        });
-        ModbusServer02ByteBlocks.GetOrAdd(mAddress.Station, a =>
-        {
-            var data = new ByteBlock(ushort.MaxValue * 2);
-            data.SetLength(ushort.MaxValue * 2);
-            return data;
-        });
-        ModbusServer03ByteBlocks.GetOrAdd(mAddress.Station, a =>
-        {
-            var data = new ByteBlock(ushort.MaxValue * 2);
-            data.SetLength(ushort.MaxValue * 2);
-            return data;
-        });
-        ModbusServer04ByteBlocks.GetOrAdd(mAddress.Station, a =>
-        {
-            var data = new ByteBlock(ushort.MaxValue * 2);
-            data.SetLength(ushort.MaxValue * 2);
-            return data;
-        });
+
+        ModbusServer01ByteBlocks.GetOrAdd(mAddress.Station, a => new ByteBlock(new byte[ushort.MaxValue * 2]));
+        ModbusServer02ByteBlocks.GetOrAdd(mAddress.Station, a => new ByteBlock(new byte[ushort.MaxValue * 2]));
+        ModbusServer03ByteBlocks.GetOrAdd(mAddress.Station, a => new ByteBlock(new byte[ushort.MaxValue * 2]));
+        ModbusServer04ByteBlocks.GetOrAdd(mAddress.Station, a => new ByteBlock(new byte[ushort.MaxValue * 2]));
+
     }
 
     /// <inheritdoc/>
