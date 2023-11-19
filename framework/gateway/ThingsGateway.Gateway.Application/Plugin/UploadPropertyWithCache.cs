@@ -39,7 +39,7 @@ public class UploadPropertyWithCache : DriverPropertyBase
     [DeviceProperty("列表分割大小", "默认1千条")]
     public virtual int SplitSize { get; set; } = 1000;
 
-    [DeviceProperty("是否选择全部变量", "")] public bool IsAllVariable { get; set; } = false;
+    [DeviceProperty("是否选择全部变量", "")] public virtual bool IsAllVariable { get; set; } = false;
 
 
 }

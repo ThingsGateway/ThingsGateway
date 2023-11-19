@@ -102,6 +102,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThingsGateway.Plugin.OPCDA"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThingsGateway.Plugin.OPCUA", "plugin\ThingsGateway.Plugin.OPCUA\ThingsGateway.Plugin.OPCUA.csproj", "{FD4969DB-3CCE-4CCF-BAE4-1BE8A3F40812}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThingsGateway.Plugin.SQLHisAlarm", "plugin\ThingsGateway.Plugin.SQLHisAlarm\ThingsGateway.Plugin.SQLHisAlarm.csproj", "{0947E6C0-6371-4483-B0ED-191FB5073151}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -236,6 +238,10 @@ Global
 		{FD4969DB-3CCE-4CCF-BAE4-1BE8A3F40812}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FD4969DB-3CCE-4CCF-BAE4-1BE8A3F40812}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FD4969DB-3CCE-4CCF-BAE4-1BE8A3F40812}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0947E6C0-6371-4483-B0ED-191FB5073151}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0947E6C0-6371-4483-B0ED-191FB5073151}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0947E6C0-6371-4483-B0ED-191FB5073151}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0947E6C0-6371-4483-B0ED-191FB5073151}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -273,6 +279,7 @@ Global
 		{AC4295F2-AB2F-4137-99EF-80FA5C83896B} = {E65490B8-D2E2-4693-B39C-15703B1EBFBB}
 		{9DA9AED3-9572-4378-A2A6-4D792D67ADDC} = {E65490B8-D2E2-4693-B39C-15703B1EBFBB}
 		{FD4969DB-3CCE-4CCF-BAE4-1BE8A3F40812} = {E65490B8-D2E2-4693-B39C-15703B1EBFBB}
+		{0947E6C0-6371-4483-B0ED-191FB5073151} = {E65490B8-D2E2-4693-B39C-15703B1EBFBB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C49B2D3E-6818-4E28-91B7-6E4E7E264BBB}
