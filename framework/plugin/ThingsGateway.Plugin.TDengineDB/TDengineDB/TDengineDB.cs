@@ -28,7 +28,7 @@ namespace ThingsGateway.Plugin.TDengineDB;
 /// <summary>
 /// SQLDB
 /// </summary>
-public partial class TDengineDB : UpLoadBaseWithCache<DeviceData, TDHistoryValue>
+public partial class TDengineDB : UpLoadBaseWithCacheT<DeviceData, TDHistoryValue>
 {
     protected override bool _device => false;
     protected override bool _variable => true;
@@ -41,7 +41,7 @@ public partial class TDengineDB : UpLoadBaseWithCache<DeviceData, TDHistoryValue
     public override VariablePropertyBase VariablePropertys => _variablePropertys;
     protected override IReadWrite _readWrite => null;
 
-    protected override UploadPropertyWithCache _uploadPropertyWithCache => _driverPropertys;
+    protected override UploadPropertyWithCacheT _uploadPropertyWithCache => _driverPropertys;
 
     /// <summary>
     /// <inheritdoc/>

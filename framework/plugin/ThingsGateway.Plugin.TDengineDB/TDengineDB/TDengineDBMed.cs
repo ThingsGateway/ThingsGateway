@@ -30,7 +30,7 @@ namespace ThingsGateway.Plugin.TDengineDB;
 /// <summary>
 /// MqttClient
 /// </summary>
-public partial class TDengineDB : UpLoadBaseWithCache<DeviceData, TDHistoryValue>
+public partial class TDengineDB : UpLoadBaseWithCacheT<DeviceData, TDHistoryValue>
 {
     private const string devType = "dev";
     private const string varType = "var";

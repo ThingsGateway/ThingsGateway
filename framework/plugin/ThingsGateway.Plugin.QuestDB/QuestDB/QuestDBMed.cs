@@ -30,7 +30,7 @@ namespace ThingsGateway.Plugin.QuestDB;
 /// <summary>
 /// MqttClient
 /// </summary>
-public partial class QuestDB : UpLoadBaseWithCache<DeviceData, QuestDBHistoryValue>
+public partial class QuestDB : UpLoadBaseWithCacheT<DeviceData, QuestDBHistoryValue>
 {
     private const string devType = "dev";
     private const string varType = "var";

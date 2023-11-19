@@ -27,7 +27,7 @@ namespace ThingsGateway.Plugin.RabbitMQ;
 /// <summary>
 /// Kafka消息生产
 /// </summary>
-public partial class RabbitMQProducer : UpLoadBaseWithCache<DeviceData, VariableData>
+public partial class RabbitMQProducer : UpLoadBaseWithCacheT<DeviceData, VariableData>
 {
     /// <inheritdoc/>
     public override Type DriverDebugUIType => null;
@@ -39,7 +39,7 @@ public partial class RabbitMQProducer : UpLoadBaseWithCache<DeviceData, Variable
 
     protected override IReadWrite _readWrite => null;
 
-    protected override UploadPropertyWithCache _uploadPropertyWithCache => _driverPropertys;
+    protected override UploadPropertyWithCacheT _uploadPropertyWithCache => _driverPropertys;
 
 
     /// <summary>

@@ -17,7 +17,7 @@ namespace ThingsGateway.Plugin.SQLDB;
 /// <summary>
 /// <inheritdoc/>
 /// </summary>
-public class SQLDBProperty : UploadPropertyWithCache
+public class SQLDBProperty : UploadPropertyWithCacheT
 {
     [DeviceProperty("是否实时表", "true=>实时表更新")] public bool IsReadDB { get; set; } = false;
     [DeviceProperty("是否历史表", "true=>历史存储(按月分表)")] public bool IsHisDB { get; set; } = true;

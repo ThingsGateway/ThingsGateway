@@ -19,7 +19,7 @@ namespace ThingsGateway.Plugin.Kafka;
 /// <summary>
 /// MqttClient
 /// </summary>
-public partial class KafkaProducer : UpLoadBaseWithCache<DeviceData, VariableData>
+public partial class KafkaProducer : UpLoadBaseWithCacheT<DeviceData, VariableData>
 {
     private const string devType = "dev";
     private const string varType = "var";

@@ -15,7 +15,7 @@ namespace ThingsGateway.Plugin.Mqtt;
 /// <summary>
 /// <inheritdoc/>
 /// </summary>
-public class MqttClientProperty : UploadPropertyWithCache
+public class MqttClientProperty : UploadPropertyWithCacheT
 {
 
     /// <summary>
