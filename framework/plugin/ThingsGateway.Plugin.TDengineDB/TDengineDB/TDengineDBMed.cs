@@ -22,7 +22,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 
 using ThingsGateway.Foundation.Extension.Generic;
-using ThingsGateway.Foundation.Extension.String;
 
 using Yitter.IdGenerator;
 
@@ -39,19 +38,6 @@ public partial class TDengineDB : UpLoadBaseWithCache<DeviceData, TDHistoryValue
     private readonly TDengineDBVariableProperty _variablePropertys = new();
 
     private volatile bool success = true;
-    private static object ValueReturn(DeviceVariableRunTime src)
-    {
-        var data = src.Value?.ToString()?.ToBool();
-        if (data != null)
-        {
-            return data;
-        }
-        else
-        {
-            return src.Value;
-        }
-    }
-
     protected override void AddCache(List<CacheItem> cacheItems, IEnumerable<TDHistoryValue> dev)
     {
         var data = dev.ChunkBetter(_driverPropertys.CacheItemCount);

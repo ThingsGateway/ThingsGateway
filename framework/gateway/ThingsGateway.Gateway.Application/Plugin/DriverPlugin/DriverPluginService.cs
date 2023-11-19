@@ -267,7 +267,19 @@ public class DriverPluginService : ISingleton
         }, true);
         return data;
     }
-
+    static T GetCustomAttributeRecursive<T>(PropertyInfo property) where T : Attribute
+    {
+        var attribute = property.GetCustomAttribute<T>(false);
+        if (attribute == null && property.DeclaringType.BaseType != null)
+        {
+            var baseProperty = property.DeclaringType.BaseType.GetProperties().FirstOrDefault(p => p.Name == property.Name);
+            if (baseProperty != null)
+            {
+                attribute = GetCustomAttributeRecursive<T>(baseProperty);
+            }
+        }
+        return attribute;
+    }
     /// <summary>
     /// 获取插件的属性值
     /// </summary>
@@ -278,7 +290,7 @@ public class DriverPluginService : ISingleton
         var data = _serviceScope.ServiceProvider.GetService<MemoryCache>().GetOrCreate($"{nameof(GetDriverProperties)}", cacheKey, c =>
         {
             var data = driver.DriverPropertys?.GetType().GetProperties().SelectMany(it =>
-    new[] { new { memberInfo = it, attribute = it.GetCustomAttribute<DevicePropertyAttribute>() } })
+    new[] { new { memberInfo = it, attribute = GetCustomAttributeRecursive<DevicePropertyAttribute>(it) } })
     .Where(x => x.attribute != null).ToList()
       .SelectMany(it => new[]
       {
@@ -305,7 +317,7 @@ public class DriverPluginService : ISingleton
         var data = _serviceScope.ServiceProvider.GetService<MemoryCache>().GetOrCreate($"{nameof(GetDriverVariableProperties)}", cacheKey, c =>
         {
             var data = driver.VariablePropertys?.GetType().GetProperties()?.SelectMany(it =>
-    new[] { new { memberInfo = it, attribute = it.GetCustomAttribute<VariablePropertyAttribute>() } })
+    new[] { new { memberInfo = it, attribute = GetCustomAttributeRecursive<DevicePropertyAttribute>(it) } })
     ?.Where(x => x.attribute != null).ToList()
       ?.SelectMany(it => new[]
       {
@@ -380,7 +392,7 @@ public class DriverPluginService : ISingleton
     /// <param name="deviceProperties">插件属性，检索相同名称的属性后写入</param>
     public void SetDriverProperties(DriverBase driver, List<DependencyProperty> deviceProperties)
     {
-        var pluginPropertys = driver.DriverPropertys?.GetType().GetProperties().Where(a => a.GetCustomAttribute(typeof(DevicePropertyAttribute)) != null)?.ToList();
+        var pluginPropertys = driver.DriverPropertys?.GetType().GetProperties().Where(a => GetCustomAttributeRecursive<DevicePropertyAttribute>(a) != null)?.ToList();
         foreach (var propertyInfo in pluginPropertys ?? new())
         {
             var deviceProperty = deviceProperties.FirstOrDefault(x => x.PropertyName == propertyInfo.Name);

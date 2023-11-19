@@ -21,7 +21,7 @@ namespace ThingsGateway.Foundation.Extension.String;
 public static class StringExtensions
 {
     /// <summary>
-    /// 转换布尔值
+    /// 转换布尔值，注意    1，0，on，off  ，true，false     都会对应转换
     /// </summary>
     /// <param name="value"></param>
     /// <returns></returns>

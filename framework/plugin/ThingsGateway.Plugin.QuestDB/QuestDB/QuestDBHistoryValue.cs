@@ -57,5 +57,5 @@ public class QuestDBHistoryValue
     /// 变量值
     /// </summary>
     [Description("变量值")]
-    public double Value { get; set; }
+    public string Value { get; set; }
 }

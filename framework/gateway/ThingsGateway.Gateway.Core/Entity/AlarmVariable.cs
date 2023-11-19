@@ -12,10 +12,8 @@
 
 namespace ThingsGateway.Gateway.Core;
 /// <summary>
-/// 历史报警表
+/// 报警变量
 /// </summary>
-[IgnoreSqlTable]
-[SugarTable("historyAlarm", TableDescription = "历史报警表")]
 public class AlarmVariable : PrimaryIdEntity
 {
     /// <inheritdoc  cref="DeviceVariable.Name"/>

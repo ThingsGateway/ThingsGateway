@@ -59,7 +59,7 @@ public partial class QuestDB : UpLoadBaseWithCache<DeviceData, QuestDBHistoryVal
     {
         _config = new TypeAdapterConfig();
         _config.ForType<DeviceVariableRunTime, QuestDBHistoryValue>()
-            .Map(dest => dest.Value, (src) => ValueReturn(src))
+            .Map(dest => dest.Value, src => src.Value == null ? string.Empty : src.Value.ToString() ?? string.Empty)
             .Map(dest => dest.CollectTime, (src) => src.CollectTime < DateTime.MinValue ? DateTime.MinValue.ToUniversalTime() : src.CollectTime.ToUniversalTime())//注意sqlsugar插入时无时区，直接utc时间
             .Map(dest => dest.CreateTime, (src) => DateTime.UtcNow)
             ;//注意sqlsugar插入时无时区，直接utc时间
