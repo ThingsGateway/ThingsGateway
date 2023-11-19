@@ -440,6 +440,7 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
             }
             finally
             {
+                SetDataAdapter();
                 await base.Connected(client, e);
             }
         }

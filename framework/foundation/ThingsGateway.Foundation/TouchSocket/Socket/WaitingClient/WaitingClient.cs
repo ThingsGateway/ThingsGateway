@@ -186,6 +186,10 @@ namespace ThingsGateway.Foundation.Sockets
                     }
                 }
             }
+            catch (Exception ex)
+            {
+                return new();
+            }
             finally
             {
                 this.m_cancellationTokenSource = null;
