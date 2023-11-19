@@ -30,7 +30,7 @@ namespace ThingsGateway.Plugin.SQLDB;
 /// <summary>
 /// MqttClient
 /// </summary>
-public partial class SQLDB : UpLoadBaseWithCache<DeviceData, SQLHistoryValue>
+public partial class SQLDB : UpLoadBaseWithCacheT<DeviceData, SQLHistoryValue>
 {
     private const string devType = "dev";
     private const string varType = "var";

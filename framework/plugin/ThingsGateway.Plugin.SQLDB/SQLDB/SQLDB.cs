@@ -28,7 +28,7 @@ namespace ThingsGateway.Plugin.SQLDB;
 /// <summary>
 /// SQLDB
 /// </summary>
-public partial class SQLDB : UpLoadBaseWithCache<DeviceData, SQLHistoryValue>
+public partial class SQLDB : UpLoadBaseWithCacheT<DeviceData, SQLHistoryValue>
 {
     protected override bool _device => false;
     protected override bool _variable => _driverPropertys.IsHisDB;
@@ -41,7 +41,7 @@ public partial class SQLDB : UpLoadBaseWithCache<DeviceData, SQLHistoryValue>
     public override VariablePropertyBase VariablePropertys => _variablePropertys;
     protected override IReadWrite _readWrite => null;
 
-    protected override UploadPropertyWithCache _uploadPropertyWithCache => _driverPropertys;
+    protected override UploadPropertyWithCacheT _uploadPropertyWithCache => _driverPropertys;
 
     /// <summary>
     /// <inheritdoc/>

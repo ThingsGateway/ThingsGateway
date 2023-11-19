@@ -26,7 +26,7 @@ namespace ThingsGateway.Plugin.Mqtt;
 /// <summary>
 /// MqttClient
 /// </summary>
-public partial class MqttClient : UpLoadBaseWithCache<DeviceData, VariableData>
+public partial class MqttClient : UpLoadBaseWithCacheT<DeviceData, VariableData>
 {
     /// <inheritdoc/>
     public override Type DriverDebugUIType => null;
@@ -37,7 +37,7 @@ public partial class MqttClient : UpLoadBaseWithCache<DeviceData, VariableData>
     public override VariablePropertyBase VariablePropertys => _variablePropertys;
     protected override IReadWrite _readWrite => null;
 
-    protected override UploadPropertyWithCache _uploadPropertyWithCache => _driverPropertys;
+    protected override UploadPropertyWithCacheT _uploadPropertyWithCache => _driverPropertys;
 
     /// <summary>
     /// <inheritdoc/>

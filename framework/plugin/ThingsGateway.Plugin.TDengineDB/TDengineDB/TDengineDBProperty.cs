@@ -17,7 +17,7 @@ namespace ThingsGateway.Plugin.TDengineDB;
 /// <summary>
 /// <inheritdoc/>
 /// </summary>
-public class TDengineDBProperty : UploadPropertyWithCache
+public class TDengineDBProperty : UploadPropertyWithCacheT
 {
 
     public DbType DbType { get; set; } = DbType.TDengine;

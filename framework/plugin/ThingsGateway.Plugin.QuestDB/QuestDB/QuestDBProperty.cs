@@ -17,7 +17,7 @@ namespace ThingsGateway.Plugin.QuestDB;
 /// <summary>
 /// <inheritdoc/>
 /// </summary>
-public class QuestDBProperty : UploadPropertyWithCache
+public class QuestDBProperty : UploadPropertyWithCacheT
 {
 
     public DbType DbType { get; set; } = DbType.QuestDB;

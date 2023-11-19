@@ -15,7 +15,7 @@ namespace ThingsGateway.Plugin.Kafka;
 /// <summary>
 /// kafka 生产者属性
 /// </summary>
-public class KafkaProducerProperty : UploadPropertyWithCache
+public class KafkaProducerProperty : UploadPropertyWithCacheT
 {
     /// <summary>
     /// 服务地址

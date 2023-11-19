@@ -29,7 +29,7 @@ namespace ThingsGateway.Plugin.Kafka;
 /// <summary>
 /// Kafka消息生产
 /// </summary>
-public partial class KafkaProducer : UpLoadBaseWithCache<DeviceData, VariableData>
+public partial class KafkaProducer : UpLoadBaseWithCacheT<DeviceData, VariableData>
 {
     /// <inheritdoc/>
     public override Type DriverDebugUIType => null;
@@ -41,7 +41,7 @@ public partial class KafkaProducer : UpLoadBaseWithCache<DeviceData, VariableDat
 
     protected override IReadWrite _readWrite => null;
 
-    protected override UploadPropertyWithCache _uploadPropertyWithCache => _driverPropertys;
+    protected override UploadPropertyWithCacheT _uploadPropertyWithCache => _driverPropertys;
 
 
     /// <summary>

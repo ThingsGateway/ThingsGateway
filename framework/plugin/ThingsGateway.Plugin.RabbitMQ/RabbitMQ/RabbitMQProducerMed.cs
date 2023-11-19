@@ -21,7 +21,7 @@ namespace ThingsGateway.Plugin.RabbitMQ;
 /// <summary>
 /// MqttClient
 /// </summary>
-public partial class RabbitMQProducer : UpLoadBaseWithCache<DeviceData, VariableData>
+public partial class RabbitMQProducer : UpLoadBaseWithCacheT<DeviceData, VariableData>
 {
     private const string devType = "dev";
     private const string varType = "var";

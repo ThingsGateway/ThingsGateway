@@ -27,7 +27,7 @@ namespace ThingsGateway.Plugin.Mqtt;
 /// <summary>
 /// IotSharpClient
 /// </summary>
-public partial class IotSharpClient : UpLoadBaseWithCache<DeviceData, VariableData>
+public partial class IotSharpClient : UpLoadBaseWithCacheT<DeviceData, VariableData>
 {
     /// <summary>
     /// rpcmethodname存疑，定为自定义方法，在ThingsGateway上写入变量的方法固定为"Write"

@@ -17,7 +17,7 @@ namespace ThingsGateway.Plugin.RabbitMQ;
 /// <summary>
 /// kafka 生产者属性
 /// </summary>
-public class RabbitMQProducerProperty : UploadPropertyWithCache
+public class RabbitMQProducerProperty : UploadPropertyWithCacheT
 {
     /// <summary>
     /// IP

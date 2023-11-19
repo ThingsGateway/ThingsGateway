@@ -24,7 +24,7 @@ namespace ThingsGateway.Plugin.Mqtt;
 /// <summary>
 /// IotSharpClient
 /// </summary>
-public partial class IotSharpClient : UpLoadBaseWithCache<DeviceData, VariableData>
+public partial class IotSharpClient : UpLoadBaseWithCacheT<DeviceData, VariableData>
 {
     /// <inheritdoc/>
     public override Type DriverDebugUIType => null;
@@ -35,7 +35,7 @@ public partial class IotSharpClient : UpLoadBaseWithCache<DeviceData, VariableDa
     public override VariablePropertyBase VariablePropertys => _variablePropertys;
     protected override IReadWrite _readWrite => null;
 
-    protected override UploadPropertyWithCache _uploadPropertyWithCache => _driverPropertys;
+    protected override UploadPropertyWithCacheT _uploadPropertyWithCache => _driverPropertys;
 
     /// <summary>
     /// <inheritdoc/>
