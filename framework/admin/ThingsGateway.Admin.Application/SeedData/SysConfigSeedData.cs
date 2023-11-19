@@ -86,7 +86,7 @@ public class SysConfigSeedData : ISqlSugarEntitySeedData<SysConfig>
                 Id = 22222222222229,
                 Category = ConfigConst.SYS_CONFIGBASEDEFAULT,
                 ConfigKey = ConfigConst.CONFIG_PAGETAB,
-                ConfigValue = "false",
+                ConfigValue = "true",
                 Remark = "开启标签页",
                 SortCode = 7,
             },
