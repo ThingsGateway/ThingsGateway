@@ -44,7 +44,7 @@ public class CollectDeviceService : DeviceService<CollectDevice>, ITransient
 
 
     /// <inheritdoc/>
-    [OperDesc("复制设备与变量")]
+    [OperDesc("复制设备与变量", IsRecordPar = false)]
     public virtual async Task CopyDevAndVarAsync(IEnumerable<CollectDevice> input)
     {
         var variableService = _serviceScope.ServiceProvider.GetService<VariableService>();
