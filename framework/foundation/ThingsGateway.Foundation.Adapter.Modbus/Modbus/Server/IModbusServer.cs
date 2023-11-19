@@ -18,6 +18,10 @@ namespace ThingsGateway.Foundation.Adapter.Modbus
     internal interface IModbusServer : IReadWrite
     {
         /// <summary>
+        /// 外部写入数据后，是否写入内存(下次读取实时更新，否则需要内部调用Write)
+        /// </summary>
+        public bool WriteMemory { get; set; }
+        /// <summary>
         /// 读写锁
         /// </summary>
         public EasyLock EasyLock { get; }

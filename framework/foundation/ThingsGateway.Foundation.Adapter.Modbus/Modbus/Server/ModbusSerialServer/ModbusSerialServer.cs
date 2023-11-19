@@ -18,15 +18,19 @@ namespace ThingsGateway.Foundation.Adapter.Modbus;
 /// </summary>
 public class ModbusSerialServer : ReadWriteDevicesSerialSessionBase, IModbusServer
 {
+    /// <inheritdoc/>
+    public ModbusSerialServer(SerialSession serialSession) : base(serialSession)
+    {
+        ThingsGatewayBitConverter = new ThingsGatewayBitConverter(EndianType.Big);
+        RegisterByteLength = 2;
+    }
+
     /// <summary>
     /// 读写锁
     /// </summary>
     public EasyLock EasyLock { get; } = new();
-
-    /// <summary>
-    /// 接收外部写入时，传出变量地址/写入字节组/转换规则/客户端
-    /// </summary>
-    public Func<ModbusAddress, byte[], IThingsGatewayBitConverter, ISenderClient, Task<OperResult>> OnWriteData { get; set; }
+    /// <inheritdoc/>
+    public bool IsRtu => true;
 
     /// <inheritdoc/>
     public ConcurrentDictionary<byte, ByteBlock> ModbusServer01ByteBlocks { get; set; } = new();
@@ -39,22 +43,22 @@ public class ModbusSerialServer : ReadWriteDevicesSerialSessionBase, IModbusServ
 
     /// <inheritdoc/>
     public ConcurrentDictionary<byte, ByteBlock> ModbusServer04ByteBlocks { get; set; } = new();
-    /// <inheritdoc/>
-    public ModbusSerialServer(SerialSession serialSession) : base(serialSession)
-    {
-        ThingsGatewayBitConverter = new ThingsGatewayBitConverter(EndianType.Big);
-        RegisterByteLength = 2;
-    }
 
     /// <inheritdoc/>
     public bool MulStation { get; set; }
 
+    /// <summary>
+    /// 接收外部写入时，传出变量地址/写入字节组/转换规则/客户端
+    /// </summary>
+    public Func<ModbusAddress, byte[], IThingsGatewayBitConverter, ISenderClient, Task<OperResult>> OnWriteData { get; set; }
+
     /// <inheritdoc/>
     public byte Station { get; set; } = 1;
+
+    /// <summary>
     /// <inheritdoc/>
-    public bool IsRtu => true;
-
-
+    /// </summary>
+    public bool WriteMemory { get; set; }
     /// <inheritdoc/>
     public override void Dispose()
     {
@@ -85,6 +89,17 @@ public class ModbusSerialServer : ReadWriteDevicesSerialSessionBase, IModbusServ
     public override string GetAddressDescription()
     {
         return $"{base.GetAddressDescription()}{Environment.NewLine}{ModbusHelper.GetAddressDescription()}";
+    }
+
+    /// <inheritdoc/>
+    public void Init(ModbusAddress mAddress)
+    {
+
+        ModbusServer01ByteBlocks.GetOrAdd(mAddress.Station, a => new ByteBlock(new byte[ushort.MaxValue * 2]));
+        ModbusServer02ByteBlocks.GetOrAdd(mAddress.Station, a => new ByteBlock(new byte[ushort.MaxValue * 2]));
+        ModbusServer03ByteBlocks.GetOrAdd(mAddress.Station, a => new ByteBlock(new byte[ushort.MaxValue * 2]));
+        ModbusServer04ByteBlocks.GetOrAdd(mAddress.Station, a => new ByteBlock(new byte[ushort.MaxValue * 2]));
+
     }
 
     /// <inheritdoc/>
@@ -160,36 +175,5 @@ public class ModbusSerialServer : ReadWriteDevicesSerialSessionBase, IModbusServ
         {
             Logger.LogError(ex, ToString());
         }
-    }
-
-
-
-    /// <inheritdoc/>
-    public void Init(ModbusAddress mAddress)
-    {
-        ModbusServer01ByteBlocks.GetOrAdd(mAddress.Station, a =>
-        {
-            var data = new ByteBlock(ushort.MaxValue * 2);
-            data.SetLength(ushort.MaxValue * 2);
-            return data;
-        });
-        ModbusServer02ByteBlocks.GetOrAdd(mAddress.Station, a =>
-        {
-            var data = new ByteBlock(ushort.MaxValue * 2);
-            data.SetLength(ushort.MaxValue * 2);
-            return data;
-        });
-        ModbusServer03ByteBlocks.GetOrAdd(mAddress.Station, a =>
-        {
-            var data = new ByteBlock(ushort.MaxValue * 2);
-            data.SetLength(ushort.MaxValue * 2);
-            return data;
-        });
-        ModbusServer04ByteBlocks.GetOrAdd(mAddress.Station, a =>
-        {
-            var data = new ByteBlock(ushort.MaxValue * 2);
-            data.SetLength(ushort.MaxValue * 2);
-            return data;
-        });
     }
 }
