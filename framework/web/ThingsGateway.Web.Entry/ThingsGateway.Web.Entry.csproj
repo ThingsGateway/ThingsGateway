@@ -7,12 +7,6 @@
 		<!--<PlatformTarget>x86</PlatformTarget>-->
 	</PropertyGroup>
 
-
-	<ItemGroup>
-	  <_WebToolingArtifacts Remove="Properties\PublishProfiles\linux64_net6.pubxml" />
-	  <_WebToolingArtifacts Remove="Properties\PublishProfiles\linux64_net8.pubxml" />
-	</ItemGroup>
-
 	<ItemGroup>
 		<Content Update="pm2-linux.json">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -49,18 +43,6 @@
 	</ItemGroup>
 
 
-
-
-
-	<!--pro内容-->
-	<PropertyGroup Condition="'$(SolutionName)'=='ThingsGateway - Pro - AF2021'">
-		<DefineConstants>AF2021</DefineConstants>
-	</PropertyGroup>
-	<ItemGroup Condition="'$(SolutionName)'=='ThingsGateway - Pro - AF2021'">
-		<ProjectReference Include="..\..\PluginProAF2021\ThingsGateway.Gateway.LK\ThingsGateway.Gateway.LK.csproj" />
-		<PackageReference Include="MQTTnet.AspNetCore" Version="4.3.1.873" />
-	</ItemGroup>
-	
 
 	
 </Project>
