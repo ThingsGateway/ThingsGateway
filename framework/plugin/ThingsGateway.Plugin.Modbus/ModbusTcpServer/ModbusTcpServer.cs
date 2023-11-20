@@ -64,6 +64,7 @@ public class ModbusTcpServer : UpLoadBase
             iPHost = new IPHost($"{_driverPropertys.IP}:{_driverPropertys.Port}");
         }
         FoundataionConfig.SetListenIPHosts(new IPHost[] { iPHost });
+        FoundataionConfig.SetMaxCount(30000);
         var service = new TcpService();
         service.Setup(FoundataionConfig);
         //载入配置
