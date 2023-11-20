@@ -2,7 +2,7 @@
 	<PropertyGroup>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<TargetFrameworks>net6.0;net8.0;</TargetFrameworks>
-		<Version>4.0.0.1</Version>
+		<Version>4.0.0.2</Version>
 		<LangVersion>latest</LangVersion>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Authors>Diego</Authors>

@@ -54,20 +54,6 @@ public class Program
         builder.Host.UseWindowsService();
         builder.Host.UseSystemd();
 
-#if AF2021
-
-        builder.WebHost.UseKestrel(
-    o =>
-    {
-        var config = Furion.App.GetConfig<ThingsGateway.Gateway.LK.MqttConfig>("MqttConfig", true);
-        if (config.Enable)
-        {
-            o.ListenAnyIP(config.Port, a => MQTTnet.AspNetCore.ConnectionBuilderExtensions.UseMqtt(a));
-            o.ListenAnyIP(config.WebSocketPort);
-        }
-    });
-#endif
-
         //Furion便利方法
         builder.Inject();
         var app = builder.Build();
