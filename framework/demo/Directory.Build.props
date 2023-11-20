@@ -1,7 +1,7 @@
 <Project>
 	<PropertyGroup>
 		<TargetFrameworks>net6.0;net8.0;</TargetFrameworks>
-		<Version>4.0.0.2</Version>
+		<Version>4.0.0.3</Version>
 		<LangVersion>latest</LangVersion>
 		<Authors>Diego</Authors>
 		<Product>ThingsGateway</Product>
