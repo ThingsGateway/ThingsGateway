@@ -29,7 +29,7 @@
 
 @layout MainLayout
 @using ThingsGateway.Admin.Core;
-@if (IsMobile)
+@* @if (IsMobile)
 {
     @GetAppDataTable()
 }
@@ -67,8 +67,9 @@ else
             @GetAppDataTable()
         </MCol>
     </MRow>
-}
+} *@
 
+@GetAppDataTable()
 
 <ImportExcel @ref=_importExcel Import="SaveDeviceImportAsync" Preview="DeviceImportAsync" />
 

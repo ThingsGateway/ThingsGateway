@@ -30,7 +30,7 @@
 @inject UserResoures UserResoures
 @layout MainLayout
 
-@if (IsMobile)
+@* @if (IsMobile)
 {
     @GetAppDataTable()
 
@@ -69,7 +69,8 @@ else
 
         </MCol>
     </MRow>
-}
+} *@
+@GetAppDataTable()
 
 <ImportExcel @ref=_importExcel Import="SaveDeviceImportAsync" Preview="DeviceImportAsync" />
 
