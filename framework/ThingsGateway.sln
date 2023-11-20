@@ -82,6 +82,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "解决方案项", "解决方案项", "{97B23D8B-C6C0-4746-A21F-C7B49354B284}"
 	ProjectSection(SolutionItems) = preProject
 		..\.gitignore = ..\.gitignore
+		..\README.md = ..\README.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThingsGateway.Plugin.Kafka", "plugin\ThingsGateway.Plugin.Kafka\ThingsGateway.Plugin.Kafka.csproj", "{E4B8B8E6-FAE7-43BA-9A51-33A3CD9FB825}"
