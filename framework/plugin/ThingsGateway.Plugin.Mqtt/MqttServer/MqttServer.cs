@@ -14,15 +14,18 @@ using Furion;
 
 using Mapster;
 
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 using MQTTnet;
+using MQTTnet.AspNetCore;
 using MQTTnet.Internal;
 using MQTTnet.Protocol;
 using MQTTnet.Server;
 
 using System.Collections.Concurrent;
-using System.Net;
 using System.Text;
 
 using ThingsGateway.Admin.Application;
@@ -93,6 +96,7 @@ public class MqttServer : UpLoadBase
             _mqttServer.InterceptingSubscriptionAsync -= MqttServer_InterceptingSubscriptionAsync; ;
             _mqttServer?.SafeDispose();
         }
+        _webHost?.Dispose();
         _globalDeviceData?.AllVariables?.ForEach(a => a.VariableValueChange -= VariableValueChange);
         _globalDeviceData?.CollectDevices?.ForEach(a =>
         {
@@ -102,16 +106,33 @@ public class MqttServer : UpLoadBase
         _collectVariableRunTimes.Clear();
         base.Dispose(disposing);
     }
-
+    private IWebHost _webHost { get; set; }
     protected override void Init(ISenderClient client = null)
     {
-        var mqttFactory = new MqttFactory();
-        var mqttServerOptions = mqttFactory.CreateServerOptionsBuilder()
-            .WithDefaultEndpointBoundIPAddress(string.IsNullOrEmpty(_driverPropertys.IP) ? null : IPAddress.Parse(_driverPropertys.IP))
-            .WithDefaultEndpointPort(_driverPropertys.Port)
-            .WithDefaultEndpoint()
-            .Build();
-        _mqttServer = mqttFactory.CreateMqttServer(mqttServerOptions);
+        //var mqttFactory = new MqttFactory();
+        //var mqttServerOptions = mqttFactory.CreateServerOptionsBuilder()
+        //    .WithDefaultEndpointBoundIPAddress(string.IsNullOrEmpty(_driverPropertys.IP) ? null : IPAddress.Parse(_driverPropertys.IP))
+        //    .WithDefaultEndpointPort(_driverPropertys.Port)
+        //    .WithDefaultEndpoint()
+        //    .Build();
+        //_mqttServer = mqttFactory.CreateMqttServer(mqttServerOptions);
+        var configuration = new ConfigurationBuilder()
+          .SetBasePath(Directory)
+          .Build();
+        var webBuilder = new WebHostBuilder()
+     .UseKestrel(
+                             o =>
+                             {
+                                 o.ListenAnyIP(_driverPropertys.Port, l => l.UseMqtt());
+                                 o.ListenAnyIP(_driverPropertys.WebSocketPort);
+                             });
+        webBuilder.UseStartup<MqttServerStartup>();
+        _webHost = webBuilder.UseConfiguration(configuration)
+           .Build();
+
+        _webHost.StartAsync();
+
+        _mqttServer = _webHost.Services.GetService<MqttHostedServer>();
 
         CollectDevices.Where(a => CurrentDevice.DeviceVariableRunTimes.Select(b => b.DeviceId).Contains(a.Id)).ForEach(a =>
         {
@@ -121,7 +142,6 @@ public class MqttServer : UpLoadBase
         {
             a.VariableValueChange += VariableValueChange;
         });
-
     }
 
     protected override async Task ProtectedBeforStartAsync(CancellationToken cancellationToken)

@@ -17,16 +17,17 @@ namespace ThingsGateway.Plugin.Mqtt;
 public class MqttServerProperty : DriverPropertyBase
 {
     [DeviceProperty("是否选择全部变量", "")] public bool IsAllVariable { get; set; } = false;
-    /// <summary>
-    /// IP
-    /// </summary>
-    [DeviceProperty("IP", "留空则全部监听")]
-    public override string IP { get; set; } = "";
+
     /// <summary>
     /// 端口
     /// </summary>
     [DeviceProperty("端口", "")]
     public override int Port { get; set; } = 1883;
+    /// <summary>
+    /// WebSocket端口
+    /// </summary>
+    [DeviceProperty("WebSocket端口", "")]
+    public int WebSocketPort { get; set; } = 8083;
     /// <summary>
     /// 允许连接的ID(前缀)
     /// </summary>
