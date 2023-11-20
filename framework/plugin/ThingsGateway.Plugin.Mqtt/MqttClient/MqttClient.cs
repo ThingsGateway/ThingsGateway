@@ -69,14 +69,20 @@ public partial class MqttClient : UpLoadBaseWithCacheT<DeviceData, VariableData>
     {
         base.Init(client);
         var mqttFactory = new MqttFactory();
-        _mqttClientOptions = mqttFactory.CreateClientOptionsBuilder()
+        var mqttClientOptionsBuilder = mqttFactory.CreateClientOptionsBuilder()
            .WithClientId(_driverPropertys.ConnectId)
            .WithCredentials(_driverPropertys.UserName, _driverPropertys.Password)//账密
-           .WithTcpServer(_driverPropertys.IP, _driverPropertys.Port)//服务器
+
            .WithCleanSession(true)
            .WithKeepAlivePeriod(TimeSpan.FromSeconds(120.0))
-           .WithoutThrowOnNonSuccessfulConnectResponse()
+           .WithoutThrowOnNonSuccessfulConnectResponse();
+        if (_driverPropertys.IsWebSocket)
+            _mqttClientOptions = mqttClientOptionsBuilder.WithWebSocketServer(a => a.WithUri(_driverPropertys.WebSocktUrl))
            .Build();
+        else
+            _mqttClientOptions = mqttClientOptionsBuilder.WithTcpServer(_driverPropertys.IP, _driverPropertys.Port)//服务器
+           .Build();
+
         _mqttSubscribeOptions = mqttFactory.CreateSubscribeOptionsBuilder()
             .WithTopicFilter(
                 f =>

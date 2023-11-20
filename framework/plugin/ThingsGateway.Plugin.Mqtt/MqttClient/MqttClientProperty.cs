@@ -29,6 +29,16 @@ public class MqttClientProperty : UploadPropertyWithCacheT
     [DeviceProperty("端口", "")]
     public override int Port { get; set; } = 1883;
     /// <summary>
+    /// 是否websocket连接
+    /// </summary>
+    [DeviceProperty("是否WebSocket连接", "true=>websocket，flase=>tcp")]
+    public bool IsWebSocket { get; set; } = false;
+    /// <summary>
+    /// WebSocktUrl
+    /// </summary>
+    [DeviceProperty("WebSocktUrl", "")]
+    public string WebSocktUrl { get; set; } = "ws://127.0.0.1:8083/mqtt";
+    /// <summary>
     /// 账号
     /// </summary>
     [DeviceProperty("账号", "")]
