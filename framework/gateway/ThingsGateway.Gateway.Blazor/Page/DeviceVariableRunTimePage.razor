@@ -30,7 +30,7 @@
 @inherits BaseComponentBase
 @inject UserResoures UserResoures
 @layout MainLayout
-@if (IsMobile)
+@* @if (IsMobile)
 {
     @GetAppDataTable()
 
@@ -69,7 +69,11 @@ else
             @GetAppDataTable()
         </MCol>
     </MRow>
-}
+} *@
+
+@GetAppDataTable()
+
+
 @code {
     RenderFragment GetAppDataTable()
     {

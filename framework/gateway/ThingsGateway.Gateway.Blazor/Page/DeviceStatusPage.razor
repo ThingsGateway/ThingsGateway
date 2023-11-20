@@ -48,7 +48,7 @@
              @if (_tabNumber == 1)
             {
                 <MRow NoGutters>
-                 <MCol Md=2 Cols="12">
+@*                  <MCol Md=2 Cols="12">
 
                      <MCard Class="ma-2" Style=@($"height: calc(100vh - {BlazorResourceConst.DefaultHeight + 80}px );")>
                          <MCardTitle>
@@ -73,8 +73,8 @@
                                 </LabelContent>
                             </MTreeview>
                         </MCard>
-                    </MCol>
-                    <MCol Md=3 Cols="12">
+                    </MCol> *@
+                    <MCol Md=5 Cols="12">
                         <MCard Height=@($"calc(100vh - {BlazorResourceConst.DefaultHeight + 80}px; )") Style="overflow-y:auto;" Flat Class="ml-2 my-4">
 
 
@@ -250,7 +250,7 @@
             @if (_tabNumber == 2)
             {
                 <MRow>
-                    <MCol Md=2 Cols="12">
+@*                     <MCol Md=2 Cols="12">
                         <MCard Class="ma-2" Style=@($"height: calc(100vh - {BlazorResourceConst.DefaultHeight + 80}px); )")>
                             <MCardTitle>
                                 <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="mx-2 my-1" @bind-Value="_uploadDeviceGroupSearchName"
@@ -274,8 +274,8 @@
                                 </LabelContent>
                             </MTreeview>
                         </MCard>
-                    </MCol>
-                    <MCol Md=3 Cols="12">
+                    </MCol> *@
+                    <MCol Md=5 Cols="12">
                         <MCard Height=@($"calc(100vh - {BlazorResourceConst.DefaultHeight+80}px)") Style="overflow-y:auto;" Flat Class="ml-2 my-4">
 
                              <MVirtualScroll Context="item" Height=@($"calc(100vh - {BlazorResourceConst.DefaultHeight+100}px)") OverscanCount=2 ItemSize="60" Items="_uploadDriverBases">
