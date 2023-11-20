@@ -130,7 +130,6 @@ public class MqttServer : UpLoadBase
         _webHost = webBuilder.UseConfiguration(configuration)
            .Build();
 
-        _webHost.StartAsync();
 
         _mqttServer = _webHost.Services.GetService<MqttHostedServer>();
 
@@ -146,6 +145,7 @@ public class MqttServer : UpLoadBase
 
     protected override async Task ProtectedBeforStartAsync(CancellationToken cancellationToken)
     {
+        _ = _webHost.StartAsync(cancellationToken);
         if (_mqttServer != null)
         {
             _mqttServer.ValidatingConnectionAsync += MqttServer_ValidatingConnectionAsync;
