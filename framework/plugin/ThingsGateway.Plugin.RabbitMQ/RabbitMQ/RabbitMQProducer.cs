@@ -14,8 +14,6 @@ using LiteDB;
 
 using Microsoft.Extensions.Logging;
 
-using MQTTnet.Diagnostics;
-
 using RabbitMQ.Client;
 
 using ThingsGateway.Foundation.Extension.ConcurrentQueue;

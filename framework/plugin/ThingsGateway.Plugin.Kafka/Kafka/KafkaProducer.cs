@@ -16,8 +16,6 @@ using LiteDB;
 
 using Microsoft.Extensions.Logging;
 
-using MQTTnet.Diagnostics;
-
 using System.Runtime.InteropServices;
 
 using ThingsGateway.Foundation.Extension.ConcurrentQueue;

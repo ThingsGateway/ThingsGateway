@@ -16,8 +16,6 @@ using Mapster;
 
 using Microsoft.Extensions.Logging;
 
-using MQTTnet.Diagnostics;
-
 using ThingsGateway.Foundation.Extension.ConcurrentQueue;
 using ThingsGateway.Foundation.Sockets;
 
