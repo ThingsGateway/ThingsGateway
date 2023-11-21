@@ -110,7 +110,7 @@ public abstract class UpLoadBaseWithCacheT<DeviceT, VariableT> : UpLoadBase
         }
 
         if (_uploadPropertyWithCache.CycleInterval <= 100) _uploadPropertyWithCache.CycleInterval = 100;
-        if (_uploadPropertyWithCache.UploadInterval <= 1000) _uploadPropertyWithCache.UploadInterval = 1000;
+        if (_uploadPropertyWithCache.UploadInterval <= 100) _uploadPropertyWithCache.UploadInterval = 100;
         _exVariableTimerTick = new(_uploadPropertyWithCache.UploadInterval);
         _exDeviceTimerTick = new(_uploadPropertyWithCache.UploadInterval);
     }
