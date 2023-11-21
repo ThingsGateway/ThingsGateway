@@ -109,7 +109,7 @@ public abstract class UpLoadBaseWithCacheT<DeviceT, VariableT> : UpLoadBase
                 CurrentDevice.DeviceVariableRunTimes.ForEach(a => { a.VariableValueChange += VariableValueChange; });
         }
 
-        if (_uploadPropertyWithCache.CycleInterval <= 100) _uploadPropertyWithCache.CycleInterval = 100;
+        if (_uploadPropertyWithCache.CycleInterval <= 50) _uploadPropertyWithCache.CycleInterval = 50;
         if (_uploadPropertyWithCache.UploadInterval <= 100) _uploadPropertyWithCache.UploadInterval = 100;
         _exVariableTimerTick = new(_uploadPropertyWithCache.UploadInterval);
         _exDeviceTimerTick = new(_uploadPropertyWithCache.UploadInterval);
