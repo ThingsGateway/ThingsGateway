@@ -105,15 +105,6 @@ public partial class MainLayout
         "Title": "OPCUAClient"
       }
     ]
-  },
-  {
-    "Title": "Mqtt",
-    "Children": [
-      {
-        "Href": "/MqttClient",
-        "Title": "MqttClient"
-      }
-    ]
   }
 ]
 
