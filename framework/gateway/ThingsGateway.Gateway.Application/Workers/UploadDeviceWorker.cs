@@ -99,9 +99,9 @@ public class UploadDeviceWorker : DeviceWorker
     {
         if (!_stoppingToken.IsCancellationRequested)
         {
-            _logger.LogInformation("正在获取北向组态信息");
+            _logger.LogInformation("正在获取北向设备组态信息");
             var deviceRunTimes = (_serviceScope.ServiceProvider.GetService<UploadDeviceService>().GetDeviceRuntime());
-            _logger.LogInformation("获取北向组态信息完成");
+            _logger.LogInformation("获取北向设备组态信息完成");
             foreach (var uploadDeviceRunTime in deviceRunTimes.Where(a => !deviceRunTimes.Any(b => a.Id == b.RedundantDeviceId && b.IsRedundant)))
             {
                 if (!_stoppingToken.IsCancellationRequested)
