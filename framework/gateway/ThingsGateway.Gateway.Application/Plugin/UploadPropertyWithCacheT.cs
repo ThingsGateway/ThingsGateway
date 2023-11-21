@@ -20,7 +20,7 @@ public class UploadPropertyWithCacheT : DriverPropertyBase
     /// <summary>
     /// 线程循环间隔
     /// </summary>
-    [DeviceProperty("线程循环间隔", "最小10ms")]
+    [DeviceProperty("线程循环间隔", "最小50ms")]
     public virtual int CycleInterval { get; set; } = 1000;
     /// <summary>
     /// 内存队列最大条数
@@ -47,7 +47,7 @@ public class UploadPropertyWithCacheT : DriverPropertyBase
     /// <summary>
     /// 上传间隔时间
     /// </summary>
-    [DeviceProperty("上传间隔时间", "最小1000ms")]
+    [DeviceProperty("上传间隔时间", "最小100ms")]
     public virtual int UploadInterval { get; set; } = 1000;
 
     [DeviceProperty("是否选择全部变量", "")] public bool IsAllVariable { get; set; } = false;
