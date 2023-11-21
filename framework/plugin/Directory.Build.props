@@ -14,10 +14,6 @@
 
 	</PropertyGroup>
 
-	<!--<PropertyGroup>
-		<EnableDynamicLoading>true</EnableDynamicLoading>
-	</PropertyGroup>-->
-
 	<ItemGroup>
 
 		<ProjectReference Include="..\..\gateway\ThingsGateway.Gateway.Application\ThingsGateway.Gateway.Application.csproj" >

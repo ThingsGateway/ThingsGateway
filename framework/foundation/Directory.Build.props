@@ -1,4 +1,8 @@
 <Project>
+	<!--如果编译net45报错无支持，用一下方法添加net45包-->
+	<!--VS顶部菜单栏 -> 视图 -> 其他 -> 程序包控制台
+	Install-Package Microsoft.NETFramework.ReferenceAssemblies.net45
+	-->
 	<PropertyGroup>
 		<Version>4.0.0.3</Version>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
