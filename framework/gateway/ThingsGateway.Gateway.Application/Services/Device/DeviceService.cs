@@ -391,7 +391,7 @@ public abstract class DeviceService<T> : DbRepository<T> where T : Device, new()
 
                         #endregion
                         //设备ID、冗余设备ID都需要手动补录
-                        if (hasRedundant && deviceDicts.TryGetValue(redundantObj.ToString(), out var rendundantDevice))
+                        if (hasRedundant && redundantObj != null && deviceDicts.TryGetValue(redundantObj.ToString(), out var rendundantDevice))
                         {
                             device.RedundantDeviceId = rendundantDevice.Id;
                         }
