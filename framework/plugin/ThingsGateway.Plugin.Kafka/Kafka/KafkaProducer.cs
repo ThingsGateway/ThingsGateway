@@ -69,18 +69,19 @@ public partial class KafkaProducer : UpLoadBaseWithCacheT<DeviceData, VariableDa
 
         #region Kafka 生产者
 
-        Enum.TryParse<SecurityProtocol>(_driverPropertys.SecurityProtocol, out var SecurityProtocol);
-        Enum.TryParse<SaslMechanism>(_driverPropertys.SaslMechanism, out var SaslMechanism);
 
         //1、生产者配置
         producerconfig = new ProducerConfig
         {
             BootstrapServers = _driverPropertys.BootStrapServers,
-            SecurityProtocol = SecurityProtocol,
-            SaslMechanism = SaslMechanism,
-            SaslUsername = _driverPropertys.SaslUsername,
-            SaslPassword = _driverPropertys.SaslPassword,
+            SecurityProtocol = _driverPropertys.SecurityProtocol,
+            SaslMechanism = _driverPropertys.SaslMechanism,
+
         };
+        if (!string.IsNullOrEmpty(_driverPropertys.SaslUsername))
+            producerconfig.SaslUsername = _driverPropertys.SaslUsername;
+        if (!string.IsNullOrEmpty(_driverPropertys.SaslPassword))
+            producerconfig.SaslPassword = _driverPropertys.SaslPassword;
 
         //2、创建生产者
         producerBuilder = new ProducerBuilder<Null, string>(producerconfig);
