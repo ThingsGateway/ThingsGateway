@@ -40,6 +40,14 @@ namespace ThingsGateway.Foundation.Sockets
         {
             this.Protocol = Protocol.Tcp;
         }
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return $"{nameof(SocketClient)}:{IP}:{Port}";
+        }
 
         #region 变量
 
