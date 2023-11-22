@@ -308,7 +308,7 @@ public class MqttServer : UpLoadBase
                 var tag = CurrentDevice.DeviceVariableRunTimes.FirstOrDefault(a => a.Name == rpcData.Key);
                 if (tag != null)
                 {
-                    var rpcEnable = tag.GetPropertyValue(DeviceId, nameof(_variablePropertys.VariableRpcEnable)).Value.ToBool(false);
+                    var rpcEnable = tag.GetPropertyValue(DeviceId, nameof(_variablePropertys.VariableRpcEnable))?.Value?.ToBool() == true;
                     if (!rpcEnable)
                     {
                         mqttRpcResult.Success = false;
