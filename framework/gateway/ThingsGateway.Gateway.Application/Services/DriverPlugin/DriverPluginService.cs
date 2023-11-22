@@ -317,7 +317,7 @@ public class DriverPluginService : ISingleton
         var data = _serviceScope.ServiceProvider.GetService<MemoryCache>().GetOrCreate($"{nameof(GetDriverVariableProperties)}", cacheKey, c =>
         {
             var data = driver.VariablePropertys?.GetType().GetProperties()?.SelectMany(it =>
-    new[] { new { memberInfo = it, attribute = GetCustomAttributeRecursive<DevicePropertyAttribute>(it) } })
+    new[] { new { memberInfo = it, attribute = GetCustomAttributeRecursive<VariablePropertyAttribute>(it) } })
     ?.Where(x => x.attribute != null).ToList()
       ?.SelectMany(it => new[]
       {
