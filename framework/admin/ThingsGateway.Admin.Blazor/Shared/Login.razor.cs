@@ -16,8 +16,7 @@ using Masa.Blazor.Presets;
 
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.DependencyInjection;
-
-using System.Diagnostics;
+using Microsoft.Extensions.Hosting;
 
 using ThingsGateway.Foundation.Extension.String;
 
@@ -44,7 +43,7 @@ public partial class Login
     /// <inheritdoc/>
     protected override async Task OnParametersSetAsync()
     {
-        if (Debugger.IsAttached)
+        if (App.WebHostEnvironment.IsDevelopment())
         {
             _loginModel.Account = "superAdmin";
             _password = "111111";

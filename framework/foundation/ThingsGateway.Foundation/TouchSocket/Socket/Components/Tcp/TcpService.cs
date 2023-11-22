@@ -608,6 +608,7 @@ namespace ThingsGateway.Foundation.Sockets
                         this.OnAccepted(e);
                     }
                 }
+                catch (ObjectDisposedException) { }
                 catch (Exception ex)
                 {
                     this.Logger.Exception(ex);
