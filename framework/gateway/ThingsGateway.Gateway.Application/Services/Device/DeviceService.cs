@@ -235,8 +235,8 @@ public abstract class DeviceService<T> : DbRepository<T> where T : Device, new()
             }
             deviceDicts.TryGetValue(devData.RedundantDeviceId, out var redundantDevice);
 
-            //设备实体没有包含插件名称，手动插入
-            devExport.Add(ExportHelpers.PluginName, devData.PluginName);
+            ////设备实体没有包含插件名称，手动插入
+            //devExport.Add(ExportHelpers.PluginName, devData.PluginName);
             //设备实体没有包含冗余设备名称，手动插入
             devExport.Add(ExportHelpers.RedundantDeviceName, redundantDevice?.Name);
 
@@ -376,18 +376,18 @@ public abstract class DeviceService<T> : DbRepository<T> where T : Device, new()
                     {
                         var device = ((ExpandoObject)item).ConvertToEntity<T>(true);
                         #region 特殊转化名称
-                        //转化插件名称
-                        var hasPlugin = item.TryGetValue(ExportHelpers.PluginName, out var pluginObj);
+                        ////转化插件名称
+                        //var hasPlugin = item.TryGetValue(ExportHelpers.PluginName, out var pluginObj);
 
-                        if (pluginObj == null || !driverPluginFullNameDict.TryGetValue(pluginObj.ToString(), out var plugin))
-                        {
-                            //找不到对应的插件
-                            importPreviewOutput.HasError = true;
-                            importPreviewOutput.Results.Add((row++, false, $"{ExportHelpers.PluginName}不存在"));
-                            return;
-                        }
+                        //if (pluginObj == null || !driverPluginFullNameDict.TryGetValue(pluginObj.ToString(), out var plugin))
+                        //{
+                        //    //找不到对应的插件
+                        //    importPreviewOutput.HasError = true;
+                        //    importPreviewOutput.Results.Add((row++, false, $"{ExportHelpers.PluginName}不存在"));
+                        //    return;
+                        //}
                         //转化冗余设备名称
-                        var hasRedundant = item.TryGetValue(ExportHelpers.PluginName, out var redundantObj);
+                        var hasRedundant = item.TryGetValue(ExportHelpers.RedundantDeviceName, out var redundantObj);
 
                         #endregion
                         //设备ID、冗余设备ID都需要手动补录
