@@ -10,6 +10,8 @@
 //------------------------------------------------------------------------------
 #endregion
 
+using Confluent.Kafka;
+
 namespace ThingsGateway.Plugin.Kafka;
 
 /// <summary>
@@ -53,12 +55,10 @@ public class KafkaProducerProperty : UploadPropertyWithCacheT
     /// </summary>
     [DeviceProperty("密码", "")]
     public string SaslPassword { get; set; } = "none";
-    [DeviceProperty("SecurityProtocol", "")]
-    public string SecurityProtocol { get; set; } = "SaslPlaintext";
-    [DeviceProperty("SaslMechanism", "")]
-    public string SaslMechanism { get; set; } = "Plain";
-
-
+    [DeviceProperty("SecurityProtocol", "Plaintext, Ssl, SaslPlaintext, SaslSsl")]
+    public SecurityProtocol SecurityProtocol { get; set; } = SecurityProtocol.Plaintext;
+    [DeviceProperty("SaslMechanism", " Gssapi, Plain, ScramSha256, ScramSha512, OAuthBearer")]
+    public SaslMechanism SaslMechanism { get; set; } = SaslMechanism.Plain;
 
     /// <summary>
     /// 设备实体脚本
