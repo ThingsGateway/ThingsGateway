@@ -79,7 +79,7 @@ public class ModbusTcpServer : UpLoadBase
 
         var tags = CurrentDevice.DeviceVariableRunTimes
             .Where(b => !string.IsNullOrEmpty(
-                b.GetPropertyValue(DeviceId, nameof(_variablePropertys.ServiceAddress)).Value))
+                b.GetPropertyValue(DeviceId, nameof(_variablePropertys.ServiceAddress))?.Value))
             .ToList();
 
         tags.ForEach(a =>

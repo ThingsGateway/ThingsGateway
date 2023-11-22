@@ -134,7 +134,7 @@ public partial class MqttClient : UpLoadBaseWithCacheT<DeviceData, VariableData>
                 var tag = CurrentDevice.DeviceVariableRunTimes.FirstOrDefault(a => a.Name == rpcData.Key);
                 if (tag != null)
                 {
-                    var rpcEnable = tag.GetPropertyValue(DeviceId, nameof(_variablePropertys.VariableRpcEnable)).Value.ToBool();
+                    var rpcEnable = tag.GetPropertyValue(DeviceId, nameof(_variablePropertys.VariableRpcEnable))?.Value?.ToBool();
                     if (rpcEnable == true)
                     {
 

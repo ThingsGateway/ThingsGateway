@@ -112,7 +112,7 @@ public partial class IotSharpClient : UpLoadBaseWithCacheT<DeviceData, VariableD
                         var tag = CurrentDevice.DeviceVariableRunTimes.FirstOrDefault(a => a.Name == item.Key);
                         if (tag != null)
                         {
-                            var rpcEnable = tag.GetPropertyValue(DeviceId, nameof(_variablePropertys.VariableRpcEnable)).Value.ToBool(false) && _driverPropertys.DeviceRpcEnable;
+                            var rpcEnable = tag.GetPropertyValue(DeviceId, nameof(_variablePropertys.VariableRpcEnable))?.Value?.ToBool() == true && _driverPropertys.DeviceRpcEnable;
                             if (!rpcEnable)
                             {
                                 results.Add(item.Key, new OperResult("权限不足，变量不支持写入"));
