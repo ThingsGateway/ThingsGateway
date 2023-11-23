@@ -35,7 +35,7 @@ public partial class CollectDevicePage : BaseComponentBase
     List<CollectDevice> _devices = new();
     List<DriverPlugin> _driverPlugins;
     ImportExcel _importExcel;
-    string _searchName;
+    //string _searchName;
     [Inject]
     AjaxService _ajaxService { get; set; }
     [Inject]

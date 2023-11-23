@@ -12,8 +12,6 @@
 
 using BlazorComponent;
 
-using Mapster;
-
 using Masa.Blazor;
 
 using Microsoft.AspNetCore.Components;
@@ -30,10 +28,11 @@ namespace ThingsGateway.Gateway.Blazor;
 public partial class DeviceStatusPage : IDisposable
 {
     readonly PeriodicTimer _periodicTimer = new(TimeSpan.FromSeconds(3));
-    private string _collectDeviceGroup;
     private bool _isShowDetailUI;
-    List<string> _collectDeviceGroups = new();
-    string _collectDeviceGroupSearchName;
+    //List<string> _collectDeviceGroups = new();
+    //string _collectDeviceGroupSearchName;
+    //private string _collectDeviceSearchName;
+    string _collectDeviceSearchName;
     List<CollectBase> _collectDriverBases = new();
     CollectBase _collectDriverItem;
     BootstrapDynamicComponent _driverComponent;
@@ -42,9 +41,10 @@ public partial class DeviceStatusPage : IDisposable
     bool _isAllRestart;
     bool _isRestart;
     StringNumber _tabNumber;
-    private string _uploadDeviceGroup;
-    List<string> _uploadDeviceGroups = new();
-    string _uploadDeviceGroupSearchName;
+    //private string _uploadDeviceSearchName;
+    //List<string> _uploadDeviceGroups = new();
+    //string _uploadDeviceGroupSearchName;
+    string _uploadDeviceSearchName;
     List<DriverBase> _uploadDriverBases = new();
     DriverBase _uploadDriverItem;
     AlarmWorker _alarmWorker { get; set; }
@@ -121,8 +121,8 @@ public partial class DeviceStatusPage : IDisposable
 
     void CollectDeviceQuery()
     {
-        _collectDeviceGroups = _globalDeviceData.CollectDevices.Adapt<List<CollectDevice>>()?.Select(a => a.DeviceGroup)?.Where(a => a != null).Distinct()?.ToList() ?? new();
-        _collectDriverBases = _collectDeviceWorker?.DriverBases?.WhereIF(!_collectDeviceGroup.IsNullOrEmpty(), a => a.CurrentDevice?.DeviceGroup == _collectDeviceGroup).Select(a => (CollectBase)a).ToList() ?? new();
+        //_collectDeviceGroups = _globalDeviceData.CollectDevices?.Select(a => a.DeviceGroup)?.Where(a => !a.IsNullOrEmpty()).Distinct()?.ToList() ?? new();
+        _collectDriverBases = _collectDeviceWorker?.DriverBases?.WhereIF(!_collectDeviceSearchName.IsNullOrEmpty(), a => a.CurrentDevice?.Name.Contains(_collectDeviceSearchName) == true).Select(a => (CollectBase)a).ToList() ?? new();
     }
     async Task DeviceRedundantThreadAsync(long devId)
     {
@@ -207,10 +207,6 @@ public partial class DeviceStatusPage : IDisposable
         {
             try
             {
-                {
-                    _collectDeviceGroups = _globalDeviceData.CollectDevices.Adapt<List<CollectDevice>>()?.Select(a => a.DeviceGroup)?.Where(a => a != null).Distinct()?.ToList() ?? new();
-                    _collectDriverBases = _collectDeviceWorker?.DriverBases?.WhereIF(!_collectDeviceGroup.IsNullOrEmpty(), a => a.CurrentDevice?.DeviceGroup == _collectDeviceGroup).Select(a => (CollectBase)a).ToList() ?? new();
-                }
                 if (_collectDriverBases?.FirstOrDefault()?.CurrentDevice == null || _collectDeviceWorker?.DriverBases.Count != _collectDriverBases.Count)
                 {
                     CollectDeviceQuery();
@@ -248,8 +244,8 @@ public partial class DeviceStatusPage : IDisposable
 
     void UploadDeviceQuery()
     {
-        _uploadDeviceGroups = _uploadDeviceWorker.DriverBases.Select(a => a.CurrentDevice)?.Select(a => a.DeviceGroup)?.Where(a => a != null).Distinct()?.ToList() ?? new();
-        _uploadDriverBases = _uploadDeviceWorker?.DriverBases?.WhereIF(!_uploadDeviceGroup.IsNullOrEmpty(), a => a.CurrentDevice?.DeviceGroup == _uploadDeviceGroup).ToList() ?? new();
+        //_uploadDeviceGroups = _uploadDeviceWorker.DriverBases.Select(a => a.CurrentDevice)?.Select(a => a.DeviceGroup)?.Where(a => a != null).Distinct()?.ToList() ?? new();
+        _uploadDriverBases = _uploadDeviceWorker?.DriverBases?.WhereIF(!_uploadDeviceSearchName.IsNullOrEmpty(), a => a.CurrentDevice?.Name.Contains(_uploadDeviceSearchName) == true).ToList() ?? new();
     }
     async Task UpRestartAsync(long devId)
     {
