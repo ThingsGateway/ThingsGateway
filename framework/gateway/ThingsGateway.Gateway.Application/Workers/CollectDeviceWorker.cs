@@ -23,7 +23,7 @@ namespace ThingsGateway.Gateway.Application;
 /// </summary>
 public class CollectDeviceWorker : DeviceWorker
 {
-
+    private GlobalDeviceData _globalDeviceData;
     public CollectDeviceWorker(IServiceScopeFactory serviceScopeFactory, IHostApplicationLifetime appLifetime) : base(serviceScopeFactory, appLifetime)
     {
         _logger = _serviceScope.ServiceProvider.GetService<ILoggerFactory>().CreateLogger("南向设备服务");
@@ -49,6 +49,10 @@ public class CollectDeviceWorker : DeviceWorker
             await StopOtherHostService();
             //停止全部采集线程
             await RemoveAllDeviceThreadAsync();
+
+            //清空内存列表
+            _globalDeviceData.CollectDevices.Clear();
+
             //创建全部采集线程
             await CreatAllDeviceThreadsAsync();
             //开始其他后台服务
@@ -197,6 +201,7 @@ public class CollectDeviceWorker : DeviceWorker
     {
         await _easyLock?.WaitAsync();
         _driverPluginService = _serviceScope.ServiceProvider.GetService<DriverPluginService>();
+        _globalDeviceData = _serviceScope.ServiceProvider.GetService<GlobalDeviceData>();
         //重启采集线程，会启动其他后台服务
         await RestartDeviceThreadAsync();
         await WhileExecuteAsync(stoppingToken);

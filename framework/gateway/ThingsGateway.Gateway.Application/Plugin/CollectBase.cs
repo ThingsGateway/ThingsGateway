@@ -43,13 +43,15 @@ public abstract class CollectBase : DriverBase
 
     public override async Task AfterStopAsync()
     {
-        await base.AfterStopAsync();
         //去除全局设备变量
         lock (_globalDeviceData.CollectDevices)
         {
             _globalDeviceData.CollectDevices.RemoveWhere(it => it.Id == DeviceId);
         }
+        await base.AfterStopAsync();
     }
+
+
 
     public override void Init(DeviceRunTime device)
     {
