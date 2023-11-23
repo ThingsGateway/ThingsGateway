@@ -173,7 +173,7 @@ public class DriverPluginService : ISingleton
 
                 }
                 return plugins;
-            }, false);
+            }, true);
             return data;
         }
     }
