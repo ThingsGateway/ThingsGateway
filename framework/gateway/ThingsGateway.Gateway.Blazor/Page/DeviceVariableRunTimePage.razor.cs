@@ -34,7 +34,7 @@ public partial class DeviceVariableRunTimePage
     private IAppDataTable _datatable;
     private List<DeviceTree> _deviceGroups = new();
     private EventCallback<string> _onWrite;
-    private string _searchName;
+    //private string _searchName;
     /// <summary>
     /// 设备名称
     /// </summary>

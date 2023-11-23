@@ -52,7 +52,7 @@
 
                      <MCard Class="ma-2" Style=@($"height: calc(100vh - {BlazorResourceConst.DefaultHeight + 80}px );")>
                          <MCardTitle>
-                             <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="mx-2 my-1" @bind-Value="_collectDeviceGroupSearchName"
+                             <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="mx-2 my-1" @bind-Value="_collectDeviceSearchName"
                                             Outlined Label=@typeof(CollectDevice).GetDescription(nameof(CollectDevice.DeviceGroup)) />
                              </MCardTitle>
 
@@ -64,7 +64,7 @@
                                    }
                                    } )
                                         Items="_collectDeviceGroups" ItemText="r=>r" ItemChildren="r=>null"
-                                        Search="@_collectDeviceGroupSearchName"
+                                        Search="@_collectDeviceSearchName"
                                       Activatable ItemKey=@(r=>r)>
                                  <LabelContent>
                                      <span title=@context.Item>
@@ -77,10 +77,10 @@
                     <MCol Md=5 Cols="12">
                         <MCard Height=@($"calc(100vh - {BlazorResourceConst.DefaultHeight + 80}px; )") Style="overflow-y:auto;" Flat Class="ml-2 my-4">
 
-                              <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="mx-2 my-1" @bind-Value="_collectDeviceGroupSearchName"
-                                            Outlined Label=@typeof(CollectDevice).GetDescription(nameof(CollectDevice.DeviceGroup)) />
+                              <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="mx-2 my-1" @bind-Value="_collectDeviceSearchName"
+                                            Outlined Label=@typeof(CollectDevice).GetDescription(nameof(CollectDevice.Name)) />
 
-                             <MVirtualScroll Context="item" Height=@($"calc(100vh - {BlazorResourceConst.DefaultHeight+140}px)") OverscanCount=2 ItemSize="60" Items="_collectDriverBases.WhereIF(!_collectDeviceGroupSearchName.IsNullOrEmpty(),a=>a.CurrentDevice.DeviceGroup==_collectDeviceGroupSearchName).ToList()">
+                             <MVirtualScroll Context="item" Height=@($"calc(100vh - {BlazorResourceConst.DefaultHeight+140}px)") OverscanCount=2 ItemSize="60" Items="_collectDriverBases.WhereIF(!_collectDeviceSearchName.IsNullOrEmpty(),a=>a.CurrentDevice.Name.Contains(_collectDeviceSearchName)).ToList()">
 
                                  <ItemContent>
                                      @if (item.CurrentDevice != null)
@@ -255,7 +255,7 @@
 @*                     <MCol Md=2 Cols="12">
                         <MCard Class="ma-2" Style=@($"height: calc(100vh - {BlazorResourceConst.DefaultHeight + 80}px); )")>
                             <MCardTitle>
-                                <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="mx-2 my-1" @bind-Value="_uploadDeviceGroupSearchName"
+                                <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="mx-2 my-1" @bind-Value="_uploadDeviceSearchName"
                                             Outlined Label=@typeof(Device).GetDescription(nameof(Device.DeviceGroup)) />
                              </MCardTitle>
                              <MTreeview Style=@($"height: calc(100vh - {BlazorResourceConst.DefaultHeight+240}px);overflow-y:auto") Dense TItem="string" TKey="string" ActiveChanged=@(async a=>
@@ -267,7 +267,7 @@
                                    }
                                    } )
                                         Items="_uploadDeviceGroups" ItemText="r=>r" ItemChildren="r=>null"
-                                        Search="@_uploadDeviceGroupSearchName"
+                                        Search="@_uploadDeviceSearchName"
                                       Activatable ItemKey=@(r=>r)>
                                  <LabelContent>
                                      <span title=@context.Item>
@@ -279,10 +279,10 @@
                     </MCol> *@
                     <MCol Md=5 Cols="12">
                         <MCard Height=@($"calc(100vh - {BlazorResourceConst.DefaultHeight+80}px)") Style="overflow-y:auto;" Flat Class="ml-2 my-4">
-                             <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="mx-2 my-1" @bind-Value="_uploadDeviceGroupSearchName"
-                                            Outlined Label=@typeof(CollectDevice).GetDescription(nameof(CollectDevice.DeviceGroup)) />
+                             <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="mx-2 my-1" @bind-Value="_uploadDeviceSearchName"
+                                            Outlined Label=@typeof(CollectDevice).GetDescription(nameof(CollectDevice.Name)) />
 
-                             <MVirtualScroll Context="item" Height=@($"calc(100vh - {BlazorResourceConst.DefaultHeight+140}px)") OverscanCount=2 ItemSize="60" Items="_uploadDriverBases.WhereIF(!_uploadDeviceGroupSearchName.IsNullOrEmpty(),a=>a.CurrentDevice.DeviceGroup==_uploadDeviceGroupSearchName).ToList()">
+                             <MVirtualScroll Context="item" Height=@($"calc(100vh - {BlazorResourceConst.DefaultHeight+140}px)") OverscanCount=2 ItemSize="60" Items="_uploadDriverBases.WhereIF(!_uploadDeviceSearchName.IsNullOrEmpty(),a=>a.CurrentDevice.Name.Contains(_uploadDeviceSearchName)).ToList()">
 
                                  <ItemContent>
                                      @if (item.CurrentDevice != null)

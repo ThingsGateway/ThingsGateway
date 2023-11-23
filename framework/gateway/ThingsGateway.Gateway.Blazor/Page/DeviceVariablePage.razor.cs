@@ -32,7 +32,7 @@ public partial class DeviceVariablePage
 
     ImportExcel _importExcel;
     Dictionary<long, List<string>> _otherMethods = new();
-    string _searchName;
+    //string _searchName;
 
     List<Device> _uploadDevices = new();
 
