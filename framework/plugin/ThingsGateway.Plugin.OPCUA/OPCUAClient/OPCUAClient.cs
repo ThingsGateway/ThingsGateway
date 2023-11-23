@@ -48,7 +48,7 @@ public class OPCUAClient : CollectBase
     public override Task AfterStopAsync()
     {
         _plc?.Disconnect();
-        return Task.CompletedTask;
+        return base.AfterStopAsync();
     }
     protected override string GetAddressDescription()
     {

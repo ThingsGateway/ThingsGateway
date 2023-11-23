@@ -51,7 +51,7 @@
 
 	<ItemGroup>
 
-		<ProjectReference Include="..\..\gateway\ThingsGateway.Gateway.Blazor\ThingsGateway.Gateway.Blazor.csproj" >
+		<ProjectReference Include="..\..\gateway\ThingsGateway.Gateway.Blazor\ThingsGateway.Gateway.Blazor.csproj">
 			<Private>false</Private>
 			<CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
 			<ExcludeAssets>runtime</ExcludeAssets>

@@ -2,7 +2,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\admin\ThingsGateway.Admin.Blazor\ThingsGateway.Admin.Blazor.csproj" />
-	  <ProjectReference Include="..\..\admin\ThingsGateway.Components\ThingsGateway.Components.csproj" />
 	  <ProjectReference Include="..\ThingsGateway.Gateway.Application\ThingsGateway.Gateway.Application.csproj" />
   </ItemGroup>
 </Project>

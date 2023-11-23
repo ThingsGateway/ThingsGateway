@@ -49,7 +49,7 @@ public abstract class DeviceWorker : BackgroundService
     /// </summary>
     public List<DriverBase> DriverBases => _deviceThreads
         .Where(a => a.DriverBases.Any(b => b.CurrentDevice != null))
-        .SelectMany(a => a.DriverBases).ToList();
+        .SelectMany(a => a.DriverBases).OrderByDescending(a => a.CurrentDevice.DeviceStatus).ToList();
 
     /// <summary>
     /// 设备子线程列表
