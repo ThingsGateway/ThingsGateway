@@ -45,7 +45,7 @@ public class ModbusTcpDtu : CollectBase
         var client1 = new TcpService();
         ((TcpService)client1).Setup(FoundataionConfig);
         //载入配置
-        _plc = new((TcpService)client)
+        _plc = new((TcpService)client1)
         {
             DataFormat = _driverPropertys.DataFormat,
             FrameTime = _driverPropertys.FrameTime,
