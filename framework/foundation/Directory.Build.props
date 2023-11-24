@@ -4,7 +4,7 @@
 	Install-Package Microsoft.NETFramework.ReferenceAssemblies.net45
 	-->
 	<PropertyGroup>
-		<Version>4.0.0.4</Version>
+		<Version>4.0.0.5</Version>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<LangVersion>latest</LangVersion>
 		<TargetFrameworks>net45;netstandard2.0;net6.0;net8.0;</TargetFrameworks>
