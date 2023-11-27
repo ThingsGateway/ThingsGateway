@@ -69,7 +69,7 @@ public abstract class ReadWriteDevicesUdpSessionBase : ReadWriteDevicesBase
     /// <inheritdoc/>
     public override string ToString()
     {
-        return UdpSession.RemoteIPHost.ToString();
+        return UdpSession.RemoteIPHost?.ToString();
     }
 
     /// <inheritdoc/>

@@ -53,7 +53,7 @@ public abstract class ReadWriteDevicesUdpDataHandleAdapter<TRequest> : UdpDataHa
     /// <inheritdoc/>
     public override string ToString()
     {
-        return (Owner as UdpSession)?.RemoteIPHost.ToString();
+        return (Owner as UdpSession)?.RemoteIPHost?.ToString();
     }
 
     /// <summary>
@@ -83,11 +83,11 @@ public abstract class ReadWriteDevicesUdpDataHandleAdapter<TRequest> : UdpDataHa
         var allBytes = byteBlock.ToArray(0, byteBlock.Len);
         Logger?.Trace($"{FoundationConst.LogMessageHeader}{ToString()}- 接收:{(IsHexData ? allBytes.ToHexString(' ') : Encoding.UTF8.GetString(allBytes))}");
 
-        if (Request?.SendBytes == null)
-        {
-            GoReceived(remoteEndPoint, byteBlock, null);
-            return;
-        }
+        //if (Request?.SendBytes == null)
+        //{
+        //    GoReceived(remoteEndPoint, byteBlock, null);
+        //    return;
+        //}
         byte[] header = new byte[] { };
         if (Request.HeadBytesLength > 0)
         {
