@@ -12,6 +12,9 @@
 
 using Microsoft.AspNetCore.Components;
 
+using ThingsGateway.Components;
+
+
 namespace ThingsGateway.Foundation.Demo;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 /// <summary>

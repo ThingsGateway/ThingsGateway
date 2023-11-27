@@ -106,7 +106,7 @@ public class DLT645_2007OverTcp : ReadWriteDevicesTcpClientBase, IDLT645_2007
     public override OperResult Write(string address, bool[] value, CancellationToken cancellationToken = default) => Write(address, value.ToString(), cancellationToken);
 
     /// <inheritdoc/>
-    public override Task<OperResult> WriteAsync(string address, byte[] value, CancellationToken cancellationToken = default) => throw new NotImplementedException();
+    public override Task<OperResult> WriteAsync(string address, byte[] value, CancellationToken cancellationToken = default) => Task.FromResult(new OperResult());
     /// <inheritdoc/>
     public override Task<OperResult> WriteAsync(string address, uint value, CancellationToken cancellationToken = default) => WriteAsync(address, value.ToString(), cancellationToken);
     /// <inheritdoc/>
@@ -125,7 +125,7 @@ public class DLT645_2007OverTcp : ReadWriteDevicesTcpClientBase, IDLT645_2007
     public override Task<OperResult> WriteAsync(string address, int value, CancellationToken cancellationToken = default) => WriteAsync(address, value.ToString(), cancellationToken);
 
     /// <inheritdoc/>
-    public override Task<OperResult> WriteAsync(string address, bool[] value, CancellationToken cancellationToken = default) => throw new NotImplementedException();
+    public override Task<OperResult> WriteAsync(string address, bool[] value, CancellationToken cancellationToken = default) => Task.FromResult(new OperResult());
 
 
     #region 其他方法

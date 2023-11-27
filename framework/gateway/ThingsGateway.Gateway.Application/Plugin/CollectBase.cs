@@ -85,7 +85,7 @@ public abstract class CollectBase : DriverBase
     public virtual async Task<Dictionary<string, OperResult>> WriteValuesAsync(Dictionary<DeviceVariableRunTime, JToken> writeInfoLists, CancellationToken cancellationToken)
     {
         if (_readWrite == null)
-            throw new("未初始化成功");
+            throw new($"无法写入数据，{nameof(_readWrite)}为null");
         Dictionary<string, OperResult> operResults = new();
         foreach (var writeInfo in writeInfoLists)
         {

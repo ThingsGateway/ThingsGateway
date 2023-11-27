@@ -421,6 +421,74 @@ public static class StringExtensions
     {
         return value.IsNullOrEmpty() ? defaultValue : ushort.TryParse(value, out var n) ? n : defaultValue;
     }
+    /// <summary>
+    /// ToDouble
+    /// </summary>
+    /// <returns></returns>
+    public static double ToDouble(this object value, double defaultValue = 0)
+    {
+        if (value is Double d)
+        {
+            return Double.IsNaN(d) ? defaultValue : (Double)d;
+        }
+        var str = value?.ToString();
+        if (str.IsNullOrEmpty())
+        {
+            return (double)defaultValue;
+        }
+        else
+        {
+            if (value is bool boolValue)
+            {
+                return boolValue ? 1 : 0;
+            }
+            return (double)(double.TryParse(str, out var n) ? n : defaultValue);
+        }
+    }
+
+    /// <summary>
+    /// ToDecimal
+    /// </summary>
+    /// <returns></returns>
+    public static decimal ToDecimal(this object value, int defaultValue = 0)
+    {
+        if (value is Double d)
+        {
+            return Double.IsNaN(d) ? defaultValue : (Decimal)d;
+        }
+        var str = value?.ToString();
+        if (str.IsNullOrEmpty())
+        {
+            return defaultValue;
+        }
+        else
+        {
+            if (value is bool boolValue)
+            {
+                return boolValue ? 1 : 0;
+            }
+            return Decimal.TryParse(str, out var n) ? n : defaultValue;
+        }
+    }
+    /// <summary>
+    /// ToInt
+    /// </summary>
+    /// <returns></returns>
+    public static int ToInt(this object value, int defaultValue = 0)
+    {
+        if (value == null || value.ToString().IsNullOrEmpty())
+        {
+            return defaultValue;
+        }
+        else
+        {
+            if (value is bool boolValue)
+            {
+                return boolValue ? 1 : 0;
+            }
+            return int.TryParse(value.ToString(), out int n) ? n : defaultValue;
+        }
+    }
 
     /// <summary>
     /// 用 正则表达式 判断字符是不是汉字

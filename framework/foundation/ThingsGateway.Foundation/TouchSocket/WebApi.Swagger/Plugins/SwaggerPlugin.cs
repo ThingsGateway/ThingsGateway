@@ -75,7 +75,7 @@ namespace ThingsGateway.Foundation.WebApi.Swagger
                     var bytes = new byte[stream.Length];
                     stream.Read(bytes, 0, bytes.Length);
                     var prefix = this.Prefix.IsNullOrEmpty() ? "/" : (this.Prefix.StartsWith("/") ? this.Prefix : $"/{this.Prefix}");
-                    var name = item.Replace("ThingsGateway.Foundation.ThingsGateway.Foundation.WebApi.Swagger.api.", string.Empty);
+                    var name = item.Replace("ThingsGateway.Foundation.TouchSocket.WebApi.Swagger.api.", string.Empty);
                     if (name == "openapi.json")
                     {
                         try

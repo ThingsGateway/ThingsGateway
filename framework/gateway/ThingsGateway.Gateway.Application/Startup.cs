@@ -12,6 +12,8 @@
 
 using Microsoft.Extensions.DependencyInjection;
 
+using System.Reflection;
+
 namespace ThingsGateway.Gateway.Application;
 
 /// <summary>
@@ -42,6 +44,9 @@ public class Startup : AppStartup
         services.AddHostedService<CollectDeviceWorker>();
         services.AddHostedService<AlarmWorker>();
         services.AddHostedService<UploadDeviceWorker>();
+
+        ThingsGateway.Core.TypeExtensions.DefaultFuncs.Add(a => a.GetCustomAttribute<VariablePropertyAttribute>()?.Description);
+
     }
 
 

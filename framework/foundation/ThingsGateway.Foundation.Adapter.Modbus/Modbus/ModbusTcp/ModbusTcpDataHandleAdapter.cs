@@ -19,7 +19,7 @@ namespace ThingsGateway.Foundation.Adapter.Modbus;
 /// </summary>
 internal class ModbusTcpDataHandleAdapter : ReadWriteDevicesSingleStreamDataHandleAdapter<ModbusTcpMessage>
 {
-    private readonly IncrementCount easyIncrementCount = new(ushort.MaxValue);
+    private readonly IncrementCount _incrementCount = new(ushort.MaxValue);
 
     /// <summary>
     /// 检测事务标识符
@@ -39,7 +39,7 @@ internal class ModbusTcpDataHandleAdapter : ReadWriteDevicesSingleStreamDataHand
     /// <inheritdoc/>
     public override byte[] PackCommand(byte[] command)
     {
-        return ModbusHelper.AddModbusTcpHead(command, (ushort)easyIncrementCount.GetCurrentValue());
+        return ModbusHelper.AddModbusTcpHead(command, (ushort)_incrementCount.GetCurrentValue());
     }
 
     /// <inheritdoc/>
