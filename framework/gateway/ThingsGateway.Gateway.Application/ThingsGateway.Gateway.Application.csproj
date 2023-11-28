@@ -12,9 +12,9 @@
 	<ItemGroup>
 		<PackageReference Include="LiteDB" Version="5.0.17" />
 		<PackageReference Include="Hardware.Info" Version="100.0.0" />
-		<PackageReference Include="CS-Script" Version="4.8.8" />
+		<PackageReference Include="CS-Script" Version="4.8.10" />
 		<!--CS-Script与Furion冲突，直接安装覆盖版本-->
-		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.7.0" />
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.8.0" />
 		<PackageReference Include="SqlSugar.TDengineCore" Version="3.4.0" />
 	</ItemGroup>
 
