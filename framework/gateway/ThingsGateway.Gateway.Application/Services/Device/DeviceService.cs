@@ -206,7 +206,7 @@ public abstract class DeviceService<T> : DbRepository<T> where T : Device, new()
         var data = await query.ToListAsync();
         return await ExportFileAsync(data);
     }
-
+    protected abstract string DeviceSheetName { get; }
     /// <inheritdoc/>
     [OperDesc("导出采集设备表", IsRecordPar = false)]
     public async Task<MemoryStream> ExportFileAsync(List<T> devDatas = null)
@@ -277,7 +277,7 @@ public abstract class DeviceService<T> : DbRepository<T> where T : Device, new()
         }
 
         //添加设备页
-        sheets.Add(ExportHelpers.CollectDeviceSheetName, devExports);
+        sheets.Add(DeviceSheetName, devExports);
 
 
         //添加插件属性页
@@ -321,7 +321,7 @@ public abstract class DeviceService<T> : DbRepository<T> where T : Device, new()
         var collectDevices = new List<T>();
         foreach (var item in input)
         {
-            if (item.Key == ExportHelpers.CollectDeviceSheetName)
+            if (item.Key == DeviceSheetName)
             {
                 var collectDeviceImports = ((ImportPreviewOutput<T>)item.Value).Data;
                 collectDevices = collectDeviceImports.Values.Adapt<List<T>>();
@@ -362,7 +362,7 @@ public abstract class DeviceService<T> : DbRepository<T> where T : Device, new()
             //单页数据
             var rows = stream.Query(useHeaderRow: true, sheetName: sheetName).Cast<IDictionary<string, object>>();
             #region 采集设备sheet
-            if (sheetName == ExportHelpers.CollectDeviceSheetName)
+            if (sheetName == DeviceSheetName)
             {
                 int row = 1;
                 ImportPreviewOutput<T> importPreviewOutput = new();

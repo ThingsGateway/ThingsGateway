@@ -21,6 +21,7 @@ namespace ThingsGateway.Gateway.Application;
 [Injection(Proxy = typeof(OperDispatchProxy))]
 public class UploadDeviceService : DeviceService<Device>, ITransient
 {
+    protected override string DeviceSheetName => ExportHelpers.UploadDeviceSheetName;
     public UploadDeviceService(IServiceScopeFactory serviceScopeFactory, IFileService fileService) : base(serviceScopeFactory, fileService)
     {
     }

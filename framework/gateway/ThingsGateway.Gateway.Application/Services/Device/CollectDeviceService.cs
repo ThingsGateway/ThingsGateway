@@ -26,6 +26,8 @@ namespace ThingsGateway.Gateway.Application;
 [Injection(Proxy = typeof(OperDispatchProxy))]
 public class CollectDeviceService : DeviceService<CollectDevice>, ITransient
 {
+    protected override string DeviceSheetName => ExportHelpers.CollectDeviceSheetName;
+
     public CollectDeviceService(IServiceScopeFactory serviceScopeFactory, IFileService fileService) : base(serviceScopeFactory, fileService)
     {
     }
