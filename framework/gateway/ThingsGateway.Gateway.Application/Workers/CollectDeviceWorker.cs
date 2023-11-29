@@ -206,6 +206,8 @@ public class CollectDeviceWorker : DeviceWorker
         await RestartDeviceThreadAsync();
         await WhileExecuteAsync(stoppingToken);
     }
+
+
     protected virtual async Task WhileExecuteAsync(CancellationToken stoppingToken)
     {
         while (!stoppingToken.IsCancellationRequested)
@@ -235,11 +237,11 @@ public class CollectDeviceWorker : DeviceWorker
                                 }
                             }
 
-                            //超过30分钟，或者(初始化失败并超过10分钟)会重启
+
                             if (
             (driverBase.CurrentDevice.ActiveTime != DateTime.MinValue &&
-            driverBase.CurrentDevice.ActiveTime.AddMinutes(30) <= DateTimeExtensions.CurrentDateTime)
-            || (driverBase.IsInitSuccess == false && driverBase.CurrentDevice.ActiveTime.AddMinutes(10) <= DateTimeExtensions.CurrentDateTime)
+            driverBase.CurrentDevice.ActiveTime.AddSeconds(CheckIntervalTime) <= DateTimeExtensions.CurrentDateTime)
+            || (driverBase.IsInitSuccess == false && driverBase.CurrentDevice.ActiveTime.AddMinutes(CheckIntervalTime) <= DateTimeExtensions.CurrentDateTime)
             )
                             {
                                 //如果线程处于暂停状态，跳过

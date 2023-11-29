@@ -275,7 +275,7 @@ public abstract class DriverBase : DisposableObject
         {
             LogMessage?.LogError(ex, $"插件执行{nameof(ExecuteAsync)}方法失败");
             CurrentDevice.SetDeviceStatus(null, CurrentDevice.ErrorCount + 1, ex.Message);
-            return ThreadRunReturn.Continue;
+            return ThreadRunReturn.None;
         }
     }
 

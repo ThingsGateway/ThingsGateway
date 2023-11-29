@@ -15,7 +15,7 @@ using Opc.Ua;
 namespace ThingsGateway.Plugin.OPCUA;
 
 /// <inheritdoc/>
-public class OPCUAServerProperty : DriverPropertyBase
+public class OPCUAServerProperty : UpDriverPropertyBase
 {
     [DeviceProperty("是否选择全部变量", "")] public bool IsAllVariable { get; set; } = false;
     /// <summary>

@@ -14,7 +14,7 @@ namespace ThingsGateway.Plugin.Modbus;
 /// <summary>
 /// <inheritdoc/>
 /// </summary>
-public class ModbusTcpServerProperty : DriverPropertyBase
+public class ModbusTcpServerProperty : UpDriverPropertyBase
 {
     /// <summary>
     /// IP

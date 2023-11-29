@@ -139,7 +139,11 @@ public class DeviceThread
                                 var result = await device.ExecuteAsync(stoppingToken);
                                 if (result == ThreadRunReturn.None)
                                 {
-                                    await Task.Delay(CycleInterval, stoppingToken);
+                                    //4.0.0.7版本添加离线恢复的间隔时间
+                                    if (device.CurrentDevice.DeviceStatus == DeviceStatusEnum.OffLine)
+                                        await Task.Delay(Math.Min(device.DriverPropertys.ReIntervalTime, DeviceWorker.CheckIntervalTime / 2) * 1000 - CycleInterval, stoppingToken);
+                                    else
+                                        await Task.Delay(CycleInterval, stoppingToken);
                                 }
                                 else if (result == ThreadRunReturn.Continue)
                                 {

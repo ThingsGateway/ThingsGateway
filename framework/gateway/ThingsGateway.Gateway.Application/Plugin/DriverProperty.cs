@@ -33,6 +33,17 @@ public abstract class VariablePropertyBase
 /// </summary>
 public abstract class DriverPropertyBase
 {
+
+    /// <summary>
+    /// 离线后恢复运行的间隔时间 /s，默认300s
+    /// </summary>
+    [DeviceProperty("离线恢复间隔", "离线后恢复运行的间隔时间s，默认300s，最大3600s")]
+    public virtual int ReIntervalTime { get; set; } = 300;
+    /// <summary>
+    /// 失败重试次数，默认3
+    /// </summary>
+    [DeviceProperty("失败重试次数", "失败重试次数，默认3")]
+    public virtual int RetryCount { get; set; } = 3;
     #region 共享通道配置
 
     /// <summary>
@@ -86,5 +97,23 @@ public abstract class DriverPropertyBase
     public virtual StopBits StopBits { get; set; } = StopBits.One;
 
     #endregion
+
+}
+
+
+/// <summary>
+/// 插件配置项
+/// <para></para>
+/// 约定：
+/// 如果需要密码输入，属性名称中需包含Password字符串
+/// <br></br>
+/// 使用<see cref="DevicePropertyAttribute"/> 标识所需的配置属性
+/// </summary>
+public abstract class UpDriverPropertyBase : DriverPropertyBase
+{
+
+    public override int ReIntervalTime { get; set; } = 300;
+
+    public override int RetryCount { get; set; } = 3;
 
 }

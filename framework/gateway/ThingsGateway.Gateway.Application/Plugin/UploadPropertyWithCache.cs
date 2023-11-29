@@ -15,7 +15,7 @@ namespace ThingsGateway.Gateway.Application;
 /// <summary>
 /// <inheritdoc/>
 /// </summary>
-public class UploadPropertyWithCache : DriverPropertyBase
+public class UploadPropertyWithCache : UpDriverPropertyBase
 {
     /// <summary>
     /// 线程循环间隔

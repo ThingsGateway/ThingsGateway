@@ -16,7 +16,7 @@ namespace ThingsGateway.Plugin.Modbus;
 /// <summary>
 /// <inheritdoc/>
 /// </summary>
-public class ModbusSerialServerProperty : DriverPropertyBase
+public class ModbusSerialServerProperty : UpDriverPropertyBase
 {
     /// <summary>
     /// COM口

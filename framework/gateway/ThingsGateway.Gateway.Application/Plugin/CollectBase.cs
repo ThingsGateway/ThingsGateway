@@ -235,7 +235,7 @@ public abstract class CollectBase : DriverBase
                     var readErrorCount = 0;
                     var readResult = await ReadSourceAsync(deviceVariableSourceRead, cancellationToken);
 
-                    while (readResult != null && !readResult.IsSuccess && readErrorCount < 3)
+                    while (readResult != null && !readResult.IsSuccess && readErrorCount < DriverPropertys.RetryCount)
                     {
                         readErrorCount++;
                         LogMessage?.Trace($"{DeviceName} - 采集[{deviceVariableSourceRead?.Address} - {deviceVariableSourceRead?.Length}] 数据失败 - {readResult?.Message}");
@@ -287,7 +287,7 @@ public abstract class CollectBase : DriverBase
                     var readErrorCount = 0;
                     var readResult = await InvokeMethodAsync(deviceVariableMethodRead, cancellationToken);
 
-                    while (readResult != null && !readResult.IsSuccess && readErrorCount < 3)
+                    while (readResult != null && !readResult.IsSuccess && readErrorCount < DriverPropertys.RetryCount)
                     {
                         readErrorCount++;
                         LogMessage?.Trace($"{DeviceName} - 执行方法[{deviceVariableMethodRead.MethodInfo.Name}] - 失败 - {readResult?.Message}");

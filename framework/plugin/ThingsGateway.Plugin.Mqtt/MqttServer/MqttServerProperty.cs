@@ -14,7 +14,7 @@ namespace ThingsGateway.Plugin.Mqtt;
 /// <summary>
 /// <inheritdoc/>
 /// </summary>
-public class MqttServerProperty : DriverPropertyBase
+public class MqttServerProperty : UpDriverPropertyBase
 {
     [DeviceProperty("是否选择全部变量", "")] public bool IsAllVariable { get; set; } = false;
 

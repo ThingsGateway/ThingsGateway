@@ -381,7 +381,10 @@ public abstract class DeviceWorker : BackgroundService
         }
     }
 
-
+    /// <summary>
+    /// 线程检查时间，120分钟
+    /// </summary>
+    public const int CheckIntervalTime = 7200;
     protected abstract Task StartOtherHostService();
     protected abstract Task StopOtherHostService();
 

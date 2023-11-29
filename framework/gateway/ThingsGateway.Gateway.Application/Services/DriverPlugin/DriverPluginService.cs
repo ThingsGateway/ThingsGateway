@@ -270,9 +270,9 @@ public class DriverPluginService : ISingleton
     static T GetCustomAttributeRecursive<T>(PropertyInfo property) where T : Attribute
     {
         var attribute = property.GetCustomAttribute<T>(false);
-        if (attribute == null && property.DeclaringType.BaseType != null)
+        if (attribute == null && property.ReflectedType.BaseType != null && property.ReflectedType != typeof(UpDriverPropertyBase))
         {
-            var baseProperty = property.DeclaringType.BaseType.GetProperties().FirstOrDefault(p => p.Name == property.Name);
+            var baseProperty = property.ReflectedType.BaseType.GetProperties().FirstOrDefault(p => p.Name == property.Name);
             if (baseProperty != null)
             {
                 attribute = GetCustomAttributeRecursive<T>(baseProperty);
