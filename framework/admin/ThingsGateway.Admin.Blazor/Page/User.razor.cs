@@ -35,17 +35,17 @@ public partial class User
 
     private async Task AddCallAsync(UserAddInput input)
     {
-        await _serviceScope.ServiceProvider.GetService<SysUserService>().AddAsync(input);
+        await _serviceScope.ServiceProvider.GetService<ISysUserService>().AddAsync(input);
     }
     private async Task DeleteCallAsync(IEnumerable<SysUser> users)
     {
-        await _serviceScope.ServiceProvider.GetService<SysUserService>().DeleteAsync(users.Select(a => a.Id).ToArray());
+        await _serviceScope.ServiceProvider.GetService<ISysUserService>().DeleteAsync(users.Select(a => a.Id).ToArray());
         await _mainLayout.StateHasChangedAsync();
     }
 
     private async Task EditCallAsync(UserEditInput users)
     {
-        await _serviceScope.ServiceProvider.GetService<SysUserService>().EditAsync(users);
+        await _serviceScope.ServiceProvider.GetService<ISysUserService>().EditAsync(users);
         await _mainLayout.StateHasChangedAsync();
     }
 
@@ -56,7 +56,7 @@ public partial class User
             UserGrantRoleInput userGrantRoleInput = new();
             userGrantRoleInput.Id = _choiceUserId;
             userGrantRoleInput.RoleIdList = _rolesChoice.Select(it => it.Id).ToList();
-            await _serviceScope.ServiceProvider.GetService<SysUserService>().GrantRoleAsync(userGrantRoleInput);
+            await _serviceScope.ServiceProvider.GetService<ISysUserService>().GrantRoleAsync(userGrantRoleInput);
             _isShowRoles = false;
         }
         catch (Exception ex)
@@ -68,20 +68,20 @@ public partial class User
     }
     private async Task<ISqlSugarPagedList<SysUser>> QueryCallAsync(UserPageInput input)
     {
-        return await _serviceScope.ServiceProvider.GetService<SysUserService>().PageAsync(input);
+        return await _serviceScope.ServiceProvider.GetService<ISysUserService>().PageAsync(input);
     }
 
     private async Task ResetPasswordAsync(SysUser sysUser)
     {
-        await _serviceScope.ServiceProvider.GetService<SysUserService>().ResetPasswordAsync(sysUser.Id);
+        await _serviceScope.ServiceProvider.GetService<ISysUserService>().ResetPasswordAsync(sysUser.Id);
         await PopupService.EnqueueSnackbarAsync(new("成功", AlertTypes.Success));
         await _mainLayout.StateHasChangedAsync();
     }
 
     private async Task RoleInitAsync()
     {
-        _allRoles = await _serviceScope.ServiceProvider.GetService<RoleService>().RoleSelectorAsync();
-        var data = await _serviceScope.ServiceProvider.GetService<RoleService>().GetRoleIdListByUserIdAsync(_choiceUserId);
+        _allRoles = await _serviceScope.ServiceProvider.GetService<IRoleService>().RoleSelectorAsync();
+        var data = await _serviceScope.ServiceProvider.GetService<IRoleService>().GetRoleIdListByUserIdAsync(_choiceUserId);
         _rolesChoice = _allRoles.Where(a => data.Contains(a.Id)).ToList();
     }
     private async Task UserStatusChangeAsync(SysUser context, bool enable)
@@ -89,9 +89,9 @@ public partial class User
         try
         {
             if (enable)
-                await _serviceScope.ServiceProvider.GetService<SysUserService>().EnableUserAsync(context.Id);
+                await _serviceScope.ServiceProvider.GetService<ISysUserService>().EnableUserAsync(context.Id);
             else
-                await _serviceScope.ServiceProvider.GetService<SysUserService>().DisableUserAsync(context.Id);
+                await _serviceScope.ServiceProvider.GetService<ISysUserService>().DisableUserAsync(context.Id);
         }
         finally
         {

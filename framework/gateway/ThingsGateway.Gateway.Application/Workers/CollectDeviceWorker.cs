@@ -105,7 +105,7 @@ public class CollectDeviceWorker : DeviceWorker
         if (!_stoppingToken.IsCancellationRequested)
         {
             _logger.LogInformation("正在获取南向设备组态信息");
-            var collectDeviceRunTimes = (await _serviceScope.ServiceProvider.GetService<CollectDeviceService>().GetDeviceRuntimeAsync());
+            var collectDeviceRunTimes = (await _serviceScope.ServiceProvider.GetService<ICollectDeviceService>().GetDeviceRuntimeAsync());
             _logger.LogInformation("获取南向设备组态信息完成");
             foreach (var collectDeviceRunTime in collectDeviceRunTimes.Where(a => !collectDeviceRunTimes.Any(b => a.Id == b.RedundantDeviceId && b.IsRedundant)))
             {
@@ -129,7 +129,7 @@ public class CollectDeviceWorker : DeviceWorker
 
     protected override async Task<IEnumerable<DeviceRunTime>> GetDeviceRunTimeAsync(long devId)
     {
-        return await _serviceScope.ServiceProvider.GetService<CollectDeviceService>().GetDeviceRuntimeAsync(devId);
+        return await _serviceScope.ServiceProvider.GetService<ICollectDeviceService>().GetDeviceRuntimeAsync(devId);
     }
 
     #endregion
@@ -143,7 +143,7 @@ public class CollectDeviceWorker : DeviceWorker
     /// <returns></returns>
     public List<string> GetDeviceMethods(long devId)
     {
-        var pluginName = _serviceScope.ServiceProvider.GetService<CollectDeviceService>().GetDeviceById(devId).PluginName;
+        var pluginName = _serviceScope.ServiceProvider.GetService<ICollectDeviceService>().GetDeviceById(devId).PluginName;
         var driverBase = _driverPluginService.GetDriver(pluginName);
         var Propertys = _driverPluginService.GetDriverMethodInfo(driverBase);
         driverBase?.SafeDispose();
@@ -162,7 +162,7 @@ public class CollectDeviceWorker : DeviceWorker
         var Propertys = _driverPluginService.GetDriverProperties(driverBase);
         if (devId != 0)
         {
-            var collectDevice = _serviceScope.ServiceProvider.GetService<CollectDeviceService>().GetDeviceById(devId);
+            var collectDevice = _serviceScope.ServiceProvider.GetService<ICollectDeviceService>().GetDeviceById(devId);
             collectDevice?.DevicePropertys?.ForEach(it =>
             {
                 var dependencyProperty = Propertys.FirstOrDefault(a => a.PropertyName == it.PropertyName);
@@ -229,7 +229,7 @@ public class CollectDeviceWorker : DeviceWorker
 
                             if (driverBase.CurrentDevice.DeviceStatus == DeviceStatusEnum.OffLine)
                             {
-                                if (driverBase.CurrentDevice.IsRedundant && _serviceScope.ServiceProvider.GetService<CollectDeviceService>().GetCacheList(false).Any(a => a.Id == driverBase.CurrentDevice.RedundantDeviceId))
+                                if (driverBase.CurrentDevice.IsRedundant && _serviceScope.ServiceProvider.GetService<ICollectDeviceService>().GetCacheList(false).Any(a => a.Id == driverBase.CurrentDevice.RedundantDeviceId))
                                 {
                                     await DeviceRedundantThreadAsync(driverBase.CurrentDevice.Id);
                                 }

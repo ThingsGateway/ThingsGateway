@@ -32,18 +32,18 @@ namespace ThingsGateway.Gateway.Application;
 
 /// <inheritdoc cref="VariableService"/>
 [Injection(Proxy = typeof(OperDispatchProxy))]
-public class VariableService : DbRepository<DeviceVariable>, ITransient
+public class VariableService : DbRepository<DeviceVariable>, IVariableService
 {
-    private readonly CollectDeviceService _collectDeviceService;
-    private readonly UploadDeviceService _uploadDeviceService;
+    private readonly ICollectDeviceService _collectDeviceService;
+    private readonly IUploadDeviceService _uploadDeviceService;
     private readonly FileService _fileService;
     private readonly IServiceScope _serviceScope;
 
     /// <inheritdoc cref="VariableService"/>
     public VariableService(
-        CollectDeviceService collectDeviceService,
+        ICollectDeviceService collectDeviceService,
         FileService fileService,
-        UploadDeviceService uploadDeviceService,
+        IUploadDeviceService uploadDeviceService,
     IServiceScopeFactory scopeFactory)
     {
         _serviceScope = scopeFactory.CreateScope();

@@ -107,8 +107,8 @@ public partial class Login
             {
                 await PopupService.EnqueueSnackbarAsync(new("登录成功", AlertTypes.Success));
                 await Task.Delay(500);
-                var userId = await _serviceScope.ServiceProvider.GetService<SysUserService>().GetIdByAccountAsync(_loginModel.Account);
-                var data = await _serviceScope.ServiceProvider.GetService<UserCenterService>().GetLoginDefaultRazorAsync(userId);
+                var userId = await _serviceScope.ServiceProvider.GetService<ISysUserService>().GetIdByAccountAsync(_loginModel.Account);
+                var data = await _serviceScope.ServiceProvider.GetService<IUserCenterService>().GetLoginDefaultRazorAsync(userId);
                 var sameLevelMenus = await _serviceScope.ServiceProvider.GetService<ResourceService>().GetaMenuAndSpaListAsync();
                 if (_NavigationManager.ToAbsoluteUri(_NavigationManager.Uri).AbsolutePath == "/Login" || _NavigationManager.ToAbsoluteUri(_NavigationManager.Uri).AbsolutePath == "/")
                     await _ajaxService.GotoAsync(sameLevelMenus.FirstOrDefault(a => a.Id == data)?.Component ?? "index");

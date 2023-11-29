@@ -56,6 +56,7 @@ public abstract class BaseComponentBase : ComponentBase, IDisposable
     /// </summary>
     public virtual void Dispose()
     {
+        _serviceScope.Dispose();
     }
 
     /// <summary>

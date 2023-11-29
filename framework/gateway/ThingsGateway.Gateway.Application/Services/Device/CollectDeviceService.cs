@@ -24,7 +24,7 @@ using Yitter.IdGenerator;
 namespace ThingsGateway.Gateway.Application;
 
 [Injection(Proxy = typeof(OperDispatchProxy))]
-public class CollectDeviceService : DeviceService<CollectDevice>, ITransient
+public class CollectDeviceService : DeviceService<CollectDevice>, ITransient, ICollectDeviceService
 {
     protected override string DeviceSheetName => ExportHelpers.CollectDeviceSheetName;
 

@@ -34,7 +34,7 @@ public partial class BackendLogPage
         var confirm = await PopupService.OpenConfirmDialogAsync("删除", "确定 ?");
         if (confirm)
         {
-            await _serviceScope.ServiceProvider.GetService<BackendLogService>().DeleteAsync();
+            await _serviceScope.ServiceProvider.GetService<IBackendLogService>().DeleteAsync();
             await _datatable?.QueryClickAsync();
         }
     }
@@ -46,7 +46,7 @@ public partial class BackendLogPage
 
     private async Task<ISqlSugarPagedList<BackendLog>> QueryCallAsync(BackendLogPageInput input)
     {
-        var data = await _serviceScope.ServiceProvider.GetService<BackendLogService>().PageAsync(input);
+        var data = await _serviceScope.ServiceProvider.GetService<IBackendLogService>().PageAsync(input);
         return data;
     }
 }

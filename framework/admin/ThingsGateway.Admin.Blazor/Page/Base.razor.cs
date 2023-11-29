@@ -37,7 +37,7 @@ namespace ThingsGateway.Admin.Blazor
             {
                 try
                 {
-                    var data = await _serviceScope.ServiceProvider.GetService<UserCenterService>().GetLoginDefaultRazorAsync(UserManager.UserId);
+                    var data = await _serviceScope.ServiceProvider.GetService<IUserCenterService>().GetLoginDefaultRazorAsync(UserManager.UserId);
                     var sameLevelMenus = await _serviceScope.ServiceProvider.GetService<IResourceService>().GetaMenuAndSpaListAsync();
                     if (NavigationManager.ToAbsoluteUri(NavigationManager.Uri).AbsolutePath == "/Login" || NavigationManager.ToAbsoluteUri(NavigationManager.Uri).AbsolutePath == "/")
                         NavigationManager.NavigateTo(sameLevelMenus.FirstOrDefault(a => a.Id == data)?.Component ?? "index", true);

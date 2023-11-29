@@ -20,8 +20,6 @@ using Microsoft.JSInterop;
 
 using Newtonsoft.Json.Linq;
 
-using System.Collections.Generic;
-
 using ThingsGateway.Foundation.Adapter.OPCDA;
 using ThingsGateway.Foundation.Adapter.OPCDA.Da;
 
@@ -45,6 +43,7 @@ public partial class OPCDAClientDebugPage : IDisposable
     {
         _plc.SafeDispose();
         opcDAClientPage.SafeDispose();
+        base.Dispose();
     }
 
     /// <inheritdoc/>
@@ -105,7 +104,7 @@ public partial class OPCDAClientDebugPage : IDisposable
                     await PopupService.EnqueueSnackbarAsync("无可用变量", AlertTypes.Warning);
                     return;
                 }
-                await _serviceScope.ServiceProvider.GetService<CollectDeviceService>().AddAsync(data?.Item1);
+                await _serviceScope.ServiceProvider.GetService<ICollectDeviceService>().AddAsync(data?.Item1);
                 await _serviceScope.ServiceProvider.GetService<VariableService>().AddBatchAsync(data?.Item2);
                 await PopupService.EnqueueSnackbarAsync("成功", AlertTypes.Success);
             }
@@ -151,7 +150,7 @@ public partial class OPCDAClientDebugPage : IDisposable
     /// <returns></returns>
     public async Task DownDeviceExportAsync(CollectDevice data)
     {
-        using var memoryStream = await _serviceScope.ServiceProvider.GetService<CollectDeviceService>().ExportFileAsync(new List<CollectDevice>() { data });
+        using var memoryStream = await _serviceScope.ServiceProvider.GetService<ICollectDeviceService>().ExportFileAsync(new List<CollectDevice>() { data });
         using var streamRef = new DotNetStreamReference(stream: memoryStream);
         JSObjectReference ??= await JSRuntime.LoadModuleAsync("js/downloadFileFromStream");
         await JSObjectReference.InvokeVoidAsync("downloadFileFromStream", $"设备导出{DateTimeExtensions.CurrentDateTime.ToFileDateTimeFormat()}.xlsx", streamRef);

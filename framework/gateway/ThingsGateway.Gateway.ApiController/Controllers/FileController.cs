@@ -23,9 +23,9 @@ namespace ThingsGateway.Gateway.ApiController;
 public class FileController : IDynamicApiController
 {
     private readonly IBackendLogService _backendLogService;
-    private readonly CollectDeviceService _collectDeviceService;
+    private readonly ICollectDeviceService _collectDeviceService;
     private readonly IRpcLogService _rpcLogService;
-    private readonly UploadDeviceService _uploadDeviceService;
+    private readonly IUploadDeviceService _uploadDeviceService;
     private readonly VariableService _variableService;
     /// <summary>
     /// <inheritdoc cref="FileController"/>
@@ -33,8 +33,8 @@ public class FileController : IDynamicApiController
     public FileController(
         IRpcLogService rpcLogService,
         IBackendLogService backendLogService,
-        CollectDeviceService collectDeviceService,
-        UploadDeviceService uploadDeviceService,
+        ICollectDeviceService collectDeviceService,
+        IUploadDeviceService uploadDeviceService,
         VariableService variableService
         )
     {

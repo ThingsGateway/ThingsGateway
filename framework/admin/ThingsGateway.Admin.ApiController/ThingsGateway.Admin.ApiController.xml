@@ -79,7 +79,7 @@
             Swagger登录授权服务
             </summary>
         </member>
-        <member name="M:ThingsGateway.Admin.ApiController.SwaggerController.#ctor(ThingsGateway.Admin.Application.ConfigService)">
+        <member name="M:ThingsGateway.Admin.ApiController.SwaggerController.#ctor(ThingsGateway.Admin.Application.IConfigService)">
             <summary>
             <inheritdoc cref="T:ThingsGateway.Admin.ApiController.SwaggerController"/>
             </summary>

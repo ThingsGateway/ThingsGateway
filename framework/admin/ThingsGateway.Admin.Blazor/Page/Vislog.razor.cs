@@ -56,7 +56,7 @@ public partial class Vislog
         var confirm = await PopupService.OpenConfirmDialogAsync("删除", "确定 ?");
         if (confirm)
         {
-            await _serviceScope.ServiceProvider.GetService<VisitLogService>().DeleteAsync(_categoryFilters.Select(it => it.Value).ToArray());
+            await _serviceScope.ServiceProvider.GetService<IVisitLogService>().DeleteAsync(_categoryFilters.Select(it => it.Value).ToArray());
             await _datatable?.QueryClickAsync();
         }
     }
@@ -74,7 +74,7 @@ public partial class Vislog
 
     private async Task<ISqlSugarPagedList<SysVisitLog>> QueryCallAsync(VisitLogPageInput input)
     {
-        var data = await _serviceScope.ServiceProvider.GetService<VisitLogService>().PageAsync(input);
+        var data = await _serviceScope.ServiceProvider.GetService<IVisitLogService>().PageAsync(input);
         return data;
     }
 }

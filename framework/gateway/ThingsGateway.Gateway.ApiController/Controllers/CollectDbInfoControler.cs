@@ -30,14 +30,14 @@ public class CollectDbInfoControler : IDynamicApiController
 {
     readonly IServiceScope _serviceScope;
     /// <inheritdoc cref="CollectDbInfoControler"/>
-    public CollectDbInfoControler(IServiceScopeFactory scopeFactory, VariableService variableService, CollectDeviceService collectDeviceService)
+    public CollectDbInfoControler(IServiceScopeFactory scopeFactory, VariableService variableService, ICollectDeviceService collectDeviceService)
     {
         _serviceScope = scopeFactory.CreateScope();
         _variableService = variableService;
         _collectDeviceService = collectDeviceService;
     }
 
-    CollectDeviceService _collectDeviceService { get; set; }
+    ICollectDeviceService _collectDeviceService { get; set; }
     VariableService _variableService { get; set; }
     /// <summary>
     /// 获取采集设备信息

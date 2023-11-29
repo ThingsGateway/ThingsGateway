@@ -10,7 +10,6 @@
 //------------------------------------------------------------------------------
 #endregion
 
-using Furion.DependencyInjection;
 using Furion.FriendlyException;
 
 using Mapster;
@@ -31,12 +30,11 @@ using Yitter.IdGenerator;
 
 namespace ThingsGateway.Gateway.Application;
 
-[Injection(Proxy = typeof(OperDispatchProxy))]
-public abstract class DeviceService<T> : DbRepository<T> where T : Device, new()
+public abstract class DeviceService<T> : DbRepository<T>, IDeviceService<T> where T : Device, new()
 {
     protected readonly IFileService _fileService;
     protected readonly IServiceScope _serviceScope;
-    /// <inheritdoc cref="CollectDeviceService"/>
+    /// <inheritdoc cref="ICollectDeviceService"/>
     public DeviceService(
     IServiceScopeFactory serviceScopeFactory,
     IFileService fileService

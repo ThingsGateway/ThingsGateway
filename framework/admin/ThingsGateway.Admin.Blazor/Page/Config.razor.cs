@@ -39,26 +39,26 @@ public partial class Config
     }
     private async Task AddCallAsync(ConfigAddInput input)
     {
-        await _serviceScope.ServiceProvider.GetService<ConfigService>().AddAsync(input);
+        await _serviceScope.ServiceProvider.GetService<IConfigService>().AddAsync(input);
     }
 
     private async Task DeleteCallAsync(IEnumerable<SysConfig> sysConfigs)
     {
-        await _serviceScope.ServiceProvider.GetService<ConfigService>().DeleteAsync(sysConfigs.Select(a => a.Id).ToArray());
+        await _serviceScope.ServiceProvider.GetService<IConfigService>().DeleteAsync(sysConfigs.Select(a => a.Id).ToArray());
     }
     private async Task EditCallAsync(ConfigEditInput sysConfigs)
     {
-        await _serviceScope.ServiceProvider.GetService<ConfigService>().EditAsync(sysConfigs);
+        await _serviceScope.ServiceProvider.GetService<IConfigService>().EditAsync(sysConfigs);
     }
 
     private async Task OnSaveAsync()
     {
-        await _serviceScope.ServiceProvider.GetService<ConfigService>().EditBatchAsync(_sysConfig);
+        await _serviceScope.ServiceProvider.GetService<IConfigService>().EditBatchAsync(_sysConfig);
         await _mainLayout.StateHasChangedAsync();
         await PopupService.EnqueueSnackbarAsync("成功", AlertTypes.Success);
     }
     private async Task<ISqlSugarPagedList<SysConfig>> QueryCallAsync(ConfigPageInput input)
     {
-        return await _serviceScope.ServiceProvider.GetService<ConfigService>().PageAsync(input);
+        return await _serviceScope.ServiceProvider.GetService<IConfigService>().PageAsync(input);
     }
 }

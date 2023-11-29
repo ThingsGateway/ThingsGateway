@@ -62,18 +62,18 @@ public partial class CollectDevicePage : BaseComponentBase
                 return;
             }
         }
-        data ??= _serviceScope.ServiceProvider.GetService<CollectDeviceService>().GetCacheList(true);
+        data ??= _serviceScope.ServiceProvider.GetService<ICollectDeviceService>().GetCacheList(true);
         foreach (var device in data)
         {
             device.DevicePropertys = GetDriverProperties(device.PluginName, device.Id);
         }
-        await _serviceScope.ServiceProvider.GetService<CollectDeviceService>().EditsAsync(data);
+        await _serviceScope.ServiceProvider.GetService<ICollectDeviceService>().EditsAsync(data);
         await PopupService.EnqueueSnackbarAsync("刷新成功", AlertTypes.Success);
 
     }
     private async Task AddCallAsync(DeviceAddInput input)
     {
-        await _serviceScope.ServiceProvider.GetService<CollectDeviceService>().AddAsync(input);
+        await _serviceScope.ServiceProvider.GetService<ICollectDeviceService>().AddAsync(input);
         Refresh();
         await _mainLayout.StateHasChangedAsync();
     }
@@ -85,7 +85,7 @@ public partial class CollectDevicePage : BaseComponentBase
             return;
         }
 
-        await _serviceScope.ServiceProvider.GetService<CollectDeviceService>().CopyDevAndVarAsync(data);
+        await _serviceScope.ServiceProvider.GetService<ICollectDeviceService>().CopyDevAndVarAsync(data);
         await DatatableQueryAsync();
         await PopupService.EnqueueSnackbarAsync("复制成功", AlertTypes.Success);
         await _mainLayout.StateHasChangedAsync();
@@ -99,7 +99,7 @@ public partial class CollectDevicePage : BaseComponentBase
             return;
         }
 
-        await _serviceScope.ServiceProvider.GetService<CollectDeviceService>().CopyDevAsync(data);
+        await _serviceScope.ServiceProvider.GetService<ICollectDeviceService>().CopyDevAsync(data);
         await DatatableQueryAsync();
         await PopupService.EnqueueSnackbarAsync("复制成功", AlertTypes.Success);
         await _mainLayout.StateHasChangedAsync();
@@ -112,14 +112,14 @@ public partial class CollectDevicePage : BaseComponentBase
 
     private async Task DeleteCallAsync(IEnumerable<CollectDevice> input)
     {
-        await _serviceScope.ServiceProvider.GetService<CollectDeviceService>().DeleteAsync(input.Select(a => a.Id).ToArray());
+        await _serviceScope.ServiceProvider.GetService<ICollectDeviceService>().DeleteAsync(input.Select(a => a.Id).ToArray());
         Refresh();
         await _mainLayout.StateHasChangedAsync();
     }
 
     Task<Dictionary<string, ImportPreviewOutputBase>> DeviceImportAsync(IBrowserFile file)
     {
-        return _serviceScope.ServiceProvider.GetService<CollectDeviceService>().PreviewAsync(file);
+        return _serviceScope.ServiceProvider.GetService<ICollectDeviceService>().PreviewAsync(file);
     }
 
     async Task DownExportAsync(DevicePageInput input = null)
@@ -148,8 +148,8 @@ public partial class CollectDevicePage : BaseComponentBase
 
     private async Task EditCallAsync(DeviceEditInput input)
     {
-        await _serviceScope.ServiceProvider.GetService<CollectDeviceService>().EditAsync(input);
-        _devices = _serviceScope.ServiceProvider.GetService<CollectDeviceService>().GetCacheList(true);
+        await _serviceScope.ServiceProvider.GetService<ICollectDeviceService>().EditAsync(input);
+        _devices = _serviceScope.ServiceProvider.GetService<ICollectDeviceService>().GetCacheList(true);
         _deviceGroups = _devices?.Select(a => a.DeviceGroup)?.Where(a => a != null).Distinct()?.ToList();
         await _mainLayout.StateHasChangedAsync();
     }
@@ -161,19 +161,19 @@ public partial class CollectDevicePage : BaseComponentBase
 
     private async Task<ISqlSugarPagedList<CollectDevice>> QueryCallAsync(DevicePageInput input)
     {
-        var data = await _serviceScope.ServiceProvider.GetService<CollectDeviceService>().PageAsync(input);
+        var data = await _serviceScope.ServiceProvider.GetService<ICollectDeviceService>().PageAsync(input);
         return data;
     }
 
     private void Refresh()
     {
-        _devices = _serviceScope.ServiceProvider.GetService<CollectDeviceService>().GetCacheList(true);
+        _devices = _serviceScope.ServiceProvider.GetService<ICollectDeviceService>().GetCacheList(true);
         _deviceGroups = _devices?.Select(a => a.DeviceGroup)?.Where(a => a != null).Distinct()?.ToList();
     }
 
     async Task SaveDeviceImportAsync(Dictionary<string, ImportPreviewOutputBase> data)
     {
-        await _serviceScope.ServiceProvider.GetService<CollectDeviceService>().ImportAsync(data);
+        await _serviceScope.ServiceProvider.GetService<ICollectDeviceService>().ImportAsync(data);
         await DatatableQueryAsync();
         _importExcel.IsShowImport = false;
         await _mainLayout.StateHasChangedAsync();

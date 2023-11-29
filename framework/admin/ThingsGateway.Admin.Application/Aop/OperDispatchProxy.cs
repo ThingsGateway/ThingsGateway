@@ -96,7 +96,7 @@ public class OperDispatchProxy : AspectDispatchProxy, IDispatchProxy
     /// <exception cref="NotImplementedException"></exception>
     public override async Task InvokeAsync(MethodInfo method, object[] args)
     {
-        var desc = method.GetActualCustomAttribute<OperDescAttribute>(Target);
+        var desc = method.GetActualCustomAttribute<OperDescAttribute>(Target, true);
         if (desc == null)
         {
             var task = method.Invoke(Target, args) as Task;
@@ -134,7 +134,7 @@ public class OperDispatchProxy : AspectDispatchProxy, IDispatchProxy
     /// <exception cref="NotImplementedException"></exception>
     public override async Task<T> InvokeAsyncT<T>(MethodInfo method, object[] args)
     {
-        var desc = method.GetActualCustomAttribute<OperDescAttribute>(Target);
+        var desc = method.GetActualCustomAttribute<OperDescAttribute>(Target, true);
         if (desc == null)
         {
             var taskT = method.Invoke(Target, args) as Task<T>;

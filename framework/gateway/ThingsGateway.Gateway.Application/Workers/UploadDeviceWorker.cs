@@ -100,7 +100,7 @@ public class UploadDeviceWorker : DeviceWorker
         if (!_stoppingToken.IsCancellationRequested)
         {
             _logger.LogInformation("正在获取北向设备组态信息");
-            var deviceRunTimes = (_serviceScope.ServiceProvider.GetService<UploadDeviceService>().GetDeviceRuntime());
+            var deviceRunTimes = (_serviceScope.ServiceProvider.GetService<IUploadDeviceService>().GetDeviceRuntime());
             _logger.LogInformation("获取北向设备组态信息完成");
             foreach (var uploadDeviceRunTime in deviceRunTimes.Where(a => !deviceRunTimes.Any(b => a.Id == b.RedundantDeviceId && b.IsRedundant)))
             {
@@ -135,7 +135,7 @@ public class UploadDeviceWorker : DeviceWorker
     /// <returns></returns>
     public List<string> GetDeviceMethods(long devId)
     {
-        var pluginName = _serviceScope.ServiceProvider.GetService<UploadDeviceService>().GetDeviceById(devId).PluginName;
+        var pluginName = _serviceScope.ServiceProvider.GetService<IUploadDeviceService>().GetDeviceById(devId).PluginName;
         var driverBase = _driverPluginService.GetDriver(pluginName);
         var Propertys = _driverPluginService.GetDriverMethodInfo(driverBase);
         driverBase?.SafeDispose();
@@ -154,7 +154,7 @@ public class UploadDeviceWorker : DeviceWorker
         var Propertys = _driverPluginService.GetDriverProperties(driverBase);
         if (devId != 0)
         {
-            var uploadDevice = _serviceScope.ServiceProvider.GetService<UploadDeviceService>().GetDeviceById(devId);
+            var uploadDevice = _serviceScope.ServiceProvider.GetService<IUploadDeviceService>().GetDeviceById(devId);
             uploadDevice?.DevicePropertys?.ForEach(it =>
             {
                 var dependencyProperty = Propertys.FirstOrDefault(a => a.PropertyName == it.PropertyName);
@@ -237,7 +237,7 @@ public class UploadDeviceWorker : DeviceWorker
 
                             if (driverBase.CurrentDevice.DeviceStatus == DeviceStatusEnum.OffLine)
                             {
-                                if (driverBase.CurrentDevice.IsRedundant && _serviceScope.ServiceProvider.GetService<UploadDeviceService>().GetCacheList(false).Any(a => a.Id == driverBase.CurrentDevice.RedundantDeviceId))
+                                if (driverBase.CurrentDevice.IsRedundant && _serviceScope.ServiceProvider.GetService<IUploadDeviceService>().GetCacheList(false).Any(a => a.Id == driverBase.CurrentDevice.RedundantDeviceId))
                                 {
                                     await DeviceRedundantThreadAsync(driverBase.CurrentDevice.Id);
                                 }
@@ -307,7 +307,7 @@ public class UploadDeviceWorker : DeviceWorker
 
     protected override Task<IEnumerable<DeviceRunTime>> GetDeviceRunTimeAsync(long devId)
     {
-        return Task.FromResult(_serviceScope.ServiceProvider.GetService<UploadDeviceService>().GetDeviceRuntime(devId));
+        return Task.FromResult(_serviceScope.ServiceProvider.GetService<IUploadDeviceService>().GetDeviceRuntime(devId));
     }
 
     #endregion

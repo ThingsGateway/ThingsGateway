@@ -19,7 +19,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace ThingsGateway.Gateway.Application;
 
 [Injection(Proxy = typeof(OperDispatchProxy))]
-public class UploadDeviceService : DeviceService<Device>, ITransient
+public class UploadDeviceService : DeviceService<Device>, ITransient, IUploadDeviceService
 {
     protected override string DeviceSheetName => ExportHelpers.UploadDeviceSheetName;
     public UploadDeviceService(IServiceScopeFactory serviceScopeFactory, IFileService fileService) : base(serviceScopeFactory, fileService)

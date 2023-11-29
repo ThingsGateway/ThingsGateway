@@ -54,7 +54,7 @@ public partial class UploadDevicePage
 
     private async Task AddCallAsync(DeviceAddInput input)
     {
-        await _serviceScope.ServiceProvider.GetService<UploadDeviceService>().AddAsync(input);
+        await _serviceScope.ServiceProvider.GetService<IUploadDeviceService>().AddAsync(input);
         Refresh();
         await _mainLayout.StateHasChangedAsync();
     }
@@ -68,12 +68,12 @@ public partial class UploadDevicePage
                 return;
             }
         }
-        data ??= _serviceScope.ServiceProvider.GetService<UploadDeviceService>().GetCacheList(true);
+        data ??= _serviceScope.ServiceProvider.GetService<IUploadDeviceService>().GetCacheList(true);
         foreach (var device in data)
         {
             device.DevicePropertys = GetDriverProperties(device.PluginName, device.Id);
         }
-        await _serviceScope.ServiceProvider.GetService<UploadDeviceService>().EditsAsync(data);
+        await _serviceScope.ServiceProvider.GetService<IUploadDeviceService>().EditsAsync(data);
         await PopupService.EnqueueSnackbarAsync("刷新成功", AlertTypes.Success);
 
     }
@@ -85,7 +85,7 @@ public partial class UploadDevicePage
             return;
         }
 
-        await _serviceScope.ServiceProvider.GetService<UploadDeviceService>().CopyDevAsync(data);
+        await _serviceScope.ServiceProvider.GetService<IUploadDeviceService>().CopyDevAsync(data);
         await DatatableQueryAsync();
         await PopupService.EnqueueSnackbarAsync("复制成功", AlertTypes.Success);
         await _mainLayout.StateHasChangedAsync();
@@ -98,14 +98,14 @@ public partial class UploadDevicePage
 
     private async Task DeleteCallAsync(IEnumerable<Device> input)
     {
-        await _serviceScope.ServiceProvider.GetService<UploadDeviceService>().DeleteAsync(input.Select(a => a.Id).ToArray());
+        await _serviceScope.ServiceProvider.GetService<IUploadDeviceService>().DeleteAsync(input.Select(a => a.Id).ToArray());
         Refresh();
         await _mainLayout.StateHasChangedAsync();
     }
 
     Task<Dictionary<string, ImportPreviewOutputBase>> DeviceImportAsync(IBrowserFile file)
     {
-        return _serviceScope.ServiceProvider.GetService<UploadDeviceService>().PreviewAsync(file);
+        return _serviceScope.ServiceProvider.GetService<IUploadDeviceService>().PreviewAsync(file);
     }
 
     async Task DownExportAsync(DevicePageInput input = null)
@@ -134,8 +134,8 @@ public partial class UploadDevicePage
 
     private async Task EditCallAsync(DeviceEditInput input)
     {
-        await _serviceScope.ServiceProvider.GetService<UploadDeviceService>().EditAsync(input);
-        _devices = _serviceScope.ServiceProvider.GetService<UploadDeviceService>().GetCacheList(true);
+        await _serviceScope.ServiceProvider.GetService<IUploadDeviceService>().EditAsync(input);
+        _devices = _serviceScope.ServiceProvider.GetService<IUploadDeviceService>().GetCacheList(true);
         _deviceGroups = _devices?.Select(a => a.DeviceGroup)?.Where(a => a != null).Distinct()?.ToList();
         await _mainLayout.StateHasChangedAsync();
     }
@@ -147,19 +147,19 @@ public partial class UploadDevicePage
 
     private async Task<ISqlSugarPagedList<Device>> QueryCallAsync(DevicePageInput input)
     {
-        var data = await _serviceScope.ServiceProvider.GetService<UploadDeviceService>().PageAsync(input);
+        var data = await _serviceScope.ServiceProvider.GetService<IUploadDeviceService>().PageAsync(input);
         return data;
     }
 
     private void Refresh()
     {
-        _devices = _serviceScope.ServiceProvider.GetService<UploadDeviceService>().GetCacheList(true);
+        _devices = _serviceScope.ServiceProvider.GetService<IUploadDeviceService>().GetCacheList(true);
         _deviceGroups = _devices?.Select(a => a.DeviceGroup)?.Where(a => a != null).Distinct()?.ToList();
     }
 
     async Task SaveDeviceImportAsync(Dictionary<string, ImportPreviewOutputBase> data)
     {
-        await _serviceScope.ServiceProvider.GetService<UploadDeviceService>().ImportAsync(data);
+        await _serviceScope.ServiceProvider.GetService<IUploadDeviceService>().ImportAsync(data);
         await DatatableQueryAsync();
         _importExcel.IsShowImport = false;
         await _mainLayout.StateHasChangedAsync();

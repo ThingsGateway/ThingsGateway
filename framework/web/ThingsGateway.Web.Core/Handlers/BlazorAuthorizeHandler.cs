@@ -78,7 +78,7 @@ public class BlazorAuthorizeHandler : AppAuthorizeHandler
         var isOpenApi = context.User.Claims.FirstOrDefault(it => it.Type == ClaimConst.IsOpenApi)?.Value?.ToBool() == true;
         if (isOpenApi)
         {
-            var _openApiUserService = _serviceScope.ServiceProvider.GetService<OpenApiUserService>();
+            var _openApiUserService = _serviceScope.ServiceProvider.GetService<IOpenApiUserService>();
             var user = await _openApiUserService.GetUsertByIdAsync(userId);
             if (user == null) { return false; }
             // 此处已经自动验证 Jwt Verificat的有效性了，无需手动验证
@@ -93,7 +93,7 @@ public class BlazorAuthorizeHandler : AppAuthorizeHandler
         }
         else
         {
-            var _sysUserService = _serviceScope.ServiceProvider.GetService<SysUserService>();
+            var _sysUserService = _serviceScope.ServiceProvider.GetService<ISysUserService>();
             var user = await _sysUserService.GetUserByIdAsync(userId);
             if (user == null) { return false; }
 

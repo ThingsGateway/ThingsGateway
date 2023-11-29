@@ -73,7 +73,7 @@ public class SessionService : DbRepository<SysUser>, ISessionService
                   var verificatInfos = await _verificatService.GetVerificatIdAsync(it.Id);
                   if (verificatInfos != null)
                   {
-                      SessionService.GetVerificatInfos(ref verificatInfos);//获取剩余时间
+                      GetVerificatInfos(ref verificatInfos);//获取剩余时间
                       it.VerificatCount = verificatInfos.Count;//令牌数量
                       it.VerificatSignList = verificatInfos;//令牌列表
 

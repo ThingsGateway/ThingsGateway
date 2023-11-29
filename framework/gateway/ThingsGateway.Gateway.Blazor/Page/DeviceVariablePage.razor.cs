@@ -46,9 +46,9 @@ public partial class DeviceVariablePage
     /// <returns></returns>
     protected override async Task OnParametersSetAsync()
     {
-        _collectDevices = _serviceScope.ServiceProvider.GetService<CollectDeviceService>().GetCacheList(true);
-        _uploadDevices = _serviceScope.ServiceProvider.GetService<UploadDeviceService>().GetCacheList(true);
-        _deviceGroups = _serviceScope.ServiceProvider.GetService<CollectDeviceService>().GetTree();
+        _collectDevices = _serviceScope.ServiceProvider.GetService<ICollectDeviceService>().GetCacheList(true);
+        _uploadDevices = _serviceScope.ServiceProvider.GetService<IUploadDeviceService>().GetCacheList(true);
+        _deviceGroups = _serviceScope.ServiceProvider.GetService<ICollectDeviceService>().GetTree();
         await base.OnParametersSetAsync();
     }
 

@@ -1,20 +1,14 @@
 <Project>
+	<Import Project="$(SolutionDir)\Directory.Build.props" />
 	<!--如果编译net45报错无支持，用一下方法添加net45包-->
 	<!--VS顶部菜单栏 -> 视图 -> 其他 -> 程序包控制台
 	Install-Package Microsoft.NETFramework.ReferenceAssemblies.net45
 	-->
 	<PropertyGroup>
-		<Version>4.0.0.5</Version>
-		<GenerateDocumentationFile>True</GenerateDocumentationFile>
-		<LangVersion>latest</LangVersion>
 		<TargetFrameworks>net45;netstandard2.0;net6.0;net8.0;</TargetFrameworks>
 		<Description>
 			ThingsGateway.Foundation是工业设备通讯类库，归属于ThingsGateway边缘网关项目，说明文档：https://diego2098.gitee.io/thingsgateway-docs/
 		</Description>
-		<Authors>Diego</Authors>
-		<Product>ThingsGateway</Product>
-		<Copyright>© 2023-present Diego</Copyright>
-		<RepositoryUrl>https://gitee.com/diego2098/ThingsGateway</RepositoryUrl>
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
 		<EmbedUntrackedSource>true</EmbedUntrackedSource>
 		<EmbedAllSources>true</EmbedAllSources>
@@ -26,16 +20,10 @@
 		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
 		<PackageProjectUrl>https://diego2098.gitee.io/thingsgateway-docs/</PackageProjectUrl>
 		<PackageTags>ThingsGateway;Diego;dotNET China;Blazor;设备采集;边缘网关</PackageTags>
-		<SignAssembly>True</SignAssembly>
-		<DelaySign>False</DelaySign>
-		<SatelliteResourceLanguages>zh-Hans</SatelliteResourceLanguages>
 		<PackageOutputPath>..\..\nupkgs</PackageOutputPath>
 		<AssemblyOriginatorKeyFile>..\..\..\snks/ThingsGateway.snk</AssemblyOriginatorKeyFile>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 	</PropertyGroup>
-
-	<PropertyGroup>
-	</PropertyGroup>
-
 
 	<ItemGroup>
 		<None Include="..\..\..\README.md" Pack="true" PackagePath="\" />

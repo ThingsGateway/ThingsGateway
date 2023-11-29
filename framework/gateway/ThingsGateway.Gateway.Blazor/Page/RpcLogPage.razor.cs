@@ -32,7 +32,7 @@ public partial class RpcLogPage
         var confirm = await PopupService.OpenConfirmDialogAsync("删除", "确定 ?");
         if (confirm)
         {
-            await _serviceScope.ServiceProvider.GetService<RpcLogService>().DeleteAsync();
+            await _serviceScope.ServiceProvider.GetService<IRpcLogService>().DeleteAsync();
             await _datatable?.QueryClickAsync();
         }
     }
@@ -50,7 +50,7 @@ public partial class RpcLogPage
 
     private async Task<ISqlSugarPagedList<RpcLog>> QueryCallAsync(RpcLogPageInput input)
     {
-        var data = await _serviceScope.ServiceProvider.GetService<RpcLogService>().PageAsync(input);
+        var data = await _serviceScope.ServiceProvider.GetService<IRpcLogService>().PageAsync(input);
         return data;
     }
 }

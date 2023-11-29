@@ -27,12 +27,12 @@ namespace ThingsGateway.Admin.ApiController;
 [Route("Swagger")]
 public class SwaggerController : IDynamicApiController, IScoped
 {
-    private readonly ConfigService _configService;
+    private readonly IConfigService _configService;
     /// <summary>
     /// <inheritdoc cref="SwaggerController"/>
     /// </summary>
     /// <param name="sysConfigService"></param>
-    public SwaggerController(ConfigService sysConfigService)
+    public SwaggerController(IConfigService sysConfigService)
     {
         _configService = sysConfigService;
     }

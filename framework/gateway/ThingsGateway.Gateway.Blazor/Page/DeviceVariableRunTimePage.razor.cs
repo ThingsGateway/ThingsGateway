@@ -140,7 +140,7 @@ public partial class DeviceVariableRunTimePage
 
     private async Task<ISqlSugarPagedList<DeviceVariableRunTime>> QueryCallAsync(VariablePageInput input)
     {
-        var uploadDevId = _serviceScope.ServiceProvider.GetService<UploadDeviceService>().GetIdByName(input.UploadDeviceName);
+        var uploadDevId = _serviceScope.ServiceProvider.GetService<IUploadDeviceService>().GetIdByName(input.UploadDeviceName);
         var data = _globalDeviceData.AllVariables
             .WhereIF(!input.DeviceName.IsNullOrEmpty(), a => a.DeviceName == input.DeviceName)
             .WhereIF(!input.Name.IsNullOrEmpty(), a => a.Name.Contains(input.Name))

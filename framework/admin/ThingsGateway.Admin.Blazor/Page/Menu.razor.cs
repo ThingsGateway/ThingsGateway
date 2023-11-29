@@ -45,23 +45,23 @@ public partial class Menu
     private async Task AddCallAsync(MenuAddInput input)
     {
         input.ParentId = _search.ParentId;
-        await _serviceScope.ServiceProvider.GetService<MenuService>().AddAsync(input);
+        await _serviceScope.ServiceProvider.GetService<IMenuService>().AddAsync(input);
         await NavChangeAsync();
     }
     private async Task ButtonAddCallAsync(ButtonAddInput input)
     {
         input.ParentId = _buttonParentId;
-        await _serviceScope.ServiceProvider.GetService<ButtonService>().AddAsync(input);
+        await _serviceScope.ServiceProvider.GetService<IButtonService>().AddAsync(input);
     }
 
     private async Task ButtonDeleteCallAsync(IEnumerable<SysResource> input)
     {
-        await _serviceScope.ServiceProvider.GetService<ButtonService>().DeleteAsync(input.Select(a => a.Id).ToArray());
+        await _serviceScope.ServiceProvider.GetService<IButtonService>().DeleteAsync(input.Select(a => a.Id).ToArray());
     }
 
     private async Task ButtonEditCallAsync(ButtonEditInput input)
     {
-        await _serviceScope.ServiceProvider.GetService<ButtonService>().EditAsync(input);
+        await _serviceScope.ServiceProvider.GetService<IButtonService>().EditAsync(input);
 
     }
 
@@ -85,7 +85,7 @@ public partial class Menu
     private async Task<ISqlSugarPagedList<SysResource>> ButtonQueryCallAsync(ButtonPageInput input)
     {
         input.ParentId = _buttonParentId;
-        var data = await _serviceScope.ServiceProvider.GetService<ButtonService>().PageAsync(input);
+        var data = await _serviceScope.ServiceProvider.GetService<IButtonService>().PageAsync(input);
         return data;
     }
 
@@ -96,13 +96,13 @@ public partial class Menu
 
     private async Task DeleteCallAsync(IEnumerable<SysResource> input)
     {
-        await _serviceScope.ServiceProvider.GetService<MenuService>().DeleteAsync(input.Select(a => a.Id).ToArray());
+        await _serviceScope.ServiceProvider.GetService<IMenuService>().DeleteAsync(input.Select(a => a.Id).ToArray());
         await NavChangeAsync();
 
     }
     private async Task EditCallAsync(MenuEditInput input)
     {
-        await _serviceScope.ServiceProvider.GetService<MenuService>().EditAsync(input);
+        await _serviceScope.ServiceProvider.GetService<IMenuService>().EditAsync(input);
         await NavChangeAsync();
 
     }
@@ -123,7 +123,7 @@ public partial class Menu
     }
     private async Task<ISqlSugarPagedList<SysResource>> QueryCallAsync(MenuPageInput input)
     {
-        var data = await _serviceScope.ServiceProvider.GetService<MenuService>().TreeAsync(input);
+        var data = await _serviceScope.ServiceProvider.GetService<IMenuService>().TreeAsync(input);
         return data.ToPagedList(input);
     }
 

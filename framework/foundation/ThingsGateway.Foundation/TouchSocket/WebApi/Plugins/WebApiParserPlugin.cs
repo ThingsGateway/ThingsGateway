@@ -342,11 +342,11 @@ namespace ThingsGateway.Foundation.WebApi
             var client = (IHttpSocketClient)sender;
             var e = (HttpContextEventArgs)args;
 
-            if (e.Context.Request.Method == HttpMethod.Get)
+            if (e.Context.Request.Method == Http.HttpMethod.Get)
             {
                 return this.OnHttpGet(client, e);
             }
-            else if (e.Context.Request.Method == HttpMethod.Post)
+            else if (e.Context.Request.Method == Http.HttpMethod.Post)
             {
                 return this.OnHttpPost(client, e);
             }

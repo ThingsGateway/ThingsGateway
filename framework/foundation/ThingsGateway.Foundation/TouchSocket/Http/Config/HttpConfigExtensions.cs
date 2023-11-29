@@ -51,9 +51,9 @@ namespace ThingsGateway.Foundation.Sockets
         /// </summary>
         /// <param name="config"></param>
         /// <returns></returns>
-        public static HttpClient BuildWithHttpClient(this TouchSocketConfig config)
+        public static Http.HttpClient BuildWithHttpClient(this TouchSocketConfig config)
         {
-            return BuildWithHttpClient<HttpClient>(config);
+            return BuildWithHttpClient<Http.HttpClient>(config);
         }
 
         /// <summary>

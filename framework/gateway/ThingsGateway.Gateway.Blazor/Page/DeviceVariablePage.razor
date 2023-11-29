@@ -161,7 +161,7 @@ else
         case nameof(context.Item.DeviceId):
             <span title=@context.Value>
                 @(
-            _serviceScope.ServiceProvider.GetService<CollectDeviceService>().GetNameById(context.Item.DeviceId)
+            _serviceScope.ServiceProvider.GetService<ICollectDeviceService>().GetNameById(context.Item.DeviceId)
                 )
             </span>
         break;
@@ -193,7 +193,7 @@ else
                     </td>
                     <td class="text-start ">
                         <div style="word-break:break-all; white-space:pre-wrap;">
-                            @(_serviceScope.ServiceProvider.GetService<CollectDeviceService>().GetNameById(context.Item2.ToLong()))
+                            @(_serviceScope.ServiceProvider.GetService<ICollectDeviceService>().GetNameById(context.Item2.ToLong()))
                         </div>
                     </td>
                 </tr>

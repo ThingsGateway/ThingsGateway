@@ -9,7 +9,7 @@
             采集设备
             </summary>
         </member>
-        <member name="M:ThingsGateway.Gateway.ApiController.CollectDbInfoControler.#ctor(Microsoft.Extensions.DependencyInjection.IServiceScopeFactory,ThingsGateway.Gateway.Application.VariableService,ThingsGateway.Gateway.Application.CollectDeviceService)">
+        <member name="M:ThingsGateway.Gateway.ApiController.CollectDbInfoControler.#ctor(Microsoft.Extensions.DependencyInjection.IServiceScopeFactory,ThingsGateway.Gateway.Application.VariableService,ThingsGateway.Gateway.Application.ICollectDeviceService)">
             <inheritdoc cref="T:ThingsGateway.Gateway.ApiController.CollectDbInfoControler"/>
         </member>
         <member name="M:ThingsGateway.Gateway.ApiController.CollectDbInfoControler.GetCollectDeviceList(ThingsGateway.Gateway.Application.DevicePageInput)">
@@ -29,7 +29,7 @@
             文件下载
             </summary>
         </member>
-        <member name="M:ThingsGateway.Gateway.ApiController.FileController.#ctor(ThingsGateway.Gateway.Application.IRpcLogService,ThingsGateway.Gateway.Application.IBackendLogService,ThingsGateway.Gateway.Application.CollectDeviceService,ThingsGateway.Gateway.Application.UploadDeviceService,ThingsGateway.Gateway.Application.VariableService)">
+        <member name="M:ThingsGateway.Gateway.ApiController.FileController.#ctor(ThingsGateway.Gateway.Application.IRpcLogService,ThingsGateway.Gateway.Application.IBackendLogService,ThingsGateway.Gateway.Application.ICollectDeviceService,ThingsGateway.Gateway.Application.IUploadDeviceService,ThingsGateway.Gateway.Application.VariableService)">
             <summary>
             <inheritdoc cref="T:ThingsGateway.Gateway.ApiController.FileController"/>
             </summary>

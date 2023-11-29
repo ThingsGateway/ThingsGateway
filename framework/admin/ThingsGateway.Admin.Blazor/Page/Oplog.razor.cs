@@ -47,7 +47,7 @@ public partial class Oplog
         var confirm = await PopupService.OpenConfirmDialogAsync("删除", "确定 ?");
         if (confirm)
         {
-            await _serviceScope.ServiceProvider.GetService<OperateLogService>().DeleteAsync(_categoryFilters.Select(it => it.Value).ToArray());
+            await _serviceScope.ServiceProvider.GetService<IOperateLogService>().DeleteAsync(_categoryFilters.Select(it => it.Value).ToArray());
             await _datatable?.QueryClickAsync();
         }
     }
@@ -68,6 +68,6 @@ public partial class Oplog
         input.Account = _search.Account;
         input.Category = _search.Category;
         input.ExeStatus = _search.ExeStatus;
-        return await _serviceScope.ServiceProvider.GetService<OperateLogService>().PageAsync(input);
+        return await _serviceScope.ServiceProvider.GetService<IOperateLogService>().PageAsync(input);
     }
 }

@@ -32,17 +32,17 @@ public partial class OpenApiUserR
 
     private async Task AddCallAsync(OpenApiUserAddInput input)
     {
-        await _serviceScope.ServiceProvider.GetService<OpenApiUserService>().AddAsync(input);
+        await _serviceScope.ServiceProvider.GetService<IOpenApiUserService>().AddAsync(input);
     }
 
     private async Task DeleteCallAsync(IEnumerable<OpenApiUser> users)
     {
-        await _serviceScope.ServiceProvider.GetService<OpenApiUserService>().DeleteAsync(users.Select(a => a.Id).ToArray());
+        await _serviceScope.ServiceProvider.GetService<IOpenApiUserService>().DeleteAsync(users.Select(a => a.Id).ToArray());
     }
 
     private async Task EditCallAsync(OpenApiUserEditInput users)
     {
-        await _serviceScope.ServiceProvider.GetService<OpenApiUserService>().EditAsync(users);
+        await _serviceScope.ServiceProvider.GetService<IOpenApiUserService>().EditAsync(users);
     }
 
     private List<OpenApiPermissionTreeSelector> GetRouters()
@@ -58,7 +58,7 @@ public partial class OpenApiUserR
             OpenApiUserGrantPermissionInput userGrantRoleInput = new();
             userGrantRoleInput.Id = _choiceUserId;
             userGrantRoleInput.PermissionList = _rolesChoice.Select(it => it.ApiRoute).ToList();
-            await _serviceScope.ServiceProvider.GetService<OpenApiUserService>().GrantRoleAsync(userGrantRoleInput);
+            await _serviceScope.ServiceProvider.GetService<IOpenApiUserService>().GrantRoleAsync(userGrantRoleInput);
             _isShowRoles = false;
             await _datatable?.QueryClickAsync();
         }
@@ -70,7 +70,7 @@ public partial class OpenApiUserR
     }
     private async Task<ISqlSugarPagedList<OpenApiUser>> QueryCallAsync(OpenApiUserPageInput input)
     {
-        return await _serviceScope.ServiceProvider.GetService<OpenApiUserService>().PageAsync(input);
+        return await _serviceScope.ServiceProvider.GetService<IOpenApiUserService>().PageAsync(input);
     }
 
     private async Task UserStatusChangeAsync(OpenApiUser context, bool enable)
@@ -78,9 +78,9 @@ public partial class OpenApiUserR
         try
         {
             if (enable)
-                await _serviceScope.ServiceProvider.GetService<OpenApiUserService>().EnableUserAsync(context.Id);
+                await _serviceScope.ServiceProvider.GetService<IOpenApiUserService>().EnableUserAsync(context.Id);
             else
-                await _serviceScope.ServiceProvider.GetService<OpenApiUserService>().DisableUserAsync(context.Id);
+                await _serviceScope.ServiceProvider.GetService<IOpenApiUserService>().DisableUserAsync(context.Id);
         }
         finally
         {

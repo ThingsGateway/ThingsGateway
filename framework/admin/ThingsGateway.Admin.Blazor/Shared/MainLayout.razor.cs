@@ -16,7 +16,7 @@ using ThingsGateway.Foundation.Extension.String;
 
 namespace ThingsGateway.Admin.Blazor;
 
-public partial class MainLayout
+public partial class MainLayout : IDisposable
 {
     private List<SysResource> _breadcrumbSysResources = new();
     private string _configCopyRight = "";
@@ -43,16 +43,23 @@ public partial class MainLayout
     private IServiceScopeFactory _serviceScopeFactory { get; set; }
     [Inject]
     private UserResoures _userResoures { get; set; }
+
+    public void Dispose()
+    {
+        _serviceScope.Dispose();
+    }
+
     /// <summary>
     /// 页面刷新
     /// </summary>
     /// <returns></returns>
     public async Task StateHasChangedAsync()
     {
-        _configCopyRight = (await _serviceScope.ServiceProvider.GetService<IConfigService>().GetByConfigKeyAsync(ConfigConst.SYS_CONFIGBASEDEFAULT, ConfigConst.CONFIG_COPYRIGHT)).ConfigValue;
-        _configTitle = (await _serviceScope.ServiceProvider.GetService<IConfigService>().GetByConfigKeyAsync(ConfigConst.SYS_CONFIGBASEDEFAULT, ConfigConst.CONFIG_TITLE)).ConfigValue;
-        _configCopyRightUrl = (await _serviceScope.ServiceProvider.GetService<IConfigService>().GetByConfigKeyAsync(ConfigConst.SYS_CONFIGBASEDEFAULT, ConfigConst.CONFIG_COPYRIGHT_URL)).ConfigValue;
-        _configPageTab = (await _serviceScope.ServiceProvider.GetService<IConfigService>().GetByConfigKeyAsync(ConfigConst.SYS_CONFIGBASEDEFAULT, ConfigConst.CONFIG_PAGETAB)).ConfigValue.ToBool(true);
+        var configService = _serviceScope.ServiceProvider.GetService<IConfigService>();
+        _configCopyRight = (await configService.GetByConfigKeyAsync(ConfigConst.SYS_CONFIGBASEDEFAULT, ConfigConst.CONFIG_COPYRIGHT)).ConfigValue;
+        _configTitle = (await configService.GetByConfigKeyAsync(ConfigConst.SYS_CONFIGBASEDEFAULT, ConfigConst.CONFIG_TITLE)).ConfigValue;
+        _configCopyRightUrl = (await configService.GetByConfigKeyAsync(ConfigConst.SYS_CONFIGBASEDEFAULT, ConfigConst.CONFIG_COPYRIGHT_URL)).ConfigValue;
+        _configPageTab = (await configService.GetByConfigKeyAsync(ConfigConst.SYS_CONFIGBASEDEFAULT, ConfigConst.CONFIG_PAGETAB)).ConfigValue.ToBool(true);
 
         await _userResoures.InitUserAsync();
         await _userResoures.InitMenuAsync();
