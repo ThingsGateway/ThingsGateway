@@ -10,6 +10,8 @@
 //------------------------------------------------------------------------------
 #endregion
 
+using System.Text.RegularExpressions;
+
 using ThingsGateway.Foundation.Extension.String;
 
 namespace ThingsGateway.Admin.Application;
@@ -34,7 +36,8 @@ public class SeedDataUtil
         if (!string.IsNullOrEmpty(dataString))//如果有内容
         {
             //字段没有数据的替换成null
-            dataString = dataString.Replace("\"\"", "null");
+            dataString = Regex.Replace(dataString, "\\\"[^\"]+?\\\": \\\"\\\"", match => match.Value.Replace("\"\"", "null"));
+            //dataString = dataString.Replace("\"\"", "null");
             //将json字符串转为实体，这里extjson可以正常转换为字符串
             var seedDataRecord = Newtonsoft.Json.JsonConvert.DeserializeObject<SeedDataRecords<T>>(dataString);
 
