@@ -1,0 +1,20 @@
+<Project>
+	<PropertyGroup>
+		
+		<ImplicitUsings>enable</ImplicitUsings>
+		<TargetFrameworks>net6.0;net8.0;</TargetFrameworks>
+		<Version>4.0.0.6</Version>
+		<LangVersion>latest</LangVersion>
+		<Authors>Diego</Authors>
+		<Product>ThingsGateway</Product>
+		<Copyright>© 2023-present Diego</Copyright>
+		<RepositoryUrl>https://gitee.com/diego2098/ThingsGateway</RepositoryUrl>
+		<SignAssembly>True</SignAssembly>
+		<DelaySign>False</DelaySign>
+		<SatelliteResourceLanguages>zh-Hans</SatelliteResourceLanguages>
+		<GenerateDocumentationFile>False</GenerateDocumentationFile>
+	</PropertyGroup>
+
+
+
+</Project>
