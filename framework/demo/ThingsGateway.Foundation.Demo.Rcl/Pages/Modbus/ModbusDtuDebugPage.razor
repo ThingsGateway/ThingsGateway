@@ -40,7 +40,9 @@
                   Dense>
         </MSelect>
 
+            <MCheckbox Class="ma-1" Style="max-width:200px" Label=@(_plc.Description(x => x.IsRtu)) Dense HideDetails="@("auto")" @bind-Value=@_plc.IsRtu></MCheckbox>
             <MCheckbox Class="ma-1" Style="max-width:200px" Label=@(_plc.Description(x => x.IsCheckMessageId)) Dense HideDetails="@("auto")" @bind-Value=@_plc.IsCheckMessageId></MCheckbox>
+            <MCheckbox Class="ma-1" Style="max-width:200px" Label=@(_plc.Description(x => x.Crc16CheckEnable)) Dense HideDetails="@("auto")" @bind-Value=@_plc.Crc16CheckEnable></MCheckbox>
 
         }
     </MRow>

@@ -35,7 +35,7 @@
 		<Compile Include="..\..\demo\ThingsGateway.Foundation.Demo.Rcl\Pages\Modbus\ModbusRtuOverUdpDebugPage.razor.cs" Link="Page\ModbusRtuOverUdpDebugPage.razor.cs" />
 		<Compile Include="..\..\demo\ThingsGateway.Foundation.Demo.Rcl\Pages\Modbus\ModbusSerialServerDebugPage.razor.cs" Link="Page\ModbusSerialServerDebugPage.razor.cs" />
 		<Compile Include="..\..\demo\ThingsGateway.Foundation.Demo.Rcl\Pages\Modbus\ModbusTcpDebugPage.razor.cs" Link="Page\ModbusTcpDebugPage.razor.cs" />
-		<Compile Include="..\..\demo\ThingsGateway.Foundation.Demo.Rcl\Pages\Modbus\ModbusTcpDtuDebugPage.razor.cs" Link="Page\ModbusTcpDtuDebugPage.razor.cs" />
+		<Compile Include="..\..\demo\ThingsGateway.Foundation.Demo.Rcl\Pages\Modbus\ModbusDtuDebugPage.razor.cs" Link="Page\ModbusDtuDebugPage.razor.cs" />
 		<Compile Include="..\..\demo\ThingsGateway.Foundation.Demo.Rcl\Pages\Modbus\ModbusTcpServerDebugPage.razor.cs" Link="Page\ModbusTcpServerDebugPage.razor.cs" />
 		<Compile Include="..\..\demo\ThingsGateway.Foundation.Demo.Rcl\Pages\Modbus\ModbusUdpDebugPage.razor.cs" Link="Page\ModbusUdpDebugPage.razor.cs" />
 		<Content Include="..\..\demo\ThingsGateway.Foundation.Demo.Rcl\Pages\Modbus\ModbusRtuDebugPage.razor" Link="Page\ModbusRtuDebugPage.razor" />
@@ -43,7 +43,7 @@
 		<Content Include="..\..\demo\ThingsGateway.Foundation.Demo.Rcl\Pages\Modbus\ModbusRtuOverUdpDebugPage.razor" Link="Page\ModbusRtuOverUdpDebugPage.razor" />
 		<Content Include="..\..\demo\ThingsGateway.Foundation.Demo.Rcl\Pages\Modbus\ModbusSerialServerDebugPage.razor" Link="Page\ModbusSerialServerDebugPage.razor" />
 		<Content Include="..\..\demo\ThingsGateway.Foundation.Demo.Rcl\Pages\Modbus\ModbusTcpDebugPage.razor" Link="Page\ModbusTcpDebugPage.razor" />
-		<Content Include="..\..\demo\ThingsGateway.Foundation.Demo.Rcl\Pages\Modbus\ModbusTcpDtuDebugPage.razor" Link="Page\ModbusTcpDtuDebugPage.razor" />
+		<Content Include="..\..\demo\ThingsGateway.Foundation.Demo.Rcl\Pages\Modbus\ModbusDtuDebugPage.razor" Link="Page\ModbusDtuDebugPage.razor" />
 		<Content Include="..\..\demo\ThingsGateway.Foundation.Demo.Rcl\Pages\Modbus\ModbusTcpServerDebugPage.razor" Link="Page\ModbusTcpServerDebugPage.razor" />
 		<Content Include="..\..\demo\ThingsGateway.Foundation.Demo.Rcl\Pages\Modbus\ModbusUdpDebugPage.razor" Link="Page\ModbusUdpDebugPage.razor" />
 	</ItemGroup>

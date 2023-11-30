@@ -13,9 +13,9 @@
 namespace ThingsGateway.Foundation.Demo;
 
 /// <summary>
-/// ModbusTcpDtuDebugPage
+/// ModbusDtuDebugPage
 /// </summary>
-public partial class ModbusTcpDtuDebugPage
+public partial class ModbusDtuDebugPage
 {
     /// <summary>
     /// TcpServerPage

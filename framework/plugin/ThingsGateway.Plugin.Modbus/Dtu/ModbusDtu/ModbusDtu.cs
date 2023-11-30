@@ -24,7 +24,7 @@ public class ModbusDtu : CollectBase
     private ThingsGateway.Foundation.Adapter.Modbus.ModbusDtu _plc;
 
     /// <inheritdoc/>
-    public override Type DriverDebugUIType => typeof(ModbusTcpDtuDebugPage);
+    public override Type DriverDebugUIType => typeof(ModbusDtuDebugPage);
 
     /// <inheritdoc/>
     public override DriverPropertyBase DriverPropertys => _driverPropertys;
