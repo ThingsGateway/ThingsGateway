@@ -44,25 +44,24 @@ namespace ThingsGateway.Foundation.Http
         }
 
         /// <summary>
-        /// 静态文件缓存。
-        /// </summary>
-        public FileCachePool FileCache { get; private set; }
-
-        /// <summary>
         /// 提供文件扩展名和MIME类型之间的映射。
         /// </summary>
         public IContentTypeProvider ContentTypeProvider { get; set; }
 
         /// <summary>
-        /// 设置提供文件扩展名和MIME类型之间的映射。
+        /// 静态文件缓存。
         /// </summary>
-        /// <param name="provider"></param>
-        /// <returns></returns>
-        public HttpStaticPagePlugin SetContentTypeProvider(IContentTypeProvider provider)
-        {
-            this.ContentTypeProvider = provider ?? throw new ArgumentNullException(nameof(provider));
-            return this;
-        }
+        public FileCachePool FileCache { get; private set; }
+
+        /// <summary>
+        /// 重新导航。
+        /// </summary>
+        public Func<HttpRequest, Task<string>> NavigateAction { get; set; }
+
+        /// <summary>
+        /// 在响应之前调用
+        /// </summary>
+        public Func<HttpContext, Task> ResponseAction { get; set; }
 
         /// <summary>
         /// 添加静态
@@ -76,7 +75,33 @@ namespace ThingsGateway.Foundation.Http
             timeout ??= TimeSpan.FromHours(1);
             this.FileCache.InsertPath(path, prefix, filter, timeout.Value, null);
         }
+        /// <inheritdoc/>
+        public async Task OnHttpRequest(IHttpSocketClient client, HttpContextEventArgs e)
+        {
+            var url = await this.NavigateAction.Invoke(e.Context.Request);
+            if (this.FileCache.Find(url, out var data))
+            {
+                var response = e.Context.Response;
+                response.SetStatus();
+                if (this.ContentTypeProvider?.TryGetContentType(url, out var result) != true)
+                {
+                    result = HttpTools.GetContentTypeFromExtension(url);
+                }
+                response.ContentType = result;
+                response.SetContent(data);
+                if (this.ResponseAction != null)
+                {
+                    await this.ResponseAction.Invoke(e.Context);
+                }
 
+                await response.AnswerAsync();
+                e.Handled = true;
+            }
+            else
+            {
+                await e.InvokeNext();
+            }
+        }
         /// <summary>
         /// Clear static content cache
         /// </summary>
@@ -84,20 +109,23 @@ namespace ThingsGateway.Foundation.Http
         {
             this.FileCache.Clear();
         }
-
         /// <summary>
-        /// 重新导航
+        /// Remove static content cache
         /// </summary>
-        public Func<HttpRequest, Task<string>> NavigateAction { get; set; }
-
-        /// <summary>
-        /// 设定重新导航
-        /// </summary>
-        /// <param name="func"></param>
-        /// <returns></returns>
-        public HttpStaticPagePlugin SetNavigateAction(Func<HttpRequest, Task<string>> func)
+        /// <param name="path">Static content path</param>
+        public void RemoveFolder(string path)
         {
-            this.NavigateAction = func;
+            this.FileCache.RemovePath(path);
+        }
+
+        /// <summary>
+        /// 设置提供文件扩展名和MIME类型之间的映射。
+        /// </summary>
+        /// <param name="provider"></param>
+        /// <returns></returns>
+        public HttpStaticPagePlugin SetContentTypeProvider(IContentTypeProvider provider)
+        {
+            this.ContentTypeProvider = provider ?? throw new ArgumentNullException(nameof(provider));
             return this;
         }
 
@@ -115,35 +143,30 @@ namespace ThingsGateway.Foundation.Http
             return this;
         }
 
-        /// <inheritdoc/>
-        public async Task OnHttpRequest(IHttpSocketClient client, HttpContextEventArgs e)
+        /// <summary>
+        /// 在响应之前调用。
+        /// </summary>
+        /// <param name="func"></param>
+        /// <returns></returns>
+        public HttpStaticPagePlugin SetResponseAction(Func<HttpContext, Task> func)
         {
-            var url = await this.NavigateAction.Invoke(e.Context.Request);
-            if (this.FileCache.Find(url, out var data))
-            {
-                e.Context.Response.SetStatus();
-                if (this.ContentTypeProvider?.TryGetContentType(url, out var result) != true)
-                {
-                    result = HttpTools.GetContentTypeFromExtension(url);
-                }
-                e.Context.Response.ContentType = result;
-                e.Context.Response.SetContentLength(data.Length)
-                    .WriteContent(data);
-                e.Handled = true;
-            }
-            else
-            {
-                await e.InvokeNext();
-            }
+            this.ResponseAction = func;
+            return this;
         }
 
         /// <summary>
-        /// Remove static content cache
+        /// 在响应之前调用。
         /// </summary>
-        /// <param name="path">Static content path</param>
-        public void RemoveFolder(string path)
+        /// <param name="action"></param>
+        /// <returns></returns>
+        public HttpStaticPagePlugin SetResponseAction(Action<HttpContext> action)
         {
-            this.FileCache.RemovePath(path);
+            this.ResponseAction = (response) =>
+            {
+                action.Invoke(response);
+                return EasyTask.CompletedTask;
+            };
+            return this;
         }
     }
 }
