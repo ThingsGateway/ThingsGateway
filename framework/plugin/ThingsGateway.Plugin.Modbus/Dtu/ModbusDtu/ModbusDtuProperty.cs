@@ -14,7 +14,7 @@ namespace ThingsGateway.Plugin.Modbus;
 /// <summary>
 /// <inheritdoc/>
 /// </summary>
-public class ModbusTcpDtuProperty : DriverPropertyBase
+public class ModbusDtuProperty : DriverPropertyBase
 {
     /// <summary>
     /// IP
@@ -61,6 +61,19 @@ public class ModbusTcpDtuProperty : DriverPropertyBase
     /// </summary>
     [DeviceProperty("连接标识检测", "")]
     public bool MessageIdCheckEnable { get; set; }
+
+    /// <summary>
+    /// 是否Rtu格式
+    /// </summary>
+    [DeviceProperty("是否Rtu格式")]
+    public bool IsRtu { get; set; }
+
+    /// <summary>
+    /// Crc校验
+    /// </summary>
+    [DeviceProperty("Crc校验")]
+    public bool Crc16CheckEnable { get; set; } = true;
+
     /// <summary>
     /// 共享链路
     /// </summary>

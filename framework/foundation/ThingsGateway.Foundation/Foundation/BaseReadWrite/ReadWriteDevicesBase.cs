@@ -148,7 +148,7 @@ public abstract class ReadWriteDevicesBase : IReadWrite
     public abstract void Send(byte[] command, string id = default);
 
     /// <inheritdoc/>
-    public virtual T SendThenReturn<T>(byte[] command, CancellationToken cancellationToken, ISenderClient senderClient = default) where T : OperResult<byte[]>, new()
+    public virtual T SendThenReturn<T>(byte[] command, CancellationToken cancellationToken, ISenderClient senderClient = default) where T : OperResult<byte[]>
     {
         var item = command;
         if (FrameTime != 0)
@@ -157,7 +157,7 @@ public abstract class ReadWriteDevicesBase : IReadWrite
         return (T)result.RequestInfo;
     }
     /// <inheritdoc/>
-    public virtual async Task<T> SendThenReturnAsync<T>(byte[] command, CancellationToken cancellationToken, ISenderClient senderClient = default) where T : OperResult<byte[]>, new()
+    public virtual async Task<T> SendThenReturnAsync<T>(byte[] command, CancellationToken cancellationToken, ISenderClient senderClient = default) where T : OperResult<byte[]>
     {
         var item = command;
         await Task.Delay(FrameTime, cancellationToken);

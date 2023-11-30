@@ -14,14 +14,14 @@ using System.ComponentModel;
 
 namespace ThingsGateway.Foundation.Adapter.Modbus;
 /// <inheritdoc/>
-public class ModbusTcpDtu : ReadWriteDevicesTcpServerBase
+public class ModbusDtu : ReadWriteDevicesTcpServerBase
 {
     /// <inheritdoc/>
-    public ModbusTcpDtu(TcpService tcpService) : base(tcpService)
+    public ModbusDtu(TcpService tcpService) : base(tcpService)
     {
         ThingsGatewayBitConverter = new ThingsGatewayBitConverter(EndianType.Big);
         RegisterByteLength = 2;
-        ModbusTcpDtuPlugin modbusTcpSalvePlugin = new ModbusTcpDtuPlugin();
+        ModbusDtuPlugin modbusTcpSalvePlugin = new ModbusDtuPlugin();
         tcpService.Config.ConfigurePlugins(a =>
          {
              a.Add(modbusTcpSalvePlugin);
@@ -34,6 +34,18 @@ public class ModbusTcpDtu : ReadWriteDevicesTcpServerBase
     /// </summary>
     [Description("检测事务标识符")]
     public bool IsCheckMessageId { get; set; }
+
+    /// <summary>
+    /// 是否Rtu格式
+    /// </summary>
+    [Description("是否Rtu格式")]
+    public bool IsRtu { get; set; }
+
+    /// <summary>
+    /// Crc校验
+    /// </summary>
+    [Description("Crc校验")]
+    public bool Crc16CheckEnable { get; set; } = true;
 
     /// <summary>
     /// 站号
@@ -92,23 +104,49 @@ public class ModbusTcpDtu : ReadWriteDevicesTcpServerBase
     {
         if (socketClient != default)
         {
-            ModbusTcpDataHandleAdapter dataHandleAdapter = new()
-            {
-                IsCheckMessageId = IsCheckMessageId,
-                CacheTimeout = TimeSpan.FromMilliseconds(CacheTimeout)
-            };
-            socketClient.SetDataHandlingAdapter(dataHandleAdapter);
-        }
-        else
-        {
-            foreach (var item in TcpService.GetClients())
+            if (!IsRtu)
             {
                 ModbusTcpDataHandleAdapter dataHandleAdapter = new()
                 {
                     IsCheckMessageId = IsCheckMessageId,
                     CacheTimeout = TimeSpan.FromMilliseconds(CacheTimeout)
                 };
-                item.SetDataHandlingAdapter(dataHandleAdapter);
+                socketClient.SetDataHandlingAdapter(dataHandleAdapter);
+            }
+            else
+            {
+                ModbusRtuDataHandleAdapter dataHandleAdapter = new()
+                {
+                    Crc16CheckEnable = Crc16CheckEnable,
+                    CacheTimeout = TimeSpan.FromMilliseconds(CacheTimeout)
+                };
+                socketClient.SetDataHandlingAdapter(dataHandleAdapter);
+            }
+        }
+        else
+        {
+            //只适配第一个
+            var item = TcpService.GetClients().FirstOrDefault();
+            if (item != null)
+            {
+                if (!IsRtu)
+                {
+                    ModbusTcpDataHandleAdapter dataHandleAdapter = new()
+                    {
+                        IsCheckMessageId = IsCheckMessageId,
+                        CacheTimeout = TimeSpan.FromMilliseconds(CacheTimeout)
+                    };
+                    item.SetDataHandlingAdapter(dataHandleAdapter);
+                }
+                else
+                {
+                    ModbusRtuDataHandleAdapter dataHandleAdapter = new()
+                    {
+                        Crc16CheckEnable = Crc16CheckEnable,
+                        CacheTimeout = TimeSpan.FromMilliseconds(CacheTimeout)
+                    };
+                    item.SetDataHandlingAdapter(dataHandleAdapter);
+                }
             }
         }
     }
@@ -187,7 +225,7 @@ public class ModbusTcpDtu : ReadWriteDevicesTcpServerBase
         if (TcpService.TryGetSocketClient($"ID={id}", out var client))
         {
             SetDataAdapter(client);
-            return SendThenReturn<ModbusTcpMessage>(command, cancellationToken, client);
+            return SendThenReturn<MessageBase>(command, cancellationToken, client);
         }
         else
         {
@@ -200,7 +238,7 @@ public class ModbusTcpDtu : ReadWriteDevicesTcpServerBase
         if (TcpService.TryGetSocketClient($"ID={id}", out var client))
         {
             SetDataAdapter(client);
-            return await SendThenReturnAsync<ModbusTcpMessage>(command, cancellationToken, client);
+            return await SendThenReturnAsync<MessageBase>(command, cancellationToken, client);
         }
         else if (TcpService.SocketClients.Count == 1)
         {
@@ -208,13 +246,13 @@ public class ModbusTcpDtu : ReadWriteDevicesTcpServerBase
             if (client1 != null)
             {
                 SetDataAdapter(client1);
-                return await SendThenReturnAsync<ModbusTcpMessage>(command, cancellationToken, client1);
+                return await SendThenReturnAsync<MessageBase>(command, cancellationToken, client1);
             }
         }
         return new OperResult<byte[]>("客户端未连接");
     }
 
-    internal class ModbusTcpDtuPlugin : PluginBase, ITcpReceivingPlugin
+    internal class ModbusDtuPlugin : PluginBase, ITcpReceivingPlugin
     {
         public async Task OnTcpReceiving(ITcpClientBase client, ByteBlockEventArgs e)
         {

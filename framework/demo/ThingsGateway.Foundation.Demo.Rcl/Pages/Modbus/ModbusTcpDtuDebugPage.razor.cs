@@ -23,7 +23,7 @@ public partial class ModbusTcpDtuDebugPage
     private TcpServerPage _tcpServerPage;
     private DriverDebugUIPage _driverDebugUIPage;
 
-    private ThingsGateway.Foundation.Adapter.Modbus.ModbusTcpDtu _plc;
+    private ThingsGateway.Foundation.Adapter.Modbus.ModbusDtu _plc;
 
     /// <summary>
     /// <inheritdoc/>
@@ -70,7 +70,7 @@ public partial class ModbusTcpDtuDebugPage
 
             if (_tcpServerPage != null)
                 _tcpServerPage.LogAction = _driverDebugUIPage.LogOut;
-            _plc = new ThingsGateway.Foundation.Adapter.Modbus.ModbusTcpDtu(_tcpServerPage.GetTcpServer());
+            _plc = new ThingsGateway.Foundation.Adapter.Modbus.ModbusDtu(_tcpServerPage.GetTcpServer());
             _driverDebugUIPage.Plc = _plc;
             //载入配置
             StateHasChanged();

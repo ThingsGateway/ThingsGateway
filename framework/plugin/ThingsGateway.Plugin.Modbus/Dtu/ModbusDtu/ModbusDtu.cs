@@ -17,11 +17,11 @@ namespace ThingsGateway.Plugin.Modbus;
 /// <summary>
 /// <inheritdoc/>
 /// </summary>
-public class ModbusTcpDtu : CollectBase
+public class ModbusDtu : CollectBase
 {
-    private readonly ModbusTcpDtuProperty _driverPropertys = new();
+    private readonly ModbusDtuProperty _driverPropertys = new();
 
-    private ThingsGateway.Foundation.Adapter.Modbus.ModbusTcpDtu _plc;
+    private ThingsGateway.Foundation.Adapter.Modbus.ModbusDtu _plc;
 
     /// <inheritdoc/>
     public override Type DriverDebugUIType => typeof(ModbusTcpDtuDebugPage);
@@ -52,6 +52,8 @@ public class ModbusTcpDtu : CollectBase
             CacheTimeout = _driverPropertys.CacheTimeout,
             Station = _driverPropertys.Station,
             TimeOut = _driverPropertys.TimeOut,
+            IsRtu = _driverPropertys.IsRtu,
+            Crc16CheckEnable = _driverPropertys.Crc16CheckEnable,
             IsCheckMessageId = _driverPropertys.MessageIdCheckEnable
         };
         base.Init(client);

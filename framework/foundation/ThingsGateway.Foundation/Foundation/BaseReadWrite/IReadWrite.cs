@@ -143,7 +143,7 @@ public interface IReadWrite : IDisposable
     /// <param name="cancellationToken">取消令箭</param>
     /// <param name="senderClient">传入改参数时，将新建等待线程</param>
     /// <returns></returns>
-    T SendThenReturn<T>(byte[] command, CancellationToken cancellationToken, ISenderClient senderClient = default) where T : OperResult<byte[]>, new();
+    T SendThenReturn<T>(byte[] command, CancellationToken cancellationToken, ISenderClient senderClient = default) where T : OperResult<byte[]>;
 
     /// <summary>
     /// 异步发送并返回结果
@@ -153,7 +153,7 @@ public interface IReadWrite : IDisposable
     /// <param name="cancellationToken">取消令箭</param>
     /// <param name="senderClient">传入改参数时，将新建等待线程</param>
     /// <returns></returns>
-    Task<T> SendThenReturnAsync<T>(byte[] command, CancellationToken cancellationToken, ISenderClient senderClient = default) where T : OperResult<byte[]>, new();
+    Task<T> SendThenReturnAsync<T>(byte[] command, CancellationToken cancellationToken, ISenderClient senderClient = default) where T : OperResult<byte[]>;
 
     /// <summary>
     /// 发送获取数据
