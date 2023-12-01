@@ -167,7 +167,7 @@ public abstract class CollectBase : DriverBase
 
                         if (!string.IsNullOrEmpty(methodResult.MethodStr))
                         {
-                            string[] strs = methodResult.MethodStr?.Trim()?.TrimEnd(';').Split(';');
+                            string[] strs = methodResult.MethodStr?.Trim()?.TrimEnd(',').Split(',');
                             try
                             {
                                 int index = 0;
@@ -365,8 +365,8 @@ public abstract class CollectBase : DriverBase
 
                     if (!string.IsNullOrEmpty(deviceVariableMethodSource.MethodStr) || !string.IsNullOrEmpty(value))
                     {
-                        var strs1 = deviceVariableMethodSource.MethodStr?.Trim()?.TrimEnd(';').Split(';') ?? Array.Empty<string>();
-                        var strs2 = value?.Trim()?.TrimEnd(';').Split(';') ?? Array.Empty<string>();
+                        var strs1 = deviceVariableMethodSource.MethodStr?.Trim()?.TrimEnd(',').Split(',') ?? Array.Empty<string>();
+                        var strs2 = value?.Trim()?.TrimEnd(',').Split(',') ?? Array.Empty<string>();
                         //通过分号分割，并且合并参数
                         var strs = GenericExtensions.SpliceArray(strs1, strs2);
                         int index = 0;
