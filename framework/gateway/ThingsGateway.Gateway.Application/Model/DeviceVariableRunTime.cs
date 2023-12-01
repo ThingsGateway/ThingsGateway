@@ -10,6 +10,8 @@
 //------------------------------------------------------------------------------
 #endregion
 
+using Mapster;
+
 using System.ComponentModel;
 
 using ThingsGateway.Gateway.Core.Extensions;
@@ -48,6 +50,7 @@ public class DeviceVariableRunTime : DeviceVariable, IDeviceVariableRunTime
     /// </summary>
     [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
+    [AdaptIgnore]
     [Description("采集设备")]
     public CollectDeviceRunTime CollectDeviceRunTime { get; set; }
 

@@ -124,7 +124,14 @@ public partial class KafkaProducer : UpLoadBaseWithCacheT<DeviceData, VariableDa
                 osStr += RuntimeInformation.ProcessArchitecture.ToString().ToLower();
 
                 var pathToLibrd = System.IO.Path.Combine(Directory, "runtimes", osStr, "native", $"librdkafka{fileEx}");
-                Library.Load(pathToLibrd);
+                try
+                {
+                    Library.Load(pathToLibrd);
+                }
+                catch (Exception ex)
+                {
+                    LogMessage.LogError(ex, $"加载dll失败：{pathToLibrd}");
+                }
             }
             producer = producerBuilder.Build();
         }

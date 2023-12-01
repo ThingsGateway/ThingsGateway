@@ -29,6 +29,7 @@ public abstract class ReadWriteDevicesSingleStreamDataHandleAdapter<TRequest> : 
     public ReadWriteDevicesSingleStreamDataHandleAdapter()
     {
         Request = GetInstance();
+        CacheTimeoutEnable = true;
     }
     /// <inheritdoc/>
     public override bool CanSendRequestInfo => false;
