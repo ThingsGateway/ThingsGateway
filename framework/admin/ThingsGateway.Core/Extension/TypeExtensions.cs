@@ -10,8 +10,6 @@
 //------------------------------------------------------------------------------
 #endregion
 
-using Furion;
-
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
@@ -90,7 +88,7 @@ public static class TypeExtensions
     public static string GetDescription(this Type modelType, string name, Func<MemberInfo, string> func = null)
     {
         var cacheKey = $"{nameof(GetDescription)}-{CultureInfo.CurrentUICulture.Name}-{modelType.FullName}-{name}-{modelType.TypeHandle.Value}";
-        var str = App.GetService<MemoryCache>().GetOrCreate(cacheKey, entry =>
+        var str = MemoryCache.Instance.GetOrCreate(cacheKey, entry =>
         {
             string dn = default;
             {

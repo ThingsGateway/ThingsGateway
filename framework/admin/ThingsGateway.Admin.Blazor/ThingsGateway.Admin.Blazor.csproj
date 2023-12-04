@@ -3,6 +3,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.0" />
+		<PackageReference Include="Masa.Blazor.SomethingSkia" Version="1.2.2" />
 	</ItemGroup>
 
 

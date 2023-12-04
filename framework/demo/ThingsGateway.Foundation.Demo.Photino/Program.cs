@@ -12,6 +12,8 @@
 
 using Photino.Blazor;
 
+using ThingsGateway.Core;
+
 namespace ThingsGateway.Foundation.Demo;
 
 internal class Program
@@ -23,11 +25,10 @@ internal class Program
 
         var appBuilder = PhotinoBlazorAppBuilder.CreateDefault(args);
 
-        Serve.RunNative();
-
         appBuilder.RootComponents.Add<App>("#app");
 
         appBuilder.Services.ThingsGatewayComponentsConfigureServices();
+        appBuilder.Services.ThingsGatewayCoreConfigureServices();
         var app = appBuilder.Build();
         app.MainWindow.SetTitle("ThingsGateway.Foundation.Demo");
         app.MainWindow.SetIconFile("wwwroot/favicon.ico");

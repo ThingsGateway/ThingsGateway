@@ -245,7 +245,6 @@ public class SerialSessionBase : SetupConfigObject, ISerialSession
             if (this.m_online)
             {
                 Task.Factory.StartNew(this.PrivateOnDisconnecting, new DisconnectEventArgs(true, msg));
-                this.MainSerialPort.TryClose();
                 this.BreakOut(true, msg);
             }
         }

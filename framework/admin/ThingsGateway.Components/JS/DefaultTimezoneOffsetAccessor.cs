@@ -10,20 +10,12 @@
 //------------------------------------------------------------------------------
 #endregion
 
-using Furion;
+namespace ThingsGateway.Components;
 
-using Microsoft.Extensions.DependencyInjection;
-
-namespace ThingsGateway.Core;
-
-/// <summary>
-/// Startup
-/// </summary>
-[AppStartup(9999)]
-public class Startup : AppStartup
+public class DefaultTimezoneOffsetAccessor : IDefaultTimezoneOffsetAccessor
 {
-    public void ConfigureServices(IServiceCollection services)
+    public TimeSpan GetTimezoneOffsetResult()
     {
-
+        return TimeSpan.FromHours(8);
     }
 }

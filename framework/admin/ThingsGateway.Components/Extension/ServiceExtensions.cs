@@ -19,7 +19,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace ThingsGateway.Components;
 
-public static class ConfigureService
+public static class ServiceExtensions
 {
     /// <inheritdoc/>
     public static void ThingsGatewayComponentsConfigureServices(this IServiceCollection services)
@@ -65,9 +65,7 @@ public static class ConfigureService
         { nameof(MTimeline), new Dictionary<string, object>() { { nameof(MTimeline.Dense), true } } },
         { nameof(MToolbar), new Dictionary<string, object>() { { nameof(MToolbar.Dense), true } } },
         { "MTreeview", new Dictionary<string, object>() { { "Dense", true } } },
-        { nameof(PImageCaptcha), new Dictionary<string, object>() { { nameof(PImageCaptcha.Dense), true } } }
-
-
+        { "PImageCaptcha", new Dictionary<string, object>() { { "Dense", true } } }
 
             };
             options.ConfigureTheme(theme =>
@@ -98,6 +96,7 @@ public static class ConfigureService
         services.AddScoped<InitTimezone>();
         services.AddScoped<AjaxService>();
         services.AddScoped<CookieStorage>();
+        services.AddScoped<IDefaultTimezoneOffsetAccessor, DefaultTimezoneOffsetAccessor>();
 
     }
 }

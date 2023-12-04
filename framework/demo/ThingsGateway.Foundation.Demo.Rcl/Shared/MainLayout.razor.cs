@@ -10,8 +10,6 @@
 //------------------------------------------------------------------------------
 #endregion
 
-using System.Collections.Generic;
-
 namespace ThingsGateway.Foundation.Demo;
 
 public partial class MainLayout
@@ -105,16 +103,16 @@ public partial class MainLayout
         "Title": "OPCUAClient"
       }
     ]
-  },
-  {
-    "Title": "Mqtt",
-    "Children": [
-      {
-        "Href": "/MqttClient",
-        "Title": "MqttClient"
-      }
-    ]
   }
+  //{
+  //  "Title": "Mqtt",
+  //  "Children": [
+  //    {
+  //      "Href": "/MqttClient",
+  //      "Title": "MqttClient"
+  //    }
+  //  ]
+  //}
 ]
 
 

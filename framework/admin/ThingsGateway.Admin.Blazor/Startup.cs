@@ -24,7 +24,6 @@ public class Startup : AppStartup
     public void ConfigureServices(IServiceCollection services)
     {
         services.ThingsGatewayComponentsConfigureServices();
-
         services.AddScoped<UserResoures>();
 
     }

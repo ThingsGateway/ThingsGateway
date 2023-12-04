@@ -10,8 +10,6 @@
 //------------------------------------------------------------------------------
 #endregion
 
-using Furion.DependencyInjection;
-
 using Mapster;
 
 using Microsoft.Extensions.Caching.Memory;
@@ -23,8 +21,9 @@ namespace ThingsGateway.Core;
 /// <summary>
 /// 系统内存缓存
 /// </summary>
-public class MemoryCache : ISingleton
+public class MemoryCache
 {
+    public static MemoryCache Instance { get; private set; } = new();
     private const string intervalStr = "---___---";
     private readonly Microsoft.Extensions.Caching.Memory.MemoryCache _memoryCache = new(new MemoryCacheOptions());
     private readonly Microsoft.Extensions.Caching.Memory.MemoryCache _prefixmemoryCache = new(new MemoryCacheOptions());

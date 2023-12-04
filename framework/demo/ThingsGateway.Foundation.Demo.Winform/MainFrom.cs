@@ -14,9 +14,9 @@ using Microsoft.AspNetCore.Components.WebView.WindowsForms;
 using Microsoft.Extensions.DependencyInjection;
 
 using System.Diagnostics;
-using System.Threading.Tasks;
 
 using ThingsGateway.Components;
+using ThingsGateway.Core;
 
 namespace ThingsGateway.Foundation.Demo.Winform
 {
@@ -26,14 +26,12 @@ namespace ThingsGateway.Foundation.Demo.Winform
         {
             InitializeComponent();
 
-            IServiceCollection services = null;
+            IServiceCollection services = new ServiceCollection();
 
-            Serve.RunNative(a =>
-            {
-                services = a;
-                services.AddWindowsFormsBlazorWebView();
-                services.ThingsGatewayComponentsConfigureServices();
-            });
+
+            services.AddWindowsFormsBlazorWebView();
+            services.ThingsGatewayComponentsConfigureServices();
+            services.ThingsGatewayCoreConfigureServices();
 
             blazorWebView1.HostPage = "wwwroot/index.html";
             blazorWebView1.Services = services.BuildServiceProvider();

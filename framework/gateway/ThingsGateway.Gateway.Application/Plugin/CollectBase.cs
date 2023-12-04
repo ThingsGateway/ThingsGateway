@@ -238,7 +238,7 @@ public abstract class CollectBase : DriverBase
                     while (readResult != null && !readResult.IsSuccess && readErrorCount < DriverPropertys.RetryCount)
                     {
                         readErrorCount++;
-                        LogMessage?.Trace($"{DeviceName} - 采集[{deviceVariableSourceRead?.Address} - {deviceVariableSourceRead?.Length}] 数据失败 - {readResult?.Message}");
+                        LogMessage?.Trace($"{DeviceName} - 采集[{deviceVariableSourceRead?.Address} - {deviceVariableSourceRead?.Length}] 数据失败 - {readResult?.ToString()}");
                         readResult = await ReadSourceAsync(deviceVariableSourceRead, cancellationToken);
                     }
 
@@ -252,9 +252,9 @@ public abstract class CollectBase : DriverBase
                         if (readResult != null)
                         {
                             if (deviceVariableSourceRead.LastErrorMessage != readResult?.Message)
-                                LogMessage?.Warning($"{DeviceName} - 采集[{deviceVariableSourceRead?.Address} - {deviceVariableSourceRead?.Length}] 数据失败 - {readResult?.Message}");
+                                LogMessage?.Warning($"{DeviceName} - 采集[{deviceVariableSourceRead?.Address} - {deviceVariableSourceRead?.Length}] 数据失败 - {readResult?.ToString()}");
                             else
-                                LogMessage?.Trace($"{DeviceName} - 采集[{deviceVariableSourceRead?.Address} - {deviceVariableSourceRead?.Length}] 数据连续失败 - {readResult?.Message}");
+                                LogMessage?.Trace($"{DeviceName} - 采集[{deviceVariableSourceRead?.Address} - {deviceVariableSourceRead?.Length}] 数据连续失败 - {readResult?.ToString()}");
 
                             deviceMethodsVariableFailedNum++;
                             deviceVariableSourceRead.SetValue(readResult?.Message);
@@ -290,7 +290,7 @@ public abstract class CollectBase : DriverBase
                     while (readResult != null && !readResult.IsSuccess && readErrorCount < DriverPropertys.RetryCount)
                     {
                         readErrorCount++;
-                        LogMessage?.Trace($"{DeviceName} - 执行方法[{deviceVariableMethodRead.MethodInfo.Name}] - 失败 - {readResult?.Message}");
+                        LogMessage?.Trace($"{DeviceName} - 执行方法[{deviceVariableMethodRead.MethodInfo.Name}] - 失败 - {readResult?.ToString()}");
                         readResult = await InvokeMethodAsync(deviceVariableMethodRead, cancellationToken);
                     }
 
@@ -303,9 +303,9 @@ public abstract class CollectBase : DriverBase
                     {
                         if (readResult != null)
                         {
-                            LogMessage?.Warning($"{DeviceName} - 执行方法[{deviceVariableMethodRead.MethodInfo.Name}] - 失败 - {readResult?.Message}");
+                            LogMessage?.Warning($"{DeviceName} - 执行方法[{deviceVariableMethodRead.MethodInfo.Name}] - 失败 - {readResult?.ToString()}");
                             deviceSourceVariableFailedNum++;
-                            CurrentDevice.SetDeviceStatus(DateTimeExtensions.CurrentDateTime, CurrentDevice.ErrorCount + 1, readResult?.Message);
+                            CurrentDevice.SetDeviceStatus(DateTimeExtensions.CurrentDateTime, CurrentDevice.ErrorCount + 1, readResult?.ToString());
                         }
                     }
 

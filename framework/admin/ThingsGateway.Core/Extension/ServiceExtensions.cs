@@ -10,34 +10,15 @@
 //------------------------------------------------------------------------------
 #endregion
 
-using Furion;
-
 using Microsoft.Extensions.DependencyInjection;
 
-using System.Reflection;
+namespace ThingsGateway.Core;
 
-using Yitter.IdGenerator;
-
-namespace ThingsGateway.Admin.Core;
-
-/// <summary>
-/// AppStartup启动类
-/// </summary>
-[AppStartup(9998)]
-public class Startup : AppStartup
+public static class ServiceExtensions
 {
     /// <inheritdoc/>
-    public void ConfigureServices(IServiceCollection services)
+    public static void ThingsGatewayCoreConfigureServices(this IServiceCollection services)
     {
-        DbContext.InitDbContext();
-        // 配置雪花Id算法机器码
-        YitIdHelper.SetIdGenerator(new IdGeneratorOptions
-        {
-            WorkerId = 4// 取值范围0~63
-        });
-        services.ThingsGatewayCoreConfigureServices();
-
-        services.AddComponent<LoggingConsoleComponent>();//启动控制台日志格式化组件
-        ThingsGateway.Core.TypeExtensions.DefaultFuncs.Add(a => a.GetCustomAttribute<SqlSugar.SugarColumn>()?.ColumnDescription);
+        services.AddSingleton(a => MemoryCache.Instance);
     }
 }

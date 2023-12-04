@@ -10,9 +10,6 @@
 //------------------------------------------------------------------------------
 #endregion
 
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
-
 namespace ThingsGateway.Components;
 
 /// <summary>
@@ -43,17 +40,11 @@ public class InitTimezone : IDisposable
     /// <param name="jsRuntime"></param>
     /// <param name="storage"></param>
     /// <param name="serviceProvider"></param>
-    public InitTimezone(IJSRuntime jsRuntime, CookieStorage storage, IServiceProvider serviceProvider)
+    public InitTimezone(IJSRuntime jsRuntime, CookieStorage storage, IDefaultTimezoneOffsetAccessor defaultTimezoneOffsetAccessor)
     {
-        IHttpContextAccessor httpContextAccessor = serviceProvider.GetService<IHttpContextAccessor>();
         _jsRuntime = jsRuntime;
         _storage = storage;
-        var httpContext = httpContextAccessor?.HttpContext;
-        if (httpContext is not null)
-        {
-            var timezoneOffsetResult = httpContext.Request.Cookies[_timezoneOffsetKey];
-            _timezoneOffset = TimeSpan.FromMinutes(Convert.ToDouble(timezoneOffsetResult));
-        }
+        _timezoneOffset = defaultTimezoneOffsetAccessor.GetTimezoneOffsetResult();
     }
     /// <summary>
     /// 获取Web客户端时差

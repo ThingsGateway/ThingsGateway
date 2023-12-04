@@ -2,7 +2,7 @@
 
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
 
-		<Exec Command=" set dir=&quot;$(SolutionDir)web\ThingsGateway.Web.Entry\bin\$(Configuration)\$(TargetFramework)\Plugins\$(AssemblyName)&quot;&#xD;&#xA; if not exist %25dir%25  md %25dir%25  &#xD;&#xA;&#xD;&#xA;copy &quot;$(TargetDir)*Kafka*.dll&quot;  %25dir%25&#xD;&#xA;&#xD;&#xA;xcopy &quot;$(TargetDir)runtimes&quot;  %25dir%25\runtimes\ /s /f /y" />
+		<Exec Command=" set dir=&quot;$(SolutionDir)web\ThingsGateway.Web.Entry\bin\$(Configuration)\$(TargetFramework)\Plugins\$(AssemblyName)&quot;&#xD;&#xA; if not exist %25dir%25  md %25dir%25  &#xD;&#xA;&#xD;&#xA;copy &quot;$(TargetDir)*Kafka*.dll&quot;  %25dir%25&#xD;&#xA;" />
 	</Target>
 
 	<ItemGroup>

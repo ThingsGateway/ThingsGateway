@@ -3,7 +3,6 @@
 	
 	<ItemGroup>
 		<PackageReference Include="Masa.Blazor" Version="1.2.2" />
-		<PackageReference Include="Masa.Blazor.SomethingSkia" Version="1.2.2" />
 	</ItemGroup>
 	
 	<ItemGroup>

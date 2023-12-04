@@ -7,6 +7,7 @@
 		<UseWindowsForms>true</UseWindowsForms>
 	</PropertyGroup>
 
+
 	<ItemGroup>
 		<None Remove="favicon.ico" />
 	</ItemGroup>
