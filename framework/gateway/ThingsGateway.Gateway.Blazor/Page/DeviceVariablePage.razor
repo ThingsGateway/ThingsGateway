@@ -267,15 +267,7 @@ else
                 </MSelect>
             </MCol>
 
-            <MCol Md=3 Sm=12>
-
-                <MTextField Dense Outlined HideDetails="@("auto")" Color="primary" @bind-Value=@context.ReadExpressions Label="@(context.Description(x => x.ReadExpressions))" />
-            </MCol>
-            <MCol Md=3 Sm=12>
-                <MTextField Dense Outlined HideDetails="@("auto")" Color="primary" @bind-Value=@context.WriteExpressions Label="@(context.Description(x => x.WriteExpressions))" />
-            </MCol>
-
-            <MCol Md=3 Sm=12>
+                        <MCol Md=3 Sm=12>
                 <MSelect @bind-Value=@context.RpcWriteEnable Outlined Color="primary"
                          Items=@(new List<bool>(){true,false}) Clearable Label=@(context.Description(x => x.RpcWriteEnable))
                          MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
@@ -283,8 +275,20 @@ else
                          HideDetails=@("auto") Height="30" Dense>
                 </MSelect>
             </MCol>
-
         </MRow>
+
+        <MRow>
+            <MCol Md=6 Sm=12>
+
+                <MTextarea Dense Outlined HideDetails="@("auto")" Color="primary" @bind-Value=@context.ReadExpressions Label="@(context.Description(x => x.ReadExpressions))" />
+            </MCol>
+            <MCol Md=6 Sm=12>
+                <MTextarea Dense Outlined HideDetails="@("auto")" Color="primary" @bind-Value=@context.WriteExpressions Label="@(context.Description(x => x.WriteExpressions))" />
+            </MCol>
+        </MRow>
+
+
+
         <div class="mt-3">
             <span class="ml-1  font-weight-black">采集属性设置</span>
         </div>
