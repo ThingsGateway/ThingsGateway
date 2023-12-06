@@ -12,7 +12,7 @@
 
 global using ThingsGateway.Components;
 global using ThingsGateway.Foundation.Core;
-global using ThingsGateway.Foundation.Serial;
+global using ThingsGateway.Foundation.SerialPorts;
 global using ThingsGateway.Foundation.Sockets;
 global using ThingsGateway.Gateway.Application;
 global using ThingsGateway.Gateway.Core;

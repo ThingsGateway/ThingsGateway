@@ -42,7 +42,7 @@ public class ModbusRtu : CollectBase
     {
         if (client == null)
         {
-            FoundataionConfig.SetSerialProperty(new()
+            FoundataionConfig.SetSerialPortOption(new()
             {
                 PortName = _driverPropertys.PortName,
                 BaudRate = _driverPropertys.BaudRate,
@@ -50,11 +50,11 @@ public class ModbusRtu : CollectBase
                 Parity = _driverPropertys.Parity,
                 StopBits = _driverPropertys.StopBits,
             });
-            client = new SerialSession();
-            ((SerialSession)client).Setup(FoundataionConfig);
+            client = new SerialPortClient();
+            ((SerialPortClient)client).Setup(FoundataionConfig);
         }
         //载入配置
-        _plc = new((SerialSession)client)
+        _plc = new((SerialPortClient)client)
         {
             Crc16CheckEnable = _driverPropertys.Crc16CheckEnable,
             FrameTime = _driverPropertys.FrameTime,

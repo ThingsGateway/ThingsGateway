@@ -36,7 +36,7 @@ public static class DriverBaseExtension
         {
             switch (config.ShareChannel)
             {
-                case ChannelEnum.SerialSession:
+                case ChannelEnum.SerialPortClient:
                     return config.PortName;
                 case ChannelEnum.TcpClient:
                 case ChannelEnum.UdpSession:
@@ -88,8 +88,8 @@ public static class DriverBaseExtension
             {
                 case ChannelEnum.None:
                     break;
-                case ChannelEnum.SerialSession:
-                    var data = new SerialProperty()
+                case ChannelEnum.SerialPortClient:
+                    var data = new SerialPortOption()
                     {
                         PortName = config.PortName,
                         BaudRate = config.BaudRate,
@@ -97,10 +97,10 @@ public static class DriverBaseExtension
                         Parity = config.Parity,
                         StopBits = config.StopBits,
                     };
-                    touchSocketConfig.SetValue(SerialConfigExtension.SerialProperty, data);
-                    var serialSession = new SerialSession();
-                    (serialSession).Setup(touchSocketConfig);
-                    return serialSession;
+                    touchSocketConfig.SetSerialPortOption(data);
+                    var serialPortClient = new SerialPortClient();
+                    (serialPortClient).Setup(touchSocketConfig);
+                    return serialPortClient;
                 case ChannelEnum.TcpClient:
                     touchSocketConfig.SetRemoteIPHost(new IPHost($"{config.IP}:{config.Port}"));
                     var tcpClient = new TcpClient();

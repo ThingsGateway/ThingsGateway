@@ -22,7 +22,7 @@ public enum ChannelEnum
     /// <inheritdoc/>
     TcpClient = 1,
     /// <inheritdoc/>
-    SerialSession = 2,
+    SerialPortClient = 2,
     /// <inheritdoc/>
     UdpSession = 4,
     /// <inheritdoc/>

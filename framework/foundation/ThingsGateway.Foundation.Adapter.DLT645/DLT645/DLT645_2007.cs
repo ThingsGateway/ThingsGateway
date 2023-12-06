@@ -21,8 +21,8 @@ public class DLT645_2007 : ReadWriteDevicesSerialSessionBase, IDLT645_2007
     /// <summary>
     /// DLT645_2007
     /// </summary>
-    /// <param name="serialSession"></param>
-    public DLT645_2007(SerialSession serialSession) : base(serialSession)
+    /// <param name="serialPortClient"></param>
+    public DLT645_2007(SerialPortClient serialPortClient) : base(serialPortClient)
     {
         ThingsGatewayBitConverter = new DLT645_2007BitConverter(EndianType.Big);
         RegisterByteLength = 2;
@@ -62,7 +62,7 @@ public class DLT645_2007 : ReadWriteDevicesSerialSessionBase, IDLT645_2007
         {
             EnableFEHead = EnableFEHead
         };
-        SerialSession.SetDataHandlingAdapter(dataHandleAdapter);
+        SerialPortClient.SetDataHandlingAdapter(dataHandleAdapter);
     }
 
 

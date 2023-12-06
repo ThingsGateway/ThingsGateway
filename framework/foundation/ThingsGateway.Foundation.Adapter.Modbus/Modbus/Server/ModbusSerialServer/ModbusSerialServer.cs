@@ -19,7 +19,7 @@ namespace ThingsGateway.Foundation.Adapter.Modbus;
 public class ModbusSerialServer : ReadWriteDevicesSerialSessionBase, IModbusServer
 {
     /// <inheritdoc/>
-    public ModbusSerialServer(SerialSession serialSession) : base(serialSession)
+    public ModbusSerialServer(SerialPortClient serialPortClient) : base(serialPortClient)
     {
         ThingsGatewayBitConverter = new ThingsGatewayBitConverter(EndianType.Big);
         RegisterByteLength = 2;
@@ -130,7 +130,7 @@ public class ModbusSerialServer : ReadWriteDevicesSerialSessionBase, IModbusServ
     {
         ModbusSerialServerDataHandleAdapter dataHandleAdapter = new();
         dataHandleAdapter.CacheTimeout = TimeSpan.FromMilliseconds(CacheTimeout);
-        SerialSession.SetDataHandlingAdapter(dataHandleAdapter);
+        SerialPortClient.SetDataHandlingAdapter(dataHandleAdapter);
     }
 
 
@@ -165,7 +165,7 @@ public class ModbusSerialServer : ReadWriteDevicesSerialSessionBase, IModbusServ
     }
 
     /// <inheritdoc/>
-    protected override async Task Received(SerialSession client, ReceivedDataEventArgs e)
+    protected override async Task Received(SerialPortClient client, ReceivedDataEventArgs e)
     {
         try
         {

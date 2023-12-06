@@ -100,7 +100,7 @@ public class DLT645_2007Property : DriverPropertyBase
     /// <summary>
     /// <inheritdoc/>
     /// </summary>
-    public override ChannelEnum ShareChannel => ChannelEnum.SerialSession;
+    public override ChannelEnum ShareChannel => ChannelEnum.SerialPortClient;
 
 
 }

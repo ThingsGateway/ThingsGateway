@@ -38,7 +38,7 @@ public class DLT645_2007 : CollectBase
     {
         if (client == null)
         {
-            FoundataionConfig.SetSerialProperty(new()
+            FoundataionConfig.SetSerialPortOption(new()
             {
                 PortName = _driverPropertys.PortName,
                 BaudRate = _driverPropertys.BaudRate,
@@ -47,11 +47,11 @@ public class DLT645_2007 : CollectBase
                 StopBits = _driverPropertys.StopBits,
             })
                 ;
-            client = new SerialSession();
-            ((SerialSession)client).Setup(FoundataionConfig);
+            client = new SerialPortClient();
+            ((SerialPortClient)client).Setup(FoundataionConfig);
         }
         //载入配置
-        _plc = new((SerialSession)client)
+        _plc = new((SerialPortClient)client)
         {
             FrameTime = _driverPropertys.FrameTime,
             CacheTimeout = _driverPropertys.CacheTimeout,

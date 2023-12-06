@@ -10,6 +10,7 @@
 //------------------------------------------------------------------------------
 #endregion
 
+
 namespace ThingsGateway.Foundation.Core;
 
 /// <summary>
@@ -20,23 +21,23 @@ public abstract class ReadWriteDevicesSerialSessionBase : ReadWriteDevicesBase
     /// <summary>
     /// <inheritdoc cref="ReadWriteDevicesSerialSessionBase"/>
     /// </summary>
-    /// <param name="serialSession"></param>
-    public ReadWriteDevicesSerialSessionBase(SerialSession serialSession)
+    /// <param name="serialPortClient"></param>
+    public ReadWriteDevicesSerialSessionBase(SerialPortClient serialPortClient)
     {
-        SerialSession = serialSession;
-        WaitingClientEx = SerialSession.CreateWaitingClient(new() { });
-        SerialSession.Received -= Received;
-        SerialSession.Connecting -= Connecting;
-        SerialSession.Connected -= Connected;
-        SerialSession.Disconnecting -= Disconnecting;
-        SerialSession.Disconnected -= Disconnected;
-        SerialSession.Connecting += Connecting;
-        SerialSession.Connected += Connected;
-        SerialSession.Disconnecting += Disconnecting;
-        SerialSession.Disconnected += Disconnected;
-        SerialSession.Received += Received;
+        SerialPortClient = serialPortClient;
+        WaitingClientEx = SerialPortClient.CreateWaitingClient(new() { });
+        SerialPortClient.Received -= Received;
+        SerialPortClient.Connecting -= Connecting;
+        SerialPortClient.Connected -= Connected;
+        SerialPortClient.Disconnecting -= Disconnecting;
+        SerialPortClient.Disconnected -= Disconnected;
+        SerialPortClient.Connecting += Connecting;
+        SerialPortClient.Connected += Connected;
+        SerialPortClient.Disconnecting += Disconnecting;
+        SerialPortClient.Disconnected += Disconnected;
+        SerialPortClient.Received += Received;
 
-        Logger = SerialSession.Logger;
+        Logger = SerialPortClient.Logger;
     }
     /// <summary>
     /// 接收解析
@@ -44,88 +45,88 @@ public abstract class ReadWriteDevicesSerialSessionBase : ReadWriteDevicesBase
     /// <param name="client"></param>
     /// <param name="e"></param>
     /// <returns></returns>
-    protected virtual Task Received(SerialSession client, ReceivedDataEventArgs e)
+    protected virtual Task Received(SerialPortClient client, ReceivedDataEventArgs e)
     {
         return EasyTask.CompletedTask;
     }
 
     /// <inheritdoc/>
-    public override ChannelEnum ChannelEnum => ChannelEnum.SerialSession;
+    public override ChannelEnum ChannelEnum => ChannelEnum.SerialPortClient;
 
     /// <summary>
     /// 串口管理对象
     /// </summary>
-    public SerialSession SerialSession { get; }
+    public SerialPortClient SerialPortClient { get; }
 
     /// <summary>
     /// 默认WaitingClientEx
     /// </summary>
-    public virtual IWaitingClient<SerialSession> WaitingClientEx { get; }
+    public virtual IWaitingClient<SerialPortClient> WaitingClientEx { get; }
     /// <inheritdoc/>
     public override bool IsConnected()
     {
-        return SerialSession?.CanSend == true;
+        return SerialPortClient?.CanSend == true;
     }
     /// <inheritdoc/>
     public override void Connect(CancellationToken cancellationToken)
     {
-        SerialSession.Connect();
+        SerialPortClient.Connect();
     }
 
     /// <inheritdoc/>
     public override Task ConnectAsync(CancellationToken cancellationToken)
     {
-        return SerialSession.ConnectAsync();
+        return SerialPortClient.ConnectAsync();
     }
 
     /// <inheritdoc/>
     public override void Disconnect()
     {
         if (CascadeDisposal && IsConnected())
-            SerialSession.Close();
+            SerialPortClient.Close();
     }
 
     /// <inheritdoc/>
     public override void Dispose()
     {
         Disconnect();
-        SerialSession.Received -= Received;
-        SerialSession.Connecting -= Connecting;
-        SerialSession.Connected -= Connected;
-        SerialSession.Disconnecting -= Disconnecting;
-        SerialSession.Disconnected -= Disconnected;
-        if (CascadeDisposal && !SerialSession.DisposedValue)
-            SerialSession.SafeDispose();
+        SerialPortClient.Received -= Received;
+        SerialPortClient.Connecting -= Connecting;
+        SerialPortClient.Connected -= Connected;
+        SerialPortClient.Disconnecting -= Disconnecting;
+        SerialPortClient.Disconnected -= Disconnected;
+        if (CascadeDisposal && !SerialPortClient.DisposedValue)
+            SerialPortClient.SafeDispose();
     }
 
     /// <inheritdoc/>
     public override string ToString()
     {
-        return SerialSession.SerialProperty.ToString();
+        return SerialPortClient.ToString();
     }
 
-    private async Task Connected(ISerialSession client, ConnectedEventArgs e)
+    private async Task Connected(ISerialPortClient client, ConnectedEventArgs e)
     {
-        Logger?.Debug(client.SerialProperty.ToString() + "连接成功");
+        Logger?.Debug(client.ToString() + "连接成功");
         SetDataAdapter();
         await EasyTask.CompletedTask;
     }
 
-    private async Task Connecting(ISerialSession client, SerialConnectingEventArgs e)
+    private async Task Connecting(ISerialPortClient client, SerialConnectingEventArgs e)
     {
-        Logger?.Debug(client.SerialProperty.ToString() + "正在连接");
+        Logger?.Debug(client.ToString() + "正在连接");
         await EasyTask.CompletedTask;
     }
 
-    private async Task Disconnected(ISerialSessionBase client, DisconnectEventArgs e)
+    private async Task Disconnected(ISerialPortClient client, DisconnectEventArgs e)
     {
-        Logger?.Debug(client.SerialProperty.ToString() + "断开连接-" + e.Message);
+        Logger?.Debug(client.ToString() + "断开连接-" + e.Message);
         await EasyTask.CompletedTask;
     }
 
-    private async Task Disconnecting(ISerialSessionBase client, DisconnectEventArgs e)
+    private async Task Disconnecting(ISerialPortClient client, DisconnectEventArgs e)
     {
-        Logger?.Debug(client.SerialProperty.ToString() + "正在主动断开连接-" + e.Message);
+        Logger?.Debug(client.ToString() + "正在主动断开连接-" + e.Message);
         await EasyTask.CompletedTask;
     }
 
@@ -150,6 +151,6 @@ public abstract class ReadWriteDevicesSerialSessionBase : ReadWriteDevicesBase
     /// <inheritdoc/>
     public override void Send(byte[] command, string id = default)
     {
-        SerialSession.Send(command);
+        SerialPortClient.Send(command);
     }
 }

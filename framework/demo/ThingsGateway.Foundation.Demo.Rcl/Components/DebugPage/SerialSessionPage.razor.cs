@@ -20,32 +20,32 @@ public partial class SerialSessionPage : IDisposable
     /// </summary>
     public Action<LogLevel, object, string, Exception> LogAction;
 
-    private readonly SerialProperty _serialProperty = new();
+    private readonly SerialPortOption _serialPortOption = new();
     private TouchSocketConfig _config;
-    private SerialSession _serialSession { get; set; } = new();
+    private SerialPortClient _serialPortClient { get; set; } = new();
 
     /// <summary>
     /// <inheritdoc/>
     /// </summary>
     public void Dispose()
     {
-        _serialSession.SafeDispose();
+        _serialPortClient.SafeDispose();
     }
 
     /// <summary>
     /// 获取对象
     /// </summary>
     /// <returns></returns>
-    public SerialSession GetSerialSession()
+    public SerialPortClient GetSerialSession()
     {
         _config ??= new TouchSocketConfig();
         var LogMessage = new LoggerGroup() { LogLevel = LogLevel.Trace };
         LogMessage.AddLogger(new EasyLogger(LogOut) { LogLevel = LogLevel.Trace });
         _config.ConfigureContainer(a => a.RegisterSingleton<ILog>(LogMessage));
-        _config.SetSerialProperty(_serialProperty);
+        _config.SetSerialPortOption(_serialPortOption);
         //载入配置
-        _serialSession.Setup(_config);
-        return _serialSession;
+        _serialPortClient.Setup(_config);
+        return _serialPortClient;
     }
     internal void StateHasChangedAsync()
     {
@@ -63,7 +63,7 @@ public partial class SerialSessionPage : IDisposable
             var LogMessage = new LoggerGroup() { LogLevel = LogLevel.Trace };
             LogMessage.AddLogger(new EasyLogger(LogOut) { LogLevel = LogLevel.Trace });
             _config.ConfigureContainer(a => a.RegisterSingleton<ILog>(LogMessage));
-            _serialSession.Setup(_config);
+            _serialPortClient.Setup(_config);
         }
         base.OnAfterRender(firstRender);
     }
@@ -80,7 +80,7 @@ public partial class SerialSessionPage : IDisposable
     {
         try
         {
-            _serialSession.Close();
+            _serialPortClient.Close();
             await GetSerialSession().ConnectAsync();
         }
         catch (Exception ex)
@@ -93,7 +93,7 @@ public partial class SerialSessionPage : IDisposable
     {
         try
         {
-            _serialSession.Close();
+            _serialPortClient.Close();
         }
         catch (Exception ex)
         {

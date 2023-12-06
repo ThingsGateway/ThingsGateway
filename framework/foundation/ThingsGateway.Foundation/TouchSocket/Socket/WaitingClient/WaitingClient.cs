@@ -45,7 +45,7 @@ namespace ThingsGateway.Foundation.Sockets
         {
             get
             {
-                return this.Client is ITcpClientBase tcpClient ? tcpClient.CanSend : this.Client is ISerialSessionBase serialSession ? serialSession.CanSend : this.Client is IUdpSession;
+                return this.Client is ITcpClientBase tcpClient ? tcpClient.CanSend : this.Client is ISerialPortClient serialPortClient ? serialPortClient.CanSend : this.Client is IUdpSession;
             }
         }
 

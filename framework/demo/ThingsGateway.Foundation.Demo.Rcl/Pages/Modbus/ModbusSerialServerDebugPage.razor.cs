@@ -39,15 +39,15 @@ public partial class ModbusSerialServerDebugPage
                     //链路基础配置项
                     var config = new TouchSocketConfig();
                     config
-                    .SetSerialProperty(new SerialProperty() //串口链路才需要
+                    .SetSerialPortOption(new SerialPortOption() //串口链路才需要
                     {
                         PortName = "COM1"
                     });
-                    var serialSession = new SerialSession();//链路对象
-                    serialSession.Setup(config);
+                    var serialPortClient = new SerialPortClient();//链路对象
+                    serialPortClient.Setup(config);
 
                     //创建协议对象,构造函数需要传入对应链路对象
-                    ModbusSerialServer plc = new(serialSession)//传入链路
+                    ModbusSerialServer plc = new(serialPortClient)//传入链路
                     {
                         //协议配置
                         DataFormat = DataFormat.ABCD,

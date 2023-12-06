@@ -253,11 +253,11 @@
             ModbusRtu
             </summary>
         </member>
-        <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusRtu.#ctor(ThingsGateway.Foundation.Serial.SerialSession)">
+        <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusRtu.#ctor(ThingsGateway.Foundation.SerialPorts.SerialPortClient)">
             <summary>
             ModbusRtu
             </summary>
-            <param name="serialSession"></param>
+            <param name="serialPortClient"></param>
         </member>
         <member name="P:ThingsGateway.Foundation.Adapter.Modbus.ModbusRtu.Crc16CheckEnable">
             <summary>

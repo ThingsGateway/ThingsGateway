@@ -95,7 +95,7 @@ public class ModbusRtuProperty : DriverPropertyBase
     /// <summary>
     /// <inheritdoc/>
     /// </summary>
-    public override ChannelEnum ShareChannel => ChannelEnum.SerialSession;
+    public override ChannelEnum ShareChannel => ChannelEnum.SerialPortClient;
 
 
 }

@@ -18,10 +18,10 @@
 <MCard Flat Class="pa-2 my-1" Style="width:100%">
     <div class="mb-4">通道配置</div>
     <MRow Justify="JustifyTypes.Start" Align="AlignTypes.Center">
-        <MTextField Style="max-width:100px" Class="ma-1" Outlined Label=@(_serialProperty.Description(x => x.PortName)) Dense HideDetails="@("auto")" @bind-Value=@_serialProperty.PortName />
-        <MTextField Style="max-width:100px" Class="ma-1" Outlined Label=@(_serialProperty.Description(x => x.BaudRate)) Dense HideDetails="@("auto")" @bind-Value=@_serialProperty.BaudRate />
-        <MTextField Style="max-width:100px" Class="ma-1" Outlined Label=@(_serialProperty.Description(x => x.DataBits)) Dense HideDetails="@("auto")" @bind-Value=@_serialProperty.DataBits />
-        <MSelect Class="ma-1 " Style="max-width:200px" Outlined @bind-Value="_serialProperty.Parity" Label="@(_serialProperty.Description(x => x.Parity))"
+        <MTextField Style="max-width:100px" Class="ma-1" Outlined Label=@(_serialPortOption.Description(x => x.PortName)) Dense HideDetails="@("auto")" @bind-Value=@_serialPortOption.PortName />
+        <MTextField Style="max-width:100px" Class="ma-1" Outlined Label=@(_serialPortOption.Description(x => x.BaudRate)) Dense HideDetails="@("auto")" @bind-Value=@_serialPortOption.BaudRate />
+        <MTextField Style="max-width:100px" Class="ma-1" Outlined Label=@(_serialPortOption.Description(x => x.DataBits)) Dense HideDetails="@("auto")" @bind-Value=@_serialPortOption.DataBits />
+        <MSelect Class="ma-1 " Style="max-width:200px" Outlined @bind-Value="_serialPortOption.Parity" Label="@(_serialPortOption.Description(x => x.Parity))"
                  Items=@(typeof(Parity).GetEnumList())
                  MenuProps="@(props => { props.Auto = true; props.OffsetY = true; })"
                  ItemText=@((u) =>u.Description)
@@ -29,7 +29,7 @@
                  HideDetails=@("auto") Height="30"
                  Dense>
         </MSelect>
-        <MSelect Class="ma-1 " Style="max-width:200px" Outlined @bind-Value="_serialProperty.StopBits" Label="@(_serialProperty.Description(x => x.StopBits))"
+        <MSelect Class="ma-1 " Style="max-width:200px" Outlined @bind-Value="_serialPortOption.StopBits" Label="@(_serialPortOption.Description(x => x.StopBits))"
                  Items=@(typeof(StopBits).GetEnumList())
                  MenuProps="@(props => { props.Auto = true; props.OffsetY = true; })"
                  ItemText=@((u) =>u.Description)

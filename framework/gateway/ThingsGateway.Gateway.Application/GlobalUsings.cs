@@ -25,6 +25,6 @@ global using ThingsGateway.Admin.Application;
 global using ThingsGateway.Admin.Core;
 global using ThingsGateway.Core;
 global using ThingsGateway.Foundation.Core;
-global using ThingsGateway.Foundation.Serial;
+global using ThingsGateway.Foundation.SerialPorts;
 global using ThingsGateway.Foundation.Sockets;
 global using ThingsGateway.Gateway.Core;

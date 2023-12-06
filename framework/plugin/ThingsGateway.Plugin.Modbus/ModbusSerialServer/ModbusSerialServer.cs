@@ -60,8 +60,8 @@ public class ModbusSerialServer : UpLoadBase
     /// <inheritdoc/>
     protected override void Init(ISenderClient client = null)
     {
-        var service = new SerialSession();
-        FoundataionConfig.SetSerialProperty(new()
+        var service = new SerialPortClient();
+        FoundataionConfig.SetSerialPortOption(new()
         {
             PortName = _driverPropertys.PortName,
             BaudRate = _driverPropertys.BaudRate,
@@ -70,8 +70,8 @@ public class ModbusSerialServer : UpLoadBase
             StopBits = _driverPropertys.StopBits,
         })
             ;
-        service = new SerialSession();
-        ((SerialSession)service).Setup(FoundataionConfig);
+        service = new SerialPortClient();
+        ((SerialPortClient)service).Setup(FoundataionConfig);
         //载入配置
         _plc = new(service)
         {
