@@ -145,6 +145,8 @@ namespace ThingsGateway.Foundation.SerialPorts
                         this.PrivateBreakOut(false, m_msg1);
                         return;
                     }
+                    if (m_serialPort.BytesToRead > 0)
+                        r += await Task<int>.Factory.FromAsync(this.m_serialPort.BaseStream.BeginRead, this.m_serialPort.BaseStream.EndRead, byteBlock.Buffer, r, byteBlock.Capacity - r, default);
 
                     byteBlock.SetLength(r);
                     this.HandleBuffer(byteBlock);

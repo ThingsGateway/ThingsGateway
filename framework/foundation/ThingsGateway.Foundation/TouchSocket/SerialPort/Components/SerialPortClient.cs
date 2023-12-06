@@ -430,7 +430,11 @@ namespace ThingsGateway.Foundation.SerialPorts
         private SerialPort CreateSerial(SerialPortOption serialPortOption)
         {
             SerialPortOption = serialPortOption.Map<SerialPortOption>();
-            var serialPort = new SerialPort(serialPortOption.PortName, serialPortOption.BaudRate, serialPortOption.Parity, serialPortOption.DataBits, serialPortOption.StopBits);
+            var serialPort = new SerialPort(serialPortOption.PortName, serialPortOption.BaudRate, serialPortOption.Parity, serialPortOption.DataBits, serialPortOption.StopBits)
+            {
+                DtrEnable = true,
+                RtsEnable = true,
+            };
             return serialPort;
         }
 
