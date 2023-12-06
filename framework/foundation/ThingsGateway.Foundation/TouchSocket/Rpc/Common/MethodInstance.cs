@@ -154,11 +154,6 @@ namespace ThingsGateway.Foundation.Rpc
         }
 
         /// <summary>
-        /// 服务实例工厂
-        /// </summary>
-        public IRpcServerFactory ServerFactory { get; internal set; }
-
-        /// <summary>
         /// 注册类型
         /// </summary>
         public Type ServerFromType { get; private set; }

@@ -15,16 +15,22 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
     /// <summary>
     /// 能够基于Dmtp协议，提供Rpc的功能
     /// </summary>
-    public class DmtpRpcFeature : PluginBase, IRpcParser, IDmtpFeature
+    public class DmtpRpcFeature : PluginBase, IDmtpFeature
     {
+        private readonly IRpcServerProvider m_rpcServerProvider;
         /// <summary>
         /// 能够基于Dmtp协议，提供Rpc的功能
         /// </summary>
-        /// <param name="container"></param>
-        public DmtpRpcFeature(IContainer container)
+        /// <param name="resolver"></param>
+        public DmtpRpcFeature(IResolver resolver)
         {
-            this.RpcStore = container.IsRegistered(typeof(RpcStore)) ? container.Resolve<RpcStore>() : new RpcStore(container);
-            this.RpcStore.AddRpcParser(this);
+            if (resolver.IsRegistered<IRpcServerProvider>())
+            {
+                var rpcServerProvider = resolver.Resolve<IRpcServerProvider>();
+                this.RegisterServer(rpcServerProvider.GetMethods());
+                this.m_rpcServerProvider = rpcServerProvider;
+            }
+
             this.CreateDmtpRpcActor = this.PrivateCreateDmtpRpcActor;
             this.SetProtocolFlags(20);
         }
@@ -42,8 +48,6 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
         /// <inheritdoc/>
         public ushort ReserveProtocolSize => 5;
 
-        /// <inheritdoc/>
-        public RpcStore RpcStore { get; }
 
         /// <summary>
         /// 序列化选择器
@@ -96,12 +100,12 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
 
         private DmtpRpcActor PrivateCreateDmtpRpcActor(IDmtpActor dmtpActor)
         {
-            return new DmtpRpcActor(dmtpActor);
+            return new DmtpRpcActor(dmtpActor, this.m_rpcServerProvider);
         }
 
         #region Rpc配置
 
-        void IRpcParser.OnRegisterServer(MethodInstance[] methodInstances)
+        private void RegisterServer(MethodInstance[] methodInstances)
         {
             foreach (var methodInstance in methodInstances)
             {
@@ -112,16 +116,7 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
             }
         }
 
-        void IRpcParser.OnUnregisterServer(MethodInstance[] methodInstances)
-        {
-            foreach (var methodInstance in methodInstances)
-            {
-                if (methodInstance.GetAttribute<DmtpRpcAttribute>() is DmtpRpcAttribute attribute)
-                {
-                    this.ActionMap.Remove(attribute.GetInvokenKey(methodInstance));
-                }
-            }
-        }
+
 
         #endregion Rpc配置
 
@@ -138,7 +133,6 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
         private async Task OnDmtpHandshaking(IDmtpActorObject client, DmtpVerifyEventArgs e)
         {
             var dmtpRpcActor = this.CreateDmtpRpcActor(client.DmtpActor);
-            dmtpRpcActor.RpcStore = this.RpcStore;
             dmtpRpcActor.SerializationSelector = this.SerializationSelector;
             dmtpRpcActor.GetInvokeMethod = this.GetInvokeMethod;
 

@@ -28,7 +28,7 @@ namespace ThingsGateway.Foundation.Http
     /// <summary>
     /// Http静态内容插件
     /// </summary>
-    [PluginOption(Singleton = false, NotRegister = true)]
+    [PluginOption(Singleton = false)]
     public class HttpStaticPagePlugin : PluginBase, IHttpPlugin
     {
         /// <summary>

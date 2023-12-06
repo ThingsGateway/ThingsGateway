@@ -18,21 +18,24 @@ namespace ThingsGateway.Foundation.Dmtp.FileTransfer
     public sealed class DmtpFileTransferFeature : PluginBase, IDmtpHandshakingPlugin, IDmtpReceivedPlugin, IDmtpFeature
     {
         private readonly IFileResourceController m_fileResourceController;
-        private readonly IPluginManager m_pluginsManager;
+        private IPluginManager m_pluginManager;
 
         /// <summary>
         /// 能够基于Dmtp协议，提供文件传输的能力
         /// </summary>
-        /// <param name="pluginManager"></param>
-        /// <param name="container"></param>
-        public DmtpFileTransferFeature(IPluginManager pluginManager, IContainer container)
+        /// <param name="resolver"></param>
+        public DmtpFileTransferFeature(IResolver resolver)
         {
-            this.m_fileResourceController = container.TryResolve<IFileResourceController>() ?? new FileResourceController();
-            this.m_pluginsManager = pluginManager;
+            this.m_fileResourceController = resolver.TryResolve<IFileResourceController>() ?? new FileResourceController();
             this.MaxSmallFileLength = 1024 * 1024;
             this.SetProtocolFlags(30);
         }
-
+        /// <inheritdoc/>
+        protected override void Loaded(IPluginManager pluginManager)
+        {
+            base.Loaded(pluginManager);
+            this.m_pluginManager = pluginManager;
+        }
         /// <inheritdoc cref="IDmtpFileTransferActor.MaxSmallFileLength"/>
         public int MaxSmallFileLength { get; set; }
 
@@ -107,12 +110,12 @@ namespace ThingsGateway.Foundation.Dmtp.FileTransfer
 
         private Task OnFileTransfered(IDmtpActor actor, FileTransferedEventArgs e)
         {
-            return this.m_pluginsManager.RaiseAsync(nameof(IDmtpFileTransferedPlugin<IDmtpActorObject>.OnDmtpFileTransfered), actor.Client, e);
+            return this.m_pluginManager.RaiseAsync(nameof(IDmtpFileTransferedPlugin<IDmtpActorObject>.OnDmtpFileTransfered), actor.Client, e);
         }
 
         private Task OnFileTransfering(IDmtpActor actor, FileTransferingEventArgs e)
         {
-            return this.m_pluginsManager.RaiseAsync(nameof(IDmtpFileTransferingPlugin<IDmtpActorObject>.OnDmtpFileTransfering), actor.Client, e);
+            return this.m_pluginManager.RaiseAsync(nameof(IDmtpFileTransferingPlugin<IDmtpActorObject>.OnDmtpFileTransfering), actor.Client, e);
         }
     }
 }

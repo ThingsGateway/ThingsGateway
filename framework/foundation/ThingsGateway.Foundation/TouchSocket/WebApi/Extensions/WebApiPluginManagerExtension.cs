@@ -22,27 +22,23 @@
 //  感谢您的下载和使用
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
+using ThingsGateway.Foundation.WebApi;
 
-namespace ThingsGateway.Foundation.Dmtp
+namespace ThingsGateway.Foundation.Core
 {
     /// <summary>
-    /// DmtpPluginsManagerExtension
+    /// WebApiPluginManagerExtension
     /// </summary>
-    public static class DmtpPluginsManagerExtension
+    public static class WebApiPluginManagerExtension
     {
         /// <summary>
-        /// DmtpRpc心跳。客户端、服务器均，但是一般建议仅客户端使用即可。
-        /// <para>
-        /// 默认心跳每3秒进行一次。最大失败3次即判定为断开连接。
-        /// </para>
+        /// 使用WebApi的插件。仅服务器可用。
         /// </summary>
         /// <param name="pluginManager"></param>
         /// <returns></returns>
-        public static DmtpHeartbeatPlugin UseDmtpHeartbeat(this IPluginManager pluginManager)
+        public static WebApiParserPlugin UseWebApi(this IPluginManager pluginManager)
         {
-            var heartbeat = new DmtpHeartbeatPlugin();
-            pluginManager.Add(heartbeat);
-            return heartbeat;
+            return pluginManager.Add<WebApiParserPlugin>();
         }
     }
 }

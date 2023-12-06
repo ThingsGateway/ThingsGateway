@@ -282,13 +282,13 @@ namespace ThingsGateway.Foundation.Sockets
 
                 this.m_serverState = ServerState.Running;
 
-                await this.PluginManager?.RaiseAsync(nameof(IServerStartedPlugin.OnServerStarted), this, new ServiceStateEventArgs(this.m_serverState, default)).ConfigureFalseAwait();
+                await this.PluginManager.RaiseAsync(nameof(IServerStartedPlugin.OnServerStarted), this, new ServiceStateEventArgs(this.m_serverState, default)).ConfigureFalseAwait();
                 return;
             }
             catch (Exception ex)
             {
                 this.m_serverState = ServerState.Exception;
-                await this.PluginManager?.RaiseAsync(nameof(IServerStartedPlugin.OnServerStarted), this, new ServiceStateEventArgs(this.m_serverState, ex) { Message = ex.Message }).ConfigureFalseAwait();
+                await this.PluginManager.RaiseAsync(nameof(IServerStartedPlugin.OnServerStarted), this, new ServiceStateEventArgs(this.m_serverState, ex) { Message = ex.Message }).ConfigureFalseAwait();
                 throw;
             }
         }
@@ -320,7 +320,7 @@ namespace ThingsGateway.Foundation.Sockets
             }
             this.m_socketAsyncs.Clear();
 
-            await this.PluginManager?.RaiseAsync(nameof(IServerStartedPlugin.OnServerStarted), this, new ServiceStateEventArgs(this.m_serverState, default)).ConfigureFalseAwait();
+            await this.PluginManager.RaiseAsync(nameof(IServerStartedPlugin.OnServerStarted), this, new ServiceStateEventArgs(this.m_serverState, default)).ConfigureFalseAwait();
         }
 
         /// <summary>

@@ -9,7 +9,6 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 #endregion
-
 //------------------------------------------------------------------------------
 //  此代码版权（除特别声明或在XREF结尾的命名空间的代码）归作者本人若汝棋茗所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议，若本仓库没有设置，则按MIT开源协议授权
@@ -21,7 +20,6 @@
 //  交流QQ群：234762506
 //  感谢您的下载和使用
 //------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
 
 namespace ThingsGateway.Foundation.Core
 {
@@ -30,12 +28,59 @@ namespace ThingsGateway.Foundation.Core
     /// </summary>
     public static class LoggerContainerExtension
     {
+        #region GroupLogger
+
+        /// <summary>
+        /// 添加控制台日志到日志组。
+        /// </summary>
+        /// <returns></returns>
+        public static void AddConsoleLogger(this LoggerGroup loggerGroup)
+        {
+            loggerGroup.AddLogger(ConsoleLogger.Default);
+        }
+
+        /// <summary>
+        /// 添加委托日志到日志组。
+        /// </summary>
+        /// <param name="loggerGroup"></param>
+        /// <param name="action"></param>
+        /// <returns></returns>
+        public static void AddEasyLogger(this LoggerGroup loggerGroup, Action<LogLevel, object, string, Exception> action)
+        {
+            loggerGroup.AddLogger(new EasyLogger(action));
+        }
+
+        /// <summary>
+        /// 添加委托日志到日志组。
+        /// </summary>
+        /// <param name="loggerGroup"></param>
+        /// <param name="action"></param>
+        /// <returns></returns>
+        public static void AddEasyLogger(this LoggerGroup loggerGroup, Action<string> action)
+        {
+            loggerGroup.AddLogger(new EasyLogger(action));
+        }
+
+        /// <summary>
+        /// 添加文件日志到日志组。
+        /// </summary>
+        /// <param name="loggerGroup"></param>
+        /// <param name="rootPath"></param>
+        /// <returns></returns>
+        public static void AddFileLogger(this LoggerGroup loggerGroup, string rootPath = "logs")
+        {
+            loggerGroup.AddLogger(new FileLogger(rootPath));
+        }
+
+        #endregion GroupLogger
+
+        #region Obsolete
         /// <summary>
         /// 添加控制台日志到日志组。
         /// </summary>
         /// <param name="container"></param>
         /// <returns></returns>
-        public static IContainer AddConsoleLogger(this IContainer container)
+        public static IRegistrator AddConsoleLogger(this IRegistrator container)
         {
             AddLogger(container, ConsoleLogger.Default);
             return container;
@@ -47,7 +92,7 @@ namespace ThingsGateway.Foundation.Core
         /// <param name="container"></param>
         /// <param name="action"></param>
         /// <returns></returns>
-        public static IContainer AddEasyLogger(this IContainer container, Action<LogLevel, object, string, Exception> action)
+        public static IRegistrator AddEasyLogger(this IRegistrator container, Action<LogLevel, object, string, Exception> action)
         {
             AddLogger(container, new EasyLogger(action));
             return container;
@@ -59,7 +104,7 @@ namespace ThingsGateway.Foundation.Core
         /// <param name="container"></param>
         /// <param name="action"></param>
         /// <returns></returns>
-        public static IContainer AddEasyLogger(this IContainer container, Action<string> action)
+        public static IRegistrator AddEasyLogger(this IRegistrator container, Action<string> action)
         {
             AddLogger(container, new EasyLogger(action));
             return container;
@@ -71,52 +116,62 @@ namespace ThingsGateway.Foundation.Core
         /// <param name="container"></param>
         /// <param name="rootPath"></param>
         /// <returns></returns>
-        public static IContainer AddFileLogger(this IContainer container, string rootPath = "logs")
+        public static IRegistrator AddFileLogger(this IRegistrator container, string rootPath = "logs")
         {
             AddLogger(container, new FileLogger(rootPath));
             return container;
         }
+        #endregion
 
         /// <summary>
-        /// 添加日志到日志组。
+        /// 添加日志到容器。
         /// </summary>
-        /// <param name="container"></param>
+        /// <param name="registrator"></param>
         /// <param name="logger"></param>
         /// <returns></returns>
-        public static IContainer AddLogger(this IContainer container, ILog logger)
+        public static IRegistrator AddLogger(this IRegistrator registrator, ILog logger)
         {
-            if (!container.IsRegistered(typeof(ILog)))
-            {
-                container.RegisterSingleton<ILog>(new LoggerGroup());
-            }
-            var loggerGroup = (LoggerGroup)container.Resolve<ILog>();
-            loggerGroup.AddLogger(logger);
-            return container;
+            registrator.RegisterSingleton<ILog>(logger);
+            return registrator;
+        }
+
+        /// <summary>
+        /// 添加日志组
+        /// </summary>
+        /// <param name="registrator"></param>
+        /// <param name="loggerAction"></param>
+        /// <returns></returns>
+        public static IRegistrator AddLogger(this IRegistrator registrator, Action<LoggerGroup> loggerAction)
+        {
+            var loggerGroup = new LoggerGroup();
+            loggerAction.Invoke(loggerGroup);
+            registrator.RegisterSingleton<ILog>(loggerGroup);
+            return registrator;
         }
 
         /// <summary>
         /// 设置单例日志。
         /// </summary>
         /// <typeparam name="TLogger"></typeparam>
-        /// <param name="container"></param>
+        /// <param name="registrator"></param>
         /// <returns></returns>
-        public static IContainer SetSingletonLogger<TLogger>(this IContainer container) where TLogger : class, ILog
+        public static IRegistrator SetSingletonLogger<TLogger>(this IRegistrator registrator) where TLogger : class, ILog
         {
-            container.RegisterSingleton<ILog, TLogger>();
-            return container;
+            registrator.RegisterSingleton<ILog, TLogger>();
+            return registrator;
         }
 
         /// <summary>
         /// 设置单例实例日志。
         /// </summary>
         /// <typeparam name="TLogger"></typeparam>
-        /// <param name="container"></param>
+        /// <param name="registrator"></param>
         /// <param name="logger"></param>
         /// <returns></returns>
-        public static IContainer SetSingletonLogger<TLogger>(this IContainer container, TLogger logger) where TLogger : class, ILog
+        public static IRegistrator SetSingletonLogger<TLogger>(this IRegistrator registrator, TLogger logger) where TLogger : class, ILog
         {
-            container.RegisterSingleton<ILog, TLogger>(logger);
-            return container;
+            registrator.RegisterSingleton<ILog, TLogger>(logger);
+            return registrator;
         }
     }
 }

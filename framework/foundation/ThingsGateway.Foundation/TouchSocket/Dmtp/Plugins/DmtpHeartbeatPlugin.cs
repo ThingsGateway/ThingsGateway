@@ -28,7 +28,7 @@ namespace ThingsGateway.Foundation.Dmtp
     /// <summary>
     /// 基于Dmtp的心跳插件。服务器和客户端均适用
     /// </summary>
-    [PluginOption(Singleton = true, NotRegister = true)]
+    [PluginOption(Singleton = true)]
     public class DmtpHeartbeatPlugin : HeartbeatPlugin, IDmtpHandshakedPlugin
     {
         /// <inheritdoc/>

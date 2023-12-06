@@ -23,6 +23,10 @@
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
+#if NET6_0_OR_GREATER
+using System.Diagnostics.CodeAnalysis;
+#endif
+
 namespace ThingsGateway.Foundation.Core
 {
     /// <summary>
@@ -58,7 +62,11 @@ namespace ThingsGateway.Foundation.Core
         /// 添加插件
         /// </summary>
         /// <param name="pluginType">插件类型</param>
+#if NET6_0_OR_GREATER
+        object Add([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] Type pluginType);
+#else
         object Add(Type pluginType);
+#endif
 
         /// <summary>
         /// 添加插件异步执行委托

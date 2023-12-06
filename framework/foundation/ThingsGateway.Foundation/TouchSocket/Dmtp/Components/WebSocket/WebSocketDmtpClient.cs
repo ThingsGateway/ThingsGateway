@@ -205,9 +205,9 @@ namespace ThingsGateway.Foundation.Dmtp
         protected override void LoadConfig(TouchSocketConfig config)
         {
             this.RemoteIPHost = config.GetValue(TouchSocketConfigExtension.RemoteIPHostProperty);
-            if (this.Container.IsRegistered(typeof(IDmtpRouteService)))
+            if (this.Resolver.IsRegistered(typeof(IDmtpRouteService)))
             {
-                this.m_findDmtpActor = this.Container.Resolve<IDmtpRouteService>().FindDmtpActor;
+                this.m_findDmtpActor = this.Resolver.Resolve<IDmtpRouteService>().FindDmtpActor;
             }
         }
 

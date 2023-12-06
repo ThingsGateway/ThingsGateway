@@ -21,40 +21,34 @@
 //  交流QQ群：234762506
 //  感谢您的下载和使用
 //------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
 
 namespace ThingsGateway.Foundation.Rpc
 {
     /// <summary>
-    /// RpcServerFactory
+    /// IRpcServerProvider
     /// </summary>
-    public class RpcServerFactory : IRpcServerFactory
+    public interface IRpcServerProvider
     {
-        private readonly IContainer m_container;
-        private readonly ILog m_logger;
+        /// <summary>
+        /// 执行Rpc
+        /// </summary>
+        /// <param name="callContext"></param>
+        /// <param name="ps"></param>
+        /// <returns></returns>
+        InvokeResult Execute(ICallContext callContext, object[] ps);
 
         /// <summary>
-        /// 构造函数
+        /// 异步执行Rpc
         /// </summary>
-        /// <param name="container"></param>
-        /// <param name="logger"></param>
-        public RpcServerFactory(IContainer container, ILog logger)
-        {
-            this.m_container = container;
-            this.m_logger = logger;
-        }
+        /// <param name="callContext"></param>
+        /// <param name="ps"></param>
+        /// <returns></returns>
+        Task<InvokeResult> ExecuteAsync(ICallContext callContext, object[] ps);
 
-        IRpcServer IRpcServerFactory.Create(ICallContext callContext, object[] ps)
-        {
-            try
-            {
-                return (IRpcServer)this.m_container.Resolve(callContext.MethodInstance.ServerFromType);
-            }
-            catch (System.Exception ex)
-            {
-                this.m_logger.Exception(ex);
-                throw;
-            }
-        }
+        /// <summary>
+        /// 获取所有Method
+        /// </summary>
+        /// <returns></returns>
+        MethodInstance[] GetMethods();
     }
 }

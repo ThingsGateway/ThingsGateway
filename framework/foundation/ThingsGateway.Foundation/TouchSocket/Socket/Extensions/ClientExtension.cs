@@ -82,11 +82,12 @@ namespace ThingsGateway.Foundation.Sockets
         /// <typeparam name="T"></typeparam>
         /// <param name="client"></param>
         /// <param name="msg"></param>
-        public static void SafeClose<T>(this T client, string msg) where T : ITcpClientBase
+        public static void SafeClose<T>(this T client, string msg = "") where T : ICloseObject, IOnlineClient
         {
             try
             {
-                client.Close(msg);
+                if (client.Online)
+                    client.Close(msg);
             }
             catch
             {

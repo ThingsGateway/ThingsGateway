@@ -24,16 +24,16 @@ namespace ThingsGateway.Foundation.WebApi.Swagger
     /// </summary>
     public sealed class SwaggerPlugin : PluginBase, IServerStartedPlugin
     {
-        private readonly IContainer m_container;
+        private readonly IResolver m_resolver;
         private readonly ILog m_logger;
         private readonly Dictionary<string, byte[]> m_swagger = new Dictionary<string, byte[]>();
 
         /// <summary>
         /// SwaggerPlugin
         /// </summary>
-        public SwaggerPlugin(IContainer container, ILog logger)
+        public SwaggerPlugin(IResolver resolver, ILog logger)
         {
-            this.m_container = container;
+            this.m_resolver = resolver;
             this.m_logger = logger;
         }
 
@@ -54,15 +54,16 @@ namespace ThingsGateway.Foundation.WebApi.Swagger
             {
                 return;
             }
-            if (!this.m_container.IsRegistered(typeof(WebApiParserPlugin)))
+            if (!this.m_resolver.IsRegistered(typeof(IRpcServerProvider)))
             {
-                this.m_logger.Warning($"该服务器中似乎没有添加{nameof(WebApiParserPlugin)}插件（WebApi插件）。");
+                this.m_logger.Warning($"该服务器中似乎没有添加{nameof(IRpcServerProvider)}。");
                 return;
             }
 
-            var webApiParserPlugin = this.m_container.Resolve<WebApiParserPlugin>();
-            if (webApiParserPlugin == null)
+            var rpcServerProvider = this.m_resolver.Resolve<IRpcServerProvider>();
+            if (rpcServerProvider == null)
             {
+                this.m_logger.Warning($"该服务器中似乎没有添加{nameof(IRpcServerProvider)}。");
                 return;
             }
 
@@ -80,7 +81,7 @@ namespace ThingsGateway.Foundation.WebApi.Swagger
                     {
                         try
                         {
-                            bytes = this.BuildOpenApi(webApiParserPlugin);
+                            bytes = this.BuildOpenApi(rpcServerProvider.GetMethods());
                         }
                         catch (Exception ex)
                         {
@@ -236,47 +237,42 @@ namespace ThingsGateway.Foundation.WebApi.Swagger
             }
         }
 
-        private void BuildGet(WebApiParserPlugin webApiParserPlugin, in List<Type> schemaTypeList, in Dictionary<string, OpenApiPath> paths)
+        private void BuildGet(string url, MethodInstance methodInstance, in List<Type> schemaTypeList, in Dictionary<string, OpenApiPath> paths)
         {
-            foreach (var item in webApiParserPlugin.GetRouteMap)
+            //解析get
+            var openApiPath = new OpenApiPath();
+
+            var openApiPathValue = new OpenApiPathValue
             {
-                //解析get
-                var methodInstance = item.Value;
-                var openApiPath = new OpenApiPath();
-
-                var openApiPathValue = new OpenApiPathValue
-                {
-                    Tags = this.GetTags(methodInstance),
-                    Description = methodInstance.GetDescription(),
-                    Summary = methodInstance.GetDescription()
-                };
-                var i = 0;
-                if (methodInstance.IncludeCallContext)
-                {
-                    i = 1;
-                }
-
-                var parameters = new List<OpenApiParameter>();
-                for (; i < methodInstance.Parameters.Length; i++)
-                {
-                    var parameter = methodInstance.Parameters[i];
-                    var openApiParameter = this.GetParameter(parameter);
-                    openApiParameter.In = "query";
-
-                    this.AddSchemaType(parameter.ParameterType, schemaTypeList);
-                    parameters.Add(openApiParameter);
-                }
-
-                openApiPathValue.Parameters = parameters.Count > 0 ? parameters : null;
-
-                this.BuildResponse(methodInstance, openApiPathValue, schemaTypeList);
-
-                openApiPath.Add("get", openApiPathValue);
-                paths.Add(item.Key, openApiPath);
+                Tags = this.GetTags(methodInstance),
+                Description = methodInstance.GetDescription(),
+                Summary = methodInstance.GetDescription()
+            };
+            var i = 0;
+            if (methodInstance.IncludeCallContext)
+            {
+                i = 1;
             }
-        }
 
-        private byte[] BuildOpenApi(WebApiParserPlugin webApiParserPlugin)
+            var parameters = new List<OpenApiParameter>();
+            for (; i < methodInstance.Parameters.Length; i++)
+            {
+                var parameter = methodInstance.Parameters[i];
+                var openApiParameter = this.GetParameter(parameter);
+                openApiParameter.In = "query";
+
+                this.AddSchemaType(parameter.ParameterType, schemaTypeList);
+                parameters.Add(openApiParameter);
+            }
+
+            openApiPathValue.Parameters = parameters.Count > 0 ? parameters : null;
+
+            this.BuildResponse(methodInstance, openApiPathValue, schemaTypeList);
+
+            openApiPath.Add("get", openApiPathValue);
+            paths.Add(url, openApiPath);
+        }
+        private byte[] BuildOpenApi(MethodInstance[] methodInstances)
         {
             var openApiRoot = new OpenApiRoot();
             openApiRoot.Info = new OpenApiInfo();
@@ -285,9 +281,28 @@ namespace ThingsGateway.Foundation.WebApi.Swagger
 
             var schemaTypeList = new List<Type>();
 
-            this.BuildGet(webApiParserPlugin, schemaTypeList, paths);
-            this.BuildPost(webApiParserPlugin, schemaTypeList, paths);
 
+            foreach (var methodInstance in methodInstances)
+            {
+                if (methodInstance.GetAttribute<WebApiAttribute>() is WebApiAttribute attribute)
+                {
+                    var actionUrls = attribute.GetRouteUrls(methodInstance);
+                    if (actionUrls != null)
+                    {
+                        foreach (var url in actionUrls)
+                        {
+                            if (attribute.Method == HttpMethodType.GET)
+                            {
+                                this.BuildGet(url, methodInstance, schemaTypeList, paths);
+                            }
+                            else if (attribute.Method == HttpMethodType.POST)
+                            {
+                                this.BuildPost(url, methodInstance, schemaTypeList, paths);
+                            }
+                        }
+                    }
+                }
+            }
             openApiRoot.Paths = paths;
 
             openApiRoot.Components = this.GetComponents(schemaTypeList);
@@ -296,74 +311,70 @@ namespace ThingsGateway.Foundation.WebApi.Swagger
             return JsonConvert.SerializeObject(openApiRoot, Formatting.Indented, jsonSetting).ToUTF8Bytes();
         }
 
-        private void BuildPost(WebApiParserPlugin webApiParserPlugin, in List<Type> schemaTypeList, in Dictionary<string, OpenApiPath> paths)
+        private void BuildPost(string url, MethodInstance methodInstance, in List<Type> schemaTypeList, in Dictionary<string, OpenApiPath> paths)
         {
-            foreach (var item in webApiParserPlugin.PostRouteMap)
+            //解析post
+            var openApiPath = new OpenApiPath();
+
+            var openApiPathValue = new OpenApiPathValue
             {
-                //解析post
-                var methodInstance = item.Value;
-                var openApiPath = new OpenApiPath();
+                Tags = this.GetTags(methodInstance),
+                Description = methodInstance.GetDescription(),
+                Summary = methodInstance.GetDescription()
+            };
 
-                var openApiPathValue = new OpenApiPathValue
-                {
-                    Tags = this.GetTags(methodInstance),
-                    Description = methodInstance.GetDescription(),
-                    Summary = methodInstance.GetDescription()
-                };
-
-                var i = 0;
-                if (methodInstance.IncludeCallContext)
-                {
-                    i = 1;
-                }
-
-                var parameters = new List<OpenApiParameter>();
-                for (; i < methodInstance.Parameters.Length; i++)
-                {
-                    var parameter = methodInstance.Parameters[i];
-                    if (this.ParseDataTypes(parameter.ParameterType).IsPrimitive())
-                    {
-                        var openApiParameter = this.GetParameter(parameter);
-                        openApiParameter.In = "query";
-                        this.AddSchemaType(parameter.ParameterType, schemaTypeList);
-                        parameters.Add(openApiParameter);
-                    }
-                }
-
-                openApiPathValue.Parameters = parameters.Count > 0 ? parameters : default;
-
-                ParameterInfo parameterInfo = null;
-                if (methodInstance.IncludeCallContext)
-                {
-                    if (methodInstance.Parameters.Length > 1)
-                    {
-                        parameterInfo = methodInstance.Parameters.Last();
-                    }
-                }
-                else
-                {
-                    if (methodInstance.Parameters.Length > 0)
-                    {
-                        parameterInfo = methodInstance.Parameters.Last();
-                    }
-                }
-                if (parameterInfo != null && !this.ParseDataTypes(parameterInfo.ParameterType).IsPrimitive())
-                {
-                    this.AddSchemaType(parameterInfo.ParameterType, schemaTypeList);
-
-                    var body = new OpenApiRequestBody();
-                    body.Content = new Dictionary<string, OpenApiContent>();
-                    var content = new OpenApiContent();
-                    content.Schema = this.CreateSchema(parameterInfo.ParameterType);
-                    body.Content.Add("application/json", content);
-                    openApiPathValue.RequestBody = body;
-                }
-
-                this.BuildResponse(methodInstance, openApiPathValue, schemaTypeList);
-
-                openApiPath.Add("post", openApiPathValue);
-                paths.Add(item.Key, openApiPath);
+            var i = 0;
+            if (methodInstance.IncludeCallContext)
+            {
+                i = 1;
             }
+
+            var parameters = new List<OpenApiParameter>();
+            for (; i < methodInstance.Parameters.Length; i++)
+            {
+                var parameter = methodInstance.Parameters[i];
+                if (this.ParseDataTypes(parameter.ParameterType).IsPrimitive())
+                {
+                    var openApiParameter = this.GetParameter(parameter);
+                    openApiParameter.In = "query";
+                    this.AddSchemaType(parameter.ParameterType, schemaTypeList);
+                    parameters.Add(openApiParameter);
+                }
+            }
+
+            openApiPathValue.Parameters = parameters.Count > 0 ? parameters : default;
+
+            ParameterInfo parameterInfo = null;
+            if (methodInstance.IncludeCallContext)
+            {
+                if (methodInstance.Parameters.Length > 1)
+                {
+                    parameterInfo = methodInstance.Parameters.Last();
+                }
+            }
+            else
+            {
+                if (methodInstance.Parameters.Length > 0)
+                {
+                    parameterInfo = methodInstance.Parameters.Last();
+                }
+            }
+            if (parameterInfo != null && !this.ParseDataTypes(parameterInfo.ParameterType).IsPrimitive())
+            {
+                this.AddSchemaType(parameterInfo.ParameterType, schemaTypeList);
+
+                var body = new OpenApiRequestBody();
+                body.Content = new Dictionary<string, OpenApiContent>();
+                var content = new OpenApiContent();
+                content.Schema = this.CreateSchema(parameterInfo.ParameterType);
+                body.Content.Add("application/json", content);
+                openApiPathValue.RequestBody = body;
+            }
+
+            this.BuildResponse(methodInstance, openApiPathValue, schemaTypeList);
+
+            openApiPath.Add("post", openApiPathValue);
+            paths.Add(url, openApiPath);
         }
 
         private void BuildResponse(MethodInstance methodInstance, in OpenApiPathValue openApiPathValue, in List<Type> schemaTypeList)
@@ -500,22 +511,6 @@ namespace ThingsGateway.Foundation.WebApi.Swagger
             return schema;
         }
 
-        private string GetSchemaName(Type type)
-        {
-            if (!type.IsGenericType)
-            {
-                return type.Name;
-            }
-
-            StringBuilder stringBuilder = new StringBuilder();
-            foreach (var item in type.GetGenericArguments())
-            {
-                stringBuilder.Append(GetSchemaName(item));
-            }
-            stringBuilder.Append(type.Name.Substring(0, type.Name.IndexOf('`')));
-            return stringBuilder.ToString();
-        }
-
         private OpenApiComponent GetComponents(List<Type> types)
         {
             if (types.Count == 0)
@@ -647,7 +642,21 @@ namespace ThingsGateway.Foundation.WebApi.Swagger
             }
             return e.InvokeNext();
         }
+        private string GetSchemaName(Type type)
+        {
+            if (!type.IsGenericType)
+            {
+                return type.Name;
+            }
 
+            var stringBuilder = new StringBuilder();
+            foreach (var item in type.GetGenericArguments())
+            {
+                stringBuilder.Append(this.GetSchemaName(item));
+            }
+            stringBuilder.Append(type.Name.Substring(0, type.Name.IndexOf('`')));
+            return stringBuilder.ToString();
+        }
         private OpenApiDataTypes ParseDataTypes(Type type)
         {
             // 空检查

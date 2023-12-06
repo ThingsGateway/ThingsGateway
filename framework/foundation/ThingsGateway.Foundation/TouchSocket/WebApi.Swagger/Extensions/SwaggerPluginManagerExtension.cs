@@ -10,24 +10,21 @@
 //------------------------------------------------------------------------------
 #endregion
 
-namespace ThingsGateway.Foundation.Rpc
+namespace ThingsGateway.Foundation.WebApi.Swagger
 {
     /// <summary>
-    /// RpcParserExtension
+    /// SwaggerPluginsManagerExtension
     /// </summary>
-    public static class RpcParserExtension
+    public static class SwaggerPluginManagerExtension
     {
         /// <summary>
-        /// 配置<see cref="RpcStore"/>
+        /// 使用<see cref="SwaggerPlugin"/>插件。
         /// </summary>
-        /// <typeparam name="TParser"></typeparam>
-        /// <param name="parser"></param>
-        /// <param name="action"></param>
+        /// <param name="pluginManager"></param>
         /// <returns></returns>
-        public static TParser ConfigureRpcStore<TParser>(this TParser parser, Action<RpcStore> action) where TParser : IRpcParser
+        public static SwaggerPlugin UseSwagger(this IPluginManager pluginManager)
         {
-            action?.Invoke(parser.RpcStore);
-            return parser;
+            return pluginManager.Add<SwaggerPlugin>();
         }
     }
 }

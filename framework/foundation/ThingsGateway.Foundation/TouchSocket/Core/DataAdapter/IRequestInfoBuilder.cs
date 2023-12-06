@@ -23,33 +23,22 @@
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-using ThingsGateway.Foundation.Http.WebSockets;
-
 namespace ThingsGateway.Foundation.Core
 {
     /// <summary>
-    /// WebSocketPluginsManagerExtension
+    /// 指示<see cref="IRequestInfo"/>应当如何构建
     /// </summary>
-    public static class WebSocketPluginsManagerExtension
+    public interface IRequestInfoBuilder
     {
         /// <summary>
-        /// 使用WebSocket插件。
+        /// 构建数据时，指示内存池的申请长度。
         /// </summary>
-        /// <returns>插件类型实例</returns>
-        public static WebSocketFeature UseWebSocket(this IPluginManager pluginManager)
-        {
-            return pluginManager.Add<WebSocketFeature>();
-        }
+        int MaxLength { get; }
 
         /// <summary>
-        /// 使用WebSocket心跳插件，客户端、服务器均有效。但是一般建议客户端使用即可。
+        /// 构建对象到<see cref="ByteBlock"/>
         /// </summary>
-        /// <returns>插件类型实例</returns>
-        public static WebSocketHeartbeatPlugin UseWebSocketHeartbeat(this IPluginManager pluginManager)
-        {
-            var heartbeatPlugin = new WebSocketHeartbeatPlugin();
-            pluginManager.Add(heartbeatPlugin);
-            return heartbeatPlugin;
-        }
+        /// <param name="byteBlock"></param>
+        void Build(ByteBlock byteBlock);
     }
 }

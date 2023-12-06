@@ -29,52 +29,27 @@ namespace ThingsGateway.Foundation.WebApi
     /// <summary>
     /// WebApi解析器
     /// </summary>
-    [PluginOption(Singleton = true, NotRegister = false)]
-    public class WebApiParserPlugin : PluginBase, IRpcParser
+    [PluginOption(Singleton = true)]
+    public class WebApiParserPlugin : PluginBase
     {
+        private readonly IRpcServerProvider m_rpcServerProvider;
         /// <summary>
         /// 构造函数
         /// </summary>
-        public WebApiParserPlugin(IContainer container, IPluginManager pluginManager)
+        public WebApiParserPlugin(IRpcServerProvider rpcServerProvider)
         {
-            if (container.IsRegistered(typeof(RpcStore)))
-            {
-                this.RpcStore = container.Resolve<RpcStore>();
-            }
-            else
-            {
-                this.RpcStore = new RpcStore(container);
-            }
-
-            if (pluginManager is null)
-            {
-                throw new ArgumentNullException(nameof(pluginManager));
-            }
-
-            pluginManager.Add(nameof(IHttpPlugin.OnHttpRequest), this.OnHttpRequest);
-
             this.GetRouteMap = new ActionMap(true);
             this.PostRouteMap = new ActionMap(true);
             this.Converter = new StringConverter();
 
-            this.RpcStore.AddRpcParser(this);
+            this.RegisterServer(rpcServerProvider.GetMethods());
+            this.m_rpcServerProvider = rpcServerProvider;
         }
 
         /// <summary>
         /// 转化器
         /// </summary>
         public StringConverter Converter { get; private set; }
-
-        /// <summary>
-        /// 配置转换器。可以实现json序列化或者xml序列化。
-        /// </summary>
-        /// <param name="action"></param>
-        /// <returns></returns>
-        public WebApiParserPlugin ConfigureConverter(Action<StringConverter> action)
-        {
-            action.Invoke(this.Converter);
-            return this;
-        }
 
         /// <summary>
         /// 获取Get函数路由映射图
@@ -87,10 +62,22 @@ namespace ThingsGateway.Foundation.WebApi
         public ActionMap PostRouteMap { get; private set; }
 
         /// <summary>
-        /// 所属服务器
+        /// 配置转换器。可以实现json序列化或者xml序列化。
         /// </summary>
-        public RpcStore RpcStore { get; private set; }
+        /// <param name="action"></param>
+        /// <returns></returns>
+        public WebApiParserPlugin ConfigureConverter(Action<StringConverter> action)
+        {
+            action.Invoke(this.Converter);
+            return this;
+        }
 
+        /// <inheritdoc/>
+        protected override void Loaded(IPluginManager pluginManager)
+        {
+            pluginManager.Add(nameof(IHttpPlugin.OnHttpRequest), this.OnHttpRequest);
+            base.Loaded(pluginManager);
+        }
         private async Task OnHttpGet(IHttpSocketClient client, HttpContextEventArgs e)
         {
             if (this.GetRouteMap.TryGetMethodInstance(e.Context.Request.RelativeURL, out var methodInstance))
@@ -151,12 +138,8 @@ namespace ThingsGateway.Foundation.WebApi
                 }
                 if (invokeResult.Status == InvokeStatus.Ready)
                 {
-                    var rpcServer = methodInstance.ServerFactory.Create(callContext, ps);
-                    if (rpcServer is ITransientRpcServer transientRpcServer)
-                    {
-                        transientRpcServer.CallContext = callContext;
-                    }
-                    invokeResult = await RpcStore.ExecuteAsync(rpcServer, ps, callContext);
+                    invokeResult = await this.m_rpcServerProvider.ExecuteAsync(callContext, ps);
+
                 }
 
                 if (e.Context.Response.Responsed)
@@ -282,12 +265,8 @@ namespace ThingsGateway.Foundation.WebApi
                 }
                 if (invokeResult.Status == InvokeStatus.Ready)
                 {
-                    var rpcServer = methodInstance.ServerFactory.Create(callContext, ps);
-                    if (rpcServer is ITransientRpcServer transientRpcServer)
-                    {
-                        transientRpcServer.CallContext = callContext;
-                    }
-                    invokeResult = await RpcStore.ExecuteAsync(rpcServer, ps, callContext);
+                    invokeResult = await this.m_rpcServerProvider.ExecuteAsync(callContext, ps);
+
                 }
 
                 if (e.Context.Response.Responsed)
@@ -358,7 +337,7 @@ namespace ThingsGateway.Foundation.WebApi
 
         #region Rpc解析器
 
-        void IRpcParser.OnRegisterServer(MethodInstance[] methodInstances)
+        private void RegisterServer(MethodInstance[] methodInstances)
         {
             foreach (var methodInstance in methodInstances)
             {
@@ -383,30 +362,6 @@ namespace ThingsGateway.Foundation.WebApi
             }
         }
 
-        void IRpcParser.OnUnregisterServer(MethodInstance[] methodInstances)
-        {
-            foreach (var methodInstance in methodInstances)
-            {
-                if (methodInstance.GetAttribute<WebApiAttribute>() is WebApiAttribute attribute)
-                {
-                    var actionUrls = attribute.GetRouteUrls(methodInstance);
-                    if (actionUrls != null)
-                    {
-                        foreach (var item in actionUrls)
-                        {
-                            if (attribute.Method == HttpMethodType.GET)
-                            {
-                                this.GetRouteMap.Remove(item);
-                            }
-                            else if (attribute.Method == HttpMethodType.POST)
-                            {
-                                this.PostRouteMap.Remove(item);
-                            }
-                        }
-                    }
-                }
-            }
-        }
 
         #endregion Rpc解析器
     }

@@ -15,7 +15,7 @@ namespace ThingsGateway.Foundation.Core
     /// <summary>
     /// 具有设置配置的对象接口
     /// </summary>
-    public interface ISetupConfigObject : IConfigObject, IPluginObject
+    public interface ISetupConfigObject : IConfigObject, IPluginObject, IResolverObject
     {
         /// <summary>
         /// 配置设置项
@@ -23,5 +23,12 @@ namespace ThingsGateway.Foundation.Core
         /// <param name="config"></param>
         /// <exception cref="Exception"></exception>
         void Setup(TouchSocketConfig config);
+
+        /// <summary>
+        /// 异步配置设置项
+        /// </summary>
+        /// <param name="config"></param>
+        /// <returns></returns>
+        Task SetupAsync(TouchSocketConfig config);
     }
 }

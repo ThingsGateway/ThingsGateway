@@ -103,7 +103,7 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
         {
             if (!this.m_udpDmtpClients.TryGetValue(endPoint, out var udpRpcActor))
             {
-                udpRpcActor = new UdpDmtpClient(this, endPoint, this.Container.Resolve<ILog>())
+                udpRpcActor = new UdpDmtpClient(this, endPoint, this.Resolver.Resolve<ILog>())
                 {
                     Client = this,
                 };

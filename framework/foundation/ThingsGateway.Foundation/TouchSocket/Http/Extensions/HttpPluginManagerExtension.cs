@@ -26,39 +26,28 @@
 namespace ThingsGateway.Foundation.Core
 {
     /// <summary>
-    /// 注入容器接口
+    /// HttpPluginsManagerExtension
     /// </summary>
-    public interface IContainer : IEnumerable<DependencyDescriptor>
+    public static class HttpPluginManagerExtension
     {
         /// <summary>
-        /// 创建目标类型的对应实例。
+        /// 默认的Http服务。为Http做兜底拦截。该插件应该最后添加。
         /// </summary>
-        /// <param name="fromType"></param>
-        /// <param name="key"></param>
+        /// <param name="pluginManager"></param>
         /// <returns></returns>
-        object Resolve(Type fromType, string key = "");
+        public static DefaultHttpServicePlugin UseDefaultHttpServicePlugin(this IPluginManager pluginManager)
+        {
+            return pluginManager.Add<DefaultHttpServicePlugin>();
+        }
 
         /// <summary>
-        /// 判断某类型是否已经注册
+        /// 使用Http静态页面。
         /// </summary>
-        /// <param name="fromType"></param>
-        /// <param name="key"></param>
+        /// <param name="pluginManager"></param>
         /// <returns></returns>
-        bool IsRegistered(Type fromType, string key = "");
-
-        /// <summary>
-        /// 添加类型描述符。
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="descriptor"></param>
-        void Register(DependencyDescriptor descriptor, string key = "");
-
-        /// <summary>
-        /// 移除注册信息。
-        /// </summary>
-        /// <param name="descriptor"></param>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        void Unregister(DependencyDescriptor descriptor, string key = "");
+        public static HttpStaticPagePlugin UseHttpStaticPage(this IPluginManager pluginManager)
+        {
+            return pluginManager.Add<HttpStaticPagePlugin>();
+        }
     }
 }

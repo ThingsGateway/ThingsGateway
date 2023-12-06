@@ -28,7 +28,7 @@ namespace ThingsGateway.Foundation.Http.WebSockets
     /// <summary>
     /// 初始化一个适用于WebSocket的心跳插件
     /// </summary>
-    [PluginOption(Singleton = true, NotRegister = true)]
+    [PluginOption(Singleton = true)]
     public class WebSocketHeartbeatPlugin : HeartbeatPlugin, IWebSocketHandshakedPlugin
     {
         /// <inheritdoc/>

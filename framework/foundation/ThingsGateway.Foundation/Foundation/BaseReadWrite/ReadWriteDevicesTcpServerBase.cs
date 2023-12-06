@@ -53,8 +53,7 @@ public abstract class ReadWriteDevicesTcpServerBase : ReadWriteDevicesBase
     /// <inheritdoc/>
     public override Task ConnectAsync(CancellationToken cancellationToken)
     {
-        Connect(cancellationToken);
-        return EasyTask.CompletedTask;
+        return TcpService.StartAsync();
     }
 
     /// <inheritdoc/>

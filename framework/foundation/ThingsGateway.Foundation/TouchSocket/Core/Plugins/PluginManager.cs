@@ -1,15 +1,3 @@
-#region copyright
-//------------------------------------------------------------------------------
-//  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
-//  此代码版权（除特别声明外的代码）归作者本人Diego所有
-//  源代码使用协议遵循本仓库的开源协议及附加协议
-//  Gitee源代码仓库：https://gitee.com/diego2098/ThingsGateway
-//  Github源代码仓库：https://github.com/kimdiego2098/ThingsGateway
-//  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
-//  QQ群：605534569
-//------------------------------------------------------------------------------
-#endregion
-
 //------------------------------------------------------------------------------
 //  此代码版权（除特别声明或在XREF结尾的命名空间的代码）归作者本人若汝棋茗所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议，若本仓库没有设置，则按MIT开源协议授权
@@ -21,7 +9,7 @@
 //  交流QQ群：234762506
 //  感谢您的下载和使用
 //------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
+
 using System.Reflection;
 
 namespace ThingsGateway.Foundation.Core
@@ -31,18 +19,18 @@ namespace ThingsGateway.Foundation.Core
     /// </summary>
     public class PluginManager : DisposableObject, IPluginManager
     {
-        private readonly IContainer m_container;
         private readonly object m_locker = new object();
         private readonly Dictionary<string, PluginModel> m_pluginMethods = new Dictionary<string, PluginModel>();
         private readonly List<IPlugin> m_plugins = new List<IPlugin>();
+        private readonly IResolver m_resolver;
 
         /// <summary>
         /// 表示插件管理器
         /// </summary>
-        /// <param name="container"></param>
-        public PluginManager(IContainer container)
+        /// <param name="resolver"></param>
+        public PluginManager(IResolver resolver)
         {
-            this.m_container = container;
+            this.m_resolver = resolver;
         }
 
         /// <inheritdoc/>
@@ -74,14 +62,6 @@ namespace ThingsGateway.Foundation.Core
                             }
                         }
                     }
-                    if (!optionAttribute.NotRegister)
-                    {
-                        this.m_container.RegisterSingleton(plugin);
-                    }
-                }
-                else
-                {
-                    this.m_container.RegisterSingleton(plugin);
                 }
 
                 var list = this.SearchPluginMethod(plugin);
@@ -103,12 +83,6 @@ namespace ThingsGateway.Foundation.Core
                             var pluginModel = this.GetPluginModel(name);
                             var pluginEntity = new PluginEntity(new Method(methodInfo), plugin);
                             pluginModel.Funcs.Add(pluginEntity.Run);
-
-                            //pluginModel.PluginEntities.Add(new PluginEntity(new Method(methodInfo), plugin));
-                            //pluginModel.PluginEntities.Sort(delegate (PluginEntity x, PluginEntity y)
-                            //{
-                            //    return x.Plugin.Order == y.Plugin.Order ? 0 : x.Plugin.Order < y.Plugin.Order ? 1 : -1;
-                            //});
                         }
                         pairs.Add(name);
                     }
@@ -116,36 +90,6 @@ namespace ThingsGateway.Foundation.Core
                 this.m_plugins.Add(plugin);
                 plugin.Loaded(this);
             }
-        }
-
-        private List<string> SearchPluginMethod(IPlugin plugin)
-        {
-            List<string> pluginMethodNames = new List<string>();
-            var pluginInterfacetypes = plugin.GetType().GetInterfaces().Where(a => typeof(IPlugin).IsAssignableFrom(a)).ToArray();
-            foreach (var type in pluginInterfacetypes)
-            {
-                var pairs = new List<string>();
-
-                var methodInfos = type.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly);
-                foreach (var methodInfo in methodInfos)
-                {
-                    if (methodInfo.GetParameters().Length == 2 && typeof(PluginEventArgs).IsAssignableFrom(methodInfo.GetParameters()[1].ParameterType) && methodInfo.ReturnType == typeof(Task))
-                    {
-                        var name = methodInfo.GetName();
-                        if (pairs.Contains(name))
-                        {
-                            throw new Exception("插件的接口方法不允许重载");
-                        }
-                        if (!pluginMethodNames.Contains(name))
-                        {
-                            pluginMethodNames.Add(name);
-                        }
-
-                        pairs.Add(name);
-                    }
-                }
-            }
-            return pluginMethodNames;
         }
 
         object IPluginManager.Add(Type pluginType)
@@ -164,13 +108,13 @@ namespace ThingsGateway.Foundation.Core
                 }
             }
             IPlugin plugin;
-            if (this.m_container.IsRegistered(pluginType))
+            if (this.m_resolver.IsRegistered(pluginType))
             {
-                plugin = (IPlugin)this.m_container.Resolve(pluginType);
+                plugin = (IPlugin)this.m_resolver.Resolve(pluginType);
             }
             else
             {
-                plugin = (IPlugin)this.m_container.ResolveWithoutRoot(pluginType);
+                plugin = (IPlugin)this.m_resolver.ResolveWithoutRoot(pluginType);
             }
 
             ((IPluginManager)this).Add(plugin);
@@ -184,6 +128,16 @@ namespace ThingsGateway.Foundation.Core
                 var pluginModel = this.GetPluginModel(name);
                 pluginModel.Funcs.Add(func);
             }
+        }
+
+        /// <inheritdoc/>
+        public int GetPluginCount(string name)
+        {
+            if (this.m_pluginMethods.TryGetValue(name, out var pluginModel))
+            {
+                return pluginModel.Funcs.Count;
+            }
+            return 0;
         }
 
         bool IPluginManager.Raise(string name, object sender, PluginEventArgs e)
@@ -240,14 +194,34 @@ namespace ThingsGateway.Foundation.Core
             return pluginModel;
         }
 
-        /// <inheritdoc/>
-        public int GetPluginCount(string name)
+        private List<string> SearchPluginMethod(IPlugin plugin)
         {
-            if (this.m_pluginMethods.TryGetValue(name, out var pluginModel))
+            var pluginMethodNames = new List<string>();
+            var pluginInterfacetypes = plugin.GetType().GetInterfaces().Where(a => typeof(IPlugin).IsAssignableFrom(a)).ToArray();
+            foreach (var type in pluginInterfacetypes)
             {
-                return pluginModel.Funcs.Count;
+                var pairs = new List<string>();
+
+                var methodInfos = type.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly);
+                foreach (var methodInfo in methodInfos)
+                {
+                    if (methodInfo.GetParameters().Length == 2 && typeof(PluginEventArgs).IsAssignableFrom(methodInfo.GetParameters()[1].ParameterType) && methodInfo.ReturnType == typeof(Task))
+                    {
+                        var name = methodInfo.GetName();
+                        if (pairs.Contains(name))
+                        {
+                            throw new Exception("插件的接口方法不允许重载");
+                        }
+                        if (!pluginMethodNames.Contains(name))
+                        {
+                            pluginMethodNames.Add(name);
+                        }
+
+                        pairs.Add(name);
+                    }
+                }
             }
-            return 0;
+            return pluginMethodNames;
         }
     }
 }

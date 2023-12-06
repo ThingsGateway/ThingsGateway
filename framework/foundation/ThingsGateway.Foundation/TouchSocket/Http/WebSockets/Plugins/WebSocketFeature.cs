@@ -29,7 +29,7 @@ namespace ThingsGateway.Foundation.Http.WebSockets
     /// 基于Http的WebSocket的扩展。
     /// <para>此组件只能挂载在<see cref="HttpService"/>中</para>
     /// </summary>
-    [PluginOption(Singleton = true, NotRegister = false)]
+    [PluginOption(Singleton = true)]
     public sealed class WebSocketFeature : PluginBase, ITcpReceivedPlugin, IHttpPlugin, ITcpDisconnectedPlugin
     {
         /// <summary>
@@ -44,17 +44,15 @@ namespace ThingsGateway.Foundation.Http.WebSockets
         public static readonly DependencyProperty<string> WebSocketVersionProperty =
             DependencyProperty<string>.Register("WebSocketVersion", "13");
 
-        private readonly IPluginManager m_pluginsManager;
+        private IPluginManager m_pluginManager;
 
         private string m_wSUrl = "/ws";
 
         /// <summary>
         /// WebSocketFeature
         /// </summary>
-        /// <param name="pluginManager"></param>
-        public WebSocketFeature(IPluginManager pluginManager)
+        public WebSocketFeature()
         {
-            this.m_pluginsManager = pluginManager ?? throw new ArgumentNullException(nameof(pluginManager));
             this.VerifyConnection = this.ThisVerifyConnection;
         }
 
@@ -186,13 +184,18 @@ namespace ThingsGateway.Foundation.Http.WebSockets
             this.AutoPong = true;
             return this;
         }
-
+        /// <inheritdoc/>
+        protected override void Loaded(IPluginManager pluginManager)
+        {
+            base.Loaded(pluginManager);
+            this.m_pluginManager = pluginManager;
+        }
         private async Task OnHandleWSDataFrame(ITcpClientBase client, WSDataFrame dataFrame)
         {
             if (this.AutoClose && dataFrame.IsClose)
             {
                 var msg = dataFrame.PayloadData?.ToString();
-                await this.m_pluginsManager.RaiseAsync(nameof(IWebSocketClosingPlugin.OnWebSocketClosing), client, new MsgPermitEventArgs() { Message = msg });
+                await this.m_pluginManager.RaiseAsync(nameof(IWebSocketClosingPlugin.OnWebSocketClosing), client, new MsgPermitEventArgs() { Message = msg });
                 client.Close(msg);
                 return;
             }
@@ -208,7 +211,7 @@ namespace ThingsGateway.Foundation.Http.WebSockets
                     return;
                 }
             }
-            await this.m_pluginsManager.RaiseAsync(nameof(IWebSocketReceivedPlugin.OnWebSocketReceived), client, new WSDataFrameEventArgs(dataFrame));
+            await this.m_pluginManager.RaiseAsync(nameof(IWebSocketReceivedPlugin.OnWebSocketReceived), client, new WSDataFrameEventArgs(dataFrame));
         }
 
         private async Task<bool> ThisVerifyConnection(IHttpSocketClient client, HttpContext context)

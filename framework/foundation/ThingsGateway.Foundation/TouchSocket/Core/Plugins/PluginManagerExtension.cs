@@ -28,7 +28,7 @@ namespace ThingsGateway.Foundation.Core
     /// <summary>
     /// PluginsManagerExtension
     /// </summary>
-    public static class PluginsManagerExtension
+    public static class PluginManagerExtension
     {
         /// <summary>
         /// 添加插件

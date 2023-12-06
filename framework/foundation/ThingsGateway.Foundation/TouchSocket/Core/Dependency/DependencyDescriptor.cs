@@ -42,13 +42,6 @@ namespace ThingsGateway.Foundation.Core
             this.Lifetime = Lifetime.Singleton;
             this.ToType = instance.GetType();
         }
-        /// <summary>
-        /// 在获取到注册时触发委托。
-        /// <para>
-        /// 在单例实例注册时，不会触发。在单例注册时，只会触发一次，在瞬态注册时，会每次都触发。
-        /// </para>
-        /// </summary>
-        public Action<object> OnResolved { get; set; }
 
         /// <summary>
         /// 初始化一个完整的服务注册
@@ -73,19 +66,14 @@ namespace ThingsGateway.Foundation.Core
         }
 
         /// <summary>
+        /// 注册类型
+        /// </summary>
+        public Type FromType { get; }
+
+        /// <summary>
         /// 实例化工厂委托
         /// </summary>
-        public Func<IContainer, object> ImplementationFactory { get; set; }
-
-        /// <summary>
-        /// 实例类型
-        /// </summary>
-        public Type ToType { get; }
-
-        /// <summary>
-        /// 实例
-        /// </summary>
-        public object ToInstance { get; set; }
+        public Func<IResolver, object> ImplementationFactory { get; set; }
 
         /// <summary>
         /// 生命周期
@@ -93,8 +81,21 @@ namespace ThingsGateway.Foundation.Core
         public Lifetime Lifetime { get; }
 
         /// <summary>
-        /// 注册类型
+        /// 在获取到注册时触发委托。
+        /// <para>
+        /// 在单例实例注册时，不会触发。在单例注册时，只会触发一次，在瞬态注册时，会每次都触发。
+        /// </para>
         /// </summary>
-        public Type FromType { get; }
+        public Action<object> OnResolved { get; set; }
+
+        /// <summary>
+        /// 实例
+        /// </summary>
+        public object ToInstance { get; set; }
+
+        /// <summary>
+        /// 实例类型
+        /// </summary>
+        public Type ToType { get; }
     }
 }

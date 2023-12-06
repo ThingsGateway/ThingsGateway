@@ -31,11 +31,6 @@ namespace ThingsGateway.Foundation.Core
     public interface IPluginObject
     {
         /// <summary>
-        /// IOC容器
-        /// </summary>
-        IContainer Container { get; }
-
-        /// <summary>
         /// 插件管理器
         /// </summary>
         IPluginManager PluginManager { get; }

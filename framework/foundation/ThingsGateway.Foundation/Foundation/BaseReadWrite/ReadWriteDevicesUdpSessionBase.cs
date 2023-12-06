@@ -48,7 +48,7 @@ public abstract class ReadWriteDevicesUdpSessionBase : ReadWriteDevicesBase
     /// <inheritdoc/>
     public override Task ConnectAsync(CancellationToken cancellationToken)
     {
-        return Task.FromResult(UdpSession.Start());
+        return UdpSession.StartAsync();
     }
 
     /// <inheritdoc/>

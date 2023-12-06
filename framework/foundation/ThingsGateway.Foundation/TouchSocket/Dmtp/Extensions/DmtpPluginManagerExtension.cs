@@ -23,28 +23,26 @@
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-namespace ThingsGateway.Foundation.Rpc
+namespace ThingsGateway.Foundation.Dmtp
 {
     /// <summary>
-    /// Rpc解析器
+    /// DmtpPluginsManagerExtension
     /// </summary>
-    public interface IRpcParser : IDisposable
+    public static class DmtpPluginManagerExtension
     {
         /// <summary>
-        /// Rpc仓库。
+        /// DmtpRpc心跳。客户端、服务器均，但是一般建议仅客户端使用即可。
+        /// <para>
+        /// 默认心跳每3秒进行一次。最大失败3次即判定为断开连接。
+        /// </para>
         /// </summary>
-        public RpcStore RpcStore { get; }
-
-        /// <summary>
-        /// 注册服务
-        /// </summary>
-        /// <param name="methodInstances"></param>
-        void OnRegisterServer(MethodInstance[] methodInstances);
-
-        /// <summary>
-        /// 取消注册服务
-        /// </summary>
-        /// <param name="methodInstances"></param>
-        void OnUnregisterServer(MethodInstance[] methodInstances);
+        /// <param name="pluginManager"></param>
+        /// <returns></returns>
+        public static DmtpHeartbeatPlugin UseDmtpHeartbeat(this IPluginManager pluginManager)
+        {
+            var heartbeat = new DmtpHeartbeatPlugin();
+            pluginManager.Add(heartbeat);
+            return heartbeat;
+        }
     }
 }

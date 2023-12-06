@@ -21,251 +21,38 @@
 //  交流QQ群：234762506
 //  感谢您的下载和使用
 //------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-using System.Collections;
+
 using System.Collections.Concurrent;
-using System.Reflection;
 
 namespace ThingsGateway.Foundation.Rpc
 {
     /// <summary>
     /// Rpc仓库
     /// </summary>
-    public class RpcStore : DisposableObject, IEnumerable<IRpcParser>
+    public sealed class RpcStore
     {
-        private readonly ConcurrentList<IRpcParser> m_parsers = new ConcurrentList<IRpcParser>();
+        private readonly IRegistrator m_registrator;
         private readonly ConcurrentDictionary<Type, List<MethodInstance>> m_serverTypes = new ConcurrentDictionary<Type, List<MethodInstance>>();
 
         /// <summary>
         /// 实例化一个Rpc仓库。
-        /// <para>需要指定<see cref="IContainer"/>容器。一般和对应的服务器、客户端共用一个容器比较好。</para>
         /// </summary>
-        public RpcStore(IContainer container)
+        public RpcStore(IRegistrator registrator)
         {
-            this.Container = container ?? throw new ArgumentNullException(nameof(container));
-            if (!container.IsRegistered(typeof(IRpcServerFactory)))
+            registrator.Register(new DependencyDescriptor(typeof(IRpcServerProvider), typeof(RpcServerProvider), Lifetime.Singleton)
             {
-                this.Container.RegisterSingleton<IRpcServerFactory, RpcServerFactory>();
-            }
+                ImplementationFactory = (provider) => new RpcServerProvider(
+                    provider.Resolve<IResolver>(),
+                    provider.Resolve<ILog>(),
+                    provider.Resolve<RpcStore>())
+            });
+            this.m_registrator = registrator;
         }
-
-        /// <summary>
-        /// 内置IOC容器
-        /// </summary>
-        public IContainer Container { get; private set; }
 
         /// <summary>
         /// 服务类型
         /// </summary>
         public Type[] ServerTypes => this.m_serverTypes.Keys.ToArray();
-
-        /// <summary>
-        /// 执行Rpc
-        /// </summary>
-        /// <param name="rpcServer"></param>
-        /// <param name="ps"></param>
-        /// <param name="callContext"></param>
-        /// <returns></returns>
-        public static InvokeResult Execute(IRpcServer rpcServer, object[] ps, ICallContext callContext)
-        {
-            var invokeResult = new InvokeResult();
-            try
-            {
-                if (callContext.MethodInstance.Filters != null)
-                {
-                    for (var i = 0; i < callContext.MethodInstance.Filters.Length; i++)
-                    {
-                        invokeResult = callContext.MethodInstance.Filters[i].ExecutingAsync(callContext, ps, invokeResult)
-                            .GetFalseAwaitResult();
-                    }
-                }
-
-                if (invokeResult.Status != InvokeStatus.Ready)
-                {
-                    return invokeResult;
-                }
-
-                //调用
-                switch (callContext.MethodInstance.TaskType)
-                {
-                    case TaskReturnType.Task:
-                        {
-                            callContext.MethodInstance.InvokeAsync(rpcServer, ps)
-                                .GetFalseAwaitResult();
-                        }
-                        break;
-
-                    case TaskReturnType.TaskObject:
-                        {
-                            invokeResult.Result = callContext.MethodInstance.InvokeObjectAsync(rpcServer, ps)
-                                .GetFalseAwaitResult();
-                        }
-                        break;
-
-                    default:
-                    case TaskReturnType.None:
-                        {
-                            if (callContext.MethodInstance.HasReturn)
-                            {
-                                invokeResult.Result = callContext.MethodInstance.Invoke(rpcServer, ps);
-                            }
-                            else
-                            {
-                                callContext.MethodInstance.Invoke(rpcServer, ps);
-                            }
-                        }
-                        break;
-                }
-
-                invokeResult.Status = InvokeStatus.Success;
-                if (callContext.MethodInstance.Filters != null)
-                {
-                    for (var i = 0; i < callContext.MethodInstance.Filters.Length; i++)
-                    {
-                        invokeResult = callContext.MethodInstance.Filters[i].ExecutedAsync(callContext, ps, invokeResult)
-                            .GetFalseAwaitResult();
-                    }
-                }
-            }
-            catch (TargetInvocationException ex)
-            {
-                invokeResult.Status = InvokeStatus.InvocationException;
-                invokeResult.Message = ex.InnerException != null ? $"函数内部发生异常，信息：{ex.InnerException.Message}" : "函数内部发生异常，信息：未知";
-                if (callContext.MethodInstance.Filters != null)
-                {
-                    for (var i = 0; i < callContext.MethodInstance.Filters.Length; i++)
-                    {
-                        invokeResult = callContext.MethodInstance.Filters[i].ExecutExceptionAsync(callContext, ps, invokeResult, ex)
-                            .GetFalseAwaitResult();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                invokeResult.Status = InvokeStatus.Exception;
-                invokeResult.Message = ex.Message;
-                if (callContext.MethodInstance.Filters != null)
-                {
-                    for (var i = 0; i < callContext.MethodInstance.Filters.Length; i++)
-                    {
-                        invokeResult = callContext.MethodInstance.Filters[i].ExecutExceptionAsync(callContext, ps, invokeResult, ex).ConfigureAwait(false).GetAwaiter().GetResult();
-                    }
-                }
-            }
-
-            return invokeResult;
-        }
-
-        /// <summary>
-        /// 异步执行Rpc
-        /// </summary>
-        /// <param name="rpcServer"></param>
-        /// <param name="ps"></param>
-        /// <param name="callContext"></param>
-        /// <returns></returns>
-        public static async Task<InvokeResult> ExecuteAsync(IRpcServer rpcServer, object[] ps, ICallContext callContext)
-        {
-            var invokeResult = new InvokeResult();
-            try
-            {
-                if (callContext.MethodInstance.Filters != null)
-                {
-                    for (var i = 0; i < callContext.MethodInstance.Filters.Length; i++)
-                    {
-                        invokeResult = await callContext.MethodInstance.Filters[i].ExecutingAsync(callContext, ps, invokeResult);
-                    }
-                }
-
-                if (invokeResult.Status != InvokeStatus.Ready)
-                {
-                    return invokeResult;
-                }
-
-                //调用
-                switch (callContext.MethodInstance.TaskType)
-                {
-                    case TaskReturnType.Task:
-                        {
-                            await (Task)callContext.MethodInstance.Invoke(rpcServer, ps);
-                        }
-                        break;
-
-                    case TaskReturnType.TaskObject:
-                        {
-                            invokeResult.Result = await callContext.MethodInstance.InvokeObjectAsync(rpcServer, ps);
-                        }
-                        break;
-
-                    default:
-                    case TaskReturnType.None:
-                        {
-                            if (callContext.MethodInstance.HasReturn)
-                            {
-                                invokeResult.Result = callContext.MethodInstance.Invoke(rpcServer, ps);
-                            }
-                            else
-                            {
-                                callContext.MethodInstance.Invoke(rpcServer, ps);
-                            }
-                        }
-                        break;
-                }
-
-                invokeResult.Status = InvokeStatus.Success;
-                if (callContext.MethodInstance.Filters != null)
-                {
-                    for (var i = 0; i < callContext.MethodInstance.Filters.Length; i++)
-                    {
-                        invokeResult = await callContext.MethodInstance.Filters[i].ExecutedAsync(callContext, ps, invokeResult);
-                    }
-                }
-            }
-            catch (TargetInvocationException ex)
-            {
-                invokeResult.Status = InvokeStatus.InvocationException;
-                invokeResult.Message = ex.InnerException != null ? $"函数内部发生异常，信息：{ex.InnerException.Message}" : "函数内部发生异常，信息：未知";
-                if (callContext.MethodInstance.Filters != null)
-                {
-                    for (var i = 0; i < callContext.MethodInstance.Filters.Length; i++)
-                    {
-                        invokeResult = await callContext.MethodInstance.Filters[i].ExecutExceptionAsync(callContext, ps, invokeResult, ex);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                invokeResult.Status = InvokeStatus.Exception;
-                invokeResult.Message = ex.Message;
-                if (callContext.MethodInstance.Filters != null)
-                {
-                    for (var i = 0; i < callContext.MethodInstance.Filters.Length; i++)
-                    {
-                        invokeResult = await callContext.MethodInstance.Filters[i].ExecutExceptionAsync(callContext, ps, invokeResult, ex);
-                    }
-                }
-            }
-
-            return invokeResult;
-        }
-
-        /// <summary>
-        /// 添加Rpc解析器
-        /// </summary>
-        /// <param name="parser">解析器实例</param>
-        /// <param name="applyServer">是否应用已注册服务</param>
-        public void AddRpcParser(IRpcParser parser, bool applyServer = true)
-        {
-            this.ThrowIfDisposed();
-            this.m_parsers.Add(parser);
-            //parser.SetRpcStore(this);
-            if (applyServer)
-            {
-                foreach (var item in this.m_serverTypes)
-                {
-                    parser.OnRegisterServer(item.Value.ToArray());
-                }
-            }
-        }
 
         /// <summary>
         /// 获取所有已注册的函数。
@@ -279,20 +66,6 @@ namespace ThingsGateway.Foundation.Rpc
             }
 
             return methods.ToArray();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return this.m_parsers.GetEnumerator();
-        }
-
-        /// <summary>
-        /// 返回枚举对象
-        /// </summary>
-        /// <returns></returns>
-        IEnumerator<IRpcParser> IEnumerable<IRpcParser>.GetEnumerator()
-        {
-            return this.m_parsers.GetEnumerator();
         }
 
         /// <summary>
@@ -326,11 +99,6 @@ namespace ThingsGateway.Foundation.Rpc
         /// <returns></returns>
         public ServerCellCode[] GetProxyInfo(Type[] attrbuteType)
         {
-            if (this.DisposedValue)
-            {
-                throw new ObjectDisposedException(this.GetType().FullName);
-            }
-
             var codes = new List<ServerCellCode>();
 
             foreach (var attrbute in attrbuteType)
@@ -352,93 +120,6 @@ namespace ThingsGateway.Foundation.Rpc
         public MethodInstance[] GetServerMethodInstances(Type serverType)
         {
             return this.m_serverTypes[serverType].ToArray();
-        }
-
-        /// <summary>
-        /// 移除Rpc解析器
-        /// </summary>
-        /// <param name="parser"></param>
-        /// <returns></returns>
-        public bool RemoveRpcParser(IRpcParser parser)
-        {
-            return this.m_parsers.Remove(parser);
-        }
-
-        /// <summary>
-        /// 移除注册服务
-        /// </summary>
-        /// <param name="provider"></param>
-        /// <returns></returns>
-        public int UnregisterServer(IRpcServer provider)
-        {
-            return this.UnregisterServer(provider.GetType());
-        }
-
-        /// <summary>
-        /// 移除注册服务
-        /// </summary>
-        /// <param name="providerType"></param>
-        /// <returns></returns>
-        public int UnregisterServer(Type providerType)
-        {
-            this.ThrowIfDisposed();
-            if (!typeof(IRpcServer).IsAssignableFrom(providerType))
-            {
-                throw new RpcException("类型不相符");
-            }
-
-            if (this.RemoveServer(providerType, out var instances))
-            {
-                foreach (var parser in this)
-                {
-                    parser.OnUnregisterServer(instances);
-                }
-
-                return instances.Length;
-            }
-            return 0;
-        }
-
-        /// <summary>
-        /// 移除注册服务
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        public int UnregisterServer<T>() where T : IRpcServer
-        {
-            return this.UnregisterServer(typeof(T));
-        }
-
-        /// <summary>
-        /// <inheritdoc/>
-        /// </summary>
-        /// <param name="disposing"></param>
-        protected override void Dispose(bool disposing)
-        {
-            if (!this.DisposedValue)
-            {
-                foreach (var item in this)
-                {
-                    item.SafeDispose();
-                }
-            }
-
-            base.Dispose(disposing);
-        }
-
-        private bool RemoveServer(Type type, out MethodInstance[] methodInstances)
-        {
-            foreach (var newType in this.m_serverTypes.Keys)
-            {
-                if (newType.FullName == type.FullName)
-                {
-                    this.m_serverTypes.TryRemove(newType, out var list);
-                    methodInstances = list.ToArray();
-                    return true;
-                }
-            }
-            methodInstances = null;
-            return false;
         }
 
         #region 注册
@@ -469,17 +150,9 @@ namespace ThingsGateway.Foundation.Rpc
             }
 
             var methodInstances = CodeGenerator.GetMethodInstances(serverFromType, rpcServer.GetType());
-            foreach (var item in methodInstances)
-            {
-                item.ServerFactory = this.Container.Resolve<IRpcServerFactory>() ?? throw new ArgumentNullException($"{nameof(IRpcServerFactory)}");
-            }
-            this.m_serverTypes.TryAdd(serverFromType, new List<MethodInstance>(methodInstances));
-            this.Container.RegisterSingleton(serverFromType, rpcServer);
 
-            foreach (var parser in this)
-            {
-                parser.OnRegisterServer(methodInstances);
-            }
+            this.m_serverTypes.TryAdd(serverFromType, new List<MethodInstance>(methodInstances));
+            this.m_registrator.RegisterSingleton(serverFromType, rpcServer);
         }
 
         /// <summary>
@@ -508,27 +181,17 @@ namespace ThingsGateway.Foundation.Rpc
                 }
             }
 
-
             if (typeof(ITransientRpcServer).IsAssignableFrom(serverFromType))
             {
-                this.Container.RegisterTransient(serverFromType, serverToType);
+                this.m_registrator.RegisterTransient(serverFromType, serverToType);
             }
             else
             {
-                this.Container.RegisterSingleton(serverFromType, serverToType);
+                this.m_registrator.RegisterSingleton(serverFromType, serverToType);
             }
             var methodInstances = CodeGenerator.GetMethodInstances(serverFromType, serverToType);
-            foreach (var item in methodInstances)
-            {
-                item.ServerFactory = this.Container.Resolve<IRpcServerFactory>() ?? throw new ArgumentNullException($"{nameof(IRpcServerFactory)}");
-            }
 
             this.m_serverTypes.TryAdd(serverFromType, new List<MethodInstance>(methodInstances));
-
-            foreach (var parser in this)
-            {
-                parser.OnRegisterServer(methodInstances);
-            }
         }
 
         #endregion 注册

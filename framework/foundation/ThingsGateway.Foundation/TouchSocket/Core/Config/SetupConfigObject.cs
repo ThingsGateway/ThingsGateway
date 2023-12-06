@@ -23,7 +23,7 @@ namespace ThingsGateway.Foundation.Core
         public override TouchSocketConfig Config => this.m_config;
 
         /// <inheritdoc/>
-        public IContainer Container { get; private set; }
+        public IResolver Resolver { get; private set; }
 
         /// <inheritdoc/>
         public IPluginManager PluginManager { get; private set; }
@@ -44,7 +44,23 @@ namespace ThingsGateway.Foundation.Core
             this.LoadConfig(this.Config);
             this.PluginManager?.Raise(nameof(ILoadedConfigPlugin.OnLoadedConfig), this, new ConfigEventArgs(config));
         }
+        /// <inheritdoc/>
+        public async Task SetupAsync(TouchSocketConfig config)
+        {
+            if (config == null)
+            {
+                throw new ArgumentNullException(nameof(config));
+            }
 
+            this.ThrowIfDisposed();
+
+            this.BuildConfig(config);
+
+            await this.PluginManager.RaiseAsync(nameof(ILoadingConfigPlugin.OnLoadingConfig), this, new ConfigEventArgs(config)).ConfigureFalseAwait();
+            this.LoadConfig(config);
+            //return EasyTask.CompletedTask;
+            await this.PluginManager.RaiseAsync(nameof(ILoadedConfigPlugin.OnLoadedConfig), this, new ConfigEventArgs(config)).ConfigureFalseAwait();
+        }
         /// <summary>
         /// 加载配置
         /// </summary>
@@ -56,47 +72,48 @@ namespace ThingsGateway.Foundation.Core
 
         private void BuildConfig(TouchSocketConfig config)
         {
-            this.m_config = config;
+            this.m_config = config ?? throw new ArgumentNullException(nameof(config));
 
-            if (!config.TryGetValue(TouchSocketCoreConfigExtension.ContainerProperty, out var container))
+            if (!config.TryGetValue(TouchSocketCoreConfigExtension.ResolverProperty, out var resolver))
             {
-                container = new Container();
+                if (!config.TryGetValue(TouchSocketCoreConfigExtension.RegistratorProperty, out var registrator))
+                {
+                    registrator = new Container();
+                }
+
+                if (!registrator.IsRegistered(typeof(ILog)))
+                {
+                    registrator.RegisterSingleton<ILog>(new LoggerGroup());
+                }
+
+                if (config.GetValue(TouchSocketCoreConfigExtension.ConfigureContainerProperty) is Action<IRegistrator> actionContainer)
+                {
+                    actionContainer.Invoke(registrator);
+                }
+
+                resolver = registrator.BuildResolver();
             }
 
-            if (!container.IsRegistered(typeof(ILog)))
+            IPluginManager pluginManager;
+            if ((!this.Config.GetValue(TouchSocketCoreConfigExtension.NewPluginManagerProperty)) && resolver.IsRegistered<IPluginManager>())
             {
-                container.RegisterSingleton<ILog, LoggerGroup>();
-            }
-
-            if (!(config.GetValue(TouchSocketCoreConfigExtension.PluginsManagerProperty) is IPluginManager pluginManager))
-            {
-                pluginManager = new PluginManager(container);
-            }
-
-            if (container.IsRegistered(typeof(IPluginManager)))
-            {
-                pluginManager = container.Resolve<IPluginManager>();
+                pluginManager = resolver.Resolve<IPluginManager>();
             }
             else
             {
-                container.RegisterSingleton<IPluginManager>(pluginManager);
+                pluginManager = new PluginManager(resolver);
             }
 
-            if (config.GetValue(TouchSocketCoreConfigExtension.ConfigureContainerProperty) is Action<IContainer> actionContainer)
-            {
-                actionContainer.Invoke(container);
-            }
-
-            if (config.GetValue(TouchSocketCoreConfigExtension.ConfigurePluginsProperty) is Action<IPluginManager> actionPluginsManager)
+            if (this.Config.GetValue(TouchSocketCoreConfigExtension.ConfigurePluginsProperty) is Action<IPluginManager> actionPluginManager)
             {
                 pluginManager.Enable = true;
-                actionPluginsManager.Invoke(pluginManager);
+                actionPluginManager.Invoke(pluginManager);
             }
 
-            this.Logger ??= container.Resolve<ILog>();
+            this.Logger ??= resolver.Resolve<ILog>();
 
-            this.Container = container;
             this.PluginManager = pluginManager;
+            this.Resolver = resolver;
         }
     }
 }

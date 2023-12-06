@@ -1,15 +1,3 @@
-#region copyright
-//------------------------------------------------------------------------------
-//  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
-//  此代码版权（除特别声明外的代码）归作者本人Diego所有
-//  源代码使用协议遵循本仓库的开源协议及附加协议
-//  Gitee源代码仓库：https://gitee.com/diego2098/ThingsGateway
-//  Github源代码仓库：https://github.com/kimdiego2098/ThingsGateway
-//  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
-//  QQ群：605534569
-//------------------------------------------------------------------------------
-#endregion
-
 //------------------------------------------------------------------------------
 //  此代码版权（除特别声明或在XREF结尾的命名空间的代码）归作者本人若汝棋茗所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议，若本仓库没有设置，则按MIT开源协议授权
@@ -21,8 +9,7 @@
 //  交流QQ群：234762506
 //  感谢您的下载和使用
 //------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-using System.Collections;
+
 using System.Collections.Concurrent;
 using System.Reflection;
 
@@ -31,53 +18,66 @@ namespace ThingsGateway.Foundation.Core
     /// <summary>
     /// IOC容器
     /// </summary>
-    public class Container : IContainer
+    public sealed class Container : IContainer
     {
         private readonly ConcurrentDictionary<string, DependencyDescriptor> m_registrations = new ConcurrentDictionary<string, DependencyDescriptor>();
 
         /// <summary>
-        /// 返回迭代器
+        /// IOC容器
         /// </summary>
-        /// <returns></returns>
-        public IEnumerator<DependencyDescriptor> GetEnumerator()
+        public Container()
         {
-            return this.m_registrations.Values.GetEnumerator();
+            this.RegisterSingleton<IResolver>(this);
+            this.RegisterSingleton<IServiceProvider>(this);
         }
 
-        /// <summary>
         /// <inheritdoc/>
-        /// </summary>
-        /// <param name="fromType"></param>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        public bool IsRegistered(Type fromType, string key = "")
+        public IResolver BuildResolver()
         {
-            return fromType == typeof(IContainer) || this.m_registrations.ContainsKey($"{fromType.FullName}{key}");
+            return this;
         }
 
-        /// <summary>
         /// <inheritdoc/>
-        /// </summary>
-        /// <param name="descriptor"></param>
-        /// <param name="key"></param>
-        public void Register(DependencyDescriptor descriptor, string key = "")
+        public IEnumerable<DependencyDescriptor> GetDescriptors()
+        {
+            return this.m_registrations.Values;
+        }
+
+        /// <inheritdoc/>
+        public object GetService(Type serviceType)
+        {
+            return this.Resolve(serviceType);
+        }
+
+        /// <inheritdoc/>
+        public bool IsRegistered(Type fromType, string key)
+        {
+            return this.m_registrations.ContainsKey($"{fromType.FullName}{key}");
+        }
+
+        /// <inheritdoc/>
+        public bool IsRegistered(Type fromType)
+        {
+            return this.m_registrations.ContainsKey(fromType.FullName);
+        }
+
+        /// <inheritdoc/>
+        public void Register(DependencyDescriptor descriptor, string key)
         {
             var k = $"{descriptor.FromType.FullName}{key}";
             this.m_registrations.AddOrUpdate(k, descriptor, (k, v) => { return descriptor; });
         }
 
-        /// <summary>
         /// <inheritdoc/>
-        /// </summary>
-        /// <param name="fromType"></param>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        public object Resolve(Type fromType, string key = "")
+        public void Register(DependencyDescriptor descriptor)
         {
-            if (fromType == typeof(IContainer))
-            {
-                return this;
-            }
+            var k = descriptor.FromType.FullName;
+            this.m_registrations.AddOrUpdate(k, descriptor, (k, v) => { return descriptor; });
+        }
+
+        /// <inheritdoc/>
+        public object Resolve(Type fromType, string key)
+        {
             string k;
             DependencyDescriptor descriptor;
             if (fromType.IsGenericType)
@@ -160,14 +160,102 @@ namespace ThingsGateway.Foundation.Core
             }
         }
 
-        /// <summary>
         /// <inheritdoc/>
-        /// </summary>
-        /// <param name="descriptor"></param>
-        /// <param name="key"></param>
-        public void Unregister(DependencyDescriptor descriptor, string key = "")
+        public object Resolve(Type fromType)
+        {
+            string k;
+            DependencyDescriptor descriptor;
+            if (fromType.IsGenericType)
+            {
+                var type = fromType.GetGenericTypeDefinition();
+                k = type.FullName;
+                if (this.m_registrations.TryGetValue(k, out descriptor))
+                {
+                    if (descriptor.ImplementationFactory != null)
+                    {
+                        return descriptor.ImplementationFactory.Invoke(this);
+                    }
+
+                    if (descriptor.Lifetime == Lifetime.Singleton)
+                    {
+                        if (descriptor.ToInstance != null)
+                        {
+                            return descriptor.ToInstance;
+                        }
+                        lock (descriptor)
+                        {
+                            if (descriptor.ToInstance != null)
+                            {
+                                return descriptor.ToInstance;
+                            }
+                            else
+                            {
+                                if (descriptor.ToType.IsGenericType)
+                                {
+                                    return (descriptor.ToInstance = this.Create(descriptor, descriptor.ToType.MakeGenericType(fromType.GetGenericArguments())));
+                                }
+                                else
+                                {
+                                    return descriptor.ToInstance = this.Create(descriptor, descriptor.ToType);
+                                }
+                            }
+                        }
+                    }
+
+                    if (descriptor.ToType.IsGenericType)
+                    {
+                        return this.Create(descriptor, descriptor.ToType.MakeGenericType(fromType.GetGenericArguments()));
+                    }
+                    else
+                    {
+                        return this.Create(descriptor, descriptor.ToType);
+                    }
+                }
+            }
+            k = fromType.FullName;
+            if (this.m_registrations.TryGetValue(k, out descriptor))
+            {
+                if (descriptor.ImplementationFactory != null)
+                {
+                    return descriptor.ImplementationFactory.Invoke(this);
+                }
+                if (descriptor.Lifetime == Lifetime.Singleton)
+                {
+                    if (descriptor.ToInstance != null)
+                    {
+                        return descriptor.ToInstance;
+                    }
+                    lock (descriptor)
+                    {
+                        return descriptor.ToInstance ??= this.Create(descriptor, descriptor.ToType);
+                    }
+                }
+                return this.Create(descriptor, descriptor.ToType);
+            }
+            else
+            {
+                if (fromType.IsPrimitive || fromType == typeof(string))
+                {
+                    return default;
+                }
+                else
+                {
+                    throw new Exception(TouchSocketCoreResource.UnregisteredType.GetDescription(fromType));
+                }
+            }
+        }
+
+        /// <inheritdoc/>
+        public void Unregister(DependencyDescriptor descriptor, string key)
         {
             var k = $"{descriptor.FromType.FullName}{key}";
+            this.m_registrations.TryRemove(k, out _);
+        }
+
+        /// <inheritdoc/>
+        public void Unregister(DependencyDescriptor descriptor)
+        {
+            var k = descriptor.FromType.FullName;
             this.m_registrations.TryRemove(k, out _);
         }
 
@@ -274,11 +362,6 @@ namespace ThingsGateway.Foundation.Core
             }
             descriptor.OnResolved?.Invoke(instance);
             return instance;
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return this.GetEnumerator();
         }
     }
 }

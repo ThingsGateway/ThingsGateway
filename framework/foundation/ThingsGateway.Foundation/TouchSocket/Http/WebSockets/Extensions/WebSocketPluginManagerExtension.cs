@@ -23,33 +23,33 @@
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
+using ThingsGateway.Foundation.Http.WebSockets;
+
 namespace ThingsGateway.Foundation.Core
 {
     /// <summary>
-    /// RpcPluginsManagerExtension
+    /// WebSocketPluginsManagerExtension
     /// </summary>
-    public static class RpcPluginsManagerExtension
+    public static class WebSocketPluginManagerExtension
     {
         /// <summary>
-        /// 使用全局Rpc服务注入。
+        /// 使用WebSocket插件。
         /// </summary>
-        /// <param name="pluginManager"></param>
-        public static GlobalRpcStorePlugin UseGlobalRpcStore(this IPluginManager pluginManager)
+        /// <returns>插件类型实例</returns>
+        public static WebSocketFeature UseWebSocket(this IPluginManager pluginManager)
         {
-            return pluginManager.Add<GlobalRpcStorePlugin>();
+            return pluginManager.Add<WebSocketFeature>();
         }
 
         /// <summary>
-        /// 使用全局Rpc服务注入。
+        /// 使用WebSocket心跳插件，客户端、服务器均有效。但是一般建议客户端使用即可。
         /// </summary>
-        /// <param name="pluginManager"></param>
-        /// <param name="action"></param>
-        /// <returns></returns>
-        public static GlobalRpcStorePlugin UseGlobalRpcStore(this IPluginManager pluginManager, Action<RpcStore> action)
+        /// <returns>插件类型实例</returns>
+        public static WebSocketHeartbeatPlugin UseWebSocketHeartbeat(this IPluginManager pluginManager)
         {
-            var plugin = pluginManager.Add<GlobalRpcStorePlugin>();
-            plugin.ConfigureRpcStore(action);
-            return plugin;
+            var heartbeatPlugin = new WebSocketHeartbeatPlugin();
+            pluginManager.Add(heartbeatPlugin);
+            return heartbeatPlugin;
         }
     }
 }

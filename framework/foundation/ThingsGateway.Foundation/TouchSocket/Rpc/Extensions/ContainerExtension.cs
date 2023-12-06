@@ -21,23 +21,31 @@
 //  交流QQ群：234762506
 //  感谢您的下载和使用
 //------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
 
-namespace ThingsGateway.Foundation.Core
+
+#if NET6_0_OR_GREATER
+using System.Diagnostics.CodeAnalysis;
+#endif
+
+namespace ThingsGateway.Foundation.Rpc
 {
     /// <summary>
-    /// 注入项的生命周期。
+    /// ContainerExtension
     /// </summary>
-    public enum Lifetime
+    public static class ContainerExtension
     {
         /// <summary>
-        /// 单例对象
+        /// 向容器中添加<see cref="RpcStore"/>。
         /// </summary>
-        Singleton,
-
-        /// <summary>
-        /// 瞬时对象
-        /// </summary>
-        Transient
+        /// <param name="registrator"></param>
+        /// <param name="action"></param>
+        /// <returns></returns>
+        public static IRegistrator AddRpcStore(this IRegistrator registrator, Action<RpcStore> action)
+        {
+            var rpcStore = new RpcStore(registrator);
+            action.Invoke(rpcStore);
+            registrator.RegisterSingleton(rpcStore);
+            return registrator;
+        }
     }
 }

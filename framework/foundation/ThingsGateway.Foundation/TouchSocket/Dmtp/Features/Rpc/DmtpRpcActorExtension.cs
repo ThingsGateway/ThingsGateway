@@ -10,6 +10,10 @@
 //------------------------------------------------------------------------------
 #endregion
 
+#if NET6_0_OR_GREATER
+using System.Diagnostics.CodeAnalysis;
+
+#endif
 using ThingsGateway.Foundation.Resources;
 
 namespace ThingsGateway.Foundation.Dmtp.Rpc
@@ -98,7 +102,11 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
         /// </summary>
         /// <param name="pluginManager"></param>
         /// <returns></returns>
+#if NET6_0_OR_GREATER
         public static DmtpRpcFeature UseDmtpRpc(this IPluginManager pluginManager)
+#else
+        public static DmtpRpcFeature UseDmtpRpc(this IPluginManager pluginManager)
+#endif
         {
             return pluginManager.Add<DmtpRpcFeature>();
         }
@@ -108,11 +116,15 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
         /// </summary>
         /// <param name="pluginManager"></param>
         /// <returns></returns>
+#if NET6_0_OR_GREATER
+        public static DmtpRpcFeature UseDmtpRpc<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TDmtpRpcFeature>(this IPluginManager pluginManager) where TDmtpRpcFeature : DmtpRpcFeature
+#else
         public static DmtpRpcFeature UseDmtpRpc<TDmtpRpcFeature>(this IPluginManager pluginManager) where TDmtpRpcFeature : DmtpRpcFeature
+#endif
+
         {
             return pluginManager.Add<TDmtpRpcFeature>();
         }
-
         #endregion 插件扩展
     }
 }

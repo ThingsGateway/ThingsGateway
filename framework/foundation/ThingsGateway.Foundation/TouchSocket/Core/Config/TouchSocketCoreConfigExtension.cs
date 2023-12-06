@@ -39,10 +39,10 @@ namespace ThingsGateway.Foundation.Core
             DependencyProperty<Action<IPluginManager>>.Register("ConfigurePlugins", null);
 
         /// <summary>
-        /// 容器
+        /// 是否使用新插件管理器。
         /// </summary>
-        public static readonly DependencyProperty<IPluginManager> PluginsManagerProperty =
-            DependencyProperty<IPluginManager>.Register("PluginManager", null);
+        public static readonly DependencyProperty<bool> NewPluginManagerProperty =
+            DependencyProperty<bool>.Register("NewPluginManager", false);
 
         /// <summary>
         /// 配置插件。
@@ -64,15 +64,19 @@ namespace ThingsGateway.Foundation.Core
             return config;
         }
 
+
         /// <summary>
-        /// 使用插件。
+        /// 使用新的插件管理器。
+        /// <para>
+        /// 一般的，当在容器<see cref="IContainer"/>中注入<see cref="IPluginManager"/>时。会使用容器中的<see cref="IPluginManager"/>。
+        /// 但是有时候，我们希望个别配置能够独立使用插件管理器。所以可以使用此配置。
+        /// </para>
         /// </summary>
         /// <param name="config"></param>
-        /// <param name="value"></param>
         /// <returns></returns>
-        public static TouchSocketConfig SetPluginsManager(this TouchSocketConfig config, IPluginManager value)
+        public static TouchSocketConfig UseNewPluginManager(this TouchSocketConfig config)
         {
-            config.SetValue(PluginsManagerProperty, value);
+            config.SetValue(NewPluginManagerProperty, true);
             return config;
         }
 
@@ -83,14 +87,21 @@ namespace ThingsGateway.Foundation.Core
         /// <summary>
         /// 配置容器注入。
         /// </summary>
-        public static readonly DependencyProperty<Action<IContainer>> ConfigureContainerProperty =
-            DependencyProperty<Action<IContainer>>.Register("ConfigureContainer", null);
+        public static readonly DependencyProperty<Action<IRegistrator>> ConfigureContainerProperty =
+            DependencyProperty<Action<IRegistrator>>.Register("ConfigureContainer", null);
 
         /// <summary>
-        /// 容器
+        /// 容器注册
         /// </summary>
-        public static readonly DependencyProperty<IContainer> ContainerProperty =
-            DependencyProperty<IContainer>.Register("Container", null);
+        public static readonly DependencyProperty<IRegistrator> RegistratorProperty =
+            DependencyProperty<IRegistrator>.Register("Registrator", null);
+
+        /// <summary>
+        /// 容器提供者
+        /// </summary>
+        public static readonly DependencyProperty<IResolver> ResolverProperty =
+            DependencyProperty<IResolver>.Register("Resolver", null);
+
 
         /// <summary>
         /// 配置容器注入。
@@ -98,7 +109,7 @@ namespace ThingsGateway.Foundation.Core
         /// <param name="config"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        public static TouchSocketConfig ConfigureContainer(this TouchSocketConfig config, Action<IContainer> value)
+        public static TouchSocketConfig ConfigureContainer(this TouchSocketConfig config, Action<IRegistrator> value)
         {
             if (config.TryGetValue(ConfigureContainerProperty, out var action))
             {
@@ -112,15 +123,28 @@ namespace ThingsGateway.Foundation.Core
             return config;
         }
 
+
         /// <summary>
-        /// 设置容器。
+        /// 设置<see cref="IResolver"/>
         /// </summary>
         /// <param name="config"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        public static TouchSocketConfig SetContainer(this TouchSocketConfig config, IContainer value)
+        public static TouchSocketConfig SetResolver(this TouchSocketConfig config, IResolver value)
         {
-            config.SetValue(ContainerProperty, value);
+            config.SetValue(ResolverProperty, value);
+            return config;
+        }
+
+        /// <summary>
+        /// 设置<see cref="IRegistrator"/>
+        /// </summary>
+        /// <param name="config"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static TouchSocketConfig SetRegistrator(this TouchSocketConfig config, IRegistrator value)
+        {
+            config.SetValue(RegistratorProperty, value);
             return config;
         }
 
