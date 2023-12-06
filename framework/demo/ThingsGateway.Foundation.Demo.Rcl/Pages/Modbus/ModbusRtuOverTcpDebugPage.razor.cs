@@ -19,7 +19,7 @@ namespace ThingsGateway.Foundation.Demo;
 public partial class ModbusRtuOverTcpDebugPage
 {
     /// <summary>
-    /// SerialSessionPage
+    /// SerialPortClientPage
     /// </summary>
     private TcpClientPage _tcpClientPage;
     private DriverDebugUIPage _driverDebugUIPage;

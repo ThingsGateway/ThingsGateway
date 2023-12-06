@@ -17,7 +17,7 @@ namespace ThingsGateway.Foundation.Demo;
 public partial class ModbusRtuOverUdpDebugPage
 {
     /// <summary>
-    /// SerialSessionPage
+    /// SerialPortClientPage
     /// </summary>
     private UdpSessionPage _udpSessionPage;
     private DriverDebugUIPage _driverDebugUIPage;

@@ -16,13 +16,13 @@ namespace ThingsGateway.Foundation.Core;
 /// <summary>
 /// 串口读写设备
 /// </summary>
-public abstract class ReadWriteDevicesSerialSessionBase : ReadWriteDevicesBase
+public abstract class ReadWriteDevicesSerialPortClientBase : ReadWriteDevicesBase
 {
     /// <summary>
-    /// <inheritdoc cref="ReadWriteDevicesSerialSessionBase"/>
+    /// <inheritdoc cref="ReadWriteDevicesSerialPortClientBase"/>
     /// </summary>
     /// <param name="serialPortClient"></param>
-    public ReadWriteDevicesSerialSessionBase(SerialPortClient serialPortClient)
+    public ReadWriteDevicesSerialPortClientBase(SerialPortClient serialPortClient)
     {
         SerialPortClient = serialPortClient;
         WaitingClientEx = SerialPortClient.CreateWaitingClient(new() { });

@@ -19,9 +19,9 @@ namespace ThingsGateway.Foundation.Demo;
 public partial class ModbusRtuDebugPage
 {
     /// <summary>
-    /// SerialSessionPage
+    /// SerialPortClientPage
     /// </summary>
-    private SerialSessionPage _serialSessionPage;
+    private SerialPortClientPage _serialPortClientPage;
     private readonly List<(string Code, string Language)> _sections = new();
     private DriverDebugUIPage _driverDebugUIPage;
 
@@ -72,9 +72,9 @@ public partial class ModbusRtuDebugPage
                 """, "csharp"));
 
 
-            if (_serialSessionPage != null)
-                _serialSessionPage.LogAction = _driverDebugUIPage.LogOut;
-            _plc = new ThingsGateway.Foundation.Adapter.Modbus.ModbusRtu(_serialSessionPage.GetSerialSession());
+            if (_serialPortClientPage != null)
+                _serialPortClientPage.LogAction = _driverDebugUIPage.LogOut;
+            _plc = new ThingsGateway.Foundation.Adapter.Modbus.ModbusRtu(_serialPortClientPage.GetSerialPortClient());
             _driverDebugUIPage.Plc = _plc;
             //载入配置
             StateHasChanged();

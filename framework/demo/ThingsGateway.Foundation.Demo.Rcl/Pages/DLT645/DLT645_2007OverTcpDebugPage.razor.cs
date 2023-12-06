@@ -17,7 +17,7 @@ namespace ThingsGateway.Foundation.Demo;
 public partial class DLT645_2007OverTcpDebugPage
 {
     /// <summary>
-    /// SerialSessionPage
+    /// SerialPortClientPage
     /// </summary>
     private TcpClientPage _tcpClientPage;
     private DriverDebugUIPage _driverDebugUIPage;

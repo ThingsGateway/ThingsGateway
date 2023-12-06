@@ -21,7 +21,7 @@ public partial class SiemensDebugPage
     private ThingsGateway.Foundation.Adapter.Siemens.SiemensS7PLC _plc;
 
     /// <summary>
-    /// SerialSessionPage
+    /// SerialPortClientPage
     /// </summary>
     private TcpClientPage _tcpClientPage;
     /// <summary>

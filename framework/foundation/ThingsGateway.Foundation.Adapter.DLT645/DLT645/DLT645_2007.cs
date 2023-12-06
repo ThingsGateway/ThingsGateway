@@ -16,7 +16,7 @@ namespace ThingsGateway.Foundation.Adapter.DLT645;
 /// <summary>
 /// DLT645_2007
 /// </summary>
-public class DLT645_2007 : ReadWriteDevicesSerialSessionBase, IDLT645_2007
+public class DLT645_2007 : ReadWriteDevicesSerialPortClientBase, IDLT645_2007
 {
     /// <summary>
     /// DLT645_2007

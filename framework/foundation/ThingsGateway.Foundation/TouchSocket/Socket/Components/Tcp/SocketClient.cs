@@ -233,7 +233,7 @@ namespace ThingsGateway.Foundation.Sockets
                     this.MainSocket.SafeDispose();
                     this.m_delaySender.SafeDispose();
                     this.DataHandlingAdapter.SafeDispose();
-                    Task.Factory.StartNew(this.PrivateOnDisconnected, new DisconnectEventArgs(manual, msg));
+                    this.PrivateOnDisconnected(new DisconnectEventArgs(manual, msg)).GetFalseAwaitResult();
                 }
             }
 
@@ -397,7 +397,7 @@ namespace ThingsGateway.Foundation.Sockets
             {
                 if (this.Online)
                 {
-                    Task.Factory.StartNew(this.PrivateOnDisconnecting, new DisconnectEventArgs(true, msg));
+                    this.PrivateOnDisconnecting(new DisconnectEventArgs(true, msg)).GetFalseAwaitResult();
                     this.MainSocket.TryClose();
                     this.BreakOut(true, msg);
                 }
@@ -479,7 +479,7 @@ namespace ThingsGateway.Foundation.Sockets
             {
                 if (this.Online)
                 {
-                    Task.Factory.StartNew(this.PrivateOnDisconnecting, new DisconnectEventArgs(true, $"{nameof(Dispose)}主动断开"));
+                    this.PrivateOnDisconnecting(new DisconnectEventArgs(true, $"{nameof(Dispose)}主动断开")).GetFalseAwaitResult();
                     this.BreakOut(true, $"{nameof(Dispose)}主动断开");
                 }
 

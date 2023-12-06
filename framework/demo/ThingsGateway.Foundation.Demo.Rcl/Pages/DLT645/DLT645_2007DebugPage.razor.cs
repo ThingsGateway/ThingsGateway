@@ -17,9 +17,9 @@ namespace ThingsGateway.Foundation.Demo;
 public partial class DLT645_2007DebugPage
 {
     /// <summary>
-    /// SerialSessionPage
+    /// SerialPortClientPage
     /// </summary>
-    private SerialSessionPage _serialSessionPage;
+    private SerialPortClientPage _serialPortClientPage;
     private DriverDebugUIPage _driverDebugUIPage;
     private ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007 _plc;
     /// <summary>
@@ -69,9 +69,9 @@ public partial class DLT645_2007DebugPage
                 """, "csharp"));
 
 
-            if (_serialSessionPage != null)
-                _serialSessionPage.LogAction = _driverDebugUIPage.LogOut;
-            _plc = new ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007(_serialSessionPage.GetSerialSession());
+            if (_serialPortClientPage != null)
+                _serialPortClientPage.LogAction = _driverDebugUIPage.LogOut;
+            _plc = new ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007(_serialPortClientPage.GetSerialPortClient());
             _driverDebugUIPage.Plc = _plc;
 
             //初始化

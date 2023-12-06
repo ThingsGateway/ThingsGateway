@@ -21,7 +21,7 @@ public partial class ModbusTcpDebugPage
     private ThingsGateway.Foundation.Adapter.Modbus.ModbusTcp _plc;
 
     /// <summary>
-    /// SerialSessionPage
+    /// SerialPortClientPage
     /// </summary>
     private TcpClientPage _tcpClientPage;
     /// <summary>

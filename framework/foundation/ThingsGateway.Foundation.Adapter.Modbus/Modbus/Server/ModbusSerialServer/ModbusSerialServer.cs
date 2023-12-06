@@ -16,7 +16,7 @@ namespace ThingsGateway.Foundation.Adapter.Modbus;
 /// <summary>
 /// <inheritdoc/>
 /// </summary>
-public class ModbusSerialServer : ReadWriteDevicesSerialSessionBase, IModbusServer
+public class ModbusSerialServer : ReadWriteDevicesSerialPortClientBase, IModbusServer
 {
     /// <inheritdoc/>
     public ModbusSerialServer(SerialPortClient serialPortClient) : base(serialPortClient)

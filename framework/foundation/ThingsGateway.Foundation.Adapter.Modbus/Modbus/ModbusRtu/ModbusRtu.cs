@@ -16,7 +16,7 @@ namespace ThingsGateway.Foundation.Adapter.Modbus;
 /// <summary>
 /// ModbusRtu
 /// </summary>
-public class ModbusRtu : ReadWriteDevicesSerialSessionBase
+public class ModbusRtu : ReadWriteDevicesSerialPortClientBase
 {
     /// <summary>
     /// ModbusRtu

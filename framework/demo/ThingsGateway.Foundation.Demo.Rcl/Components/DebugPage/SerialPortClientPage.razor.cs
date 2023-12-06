@@ -13,7 +13,7 @@
 namespace ThingsGateway.Foundation.Demo;
 
 /// <inheritdoc/>
-public partial class SerialSessionPage : IDisposable
+public partial class SerialPortClientPage : IDisposable
 {
     /// <summary>
     /// 日志输出
@@ -36,7 +36,7 @@ public partial class SerialSessionPage : IDisposable
     /// 获取对象
     /// </summary>
     /// <returns></returns>
-    public SerialPortClient GetSerialSession()
+    public SerialPortClient GetSerialPortClient()
     {
         _config ??= new TouchSocketConfig();
         var LogMessage = new LoggerGroup() { LogLevel = LogLevel.Trace };
@@ -81,7 +81,7 @@ public partial class SerialSessionPage : IDisposable
         try
         {
             _serialPortClient.Close();
-            await GetSerialSession().ConnectAsync();
+            await GetSerialPortClient().ConnectAsync();
         }
         catch (Exception ex)
         {

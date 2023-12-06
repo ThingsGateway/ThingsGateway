@@ -17,9 +17,9 @@ namespace ThingsGateway.Foundation.Demo;
 public partial class ModbusSerialServerDebugPage
 {
     /// <summary>
-    /// SerialSessionPage
+    /// SerialPortClientPage
     /// </summary>
-    private SerialSessionPage _serialSessionPage;
+    private SerialPortClientPage _serialPortClientPage;
     private DriverDebugUIPage _driverDebugUIPage;
 
     private ThingsGateway.Foundation.Adapter.Modbus.ModbusSerialServer _plc;
@@ -70,9 +70,9 @@ public partial class ModbusSerialServerDebugPage
                 """, "csharp"));
 
 
-            if (_serialSessionPage != null)
-                _serialSessionPage.LogAction = _driverDebugUIPage.LogOut;
-            _plc = new ThingsGateway.Foundation.Adapter.Modbus.ModbusSerialServer(_serialSessionPage.GetSerialSession());
+            if (_serialPortClientPage != null)
+                _serialPortClientPage.LogAction = _driverDebugUIPage.LogOut;
+            _plc = new ThingsGateway.Foundation.Adapter.Modbus.ModbusSerialServer(_serialPortClientPage.GetSerialPortClient());
             _driverDebugUIPage.Plc = _plc;
             //载入配置
             StateHasChanged();

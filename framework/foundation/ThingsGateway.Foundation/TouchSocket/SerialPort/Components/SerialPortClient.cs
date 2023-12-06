@@ -232,8 +232,7 @@ namespace ThingsGateway.Foundation.SerialPorts
             {
                 if (this.m_online)
                 {
-                    Task.Factory.StartNew(this.PrivateOnDisconnecting, new DisconnectEventArgs(true, msg));
-                    this.MainSerialPort.TryClose();
+                    this.PrivateOnDisconnecting(new DisconnectEventArgs(true, msg)).GetFalseAwaitResult();
                     this.BreakOut(true, msg);
                 }
             }
@@ -249,7 +248,7 @@ namespace ThingsGateway.Foundation.SerialPorts
             {
                 if (this.m_online)
                 {
-                    Task.Factory.StartNew(this.PrivateOnDisconnecting, new DisconnectEventArgs(true, $"{nameof(Dispose)}主动断开"));
+                    this.PrivateOnDisconnecting(new DisconnectEventArgs(true, $"{nameof(Dispose)}主动断开")).GetFalseAwaitResult();
                     this.BreakOut(true, $"{nameof(Dispose)}主动断开");
                 }
             }
@@ -357,7 +356,7 @@ namespace ThingsGateway.Foundation.SerialPorts
                     this.MainSerialPort.SafeDispose();
                     this.m_delaySender.SafeDispose();
                     this.DataHandlingAdapter.SafeDispose();
-                    Task.Factory.StartNew(this.PrivateOnDisconnected, new DisconnectEventArgs(manual, msg));
+                    this.PrivateOnDisconnected(new DisconnectEventArgs(manual, msg)).GetFalseAwaitResult();
                 }
             }
         }
@@ -430,7 +429,7 @@ namespace ThingsGateway.Foundation.SerialPorts
         }
         private SerialPort CreateSerial(SerialPortOption serialPortOption)
         {
-            SerialPortOption = serialPortOption;
+            SerialPortOption = serialPortOption.Map<SerialPortOption>();
             var serialPort = new SerialPort(serialPortOption.PortName, serialPortOption.BaudRate, serialPortOption.Parity, serialPortOption.DataBits, serialPortOption.StopBits);
             return serialPort;
         }
