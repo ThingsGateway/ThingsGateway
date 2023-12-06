@@ -38,6 +38,6 @@ namespace ThingsGateway.Foundation.Core
         /// <summary>
         /// 插件管理器
         /// </summary>
-        IPluginsManager PluginsManager { get; }
+        IPluginManager PluginManager { get; }
     }
 }

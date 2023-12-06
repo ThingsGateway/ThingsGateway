@@ -96,21 +96,21 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
         /// <summary>
         /// 使用DmtpRpc插件
         /// </summary>
-        /// <param name="pluginsManager"></param>
+        /// <param name="pluginManager"></param>
         /// <returns></returns>
-        public static DmtpRpcFeature UseDmtpRpc(this IPluginsManager pluginsManager)
+        public static DmtpRpcFeature UseDmtpRpc(this IPluginManager pluginManager)
         {
-            return pluginsManager.Add<DmtpRpcFeature>();
+            return pluginManager.Add<DmtpRpcFeature>();
         }
 
         /// <summary>
         /// 使用自定义的DmtpRpc插件。
         /// </summary>
-        /// <param name="pluginsManager"></param>
+        /// <param name="pluginManager"></param>
         /// <returns></returns>
-        public static DmtpRpcFeature UseDmtpRpc<TDmtpRpcFeature>(this IPluginsManager pluginsManager) where TDmtpRpcFeature : DmtpRpcFeature
+        public static DmtpRpcFeature UseDmtpRpc<TDmtpRpcFeature>(this IPluginManager pluginManager) where TDmtpRpcFeature : DmtpRpcFeature
         {
-            return pluginsManager.Add<TDmtpRpcFeature>();
+            return pluginManager.Add<TDmtpRpcFeature>();
         }
 
         #endregion 插件扩展

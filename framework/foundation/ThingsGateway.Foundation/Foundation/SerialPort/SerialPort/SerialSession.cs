@@ -98,7 +98,7 @@ public class SerialSessionBase : SetupConfigObject, ISerialSession
                     return;
                 }
             }
-            await this.PluginsManager.RaiseAsync(nameof(ITcpConnectedPlugin.OnTcpConnected), this, e);
+            await this.PluginManager.RaiseAsync(nameof(ITcpConnectedPlugin.OnTcpConnected), this, e);
         }
         catch (Exception ex)
         {
@@ -132,7 +132,7 @@ public class SerialSessionBase : SetupConfigObject, ISerialSession
                     return;
                 }
             }
-            await this.PluginsManager.RaiseAsync(nameof(ITcpConnectingPlugin.OnTcpConnecting), this, e);
+            await this.PluginManager.RaiseAsync(nameof(ITcpConnectingPlugin.OnTcpConnecting), this, e);
         }
         catch (Exception ex)
         {
@@ -163,7 +163,7 @@ public class SerialSessionBase : SetupConfigObject, ISerialSession
                 }
             }
 
-            await this.PluginsManager.RaiseAsync(nameof(ITcpDisconnectedPlugin.OnTcpDisconnected), this, e).ConfigureAwait(false);
+            await this.PluginManager.RaiseAsync(nameof(ITcpDisconnectedPlugin.OnTcpDisconnected), this, e).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -193,7 +193,7 @@ public class SerialSessionBase : SetupConfigObject, ISerialSession
                 }
             }
 
-            await this.PluginsManager.RaiseAsync(nameof(ITcpDisconnectingPlugin.OnTcpDisconnecting), this, e).ConfigureAwait(false);
+            await this.PluginManager.RaiseAsync(nameof(ITcpDisconnectingPlugin.OnTcpDisconnecting), this, e).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -415,7 +415,7 @@ public class SerialSessionBase : SetupConfigObject, ISerialSession
     /// <returns>如果返回<see langword="true"/>则表示数据已被处理，且不会再向下传递。</returns>
     protected virtual Task ReceivedData(ReceivedDataEventArgs e)
     {
-        return this.PluginsManager.RaiseAsync(nameof(ITcpReceivedPlugin.OnTcpReceived), this, e);
+        return this.PluginManager.RaiseAsync(nameof(ITcpReceivedPlugin.OnTcpReceived), this, e);
     }
 
     /// <summary>
@@ -427,10 +427,10 @@ public class SerialSessionBase : SetupConfigObject, ISerialSession
     /// <returns>返回值表示是否允许发送</returns>
     protected virtual async Task<bool> SendingData(byte[] buffer, int offset, int length)
     {
-        if (this.PluginsManager.GetPluginCount(nameof(ITcpSendingPlugin.OnTcpSending)) > 0)
+        if (this.PluginManager.GetPluginCount(nameof(ITcpSendingPlugin.OnTcpSending)) > 0)
         {
             var args = new SendingEventArgs(buffer, offset, length);
-            await this.PluginsManager.RaiseAsync(nameof(ITcpSendingPlugin.OnTcpSending), this, args).ConfigureAwait(false);
+            await this.PluginManager.RaiseAsync(nameof(ITcpSendingPlugin.OnTcpSending), this, args).ConfigureAwait(false);
             return args.IsPermitOperation;
         }
         return true;
@@ -737,9 +737,9 @@ public class SerialSessionBase : SetupConfigObject, ISerialSession
     /// <returns>如果返回<see langword="true"/>则表示数据已被处理，且不会再向下传递。</returns>
     protected virtual Task<bool> ReceivingData(ByteBlock byteBlock)
     {
-        if (this.PluginsManager.GetPluginCount(nameof(ITcpReceivingPlugin.OnTcpReceiving)) > 0)
+        if (this.PluginManager.GetPluginCount(nameof(ITcpReceivingPlugin.OnTcpReceiving)) > 0)
         {
-            return this.PluginsManager.RaiseAsync(nameof(ITcpReceivingPlugin.OnTcpReceiving), this, new ByteBlockEventArgs(byteBlock));
+            return this.PluginManager.RaiseAsync(nameof(ITcpReceivingPlugin.OnTcpReceiving), this, new ByteBlockEventArgs(byteBlock));
         }
         return Task.FromResult(false);
     }

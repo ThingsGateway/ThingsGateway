@@ -360,13 +360,8 @@ namespace ThingsGateway.Foundation.Sockets
             return this.SocketClients.SocketClientExist(id);
         }
 
-        /// <summary>
         /// <inheritdoc/>
-        /// </summary>
-        /// <exception cref="Exception"></exception>
-        /// <exception cref="ArgumentNullException"></exception>
-        /// <exception cref="System.Exception"></exception>
-        public override IService Start()
+        public override void Start()
         {
             if (this.Config is null)
             {
@@ -427,14 +422,14 @@ namespace ThingsGateway.Foundation.Sockets
                 }
                 this.m_serverState = ServerState.Running;
 
-                this.PluginsManager?.Raise(nameof(IServerStartedPlugin.OnServerStarted), this, new ServiceStateEventArgs(this.m_serverState, default));
+                this.PluginManager?.Raise(nameof(IServerStartedPlugin.OnServerStarted), this, new ServiceStateEventArgs(this.m_serverState, default));
                 return this;
             }
             catch (Exception ex)
             {
                 this.m_serverState = ServerState.Exception;
 
-                this.PluginsManager?.Raise(nameof(IServerStartedPlugin.OnServerStarted), this, new ServiceStateEventArgs(this.m_serverState, ex) { Message = ex.Message });
+                this.PluginManager?.Raise(nameof(IServerStartedPlugin.OnServerStarted), this, new ServiceStateEventArgs(this.m_serverState, ex) { Message = ex.Message });
                 throw;
             }
         }
@@ -472,7 +467,7 @@ namespace ThingsGateway.Foundation.Sockets
             this.Clear();
 
             this.m_serverState = ServerState.Stopped;
-            this.PluginsManager?.Raise(nameof(IServerStopedPlugin.OnServerStoped), this, new ServiceStateEventArgs(this.m_serverState, default));
+            this.PluginManager?.Raise(nameof(IServerStopedPlugin.OnServerStoped), this, new ServiceStateEventArgs(this.m_serverState, default));
 
             return this;
         }
@@ -524,9 +519,9 @@ namespace ThingsGateway.Foundation.Sockets
                 this.Clear();
 
                 this.m_serverState = ServerState.Disposed;
-                this.PluginsManager?.Raise(nameof(IServerStopedPlugin.OnServerStoped), this, new ServiceStateEventArgs(this.m_serverState, default));
+                this.PluginManager?.Raise(nameof(IServerStopedPlugin.OnServerStoped), this, new ServiceStateEventArgs(this.m_serverState, default));
 
-                this.PluginsManager?.SafeDispose();
+                this.PluginManager?.SafeDispose();
             }
             base.Dispose(disposing);
         }
@@ -650,7 +645,7 @@ namespace ThingsGateway.Foundation.Sockets
                 client.InternalSetService(this);
                 client.InternalSetListenOption(monitor.Option);
                 client.InternalSetSocket(socket);
-                client.InternalSetPluginsManager(this.PluginsManager);
+                client.InternalSetPluginManager(this.PluginManager);
 
                 if (client.CanSetDataHandlingAdapter)
                 {

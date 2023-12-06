@@ -36,12 +36,12 @@ namespace ThingsGateway.Foundation.Dmtp
         /// 默认心跳每3秒进行一次。最大失败3次即判定为断开连接。
         /// </para>
         /// </summary>
-        /// <param name="pluginsManager"></param>
+        /// <param name="pluginManager"></param>
         /// <returns></returns>
-        public static DmtpHeartbeatPlugin UseDmtpHeartbeat(this IPluginsManager pluginsManager)
+        public static DmtpHeartbeatPlugin UseDmtpHeartbeat(this IPluginManager pluginManager)
         {
             var heartbeat = new DmtpHeartbeatPlugin();
-            pluginsManager.Add(heartbeat);
+            pluginManager.Add(heartbeat);
             return heartbeat;
         }
     }

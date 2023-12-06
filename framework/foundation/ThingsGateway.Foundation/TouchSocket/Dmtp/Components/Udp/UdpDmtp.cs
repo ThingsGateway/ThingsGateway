@@ -86,9 +86,9 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
             var message = DmtpMessage.CreateFrom(e.ByteBlock);
             if (!await client.InputReceivedData(message))
             {
-                if (this.PluginsManager.Enable)
+                if (this.PluginManager.Enable)
                 {
-                    await this.PluginsManager.RaiseAsync(nameof(IDmtpReceivedPlugin.OnDmtpReceived), client, new DmtpMessageEventArgs(message));
+                    await this.PluginManager.RaiseAsync(nameof(IDmtpReceivedPlugin.OnDmtpReceived), client, new DmtpMessageEventArgs(message));
                 }
             }
         }
@@ -107,7 +107,7 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
                 {
                     Client = this,
                 };
-                if (udpRpcActor.Created(this.PluginsManager))
+                if (udpRpcActor.Created(this.PluginManager))
                 {
                     this.m_udpDmtpClients.TryAdd(endPoint, udpRpcActor);
                 }

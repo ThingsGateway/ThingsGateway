@@ -60,11 +60,11 @@ namespace ThingsGateway.Foundation.Http
         /// </summary>
         protected virtual Task OnReceivedHttpRequest(HttpRequest request)
         {
-            if (this.PluginsManager.GetPluginCount(nameof(IHttpPlugin.OnHttpRequest)) > 0)
+            if (this.PluginManager.GetPluginCount(nameof(IHttpPlugin.OnHttpRequest)) > 0)
             {
                 var e = new HttpContextEventArgs(new HttpContext(request));
 
-                return this.PluginsManager.RaiseAsync(nameof(IHttpPlugin.OnHttpRequest), this, e);
+                return this.PluginManager.RaiseAsync(nameof(IHttpPlugin.OnHttpRequest), this, e);
             }
 
             return EasyTask.CompletedTask;

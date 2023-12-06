@@ -35,14 +35,14 @@ namespace ThingsGateway.Foundation.Core
         /// <summary>
         /// 配置插件。
         /// </summary>
-        public static readonly DependencyProperty<Action<IPluginsManager>> ConfigurePluginsProperty =
-            DependencyProperty<Action<IPluginsManager>>.Register("ConfigurePlugins", null);
+        public static readonly DependencyProperty<Action<IPluginManager>> ConfigurePluginsProperty =
+            DependencyProperty<Action<IPluginManager>>.Register("ConfigurePlugins", null);
 
         /// <summary>
         /// 容器
         /// </summary>
-        public static readonly DependencyProperty<IPluginsManager> PluginsManagerProperty =
-            DependencyProperty<IPluginsManager>.Register("PluginsManager", null);
+        public static readonly DependencyProperty<IPluginManager> PluginsManagerProperty =
+            DependencyProperty<IPluginManager>.Register("PluginManager", null);
 
         /// <summary>
         /// 配置插件。
@@ -50,7 +50,7 @@ namespace ThingsGateway.Foundation.Core
         /// <param name="config"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        public static TouchSocketConfig ConfigurePlugins(this TouchSocketConfig config, Action<IPluginsManager> value)
+        public static TouchSocketConfig ConfigurePlugins(this TouchSocketConfig config, Action<IPluginManager> value)
         {
             if (config.TryGetValue(ConfigurePluginsProperty, out var action))
             {
@@ -70,7 +70,7 @@ namespace ThingsGateway.Foundation.Core
         /// <param name="config"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        public static TouchSocketConfig SetPluginsManager(this TouchSocketConfig config, IPluginsManager value)
+        public static TouchSocketConfig SetPluginsManager(this TouchSocketConfig config, IPluginManager value)
         {
             config.SetValue(PluginsManagerProperty, value);
             return config;

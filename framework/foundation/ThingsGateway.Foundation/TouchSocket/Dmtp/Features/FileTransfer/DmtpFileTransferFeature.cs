@@ -18,17 +18,17 @@ namespace ThingsGateway.Foundation.Dmtp.FileTransfer
     public sealed class DmtpFileTransferFeature : PluginBase, IDmtpHandshakingPlugin, IDmtpReceivedPlugin, IDmtpFeature
     {
         private readonly IFileResourceController m_fileResourceController;
-        private readonly IPluginsManager m_pluginsManager;
+        private readonly IPluginManager m_pluginsManager;
 
         /// <summary>
         /// 能够基于Dmtp协议，提供文件传输的能力
         /// </summary>
-        /// <param name="pluginsManager"></param>
+        /// <param name="pluginManager"></param>
         /// <param name="container"></param>
-        public DmtpFileTransferFeature(IPluginsManager pluginsManager, IContainer container)
+        public DmtpFileTransferFeature(IPluginManager pluginManager, IContainer container)
         {
             this.m_fileResourceController = container.TryResolve<IFileResourceController>() ?? new FileResourceController();
-            this.m_pluginsManager = pluginsManager;
+            this.m_pluginsManager = pluginManager;
             this.MaxSmallFileLength = 1024 * 1024;
             this.SetProtocolFlags(30);
         }

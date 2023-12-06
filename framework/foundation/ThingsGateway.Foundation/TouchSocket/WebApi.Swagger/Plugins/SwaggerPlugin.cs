@@ -136,10 +136,10 @@ namespace ThingsGateway.Foundation.WebApi.Swagger
         }
 
         /// <inheritdoc/>
-        protected override void Loaded(IPluginsManager pluginsManager)
+        protected override void Loaded(IPluginManager pluginManager)
         {
-            base.Loaded(pluginsManager);
-            pluginsManager.Add<IHttpSocketClient, HttpContextEventArgs>(nameof(IHttpPlugin.OnHttpRequest), this.OnHttpRequest);
+            base.Loaded(pluginManager);
+            pluginManager.Add<IHttpSocketClient, HttpContextEventArgs>(nameof(IHttpPlugin.OnHttpRequest), this.OnHttpRequest);
         }
 
         /// <summary>

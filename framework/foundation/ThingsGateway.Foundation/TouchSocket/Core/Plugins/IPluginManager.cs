@@ -28,7 +28,7 @@ namespace ThingsGateway.Foundation.Core
     /// <summary>
     /// 插件管理器接口
     /// </summary>
-    public interface IPluginsManager : IDisposable
+    public interface IPluginManager : IDisposable
     {
         /// <summary>
         /// 标识该插件管理器是否可用。

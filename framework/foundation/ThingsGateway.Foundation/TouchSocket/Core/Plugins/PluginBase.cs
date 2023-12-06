@@ -18,14 +18,14 @@ namespace ThingsGateway.Foundation.Core
     public class PluginBase : DisposableObject, IPlugin
     {
 
-        /// <inheritdoc cref="IPlugin.Loaded(IPluginsManager)"/>
-        protected virtual void Loaded(IPluginsManager pluginsManager)
+        /// <inheritdoc cref="IPlugin.Loaded(IPluginManager)"/>
+        protected virtual void Loaded(IPluginManager pluginManager)
         {
         }
 
-        void IPlugin.Loaded(IPluginsManager pluginsManager)
+        void IPlugin.Loaded(IPluginManager pluginManager)
         {
-            this.Loaded(pluginsManager);
+            this.Loaded(pluginManager);
         }
     }
 }

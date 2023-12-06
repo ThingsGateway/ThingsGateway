@@ -32,7 +32,7 @@ namespace ThingsGateway.Foundation.Core
     public sealed class PluginOptionAttribute : Attribute
     {
         /// <summary>
-        /// 标识该插件在一个<see cref="IPluginsManager"/>中仅仅只会有一个实例。
+        /// 标识该插件在一个<see cref="IPluginManager"/>中仅仅只会有一个实例。
         /// </summary>
         public bool Singleton { get; set; }
 

@@ -217,7 +217,7 @@ namespace ThingsGateway.Foundation.Dmtp
         /// <param name="e"></param>
         protected virtual void OnDisconnected(DisconnectEventArgs e)
         {
-            if (this.PluginsManager.Raise(nameof(ITcpDisconnectedPlugin.OnTcpDisconnected), this, e))
+            if (this.PluginManager.Raise(nameof(ITcpDisconnectedPlugin.OnTcpDisconnected), this, e))
             {
                 return;
             }
@@ -289,7 +289,7 @@ namespace ThingsGateway.Foundation.Dmtp
             var message = (DmtpMessage)requestInfo;
             if (!this.m_dmtpActor.InputReceivedData(message).GetFalseAwaitResult())
             {
-                this.PluginsManager?.Raise(nameof(IDmtpReceivedPlugin.OnDmtpReceived), this, new DmtpMessageEventArgs(message));
+                this.PluginManager?.Raise(nameof(IDmtpReceivedPlugin.OnDmtpReceived), this, new DmtpMessageEventArgs(message));
             }
         }
 
@@ -387,7 +387,7 @@ namespace ThingsGateway.Foundation.Dmtp
                 return;
             }
 
-            await this.PluginsManager.RaiseAsync(nameof(IDmtpCreateChannelPlugin.OnCreateChannel), this, e);
+            await this.PluginManager.RaiseAsync(nameof(IDmtpCreateChannelPlugin.OnCreateChannel), this, e);
         }
 
         /// <summary>
@@ -400,7 +400,7 @@ namespace ThingsGateway.Foundation.Dmtp
             {
                 return;
             }
-            await this.PluginsManager.RaiseAsync(nameof(IDmtpHandshakedPlugin.OnDmtpHandshaked), this, e);
+            await this.PluginManager.RaiseAsync(nameof(IDmtpHandshakedPlugin.OnDmtpHandshaked), this, e);
         }
 
         /// <summary>
@@ -413,7 +413,7 @@ namespace ThingsGateway.Foundation.Dmtp
             {
                 return;
             }
-            await this.PluginsManager.RaiseAsync(nameof(IDmtpHandshakingPlugin.OnDmtpHandshaking), this, e);
+            await this.PluginManager.RaiseAsync(nameof(IDmtpHandshakingPlugin.OnDmtpHandshaking), this, e);
         }
 
         /// <summary>
@@ -426,7 +426,7 @@ namespace ThingsGateway.Foundation.Dmtp
             {
                 return;
             }
-            await this.PluginsManager.RaiseAsync(nameof(IDmtpRoutingPlugin.OnDmtpRouting), this, e);
+            await this.PluginManager.RaiseAsync(nameof(IDmtpRoutingPlugin.OnDmtpRouting), this, e);
         }
 
         #endregion 事件触发

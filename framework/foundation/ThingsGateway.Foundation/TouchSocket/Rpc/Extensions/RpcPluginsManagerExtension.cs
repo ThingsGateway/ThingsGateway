@@ -33,21 +33,21 @@ namespace ThingsGateway.Foundation.Core
         /// <summary>
         /// 使用全局Rpc服务注入。
         /// </summary>
-        /// <param name="pluginsManager"></param>
-        public static GlobalRpcStorePlugin UseGlobalRpcStore(this IPluginsManager pluginsManager)
+        /// <param name="pluginManager"></param>
+        public static GlobalRpcStorePlugin UseGlobalRpcStore(this IPluginManager pluginManager)
         {
-            return pluginsManager.Add<GlobalRpcStorePlugin>();
+            return pluginManager.Add<GlobalRpcStorePlugin>();
         }
 
         /// <summary>
         /// 使用全局Rpc服务注入。
         /// </summary>
-        /// <param name="pluginsManager"></param>
+        /// <param name="pluginManager"></param>
         /// <param name="action"></param>
         /// <returns></returns>
-        public static GlobalRpcStorePlugin UseGlobalRpcStore(this IPluginsManager pluginsManager, Action<RpcStore> action)
+        public static GlobalRpcStorePlugin UseGlobalRpcStore(this IPluginManager pluginManager, Action<RpcStore> action)
         {
-            var plugin = pluginsManager.Add<GlobalRpcStorePlugin>();
+            var plugin = pluginManager.Add<GlobalRpcStorePlugin>();
             plugin.ConfigureRpcStore(action);
             return plugin;
         }

@@ -144,11 +144,11 @@ namespace ThingsGateway.Foundation.Sockets
         }
 
         /// <inheritdoc/>
-        protected override void Loaded(IPluginsManager pluginsManager)
+        protected override void Loaded(IPluginManager pluginManager)
         {
-            base.Loaded(pluginsManager);
-            pluginsManager.Add<object, ConfigEventArgs>(nameof(ILoadedConfigPlugin.OnLoadedConfig), this.OnLoadedConfig);
-            pluginsManager.Add<TClient, DisconnectEventArgs>(nameof(ITcpDisconnectedPlugin.OnTcpDisconnected), this.OnTcpDisconnected);
+            base.Loaded(pluginManager);
+            pluginManager.Add<object, ConfigEventArgs>(nameof(ILoadedConfigPlugin.OnLoadedConfig), this.OnLoadedConfig);
+            pluginManager.Add<TClient, DisconnectEventArgs>(nameof(ITcpDisconnectedPlugin.OnTcpDisconnected), this.OnTcpDisconnected);
         }
 
         private Task OnLoadedConfig(object sender, ConfigEventArgs e)

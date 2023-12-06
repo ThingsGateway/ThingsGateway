@@ -33,21 +33,21 @@ namespace ThingsGateway.Foundation.Core
         /// <summary>
         /// 默认的Http服务。为Http做兜底拦截。该插件应该最后添加。
         /// </summary>
-        /// <param name="pluginsManager"></param>
+        /// <param name="pluginManager"></param>
         /// <returns></returns>
-        public static DefaultHttpServicePlugin UseDefaultHttpServicePlugin(this IPluginsManager pluginsManager)
+        public static DefaultHttpServicePlugin UseDefaultHttpServicePlugin(this IPluginManager pluginManager)
         {
-            return pluginsManager.Add<DefaultHttpServicePlugin>();
+            return pluginManager.Add<DefaultHttpServicePlugin>();
         }
 
         /// <summary>
         /// 使用Http静态页面。
         /// </summary>
-        /// <param name="pluginsManager"></param>
+        /// <param name="pluginManager"></param>
         /// <returns></returns>
-        public static HttpStaticPagePlugin UseHttpStaticPage(this IPluginsManager pluginsManager)
+        public static HttpStaticPagePlugin UseHttpStaticPage(this IPluginManager pluginManager)
         {
-            return pluginsManager.Add<HttpStaticPagePlugin>();
+            return pluginManager.Add<HttpStaticPagePlugin>();
         }
     }
 }

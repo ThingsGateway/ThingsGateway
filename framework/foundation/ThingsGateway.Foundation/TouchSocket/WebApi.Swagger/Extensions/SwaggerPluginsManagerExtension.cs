@@ -20,11 +20,11 @@ namespace ThingsGateway.Foundation.WebApi.Swagger
         /// <summary>
         /// 使用<see cref="SwaggerPlugin"/>插件。
         /// </summary>
-        /// <param name="pluginsManager"></param>
+        /// <param name="pluginManager"></param>
         /// <returns></returns>
-        public static SwaggerPlugin UseSwagger(this IPluginsManager pluginsManager)
+        public static SwaggerPlugin UseSwagger(this IPluginManager pluginManager)
         {
-            return pluginsManager.Add<SwaggerPlugin>();
+            return pluginManager.Add<SwaggerPlugin>();
         }
     }
 }

@@ -113,7 +113,7 @@ namespace ThingsGateway.Foundation.Sockets
         private async Task TcpClient_Disconnected(ITcpClientBase client, DisconnectEventArgs e)
         {
             await EasyTask.CompletedTask;
-            foreach (var item in client.PluginsManager.Plugins)
+            foreach (var item in client.PluginManager.Plugins)
             {
                 if (typeof(ReconnectionPlugin<>) == item.GetType().GetGenericTypeDefinition())
                 {

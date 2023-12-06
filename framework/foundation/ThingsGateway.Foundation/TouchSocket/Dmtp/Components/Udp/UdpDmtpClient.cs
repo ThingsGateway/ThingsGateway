@@ -33,7 +33,7 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
     {
         private readonly EndPoint m_endPoint;
         private readonly UdpSessionBase m_udpSession;
-        private IPluginsManager pluginsManager;
+        private IPluginManager pluginManager;
 
         /// <summary>
         /// UdpDmtp终端客户端
@@ -55,18 +55,18 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
 
         private Task OnDmtpActorCreatedChannel(DmtpActor actor, CreateChannelEventArgs e)
         {
-            return this.pluginsManager.RaiseAsync(nameof(IDmtpCreateChannelPlugin.OnCreateChannel), this, e);
+            return this.pluginManager.RaiseAsync(nameof(IDmtpCreateChannelPlugin.OnCreateChannel), this, e);
         }
 
-        public bool Created(IPluginsManager pluginsManager)
+        public bool Created(IPluginManager pluginManager)
         {
-            this.pluginsManager = pluginsManager;
+            this.pluginManager = pluginManager;
             var args = new DmtpVerifyEventArgs()
             {
                 Id = this.Id,
                 IsPermitOperation = true
             };
-            pluginsManager.Raise(nameof(IDmtpHandshakingPlugin.OnDmtpHandshaking), this, args);
+            pluginManager.Raise(nameof(IDmtpHandshakingPlugin.OnDmtpHandshaking), this, args);
 
             if (args.IsPermitOperation == false)
             {
@@ -79,7 +79,7 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
             {
                 Id = this.Id
             };
-            pluginsManager.Raise(nameof(IDmtpHandshakedPlugin.OnDmtpHandshaked), this, args);
+            pluginManager.Raise(nameof(IDmtpHandshakedPlugin.OnDmtpHandshaked), this, args);
 
             return true;
         }

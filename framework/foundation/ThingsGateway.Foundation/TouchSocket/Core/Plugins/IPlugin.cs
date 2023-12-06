@@ -31,9 +31,9 @@ namespace ThingsGateway.Foundation.Core
     public interface IPlugin : IDisposable
     {
         /// <summary>
-        /// 在插件被成功添加在<see cref="IPluginsManager"/>时执行。
+        /// 在插件被成功添加在<see cref="IPluginManager"/>时执行。
         /// </summary>
-        /// <param name="pluginsManager"></param>
-        void Loaded(IPluginsManager pluginsManager);
+        /// <param name="pluginManager"></param>
+        void Loaded(IPluginManager pluginManager);
     }
 }

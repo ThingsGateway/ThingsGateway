@@ -179,7 +179,7 @@ namespace ThingsGateway.Foundation.Http.WebSockets
                     return;
                 }
             }
-            await this.PluginsManager.RaiseAsync(nameof(IWebSocketHandshakedPlugin.OnWebSocketHandshaked), this, e);
+            await this.PluginManager.RaiseAsync(nameof(IWebSocketHandshakedPlugin.OnWebSocketHandshaked), this, e);
         }
 
         /// <summary>
@@ -200,7 +200,7 @@ namespace ThingsGateway.Foundation.Http.WebSockets
                     return;
                 }
             }
-            await this.PluginsManager.RaiseAsync(nameof(IWebSocketHandshakingPlugin.OnWebSocketHandshaking), this, e).ConfigureFalseAwait();
+            await this.PluginManager.RaiseAsync(nameof(IWebSocketHandshakingPlugin.OnWebSocketHandshaking), this, e).ConfigureFalseAwait();
         }
 
         #endregion 事件
@@ -258,7 +258,7 @@ namespace ThingsGateway.Foundation.Http.WebSockets
         /// <returns></returns>
         protected virtual async Task OnReceivedWSDataFrame(WSDataFrameEventArgs e)
         {
-            await this.PluginsManager.RaiseAsync(nameof(IWebSocketReceivedPlugin.OnWebSocketReceived), this, e).ConfigureFalseAwait();
+            await this.PluginManager.RaiseAsync(nameof(IWebSocketReceivedPlugin.OnWebSocketReceived), this, e).ConfigureFalseAwait();
         }
     }
 }

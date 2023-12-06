@@ -34,11 +34,11 @@ namespace ThingsGateway.Foundation.Core
         /// <summary>
         /// 使用WebApi的插件。仅服务器可用。
         /// </summary>
-        /// <param name="pluginsManager"></param>
+        /// <param name="pluginManager"></param>
         /// <returns></returns>
-        public static WebApiParserPlugin UseWebApi(this IPluginsManager pluginsManager)
+        public static WebApiParserPlugin UseWebApi(this IPluginManager pluginManager)
         {
-            return pluginsManager.Add<WebApiParserPlugin>();
+            return pluginManager.Add<WebApiParserPlugin>();
         }
     }
 }

@@ -35,11 +35,11 @@ namespace ThingsGateway.Foundation.Sockets
         ///  <para>当在设置的周期内，没有接收/发送任何数据，则判定该客户端掉线。执行清理。默认配置：60秒为一个周期，同时检测发送和接收。</para>
         ///  服务器、客户端均适用。
         /// </summary>
-        /// <param name="pluginsManager"></param>
+        /// <param name="pluginManager"></param>
         /// <returns></returns>
-        public static CheckClearPlugin<ITcpClientBase> UseCheckClear(this IPluginsManager pluginsManager)
+        public static CheckClearPlugin<ITcpClientBase> UseCheckClear(this IPluginManager pluginManager)
         {
-            return pluginsManager.Add<CheckClearPlugin<ITcpClientBase>>();
+            return pluginManager.Add<CheckClearPlugin<ITcpClientBase>>();
         }
 
         /// <summary>
@@ -47,36 +47,36 @@ namespace ThingsGateway.Foundation.Sockets
         ///  <para>当在设置的周期内，没有接收/发送任何数据，则判定该客户端掉线。执行清理。默认配置：60秒为一个周期，同时检测发送和接收。</para>
         ///  服务器、客户端均适用。
         /// </summary>
-        /// <param name="pluginsManager"></param>
+        /// <param name="pluginManager"></param>
         /// <returns></returns>
-        public static CheckClearPlugin<TClient> UseCheckClear<TClient>(this IPluginsManager pluginsManager) where TClient : ITcpClientBase
+        public static CheckClearPlugin<TClient> UseCheckClear<TClient>(this IPluginManager pluginManager) where TClient : ITcpClientBase
         {
-            return pluginsManager.Add<CheckClearPlugin<TClient>>();
+            return pluginManager.Add<CheckClearPlugin<TClient>>();
         }
         #region Reconnection
         /// <summary>
         /// 使用断线重连。
         /// </summary>
         /// <typeparam name="TClient"></typeparam>
-        /// <param name="pluginsManager"></param>
+        /// <param name="pluginManager"></param>
         /// <returns></returns>
-        public static ReconnectionPlugin<TClient> UseReconnection<TClient>(this IPluginsManager pluginsManager) where TClient : class, ITcpClient
+        public static ReconnectionPlugin<TClient> UseReconnection<TClient>(this IPluginManager pluginManager) where TClient : class, ITcpClient
         {
             var reconnectionPlugin = new ReconnectionPlugin<TClient>();
-            pluginsManager.Add(reconnectionPlugin);
+            pluginManager.Add(reconnectionPlugin);
             return reconnectionPlugin;
         }
         /// <summary>
         /// 使用断线重连。
         /// <para>该效果仅客户端在完成首次连接，且为被动断开时有效。</para>
         /// </summary>
-        /// <param name="pluginsManager"></param>
+        /// <param name="pluginManager"></param>
         /// <param name="successCallback">成功回调函数</param>
         /// <param name="tryCount">尝试重连次数，设为-1时则永远尝试连接</param>
         /// <param name="printLog">是否输出日志。</param>
         /// <param name="sleepTime">失败时，停留时间</param>
         /// <returns></returns>
-        public static ReconnectionPlugin<ITcpClient> UseReconnection(this IPluginsManager pluginsManager, int tryCount = 10, bool printLog = false, int sleepTime = 1000, Action<ITcpClient> successCallback = null)
+        public static ReconnectionPlugin<ITcpClient> UseReconnection(this IPluginManager pluginManager, int tryCount = 10, bool printLog = false, int sleepTime = 1000, Action<ITcpClient> successCallback = null)
         {
             var reconnectionPlugin = new ReconnectionPlugin<ITcpClient>();
             reconnectionPlugin.SetConnectAction(async client =>
@@ -109,7 +109,7 @@ namespace ThingsGateway.Foundation.Sockets
                 }
                 return true;
             });
-            pluginsManager.Add(reconnectionPlugin);
+            pluginManager.Add(reconnectionPlugin);
             return reconnectionPlugin;
         }
 
@@ -117,12 +117,12 @@ namespace ThingsGateway.Foundation.Sockets
         /// 使用断线重连。
         /// <para>该效果仅客户端在完成首次连接，且为被动断开时有效。</para>
         /// </summary>
-        /// <param name="pluginsManager"></param>
+        /// <param name="pluginManager"></param>
         /// <param name="sleepTime">失败时间隔时间</param>
         /// <param name="failCallback">失败时回调（参数依次为：客户端，本轮尝试重连次数，异常信息）。如果回调为null或者返回false，则终止尝试下次连接。</param>
         /// <param name="successCallback">成功连接时回调。</param>
         /// <returns></returns>
-        public static ReconnectionPlugin<ITcpClient> UseReconnection(this IPluginsManager pluginsManager, TimeSpan sleepTime,
+        public static ReconnectionPlugin<ITcpClient> UseReconnection(this IPluginManager pluginManager, TimeSpan sleepTime,
             Func<ITcpClient, int, Exception, bool> failCallback = default,
             Action<ITcpClient> successCallback = default)
         {
@@ -157,7 +157,7 @@ namespace ThingsGateway.Foundation.Sockets
                     }
                 }
             });
-            pluginsManager.Add(reconnectionPlugin);
+            pluginManager.Add(reconnectionPlugin);
             return reconnectionPlugin;
         }
         #endregion

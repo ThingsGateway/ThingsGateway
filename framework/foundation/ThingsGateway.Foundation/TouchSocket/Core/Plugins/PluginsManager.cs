@@ -29,7 +29,7 @@ namespace ThingsGateway.Foundation.Core
     /// <summary>
     /// 表示插件管理器。
     /// </summary>
-    public class PluginsManager : DisposableObject, IPluginsManager
+    public class PluginManager : DisposableObject, IPluginManager
     {
         private readonly IContainer m_container;
         private readonly object m_locker = new object();
@@ -40,7 +40,7 @@ namespace ThingsGateway.Foundation.Core
         /// 表示插件管理器
         /// </summary>
         /// <param name="container"></param>
-        public PluginsManager(IContainer container)
+        public PluginManager(IContainer container)
         {
             this.m_container = container;
         }
@@ -51,7 +51,7 @@ namespace ThingsGateway.Foundation.Core
         /// <inheritdoc/>
         public IEnumerable<IPlugin> Plugins => this.m_plugins;
 
-        void IPluginsManager.Add(IPlugin plugin)
+        void IPluginManager.Add(IPlugin plugin)
         {
             if (plugin is null)
             {
@@ -148,7 +148,7 @@ namespace ThingsGateway.Foundation.Core
             return pluginMethodNames;
         }
 
-        object IPluginsManager.Add(Type pluginType)
+        object IPluginManager.Add(Type pluginType)
         {
             if (pluginType.GetCustomAttribute<PluginOptionAttribute>() is PluginOptionAttribute optionAttribute)
             {
@@ -173,11 +173,11 @@ namespace ThingsGateway.Foundation.Core
                 plugin = (IPlugin)this.m_container.ResolveWithoutRoot(pluginType);
             }
 
-            ((IPluginsManager)this).Add(plugin);
+            ((IPluginManager)this).Add(plugin);
             return plugin;
         }
 
-        void IPluginsManager.Add(string name, Func<object, PluginEventArgs, Task> func)
+        void IPluginManager.Add(string name, Func<object, PluginEventArgs, Task> func)
         {
             lock (this.m_locker)
             {
@@ -186,7 +186,7 @@ namespace ThingsGateway.Foundation.Core
             }
         }
 
-        bool IPluginsManager.Raise(string name, object sender, PluginEventArgs e)
+        bool IPluginManager.Raise(string name, object sender, PluginEventArgs e)
         {
             if (!this.Enable)
             {
@@ -201,7 +201,7 @@ namespace ThingsGateway.Foundation.Core
             return false;
         }
 
-        async Task<bool> IPluginsManager.RaiseAsync(string name, object sender, PluginEventArgs e)
+        async Task<bool> IPluginManager.RaiseAsync(string name, object sender, PluginEventArgs e)
         {
             if (!this.Enable)
             {

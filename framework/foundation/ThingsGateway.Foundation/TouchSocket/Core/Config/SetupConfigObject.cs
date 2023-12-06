@@ -26,7 +26,7 @@ namespace ThingsGateway.Foundation.Core
         public IContainer Container { get; private set; }
 
         /// <inheritdoc/>
-        public IPluginsManager PluginsManager { get; private set; }
+        public IPluginManager PluginManager { get; private set; }
 
         /// <inheritdoc/>
         public void Setup(TouchSocketConfig config)
@@ -40,9 +40,9 @@ namespace ThingsGateway.Foundation.Core
 
             this.BuildConfig(config);
 
-            this.PluginsManager?.Raise(nameof(ILoadingConfigPlugin.OnLoadingConfig), this, new ConfigEventArgs(config));
+            this.PluginManager?.Raise(nameof(ILoadingConfigPlugin.OnLoadingConfig), this, new ConfigEventArgs(config));
             this.LoadConfig(this.Config);
-            this.PluginsManager?.Raise(nameof(ILoadedConfigPlugin.OnLoadedConfig), this, new ConfigEventArgs(config));
+            this.PluginManager?.Raise(nameof(ILoadedConfigPlugin.OnLoadedConfig), this, new ConfigEventArgs(config));
         }
 
         /// <summary>
@@ -68,18 +68,18 @@ namespace ThingsGateway.Foundation.Core
                 container.RegisterSingleton<ILog, LoggerGroup>();
             }
 
-            if (!(config.GetValue(TouchSocketCoreConfigExtension.PluginsManagerProperty) is IPluginsManager pluginsManager))
+            if (!(config.GetValue(TouchSocketCoreConfigExtension.PluginsManagerProperty) is IPluginManager pluginManager))
             {
-                pluginsManager = new PluginsManager(container);
+                pluginManager = new PluginManager(container);
             }
 
-            if (container.IsRegistered(typeof(IPluginsManager)))
+            if (container.IsRegistered(typeof(IPluginManager)))
             {
-                pluginsManager = container.Resolve<IPluginsManager>();
+                pluginManager = container.Resolve<IPluginManager>();
             }
             else
             {
-                container.RegisterSingleton<IPluginsManager>(pluginsManager);
+                container.RegisterSingleton<IPluginManager>(pluginManager);
             }
 
             if (config.GetValue(TouchSocketCoreConfigExtension.ConfigureContainerProperty) is Action<IContainer> actionContainer)
@@ -87,16 +87,16 @@ namespace ThingsGateway.Foundation.Core
                 actionContainer.Invoke(container);
             }
 
-            if (config.GetValue(TouchSocketCoreConfigExtension.ConfigurePluginsProperty) is Action<IPluginsManager> actionPluginsManager)
+            if (config.GetValue(TouchSocketCoreConfigExtension.ConfigurePluginsProperty) is Action<IPluginManager> actionPluginsManager)
             {
-                pluginsManager.Enable = true;
-                actionPluginsManager.Invoke(pluginsManager);
+                pluginManager.Enable = true;
+                actionPluginsManager.Invoke(pluginManager);
             }
 
             this.Logger ??= container.Resolve<ILog>();
 
             this.Container = container;
-            this.PluginsManager = pluginsManager;
+            this.PluginManager = pluginManager;
         }
     }
 }

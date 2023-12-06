@@ -26,11 +26,11 @@ namespace ThingsGateway.Foundation.Dmtp.FileTransfer
         /// <summary>
         /// 使用DmtpFileTransfer插件
         /// </summary>
-        /// <param name="pluginsManager"></param>
+        /// <param name="pluginManager"></param>
         /// <returns></returns>
-        public static DmtpFileTransferFeature UseDmtpFileTransfer(this IPluginsManager pluginsManager)
+        public static DmtpFileTransferFeature UseDmtpFileTransfer(this IPluginManager pluginManager)
         {
-            return pluginsManager.Add<DmtpFileTransferFeature>();
+            return pluginManager.Add<DmtpFileTransferFeature>();
         }
 
         #endregion 插件扩展

@@ -234,13 +234,13 @@ namespace ThingsGateway.Foundation.Sockets
 
                 this.ServerState = ServerState.Running;
 
-                this.PluginsManager?.Raise(nameof(IServerStartedPlugin.OnServerStarted), this, new ServiceStateEventArgs(this.ServerState, default));
+                this.PluginManager?.Raise(nameof(IServerStartedPlugin.OnServerStarted), this, new ServiceStateEventArgs(this.ServerState, default));
                 return this;
             }
             catch (Exception ex)
             {
                 this.ServerState = ServerState.Exception;
-                this.PluginsManager?.Raise(nameof(IServerStartedPlugin.OnServerStarted), this, new ServiceStateEventArgs(this.ServerState, ex) { Message = ex.ToString() });
+                this.PluginManager?.Raise(nameof(IServerStartedPlugin.OnServerStarted), this, new ServiceStateEventArgs(this.ServerState, ex) { Message = ex.ToString() });
                 throw;
             }
         }
@@ -259,7 +259,7 @@ namespace ThingsGateway.Foundation.Sockets
             }
             this.m_socketAsyncs.Clear();
 
-            this.PluginsManager?.Raise(nameof(IServerStartedPlugin.OnServerStarted), this, new ServiceStateEventArgs(this.ServerState, default));
+            this.PluginManager?.Raise(nameof(IServerStartedPlugin.OnServerStarted), this, new ServiceStateEventArgs(this.ServerState, default));
             return this;
         }
 
@@ -282,7 +282,7 @@ namespace ThingsGateway.Foundation.Sockets
                     }
                     this.m_socketAsyncs.Clear();
 
-                    this.PluginsManager?.Raise(nameof(IServerStartedPlugin.OnServerStarted), this, new ServiceStateEventArgs(this.ServerState, default));
+                    this.PluginManager?.Raise(nameof(IServerStartedPlugin.OnServerStarted), this, new ServiceStateEventArgs(this.ServerState, default));
                 }
             }
             base.Dispose(disposing);
@@ -293,7 +293,7 @@ namespace ThingsGateway.Foundation.Sockets
         /// </summary>
         protected virtual Task ReceivedData(UdpReceivedDataEventArgs e)
         {
-            return this.PluginsManager.RaiseAsync(nameof(IUdpReceivedPlugin.OnUdpReceived), this, e);
+            return this.PluginManager.RaiseAsync(nameof(IUdpReceivedPlugin.OnUdpReceived), this, e);
         }
 
         /// <summary>

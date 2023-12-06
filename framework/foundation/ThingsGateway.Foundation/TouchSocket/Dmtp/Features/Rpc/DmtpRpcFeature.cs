@@ -128,11 +128,11 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
         #region Config
 
         /// <inheritdoc/>
-        protected override void Loaded(IPluginsManager pluginsManager)
+        protected override void Loaded(IPluginManager pluginManager)
         {
-            base.Loaded(pluginsManager);
-            pluginsManager.Add<IDmtpActorObject, DmtpVerifyEventArgs>(nameof(IDmtpHandshakingPlugin.OnDmtpHandshaking), this.OnDmtpHandshaking);
-            pluginsManager.Add<IDmtpActorObject, DmtpMessageEventArgs>(nameof(IDmtpReceivedPlugin.OnDmtpReceived), this.OnDmtpReceived);
+            base.Loaded(pluginManager);
+            pluginManager.Add<IDmtpActorObject, DmtpVerifyEventArgs>(nameof(IDmtpHandshakingPlugin.OnDmtpHandshaking), this.OnDmtpHandshaking);
+            pluginManager.Add<IDmtpActorObject, DmtpMessageEventArgs>(nameof(IDmtpReceivedPlugin.OnDmtpReceived), this.OnDmtpReceived);
         }
 
         private async Task OnDmtpHandshaking(IDmtpActorObject client, DmtpVerifyEventArgs e)

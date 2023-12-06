@@ -35,7 +35,7 @@ namespace ThingsGateway.Foundation.WebApi
         /// <summary>
         /// 构造函数
         /// </summary>
-        public WebApiParserPlugin(IContainer container, IPluginsManager pluginsManager)
+        public WebApiParserPlugin(IContainer container, IPluginManager pluginManager)
         {
             if (container.IsRegistered(typeof(RpcStore)))
             {
@@ -46,12 +46,12 @@ namespace ThingsGateway.Foundation.WebApi
                 this.RpcStore = new RpcStore(container);
             }
 
-            if (pluginsManager is null)
+            if (pluginManager is null)
             {
-                throw new ArgumentNullException(nameof(pluginsManager));
+                throw new ArgumentNullException(nameof(pluginManager));
             }
 
-            pluginsManager.Add(nameof(IHttpPlugin.OnHttpRequest), this.OnHttpRequest);
+            pluginManager.Add(nameof(IHttpPlugin.OnHttpRequest), this.OnHttpRequest);
 
             this.GetRouteMap = new ActionMap(true);
             this.PostRouteMap = new ActionMap(true);

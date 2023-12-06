@@ -44,17 +44,17 @@ namespace ThingsGateway.Foundation.Http.WebSockets
         public static readonly DependencyProperty<string> WebSocketVersionProperty =
             DependencyProperty<string>.Register("WebSocketVersion", "13");
 
-        private readonly IPluginsManager m_pluginsManager;
+        private readonly IPluginManager m_pluginsManager;
 
         private string m_wSUrl = "/ws";
 
         /// <summary>
         /// WebSocketFeature
         /// </summary>
-        /// <param name="pluginsManager"></param>
-        public WebSocketFeature(IPluginsManager pluginsManager)
+        /// <param name="pluginManager"></param>
+        public WebSocketFeature(IPluginManager pluginManager)
         {
-            this.m_pluginsManager = pluginsManager ?? throw new ArgumentNullException(nameof(pluginsManager));
+            this.m_pluginsManager = pluginManager ?? throw new ArgumentNullException(nameof(pluginManager));
             this.VerifyConnection = this.ThisVerifyConnection;
         }
 

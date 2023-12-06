@@ -85,7 +85,7 @@ namespace ThingsGateway.Foundation.WebApi
                     break;
             }
 
-            this.PluginsManager?.Raise(nameof(IWebApiPlugin.OnRequest), this, new WebApiEventArgs(request, default));
+            this.PluginManager?.Raise(nameof(IWebApiPlugin.OnRequest), this, new WebApiEventArgs(request, default));
 
             using (var tokenSource = new CancellationTokenSource(invokeOption.Timeout))
             {
@@ -95,7 +95,7 @@ namespace ThingsGateway.Foundation.WebApi
                 }
                 var response = this.HttpClient.SendAsync(request, tokenSource.Token).GetAwaiter().GetResult();
 
-                this.PluginsManager?.Raise(nameof(IWebApiPlugin.OnResponse), this, new WebApiEventArgs(request, response));
+                this.PluginManager?.Raise(nameof(IWebApiPlugin.OnResponse), this, new WebApiEventArgs(request, response));
 
                 if (invokeOption.FeedbackType != FeedbackType.WaitInvoke)
                 {
@@ -155,7 +155,7 @@ namespace ThingsGateway.Foundation.WebApi
                     break;
             }
 
-            this.PluginsManager?.Raise(nameof(IWebApiPlugin.OnRequest), this, new WebApiEventArgs(request, default));
+            this.PluginManager?.Raise(nameof(IWebApiPlugin.OnRequest), this, new WebApiEventArgs(request, default));
 
             using (var tokenSource = new CancellationTokenSource(invokeOption.Timeout))
             {
@@ -165,7 +165,7 @@ namespace ThingsGateway.Foundation.WebApi
                 }
                 var response = this.HttpClient.SendAsync(request, tokenSource.Token).GetAwaiter().GetResult();
 
-                this.PluginsManager?.Raise(nameof(IWebApiPlugin.OnResponse), this, new WebApiEventArgs(request, response));
+                this.PluginManager?.Raise(nameof(IWebApiPlugin.OnResponse), this, new WebApiEventArgs(request, response));
 
                 if (invokeOption.FeedbackType != FeedbackType.WaitInvoke)
                 {
@@ -237,7 +237,7 @@ namespace ThingsGateway.Foundation.WebApi
                     break;
             }
 
-            await this.PluginsManager.RaiseAsync(nameof(IWebApiPlugin.OnRequest), this, new WebApiEventArgs(request, default));
+            await this.PluginManager.RaiseAsync(nameof(IWebApiPlugin.OnRequest), this, new WebApiEventArgs(request, default));
 
             using (var tokenSource = new CancellationTokenSource(invokeOption.Timeout))
             {
@@ -247,7 +247,7 @@ namespace ThingsGateway.Foundation.WebApi
                 }
                 var response = await this.HttpClient.SendAsync(request, tokenSource.Token);
 
-                await this.PluginsManager.RaiseAsync(nameof(IWebApiPlugin.OnResponse), this, new WebApiEventArgs(request, response));
+                await this.PluginManager.RaiseAsync(nameof(IWebApiPlugin.OnResponse), this, new WebApiEventArgs(request, response));
 
                 if (invokeOption.FeedbackType != FeedbackType.WaitInvoke)
                 {
@@ -307,7 +307,7 @@ namespace ThingsGateway.Foundation.WebApi
                     break;
             }
 
-            await this.PluginsManager.RaiseAsync(nameof(IWebApiPlugin.OnRequest), this, new WebApiEventArgs(request, default));
+            await this.PluginManager.RaiseAsync(nameof(IWebApiPlugin.OnRequest), this, new WebApiEventArgs(request, default));
 
             using (var tokenSource = new CancellationTokenSource(invokeOption.Timeout))
             {
@@ -317,7 +317,7 @@ namespace ThingsGateway.Foundation.WebApi
                 }
                 var response = await this.HttpClient.SendAsync(request, tokenSource.Token);
 
-                await this.PluginsManager.RaiseAsync(nameof(IWebApiPlugin.OnResponse), this, new WebApiEventArgs(request, response));
+                await this.PluginManager.RaiseAsync(nameof(IWebApiPlugin.OnResponse), this, new WebApiEventArgs(request, response));
 
                 if (invokeOption.FeedbackType != FeedbackType.WaitInvoke)
                 {
