@@ -26,9 +26,9 @@
 namespace ThingsGateway.Foundation.Sockets
 {
     /// <summary>
-    /// SocketPluginsManagerExtension
+    /// SocketPluginManagerExtension
     /// </summary>
-    public static class SocketPluginsManagerExtension
+    public static class SocketPluginManagerExtension
     {
         /// <summary>
         ///  检查连接客户端活性插件。

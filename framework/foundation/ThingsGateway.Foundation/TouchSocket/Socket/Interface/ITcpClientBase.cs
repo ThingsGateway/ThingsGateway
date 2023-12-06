@@ -33,18 +33,8 @@ namespace ThingsGateway.Foundation.Sockets
     /// 注意：该接口并不仅表示客户端。<see cref="SocketClient"/>也实现了该接口。
     /// </para>
     /// </summary>
-    public interface ITcpClientBase : ISenderClient, IClient, ISender, IDefaultSender, IPluginObject, IRequsetInfoSender, IConfigObject, IOnlineClient
+    public interface ITcpClientBase : IClient, ISender, IDefaultSender, IPluginObject, IRequsetInfoSender, IConfigObject, IOnlineClient, IAdapterObject, ICloseObject
     {
-        /// <summary>
-        /// 是否允许自由调用<see cref="SetDataHandlingAdapter"/>进行赋值。
-        /// </summary>
-        bool CanSetDataHandlingAdapter { get; }
-
-        /// <summary>
-        /// 数据处理适配器
-        /// </summary>
-        SingleStreamDataHandlingAdapter DataHandlingAdapter { get; }
-
         /// <summary>
         /// 断开连接
         /// </summary>
@@ -77,26 +67,10 @@ namespace ThingsGateway.Foundation.Sockets
         /// </summary>
         int Port { get; }
 
-
-
         /// <summary>
         /// 使用Ssl加密
         /// </summary>
         bool UseSsl { get; }
 
-        /// <summary>
-        /// 关闭客户端。
-        /// </summary>
-        /// <param name="msg"></param>
-        /// <exception cref="Exception"></exception>
-        void Close(string msg = TouchSocketCoreUtility.Empty);
-
-
-
-        /// <summary>
-        /// 设置数据处理适配器
-        /// </summary>
-        /// <param name="adapter"></param>
-        void SetDataHandlingAdapter(SingleStreamDataHandlingAdapter adapter);
     }
 }

@@ -28,7 +28,7 @@ namespace ThingsGateway.Foundation.Sockets
     /// <summary>
     /// 检查清理连接插件。服务器与客户端均适用。
     /// </summary>
-    [PluginOption(Singleton = true, NotRegister = true)]
+    [PluginOption(Singleton = true)]
     public sealed class CheckClearPlugin<TClient> : PluginBase, ITcpConnectedPlugin<TClient> where TClient : ITcpClientBase
     {
         /// <summary>

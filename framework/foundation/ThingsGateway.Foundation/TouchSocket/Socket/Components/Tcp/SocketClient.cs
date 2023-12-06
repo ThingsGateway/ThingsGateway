@@ -164,7 +164,6 @@ namespace ThingsGateway.Foundation.Sockets
         internal void InternalSetContainer(IResolver containerProvider)
         {
             this.Resolver = containerProvider;
-            this.Logger ??= containerProvider.Resolve<ILog>();
         }
 
         internal void InternalSetId(string id)

@@ -28,7 +28,7 @@ namespace ThingsGateway.Foundation.Sockets
     /// <summary>
     /// 重连插件
     /// </summary>
-    [PluginOption(Singleton = true, NotRegister = true)]
+    [PluginOption(Singleton = true)]
     public sealed class ReconnectionPlugin<TClient> : PluginBase where TClient : class, ITcpClient
     {
         private bool m_polling;

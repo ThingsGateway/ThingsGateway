@@ -10,10 +10,7 @@
 //  感谢您的下载和使用
 //------------------------------------------------------------------------------
 
-using System.Threading.Tasks;
-using TouchSocket.Core;
-
-namespace TouchSocket.Sockets
+namespace ThingsGateway.Foundation.Sockets
 {
     /// <summary>
     /// 服务器基类

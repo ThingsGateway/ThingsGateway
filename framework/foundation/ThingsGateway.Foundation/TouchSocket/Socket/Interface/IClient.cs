@@ -28,7 +28,7 @@ namespace ThingsGateway.Foundation.Sockets
     /// <summary>
     /// 终端接口
     /// </summary>
-    public interface IClient : IDependencyObject, IDisposable, ILoggerObject
+    public interface IClient : IDependencyObject, IDisposable, ILoggerObject, IResolverObject
     {
         /// <summary>
         /// 获取一个同步数据接收器
@@ -45,11 +45,6 @@ namespace ThingsGateway.Foundation.Sockets
         /// 终端协议
         /// </summary>
         Protocol Protocol { get; set; }
-
-        /// <summary>
-        /// 简单IOC容器
-        /// </summary>
-        IContainer Container { get; }
 
         /// <summary>
         /// 最后一次接收到数据的时间

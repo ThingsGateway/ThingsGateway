@@ -440,7 +440,6 @@ public class SerialSessionBase : SetupConfigObject, ISerialSession
     protected override void LoadConfig(TouchSocketConfig config)
     {
         this.SerialProperty = config.GetValue(SerialConfigExtension.SerialProperty);
-        this.Logger ??= this.Container.Resolve<ILog>();
     }
 
     /// <summary>

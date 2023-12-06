@@ -21,7 +21,7 @@
 //  交流QQ群：234762506
 //  感谢您的下载和使用
 //------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
+
 using System.Net.Sockets;
 
 namespace ThingsGateway.Foundation.Sockets
@@ -31,7 +31,6 @@ namespace ThingsGateway.Foundation.Sockets
     /// </summary>
     public class TcpService<TClient> : TcpServiceBase, ITcpService<TClient> where TClient : SocketClient, new()
     {
-
         /// <summary>
         /// Tcp泛型服务器，由使用者自己指定<see cref="SocketClient"/>类型。
         /// </summary>
@@ -41,14 +40,12 @@ namespace ThingsGateway.Foundation.Sockets
         }
 
         #region 变量
-
         private readonly List<TcpNetworkMonitor> m_monitors = new List<TcpNetworkMonitor>();
         private readonly SocketClientCollection m_socketClients = new SocketClientCollection();
         private Func<string> m_getDefaultNewId;
         private int m_maxCount;
         private long m_nextId;
         private ServerState m_serverState;
-
         #endregion 变量
 
         #region 属性
@@ -97,7 +94,7 @@ namespace ThingsGateway.Foundation.Sockets
         /// </summary>
         /// <param name="socketClient"></param>
         /// <param name="e"></param>
-        protected override sealed Task OnClientConnected(ISocketClient socketClient, ConnectedEventArgs e)
+        protected sealed override Task OnClientConnected(ISocketClient socketClient, ConnectedEventArgs e)
         {
             return this.OnConnected((TClient)socketClient, e);
         }
@@ -107,7 +104,7 @@ namespace ThingsGateway.Foundation.Sockets
         /// </summary>
         /// <param name="socketClient"></param>
         /// <param name="e"></param>
-        protected override sealed Task OnClientConnecting(ISocketClient socketClient, ConnectingEventArgs e)
+        protected sealed override Task OnClientConnecting(ISocketClient socketClient, ConnectingEventArgs e)
         {
             return this.OnConnecting((TClient)socketClient, e);
         }
@@ -117,7 +114,7 @@ namespace ThingsGateway.Foundation.Sockets
         /// </summary>
         /// <param name="socketClient"></param>
         /// <param name="e"></param>
-        protected override sealed Task OnClientDisconnected(ISocketClient socketClient, DisconnectEventArgs e)
+        protected sealed override Task OnClientDisconnected(ISocketClient socketClient, DisconnectEventArgs e)
         {
             return this.OnDisconnected((TClient)socketClient, e);
         }
@@ -127,7 +124,7 @@ namespace ThingsGateway.Foundation.Sockets
         /// </summary>
         /// <param name="socketClient"></param>
         /// <param name="e"></param>
-        protected override sealed Task OnClientDisconnecting(ISocketClient socketClient, DisconnectEventArgs e)
+        protected sealed override Task OnClientDisconnecting(ISocketClient socketClient, DisconnectEventArgs e)
         {
             return this.OnDisconnecting((TClient)socketClient, e);
         }
@@ -137,7 +134,7 @@ namespace ThingsGateway.Foundation.Sockets
         /// </summary>
         /// <param name="socketClient"></param>
         /// <param name="e"></param>
-        protected override sealed Task OnClientReceivedData(ISocketClient socketClient, ReceivedDataEventArgs e)
+        protected sealed override Task OnClientReceivedData(ISocketClient socketClient, ReceivedDataEventArgs e)
         {
             return this.OnReceived((TClient)socketClient, e);
         }
@@ -316,6 +313,103 @@ namespace ThingsGateway.Foundation.Sockets
             }
             return false;
         }
+        /// <inheritdoc/>
+        public override async Task StartAsync()
+        {
+            if (this.Config is null)
+            {
+                throw new ArgumentNullException(nameof(this.Config), "Config为null，请先执行Setup");
+            }
+            try
+            {
+                var optionList = new List<TcpListenOption>();
+                if (this.Config.GetValue(TouchSocketConfigExtension.ListenOptionsProperty) is Action<List<TcpListenOption>> action)
+                {
+                    action.Invoke(optionList);
+                }
+
+                var iPHosts = this.Config.GetValue(TouchSocketConfigExtension.ListenIPHostsProperty);
+                if (iPHosts != null)
+                {
+                    foreach (var item in iPHosts)
+                    {
+                        var option = new TcpListenOption
+                        {
+                            IpHost = item,
+                            ServiceSslOption = this.Config.GetValue(TouchSocketConfigExtension.SslOptionProperty) as ServiceSslOption,
+                            ReuseAddress = this.Config.GetValue(TouchSocketConfigExtension.ReuseAddressProperty),
+                            NoDelay = this.Config.GetValue(TouchSocketConfigExtension.NoDelayProperty),
+                            Adapter = this.Config.GetValue(TouchSocketConfigExtension.TcpDataHandlingAdapterProperty),
+                        };
+                        option.Backlog = this.Config.GetValue(TouchSocketConfigExtension.BacklogProperty) ?? option.Backlog;
+                        option.SendTimeout = this.Config.GetValue(TouchSocketConfigExtension.SendTimeoutProperty);
+
+                        optionList.Add(option);
+                    }
+                }
+
+                switch (this.m_serverState)
+                {
+                    case ServerState.None:
+                        {
+                            this.BeginListen(optionList);
+                            break;
+                        }
+                    case ServerState.Running:
+                        {
+                            return;
+                        }
+                    case ServerState.Stopped:
+                        {
+                            this.BeginListen(optionList);
+                            break;
+                        }
+                    case ServerState.Disposed:
+                        {
+                            throw new ObjectDisposedException(this.GetType().Name);
+                        }
+                }
+                this.m_serverState = ServerState.Running;
+
+                await this.PluginManager.RaiseAsync(nameof(IServerStartedPlugin.OnServerStarted), this, new ServiceStateEventArgs(this.m_serverState, default)).ConfigureFalseAwait();
+                return;
+            }
+            catch (Exception ex)
+            {
+                this.m_serverState = ServerState.Exception;
+
+                await this.PluginManager.RaiseAsync(nameof(IServerStartedPlugin.OnServerStarted), this, new ServiceStateEventArgs(this.m_serverState, ex) { Message = ex.Message }).ConfigureFalseAwait();
+                throw;
+            }
+        }
+
+
+
+
+
+
+
+        /// <inheritdoc/>
+        public override async Task StopAsync()
+        {
+            ShutDown();
+            foreach (var item in this.m_monitors)
+            {
+                item.Socket.SafeDispose();
+                item.SocketAsyncEvent.SafeDispose();
+            }
+            foreach (var item in m_monitors)
+            {
+                Logger.Info($"{item.Option.IpHost}停止成功");
+            }
+            this.m_monitors.Clear();
+
+            this.Clear();
+
+            this.m_serverState = ServerState.Stopped;
+            this.PluginManager?.Raise(nameof(IServerStopedPlugin.OnServerStoped), this, new ServiceStateEventArgs(this.m_serverState, default));
+            await this.PluginManager.RaiseAsync(nameof(IServerStopedPlugin.OnServerStoped), this, new ServiceStateEventArgs(this.m_serverState, default));
+        }
 
         /// <summary>
         /// <inheritdoc/>
@@ -394,10 +488,9 @@ namespace ThingsGateway.Foundation.Sockets
                         optionList.Add(option);
                     }
                 }
-
                 if (optionList.Count == 0)
                 {
-                    return this;
+                    return;
                 }
                 switch (this.m_serverState)
                 {
@@ -408,7 +501,7 @@ namespace ThingsGateway.Foundation.Sockets
                         }
                     case ServerState.Running:
                         {
-                            return this;
+                            return;
                         }
                     case ServerState.Stopped:
                         {
@@ -423,7 +516,7 @@ namespace ThingsGateway.Foundation.Sockets
                 this.m_serverState = ServerState.Running;
 
                 this.PluginManager?.Raise(nameof(IServerStartedPlugin.OnServerStarted), this, new ServiceStateEventArgs(this.m_serverState, default));
-                return this;
+                return;
             }
             catch (Exception ex)
             {
@@ -434,43 +527,29 @@ namespace ThingsGateway.Foundation.Sockets
             }
         }
 
-        /// <summary>
+
         /// <inheritdoc/>
-        /// </summary>
-        public override IService Stop()
+        public override void Stop()
         {
+            ShutDown();
+            foreach (var item in this.m_monitors)
+            {
+                item.Socket.SafeDispose();
+                item.SocketAsyncEvent.SafeDispose();
+            }
             foreach (var item in m_monitors)
             {
                 Logger.Info($"{item.Option.IpHost}停止成功");
             }
-            foreach (var item in GetClients())
-            {
-                try
-                {
-                    item.MainSocket?.Shutdown(SocketShutdown.Both);
-                    item.SafeDispose();
-                }
-                catch
-                {
-
-                }
-            }
-            foreach (var item in this.m_monitors)
-            {
-
-                item.Socket.SafeDispose();
-                item.SocketAsyncEvent.SafeDispose();
-            }
-
             this.m_monitors.Clear();
 
             this.Clear();
 
             this.m_serverState = ServerState.Stopped;
             this.PluginManager?.Raise(nameof(IServerStopedPlugin.OnServerStoped), this, new ServiceStateEventArgs(this.m_serverState, default));
-
-            return this;
+            return;
         }
+
 
         /// <summary>
         /// 尝试获取TClient
@@ -496,18 +575,7 @@ namespace ThingsGateway.Foundation.Sockets
 
             if (disposing)
             {
-                foreach (var item in GetClients())
-                {
-                    try
-                    {
-                        item.MainSocket?.Shutdown(SocketShutdown.Both);
-                        item.SafeDispose();
-                    }
-                    catch
-                    {
-
-                    }
-                }
+                ShutDown();
                 foreach (var item in this.m_monitors)
                 {
                     item.Socket.SafeDispose();
@@ -524,6 +592,22 @@ namespace ThingsGateway.Foundation.Sockets
                 this.PluginManager?.SafeDispose();
             }
             base.Dispose(disposing);
+        }
+
+        private void ShutDown()
+        {
+            foreach (var item in GetClients())
+            {
+                try
+                {
+                    item.MainSocket?.Shutdown(SocketShutdown.Both);
+                    item.SafeDispose();
+                }
+                catch
+                {
+
+                }
+            }
         }
 
         /// <summary>
@@ -574,7 +658,6 @@ namespace ThingsGateway.Foundation.Sockets
                 Logger.Info($"{item.IpHost}启动成功");
             }
         }
-
 
         private void OnAccepted(SocketAsyncEventArgs e)
         {
@@ -641,8 +724,8 @@ namespace ThingsGateway.Foundation.Sockets
                 socket.SendTimeout = monitor.Option.SendTimeout;
 
                 var client = this.GetClientInstence(socket, monitor);
-                client.InternalSetContainer(this.Container);
                 client.InternalSetService(this);
+                client.InternalSetContainer(this.Resolver);
                 client.InternalSetListenOption(monitor.Option);
                 client.InternalSetSocket(socket);
                 client.InternalSetPluginManager(this.PluginManager);

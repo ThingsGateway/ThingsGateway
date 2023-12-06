@@ -566,7 +566,6 @@ namespace ThingsGateway.Foundation.Sockets
         protected override void LoadConfig(TouchSocketConfig config)
         {
             this.RemoteIPHost = config.GetValue(TouchSocketConfigExtension.RemoteIPHostProperty);
-            this.Logger ??= this.Container.Resolve<ILog>();
         }
 
         /// <summary>

@@ -20,7 +20,7 @@ namespace ThingsGateway.Foundation.Sockets
         #region ITcpService
 
         /// <inheritdoc cref="IService.Start"/>
-        public static TService Start<TService>(this TService service, params IPHost[] iPHosts) where TService : ITcpService
+        public static void Start<TService>(this TService service, params IPHost[] iPHosts) where TService : ITcpService
         {
             TouchSocketConfig config;
             if (service.Config == null)
@@ -35,15 +35,30 @@ namespace ThingsGateway.Foundation.Sockets
                 config.SetListenIPHosts(iPHosts);
             }
             service.Start();
-            return service;
         }
-
+        /// <inheritdoc cref="IService.StartAsync"/>
+        public static async Task StartAsync<TService>(this TService service, params IPHost[] iPHosts) where TService : ITcpService
+        {
+            TouchSocketConfig config;
+            if (service.Config == null)
+            {
+                config = new TouchSocketConfig();
+                config.SetListenIPHosts(iPHosts);
+                service.Setup(config);
+            }
+            else
+            {
+                config = service.Config;
+                config.SetListenIPHosts(iPHosts);
+            }
+            await service.StartAsync();
+        }
         #endregion ITcpService
 
         #region Udp
 
         /// <inheritdoc cref="IService.Start"/>
-        public static TService Start<TService>(this TService service, IPHost iPHost) where TService : IUdpSession
+        public static void Start<TService>(this TService service, IPHost iPHost) where TService : IUdpSession
         {
             TouchSocketConfig config;
             if (service.Config == null)
@@ -58,9 +73,24 @@ namespace ThingsGateway.Foundation.Sockets
                 config.SetBindIPHost(iPHost);
             }
             service.Start();
-            return service;
         }
-
+        /// <inheritdoc cref="IService.Start"/>
+        public static async Task StartAsync<TService>(this TService service, IPHost iPHost) where TService : IUdpSession
+        {
+            TouchSocketConfig config;
+            if (service.Config == null)
+            {
+                config = new TouchSocketConfig();
+                config.SetBindIPHost(iPHost);
+                service.Setup(config);
+            }
+            else
+            {
+                config = service.Config;
+                config.SetBindIPHost(iPHost);
+            }
+            await service.StartAsync();
+        }
         #endregion Udp
     }
 }

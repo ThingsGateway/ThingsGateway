@@ -146,7 +146,7 @@ namespace ThingsGateway.Foundation.Sockets
             {
                 config = new TouchSocketConfig();
                 config.SetRemoteIPHost(ipHost);
-                client.Setup(config);
+                await client.SetupAsync(config);
             }
             else
             {
