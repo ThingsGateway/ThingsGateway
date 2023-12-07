@@ -12,8 +12,6 @@
 
 using Microsoft.AspNetCore.Components;
 
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 
 using ThingsGateway.Foundation.Adapter.OPCDA.Rcw;
@@ -141,6 +139,7 @@ public partial class OPCDAImportVariable
             overlay = false;
             await InvokeAsync(StateHasChanged);
         });
+        await base.OnInitializedAsync();
     }
 
 

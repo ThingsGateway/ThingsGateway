@@ -14,8 +14,6 @@ using Microsoft.AspNetCore.Components;
 
 using Opc.Ua;
 
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 
 using ThingsGateway.Foundation.Adapter.OPCUA;
@@ -173,6 +171,7 @@ public partial class OPCUAImportVariable
             overlay = false;
             await InvokeAsync(StateHasChanged);
         });
+        base.OnInitialized();
     }
 
 
