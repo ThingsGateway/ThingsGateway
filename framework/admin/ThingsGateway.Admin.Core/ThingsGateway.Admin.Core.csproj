@@ -8,8 +8,7 @@
 		<PackageReference Include="Furion.Pure" Version="4.9.1.11" />
 		<PackageReference Include="Furion.Extras.ObjectMapper.Mapster" Version="4.9.1.11" />
 		<PackageReference Include="Furion.Extras.Authentication.JwtBearer" Version="4.9.1.11" />
-		<PackageReference Include="SqlSugarCore" Version="5.1.4.126" />
-		<PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.0" />
+		<PackageReference Include="SqlSugarCore" Version="5.1.4.122" />
 		<PackageReference Include="UAParser" Version="3.1.47" />
 		<PackageReference Include="Yitter.IdGenerator" Version="1.0.14" />
 	</ItemGroup>
