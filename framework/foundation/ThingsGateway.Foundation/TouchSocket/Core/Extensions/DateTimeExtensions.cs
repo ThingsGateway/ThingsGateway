@@ -61,8 +61,8 @@ namespace ThingsGateway.Foundation.Core
                 else if (dt.Kind != DateTimeKind.Local)
                     return new DateTimeOffset(dt, offset).ToString("yyyy-MM-dd HH:mm:ss:fff zz");
             }
-            return new DateTimeOffset(dt, offset).ToString("yyyy-MM-dd HH:mm:ss:fff zz");
-            //return dt.ToString("yyyy-MM-dd HH:mm:ss:fff zz");
+            //return new DateTimeOffset(dt, offset).ToString("yyyy-MM-dd HH:mm:ss:fff zz");
+            return dt.ToString("yyyy-MM-dd HH:mm:ss:fff zz");
         }
 
         /// <summary>
