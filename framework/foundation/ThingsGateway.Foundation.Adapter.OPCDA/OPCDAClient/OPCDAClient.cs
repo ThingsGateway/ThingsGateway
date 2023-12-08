@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using System.Runtime.InteropServices;
@@ -22,11 +24,13 @@ using Timer = System.Timers.Timer;
 //部分非托管交互代码来自https://gitee.com/Zer0Day/opc-client与OPC基金会opcnet库，更改部分逻辑
 
 namespace ThingsGateway.Foundation.Adapter.OPCDA;
+
 /// <summary>
 /// 订阅变化项
 /// </summary>
 /// <param name="values"></param>
 public delegate void DataChangedEventHandler(List<ItemReadResult> values);
+
 /// <summary>
 /// OPCDAClient
 /// </summary>
@@ -42,6 +46,7 @@ public class OPCDAClient : IDisposable
     private Timer checkTimer;
 
     private int IsExit = 1;
+
     /// <summary>
     /// 当前保存的需订阅列表
     /// </summary>
@@ -49,6 +54,7 @@ public class OPCDAClient : IDisposable
 
     private OpcServer m_server;
     private bool publicConnect;
+
     /// <summary>
     /// <inheritdoc/>
     /// </summary>
@@ -77,6 +83,7 @@ public class OPCDAClient : IDisposable
     /// 当前配置
     /// </summary>
     public OPCDANode OPCNode { get; private set; }
+
     private List<OpcGroup> Groups => m_server.OpcGroups;
 
     /// <summary>
@@ -264,10 +271,9 @@ public class OPCDAClient : IDisposable
                     ItemDicts[opcGroup.Name].RemoveWhere(a => tag.Contains(a) && !result.Select(b => b.Item1).Contains(a));
                 }
             }
-
-
         }
     }
+
     /// <inheritdoc/>
     public override string ToString()
     {
@@ -338,11 +344,11 @@ public class OPCDAClient : IDisposable
         }
         return results;
     }
+
     private void CheckTimer_Elapsed(object sender, ElapsedEventArgs e)
     {
         lock (checkLock)
         {
-
             if (IsExit == 0)
             {
                 try
@@ -371,7 +377,6 @@ public class OPCDAClient : IDisposable
                 timeer.Enabled = false;
                 timeer.Stop();
             }
-
         }
     }
 
@@ -386,11 +391,11 @@ public class OPCDAClient : IDisposable
             _logAction?.Invoke(3, this, $"添加点位失败：{ex.Message}", ex);
         }
     }
+
     private void PrivateConnect()
     {
         lock (this)
         {
-
             if (m_server?.IsConnected == true)
             {
                 try
@@ -405,15 +410,12 @@ public class OPCDAClient : IDisposable
                     }
                     catch
                     {
-
                         Init(OPCNode);
                         m_server?.Connect();
                         _logAction?.Invoke(1, this, $"{m_server.Host} - {m_server.Name} - 连接成功", null);
                         PrivateAddItems();
                     }
                 }
-
-
             }
             else
             {
@@ -422,7 +424,6 @@ public class OPCDAClient : IDisposable
                 _logAction?.Invoke(1, this, $"{m_server.Host} - {m_server.Name} - 连接成功", null);
                 PrivateAddItems();
             }
-
         }
     }
 
@@ -449,9 +450,9 @@ public class OPCDAClient : IDisposable
             }
         }
     }
+
     private void Subscription_OnDataChanged(List<ItemReadResult> values)
     {
         DataChangedHandler?.Invoke(values);
     }
-
 }

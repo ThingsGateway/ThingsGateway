@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using BlazorComponent;
@@ -32,9 +34,10 @@ public partial class OPCDAClientDebugPage : IDisposable
 {
     private ThingsGateway.Foundation.Adapter.OPCDA.OPCDAClient _plc;
     private DriverDebugUIPage _driverDebugUIPage;
-    bool IsShowImportVariableList;
+    private bool IsShowImportVariableList;
     private OPCDAClientPage opcDAClientPage;
     private OPCDAImportVariable ImportVariable { get; set; }
+
     [Inject]
     private InitTimezone InitTimezone { get; set; }
 
@@ -61,7 +64,6 @@ public partial class OPCDAClientDebugPage : IDisposable
             {
                 opcDAClientPage.LogAction = _driverDebugUIPage.LogOut;
                 opcDAClientPage.ValueAction = ValueOut;
-
             }
             _plc = opcDAClientPage.OPC;
             //载入配置
@@ -89,13 +91,13 @@ public partial class OPCDAClientDebugPage : IDisposable
 
 #if Plugin
     private bool isDownLoading;
+
     private async Task DeviceImport()
     {
         isDownLoading = true;
         await InvokeAsync(StateHasChanged);
         try
         {
-
             var data = ImportVariable?.GetImportVariableList();
             if (data != null)
             {
@@ -114,11 +116,13 @@ public partial class OPCDAClientDebugPage : IDisposable
             isDownLoading = false;
         }
     }
+
     private IJSObjectReference JSObjectReference;
 
     /// <inheritdoc/>
     [Inject]
     protected IJSRuntime JSRuntime { get; set; }
+
     private async Task DownDeviceExport()
     {
         isDownLoading = true;
@@ -144,6 +148,7 @@ public partial class OPCDAClientDebugPage : IDisposable
             isDownLoading = false;
         }
     }
+
     /// <summary>
     /// 导出到excel
     /// </summary>
@@ -175,7 +180,6 @@ public partial class OPCDAClientDebugPage : IDisposable
         try
         {
             _plc.ReadItemsWithGroup();
-
         }
         catch (Exception ex)
         {
@@ -184,6 +188,7 @@ public partial class OPCDAClientDebugPage : IDisposable
 
         await Task.CompletedTask;
     }
+
     private void Remove()
     {
         _plc.RemoveItems(new List<string>() { _driverDebugUIPage.Address });

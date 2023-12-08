@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,15 +9,17 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using Microsoft.AspNetCore.Components;
 
 using ThingsGateway.Components;
 
-
 namespace ThingsGateway.Foundation.Demo;
+
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
+
 /// <summary>
 /// 调试UI
 /// </summary>
@@ -55,6 +58,7 @@ public abstract class DriverDebugUIBase : ComponentBase, IDisposable
     /// 默认读写设备
     /// </summary>
     public virtual IReadWrite Plc { get; set; }
+
     /// <summary>
     /// 写入值
     /// </summary>
@@ -64,11 +68,13 @@ public abstract class DriverDebugUIBase : ComponentBase, IDisposable
     /// 数据类型
     /// </summary>
     protected virtual DataTypeEnum DataTypeEnum { get; set; } = DataTypeEnum.Int16;
+
     /// <inheritdoc/>
     public virtual void Dispose()
     {
         _periodicTimer?.Dispose();
     }
+
     /// <inheritdoc/>
     public void LogOut(ThingsGateway.Foundation.Core.LogLevel logLevel, object source, string message, Exception exception)
     {
@@ -102,7 +108,6 @@ public abstract class DriverDebugUIBase : ComponentBase, IDisposable
             Messages.Add((LogLevel.Error,
             $"{DateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset)} - 错误：{ex}"));
         }
-
     }
 
     /// <inheritdoc/>
@@ -135,6 +140,7 @@ public abstract class DriverDebugUIBase : ComponentBase, IDisposable
         _ = RunTimerAsync();
         base.OnInitialized();
     }
+
     private async Task RunTimerAsync()
     {
         while (await _periodicTimer.WaitForNextTickAsync())
@@ -142,6 +148,4 @@ public abstract class DriverDebugUIBase : ComponentBase, IDisposable
             await InvokeAsync(StateHasChanged);
         }
     }
-
-
 }

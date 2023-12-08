@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 namespace ThingsGateway.Plugin.OPCUA;
@@ -20,12 +22,12 @@ public class OPCUAClientProperty : DriverPropertyBase
     /// </summary>
     [DeviceProperty("连接Url", "")]
     public string OPCURL { get; set; } = "opc.tcp://127.0.0.1:49320";
+
     /// <summary>
     /// 登录账号
     /// </summary>
     [DeviceProperty("登录账号", "为空时将采用匿名方式登录")]
     public string UserName { get; set; }
-
 
     /// <summary>
     /// 登录密码
@@ -69,7 +71,6 @@ public class OPCUAClientProperty : DriverPropertyBase
     [DeviceProperty("更新频率", "")]
     public int UpdateRate { get; set; } = 1000;
 
-
     /// <summary>
     /// 死区
     /// </summary>
@@ -81,14 +82,16 @@ public class OPCUAClientProperty : DriverPropertyBase
     /// </summary>
     [DeviceProperty("自动分组大小", "")]
     public int GroupSize { get; set; } = 500;
+
     /// <summary>
     /// 心跳频率
     /// </summary>
     [DeviceProperty("心跳频率", "")]
     public int KeepAliveInterval { get; set; } = 3000;
+
     /// <inheritdoc/>
     public override bool IsShareChannel { get; set; } = false;
+
     /// <inheritdoc/>
     public override ChannelEnum ShareChannel => ChannelEnum.None;
-
 }

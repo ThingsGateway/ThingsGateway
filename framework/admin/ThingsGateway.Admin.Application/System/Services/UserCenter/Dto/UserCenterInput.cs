@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using System.ComponentModel;
@@ -26,6 +28,7 @@ public class UpdateInfoInput : SysUser
     [MinValue(1, ErrorMessage = "Id不能为空")]
     public override long Id { get; set; }
 }
+
 /// <summary>
 /// 修改密码
 /// </summary>
@@ -37,12 +40,14 @@ public class PasswordInfoInput : BaseIdInput, IValidatableObject
     [Description("旧密码")]
     [Required(ErrorMessage = "不能为空")]
     public string OldPassword { get; set; }
+
     /// <summary>
     /// 新密码
     /// </summary>
     [Description("新密码")]
     [Required(ErrorMessage = "不能为空")]
     public string NewPassword { get; set; }
+
     /// <summary>
     /// 确认密码
     /// </summary>

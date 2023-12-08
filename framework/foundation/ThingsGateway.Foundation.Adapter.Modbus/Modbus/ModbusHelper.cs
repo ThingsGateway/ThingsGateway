@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using System.Text;
@@ -60,6 +62,7 @@ internal class ModbusHelper
         stringBuilder.AppendLine("写入功能码 ，比如40001;w=16; ，代表保持寄存器第一个寄存器，写入值时采用0x10功能码，而不是默认的0x06功能码");
         return stringBuilder.ToString();
     }
+
     /// <summary>
     /// 通过错误码来获取到对应的文本消息
     /// </summary>
@@ -88,7 +91,6 @@ internal class ModbusHelper
             if (response.Length < 3)
                 return new OperResult<byte[], FilterResult>("数据长度不足" + response.ToHexString()) { Content2 = FilterResult.Cache };
 
-
             if (response[1] >= 0x80)//错误码
                 return new OperResult<byte[], FilterResult>(GetDescriptionByErrorCode(response[2])) { Content2 = FilterResult.Success };
             if (response[1] <= 0x05)
@@ -100,7 +102,6 @@ internal class ModbusHelper
             {
                 if ((response.Length < 6))
                     return new OperResult<byte[], FilterResult>("数据长度不足" + response.ToHexString()) { Content2 = FilterResult.Cache };
-
             }
 
             if (send.Length == 0)
@@ -120,6 +121,7 @@ internal class ModbusHelper
             return new OperResult<byte[], FilterResult>(ex) { Content2 = FilterResult.Success };
         }
     }
+
     /// <summary>
     /// 去除Crc，返回modbus数据区
     /// </summary>
@@ -145,12 +147,12 @@ internal class ModbusHelper
                 return new OperResult<byte[], FilterResult>("数据长度不足" + response.ToHexString()) { Content2 = FilterResult.Cache };
         }
 
-
         var data = response.SelectMiddle(0, response[1] <= 0x04 ? response[2] != 0 ? response[2] + 5 : 8 : 8);
         if (crcCheck && !CRC16Utils.CheckCRC16(data))
             return new OperResult<byte[], FilterResult>("Crc校验失败" + DataTransUtil.ByteToHexString(data, ' ')) { Content2 = FilterResult.Success };
         return GetModbusData(send, data.RemoveLast(2));
     }
+
     /// <summary>
     /// 获取读取报文
     /// </summary>
@@ -166,6 +168,7 @@ internal class ModbusHelper
             return new OperResult<byte[]>(ex);
         }
     }
+
     /// <summary>
     /// 获取写入布尔量报文，根据地址识别功能码
     /// </summary>
@@ -201,13 +204,13 @@ internal class ModbusHelper
                 return OperResult.CreateSuccessResult(GetWriteModbusCommand(mAddress, value));
             else
                 return OperResult.CreateSuccessResult(GetWriteOneModbusCommand(mAddress, value));
-
         }
         catch (Exception ex)
         {
             return new OperResult<byte[]>(ex);
         }
     }
+
     /// <summary>
     /// 获取读取报文
     /// </summary>
@@ -328,5 +331,4 @@ internal class ModbusHelper
         values.CopyTo(numArray, 4);
         return numArray;
     }
-
 }

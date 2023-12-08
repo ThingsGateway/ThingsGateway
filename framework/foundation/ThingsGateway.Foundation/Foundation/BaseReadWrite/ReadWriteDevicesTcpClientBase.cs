@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using System.ComponentModel;
@@ -34,8 +36,10 @@ public abstract class ReadWriteDevicesTcpClientBase : ReadWriteDevicesBase
         TcpClient.Disconnected += Disconnected;
         Logger = TcpClient.Logger;
     }
+
     /// <inheritdoc/>
     public override ChannelEnum ChannelEnum => ChannelEnum.TcpClient;
+
     /// <summary>
     /// 连接超时时间
     /// </summary>
@@ -51,11 +55,13 @@ public abstract class ReadWriteDevicesTcpClientBase : ReadWriteDevicesBase
     /// WaitingClientEx
     /// </summary>
     public virtual IWaitingClient<TcpClient> WaitingClientEx { get; }
+
     /// <inheritdoc/>
     public override bool IsConnected()
     {
         return TcpClient?.CanSend == true;
     }
+
     /// <inheritdoc/>
     public override void Connect(CancellationToken cancellationToken)
     {
@@ -92,6 +98,7 @@ public abstract class ReadWriteDevicesTcpClientBase : ReadWriteDevicesBase
     {
         return TcpClient.RemoteIPHost.ToString();
     }
+
     /// <summary>
     /// 连接成功
     /// </summary>
@@ -140,6 +147,7 @@ public abstract class ReadWriteDevicesTcpClientBase : ReadWriteDevicesBase
         else
             return senderClient.CreateWaitingClient(new()).SendThenResponse(item, TimeOut, cancellationToken);
     }
+
     /// <inheritdoc/>
     public override void Send(byte[] command, string id = default)
     {

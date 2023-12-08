@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using Microsoft.AspNetCore.Authorization;
@@ -28,7 +30,8 @@ namespace ThingsGateway.Gateway.ApiController;
 [Authorize(AuthenticationSchemes = "Bearer")]
 public class CollectDbInfoControler : IDynamicApiController
 {
-    readonly IServiceScope _serviceScope;
+    private readonly IServiceScope _serviceScope;
+
     /// <inheritdoc cref="CollectDbInfoControler"/>
     public CollectDbInfoControler(IServiceScopeFactory scopeFactory, VariableService variableService, ICollectDeviceService collectDeviceService)
     {
@@ -37,8 +40,9 @@ public class CollectDbInfoControler : IDynamicApiController
         _collectDeviceService = collectDeviceService;
     }
 
-    ICollectDeviceService _collectDeviceService { get; set; }
-    VariableService _variableService { get; set; }
+    private ICollectDeviceService _collectDeviceService { get; set; }
+    private VariableService _variableService { get; set; }
+
     /// <summary>
     /// 获取采集设备信息
     /// </summary>
@@ -63,4 +67,3 @@ public class CollectDbInfoControler : IDynamicApiController
         return data;
     }
 }
-

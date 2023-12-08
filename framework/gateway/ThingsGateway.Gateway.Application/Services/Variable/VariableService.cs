@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using Furion.DependencyInjection;
@@ -58,6 +60,7 @@ public class VariableService : DbRepository<DeviceVariable>, IVariableService
     {
         await InsertAsync(input);//添加数据
     }
+
     /// <inheritdoc/>
     [OperDesc("添加变量")]
     public async Task AddBatchAsync(List<DeviceVariable> input)
@@ -124,7 +127,6 @@ public class VariableService : DbRepository<DeviceVariable>, IVariableService
             var pageInfo = await query.ToPagedListAsync(input.Current, input.Size);//分页
             return pageInfo;
         }
-
     }
 
     /// <inheritdoc/>
@@ -147,10 +149,8 @@ public class VariableService : DbRepository<DeviceVariable>, IVariableService
         }
         query = query.OrderBy(it => it.Id, OrderByType.Desc);//排序
 
-
         return query;
     }
-
 
     /// <inheritdoc/>
     public async Task<List<DeviceVariableRunTime>> GetDeviceVariableRuntimeAsync(long devId = 0)
@@ -167,8 +167,8 @@ public class VariableService : DbRepository<DeviceVariable>, IVariableService
             var runtime = deviceVariables.Adapt<List<DeviceVariableRunTime>>();
             return runtime;
         }
-
     }
+
     /// <inheritdoc/>
     public async Task<List<DeviceVariableRunTime>> GetMemoryVariableRuntimeAsync()
     {
@@ -178,6 +178,7 @@ public class VariableService : DbRepository<DeviceVariable>, IVariableService
     }
 
     #region 导入导出
+
     /// <inheritdoc/>
     public async Task<MemoryStream> ExportFileAsync(VariableInput input)
     {
@@ -219,8 +220,8 @@ public class VariableService : DbRepository<DeviceVariable>, IVariableService
         var driverPluginDicts = driverPluginService.GetAllDriverPlugin().SelectMany(a => a.Children).ToDictionary(a => a.FullName);
         deviceVariables.ParallelForEach(devData =>
    {
-
        #region 变量sheet
+
        //变量页
        var data = devData.GetType().GetProperties().Where(a => a.GetCustomAttribute<IgnoreExcelAttribute>() == null).OrderBy(
            a =>
@@ -247,6 +248,7 @@ public class VariableService : DbRepository<DeviceVariable>, IVariableService
        #endregion
 
        #region 上传插件属性
+
        foreach (var item in devData.VariablePropertys ?? new())
        {
            //插件属性
@@ -277,11 +279,9 @@ public class VariableService : DbRepository<DeviceVariable>, IVariableService
                    devicePropertys.TryAdd(pluginName, new() { driverInfo });
                }
            }
-
-
        }
-       #endregion
 
+       #endregion
    });
 
         //添加变量页
@@ -311,7 +311,6 @@ public class VariableService : DbRepository<DeviceVariable>, IVariableService
     /// <inheritdoc/>
     public async Task<Dictionary<string, ImportPreviewOutputBase>> PreviewAsync(MemoryStream stream, List<CollectDevice> memCollectDevices = null, List<Device> memUploadDevices = null)
     {
-
         var sheetNames = MiniExcel.GetSheetNames(stream);
 
         var dbVariables = await Context.Queryable<DeviceVariable>().Select(it => new { it.Id, it.Name }).ToListAsync();
@@ -325,7 +324,6 @@ public class VariableService : DbRepository<DeviceVariable>, IVariableService
         var driverPluginService = _serviceScope.ServiceProvider.GetService<DriverPluginService>();
         var driverPluginFullNameDict = driverPluginService.GetAllDriverPlugin().SelectMany(a => a.Children).ToDictionary(a => a.FullName);
         var driverPluginNameDict = driverPluginService.GetAllDriverPlugin().SelectMany(a => a.Children).ToDictionary(a => a.Name);
-
 
         foreach (var sheetName in sheetNames)
         {
@@ -390,7 +388,6 @@ public class VariableService : DbRepository<DeviceVariable>, IVariableService
                });
 
                 importPreviewOutput.Data = variables.OrderBy(a => a.Id).ToDictionary(a => a.Name);
-
             }
             else
             {
@@ -419,7 +416,6 @@ public class VariableService : DbRepository<DeviceVariable>, IVariableService
                        {
                            try
                            {
-
                                List<DependencyProperty> dependencyProperties = new();
                                foreach (var keyValuePair in item)
                                {
@@ -480,8 +476,6 @@ public class VariableService : DbRepository<DeviceVariable>, IVariableService
             }
         }
 
-
-
         return ImportPreviews;
     }
 
@@ -507,8 +501,5 @@ public class VariableService : DbRepository<DeviceVariable>, IVariableService
         DeleteVariableFromCache();
     }
 
-
-
     #endregion
-
 }

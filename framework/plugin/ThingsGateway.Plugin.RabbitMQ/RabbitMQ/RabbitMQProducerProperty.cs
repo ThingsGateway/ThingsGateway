@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using RabbitMQ.Client;
@@ -24,16 +26,19 @@ public class RabbitMQProducerProperty : UploadPropertyWithCacheT
     /// </summary>
     [DeviceProperty("IP", "")]
     public override string IP { get; set; } = "localhost";
+
     /// <summary>
     /// 端口
     /// </summary>
     [DeviceProperty("端口", "")]
     public override int Port { get; set; } = 5672;
+
     /// <summary>
     /// UserName
     /// </summary>
     [DeviceProperty("账号", "")]
     public string UserName { get; set; } = "guest";
+
     /// <summary>
     /// Password
     /// </summary>
@@ -63,11 +68,13 @@ public class RabbitMQProducerProperty : UploadPropertyWithCacheT
     /// </summary>
     [DeviceProperty("交换机名称", "")]
     public string ExchangeName { get; set; } = "";
+
     /// <summary>
     /// 设备主题
     /// </summary>
     [DeviceProperty("设备主题", "")]
     public string DeviceTopic { get; set; } = "test1";
+
     /// <summary>
     /// 变量主题
     /// </summary>
@@ -79,6 +86,7 @@ public class RabbitMQProducerProperty : UploadPropertyWithCacheT
     /// </summary>
     [DeviceProperty("设备实体脚本", "查看文档说明，为空时默认Json传输")]
     public string BigTextScriptDeviceModel { get; set; }
+
     /// <summary>
     /// 变量实体脚本
     /// </summary>

@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,13 +9,13 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace ThingsGateway.Gateway.Application;
-
 
 /// <summary>
 /// 上传插件
@@ -25,6 +26,7 @@ public abstract class UpLoadBase : DriverBase
     /// 插件配置项 ，继承实现<see cref="VariablePropertyBase"/>后，返回继承类，如果不存在，返回null
     /// </summary>
     public abstract VariablePropertyBase VariablePropertys { get; }
+
     /// <summary>
     /// 当前关联的南向设备
     /// </summary>
@@ -42,8 +44,4 @@ public abstract class UpLoadBase : DriverBase
     }
 
     protected override bool IsUploadBase { get; } = true;
-
-
 }
-
-

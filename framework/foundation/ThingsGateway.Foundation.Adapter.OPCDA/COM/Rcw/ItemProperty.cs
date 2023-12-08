@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,13 +9,13 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using System.Collections;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Xml;
-
 
 namespace ThingsGateway.Foundation.Adapter.OPCDA.Rcw;
 #pragma warning disable CS1591 // 缺少对公共可见类型或成员的 XML 注释
@@ -210,6 +211,7 @@ public struct Quality
     private limitBits m_limitBits;
     private qualityBits m_qualityBits;
     private byte m_vendorBits;
+
     public Quality(qualityBits quality)
     {
         m_qualityBits = quality;
@@ -247,6 +249,7 @@ public struct Quality
             m_qualityBits = value;
         }
     }
+
     public byte VendorBits
     {
         get
@@ -320,6 +323,7 @@ public struct Quality
         m_limitBits = (limitBits)(code & 3);
         m_vendorBits = (byte)((code & -253) >> 8);
     }
+
     public override string ToString()
     {
         string text = QualityBits.ToString();
@@ -626,6 +630,7 @@ public struct ResultID : ISerializable
         internal const string NAMESPACE = "NS";
     }
 }
+
 [Serializable]
 public class ItemProperty : ICloneable, IResult
 {
@@ -637,6 +642,7 @@ public class ItemProperty : ICloneable, IResult
     private string m_itemPath;
     private ResultID m_resultID = ResultID.S_OK;
     private object m_value;
+
     public System.Type DataType
     {
         get
@@ -684,6 +690,7 @@ public class ItemProperty : ICloneable, IResult
             m_id = value;
         }
     }
+
     public string ItemName
     {
         get
@@ -740,6 +747,7 @@ public class ItemProperty : ICloneable, IResult
         return obj;
     }
 }
+
 public class Property
 {
     public static readonly PropertyID ACCESSRIGHTS = new PropertyID("accessRights", 5, "http://opcfoundation.org/DataAccess/");
@@ -788,6 +796,7 @@ public class Property
     public static readonly PropertyID VALUE_PRECISION = new PropertyID("valuePrecision", 111, "http://opcfoundation.org/DataAccess/");
     public static readonly PropertyID WRITE_BEHAVIOR = new PropertyID("writeBehavior", 606, "http://opcfoundation.org/DataAccess/");
 }
+
 public class Type
 {
     public static System.Type ANY_TYPE = typeof(object);
@@ -822,6 +831,7 @@ public class Type
     public static System.Type UINT = typeof(uint);
     public static System.Type ULONG = typeof(ulong);
     public static System.Type USHORT = typeof(ushort);
+
     public static System.Type[] Enumerate()
     {
         ArrayList arrayList = new ArrayList();
@@ -834,6 +844,7 @@ public class Type
         return (System.Type[])arrayList.ToArray(typeof(System.Type));
     }
 }
+
 [Serializable]
 public class PropertyDescription
 {
@@ -885,6 +896,7 @@ public class PropertyDescription
 
     private string m_name;
     private System.Type m_type;
+
     public PropertyDescription(PropertyID id, System.Type type, string name)
     {
         ID = id;
@@ -927,6 +939,7 @@ public class PropertyDescription
             m_type = value;
         }
     }
+
     public static PropertyDescription[] Enumerate()
     {
         ArrayList arrayList = new ArrayList();

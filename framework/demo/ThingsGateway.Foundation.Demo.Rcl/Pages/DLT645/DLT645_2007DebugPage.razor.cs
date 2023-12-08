@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,10 +9,10 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 namespace ThingsGateway.Foundation.Demo;
-
 
 /// <inheritdoc/>
 public partial class DLT645_2007DebugPage
@@ -20,8 +21,10 @@ public partial class DLT645_2007DebugPage
     /// SerialPortClientPage
     /// </summary>
     private SerialPortClientPage _serialPortClientPage;
+
     private DriverDebugUIPage _driverDebugUIPage;
     private ThingsGateway.Foundation.Adapter.DLT645.DLT645_2007 _plc;
+
     /// <summary>
     /// <inheritdoc/>
     /// </summary>
@@ -58,16 +61,13 @@ public partial class DLT645_2007DebugPage
                     };
 
                     #region 读写测试
-                
-                
+
                         var result = await plc.ReadStringAsync("00000000", 1);
 
                     #endregion
-
                 }
-                
-                """, "csharp"));
 
+                """, "csharp"));
 
             if (_serialPortClientPage != null)
                 _serialPortClientPage.LogAction = _driverDebugUIPage.LogOut;
@@ -84,5 +84,4 @@ public partial class DLT645_2007DebugPage
 
         base.OnAfterRender(firstRender);
     }
-
 }

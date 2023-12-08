@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using BlazorComponent;
@@ -27,39 +29,45 @@ namespace ThingsGateway.Gateway.Blazor;
 /// </summary>
 public partial class DeviceStatusPage : IDisposable
 {
-    readonly PeriodicTimer _periodicTimer = new(TimeSpan.FromSeconds(3));
+    private readonly PeriodicTimer _periodicTimer = new(TimeSpan.FromSeconds(3));
     private bool _isShowDetailUI;
+
     //List<string> _collectDeviceGroups = new();
     //string _collectDeviceGroupSearchName;
     //private string _collectDeviceSearchName;
-    string _collectDeviceSearchName;
-    List<CollectBase> _collectDriverBases = new();
-    CollectBase _collectDriverItem;
-    BootstrapDynamicComponent _driverComponent;
+    private string _collectDeviceSearchName;
+
+    private List<CollectBase> _collectDriverBases = new();
+    private CollectBase _collectDriverItem;
+    private BootstrapDynamicComponent _driverComponent;
     private RenderFragment _driverRender;
     private object _importRef;
-    bool _isAllRestart;
-    bool _isRestart;
-    StringNumber _tabNumber;
+    private bool _isAllRestart;
+    private bool _isRestart;
+    private StringNumber _tabNumber;
+
     //private string _uploadDeviceSearchName;
     //List<string> _uploadDeviceGroups = new();
     //string _uploadDeviceGroupSearchName;
-    string _uploadDeviceSearchName;
-    List<DriverBase> _uploadDriverBases = new();
-    DriverBase _uploadDriverItem;
-    AlarmWorker _alarmWorker { get; set; }
-    CollectDeviceWorker _collectDeviceWorker { get; set; }
-    [Inject]
-    GlobalDeviceData _globalDeviceData { get; set; }
+    private string _uploadDeviceSearchName;
+
+    private List<DriverBase> _uploadDriverBases = new();
+    private DriverBase _uploadDriverItem;
+    private AlarmWorker _alarmWorker { get; set; }
+    private CollectDeviceWorker _collectDeviceWorker { get; set; }
 
     [Inject]
-    InitTimezone _initTimezone { get; set; }
+    private GlobalDeviceData _globalDeviceData { get; set; }
+
+    [Inject]
+    private InitTimezone _initTimezone { get; set; }
 
     [CascadingParameter]
-    MainLayout _mainLayout { get; set; }
+    private MainLayout _mainLayout { get; set; }
 
-    UploadDeviceWorker _uploadDeviceWorker { get; set; }
-    StringNumber _upTabNumber { get; set; }
+    private UploadDeviceWorker _uploadDeviceWorker { get; set; }
+    private StringNumber _upTabNumber { get; set; }
+
     /// <summary>
     /// <inheritdoc/>
     /// </summary>
@@ -89,7 +97,7 @@ public partial class DeviceStatusPage : IDisposable
         base.OnParametersSet();
     }
 
-    async Task AllRestartAsync()
+    private async Task AllRestartAsync()
     {
         try
         {
@@ -114,17 +122,18 @@ public partial class DeviceStatusPage : IDisposable
         }
     }
 
-    void CollectDeviceInfo(CollectBase item)
+    private void CollectDeviceInfo(CollectBase item)
     {
         _collectDriverItem = item;
     }
 
-    void CollectDeviceQuery()
+    private void CollectDeviceQuery()
     {
         //_collectDeviceGroups = _globalDeviceData.CollectDevices?.Select(a => a.DeviceGroup)?.Where(a => !a.IsNullOrEmpty()).Distinct()?.ToList() ?? new();
         _collectDriverBases = _collectDeviceWorker?.DriverBases?.WhereIF(!_collectDeviceSearchName.IsNullOrEmpty(), a => a.CurrentDevice?.Name.Contains(_collectDeviceSearchName) == true).Select(a => (CollectBase)a).ToList() ?? new();
     }
-    async Task DeviceRedundantThreadAsync(long devId)
+
+    private async Task DeviceRedundantThreadAsync(long devId)
     {
         var confirm = await PopupService.OpenConfirmDialogAsync("切换冗余通道", $"确定切换?");
         if (confirm)
@@ -134,7 +143,8 @@ public partial class DeviceStatusPage : IDisposable
             _collectDriverItem = null;
         }
     }
-    async Task UpDeviceRedundantThreadAsync(long devId)
+
+    private async Task UpDeviceRedundantThreadAsync(long devId)
     {
         var confirm = await PopupService.OpenConfirmDialogAsync("切换冗余通道", $"确定切换?");
         if (confirm)
@@ -145,7 +155,7 @@ public partial class DeviceStatusPage : IDisposable
         }
     }
 
-    async Task ConfigAsync(long devId, bool? isStart)
+    private async Task ConfigAsync(long devId, bool? isStart)
     {
         var str = isStart == true ? "启动" : "暂停";
         var confirm = await PopupService.OpenConfirmDialogAsync(str, $"确定{str}?");
@@ -155,7 +165,7 @@ public partial class DeviceStatusPage : IDisposable
         }
     }
 
-    void GetCollectDriverUI()
+    private void GetCollectDriverUI()
     {
         var driver = _collectDriverItem.DriverUIType;
         if (driver == null)
@@ -166,7 +176,8 @@ public partial class DeviceStatusPage : IDisposable
         _driverRender = _driverComponent.Render(a => _importRef = a);
         _isShowDetailUI = true;
     }
-    void GetUploadDriverUI()
+
+    private void GetUploadDriverUI()
     {
         var driver = _uploadDriverItem.DriverUIType;
         if (driver == null)
@@ -177,7 +188,7 @@ public partial class DeviceStatusPage : IDisposable
         _driverRender = _driverComponent.Render(a => _importRef = a);
     }
 
-    async Task RestartAsync(long devId)
+    private async Task RestartAsync(long devId)
     {
         try
         {
@@ -201,6 +212,7 @@ public partial class DeviceStatusPage : IDisposable
             await _mainLayout.StateHasChangedAsync();
         }
     }
+
     private async Task RunTimerAsync()
     {
         while (await _periodicTimer.WaitForNextTickAsync())
@@ -222,12 +234,10 @@ public partial class DeviceStatusPage : IDisposable
             catch
             {
             }
-
         }
     }
 
-
-    async Task UpConfigAsync(long devId, bool? isStart)
+    private async Task UpConfigAsync(long devId, bool? isStart)
     {
         var str = isStart == true ? "启动" : "暂停";
         var confirm = await PopupService.OpenConfirmDialogAsync(str, $"确定{str}?");
@@ -237,17 +247,18 @@ public partial class DeviceStatusPage : IDisposable
         }
     }
 
-    void UploadDeviceInfo(DriverBase item)
+    private void UploadDeviceInfo(DriverBase item)
     {
         _uploadDriverItem = item;
     }
 
-    void UploadDeviceQuery()
+    private void UploadDeviceQuery()
     {
         //_uploadDeviceGroups = _uploadDeviceWorker.DriverBases.Select(a => a.CurrentDevice)?.Select(a => a.DeviceGroup)?.Where(a => a != null).Distinct()?.ToList() ?? new();
         _uploadDriverBases = _uploadDeviceWorker?.DriverBases?.WhereIF(!_uploadDeviceSearchName.IsNullOrEmpty(), a => a.CurrentDevice?.Name.Contains(_uploadDeviceSearchName) == true).ToList() ?? new();
     }
-    async Task UpRestartAsync(long devId)
+
+    private async Task UpRestartAsync(long devId)
     {
         try
         {

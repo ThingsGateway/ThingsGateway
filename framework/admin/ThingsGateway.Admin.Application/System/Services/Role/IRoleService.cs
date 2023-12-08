@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using Furion.DependencyInjection;
@@ -67,6 +69,7 @@ public interface IRoleService : ITransient
     /// <param name="input">授权信息</param>
     /// <returns></returns>
     Task GrantUserAsync(GrantUserInput input);
+
     /// <summary>
     /// 角色拥有资源
     /// </summary>
@@ -98,6 +101,7 @@ public interface IRoleService : ITransient
     /// 角色刷新资源
     /// </summary>
     Task RefreshResourceAsync(long? menuId = null);
+
     /// <summary>
     /// 角色选择器
     /// </summary>

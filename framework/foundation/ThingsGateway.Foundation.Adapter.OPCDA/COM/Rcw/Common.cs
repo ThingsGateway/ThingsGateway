@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using System.
@@ -17,6 +19,7 @@ Runtime.InteropServices;
 namespace ThingsGateway.Foundation.Adapter.OPCDA.Rcw;
 
 #pragma warning disable CS1591 // 缺少对公共可见类型或成员的 XML 注释
+
 /// <exclude />
 [ComImport]
 [GuidAttribute("B196B286-BAB4-101A-B69C-00AA00341D07")]
@@ -327,7 +330,8 @@ public interface IOPCShutdown
 public struct CONNECTDATA
 {
     [MarshalAs(UnmanagedType.IUnknown)]
-    object pUnk;
+    private object pUnk;
+
     [MarshalAs(UnmanagedType.I4)]
-    int dwCookie;
+    private int dwCookie;
 }

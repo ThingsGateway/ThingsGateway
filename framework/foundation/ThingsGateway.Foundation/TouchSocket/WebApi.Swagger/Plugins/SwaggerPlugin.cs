@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using Newtonsoft.Json;
@@ -272,6 +274,7 @@ namespace ThingsGateway.Foundation.WebApi.Swagger
             openApiPath.Add("get", openApiPathValue);
             paths.Add(url, openApiPath);
         }
+
         private byte[] BuildOpenApi(MethodInstance[] methodInstances)
         {
             var openApiRoot = new OpenApiRoot();
@@ -280,7 +283,6 @@ namespace ThingsGateway.Foundation.WebApi.Swagger
             var paths = new Dictionary<string, OpenApiPath>();
 
             var schemaTypeList = new List<Type>();
-
 
             foreach (var methodInstance in methodInstances)
             {
@@ -642,6 +644,7 @@ namespace ThingsGateway.Foundation.WebApi.Swagger
             }
             return e.InvokeNext();
         }
+
         private string GetSchemaName(Type type)
         {
             if (!type.IsGenericType)
@@ -657,6 +660,7 @@ namespace ThingsGateway.Foundation.WebApi.Swagger
             stringBuilder.Append(type.Name.Substring(0, type.Name.IndexOf('`')));
             return stringBuilder.ToString();
         }
+
         private OpenApiDataTypes ParseDataTypes(Type type)
         {
             // 空检查

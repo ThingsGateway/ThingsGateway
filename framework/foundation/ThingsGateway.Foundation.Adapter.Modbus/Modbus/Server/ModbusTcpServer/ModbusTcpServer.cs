@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,12 +9,14 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using System.Collections.Concurrent;
 using System.ComponentModel;
 
 namespace ThingsGateway.Foundation.Adapter.Modbus;
+
 /// <summary>
 /// <inheritdoc/>
 /// </summary>
@@ -30,6 +33,7 @@ public class ModbusTcpServer : ReadWriteDevicesTcpServerBase, IModbusServer
     /// 读写锁
     /// </summary>
     public EasyLock EasyLock { get; } = new();
+
     /// <inheritdoc/>
     public bool IsRtu => false;
 
@@ -63,17 +67,17 @@ public class ModbusTcpServer : ReadWriteDevicesTcpServerBase, IModbusServer
     /// 接收外部写入时，传出变量地址/写入字节组/转换规则/客户端
     /// </summary>
     public Func<ModbusAddress, byte[], IThingsGatewayBitConverter, ISenderClient, Task<OperResult>> OnWriteData { get; set; }
+
     /// <summary>
     /// 默认站点
     /// </summary>
     [Description("默认站点")]
     public byte Station { get; set; } = 1;
+
     /// <summary>
     /// <inheritdoc/>
     /// </summary>
     public bool WriteMemory { get; set; }
-
-
 
     /// <inheritdoc/>
     public override void Dispose()
@@ -110,12 +114,10 @@ public class ModbusTcpServer : ReadWriteDevicesTcpServerBase, IModbusServer
     /// <inheritdoc/>
     public void Init(ModbusAddress mAddress)
     {
-
         ModbusServer01ByteBlocks.GetOrAdd(mAddress.Station, a => new ByteBlock(new byte[ushort.MaxValue * 2]));
         ModbusServer02ByteBlocks.GetOrAdd(mAddress.Station, a => new ByteBlock(new byte[ushort.MaxValue * 2]));
         ModbusServer03ByteBlocks.GetOrAdd(mAddress.Station, a => new ByteBlock(new byte[ushort.MaxValue * 2]));
         ModbusServer04ByteBlocks.GetOrAdd(mAddress.Station, a => new ByteBlock(new byte[ushort.MaxValue * 2]));
-
     }
 
     /// <inheritdoc/>
@@ -123,13 +125,12 @@ public class ModbusTcpServer : ReadWriteDevicesTcpServerBase, IModbusServer
     {
         return PackHelper.LoadSourceRead<T, T2>(this, deviceVariables, maxPack, defaultIntervalTime);
     }
+
     /// <inheritdoc/>
     public override OperResult<byte[]> Read(string address, int length, CancellationToken cancellationToken = default)
     {
         return ModbusServerHelpers.Read(this, address, length);
     }
-
-
 
     /// <inheritdoc/>
     public override Task<OperResult<byte[]>> ReadAsync(string address, int length, CancellationToken cancellationToken = default)
@@ -159,21 +160,17 @@ public class ModbusTcpServer : ReadWriteDevicesTcpServerBase, IModbusServer
         }
     }
 
-
     /// <inheritdoc/>
     public override OperResult Write(string address, byte[] value, CancellationToken cancellationToken = default)
     {
         return ModbusServerHelpers.Write(this, address, value);
     }
 
-
     /// <inheritdoc/>
     public override OperResult Write(string address, bool[] value, CancellationToken cancellationToken = default)
     {
         return ModbusServerHelpers.Write(this, address, value);
-
     }
-
 
     /// <inheritdoc/>
     public override Task<OperResult> WriteAsync(string address, byte[] value, CancellationToken cancellationToken = default)
@@ -186,6 +183,7 @@ public class ModbusTcpServer : ReadWriteDevicesTcpServerBase, IModbusServer
     {
         return Task.FromResult(Write(address, value));
     }
+
     /// <inheritdoc/>
     protected override async Task Received(SocketClient client, ReceivedDataEventArgs e)
     {

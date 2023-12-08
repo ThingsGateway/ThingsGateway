@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using Furion.Templates;
@@ -30,7 +32,9 @@ public class Program
         ThreadPool.SetMinThreads(1000, 1000);
         //当前工作目录设为程序集的基目录
         System.IO.Directory.SetCurrentDirectory(AppContext.BaseDirectory);
+
         #region 控制台输出Logo
+
         Console.Write(Environment.NewLine);
         Console.ForegroundColor = ConsoleColor.Yellow;
         Console.WriteLine("████████╗    ██╗  ██╗    ██╗    ███╗   ██╗     ██████╗     ███████╗     ██████╗      █████╗     ████████╗    ███████╗    ██╗    ██╗     █████╗     ██╗   ██╗\r\n╚══██╔══╝    ██║  ██║    ██║    ████╗  ██║    ██╔════╝     ██╔════╝    ██╔════╝     ██╔══██╗    ╚══██╔══╝    ██╔════╝    ██║    ██║    ██╔══██╗    ╚██╗ ██╔╝\r\n   ██║       ███████║    ██║    ██╔██╗ ██║    ██║  ███╗    ███████╗    ██║  ███╗    ███████║       ██║       █████╗      ██║ █╗ ██║    ███████║     ╚████╔╝ \r\n   ██║       ██╔══██║    ██║    ██║╚██╗██║    ██║   ██║    ╚════██║    ██║   ██║    ██╔══██║       ██║       ██╔══╝      ██║███╗██║    ██╔══██║      ╚██╔╝  \r\n   ██║       ██║  ██║    ██║    ██║ ╚████║    ╚██████╔╝    ███████║    ╚██████╔╝    ██║  ██║       ██║       ███████╗    ╚███╔███╔╝    ██║  ██║       ██║   \r\n   ╚═╝       ╚═╝  ╚═╝    ╚═╝    ╚═╝  ╚═══╝     ╚═════╝     ╚══════╝     ╚═════╝     ╚═╝  ╚═╝       ╚═╝       ╚══════╝     ╚══╝╚══╝     ╚═╝  ╚═╝       ╚═╝   \r\n                                                                                                                                                            ");
@@ -41,6 +45,7 @@ public class Program
          "##文档地址## https://diego2098.gitee.io/thingsgateway-docs/",
          "##作者信息## Diego QQ 2248356998"));
         Console.ResetColor();
+
         #endregion
 
         var builder = WebApplication.CreateBuilder(args);
@@ -58,7 +63,5 @@ public class Program
         builder.Inject();
         var app = builder.Build();
         await app.RunAsync();
-
     }
-
 }

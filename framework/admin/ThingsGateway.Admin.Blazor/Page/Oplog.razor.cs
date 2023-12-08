@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using Mapster;
@@ -23,10 +25,13 @@ public partial class Oplog
 {
     private readonly OperateLogPageInput _search = new();
     private IAppDataTable _datatable;
+
     [Inject]
     private AjaxService _ajaxService { get; set; }
+
     private List<StringFilters> _categoryFilters { get; set; } = new();
     private List<StringFilters> _exeStatus { get; set; } = new();
+
     [Inject]
     private InitTimezone _initTimezone { get; set; }
 
@@ -52,7 +57,7 @@ public partial class Oplog
         }
     }
 
-    async Task DownExportAsync(OperateLogPageInput input = null)
+    private async Task DownExportAsync(OperateLogPageInput input = null)
     {
         try
         {

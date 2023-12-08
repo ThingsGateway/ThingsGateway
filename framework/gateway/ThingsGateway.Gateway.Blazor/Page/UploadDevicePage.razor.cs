@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using BlazorComponent;
@@ -24,25 +26,28 @@ using SqlSugar;
 using ThingsGateway.Admin.Blazor;
 
 namespace ThingsGateway.Gateway.Blazor;
+
 /// <summary>
 /// 采集设备页面
 /// </summary>
 public partial class UploadDevicePage
 {
-    readonly DevicePageInput _search = new();
-    IAppDataTable _datatable;
-    List<string> _deviceGroups = new();
-    List<Device> _devices = new();
-    List<DriverPlugin> _driverPlugins;
-    ImportExcel _importExcel;
+    private readonly DevicePageInput _search = new();
+    private IAppDataTable _datatable;
+    private List<string> _deviceGroups = new();
+    private List<Device> _devices = new();
+    private List<DriverPlugin> _driverPlugins;
+    private ImportExcel _importExcel;
+
     //string _searchName;
     [Inject]
-    AjaxService _ajaxService { get; set; }
+    private AjaxService _ajaxService { get; set; }
+
     [Inject]
-    DriverPluginService _driverPluginService { get; set; }
+    private DriverPluginService _driverPluginService { get; set; }
 
     [CascadingParameter]
-    MainLayout _mainLayout { get; set; }
+    private MainLayout _mainLayout { get; set; }
 
     /// <inheritdoc/>
     protected override async Task OnParametersSetAsync()
@@ -58,6 +63,7 @@ public partial class UploadDevicePage
         Refresh();
         await _mainLayout.StateHasChangedAsync();
     }
+
     private async Task GetDriverProperties(List<Device> data)
     {
         if (data != null)
@@ -75,9 +81,9 @@ public partial class UploadDevicePage
         }
         await _serviceScope.ServiceProvider.GetService<IUploadDeviceService>().EditsAsync(data);
         await PopupService.EnqueueSnackbarAsync("刷新成功", AlertTypes.Success);
-
     }
-    async Task CopyDeviceAsync(IEnumerable<Device> data)
+
+    private async Task CopyDeviceAsync(IEnumerable<Device> data)
     {
         if (!data.Any())
         {
@@ -103,15 +109,16 @@ public partial class UploadDevicePage
         await _mainLayout.StateHasChangedAsync();
     }
 
-    Task<Dictionary<string, ImportPreviewOutputBase>> DeviceImportAsync(IBrowserFile file)
+    private Task<Dictionary<string, ImportPreviewOutputBase>> DeviceImportAsync(IBrowserFile file)
     {
         return _serviceScope.ServiceProvider.GetService<IUploadDeviceService>().PreviewAsync(file);
     }
 
-    async Task DownExportAsync(DevicePageInput input = null)
+    private async Task DownExportAsync(DevicePageInput input = null)
     {
         await _ajaxService.DownFileAsync("gatewayFile/uploadDevice", DateTimeExtensions.CurrentDateTime.ToFileDateTimeFormat(), input.Adapt<DeviceInput>());
     }
+
     private async Task DriverValueChangedAsync(DeviceAddInput context, string pluginName)
     {
         if (pluginName.IsNullOrEmpty()) return;
@@ -140,7 +147,7 @@ public partial class UploadDevicePage
         await _mainLayout.StateHasChangedAsync();
     }
 
-    List<DependencyProperty> GetDriverProperties(string pluginName, long devId)
+    private List<DependencyProperty> GetDriverProperties(string pluginName, long devId)
     {
         return BackgroundServiceUtil.GetBackgroundService<UploadDeviceWorker>().GetDevicePropertys(pluginName, devId);
     }
@@ -157,12 +164,11 @@ public partial class UploadDevicePage
         _deviceGroups = _devices?.Select(a => a.DeviceGroup)?.Where(a => a != null).Distinct()?.ToList();
     }
 
-    async Task SaveDeviceImportAsync(Dictionary<string, ImportPreviewOutputBase> data)
+    private async Task SaveDeviceImportAsync(Dictionary<string, ImportPreviewOutputBase> data)
     {
         await _serviceScope.ServiceProvider.GetService<IUploadDeviceService>().ImportAsync(data);
         await DatatableQueryAsync();
         _importExcel.IsShowImport = false;
         await _mainLayout.StateHasChangedAsync();
     }
-
 }

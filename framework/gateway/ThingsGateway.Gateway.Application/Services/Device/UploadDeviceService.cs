@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using Furion.DependencyInjection;
@@ -22,9 +24,11 @@ namespace ThingsGateway.Gateway.Application;
 public class UploadDeviceService : DeviceService<Device>, ITransient, IUploadDeviceService
 {
     protected override string DeviceSheetName => ExportHelpers.UploadDeviceSheetName;
+
     public UploadDeviceService(IServiceScopeFactory serviceScopeFactory, IFileService fileService) : base(serviceScopeFactory, fileService)
     {
     }
+
     /// <inheritdoc/>
     public IEnumerable<DeviceRunTime> GetDeviceRuntime(long devId = 0)
     {
@@ -41,6 +45,7 @@ public class UploadDeviceService : DeviceService<Device>, ITransient, IUploadDev
             return new List<DeviceRunTime>() { runtime };
         }
     }
+
     /// <summary>
     /// 编辑多个设备，不检测名称重复
     /// </summary>

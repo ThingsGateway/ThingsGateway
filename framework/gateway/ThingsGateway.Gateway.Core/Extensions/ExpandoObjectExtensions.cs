@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using System.Dynamic;
@@ -17,6 +19,7 @@ using ThingsGateway.Foundation.Extension.Generic;
 using ThingsGateway.Foundation.Extension.String;
 
 namespace ThingsGateway.Gateway.Core.Extensions;
+
 /// <summary>
 /// 动态类型扩展
 /// </summary>
@@ -43,7 +46,6 @@ public static class ExpandoObjectExtensions
                 property.PropertyType.GetTypeValue(value?.ToString() ?? "", out var objValue);
                 property.SetValue(entity, objValue);
             }
-
         });
         return entity;
     }
@@ -57,5 +59,4 @@ public static class ExpandoObjectExtensions
         var propertyDes = properties.FirstOrDefault(p => p.Name == propertyName).FindDisplayAttribute();
         return expandoObject.FirstOrDefault(a => a.Key == propertyDes).Value;
     }
-
 }

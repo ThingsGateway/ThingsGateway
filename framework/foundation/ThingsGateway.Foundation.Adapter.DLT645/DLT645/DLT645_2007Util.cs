@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,12 +9,14 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using ThingsGateway.Foundation.Extension.Generic;
 using ThingsGateway.Foundation.Extension.String;
 
 namespace ThingsGateway.Foundation.Adapter.DLT645;
+
 /// <summary>
 /// DLT645_2007
 /// </summary>
@@ -23,16 +26,16 @@ internal static class DLT645_2007Util
     public static string GetAddressDescription()
     {
         var str = """
-            查看附带文档或者相关资料，下面列举一下常见的数据标识地址 
-            
-            地址                       说明                    
+            查看附带文档或者相关资料，下面列举一下常见的数据标识地址
+
+            地址                       说明
             -----------------------------------------
             02010100    A相电压
             02020100    A相电流
             02030000    瞬时总有功功率
             00000000    (当前)组合有功总电能
             00010000    (当前)正向有功总电能
-            
+
             """;
         return Environment.NewLine + str;
     }
@@ -67,14 +70,11 @@ internal static class DLT645_2007Util
         {
             return new OperResult<byte[]>(ex);
         }
-
     }
-
 
     /// <inheritdoc/>
     public static OperResult Write(IDLT645_2007 dlt645_2007, string address, string value, CancellationToken cancellationToken = default)
     {
-
         try
         {
             dlt645_2007.Connect(cancellationToken);
@@ -95,14 +95,11 @@ internal static class DLT645_2007Util
         {
             return new OperResult<byte[]>(ex);
         }
-
     }
-
 
     /// <inheritdoc/>
     public static async Task<OperResult> WriteAsync(IDLT645_2007 dlt645_2007, string address, string value, CancellationToken cancellationToken = default)
     {
-
         try
         {
             await dlt645_2007.ConnectAsync(cancellationToken);
@@ -122,7 +119,6 @@ internal static class DLT645_2007Util
         {
             return new OperResult<byte[]>(ex);
         }
-
     }
 
     #region 其他方法
@@ -180,7 +176,6 @@ internal static class DLT645_2007Util
         {
             return new OperResult<string>(ex);
         }
-
     }
 
     /// <summary>
@@ -206,16 +201,12 @@ internal static class DLT645_2007Util
             {
                 return new(result);
             }
-
         }
         catch (Exception ex)
         {
             return new(ex);
         }
-
     }
-
-
 
     /// <summary>
     /// 修改波特率
@@ -250,7 +241,6 @@ internal static class DLT645_2007Util
         {
             return new OperResult<string>(ex);
         }
-
     }
 
     /// <summary>
@@ -273,8 +263,8 @@ internal static class DLT645_2007Util
         {
             return new OperResult<string>(ex);
         }
-
     }
+
     /// <summary>
     /// 修改密码
     /// </summary>
@@ -306,8 +296,7 @@ internal static class DLT645_2007Util
         {
             return new OperResult<string>(ex);
         }
-
     }
-    #endregion
 
+    #endregion
 }

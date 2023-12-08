@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using Hardware.Info;
@@ -48,6 +50,7 @@ public class HardwareInfoWorker : BackgroundService
     /// 硬件信息获取
     /// </summary>
     public HardwareInfo HardwareInfo { get; private set; }
+
     /// <summary>
     /// <inheritdoc/>
     /// </summary>
@@ -59,6 +62,7 @@ public class HardwareInfoWorker : BackgroundService
         _appLifetime.ApplicationStarted.Register(() => { _easyLock.Release(); _easyLock = null; });
         await base.StartAsync(cancellationToken);
     }
+
     /// <summary>
     /// <inheritdoc/>
     /// </summary>
@@ -113,7 +117,6 @@ public class HardwareInfoWorker : BackgroundService
             }
             catch (TaskCanceledException)
             {
-
             }
             catch (Exception ex)
             {
@@ -122,7 +125,6 @@ public class HardwareInfoWorker : BackgroundService
                 error = true;
             }
         }
-
     }
 
     /// <summary>
@@ -204,4 +206,3 @@ public class APPInfo
     [Description("更新时间")]
     public string UpdateTime { get; set; }
 }
-

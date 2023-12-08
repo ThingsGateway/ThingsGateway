@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,17 +9,20 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using BlazorComponent;
 
 namespace ThingsGateway.Components;
+
 /// <summary>
 /// CookieStorage
 /// </summary>
 public class CookieStorage
 {
     private readonly IJSRuntime _jsRuntime;
+
     /// <summary>
     /// CookieStorage
     /// </summary>
@@ -27,6 +31,7 @@ public class CookieStorage
     {
         _jsRuntime = jsRuntime;
     }
+
     /// <summary>
     /// GetCookieAsync
     /// </summary>
@@ -36,6 +41,7 @@ public class CookieStorage
     {
         return await _jsRuntime.InvokeAsync<string>(JsInteropConstants.GetCookie, key);
     }
+
     /// <summary>
     /// GetCookie
     /// </summary>
@@ -49,6 +55,7 @@ public class CookieStorage
         }
         return null;
     }
+
     /// <summary>
     /// SetItemAsync
     /// </summary>
@@ -63,7 +70,6 @@ public class CookieStorage
         }
         catch
         {
-
         }
     }
 }

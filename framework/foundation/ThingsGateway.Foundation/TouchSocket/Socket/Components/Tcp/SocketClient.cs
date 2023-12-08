@@ -1,4 +1,5 @@
 #region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 //------------------------------------------------------------------------------
@@ -40,6 +42,7 @@ namespace ThingsGateway.Foundation.Sockets
         {
             this.Protocol = Protocol.Tcp;
         }
+
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
@@ -64,7 +67,6 @@ namespace ThingsGateway.Foundation.Sockets
 
         /// <inheritdoc/>
         public virtual bool CanSetDataHandlingAdapter => true;
-
 
         /// <inheritdoc/>
         public IResolver Resolver { get; private set; }
@@ -116,15 +118,19 @@ namespace ThingsGateway.Foundation.Sockets
 
         /// <inheritdoc/>
         public bool UseSsl { get; private set; }
+
         /// <inheritdoc/>
         public override TouchSocketConfig Config => this.Service?.Config;
+
         #endregion 属性
 
         #region Internal
+
         internal Task AuthenticateAsync(ServiceSslOption sslOption)
         {
             return this.m_tcpCore.AuthenticateAsync(sslOption);
         }
+
         internal void BeginReceive()
         {
             try
@@ -136,7 +142,6 @@ namespace ThingsGateway.Foundation.Sockets
                 this.BreakOut(false, ex.ToString());
             }
         }
-
 
         internal Task BeginReceiveSsl()
         {
@@ -158,8 +163,6 @@ namespace ThingsGateway.Foundation.Sockets
         {
             return this.OnInitialized();
         }
-
-
 
         internal void InternalSetContainer(IResolver containerProvider)
         {
@@ -216,8 +219,6 @@ namespace ThingsGateway.Foundation.Sockets
             this.m_tcpCore = tcpCore;
         }
 
-
-
         /// <summary>
         /// 中断连接
         /// </summary>
@@ -236,7 +237,6 @@ namespace ThingsGateway.Foundation.Sockets
                     this.PrivateOnDisconnected(new DisconnectEventArgs(manual, msg)).GetFalseAwaitResult();
                 }
             }
-
         }
 
         private void HandleReceived(TcpCore core, ByteBlock byteBlock)
@@ -265,10 +265,12 @@ namespace ThingsGateway.Foundation.Sockets
                 this.Logger.Log(LogLevel.Error, this, "在处理数据时发生错误", ex);
             }
         }
+
         private void TcpCoreBreakOut(TcpCore core, bool manual, string msg)
         {
             this.BreakOut(manual, msg);
         }
+
         #endregion Internal
 
         #region 事件&委托
@@ -363,7 +365,6 @@ namespace ThingsGateway.Foundation.Sockets
             return EasyTask.CompletedTask;
         }
 
-
         private async Task PrivateOnDisconnected(object obj)
         {
             this.m_receiver?.TryInputReceive(default, default);
@@ -383,12 +384,13 @@ namespace ThingsGateway.Foundation.Sockets
                 base.Dispose(true);
             }
         }
+
         private Task PrivateOnDisconnecting(object obj)
         {
             return this.OnDisconnecting((DisconnectEventArgs)obj);
         }
-        #endregion 事件&委托
 
+        #endregion 事件&委托
 
         /// <inheritdoc/>
         public virtual void Close(string msg = TouchSocketCoreUtility.Empty)
@@ -482,10 +484,8 @@ namespace ThingsGateway.Foundation.Sockets
                     this.PrivateOnDisconnecting(new DisconnectEventArgs(true, $"{nameof(Dispose)}主动断开")).GetFalseAwaitResult();
                     this.BreakOut(true, $"{nameof(Dispose)}主动断开");
                 }
-
             }
         }
-
 
         /// <summary>
         /// 当Id更新的时候触发
@@ -847,7 +847,6 @@ namespace ThingsGateway.Foundation.Sockets
         {
             return this.m_receiver ??= new Receiver(this);
         }
-
 
         #endregion
     }

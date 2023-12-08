@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using Mapster;
@@ -22,7 +24,6 @@ using System.Collections.Concurrent;
 using ThingsGateway.Foundation.Extension.ConcurrentQueue;
 
 namespace ThingsGateway.Plugin.OPCUA;
-
 
 /// <summary>
 /// OPCUA服务端
@@ -67,6 +68,7 @@ public partial class OPCUAServer : UpLoadBase
             CollectDevices = _globalDeviceData.CollectDevices.Where(a => device.DeviceVariableRunTimes.Select(b => b.DeviceId).Contains(a.Id)).ToList();
         }
     }
+
     /// <inheritdoc/>
     public override bool IsConnected() => m_server?.CurrentInstance.CurrentState == Opc.Ua.ServerState.Running;
 
@@ -108,7 +110,6 @@ public partial class OPCUAServer : UpLoadBase
             VariableValueChange(a);
             a.VariableValueChange += VariableValueChange;
         });
-
     }
 
     protected override Task ProtectedAfterStopAsync()
@@ -124,6 +125,7 @@ public partial class OPCUAServer : UpLoadBase
         await m_application.Start(m_server);
         await base.ProtectedBeforStartAsync(cancellationToken);
     }
+
     protected override async Task ProtectedExecuteAsync(CancellationToken cancellationToken)
     {
         //获取设备连接状态
@@ -160,7 +162,6 @@ public partial class OPCUAServer : UpLoadBase
                         LogMessage.LogWarning(ex);
                     }
                 }
-
             }
             success = true;
         }
@@ -173,6 +174,7 @@ public partial class OPCUAServer : UpLoadBase
 
         await Delay(_driverPropertys.CycleInterval, cancellationToken);
     }
+
     private ApplicationConfiguration GetDefaultConfiguration()
     {
         ApplicationConfiguration config = new();
@@ -234,7 +236,6 @@ public partial class OPCUAServer : UpLoadBase
             });
 
             userTokens.Add(new UserTokenPolicy(UserTokenType.UserName));
-
         }
         else
         {
@@ -250,7 +251,6 @@ public partial class OPCUAServer : UpLoadBase
         config.ApplicationName = "ThingsGateway OPCUAServer";
         config.ApplicationType = ApplicationType.Server;
         config.ApplicationUri = _driverPropertys.BigTextApplicationUri;
-
 
         config.ServerConfiguration = new ServerConfiguration()
         {
@@ -278,7 +278,6 @@ public partial class OPCUAServer : UpLoadBase
             MaxNotificationsPerPublish = 1000,    // 每次发布的最大通知数
             MinMetadataSamplingInterval = 1000,   // 元数据的最小采样间隔
             MaxRegistrationInterval = -1,   // 两次注册尝试之间的最大时间（以毫秒为单位）//不提供注册
-
         };
         config.SecurityConfiguration = new SecurityConfiguration()
         {
@@ -316,7 +315,6 @@ public partial class OPCUAServer : UpLoadBase
             {
                 StoreType = CertificateStoreType.Directory,
                 StorePath = AppContext.BaseDirectory + @"OPCUAServerCertificate\pki\issuerUser",
-
             },
             TrustedUserCertificates = new CertificateTrustList
             {
@@ -329,7 +327,6 @@ public partial class OPCUAServer : UpLoadBase
         config.TransportQuotas = new TransportQuotas { OperationTimeout = 15000 };
         config.ClientConfiguration = new ClientConfiguration { DefaultSessionTimeout = 60000 };
         config.TraceConfiguration = new TraceConfiguration();
-
 
         config.CertificateValidator = new CertificateValidator();
         config.CertificateValidator.Update(config).GetAwaiter().GetResult();

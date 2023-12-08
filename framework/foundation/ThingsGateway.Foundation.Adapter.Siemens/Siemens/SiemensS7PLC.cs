@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using System.ComponentModel;
@@ -24,6 +26,7 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
     public partial class SiemensS7PLC : ReadWriteDevicesTcpClientBase
     {
         private SiemensEnum siemensEnum = SiemensEnum.S1200;
+
         /// <summary>
         /// S7类型
         /// </summary>
@@ -39,20 +42,25 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
                     case SiemensEnum.S1200:
                         ISO_CR[21] = 0x00;
                         break;
+
                     case SiemensEnum.S300:
                         ISO_CR[21] = 0x02;
                         break;
+
                     case SiemensEnum.S400:
                         ISO_CR[21] = 0x03;
                         ISO_CR[17] = 0x00;
                         break;
+
                     case SiemensEnum.S1500:
                         ISO_CR[21] = 0x00;
                         break;
+
                     case SiemensEnum.S200Smart:
                         ISO_CR = SiemensHelper.ISO_CR200SMART;
                         S7_PN = SiemensHelper.S7200SMART_PN;
                         break;
+
                     case SiemensEnum.S200:
                         ISO_CR = SiemensHelper.ISO_CR200;
                         S7_PN = SiemensHelper.S7200_PN;
@@ -60,11 +68,13 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
                 }
             }
         }
+
         private byte[] ISO_CR;
         private byte[] S7_PN;
         private int pdu_length = 100;
         private byte plc_rack = 0;
         private byte plc_slot = 0;
+
         /// <summary>
         /// 传入PLC类型，程序内会改变相应PLC类型的S7协议LocalTSAP， RemoteTSAP等
         /// </summary>
@@ -78,6 +88,7 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
             Array.Copy(SiemensHelper.ISO_CR, ISO_CR, ISO_CR.Length);
             Array.Copy(SiemensHelper.S7_PN, S7_PN, S7_PN.Length);
         }
+
         /// <inheritdoc/>
         public override string GetAddressDescription()
         {
@@ -115,6 +126,7 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
             }
             return 0;
         }
+
         /// <inheritdoc/>
         public override bool BitReverse(string address)
         {
@@ -149,6 +161,7 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
                 }
             }
         }
+
         /// <summary>
         /// PDULength
         /// </summary>
@@ -243,9 +256,7 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
             {
                 return new OperResult<byte[]>(ex);
             }
-
         }
-
 
         /// <inheritdoc/>
         public override void SetDataAdapter(ISocketClient socketClient = default)
@@ -253,7 +264,6 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
             SiemensS7PLCDataHandleAdapter dataHandleAdapter = new();
             TcpClient.SetDataHandlingAdapter(dataHandleAdapter);
         }
-
 
         /// <inheritdoc/>
         public override OperResult Write(string address, byte[] value, CancellationToken cancellationToken = default)
@@ -350,8 +360,8 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
             }
         }
 
-
         #region 其他方法
+
         /// <summary>
         /// 读取日期
         /// </summary>
@@ -389,6 +399,7 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
         {
             return await base.WriteAsync(address, Convert.ToUInt16((dateTime - ThingsGateway.Foundation.Adapter.Siemens.DateTime.SpecMinimumDateTime).TotalDays), cancellationToken);
         }
+
         /// <summary>
         /// 写入时间
         /// </summary>
@@ -397,13 +408,16 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
         {
             return await WriteAsync(address, ThingsGateway.Foundation.Adapter.Siemens.DateTime.ToByteArray(dateTime), cancellationToken);
         }
+
         #endregion
+
         /// <inheritdoc/>
         public override void Dispose()
         {
             TcpClient.Connected -= Connected;
             base.Dispose();
         }
+
         /// <inheritdoc/>
         protected override async Task Connected(ITcpClient client, ConnectedEventArgs e)
         {
@@ -432,7 +446,6 @@ namespace ThingsGateway.Foundation.Adapter.Siemens
                     Logger?.LogInformation($"{client.IP} : {client.Port}：PDU初始化失败-{ex.Message}");
                     return;
                 }
-
             }
             catch (Exception ex)
             {

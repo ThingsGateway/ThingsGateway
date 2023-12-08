@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,9 +9,11 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 namespace ThingsGateway.Gateway.Application;
+
 public static class DriverBaseExtension
 {
     /// <summary>
@@ -38,6 +41,7 @@ public static class DriverBaseExtension
             {
                 case ChannelEnum.SerialPortClient:
                     return config.PortName;
+
                 case ChannelEnum.TcpClient:
                 case ChannelEnum.UdpSession:
                     var a = new IPHost($"{config.IP}:{config.Port}");
@@ -46,6 +50,7 @@ public static class DriverBaseExtension
         }
         return null;
     }
+
     /// <summary>
     /// 获取设备的属性值
     /// </summary>
@@ -88,6 +93,7 @@ public static class DriverBaseExtension
             {
                 case ChannelEnum.None:
                     break;
+
                 case ChannelEnum.SerialPortClient:
                     var data = new SerialPortOption()
                     {
@@ -101,18 +107,19 @@ public static class DriverBaseExtension
                     var serialPortClient = new SerialPortClient();
                     (serialPortClient).Setup(touchSocketConfig);
                     return serialPortClient;
+
                 case ChannelEnum.TcpClient:
                     touchSocketConfig.SetRemoteIPHost(new IPHost($"{config.IP}:{config.Port}"));
                     var tcpClient = new TcpClient();
                     (tcpClient).Setup(touchSocketConfig);
                     return tcpClient;
+
                 case ChannelEnum.UdpSession:
                     touchSocketConfig.SetRemoteIPHost(new IPHost($"{config.IP}:{config.Port}"));
                     var udpSession = new UdpSession();
                     (udpSession).Setup(touchSocketConfig);
                     return udpSession;
             }
-
         }
         return null;
     }

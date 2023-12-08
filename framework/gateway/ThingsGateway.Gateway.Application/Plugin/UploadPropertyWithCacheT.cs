@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 namespace ThingsGateway.Gateway.Application;
@@ -22,11 +24,13 @@ public class UploadPropertyWithCacheT : UpDriverPropertyBase
     /// </summary>
     [DeviceProperty("线程循环间隔", "最小50ms")]
     public virtual int CycleInterval { get; set; } = 1000;
+
     /// <summary>
     /// 内存队列最大条数
     /// </summary>
     [DeviceProperty("内存队列最大条数", "默认2w条")]
     public virtual int QueueMaxCount { get; set; } = 20000;
+
     /// <summary>
     /// 离线缓存大小限制
     /// </summary>
@@ -44,6 +48,7 @@ public class UploadPropertyWithCacheT : UpDriverPropertyBase
     /// </summary>
     [DeviceProperty("是否间隔上传", "False时为变化检测上传")]
     public virtual bool IsInterval { get; set; } = false;
+
     /// <summary>
     /// 上传间隔时间
     /// </summary>
@@ -51,6 +56,4 @@ public class UploadPropertyWithCacheT : UpDriverPropertyBase
     public virtual int UploadInterval { get; set; } = 1000;
 
     [DeviceProperty("是否选择全部变量", "")] public bool IsAllVariable { get; set; } = false;
-
-
 }

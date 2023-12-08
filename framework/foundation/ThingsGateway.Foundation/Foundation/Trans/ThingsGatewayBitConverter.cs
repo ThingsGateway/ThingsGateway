@@ -1,4 +1,5 @@
 #region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using System.Text;
@@ -26,14 +28,14 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
     private readonly EndianType endianType;
 
     private DataFormat? dataFormat;
+
     /// <inheritdoc/>
     [Newtonsoft.Json.JsonIgnore]
-#if NET6_0_OR_GREATER
-    [System.Text.Json.Serialization.JsonIgnore]
-#endif
     public virtual Encoding Encoding { get; set; } = Encoding.UTF8;
+
     /// <inheritdoc/>
     public virtual BcdFormat? BcdFormat { get; set; }
+
     /// <inheritdoc/>
     public virtual int? Length { get; set; }
 
@@ -67,9 +69,9 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
         }
     }
 
-
     /// <inheritdoc/>
     public virtual EndianType EndianType => endianType;
+
     /// <inheritdoc/>
     public virtual bool IsStringReverseByteWord { get; set; }
 
@@ -111,6 +113,7 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
         }
         return bytes;
     }
+
     /// <inheritdoc/>
     public virtual byte[] GetBytes(short[] value)
     {
@@ -133,6 +136,7 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
         }
         return bytes;
     }
+
     /// <inheritdoc/>
     public virtual byte[] GetBytes(ushort[] value)
     {
@@ -144,11 +148,13 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
         }
         return numArray;
     }
+
     /// <inheritdoc/>
     public virtual byte[] GetBytes(int value)
     {
         return ByteTransDataFormat4(BitConverter.GetBytes(value));
     }
+
     /// <inheritdoc/>
     public virtual byte[] GetBytes(int[] value)
     {
@@ -160,11 +166,13 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
         }
         return numArray;
     }
+
     /// <inheritdoc/>
     public virtual byte[] GetBytes(uint value)
     {
         return ByteTransDataFormat4(BitConverter.GetBytes(value));
     }
+
     /// <inheritdoc/>
     public virtual byte[] GetBytes(uint[] value)
     {
@@ -176,11 +184,13 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
         }
         return numArray;
     }
+
     /// <inheritdoc/>
     public virtual byte[] GetBytes(long value)
     {
         return ByteTransDataFormat8(BitConverter.GetBytes(value));
     }
+
     /// <inheritdoc/>
     public virtual byte[] GetBytes(long[] value)
     {
@@ -192,11 +202,13 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
         }
         return numArray;
     }
+
     /// <inheritdoc/>
     public virtual byte[] GetBytes(ulong value)
     {
         return ByteTransDataFormat8(BitConverter.GetBytes(value));
     }
+
     /// <inheritdoc/>
     public virtual byte[] GetBytes(ulong[] value)
     {
@@ -208,11 +220,13 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
         }
         return numArray;
     }
+
     /// <inheritdoc/>
     public virtual byte[] GetBytes(float value)
     {
         return ByteTransDataFormat4(BitConverter.GetBytes(value));
     }
+
     /// <inheritdoc/>
     public virtual byte[] GetBytes(float[] value)
     {
@@ -224,11 +238,13 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
         }
         return numArray;
     }
+
     /// <inheritdoc/>
     public virtual byte[] GetBytes(double value)
     {
         return ByteTransDataFormat8(BitConverter.GetBytes(value));
     }
+
     /// <inheritdoc/>
     public virtual byte[] GetBytes(double[] value)
     {
@@ -240,6 +256,7 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
         }
         return numArray;
     }
+
     /// <inheritdoc/>
     public virtual byte[] GetBytes(string value)
     {
@@ -259,13 +276,11 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
                 byte[] bytes = Encoding.GetBytes(value);
                 return IsStringReverseByteWord ? bytes.BytesReverseByWord().ArrayExpandToLength(Length.Value) : bytes.ArrayExpandToLength(Length.Value);
             }
-
         }
         else
         {
             if (BcdFormat != null)
             {
-
                 byte[] bytes = DataTransUtil.GetBytesFromBCD(value, BcdFormat.Value);
                 return IsStringReverseByteWord ? bytes.BytesReverseByWord() : bytes;
             }
@@ -274,18 +289,14 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
                 byte[] bytes = Encoding.GetBytes(value);
                 return IsStringReverseByteWord ? bytes.BytesReverseByWord() : bytes;
             }
-
         }
-
     }
-
 
     /// <inheritdoc/>
     public virtual bool IsSameOfSet()
     {
         return !(BitConverter.IsLittleEndian ^ (endianType == EndianType.Little));
     }
-
 
     /// <inheritdoc/>
     public virtual bool ToBoolean(byte[] buffer, int offset, bool isReverse = false)
@@ -391,15 +402,12 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
         if (BcdFormat != null)
         {
             return IsStringReverseByteWord ? DataTransUtil.GetBCDValue(buffer.SelectMiddle(offset, length).BytesReverseByWord(), BcdFormat.Value) : DataTransUtil.GetBCDValue(buffer.SelectMiddle(offset, length), BcdFormat.Value);
-
         }
         else
         {
-
             return IsStringReverseByteWord ?
                 Encoding.GetString(numArray.BytesReverseByWord()).TrimEnd().Replace($"\0", "") :
                 Encoding.GetString(numArray).TrimEnd().Replace($"\0", "");
-
         }
     }
 
@@ -584,6 +592,7 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
         }
         return numArray;
     }
+
     /// <inheritdoc/>
     public virtual float[] ToSingle(byte[] buffer, int offset, int len)
     {

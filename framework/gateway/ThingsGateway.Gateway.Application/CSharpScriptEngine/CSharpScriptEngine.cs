@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using CSScriptLib;
@@ -21,6 +23,7 @@ using System.Dynamic;
 using System.Text;
 
 namespace ThingsGateway.Gateway.Application;
+
 /// <summary>
 /// C#脚本扩展使用
 ///代码修改自IoTSharp：https://gitee.com/IoTSharp/IoTSharp
@@ -47,12 +50,11 @@ public class CSharpScriptEngine : ISingleton
                 {
                     _body.AppendLine(l);
                 }
-
             });
             var eva = CSScript.Evaluator
                    .CreateDelegate(@$"
-                                    using System; 
-                                    using System.Collections.Generic; 
+                                    using System;
+                                    using System.Collections.Generic;
                                     {_using}
                                     dynamic  runscript(dynamic   input)
                                     {{
@@ -87,12 +89,11 @@ public class CSharpScriptEngine : ISingleton
                 {
                     _body.AppendLine(l);
                 }
-
             });
             var eva = CSScript.Evaluator
                    .CreateDelegate(@$"
-                                    using System; 
-                                    using System.Collections.Generic; 
+                                    using System;
+                                    using System.Collections.Generic;
                                     {_using}
                                     dynamic  runscript(dynamic   input)
                                     {{
@@ -106,6 +107,4 @@ public class CSharpScriptEngine : ISingleton
         var json = result.ToJsonString();
         return json;
     }
-
 }
-

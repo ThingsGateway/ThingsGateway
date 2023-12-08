@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 // Copyright (c) Argo Zhang (argo@163.com). All rights reserved.
@@ -48,6 +50,7 @@ public class AjaxService
         var cb = Cache.FirstOrDefault().Callback;
         return cb == null ? null : await cb.Invoke(option);
     }
+
     /// <summary>
     /// 调用Ajax方法发送请求
     /// </summary>
@@ -60,6 +63,7 @@ public class AjaxService
             await cb.Invoke(url, fileName, dtoObject);
         }
     }
+
     /// <summary>
     /// 调用 Goto 方法跳转其他页面
     /// </summary>
@@ -94,7 +98,6 @@ public class AjaxService
     /// <param name="callback"></param>
     internal void RegisterDownFile(IComponent key, Func<string, string, object, Task> callback) => DownFileCache.Add((key, callback));
 
-
     /// <summary>
     /// 注销事件
     /// </summary>
@@ -118,6 +121,7 @@ public class AjaxService
             GotoCache.Remove(item);
         }
     }
+
     /// <summary>
     /// 注销事件
     /// </summary>

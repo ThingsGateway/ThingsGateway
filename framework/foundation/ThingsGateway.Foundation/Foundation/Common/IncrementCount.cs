@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 namespace ThingsGateway.Foundation.Core;
@@ -21,6 +23,7 @@ public sealed class IncrementCount : DisposableObject
     private readonly EasyLock easyLock = new();
     private long max = long.MaxValue;
     private long start = 0;
+
     /// <inheritdoc cref="IncrementCount"/>
     public IncrementCount(long max, long start = 0, int tick = 1)
     {
@@ -29,17 +32,20 @@ public sealed class IncrementCount : DisposableObject
         current = start;
         IncreaseTick = tick;
     }
+
     /// <inheritdoc/>
     ~IncrementCount()
     {
         easyLock.SafeDispose();
     }
+
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
         easyLock.SafeDispose();
         base.Dispose(disposing);
     }
+
     /// <summary>
     /// Tick
     /// </summary>
@@ -126,5 +132,4 @@ public sealed class IncrementCount : DisposableObject
         }
         easyLock.Release();
     }
-
 }

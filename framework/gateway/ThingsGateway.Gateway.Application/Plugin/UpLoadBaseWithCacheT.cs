@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using Mapster;
@@ -20,7 +22,6 @@ using ThingsGateway.Foundation.Extension.ConcurrentQueue;
 using ThingsGateway.Foundation.Extension.Generic;
 
 namespace ThingsGateway.Gateway.Application;
-
 
 /// <summary>
 /// 上传插件
@@ -37,10 +38,12 @@ public abstract class UpLoadBaseWithCacheT<DeviceT, VariableT> : UpLoadBase
     /// mapster配置
     /// </summary>
     protected virtual TypeAdapterConfig _config { get; set; }
+
     /// <summary>
     /// 是否需要设备上传，默认true
     /// </summary>
     protected virtual bool _device { get; } = true;
+
     /// <summary>
     /// <inheritdoc cref="DriverPropertys"/>
     /// </summary>
@@ -61,7 +64,6 @@ public abstract class UpLoadBaseWithCacheT<DeviceT, VariableT> : UpLoadBase
     {
         try
         {
-
             _globalDeviceData?.AllVariables?.ForEach(a => a.VariableValueChange -= VariableValueChange);
 
             _globalDeviceData?.CollectDevices?.ForEach(a =>
@@ -93,6 +95,7 @@ public abstract class UpLoadBaseWithCacheT<DeviceT, VariableT> : UpLoadBase
             CollectDevices = _globalDeviceData.CollectDevices.Where(a => device.DeviceVariableRunTimes.Select(b => b.DeviceId).Contains(a.Id)).ToList();
         }
     }
+
     /// <summary>
     /// 初始化
     /// </summary>
@@ -123,6 +126,7 @@ public abstract class UpLoadBaseWithCacheT<DeviceT, VariableT> : UpLoadBase
         _ = Task.Factory.StartNew(CheckCacheDb);
         return base.ProtectedBeforStartAsync(cancellationToken);
     }
+
     #region 缓存操作
 
     /// <summary>
@@ -141,6 +145,7 @@ public abstract class UpLoadBaseWithCacheT<DeviceT, VariableT> : UpLoadBase
     protected TimerTick _exVariableTimerTick;
 
     private CancellationToken _token;
+
     protected abstract void AddCache(List<CacheItem> cacheItems, IEnumerable<VariableT> dev);
 
     protected abstract void AddCache(List<CacheItem> cacheItems, IEnumerable<DeviceT> dev);
@@ -161,7 +166,6 @@ public abstract class UpLoadBaseWithCacheT<DeviceT, VariableT> : UpLoadBase
                 {
                     list = _collectDeviceRunTimes.ToListWithDequeue();
                 }
-
             }
             if (list != null)
             {
@@ -174,7 +178,6 @@ public abstract class UpLoadBaseWithCacheT<DeviceT, VariableT> : UpLoadBase
         }
 
         _collectDeviceRunTimes.Enqueue(deviceData);
-
     }
 
     /// <summary>
@@ -192,9 +195,7 @@ public abstract class UpLoadBaseWithCacheT<DeviceT, VariableT> : UpLoadBase
                 if (_collectVariableRunTimes.Count > _uploadPropertyWithCache.QueueMaxCount)
                 {
                     list = _collectVariableRunTimes.ToListWithDequeue();
-
                 }
-
             }
             if (list != null)
             {
@@ -208,7 +209,6 @@ public abstract class UpLoadBaseWithCacheT<DeviceT, VariableT> : UpLoadBase
         }
 
         _collectVariableRunTimes.Enqueue(variableData);
-
     }
 
     protected virtual void DeviceStatusChange(DeviceRunTime collectDeviceRunTime)
@@ -247,6 +247,7 @@ public abstract class UpLoadBaseWithCacheT<DeviceT, VariableT> : UpLoadBase
             LogMessage.LogWarning(ex, "缓存失败");
         }
     }
+
     private void AddCache(IEnumerable<IEnumerable<DeviceT>> devData, List<CacheItem> cacheItems)
     {
         try
@@ -261,6 +262,7 @@ public abstract class UpLoadBaseWithCacheT<DeviceT, VariableT> : UpLoadBase
             LogMessage.LogWarning(ex, "缓存失败");
         }
     }
+
     private async Task CheckCacheDb()
     {
         while (!_token.IsCancellationRequested)
@@ -276,11 +278,11 @@ public abstract class UpLoadBaseWithCacheT<DeviceT, VariableT> : UpLoadBase
             await Delay(30000, _token);
         }
     }
+
     private async Task IntervalInsert()
     {
         while (!_token.IsCancellationRequested)
         {
-
             if (CurrentDevice?.KeepRun == false)
             {
                 await Delay(_uploadPropertyWithCache.CycleInterval, _token);
@@ -301,7 +303,6 @@ public abstract class UpLoadBaseWithCacheT<DeviceT, VariableT> : UpLoadBase
                                 AddVariableQueue(variableData);
                             }
                         }
-
                 }
                 catch (Exception ex)
                 {
@@ -328,7 +329,6 @@ public abstract class UpLoadBaseWithCacheT<DeviceT, VariableT> : UpLoadBase
             await Delay(_uploadPropertyWithCache.CycleInterval, _token);
         }
     }
+
     #endregion
 }
-
-

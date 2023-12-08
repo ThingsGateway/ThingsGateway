@@ -1,4 +1,5 @@
 #region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 //------------------------------------------------------------------------------
@@ -26,10 +28,10 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Data;
 using System.Text;
+
 #if NET6_0_OR_GREATER
 using System.Diagnostics.CodeAnalysis;
 #endif
-
 
 namespace ThingsGateway.Foundation.Core
 {
@@ -44,6 +46,7 @@ namespace ThingsGateway.Foundation.Core
         /// </summary>
         public const DynamicallyAccessedMemberTypes DynamicallyAccessed = DynamicallyAccessedMemberTypes.All;
 #endif
+
         static FastBinaryFormatter()
         {
             AddFastBinaryConverter(typeof(string), new StringFastBinaryConverter());
@@ -63,6 +66,7 @@ namespace ThingsGateway.Foundation.Core
 #if NET6_0_OR_GREATER
         public static void AddFastBinaryConverter<[DynamicallyAccessedMembers(DynamicallyAccessed)] TType, [DynamicallyAccessedMembers(DynamicallyAccessed)] TConverter>() where TConverter : IFastBinaryConverter, new()
 #else
+
         public static void AddFastBinaryConverter<TType, TConverter>() where TConverter : IFastBinaryConverter, new()
 #endif
 
@@ -78,6 +82,7 @@ namespace ThingsGateway.Foundation.Core
 #if NET6_0_OR_GREATER
         public static void AddFastBinaryConverter<[DynamicallyAccessedMembers(DynamicallyAccessed)] TType>(IFastBinaryConverter converter)
 #else
+
         public static void AddFastBinaryConverter<TType>(IFastBinaryConverter converter)
 #endif
         {
@@ -92,6 +97,7 @@ namespace ThingsGateway.Foundation.Core
 #if NET6_0_OR_GREATER
         public static void AddFastBinaryConverter([DynamicallyAccessedMembers(DynamicallyAccessed)] Type type, IFastBinaryConverter converter)
 #else
+
         public static void AddFastBinaryConverter(Type type, IFastBinaryConverter converter)
 #endif
         {
@@ -109,6 +115,7 @@ namespace ThingsGateway.Foundation.Core
 #if NET6_0_OR_GREATER
         public static void Serialize<[DynamicallyAccessedMembers(DynamicallyAccessed)] T>(ByteBlock byteBlock, [DynamicallyAccessedMembers(DynamicallyAccessed)] in T graph)
 #else
+
         public static void Serialize<T>(ByteBlock byteBlock, in T graph)
 #endif
         {
@@ -415,6 +422,7 @@ namespace ThingsGateway.Foundation.Core
 #if NET6_0_OR_GREATER
         public static object Deserialize(byte[] data, int offset, [DynamicallyAccessedMembers(DynamicallyAccessed)] Type type)
 #else
+
         public static object Deserialize(byte[] data, int offset, Type type)
 #endif
         {

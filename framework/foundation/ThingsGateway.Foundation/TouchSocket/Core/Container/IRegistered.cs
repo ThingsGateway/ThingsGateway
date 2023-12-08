@@ -31,6 +31,5 @@ namespace ThingsGateway.Foundation.Core
         /// <param name="fromType"></param>
         /// <returns></returns>
         bool IsRegistered(Type fromType);
-
     }
 }

@@ -11,7 +11,7 @@
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusAddress.#ctor">
             <summary>
-            <inheritdoc/>
+            <inheritdoc />
             </summary>
         </member>
         <member name="P:ThingsGateway.Foundation.Adapter.Modbus.ModbusAddress.AddressStart">
@@ -45,7 +45,7 @@
             </summary>
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusAddress.Parse(System.String)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusAddress.ParseFrom(System.String,System.Byte)">
             <summary>
@@ -58,7 +58,7 @@
             </summary>
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusAddress.ToString">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusHelper.AddCrc(System.Byte[])">
             <summary>
@@ -144,10 +144,10 @@
             </summary>
         </member>
         <member name="T:ThingsGateway.Foundation.Adapter.Modbus.ModbusRtuOverTcp">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusRtuOverTcp.#ctor(ThingsGateway.Foundation.Sockets.TcpClient)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="P:ThingsGateway.Foundation.Adapter.Modbus.ModbusRtuOverTcp.Crc16CheckEnable">
             <summary>
@@ -160,37 +160,37 @@
             </summary>
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusRtuOverTcp.GetAddressDescription">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusRtuOverTcp.Read(System.String,System.Int32,System.Threading.CancellationToken)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusRtuOverTcp.ReadAsync(System.String,System.Int32,System.Threading.CancellationToken)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusRtuOverTcp.LoadSourceRead``2(System.Collections.Generic.List{``1},System.Int32)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusRtuOverTcp.SetDataAdapter(System.Object)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusRtuOverTcp.Write(System.String,System.Byte[],System.Threading.CancellationToken)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusRtuOverTcp.Write(System.String,System.Boolean[],System.Threading.CancellationToken)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusRtuOverTcp.WriteAsync(System.String,System.Byte[],System.Threading.CancellationToken)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusRtuOverTcp.WriteAsync(System.String,System.Boolean[],System.Threading.CancellationToken)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="T:ThingsGateway.Foundation.Adapter.Modbus.ModbusRtuOverUdp">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusRtuOverUdp.#ctor(ThingsGateway.Foundation.Sockets.UdpSession)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="P:ThingsGateway.Foundation.Adapter.Modbus.ModbusRtuOverUdp.Crc16CheckEnable">
             <summary>
@@ -203,35 +203,35 @@
             </summary>
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusRtuOverUdp.GetAddressDescription">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusRtuOverUdp.Read(System.String,System.Int32,System.Threading.CancellationToken)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusRtuOverUdp.ReadAsync(System.String,System.Int32,System.Threading.CancellationToken)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusRtuOverUdp.SetDataAdapter(System.Object)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusRtuOverUdp.LoadSourceRead``2(System.Collections.Generic.List{``1},System.Int32)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusRtuOverUdp.Write(System.String,System.Byte[],System.Threading.CancellationToken)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusRtuOverUdp.Write(System.String,System.Boolean[],System.Threading.CancellationToken)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusRtuOverUdp.WriteAsync(System.String,System.Byte[],System.Threading.CancellationToken)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusRtuOverUdp.WriteAsync(System.String,System.Boolean[],System.Threading.CancellationToken)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="T:ThingsGateway.Foundation.Adapter.Modbus.ModbusRtuOverUdpDataHandleAdapter">
             <summary>
-            <inheritdoc/>
+            <inheritdoc />
             </summary>
         </member>
         <member name="P:ThingsGateway.Foundation.Adapter.Modbus.ModbusRtuOverUdpDataHandleAdapter.Crc16CheckEnable">
@@ -240,13 +240,13 @@
             </summary>
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusRtuOverUdpDataHandleAdapter.PackCommand(System.Byte[])">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusRtuOverUdpDataHandleAdapter.GetInstance">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusRtuOverUdpDataHandleAdapter.UnpackResponse(System.Byte[],System.Byte[])">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="T:ThingsGateway.Foundation.Adapter.Modbus.ModbusRtu">
             <summary>
@@ -270,31 +270,31 @@
             </summary>
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusRtu.GetAddressDescription">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusRtu.LoadSourceRead``2(System.Collections.Generic.List{``1},System.Int32)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusRtu.Read(System.String,System.Int32,System.Threading.CancellationToken)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusRtu.ReadAsync(System.String,System.Int32,System.Threading.CancellationToken)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusRtu.SetDataAdapter(System.Object)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusRtu.Write(System.String,System.Byte[],System.Threading.CancellationToken)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusRtu.Write(System.String,System.Boolean[],System.Threading.CancellationToken)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusRtu.WriteAsync(System.String,System.Byte[],System.Threading.CancellationToken)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusRtu.WriteAsync(System.String,System.Boolean[],System.Threading.CancellationToken)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="T:ThingsGateway.Foundation.Adapter.Modbus.ModbusRtuDataHandleAdapter">
             <summary>
@@ -308,34 +308,34 @@
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusRtuDataHandleAdapter.PackCommand(System.Byte[])">
             <summary>
-            <inheritdoc/>
+            <inheritdoc />
             </summary>
             <param name="command"></param>
             <returns></returns>
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusRtuDataHandleAdapter.GetInstance">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusRtuDataHandleAdapter.UnpackResponse(ThingsGateway.Foundation.Adapter.Modbus.ModbusRtuMessage,System.Byte[],System.Byte[],System.Byte[])">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="T:ThingsGateway.Foundation.Adapter.Modbus.ModbusRtuMessage">
             <summary>
-            <inheritdoc/>
+            <inheritdoc />
             </summary>
         </member>
         <member name="P:ThingsGateway.Foundation.Adapter.Modbus.ModbusRtuMessage.HeadBytesLength">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusRtuMessage.CheckHeadBytes(System.Byte[])">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusRtuMessage.SendBytesThen">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="T:ThingsGateway.Foundation.Adapter.Modbus.ModbusServer">
             <summary>
-            <inheritdoc/>
+            <inheritdoc />
             </summary>
         </member>
         <member name="F:ThingsGateway.Foundation.Adapter.Modbus.ModbusServer.ModbusServer01ByteBlocks">
@@ -364,7 +364,7 @@
             </summary>
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusServer.#ctor(ThingsGateway.Foundation.Sockets.TcpService)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="P:ThingsGateway.Foundation.Adapter.Modbus.ModbusServer.MulStation">
             <summary>
@@ -377,44 +377,44 @@
             </summary>
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusServer.LoadSourceRead``2(System.Collections.Generic.List{``1},System.Int32)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusServer.Dispose">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusServer.GetAddressDescription">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusServer.Read(System.String,System.Int32,System.Threading.CancellationToken)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusServer.ReadAsync(System.String,System.Int32,System.Threading.CancellationToken)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusServer.SetDataAdapter(System.Object)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusServer.Write(System.String,System.Byte[],System.Threading.CancellationToken)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusServer.Write(System.String,System.Boolean[],System.Threading.CancellationToken)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusServer.WriteAsync(System.String,System.Byte[],System.Threading.CancellationToken)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusServer.WriteAsync(System.String,System.Boolean[],System.Threading.CancellationToken)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusServer.Received(ThingsGateway.Foundation.Sockets.SocketClient,ThingsGateway.Foundation.Core.IRequestInfo)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="T:ThingsGateway.Foundation.Adapter.Modbus.ModbusServerDataHandleAdapter">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusServerDataHandleAdapter.PackCommand(System.Byte[])">
             <summary>
-            <inheritdoc/>
+            <inheritdoc />
             </summary>
             <param name="command"></param>
             <returns></returns>
@@ -427,14 +427,14 @@
             <returns></returns>
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusServerDataHandleAdapter.GetInstance">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusServerDataHandleAdapter.UnpackResponse(ThingsGateway.Foundation.Adapter.Modbus.ModbusServerMessage,System.Byte[],System.Byte[],System.Byte[])">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="T:ThingsGateway.Foundation.Adapter.Modbus.ModbusServerMessage">
             <summary>
-            <inheritdoc/>
+            <inheritdoc />
             </summary>
         </member>
         <member name="P:ThingsGateway.Foundation.Adapter.Modbus.ModbusServerMessage.CurModbusAddress">
@@ -448,16 +448,16 @@
             </summary>
         </member>
         <member name="P:ThingsGateway.Foundation.Adapter.Modbus.ModbusServerMessage.HeadBytesLength">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusServerMessage.CheckHeadBytes(System.Byte[])">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="T:ThingsGateway.Foundation.Adapter.Modbus.ModbusTcp">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusTcp.#ctor(ThingsGateway.Foundation.Sockets.TcpClient)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="P:ThingsGateway.Foundation.Adapter.Modbus.ModbusTcp.IsCheckMessageId">
             <summary>
@@ -470,31 +470,31 @@
             </summary>
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusTcp.GetAddressDescription">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusTcp.LoadSourceRead``2(System.Collections.Generic.List{``1},System.Int32)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusTcp.Read(System.String,System.Int32,System.Threading.CancellationToken)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusTcp.ReadAsync(System.String,System.Int32,System.Threading.CancellationToken)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusTcp.SetDataAdapter(System.Object)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusTcp.Write(System.String,System.Byte[],System.Threading.CancellationToken)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusTcp.Write(System.String,System.Boolean[],System.Threading.CancellationToken)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusTcp.WriteAsync(System.String,System.Byte[],System.Threading.CancellationToken)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusTcp.WriteAsync(System.String,System.Boolean[],System.Threading.CancellationToken)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="T:ThingsGateway.Foundation.Adapter.Modbus.ModbusTcpDataHandleAdapter">
             <summary>
@@ -507,21 +507,21 @@
             </summary>
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusTcpDataHandleAdapter.PackCommand(System.Byte[])">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusTcpDataHandleAdapter.GetInstance">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusTcpDataHandleAdapter.UnpackResponse(ThingsGateway.Foundation.Adapter.Modbus.ModbusTcpMessage,System.Byte[],System.Byte[],System.Byte[])">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="T:ThingsGateway.Foundation.Adapter.Modbus.ModbusTcpMessage">
             <summary>
-            <inheritdoc/>
+            <inheritdoc />
             </summary>
         </member>
         <member name="P:ThingsGateway.Foundation.Adapter.Modbus.ModbusTcpMessage.HeadBytesLength">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="P:ThingsGateway.Foundation.Adapter.Modbus.ModbusTcpMessage.IsCheckMessageId">
             <summary>
@@ -529,13 +529,13 @@
             </summary>
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusTcpMessage.CheckHeadBytes(System.Byte[])">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="T:ThingsGateway.Foundation.Adapter.Modbus.ModbusUdp">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusUdp.#ctor(ThingsGateway.Foundation.Sockets.UdpSession)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="P:ThingsGateway.Foundation.Adapter.Modbus.ModbusUdp.IsCheckMessageId">
             <summary>
@@ -548,35 +548,35 @@
             </summary>
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusUdp.LoadSourceRead``2(System.Collections.Generic.List{``1},System.Int32)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusUdp.GetAddressDescription">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusUdp.Read(System.String,System.Int32,System.Threading.CancellationToken)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusUdp.ReadAsync(System.String,System.Int32,System.Threading.CancellationToken)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusUdp.SetDataAdapter(System.Object)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusUdp.Write(System.String,System.Byte[],System.Threading.CancellationToken)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusUdp.Write(System.String,System.Boolean[],System.Threading.CancellationToken)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusUdp.WriteAsync(System.String,System.Byte[],System.Threading.CancellationToken)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusUdp.WriteAsync(System.String,System.Boolean[],System.Threading.CancellationToken)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="T:ThingsGateway.Foundation.Adapter.Modbus.ModbusUdpDataHandleAdapter">
             <summary>
-            <inheritdoc/>
+            <inheritdoc />
             </summary>
         </member>
         <member name="P:ThingsGateway.Foundation.Adapter.Modbus.ModbusUdpDataHandleAdapter.IsCheckMessageId">
@@ -585,13 +585,13 @@
             </summary>
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusUdpDataHandleAdapter.PackCommand(System.Byte[])">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusUdpDataHandleAdapter.GetInstance">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Adapter.Modbus.ModbusUdpDataHandleAdapter.UnpackResponse(System.Byte[],System.Byte[])">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="T:ThingsGateway.Foundation.Adapter.Modbus.PackHelper">
             <summary>

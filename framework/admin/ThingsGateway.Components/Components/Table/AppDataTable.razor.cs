@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using BlazorComponent;
@@ -23,6 +25,7 @@ using Microsoft.AspNetCore.Components.Web;
 using System.Reflection;
 
 namespace ThingsGateway.Components;
+
 /// <summary>
 /// 通用表格
 /// </summary>
@@ -36,7 +39,6 @@ public partial class AppDataTable<TItem, SearchItem, AddItem, EditItem> : IAppDa
     where AddItem : class, new()
     where EditItem : class, new()
 {
-
     private MDataTable<TItem> _table;
 
     private Dictionary<string, string> DetailModelPairs = new();
@@ -46,16 +48,19 @@ public partial class AppDataTable<TItem, SearchItem, AddItem, EditItem> : IAppDa
     /// </summary>
     [Parameter]
     public StringNumber AddWidth { get; set; } = 600;
+
     /// <summary>
     /// Width
     /// </summary>
     [Parameter]
     public StringNumber EditWidth { get; set; } = 600;
+
     /// <summary>
     /// Width
     /// </summary>
     [Parameter]
     public StringNumber DetailWidth { get; set; } = 600;
+
     /// <summary>
     /// 添加项委托
     /// </summary>
@@ -73,16 +78,19 @@ public partial class AppDataTable<TItem, SearchItem, AddItem, EditItem> : IAppDa
     /// </summary>
     [Parameter]
     public string ClassString { get; set; }
+
     /// <summary>
     /// MSheet.Style
     /// </summary>
     [Parameter]
     public string StyleString { get; set; }
+
     /// <summary>
     /// 删除项委托
     /// </summary>
     [Parameter]
     public Func<IEnumerable<TItem>, Task> DeleteCallAsync { get; set; }
+
     /// <summary>
     /// 表格紧凑
     /// </summary>
@@ -100,6 +108,7 @@ public partial class AppDataTable<TItem, SearchItem, AddItem, EditItem> : IAppDa
     /// </summary>
     [Parameter]
     public RenderFragment<EditItem> EditTemplate { get; set; }
+
     /// <summary>
     /// 获得/设置 详情模板
     /// </summary>
@@ -129,11 +138,13 @@ public partial class AppDataTable<TItem, SearchItem, AddItem, EditItem> : IAppDa
     /// </summary>
     [Parameter]
     public bool IsMenuOperTemplate { get; set; } = true;
+
     /// <summary>
     /// 是否分页
     /// </summary>
     [Parameter]
     public bool IsPage { get; set; } = true;
+
     /// <summary>
     /// 是否显示添加按钮
     /// </summary>
@@ -145,6 +156,7 @@ public partial class AppDataTable<TItem, SearchItem, AddItem, EditItem> : IAppDa
     /// </summary>
     [Parameter]
     public bool IsShowClearSearch { get; set; } = true;
+
     /// <summary>
     /// 是否显示删除按钮
     /// </summary>
@@ -174,6 +186,7 @@ public partial class AppDataTable<TItem, SearchItem, AddItem, EditItem> : IAppDa
     /// </summary>
     [Parameter]
     public bool IsShowOperCol { get; set; } = true;
+
     /// <summary>
     /// 是否显示查询按钮
     /// </summary>
@@ -185,6 +198,7 @@ public partial class AppDataTable<TItem, SearchItem, AddItem, EditItem> : IAppDa
     /// </summary>
     [Parameter]
     public bool IsShowSearchKey { get; set; } = false;
+
     /// <summary>
     /// 是否显示表格多项选择
     /// </summary>
@@ -214,7 +228,6 @@ public partial class AppDataTable<TItem, SearchItem, AddItem, EditItem> : IAppDa
     /// </summary>
     [Parameter]
     public RenderFragment<ItemColProps<TItem>> ItemColWithDTTemplate { get; set; }
-
 
     /// <summary>
     /// 当前显示项目
@@ -257,6 +270,7 @@ public partial class AppDataTable<TItem, SearchItem, AddItem, EditItem> : IAppDa
     /// </summary>
     [Parameter]
     public RenderFragment<SearchItem> SearchTemplate { get; set; }
+
     private AddItem AddModel { get; set; }
     private bool AddShow { get; set; }
     private bool DeleteLoading { get; set; }
@@ -398,7 +412,6 @@ public partial class AppDataTable<TItem, SearchItem, AddItem, EditItem> : IAppDa
         await base.OnInitializedAsync();
     }
 
-
     private void AddClick()
     {
         AddModel = new();
@@ -498,6 +511,7 @@ public partial class AppDataTable<TItem, SearchItem, AddItem, EditItem> : IAppDa
             await PopupService.EnqueueSnackbarAsync("选择一行后才能进行操作");
         }
     }
+
     private async Task EditClick(params TItem[] _selectedItem)
     {
         if (_selectedItem.Length > 1)
@@ -570,6 +584,5 @@ public partial class AppDataTable<TItem, SearchItem, AddItem, EditItem> : IAppDa
             size = SearchModel.Size;
             await QueryClickAsync();
         }
-
     }
 }

@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using System.ComponentModel;
@@ -44,7 +46,6 @@ internal class DLT645_2007DataHandleAdapter : ReadWriteDevicesSingleStreamDataHa
         return new DLT645_2007Message();
     }
 
-
     /// <inheritdoc/>
     protected override FilterResult UnpackResponse(DLT645_2007Message request, byte[] send, byte[] body, byte[] response)
     {
@@ -78,7 +79,6 @@ internal class DLT645_2007DataHandleAdapter : ReadWriteDevicesSingleStreamDataHa
         if (headCodeIndex < 0 || headCodeIndex + 10 > response.Length)
             return FilterResult.Cache;
 
-
         var len = 10 + response[headCodeIndex + 9] + 2;
 
         if (response.Length - headCodeIndex < len)
@@ -87,7 +87,6 @@ internal class DLT645_2007DataHandleAdapter : ReadWriteDevicesSingleStreamDataHa
         }
         if (response.Length - headCodeIndex >= len && response[len + headCodeIndex - 1] == 0x16)
         {
-
             //检查校验码
             int sumCheck = 0;
             for (int i = headCodeIndex; i < len + headCodeIndex - 2; i++)
@@ -109,7 +108,6 @@ internal class DLT645_2007DataHandleAdapter : ReadWriteDevicesSingleStreamDataHa
                 (response[headCodeIndex + 6] != send[sendHeadCodeIndex + 6])
                 )//设备地址不符合时，返回错误
             {
-
                 if (
                 (send[sendHeadCodeIndex + 1] == 0xAA) &&
                 (send[sendHeadCodeIndex + 2] == 0xAA) &&
@@ -119,7 +117,6 @@ internal class DLT645_2007DataHandleAdapter : ReadWriteDevicesSingleStreamDataHa
                 (send[sendHeadCodeIndex + 6] == 0xAA)
                 )//读写通讯地址例外
                 {
-
                 }
                 else
                 {
@@ -127,10 +124,7 @@ internal class DLT645_2007DataHandleAdapter : ReadWriteDevicesSingleStreamDataHa
                     request.ErrorCode = 999;
                     return FilterResult.Success;
                 }
-
             }
-
-
 
             if ((response[headCodeIndex + 8] != send[sendHeadCodeIndex + 8] + 0x80))//控制码不符合时，返回错误
             {
@@ -138,9 +132,6 @@ internal class DLT645_2007DataHandleAdapter : ReadWriteDevicesSingleStreamDataHa
                 request.ErrorCode = 999;
                 return FilterResult.Success;
             }
-
-
-
 
             if ((response[headCodeIndex + 8] & 0x40) == 0x40)//控制码bit6为1时，返回错误
             {
@@ -163,7 +154,6 @@ internal class DLT645_2007DataHandleAdapter : ReadWriteDevicesSingleStreamDataHa
                 (response[headCodeIndex + 13] == send[sendHeadCodeIndex + 13])
                 )
                 {
-
                 }
                 else
                 {
@@ -171,21 +161,16 @@ internal class DLT645_2007DataHandleAdapter : ReadWriteDevicesSingleStreamDataHa
                     request.ErrorCode = 999;
                     return FilterResult.Success;
                 }
-
             }
-
 
             request.Content = response.RemoveBegin(headCodeIndex + 10).RemoveLast(response.Length + 2 - len - headCodeIndex);
             request.ErrorCode = 0;
             return FilterResult.Success;
-
         }
         else
         {
             request.ErrorCode = 999;
             return FilterResult.Success;
-
         }
     }
-
 }

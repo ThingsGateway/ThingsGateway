@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,11 +9,13 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using System.ComponentModel;
 
 namespace ThingsGateway.Foundation.Adapter.DLT645;
+
 /// <summary>
 /// DLT645_2007
 /// </summary>
@@ -43,6 +46,7 @@ public class DLT645_2007OverTcp : ReadWriteDevicesTcpClientBase, IDLT645_2007
     /// <inheritdoc/>
     [Description("通讯地址")]
     public string Station { get; set; }
+
     /// <inheritdoc/>
     public override string GetAddressDescription()
     {
@@ -65,8 +69,6 @@ public class DLT645_2007OverTcp : ReadWriteDevicesTcpClientBase, IDLT645_2007
         TcpClient.SetDataHandlingAdapter(dataHandleAdapter);
     }
 
-
-
     /// <inheritdoc/>
     public override OperResult<byte[]> Read(string address, int length, CancellationToken cancellationToken = default)
     {
@@ -79,25 +81,17 @@ public class DLT645_2007OverTcp : ReadWriteDevicesTcpClientBase, IDLT645_2007
         return DLT645_2007Util.ReadAsync(this, address, length, cancellationToken);
     }
 
-
     /// <inheritdoc/>
     public override OperResult Write(string address, string value, CancellationToken cancellationToken = default)
     {
-
         return DLT645_2007Util.Write(this, address, value, cancellationToken);
-
-
     }
-
 
     /// <inheritdoc/>
     public override Task<OperResult> WriteAsync(string address, string value, CancellationToken cancellationToken = default)
     {
-
         return DLT645_2007Util.WriteAsync(this, address, value, cancellationToken);
-
     }
-
 
     /// <inheritdoc/>
     public override OperResult Write(string address, byte[] value, CancellationToken cancellationToken = default) => Write(address, value.ToString(), cancellationToken);
@@ -107,26 +101,33 @@ public class DLT645_2007OverTcp : ReadWriteDevicesTcpClientBase, IDLT645_2007
 
     /// <inheritdoc/>
     public override Task<OperResult> WriteAsync(string address, byte[] value, CancellationToken cancellationToken = default) => Task.FromResult(new OperResult());
+
     /// <inheritdoc/>
     public override Task<OperResult> WriteAsync(string address, uint value, CancellationToken cancellationToken = default) => WriteAsync(address, value.ToString(), cancellationToken);
+
     /// <inheritdoc/>
     public override Task<OperResult> WriteAsync(string address, double value, CancellationToken cancellationToken = default) => WriteAsync(address, value.ToString(), cancellationToken);
+
     /// <inheritdoc/>
     public override Task<OperResult> WriteAsync(string address, float value, CancellationToken cancellationToken = default) => WriteAsync(address, value.ToString(), cancellationToken);
+
     /// <inheritdoc/>
     public override Task<OperResult> WriteAsync(string address, long value, CancellationToken cancellationToken = default) => WriteAsync(address, value.ToString(), cancellationToken);
+
     /// <inheritdoc/>
     public override Task<OperResult> WriteAsync(string address, ulong value, CancellationToken cancellationToken = default) => WriteAsync(address, value.ToString(), cancellationToken);
+
     /// <inheritdoc/>
     public override Task<OperResult> WriteAsync(string address, ushort value, CancellationToken cancellationToken = default) => WriteAsync(address, value.ToString(), cancellationToken);
+
     /// <inheritdoc/>
     public override Task<OperResult> WriteAsync(string address, short value, CancellationToken cancellationToken = default) => WriteAsync(address, value.ToString(), cancellationToken);
+
     /// <inheritdoc/>
     public override Task<OperResult> WriteAsync(string address, int value, CancellationToken cancellationToken = default) => WriteAsync(address, value.ToString(), cancellationToken);
 
     /// <inheritdoc/>
     public override Task<OperResult> WriteAsync(string address, bool[] value, CancellationToken cancellationToken = default) => Task.FromResult(new OperResult());
-
 
     #region 其他方法
 
@@ -134,33 +135,24 @@ public class DLT645_2007OverTcp : ReadWriteDevicesTcpClientBase, IDLT645_2007
     public OperResult BroadcastTime(DateTime dateTime, CancellationToken cancellationToken = default)
     {
         return DLT645_2007Util.BroadcastTime(this, dateTime, cancellationToken);
-
     }
 
     /// <inheritdoc cref="DLT645_2007Util.FreezeAsync(IDLT645_2007,DateTime,  CancellationToken)"/>
     public async Task<OperResult> FreezeAsync(DateTime dateTime, CancellationToken cancellationToken = default)
     {
         return await DLT645_2007Util.FreezeAsync(this, dateTime, cancellationToken);
-
     }
-
-
 
     /// <inheritdoc cref="DLT645_2007Util.ReadDeviceStationAsync(IDLT645_2007,  CancellationToken)"/>
     public async Task<OperResult<string>> ReadDeviceStationAsync(CancellationToken cancellationToken = default)
     {
         return await DLT645_2007Util.ReadDeviceStationAsync(this, cancellationToken);
-
-
     }
-
-
 
     /// <inheritdoc cref="DLT645_2007Util.WriteBaudRateAsync(IDLT645_2007, int, CancellationToken)"/>
     public async Task<OperResult> WriteBaudRateAsync(int baudRate, CancellationToken cancellationToken = default)
     {
         return await DLT645_2007Util.WriteBaudRateAsync(this, baudRate, cancellationToken);
-
     }
 
     /// <inheritdoc cref="DLT645_2007Util.WriteDeviceStationAsync(IDLT645_2007, string, CancellationToken)"/>
@@ -174,7 +166,6 @@ public class DLT645_2007OverTcp : ReadWriteDevicesTcpClientBase, IDLT645_2007
     {
         return await DLT645_2007Util.WritePasswordAsync(this, level, oldPassword, newPassword, cancellationToken);
     }
+
     #endregion
-
-
 }

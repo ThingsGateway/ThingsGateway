@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using Microsoft.AspNetCore.Components;
@@ -19,8 +21,11 @@ using System.Reflection;
 using ThingsGateway.Foundation.Adapter.OPCUA;
 
 #if Plugin
+
 using ThingsGateway.Plugin.OPCUA;
+
 #endif
+
 namespace ThingsGateway.Foundation.Demo;
 
 /// <summary>
@@ -35,11 +40,13 @@ public partial class OPCUAImportVariable
     private List<OPCUATagModel> Nodes = new();
 
     private bool overlay = true;
+
     /// <summary>
     /// opc对象
     /// </summary>
     [Parameter]
     public ThingsGateway.Foundation.Adapter.OPCUA.OPCUAClient PLC { get; set; }
+
     /// <summary>
     /// 是否显示子变量
     /// </summary>
@@ -57,14 +64,13 @@ public partial class OPCUAImportVariable
                 if (actived.FirstOrDefault().NodeId != null)
                     nodeAttributes = PLC.ReadNoteAttributes(actived.FirstOrDefault().NodeId.ToString());
             }
-
         }
-
     }
 
     private List<ReferenceDescription> Selected { get; set; } = new();
 
 #if Plugin
+
     /// <summary>
     /// 获取设备与变量列表
     /// </summary>
@@ -105,7 +111,6 @@ public partial class OPCUAImportVariable
                 }
                 catch
                 {
-
                 }
 
                 var id = Yitter.IdGenerator.YitIdHelper.NextId();
@@ -129,7 +134,6 @@ public partial class OPCUAImportVariable
         })).Where(a => a != null).ToList();
         return (device, data);
     }
-
 
     /// <inheritdoc/>
     private CollectDevice GetImportDevice()
@@ -160,6 +164,7 @@ public partial class OPCUAImportVariable
     }
 
 #endif
+
     /// <summary>
     /// <inheritdoc/>
     /// </summary>
@@ -173,7 +178,6 @@ public partial class OPCUAImportVariable
         });
         base.OnInitialized();
     }
-
 
     private async Task<ReferenceDescriptionCollection> GetReferenceDescriptionCollectionAsync(NodeId sourceId)
     {
@@ -206,6 +210,7 @@ public partial class OPCUAImportVariable
         ReferenceDescriptionCollection references = await FormUtils.BrowseAsync(PLC.Session, nodesToBrowse, false);
         return references;
     }
+
     private async Task PopulateBranchAsync(OPCUATagModel model)
     {
         var sourceId = (NodeId)model.Tag.NodeId;
@@ -255,8 +260,6 @@ public partial class OPCUAImportVariable
                     child.Nodes = null;
                 }
 
-
-
                 ////if (target.NodeClass != NodeClass.Variable)  //这个判断注释后会让子节点也是变量的情况下无法加载
                 //{
                 //    var data = await GetReferenceDescriptionCollectionAsync((NodeId)target.NodeId);
@@ -291,6 +294,7 @@ public partial class OPCUAImportVariable
     {
         return await Task.WhenAll(source.Select(selector));
     }
+
     internal class OPCUATagModel
     {
         internal string Name { get; set; }

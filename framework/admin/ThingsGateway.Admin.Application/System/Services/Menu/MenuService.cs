@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using Furion.DependencyInjection;
@@ -28,6 +30,7 @@ public class MenuService : DbRepository<SysResource>, IMenuService
     private readonly IRelationService _relationService;
     private readonly IResourceService _resourceService;
     private readonly IRoleService _roleService;
+
     /// <inheritdoc cref="IMenuService"/>
     public MenuService(IResourceService resourceService, IRelationService relationService, IRoleService roleService)
     {
@@ -46,7 +49,6 @@ public class MenuService : DbRepository<SysResource>, IMenuService
         if (await InsertAsync(sysResource))//插入数据
             _resourceService.RefreshCache(ResourceCategoryEnum.MENU);//刷新菜单缓存
     }
-
 
     /// <inheritdoc />
     [OperDesc("删除菜单")]

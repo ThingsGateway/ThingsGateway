@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using Microsoft.AspNetCore.Components.WebView.WindowsForms;
@@ -28,7 +30,6 @@ namespace ThingsGateway.Foundation.Demo.Winform
 
             IServiceCollection services = new ServiceCollection();
 
-
             services.AddWindowsFormsBlazorWebView();
             services.ThingsGatewayComponentsConfigureServices();
             services.ThingsGatewayCoreConfigureServices();
@@ -41,14 +42,12 @@ namespace ThingsGateway.Foundation.Demo.Winform
 
         private void MainFrom_FormClosed(object sender, FormClosedEventArgs e)
         {
-
             Task.Run(() => { MessageBox.Show("释放资源中，稍候自动退出程序..."); });
             Task.Run(async () =>
             {
                 await Task.Delay(3000);
                 Process.GetCurrentProcess().Kill();
             });
-
         }
     }
 }

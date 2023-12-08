@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using Mapster;
@@ -17,15 +19,17 @@ using SqlSugar;
 using ThingsGateway.Admin.Core;
 
 namespace ThingsGateway.Gateway.Blazor;
+
 /// <summary>
 /// 实时报警
 /// </summary>
 public partial class RealAlarmPage
 {
-    readonly PeriodicTimer _periodicTimer = new(TimeSpan.FromSeconds(3));
+    private readonly PeriodicTimer _periodicTimer = new(TimeSpan.FromSeconds(3));
     private IAppDataTable _datatable;
-    AlarmWorker _alarmHostService { get; set; }
-    VariablePageInput _search { get; set; } = new();
+    private AlarmWorker _alarmHostService { get; set; }
+    private VariablePageInput _search { get; set; } = new();
+
     /// <inheritdoc/>
     public override void Dispose()
     {
@@ -68,7 +72,6 @@ public partial class RealAlarmPage
             catch
             {
             }
-
         }
     }
 }

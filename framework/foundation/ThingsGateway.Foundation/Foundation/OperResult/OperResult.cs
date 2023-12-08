@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using Newtonsoft.Json;
@@ -23,10 +25,12 @@ public class OperResult<T> : OperResult, IOperResult<T>
         ErrorCode = 999;
         Message = "未知错误";
     }
+
     /// <inheritdoc/>
     public OperResult(OperResult operResult) : base(operResult)
     {
     }
+
     /// <inheritdoc/>
     public OperResult(string msg) : base(msg)
     {
@@ -44,7 +48,6 @@ public class OperResult<T> : OperResult, IOperResult<T>
 
     /// <inheritdoc/>
     public T Content { get; set; }
-
 }
 
 /// <inheritdoc/>
@@ -56,10 +59,12 @@ public class OperResult<T, T2> : OperResult<T>, IOperResult<T, T2>
         ErrorCode = 999;
         Message = "未知错误";
     }
+
     /// <inheritdoc/>
     public OperResult(OperResult operResult) : base(operResult)
     {
     }
+
     /// <inheritdoc/>
     public OperResult(string msg) : base(msg)
     {
@@ -88,10 +93,12 @@ public class OperResult<T, T2, T3> : OperResult<T, T2>, IOperResult<T, T2, T3>
         ErrorCode = 999;
         Message = "未知错误";
     }
+
     /// <inheritdoc/>
     public OperResult(OperResult operResult) : base(operResult)
     {
     }
+
     /// <inheritdoc/>
     public OperResult(string msg) : base(msg)
     {
@@ -120,6 +127,7 @@ public class OperResult : IOperResult
         ErrorCode = 999;
         Message = "未知错误";
     }
+
     /// <inheritdoc/>
     public OperResult(OperResult operResult)
     {
@@ -127,6 +135,7 @@ public class OperResult : IOperResult
         Message = operResult.Message;
         Exception = operResult.Exception;
     }
+
     /// <inheritdoc/>
     public OperResult(int code, string msg = "成功")
     {
@@ -176,24 +185,25 @@ public class OperResult : IOperResult
     {
         return new OperResult<T, T2>(0) { Content = content, Content2 = content2 };
     }
+
     /// <inheritdoc/>
     public static OperResult<T, T2, T3> CreateSuccessResult<T, T2, T3>(T content, T2 content2, T3 content3)
     {
         return new OperResult<T, T2, T3>(0) { Content = content, Content2 = content2, Content3 = content3 };
     }
+
     /// <inheritdoc/>
     public static OperResult<T> CreateSuccessResult<T>(T content)
     {
         return new OperResult<T>(0) { Content = content };
     }
+
     /// <inheritdoc/>
     public static OperResult CreateSuccessResult()
     {
         return new OperResult(0);
     }
-
 }
-
 
 /// <summary>
 /// 操作接口
@@ -204,14 +214,17 @@ public interface IOperResult : IRequestInfo
     /// 是否成功
     /// </summary>
     bool IsSuccess { get; }
+
     /// <summary>
     /// 返回消息
     /// </summary>
     string Message { get; set; }
+
     /// <summary>
     /// 错误代码
     /// </summary>
     int ErrorCode { get; set; }
+
     /// <summary>
     /// 错误消息
     /// </summary>
@@ -226,6 +239,7 @@ public interface IOperResult<out T> : IOperResult
     /// <inheritdoc/>
     T Content { get; }
 }
+
 /// <summary>
 /// 操作接口
 /// </summary>
@@ -257,6 +271,7 @@ public static class OperResultExtensions
         else
             return new OperResult<T1>(result.ErrorCode, result.Message);
     }
+
     /// <summary>
     /// 操作成功则继续
     /// </summary>
@@ -267,6 +282,7 @@ public static class OperResultExtensions
     {
         return !result.IsSuccess ? result : func();
     }
+
     /// <inheritdoc cref="Then(OperResult, Func{OperResult})"/>
     public static OperResult<T> Then<T>(this OperResult result, Func<OperResult<T>> func)
     {
@@ -284,5 +300,4 @@ public static class OperResultExtensions
     {
         return !result.IsSuccess ? new(result) : func(result.Content);
     }
-
 }

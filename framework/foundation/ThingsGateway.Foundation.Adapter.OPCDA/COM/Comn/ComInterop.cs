@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using System.Runtime.InteropServices;
@@ -33,6 +35,7 @@ internal class ComInterop
     private const uint EOAC_NONE = 0x00;
     private const uint EOAC_SECURE_REFS = 0x02;
     private const uint EOAC_STATIC_CLOAKING = 0x20;
+
     /// <summary>
     /// The WIN32 system default locale.
     /// </summary>
@@ -71,6 +74,7 @@ internal class ComInterop
     private const uint RPC_C_IMP_LEVEL_DELEGATE = 4;
     private const uint RPC_C_IMP_LEVEL_IDENTIFY = 2;
     private const uint RPC_C_IMP_LEVEL_IMPERSONATE = 3;
+
     #endregion const
 
     #region struct
@@ -147,6 +151,7 @@ internal class ComInterop
 
     [DllImport("Kernel32.dll")]
     private static extern int GetUserDefaultLangID();
+
     #endregion win32 api
 
     /// <summary>
@@ -256,6 +261,7 @@ internal class ComInterop
             throw new ExternalException("COM初始化安全: " + GetSystemMessage(error), error);
         }
     }
+
     /// <summary>
     /// 从枚举器读取guid。
     /// </summary>

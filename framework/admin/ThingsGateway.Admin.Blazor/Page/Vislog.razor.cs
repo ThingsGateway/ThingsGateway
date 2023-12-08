@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using Mapster;
@@ -23,10 +25,12 @@ public partial class Vislog
 {
     private readonly VisitLogPageInput _search = new();
     private IAppDataTable _datatable;
+
     /// <summary>
     /// 日志分类菜单
     /// </summary>
     private List<StringFilters> _categoryFilters { get; set; } = new();
+
     /// <summary>
     /// 执行结果菜单
     /// </summary>
@@ -35,9 +39,8 @@ public partial class Vislog
     [Inject]
     private InitTimezone _initTimezone { get; set; }
 
-
     [Inject]
-    AjaxService AjaxService { get; set; }
+    private AjaxService AjaxService { get; set; }
 
     /// <inheritdoc/>
     protected override void OnInitialized()
@@ -61,7 +64,7 @@ public partial class Vislog
         }
     }
 
-    async Task DownExportAsync(VisitLogPageInput input = null)
+    private async Task DownExportAsync(VisitLogPageInput input = null)
     {
         try
         {

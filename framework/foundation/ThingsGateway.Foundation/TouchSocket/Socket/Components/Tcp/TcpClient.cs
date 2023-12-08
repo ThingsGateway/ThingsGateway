@@ -1,4 +1,5 @@
 #region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 //------------------------------------------------------------------------------
@@ -68,6 +70,7 @@ namespace ThingsGateway.Foundation.Sockets
         private volatile bool m_online;
         private readonly SemaphoreSlim m_semaphoreForConnect = new SemaphoreSlim(1, 1);
         private readonly InternalTcpCore m_tcpCore = new InternalTcpCore();
+
         #endregion 变量
 
         #region 事件
@@ -218,10 +221,8 @@ namespace ThingsGateway.Foundation.Sockets
         /// <inheritdoc/>
         public DateTime LastSendTime => this.GetTcpCore().SendCounter.LastIncrement;
 
-
         /// <inheritdoc/>
         public virtual bool CanSetDataHandlingAdapter => true;
-
 
         /// <inheritdoc/>
         public SingleStreamDataHandlingAdapter DataHandlingAdapter { get; private set; }
@@ -238,11 +239,8 @@ namespace ThingsGateway.Foundation.Sockets
         /// <inheritdoc/>
         public bool CanSend => this.m_online;
 
-
         /// <inheritdoc/>
         public int Port { get; private set; }
-
-
 
         /// <inheritdoc/>
         public bool UseSsl => this.GetTcpCore().UseSsl;
@@ -273,7 +271,6 @@ namespace ThingsGateway.Foundation.Sockets
                 }
             }
         }
-
 
         /// <summary>
         /// <inheritdoc/>
@@ -360,7 +357,6 @@ namespace ThingsGateway.Foundation.Sockets
             }
         }
 
-
         /// <summary>
         /// 异步连接服务器
         /// </summary>
@@ -412,7 +408,7 @@ namespace ThingsGateway.Foundation.Sockets
                     }
                     else
                     {
-                       await Success(socket);
+                        await Success(socket);
                     }
                 }
                 else
@@ -420,9 +416,6 @@ namespace ThingsGateway.Foundation.Sockets
                     socket?.SafeDispose();
                     throw new TimeoutException("连接超时");
                 }
-
-
-
 
 #endif
                 async Task Success(Socket socket)
@@ -439,7 +432,6 @@ namespace ThingsGateway.Foundation.Sockets
                 this.m_semaphoreForConnect.Release();
             }
         }
-
 
         /// <inheritdoc/>
         public virtual void Connect(int timeout, CancellationToken cancellationToken)
@@ -483,6 +475,7 @@ namespace ThingsGateway.Foundation.Sockets
         {
             this.BreakOut(manual, msg);
         }
+
         /// <summary>
         /// BreakOut。
         /// </summary>
@@ -508,7 +501,6 @@ namespace ThingsGateway.Foundation.Sockets
             this.ThrowIfDisposed();
             return this.m_tcpCore ?? throw new ObjectDisposedException(this.GetType().Name);
         }
-
 
         /// <inheritdoc/>
         public virtual void SetDataHandlingAdapter(SingleStreamDataHandlingAdapter adapter)
@@ -542,7 +534,6 @@ namespace ThingsGateway.Foundation.Sockets
         {
             return this.PluginManager.RaiseAsync(nameof(ITcpReceivedPlugin.OnTcpReceived), this, e);
         }
-
 
         /// <summary>
         /// 当即将发送时，如果覆盖父类方法，则不会触发插件。
@@ -900,7 +891,5 @@ namespace ThingsGateway.Foundation.Sockets
             }
             return Task.FromResult(false);
         }
-
-
     }
 }

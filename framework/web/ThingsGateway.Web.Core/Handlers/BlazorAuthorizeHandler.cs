@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using Furion;
@@ -30,10 +32,12 @@ namespace ThingsGateway.Web.Core;
 public class BlazorAuthorizeHandler : AppAuthorizeHandler
 {
     private readonly IServiceScope _serviceScope;
+
     public BlazorAuthorizeHandler(IServiceScopeFactory serviceScopeFactory)
     {
         _serviceScope = serviceScopeFactory.CreateScope();
     }
+
     /// <inheritdoc/>
     public override async Task HandleAsync(AuthorizationHandlerContext context)
     {
@@ -72,7 +76,6 @@ public class BlazorAuthorizeHandler : AppAuthorizeHandler
     /// <inheritdoc/>
     public override async Task<bool> PipelineAsync(AuthorizationHandlerContext context, DefaultHttpContext httpContext)
     {
-
         //这里鉴别密码是否改变
         var userId = context.User.Claims.FirstOrDefault(it => it.Type == ClaimConst.UserId).Value.ToLong();
         var isOpenApi = context.User.Claims.FirstOrDefault(it => it.Type == ClaimConst.IsOpenApi)?.Value?.ToBool() == true;
@@ -139,7 +142,6 @@ public class BlazorAuthorizeHandler : AppAuthorizeHandler
                 return true;
             }
         }
-
     }
 
     /// <summary>
@@ -165,7 +167,6 @@ public class BlazorAuthorizeHandler : AppAuthorizeHandler
                 return true;
             }
         }
-
         else
         {
             var verificat = await _verificatService.GetVerificatIdAsync(userId.ToLong());

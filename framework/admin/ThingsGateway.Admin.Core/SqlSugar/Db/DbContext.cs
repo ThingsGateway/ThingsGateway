@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using Furion;
@@ -69,7 +71,6 @@ public class DbContext
         });
     }
 
-
     /// <summary>
     /// SqlSugar 数据库实例
     /// </summary>
@@ -79,8 +80,6 @@ public class DbContext
     /// DbConfigs
     /// </summary>
     public static List<SqlSugarConfig> DbConfigs { get; private set; }
-
-
 
     /// <summary>
     /// Aop设置
@@ -207,7 +206,6 @@ public class DbContext
     /// <param name="db"></param>
     public static void FilterSetting(SqlSugarScopeProvider db)
     {
-
     }
 
     /// <summary>
@@ -222,7 +220,6 @@ public class DbContext
             // 处理表
             EntityNameService = (type, entity) =>
             {
-
             },
             //自定义类型多库兼容
             EntityService = (c, p) =>
@@ -281,7 +278,6 @@ public class DbContext
             var seedData = ((IEnumerable)hasDataMethod?.Invoke(instance, null))?.Cast<object>();
             if (seedData == null) continue;//没有种子数据就下一个
 
-
             var entityType = seedType.GetInterfaces().First().GetGenericArguments().First();//获取实体类型
             var tenantAtt = entityType.GetCustomAttribute<TenantAttribute>();//获取sqlsugar租户特性
             if (tenantAtt != null && tenantAtt.configId.ToString() != config.ConfigId.ToString()) continue;//如果不是当前租户的就下一个
@@ -304,9 +300,9 @@ public class DbContext
                 if (!db.Queryable(entityInfo.DbTableName, entityInfo.DbTableName).Any() && ignoreAdd == null)
                     db.InsertableByObject(seedData.ToList()).ExecuteCommand();
             }
-
         }
     }
+
     /// <summary>
     /// 实体更多配置
     /// </summary>
@@ -324,6 +320,7 @@ public class DbContext
         Console.WriteLine("【Sql执行时间】：" + DateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat());
         Console.WriteLine("【Sql语句】：" + msg + Environment.NewLine);
     }
+
     private static void WriteSqlLogError(string msg)
     {
         Console.WriteLine("【Sql执行错误时间】：" + DateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat());

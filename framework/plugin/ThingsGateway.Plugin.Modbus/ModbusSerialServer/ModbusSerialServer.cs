@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using SqlSugar;
@@ -21,6 +23,7 @@ using ThingsGateway.Foundation.Extension.ConcurrentQueue;
 using ThingsGateway.Foundation.Extension.String;
 
 namespace ThingsGateway.Plugin.Modbus;
+
 /// <summary>
 /// <inheritdoc/>
 /// </summary>
@@ -46,8 +49,10 @@ public class ModbusSerialServer : UpLoadBase
 
     /// <inheritdoc/>
     public override VariablePropertyBase VariablePropertys => _variablePropertys;
+
     /// <inheritdoc/>
     protected override IReadWrite _readWrite => _plc;
+
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
@@ -82,7 +87,6 @@ public class ModbusSerialServer : UpLoadBase
             MulStation = _driverPropertys.MulStation
         };
 
-
         var tags = CurrentDevice.DeviceVariableRunTimes
             .Where(b => !string.IsNullOrEmpty(
                 b.GetPropertyValue(DeviceId, nameof(_variablePropertys.ServiceAddress))?.Value))
@@ -104,7 +108,6 @@ public class ModbusSerialServer : UpLoadBase
         _plc.OnWriteData += OnWriteData;
 
         _plc.Connect(CancellationToken.None);
-
     }
 
     protected override async Task ProtectedExecuteAsync(CancellationToken cancellationToken)
@@ -137,6 +140,7 @@ public class ModbusSerialServer : UpLoadBase
 
         await Delay(_driverPropertys.CycleInterval, cancellationToken);
     }
+
     /// <summary>
     /// RPC写入
     /// </summary>
@@ -189,7 +193,6 @@ public class ModbusSerialServer : UpLoadBase
         {
             return new OperResult(ex);
         }
-
     }
 
     /// <inheritdoc/>

@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using System.Runtime.InteropServices;
@@ -19,7 +21,6 @@ namespace ThingsGateway.Foundation.Adapter.OPCDA.Da;
 
 internal class OpcServer : IDisposable
 {
-
     private bool disposedValue;
 
     private IOPCServer m_OpcServer = null;
@@ -82,7 +83,6 @@ internal class OpcServer : IDisposable
             throw new("添加OPC组错误，OPC服务器返回null");
         }
         return group;
-
     }
 
     /// <summary>
@@ -109,7 +109,6 @@ internal class OpcServer : IDisposable
                            new PropertyID(6),
                            new PropertyID(101),
                          };
-
 
             var server = m_OpcServer as IOPCBrowse;
             server.Browse(
@@ -167,7 +166,6 @@ internal class OpcServer : IDisposable
             OPCSERVERSTATUS status;
             if (statusPtr != IntPtr.Zero)
             {
-
                 object o = Marshal.PtrToStructure(statusPtr, typeof(OPCSERVERSTATUS));
 
                 Marshal.FreeCoTaskMem(statusPtr);
@@ -190,9 +188,7 @@ internal class OpcServer : IDisposable
                 {
                     IsConnected = false;
                     throw new("未知错误");
-
                 }
-
             }
             else
             {
@@ -208,8 +204,6 @@ internal class OpcServer : IDisposable
                 IsConnected = false;
             ServerStatus = serverStatus;
         }
-
-
     }
 
     internal void RemoveGroup(OpcGroup group)
@@ -232,7 +226,6 @@ internal class OpcServer : IDisposable
             }
             catch
             {
-
             }
             if (m_OpcServer != null)
             {

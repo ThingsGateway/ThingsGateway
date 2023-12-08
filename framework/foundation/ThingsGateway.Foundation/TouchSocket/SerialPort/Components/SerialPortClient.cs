@@ -427,6 +427,7 @@ namespace ThingsGateway.Foundation.SerialPorts
             adapter.SendAsyncCallBack = this.DefaultSendAsync;
             this.DataHandlingAdapter = adapter;
         }
+
         private SerialPort CreateSerial(SerialPortOption serialPortOption)
         {
             SerialPortOption = serialPortOption.Map<SerialPortOption>();
@@ -451,6 +452,7 @@ namespace ThingsGateway.Foundation.SerialPorts
         {
             return SerialPortOption?.ToString();
         }
+
         private SerialCore GetSerialCore()
         {
             this.ThrowIfDisposed();

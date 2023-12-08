@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,14 +9,14 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
-#endregion
 
-using System.Collections.Generic;
+#endregion
 
 using ThingsGateway.Foundation.Adapter.OPCDA;
 using ThingsGateway.Foundation.Adapter.OPCDA.Da;
 
 namespace ThingsGateway.Foundation.Demo;
+
 /// <summary>
 /// OPC
 /// </summary>
@@ -45,6 +46,7 @@ public partial class OPCDAClientPage : IDisposable
     {
         OPC.SafeDispose();
     }
+
     /// <inheritdoc/>
     protected override void OnInitialized()
     {
@@ -66,6 +68,7 @@ public partial class OPCDAClientPage : IDisposable
             LogAction?.Invoke(LogLevel.Error, null, null, ex);
         }
     }
+
     private void DisConnect()
     {
         try

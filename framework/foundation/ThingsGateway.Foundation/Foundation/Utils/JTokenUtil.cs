@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,10 +9,13 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using Newtonsoft.Json.Linq;
+
 namespace ThingsGateway.Foundation.Core;
+
 /// <summary>
 /// JTokenUtil
 /// </summary>
@@ -37,6 +41,7 @@ public static class JTokenUtil
 
         return tagValue;
     }
+
     /// <summary>
     /// GetObjFromJToken
     /// </summary>
@@ -50,6 +55,7 @@ public static class JTokenUtil
             case -1:
                 rawWriteValue = ((JValue)jtoken).Value;
                 break;
+
             default:
                 var jarray = ((JArray)jtoken);
                 rawWriteValue = jarray.Select(j => (object)j).ToArray();
@@ -81,12 +87,14 @@ public static class JTokenUtil
         }
         return numDimensions;
     }
+
     private static JTokenType GetElementsType(this JToken[] jTokens)
     {
         if (!jTokens.ElementsHasSameType())
             throw new Exception("The array sent must have the same type of element in each dimension");
         return jTokens.First().Type;
     }
+
     private static bool ElementsHasSameType(this JToken[] jTokens)
     {
         var checkType = jTokens[0].Type == JTokenType.Integer ? JTokenType.Float : jTokens[0].Type;
@@ -95,5 +103,4 @@ public static class JTokenUtil
     }
 
     #endregion
-
 }

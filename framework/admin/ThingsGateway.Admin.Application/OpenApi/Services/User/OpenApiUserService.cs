@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using Furion.DataEncryption;
@@ -58,7 +60,6 @@ public class OpenApiUserService : DbRepository<OpenApiUser>, IOpenApiUserService
     [OperDesc("删除用户")]
     public async Task DeleteAsync(params long[] ids)
     {
-
         //获取所有ID
         if (ids.Length > 0)
         {
@@ -74,7 +75,6 @@ public class OpenApiUserService : DbRepository<OpenApiUser>, IOpenApiUserService
             }
         }
     }
-
 
     /// <inheritdoc />
     public void DeleteUserFromCache(params long[] ids)
@@ -139,7 +139,6 @@ public class OpenApiUserService : DbRepository<OpenApiUser>, IOpenApiUserService
         }
         //编辑操作可能会修改用户密码等信息，认证时需要实时获取用户并验证
     }
-
 
     /// <inheritdoc/>
     [OperDesc("启用用户")]
@@ -248,7 +247,6 @@ public class OpenApiUserService : DbRepository<OpenApiUser>, IOpenApiUserService
         }
         query = query.OrderBy(it => it.SortCode);//排序
         query = query.OrderBy(u => u.Id);//排序
-
 
         var pageInfo = await query.ToPagedListAsync(input.Current, input.Size);//分页
         return pageInfo;

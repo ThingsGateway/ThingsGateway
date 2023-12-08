@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,11 +9,13 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using ThingsGateway.Foundation.Extension.String;
 
 namespace ThingsGateway.Foundation.Adapter.Siemens;
+
 /// <summary>
 /// 区域
 /// </summary>
@@ -20,18 +23,25 @@ internal enum S7Area : byte
 {
     /// <inheritdoc/>
     PE = 0x81,
+
     /// <inheritdoc/>
     PA = 0x82,
+
     /// <inheritdoc/>
     MK = 0x83,
+
     /// <inheritdoc/>
     DB = 0x84,
+
     /// <inheritdoc/>
     CT = 0x1C,
+
     /// <inheritdoc/>
     TM = 0x1D,
+
     /// <inheritdoc/>
     AI = 0X06,
+
     /// <inheritdoc/>
     AQ = 0x07,
 }
@@ -50,14 +60,17 @@ public class SiemensAddress : DeviceAddressBase
     /// 数据块代码
     /// </summary>
     public byte DataCode { get; set; }
+
     /// <summary>
     /// DB块数据信息
     /// </summary>
     public ushort DbBlock { get; set; }
+
     /// <summary>
     /// IsWString，默认是true，如果不是WString,需要填写W=false;
     /// </summary>
     public bool IsWString { get; set; } = true;
+
     /// <summary>
     /// 获取起始地址
     /// </summary>
@@ -74,6 +87,7 @@ public class SiemensAddress : DeviceAddressBase
         string[] strArray = address.Split('.');
         return Convert.ToInt32(strArray[0]) * 8;
     }
+
     /// <summary>
     /// 获取bit
     /// </summary>
@@ -88,6 +102,7 @@ public class SiemensAddress : DeviceAddressBase
         string[] strArray = address.Split('.');
         return Convert.ToByte(strArray[1]);
     }
+
     /// <summary>
     /// 解析地址
     /// </summary>
@@ -98,6 +113,7 @@ public class SiemensAddress : DeviceAddressBase
         s7AddressData.Length = len;
         return s7AddressData;
     }
+
     /// <summary>
     /// 解析地址
     /// </summary>
@@ -116,7 +132,6 @@ public class SiemensAddress : DeviceAddressBase
             }
             else if (!strArr[index].Contains("="))
             {
-
                 s7AddressData.DbBlock = 0;
 
                 if (strArr[index].StartsWith("AI"))
@@ -235,11 +250,11 @@ public class SiemensAddress : DeviceAddressBase
         return s7AddressData;
     }
 
-
     /// <summary>
     /// Length
     /// </summary>
     public int Length { get; set; }
+
     /// <summary>
     /// <inheritdoc cref="DeviceAddressBase.Address"/>
     /// </summary>
@@ -289,5 +304,4 @@ public class SiemensAddress : DeviceAddressBase
     {
         return addressStart % 8 == 0 ? (addressStart / 8).ToString() : $"{addressStart / 8}.{addressStart % 8}";
     }
-
 }

@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using LiteDB;
@@ -15,6 +17,7 @@ using LiteDB;
 using System.Text.RegularExpressions;
 
 namespace ThingsGateway.Gateway.Application;
+
 /// <summary>
 /// 缓存帮助类
 /// </summary>
@@ -70,8 +73,8 @@ public class LiteDBCache
                 Cache.EnsureIndex(c => c.Type);
             }
         }
-
     }
+
     /// <summary>
     /// 构造函数传入Id号作为数据库文件名称
     /// </summary>
@@ -111,6 +114,4 @@ public class LiteDBCache
             }
         }
     }
-
-
 }

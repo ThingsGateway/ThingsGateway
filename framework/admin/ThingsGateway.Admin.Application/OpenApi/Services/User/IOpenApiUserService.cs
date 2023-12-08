@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using Furion.DependencyInjection;
@@ -53,7 +55,6 @@ public interface IOpenApiUserService : ITransient
     /// <returns></returns>
     Task EditAsync(OpenApiUserEditInput input);
 
-
     /// <summary>
     /// 启用用户
     /// </summary>
@@ -74,6 +75,7 @@ public interface IOpenApiUserService : ITransient
     /// <param name="account">用户名</param>
     /// <returns>用户信息</returns>
     Task<OpenApiUser> GetUserByAccountAsync(string account);
+
     /// <summary>
     /// 根据ID获取用户信息
     /// </summary>

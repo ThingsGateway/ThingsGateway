@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,12 +9,12 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using Microsoft.Extensions.Logging;
 
 namespace ThingsGateway.Gateway.Application;
-
 
 /// <summary>
 /// 上传插件
@@ -30,7 +31,6 @@ public abstract class UpLoadBaseWithCache : UpLoadBase
     /// <inheritdoc cref="DriverPropertys"/>
     /// </summary>
     protected abstract UploadPropertyWithCache _uploadPropertyWithCache { get; }
-
 
     /// <summary>
     /// 离线缓存
@@ -67,6 +67,7 @@ public abstract class UpLoadBaseWithCache : UpLoadBase
             LogMessage?.LogWarning(ex);
         }
     }
+
     /// <summary>
     /// 初始化
     /// </summary>
@@ -86,6 +87,7 @@ public abstract class UpLoadBaseWithCache : UpLoadBase
         _ = Task.Factory.StartNew(CheckCacheDb);
         return base.ProtectedBeforStartAsync(cancellationToken);
     }
+
     #region 缓存操作
 
     protected CancellationToken _token;
@@ -105,7 +107,6 @@ public abstract class UpLoadBaseWithCache : UpLoadBase
             await Delay(30000, _token);
         }
     }
+
     #endregion
 }
-
-

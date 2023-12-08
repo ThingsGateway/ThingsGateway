@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using BlazorComponent;
@@ -17,6 +19,7 @@ using Masa.Blazor;
 using Microsoft.AspNetCore.Components;
 
 namespace ThingsGateway.Gateway.Blazor;
+
 /// <summary>
 /// 调试页面
 /// </summary>
@@ -24,10 +27,11 @@ public partial class DriverDebugPage
 {
     private BootstrapDynamicComponent _debugComponent;
     private RenderFragment _debugRender;
-    List<DriverPlugin> _driverPlugins;
+    private List<DriverPlugin> _driverPlugins;
     private object _importRef;
-    bool _isShowTreeView = true;
-    string _searchName;
+    private bool _isShowTreeView = true;
+    private string _searchName;
+
     /// <inheritdoc/>
     protected override void OnParametersSet()
     {
@@ -61,7 +65,7 @@ public partial class DriverDebugPage
     }
 
     /// <inheritdoc/>
-    async Task GetDebugUIAsync(string pluginName)
+    private async Task GetDebugUIAsync(string pluginName)
     {
         if (!pluginName.IsNullOrEmpty())
         {
@@ -74,8 +78,5 @@ public partial class DriverDebugPage
             _debugComponent = new BootstrapDynamicComponent(driver);
             _debugRender = _debugComponent.Render(a => _importRef = a);
         }
-
     }
-
-
 }

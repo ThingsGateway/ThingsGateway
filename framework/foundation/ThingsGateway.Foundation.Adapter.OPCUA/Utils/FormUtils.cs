@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using Opc.Ua;
@@ -16,6 +18,7 @@ using Opc.Ua.Client;
 using System.Text;
 
 namespace ThingsGateway.Foundation.Adapter.OPCUA;
+
 /// <summary>
 /// 辅助类
 /// </summary>
@@ -59,7 +62,7 @@ public class FormUtils
                     // check for error.
                     if (StatusCode.IsBad(results[ii].StatusCode))
                     {
-                        // this error indicates that the server does not have enough simultaneously active 
+                        // this error indicates that the server does not have enough simultaneously active
                         // continuation points. This request will need to be resent after the other operations
                         // have been completed and their continuation points released.
                         if (results[ii].StatusCode == StatusCodes.BadNoContinuationPoints)
@@ -182,7 +185,6 @@ public class FormUtils
 
                 for (int ii = 0; ii < nodesToBrowse.Count; ii++)
                 {
-
                     // check if all references have been fetched.
                     if (results[ii].References.Count == 0)
                     {
@@ -192,7 +194,7 @@ public class FormUtils
                     // check for error.
                     if (StatusCode.IsBad(results[ii].StatusCode))
                     {
-                        // this error indicates that the server does not have enough simultaneously active 
+                        // this error indicates that the server does not have enough simultaneously active
                         // continuation points. This request will need to be resent after the other operations
                         // have been completed and their continuation points released.
                         if (results[ii].StatusCode == StatusCodes.BadNoContinuationPoints)
@@ -203,13 +205,9 @@ public class FormUtils
                         continue;
                     }
 
-
-
                     // save results.
                     references.AddRange(results[ii].References);
-
                 }
-
 
                 while (continuationPoints.Any())
                 {
@@ -238,12 +236,8 @@ public class FormUtils
                             continue;
                         }
 
-
-
                         // save results.
                         references.AddRange(results[ii].References);
-
-
                     }
 
                     // check if browsing must continue;
@@ -290,7 +284,6 @@ public class FormUtils
             };
 
             // start the browse operation.
-
 
             var result = await session.BrowseAsync(
                   null,
@@ -374,7 +367,7 @@ public class FormUtils
                 BrowseDirection = BrowseDirection.Inverse,
                 ReferenceTypeId = ReferenceTypeIds.HasSubtype,
                 IncludeSubtypes = false, // more efficient to use IncludeSubtypes=False when possible.
-                NodeClassMask = 0, // the HasSubtype reference already restricts the targets to Types. 
+                NodeClassMask = 0, // the HasSubtype reference already restricts the targets to Types.
                 ResultMask = (uint)BrowseResultMask.All
             };
 
@@ -571,7 +564,7 @@ public class FormUtils
                     string discoveryUrl = servers[ii].DiscoveryUrls[jj];
 
                     // Many servers will use the '/discovery' suffix for the discovery endpoint.
-                    // The URL without this prefix should be the base URL for the server. 
+                    // The URL without this prefix should be the base URL for the server.
                     if (discoveryUrl.EndsWith("/discovery"))
                     {
                         discoveryUrl = discoveryUrl.Substring(0, discoveryUrl.Length - "/discovery".Length);
@@ -733,7 +726,7 @@ public class FormUtils
         {
             EndpointDescriptionCollection endpoints = client.GetEndpoints(null);
 
-            // select the best endpoint to use based on the selected URL and the UseSecurity checkbox. 
+            // select the best endpoint to use based on the selected URL and the UseSecurity checkbox.
             for (int ii = 0; ii < endpoints.Count; ii++)
             {
                 EndpointDescription endpoint = endpoints[ii];
@@ -760,7 +753,7 @@ public class FormUtils
                     // pick the first available endpoint by default.
                     selectedEndpoint ??= endpoint;
 
-                    // The security level is a relative measure assigned by the server to the 
+                    // The security level is a relative measure assigned by the server to the
                     // endpoints that it returns. Clients should always pick the highest level
                     // unless they have a reason not too.
                     if (endpoint.SecurityLevel > selectedEndpoint.SecurityLevel)
@@ -778,7 +771,7 @@ public class FormUtils
         }
 
         // if a server is behind a firewall it may return URLs that are not accessible to the client.
-        // This problem can be avoided by assuming that the domain in the URL used to call 
+        // This problem can be avoided by assuming that the domain in the URL used to call
         // GetEndpoints can be used to access any of the endpoints. This code makes that conversion.
         // Note that the conversion only makes sense if discovery uses the same protocol as the endpoint.
 
@@ -831,7 +824,6 @@ public class FormUtils
 
         // make the call to the server.
 
-
         var result = await session.TranslateBrowsePathsToNodeIdsAsync(
             null,
             browsePaths,
@@ -871,7 +863,7 @@ public class FormUtils
                 continue;
             }
 
-            // The targetId is an ExpandedNodeId because it could be node in another server. 
+            // The targetId is an ExpandedNodeId because it could be node in another server.
             // The ToNodeId function is used to convert a local NodeId stored in a ExpandedNodeId to a NodeId.
             nodes.Add(ExpandedNodeId.ToNodeId(target.TargetId, session.NamespaceUris));
         }

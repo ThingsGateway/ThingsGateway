@@ -1,4 +1,5 @@
 #region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 //------------------------------------------------------------------------------
@@ -36,6 +38,7 @@ namespace ThingsGateway.Foundation.Dmtp
         private Func<string, Task<IDmtpActor>> m_findDmtpActor;
         private DmtpActor m_dmtpActor;
         private readonly SemaphoreSlim m_semaphoreForConnect = new SemaphoreSlim(1, 1);
+
         #endregion 字段
 
         /// <inheritdoc cref="IDmtpActor.Id"/>
@@ -143,6 +146,7 @@ namespace ThingsGateway.Foundation.Dmtp
         #endregion 连接
 
         #region 断开
+
         /// <inheritdoc/>
         protected override void Dispose(bool disposing)
         {
@@ -204,7 +208,6 @@ namespace ThingsGateway.Foundation.Dmtp
                 this.m_findDmtpActor = this.Resolver.Resolve<IDmtpRouteService>().FindDmtpActor;
             }
         }
-
 
         #region ResetId
 

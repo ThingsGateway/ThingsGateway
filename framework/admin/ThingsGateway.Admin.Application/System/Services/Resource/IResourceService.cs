@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using Furion.DependencyInjection;
@@ -24,6 +26,7 @@ public interface IResourceService : ITransient
     /// </summary>
     /// <returns>所有的菜单和模块以及单页面列表</returns>
     Task<List<SysResource>> GetaMenuAndSpaListAsync();
+
     /// <summary>
     /// 获取子资源
     /// </summary>
@@ -54,6 +57,7 @@ public interface IResourceService : ITransient
     /// <param name="categorys">资源分类列表</param>
     /// <returns></returns>
     Task<List<SysResource>> GetListByCategorysAsync(List<ResourceCategoryEnum> categorys = null);
+
     /// <summary>
     /// 获取资源所有下级
     /// </summary>
@@ -89,10 +93,10 @@ public interface IResourceService : ITransient
     /// <returns>菜单形结构</returns>
     /// <inheritdoc/>
     List<SysResource> ResourceListToTree(List<SysResource> resourceList, long parentId = 0);
+
     /// <summary>
     /// 多个树转列表
     /// </summary>
     /// <param name="data"></param>
     List<SysResource> ResourceTreeToList(List<SysResource> data);
-
 }

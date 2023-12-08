@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 namespace ThingsGateway.Plugin.Mqtt;
@@ -21,11 +23,13 @@ public class MqttRpcNameVaueWithId
     /// 标识
     /// </summary>
     public string RpcId { get; set; }
+
     /// <summary>
     /// "WriteInfos":{"test":"1"}
     /// </summary>
     public Dictionary<string, string> WriteInfos { get; set; } = new();
 }
+
 /// <summary>
 /// MqttRpc输出
 /// </summary>
@@ -35,10 +39,12 @@ public class MqttRpcResult
     /// 标识
     /// </summary>
     public string RpcId { get; set; }
+
     /// <summary>
     /// 消息
     /// </summary>
     public Dictionary<string, OperResult> Message { get; set; } = new();
+
     /// <summary>
     /// 是否成功
     /// </summary>

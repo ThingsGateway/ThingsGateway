@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using Furion.DependencyInjection;
@@ -44,7 +46,6 @@ public class CollectDeviceService : DeviceService<CollectDevice>, ITransient, IC
             RemoveCache();
     }
 
-
     /// <inheritdoc/>
     [OperDesc("复制设备与变量", IsRecordPar = false)]
     public virtual async Task CopyDevAndVarAsync(IEnumerable<CollectDevice> input)
@@ -66,7 +67,6 @@ public class CollectDeviceService : DeviceService<CollectDevice>, ITransient, IC
                 b.Name = $"{Regex.Replace(b.Name, @"\d", "")}{b.Id}";
             });
             variables.AddRange(deviceVariables);
-
         }
 
         var result = await itenant.UseTranAsync(async () =>
@@ -83,9 +83,8 @@ public class CollectDeviceService : DeviceService<CollectDevice>, ITransient, IC
         {
             throw Oops.Oh(result.ErrorMessage);
         }
-
-
     }
+
     /// <inheritdoc/>
     public async Task<IEnumerable<DeviceRunTime>> GetDeviceRuntimeAsync(long devId = 0)
     {
@@ -125,9 +124,6 @@ public class CollectDeviceService : DeviceService<CollectDevice>, ITransient, IC
                 variable.DeviceName = runtime.Name;
             });
             return new List<CollectDeviceRunTime>() { runtime };
-
         }
-
     }
-
 }

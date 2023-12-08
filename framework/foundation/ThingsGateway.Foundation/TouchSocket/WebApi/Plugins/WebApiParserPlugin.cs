@@ -1,4 +1,5 @@
 #region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 //------------------------------------------------------------------------------
@@ -33,6 +35,7 @@ namespace ThingsGateway.Foundation.WebApi
     public class WebApiParserPlugin : PluginBase
     {
         private readonly IRpcServerProvider m_rpcServerProvider;
+
         /// <summary>
         /// 构造函数
         /// </summary>
@@ -78,6 +81,7 @@ namespace ThingsGateway.Foundation.WebApi
             pluginManager.Add(nameof(IHttpPlugin.OnHttpRequest), this.OnHttpRequest);
             base.Loaded(pluginManager);
         }
+
         private async Task OnHttpGet(IHttpSocketClient client, HttpContextEventArgs e)
         {
             if (this.GetRouteMap.TryGetMethodInstance(e.Context.Request.RelativeURL, out var methodInstance))
@@ -139,7 +143,6 @@ namespace ThingsGateway.Foundation.WebApi
                 if (invokeResult.Status == InvokeStatus.Ready)
                 {
                     invokeResult = await this.m_rpcServerProvider.ExecuteAsync(callContext, ps);
-
                 }
 
                 if (e.Context.Response.Responsed)
@@ -266,7 +269,6 @@ namespace ThingsGateway.Foundation.WebApi
                 if (invokeResult.Status == InvokeStatus.Ready)
                 {
                     invokeResult = await this.m_rpcServerProvider.ExecuteAsync(callContext, ps);
-
                 }
 
                 if (e.Context.Response.Responsed)
@@ -361,7 +363,6 @@ namespace ThingsGateway.Foundation.WebApi
                 }
             }
         }
-
 
         #endregion Rpc解析器
     }

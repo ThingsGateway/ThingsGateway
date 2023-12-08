@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using Furion.DataEncryption;
@@ -19,7 +21,6 @@ using Mapster;
 using ThingsGateway.Foundation.Extension.String;
 
 namespace ThingsGateway.Admin.Application;
-
 
 /// <inheritdoc cref="IUserCenterService"/>
 [Injection(Proxy = typeof(OperDispatchProxy))]
@@ -86,6 +87,7 @@ public class UserCenterService : DbRepository<SysUser>, IUserCenterService
         else
             return 0;
     }
+
     /// <inheritdoc />
     public async Task UpdateUserDefaultRazorAsync(long userId, long defaultRazor)
     {
@@ -148,6 +150,7 @@ public class UserCenterService : DbRepository<SysUser>, IUserCenterService
         }
         return result;
     }
+
     /// <inheritdoc />
     [OperDesc("用户更新个人信息")]
     public async Task UpdateUserInfoAsync(UpdateInfoInput input)
@@ -186,8 +189,8 @@ public class UserCenterService : DbRepository<SysUser>, IUserCenterService
         //关系表保存个人工作台
         await _relationService.SaveRelationAsync(CateGoryConst.Relation_SYS_USER_WORKBENCH_DATA, UserManager.UserId, null, input.ToJsonString(), true);
     }
-    #region 方法
 
+    #region 方法
 
     /// <summary>
     /// 获取父菜单集合，已过滤掉同时存在的父节点

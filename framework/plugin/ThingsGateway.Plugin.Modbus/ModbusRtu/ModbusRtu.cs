@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using ThingsGateway.Foundation.Demo;
@@ -18,18 +20,20 @@ namespace ThingsGateway.Plugin.Modbus;
 public class ModbusRtu : CollectBase
 {
     private readonly ModbusRtuProperty _driverPropertys = new();
+
     /// <inheritdoc/>
     protected override IReadWrite _readWrite => _plc;
+
     private ThingsGateway.Foundation.Adapter.Modbus.ModbusRtu _plc;
 
     /// <inheritdoc/>
     public override Type DriverDebugUIType => typeof(ModbusRtuDebugPage);
+
     /// <inheritdoc/>
     public override Type DriverUIType => null;
 
     /// <inheritdoc/>
     public override DriverPropertyBase DriverPropertys => _driverPropertys;
-
 
     /// <inheritdoc/>
     protected override List<DeviceVariableSourceRead> ProtectedLoadSourceRead(List<DeviceVariableRunTime> deviceVariables)
@@ -65,5 +69,4 @@ public class ModbusRtu : CollectBase
         };
         base.Init(client);
     }
-
 }

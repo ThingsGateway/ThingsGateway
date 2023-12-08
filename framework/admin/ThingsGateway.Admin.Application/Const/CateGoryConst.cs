@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 namespace ThingsGateway.Admin.Application;
@@ -17,18 +19,15 @@ namespace ThingsGateway.Admin.Application;
 /// </summary>
 public static class CateGoryConst
 {
-
     /// <summary>
     /// ThingsGateway.Admin
     /// </summary>
     public const string ThingsGatewayAdmin = "ThingsGateway.Admin";
+
     /// <summary>
     /// ThingsGateway.OpenApi
     /// </summary>
     public const string ThingsGatewayOpenApi = "ThingsGateway.OpenApi";
-
-
-
 
     #region 关系表
 
@@ -56,6 +55,6 @@ public static class CateGoryConst
     /// 用户有哪些角色
     /// </summary>
     public const string Relation_SYS_USER_HAS_ROLE = "SYS_USER_HAS_ROLE";
-    #endregion 关系表
 
+    #endregion 关系表
 }

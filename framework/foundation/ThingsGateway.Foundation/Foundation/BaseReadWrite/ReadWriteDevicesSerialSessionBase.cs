@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,8 +9,8 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
-#endregion
 
+#endregion
 
 namespace ThingsGateway.Foundation.Core;
 
@@ -39,6 +40,7 @@ public abstract class ReadWriteDevicesSerialPortClientBase : ReadWriteDevicesBas
 
         Logger = SerialPortClient.Logger;
     }
+
     /// <summary>
     /// 接收解析
     /// </summary>
@@ -62,11 +64,13 @@ public abstract class ReadWriteDevicesSerialPortClientBase : ReadWriteDevicesBas
     /// 默认WaitingClientEx
     /// </summary>
     public virtual IWaitingClient<SerialPortClient> WaitingClientEx { get; }
+
     /// <inheritdoc/>
     public override bool IsConnected()
     {
         return SerialPortClient?.CanSend == true;
     }
+
     /// <inheritdoc/>
     public override void Connect(CancellationToken cancellationToken)
     {

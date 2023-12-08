@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using BlazorComponent;
@@ -25,6 +27,7 @@ using Opc.Ua;
 using ThingsGateway.Foundation.Adapter.OPCUA;
 
 namespace ThingsGateway.Foundation.Demo;
+
 /// <summary>
 /// OPCUA调试页面
 /// </summary>
@@ -32,9 +35,10 @@ public partial class OPCUAClientDebugPage
 {
     private ThingsGateway.Foundation.Adapter.OPCUA.OPCUAClient _plc;
     private DriverDebugUIPage _driverDebugUIPage;
-    bool IsShowImportVariableList;
+    private bool IsShowImportVariableList;
     private OPCUAClientPage opcUAClientPage;
     private OPCUAImportVariable ImportVariable { get; set; }
+
     [Inject]
     private InitTimezone InitTimezone { get; set; }
 
@@ -68,11 +72,11 @@ public partial class OPCUAClientDebugPage
             //载入配置
             StateHasChanged();
             _driverDebugUIPage.Sections.Clear();
-
         }
 
         base.OnAfterRender(firstRender);
     }
+
     private async Task Add()
     {
         if (_plc.Connected)
@@ -84,6 +88,7 @@ public partial class OPCUAClientDebugPage
     }
 
 #if Plugin
+
     private async Task DeviceImport()
     {
         isDownLoading = true;
@@ -104,13 +109,15 @@ public partial class OPCUAClientDebugPage
         {
             isDownLoading = false;
         }
-
     }
+
     private IJSObjectReference JSObjectReference;
     private bool isDownLoading;
+
     /// <inheritdoc/>
     [Inject]
     protected IJSRuntime JSRuntime { get; set; }
+
     private async Task DownDeviceExport()
     {
         isDownLoading = true;
@@ -132,7 +139,6 @@ public partial class OPCUAClientDebugPage
         {
             isDownLoading = false;
         }
-
     }
 
     /// <summary>
@@ -169,8 +175,8 @@ public partial class OPCUAClientDebugPage
         {
             _driverDebugUIPage.Messages.Clear();
         }
-
     }
+
     private async Task ReadAsync()
     {
         if (_plc.Connected)
@@ -183,7 +189,6 @@ public partial class OPCUAClientDebugPage
             }
             catch (Exception ex)
             {
-
                 _driverDebugUIPage.Messages.Add((Microsoft.Extensions.Logging.LogLevel.Warning,
                         $"{DateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset)}  - {ex}"));
             }
@@ -194,6 +199,7 @@ public partial class OPCUAClientDebugPage
                         $"{DateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset)}  - 未连接"));
         }
     }
+
     private void Remove()
     {
         if (_plc.Connected)

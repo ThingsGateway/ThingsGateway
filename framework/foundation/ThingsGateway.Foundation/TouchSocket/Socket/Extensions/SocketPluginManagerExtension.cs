@@ -1,4 +1,5 @@
 #region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 //------------------------------------------------------------------------------
@@ -53,7 +55,9 @@ namespace ThingsGateway.Foundation.Sockets
         {
             return pluginManager.Add<CheckClearPlugin<TClient>>();
         }
+
         #region Reconnection
+
         /// <summary>
         /// 使用断线重连。
         /// </summary>
@@ -66,6 +70,7 @@ namespace ThingsGateway.Foundation.Sockets
             pluginManager.Add(reconnectionPlugin);
             return reconnectionPlugin;
         }
+
         /// <summary>
         /// 使用断线重连。
         /// <para>该效果仅客户端在完成首次连接，且为被动断开时有效。</para>
@@ -160,7 +165,7 @@ namespace ThingsGateway.Foundation.Sockets
             pluginManager.Add(reconnectionPlugin);
             return reconnectionPlugin;
         }
-        #endregion
 
+        #endregion
     }
 }

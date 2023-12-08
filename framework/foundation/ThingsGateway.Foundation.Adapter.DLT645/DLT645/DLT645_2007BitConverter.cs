@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using System.Text;
@@ -15,6 +17,7 @@ using System.Text;
 using ThingsGateway.Foundation.Extension.Generic;
 
 namespace ThingsGateway.Foundation.Adapter.DLT645;
+
 /// <summary>
 /// DLT645_2007
 /// </summary>
@@ -26,41 +29,49 @@ public class DLT645_2007BitConverter : ThingsGatewayBitConverter
     public DLT645_2007BitConverter(EndianType endianType) : base(endianType)
     {
     }
+
     /// <inheritdoc/>
     public override short ToInt16(byte[] buffer, int offset)
     {
         return Convert.ToInt16(this.ToString(buffer, offset, buffer.Length));
     }
+
     /// <inheritdoc/>
     public override ushort ToUInt16(byte[] buffer, int offset)
     {
         return Convert.ToUInt16(this.ToString(buffer, offset, buffer.Length));
     }
+
     /// <inheritdoc/>
     public override float ToSingle(byte[] buffer, int offset)
     {
         return Convert.ToSingle(this.ToString(buffer, offset, buffer.Length));
     }
+
     /// <inheritdoc/>
     public override long ToInt64(byte[] buffer, int offset)
     {
         return Convert.ToInt64(this.ToString(buffer, offset, buffer.Length));
     }
+
     /// <inheritdoc/>
     public override int ToInt32(byte[] buffer, int offset)
     {
         return Convert.ToInt32(this.ToString(buffer, offset, buffer.Length));
     }
+
     /// <inheritdoc/>
     public override uint ToUInt32(byte[] buffer, int offset)
     {
         return Convert.ToUInt32(this.ToString(buffer, offset, buffer.Length));
     }
+
     /// <inheritdoc/>
     public override ulong ToUInt64(byte[] buffer, int offset)
     {
         return Convert.ToUInt64(this.ToString(buffer, offset, buffer.Length));
     }
+
     /// <summary>
     /// DLT645协议转换double
     /// </summary>
@@ -84,7 +95,6 @@ public class DLT645_2007BitConverter : ThingsGatewayBitConverter
             Length = Length,
         };
     }
-
 
     /// <inheritdoc/>
     public override string ToString(byte[] buffer)
@@ -146,6 +156,4 @@ public class DLT645_2007BitConverter : ThingsGatewayBitConverter
             }
         }
     }
-
-
 }

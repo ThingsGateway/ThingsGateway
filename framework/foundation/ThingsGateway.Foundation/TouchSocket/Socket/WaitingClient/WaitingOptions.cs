@@ -1,4 +1,5 @@
 #region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 //------------------------------------------------------------------------------
@@ -35,11 +37,9 @@ namespace ThingsGateway.Foundation.Sockets
         /// </summary>
         public IPHost RemoteIPHost { get; set; }
 
-
         /// <summary>
         /// 筛选函数
         /// </summary>
         public Func<ResponsedData, bool> FilterFunc { get; set; }
-
     }
 }

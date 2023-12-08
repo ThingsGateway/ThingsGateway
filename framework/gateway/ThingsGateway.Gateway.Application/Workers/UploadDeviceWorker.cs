@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using Furion.Logging.Extensions;
@@ -23,12 +25,13 @@ namespace ThingsGateway.Gateway.Application;
 /// </summary>
 public class UploadDeviceWorker : DeviceWorker
 {
-
     public UploadDeviceWorker(IServiceScopeFactory serviceScopeFactory, IHostApplicationLifetime appLifetime) : base(serviceScopeFactory, appLifetime)
     {
         _logger = _serviceScope.ServiceProvider.GetService<ILoggerFactory>().CreateLogger("北向设备服务");
     }
+
     #region public 设备创建更新结束
+
     /// <summary>
     /// 开始
     /// </summary>
@@ -119,12 +122,9 @@ public class UploadDeviceWorker : DeviceWorker
                 }
             }
         }
-
     }
 
-
     #endregion
-
 
     #region 设备信息获取
 
@@ -166,8 +166,8 @@ public class UploadDeviceWorker : DeviceWorker
         }
         driverBase?.SafeDispose();
         return Propertys;
-
     }
+
     /// <summary>
     /// 获取变量上传属性
     /// </summary>
@@ -191,12 +191,9 @@ public class UploadDeviceWorker : DeviceWorker
         return Propertys;
     }
 
-
     #endregion
 
     #region worker服务
-
-
 
     /// <inheritdoc/>
     public override async Task StopAsync(CancellationToken cancellationToken)
@@ -206,15 +203,16 @@ public class UploadDeviceWorker : DeviceWorker
         stoppingToken.Cancel();
         await base.StopAsync(cancellationToken);
     }
+
     /// <inheritdoc/>
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         await _easyLock?.WaitAsync();
         _driverPluginService = _serviceScope.ServiceProvider.GetService<DriverPluginService>();
 
-
         await WhileExecuteAsync(stoppingToken);
     }
+
     protected virtual async Task WhileExecuteAsync(CancellationToken stoppingToken)
     {
         while (!stoppingToken.IsCancellationRequested)
@@ -228,13 +226,11 @@ public class UploadDeviceWorker : DeviceWorker
                 var num = DriverBases.Count;
                 for (int i = 0; i < num; i++)
                 {
-
                     DriverBase driverBase = DriverBases[i];
                     try
                     {
                         if (driverBase.CurrentDevice != null && !driverBase.DisposedValue)
                         {
-
                             if (driverBase.CurrentDevice.DeviceStatus == DeviceStatusEnum.OffLine)
                             {
                                 if (driverBase.CurrentDevice.IsRedundant && _serviceScope.ServiceProvider.GetService<IUploadDeviceService>().GetCacheList(false).Any(a => a.Id == driverBase.CurrentDevice.RedundantDeviceId))
@@ -242,9 +238,6 @@ public class UploadDeviceWorker : DeviceWorker
                                     await DeviceRedundantThreadAsync(driverBase.CurrentDevice.Id);
                                 }
                             }
-
-
-
 
                             if (
             (driverBase.CurrentDevice.ActiveTime != DateTime.MinValue &&
@@ -268,21 +261,15 @@ public class UploadDeviceWorker : DeviceWorker
                             {
                                 _logger?.LogTrace($"{driverBase.CurrentDevice.Name}线程检测正常");
                             }
-
-
-
-
                         }
                     }
                     finally
                     {
                     }
                 }
-
             }
             catch (TaskCanceledException)
             {
-
             }
             catch (ObjectDisposedException)
             {
@@ -291,7 +278,6 @@ public class UploadDeviceWorker : DeviceWorker
             {
                 _logger.LogWarning(ex, "线程检测错误");
             }
-
         }
     }
 
@@ -311,9 +297,4 @@ public class UploadDeviceWorker : DeviceWorker
     }
 
     #endregion
-
 }
-
-
-
-

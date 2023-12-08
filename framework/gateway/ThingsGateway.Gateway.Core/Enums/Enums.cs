@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using System.ComponentModel;
@@ -23,26 +25,32 @@ public enum AlarmEnum
     /// 无
     /// </summary>
     None,
+
     /// <summary>
     /// Bool On
     /// </summary>
     Open,
+
     /// <summary>
     /// Bool Off
     /// </summary>
     Close,
+
     /// <summary>
     /// HH
     /// </summary>
     HH,
+
     /// <summary>
     /// H
     /// </summary>
     H,
+
     /// <summary>
     /// L
     /// </summary>
     L,
+
     /// <summary>
     /// LL
     /// </summary>
@@ -59,16 +67,19 @@ public enum DeviceStatusEnum
     /// </summary>
     [Description("初始化")]
     None = 0,
+
     /// <summary>
     /// 在线
     /// </summary>
     [Description("在线")]
     OnLine = 1,
+
     /// <summary>
     /// 离线
     /// </summary>
     [Description("离线")]
     OffLine = 2,
+
     /// <summary>
     /// 暂停
     /// </summary>
@@ -86,6 +97,7 @@ public enum DriverEnum
     /// </summary>
     [Description("采集")]
     Collect,
+
     /// <summary>
     /// 上传
     /// </summary>
@@ -102,20 +114,22 @@ public enum EventEnum
     /// 无
     /// </summary>
     None,
+
     /// <summary>
     /// 报警产生
     /// </summary>
     Alarm,
+
     /// <summary>
     /// 报警确认
     /// </summary>
     Check,
+
     /// <summary>
     /// 报警恢复
     /// </summary>
     Finish,
 }
-
 
 /// <summary>
 /// 用户权限
@@ -127,17 +141,20 @@ public enum ProtectTypeEnum
     /// </summary>
     [Description("只读")]
     ReadOnly,
+
     /// <summary>
     /// 读写
     /// </summary>
     [Description("读写")]
     ReadWrite,
+
     /// <summary>
     /// 只写
     /// </summary>
     [Description("只写")]
     WriteOnly,
 }
+
 /// <summary>
 /// 冗余
 /// </summary>
@@ -148,11 +165,13 @@ public enum RedundantEnum
     /// </summary>
     [Description("无")]
     None,
+
     /// <summary>
     /// 主站
     /// </summary>
     [Description("主站")]
     Primary,
+
     /// <summary>
     /// 备用
     /// </summary>
@@ -169,10 +188,12 @@ public enum ThreadRunReturn
     /// 无
     /// </summary>
     None,
+
     /// <summary>
     /// 继续
     /// </summary>
     Continue,
+
     /// <summary>
     /// 跳出
     /// </summary>

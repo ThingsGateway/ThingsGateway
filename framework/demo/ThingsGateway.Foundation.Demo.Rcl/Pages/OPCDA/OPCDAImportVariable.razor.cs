@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using Microsoft.AspNetCore.Components;
@@ -15,9 +17,13 @@ using Microsoft.AspNetCore.Components;
 using System.Reflection;
 
 using ThingsGateway.Foundation.Adapter.OPCDA.Rcw;
+
 #if Plugin
+
 using ThingsGateway.Plugin.OPCDA;
+
 #endif
+
 namespace ThingsGateway.Foundation.Demo;
 
 /// <summary>
@@ -52,9 +58,7 @@ public partial class OPCDAImportVariable
         }
     }
 
-
     private List<BrowseElement> Selected { get; set; } = new();
-
 
 #if Plugin
 
@@ -105,6 +109,7 @@ public partial class OPCDAImportVariable
         }).Where(a => a != null).ToList();
         return (device, data);
     }
+
     private CollectDevice GetImportDevice()
     {
         var id = Yitter.IdGenerator.YitIdHelper.NextId();
@@ -129,7 +134,6 @@ public partial class OPCDAImportVariable
 
 #endif
 
-
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
@@ -141,7 +145,6 @@ public partial class OPCDAImportVariable
         });
         await base.OnInitializedAsync();
     }
-
 
     private List<OPCDATagModel> PopulateBranch(string sourceId, bool isAll = false)
     {
@@ -197,9 +200,6 @@ public partial class OPCDAImportVariable
                 }
             };
         }
-
-
-
     }
 
     private async Task PopulateBranchAsync(OPCDATagModel model)
@@ -210,12 +210,14 @@ public partial class OPCDAImportVariable
            model.Nodes = PopulateBranch(sourceId);
        });
     }
+
     internal class OPCDATagModel
     {
         internal string Name { get; set; }
         internal string NodeId => (Tag?.ItemName)?.ToString();
         internal List<OPCDATagModel> Nodes { get; set; } = new();
         internal BrowseElement Tag { get; set; }
+
         public List<OPCDATagModel> GetAllTags()
         {
             List<OPCDATagModel> allTags = new();

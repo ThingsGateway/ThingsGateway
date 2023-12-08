@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,11 +9,13 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using System.Text;
 
 namespace ThingsGateway.Plugin.Siemens;
+
 /// <summary>
 /// S7
 /// </summary>
@@ -22,6 +25,7 @@ public class Siemens : CollectBase
     /// PLC
     /// </summary>
     protected SiemensS7PLC _plc;
+
     /// <summary>
     /// SiemensProperty
     /// </summary>
@@ -34,10 +38,12 @@ public class Siemens : CollectBase
     /// <inheritdoc/>
     /// </summary>
     public override Type DriverDebugUIType => typeof(SiemensDebugPage);
+
     public override Type DriverUIType => null;
 
     /// <inheritdoc/>
     public override DriverPropertyBase DriverPropertys => _driverPropertys;
+
     /// <inheritdoc/>
     protected override void Init(ISenderClient client = null)
     {
@@ -124,5 +130,4 @@ public class Siemens : CollectBase
         else
             return new(await _plc?.WriteAsync(address, value, cancellationToken));
     }
-
 }

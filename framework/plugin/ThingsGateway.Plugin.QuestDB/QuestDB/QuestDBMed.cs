@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using Furion;
@@ -109,13 +111,14 @@ public partial class QuestDB : UpLoadBaseWithCacheT<DeviceData, QuestDBHistoryVa
         //        Console.ForegroundColor = ConsoleColor.White;
         //    }
         //};
-
     }
+
     private static void WriteSqlLog(string msg)
     {
         Console.WriteLine("【Sql执行时间】：" + DateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat());
         Console.WriteLine("【Sql语句】：" + msg + Environment.NewLine);
     }
+
     private static void WriteSqlLogError(string msg)
     {
         Console.WriteLine("【Sql执行错误时间】：" + DateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat());
@@ -166,6 +169,5 @@ public partial class QuestDB : UpLoadBaseWithCacheT<DeviceData, QuestDBHistoryVa
             CurrentDevice.SetDeviceStatus(DateTimeExtensions.CurrentDateTime, 999);
             return new(ex);
         }
-
     }
 }

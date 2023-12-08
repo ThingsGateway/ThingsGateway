@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,14 +9,15 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using Mapster;
 
 using Microsoft.AspNetCore.Components;
 
-
 namespace ThingsGateway.Gateway.Blazor;
+
 /// <summary>
 /// 后台日志页面
 /// </summary>
@@ -23,11 +25,12 @@ public partial class BackendLogPage
 {
     private readonly BackendLogPageInput _search = new();
     private IAppDataTable _datatable;
-    [Inject]
-    AjaxService _ajaxService { get; set; }
 
     [Inject]
-    InitTimezone _initTimezone { get; set; }
+    private AjaxService _ajaxService { get; set; }
+
+    [Inject]
+    private InitTimezone _initTimezone { get; set; }
 
     private async Task ClearClickAsync()
     {
@@ -39,7 +42,7 @@ public partial class BackendLogPage
         }
     }
 
-    async Task DownExportAsync(BackendLogPageInput input = null)
+    private async Task DownExportAsync(BackendLogPageInput input = null)
     {
         await _ajaxService.DownFileAsync("gatewayFile/backendLog", DateTimeExtensions.CurrentDateTime.ToFileDateTimeFormat(), input.Adapt<BackendLogInput>());
     }

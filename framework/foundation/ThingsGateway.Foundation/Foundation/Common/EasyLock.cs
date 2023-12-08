@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 namespace ThingsGateway.Foundation.Core;
@@ -19,27 +21,32 @@ public sealed class EasyLock : DisposableObject
 {
     private static long lockWaitCount;
     private readonly SemaphoreSlim m_waiterLock = new SemaphoreSlim(1, 1);
+
     /// <inheritdoc/>
     public EasyLock(bool initialState = true)
     {
         if (!initialState)
             m_waiterLock.Wait();
     }
+
     /// <inheritdoc/>
     ~EasyLock()
     {
         m_waiterLock.SafeDispose();
     }
+
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
         m_waiterLock.SafeDispose();
         base.Dispose(disposing);
     }
+
     /// <summary>
     /// 当前正在等待的数量
     /// </summary>
     public static long LockWaitCount => lockWaitCount;
+
     /// <summary>
     /// 当前锁是否在等待当中
     /// </summary>
@@ -62,6 +69,7 @@ public sealed class EasyLock : DisposableObject
         m_waiterLock.Wait(cancellationToken);
         Interlocked.Decrement(ref lockWaitCount);
     }
+
     /// <summary>
     /// 进入锁
     /// </summary>
@@ -82,6 +90,7 @@ public sealed class EasyLock : DisposableObject
         await m_waiterLock.WaitAsync(cancellationToken);
         Interlocked.Decrement(ref lockWaitCount);
     }
+
     /// <summary>
     /// 进入锁
     /// </summary>
@@ -92,5 +101,4 @@ public sealed class EasyLock : DisposableObject
         Interlocked.Decrement(ref lockWaitCount);
         return data;
     }
-
 }

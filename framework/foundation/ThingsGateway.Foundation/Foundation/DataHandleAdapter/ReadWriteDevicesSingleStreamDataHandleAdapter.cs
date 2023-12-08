@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using System.Text;
@@ -25,12 +27,14 @@ public abstract class ReadWriteDevicesSingleStreamDataHandleAdapter<TRequest> : 
     /// 报文输出时采用字符串还是HexString
     /// </summary>
     public virtual bool IsHexData { get; set; } = true;
+
     /// <inheritdoc cref="ReadWriteDevicesSingleStreamDataHandleAdapter{TRequest}"/>
     public ReadWriteDevicesSingleStreamDataHandleAdapter()
     {
         Request = GetInstance();
         CacheTimeoutEnable = true;
     }
+
     /// <inheritdoc/>
     public override bool CanSendRequestInfo => false;
 
@@ -126,16 +130,20 @@ public abstract class ReadWriteDevicesSingleStreamDataHandleAdapter<TRequest> : 
         {
             case FilterResult.Cache:
                 return FilterResult.Cache;
+
             case FilterResult.Success:
                 return FilterResult.Success;
+
             case FilterResult.GoOn:
                 byteBlock.Pos = byteBlock.Len;
                 return FilterResult.GoOn;
+
             default:
                 byteBlock.Pos = byteBlock.Len;
                 return FilterResult.GoOn;
         }
     }
+
     /// <summary>
     /// 发送方法,会重新建立<see cref="Request"/>
     /// </summary>
@@ -151,6 +159,7 @@ public abstract class ReadWriteDevicesSingleStreamDataHandleAdapter<TRequest> : 
         GoSend(bytes, 0, bytes.Length);
         Logger?.Trace($"{FoundationConst.LogMessageHeader}{ToString()}- 发送:{(IsHexData ? Request.SendBytes.ToHexString(' ') : Encoding.UTF8.GetString(Request.SendBytes))}");
     }
+
     /// <summary>
     /// 发送方法,会重新建立<see cref="Request"/>
     /// </summary>
@@ -183,7 +192,6 @@ public abstract class ReadWriteDevicesSingleStreamDataHandleAdapter<TRequest> : 
     /// 报文拆包
     /// </summary>
     protected abstract FilterResult UnpackResponse(TRequest request, byte[] send, byte[] body, byte[] response);
-
 
     /// <inheritdoc/>
     public override string ToString()

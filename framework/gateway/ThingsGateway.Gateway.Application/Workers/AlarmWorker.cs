@@ -1,4 +1,5 @@
 #region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using Furion.Logging.Extensions;
@@ -25,10 +27,12 @@ using ThingsGateway.Foundation.Extension.String;
 using ThingsGateway.Gateway.Core.Extensions;
 
 namespace ThingsGateway.Gateway.Application;
+
 /// <summary>
 /// 变量报警事件委托
 /// </summary>
 public delegate void VariableAlarmEventHandler(AlarmVariable alarmVariable);
+
 /// <summary>
 /// 设备采集报警后台服务
 /// </summary>
@@ -39,6 +43,7 @@ public class AlarmWorker : BackgroundService
     private readonly ILogger _logger;
     private ConcurrentQueue<DeviceVariableRunTime> _deviceVariables = new();
     private GlobalDeviceData _globalDeviceData;
+
     /// <inheritdoc cref="AlarmWorker"/>
     public AlarmWorker(IServiceScopeFactory serviceScopeFactory, IHostApplicationLifetime appLifetime)
     {
@@ -46,6 +51,7 @@ public class AlarmWorker : BackgroundService
         _logger = _serviceScope.ServiceProvider.GetService<ILoggerFactory>().CreateLogger("实时报警服务");
         _appLifetime = appLifetime;
     }
+
     /// <summary>
     /// 报警变化事件
     /// </summary>
@@ -60,7 +66,6 @@ public class AlarmWorker : BackgroundService
     /// 服务状态
     /// </summary>
     public OperResult StatuString { get; private set; } = new OperResult("初始化");
-
 
     #region 核心实现
 
@@ -137,7 +142,6 @@ public class AlarmWorker : BackgroundService
                 }
                 catch (ObjectDisposedException)
                 {
-
                 }
                 catch (TimeoutException)
                 {
@@ -236,6 +240,7 @@ public class AlarmWorker : BackgroundService
         }
         return AlarmEnum.None;
     }
+
     private void AlarmAnalysis(DeviceVariableRunTime item)
     {
         string limit;
@@ -273,9 +278,9 @@ public class AlarmWorker : BackgroundService
             {
                 AlarmChange(item, limit, text, EventEnum.Alarm, alarmEnum);
             }
-
         }
     }
+
     private void AlarmChange(DeviceVariableRunTime item, object limit, string text, EventEnum eventEnum, AlarmEnum alarmEnum)
     {
         if (eventEnum == EventEnum.Finish)
@@ -342,7 +347,6 @@ public class AlarmWorker : BackgroundService
         }
     }
 
-
     private void DeviceVariableChange(DeviceVariableRunTime variable)
     {
         //这里不能序列化变量，报警服务需改变同一个变量指向的属性
@@ -377,7 +381,6 @@ public class AlarmWorker : BackgroundService
                 }
                 catch (TaskCanceledException)
                 {
-
                 }
                 catch (ObjectDisposedException)
                 {
@@ -387,16 +390,14 @@ public class AlarmWorker : BackgroundService
                     _logger?.LogWarning(ex, $"实时报警循环异常");
                 }
             }
-
         }
  , TaskCreationOptions.LongRunning);
-
     }
+
     #endregion
 
-
-
     #region worker服务
+
     private EasyLock _easyLock = new();
 
     /// <inheritdoc/>
@@ -430,7 +431,6 @@ public class AlarmWorker : BackgroundService
             }
             catch (TaskCanceledException)
             {
-
             }
             catch (ObjectDisposedException)
             {
@@ -438,10 +438,5 @@ public class AlarmWorker : BackgroundService
         }
     }
 
-
     #endregion
-
-
 }
-
-

@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 namespace ThingsGateway.Core;
@@ -19,6 +21,7 @@ public static class TextWriterExtensions
 {
     private const string DefaultBackgroundColor = "\x1B[49m";
     private const string DefaultForegroundColor = "\x1B[39m\x1B[22m";
+
     /// <summary>
     /// 写入流
     /// </summary>
@@ -32,7 +35,6 @@ public static class TextWriterExtensions
         ConsoleColor? background,
         ConsoleColor? foreground)
     {
-
         var backgroundColor = background.HasValue ? GetBackgroundColorEscapeCode(background.Value) : null;
         var foregroundColor = foreground.HasValue ? GetForegroundColorEscapeCode(foreground.Value) : null;
 

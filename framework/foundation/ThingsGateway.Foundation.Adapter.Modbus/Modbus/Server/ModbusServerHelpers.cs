@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using ThingsGateway.Foundation.Adapter.Modbus;
@@ -16,7 +18,6 @@ using ThingsGateway.Foundation.Extension.Generic;
 
 internal static class ModbusServerHelpers
 {
-
     internal static OperResult<byte[]> Read(IModbusServer modbusServer, string address, int length)
     {
         ModbusAddress mAddress;
@@ -57,17 +58,20 @@ internal static class ModbusServerHelpers
                     ModbusServer01ByteBlock.Pos = mAddress.AddressStart;
                     ModbusServer01ByteBlock.Read(bytes0);
                     return OperResult.CreateSuccessResult(bytes0);
+
                 case 2:
                     byte[] bytes1 = new byte[len];
                     ModbusServer02ByteBlock.Pos = mAddress.AddressStart;
                     ModbusServer02ByteBlock.Read(bytes1);
                     return OperResult.CreateSuccessResult(bytes1);
+
                 case 3:
 
                     byte[] bytes3 = new byte[len];
                     ModbusServer03ByteBlock.Pos = mAddress.AddressStart * modbusServer.RegisterByteLength;
                     ModbusServer03ByteBlock.Read(bytes3);
                     return OperResult.CreateSuccessResult(bytes3);
+
                 case 4:
                     byte[] bytes4 = new byte[len];
                     ModbusServer04ByteBlock.Pos = mAddress.AddressStart * modbusServer.RegisterByteLength;
@@ -81,7 +85,6 @@ internal static class ModbusServerHelpers
         }
         return new OperResult<byte[]>("功能码错误");
     }
-
 
     internal static OperResult Write(IModbusServer modbusServer, string address, byte[] value)
     {
@@ -117,6 +120,7 @@ internal static class ModbusServerHelpers
                     ModbusServer03ByteBlock.Pos = mAddress.AddressStart * modbusServer.RegisterByteLength;
                     ModbusServer03ByteBlock.Write(value);
                     return OperResult.CreateSuccessResult();
+
                 case 4:
                     ModbusServer04ByteBlock.Pos = mAddress.AddressStart * modbusServer.RegisterByteLength;
                     ModbusServer04ByteBlock.Write(value);
@@ -126,7 +130,6 @@ internal static class ModbusServerHelpers
         finally { modbusServer.EasyLock.Release(); }
         return new OperResult("功能码错误");
     }
-
 
     internal static OperResult Write(IModbusServer modbusServer, string address, bool[] value)
     {
@@ -142,7 +145,6 @@ internal static class ModbusServerHelpers
         if (modbusServer.MulStation)
         {
             modbusServer.Init(mAddress);
-
         }
         else
         {
@@ -151,7 +153,6 @@ internal static class ModbusServerHelpers
                 return (new OperResult("地址错误"));
             }
             modbusServer.Init(mAddress);
-
         }
         try
         {
@@ -164,6 +165,7 @@ internal static class ModbusServerHelpers
                     ModbusServer01ByteBlock.Pos = mAddress.AddressStart;
                     ModbusServer01ByteBlock.Write(value.BoolArrayToByte());
                     return (OperResult.CreateSuccessResult());
+
                 case 2:
                     ModbusServer02ByteBlock.Pos = mAddress.AddressStart;
                     ModbusServer02ByteBlock.Write(value.BoolArrayToByte());
@@ -177,9 +179,6 @@ internal static class ModbusServerHelpers
 
         return new OperResult("功能码错误");
     }
-
-
-
 
     internal static async Task Received(IModbusServer modbusServer, ISenderClient client, ReceivedDataEventArgs e)
     {
@@ -246,7 +245,6 @@ internal static class ModbusServerHelpers
                             }
                             else
                                 WriteSuccess(modbusServer.IsRtu, client, modbusServerMessage);
-
                         }
                         else
                         {
@@ -272,7 +270,6 @@ internal static class ModbusServerHelpers
                     //写入寄存器
                     if (modbusServer.OnWriteData != null)
                     {
-
                         if ((await modbusServer.OnWriteData(modbusServerMessage.ModbusAddress, modbusServerMessage.Content, modbusServer.ThingsGatewayBitConverter, client)).IsSuccess)
                         {
                             if (modbusServer.WriteMemory)
@@ -297,12 +294,10 @@ internal static class ModbusServerHelpers
                         if (result.IsSuccess)
                         {
                             WriteSuccess(modbusServer.IsRtu, client, modbusServerMessage);
-
                         }
                         else
                         {
                             WriteError(modbusServer.IsRtu, client, modbusServerMessage);
-
                         }
                     }
                 }
@@ -310,11 +305,10 @@ internal static class ModbusServerHelpers
         }
     }
 
-
     /// <summary>
     /// 返回错误码
     /// </summary>
-    static void WriteError(bool isRtu, ISenderClient client, IModbusServerMessage modbusServerMessage)
+    private static void WriteError(bool isRtu, ISenderClient client, IModbusServerMessage modbusServerMessage)
     {
         if (isRtu)
         {
@@ -330,11 +324,8 @@ internal static class ModbusServerHelpers
             sendData[5] = (byte)(sendData.Length - 6);
             sendData[7] = (byte)(sendData[7] + 128);
             client.Send(sendData);
-
         }
-
     }
-
 
     /// <summary>
     /// 返回成功
@@ -352,7 +343,5 @@ internal static class ModbusServerHelpers
             sendData[5] = (byte)(sendData.Length - 6);
             client.Send(sendData);
         }
-
     }
-
 }

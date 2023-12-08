@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 namespace ThingsGateway.Gateway.Blazor;
@@ -17,9 +19,10 @@ namespace ThingsGateway.Gateway.Blazor;
 /// </summary>
 public partial class HardwareInfoPage
 {
-    readonly PeriodicTimer _periodicTimer = new(TimeSpan.FromSeconds(5));
+    private readonly PeriodicTimer _periodicTimer = new(TimeSpan.FromSeconds(5));
 
-    HardwareInfoWorker _hardwareInfoWorker { get; set; }
+    private HardwareInfoWorker _hardwareInfoWorker { get; set; }
+
     /// <inheritdoc/>
     public override void Dispose()
     {
@@ -36,6 +39,7 @@ public partial class HardwareInfoPage
         _ = RunTimerAsync();
         base.OnInitialized();
     }
+
     private async Task RunTimerAsync()
     {
         while (await _periodicTimer.WaitForNextTickAsync())
@@ -47,7 +51,6 @@ public partial class HardwareInfoPage
             catch
             {
             }
-
         }
     }
 }

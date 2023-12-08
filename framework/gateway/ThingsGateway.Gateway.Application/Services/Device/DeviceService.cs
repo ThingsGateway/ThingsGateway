@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using Furion.FriendlyException;
@@ -34,6 +36,7 @@ public abstract class DeviceService<T> : DbRepository<T>, IDeviceService<T> wher
 {
     protected readonly IFileService _fileService;
     protected readonly IServiceScope _serviceScope;
+
     /// <inheritdoc cref="ICollectDeviceService"/>
     public DeviceService(
     IServiceScopeFactory serviceScopeFactory,
@@ -55,7 +58,6 @@ public abstract class DeviceService<T> : DbRepository<T>, IDeviceService<T> wher
         RemoveCache();
     }
 
-
     /// <inheritdoc/>
     [OperDesc("复制设备")]
     public async Task CopyDevAsync(IEnumerable<T> input)
@@ -70,9 +72,9 @@ public abstract class DeviceService<T> : DbRepository<T>, IDeviceService<T> wher
 
         var result = await InsertRangeAsync(newDevs);//添加数据
         RemoveCache();
-
     }
-    static string GetUniqueName(string name, List<string> existingNames)
+
+    private static string GetUniqueName(string name, List<string> existingNames)
     {
         if (existingNames.Contains(name))
         {
@@ -91,6 +93,7 @@ public abstract class DeviceService<T> : DbRepository<T>, IDeviceService<T> wher
             return name;  // 如果名称不重复，直接返回原名称
         }
     }
+
     /// <inheritdoc/>
     [OperDesc("删除设备")]
     public async Task DeleteAsync(params long[] input)
@@ -138,8 +141,6 @@ public abstract class DeviceService<T> : DbRepository<T>, IDeviceService<T> wher
         return collectDevice;
     }
 
-
-
     /// <inheritdoc/>
     public T GetDeviceById(long Id)
     {
@@ -181,6 +182,7 @@ public abstract class DeviceService<T> : DbRepository<T>, IDeviceService<T> wher
     {
         _serviceScope.ServiceProvider.GetService<MemoryCache>().Remove(ThingsGatewayCacheConst.Cache_CollectDevice);//cache删除
     }
+
     /// <inheritdoc/>
     private ISugarQueryable<T> GetPage(DevicePageInput input)
     {
@@ -196,7 +198,9 @@ public abstract class DeviceService<T> : DbRepository<T>, IDeviceService<T> wher
 
         return query;
     }
+
     #region 导入导出
+
     /// <inheritdoc/>
     public async Task<MemoryStream> ExportFileAsync(DeviceInput input)
     {
@@ -204,7 +208,9 @@ public abstract class DeviceService<T> : DbRepository<T>, IDeviceService<T> wher
         var data = await query.ToListAsync();
         return await ExportFileAsync(data);
     }
+
     protected abstract string DeviceSheetName { get; }
+
     /// <inheritdoc/>
     [OperDesc("导出采集设备表", IsRecordPar = false)]
     public async Task<MemoryStream> ExportFileAsync(List<T> devDatas = null)
@@ -221,6 +227,7 @@ public abstract class DeviceService<T> : DbRepository<T>, IDeviceService<T> wher
         foreach (var devData in devDatas)
         {
             #region 设备sheet
+
             //设备页
             var data = devData.GetType().GetProperties().Where(a => a.GetCustomAttribute<IgnoreExcelAttribute>() == null);
             Dictionary<string, object> devExport = new();
@@ -244,6 +251,7 @@ public abstract class DeviceService<T> : DbRepository<T>, IDeviceService<T> wher
             #endregion
 
             #region 插件sheet
+
             //插件属性
             //单个设备的行数据
             Dictionary<string, object> driverInfo = new();
@@ -277,7 +285,6 @@ public abstract class DeviceService<T> : DbRepository<T>, IDeviceService<T> wher
         //添加设备页
         sheets.Add(DeviceSheetName, devExports);
 
-
         //添加插件属性页
         foreach (var item in devicePropertys)
         {
@@ -300,7 +307,6 @@ public abstract class DeviceService<T> : DbRepository<T>, IDeviceService<T> wher
                     }
                 }
             }
-
 
             sheets.Add(item.Key, item.Value);
         }
@@ -328,7 +334,6 @@ public abstract class DeviceService<T> : DbRepository<T>, IDeviceService<T> wher
         }
         await Context.Storageable(collectDevices).ExecuteCommandAsync();
         RemoveCache();
-
     }
 
     /// <inheritdoc/>
@@ -340,7 +345,6 @@ public abstract class DeviceService<T> : DbRepository<T>, IDeviceService<T> wher
         await fs.CopyToAsync(stream);
         return await PreviewAsync(stream);
     }
-
 
     /// <inheritdoc/>
     public async Task<Dictionary<string, ImportPreviewOutputBase>> PreviewAsync(MemoryStream stream)
@@ -359,7 +363,9 @@ public abstract class DeviceService<T> : DbRepository<T>, IDeviceService<T> wher
         {
             //单页数据
             var rows = stream.Query(useHeaderRow: true, sheetName: sheetName).Cast<IDictionary<string, object>>();
+
             #region 采集设备sheet
+
             if (sheetName == DeviceSheetName)
             {
                 int row = 1;
@@ -373,7 +379,9 @@ public abstract class DeviceService<T> : DbRepository<T>, IDeviceService<T> wher
                     try
                     {
                         var device = ((ExpandoObject)item).ConvertToEntity<T>(true);
+
                         #region 特殊转化名称
+
                         ////转化插件名称
                         //var hasPlugin = item.TryGetValue(ExportHelpers.PluginName, out var pluginObj);
 
@@ -388,6 +396,7 @@ public abstract class DeviceService<T> : DbRepository<T>, IDeviceService<T> wher
                         var hasRedundant = item.TryGetValue(ExportHelpers.RedundantDeviceName, out var redundantObj);
 
                         #endregion
+
                         //设备ID、冗余设备ID都需要手动补录
                         if (hasRedundant && redundantObj != null && deviceDicts.TryGetValue(redundantObj.ToString(), out var rendundantDevice))
                         {
@@ -401,16 +410,16 @@ public abstract class DeviceService<T> : DbRepository<T>, IDeviceService<T> wher
                     }
                     catch (Exception ex)
                     {
-
                         importPreviewOutput.HasError = true;
                         importPreviewOutput.Results.Add((row++, false, ex.Message));
                         return;
                     }
                 });
                 importPreviewOutput.Data = devices.ToDictionary(a => a.Name);
-
             }
+
             #endregion
+
             else
             {
                 int row = 1;
@@ -433,7 +442,6 @@ public abstract class DeviceService<T> : DbRepository<T>, IDeviceService<T> wher
                 {
                     try
                     {
-
                         List<DependencyProperty> devices = new();
                         foreach (var keyValuePair in item)
                         {
@@ -446,7 +454,6 @@ public abstract class DeviceService<T> : DbRepository<T>, IDeviceService<T> wher
                                     Value = keyValuePair.Value?.ToString()
                                 });
                             }
-
                         }
                         //转化插件名称
 
@@ -463,12 +470,11 @@ public abstract class DeviceService<T> : DbRepository<T>, IDeviceService<T> wher
                         return;
                     }
                 });
-
             }
         }
 
-
         return await Task.FromResult(ImportPreviews);
     }
+
     #endregion
 }

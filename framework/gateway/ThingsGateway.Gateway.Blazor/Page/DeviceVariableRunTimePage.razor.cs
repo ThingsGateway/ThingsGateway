@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using BlazorComponent;
@@ -25,6 +27,7 @@ using SqlSugar;
 using ThingsGateway.Admin.Core;
 
 namespace ThingsGateway.Gateway.Blazor;
+
 /// <summary>
 /// 实时数据页
 /// </summary>
@@ -34,6 +37,7 @@ public partial class DeviceVariableRunTimePage
     private IAppDataTable _datatable;
     private List<DeviceTree> _deviceGroups = new();
     private EventCallback<string> _onWrite;
+
     //private string _searchName;
     /// <summary>
     /// 设备名称
@@ -41,20 +45,24 @@ public partial class DeviceVariableRunTimePage
     [Parameter]
     [SupplyParameterFromQuery]
     public string DeviceName { get; set; }
+
     /// <summary>
     /// 上传设备名称
     /// </summary>
     [Parameter]
     [SupplyParameterFromQuery]
     public string UploadDeviceName { get; set; }
+
     private CollectDeviceWorker _collectDeviceWorker { get; set; }
 
     [Inject]
     private GlobalDeviceData _globalDeviceData { get; set; }
 
     [Inject]
-    RpcSingletonService _rpcSingletonService { get; set; }
+    private RpcSingletonService _rpcSingletonService { get; set; }
+
     private VariablePageInput _search { get; set; } = new();
+
     /// <summary>
     /// <inheritdoc/>
     /// </summary>
@@ -63,12 +71,14 @@ public partial class DeviceVariableRunTimePage
         _periodicTimer?.Dispose();
         base.Dispose();
     }
+
     /// <inheritdoc/>
     protected override void OnInitialized()
     {
         _ = RunTimerAsync();
         base.OnInitialized();
     }
+
     /// <summary>
     /// <inheritdoc/>
     /// </summary>
@@ -101,6 +111,7 @@ public partial class DeviceVariableRunTimePage
     {
         datas.RemoveWhere(it => it.Value == nameof(DeviceVariableRunTime.DeviceId));
     }
+
     private void Filters(List<Filters> datas)
     {
         foreach (var item in datas)
@@ -115,14 +126,12 @@ public partial class DeviceVariableRunTimePage
         }
     }
 
-
     private async Task OnWriteValueAsync(DeviceVariableRunTime tag, string value)
     {
         var data = await _rpcSingletonService?.InvokeDeviceMethodAsync($"BLAZOR-{UserResoures.CurrentUser.Account}-{App.HttpContext.Connection.RemoteIpAddress.MapToIPv4()}",
 
             new Dictionary<string, string>()
             {
-
                 { tag.Name, value}
             }
 
@@ -134,7 +143,6 @@ public partial class DeviceVariableRunTimePage
         else
         {
             await PopupService.EnqueueSnackbarAsync(data.ToJsonString(true), AlertTypes.Info);
-
         }
     }
 
@@ -162,9 +170,9 @@ public partial class DeviceVariableRunTimePage
             catch
             {
             }
-
         }
     }
+
     private async Task WriteAsync(DeviceVariableRunTime collectVariableRunTime)
     {
         // 将异步方法添加到事件回调上
@@ -173,6 +181,5 @@ public partial class DeviceVariableRunTimePage
         {
             { nameof(WriteValue.OnSaveAsync), _onWrite }
         });
-
     }
 }

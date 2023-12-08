@@ -1,4 +1,5 @@
 #region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 //------------------------------------------------------------------------------
@@ -66,8 +68,6 @@ namespace ThingsGateway.Foundation.Dmtp
         /// <inheritdoc/>
         public bool CanSend => this.m_client.State == WebSocketState.Open;
 
-
-
         /// <summary>
         /// 断开连接
         /// </summary>
@@ -88,14 +88,11 @@ namespace ThingsGateway.Foundation.Dmtp
         /// <inheritdoc/>
         public DateTime LastSendTime => this.m_sendCounter.LastIncrement;
 
-
         /// <inheritdoc/>
         public Protocol Protocol { get; set; } = DmtpUtility.DmtpProtocol;
 
-
         /// <inheritdoc/>
         public IPHost RemoteIPHost { get; private set; }
-
 
         /// <summary>
         /// 发送<see cref="IDmtpActor"/>关闭消息。
@@ -182,7 +179,6 @@ namespace ThingsGateway.Foundation.Dmtp
             this.DmtpActor.ResetId(newId);
         }
 
-
         /// <inheritdoc/>
         protected override void Dispose(bool disposing)
         {
@@ -267,7 +263,6 @@ namespace ThingsGateway.Foundation.Dmtp
                 }
             }
         }
-
 
         private void OnReceivePeriod(long value)
         {
@@ -369,7 +364,6 @@ namespace ThingsGateway.Foundation.Dmtp
             {
                 this.m_semaphoreForSend.Release();
             }
-
         }
 
         #endregion 内部委托绑定

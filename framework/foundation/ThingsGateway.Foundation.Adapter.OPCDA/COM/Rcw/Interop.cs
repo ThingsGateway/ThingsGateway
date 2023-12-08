@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using System.Collections;
@@ -109,6 +111,7 @@ public class Interop
         }
         return browseElements;
     }
+
     internal static ItemProperty[] GetItemProperties(
       ref OPCITEMPROPERTIES input,
       bool deallocate)
@@ -188,6 +191,7 @@ public class Interop
         }
         return itemProperty;
     }
+
     internal static OPCITEMPROPERTY GetItemProperty(ItemProperty input)
     {
         OPCITEMPROPERTY itemProperty = new OPCITEMPROPERTY();
@@ -225,204 +229,302 @@ public class Interop
         {
             case -2147467262:
                 return new ResultID(ResultID.E_NOTSUPPORTED, (long)input);
+
             case -2147467259:
                 return new ResultID(ResultID.E_FAIL, (long)input);
+
             case -2147352571:
                 return new ResultID(ResultID.Da.E_BADTYPE, (long)input);
+
             case -2147352566:
                 return new ResultID(ResultID.Da.E_RANGE, (long)input);
+
             case -2147217401:
                 return new ResultID(ResultID.Hda.W_NOFILTER, (long)input);
+
             case -2147024882:
                 return new ResultID(ResultID.E_OUTOFMEMORY, (long)input);
+
             case -2147024809:
                 return new ResultID(ResultID.E_INVALIDARG, (long)input);
+
             case -1073479679:
                 return new ResultID(ResultID.Da.E_INVALIDHANDLE, (long)input);
+
             case -1073479676:
                 return new ResultID(ResultID.Da.E_BADTYPE, (long)input);
+
             case -1073479673:
                 return new ResultID(ResultID.Da.E_UNKNOWN_ITEM_NAME, (long)input);
+
             case -1073479672:
                 return new ResultID(ResultID.Da.E_INVALID_ITEM_NAME, (long)input);
+
             case -1073479671:
                 return new ResultID(ResultID.Da.E_INVALID_FILTER, (long)input);
+
             case -1073479670:
                 return new ResultID(ResultID.Da.E_UNKNOWN_ITEM_PATH, (long)input);
+
             case -1073479669:
                 return new ResultID(ResultID.Da.E_RANGE, (long)input);
+
             case -1073479165:
                 return new ResultID(ResultID.Da.E_INVALID_PID, (long)input);
+
             case -1073479164:
                 return new ResultID(ResultID.Ae.E_INVALIDTIME, (long)input);
+
             case -1073479163:
                 return new ResultID(ResultID.Ae.E_BUSY, (long)input);
+
             case -1073479162:
                 return new ResultID(ResultID.Ae.E_NOINFO, (long)input);
+
             case -1073478655:
                 return new ResultID(ResultID.Da.E_NO_ITEM_DEADBAND, (long)input);
+
             case -1073478654:
                 return new ResultID(ResultID.Da.E_NO_ITEM_BUFFERING, (long)input);
+
             case -1073478653:
                 return new ResultID(ResultID.Da.E_INVALIDCONTINUATIONPOINT, (long)input);
+
             case -1073478650:
                 return new ResultID(ResultID.Da.E_NO_WRITEQT, (long)input);
+
             case -1073478649:
                 return new ResultID(ResultID.Cpx.E_TYPE_CHANGED, (long)input);
+
             case -1073478648:
                 return new ResultID(ResultID.Cpx.E_FILTER_DUPLICATE, (long)input);
+
             case -1073478647:
                 return new ResultID(ResultID.Cpx.E_FILTER_INVALID, (long)input);
+
             case -1073478646:
                 return new ResultID(ResultID.Cpx.E_FILTER_ERROR, (long)input);
+
             case -1073477888:
                 return new ResultID(ResultID.Dx.E_PERSISTING, (long)input);
+
             case -1073477887:
                 return new ResultID(ResultID.Dx.E_NOITEMLIST, (long)input);
+
             case -1073477886:
                 return new ResultID(ResultID.Dx.E_VERSION_MISMATCH, (long)input);
+
             case -1073477885:
                 return new ResultID(ResultID.Dx.E_VERSION_MISMATCH, (long)input);
+
             case -1073477884:
                 return new ResultID(ResultID.Dx.E_UNKNOWN_ITEM_PATH, (long)input);
+
             case -1073477883:
                 return new ResultID(ResultID.Dx.E_UNKNOWN_ITEM_NAME, (long)input);
+
             case -1073477882:
                 return new ResultID(ResultID.Dx.E_INVALID_ITEM_PATH, (long)input);
+
             case -1073477881:
                 return new ResultID(ResultID.Dx.E_INVALID_ITEM_NAME, (long)input);
+
             case -1073477880:
                 return new ResultID(ResultID.Dx.E_INVALID_NAME, (long)input);
+
             case -1073477879:
                 return new ResultID(ResultID.Dx.E_DUPLICATE_NAME, (long)input);
+
             case -1073477878:
                 return new ResultID(ResultID.Dx.E_INVALID_BROWSE_PATH, (long)input);
+
             case -1073477877:
                 return new ResultID(ResultID.Dx.E_INVALID_SERVER_URL, (long)input);
+
             case -1073477876:
                 return new ResultID(ResultID.Dx.E_INVALID_SERVER_TYPE, (long)input);
+
             case -1073477875:
                 return new ResultID(ResultID.Dx.E_UNSUPPORTED_SERVER_TYPE, (long)input);
+
             case -1073477874:
                 return new ResultID(ResultID.Dx.E_CONNECTIONS_EXIST, (long)input);
+
             case -1073477873:
                 return new ResultID(ResultID.Dx.E_TOO_MANY_CONNECTIONS, (long)input);
+
             case -1073477872:
                 return new ResultID(ResultID.Dx.E_OVERRIDE_BADTYPE, (long)input);
+
             case -1073477871:
                 return new ResultID(ResultID.Dx.E_OVERRIDE_RANGE, (long)input);
+
             case -1073477870:
                 return new ResultID(ResultID.Dx.E_SUBSTITUTE_BADTYPE, (long)input);
+
             case -1073477869:
                 return new ResultID(ResultID.Dx.E_SUBSTITUTE_RANGE, (long)input);
+
             case -1073477868:
                 return new ResultID(ResultID.Dx.E_INVALID_TARGET_ITEM, (long)input);
+
             case -1073477867:
                 return new ResultID(ResultID.Dx.E_UNKNOWN_TARGET_ITEM, (long)input);
+
             case -1073477866:
                 return new ResultID(ResultID.Dx.E_TARGET_ALREADY_CONNECTED, (long)input);
+
             case -1073477865:
                 return new ResultID(ResultID.Dx.E_UNKNOWN_SERVER_NAME, (long)input);
+
             case -1073477864:
                 return new ResultID(ResultID.Dx.E_UNKNOWN_SOURCE_ITEM, (long)input);
+
             case -1073477863:
                 return new ResultID(ResultID.Dx.E_INVALID_SOURCE_ITEM, (long)input);
+
             case -1073477862:
                 return new ResultID(ResultID.Dx.E_INVALID_QUEUE_SIZE, (long)input);
+
             case -1073477861:
                 return new ResultID(ResultID.Dx.E_INVALID_DEADBAND, (long)input);
+
             case -1073477860:
                 return new ResultID(ResultID.Dx.E_INVALID_CONFIG_FILE, (long)input);
+
             case -1073477859:
                 return new ResultID(ResultID.Dx.E_PERSIST_FAILED, (long)input);
+
             case -1073477858:
                 return new ResultID(ResultID.Dx.E_TARGET_FAULT, (long)input);
+
             case -1073477857:
                 return new ResultID(ResultID.Dx.E_TARGET_NO_ACCESSS, (long)input);
+
             case -1073477856:
                 return new ResultID(ResultID.Dx.E_SOURCE_SERVER_FAULT, (long)input);
+
             case -1073477855:
                 return new ResultID(ResultID.Dx.E_SOURCE_SERVER_NO_ACCESSS, (long)input);
+
             case -1073477854:
                 return new ResultID(ResultID.Dx.E_SUBSCRIPTION_FAULT, (long)input);
+
             case -1073477853:
                 return new ResultID(ResultID.Dx.E_SOURCE_ITEM_BADRIGHTS, (long)input);
+
             case -1073477852:
                 return new ResultID(ResultID.Dx.E_SOURCE_ITEM_BAD_QUALITY, (long)input);
+
             case -1073477851:
                 return new ResultID(ResultID.Dx.E_SOURCE_ITEM_BADTYPE, (long)input);
+
             case -1073477850:
                 return new ResultID(ResultID.Dx.E_SOURCE_ITEM_RANGE, (long)input);
+
             case -1073477849:
                 return new ResultID(ResultID.Dx.E_SOURCE_SERVER_NOT_CONNECTED, (long)input);
+
             case -1073477848:
                 return new ResultID(ResultID.Dx.E_SOURCE_SERVER_TIMEOUT, (long)input);
+
             case -1073477847:
                 return new ResultID(ResultID.Dx.E_TARGET_ITEM_DISCONNECTED, (long)input);
+
             case -1073477846:
                 return new ResultID(ResultID.Dx.E_TARGET_NO_WRITES_ATTEMPTED, (long)input);
+
             case -1073477845:
                 return new ResultID(ResultID.Dx.E_TARGET_ITEM_BADTYPE, (long)input);
+
             case -1073477844:
                 return new ResultID(ResultID.Dx.E_TARGET_ITEM_RANGE, (long)input);
+
             case -1073475583:
                 return new ResultID(ResultID.Hda.E_MAXEXCEEDED, (long)input);
+
             case -1073475580:
                 return new ResultID(ResultID.Hda.E_INVALIDAGGREGATE, (long)input);
+
             case -1073475576:
                 return new ResultID(ResultID.Hda.E_UNKNOWNATTRID, (long)input);
+
             case -1073475575:
                 return new ResultID(ResultID.Hda.E_NOT_AVAIL, (long)input);
+
             case -1073475574:
                 return new ResultID(ResultID.Hda.E_INVALIDDATATYPE, (long)input);
+
             case -1073475573:
                 return new ResultID(ResultID.Hda.E_DATAEXISTS, (long)input);
+
             case -1073475572:
                 return new ResultID(ResultID.Hda.E_INVALIDATTRID, (long)input);
+
             case -1073475571:
                 return new ResultID(ResultID.Hda.E_NODATAEXISTS, (long)input);
+
             case 0:
                 return new ResultID(ResultID.S_OK, (long)input);
+
             case 262157:
                 return new ResultID(ResultID.Da.S_UNSUPPORTEDRATE, (long)input);
+
             case 262158:
                 return new ResultID(ResultID.Da.S_CLAMP, (long)input);
+
             case 262656:
                 return new ResultID(ResultID.Ae.S_ALREADYACKED, (long)input);
+
             case 262657:
                 return new ResultID(ResultID.Ae.S_INVALIDBUFFERTIME, (long)input);
+
             case 262658:
                 return new ResultID(ResultID.Ae.S_INVALIDMAXSIZE, (long)input);
+
             case 262659:
                 return new ResultID(ResultID.Ae.S_INVALIDKEEPALIVETIME, (long)input);
+
             case 263172:
                 return new ResultID(ResultID.Da.S_DATAQUEUEOVERFLOW, (long)input);
+
             case 263179:
                 return new ResultID(ResultID.Cpx.S_FILTER_NO_DATA, (long)input);
+
             case 264064:
                 return new ResultID(ResultID.Dx.S_TARGET_SUBSTITUTED, (long)input);
+
             case 264065:
                 return new ResultID(ResultID.Dx.S_TARGET_OVERRIDEN, (long)input);
+
             case 264066:
                 return new ResultID(ResultID.Dx.S_CLAMP, (long)input);
+
             case 1074008066:
                 return new ResultID(ResultID.Hda.S_NODATA, (long)input);
+
             case 1074008067:
                 return new ResultID(ResultID.Hda.S_MOREDATA, (long)input);
+
             case 1074008069:
                 return new ResultID(ResultID.Hda.S_CURRENTVALUE, (long)input);
+
             case 1074008070:
                 return new ResultID(ResultID.Hda.S_EXTRADATA, (long)input);
+
             case 1074008078:
                 return new ResultID(ResultID.Hda.S_INSERTED, (long)input);
+
             case 1074008079:
                 return new ResultID(ResultID.Hda.S_REPLACED, (long)input);
+
             default:
                 if ((input & 2147418112) == 65536)
                     return new ResultID(ResultID.E_NETWORK_ERROR, (long)input);
                 return input >= 0 ? new ResultID(ResultID.S_FALSE, (long)input) : new ResultID(ResultID.E_FAIL, (long)input);
         }
     }
+
     internal static int GetResultID(ResultID input)
     {
         if (input.Name != (XmlQualifiedName)null && input.Name.Namespace == "http://opcfoundation.org/DataAccess/")
@@ -686,74 +788,106 @@ public class Interop
             return VarEnum.VT_I2;
         return input == typeof(accessRights) || input == typeof(euType) ? VarEnum.VT_I4 : VarEnum.VT_EMPTY;
     }
+
     internal static System.Type GetType(VarEnum input)
     {
         switch (input)
         {
             case VarEnum.VT_EMPTY:
                 return (System.Type)null;
+
             case VarEnum.VT_I2:
                 return typeof(short);
+
             case VarEnum.VT_I4:
                 return typeof(int);
+
             case VarEnum.VT_R4:
                 return typeof(float);
+
             case VarEnum.VT_R8:
                 return typeof(double);
+
             case VarEnum.VT_CY:
                 return typeof(Decimal);
+
             case VarEnum.VT_DATE:
                 return typeof(DateTime);
+
             case VarEnum.VT_BSTR:
                 return typeof(string);
+
             case VarEnum.VT_BOOL:
                 return typeof(bool);
+
             case VarEnum.VT_I1:
                 return typeof(sbyte);
+
             case VarEnum.VT_UI1:
                 return typeof(byte);
+
             case VarEnum.VT_UI2:
                 return typeof(ushort);
+
             case VarEnum.VT_UI4:
                 return typeof(uint);
+
             case VarEnum.VT_I8:
                 return typeof(long);
+
             case VarEnum.VT_UI8:
                 return typeof(ulong);
+
             case VarEnum.VT_I2 | VarEnum.VT_ARRAY:
                 return typeof(short[]);
+
             case VarEnum.VT_I4 | VarEnum.VT_ARRAY:
                 return typeof(int[]);
+
             case VarEnum.VT_R4 | VarEnum.VT_ARRAY:
                 return typeof(float[]);
+
             case VarEnum.VT_R8 | VarEnum.VT_ARRAY:
                 return typeof(double[]);
+
             case VarEnum.VT_CY | VarEnum.VT_ARRAY:
                 return typeof(Decimal[]);
+
             case VarEnum.VT_DATE | VarEnum.VT_ARRAY:
                 return typeof(DateTime[]);
+
             case VarEnum.VT_BSTR | VarEnum.VT_ARRAY:
                 return typeof(string[]);
+
             case VarEnum.VT_BOOL | VarEnum.VT_ARRAY:
                 return typeof(bool[]);
+
             case VarEnum.VT_VARIANT | VarEnum.VT_ARRAY:
                 return typeof(object[]);
+
             case VarEnum.VT_I1 | VarEnum.VT_ARRAY:
                 return typeof(sbyte[]);
+
             case VarEnum.VT_UI1 | VarEnum.VT_ARRAY:
                 return typeof(byte[]);
+
             case VarEnum.VT_UI2 | VarEnum.VT_ARRAY:
                 return typeof(ushort[]);
+
             case VarEnum.VT_UI4 | VarEnum.VT_ARRAY:
                 return typeof(uint[]);
+
             case VarEnum.VT_I8 | VarEnum.VT_ARRAY:
                 return typeof(long[]);
+
             case VarEnum.VT_UI8 | VarEnum.VT_ARRAY:
                 return typeof(ulong[]);
+
             default:
                 return Type.ILLEGAL_TYPE;
         }
     }
+
     internal static object MarshalPropertyValue(PropertyID propertyID, object input)
     {
         if (input == null)
@@ -768,10 +902,13 @@ public class Interop
                 {
                     case accessRights.readable:
                         return (object)1;
+
                     case accessRights.writable:
                         return (object)2;
+
                     case accessRights.readWritable:
                         return (object)3;
+
                     default:
                         return (object)null;
                 }
@@ -782,10 +919,13 @@ public class Interop
                 {
                     case euType.noEnum:
                         return (object)OPCEUTYPE.OPC_NOENUM;
+
                     case euType.analog:
                         return (object)OPCEUTYPE.OPC_ANALOG;
+
                     case euType.enumerated:
                         return (object)OPCEUTYPE.OPC_ENUMERATED;
+
                     default:
                         return (object)null;
                 }
@@ -824,10 +964,13 @@ public class Interop
                 {
                     case 1:
                         return (object)accessRights.readable;
+
                     case 2:
                         return (object)accessRights.writable;
+
                     case 3:
                         return (object)accessRights.readWritable;
+
                     default:
                         return (object)null;
                 }
@@ -838,10 +981,13 @@ public class Interop
                 {
                     case OPCEUTYPE.OPC_NOENUM:
                         return (object)euType.noEnum;
+
                     case OPCEUTYPE.OPC_ANALOG:
                         return (object)euType.analog;
+
                     case OPCEUTYPE.OPC_ENUMERATED:
                         return (object)euType.enumerated;
+
                     default:
                         return (object)null;
                 }

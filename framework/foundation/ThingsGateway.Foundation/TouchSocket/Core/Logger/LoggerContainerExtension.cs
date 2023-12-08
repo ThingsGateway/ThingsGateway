@@ -1,4 +1,5 @@
 #region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,7 +9,9 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
+
 //------------------------------------------------------------------------------
 //  此代码版权（除特别声明或在XREF结尾的命名空间的代码）归作者本人若汝棋茗所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议，若本仓库没有设置，则按MIT开源协议授权
@@ -75,6 +78,7 @@ namespace ThingsGateway.Foundation.Core
         #endregion GroupLogger
 
         #region Obsolete
+
         /// <summary>
         /// 添加控制台日志到日志组。
         /// </summary>
@@ -121,6 +125,7 @@ namespace ThingsGateway.Foundation.Core
             AddLogger(container, new FileLogger(rootPath));
             return container;
         }
+
         #endregion
 
         /// <summary>

@@ -12,6 +12,7 @@
 #if NET6_0_OR_GREATER
 using System.Diagnostics.CodeAnalysis;
 #endif
+
 namespace ThingsGateway.Foundation.Core
 {
     /// <summary>

@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 namespace ThingsGateway.Components;
@@ -17,11 +19,11 @@ namespace ThingsGateway.Components;
 /// </summary>
 public class InitTimezone : IDisposable
 {
-    static readonly string _timezoneOffsetKey = "timezoneOffset";
-    readonly IJSRuntime _jsRuntime;
-    readonly CookieStorage _storage;
-    TimeSpan _timezoneOffset;
-    IJSObjectReference _helper;
+    private static readonly string _timezoneOffsetKey = "timezoneOffset";
+    private readonly IJSRuntime _jsRuntime;
+    private readonly CookieStorage _storage;
+    private TimeSpan _timezoneOffset;
+    private IJSObjectReference _helper;
 
     /// <summary>
     /// 当前的客户端时差
@@ -34,6 +36,7 @@ public class InitTimezone : IDisposable
             _timezoneOffset = value;
         }
     }
+
     /// <summary>
     /// 构造函数
     /// </summary>
@@ -46,6 +49,7 @@ public class InitTimezone : IDisposable
         _storage = storage;
         _timezoneOffset = defaultTimezoneOffsetAccessor.GetTimezoneOffsetResult();
     }
+
     /// <summary>
     /// 获取Web客户端时差
     /// </summary>

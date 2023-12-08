@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using Confluent.Kafka;
@@ -41,7 +43,6 @@ public partial class KafkaProducer : UpLoadBaseWithCacheT<DeviceData, VariableDa
 
     protected override UploadPropertyWithCacheT _uploadPropertyWithCache => _driverPropertys;
 
-
     /// <summary>
     /// <inheritdoc/>
     /// </summary>
@@ -53,6 +54,7 @@ public partial class KafkaProducer : UpLoadBaseWithCacheT<DeviceData, VariableDa
     {
         return $" {nameof(KafkaProducer)} {_driverPropertys.BootStrapServers} ";
     }
+
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
@@ -61,14 +63,14 @@ public partial class KafkaProducer : UpLoadBaseWithCacheT<DeviceData, VariableDa
         _collectVariableRunTimes.Clear();
         base.Dispose(disposing);
     }
+
     private volatile bool producerSuccess = true;
+
     protected override void Init(ISenderClient client = null)
     {
         base.Init(client);
 
-
         #region Kafka 生产者
-
 
         //1、生产者配置
         producerconfig = new ProducerConfig
@@ -76,7 +78,6 @@ public partial class KafkaProducer : UpLoadBaseWithCacheT<DeviceData, VariableDa
             BootstrapServers = _driverPropertys.BootStrapServers,
             SecurityProtocol = _driverPropertys.SecurityProtocol,
             SaslMechanism = _driverPropertys.SaslMechanism,
-
         };
         if (!string.IsNullOrEmpty(_driverPropertys.SaslUsername))
             producerconfig.SaslUsername = _driverPropertys.SaslUsername;
@@ -95,9 +96,7 @@ public partial class KafkaProducer : UpLoadBaseWithCacheT<DeviceData, VariableDa
         //kafka
         try
         {
-
             producer = producerBuilder.Build();
-
         }
         catch (DllNotFoundException)
         {
@@ -117,7 +116,6 @@ public partial class KafkaProducer : UpLoadBaseWithCacheT<DeviceData, VariableDa
                 }
                 else
                 {
-
                     osStr = "osx-";
                     fileEx = ".dylib";
                 }
@@ -135,10 +133,9 @@ public partial class KafkaProducer : UpLoadBaseWithCacheT<DeviceData, VariableDa
             }
             producer = producerBuilder.Build();
         }
+
         #endregion
-
     }
-
 
     protected override async Task ProtectedExecuteAsync(CancellationToken cancellationToken)
     {
@@ -178,10 +175,8 @@ public partial class KafkaProducer : UpLoadBaseWithCacheT<DeviceData, VariableDa
                     {
                         LogMessage?.LogWarning(ex);
                     }
-
                 }
             }
-
         }
         catch (Exception ex)
         {
@@ -222,10 +217,8 @@ public partial class KafkaProducer : UpLoadBaseWithCacheT<DeviceData, VariableDa
                     {
                         LogMessage?.LogWarning(ex);
                     }
-
                 }
             }
-
         }
         catch (Exception ex)
         {
@@ -260,14 +253,12 @@ public partial class KafkaProducer : UpLoadBaseWithCacheT<DeviceData, VariableDa
                         {
                             break;
                         }
-
                     }
                     catch (Exception ex)
                     {
                         LogMessage?.LogWarning(ex);
                     }
                 }
-
             }
         }
         catch (Exception ex)
@@ -277,7 +268,6 @@ public partial class KafkaProducer : UpLoadBaseWithCacheT<DeviceData, VariableDa
 
         try
         {
-
             var devList = CacheDb.Cache.Find(a => a.Type == devType, 0, 100).ToList();
             {
                 foreach (var item in devList)
@@ -307,9 +297,6 @@ public partial class KafkaProducer : UpLoadBaseWithCacheT<DeviceData, VariableDa
                     }
                 }
             }
-
-
-
         }
         catch (Exception ex)
         {

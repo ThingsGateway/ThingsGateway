@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using Masa.Blazor;
@@ -25,6 +27,7 @@ public partial class Config
     private IAppDataTable _datatable;
     private List<SysConfig> _sysConfig = new();
     private StringNumber _tabNumber;
+
     [CascadingParameter]
     private MainLayout _mainLayout { get; set; }
 
@@ -37,6 +40,7 @@ public partial class Config
         _sysConfig = await _serviceScope.ServiceProvider.GetService<IConfigService>().GetListByCategoryAsync(ConfigConst.SYS_CONFIGBASEDEFAULT);
         await base.OnParametersSetAsync();
     }
+
     private async Task AddCallAsync(ConfigAddInput input)
     {
         await _serviceScope.ServiceProvider.GetService<IConfigService>().AddAsync(input);
@@ -46,6 +50,7 @@ public partial class Config
     {
         await _serviceScope.ServiceProvider.GetService<IConfigService>().DeleteAsync(sysConfigs.Select(a => a.Id).ToArray());
     }
+
     private async Task EditCallAsync(ConfigEditInput sysConfigs)
     {
         await _serviceScope.ServiceProvider.GetService<IConfigService>().EditAsync(sysConfigs);
@@ -57,6 +62,7 @@ public partial class Config
         await _mainLayout.StateHasChangedAsync();
         await PopupService.EnqueueSnackbarAsync("成功", AlertTypes.Success);
     }
+
     private async Task<ISqlSugarPagedList<SysConfig>> QueryCallAsync(ConfigPageInput input)
     {
         return await _serviceScope.ServiceProvider.GetService<IConfigService>().PageAsync(input);

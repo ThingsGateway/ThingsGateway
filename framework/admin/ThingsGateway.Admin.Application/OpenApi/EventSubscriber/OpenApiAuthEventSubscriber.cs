@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using Furion.DependencyInjection;
@@ -31,6 +33,7 @@ public class OpenApiAuthEventSubscriber : IEventSubscriber, ISingleton
         LoginOpenApiEvent loginEvent = (LoginOpenApiEvent)context.Source.Payload;//获取参数
         OpenApiUser openApiUser = loginEvent.OpenApiUser;
         var db = DbContext.Db.CopyNew();
+
         #region 重新赋值属性,设置本次登录信息为最新的信息
 
         db.Tracking(openApiUser);//创建跟踪,只更新修改字段

@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,9 +9,11 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using System.IO.Ports;
+
 namespace ThingsGateway.Gateway.Core;
 
 /// <summary>
@@ -20,7 +23,6 @@ namespace ThingsGateway.Gateway.Core;
 /// </summary>
 public abstract class VariablePropertyBase
 {
-
 }
 
 /// <summary>
@@ -33,17 +35,18 @@ public abstract class VariablePropertyBase
 /// </summary>
 public abstract class DriverPropertyBase
 {
-
     /// <summary>
     /// 离线后恢复运行的间隔时间 /s，默认300s
     /// </summary>
     [DeviceProperty("离线恢复间隔", "离线后恢复运行的间隔时间s，默认300s，最大3600s")]
     public virtual int ReIntervalTime { get; set; } = 300;
+
     /// <summary>
     /// 失败重试次数，默认3
     /// </summary>
     [DeviceProperty("失败重试次数", "失败重试次数，默认3")]
     public virtual int RetryCount { get; set; } = 3;
+
     #region 共享通道配置
 
     /// <summary>
@@ -64,6 +67,7 @@ public abstract class DriverPropertyBase
     /// IP地址
     /// </summary>
     public virtual string IP { get; set; } = "127.0.0.1";
+
     /// <summary>
     /// 端口
     /// </summary>
@@ -72,6 +76,7 @@ public abstract class DriverPropertyBase
     #endregion
 
     #region Serial
+
     /// <summary>
     /// 波特率
     /// </summary>
@@ -91,15 +96,14 @@ public abstract class DriverPropertyBase
     /// COM名称
     /// </summary>
     public virtual string PortName { get; set; } = "COM1";
+
     /// <summary>
     /// 停止位
     /// </summary>
     public virtual StopBits StopBits { get; set; } = StopBits.One;
 
     #endregion
-
 }
-
 
 /// <summary>
 /// 插件配置项
@@ -111,9 +115,7 @@ public abstract class DriverPropertyBase
 /// </summary>
 public abstract class UpDriverPropertyBase : DriverPropertyBase
 {
-
     public override int ReIntervalTime { get; set; } = 300;
 
     public override int RetryCount { get; set; } = 3;
-
 }

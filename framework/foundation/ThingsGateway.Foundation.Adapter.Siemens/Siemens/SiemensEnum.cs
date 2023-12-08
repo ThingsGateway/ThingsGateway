@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,9 +9,11 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 namespace ThingsGateway.Foundation.Adapter.Siemens;
+
 /// <summary>
 /// <inheritdoc/>
 /// </summary>
@@ -18,17 +21,19 @@ public enum SiemensEnum
 {
     /// <inheritdoc/>
     S200,
+
     /// <inheritdoc/>
     S200Smart,
 
     /// <inheritdoc/>
     S300,
+
     /// <inheritdoc/>
     S400,
 
     /// <inheritdoc/>
     S1200,
+
     /// <inheritdoc/>
     S1500,
-
 }

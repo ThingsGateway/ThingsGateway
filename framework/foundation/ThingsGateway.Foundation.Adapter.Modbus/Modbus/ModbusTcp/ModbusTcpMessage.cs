@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,9 +9,11 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 namespace ThingsGateway.Foundation.Adapter.Modbus;
+
 /// <summary>
 /// <inheritdoc/>
 /// </summary>
@@ -18,10 +21,12 @@ internal class ModbusTcpMessage : MessageBase, IMessage
 {
     /// <inheritdoc/>
     public override int HeadBytesLength => 6;
+
     /// <summary>
     /// 检测事务标识符
     /// </summary>
     public bool IsCheckMessageId { get; set; } = false;
+
     /// <inheritdoc/>
     public override bool CheckHeadBytes(byte[] heads)
     {
@@ -37,6 +42,4 @@ internal class ModbusTcpMessage : MessageBase, IMessage
         else
             return SendBytes[0] == HeadBytes[0] && SendBytes[1] == HeadBytes[1] && HeadBytes[2] == 0 && HeadBytes[3] == 0;
     }
-
-
 }

@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using ThingsGateway.Foundation.Extension.Generic;
@@ -18,15 +20,12 @@ public partial class SiemensS7PLC : ReadWriteDevicesTcpClientBase
 {
     private static byte[] GetWriteBitCommand(string address, bool data)
     {
-
         var result = SiemensAddress.ParseFrom(address);
         return SiemensHelper.GetWriteBitCommand(result, data);
     }
 
-
     private List<byte[]> GetReadByteCommand(string address, int length)
     {
-
         var from = SiemensAddress.ParseFrom(address, length);
         ushort num1 = 0;
         var listBytes = new List<byte[]>();
@@ -69,16 +68,16 @@ public partial class SiemensS7PLC : ReadWriteDevicesTcpClientBase
 
     private List<byte[]> GetWriteByteCommand(string address, byte[] value)
     {
-
         var s_Address = SiemensAddress.ParseFrom(address);
 
         return GetWriteByteCommand(s_Address, value);
-
     }
+
     /// <summary>
     /// DefaultConverter
     /// </summary>
     public static ThingsGatewayBitConverter DefaultConverter = new(BitConverter.IsLittleEndian ? EndianType.Little : EndianType.Big);
+
     private List<byte[]> GetWriteByteCommand(SiemensAddress address, byte[] value)
     {
         int length1 = value.Length;
@@ -96,5 +95,4 @@ public partial class SiemensS7PLC : ReadWriteDevicesTcpClientBase
         }
         return bytes;
     }
-
 }

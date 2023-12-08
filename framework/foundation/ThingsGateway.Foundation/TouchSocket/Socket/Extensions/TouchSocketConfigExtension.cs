@@ -1,4 +1,5 @@
 #region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 //------------------------------------------------------------------------------
@@ -31,6 +33,7 @@ namespace ThingsGateway.Foundation.Sockets
     public static class TouchSocketConfigExtension
     {
         #region 数据
+
         /// <summary>
         /// 发送超时设定，默认为0。
         /// 所需类型<see cref="int"/>
@@ -49,7 +52,6 @@ namespace ThingsGateway.Foundation.Sockets
         /// 所需类型<see cref="Func{TResult}"/>
         /// </summary>
         public static readonly DependencyProperty<Func<UdpDataHandlingAdapter>> UdpDataHandlingAdapterProperty = DependencyProperty<Func<UdpDataHandlingAdapter>>.Register("UdpDataHandlingAdapter", () => { return new NormalUdpDataHandlingAdapter(); });
-
 
         /// <summary>
         /// 最小缓存池尺寸
@@ -452,6 +454,7 @@ namespace ThingsGateway.Foundation.Sockets
         {
             return SetBindIPHost(config, 0);
         }
+
         #endregion UDP
 
         #region 创建

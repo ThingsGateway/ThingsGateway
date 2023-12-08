@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using Newtonsoft.Json;
@@ -16,11 +18,11 @@ using Newtonsoft.Json.Linq;
 using Opc.Ua;
 
 using System.Collections;
-using System.IO;
 using System.Text;
 using System.Xml;
 
 namespace ThingsGateway.Foundation.Adapter.OPCUA;
+
 /// <summary>
 /// 扩展方法
 /// </summary>
@@ -40,12 +42,10 @@ public static class JsonUtils
         JToken json
     )
     {
-
         var data = DecoderObject(Context, dataTypeId, builtInType, valueRank, json);
         var dataValue = new DataValue(new Variant(data));
         return dataValue;
     }
-
 
     /// <summary>
     /// 解析获取object
@@ -72,6 +72,7 @@ public static class JsonUtils
                     }
                 }.ToJsonString();
                 break;
+
             case BuiltInType.Variant:
                 var type = TypeInfo.GetDataTypeId(GetSystemType(json.Type));
                 newData = new
@@ -81,9 +82,9 @@ public static class JsonUtils
                         Type = type.Identifier,
                         Body = json
                     }
-
                 }.ToJsonString();
                 break;
+
             default:
                 newData = new
                 {
@@ -96,8 +97,6 @@ public static class JsonUtils
         var data = DecodeRawData(decoder, builtInType, valueRank, "Value");
         return data;
     }
-
-
 
     /// <summary>
     /// DecodeRawData
@@ -152,10 +151,10 @@ public static class JsonUtils
         return null;
     }
 
-
     #endregion
 
     #region Encode
+
     /// <summary>
     /// OPCUAValue解析为Jtoken
     /// </summary>
@@ -193,7 +192,6 @@ public static class JsonUtils
         bool includeDefaultNumbers = true
         )
     {
-
         return new OPCUAJsonEncoder(context, useReversibleEncoding, topLevelIsArray, stream)
         {
             IncludeDefaultValues = includeDefaultValues,
@@ -308,7 +306,6 @@ public static class JsonUtils
                         return;
                     }
 
-
                 case BuiltInType.Guid: { encoder.WriteGuid(fieldName, (Uuid)value); return; }
                 case BuiltInType.ByteString: { encoder.WriteByteString(fieldName, (byte[])value); return; }
                 case BuiltInType.XmlElement: { encoder.WriteXmlElement(fieldName, (XmlElement)value); return; }
@@ -358,6 +355,7 @@ public static class JsonUtils
             encoder.WriteArray(fieldName, c, c.Rank, builtInType);
         }
     }
+
     #endregion
 
     #region json
@@ -382,6 +380,7 @@ public static class JsonUtils
         }
         return numDimensions;
     }
+
     private static bool ElementsHasSameType(this JToken[] jTokens)
     {
         var checkType = jTokens[0].Type == JTokenType.Integer ? JTokenType.Float : jTokens[0].Type;
@@ -396,6 +395,7 @@ public static class JsonUtils
             throw new Exception("The array sent must have the same type of element in each dimension");
         return jTokens.First().Type;
     }
+
     private static Type GetSystemType(JTokenType jsonType)
     {
         return jsonType switch
@@ -425,6 +425,7 @@ public static class JsonUtils
     #endregion
 
     #region Json序列化和反序列化
+
     /// <summary>
     /// 从字符串到json
     /// </summary>
@@ -529,6 +530,6 @@ public static class JsonUtils
         else
             return Newtonsoft.Json.JsonConvert.SerializeObject(item);
     }
-    #endregion Json序列化和反序列化
 
+    #endregion Json序列化和反序列化
 }

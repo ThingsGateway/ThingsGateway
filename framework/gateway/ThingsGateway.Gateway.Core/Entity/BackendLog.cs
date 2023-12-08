@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
@@ -27,24 +29,28 @@ public class BackendLog : PrimaryIdEntity
     [SugarColumn(ColumnDescription = "日志时间", IsNullable = false)]
     [DataTable(Order = 1, IsShow = true, Sortable = true)]
     public DateTime LogTime { get; set; }
+
     /// <summary>
     /// 日志级别
     /// </summary>
     [SugarColumn(ColumnDataType = "varchar(50)", ColumnDescription = "日志级别", SqlParameterDbType = typeof(SqlSugar.DbConvert.EnumToStringConvert), IsNullable = false)]
     [DataTable(Order = 2, IsShow = true, Sortable = true)]
     public LogLevel LogLevel { get; set; }
+
     /// <summary>
     /// 日志来源
     ///</summary>
     [SugarColumn(ColumnDescription = "日志来源", IsNullable = false)]
     [DataTable(Order = 3, IsShow = true, Sortable = true, CellClass = " table-text-truncate ")]
     public string LogSource { get; set; }
+
     /// <summary>
     /// 具体消息
     ///</summary>
     [SugarColumn(ColumnDescription = "具体消息", ColumnDataType = StaticConfig.CodeFirst_BigString, IsNullable = true)]
     [DataTable(Order = 4, IsShow = true, Sortable = true, CellClass = " table-text-truncate ")]
     public string LogMessage { get; set; }
+
     /// <summary>
     /// 异常对象
     /// </summary>

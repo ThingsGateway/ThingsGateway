@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using System.Text;
@@ -15,6 +17,7 @@ using System.Text;
 using ThingsGateway.Foundation.Extension.Generic;
 
 namespace ThingsGateway.Foundation.Adapter.DLT645;
+
 /// <summary>
 /// 解析参数
 /// </summary>
@@ -24,19 +27,20 @@ internal class DataInfo
     /// 解析长度
     /// </summary>
     public int ByteLength { get; set; }
+
     /// <summary>
     /// 小数位
     /// </summary>
     public int Digtal { get; set; }
+
     /// <summary>
     /// 有符号解析
     /// </summary>
     public bool IsSigned { get; set; }
 }
+
 internal static class DLT645Helper
 {
-
-
     internal static string Get2007ErrorMessage(byte buffer)
     {
         string error = buffer switch
@@ -76,6 +80,7 @@ internal static class DLT645Helper
                             new(){ ByteLength=4,Digtal=2,IsSigned=true},
                         });
                         break;
+
                     default:
                         //正向有功总电能
                         //反向有功总电能
@@ -99,6 +104,7 @@ internal static class DLT645Helper
                             new(){ ByteLength=5,Digtal=0,IsSigned=false},
                         });
                         break;
+
                     default:
                         dataInfos.AddRange(new DataInfo[]
                         {
@@ -121,12 +127,14 @@ internal static class DLT645Helper
 });
 
                         break;
+
                     case 2://电流
                         dataInfos.AddRange(new DataInfo[]
 {
                            new(){ ByteLength=3,Digtal=3,IsSigned=true},
 });
                         break;
+
                     case < 6:
                         //瞬时总有功功率
                         //瞬时A相有功功率
@@ -149,12 +157,14 @@ internal static class DLT645Helper
 });
 
                         break;
+
                     case 6://功率因数
                         dataInfos.AddRange(new DataInfo[]
 {
                            new(){ ByteLength=2,Digtal=3,IsSigned=true},
 });
                         break;
+
                     case 7://相角
 
                         dataInfos.AddRange(new DataInfo[]
@@ -162,8 +172,8 @@ internal static class DLT645Helper
                            new(){ ByteLength=2,Digtal=1,IsSigned=false},
 });
 
-
                         break;
+
                     case < 0x80:
                         {
                             //A相电压波形失真度
@@ -216,18 +226,21 @@ internal static class DLT645Helper
                            new(){ ByteLength=3,Digtal=3,IsSigned=true},
 });
                                 break;
+
                             case 2://电网频率
                                 dataInfos.AddRange(new DataInfo[]
 {
                            new(){ ByteLength=2,Digtal=2,IsSigned=false},
 });
                                 break;
+
                             case 3://一分钟有功总平均功率
                                 dataInfos.AddRange(new DataInfo[]
 {
                            new(){ ByteLength=3,Digtal=4,IsSigned=false},
 });
                                 break;
+
                             case 4://当前有功需量
                             case 5://当前无功需量
                             case 6://当前视在需量
@@ -236,12 +249,14 @@ internal static class DLT645Helper
                            new(){ ByteLength=3,Digtal=4,IsSigned=true},
 });
                                 break;
+
                             case 7://表内温度
                                 dataInfos.AddRange(new DataInfo[]
 {
                            new(){ ByteLength=2,Digtal=1,IsSigned=false},
 });
                                 break;
+
                             case 8://时钟电池电压(内部)
                             case 9://停电抄表电池电压(外部)
                                 dataInfos.AddRange(new DataInfo[]
@@ -249,12 +264,14 @@ internal static class DLT645Helper
                            new(){ ByteLength=2,Digtal=2,IsSigned=false},
 });
                                 break;
+
                             case 10://内部电池工作时间
                                 dataInfos.AddRange(new DataInfo[]
 {
                            new(){ ByteLength=4,Digtal=0,IsSigned=false},
 });
                                 break;
+
                             case 11://当前阶梯电价
                                 dataInfos.AddRange(new DataInfo[]
 {
@@ -263,6 +280,7 @@ internal static class DLT645Helper
                                 break;
                         }
                         break;
+
                     default:
                         break;
                 }
@@ -326,10 +344,8 @@ internal static class DLT645Helper
                             new DataInfo() { ByteLength = 4, Digtal = 2},
                             new DataInfo() { ByteLength = 4, Digtal = 2},
                             new DataInfo() { ByteLength = 4, Digtal = 2},
-
 });
                             break;
-
                         }
 
                     case 5://全失压总次数，总累计时间
@@ -352,12 +368,9 @@ internal static class DLT645Helper
 });
 
                             break;
-
                         }
 
-
                         break;
-
 
                     case 6://辅助电源失电总次数，总累计时间
 
@@ -379,10 +392,10 @@ internal static class DLT645Helper
                            new(){ ByteLength=6,Digtal=0,IsSigned=false},
 });
                             break;
-
                         }
 
                         break;
+
                     case 7://电压逆相序总次数，总累计时间
                     case 8://电流逆相序总次数，总累计时间
                         if (buffer[1] == 0 && buffer[0] == 0)
@@ -410,11 +423,10 @@ internal static class DLT645Helper
                             });
                             }
                             break;
-
                         }
 
-
                         break;
+
                     case 9://电压不平衡总次数，总累计时间
                     case 0x0A://电流不平衡总次数，总累计时间
                         if (buffer[1] == 0 && buffer[0] == 0)
@@ -434,7 +446,6 @@ internal static class DLT645Helper
                                 new DataInfo(){ByteLength=6, Digtal=0},
                                 new DataInfo(){ByteLength=2, Digtal=2},
                                 new DataInfo(){ByteLength=2, Digtal=2},
-
                             });
                             for (int i = 0; i < 16; i++)
                             {
@@ -444,9 +455,7 @@ internal static class DLT645Helper
                             });
                             }
                             break;
-
                         }
-
 
                         break;
 
@@ -503,10 +512,8 @@ internal static class DLT645Helper
                                 new DataInfo(){ByteLength=3, Digtal=4},
                                 new DataInfo(){ByteLength=3, Digtal=4},
                                 new DataInfo(){ByteLength=2, Digtal=3},
-
                             });
                             break;
-
                         }
 
                     case 0x0E:
@@ -530,7 +537,6 @@ internal static class DLT645Helper
                             {
                                 new DataInfo(){ByteLength=6, Digtal=0},
                                 new DataInfo(){ByteLength=6, Digtal=0},
-
                             });
                             for (int i = 0; i < 16; i++)
                             {
@@ -540,7 +546,6 @@ internal static class DLT645Helper
                             });
                             }
                             break;
-
                         }
 
                     case 0x10:
@@ -555,10 +560,8 @@ internal static class DLT645Helper
                                 new DataInfo(){ByteLength=4, Digtal=0},
                                 new DataInfo(){ByteLength=2, Digtal=1},
                                 new DataInfo(){ByteLength=4, Digtal=0},
-
                             });
                         break;
-
 
                     case 0x11:
                         if (buffer[1] == 0 && buffer[0] == 0)
@@ -577,10 +580,8 @@ internal static class DLT645Helper
                                 new DataInfo(){ByteLength=6, Digtal=0},
                             });
                             break;
-
                         }
                         break;
-
 
                     case 0x12:
                         if (buffer[1] == 0 && buffer[0] == 0)
@@ -607,9 +608,7 @@ internal static class DLT645Helper
                                 new DataInfo(){ByteLength=5, Digtal=0},
                             });
                             break;
-
                         }
-
 
                     case 0x30:
 
@@ -640,6 +639,7 @@ internal static class DLT645Helper
                                 }
 
                                 break;
+
                             case 1://电表清零记录
 
                                 if (buffer[0] == 0)
@@ -665,6 +665,7 @@ internal static class DLT645Helper
                                     }
                                 }
                                 break;
+
                             case 2://编程记录
 
                                 if (buffer[0] == 0)
@@ -676,7 +677,6 @@ internal static class DLT645Helper
                                 }
                                 else
                                 {
-
                                     dataInfos.AddRange(new List<DataInfo>()
                                     {
                                         new DataInfo { ByteLength = 6, Digtal = 0 },
@@ -693,6 +693,7 @@ internal static class DLT645Helper
                                     }
                                 }
                                 break;
+
                             case 3://事件清零记录
                                 if (buffer[0] == 0)
                                 {
@@ -711,6 +712,7 @@ internal static class DLT645Helper
                                     });
                                 }
                                 break;
+
                             case 4://校时记录
                                 if (buffer[0] == 0)
                                 {
@@ -729,6 +731,7 @@ internal static class DLT645Helper
                                     });
                                 }
                                 break;
+
                             case 5://时段表编程记录
                                 if (buffer[0] == 0)
                                 {
@@ -753,6 +756,7 @@ internal static class DLT645Helper
                                     }
                                 }
                                 break;
+
                             case 6://时区表编程记录
                                 if (buffer[0] == 0)
                                 {
@@ -777,6 +781,7 @@ internal static class DLT645Helper
                                     }
                                 }
                                 break;
+
                             case 7://周休日编程记录
                                 if (buffer[0] == 0)
                                 {
@@ -821,6 +826,7 @@ internal static class DLT645Helper
                                     }
                                 }
                                 break;
+
                             case 9:
                             case 10:
                             case 11://有功组合方式编程记录
@@ -841,6 +847,7 @@ internal static class DLT645Helper
                                     });
                                 }
                                 break;
+
                             case 12://结算日编程记录
                                 if (buffer[0] == 0)
                                 {
@@ -861,6 +868,7 @@ internal static class DLT645Helper
                                     });
                                 }
                                 break;
+
                             case 13:
                             case 14:
                                 if (buffer[0] == 0)
@@ -886,10 +894,8 @@ internal static class DLT645Helper
                                     }
                                 }
                                 break;
-
                         }
                         break;
-
                 }
                 break;
 
@@ -909,44 +915,55 @@ internal static class DLT645Helper
                             new(){ ByteLength=4,Digtal=0,IsSigned=false},
 });
                                         break;
+
                                     case 2:
                                         dataInfos.AddRange(new DataInfo[]
 {
                             new(){ ByteLength=3,Digtal=0,IsSigned=false},
 });
                                         break;
+
                                     case 3:
                                         dataInfos.AddRange(new DataInfo[] { new() { ByteLength = 1, Digtal = 0, IsSigned = false } });
                                         break;
+
                                     case 4:
                                         dataInfos.AddRange(new DataInfo[] { new() { ByteLength = 1, Digtal = 0, IsSigned = false } });
                                         break;
+
                                     case 5:
                                         dataInfos.AddRange(new DataInfo[] { new() { ByteLength = 2, Digtal = 0, IsSigned = false } });
                                         break;
+
                                     case 6:
                                         dataInfos.AddRange(new DataInfo[] { new() { ByteLength = 5, Digtal = 0, IsSigned = false } });
                                         break;
+
                                     case 7:
                                         dataInfos.AddRange(new DataInfo[] { new() { ByteLength = 5, Digtal = 0, IsSigned = false } });
                                         break;
+
                                     default:
                                         break;
                                 }
                                 break;
+
                             case 2:
                                 switch (buffer[0])
                                 {
                                     case 5:
                                         dataInfos.AddRange(new DataInfo[] { new() { ByteLength = 2, Digtal = 0, IsSigned = false } });
                                         break;
+
                                     default:
                                         break;
                                 }
                                 break;
+
                             case 3:
                                 dataInfos.AddRange(new DataInfo[] { new() { ByteLength = 1, Digtal = 0, IsSigned = false } });
                                 break;
+
                             case 4:
                                 if (buffer[0] <= 2)
                                     dataInfos.AddRange(new DataInfo[]
@@ -969,21 +986,27 @@ internal static class DLT645Helper
                                 else if (buffer[0] == 13)
                                     dataInfos.AddRange(new DataInfo[] { new() { ByteLength = 16, Digtal = -1, IsSigned = false } });
                                 break;
+
                             case 5:
                                 dataInfos.AddRange(new DataInfo[] { new() { ByteLength = 2, Digtal = 0, IsSigned = false } });
                                 break;
+
                             case 6:
                                 dataInfos.AddRange(new DataInfo[] { new() { ByteLength = 1, Digtal = 0, IsSigned = false } });
                                 break;
+
                             case 7:
                                 dataInfos.AddRange(new DataInfo[] { new() { ByteLength = 1, Digtal = 0, IsSigned = false } });
                                 break;
+
                             case 8:
                                 dataInfos.AddRange(new DataInfo[] { new() { ByteLength = 1, Digtal = 0, IsSigned = false } });
                                 break;
+
                             case 9:
                                 dataInfos.AddRange(new DataInfo[] { new() { ByteLength = 1, Digtal = 0, IsSigned = false } });
                                 break;
+
                             case 10:
                                 switch (buffer[0])
                                 {
@@ -993,6 +1016,7 @@ internal static class DLT645Helper
                             new(){ ByteLength=4,Digtal=0,IsSigned=false},
 });
                                         break;
+
                                     default:
                                         dataInfos.AddRange(new DataInfo[]
 {
@@ -1001,18 +1025,22 @@ internal static class DLT645Helper
                                         break;
                                 }
                                 break;
+
                             case 11:
                                 dataInfos.AddRange(new DataInfo[] { new() { ByteLength = 2, Digtal = 0, IsSigned = false } });
                                 break;
+
                             case 12:
                                 dataInfos.AddRange(new DataInfo[] { new() { ByteLength = 4, Digtal = 0, IsSigned = false } });
                                 break;
+
                             case 13:
                                 dataInfos.AddRange(new DataInfo[]
 {
                             new(){ ByteLength=2,Digtal=3,IsSigned=false},
 });
                                 break;
+
                             case 14:
                                 if (buffer[0] < 3)
                                     dataInfos.AddRange(new DataInfo[]
@@ -1027,6 +1055,7 @@ internal static class DLT645Helper
                                 break;
                         }
                         break;
+
                     case 1:
                     case 2:
                         if (buffer[1] == 0)
@@ -1037,10 +1066,12 @@ internal static class DLT645Helper
                             }
                         }
                         break;
+
                     case 3:
                     case 4:
                         dataInfos.AddRange(new DataInfo[] { new() { ByteLength = 4, Digtal = 0, IsSigned = false } });
                         break;
+
                     case 0x80:
                         dataInfos.AddRange(new DataInfo[] { new() { ByteLength = 32, Digtal = -1, IsSigned = false } });
                         break;
@@ -1065,6 +1096,7 @@ internal static class DLT645Helper
                                         break;
                                 }
                                 break;
+
                             case 1:
                             case 2:
                             case 3:
@@ -1087,6 +1119,7 @@ internal static class DLT645Helper
                             new(){ ByteLength=5,Digtal=0,IsSigned=false},
 });
                                 break;
+
                             case 16:
                                 for (int i = 0; i < 8; i++)
                                 {
@@ -1113,6 +1146,7 @@ internal static class DLT645Helper
                             new(){ ByteLength=1,Digtal=0,IsSigned=false},
 });
                                 break;
+
                             case 1:
                                 dataInfos.AddRange(new DataInfo[]
 {
@@ -1121,6 +1155,7 @@ internal static class DLT645Helper
                                 break;
                         }
                         break;
+
                     default:
                         if (buffer[0] == 2)
                             dataInfos.AddRange(new DataInfo[]
@@ -1134,8 +1169,6 @@ internal static class DLT645Helper
         }
         return dataInfos;
     }
-
-
 
     /// <summary>
     /// 获取DLT645报文
@@ -1206,11 +1239,8 @@ internal static class DLT645Helper
                     }
                 }
 
-
                 buffer = buffer.SpliceArray(codes, buffers.ToArray());
-
             }
-
 
             byte[] stationBytes;
             if (operResult.Station.Length == 0)
@@ -1226,14 +1256,13 @@ internal static class DLT645Helper
             }
 
             return GetDLT645_2007Command(control, buffer, stationBytes);
-
         }
         catch (Exception ex)
         {
             return new(ex);
         }
-
     }
+
     internal static OperResult<byte[]> GetDLT645_2007Command(byte control, byte[] buffer, byte[] stationBytes)
     {
         buffer ??= new byte[0];

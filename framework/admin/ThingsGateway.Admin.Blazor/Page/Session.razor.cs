@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using Microsoft.Extensions.DependencyInjection;
@@ -31,7 +33,6 @@ public partial class Session
 
     private IAppDataTable _verificatinfosDatatable;
 
-
     private async Task SessionExitAsync(long id)
     {
         var confirm = await PopupService.OpenConfirmDialogAsync("警告", "确定 ?");
@@ -40,7 +41,6 @@ public partial class Session
             await _serviceScope.ServiceProvider.GetService<ISessionService>().ExitSessionAsync(id);
         }
     }
-
 
     private async Task<ISqlSugarPagedList<SessionOutput>> SessionQueryCallAsync(SessionPageInput input)
     {

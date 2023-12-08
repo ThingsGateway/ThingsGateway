@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using BlazorComponent;
@@ -35,8 +37,6 @@ public static class ServiceExtensions
                         { nameof(PEnqueuedSnackbars.Position), SnackPosition.TopCenter }
                     }
                 },
-
-
 
         { nameof(MErrorHandler), new Dictionary<string, object>() { { nameof(MErrorHandler.ShowDetail), true } } },
 
@@ -66,7 +66,6 @@ public static class ServiceExtensions
         { nameof(MToolbar), new Dictionary<string, object>() { { nameof(MToolbar.Dense), true } } },
         { "MTreeview", new Dictionary<string, object>() { { "Dense", true } } },
         { "PImageCaptcha", new Dictionary<string, object>() { { "Dense", true } } }
-
             };
             options.ConfigureTheme(theme =>
             {
@@ -87,16 +86,13 @@ public static class ServiceExtensions
                 theme.Themes.Light.Success = "#4CAF50";
                 theme.Themes.Light.Warning = "#FB8C00";
                 theme.Themes.Light.UserDefined.Add("barcolor", "#fff");
-
             });
             options.Locale = new Locale("zh-CN", "en-US");
-
         });
 
         services.AddScoped<InitTimezone>();
         services.AddScoped<AjaxService>();
         services.AddScoped<CookieStorage>();
         services.AddScoped<IDefaultTimezoneOffsetAccessor, DefaultTimezoneOffsetAccessor>();
-
     }
 }

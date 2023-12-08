@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using SqlSugar;
@@ -23,6 +25,7 @@ public class SQLHistoryValue
 {
     [SugarColumn(ColumnDescription = "Id", IsPrimaryKey = true)]
     public long Id { get; set; }
+
     /// <summary>
     /// 变量名称
     /// </summary>
@@ -47,10 +50,8 @@ public class SQLHistoryValue
     [SugarColumn(ColumnName = "IsOnline", ColumnDescription = "是否在线 True=在线;False=离线")]
     public bool IsOnline { get; set; }
 
-
     public DateTime CollectTime { get; set; }
 
     [SplitField] //分表字段 在插入的时候会根据这个字段插入哪个表，在更新删除的时候用这个字段找出相关表
     public DateTime CreateTime { get; set; }
 }
-

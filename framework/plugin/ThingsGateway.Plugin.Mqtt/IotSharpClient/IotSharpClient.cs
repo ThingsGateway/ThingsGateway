@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using LiteDB;
@@ -28,11 +30,13 @@ public partial class IotSharpClient : UpLoadBaseWithCacheT<DeviceData, VariableD
 {
     /// <inheritdoc/>
     public override Type DriverDebugUIType => null;
+
     protected override bool _device => false;
     public override Type DriverUIType => null;
 
     /// <inheritdoc/>
     public override VariablePropertyBase VariablePropertys => _variablePropertys;
+
     protected override IReadWrite _readWrite => null;
 
     protected override UploadPropertyWithCacheT _uploadPropertyWithCache => _driverPropertys;
@@ -85,9 +89,7 @@ public partial class IotSharpClient : UpLoadBaseWithCacheT<DeviceData, VariableD
         _mqttClient = mqttFactory.CreateMqttClient();
         _mqttClient.ConnectedAsync += MqttClient_ConnectedAsync;
         _mqttClient.ApplicationMessageReceivedAsync += MqttClient_ApplicationMessageReceivedAsync;
-
     }
-
 
     protected override async Task ProtectedBeforStartAsync(CancellationToken cancellationToken)
     {
@@ -102,10 +104,8 @@ public partial class IotSharpClient : UpLoadBaseWithCacheT<DeviceData, VariableD
         }
     }
 
-
     protected override async Task ProtectedExecuteAsync(CancellationToken cancellationToken)
     {
-
         var clientResult = await TryMqttClientAsync(cancellationToken);
         if (!clientResult.IsSuccess)
         {
@@ -149,7 +149,6 @@ public partial class IotSharpClient : UpLoadBaseWithCacheT<DeviceData, VariableD
                             if (!result.IsSuccess)
                             {
                                 AddVarCahce(cacheItems, item.Key, json);
-
                             }
                         }
                         else
@@ -161,16 +160,13 @@ public partial class IotSharpClient : UpLoadBaseWithCacheT<DeviceData, VariableD
                     {
                         LogMessage?.LogWarning(ex);
                     }
-
                 }
             }
-
         }
         catch (Exception ex)
         {
             LogMessage?.LogWarning(ex);
         }
-
 
         if (cacheItems.Count > 0)
             CacheDb.Cache.Insert(cacheItems);
@@ -200,14 +196,12 @@ public partial class IotSharpClient : UpLoadBaseWithCacheT<DeviceData, VariableD
                         {
                             break;
                         }
-
                     }
                     catch (Exception ex)
                     {
                         LogMessage?.LogWarning(ex);
                     }
                 }
-
             }
         }
         catch (Exception ex)
@@ -220,6 +214,4 @@ public partial class IotSharpClient : UpLoadBaseWithCacheT<DeviceData, VariableD
 
         await Delay(_driverPropertys.CycleInterval, cancellationToken);
     }
-
-
 }

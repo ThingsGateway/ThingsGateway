@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using LiteDB;
@@ -35,6 +37,7 @@ public partial class MqttClient : UpLoadBaseWithCacheT<DeviceData, VariableData>
 
     /// <inheritdoc/>
     public override VariablePropertyBase VariablePropertys => _variablePropertys;
+
     protected override IReadWrite _readWrite => null;
 
     protected override UploadPropertyWithCacheT _uploadPropertyWithCache => _driverPropertys;
@@ -98,9 +101,7 @@ public partial class MqttClient : UpLoadBaseWithCacheT<DeviceData, VariableData>
         _mqttClient = mqttFactory.CreateMqttClient();
         _mqttClient.ConnectedAsync += MqttClient_ConnectedAsync;
         _mqttClient.ApplicationMessageReceivedAsync += MqttClient_ApplicationMessageReceivedAsync;
-
     }
-
 
     protected override async Task ProtectedBeforStartAsync(CancellationToken cancellationToken)
     {
@@ -114,9 +115,9 @@ public partial class MqttClient : UpLoadBaseWithCacheT<DeviceData, VariableData>
             }
         }
     }
+
     protected override async Task ProtectedExecuteAsync(CancellationToken cancellationToken)
     {
-
         var clientResult = await TryMqttClientAsync(cancellationToken);
         if (!clientResult.IsSuccess)
         {
@@ -166,10 +167,8 @@ public partial class MqttClient : UpLoadBaseWithCacheT<DeviceData, VariableData>
                     {
                         LogMessage?.LogWarning(ex);
                     }
-
                 }
             }
-
         }
         catch (Exception ex)
         {
@@ -210,10 +209,8 @@ public partial class MqttClient : UpLoadBaseWithCacheT<DeviceData, VariableData>
                     {
                         LogMessage?.LogWarning(ex);
                     }
-
                 }
             }
-
         }
         catch (Exception ex)
         {
@@ -248,14 +245,12 @@ public partial class MqttClient : UpLoadBaseWithCacheT<DeviceData, VariableData>
                         {
                             break;
                         }
-
                     }
                     catch (Exception ex)
                     {
                         LogMessage?.LogWarning(ex);
                     }
                 }
-
             }
         }
         catch (Exception ex)
@@ -265,7 +260,6 @@ public partial class MqttClient : UpLoadBaseWithCacheT<DeviceData, VariableData>
 
         try
         {
-
             var devList = CacheDb.Cache.Find(a => a.Type == devType, 0, 100).ToList();
             {
                 foreach (var item in devList)
@@ -295,9 +289,6 @@ public partial class MqttClient : UpLoadBaseWithCacheT<DeviceData, VariableData>
                     }
                 }
             }
-
-
-
         }
         catch (Exception ex)
         {
@@ -308,6 +299,4 @@ public partial class MqttClient : UpLoadBaseWithCacheT<DeviceData, VariableData>
 
         await Delay(_driverPropertys.CycleInterval, cancellationToken);
     }
-
-
 }

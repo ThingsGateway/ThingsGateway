@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using SqlSugar;
@@ -22,6 +24,7 @@ public class SQLRealValue
 {
     [SugarColumn(ColumnDescription = "Id", IsPrimaryKey = true)]
     public long Id { get; set; }
+
     /// <summary>
     /// 变量名称
     /// </summary>
@@ -47,6 +50,4 @@ public class SQLRealValue
     public bool IsOnline { get; set; }
 
     public DateTime CollectTime { get; set; }
-
 }
-

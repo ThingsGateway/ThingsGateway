@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,10 +9,10 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 namespace ThingsGateway.Foundation.Demo;
-
 
 /// <inheritdoc/>
 public partial class ModbusUdpDebugPage
@@ -20,6 +21,7 @@ public partial class ModbusUdpDebugPage
     /// SerialPortClientPage
     /// </summary>
     private UdpSessionPage _udpSessionPage;
+
     private DriverDebugUIPage _driverDebugUIPage;
 
     private ThingsGateway.Foundation.Adapter.Modbus.ModbusUdp _plc;
@@ -40,10 +42,10 @@ public partial class ModbusUdpDebugPage
                     var config = new TouchSocketConfig();
                     config
                     .SetRemoteIPHost(new IPHost("127.0.0.1:502"))//TCP/UDP链路才需要
-                
+
                 var udpSession1 = new UdpSession();//链路对象
                 udpSession1.Setup(config);
-                
+
                     //创建协议对象,构造函数需要传入对应链路对象
                     ModbusUdp plc = new(udpSession1)
                 {
@@ -55,15 +57,15 @@ public partial class ModbusUdpDebugPage
                     TimeOut = 3000,
                     Crc16CheckEnable = true
                 };
-                
+
                     #region 读写测试
+
                         var bytesResult = await plc.ReadAsync("400001", 20);
                         var int32sResult = await plc.ReadInt32Async("400001", 20);
-                
-                    #endregion
 
+                    #endregion
                 }
-                
+
                 """, "csharp"));
 
             if (_udpSessionPage != null)
@@ -76,5 +78,4 @@ public partial class ModbusUdpDebugPage
 
         base.OnAfterRender(firstRender);
     }
-
 }

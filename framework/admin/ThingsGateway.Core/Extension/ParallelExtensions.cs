@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,19 +9,23 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 namespace ThingsGateway.Core;
+
 /// <summary>
 /// Parallel扩展
 /// </summary>
 public static class ParallelExtensions
 {
     private static readonly ParallelOptions _options = new();
+
     static ParallelExtensions()
     {
         _options.MaxDegreeOfParallelism = Environment.ProcessorCount / 2 == 0 ? 1 : Environment.ProcessorCount / 2;
     }
+
     /// <summary>
     /// 使用默认的并行设置执行<see cref="Parallel.ForEach{TSource}(IEnumerable{TSource}, Action{TSource})"/>
     /// </summary>
@@ -57,5 +62,4 @@ public static class ParallelExtensions
         options.MaxDegreeOfParallelism = parallelCount / 2 == 0 ? 1 : parallelCount;
         await Parallel.ForEachAsync(source, options, body);
     }
-
 }

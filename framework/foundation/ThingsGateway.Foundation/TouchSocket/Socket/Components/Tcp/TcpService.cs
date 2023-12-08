@@ -1,4 +1,5 @@
 #region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 //------------------------------------------------------------------------------
@@ -40,12 +42,14 @@ namespace ThingsGateway.Foundation.Sockets
         }
 
         #region 变量
+
         private readonly List<TcpNetworkMonitor> m_monitors = new List<TcpNetworkMonitor>();
         private readonly SocketClientCollection m_socketClients = new SocketClientCollection();
         private Func<string> m_getDefaultNewId;
         private int m_maxCount;
         private long m_nextId;
         private ServerState m_serverState;
+
         #endregion 变量
 
         #region 属性
@@ -94,7 +98,7 @@ namespace ThingsGateway.Foundation.Sockets
         /// </summary>
         /// <param name="socketClient"></param>
         /// <param name="e"></param>
-        protected sealed override Task OnClientConnected(ISocketClient socketClient, ConnectedEventArgs e)
+        protected override sealed Task OnClientConnected(ISocketClient socketClient, ConnectedEventArgs e)
         {
             return this.OnConnected((TClient)socketClient, e);
         }
@@ -104,7 +108,7 @@ namespace ThingsGateway.Foundation.Sockets
         /// </summary>
         /// <param name="socketClient"></param>
         /// <param name="e"></param>
-        protected sealed override Task OnClientConnecting(ISocketClient socketClient, ConnectingEventArgs e)
+        protected override sealed Task OnClientConnecting(ISocketClient socketClient, ConnectingEventArgs e)
         {
             return this.OnConnecting((TClient)socketClient, e);
         }
@@ -114,7 +118,7 @@ namespace ThingsGateway.Foundation.Sockets
         /// </summary>
         /// <param name="socketClient"></param>
         /// <param name="e"></param>
-        protected sealed override Task OnClientDisconnected(ISocketClient socketClient, DisconnectEventArgs e)
+        protected override sealed Task OnClientDisconnected(ISocketClient socketClient, DisconnectEventArgs e)
         {
             return this.OnDisconnected((TClient)socketClient, e);
         }
@@ -124,7 +128,7 @@ namespace ThingsGateway.Foundation.Sockets
         /// </summary>
         /// <param name="socketClient"></param>
         /// <param name="e"></param>
-        protected sealed override Task OnClientDisconnecting(ISocketClient socketClient, DisconnectEventArgs e)
+        protected override sealed Task OnClientDisconnecting(ISocketClient socketClient, DisconnectEventArgs e)
         {
             return this.OnDisconnecting((TClient)socketClient, e);
         }
@@ -134,7 +138,7 @@ namespace ThingsGateway.Foundation.Sockets
         /// </summary>
         /// <param name="socketClient"></param>
         /// <param name="e"></param>
-        protected sealed override Task OnClientReceivedData(ISocketClient socketClient, ReceivedDataEventArgs e)
+        protected override sealed Task OnClientReceivedData(ISocketClient socketClient, ReceivedDataEventArgs e)
         {
             return this.OnReceived((TClient)socketClient, e);
         }
@@ -313,6 +317,7 @@ namespace ThingsGateway.Foundation.Sockets
             }
             return false;
         }
+
         /// <inheritdoc/>
         public override async Task StartAsync()
         {
@@ -382,12 +387,6 @@ namespace ThingsGateway.Foundation.Sockets
                 throw;
             }
         }
-
-
-
-
-
-
 
         /// <inheritdoc/>
         public override async Task StopAsync()
@@ -527,7 +526,6 @@ namespace ThingsGateway.Foundation.Sockets
             }
         }
 
-
         /// <inheritdoc/>
         public override void Stop()
         {
@@ -549,7 +547,6 @@ namespace ThingsGateway.Foundation.Sockets
             this.PluginManager?.Raise(nameof(IServerStopedPlugin.OnServerStoped), this, new ServiceStateEventArgs(this.m_serverState, default));
             return;
         }
-
 
         /// <summary>
         /// 尝试获取TClient
@@ -605,7 +602,6 @@ namespace ThingsGateway.Foundation.Sockets
                 }
                 catch
                 {
-
                 }
             }
         }

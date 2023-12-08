@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using Furion.Logging.Extensions;
@@ -24,6 +26,7 @@ namespace ThingsGateway.Gateway.Application;
 public class CollectDeviceWorker : DeviceWorker
 {
     private GlobalDeviceData _globalDeviceData;
+
     public CollectDeviceWorker(IServiceScopeFactory serviceScopeFactory, IHostApplicationLifetime appLifetime) : base(serviceScopeFactory, appLifetime)
     {
         _logger = _serviceScope.ServiceProvider.GetService<ILoggerFactory>().CreateLogger("南向设备服务");
@@ -92,6 +95,7 @@ public class CollectDeviceWorker : DeviceWorker
         await alarmHostService.StopAsync();
         await uploadDeviceHostService.StopAsync();
     }
+
     #endregion
 
     #region Private
@@ -124,7 +128,6 @@ public class CollectDeviceWorker : DeviceWorker
                 }
             }
         }
-
     }
 
     protected override async Task<IEnumerable<DeviceRunTime>> GetDeviceRunTimeAsync(long devId)
@@ -174,15 +177,11 @@ public class CollectDeviceWorker : DeviceWorker
         }
         driverBase?.SafeDispose();
         return Propertys;
-
     }
-
 
     #endregion
 
     #region worker服务
-
-
 
     /// <inheritdoc/>
     public override async Task StopAsync(CancellationToken cancellationToken)
@@ -196,6 +195,7 @@ public class CollectDeviceWorker : DeviceWorker
         await RemoveAllDeviceThreadAsync();
         await base.StopAsync(cancellationToken);
     }
+
     /// <inheritdoc/>
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -206,7 +206,6 @@ public class CollectDeviceWorker : DeviceWorker
         await RestartDeviceThreadAsync();
         await WhileExecuteAsync(stoppingToken);
     }
-
 
     protected virtual async Task WhileExecuteAsync(CancellationToken stoppingToken)
     {
@@ -221,14 +220,11 @@ public class CollectDeviceWorker : DeviceWorker
                 var num = DriverBases.Count;
                 for (int i = 0; i < num; i++)
                 {
-
                     DriverBase driverBase = DriverBases[i];
                     try
                     {
                         if (driverBase.CurrentDevice != null)
                         {
-
-
                             if (driverBase.CurrentDevice.DeviceStatus == DeviceStatusEnum.OffLine)
                             {
                                 if (driverBase.CurrentDevice.IsRedundant && _serviceScope.ServiceProvider.GetService<ICollectDeviceService>().GetCacheList(false).Any(a => a.Id == driverBase.CurrentDevice.RedundantDeviceId))
@@ -236,7 +232,6 @@ public class CollectDeviceWorker : DeviceWorker
                                     await DeviceRedundantThreadAsync(driverBase.CurrentDevice.Id);
                                 }
                             }
-
 
                             if (
             (driverBase.CurrentDevice.ActiveTime != DateTime.MinValue &&
@@ -260,21 +255,15 @@ public class CollectDeviceWorker : DeviceWorker
                             {
                                 _logger?.LogTrace($"{driverBase.CurrentDevice.Name}线程检测正常");
                             }
-
-
-
-
                         }
                     }
                     finally
                     {
                     }
                 }
-
             }
             catch (TaskCanceledException)
             {
-
             }
             catch (ObjectDisposedException)
             {
@@ -283,14 +272,8 @@ public class CollectDeviceWorker : DeviceWorker
             {
                 _logger.LogWarning(ex, "线程检测错误");
             }
-
         }
     }
 
-
     #endregion
-
-
-
 }
-

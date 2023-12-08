@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using Furion;
@@ -35,6 +37,7 @@ using ThingsGateway.Foundation.Extension.String;
 using ThingsGateway.Foundation.Sockets;
 
 namespace ThingsGateway.Plugin.Mqtt;
+
 /// <summary>
 /// MqttServer
 /// </summary>
@@ -52,12 +55,15 @@ public class MqttServer : UpLoadBase
 
     /// <inheritdoc/>
     public override Type DriverDebugUIType => null;
+
     /// <inheritdoc/>
     public override DriverPropertyBase DriverPropertys => _driverPropertys;
+
     public override Type DriverUIType => null;
 
     /// <inheritdoc/>
     public override VariablePropertyBase VariablePropertys => _variablePropertys;
+
     protected override IReadWrite _readWrite => null;
 
     public override void Init(DeviceRunTime device)
@@ -76,6 +82,7 @@ public class MqttServer : UpLoadBase
             CollectDevices = _globalDeviceData.CollectDevices.Where(a => device.DeviceVariableRunTimes.Select(b => b.DeviceId).Contains(a.Id)).ToList();
         }
     }
+
     /// <inheritdoc/>
     public override bool IsConnected() => _mqttServer?.IsStarted == true;
 
@@ -106,7 +113,9 @@ public class MqttServer : UpLoadBase
         _collectVariableRunTimes.Clear();
         base.Dispose(disposing);
     }
+
     private IWebHost _webHost { get; set; }
+
     protected override void Init(ISenderClient client = null)
     {
         //var mqttFactory = new MqttFactory();
@@ -129,7 +138,6 @@ public class MqttServer : UpLoadBase
         webBuilder.UseStartup<MqttServerStartup>();
         _webHost = webBuilder.UseConfiguration(configuration)
            .Build();
-
 
         _mqttServer = _webHost.Services.GetService<MqttHostedServer>();
 
@@ -156,6 +164,7 @@ public class MqttServer : UpLoadBase
         }
         await base.ProtectedBeforStartAsync(cancellationToken);
     }
+
     protected override async Task ProtectedExecuteAsync(CancellationToken cancellationToken)
     {
         //获取设备连接状态
@@ -200,12 +209,8 @@ public class MqttServer : UpLoadBase
                         LogMessage?.LogWarning(ex);
                     success = false;
                 }
-
             }
-
         }
-
-
 
         ////变化推送
         var devList = _collectDeviceRunTimes.ToListWithDequeue();
@@ -236,12 +241,9 @@ public class MqttServer : UpLoadBase
                     if (success)
                         LogMessage?.LogWarning(ex);
                     success = false;
-
                 }
-
             }
         }
-
 
         try
         {
@@ -260,6 +262,7 @@ public class MqttServer : UpLoadBase
         }
         await Delay(_driverPropertys.CycleInterval, cancellationToken);
     }
+
     private void DeviceStatusChange(DeviceRunTime collectDeviceRunTime)
     {
         if (!CurrentDevice.KeepRun)
@@ -304,7 +307,6 @@ public class MqttServer : UpLoadBase
         {
             foreach (var rpcData in rpcDatas.WriteInfos)
             {
-
                 var tag = CurrentDevice.DeviceVariableRunTimes.FirstOrDefault(a => a.Name == rpcData.Key);
                 if (tag != null)
                 {
@@ -361,6 +363,7 @@ public class MqttServer : UpLoadBase
         arg.LoadedRetainedMessages = Messages;
         await CompletedTask.Instance;
     }
+
     private async Task MqttServer_ValidatingConnectionAsync(ValidatingConnectionEventArgs arg)
     {
         if (!arg.ClientId.StartsWith(_driverPropertys.StartWithId))
@@ -382,6 +385,7 @@ public class MqttServer : UpLoadBase
         }
         LogMessage?.LogInformation($"{ToString()}-{arg.ClientId}-客户端已连接成功");
     }
+
     private void VariableValueChange(DeviceVariableRunTime collectVariableRunTime)
     {
         if (!CurrentDevice.KeepRun)

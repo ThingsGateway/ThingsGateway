@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using Masa.Blazor;
@@ -29,14 +31,15 @@ public partial class User
     private bool _isShowRoles;
     private List<SysRole> _rolesChoice = new();
     private string _searchName;
+
     [CascadingParameter]
     private MainLayout _mainLayout { get; set; }
-
 
     private async Task AddCallAsync(UserAddInput input)
     {
         await _serviceScope.ServiceProvider.GetService<ISysUserService>().AddAsync(input);
     }
+
     private async Task DeleteCallAsync(IEnumerable<SysUser> users)
     {
         await _serviceScope.ServiceProvider.GetService<ISysUserService>().DeleteAsync(users.Select(a => a.Id).ToArray());
@@ -66,6 +69,7 @@ public partial class User
         }
         await _mainLayout.StateHasChangedAsync();
     }
+
     private async Task<ISqlSugarPagedList<SysUser>> QueryCallAsync(UserPageInput input)
     {
         return await _serviceScope.ServiceProvider.GetService<ISysUserService>().PageAsync(input);
@@ -84,6 +88,7 @@ public partial class User
         var data = await _serviceScope.ServiceProvider.GetService<IRoleService>().GetRoleIdListByUserIdAsync(_choiceUserId);
         _rolesChoice = _allRoles.Where(a => data.Contains(a.Id)).ToList();
     }
+
     private async Task UserStatusChangeAsync(SysUser context, bool enable)
     {
         try

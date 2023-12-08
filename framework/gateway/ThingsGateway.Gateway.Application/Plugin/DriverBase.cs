@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using Microsoft.Extensions.DependencyInjection;
@@ -35,10 +37,12 @@ public abstract class DriverBase : DisposableObject
         LogMessage.AddLogger(new EasyLogger(Log_Out) { LogLevel = ThingsGateway.Foundation.Core.LogLevel.Trace });
         FoundataionConfig.ConfigureContainer(a => a.RegisterSingleton<ILog>(LogMessage));
     }
+
     public override string ToString()
     {
         return _readWrite?.ToString() ?? base.ToString();
     }
+
     /// <summary>
     /// 当前设备
     /// </summary>
@@ -60,6 +64,7 @@ public abstract class DriverBase : DisposableObject
     public List<DependencyProperty> DevicePropertys { get; private set; }
 
     public DeviceThread DeviceThread { get; set; }
+
     /// <summary>
     /// 当前插件目录
     /// </summary>
@@ -91,6 +96,7 @@ public abstract class DriverBase : DisposableObject
     public bool IsLogOut { get; set; }
 
     public bool? KeepRun => CurrentDevice?.KeepRun;
+
     /// <summary>
     /// 日志
     /// </summary>
@@ -117,12 +123,14 @@ public abstract class DriverBase : DisposableObject
     protected DriverPluginService _driverPluginService { get; private set; }
 
     protected GlobalDeviceData _globalDeviceData { get; private set; }
+
     /// <summary>
     /// 一般底层驱动，也有可能为null
     /// </summary>
     protected abstract IReadWrite _readWrite { get; }
 
     public RpcSingletonService RpcSingletonService { get; }
+
     /// <summary>
     /// IServiceScope
     /// </summary>
@@ -217,7 +225,9 @@ public abstract class DriverBase : DisposableObject
             CurrentDevice.SetDeviceStatus(DateTimeExtensions.CurrentDateTime, 999, ex.Message);
         }
     }
+
     protected virtual bool IsUploadBase { get; } = false;
+
     /// <summary>
     /// 间隔执行
     /// </summary>
@@ -241,7 +251,6 @@ public abstract class DriverBase : DisposableObject
             if (cancellationToken.IsCancellationRequested)
                 return ThreadRunReturn.Break;
 
-
             //获取设备连接状态
             if (IsConnected())
             {
@@ -261,7 +270,6 @@ public abstract class DriverBase : DisposableObject
 
             //正常返回None
             return ThreadRunReturn.None;
-
         }
         catch (TaskCanceledException)
         {
@@ -319,6 +327,7 @@ public abstract class DriverBase : DisposableObject
             this.CurrentDevice.KeepRun = keepRun;
         }
     }
+
     private static string TruncateString(string originalString, int startLength, int endLength)
     {
         if (originalString.Length <= startLength + endLength)
@@ -333,6 +342,7 @@ public abstract class DriverBase : DisposableObject
             return truncatedString;
         }
     }
+
     /// <summary>
     /// 设备报文输出
     /// </summary>
@@ -362,6 +372,7 @@ public abstract class DriverBase : DisposableObject
     {
         await Task.Delay(interval - DeviceThread.CycleInterval, cancellationToken);
     }
+
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
@@ -376,6 +387,7 @@ public abstract class DriverBase : DisposableObject
     /// </summary>
     /// <param name="client"></param>
     protected abstract void Init(ISenderClient client = null);
+
     /// <summary>
     /// 底层错误日志输出
     /// </summary>
@@ -422,6 +434,7 @@ public abstract class DriverBase : DisposableObject
             CurrentDevice.SetDeviceStatus(DateTimeExtensions.CurrentDateTime, 0);
         }
     }
+
     /// <summary>
     /// 间隔执行
     /// </summary>

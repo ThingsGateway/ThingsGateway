@@ -1,4 +1,5 @@
 #region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using Furion.DependencyInjection;
@@ -23,6 +25,7 @@ using System.Collections.Concurrent;
 using ThingsGateway.Foundation.Extension.ConcurrentQueue;
 
 namespace ThingsGateway.Gateway.Application;
+
 /// <summary>
 /// 变量写入/执行变量附带方法，单例服务
 /// </summary>
@@ -32,12 +35,14 @@ public class RpcSingletonService : ISingleton
     /// 写入变量说明
     /// </summary>
     public const string WriteVariable = "写入变量";
+
     private readonly IServiceScope _serviceScope;
     private readonly CollectDeviceWorker _collectDeviceWorker;
     private readonly GlobalDeviceData _globalDeviceData;
     private readonly ILogger _logger;
     private readonly ConcurrentQueue<RpcLog> _logQueues = new();
     private readonly IHostApplicationLifetime _appLifetime;
+
     /// <inheritdoc cref="RpcSingletonService"/>
     public RpcSingletonService(
     IServiceScopeFactory serviceScopeFactory,
@@ -95,7 +100,6 @@ public class RpcSingletonService : ISingleton
             {
                 results.Add(item.Key, new OperResult("系统错误，不存在对应采集设备，请稍候重试"));
                 continue;
-
             }
             if (dev.CurrentDevice.DeviceStatus == DeviceStatusEnum.OffLine)
             {
@@ -155,7 +159,6 @@ public class RpcSingletonService : ISingleton
                      {
                          operObj = resultItem.Key;
                          parJson = items[resultItem.Key];
-
                      }
                      _logQueues.Enqueue(
            new RpcLog()
@@ -186,9 +189,7 @@ public class RpcSingletonService : ISingleton
                  {
                      return new KeyValuePair<string, OperResult>(a.Key.Name, new OperResult($"捕捉错误：{ex.Message}"));
                  }));
-
              }
-
          }, 10, cancellationToken);
 
         await WriteMethods.ParallelForEachAsync(async (item, cancellationToken) =>
@@ -225,10 +226,7 @@ public class RpcSingletonService : ISingleton
                 {
                     _logger.LogWarning($"执行变量[{writeMethod.Key.Name}]方法[{writeMethod.Key.OtherMethod}]失败：{result.Message}");
                 }
-
-
             }
-
         }, 10, cancellationToken);
 
         return results;
@@ -246,7 +244,6 @@ public class RpcSingletonService : ISingleton
             }
             catch
             {
-
             }
             finally
             {

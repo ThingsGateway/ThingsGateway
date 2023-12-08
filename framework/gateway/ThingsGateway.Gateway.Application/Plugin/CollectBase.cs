@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using Mapster;
@@ -21,6 +23,7 @@ using ThingsGateway.Foundation.Extension.Generic;
 using ThingsGateway.Gateway.Core.Extensions;
 
 namespace ThingsGateway.Gateway.Application;
+
 /// <summary>
 /// <para></para>
 /// 采集插件，继承实现不同PLC通讯
@@ -33,13 +36,13 @@ public abstract class CollectBase : DriverBase
     {
         Methods = _driverPluginService.GetDriverMethodInfo(this);
     }
+
     public new CollectDeviceRunTime CurrentDevice { get; set; }
 
     /// <summary>
     /// 特殊方法
     /// </summary>
     public List<DependencyPropertyWithMethodInfo> Methods { get; set; }
-
 
     public override async Task AfterStopAsync()
     {
@@ -50,8 +53,6 @@ public abstract class CollectBase : DriverBase
         }
         await base.AfterStopAsync();
     }
-
-
 
     public override void Init(DeviceRunTime device)
     {
@@ -94,6 +95,7 @@ public abstract class CollectBase : DriverBase
         }
         return operResults;
     }
+
     /// <summary>
     /// 注意非IReadWrite设备需重写
     /// </summary>
@@ -107,6 +109,7 @@ public abstract class CollectBase : DriverBase
     {
         LoadSourceRead(CurrentDevice.DeviceVariableRunTimes);
     }
+
     /// <summary>
     /// 获取设备变量打包列表/特殊方法列表
     /// </summary>
@@ -191,9 +194,7 @@ public abstract class CollectBase : DriverBase
                             {
                                 throw new($"特殊方法初始化失败，请查看变量地址/传入参数是否正确", ex);
                             }
-
                         }
-
                     }
 
                     methodResult.DeviceVariable = item;
@@ -204,7 +205,6 @@ public abstract class CollectBase : DriverBase
             return variablesMethodResult;
         }
     }
-
 
     /// <summary>
     /// 执行读取等方法，如果插件不支持读取，而是自更新值的话，需重写此方法
@@ -283,7 +283,6 @@ public abstract class CollectBase : DriverBase
                 {
                     await DeviceThread.EasyLock.WaitAsync();
 
-
                     var readErrorCount = 0;
                     var readResult = await InvokeMethodAsync(deviceVariableMethodRead, cancellationToken);
 
@@ -317,9 +316,7 @@ public abstract class CollectBase : DriverBase
                     DeviceThread.EasyLock.Release();
                 }
             }
-
         }
-
 
         if (deviceMethodsVariableFailedNum == 0 && deviceSourceVariableFailedNum == 0 && (deviceMethodsVariableSuccessNum != 0 || deviceSourceVariableSuccessNum != 0))
         {
@@ -329,7 +326,7 @@ public abstract class CollectBase : DriverBase
     }
 
     /// <summary>
-    /// 连读打包，返回实际通讯包信息<see cref="DeviceVariableSourceRead"/> 
+    /// 连读打包，返回实际通讯包信息<see cref="DeviceVariableSourceRead"/>
     /// <br></br>每个驱动打包方法不一样，所以需要实现这个接口
     /// </summary>
     /// <param name="deviceVariables">设备下的全部通讯点位</param>
@@ -345,7 +342,6 @@ public abstract class CollectBase : DriverBase
     {
         try
         {
-
             await DeviceThread.EasyLock.WaitAsync();
             OperResult<JToken> result = new OperResult<JToken>();
             var method = deviceVariableMethodSource.MethodInfo;
@@ -394,7 +390,6 @@ public abstract class CollectBase : DriverBase
                                 deviceVariableMethodSource.MethodObj[i] = deviceVariableMethodSource.Converter.ConvertFrom(strs[index], ps[i].ParameterType);
                                 index++;
                             }
-
                         }
                     }
                 }
@@ -425,9 +420,11 @@ public abstract class CollectBase : DriverBase
                         case TaskReturnType.None:
                             data = method.Invoke(this, deviceVariableMethodSource.MethodObj);
                             break;
+
                         case TaskReturnType.Task:
                             await method.InvokeAsync(this, deviceVariableMethodSource.MethodObj);
                             break;
+
                         case TaskReturnType.TaskObject:
                             //执行方法
                             data = await method.InvokeObjectAsync(this, deviceVariableMethodSource.MethodObj);
@@ -482,7 +479,6 @@ public abstract class CollectBase : DriverBase
     {
         try
         {
-
             await DeviceThread.EasyLock.WaitAsync();
             Dictionary<string, OperResult> results = new Dictionary<string, OperResult>();
             foreach (var (deviceVariable, jToken) in writeInfoLists)
@@ -515,7 +511,6 @@ public abstract class CollectBase : DriverBase
         }
     }
 
-
     /// <summary>
     /// 执行特殊方法读取,并设置变量值
     /// </summary>
@@ -525,5 +520,4 @@ public abstract class CollectBase : DriverBase
     }
 
     #endregion
-
 }

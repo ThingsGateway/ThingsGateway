@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,12 +9,10 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
-using System.Collections.Generic;
-
 namespace ThingsGateway.Foundation.Demo;
-
 
 /// <inheritdoc/>
 public partial class ModbusRtuOverTcpDebugPage
@@ -22,6 +21,7 @@ public partial class ModbusRtuOverTcpDebugPage
     /// SerialPortClientPage
     /// </summary>
     private TcpClientPage _tcpClientPage;
+
     private DriverDebugUIPage _driverDebugUIPage;
 
     private ThingsGateway.Foundation.Adapter.Modbus.ModbusRtuOverTcp _plc;
@@ -43,7 +43,7 @@ public partial class ModbusRtuOverTcpDebugPage
                     var config = new TouchSocketConfig();
                     config
                     .SetRemoteIPHost(new IPHost("127.0.0.1:502"))//TCP/UDP链路才需要
-                
+
                 var tcpClient1 = new TcpClient();//链路对象
                 tcpClient1.Setup(config);
 
@@ -61,13 +61,13 @@ public partial class ModbusRtuOverTcpDebugPage
                 };
 
                     #region 读写测试
+
                         var bytesResult = await plc.ReadAsync("400001", 20);
                         var int32sResult = await plc.ReadInt32Async("400001", 20);
 
                     #endregion
-
                 }
-                
+
                 """, "csharp"));
 
             if (_tcpClientPage != null)
@@ -80,5 +80,4 @@ public partial class ModbusRtuOverTcpDebugPage
 
         base.OnAfterRender(firstRender);
     }
-
 }

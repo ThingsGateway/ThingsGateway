@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,11 +9,13 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using System.Collections.Concurrent;
 
 namespace ThingsGateway.Gateway.Core;
+
 /// <summary>
 /// 设备变量表
 /// </summary>
@@ -30,6 +33,7 @@ public class DeviceVariable : BaseEntity
     [SugarColumn(ColumnDescription = "变量名称", IsNullable = true)]
     [DataTable(Order = 1, IsShow = true, Sortable = true)]
     public virtual string Name { get; set; }
+
     /// <summary>
     /// 描述
     /// </summary>
@@ -57,24 +61,28 @@ public class DeviceVariable : BaseEntity
     [SugarColumn(ColumnDescription = "读取表达式", Length = 200, IsNullable = true)]
     [DataTable(Order = 7, IsShow = true, Sortable = true, CellClass = " table-text-truncate ")]
     public string ReadExpressions { get; set; }
+
     /// <summary>
     /// 写入表达式
     /// </summary>
     [SugarColumn(ColumnDescription = "写入表达式", Length = 200, IsNullable = true)]
     [DataTable(Order = 7, IsShow = true, Sortable = true)]
     public string WriteExpressions { get; set; }
+
     /// <summary>
     /// 是否允许远程Rpc写入
     /// </summary>
     [SugarColumn(ColumnDescription = "远程写入", IsNullable = true)]
     [DataTable(Order = 4, IsShow = true, Sortable = true, CellClass = " table-text-truncate ")]
     public bool RpcWriteEnable { get; set; }
+
     /// <summary>
     /// 变量额外属性Json，通常使用为上传设备,List属性
     /// </summary>
     [SugarColumn(IsJson = true, ColumnDataType = StaticConfig.CodeFirst_BigString, ColumnDescription = "变量属性Json", IsNullable = true)]
     [IgnoreExcel]
     public ConcurrentDictionary<long, List<DependencyProperty>> VariablePropertys { get; set; } = new();
+
     /// <summary>
     /// 导入验证专用
     /// </summary>
@@ -84,18 +92,21 @@ public class DeviceVariable : BaseEntity
     public bool IsUp { get; set; }
 
     #region 报警
+
     /// <summary>
     /// 布尔开报警使能
     /// </summary>
     [SugarColumn(ColumnDescription = "布尔开报警使能")]
     [DataTable(Order = 99, IsShow = true, Sortable = true, DefaultFilter = true, CellClass = " table-text-truncate ")]
     public bool BoolOpenAlarmEnable { get; set; }
+
     /// <summary>
     /// 布尔开报警约束
     /// </summary>
     [SugarColumn(ColumnDescription = "布尔开报警约束", IsNullable = true)]
     [DataTable(Order = 99, IsShow = true, Sortable = true, DefaultFilter = true, CellClass = " table-text-truncate ")]
     public string BoolOpenRestrainExpressions { get; set; } = "";
+
     /// <summary>
     /// 布尔开报警文本
     /// </summary>
@@ -109,12 +120,14 @@ public class DeviceVariable : BaseEntity
     [SugarColumn(ColumnDescription = "布尔关报警使能")]
     [DataTable(Order = 99, IsShow = true, Sortable = true, DefaultFilter = true, CellClass = " table-text-truncate ")]
     public bool BoolCloseAlarmEnable { get; set; }
+
     /// <summary>
     /// 布尔关报警约束
     /// </summary>
     [SugarColumn(ColumnDescription = "布尔关报警约束", IsNullable = true)]
     [DataTable(Order = 99, IsShow = true, Sortable = true, DefaultFilter = true, CellClass = " table-text-truncate ")]
     public string BoolCloseRestrainExpressions { get; set; } = "";
+
     /// <summary>
     /// 布尔关报警文本
     /// </summary>
@@ -128,18 +141,21 @@ public class DeviceVariable : BaseEntity
     [SugarColumn(ColumnDescription = "高报使能")]
     [DataTable(Order = 99, IsShow = true, Sortable = true, DefaultFilter = true, CellClass = " table-text-truncate ")]
     public bool HAlarmEnable { get; set; }
+
     /// <summary>
     /// 高报约束
     /// </summary>
     [SugarColumn(ColumnDescription = "高报约束", IsNullable = true)]
     [DataTable(Order = 99, IsShow = true, Sortable = true, DefaultFilter = true, CellClass = " table-text-truncate ")]
     public string HRestrainExpressions { get; set; } = "";
+
     /// <summary>
     /// 高报文本
     /// </summary>
     [SugarColumn(ColumnDescription = "高报文本", IsNullable = true)]
     [DataTable(Order = 99, IsShow = true, Sortable = true, DefaultFilter = true, CellClass = " table-text-truncate ")]
     public string HAlarmText { get; set; } = "";
+
     /// <summary>
     /// 高限值
     /// </summary>
@@ -153,18 +169,21 @@ public class DeviceVariable : BaseEntity
     [SugarColumn(ColumnDescription = "高高报使能")]
     [DataTable(Order = 99, IsShow = true, Sortable = true, DefaultFilter = true, CellClass = " table-text-truncate ")]
     public bool HHAlarmEnable { get; set; }
+
     /// <summary>
     /// 高高报约束
     /// </summary>
     [SugarColumn(ColumnDescription = "高高报约束", IsNullable = true)]
     [DataTable(Order = 99, IsShow = true, Sortable = true, DefaultFilter = true, CellClass = " table-text-truncate ")]
     public string HHRestrainExpressions { get; set; } = "";
+
     /// <summary>
     /// 高高报文本
     /// </summary>
     [SugarColumn(ColumnDescription = "高高报文本", IsNullable = true)]
     [DataTable(Order = 99, IsShow = true, Sortable = true, DefaultFilter = true, CellClass = " table-text-truncate ")]
     public string HHAlarmText { get; set; } = "";
+
     /// <summary>
     /// 高高限值
     /// </summary>
@@ -178,18 +197,21 @@ public class DeviceVariable : BaseEntity
     [SugarColumn(ColumnDescription = "低报使能")]
     [DataTable(Order = 99, IsShow = true, Sortable = true, DefaultFilter = true, CellClass = " table-text-truncate ")]
     public bool LAlarmEnable { get; set; }
+
     /// <summary>
     /// 低报约束
     /// </summary>
     [SugarColumn(ColumnDescription = "低报约束", IsNullable = true)]
     [DataTable(Order = 99, IsShow = true, Sortable = true, DefaultFilter = true, CellClass = " table-text-truncate ")]
     public string LRestrainExpressions { get; set; } = "";
+
     /// <summary>
     /// 低报文本
     /// </summary>
     [SugarColumn(ColumnDescription = "低报文本", IsNullable = true)]
     [DataTable(Order = 99, IsShow = true, Sortable = true, DefaultFilter = true, CellClass = " table-text-truncate ")]
     public string LAlarmText { get; set; } = "";
+
     /// <summary>
     /// 低限值
     /// </summary>
@@ -203,30 +225,31 @@ public class DeviceVariable : BaseEntity
     [SugarColumn(ColumnDescription = "低低报使能")]
     [DataTable(Order = 99, IsShow = true, Sortable = true, DefaultFilter = true, CellClass = " table-text-truncate ")]
     public bool LLAlarmEnable { get; set; }
+
     /// <summary>
     /// 低低报约束
     /// </summary>
     [SugarColumn(ColumnDescription = "低低报约束", IsNullable = true)]
     [DataTable(Order = 99, IsShow = true, Sortable = true, DefaultFilter = true, CellClass = " table-text-truncate ")]
     public string LLRestrainExpressions { get; set; } = "";
+
     /// <summary>
     /// 低低报文本
     /// </summary>
     [SugarColumn(ColumnDescription = "低低报文本", IsNullable = true)]
     [DataTable(Order = 99, IsShow = true, Sortable = true, DefaultFilter = true, CellClass = " table-text-truncate ")]
     public string LLAlarmText { get; set; } = "";
+
     /// <summary>
     /// 低低限值
     /// </summary>
     [SugarColumn(ColumnDescription = "低低限值", IsNullable = true)]
     [DataTable(Order = 99, IsShow = true, Sortable = true, DefaultFilter = true, CellClass = " table-text-truncate ")]
     public double LLAlarmCode { get; set; }
-    #endregion
-
-
 
     #endregion
 
+    #endregion
 
     /// <summary>
     /// 设备
@@ -255,7 +278,6 @@ public class DeviceVariable : BaseEntity
     /// </summary>
     [SugarColumn(ColumnDescription = "特殊方法", Length = 200, IsNullable = true)]
     [DataTable(Order = 7, IsShow = true, Sortable = true)]
-
     public string OtherMethod { get; set; }
 
     /// <summary>
@@ -264,6 +286,4 @@ public class DeviceVariable : BaseEntity
     [SugarColumn(ColumnDescription = "变量地址", Length = 200, IsNullable = true)]
     [DataTable(Order = 3, IsShow = true, Sortable = true)]
     public string Address { get; set; }
-
 }
-

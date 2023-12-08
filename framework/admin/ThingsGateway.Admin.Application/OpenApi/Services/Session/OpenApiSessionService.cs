@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using Furion.DependencyInjection;
@@ -22,18 +24,13 @@ namespace ThingsGateway.Admin.Application;
 [Injection(Proxy = typeof(OperDispatchProxy))]
 public class OpenApiSessionService : DbRepository<OpenApiUser>, IOpenApiSessionService
 {
-
     private readonly IVerificatService _verificatService;
-
-
 
     /// <inheritdoc cref="IOpenApiSessionService"/>
     public OpenApiSessionService(IVerificatService verificatService)
     {
         _verificatService = verificatService;
     }
-
-
 
     /// <inheritdoc/>
     [OperDesc("强退OPENAPI会话")]
@@ -91,7 +88,6 @@ public class OpenApiSessionService : DbRepository<OpenApiUser>, IOpenApiSessionS
                 {
                     it.VerificatSignList = new();
                 }
-
             });
         for (int i = input.SortField.Count - 1; i >= 0; i--)
         {
@@ -102,5 +98,4 @@ public class OpenApiSessionService : DbRepository<OpenApiUser>, IOpenApiSessionS
         pageInfo.Records = pageInfo.Records.OrderByDescending(it => it.VerificatCount);
         return pageInfo;
     }
-
 }

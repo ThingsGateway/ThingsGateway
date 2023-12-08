@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using LiteDB;
@@ -39,7 +41,6 @@ public partial class RabbitMQProducer : UpLoadBaseWithCacheT<DeviceData, Variabl
 
     protected override UploadPropertyWithCacheT _uploadPropertyWithCache => _driverPropertys;
 
-
     /// <summary>
     /// <inheritdoc/>
     /// </summary>
@@ -51,6 +52,7 @@ public partial class RabbitMQProducer : UpLoadBaseWithCacheT<DeviceData, Variabl
     {
         return $" {nameof(RabbitMQProducer)} IP:{_driverPropertys.IP} Port:{_driverPropertys.Port}";
     }
+
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
@@ -65,7 +67,6 @@ public partial class RabbitMQProducer : UpLoadBaseWithCacheT<DeviceData, Variabl
     {
         base.Init(client);
 
-
         #region Kafka 生产者
 
         _connectionFactory = new ConnectionFactory
@@ -78,18 +79,14 @@ public partial class RabbitMQProducer : UpLoadBaseWithCacheT<DeviceData, Variabl
         };
 
         #endregion
-
     }
-
 
     protected override async Task ProtectedExecuteAsync(CancellationToken cancellationToken)
     {
-
         if (_model == null)
         {
             try
             {
-
                 // 创建连接
                 _connection ??= _connectionFactory.CreateConnection();
                 // 创建通道
@@ -111,7 +108,6 @@ public partial class RabbitMQProducer : UpLoadBaseWithCacheT<DeviceData, Variabl
                 }
             }
         }
-
 
         var cacheItems = new List<CacheItem>();
 
@@ -149,10 +145,8 @@ public partial class RabbitMQProducer : UpLoadBaseWithCacheT<DeviceData, Variabl
                     {
                         LogMessage?.LogWarning(ex);
                     }
-
                 }
             }
-
         }
         catch (Exception ex)
         {
@@ -181,9 +175,7 @@ public partial class RabbitMQProducer : UpLoadBaseWithCacheT<DeviceData, Variabl
                             }
                             if (!result.IsSuccess)
                             {
-
                                 AddDevCache(cacheItems, $"{_driverPropertys.DeviceTopic}", json);
-
                             }
                         }
                         else
@@ -195,10 +187,8 @@ public partial class RabbitMQProducer : UpLoadBaseWithCacheT<DeviceData, Variabl
                     {
                         LogMessage?.LogWarning(ex);
                     }
-
                 }
             }
-
         }
         catch (Exception ex)
         {
@@ -233,14 +223,12 @@ public partial class RabbitMQProducer : UpLoadBaseWithCacheT<DeviceData, Variabl
                         {
                             break;
                         }
-
                     }
                     catch (Exception ex)
                     {
                         LogMessage?.LogWarning(ex);
                     }
                 }
-
             }
         }
         catch (Exception ex)
@@ -250,7 +238,6 @@ public partial class RabbitMQProducer : UpLoadBaseWithCacheT<DeviceData, Variabl
 
         try
         {
-
             var devList = CacheDb.Cache.Find(a => a.Type == devType, 0, 100).ToList();
             {
                 foreach (var item in devList)
@@ -280,9 +267,6 @@ public partial class RabbitMQProducer : UpLoadBaseWithCacheT<DeviceData, Variabl
                     }
                 }
             }
-
-
-
         }
         catch (Exception ex)
         {

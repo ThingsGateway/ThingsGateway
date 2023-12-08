@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using System.Collections;
@@ -16,6 +18,7 @@ using System.Text;
 using ThingsGateway.Foundation.Adapter.OPCDA.Rcw;
 
 namespace ThingsGateway.Foundation.Adapter.OPCDA.Discovery;
+
 /// <summary>
 /// OpcDiscovery
 /// </summary>
@@ -28,6 +31,7 @@ internal class OpcDiscovery
     private static readonly Guid CATID_OPC_DA30 = new("CC603642-66D7-48f1-B69A-B625E73652D7");
 
     private static readonly Guid OPCEnumCLSID = new("13486D51-4821-11D2-A494-3CB306C10000");
+
     /// <summary>
     /// GetOpcServer
     /// </summary>
@@ -36,7 +40,6 @@ internal class OpcDiscovery
     /// <returns></returns>
     internal static ServerInfo GetOpcServer(string serverName, string host)
     {
-
         if (string.IsNullOrEmpty(serverName))
         {
             throw new("检索失败，需提供OPCName");
@@ -85,7 +88,6 @@ internal class OpcDiscovery
             Comn.ComInterop.RealseComServer(o_Server);
             o_Server = null;
         }
-
     }
 
     private static void GetIOPCServerList(ref ServerInfo result, ref ServerInfo[] serverInfos, string serverName, string host, IOPCServerList m_server, Guid catid)
@@ -114,7 +116,6 @@ internal class OpcDiscovery
                 break;
             }
         }
-
     }
 
     private static void GetIOPCServerList(ref ServerInfo result, ref ServerInfo[] serverInfos, string serverName, string host, IOPCServerList2 m_server, Guid catid)
@@ -143,9 +144,7 @@ internal class OpcDiscovery
                 break;
             }
         }
-
     }
-
 
     private static ServerInfo[] GetServerDetails(Guid[] clsids, string host, IOPCServerList m_server)
     {
@@ -230,10 +229,7 @@ internal class OpcDiscovery
         }
         return (ServerInfo[])servers.ToArray(typeof(ServerInfo));
     }
-
-
 }
-
 
 internal class ServerInfo
 {

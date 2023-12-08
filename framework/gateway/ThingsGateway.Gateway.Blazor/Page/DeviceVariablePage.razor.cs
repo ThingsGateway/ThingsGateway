@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using Mapster;
@@ -15,30 +17,28 @@ using Mapster;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 
-
-
 namespace ThingsGateway.Gateway.Blazor;
+
 /// <summary>
 /// 采集变量页面
 /// </summary>
 public partial class DeviceVariablePage
 {
     private readonly DeviceVariablePageInput _search = new();
-    long _choiceUploadDeviceId;
-    List<CollectDevice> _collectDevices = new();
+    private long _choiceUploadDeviceId;
+    private List<CollectDevice> _collectDevices = new();
     private IAppDataTable _datatable;
 
-    List<DeviceTree> _deviceGroups = new();
+    private List<DeviceTree> _deviceGroups = new();
 
-    ImportExcel _importExcel;
-    Dictionary<long, List<string>> _otherMethods = new();
+    private ImportExcel _importExcel;
+    private Dictionary<long, List<string>> _otherMethods = new();
     //string _searchName;
 
-    List<Device> _uploadDevices = new();
+    private List<Device> _uploadDevices = new();
 
     [Inject]
-    AjaxService _ajaxService { get; set; }
-
+    private AjaxService _ajaxService { get; set; }
 
     /// <summary>
     /// <inheritdoc/>
@@ -65,7 +65,6 @@ public partial class DeviceVariablePage
             await _serviceScope.ServiceProvider.GetService<VariableService>().ClearDeviceVariableAsync();
         }
         await DatatableQueryAsync();
-
     }
 
     private async Task DatatableQueryAsync()
@@ -78,7 +77,7 @@ public partial class DeviceVariablePage
         await _serviceScope.ServiceProvider.GetService<VariableService>().DeleteAsync(input.Select(a => a.Id).ToArray());
     }
 
-    void DeviceChanged(long devId)
+    private void DeviceChanged(long devId)
     {
         if (devId > 0)
         {
@@ -89,11 +88,12 @@ public partial class DeviceVariablePage
             _otherMethods = new();
     }
 
-    Task<Dictionary<string, ImportPreviewOutputBase>> DeviceImportAsync(IBrowserFile file)
+    private Task<Dictionary<string, ImportPreviewOutputBase>> DeviceImportAsync(IBrowserFile file)
     {
         return _serviceScope.ServiceProvider.GetService<VariableService>().PreviewAsync(file);
     }
-    async Task DownExportAsync(DeviceVariablePageInput input = null)
+
+    private async Task DownExportAsync(DeviceVariablePageInput input = null)
     {
         await _ajaxService.DownFileAsync("gatewayFile/deviceVariable", DateTimeExtensions.CurrentDateTime.ToFileDateTimeFormat(), input.Adapt<DeviceVariableInput>());
     }
@@ -103,7 +103,7 @@ public partial class DeviceVariablePage
         await _serviceScope.ServiceProvider.GetService<VariableService>().EditAsync(input);
     }
 
-    List<DependencyProperty> GetDriverProperties(string pluginName, List<DependencyProperty> dependencyProperties)
+    private List<DependencyProperty> GetDriverProperties(string pluginName, List<DependencyProperty> dependencyProperties)
     {
         return BackgroundServiceUtil.GetBackgroundService<UploadDeviceWorker>().GetVariablePropertys(pluginName, dependencyProperties);
     }
@@ -114,7 +114,7 @@ public partial class DeviceVariablePage
         return data;
     }
 
-    async Task SaveDeviceImportAsync(Dictionary<string, ImportPreviewOutputBase> data)
+    private async Task SaveDeviceImportAsync(Dictionary<string, ImportPreviewOutputBase> data)
     {
         await _serviceScope.ServiceProvider.GetService<VariableService>().ImportAsync(data);
         await DatatableQueryAsync();

@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using System.Text;
@@ -26,22 +28,22 @@ public class DLT645_2007Address : DeviceAddressBase
     /// </summary>
     public DLT645_2007Address()
     {
-
     }
 
     /// <summary>
     /// 数据标识
     /// </summary>
     public byte[] DataId { get; set; } = new byte[0];
+
     /// <summary>
     /// 反转解析
     /// </summary>
     public bool Reverse { get; set; } = true;
+
     /// <summary>
     /// 站号信息
     /// </summary>
     public byte[] Station { get; set; } = new byte[0];
-
 
     /// <summary>
     /// 解析地址
@@ -83,7 +85,6 @@ public class DLT645_2007Address : DeviceAddressBase
         }
         dlt645_2007Address.DataId = array;
         return dlt645_2007Address;
-
     }
 
     /// <inheritdoc/>
@@ -104,6 +105,4 @@ public class DLT645_2007Address : DeviceAddressBase
         }
         return stringGeter.ToString();
     }
-
-
 }

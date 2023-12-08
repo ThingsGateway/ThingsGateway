@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,16 +9,14 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using BlazorComponent;
 
 using Microsoft.AspNetCore.Components;
 
-using System.Collections.Generic;
-
 namespace ThingsGateway.Foundation.Demo;
-
 
 /// <inheritdoc/>
 public partial class DriverDebugUIPage : DriverDebugUIBase
@@ -26,10 +25,12 @@ public partial class DriverDebugUIPage : DriverDebugUIBase
     /// DeviceVariableRunTimes
     /// </summary>
     public List<DeviceVariableRunTime> DeviceVariableRunTimes;
+
     /// <summary>
     /// MaxPack
     /// </summary>
     public int MaxPack = 100;
+
     private StringNumber _selected = 0;
 
     /// <inheritdoc/>
@@ -101,12 +102,12 @@ public partial class DriverDebugUIPage : DriverDebugUIBase
                 {
                     Messages.Add((Microsoft.Extensions.Logging.LogLevel.Warning, DateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset) + " - " + ex));
                 }
-
             }
             else
                 Messages.Add((Microsoft.Extensions.Logging.LogLevel.Warning, DateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat(InitTimezone.TimezoneOffset) + " - " + result.Message));
         }
     }
+
     /// <summary>
     /// <inheritdoc/>
     /// </summary>
@@ -187,7 +188,7 @@ public partial class DriverDebugUIPage : DriverDebugUIBase
                     }
                 }
                 public List<DeviceVariableRunTime> DeviceVariableRunTimes;
-                                
+
                 private static async Task ModbusClientAsync(IReadWrite plc)
                 {
                 DeviceVariableRunTimes = new()
@@ -219,6 +220,7 @@ public partial class DriverDebugUIPage : DriverDebugUIBase
                 };
 
                     #region 连读
+
                 var deviceVariableSourceReads = Plc.LoadSourceRead<DeviceVariableSourceRead, DeviceVariableRunTime>(DeviceVariableRunTimes, MaxPack);
                 foreach (var item in deviceVariableSourceReads)
                 {
@@ -228,10 +230,10 @@ public partial class DriverDebugUIPage : DriverDebugUIBase
                         item.DeviceVariableRunTimes.PraseStructContent(result.Content);
                     }
                 }
-                    #endregion
 
+                    #endregion
                 }
-                
+
 """, "csharp"));
         base.OnInitialized();
     }

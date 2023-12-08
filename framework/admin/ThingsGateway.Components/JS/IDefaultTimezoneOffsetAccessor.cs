@@ -1,5 +1,4 @@
-﻿
-namespace ThingsGateway.Components
+﻿namespace ThingsGateway.Components
 {
     public interface IDefaultTimezoneOffsetAccessor
     {

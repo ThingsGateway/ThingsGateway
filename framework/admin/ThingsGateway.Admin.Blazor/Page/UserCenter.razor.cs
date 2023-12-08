@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using Masa.Blazor;
@@ -15,6 +17,7 @@ using Masa.Blazor;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ThingsGateway.Admin.Blazor;
+
 /// <summary>
 /// 个人设置
 /// </summary>
@@ -24,13 +27,12 @@ public partial class UserCenter
     private readonly UpdateInfoInput _updateInfoInput = new();
     private List<long> _menusChoice = new();
     private long _defaultMenuId { get; set; }
+
     [CascadingParameter]
     private MainLayout _mainLayout { get; set; }
 
     [Inject]
     private NavigationManager _navigationManager { get; set; }
-
-
 
     /// <inheritdoc/>
     protected override async Task OnParametersSetAsync()
@@ -42,20 +44,21 @@ public partial class UserCenter
         await base.OnParametersSetAsync();
     }
 
-    async Task OnDefaultRazorSaveAsync()
+    private async Task OnDefaultRazorSaveAsync()
     {
         await _serviceScope.ServiceProvider.GetService<IUserCenterService>().UpdateUserDefaultRazorAsync(UserManager.UserId, _defaultMenuId);
         await _mainLayout.StateHasChangedAsync();
         await PopupService.EnqueueSnackbarAsync("成功", AlertTypes.Success);
     }
 
-    async Task OnShortcutSaveAsync()
+    private async Task OnShortcutSaveAsync()
     {
         await _serviceScope.ServiceProvider.GetService<IUserCenterService>().UpdateWorkbenchAsync(_menusChoice);
         await _mainLayout.StateHasChangedAsync();
         await PopupService.EnqueueSnackbarAsync("成功", AlertTypes.Success);
     }
-    async Task OnUpdatePasswordInfoAsync(FormContext context)
+
+    private async Task OnUpdatePasswordInfoAsync(FormContext context)
     {
         var success = context.Validate();
         if (success)
@@ -70,7 +73,7 @@ public partial class UserCenter
         }
     }
 
-    async Task OnUpdateUserInfoAsync()
+    private async Task OnUpdateUserInfoAsync()
     {
         await _serviceScope.ServiceProvider.GetService<IUserCenterService>().UpdateUserInfoAsync(_updateInfoInput);
         await _mainLayout.StateHasChangedAsync();

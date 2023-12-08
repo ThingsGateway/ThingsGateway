@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using System.Net;
@@ -22,7 +24,6 @@ namespace ThingsGateway.Foundation.Core;
 /// </summary>
 public abstract class ReadWriteDevicesUdpDataHandleAdapter<TRequest> : UdpDataHandlingAdapter where TRequest : class, IMessage
 {
-
     /// <summary>
     /// 报文输出时采用字符串还是HexString
     /// </summary>
@@ -33,10 +34,13 @@ public abstract class ReadWriteDevicesUdpDataHandleAdapter<TRequest> : UdpDataHa
     {
         Request = GetInstance();
     }
+
     /// <inheritdoc/>
     public override bool CanSendRequestInfo => false;
+
     /// <inheritdoc/>
     public override bool CanSplicingSend => false;
+
     /// <inheritdoc/>
     public virtual bool IsSendPackCommand { get; set; } = true;
 
@@ -77,6 +81,7 @@ public abstract class ReadWriteDevicesUdpDataHandleAdapter<TRequest> : UdpDataHa
         GoSend(endPoint, bytes, 0, bytes.Length);
         Logger?.Trace($"{FoundationConst.LogMessageHeader}{ToString()}- 发送:{(IsHexData ? Request.SendBytes.ToHexString(' ') : Encoding.UTF8.GetString(Request.SendBytes))}");
     }
+
     /// <inheritdoc/>
     protected override void PreviewReceived(EndPoint remoteEndPoint, ByteBlock byteBlock)
     {
@@ -151,6 +156,4 @@ public abstract class ReadWriteDevicesUdpDataHandleAdapter<TRequest> : UdpDataHa
     /// <param name="response">设备方反馈的原始报文内容</param>
     /// <returns>返回拆包之后的报文信息，默认不进行任何的拆包操作</returns>
     protected abstract OperResult<byte[]> UnpackResponse(byte[] send, byte[] response);
-
-
 }

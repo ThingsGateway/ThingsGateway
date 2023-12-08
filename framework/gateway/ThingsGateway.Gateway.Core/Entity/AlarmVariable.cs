@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,9 +9,11 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 namespace ThingsGateway.Gateway.Core;
+
 /// <summary>
 /// 报警变量
 /// </summary>
@@ -71,12 +74,10 @@ public class AlarmVariable : PrimaryIdEntity
     [DataTable(Order = 8, IsShow = true, Sortable = true, CellClass = " table-text-truncate ")]
     public DateTime AlarmTime { get; set; }
 
-
     /// <inheritdoc  cref="DeviceVariableRunTime.EventTime"/>
     [SugarColumn(ColumnDescription = "事件时间", IsNullable = false)]
     [DataTable(Order = 8, IsShow = true, Sortable = true, CellClass = " table-text-truncate ")]
     public DateTime EventTime { get; set; }
-
 
     /// <summary>
     /// 报警类型
@@ -91,5 +92,4 @@ public class AlarmVariable : PrimaryIdEntity
     [SugarColumn(ColumnDescription = "事件类型", IsNullable = false, ColumnDataType = "varchar(100)")]
     [DataTable(Order = 8, IsShow = true, Sortable = true, CellClass = " table-text-truncate ")]
     public EventEnum EventTypeEnum { get; set; }
-
 }

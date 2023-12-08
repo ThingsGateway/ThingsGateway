@@ -1,4 +1,5 @@
 #region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 //------------------------------------------------------------------------------
@@ -204,6 +206,7 @@ namespace ThingsGateway.Foundation.Core
 #if NET6_0_OR_GREATER
         public static void FastBinarySerialize<[DynamicallyAccessedMembers(FastBinaryFormatter.DynamicallyAccessed)] T>(ByteBlock stream, [DynamicallyAccessedMembers(FastBinaryFormatter.DynamicallyAccessed)] in T obj)
 #else
+
         public static void FastBinarySerialize<T>(ByteBlock stream, in T obj)
 #endif
         {
@@ -218,6 +221,7 @@ namespace ThingsGateway.Foundation.Core
 #if NET6_0_OR_GREATER
         public static byte[] FastBinarySerialize<[DynamicallyAccessedMembers(FastBinaryFormatter.DynamicallyAccessed)] T>([DynamicallyAccessedMembers(FastBinaryFormatter.DynamicallyAccessed)] in T obj)
 #else
+
         public static byte[] FastBinarySerialize<T>(in T obj)
 #endif
         {
@@ -242,6 +246,7 @@ namespace ThingsGateway.Foundation.Core
 #if NET6_0_OR_GREATER
         public static T FastBinaryDeserialize<[DynamicallyAccessedMembers(FastBinaryFormatter.DynamicallyAccessed)] T>(byte[] data, int offset)
 #else
+
         public static T FastBinaryDeserialize<T>(byte[] data, int offset)
 #endif
         {
@@ -258,6 +263,7 @@ namespace ThingsGateway.Foundation.Core
 #if NET6_0_OR_GREATER
         public static object FastBinaryDeserialize(byte[] data, int offset, [DynamicallyAccessedMembers(FastBinaryFormatter.DynamicallyAccessed)] Type type)
 #else
+
         public static object FastBinaryDeserialize(byte[] data, int offset, Type type)
 #endif
         {
@@ -273,12 +279,12 @@ namespace ThingsGateway.Foundation.Core
 #if NET6_0_OR_GREATER
         public static T FastBinaryDeserialize<[DynamicallyAccessedMembers(FastBinaryFormatter.DynamicallyAccessed)] T>(byte[] data)
 #else
+
         public static T FastBinaryDeserialize<T>(byte[] data)
 #endif
         {
             return FastBinaryDeserialize<T>(data, 0);
         }
-
 
         #endregion Fast二进制反序列化
 
@@ -410,6 +416,7 @@ namespace ThingsGateway.Foundation.Core
         #endregion Xml序列化和反序列化
 
         #region Json序列化和反序列化
+
         /// <summary>
         /// 转换为Json
         /// </summary>

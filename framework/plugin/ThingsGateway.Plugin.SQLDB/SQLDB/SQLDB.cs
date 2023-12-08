@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using LiteDB;
@@ -30,6 +32,7 @@ public partial class SQLDB : UpLoadBaseWithCacheT<DeviceData, SQLHistoryValue>
 {
     protected override bool _device => false;
     protected override bool _variable => _driverPropertys.IsHisDB;
+
     /// <inheritdoc/>
     public override Type DriverDebugUIType => null;
 
@@ -37,6 +40,7 @@ public partial class SQLDB : UpLoadBaseWithCacheT<DeviceData, SQLHistoryValue>
 
     /// <inheritdoc/>
     public override VariablePropertyBase VariablePropertys => _variablePropertys;
+
     protected override IReadWrite _readWrite => null;
 
     protected override UploadPropertyWithCacheT _uploadPropertyWithCache => _driverPropertys;
@@ -74,6 +78,7 @@ YitIdHelper.NextId())
     }
 
     private bool initRead = false;
+
     protected override async Task ProtectedExecuteAsync(CancellationToken cancellationToken)
     {
         //获取设备连接状态
@@ -162,7 +167,6 @@ YitIdHelper.NextId())
                         {
                             if (!cancellationToken.IsCancellationRequested)
                             {
-
                                 var result = await InserableAsync(db, item, cancellationToken);
                                 if (success != result.IsSuccess)
                                 {
@@ -179,7 +183,6 @@ YitIdHelper.NextId())
                             LogMessage?.LogWarning(ex);
                         }
                     }
-
                 }
             }
             catch (Exception ex)
@@ -193,6 +196,4 @@ YitIdHelper.NextId())
 
         await Delay(_driverPropertys.CycleInterval, cancellationToken);
     }
-
-
 }

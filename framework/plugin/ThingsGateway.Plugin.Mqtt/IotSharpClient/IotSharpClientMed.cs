@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using IoTSharp.Data;
@@ -33,6 +35,7 @@ public partial class IotSharpClient : UpLoadBaseWithCacheT<DeviceData, VariableD
     /// rpcmethodname存疑，定为自定义方法，在ThingsGateway上写入变量的方法固定为"Write"
     /// </summary>
     private const string WriteMethod = "WRITE";
+
     private const string devType = "dev";
     private const string varType = "var";
     private readonly MqttClientVariableProperty _variablePropertys = new();
@@ -46,8 +49,6 @@ public partial class IotSharpClient : UpLoadBaseWithCacheT<DeviceData, VariableD
     private MqttClientSubscribeOptions _mqttSubscribeOptions;
 
     private volatile bool success = true;
-
-
 
     private async Task MqttClient_ApplicationMessageReceivedAsync(MqttApplicationMessageReceivedEventArgs args)
     {
@@ -117,7 +118,6 @@ public partial class IotSharpClient : UpLoadBaseWithCacheT<DeviceData, VariableD
                             {
                                 results.Add(item.Key, new OperResult("权限不足，变量不支持写入"));
                             }
-
                         }
                         else
                         {
@@ -152,10 +152,7 @@ public partial class IotSharpClient : UpLoadBaseWithCacheT<DeviceData, VariableD
                 }
 
                 await SendResponseAsync(rpcResponse);
-
             }
-
-
         }
 
         async Task SendResponseAsync(RpcResponse rpcResponse)
@@ -175,9 +172,7 @@ public partial class IotSharpClient : UpLoadBaseWithCacheT<DeviceData, VariableD
             {
             }
         }
-
     }
-
 
     protected override void AddCache(List<CacheItem> cacheItems, IEnumerable<VariableData> dev)
     {
@@ -205,7 +200,6 @@ public partial class IotSharpClient : UpLoadBaseWithCacheT<DeviceData, VariableD
     protected override void AddCache(List<CacheItem> cacheItems, IEnumerable<DeviceData> dev)
     {
     }
-
 
     private async Task MqttClient_ConnectedAsync(MqttClientConnectedEventArgs arg)
     {

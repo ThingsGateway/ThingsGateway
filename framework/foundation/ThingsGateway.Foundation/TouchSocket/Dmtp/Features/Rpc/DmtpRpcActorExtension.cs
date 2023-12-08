@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,12 +9,14 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 #if NET6_0_OR_GREATER
 using System.Diagnostics.CodeAnalysis;
 
 #endif
+
 using ThingsGateway.Foundation.Resources;
 
 namespace ThingsGateway.Foundation.Dmtp.Rpc
@@ -105,6 +108,7 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
 #if NET6_0_OR_GREATER
         public static DmtpRpcFeature UseDmtpRpc(this IPluginManager pluginManager)
 #else
+
         public static DmtpRpcFeature UseDmtpRpc(this IPluginManager pluginManager)
 #endif
         {
@@ -119,12 +123,14 @@ namespace ThingsGateway.Foundation.Dmtp.Rpc
 #if NET6_0_OR_GREATER
         public static DmtpRpcFeature UseDmtpRpc<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TDmtpRpcFeature>(this IPluginManager pluginManager) where TDmtpRpcFeature : DmtpRpcFeature
 #else
+
         public static DmtpRpcFeature UseDmtpRpc<TDmtpRpcFeature>(this IPluginManager pluginManager) where TDmtpRpcFeature : DmtpRpcFeature
 #endif
 
         {
             return pluginManager.Add<TDmtpRpcFeature>();
         }
+
         #endregion 插件扩展
     }
 }

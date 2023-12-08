@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 namespace ThingsGateway.Foundation.Core;
@@ -17,8 +19,8 @@ namespace ThingsGateway.Foundation.Core;
 /// </summary>
 public interface IReadWrite : IDisposable
 {
-
     #region 属性
+
     /// <summary>
     /// 日志
     /// </summary>
@@ -64,30 +66,33 @@ public interface IReadWrite : IDisposable
     /// </summary>
     int FrameTime { get; set; }
 
-
-
     #endregion
 
     #region 连接，设置
+
     /// <summary>
     /// 获取链路连接状态
     /// </summary>
     bool IsConnected();
+
     /// <summary>
     /// 获取变量地址对应的bit偏移
     /// </summary>
     /// <param name="address">变量地址</param>
     /// <returns></returns>
     int GetBitOffset(string address);
+
     /// <summary>
     /// 寄存器地址的详细说明
     /// </summary>
     /// <returns></returns>
     string GetAddressDescription();
+
     /// <summary>
     /// 连读变量打包
     /// </summary>
     List<T> LoadSourceRead<T, T2>(List<T2> deviceVariables, int maxPack, int defaultIntervalTime) where T : IDeviceVariableSourceRead<IDeviceVariableRunTime>, new() where T2 : IDeviceVariableRunTime, new();
+
     /// <summary>
     /// 布尔量是否需要按字反转
     /// </summary>
@@ -100,12 +105,14 @@ public interface IReadWrite : IDisposable
     /// </summary>
     /// <param name="cancellationToken">取消令箭</param>
     void Connect(CancellationToken cancellationToken);
+
     /// <summary>
     /// 异步连接
     /// </summary>
     /// <param name="cancellationToken">取消令箭</param>
     /// <returns></returns>
     Task ConnectAsync(CancellationToken cancellationToken);
+
     /// <summary>
     /// 断开连接
     /// </summary>
@@ -116,6 +123,7 @@ public interface IReadWrite : IDisposable
     /// </summary>
     /// <param name="socketClient">客户端，对应Server有效</param>
     void SetDataAdapter(ISocketClient socketClient = default);
+
     /// <summary>
     /// 获取数据类型对应的寄存器长度
     /// </summary>
@@ -125,7 +133,6 @@ public interface IReadWrite : IDisposable
     /// <param name="isBool">isBool</param>
     /// <returns></returns>
     int GetLength(string address, int length, int typeLength, bool isBool = false);
-
 
     /// <summary>
     /// 发送
@@ -164,6 +171,7 @@ public interface IReadWrite : IDisposable
     /// <param name="senderClient">传入改参数时，将新建等待线程</param>
     /// <returns></returns>
     Task<ResponsedData> GetResponsedDataAsync(byte[] item, int timeout, CancellationToken cancellationToken, ISenderClient senderClient = default);
+
     /// <summary>
     /// 异步发送获取数据
     /// </summary>
@@ -174,11 +182,9 @@ public interface IReadWrite : IDisposable
     /// <returns></returns>
     ResponsedData GetResponsedData(byte[] item, int timeout, CancellationToken cancellationToken, ISenderClient senderClient = default);
 
-
     #endregion
 
     #region 读取
-
 
     /// <summary>
     /// 批量读取字节数组信息，需要指定地址和长度
@@ -193,7 +199,6 @@ public interface IReadWrite : IDisposable
     /// <inheritdoc cref="ReadAsync(string, int, CancellationToken)"/>
     /// </summary>
     OperResult<byte[]> Read(string address, int length, CancellationToken cancellationToken = default);
-
 
     /// <summary>
     /// 通过数据类型，获取对应的类型值
@@ -252,9 +257,9 @@ public interface IReadWrite : IDisposable
     /// <param name="cancellationToken">取消令箭</param>
     /// <returns></returns>
     OperResult<int[]> ReadInt32(string address, int length, CancellationToken cancellationToken = default);
+
     /// <inheritdoc cref="ReadInt32(string, int, CancellationToken)"/>
     Task<OperResult<int[]>> ReadInt32Async(string address, int length, CancellationToken cancellationToken = default);
-
 
     /// <summary>
     /// 读取Int64数组
@@ -264,6 +269,7 @@ public interface IReadWrite : IDisposable
     /// <param name="cancellationToken">取消令箭</param>
     /// <returns></returns>
     OperResult<long[]> ReadInt64(string address, int length, CancellationToken cancellationToken = default);
+
     /// <inheritdoc cref="ReadInt64(string, int, CancellationToken)"/>
     Task<OperResult<long[]>> ReadInt64Async(string address, int length, CancellationToken cancellationToken = default);
 
@@ -275,6 +281,7 @@ public interface IReadWrite : IDisposable
     /// <param name="cancellationToken">取消令箭</param>
     /// <returns></returns>
     OperResult<float[]> ReadSingle(string address, int length, CancellationToken cancellationToken = default);
+
     /// <inheritdoc cref="ReadSingle(string, int, CancellationToken)"/>
     Task<OperResult<float[]>> ReadSingleAsync(string address, int length, CancellationToken cancellationToken = default);
 
@@ -286,6 +293,7 @@ public interface IReadWrite : IDisposable
     /// <param name="cancellationToken">取消令箭</param>
     /// <returns></returns>
     OperResult<string> ReadString(string address, int length, CancellationToken cancellationToken = default);
+
     /// <inheritdoc cref="ReadString(string, int, CancellationToken)"/>
     Task<OperResult<string>> ReadStringAsync(string address, int length, CancellationToken cancellationToken = default);
 
@@ -297,6 +305,7 @@ public interface IReadWrite : IDisposable
     /// <param name="cancellationToken">取消令箭</param>
     /// <returns></returns>
     OperResult<ushort[]> ReadUInt16(string address, int length, CancellationToken cancellationToken = default);
+
     /// <inheritdoc cref="ReadUInt16(string, int, CancellationToken)"/>
     Task<OperResult<ushort[]>> ReadUInt16Async(string address, int length, CancellationToken cancellationToken = default);
 
@@ -308,6 +317,7 @@ public interface IReadWrite : IDisposable
     /// <param name="cancellationToken">取消令箭</param>
     /// <returns></returns>
     OperResult<uint[]> ReadUInt32(string address, int length, CancellationToken cancellationToken = default);
+
     /// <inheritdoc cref="ReadUInt32(string, int, CancellationToken)"/>
     Task<OperResult<uint[]>> ReadUInt32Async(string address, int length, CancellationToken cancellationToken = default);
 
@@ -319,18 +329,14 @@ public interface IReadWrite : IDisposable
     /// <param name="cancellationToken">取消令箭</param>
     /// <returns></returns>
     OperResult<ulong[]> ReadUInt64(string address, int length, CancellationToken cancellationToken = default);
+
     /// <inheritdoc cref="ReadUInt64(string, int, CancellationToken)"/>
     Task<OperResult<ulong[]>> ReadUInt64Async(string address, int length, CancellationToken cancellationToken = default);
-
-
-
-
-
-
 
     #endregion
 
     #region 写入数组
+
     /// <summary>
     /// 写入Double数组
     /// </summary>
@@ -339,6 +345,7 @@ public interface IReadWrite : IDisposable
     /// <param name="cancellationToken">取消令箭</param>
     /// <returns>写入结果</returns>
     OperResult Write(string address, double[] value, CancellationToken cancellationToken = default);
+
     /// <summary>
     /// 写入Single数组
     /// </summary>
@@ -347,6 +354,7 @@ public interface IReadWrite : IDisposable
     /// <param name="cancellationToken">取消令箭</param>
     /// <returns>写入结果</returns>
     OperResult Write(string address, float[] value, CancellationToken cancellationToken = default);
+
     /// <summary>
     /// 写入Int32数组
     /// </summary>
@@ -355,6 +363,7 @@ public interface IReadWrite : IDisposable
     /// <param name="cancellationToken">取消令箭</param>
     /// <returns>写入结果</returns>
     OperResult Write(string address, int[] value, CancellationToken cancellationToken = default);
+
     /// <summary>
     /// 写入Int64数组
     /// </summary>
@@ -363,6 +372,7 @@ public interface IReadWrite : IDisposable
     /// <param name="cancellationToken">取消令箭</param>
     /// <returns>写入结果</returns>
     OperResult Write(string address, long[] value, CancellationToken cancellationToken = default);
+
     /// <summary>
     /// 写入Int16数组
     /// </summary>
@@ -380,6 +390,7 @@ public interface IReadWrite : IDisposable
     /// <param name="cancellationToken">取消令箭</param>
     /// <returns>写入结果</returns>
     OperResult Write(string address, uint[] value, CancellationToken cancellationToken = default);
+
     /// <summary>
     /// 写入UInt64数组
     /// </summary>
@@ -388,6 +399,7 @@ public interface IReadWrite : IDisposable
     /// <param name="cancellationToken">取消令箭</param>
     /// <returns>写入结果</returns>
     OperResult Write(string address, ulong[] value, CancellationToken cancellationToken = default);
+
     /// <summary>
     /// 写入UInt16数组
     /// </summary>
@@ -396,28 +408,34 @@ public interface IReadWrite : IDisposable
     /// <param name="cancellationToken">取消令箭</param>
     /// <returns>写入结果</returns>
     OperResult Write(string address, ushort[] value, CancellationToken cancellationToken = default);
+
     /// <inheritdoc cref="Write(string, double[], CancellationToken)"/>
     Task<OperResult> WriteAsync(string address, double[] value, CancellationToken cancellationToken = default);
+
     /// <inheritdoc cref="Write(string, float[], CancellationToken)"/>
     Task<OperResult> WriteAsync(string address, float[] value, CancellationToken cancellationToken = default);
+
     /// <inheritdoc cref="Write(string, int[], CancellationToken)"/>
     Task<OperResult> WriteAsync(string address, int[] value, CancellationToken cancellationToken = default);
+
     /// <inheritdoc cref="Write(string, long[], CancellationToken)"/>
     Task<OperResult> WriteAsync(string address, long[] value, CancellationToken cancellationToken = default);
+
     /// <inheritdoc cref="Write(string, short[], CancellationToken)"/>
     Task<OperResult> WriteAsync(string address, short[] value, CancellationToken cancellationToken = default);
+
     /// <inheritdoc cref="Write(string, uint[], CancellationToken)"/>
     Task<OperResult> WriteAsync(string address, uint[] value, CancellationToken cancellationToken = default);
+
     /// <inheritdoc cref="Write(string, ulong[], CancellationToken)"/>
     Task<OperResult> WriteAsync(string address, ulong[] value, CancellationToken cancellationToken = default);
+
     /// <inheritdoc cref="Write(string, ushort[], CancellationToken)"/>
     Task<OperResult> WriteAsync(string address, ushort[] value, CancellationToken cancellationToken = default);
-
 
     #endregion
 
     #region 写入
-
 
     /// <summary>
     /// 根据数据类型，写入类型值
@@ -497,8 +515,6 @@ public interface IReadWrite : IDisposable
     /// </summary>
     Task<OperResult> WriteAsync(string address, string value, CancellationToken cancellationToken = default);
 
-
-
     /// <summary>
     /// 写入原始的byte数组数据到指定的地址，返回结果
     /// </summary>
@@ -565,5 +581,4 @@ public interface IReadWrite : IDisposable
     OperResult Write(string address, string value, CancellationToken cancellationToken = default);
 
     #endregion
-
 }

@@ -1,4 +1,5 @@
 #region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using Newtonsoft.Json.Linq;
@@ -19,7 +21,6 @@ using ThingsGateway.Foundation.Adapter.OPCUA;
 
 namespace ThingsGateway.Plugin.OPCUA;
 
-
 /// <summary>
 /// 数据节点
 /// </summary>
@@ -27,11 +28,13 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
 {
     private const string ReferenceServer = "https://diego2098.gitee.io/thingsgateway-docs/";
     private UpLoadBase _upLoadBase;
+
     //private readonly TypeAdapterConfig _config;
     /// <summary>
     /// OPC和网关对应表
     /// </summary>
     private readonly Dictionary<NodeId, OPCUATag> NodeIdTags = new();
+
     /// <inheritdoc cref="ThingsGatewayNodeManager"/>
     public ThingsGatewayNodeManager(UpLoadBase upLoadBase, IServerInternal server, ApplicationConfiguration configuration) : base(server, configuration, ReferenceServer)
     {
@@ -82,9 +85,7 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
                 }
             }
             AddPredefinedNode(SystemContext, rootFolder);
-
         }
-
     }
 
     /// <summary>
@@ -134,7 +135,6 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
 
     //            if (data.Count > 0)
     //            {
-
     //                var hisDataValue = data.Adapt<List<DataValue>>(_config);
     //                HistoryData hisData = new();
     //                hisData.DataValues.AddRange(hisDataValue);
@@ -203,7 +203,6 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
                 uaTag.StatusCode = code;
             }
             uaTag.ClearChangeMasks(SystemContext, false);
-
         }
     }
 
@@ -216,6 +215,7 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
         NodeIdTags.Clear();
         base.Dispose(disposing);
     }
+
     private static NodeId DataNodeType(Type tp)
     {
         if (tp == typeof(bool))
@@ -247,8 +247,8 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
         return DataTypeIds.String;
     }
 
-
     private volatile bool success = true;
+
     /// <summary>
     /// 在服务器端直接更改对应数据节点的值
     /// </summary>
@@ -291,7 +291,6 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
         }
         tag.Value = newValue;
         tag.Timestamp = dateTime;
-
 
         void SetDataType(OPCUATag tag, object value)
         {
@@ -394,6 +393,7 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
         NodeIdTags.AddOrUpdate(variable.NodeId, variable);
         return variable;
     }
+
     /// <summary>
     /// 网关转OPC数据类型
     /// </summary>
@@ -414,6 +414,7 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
 
         return DataNodeType(tp);
     }
+
     private ServiceResult OnWriteDataValue(ISystemContext context, NodeState node, NumericRange indexRange, QualifiedName dataEncoding, ref object value, ref StatusCode statusCode, ref DateTime timestamp)
     {
         try
@@ -431,13 +432,11 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
                     //仅当指定了值时才将值写入
                     if (variable.Value != null)
                     {
-
                         var result = _upLoadBase.RpcSingletonService.InvokeDeviceMethodAsync("OPCUASERVER-" + context1?.OperationContext?.Session?.Identity?.DisplayName,
                             new()
                             {
                                 { variable.SymbolicName, value?.ToString() }
                             }
-
 
                             ).ConfigureAwait(true).GetAwaiter().GetResult();
                         if (result.Values.FirstOrDefault().IsSuccess)
@@ -450,7 +449,6 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
                         }
                     }
                 }
-
             }
             return StatusCodes.BadWaitingForResponse;
         }
@@ -458,7 +456,6 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
         {
             return StatusCodes.BadTypeMismatch;
         }
-
     }
 
     private byte ProtectTypeTrans(DeviceVariableRunTime variableRunTime)
@@ -476,5 +473,4 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
         //}
         return result;
     }
-
 }

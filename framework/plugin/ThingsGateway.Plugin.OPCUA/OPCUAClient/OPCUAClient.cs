@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using Newtonsoft.Json.Linq;
@@ -34,27 +36,34 @@ public class OPCUAClient : CollectBase
 
     /// <inheritdoc/>
     public override DriverPropertyBase DriverPropertys => _driverPropertys;
+
     /// <inheritdoc/>
     protected override IReadWrite _readWrite => null;
+
     public override Type DriverUIType => null;
     private CancellationToken _token;
+
     protected override async Task ProtectedBeforStartAsync(CancellationToken cancellationToken)
     {
         _token = cancellationToken;
         await _plc?.ConnectAsync(cancellationToken);
         await base.ProtectedBeforStartAsync(cancellationToken);
     }
+
     /// <inheritdoc/>
     public override Task AfterStopAsync()
     {
         _plc?.Disconnect();
         return base.AfterStopAsync();
     }
+
     protected override string GetAddressDescription()
     {
         return "OPCUA ItemName";
     }
+
     public override bool IsConnected() => _plc?.Connected == true;
+
     protected override List<DeviceVariableSourceRead> ProtectedLoadSourceRead(List<DeviceVariableRunTime> deviceVariables)
     {
         var dataLists = deviceVariables.ChunkBetter(_driverPropertys.GroupSize);
@@ -74,7 +83,6 @@ public class OPCUAClient : CollectBase
 
         return dataResult;
     }
-
 
     /// <inheritdoc/>
     public override async Task<OperResult<byte[]>> ReadSourceAsync(DeviceVariableSourceRead deviceVariableSourceRead, CancellationToken cancellationToken)
@@ -122,7 +130,6 @@ public class OPCUAClient : CollectBase
         }
     }
 
-
     /// <inheritdoc/>
     public override async Task<Dictionary<string, OperResult>> WriteValuesAsync(Dictionary<DeviceVariableRunTime, JToken> writeInfoLists, CancellationToken cancellationToken)
     {
@@ -138,8 +145,8 @@ public class OPCUAClient : CollectBase
             else
                 return OperResult.CreateSuccessResult();
         });
-
     }
+
     protected override async Task ProtectedExecuteAsync(CancellationToken cancellationToken)
     {
         if (_driverPropertys.ActiveSubscribe)
@@ -160,7 +167,6 @@ public class OPCUAClient : CollectBase
         {
             await base.ProtectedExecuteAsync(cancellationToken);
         }
-
     }
 
     /// <inheritdoc/>
@@ -176,6 +182,7 @@ public class OPCUAClient : CollectBase
         }
         base.Dispose(disposing);
     }
+
     /// <inheritdoc/>
     protected override void Init(ISenderClient client = null)
     {
@@ -203,7 +210,6 @@ public class OPCUAClient : CollectBase
         _plc.OPCNode = opcNode;
         base.Init();
     }
-
 
     private void _plc_OpcStatusChange(object sender, OpcUaStatusEventArgs e)
     {
@@ -271,7 +277,6 @@ public class OPCUAClient : CollectBase
                 }
             }
             success = true;
-
         }
         catch (Exception ex)
         {
@@ -280,5 +285,4 @@ public class OPCUAClient : CollectBase
             success = false;
         }
     }
-
 }

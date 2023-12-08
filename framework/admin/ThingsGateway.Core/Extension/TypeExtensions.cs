@@ -1,4 +1,5 @@
 #region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using System.ComponentModel;
@@ -103,7 +105,6 @@ public static class TypeExtensions
                     var fields = modelType.GetFields();
                     var fieldInfo = fields.FirstOrDefault(p => p.Name == name);
                     dn = FindDisplayAttribute(fieldInfo, func);
-
                 }
             }
             return dn ?? name;
@@ -128,8 +129,6 @@ public static class TypeExtensions
         }
         return list;
     }
-
-
 
     /// <summary>
     /// 获得类型属性的值
@@ -161,6 +160,7 @@ public static class TypeExtensions
         return modelType.GetProperties().Select(a => a.Name);
     }
 }
+
 /// <summary>
 /// EnumItem
 /// </summary>
@@ -179,6 +179,7 @@ public class EnumItem
 
     /// <inheritdoc/>
     public string Name { get; set; }
+
     /// <inheritdoc/>
     public int Value { get; }
 }

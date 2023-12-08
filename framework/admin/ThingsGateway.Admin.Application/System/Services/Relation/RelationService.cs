@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using Furion.FriendlyException;
@@ -20,10 +22,12 @@ namespace ThingsGateway.Admin.Application;
 public class RelationService : DbRepository<SysRelation>, IRelationService
 {
     private readonly IServiceScope _serviceScope;
+
     public RelationService(IServiceScopeFactory serviceScopeFactory)
     {
         _serviceScope = serviceScopeFactory.CreateScope();
     }
+
     /// <inheritdoc/>
     public async Task<List<SysRelation>> GetRelationByCategoryAsync(string category)
     {

@@ -89,7 +89,6 @@ html {
     padding: 0 16px;
 }
 
-
 .m-application .text-start {
     text-align: start !important;
     min-width: 130px;
@@ -99,7 +98,6 @@ html {
     color: #1B2559 !important;
     caret-color: #1B2559 !important;
 }
-
 
 .app-code {
     position: relative;

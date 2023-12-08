@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using System.IO.Ports;
@@ -24,11 +26,13 @@ public class DLT645_2007Property : DriverPropertyBase
     /// </summary>
     [DeviceProperty("COM口", "示例：COM1")]
     public override string PortName { get; set; } = "COM1";
+
     /// <summary>
     /// 波特率
     /// </summary>
     [DeviceProperty("波特率", "通常为：38400/19200/9600/4800")]
     public override int BaudRate { get; set; } = 9600;
+
     /// <summary>
     /// 数据位
     /// </summary>
@@ -52,16 +56,19 @@ public class DLT645_2007Property : DriverPropertyBase
     /// </summary>
     [DeviceProperty("读写超时时间", "")]
     public ushort TimeOut { get; set; } = 3000;
+
     /// <summary>
     /// 默认地址
     /// </summary>
     [DeviceProperty("默认地址", "")]
     public string Station { get; set; }
+
     /// <summary>
     /// 密码
     /// </summary>
     [DeviceProperty("密码", "")]
     public string Password { get; set; }
+
     /// <summary>
     /// 操作员代码
     /// </summary>
@@ -85,22 +92,21 @@ public class DLT645_2007Property : DriverPropertyBase
     /// </summary>
     [DeviceProperty("帧前时间", "某些设备性能较弱，报文间需要间隔较长时间")]
     public int FrameTime { get; set; } = 0;
+
     /// <summary>
     /// 组包缓存超时ms
     /// </summary>
     [DeviceProperty("组包缓存超时ms", "某些设备性能较弱，报文间需要间隔较长时间，可以设置更长的组包缓存，默认1s")]
     public int CacheTimeout { get; set; } = 1000;
 
-
     /// <summary>
     /// 共享链路
     /// </summary>
     [DeviceProperty("共享链路", "")]
     public override bool IsShareChannel { get; set; } = false;
+
     /// <summary>
     /// <inheritdoc/>
     /// </summary>
     public override ChannelEnum ShareChannel => ChannelEnum.SerialPortClient;
-
-
 }

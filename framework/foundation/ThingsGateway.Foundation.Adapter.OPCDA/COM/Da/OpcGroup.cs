@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using System.Runtime.InteropServices;
@@ -35,6 +37,7 @@ internal class OpcGroup : IOPCDataCallback, IDisposable
     private IOPCSyncIO m_SyncIO = null;
     private GCHandle percendDeadBand = GCHandle.Alloc(0, GCHandleType.Pinned);
     private GCHandle timeBias = GCHandle.Alloc(0, GCHandleType.Pinned);
+
     internal OpcGroup(string name)
     {
         Name = name;
@@ -78,6 +81,7 @@ internal class OpcGroup : IOPCDataCallback, IDisposable
     internal object GroupPointer => groupPointer;
 
     internal bool IsActive { get; set; } = true;
+
     internal int LCID
     {
         get => lcid;
@@ -86,6 +90,7 @@ internal class OpcGroup : IOPCDataCallback, IDisposable
 
     internal string Name { get; private set; } = string.Empty;
     internal List<OpcItem> OpcItems { get; private set; } = new List<OpcItem> { };
+
     internal GCHandle PercendDeadBand
     {
         get => percendDeadBand;
@@ -95,11 +100,13 @@ internal class OpcGroup : IOPCDataCallback, IDisposable
     internal int RequestUpdateRate { get; set; } = 1000;
     internal int RevisedUpdateRate => revisedUpdateRate;
     internal int ServerGroupHandle => serverGroupHandle;
+
     internal GCHandle TimeBias
     {
         get => timeBias;
         set => timeBias = value;
     }
+
     public void Dispose()
     {
         Dispose(disposing: true);
@@ -264,6 +271,7 @@ internal class OpcGroup : IOPCDataCallback, IDisposable
             }
         }
     }
+
     /// <summary>
     /// 建立连接
     /// </summary>
@@ -281,6 +289,7 @@ internal class OpcGroup : IOPCDataCallback, IDisposable
         //创建客户端与服务端之间的连接
         m_ConnectionPoint.Advise(this, out m_connectionpoint_cookie);
     }
+
     /// <summary>
     /// 组读取
     /// </summary>
@@ -353,7 +362,6 @@ internal class OpcGroup : IOPCDataCallback, IDisposable
         return results;
     }
 
-
     internal List<Tuple<int, int>> Write(object[] values, int[] serverHandle)
     {
         IntPtr pErrors = IntPtr.Zero;
@@ -385,6 +393,7 @@ internal class OpcGroup : IOPCDataCallback, IDisposable
         else
             throw new("连接无效");
     }
+
     protected virtual void Dispose(bool disposing)
     {
         if (!disposedValue)

@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using System.Collections.Concurrent;
@@ -17,8 +19,6 @@ using System.Text;
 using ThingsGateway.Foundation.Extension.String;
 
 namespace ThingsGateway.Foundation.Core;
-
-
 
 /// <summary>
 /// 读写设备基类
@@ -38,6 +38,7 @@ public abstract class ReadWriteDevicesBase : IReadWrite
         get => ThingsGatewayBitConverter.DataFormat;
         set => ThingsGatewayBitConverter.DataFormat = value;
     }
+
     /// <inheritdoc/>
     [Description("通道类型")]
     public abstract ChannelEnum ChannelEnum { get; }
@@ -65,8 +66,10 @@ public abstract class ReadWriteDevicesBase : IReadWrite
     #endregion
 
     #region 连接，设置
+
     /// <inheritdoc/>
     public abstract bool IsConnected();
+
     /// <summary>
     /// 连接操作
     /// </summary>
@@ -90,7 +93,6 @@ public abstract class ReadWriteDevicesBase : IReadWrite
 
     /// <inheritdoc/>
     public abstract List<T> LoadSourceRead<T, T2>(List<T2> deviceVariables, int maxPack, int defaultIntervalTime) where T : IDeviceVariableSourceRead<IDeviceVariableRunTime>, new() where T2 : IDeviceVariableRunTime, new();
-
 
     /// <inheritdoc/>
     public virtual string GetAddressDescription()
@@ -128,7 +130,6 @@ public abstract class ReadWriteDevicesBase : IReadWrite
         return address?.IndexOf('.') > 0;
     }
 
-
     /// <inheritdoc/>
     public virtual int GetLength(string address, int length, int typeLength, bool isBool = false)
     {
@@ -156,6 +157,7 @@ public abstract class ReadWriteDevicesBase : IReadWrite
         var result = GetResponsedData(item, TimeOut, cancellationToken, senderClient);
         return (T)result.RequestInfo;
     }
+
     /// <inheritdoc/>
     public virtual async Task<T> SendThenReturnAsync<T>(byte[] command, CancellationToken cancellationToken, ISenderClient senderClient = default) where T : OperResult<byte[]>
     {
@@ -164,6 +166,7 @@ public abstract class ReadWriteDevicesBase : IReadWrite
         var result = await GetResponsedDataAsync(item, TimeOut, cancellationToken, senderClient);
         return (T)result.RequestInfo;
     }
+
     /// <inheritdoc/>
     public virtual Task<ResponsedData> GetResponsedDataAsync(byte[] item, int timeout, CancellationToken cancellationToken, ISenderClient senderClient = default)
     {
@@ -180,6 +183,7 @@ public abstract class ReadWriteDevicesBase : IReadWrite
     /// 等待数据
     /// </summary>
     protected ConcurrentDictionary<int, WaitDataAsync<MessageBase>> WaitDatas { get; set; } = new();
+
     /// <summary>
     /// 设置等待数据
     /// </summary>
@@ -196,12 +200,12 @@ public abstract class ReadWriteDevicesBase : IReadWrite
     #endregion
 
     #region 读取
+
     /// <inheritdoc/>
     public abstract OperResult<byte[]> Read(string address, int length, CancellationToken cancellationToken = default);
 
     /// <inheritdoc/>
     public abstract Task<OperResult<byte[]>> ReadAsync(string address, int length, CancellationToken cancellationToken = default);
-
 
     /// <inheritdoc/>
     public async Task<IOperResult<object>> ReadAsync(string address, int length, DataTypeEnum dataType, CancellationToken cancellationToken = default)
@@ -251,6 +255,7 @@ public abstract class ReadWriteDevicesBase : IReadWrite
         var result = await ReadAsync(address, GetLength(address, length, RegisterByteLength, true), cancellationToken);
         return result.OperResultFrom(() => transformParameter.ToBoolean(result.Content, GetBitOffset(address), length, BitReverse(address)));
     }
+
     /// <inheritdoc/>
     public async Task<OperResult<Int16[]>> ReadInt16Async(string address, int length, CancellationToken cancellationToken = default)
     {
@@ -258,6 +263,7 @@ public abstract class ReadWriteDevicesBase : IReadWrite
         var result = await ReadAsync(address, GetLength(address, length, 2), cancellationToken);
         return result.OperResultFrom(() => transformParameter.ToInt16(result.Content, 0, length));
     }
+
     /// <inheritdoc/>
     public async Task<OperResult<UInt16[]>> ReadUInt16Async(string address, int length, CancellationToken cancellationToken = default)
     {
@@ -265,6 +271,7 @@ public abstract class ReadWriteDevicesBase : IReadWrite
         var result = await ReadAsync(address, GetLength(address, length, 2), cancellationToken);
         return result.OperResultFrom(() => transformParameter.ToUInt16(result.Content, 0, length));
     }
+
     /// <inheritdoc/>
     public async Task<OperResult<Int32[]>> ReadInt32Async(string address, int length, CancellationToken cancellationToken = default)
     {
@@ -272,6 +279,7 @@ public abstract class ReadWriteDevicesBase : IReadWrite
         var result = await ReadAsync(address, GetLength(address, length, 4), cancellationToken);
         return result.OperResultFrom(() => transformParameter.ToInt32(result.Content, 0, length));
     }
+
     /// <inheritdoc/>
     public async Task<OperResult<UInt32[]>> ReadUInt32Async(string address, int length, CancellationToken cancellationToken = default)
     {
@@ -287,6 +295,7 @@ public abstract class ReadWriteDevicesBase : IReadWrite
         var result = await ReadAsync(address, GetLength(address, length, 8), cancellationToken);
         return result.OperResultFrom(() => transformParameter.ToInt64(result.Content, 0, length));
     }
+
     /// <inheritdoc/>
     public async Task<OperResult<UInt64[]>> ReadUInt64Async(string address, int length, CancellationToken cancellationToken = default)
     {
@@ -294,6 +303,7 @@ public abstract class ReadWriteDevicesBase : IReadWrite
         var result = await ReadAsync(address, GetLength(address, length, 8), cancellationToken);
         return result.OperResultFrom(() => transformParameter.ToUInt64(result.Content, 0, length));
     }
+
     /// <inheritdoc/>
     public async Task<OperResult<Single[]>> ReadSingleAsync(string address, int length, CancellationToken cancellationToken = default)
     {
@@ -301,6 +311,7 @@ public abstract class ReadWriteDevicesBase : IReadWrite
         var result = await ReadAsync(address, GetLength(address, length, 4), cancellationToken);
         return result.OperResultFrom(() => transformParameter.ToSingle(result.Content, 0, length));
     }
+
     /// <inheritdoc/>
     public async Task<OperResult<Double[]>> ReadDoubleAsync(string address, int length, CancellationToken cancellationToken = default)
     {
@@ -324,6 +335,7 @@ public abstract class ReadWriteDevicesBase : IReadWrite
         var result = Read(address, GetLength(address, length, RegisterByteLength, true), cancellationToken);
         return result.OperResultFrom(() => transformParameter.ToBoolean(result.Content, GetBitOffset(address), length, BitReverse(address)));
     }
+
     /// <inheritdoc/>
     public OperResult<Int16[]> ReadInt16(string address, int length, CancellationToken cancellationToken = default)
     {
@@ -331,6 +343,7 @@ public abstract class ReadWriteDevicesBase : IReadWrite
         var result = Read(address, GetLength(address, length, 2), cancellationToken);
         return result.OperResultFrom(() => transformParameter.ToInt16(result.Content, 0, length));
     }
+
     /// <inheritdoc/>
     public OperResult<UInt16[]> ReadUInt16(string address, int length, CancellationToken cancellationToken = default)
     {
@@ -338,6 +351,7 @@ public abstract class ReadWriteDevicesBase : IReadWrite
         var result = Read(address, GetLength(address, length, 2), cancellationToken);
         return result.OperResultFrom(() => transformParameter.ToUInt16(result.Content, 0, length));
     }
+
     /// <inheritdoc/>
     public OperResult<Int32[]> ReadInt32(string address, int length, CancellationToken cancellationToken = default)
     {
@@ -345,6 +359,7 @@ public abstract class ReadWriteDevicesBase : IReadWrite
         var result = Read(address, GetLength(address, length, 4), cancellationToken);
         return result.OperResultFrom(() => transformParameter.ToInt32(result.Content, 0, length));
     }
+
     /// <inheritdoc/>
     public OperResult<UInt32[]> ReadUInt32(string address, int length, CancellationToken cancellationToken = default)
     {
@@ -360,6 +375,7 @@ public abstract class ReadWriteDevicesBase : IReadWrite
         var result = Read(address, GetLength(address, length, 8), cancellationToken);
         return result.OperResultFrom(() => transformParameter.ToInt64(result.Content, 0, length));
     }
+
     /// <inheritdoc/>
     public OperResult<UInt64[]> ReadUInt64(string address, int length, CancellationToken cancellationToken = default)
     {
@@ -367,6 +383,7 @@ public abstract class ReadWriteDevicesBase : IReadWrite
         var result = Read(address, GetLength(address, length, 8), cancellationToken);
         return result.OperResultFrom(() => transformParameter.ToUInt64(result.Content, 0, length));
     }
+
     /// <inheritdoc/>
     public OperResult<Single[]> ReadSingle(string address, int length, CancellationToken cancellationToken = default)
     {
@@ -374,6 +391,7 @@ public abstract class ReadWriteDevicesBase : IReadWrite
         var result = Read(address, GetLength(address, length, 4), cancellationToken);
         return result.OperResultFrom(() => transformParameter.ToSingle(result.Content, 0, length));
     }
+
     /// <inheritdoc/>
     public OperResult<Double[]> ReadDouble(string address, int length, CancellationToken cancellationToken = default)
     {
@@ -390,11 +408,9 @@ public abstract class ReadWriteDevicesBase : IReadWrite
         return result.OperResultFrom(() => transformParameter.ToString(result.Content));
     }
 
-
     #endregion
 
     #region 写入
-
 
     /// <inheritdoc/>
     public async Task<OperResult> WriteAsync(string address, string value, int length, DataTypeEnum dataType, CancellationToken cancellationToken = default)
@@ -437,13 +453,11 @@ public abstract class ReadWriteDevicesBase : IReadWrite
                     _ => new OperResult($"{dataType}数据类型未实现写入"),
                 };
             }
-
         }
         catch (Exception ex)
         {
             return new OperResult(ex);
         }
-
     }
 
     /// <inheritdoc/>
@@ -471,9 +485,7 @@ public abstract class ReadWriteDevicesBase : IReadWrite
         {
             return new OperResult(ex);
         }
-
     }
-
 
     /// <inheritdoc/>
     public abstract Task<OperResult> WriteAsync(string address, byte[] value, CancellationToken cancellationToken = default);
@@ -557,7 +569,6 @@ public abstract class ReadWriteDevicesBase : IReadWrite
         return WriteAsync(address, transformParameter.GetBytes(value), cancellationToken);
     }
 
-
     /// <inheritdoc/>
     public virtual Task<OperResult> WriteAsync(string address, short[] value, CancellationToken cancellationToken = default)
     {
@@ -613,9 +624,6 @@ public abstract class ReadWriteDevicesBase : IReadWrite
         IThingsGatewayBitConverter transformParameter = ByteTransformUtil.GetTransByAddress(ref address, ThingsGatewayBitConverter);
         return WriteAsync(address, transformParameter.GetBytes(value), cancellationToken);
     }
-
-
-
 
     /// <inheritdoc/>
     public OperResult Write(string address, short[] value, CancellationToken cancellationToken = default)
@@ -673,7 +681,6 @@ public abstract class ReadWriteDevicesBase : IReadWrite
         return Write(address, transformParameter.GetBytes(value), cancellationToken);
     }
 
-
     /// <inheritdoc/>
     public abstract OperResult Write(string address, byte[] value, CancellationToken cancellationToken = default);
 
@@ -685,6 +692,7 @@ public abstract class ReadWriteDevicesBase : IReadWrite
     {
         return Write(address, new bool[1] { value }, cancellationToken);
     }
+
     /// <inheritdoc/>
     public virtual OperResult Write(string address, byte value, CancellationToken cancellationToken = default)
     {
@@ -755,11 +763,5 @@ public abstract class ReadWriteDevicesBase : IReadWrite
         return Write(address, transformParameter.GetBytes(value), cancellationToken);
     }
 
-
-
     #endregion
-
-
-
-
 }

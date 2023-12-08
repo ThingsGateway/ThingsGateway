@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using System.Collections.Concurrent;
@@ -122,7 +124,6 @@ namespace ThingsGateway.Foundation.Dmtp
         public DmtpActor(bool allowRoute) : this(allowRoute, true)
         {
         }
-
 
         /// <summary>
         /// 建立对点
@@ -295,7 +296,6 @@ namespace ThingsGateway.Foundation.Dmtp
             return EasyTask.CompletedTask;
         }
 
-
         /// <summary>
         /// 正在握手连接
         /// </summary>
@@ -361,6 +361,7 @@ namespace ThingsGateway.Foundation.Dmtp
         {
             this.OnCreatedChannel((CreateChannelEventArgs)obj);
         }
+
         #endregion
 
         #region const
@@ -553,7 +554,6 @@ namespace ThingsGateway.Foundation.Dmtp
 
                             if (this.AllowRoute && waitPing.Route)
                             {
-
                                 if (await this.TryRoute(new PackageRouterEventArgs(RouteType.Ping, waitPing)).ConfigureFalseAwait())
                                 {
                                     if (await this.TryFindDmtpActor(waitPing.TargetId).ConfigureFalseAwait() is DmtpActor actor)
@@ -1051,6 +1051,7 @@ namespace ThingsGateway.Foundation.Dmtp
             this.WaitHandlePool.SafeDispose();
             base.Dispose(disposing);
         }
+
         /// <inheritdoc/>
         public void Close(string msg)
         {
@@ -1070,6 +1071,7 @@ namespace ThingsGateway.Foundation.Dmtp
                 return false;
             }
         }
+
         #endregion 重写
 
         #region 协议同步发送
@@ -1441,7 +1443,6 @@ namespace ThingsGateway.Foundation.Dmtp
                 }
             }
         }
-
 
         #endregion IDmtpChannel
     }

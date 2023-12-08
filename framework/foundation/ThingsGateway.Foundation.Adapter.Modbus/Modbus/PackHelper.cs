@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using ThingsGateway.Foundation.Extension.Generic;
@@ -57,6 +59,7 @@ public class PackHelper
                         case DataTypeEnum.String:
                             lastLen = it.ThingsGatewayBitConverter.Length == null ? throw new("数据类型为字符串时，必须指定字符串长度，才能进行打包") : it.ThingsGatewayBitConverter.Length.Value;
                             break;
+
                         default:
                             lastLen = 2;
                             break;
@@ -97,7 +100,6 @@ public class PackHelper
                     deviceVariableSourceReads.AddRange(tempResult);
                 }
             }
-
         }
 
         return deviceVariableSourceReads;
@@ -123,7 +125,6 @@ public class PackHelper
             {
                 readLength = maxPack * 8 * 2;
             }
-
 
             //获取当前的一组打包地址信息，
             var tempAddressEnd = orderByAddressEnd.Where(t => t.AddressEnd <= minAddress + readLength).ToList();
@@ -166,5 +167,4 @@ public class PackHelper
         }
         return sourceReads;
     }
-
 }

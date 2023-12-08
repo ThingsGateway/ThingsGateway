@@ -1,4 +1,5 @@
 #region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using Opc.Ua;
@@ -29,15 +31,16 @@ public class OpcUaStatusEventArgs
     /// 不可控中断类日输出Critical = 5,
     /// </summary>
     public int LogLevel { get; set; }
+
     /// <summary>
     /// 时间
     /// </summary>
     public DateTime Time { get; set; }
+
     /// <summary>
     /// 文本
     /// </summary>
     public string Text { get; set; }
-
 }
 
 /// <summary>

@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,9 +9,11 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 namespace ThingsGateway.Gateway.Application;
+
 /// <summary>
 /// 设备线程管理
 /// </summary>
@@ -27,6 +30,7 @@ public class DeviceThread
     }
 
     public string ChangelID { get; private set; }
+
     /// <summary>
     /// 插件集合
     /// </summary>
@@ -36,6 +40,7 @@ public class DeviceThread
     /// 启停锁
     /// </summary>
     public EasyLock EasyLock { get; set; } = new();
+
     /// <summary>
     /// 设备单线程
     /// </summary>
@@ -57,7 +62,6 @@ public class DeviceThread
             }
             _cancellationTokenSources.Clear();
         }
-
     }
 
     /// <summary>
@@ -85,7 +89,6 @@ public class DeviceThread
     /// </summary>
     public virtual async Task StopThreadAsync()
     {
-
         if (_driverTask == null)
         {
             return;
@@ -162,11 +165,9 @@ public class DeviceThread
                         }
                         catch (TaskCanceledException)
                         {
-
                         }
                         catch (ObjectDisposedException)
                         {
-
                         }
                     }
 
@@ -195,7 +196,5 @@ public class DeviceThread
             }
         }
  , TaskCreationOptions.LongRunning);
-
-
     }
 }

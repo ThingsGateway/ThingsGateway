@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using Newtonsoft.Json.Linq;
@@ -16,6 +18,7 @@ using ThingsGateway.Foundation.Adapter.OPCDA;
 using ThingsGateway.Foundation.Adapter.OPCDA.Da;
 
 namespace ThingsGateway.Plugin.OPCDA;
+
 /// <summary>
 /// OPCDAClient
 /// </summary>
@@ -23,6 +26,7 @@ public class OPCDAClient : CollectBase
 {
     internal ThingsGateway.Foundation.Adapter.OPCDA.OPCDAClient _plc = null;
     private readonly OPCDAClientProperty _driverPropertys = new();
+
     /// <inheritdoc/>
     public override System.Type DriverDebugUIType => typeof(OPCDAClientDebugPage);
 
@@ -34,16 +38,19 @@ public class OPCDAClient : CollectBase
 
     public override Type DriverUIType => null;
     private CancellationToken _token;
+
     protected override Task ProtectedBeforStartAsync(CancellationToken cancellationToken)
     {
         _token = cancellationToken;
         _plc.Connect();
         return base.ProtectedBeforStartAsync(cancellationToken);
     }
+
     protected override string GetAddressDescription()
     {
         return "OPCDA ItemName";
     }
+
     /// <inheritdoc/>
     public override bool IsConnected() => _plc?.IsConnected == true;
 
@@ -122,7 +129,6 @@ public class OPCDAClient : CollectBase
         {
             await base.ProtectedExecuteAsync(cancellationToken);
         }
-
     }
 
     /// <inheritdoc/>
@@ -159,6 +165,7 @@ public class OPCDAClient : CollectBase
     }
 
     private volatile bool success = true;
+
     private void DataChangedHandler(List<ItemReadResult> values)
     {
         try

@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using Furion.Reflection;
@@ -167,7 +169,6 @@ public class OperDispatchProxy : AspectDispatchProxy, IDispatchProxy
         }
     }
 
-
     private void WriteOperLog(MethodInfo method, object[] args, OperDescAttribute desc, object result, Exception exception)
     {
         //写入操作日志
@@ -216,9 +217,5 @@ public class OperDispatchProxy : AspectDispatchProxy, IDispatchProxy
             log.ExeMessage = exception.Source + ":" + exception.Message + Environment.NewLine + exception.StackTrace;
         }
         DbContext.Db.CopyNew().InsertableWithAttr(log).ExecuteCommand();//入库
-
     }
-
-
-
 }

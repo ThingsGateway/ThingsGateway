@@ -1,4 +1,5 @@
 #region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 //------------------------------------------------------------------------------
@@ -40,6 +42,7 @@ namespace ThingsGateway.Foundation.Core
         /// 系统默认使用的当前时间
         /// </summary>
         public static DateTime CurrentDateTime => DateTime.Now;
+
         /// <summary>
         /// 返回yyyy-MM-dd HH:mm:ss:fff zz时间格式字符串
         /// </summary>
@@ -61,6 +64,7 @@ namespace ThingsGateway.Foundation.Core
             return new DateTimeOffset(dt, offset).ToString("yyyy-MM-dd HH:mm:ss:fff zz");
             //return dt.ToString("yyyy-MM-dd HH:mm:ss:fff zz");
         }
+
         /// <summary>
         /// 返回yyyy-MM-dd HH:mm:ss:fff zz时间格式字符串
         /// </summary>
@@ -68,6 +72,7 @@ namespace ThingsGateway.Foundation.Core
         {
             return dt.ToString("yyyy-MM-dd HH:mm:ss:fff zz");
         }
+
         /// <summary>
         /// 返回yyyy-MM-dd HH:mm:ss:fff zz时间格式字符串
         /// </summary>
@@ -75,9 +80,6 @@ namespace ThingsGateway.Foundation.Core
         {
             return dt.ToString("yyyy-MM-dd HH-mm-ss-fff zz");
         }
-
-
-
 
         /// <summary>
         /// 计算2个时间差，返回文字描述
@@ -187,7 +189,6 @@ namespace ThingsGateway.Foundation.Core
             return strResout;
         }
 
-
         /// <summary>
         /// ToLong
         /// </summary>
@@ -200,8 +201,8 @@ namespace ThingsGateway.Foundation.Core
             //// 先转UTC时间再相减，以得到绝对时间差
             //return (Int32)(dt.ToUniversalTime() - _dt1970).TotalSeconds;
             return (Int64)(value - _dt1970).TotalMilliseconds;
-
         }
+
         /// <summary>
         /// 将时间转为毫秒级别的短整形
         /// </summary>

@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using System.Net.Security;
@@ -47,6 +49,7 @@ public class TcpCore : SocketAsyncEventArgs, IDisposable, ISender
     private ValueCounter m_sendCounter;
     private Socket m_socket;
     private readonly EasyLock m_semaphoreForSend = new();
+
     #endregion 字段
 
     /// <summary>
@@ -257,7 +260,6 @@ public class TcpCore : SocketAsyncEventArgs, IDisposable, ISender
         this.PrivateBreakOut(true, msg);
     }
 
-
     /// <summary>
     /// 重置环境，并设置新的<see cref="Socket"/>。
     /// </summary>
@@ -296,6 +298,7 @@ public class TcpCore : SocketAsyncEventArgs, IDisposable, ISender
         this.m_sendBufferSize = this.MinBufferSize;
         this.m_online = false;
     }
+
     /// <summary>
     /// 判断，当不在连接状态时触发异常。
     /// </summary>
@@ -307,6 +310,7 @@ public class TcpCore : SocketAsyncEventArgs, IDisposable, ISender
             throw new NotConnectedException();
         }
     }
+
     /// <summary>
     /// 发送数据。
     /// <para>
@@ -328,7 +332,6 @@ public class TcpCore : SocketAsyncEventArgs, IDisposable, ISender
             }
             else
             {
-
                 while (length > 0)
                 {
                     var r = this.m_socket.Send(buffer, offset, length, SocketFlags.None);
@@ -372,7 +375,6 @@ public class TcpCore : SocketAsyncEventArgs, IDisposable, ISender
             }
             else
             {
-
                 while (length > 0)
                 {
                     var r = await this.m_socket.SendAsync(new ArraySegment<byte>(buffer, offset, length), SocketFlags.None, CancellationToken.None);
@@ -392,7 +394,6 @@ public class TcpCore : SocketAsyncEventArgs, IDisposable, ISender
             }
             else
             {
-
                 while (length > 0)
                 {
                     var r = this.m_socket.Send(buffer, offset, length, SocketFlags.None);

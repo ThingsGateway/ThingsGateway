@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 namespace ThingsGateway.Plugin.Modbus;
@@ -22,15 +24,16 @@ public class ModbusTcpServerVariableProperty : VariablePropertyBase
     /// </summary>
     [VariableProperty("从站变量地址", "")]
     public string ServiceAddress { get; set; }
+
     /// <summary>
     /// 允许写入
     /// </summary>
     [VariableProperty("允许写入", "")]
     public bool VariableRpcEnable { get; set; }
+
     /// <summary>
     /// 数据类型
     /// </summary>
     [VariableProperty("数据类型", "")]
     public DataTypeEnum ModbusType { get; set; } = DataTypeEnum.Int16;
-
 }

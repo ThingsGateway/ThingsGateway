@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using BlazorComponent;
@@ -24,26 +26,28 @@ using SqlSugar;
 using ThingsGateway.Admin.Blazor;
 
 namespace ThingsGateway.Gateway.Blazor;
+
 /// <summary>
 /// 采集设备页面
 /// </summary>
 public partial class CollectDevicePage : BaseComponentBase
 {
-    readonly DevicePageInput _search = new();
-    IAppDataTable _datatable;
-    List<string> _deviceGroups = new();
-    List<CollectDevice> _devices = new();
-    List<DriverPlugin> _driverPlugins;
-    ImportExcel _importExcel;
+    private readonly DevicePageInput _search = new();
+    private IAppDataTable _datatable;
+    private List<string> _deviceGroups = new();
+    private List<CollectDevice> _devices = new();
+    private List<DriverPlugin> _driverPlugins;
+    private ImportExcel _importExcel;
+
     //string _searchName;
     [Inject]
-    AjaxService _ajaxService { get; set; }
+    private AjaxService _ajaxService { get; set; }
+
     [Inject]
-    DriverPluginService _driverPluginService { get; set; }
+    private DriverPluginService _driverPluginService { get; set; }
 
     [CascadingParameter]
-    MainLayout _mainLayout { get; set; }
-
+    private MainLayout _mainLayout { get; set; }
 
     /// <inheritdoc/>
     protected override async Task OnParametersSetAsync()
@@ -52,6 +56,7 @@ public partial class CollectDevicePage : BaseComponentBase
         _driverPlugins = _driverPluginService.GetAllDriverPlugin(DriverEnum.Collect);
         await base.OnParametersSetAsync();
     }
+
     private async Task GetDriverProperties(List<CollectDevice> data)
     {
         if (data != null)
@@ -69,15 +74,16 @@ public partial class CollectDevicePage : BaseComponentBase
         }
         await _serviceScope.ServiceProvider.GetService<ICollectDeviceService>().EditsAsync(data);
         await PopupService.EnqueueSnackbarAsync("刷新成功", AlertTypes.Success);
-
     }
+
     private async Task AddCallAsync(DeviceAddInput input)
     {
         await _serviceScope.ServiceProvider.GetService<ICollectDeviceService>().AddAsync(input);
         Refresh();
         await _mainLayout.StateHasChangedAsync();
     }
-    async Task CopyDevAndVarAsync(IEnumerable<CollectDevice> data)
+
+    private async Task CopyDevAndVarAsync(IEnumerable<CollectDevice> data)
     {
         if (!data.Any())
         {
@@ -91,7 +97,7 @@ public partial class CollectDevicePage : BaseComponentBase
         await _mainLayout.StateHasChangedAsync();
     }
 
-    async Task CopyDeviceAsync(IEnumerable<CollectDevice> data)
+    private async Task CopyDeviceAsync(IEnumerable<CollectDevice> data)
     {
         if (!data.Any())
         {
@@ -117,15 +123,16 @@ public partial class CollectDevicePage : BaseComponentBase
         await _mainLayout.StateHasChangedAsync();
     }
 
-    Task<Dictionary<string, ImportPreviewOutputBase>> DeviceImportAsync(IBrowserFile file)
+    private Task<Dictionary<string, ImportPreviewOutputBase>> DeviceImportAsync(IBrowserFile file)
     {
         return _serviceScope.ServiceProvider.GetService<ICollectDeviceService>().PreviewAsync(file);
     }
 
-    async Task DownExportAsync(DevicePageInput input = null)
+    private async Task DownExportAsync(DevicePageInput input = null)
     {
         await _ajaxService.DownFileAsync("gatewayFile/collectDevice", DateTimeExtensions.CurrentDateTime.ToFileDateTimeFormat(), input.Adapt<DeviceInput>());
     }
+
     private async Task DriverValueChangedAsync(DeviceAddInput context, string pluginName)
     {
         if (pluginName.IsNullOrEmpty()) return;
@@ -154,7 +161,7 @@ public partial class CollectDevicePage : BaseComponentBase
         await _mainLayout.StateHasChangedAsync();
     }
 
-    List<DependencyProperty> GetDriverProperties(string pluginName, long devId)
+    private List<DependencyProperty> GetDriverProperties(string pluginName, long devId)
     {
         return BackgroundServiceUtil.GetBackgroundService<CollectDeviceWorker>().GetDevicePropertys(pluginName, devId);
     }
@@ -171,12 +178,11 @@ public partial class CollectDevicePage : BaseComponentBase
         _deviceGroups = _devices?.Select(a => a.DeviceGroup)?.Where(a => a != null).Distinct()?.ToList();
     }
 
-    async Task SaveDeviceImportAsync(Dictionary<string, ImportPreviewOutputBase> data)
+    private async Task SaveDeviceImportAsync(Dictionary<string, ImportPreviewOutputBase> data)
     {
         await _serviceScope.ServiceProvider.GetService<ICollectDeviceService>().ImportAsync(data);
         await DatatableQueryAsync();
         _importExcel.IsShowImport = false;
         await _mainLayout.StateHasChangedAsync();
     }
-
 }

@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using LiteDB;
@@ -35,15 +37,18 @@ public partial class SQLHisAlarm : UpLoadBaseWithCache
 
     /// <inheritdoc/>
     public override VariablePropertyBase VariablePropertys => null;
+
     protected override IReadWrite _readWrite => null;
 
     protected override UploadPropertyWithCache _uploadPropertyWithCache => _driverPropertys;
+
     public override void Init(DeviceRunTime device)
     {
         base.Init(device);
         device.DeviceVariableRunTimes = _globalDeviceData.AllVariables.Where(a => a.AlarmEnable).ToList();
         CollectDevices = _globalDeviceData.CollectDevices.Where(a => a.DeviceVariableRunTimes.Any(a => a.AlarmEnable)).ToList();
     }
+
     /// <summary>
     /// <inheritdoc/>
     /// </summary>
@@ -55,7 +60,9 @@ public partial class SQLHisAlarm : UpLoadBaseWithCache
     {
         return $" {nameof(SQLHisAlarm)}";
     }
+
     private TypeAdapterConfig _config;
+
     protected override void Init(ISenderClient client = null)
     {
         base.Init(client);
@@ -142,7 +149,6 @@ YitIdHelper.NextId());
                         {
                             if (!cancellationToken.IsCancellationRequested)
                             {
-
                                 var result = await InserableAsync(db, item, cancellationToken);
                                 if (success != result.IsSuccess)
                                 {
@@ -159,7 +165,6 @@ YitIdHelper.NextId());
                             LogMessage?.LogWarning(ex);
                         }
                     }
-
                 }
             }
             catch (Exception ex)
@@ -173,6 +178,4 @@ YitIdHelper.NextId());
 
         await Delay(_driverPropertys.CycleInterval, cancellationToken);
     }
-
-
 }

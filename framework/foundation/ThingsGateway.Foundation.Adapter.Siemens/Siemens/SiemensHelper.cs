@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using System.Text;
@@ -19,6 +21,7 @@ namespace ThingsGateway.Foundation.Adapter.Siemens;
 internal partial class SiemensHelper
 {
     #region 验证
+
     //internal static OperResult<byte[]> AnalysisReadBit(byte[] content)
     //{
     //    int length = 1;
@@ -144,7 +147,6 @@ internal partial class SiemensHelper
             }
         }
         return OperResult.CreateSuccessResult(dataArray, FilterResult.Success);
-
     }
 
     internal static OperResult<byte[], FilterResult> AnalysisWrite(byte[] content)
@@ -170,8 +172,8 @@ internal partial class SiemensHelper
         {
             return OperResult.CreateSuccessResult(content, FilterResult.Success);
         }
-
     }
+
     private static string GetCpuError(ushort Error)
     {
         return Error switch
@@ -194,6 +196,7 @@ internal partial class SiemensHelper
     #endregion
 
     #region 获取报文
+
     internal static byte[] GetReadCommand(SiemensAddress[] siemensAddress)
     {
         int len = siemensAddress.Length;
@@ -272,7 +275,6 @@ internal partial class SiemensHelper
         numArray[35] = (byte)(data ? 1 : 0);
 
         return numArray;
-
     }
 
     internal static byte[] GetWriteByteCommand(SiemensAddress address, byte[] data)
@@ -314,7 +316,6 @@ internal partial class SiemensHelper
         data.CopyTo(numArray, 35);
 
         return numArray;
-
     }
 
     #endregion
@@ -359,9 +360,7 @@ internal partial class SiemensHelper
             {
                 return OperResult.CreateSuccessResult(encoding.GetString(result2.Content, 1, result2.Content.Length - 1));
             }
-
         }
-
     }
 
     internal static async Task<OperResult> WriteAsync(SiemensS7PLC plc, string address, string value, Encoding encoding)
@@ -399,22 +398,31 @@ internal enum S7WordLength : byte
 {
     /// <inheritdoc/>
     Bit = 0x01,
+
     /// <inheritdoc/>
     Byte = 0x02,
+
     /// <inheritdoc/>
     Char = 0x03,
+
     /// <inheritdoc/>
     Word = 0x04,
+
     /// <inheritdoc/>
     Int = 0x05,
+
     /// <inheritdoc/>
     DWord = 0x06,
+
     /// <inheritdoc/>
     DInt = 0x07,
+
     /// <inheritdoc/>
     Real = 0x08,
+
     /// <inheritdoc/>
     Counter = 0x1C,
+
     /// <inheritdoc/>
     Timer = 0x1D,
 }

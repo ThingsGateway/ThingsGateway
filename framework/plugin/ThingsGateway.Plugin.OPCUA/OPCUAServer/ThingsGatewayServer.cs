@@ -1,4 +1,5 @@
 #region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using Furion;
@@ -109,6 +111,7 @@ public partial class ThingsGatewayServer : StandardServer
         NodeManager?.SafeDispose();
         base.Dispose(disposing);
     }
+
     /// <inheritdoc/>
     protected override ServerProperties LoadServerProperties()
     {
@@ -185,7 +188,6 @@ public partial class ThingsGatewayServer : StandardServer
         if (args.NewIdentity is UserNameIdentityToken userNameToken)
         {
             args.Identity = VerifyPassword(userNameToken);
-
 
             // set AuthenticatedUser role for accepted user/password authentication
             args.Identity.GrantedRoleIds.Add(ObjectIds.WellKnownRole_AuthenticatedUser);
@@ -278,9 +280,8 @@ public partial class ThingsGatewayServer : StandardServer
         {
             return new UserIdentity(userNameToken);
         }
-
-
     }
+
     private void VerifyUserTokenCertificate(X509Certificate2 certificate)
     {
         try
@@ -326,5 +327,4 @@ public partial class ThingsGatewayServer : StandardServer
                 new LocalizedText(info)));
         }
     }
-
 }

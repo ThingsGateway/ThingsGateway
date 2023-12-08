@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using System.Text;
@@ -63,7 +65,6 @@ public class DataTransUtil
         return array;
     }
 
-
     /// <summary>
     /// 字节数据转化成16进制表示的字符串
     /// </summary>
@@ -100,7 +101,6 @@ public class DataTransUtil
         }
         return stringBuilder.ToString();
     }
-
 
     /// <summary>
     /// 获取BCD值
@@ -395,6 +395,4 @@ public class DataTransUtil
             array[index] = index != array.Length - 1 ? everyLength : (integer % everyLength == 0 ? everyLength : integer % everyLength);
         return array;
     }
-
-
 }

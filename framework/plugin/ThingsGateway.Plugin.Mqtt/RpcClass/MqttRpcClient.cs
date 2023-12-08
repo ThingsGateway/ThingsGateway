@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 // Licensed to the .NET Foundation under one or more agreements.
@@ -24,12 +26,11 @@ using System.Collections.Concurrent;
 
 namespace MQTTnet.Extensions.Rpc
 {
-
     public sealed class MqttRpcClient : IDisposable
     {
-        readonly IMqttClient _mqttClient;
+        private readonly IMqttClient _mqttClient;
 
-        readonly ConcurrentDictionary<string, AsyncTaskCompletionSource<byte[]>> _waitingCalls = new ConcurrentDictionary<string, AsyncTaskCompletionSource<byte[]>>();
+        private readonly ConcurrentDictionary<string, AsyncTaskCompletionSource<byte[]>> _waitingCalls = new ConcurrentDictionary<string, AsyncTaskCompletionSource<byte[]>>();
 
         public MqttRpcClient(IMqttClient mqttClient)
         {
@@ -127,7 +128,7 @@ namespace MQTTnet.Extensions.Rpc
             }
         }
 
-        Task HandleApplicationMessageReceivedAsync(MqttApplicationMessageReceivedEventArgs eventArgs)
+        private Task HandleApplicationMessageReceivedAsync(MqttApplicationMessageReceivedEventArgs eventArgs)
         {
             if (!_waitingCalls.TryRemove(eventArgs.ApplicationMessage.Topic, out var awaitable))
             {

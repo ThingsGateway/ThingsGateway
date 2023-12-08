@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using Furion.Logging.Extensions;
@@ -24,6 +26,7 @@ namespace ThingsGateway.Gateway.Application;
 public abstract class DeviceWorker : BackgroundService
 {
     protected ILogger _logger;
+
     /// <summary>
     /// 全部重启锁
     /// </summary>
@@ -37,6 +40,7 @@ public abstract class DeviceWorker : BackgroundService
     protected DriverPluginService _driverPluginService;
     protected IServiceScope _serviceScope;
     private readonly IHostApplicationLifetime _appLifetime;
+
     /// <inheritdoc/>
     public DeviceWorker(IServiceScopeFactory serviceScopeFactory, IHostApplicationLifetime appLifetime)
     {
@@ -72,12 +76,9 @@ public abstract class DeviceWorker : BackgroundService
             DriverBases.FirstOrDefault(it => it.DeviceId == deviceId)?.PasueThread(isStart);
     }
 
-
-
     #endregion
 
     #region Private
-
 
     /// <summary>
     /// 根据通道生成/获取线程管理器
@@ -108,7 +109,6 @@ public abstract class DeviceWorker : BackgroundService
             _deviceThreads.Add(deviceThread);
             return deviceThread;
         }
-
     }
 
     /// <summary>
@@ -161,10 +161,10 @@ public abstract class DeviceWorker : BackgroundService
         }
     }
 
-
     #endregion
 
     #region 设备信息获取
+
     /// <summary>
     /// GetDebugUI
     /// </summary>
@@ -177,9 +177,6 @@ public abstract class DeviceWorker : BackgroundService
         return driverPlugin?.DriverDebugUIType;
     }
 
-
-
-
     /// <summary>
     /// GetDriverUI
     /// </summary>
@@ -191,15 +188,18 @@ public abstract class DeviceWorker : BackgroundService
         driverPlugin?.SafeDispose();
         return driverPlugin?.DriverUIType;
     }
+
     #endregion
 
     #region worker服务
+
     protected EasyLock _easyLock = new();
 
     /// <summary>
     /// 在软件关闭时取消
     /// </summary>
     protected CancellationToken _stoppingToken;
+
     /// <inheritdoc/>
     public override async Task StartAsync(CancellationToken cancellationToken)
     {
@@ -232,7 +232,6 @@ public abstract class DeviceWorker : BackgroundService
                 if (deviceThread == null) { throw new($"更新设备线程失败，不存在{devId}为id的设备"); }
                 //这里先停止采集，操作会使线程取消，需要重新恢复线程
                 await deviceThread.StopThreadAsync();
-
 
                 var dev = isChanged ? (await GetDeviceRunTimeAsync(devId)).FirstOrDefault() : driverBase.CurrentDevice;
 
@@ -281,7 +280,6 @@ public abstract class DeviceWorker : BackgroundService
                     if (isChanged)
                         await StartOtherHostService();
                 }
-
             }
         }
         finally
@@ -289,6 +287,7 @@ public abstract class DeviceWorker : BackgroundService
             singleRestartLock.Release();
         }
     }
+
     /// <summary>
     /// 更新设备线程,切换为冗余通道
     /// </summary>
@@ -344,14 +343,12 @@ public abstract class DeviceWorker : BackgroundService
                                 dev.Redundant = RedundantEnum.Standby;
                                 _logger?.LogInformation($"{dev.Name}：切换到备用通道");
                             }
-
                         }
                         catch
                         {
                         }
                     }
                 }
-
 
                 deviceThread.DriverBases.Remove(driverBase);
 
@@ -372,7 +369,6 @@ public abstract class DeviceWorker : BackgroundService
                     await item.StopThreadAsync();
                     await item.StartThreadAsync();
                 }
-
             }
         }
         finally
@@ -385,13 +381,12 @@ public abstract class DeviceWorker : BackgroundService
     /// 线程检查时间，120分钟
     /// </summary>
     public const int CheckIntervalTime = 7200;
+
     protected abstract Task StartOtherHostService();
+
     protected abstract Task StopOtherHostService();
 
     protected abstract Task<IEnumerable<DeviceRunTime>> GetDeviceRunTimeAsync(long devId);
+
     #endregion
-
-
-
 }
-

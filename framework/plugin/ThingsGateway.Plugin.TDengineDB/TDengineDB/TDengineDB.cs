@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using LiteDB;
@@ -30,6 +32,7 @@ public partial class TDengineDB : UpLoadBaseWithCacheT<DeviceData, TDHistoryValu
 {
     protected override bool _device => false;
     protected override bool _variable => true;
+
     /// <inheritdoc/>
     public override Type DriverDebugUIType => null;
 
@@ -37,6 +40,7 @@ public partial class TDengineDB : UpLoadBaseWithCacheT<DeviceData, TDHistoryValu
 
     /// <inheritdoc/>
     public override VariablePropertyBase VariablePropertys => _variablePropertys;
+
     protected override IReadWrite _readWrite => null;
 
     protected override UploadPropertyWithCacheT _uploadPropertyWithCache => _driverPropertys;
@@ -126,7 +130,6 @@ public partial class TDengineDB : UpLoadBaseWithCacheT<DeviceData, TDHistoryValu
                     {
                         if (!cancellationToken.IsCancellationRequested)
                         {
-
                             var result = await InserableAsync(db, item, cancellationToken);
                             if (success != result.IsSuccess)
                             {
@@ -143,7 +146,6 @@ public partial class TDengineDB : UpLoadBaseWithCacheT<DeviceData, TDHistoryValu
                         LogMessage?.LogWarning(ex);
                     }
                 }
-
             }
         }
         catch (Exception ex)
@@ -156,6 +158,4 @@ public partial class TDengineDB : UpLoadBaseWithCacheT<DeviceData, TDHistoryValu
 
         await Delay(_driverPropertys.CycleInterval, cancellationToken);
     }
-
-
 }

@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,12 +9,12 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using System.
 
 Runtime.InteropServices;
-
 
 namespace ThingsGateway.Foundation.Adapter.OPCDA.Rcw;
 
@@ -91,25 +92,30 @@ public enum OPCSERVERSTATE
 [ComImport]
 [GuidAttribute("63D5F430-CFE4-11d1-B2C8-0060083BA1FB")]
 [InterfaceTypeAttribute(ComInterfaceType.InterfaceIsIUnknown)]
-public interface CATID_OPCDAServer10 { }
+public interface CATID_OPCDAServer10
+{ }
 
 /// <exclude />
 [ComImport]
 [GuidAttribute("63D5F432-CFE4-11d1-B2C8-0060083BA1FB")]
 [InterfaceTypeAttribute(ComInterfaceType.InterfaceIsIUnknown)]
-public interface CATID_OPCDAServer20 { }
+public interface CATID_OPCDAServer20
+{ }
 
 /// <exclude />
 [ComImport]
 [GuidAttribute("CC603642-66D7-48f1-B69A-B625E73652D7")]
 [InterfaceTypeAttribute(ComInterfaceType.InterfaceIsIUnknown)]
-public interface CATID_OPCDAServer30 { }
+public interface CATID_OPCDAServer30
+{ }
 
 /// <exclude />
 [ComImport]
 [GuidAttribute("3098EDA4-A006-48b2-A27F-247453959408")]
 [InterfaceTypeAttribute(ComInterfaceType.InterfaceIsIUnknown)]
-public interface CATID_XMLDAServer10 { }
+public interface CATID_XMLDAServer10
+{ }
+
 /// <exclude />
 [ComImport]
 [GuidAttribute("39c13a55-011e-11d0-9675-0020afd8adb3")]
@@ -1002,12 +1008,16 @@ public struct OPCBROWSEELEMENT
 {
     [MarshalAs(UnmanagedType.LPWStr)]
     public string szName;
+
     [MarshalAs(UnmanagedType.LPWStr)]
     public string szItemID;
+
     [MarshalAs(UnmanagedType.I4)]
     public int dwFlagValue;
+
     [MarshalAs(UnmanagedType.I4)]
     public int dwReserved;
+
     public OPCITEMPROPERTIES ItemProperties;
 }
 
@@ -1017,12 +1027,16 @@ public struct OPCGROUPHEADER
 {
     [MarshalAs(UnmanagedType.I4)]
     public int dwSize;
+
     [MarshalAs(UnmanagedType.I4)]
     public int dwItemCount;
+
     [MarshalAs(UnmanagedType.I4)]
     public int hClientGroup;
+
     [MarshalAs(UnmanagedType.I4)]
     public int dwTransactionID;
+
     [MarshalAs(UnmanagedType.I4)]
     public int hrStatus;
 }
@@ -1033,10 +1047,13 @@ public struct OPCGROUPHEADERWRITE
 {
     [MarshalAs(UnmanagedType.I4)]
     public int dwItemCount;
+
     [MarshalAs(UnmanagedType.I4)]
     public int hClientGroup;
+
     [MarshalAs(UnmanagedType.I4)]
     public int dwTransactionID;
+
     [MarshalAs(UnmanagedType.I4)]
     public int hrStatus;
 }
@@ -1047,24 +1064,35 @@ public struct OPCITEMATTRIBUTES
 {
     [MarshalAs(UnmanagedType.LPWStr)]
     public string szAccessPath;
+
     [MarshalAs(UnmanagedType.LPWStr)]
     public string szItemID;
+
     [MarshalAs(UnmanagedType.I4)]
     public int bActive;
+
     [MarshalAs(UnmanagedType.I4)]
     public int hClient;
+
     [MarshalAs(UnmanagedType.I4)]
     public int hServer;
+
     [MarshalAs(UnmanagedType.I4)]
     public int dwAccessRights;
+
     [MarshalAs(UnmanagedType.I4)]
     public int dwBlobSize;
+
     public IntPtr pBlob;
+
     [MarshalAs(UnmanagedType.I2)]
     public short vtRequestedDataType;
+
     [MarshalAs(UnmanagedType.I2)]
     public short vtCanonicalDataType;
+
     public OPCEUTYPE dwEUType;
+
     [MarshalAs(UnmanagedType.Struct)]
     public object vEUInfo;
 }
@@ -1075,17 +1103,24 @@ public struct OPCITEMDEF
 {
     [MarshalAs(UnmanagedType.LPWStr)]
     public string szAccessPath;
+
     [MarshalAs(UnmanagedType.LPWStr)]
     public string szItemID;
+
     [MarshalAs(UnmanagedType.I4)]
     public int bActive;
+
     [MarshalAs(UnmanagedType.I4)]
     public int hClient;
+
     [MarshalAs(UnmanagedType.I4)]
     public int dwBlobSize;
+
     public IntPtr pBlob;
+
     [MarshalAs(UnmanagedType.I2)]
     public short vtRequestedDataType;
+
     [MarshalAs(UnmanagedType.I2)]
     public short wReserved;
 };
@@ -1096,12 +1131,16 @@ public struct OPCITEMHEADER1
 {
     [MarshalAs(UnmanagedType.I4)]
     public int hClient;
+
     [MarshalAs(UnmanagedType.I4)]
     public int dwValueOffset;
+
     [MarshalAs(UnmanagedType.I2)]
     public short wQuality;
+
     [MarshalAs(UnmanagedType.I2)]
     public short wReserved;
+
     public System.Runtime.InteropServices.ComTypes.FILETIME ftTimeStampItem;
 }
 
@@ -1111,19 +1150,24 @@ public struct OPCITEMHEADER2
 {
     [MarshalAs(UnmanagedType.I4)]
     public int hClient;
+
     [MarshalAs(UnmanagedType.I4)]
     public int dwValueOffset;
+
     [MarshalAs(UnmanagedType.I2)]
     public short wQuality;
+
     [MarshalAs(UnmanagedType.I2)]
     public short wReserved;
 }
+
 /// <exclude />
 [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
 public struct OPCITEMHEADERWRITE
 {
     [MarshalAs(UnmanagedType.I4)]
     public int hClient;
+
     [MarshalAs(UnmanagedType.I4)]
     public int dwError;
 }
@@ -1134,9 +1178,12 @@ public struct OPCITEMPROPERTIES
 {
     [MarshalAs(UnmanagedType.I4)]
     public int hrErrorID;
+
     [MarshalAs(UnmanagedType.I4)]
     public int dwNumProperties;
+
     public IntPtr pItemProperties;
+
     [MarshalAs(UnmanagedType.I4)]
     public int dwReserved;
 }
@@ -1147,18 +1194,25 @@ public struct OPCITEMPROPERTY
 {
     [MarshalAs(UnmanagedType.I2)]
     public short vtDataType;
+
     [MarshalAs(UnmanagedType.I2)]
     public short wReserved;
+
     [MarshalAs(UnmanagedType.I4)]
     public int dwPropertyID;
+
     [MarshalAs(UnmanagedType.LPWStr)]
     public string szItemID;
+
     [MarshalAs(UnmanagedType.LPWStr)]
     public string szDescription;
+
     [MarshalAs(UnmanagedType.Struct)]
     public object vValue;
+
     [MarshalAs(UnmanagedType.I4)]
     public int hrErrorID;
+
     [MarshalAs(UnmanagedType.I4)]
     public int dwReserved;
 }
@@ -1169,14 +1223,19 @@ public struct OPCITEMRESULT
 {
     [MarshalAs(UnmanagedType.I4)]
     public int hServer;
+
     [MarshalAs(UnmanagedType.I2)]
     public short vtCanonicalDataType;
+
     [MarshalAs(UnmanagedType.I2)]
     public short wReserved;
+
     [MarshalAs(UnmanagedType.I4)]
     public int dwAccessRights;
+
     [MarshalAs(UnmanagedType.I4)]
     public int dwBlobSize;
+
     public IntPtr pBlob;
 }
 
@@ -1186,11 +1245,15 @@ public struct OPCITEMSTATE
 {
     [MarshalAs(UnmanagedType.I4)]
     public int hClient;
+
     public System.Runtime.InteropServices.ComTypes.FILETIME ftTimeStamp;
+
     [MarshalAs(UnmanagedType.I2)]
     public short wQuality;
+
     [MarshalAs(UnmanagedType.I2)]
     public short wReserved;
+
     [MarshalAs(UnmanagedType.Struct)]
     public object vDataValue;
 }
@@ -1201,16 +1264,22 @@ public struct OPCITEMVQT
 {
     [MarshalAs(UnmanagedType.Struct)]
     public object vDataValue;
+
     [MarshalAs(UnmanagedType.I4)]
     public int bQualitySpecified;
+
     [MarshalAs(UnmanagedType.I2)]
     public short wQuality;
+
     [MarshalAs(UnmanagedType.I2)]
     public short wReserved;
+
     [MarshalAs(UnmanagedType.I4)]
     public int bTimeStampSpecified;
+
     [MarshalAs(UnmanagedType.I4)]
     public int dwReserved;
+
     public System.Runtime.InteropServices.ComTypes.FILETIME ftTimeStamp;
 }
 
@@ -1222,21 +1291,29 @@ public struct OPCSERVERSTATUS
     public System.Runtime.InteropServices.ComTypes.FILETIME ftCurrentTime;
     public System.Runtime.InteropServices.ComTypes.FILETIME ftLastUpdateTime;
     public OPCSERVERSTATE dwServerState;
+
     [MarshalAs(UnmanagedType.I4)]
     public int dwGroupCount;
+
     [MarshalAs(UnmanagedType.I4)]
     public int dwBandWidth;
+
     [MarshalAs(UnmanagedType.I2)]
     public short wMajorVersion;
+
     [MarshalAs(UnmanagedType.I2)]
     public short wMinorVersion;
+
     [MarshalAs(UnmanagedType.I2)]
     public short wBuildNumber;
+
     [MarshalAs(UnmanagedType.I2)]
     public short wReserved;
+
     [MarshalAs(UnmanagedType.LPWStr)]
     public string szVendorInfo;
 }
+
 /// <exclude />
 public static class Constants
 {
@@ -1247,6 +1324,7 @@ public static class Constants
 
     // category description strings.
     public const string OPC_CATEGORY_DESCRIPTION_DA10 = "OPC Data Access Servers Version 1.0";
+
     public const string OPC_CATEGORY_DESCRIPTION_DA20 = "OPC Data Access Servers Version 2.0";
     public const string OPC_CATEGORY_DESCRIPTION_DA30 = "OPC Data Access Servers Version 3.0";
     public const string OPC_CATEGORY_DESCRIPTION_XMLDA10 = "OPC XML Data Access Servers Version 1.0";
@@ -1258,11 +1336,13 @@ public static class Constants
 
     // values for access rights mask.
     public const int OPC_READABLE = 0x01;
-    // well known complex type description systems.   
+
+    // well known complex type description systems.
     public const string OPC_TYPE_SYSTEM_OPCBINARY = "OPCBinary";
 
     public const string OPC_TYPE_SYSTEM_XMLSCHEMA = "XMLSchema";
     public const string OPC_WRITE_BEHAVIOR_ALL_OR_NOTHING = "All or Nothing";
+
     // complex data write behavior values.
     public const string OPC_WRITE_BEHAVIOR_BEST_EFFORT = "Best Effort";
 
@@ -1280,7 +1360,7 @@ public static class Qualities
 
     public const short OPC_LIMIT_MASK = 0x03;
 
-    // Values for Limit Bitfield 
+    // Values for Limit Bitfield
     public const short OPC_LIMIT_OK = 0x00;
 
     // Values for QUALITY_MASK bit field
@@ -1307,6 +1387,7 @@ public static class Qualities
 
     // Values for fields in the quality word
     public const short OPC_QUALITY_MASK = 0xC0;
+
     public const short OPC_QUALITY_NOT_CONNECTED = 0x08;
     public const short OPC_QUALITY_OUT_OF_SERVICE = 0x1C;
     public const short OPC_QUALITY_SENSOR_CAL = 0x50;
@@ -1340,6 +1421,7 @@ public static class Properties
 
     // property ids.
     public const int OPC_PROPERTY_DATATYPE = 1;
+
     public const int OPC_PROPERTY_DEADBAND = 306;
     public const string OPC_PROPERTY_DESC_ACCESS_RIGHTS = "Item Access Rights";
     public const string OPC_PROPERTY_DESC_ALARM_AREA_LIST = "Alarm Area List";
@@ -1350,6 +1432,7 @@ public static class Properties
     public const string OPC_PROPERTY_DESC_CONDITION_STATUS = "Condition Status";
     public const string OPC_PROPERTY_DESC_CONSISTENCY_WINDOW = "Consistency Window";
     public const string OPC_PROPERTY_DESC_DATA_FILTER_VALUE = "Data Filter Value";
+
     // property descriptions.
     public const string OPC_PROPERTY_DESC_DATATYPE = "Item Canonical Data Type";
 
@@ -1379,6 +1462,7 @@ public static class Properties
     public const string OPC_PROPERTY_DESC_TIMEZONE = "Item Timezone";
     public const string OPC_PROPERTY_DESC_TYPE_DESCRIPTION = "Type Description";
     public const string OPC_PROPERTY_DESC_TYPE_ID = "Type ID";
+
     // complex data properties.
     public const string OPC_PROPERTY_DESC_TYPE_SYSTEM_ID = "Type System ID";
 
@@ -1411,6 +1495,7 @@ public static class Properties
     public const int OPC_PROPERTY_TIMEZONE = 108;
     public const int OPC_PROPERTY_TYPE_DESCRIPTION = 604;
     public const int OPC_PROPERTY_TYPE_ID = 602;
+
     // complex data properties.
     public const int OPC_PROPERTY_TYPE_SYSTEM_ID = 600;
 

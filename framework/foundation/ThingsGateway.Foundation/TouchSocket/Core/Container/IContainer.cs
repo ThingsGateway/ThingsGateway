@@ -17,6 +17,5 @@ namespace ThingsGateway.Foundation.Core
     /// </summary>
     public interface IContainer : IResolver, IRegistrator
     {
-
     }
 }

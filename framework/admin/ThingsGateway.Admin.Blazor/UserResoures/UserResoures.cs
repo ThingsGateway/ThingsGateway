@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using Masa.Blazor;
@@ -24,6 +26,7 @@ public class UserResoures
 {
     private readonly CookieStorage _cookieStorage;
     private IRequestCookieCollection _cookies;
+
     /// <summary>
     /// 构造函数
     /// </summary>
@@ -76,6 +79,7 @@ public class UserResoures
 
     private MasaBlazor _masaBlazor { get; set; }
     private IServiceScope _serviceScope { get; set; }
+
     /// <summary>
     /// 初始化获取全部资源
     /// </summary>
@@ -85,6 +89,7 @@ public class UserResoures
         await InitUserAsync();
         await InitMenuAsync();
     }
+
     /// <summary>
     /// 初始化获取当前菜单资源
     /// </summary>
@@ -112,6 +117,7 @@ public class UserResoures
         if (UserManager.UserId > 0)
             CurrentUser = await _serviceScope.ServiceProvider.GetService<AuthService>().GetLoginUserAsync();
     }
+
     /// <summary>
     /// 是否拥有按钮授权
     /// </summary>
@@ -130,6 +136,7 @@ public class UserResoures
             return true;
         }
     }
+
     /// <summary>
     /// 是否拥有页面授权
     /// </summary>
@@ -146,7 +153,6 @@ public class UserResoures
         {
             return true;
         }
-
     }
 
     /// <summary>

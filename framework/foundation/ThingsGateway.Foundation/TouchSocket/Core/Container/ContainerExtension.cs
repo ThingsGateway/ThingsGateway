@@ -730,6 +730,7 @@ namespace ThingsGateway.Foundation.Core
         {
             return registered.IsRegistered(typeof(T), key);
         }
-        #endregion
+
+        #endregion IsRegistered
     }
 }

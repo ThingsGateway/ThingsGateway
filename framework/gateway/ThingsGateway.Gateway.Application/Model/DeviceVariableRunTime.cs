@@ -1,4 +1,5 @@
 #region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using Mapster;
@@ -23,7 +25,6 @@ namespace ThingsGateway.Gateway.Core;
 /// </summary>
 public class DeviceVariableRunTime : DeviceVariable, IDeviceVariableRunTime
 {
-
     private bool _isOnline;
     private bool _isOnlineChanged;
     private string _lastErrorMessage;
@@ -38,6 +39,7 @@ public class DeviceVariableRunTime : DeviceVariable, IDeviceVariableRunTime
     /// 谨慎使用，务必采用队列等方式
     /// </summary>
     internal event VariableCollectEventHandler VariableCollectChange;
+
     /// <summary>
     /// 变化时间
     /// </summary>
@@ -67,6 +69,7 @@ public class DeviceVariableRunTime : DeviceVariable, IDeviceVariableRunTime
     [Description("设备名称")]
     [DataTable(Order = 2, IsShow = true, Sortable = true)]
     public string DeviceName { get; set; }
+
     /// <summary>
     /// 是否在线
     /// </summary>
@@ -89,9 +92,9 @@ public class DeviceVariableRunTime : DeviceVariable, IDeviceVariableRunTime
                 _isOnlineChanged = false;
             }
             _isOnline = value;
-
         }
     }
+
     /// <summary>
     /// <inheritdoc/>
     /// </summary>
@@ -111,6 +114,7 @@ public class DeviceVariableRunTime : DeviceVariable, IDeviceVariableRunTime
             _lastErrorMessage = value;
         }
     }
+
     /// <summary>
     /// 上次值
     /// </summary>
@@ -124,12 +128,14 @@ public class DeviceVariableRunTime : DeviceVariable, IDeviceVariableRunTime
     [Description("原始值")]
     [DataTable(Order = 3, IsShow = true, Sortable = false, CellClass = " table-text-truncate ")]
     public object RawValue { get; private set; }
+
     /// <summary>
     /// 实时值
     /// </summary>
     [Description("实时值")]
     [DataTable(Order = 3, IsShow = true, Sortable = false, CellClass = " table-text-truncate ")]
     public object Value { get => _value; private set => _value = value; }
+
     /// <summary>
     /// 设置变量值与时间/质量戳
     /// </summary>
@@ -190,16 +196,15 @@ public class DeviceVariableRunTime : DeviceVariable, IDeviceVariableRunTime
         }
     }
 
-
-
-
     #region LoadSourceRead
+
     /// <summary>
     /// 这个参数值由自动打包方法写入<see cref="IReadWrite.LoadSourceRead{T, T2}(List{T2}, int)"/>
     /// </summary>
     [Description("打包索引")]
     [DataTable(Order = 6, IsShow = true, Sortable = true)]
     public int Index { get; set; }
+
     /// <summary>
     /// 这个参数值由自动打包方法写入<see cref="IReadWrite.LoadSourceRead{T, T2}(List{T2}, int)"/>
     /// </summary>
@@ -210,6 +215,7 @@ public class DeviceVariableRunTime : DeviceVariable, IDeviceVariableRunTime
     #endregion
 
     #region 报警
+
     /// <summary>
     /// 报警值
     /// </summary>
@@ -225,6 +231,7 @@ public class DeviceVariableRunTime : DeviceVariable, IDeviceVariableRunTime
             return LAlarmEnable || LLAlarmEnable || HAlarmEnable || HHAlarmEnable || BoolOpenAlarmEnable || BoolCloseAlarmEnable;
         }
     }
+
     /// <summary>
     /// 报警限值
     /// </summary>
@@ -239,6 +246,7 @@ public class DeviceVariableRunTime : DeviceVariable, IDeviceVariableRunTime
     /// 报警时间
     /// </summary>
     public DateTime AlarmTime { get; set; }
+
     /// <summary>
     /// 报警类型
     /// </summary>
@@ -248,19 +256,21 @@ public class DeviceVariableRunTime : DeviceVariable, IDeviceVariableRunTime
     /// 事件时间
     /// </summary>
     public DateTime EventTime { get; set; }
+
     /// <summary>
     /// 事件类型
     /// </summary>
     public EventEnum EventTypeEnum { get; set; } = EventEnum.None;
+
     #endregion
 }
+
 /// <summary>
 /// 变量采集事件委托
 /// </summary>
 public delegate void VariableCollectEventHandler(DeviceVariableRunTime collectVariableRunTime);
+
 /// <summary>
 /// 变量改变事件委托
 /// </summary>
 public delegate void VariableChangeEventHandler(DeviceVariableRunTime collectVariableRunTime);
-
-

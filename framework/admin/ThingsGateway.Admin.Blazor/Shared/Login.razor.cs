@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using Furion.DataEncryption;
@@ -29,17 +31,21 @@ public partial class Login
     private string _captchaValue;
     private bool _showCaptcha;
     private bool _showPassword;
+
     [Inject]
     private AjaxService _ajaxService { get; set; }
+
     private ValidCodeOutput _captchaInfo { get; set; }
     private string _configRemark { get; set; }
     private string _configTitle { get; set; }
+
     [Inject]
     private NavigationManager _NavigationManager { get; set; }
 
     private string _password { get; set; }
     private string _userLogoUrl { get; set; } = BlazorResourceConst.ResourceUrl + "images/defaultUser.svg";
     private string _welcome { get; set; }
+
     /// <inheritdoc/>
     protected override async Task OnParametersSetAsync()
     {
@@ -64,7 +70,6 @@ public partial class Login
             await LoginAsync();
         }
     }
-
 
     private void GetCaptchaInfo()
     {
@@ -126,6 +131,7 @@ public partial class Login
             await PopupService.EnqueueSnackbarAsync(new("登录错误", AlertTypes.Error));
         }
     }
+
     private async Task<string> RefreshCode()
     {
         _captchaInfo = _serviceScope.ServiceProvider.GetService<AuthService>().GetCaptchaInfo();

@@ -1,4 +1,5 @@
 #region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using Furion.DependencyInjection;
@@ -31,6 +33,7 @@ using ThingsGateway.Foundation.Extension.String;
 using Yitter.IdGenerator;
 
 namespace ThingsGateway.Gateway.Application;
+
 /// <summary>
 /// 驱动插件服务
 /// </summary>
@@ -39,6 +42,7 @@ public class DriverPluginService : ISingleton
     public const string DefaultKey = "默认";
     private readonly IServiceScope _serviceScope;
     private readonly ILogger _logger;
+
     /// <inheritdoc cref="DriverPluginService"/>
     public DriverPluginService(
     IServiceScopeFactory serviceScopeFactory,
@@ -53,6 +57,7 @@ public class DriverPluginService : ISingleton
         _stringConverter = new StringConverter();
         _stringConverter.Add(new StringToEncodingConverter());
     }
+
     /// <summary>
     /// 插件文件名称/插件程序集
     /// </summary>
@@ -77,7 +82,9 @@ public class DriverPluginService : ISingleton
     /// 字符串转换器，默认支持基础类型和Json。
     /// </summary>
     private StringConverter _stringConverter { get; }
+
     #region public
+
     /// <summary>
     /// 获取全部插件信息
     /// </summary>
@@ -93,7 +100,9 @@ public class DriverPluginService : ISingleton
         }).Where(p => p.Children.Any()).ToList();
         return filteredPlugins;
     }
+
     public const string Plugins = "Plugins";
+
     /// <summary>
     /// 获取全部插件信息
     /// </summary>
@@ -150,7 +159,6 @@ public class DriverPluginService : ISingleton
                             {
                                 _driverBaseDict.TryAdd($"{driverPlugin.Name}.{type.Name}", type);
                                 _logger?.LogInformation($"加载插件 {folderPath.CombinePath($"{driverPlugin.Name}.dll")}-{type.Name} 成功");
-
                             }
                             driverPlugin.Children.Add(
                             new DriverPlugin()
@@ -170,7 +178,6 @@ public class DriverPluginService : ISingleton
                     {
                         _logger.LogWarning(ex, $"加载插件 {folderPath} 失败");
                     }
-
                 }
                 return plugins;
             }, true);
@@ -245,7 +252,6 @@ public class DriverPluginService : ISingleton
     /// </summary>
     public List<DependencyPropertyWithMethodInfo> GetDriverMethodInfo(DriverBase driver)
     {
-
         var type = driver.GetType();
         var cacheKey = $"{CultureInfo.CurrentUICulture.Name}-{type.FullName}-{type.TypeHandle.Value}";
         var data = _serviceScope.ServiceProvider.GetService<MemoryCache>().GetOrCreate($"{nameof(GetDriverMethodInfo)}", cacheKey, c =>
@@ -263,11 +269,11 @@ public class DriverPluginService : ISingleton
                   }
       });
             return data?.ToList();
-
         }, true);
         return data;
     }
-    static T GetCustomAttributeRecursive<T>(PropertyInfo property) where T : Attribute
+
+    private static T GetCustomAttributeRecursive<T>(PropertyInfo property) where T : Attribute
     {
         var attribute = property.GetCustomAttribute<T>(false);
         if (attribute == null && property.ReflectedType.BaseType != null && property.ReflectedType != typeof(UpDriverPropertyBase))
@@ -280,6 +286,7 @@ public class DriverPluginService : ISingleton
         }
         return attribute;
     }
+
     /// <summary>
     /// 获取插件的属性值
     /// </summary>
@@ -330,7 +337,6 @@ public class DriverPluginService : ISingleton
                   }
       });
             return data?.ToList();
-
         }, true);
         return data;
     }
@@ -364,7 +370,6 @@ public class DriverPluginService : ISingleton
             var pageInfo = query.ToPagedList(input);//分页
             return pageInfo;
         }
-
     }
 
     public void Remove()
@@ -385,6 +390,7 @@ public class DriverPluginService : ISingleton
             _serviceScope.ServiceProvider.GetService<MemoryCache>().RemoveByPrefix(nameof(GetDriverVariableProperties));
         }
     }
+
     /// <summary>
     /// 设置插件的属性值
     /// </summary>
@@ -472,8 +478,6 @@ public class DriverPluginService : ISingleton
                     using FileStream fs1 = new(fullDir.CombinePathOS(item.Name), FileMode.Create);
                     otherStream.CopyTo(fs1);
                 }
-
-
             }
             finally
             {
@@ -482,7 +486,6 @@ public class DriverPluginService : ISingleton
             }
         }
     }
-
 
     #endregion public
 

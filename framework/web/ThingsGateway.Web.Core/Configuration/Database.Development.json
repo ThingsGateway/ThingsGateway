@@ -9,7 +9,7 @@
         //"DbType": "MySql", //数据库类型
         "ConnectionString": "Data Source=Admin.db;", //连接字符串
         "DbType": "Sqlite", //数据库类型
-        "LanguageType": "Chinese",//中文提示
+        "LanguageType": "Chinese", //中文提示
         "IsAutoCloseConnection": true, //是否自动释放
         "IsInitDb": true, //是否初始化数据库,适用于codefirst
         "IsUnderLine": false, //是否驼峰转下划线

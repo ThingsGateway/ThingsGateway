@@ -1,4 +1,5 @@
 #region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 //------------------------------------------------------------------------------
@@ -34,6 +36,7 @@ namespace ThingsGateway.Foundation.Rpc
     public static class RpcStoreExtension
     {
 #if !NET6_0_OR_GREATER
+
         /// <summary>
         /// 注册所有服务
         /// </summary>
@@ -60,8 +63,8 @@ namespace ThingsGateway.Foundation.Rpc
             }
             return types.Count;
         }
-#endif
 
+#endif
 
         /// <summary>
         /// 注册服务
@@ -71,6 +74,7 @@ namespace ThingsGateway.Foundation.Rpc
 #if NET6_0_OR_GREATER
         public static void RegisterServer<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T>(this RpcStore rpcStore) where T : IRpcServer
 #else
+
         public static void RegisterServer<T>(this RpcStore rpcStore) where T : IRpcServer
 #endif
 
@@ -87,6 +91,7 @@ namespace ThingsGateway.Foundation.Rpc
 #if NET6_0_OR_GREATER
         public static void RegisterServer(this RpcStore rpcStore, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type providerType)
 #else
+
         public static void RegisterServer(this RpcStore rpcStore, Type providerType)
 #endif
         {
@@ -102,6 +107,7 @@ namespace ThingsGateway.Foundation.Rpc
 #if NET6_0_OR_GREATER
         public static void RegisterServer<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TFrom, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TTo>(this RpcStore rpcStore) where TFrom : class, IRpcServer where TTo : TFrom
 #else
+
         public static void RegisterServer<TFrom, TTo>(this RpcStore rpcStore) where TFrom : class, IRpcServer where TTo : TFrom
 #endif
 
@@ -117,6 +123,7 @@ namespace ThingsGateway.Foundation.Rpc
 #if NET6_0_OR_GREATER
         public static void RegisterServer<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TFrom>(this RpcStore rpcStore, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TFrom rpcServer) where TFrom : class, IRpcServer
 #else
+
         public static void RegisterServer<TFrom>(this RpcStore rpcStore, TFrom rpcServer) where TFrom : class, IRpcServer
 #endif
 

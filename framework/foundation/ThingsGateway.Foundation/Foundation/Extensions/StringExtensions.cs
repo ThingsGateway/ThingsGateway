@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using System.Globalization;
@@ -31,8 +33,10 @@ public static class StringExtensions
         {
             case null:
                 return null;
+
             case "1":
                 return true;
+
             case "0":
                 return false;
         }
@@ -41,12 +45,16 @@ public static class StringExtensions
         {
             case "TRUE":
                 return true;
+
             case "FALSE":
                 return false;
+
             case "ON":
                 return true;
+
             case "OFF":
                 return false;
+
             default:
                 if (bool.TryParse(value, out bool parseBool))
                 {
@@ -58,6 +66,7 @@ public static class StringExtensions
                 }
         }
     }
+
     /// <summary>
     /// 转换布尔值
     /// </summary>
@@ -149,6 +158,7 @@ public static class StringExtensions
         }
         return true;
     }
+
     /// <summary>
     /// 根据<see cref="Type"/> 数据类型转化返回值类型
     /// </summary>
@@ -353,7 +363,6 @@ public static class StringExtensions
 }, StringSplitOptions.RemoveEmptyEntries);
     }
 
-
     /// <summary>
     /// 只按第一个匹配项分割
     /// </summary>
@@ -395,6 +404,7 @@ public static class StringExtensions
     {
         return value.IsNullOrEmpty() ? defaultValue : int.TryParse(value, out int n) ? n : defaultValue;
     }
+
     /// <summary>
     /// ToUInt
     /// </summary>
@@ -421,6 +431,7 @@ public static class StringExtensions
     {
         return value.IsNullOrEmpty() ? defaultValue : ushort.TryParse(value, out var n) ? n : defaultValue;
     }
+
     /// <summary>
     /// ToDouble
     /// </summary>
@@ -470,6 +481,7 @@ public static class StringExtensions
             return Decimal.TryParse(str, out var n) ? n : defaultValue;
         }
     }
+
     /// <summary>
     /// ToInt
     /// </summary>

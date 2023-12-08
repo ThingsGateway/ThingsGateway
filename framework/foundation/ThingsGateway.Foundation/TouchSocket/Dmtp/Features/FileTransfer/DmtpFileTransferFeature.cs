@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 namespace ThingsGateway.Foundation.Dmtp.FileTransfer
@@ -30,12 +32,14 @@ namespace ThingsGateway.Foundation.Dmtp.FileTransfer
             this.MaxSmallFileLength = 1024 * 1024;
             this.SetProtocolFlags(30);
         }
+
         /// <inheritdoc/>
         protected override void Loaded(IPluginManager pluginManager)
         {
             base.Loaded(pluginManager);
             this.m_pluginManager = pluginManager;
         }
+
         /// <inheritdoc cref="IDmtpFileTransferActor.MaxSmallFileLength"/>
         public int MaxSmallFileLength { get; set; }
 

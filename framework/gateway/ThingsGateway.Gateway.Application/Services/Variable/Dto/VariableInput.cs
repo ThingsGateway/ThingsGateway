@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using System.ComponentModel;
@@ -23,6 +25,7 @@ public class VariableAddInput : VariableEditInput
     /// <inheritdoc/>
     public override ProtectTypeEnum ProtectTypeEnum { get; set; } = ProtectTypeEnum.ReadOnly;
 }
+
 /// <summary>
 /// 添加变量DTO
 /// </summary>
@@ -39,7 +42,6 @@ public class DeviceVariableAddInput : VariableAddInput
 /// </summary>
 public class VariableEditInput : DeviceVariable, IValidatableObject
 {
-
     /// <inheritdoc/>
     [Required(ErrorMessage = "不能为空")]
     public override string Name { get; set; }
@@ -58,7 +60,6 @@ public class VariableEditInput : DeviceVariable, IValidatableObject
             if (string.IsNullOrEmpty(Address) && string.IsNullOrEmpty(OtherMethod))
                 yield return new ValidationResult("变量地址或特殊方法不能同时为空", new[] { nameof(Address) });
     }
-
 }
 
 /// <summary>
@@ -69,16 +70,18 @@ public class VariablePageInput : BasePageInput
     /// <inheritdoc/>
     [Description("变量名称")]
     public string Name { get; set; }
+
     /// <inheritdoc/>
     [Description("设备名称")]
     public string DeviceName { get; set; }
+
     /// <inheritdoc/>
     [Description("变量地址")]
     public string Address { get; set; }
+
     /// <inheritdoc/>
     [Description("上传设备名称")]
     public string UploadDeviceName { get; set; }
-
 }
 
 /// <summary>
@@ -87,6 +90,7 @@ public class VariablePageInput : BasePageInput
 public class DeviceVariablePageInput : VariablePageInput
 {
 }
+
 /// <summary>
 /// 变量分页查询参数
 /// </summary>
@@ -95,11 +99,11 @@ public class DeviceVariableInput : VariableInput
     /// <inheritdoc/>
     [Description("设备名称")]
     public string DeviceName { get; set; }
+
     /// <inheritdoc/>
     [Description("变量地址")]
     public string Address { get; set; }
 }
-
 
 /// <summary>
 /// 变量分页查询参数
@@ -109,8 +113,8 @@ public class VariableInput
     /// <inheritdoc/>
     [Description("变量名称")]
     public string Name { get; set; }
+
     /// <inheritdoc/>
     [Description("上传设备名称")]
     public string UploadDeviceName { get; set; }
 }
-

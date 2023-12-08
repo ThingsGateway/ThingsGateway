@@ -1,4 +1,5 @@
 #region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,6 +9,7 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using Mapster;
@@ -27,16 +29,19 @@ public class MemoryCache
     private const string intervalStr = "---___---";
     private readonly Microsoft.Extensions.Caching.Memory.MemoryCache _memoryCache = new(new MemoryCacheOptions());
     private readonly Microsoft.Extensions.Caching.Memory.MemoryCache _prefixmemoryCache = new(new MemoryCacheOptions());
+
     /// <inheritdoc/>
     public T Get<T>(string prefixKey, string key, bool mapster)
     {
         return _memoryCache.TryGetValue<T>($"{prefixKey}{intervalStr}{key}", out var value) ? mapster ? value.Adapt<T>() : value : default;
     }
+
     /// <inheritdoc/>
     public T Get<T>(string key, bool mapster)
     {
         return Get<T>(string.Empty, key, mapster);
     }
+
     /// <inheritdoc/>
     public T GetOrCreate<T>(string prefixKey, string key, Func<ICacheEntry, T> func, bool mapster) where T : class
     {
@@ -126,6 +131,5 @@ public class MemoryCache
         result ??= new();
         result.Add($"{string.Empty}{intervalStr}{key}");
         _prefixmemoryCache.Set(string.Empty, result, offset);
-
     }
 }

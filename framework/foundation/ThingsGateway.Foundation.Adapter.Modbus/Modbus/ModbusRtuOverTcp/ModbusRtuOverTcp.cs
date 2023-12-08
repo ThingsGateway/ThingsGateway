@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -8,17 +9,16 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
 #endregion
 
 using System.ComponentModel;
 
-
 namespace ThingsGateway.Foundation.Adapter.Modbus;
+
 /// <inheritdoc/>
 public class ModbusRtuOverTcp : ReadWriteDevicesTcpClientBase
 {
-
-
     /// <inheritdoc/>
     public ModbusRtuOverTcp(TcpClient tcpClient) : base(tcpClient)
     {
@@ -37,12 +37,12 @@ public class ModbusRtuOverTcp : ReadWriteDevicesTcpClientBase
     /// </summary>
     [Description("站号")]
     public byte Station { get; set; } = 1;
+
     /// <inheritdoc/>
     public override string GetAddressDescription()
     {
         return $"{base.GetAddressDescription()}{Environment.NewLine}{ModbusHelper.GetAddressDescription()}";
     }
-
 
     /// <inheritdoc/>
     public override OperResult<byte[]> Read(string address, int length, CancellationToken cancellationToken = default)
@@ -156,5 +156,4 @@ public class ModbusRtuOverTcp : ReadWriteDevicesTcpClientBase
             return new OperResult(ex);
         }
     }
-
 }

@@ -14,7 +14,6 @@ using System.IO.Ports;
 
 namespace ThingsGateway.Foundation.SerialPorts
 {
-
     /// <summary>
     /// SocketExtension
     /// </summary>
@@ -35,7 +34,6 @@ namespace ThingsGateway.Foundation.SerialPorts
             }
             catch
             {
-
             }
         }
     }

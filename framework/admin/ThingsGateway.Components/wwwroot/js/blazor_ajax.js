@@ -26,7 +26,6 @@ export function blazor_ajax_goto(url) {
 }
 
 export function blazor_downloadFile(url, fileName, dtoObject) {
-
     const params = new URLSearchParams();
 
     for (const key in dtoObject) {
@@ -63,7 +62,4 @@ export function blazor_downloadFile(url, fileName, dtoObject) {
         .catch(error => {
             console.error('DownFile Error:', error);
         });
-
-
-
 }

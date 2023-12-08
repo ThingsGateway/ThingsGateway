@@ -5,7 +5,7 @@
 
   "Logging": {
     "LogLevel": {
-      "Default": "Information", 
+      "Default": "Information",
       "Microsoft": "Warning",
       "Microsoft.Hosting.Lifetime": "Information"
     },
