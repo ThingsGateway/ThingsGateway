@@ -16,6 +16,7 @@ using Mapster;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 using MQTTnet.AspNetCore;
 using MQTTnet.Diagnostics;
@@ -41,6 +42,7 @@ public class MqttServerStartup
 
         var logger = new MqttNetEventLogger();
         services.AddSingleton<IMqttNetLogger>(logger);
+        services.TryAddSingleton(new MqttFactory());
         services.AddSingleton<MqttHostedServer>();
         //services.AddSingleton<IHostedService>(s => s.GetService<MqttHostedServer>());
         ////不再注册HostService,MqttServer的生命周期由插件完成
