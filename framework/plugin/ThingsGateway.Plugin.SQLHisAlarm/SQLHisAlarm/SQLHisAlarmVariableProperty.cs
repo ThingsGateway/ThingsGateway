@@ -17,6 +17,6 @@ namespace ThingsGateway.Plugin.SQLHisAlarm;
 /// <summary>
 /// <inheritdoc/>
 /// </summary>
-//public class SQLHisAlarmVariableProperty : VariablePropertyBase
-//{
-//}
+public class SQLHisAlarmVariableProperty : VariablePropertyBase
+{
+}

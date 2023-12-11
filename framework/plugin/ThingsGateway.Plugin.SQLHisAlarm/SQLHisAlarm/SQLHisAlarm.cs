@@ -30,13 +30,14 @@ namespace ThingsGateway.Plugin.SQLHisAlarm;
 /// </summary>
 public partial class SQLHisAlarm : UpLoadBaseWithCache
 {
+    private readonly SQLHisAlarmVariableProperty _variablePropertys = new();
     /// <inheritdoc/>
     public override Type DriverDebugUIType => null;
 
     public override Type DriverUIType => null;
 
     /// <inheritdoc/>
-    public override VariablePropertyBase VariablePropertys => null;
+    public override VariablePropertyBase VariablePropertys => _variablePropertys;
 
     protected override IReadWrite _readWrite => null;
 
