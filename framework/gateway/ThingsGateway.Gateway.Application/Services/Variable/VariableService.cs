@@ -270,13 +270,16 @@ public class VariableService : DbRepository<DeviceVariable>, IVariableService
            {
                //插件名称去除首部ThingsGateway.作为表名
                var pluginName = driverPluginDicts[uploadDevice.PluginName].Name;
-               if (devicePropertys.ContainsKey(pluginName))
+               lock (devicePropertys)
                {
-                   devicePropertys[pluginName].Add(driverInfo);
-               }
-               else
-               {
-                   devicePropertys.TryAdd(pluginName, new() { driverInfo });
+                   if (devicePropertys.ContainsKey(pluginName))
+                   {
+                       devicePropertys[pluginName].Add(driverInfo);
+                   }
+                   else
+                   {
+                       devicePropertys.TryAdd(pluginName, new() { driverInfo });
+                   }
                }
            }
        }
