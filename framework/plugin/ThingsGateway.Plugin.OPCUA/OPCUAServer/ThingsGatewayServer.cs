@@ -35,12 +35,12 @@ public partial class ThingsGatewayServer : StandardServer
     /// </summary>
     public ThingsGatewayNodeManager NodeManager;
 
-    private readonly UpLoadBase _upLoadBase;
+    private readonly UploadBase _upLoadBase;
 
     private ICertificateValidator m_userCertificateValidator;
 
     /// <inheritdoc cref="ThingsGatewayServer"/>
-    public ThingsGatewayServer(UpLoadBase upLoadBase)
+    public ThingsGatewayServer(UploadBase upLoadBase)
     {
         _upLoadBase = upLoadBase;
     }

@@ -267,7 +267,7 @@ else
                 </MSelect>
             </MCol>
 
-                        <MCol Md=3 Sm=12>
+            <MCol Md=3 Sm=12>
                 <MSelect @bind-Value=@context.RpcWriteEnable Outlined Color="primary"
                          Items=@(new List<bool>(){true,false}) Clearable Label=@(context.Description(x => x.RpcWriteEnable))
                          MenuProps="@(props => { props.Bottom = true; props.OffsetY = true; })"
@@ -497,6 +497,10 @@ else
                      if(_choiceUploadDeviceId>0)
                      {
                      var data=GetDriverProperties(_uploadDevices.FirstOrDefault(a=>a.Id==_choiceUploadDeviceId).PluginName,context.VariablePropertys.ContainsKey(_choiceUploadDeviceId)?context.VariablePropertys[_choiceUploadDeviceId]:null);
+                     if(data==null)
+                     {
+                     return;
+                     }
                      if(data.Count>0)
                      {
                      context.VariablePropertys.AddOrUpdate(_choiceUploadDeviceId,a=> data,(a,b)=>data);

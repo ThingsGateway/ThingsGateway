@@ -19,19 +19,19 @@ namespace ThingsGateway.Plugin.SQLHisAlarm;
 /// <summary>
 /// <inheritdoc/>
 /// </summary>
-public class SQLHisAlarmProperty : UploadDatabasePropertyWithCache
+public class SQLHisAlarmProperty : UploadPropertyWithCache
 {
-    [DeviceProperty("数据库类型", "MySql/SqlServer")] public override DbType DbType { get; set; } = DbType.MySql;
-    [DeviceProperty("链接字符串", "")] public override string BigTextConnectStr { get; set; } = "server=localhost;Database=test;Uid=root;Pwd=111111;AllowLoadLocalInfile=true;";
+    [DeviceProperty("数据库类型", "MySql/SqlServer")] public DbType DbType { get; set; } = DbType.MySql;
+    [DeviceProperty("链接字符串", "")] public string BigTextConnectStr { get; set; } = "server=localhost;Database=test;Uid=root;Pwd=111111;AllowLoadLocalInfile=true;";
     public override bool IsAllVariable { get; set; } = true;
 
     /// <summary>
     /// 每次发送时合并的缓存值数量
     /// </summary>
-    public override int CacheSendCount { get; set; } = 500;
+    public int CacheSendCount { get; set; } = 500;
 
     /// <summary>
     /// 每次添加缓存时，合并的变量值数量
     /// </summary>
-    public override int CacheItemCount { get; set; } = 2000;
+    public int CacheItemCount { get; set; } = 2000;
 }

@@ -34,7 +34,7 @@ namespace ThingsGateway.Plugin.Mqtt;
 /// <summary>
 /// MqttClient
 /// </summary>
-public partial class MqttClient : UpLoadBaseWithCacheT<DeviceData, VariableData>
+public partial class MqttClient : UploadBaseWithCacheT<DeviceData, VariableData>
 {
     private const string devType = "dev";
     private const string varType = "var";

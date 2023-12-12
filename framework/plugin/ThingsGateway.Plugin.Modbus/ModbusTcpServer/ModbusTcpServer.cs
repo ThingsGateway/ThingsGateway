@@ -27,7 +27,7 @@ namespace ThingsGateway.Plugin.Modbus;
 /// <summary>
 /// <inheritdoc/>
 /// </summary>
-public class ModbusTcpServer : UpLoadBase
+public class ModbusTcpServer : UploadBase
 {
     private readonly ModbusTcpServerProperty _driverPropertys = new();
     private readonly ModbusTcpServerVariableProperty _variablePropertys = new();

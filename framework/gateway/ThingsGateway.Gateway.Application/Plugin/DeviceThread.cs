@@ -143,7 +143,7 @@ public class DeviceThread
                                 if (result == ThreadRunReturn.None)
                                 {
                                     //4.0.0.7版本添加离线恢复的间隔时间
-                                    if (device.CurrentDevice.DeviceStatus == DeviceStatusEnum.OffLine && device is not UpLoadBase)
+                                    if (device.CurrentDevice.DeviceStatus == DeviceStatusEnum.OffLine && device is not UploadBase)
                                         await Task.Delay(Math.Min(device.DriverPropertys.ReIntervalTime, DeviceWorker.CheckIntervalTime / 2) * 1000 - CycleInterval, stoppingToken);
                                     else
                                         await Task.Delay(CycleInterval, stoppingToken);

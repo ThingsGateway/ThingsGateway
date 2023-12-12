@@ -405,7 +405,7 @@ public class VariableService : DbRepository<DeviceVariable>, IVariableService
                         continue;
                     }
 
-                    var driver = (UpLoadBase)driverPluginService.GetDriver(driverPluginType.FullName);
+                    var driver = (UploadBase)driverPluginService.GetDriver(driverPluginType.FullName);
                     var propertys = driver.VariablePropertys.GetType().GetProperties()
                         .Where(a => a.GetCustomAttribute<VariablePropertyAttribute>() != null)
                         .ToDictionary(a => a.FindDisplayAttribute(a => a.GetCustomAttribute<VariablePropertyAttribute>()?.Description));

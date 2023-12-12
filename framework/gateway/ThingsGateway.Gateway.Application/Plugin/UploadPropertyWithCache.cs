@@ -20,12 +20,6 @@ namespace ThingsGateway.Gateway.Application;
 public class UploadPropertyWithCache : UpDriverPropertyBase
 {
     /// <summary>
-    /// 线程循环间隔
-    /// </summary>
-    [DeviceProperty("线程循环间隔", "最小10ms")]
-    public virtual int CycleInterval { get; set; } = 1000;
-
-    /// <summary>
     /// 内存队列最大条数
     /// </summary>
     [DeviceProperty("内存队列最大条数", "默认2w条")]
@@ -44,4 +38,25 @@ public class UploadPropertyWithCache : UpDriverPropertyBase
     public virtual int SplitSize { get; set; } = 1000;
 
     [DeviceProperty("是否选择全部变量", "")] public virtual bool IsAllVariable { get; set; } = false;
+}
+
+
+/// <summary>
+/// <inheritdoc/>
+/// </summary>
+public class UploadPropertyWithCacheT : UploadPropertyWithCache
+{
+
+    /// <summary>
+    /// 是否间隔上传
+    /// </summary>
+    [DeviceProperty("是否间隔上传", "False时为变化检测上传")]
+    public virtual bool IsInterval { get; set; } = false;
+
+    /// <summary>
+    /// 上传间隔时间
+    /// </summary>
+    [DeviceProperty("上传间隔时间", "最小100ms")]
+    public virtual int UploadInterval { get; set; } = 1000;
+
 }

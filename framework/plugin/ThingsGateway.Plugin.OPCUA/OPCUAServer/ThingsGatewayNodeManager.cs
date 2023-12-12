@@ -27,7 +27,7 @@ namespace ThingsGateway.Plugin.OPCUA;
 public class ThingsGatewayNodeManager : CustomNodeManager2
 {
     private const string ReferenceServer = "https://diego2098.gitee.io/thingsgateway-docs/";
-    private UpLoadBase _upLoadBase;
+    private UploadBase _upLoadBase;
 
     //private readonly TypeAdapterConfig _config;
     /// <summary>
@@ -36,7 +36,7 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
     private readonly Dictionary<NodeId, OPCUATag> NodeIdTags = new();
 
     /// <inheritdoc cref="ThingsGatewayNodeManager"/>
-    public ThingsGatewayNodeManager(UpLoadBase upLoadBase, IServerInternal server, ApplicationConfiguration configuration) : base(server, configuration, ReferenceServer)
+    public ThingsGatewayNodeManager(UploadBase upLoadBase, IServerInternal server, ApplicationConfiguration configuration) : base(server, configuration, ReferenceServer)
     {
         _upLoadBase = upLoadBase;
         //_config = new TypeAdapterConfig();

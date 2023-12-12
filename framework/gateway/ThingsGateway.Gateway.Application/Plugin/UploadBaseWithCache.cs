@@ -26,58 +26,23 @@ namespace ThingsGateway.Gateway.Application;
 /// <summary>
 /// 上传插件
 /// </summary>
-public abstract class UpLoadBaseWithCacheT<DeviceT, VariableT> : UpLoadBase
+public abstract class UploadBaseWithCache : UploadBase
 {
     /// <summary>
     /// <inheritdoc/><br></br>
-    /// 实现<see cref="_uploadPropertyWithCache"/>
+    /// 实现<see cref="_uploadPropertyWithCacheT"/>
     /// </summary>
     public override DriverPropertyBase DriverPropertys => _uploadPropertyWithCache;
 
     /// <summary>
-    /// mapster配置
-    /// </summary>
-    protected virtual TypeAdapterConfig _config { get; set; }
-
-    /// <summary>
-    /// 是否需要设备上传，默认true
-    /// </summary>
-    protected virtual bool _device { get; } = true;
-
-    /// <summary>
     /// <inheritdoc cref="DriverPropertys"/>
     /// </summary>
-    protected abstract UploadPropertyWithCacheT _uploadPropertyWithCache { get; }
-
-    /// <summary>
-    /// 是否需要变量上传，默认true
-    /// </summary>
-    protected virtual bool _variable { get; } = true;
+    protected abstract UploadPropertyWithCache _uploadPropertyWithCache { get; }
 
     /// <summary>
     /// 离线缓存
     /// </summary>
     protected LiteDBCache CacheDb { get; set; }
-
-    /// <inheritdoc/>
-    protected override void Dispose(bool disposing)
-    {
-        try
-        {
-            _globalDeviceData?.AllVariables?.ForEach(a => a.VariableValueChange -= VariableValueChange);
-
-            _globalDeviceData?.CollectDevices?.ForEach(a =>
-            {
-                a.DeviceStatusChange -= DeviceStatusChange;
-            });
-            CacheDb?.Litedb?.SafeDispose();
-            base.Dispose(disposing);
-        }
-        catch (Exception ex)
-        {
-            LogMessage?.LogWarning(ex);
-        }
-    }
 
     public override void Init(DeviceRunTime device)
     {
@@ -96,6 +61,20 @@ public abstract class UpLoadBaseWithCacheT<DeviceT, VariableT> : UpLoadBase
         }
     }
 
+    /// <inheritdoc/>
+    protected override void Dispose(bool disposing)
+    {
+        try
+        {
+            CacheDb?.Litedb?.SafeDispose();
+            base.Dispose(disposing);
+        }
+        catch (Exception ex)
+        {
+            LogMessage?.LogWarning(ex);
+        }
+    }
+
     /// <summary>
     /// 初始化
     /// </summary>
@@ -104,7 +83,96 @@ public abstract class UpLoadBaseWithCacheT<DeviceT, VariableT> : UpLoadBase
     protected override void Init(ISenderClient client = null)
     {
         CacheDb = new LiteDBCache(DeviceId.ToString(), CurrentDevice.PluginName);
-        if (!_uploadPropertyWithCache.IsInterval)
+
+        if (_uploadPropertyWithCache.CycleInterval <= 50) _uploadPropertyWithCache.CycleInterval = 50;
+    }
+
+    /// <inheritdoc/>
+    protected override Task ProtectedBeforStartAsync(CancellationToken cancellationToken)
+    {
+        _token = cancellationToken;
+        _ = Task.Factory.StartNew(CheckCacheDb);
+        return base.ProtectedBeforStartAsync(cancellationToken);
+    }
+
+    #region 缓存操作
+
+    protected CancellationToken _token;
+
+    private async Task CheckCacheDb()
+    {
+        while (!_token.IsCancellationRequested)
+        {
+            try
+            {
+                CacheDb.DeleteOldData(_uploadPropertyWithCache.CahceMaxLength);
+            }
+            catch (Exception ex)
+            {
+                LogMessage.LogWarning(ex, "删除缓存失败");
+            }
+            await Delay(30000, _token);
+        }
+    }
+
+    #endregion
+}
+
+
+/// <summary>
+/// 上传插件
+/// </summary>
+public abstract class UploadBaseWithCacheT<DeviceT, VariableT> : UploadBaseWithCache
+{
+    /// <summary>
+    /// mapster配置
+    /// </summary>
+    protected virtual TypeAdapterConfig _config { get; set; }
+
+    /// <summary>
+    /// 是否需要设备上传，默认true
+    /// </summary>
+    protected virtual bool _device { get; } = true;
+
+    /// <summary>
+    /// <inheritdoc cref="DriverPropertys"/>
+    /// </summary>
+    protected override UploadPropertyWithCache _uploadPropertyWithCache => _uploadPropertyWithCacheT;
+    protected abstract UploadPropertyWithCacheT _uploadPropertyWithCacheT { get; }
+
+    /// <summary>
+    /// 是否需要变量上传，默认true
+    /// </summary>
+    protected virtual bool _variable { get; } = true;
+
+    /// <inheritdoc/>
+    protected override void Dispose(bool disposing)
+    {
+        try
+        {
+            _globalDeviceData?.AllVariables?.ForEach(a => a.VariableValueChange -= VariableValueChange);
+
+            _globalDeviceData?.CollectDevices?.ForEach(a =>
+            {
+                a.DeviceStatusChange -= DeviceStatusChange;
+            });
+            base.Dispose(disposing);
+        }
+        catch (Exception ex)
+        {
+            LogMessage?.LogWarning(ex);
+        }
+    }
+
+    /// <summary>
+    /// 初始化
+    /// </summary>
+    /// <param name="device">当前设备</param>
+    /// <param name="client">链路，共享链路时生效</param>
+    protected override void Init(ISenderClient client = null)
+    {
+        base.Init(client);
+        if (!_uploadPropertyWithCacheT.IsInterval)
         {
             if (_device)
                 CollectDevices.ForEach(a => { a.DeviceStatusChange += DeviceStatusChange; });
@@ -112,19 +180,16 @@ public abstract class UpLoadBaseWithCacheT<DeviceT, VariableT> : UpLoadBase
                 CurrentDevice.DeviceVariableRunTimes.ForEach(a => { a.VariableValueChange += VariableValueChange; });
         }
 
-        if (_uploadPropertyWithCache.CycleInterval <= 50) _uploadPropertyWithCache.CycleInterval = 50;
-        if (_uploadPropertyWithCache.UploadInterval <= 100) _uploadPropertyWithCache.UploadInterval = 100;
-        _exVariableTimerTick = new(_uploadPropertyWithCache.UploadInterval);
-        _exDeviceTimerTick = new(_uploadPropertyWithCache.UploadInterval);
+        if (_uploadPropertyWithCacheT.UploadInterval <= 100) _uploadPropertyWithCacheT.UploadInterval = 100;
+        _exVariableTimerTick = new(_uploadPropertyWithCacheT.UploadInterval);
+        _exDeviceTimerTick = new(_uploadPropertyWithCacheT.UploadInterval);
     }
 
     /// <inheritdoc/>
-    protected override Task ProtectedBeforStartAsync(CancellationToken cancellationToken)
+    protected override async Task ProtectedBeforStartAsync(CancellationToken cancellationToken)
     {
-        _token = cancellationToken;
+        await base.ProtectedBeforStartAsync(cancellationToken);
         _ = Task.Factory.StartNew(IntervalInsert);
-        _ = Task.Factory.StartNew(CheckCacheDb);
-        return base.ProtectedBeforStartAsync(cancellationToken);
     }
 
     #region 缓存操作
@@ -144,8 +209,6 @@ public abstract class UpLoadBaseWithCacheT<DeviceT, VariableT> : UpLoadBase
 
     protected TimerTick _exVariableTimerTick;
 
-    private CancellationToken _token;
-
     protected abstract void AddCache(List<CacheItem> cacheItems, IEnumerable<VariableT> dev);
 
     protected abstract void AddCache(List<CacheItem> cacheItems, IEnumerable<DeviceT> dev);
@@ -157,19 +220,19 @@ public abstract class UpLoadBaseWithCacheT<DeviceT, VariableT> : UpLoadBase
     private void AddDeviceQueue(DeviceT deviceData)
     {
         //检测队列长度，超限存入缓存数据库
-        if (_collectDeviceRunTimes.Count > _uploadPropertyWithCache.QueueMaxCount)
+        if (_collectDeviceRunTimes.Count > _uploadPropertyWithCacheT.QueueMaxCount)
         {
             List<DeviceT> list = null;
             lock (_collectDeviceRunTimes)
             {
-                if (_collectDeviceRunTimes.Count > _uploadPropertyWithCache.QueueMaxCount)
+                if (_collectDeviceRunTimes.Count > _uploadPropertyWithCacheT.QueueMaxCount)
                 {
                     list = _collectDeviceRunTimes.ToListWithDequeue();
                 }
             }
             if (list != null)
             {
-                var devData = list.ChunkBetter(_uploadPropertyWithCache.SplitSize);
+                var devData = list.ChunkBetter(_uploadPropertyWithCacheT.SplitSize);
                 var cacheItems = new List<CacheItem>();
                 AddCache(devData, cacheItems);
                 if (cacheItems.Count > 0)
@@ -187,19 +250,19 @@ public abstract class UpLoadBaseWithCacheT<DeviceT, VariableT> : UpLoadBase
     private void AddVariableQueue(VariableT variableData)
     {
         //检测队列长度，超限存入缓存数据库
-        if (_collectVariableRunTimes.Count > _uploadPropertyWithCache.QueueMaxCount)
+        if (_collectVariableRunTimes.Count > _uploadPropertyWithCacheT.QueueMaxCount)
         {
             List<VariableT> list = null;
             lock (_collectVariableRunTimes)
             {
-                if (_collectVariableRunTimes.Count > _uploadPropertyWithCache.QueueMaxCount)
+                if (_collectVariableRunTimes.Count > _uploadPropertyWithCacheT.QueueMaxCount)
                 {
                     list = _collectVariableRunTimes.ToListWithDequeue();
                 }
             }
             if (list != null)
             {
-                var devData = list.ChunkBetter(_uploadPropertyWithCache.SplitSize);
+                var devData = list.ChunkBetter(_uploadPropertyWithCacheT.SplitSize);
                 var cacheItems = new List<CacheItem>();
                 AddCache(devData, cacheItems);
 
@@ -216,7 +279,7 @@ public abstract class UpLoadBaseWithCacheT<DeviceT, VariableT> : UpLoadBase
         if (!CurrentDevice.KeepRun)
             return;
         if (_device)
-            if (_uploadPropertyWithCache?.IsInterval != true)
+            if (_uploadPropertyWithCacheT?.IsInterval != true)
             {
                 AddDeviceQueue(collectDeviceRunTime.Adapt<DeviceT>(_config ?? TypeAdapterConfig.GlobalSettings));
             }
@@ -227,7 +290,7 @@ public abstract class UpLoadBaseWithCacheT<DeviceT, VariableT> : UpLoadBase
         if (!CurrentDevice.KeepRun)
             return;
         if (_variable)
-            if (_uploadPropertyWithCache?.IsInterval != true)
+            if (_uploadPropertyWithCacheT?.IsInterval != true)
             {
                 AddVariableQueue(deviceVariableRunTime.Adapt<VariableT>(_config ?? TypeAdapterConfig.GlobalSettings));
             }
@@ -269,7 +332,7 @@ public abstract class UpLoadBaseWithCacheT<DeviceT, VariableT> : UpLoadBase
         {
             try
             {
-                CacheDb.DeleteOldData(_uploadPropertyWithCache.CahceMaxLength);
+                CacheDb.DeleteOldData(_uploadPropertyWithCacheT.CahceMaxLength);
             }
             catch (Exception ex)
             {
@@ -285,11 +348,11 @@ public abstract class UpLoadBaseWithCacheT<DeviceT, VariableT> : UpLoadBase
         {
             if (CurrentDevice?.KeepRun == false)
             {
-                await Delay(_uploadPropertyWithCache.CycleInterval, _token);
+                await Delay(_uploadPropertyWithCacheT.CycleInterval, _token);
                 continue;
             }
             //间隔上传
-            if (_uploadPropertyWithCache.IsInterval)
+            if (_uploadPropertyWithCacheT.IsInterval)
             {
                 try
                 {
@@ -326,7 +389,7 @@ public abstract class UpLoadBaseWithCacheT<DeviceT, VariableT> : UpLoadBase
                 }
             }
 
-            await Delay(_uploadPropertyWithCache.CycleInterval, _token);
+            await Delay(_uploadPropertyWithCacheT.CycleInterval, _token);
         }
     }
 

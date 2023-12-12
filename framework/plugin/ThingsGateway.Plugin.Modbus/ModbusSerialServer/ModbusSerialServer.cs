@@ -27,7 +27,7 @@ namespace ThingsGateway.Plugin.Modbus;
 /// <summary>
 /// <inheritdoc/>
 /// </summary>
-public class ModbusSerialServer : UpLoadBase
+public class ModbusSerialServer : UploadBase
 {
     private readonly ModbusSerialServerProperty _driverPropertys = new();
 

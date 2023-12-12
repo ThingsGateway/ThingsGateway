@@ -28,7 +28,7 @@ namespace ThingsGateway.Plugin.OPCUA;
 /// <summary>
 /// OPCUA服务端
 /// </summary>
-public partial class OPCUAServer : UpLoadBase
+public partial class OPCUAServer : UploadBase
 {
     private readonly OPCUAServerProperty _driverPropertys = new();
     private readonly OPCUAServerVariableProperty _variablePropertys = new();

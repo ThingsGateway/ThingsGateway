@@ -10,25 +10,52 @@
 //------------------------------------------------------------------------------
 #endregion
 
-using Microsoft.Extensions.DependencyInjection;
+using Mapster;
+
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 
 namespace ThingsGateway.Gateway.Application;
 
-
 /// <summary>
-/// 上传数据库插件
+/// 上传数据库插件静态方法
 /// </summary>
-public static class UpLoadDataBase
+public static class UploadDatabaseUtil
 {
+    /// <summary>
+    /// 获取数据库链接
+    /// </summary>
+    /// <returns></returns>
+    public static SqlSugarClient GetDb(DbType dbType, string connectionString)
+    {
+        var configureExternalServices = new ConfigureExternalServices
+        {
+            EntityService = (type, column) => // 修改列可空-1、带?问号 2、String类型若没有Required
+            {
+                if ((type.PropertyType.IsGenericType && type.PropertyType.GetGenericTypeDefinition() == typeof(Nullable<>))
+                    || (type.PropertyType == typeof(string) && type.GetCustomAttribute<RequiredAttribute>() == null))
+                    column.IsNullable = true;
+            },
+        };
+        var sqlSugarClient = new SqlSugarClient(new ConnectionConfig()
+        {
+            ConnectionString = connectionString,//连接字符串
+            DbType = dbType,//数据库类型
+            IsAutoCloseConnection = true, //不设成true要手动close
+            ConfigureExternalServices = configureExternalServices,
+        }
+        );
+        AopSetting(sqlSugarClient);//aop配置
+        return sqlSugarClient;
+    }
+
     /// <summary>
     /// Aop设置
     /// </summary>
     /// <param name="db"></param>
-    private static void AopSetting(SqlSugarClient db)
+    public static void AopSetting(SqlSugarClient db)
     {
         var config = db.CurrentConnectionConfig;
 
@@ -77,44 +104,16 @@ public static class UpLoadDataBase
         };
 
     }
-    private static void WriteSqlLog(string msg)
+    public static void WriteSqlLog(string msg)
     {
         Console.WriteLine("【Sql执行时间】：" + DateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat());
         Console.WriteLine("【Sql语句】：" + msg + Environment.NewLine);
     }
-    private static void WriteSqlLogError(string msg)
+    public static void WriteSqlLogError(string msg)
     {
         Console.WriteLine("【Sql执行错误时间】：" + DateTimeExtensions.CurrentDateTime.ToDefaultDateTimeFormat());
         Console.WriteLine("【Sql语句】：" + msg + Environment.NewLine);
     }
-
-    /// <summary>
-    /// 获取数据库链接
-    /// </summary>
-    /// <returns></returns>
-    public static SqlSugarClient GetDb(DbType dbType,string connectionString)
-    {
-        var configureExternalServices = new ConfigureExternalServices
-        {
-            EntityService = (type, column) => // 修改列可空-1、带?问号 2、String类型若没有Required
-            {
-                if ((type.PropertyType.IsGenericType && type.PropertyType.GetGenericTypeDefinition() == typeof(Nullable<>))
-                    || (type.PropertyType == typeof(string) && type.GetCustomAttribute<RequiredAttribute>() == null))
-                    column.IsNullable = true;
-            },
-        };
-        var sqlSugarClient = new SqlSugarClient(new ConnectionConfig()
-        {
-            ConnectionString = connectionString,//连接字符串
-            DbType = dbType,//数据库类型
-            IsAutoCloseConnection = true, //不设成true要手动close
-            ConfigureExternalServices = configureExternalServices,
-        }
-        );
-        AopSetting(sqlSugarClient);//aop配置
-        return sqlSugarClient;
-    }
-
 
 }
 

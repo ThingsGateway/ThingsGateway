@@ -19,18 +19,18 @@ namespace ThingsGateway.Plugin.QuestDB;
 /// <summary>
 /// <inheritdoc/>
 /// </summary>
-public class QuestDBProperty : UploadDatabasePropertyWithCacheT
+public class QuestDBProperty : UploadPropertyWithCacheT
 {
-    [DeviceProperty("数据库类型", "QuestDB")] public override DbType DbType { get; set; } = DbType.QuestDB;
-    [DeviceProperty("链接字符串", "")] public override string BigTextConnectStr { get; set; } = "host=localhost;port=8812;username=admin;password=quest;database=qdb;ServerCompatibilityMode=NoTypeLoading;";
+    [DeviceProperty("数据库类型", "QuestDB")] public DbType DbType { get; set; } = DbType.QuestDB;
+    [DeviceProperty("链接字符串", "")] public string BigTextConnectStr { get; set; } = "host=localhost;port=8812;username=admin;password=quest;database=qdb;ServerCompatibilityMode=NoTypeLoading;";
 
     /// <summary>
     /// 每次发送时合并的缓存值数量
     /// </summary>
-    public override int CacheSendCount { get; set; } = 2000;
+    public int CacheSendCount { get; set; } = 2000;
 
     /// <summary>
     /// 每次添加缓存时，合并的变量值数量
     /// </summary>
-    public override int CacheItemCount { get; set; } = 2000;
+    public int CacheItemCount { get; set; } = 2000;
 }

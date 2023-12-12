@@ -41,7 +41,7 @@ namespace ThingsGateway.Plugin.Mqtt;
 /// <summary>
 /// MqttServer
 /// </summary>
-public class MqttServer : UpLoadBase
+public class MqttServer : UploadBase
 {
     private readonly MqttServerProperty _driverPropertys = new();
     private readonly MqttClientVariableProperty _variablePropertys = new();

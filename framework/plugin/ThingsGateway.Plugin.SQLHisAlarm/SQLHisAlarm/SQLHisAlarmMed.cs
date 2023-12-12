@@ -12,17 +12,9 @@
 
 #endregion
 
-using Furion;
-
-using Mapster;
-
-using Microsoft.Extensions.Hosting;
-
 using SqlSugar;
 
 using System.Collections.Concurrent;
-using System.ComponentModel.DataAnnotations;
-using System.Reflection;
 
 using ThingsGateway.Foundation.Extension.ConcurrentQueue;
 using ThingsGateway.Foundation.Extension.Generic;
@@ -34,7 +26,7 @@ namespace ThingsGateway.Plugin.SQLHisAlarm;
 /// <summary>
 /// MqttClient
 /// </summary>
-public partial class SQLHisAlarm : UpLoadDatabaseWithCache
+public partial class SQLHisAlarm : UploadBaseWithCache
 {
     private const string devType = "dev";
     private const string varType = "var";

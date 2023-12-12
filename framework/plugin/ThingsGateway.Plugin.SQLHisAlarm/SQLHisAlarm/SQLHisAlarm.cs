@@ -28,7 +28,7 @@ namespace ThingsGateway.Plugin.SQLHisAlarm;
 /// <summary>
 /// SQLDB
 /// </summary>
-public partial class SQLHisAlarm : UpLoadDatabaseWithCache
+public partial class SQLHisAlarm : UploadBaseWithCache
 {
     private readonly SQLHisAlarmVariableProperty _variablePropertys = new();
     /// <inheritdoc/>
@@ -41,7 +41,7 @@ public partial class SQLHisAlarm : UpLoadDatabaseWithCache
 
     protected override IReadWrite _readWrite => null;
 
-    protected override UploadDatabasePropertyWithCache _uploadPropertyWithCache => _driverPropertys;
+    protected override UploadPropertyWithCache _uploadPropertyWithCache => _driverPropertys;
 
     public override void Init(DeviceRunTime device)
     {
@@ -75,7 +75,6 @@ YitIdHelper.NextId());
         var alarmWorker = BackgroundServiceUtil.GetBackgroundService<AlarmWorker>();
         alarmWorker.OnAlarmChanged += AlarmWorker_OnAlarmChanged;
 
-        if (_uploadPropertyWithCache.CycleInterval <= 100) _uploadPropertyWithCache.CycleInterval = 100;
     }
 
     private void AlarmWorker_OnAlarmChanged(AlarmVariable alarmVariable)
@@ -87,7 +86,7 @@ YitIdHelper.NextId());
 
     protected override async Task ProtectedBeforStartAsync(CancellationToken cancellationToken)
     {
-        var db = UpLoadDataBase.GetDb(_driverPropertys.DbType, _driverPropertys.BigTextConnectStr);
+        var db = UploadDatabaseUtil.GetDb(_driverPropertys.DbType, _driverPropertys.BigTextConnectStr);
         db.CodeFirst.InitTables(typeof(HistoryAlarm));
         await base.ProtectedBeforStartAsync(cancellationToken);
     }
@@ -108,7 +107,7 @@ YitIdHelper.NextId());
         CurrentDevice.SetDeviceStatus(DateTimeExtensions.CurrentDateTime, CurrentDevice.ErrorCount + 1);
 
         var cacheItems = new List<CacheItem>();
-        var db = UpLoadDataBase.GetDb(_driverPropertys.DbType, _driverPropertys.BigTextConnectStr);
+        var db = UploadDatabaseUtil.GetDb(_driverPropertys.DbType, _driverPropertys.BigTextConnectStr);
         db.Ado.CancellationToken = cancellationToken;
 
         {

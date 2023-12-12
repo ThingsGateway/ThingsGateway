@@ -52,7 +52,7 @@ public class DriverPluginService : ISingleton
         _serviceScope = serviceScopeFactory.CreateScope();
         _logger = loggerFactory.CreateLogger("驱动插件服务");
         _defaultDriverBaseDict = new(App.EffectiveTypes
-            .Where(x => (typeof(CollectBase).IsAssignableFrom(x) || typeof(UpLoadBase).IsAssignableFrom(x)) && x.IsClass && !x.IsAbstract)
+            .Where(x => (typeof(CollectBase).IsAssignableFrom(x) || typeof(UploadBase).IsAssignableFrom(x)) && x.IsClass && !x.IsAbstract)
             .ToDictionary(a => a.Name));
         _stringConverter = new StringConverter();
         _stringConverter.Add(new StringToEncodingConverter());
@@ -150,7 +150,7 @@ public class DriverPluginService : ISingleton
 
                         var assembly = GetAssembly(folderPath, folderPath.CombinePath($"{driverPlugin.Name}.dll"), driverPlugin.Name);
                         var driverTypes = assembly.GetTypes().
-        Where(x => (typeof(CollectBase).IsAssignableFrom(x) || typeof(UpLoadBase).IsAssignableFrom(x)) && x.IsClass && !x.IsAbstract);
+        Where(x => (typeof(CollectBase).IsAssignableFrom(x) || typeof(UploadBase).IsAssignableFrom(x)) && x.IsClass && !x.IsAbstract);
                         driverPlugin.Children = new();
                         foreach (var type in driverTypes)
                         {
@@ -228,7 +228,7 @@ public class DriverPluginService : ISingleton
             {
                 //根据采集/上传类型获取实际插件类
                 var driverType = assembly.GetTypes().
-                    Where(x => (typeof(CollectBase).IsAssignableFrom(x) || typeof(UpLoadBase).IsAssignableFrom(x)) && x.IsClass && !x.IsAbstract)
+                    Where(x => (typeof(CollectBase).IsAssignableFrom(x) || typeof(UploadBase).IsAssignableFrom(x)) && x.IsClass && !x.IsAbstract)
                     .FirstOrDefault(it => it.Name == filtResult.Item2);
                 if (driverType != null)
                 {
@@ -317,7 +317,7 @@ public class DriverPluginService : ISingleton
     /// <summary>
     /// 获取插件的变量上传属性值
     /// </summary>
-    public List<DependencyProperty> GetDriverVariableProperties(UpLoadBase driver)
+    public List<DependencyProperty> GetDriverVariableProperties(UploadBase driver)
     {
         var type = driver.GetType();
         var cacheKey = $"{CultureInfo.CurrentUICulture.Name}-{type.FullName}-{type.TypeHandle.Value}";
@@ -451,7 +451,7 @@ public class DriverPluginService : ISingleton
                 if (assembly != null)
                 {
                     //获取插件的相关信息
-                    var driverTypes = assembly.GetTypes().Where(x => (typeof(CollectBase).IsAssignableFrom(x) || typeof(UpLoadBase).IsAssignableFrom(x))
+                    var driverTypes = assembly.GetTypes().Where(x => (typeof(CollectBase).IsAssignableFrom(x) || typeof(UploadBase).IsAssignableFrom(x))
                     && x.IsClass && !x.IsAbstract);
                     if (!driverTypes.Any())
                     {

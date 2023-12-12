@@ -28,7 +28,7 @@ namespace ThingsGateway.Plugin.TDengineDB;
 /// <summary>
 /// SQLDB
 /// </summary>
-public partial class TDengineDB : UpLoadDatabaseWithCacheT<DeviceData, TDHistoryValue>
+public partial class TDengineDB : UploadBaseWithCacheT<DeviceData, TDHistoryValue>
 {
     protected override bool _device => false;
     protected override bool _variable => true;
@@ -43,7 +43,7 @@ public partial class TDengineDB : UpLoadDatabaseWithCacheT<DeviceData, TDHistory
 
     protected override IReadWrite _readWrite => null;
 
-    protected override UploadDatabasePropertyWithCacheT _uploadPropertyWithCache => _driverPropertys;
+    protected override UploadPropertyWithCacheT _uploadPropertyWithCacheT => _driverPropertys;
 
     /// <summary>
     /// <inheritdoc/>
@@ -67,7 +67,7 @@ public partial class TDengineDB : UpLoadDatabaseWithCacheT<DeviceData, TDHistory
 
     protected override async Task ProtectedBeforStartAsync(CancellationToken cancellationToken)
     {
-        var db = UpLoadDataBase.GetDb(_driverPropertys.DbType, _driverPropertys.BigTextConnectStr);
+        var db = UploadDatabaseUtil.GetDb(_driverPropertys.DbType, _driverPropertys.BigTextConnectStr);
         db.DbMaintenance.CreateDatabase();
         db.CodeFirst.InitTables(typeof(TDHistoryValue));
         await base.ProtectedBeforStartAsync(cancellationToken);
@@ -89,7 +89,7 @@ public partial class TDengineDB : UpLoadDatabaseWithCacheT<DeviceData, TDHistory
         CurrentDevice.SetDeviceStatus(DateTimeExtensions.CurrentDateTime, CurrentDevice.ErrorCount + 1);
 
         var cacheItems = new List<CacheItem>();
-        var db = UpLoadDataBase.GetDb(_driverPropertys.DbType, _driverPropertys.BigTextConnectStr);
+        var db = UploadDatabaseUtil.GetDb(_driverPropertys.DbType, _driverPropertys.BigTextConnectStr);
         db.Ado.CancellationToken = cancellationToken;
 
         try

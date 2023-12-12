@@ -176,7 +176,7 @@ public class UploadDeviceWorker : DeviceWorker
     /// <returns></returns>
     public List<DependencyProperty> GetVariablePropertys(string pluginName, List<DependencyProperty> dependencyProperties = null)
     {
-        var driverBase = (UpLoadBase)_driverPluginService.GetDriver(pluginName);
+        var driverBase = (UploadBase)_driverPluginService.GetDriver(pluginName);
         var Propertys = _driverPluginService.GetDriverVariableProperties(driverBase);
         dependencyProperties?.ForEach(it =>
         {

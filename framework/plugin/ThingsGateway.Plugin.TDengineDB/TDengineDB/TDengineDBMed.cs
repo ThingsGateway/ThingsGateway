@@ -12,16 +12,7 @@
 
 #endregion
 
-using Furion;
-
-using Mapster;
-
-using Microsoft.Extensions.Hosting;
-
 using SqlSugar;
-
-using System.ComponentModel.DataAnnotations;
-using System.Reflection;
 
 using ThingsGateway.Foundation.Extension.Generic;
 
@@ -32,7 +23,7 @@ namespace ThingsGateway.Plugin.TDengineDB;
 /// <summary>
 /// MqttClient
 /// </summary>
-public partial class TDengineDB : UpLoadDatabaseWithCacheT<DeviceData, TDHistoryValue>
+public partial class TDengineDB : UploadBaseWithCacheT<DeviceData, TDHistoryValue>
 {
     private const string devType = "dev";
     private const string varType = "var";

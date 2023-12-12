@@ -28,7 +28,7 @@ namespace ThingsGateway.Plugin.SQLDB;
 /// <summary>
 /// SQLDB
 /// </summary>
-public partial class SQLDB : UpLoadDatabaseWithCacheT<DeviceData, SQLHistoryValue>
+public partial class SQLDB : UploadBaseWithCacheT<DeviceData, SQLHistoryValue>
 {
     protected override bool _device => false;
     protected override bool _variable => _driverPropertys.IsHisDB;
@@ -43,7 +43,7 @@ public partial class SQLDB : UpLoadDatabaseWithCacheT<DeviceData, SQLHistoryValu
 
     protected override IReadWrite _readWrite => null;
 
-    protected override UploadDatabasePropertyWithCacheT _uploadPropertyWithCache => _driverPropertys;
+    protected override UploadPropertyWithCacheT _uploadPropertyWithCacheT => _driverPropertys;
 
     /// <summary>
     /// <inheritdoc/>
@@ -70,7 +70,7 @@ YitIdHelper.NextId())
 
     protected override async Task ProtectedBeforStartAsync(CancellationToken cancellationToken)
     {
-        var db = UpLoadDataBase.GetDb(_driverPropertys.DbType, _driverPropertys.BigTextConnectStr);
+        var db = UploadDatabaseUtil.GetDb(_driverPropertys.DbType, _driverPropertys.BigTextConnectStr);
         db.CodeFirst.InitTables(typeof(SQLHistoryValue));
         db.MappingTables.Add(nameof(SQLRealValue), _driverPropertys.ReadDBTableName);
         db.CodeFirst.InitTables(typeof(SQLRealValue));
@@ -95,7 +95,7 @@ YitIdHelper.NextId())
         CurrentDevice.SetDeviceStatus(DateTimeExtensions.CurrentDateTime, CurrentDevice.ErrorCount + 1);
 
         var cacheItems = new List<CacheItem>();
-        var db = UpLoadDataBase.GetDb(_driverPropertys.DbType, _driverPropertys.BigTextConnectStr);
+        var db = UploadDatabaseUtil.GetDb(_driverPropertys.DbType, _driverPropertys.BigTextConnectStr);
         db.Ado.CancellationToken = cancellationToken;
 
         if (_driverPropertys.IsReadDB)

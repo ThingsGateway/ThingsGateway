@@ -20,7 +20,7 @@ namespace ThingsGateway.Gateway.Application;
 /// <summary>
 /// 上传插件
 /// </summary>
-public abstract class UpLoadBase : DriverBase
+public abstract class UploadBase : DriverBase
 {
     /// <summary>
     /// 插件配置项 ，继承实现<see cref="VariablePropertyBase"/>后，返回继承类，如果不存在，返回null
