@@ -19,18 +19,18 @@ namespace ThingsGateway.Plugin.TDengineDB;
 /// <summary>
 /// <inheritdoc/>
 /// </summary>
-public class TDengineDBProperty : UploadPropertyWithCacheT
+public class TDengineDBProperty : UploadDatabasePropertyWithCacheT
 {
-    public DbType DbType { get; set; } = DbType.TDengine;
-    [DeviceProperty("链接字符串", "")] public string BigTextConnectStr { get; set; } = "Host=localhost;Port=6030;Username=root;Password=taosdata;Database=test";
+    [DeviceProperty("数据库类型", "TDengine")] public override DbType DbType { get; set; } = DbType.TDengine;
+    [DeviceProperty("链接字符串", "")] public override string BigTextConnectStr { get; set; } = "Host=localhost;Port=6030;Username=root;Password=taosdata;Database=test";
 
     /// <summary>
     /// 每次发送时合并的缓存值数量
     /// </summary>
-    public virtual int CacheSendCount { get; set; } = 2000;
+    public override int CacheSendCount { get; set; } = 2000;
 
     /// <summary>
     /// 每次添加缓存时，合并的变量值数量
     /// </summary>
-    public virtual int CacheItemCount { get; set; } = 2000;
+    public override int CacheItemCount { get; set; } = 2000;
 }

@@ -28,7 +28,7 @@ namespace ThingsGateway.Plugin.QuestDB;
 /// <summary>
 /// SQLDB
 /// </summary>
-public partial class QuestDB : UpLoadBaseWithCacheT<DeviceData, QuestDBHistoryValue>
+public partial class QuestDB : UpLoadDatabaseWithCacheT<DeviceData, QuestDBHistoryValue>
 {
     protected override bool _device => false;
     protected override bool _variable => true;
@@ -43,7 +43,7 @@ public partial class QuestDB : UpLoadBaseWithCacheT<DeviceData, QuestDBHistoryVa
 
     protected override IReadWrite _readWrite => null;
 
-    protected override UploadPropertyWithCacheT _uploadPropertyWithCache => _driverPropertys;
+    protected override UploadDatabasePropertyWithCacheT _uploadPropertyWithCache => _driverPropertys;
 
     /// <summary>
     /// <inheritdoc/>
@@ -70,7 +70,7 @@ public partial class QuestDB : UpLoadBaseWithCacheT<DeviceData, QuestDBHistoryVa
 
     protected override async Task ProtectedBeforStartAsync(CancellationToken cancellationToken)
     {
-        var db = GetDb();
+        var db = UpLoadDataBase.GetDb(_driverPropertys.DbType, _driverPropertys.BigTextConnectStr);
         db.DbMaintenance.CreateDatabase();
         db.CodeFirst.InitTables(typeof(QuestDBHistoryValue));
         await base.ProtectedBeforStartAsync(cancellationToken);
@@ -92,7 +92,7 @@ public partial class QuestDB : UpLoadBaseWithCacheT<DeviceData, QuestDBHistoryVa
         CurrentDevice.SetDeviceStatus(DateTimeExtensions.CurrentDateTime, CurrentDevice.ErrorCount + 1);
 
         var cacheItems = new List<CacheItem>();
-        var db = GetDb();
+        var db = UpLoadDataBase.GetDb(_driverPropertys.DbType, _driverPropertys.BigTextConnectStr);
         db.Ado.CancellationToken = cancellationToken;
 
         try
