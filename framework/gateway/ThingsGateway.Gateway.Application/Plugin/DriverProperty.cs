@@ -119,3 +119,31 @@ public abstract class UpDriverPropertyBase : DriverPropertyBase
 
     public override int RetryCount { get; set; } = 3;
 }
+
+/// <summary>
+/// 插件配置项
+/// <para></para>
+/// 约定：
+/// 如果需要密码输入，属性名称中需包含Password字符串
+/// <br></br>
+/// 使用<see cref="DevicePropertyAttribute"/> 标识所需的配置属性
+/// </summary>
+public abstract class UpDriverDatabasePropertyBase : UpDriverPropertyBase
+{
+
+    [DeviceProperty("数据库类型", "")]
+    public virtual DbType DbType { get; set; }
+
+    [DeviceProperty("链接字符串", "")]
+    public virtual string BigTextConnectStr { get; set; }
+
+    /// <summary>
+    /// 每次发送时合并的缓存值数量
+    /// </summary>
+    public virtual int CacheSendCount { get; set; } = 2000;
+    /// <summary>
+    /// 每次添加缓存时，合并的变量值数量
+    /// </summary>
+    public virtual int CacheItemCount { get; set; } = 2000;
+
+}

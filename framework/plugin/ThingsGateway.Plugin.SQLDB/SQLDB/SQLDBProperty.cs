@@ -19,22 +19,22 @@ namespace ThingsGateway.Plugin.SQLDB;
 /// <summary>
 /// <inheritdoc/>
 /// </summary>
-public class SQLDBProperty : UploadPropertyWithCacheT
+public class SQLDBProperty : UploadDatabasePropertyWithCacheT
 {
     [DeviceProperty("是否实时表", "true=>实时表更新")] public bool IsReadDB { get; set; } = false;
     [DeviceProperty("是否历史表", "true=>历史存储(按月分表)")] public bool IsHisDB { get; set; } = true;
     [DeviceProperty("实时表名称", "")] public string ReadDBTableName { get; set; } = "ReadDBTableName";
 
-    [DeviceProperty("数据库类型", "MySql/SqlServer")] public DbType DbType { get; set; } = DbType.MySql;
-    [DeviceProperty("链接字符串", "")] public string BigTextConnectStr { get; set; } = "server=localhost;Database=test;Uid=root;Pwd=111111;AllowLoadLocalInfile=true;";
+    [DeviceProperty("数据库类型", "MySql/SqlServer")] public override DbType DbType { get; set; } = DbType.MySql;
+    [DeviceProperty("链接字符串", "")] public override string BigTextConnectStr { get; set; } = "server=localhost;Database=test;Uid=root;Pwd=111111;AllowLoadLocalInfile=true;";
 
     /// <summary>
     /// 每次发送时合并的缓存值数量
     /// </summary>
-    public virtual int CacheSendCount { get; set; } = 500;
+    public override int CacheSendCount { get; set; } = 500;
 
     /// <summary>
     /// 每次添加缓存时，合并的变量值数量
     /// </summary>
-    public virtual int CacheItemCount { get; set; } = 2000;
+    public override int CacheItemCount { get; set; } = 2000;
 }

@@ -28,7 +28,7 @@ namespace ThingsGateway.Plugin.SQLHisAlarm;
 /// <summary>
 /// SQLDB
 /// </summary>
-public partial class SQLHisAlarm : UpLoadBaseWithCache
+public partial class SQLHisAlarm : UpLoadDatabaseWithCache
 {
     private readonly SQLHisAlarmVariableProperty _variablePropertys = new();
     /// <inheritdoc/>
@@ -41,7 +41,7 @@ public partial class SQLHisAlarm : UpLoadBaseWithCache
 
     protected override IReadWrite _readWrite => null;
 
-    protected override UploadPropertyWithCache _uploadPropertyWithCache => _driverPropertys;
+    protected override UploadDatabasePropertyWithCache _uploadPropertyWithCache => _driverPropertys;
 
     public override void Init(DeviceRunTime device)
     {
@@ -87,7 +87,7 @@ YitIdHelper.NextId());
 
     protected override async Task ProtectedBeforStartAsync(CancellationToken cancellationToken)
     {
-        var db = GetDb();
+        var db = UpLoadDataBase.GetDb(_driverPropertys.DbType, _driverPropertys.BigTextConnectStr);
         db.CodeFirst.InitTables(typeof(HistoryAlarm));
         await base.ProtectedBeforStartAsync(cancellationToken);
     }
@@ -108,7 +108,7 @@ YitIdHelper.NextId());
         CurrentDevice.SetDeviceStatus(DateTimeExtensions.CurrentDateTime, CurrentDevice.ErrorCount + 1);
 
         var cacheItems = new List<CacheItem>();
-        var db = GetDb();
+        var db = UpLoadDataBase.GetDb(_driverPropertys.DbType, _driverPropertys.BigTextConnectStr);
         db.Ado.CancellationToken = cancellationToken;
 
         {
