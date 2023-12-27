@@ -197,7 +197,7 @@ public class OPCDAClient : CollectBase
                     var value = data.Value;
                     var quality = data.Quality;
                     var time = data.TimeStamp.ToLocalTime();
-                    if (value != null && quality == 192)
+                    if (quality == 192)
                     {
                         if (item.DataTypeEnum == DataTypeEnum.Object)
                             if (type.Namespace.StartsWith("System"))

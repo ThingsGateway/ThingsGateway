@@ -108,7 +108,7 @@ public class OPCUAClient : CollectBase
                     var isGood = StatusCode.IsGood(data.Item2.StatusCode);
 
                     var time = data.Item2.SourceTimestamp;
-                    if (value != null && isGood)
+                    if (isGood)
                     {
                         item.SetValue(value, time);
                     }
