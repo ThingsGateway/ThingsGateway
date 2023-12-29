@@ -267,13 +267,13 @@ public class OPCUAClient : CollectBase
                         if (stringList.Contains(type.Name))
                             try { item.DataTypeEnum = Enum.Parse<DataTypeEnum>(type.Name); } catch { }
                     }
-                if (value != null && isGood)
+                if (isGood)
                 {
                     item.SetValue(value, time);
                 }
                 else
                 {
-                    item.SetValue(null, time, data.dataValue.StatusCode.ToString());
+                    item.SetValue(null, time, data.Item2.StatusCode.ToString());
                 }
             }
             success = true;
