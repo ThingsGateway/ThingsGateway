@@ -42,7 +42,7 @@ public class DriverPluginService : ISingleton
     public const string DefaultKey = "默认";
     private readonly IServiceScope _serviceScope;
     private readonly ILogger _logger;
-
+    private readonly EasyLock _locker=new();
     /// <inheritdoc cref="DriverPluginService"/>
     public DriverPluginService(
     IServiceScopeFactory serviceScopeFactory,
@@ -109,8 +109,11 @@ public class DriverPluginService : ISingleton
     /// <returns></returns>
     public List<DriverPlugin> GetAllDriverPlugin()
     {
-        lock (this)
+        try
         {
+            _locker.Wait();
+
+         
             var type1 = this.GetType();
             var cacheKey = $"{CultureInfo.CurrentUICulture.Name}-{type1.FullName}-{type1.TypeHandle.Value}";
             var data = _serviceScope.ServiceProvider.GetService<MemoryCache>().GetOrCreate($"{nameof(GetAllDriverPlugin)}", cacheKey, c =>
@@ -183,6 +186,11 @@ public class DriverPluginService : ISingleton
             }, true);
             return data;
         }
+
+        finally
+        {
+            _locker.Release();
+        }
     }
 
     /// <summary>
@@ -192,8 +200,11 @@ public class DriverPluginService : ISingleton
     /// <returns></returns>
     public DriverBase GetDriver(string pluginName)
     {
-        lock (this)
+        try
         {
+            _locker.Wait();
+
+
             var filtResult = DriverPluginServiceExtensions.GetFileNameAndTypeName(pluginName);
             if (filtResult.Item1.IsNullOrEmpty() || filtResult.Item1 == DefaultKey)
             {
@@ -244,6 +255,10 @@ public class DriverPluginService : ISingleton
             {
                 throw new Exception($"加载插件文件 {path} 失败，文件不存在");
             }
+        }
+        finally
+        {
+            _locker.Release();
         }
     }
 
@@ -374,8 +389,9 @@ public class DriverPluginService : ISingleton
 
     public void Remove()
     {
-        lock (this)
+        try
         {
+            _locker.Wait();
             _driverBaseDict.Clear();
             _assemblyDict.Clear();
             foreach (var item in _assemblyLoadContextDict)
@@ -388,6 +404,10 @@ public class DriverPluginService : ISingleton
             _serviceScope.ServiceProvider.GetService<MemoryCache>().RemoveByPrefix(nameof(GetDriverMethodInfo));
             _serviceScope.ServiceProvider.GetService<MemoryCache>().RemoveByPrefix(nameof(GetDriverProperties));
             _serviceScope.ServiceProvider.GetService<MemoryCache>().RemoveByPrefix(nameof(GetDriverVariableProperties));
+        }
+        finally
+        {
+            _locker.Release();
         }
     }
 
@@ -413,10 +433,11 @@ public class DriverPluginService : ISingleton
     /// </summary>
     /// <param name="plugin"></param>
     /// <returns></returns>
-    public void TryAddDriver(DriverPluginAddInput plugin)
+    public async Task TryAddDriver(DriverPluginAddInput plugin)
     {
-        lock (this)
+        try
         {
+            _locker.Wait();
             var assemblyLoadContext = new AssemblyLoadContext(YitIdHelper.NextId().ToString(), true);
             try
             {
@@ -431,17 +452,21 @@ public class DriverPluginService : ISingleton
                 //主程序集相对路径
                 //获取文件流
                 using var stream = plugin.MainFile.OpenReadStream(maxFileSize);
-                stream.Seek(0, SeekOrigin.Begin);
+                MemoryStream memoryStream = new MemoryStream();
+                await  stream.CopyToAsync(memoryStream);
+                memoryStream.Seek(0, SeekOrigin.Begin);
 
                 //获取主程序集
-                var assembly = assemblyLoadContext.LoadFromStream(stream);
+                var assembly = assemblyLoadContext.LoadFromStream(memoryStream);
                 foreach (var item in plugin.OtherFiles)
                 {
                     using var otherStream = item.OpenReadStream(maxFileSize);
-                    otherStream.Seek(0, SeekOrigin.Begin);
+                    MemoryStream memoryStream1 = new MemoryStream();
+                    await otherStream.CopyToAsync(memoryStream1);
+                    memoryStream1.Seek(0, SeekOrigin.Begin);
                     try
                     {
-                        assemblyLoadContext.LoadFromStream(otherStream);
+                        assemblyLoadContext.LoadFromStream(memoryStream1);
                     }
                     catch (Exception ex)
                     {
@@ -467,16 +492,18 @@ public class DriverPluginService : ISingleton
                 //卸载相同文件的插件域
                 DeleteDriver(mainFileName);
 
-                stream.Seek(0, SeekOrigin.Begin);
+                memoryStream.Seek(0, SeekOrigin.Begin);
                 Directory.CreateDirectory(fullDir);//创建插件文件夹
                 using FileStream fs = new(fullPath, FileMode.Create);
-                stream.CopyTo(fs);
+                memoryStream.CopyTo(fs);
                 foreach (var item in plugin.OtherFiles)
                 {
                     using var otherStream = item.OpenReadStream(maxFileSize);
-                    otherStream.Seek(0, SeekOrigin.Begin);
+                    MemoryStream memoryStream1 = new MemoryStream();
+                    await otherStream.CopyToAsync(memoryStream1);
+                    memoryStream1.Seek(0, SeekOrigin.Begin);
                     using FileStream fs1 = new(fullDir.CombinePathOS(item.Name), FileMode.Create);
-                    otherStream.CopyTo(fs1);
+                   await memoryStream1.CopyToAsync(fs1);
                 }
             }
             finally
@@ -484,6 +511,10 @@ public class DriverPluginService : ISingleton
                 assemblyLoadContext.Unload();
                 _serviceScope.ServiceProvider.GetService<MemoryCache>().RemoveByPrefix(nameof(GetAllDriverPlugin));
             }
+        }
+        finally
+        {
+            _locker.Release();
         }
     }
 

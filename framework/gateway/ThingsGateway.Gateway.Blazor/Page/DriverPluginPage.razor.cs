@@ -29,8 +29,7 @@ public partial class DriverPluginPage
 
     private async Task AddCallAsync(DriverPluginAddInput input)
     {
-        _driverPluginService.TryAddDriver(input);
-        await Task.CompletedTask;
+       await _driverPluginService.TryAddDriver(input);
     }
 
     private async Task<ISqlSugarPagedList<DriverPlugin>> QueryCallAsync(DriverPluginPageInput input)
