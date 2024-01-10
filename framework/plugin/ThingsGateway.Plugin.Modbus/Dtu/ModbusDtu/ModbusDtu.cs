@@ -45,6 +45,17 @@ public class ModbusDtu : CollectBase
             iPHost = new IPHost($"{_driverPropertys.IP}:{_driverPropertys.Port}");
         }
         FoundataionConfig.SetListenIPHosts(new IPHost[] { iPHost });
+        FoundataionConfig.ConfigurePlugins(a =>
+        {
+            a.UseCheckClear()
+            .SetCheckClearType(CheckClearType.All)
+            .SetTick(TimeSpan.FromSeconds(60))
+            .SetOnClose((c, t) =>
+            {
+                c.TryShutdown();
+                c.SafeClose("超时无数据");
+            });
+        });
         var client1 = new TcpService();
         ((TcpService)client1).Setup(FoundataionConfig);
         //载入配置
