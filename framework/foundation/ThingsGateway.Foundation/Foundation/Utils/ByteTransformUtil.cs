@@ -67,12 +67,12 @@ public class ByteTransformUtil
         {
             if (str.StartsWith("DATA="))
             {
-                var dataFormatName = str.Remove(5);
+                var dataFormatName = str.Substring(5);
                 try { if (Enum.TryParse<DataFormat>(dataFormatName, out var dataFormat1)) dataFormat = dataFormat1; } catch { }
             }
             else if (str.StartsWith("TEXT="))
             {
-                var encodingName = str.Remove(5);
+                var encodingName = str.Substring(5);
                 try { encoding = Encoding.GetEncoding(encodingName); } catch { }
             }
             else if (str.StartsWith("LEN="))
@@ -82,7 +82,7 @@ public class ByteTransformUtil
             }
             else if (str.StartsWith("BCD="))
             {
-                var bcdName = str.Remove(4);
+                var bcdName = str.Substring(4);
                 try { if (Enum.TryParse<BcdFormat>(bcdName, out var bcdFormat1)) bcdFormat = bcdFormat1; } catch { }
             }
             else
