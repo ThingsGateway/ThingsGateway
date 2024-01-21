@@ -316,7 +316,7 @@ public abstract class DriverBase : DisposableObject
     internal virtual void Init(DeviceRunTime device)
     {
         CurrentDevice = device;
-        DevicePropertys = PluginService.GetDriverPropertyTypes(device.PluginName, this).Values.ToList().Adapt<List<DependencyPropertyWithInfo>>();
+        DevicePropertys = PluginService.GetDriverPropertyTypes(device.PluginName, this).Values.ToList();
     }
 
     /// <summary>

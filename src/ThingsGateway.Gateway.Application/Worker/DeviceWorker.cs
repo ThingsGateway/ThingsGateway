@@ -352,7 +352,7 @@ public abstract class DeviceWorker : BackgroundService
     public List<DependencyProperty> GetDeviceMethodInfos(long deviceId)
     {
         var pluginName = (_serviceScope.ServiceProvider.GetService<IDeviceService>().GetDeviceById(deviceId))?.PluginName;
-        if (pluginName == null)
+        if (!pluginName.IsNullOrEmpty())
         {
             var propertys = PluginService.GetDriverMethodInfos(pluginName).Values;
             return propertys.ToList().Adapt<List<DependencyProperty>>();

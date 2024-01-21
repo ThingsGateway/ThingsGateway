@@ -58,7 +58,9 @@ public abstract class CollectBase : DriverBase
     {
         base.Init(device);
         CurrentDevice = device as CollectDeviceRunTime;
-        DeviceMethods = PluginService.GetDriverMethodInfos(device.PluginName, this).Values.ToList().Adapt<List<DependencyPropertyWithInfo>>();
+        var data = PluginService.GetDriverMethodInfos(device.PluginName, this).Values.ToList();
+
+        DeviceMethods = data;
 
         lock (GlobalData.CollectDevices)
         {
