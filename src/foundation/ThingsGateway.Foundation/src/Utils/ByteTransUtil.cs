@@ -65,7 +65,7 @@ public class ByteTransUtil
             return cachedConverter!.CopyNew();
         }
 
-        registerAddress = registerAddress.Trim().ToLower();
+        registerAddress = registerAddress.Trim();
 
         var strs = registerAddress.SplitStringBySemicolon();
 
@@ -77,27 +77,27 @@ public class ByteTransUtil
         StringBuilder sb = new();
         foreach (var str in strs)
         {
-            if (str.StartsWith("data="))
+            if (str.ToLower().StartsWith("data="))
             {
                 var dataFormatName = str.Substring(5);
                 try { if (Enum.TryParse<DataFormatEnum>(dataFormatName, true, out var dataFormat1)) dataFormat = dataFormat1; } catch { }
             }
-            else if (str.StartsWith("encoding="))
+            else if (str.ToLower().StartsWith("encoding="))
             {
                 var encodingName = str.Substring(9);
                 try { encoding = Encoding.GetEncoding(encodingName); } catch { }
             }
-            else if (str.StartsWith("len="))
+            else if (str.ToLower().StartsWith("len="))
             {
                 var lenStr = str.Substring(4);
                 stringlength = lenStr.IsNullOrEmpty() ? null : Convert.ToUInt16(lenStr);
             }
-            else if (str.StartsWith("arraylen="))
+            else if (str.ToLower().StartsWith("arraylen="))
             {
                 var lenStr = str.Substring(9);
                 length = lenStr.IsNullOrEmpty() ? null : Convert.ToUInt16(lenStr);
             }
-            else if (str.StartsWith("bcd="))
+            else if (str.ToLower().StartsWith("bcd="))
             {
                 var bcdName = str.Substring(4);
                 try { if (Enum.TryParse<BcdFormatEnum>(bcdName, true, out var bcdFormat1)) bcdFormat = bcdFormat1; } catch { }

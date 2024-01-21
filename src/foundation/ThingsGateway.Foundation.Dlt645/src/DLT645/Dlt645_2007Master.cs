@@ -482,7 +482,7 @@ internal class DtuPlugin : PluginBase, ITcpReceivingPlugin
             if (!socket.Id.StartsWith("ID="))
             {
                 ByteBlock byteBlock = e.ByteBlock;
-                var id = $"ID={Encoding.UTF8.GetString(byteBlock.ToArray()).ToLower()}";
+                var id = $"ID={Encoding.UTF8.GetString(byteBlock.ToArray())}";
                 client.Logger.Info(string.Format(DltConst.DtuConnected, id));
                 socket.ResetId(id);
             }
