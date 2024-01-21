@@ -96,6 +96,10 @@ public static class StringExtension
                 return true;
             }
         }
+        if (propertyType.IsNullableType())
+        {
+            propertyType = propertyType.GetGenericArguments()[0];
+        }
         if (propertyType == typeof(bool))
             objResult = value.ToBool(false);
         else if (propertyType == typeof(byte))
