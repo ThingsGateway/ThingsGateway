@@ -1,0 +1,27 @@
+<Project>
+	<PropertyGroup>
+		<NoWarn>CS8618;CS8625;CS8600;CS8601;CS8604;CS8714;CS8602;CS8603;CS8619;CS8621</NoWarn>
+		<TargetFrameworks>net6.0;</TargetFrameworks>
+		<!--<TargetFrameworks>net6.0;</TargetFrameworks>-->
+		<LangVersion>11.0</LangVersion>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<Version>5.0.0.1</Version>
+		<Authors>Diego</Authors>
+		<Company>Diego</Company>
+		<Product>Diego</Product>
+		<Copyright>版权所有 © 2023-present Diego</Copyright>
+		<RepositoryUrl>https://gitee.com/diego2098/ThingsGateway</RepositoryUrl>
+		<RepositoryType>Gitee</RepositoryType>
+		<GenerateResxSourceIncludeDefaultValues>true</GenerateResxSourceIncludeDefaultValues>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(SolutionName)'=='ThingsGateway - Admin'">
+		<DefineConstants>Admin</DefineConstants>
+	</PropertyGroup>
+	<ItemGroup>
+		<None Include="$(SolutionDir)..\README.md" Pack="true" PackagePath="\" />
+		<None Include="$(SolutionDir)..\LICENSE" Pack="true" PackagePath="\" />
+		<None Include="$(SolutionDir)..\icon.png" Pack="true" PackagePath="\" />
+		<None Include="$(SolutionDir)Directory.Build.props" Pack="true" PackagePath="\" />
+	</ItemGroup>
+</Project>
