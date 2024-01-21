@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFrameworks>net6.0;</TargetFrameworks>
+		<OutputType>Exe</OutputType>
+		<OutputPath>$(SolutionDir)bin\$(Configuration)\$(MSBuildProjectName)\</OutputPath>
+		<DocumentationFile></DocumentationFile>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\ThingsGateway.Foundation.Modbus\src\ThingsGateway.Foundation.Modbus.csproj" >
+		</ProjectReference>
+	</ItemGroup>
+
+</Project>

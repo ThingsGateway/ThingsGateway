@@ -1,0 +1,53 @@
+﻿@namespace ThingsGateway.Demo
+@using BlazorComponent;
+@using Microsoft.AspNetCore.Components.Web;
+@using System.IO.Ports;
+@using System.Collections.Concurrent;
+@using ThingsGateway.Foundation.OpcDa;
+@using ThingsGateway.Core.Extension;
+@using Masa.Blazor
+@inherits BaseComponentBase
+@implements IDisposable
+<MCard Class="ma-2">
+    <MSubheader Style="max-height:32px">
+        @AppService.I18n.T("Adapter Config")
+    </MSubheader>
+    <MContainer Class="ma-0">
+
+        <MRow Justify="JustifyTypes.Start" Align="AlignTypes.Center">
+            <MTextField Class="ma-1" Outlined Style="max-width:150px" Dense HideDetails="@("auto")"
+                         Label=@config.Description(a=>a.GroupSize) @bind-Value=@config.GroupSize />
+
+             <MTextField Class="ma-1" Outlined Style="max-width:150px" Dense HideDetails="@("auto")"
+                         Label=@config.Description(a=>a.UpdateRate) @bind-Value=@config.UpdateRate />
+
+             <MTextField Class="ma-1" Outlined Style="max-width:150px" Dense HideDetails="@("auto")"
+                         Label=@config.Description(a=>a.DeadBand) @bind-Value=@config.DeadBand />
+
+             <MTextField Class="ma-1" Outlined Style="max-width:150px" Dense HideDetails="@("auto")"
+                         Label=@config.Description(a=>a.CheckRate) @bind-Value=@config.CheckRate />
+
+             <MTextField Class="ma-1" Outlined Style="max-width:200px" Dense HideDetails="@("auto")"
+                         Label=@config.Description(a=>a.OpcIP) @bind-Value=@config.OpcIP />
+
+             <MTextField Class="ma-1" Outlined Style="max-width:250px" Dense HideDetails="@("auto")"
+                         Label=@config.Description(a=>a.OpcName) @bind-Value=@config.OpcName />
+
+
+             <MCheckbox Class="ma-1" Style="max-width:200px" Dense HideDetails="@("auto")"
+                        Label=@(AppService.I18n.T(config.Description(x => x.ActiveSubscribe))) @bind-Value=@config.ActiveSubscribe></MCheckbox>
+
+
+             <MButton Class="ma-1" OnClick=@Connect Color="primary">
+                 连接
+             </MButton>
+
+             <MButton Class="ma-1" OnClick=@DisConnect Color="red">
+                 断开
+             </MButton>
+
+
+         </MRow>
+     </MContainer>
+ </MCard>
+

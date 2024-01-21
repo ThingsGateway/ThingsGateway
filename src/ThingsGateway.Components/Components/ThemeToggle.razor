@@ -1,0 +1,43 @@
+﻿@inject BlazorAppService AppService
+@implements IDisposable
+@namespace ThingsGateway.Components
+
+<AppTooltipButton Icon="@(Dark ? "mdi-weather-night" : "mdi-weather-sunny")"
+                  Path="Toggle Theme"
+                  Class="mr-2 ml-2"
+                  OnClick="@SwitchTheme">
+</AppTooltipButton>
+
+@code {
+
+    private DotNetObjectReference<ThemeToggle>? _objRef;
+
+    protected override void OnInitialized()
+    {
+        _objRef = DotNetObjectReference.Create(this);
+    }
+
+    /// <summary>
+    /// Dark
+    /// </summary>
+    [CascadingParameter(Name = "Dark")]
+    public bool Dark { get; set; }
+
+    public void SwitchTheme(MouseEventArgs e)
+    {
+        _ = AppService.SwitchTheme(_objRef, AppService.Dark?"Light":"Dark", e);
+    }
+
+    [JSInvokable]
+    public void ToggleTheme(string option)
+    {
+        _ = AppService.ToggleTheme(option);
+    }
+
+
+    public void Dispose()
+    {
+        _objRef?.Dispose();
+    }
+
+}

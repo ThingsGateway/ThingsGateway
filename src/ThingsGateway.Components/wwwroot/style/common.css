@@ -1,0 +1,405 @@
+﻿#blazor-error-ui {
+    background: lightyellow;
+    bottom: 0;
+    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
+    display: none;
+    left: 0;
+    padding: 0.6rem 1.25rem 0.7rem 1.25rem;
+    position: fixed;
+    width: 100%;
+    z-index: 1080;
+}
+
+    #blazor-error-ui .dismiss {
+        cursor: pointer;
+        position: absolute;
+        right: 0.75rem;
+        top: 0.5rem;
+    }
+
+html {
+    overflow-y: hidden
+}
+
+.status-bar-safe-area {
+    display: none;
+}
+
+@supports (-webkit-touch-callout: none) {
+    .status-bar-safe-area {
+        display: flex;
+        position: sticky;
+        top: 0;
+        height: env(safe-area-inset-top);
+        background-color: #f7f7f7;
+        width: 100%;
+        z-index: 1;
+    }
+
+    .flex-column, .navbar-brand {
+        padding-left: env(safe-area-inset-left);
+    }
+}
+/*自定义样式*/
+.table-text-truncate {
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    max-width: 200px;
+    min-width: 130px;
+}
+
+.table-minwidth {
+    min-width: 130px;
+}
+
+.tg-drawer.theme--dark.m-navigation-drawer {
+    background-color: var(--md-sys-color-surface-dark);
+}
+
+.tg-drawer .theme--dark.m-toolbar {
+    background-color: inherit;
+}
+
+.block-center {
+    /*flex 布局*/
+    display: flex;
+    /*实现垂直居中*/
+    align-items: center;
+}
+
+.h1, .text-h1, h1 {
+    /* Headline 1 */
+    font-family: Roboto !important;
+    font-style: normal !important;
+    font-weight: 300 !important;
+    font-size: 6rem !important;
+    line-height: 7rem !important;
+    /* identical to box height */
+    letter-spacing: -0.093755em !important;
+    /* default color */
+    color: #1B2559;
+}
+
+.h2, .text-h2, h2 {
+    /* Headline 2 */
+    font-family: Roboto !important;
+    font-style: normal !important;
+    font-weight: 900 !important;
+    font-size: 3.75rem !important;
+    line-height: 4.375rem !important;
+    /* identical to box height */
+    letter-spacing: -0.03125em !important;
+    /* default color */
+    color: #323D6F;
+}
+
+.h3, .text-h3, h3 {
+    /* Headline 3 */
+    font-family: Roboto !important;
+    font-style: normal !important;
+    font-weight: 900 !important;
+    font-size: 3rem !important;
+    line-height: 3.5rem !important;
+    /* default color */
+    color: #323D6F;
+}
+
+.h4, .text-h4, h4 {
+    /* Headline 4 */
+    font-family: Roboto !important;
+    font-style: normal !important;
+    font-weight: bold !important;
+    font-size: 2.125rem !important;
+    line-height: 2.625rem !important;
+    /* identical to box height */
+    letter-spacing: 0.02em !important;
+    /* default color */
+    color: #323D6F;
+}
+
+.h5, .text-h5, h5 {
+    /* Headline 5 */
+    font-family: Roboto !important;
+    font-style: normal !important;
+    font-weight: bold !important;
+    font-size: 1.5rem !important;
+    line-height: 2.25rem !important;
+    /* identical to box height */
+    /* default color */
+    color: #1B2559;
+}
+
+.h6, .text-h6, h6 {
+    /* Headline 6 */
+    font-family: Roboto !important;
+    font-style: normal !important;
+    font-weight: bold !important;
+    font-size: 1.25rem !important;
+    line-height: 1.875rem !important;
+    /* identical to box height */
+    letter-spacing: 0.01em !important;
+    /* default color */
+    color: #1B2559;
+}
+
+.h7, .text-h7, h7 {
+    /* Headline 6 */
+    font-family: Roboto !important;
+    font-style: normal !important;
+    font-weight: 500 !important;
+    font-size: 1.125rem !important;
+    line-height: 1.6875rem !important;
+    /* identical to box height */
+    letter-spacing: 0.01em !important;
+    /* default color */
+    color: #323D6F;
+}
+
+.text-subtitle {
+    /* Subtitle 1-副标题 1 */
+    font-family: Roboto !important;
+    font-style: normal !important;
+    font-weight: bold !important;
+    font-size: 1rem !important;
+    line-height: 1.1875rem !important;
+    /* identical to box height */
+    letter-spacing: 0.009375rem !important;
+    /* default color */
+    color: #1B2559;
+}
+
+.text-subtitle2 {
+    /* Subtitle 2-2 */
+    font-family: Roboto !important;
+    font-style: normal !important;
+    font-weight: bold !important;
+    font-size: 0.875rem !important;
+    line-height: 1rem !important;
+    /* identical to box height */
+    letter-spacing: 0.00625rem !important;
+    /* default color */
+    color: #323D6F;
+}
+
+.text-body {
+    /* Body 1-内容 1 */
+    font-family: Roboto !important;
+    font-style: normal !important;
+    font-weight: 500 !important;
+    font-size: 1rem !important;
+    /* identical to box height */
+    line-height: 1.1875rem !important;
+    /* default color */
+    color: #1B2559;
+}
+
+.text-body2 {
+    /* Body 2 */
+    font-family: Roboto !important;
+    font-style: normal !important;
+    font-weight: normal !important;
+    font-size: 0.875rem !important;
+    line-height: 1rem !important;
+    /* identical to box height */
+    letter-spacing: 0.015625rem !important;
+    /* default color */
+    color: #485585 !important;
+}
+
+.text-body3 {
+    /* Body 1-内容 1 */
+    font-family: Roboto !important;
+    font-style: normal !important;
+    font-weight: normal !important;
+    font-size: 1rem !important;
+    /* identical to box height */
+    line-height: 1.75rem !important;
+    /* default color */
+    color: #485585;
+}
+
+.text-btn {
+    /* BUTTON-按钮 */
+    font-family: Roboto !important;
+    font-style: normal !important;
+    font-weight: 500 !important;
+    font-size: 0.875rem !important;
+    line-height: 1rem !important;
+    /* default color */
+    color: #323D6F !important;
+}
+
+.text-caption {
+    /* Caption-说明 */
+    font-family: Roboto !important;
+    font-style: normal !important;
+    font-weight: 500 !important;
+    font-size: 0.75rem !important;
+    line-height: 1.125rem !important;
+    /* default color */
+    color: #A3AED0;
+}
+
+.text-overline {
+    /* OVERLINE-眉题 */
+    font-family: Roboto !important;
+    font-style: normal !important;
+    font-weight: normal !important;
+    font-size: 0.625rem !important;
+    line-height: 0.75rem !important;
+    /* identical to box height */
+    letter-spacing: 0.09375rem !important;
+    /* default color */
+    color: #A3AED0;
+}
+
+.neutral {
+    background-color: #1B2559;
+}
+
+.neutral-lighten-1 {
+    background-color: #323D6F;
+}
+
+.neutral-lighten-2 {
+    background-color: #485585;
+}
+
+.neutral-lighten-3 {
+    background-color: #7681AB;
+}
+
+.neutral-lighten-4 {
+    background-color: #A3AED0;
+}
+
+.neutral-lighten-5 {
+    background-color: #E9EDF7;
+}
+
+.neutral--text {
+    color: #1B2559 !important;
+    caret-color: #1B2559 !important;
+}
+
+.neutral-lighten-1--text {
+    color: #323D6F !important;
+    caret-color: #323D6F !important;
+}
+
+.neutral-lighten-2--text {
+    color: #485585 !important;
+    caret-color: #485585 !important;
+}
+
+.neutral-lighten-3--text {
+    color: #7681AB !important;
+    caret-color: #7681AB !important;
+}
+
+.neutral-lighten-4--text {
+    color: #A3AED0 !important;
+    caret-color: #A3AED0 !important;
+}
+/*masa样式覆盖修改*/
+
+:root {
+    --md-sys-color-surface-dark: #131316;
+    --md-sys-color-on-surface-dark: #c8c5ca;
+}
+
+//扩散主题
+::view-transition-old(root) {
+    animation: none;
+}
+
+::view-transition-new(root) {
+    mix-blend-mode: normal;
+    animation: clip .3s ease-in;
+}
+
+@keyframes clip {
+    from {
+        clip-path: circle(0% at var(--x) var(--y));
+    }
+
+    to {
+        clip-path: circle(100% at var(--x) var(--y));
+    }
+}
+
+.m-application--is-ltr .m-data-table__mobile-row__cell {
+    text-align: right;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    max-width: 200px;
+}
+
+.m-application--is-ltr .m-list-group--no-action > .m-list-group__items > .m-list-item {
+    padding-left: 36px;
+}
+
+.m-application--is-ltr .m-list--dense.m-list--nav .m-list-group--no-action > .m-list-group__items > .m-list-item {
+    padding-left: 36px;
+}
+
+.m-application--is-ltr .m-list-item__action:first-child, .m-application--is-ltr .m-list-item__icon:first-child {
+    margin-right: 8px;
+}
+
+.m-tabs-bar {
+    height: 36px;
+}
+
+.m-breadcrumbs li:nth-child(even) {
+    padding: 0 6px;
+}
+
+.m-page-tabs > .m-tabs-bar {
+    border-bottom-left-radius: 20px !important;
+    border-bottom-right-radius: 20px !important;
+    height: 36px;
+    padding: 0 16px;
+}
+
+.m-application .text-start {
+    text-align: start !important;
+    min-width: 130px;
+}
+
+.neutral--text {
+    color: #1B2559 !important;
+    caret-color: #1B2559 !important;
+}
+
+.app-code {
+    position: relative;
+    font-size: 0.9em !important;
+    line-height: 1.3em !important;
+}
+
+    .app-code pre {
+        font-size: inherit !important;
+        line-height: inherit !important;
+    }
+
+    .app-code code {
+        font-size: inherit !important;
+        line-height: inherit !important;
+    }
+
+/* prism line highlight */
+pre[data-line] {
+    padding: 0 !important;
+}
+
+.line-highlight {
+    margin-top: 16px !important;
+    background: #a3aed033 !important;
+}
+
+    .line-highlight::before, .line-highlight[data-end]:after {
+        content: "" !important;
+    }

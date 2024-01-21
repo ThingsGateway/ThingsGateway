@@ -1,0 +1,64 @@
+﻿@namespace ThingsGateway.Admin.Blazor
+@using BlazorComponent;
+@using Masa.Blazor
+@using ThingsGateway.Admin.Core;
+@using ThingsGateway.Core.Extension
+@using ThingsGateway.Core.Extension.Json
+
+@inherits BaseComponentBase
+<MMenu OffsetY>
+    <ActivatorContent>
+        <MButton @attributes="@context.Attrs" Color="primary"
+                 MaxHeight="@(BlazorAppService.AppBarHeight-8)"
+                 Icon="@IsMobile"
+                 Class="mr-2 text-h6"
+                  Text>
+            @UserResoures.CurrentUser?.Account.GetNameLen2()
+            <AppChevronDown></AppChevronDown>
+        </MButton>
+    </ActivatorContent>
+    <ChildContent>
+        <MSheet Class="d-flex flex-column  justify-center">
+            <MLabel Class=" ma-2 my-3 text-subtitle-1 ml-4" Color="primary">@UserResoures.CurrentUser?.Account</MLabel>
+                <MDivider></MDivider>
+                <MListItem Target="_self" Href="/usercenter" Link><MIcon>mdi-account-circle</MIcon>  个人中心 </MListItem>
+            <MListItem OnClick="LogoutAsync"><MIcon>mdi-logout</MIcon>  注销 </MListItem>
+        </MSheet>
+    </ChildContent>
+</MMenu>
+
+
+@code {
+    [Inject]
+    NavigationManager NavigationManager { get; set; }
+    [Inject]
+    private UserResoures UserResoures { get; set; }
+    /// <summary>
+    /// <inheritdoc/>
+    /// </summary>
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+    }
+
+    private async Task LogoutAsync()
+    {
+        var ajaxOption = new AjaxOption
+            {
+                Url = "/auth/logout",
+                Data = new LoginOutIput() { VerificatId = UserManager.VerificatId },
+            };
+        var str = await AppService.GetMessageAsync(ajaxOption);
+        var ret = str?.FromJsonString<UnifyResult<string>>();
+        if (ret?.Code != 200)
+        {
+            await PopupService.EnqueueSnackbarAsync(AppService.I18n.T("注销失败") + ret.Msg, AlertTypes.Error);
+        }
+        else
+        {
+            await PopupService.EnqueueSnackbarAsync(AppService.I18n.T("注销成功"), AlertTypes.Success);
+            await Task.Delay(500);
+            NavigationManager.NavigateTo(NavigationManager.Uri, true);
+        }
+    }
+}

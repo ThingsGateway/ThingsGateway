@@ -1,0 +1,21 @@
+{
+  "name": "ThingsGateway.Demo",
+  "short_name": "ThingsGateway.Demo",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#03173d",
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "favicon.png",
+      "type": "image/png",
+      "sizes": "256x256"
+    },
+    {
+      "src": "favicon.ico",
+      "type": "image/ico",
+      "sizes": "128x128"
+    }
+  ]
+}

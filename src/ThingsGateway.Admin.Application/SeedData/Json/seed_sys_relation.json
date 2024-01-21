@@ -1,0 +1,18 @@
+{
+  "RECORDS": [
+    {
+      "Id": 503217527844933,
+      "Category": "SYS_USER_HAS_ROLE",
+      "ObjectId": 212725263002001,
+      "TargetId": "212725263001001",
+      "ExtJson": null
+    },
+    {
+      "Id": 503217516294213,
+      "Category": "SYS_USER_HAS_ROLE",
+      "ObjectId": 201725263002001,
+      "TargetId": "212725263001002",
+      "ExtJson": null
+    }
+  ]
+}

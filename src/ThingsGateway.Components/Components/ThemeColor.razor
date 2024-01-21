@@ -1,0 +1,38 @@
+﻿@inject BlazorAppService AppService
+@namespace ThingsGateway.Components
+@using BlazorComponent.I18n
+<MRow Align="AlignTypes.Center" Class="my-2">
+    <input Class="ml-2" style="width:50px;" type="color" @bind="@SelectedColor" />
+    <MButton Class="ml-2" Small Depressed OnClick="HandleColorChange">
+         @AppService.I18n.T("Confirm")
+    </MButton>
+</MRow>
+
+@code {
+    [CascadingParameter]
+    public bool Dark{ get;  set; }
+    private string selectedColor;
+    public string SelectedColor { get; set; }
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+        SelectedColor ??= AppService.ThemeOptions.Primary;
+        selectedColor ??= AppService.ThemeOptions.Primary;
+        if ((SelectedColor != AppService.ThemeOptions.Primary && selectedColor == SelectedColor)||
+        (SelectedColor == selectedColor && SelectedColor != AppService.ThemeOptions.Primary) )
+        {
+            SelectedColor = AppService.ThemeOptions.Primary;
+            selectedColor = SelectedColor;
+            StateHasChanged();
+        }
+
+    }
+    [Parameter]
+    public EventCallback<string> OnColorChanged { get; set; }
+
+    private async Task HandleColorChange()
+    {
+        selectedColor = SelectedColor;
+        await OnColorChanged.InvokeAsync(SelectedColor);
+    }
+}

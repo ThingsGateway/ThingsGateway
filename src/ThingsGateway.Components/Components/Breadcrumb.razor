@@ -1,0 +1,99 @@
+﻿@inject NavigationManager NavigationManager
+@implements IDisposable
+@namespace ThingsGateway.Components
+@using BlazorComponent;
+@using Masa.Blazor;
+<div class="d-flex align-center py-1">
+    <MBreadcrumbs Routable @key="@(Guid.NewGuid())" Class="pa-0">
+         <DividerContent>
+             <MIcon Class="ma-0 pa-0">mdi-chevron-right</MIcon>
+         </DividerContent>
+         <ChildContent>
+             <div style="white-space: nowrap !important;overflow: hidden !important; text-overflow: ellipsis !important;">
+                 <MBreadcrumbsItem Href="javascript:history.back(-1)">
+                     <MIcon Size=20>mdi-arrow-left</MIcon>
+                 </MBreadcrumbsItem>
+                 @for (var i = 0; i < BreadcrumbItems.Count; i++)
+                {
+                    var item = BreadcrumbItems[i];
+                    var isLast = i == BreadcrumbItems.Count - 1;
+                    <MBreadcrumbsItem Href="@item.Href">
+                        <span class="@(isLast ? "text-subtitle2" : "text-body2")">@item.Text</span>
+                    </MBreadcrumbsItem>
+                }
+            </div>
+
+        </ChildContent>
+    </MBreadcrumbs>
+</div>
+
+
+@code {
+    private List<BreadcrumbItem> BreadcrumbItems = new();
+
+    /// <summary>
+    /// 当前列表
+    /// </summary>
+    [Parameter]
+    public List<NavItem> SysResources { get; set; } = new();
+
+    /// <inheritdoc/>
+    public  void Dispose()
+    {
+        NavigationManager.LocationChanged -= OnLocationChanged;
+    }
+
+    /// <inheritdoc/>
+    protected override void OnInitialized()
+    {
+        NavigationManager.LocationChanged += OnLocationChanged;
+        BreadcrumbItems = GetBreadcrumbItems();
+        base.OnInitialized();
+    }
+    private static List<NavItem> GetMatchingItems(List<NavItem> navItems, Func<NavItem, bool> predicate)
+    {
+        var matchingItems = new List<NavItem>();
+
+        foreach (var item in navItems)
+        {
+            if (predicate(item))
+            {
+                // 如果当前项满足条件，将其添加到匹配项列表中
+                matchingItems.Add(item);
+
+                // 检查当前项是否有满足条件的祖先项
+                var parent = navItems.FirstOrDefault(x => x.Children?.Contains(item) == true);
+                while (parent != null && !matchingItems.Contains(parent) && predicate(parent))
+                {
+                    // 将祖先项添加到匹配项列表中，并继续搜索更多祖先项
+                    matchingItems.Add(parent);
+                    parent = navItems.FirstOrDefault(x => x.Children?.Contains(parent) == true);
+                }
+            }
+            else if (item.HasChildren())
+            {
+                // 递归地在当前项的子级列表中搜索匹配项
+                matchingItems.AddRange(GetMatchingItems(item.Children, predicate));
+            }
+        }
+
+        return matchingItems;
+    }
+
+    private List<BreadcrumbItem> GetBreadcrumbItems()
+    {
+        var items = new List<BreadcrumbItem>();
+        var currentNav = GetMatchingItems(SysResources,(n => n.Href is not null && NavigationManager.Uri.Replace(NavigationManager.BaseUri, "/") == (n.Href)));
+        if (currentNav is not null && currentNav.Count>0)
+        {
+            items = currentNav.Select(a => new BreadcrumbItem { Text = currentNav[0].Title, Href = currentNav[0].Href }).ToList();
+        }
+        return items;
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        BreadcrumbItems = GetBreadcrumbItems();
+        _ = InvokeAsync(StateHasChanged);
+    }
+}

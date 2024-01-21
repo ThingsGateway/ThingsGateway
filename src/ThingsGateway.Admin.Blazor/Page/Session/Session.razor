@@ -1,0 +1,95 @@
+﻿@page "/admin/session"
+@using System.Linq.Expressions;
+@using Masa.Blazor.Presets;
+@using Microsoft.AspNetCore.Authorization;
+@using ThingsGateway.Admin.Application;
+@using ThingsGateway.Core.Extension
+
+@namespace ThingsGateway.Admin.Blazor
+@attribute [Authorize]
+@inject UserResoures UserResoures
+@attribute [RolePermission]
+@inherits BaseComponentBase
+
+
+<MRow Class="pa-2" NoGutters Align="AlignTypes.Center" Justify="JustifyTypes.Start">
+     <MCol Cols="4">
+
+         <MCard MinHeight=80 Rounded=true Elevation=1 Class="mr-2 d-flex flex-column  justify-center align-center">
+             <MIcon Color="primary" XLarge Dense=false>mdi-account-multiple-outline</MIcon>
+             <MLabel Class="primary--text">@AppService.I18n.T("会话数量 {0}", args: _sessionAnalysisOutput.CurrentSessionTotalCount)</MLabel>
+
+            </MCard>
+        </MCol>
+        <MCol Cols="4">
+
+            <MCard MinHeight=80 Rounded=true Elevation=1 Class="mr-2 d-flex flex-column  justify-center align-center">
+                <MIcon Color="primary" XLarge Dense=false>
+                 mdi-account-credit-card-outline
+             </MIcon>
+             <MLabel Class="primary--text">@AppService.I18n.T("最大令牌数量 {0}", args: _sessionAnalysisOutput.MaxVerificatCount)</MLabel>
+            </MCard>
+        </MCol>
+        <MCol Cols="4">
+
+            <MCard MinHeight=80 Rounded=true Elevation=1 Class="d-flex flex-column  justify-center align-center">
+                <MIcon Color="primary" XLarge Dense=false>mdi-signal</MIcon>
+             <MLabel Class="primary--text">@AppService.I18n.T("在线用户数量 {0}", args: _sessionAnalysisOutput.OnLineCount)</MLabel>
+
+            </MCard>
+        </MCol>
+
+    </MRow>
+
+
+
+    <AppDataTable TItem="SessionOutput" @ref=_verificatinfosDatatable
+                  SearchItem="SessionPageInput"
+                  AddItem="SessionOutput" EditItem="SessionOutput"
+                  SearchModel="@_sessionSearch"
+                  QueryCallAsync="SessionQueryCallAsync"
+                  IsMenuOperTemplate=false
+                IsShowQueryButton>
+
+    <SearchTemplate>
+        <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="my-1 mx-2 " Outlined
+                     @bind-Value="context.Account" Label=@context.Description(x => x.Account) />
+
+     </SearchTemplate>
+
+     <ItemColOperTemplate>
+         <MButton Color="info" Text OnClick=@(()=>ShowVerificatListAsync(context.Item))>
+             @context.Item.Description(it => it.VerificatSignList)
+        </MButton>
+        <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("SysSessionExit")) Text Color="error" OnClick="()=>SessionExitAsync(context.Item.Id)">
+             @AppService.I18n.T("强退")
+        </MButton>
+
+    </ItemColOperTemplate>
+
+    <ItemColTemplate>
+        @switch (context.Header.Value)
+        {
+            case nameof(context.Item.Online):
+                <EnableChip EnabledLabel=@AppService.I18n.T("在线")
+                            DisabledLabel=@AppService.I18n.T("离线")
+                            Value="context.Item.Online">
+                </EnableChip>
+                break;
+            default:
+                @if (context.Header.CellClass?.Contains("text-truncate") == true)
+                {
+                    <span title=@context.Value>
+                        @context.Value
+                    </span>
+                }
+                else
+                {
+                    @context.Value
+                }
+                break;
+        }
+
+    </ItemColTemplate>
+</AppDataTable>
+

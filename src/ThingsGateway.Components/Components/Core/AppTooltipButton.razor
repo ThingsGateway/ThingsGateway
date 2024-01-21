@@ -1,0 +1,87 @@
+﻿@using BlazorComponent.I18n
+@inject I18n I18n
+@namespace ThingsGateway.Components
+
+<MTooltip Bottom
+           ContentClass="m-app-tooltip-btn__content"
+           OpenDelay="200">
+     <ActivatorContent>
+         <MButton Icon
+                  Class="@($" {Class} ")"
+                  Style="@($" {Style} ")"
+                  Disabled="Disabled"
+                  Href="@Href"
+                  Loading=@(LoadingEnable&&_loading)
+                  Target="@Target"
+                  OnClick="@HandleOnClick"
+                  aria-label="@Path"
+                  @attributes="@context.Attrs">
+             <MIcon SvgAttributes="@IconSvgAttrs">@Icon</MIcon>
+            </MButton>
+        </ActivatorContent>
+        <ChildContent>
+            <span style="white-space: pre-wrap;">
+                @I18n.T(Path)
+        </span>
+    </ChildContent>
+</MTooltip>
+
+@code {
+
+    [Parameter, EditorRequired]
+    public string Icon { get; set; } = null!;
+
+    [Parameter]
+    public Dictionary<string, object?>? IconSvgAttrs { get; set; }
+
+    [Parameter, EditorRequired]
+    public string? Path { get; set; }
+
+    [Parameter]
+    public bool Disabled { get; set; }
+
+    [Parameter]
+    public string? Href { get; set; }
+
+    [Parameter]
+    public string? Target { get; set; }
+
+    [Parameter]
+    public string? Class { get; set; }
+    [Parameter]
+    public string? Style { get; set; }
+    [Parameter]
+    public bool LoadingEnable { get; set; } = true;
+    [Parameter]
+    public EventCallback<MouseEventArgs> OnClick { get; set; }
+
+    private bool _loading;
+
+    public override async Task SetParametersAsync(ParameterView parameters)
+    {
+        await base.SetParametersAsync(parameters);
+
+        Icon.ThrowIfNull("AppTooltipButton");
+    }
+
+    private async Task HandleOnClick(MouseEventArgs args)
+    {
+        try
+        {
+            if (OnClick.HasDelegate)
+            {
+                _loading = true;
+                StateHasChanged();
+
+                await OnClick.InvokeAsync(args);
+            }
+        }
+        finally
+        {
+            _loading = false;
+        }
+
+
+    }
+
+}

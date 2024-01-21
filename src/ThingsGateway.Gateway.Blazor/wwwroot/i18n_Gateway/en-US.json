@@ -1,0 +1,16 @@
+{
+  "硬件信息": "Hardware Info",
+  "系统信息": "System Info",
+  "磁盘使用率": "Disk Usage",
+  "内存使用率": "Memory Usage",
+  "历史信息": "Hardware HisInfo",
+  "复制": "Copy",
+  "刷新动态属性": "Refresh Dynamic Properties",
+  "导入": "Import",
+  "清空": "Clear",
+  "复制设备": "Copy Device",
+  "输入复制数量": "Copy Count",
+  "远程地址": "RemoteUrl",
+  "本地地址": "BindUrl",
+  "重新检测文件": "Check Files"
+}

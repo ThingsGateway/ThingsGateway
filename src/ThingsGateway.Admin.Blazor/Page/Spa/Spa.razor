@@ -1,0 +1,136 @@
+﻿@page "/admin/spa"
+@using System.Linq.Expressions;
+@using BlazorComponent;
+@using Masa.Blazor.Presets;
+@using Microsoft.AspNetCore.Authorization;
+@using ThingsGateway.Admin.Application;
+@using ThingsGateway.Core.Extension
+
+@namespace ThingsGateway.Admin.Blazor
+@attribute [Authorize]
+@attribute [RolePermission]
+@inherits BaseComponentBase
+@inject UserResoures UserResoures
+
+<AppDataTable @ref="_datatable" TItem="SysResource" SearchItem="SpaPageInput"
+              AddItem="SpaAddInput" EditItem="SpaEditInput"
+              SearchModel="@_search"
+              QueryCallAsync="QueryCallAsync" AddCallAsync="AddCallAsync"
+              EditCallAsync="EditCallAsync" DeleteCallAsync="DeleteCallAsync"
+                IsShowQueryButton IsShowSearchKey IsShowDetailButton
+               IsShowAddButton=@UserResoures.IsHasButtonWithRole("SpaAdd")
+               IsShowDeleteButton=@UserResoures.IsHasButtonWithRole("SpaDelete")
+               IsShowEditButton=@UserResoures.IsHasButtonWithRole("SpaEdit")>
+
+     <AddTemplate>
+         @GetRenderFragment(context)
+    </AddTemplate>
+
+    <EditTemplate>
+        @GetRenderFragment(context)
+    </EditTemplate>
+
+
+    <ItemColTemplate>
+        @switch (context.Header.Value)
+        {
+            case nameof(context.Item.Icon):
+                <MIcon>
+                    @context.Value
+                </MIcon>
+                break;
+            default:
+                @if (context.Header.CellClass?.Contains("text-truncate") == true)
+                {
+                    <span title=@context.Value>
+                        @context.Value
+                    </span>
+                }
+                else
+                {
+                    @context.Value
+                }
+                break;
+        }
+
+    </ItemColTemplate>
+</AppDataTable>
+
+
+@code {
+
+    RenderFragment GetRenderFragment(SysResource context)
+    {
+        RenderFragment renderFragment =
+    @<MRow>
+
+        <MCol Cols="12">
+
+            <MTextField Dense Outlined HideDetails="@("auto")"
+                        Style="max-width:300px"
+                        Label=@(context.Description(x => x.Title)) @bind-Value=@context.Title />
+        </MCol>
+        <MCol Cols="12">
+
+            <MTextField Dense Outlined HideDetails="@("auto")"
+                        Style="max-width:300px"
+                        Label=@(context.Description(x => x.Href)) @bind-Value=@context.Href />
+        </MCol>
+
+        <MCol Cols="12">
+            <MSelect Class="" Items=@(typeof(MenuTypeEnum).GetEnumList()) Style="max-width:300px;"
+                     @bind-Value=@context.MenuType Label=@(context.Description(x => x.MenuType))
+                     MenuProps="@(props => { props.Auto = true; props.OffsetY = true; })"
+                     ItemText=@(u =>u.Description)
+                     ItemValue=@(u =>(MenuTypeEnum)u.Value)
+                     Dense HideDetails=@("auto")
+                     Outlined></MSelect>
+        </MCol>
+
+        <MCol Cols="12">
+
+            <MTextField Dense Outlined HideDetails="@("auto")"
+                        Style="max-width:300px"
+                        Label=@(context.Description(x => x.Icon)) @bind-Value=@context.Icon>
+                <AppendContent>
+                    <MIcon>
+                        @context.Icon
+                    </MIcon>
+                </AppendContent>
+            </MTextField>
+        </MCol>
+
+        <MCol Cols="12">
+            <MRadioGroup @bind-Value=@context.Hidden Label=@(context.Description(x => x.Hidden))
+                         Style="max-width:300px"
+                         Row Dense HideDetails="@("auto")">
+                <MRadio Label=@AppService.I18n.T("是") Value=true></MRadio>
+                <MRadio Label=@AppService.I18n.T("否") Value=false></MRadio>
+            </MRadioGroup>
+
+        </MCol>
+
+        <MCol Cols="12">
+            <MSlider TValue="int" ThumbLabel="@("always")" Dense
+                     Style="max-width:300px;" Class="mt-8"
+                     @bind-Value=@context.SortCode Label=@(context.Description(x => x.SortCode))>
+                <PrependContent>
+                    <MIcon OnClick="()=>context.SortCode--">
+                        mdi-minus
+                    </MIcon>
+                </PrependContent>
+
+                <AppendContent>
+                    <MIcon OnClick="()=>context.SortCode++">
+                        mdi-plus
+                    </MIcon>
+                </AppendContent>
+            </MSlider>
+        </MCol>
+
+    </MRow>
+    ;
+        return renderFragment;
+    }
+}
+

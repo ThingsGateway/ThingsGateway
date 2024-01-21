@@ -1,0 +1,217 @@
+﻿@using System.Linq.Expressions;
+@using BlazorComponent;
+@using Masa.Blazor.Presets;
+@using Microsoft.AspNetCore.Authorization;
+@using Microsoft.Extensions.DependencyInjection
+@using SqlSugar
+@using ThingsGateway.Admin.Application;
+@using ThingsGateway.Admin.Blazor
+@using ThingsGateway.Core.Extension
+@using ThingsGateway.Gateway.Application
+
+@namespace ThingsGateway.Gateway.Blazor
+@inject UserResoures UserResoures
+@inherits BaseComponentBase
+@inject NavigationManager NavigationManager
+
+<MCard Flat Elevation="0" Class="ma-2">
+
+     <MRow NoGutters Justify="JustifyTypes.Start" Align="AlignTypes.Center">
+
+         <MCol Md=5 Cols="12">
+
+             <MCard Height=@($"calc(100vh - {BlazorAppService.DefaultHeight + 80}px; )") Style="overflow-y:auto;" Flat Elevation="0">
+                 <MRow NoGutters Justify="JustifyTypes.Start" Align="AlignTypes.Center" Class="pt-2 pb-5">
+                     <MCol Md=4 Cols="12" Class="px-2">
+
+                         <MAutocomplete Dense Style="max-width:200px;" HideDetails=@("auto") CacheItems HideNoData Outlined
+                                        ItemValue="r=>r.Id" ItemText="r=>r.Name" OnSearchInputUpdate="ChannelQuerySelections"
+                                        Items="_queryChannels" Flat Clearable
+                                        @bind-Value="deviceInput.ChannelId" Label=@AppService.I18n.T(deviceInput.Description(x => x.ChannelId)) />
+
+                         </MCol>
+                         <MCol Md=4 Cols="12" Class="px-2">
+
+                         <MAutocomplete Dense Style="max-width:200px;" HideDetails=@("auto") CacheItems HideNoData Outlined
+                                        ItemValue="r=>r.Name" ItemText="r=>r.Name" OnSearchInputUpdate="DeviceQuerySelections"
+                                        Items="_queryDevices" Flat Clearable
+                                        @bind-Value="deviceInput.Name" Label=@AppService.I18n.T(deviceInput.Description(x => x.Name)) />
+                         </MCol>
+                         <MCol Md=4 Cols="12" Class="px-2">
+
+                         <MAutocomplete Dense Style="max-width:200px;" HideDetails=@("auto") CacheItems HideNoData Outlined
+                                        ItemValue="r=>r.FullName" ItemText="r=>r.Name" OnSearchInputUpdate="PluginQuerySelections"
+                                        Items="_queryPluginOutputs" Flat Clearable
+                                        @bind-Value="deviceInput.PluginName" Label=@AppService.I18n.T(deviceInput.Description(x => x.PluginName)) />
+                         </MCol>
+                         </MRow>
+
+                         <MVirtualScroll Context="item" Height=@($"calc(100vh - {BlazorAppService.DefaultHeight+140}px)") OverscanCount=2 ItemSize="60" Class="py-2"
+                                         Items="DriverBases.WhereIF(!string.IsNullOrEmpty(deviceInput.Name), u => u.CurrentDevice.Name.Contains(deviceInput.Name))
+                                                         .WhereIF(deviceInput.ChannelId != null, u => u.CurrentDevice.ChannelId == deviceInput.ChannelId)
+                                                         .WhereIF(!string.IsNullOrEmpty(deviceInput.PluginName), u => u.CurrentDevice.PluginName == deviceInput.PluginName).ToList()">
+
+                         <ItemContent>
+                             @if (item.CurrentDevice != null)
+                        {
+                            <MListItem OnClick=@(()=>DeviceInfoOnClick(item))>
+                                <MListItemContent>
+                                    <MLabel Class=@((item.CurrentDevice?.DeviceStatus==DeviceStatusEnum.OnLine?"green--text":"red--text")+$" text-h6")>
+                                        <div class="mt-1  d-flex align-start justify-start" style="white-space: nowrap !important;overflow: hidden !important; text-overflow: ellipsis !important;" title=@item.CurrentDevice?.Name>
+                                            <span>@item.CurrentDevice?.Name</span>
+
+                                        </div>
+                                        <div style="white-space: nowrap !important;overflow: hidden !important; text-overflow: ellipsis !important;" class="text-caption">
+                                            @(item.CurrentDevice?.ActiveTime?.ToDefaultDateTimeFormat(AppService.TimezoneOffset) + "     " + typeof(DeviceStatusEnum).GetDescription(item.CurrentDevice?.DeviceStatus.ToString()))
+                                        </div>
+                                    </MLabel>
+                                </MListItemContent>
+
+                            </MListItem>
+
+                            <MDivider></MDivider>
+
+                        }
+
+                    </ItemContent>
+                </MVirtualScroll>
+
+            </MCard>
+
+        </MCol>
+        <MCol Md=7 Cols="12" Class="pl-4">
+            <MCard Style=@($"height: calc(100vh - {BlazorAppService.DefaultHeight + 80}px); overflow:auto)") Flat Elevation="0">
+                 @if (_driverBaseItem != null && _driverBaseItem?.CurrentDevice != null)
+                {
+                    var item = _driverBaseItem;
+                    <MCard Style="height:100px;overflow:auto;" Flat Class="mb-4 ma-2" Elevation="0">
+
+                         <MCardActions>
+
+                             <MLabel Class=@((item.CurrentDevice?.DeviceStatus==DeviceStatusEnum.OnLine?"green--text":"red--text")+$" text-h6")>
+                                 <div class="mt-1  d-flex align-center justify-space-between">
+                                     <span class="mx-3">@item.CurrentDevice?.Name</span>
+                                    <span style="white-space: nowrap !important;overflow: hidden !important; text-overflow: ellipsis !important;" class="text-caption mx-3">@(item.CurrentDevice?.ActiveTime?.ToDefaultDateTimeFormat(AppService.TimezoneOffset) + "     " + typeof(DeviceStatusEnum).GetDescription(item.CurrentDevice?.DeviceStatus.ToString()))</span>
+                                </div>
+                            </MLabel>
+
+                            <MSpacer></MSpacer>
+                            @if (item?.DriverUIType != null)
+                            {
+                                <MTooltip Bottom Context="tip">
+                                     <ActivatorContent>
+                                         <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("GatewayDeviceRestart")) Class="mx-2" @attributes="@tip.Attrs" Icon
+                                                  OnClick=@(()=>ShowDriverUI())>
+                                             <MIcon>mdi-information-outline</MIcon>
+                                         </MButton>
+                                     </ActivatorContent>
+                                     <ChildContent>
+                                         <span>插件页</span>
+                                     </ChildContent>
+                                 </MTooltip>
+                            }
+
+                            @if (item?.CurrentDevice.IsRedundant == true)
+                            {
+                                <MTooltip Bottom Context="tip">
+                                     <ActivatorContent>
+                                         <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("GatewayDeviceRestart")) Class="mx-2" @attributes="@tip.Attrs" Icon
+                                                  OnClick=@(()=>DeviceRedundantThreadAsync(item.DeviceId))>
+                                             <MIcon>mdi-swap-horizontal</MIcon>
+                                         </MButton>
+                                     </ActivatorContent>
+                                     <ChildContent>
+                                         <span>切换冗余通道</span>
+                                     </ChildContent>
+                                 </MTooltip>
+                            }
+
+                            <MTooltip Bottom Context="tip">
+                                 <ActivatorContent>
+                                     <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("GatewayDeviceLog")) Class="mx-2" @attributes="@tip.Attrs" Icon
+                                              OnClick=@(()=>item.ChannelThread.LogEnable=!item.ChannelThread.LogEnable)>
+                                         <MIcon>@(item.ChannelThread.LogEnable == true ? "mdi-pause" : "mdi-play")</MIcon>
+                                     </MButton>
+                                 </ActivatorContent>
+                                 <ChildContent>
+                                     <span>@(item.ChannelThread.LogEnable == true ? "输出调试日志" : "不输出调试日志")</span>
+                                 </ChildContent>
+                             </MTooltip>
+
+                             <MTooltip Bottom Context="tip">
+                                 <ActivatorContent>
+                                     <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("GatewayDevicePause")) Class="mx-2" @attributes="@tip.Attrs" Icon
+                                              OnClick=@(()=>PasueThread(item.DeviceId,!item.CurrentDevice?.KeepRun))>
+                                         <MIcon>@(item.CurrentDevice?.KeepRun == true ? "mdi-pause" : "mdi-play")</MIcon>
+                                     </MButton>
+                                 </ActivatorContent>
+                                 <ChildContent>
+                                     <span>@(item.CurrentDevice?.KeepRun == true ? "暂停" : "运行")</span>
+                                 </ChildContent>
+                             </MTooltip>
+
+                             <MTooltip Bottom Context="tip">
+                                 <ActivatorContent>
+                                     <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("GatewayDeviceRestart")) Class="mx-2" @attributes="@tip.Attrs" Icon Loading=_restartLoading
+                                              OnClick=@(()=>RestartAsync(item.DeviceId))>
+                                         <MIcon>mdi-restart</MIcon>
+                                     </MButton>
+                                 </ActivatorContent>
+                                 <ChildContent>
+                                     <span>重启</span>
+                                 </ChildContent>
+                             </MTooltip>
+
+                         </MCardActions>
+
+
+                     </MCard>
+
+                    <MCard Style="height:200px;overflow:auto;" Flat Class="mb-4 ma-2" Elevation="0">
+                         <MDescriptions Class="ml-2" Dense Title="运行状态" Bordered=false>
+                             <MDescriptionsItem Span=3 Label=@item.CurrentDevice?.Description(a => a.ActiveTime)>@item.CurrentDevice?.ActiveTime?.ToDefaultDateTimeFormat(AppService.TimezoneOffset)</MDescriptionsItem>
+                                @if (item.CurrentDevice is CollectDeviceRunTime collectDeviceRunTime)
+                            {
+                                <MDescriptionsItem Label=@collectDeviceRunTime?.Description(a => a.SourceVariableCount)>@collectDeviceRunTime?.SourceVariableCount</MDescriptionsItem>
+                                <MDescriptionsItem Label=@collectDeviceRunTime?.Description(a => a.DeviceVariableCount)>@collectDeviceRunTime?.DeviceVariableCount</MDescriptionsItem>
+                                <MDescriptionsItem Label=@collectDeviceRunTime?.Description(a => a.MethodVariableCount)>@collectDeviceRunTime?.MethodVariableCount</MDescriptionsItem>
+                                <MDescriptionsItem Span=3 Class="red--text" Label=@collectDeviceRunTime?.Description(a => a.LastErrorMessage)>@collectDeviceRunTime?.LastErrorMessage</MDescriptionsItem>
+                            }
+                            else
+                            {
+                                <MDescriptionsItem Label=@item.CurrentDevice?.Description(a => a.DeviceVariableCount)>@item.CurrentDevice?.DeviceVariableCount</MDescriptionsItem>
+                                <MDescriptionsItem Span=3 Class="red--text" Label=@item.CurrentDevice?.Description(a => a.LastErrorMessage)>@item.CurrentDevice?.LastErrorMessage</MDescriptionsItem>
+
+                            }
+                        </MDescriptions>
+
+                        <MDescriptions Class="ml-2" Dense Title="配置信息" Bordered=false>
+                             <MDescriptionsItem Span=2 Label=@item.CurrentDevice?.Description(a => a.PluginName)>@item.CurrentDevice?.PluginName</MDescriptionsItem>
+                                @foreach (var property in item.CurrentDevice?.DevicePropertys ?? new())
+                            {
+                                <MDescriptionsItem Span=@(property.Name.Contains("BigText")?3:1) Label=@property.Description>@(property.Name.Contains("Password") ? "******" : property.Value)</MDescriptionsItem>
+                            }
+                        </MDescriptions>
+
+                    </MCard>
+
+                }
+
+                <MCard Flat Class="ml-4">
+                     @if (_driverBaseItem != null && _driverBaseItem?.CurrentDevice != null && _driverBaseItem.CurrentDevice.Channel.LogEnable == true)
+                    {
+
+                        <ConsoleTxt Messages="Messages" Height=@($"calc(100vh - {BlazorAppService.DefaultHeight+480}px)") OnExportClick="OnExportClick">
+
+                        </ConsoleTxt>
+
+                    }
+                </MCard>
+
+            </MCard>
+        </MCol>
+
+
+    </MRow>
+
+</MCard>

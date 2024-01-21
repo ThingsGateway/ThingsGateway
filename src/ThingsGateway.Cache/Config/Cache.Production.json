@@ -1,0 +1,8 @@
+{
+  //缓存设置
+  "LiteDBConfig": {
+    "MaxFileLength": "400",
+    "MaxFileCount": "20",
+    "MaxDriveUsage": "90"
+  }
+}

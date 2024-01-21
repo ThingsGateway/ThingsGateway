@@ -1,7 +1,0 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
-	<ItemGroup>
-	  <ProjectReference Include="..\..\admin\ThingsGateway.Admin.Core\ThingsGateway.Admin.Core.csproj" />
-	</ItemGroup>
-	
-</Project>

@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<Import Project="$(SolutionDir)PackNuget.props" />
+
+
+	<ItemGroup>
+		<PackageReference Include="NewLife.Core" Version="10.6.2024.101" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+	</ItemGroup>
+	
+	
+	
+</Project>

@@ -1,0 +1,90 @@
+﻿@using System.Linq.Expressions;
+@using BlazorComponent;
+@using Masa.Blazor.Presets;
+@using Microsoft.AspNetCore.Authorization;
+@using Microsoft.Extensions.DependencyInjection
+@using ThingsGateway.Admin.Application;
+@using ThingsGateway.Core.Extension
+
+@namespace ThingsGateway.Admin.Blazor
+@inherits BasePopupComponentBase
+@inject UserResoures UserResoures
+<PModal Persistent Title=@AppService.I18n.T("按钮管理") Value="Visible" Width=1600 ValueChanged=@((a=>{if(!a)
+        ClosePopupAsync();}))>
+     @if (Visible)
+    {
+        <AppDataTable @ref="_buttonsDatatable" TItem="SysResource" SearchItem="ButtonPageInput"
+                      AddItem="ButtonAddInput" EditItem="ButtonEditInput"
+                      QueryCallAsync="ButtonQueryCallAsync" AddCallAsync="ButtonAddCallAsync"
+                      EditCallAsync="ButtonEditCallAsync" DeleteCallAsync="ButtonDeleteCallAsync"
+                        IsShowQueryButton IsShowClearSearch=false Filters=ButtonFilters IsShowFilter=false
+                       IsShowAddButton=@UserResoures.IsHasButtonWithRole("ButtonAdd")
+                       IsShowDeleteButton=@UserResoures.IsHasButtonWithRole("ButtonDelete")
+                       IsShowEditButton=@UserResoures.IsHasButtonWithRole("ButtonEdit")>
+
+             <OtherToolbarTemplate>
+
+                    <MButton Disabled=@(!UserResoures.IsHasButtonWithRole("ButtonAdd")) Color="info" Class="mx-2 my-1" OnClick=@(BatchAddClickAsync)>@AppService.I18n.T("批量新增")</MButton>
+
+                </OtherToolbarTemplate>
+
+             <AddTemplate>
+                 @GetButtonRenderFragment(context)
+            </AddTemplate>
+
+            <EditTemplate>
+                @GetButtonRenderFragment(context)
+            </EditTemplate>
+
+        </AppDataTable>
+    }
+</PModal>
+
+
+
+@code {
+    RenderFragment GetButtonRenderFragment(ButtonAddInput context)
+    {
+        context.ParentId = ParentId;
+        RenderFragment renderFragment =
+    @<MRow>
+
+        <MCol Cols="12">
+
+            <MTextField Dense Outlined HideDetails="@("auto")"
+                        Style="max-width:300px"
+                        Label=@(context.Description(x => x.Title)) @bind-Value=@context.Title />
+        </MCol>
+        <MCol Cols="12">
+            <MTextField Dense Outlined HideDetails="@("auto")"
+                        Style="max-width:300px"
+                        Label=@(context.Description(x => x.Code)) @bind-Value=@context.Code />
+        </MCol>
+
+
+
+        <MCol Cols="12">
+            <MSlider TValue="int" ThumbLabel="@("always")" Dense
+                     Style="max-width:300px;" Class="mt-8"
+                     @bind-Value=@context.SortCode Label=@(context.Description(x => x.SortCode))>
+                <PrependContent>
+                    <MIcon OnClick="()=>context.SortCode--">
+                        mdi-minus
+                    </MIcon>
+                </PrependContent>
+
+                <AppendContent>
+                    <MIcon OnClick="()=>context.SortCode++">
+                        mdi-plus
+                    </MIcon>
+                </AppendContent>
+            </MSlider>
+        </MCol>
+
+    </MRow>
+
+    ;
+        return renderFragment;
+    }
+
+}

@@ -1,0 +1,33 @@
+{
+  "NavItems": [
+    {
+      "Title": "Modbus",
+      "Children": [
+        {
+          "Href": "/ModbusMaster",
+          "Title": "ModbusMaster"
+        },
+        {
+          "Href": "/ModbusSlave",
+          "Title": "ModbusSlave"
+        }
+      ]
+    },
+    {
+      "Title": "Siemens",
+      "Href": "/SiemensS7Master"
+    },
+    {
+      "Title": "OpcDa",
+      "Href": "/OpcDaMaster"
+    },
+    {
+      "Title": "OpcUa",
+      "Href": "/OpcUaMaster"
+    },
+    {
+      "Title": "Dlt645_2007",
+      "Href": "/Dlt645_2007Master"
+    }
+  ]
+}

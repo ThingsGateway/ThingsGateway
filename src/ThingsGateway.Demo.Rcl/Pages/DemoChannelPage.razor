@@ -1,0 +1,48 @@
+﻿@namespace ThingsGateway.Demo
+@using BlazorComponent;
+@using Mapster
+@using Microsoft.AspNetCore.Components.Web;
+@using System.IO.Ports;
+@using Masa.Blazor
+@using ThingsGateway.Foundation
+@using TouchSocket.Core
+@inherits BaseComponentBase
+<MCard Class="ma-2">
+    <MCardText>
+        <MRow> 
+            <MSelect TItem="ChannelData"
+                     TItemValue="string"
+                     TValue="string" Clearable
+                     Value="ChannelName"  ValueChanged="HandleChannelNameChanged" ValueExpression="()=>ChannelName"
+                      Class="mr-10" Style="max-width:400px;"
+                     Hint=@AppService.I18n.T( "Click the right icon to new")
+                     Items="ChannelConfigs.Default.ChannelDatas"
+                     Label=@AppService.I18n.T( "Channel Select")
+                     PersistentHint
+                     OnSelect="HandleSelectClick"
+                     ItemValue="r=>r.Name"
+                     ItemText=@(r=>{
+                        return $"{r.Name}";
+                     }
+                     )
+                     PrependIcon="mdi-city" MenuProps="@(props => { props.Auto = true; props.OffsetY = true; })">
+                 <AppendOuterContent>
+                     <SlideXReverseTransition>
+                         <AppTooltipButton LoadingEnable=false Path=@AppService.I18n.T("Add") Icon="mdi-plus" OnClick="a=>HandleAddClick()"></AppTooltipButton>
+                         <AppTooltipButton LoadingEnable=false Path=@AppService.I18n.T("Edit") Icon="mdi-pencil" OnClick="a=>HandleEditClick()"></AppTooltipButton>
+                         <AppTooltipButton LoadingEnable=false Path=@AppService.I18n.T("Delete") Icon="mdi-delete" OnClick="a=>HandleDeleteClick()"></AppTooltipButton>
+                     </SlideXReverseTransition>
+                 </AppendOuterContent>
+
+                </MSelect>
+                <MButton Class="ma-1" OnClick=@OnConnectClick Color="primary">
+                    @AppService.I18n.T("Connect")
+            </MButton>
+            <MButton Class="ma-1" OnClick=@OnDisconnectClick Color="red">
+                @AppService.I18n.T("Disconnect")
+            </MButton>
+        </MRow>
+    </MCardText>
+
+</MCard>
+

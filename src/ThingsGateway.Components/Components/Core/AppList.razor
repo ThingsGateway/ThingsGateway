@@ -1,0 +1,53 @@
+﻿
+
+@namespace ThingsGateway.Components
+@using Masa.Blazor
+ 
+<MList Class="@ClassString" Style="@StyleString"
+       Expand Dense Routable=@Routable
+       Nav  >
+    @foreach (var item in Items)
+    {
+        @*副标题*@
+        if (item.Heading is not null)
+        {
+            <MSubheader Class="text--primary font-weight-black ">@item.Heading</MSubheader>
+        }
+        @*分割线*@
+        else if (item.Divider)
+        {
+            <MDivider Class="mt-3 mb-2 ml-2 mr-n2" />
+        }
+        @*子菜单*@
+        else if (item.HasChildren())
+        {
+            <AppListGroup Item="item" />
+        }
+        else if (ItemContent != null)
+        {
+            @ItemContent.Invoke(item)
+        }
+        @*默认实现菜单*@
+        else
+        {
+            <AppListItem Item="item" />
+        }
+    }
+
+</MList>
+
+@code {
+
+    [Parameter]
+    public List<NavItem> Items { get; set; } = new();
+
+    [Parameter]
+    public RenderFragment<NavItem> ItemContent { get; set; }
+
+    [Parameter]
+    public bool Routable { get; set; }
+    [Parameter]
+    public string ClassString { get; set; }
+    [Parameter]
+    public string StyleString { get; set; }
+}

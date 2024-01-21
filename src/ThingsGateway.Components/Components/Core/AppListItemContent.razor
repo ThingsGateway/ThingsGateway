@@ -1,0 +1,26 @@
+﻿
+
+@namespace ThingsGateway.Components
+@using Masa.Blazor
+ 
+@*<MListItemContent>*@
+@{
+    @*标题和子标头*@
+    var title = Item?.Title;
+    var subtitle = Item?.SubTitle;
+    if (!string.IsNullOrWhiteSpace(title))
+    {
+        <MListItemTitle>@title</MListItemTitle>
+    }
+    if (!string.IsNullOrWhiteSpace(subtitle))
+    {
+        <MListItemSubtitle>@subtitle</MListItemSubtitle>
+    }
+}
+@*</MListItemContent>*@
+
+@code {
+    [Parameter, EditorRequired]
+    public NavItem Item { get; set; }
+
+}

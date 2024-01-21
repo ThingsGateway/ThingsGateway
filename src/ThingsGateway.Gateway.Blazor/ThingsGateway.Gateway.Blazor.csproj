@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+
+	<ItemGroup>
+	  <Compile Include="..\ThingsGateway.Demo.Rcl\Extension\PlatformService.cs" Link="Extension\PlatformService.cs" />
+	</ItemGroup>
+
+
+
+	<ItemGroup>
+	  <ProjectReference Include="..\ThingsGateway.Admin.Blazor\ThingsGateway.Admin.Blazor.csproj" />
+	  <ProjectReference Include="..\ThingsGateway.Gateway.Application\ThingsGateway.Gateway.Application.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Update="wwwroot\**">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Extension\" />
+	</ItemGroup>
+
+
+</Project>

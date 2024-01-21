@@ -1,0 +1,130 @@
+﻿@page "/admin/user"
+@using System.Linq.Expressions;
+@using BlazorComponent;
+@using Masa.Blazor.Presets;
+@using Microsoft.AspNetCore.Authorization;
+@using ThingsGateway.Admin.Application;
+@using ThingsGateway.Core.Extension
+
+@namespace ThingsGateway.Admin.Blazor
+@attribute [Authorize]
+@inject UserResoures UserResoures
+@attribute [RolePermission]
+@inherits BaseComponentBase
+
+
+<AppDataTable @ref="_datatable" TItem="SysUser" SearchItem="UserPageInput" AddItem="UserAddInput" EditItem="UserEditInput"
+              SearchModel="@_search" IsShowSearchKey
+               QueryCallAsync="QueryCallAsync" AddCallAsync="AddCallAsync"
+               EditCallAsync="EditCallAsync" DeleteCallAsync="DeleteCallAsync"
+                IsShowQueryButton
+               IsShowAddButton=@UserResoures.IsHasButtonWithRole("SysUserAdd")
+               IsShowDeleteButton=@UserResoures.IsHasButtonWithRole("SysUserDelete")
+               IsShowEditButton=@UserResoures.IsHasButtonWithRole("SysUserEdit")>
+
+     <AddTemplate>
+         @GetRenderFragment(context)
+
+
+    </AddTemplate>
+
+    <EditTemplate>
+        @GetRenderFragment(context)
+    </EditTemplate>
+
+    <ItemColOperTemplate>
+        <MList Dense>
+            <MListItem Disabled=@(!UserResoures.IsHasButtonWithRole("SysUserResetPassword")) OnClick="async()=>await ResetPasswordAsync(context.Item)">
+                <MListItemTitle Class="ml-2">@AppService.I18n.T("重置密码")</MListItemTitle>
+                </MListItem>
+                <MListItem Disabled=@(!UserResoures.IsHasButtonWithRole("SysUserGrantRole")) OnClick="()=>GrantRoleAsync(context.Item)">
+                    <MListItemTitle Class="ml-2">@AppService.I18n.T("授权角色")</MListItemTitle>
+                </MListItem>
+
+                <MListItem Disabled=@(!UserResoures.IsHasButtonWithRole("SysUserGrantResource")) OnClick="()=>GrantResourceAsync(context.Item)">
+                    <MListItemTitle Class="ml-2">@AppService.I18n.T("授权资源")</MListItemTitle>
+                </MListItem>
+
+                <MListItem Disabled=@(!UserResoures.IsHasButtonWithRole("SysUserGrantApi")) OnClick="()=> GrantApiAsync(context.Item)">
+                    <MListItemTitle Class="ml-2">@AppService.I18n.T("授权API")</MListItemTitle>
+                    </MListItem>
+
+        </MList>
+    </ItemColOperTemplate>
+
+    <ItemColTemplate>
+        @switch (context.Header.Value)
+        {
+            case nameof(context.Item.UserStatus):
+                <MSimpleCheckbox ValueChanged=@((a)=> UserStatusChangeAsync(context.Item,a))
+                                 Value="context.Item.UserStatus">
+                </MSimpleCheckbox>
+                break;
+            default:
+                @if (context.Header.CellClass?.Contains("text-truncate") == true)
+                {
+                    <span title=@context.Value>
+                        @context.Value
+                    </span>
+                }
+                else
+                {
+                    @context.Value
+                }
+                break;
+        }
+
+    </ItemColTemplate>
+</AppDataTable>
+
+
+
+@code {
+
+    RenderFragment GetRenderFragment(UserAddInput context)
+    {
+        RenderFragment renderFragment =
+
+    @<MRow>
+        <MCol Cols="12">
+            <MTextField Dense Outlined HideDetails="@("auto")"
+                        Style="max-width:300px"
+                        Disabled=@(context.Account == RoleConst.SuperAdmin) Label=@(context.Description(x => x.Account)) @bind-Value=@context.Account />
+        </MCol>
+        <MCol Cols="12">
+
+            <MTextField Dense Outlined HideDetails="@("auto")"
+                        Style="max-width:300px"
+                        Label=@(context.Description(x => x.Phone)) @bind-Value=@context.Phone />
+        </MCol>
+        <MCol Cols="12">
+
+            <MTextField Dense Outlined HideDetails="@("auto")"
+                        Style="max-width:300px"
+                        Label=@(context.Description(x => x.Email)) @bind-Value=@context.Email />
+        </MCol>
+        <MCol Cols="12">
+            <MSlider TValue="int" ThumbLabel="@("always")" Dense
+                     Style="max-width:300px;" Class="mt-8"
+                     @bind-Value=@context.SortCode Label=@(context.Description(x => x.SortCode))>
+                <PrependContent>
+                    <MIcon OnClick="()=>context.SortCode--">
+                        mdi-minus
+                    </MIcon>
+                </PrependContent>
+
+                <AppendContent>
+                    <MIcon OnClick="()=>context.SortCode++">
+                        mdi-plus
+                    </MIcon>
+                </AppendContent>
+            </MSlider>
+        </MCol>
+
+    </MRow>
+    ;
+        return renderFragment;
+    }
+
+}
+

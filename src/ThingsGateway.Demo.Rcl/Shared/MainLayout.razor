@@ -1,0 +1,118 @@
+﻿@namespace ThingsGateway.Demo
+@using System.Text;
+@using BlazorComponent.I18n
+@inherits LayoutComponentBase
+@layout BaseLayout
+@inject NavigationManager NavigationManager
+<PPageTabsProvider>
+
+    <CascadingValue Value="@this" IsFixed Name="MainLayout">
+         <CascadingValue Value="@Changed" Name="Changed">
+             <CascadingValue Value="@AppService.I18n.Culture.ToString()" Name="Culture">
+                 <CascadingValue Value="@AppService.Dark" Name="Dark">
+
+                     <MNavigationDrawer Color="barcolor" @bind-Value="_drawerOpen" App Width="200">
+                         <Logo Height="AppService.LogoHeight" />
+                         <AppList ClassString="overflow-y-auto" Routable
+                                  StyleString=@($"height: calc(100vh - {AppService.LogoHeight}px);")
+                                  Items="_navs" />
+                     </MNavigationDrawer>
+
+                     <MAppBar Color="barcolor" Style=@($"{(!(IsMobile||_drawerOpen!=true)? "left:200px;":"")}") Elevation=1 App Flat ClippedRight Dense ElevateOnScroll
+                              MaxHeight="@(BlazorAppService.AppBarHeight)" Height="@(BlazorAppService.AppBarHeight)">
+                         <AppTooltipButton Class="mr-0" Icon="mdi-menu" Style="margin-left:-12px;" Path="Menu" LoadingEnable=false OnClick=@(() => _drawerOpen = !_drawerOpen)>
+                         </AppTooltipButton>
+
+                         <Breadcrumb SysResources="_navs" />
+
+                         <MSpacer />
+                         @if (!IsMobile)
+                        {
+                            @* <ThemeToggle></ThemeToggle> *@
+                            <AppTooltipButton OnClick=ShowAbout LoadingEnable=false
+                                              Icon="mdi-information-outline" Path="about">
+                            </AppTooltipButton>
+
+                            <AppTooltipButton OnClick=HandleSettingsClick LoadingEnable=false
+                                              Icon="mdi-shape-outline" Path="theme">
+                            </AppTooltipButton>
+                        }
+                        else
+                        {
+                            <Logo Height="AppService.LogoHeight"></Logo>
+                        }
+
+
+                    </MAppBar>
+
+                    <MMain Style=@($"{(!(IsMobile||_drawerOpen!=true)? "padding-left:200px;":"")}")>
+                        @if (AppService.IsPageTab)
+                        {
+                            <div class="full-width">
+                                <PageTabs @ref="_pageTabs" PageTabItems="_pageTabItems" />
+                            </div>
+                            <MDivider Center></MDivider>
+                        }
+
+                        <MCard Color="maincolor" Flat Class="overflow-y-auto overflow-x-hidden ma-auto  rounded-0" Style=@($"height: calc(100vh - {AppService.LogoHeight+BlazorAppService.FooterHeight}px);")>
+                             @if (AppService.IsPageTab)
+                            {
+                                <PPageContainer PageTabs="@_pageTabs?.PPageTabs">
+                                    @Body
+                                </PPageContainer>
+                            }
+                            else
+                            {
+                                @Body
+                            }
+
+                        </MCard>
+                        <MSheet Color="maincolor" Class="d-flex justify-center align-center rounded-0" Style=@($"height: {BlazorAppService.FooterHeight}px; ")>
+                            <Foter></Foter>
+                        </MSheet>
+                    </MMain>
+
+                    <ThemeSettings @bind-Value="_showSettings" TabValueChanged="()=>InvokeAsync(StateHasChanged)" LangValueChanged="()=>InvokeAsync(StateHasChanged)" />
+
+
+                </CascadingValue>
+            </CascadingValue>
+        </CascadingValue>
+    </CascadingValue>
+
+</PPageTabsProvider>
+@code {
+
+    private async Task ShowAbout()
+    {
+        await PopupService.OpenAsync(typeof(About), new Dictionary<string, object?>()
+        {
+        });
+    }
+
+
+    bool Changed { get; set; }
+
+    private bool? _drawerOpen = true;
+
+    private PageTabs _pageTabs;
+
+    private bool? _showSettings;
+
+    [Inject] BlazorAppService AppService { get; set; }
+    [Inject] IPopupService PopupService { get; set; }
+    /// <summary>
+    /// IsMobile
+    /// </summary>
+    [CascadingParameter(Name = "IsMobile")]
+    public bool IsMobile { get; set; }
+
+    private void HandleSettingsClick()
+    {
+        _showSettings = !_showSettings;
+    }
+}
+
+
+
+

@@ -1,0 +1,52 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+	<Import Project="$(SolutionDir)Plugin.props" />
+
+	<PropertyGroup>
+		<DefineConstants>Plugin</DefineConstants>
+	</PropertyGroup>
+
+
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+
+		<Exec Command=" set dir=&quot;$(SolutionDir)bin\$(Configuration)\ThingsGateway.Web.Entry\$(TargetFramework)\Plugins\$(AssemblyName)&quot;&#xD;&#xA; if not exist %25dir%25  md %25dir%25  &#xD;&#xA;copy &quot;$(TargetDir)*OpcUa*.dll&quot;  %25dir%25&#xD;&#xA;copy &quot;$(TargetDir)*Opc.Ua*.dll&quot;  %25dir%25&#xD;&#xA;copy &quot;$(TargetDir)*System.Formats.Asn1*.dll&quot;  %25dir%25&#xD;&#xA;&#xD;&#xA;cd /d &quot;$(TargetDir)&quot;&#xD;&#xA;::设置要排除的文件格式，多个格式之间使用英文逗号隔开&#xD;&#xA;set Ext=dll&#xD;&#xA;::删除文件&#xD;&#xA;for /f &quot;delims=&quot; %25%25a in ('dir /a-d/s/b') do (&#xD;&#xA; if /i not &quot;%25%25~a&quot;==&quot;%25~f0&quot; (&#xD;&#xA;  set &quot;Skip=&quot;&#xD;&#xA;  for %25%25i in (%25Ext%25) do (&#xD;&#xA;   if /i &quot;.%25%25~i&quot;==&quot;%25%25~xa&quot; (&#xD;&#xA;    set Skip=OK&#xD;&#xA;   )&#xD;&#xA;  )&#xD;&#xA;  if not defined Skip (&#xD;&#xA;   del /f /q &quot;%25%25~a&quot;&#xD;&#xA;  )&#xD;&#xA; )&#xD;&#xA;)&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;" />
+	</Target>
+	<ItemGroup>
+
+		<Compile Include="$(SolutionDir)ThingsGateway.Demo.Rcl\Common\ChannelConfigs.cs" Link="Common\ChannelConfigs.cs" />
+		<Compile Include="$(SolutionDir)ThingsGateway.Demo.Rcl\Common\VariableDemo.cs" Link="Common\VariableDemo.cs" />
+		<Compile Include="$(SolutionDir)ThingsGateway.Demo.Rcl\Common\VariableSourceDemo.cs" Link="Common\VariableSourceDemo.cs" />
+
+		<Compile Include="$(SolutionDir)ThingsGateway.Demo.Rcl\Pages\AdapterDebugBase.cs" Link="Pages\AdapterDebugBase.cs" />
+		<Compile Include="$(SolutionDir)ThingsGateway.Demo.Rcl\Pages\AdapterDebugPage.razor.cs" Link="Pages\AdapterDebugPage.razor.cs" />
+		<Compile Include="$(SolutionDir)ThingsGateway.Demo.Rcl\Pages\ChannelEditPage.razor.cs" Link="Pages\ChannelEditPage.razor.cs" />
+		<Content Include="$(SolutionDir)ThingsGateway.Demo.Rcl\Pages\AdapterDebugPage.razor" Link="Pages\AdapterDebugPage.razor" />
+		<Content Include="$(SolutionDir)ThingsGateway.Demo.Rcl\Pages\ChannelEditPage.razor" Link="Pages\ChannelEditPage.razor" />
+		<Content Include="$(SolutionDir)ThingsGateway.Demo.Rcl\Pages\DemoChannelPage.razor" Link="Pages\DemoChannelPage.razor" />
+		<Compile Include="$(SolutionDir)ThingsGateway.Demo.Rcl\Pages\DemoChannelPage.razor.cs" Link="Pages\DemoChannelPage.razor.cs" />
+
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Include="$(SolutionDir)ThingsGateway.Demo.Rcl\Pages\OpcUa\OpcUaMaster.razor.cs" Link="Pages\OpcUaMaster.razor.cs" />
+		<Compile Include="$(SolutionDir)ThingsGateway.Demo.Rcl\Pages\OpcUa\OpcUaImportVariable.razor.cs" Link="Pages\OpcUaImportVariable.razor.cs" />
+		<Content Include="$(SolutionDir)ThingsGateway.Demo.Rcl\Pages\OpcUa\OpcUaMaster.razor" Link="Pages\OpcUaMaster.razor" />
+		<Content Include="$(SolutionDir)ThingsGateway.Demo.Rcl\Pages\OpcUa\OpcUaImportVariable.razor" Link="Pages\OpcUaImportVariable.razor" />
+		<Compile Include="$(SolutionDir)ThingsGateway.Demo.Rcl\Pages\OpcUa\OpcUaMasterConnectPage.razor.cs" Link="Pages\OpcUaMasterConnectPage.razor.cs" />
+		<Content Include="$(SolutionDir)ThingsGateway.Demo.Rcl\Pages\OpcUa\OpcUaMasterConnectPage.razor" Link="Pages\OpcUaMasterConnectPage.razor" />
+	</ItemGroup>
+
+
+
+
+	<ItemGroup>
+		<PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Server" Version="1.4.372.107" />
+
+		<ProjectReference Include="..\..\foundation\ThingsGateway.Foundation.OpcUa\src\ThingsGateway.Foundation.OpcUa.csproj" />
+
+	</ItemGroup>
+
+	<PropertyGroup>
+		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+	</PropertyGroup>
+
+</Project>

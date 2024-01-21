@@ -1,0 +1,46 @@
+﻿@using System.Reflection;
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.Routing
+<CascadingAuthenticationState>
+    <Router AppAssembly="@typeof(BlazorApp).Assembly" AdditionalAssemblies=@(GetAssemblys())>
+        <Found Context="routeData">
+            <AuthorizeView Resource="routeData">
+                <Authorized>
+                    <RouteView RouteData="routeData" DefaultLayout="typeof(MainLayout)">
+                    </RouteView>
+                </Authorized>
+                <NotAuthorized>
+                    @if (UserManager.UserId > 0)
+                    {
+                        <LayoutView Layout="typeof(MainLayout)">
+                            <ThingsGateway.Admin.Blazor.Auth401></ThingsGateway.Admin.Blazor.Auth401>
+                        </LayoutView>
+                    }
+                    else
+                    {
+                        <LayoutView Layout="typeof(ThingsGateway.Admin.Blazor.BaseLayout)">
+                            <ThingsGateway.Admin.Blazor.Login></ThingsGateway.Admin.Blazor.Login>
+                        </LayoutView>
+                    }
+                </NotAuthorized>
+            </AuthorizeView>
+        </Found>
+        <NotFound>
+            <LayoutView Layout="@typeof(ThingsGateway.Admin.Blazor.BaseLayout)">
+                <ThingsGateway.Admin.Blazor.NotFound404></ThingsGateway.Admin.Blazor.NotFound404>
+            </LayoutView>
+        </NotFound>
+    </Router>
+</CascadingAuthenticationState>
+@code {
+    IEnumerable<Assembly> GetAssemblys()
+    {
+        var controllerTypes = App.EffectiveTypes.
+    Where(u => !u.IsInterface && !u.IsAbstract && u.IsClass
+    && u.IsDefined(typeof(Microsoft.AspNetCore.Components.RouteAttribute), false))
+    .Where(it => it.Assembly != typeof(BlazorApp).Assembly);
+        var assemblys = controllerTypes?.Select(it => it.Assembly)?.Distinct();
+        return assemblys;
+    }
+
+}

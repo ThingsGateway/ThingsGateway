@@ -1,0 +1,113 @@
+﻿@using BlazorComponent;
+@using BlazorComponent.I18n
+@using Microsoft.AspNetCore.Components.Web;
+@using Microsoft.JSInterop;
+@using NewLife.Threading
+@using ThingsGateway.Core.Extension;
+@using Masa.Blazor;
+@namespace ThingsGateway.Components
+
+<MCardActions>
+    @AppService.I18n.T("Consolelog")
+    <MSpacer></MSpacer>
+    @if (ChildContent != null)
+        @ChildContent
+
+
+    <AppTooltipButton Path=@((!pauseMessage) ? "Pause" : "Continue")
+                      Icon="@((!pauseMessage) ? "mdi-pause" : "mdi-play")"
+                      OnClick=@(()=>
+                      {
+                      pauseMessage=!pauseMessage;
+                      if(pauseMessage)
+                      {
+                      PauseMessagesText= Messages?.ToList();
+                      }
+                      })>
+
+    </AppTooltipButton>
+
+    <AppTooltipButton Path="Export" Icon="mdi-export" OnClick=HandleOnExportClick>
+    </AppTooltipButton>
+
+</MCardActions>
+@{
+    var item = CurrentMessages;
+    if (item != null)
+    {
+        <MRow Class="ml-2 mr-2 d-flex" NoGutters>
+         <MVirtualScroll Context="itemMessage" Height=@(Height) OverscanCount=2 ItemSize="100" Items="item">
+             <ItemContent>
+                 <div title=@itemMessage.message.Substring(0, Math.Min(itemMessage.message.Length, 500))
+                      class=@(itemMessage.level<(byte)Microsoft.Extensions.Logging.LogLevel.Information?
+                 AppService. MasaBlazor.Theme.Dark? " while--text ":"black--text":
+                 itemMessage.level>=(byte)Microsoft.Extensions.Logging.LogLevel.Warning? " red--text ":"green--text ")
+                      style="white-space: nowrap !important;overflow: hidden !important; text-overflow: ellipsis !important;">
+
+                     @itemMessage.message.Substring(0, Math.Min(itemMessage.message.Length, 100))
+
+                    </div>
+                </ItemContent>
+            </MVirtualScroll>
+        </MRow>
+    }
+    else
+    {
+        <MRow Class="ml-2 mr-2 d-flex" NoGutters>
+         <MVirtualScroll Context="itemMessage" Height=@(Height) OverscanCount=2 ItemSize="100" Items="new List<(int,string)>()">
+             
+            </MVirtualScroll>
+        </MRow>
+    }
+
+}
+
+
+
+@code {
+    /// <summary>
+    /// ChildContent
+    /// </summary>
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+    /// <summary>
+    /// Height
+    /// </summary>
+    [Parameter, EditorRequired]
+    public StringNumber Height { get; set; } = 800;
+
+    /// <summary>
+    /// 日志
+    /// </summary>
+    [Parameter]
+    public EventCallback OnExportClick { get; set; }
+    private async Task HandleOnExportClick(MouseEventArgs args)
+    {
+        if (pauseMessage)
+        {
+            await AppService.DownLogTxtAsync(PauseMessagesText.Select(a => a.message));
+        }
+        else
+        {
+            if (OnExportClick.HasDelegate)
+                await OnExportClick.InvokeAsync(args);
+        }
+
+    }
+
+    [Inject]
+    BlazorAppService AppService { get; set; }
+    /// <summary>
+    /// 日志
+    /// </summary>
+    [Parameter]
+    public ICollection<(int level, string message)> Messages { get; set; }
+    /// <summary>
+    /// 暂停缓存
+    /// </summary>
+    private List<(int level, string message)> PauseMessagesText { get; set; }
+
+    private ICollection<(int level, string message)> CurrentMessages => pauseMessage ? PauseMessagesText : Messages;
+
+    private bool pauseMessage;
+}

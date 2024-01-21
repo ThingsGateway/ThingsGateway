@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+		<Import Project="$(SolutionDir)Foundation.props" />
+	<PropertyGroup>
+		<Description>工业设备通讯协议-OpcDa协议</Description>
+		<DocumentationFile></DocumentationFile>
+	</PropertyGroup>
+
+</Project>

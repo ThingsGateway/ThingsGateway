@@ -1,0 +1,51 @@
+﻿
+
+@namespace ThingsGateway.Components
+@using BlazorComponent;
+@using Masa.Blazor
+<MButton Absolute Class="@($"m-btn--copy {Class}")"  Icon  Right   Top   Show="Show"   OnClick="Copy">
+    <FadeTransition LeaveAbsolute>
+        <ShowTransitionElement Value="_copying">
+            <MIcon Color="success">
+                mdi-check
+            </MIcon>
+        </ShowTransitionElement>
+        <ShowTransitionElement Value="!_copying">
+            <MIcon Color="white">
+                mdi-content-copy
+            </MIcon>
+        </ShowTransitionElement>
+    </FadeTransition>
+</MButton>
+
+@code {
+
+    [Inject]
+    public IJSRuntime Js { get; set; } = null!;
+
+    [Parameter]
+    public bool Show { get; set; }
+
+    [Parameter]
+    public string Class { get; set; }
+
+    [Parameter]
+    [EditorRequired]
+    public string Content { get; set; }
+
+    private bool _copying;
+
+    private async Task Copy()
+    {
+        if (_copying) return;
+
+        _copying = true;
+
+        await Js.InvokeVoidAsync(JsInteropConstants.Copy, Content);
+
+        await Task.Delay(1000);
+
+        _copying = false;
+    }
+
+}

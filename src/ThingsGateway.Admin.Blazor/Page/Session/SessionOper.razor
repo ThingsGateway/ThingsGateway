@@ -1,0 +1,58 @@
+﻿@using System.Linq.Expressions;
+@using BlazorComponent;
+@using Masa.Blazor.Presets;
+@using Microsoft.AspNetCore.Authorization;
+@using Microsoft.Extensions.DependencyInjection
+@using ThingsGateway.Admin.Application;
+@using ThingsGateway.Core.Extension
+
+@namespace ThingsGateway.Admin.Blazor
+@inherits BasePopupComponentBase
+@inject UserResoures UserResoures
+<PModal Persistent Title=@AppService.I18n.T("令牌管理") Value="Visible" Width=1600 ValueChanged=@((a=>{if(!a)
+        ClosePopupAsync();}))>
+     @if (Visible)
+    {
+        <AppDataTable @ref="_verificatinfosDatatable" TItem="VerificatInfo"
+                      SearchItem="BasePageInput" AddItem="object" EditItem="object"
+                      QueryCallAsync="VerificatQueryCallAsync"
+                      DeleteCallAsync="VerificatExitAsync"
+                      IsMenuOperTemplate=false IsShowToolbar IsPage=true
+                       IsShowDeleteButton=@UserResoures.IsHasButtonWithRole("SysSessionExit")>
+
+             <ItemColTemplate>
+                 @switch (context.Header.Value)
+                {
+                    case nameof(context.Item.Device):
+                        <MChip Class="ma-1">
+                            @(context.Item.Device)
+                        </MChip>
+                        break;
+                    case nameof(context.Item.IsOnline):
+                        <EnableChip EnabledLabel=@AppService.I18n.T("在线")
+                                    DisabledLabel=@AppService.I18n.T("离线")
+                                    Value="context.Item.IsOnline">
+                        </EnableChip>
+                        break;
+                    default:
+                        @if (context.Header.CellClass?.Contains("text-truncate") == true)
+                        {
+                            <span title=@context.Value>
+                                @context.Value
+                            </span>
+                        }
+                        else
+                        {
+                            @context.Value
+                        }
+                        break;
+                }
+
+            </ItemColTemplate>
+
+        </AppDataTable>
+    }
+</PModal>
+
+
+

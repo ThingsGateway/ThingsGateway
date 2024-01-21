@@ -1,0 +1,307 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ThingsGateway.Gateway.ApiController</name>
+    </assembly>
+    <members>
+        <member name="T:ThingsGateway.Gateway.ApiController.AuthController">
+            <summary>
+            登录控制器
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Gateway.ApiController.AuthController.#ctor(ThingsGateway.Admin.Application.IAuthService)">
+            <summary>
+            <inheritdoc cref="T:ThingsGateway.Gateway.ApiController.AuthController"/>
+            </summary>
+            <param name="authService"></param>
+        </member>
+        <member name="M:ThingsGateway.Gateway.ApiController.AuthController.LoginAsync(ThingsGateway.Gateway.ApiController.OpenApiLoginInput)">
+            <summary>
+            登录
+            </summary>
+            <param name="input"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Gateway.ApiController.AuthController.LogoutAsync(ThingsGateway.Admin.Application.LoginOutIput)">
+            <summary>
+            登出
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:ThingsGateway.Gateway.ApiController.OpenApiLoginInput">
+            <summary>
+            登录输入参数
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Gateway.ApiController.OpenApiLoginInput.Account">
+             <summary>
+             账号
+            </summary>
+             <example>apiAdmin</example>
+        </member>
+        <member name="P:ThingsGateway.Gateway.ApiController.OpenApiLoginInput.Password">
+             <summary>
+             密码，需要SM2加密后传入
+            </summary>
+            <example>04F75DE291D453BC1B15DF350B4763FEA20B0E0EF4F9513ADD7E1923F92441F87488A1ADBF9862808916E2DFEEF828A0E3DCE24EE73BAC2EECB05C390C4E51A2F06D13EDEBE2DB30878C5D0EF757D68C37A5E203E7C20F87D1F27979B4A53C90C08AD7AB038C02</example>
+        </member>
+        <member name="T:ThingsGateway.Gateway.ApiController.ConfigInfoControler">
+            <summary>
+            采集设备
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Gateway.ApiController.ConfigInfoControler.#ctor(Microsoft.Extensions.DependencyInjection.IServiceScopeFactory,ThingsGateway.Gateway.Application.IChannelService,ThingsGateway.Gateway.Application.IVariableService,ThingsGateway.Gateway.Application.IDeviceService)">
+            <inheritdoc cref="T:ThingsGateway.Gateway.ApiController.ConfigInfoControler"/>
+        </member>
+        <member name="M:ThingsGateway.Gateway.ApiController.ConfigInfoControler.GetChannelList(ThingsGateway.Gateway.Application.ChannelPageInput)">
+            <summary>
+            获取通道信息
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Gateway.ApiController.ConfigInfoControler.GetCollectDeviceList(ThingsGateway.Gateway.Application.DevicePageInput)">
+            <summary>
+            获取设备信息
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Gateway.ApiController.ConfigInfoControler.GetVariableList(ThingsGateway.Gateway.Application.VariablePageInput)">
+            <summary>
+            获取变量信息
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:ThingsGateway.Gateway.ApiController.ControlControler">
+            <summary>
+            设备控制
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Gateway.ApiController.ControlControler.#ctor(Microsoft.Extensions.DependencyInjection.IServiceScopeFactory)">
+            <inheritdoc cref="T:ThingsGateway.Gateway.ApiController.ControlControler"/>
+        </member>
+        <member name="M:ThingsGateway.Gateway.ApiController.ControlControler.PasueCollectThread(System.Int64,System.Boolean)">
+            <summary>
+            控制采集线程启停
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Gateway.ApiController.ControlControler.PasueBusinessThread(System.Int64,System.Boolean)">
+            <summary>
+            控制业务线程启停
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Gateway.ApiController.ControlControler.RestartCollectDeviceThread(System.Int64)">
+            <summary>
+            重启采集线程
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Gateway.ApiController.ControlControler.RestartBusinessDeviceThread(System.Int64)">
+            <summary>
+            重启业务线程
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Gateway.ApiController.ControlControler.WriteDeviceMethods(System.Collections.Generic.Dictionary{System.String,System.String})">
+            <summary>
+            写入多个变量
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Admin.ApiController.GatewayExportController">
+            <summary>
+            导出文件
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Admin.ApiController.GatewayExportController.#ctor(ThingsGateway.Gateway.Application.IChannelService,ThingsGateway.Gateway.Application.IDeviceService,ThingsGateway.Gateway.Application.IVariableService,ThingsGateway.Gateway.Application.IBackendLogService,ThingsGateway.Gateway.Application.IRpcLogService)">
+            <summary>
+            <inheritdoc cref="T:ThingsGateway.Admin.ApiController.GatewayExportController"/>
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Admin.ApiController.GatewayExportController.DownloadOperateLogAsync(ThingsGateway.Gateway.Application.RpcLogInput)">
+            <summary>
+            下载Rpc日志
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.ApiController.GatewayExportController.DownloadVisitLogAsync(ThingsGateway.Gateway.Application.BackendLogInput)">
+            <summary>
+            下载后台日志
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.ApiController.GatewayExportController.DownloadChannelAsync(ThingsGateway.Gateway.Application.ChannelInput)">
+            <summary>
+            下载通道
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.ApiController.GatewayExportController.DownloadDeviceAsync(ThingsGateway.Gateway.Application.DeviceInput)">
+            <summary>
+            下载设备
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Admin.ApiController.GatewayExportController.DownloadDeviceAsync(ThingsGateway.Gateway.Application.VariableInput)">
+            <summary>
+            下载变量
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:ThingsGateway.Web.Foundation.RuntimeInfoControler">
+            <summary>
+            采集状态信息
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Web.Foundation.RuntimeInfoControler.#ctor(Microsoft.Extensions.DependencyInjection.IServiceScopeFactory)">
+            <inheritdoc cref="T:ThingsGateway.Web.Foundation.RuntimeInfoControler"/>
+        </member>
+        <member name="M:ThingsGateway.Web.Foundation.RuntimeInfoControler.GetCollectDeviceList">
+            <summary>
+            获取设备信息
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Web.Foundation.RuntimeInfoControler.GetDeviceVariableList(ThingsGateway.Gateway.Application.VariablePageInput)">
+            <summary>
+            获取变量信息
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Web.Foundation.RuntimeInfoControler.GetRealAlarmList(ThingsGateway.Gateway.Application.VariablePageInput)">
+            <summary>
+            获取实时报警信息
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:ThingsGateway.Demo.Web.FileController">
+            <summary>
+            文件下载
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Demo.Web.FileController.Download(System.String)">
+            <summary>
+            下载wwwroot文件夹下的文件
+            </summary>
+            <param name="fileName">相对路径</param>
+            <returns></returns>
+        </member>
+        <member name="T:TouchSocket.Core.GeneratorContainerAttribute">
+            <summary>
+            源生成容器特性
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Core.BaseInjectAttribute.FromType">
+            <summary>
+            注册类型
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Core.BaseInjectAttribute.ToType">
+            <summary>
+            实例类型
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Core.BaseInjectAttribute.Key">
+            <summary>
+            注册额外键
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Core.AutoInjectForSingletonAttribute">
+            <summary>
+            自动注入为单例。
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Core.AutoInjectForTransientAttribute">
+            <summary>
+            自动注入为瞬时。
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Core.AddSingletonInjectAttribute">
+            <summary>
+            添加单例注入。
+            <para>
+            该标签仅添加在继承<see cref="T:TouchSocket.Core.ManualContainer"/>的容器上时有用。
+            </para>
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Core.AddSingletonInjectAttribute.#ctor(System.Type,System.Type,System.String)">
+            <summary>
+            添加单例注入。
+            <para>
+            该标签仅添加在继承<see cref="T:TouchSocket.Core.ManualContainer"/>的容器上时有用。
+            </para>
+            </summary>
+            <param name="fromType">注册类型</param>
+            <param name="toType">实例类型</param>
+            <param name="key">注册额外键</param>
+        </member>
+        <member name="M:TouchSocket.Core.AddSingletonInjectAttribute.#ctor(System.Type)">
+            <summary>
+            添加单例注入。
+            <para>
+            该标签仅添加在继承<see cref="T:TouchSocket.Core.ManualContainer"/>的容器上时有用。
+            </para>
+            </summary>
+            <param name="type">注册类型与实例类型一致</param>
+        </member>
+        <member name="M:TouchSocket.Core.AddSingletonInjectAttribute.#ctor(System.Type,System.Type)">
+            <summary>
+            添加单例注入。
+            <para>
+            该标签仅添加在继承<see cref="T:TouchSocket.Core.ManualContainer"/>的容器上时有用。
+            </para>
+            </summary>
+            <param name="fromType">注册类型</param>
+            <param name="toType">实例类型</param>
+        </member>
+        <member name="T:TouchSocket.Core.AddTransientInjectAttribute">
+            <summary>
+            添加瞬态注入。
+            <para>
+            该标签仅添加在继承<see cref="T:TouchSocket.Core.ManualContainer"/>的容器上时有用。
+            </para>
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Core.AddTransientInjectAttribute.#ctor(System.Type,System.Type,System.String)">
+            <summary>
+            添加瞬态注入。
+            <para>
+            该标签仅添加在继承<see cref="T:TouchSocket.Core.ManualContainer"/>的容器上时有用。
+            </para>
+            </summary>
+            <param name="fromType">注册类型</param>
+            <param name="toType">实例类型</param>
+            <param name="key">注册额外键</param>
+        </member>
+        <member name="M:TouchSocket.Core.AddTransientInjectAttribute.#ctor(System.Type)">
+            <summary>
+            添加瞬态注入。
+            <para>
+            该标签仅添加在继承<see cref="T:TouchSocket.Core.ManualContainer"/>的容器上时有用。
+            </para>
+            </summary>
+            <param name="type">注册类型与实例类型一致</param>
+        </member>
+        <member name="M:TouchSocket.Core.AddTransientInjectAttribute.#ctor(System.Type,System.Type)">
+            <summary>
+            添加瞬态注入。
+            <para>
+            该标签仅添加在继承<see cref="T:TouchSocket.Core.ManualContainer"/>的容器上时有用。
+            </para>
+            </summary>
+            <param name="fromType">注册类型</param>
+            <param name="toType">实例类型</param>
+        </member>
+        <member name="T:TouchSocket.Core.GeneratorPluginAttribute">
+            <summary>
+            使用源生成插件的调用。
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Core.GeneratorPluginAttribute.#ctor(System.String)">
+            <summary>
+            使用源生成插件的调用。
+            </summary>
+            <param name="pluginName">插件名称，一般建议使用nameof()解决。</param>
+        </member>
+    </members>
+</doc>

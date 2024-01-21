@@ -1,9 +1,0 @@
-<Project>
-	<Import Project="$(SolutionDir)\Directory.Build.props" />
-	<PropertyGroup>
-
-	</PropertyGroup>
-
-
-
-</Project>

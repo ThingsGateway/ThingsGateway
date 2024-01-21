@@ -1,0 +1,14 @@
+﻿
+
+@namespace ThingsGateway.Admin.Blazor
+
+@inherits BaseComponentBase
+
+<div style="height:100%" class="d-flex flex-column justify-center align-center">
+    <div class="bg">
+        <img alt="404" src="@(BlazorAppService.DefaultResourceUrl + "images/404.png")" />
+    </div>
+    <h5>@AppService.I18n.T("抱歉，您访问的页面不存在。")</h5>
+    <MButton Class="mt-2" Color="primary" Href="/">@AppService.I18n.T("回到首页")</MButton>
+</div>
+

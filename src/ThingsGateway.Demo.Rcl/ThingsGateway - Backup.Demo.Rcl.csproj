@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+	
+  <ItemGroup>
+    <Compile Remove="Components\DebugPage\**" />
+    <Content Remove="Components\DebugPage\**" />
+    <EmbeddedResource Remove="Components\DebugPage\**" />
+    <None Remove="Components\DebugPage\**" />
+  </ItemGroup>
+	
+  <ItemGroup>
+    <ProjectReference Include="..\foundation\ThingsGateway.Foundation\src\ThingsGateway.Foundation.csproj" />
+    <ProjectReference Include="..\ThingsGateway.Components\ThingsGateway.Components.csproj" />
+    <ProjectReference Include="..\ThingsGateway.Core\ThingsGateway.Core.csproj" />
+  </ItemGroup>
+	
+</Project>

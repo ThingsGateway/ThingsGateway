@@ -1,0 +1,68 @@
+﻿@inherits LayoutComponentBase
+@namespace ThingsGateway.Admin.Blazor
+@using Masa.Blazor;
+@implements IDisposable
+
+
+<CascadingValue Value="IsMobile" Name="IsMobile">
+    <CascadingValue Value="BaseChanged" Name="BaseChanged">
+        <MApp>
+            <MErrorHandler>
+                @if (AppService.InitSuccess)
+                {
+                    @Body
+                }
+            </MErrorHandler>
+        </MApp>
+    </CascadingValue>
+</CascadingValue>
+
+@code {
+    public bool IsMobile { get; set; }
+    public bool BaseChanged { get; set; }
+    [Inject]
+    public BlazorAppService AppService { get; set; }
+    [Inject]
+    public MasaBlazor MasaBlazor { get; set; }
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        MasaBlazor.BreakpointChanged += BreakpointOnOnUpdate;
+    }
+    protected async override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                var data = await AppService.InitAll();
+                if (data)
+                {
+                    BaseChanged = !BaseChanged;
+                    await InvokeAsync(StateHasChanged);
+                }
+            }
+            catch
+            {
+                
+            }     
+
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+    private void BreakpointOnOnUpdate(object? sender, BreakpointChangedEventArgs e)
+    {
+        IsMobile = MasaBlazor.Breakpoint.Mobile;
+        if (e.MobileChanged)
+        {
+            StateHasChanged();
+        }
+    }
+    /// <summary>
+    /// <inheritdoc/>
+    /// </summary>
+    public void Dispose()
+    {
+        MasaBlazor.BreakpointChanged -= BreakpointOnOnUpdate;
+    }
+}

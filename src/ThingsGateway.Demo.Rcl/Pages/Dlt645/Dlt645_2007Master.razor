@@ -1,0 +1,61 @@
+﻿@page "/Dlt645_2007Master"
+@using ThingsGateway.Core.Extension
+@using ThingsGateway.Foundation
+@using ThingsGateway.Foundation.Dlt645
+@namespace ThingsGateway.Demo
+@using TouchSocket.Core
+@inherits BaseComponentBase
+<DemoChannelPage OnConnectClick="OnConnectClick" OnEditClick="OnEditClick"></DemoChannelPage>
+
+@if (_plc != null)
+{
+    <MCard Class="ma-2">
+        <MSubheader Style="max-height:32px">
+            @AppService.I18n.T("Adapter Config")
+        </MSubheader>
+        <MContainer Class="ma-0">
+
+            <MRow Justify="JustifyTypes.Start" Align="AlignTypes.Center">
+
+             <MTextField Class="ma-1" Outlined Style="max-width:150px" Dense HideDetails="@("auto")"
+                             Label=@(AppService.I18n.T(_plc.Description(x => x.ConnectTimeout))) @bind-Value=@_plc.ConnectTimeout></MTextField>
+                 <MTextField Class="ma-1" Outlined Style="max-width:150px" Dense HideDetails="@("auto")"
+                             Label=@(AppService.I18n.T(_plc.Description(x => x.Timeout))) @bind-Value=@_plc.Timeout></MTextField>
+
+                 <MTextField Class="ma-1" Outlined Style="max-width:150px" Dense HideDetails="@("auto")"
+                             Label=@(AppService.I18n.T(_plc.Description(x => x.SendDelayTime))) @bind-Value=@_plc.SendDelayTime></MTextField>
+                 <MTextField Class="ma-1" Outlined Style="max-width:150px" Dense HideDetails="@("auto")"
+                             Label=@(AppService.I18n.T(_plc.Description(x => x.CacheTimeout))) @bind-Value=@_plc.CacheTimeout></MTextField>
+
+                 <MTextField Class="ma-1" Outlined Style="max-width:150px" Dense HideDetails="@("auto")"
+                             Label=@(AppService.I18n.T(_plc.Description(x => x.Station))) @bind-Value=@_plc.Station></MTextField>
+
+                 <MTextField Class="ma-1" Outlined Style="max-width:150px" Dense HideDetails="@("auto")"
+                             Label=@(AppService.I18n.T(_plc.Description(x => x.OperCode))) @bind-Value=@_plc.OperCode></MTextField>
+
+                 <MTextField Class="ma-1" Outlined Style="max-width:150px" Dense HideDetails="@("auto")"
+                             Label=@(AppService.I18n.T(_plc.Description(x => x.Password))) @bind-Value=@_plc.Password></MTextField>
+
+                 <MSelect Class="ma-1" Outlined Style="max-width:200px"
+                          @bind-Value="_plc.DataFormat" Label="@(AppService.I18n.T(_plc.Description(x => x.DataFormat)))"
+                          Items=@(typeof(DataFormatEnum).GetEnumList())
+                          MenuProps="@(props => { props.Auto = true; props.OffsetY = true; })"
+                          ItemText=@(u =>u.Description)
+                          ItemValue=@(u =>(DataFormatEnum)u.Value)
+                          HideDetails=@("auto") Height="30"
+                      Dense>
+             </MSelect>
+
+             <MCheckbox Class="ma-1" Style="max-width:200px" Dense HideDetails="@("auto")"
+                            Label=@(AppService.I18n.T(_plc.Description(x => x.EnableFEHead))) @bind-Value=@_plc.EnableFEHead></MCheckbox>
+          <MCheckbox Class="ma-1" Style="max-width:200px" Dense HideDetails="@("auto")"
+                            Label=@(AppService.I18n.T(_plc.Description(x => x.CheckClear))) @bind-Value=@_plc.CheckClear></MCheckbox>
+
+             </MRow>
+         </MContainer>
+     </MCard>
+}
+
+<AdapterDebugPage LogPath=@LogPath @ref=AdapterDebugPage Height=@($"calc(100vh - {BlazorAppService.DefaultHeight+400}px)")></AdapterDebugPage>
+
+

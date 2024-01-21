@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+		<Import Project="$(SolutionDir)Foundation.props" />
+	<PropertyGroup>
+		<Description>工业设备通讯协议-Modbus协议</Description>
+		<DocumentationFile></DocumentationFile>
+	</PropertyGroup>
+	<ItemGroup>
+		<ProjectReference Include="$(SolutionDir)\foundation\ThingsGateway.Foundation\src\ThingsGateway.Foundation.csproj">
+		  <Private>True</Private>
+		  <CopyLocalSatelliteAssemblies>True</CopyLocalSatelliteAssemblies>
+		</ProjectReference>
+	</ItemGroup>
+
+</Project>

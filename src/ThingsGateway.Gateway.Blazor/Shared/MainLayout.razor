@@ -1,0 +1,114 @@
+﻿@namespace ThingsGateway.Gateway.Blazor
+@using System.Text;
+@using BlazorComponent.I18n
+@using Microsoft.AspNetCore.Components.Authorization
+@using ThingsGateway.Admin.Blazor
+@inherits LayoutComponentBase
+@layout BaseLayout
+@inject NavigationManager NavigationManager
+@inject UserResoures UserResoures
+
+
+
+@if (UserManager.UserId > 0)
+{
+    <SysSignalR></SysSignalR>
+}
+
+<PPageTabsProvider>
+
+    <CascadingValue Value="@this" IsFixed Name="MainLayout">
+         <CascadingValue Value="@Changed" Name="Changed">
+             <CascadingValue Value="@AppService.I18n.Culture.ToString()" Name="Culture">
+                 <CascadingValue Value="@AppService.Dark" Name="Dark">
+
+                     <MNavigationDrawer Color="barcolor" @bind-Value="_drawerOpen" App Width="200">
+                         <Logo Height="AppService.LogoHeight" />
+                         <AppList ClassString="overflow-y-auto" Routable
+                                  StyleString=@($"height: calc(100vh - {AppService.LogoHeight}px);")
+                                  Items="UserResoures.UserNavItems.Where(a=>a.Hidden==false).ToList()" />
+                     </MNavigationDrawer>
+
+                     <MAppBar Color="barcolor" Style=@($"{(!(IsMobile||_drawerOpen!=true)? "left:200px;":"")}") Elevation=1 App Flat ClippedRight Dense ElevateOnScroll
+                              MaxHeight="@(BlazorAppService.AppBarHeight)" Height="@(BlazorAppService.AppBarHeight)">
+                         <AppTooltipButton Class="mr-0" Icon="mdi-menu" Style="margin-left:-12px;" Path="Menu" LoadingEnable=false OnClick=@(() => _drawerOpen = !_drawerOpen)>
+                         </AppTooltipButton>
+
+                         <Breadcrumb SysResources="UserResoures.UserNavItems" />
+
+                         <MSpacer />
+                         @if (!IsMobile)
+                        {
+                            <AppTooltipButton Class="position-button"
+                                              Disabled=@(!UserResoures.IsHasButtonWithRole("GatewayPluginCheck"))
+                                              OnClick="()=>PluginService.Remove()"
+                                              Icon="mdi-restart" Path="重新载入插件，需手动重启后台才生效">
+                            </AppTooltipButton>
+
+                            <AppTooltipButton Class="position-button"
+                                              Disabled=@(!UserResoures.IsHasButtonWithRole("GatewayDeviceRestart"))
+                                              OnClick="AllRestartAsync"
+                                              Icon="mdi-restart" Path="重启后台">
+                            </AppTooltipButton>
+                            @* <ThemeToggle></ThemeToggle> *@
+                            <AppTooltipButton OnClick=ShowAbout LoadingEnable=false
+                                              Icon="mdi-information-outline" Path="about">
+                            </AppTooltipButton>
+
+                            <AppTooltipButton OnClick=HandleSettingsClick LoadingEnable=false
+                                              Icon="mdi-shape-outline" Path="theme">
+                            </AppTooltipButton>
+
+                            <UserMenu></UserMenu>
+                        }
+                        else
+                        {
+                            <Logo Height="AppService.LogoHeight"></Logo>
+                        }
+
+
+                    </MAppBar>
+
+                    <MMain Style=@($"{(!(IsMobile||_drawerOpen!=true)? "padding-left:200px;":"")}")>
+                        @if (AppService.IsPageTab)
+                        {
+                            <div class="full-width">
+                                <PageTabs @ref="_pageTabs" PageTabItems="UserResoures.UserPageTabItems" />
+                            </div>
+                            <MDivider Center></MDivider>
+                        }
+
+                        <MCard Color="maincolor" Flat Class="overflow-y-auto overflow-x-hidden ma-auto  rounded-0" Style=@($"height: calc(100vh - {AppService.LogoHeight+BlazorAppService.FooterHeight}px);")>
+                             @if (AppService.IsPageTab)
+                            {
+                                <PPageContainer PageTabs="@_pageTabs?.PPageTabs">
+                                    @Body
+                                </PPageContainer>
+                            }
+                            else
+                            {
+                                @Body
+                            }
+
+                        </MCard>
+                        <MSheet Color="maincolor" Class="d-flex justify-center align-center rounded-0" Style=@($"height: {BlazorAppService.FooterHeight}px; ")>
+                            <Foter></Foter>
+                        </MSheet>
+                    </MMain>
+
+                    <ThemeSettings @bind-Value="_showSettings" TabValueChanged="()=>InvokeAsync(StateHasChanged)" LangValueChanged="()=>InvokeAsync(StateHasChanged)" />
+
+
+                </CascadingValue>
+            </CascadingValue>
+        </CascadingValue>
+    </CascadingValue>
+
+</PPageTabsProvider>
+
+
+
+
+
+
+

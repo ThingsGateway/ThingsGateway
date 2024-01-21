@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+	<Import Project="$(SolutionDir)Plugin.props" />
+
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+
+		<Exec Command=" set dir=&quot;$(SolutionDir)bin\$(Configuration)\ThingsGateway.Web.Entry\$(TargetFramework)\Plugins\$(AssemblyName)&quot;&#xD;&#xA; if not exist %25dir%25  md %25dir%25  &#xD;&#xA;copy &quot;$(TargetDir)*Kafka*.dll&quot;  %25dir%25&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;cd /d &quot;$(TargetDir)&quot;&#xD;&#xA;::设置要排除的文件格式，多个格式之间使用英文逗号隔开&#xD;&#xA;set Ext=dll&#xD;&#xA;::删除文件&#xD;&#xA;for /f &quot;delims=&quot; %25%25a in ('dir /a-d/s/b') do (&#xD;&#xA; if /i not &quot;%25%25~a&quot;==&quot;%25~f0&quot; (&#xD;&#xA;  set &quot;Skip=&quot;&#xD;&#xA;  for %25%25i in (%25Ext%25) do (&#xD;&#xA;   if /i &quot;.%25%25~i&quot;==&quot;%25%25~xa&quot; (&#xD;&#xA;    set Skip=OK&#xD;&#xA;   )&#xD;&#xA;  )&#xD;&#xA;  if not defined Skip (&#xD;&#xA;   del /f /q &quot;%25%25~a&quot;&#xD;&#xA;  )&#xD;&#xA; )&#xD;&#xA;)&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;" />
+	</Target>
+
+	<PropertyGroup>
+		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Confluent.Kafka" Version="2.3.0">
+			<Private>true</Private>
+			<IncludeAssets>all</IncludeAssets>
+			<PrivateAssets>runtime</PrivateAssets>
+		</PackageReference>
+	</ItemGroup>
+	
+
+
+
+
+</Project>

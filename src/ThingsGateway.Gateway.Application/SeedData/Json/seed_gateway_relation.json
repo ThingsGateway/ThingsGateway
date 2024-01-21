@@ -1,0 +1,585 @@
+{
+  "RECORDS": [
+    {
+      "Id": 502966818496581,
+      "Category": "SYS_USER_WORKBENCH_DATA",
+      "ObjectId": 212725263002001,
+      "TargetId": null,
+      "ExtJson": "[100,200001000,200002001,200002002,200002003,200002004,200003001,200003002]"
+    },
+    {
+      "Id": 502967011012677,
+      "Category": "Relation_SYS_USER_DEFAULT_RAZOR",
+      "ObjectId": 212725263002001,
+      "TargetId": null,
+      "ExtJson": "100"
+    },
+    {
+      "Id": 503217505882181,
+      "Category": "SYS_USER_HAS_ROLE",
+      "ObjectId": 502961796145221,
+      "TargetId": "502961260494917",
+      "ExtJson": null
+    },
+    {
+      "Id": 503217516294213,
+      "Category": "SYS_USER_HAS_ROLE",
+      "ObjectId": 201725263002001,
+      "TargetId": "212725263001002",
+      "ExtJson": null
+    },
+    {
+      "Id": 503217527844933,
+      "Category": "SYS_USER_HAS_ROLE",
+      "ObjectId": 212725263002001,
+      "TargetId": "212725263001001",
+      "ExtJson": null
+    },
+    {
+      "Id": 503223987060805,
+      "Category": "SYS_ROLE_HAS_OPENAPIPERMISSION",
+      "ObjectId": 212725263001002,
+      "TargetId": "/openApi/runtimeInfo/deviceList",
+      "ExtJson": "{\"ApiUrl\":\"/openApi/runtimeInfo/deviceList\"}"
+    },
+    {
+      "Id": 503223987064901,
+      "Category": "SYS_ROLE_HAS_OPENAPIPERMISSION",
+      "ObjectId": 212725263001002,
+      "TargetId": "/openApi/runtimeInfo/variableList",
+      "ExtJson": "{\"ApiUrl\":\"/openApi/runtimeInfo/variableList\"}"
+    },
+    {
+      "Id": 503223987064902,
+      "Category": "SYS_ROLE_HAS_OPENAPIPERMISSION",
+      "ObjectId": 212725263001002,
+      "TargetId": "/openApi/runtimeInfo/realAlarmList",
+      "ExtJson": "{\"ApiUrl\":\"/openApi/runtimeInfo/realAlarmList\"}"
+    },
+    {
+      "Id": 503223987064903,
+      "Category": "SYS_ROLE_HAS_OPENAPIPERMISSION",
+      "ObjectId": 212725263001002,
+      "TargetId": "/openApi/configInfo/deviceList",
+      "ExtJson": "{\"ApiUrl\":\"/openApi/configInfo/deviceList\"}"
+    },
+    {
+      "Id": 503223987064904,
+      "Category": "SYS_ROLE_HAS_OPENAPIPERMISSION",
+      "ObjectId": 212725263001002,
+      "TargetId": "/openApi/configInfo/deviceList",
+      "ExtJson": "{\"ApiUrl\":\"/openApi/configInfo/deviceList\"}"
+    },
+    {
+      "Id": 503223987064905,
+      "Category": "SYS_ROLE_HAS_OPENAPIPERMISSION",
+      "ObjectId": 212725263001002,
+      "TargetId": "/openApi/configInfo/variableList",
+      "ExtJson": "{\"ApiUrl\":\"/openApi/configInfo/variableList\"}"
+    },
+    {
+      "Id": 503223987064906,
+      "Category": "SYS_ROLE_HAS_OPENAPIPERMISSION",
+      "ObjectId": 212725263001002,
+      "TargetId": "/openApi/control/pasueCollectThread",
+      "ExtJson": "{\"ApiUrl\":\"/openApi/control/pasueCollectThread\"}"
+    },
+    {
+      "Id": 503223987064907,
+      "Category": "SYS_ROLE_HAS_OPENAPIPERMISSION",
+      "ObjectId": 212725263001002,
+      "TargetId": "/openApi/control/pasueBusinessThread",
+      "ExtJson": "{\"ApiUrl\":\"/openApi/control/pasueBusinessThread\"}"
+    },
+    {
+      "Id": 503223987064908,
+      "Category": "SYS_ROLE_HAS_OPENAPIPERMISSION",
+      "ObjectId": 212725263001002,
+      "TargetId": "/openApi/control/restartCollectThread",
+      "ExtJson": "{\"ApiUrl\":\"/openApi/control/restartCollectThread\"}"
+    },
+    {
+      "Id": 503223987064909,
+      "Category": "SYS_ROLE_HAS_OPENAPIPERMISSION",
+      "ObjectId": 212725263001002,
+      "TargetId": "/openApi/control/restartBusinessThread",
+      "ExtJson": "{\"ApiUrl\":\"/openApi/control/restartBusinessThread\"}"
+    },
+    {
+      "Id": 503223987064910,
+      "Category": "SYS_ROLE_HAS_OPENAPIPERMISSION",
+      "ObjectId": 212725263001002,
+      "TargetId": "/openApi/control/writeVariables",
+      "ExtJson": "{\"ApiUrl\":\"/openApi/control/writeVariables\"}"
+    },
+    {
+      "Id": 503224107855941,
+      "Category": "SYS_ROLE_HAS_RESOURCE",
+      "ObjectId": 212725263001002,
+      "TargetId": "100003001",
+      "ExtJson": "{\"MenuId\":100003001,\"ButtonInfo\":[]}"
+    },
+    {
+      "Id": 503224107855942,
+      "Category": "SYS_ROLE_HAS_RESOURCE",
+      "ObjectId": 212725263001002,
+      "TargetId": "100003002",
+      "ExtJson": "{\"MenuId\":100003002,\"ButtonInfo\":[100003002001,100003002002,100003002003,100003002004,100003002005]}"
+    },
+    {
+      "Id": 503224107855943,
+      "Category": "SYS_ROLE_HAS_RESOURCE",
+      "ObjectId": 212725263001002,
+      "TargetId": "100003003",
+      "ExtJson": "{\"MenuId\":100003003,\"ButtonInfo\":[]}"
+    },
+    {
+      "Id": 503224107855944,
+      "Category": "SYS_ROLE_HAS_RESOURCE",
+      "ObjectId": 212725263001002,
+      "TargetId": "200001101",
+      "ExtJson": "{\"MenuId\":200001101,\"ButtonInfo\":[391877764051205,391877800583429,391877824180485]}"
+    },
+    {
+      "Id": 503224107855945,
+      "Category": "SYS_ROLE_HAS_RESOURCE",
+      "ObjectId": 212725263001002,
+      "TargetId": "200001011",
+      "ExtJson": "{\"MenuId\":200001011,\"ButtonInfo\":[]}"
+    },
+    {
+      "Id": 503224107855946,
+      "Category": "SYS_ROLE_HAS_RESOURCE",
+      "ObjectId": 212725263001002,
+      "TargetId": "390053150736645",
+      "ExtJson": "{\"MenuId\":390053150736645,\"ButtonInfo\":[391878193139973,391878242271493]}"
+    },
+    {
+      "Id": 503224107855947,
+      "Category": "SYS_ROLE_HAS_RESOURCE",
+      "ObjectId": 212725263001002,
+      "TargetId": "200001903",
+      "ExtJson": "{\"MenuId\":200001903,\"ButtonInfo\":[]}"
+    },
+    {
+      "Id": 503224107855948,
+      "Category": "SYS_ROLE_HAS_RESOURCE",
+      "ObjectId": 212725263001002,
+      "TargetId": "389854423286021",
+      "ExtJson": "{\"MenuId\":389854423286021,\"ButtonInfo\":[]}"
+    },
+    {
+      "Id": 503224107855949,
+      "Category": "SYS_ROLE_HAS_RESOURCE",
+      "ObjectId": 212725263001002,
+      "TargetId": "389854535966981",
+      "ExtJson": "{\"MenuId\":389854535966981,\"ButtonInfo\":[]}"
+    },
+    {
+      "Id": 503224107855950,
+      "Category": "SYS_ROLE_HAS_RESOURCE",
+      "ObjectId": 212725263001002,
+      "TargetId": "389854579716357",
+      "ExtJson": "{\"MenuId\":389854579716357,\"ButtonInfo\":[]}"
+    },
+    {
+      "Id": 503224107855951,
+      "Category": "SYS_ROLE_HAS_RESOURCE",
+      "ObjectId": 212725263001002,
+      "TargetId": "389854617587973",
+      "ExtJson": "{\"MenuId\":389854617587973,\"ButtonInfo\":[]}"
+    },
+    {
+      "Id": 503224107855952,
+      "Category": "SYS_ROLE_HAS_RESOURCE",
+      "ObjectId": 212725263001002,
+      "TargetId": "390107473895685",
+      "ExtJson": "{\"MenuId\":390107473895685,\"ButtonInfo\":[391876432142597]}"
+    },
+    {
+      "Id": 503224107855953,
+      "Category": "SYS_ROLE_HAS_RESOURCE",
+      "ObjectId": 212725263001002,
+      "TargetId": "390107521245445",
+      "ExtJson": "{\"MenuId\":390107521245445,\"ButtonInfo\":[391876531253509]}"
+    },
+    {
+      "Id": 503224107855954,
+      "Category": "SYS_ROLE_HAS_RESOURCE",
+      "ObjectId": 212725263001002,
+      "TargetId": "100003001",
+      "ExtJson": "{\"MenuId\":100003001,\"ButtonInfo\":[]}"
+    },
+    {
+      "Id": 503224107855955,
+      "Category": "SYS_ROLE_HAS_RESOURCE",
+      "ObjectId": 212725263001002,
+      "TargetId": "100003002",
+      "ExtJson": "{\"MenuId\":100003002,\"ButtonInfo\":[100003002001,100003002002,100003002003,100003002004,100003002005]}"
+    },
+    {
+      "Id": 503224107855956,
+      "Category": "SYS_ROLE_HAS_RESOURCE",
+      "ObjectId": 212725263001002,
+      "TargetId": "100003003",
+      "ExtJson": "{\"MenuId\":100003003,\"ButtonInfo\":[]}"
+    },
+    {
+      "Id": 503224107855957,
+      "Category": "SYS_ROLE_HAS_RESOURCE",
+      "ObjectId": 212725263001002,
+      "TargetId": "200001101",
+      "ExtJson": "{\"MenuId\":200001101,\"ButtonInfo\":[391877764051205,391877800583429,391877824180485]}"
+    },
+    {
+      "Id": 503224107855958,
+      "Category": "SYS_ROLE_HAS_RESOURCE",
+      "ObjectId": 212725263001002,
+      "TargetId": "200001011",
+      "ExtJson": "{\"MenuId\":200001011,\"ButtonInfo\":[]}"
+    },
+    {
+      "Id": 503224107855959,
+      "Category": "SYS_ROLE_HAS_RESOURCE",
+      "ObjectId": 212725263001002,
+      "TargetId": "390053150736645",
+      "ExtJson": "{\"MenuId\":390053150736645,\"ButtonInfo\":[391878193139973,391878242271493]}"
+    },
+    {
+      "Id": 503224107855960,
+      "Category": "SYS_ROLE_HAS_RESOURCE",
+      "ObjectId": 212725263001002,
+      "TargetId": "200001903",
+      "ExtJson": "{\"MenuId\":200001903,\"ButtonInfo\":[]}"
+    },
+    {
+      "Id": 503224107855961,
+      "Category": "SYS_ROLE_HAS_RESOURCE",
+      "ObjectId": 212725263001002,
+      "TargetId": "389854423286021",
+      "ExtJson": "{\"MenuId\":389854423286021,\"ButtonInfo\":[]}"
+    },
+    {
+      "Id": 503224107855962,
+      "Category": "SYS_ROLE_HAS_RESOURCE",
+      "ObjectId": 212725263001002,
+      "TargetId": "389854535966981",
+      "ExtJson": "{\"MenuId\":389854535966981,\"ButtonInfo\":[]}"
+    },
+    {
+      "Id": 503224107855963,
+      "Category": "SYS_ROLE_HAS_RESOURCE",
+      "ObjectId": 212725263001002,
+      "TargetId": "389854579716357",
+      "ExtJson": "{\"MenuId\":389854579716357,\"ButtonInfo\":[]}"
+    },
+    {
+      "Id": 503224107855964,
+      "Category": "SYS_ROLE_HAS_RESOURCE",
+      "ObjectId": 212725263001002,
+      "TargetId": "389854617587973",
+      "ExtJson": "{\"MenuId\":389854617587973,\"ButtonInfo\":[]}"
+    },
+    {
+      "Id": 503224107855965,
+      "Category": "SYS_ROLE_HAS_RESOURCE",
+      "ObjectId": 212725263001002,
+      "TargetId": "390107473895685",
+      "ExtJson": "{\"MenuId\":390107473895685,\"ButtonInfo\":[391876432142597]}"
+    },
+    {
+      "Id": 503224107855966,
+      "Category": "SYS_ROLE_HAS_RESOURCE",
+      "ObjectId": 212725263001002,
+      "TargetId": "390107521245445",
+      "ExtJson": "{\"MenuId\":390107521245445,\"ButtonInfo\":[391876531253509]}"
+    },
+    {
+      "Id": 503224107855967,
+      "Category": "SYS_ROLE_HAS_RESOURCE",
+      "ObjectId": 212725263001002,
+      "TargetId": "100002010",
+      "ExtJson": "{\"MenuId\":100002010,\"ButtonInfo\":[]}"
+    },
+    {
+      "Id": 503224107855968,
+      "Category": "SYS_ROLE_HAS_RESOURCE",
+      "ObjectId": 212725263001002,
+      "TargetId": "200001000",
+      "ExtJson": "{\"MenuId\":200001000,\"ButtonInfo\":[]}"
+    },
+    {
+      "Id": 503224107855969,
+      "Category": "SYS_ROLE_HAS_RESOURCE",
+      "ObjectId": 212725263001002,
+      "TargetId": "200002001",
+      "ExtJson": "{\"MenuId\":200002001,\"ButtonInfo\":[502957849497669,502958001659973,502958086324293]}"
+    },
+    {
+      "Id": 503224107855970,
+      "Category": "SYS_ROLE_HAS_RESOURCE",
+      "ObjectId": 212725263001002,
+      "TargetId": "200002002",
+      "ExtJson": "{\"MenuId\":200002002,\"ButtonInfo\":[502958320812101]}"
+    },
+    {
+      "Id": 503224107855971,
+      "Category": "SYS_ROLE_HAS_RESOURCE",
+      "ObjectId": 212725263001002,
+      "TargetId": "200002003",
+      "ExtJson": "{\"MenuId\":200002003,\"ButtonInfo\":[]}"
+    },
+    {
+      "Id": 503224107855972,
+      "Category": "SYS_ROLE_HAS_RESOURCE",
+      "ObjectId": 212725263001002,
+      "TargetId": "200002004",
+      "ExtJson": "{\"MenuId\":200002004,\"ButtonInfo\":[]}"
+    },
+    {
+      "Id": 503224107855973,
+      "Category": "SYS_ROLE_HAS_RESOURCE",
+      "ObjectId": 212725263001002,
+      "TargetId": "200003001",
+      "ExtJson": "{\"MenuId\":200003001,\"ButtonInfo\":[502955134959685]}"
+    },
+    {
+      "Id": 503224107855974,
+      "Category": "SYS_ROLE_HAS_RESOURCE",
+      "ObjectId": 212725263001002,
+      "TargetId": "200003002",
+      "ExtJson": "{\"MenuId\":200003002,\"ButtonInfo\":[502955056398405]}"
+    },
+    {
+      "Id": 503224107855975,
+      "Category": "SYS_ROLE_HAS_RESOURCE",
+      "ObjectId": 212725263001002,
+      "TargetId": "200001005",
+      "ExtJson": "{\"MenuId\":200001005,\"ButtonInfo\":[502957141917765,502957141917766,502957141917767,502957488164933,502957527068741]}"
+    },
+    {
+      "Id": 503224107855976,
+      "Category": "SYS_ROLE_HAS_RESOURCE",
+      "ObjectId": 212725263001002,
+      "TargetId": "200001004",
+      "ExtJson": "{\"MenuId\":200001004,\"ButtonInfo\":[502956605169733,502956605169734,502956605169735,502956697067589,502956736983109]}"
+    },
+    {
+      "Id": 503224107855977,
+      "Category": "SYS_ROLE_HAS_RESOURCE",
+      "ObjectId": 212725263001002,
+      "TargetId": "200001003",
+      "ExtJson": "{\"MenuId\":200001003,\"ButtonInfo\":[502957047287877,505731927740485]}"
+    },
+    {
+      "Id": 503224107855978,
+      "Category": "SYS_ROLE_HAS_RESOURCE",
+      "ObjectId": 212725263001002,
+      "TargetId": "200001002",
+      "ExtJson": "{\"MenuId\":200001002,\"ButtonInfo\":[502955883442245,502955883442246,502955883442247,502956127707205,502956248375365]}"
+    },
+    {
+      "Id": 503224107855979,
+      "Category": "SYS_ROLE_HAS_RESOURCE",
+      "ObjectId": 212725263001002,
+      "TargetId": "200001001",
+      "ExtJson": "{\"MenuId\":200001001,\"ButtonInfo\":[502955300802629,502955300802630,502955300802631,502955430760517,502955545583685]}"
+    },
+    {
+      "Id": 503224107860037,
+      "Category": "SYS_ROLE_HAS_RESOURCE",
+      "ObjectId": 212725263001002,
+      "TargetId": "100002002",
+      "ExtJson": "{\"MenuId\":100002002,\"ButtonInfo\":[502954582671429]}"
+    },
+    {
+      "Id": 503224107860038,
+      "Category": "SYS_ROLE_HAS_RESOURCE",
+      "ObjectId": 212725263001002,
+      "TargetId": "100002003",
+      "ExtJson": "{\"MenuId\":100002003,\"ButtonInfo\":[502954686193733]}"
+    },
+    {
+      "Id": 503224107860039,
+      "Category": "SYS_ROLE_HAS_RESOURCE",
+      "ObjectId": 212725263001002,
+      "TargetId": "100002004",
+      "ExtJson": "{\"MenuId\":100002004,\"ButtonInfo\":[502954811879493]}"
+    },
+    {
+      "Id": 503224107860040,
+      "Category": "SYS_ROLE_HAS_PERMISSION",
+      "ObjectId": 212725263001002,
+      "TargetId": "/admin/oplog",
+      "ExtJson": "{\"ApiUrl\":\"/admin/oplog\"}"
+    },
+    {
+      "Id": 503224107860041,
+      "Category": "SYS_ROLE_HAS_PERMISSION",
+      "ObjectId": 212725263001002,
+      "TargetId": "/admin/session",
+      "ExtJson": "{\"ApiUrl\":\"/admin/session\"}"
+    },
+    {
+      "Id": 503224107860042,
+      "Category": "SYS_ROLE_HAS_PERMISSION",
+      "ObjectId": 212725263001002,
+      "TargetId": "/admin/vislog",
+      "ExtJson": "{\"ApiUrl\":\"/admin/vislog\"}"
+    },
+    {
+      "Id": 503224107860043,
+      "Category": "SYS_ROLE_HAS_PERMISSION",
+      "ObjectId": 212725263001002,
+      "TargetId": "/schedulePage",
+      "ExtJson": "{\"ApiUrl\":\"/schedulePage\"}"
+    },
+    {
+      "Id": 503224107860044,
+      "Category": "SYS_ROLE_HAS_PERMISSION",
+      "ObjectId": 212725263001002,
+      "TargetId": "/gatewaylog/backendlog",
+      "ExtJson": "{\"ApiUrl\":\"/gatewaylog/backendlog\"}"
+    },
+    {
+      "Id": 503224107860045,
+      "Category": "SYS_ROLE_HAS_PERMISSION",
+      "ObjectId": 212725263001002,
+      "TargetId": "/gatewayconfig/channel",
+      "ExtJson": "{\"ApiUrl\":\"/gatewayconfig/channel\"}"
+    },
+    {
+      "Id": 503224107860046,
+      "Category": "SYS_ROLE_HAS_PERMISSION",
+      "ObjectId": 212725263001002,
+      "TargetId": "/gatewayruntime/devicestatus",
+      "ExtJson": "{\"ApiUrl\":\"/gatewayruntime/devicestatus\"}"
+    },
+    {
+      "Id": 503224107860047,
+      "Category": "SYS_ROLE_HAS_PERMISSION",
+      "ObjectId": 212725263001002,
+      "TargetId": "/gatewayconfig/driverdebug",
+      "ExtJson": "{\"ApiUrl\":\"/gatewayconfig/driverdebug\"}"
+    },
+    {
+      "Id": 503224107860048,
+      "Category": "SYS_ROLE_HAS_PERMISSION",
+      "ObjectId": 212725263001002,
+      "TargetId": "/gatewayruntime/hardwareinfo",
+      "ExtJson": "{\"ApiUrl\":\"/gatewayruntime/hardwareinfo\"}"
+    },
+    {
+      "Id": 503224107860049,
+      "Category": "SYS_ROLE_HAS_PERMISSION",
+      "ObjectId": 212725263001002,
+      "TargetId": "/gatewayconfig/plugin",
+      "ExtJson": "{\"ApiUrl\":\"/gatewayconfig/plugin\"}"
+    },
+    {
+      "Id": 503224107860050,
+      "Category": "SYS_ROLE_HAS_PERMISSION",
+      "ObjectId": 212725263001002,
+      "TargetId": "/gatewayruntime/realalarm",
+      "ExtJson": "{\"ApiUrl\":\"/gatewayruntime/realalarm\"}"
+    },
+    {
+      "Id": 503224107860051,
+      "Category": "SYS_ROLE_HAS_PERMISSION",
+      "ObjectId": 212725263001002,
+      "TargetId": "/gatewaylog/rpclog",
+      "ExtJson": "{\"ApiUrl\":\"/gatewaylog/rpclog\"}"
+    },
+    {
+      "Id": 503224107860052,
+      "Category": "SYS_ROLE_HAS_PERMISSION",
+      "ObjectId": 212725263001002,
+      "TargetId": "/gatewayruntime/variable",
+      "ExtJson": "{\"ApiUrl\":\"/gatewayruntime/variable\"}"
+    },
+    {
+      "Id": 503224107860053,
+      "Category": "SYS_ROLE_HAS_PERMISSION",
+      "ObjectId": 212725263001002,
+      "TargetId": "/gatewayconfig/variable",
+      "ExtJson": "{\"ApiUrl\":\"/gatewayconfig/variable\"}"
+    },
+    {
+      "Id": 503224196124741,
+      "Category": "SYS_ROLE_HAS_OPENAPIPERMISSION",
+      "ObjectId": 502961260494917,
+      "TargetId": "/openApi/runtimeInfo/deviceList",
+      "ExtJson": "{\"ApiUrl\":\"/openApi/runtimeInfo/deviceList\"}"
+    },
+    {
+      "Id": 503224196124742,
+      "Category": "SYS_ROLE_HAS_OPENAPIPERMISSION",
+      "ObjectId": 502961260494917,
+      "TargetId": "/openApi/runtimeInfo/variableList",
+      "ExtJson": "{\"ApiUrl\":\"/openApi/runtimeInfo/variableList\"}"
+    },
+    {
+      "Id": 503224196124743,
+      "Category": "SYS_ROLE_HAS_OPENAPIPERMISSION",
+      "ObjectId": 502961260494917,
+      "TargetId": "/openApi/runtimeInfo/realAlarmList",
+      "ExtJson": "{\"ApiUrl\":\"/openApi/runtimeInfo/realAlarmList\"}"
+    },
+    {
+      "Id": 503224196124744,
+      "Category": "SYS_ROLE_HAS_OPENAPIPERMISSION",
+      "ObjectId": 502961260494917,
+      "TargetId": "/openApi/configInfo/deviceList",
+      "ExtJson": "{\"ApiUrl\":\"/openApi/configInfo/deviceList\"}"
+    },
+    {
+      "Id": 503224196124745,
+      "Category": "SYS_ROLE_HAS_OPENAPIPERMISSION",
+      "ObjectId": 502961260494917,
+      "TargetId": "/openApi/configInfo/deviceList",
+      "ExtJson": "{\"ApiUrl\":\"/openApi/configInfo/deviceList\"}"
+    },
+    {
+      "Id": 503224196124746,
+      "Category": "SYS_ROLE_HAS_OPENAPIPERMISSION",
+      "ObjectId": 502961260494917,
+      "TargetId": "/openApi/configInfo/variableList",
+      "ExtJson": "{\"ApiUrl\":\"/openApi/configInfo/variableList\"}"
+    },
+    {
+      "Id": 503224196124747,
+      "Category": "SYS_ROLE_HAS_OPENAPIPERMISSION",
+      "ObjectId": 502961260494917,
+      "TargetId": "/openApi/control/pasueCollectThread",
+      "ExtJson": "{\"ApiUrl\":\"/openApi/control/pasueCollectThread\"}"
+    },
+    {
+      "Id": 503224196124748,
+      "Category": "SYS_ROLE_HAS_OPENAPIPERMISSION",
+      "ObjectId": 502961260494917,
+      "TargetId": "/openApi/control/pasueBusinessThread",
+      "ExtJson": "{\"ApiUrl\":\"/openApi/control/pasueBusinessThread\"}"
+    },
+    {
+      "Id": 503224196124749,
+      "Category": "SYS_ROLE_HAS_OPENAPIPERMISSION",
+      "ObjectId": 502961260494917,
+      "TargetId": "/openApi/control/restartCollectThread",
+      "ExtJson": "{\"ApiUrl\":\"/openApi/control/restartCollectThread\"}"
+    },
+    {
+      "Id": 503224196124750,
+      "Category": "SYS_ROLE_HAS_OPENAPIPERMISSION",
+      "ObjectId": 502961260494917,
+      "TargetId": "/openApi/control/restartBusinessThread",
+      "ExtJson": "{\"ApiUrl\":\"/openApi/control/restartBusinessThread\"}"
+    },
+    {
+      "Id": 503224196124751,
+      "Category": "SYS_ROLE_HAS_OPENAPIPERMISSION",
+      "ObjectId": 502961260494917,
+      "TargetId": "/openApi/control/writeVariables",
+      "ExtJson": "{\"ApiUrl\":\"/openApi/control/writeVariables\"}"
+    }
+  ]
+}

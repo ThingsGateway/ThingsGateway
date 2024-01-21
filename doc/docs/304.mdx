@@ -1,0 +1,77 @@
+---
+id: 304
+title: KafkaProducer
+---
+
+
+import useBaseUrl from "@docusaurus/useBaseUrl";
+import Tag from "@site/src/components/Tag.js";
+import Highlight from '@site/src/components/Highlight.js';
+
+:::tip `提示`
+
+通过自定义脚本，可快速适配业务模型
+
+脚本的示例请查看**常见问题**
+
+:::
+
+:::tip `须知`
+
+插件使用**librdkafka**,注意按需安装c库
+
+On Mac OSX, install librdkafka with homebrew:
+```
+$ brew install librdkafka
+```
+On Debian and Ubuntu, install librdkafka from the Confluent APT repositories, see instructions here and then install librdkafka:
+```
+$ apt install librdkafka-dev
+
+```
+On RedHat, CentOS, Fedora, install librdkafka from the Confluent YUM repositories, instructions here and then install librdkafka:
+```
+$ yum install librdkafka-devel
+```
+For other platforms, follow the source building instructions below.
+:::
+
+## 一、说明
+
+KafkaProducer适配Kafka协议，主动发布内容到服务端，可以定时/变化发布数据
+
+通道只支持 Other 
+
+## 二、插件属性配置项
+
+<img src={require("@site/static/img/docs/KafkaProducer.png").default} />
+
+| 属性           |  说明                    | 备注|
+| ---------------| --------------------------| ---|
+| 服务地址         | 服务地址              | 127.0.0.1:9092|
+| 发布超时时间         | 发布超时时间             |5000  |
+| 用户名         | 用户名             |  |
+| 密码         | 密码              |  |
+| SecurityProtocol         | SecurityProtocol              |  |
+| SaslMechanism         | SaslMechanism              |  |
+| 设备是否列表         | 设备是否列表上传，false时每个设备实体都会单独发布，注意性能需求，默认为true             |  |
+| 变量是否列表         | 变量是否列表上传，false时每个变量实体都会单独发布，注意性能需求，默认为true             |  |
+| 报警是否列表         | 报警是否列表上传，false时每个报警实体都会单独发布，注意性能需求，默认为true             |  |
+| 设备Topic         | 设备实体的发布主题 ，使用${key}作为匹配项，key必须是上传实体中的属性            |  |
+| 变量Topic         | 变量实体的发布主题 ，使用${key}作为匹配项，key必须是上传实体中的属性            |  |
+| 报警Topic         | 报警实体的发布主题 ，使用${key}作为匹配项，key必须是上传实体中的属性            |  |
+| 设备实体脚本         | 脚本返回新的实体列表，动态类中需继承**IDynamicModel**，传入列表为**DeviceData**,查看以下具体属性            | 编辑页面中，可通过检查按钮验证脚本，脚本示例请查看**常见问题**  |
+| 变量实体脚本         | 脚本返回新的实体列表，动态类中需继承**IDynamicModel**，传入列表为**VariableData**,查看以下具体属性            | 编辑页面中，可通过检查按钮验证脚本，脚本示例请查看**常见问题** |
+| 报警实体脚本         | 脚本返回新的实体列表，动态类中需继承**IDynamicModel**，传入列表为**AlarmVariable**,查看以下具体属性            | 编辑页面中，可通过检查按钮验证脚本，脚本示例请查看**常见问题** |
+| 是否选择全部变量         | 是否选择全部变量，true时不需要单个变量添加业务属性            |  |
+| 是否间隔执行         | 是否选择全部变量，true间隔上传，False变化检测上传            |  |
+| 间隔执行时间         | 间隔执行时间           |  |
+| 启用缓存         | 是否启用缓存           |  |
+| 上传列表最大数量         | 每一次上传的列表最大数量           |  |
+| 内存队列最大数量         | 内存队列的最大数量，超出或失败时转入文件缓存，根据数据量设定适当值           |  |
+
+### 脚本与实体
+
+查看MqttClient页面[脚本接口](./301.mdx#脚本接口) 
+
+

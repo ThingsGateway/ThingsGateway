@@ -1,0 +1,784 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ThingsGateway.Foundation.Modbus</name>
+    </assembly>
+    <members>
+        <member name="T:ThingsGateway.Foundation.Modbus.ModbusConst">
+            <summary>
+            常量
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Foundation.Modbus.ModbusConst.AddressDes">
+            <summary>
+            地址说明
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Foundation.Modbus.ModbusConst.DtuConnected">
+            <summary>
+            Dtu-{0}-已连接
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Foundation.Modbus.ModbusConst.DtuNoConnectedWaining">
+            <summary>
+            客户端未连接，或寄存器设置错误，必须设置ID={DTU注册包}
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Foundation.Modbus.ModbusConst.FunctionError">
+            <summary>
+            功能码错误
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Foundation.Modbus.ModbusConst.FunctionNotSame">
+            <summary>
+            功能码不一致，请求功能码{0}，返回功能码{1}。
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Foundation.Modbus.ModbusConst.ModbusError1">
+            <summary>
+            不支持的功能码
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Foundation.Modbus.ModbusConst.ModbusError10">
+            <summary>
+            网关路径不可用
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Foundation.Modbus.ModbusConst.ModbusError11">
+            <summary>
+            网关目标设备响应失败
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Foundation.Modbus.ModbusConst.ModbusError2">
+            <summary>
+            读取寄存器越界
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Foundation.Modbus.ModbusConst.ModbusError3">
+            <summary>
+            读取长度超限
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Foundation.Modbus.ModbusConst.ModbusError4">
+            <summary>
+            设备故障
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Foundation.Modbus.ModbusConst.ModbusError5">
+            <summary>
+            设备已确认，但未执行
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Foundation.Modbus.ModbusConst.ModbusError6">
+            <summary>
+            设备忙
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Foundation.Modbus.ModbusConst.ModbusError8">
+            <summary>
+            存储奇偶性错误
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Foundation.Modbus.ModbusConst.StationNotSame">
+            <summary>
+            站号不一致，请求站号{0}，返回站号{1}。
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Foundation.Modbus.ModbusConst.ValueOverlimit">
+            <summary>
+            {0} 不能超过 {1}
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Foundation.Modbus.ModbusRtuDataHandleAdapter">
+            <summary>
+            Rtu适配器
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Modbus.ModbusRtuDataHandleAdapter.IsCheckCrc16">
+            <summary>
+            检测CRC
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusRtuDataHandleAdapter.PackCommand(System.Byte[])">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <param name="command"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusRtuDataHandleAdapter.GetInstance">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusRtuDataHandleAdapter.UnpackResponse(ThingsGateway.Foundation.Modbus.ModbusRtuMessage,System.Byte[],System.Byte[],System.Byte[])">
+            <inheritdoc/>
+        </member>
+        <member name="T:ThingsGateway.Foundation.Modbus.ModbusRtuMessage">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Modbus.ModbusRtuMessage.HeadBytesLength">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusRtuMessage.CheckHeadBytes(System.Byte[])">
+            <inheritdoc/>
+        </member>
+        <member name="T:ThingsGateway.Foundation.Modbus.ModbusRtuOverUdpDataHandleAdapter">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Modbus.ModbusRtuOverUdpDataHandleAdapter.IsCheckCrc16">
+            <summary>
+            检测CRC
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusRtuOverUdpDataHandleAdapter.PackCommand(System.Byte[])">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusRtuOverUdpDataHandleAdapter.GetInstance">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusRtuOverUdpDataHandleAdapter.UnpackResponse(ThingsGateway.Foundation.Modbus.ModbusRtuMessage,System.Byte[],System.Byte[])">
+            <inheritdoc/>
+        </member>
+        <member name="T:ThingsGateway.Foundation.Modbus.ModbusTcpDataHandleAdapter">
+            <summary>
+            ModbusTcpDataHandleAdapter
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Modbus.ModbusTcpDataHandleAdapter.IsCheckMessageId">
+            <summary>
+            检测事务标识符
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusTcpDataHandleAdapter.PackCommand(System.Byte[])">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusTcpDataHandleAdapter.GetInstance">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusTcpDataHandleAdapter.UnpackResponse(ThingsGateway.Foundation.Modbus.ModbusTcpMessage,System.Byte[],System.Byte[],System.Byte[])">
+            <inheritdoc/>
+        </member>
+        <member name="T:ThingsGateway.Foundation.Modbus.ModbusTcpMessage">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Modbus.ModbusTcpMessage.HeadBytesLength">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Modbus.ModbusTcpMessage.IsCheckMessageId">
+            <summary>
+            检测事务标识符
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusTcpMessage.CheckHeadBytes(System.Byte[])">
+            <inheritdoc/>
+        </member>
+        <member name="T:ThingsGateway.Foundation.Modbus.ModbusTypeEnum">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Foundation.Modbus.ModbusTypeEnum.ModbusTcp">
+            <summary>
+            tcp格式
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Foundation.Modbus.ModbusTypeEnum.ModbusRtu">
+            <summary>
+            rtu格式
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Foundation.Modbus.ModbusUdpDataHandleAdapter">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Modbus.ModbusUdpDataHandleAdapter.IsCheckMessageId">
+            <summary>
+            检测事务标识符
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusUdpDataHandleAdapter.PackCommand(System.Byte[])">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusUdpDataHandleAdapter.GetInstance">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusUdpDataHandleAdapter.UnpackResponse(ThingsGateway.Foundation.Modbus.ModbusTcpMessage,System.Byte[],System.Byte[])">
+            <inheritdoc/>
+        </member>
+        <member name="T:ThingsGateway.Foundation.Modbus.ModbusMaster">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusMaster.#ctor(ThingsGateway.Foundation.IChannel)">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Modbus.ModbusMaster.ModbusType">
+            <summary>
+            Modbus类型
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Modbus.ModbusMaster.IsCheck">
+            <summary>
+            是否校验/，对于Rtu来说是Crc，对于Tcp来说是事务检测符
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Modbus.ModbusMaster.Station">
+            <summary>
+            站号
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusMaster.GetAddressDescription">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusMaster.GetDataAdapter">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusMaster.LoadSourceRead``1(System.Collections.Generic.IEnumerable{ThingsGateway.Foundation.IVariable},System.Int32,System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusMaster.Read(System.String,System.Int32,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusMaster.ReadAsync(System.String,System.Int32,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusMaster.Write(System.String,System.Byte[],System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusMaster.Write(System.String,System.Boolean[],System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusMaster.WriteAsync(System.String,System.Byte[],System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusMaster.WriteAsync(System.String,System.Boolean[],System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusMaster.Dispose(System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="T:ThingsGateway.Foundation.Modbus.IModbusServerMessage">
+            <summary>
+            ModbusServerMessage
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Modbus.IModbusServerMessage.Length">
+            <summary>
+            读写长度
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Modbus.IModbusServerMessage.ModbusAddress">
+            <summary>
+            当前关联的地址
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Foundation.Modbus.ModbusRtuOverUdpServerDataHandleAdapter">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusRtuOverUdpServerDataHandleAdapter.PackCommand(System.Byte[])">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <param name="command"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusRtuOverUdpServerDataHandleAdapter.GetInstance">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusRtuOverUdpServerDataHandleAdapter.UnpackResponse(ThingsGateway.Foundation.Modbus.ModbusRtuServerMessage,System.Byte[],System.Byte[])">
+            <inheritdoc/>
+        </member>
+        <member name="T:ThingsGateway.Foundation.Modbus.ModbusRtuServerDataHandleAdapter">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusRtuServerDataHandleAdapter.PackCommand(System.Byte[])">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <param name="command"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusRtuServerDataHandleAdapter.GetInstance">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusRtuServerDataHandleAdapter.UnpackResponse(ThingsGateway.Foundation.Modbus.ModbusRtuServerMessage,System.Byte[],System.Byte[],System.Byte[])">
+            <inheritdoc/>
+        </member>
+        <member name="T:ThingsGateway.Foundation.Modbus.ModbusRtuServerMessage">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Modbus.ModbusRtuServerMessage.ModbusAddress">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Modbus.ModbusRtuServerMessage.Length">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Modbus.ModbusRtuServerMessage.HeadBytesLength">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusRtuServerMessage.CheckHeadBytes(System.Byte[])">
+            <inheritdoc/>
+        </member>
+        <member name="T:ThingsGateway.Foundation.Modbus.ModbusTcpServerDataHandleAdapter">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusTcpServerDataHandleAdapter.PackCommand(System.Byte[])">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <param name="command"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusTcpServerDataHandleAdapter.GetInstance">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusTcpServerDataHandleAdapter.UnpackResponse(ThingsGateway.Foundation.Modbus.ModbusTcpServerMessage,System.Byte[],System.Byte[],System.Byte[])">
+            <inheritdoc/>
+        </member>
+        <member name="T:ThingsGateway.Foundation.Modbus.ModbusTcpServerMessage">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Modbus.ModbusTcpServerMessage.ModbusAddress">
+            <summary>
+            当前关联的地址
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Modbus.ModbusTcpServerMessage.Length">
+            <summary>
+            当前读写的数据长度
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Modbus.ModbusTcpServerMessage.HeadBytesLength">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusTcpServerMessage.CheckHeadBytes(System.Byte[])">
+            <inheritdoc/>
+        </member>
+        <member name="T:ThingsGateway.Foundation.Modbus.ModbusUdpServerDataHandleAdapter">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusUdpServerDataHandleAdapter.PackCommand(System.Byte[])">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <param name="command"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusUdpServerDataHandleAdapter.GetInstance">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusUdpServerDataHandleAdapter.UnpackResponse(ThingsGateway.Foundation.Modbus.ModbusTcpServerMessage,System.Byte[],System.Byte[])">
+            <inheritdoc/>
+        </member>
+        <member name="T:ThingsGateway.Foundation.Modbus.ModbusServerWriteEventHandler">
+            <summary>
+            ChannelEventHandler
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Foundation.Modbus.ModbusSlave">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusSlave.#ctor(ThingsGateway.Foundation.IChannel)">
+            <inheritdoc/>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Modbus.ModbusSlave.ModbusType">
+            <summary>
+            Modbus类型
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Modbus.ModbusSlave.IsCheck">
+            <summary>
+            是否校验/，对于Rtu来说是Crc，对于Tcp来说是事务检测符
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Foundation.Modbus.ModbusSlave.ModbusServer01ByteBlocks">
+            <summary>
+            继电器
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Foundation.Modbus.ModbusSlave.ModbusServer02ByteBlocks">
+            <summary>
+            开关输入
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Foundation.Modbus.ModbusSlave.ModbusServer03ByteBlocks">
+            <summary>
+            输入寄存器
+            </summary>
+        </member>
+        <member name="F:ThingsGateway.Foundation.Modbus.ModbusSlave.ModbusServer04ByteBlocks">
+            <summary>
+            保持寄存器
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Modbus.ModbusSlave.MulStation">
+            <summary>
+            多站点
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Modbus.ModbusSlave.WriteData">
+            <summary>
+            接收外部写入时，传出变量地址/写入字节组/转换规则/客户端
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Modbus.ModbusSlave.Station">
+            <summary>
+            默认站点
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Modbus.ModbusSlave.IsWriteMemory">
+            <summary>
+            写入内存
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Modbus.ModbusSlave.MaxClientCount">
+            <summary>
+            最大连接数
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusSlave.GetAddressDescription">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusSlave.GetDataAdapter">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusSlave.LoadSourceRead``1(System.Collections.Generic.IEnumerable{ThingsGateway.Foundation.IVariable},System.Int32,System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusSlave.Init(ThingsGateway.Foundation.Modbus.ModbusAddress)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusSlave.Dispose(System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusSlave.Received(ThingsGateway.Foundation.IClientChannel,TouchSocket.Sockets.ReceivedDataEventArgs)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusSlave.WriteError(ThingsGateway.Foundation.Modbus.ModbusTypeEnum,ThingsGateway.Foundation.IClientChannel,ThingsGateway.Foundation.Modbus.IModbusServerMessage,TouchSocket.Sockets.ReceivedDataEventArgs)">
+            <summary>
+            返回错误码
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusSlave.WriteSuccess(ThingsGateway.Foundation.Modbus.ModbusTypeEnum,ThingsGateway.Foundation.IClientChannel,ThingsGateway.Foundation.Modbus.IModbusServerMessage,TouchSocket.Sockets.ReceivedDataEventArgs)">
+            <summary>
+            返回成功
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusSlave.Read(System.String,System.Int32,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusSlave.ReadAsync(System.String,System.Int32,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusSlave.Write(System.String,System.Byte[],System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusSlave.Write(System.String,System.Boolean[],System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusSlave.WriteAsync(System.String,System.Byte[],System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusSlave.WriteAsync(System.String,System.Boolean[],System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="T:ThingsGateway.Foundation.Modbus.ModbusAddress">
+            <summary>
+            Modbus协议地址
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusAddress.#ctor">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Modbus.ModbusAddress.Address">
+            <summary>
+            可能带小数点的地址表示
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Modbus.ModbusAddress.AddressStart">
+            <summary>
+            起始地址
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Modbus.ModbusAddress.ReadFunction">
+            <summary>
+            读取功能码
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Modbus.ModbusAddress.Station">
+            <summary>
+            站号信息
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Modbus.ModbusAddress.WriteFunction">
+            <summary>
+            写入功能码
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Modbus.ModbusAddress.BitIndex">
+            <summary>
+            BitIndex
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Modbus.ModbusAddress.ByteLength">
+            <summary>
+            打包临时写入，需要读取的字节长度
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Modbus.ModbusAddress.AddressEnd">
+            <summary>
+            读取终止
+            </summary>
+        </member>
+        <member name="P:ThingsGateway.Foundation.Modbus.ModbusAddress.SocketId">
+            <summary>
+            作为Slave时需提供的SocketId，用于分辨Socket客户端，通常对比的是初始链接时的注册包
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusAddress.ToString">
+            <inheritdoc/>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusHelper.AddCrc(System.Byte[])">
+            <summary>
+            添加Crc16
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusHelper.GetModbusWriteData(System.Byte[])">
+            <summary>
+            获取modbus写入数据区内容
+            </summary>
+            <param name="response">返回数据</param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusHelper.AddModbusTcpHead(System.Byte[],System.UInt16)">
+            <summary>
+            添加ModbusTcp报文头
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusHelper.GetAddressDescription">
+            <summary>
+            modbus地址格式说明
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusHelper.GetDescriptionByErrorCode(System.Byte)">
+            <summary>
+            通过错误码来获取到对应的文本消息
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusHelper.GetModbusData(System.Byte[],System.Byte[])">
+            <summary>
+            获取modbus数据区内容，返回数据需去除Crc和报文头，例如：01 03 02 00 01，发送数据需报文头
+            </summary>
+            <param name="send">发送数据</param>
+            <param name="response">返回数据</param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusHelper.GetModbusRtuData(System.Byte[],System.Byte[],System.Boolean)">
+            <summary>
+            去除Crc，返回modbus数据区
+            </summary>
+            <param name="send"></param>
+            <param name="response"></param>
+            <param name="crcCheck"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusHelper.GetReadModbusCommand(System.String,System.Int32,System.Byte)">
+            <summary>
+            获取读取报文
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusHelper.GetWriteModbusCommand(System.String,System.Byte[],System.Byte)">
+            <summary>
+            获取写入字报文，根据地址识别功能码
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusHelper.GetReadModbusCommand(ThingsGateway.Foundation.Modbus.ModbusAddress,System.Int32)">
+            <summary>
+            获取读取报文
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusHelper.GetWriteBoolModbusCommand(ThingsGateway.Foundation.Modbus.ModbusAddress,System.Boolean)">
+            <summary>
+            获取05写入布尔量报文
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusHelper.GetWriteBoolModbusCommand(ThingsGateway.Foundation.Modbus.ModbusAddress,System.Boolean[],System.Int32)">
+            <summary>
+            获取15写入布尔量报文
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusHelper.GetWriteModbusCommand(ThingsGateway.Foundation.Modbus.ModbusAddress,System.Byte[])">
+            <summary>
+            获取16写入字报文
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.ModbusHelper.GetWriteOneModbusCommand(ThingsGateway.Foundation.Modbus.ModbusAddress,System.Byte[])">
+            <summary>
+            获取6写入字报文
+            </summary>
+        </member>
+        <member name="T:ThingsGateway.Foundation.Modbus.PackHelper">
+            <summary>
+            PackHelper
+            </summary>
+        </member>
+        <member name="M:ThingsGateway.Foundation.Modbus.PackHelper.LoadSourceRead``1(ThingsGateway.Foundation.IProtocol,System.Collections.Generic.List{ThingsGateway.Foundation.IVariable},System.Int32,System.Int32)">
+            <summary>
+            打包变量，添加到<see cref="T:System.Collections.Generic.List`1"/>
+            </summary>
+            <param name="device"></param>
+            <param name="deviceVariables"></param>
+            <param name="maxPack">最大打包长度</param>
+            <param name="defaultIntervalTime">默认间隔时间</param>
+            <returns></returns>
+        </member>
+        <member name="T:ModbusAddressUtil">
+            <summary>
+            ModbusAddressUtil
+            </summary>
+        </member>
+        <member name="M:ModbusAddressUtil.ParseFrom(System.String,System.Byte)">
+            <summary>
+            解析地址
+            </summary>
+        </member>
+        <member name="M:ModbusAddressUtil.ParseFrom(System.String,ThingsGateway.Foundation.Modbus.ModbusAddress)">
+            <summary>
+            解析地址
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Core.GeneratorContainerAttribute">
+            <summary>
+            源生成容器特性
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Core.BaseInjectAttribute.FromType">
+            <summary>
+            注册类型
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Core.BaseInjectAttribute.ToType">
+            <summary>
+            实例类型
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Core.BaseInjectAttribute.Key">
+            <summary>
+            注册额外键
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Core.AutoInjectForSingletonAttribute">
+            <summary>
+            自动注入为单例。
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Core.AutoInjectForTransientAttribute">
+            <summary>
+            自动注入为瞬时。
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Core.AddSingletonInjectAttribute">
+            <summary>
+            添加单例注入。
+            <para>
+            该标签仅添加在继承<see cref="T:TouchSocket.Core.ManualContainer"/>的容器上时有用。
+            </para>
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Core.AddSingletonInjectAttribute.#ctor(System.Type,System.Type,System.String)">
+            <summary>
+            添加单例注入。
+            <para>
+            该标签仅添加在继承<see cref="T:TouchSocket.Core.ManualContainer"/>的容器上时有用。
+            </para>
+            </summary>
+            <param name="fromType">注册类型</param>
+            <param name="toType">实例类型</param>
+            <param name="key">注册额外键</param>
+        </member>
+        <member name="M:TouchSocket.Core.AddSingletonInjectAttribute.#ctor(System.Type)">
+            <summary>
+            添加单例注入。
+            <para>
+            该标签仅添加在继承<see cref="T:TouchSocket.Core.ManualContainer"/>的容器上时有用。
+            </para>
+            </summary>
+            <param name="type">注册类型与实例类型一致</param>
+        </member>
+        <member name="M:TouchSocket.Core.AddSingletonInjectAttribute.#ctor(System.Type,System.Type)">
+            <summary>
+            添加单例注入。
+            <para>
+            该标签仅添加在继承<see cref="T:TouchSocket.Core.ManualContainer"/>的容器上时有用。
+            </para>
+            </summary>
+            <param name="fromType">注册类型</param>
+            <param name="toType">实例类型</param>
+        </member>
+        <member name="T:TouchSocket.Core.AddTransientInjectAttribute">
+            <summary>
+            添加瞬态注入。
+            <para>
+            该标签仅添加在继承<see cref="T:TouchSocket.Core.ManualContainer"/>的容器上时有用。
+            </para>
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Core.AddTransientInjectAttribute.#ctor(System.Type,System.Type,System.String)">
+            <summary>
+            添加瞬态注入。
+            <para>
+            该标签仅添加在继承<see cref="T:TouchSocket.Core.ManualContainer"/>的容器上时有用。
+            </para>
+            </summary>
+            <param name="fromType">注册类型</param>
+            <param name="toType">实例类型</param>
+            <param name="key">注册额外键</param>
+        </member>
+        <member name="M:TouchSocket.Core.AddTransientInjectAttribute.#ctor(System.Type)">
+            <summary>
+            添加瞬态注入。
+            <para>
+            该标签仅添加在继承<see cref="T:TouchSocket.Core.ManualContainer"/>的容器上时有用。
+            </para>
+            </summary>
+            <param name="type">注册类型与实例类型一致</param>
+        </member>
+        <member name="M:TouchSocket.Core.AddTransientInjectAttribute.#ctor(System.Type,System.Type)">
+            <summary>
+            添加瞬态注入。
+            <para>
+            该标签仅添加在继承<see cref="T:TouchSocket.Core.ManualContainer"/>的容器上时有用。
+            </para>
+            </summary>
+            <param name="fromType">注册类型</param>
+            <param name="toType">实例类型</param>
+        </member>
+        <member name="T:TouchSocket.Core.GeneratorPluginAttribute">
+            <summary>
+            使用源生成插件的调用。
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Core.GeneratorPluginAttribute.#ctor(System.String)">
+            <summary>
+            使用源生成插件的调用。
+            </summary>
+            <param name="pluginName">插件名称，一般建议使用nameof()解决。</param>
+        </member>
+    </members>
+</doc>

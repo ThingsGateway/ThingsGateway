@@ -1,0 +1,30 @@
+{
+  "RECORDS": [
+    {
+      "Id": 212725263001001,
+      "Code": "superAdmin",
+      "Name": "超级管理员",
+      "Category": "GLOBAL",
+      "CreateUserId": 0,
+      "IsDelete": "0",
+      "SortCode": 1
+    },
+    {
+      "Id": 212725263001002,
+      "Code": "bizAdmin",
+      "Name": "业务管理员",
+      "Category": "GLOBAL",
+      "CreateUserId": 0,
+      "IsDelete": "0",
+      "SortCode": 2
+    },
+    {
+      "Id": 502961260494917,
+      "Code": "QXJiu7EPwR",
+      "Name": "Api管理员",
+      "Category": "API",
+      "IsDelete": "0",
+      "SortCode": 0
+    }
+  ]
+}

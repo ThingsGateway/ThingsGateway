@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<Import Project="$(SolutionDir)Foundation.props" />
+
+	<PropertyGroup>
+		<Description>工业设备通讯协议-基础类库</Description>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <None Include="..\..\..\.editorconfig" Link=".editorconfig" />
+	</ItemGroup>
+
+
+	<ItemGroup>
+	  <PackageReference Include="NewLife.Core" Version="10.6.2024.101" />
+	  <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+	  <PackageReference Include="TouchSocket" Version="2.0.0-beta.267" />
+	</ItemGroup>
+	
+	<ItemGroup Condition="'$(TargetFramework)'!='net45'">
+		<PackageReference Include="System.IO.Ports" Version="8.0.0" />
+	</ItemGroup>
+	
+	<ItemGroup Condition="'$(TargetFramework)'!='net6'">
+		<PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
+	</ItemGroup>
+
+
+</Project>

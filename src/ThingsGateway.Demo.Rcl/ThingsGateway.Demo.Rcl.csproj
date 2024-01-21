@@ -1,0 +1,55 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+ 
+
+  <PropertyGroup>
+    <DefineConstants>DEMO</DefineConstants>
+  </PropertyGroup>
+ 
+
+  <ItemGroup>
+    <ProjectReference Include="..\foundation\ThingsGateway.Foundation.Dlt645\src\ThingsGateway.Foundation.Dlt645.csproj" />
+    <ProjectReference Include="..\foundation\ThingsGateway.Foundation.Modbus\src\ThingsGateway.Foundation.Modbus.csproj" />
+    <ProjectReference Include="..\foundation\ThingsGateway.Foundation.OpcDa\src\ThingsGateway.Foundation.OpcDa.csproj" />
+    <ProjectReference Include="..\foundation\ThingsGateway.Foundation.OpcUa\src\ThingsGateway.Foundation.OpcUa.csproj" />
+    <ProjectReference Include="..\foundation\ThingsGateway.Foundation.SiemensS7\src\ThingsGateway.Foundation.SiemensS7.csproj" />
+    <ProjectReference Include="..\foundation\ThingsGateway.Foundation\src\ThingsGateway.Foundation.csproj" />
+    <ProjectReference Include="..\ThingsGateway.Components\ThingsGateway.Components.csproj" />
+    <ProjectReference Include="..\ThingsGateway.Core\ThingsGateway.Core.csproj" />
+  </ItemGroup>
+
+
+	<ItemGroup>
+		<Content Update="wwwroot\**">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+
+
+	<ItemGroup>
+	  <Content Update="MenuConfig.json">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="Pages\AdapterDebugPage.razor">
+	    <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+	  </Content>
+	  <Content Update="Pages\ChannelEditPage.razor">
+	    <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+	  </Content>
+	  <Content Update="Pages\DemoChannelPage.razor">
+	    <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+	  </Content>
+	  <Content Update="Pages\Modbus\ModbusMaster.razor">
+	    <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+	  </Content>
+	  <Content Update="Pages\Modbus\ModbusSlave.razor">
+	    <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+	  </Content>
+	</ItemGroup>
+
+
+	<ItemGroup>
+	  <Folder Include="Service\" />
+	  <Folder Include="wwwroot\" />
+	</ItemGroup>
+	
+</Project>

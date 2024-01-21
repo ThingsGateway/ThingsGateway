@@ -1,0 +1,37 @@
+---
+id: 401
+title: Windows部署
+---
+
+import useBaseUrl from "@docusaurus/useBaseUrl";
+import Tag from "@site/src/components/Tag.js";
+import Highlight from '@site/src/components/Highlight.js';
+
+
+:::tip `提示`
+
+ 如果需要Runtime依赖部署，需要安装ASP.NET Core Runtime，如果是独立发布部署，则不需要安装Runtime
+
+ 下载链接:https://dotnet.microsoft.com/zh-cn/download/dotnet
+
+:::
+
+
+
+
+ 
+
+
+遵循windows service服务安装/启动/停止方式 https://docs.microsoft.com/zh-cn/windows-server/administration/windows-commands/sc-create 
+
+提供懒人bat脚本文件，管理员身份运行**WindowsServiceCreate.bat**
+
+
+<img src={require("@site/static/img/docs/Windows服务.png").default} />
+
+运行脚本后可以在windows服务中找到**ThingsGateway**
+
+<img src={require("@site/static/img/docs/Windows服务1.png").default} />
+
+如需删除服务，运行**WindowsServiceDelete.bat**
+
