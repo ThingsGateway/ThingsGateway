@@ -1037,6 +1037,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
         lock (Channel)
         {
             Channel.Starting -= ChannelStarting;
+            Channel.Stoped -= ChannelStoped;
             Channel.Started -= ChannelStarted;
             Channel.Received -= Received;
             Channel.Collects.Remove(this);
