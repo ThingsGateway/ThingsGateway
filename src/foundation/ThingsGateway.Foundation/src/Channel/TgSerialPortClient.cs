@@ -46,6 +46,9 @@ namespace ThingsGateway.Foundation
         public ChannelEventHandler Started { get; set; }
 
         /// <inheritdoc/>
+        public ChannelEventHandler Stoped { get; set; }
+
+        /// <inheritdoc/>
         public ChannelEventHandler Starting { get; set; }
 
         /// <inheritdoc/>
@@ -93,10 +96,12 @@ namespace ThingsGateway.Foundation
         }
 
         /// <inheritdoc/>
-        protected override Task OnDisconnected(DisconnectEventArgs e)
+        protected override async Task OnDisconnected(DisconnectEventArgs e)
         {
             Logger?.Debug($"{ToString()}  {FoundationConst.Disconnected}{(e.Message.IsNullOrEmpty() ? string.Empty : $"-{e.Message}")}");
-            return base.OnDisconnected(e);
+            if (Stoped != null)
+                await Stoped.Invoke(this);
+            await base.OnDisconnected(e);
         }
     }
 }

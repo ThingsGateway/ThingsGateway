@@ -196,6 +196,9 @@ namespace ThingsGateway.Foundation
         public ChannelEventHandler Started { get; set; }
 
         /// <inheritdoc/>
+        public ChannelEventHandler Stoped { get; set; }
+
+        /// <inheritdoc/>
         public ChannelEventHandler Starting { get; set; }
 
         /// <inheritdoc/>
@@ -230,6 +233,14 @@ namespace ThingsGateway.Foundation
             if (Starting != null)
                 await Starting.Invoke(socketClient);
             await base.OnConnecting(socketClient, e);
+        }
+
+        /// <inheritdoc/>
+        protected override async Task OnDisconnected(TgSocketClient socketClient, DisconnectEventArgs e)
+        {
+            if (Stoped != null)
+                await Stoped.Invoke(socketClient);
+            await base.OnDisconnected(socketClient, e);
         }
 
         /// <inheritdoc/>

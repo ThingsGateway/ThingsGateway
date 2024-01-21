@@ -21,8 +21,10 @@ namespace ThingsGateway.Foundation
     {
         /// <inheritdoc/>
         public List<IProtocol> Collects { get; } = new();
+
         /// <inheritdoc/>
         public EasyLock WaitLock { get; } = new EasyLock();
+
         /// <summary>
         /// 接收到数据
         /// </summary>
@@ -33,6 +35,9 @@ namespace ThingsGateway.Foundation
 
         /// <inheritdoc/>
         public ChannelEventHandler Started { get; set; }
+
+        /// <inheritdoc/>
+        public ChannelEventHandler Stoped { get; set; }
 
         /// <inheritdoc/>
         public ChannelEventHandler Starting { get; set; }
@@ -89,10 +94,12 @@ namespace ThingsGateway.Foundation
         }
 
         /// <inheritdoc/>
-        protected override Task OnDisconnected(DisconnectEventArgs e)
+        protected override async Task OnDisconnected(DisconnectEventArgs e)
         {
             Logger?.Debug($"{ToString()}   {FoundationConst.Disconnected}{(e.Message.IsNullOrEmpty() ? string.Empty : $"-{e.Message}")}");
-            return base.OnDisconnected(e);
+            if (Stoped != null)
+                await Stoped.Invoke(this);
+            await base.OnDisconnected(e);
         }
     }
 }

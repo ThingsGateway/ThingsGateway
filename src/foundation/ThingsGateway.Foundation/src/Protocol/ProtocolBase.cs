@@ -32,6 +32,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
         Channel = channel;
         Logger = channel.Logger;
         Channel.Starting += ChannelStarting;
+        Channel.Stoped += ChannelStoped;
         Channel.Started += ChannelStarted;
         Channel.Received += Received;
         Channel.Config.ConfigurePlugins(ConfigurePlugins());
@@ -96,6 +97,19 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     /// <returns></returns>
     protected virtual Task ChannelStarted(IClientChannel channel)
     {
+        return EasyTask.CompletedTask;
+    }
+
+    /// <summary>
+    /// 通道断开连接后
+    /// </summary>
+    /// <param name="channel"></param>
+    /// <returns></returns>
+    protected Task ChannelStoped(IClientChannel channel)
+    {
+        //取消全部等待池
+        WaitHandlePool.CancelAll();
+
         return EasyTask.CompletedTask;
     }
 
@@ -1020,7 +1034,6 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
-        WaitHandlePool.SafeDispose();
         lock (Channel)
         {
             Channel.Starting -= ChannelStarting;
@@ -1040,6 +1053,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
                 }
             }
         }
+        WaitHandlePool.SafeDispose();
         base.Dispose(disposing);
     }
 

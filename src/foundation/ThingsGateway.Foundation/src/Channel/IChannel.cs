@@ -25,7 +25,7 @@ public interface IChannel : IConnectObject, ICloseObject, ISetupConfigObject, ID
     public List<IProtocol> Collects { get; }
 
     /// <summary>
-    /// 通道启动成功后
+    /// CanSend
     /// </summary>
     public bool CanSend { get; }
 
@@ -33,6 +33,11 @@ public interface IChannel : IConnectObject, ICloseObject, ISetupConfigObject, ID
     /// 通道启动成功后
     /// </summary>
     public ChannelEventHandler Started { get; set; }
+
+    /// <summary>
+    /// 通道停止
+    /// </summary>
+    public ChannelEventHandler Stoped { get; set; }
 
     /// <summary>
     /// 通道启动即将成功

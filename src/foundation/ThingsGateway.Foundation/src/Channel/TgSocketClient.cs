@@ -29,8 +29,10 @@ namespace ThingsGateway.Foundation
         {
             Dispose(false);
         }
+
         /// <inheritdoc/>
         public EasyLock WaitLock { get; } = new EasyLock();
+
         /// <inheritdoc/>
         public List<IProtocol> Collects { get; } = new();
 
@@ -55,6 +57,9 @@ namespace ThingsGateway.Foundation
 
         /// <inheritdoc/>
         public ChannelEventHandler Started { get; set; }
+
+        /// <inheritdoc/>
+        public ChannelEventHandler Stoped { get; set; }
 
         /// <inheritdoc/>
         public ChannelEventHandler Starting { get; set; }

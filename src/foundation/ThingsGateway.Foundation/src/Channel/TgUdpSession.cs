@@ -22,8 +22,10 @@ namespace ThingsGateway.Foundation
         {
             Dispose(false);
         }
+
         /// <inheritdoc/>
         public EasyLock WaitLock { get; } = new EasyLock();
+
         /// <summary>
         /// 当收到数据时
         /// </summary>
@@ -37,6 +39,9 @@ namespace ThingsGateway.Foundation
 
         /// <inheritdoc/>
         public ChannelEventHandler Started { get; set; }
+
+        /// <inheritdoc/>
+        public ChannelEventHandler Stoped { get; set; }
 
         /// <inheritdoc/>
         public ChannelEventHandler Starting { get; set; }
@@ -112,6 +117,8 @@ namespace ThingsGateway.Foundation
             {
                 base.Stop();
             }
+            if (Stoped != null)
+                Stoped.Invoke(this).GetFalseAwaitResult();
         }
 
         /// <inheritdoc/>
@@ -127,6 +134,8 @@ namespace ThingsGateway.Foundation
             {
                 await base.StopAsync();
             }
+            if (Stoped != null)
+                await Stoped.Invoke(this);
         }
 
         /// <inheritdoc/>
