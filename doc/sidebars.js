@@ -169,13 +169,17 @@ module.exports = {
         },
       ]
     },
-    // {
-    //   type: "category",
-    //   label: "Pro插件手册",
-    //   items: [
-
-    //   ]
-    // },
+    {
+      type: "category",
+      label: "Pro插件手册",
+      items: [
+        {
+          type: "doc",
+          id: "10001",
+          label: "ABCipMatser"
+        },
+      ]
+    },
     {
       type: "category",
       label: "部署",
@@ -236,6 +240,37 @@ module.exports = {
           type: "doc",
           id: "602",
           label: "业务插件"
+        },
+      ]
+    },
+    {
+      type: "category",
+      label: "nuget包文档",
+      items: [
+        {
+          type: "doc",
+          id: "20001",
+          label: "Modbus"
+        },
+        {
+          type: "doc",
+          id: "20002",
+          label: "SiemensS7"
+        },
+        {
+          type: "doc",
+          id: "20003",
+          label: "OpcDa"
+        },
+        {
+          type: "doc",
+          id: "20004",
+          label: "OpcUa"
+        },
+        {
+          type: "doc",
+          id: "20005",
+          label: "Dlt645"
         },
       ]
     },
