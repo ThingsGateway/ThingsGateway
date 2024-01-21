@@ -342,7 +342,7 @@ public abstract class CollectBase : DriverBase
             {
                 try
                 {
-                    var data = await variableMethod.InvokeMethodAsync(value, cancellationToken);
+                    var data = await variableMethod.InvokeMethodAsync(this, value, cancellationToken);
                     var result1 = data?.Adapt<OperResult<object>>();
                     if (result1 != null)
                     {
