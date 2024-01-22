@@ -8,8 +8,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="SqlSugar.TDengineCore" Version="4.1.6">
-			<Private>false</Private>
-			<IncludeAssets> native;build;runtime </IncludeAssets>
+
 		</PackageReference>
 	</ItemGroup>
 
