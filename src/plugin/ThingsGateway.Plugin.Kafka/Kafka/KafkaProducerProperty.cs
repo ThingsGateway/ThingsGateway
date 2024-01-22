@@ -31,7 +31,7 @@ public class KafkaProducerProperty : BusinessPropertyWithCacheIntervalScript
     /// 发布超时时间
     /// </summary>
     [DynamicProperty("发布超时时间", "ms")]
-    public int TimeOut { get; set; } = 5000;
+    public int Timeout { get; set; } = 5000;
 
     /// <summary>
     /// 用户名

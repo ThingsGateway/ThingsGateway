@@ -249,7 +249,7 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
                 await ConnectLock.WaitAsync();
                 if (_mqttClient?.IsConnected == true)
                     return new();
-                using var timeoutToken = new CancellationTokenSource(TimeSpan.FromMilliseconds(_driverPropertys.ConnectTimeOut));
+                using var timeoutToken = new CancellationTokenSource(TimeSpan.FromMilliseconds(_driverPropertys.ConnectTimeout));
                 using CancellationTokenSource stoppingToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutToken.Token);
                 if (_mqttClient?.IsConnected == true)
                     return new();

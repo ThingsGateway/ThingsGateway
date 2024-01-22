@@ -67,7 +67,7 @@ public class MqttClientProperty : BusinessPropertyWithCacheIntervalScript
     /// 连接超时时间
     /// </summary>
     [DynamicProperty("连接超时时间", "")]
-    public int ConnectTimeOut { get; set; } = 3000;
+    public int ConnectTimeout { get; set; } = 3000;
 
     /// <summary>
     /// 允许Rpc写入

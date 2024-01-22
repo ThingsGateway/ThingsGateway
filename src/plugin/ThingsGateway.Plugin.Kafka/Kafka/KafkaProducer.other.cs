@@ -143,7 +143,7 @@ public partial class KafkaProducer : BusinessBaseWithCacheIntervalScript<Variabl
             using CancellationTokenSource cancellationTokenSource = new();
             using CancellationTokenSource stoppingToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationTokenSource.Token, cancellationToken);
             Task<DeliveryResult<Null, string>> resultTask = _producer.ProduceAsync(topic, new Message<Null, string> { Value = payLoad }, stoppingToken.Token);
-            var timeOutResult = await Task.WhenAny(resultTask, Task.Delay(_driverPropertys.TimeOut, stoppingToken.Token));
+            var timeOutResult = await Task.WhenAny(resultTask, Task.Delay(_driverPropertys.Timeout, stoppingToken.Token));
             if (timeOutResult == resultTask)
             {
                 var result = (timeOutResult as Task<DeliveryResult<Null, string>>).Result;
