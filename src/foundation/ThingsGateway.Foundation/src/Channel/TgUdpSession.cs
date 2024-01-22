@@ -111,7 +111,7 @@ namespace ThingsGateway.Foundation
             {
                 base.Stop();
                 if (Monitor == null)
-                    Logger.Info($"{Monitor.IPHost}{FoundationConst.ServiceStoped}");
+                    Logger.Info($"{Monitor?.IPHost}{FoundationConst.ServiceStoped}");
             }
             else
             {
