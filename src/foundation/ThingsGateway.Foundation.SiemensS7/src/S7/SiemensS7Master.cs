@@ -356,6 +356,7 @@ public partial class SiemensS7Master : ProtocolBase
                 if (!result2.IsSuccess)
                 {
                     Logger?.LogWarning($"{channel.ToString()}：PDU初始化失败-{result2.ErrorMessage}，请检查机架号/槽号是否正确");
+                    channel.Close();
                     return;
                 }
                 PduLength = ThingsGatewayBitConverter.ToUInt16(result2.Content.SelectLast(2), 0);
@@ -364,11 +365,13 @@ public partial class SiemensS7Master : ProtocolBase
             catch (Exception ex)
             {
                 Logger?.LogWarning($"{channel.ToString()}：PDU初始化失败-{ex.Message}，请检查机架号/槽号是否正确");
+                channel.Close();
                 return;
             }
         }
         catch (Exception ex)
         {
+            channel.Close();
             Logger.Exception(ex);
         }
         finally
