@@ -26,6 +26,13 @@ public class LiteDBDefalutCacheItem<T> : IPrimaryIdEntity
     /// <summary>
     /// LiteDBDefalutCacheItem
     /// </summary>
+    public LiteDBDefalutCacheItem()
+    {
+    }
+
+    /// <summary>
+    /// LiteDBDefalutCacheItem
+    /// </summary>
     /// <param name="data"></param>
     public LiteDBDefalutCacheItem(T data)
     {

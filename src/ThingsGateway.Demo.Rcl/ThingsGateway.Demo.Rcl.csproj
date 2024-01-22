@@ -12,7 +12,6 @@
     <ProjectReference Include="..\foundation\ThingsGateway.Foundation.OpcDa\src\ThingsGateway.Foundation.OpcDa.csproj" />
     <ProjectReference Include="..\foundation\ThingsGateway.Foundation.OpcUa\src\ThingsGateway.Foundation.OpcUa.csproj" />
     <ProjectReference Include="..\foundation\ThingsGateway.Foundation.SiemensS7\src\ThingsGateway.Foundation.SiemensS7.csproj" />
-    <ProjectReference Include="..\foundation\ThingsGateway.Foundation\src\ThingsGateway.Foundation.csproj" />
     <ProjectReference Include="..\ThingsGateway.Components\ThingsGateway.Components.csproj" />
     <ProjectReference Include="..\ThingsGateway.Core\ThingsGateway.Core.csproj" />
   </ItemGroup>
