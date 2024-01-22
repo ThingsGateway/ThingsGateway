@@ -449,7 +449,7 @@ public class PluginService : IPluginService
                 foreach (var item in plugin.OtherFiles ?? new())
                 {
                     using var otherStream = item.OpenReadStream(maxFileSize);
-                    using MemoryStream memoryStream1 = new MemoryStream();
+                    MemoryStream memoryStream1 = new MemoryStream();
                     await otherStream.CopyToAsync(memoryStream1);
                     memoryStream1.Seek(0, SeekOrigin.Begin);
                     otherFilesStreams.Add((item.Name, memoryStream1));
@@ -491,6 +491,7 @@ public class PluginService : IPluginService
                     item.Item2.Seek(0, SeekOrigin.Begin);
                     using FileStream fs1 = new(fullDir.CombinePathOS(item.Item1), FileMode.Create);
                     await item.Item2.CopyToAsync(fs1);
+                    await item.Item2.DisposeAsync();
                 }
             }
             finally
