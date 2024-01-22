@@ -381,4 +381,18 @@ public class DataTransUtil
             _ => 0x10,
         };
     }
+
+    /// <summary>
+    /// 将整数进行有效的拆分成数组，指定每个元素的最大值
+    /// </summary>
+    /// <param name="integer">整数信息</param>
+    /// <param name="everyLength">单个的数组长度</param>
+    /// <returns>拆分后的数组长度</returns>
+    public static int[] SplitIntegerToArray(int integer, int everyLength)
+    {
+        int[] array = new int[(integer / everyLength) + (integer % everyLength == 0 ? 0 : 1)];
+        for (int index = 0; index < array.Length; ++index)
+            array[index] = index != array.Length - 1 ? everyLength : (integer % everyLength == 0 ? everyLength : integer % everyLength);
+        return array;
+    }
 }

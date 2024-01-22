@@ -164,7 +164,7 @@ public class Dlt645_2007Master : ProtocolBase
                 return new();
             }
             else
-                return new OperResult<byte[]>(DltConst.DtuNoConnectedWaining);
+                return new OperResult<byte[]>(FoundationConst.DtuNoConnectedWaining);
         }
         else
         {
@@ -181,7 +181,7 @@ public class Dlt645_2007Master : ProtocolBase
             if (((TcpServiceBase)Channel).SocketClients.TryGetSocketClient($"ID={mAddress.SocketId}", out TgSocketClient? client))
                 return SendThenReturn(new SendMessage(commandResult), cancellationToken, client);
             else
-                return new OperResult<byte[]>(DltConst.DtuNoConnectedWaining);
+                return new OperResult<byte[]>(FoundationConst.DtuNoConnectedWaining);
         }
         else
             return SendThenReturn(new SendMessage(commandResult), cancellationToken);
@@ -225,7 +225,7 @@ public class Dlt645_2007Master : ProtocolBase
             if (((TcpServiceBase)Channel).SocketClients.TryGetSocketClient($"ID={mAddress.SocketId}", out TgSocketClient? client))
                 return SendThenReturnAsync(new SendMessage(commandResult), cancellationToken, client);
             else
-                return Task.FromResult(new OperResult<byte[]>(DltConst.DtuNoConnectedWaining));
+                return Task.FromResult(new OperResult<byte[]>(FoundationConst.DtuNoConnectedWaining));
         }
         else
             return SendThenReturnAsync(new SendMessage(commandResult), cancellationToken);
@@ -483,7 +483,7 @@ internal class DtuPlugin : PluginBase, ITcpReceivingPlugin
             {
                 ByteBlock byteBlock = e.ByteBlock;
                 var id = $"ID={Encoding.UTF8.GetString(byteBlock.ToArray())}";
-                client.Logger.Info(string.Format(DltConst.DtuConnected, id));
+                client.Logger.Info(string.Format(FoundationConst.DtuConnected, id));
                 socket.ResetId(id);
             }
         }

@@ -35,14 +35,4 @@ public class DltConst
 00010000    (当前)正向有功总电能
 """
 ;
-
-    /// <summary>
-    /// Dtu-{0}-已连接
-    /// </summary>
-    public const string DtuConnected = "Dtu-{0}-Connected.";
-
-    /// <summary>
-    /// 客户端未连接，或寄存器设置错误，必须设置ID={DTU注册包}
-    /// </summary>
-    public const string DtuNoConnectedWaining = "The client is not connected or the register is set incorrectly. id={Dtu registration package} must be set.";
 }
