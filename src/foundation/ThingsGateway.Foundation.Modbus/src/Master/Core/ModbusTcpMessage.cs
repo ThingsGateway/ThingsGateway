@@ -25,21 +25,15 @@ internal class ModbusTcpMessage : MessageBase, IMessage
     /// <inheritdoc/>
     public override bool CheckHeadBytes(byte[] heads)
     {
-        if (SendBytes?.Length > 0)
-        {
-            if (heads == null || heads.Length <= 0) return false;
-            HeadBytes = heads;
+        if (heads == null || heads.Length <= 0) return false;
+        HeadBytes = heads;
 
-            int num = (HeadBytes[4] * 256) + HeadBytes[5];
-            if (num > 0xff + 3) return false;
-            BodyLength = num;
+        int num = (HeadBytes[4] * 256) + HeadBytes[5];
+        if (num > 0xff + 3) return false;
+        BodyLength = num;
 
-            return true;
-        }
-        else
-        {
-            return false;//不是主动请求的，可能是心跳DTU包，直接放弃
-        }
+        return true;
+
 
     }
 }
