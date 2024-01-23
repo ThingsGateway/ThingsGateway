@@ -258,26 +258,20 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
         if (SendDelayTime != 0)
             Thread.Sleep(SendDelayTime);
         SetDataAdapter();
-        MessageBase? result = null;
-        try
-        {
-            if (channel == default)
-            {
-                if (Channel is not IClientChannel clientChannel) { throw new ArgumentNullException(nameof(channel)); }
+        MessageBase? result;
 
-                result = GetResponsedData(item, Timeout, clientChannel, cancellationToken);
-            }
-            else
-            {
-                result = GetResponsedData(item, Timeout, channel, cancellationToken);
-            }
-        }
-        catch (Exception ex)
+        if (channel == default)
         {
-            return new OperResult<byte[]>(ex);
+            if (Channel is not IClientChannel clientChannel) { throw new ArgumentNullException(nameof(channel)); }
+
+            result = GetResponsedData(item, Timeout, clientChannel, cancellationToken);
+        }
+        else
+        {
+            result = GetResponsedData(item, Timeout, channel, cancellationToken);
         }
 
-        return result ?? new OperResult<byte[]>(FoundationConst.UnknowError);
+        return result;
     }
 
     /// <inheritdoc/>
@@ -288,25 +282,19 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
         if (SendDelayTime != 0)
             await Task.Delay(SendDelayTime, cancellationToken);
         SetDataAdapter();
-        MessageBase? result = null;
-        try
+        MessageBase? result;
+
+        if (channel == default)
         {
-            if (channel == default)
-            {
-                if (Channel is not IClientChannel clientChannel) { throw new ArgumentNullException(nameof(channel)); }
-                result = await GetResponsedDataAsync(item, Timeout, clientChannel, cancellationToken);
-            }
-            else
-            {
-                result = await GetResponsedDataAsync(item, Timeout, channel, cancellationToken);
-            }
+            if (Channel is not IClientChannel clientChannel) { throw new ArgumentNullException(nameof(channel)); }
+            result = await GetResponsedDataAsync(item, Timeout, clientChannel, cancellationToken);
         }
-        catch (Exception ex)
+        else
         {
-            return new OperResult<byte[]>(ex);
+            result = await GetResponsedDataAsync(item, Timeout, channel, cancellationToken);
         }
 
-        return result ?? new OperResult<byte[]>(FoundationConst.UnknowError);
+        return result;
     }
 
     /// <summary>

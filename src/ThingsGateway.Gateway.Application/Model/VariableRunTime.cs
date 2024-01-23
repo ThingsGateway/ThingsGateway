@@ -173,6 +173,7 @@ public class VariableRunTime : Variable, IVariable
             {
                 IsOnline = false;
                 Set(null);
+                VariableSource.LastErrorMessage = $"{Name} 转换表达式失败：{ex.Message}";
                 return new($"{Name} 转换表达式失败：{ex.Message}");
             }
         }
