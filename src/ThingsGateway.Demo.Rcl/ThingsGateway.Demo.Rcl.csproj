@@ -46,9 +46,6 @@
 	</ItemGroup>
 
 
-	<ItemGroup>
-	  <Folder Include="Service\" />
-	  <Folder Include="wwwroot\" />
-	</ItemGroup>
+
 	
 </Project>

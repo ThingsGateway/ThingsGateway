@@ -53,6 +53,7 @@ public class Dlt645_2007Master : CollectBase
             Password = _driverPropertys.Password,
             CheckClear = _driverPropertys.CheckClear,
             Station = _driverPropertys.Station,
+            HeartbeatHexString = _driverPropertys.HeartbeatHexString,
         };
         base.Init(channel);
     }

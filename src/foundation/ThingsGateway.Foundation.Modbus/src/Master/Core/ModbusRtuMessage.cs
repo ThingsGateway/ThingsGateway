@@ -25,7 +25,14 @@ internal class ModbusRtuMessage : MessageBase, IMessage
     /// <inheritdoc/>
     public override bool CheckHeadBytes(byte[] heads)
     {
-        BodyLength = -1;
-        return true;
+        if (SendBytes?.Length > 0)
+        {
+            BodyLength = -1;
+            return true;
+        }
+        else
+        {
+            return false;//不是主动请求的，可能是心跳DTU包，直接放弃
+        }
     }
 }

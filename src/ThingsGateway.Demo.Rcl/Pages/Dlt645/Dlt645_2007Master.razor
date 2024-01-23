@@ -35,6 +35,8 @@
 
                  <MTextField Class="ma-1" Outlined Style="max-width:150px" Dense HideDetails="@("auto")"
                              Label=@(AppService.I18n.T(_plc.Description(x => x.Password))) @bind-Value=@_plc.Password></MTextField>
+                 <MTextField Class="ma-1" Outlined Style="max-width:150px" Dense HideDetails="@("auto")"
+                             Label=@(AppService.I18n.T(_plc.Description(x => x.HeartbeatHexString))) @bind-Value=@_plc.HeartbeatHexString></MTextField>
 
                  <MSelect Class="ma-1" Outlined Style="max-width:200px"
                           @bind-Value="_plc.DataFormat" Label="@(AppService.I18n.T(_plc.Description(x => x.DataFormat)))"

@@ -51,6 +51,7 @@ public class ModbusMaster : CollectBase
             Timeout = _driverPropertys.Timeout,
             CheckClear = _driverPropertys.CheckClear,
             ModbusType = _driverPropertys.ModbusType,
+            HeartbeatHexString = _driverPropertys.HeartbeatHexString,
         };
         base.Init(channel);
     }

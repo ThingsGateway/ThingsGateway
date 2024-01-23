@@ -120,7 +120,7 @@ public class ModbusSlave : ProtocolBase
         switch (Channel.ChannelType)
         {
             case ChannelTypeEnum.TcpService:
-                Action<IPluginManager> action = null;
+                Action<IPluginManager> action = a => { };
                 if (CheckClear)
                 {
                     action = a => a.UseCheckClear()
@@ -132,16 +132,7 @@ public class ModbusSlave : ProtocolBase
             c.SafeClose("超时清理");
         });
                 }
-                if (action == null)
-                    action = a =>
-                    {
-                        a.Add<DtuPlugin>();
-                    };
-                else
-                    action += a =>
-                    {
-                        a.Add<DtuPlugin>();
-                    };
+
                 return action;
         }
         return base.ConfigurePlugins();

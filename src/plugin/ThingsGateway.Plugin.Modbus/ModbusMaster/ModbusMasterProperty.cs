@@ -24,7 +24,11 @@ public class ModbusMasterProperty : CollectPropertyBase
 {
     [DynamicProperty("Modbus协议类型", "")]
     public ModbusTypeEnum ModbusType { get; set; }
-
+    /// <summary>
+    /// 心跳检测
+    /// </summary>
+    [DynamicProperty("心跳检测", "大写16进制字符串，符合心跳内容会自动回应")]
+    public string HeartbeatHexString { get; set; }
     /// <summary>
     /// 默认站号
     /// </summary>
