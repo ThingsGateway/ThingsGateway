@@ -37,7 +37,7 @@ public partial class MqttServer : BusinessBaseWithCacheIntervalScript<VariableDa
     protected override BusinessPropertyWithCacheIntervalScript _businessPropertyWithCacheIntervalScript => _driverPropertys;
 
     /// <inheritdoc/>
-    public override bool IsConnected() => _mqttServer?.IsStarted == true && success;
+    public override bool IsConnected() => _mqttServer?.IsStarted == true;
 
     /// <inheritdoc/>
     public override string ToString()
