@@ -30,7 +30,13 @@ public class ChannelThread
     /// <summary>
     /// 线程最小等待间隔时间
     /// </summary>
-    public const int CycleInterval = 10;
+    public static volatile int CycleInterval = 10;
+
+    static ChannelThread()
+    {
+        var cycleInterval = App.GetConfig<int?>("ChannelThread:CycleInterval") ?? 10;
+        CycleInterval = cycleInterval < 10 ? 10 : cycleInterval;
+    }
 
     /// <summary>
     /// <inheritdoc cref="TouchSocket.Core.TouchSocketConfig"/>

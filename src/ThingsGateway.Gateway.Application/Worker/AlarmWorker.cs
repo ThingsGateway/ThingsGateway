@@ -117,7 +117,6 @@ public class AlarmWorker : BackgroundService
                 device.VariableRunTimes?.ForEach(v => { v.VariableCollectChange -= DeviceVariableChange; });
             }
 
-
             StoppingTokens.ParallelForEach(cancellationToken =>
          {
              _ = Task.Run(() =>

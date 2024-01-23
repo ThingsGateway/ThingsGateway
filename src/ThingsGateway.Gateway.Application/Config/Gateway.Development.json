@@ -2,5 +2,8 @@
   "HardwareInfo": {
     "Enable": true, //启用硬件信息获取
     "TimeInterval": 10000 //更新间隔ms
+  },
+  "ChannelThread": {
+    "CycleInterval": 20 //最小循环间隔
   }
 }

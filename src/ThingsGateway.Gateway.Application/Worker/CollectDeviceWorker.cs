@@ -78,6 +78,8 @@ public class CollectDeviceWorker : DeviceWorker
         var businessDeviceHostService = WorkerUtil.GetWoker<BusinessDeviceWorker>();
         await businessDeviceHostService.StartAsync();
         await alarmHostService.StartAsync();
+        if (Start != null)
+            await Start.Invoke();
     }
 
     /// <summary>
@@ -89,6 +91,8 @@ public class CollectDeviceWorker : DeviceWorker
         var businessDeviceHostService = WorkerUtil.GetWoker<BusinessDeviceWorker>();
         await alarmHostService.StopAsync();
         await businessDeviceHostService.StopAsync();
+        if (Stop != null)
+            await Stop.Invoke();
     }
 
     #endregion public 设备创建更新结束
@@ -161,4 +165,9 @@ public class CollectDeviceWorker : DeviceWorker
     }
 
     #endregion worker服务
+
+    public event RestartEventHandler Stop;
+    public event RestartEventHandler Start;
 }
+
+public delegate Task RestartEventHandler();
