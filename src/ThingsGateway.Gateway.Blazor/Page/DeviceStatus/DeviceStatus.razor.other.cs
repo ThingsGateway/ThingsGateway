@@ -30,7 +30,7 @@ public partial class DeviceStatus
             try
             {
                 await Task.Delay(2000);
-                Execute();
+                await Execute();
             }
             catch
             {
@@ -76,12 +76,12 @@ public partial class DeviceStatus
     private RenderFragment _driverRender;
     private object _importRef;
 
-    private void DeviceInfoOnClick(DriverBase item)
+    private async void DeviceInfoOnClick(DriverBase item)
     {
         if (_driverBaseItem != item)
         {
             _driverBaseItem = item;
-            Execute();
+            await Execute();
         }
     }
 
@@ -158,7 +158,7 @@ public partial class DeviceStatus
 
     private List<(int, string)> Messages { get; set; } = new List<(int, string)>();
 
-    protected void Execute()
+    protected async Task Execute()
     {
         try
         {
@@ -180,6 +180,7 @@ public partial class DeviceStatus
                     {
                         Messages = new List<(int, string)>();
                     }
+                    await Task.Delay(1000);
                 }
             }
             else

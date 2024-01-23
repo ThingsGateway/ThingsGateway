@@ -157,14 +157,19 @@ public partial class AdapterDebugPage : AdapterDebugBase
                 }
                 else
                 {
-                    var result = TextFileReader.LastLog(files.FirstOrDefault().FullName, 0);
-                    if (result.IsSuccess)
+                    _ = Task.Run(() =>
                     {
-                        Messages = result.Content.Select(a => ((int)a.LogLevel, $"{a.LogTime} - {a.Message} {Environment.NewLine} {a.ExceptionString}")).ToList();
-                    }
-                    else
-                    {
-                    }
+                        var result = TextFileReader.LastLog(files.FirstOrDefault().FullName, 0);
+                        if (result.IsSuccess)
+                        {
+                            Messages = result.Content.Select(a => ((int)a.LogLevel, $"{a.LogTime} - {a.Message}")).ToList();
+                        }
+                        else
+                        {
+                            Messages = new List<(int, string)>();
+                        }
+                    });
+                    await Task.Delay(1000);
                 }
             }
         }

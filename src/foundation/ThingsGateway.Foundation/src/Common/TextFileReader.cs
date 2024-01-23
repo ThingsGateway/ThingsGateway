@@ -252,6 +252,7 @@ namespace ThingsGateway.Foundation
                     {
                         arr.RemoveRange(arr.Count - maxRead / 2, maxRead / 2);
                         arr.Add((byte)s);
+                        readLength = arr.Count;
                     }
 
                     if (curVal == n || curVal == s || curVal == a)

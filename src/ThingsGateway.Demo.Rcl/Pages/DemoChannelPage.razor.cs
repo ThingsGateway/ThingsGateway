@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Components;
 using ThingsGateway.Foundation;
 
 using TouchSocket.Core;
+using TouchSocket.Sockets;
 
 namespace ThingsGateway.Demo
 {
@@ -34,6 +35,7 @@ namespace ThingsGateway.Demo
             {
                 if (ChannelData != item.Item)
                 {
+                    ChannelData?.Channel?.Close();
                     ChannelData = item.Item;
                     await OnEditClick.InvokeAsync(ChannelData);
                 }
@@ -48,6 +50,7 @@ namespace ThingsGateway.Demo
             {
                 if (ChannelData != channelData)
                 {
+                    ChannelData?.Channel?.Close();
                     ChannelData = channelData;
                     ChannelConfigs.Default.Save(true, out _);
                     await OnEditClick.InvokeAsync(ChannelData);
@@ -59,6 +62,7 @@ namespace ThingsGateway.Demo
         {
             try
             {
+                ChannelData?.Channel?.Close();
                 ChannelConfigs.Default.ChannelDatas.Remove(ChannelData);
                 ChannelData = null;
                 ChannelName = null;
@@ -95,6 +99,7 @@ namespace ThingsGateway.Demo
 
             if (data != null)
             {
+                ChannelData?.Channel?.Close();
                 ChannelConfigs.Default.ChannelDatas.Remove(ChannelData);
                 ChannelData = (ChannelData)data;
                 ChannelData.CreateChannel(ChannelData);
