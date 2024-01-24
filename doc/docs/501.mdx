@@ -8,3 +8,9 @@ import Tag from "@site/src/components/Tag.js";
 import Highlight from '@site/src/components/Highlight.js';
 
 
+#### 1、Modbus地址可以只写地址0吗，一定要写成类似400001?
+
+答：
+
+按照PLC Modbus寄存器的格式，以区域号为起始字符，后续加上（寄存器地址+1）  
+所以一定要写成400001

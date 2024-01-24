@@ -81,12 +81,34 @@ public interface IDynamicModel
     IEnumerable<dynamic> GetList(IEnumerable<dynamic> datas);
 }
 
+public interface IDynamicModelData
+{
+    dynamic GeData(dynamic datas);
+}
+
 /// <summary>
 /// 脚本扩展方法
 /// </summary>
 public static class CSharpScriptEngineExtension
 {
     private static readonly CSharpScriptEngine _cSharpScriptEngine = new();
+
+    /// <summary>
+    /// GetDynamicModel
+    /// </summary>
+    public static dynamic GetDynamicModelData<T>(this T data, string script) where T : class
+    {
+        if (!string.IsNullOrEmpty(script))
+        {
+            //执行脚本，获取新实体
+            var getDeviceModel = _cSharpScriptEngine.Do<IDynamicModelData>(script);
+            return getDeviceModel.GeData(data);
+        }
+        else
+        {
+            return data;
+        }
+    }
 
     /// <summary>
     /// GetDynamicModel
