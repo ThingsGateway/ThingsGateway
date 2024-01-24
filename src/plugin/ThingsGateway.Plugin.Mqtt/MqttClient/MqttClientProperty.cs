@@ -92,10 +92,6 @@ public class MqttClientProperty : BusinessPropertyWithCacheIntervalScript
                 throw new ArgumentNullException(nameof(RpcWriteTopic));
             }
 
-            if (value.Contains("/") || value.Contains("+") || value.Contains("#"))
-            {
-                throw new ArgumentException("值不能包含  / + # ");
-            }
             rpcwriteTopic = value;
         }
     }
