@@ -14,7 +14,7 @@
 
 using System.ComponentModel;
 
-namespace ThingsGateway.Admin.Core;
+namespace ThingsGateway.Admin.Application;
 
 /// <summary>
 /// 会话信息

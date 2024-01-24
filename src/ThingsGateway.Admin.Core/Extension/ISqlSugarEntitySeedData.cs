@@ -12,7 +12,7 @@
 
 #endregion
 
-namespace ThingsGateway.Admin.Application;
+namespace ThingsGateway.Admin.Core;
 
 /// <summary>
 /// 实体种子数据接口

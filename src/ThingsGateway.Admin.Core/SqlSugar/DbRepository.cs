@@ -14,7 +14,7 @@
 
 using System.Linq.Expressions;
 
-namespace ThingsGateway.Admin.Application;
+namespace ThingsGateway.Admin.Core;
 
 /// <summary>
 /// 仓储模式对象

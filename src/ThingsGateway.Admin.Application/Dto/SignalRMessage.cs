@@ -12,7 +12,7 @@
 
 #endregion
 
-namespace ThingsGateway.Admin.Core;
+namespace ThingsGateway.Admin.Application;
 
 /// <summary>
 /// SignalR消息

@@ -12,7 +12,7 @@
 
 #endregion
 
-namespace ThingsGateway.Admin.Application;
+namespace ThingsGateway.Admin.Core;
 
 /// <summary>
 /// SqlSugar系统常量

@@ -20,7 +20,7 @@ using ThingsGateway.Core.Extension;
 
 using Yitter.IdGenerator;
 
-namespace ThingsGateway.Admin.Application;
+namespace ThingsGateway.Admin.Core;
 
 /// <summary>
 /// 数据库上下文对象

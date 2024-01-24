@@ -14,7 +14,7 @@
 
 using NewLife.Serialization;
 
-namespace ThingsGateway.Admin.Application;
+namespace ThingsGateway.Admin.Core;
 
 /// <summary>
 /// 种子数据工具类

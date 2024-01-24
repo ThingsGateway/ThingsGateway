@@ -15,7 +15,7 @@
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace ThingsGateway.Admin.Application;
+namespace ThingsGateway.Admin.Core;
 
 /// <summary>
 /// Sqlsugar分页拓展类

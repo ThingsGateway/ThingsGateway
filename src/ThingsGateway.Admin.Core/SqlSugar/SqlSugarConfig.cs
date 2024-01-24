@@ -14,7 +14,7 @@
 
 using Furion.ConfigurableOptions;
 
-namespace ThingsGateway.Admin.Application;
+namespace ThingsGateway.Admin.Core;
 
 /// <summary>
 /// 初始化表配置

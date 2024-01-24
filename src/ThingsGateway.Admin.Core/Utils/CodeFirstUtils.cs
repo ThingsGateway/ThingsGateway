@@ -15,7 +15,7 @@
 using System.Collections;
 using System.Reflection;
 
-namespace ThingsGateway.Admin.Application;
+namespace ThingsGateway.Admin.Core;
 
 /// <summary>
 /// CodeFirst功能类
