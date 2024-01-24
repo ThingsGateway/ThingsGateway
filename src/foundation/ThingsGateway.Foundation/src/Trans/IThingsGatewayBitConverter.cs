@@ -75,12 +75,6 @@ public interface IThingsGatewayBitConverter
     #endregion Public Properties
 
     /// <summary>
-    /// 拷贝
-    /// </summary>
-    /// <returns></returns>
-    public IThingsGatewayBitConverter CopyNew();
-
-    /// <summary>
     /// 判断当前系统是否为设置的大小端
     /// </summary>
     /// <returns></returns>

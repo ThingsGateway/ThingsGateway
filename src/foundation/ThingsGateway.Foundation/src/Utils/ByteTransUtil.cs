@@ -62,7 +62,7 @@ public class ByteTransUtil
         var cacheKey = $"{nameof(ByteTransUtil)}_{nameof(GetTransByAddress)}_{defaultBitConverter.GetType().FullName}_{defaultBitConverter.ToJsonString()}_{registerAddress}";
         if (Cache.Default.TryGetValue(cacheKey, out IThingsGatewayBitConverter cachedConverter))
         {
-            return cachedConverter!.CopyNew();
+            return (IThingsGatewayBitConverter)cachedConverter!.ToJsonString().FromJsonString(defaultBitConverter.GetType());
         }
 
         registerAddress = registerAddress.Trim();
@@ -118,7 +118,7 @@ public class ByteTransUtil
             return defaultBitConverter;
         }
 
-        var converter = defaultBitConverter.CopyNew();
+        var converter = (IThingsGatewayBitConverter)defaultBitConverter!.ToJsonString().FromJsonString(defaultBitConverter.GetType());
 
         if (encoding != null)
         {
@@ -142,7 +142,7 @@ public class ByteTransUtil
         }
 
         // 将解析结果添加到缓存中
-        Cache.Default.Set(cacheKey, converter.CopyNew(), 3600);
+        Cache.Default.Set(cacheKey, (IThingsGatewayBitConverter)converter!.ToJsonString().FromJsonString(defaultBitConverter.GetType()), 3600);
         return converter;
     }
 }

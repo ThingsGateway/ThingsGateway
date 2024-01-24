@@ -86,20 +86,6 @@ public class Dlt645_2007BitConverter : ThingsGatewayBitConverter
     }
 
     /// <inheritdoc/>
-    public override IThingsGatewayBitConverter CopyNew()
-    {
-        return new Dlt645_2007BitConverter(EndianType)
-        {
-            DataFormat = DataFormat,
-            BcdFormat = BcdFormat,
-            Encoding = Encoding,
-            IsStringReverseByteWord = IsStringReverseByteWord,
-            StringLength = StringLength,
-            ArrayLength = ArrayLength,
-        };
-    }
-
-    /// <inheritdoc/>
     public override string ToString(byte[] buffer)
     {
         return this.ToString(buffer, 0, buffer.Length);

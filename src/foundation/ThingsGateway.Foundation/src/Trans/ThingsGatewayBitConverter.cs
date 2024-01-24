@@ -89,20 +89,6 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
     public virtual bool IsStringReverseByteWord { get; set; }
 
     /// <inheritdoc/>
-    public virtual IThingsGatewayBitConverter CopyNew()
-    {
-        return new ThingsGatewayBitConverter(EndianType)
-        {
-            DataFormat = DataFormat,
-            BcdFormat = BcdFormat,
-            Encoding = Encoding,
-            IsStringReverseByteWord = IsStringReverseByteWord,
-            StringLength = StringLength,
-            ArrayLength = ArrayLength,
-        };
-    }
-
-    /// <inheritdoc/>
     public virtual byte[] GetBytes(bool value)
     {
         return GetBytes(new bool[1]
