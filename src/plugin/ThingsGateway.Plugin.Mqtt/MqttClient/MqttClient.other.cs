@@ -157,7 +157,8 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
 
         if (!_driverPropertys.DeviceRpcEnable || string.IsNullOrEmpty(args.ClientId))
             return;
-        if (args.ApplicationMessage.Topic != _driverPropertys.RpcWriteTopic)
+        var t = string.Format(TgMqttRpcClientTopicGenerationStrategy.RpcTopic, _driverPropertys.RpcWriteTopic);
+        if (MqttTopicFilterComparer.Compare(args.ApplicationMessage.Topic, t) != MqttTopicFilterCompareResult.IsMatch)
             return;
         var rpcDatas = Encoding.UTF8.GetString(args.ApplicationMessage.PayloadSegment).FromJsonString<Dictionary<string, string>>();
         if (rpcDatas == null)
@@ -169,7 +170,7 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
             if (isConnect.IsSuccess)
             {
                 var variableMessage = new MqttApplicationMessageBuilder()
-.WithTopic($"{args.ApplicationMessage.Topic}/response")
+.WithTopic($"{args.ApplicationMessage.Topic}/Response")
 .WithPayload(mqttRpcResult.ToJsonString(true)).Build();
                 await _mqttClient.PublishAsync(variableMessage);
             }
@@ -190,7 +191,7 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
                 if (tag != null)
                 {
                     var rpcEnable = tag.GetPropertyValue(DeviceId, nameof(_variablePropertys.VariableRpcEnable))?.Value?.ToBoolean();
-                    if (rpcEnable != true)
+                    if (rpcEnable == false)
                     {
                         mqttRpcResult.Add(rpcData.Key, new("权限不足，变量不支持写入"));
                     }

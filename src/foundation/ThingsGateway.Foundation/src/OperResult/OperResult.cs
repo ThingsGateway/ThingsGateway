@@ -12,6 +12,8 @@
 
 #endregion
 
+using Newtonsoft.Json;
+
 namespace ThingsGateway.Foundation;
 
 /// <inheritdoc/>
@@ -116,6 +118,7 @@ public class OperResult : IOperResult
     /// <summary>
     /// 异常堆栈
     /// </summary>
+    [JsonIgnore]
     public Exception? Exception;
 
     /// <summary>
