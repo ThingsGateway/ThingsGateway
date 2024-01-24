@@ -14,3 +14,13 @@ import Highlight from '@site/src/components/Highlight.js';
 
 按照PLC Modbus寄存器的格式，以区域号为起始字符，后续加上（寄存器地址+1）  
 所以一定要写成400001
+
+#### 2、数据如何设置小数位
+
+答：
+
+网关提供灵活的脚本式配置转换，可以在变量的读取表达式中进行配置转换 
+如果要设置小数位为2，可以填入 
+```
+Math.Round(raw, 2)
+```
