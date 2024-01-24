@@ -528,19 +528,18 @@
                         </MRow>
                         @if (context.VariablePropertys != null)
                     {
-                        @foreach (var item in context.VariablePropertys)
+                        @foreach (var item in context.VariablePropertys.ToList())
                     {
                     var data=_businessDevices.FirstOrDefault(a => a.Id == item.Key);
+
+                        @if(data!=null)
+                    {
                         <MRow Justify="JustifyTypes.Start" Align="AlignTypes.Center">
                             <MCard Rounded=true Elevation=1 Class="ma-2 pa-3" Width=@("100%")>
                                 <MCardActions>
                                     <MRow Justify="JustifyTypes.Start" Align="AlignTypes.Center">
 
-                                        @if(data!=null)
                                         @($"{data.Name}  ({data.PluginName})")
-
-
-
 
                                         <MSpacer></MSpacer>
                                         <MButton OnClick=@(() =>context.VariablePropertys.Remove(item.Key)) Color="primary">@AppService.I18n.T("删除") </MButton>
@@ -569,6 +568,10 @@
                             </MCard>
                         </MRow>
                     }
+                    else{
+                    context.VariablePropertys.Remove(item.Key);
+                    }
+                    }
                     }
                     </MContainer>
                 </MCard>
@@ -576,7 +579,7 @@
 
         </MTabsItems>
     </div>
-        ;
+    ;
         return renderFragment;
     }
     private StringNumber tab;

@@ -297,15 +297,24 @@
                             </MCol>
                             @if (context.DevicePropertys != null)
                         {
-                            @foreach (var item in context.DevicePropertys)
+                            @foreach (var item in context.DevicePropertys.ToList())
                         {
+                        var data=PluginService.GetDriverPropertyTypes(context.PluginName);
+                        if(data.ContainsKey(item.Name))
+                        {
+
                         var isBigText=item.Name.Contains("BigText");
                         int md=isBigText?12:4;
                             <MCol Md=md Sm=12>
-                                <DynamicPropertyComponent IsBigText=isBigText Type="PluginService.GetDriverPropertyTypes(context.PluginName)[item.Name].PropertyType" @bind-Value=item.Value
-                                                          Description=@(item.Description) Remark=@(PluginService.GetDriverPropertyTypes(context.PluginName)[item.Name].Remark)>
+                                <DynamicPropertyComponent IsBigText=isBigText Type="data[item.Name].PropertyType" @bind-Value=item.Value
+                                                          Description=@(item.Description) Remark=@(data[item.Name].Remark)>
                                 </DynamicPropertyComponent>
                             </MCol>
+                        }
+                        else
+                        {
+                        context.DevicePropertys.Remove(item);
+                        }
                         }
                         }
                         </MRow>
