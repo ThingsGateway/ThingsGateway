@@ -24,6 +24,4 @@ global using System.Collections.Generic;
 global using System.Linq;
 global using System.Threading.Tasks;
 
-global using ThingsGateway.Admin.Application;
-global using ThingsGateway.Admin.Core;
 global using ThingsGateway.Core;

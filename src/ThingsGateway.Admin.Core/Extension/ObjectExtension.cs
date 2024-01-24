@@ -115,7 +115,7 @@ public static class ObjectExtension
     /// <param name="type">类型</param>
     /// <param name="generic">泛型类型</param>
     /// <returns>bool</returns>
-    internal static bool HasImplementedRawGeneric(this Type type, Type generic)
+    public static bool HasImplementedRawGeneric(this Type type, Type generic)
     {
         // 检查接口类型
         var isTheRawGenericType = type.GetInterfaces().Any(IsTheRawGenericType);
