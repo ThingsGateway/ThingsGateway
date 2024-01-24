@@ -64,11 +64,13 @@ public class Dlt645_2007Master : ProtocolBase
     /// </summary>
     [Description("自动断开连接")]
     public bool CheckClear { get; set; } = false;
+
     /// <summary>
     /// 心跳检测(大写16进制字符串)
     /// </summary>
     [Description("心跳检测")]
     public string HeartbeatHexString { get; set; } = "FFFF8080";
+
     /// <inheritdoc/>
     public override string GetAddressDescription()
     {
@@ -93,16 +95,11 @@ public class Dlt645_2007Master : ProtocolBase
           c.SafeClose("超时清理");
       });
                 }
-                if (action == null)
-                    action = a =>
-                    {
-                        a.Add<DtuPlugin>();
-                    };
-                else
-                    action += a =>
-                    {
-                        a.Add<DtuPlugin>();
-                    };
+
+                action += a =>
+                {
+                    a.Add<DtuPlugin>();
+                };
                 return action;
         }
         return base.ConfigurePlugins();
@@ -480,10 +477,12 @@ public class Dlt645_2007Master : ProtocolBase
 internal class DtuPlugin : PluginBase, ITcpReceivingPlugin
 {
     private Dlt645_2007Master _dlt645_2007Master;
+
     public DtuPlugin(Dlt645_2007Master dlt645_2007Master)
     {
         _dlt645_2007Master = dlt645_2007Master;
     }
+
     public async Task OnTcpReceiving(ITcpClientBase client, ByteBlockEventArgs e)
     {
         if (client is ISocketClient socket)

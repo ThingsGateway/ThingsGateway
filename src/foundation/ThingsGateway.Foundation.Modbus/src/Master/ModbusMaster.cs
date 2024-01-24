@@ -75,11 +75,13 @@ public class ModbusMaster : ProtocolBase
     /// </summary>
     [Description("自动断开连接")]
     public bool CheckClear { get; set; } = false;
+
     /// <summary>
     /// 心跳检测(大写16进制字符串)
     /// </summary>
     [Description("心跳检测")]
     public string HeartbeatHexString { get; set; } = "FFFF8080";
+
     /// <inheritdoc/>
     public override string GetAddressDescription()
     {
@@ -104,18 +106,12 @@ public class ModbusMaster : ProtocolBase
           c.SafeClose("超时清理");
       });
                 }
-                if (action == null)
-                    action = a =>
-                    {
-                        DtuPlugin dtuPlugin = new(this);
-                        a.Add(dtuPlugin);
-                    };
-                else
-                    action += a =>
-                       {
-                           DtuPlugin dtuPlugin = new(this);
-                           a.Add(dtuPlugin);
-                       };
+
+                action += a =>
+                   {
+                       DtuPlugin dtuPlugin = new(this);
+                       a.Add(dtuPlugin);
+                   };
                 return action;
         }
         return base.ConfigurePlugins();
@@ -350,11 +346,13 @@ public class ModbusMaster : ProtocolBase
 [PluginOption(Singleton = true)]
 internal class DtuPlugin : PluginBase, ITcpReceivingPlugin
 {
-    ModbusMaster _modbusMaster;
+    private ModbusMaster _modbusMaster;
+
     public DtuPlugin(ModbusMaster modbusMaster)
     {
         this._modbusMaster = modbusMaster;
     }
+
     public async Task OnTcpReceiving(ITcpClientBase client, ByteBlockEventArgs e)
     {
         if (client is ISocketClient socket)
@@ -372,7 +370,6 @@ internal class DtuPlugin : PluginBase, ITcpReceivingPlugin
                 socket.DefaultSend(bytes);
                 socket.Logger?.Trace($"{socket.ToString()}- {FoundationConst.Send}:{bytes.ToHexString(' ')}");
             }
-
         }
         await e.InvokeNext();//如果本插件无法处理当前数据，请将数据转至下一个插件。
     }
