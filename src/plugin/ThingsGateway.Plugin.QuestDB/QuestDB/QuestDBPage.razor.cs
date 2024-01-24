@@ -16,7 +16,7 @@ using Microsoft.AspNetCore.Components;
 
 using SqlSugar;
 
-using ThingsGateway.Admin.Application;
+using ThingsGateway.Admin.Core;
 using ThingsGateway.Core;
 
 namespace ThingsGateway.Plugin.QuestDB;

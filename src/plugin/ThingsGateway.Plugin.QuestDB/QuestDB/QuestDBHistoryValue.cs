@@ -16,7 +16,7 @@ using SqlSugar;
 
 using System.ComponentModel;
 
-using ThingsGateway.Admin.Application;
+using ThingsGateway.Admin.Core;
 using ThingsGateway.Core;
 
 namespace ThingsGateway.Plugin.QuestDB;
