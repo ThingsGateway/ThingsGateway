@@ -7,6 +7,8 @@
 @using ThingsGateway.Core.Extension.Json
 @using ThingsGateway.Gateway.Application
 @using TouchSocket.Core
+@using ThingsGateway.Foundation.TypeExtension
+
 @namespace ThingsGateway.Gateway.Blazor
 @inject UserResoures UserResoures
 @inherits BaseComponentBase
@@ -18,7 +20,7 @@
         <MTooltip Disabled=@(string.IsNullOrEmpty(Remark)) Bottom Context="tip">
              <ActivatorContent>
                  <MSelect Class="" Items=@(new List<bool>(){true,false})
-                          Value=@Value ValueChanged=@ValueChanged Label=@(Description) ValueExpression="()=>Value" Required=!Type.IsNullableType() Clearable=Type.IsNullableType()
+                          Value=@Value ValueChanged=@ValueChanged Label=@(Description) ValueExpression="()=>Value" Required=!Type.IsNullable() Clearable=Type.IsNullable()
                           MenuProps="@(props => { props.Auto = true; props.OffsetY = true; })"
                           ItemText=@((u) =>u.ToString()) @attributes="@tip.Attrs"
                           ItemValue=@(u =>u.ToString())
@@ -41,7 +43,7 @@
                                   TimeFormat="TimeFormat.Hr24"
                                   ViewType="DateTimePickerViewType.Compact">
                      <ActivatorContent Context="dt">
-                         <MTextField Value=@Value ValueChanged=@ValueChanged Label=@Description Required=!Type.IsNullableType() Clearable=Type.IsNullableType()
+                         <MTextField Value=@Value ValueChanged=@ValueChanged Label=@Description Required=!Type.IsNullable() Clearable=Type.IsNullable()
                                      Class="my-1  mx-2 " ValueExpression="()=>Value"
                                             Filled Outlined
                                             Readonly Dense
@@ -60,7 +62,7 @@
         <MTooltip Disabled=@(string.IsNullOrEmpty(Remark)) Bottom Context="tip">
              <ActivatorContent>
                  <MSelect Class="" Items=@(Type.PropertyType.GetEnumList())
-                          Value=@Value ValueChanged=@ValueChanged Label=@(Description) ValueExpression="()=>Value" Required=!Type.IsNullableType() Clearable=Type.IsNullableType()
+                          Value=@Value ValueChanged=@ValueChanged Label=@(Description) ValueExpression="()=>Value" Required=!Type.IsNullable() Clearable=Type.IsNullable()
                           MenuProps="@(props => { props.Auto = true; props.OffsetY = true; })"
                           ItemText=@(u =>u.Description) @attributes="@tip.Attrs"
                           ItemValue=@(u =>u.Name)
@@ -78,7 +80,7 @@
              <ActivatorContent>
                  <MTextField Dense @attributes="@tip.Attrs"
                              Type="number" NumberProps=@(prop => { prop.Step = 1; })
-                                Outlined HideDetails="@("auto")" Color="primary" ValueExpression="()=>Value" Required=!Type.IsNullableType() Clearable=Type.IsNullableType()
+                                Outlined HideDetails="@("auto")" Color="primary" ValueExpression="()=>Value" Required=!Type.IsNullable() Clearable=Type.IsNullable()
                              Value=@Value ValueChanged=@ValueChanged Label="@(Description)" />
 
              </ActivatorContent>
@@ -93,7 +95,7 @@
              <ActivatorContent>
                  <MTextField Dense @attributes="@tip.Attrs"
                              Type="number" NumberProps=@(prop => { prop.Step = 0.1m; })
-                                Outlined HideDetails="@("auto")" Color="primary" ValueExpression="()=>Value" Required=!Type.IsNullableType() Clearable=Type.IsNullableType()
+                                Outlined HideDetails="@("auto")" Color="primary" ValueExpression="()=>Value" Required=!Type.IsNullable() Clearable=Type.IsNullable()
                              Value=@Value ValueChanged=@ValueChanged Label="@(Description)" />
 
              </ActivatorContent>
@@ -111,7 +113,7 @@
                     <MTooltip Disabled=@(string.IsNullOrEmpty(Remark)) Bottom Context="tip">
                          <ActivatorContent>
                              <MTextarea Dense @attributes="@tip.Attrs" AutoGrow
-                                          Outlined HideDetails="@("auto")" Color="primary" ValueExpression="()=>Value" Required=!Type.IsNullableType() Clearable=Type.IsNullableType()
+                                          Outlined HideDetails="@("auto")" Color="primary" ValueExpression="()=>Value" Required=!Type.IsNullable() Clearable=Type.IsNullable()
                                         Value=@Value ValueChanged=@ValueChanged Label="@(Description)" />
 
                          </ActivatorContent>
@@ -133,7 +135,7 @@
             <MTooltip Disabled=@(string.IsNullOrEmpty(Remark)) Bottom Context="tip">
                  <ActivatorContent>
                      <MTextField Dense @attributes="@tip.Attrs"
-                                    Outlined HideDetails="@("auto")" Color="primary" ValueExpression="()=>Value" Required=!Type.IsNullableType() Clearable=Type.IsNullableType()
+                                    Outlined HideDetails="@("auto")" Color="primary" ValueExpression="()=>Value" Required=!Type.IsNullable() Clearable=Type.IsNullable()
                                  Value=@Value ValueChanged=@ValueChanged Label="@(Description)" />
 
                  </ActivatorContent>
