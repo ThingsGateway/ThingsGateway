@@ -19,13 +19,11 @@ public class Relationservice : DbRepository<SysRelation>, IRelationService
 {
     private readonly ILogger<Relationservice> _logger;
     private readonly ISimpleCacheService _simpleCacheService;
-    private readonly IResourceService _resourceService;
 
-    public Relationservice(ILogger<Relationservice> logger, ISimpleCacheService simpleCacheService, IResourceService resourceService)
+    public Relationservice(ILogger<Relationservice> logger, ISimpleCacheService simpleCacheService)
     {
         _logger = logger;
         _simpleCacheService = simpleCacheService;
-        _resourceService = resourceService;
     }
 
     /// <inheritdoc/>
@@ -119,7 +117,7 @@ public class Relationservice : DbRepository<SysRelation>, IRelationService
             });
         }
         //事务
-        var result = await NewContent.UseTranAsync(async () =>
+        var result = await Context.AsTenant().UseTranAsync(async () =>
         {
             if (clear)
                 await DeleteAsync(it => it.ObjectId == objectId && it.Category == category);//删除老的
@@ -147,7 +145,7 @@ public class Relationservice : DbRepository<SysRelation>, IRelationService
             ExtJson = extJson
         };
         //事务
-        var result = await NewContent.UseTranAsync(async () =>
+        var result = await Context.AsTenant().UseTranAsync(async () =>
         {
             if (clear)
                 await DeleteAsync(it => it.ObjectId == objectId && it.Category == category);//删除老的

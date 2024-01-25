@@ -116,7 +116,7 @@ public class MenuService : DbRepository<SysResource>, IMenuService
             });
             ids.AddRange(resourceIds);//添加到删除ID列表
             //事务
-            var result = await NewContent.UseTranAsync(async () =>
+            var result = await Context.AsTenant().UseTranAsync(async () =>
             {
                 await DeleteByIdsAsync(ids.Cast<object>().ToArray());//删除菜单和按钮
                 await Context.Deleteable<SysRelation>()//关系表删除对应SYS_ROLE_HAS_RESOURCE

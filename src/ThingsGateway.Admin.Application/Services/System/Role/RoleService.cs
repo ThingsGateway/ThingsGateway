@@ -113,7 +113,7 @@ public class RoleService : DbRepository<SysRole>, IRoleService
         {
             var sysRole = input.Adapt<SysRole>();//实体转换
             //事务
-            var result = await NewContent.UseTranAsync(async () =>
+            var result = await Context.AsTenant().UseTranAsync(async () =>
             {
                 await UpdateAsync(sysRole);//更新角色
             });

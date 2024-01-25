@@ -43,7 +43,7 @@ public class NoticeEventSubsciber : IEventSubscriber, ISingleton
         //客户端ID列表
         var clientIds = new List<string>();
         //遍历verificat列表获取客户端ID列表
-        loginEvent.VerificatInfos.ForEach(it =>
+        loginEvent?.VerificatInfos?.ForEach(it =>
         {
             clientIds.AddRange(it.ClientIds);
         });

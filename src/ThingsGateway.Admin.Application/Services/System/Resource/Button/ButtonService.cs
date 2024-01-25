@@ -111,7 +111,7 @@ public class ButtonService : DbRepository<SysResource>, IButtonService
         await CheckInput(input);//检查参数
         var sysResource = input.Adapt<SysResource>();//实体转换
         //事务
-        var result = await NewContent.UseTranAsync(async () =>
+        var result = await Context.AsTenant().UseTranAsync(async () =>
         {
             await UpdateAsync(sysResource);//更新按钮
         });
@@ -164,7 +164,7 @@ public class ButtonService : DbRepository<SysResource>, IButtonService
         #endregion 处理关系表角色资源信息
 
         //事务
-        var result = await NewContent.UseTranAsync(async () =>
+        var result = await Context.AsTenant().UseTranAsync(async () =>
         {
             await DeleteByIdsAsync(ids.Cast<object>().ToArray());//删除按钮
             if (relationList.Count > 0)
