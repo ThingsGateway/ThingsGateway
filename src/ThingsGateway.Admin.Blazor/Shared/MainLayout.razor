@@ -20,7 +20,22 @@
                  <CascadingValue Value="@AppService.Dark" Name="Dark">
 
                      <MNavigationDrawer Color="barcolor" @bind-Value="_drawerOpen" App Width="200">
-                         <Logo Height="AppService.LogoHeight" />
+                         @if (!IsMobile)
+                        {
+                            <Logo Height="AppService.LogoHeight" />
+                        }
+                        else
+                        {
+                            <MRow>
+                                <MSpacer />
+
+                                @* <ThemeToggle></ThemeToggle> *@
+                                <AppTooltipButton OnClick=ShowAbout LoadingEnable=false
+                                                  Icon="mdi-information-outline" Path="about">
+                                </AppTooltipButton>
+                                <UserMenu></UserMenu>
+                            </MRow>
+                        }
                          <AppList ClassString="overflow-y-auto" Routable
                                   StyleString=@($"height: calc(100vh - {AppService.LogoHeight}px);")
                                   Items="UserResoures.UserNavItems.Where(a=>a.Hidden==false).ToList()" />
@@ -31,12 +46,12 @@
                          <AppTooltipButton Class="mr-0" Icon="mdi-menu" Style="margin-left:-12px;" Path="Menu" LoadingEnable=false OnClick=@(() => _drawerOpen = !_drawerOpen)>
                          </AppTooltipButton>
 
-                         <Breadcrumb SysResources="UserResoures.UserNavItems" />
-
-                         <MSpacer />
+         
                          @if (!IsMobile)
                         {
+                            <Breadcrumb SysResources="UserResoures.UserNavItems" />
 
+                            <MSpacer />
                             @* <ThemeToggle></ThemeToggle> *@
                             <AppTooltipButton OnClick=ShowAbout LoadingEnable=false
                                               Icon="mdi-information-outline" Path="about">
@@ -51,6 +66,9 @@
                         else
                         {
                             <Logo Height="AppService.LogoHeight"></Logo>
+                            <AppTooltipButton OnClick=HandleSettingsClick LoadingEnable=false
+                                              Icon="mdi-shape-outline" Path="theme">
+                            </AppTooltipButton>
                         }
 
 

@@ -109,7 +109,7 @@
         if (IsBigText)
         {
             <MRow Align="AlignTypes.Center">
-                <MCol Md=9 Sm=12>
+                <MCol Md=9 Cols=12>
                     <MTooltip Disabled=@(string.IsNullOrEmpty(Remark)) Bottom Context="tip">
                          <ActivatorContent>
                              <MTextarea Dense @attributes="@tip.Attrs" AutoGrow
@@ -124,7 +124,7 @@
                 </MCol>
                 @if (Type.Name.Contains("BigTextScript"))
                 {
-                    <MCol Md=3 Sm=12>
+                    <MCol Md=3 Cols=12>
                         <MButton Class="mx-2 my-1" OnClick=@(()=>CheckScript()) Color="primary">@AppService.I18n.T("检查")</MButton>
                         </MCol>
                 }

@@ -46,19 +46,19 @@
              <MContainer>
                  <MRow Justify="JustifyTypes.Start" Align="AlignTypes.Center">
 
-                     <MCol Md=12 Sm=12>
+                     <MCol Md=12 Cols=12>
                          <MSubheader Class="mt-4 red--text">   注意：文件名称相同的插件将被覆盖 </MSubheader>
                      </MCol>
-                     <MCol Md=12 Sm=12>
+                     <MCol Md=12 Cols=12>
                          <MSubheader Class="font-weight-black">    @(context.Description(x => x.MainFile))  </MSubheader>
                      </MCol>
-                     <MCol Md=12 Sm=12>
+                     <MCol Md=12 Cols=12>
                          <MFileInput @bind-Value="context.MainFile" ShowSize Accept=".dll"></MFileInput>
                      </MCol>
-                     <MCol Md=12 Sm=12>
+                     <MCol Md=12 Cols=12>
                          <MSubheader Class="mt-4 font-weight-black">    @(context.Description(x => x.OtherFiles))  </MSubheader>
                      </MCol>
-                     <MCol Md=12 Sm=12>
+                     <MCol Md=12 Cols=12>
                          <MFileInput @bind-Value="context.OtherFiles" ShowSize Multiple Counter=true Accept=".dll"></MFileInput>
                      </MCol>
                  </MRow>

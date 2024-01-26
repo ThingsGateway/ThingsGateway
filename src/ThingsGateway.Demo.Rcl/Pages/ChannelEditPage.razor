@@ -11,15 +11,15 @@
     <MContainer @onkeydown=Enter>
         <MRow Justify="JustifyTypes.Start" Align="AlignTypes.Center">
 
-            <MCol Md=12 Sm=12>
+            <MCol Md=12 Cols=12>
                 <MSubheader Style="max-height:24px" Class="font-weight-black text-subtitle-1">
                     @AppService.I18n.T("基础属性")
                 </MSubheader>
             </MCol>
-            <MCol Md=3 Sm=12>
+            <MCol Md=3 Cols=12>
                 <MTextField Dense Style="max-width:300px" Outlined HideDetails="@("auto")" Color="primary" @bind-Value=@ChannelData.Name Label="@(ChannelData.Description(x => x.Name))" />
              </MCol>
-             <MCol Md=9 Sm=12>
+             <MCol Md=9 Cols=12>
                  <MSelect Items=@(typeof(ChannelTypeEnum).GetEnumList()) Style="max-width:300px;"
                           @bind-Value=@ChannelData.ChannelType Label=@(ChannelData.Description(x => x.ChannelType))
                           MenuProps="@(props => { props.Auto = true; props.OffsetY = true; })"
@@ -39,39 +39,39 @@
 
         }
         <MRow Class="mt-5" Justify="JustifyTypes.Start" Align="AlignTypes.Center">
-            <MCol Md=12 Sm=12>
+            <MCol Md=12 Cols=12>
                 <MSubheader Style="max-height:24px" Class="font-weight-black text-subtitle-1">
                     @AppService.I18n.T("通道属性")
                 </MSubheader>
             </MCol>
 
 
-            <MCol Md=3 Sm=12>
+            <MCol Md=3 Cols=12>
                 <MTextField Style="max-width:300px" Disabled=@(!isTcpClient&&!isUdp) Dense Outlined HideDetails="@("auto")"
                              Label=@AppService.I18n.T("RemoteUrl") @bind-Value=@ChannelData.RemoteUrl />
              </MCol>
-             <MCol Md=3 Sm=12>
+             <MCol Md=3 Cols=12>
                  <MTextField Style="max-width:300px" Disabled=@(!isTcpClient&&!isTcpService&&!isUdp) Dense Outlined HideDetails="@("auto")"
                              Label=@AppService.I18n.T("BindUrl") @bind-Value=@ChannelData.BindUrl />
              </MCol>
          </MRow>
          <MRow Class="mt-5" Justify="JustifyTypes.Start" Align="AlignTypes.Center">
 
-             <MCol Md=3 Sm=12>
+             <MCol Md=3 Cols=12>
                  <MTextField Style="max-width:300px" Disabled=!isSerial Dense Outlined HideDetails="@("auto")"
                              Label=@AppService.I18n.T("PortName") @bind-Value=@ChannelData.PortName />
              </MCol>
-             <MCol Md=3 Sm=12>
+             <MCol Md=3 Cols=12>
                  <MTextField Type="number" Style="max-width:300px" Disabled=!isSerial Dense Outlined HideDetails="@("auto")"
                              Label=@AppService.I18n.T("BaudRate") @bind-Value=@ChannelData.BaudRate />
              </MCol>
 
-             <MCol Md=3 Sm=12>
+             <MCol Md=3 Cols=12>
                  <MTextField Style="max-width:300px" Disabled=!isSerial Dense Outlined HideDetails="@("auto")"
                              Type="number" Label=@AppService.I18n.T("DataBits") @bind-Value=@ChannelData.DataBits />
              </MCol>
 
-             <MCol Md=3 Sm=12>
+             <MCol Md=3 Cols=12>
                  <MSelect Style="max-width:300px" Disabled=!isSerial Dense Outlined HideDetails="@("auto")"
                           Label=@AppService.I18n.T("Parity") @bind-Value=@ChannelData.Parity
                           Items=@(typeof(Parity).GetEnumList())
@@ -81,7 +81,7 @@
                  </MSelect>
              </MCol>
 
-             <MCol Md=3 Sm=12>
+             <MCol Md=3 Cols=12>
                  <MSelect Style="max-width:300px" Disabled=!isSerial Dense Outlined HideDetails="@("auto")"
                           Label=@AppService.I18n.T("StopBits") @bind-Value=@ChannelData.StopBits
                           Items=@(typeof(StopBits).GetEnumList())
@@ -91,7 +91,7 @@
                  </MSelect>
              </MCol>
 
-                <MCol Md=3 Sm=12>
+                <MCol Md=3 Cols=12>
                     <MSelect Class="" Items=@(new List<bool>(){true,false})
                              Label=@AppService.I18n.T("DtrEnable") @bind-Value=@ChannelData.DtrEnable
                              Clearable Style="max-width:300px" Disabled=!isSerial
@@ -102,7 +102,7 @@
                              Outlined></MSelect>
 
                 </MCol>
-                <MCol Md=3 Sm=12>
+                <MCol Md=3 Cols=12>
                     <MSelect Class="" Items=@(new List<bool>(){true,false})
                           Label=@AppService.I18n.T("RtsEnable") @bind-Value=@ChannelData.RtsEnable
                              Clearable Style="max-width:300px" Disabled=!isSerial

@@ -161,25 +161,25 @@
                     <MContainer>
                         <MRow Justify="JustifyTypes.Start" Align="AlignTypes.Center">
 
-                            <MCol Md=12 Sm=12>
+                            <MCol Md=12 Cols=12>
                                 <MSubheader Style="max-height:24px" Class="font-weight-black text-subtitle-1">
                                     @AppService.I18n.T("基础属性")
                                 </MSubheader>
                             </MCol>
 
-                            <MCol Md=3 Sm=12>
+                            <MCol Md=3 Cols=12>
                                 <MTextField Dense Style="max-width:300px" Outlined HideDetails="@("auto")" Color="primary" @bind-Value=@context.Name Label="@(context.Description(x => x.Name))" />
                             </MCol>
-                            <MCol Md=3 Sm=12>
+                            <MCol Md=3 Cols=12>
                                 <MTextField Dense Style="max-width:300px" Outlined HideDetails="@("auto")" Color="primary" @bind-Value=@context.Description Label="@(context.Description(x => x.Description))" />
                             </MCol>
-                            <MCol Md=3 Sm=12>
+                            <MCol Md=3 Cols=12>
                                 <MTextField Dense Style="max-width:300px" Outlined HideDetails="@("auto")" Color="primary" @bind-Value=@context.Unit Label="@(context.Description(x => x.Unit))" />
                             </MCol>
 
 
 
-                            <MCol Md=3 Sm=12>
+                            <MCol Md=3 Cols=12>
                                 <MSelect Items=@(typeof(ProtectTypeEnum).GetEnumList()) Style="max-width:300px;"
                                          @bind-Value=@context.ProtectType Label=@(context.Description(x => x.ProtectType))
                                          MenuProps="@(props => { props.Auto = true; props.OffsetY = true; })"
@@ -189,7 +189,7 @@
                                          Outlined></MSelect>
                             </MCol>
 
-                            <MCol Md=3 Sm=12>
+                            <MCol Md=3 Cols=12>
                                 <MRadioGroup @bind-Value=@context.Enable Label=@(context.Description(x => x.Enable))
                                              Style="max-width:300px"
                                              Row Dense HideDetails="@("auto")">
@@ -197,7 +197,7 @@
                                     <MRadio Label=@AppService.I18n.T("否") Value=false></MRadio>
                                 </MRadioGroup>
                             </MCol>
-                            <MCol Md=3 Sm=12>
+                            <MCol Md=3 Cols=12>
                                 <MRadioGroup @bind-Value=@context.RpcWriteEnable Label=@(context.Description(x => x.RpcWriteEnable))
                                              Style="max-width:300px"
                                              Row Dense HideDetails="@("auto")">
@@ -211,31 +211,31 @@
                         </MRow>
 
                         <MRow Class="mt-5" Justify="JustifyTypes.Start" Align="AlignTypes.Center">
-                            <MCol Md=12 Sm=12>
+                            <MCol Md=12 Cols=12>
                                 <MSubheader Style="max-height:24px" Class="font-weight-black text-subtitle-1">
                                     @AppService.I18n.T("采集配置")
                                 </MSubheader>
                             </MCol>
 
-                            <MCol Md=3 Sm=12>
+                            <MCol Md=3 Cols=12>
                                 <MAutocomplete Dense Style="max-width:300px;" HideDetails=@("auto") CacheItems HideNoData Outlined
                                                ItemValue="r=>r.Id" ItemText="r=>r.Name" OnSearchInputUpdate="DeviceQuerySelections"
                                                Items="_queryDevices" Flat Clearable OnClick=@(()=>DeviceChanged(context.DeviceId))
                                                @bind-Value=@context.DeviceId Label="@context.Description(x=>x.DeviceId)" />
 
                             </MCol>
-                            <MCol Md=9 Sm=12>
+                            <MCol Md=9 Cols=12>
                                 <MTextField Dense
                                             Outlined HideDetails="@("auto")" Color="primary" @bind-Value=@context.RegisterAddress Label="@(context.Description(x => x.RegisterAddress))" />
                             </MCol>
 
-                            <MCol Md=3 Sm=12>
+                            <MCol Md=3 Cols=12>
                                 <MTextField Dense Style="max-width:300px"
                                             Type="number" NumberProps=@(prop => { prop.Step = 10; })
                                             Outlined HideDetails="@("auto")" Color="primary" @bind-Value=@context.IntervalTime Label="@(context.Description(x => x.IntervalTime))" />
                             </MCol>
 
-                            <MCol Md=9 Sm=12>
+                            <MCol Md=9 Cols=12>
 
                                 <MSelect @bind-Value="context.OtherMethod" Label=@(context.Description(x => x.OtherMethod))
                                          Items=@(_otherMethods.ContainsKey(context.DeviceId)?_otherMethods[context.DeviceId]:new()) Clearable Outlined Color="primary"
@@ -249,7 +249,7 @@
                             </MCol>
 
 
-                            <MCol Md=3 Sm=12>
+                            <MCol Md=3 Cols=12>
                                 <MSelect Items=@(typeof(DataTypeEnum).GetEnumList()) Style="max-width:300px;"
                                          @bind-Value=@context.DataType Label=@(context.Description(x => x.DataType))
                                          MenuProps="@(props => { props.Auto = true; props.OffsetY = true; })"
@@ -259,11 +259,11 @@
                                          Outlined></MSelect>
                             </MCol>
 
-                            <MCol Md=12 Sm=12>
+                            <MCol Md=12 Cols=12>
                                 <MTextField Dense Style="min-width:300px"
                                             Outlined HideDetails="@("auto")" Color="primary" @bind-Value=@context.ReadExpressions Label="@(context.Description(x => x.ReadExpressions))" />
                             </MCol>
-                            <MCol Md=12 Sm=12>
+                            <MCol Md=12 Cols=12>
                                 <MTextField Dense Style="min-width:300px"
                                             Outlined HideDetails="@("auto")" Color="primary" @bind-Value=@context.WriteExpressions Label="@(context.Description(x => x.WriteExpressions))" />
                             </MCol>
@@ -272,26 +272,26 @@
 
 
                         <MRow Class="mt-5" Justify="JustifyTypes.Start" Align="AlignTypes.Center">
-                            <MCol Md=12 Sm=12>
+                            <MCol Md=12 Cols=12>
                                 <MSubheader Style="max-height:24px" Class="font-weight-black text-subtitle-1">
                                     @AppService.I18n.T("备用字段")
                                 </MSubheader>
                             </MCol>
 
 
-                            <MCol Md=3 Sm=12>
+                            <MCol Md=3 Cols=12>
                                 <MTextField Dense Style="max-width:300px" Outlined HideDetails="@("auto")" Color="primary" @bind-Value=@context.Remark1 Label="@(context.Description(x => x.Remark1))" />
                             </MCol>
-                            <MCol Md=3 Sm=12>
+                            <MCol Md=3 Cols=12>
                                 <MTextField Dense Style="max-width:300px" Outlined HideDetails="@("auto")" Color="primary" @bind-Value=@context.Remark2 Label="@(context.Description(x => x.Remark2))" />
                             </MCol>
-                            <MCol Md=3 Sm=12>
+                            <MCol Md=3 Cols=12>
                                 <MTextField Dense Style="max-width:300px" Outlined HideDetails="@("auto")" Color="primary" @bind-Value=@context.Remark3 Label="@(context.Description(x => x.Remark3))" />
                             </MCol>
-                            <MCol Md=3 Sm=12>
+                            <MCol Md=3 Cols=12>
                                 <MTextField Dense Style="max-width:300px" Outlined HideDetails="@("auto")" Color="primary" @bind-Value=@context.Remark4 Label="@(context.Description(x => x.Remark4))" />
                             </MCol>
-                            <MCol Md=3 Sm=12>
+                            <MCol Md=3 Cols=12>
                                 <MTextField Dense Style="max-width:300px" Outlined HideDetails="@("auto")" Color="primary" @bind-Value=@context.Remark5 Label="@(context.Description(x => x.Remark5))" />
                             </MCol>
                         </MRow>
@@ -305,19 +305,19 @@
                     <MContainer>
                         <MRow Justify="JustifyTypes.Start" Align="AlignTypes.Center">
 
-                            <MCol Md=12 Sm=12>
+                            <MCol Md=12 Cols=12>
                                 <MSubheader Style="max-height:24px" Class="font-weight-black text-subtitle-1">
                                     @AppService.I18n.T("布尔量关报警")
                                 </MSubheader>
                             </MCol>
 
-                            <MCol Md=3 Sm=12>
+                            <MCol Md=3 Cols=12>
                                 <MTextField Dense Outlined HideDetails="@("auto")" Color="primary" @bind-Value=@context.BoolCloseAlarmText Label="@(context.Description(x => x.BoolCloseAlarmText))" />
                             </MCol>
-                            <MCol Md=3 Sm=12>
+                            <MCol Md=3 Cols=12>
                                 <MTextField Dense Outlined HideDetails="@("auto")" Color="primary" @bind-Value=@context.BoolCloseRestrainExpressions Label="@(context.Description(x => x.BoolCloseRestrainExpressions))" />
                             </MCol>
-                            <MCol Md=3 Sm=12>
+                            <MCol Md=3 Cols=12>
                                 <MRadioGroup @bind-Value=@context.BoolCloseAlarmEnable Label=@(context.Description(x => x.BoolCloseAlarmEnable))
                                              Style="max-width:300px"
                                              Row Dense HideDetails="@("auto")">
@@ -330,19 +330,19 @@
                         </MRow>
                         <MRow Justify="JustifyTypes.Start" Align="AlignTypes.Center">
 
-                            <MCol Md=12 Sm=12>
+                            <MCol Md=12 Cols=12>
                                 <MSubheader Style="max-height:24px" Class="font-weight-black text-subtitle-1">
                                     @AppService.I18n.T("布尔量开报警")
                                 </MSubheader>
                             </MCol>
 
-                            <MCol Md=3 Sm=12>
+                            <MCol Md=3 Cols=12>
                                 <MTextField Dense Outlined HideDetails="@("auto")" Color="primary" @bind-Value=@context.BoolOpenAlarmText Label="@(context.Description(x => x.BoolOpenAlarmText))" />
                             </MCol>
-                            <MCol Md=3 Sm=12>
+                            <MCol Md=3 Cols=12>
                                 <MTextField Dense Outlined HideDetails="@("auto")" Color="primary" @bind-Value=@context.BoolOpenRestrainExpressions Label="@(context.Description(x => x.BoolOpenRestrainExpressions))" />
                             </MCol>
-                            <MCol Md=3 Sm=12>
+                            <MCol Md=3 Cols=12>
                                 <MRadioGroup @bind-Value=@context.BoolOpenAlarmEnable Label=@(context.Description(x => x.BoolOpenAlarmEnable))
                                              Style="max-width:300px"
                                              Row Dense HideDetails="@("auto")">
@@ -357,22 +357,22 @@
 
                         <MRow Justify="JustifyTypes.Start" Align="AlignTypes.Center">
 
-                            <MCol Md=12 Sm=12>
+                            <MCol Md=12 Cols=12>
                                 <MSubheader Style="max-height:24px" Class="font-weight-black text-subtitle-1">
                                     @AppService.I18n.T("数值高高报警")
                                 </MSubheader>
                             </MCol>
 
-                            <MCol Md=3 Sm=12>
+                            <MCol Md=3 Cols=12>
                                 <MTextField Dense Outlined HideDetails="@("auto")" Color="primary" @bind-Value=@context.HHAlarmText Label="@(context.Description(x => x.HHAlarmText))" />
                             </MCol>
-                            <MCol Md=3 Sm=12>
+                            <MCol Md=3 Cols=12>
                                 <MTextField Dense Outlined HideDetails="@("auto")" Color="primary" @bind-Value=@context.HHAlarmCode Label="@(context.Description(x => x.HHAlarmCode))" />
                             </MCol>
-                            <MCol Md=3 Sm=12>
+                            <MCol Md=3 Cols=12>
                                 <MTextField Dense Outlined HideDetails="@("auto")" Color="primary" @bind-Value=@context.HHRestrainExpressions Label="@(context.Description(x => x.HHRestrainExpressions))" />
                             </MCol>
-                            <MCol Md=3 Sm=12>
+                            <MCol Md=3 Cols=12>
                                 <MRadioGroup @bind-Value=@context.HHAlarmEnable Label=@(context.Description(x => x.HHAlarmEnable))
                                              Style="max-width:300px"
                                              Row Dense HideDetails="@("auto")">
@@ -387,22 +387,22 @@
 
                         <MRow Justify="JustifyTypes.Start" Align="AlignTypes.Center">
 
-                            <MCol Md=12 Sm=12>
+                            <MCol Md=12 Cols=12>
                                 <MSubheader Style="max-height:24px" Class="font-weight-black text-subtitle-1">
                                     @AppService.I18n.T("数值高报警")
                                 </MSubheader>
                             </MCol>
 
-                            <MCol Md=3 Sm=12>
+                            <MCol Md=3 Cols=12>
                                 <MTextField Dense Outlined HideDetails="@("auto")" Color="primary" @bind-Value=@context.HAlarmText Label="@(context.Description(x => x.HAlarmText))" />
                             </MCol>
-                            <MCol Md=3 Sm=12>
+                            <MCol Md=3 Cols=12>
                                 <MTextField Dense Outlined HideDetails="@("auto")" Color="primary" @bind-Value=@context.HAlarmCode Label="@(context.Description(x => x.HAlarmCode))" />
                             </MCol>
-                            <MCol Md=3 Sm=12>
+                            <MCol Md=3 Cols=12>
                                 <MTextField Dense Outlined HideDetails="@("auto")" Color="primary" @bind-Value=@context.HRestrainExpressions Label="@(context.Description(x => x.HRestrainExpressions))" />
                             </MCol>
-                            <MCol Md=3 Sm=12>
+                            <MCol Md=3 Cols=12>
                                 <MRadioGroup @bind-Value=@context.HAlarmEnable Label=@(context.Description(x => x.HAlarmEnable))
                                              Style="max-width:300px"
                                              Row Dense HideDetails="@("auto")">
@@ -417,22 +417,22 @@
 
                         <MRow Justify="JustifyTypes.Start" Align="AlignTypes.Center">
 
-                            <MCol Md=12 Sm=12>
+                            <MCol Md=12 Cols=12>
                                 <MSubheader Style="max-height:24px" Class="font-weight-black text-subtitle-1">
                                     @AppService.I18n.T("数值低报警")
                                 </MSubheader>
                             </MCol>
 
-                            <MCol Md=3 Sm=12>
+                            <MCol Md=3 Cols=12>
                                 <MTextField Dense Outlined HideDetails="@("auto")" Color="primary" @bind-Value=@context.LAlarmText Label="@(context.Description(x => x.LAlarmText))" />
                             </MCol>
-                            <MCol Md=3 Sm=12>
+                            <MCol Md=3 Cols=12>
                                 <MTextField Dense Outlined HideDetails="@("auto")" Color="primary" @bind-Value=@context.LAlarmCode Label="@(context.Description(x => x.LAlarmCode))" />
                             </MCol>
-                            <MCol Md=3 Sm=12>
+                            <MCol Md=3 Cols=12>
                                 <MTextField Dense Outlined HideDetails="@("auto")" Color="primary" @bind-Value=@context.LRestrainExpressions Label="@(context.Description(x => x.LRestrainExpressions))" />
                             </MCol>
-                            <MCol Md=3 Sm=12>
+                            <MCol Md=3 Cols=12>
                                 <MRadioGroup @bind-Value=@context.LAlarmEnable Label=@(context.Description(x => x.LAlarmEnable))
                                              Style="max-width:300px"
                                              Row Dense HideDetails="@("auto")">
@@ -447,22 +447,22 @@
 
                         <MRow Justify="JustifyTypes.Start" Align="AlignTypes.Center">
 
-                            <MCol Md=12 Sm=12>
+                            <MCol Md=12 Cols=12>
                                 <MSubheader Style="max-height:24px" Class="font-weight-black text-subtitle-1">
                                     @AppService.I18n.T("数值低低报警")
                                 </MSubheader>
                             </MCol>
 
-                            <MCol Md=3 Sm=12>
+                            <MCol Md=3 Cols=12>
                                 <MTextField Dense Outlined HideDetails="@("auto")" Color="primary" @bind-Value=@context.LLAlarmText Label="@(context.Description(x => x.LLAlarmText))" />
                             </MCol>
-                            <MCol Md=3 Sm=12>
+                            <MCol Md=3 Cols=12>
                                 <MTextField Dense Outlined HideDetails="@("auto")" Color="primary" @bind-Value=@context.LLAlarmCode Label="@(context.Description(x => x.LLAlarmCode))" />
                             </MCol>
-                            <MCol Md=3 Sm=12>
+                            <MCol Md=3 Cols=12>
                                 <MTextField Dense Outlined HideDetails="@("auto")" Color="primary" @bind-Value=@context.LLRestrainExpressions Label="@(context.Description(x => x.LLRestrainExpressions))" />
                             </MCol>
-                            <MCol Md=3 Sm=12>
+                            <MCol Md=3 Cols=12>
                                 <MRadioGroup @bind-Value=@context.LLAlarmEnable Label=@(context.Description(x => x.LLAlarmEnable))
                                              Style="max-width:300px"
                                              Row Dense HideDetails="@("auto")">
@@ -477,22 +477,22 @@
 
                         <MRow Justify="JustifyTypes.Start" Align="AlignTypes.Center">
 
-                            <MCol Md=12 Sm=12>
+                            <MCol Md=12 Cols=12>
                                 <MSubheader Style="max-height:24px" Class="font-weight-black text-subtitle-1">
                                     @AppService.I18n.T("自定义报警")
                                 </MSubheader>
                             </MCol>
 
-                            <MCol Md=3 Sm=12>
+                            <MCol Md=3 Cols=12>
                                 <MTextField Dense Outlined HideDetails="@("auto")" Color="primary" @bind-Value=@context.CustomAlarmText Label="@(context.Description(x => x.CustomAlarmText))" />
                             </MCol>
-                            <MCol Md=3 Sm=12>
+                            <MCol Md=3 Cols=12>
                                 <MTextField Dense Outlined HideDetails="@("auto")" Color="primary" @bind-Value=@context.CustomAlarmCode Label="@(context.Description(x => x.CustomAlarmCode))" />
                             </MCol>
-                            <MCol Md=3 Sm=12>
+                            <MCol Md=3 Cols=12>
                                 <MTextField Dense Outlined HideDetails="@("auto")" Color="primary" @bind-Value=@context.CustomRestrainExpressions Label="@(context.Description(x => x.CustomRestrainExpressions))" />
                             </MCol>
-                            <MCol Md=3 Sm=12>
+                            <MCol Md=3 Cols=12>
                                 <MRadioGroup @bind-Value=@context.CustomAlarmEnable Label=@(context.Description(x => x.CustomAlarmEnable))
                                              Style="max-width:300px"
                                              Row Dense HideDetails="@("auto")">
@@ -514,13 +514,13 @@
                     <MContainer>
                         <MRow Justify="JustifyTypes.Start" Align="AlignTypes.Center">
 
-                            <MCol Md=3 Sm=12>
+                            <MCol Md=3 Cols=12>
                                 <MAutocomplete Dense Style="max-width:400px;" HideDetails=@("auto") Class="my-1 mx-2 " CacheItems HideNoData Outlined
                                                ItemValue="r=>r.Id" ItemText="r=>r.Name" OnSearchInputUpdate="BusinessDeviceQuerySelections"
                                                Items="_queryBusinessDevices" Flat Clearable Label=@AppService.I18n.T(typeof(Device).GetDescription(nameof(Device.Name)))
                                                @bind-Value=_choiceUploadDeviceId />
                             </MCol>
-                            <MCol Md=3 Sm=12>
+                            <MCol Md=3 Cols=12>
                                 <MButton Class="mx-2 my-1" OnClick=@(()=>RefreshClickAsync(context)) Color="primary">@AppService.I18n.T("添加业务属性")</MButton>
                             </MCol>
 
@@ -555,7 +555,7 @@
                                 {
                                 continue;
                                 }
-                                    <MCol Md=md Sm=12 Class="pa-3">
+                                    <MCol Md=md Cols=12 Class="pa-3">
                                         <DynamicPropertyComponent IsBigText=isBigText Type="dict[property.Description].PropertyType" @bind-Value=property.Value
                                                                   Description=@(property.Description) Remark=@(dict[property.Description].Remark)>
                                         </DynamicPropertyComponent>

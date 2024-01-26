@@ -23,8 +23,33 @@
                  <CascadingValue Value="@AppService.Dark" Name="Dark">
 
                      <MNavigationDrawer Color="barcolor" @bind-Value="_drawerOpen" App Width="200">
-                         <Logo Height="AppService.LogoHeight" />
-                         <AppList ClassString="overflow-y-auto" Routable
+                         @if (!IsMobile)
+                        {
+                            <Logo Height="AppService.LogoHeight" />
+                        }
+                        else
+                        {
+                            <MRow>
+                                <MSpacer />
+                                <AppTooltipButton Class="position-button"
+                                                  Disabled=@(!UserResoures.IsHasButtonWithRole("GatewayPluginCheck"))
+                                                  OnClick="()=>PluginService.Remove()"
+                                                  Icon="mdi-restart" Path="重新载入插件，需手动重启后台才生效">
+                                </AppTooltipButton>
+
+                                <AppTooltipButton Class="position-button"
+                                                  Disabled=@(!UserResoures.IsHasButtonWithRole("GatewayDeviceRestart"))
+                                                  OnClick="AllRestartAsync"
+                                                  Icon="mdi-restart" Path="重启后台">
+                                </AppTooltipButton>
+                                @* <ThemeToggle></ThemeToggle> *@
+                                <AppTooltipButton OnClick=ShowAbout LoadingEnable=false
+                                                  Icon="mdi-information-outline" Path="about">
+                                </AppTooltipButton>
+                                <UserMenu></UserMenu>
+                            </MRow>
+                        }
+                        <AppList ClassString="overflow-y-auto" Routable
                                   StyleString=@($"height: calc(100vh - {AppService.LogoHeight}px);")
                                   Items="UserResoures.UserNavItems.Where(a=>a.Hidden==false).ToList()" />
                      </MNavigationDrawer>
@@ -34,11 +59,13 @@
                          <AppTooltipButton Class="mr-0" Icon="mdi-menu" Style="margin-left:-12px;" Path="Menu" LoadingEnable=false OnClick=@(() => _drawerOpen = !_drawerOpen)>
                          </AppTooltipButton>
 
-                         <Breadcrumb SysResources="UserResoures.UserNavItems" />
 
-                         <MSpacer />
                          @if (!IsMobile)
                         {
+                            <Breadcrumb SysResources="UserResoures.UserNavItems" />
+
+                            <MSpacer />
+
                             <AppTooltipButton Class="position-button"
                                               Disabled=@(!UserResoures.IsHasButtonWithRole("GatewayPluginCheck"))
                                               OnClick="()=>PluginService.Remove()"
@@ -63,7 +90,11 @@
                         }
                         else
                         {
+
                             <Logo Height="AppService.LogoHeight"></Logo>
+                            <AppTooltipButton OnClick=HandleSettingsClick LoadingEnable=false
+                                              Icon="mdi-shape-outline" Path="theme">
+                            </AppTooltipButton>
                         }
 
 
