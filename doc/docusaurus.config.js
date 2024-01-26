@@ -42,7 +42,11 @@ module.exports = {
           position: "left",
           to: "docs/upgrade"
         },
-
+        {
+          label: "演示",
+          position: "right",
+          href: "http://120.24.62.140:5000",
+        },
         {
           label: "源码",
           position: "right",
