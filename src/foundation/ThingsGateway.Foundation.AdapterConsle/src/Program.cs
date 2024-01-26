@@ -12,12 +12,6 @@
 
 #endregion
 
-using Newtonsoft.Json.Linq;
-
-using System.Diagnostics;
-
-using ThingsGateway.Foundation.Modbus;
-
 using TouchSocket.Core;
 
 namespace ThingsGateway.Foundation
@@ -26,45 +20,13 @@ namespace ThingsGateway.Foundation
     {
         private static async Task Main(string[] args)
         {
-            var clientConfig = new TouchSocketConfig().GetConfigWithLog(TouchSocket.Core.LogLevel.Trace, (logLevel, source, message, exception) =>
-              {
-                  Debug.WriteLine($"{DateTimeUtil.Now.ToString("yyyy-MM-dd HH:mm:ss fff")} - {message} {exception}");
-              });
-            //创建通道，也可以通过TouchSocketConfig.GetChannel扩展获取
-            var clientChannel = clientConfig.GetTcpClientWithIPHost("tcp://127.0.0.1:502");
+            Dlt645MasterTest dlt645MasterTest = new Dlt645MasterTest();
+            var channel = dlt645MasterTest.GetChannel();
+            var protocol = dlt645MasterTest.GetProtocol(channel);
+            var data = await protocol.ReadDoubleAsync("02010100"); //读取A相电压
 
-            //创建modbus客户端，传入通道
-            using ModbusMaster modbusMaster = new(clientChannel)
-            {
-                //modbus协议格式
-                //ModbusType = Modbus.ModbusTypeEnum.ModbusRtu,
-                ModbusType = Modbus.ModbusTypeEnum.ModbusTcp,
-            };
-
-            //测试5千次
-            for (int i = 0; i < 5000; i++)
-            {
-                //读写对应数据类型
-                var result = await modbusMaster.ReadInt32Async("40001", 1);
-                if (!result.IsSuccess)
-                {
-                    Console.WriteLine(result);
-                }
-            }
-
-            var wResult = await modbusMaster.WriteAsync("40001", 1);
-
-            //动态类型读写
-            var objResult = await modbusMaster.ReadAsync("40001", 1, DataTypeEnum.Int32);
-            var objWResult = await modbusMaster.WriteAsync("40001", JToken.FromObject(1), DataTypeEnum.Int32);
-
-            //地址说明
-            //单独设置解析顺序
-            var objABCDResult = await modbusMaster.ReadAsync("40001;dataformat=badc", 1, DataTypeEnum.Int32);
-            //单独设置站号
-            var objSResult = await modbusMaster.ReadAsync("40001;dataformat=badc;s=2", 1, DataTypeEnum.Int32);
-            //单独设置写入功能码
-            var objFWResult = await modbusMaster.ReadAsync("40001;s=2;w=16", 1, DataTypeEnum.Int16);
+            Console.WriteLine(data.ToJsonString());
+            Console.ReadLine();
         }
     }
 }

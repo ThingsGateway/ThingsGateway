@@ -7,3 +7,80 @@ import useBaseUrl from "@docusaurus/useBaseUrl";
 import Tag from "@site/src/components/Tag.js";
 import Highlight from '@site/src/components/Highlight.js';
 
+
+## 定义
+
+程序集：[ThingsGateway.Foundation.Dlt645](https://www.nuget.org/packages/ThingsGateway.Foundation.Dlt645)
+
+## 一、说明
+
+**ThingsGateway.Foundation.Dlt645**是对于Dlt645-2007协议的封装类库
+
+支持多个通讯链路：Tcp/Udp/SerialPort
+
+## 二、新建
+
+1、创建Dlt645Master
+
+```
+        /// <summary>
+        /// 新建链路
+        /// </summary>
+        /// <returns></returns>
+        public IChannel GetChannel()
+        {
+            TouchSocketConfig touchSocketConfig = new TouchSocketConfig();
+            return touchSocketConfig.GetSerialPortWithOption(new("COM1")); //直接获取串口对象
+            //return touchSocketConfig.GetChannel(ChannelTypeEnum.SerialPortClient, null, null, new("COM1"));//通过链路枚举获取对象
+        }
+
+        /// <summary>
+        /// 新建协议对象
+        /// </summary>
+        /// <param name="channel"></param>
+        /// <returns></returns>
+        public IProtocol GetProtocol(IChannel channel)
+        {
+            var client = new Dlt645_2007Master(channel);
+            client.Station = "311111111114";//表号
+            return client;
+        }
+```
+2、读写操作
+
+
+```
+            Dlt645MasterTest dlt645MasterTest = new Dlt645MasterTest();
+            var channel = dlt645MasterTest.GetChannel();
+            var protocol = dlt645MasterTest.GetProtocol(channel);
+            var data = await protocol.ReadDoubleAsync("02010100"); //读取A相电压
+
+```
+
+`02010100`是Dlt645中的地址表示方式，代表A相电压，请查看相关协议文档，可在源码附件中找到文档
+
+3、其他方法
+
+修改密码
+
+```
+      var result = await protocol.WritePasswordAsync(level, oldPassword, newPassword);
+```
+
+更改表号
+
+```
+      var result = await protocol.WriteDeviceStationAsync(station);
+```
+
+修改波特率
+
+```
+      var result = await protocol.WriteBaudRateAsync(baudRate);
+```
+
+读取表号
+
+```
+      var result = await protocol.ReadDeviceStationAsync;
+```

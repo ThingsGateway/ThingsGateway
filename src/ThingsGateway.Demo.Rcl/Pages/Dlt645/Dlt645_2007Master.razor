@@ -58,6 +58,164 @@
      </MCard>
 }
 
-<AdapterDebugPage LogPath=@LogPath @ref=AdapterDebugPage Height=@($"calc(100vh - {BlazorAppService.DefaultHeight+400}px)")></AdapterDebugPage>
+<AdapterDebugPage LogPath=@LogPath @ref=AdapterDebugPage Height=@($"calc(100vh - {BlazorAppService.DefaultHeight+400}px)") ShowDefaultOtherContent=false>
+
+    <OtherContent>
+        <MSubheader>
+            广播校时
+        </MSubheader>
+        <MContainer>
+            <MRow Dense Align="AlignTypes.Center">
+
+                 <PDateDigitalClockPicker @bind-Value="dateTime" TimeFormat="TimeFormat.Hr24" ViewType="DateTimePickerViewType.Auto" Context="dateContext">
+                     <ActivatorContent>
+                         <MTextField @bind-Value="dateTime" Style="max-width:200px;" Class="ma-1" Outlined HideDetails=@("auto") Dense Clearable Readonly @attributes="@dateContext.Attrs">
+                         </MTextField>
+                     </ActivatorContent>
+                 </PDateDigitalClockPicker>
+                 <MButton Class="ma-1" Color="primary" OnClick="()=>_plc.BroadcastTime(dateTime)">
+                     校时
+                 </MButton>
+             </MRow>
+         </MContainer>
+
+         <MSubheader>
+             冻结
+         </MSubheader>
+         <MContainer>
+             <MRow Dense Align="AlignTypes.Center">
+
+                 <PDateDigitalClockPicker @bind-Value="dateTime" TimeFormat="TimeFormat.Hr24" ViewType="DateTimePickerViewType.Auto" Context="dateContext">
+                     <ActivatorContent>
+                         <MTextField @bind-Value="dateTime" Style="max-width:200px;" Class="ma-1" Outlined HideDetails=@("auto") Dense Clearable Readonly @attributes="@dateContext.Attrs">
+                         </MTextField>
+                     </ActivatorContent>
+                 </PDateDigitalClockPicker>
+                 <MButton Class="ma-1" Color="primary" OnClick="()=>_plc.FreezeAsync(dateTime)">
+                     冻结
+                 </MButton>
+             </MRow>
+         </MContainer>
+         <MSubheader>
+             读取通信地址
+         </MSubheader>
+         <MContainer>
+             <MRow Dense Align="AlignTypes.Center">
+
+                 <MButton Class="ma-1" Color="primary" OnClick="ReadDeviceStationAsync">
+                     读取通信地址
+                 </MButton>
+             </MRow>
+         </MContainer>
+         <MSubheader>
+             修改波特率
+         </MSubheader>
+         <MContainer>
+             <MRow Dense Align="AlignTypes.Center">
+
+                 <MTextField Class="ma-1" Outlined Style="max-width:200px" Label=波特率 Clearable Dense HideDetails="@("auto")" @bind-Value=baudRate></MTextField>
+
+                 <MButton Class="ma-1" Color="primary" OnClick="WriteBaudRateAsync">
+                     修改波特率
+                 </MButton>
+             </MRow>
+         </MContainer>
 
 
+         <MSubheader>
+             更新通信地址
+         </MSubheader>
+         <MContainer>
+             <MRow Dense Align="AlignTypes.Center">
+
+                 <MTextField Class="ma-1" Outlined Style="max-width:200px" Label=通信地址 Clearable Dense HideDetails="@("auto")" @bind-Value=station></MTextField>
+
+                 <MButton Class="ma-1" Color="primary" OnClick="WriteDeviceStationAsync">
+                     更新通信地址
+                 </MButton>
+             </MRow>
+         </MContainer>
+
+         <MSubheader>
+             修改密码
+         </MSubheader>
+         <MContainer>
+             <MRow Dense Align="AlignTypes.Center">
+
+                 <MTextField Class="ma-1" Outlined Style="max-width:200px" Label=级别(0-9) Clearable Dense HideDetails="@("auto")" @bind-Value=level></MTextField>
+                 <MTextField Class="ma-1" Outlined Style="max-width:200px" Label=旧密码 Clearable Dense HideDetails="@("auto")" @bind-Value=oldPassword></MTextField>
+                 <MTextField Class="ma-1" Outlined Style="max-width:200px" Label=新密码 Clearable Dense HideDetails="@("auto")" @bind-Value=newPassword></MTextField>
+
+                 <MButton Class="ma-1" Color="primary" OnClick="WritePasswordAsync">
+                     修改密码
+                 </MButton>
+             </MRow>
+         </MContainer>
+
+
+
+     </OtherContent>
+
+</AdapterDebugPage>
+
+
+ @code {
+    private byte level;
+    private string oldPassword;
+    private string newPassword;
+    private async Task WritePasswordAsync()
+    {
+        var result = await _plc.WritePasswordAsync(level, oldPassword, newPassword);
+        if (result.IsSuccess)
+        {
+            _plc.Logger.LogInformation((result.ErrorMessage ?? "SUCCESS"));
+        }
+        else
+        {
+            _plc.Logger.LogWarning(result.Exception,result.ErrorMessage);
+        }
+    }
+
+
+    private string station;
+    private async Task WriteDeviceStationAsync()
+    {
+        var result = await _plc.WriteDeviceStationAsync(station);
+        if (result.IsSuccess)
+        {
+            _plc.Logger.LogInformation((result.ErrorMessage ?? "SUCCESS"));
+        }
+        else
+        {
+            _plc.Logger.LogWarning(result.Exception,result.ErrorMessage);
+        }
+    }
+
+    private int baudRate;
+    private async Task WriteBaudRateAsync()
+    {
+        var result = await _plc.WriteBaudRateAsync(baudRate);
+        if (result.IsSuccess)
+        {
+            _plc.Logger.LogInformation((result.ErrorMessage??"SUCCESS"));
+        }
+        else
+        {
+            _plc.Logger.LogWarning(result.Exception,result.ErrorMessage);
+        }
+    }
+
+    private async Task ReadDeviceStationAsync()
+    {
+        var result = await _plc.ReadDeviceStationAsync();
+        if (result.IsSuccess)
+        {
+            _plc.Logger.LogInformation((result.ErrorMessage??"SUCCESS"));
+        }
+        else
+        {
+            _plc.Logger.LogWarning(result.Exception,result.ErrorMessage);
+        }
+    }
+    private DateTime dateTime;
+}
