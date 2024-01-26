@@ -362,8 +362,8 @@ public class BlazorAppService : IAsyncDisposable
 
     public async Task InitTabAsync()
     {
-        var isPageTab = await LocalStorage.GetItemAsync<bool>("masablazor@isPageTab");
-        IsPageTab = isPageTab;
+        var isPageTab = await LocalStorage.GetItemAsync<bool?>("masablazor@isPageTab");
+        IsPageTab = isPageTab ?? true;
     }
 
     #endregion 标签页/面包屑
