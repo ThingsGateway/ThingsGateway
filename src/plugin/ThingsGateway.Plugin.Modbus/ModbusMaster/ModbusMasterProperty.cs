@@ -28,7 +28,7 @@ public class ModbusMasterProperty : CollectPropertyBase
     /// 心跳检测
     /// </summary>
     [DynamicProperty("心跳检测", "大写16进制字符串，符合心跳内容会自动回应")]
-    public string HeartbeatHexString { get; set; }
+    public string HeartbeatHexString { get; set; } = "FFFF8080";
     /// <summary>
     /// 默认站号
     /// </summary>
