@@ -17,6 +17,8 @@ using Mapster;
 using MQTTnet;
 using MQTTnet.Client;
 
+using Newtonsoft.Json.Linq;
+
 using System.Text;
 
 using ThingsGateway.Cache;
@@ -160,7 +162,7 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
         var t = string.Format(TgMqttRpcClientTopicGenerationStrategy.RpcTopic, _driverPropertys.RpcWriteTopic);
         if (MqttTopicFilterComparer.Compare(args.ApplicationMessage.Topic, t) != MqttTopicFilterCompareResult.IsMatch)
             return;
-        var rpcDatas = Encoding.UTF8.GetString(args.ApplicationMessage.PayloadSegment).FromJsonString<Dictionary<string, string>>();
+        var rpcDatas = Encoding.UTF8.GetString(args.ApplicationMessage.PayloadSegment).FromJsonString<Dictionary<string, JToken>>();
         if (rpcDatas == null)
             return;
         Dictionary<string, OperResult> mqttRpcResult = await GetResult(args, rpcDatas);
@@ -180,7 +182,7 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
         }
     }
 
-    private async Task<Dictionary<string, OperResult>> GetResult(MqttApplicationMessageReceivedEventArgs args, Dictionary<string, string> rpcDatas)
+    private async Task<Dictionary<string, OperResult>> GetResult(MqttApplicationMessageReceivedEventArgs args, Dictionary<string, JToken> rpcDatas)
     {
         var mqttRpcResult = new Dictionary<string, OperResult>();
         try
@@ -204,7 +206,7 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
 
             var result = await RpcService.InvokeDeviceMethodAsync(ToString() + "-" + args.ClientId,
                 rpcDatas.Where(
-                a => !mqttRpcResult.Any(b => b.Key == a.Key)).ToDictionary(a => a.Key, a => a.Value));
+                a => !mqttRpcResult.Any(b => b.Key == a.Key)).ToDictionary(a => a.Key, a => a.Value.ToString()));
 
             mqttRpcResult.AddRange(result);
         }

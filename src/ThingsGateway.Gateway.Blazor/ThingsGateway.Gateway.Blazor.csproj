@@ -18,9 +18,5 @@
 		</Content>
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Folder Include="Extension\" />
-	</ItemGroup>
-
 
 </Project>

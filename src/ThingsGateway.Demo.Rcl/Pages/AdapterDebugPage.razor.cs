@@ -16,7 +16,6 @@ using BlazorComponent;
 
 using Microsoft.AspNetCore.Components;
 
-using ThingsGateway.Components;
 using ThingsGateway.Foundation;
 
 using TouchSocket.Core;
@@ -157,7 +156,8 @@ public partial class AdapterDebugPage : AdapterDebugBase
                 }
                 else
                 {
-                    _ = Task.Run(() =>
+                    await Task.Delay(1000);
+                    await Task.Factory.StartNew(() =>
                     {
                         var result = TextFileReader.LastLog(files.FirstOrDefault().FullName, 0);
                         if (result.IsSuccess)
@@ -169,7 +169,6 @@ public partial class AdapterDebugPage : AdapterDebugBase
                             Messages = new List<(int, string)>();
                         }
                     });
-                    await Task.Delay(1000);
                 }
             }
         }

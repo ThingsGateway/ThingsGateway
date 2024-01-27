@@ -13,7 +13,7 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-		<PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Client" Version="1.4.372.107" />
-		<PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Client.ComplexTypes" Version="1.4.372.107" />
+		<PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Client" Version="1.5.372.113" />
+		<PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Client.ComplexTypes" Version="1.5.372.113" />
 	</ItemGroup>
 </Project>
