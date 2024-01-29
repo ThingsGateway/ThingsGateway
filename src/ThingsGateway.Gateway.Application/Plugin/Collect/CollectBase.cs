@@ -307,7 +307,7 @@ public abstract class CollectBase : DriverBase
         if (deviceMethodsVariableFailedNum == 0 && deviceSourceVariableFailedNum == 0 && (deviceMethodsVariableSuccessNum != 0 || deviceSourceVariableSuccessNum != 0))
         {
             //只有成功读取一次，失败次数都会清零
-            CurrentDevice.SetDeviceStatus(DateTimeUtil.Now, 0);
+            CurrentDevice.SetDeviceStatus(DateTimeUtil.TimerXNow, 0);
         }
     }
 
