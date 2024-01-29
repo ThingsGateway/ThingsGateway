@@ -36,6 +36,13 @@
       "ExtJson": null
     },
     {
+      "Id": 103223987060805,
+      "Category": "SYS_ROLE_HAS_OPENAPIPERMISSION",
+      "ObjectId": 212725263001002,
+      "TargetId": "/openApi/runtimeInfo/channelList",
+      "ExtJson": "{\"ApiUrl\":\"/openApi/runtimeInfo/channelList\"}"
+    },
+    {
       "Id": 503223987060805,
       "Category": "SYS_ROLE_HAS_OPENAPIPERMISSION",
       "ObjectId": 212725263001002,
@@ -505,6 +512,13 @@
       "ExtJson": "{\"ApiUrl\":\"/gatewayconfig/variable\"}"
     },
     {
+      "Id": 103224196124742,
+      "Category": "SYS_ROLE_HAS_OPENAPIPERMISSION",
+      "ObjectId": 502961260494917,
+      "TargetId": "/openApi/runtimeInfo/channelList",
+      "ExtJson": "{\"ApiUrl\":\"/openApi/runtimeInfo/channelList\"}"
+    },
+    {
       "Id": 503224196124741,
       "Category": "SYS_ROLE_HAS_OPENAPIPERMISSION",
       "ObjectId": 502961260494917,
@@ -518,6 +532,7 @@
       "TargetId": "/openApi/runtimeInfo/variableList",
       "ExtJson": "{\"ApiUrl\":\"/openApi/runtimeInfo/variableList\"}"
     },
+
     {
       "Id": 503224196124743,
       "Category": "SYS_ROLE_HAS_OPENAPIPERMISSION",

@@ -292,6 +292,11 @@
             <param name="fromType">注册类型</param>
             <param name="toType">实例类型</param>
         </member>
+        <member name="T:TouchSocket.Core.GeneratorPackageAttribute">
+            <summary>
+            标识源生成<see cref="T:TouchSocket.Core.IPackage"/>的实现。
+            </summary>
+        </member>
         <member name="T:TouchSocket.Core.GeneratorPluginAttribute">
             <summary>
             使用源生成插件的调用。

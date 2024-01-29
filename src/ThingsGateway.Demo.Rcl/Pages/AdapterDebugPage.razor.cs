@@ -16,6 +16,7 @@ using BlazorComponent;
 
 using Microsoft.AspNetCore.Components;
 
+using ThingsGateway.Components;
 using ThingsGateway.Foundation;
 
 using TouchSocket.Core;
