@@ -89,6 +89,6 @@ public partial class KafkaProducer : BusinessBaseWithCacheIntervalScript<Variabl
     {
         await Update(cancellationToken);
 
-        await Delay(CurrentDevice.IntervalTime, cancellationToken);
+        await Delay(cancellationToken);
     }
 }

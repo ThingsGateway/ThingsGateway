@@ -148,7 +148,7 @@ public partial class OpcUaServer : BusinessBase
             success = false;
         }
 
-        await Delay(CurrentDevice.IntervalTime, cancellationToken);
+        await Delay(cancellationToken);
     }
 
     private ApplicationConfiguration GetDefaultConfiguration()

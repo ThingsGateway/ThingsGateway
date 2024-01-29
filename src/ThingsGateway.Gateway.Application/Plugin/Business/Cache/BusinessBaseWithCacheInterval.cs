@@ -89,7 +89,7 @@ public abstract class BusinessBaseWithCacheInterval<T, T2, T3> : BusinessBaseWit
         {
             if (CurrentDevice?.KeepRun == false)
             {
-                await Delay(CurrentDevice.IntervalTime, cancellationToken);
+                await Delay(cancellationToken);
                 continue;
             }
             //间隔上传
@@ -126,7 +126,7 @@ public abstract class BusinessBaseWithCacheInterval<T, T2, T3> : BusinessBaseWit
                 }
             }
 
-            await Delay(CurrentDevice.IntervalTime, cancellationToken);
+            await Delay(cancellationToken);
         }
     }
 
@@ -252,7 +252,7 @@ public abstract class BusinessBaseWithCacheInterval<T, T2> : BusinessBaseWithCac
         {
             if (CurrentDevice?.KeepRun == false)
             {
-                await Delay(CurrentDevice.IntervalTime, cancellationToken);
+                await Delay(cancellationToken);
                 continue;
             }
             //间隔上传
@@ -289,7 +289,7 @@ public abstract class BusinessBaseWithCacheInterval<T, T2> : BusinessBaseWithCac
                 }
             }
 
-            await Delay(CurrentDevice.IntervalTime, cancellationToken);
+            await Delay(cancellationToken);
         }
     }
 
@@ -384,13 +384,13 @@ public abstract class BusinessBaseWithCacheInterval<T> : BusinessBaseWithCacheT<
         {
             if (CurrentDevice?.KeepRun == false)
             {
-                await Delay(CurrentDevice.IntervalTime, cancellationToken);
+                await Delay(cancellationToken);
                 continue;
             }
             //间隔上传
             IntervalInsertVariable();
 
-            await Delay(CurrentDevice.IntervalTime, cancellationToken);
+            await Delay(cancellationToken);
         }
     }
 

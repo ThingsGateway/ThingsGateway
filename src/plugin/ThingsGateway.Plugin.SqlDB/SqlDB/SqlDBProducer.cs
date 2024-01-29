@@ -100,6 +100,6 @@ YitIdHelper.NextId())
             await UpdateTMemory(cancellationToken);
             await UpdateTCache(cancellationToken);
         }
-        await Delay(CurrentDevice.IntervalTime, cancellationToken);
+        await Delay(cancellationToken);
     }
 }

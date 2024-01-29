@@ -345,12 +345,12 @@ public abstract class DriverBase : DisposableObject
     /// <summary>
     /// 默认延时
     /// </summary>
-    /// <param name="interval"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    protected static async Task Delay(int interval, CancellationToken cancellationToken)
+    protected async Task Delay(CancellationToken cancellationToken)
     {
-        await Task.Delay(interval - ChannelThread.CycleInterval, cancellationToken);
+        if (CurrentDevice.IntervalTime > ChannelThread.CycleInterval)
+            await Task.Delay(CurrentDevice.IntervalTime - ChannelThread.CycleInterval, cancellationToken);
+        else
+            await Task.Delay(ChannelThread.CycleInterval, cancellationToken);
     }
 
     /// <inheritdoc/>

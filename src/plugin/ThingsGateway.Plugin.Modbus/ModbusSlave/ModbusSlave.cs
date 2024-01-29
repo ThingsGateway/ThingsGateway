@@ -127,7 +127,7 @@ public class ModbusSlave : BusinessBase
             }
         }
 
-        await Delay(CurrentDevice.IntervalTime, cancellationToken);
+        await Delay(cancellationToken);
     }
 
     /// <summary>

@@ -72,6 +72,6 @@ public partial class TDengineDBProducer : BusinessBaseWithCacheInterval<TDengine
         await UpdateTMemory(cancellationToken);
         await UpdateTCache(cancellationToken);
 
-        await Delay(CurrentDevice.IntervalTime, cancellationToken);
+        await Delay(cancellationToken);
     }
 }
