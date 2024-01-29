@@ -21,7 +21,7 @@ namespace ThingsGateway.Gateway.Application;
 /// <summary>
 /// 业务插件，额外实现脚本切换实体
 /// </summary>
-public abstract class BusinessBaseWithCacheIntervalScript<T, T2, T3> : BusinessBaseWithCacheInterval<T, T2, T3>
+public abstract partial class BusinessBaseWithCacheIntervalScript<T, T2, T3> : BusinessBaseWithCacheInterval<T, T2, T3>
 {
     /// <summary>
     /// <inheritdoc cref="DriverPropertys"/>
@@ -218,17 +218,6 @@ public abstract class BusinessBaseWithCacheIntervalScript<T, T2, T3> : BusinessB
             }
         }
         return topicJsonList;
-    }
-
-    protected class TopicJson
-    {
-        public TopicJson(string topic, string json)
-        {
-            Topic = topic; Json = json;
-        }
-
-        public string Topic { get; set; }
-        public string Json { get; set; }
     }
 
     #endregion 封装方法
