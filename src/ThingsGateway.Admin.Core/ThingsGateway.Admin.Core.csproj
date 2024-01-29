@@ -6,10 +6,9 @@
 		<PackageReference Include="SharpZipLib" Version="1.4.2" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Data.Sqlite.Core" Version="8.0.1" />
-		<PackageReference Include="SqlSugarCore" Version="5.1.4.137" />
+		<PackageReference Include="SqlSugarCore" Version="5.1.4.122" />
 	</ItemGroup>
-	
+
 	<ItemGroup>
 	  <ProjectReference Include="..\ThingsGateway.Cache\ThingsGateway.Cache.csproj" />
 	</ItemGroup>
