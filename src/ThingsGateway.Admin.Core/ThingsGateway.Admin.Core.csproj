@@ -14,6 +14,7 @@
 		<PackageReference Include="SqlSugarCoreNoDrive" Version="5.1.4.137" />
 		<PackageReference Include="System.Data.Common" Version="4.3.0" />
 		<PackageReference Include="System.Reflection.Emit.Lightweight" Version="4.7.0" />
+		<PackageReference Include="System.Text.Json" Version="8.0.1" />
 		<PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
 	</ItemGroup>
 
