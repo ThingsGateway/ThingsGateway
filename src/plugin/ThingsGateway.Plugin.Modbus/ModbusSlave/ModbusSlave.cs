@@ -69,6 +69,7 @@ public class ModbusSlave : BusinessBase
         _plc = new(channel)
         {
             DataFormat = _driverPropertys.DataFormat,
+            IsStringReverseByteWord = _driverPropertys.IsStringReverseByteWord,
             CacheTimeout = _driverPropertys.CacheTimeout,
             Station = _driverPropertys.Station,
             IsWriteMemory = _driverPropertys.IsWriteMemory,

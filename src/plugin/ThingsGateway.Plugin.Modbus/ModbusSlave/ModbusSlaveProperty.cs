@@ -37,6 +37,9 @@ public class ModbusSlaveProperty : BusinessPropertyBase
     [DynamicProperty("默认解析顺序", "")]
     public DataFormatEnum DataFormat { get; set; }
 
+    [DynamicProperty("字符串按字反转", "")]
+    public bool IsStringReverseByteWord { get; set; }
+
     /// <summary>
     /// 无交互2min时断开连接
     /// </summary>

@@ -68,6 +68,21 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     /// </summary>
     public virtual ushort ConnectTimeout { get; set; } = 3000;
 
+    /// <summary>
+    /// <inheritdoc cref="IThingsGatewayBitConverter.IsStringReverseByteWord"/>
+    /// </summary>
+    public bool IsStringReverseByteWord
+    {
+        get
+        {
+            return ThingsGatewayBitConverter.IsStringReverseByteWord;
+        }
+        set
+        {
+            ThingsGatewayBitConverter.IsStringReverseByteWord = value;
+        }
+    }
+
     /// <inheritdoc/>
     public virtual IChannel Channel { get; }
 

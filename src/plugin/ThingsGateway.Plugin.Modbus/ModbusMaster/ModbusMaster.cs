@@ -44,6 +44,7 @@ public class ModbusMaster : CollectBase
         _plc = new(channel)
         {
             DataFormat = _driverPropertys.DataFormat,
+            IsStringReverseByteWord = _driverPropertys.IsStringReverseByteWord,
             SendDelayTime = _driverPropertys.SendDelayTime,
             CacheTimeout = _driverPropertys.CacheTimeout,
             ConnectTimeout = _driverPropertys.ConnectTimeout,
