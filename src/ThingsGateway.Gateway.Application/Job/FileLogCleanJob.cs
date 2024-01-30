@@ -27,10 +27,12 @@ public class FileLogCleanJob : IJob
     public Task ExecuteAsync(JobExecutingContext context, CancellationToken stoppingToken)
     {
         var channelService = context.ServiceProvider.GetService<IChannelService>();
-        var data = channelService.GetCacheList().Select(a => a.Name);
+        var data = channelService.GetCacheList().Select(a => a.Id.ToString());
         var dir = LoggerExtension.GetLogBasePath();
         Directory.CreateDirectory(dir);
-        string[] dirs = Directory.GetDirectories(dir);
+        string[] dirs = Directory.GetDirectories(dir)
+.Select(a => Path.GetFileName(a))
+.ToArray();
         foreach (var item in dirs)
         {
             if (stoppingToken.IsCancellationRequested)
@@ -50,7 +52,9 @@ public class FileLogCleanJob : IJob
 
         var debugDir = LoggerExtension.GetDebugLogBasePath();
         Directory.CreateDirectory(debugDir);
-        string[] debugDirs = Directory.GetDirectories(debugDir);
+        string[] debugDirs = Directory.GetDirectories(debugDir)
+    .Select(a => Path.GetFileName(a))
+    .ToArray();
 
         ChannelConfig channelConfig = TouchSocket.Core.AppConfigBase.GetNewDefault<ChannelConfig>();
         foreach (var item in debugDirs)
@@ -62,7 +66,7 @@ public class FileLogCleanJob : IJob
             //删除文件夹
             try
             {
-                if (!channelConfig.ChannelDatas.Select(a => a.Name).Contains(item))
+                if (!channelConfig.ChannelDatas.Select(a => a.Id.ToString()).Contains(item))
                 {
                     Directory.Delete(item, true);
                 }

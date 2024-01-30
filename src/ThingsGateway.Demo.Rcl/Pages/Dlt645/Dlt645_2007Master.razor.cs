@@ -76,7 +76,7 @@ namespace ThingsGateway.Demo
         {
             _plc = new ThingsGateway.Foundation.Dlt645.Dlt645_2007Master(channelData.Channel);
             AdapterDebugPage.Plc = _plc;
-            LogPath = channelData.Name.GetDebugLogPath();
+            LogPath = channelData.Id.GetDebugLogPath();
         }
     }
 }

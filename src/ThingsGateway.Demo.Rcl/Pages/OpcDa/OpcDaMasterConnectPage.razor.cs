@@ -46,7 +46,7 @@ public partial class OpcDaMasterConnectPage : IDisposable
 
         Plc.Init(config);
         LogMessage = new TouchSocket.Core.LoggerGroup() { LogLevel = TouchSocket.Core.LogLevel.Trace };
-        var logger = TextFileLogger.Create(Plc.GetHashCode().ToString().GetDebugLogPath());
+        var logger = TextFileLogger.Create(Plc.GetHashCode().ToLong().GetDebugLogPath());
         logger.LogLevel = LogLevel.Trace;
         LogMessage.AddLogger(logger);
 

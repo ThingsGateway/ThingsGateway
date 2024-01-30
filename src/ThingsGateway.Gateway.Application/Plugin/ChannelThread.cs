@@ -81,7 +81,7 @@ public class ChannelThread
         FoundataionConfig = new();
         FoundataionConfig.ConfigureContainer(a => a.RegisterSingleton<ILog>(LogMessage));
         Channel = getChannel(FoundataionConfig);
-        LogPath = channel.Name.GetLogPath();
+        LogPath = channel.Id.GetLogPath();
         LogEnable = channel.LogEnable;
     }
 

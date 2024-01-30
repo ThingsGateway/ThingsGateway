@@ -24,21 +24,21 @@ public static class LoggerExtension
     /// <summary>
     /// 获取DEBUG日志路径
     /// </summary>
-    /// <param name="channelName"></param>
+    /// <param name="channelId"></param>
     /// <returns></returns>
-    public static string GetDebugLogPath(this string channelName)
+    public static string GetDebugLogPath(this long channelId)
     {
-        return GetDebugLogBasePath().CombinePath(channelName).FileNameReplace();
+        return GetDebugLogBasePath().CombinePath(channelId.ToString()).FileNameReplace();
     }
 
     /// <summary>
     /// 获取日志路径
     /// </summary>
-    /// <param name="channelName"></param>
+    /// <param name="channelId"></param>
     /// <returns></returns>
-    public static string GetLogPath(this string channelName)
+    public static string GetLogPath(this long channelId)
     {
-        return GetLogBasePath().CombinePath(channelName).FileNameReplace();
+        return GetLogBasePath().CombinePath(channelId.ToString()).FileNameReplace();
     }
 
     /// <summary>

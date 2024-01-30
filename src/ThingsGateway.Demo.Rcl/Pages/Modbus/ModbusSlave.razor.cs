@@ -71,7 +71,7 @@ namespace ThingsGateway.Demo
         {
             _plc = new ThingsGateway.Foundation.Modbus.ModbusSlave(channelData.Channel);
             AdapterDebugPage.Plc = _plc;
-            LogPath = channelData.Name.GetDebugLogPath();
+            LogPath = channelData.Id.GetDebugLogPath();
         }
     }
 }

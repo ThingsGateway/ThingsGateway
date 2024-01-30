@@ -23,6 +23,9 @@ namespace ThingsGateway.Foundation;
 public class ChannelData : IValidatableObject, IChannelData
 {
     /// <inheritdoc/>
+    public long Id { get; set; } = IncrementCount.GetCurrentValue();
+
+    /// <inheritdoc/>
     [Required(ErrorMessage = "不能为空")]
     public string Name { get; set; }
 
@@ -130,6 +133,8 @@ public class ChannelData : IValidatableObject, IChannelData
     [JsonIgnore]
     public IChannel Channel;
 
+    private static IncrementCount IncrementCount = new(long.MaxValue);
+
     /// <summary>
     /// 创建通道
     /// </summary>
@@ -138,7 +143,7 @@ public class ChannelData : IValidatableObject, IChannelData
     {
         channelData.TouchSocketConfig ??= new TouchSocket.Core.TouchSocketConfig();
         var LogMessage = new TouchSocket.Core.LoggerGroup() { LogLevel = TouchSocket.Core.LogLevel.Trace };
-        var logger = TextFileLogger.Create(channelData.Name.GetDebugLogPath());
+        var logger = TextFileLogger.Create(channelData.Id.GetDebugLogPath());
         logger.LogLevel = LogLevel.Trace;
         LogMessage.AddLogger(logger);
         channelData.TouchSocketConfig.ConfigureContainer(a => a.RegisterSingleton<ILog>(LogMessage));

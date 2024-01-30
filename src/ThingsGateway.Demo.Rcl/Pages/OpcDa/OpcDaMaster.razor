@@ -9,7 +9,7 @@
 <OpcDaMasterConnectPage @ref=opcDaMasterConnectPage OnConnectClick=OnConnectClick></OpcDaMasterConnectPage>
 
 
-<AdapterDebugPage LogPath=@(opcDaMasterConnectPage?.Plc?.GetHashCode().ToString().GetDebugLogPath()) @ref=adapterDebugPage Height=@($"calc(100vh - {BlazorAppService.DefaultHeight+400}px)") ShowDefaultOtherContent=false ShowDefaultReadWriteContent=false>
+<AdapterDebugPage LogPath=@(opcDaMasterConnectPage?.Plc?.GetHashCode().ToLong().GetDebugLogPath()) @ref=adapterDebugPage Height=@($"calc(100vh - {BlazorAppService.DefaultHeight+400}px)") ShowDefaultOtherContent=false ShowDefaultReadWriteContent=false>
 
     <ReadWriteContent>
 
