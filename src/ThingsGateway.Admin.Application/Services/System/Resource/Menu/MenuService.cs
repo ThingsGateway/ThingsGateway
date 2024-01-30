@@ -24,13 +24,11 @@ namespace ThingsGateway.Admin.Application;
 [Injection(Proxy = typeof(OperDispatchProxy))]
 public class MenuService : DbRepository<SysResource>, IMenuService
 {
-    private readonly ILogger<MenuService> _logger;
     private readonly IResourceService _resourceService;
     private readonly IRelationService _relationService;
 
-    public MenuService(ILogger<MenuService> logger, IResourceService resourceService, IRelationService relationService)
+    public MenuService(IResourceService resourceService, IRelationService relationService)
     {
-        this._logger = logger;
         this._resourceService = resourceService;
         this._relationService = relationService;
     }

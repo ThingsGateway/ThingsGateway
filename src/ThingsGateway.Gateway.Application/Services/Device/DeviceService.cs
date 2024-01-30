@@ -48,7 +48,8 @@ public class DeviceService : DbRepository<Device>, IDeviceService
     /// <inheritdoc cref="IDeviceService"/>
     public DeviceService(
     IServiceScopeFactory serviceScopeFactory,
-    IFileService fileService, IImportExportService importExportService,
+    IFileService fileService,
+    IImportExportService importExportService,
     ISimpleCacheService simpleCacheService
         )
     {

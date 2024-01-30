@@ -27,13 +27,6 @@ namespace ThingsGateway.Admin.Application;
 /// </summary>
 public class FileService : IFileService
 {
-    private readonly IConfigService _configService;
-
-    public FileService(IConfigService configService)
-    {
-        _configService = configService;
-    }
-
     /// <inheritdoc/>
     public async Task<string> UploadFileAsync(string pPath, IBrowserFile file)
     {

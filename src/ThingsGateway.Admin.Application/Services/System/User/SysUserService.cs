@@ -28,7 +28,6 @@ namespace ThingsGateway.Admin.Application;
 [Injection(Proxy = typeof(OperDispatchProxy))]
 public class SysUserService : DbRepository<SysUser>, ISysUserService
 {
-    private readonly ILogger<ILogger> _logger;
     private readonly ISimpleCacheService _simpleCacheService;
     private readonly IRelationService _relationService;
     private readonly IResourceService _resourceService;
@@ -36,13 +35,12 @@ public class SysUserService : DbRepository<SysUser>, ISysUserService
     private readonly IConfigService _configService;
     private readonly IEventPublisher _eventPublisher;
 
-    public SysUserService(ILogger<ILogger> logger, ISimpleCacheService simpleCacheService,
+    public SysUserService(ISimpleCacheService simpleCacheService,
         IRelationService relationService,
         IResourceService resourceService, IEventPublisher eventPublisher,
         IRoleService roleService,
         IConfigService configService)
     {
-        _logger = logger;
         _simpleCacheService = simpleCacheService;
         _relationService = relationService;
         _resourceService = resourceService;

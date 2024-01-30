@@ -17,12 +17,10 @@ namespace ThingsGateway.Admin.Application;
 /// <inheritdoc cref="IRelationService"/>
 public class Relationservice : DbRepository<SysRelation>, IRelationService
 {
-    private readonly ILogger<Relationservice> _logger;
     private readonly ISimpleCacheService _simpleCacheService;
 
-    public Relationservice(ILogger<Relationservice> logger, ISimpleCacheService simpleCacheService)
+    public Relationservice(ISimpleCacheService simpleCacheService)
     {
-        _logger = logger;
         _simpleCacheService = simpleCacheService;
     }
 

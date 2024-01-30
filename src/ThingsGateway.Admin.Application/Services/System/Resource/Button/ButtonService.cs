@@ -27,18 +27,13 @@ namespace ThingsGateway.Admin.Application;
 [Injection(Proxy = typeof(OperDispatchProxy))]
 public class ButtonService : DbRepository<SysResource>, IButtonService
 {
-    private readonly ILogger<ButtonService> _logger;
     private readonly IResourceService _resourceService;
     private readonly IRelationService _relationService;
-    private readonly IEventPublisher _eventPublisher;
 
-    public ButtonService(ILogger<ButtonService> logger, IResourceService resourceService, IRelationService relationService,
-        IEventPublisher eventPublisher)
+    public ButtonService(IResourceService resourceService, IRelationService relationService)
     {
-        _logger = logger;
         _resourceService = resourceService;
         _relationService = relationService;
-        _eventPublisher = eventPublisher;
     }
 
     /// <inheritdoc/>

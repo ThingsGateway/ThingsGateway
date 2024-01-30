@@ -34,16 +34,14 @@ public class AuthService : IAuthService
     private readonly IEventPublisher _eventPublisher;
     private readonly IConfigService _configService;
     private readonly ISysUserService _userService;
-    private readonly IRoleService _roleService;
 
     public AuthService(ISimpleCacheService simpleCacheService, IEventPublisher eventPublisher, IConfigService configService,
-        ISysUserService userService, IRoleService roleService)
+        ISysUserService userService)
     {
         _simpleCacheService = simpleCacheService;
         _eventPublisher = eventPublisher;
         _configService = configService;
         _userService = userService;
-        _roleService = roleService;
     }
 
     /// <inheritdoc/>

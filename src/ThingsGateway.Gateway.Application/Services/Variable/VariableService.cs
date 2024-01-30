@@ -23,7 +23,6 @@ using System.Dynamic;
 using System.Reflection;
 using System.Text.RegularExpressions;
 
-using ThingsGateway.Cache;
 using ThingsGateway.Core.Extension;
 using ThingsGateway.Gateway.Application.Extensions;
 
@@ -39,19 +38,17 @@ public class VariableService : DbRepository<Variable>, IVariableService
 {
     protected readonly IFileService _fileService;
     protected readonly IServiceScope _serviceScope;
-    protected readonly ISimpleCacheService _simpleCacheService;
     protected readonly IImportExportService _importExportService;
 
     /// <inheritdoc cref="IVariableService"/>
     public VariableService(
     IServiceScopeFactory serviceScopeFactory,
-    IFileService fileService, IImportExportService importExportService,
-    ISimpleCacheService simpleCacheService
+    IFileService fileService,
+    IImportExportService importExportService
         )
     {
         _fileService = fileService;
         _serviceScope = serviceScopeFactory.CreateScope();
-        _simpleCacheService = simpleCacheService;
         _importExportService = importExportService;
     }
 

@@ -24,19 +24,17 @@ namespace ThingsGateway.Admin.Application;
 [Injection(Proxy = typeof(OperDispatchProxy))]
 public class RoleService : DbRepository<SysRole>, IRoleService
 {
-    private readonly ILogger<RoleService> _logger;
     private readonly ISimpleCacheService _simpleCacheService;
     private readonly IRelationService _relationService;
     private readonly IResourceService _resourceService;
     private readonly IEventPublisher _eventPublisher;
 
-    public RoleService(ILogger<RoleService> logger,
+    public RoleService(
         ISimpleCacheService simpleCacheService,
         IRelationService relationService,
         IResourceService resourceService,
         IEventPublisher eventPublisher)
     {
-        _logger = logger;
         _simpleCacheService = simpleCacheService;
         _relationService = relationService;
         _resourceService = resourceService;

@@ -17,7 +17,7 @@ namespace ThingsGateway.Admin.Application;
 /// <summary>
 /// 会话管理服务
 /// </summary>
-public interface ISessionService : ISugarService, ITransient
+public interface ISessionService : ISugarService, IScoped
 {
     /// <summary>
     /// 会话统计
