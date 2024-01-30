@@ -799,7 +799,8 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     public virtual Task<OperResult> WriteAsync(string address, string value, CancellationToken cancellationToken = default)
     {
         IThingsGatewayBitConverter transformParameter = ByteTransUtil.GetTransByAddress(ref address, ThingsGatewayBitConverter);
-        return WriteAsync(address, transformParameter.GetBytes(value), cancellationToken);
+        var data = transformParameter.GetBytes(value);
+        return WriteAsync(address, data.ArrayExpandToLength(transformParameter.StringLength ?? data.Length), cancellationToken);
     }
 
     /// <inheritdoc/>
@@ -881,7 +882,8 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     public virtual OperResult Write(string address, string value, CancellationToken cancellationToken = default)
     {
         IThingsGatewayBitConverter transformParameter = ByteTransUtil.GetTransByAddress(ref address, ThingsGatewayBitConverter);
-        return Write(address, transformParameter.GetBytes(value), cancellationToken);
+        var data = transformParameter.GetBytes(value);
+        return Write(address, data.ArrayExpandToLength(transformParameter.StringLength ?? data.Length), cancellationToken);
     }
 
     #endregion 写入
@@ -953,9 +955,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
         value.ForEach((Action<string>)(a =>
         {
             var data = transformParameter.GetBytes(a);
-            if (a.Length > transformParameter.StringLength)
-                data = data.RemoveLast((int)(a.Length - transformParameter.StringLength.Value));
-            bytes.AddRange(data);
+            bytes.AddRange(data.ArrayExpandToLength(transformParameter.StringLength ?? data.Length));
         }));
         return await WriteAsync(address, bytes.ToArray(), cancellationToken);
     }
@@ -1025,9 +1025,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
         value.ForEach((Action<string>)(a =>
         {
             var data = transformParameter.GetBytes(a);
-            if (a.Length > transformParameter.StringLength)
-                data = data.RemoveLast((int)(a.Length - transformParameter.StringLength.Value));
-            bytes.AddRange(data);
+            bytes.AddRange(data.ArrayExpandToLength(transformParameter.StringLength ?? data.Length));
         }));
         return Write(address, bytes.ToArray(), cancellationToken);
     }
