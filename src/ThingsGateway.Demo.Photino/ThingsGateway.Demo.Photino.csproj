@@ -8,36 +8,18 @@
 		<TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
 		<OutputPath>$(SolutionDir)bin\$(Configuration)\$(MSBuildProjectName)\</OutputPath>
 	</PropertyGroup>
-	
+
 	<ItemGroup>
-	  <Content Include="favicon.ico">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	    <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-	    <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-	  </Content>
+		<Content Include="favicon.ico">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+		</Content>
 	</ItemGroup>
 
 
-		<ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
-			<PackageReference Include="Microsoft.AspNetCore.Components.WebView" Version="6.0.25" />
-			<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="6.0.0" />
-		</ItemGroup>
-	
-		<ItemGroup Condition="'$(TargetFramework)' == 'net7.0'">
-			<PackageReference Include="Microsoft.AspNetCore.Components.WebView" Version="7.0.14" />
-			<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="8.0.0" />
-		</ItemGroup>
-	
-		<ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
-			<PackageReference Include="Microsoft.AspNetCore.Components.WebView" Version="8.0.0" />
-			<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="8.0.0" />
-		</ItemGroup>
-		<ItemGroup>
-		</ItemGroup>
-
-
 	<ItemGroup>
-	  <ProjectReference Include="..\ThingsGateway.Demo.Rcl\ThingsGateway.Demo.Rcl.csproj" />
+		<ProjectReference Include="..\ThingsGateway.Demo.Rcl\ThingsGateway.Demo.Rcl.csproj" />
 		<PackageReference Include="Photino.NET" Version="2.6.0" />
 		<PackageReference Include="Photino.Blazor" Version="2.7.0" />
 
