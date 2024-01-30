@@ -51,7 +51,12 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
 
     /// <inheritdoc/>
     public virtual int? ArrayLength { get; set; }
-
+    /// <summary>
+    /// 构造函数
+    /// </summary>
+    public ThingsGatewayBitConverter()
+    {
+    }
     /// <summary>
     /// 构造函数
     /// </summary>
