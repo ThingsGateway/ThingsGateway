@@ -497,3 +497,5 @@ public abstract class DeviceWorker : BackgroundService
 
     #endregion worker服务
 }
+
+public delegate Task RestartEventHandler();

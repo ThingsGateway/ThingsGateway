@@ -53,6 +53,8 @@ public class BusinessDeviceWorker : DeviceWorker
                 await CreatAllChannelThreadsAsync();
                 await StartAllChannelThreadsAsync();
             }
+            if (Start != null)
+                await Start.Invoke();
         }
         catch (Exception ex)
         {
@@ -79,6 +81,9 @@ public class BusinessDeviceWorker : DeviceWorker
 
             //清空内存列表
             GlobalData.BusinessDevices.Clear();
+
+            if (Stop != null)
+                await Stop.Invoke();
         }
         catch (Exception ex)
         {
@@ -180,4 +185,8 @@ public class BusinessDeviceWorker : DeviceWorker
     }
 
     #endregion worker服务
+
+    public event RestartEventHandler Stop;
+
+    public event RestartEventHandler Start;
 }

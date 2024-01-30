@@ -167,7 +167,6 @@ public class CollectDeviceWorker : DeviceWorker
     #endregion worker服务
 
     public event RestartEventHandler Stop;
+
     public event RestartEventHandler Start;
 }
-
-public delegate Task RestartEventHandler();
