@@ -139,14 +139,14 @@ namespace ThingsGateway.Foundation
                 var byteBlock = new ByteBlock(this.ReceiveBufferSize);
                 try
                 {
-                    var r = await Task<int>.Factory.FromAsync(this.m_serialPort.BaseStream.BeginRead, this.m_serialPort.BaseStream.EndRead, byteBlock.Buffer, 0, byteBlock.Capacity, default).ConfigureFalseAwait();
+                    var r = await this.m_serialPort.BaseStream.ReadAsync(byteBlock.Buffer, 0, byteBlock.Capacity, default).ConfigureFalseAwait();
                     if (r == 0)
                     {
                         this.PrivateBreakOut(false, FoundationConst.RemoteClose);
                         return;
                     }
                     if (m_serialPort.BytesToRead > 0)
-                        r += await Task<int>.Factory.FromAsync(this.m_serialPort.BaseStream.BeginRead, this.m_serialPort.BaseStream.EndRead, byteBlock.Buffer, r, byteBlock.Capacity - r, default);
+                        r += await this.m_serialPort.BaseStream.ReadAsync(byteBlock.Buffer, r, byteBlock.Capacity - r, default).ConfigureFalseAwait();
 
                     byteBlock.SetLength(r);
                     this.HandleBuffer(byteBlock);
