@@ -44,7 +44,7 @@ public class FileLogCleanJob : IJob
             {
                 if (!data.Contains(item))
                 {
-                    Directory.Delete(item, true);
+                    Directory.Delete(dir.CombinePath(item), true);
                 }
             }
             catch { }
@@ -68,7 +68,7 @@ public class FileLogCleanJob : IJob
             {
                 if (!channelConfig.ChannelDatas.Select(a => a.Id.ToString()).Contains(item))
                 {
-                    Directory.Delete(item, true);
+                    Directory.Delete(debugDir.CombinePath(item), true);
                 }
             }
             catch { }

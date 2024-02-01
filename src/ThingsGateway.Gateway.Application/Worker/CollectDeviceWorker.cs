@@ -43,20 +43,21 @@ public class CollectDeviceWorker : DeviceWorker
 
             //停止采集服务
             await BeforeRemoveAllChannelThreadAsync();
-            //停止其他后台服务
-            await StopOtherHostService();
+            await ProtectedStoping();
             //完全停止全部采集线程
             await RemoveAllChannelThreadAsync();
+            await ProtectedStoped();
 
             //清空内存列表
             GlobalData.CollectDevices.Clear();
 
             //创建全部采集线程
             await CreatAllChannelThreadsAsync();
-            //开始其他后台服务
-            await StartOtherHostService();
+            await ProtectedStarting();
+
             //开始全部采集线程
             await StartAllChannelThreadsAsync();
+            await ProtectedStarted();
         }
         catch (Exception ex)
         {
@@ -67,32 +68,6 @@ public class CollectDeviceWorker : DeviceWorker
             singleRestartLock.Release();
             restartLock.Release();
         }
-    }
-
-    /// <summary>
-    /// 启动其他后台服务
-    /// </summary>
-    protected override async Task StartOtherHostService()
-    {
-        var alarmHostService = WorkerUtil.GetWoker<AlarmWorker>();
-        var businessDeviceHostService = WorkerUtil.GetWoker<BusinessDeviceWorker>();
-        await businessDeviceHostService.StartAsync();
-        await alarmHostService.StartAsync();
-        if (Start != null)
-            await Start.Invoke();
-    }
-
-    /// <summary>
-    /// 停止其他后台服务
-    /// </summary>
-    protected override async Task StopOtherHostService()
-    {
-        var alarmHostService = WorkerUtil.GetWoker<AlarmWorker>();
-        var businessDeviceHostService = WorkerUtil.GetWoker<BusinessDeviceWorker>();
-        await alarmHostService.StopAsync();
-        await businessDeviceHostService.StopAsync();
-        if (Stop != null)
-            await Stop.Invoke();
     }
 
     #endregion public 设备创建更新结束
@@ -147,9 +122,11 @@ public class CollectDeviceWorker : DeviceWorker
         stoppingToken.Cancel();
         await BeforeRemoveAllChannelThreadAsync();
         //停止其他后台服务
-        await StopOtherHostService();
+        await ProtectedStoping();
         //停止全部采集线程
         await RemoveAllChannelThreadAsync();
+        //停止其他后台服务
+        await ProtectedStoped();
         await base.StopAsync(cancellationToken);
     }
 
@@ -165,8 +142,4 @@ public class CollectDeviceWorker : DeviceWorker
     }
 
     #endregion worker服务
-
-    public event RestartEventHandler Stop;
-
-    public event RestartEventHandler Start;
 }

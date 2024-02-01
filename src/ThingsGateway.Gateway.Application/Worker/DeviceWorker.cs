@@ -202,13 +202,15 @@ public abstract class DeviceWorker : BackgroundService
             if (!_stoppingToken.IsCancellationRequested)
             {
                 if (isChanged)
-                    await StopOtherHostService();
+                    await ProtectedStoping();
                 var channelThread = ChannelThreads.FirstOrDefault(it => it.Has(deviceId)) ?? throw new($"更新设备线程失败，不存在{deviceId}为id的设备");
 
                 var dev = isChanged ? (await GetDeviceRunTimeAsync(deviceId)).FirstOrDefault() : channelThread.GetDriver(deviceId).CurrentDevice;
 
                 //这里先停止采集，操作会使线程取消，需要重新恢复线程
                 await channelThread.RemoveDriverAsync(deviceId);
+                if (isChanged)
+                    await ProtectedStoped();
                 if (dev != null)
                 {
                     //初始化
@@ -216,16 +218,39 @@ public abstract class DeviceWorker : BackgroundService
                     var newChannelThread = GetChannelThread(newDriverBase);
                     if (newChannelThread != null)
                     {
-                        await newChannelThread.StartThreadAsync();
+                        if (isChanged)
+                            await ProtectedStarting();
+                        try
+                        {
+                            await newChannelThread.StartThreadAsync();
+                            if (isChanged)
+                                await ProtectedStarted();
+                        }
+                        finally
+                        {
+                            if (isChanged)
+                                await ProtectedStarted();
+                        }
                     }
+                    else
+                    {
+                        if (isChanged)
+                            await ProtectedStarting();
+                        if (isChanged)
+                            await ProtectedStarted();
+                    }
+                }
+                else
+                {
+                    if (isChanged)
+                        await ProtectedStarting();
+                    if (isChanged)
+                        await ProtectedStarted();
                 }
             }
         }
         finally
         {
-            if (!_stoppingToken.IsCancellationRequested)
-                if (isChanged)
-                    await StartOtherHostService();
             singleRestartLock.Release();
         }
     }
@@ -391,7 +416,7 @@ public abstract class DeviceWorker : BackgroundService
 
     #region worker服务
 
-    protected EasyLock _easyLock = new();
+    protected EasyLock _easyLock = new(false);
 
     /// <summary>
     /// 在软件关闭时取消
@@ -401,7 +426,6 @@ public abstract class DeviceWorker : BackgroundService
     /// <inheritdoc/>
     public override async Task StartAsync(CancellationToken cancellationToken)
     {
-        await _easyLock.WaitAsync(cancellationToken);
         _appLifetime.ApplicationStarted.Register(() => { _easyLock.Release(); _easyLock = null; });
         await base.StartAsync(cancellationToken);
     }
@@ -411,16 +435,44 @@ public abstract class DeviceWorker : BackgroundService
     /// </summary>
     public const int CheckIntervalTime = 600;
 
-    protected abstract Task StartOtherHostService();
+    public event RestartEventHandler Stoping;
 
-    protected abstract Task StopOtherHostService();
+    public event RestartEventHandler Stoped;
+
+    public event RestartEventHandler Started;
+
+    public event RestartEventHandler Starting;
+
+    protected async Task ProtectedStarted()
+    {
+        if (Started != null)
+            await Started.Invoke();
+    }
+
+    protected async Task ProtectedStarting()
+    {
+        if (Starting != null)
+            await Starting.Invoke();
+    }
+
+    protected async Task ProtectedStoped()
+    {
+        if (Stoped != null)
+            await Stoped.Invoke();
+    }
+
+    protected async Task ProtectedStoping()
+    {
+        if (Stoping != null)
+            await Stoping.Invoke();
+    }
 
     protected abstract Task<IEnumerable<DeviceRunTime>> GetDeviceRunTimeAsync(long deviceId);
 
     /// <inheritdoc/>
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        await _easyLock?.WaitAsync(stoppingToken);
+        await _easyLock?.WaitAsync();
         PluginService = _serviceScope.ServiceProvider.GetService<IPluginService>();
         GlobalData = _serviceScope.ServiceProvider.GetService<GlobalData>();
         await WhileExecuteAsync(stoppingToken);

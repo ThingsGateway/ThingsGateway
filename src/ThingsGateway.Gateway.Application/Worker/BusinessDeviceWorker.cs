@@ -51,10 +51,36 @@ public class BusinessDeviceWorker : DeviceWorker
             if (ChannelThreads.Count == 0)
             {
                 await CreatAllChannelThreadsAsync();
-                await StartAllChannelThreadsAsync();
+                await ProtectedStarting();
             }
-            if (Start != null)
-                await Start.Invoke();
+            await StartAllChannelThreadsAsync();
+            await ProtectedStarted();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "启动发生错误");
+        }
+        finally
+        {
+            singleRestartLock.Release();
+            restartLock.Release();
+        }
+    }
+
+    /// <summary>
+    /// 开始
+    /// </summary>
+    public async Task CreatThreadsAsync()
+    {
+        try
+        {
+            await restartLock.WaitAsync();
+            await singleRestartLock.WaitAsync();
+            if (ChannelThreads.Count == 0)
+            {
+                await CreatAllChannelThreadsAsync();
+                await ProtectedStarting();
+            }
         }
         catch (Exception ex)
         {
@@ -76,14 +102,14 @@ public class BusinessDeviceWorker : DeviceWorker
         {
             await restartLock.WaitAsync();
             await singleRestartLock.WaitAsync();
+            await BeforeRemoveAllChannelThreadAsync();
+            await ProtectedStoping();
 
             await RemoveAllChannelThreadAsync();
+            await ProtectedStoped();
 
             //清空内存列表
             GlobalData.BusinessDevices.Clear();
-
-            if (Stop != null)
-                await Stop.Invoke();
         }
         catch (Exception ex)
         {
@@ -160,6 +186,27 @@ public class BusinessDeviceWorker : DeviceWorker
 
     #region worker服务
 
+    public override async Task StartAsync(CancellationToken cancellationToken)
+    {
+        await base.StartAsync(cancellationToken);
+    }
+
+    private async Task CollectDeviceWorker_Starting()
+    {
+        await CreatThreadsAsync();
+    }
+
+    private async Task CollectDeviceWorker_Started()
+    {
+        await Task.Delay(1000);
+        await StartAsync();
+    }
+
+    private async Task CollectDeviceWorker_Stoping()
+    {
+        await StopAsync();
+    }
+
     /// <inheritdoc/>
     public override async Task StopAsync(CancellationToken cancellationToken)
     {
@@ -169,14 +216,15 @@ public class BusinessDeviceWorker : DeviceWorker
         await base.StopAsync(cancellationToken);
     }
 
-    protected override Task StartOtherHostService()
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        return Task.CompletedTask;
-    }
-
-    protected override Task StopOtherHostService()
-    {
-        return Task.CompletedTask;
+        await _easyLock?.WaitAsync();
+        WorkerUtil.GetWoker<CollectDeviceWorker>().Starting += CollectDeviceWorker_Starting;
+        WorkerUtil.GetWoker<CollectDeviceWorker>().Started += CollectDeviceWorker_Started;
+        WorkerUtil.GetWoker<CollectDeviceWorker>().Stoping += CollectDeviceWorker_Stoping;
+        PluginService = _serviceScope.ServiceProvider.GetService<IPluginService>();
+        GlobalData = _serviceScope.ServiceProvider.GetService<GlobalData>();
+        await WhileExecuteAsync(stoppingToken);
     }
 
     protected override async Task<IEnumerable<DeviceRunTime>> GetDeviceRunTimeAsync(long deviceId)
@@ -185,8 +233,4 @@ public class BusinessDeviceWorker : DeviceWorker
     }
 
     #endregion worker服务
-
-    public event RestartEventHandler Stop;
-
-    public event RestartEventHandler Start;
 }
