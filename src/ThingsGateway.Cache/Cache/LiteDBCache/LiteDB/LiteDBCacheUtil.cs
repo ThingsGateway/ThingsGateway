@@ -43,7 +43,7 @@ public static class LiteDBCacheUtil
             var dir = GetFilePath(id);
             var fileStart = GetFileStartName(typeName);
             var maxNum = GetMaxNumFileName(id, typeName);
-            var fullName = dir.CombinePath($"{fileStart}_{maxNum}{ex}");
+            var fullName = dir.CombinePath($"{fileStart}{maxNum}{ex}");
             if (isDeleteRule)
             {
                 //磁盘使用率限制
@@ -59,14 +59,9 @@ public static class LiteDBCacheUtil
                         foreach (var d in dirs)
                         {
                             string[] files = Directory.GetFiles(d);
-                            //如果文件数量小于4的，退出循环
-                            if (files.Length < 4)
-                            {
-                                break;
-                            }
                             //数量超限就删除旧文件
-                            //按文件更改时间排序
-                            var sortedFiles = files.OrderBy(file => File.GetLastWriteTime(file)).ToArray();
+                            //按文件更改时间降序排序
+                            var sortedFiles = files.OrderByDescending(file => File.GetLastWriteTime(file));
 
                             // 需要删除的文件数量
                             int filesToDeleteCount = files.Length - Math.Max(2, (int)(files.Length * 0.1));
@@ -74,14 +69,14 @@ public static class LiteDBCacheUtil
                             // 删除较旧的文件
                             for (int i = 0; i < filesToDeleteCount; i++)
                             {
-                                var fileName = sortedFiles[i];
+                                var fileName = sortedFiles.ElementAt(i);
                                 if (_dict.TryGetValue(fileName, out object cache1))
                                 {
                                     DisposeAndDeleteFile(fileName, cache1);
                                 }
                                 else
                                 {
-                                    DeleteFile(fileName);
+                                    DeleteFile(fullName);
                                 }
                             }
                         }
@@ -95,7 +90,7 @@ public static class LiteDBCacheUtil
                     {
                         //数量超限就删除旧文件
                         //按文件更改时间降序排序
-                        var sortedFiles = files.OrderBy(file => File.GetLastWriteTime(file)).ToArray();
+                        var sortedFiles = files.OrderByDescending(file => File.GetLastWriteTime(file));
 
                         // 需要删除的文件数量
                         int filesToDeleteCount = files.Length - LiteDBCacheUtil.config.MaxFileCount;
@@ -103,14 +98,14 @@ public static class LiteDBCacheUtil
                         // 删除较旧的文件
                         for (int i = 0; i < filesToDeleteCount; i++)
                         {
-                            var fileName = sortedFiles[i];
+                            var fileName = sortedFiles.ElementAt(i);
                             if (_dict.TryGetValue(fileName, out object cache1))
                             {
                                 DisposeAndDeleteFile(fileName, cache1);
                             }
                             else
                             {
-                                DeleteFile(fileName);
+                                DeleteFile(fullName);
                             }
                         }
                     }
@@ -131,7 +126,7 @@ public static class LiteDBCacheUtil
                 if (mb1 > LiteDBCacheUtil.config.MaxFileLength)
                 {
                     //大小超限就返回新的文件
-                    var newFullName = dir.CombinePath($"{fileStart}_{maxNum + 1}{ex}");
+                    var newFullName = dir.CombinePath($"{fileStart}{maxNum + 1}{ex}");
                     {
                         if (_dict.TryGetValue(fullName, out object cache1))
                         {
@@ -244,14 +239,14 @@ public static class LiteDBCacheUtil
         var fileStart = GetFileStartName(typeName);
 
         //搜索全部符合条件的文件
-        if (!File.Exists(dir.CombinePath($"{fileStart}_{ex}")))
+        if (!File.Exists(dir.CombinePath($"{fileStart}{ex}")))
         {
             return null;
         }
         var index = 1;
         while (true)
         {
-            var newFileName = dir.CombinePath($"{fileStart}_{index}{ex}");
+            var newFileName = dir.CombinePath($"{fileStart}{index}{ex}");
             if (System.IO.File.Exists(newFileName))
             {
                 index++;
