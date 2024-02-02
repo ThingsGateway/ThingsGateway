@@ -4,7 +4,7 @@
 
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
 
-		<Exec Command=" set dir=&quot;$(SolutionDir)bin\$(Configuration)\ThingsGateway.Web.Entry\$(TargetFramework)\Plugins\$(AssemblyName)&quot;&#xD;&#xA; if not exist %25dir%25  md %25dir%25  &#xD;&#xA;copy &quot;$(TargetDir)*SqlHisAlarm*.dll&quot;  %25dir%25&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;cd /d &quot;$(TargetDir)&quot;&#xD;&#xA;::设置要排除的文件格式，多个格式之间使用英文逗号隔开&#xD;&#xA;set Ext=dll&#xD;&#xA;::删除文件&#xD;&#xA;for /f &quot;delims=&quot; %25%25a in ('dir /a-d/s/b') do (&#xD;&#xA; if /i not &quot;%25%25~a&quot;==&quot;%25~f0&quot; (&#xD;&#xA;  set &quot;Skip=&quot;&#xD;&#xA;  for %25%25i in (%25Ext%25) do (&#xD;&#xA;   if /i &quot;.%25%25~i&quot;==&quot;%25%25~xa&quot; (&#xD;&#xA;    set Skip=OK&#xD;&#xA;   )&#xD;&#xA;  )&#xD;&#xA;  if not defined Skip (&#xD;&#xA;   del /f /q &quot;%25%25~a&quot;&#xD;&#xA;  )&#xD;&#xA; )&#xD;&#xA;)&#xD;&#xA;&#xD;&#xA;for /d %25%25i in (*) do (&#xD;&#xA;    rd /s /q &quot;%25%25i&quot;&#xD;&#xA;)&#xD;&#xA;&#xD;&#xA;" />
+		<Exec Command="@echo off&#xD;&#xA;setlocal enabledelayedexpansion&#xD;&#xA;&#xD;&#xA;set &quot;targetFWS=net6.0 net7.0 net8.0&quot;&#xD;&#xA;for %25%25f in (%25targetFWS%25) do (&#xD;&#xA;    set &quot;dir=$(SolutionDir)bin\$(Configuration)\ThingsGateway.Web.Entry\%25%25f\Plugins\$(AssemblyName)&quot;&#xD;&#xA;    if not exist &quot;!dir!&quot; md &quot;!dir!&quot;&#xD;&#xA;    copy &quot;$(TargetDir)*SqlHisAlarm*.dll&quot; &quot;!dir!&quot;&#xD;&#xA;)&#xD;&#xA;&#xD;&#xA;endlocal&#xD;&#xA;" />
 	</Target>
 
 
