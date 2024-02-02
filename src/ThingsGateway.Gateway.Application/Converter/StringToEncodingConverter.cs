@@ -60,13 +60,13 @@ public class StringToEncodingConverter : IConverter<string>
     /// <param name="target"></param>
     /// <param name="source"></param>
     /// <returns></returns>
-    public bool TryConvertTo(object target, out string source)
+    public bool TryConvertTo<TTarget>(TTarget target, out string source)
     {
         try
         {
             if (target?.GetType() == typeof(Encoding))
             {
-                source = ((Encoding)target).WebName;
+                source = (target as Encoding).WebName;
                 return true;
             }
             source = target.ToJsonString();

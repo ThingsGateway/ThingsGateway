@@ -62,7 +62,7 @@ namespace ThingsGateway.Foundation
         /// <param name="target"></param>
         /// <param name="source"></param>
         /// <returns></returns>
-        public bool TryConvertTo(object target, out string source)
+        public bool TryConvertTo<TTarget>(TTarget target, out string source)
         {
             if (target != null)
             {
@@ -119,7 +119,7 @@ namespace ThingsGateway.Foundation
         /// <param name="target"></param>
         /// <param name="source"></param>
         /// <returns></returns>
-        public bool TryConvertTo(object target, out string source)
+        public bool TryConvertTo<TTarget>(TTarget target, out string source)
         {
             try
             {
