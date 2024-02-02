@@ -295,7 +295,7 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
             if (isConnect.IsSuccess)
             {
                 var variableMessage = new MqttApplicationMessageBuilder()
-    .WithTopic(topic)
+    .WithTopic(topic).WithRetainFlag(true)
     .WithPayload(payLoad).Build();
                 var result = await _mqttClient.PublishAsync(variableMessage, cancellationToken);
                 if (result.IsSuccess)
