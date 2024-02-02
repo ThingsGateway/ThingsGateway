@@ -20,7 +20,7 @@ namespace ThingsGateway.Foundation
     public class TgTcpClient : TgTcpClientBase, IClientChannel
     {
         /// <inheritdoc/>
-        public List<IProtocol> Collects { get; } = new();
+        public ConcurrentList<IProtocol> Collects { get; } = new();
 
         /// <inheritdoc/>
         public EasyLock WaitLock { get; } = new EasyLock();

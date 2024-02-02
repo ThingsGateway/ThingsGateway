@@ -26,7 +26,7 @@ namespace ThingsGateway.Foundation
         }
 
         /// <inheritdoc/>
-        public List<IProtocol> Collects { get; } = new();
+        public ConcurrentList<IProtocol> Collects { get; } = new();
 
         #region 事件
 

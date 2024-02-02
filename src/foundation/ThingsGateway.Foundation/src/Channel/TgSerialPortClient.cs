@@ -29,7 +29,7 @@ namespace ThingsGateway.Foundation
         public EasyLock WaitLock { get; } = new EasyLock();
 
         /// <inheritdoc/>
-        public List<IProtocol> Collects { get; } = new();
+        public ConcurrentList<IProtocol> Collects { get; } = new();
 
         /// <summary>
         /// 接收到数据

@@ -22,7 +22,7 @@ public interface IChannel : IConnectObject, ICloseObject, ISetupConfigObject, ID
     /// <summary>
     /// 该通道下的所有设备
     /// </summary>
-    public List<IProtocol> Collects { get; }
+    public ConcurrentList<IProtocol> Collects { get; }
 
     /// <summary>
     /// CanSend

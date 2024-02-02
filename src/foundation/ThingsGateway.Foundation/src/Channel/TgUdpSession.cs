@@ -56,7 +56,7 @@ namespace ThingsGateway.Foundation
         DataHandlingAdapter IClientChannel.DataHandlingAdapter => DataHandlingAdapter;
 
         /// <inheritdoc/>
-        public List<IProtocol> Collects { get; } = new();
+        public ConcurrentList<IProtocol> Collects { get; } = new();
 
         /// <inheritdoc/>
         public void SetDataHandlingAdapter(DataHandlingAdapter adapter)
