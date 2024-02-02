@@ -11,7 +11,7 @@
 
 
 	<ItemGroup>
-	  <PackageReference Include="NewLife.Core" Version="10.6.2024.101" />
+	  <PackageReference Include="NewLife.Core" Version="10.7.2024.202" />
 	  <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 	  <PackageReference Include="TouchSocket" Version="2.0.0-beta.270" />
 	</ItemGroup>

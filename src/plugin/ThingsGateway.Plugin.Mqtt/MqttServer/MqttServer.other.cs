@@ -207,13 +207,19 @@ public partial class MqttServer : BusinessBaseWithCacheIntervalScript<VariableDa
             arg.ReasonCode = MqttConnectReasonCode.BadUserNameOrPassword;
             return;
         }
-
-        List<MqttApplicationMessage> data = GetRetainedMessages();
-        foreach (var item in data)
-        {
-            await _mqttServer.UpdateRetainedMessageAsync(item);
-        }
         LogMessage?.LogInformation($"{ToString()}-{arg.ClientId}-客户端已连接成功");
+        _ = Task.Run(async () =>
+        {
+            //延时发送
+            await Task.Delay(1000);
+            List<MqttApplicationMessage> data = GetRetainedMessages();
+            foreach (var item in data)
+            {
+                await _mqttServer.InjectApplicationMessage(
+     new InjectedMqttApplicationMessage(item));
+                //await _mqttServer.UpdateRetainedMessageAsync(item);
+            }
+        });
     }
 
     /// <summary>
