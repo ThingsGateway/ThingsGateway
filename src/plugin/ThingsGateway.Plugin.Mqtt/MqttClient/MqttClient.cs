@@ -110,7 +110,7 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
                 success = clientResult.IsSuccess;
             }
             await Delay(cancellationToken);
-            return;
+            //return;
         }
 
         await Update(cancellationToken);
