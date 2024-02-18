@@ -274,6 +274,20 @@ module.exports = {
         },
       ]
     },
+
+    {
+      type: "category",
+      label: "协议开发教程",
+      items: [
+        {
+          type: "doc",
+          label: "基础知识",
+          id: "30001",
+
+        }
+      ]
+    },
+
     {
       type: "category",
       label: "技术支持/合作",
