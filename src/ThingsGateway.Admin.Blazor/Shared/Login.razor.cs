@@ -47,7 +47,8 @@ public partial class Login
     /// <inheritdoc/>
     protected override async Task OnParametersSetAsync()
     {
-        if (App.WebHostEnvironment.IsDevelopment())
+        var isDemo = App.GetConfig<bool?>("Demo:IsDemo") ?? false;
+        if (isDemo || App.WebHostEnvironment.IsDevelopment())
         {
             _loginModel.Account = "superAdmin";
             _password = "111111";
