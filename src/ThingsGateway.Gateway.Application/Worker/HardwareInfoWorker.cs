@@ -102,6 +102,8 @@ public class HardwareInfoWorker : BackgroundService
 
         var enable = App.GetConfig<bool?>("HardwareInfo:Enable") ?? true;
         var timeInterval = App.GetConfig<int?>("HardwareInfo:TimeInterval") ?? 10000;
+        var daysAgo = App.GetConfig<int?>("HardwareInfo:DaysAgo") ?? 7;
+        daysAgo = Math.Min(Math.Max(daysAgo, 1), 7);
         if (timeInterval < 5000) timeInterval = 5000;
         APPInfo.DriveInfo = drive;
         APPInfo.OsArchitecture = Environment.OSVersion.Platform.ToString() + " " + RuntimeInformation.OSArchitecture.ToString(); // 系统架构
@@ -138,7 +140,7 @@ public class HardwareInfoWorker : BackgroundService
                         };
                         cache.Add(his);
                     }
-                    var sevenDaysAgo = DateTimeUtil.TimerXNow.AddDays(-7);
+                    var sevenDaysAgo = DateTimeUtil.TimerXNow.AddDays(-daysAgo);
                     //删除特定信息
                     var deleteCount = cache.DeleteMany(a => a.Date <= sevenDaysAgo);
                     if (deleteCount > 0)
