@@ -208,7 +208,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     /// <summary>
     /// 等待池
     /// </summary>
-    protected WaitHandlePool<MessageBase> WaitHandlePool = new();
+    protected TgWaitHandlePool<MessageBase> WaitHandlePool = new();
 
     /// <summary>
     /// 接收,非主动发送的情况，重写实现非主从并发通讯协议
