@@ -266,6 +266,24 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     }
 
     /// <inheritdoc/>
+    public virtual async Task SendAsync(byte[] command, IClientChannel channel = default, CancellationToken cancellationToken = default)
+    {
+        var item = command;
+        await Channel.ConnectAsync(ConnectTimeout, cancellationToken);
+        if (SendDelayTime != 0)
+            await Task.Delay(SendDelayTime, cancellationToken);
+        if (channel == default)
+        {
+            if (Channel is not IClientChannel clientChannel) { throw new ArgumentNullException(nameof(channel)); }
+            await clientChannel.SendAsync(item);
+        }
+        else
+        {
+            await channel.SendAsync(item);
+        }
+    }
+
+    /// <inheritdoc/>
     public virtual OperResult<byte[]> SendThenReturn(ISendMessage command, CancellationToken cancellationToken, IClientChannel channel = default)
     {
         var item = command;
@@ -334,7 +352,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
         {
             item.Sign = sign;
             waitData.SetCancellationToken(cancellationToken);
-            clientChannel.Send(item);
+            await clientChannel.SendAsync(item);
             var waitDataStatus = await waitData.WaitAsync(timeout);
             waitDataStatus.ThrowIfNotRunning();
             var response = waitData.WaitResult;

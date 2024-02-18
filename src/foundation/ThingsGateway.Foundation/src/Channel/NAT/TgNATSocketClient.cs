@@ -128,7 +128,7 @@ namespace ThingsGateway.Foundation
                 {
                     if (this.CanSend)
                     {
-                        this.Send(data);
+                        await this.SendAsync(data);
                     }
                 }
             }
