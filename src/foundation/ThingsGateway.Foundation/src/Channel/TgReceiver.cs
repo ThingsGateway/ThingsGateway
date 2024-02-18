@@ -90,7 +90,7 @@ public class TgReceiver : DisposableObject, IReceiver
         }
         else
         {
-            this.m_resetEventForComplateRead.SafeDispose();
+            //this.m_resetEventForComplateRead.SafeDispose();
             this.m_resetEventForRead.SafeDispose();
         }
         this.m_byteBlock = null;
