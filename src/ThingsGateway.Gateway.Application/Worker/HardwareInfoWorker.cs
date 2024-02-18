@@ -140,7 +140,7 @@ public class HardwareInfoWorker : BackgroundService
                     }
                     var sevenDaysAgo = DateTimeUtil.TimerXNow.AddDays(-7);
                     //删除特定信息
-                    var deleteCount = cache.DeleteMany(Query.LT(nameof(HisHardwareInfo.Date), sevenDaysAgo));
+                    var deleteCount = cache.DeleteMany(a => a.Date <= sevenDaysAgo);
                     if (deleteCount > 0)
                         cache.InitDb();
                 }
@@ -166,8 +166,7 @@ public class HardwareInfoWorker : BackgroundService
         return data.ToList();
     }
 
-    private string cacheKey => $"{typeof(HisHardwareInfo).FullName}";
-    private LiteDBCache<HisHardwareInfo> cache => LiteDBCacheUtil.GetDB<HisHardwareInfo>(nameof(APPInfo), cacheKey, false);
+    private LiteDBCache<HisHardwareInfo> cache = LiteDBCacheUtil.GetDB<HisHardwareInfo>(nameof(APPInfo), $"{typeof(HisHardwareInfo).FullName}", false);
 }
 
 /// <inheritdoc/>
