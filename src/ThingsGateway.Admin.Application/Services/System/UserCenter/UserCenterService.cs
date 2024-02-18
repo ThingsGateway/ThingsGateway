@@ -223,6 +223,12 @@ public class UserCenterService : DbRepository<SysUser>, IUserCenterService
     [OperDesc("修改密码")]
     public async Task UpdatePasswordAsync(UpdatePasswordInput input)
     {
+        var isDemo = App.GetConfig<bool?>("Demo:IsDemo") ?? false;
+        var upPWEnable = App.GetConfig<bool?>("Demo:UpPWEnable") ?? true;
+        if (isDemo && !upPWEnable)
+        {
+            throw new Exception("不允许修改密码，因为是DEMO环境");
+        }
         //获取用户信息
         var userInfo = await _userService.GetUserByIdAsync(UserManager.UserId);
         var password = CryptogramUtil.Sm2Decrypt(input.Password);//SM2解密

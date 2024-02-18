@@ -12,6 +12,8 @@
 
 #endregion
 
+using Mapster;
+
 using Masa.Blazor;
 
 using Microsoft.Extensions.DependencyInjection;
@@ -65,16 +67,22 @@ public partial class UserCenter
         var success = context.Validate();
         if (success)
         {
-            //验证成功，操作业务
-            _passwordInfoInput.Id = UserResoures.CurrentUser.Id;
-            _passwordInfoInput.Password = CryptogramUtil.Sm2Encrypt(_passwordInfoInput.Password);
-            _passwordInfoInput.NewPassword = CryptogramUtil.Sm2Encrypt(_passwordInfoInput.NewPassword);
-            await _serviceScope.ServiceProvider.GetService<IUserCenterService>().UpdatePasswordAsync(_passwordInfoInput);
-            _passwordInfoInput = new();
-            await MainLayout.StateHasChangedAsync();
-            await PopupService.EnqueueSnackbarAsync("成功，将重新登录", AlertTypes.Success);
-            await Task.Delay(2000);
-            _navigationManager.NavigateTo(_navigationManager.Uri);
+            try
+            {
+                UpdatePasswordInput updatePasswordInput = _passwordInfoInput.Adapt<UpdatePasswordInput>();
+                //验证成功，操作业务
+                updatePasswordInput.Id = UserResoures.CurrentUser.Id;
+                updatePasswordInput.Password = CryptogramUtil.Sm2Encrypt(updatePasswordInput.Password);
+                updatePasswordInput.NewPassword = CryptogramUtil.Sm2Encrypt(updatePasswordInput.NewPassword);
+                await _serviceScope.ServiceProvider.GetService<IUserCenterService>().UpdatePasswordAsync(updatePasswordInput);
+                await MainLayout.StateHasChangedAsync();
+                await PopupService.EnqueueSnackbarAsync("成功，将重新登录", AlertTypes.Success);
+                await Task.Delay(2000);
+                _navigationManager.NavigateTo(_navigationManager.Uri);
+            }
+            finally
+            {
+            }
         }
     }
 
