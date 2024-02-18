@@ -19,7 +19,7 @@ namespace ThingsGateway.Foundation
     /// <summary>
     /// 串口客户端接口。
     /// </summary>
-    public interface ISerialPortClient : IClient, ISender, IDefaultSender, IPluginObject, IRequsetInfoSender, ISetupConfigObject, IOnlineClient, IAdapterObject, IConnectObject, ICloseObject
+    public interface ISerialPortClient : IReceiverObject, IClient, ISender, IDefaultSender, IPluginObject, IRequsetInfoSender, ISetupConfigObject, IOnlineClient, IAdapterObject, IConnectObject, ICloseObject
     {
         /// <summary>
         /// 成功打开串口

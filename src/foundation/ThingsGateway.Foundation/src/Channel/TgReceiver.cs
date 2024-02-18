@@ -27,7 +27,7 @@ public class TgReceiver : DisposableObject, IReceiver
         this.Dispose(false);
     }
 
-    private readonly IClient m_client;
+    private readonly IReceiverObject m_client;
     private readonly EasyLock m_resetEventForComplateRead = new EasyLock(false);
     private readonly AsyncAutoResetEvent m_resetEventForRead = new AsyncAutoResetEvent(false);
     private ByteBlock m_byteBlock;
@@ -37,7 +37,7 @@ public class TgReceiver : DisposableObject, IReceiver
     /// TgReceiver
     /// </summary>
     /// <param name="client"></param>
-    public TgReceiver(IClient client)
+    public TgReceiver(IReceiverObject client)
     {
         this.m_client = client;
     }
@@ -90,6 +90,7 @@ public class TgReceiver : DisposableObject, IReceiver
         }
         else
         {
+            this.m_resetEventForComplateRead.SafeDispose();
             this.m_resetEventForRead.SafeDispose();
         }
         this.m_byteBlock = null;
