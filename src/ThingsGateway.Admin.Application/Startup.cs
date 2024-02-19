@@ -41,6 +41,18 @@ public class Startup : AppStartup
 
         //事件总线
         services.AddEventBus();
+
+        //删除在线用户统计
+        var verificatInfos = UserTokenCacheUtil.HashGetAll();
+        //获取当前客户端ID所在的verificat信息
+        foreach (var infos in verificatInfos.Values)
+        {
+            foreach (var item in infos)
+            {
+                item.ClientIds.Clear();
+            }
+        }
+        UserTokenCacheUtil.HashSet(verificatInfos);//更新
     }
 
     /// <inheritdoc/>
