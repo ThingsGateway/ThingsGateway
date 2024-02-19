@@ -70,9 +70,9 @@ public class OpcUaConfig
     public double DeadBand { get; set; } = 0;
 
     /// <summary>
-    /// KeepAliveInterval/ms
+    /// 心跳间隔/ms
     /// </summary>
-    [Description("KeepAliveInterval/ms")]
+    [Description("心跳间隔/ms")]
     public int KeepAliveInterval { get; set; } = 3000;
 
     /// <summary>

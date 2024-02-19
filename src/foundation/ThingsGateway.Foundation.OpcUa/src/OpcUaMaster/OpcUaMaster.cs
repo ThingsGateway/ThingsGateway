@@ -875,7 +875,7 @@ public class OpcUaMaster : IDisposable
         typeSystem = new ComplexTypeSystem(m_session);
 
         m_session.KeepAliveInterval = OpcUaConfig.KeepAliveInterval == 0 ? 60000 : OpcUaConfig.KeepAliveInterval;
-        m_session.KeepAlive += new KeepAliveEventHandler(Session_KeepAlive);
+        m_session.KeepAlive += Session_KeepAlive;
 
         // raise an event.
         DoConnectComplete(true);
@@ -1187,14 +1187,14 @@ public class OpcUaMaster : IDisposable
                     return;
                 }
 
-                UpdateStatus(3, e.CurrentTime, "Reconnecting in {0}s", m_session.KeepAliveInterval / 1000);
+                UpdateStatus(3, e.CurrentTime, "Reconnecting in {0}s", 10);
 
                 if (m_reConnectHandler == null)
                 {
                     m_ReconnectStarting?.Invoke(this, e);
 
                     m_reConnectHandler = new SessionReconnectHandler();
-                    m_reConnectHandler.BeginReconnect(m_session, m_session.KeepAliveInterval, Server_ReconnectComplete);
+                    m_reConnectHandler.BeginReconnect(m_session, 10000, Server_ReconnectComplete);
                 }
                 return;
             }
