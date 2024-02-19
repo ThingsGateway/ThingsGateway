@@ -34,15 +34,9 @@ public class SysHub : Hub<ISysHub>
     /// </summary>
     public const string Separate = "_s_e_p_a_r_a_t_e_";
 
-    private readonly ISimpleCacheService _simpleCacheService;
-
-    private readonly ILogger<ISysHub> _logger;
-
     /// <inheritdoc cref="ISysHub"/>
-    public SysHub(IServiceScopeFactory scopeFactory, ILogger<ISysHub> logger, ISimpleCacheService simpleCacheService)
+    public SysHub()
     {
-        _simpleCacheService = simpleCacheService;
-        _logger = logger;
     }
 
     /// <summary>
