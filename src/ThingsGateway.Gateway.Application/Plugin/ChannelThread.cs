@@ -151,7 +151,7 @@ public class ChannelThread
         catch (Exception ex)
         {
             driverBase.IsInitSuccess = false;
-            driverBase?.Logger?.LogWarning(ex, $"{driverBase.DeviceName} 初始化链路失败");
+            driverBase?.Logger?.LogWarning(ex, $"插件 {driverBase.CurrentDevice.PluginName} 设备名称 {driverBase.DeviceName} 初始化失败");
         }
         var token = CancellationTokenSources.GetOrAdd(0, new CancellationTokenSource());
         CancellationTokenSources.TryAdd(driverBase.DeviceId, CancellationTokenSource.CreateLinkedTokenSource(token.Token));
@@ -175,13 +175,11 @@ public class ChannelThread
             {
                 token?.Cancel();
             }
-            //using CancellationTokenSource timeoutToken = new(5000);
+            using CancellationTokenSource timeoutToken = new(5000);
             //5秒超时返回
-            while ((!driverBase.DisposedValue)
-                //|| !timeoutToken.IsCancellationRequested
-                )
+            while (((!driverBase.DisposedValue) && driverBase.IsInitSuccess) && !timeoutToken.IsCancellationRequested)
             {
-                await Task.Delay(100);
+                await Task.Delay(500);
             }
             DriverBases.Remove(driverBase);
             CancellationTokenSources.Remove(deviceId);
@@ -303,7 +301,7 @@ public class ChannelThread
                 {
                 }
             });
-            await DriverTask.WaitAsync(CancellationToken.None);
+            try { await DriverTask.WaitAsync(TimeSpan.FromMinutes(3)); } catch (OperationCanceledException) { }
             CancellationTokenSources.Clear();
             DriverTask?.SafeDispose();
             DriverTask = null;

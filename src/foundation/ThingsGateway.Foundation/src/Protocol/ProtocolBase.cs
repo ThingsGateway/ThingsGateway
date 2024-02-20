@@ -1053,23 +1053,26 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
-        lock (Channel)
+        if (Channel != null)
         {
-            Channel.Starting -= ChannelStarting;
-            Channel.Stoped -= ChannelStoped;
-            Channel.Started -= ChannelStarted;
-            Channel.Received -= Received;
-            Channel.Collects.Remove(this);
-            if (Channel.Collects.Count == 0)
+            lock (Channel)
             {
-                try
+                Channel.Starting -= ChannelStarting;
+                Channel.Stoped -= ChannelStoped;
+                Channel.Started -= ChannelStarted;
+                Channel.Received -= Received;
+                Channel.Collects.Remove(this);
+                if (Channel.Collects.Count == 0)
                 {
-                    //只关闭，不释放
-                    Channel.Close();
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogWarning(ex);
+                    try
+                    {
+                        //只关闭，不释放
+                        Channel.Close();
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogWarning(ex);
+                    }
                 }
             }
         }
