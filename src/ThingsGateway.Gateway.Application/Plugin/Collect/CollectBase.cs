@@ -395,7 +395,7 @@ public abstract class CollectBase : DriverBase
         {
             if (!string.IsNullOrEmpty(deviceVariable.WriteExpressions))
             {
-                object rawdata = jToken is JValue jValue ? jValue.Value : jToken.ToString();
+                object rawdata = jToken is JValue jValue ? jValue.Value : jToken is JArray jArray ? jArray : jToken.ToString();
                 try
                 {
                     object data = deviceVariable.WriteExpressions.GetExpressionsResult(rawdata);
@@ -409,12 +409,11 @@ public abstract class CollectBase : DriverBase
         }
 
         //转换失败的变量不再写入
-        var result = await WriteValuesAsync(writeInfoLists.
+        var results1 = await WriteValuesAsync(writeInfoLists.
             Where(a => !results.Any(b => b.Key == a.Key.Name)).
            ToDictionary(item => item.Key, item => item.Value),
             cancellationToken);
-
-        return result;
+        return results.Concat(results1).ToDictionary(a => a.Key, a => a.Value);
     }
 
     #endregion 写入方法
