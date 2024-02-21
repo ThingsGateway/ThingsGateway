@@ -50,7 +50,8 @@ QQ群：605534569 [跳转](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=NnBjPO-8kcN
 #### 业务插件
 | 插件名称 | 备注 | 
 |-------|-------|
-| ModbusSlave | Rtu/Tcp报文格式，支持串口/Tcp/Udp链路 | 
+| ModbusSlave | Rtu/Tcp报文格式，支持串口/Tcp/Udp链路，支持Rpc反写 | 
+| OpcUaServer | OpcUa服务端，支持Rpc反写 | 
 | Mqtt Client | Mqtt客户端，支持Rpc反写，脚本自定义上传内容 | 
 | Mqtt Server | Mqtt服务端，支持WebSocket，支持Rpc反写，脚本自定义上传内容 | 
 | Kafka Client | 数据生产，脚本自定义上传内容 | 
