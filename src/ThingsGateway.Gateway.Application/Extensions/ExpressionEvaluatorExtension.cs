@@ -29,14 +29,28 @@ public static class ExpressionEvaluatorExtension
         {
             return rawvalue;
         }
+
+        //JArray内部转换
+        //
+        //JArray newValue = new JArray(raw);
+        //for (int i = 0; i < raw.Count; i++)
+        //{
+        //newValue[i] = JToken.FromObject(Extensions.Value<int>(raw[i]) * 1000);
+        //}
+        //return newValue;
+        //
         ExpressionEvaluator expressionEvaluator = new();
+        expressionEvaluator.OptionScriptNeedSemicolonAtTheEndOfLastExpression = false;
         expressionEvaluator.PreEvaluateVariable += Evaluator_PreEvaluateVariable;
+        expressionEvaluator.Assemblies.Add(typeof(Newtonsoft.Json.JsonConverter).Assembly);
+        expressionEvaluator.Namespaces.Add("Newtonsoft.Json.Linq");
+        expressionEvaluator.Namespaces.Add("Newtonsoft.Json");
         expressionEvaluator.Variables = new Dictionary<string, object>()
             {
               { "Raw", rawvalue},
               { "raw", rawvalue},
             };
-        var value = expressionEvaluator.Evaluate(expressions);
+        var value = expressionEvaluator.ScriptEvaluate(expressions);
         return value;
     }
 
