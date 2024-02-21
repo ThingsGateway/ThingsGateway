@@ -1,5 +1,3 @@
-#region copyright
-
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -10,8 +8,6 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-#endregion
-
 using Newtonsoft.Json;
 
 using ThingsGateway.Foundation.Extension.String;
@@ -21,48 +17,37 @@ namespace ThingsGateway.Foundation
     /// <summary>
     /// String类型数据转换器
     /// </summary>
-    public class ThingsGatewayStringConverter : StringConverter
+    public class ThingsGatewayStringConverter : StringSerializerConverter
     {
         /// <summary>
         /// 构造函数
         /// </summary>
-        public ThingsGatewayStringConverter()
+        public ThingsGatewayStringConverter(params ISerializerFormatter<string, object>[] converters) : base(converters)
         {
-            this.Add(new StringToClassConverter());
-            this.Add(new StringToPrimitiveConverter());
-            this.Add(new JsonStringToClassConverter());
+            this.Add(new StringToClassConverter<object>());
+            this.Add(new StringToPrimitiveSerializerFormatter<object>());
+            this.Add(new JsonStringToClassSerializerFormatter<object>());
         }
     }
 
     /// <summary>
     /// String值转换为基础类型。
     /// </summary>
-    public class StringToClassConverter : IConverter<string>
+    public class StringToClassConverter<TState> : ISerializerFormatter<string, TState>
     {
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
         public int Order { get; set; } = -100;
 
-        /// <summary>
         /// <inheritdoc/>
-        /// </summary>
-        /// <param name="source"></param>
-        /// <param name="targetType"></param>
-        /// <param name="target"></param>
-        /// <returns></returns>
-        public bool TryConvertFrom(string source, Type targetType, out object target)
+        public bool TryDeserialize(TState state, in string source, Type targetType, out object target)
         {
             return targetType.GetTypeValue(source, out target);
         }
 
-        /// <summary>
         /// <inheritdoc/>
-        /// </summary>
-        /// <param name="target"></param>
-        /// <param name="source"></param>
-        /// <returns></returns>
-        public bool TryConvertTo<TTarget>(TTarget target, out string source)
+        public bool TrySerialize(TState state, in object target, out string source)
         {
             if (target != null)
             {
@@ -80,7 +65,7 @@ namespace ThingsGateway.Foundation
     /// <summary>
     /// Json字符串转到对应类
     /// </summary>
-    public class JsonStringToClassConverter : IConverter<string>
+    public class JsonStringToClassSerializerFormatter<TState> : ISerializerFormatter<string, TState>
     {
         /// <summary>
         /// <inheritdoc/>
@@ -92,14 +77,8 @@ namespace ThingsGateway.Foundation
         /// </summary>
         public JsonSerializerSettings JsonSettings { get; set; } = new JsonSerializerSettings();
 
-        /// <summary>
         /// <inheritdoc/>
-        /// </summary>
-        /// <param name="source"></param>
-        /// <param name="targetType"></param>
-        /// <param name="target"></param>
-        /// <returns></returns>
-        public bool TryConvertFrom(string source, Type targetType, out object target)
+        public bool TryDeserialize(TState state, in string source, Type targetType, out object target)
         {
             try
             {
@@ -113,13 +92,8 @@ namespace ThingsGateway.Foundation
             }
         }
 
-        /// <summary>
         /// <inheritdoc/>
-        /// </summary>
-        /// <param name="target"></param>
-        /// <param name="source"></param>
-        /// <returns></returns>
-        public bool TryConvertTo<TTarget>(TTarget target, out string source)
+        public bool TrySerialize(TState state, in object target, out string source)
         {
             try
             {

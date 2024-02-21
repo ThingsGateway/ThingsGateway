@@ -1,5 +1,3 @@
-#region copyright
-
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -10,8 +8,6 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-#endregion
-
 namespace ThingsGateway.Foundation
 {
     /// <summary>
@@ -20,7 +16,7 @@ namespace ThingsGateway.Foundation
     public static class UdpSessionConfigExtension
     {
         /// <summary>
-        /// 获取一个新的Tcp客户端通道。传入远程服务端地址
+        /// 获取一个新的Udp通道。传入默认远程服务端地址，绑定地址
         /// </summary>
         public static TgUdpSession GetUdpSessionWithIPHost(this TouchSocketConfig config, string? remoteUrl, string? bindUrl)
         {

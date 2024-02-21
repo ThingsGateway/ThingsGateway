@@ -101,31 +101,31 @@
         </member>
         <member name="M:ThingsGateway.Foundation.Modbus.ModbusRtuDataHandleAdapter.PackCommand(System.Byte[])">
             <summary>
-            <inheritdoc/>
+            <inheritdoc />
             </summary>
             <param name="command"></param>
             <returns></returns>
         </member>
         <member name="M:ThingsGateway.Foundation.Modbus.ModbusRtuDataHandleAdapter.GetInstance">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Modbus.ModbusRtuDataHandleAdapter.UnpackResponse(ThingsGateway.Foundation.Modbus.ModbusRtuMessage,System.Byte[],System.Byte[],System.Byte[])">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="T:ThingsGateway.Foundation.Modbus.ModbusRtuMessage">
             <summary>
-            <inheritdoc/>
+            <inheritdoc />
             </summary>
         </member>
         <member name="P:ThingsGateway.Foundation.Modbus.ModbusRtuMessage.HeadBytesLength">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Modbus.ModbusRtuMessage.CheckHeadBytes(System.Byte[])">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="T:ThingsGateway.Foundation.Modbus.ModbusRtuOverUdpDataHandleAdapter">
             <summary>
-            <inheritdoc/>
+            <inheritdoc />
             </summary>
         </member>
         <member name="P:ThingsGateway.Foundation.Modbus.ModbusRtuOverUdpDataHandleAdapter.IsCheckCrc16">
@@ -134,13 +134,13 @@
             </summary>
         </member>
         <member name="M:ThingsGateway.Foundation.Modbus.ModbusRtuOverUdpDataHandleAdapter.PackCommand(System.Byte[])">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Modbus.ModbusRtuOverUdpDataHandleAdapter.GetInstance">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Modbus.ModbusRtuOverUdpDataHandleAdapter.UnpackResponse(ThingsGateway.Foundation.Modbus.ModbusRtuMessage,System.Byte[],System.Byte[])">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="T:ThingsGateway.Foundation.Modbus.ModbusTcpDataHandleAdapter">
             <summary>
@@ -153,21 +153,21 @@
             </summary>
         </member>
         <member name="M:ThingsGateway.Foundation.Modbus.ModbusTcpDataHandleAdapter.PackCommand(System.Byte[])">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Modbus.ModbusTcpDataHandleAdapter.GetInstance">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Modbus.ModbusTcpDataHandleAdapter.UnpackResponse(ThingsGateway.Foundation.Modbus.ModbusTcpMessage,System.Byte[],System.Byte[],System.Byte[])">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="T:ThingsGateway.Foundation.Modbus.ModbusTcpMessage">
             <summary>
-            <inheritdoc/>
+            <inheritdoc />
             </summary>
         </member>
         <member name="P:ThingsGateway.Foundation.Modbus.ModbusTcpMessage.HeadBytesLength">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="P:ThingsGateway.Foundation.Modbus.ModbusTcpMessage.IsCheckMessageId">
             <summary>
@@ -175,11 +175,11 @@
             </summary>
         </member>
         <member name="M:ThingsGateway.Foundation.Modbus.ModbusTcpMessage.CheckHeadBytes(System.Byte[])">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="T:ThingsGateway.Foundation.Modbus.ModbusTypeEnum">
             <summary>
-            <inheritdoc/>
+            <inheritdoc />
             </summary>
         </member>
         <member name="F:ThingsGateway.Foundation.Modbus.ModbusTypeEnum.ModbusTcp">
@@ -194,7 +194,7 @@
         </member>
         <member name="T:ThingsGateway.Foundation.Modbus.ModbusUdpDataHandleAdapter">
             <summary>
-            <inheritdoc/>
+            <inheritdoc />
             </summary>
         </member>
         <member name="P:ThingsGateway.Foundation.Modbus.ModbusUdpDataHandleAdapter.IsCheckMessageId">
@@ -203,19 +203,19 @@
             </summary>
         </member>
         <member name="M:ThingsGateway.Foundation.Modbus.ModbusUdpDataHandleAdapter.PackCommand(System.Byte[])">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Modbus.ModbusUdpDataHandleAdapter.GetInstance">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Modbus.ModbusUdpDataHandleAdapter.UnpackResponse(ThingsGateway.Foundation.Modbus.ModbusTcpMessage,System.Byte[],System.Byte[])">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="T:ThingsGateway.Foundation.Modbus.ModbusMaster">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Modbus.ModbusMaster.#ctor(ThingsGateway.Foundation.IChannel)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="P:ThingsGateway.Foundation.Modbus.ModbusMaster.ModbusType">
             <summary>
@@ -233,34 +233,34 @@
             </summary>
         </member>
         <member name="M:ThingsGateway.Foundation.Modbus.ModbusMaster.GetAddressDescription">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Modbus.ModbusMaster.GetDataAdapter">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Modbus.ModbusMaster.LoadSourceRead``1(System.Collections.Generic.IEnumerable{ThingsGateway.Foundation.IVariable},System.Int32,System.Int32)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Modbus.ModbusMaster.Read(System.String,System.Int32,System.Threading.CancellationToken)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Modbus.ModbusMaster.ReadAsync(System.String,System.Int32,System.Threading.CancellationToken)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Modbus.ModbusMaster.Write(System.String,System.Byte[],System.Threading.CancellationToken)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Modbus.ModbusMaster.Write(System.String,System.Boolean[],System.Threading.CancellationToken)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Modbus.ModbusMaster.WriteAsync(System.String,System.Byte[],System.Threading.CancellationToken)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Modbus.ModbusMaster.WriteAsync(System.String,System.Boolean[],System.Threading.CancellationToken)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Modbus.ModbusMaster.Dispose(System.Boolean)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="T:ThingsGateway.Foundation.Modbus.IModbusServerMessage">
             <summary>
@@ -279,74 +279,74 @@
         </member>
         <member name="T:ThingsGateway.Foundation.Modbus.ModbusRtuOverUdpServerDataHandleAdapter">
             <summary>
-            <inheritdoc/>
+            <inheritdoc />
             </summary>
         </member>
         <member name="M:ThingsGateway.Foundation.Modbus.ModbusRtuOverUdpServerDataHandleAdapter.PackCommand(System.Byte[])">
             <summary>
-            <inheritdoc/>
+            <inheritdoc />
             </summary>
             <param name="command"></param>
             <returns></returns>
         </member>
         <member name="M:ThingsGateway.Foundation.Modbus.ModbusRtuOverUdpServerDataHandleAdapter.GetInstance">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Modbus.ModbusRtuOverUdpServerDataHandleAdapter.UnpackResponse(ThingsGateway.Foundation.Modbus.ModbusRtuServerMessage,System.Byte[],System.Byte[])">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="T:ThingsGateway.Foundation.Modbus.ModbusRtuServerDataHandleAdapter">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Modbus.ModbusRtuServerDataHandleAdapter.PackCommand(System.Byte[])">
             <summary>
-            <inheritdoc/>
+            <inheritdoc />
             </summary>
             <param name="command"></param>
             <returns></returns>
         </member>
         <member name="M:ThingsGateway.Foundation.Modbus.ModbusRtuServerDataHandleAdapter.GetInstance">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Modbus.ModbusRtuServerDataHandleAdapter.UnpackResponse(ThingsGateway.Foundation.Modbus.ModbusRtuServerMessage,System.Byte[],System.Byte[],System.Byte[])">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="T:ThingsGateway.Foundation.Modbus.ModbusRtuServerMessage">
             <summary>
-            <inheritdoc/>
+            <inheritdoc />
             </summary>
         </member>
         <member name="P:ThingsGateway.Foundation.Modbus.ModbusRtuServerMessage.ModbusAddress">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="P:ThingsGateway.Foundation.Modbus.ModbusRtuServerMessage.Length">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="P:ThingsGateway.Foundation.Modbus.ModbusRtuServerMessage.HeadBytesLength">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Modbus.ModbusRtuServerMessage.CheckHeadBytes(System.Byte[])">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="T:ThingsGateway.Foundation.Modbus.ModbusTcpServerDataHandleAdapter">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Modbus.ModbusTcpServerDataHandleAdapter.PackCommand(System.Byte[])">
             <summary>
-            <inheritdoc/>
+            <inheritdoc />
             </summary>
             <param name="command"></param>
             <returns></returns>
         </member>
         <member name="M:ThingsGateway.Foundation.Modbus.ModbusTcpServerDataHandleAdapter.GetInstance">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Modbus.ModbusTcpServerDataHandleAdapter.UnpackResponse(ThingsGateway.Foundation.Modbus.ModbusTcpServerMessage,System.Byte[],System.Byte[],System.Byte[])">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="T:ThingsGateway.Foundation.Modbus.ModbusTcpServerMessage">
             <summary>
-            <inheritdoc/>
+            <inheritdoc />
             </summary>
         </member>
         <member name="P:ThingsGateway.Foundation.Modbus.ModbusTcpServerMessage.ModbusAddress">
@@ -360,28 +360,28 @@
             </summary>
         </member>
         <member name="P:ThingsGateway.Foundation.Modbus.ModbusTcpServerMessage.HeadBytesLength">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Modbus.ModbusTcpServerMessage.CheckHeadBytes(System.Byte[])">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="T:ThingsGateway.Foundation.Modbus.ModbusUdpServerDataHandleAdapter">
             <summary>
-            <inheritdoc/>
+            <inheritdoc />
             </summary>
         </member>
         <member name="M:ThingsGateway.Foundation.Modbus.ModbusUdpServerDataHandleAdapter.PackCommand(System.Byte[])">
             <summary>
-            <inheritdoc/>
+            <inheritdoc />
             </summary>
             <param name="command"></param>
             <returns></returns>
         </member>
         <member name="M:ThingsGateway.Foundation.Modbus.ModbusUdpServerDataHandleAdapter.GetInstance">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Modbus.ModbusUdpServerDataHandleAdapter.UnpackResponse(ThingsGateway.Foundation.Modbus.ModbusTcpServerMessage,System.Byte[],System.Byte[])">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="T:ThingsGateway.Foundation.Modbus.ModbusServerWriteEventHandler">
             <summary>
@@ -389,10 +389,10 @@
             </summary>
         </member>
         <member name="T:ThingsGateway.Foundation.Modbus.ModbusSlave">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Modbus.ModbusSlave.#ctor(ThingsGateway.Foundation.IChannel)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="P:ThingsGateway.Foundation.Modbus.ModbusSlave.ModbusType">
             <summary>
@@ -450,22 +450,22 @@
             </summary>
         </member>
         <member name="M:ThingsGateway.Foundation.Modbus.ModbusSlave.GetAddressDescription">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Modbus.ModbusSlave.GetDataAdapter">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Modbus.ModbusSlave.LoadSourceRead``1(System.Collections.Generic.IEnumerable{ThingsGateway.Foundation.IVariable},System.Int32,System.Int32)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Modbus.ModbusSlave.Init(ThingsGateway.Foundation.Modbus.ModbusAddress)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Modbus.ModbusSlave.Dispose(System.Boolean)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Modbus.ModbusSlave.Received(ThingsGateway.Foundation.IClientChannel,TouchSocket.Sockets.ReceivedDataEventArgs)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Modbus.ModbusSlave.WriteError(ThingsGateway.Foundation.Modbus.ModbusTypeEnum,ThingsGateway.Foundation.IClientChannel,ThingsGateway.Foundation.Modbus.IModbusServerMessage,TouchSocket.Sockets.ReceivedDataEventArgs)">
             <summary>
@@ -478,22 +478,22 @@
             </summary>
         </member>
         <member name="M:ThingsGateway.Foundation.Modbus.ModbusSlave.Read(System.String,System.Int32,System.Threading.CancellationToken)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Modbus.ModbusSlave.ReadAsync(System.String,System.Int32,System.Threading.CancellationToken)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Modbus.ModbusSlave.Write(System.String,System.Byte[],System.Threading.CancellationToken)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Modbus.ModbusSlave.Write(System.String,System.Boolean[],System.Threading.CancellationToken)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Modbus.ModbusSlave.WriteAsync(System.String,System.Byte[],System.Threading.CancellationToken)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Modbus.ModbusSlave.WriteAsync(System.String,System.Boolean[],System.Threading.CancellationToken)">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="T:ThingsGateway.Foundation.Modbus.ModbusAddress">
             <summary>
@@ -502,7 +502,7 @@
         </member>
         <member name="M:ThingsGateway.Foundation.Modbus.ModbusAddress.#ctor">
             <summary>
-            <inheritdoc/>
+            <inheritdoc />
             </summary>
         </member>
         <member name="P:ThingsGateway.Foundation.Modbus.ModbusAddress.Address">
@@ -551,7 +551,7 @@
             </summary>
         </member>
         <member name="M:ThingsGateway.Foundation.Modbus.ModbusAddress.ToString">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:ThingsGateway.Foundation.Modbus.ModbusHelper.AddCrc(System.Byte[])">
             <summary>
@@ -640,7 +640,7 @@
         </member>
         <member name="M:ThingsGateway.Foundation.Modbus.PackHelper.LoadSourceRead``1(ThingsGateway.Foundation.IProtocol,System.Collections.Generic.List{ThingsGateway.Foundation.IVariable},System.Int32,System.Int32)">
             <summary>
-            打包变量，添加到<see cref="T:System.Collections.Generic.List`1"/>
+            打包变量，添加到<see cref="T:System.Collections.Generic.List`1" />
             </summary>
             <param name="device"></param>
             <param name="deviceVariables"></param>
@@ -697,7 +697,7 @@
             <summary>
             添加单例注入。
             <para>
-            该标签仅添加在继承<see cref="T:TouchSocket.Core.ManualContainer"/>的容器上时有用。
+            该标签仅添加在继承<see cref="T:TouchSocket.Core.ManualContainer" />的容器上时有用。
             </para>
             </summary>
         </member>
@@ -705,7 +705,7 @@
             <summary>
             添加单例注入。
             <para>
-            该标签仅添加在继承<see cref="T:TouchSocket.Core.ManualContainer"/>的容器上时有用。
+            该标签仅添加在继承<see cref="T:TouchSocket.Core.ManualContainer" />的容器上时有用。
             </para>
             </summary>
             <param name="fromType">注册类型</param>
@@ -716,7 +716,7 @@
             <summary>
             添加单例注入。
             <para>
-            该标签仅添加在继承<see cref="T:TouchSocket.Core.ManualContainer"/>的容器上时有用。
+            该标签仅添加在继承<see cref="T:TouchSocket.Core.ManualContainer" />的容器上时有用。
             </para>
             </summary>
             <param name="type">注册类型与实例类型一致</param>
@@ -725,7 +725,7 @@
             <summary>
             添加单例注入。
             <para>
-            该标签仅添加在继承<see cref="T:TouchSocket.Core.ManualContainer"/>的容器上时有用。
+            该标签仅添加在继承<see cref="T:TouchSocket.Core.ManualContainer" />的容器上时有用。
             </para>
             </summary>
             <param name="fromType">注册类型</param>
@@ -735,7 +735,7 @@
             <summary>
             添加瞬态注入。
             <para>
-            该标签仅添加在继承<see cref="T:TouchSocket.Core.ManualContainer"/>的容器上时有用。
+            该标签仅添加在继承<see cref="T:TouchSocket.Core.ManualContainer" />的容器上时有用。
             </para>
             </summary>
         </member>
@@ -743,7 +743,7 @@
             <summary>
             添加瞬态注入。
             <para>
-            该标签仅添加在继承<see cref="T:TouchSocket.Core.ManualContainer"/>的容器上时有用。
+            该标签仅添加在继承<see cref="T:TouchSocket.Core.ManualContainer" />的容器上时有用。
             </para>
             </summary>
             <param name="fromType">注册类型</param>
@@ -754,7 +754,7 @@
             <summary>
             添加瞬态注入。
             <para>
-            该标签仅添加在继承<see cref="T:TouchSocket.Core.ManualContainer"/>的容器上时有用。
+            该标签仅添加在继承<see cref="T:TouchSocket.Core.ManualContainer" />的容器上时有用。
             </para>
             </summary>
             <param name="type">注册类型与实例类型一致</param>
@@ -763,7 +763,7 @@
             <summary>
             添加瞬态注入。
             <para>
-            该标签仅添加在继承<see cref="T:TouchSocket.Core.ManualContainer"/>的容器上时有用。
+            该标签仅添加在继承<see cref="T:TouchSocket.Core.ManualContainer" />的容器上时有用。
             </para>
             </summary>
             <param name="fromType">注册类型</param>
