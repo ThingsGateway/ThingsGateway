@@ -265,17 +265,6 @@ public static class StringExtension
     }
 
     /// <summary>
-    /// 根据英文小数点进行分割字符串，去除空白的字符
-    /// </summary>
-    public static string[]? SplitStringByComma(this string? str)
-    {
-        return str?.Split(new char[1]
-{
-  ','
-}, StringSplitOptions.RemoveEmptyEntries);
-    }
-
-    /// <summary>
     /// 根据英文分号分割字符串，去除空白的字符
     /// </summary>
     public static string[]? SplitStringBySemicolon(this string? str)

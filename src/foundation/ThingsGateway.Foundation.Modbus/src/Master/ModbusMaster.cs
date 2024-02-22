@@ -266,7 +266,7 @@ public class ModbusMaster : ProtocolBase
                     ushort mask = (ushort)(1 << mAddress.BitIndex);
                     ushort result = (ushort)(value[0] ? (writeData | mask) : (writeData & ~mask));
                     var write = ModbusHelper.GetWriteOneModbusCommand(mAddress, ThingsGatewayBitConverter.GetBytes(result));
-                    return SendThenReturn(address, read, cancellationToken);
+                    return SendThenReturn(address, write, cancellationToken);
                 }
                 else
                 {
@@ -324,7 +324,7 @@ public class ModbusMaster : ProtocolBase
                     ushort mask = (ushort)(1 << mAddress.BitIndex);
                     ushort result = (ushort)(value[0] ? (writeData | mask) : (writeData & ~mask));
                     var write = ModbusHelper.GetWriteOneModbusCommand(mAddress, ThingsGatewayBitConverter.GetBytes(result));
-                    return await SendThenReturnAsync(address, read, cancellationToken);
+                    return await SendThenReturnAsync(address, write, cancellationToken);
                 }
                 else
                 {

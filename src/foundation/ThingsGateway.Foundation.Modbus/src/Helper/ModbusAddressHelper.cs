@@ -99,7 +99,15 @@ public static class ModbusAddressHelper
                     modbusAddress.ReadFunction = 3;
                     break;
             }
-            modbusAddress.Address = (double.Parse(address.Substring(1)) - 1).ToString();
+            string[] strArray = address.SplitStringByDelimiter();
+            if (strArray.Length > 1)
+            {
+                modbusAddress.Address = (ushort.Parse(strArray[0].Substring(1)) - 1).ToString() + '.' + strArray[1];
+            }
+            else
+            {
+                modbusAddress.Address = (ushort.Parse(strArray[0].Substring(1)) - 1).ToString();
+            }
         }
     }
 }
