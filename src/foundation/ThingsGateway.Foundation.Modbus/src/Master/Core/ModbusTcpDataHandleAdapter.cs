@@ -39,9 +39,9 @@ internal class ModbusTcpDataHandleAdapter : ReadWriteDevicesSingleStreamDataHand
         var result = ModbusHelper.GetModbusData(send?.RemoveBegin(6), response.RemoveBegin(6));
         request.OperCode = result.OperCode;
         request.ErrorMessage = result.ErrorMessage;
+        request.Sign = TouchSocketBitConverter.BigEndian.ToUInt16(response, 0);
         if (result.IsSuccess)
         {
-            request.Sign = TouchSocketBitConverter.BigEndian.ToUInt16(response, 0);
             request.Content = result.Content;
         }
         return result.Content2;
