@@ -185,7 +185,6 @@ internal class ModbusHelper
             if (send == null)
             {
                 var result = new OperResult<byte[], FilterResult>() { Content = response.RemoveBegin(3), Content2 = FilterResult.Success };
-                result.ErrorMessage = FoundationConst.NotActiveQueryError;
                 return result;
             }
             if (send.Length == 0)
@@ -233,29 +232,6 @@ internal class ModbusHelper
         if (crcCheck && !CRC16Utils.CheckCRC16(data))
             return new OperResult<byte[], FilterResult>("Crc校验失败" + DataTransUtil.ByteToHexString(data, ' ')) { Content2 = FilterResult.Success };
         return GetModbusData(send, data.RemoveLast(2));
-    }
-
-    /// <summary>
-    /// 获取读取报文
-    /// </summary>
-    internal static byte[] GetReadModbusCommand(string address, ushort length, byte station)
-    {
-        var mAddress = ModbusAddressHelper.ParseFrom(address, station);
-        return GetReadModbusCommand(mAddress, length);
-    }
-
-    /// <summary>
-    /// 获取写入字报文，根据地址识别功能码
-    /// </summary>
-    internal static byte[] GetWriteModbusCommand(string address, byte[] value, byte station)
-    {
-        var mAddress = ModbusAddressHelper.ParseFrom(address, station);
-        value = value.ArrayExpandToLengthEven();
-        //功能码或实际长度
-        if (value.Length > 2 || mAddress.WriteFunction == 16)
-            return GetWriteModbusCommand(mAddress, value);
-        else
-            return GetWriteOneModbusCommand(mAddress, value);
     }
 
     #region 报文构建
