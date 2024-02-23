@@ -16,6 +16,9 @@
 		<TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
 		<ApplicationIcon>wwwroot\favicon.ico</ApplicationIcon>
 		<OutputPath>$(SolutionDir)bin\$(Configuration)\$(MSBuildProjectName)\</OutputPath>
+		<SatelliteResourceLanguages>zh-Hans;en-US</SatelliteResourceLanguages>
+		<PublishReadyToRunComposite>true</PublishReadyToRunComposite>
+		<PublishReadyToRun>true</PublishReadyToRun>
 		<!--<ServerGarbageCollection>false</ServerGarbageCollection>-->
 		<!--<PlatformTarget>x86</PlatformTarget>-->
 	</PropertyGroup>
