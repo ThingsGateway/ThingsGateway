@@ -20,7 +20,7 @@ internal static class PackHelper
     /// <param name="maxPack">最大打包长度</param>
     /// <param name="defaultIntervalTime">默认间隔时间</param>
     /// <returns></returns>
-    public static List<T> LoadSourceRead<T>(SiemensS7Master device, List<IVariable> deviceVariables, int maxPack, int defaultIntervalTime) where T : IVariableSourceT<IVariable>, new()
+    public static List<T> LoadSourceRead<T>(SiemensS7Master device, List<IVariable> deviceVariables, int maxPack, int defaultIntervalTime) where T : IVariableSource, new()
     {
         var byteConverter = device.ThingsGatewayBitConverter;
         var result = new List<T>();
@@ -138,7 +138,7 @@ internal static class PackHelper
         return result;
     }
 
-    private static List<T> LoadSourceRead<T>(Dictionary<SiemensAddress, IVariable> addressList, int functionCode, int intervalTime, SiemensS7Master siemensS7Net) where T : IVariableSourceT<IVariable>, new()
+    private static List<T> LoadSourceRead<T>(Dictionary<SiemensAddress, IVariable> addressList, int functionCode, int intervalTime, SiemensS7Master siemensS7Net) where T : IVariableSource, new()
     {
         List<T> sourceReads = new();
         //实际地址与长度排序

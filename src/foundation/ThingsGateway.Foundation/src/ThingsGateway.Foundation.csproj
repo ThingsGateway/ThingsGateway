@@ -6,23 +6,26 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <None Include="..\..\..\.editorconfig" Link=".editorconfig" />
+		<None Include="..\..\..\.editorconfig" Link=".editorconfig" />
 	</ItemGroup>
 
 
 	<ItemGroup>
-	  <PackageReference Include="NewLife.Core" Version="10.7.2024.202" />
-	  <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-	  <PackageReference Include="TouchSocket" Version="2.0.0-beta.275" />
+		<PackageReference Include="NewLife.Core" Version="10.7.2024.202" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+		<PackageReference Include="TouchSocket" Version="2.0.0-beta.275" />
 	</ItemGroup>
-	
+
 	<ItemGroup Condition="'$(TargetFramework)'!='net45'">
 		<PackageReference Include="System.IO.Ports" Version="8.0.0" />
 	</ItemGroup>
-	
+
 	<ItemGroup Condition="'$(TargetFramework)'!='net6'">
 		<PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
 	</ItemGroup>
 
-
+	<ItemGroup>
+		<None Include="..\..\ThingsGateway.Foundation.SourceGenerator\src\tools\*.ps1" PackagePath="tools" Pack="true" Visible="false" />
+		<None Include="..\..\ThingsGateway.Foundation.SourceGenerator\src\bin\$(Configuration)\netstandard2.0\ThingsGateway.Foundation.SourceGenerator.dll" PackagePath="analyzers\dotnet\cs" Pack="true" Visible="false" />
+	</ItemGroup>
 </Project>

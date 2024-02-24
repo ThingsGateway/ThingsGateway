@@ -108,7 +108,7 @@ public interface IProtocol : IDisposable
     /// <summary>
     /// 连读寄存器打包
     /// </summary>
-    List<T> LoadSourceRead<T>(IEnumerable<IVariable> deviceVariables, int maxPack, int defaultIntervalTime) where T : IVariableSourceT<IVariable>, new();
+    List<T> LoadSourceRead<T>(IEnumerable<IVariable> deviceVariables, int maxPack, int defaultIntervalTime) where T : IVariableSource, new();
 
     #endregion 变量地址解析
 

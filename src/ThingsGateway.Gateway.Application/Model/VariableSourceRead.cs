@@ -13,12 +13,8 @@ namespace ThingsGateway.Gateway.Application;
 /// <summary>
 /// 连读报文信息
 /// </summary>
-public class VariableSourceRead : IVariableSourceT<IVariable>
+public class VariableSourceRead : IVariableSource
 {
-    public VariableSourceRead()
-    {
-    }
-
     /// <summary>
     /// 读取地址，传入时需要去除额外信息
     /// </summary>
@@ -27,7 +23,9 @@ public class VariableSourceRead : IVariableSourceT<IVariable>
     /// <summary>
     /// 需分配的变量列表
     /// </summary>
-    public ICollection<IVariable> VariableRunTimes { get; private set; } = new List<IVariable>();
+    public IEnumerable<IVariable> VariableRunTimes => _variableRunTimes;
+
+    private List<IVariable> _variableRunTimes = new List<IVariable>();
 
     /// <summary>
     /// 间隔时间实现
@@ -37,7 +35,7 @@ public class VariableSourceRead : IVariableSourceT<IVariable>
     public void AddVariable(IVariable variable)
     {
         variable.VariableSource = this;
-        VariableRunTimes.Add(variable);
+        _variableRunTimes.Add(variable);
     }
 
     /// <summary>

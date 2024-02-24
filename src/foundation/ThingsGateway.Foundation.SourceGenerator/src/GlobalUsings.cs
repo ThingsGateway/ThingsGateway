@@ -7,16 +7,3 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
-
-namespace ThingsGateway.Foundation;
-
-/// <summary>
-/// IVariableSource
-/// </summary>
-public interface IVariableSourceT<T> : IVariableSource where T : IVariable
-{
-    /// <summary>
-    /// 已打包变量
-    /// </summary>
-    ICollection<T> VariableRunTimes { get; }
-}

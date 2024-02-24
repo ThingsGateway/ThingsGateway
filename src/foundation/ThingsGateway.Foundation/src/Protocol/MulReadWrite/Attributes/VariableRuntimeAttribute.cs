@@ -8,23 +8,21 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using ThingsGateway.Foundation;
+namespace ThingsGateway.Foundation;
 
-namespace ThingsGateway.Demo;
-
-/// <inheritdoc/>
-public class VariableDemo : VariableClass
+/// <summary>
+/// 变量特性
+/// </summary>
+[AttributeUsage(AttributeTargets.Property)]
+public class VariableRuntimeAttribute : Attribute
 {
-    public override object? Value => _value;
-    private object _value;
-    public bool IsOnline { get; set; }
+    /// <summary>
+    /// 寄存器地址
+    /// </summary>
+    public string? RegisterAddress { get; set; }
 
-    public string? LastErrorMessage => VariableSource?.LastErrorMessage;
-
-    public override OperResult SetValue(object value, DateTime dateTime = default, bool isOnline = false)
-    {
-        _value = value ?? "null";
-        IsOnline = isOnline;
-        return new();
-    }
+    /// <summary>
+    /// 数据类型
+    /// </summary>
+    public DataTypeEnum DataType { get; set; }
 }

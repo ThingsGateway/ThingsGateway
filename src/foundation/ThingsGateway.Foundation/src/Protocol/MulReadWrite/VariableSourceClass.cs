@@ -11,33 +11,34 @@
 namespace ThingsGateway.Foundation
 {
     /// <summary>
-    /// IVariableSource
+    /// VariableSourceClass
     /// </summary>
-    public interface IVariableSource
+    public class VariableSourceClass : IVariableSource
     {
-        /// <summary>
-        /// 最后一次失败原因
-        /// </summary>
-        string? LastErrorMessage { get; set; }
+        private List<IVariable> _variableRunTimes = new();
+
+        /// <inheritdoc/>
+        public string? LastErrorMessage { get; set; }
+
+        /// <inheritdoc/>
+        public int Length { get; set; }
+
+        /// <inheritdoc/>
+        public string RegisterAddress { get; set; }
+
+        /// <inheritdoc/>
+        public TimeTick TimeTick { get; set; }
 
         /// <summary>
-        /// 添加变量
+        /// 已打包变量
         /// </summary>
-        void AddVariable(IVariable variable);
+        public IEnumerable<IVariable> VariableRunTimes => _variableRunTimes;
 
-        /// <summary>
-        /// TimeTick
-        /// </summary>
-        TimeTick TimeTick { get; set; }
-
-        /// <summary>
-        /// 变量地址
-        /// </summary>
-        string RegisterAddress { get; set; }
-
-        /// <summary>
-        /// 长度
-        /// </summary>
-        int Length { get; set; }
+        /// <inheritdoc/>
+        public virtual void AddVariable(IVariable variable)
+        {
+            variable.VariableSource = this;
+            _variableRunTimes.Add(variable);
+        }
     }
 }

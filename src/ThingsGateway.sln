@@ -108,6 +108,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThingsGateway.Plugin.OpcUa"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThingsGateway.Plugin.Dlt645", "plugin\ThingsGateway.Plugin.Dlt645\ThingsGateway.Plugin.Dlt645.csproj", "{96E46443-1F30-4CEB-BBD7-920DD59F1BB7}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThingsGateway.Foundation.SourceGenerator", "foundation\ThingsGateway.Foundation.SourceGenerator\src\ThingsGateway.Foundation.SourceGenerator.csproj", "{D87C13E8-F5E8-493B-9137-4B5B6FBC46D7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -266,6 +268,10 @@ Global
 		{96E46443-1F30-4CEB-BBD7-920DD59F1BB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{96E46443-1F30-4CEB-BBD7-920DD59F1BB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{96E46443-1F30-4CEB-BBD7-920DD59F1BB7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D87C13E8-F5E8-493B-9137-4B5B6FBC46D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D87C13E8-F5E8-493B-9137-4B5B6FBC46D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D87C13E8-F5E8-493B-9137-4B5B6FBC46D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D87C13E8-F5E8-493B-9137-4B5B6FBC46D7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -311,9 +317,10 @@ Global
 		{0D994CAE-42F3-4CDA-9132-94515D7EF40E} = {D43C0E54-5B4B-4F00-A782-CAB91782D284}
 		{6AB13A30-C2DD-479D-BBE3-7ACFC104A416} = {D43C0E54-5B4B-4F00-A782-CAB91782D284}
 		{96E46443-1F30-4CEB-BBD7-920DD59F1BB7} = {D43C0E54-5B4B-4F00-A782-CAB91782D284}
+		{D87C13E8-F5E8-493B-9137-4B5B6FBC46D7} = {267B2DEB-0207-4F52-94E4-A1FF6B19214D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {789BA852-9F20-4421-A555-E665A12587D1}
 		RESX_NeutralResourcesLanguage = zh-Hans
+		SolutionGuid = {789BA852-9F20-4421-A555-E665A12587D1}
 	EndGlobalSection
 EndGlobal

@@ -11,44 +11,46 @@
 namespace ThingsGateway.Foundation;
 
 /// <summary>
-/// IVariable
+/// VariableClass
 /// </summary>
-public interface IVariable
+public class VariableClass : IVariable
 {
-    /// <summary>
-    /// 执行间隔
-    /// </summary>
-    int? IntervalTime { get; set; }
-
-    /// <summary>
-    /// 寄存器地址
-    /// </summary>
-    string? RegisterAddress { get; set; }
-
-    /// <summary>
-    /// 偏移量，注意如果是布尔类型，Index应该为bit的偏移
-    /// </summary>
-    int Index { get; set; }
-
-    /// <summary>
-    /// 数据转换规则
-    /// </summary>
-    IThingsGatewayBitConverter ThingsGatewayBitConverter { get; set; }
+    private object? _value;
 
     /// <summary>
     /// 数据类型
     /// </summary>
-    DataTypeEnum DataType { get; set; }
+    public virtual DataTypeEnum DataType { get; set; }
 
     /// <summary>
-    /// 打包变量
+    /// 偏移量，注意如果是布尔类型，Index应该为bit的偏移
     /// </summary>
-    IVariableSource VariableSource { get; set; }
+    public virtual int Index { get; set; }
+
+    /// <summary>
+    /// 执行间隔
+    /// </summary>
+    public virtual int? IntervalTime { get; set; }
+
+    /// <summary>
+    /// 寄存器地址
+    /// </summary>
+    public virtual string? RegisterAddress { get; set; }
+
+    /// <summary>
+    /// 数据转换规则
+    /// </summary>
+    public virtual IThingsGatewayBitConverter ThingsGatewayBitConverter { get; set; }
 
     /// <summary>
     /// 实时值
     /// </summary>
-    object? Value { get; }
+    public virtual object? Value => _value;
+
+    /// <summary>
+    /// IVariableSource
+    /// </summary>
+    public IVariableSource VariableSource { get; set; }
 
     /// <summary>
     /// 赋值变量
@@ -57,5 +59,9 @@ public interface IVariable
     /// <param name="dateTime">采集时间</param>
     /// <param name="isOnline">是否在线</param>
     /// <returns></returns>
-    OperResult SetValue(object value, DateTime dateTime = default, bool isOnline = true);
+    public virtual OperResult SetValue(object value, DateTime dateTime = default, bool isOnline = true)
+    {
+        _value = value ?? "null";
+        return new();
+    }
 }

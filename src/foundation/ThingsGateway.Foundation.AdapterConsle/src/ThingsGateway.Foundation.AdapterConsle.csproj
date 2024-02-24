@@ -1,15 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFrameworks>net6.0;</TargetFrameworks>
+		<TargetFrameworks>net6.0;net4.5;</TargetFrameworks>
 		<OutputType>Exe</OutputType>
 		<OutputPath>$(SolutionDir)bin\$(Configuration)\$(MSBuildProjectName)\</OutputPath>
 		<DocumentationFile></DocumentationFile>
 	</PropertyGroup>
-
 	<ItemGroup>
-		<ProjectReference Include="..\..\ThingsGateway.Foundation.Dlt645\src\ThingsGateway.Foundation.Dlt645.csproj" />
-		<ProjectReference Include="..\..\ThingsGateway.Foundation.Modbus\src\ThingsGateway.Foundation.Modbus.csproj">
-		</ProjectReference>
+		<PackageReference Include="ThingsGateway.Foundation.Modbus" Version="5.0.1.16" />
+		<PackageReference Include="ThingsGateway.Foundation.Dlt645" Version="5.0.1.16" />
 	</ItemGroup>
 
 </Project>

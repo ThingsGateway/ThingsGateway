@@ -20,7 +20,7 @@ internal static class PackHelper
     /// <param name="maxPack">最大打包长度</param>
     /// <param name="defaultIntervalTime">默认间隔时间</param>
     /// <returns></returns>
-    public static List<T> LoadSourceRead<T>(ProtocolBase device, List<IVariable> deviceVariables, int maxPack, int defaultIntervalTime) where T : IVariableSourceT<IVariable>, new()
+    public static List<T> LoadSourceRead<T>(ProtocolBase device, List<IVariable> deviceVariables, int maxPack, int defaultIntervalTime) where T : IVariableSource, new()
     {
         var byteConverter = device.ThingsGatewayBitConverter;
         var result = new List<T>();

@@ -12,7 +12,6 @@ using BlazorComponent;
 
 using Microsoft.AspNetCore.Components;
 
-using ThingsGateway.Components;
 using ThingsGateway.Foundation;
 
 using TouchSocket.Core;
@@ -25,7 +24,7 @@ public partial class AdapterDebugPage : AdapterDebugBase
     /// <summary>
     /// VariableRunTimes
     /// </summary>
-    public List<IVariable> VariableRunTimes;
+    public List<VariableDemo> VariableRunTimes;
 
     /// <summary>
     /// MaxPack

@@ -155,7 +155,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     #region 变量地址解析
 
     /// <inheritdoc/>
-    public abstract List<T> LoadSourceRead<T>(IEnumerable<IVariable> deviceVariables, int maxPack, int defaultIntervalTime) where T : IVariableSourceT<IVariable>, new();
+    public abstract List<T> LoadSourceRead<T>(IEnumerable<IVariable> deviceVariables, int maxPack, int defaultIntervalTime) where T : IVariableSource, new();
 
     /// <inheritdoc/>
     public virtual string GetAddressDescription()

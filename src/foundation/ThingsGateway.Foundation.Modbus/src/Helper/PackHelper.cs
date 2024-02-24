@@ -23,7 +23,7 @@ public class PackHelper
     /// <param name="maxPack">最大打包长度</param>
     /// <param name="defaultIntervalTime">默认间隔时间</param>
     /// <returns></returns>
-    public static List<T> LoadSourceRead<T>(IProtocol device, List<IVariable> deviceVariables, int maxPack, int defaultIntervalTime) where T : IVariableSourceT<IVariable>, new()
+    public static List<T> LoadSourceRead<T>(IProtocol device, List<IVariable> deviceVariables, int maxPack, int defaultIntervalTime) where T : IVariableSource, new()
     {
         if (deviceVariables == null)
             throw new ArgumentNullException(nameof(deviceVariables));
@@ -94,7 +94,7 @@ public class PackHelper
         return deviceVariableSourceReads;
     }
 
-    private static List<T> LoadSourceRead<T>(Dictionary<ModbusAddress, IVariable> addressList, int functionCode, int intervalTime, int maxPack) where T : IVariableSourceT<IVariable>, new()
+    private static List<T> LoadSourceRead<T>(Dictionary<ModbusAddress, IVariable> addressList, int functionCode, int intervalTime, int maxPack) where T : IVariableSource, new()
     {
         List<T> sourceReads = new();
         //按地址和长度排序

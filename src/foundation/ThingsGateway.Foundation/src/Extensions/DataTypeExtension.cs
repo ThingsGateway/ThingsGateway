@@ -40,6 +40,30 @@ public static class DataTypeExtension
     }
 
     /// <summary>
+    /// 获取DataTypeEnum
+    /// </summary>
+    /// <param name="coreType"></param>
+    /// <returns></returns>
+    public static DataTypeEnum GetDataType(this TypeCode coreType)
+    {
+        return coreType switch
+        {
+            TypeCode.String => DataTypeEnum.String,
+            TypeCode.Boolean => DataTypeEnum.Boolean,
+            TypeCode.Byte => DataTypeEnum.Byte,
+            TypeCode.Int16 => DataTypeEnum.Int16,
+            TypeCode.UInt16 => DataTypeEnum.UInt16,
+            TypeCode.Int32 => DataTypeEnum.Int32,
+            TypeCode.UInt32 => DataTypeEnum.UInt32,
+            TypeCode.Int64 => DataTypeEnum.Int64,
+            TypeCode.UInt64 => DataTypeEnum.UInt64,
+            TypeCode.Single => DataTypeEnum.Single,
+            TypeCode.Double => DataTypeEnum.Double,
+            _ => DataTypeEnum.Object,
+        };
+    }
+
+    /// <summary>
     /// 获取实际字节长度，不能确定返回0，bool返回1
     /// </summary>
     /// <param name="coreDataType"></param>

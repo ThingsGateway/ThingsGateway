@@ -8,23 +8,23 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using ThingsGateway.Foundation;
+using System.Reflection;
 
-namespace ThingsGateway.Demo;
+namespace ThingsGateway.Foundation;
 
-/// <inheritdoc/>
-public class VariableDemo : VariableClass
+/// <summary>
+/// VariableRuntimeProperty
+/// </summary>
+internal class VariableRuntimeProperty
 {
-    public override object? Value => _value;
-    private object _value;
-    public bool IsOnline { get; set; }
+    public VariableRuntimeAttribute Attribute { get; }
 
-    public string? LastErrorMessage => VariableSource?.LastErrorMessage;
+    public PropertyInfo Property { get; }
+    public VariableClass VariableClass { get; set; }
 
-    public override OperResult SetValue(object value, DateTime dateTime = default, bool isOnline = false)
+    public VariableRuntimeProperty(VariableRuntimeAttribute attribute, PropertyInfo property)
     {
-        _value = value ?? "null";
-        IsOnline = isOnline;
-        return new();
+        Attribute = attribute;
+        Property = property;
     }
 }

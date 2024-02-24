@@ -13,28 +13,6 @@ using ThingsGateway.Foundation;
 namespace ThingsGateway.Demo;
 
 /// <inheritdoc/>
-public class VariableSourceDemo : IVariableSourceT<IVariable>
+public class VariableSourceDemo : VariableSourceClass
 {
-    /// <inheritdoc/>
-    public TimeTick IntervalTimeTick { get; set; }
-
-    /// <inheritdoc/>
-    public string RegisterAddress { get; set; }
-
-    /// <inheritdoc/>
-    public int Length { get; set; }
-
-    /// <inheritdoc/>
-    public string? LastErrorMessage { get; set; }
-
-    /// <inheritdoc/>
-    public ICollection<IVariable> VariableRunTimes { get; set; } = new List<IVariable>();
-
-    public TimeTick TimeTick { get; set; }
-
-    public void AddVariable(IVariable variable)
-    {
-        variable.VariableSource = this;
-        VariableRunTimes.Add(variable);
-    }
 }
