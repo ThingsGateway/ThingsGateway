@@ -8,14 +8,13 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using System.Collections.Concurrent;
 using System.Reflection;
 
 using ThingsGateway.Foundation;
 
 internal static class VariableObjectHelper
 {
-    private static ConcurrentDictionary<Type, Dictionary<string, VariableRuntimeProperty>> variablePropertyDicts = new ConcurrentDictionary<Type, Dictionary<string, VariableRuntimeProperty>>();
+    private static MemoryCache<Type, Dictionary<string, VariableRuntimeProperty>> variablePropertyDicts = new MemoryCache<Type, Dictionary<string, VariableRuntimeProperty>>();
 
     public static Dictionary<string, VariableRuntimeProperty> GetPairs(Type type)
     {
@@ -36,7 +35,7 @@ internal static class VariableObjectHelper
             dictionary.Add(propertyInfo.Name, new VariableRuntimeProperty(variableRuntimeAttribute, propertyInfo));
         }
 
-        variablePropertyDicts.TryAdd(type, dictionary);
+        variablePropertyDicts.AddCache(type, dictionary, 60 * 60 * 1000);
         return dictionary;
     }
 }

@@ -36,21 +36,33 @@ namespace ThingsGateway.Foundation
         private static void Main(string[] args)
         {
             using ModbusMaster modbusMaster = GetMaster();
+            using ModbusMaster modbusMaster1 = GetMaster();
+            modbusMaster1.Station = 2;
             //构造实体类对象，传入协议对象与连读打包的最大数量
             ModbusVariable modbusVariable = new(modbusMaster, 100);
-            modbusVariable.WriteData1(1, default);
-            modbusVariable.WriteData2(2, default);
+            ModbusVariable modbusVariable1 = new(modbusMaster1, 100);
 
-            //执行连读
-            modbusVariable.MulRead();
+            Test(modbusVariable, 10);
+            Test(modbusVariable1, 100);
             Console.WriteLine(modbusVariable.ToJsonString());
-            //源生成WriteData1与WriteData2方法(Write{属性名称})
-            var data1 = modbusVariable.WriteData1(11, default);
-            var data2 = modbusVariable.WriteData2(22, default);
-            //执行连读
-            modbusVariable.MulRead();
-            Console.WriteLine(modbusVariable.ToJsonString());
+            Console.WriteLine(modbusVariable1.ToJsonString());
             Console.ReadLine();
+
+            static void Test(ModbusVariable modbusVariable, ushort value)
+            {
+                modbusVariable.WriteData1(value, default);
+                modbusVariable.WriteData2(value, default);
+
+                //执行连读
+                modbusVariable.MulRead();
+                Console.WriteLine(modbusVariable.ToJsonString());
+                //源生成WriteData1与WriteData2方法(Write{属性名称})
+                var data1 = modbusVariable.WriteData1(value + 10, default);
+                var data2 = modbusVariable.WriteData2(value + 10, default);
+                //执行连读
+                modbusVariable.MulRead();
+                Console.WriteLine(modbusVariable.ToJsonString());
+            }
         }
     }
 
