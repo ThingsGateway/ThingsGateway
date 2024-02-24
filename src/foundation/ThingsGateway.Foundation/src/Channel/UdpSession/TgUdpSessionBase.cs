@@ -409,13 +409,19 @@ namespace ThingsGateway.Foundation
             #region Windows下UDP连接被重置错误10054
 
 #if NET45_OR_GREATER
-            const int SIP_UDP_CONNRESET = -1744830452;
-            socket.IOControl(SIP_UDP_CONNRESET, new byte[] { 0, 0, 0, 0 }, null);
-#else
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            if (this.Config.GetValue(TouchSocketConfigExtension.UdpConnResetProperty))
             {
                 const int SIP_UDP_CONNRESET = -1744830452;
                 socket.IOControl(SIP_UDP_CONNRESET, new byte[] { 0, 0, 0, 0 }, null);
+            }
+#else
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                if (this.Config.GetValue(TouchSocketConfigExtension.UdpConnResetProperty))
+                {
+                    const int SIP_UDP_CONNRESET = -1744830452;
+                    socket.IOControl(SIP_UDP_CONNRESET, new byte[] { 0, 0, 0, 0 }, null);
+                }
             }
 #endif
 

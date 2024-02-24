@@ -11,6 +11,7 @@
 using ThingsGateway.Foundation.Modbus;
 
 using TouchSocket.Core;
+using TouchSocket.Sockets;
 
 namespace ThingsGateway.Foundation
 {
@@ -50,13 +51,16 @@ namespace ThingsGateway.Foundation
             //var data3 = await modbusVariable.WriteData1Async(11, CancellationToken.None);
             //Console.WriteLine(data1.ToJsonString());
             //Console.WriteLine(data3.ToJsonString());
-
+            clientChannel.Connect(3000, default);
+            await clientChannel.CreateWaitingClient(new WaitingOptions()).SendThenResponseAsync("010300000001840a".ByHexStringToBytes(), 0, 8);
+            clientChannel.CreateWaitingClient(new WaitingOptions()).SendThenResponse("010300000001840a".ByHexStringToBytes(), 0, 8);
             modbusMaster.Read("40001", (ushort)11);
             modbusMaster.Write("40001", (ushort)11);
             await modbusMaster.ReadAsync("40001", (ushort)11);
             await modbusMaster.WriteAsync("40001", (ushort)11);
             modbusMaster.Read("40001", (ushort)11);
             modbusMaster.Write("40001", (ushort)11);
+            await modbusMaster.WriteAsync("40001", (ushort)11);
 
             Console.ReadLine();
         }
