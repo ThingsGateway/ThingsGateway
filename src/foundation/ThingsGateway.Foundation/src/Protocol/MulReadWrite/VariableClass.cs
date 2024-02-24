@@ -61,7 +61,7 @@ public class VariableClass : IVariable
     /// <returns></returns>
     public virtual OperResult SetValue(object value, DateTime dateTime = default, bool isOnline = true)
     {
-        _value = value ?? "null";
+        _value = value;
         return new();
     }
 }

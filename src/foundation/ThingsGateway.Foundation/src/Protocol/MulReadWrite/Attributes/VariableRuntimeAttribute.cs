@@ -22,7 +22,7 @@ public class VariableRuntimeAttribute : Attribute
     public string? RegisterAddress { get; set; }
 
     /// <summary>
-    /// 数据类型
+    /// 数据类型，默认不填时会使用属性的Type
     /// </summary>
     public DataTypeEnum DataType { get; set; }
 }

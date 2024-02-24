@@ -15,30 +15,28 @@ using ThingsGateway.Foundation;
 
 internal static class VariableObjectHelper
 {
-    private static ConcurrentDictionary<Type, Dictionary<string, VariableRuntimeProperty>> m_pairs = new ConcurrentDictionary<Type, Dictionary<string, VariableRuntimeProperty>>();
+    private static ConcurrentDictionary<Type, Dictionary<string, VariableRuntimeProperty>> variablePropertyDicts = new ConcurrentDictionary<Type, Dictionary<string, VariableRuntimeProperty>>();
 
     public static Dictionary<string, VariableRuntimeProperty> GetPairs(Type type)
     {
-        if (m_pairs.TryGetValue(type, out var value))
+        if (variablePropertyDicts.TryGetValue(type, out var value))
         {
             return value;
         }
 
-        PropertyInfo[] properties = type.GetProperties(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
-        Dictionary<string, VariableRuntimeProperty> dictionary = new Dictionary<string, VariableRuntimeProperty>();
-        PropertyInfo[] array = properties;
-        foreach (PropertyInfo propertyInfo in array)
+        var properties = type.GetProperties(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+        var dictionary = new Dictionary<string, VariableRuntimeProperty>();
+        foreach (var propertyInfo in properties)
         {
-            VariableRuntimeAttribute customAttribute = propertyInfo.GetCustomAttribute<VariableRuntimeAttribute>();
-            if (customAttribute == null)
+            VariableRuntimeAttribute variableRuntimeAttribute = propertyInfo.GetCustomAttribute<VariableRuntimeAttribute>();
+            if (variableRuntimeAttribute == null)
             {
                 continue;
             }
-
-            dictionary.Add(propertyInfo.Name, new VariableRuntimeProperty(customAttribute, propertyInfo));
+            dictionary.Add(propertyInfo.Name, new VariableRuntimeProperty(variableRuntimeAttribute, propertyInfo));
         }
 
-        m_pairs.TryAdd(type, dictionary);
+        variablePropertyDicts.TryAdd(type, dictionary);
         return dictionary;
     }
 }
