@@ -30,10 +30,10 @@ internal partial class SiemensHelper
 		0x01, 0x0A, // PDU Max Length
 		0xC1, // Src TSAP Identifier
 		0x02, // Src TSAP Length (2 bytes)
-		0x01, 0x00, // Src TSAP  (需重写)
+		0x01, 0x02, // Src TSAP  (需重写)
 		0xC2, // Dst TSAP Identifier
 		0x02, // Dst TSAP Length (2 bytes)
-		0x01, 0x02  // Dst TSAP  (需重写)
+		0x01, 0x00  // Dst TSAP  (需重写)
 	};
 
     // ISO连接请求报文(也包含ISO头和COTP头)

@@ -55,19 +55,14 @@ internal class SiemensS7DataHandleAdapter : ReadWriteDevicesSingleStreamDataHand
 
                 default:
                     //添加返回代码校验
-                    if (response.Length == 22)
+
+                    if (response[5] == 0xD0)//首次握手0XD0连接确认
                     {
-                        if (response[21] != 0x00)
-                        {
-                            result = new($"PLC返回错误，返回代码{response[21].ToString("X2")}") { Content = response, Content2 = FilterResult.Success };
-                        }
-                        else
-                        {
-                            result = new() { Content = response, Content2 = FilterResult.Success };
-                        }
+                        result = new() { Content = response, Content2 = FilterResult.Success };
                     }
                     else
                     {
+                        //其余情况判断错误代码
                         if (response[17] + response[18] > 0)
                         {
                             result = new($"PLC返回错误，错误类型{response[17].ToString("X2")}错误代码：{response[18].ToString("X2")}") { Content = response, Content2 = FilterResult.Success };
@@ -77,6 +72,7 @@ internal class SiemensS7DataHandleAdapter : ReadWriteDevicesSingleStreamDataHand
                             result = new() { Content = response, Content2 = FilterResult.Success };
                         }
                     }
+
 
                     break;
             }
