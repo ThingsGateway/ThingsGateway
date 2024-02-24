@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFrameworks>net6.0;net4.5;</TargetFrameworks>
+		<TargetFrameworks>net6.0;</TargetFrameworks>
 		<OutputType>Exe</OutputType>
 		<OutputPath>$(SolutionDir)bin\$(Configuration)\$(MSBuildProjectName)\</OutputPath>
 		<DocumentationFile></DocumentationFile>
@@ -10,8 +10,9 @@
 		<PackageReference Include="ThingsGateway.Foundation.Dlt645" Version="5.0.1.17" />
 	</ItemGroup>-->
 	<ItemGroup>
-	  <ProjectReference Include="..\..\ThingsGateway.Foundation.Dlt645\src\ThingsGateway.Foundation.Dlt645.csproj" />
-	  <ProjectReference Include="..\..\ThingsGateway.Foundation.Modbus\src\ThingsGateway.Foundation.Modbus.csproj" />
+		<ProjectReference Include="..\..\ThingsGateway.Foundation.Dlt645\src\ThingsGateway.Foundation.Dlt645.csproj" />
+		<ProjectReference Include="..\..\ThingsGateway.Foundation.Modbus\src\ThingsGateway.Foundation.Modbus.csproj" />
+		<ProjectReference Include="..\..\ThingsGateway.Foundation.SourceGenerator\src\ThingsGateway.Foundation.SourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
 	</ItemGroup>
 
 </Project>
