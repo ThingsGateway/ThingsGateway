@@ -143,6 +143,7 @@ public abstract class VariableObject
     {
         try
         {
+            GetVariableSources();
             if (string.IsNullOrEmpty(propertyName))
             {
                 return new($"propertyName不能为 null 或空。");
@@ -171,6 +172,7 @@ public abstract class VariableObject
     {
         try
         {
+            GetVariableSources();
             if (string.IsNullOrEmpty(propertyName))
             {
                 return new($"propertyName不能为 null 或空。");

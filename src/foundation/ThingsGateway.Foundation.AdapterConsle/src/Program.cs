@@ -16,41 +16,40 @@ namespace ThingsGateway.Foundation
 {
     internal class Program
     {
-        private static async Task Main(string[] args)
+        private static ModbusMaster GetMaster()
         {
-            //Dlt645MasterTest dlt645MasterTest = new Dlt645MasterTest();
-            //var channel = dlt645MasterTest.GetChannel();
-            //var protocol = dlt645MasterTest.GetProtocol(channel);
-            //var data = await protocol.ReadDoubleAsync("02010100"); //读取A相电压
-            //Console.WriteLine(data.ToJsonString());
-
             var clientConfig = new TouchSocketConfig();
             clientConfig.ConfigureContainer(a => a.AddConsoleLogger());
             //创建通道，也可以通过TouchSocketConfig.GetChannel扩展获取
             var clientChannel = clientConfig.GetTcpClientWithIPHost("tcp://127.0.0.1:502");
             //var clientChannel = clientConfig.GetSerialPortWithOption("COM1");
-            clientChannel.Logger.LogLevel = LogLevel.Trace;
-            //创建modbus客户端，传入通道
-            using ModbusMaster modbusMaster = new(clientChannel)
+            //clientChannel.Logger.LogLevel = LogLevel.Trace;
+            ModbusMaster modbusMaster = new(clientChannel)
             {
                 //modbus协议格式
                 ModbusType = Modbus.ModbusTypeEnum.ModbusRtu,
                 //ModbusType = Modbus.ModbusTypeEnum.ModbusTcp,
             };
+            return modbusMaster;
+        }
 
+        private static void Main(string[] args)
+        {
+            using ModbusMaster modbusMaster = GetMaster();
             //构造实体类对象，传入协议对象与连读打包的最大数量
             ModbusVariable modbusVariable = new(modbusMaster, 100);
+            modbusVariable.WriteData1(1, default);
+            modbusVariable.WriteData2(2, default);
 
-            //手动执行连读，操作会使Data1属性更新值
+            //执行连读
             modbusVariable.MulRead();
             Console.WriteLine(modbusVariable.ToJsonString());
-            //源代码生成了WriteData1与WriteData1Async方法(Write{ 属性名称})
-            //直接调用就可以写入PLC
-            var data1 = modbusVariable.WriteData1(11, CancellationToken.None);
-            var data3 = await modbusVariable.WriteData1Async(22, CancellationToken.None);
-            Console.WriteLine(data1.ToJsonString());
-            Console.WriteLine(data3.ToJsonString());
-
+            //源生成WriteData1与WriteData2方法(Write{属性名称})
+            var data1 = modbusVariable.WriteData1(11, default);
+            var data2 = modbusVariable.WriteData2(22, default);
+            //执行连读
+            modbusVariable.MulRead();
+            Console.WriteLine(modbusVariable.ToJsonString());
             Console.ReadLine();
         }
     }
@@ -58,14 +57,14 @@ namespace ThingsGateway.Foundation
     [GeneratorVariable]
     public partial class ModbusVariable : VariableObject
     {
-        public ModbusVariable(IProtocol protocol, int maxPack) : base(protocol, maxPack)
-        {
-        }
-
         [VariableRuntime(RegisterAddress = "400001")]
         public ushort Data1 { get; set; }
 
         [VariableRuntime(RegisterAddress = "400051")]
         public ushort Data2 { get; set; }
+
+        public ModbusVariable(IProtocol protocol, int maxPack) : base(protocol, maxPack)
+        {
+        }
     }
 }
