@@ -67,7 +67,7 @@ namespace ThingsGateway.Foundation
         /// <inheritdoc/>
         protected override async Task OnConnected(ConnectedEventArgs e)
         {
-            Logger?.Debug($"{ToString()} {FoundationConst.Connected}");
+            Logger?.Debug($"{ToString()}  {FoundationConst.Connected}");
             if (Started != null)
                 await Started.Invoke(this);
             await base.OnConnected(e);

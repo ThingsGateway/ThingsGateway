@@ -5,9 +5,13 @@
 		<OutputPath>$(SolutionDir)bin\$(Configuration)\$(MSBuildProjectName)\</OutputPath>
 		<DocumentationFile></DocumentationFile>
 	</PropertyGroup>
+	<!--<ItemGroup>
+		<PackageReference Include="ThingsGateway.Foundation.Modbus" Version="5.0.1.17" />
+		<PackageReference Include="ThingsGateway.Foundation.Dlt645" Version="5.0.1.17" />
+	</ItemGroup>-->
 	<ItemGroup>
-		<PackageReference Include="ThingsGateway.Foundation.Modbus" Version="5.0.1.16" />
-		<PackageReference Include="ThingsGateway.Foundation.Dlt645" Version="5.0.1.16" />
+	  <ProjectReference Include="..\..\ThingsGateway.Foundation.Dlt645\src\ThingsGateway.Foundation.Dlt645.csproj" />
+	  <ProjectReference Include="..\..\ThingsGateway.Foundation.Modbus\src\ThingsGateway.Foundation.Modbus.csproj" />
 	</ItemGroup>
 
 </Project>

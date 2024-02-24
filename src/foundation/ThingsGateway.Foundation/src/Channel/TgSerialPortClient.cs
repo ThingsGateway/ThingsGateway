@@ -69,7 +69,7 @@ namespace ThingsGateway.Foundation
         /// <inheritdoc/>
         protected override async Task OnConnected(ConnectedEventArgs e)
         {
-            Logger?.Debug($"{ToString()} {FoundationConst.Connected}");
+            Logger?.Debug($"{ToString()}  {FoundationConst.Connected}");
             if (Started != null)
                 await Started.Invoke(this);
             await base.OnConnected(e);
@@ -78,7 +78,7 @@ namespace ThingsGateway.Foundation
         /// <inheritdoc/>
         protected override async Task OnConnecting(SerialConnectingEventArgs e)
         {
-            Logger?.Debug($"{ToString()} {FoundationConst.Connecting}{(e.Message.IsNullOrEmpty() ? string.Empty : $"-{e.Message}")}");
+            Logger?.Debug($"{ToString()}  {FoundationConst.Connecting}{(e.Message.IsNullOrEmpty() ? string.Empty : $"-{e.Message}")}");
             if (Starting != null)
                 await Starting.Invoke(this);
             await base.OnConnecting(e);

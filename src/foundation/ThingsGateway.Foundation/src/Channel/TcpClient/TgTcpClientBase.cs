@@ -42,7 +42,7 @@ namespace ThingsGateway.Foundation
         private DelaySender m_delaySender;
         private volatile bool m_online;
         private readonly EasyLock m_semaphoreForConnect = new();
-        private readonly TcpCore m_tcpCore = new TcpCore();
+        private readonly TcpCore m_tcpCore = new();
 
         #endregion 变量
 
@@ -216,6 +216,10 @@ namespace ThingsGateway.Foundation
         public int Port { get; private set; }
 
         /// <inheritdoc/>
+        [Obsolete("该配置已被弃用，正式版发布时会直接删除", true)]
+        public ReceiveType ReceiveType { get; private set; }
+
+        /// <inheritdoc/>
         public bool UseSsl => this.GetTcpCore().UseSsl;
 
         /// <inheritdoc/>
@@ -226,10 +230,6 @@ namespace ThingsGateway.Foundation
 
         /// <inheritdoc/>
         public bool IsClient => true;
-
-        /// <inheritdoc/>
-        [Obsolete("该配置已被弃用，正式版发布时会直接删除", true)]
-        public ReceiveType ReceiveType => default;
 
         #endregion 属性
 
@@ -450,7 +450,7 @@ namespace ThingsGateway.Foundation
 
         #endregion Connect
 
-        #region TgReceiver
+        #region Receiver
 
         private TgReceiver m_receiver;
 
@@ -466,7 +466,7 @@ namespace ThingsGateway.Foundation
             this.m_receiver = null;
         }
 
-        #endregion TgReceiver
+        #endregion Receiver
 
         /// <inheritdoc/>
         public override string ToString()
@@ -532,7 +532,6 @@ namespace ThingsGateway.Foundation
         /// 当收到适配器处理的数据时。
         /// </summary>
         /// <param name="e"></param>
-        /// <returns>如果返回<see langword="true"/>则表示数据已被处理，且不会再向下传递。</returns>
         protected virtual Task ReceivedData(ReceivedDataEventArgs e)
         {
             return this.PluginManager.RaiseAsync(nameof(ITcpReceivedPlugin.OnTcpReceived), this, e);
@@ -651,10 +650,7 @@ namespace ThingsGateway.Foundation
         /// <exception cref="Exception"></exception>
         public void Send(IRequestInfo requestInfo)
         {
-            if (this.DisposedValue)
-            {
-                return;
-            }
+            this.ThrowIfDisposed();
             if (this.DataHandlingAdapter == null)
             {
                 throw new ArgumentNullException(nameof(this.DataHandlingAdapter), TouchSocketResource.NullDataAdapter.GetDescription());

@@ -29,14 +29,14 @@ namespace ThingsGateway.Foundation
         /// <inheritdoc/>
         protected override Task OnConnected(TClient socketClient, ConnectedEventArgs e)
         {
-            Logger?.Debug($"{socketClient.ToString()} {FoundationConst.Connected}");
+            Logger?.Debug($"{socketClient.ToString()}  {FoundationConst.Connected}");
             return base.OnConnected(socketClient, e);
         }
 
         /// <inheritdoc/>
         protected override Task OnConnecting(TClient socketClient, ConnectingEventArgs e)
         {
-            Logger?.Debug($"{socketClient.ToString()} {FoundationConst.Connecting}");
+            Logger?.Debug($"{socketClient.ToString()}  {FoundationConst.Connecting}");
             return base.OnConnecting(socketClient, e);
         }
 
