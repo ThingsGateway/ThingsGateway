@@ -12,6 +12,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\..\ThingsGateway.Foundation.Dlt645\src\ThingsGateway.Foundation.Dlt645.csproj" />
 		<ProjectReference Include="..\..\ThingsGateway.Foundation.Modbus\src\ThingsGateway.Foundation.Modbus.csproj" />
+		<ProjectReference Include="..\..\ThingsGateway.Foundation.SiemensS7\src\ThingsGateway.Foundation.SiemensS7.csproj" />
 		<ProjectReference Include="..\..\ThingsGateway.Foundation.SourceGenerator\src\ThingsGateway.Foundation.SourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
 	</ItemGroup>
 
