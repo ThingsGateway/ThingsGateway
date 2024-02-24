@@ -7,8 +7,6 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<ProjectReference Include="$(SolutionDir)\foundation\ThingsGateway.Foundation\src\ThingsGateway.Foundation.csproj">
-			<Private>True</Private>
-			<CopyLocalSatelliteAssemblies>True</CopyLocalSatelliteAssemblies>
 		</ProjectReference>
 	</ItemGroup>
 </Project>

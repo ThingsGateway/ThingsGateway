@@ -5,15 +5,16 @@
 		<OutputPath>$(SolutionDir)bin\$(Configuration)\$(MSBuildProjectName)\</OutputPath>
 		<DocumentationFile></DocumentationFile>
 	</PropertyGroup>
-	<!--<ItemGroup>
-		<PackageReference Include="ThingsGateway.Foundation.Modbus" Version="5.0.1.17" />
-		<PackageReference Include="ThingsGateway.Foundation.Dlt645" Version="5.0.1.17" />
-	</ItemGroup>-->
 	<ItemGroup>
+		<PackageReference Include="ThingsGateway.Foundation.Modbus" Version="5.0.1.8" />
+		<PackageReference Include="ThingsGateway.Foundation.Dlt645" Version="5.0.1.8" />
+		<PackageReference Include="ThingsGateway.Foundation.SiemensS7" Version="5.0.1.8" />
+	</ItemGroup>
+	<!--<ItemGroup>
 		<ProjectReference Include="..\..\ThingsGateway.Foundation.Dlt645\src\ThingsGateway.Foundation.Dlt645.csproj" />
 		<ProjectReference Include="..\..\ThingsGateway.Foundation.Modbus\src\ThingsGateway.Foundation.Modbus.csproj" />
 		<ProjectReference Include="..\..\ThingsGateway.Foundation.SiemensS7\src\ThingsGateway.Foundation.SiemensS7.csproj" />
 		<ProjectReference Include="..\..\ThingsGateway.Foundation.SourceGenerator\src\ThingsGateway.Foundation.SourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
-	</ItemGroup>
+	</ItemGroup>-->
 
 </Project>

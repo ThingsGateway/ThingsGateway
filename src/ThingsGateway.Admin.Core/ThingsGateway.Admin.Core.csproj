@@ -11,7 +11,7 @@
 		<PackageReference Include="SharpZipLib" Version="1.4.2" />
 		<PackageReference Include="SqlSugarCore.Dm" Version="1.3.0" />
 		<PackageReference Include="SqlSugarCore.Kdbndp" Version="7.4.0" />
-		<PackageReference Include="SqlSugarCoreNoDrive" Version="5.1.4.142" />
+		<PackageReference Include="SqlSugarCoreNoDrive" Version="5.1.4.143" />
 		<PackageReference Include="System.Data.Common" Version="4.3.0" />
 		<PackageReference Include="System.Reflection.Emit.Lightweight" Version="4.7.0" />
 		<PackageReference Include="System.Text.Json" Version="8.0.2" />
