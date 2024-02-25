@@ -82,8 +82,9 @@
             case nameof(context.Item.LastSetValue):
                 @if (context.Header.CellClass?.Contains("text-truncate") == true)
                 {
-                    <span title=@JToken.FromObject( context.Value)>
-                        @JToken.FromObject(context.Value)
+                    var jToken = context.Value == null ? null : JToken.FromObject(context.Value);
+                    <span title=@jToken>
+                        @jToken
                     </span>
                 }
                 else
