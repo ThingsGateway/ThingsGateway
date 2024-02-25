@@ -16,5 +16,7 @@
 	<ItemGroup>
 		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.8.0" PrivateAssets="all" />
 	</ItemGroup>
-	
+	<PropertyGroup Condition="'$(Configuration)' == 'Release'">
+		<DebugType></DebugType>
+	</PropertyGroup>
 </Project>

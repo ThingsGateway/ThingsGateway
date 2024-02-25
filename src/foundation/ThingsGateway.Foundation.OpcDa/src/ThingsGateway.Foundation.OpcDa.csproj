@@ -5,5 +5,7 @@
 		<Description>工业设备通讯协议-OpcDa协议</Description>
 		<DocumentationFile></DocumentationFile>
 	</PropertyGroup>
-
+	<PropertyGroup Condition="'$(Configuration)' == 'Release'">
+		<DebugType></DebugType>
+	</PropertyGroup>
 </Project>
