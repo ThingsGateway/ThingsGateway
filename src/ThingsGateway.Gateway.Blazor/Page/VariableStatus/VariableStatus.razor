@@ -5,6 +5,7 @@
 @using Microsoft.AspNetCore.Authorization;
 @using Microsoft.Extensions.DependencyInjection
 @using System.Collections.Concurrent
+@using Newtonsoft.Json.Linq
 @using ThingsGateway.Admin.Application;
 @using ThingsGateway.Admin.Blazor
 @using ThingsGateway.Core.Extension
@@ -76,6 +77,21 @@
     <ItemColTemplate>
         @switch (context.Header.Value)
         {
+            case nameof(context.Item.Value):
+            case nameof(context.Item.RawValue):
+            case nameof(context.Item.LastSetValue):
+                @if (context.Header.CellClass?.Contains("text-truncate") == true)
+                {
+                    <span title=@JToken.FromObject( context.Value)>
+                        @JToken.FromObject(context.Value)
+                    </span>
+                }
+                else
+                {
+                    @context.Value
+                }
+                break;
+
             case nameof(context.Item.IsOnline):
                 <EnableChip Value="context.Item.IsOnline" DisabledLabel=@AppService.I18n.T("离线") EnabledLabel=@AppService.I18n.T("在线")>
                 </EnableChip>
@@ -103,6 +119,7 @@
         }
 
     </ItemColTemplate>
+
 </AppDataTable>
 
 

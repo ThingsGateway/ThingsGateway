@@ -36,77 +36,91 @@ public static class ByteTransExtension
             switch (dataType)
             {
                 case DataTypeEnum.String:
-                    Set(organizedVariable, byteConverter.ToString(buffer, index, byteConverter.StringLength ?? 1));
+                    if (byteConverter.ArrayLength > 1)
+                    {
+                        List<String> strings = new();
+                        for (int i = 0; i < byteConverter.ArrayLength; i++)
+                        {
+                            var data = byteConverter.ToString(buffer, index + i * byteConverter.StringLength ?? 1, byteConverter.StringLength ?? 1);
+                            strings.Add(data);
+                        }
+                        Set(organizedVariable, strings.ToArray());
+                    }
+                    else
+                    {
+                        Set(organizedVariable,
+ byteConverter.ToString(buffer, index, byteConverter.StringLength ?? 1));
+                    }
                     break;
 
                 case DataTypeEnum.Boolean:
                     Set(organizedVariable,
-                     byteConverter.StringLength > 1 ?
-                    byteConverter.ToBoolean(buffer, index, byteConverter.StringLength.Value, plc.BitReverse(organizedVariable.RegisterAddress)) :
+                     byteConverter.ArrayLength > 1 ?
+                    byteConverter.ToBoolean(buffer, index, byteConverter.ArrayLength.Value, plc.BitReverse(organizedVariable.RegisterAddress)) :
                     byteConverter.ToBoolean(buffer, index, plc.BitReverse(organizedVariable.RegisterAddress))
                     );
                     break;
 
                 case DataTypeEnum.Byte:
                     Set(organizedVariable,
-                    byteConverter.StringLength > 1 ?
-                    byteConverter.ToByte(buffer, index, byteConverter.StringLength.Value) :
+                    byteConverter.ArrayLength > 1 ?
+                    byteConverter.ToByte(buffer, index, byteConverter.ArrayLength.Value) :
                     byteConverter.ToByte(buffer, index));
                     break;
 
                 case DataTypeEnum.Int16:
                     Set(organizedVariable,
-                     byteConverter.StringLength > 1 ?
-                    byteConverter.ToInt16(buffer, index, byteConverter.StringLength.Value) :
+                     byteConverter.ArrayLength > 1 ?
+                    byteConverter.ToInt16(buffer, index, byteConverter.ArrayLength.Value) :
                     byteConverter.ToInt16(buffer, index));
                     break;
 
                 case DataTypeEnum.UInt16:
                     Set(organizedVariable,
-                     byteConverter.StringLength > 1 ?
-                    byteConverter.ToUInt16(buffer, index, byteConverter.StringLength.Value) :
+                     byteConverter.ArrayLength > 1 ?
+                    byteConverter.ToUInt16(buffer, index, byteConverter.ArrayLength.Value) :
                     byteConverter.ToUInt16(buffer, index));
                     break;
 
                 case DataTypeEnum.Int32:
                     Set(organizedVariable,
-                     byteConverter.StringLength > 1 ?
-                    byteConverter.ToInt32(buffer, index, byteConverter.StringLength.Value) :
+                     byteConverter.ArrayLength > 1 ?
+                    byteConverter.ToInt32(buffer, index, byteConverter.ArrayLength.Value) :
                     byteConverter.ToInt32(buffer, index));
                     break;
 
                 case DataTypeEnum.UInt32:
                     Set(organizedVariable,
-                     byteConverter.StringLength > 1 ?
-                    byteConverter.ToUInt32(buffer, index, byteConverter.StringLength.Value) :
+                     byteConverter.ArrayLength > 1 ?
+                    byteConverter.ToUInt32(buffer, index, byteConverter.ArrayLength.Value) :
                     byteConverter.ToUInt32(buffer, index));
                     break;
 
                 case DataTypeEnum.Int64:
                     Set(organizedVariable,
-                     byteConverter.StringLength > 1 ?
-                    byteConverter.ToInt64(buffer, index, byteConverter.StringLength.Value) :
+                     byteConverter.ArrayLength > 1 ?
+                    byteConverter.ToInt64(buffer, index, byteConverter.ArrayLength.Value) :
                     byteConverter.ToInt64(buffer, index));
                     break;
 
                 case DataTypeEnum.UInt64:
                     Set(organizedVariable,
-                     byteConverter.StringLength > 1 ?
-                    byteConverter.ToUInt64(buffer, index, byteConverter.StringLength.Value) :
+                     byteConverter.ArrayLength > 1 ?
+                    byteConverter.ToUInt64(buffer, index, byteConverter.ArrayLength.Value) :
                     byteConverter.ToUInt64(buffer, index));
                     break;
 
                 case DataTypeEnum.Single:
                     Set(organizedVariable,
-                     byteConverter.StringLength > 1 ?
-                    byteConverter.ToSingle(buffer, index, byteConverter.StringLength.Value) :
+                     byteConverter.ArrayLength > 1 ?
+                    byteConverter.ToSingle(buffer, index, byteConverter.ArrayLength.Value) :
                     byteConverter.ToSingle(buffer, index));
                     break;
 
                 case DataTypeEnum.Double:
                     Set(organizedVariable,
-                     byteConverter.StringLength > 1 ?
-                    byteConverter.ToDouble(buffer, index, byteConverter.StringLength.Value) :
+                     byteConverter.ArrayLength > 1 ?
+                    byteConverter.ToDouble(buffer, index, byteConverter.ArrayLength.Value) :
                     byteConverter.ToDouble(buffer, index));
                     break;
 

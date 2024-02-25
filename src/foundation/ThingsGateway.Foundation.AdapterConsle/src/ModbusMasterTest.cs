@@ -36,29 +36,23 @@ namespace ThingsGateway.Foundation
         public static void Test()
         {
             using ModbusMaster modbusMaster = GetMaster();
-            using ModbusMaster modbusMaster1 = GetMaster();
-            modbusMaster1.Station = 2;
             //构造实体类对象，传入协议对象与连读打包的最大数量
             ModbusVariable modbusVariable = new(modbusMaster, 100);
-            ModbusVariable modbusVariable1 = new(modbusMaster1, 100);
 
-            Test(modbusVariable, 10);
-            Test(modbusVariable1, 100);
+            Test(modbusVariable, new ushort[] { 1, 2 });
             Console.WriteLine(modbusVariable.ToJsonString());
-            Console.WriteLine(modbusVariable1.ToJsonString());
             Console.ReadLine();
 
-            static void Test(ModbusVariable modbusVariable, ushort value)
+            static void Test(ModbusVariable modbusVariable, object value)
             {
+                //源生成WriteData1与WriteData2方法(Write{属性名称})
+                modbusVariable.WriteData3("123", default);
+                modbusVariable.WriteData2(1, default);
                 modbusVariable.WriteData1(value, default);
-                modbusVariable.WriteData2(value, default);
 
                 //执行连读
                 modbusVariable.MulRead();
                 Console.WriteLine(modbusVariable.ToJsonString());
-                //源生成WriteData1与WriteData2方法(Write{属性名称})
-                var data1 = modbusVariable.WriteData1(value + 10, default);
-                var data2 = modbusVariable.WriteData2(value + 10, default);
                 //执行连读
                 modbusVariable.MulRead();
                 Console.WriteLine(modbusVariable.ToJsonString());
@@ -69,11 +63,14 @@ namespace ThingsGateway.Foundation
     [GeneratorVariable]
     public partial class ModbusVariable : VariableObject
     {
-        [VariableRuntime(RegisterAddress = "400001")]
-        public ushort Data1 { get; set; }
+        [VariableRuntime(RegisterAddress = "400001;arraylen=2")]
+        public ushort[] Data1 { get; set; }
 
         [VariableRuntime(RegisterAddress = "400051")]
         public ushort Data2 { get; set; }
+
+        [VariableRuntime(RegisterAddress = "400061;len=10")]
+        public string Data3 { get; set; }
 
         public ModbusVariable(IProtocol protocol, int maxPack) : base(protocol, maxPack)
         {

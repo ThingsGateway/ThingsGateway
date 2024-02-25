@@ -14,8 +14,8 @@ namespace ThingsGateway.Foundation
     {
         private static void Main(string[] args)
         {
-            //ModbusMasterTest.Test();
-            S7MatserTest.Test();
+            ModbusMasterTest.Test();
+            //S7MatserTest.Test();
         }
     }
 }

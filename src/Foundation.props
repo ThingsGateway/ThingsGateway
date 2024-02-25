@@ -14,7 +14,11 @@
 		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
 		<OutputPath></OutputPath>
 	</PropertyGroup>
-
+	<PropertyGroup Condition="'$(Configuration)' == 'Release'">
+		<DebugSymbols>True</DebugSymbols>
+		<DebugType>Embedded</DebugType>
+		<EmbedAllSources>True</EmbedAllSources>
+	</PropertyGroup>
 	<ItemGroup>
 		<None Include="$(SolutionDir)Foundation.props" Pack="true" PackagePath="\" />
 	</ItemGroup>

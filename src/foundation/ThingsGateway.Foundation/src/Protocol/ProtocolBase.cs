@@ -462,6 +462,12 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
             }
             else
             {
+                string address1 = address;
+                IThingsGatewayBitConverter transformParameter = ByteTransUtil.GetTransByAddress(ref address1, ThingsGatewayBitConverter);
+                if (transformParameter.ArrayLength > 1)
+                {
+                    return new("需要写入数组");
+                }
                 return dataType switch
                 {
                     DataTypeEnum.String => await WriteAsync(address, value.ToObject<String>(), cancellationToken),
@@ -510,6 +516,12 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
             }
             else
             {
+                string address1 = address;
+                IThingsGatewayBitConverter transformParameter = ByteTransUtil.GetTransByAddress(ref address1, ThingsGatewayBitConverter);
+                if (transformParameter.ArrayLength > 1)
+                {
+                    return new("需要写入数组");
+                }
                 return dataType switch
                 {
                     DataTypeEnum.String => Write(address, value.ToObject<String>(), cancellationToken),

@@ -22,10 +22,6 @@ namespace ThingsGateway.Foundation;
 /// </summary>
 public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
 {
-    private readonly EndianType endianType;
-
-    private DataFormatEnum? dataFormat;
-
     /// <inheritdoc/>
 #if NET6_0_OR_GREATER
 
@@ -61,7 +57,7 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
     /// <param name="endianType"></param>
     public ThingsGatewayBitConverter(EndianType endianType)
     {
-        this.endianType = endianType;
+        this.EndianType = endianType;
     }
 
     /// <summary>
@@ -69,24 +65,14 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
     /// </summary>
     public ThingsGatewayBitConverter(EndianType endianType, DataFormatEnum dataFormat)
     {
-        this.endianType = endianType; this.dataFormat = dataFormat;
+        this.EndianType = endianType; this.DataFormat = dataFormat;
     }
 
     /// <inheritdoc/>
-    public virtual DataFormatEnum? DataFormat
-    {
-        get
-        {
-            return dataFormat;
-        }
-        set
-        {
-            dataFormat = value;
-        }
-    }
+    public virtual DataFormatEnum? DataFormat { get; set; }
 
     /// <inheritdoc/>
-    public virtual EndianType EndianType => endianType;
+    public virtual EndianType EndianType { get; init; }
 
     /// <inheritdoc/>
     public virtual bool IsStringReverseByteWord { get; set; }
@@ -298,7 +284,7 @@ public class ThingsGatewayBitConverter : IThingsGatewayBitConverter
     /// <inheritdoc/>
     public virtual bool IsSameOfSet()
     {
-        return !(BitConverter.IsLittleEndian ^ (endianType == EndianType.Little));
+        return !(BitConverter.IsLittleEndian ^ (EndianType == EndianType.Little));
     }
 
     /// <inheritdoc/>

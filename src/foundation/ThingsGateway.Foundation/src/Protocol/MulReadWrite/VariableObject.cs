@@ -81,7 +81,7 @@ public abstract class VariableObject
             List<VariableClass> variableClasss = new();
             foreach (var pair in dict)
             {
-                var dataType = pair.Value.Attribute.DataType == DataTypeEnum.Object ? Type.GetTypeCode(pair.Value.Property.PropertyType).GetDataType() : pair.Value.Attribute.DataType;
+                var dataType = pair.Value.Attribute.DataType == DataTypeEnum.Object ? Type.GetTypeCode(pair.Value.Property.PropertyType.IsArray ? pair.Value.Property.PropertyType.GetElementType() : pair.Value.Property.PropertyType).GetDataType() : pair.Value.Attribute.DataType;
                 VariableClass variableClass = new VariableClass()
                 {
                     DataType = dataType,

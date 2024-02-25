@@ -23,6 +23,7 @@ using NewLife;
 using System.Reflection;
 
 using ThingsGateway.Core.Extension;
+using ThingsGateway.Core.Extension.Json;
 
 namespace ThingsGateway.Components;
 
@@ -520,7 +521,7 @@ public partial class AppDataTable<TItem, SearchItem, AddItem, EditItem> : IAppDa
                     {
                         value = dt2.ToDefaultDateTimeFormat(AppService.TimezoneOffset);
                     }
-                    keyValuePairs.Add(item, value?.ToString());
+                    keyValuePairs.Add(item, value?.ToJsonString(true));
                 }
             }
             DetailModelPairs = keyValuePairs;
