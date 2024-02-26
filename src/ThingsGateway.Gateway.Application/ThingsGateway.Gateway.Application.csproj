@@ -25,11 +25,18 @@
 		<PackageReference Include="CS-Script" Version="4.8.14" />
 		<!--CS-Script与Furion冲突，直接安装覆盖版本-->
 		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.8.0" />
+		<PackageReference Include="TouchSocket.Dmtp" Version="2.0.0-beta.278" />
 	</ItemGroup>
 
 
 
 	<ItemGroup>
+	  <None Update="Config\Management.Production.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Management.Development.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
 	  <None Update="Config\Gateway.Development.json">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </None>

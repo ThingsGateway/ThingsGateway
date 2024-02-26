@@ -1,0 +1,18 @@
+{
+  "Management": {
+    "RemoteUri": "127.0.0.1:7778", //主(备)站IP
+    "Port": 7777, //监听端口
+    "VerifyToken": "ThingsGateway", //登录token，双方一致
+    "HeartbeatInterval": 3000, //心跳间隔
+    "MaxErrorCount": 3, //最大错误次数
+    "Redundancy": {
+      "Enable": false, //启用冗余
+      "IsPrimary": true, //是否主站
+      "IsHot": true
+      //默认主站优先，当主站恢复后，从站切换回主站，并重新开始向从站数据同步。
+      //备用站对外提供的数据都来自主站的数据同步
+      //热切换：主备站都完成对采集的初始化，并且都采集数据
+      //冷切换：主站完成对采集的初始化，并采集数据，只有当主站故障后，备用站才开始初始化并采集。
+    }
+  }
+}

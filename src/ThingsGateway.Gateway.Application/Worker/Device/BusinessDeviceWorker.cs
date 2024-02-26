@@ -187,22 +187,6 @@ public class BusinessDeviceWorker : DeviceWorker
         await base.StartAsync(cancellationToken);
     }
 
-    private async Task CollectDeviceWorker_Starting()
-    {
-        await CreatThreadsAsync();
-    }
-
-    private async Task CollectDeviceWorker_Started()
-    {
-        await Task.Delay(1000);
-        await StartAsync();
-    }
-
-    private async Task CollectDeviceWorker_Stoping()
-    {
-        await StopAsync();
-    }
-
     /// <inheritdoc/>
     public override async Task StopAsync(CancellationToken cancellationToken)
     {
@@ -215,9 +199,7 @@ public class BusinessDeviceWorker : DeviceWorker
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         await _easyLock?.WaitAsync();
-        WorkerUtil.GetWoker<CollectDeviceWorker>().Starting += CollectDeviceWorker_Starting;
-        WorkerUtil.GetWoker<CollectDeviceWorker>().Started += CollectDeviceWorker_Started;
-        WorkerUtil.GetWoker<CollectDeviceWorker>().Stoping += CollectDeviceWorker_Stoping;
+
         PluginService = _serviceScope.ServiceProvider.GetService<IPluginService>();
         GlobalData = _serviceScope.ServiceProvider.GetService<GlobalData>();
         await WhileExecuteAsync(stoppingToken);

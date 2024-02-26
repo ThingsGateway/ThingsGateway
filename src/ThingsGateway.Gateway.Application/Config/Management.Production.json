@@ -1,0 +1,15 @@
+{
+  "Management": {
+    "ServerUri": "127.0.0.1:7777", //IP
+    "ServerStandbyUri": "127.0.0.1:7777", //备用IP
+    "Port": 7777, //监听端口
+    "VerifyToken": "ThingsGateway",
+    "HeartbeatInterval": 3000, //心跳间隔
+    "MaxErrorCount": 3, //最大错误次数
+    "Redundancy": {
+      "Enable": true, //启用冗余
+      "IsPrimary": true, //是否主站
+      "IsHot": true //是否热冗余
+    }
+  }
+}

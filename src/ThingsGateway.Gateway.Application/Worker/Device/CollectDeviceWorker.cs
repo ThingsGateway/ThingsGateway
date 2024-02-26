@@ -116,6 +116,12 @@ public class CollectDeviceWorker : DeviceWorker
         using var stoppingToken = new CancellationTokenSource();
         _stoppingToken = stoppingToken.Token;
         stoppingToken.Cancel();
+        await StopAsync();
+        await base.StopAsync(cancellationToken);
+    }
+
+    internal async Task StopAsync()
+    {
         await BeforeRemoveAllChannelThreadAsync();
         //停止其他后台服务
         await ProtectedStoping();
@@ -123,18 +129,6 @@ public class CollectDeviceWorker : DeviceWorker
         await RemoveAllChannelThreadAsync();
         //停止其他后台服务
         await ProtectedStoped();
-        await base.StopAsync(cancellationToken);
-    }
-
-    /// <inheritdoc/>
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-    {
-        await _easyLock?.WaitAsync();
-        PluginService = _serviceScope.ServiceProvider.GetService<IPluginService>();
-        GlobalData = _serviceScope.ServiceProvider.GetService<GlobalData>();
-        //重启采集线程，会启动其他后台服务
-        await RestartAsync();
-        await WhileExecuteAsync(stoppingToken);
     }
 
     #endregion worker服务

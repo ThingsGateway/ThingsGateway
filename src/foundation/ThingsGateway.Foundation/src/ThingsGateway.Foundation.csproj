@@ -13,7 +13,7 @@
 	<ItemGroup>
 		<PackageReference Include="NewLife.Core" Version="10.7.2024.202" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-		<PackageReference Include="TouchSocket" Version="2.0.0-beta.277" />
+		<PackageReference Include="TouchSocket" Version="2.0.0-beta.278" />
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)'!='net45'">

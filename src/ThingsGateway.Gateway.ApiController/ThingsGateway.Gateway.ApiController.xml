@@ -308,5 +308,75 @@
             </summary>
             <param name="pluginName">插件名称，一般建议使用nameof()解决。</param>
         </member>
+        <member name="T:TouchSocket.Rpc.GeneratorRpcProxyAttribute">
+            <summary>
+            标识该接口将使用源生成自动生成调用的代理类
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Rpc.GeneratorRpcProxyAttribute.Prefix">
+            <summary>
+            调用键的前缀，包括服务的命名空间，类名，不区分大小写。格式：命名空间.类名
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Rpc.GeneratorRpcProxyAttribute.GenericConstraintTypes">
+            <summary>
+            生成泛型方法的约束
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Rpc.GeneratorRpcProxyAttribute.MethodInvoke">
+            <summary>
+            是否仅以函数名调用，当为True是，调用时仅需要传入方法名即可。
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Rpc.GeneratorRpcProxyAttribute.Namespace">
+            <summary>
+            生成代码的命名空间
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Rpc.GeneratorRpcProxyAttribute.ClassName">
+            <summary>
+            生成的类名，不要包含“I”，生成接口时会自动添加。
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Rpc.GeneratorRpcProxyAttribute.GeneratorFlag">
+            <summary>
+            生成代码
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Rpc.GeneratorRpcProxyAttribute.InheritedInterface">
+            <summary>
+            继承接口
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Rpc.GeneratorRpcServerAttribute">
+            <summary>
+            标识将通过源生成器生成Rpc服务的调用委托。
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Rpc.GeneratorRpcServerRegisterAttribute">
+            <summary>
+            标识将通过源生成器生成Rpc服务的注册代码。
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Rpc.GeneratorRpcServerRegisterAttribute.MethodName">
+            <summary>
+            方法名称。默认是“RegisterAllFrom+AssemblyName”
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Rpc.GeneratorRpcServerRegisterAttribute.ClassName">
+            <summary>
+            扩展类类名，默认是“RegisterRpcServerFrom+AssemblyName+Extension”
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Rpc.GeneratorRpcServerRegisterAttribute.Accessibility">
+            <summary>
+            访问修饰。
+            <para>
+            如果为<see cref="F:TouchSocket.Rpc.Accessibility.Both"/>，将生成注册公共Rpc服务与非公共服务两个方法。其中非公共方法会在<see cref="P:TouchSocket.Rpc.GeneratorRpcServerRegisterAttribute.MethodName"/>之前以Internal开头。
+            如果为<see cref="F:TouchSocket.Rpc.Accessibility.Internal"/>，将只生成注册非公共Rpc服务。
+            如果为<see cref="F:TouchSocket.Rpc.Accessibility.Public"/>，将只生成注册公共Rpc服务。
+            </para>
+            </summary>
+        </member>
     </members>
 </doc>
