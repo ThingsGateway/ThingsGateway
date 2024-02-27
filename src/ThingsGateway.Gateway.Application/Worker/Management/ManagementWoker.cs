@@ -29,7 +29,7 @@ namespace ThingsGateway.Gateway.Application;
 
 public class ManagementOptions : IConfigurableOptions
 {
-    public string ServerUri { get; set; }
+    public string RemoteUri { get; set; }
     public string ServerStandbyUri { get; set; }
     public int Port { get; set; }
     public string VerifyToken { get; set; }
@@ -42,7 +42,8 @@ public class Redundancy
 {
     public bool Enable { get; set; }
     public bool IsPrimary { get; set; }
-    public bool IsHot { get; set; }
+
+    public bool IsStartBusinessDevice { get; set; }
 }
 
 /// <summary>
@@ -64,35 +65,11 @@ public class ManagementWoker : BackgroundService
 
     internal readonly EasyLock workerLock = new();
 
-    private async Task CollectDeviceWorker_Starting()
-    {
-        if (isStart)
-        {
-            await WorkerUtil.GetWoker<AlarmWorker>().StartAsync();
-            await WorkerUtil.GetWoker<BusinessDeviceWorker>().CreatThreadsAsync();
-        }
-    }
-
-    private async Task CollectDeviceWorker_Stoping()
-    {
-        await WorkerUtil.GetWoker<AlarmWorker>().StopAsync();
-        await WorkerUtil.GetWoker<BusinessDeviceWorker>().StopAsync();
-    }
-
-    private async Task CollectDeviceWorker_Started()
-    {
-        if (isStart)
-        {
-            await Task.Delay(1000);
-            await WorkerUtil.GetWoker<BusinessDeviceWorker>().StartAsync();
-        }
-    }
-
     #region worker服务
 
     private EasyLock _easyLock = new();
 
-    internal volatile bool isStart = false;
+    internal volatile bool IsStart = false;
 
     /// <inheritdoc/>
     public override async Task StartAsync(CancellationToken cancellationToken)
@@ -110,73 +87,76 @@ public class ManagementWoker : BackgroundService
         return base.StopAsync(cancellationToken);
     }
 
-    internal ManagementOptions options;
+    internal ManagementOptions Options;
+    internal GlobalData GlobalData;
+
+    /// <summary>
+    /// 启动锁
+    /// </summary>
+    internal EasyLock StartLock = new(true);
 
     /// <inheritdoc/>
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         await _easyLock?.WaitAsync();
-        var globalData = _serviceScope.ServiceProvider.GetService<GlobalData>();
-        options = App.GetOptions<ManagementOptions>();
-        var collectDeviceWorker = WorkerUtil.GetWoker<CollectDeviceWorker>();
-        collectDeviceWorker.Starting += CollectDeviceWorker_Starting;
-        collectDeviceWorker.Started += CollectDeviceWorker_Started;
-        collectDeviceWorker.Stoping += CollectDeviceWorker_Stoping;
-
-        if (options.Redundancy.Enable)
+        GlobalData = _serviceScope.ServiceProvider.GetService<GlobalData>();
+        Options = App.GetOptions<ManagementOptions>();
+        if (Options.Redundancy.Enable)
         {
-            if (options.Redundancy.IsHot)
-            {
-                //热备冗余，直接启动采集服务
-                await collectDeviceWorker.RestartAsync();
-            }
-            var udpDmtp = GetUdpDmtp(options);
+            var udpDmtp = GetUdpDmtp(Options);
             await udpDmtp.StartAsync();//启动
-            var firstStart = true;
+
+            if (Options.Redundancy.IsPrimary)
+            {
+                //初始化时，主站直接启动
+                IsStart = true;
+                StartLock.Release();
+            }
+
             while (!stoppingToken.IsCancellationRequested)
             {
                 try
                 {
                     GatewayState? gatewayState = null;
-                    try
+                    await StartLock.WaitAsync();
+                    var online = await udpDmtp.PingAsync(3000);
+                    if (online)
                     {
-                        await workerLock.WaitAsync();
+                        var readErrorCount = 0;
+                        while (readErrorCount < Options.MaxErrorCount)
                         {
-                            var readErrorCount = 0;
-                            while (readErrorCount < options.MaxErrorCount)
+                            try
                             {
-                                try
-                                {
-                                    gatewayState = await udpDmtp.GetDmtpRpcActor().InvokeTAsync<GatewayState>("GetGatewayStateAsync", InvokeOption.WaitInvoke, isStart);
-                                    break;
-                                }
-                                catch
-                                {
-                                    readErrorCount++;
-                                }
+                                gatewayState = await udpDmtp.GetDmtpRpcActor().InvokeTAsync<GatewayState>("GetGatewayStateAsync", InvokeOption.WaitInvoke, IsStart);
+                                break;
+                            }
+                            catch
+                            {
+                                readErrorCount++;
                             }
                         }
                     }
-                    finally
-                    {
-                        workerLock.Release();
-                    }
+
                     if (gatewayState != null)
                     {
-                        if (gatewayState.IsPrimary == options.Redundancy.IsPrimary)
+                        if (gatewayState.IsPrimary == Options.Redundancy.IsPrimary)
                         {
-                            _logger.LogInformation("主备站设置重复，退出冗余服务！");
-                            await StartAsync();
-                            break;
+                            if (!IsStart)
+                            {
+                                _logger.LogInformation("主备站设置重复！");
+                                IsStart = true;
+                            }
+                            await Task.Delay(1000);
+                            continue;
                         }
                     }
                     if (gatewayState == null)
                     {
                         //无法获取状态，启动本机
-                        if (!isStart)
+                        if (!IsStart)
                         {
                             _logger.LogInformation("无法连接冗余站点，本机将切换到正常状态");
-                            await StartAsync();
+                            IsStart = true;
                         }
                     }
                     else if (gatewayState.IsPrimary)
@@ -184,10 +164,10 @@ public class ManagementWoker : BackgroundService
                         //主站已经启动
                         if (gatewayState.IsStart)
                         {
-                            if (isStart || firstStart)
+                            if (IsStart)
                             {
-                                _logger.LogInformation("主站已恢复，本机将切换到备用状态");
-                                await StopAsync();
+                                _logger.LogInformation("主站已恢复，本机(从站)将切换到备用状态");
+                                IsStart = false;
                             }
                         }
                         else
@@ -204,19 +184,27 @@ public class ManagementWoker : BackgroundService
                         }
                         else
                         {
-                            if (!isStart)
+                            if (!IsStart)
                             {
                                 _logger.LogInformation("本机(主站)将切换到正常状态");
-                                await StartAsync();
+                                IsStart = true;
                             }
                         }
                     }
 
                     //TODO:发布到从站数据
-                    //if (options.Redundancy.IsPrimary)
-                    //{
-                    //    await udpDmtp.GetDmtpRpcActor().InvokeTAsync<GatewayState>("UpdateGatewayDataAsync", InvokeOption.WaitInvoke, globalData.CollectDevices, globalData.BusinessDevices);
-                    //}
+                    if (Options.Redundancy.IsPrimary)
+                    {
+                        try
+                        {
+                            if (online)
+                                await udpDmtp.GetDmtpRpcActor().InvokeTAsync<GatewayState>("UpdateGatewayDataAsync", InvokeOption.WaitInvoke, GlobalData.CollectDevices);
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogWarning(ex, "同步数据到从站时，发生错误");
+                        }
+                    }
                     await Task.Delay(1000, stoppingToken);
                 }
                 catch (TaskCanceledException)
@@ -231,16 +219,19 @@ public class ManagementWoker : BackgroundService
                 }
                 finally
                 {
-                    firstStart = false;
+                    StartLock.Release();
                 }
             }
         }
         else
         {
-            isStart = true;
+            //直接启动
+            IsStart = true;
             //无冗余，直接启动采集服务
-            await collectDeviceWorker.RestartAsync();
+            _logger.LogInformation("不启用网关冗余站点");
+            StartLock.Release();
         }
+
         while (!stoppingToken.IsCancellationRequested)
         {
             try
@@ -260,53 +251,6 @@ public class ManagementWoker : BackgroundService
         }
     }
 
-    private async Task StartAsync()
-    {
-        try
-        {
-            await workerLock.WaitAsync();
-
-            isStart = true;
-            if (options.Redundancy.IsHot)
-            {
-                await CollectDeviceWorker_Starting();
-                await CollectDeviceWorker_Started();
-            }
-            else
-            {
-                var collectDeviceWorker = WorkerUtil.GetWoker<CollectDeviceWorker>();
-                await collectDeviceWorker.RestartAsync();
-            }
-        }
-        finally
-        {
-            workerLock.Release();
-        }
-    }
-
-    private async Task StopAsync()
-    {
-        try
-        {
-            await workerLock.WaitAsync();
-
-            isStart = false;
-            if (options.Redundancy.IsHot)
-            {
-                await CollectDeviceWorker_Stoping();
-            }
-            else
-            {
-                var collectDeviceWorker = WorkerUtil.GetWoker<CollectDeviceWorker>();
-                await collectDeviceWorker.StopAsync();
-            }
-        }
-        finally
-        {
-            workerLock.Release();
-        }
-    }
-
     #endregion worker服务
 
     #region
@@ -320,7 +264,7 @@ public class ManagementWoker : BackgroundService
     {
         var udpDmtp = new UdpDmtp();
         var config = new TouchSocketConfig()
-               .SetRemoteIPHost(options.ServerUri)
+               .SetRemoteIPHost(options.RemoteUri)
                .SetBindIPHost(options.Port)
                .SetDmtpOption(
             new DmtpOption() { VerifyToken = options.VerifyToken })
@@ -337,7 +281,7 @@ public class ManagementWoker : BackgroundService
                .ConfigurePlugins(a =>
                {
                    a.UseDmtpFileTransfer();//必须添加文件传输插件
-                   //a.Add<FilePlugin>();
+                                           //a.Add<FilePlugin>();
                    a.UseDmtpHeartbeat()//使用Dmtp心跳
                    .SetTick(TimeSpan.FromMilliseconds(options.HeartbeatInterval))
                    .SetMaxFailCount(options.MaxErrorCount);

@@ -446,6 +446,16 @@ public class AlarmWorker : BackgroundService
 
     private EasyLock _easyLock = new(false);
 
+    private async Task CollectDeviceWorker_Starting()
+    {
+        await StartAsync();
+    }
+
+    private async Task CollectDeviceWorker_Stoping()
+    {
+        await StopAsync();
+    }
+
     /// <inheritdoc/>
     public override async Task StartAsync(CancellationToken cancellationToken)
     {
@@ -463,7 +473,9 @@ public class AlarmWorker : BackgroundService
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         await _easyLock?.WaitAsync();
-
+        var collectDeviceWorker = WorkerUtil.GetWoker<CollectDeviceWorker>();
+        collectDeviceWorker.Starting += CollectDeviceWorker_Starting;
+        collectDeviceWorker.Stoping += CollectDeviceWorker_Stoping;
         GlobalData = _serviceScope.ServiceProvider.GetService<GlobalData>();
         while (!stoppingToken.IsCancellationRequested)
         {

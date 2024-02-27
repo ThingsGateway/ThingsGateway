@@ -182,6 +182,22 @@ public class BusinessDeviceWorker : DeviceWorker
 
     #region worker服务
 
+    private async Task CollectDeviceWorker_Starting()
+    {
+        await CreatThreadsAsync();
+    }
+
+    private async Task CollectDeviceWorker_Started()
+    {
+        await Task.Delay(1000);
+        await StartAsync();
+    }
+
+    private async Task CollectDeviceWorker_Stoping()
+    {
+        await StopAsync();
+    }
+
     public override async Task StartAsync(CancellationToken cancellationToken)
     {
         await base.StartAsync(cancellationToken);
@@ -199,7 +215,10 @@ public class BusinessDeviceWorker : DeviceWorker
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         await _easyLock?.WaitAsync();
-
+        var collectDeviceWorker = WorkerUtil.GetWoker<CollectDeviceWorker>();
+        collectDeviceWorker.Starting += CollectDeviceWorker_Starting;
+        collectDeviceWorker.Started += CollectDeviceWorker_Started;
+        collectDeviceWorker.Stoping += CollectDeviceWorker_Stoping;
         PluginService = _serviceScope.ServiceProvider.GetService<IPluginService>();
         GlobalData = _serviceScope.ServiceProvider.GetService<GlobalData>();
         await WhileExecuteAsync(stoppingToken);

@@ -19,19 +19,25 @@ namespace ThingsGateway.Foundation;
 /// </summary>
 public abstract class VariableObject
 {
-    private IProtocol protocol;
     private int maxPack;
+
+    private List<VariableSourceClass>? deviceVariableSourceReads;
+
+    private Dictionary<string, VariableRuntimeProperty>? dict;
 
     /// <summary>
     /// VariableObject
     /// </summary>
     public VariableObject(IProtocol protocol, int maxPack)
     {
-        this.protocol = protocol;
+        this.Protocol = protocol;
         this.maxPack = maxPack;
     }
 
-    private List<VariableSourceClass>? deviceVariableSourceReads;
+    /// <summary>
+    /// 协议对象
+    /// </summary>
+    public IProtocol Protocol { get; set; }
 
     /// <summary>
     /// <see cref="VariableRuntimeAttribute"/>特性连读，反射赋值到继承类中的属性
@@ -44,10 +50,10 @@ public abstract class VariableObject
             //连读
             foreach (var item in deviceVariableSourceReads)
             {
-                var result = await protocol.ReadAsync(item.RegisterAddress, item.Length);
+                var result = await Protocol.ReadAsync(item.RegisterAddress, item.Length);
                 if (result.IsSuccess)
                 {
-                    item.VariableRunTimes.PraseStructContent(protocol, result.Content, item, exWhenAny: true);
+                    item.VariableRunTimes.PraseStructContent(Protocol, result.Content, item, exWhenAny: true);
                 }
                 else
                 {
@@ -71,30 +77,6 @@ public abstract class VariableObject
         }
     }
 
-    private Dictionary<string, VariableRuntimeProperty>? dict;
-
-    private void GetVariableSources()
-    {
-        if (deviceVariableSourceReads == null)
-        {
-            dict = VariableObjectHelper.GetPairs(GetType());
-            List<VariableClass> variableClasss = new();
-            foreach (var pair in dict)
-            {
-                var dataType = pair.Value.Attribute.DataType == DataTypeEnum.Object ? Type.GetTypeCode(pair.Value.Property.PropertyType.IsArray ? pair.Value.Property.PropertyType.GetElementType() : pair.Value.Property.PropertyType).GetDataType() : pair.Value.Attribute.DataType;
-                VariableClass variableClass = new VariableClass()
-                {
-                    DataType = dataType,
-                    RegisterAddress = pair.Value.Attribute.RegisterAddress,
-                    IntervalTime = 1000,
-                };
-                pair.Value.VariableClass = variableClass;
-                variableClasss.Add(variableClass);
-            }
-            deviceVariableSourceReads = protocol.LoadSourceRead<VariableSourceClass>(variableClasss, maxPack, 1000);
-        }
-    }
-
     /// <summary>
     /// <see cref="VariableRuntimeAttribute"/>特性连读，反射赋值到继承类中的属性
     /// </summary>
@@ -106,10 +88,10 @@ public abstract class VariableObject
             //连读
             foreach (var item in deviceVariableSourceReads)
             {
-                var result = protocol.Read(item.RegisterAddress, item.Length);
+                var result = Protocol.Read(item.RegisterAddress, item.Length);
                 if (result.IsSuccess)
                 {
-                    item.VariableRunTimes.PraseStructContent(protocol, result.Content, item, exWhenAny: true);
+                    item.VariableRunTimes.PraseStructContent(Protocol, result.Content, item, exWhenAny: true);
                 }
                 else
                 {
@@ -153,7 +135,7 @@ public abstract class VariableObject
             {
                 return new($"该属性未被识别，可能没有使用{typeof(VariableRuntimeAttribute)}特性标识");
             }
-            var result = protocol.Write(variableRuntimeProperty.VariableClass.RegisterAddress, JToken.FromObject(value), variableRuntimeProperty.VariableClass.DataType, cancellationToken);
+            var result = Protocol.Write(variableRuntimeProperty.VariableClass.RegisterAddress, JToken.FromObject(value), variableRuntimeProperty.VariableClass.DataType, cancellationToken);
             return result;
         }
         catch (Exception ex)
@@ -182,12 +164,34 @@ public abstract class VariableObject
             {
                 return new($"该属性未被识别，可能没有使用{typeof(VariableRuntimeAttribute)}特性标识");
             }
-            var result = await protocol.WriteAsync(variableRuntimeProperty.VariableClass.RegisterAddress, JToken.FromObject(value), variableRuntimeProperty.VariableClass.DataType, cancellationToken);
+            var result = await Protocol.WriteAsync(variableRuntimeProperty.VariableClass.RegisterAddress, JToken.FromObject(value), variableRuntimeProperty.VariableClass.DataType, cancellationToken);
             return result;
         }
         catch (Exception ex)
         {
             return new(ex);
+        }
+    }
+
+    private void GetVariableSources()
+    {
+        if (deviceVariableSourceReads == null)
+        {
+            dict = VariableObjectHelper.GetPairs(GetType());
+            List<VariableClass> variableClasss = new();
+            foreach (var pair in dict)
+            {
+                var dataType = pair.Value.Attribute.DataType == DataTypeEnum.Object ? Type.GetTypeCode(pair.Value.Property.PropertyType.IsArray ? pair.Value.Property.PropertyType.GetElementType() : pair.Value.Property.PropertyType).GetDataType() : pair.Value.Attribute.DataType;
+                VariableClass variableClass = new VariableClass()
+                {
+                    DataType = dataType,
+                    RegisterAddress = pair.Value.Attribute.RegisterAddress,
+                    IntervalTime = 1000,
+                };
+                pair.Value.VariableClass = variableClass;
+                variableClasss.Add(variableClass);
+            }
+            deviceVariableSourceReads = Protocol.LoadSourceRead<VariableSourceClass>(variableClasss, maxPack, 1000);
         }
     }
 }

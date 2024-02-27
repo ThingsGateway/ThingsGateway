@@ -37,20 +37,8 @@ internal class ReverseCallbackServer : RpcServer
             //冗余双方站点可能存在同时执行冗余切换的情况
             {
                 GatewayState result = new();
-                result.IsStart = managementWoker.isStart;
-
-                //避免出现偶发同时启动
-                if (isStart && result.IsStart)
-                {
-                    //请求方停止
-                    result.RequestStop = true;
-                }
-                if (!isStart && !result.IsStart)
-                {
-                    //请求方启动
-                    result.RequestStop = false;
-                }
-
+                result.IsStart = managementWoker.IsStart;
+                result.IsPrimary = managementWoker.Options.Redundancy.IsPrimary;
                 return result;
             }
         }

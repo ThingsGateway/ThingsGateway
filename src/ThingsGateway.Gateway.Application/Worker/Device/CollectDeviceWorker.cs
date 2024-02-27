@@ -129,6 +129,19 @@ public class CollectDeviceWorker : DeviceWorker
         await RemoveAllChannelThreadAsync();
         //停止其他后台服务
         await ProtectedStoped();
+        //清空内存列表
+        GlobalData.CollectDevices.Clear();
+    }
+
+    /// <inheritdoc/>
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        await _easyLock?.WaitAsync();
+        PluginService = _serviceScope.ServiceProvider.GetService<IPluginService>();
+        GlobalData = _serviceScope.ServiceProvider.GetService<GlobalData>();
+        //重启采集线程，会启动其他后台服务
+        await RestartAsync();
+        await WhileExecuteAsync(stoppingToken);
     }
 
     #endregion worker服务
