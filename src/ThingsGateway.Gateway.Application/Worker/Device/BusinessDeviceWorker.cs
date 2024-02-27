@@ -29,14 +29,25 @@ public class BusinessDeviceWorker : DeviceWorker
 
     #region public 设备创建更新结束
 
+    private EasyLock publicRestartLock = new();
+
     public async Task RestartAsync()
     {
-        await StopAsync();
-        await StartAsync();
+        try
+        {
+            await publicRestartLock.WaitAsync();
+
+            await StopAsync();
+            await StartAsync();
+        }
+        finally
+        {
+            publicRestartLock.Release();
+        }
     }
 
     /// <summary>
-    /// 开始
+    /// 启动全部设备，如果没有找到设备会创建
     /// </summary>
     public async Task StartAsync()
     {
@@ -64,7 +75,7 @@ public class BusinessDeviceWorker : DeviceWorker
     }
 
     /// <summary>
-    /// 开始
+    /// 初始化，如果没有找到设备会创建
     /// </summary>
     public async Task CreatThreadsAsync()
     {
@@ -98,14 +109,7 @@ public class BusinessDeviceWorker : DeviceWorker
         {
             await restartLock.WaitAsync();
             await singleRestartLock.WaitAsync();
-            await BeforeRemoveAllChannelThreadAsync();
-            await ProtectedStoping();
-
-            await RemoveAllChannelThreadAsync();
-            await ProtectedStoped();
-
-            //清空内存列表
-            GlobalData.BusinessDevices.Clear();
+            await StopThreadAsync();
         }
         catch (Exception ex)
         {
@@ -118,12 +122,38 @@ public class BusinessDeviceWorker : DeviceWorker
         }
     }
 
-    #endregion public 设备创建更新结束
+    private async Task StopThreadAsync()
+    {
+        //取消全部采集线程
+        await BeforeRemoveAllChannelThreadAsync();
+        //取消其他后台服务
+        await ProtectedStoping();
+        //停止全部采集线程
+        await RemoveAllChannelThreadAsync();
+        //停止其他后台服务
+        await ProtectedStoped();
+        //清空内存列表
+        GlobalData.CollectDevices.Clear();
+    }
 
-    #region public 设备创建更新结束
+    private async Task CollectDeviceWorker_Starting()
+    {
+        await CreatThreadsAsync();
+    }
+
+    private async Task CollectDeviceWorker_Started()
+    {
+        await Task.Delay(1000);
+        await StartAsync();
+    }
+
+    private async Task CollectDeviceWorker_Stoping()
+    {
+        await StopAsync();
+    }
 
     /// <summary>
-    /// 创建业务设备线程
+    /// 读取数据库，创建全部设备
     /// </summary>
     /// <returns></returns>
     protected async Task CreatAllChannelThreadsAsync()
@@ -181,22 +211,6 @@ public class BusinessDeviceWorker : DeviceWorker
     #endregion 设备信息获取
 
     #region worker服务
-
-    private async Task CollectDeviceWorker_Starting()
-    {
-        await CreatThreadsAsync();
-    }
-
-    private async Task CollectDeviceWorker_Started()
-    {
-        await Task.Delay(1000);
-        await StartAsync();
-    }
-
-    private async Task CollectDeviceWorker_Stoping()
-    {
-        await StopAsync();
-    }
 
     public override async Task StartAsync(CancellationToken cancellationToken)
     {

@@ -69,7 +69,23 @@ public class ManagementWoker : BackgroundService
 
     private EasyLock _easyLock = new();
 
-    internal volatile bool IsStart = false;
+    internal bool IsStart
+    {
+        get
+        {
+            return isStart;
+        }
+        set
+        {
+            if (isStart != value)
+            {
+                isStart = value;
+                //触发启动事件
+            }
+        }
+    }
+
+    private volatile bool isStart = false;
 
     /// <inheritdoc/>
     public override async Task StartAsync(CancellationToken cancellationToken)
@@ -117,88 +133,101 @@ public class ManagementWoker : BackgroundService
             {
                 try
                 {
-                    GatewayState? gatewayState = null;
-                    await StartLock.WaitAsync();
-                    var online = await udpDmtp.PingAsync(3000);
-                    if (online)
+                    bool online = false;
+                    var waitInvoke = new InvokeOption(millisecondsTimeout: 5000)
                     {
-                        var readErrorCount = 0;
-                        while (readErrorCount < Options.MaxErrorCount)
+                        FeedbackType = FeedbackType.WaitInvoke,
+                        Token = stoppingToken,
+                        Timeout = 3000
+                    };
+                    try
+                    {
+                        GatewayState? gatewayState = null;
+                        await StartLock.WaitAsync(stoppingToken);
+                        online = await udpDmtp.PingAsync(3000);
+                        if (online)
                         {
-                            try
+                            var readErrorCount = 0;
+                            while (readErrorCount < Options.MaxErrorCount)
                             {
-                                gatewayState = await udpDmtp.GetDmtpRpcActor().InvokeTAsync<GatewayState>("GetGatewayStateAsync", InvokeOption.WaitInvoke, IsStart);
-                                break;
-                            }
-                            catch
-                            {
-                                readErrorCount++;
+                                try
+                                {
+                                    gatewayState = await udpDmtp.GetDmtpRpcActor().InvokeTAsync<GatewayState>("GetGatewayStateAsync", waitInvoke, IsStart);
+                                    break;
+                                }
+                                catch
+                                {
+                                    readErrorCount++;
+                                }
                             }
                         }
-                    }
 
-                    if (gatewayState != null)
-                    {
-                        if (gatewayState.IsPrimary == Options.Redundancy.IsPrimary)
+                        if (gatewayState != null)
                         {
+                            if (gatewayState.IsPrimary == Options.Redundancy.IsPrimary)
+                            {
+                                if (!IsStart)
+                                {
+                                    _logger.LogInformation("主备站设置重复！");
+                                    IsStart = true;
+                                }
+                                await Task.Delay(1000);
+                                continue;
+                            }
+                        }
+                        if (gatewayState == null)
+                        {
+                            //无法获取状态，启动本机
                             if (!IsStart)
                             {
-                                _logger.LogInformation("主备站设置重复！");
+                                _logger.LogInformation("无法连接冗余站点，本机将切换到正常状态");
                                 IsStart = true;
                             }
-                            await Task.Delay(1000);
-                            continue;
                         }
-                    }
-                    if (gatewayState == null)
-                    {
-                        //无法获取状态，启动本机
-                        if (!IsStart)
+                        else if (gatewayState.IsPrimary)
                         {
-                            _logger.LogInformation("无法连接冗余站点，本机将切换到正常状态");
-                            IsStart = true;
-                        }
-                    }
-                    else if (gatewayState.IsPrimary)
-                    {
-                        //主站已经启动
-                        if (gatewayState.IsStart)
-                        {
-                            if (IsStart)
+                            //主站已经启动
+                            if (gatewayState.IsStart)
                             {
-                                _logger.LogInformation("主站已恢复，本机(从站)将切换到备用状态");
-                                IsStart = false;
+                                if (IsStart)
+                                {
+                                    _logger.LogInformation("主站已恢复，本机(从站)将切换到备用状态");
+                                    IsStart = false;
+                                }
+                            }
+                            else
+                            {
+                                //等待主站切换到正常后，再停止从站
                             }
                         }
                         else
                         {
-                            //等待主站切换到正常后，再停止从站
-                        }
-                    }
-                    else
-                    {
-                        //从站已经启动
-                        if (gatewayState.IsStart)
-                        {
-                            //等待从站切换到备用后，再启动主站
-                        }
-                        else
-                        {
-                            if (!IsStart)
+                            //从站已经启动
+                            if (gatewayState.IsStart)
                             {
-                                _logger.LogInformation("本机(主站)将切换到正常状态");
-                                IsStart = true;
+                                //等待从站切换到备用后，再启动主站
+                            }
+                            else
+                            {
+                                if (!IsStart)
+                                {
+                                    _logger.LogInformation("本机(主站)将切换到正常状态");
+                                    IsStart = true;
+                                }
                             }
                         }
                     }
-
+                    finally
+                    {
+                        StartLock.Release();
+                    }
                     //TODO:发布到从站数据
                     if (Options.Redundancy.IsPrimary)
                     {
                         try
                         {
                             if (online)
-                                await udpDmtp.GetDmtpRpcActor().InvokeTAsync<GatewayState>("UpdateGatewayDataAsync", InvokeOption.WaitInvoke, GlobalData.CollectDevices);
+                                await udpDmtp.GetDmtpRpcActor().InvokeTAsync<GatewayState>("UpdateGatewayDataAsync", waitInvoke, GlobalData.CollectDevices);
                         }
                         catch (Exception ex)
                         {
@@ -216,10 +245,6 @@ public class ManagementWoker : BackgroundService
                 catch (Exception ex)
                 {
                     _logger.LogWarning(ex, "循环线程出错");
-                }
-                finally
-                {
-                    StartLock.Release();
                 }
             }
         }

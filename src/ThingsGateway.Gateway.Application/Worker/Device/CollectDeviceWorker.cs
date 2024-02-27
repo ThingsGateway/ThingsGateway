@@ -27,37 +27,43 @@ public class CollectDeviceWorker : DeviceWorker
 
     #region public 设备创建更新结束
 
-    /// <summary>
-    /// 重启采集服务
-    /// </summary>
+    private EasyLock publicRestartLock = new();
+
     public async Task RestartAsync()
+    {
+        try
+        {
+            await publicRestartLock.WaitAsync();
+
+            await StopAsync();
+            await StartAsync();
+        }
+        finally
+        {
+            publicRestartLock.Release();
+        }
+    }
+
+    /// <summary>
+    /// 启动全部设备，如果没有找到设备会创建
+    /// </summary>
+    public async Task StartAsync()
     {
         try
         {
             await restartLock.WaitAsync();
             await singleRestartLock.WaitAsync();
-
-            //停止采集服务
-            await BeforeRemoveAllChannelThreadAsync();
-            await ProtectedStoping();
-            //完全停止全部采集线程
-            await RemoveAllChannelThreadAsync();
-            await ProtectedStoped();
-
-            //清空内存列表
-            GlobalData.CollectDevices.Clear();
-
-            //创建全部采集线程
-            await CreatAllChannelThreadsAsync();
-            await ProtectedStarting();
-
-            //开始全部采集线程
+            if (ChannelThreads.Count == 0)
+            {
+                await CreatAllChannelThreadsAsync();
+                await ProtectedStarting();
+            }
             await StartAllChannelThreadsAsync();
             await ProtectedStarted();
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "重启错误");
+            _logger.LogError(ex, "启动发生错误");
         }
         finally
         {
@@ -66,12 +72,70 @@ public class CollectDeviceWorker : DeviceWorker
         }
     }
 
-    #endregion public 设备创建更新结束
-
-    #region Private
+    /// <summary>
+    /// 初始化，如果没有找到设备会创建
+    /// </summary>
+    public async Task CreatThreadsAsync()
+    {
+        try
+        {
+            await restartLock.WaitAsync();
+            await singleRestartLock.WaitAsync();
+            if (ChannelThreads.Count == 0)
+            {
+                await CreatAllChannelThreadsAsync();
+                await ProtectedStarting();
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "启动发生错误");
+        }
+        finally
+        {
+            singleRestartLock.Release();
+            restartLock.Release();
+        }
+    }
 
     /// <summary>
-    /// 创建设备采集线程
+    /// 停止
+    /// </summary>
+    public async Task StopAsync()
+    {
+        try
+        {
+            await restartLock.WaitAsync();
+            await singleRestartLock.WaitAsync();
+            await StopThreadAsync();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "停止错误");
+        }
+        finally
+        {
+            singleRestartLock.Release();
+            restartLock.Release();
+        }
+    }
+
+    internal async Task StopThreadAsync()
+    {
+        //取消全部采集线程
+        await BeforeRemoveAllChannelThreadAsync();
+        //取消其他后台服务
+        await ProtectedStoping();
+        //停止全部采集线程
+        await RemoveAllChannelThreadAsync();
+        //停止其他后台服务
+        await ProtectedStoped();
+        //清空内存列表
+        GlobalData.CollectDevices.Clear();
+    }
+
+    /// <summary>
+    /// 读取数据库，创建全部设备
     /// </summary>
     /// <returns></returns>
     protected virtual async Task CreatAllChannelThreadsAsync()
@@ -101,12 +165,7 @@ public class CollectDeviceWorker : DeviceWorker
         }
     }
 
-    protected override async Task<IEnumerable<DeviceRunTime>> GetDeviceRunTimeAsync(long deviceId)
-    {
-        return await _serviceScope.ServiceProvider.GetService<DeviceService>().GetCollectDeviceRuntimeAsync(deviceId);
-    }
-
-    #endregion Private
+    #endregion public 设备创建更新结束
 
     #region worker服务
 
@@ -116,21 +175,8 @@ public class CollectDeviceWorker : DeviceWorker
         using var stoppingToken = new CancellationTokenSource();
         _stoppingToken = stoppingToken.Token;
         stoppingToken.Cancel();
-        await StopAsync();
+        await StopThreadAsync();
         await base.StopAsync(cancellationToken);
-    }
-
-    internal async Task StopAsync()
-    {
-        await BeforeRemoveAllChannelThreadAsync();
-        //停止其他后台服务
-        await ProtectedStoping();
-        //停止全部采集线程
-        await RemoveAllChannelThreadAsync();
-        //停止其他后台服务
-        await ProtectedStoped();
-        //清空内存列表
-        GlobalData.CollectDevices.Clear();
     }
 
     /// <inheritdoc/>
@@ -142,6 +188,11 @@ public class CollectDeviceWorker : DeviceWorker
         //重启采集线程，会启动其他后台服务
         await RestartAsync();
         await WhileExecuteAsync(stoppingToken);
+    }
+
+    protected override async Task<IEnumerable<DeviceRunTime>> GetDeviceRunTimeAsync(long deviceId)
+    {
+        return await _serviceScope.ServiceProvider.GetService<DeviceService>().GetCollectDeviceRuntimeAsync(deviceId);
     }
 
     #endregion worker服务
