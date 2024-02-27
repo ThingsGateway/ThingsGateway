@@ -46,9 +46,6 @@ public class Redundancy
     public bool IsStartBusinessDevice { get; set; }
 }
 
-/// <summary>
-/// TODO:网关管理服务
-/// </summary>
 public class ManagementWoker : BackgroundService
 {
     protected IServiceScope _serviceScope;
@@ -152,7 +149,7 @@ public class ManagementWoker : BackgroundService
                             {
                                 try
                                 {
-                                    gatewayState = await udpDmtp.GetDmtpRpcActor().InvokeTAsync<GatewayState>("GetGatewayStateAsync", waitInvoke, IsStart);
+                                    gatewayState = await udpDmtp.GetDmtpRpcActor().InvokeTAsync<GatewayState>(nameof(ReverseCallbackServer.GetGatewayStateAsync), waitInvoke, IsStart);
                                     break;
                                 }
                                 catch
@@ -221,13 +218,12 @@ public class ManagementWoker : BackgroundService
                     {
                         StartLock.Release();
                     }
-                    //TODO:发布到从站数据
                     if (Options.Redundancy.IsPrimary)
                     {
                         try
                         {
                             if (online)
-                                await udpDmtp.GetDmtpRpcActor().InvokeTAsync<GatewayState>("UpdateGatewayDataAsync", waitInvoke, GlobalData.CollectDevices);
+                                await udpDmtp.GetDmtpRpcActor().InvokeTAsync<GatewayState>(nameof(ReverseCallbackServer.UpdateGatewayDataAsync), waitInvoke, GlobalData.CollectDevices);
                         }
                         catch (Exception ex)
                         {

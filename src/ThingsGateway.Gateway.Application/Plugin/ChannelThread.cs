@@ -249,6 +249,7 @@ public class ChannelThread
     {
         try
         {
+            //TODO:根据管理服务中的isStart，判定是否启动线程
             await EasyLock.WaitAsync();
             if (DriverTask != null)
             {

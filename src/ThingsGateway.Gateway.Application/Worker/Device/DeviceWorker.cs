@@ -61,8 +61,6 @@ public abstract class DeviceWorker : BackgroundService
     /// </summary>
     protected ConcurrentList<ChannelThread> ChannelThreads { get; set; } = new();
 
-    #region public 设备创建更新结束
-
     /// <summary>
     /// 控制设备线程启停
     /// </summary>
@@ -76,8 +74,6 @@ public abstract class DeviceWorker : BackgroundService
         else
             DriverBases.FirstOrDefault(it => it.DeviceId == deviceId)?.PasueThread(isStart);
     }
-
-    #endregion public 设备创建更新结束
 
     #region Private
 
@@ -361,10 +357,6 @@ public abstract class DeviceWorker : BackgroundService
         return driverPlugin?.DriverUIType;
     }
 
-    #endregion 设备信息获取
-
-    #region 设备信息获取
-
     /// <summary>
     /// 获取设备方法
     /// </summary>
@@ -544,6 +536,127 @@ public abstract class DeviceWorker : BackgroundService
     }
 
     #endregion worker服务
+
+    #region 重启
+
+    private EasyLock publicRestartLock = new();
+
+    public async Task RestartAsync()
+    {
+        try
+        {
+            await publicRestartLock.WaitAsync();
+
+            await StopAsync();
+            await StartAsync();
+        }
+        finally
+        {
+            publicRestartLock.Release();
+        }
+    }
+
+    /// <summary>
+    /// 启动全部设备，如果没有找到设备会创建
+    /// </summary>
+    public async Task StartAsync()
+    {
+        try
+        {
+            await restartLock.WaitAsync();
+            await singleRestartLock.WaitAsync();
+            if (ChannelThreads.Count == 0)
+            {
+                await CreatAllChannelThreadsAsync();
+                await ProtectedStarting();
+            }
+            await StartAllChannelThreadsAsync();
+            await ProtectedStarted();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "启动发生错误");
+        }
+        finally
+        {
+            singleRestartLock.Release();
+            restartLock.Release();
+        }
+    }
+
+    /// <summary>
+    /// 初始化，如果没有找到设备会创建
+    /// </summary>
+    public async Task CreatThreadsAsync()
+    {
+        try
+        {
+            await restartLock.WaitAsync();
+            await singleRestartLock.WaitAsync();
+            if (ChannelThreads.Count == 0)
+            {
+                await CreatAllChannelThreadsAsync();
+                await ProtectedStarting();
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "启动发生错误");
+        }
+        finally
+        {
+            singleRestartLock.Release();
+            restartLock.Release();
+        }
+    }
+
+    /// <summary>
+    /// 停止
+    /// </summary>
+    public async Task StopAsync()
+    {
+        try
+        {
+            await restartLock.WaitAsync();
+            await singleRestartLock.WaitAsync();
+            await StopThreadAsync();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "停止错误");
+        }
+        finally
+        {
+            singleRestartLock.Release();
+            restartLock.Release();
+        }
+    }
+
+    protected async Task StopThreadAsync()
+    {
+        //取消全部采集线程
+        await BeforeRemoveAllChannelThreadAsync();
+        //取消其他后台服务
+        await ProtectedStoping();
+        //停止全部采集线程
+        await RemoveAllChannelThreadAsync();
+        //停止其他后台服务
+        await ProtectedStoped();
+        //清空内存列表
+        GlobalData.CollectDevices.Clear();
+    }
+
+    #endregion 重启
+
+    #region 读取数据库
+
+    /// <summary>
+    /// 读取数据库，创建全部设备
+    /// </summary>
+    /// <returns></returns>
+    protected abstract Task CreatAllChannelThreadsAsync();
+
+    #endregion 读取数据库
 }
 
 public delegate Task RestartEventHandler();

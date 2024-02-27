@@ -8,8 +8,6 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using Furion.Logging.Extensions;
-
 using Mapster;
 
 using Microsoft.Extensions.Hosting;
@@ -27,115 +25,6 @@ public class BusinessDeviceWorker : DeviceWorker
         _logger = _serviceScope.ServiceProvider.GetService<ILoggerFactory>().CreateLogger("业务设备服务");
     }
 
-    #region public 设备创建更新结束
-
-    private EasyLock publicRestartLock = new();
-
-    public async Task RestartAsync()
-    {
-        try
-        {
-            await publicRestartLock.WaitAsync();
-
-            await StopAsync();
-            await StartAsync();
-        }
-        finally
-        {
-            publicRestartLock.Release();
-        }
-    }
-
-    /// <summary>
-    /// 启动全部设备，如果没有找到设备会创建
-    /// </summary>
-    public async Task StartAsync()
-    {
-        try
-        {
-            await restartLock.WaitAsync();
-            await singleRestartLock.WaitAsync();
-            if (ChannelThreads.Count == 0)
-            {
-                await CreatAllChannelThreadsAsync();
-                await ProtectedStarting();
-            }
-            await StartAllChannelThreadsAsync();
-            await ProtectedStarted();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "启动发生错误");
-        }
-        finally
-        {
-            singleRestartLock.Release();
-            restartLock.Release();
-        }
-    }
-
-    /// <summary>
-    /// 初始化，如果没有找到设备会创建
-    /// </summary>
-    public async Task CreatThreadsAsync()
-    {
-        try
-        {
-            await restartLock.WaitAsync();
-            await singleRestartLock.WaitAsync();
-            if (ChannelThreads.Count == 0)
-            {
-                await CreatAllChannelThreadsAsync();
-                await ProtectedStarting();
-            }
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "启动发生错误");
-        }
-        finally
-        {
-            singleRestartLock.Release();
-            restartLock.Release();
-        }
-    }
-
-    /// <summary>
-    /// 停止
-    /// </summary>
-    public async Task StopAsync()
-    {
-        try
-        {
-            await restartLock.WaitAsync();
-            await singleRestartLock.WaitAsync();
-            await StopThreadAsync();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "停止错误");
-        }
-        finally
-        {
-            singleRestartLock.Release();
-            restartLock.Release();
-        }
-    }
-
-    private async Task StopThreadAsync()
-    {
-        //取消全部采集线程
-        await BeforeRemoveAllChannelThreadAsync();
-        //取消其他后台服务
-        await ProtectedStoping();
-        //停止全部采集线程
-        await RemoveAllChannelThreadAsync();
-        //停止其他后台服务
-        await ProtectedStoped();
-        //清空内存列表
-        GlobalData.CollectDevices.Clear();
-    }
-
     private async Task CollectDeviceWorker_Starting()
     {
         await CreatThreadsAsync();
@@ -151,39 +40,6 @@ public class BusinessDeviceWorker : DeviceWorker
     {
         await StopAsync();
     }
-
-    /// <summary>
-    /// 读取数据库，创建全部设备
-    /// </summary>
-    /// <returns></returns>
-    protected async Task CreatAllChannelThreadsAsync()
-    {
-        if (!_stoppingToken.IsCancellationRequested)
-        {
-            _logger.LogInformation("正在获取业务设备组态信息");
-            var deviceRunTimes = await _serviceScope.ServiceProvider.GetService<IDeviceService>().GetBusinessDeviceRuntimeAsync();
-            _logger.LogInformation("获取业务设备组态信息完成");
-            var idSet = deviceRunTimes.ToDictionary(a => a.Id);
-            var result = deviceRunTimes.Where(a => !idSet.ContainsKey(a.RedundantDeviceId) && !a.IsRedundant).ToList();
-            result.ForEach(collectDeviceRunTime =>
-            {
-                if (!_stoppingToken.IsCancellationRequested)
-                {
-                    try
-                    {
-                        DriverBase driverBase = collectDeviceRunTime.CreatDriver(PluginService);
-                        GetChannelThread(driverBase);
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError(ex, $"{collectDeviceRunTime.Name}初始化错误！");
-                    }
-                }
-            });
-        }
-    }
-
-    #endregion public 设备创建更新结束
 
     #region 设备信息获取
 
@@ -238,10 +94,45 @@ public class BusinessDeviceWorker : DeviceWorker
         await WhileExecuteAsync(stoppingToken);
     }
 
+    #endregion worker服务
+
+    #region 重写
+
     protected override async Task<IEnumerable<DeviceRunTime>> GetDeviceRunTimeAsync(long deviceId)
     {
         return await _serviceScope.ServiceProvider.GetService<IDeviceService>().GetBusinessDeviceRuntimeAsync(deviceId);
     }
 
-    #endregion worker服务
+    /// <summary>
+    /// 读取数据库，创建全部设备
+    /// </summary>
+    /// <returns></returns>
+    protected override async Task CreatAllChannelThreadsAsync()
+    {
+        if (!_stoppingToken.IsCancellationRequested)
+        {
+            _logger.LogInformation("正在获取业务设备组态信息");
+            var deviceRunTimes = await _serviceScope.ServiceProvider.GetService<IDeviceService>().GetBusinessDeviceRuntimeAsync();
+            _logger.LogInformation("获取业务设备组态信息完成");
+            var idSet = deviceRunTimes.ToDictionary(a => a.Id);
+            var result = deviceRunTimes.Where(a => !idSet.ContainsKey(a.RedundantDeviceId) && !a.IsRedundant).ToList();
+            result.ForEach(collectDeviceRunTime =>
+            {
+                if (!_stoppingToken.IsCancellationRequested)
+                {
+                    try
+                    {
+                        DriverBase driverBase = collectDeviceRunTime.CreatDriver(PluginService);
+                        GetChannelThread(driverBase);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, $"{collectDeviceRunTime.Name}初始化错误！");
+                    }
+                }
+            });
+        }
+    }
+
+    #endregion 重写
 }

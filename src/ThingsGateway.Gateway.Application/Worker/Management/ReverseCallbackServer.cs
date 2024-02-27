@@ -47,4 +47,12 @@ internal class ReverseCallbackServer : RpcServer
             easyLock.Release();
         }
     }
+
+    [DmtpRpc(true)]//使用方法名作为调用键
+    public Task<GatewayState> UpdateGatewayDataAsync(bool isStart)
+    {
+        //TODO:获取主站数据
+
+        throw new NotImplementedException();
+    }
 }
