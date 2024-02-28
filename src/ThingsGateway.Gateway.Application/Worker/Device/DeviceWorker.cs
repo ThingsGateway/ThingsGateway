@@ -707,7 +707,6 @@ public abstract class DeviceWorker : BackgroundService
                 //停止其他后台服务
                 await ProtectedStoped();
             //清空内存列表
-
         }
         started = false;
         otherstarted = false;
