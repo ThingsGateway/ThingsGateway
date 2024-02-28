@@ -84,7 +84,7 @@ public class ManagementWoker : BackgroundService
                 }
                 else
                 {
-                    _ = CollectDeviceWorker.StopAsync(false);
+                    _ = CollectDeviceWorker.StopAsync(!IsStartBusinessDevice);
                 }
             }
         }

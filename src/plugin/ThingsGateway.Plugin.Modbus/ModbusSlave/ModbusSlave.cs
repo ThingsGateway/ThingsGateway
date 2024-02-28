@@ -19,6 +19,8 @@ using ThingsGateway.Foundation.Extension.String;
 using ThingsGateway.Foundation.Modbus;
 using ThingsGateway.Gateway.Application;
 
+using TouchSocket.Sockets;
+
 namespace ThingsGateway.Plugin.Modbus;
 
 /// <summary>
@@ -111,6 +113,7 @@ public class ModbusSlave : BusinessBase
             CurrentDevice.SetDeviceStatus(DateTimeUtil.Now, 999);
             try
             {
+                Protocol.Channel.Close();
                 await Protocol.Channel.ConnectAsync(3000, cancellationToken);
                 success = true;
             }
