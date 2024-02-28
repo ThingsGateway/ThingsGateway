@@ -45,7 +45,7 @@ public class DeviceRunTime : Device
     /// 设备活跃时间
     /// </summary>
     [Description("活跃时间")]
-    public DateTime? ActiveTime { get; private set; }
+    public DateTime? ActiveTime { get; internal set; }
 
     /// <summary>
     /// 设备状态
@@ -60,7 +60,7 @@ public class DeviceRunTime : Device
             else
                 return DeviceStatusEnum.Pause;
         }
-        protected set
+        internal set
         {
             if (_deviceStatus != value)
             {
@@ -123,7 +123,7 @@ public class DeviceRunTime : Device
         {
             return _lastErrorMessage;
         }
-        protected set
+        internal set
         {
             _lastErrorMessage = DateTimeUtil.TimerXNow.ToDefaultDateTimeFormat() + " - " + value;
         }

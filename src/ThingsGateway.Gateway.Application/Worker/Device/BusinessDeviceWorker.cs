@@ -24,10 +24,14 @@ public class BusinessDeviceWorker : DeviceWorker
     {
         _logger = _serviceScope.ServiceProvider.GetService<ILoggerFactory>().CreateLogger("业务设备服务");
     }
-
     private async Task CollectDeviceWorker_Starting()
     {
+        if (started)
+        {
+            await StopAsync(true);
+        }
         await CreatThreadsAsync();
+
     }
 
     private async Task CollectDeviceWorker_Started()
@@ -38,7 +42,7 @@ public class BusinessDeviceWorker : DeviceWorker
 
     private async Task CollectDeviceWorker_Stoping()
     {
-        await StopAsync();
+        await StopAsync(true);
     }
 
     #region 设备信息获取
@@ -85,6 +89,7 @@ public class BusinessDeviceWorker : DeviceWorker
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         await _easyLock?.WaitAsync();
+        ManagementWoker = WorkerUtil.GetWoker<ManagementWoker>();
         var collectDeviceWorker = WorkerUtil.GetWoker<CollectDeviceWorker>();
         collectDeviceWorker.Starting += CollectDeviceWorker_Starting;
         collectDeviceWorker.Started += CollectDeviceWorker_Started;

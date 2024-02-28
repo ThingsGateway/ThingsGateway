@@ -127,21 +127,21 @@ public class VariableRunTime : Variable, IVariable
     /// </summary>
     [Description("上次值")]
     [DataTable(Order = 3, IsShow = true, Sortable = false, CellClass = " table-text-truncate ")]
-    public object? LastSetValue { get; private set; }
+    public object? LastSetValue { get; internal set; }
 
     /// <summary>
     /// 原始值
     /// </summary>
     [Description("原始值")]
     [DataTable(Order = 3, IsShow = true, Sortable = false, CellClass = " table-text-truncate ")]
-    public object? RawValue { get; private set; }
+    public object? RawValue { get; internal set; }
 
     /// <summary>
     /// 实时值
     /// </summary>
     [Description("实时值")]
     [DataTable(Order = 3, IsShow = true, Sortable = false, CellClass = " table-text-truncate ")]
-    public object? Value { get => _value; private set => _value = value; }
+    public object? Value { get => _value; internal set => _value = value; }
 
     /// <summary>
     /// 设置变量值与时间/质量戳
@@ -200,6 +200,12 @@ public class VariableRunTime : Variable, IVariable
 
             VariableCollectChange?.Invoke(this);
         }
+    }
+
+    internal void SetErrorMessage(string value)
+    {
+        if (VariableSource != null)
+            VariableSource.LastErrorMessage = value;
     }
 
     private IRpcService? _rpcService { get; set; }

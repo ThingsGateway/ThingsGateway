@@ -48,11 +48,6 @@ public abstract class BusinessBase : DriverBase
 
     public override async Task AfterStopAsync()
     {
-        //去除全局设备变量
-        lock (GlobalData.BusinessDevices)
-        {
-            GlobalData.BusinessDevices.RemoveWhere(it => it.Id == DeviceId);
-        }
         await base.AfterStopAsync();
     }
 }

@@ -96,6 +96,8 @@ public class ModbusSlave : BusinessBase
         _plc.WriteData += OnWriteData;
     }
 
+    private volatile bool success = true;
+
     protected override async Task ProtectedExecuteAsync(CancellationToken cancellationToken)
     {
         //获取设备连接状态
@@ -107,6 +109,17 @@ public class ModbusSlave : BusinessBase
         else
         {
             CurrentDevice.SetDeviceStatus(DateTimeUtil.Now, 999);
+            try
+            {
+                await Protocol.Channel.ConnectAsync(3000, cancellationToken);
+                success = true;
+            }
+            catch (Exception ex)
+            {
+                if (success)
+                    LogMessage.LogWarning(ex, "无法启动服务");
+                success = false;
+            }
         }
         var list = _modbusVariableDict.ToListWithDequeue();
         foreach (var item in list)

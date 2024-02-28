@@ -59,7 +59,7 @@ YitIdHelper.NextId())
 
     protected override async Task ProtectedBeforStartAsync(CancellationToken cancellationToken)
     {
-        var db = BusinessDatabaseUtil.GetDb(_driverPropertys.DbType, _driverPropertys.BigTextConnectStr);
+        var db = SqlDBBusinessDatabaseUtil.GetDb(_driverPropertys);
         db.CodeFirst.InitTables(typeof(SQLHistoryValue));
         db.MappingTables.Add(nameof(SQLRealValue), _driverPropertys.ReadDBTableName);
         db.CodeFirst.InitTables(typeof(SQLRealValue));

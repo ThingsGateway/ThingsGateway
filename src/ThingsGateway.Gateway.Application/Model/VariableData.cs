@@ -82,3 +82,22 @@ public class VariableBasicData : VariableData
     /// <inheritdoc cref="Variable.DataType"/>
     public DataTypeEnum DataType { get; set; }
 }
+
+internal class VariableDataWithValue : IPrimaryIdEntity
+{
+    /// <inheritdoc cref="PrimaryIdEntity.Id"/>
+    public long Id { get; set; }
+
+    /// <inheritdoc cref="VariableRunTime.Value"/>
+    public object RawValue { get; set; }
+
+    /// <inheritdoc cref="VariableRunTime.CollectTime"/>
+    public DateTime CollectTime { get; set; }
+
+    /// <inheritdoc cref="VariableRunTime.IsOnline"/>
+    public bool IsOnline { get; set; }
+
+    /// <inheritdoc cref="VariableRunTime.LastErrorMessage"/>
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public string? LastErrorMessage { get; set; }
+}

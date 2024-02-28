@@ -83,6 +83,7 @@ public class AlarmWorker : BackgroundService
     {
         try
         {
+            await restartLock.WaitAsync();
             foreach (var item in GlobalData.CollectDevices)
             {
                 item.VariableRunTimes?.ForEach(v => { v.VariableCollectChange += DeviceVariableChange; });
@@ -446,7 +447,7 @@ public class AlarmWorker : BackgroundService
 
     private EasyLock _easyLock = new(false);
 
-    private async Task CollectDeviceWorker_Starting()
+    private async Task CollectDeviceWorker_Started()
     {
         await StartAsync();
     }
@@ -474,7 +475,7 @@ public class AlarmWorker : BackgroundService
     {
         await _easyLock?.WaitAsync();
         var collectDeviceWorker = WorkerUtil.GetWoker<CollectDeviceWorker>();
-        collectDeviceWorker.Starting += CollectDeviceWorker_Starting;
+        collectDeviceWorker.Started += CollectDeviceWorker_Started;
         collectDeviceWorker.Stoping += CollectDeviceWorker_Stoping;
         GlobalData = _serviceScope.ServiceProvider.GetService<GlobalData>();
         while (!stoppingToken.IsCancellationRequested)

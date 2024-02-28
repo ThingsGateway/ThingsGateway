@@ -18,11 +18,13 @@ internal class ReverseCallbackServer : RpcServer
 {
     private ILog _logger;
     private ManagementWoker managementWoker;
+    private GlobalData globalData;
 
-    public ReverseCallbackServer(ILog log)
+    public ReverseCallbackServer(ILog log, GlobalData globalData)
     {
         _logger = log;
         managementWoker = WorkerUtil.GetWoker<ManagementWoker>();
+        this.globalData = globalData;
     }
 
     private EasyLock easyLock = new();
@@ -49,10 +51,28 @@ internal class ReverseCallbackServer : RpcServer
     }
 
     [DmtpRpc(true)]//使用方法名作为调用键
-    public Task<GatewayState> UpdateGatewayDataAsync(bool isStart)
+    public async Task UpdateGatewayDataAsync(List<DeviceDataWithValue> deviceDatas, List<VariableDataWithValue> variableDatas)
     {
         //TODO:获取主站数据
-
-        throw new NotImplementedException();
+        await Task.CompletedTask;
+        foreach (var deviceData in deviceDatas)
+        {
+            var dev = globalData.CollectDevices.FirstOrDefault(a => a.Id == deviceData.Id);
+            if (dev != null)
+            {
+                dev.ActiveTime = deviceData.ActiveTime;
+                dev.DeviceStatus = deviceData.DeviceStatus;
+                dev.LastErrorMessage = deviceData.LastErrorMessage;
+            }
+        }
+        foreach (var variableData in variableDatas)
+        {
+            var variableRunTime = globalData.AllVariables.FirstOrDefault(a => a.Id == variableData.Id);
+            if (variableRunTime != null)
+            {
+                variableRunTime.SetValue(variableData.RawValue, variableData.CollectTime, variableData.IsOnline);
+                variableRunTime.SetErrorMessage(variableData.LastErrorMessage);
+            }
+        }
     }
 }

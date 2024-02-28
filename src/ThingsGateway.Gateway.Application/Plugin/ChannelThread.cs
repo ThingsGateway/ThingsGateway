@@ -63,10 +63,11 @@ public class ChannelThread
 
     public string LogPath { get; }
     private Channel ChannelTable;
-
+    private GlobalData GlobalData;
     public ChannelThread(Channel channel, Func<TouchSocketConfig, IChannel> getChannel)
     {
         Logger = App.GetService<ILoggerFactory>().CreateLogger($"通道：{channel.Name}");
+        GlobalData = App.GetService<GlobalData>();
         ChannelTable = channel;
         ChannelId = channel.Id;
         //底层配置
@@ -130,7 +131,9 @@ public class ChannelThread
     /// </summary>
     private ConcurrentDictionary<long, CancellationTokenSource> CancellationTokenSources { get; set; } = new();
 
-    public void AddDriver(DriverBase driverBase)
+    public bool IsCollect { get; private set; }
+
+    internal void AddDriver(DriverBase driverBase)
     {
         DriverBases.Add(driverBase);
         driverBase.ChannelThread = this;
@@ -151,6 +154,7 @@ public class ChannelThread
         }
         var token = CancellationTokenSources.GetOrAdd(0, new CancellationTokenSource());
         CancellationTokenSources.TryAdd(driverBase.DeviceId, CancellationTokenSource.CreateLinkedTokenSource(token.Token));
+        IsCollect = driverBase.IsCollect;
     }
 
     /// <summary>
@@ -158,7 +162,7 @@ public class ChannelThread
     /// </summary>
     /// <param name="deviceId"></param>
     /// <returns></returns>
-    public async Task RemoveDriverAsync(long deviceId)
+    internal async Task RemoveDriverAsync(long deviceId)
     {
         var driverBase = DriverBases.FirstOrDefault(a => a.DeviceId == deviceId);
         if (driverBase != null)
@@ -177,24 +181,41 @@ public class ChannelThread
             {
                 await Task.Delay(500);
             }
+            //去除全局设备
+            if (IsCollect)
+            {
+                lock (GlobalData.CollectDevices)
+                {
+                    GlobalData.CollectDevices.RemoveWhere(it => it.Id == driverBase.DeviceId);
+                }
+            }
+
+            else
+            {
+                lock (GlobalData.BusinessDevices)
+                {
+                    GlobalData.BusinessDevices.RemoveWhere(it => it.Id == driverBase.DeviceId);
+                }
+            }
+
             DriverBases.Remove(driverBase);
             CancellationTokenSources.Remove(deviceId);
             token?.Dispose();
         }
     }
 
-    public DriverBase GetDriver(long deviceId)
+    internal DriverBase GetDriver(long deviceId)
     {
         var driverBase = DriverBases.FirstOrDefault(a => a.DeviceId == deviceId);
         return driverBase;
     }
 
-    public IEnumerable<DriverBase> GetDriverEnumerable()
+    internal IEnumerable<DriverBase> GetDriverEnumerable()
     {
         return DriverBases;
     }
 
-    public bool Has(long deviceId)
+    internal bool Has(long deviceId)
     {
         return DriverBases.Any(a => a.DeviceId == deviceId);
     }
@@ -222,7 +243,7 @@ public class ChannelThread
     /// <summary>
     /// 停止插件前，执行取消传播
     /// </summary>
-    public virtual void BeforeStopThread()
+    internal virtual void BeforeStopThread()
     {
         CancellationTokenSources.ParallelForEach(cancellationToken =>
         {
@@ -245,11 +266,10 @@ public class ChannelThread
     /// <summary>
     /// 开始
     /// </summary>
-    public virtual async Task StartThreadAsync()
+    internal virtual async Task StartThreadAsync()
     {
         try
         {
-            //TODO:根据管理服务中的isStart，判定是否启动线程
             await EasyLock.WaitAsync();
             if (DriverTask != null)
             {
@@ -279,7 +299,7 @@ public class ChannelThread
     /// <summary>
     /// 停止
     /// </summary>
-    public virtual async Task StopThreadAsync()
+    internal virtual async Task StopThreadAsync(bool isRemoveDevice)
     {
         if (DriverTask == null)
         {
@@ -299,6 +319,24 @@ public class ChannelThread
                 }
             });
             try { await DriverTask.WaitAsync(TimeSpan.FromMinutes(3)); } catch (OperationCanceledException) { }
+            if (isRemoveDevice)
+            {
+                //去除全局设备
+                if (IsCollect)
+                {
+                    lock (GlobalData.CollectDevices)
+                    {
+                        GlobalData.CollectDevices.RemoveWhere(it => DriverBases.Any(a => a.DeviceId == it.Id));
+                    }
+                }
+                else
+                {
+                    lock (GlobalData.BusinessDevices)
+                    {
+                        GlobalData.BusinessDevices.RemoveWhere(it => DriverBases.Any(a => a.DeviceId == it.Id));
+                    }
+                }
+            }
             CancellationTokenSources.Clear();
             DriverTask?.SafeDispose();
             DriverTask = null;

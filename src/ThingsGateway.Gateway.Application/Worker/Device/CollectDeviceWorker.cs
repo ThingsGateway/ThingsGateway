@@ -33,7 +33,7 @@ public class CollectDeviceWorker : DeviceWorker
         using var stoppingToken = new CancellationTokenSource();
         _stoppingToken = stoppingToken.Token;
         stoppingToken.Cancel();
-        await StopThreadAsync();
+        await StopThreadAsync(true);
         await base.StopAsync(cancellationToken);
     }
 
@@ -45,10 +45,12 @@ public class CollectDeviceWorker : DeviceWorker
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         await _easyLock?.WaitAsync();
+        ManagementWoker = WorkerUtil.GetWoker<ManagementWoker>();
         PluginService = _serviceScope.ServiceProvider.GetService<IPluginService>();
         GlobalData = _serviceScope.ServiceProvider.GetService<GlobalData>();
         //重启采集线程，会启动其他后台服务
-        await RestartAsync();
+        await ManagementWoker.StartLock.WaitAsync();
+        //await RestartAsync();
         await WhileExecuteAsync(stoppingToken);
     }
 

@@ -42,11 +42,6 @@ public abstract class CollectBase : DriverBase
 
     public override async Task AfterStopAsync()
     {
-        //去除全局设备变量
-        lock (GlobalData.CollectDevices)
-        {
-            GlobalData.CollectDevices.RemoveWhere(it => it.Id == DeviceId);
-        }
         await base.AfterStopAsync();
     }
 

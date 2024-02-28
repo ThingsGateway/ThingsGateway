@@ -47,7 +47,7 @@ public class Startup : AppStartup
         services.AddHostedService<BusinessDeviceWorker>();
         services.AddHostedService<AlarmWorker>();
         services.AddConfigurableOptions<ManagementOptions>();
-        //services.AddHostedService<ManagementWoker>();
+        services.AddHostedService<ManagementWoker>();
 
         TypeExtension.DefaultDisplayNameFuncs.Add(a => a.GetCustomAttribute<DynamicPropertyAttribute>()?.Description);
     }

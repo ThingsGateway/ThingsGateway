@@ -684,7 +684,7 @@ namespace ThingsGateway.Foundation
 
                 var newByteBlock = new ByteBlock(1024 * 64);
                 e.UserToken = newByteBlock;
-                e.SetBuffer(newByteBlock.Buffer, 0, newByteBlock.Buffer.Length);
+                e.SetBuffer(newByteBlock.Buffer, 0, newByteBlock.Capacity);
 
                 try
                 {

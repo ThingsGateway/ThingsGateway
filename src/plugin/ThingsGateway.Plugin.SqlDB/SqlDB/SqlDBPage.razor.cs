@@ -30,7 +30,7 @@ public partial class SqlDBPage : IDriverUIBase
 
     private async Task<SqlSugarPagedList<SQLHistoryValue>> QueryCallAsync(SqlDBPageInput input)
     {
-        using var db = BusinessDatabaseUtil.GetDb(SqlDBProducer._driverPropertys.DbType, SqlDBProducer._driverPropertys.BigTextConnectStr);
+        using var db = SqlDBBusinessDatabaseUtil.GetDb(SqlDBProducer._driverPropertys);
         var query = db.Queryable<SQLHistoryValue>().SplitTable()
                              .WhereIF(input.StartTime != null, a => a.CreateTime >= input.StartTime)
                            .WhereIF(input.EndTime != null, a => a.CreateTime <= input.EndTime)
@@ -49,7 +49,7 @@ public partial class SqlDBPage : IDriverUIBase
 
     private async Task<SqlSugarPagedList<SQLRealValue>> RealQueryCallAsync(SqlDBPageInput input)
     {
-        using var db = BusinessDatabaseUtil.GetDb(SqlDBProducer._driverPropertys.DbType, SqlDBProducer._driverPropertys.BigTextConnectStr);
+        using var db = SqlDBBusinessDatabaseUtil.GetDb(SqlDBProducer._driverPropertys);
         var query = db.Queryable<SQLRealValue>().AS(SqlDBProducer._driverPropertys.ReadDBTableName)
                            .WhereIF(!string.IsNullOrEmpty(input.VariableName), it => it.Name.Contains(input.VariableName))
                            ;

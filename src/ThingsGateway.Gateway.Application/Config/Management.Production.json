@@ -6,16 +6,12 @@
     "HeartbeatInterval": 3000, //心跳间隔
     "MaxErrorCount": 3, //最大错误次数
     "Redundancy": {
-      "Enable": true, //启用冗余
-      "IsPrimary": true, //是否主站
-      "SwitchMode": {
-        "IsHot": true, //热备
-        "IsStartBusinessDevice": true //是否启用备用站点的业务设备
-      }
+      "Enable": false, //启用冗余
+      "IsPrimary": false, //是否主站
+      "IsStartBusinessDevice": true //是否启用备用站点的业务设备
       //主从站的采集配置必须一致
       //默认主站优先，当主站恢复后，从站切换回备用模式。
-      //热切换：主备站都完成对采集的初始化，并且都采集数据，但从站的数据都来自主站的数据同步
-      //冷切换：主站完成对采集的初始化，并采集数据，从站的数据都来自主站的数据同步，只有当主站故障后，从站才开始初始化并采集。
+      //主从站都完成对采集的初始化，但从站的数据都来自主站的数据同步
     }
   }
 }

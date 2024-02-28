@@ -59,7 +59,7 @@ public partial class SqlDBProducer : BusinessBaseWithCacheInterval<SQLHistoryVal
     {
         try
         {
-            var db = BusinessDatabaseUtil.GetDb(_driverPropertys.DbType, _driverPropertys.BigTextConnectStr);
+            var db = SqlDBBusinessDatabaseUtil.GetDb(_driverPropertys);
             db.Ado.CancellationToken = cancellationToken;
             var result = await db.Fastest<SQLHistoryValue>().PageSize(50000).SplitTable().BulkCopyAsync(dbInserts);
             //var result = await db.Insertable(dbInserts).SplitTable().ExecuteCommandAsync();
@@ -79,7 +79,7 @@ public partial class SqlDBProducer : BusinessBaseWithCacheInterval<SQLHistoryVal
     {
         try
         {
-            var db = BusinessDatabaseUtil.GetDb(_driverPropertys.DbType, _driverPropertys.BigTextConnectStr);
+            var db = SqlDBBusinessDatabaseUtil.GetDb(_driverPropertys);
             db.Ado.CancellationToken = cancellationToken;
             if (!_initRealData)
             {

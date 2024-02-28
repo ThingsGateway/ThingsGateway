@@ -41,6 +41,7 @@ public abstract class DeviceWorker : BackgroundService
 
     protected IPluginService PluginService;
     protected GlobalData GlobalData;
+    protected ManagementWoker ManagementWoker;
     protected IServiceScope _serviceScope;
     private readonly IHostApplicationLifetime _appLifetime;
 
@@ -75,7 +76,7 @@ public abstract class DeviceWorker : BackgroundService
             DriverBases.FirstOrDefault(it => it.DeviceId == deviceId)?.PasueThread(isStart);
     }
 
-    #region Private
+    #region protected
 
     /// <summary>
     /// 根据设备生成/获取通道线程管理器
@@ -90,6 +91,11 @@ public abstract class DeviceWorker : BackgroundService
             var channelThread = ChannelThreads.FirstOrDefault(t => t.ChannelId == channelId);
             if (channelThread != null)
             {
+                if (channelThread.IsCollect != driverBase.IsCollect)
+                {
+                    _logger.LogWarning($"设备{driverBase.DeviceName}与通道{channelId}的其他设备类型不相同，不能选择同一个通道");
+                    return null;
+                }
                 channelThread.AddDriver(driverBase);
                 return channelThread;
             }
@@ -125,7 +131,7 @@ public abstract class DeviceWorker : BackgroundService
     /// <summary>
     /// 删除通道线程，并且释放资源
     /// </summary>
-    protected async Task RemoveAllChannelThreadAsync()
+    protected async Task RemoveAllChannelThreadAsync(bool isRemoveDevice)
     {
         await BeforeRemoveAllChannelThreadAsync();
 
@@ -133,15 +139,15 @@ public abstract class DeviceWorker : BackgroundService
         {
             try
             {
-                await channelThread.StopThreadAsync();
+                await channelThread.StopThreadAsync(isRemoveDevice);
             }
             catch (Exception ex)
             {
                 _logger?.LogError(ex, channelThread.ToString());
             }
         }, Environment.ProcessorCount / 2);
-
-        ChannelThreads.Clear();
+        if (isRemoveDevice)
+            ChannelThreads.Clear();
     }
 
     protected async Task BeforeRemoveAllChannelThreadAsync()
@@ -176,10 +182,53 @@ public abstract class DeviceWorker : BackgroundService
             {
                 if (!_stoppingToken.IsCancellationRequested)
                 {
+                    await StartChannelThreadAsync(item);
+                }
+            }
+        }
+    }
+
+    private async Task StartChannelThreadAsync(ChannelThread item)
+    {
+        if (item.IsCollect)
+        {
+            if (ManagementWoker.IsStart)
+            {
+                //采集设备启动
+                await item.StartThreadAsync();
+            }
+        }
+        else
+        {
+            if (ManagementWoker.IsStart)
+            {
+                //业务设备启动
+                await item.StartThreadAsync();
+            }
+            else
+            {
+                if (ManagementWoker.Options.Redundancy.IsStartBusinessDevice)
+                {
+                    //业务设备启动
                     await item.StartThreadAsync();
                 }
             }
         }
+    }
+
+    #endregion protected
+
+    #region 单个重启
+
+    private void SetRedundantDevice(DeviceRunTime? dev, Device? newDev)
+    {
+        dev.DevicePropertys = newDev.DevicePropertys;
+        dev.Description = newDev.Description;
+        dev.ChannelId = newDev.ChannelId;
+        dev.Enable = newDev.Enable;
+        dev.IntervalTime = newDev.IntervalTime;
+        dev.Name = newDev.Name;
+        dev.PluginName = newDev.PluginName;
     }
 
     /// <summary>
@@ -199,7 +248,7 @@ public abstract class DeviceWorker : BackgroundService
 
                 var dev = isChanged ? (await GetDeviceRunTimeAsync(deviceId)).FirstOrDefault() : channelThread.GetDriver(deviceId).CurrentDevice;
 
-                //这里先停止采集，操作会使线程取消，需要重新恢复线程
+                //先停止采集，操作会使线程取消，需要重新恢复线程
                 await channelThread.RemoveDriverAsync(deviceId);
                 if (isChanged)
                     await ProtectedStoped();
@@ -214,7 +263,7 @@ public abstract class DeviceWorker : BackgroundService
                             await ProtectedStarting();
                         try
                         {
-                            await newChannelThread.StartThreadAsync();
+                            await StartChannelThreadAsync(newChannelThread);
                             if (isChanged)
                                 await ProtectedStarted();
                         }
@@ -308,7 +357,7 @@ public abstract class DeviceWorker : BackgroundService
                 var newChannelThread = GetChannelThread(newDriverBase);
                 if (newChannelThread != null && newChannelThread.DriverTask == null)
                 {
-                    await newChannelThread.StartThreadAsync();
+                    await StartChannelThreadAsync(newChannelThread);
                 }
             }
         }
@@ -318,18 +367,7 @@ public abstract class DeviceWorker : BackgroundService
         }
     }
 
-    private void SetRedundantDevice(DeviceRunTime? dev, Device? newDev)
-    {
-        dev.DevicePropertys = newDev.DevicePropertys;
-        dev.Description = newDev.Description;
-        dev.ChannelId = newDev.ChannelId;
-        dev.Enable = newDev.Enable;
-        dev.IntervalTime = newDev.IntervalTime;
-        dev.Name = newDev.Name;
-        dev.PluginName = newDev.PluginName;
-    }
-
-    #endregion Private
+    #endregion 单个重启
 
     #region 设备信息获取
 
@@ -431,10 +469,21 @@ public abstract class DeviceWorker : BackgroundService
 
     public event RestartEventHandler Starting;
 
+    private volatile bool otherstarted = false;
+
     protected async Task ProtectedStarted()
     {
-        if (Started != null)
-            await Started.Invoke();
+        try
+        {
+            if (!otherstarted)
+                if (ManagementWoker.IsStart || ManagementWoker.IsStartBusinessDevice)
+                    if (Started != null)
+                        await Started.Invoke();
+        }
+        finally
+        {
+            otherstarted = true;
+        }
     }
 
     protected async Task ProtectedStarting()
@@ -445,8 +494,16 @@ public abstract class DeviceWorker : BackgroundService
 
     protected async Task ProtectedStoped()
     {
-        if (Stoped != null)
-            await Stoped.Invoke();
+        try
+        {
+            if (!otherstoped)
+                if (Stoped != null)
+                    await Stoped.Invoke();
+        }
+        finally
+        {
+            otherstoped = true;
+        }
     }
 
     protected async Task ProtectedStoping()
@@ -456,15 +513,6 @@ public abstract class DeviceWorker : BackgroundService
     }
 
     protected abstract Task<IEnumerable<DeviceRunTime>> GetDeviceRunTimeAsync(long deviceId);
-
-    /// <inheritdoc/>
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-    {
-        await _easyLock?.WaitAsync();
-        PluginService = _serviceScope.ServiceProvider.GetService<IPluginService>();
-        GlobalData = _serviceScope.ServiceProvider.GetService<GlobalData>();
-        await WhileExecuteAsync(stoppingToken);
-    }
 
     protected virtual async Task WhileExecuteAsync(CancellationToken stoppingToken)
     {
@@ -537,7 +585,7 @@ public abstract class DeviceWorker : BackgroundService
 
     #endregion worker服务
 
-    #region 重启
+    #region 全部重启
 
     private EasyLock publicRestartLock = new();
 
@@ -547,7 +595,7 @@ public abstract class DeviceWorker : BackgroundService
         {
             await publicRestartLock.WaitAsync();
 
-            await StopAsync();
+            await StopAsync(true);
             await StartAsync();
         }
         finally
@@ -555,6 +603,8 @@ public abstract class DeviceWorker : BackgroundService
             publicRestartLock.Release();
         }
     }
+
+    protected volatile bool started;
 
     /// <summary>
     /// 启动全部设备，如果没有找到设备会创建
@@ -565,8 +615,9 @@ public abstract class DeviceWorker : BackgroundService
         {
             await restartLock.WaitAsync();
             await singleRestartLock.WaitAsync();
-            if (ChannelThreads.Count == 0)
+            if (stoped)
             {
+                ChannelThreads.Clear();
                 await CreatAllChannelThreadsAsync();
                 await ProtectedStarting();
             }
@@ -579,6 +630,9 @@ public abstract class DeviceWorker : BackgroundService
         }
         finally
         {
+            started = true;
+            stoped = false;
+            otherstoped = false;
             singleRestartLock.Release();
             restartLock.Release();
         }
@@ -593,8 +647,9 @@ public abstract class DeviceWorker : BackgroundService
         {
             await restartLock.WaitAsync();
             await singleRestartLock.WaitAsync();
-            if (ChannelThreads.Count == 0)
+            if (stoped)
             {
+                ChannelThreads.Clear();
                 await CreatAllChannelThreadsAsync();
                 await ProtectedStarting();
             }
@@ -605,6 +660,9 @@ public abstract class DeviceWorker : BackgroundService
         }
         finally
         {
+            started = true;
+            stoped = false;
+            otherstoped = false;
             singleRestartLock.Release();
             restartLock.Release();
         }
@@ -613,13 +671,13 @@ public abstract class DeviceWorker : BackgroundService
     /// <summary>
     /// 停止
     /// </summary>
-    public async Task StopAsync()
+    public async Task StopAsync(bool isRemoveDevice)
     {
         try
         {
             await restartLock.WaitAsync();
             await singleRestartLock.WaitAsync();
-            await StopThreadAsync();
+            await StopThreadAsync(isRemoveDevice);
         }
         catch (Exception ex)
         {
@@ -632,21 +690,32 @@ public abstract class DeviceWorker : BackgroundService
         }
     }
 
-    protected async Task StopThreadAsync()
+    protected async Task StopThreadAsync(bool isRemoveDevice = true)
     {
-        //取消全部采集线程
-        await BeforeRemoveAllChannelThreadAsync();
-        //取消其他后台服务
-        await ProtectedStoping();
-        //停止全部采集线程
-        await RemoveAllChannelThreadAsync();
-        //停止其他后台服务
-        await ProtectedStoped();
-        //清空内存列表
-        GlobalData.CollectDevices.Clear();
+        if (started)
+        {
+            //取消全部采集线程
+            await BeforeRemoveAllChannelThreadAsync();
+            if (isRemoveDevice)
+                //取消其他后台服务
+                await ProtectedStoping();
+            //停止全部采集线程
+            await RemoveAllChannelThreadAsync(isRemoveDevice);
+            if (isRemoveDevice)
+                //停止其他后台服务
+                await ProtectedStoped();
+            //清空内存列表
+
+        }
+        started = false;
+        otherstarted = false;
+        stoped = true;
     }
 
-    #endregion 重启
+    private volatile bool otherstoped = true;
+    protected volatile bool stoped = true;
+
+    #endregion 全部重启
 
     #region 读取数据库
 

@@ -51,6 +51,7 @@ public class ManagementWoker : BackgroundService
     protected IServiceScope _serviceScope;
     private readonly IHostApplicationLifetime _appLifetime;
     private readonly ILogger _logger;
+    private CollectDeviceWorker CollectDeviceWorker;
 
     /// <inheritdoc cref="ManagementWoker"/>
     public ManagementWoker(IServiceScopeFactory serviceScopeFactory, IHostApplicationLifetime appLifetime)
@@ -59,8 +60,6 @@ public class ManagementWoker : BackgroundService
         _logger = _serviceScope.ServiceProvider.GetService<ILoggerFactory>().CreateLogger("网关管理服务");
         _appLifetime = appLifetime;
     }
-
-    internal readonly EasyLock workerLock = new();
 
     #region worker服务
 
@@ -77,12 +76,23 @@ public class ManagementWoker : BackgroundService
             if (isStart != value)
             {
                 isStart = value;
-                //触发启动事件
+                //TODO:触发启动事件
+                if (IsStart)
+                {
+                    //启动采集
+                    _ = CollectDeviceWorker.StartAsync();
+                }
+                else
+                {
+                    _ = CollectDeviceWorker.StopAsync(false);
+                }
             }
         }
     }
 
     private volatile bool isStart = false;
+
+    internal volatile bool IsStartBusinessDevice = true;
 
     /// <inheritdoc/>
     public override async Task StartAsync(CancellationToken cancellationToken)
@@ -112,8 +122,10 @@ public class ManagementWoker : BackgroundService
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         await _easyLock?.WaitAsync();
+        CollectDeviceWorker = WorkerUtil.GetWoker<CollectDeviceWorker>();
         GlobalData = _serviceScope.ServiceProvider.GetService<GlobalData>();
         Options = App.GetOptions<ManagementOptions>();
+        IsStartBusinessDevice = Options.Redundancy.Enable ? Options.Redundancy.IsStartBusinessDevice : true;
         if (Options.Redundancy.Enable)
         {
             var udpDmtp = GetUdpDmtp(Options);
@@ -131,16 +143,16 @@ public class ManagementWoker : BackgroundService
                 try
                 {
                     bool online = false;
-                    var waitInvoke = new InvokeOption(millisecondsTimeout: 5000)
+                    var waitInvoke = new DmtpInvokeOption(millisecondsTimeout: 5000)
                     {
                         FeedbackType = FeedbackType.WaitInvoke,
                         Token = stoppingToken,
-                        Timeout = 3000
+                        Timeout = 3000,
+                        SerializationType = SerializationType.Json
                     };
                     try
                     {
                         GatewayState? gatewayState = null;
-                        await StartLock.WaitAsync(stoppingToken);
                         online = await udpDmtp.PingAsync(3000);
                         if (online)
                         {
@@ -223,7 +235,7 @@ public class ManagementWoker : BackgroundService
                         try
                         {
                             if (online)
-                                await udpDmtp.GetDmtpRpcActor().InvokeTAsync<GatewayState>(nameof(ReverseCallbackServer.UpdateGatewayDataAsync), waitInvoke, GlobalData.CollectDevices);
+                                await udpDmtp.GetDmtpRpcActor().InvokeAsync(nameof(ReverseCallbackServer.UpdateGatewayDataAsync), waitInvoke, GlobalData.CollectDevices.Adapt<List<DeviceDataWithValue>>(), GlobalData.AllVariables.Adapt<List<VariableDataWithValue>>());
                         }
                         catch (Exception ex)
                         {
@@ -291,12 +303,11 @@ public class ManagementWoker : BackgroundService
             new DmtpOption() { VerifyToken = options.VerifyToken })
                .ConfigureContainer(a =>
                {
+                   a.RegisterSingleton<GlobalData>(GlobalData);
                    a.AddEasyLogger(LogOut);
                    a.AddRpcStore(store =>
                    {
                        store.RegisterServer<ReverseCallbackServer>();
-                       //    store.Container.RegisterSingleton<IHostApplicationLifetime>(_appLifetime);
-                       //    store.Container.RegisterSingleton(client);
                    });
                })
                .ConfigurePlugins(a =>

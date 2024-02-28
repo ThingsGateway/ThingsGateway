@@ -66,3 +66,19 @@ public class DeviceBasicData : DeviceData
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
     public string? Description { get; set; }
 }
+
+public class DeviceDataWithValue : IPrimaryIdEntity
+{
+    /// <inheritdoc cref="PrimaryIdEntity.Id"/>
+    public long Id { get; set; }
+
+    /// <inheritdoc cref="DeviceRunTime.ActiveTime"/>
+    public DateTime ActiveTime { get; set; }
+
+    /// <inheritdoc cref="DeviceRunTime.DeviceStatus"/>
+    public DeviceStatusEnum DeviceStatus { get; set; }
+
+    /// <inheritdoc cref="DeviceRunTime.LastErrorMessage"/>
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public string LastErrorMessage { get; set; }
+}

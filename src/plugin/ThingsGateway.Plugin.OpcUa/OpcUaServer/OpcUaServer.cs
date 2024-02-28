@@ -112,6 +112,28 @@ public partial class OpcUaServer : BusinessBase
     {
         try
         {
+            if (IsConnected())
+            {
+                //更新设备活动时间
+                CurrentDevice.SetDeviceStatus(DateTimeUtil.Now, 0);
+            }
+            else
+            {
+                CurrentDevice.SetDeviceStatus(DateTimeUtil.Now, 999);
+                try
+                {
+                    await m_application.CheckApplicationInstanceCertificate(false, 0, 1200);
+                    await m_application.Start(m_server);
+                    success = true;
+                }
+                catch (Exception ex)
+                {
+                    if (success)
+                        LogMessage.LogWarning(ex, "无法启动服务");
+                    success = false;
+                }
+            }
+
             ////变化推送
             var varList = CollectVariableRunTimes.ToListWithDequeue();
             if (varList?.Count != 0)
