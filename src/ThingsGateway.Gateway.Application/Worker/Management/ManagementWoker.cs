@@ -126,6 +126,9 @@ public class ManagementWoker : BackgroundService
         GlobalData = _serviceScope.ServiceProvider.GetService<GlobalData>();
         Options = App.GetOptions<ManagementOptions>();
         IsStartBusinessDevice = Options.Redundancy.Enable ? Options.Redundancy.IsStartBusinessDevice : true;
+        //初始化直接启动
+        IsStart = true;
+        StartLock.Release();
         if (Options.Redundancy.Enable)
         {
             var udpDmtp = GetUdpDmtp(Options);
