@@ -11,6 +11,7 @@
 using SqlSugar;
 
 using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace ThingsGateway.Plugin.SqlDB;
 
@@ -24,6 +25,29 @@ public class SqlDBDateSplitTableService : DateSplitTableService
     }
 
     #region Core
+
+    public override List<SplitTableInfo> GetAllTables(ISqlSugarClient db, EntityInfo EntityInfo, List<DbTableInfo> tableInfos)
+    {
+        CheckTableName(EntityInfo.DbTableName);
+        string regex = "^" + EntityInfo.DbTableName.Replace("{year}", "([0-9]{2,4})").Replace("{day}", "([0-9]{1,2})").Replace("{month}", "([0-9]{1,2})").Replace("{name}", sqlDBProducerProperty.HisDBTableName);
+        List<string> list = (from it in tableInfos
+                             where Regex.IsMatch(it.Name, regex, RegexOptions.IgnoreCase)
+                             select it.Name).Reverse().ToList();
+        List<SplitTableInfo> list2 = new List<SplitTableInfo>();
+        foreach (string item in list)
+        {
+            SplitTableInfo splitTableInfo = new SplitTableInfo();
+            splitTableInfo.TableName = item;
+            Match match = Regex.Match(item, regex, RegexOptions.IgnoreCase);
+            string value = match.Groups[1].Value;
+            string value2 = match.Groups[2].Value;
+            string value3 = match.Groups[3].Value;
+            splitTableInfo.Date = GetDate(value, value2, value3, EntityInfo.DbTableName);
+            list2.Add(splitTableInfo);
+        }
+
+        return list2.OrderByDescending((SplitTableInfo it) => it.Date).ToList();
+    }
 
     public override string GetTableName(ISqlSugarClient db, EntityInfo EntityInfo)
     {
@@ -53,7 +77,69 @@ public class SqlDBDateSplitTableService : DateSplitTableService
 
     #endregion Core
 
+    #region Private Models
+
+    internal class SplitTableSort
+    {
+        public string Name { get; set; }
+        public int Sort { get; set; }
+    }
+
+    #endregion Private Models
+
     #region Common Helper
+
+    private DateTime GetDate(string group1, string group2, string group3, string dbTableName)
+    {
+        var yearIndex = dbTableName.IndexOf("{year}");
+        var dayIndex = dbTableName.IndexOf("{day}");
+        var monthIndex = dbTableName.IndexOf("{month}");
+        List<SplitTableSort> tables = new List<SplitTableSort>();
+        tables.Add(new SplitTableSort() { Name = "{year}", Sort = yearIndex });
+        tables.Add(new SplitTableSort() { Name = "{day}", Sort = dayIndex });
+        tables.Add(new SplitTableSort() { Name = "{month}", Sort = monthIndex });
+        tables = tables.OrderBy(it => it.Sort).ToList();
+        var year = "";
+        var month = "";
+        var day = "";
+        if (tables[0].Name == "{year}")
+        {
+            year = group1;
+        }
+        if (tables[1].Name == "{year}")
+        {
+            year = group2;
+        }
+        if (tables[2].Name == "{year}")
+        {
+            year = group3;
+        }
+        if (tables[0].Name == "{month}")
+        {
+            month = group1;
+        }
+        if (tables[1].Name == "{month}")
+        {
+            month = group2;
+        }
+        if (tables[2].Name == "{month}")
+        {
+            month = group3;
+        }
+        if (tables[0].Name == "{day}")
+        {
+            day = group1;
+        }
+        if (tables[1].Name == "{day}")
+        {
+            day = group2;
+        }
+        if (tables[2].Name == "{day}")
+        {
+            day = group3;
+        }
+        return Convert.ToDateTime($"{year}-{month}-{day}");
+    }
 
     private string GetTableNameByDate(EntityInfo EntityInfo, SplitType splitType, DateTime date)
     {
@@ -71,6 +157,17 @@ public class SqlDBDateSplitTableService : DateSplitTableService
         {
             return str;
         }
+    }
+
+    private static void CheckTableName(string dbTableName)
+    {
+        Check.Exception(!dbTableName.Contains("{year}"), "table name need {{year}}", "分表表名需要占位符 {{year}}");
+        Check.Exception(!dbTableName.Contains("{month}"), "table name need {{month}}", "分表表名需要占位符 {{month}} ");
+        Check.Exception(!dbTableName.Contains("{day}"), "table name need {{day}}", "分表表名需要占位符{{day}}");
+        Check.Exception(Regex.Matches(dbTableName, @"\{year\}").Count > 1, " There can only be one {{year}}", " 只能有一个 {{year}}");
+        Check.Exception(Regex.Matches(dbTableName, @"\{month\}").Count > 1, "There can only be one {{month}}", "只能有一个 {{month}} ");
+        Check.Exception(Regex.Matches(dbTableName, @"\{day\}").Count > 1, "There can only be one {{day}}", "只能有一个{{day}}");
+        Check.Exception(Regex.IsMatch(dbTableName, @"\d\{|\}\d"), " '{{' or  '}}'  can't be numbers nearby", "占位符相令一位不能是数字,比如 : 1{{day}}2 错误 , 正确: 1_{{day}}_2");
     }
 
     #endregion Common Helper
