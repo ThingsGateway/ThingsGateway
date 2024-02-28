@@ -483,6 +483,7 @@ public abstract class DeviceWorker : BackgroundService
         finally
         {
             otherstarted = true;
+            otherstoped = false;
         }
     }
 
@@ -503,6 +504,7 @@ public abstract class DeviceWorker : BackgroundService
         finally
         {
             otherstoped = true;
+            otherstarted = false;
         }
     }
 
