@@ -2,7 +2,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="Mapster" Version="7.4.0" />
-		<PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.5" />
+		<PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.0" />
 		<PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.2" />
 		<PackageReference Include="MySqlConnector" Version="2.3.5" />
 		<PackageReference Include="Npgsql" Version="8.0.2" />
