@@ -164,7 +164,7 @@ public class HardwareInfoWorker : BackgroundService
         return data.ToList();
     }
 
-    private LiteDBCache<HisHardwareInfo> cache = LiteDBCacheUtil.GetDB<HisHardwareInfo>(nameof(APPInfo), $"{typeof(HisHardwareInfo).FullName}", false);
+    private LiteDBCache<HisHardwareInfo> cache = LiteDBCacheUtil.GetDB<HisHardwareInfo>(nameof(APPInfo), $"{typeof(HisHardwareInfo).FullName}", true, false);
 }
 
 /// <inheritdoc/>

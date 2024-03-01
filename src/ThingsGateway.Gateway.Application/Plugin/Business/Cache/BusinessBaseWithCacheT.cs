@@ -33,7 +33,10 @@ public abstract class BusinessBaseWithCacheT<T> : BusinessBase
     /// <summary>
     /// 获取缓存对象，注意每次获取的对象可能不一样，如顺序操作，需固定引用
     /// </summary>
-    protected virtual LiteDBCache<LiteDBDefalutCacheItem<T>> LiteDBCacheT => LiteDBCacheUtil.GetDB<LiteDBDefalutCacheItem<T>>(CurrentDevice.Id.ToString(), $"{CurrentDevice.PluginName}{typeof(T).FullName}_{nameof(T)}");
+    protected virtual LiteDBCache<LiteDBDefalutCacheItem<T>> LiteDBCacheT(bool isInsert)
+    {
+        return LiteDBCacheUtil.GetDB<LiteDBDefalutCacheItem<T>>(CurrentDevice.Id.ToString(), $"{CurrentDevice.PluginName}{typeof(T).FullName}_{nameof(T)}", isInsert);
+    }
 
     protected override IProtocol? Protocol => null;
 
@@ -101,7 +104,7 @@ public abstract class BusinessBaseWithCacheT<T> : BusinessBase
         {
             #region //成功上传时，补上传缓存数据
 
-            if (success)
+            if (IsConnected())
             {
                 List<long> successIds = new();
 
@@ -111,7 +114,7 @@ public abstract class BusinessBaseWithCacheT<T> : BusinessBase
                     while (!cancellationToken.IsCancellationRequested)
                     {
                         //循环获取
-                        var varList = LiteDBCacheT.GetPage(successCount, _businessPropertyWithCache.SplitSize).ToList(); //按最大列表数量分页
+                        var varList = LiteDBCacheT(false).GetPage(successCount, _businessPropertyWithCache.SplitSize); //按最大列表数量分页
                         if (varList?.Count != 0)
                         {
                             try
@@ -151,7 +154,7 @@ public abstract class BusinessBaseWithCacheT<T> : BusinessBase
                     LogMessage?.LogWarning(ex);
                 }
                 if (successIds.Count > 0)
-                    LiteDBCacheT.DeleteMany(a => successIds.Contains(a.Id));
+                    LiteDBCacheT(false).DeleteMany(a => successIds.Contains(a.Id));
             }
 
             #endregion //成功上传时，补上传缓存数据
@@ -165,7 +168,7 @@ public abstract class BusinessBaseWithCacheT<T> : BusinessBase
     protected virtual void AddCache(List<LiteDBDefalutCacheItem<T>> data)
     {
         if (data?.Count > 0)
-            LiteDBCacheT.AddRange(data);
+            LiteDBCacheT(true).AddRange(data);
     }
 
     /// <summary>

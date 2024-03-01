@@ -24,7 +24,10 @@ public abstract class BusinessBaseWithCacheTTT<T, T2, T3> : BusinessBaseWithCach
     /// <summary>
     /// 获取缓存对象，注意每次获取的对象可能不一样，如顺序操作，需固定引用
     /// </summary>
-    protected virtual LiteDBCache<LiteDBDefalutCacheItem<T3>> LiteDBCacheT3 => LiteDBCacheUtil.GetDB<LiteDBDefalutCacheItem<T3>>(CurrentDevice.Id.ToString(), $"{CurrentDevice.PluginName}{typeof(T3).FullName}_{nameof(T3)}");
+    protected virtual LiteDBCache<LiteDBDefalutCacheItem<T3>> LiteDBCacheT3(bool isInsert)
+    {
+        return LiteDBCacheUtil.GetDB<LiteDBDefalutCacheItem<T3>>(CurrentDevice.Id.ToString(), $"{CurrentDevice.PluginName}{typeof(T3).FullName}_{nameof(T3)}", isInsert);
+    }
 
     protected ConcurrentQueue<LiteDBDefalutCacheItem<T3>> _memoryT3Queue = new();
 
@@ -35,7 +38,7 @@ public abstract class BusinessBaseWithCacheTTT<T, T2, T3> : BusinessBaseWithCach
     protected virtual void AddCache(List<LiteDBDefalutCacheItem<T3>> data)
     {
         if (data?.Count > 0)
-            LiteDBCacheT3.AddRange(data);
+            LiteDBCacheT3(true).AddRange(data);
     }
 
     /// <summary>
@@ -132,7 +135,7 @@ public abstract class BusinessBaseWithCacheTTT<T, T2, T3> : BusinessBaseWithCach
         {
             #region //成功上传时，补上传缓存数据
 
-            if (success)
+            if (IsConnected())
             {
                 List<long> successIds = new();
 
@@ -142,7 +145,7 @@ public abstract class BusinessBaseWithCacheTTT<T, T2, T3> : BusinessBaseWithCach
                     while (!cancellationToken.IsCancellationRequested)
                     {
                         //循环获取
-                        var varList = LiteDBCacheT3.GetPage(successCount, _businessPropertyWithCache.SplitSize).ToList(); //按最大列表数量分页
+                        var varList = LiteDBCacheT3(false).GetPage(successCount, _businessPropertyWithCache.SplitSize); //按最大列表数量分页
                         if (varList?.Count != 0)
                         {
                             try
@@ -182,7 +185,7 @@ public abstract class BusinessBaseWithCacheTTT<T, T2, T3> : BusinessBaseWithCach
                     LogMessage?.LogWarning(ex);
                 }
                 if (successIds.Count > 0)
-                    LiteDBCacheT3.DeleteMany(a => successIds.Contains(a.Id));
+                    LiteDBCacheT3(false).DeleteMany(a => successIds.Contains(a.Id));
             }
 
             #endregion //成功上传时，补上传缓存数据

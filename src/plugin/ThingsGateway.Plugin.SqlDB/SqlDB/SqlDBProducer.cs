@@ -77,7 +77,7 @@ YitIdHelper.NextId())
                     var varList = CurrentDevice.VariableRunTimes.ToList().Adapt<List<SQLRealValue>>();
 
                     var result = await UpdateAsync(varList, cancellationToken);
-                    if (success != result.IsSuccess)
+                    if (result != null && success != result.IsSuccess)
                     {
                         if (!result.IsSuccess)
                             LogMessage.LogWarning(result.ToString());

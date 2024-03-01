@@ -61,73 +61,104 @@ public class LiteDBCache<T> : IDisposable where T : IPrimaryIdEntity
 
     public void Dispose()
     {
-        try { _dbProvider.Dispose(); } catch { }
+        lock (this)
+        {
+            try { _dbProvider.Dispose(); } catch { }
+        }
     }
 
-    public IEnumerable<T>? GetPage(int skipCount, int pageSize)
+    public List<T>? GetPage(int skipCount, int pageSize)
     {
-        var results = Collection.Find(Query.All(), skipCount, pageSize);
-        return results;
+        lock (this)
+        {
+            var results = Collection.Find(Query.All(), skipCount, pageSize).ToList();
+            return results;
+        }
     }
 
     public T? GetOne(long id)
     {
-        var results = Collection.FindById(id);
-        return results;
+        lock (this)
+        {
+            var results = Collection.FindById(id);
+            return results;
+        }
     }
 
     public IEnumerable<T>? Get(long[] ids)
     {
-        var results = Collection.Find(a => ids.Contains(a.Id));
-        return results;
+        lock (this)
+        {
+            var results = Collection.Find(a => ids.Contains(a.Id));
+            return results;
+        }
     }
 
     public IEnumerable<T>? GetAll()
     {
-        var results = Collection.FindAll();
-        return results;
+        lock (this)
+        {
+            var results = Collection.FindAll();
+            return results;
+        }
     }
 
     public int AddRange(IEnumerable<T> data, int batchSize = 5000)
     {
-        var results = Collection.InsertBulk(data, batchSize);
-        return results;
+        lock (this)
+        {
+            var results = Collection.InsertBulk(data, batchSize);
+            return results;
+        }
     }
 
     public void Add(T data)
     {
-        Collection.Insert(data);
+        lock (this)
+        {
+            Collection.Insert(data);
+        }
     }
 
     public int DeleteMany(IEnumerable<T> data)
     {
-        var results = Collection.DeleteMany(a => data.Select(item => item.Id).Contains(a.Id));
-        return results;
+        lock (this)
+        {
+            var results = Collection.DeleteMany(a => data.Select(item => item.Id).Contains(a.Id));
+            return results;
+        }
     }
 
     public int DeleteMany(Expression<Func<T, bool>> predicate)
     {
-        var results = Collection.DeleteMany(predicate);
-        return results;
+        lock (this)
+        {
+            var results = Collection.DeleteMany(predicate);
+            return results;
+        }
     }
 
     public int DeleteMany(BsonExpression bsonExpression)
     {
-        var results = Collection.DeleteMany(bsonExpression);
-        return results;
+        lock (this)
+        {
+            var results = Collection.DeleteMany(bsonExpression);
+            return results;
+        }
     }
 
     /// <summary>
     /// init database
     /// </summary>
-    public void InitDb()
+    public void InitDb(bool isRebuild = false)
     {
-        lock (_dbProvider)
+        lock (this)
         {
             try
             {
                 _dbProvider.Checkpoint();
-                //_dbProvider.Rebuild();
+                if (isRebuild)
+                    _dbProvider.Rebuild();
                 lock (Collection)
                 {
                     //建立索引
@@ -141,15 +172,18 @@ public class LiteDBCache<T> : IDisposable where T : IPrimaryIdEntity
 
     private LiteDatabase GetConnection(LiteDBOptions options)
     {
-        ConnectionString builder = new ConnectionString()
+        lock (this)
         {
-            Filename = options.DataSource,
-            //InitialSize = options.InitialSize,
-            Connection = options.ConnectionType,
-            Password = options.Password
-        };
-        var _conn = new LiteDatabase(builder);
+            ConnectionString builder = new ConnectionString()
+            {
+                Filename = options.DataSource,
+                //InitialSize = options.InitialSize,
+                Connection = options.ConnectionType,
+                Password = options.Password
+            };
+            var _conn = new LiteDatabase(builder);
 
-        return _conn;
+            return _conn;
+        }
     }
 }

@@ -9,6 +9,7 @@
 //------------------------------------------------------------------------------
 
 using Furion;
+using Furion.Logging.Extensions;
 
 using NewLife;
 
@@ -32,7 +33,7 @@ public static class LiteDBCacheUtil
     /// 如果当前文件的大小超限，则返回新的链接
     /// 如果当前文件的数量超限，则删除部分旧文件
     /// </summary>
-    public static LiteDBCache<T>? GetDB<T>(string id, string typeName, bool isDeleteRule = true) where T : IPrimaryIdEntity
+    public static LiteDBCache<T>? GetDB<T>(string id, string typeName, bool isInsert, bool isDeleteRule = true) where T : IPrimaryIdEntity
     {
         lock (_dictObject)
         {
@@ -49,6 +50,7 @@ public static class LiteDBCacheUtil
                     var driveUsage = (100 - (drive.TotalFreeSpace * 100.00 / drive.TotalSize));
                     if (driveUsage > LiteDBCacheUtil.config.MaxDriveUsage)
                     {
+                        $"磁盘使用率超限，将删除缓存文件".LogInformation();
                         //删除全部文件夹中旧文件
                         string[] dirs = Directory.GetDirectories(GetFileBasePath());
                         //遍历全部文件夹，删除90%的文件
@@ -89,6 +91,7 @@ public static class LiteDBCacheUtil
                     string[] files = Directory.GetFiles(dir, searchPattern);
                     if (files.Length > LiteDBCacheUtil.config.MaxFileCount)
                     {
+                        $"{dir}缓存文件数量超限，将删除文件".LogInformation();
                         //数量超限就删除旧文件
                         //按文件更改时间降序排序
                         var sortedFiles = files.OrderBy(file => File.GetLastWriteTime(file)).ToArray();
@@ -124,8 +127,9 @@ public static class LiteDBCacheUtil
                 }
                 var mb1 = Math.Round((double)length1 / (double)1024 / (double)1024, 2);
 
-                if (mb1 > LiteDBCacheUtil.config.MaxFileLength)
+                if (isInsert && mb1 > LiteDBCacheUtil.config.MaxFileLength)
                 {
+                    $"{fullName}缓存文件大小超限，将产生新文件".LogInformation();
                     //大小超限就返回新的文件
                     var newFullName = dir.CombinePath($"{fileStart}_{maxNum + 1}{ex}");
                     {
@@ -162,23 +166,54 @@ public static class LiteDBCacheUtil
                     }
                 }
             }
-
             {
                 if (_dict.TryGetValue(fullName, out object cache1))
                 {
                     //返回原连接
                     try
                     {
-                        return (LiteDBCache<T>)cache1;
+                        var connect = (LiteDBCache<T>)cache1;
+                        if (maxNum > 1 && !isInsert)
+                        {
+                            if (connect.GetPage(1, 1).Count == 0)
+                            {
+                                //无内容时，删除文件
+                                DisposeAndDeleteFile(fullName, cache1);
+                                return GetDB<T>(id, typeName, isInsert, isDeleteRule);
+                            }
+                        }
+                        else
+                        {
+                            if (maxNum == 1)
+                            {
+                                if (isDeleteRule)
+                                {
+                                    long? length1 = null;
+                                    if (!File.Exists(fullName))
+                                    {
+                                        length1 = 0;
+                                    }
+                                    else
+                                    {
+                                        length1 = new FileInfo(fullName).Length;
+                                    }
+                                    var mb1 = Math.Round((double)length1 / (double)1024 / (double)1024, 2);
+
+                                    if (mb1 > LiteDBCacheUtil.config.MaxFileLength)
+                                    {
+                                        connect.InitDb(true);
+                                    }
+                                }
+                            }
+                        }
+                        return connect;
                     }
                     catch (Exception)
                     {
-                        //可能类型变换导致错误，此时返回null,并释放连接
+                        //可能类型变换导致错误，此时释放连接
                         DisposeAndDeleteFile(fullName, cache1);
 
-                        var cache = new LiteDBCache<T>(id, typeName, fullName);
-                        _dict.TryAdd(fullName, cache);
-                        return cache;
+                        return GetDB<T>(id, typeName, isInsert, isDeleteRule);
                     }
                 }
                 {
@@ -194,6 +229,7 @@ public static class LiteDBCacheUtil
     {
         if (File.Exists(file))
         {
+            $"删除{file}缓存文件".LogInformation();
             File.SetAttributes(file, FileAttributes.Normal);
             File.Delete(file);
         }
@@ -238,24 +274,40 @@ public static class LiteDBCacheUtil
     {
         var dir = GetFilePath(id);
         var fileStart = GetFileStartName(typeName);
+        string[] files = Directory.GetFiles(dir, $"{fileStart}_*.ldb");
+        int maxNumber = 1;
 
+        Regex regex = new Regex(@"_(\d+)\.ldb$");
+
+        foreach (var file in files)
+        {
+            Match match = regex.Match(file);
+            if (match.Success && int.TryParse(match.Groups[1].Value, out int number))
+            {
+                if (number > maxNumber)
+                {
+                    maxNumber = number;
+                }
+            }
+        }
+        return maxNumber;
         //搜索全部符合条件的文件
-        if (!File.Exists(dir.CombinePath($"{fileStart}_{ex}")))
-        {
-            return null;
-        }
-        var index = 1;
-        while (true)
-        {
-            var newFileName = dir.CombinePath($"{fileStart}_{index}{ex}");
-            if (System.IO.File.Exists(newFileName))
-            {
-                index++;
-            }
-            else
-            {
-                return (index == 1 ? null : index - 1);
-            }
-        }
+        //if (!File.Exists(dir.CombinePath($"{fileStart}_1{ex}")))
+        //{
+        //    return 1;
+        //}
+        //var index = 2;
+        //while (true)
+        //{
+        //    var newFileName = dir.CombinePath($"{fileStart}_{index}{ex}");
+        //    if (System.IO.File.Exists(newFileName))
+        //    {
+        //        index++;
+        //    }
+        //    else
+        //    {
+        //        return (index - 1);
+        //    }
+        //}
     }
 }

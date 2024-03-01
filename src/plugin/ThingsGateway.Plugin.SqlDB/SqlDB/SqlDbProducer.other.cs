@@ -83,10 +83,15 @@ public partial class SqlDBProducer : BusinessBaseWithCacheInterval<SQLHistoryVal
             db.Ado.CancellationToken = cancellationToken;
             if (!_initRealData)
             {
-                var result = await db.Storageable(datas).As(_driverPropertys.ReadDBTableName).PageSize(5000).ExecuteSqlBulkCopyAsync();
-                if (result > 0)
-                    LogMessage.Trace($"主题：{nameof(SQLRealValue)}{Environment.NewLine} ，数量：{result}");
-                _initRealData = true;
+                if (datas?.Count != 0)
+                {
+                    var result = await db.Storageable(datas).As(_driverPropertys.ReadDBTableName).PageSize(5000).ExecuteSqlBulkCopyAsync();
+                    if (result > 0)
+                        LogMessage.Trace($"主题：{nameof(SQLRealValue)}{Environment.NewLine} ，数量：{result}");
+                    _initRealData = true;
+                    return new();
+                }
+                return null;
             }
             else
             {
@@ -94,10 +99,11 @@ public partial class SqlDBProducer : BusinessBaseWithCacheInterval<SQLHistoryVal
                 {
                     var result = await db.Fastest<SQLRealValue>().AS(_driverPropertys.ReadDBTableName).PageSize(100000).BulkUpdateAsync(datas);
                     LogMessage.Trace($"主题：{nameof(SQLRealValue)}{Environment.NewLine} ，数量：{result}");
+                    return new();
                 }
+                return null;
             }
 
-            return new();
         }
         catch (Exception ex)
         {

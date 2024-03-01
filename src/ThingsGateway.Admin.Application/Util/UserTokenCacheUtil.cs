@@ -15,7 +15,7 @@ namespace ThingsGateway.Admin.Application;
 /// </summary>
 public class UserTokenCacheUtil
 {
-    public static LiteDBCache<UserTokenCache> UserTokenCache = LiteDBCacheUtil.GetDB<UserTokenCache>(nameof(UserTokenCache), $"{typeof(UserTokenCache).FullName}", false);
+    public static LiteDBCache<UserTokenCache> UserTokenCache = LiteDBCacheUtil.GetDB<UserTokenCache>(nameof(UserTokenCache), $"{typeof(UserTokenCache).FullName}", true, false);
 
     public static List<VerificatInfo>? HashGetOne(long id)
     {
