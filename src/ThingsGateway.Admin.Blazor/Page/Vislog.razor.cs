@@ -63,6 +63,7 @@ public partial class Vislog
 
         eChartsOption = new
         {
+            backgroundColor = "",
             tooltip = new { trigger = "axis" },
             legend = new { data = new[] { AppService.I18n.T("登录"), AppService.I18n.T("登出") }, left = "5%" },
             grid = new { left = "3%", right = "4%", bottom = "3%", containLabel = true },

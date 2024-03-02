@@ -77,8 +77,6 @@ html {
     line-height: 7rem !important;
     /* identical to box height */
     letter-spacing: -0.093755em !important;
-    /* default color */
-    color: #1B2559;
 }
 
 .h2, .text-h2, h2 {
@@ -90,8 +88,6 @@ html {
     line-height: 4.375rem !important;
     /* identical to box height */
     letter-spacing: -0.03125em !important;
-    /* default color */
-    color: #323D6F;
 }
 
 .h3, .text-h3, h3 {
@@ -101,8 +97,6 @@ html {
     font-weight: 900 !important;
     font-size: 3rem !important;
     line-height: 3.5rem !important;
-    /* default color */
-    color: #323D6F;
 }
 
 .h4, .text-h4, h4 {
@@ -114,8 +108,6 @@ html {
     line-height: 2.625rem !important;
     /* identical to box height */
     letter-spacing: 0.02em !important;
-    /* default color */
-    color: #323D6F;
 }
 
 .h5, .text-h5, h5 {
@@ -126,8 +118,6 @@ html {
     font-size: 1.5rem !important;
     line-height: 2.25rem !important;
     /* identical to box height */
-    /* default color */
-    color: #1B2559;
 }
 
 .h6, .text-h6, h6 {
@@ -139,8 +129,6 @@ html {
     line-height: 1.875rem !important;
     /* identical to box height */
     letter-spacing: 0.01em !important;
-    /* default color */
-    color: #1B2559;
 }
 
 .h7, .text-h7, h7 {
@@ -152,8 +140,6 @@ html {
     line-height: 1.6875rem !important;
     /* identical to box height */
     letter-spacing: 0.01em !important;
-    /* default color */
-    color: #323D6F;
 }
 
 .text-subtitle {
@@ -165,8 +151,6 @@ html {
     line-height: 1.1875rem !important;
     /* identical to box height */
     letter-spacing: 0.009375rem !important;
-    /* default color */
-    color: #1B2559;
 }
 
 .text-subtitle2 {
@@ -178,8 +162,6 @@ html {
     line-height: 1rem !important;
     /* identical to box height */
     letter-spacing: 0.00625rem !important;
-    /* default color */
-    color: #323D6F;
 }
 
 .text-body {
@@ -190,8 +172,6 @@ html {
     font-size: 1rem !important;
     /* identical to box height */
     line-height: 1.1875rem !important;
-    /* default color */
-    color: #1B2559;
 }
 
 .text-body2 {
@@ -203,8 +183,6 @@ html {
     line-height: 1rem !important;
     /* identical to box height */
     letter-spacing: 0.015625rem !important;
-    /* default color */
-    color: #485585 !important;
 }
 
 .text-body3 {
@@ -215,8 +193,6 @@ html {
     font-size: 1rem !important;
     /* identical to box height */
     line-height: 1.75rem !important;
-    /* default color */
-    color: #485585;
 }
 
 .text-btn {
@@ -226,8 +202,6 @@ html {
     font-weight: 500 !important;
     font-size: 0.875rem !important;
     line-height: 1rem !important;
-    /* default color */
-    color: #323D6F !important;
 }
 
 .text-caption {
@@ -237,8 +211,6 @@ html {
     font-weight: 500 !important;
     font-size: 0.75rem !important;
     line-height: 1.125rem !important;
-    /* default color */
-    color: #A3AED0;
 }
 
 .text-overline {
@@ -250,58 +222,8 @@ html {
     line-height: 0.75rem !important;
     /* identical to box height */
     letter-spacing: 0.09375rem !important;
-    /* default color */
-    color: #A3AED0;
 }
 
-.neutral {
-    background-color: #1B2559;
-}
-
-.neutral-lighten-1 {
-    background-color: #323D6F;
-}
-
-.neutral-lighten-2 {
-    background-color: #485585;
-}
-
-.neutral-lighten-3 {
-    background-color: #7681AB;
-}
-
-.neutral-lighten-4 {
-    background-color: #A3AED0;
-}
-
-.neutral-lighten-5 {
-    background-color: #E9EDF7;
-}
-
-.neutral--text {
-    color: #1B2559 !important;
-    caret-color: #1B2559 !important;
-}
-
-.neutral-lighten-1--text {
-    color: #323D6F !important;
-    caret-color: #323D6F !important;
-}
-
-.neutral-lighten-2--text {
-    color: #485585 !important;
-    caret-color: #485585 !important;
-}
-
-.neutral-lighten-3--text {
-    color: #7681AB !important;
-    caret-color: #7681AB !important;
-}
-
-.neutral-lighten-4--text {
-    color: #A3AED0 !important;
-    caret-color: #A3AED0 !important;
-}
 /*masa样式覆盖修改*/
 
 :root {
@@ -369,10 +291,6 @@ html {
     min-width: 130px;
 }
 
-.neutral--text {
-    color: #1B2559 !important;
-    caret-color: #1B2559 !important;
-}
 
 .app-code {
     position: relative;

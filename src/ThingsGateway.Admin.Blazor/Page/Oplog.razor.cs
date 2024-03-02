@@ -63,6 +63,7 @@ public partial class Oplog
 
         eChartsOption = new
         {
+            backgroundColor = "",
             tooltip = new { trigger = "axis" },
             legend = new { data = new[] { AppService.I18n.T("操作"), AppService.I18n.T("异常") }, left = "5%" },
             grid = new { left = "3%", right = "4%", bottom = "3%", containLabel = true },

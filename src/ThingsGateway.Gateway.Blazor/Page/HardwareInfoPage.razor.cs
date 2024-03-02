@@ -63,6 +63,7 @@ public partial class HardwareInfoPage
 
         eChartsOption = new
         {
+            backgroundColor = "",
             tooltip = new { trigger = "axis" },
             legend = new
             {

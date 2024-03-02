@@ -117,6 +117,7 @@ public partial class Index
 
         eChartsOption = new
         {
+            backgroundColor = "",
             tooltip = new { trigger = "axis" },
             legend = new
             {
@@ -192,6 +193,7 @@ public partial class Index
 
         _collectDeviceChart = new
         {
+            backgroundColor = "",
             tooltip = new
             {
                 trigger = "item"
@@ -242,6 +244,7 @@ public partial class Index
 
         _businessDeviceChart = new
         {
+            backgroundColor = "",
             tooltip = new
             {
                 trigger = "item"
@@ -291,6 +294,7 @@ public partial class Index
 
         _variableChart = new
         {
+            backgroundColor = "",
             tooltip = new
             {
                 trigger = "item"

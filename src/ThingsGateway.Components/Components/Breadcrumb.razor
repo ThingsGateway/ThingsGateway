@@ -4,7 +4,7 @@
 @using BlazorComponent;
 @using Masa.Blazor;
 <div class="d-flex align-center py-1">
-    <MBreadcrumbs Routable @key="@(Guid.NewGuid())" Class="pa-0">
+    <MBreadcrumbs Routable Class="pa-0">
          <DividerContent>
              <MIcon Class="ma-0 pa-0">mdi-chevron-right</MIcon>
          </DividerContent>
@@ -18,7 +18,7 @@
                     var item = BreadcrumbItems[i];
                     var isLast = i == BreadcrumbItems.Count - 1;
                     <MBreadcrumbsItem Href="@item.Href">
-                        <span class="@(isLast ? "text-subtitle2" : "text-body2")">@item.Text</span>
+                        <span class="@(isLast ? "text-subtitle2 primary--text" : "text-body2 primary--text")">@item.Text</span>
                     </MBreadcrumbsItem>
                 }
             </div>

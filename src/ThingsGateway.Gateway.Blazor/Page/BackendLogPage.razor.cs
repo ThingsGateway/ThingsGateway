@@ -63,6 +63,7 @@ public partial class BackendLogPage
 
         eChartsOption = new
         {
+            backgroundColor = "",
             tooltip = new { trigger = "axis" },
             legend = new { data = new[] { AppService.I18n.T("Debug"), AppService.I18n.T("Info"), AppService.I18n.T("Warn"), AppService.I18n.T("Error") }, left = "5%" },
             grid = new { left = "3%", right = "4%", bottom = "3%", containLabel = true },
