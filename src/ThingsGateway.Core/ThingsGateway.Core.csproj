@@ -3,7 +3,7 @@
 
 
 	<ItemGroup>
-		<PackageReference Include="NewLife.Core" Version="10.7.2024.202" />
+		<PackageReference Include="NewLife.Core" Version="10.8.2024.303" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 	</ItemGroup>
 	
