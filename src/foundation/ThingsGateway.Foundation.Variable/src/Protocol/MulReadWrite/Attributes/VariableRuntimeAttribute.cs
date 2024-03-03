@@ -25,4 +25,14 @@ public class VariableRuntimeAttribute : Attribute
     /// 数据类型，默认不填时会使用属性的Type
     /// </summary>
     public DataTypeEnum DataType { get; set; }
+
+    /// <summary>
+    /// 读取表达式
+    /// </summary>
+    public string? ReadExpressions { get; set; }
+
+    /// <summary>
+    /// 写入表达式
+    /// </summary>
+    public string? WriteExpressions { get; set; }
 }

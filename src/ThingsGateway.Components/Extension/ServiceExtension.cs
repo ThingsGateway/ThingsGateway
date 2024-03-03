@@ -27,6 +27,10 @@ public static class ServiceExtension
     {
         IMasaBlazorBuilder? blazorBuilder = services.AddMasaBlazor(options =>
          {
+             options.ConfigureBreakpoint(breakpoint =>
+             {
+                 breakpoint.MobileBreakpoint = Breakpoints.Xs; // This is equivalent to a vlaue of 960
+             });
              options.Defaults = new Dictionary<string, IDictionary<string, object>>()
              {
                 {

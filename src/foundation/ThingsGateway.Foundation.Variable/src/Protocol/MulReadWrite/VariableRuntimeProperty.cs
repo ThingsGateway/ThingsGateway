@@ -15,13 +15,25 @@ namespace ThingsGateway.Foundation;
 /// <summary>
 /// VariableRuntimeProperty
 /// </summary>
-internal class VariableRuntimeProperty
+public class VariableRuntimeProperty
 {
+    /// <summary>
+    /// Attribute
+    /// </summary>
     public VariableRuntimeAttribute Attribute { get; }
-
+    /// <summary>
+    /// Property
+    /// </summary>
     public PropertyInfo Property { get; }
+    /// <summary>
+    /// VariableClass
+    /// </summary>
     public VariableClass VariableClass { get; set; }
-
+    /// <summary>
+    /// VariableRuntimeProperty
+    /// </summary>
+    /// <param name="attribute"></param>
+    /// <param name="property"></param>
     public VariableRuntimeProperty(VariableRuntimeAttribute attribute, PropertyInfo property)
     {
         Attribute = attribute;

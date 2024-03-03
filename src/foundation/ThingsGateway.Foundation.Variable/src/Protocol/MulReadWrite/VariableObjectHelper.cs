@@ -11,12 +11,18 @@
 using System.Reflection;
 
 using ThingsGateway.Foundation;
-
-internal static class VariableObjectHelper
+/// <summary>
+/// VariableObjectHelper
+/// </summary>
+public static class VariableObjectHelper
 {
     private static MemoryCache<Type, Dictionary<string, VariableRuntimeProperty>> variablePropertyDicts = new MemoryCache<Type, Dictionary<string, VariableRuntimeProperty>>();
-
-    public static Dictionary<string, VariableRuntimeProperty> GetPairs(Type type)
+    /// <summary>
+    /// GetVariableRuntimePropertyDict
+    /// </summary>
+    /// <param name="type"></param>
+    /// <returns></returns>
+    public static Dictionary<string, VariableRuntimeProperty> GetVariableRuntimePropertyDict(Type type)
     {
         if (variablePropertyDicts.TryGetValue(type, out var value))
         {

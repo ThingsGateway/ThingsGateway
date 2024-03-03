@@ -11,6 +11,8 @@
 using Newtonsoft.Json.Linq;
 
 using ThingsGateway.Foundation.Extension.Generic;
+using ThingsGateway.Foundation.Extension.String;
+using ThingsGateway.Foundation.Variable;
 
 namespace ThingsGateway.Foundation;
 
@@ -19,11 +21,18 @@ namespace ThingsGateway.Foundation;
 /// </summary>
 public abstract class VariableObject
 {
-    private int maxPack;
-
-    private List<VariableSourceClass>? deviceVariableSourceReads;
-
-    private Dictionary<string, VariableRuntimeProperty>? dict;
+    /// <summary>
+    /// MaxPack
+    /// </summary>
+    protected int MaxPack;
+    /// <summary>
+    /// DeviceVariableSourceReads
+    /// </summary>
+    protected List<VariableSourceClass>? DeviceVariableSourceReads;
+    /// <summary>
+    /// VariableRuntimePropertyDict
+    /// </summary>
+    protected Dictionary<string, VariableRuntimeProperty>? VariableRuntimePropertyDict;
 
     /// <summary>
     /// VariableObject
@@ -31,7 +40,7 @@ public abstract class VariableObject
     public VariableObject(IProtocol protocol, int maxPack)
     {
         this.Protocol = protocol;
-        this.maxPack = maxPack;
+        this.MaxPack = maxPack;
     }
 
     /// <summary>
@@ -42,13 +51,13 @@ public abstract class VariableObject
     /// <summary>
     /// <see cref="VariableRuntimeAttribute"/>特性连读，反射赋值到继承类中的属性
     /// </summary>
-    public async Task<OperResult> MulReadAsync(CancellationToken cancellationToken = default)
+    public virtual async Task<OperResult> MulReadAsync(CancellationToken cancellationToken = default)
     {
         try
         {
             GetVariableSources();
             //连读
-            foreach (var item in deviceVariableSourceReads)
+            foreach (var item in DeviceVariableSourceReads)
             {
                 var result = await Protocol.ReadAsync(item.RegisterAddress, item.Length);
                 if (result.IsSuccess)
@@ -63,12 +72,7 @@ public abstract class VariableObject
                 }
             }
 
-            //结果反射赋值
-            var dict1 = VariableObjectHelper.GetPairs(GetType());
-            foreach (var pair in dict1)
-            {
-                pair.Value.Property.SetValue(this, pair.Value.VariableClass.Value);
-            }
+            SetValue();
             return new();
         }
         catch (Exception ex)
@@ -76,17 +80,40 @@ public abstract class VariableObject
             return new(ex);
         }
     }
+    /// <summary>
+    /// 结果反射赋值
+    /// </summary>
+    protected virtual void SetValue()
+    {
+        //结果反射赋值
+        var dict1 = VariableObjectHelper.GetVariableRuntimePropertyDict(GetType());
+        foreach (var pair in dict1)
+        {
+
+            if (!string.IsNullOrEmpty(pair.Value.Attribute.ReadExpressions))
+            {
+                var data = pair.Value.Attribute.ReadExpressions.GetExpressionsResult(pair.Value.VariableClass.Value);
+                pair.Value.Property.PropertyType.GetTypeValue(data?.ToString(), out var objValue);
+                pair.Value.Property.SetValue(this, objValue);
+            }
+            else
+            {
+                pair.Value.Property.PropertyType.GetTypeValue(pair.Value.VariableClass.Value?.ToString(), out var objValue);
+                pair.Value.Property.SetValue(this, objValue);
+            }
+        }
+    }
 
     /// <summary>
     /// <see cref="VariableRuntimeAttribute"/>特性连读，反射赋值到继承类中的属性
     /// </summary>
-    public OperResult MulRead(CancellationToken cancellationToken = default)
+    public virtual OperResult MulRead(CancellationToken cancellationToken = default)
     {
         try
         {
             GetVariableSources();
             //连读
-            foreach (var item in deviceVariableSourceReads)
+            foreach (var item in DeviceVariableSourceReads)
             {
                 var result = Protocol.Read(item.RegisterAddress, item.Length);
                 if (result.IsSuccess)
@@ -100,13 +127,7 @@ public abstract class VariableObject
                     return new(result);
                 }
             }
-
-            //结果反射赋值
-            var dict1 = VariableObjectHelper.GetPairs(GetType());
-            foreach (var pair in dict1)
-            {
-                pair.Value.Property.SetValue(this, pair.Value.VariableClass.Value);
-            }
+            SetValue();
             return new();
         }
         catch (Exception ex)
@@ -121,7 +142,7 @@ public abstract class VariableObject
     /// <param name="propertyName">属性名称，必须使用<see cref="VariableRuntimeAttribute"/>特性</param>
     /// <param name="value">写入值</param>
     /// <param name="cancellationToken">取消令箭</param>
-    public OperResult WriteValue(string propertyName, object value, CancellationToken cancellationToken = default)
+    public virtual OperResult WriteValue(string propertyName, object value, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -131,11 +152,14 @@ public abstract class VariableObject
                 return new($"propertyName不能为 null 或空。");
             }
 
-            if (!dict.TryGetValue(propertyName, out var variableRuntimeProperty))
+            if (!VariableRuntimePropertyDict.TryGetValue(propertyName, out var variableRuntimeProperty))
             {
                 return new($"该属性未被识别，可能没有使用{typeof(VariableRuntimeAttribute)}特性标识");
             }
-            var result = Protocol.Write(variableRuntimeProperty.VariableClass.RegisterAddress, JToken.FromObject(value), variableRuntimeProperty.VariableClass.DataType, cancellationToken);
+
+            JToken jToken = GetExpressionsValue(value, variableRuntimeProperty);
+
+            var result = Protocol.Write(variableRuntimeProperty.VariableClass.RegisterAddress, jToken, variableRuntimeProperty.VariableClass.DataType, cancellationToken);
             return result;
         }
         catch (Exception ex)
@@ -145,12 +169,32 @@ public abstract class VariableObject
     }
 
     /// <summary>
+    /// GetExpressionsValue
+    /// </summary>
+    /// <param name="value"></param>
+    /// <param name="variableRuntimeProperty"></param>
+    /// <returns></returns>
+    protected virtual JToken GetExpressionsValue(object value, VariableRuntimeProperty variableRuntimeProperty)
+    {
+        var jToken = JToken.FromObject(value);
+        if (!string.IsNullOrEmpty(variableRuntimeProperty.Attribute.WriteExpressions))
+        {
+            object rawdata = jToken is JValue jValue ? jValue.Value : jToken is JArray jArray ? jArray : jToken.ToString();
+
+            object data = variableRuntimeProperty.Attribute.WriteExpressions.GetExpressionsResult(rawdata);
+            jToken = JToken.FromObject(data);
+        }
+
+        return jToken;
+    }
+
+    /// <summary>
     /// 写入值到设备中
     /// </summary>
     /// <param name="propertyName">属性名称，必须使用<see cref="VariableRuntimeAttribute"/>特性</param>
     /// <param name="value">写入值</param>
     /// <param name="cancellationToken">取消令箭</param>
-    public async Task<OperResult> WriteValueAsync(string propertyName, object value, CancellationToken cancellationToken = default)
+    public virtual async Task<OperResult> WriteValueAsync(string propertyName, object value, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -160,11 +204,14 @@ public abstract class VariableObject
                 return new($"propertyName不能为 null 或空。");
             }
 
-            if (!dict.TryGetValue(propertyName, out var variableRuntimeProperty))
+            if (!VariableRuntimePropertyDict.TryGetValue(propertyName, out var variableRuntimeProperty))
             {
                 return new($"该属性未被识别，可能没有使用{typeof(VariableRuntimeAttribute)}特性标识");
             }
-            var result = await Protocol.WriteAsync(variableRuntimeProperty.VariableClass.RegisterAddress, JToken.FromObject(value), variableRuntimeProperty.VariableClass.DataType, cancellationToken);
+
+            JToken jToken = GetExpressionsValue(value, variableRuntimeProperty);
+
+            var result = await Protocol.WriteAsync(variableRuntimeProperty.VariableClass.RegisterAddress, jToken, variableRuntimeProperty.VariableClass.DataType, cancellationToken);
             return result;
         }
         catch (Exception ex)
@@ -172,14 +219,16 @@ public abstract class VariableObject
             return new(ex);
         }
     }
-
-    private void GetVariableSources()
+    /// <summary>
+    /// GetVariableSources
+    /// </summary>
+    protected virtual void GetVariableSources()
     {
-        if (deviceVariableSourceReads == null)
+        if (DeviceVariableSourceReads == null)
         {
-            dict = VariableObjectHelper.GetPairs(GetType());
+            VariableRuntimePropertyDict = VariableObjectHelper.GetVariableRuntimePropertyDict(GetType());
             List<VariableClass> variableClasss = new();
-            foreach (var pair in dict)
+            foreach (var pair in VariableRuntimePropertyDict)
             {
                 var dataType = pair.Value.Attribute.DataType == DataTypeEnum.Object ? Type.GetTypeCode(pair.Value.Property.PropertyType.IsArray ? pair.Value.Property.PropertyType.GetElementType() : pair.Value.Property.PropertyType).GetDataType() : pair.Value.Attribute.DataType;
                 VariableClass variableClass = new VariableClass()
@@ -191,7 +240,7 @@ public abstract class VariableObject
                 pair.Value.VariableClass = variableClass;
                 variableClasss.Add(variableClass);
             }
-            deviceVariableSourceReads = Protocol.LoadSourceRead<VariableSourceClass>(variableClasss, maxPack, 1000);
+            DeviceVariableSourceReads = Protocol.LoadSourceRead<VariableSourceClass>(variableClasss, MaxPack, 1000);
         }
     }
 }
