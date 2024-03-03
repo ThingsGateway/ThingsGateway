@@ -32,7 +32,7 @@ public abstract class VariableObject
     /// <summary>
     /// VariableRuntimePropertyDict
     /// </summary>
-    protected Dictionary<string, VariableRuntimeProperty>? VariableRuntimePropertyDict;
+    public Dictionary<string, VariableRuntimeProperty>? VariableRuntimePropertyDict;
 
     /// <summary>
     /// VariableObject
@@ -59,7 +59,7 @@ public abstract class VariableObject
             //连读
             foreach (var item in DeviceVariableSourceReads)
             {
-                var result = await Protocol.ReadAsync(item.RegisterAddress, item.Length);
+                var result = await Protocol.ReadAsync(item.RegisterAddress, item.Length, cancellationToken);
                 if (result.IsSuccess)
                 {
                     item.VariableRunTimes.PraseStructContent(Protocol, result.Content, item, exWhenAny: true);
@@ -86,10 +86,8 @@ public abstract class VariableObject
     protected virtual void SetValue()
     {
         //结果反射赋值
-        var dict1 = VariableObjectHelper.GetVariableRuntimePropertyDict(GetType());
-        foreach (var pair in dict1)
+        foreach (var pair in VariableRuntimePropertyDict)
         {
-
             if (!string.IsNullOrEmpty(pair.Value.Attribute.ReadExpressions))
             {
                 var data = pair.Value.Attribute.ReadExpressions.GetExpressionsResult(pair.Value.VariableClass.Value);
@@ -115,7 +113,7 @@ public abstract class VariableObject
             //连读
             foreach (var item in DeviceVariableSourceReads)
             {
-                var result = Protocol.Read(item.RegisterAddress, item.Length);
+                var result = Protocol.Read(item.RegisterAddress, item.Length, cancellationToken);
                 if (result.IsSuccess)
                 {
                     item.VariableRunTimes.PraseStructContent(Protocol, result.Content, item, exWhenAny: true);
@@ -174,7 +172,7 @@ public abstract class VariableObject
     /// <param name="value"></param>
     /// <param name="variableRuntimeProperty"></param>
     /// <returns></returns>
-    protected virtual JToken GetExpressionsValue(object value, VariableRuntimeProperty variableRuntimeProperty)
+    public virtual JToken GetExpressionsValue(object value, VariableRuntimeProperty variableRuntimeProperty)
     {
         var jToken = JToken.FromObject(value);
         if (!string.IsNullOrEmpty(variableRuntimeProperty.Attribute.WriteExpressions))

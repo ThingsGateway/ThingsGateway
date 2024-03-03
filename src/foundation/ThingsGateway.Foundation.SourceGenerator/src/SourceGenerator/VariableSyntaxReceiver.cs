@@ -90,7 +90,7 @@ namespace ThingsGateway.Foundation
             {
                 return false;
             }
-            return @class.BaseType.ToDisplayString() == "ThingsGateway.Foundation.VariableObject";
+            return true;
         }
 
         /// <summary>

@@ -163,8 +163,9 @@ public class ModbusSlave : BusinessBase
             var addressStr = tag.Value.GetPropertyValue(DeviceId, nameof(ModbusSlaveVariableProperty.ServiceAddress)).Value;
 
             var thingsGatewayBitConverter = ByteTransUtil.GetTransByAddress(ref addressStr, bitConverter);
-
-            var result = await tag.Value.SetValueToDeviceAsync(thingsGatewayBitConverter.GetDataFormBytes(writeValue, Enum.TryParse(type, out DataTypeEnum dataType) ? dataType : tag.Value.DataType).ToString(),
+            var data = thingsGatewayBitConverter.GetDataFormBytes(writeValue, Enum.TryParse(type, out DataTypeEnum dataType) ? dataType : tag.Value.DataType);
+            if (!data.IsSuccess) return data;
+            var result = await tag.Value.SetValueToDeviceAsync(data.Content.ToString(),
                     $"{nameof(ModbusSlave)}-{CurrentDevice.Name}-{$"{channel}"}");
             return result;
         }

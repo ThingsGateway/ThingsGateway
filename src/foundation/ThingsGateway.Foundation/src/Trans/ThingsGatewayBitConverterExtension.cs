@@ -8,6 +8,8 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using Newtonsoft.Json.Linq;
+
 namespace ThingsGateway.Foundation;
 
 /// <summary>
@@ -20,45 +22,133 @@ public static class ThingsGatewayBitConverterExtension
     /// <summary>
     /// 根据数据类型获取实际值
     /// </summary>
-    public static object GetDataFormBytes(this IThingsGatewayBitConverter thingsGatewayBitConverter, byte[] bytes, DataTypeEnum dataType, int offset = 0)
+    public static OperResult<object> GetDataFormBytes(this IThingsGatewayBitConverter thingsGatewayBitConverter, byte[] bytes, DataTypeEnum dataType, int offset = 0)
     {
         switch (dataType)
         {
             case DataTypeEnum.String:
-                return thingsGatewayBitConverter.ToString(bytes, offset, bytes.Length - offset);
+                return new() { Content = thingsGatewayBitConverter.ToString(bytes, offset, bytes.Length - offset) };
 
             case DataTypeEnum.Boolean:
-                return thingsGatewayBitConverter.ToBoolean(bytes, offset);
+                return new() { Content = thingsGatewayBitConverter.ToBoolean(bytes, offset) };
 
             case DataTypeEnum.Byte:
-                return thingsGatewayBitConverter.ToByte(bytes, offset);
+                return new() { Content = thingsGatewayBitConverter.ToByte(bytes, offset) };
 
             case DataTypeEnum.Int16:
-                return thingsGatewayBitConverter.ToInt16(bytes, offset);
+                return new() { Content = thingsGatewayBitConverter.ToInt16(bytes, offset) };
 
             case DataTypeEnum.UInt16:
-                return thingsGatewayBitConverter.ToUInt16(bytes, offset);
+                return new() { Content = thingsGatewayBitConverter.ToUInt16(bytes, offset) };
 
             case DataTypeEnum.Int32:
-                return thingsGatewayBitConverter.ToInt32(bytes, offset);
+                return new() { Content = thingsGatewayBitConverter.ToInt32(bytes, offset) };
 
             case DataTypeEnum.UInt32:
-                return thingsGatewayBitConverter.ToUInt32(bytes, offset);
+                return new() { Content = thingsGatewayBitConverter.ToUInt32(bytes, offset) };
 
             case DataTypeEnum.Int64:
-                return thingsGatewayBitConverter.ToInt64(bytes, offset);
+                return new() { Content = thingsGatewayBitConverter.ToInt64(bytes, offset) };
 
             case DataTypeEnum.UInt64:
-                return thingsGatewayBitConverter.ToUInt64(bytes, offset);
+                return new() { Content = thingsGatewayBitConverter.ToUInt64(bytes, offset) };
 
             case DataTypeEnum.Single:
-                return thingsGatewayBitConverter.ToSingle(bytes, offset);
+                return new() { Content = thingsGatewayBitConverter.ToSingle(bytes, offset) };
 
             case DataTypeEnum.Double:
-                return thingsGatewayBitConverter.ToDouble(bytes, offset);
+                return new() { Content = thingsGatewayBitConverter.ToDouble(bytes, offset) };
 
             default:
-                return Task.FromResult(new OperResult(string.Format(FoundationConst.DataTypeNotSupported, dataType)));
+                return new(string.Format(FoundationConst.DataTypeNotSupported, dataType));
+        }
+    }
+
+
+    /// <summary>
+    /// 根据数据类型获取实际值
+    /// </summary>
+    public static OperResult<byte[]> GetBytesFormData(this IThingsGatewayBitConverter thingsGatewayBitConverter, JToken value, DataTypeEnum dataType)
+    {
+        if (thingsGatewayBitConverter.ArrayLength > 1)
+        {
+            switch (dataType)
+            {
+                case DataTypeEnum.Boolean:
+                    return new() { Content = thingsGatewayBitConverter.GetBytes(value.ToObject<bool[]>()) };
+
+                case DataTypeEnum.Byte:
+                    return new() { Content = value.ToObject<Byte[]>() };
+
+                case DataTypeEnum.Int16:
+                    return new() { Content = thingsGatewayBitConverter.GetBytes(value.ToObject<Int16[]>()) };
+
+                case DataTypeEnum.UInt16:
+                    return new() { Content = thingsGatewayBitConverter.GetBytes(value.ToObject<UInt16[]>()) };
+
+                case DataTypeEnum.Int32:
+                    return new() { Content = thingsGatewayBitConverter.GetBytes(value.ToObject<Int32[]>()) };
+
+                case DataTypeEnum.UInt32:
+                    return new() { Content = thingsGatewayBitConverter.GetBytes(value.ToObject<UInt32[]>()) };
+
+                case DataTypeEnum.Int64:
+                    return new() { Content = thingsGatewayBitConverter.GetBytes(value.ToObject<Int64[]>()) };
+
+                case DataTypeEnum.UInt64:
+                    return new() { Content = thingsGatewayBitConverter.GetBytes(value.ToObject<UInt64[]>()) };
+
+                case DataTypeEnum.Single:
+                    return new() { Content = thingsGatewayBitConverter.GetBytes(value.ToObject<Single[]>()) };
+
+                case DataTypeEnum.Double:
+                    return new() { Content = thingsGatewayBitConverter.GetBytes(value.ToObject<Double[]>()) };
+
+                default:
+                    return new(string.Format(FoundationConst.DataTypeNotSupported, dataType));
+            }
+        }
+        else
+        {
+            switch (dataType)
+            {
+                case DataTypeEnum.String:
+                    return new() { Content = thingsGatewayBitConverter.GetBytes(value.ToObject<String>()) };
+
+                case DataTypeEnum.Boolean:
+                    return new() { Content = thingsGatewayBitConverter.GetBytes(value.ToObject<Boolean>()) };
+
+                case DataTypeEnum.Byte:
+                    return new() { Content = thingsGatewayBitConverter.GetBytes(value.ToObject<Byte>()) };
+
+                case DataTypeEnum.Int16:
+                    return new() { Content = thingsGatewayBitConverter.GetBytes(value.ToObject<Int16>()) };
+
+                case DataTypeEnum.UInt16:
+                    return new() { Content = thingsGatewayBitConverter.GetBytes(value.ToObject<UInt16>()) };
+
+                case DataTypeEnum.Int32:
+                    return new() { Content = thingsGatewayBitConverter.GetBytes(value.ToObject<Int32>()) };
+
+                case DataTypeEnum.UInt32:
+                    return new() { Content = thingsGatewayBitConverter.GetBytes(value.ToObject<UInt32>()) };
+
+                case DataTypeEnum.Int64:
+                    return new() { Content = thingsGatewayBitConverter.GetBytes(value.ToObject<Int64>()) };
+
+                case DataTypeEnum.UInt64:
+                    return new() { Content = thingsGatewayBitConverter.GetBytes(value.ToObject<UInt64>()) };
+
+                case DataTypeEnum.Single:
+                    return new() { Content = thingsGatewayBitConverter.GetBytes(value.ToObject<Single>()) };
+
+                case DataTypeEnum.Double:
+                    return new() { Content = thingsGatewayBitConverter.GetBytes(value.ToObject<Double>()) };
+
+                default:
+                    return new(string.Format(FoundationConst.DataTypeNotSupported, dataType));
+            }
+
         }
     }
 

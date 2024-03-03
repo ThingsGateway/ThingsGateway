@@ -282,6 +282,7 @@ namespace ThingsGateway.Foundation
                 var serialPortOption = this.Config.GetValue(SerialPortConfigExtension.SerialPortOptionProperty) ?? throw new ArgumentNullException(FoundationConst.ConfigNotNull);
                 this.MainSerialPort?.SafeDispose();
                 var serialPort = CreateSerial(serialPortOption);
+                this.MainSerialPort = serialPort;
                 this.PrivateOnConnecting(new SerialConnectingEventArgs(serialPort)).ConfigureAwait(false).GetAwaiter().GetResult();
 
                 serialPort.Open();

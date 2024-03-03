@@ -16,7 +16,6 @@ using ThingsGateway.Foundation;
 /// </summary>
 public static class VariableObjectHelper
 {
-    private static MemoryCache<Type, Dictionary<string, VariableRuntimeProperty>> variablePropertyDicts = new MemoryCache<Type, Dictionary<string, VariableRuntimeProperty>>();
     /// <summary>
     /// GetVariableRuntimePropertyDict
     /// </summary>
@@ -24,10 +23,6 @@ public static class VariableObjectHelper
     /// <returns></returns>
     public static Dictionary<string, VariableRuntimeProperty> GetVariableRuntimePropertyDict(Type type)
     {
-        if (variablePropertyDicts.TryGetValue(type, out var value))
-        {
-            return value;
-        }
 
         var properties = type.GetProperties(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
         var dictionary = new Dictionary<string, VariableRuntimeProperty>();
@@ -41,7 +36,6 @@ public static class VariableObjectHelper
             dictionary.Add(propertyInfo.Name, new VariableRuntimeProperty(variableRuntimeAttribute, propertyInfo));
         }
 
-        variablePropertyDicts.AddCache(type, dictionary, 60 * 60 * 1000);
         return dictionary;
     }
 }
