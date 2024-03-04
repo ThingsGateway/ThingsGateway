@@ -50,7 +50,7 @@ public static class LiteDBCacheUtil
                     var driveUsage = (100 - (drive.TotalFreeSpace * 100.00 / drive.TotalSize));
                     if (driveUsage > LiteDBCacheUtil.config.MaxDriveUsage)
                     {
-                        $"磁盘使用率超限，将删除缓存文件".LogInformation();
+                        bool loged = false;
                         //删除全部文件夹中旧文件
                         string[] dirs = Directory.GetDirectories(GetFileBasePath());
                         //遍历全部文件夹，删除90%的文件
@@ -62,6 +62,12 @@ public static class LiteDBCacheUtil
                             {
                                 break;
                             }
+                            if (!loged)
+                            {
+                                $"磁盘使用率超限，将删除缓存文件".LogDebug();
+                                loged = true;
+                            }
+
                             //数量超限就删除旧文件
                             //按文件更改时间排序
                             var sortedFiles = files.OrderBy(file => File.GetLastWriteTime(file)).ToArray();
