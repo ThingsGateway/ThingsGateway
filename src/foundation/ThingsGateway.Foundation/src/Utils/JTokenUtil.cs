@@ -20,6 +20,7 @@ public static class JTokenUtil
     /// <summary>
     /// 根据字符串解析对应JToken<br></br>
     /// 字符串可以不包含转义双引号，如果解析失败会直接转成String类型的JValue
+    /// true/false可忽略大小写
     /// </summary>
     /// <param name="item"></param>
     /// <returns></returns>
@@ -32,6 +33,10 @@ public static class JTokenUtil
         }
         catch
         {
+            if (bool.TryParse(item, out bool parseBool))
+            {
+                return new JValue(parseBool);
+            }
             // 解析失败时，将其转为 String 类型的 JValue
             return new JValue(item);
         }
