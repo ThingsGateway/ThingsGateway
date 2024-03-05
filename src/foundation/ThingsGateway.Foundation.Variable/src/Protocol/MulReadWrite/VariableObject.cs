@@ -25,10 +25,12 @@ public abstract class VariableObject
     /// MaxPack
     /// </summary>
     protected int MaxPack;
+
     /// <summary>
     /// DeviceVariableSourceReads
     /// </summary>
     protected List<VariableSourceClass>? DeviceVariableSourceReads;
+
     /// <summary>
     /// VariableRuntimePropertyDict
     /// </summary>
@@ -80,10 +82,16 @@ public abstract class VariableObject
             return new(ex);
         }
     }
+
+    /// <summary>
+    /// ReadTime
+    /// </summary>
+    public DateTime ReadTime { get; set; }
+
     /// <summary>
     /// 结果反射赋值
     /// </summary>
-    protected virtual void SetValue()
+    public virtual void SetValue()
     {
         //结果反射赋值
         foreach (var pair in VariableRuntimePropertyDict)
@@ -100,6 +108,8 @@ public abstract class VariableObject
                 pair.Value.Property.SetValue(this, objValue);
             }
         }
+
+        ReadTime = DateTime.Now;
     }
 
     /// <summary>
@@ -217,6 +227,7 @@ public abstract class VariableObject
             return new(ex);
         }
     }
+
     /// <summary>
     /// GetVariableSources
     /// </summary>
@@ -224,21 +235,32 @@ public abstract class VariableObject
     {
         if (DeviceVariableSourceReads == null)
         {
-            VariableRuntimePropertyDict = VariableObjectHelper.GetVariableRuntimePropertyDict(GetType());
-            List<VariableClass> variableClasss = new();
-            foreach (var pair in VariableRuntimePropertyDict)
-            {
-                var dataType = pair.Value.Attribute.DataType == DataTypeEnum.Object ? Type.GetTypeCode(pair.Value.Property.PropertyType.IsArray ? pair.Value.Property.PropertyType.GetElementType() : pair.Value.Property.PropertyType).GetDataType() : pair.Value.Attribute.DataType;
-                VariableClass variableClass = new VariableClass()
-                {
-                    DataType = dataType,
-                    RegisterAddress = pair.Value.Attribute.RegisterAddress,
-                    IntervalTime = 1000,
-                };
-                pair.Value.VariableClass = variableClass;
-                variableClasss.Add(variableClass);
-            }
+            List<VariableClass> variableClasss = GetVariableClass();
             DeviceVariableSourceReads = Protocol.LoadSourceRead<VariableSourceClass>(variableClasss, MaxPack, 1000);
         }
+    }
+
+    /// <summary>
+    /// GetVariableClass
+    /// </summary>
+    /// <returns></returns>
+    public virtual List<VariableClass> GetVariableClass()
+    {
+        VariableRuntimePropertyDict ??= VariableObjectHelper.GetVariableRuntimePropertyDict(GetType());
+        List<VariableClass> variableClasss = new();
+        foreach (var pair in VariableRuntimePropertyDict)
+        {
+            var dataType = pair.Value.Attribute.DataType == DataTypeEnum.Object ? Type.GetTypeCode(pair.Value.Property.PropertyType.IsArray ? pair.Value.Property.PropertyType.GetElementType() : pair.Value.Property.PropertyType).GetDataType() : pair.Value.Attribute.DataType;
+            VariableClass variableClass = new VariableClass()
+            {
+                DataType = dataType,
+                RegisterAddress = pair.Value.Attribute.RegisterAddress,
+                IntervalTime = 1000,
+            };
+            pair.Value.VariableClass = variableClass;
+            variableClasss.Add(variableClass);
+        }
+
+        return variableClasss;
     }
 }

@@ -79,12 +79,10 @@
                     <MButton Value="@("True")" Small Depressed ActiveClass="primary--text"
                               OnClick="async() => {await AppService.ToggleTabAsync(true);await TabValueChanged.InvokeAsync(true);}">
                          @AppService.I18n.T("Pagetab")
-                        <MIcon Right>M21,18L17,14V17H5V19H17V22M9,10V15H11V4H13V15H15V4H17V2H9A4,4 0 0,0 5,6A4,4 0 0,0 9,10Z</MIcon>
                     </MButton>
                     <MButton Value="@("False")" Small Depressed ActiveClass="primary--text"
                               OnClick="async() => {await AppService.ToggleTabAsync(false);await TabValueChanged.InvokeAsync(false);}">
                          @AppService.I18n.T("breadcrumb")
-                        <MIcon Right>M8,17V14L4,18L8,22V19H20V17M10,10V15H12V4H14V15H16V4H18V2H10A4,4 0 0,0 6,6A4,4 0 0,0 10,10Z</MIcon>
                     </MButton>
                 </MButtonGroup>
             </div>

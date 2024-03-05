@@ -50,7 +50,7 @@ namespace ThingsGateway.Foundation
             }
         }
 
-        public static INamedTypeSymbol GeneratorVariableAttributeAttribute { get; private set; }
+        public INamedTypeSymbol GeneratorVariableAttributeAttribute { get; private set; }
 
         /// <summary>
         /// 获取所有插件符号
@@ -79,7 +79,7 @@ namespace ThingsGateway.Foundation
         /// </summary>
         /// <param name="class"></param>
         /// <returns></returns>
-        public static bool IsVariableObject(INamedTypeSymbol @class)
+        public bool IsVariableObject(INamedTypeSymbol @class)
         {
             if (GeneratorVariableAttributeAttribute is null)
             {
@@ -90,7 +90,7 @@ namespace ThingsGateway.Foundation
             {
                 return false;
             }
-            return true;
+            return HasAttribute(@class, GeneratorVariableAttributeAttribute);
         }
 
         /// <summary>
@@ -104,7 +104,7 @@ namespace ThingsGateway.Foundation
             foreach (var attr in symbol.GetAttributes())
             {
                 var attrClass = attr.AttributeClass;
-                if (attrClass != null && attrClass.AllInterfaces.Contains(attribute))
+                if (attrClass != null && (attrClass.AllInterfaces.Contains(attribute) || attrClass == attribute))
                 {
                     return true;
                 }

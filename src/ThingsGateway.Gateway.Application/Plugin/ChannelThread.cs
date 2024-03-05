@@ -64,6 +64,7 @@ public class ChannelThread
     public string LogPath { get; }
     private Channel ChannelTable;
     private GlobalData GlobalData;
+
     public ChannelThread(Channel channel, Func<TouchSocketConfig, IChannel> getChannel)
     {
         Logger = App.GetService<ILoggerFactory>().CreateLogger($"通道：{channel.Name}");
@@ -189,7 +190,6 @@ public class ChannelThread
                     GlobalData.CollectDevices.RemoveWhere(it => it.Id == driverBase.DeviceId);
                 }
             }
-
             else
             {
                 lock (GlobalData.BusinessDevices)
@@ -362,15 +362,18 @@ public class ChannelThread
                     await Stop();
                     return;
                 }
+                await Task.Delay(CycleInterval, stoppingToken);
 
                 foreach (var driver in DriverBases)
                 {
                     var stoken = CancellationTokenSources[driver.DeviceId];
                     if (stoken.IsCancellationRequested)
                         continue;
+                    await Task.Delay(CycleInterval, stoppingToken);
                     await driver.BeforStartAsync(stoken.Token);
                 }
                 await Task.Delay(CycleInterval, stoppingToken);
+
                 while (!stoppingToken.IsCancellationRequested)
                 {
                     foreach (var driver in DriverBases)
@@ -469,16 +472,14 @@ public class ChannelThread
             }
             async Task Stop()
             {
+                foreach (var driver in DriverBases)
                 {
-                    foreach (var driver in DriverBases)
-                    {
-                        //如果插件还没释放，执行一次结束函数
-                        if (!driver.DisposedValue)
-                            await driver.AfterStopAsync();
-                    }
+                    //如果插件还没释放，执行一次结束函数
+                    if (!driver.DisposedValue)
+                        await driver.AfterStopAsync();
                 }
             }
-        }, cancellation, TaskCreationOptions.LongRunning
+        }, cancellation
  );
     }
 }
