@@ -479,7 +479,7 @@ public class ChannelThread
                         await driver.AfterStopAsync();
                 }
             }
-        }, cancellation
+        }, cancellation, TaskCreationOptions.LongRunning
  );
     }
 }
