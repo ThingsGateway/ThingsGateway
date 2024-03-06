@@ -10,9 +10,6 @@
 
 using Furion;
 
-using SqlSugar;
-using SqlSugar.TDengine;
-
 using System.Reflection;
 
 namespace ThingsGateway.Web.Entry;
@@ -29,8 +26,10 @@ public class SingleFilePublish : ISingleFilePublish
     /// <inheritdoc/>
     public string[] IncludeAssemblyNames()
     {
-        InstanceFactory.CustomAssemblies =
-    new System.Reflection.Assembly[] { typeof(TDengineProvider).Assembly };
+#if !Admin
+        SqlSugar.InstanceFactory.CustomAssemblies =
+    new System.Reflection.Assembly[] { typeof(SqlSugar.TDengine.TDengineProvider).Assembly };
+#endif
         return new[]
         {
         "ThingsGateway.Foundation",

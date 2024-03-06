@@ -233,7 +233,11 @@ public class OpcDaMaster : CollectBase
                         return;
                     var value = data.Value;
                     var quality = data.Quality;
-                    var time = data.TimeStamp.ToLocalTime();
+                    DateTime time = default;
+                    if (_driverPropertys.SourceTimestampEnable)
+                    {
+                        time = data.TimeStamp.ToLocalTime();
+                    }
                     if (quality == 192)
                     {
                         if (item.DataType == DataTypeEnum.Object)

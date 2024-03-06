@@ -28,6 +28,12 @@ public class OpcDaMasterProperty : CollectPropertyBase
     [DynamicProperty("Opc名称", "")] public string OpcName { get; set; } = "Kepware.KEPServerEX.V6";
 
     /// <summary>
+    /// 是否使用SourceTime
+    /// </summary>
+    [DynamicProperty("使用SourceTime", "")]
+    public bool SourceTimestampEnable { get; set; } = true;
+
+    /// <summary>
     /// 激活订阅
     /// </summary>
     [DynamicProperty("激活订阅", "")] public bool ActiveSubscribe { get; set; } = true;
