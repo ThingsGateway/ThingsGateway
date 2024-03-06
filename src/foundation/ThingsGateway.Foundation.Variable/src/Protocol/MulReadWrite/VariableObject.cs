@@ -8,6 +8,7 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 using ThingsGateway.Foundation.Extension.Generic;
@@ -29,11 +30,13 @@ public abstract class VariableObject
     /// <summary>
     /// DeviceVariableSourceReads
     /// </summary>
+    [JsonIgnore]
     protected List<VariableSourceClass>? DeviceVariableSourceReads;
 
     /// <summary>
     /// VariableRuntimePropertyDict
     /// </summary>
+    [JsonIgnore]
     public Dictionary<string, VariableRuntimeProperty>? VariableRuntimePropertyDict;
 
     /// <summary>
@@ -48,7 +51,8 @@ public abstract class VariableObject
     /// <summary>
     /// 协议对象
     /// </summary>
-    public IProtocol Protocol { get; set; }
+    [JsonIgnore]
+    public IProtocol Protocol;
 
     /// <summary>
     /// <see cref="VariableRuntimeAttribute"/>特性连读，反射赋值到继承类中的属性
