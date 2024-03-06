@@ -5,7 +5,7 @@
 		<LangVersion>11.0</LangVersion>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
-		<Version>5.0.2.15</Version>
+		<Version>5.0.2.16</Version>
 		<Authors>Diego</Authors>
 		<Company>Diego</Company>
 		<Product>Diego</Product>
