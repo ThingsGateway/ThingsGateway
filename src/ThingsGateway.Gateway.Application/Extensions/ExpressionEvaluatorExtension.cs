@@ -45,6 +45,7 @@ public static class ExpressionEvaluatorExtension
         expressionEvaluator.Assemblies.Add(typeof(Newtonsoft.Json.JsonConverter).Assembly);
         expressionEvaluator.Namespaces.Add("Newtonsoft.Json.Linq");
         expressionEvaluator.Namespaces.Add("Newtonsoft.Json");
+        expressionEvaluator.StaticTypesForExtensionsMethods.Add(typeof(Enumerable));//LINQ
         expressionEvaluator.Variables = new Dictionary<string, object>()
             {
               { "Raw", rawvalue},

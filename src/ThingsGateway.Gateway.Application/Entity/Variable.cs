@@ -61,14 +61,14 @@ public class Variable : PrimaryIdEntity
     /// <summary>
     /// 读取表达式
     /// </summary>
-    [SugarColumn(ColumnDescription = "读取表达式", Length = 200, IsNullable = true)]
+    [SugarColumn(ColumnDescription = "读取表达式", Length = 1000, IsNullable = true)]
     [DataTable(Order = 7, IsShow = true, Sortable = true, CellClass = " table-text-truncate ")]
     public string? ReadExpressions { get; set; }
 
     /// <summary>
     /// 写入表达式
     /// </summary>
-    [SugarColumn(ColumnDescription = "写入表达式", Length = 200, IsNullable = true)]
+    [SugarColumn(ColumnDescription = "写入表达式", Length = 1000, IsNullable = true)]
     [DataTable(Order = 7, IsShow = true, Sortable = true)]
     public string? WriteExpressions { get; set; }
 
