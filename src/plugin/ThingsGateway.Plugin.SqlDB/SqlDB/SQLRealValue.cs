@@ -15,9 +15,9 @@ using ThingsGateway.Core;
 namespace ThingsGateway.Plugin.SqlDB;
 
 [SugarTable(TableDescription = "设备采集实时表")]
-[SugarIndex("index_Name", nameof(SQLHistoryValue.Name), OrderByType.Desc)]
-[SugarIndex("index_DeviceName", nameof(SQLHistoryValue.DeviceName), OrderByType.Desc)]
-[SugarIndex("index_CollectTime", nameof(SQLHistoryValue.CollectTime), OrderByType.Desc)]
+[SugarIndex("{table}_index_Name", nameof(SQLRealValue.Name), OrderByType.Desc)]
+[SugarIndex("{table}_index_DeviceName", nameof(SQLRealValue.DeviceName), OrderByType.Desc)]
+[SugarIndex("{table}_index_CollectTime", nameof(SQLRealValue.CollectTime), OrderByType.Desc)]
 public class SQLRealValue : IPrimaryIdEntity
 {
     [SugarColumn(ColumnDescription = "Id", IsPrimaryKey = true)]

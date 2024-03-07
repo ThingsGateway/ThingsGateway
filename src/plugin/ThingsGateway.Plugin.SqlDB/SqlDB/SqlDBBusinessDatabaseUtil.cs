@@ -49,6 +49,13 @@ public static class SqlDBBusinessDatabaseUtil
             ConfigureExternalServices = configureExternalServices,
         }
         );
+        if (sqlSugarClient.CurrentConnectionConfig.DbType == DbType.Oracle)
+        {
+            sqlSugarClient.CurrentConnectionConfig.MoreSettings = new()
+            {
+                MaxParameterNameLength = 30
+            };
+        }
         DbContext.AopSetting(sqlSugarClient);//aop配置
         return sqlSugarClient;
     }

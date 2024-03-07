@@ -61,8 +61,10 @@ YitIdHelper.NextId())
     {
         var db = SqlDBBusinessDatabaseUtil.GetDb(_driverPropertys);
         db.CodeFirst.InitTables(typeof(SQLHistoryValue));
-        db.MappingTables.Add(nameof(SQLRealValue), _driverPropertys.ReadDBTableName);
-        db.CodeFirst.InitTables(typeof(SQLRealValue));
+        //新功能  5.0.2.3
+        db.CodeFirst.As<SQLRealValue>(_driverPropertys.ReadDBTableName).InitTables<SQLRealValue>();
+        //该功能索引名要加占位符
+        //[SugarIndex("{table}index_codetable1_name",nameof(CodeFirstTable1.Name),OrderByType.Asc)]
         await base.ProtectedBeforStartAsync(cancellationToken);
     }
 
