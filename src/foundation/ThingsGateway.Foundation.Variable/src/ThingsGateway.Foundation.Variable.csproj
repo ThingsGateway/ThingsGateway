@@ -13,6 +13,13 @@
   
 	<ItemGroup>
 		<PackageReference Include="CodingSeb.ExpressionEvaluator" Version="1.4.40" />
+		<ProjectReference Include="..\..\ThingsGateway.Foundation.SourceGenerator\src\ThingsGateway.Foundation.SourceGenerator.csproj" ReferenceOutputAssembly="false"/>
 		<ProjectReference Include="..\..\ThingsGateway.Foundation\src\ThingsGateway.Foundation.csproj" />
 	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="..\..\ThingsGateway.Foundation.SourceGenerator\src\tools\*.ps1" PackagePath="tools" Pack="true" Visible="false" />
+		<None Include="..\..\ThingsGateway.Foundation.SourceGenerator\src\bin\$(Configuration)\netstandard2.0\ThingsGateway.Foundation.SourceGenerator.dll" PackagePath="analyzers\dotnet\cs" Pack="true" Visible="false" />
+	</ItemGroup>
+	
 </Project>
