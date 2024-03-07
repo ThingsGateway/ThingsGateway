@@ -6,10 +6,10 @@
 		<DocumentationFile></DocumentationFile>
 	</PropertyGroup>
 	<ItemGroup>
-		<PackageReference Include="ThingsGateway.Foundation.Modbus" Version="5.0.2.18" />
-		<PackageReference Include="ThingsGateway.Foundation.Dlt645" Version="5.0.2.18" />
-		<PackageReference Include="ThingsGateway.Foundation.SiemensS7" Version="5.0.2.18" />
-		<PackageReference Include="ThingsGateway.Foundation.Variable" Version="5.0.2.18" />
+		<PackageReference Include="ThingsGateway.Foundation.Modbus" Version="5.0.2.20" />
+		<PackageReference Include="ThingsGateway.Foundation.Dlt645" Version="5.0.2.20" />
+		<PackageReference Include="ThingsGateway.Foundation.SiemensS7" Version="5.0.2.20" />
+		<PackageReference Include="ThingsGateway.Foundation.Variable" Version="5.0.2.20" />
 	</ItemGroup>
 	<!--<ItemGroup>
 		<ProjectReference Include="..\..\ThingsGateway.Foundation.Dlt645\src\ThingsGateway.Foundation.Dlt645.csproj" />
