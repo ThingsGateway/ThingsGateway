@@ -1143,9 +1143,9 @@ public class OpcUaMaster : IDisposable
             // raise any additional notifications.
             m_ReconnectComplete?.Invoke(this, e);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            throw;
+            UpdateStatus(3, DateTime.Now, $"{nameof(Server_ReconnectComplete)}错误：{ex}");
         }
     }
 
