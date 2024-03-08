@@ -15,7 +15,6 @@ namespace ThingsGateway.Gateway.Application
         DateTime CollectTime { get; set; }
         DateTime CreateTime { get; set; }
         string DeviceName { get; set; }
-        long Id { get; set; }
         bool IsOnline { get; set; }
         string Name { get; set; }
         string Value { get; set; }
