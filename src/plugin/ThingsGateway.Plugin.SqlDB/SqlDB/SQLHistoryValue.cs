@@ -19,7 +19,7 @@ namespace ThingsGateway.Plugin.SqlDB;
 [SugarIndex("index_Name", nameof(SQLHistoryValue.Name), OrderByType.Desc)]
 [SugarIndex("index_DeviceName", nameof(SQLHistoryValue.DeviceName), OrderByType.Desc)]
 [SugarIndex("index_CollectTime", nameof(SQLHistoryValue.CollectTime), OrderByType.Desc)]
-public class SQLHistoryValue : IPrimaryIdEntity
+public class SQLHistoryValue : IPrimaryIdEntity, IDBHistoryValue
 {
     [SugarColumn(ColumnDescription = "Id", IsPrimaryKey = true)]
     [DataTable(Order = 1, IsShow = true, Sortable = true, DefaultFilter = true, CellClass = " table-text-truncate ")]

@@ -25,9 +25,25 @@ public static class ParallelExtension
     {
         ParallelOptions options = new();
         options.MaxDegreeOfParallelism = Environment.ProcessorCount / 2 == 0 ? 1 : Environment.ProcessorCount / 2;
-        Parallel.ForEach(source, options, variable =>
+        Parallel.ForEach(source, options, (variable, state, index) =>
         {
             body(variable);
+        });
+    }
+
+    /// <summary>
+    /// 使用默认的并行设置执行<see cref="Parallel.ForEach{TSource}(IEnumerable{TSource}, Action{TSource})"/>
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="source"></param>
+    /// <param name="body"></param>
+    public static void ParallelForEach<T>(this IEnumerable<T> source, Action<T, ParallelLoopState, long> body)
+    {
+        ParallelOptions options = new();
+        options.MaxDegreeOfParallelism = Environment.ProcessorCount / 2 == 0 ? 1 : Environment.ProcessorCount / 2;
+        Parallel.ForEach(source, options, (variable, state, index) =>
+        {
+            body(variable, state, index);
         });
     }
 

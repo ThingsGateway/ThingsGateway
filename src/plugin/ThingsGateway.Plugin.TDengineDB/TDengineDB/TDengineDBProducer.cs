@@ -10,6 +10,10 @@
 
 using Mapster;
 
+using SqlSugar;
+
+using ThingsGateway.Admin.Core;
+using ThingsGateway.Core;
 using ThingsGateway.Foundation;
 
 using Yitter.IdGenerator;
@@ -19,7 +23,7 @@ namespace ThingsGateway.Plugin.TDengineDB;
 /// <summary>
 /// TDengineDBProducer
 /// </summary>
-public partial class TDengineDBProducer : BusinessBaseWithCacheInterval<TDengineDBHistoryValue>
+public partial class TDengineDBProducer : BusinessBaseWithCacheInterval<TDengineDBHistoryValue>, IDBHistoryService
 {
     private readonly TDengineDBProducerVariableProperty _variablePropertys = new();
     internal readonly TDengineDBProducerProperty _driverPropertys = new();
@@ -69,5 +73,36 @@ public partial class TDengineDBProducer : BusinessBaseWithCacheInterval<TDengine
         await UpdateTCache(cancellationToken);
 
         await Delay(cancellationToken);
+    }
+
+    internal ISugarQueryable<TDengineDBHistoryValue> Query(DBPageInput input)
+    {
+        var db = BusinessDatabaseUtil.GetDb(_driverPropertys.DbType, _driverPropertys.BigTextConnectStr);
+        var query = db.Queryable<TDengineDBHistoryValue>()
+                             .WhereIF(input.StartTime != null, a => a.CreateTime >= input.StartTime)
+                           .WhereIF(input.EndTime != null, a => a.CreateTime <= input.EndTime)
+                           .WhereIF(!string.IsNullOrEmpty(input.VariableName), it => it.Name.Contains(input.VariableName))
+                           .WhereIF(input.VariableNames != null, it => input.VariableName.Contains(it.Name))
+                           ;
+
+        for (int i = input.SortField.Count - 1; i >= 0; i--)
+        {
+            query = query.OrderByIF(!string.IsNullOrEmpty(input.SortField[i]), $"{input.SortField[i]} {(input.SortDesc[i] ? "desc" : "asc")}");
+        }
+        query = query.OrderBy(it => it.Id, OrderByType.Desc);//排序
+
+        return query;
+    }
+
+    public async Task<List<IDBHistoryValue>> GetDBHistoryValuesAsync(DBPageInput input)
+    {
+        var data = await Query(input).Select<IDBHistoryValue>().ToListAsync();
+        return data.Cast<IDBHistoryValue>().ToList(); ;
+    }
+
+    public async Task<SqlSugarPagedList<IDBHistoryValue>> GetDBHistoryValuePagesAsync(DBPageInput input)
+    {
+        var data = await Query(input).ToPagedListAsync<TDengineDBHistoryValue, IDBHistoryValue>(input.Current, input.Size);//分页
+        return data;
     }
 }

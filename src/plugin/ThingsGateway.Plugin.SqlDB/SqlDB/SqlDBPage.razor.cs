@@ -30,19 +30,7 @@ public partial class SqlDBPage : IDriverUIBase
 
     private async Task<SqlSugarPagedList<SQLHistoryValue>> QueryCallAsync(SqlDBPageInput input)
     {
-        using var db = SqlDBBusinessDatabaseUtil.GetDb(SqlDBProducer._driverPropertys);
-        var query = db.Queryable<SQLHistoryValue>().SplitTable()
-                             .WhereIF(input.StartTime != null, a => a.CreateTime >= input.StartTime)
-                           .WhereIF(input.EndTime != null, a => a.CreateTime <= input.EndTime)
-                           .WhereIF(!string.IsNullOrEmpty(input.VariableName), it => it.Name.Contains(input.VariableName))
-                           ;
-
-        for (int i = input.SortField.Count - 1; i >= 0; i--)
-        {
-            query = query.OrderByIF(!string.IsNullOrEmpty(input.SortField[i]), $"{input.SortField[i]} {(input.SortDesc[i] ? "desc" : "asc")}");
-        }
-        query = query.OrderBy(it => it.Id, OrderByType.Desc);//排序
-
+        var query = SqlDBProducer.Query(input);
         var pageInfo = await query.ToPagedListAsync(input.Current, input.Size);//分页
         return pageInfo;
     }

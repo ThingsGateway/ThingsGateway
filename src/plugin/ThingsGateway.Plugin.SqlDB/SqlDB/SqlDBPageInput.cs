@@ -8,27 +8,17 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using System.ComponentModel;
-
-using ThingsGateway.Core;
-
 namespace ThingsGateway.Gateway.Application;
 
-public class SqlDBPageInput : BasePageInput
+public class SqlDBPageInput : DBPageInput
 {
     /// <summary>
     /// 开始时间
     /// </summary>
-    public DateTime? StartTime { get; set; } = DateTime.Now.AddDays(-1);
+    public override DateTime? StartTime { get; set; } = DateTime.Now.AddDays(-1);
 
     /// <summary>
     /// 结束时间
     /// </summary>
-    public DateTime? EndTime { get; set; } = DateTime.Now.AddDays(1);
-
-    /// <summary>
-    /// 日志源
-    /// </summary>
-    [Description("变量名称")]
-    public string VariableName { get; set; }
+    public override DateTime? EndTime { get; set; } = DateTime.Now.AddDays(1);
 }

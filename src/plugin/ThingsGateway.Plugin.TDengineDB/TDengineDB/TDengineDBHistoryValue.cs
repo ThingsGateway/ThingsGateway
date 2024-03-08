@@ -21,7 +21,7 @@ namespace ThingsGateway.Plugin.TDengineDB;
 /// 历史数据表
 /// </summary>
 [SugarTable("historyValue")]
-public class TDengineDBHistoryValue : STable, IPrimaryIdEntity
+public class TDengineDBHistoryValue : STable, IPrimaryIdEntity, IDBHistoryValue
 {
     [SugarColumn(IsIgnore = true)]
     public long Id { get; set; }

@@ -8,17 +8,31 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using System.ComponentModel;
+
 namespace ThingsGateway.Gateway.Application;
 
-public class TDengineDBPageInput : DBPageInput
+public class DBPageInput : BasePageInput
 {
     /// <summary>
     /// 开始时间
     /// </summary>
-    public override DateTime? StartTime { get; set; } = DateTime.Now.AddDays(-1);
+    public virtual DateTime? StartTime { get; set; } = DateTime.Now.AddDays(-1);
 
     /// <summary>
     /// 结束时间
     /// </summary>
-    public override DateTime? EndTime { get; set; } = DateTime.Now.AddDays(1);
+    public virtual DateTime? EndTime { get; set; } = DateTime.Now.AddDays(1);
+
+    /// <summary>
+    /// 变量名称，不为空时忽略<see cref="VariableNames"/>
+    /// </summary>
+    [Description("变量名称")]
+    public virtual string? VariableName { get; set; }
+
+    /// <summary>
+    /// 变量名称组
+    /// </summary>
+    [Description("变量名称")]
+    public virtual string[]? VariableNames { get; set; }
 }

@@ -8,17 +8,16 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-namespace ThingsGateway.Gateway.Application;
-
-public class TDengineDBPageInput : DBPageInput
+namespace ThingsGateway.Gateway.Application
 {
-    /// <summary>
-    /// 开始时间
-    /// </summary>
-    public override DateTime? StartTime { get; set; } = DateTime.Now.AddDays(-1);
-
-    /// <summary>
-    /// 结束时间
-    /// </summary>
-    public override DateTime? EndTime { get; set; } = DateTime.Now.AddDays(1);
+    public interface IDBHistoryValue
+    {
+        DateTime CollectTime { get; set; }
+        DateTime CreateTime { get; set; }
+        string DeviceName { get; set; }
+        long Id { get; set; }
+        bool IsOnline { get; set; }
+        string Name { get; set; }
+        string Value { get; set; }
+    }
 }

@@ -88,7 +88,31 @@ public static class SqlSugarPageExtension
             HasPrevPages = current - 1 > 0
         };
     }
-
+    /// <summary>
+    /// SqlSugar分页扩展
+    /// </summary>
+    /// <typeparam name="TEntity"></typeparam>
+    /// <param name="queryable"></param>
+    /// <param name="current"></param>
+    /// <param name="size"></param>
+    /// <returns></returns>
+    public static async Task<SqlSugarPagedList<TResult>> ToPagedListAsync<TEntity, TResult>(this ISugarQueryable<TEntity> queryable,
+        int current, int size)
+    {
+        RefAsync<int> totalCount = 0;
+        var records = await queryable.ToPageListAsync(current, size, totalCount);
+        var totalPages = (int)Math.Ceiling(totalCount / (double)size);
+        return new SqlSugarPagedList<TResult>
+        {
+            Current = current,
+            Size = size,
+            Records = records.Cast<TResult>(),
+            Total = (int)totalCount,
+            Pages = totalPages,
+            HasNextPages = current < totalPages,
+            HasPrevPages = current - 1 > 0
+        };
+    }
     /// <summary>
     /// SqlSugar分页扩展
     /// </summary>

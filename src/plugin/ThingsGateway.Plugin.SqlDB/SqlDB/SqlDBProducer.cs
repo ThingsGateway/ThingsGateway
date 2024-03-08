@@ -10,6 +10,10 @@
 
 using Mapster;
 
+using SqlSugar;
+
+using ThingsGateway.Admin.Core;
+using ThingsGateway.Core;
 using ThingsGateway.Foundation;
 
 using Yitter.IdGenerator;
@@ -19,7 +23,7 @@ namespace ThingsGateway.Plugin.SqlDB;
 /// <summary>
 /// SqlDBProducer
 /// </summary>
-public partial class SqlDBProducer : BusinessBaseWithCacheInterval<SQLHistoryValue>
+public partial class SqlDBProducer : BusinessBaseWithCacheInterval<SQLHistoryValue>, IDBHistoryService
 {
     private readonly SqlDBProducerVariableProperty _variablePropertys = new();
     internal readonly SqlDBProducerProperty _driverPropertys = new();
@@ -99,5 +103,36 @@ YitIdHelper.NextId())
             await UpdateTCache(cancellationToken);
         }
         await Delay(cancellationToken);
+    }
+
+    internal ISugarQueryable<SQLHistoryValue> Query(DBPageInput input)
+    {
+        var db = SqlDBBusinessDatabaseUtil.GetDb(_driverPropertys);
+        var query = db.Queryable<SQLHistoryValue>().SplitTable()
+                             .WhereIF(input.StartTime != null, a => a.CreateTime >= input.StartTime)
+                           .WhereIF(input.EndTime != null, a => a.CreateTime <= input.EndTime)
+                           .WhereIF(!string.IsNullOrEmpty(input.VariableName), it => it.Name.Contains(input.VariableName))
+                           .WhereIF(input.VariableNames != null, it => input.VariableName.Contains(it.Name))
+                           ;
+
+        for (int i = input.SortField.Count - 1; i >= 0; i--)
+        {
+            query = query.OrderByIF(!string.IsNullOrEmpty(input.SortField[i]), $"{input.SortField[i]} {(input.SortDesc[i] ? "desc" : "asc")}");
+        }
+        query = query.OrderBy(it => it.Id, OrderByType.Desc);//排序
+
+        return query;
+    }
+
+    public async Task<List<IDBHistoryValue>> GetDBHistoryValuesAsync(DBPageInput input)
+    {
+        var data = await Query(input).ToListAsync();
+        return data.Cast<IDBHistoryValue>().ToList();
+    }
+
+    public async Task<SqlSugarPagedList<IDBHistoryValue>> GetDBHistoryValuePagesAsync(DBPageInput input)
+    {
+        var data = await Query(input).ToPagedListAsync<SQLHistoryValue, IDBHistoryValue>(input.Current, input.Size);//分页
+        return data;
     }
 }

@@ -22,7 +22,7 @@ namespace ThingsGateway.Plugin.QuestDB;
 /// </summary>
 [SugarTable("historyValue", TableDescription = "历史数据表")]
 [SugarIndex(null, nameof(QuestDBHistoryValue.Name), OrderByType.Asc)]
-public class QuestDBHistoryValue : PrimaryIdEntity
+public class QuestDBHistoryValue : PrimaryIdEntity, IDBHistoryValue
 {
     [SugarColumn(IsIgnore = true)]
     public override long Id { get; set; }
