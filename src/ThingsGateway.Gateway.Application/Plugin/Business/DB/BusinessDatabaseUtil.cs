@@ -46,4 +46,51 @@ public static class BusinessDatabaseUtil
         DbContext.AopSetting(sqlSugarClient);//aop配置
         return sqlSugarClient;
     }
+
+    /// <summary>
+    /// 按条件获取DB插件中的全部历史数据(不分页)
+    /// </summary>
+    /// <param name="input"></param>
+    /// <returns></returns>
+    public static async Task<OperResult<List<IDBHistoryValue>>> GetDBHistoryValuesAsync(string businessDeviceName, DBPageInput input)
+    {
+        try
+        {
+            var businessDevice = WorkerUtil.GetWoker<BusinessDeviceWorker>().DriverBases.Where(a => a is IDBHistoryService b).Where(a => a.DeviceName == businessDeviceName).Select(a => (IDBHistoryService)a).FirstOrDefault();
+            if (businessDevice == null)
+            {
+                return new("业务设备不存在");
+            }
+
+            var data = await businessDevice.GetDBHistoryValuesAsync(input);
+            return OperResult.CreateSuccessResult(data);
+        }
+        catch (Exception ex)
+        {
+            return new("查询历史数据错误", ex);
+        }
+    }
+
+    /// <summary>
+    /// 按条件获取DB插件中的全部历史数据(不分页)
+    /// </summary>
+    /// <param name="input"></param>
+    /// <returns></returns>
+    public static async Task<OperResult<SqlSugarPagedList<IDBHistoryValue>>> GetDBHistoryValuePagesAsync(string businessDeviceName, DBPageInput input)
+    {
+        try
+        {
+            var businessDevice = WorkerUtil.GetWoker<BusinessDeviceWorker>().DriverBases.Where(a => a is IDBHistoryService b).Where(a => a.DeviceName == businessDeviceName).Select(a => (IDBHistoryService)a).FirstOrDefault();
+            if (businessDevice == null)
+            {
+                return new("业务设备不存在");
+            }
+            var data = await businessDevice.GetDBHistoryValuePagesAsync(input);
+            return OperResult.CreateSuccessResult(data);
+        }
+        catch (Exception ex)
+        {
+            return new("查询历史数据错误", ex);
+        }
+    }
 }
