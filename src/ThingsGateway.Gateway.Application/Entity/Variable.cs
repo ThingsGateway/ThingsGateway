@@ -357,4 +357,13 @@ public class Variable : PrimaryIdEntity
     [System.Text.Json.Serialization.JsonIgnore]
     [Newtonsoft.Json.JsonIgnore]
     internal bool IsUp { get; set; }
+
+    /// <summary>
+    /// 导入验证专用
+    /// </summary>
+    [IgnoreExcel]
+    [SugarColumn(IsIgnore = true)]
+    [System.Text.Json.Serialization.JsonIgnore]
+    [Newtonsoft.Json.JsonIgnore]
+    internal long Row { get; set; }
 }

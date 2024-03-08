@@ -375,12 +375,12 @@ public class VariableService : DbRepository<Variable>, IVariableService
                     //线程安全
                     var variables = new ConcurrentList<Variable>();
                     //并行注意线程安全
-                    rows.ParallelForEach(item =>
+                    rows.ParallelForEach((item, state, index) =>
                     {
                         try
                         {
                             var variable = ((ExpandoObject)item).ConvertToEntity<Variable>(true);
-
+                            variable.Row = index;
                             //转化设备名称
                             item.TryGetValue(ExportConst.DeviceName, out var value);
                             var deviceName = value?.ToString();
@@ -404,7 +404,7 @@ public class VariableService : DbRepository<Variable>, IVariableService
                                 }
                                 else
                                 {
-                                    variable.Id = YitIdHelper.NextId();
+                                    //variable.Id = YitIdHelper.NextId();
                                     variable.IsUp = false;
                                 }
                             }
@@ -418,8 +418,12 @@ public class VariableService : DbRepository<Variable>, IVariableService
                             importPreviewOutput.Results.Add((Interlocked.Add(ref row, 1), false, ex.Message));
                         }
                     });
-
-                    importPreviewOutput.Data = variables.OrderBy(a => a.Id).ToDictionary(a => a.Name);
+                    foreach (var item in variables.OrderBy(a => a.Row))
+                    {
+                        if (!item.IsUp)
+                            item.Id = YitIdHelper.NextId();
+                    }
+                    importPreviewOutput.Data = variables.OrderBy(a => a.Row).ToDictionary(a => a.Name);
                 }
 
                 #endregion 变量sheet
