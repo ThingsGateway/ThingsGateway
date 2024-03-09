@@ -21,7 +21,7 @@ namespace ThingsGateway.Gateway.Application;
 /// </summary>
 public abstract class BusinessBaseWithCacheT<T> : BusinessBase
 {
-    protected volatile bool success;
+    protected volatile bool success = true;
     protected ConcurrentQueue<LiteDBDefalutCacheItem<T>> _memoryTQueue = new();
     protected override BusinessPropertyBase _businessPropertyBase => _businessPropertyWithCache;
 
