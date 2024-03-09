@@ -62,9 +62,10 @@ public partial class SqlDBProducer : BusinessBaseWithCacheInterval<SQLHistoryVal
     protected override async Task ProtectedBeforStartAsync(CancellationToken cancellationToken)
     {
         var db = SqlDBBusinessDatabaseUtil.GetDb(_driverPropertys);
-        db.CodeFirst.InitTables(typeof(SQLHistoryValue));
-        //新功能  5.0.2.3
-        db.CodeFirst.As<SQLRealValue>(_driverPropertys.ReadDBTableName).InitTables<SQLRealValue>();
+        if (_driverPropertys.IsHisDB)
+            db.CodeFirst.InitTables(typeof(SQLHistoryValue));
+        if (_driverPropertys.IsReadDB)
+            db.CodeFirst.As<SQLRealValue>(_driverPropertys.ReadDBTableName).InitTables<SQLRealValue>();
         //该功能索引名要加占位符
         //[SugarIndex("{table}index_codetable1_name",nameof(CodeFirstTable1.Name),OrderByType.Asc)]
         await base.ProtectedBeforStartAsync(cancellationToken);
