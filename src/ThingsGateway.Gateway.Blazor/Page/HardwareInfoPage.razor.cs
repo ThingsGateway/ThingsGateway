@@ -8,6 +8,8 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using Masa.Blazor;
+
 using ThingsGateway.Gateway.Application;
 
 namespace ThingsGateway.Gateway.Blazor;
@@ -34,9 +36,18 @@ public partial class HardwareInfoPage
     protected override void OnInitialized()
     {
         _hardwareInfoWorker = WorkerUtil.GetWoker<HardwareInfoWorker>();
-        _ = Task.Run(GetOption);
         _ = RunTimerAsync();
         base.OnInitialized();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await GetHardwareInfoEChartsOption();
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
     }
 
     private async Task RunTimerAsync()
@@ -45,8 +56,7 @@ public partial class HardwareInfoPage
         {
             try
             {
-                GetOption();
-                await InvokeAsync(StateHasChanged);
+                await GetHardwareInfoEChartsOption();
                 await Task.Delay(5000);
             }
             catch
@@ -54,20 +64,21 @@ public partial class HardwareInfoPage
             }
         }
     }
-
-    private object eChartsOption = new();
-
-    private void GetOption()
+    #region CPU曲线
+    private object hardwareInfoEChartsOption;
+    private MECharts hardwareInfoECharts;
+    private async Task GetHardwareInfoEChartsOption()
     {
         var hisDatas = _hardwareInfoWorker.GetHis();
-
-        eChartsOption = new
+        if (hardwareInfoEChartsOption == null)
         {
-            backgroundColor = "",
-            tooltip = new { trigger = "axis" },
-            legend = new
+            hardwareInfoEChartsOption ??= new
             {
-                data = new[] {
+                backgroundColor = "",
+                tooltip = new { trigger = "axis" },
+                legend = new
+                {
+                    data = new[] {
                 AppService.I18n.T("CPU使用率"),
                 AppService.I18n.T("内存使用率"),
                 AppService.I18n.T("磁盘使用率"),
@@ -76,19 +87,19 @@ public partial class HardwareInfoPage
                 AppService.I18n.T("上载速度"),
                 AppService.I18n.T("下载速度")
             },
-                left = "5%"
-            },
-            grid = new { left = "3%", right = "4%", bottom = "3%", containLabel = true },
-            toolbox = new { feature = new { saveAsImage = new { } } },
-            xAxis = new
-            {
-                type = "category",
-                boundaryGap = false,
-                data = hisDatas.Select(a => a.Date.ToString("yyyy-MM-dd HH:mm")).ToArray()
-            },
-            yAxis = new { type = "value" },
-            series = new[]
-    {
+                    left = "5%"
+                },
+                grid = new { left = "3%", right = "4%", bottom = "3%", containLabel = true },
+                toolbox = new { feature = new { saveAsImage = new { } } },
+                xAxis = new
+                {
+                    type = "category",
+                    boundaryGap = false,
+                    data = hisDatas.Select(a => a.Date.ToString("yyyy-MM-dd HH:mm")).ToArray()
+                },
+                yAxis = new { type = "value" },
+                series = new[]
+{
         new { name =AppService.I18n.T( "CPU使用率"), type = "line",
                 data = hisDatas.Select(a=>a.CpuUsage).ToArray(),
             smooth=true
@@ -118,6 +129,49 @@ public partial class HardwareInfoPage
             smooth=true
         },
     }
-        };
+            };
+
+        }
+        else
+        {
+            var option = new
+            {
+                xAxis = new
+                {
+                    data = hisDatas.Select(a => a.Date.ToString("yyyy-MM-dd HH:mm")).ToArray()
+                },
+                series = new[]
+  {
+        new { name =AppService.I18n.T( "CPU使用率"),
+                data = hisDatas.Select(a=>a.CpuUsage).ToArray(),
+        },
+        new { name = AppService.I18n.T("内存使用率"),
+                data = hisDatas.Select(a=>a.MemoryUsage).ToArray(),
+        },
+        new { name = AppService.I18n.T("磁盘使用率"),
+                data = hisDatas.Select(a=>a.DriveUsage).ToArray(),
+        },
+        new { name = AppService.I18n.T("温度"),
+                data = hisDatas.Select(a=>a.Temperature).ToArray(),
+        },
+                new { name = AppService.I18n.T("电池"),
+                data = hisDatas.Select(a=>a.Battery).ToArray(),
+        },
+        new { name = AppService.I18n.T("上载速度"),
+                data = hisDatas.Select(a=>a.UplinkSpeed).ToArray(),
+        },
+        new { name = AppService.I18n.T("下载速度"),
+                data = hisDatas.Select(a=>a.DownlinkSpeed).ToArray(),
+        },
     }
+            };
+            await hardwareInfoECharts.SetOption(option, false, false);
+
+        }
+
+
+        await InvokeStateHasChangedAsync();
+    }
+    #endregion
+
 }
