@@ -16,8 +16,6 @@ using ThingsGateway.Admin.Core;
 using ThingsGateway.Core;
 using ThingsGateway.Foundation;
 
-using Yitter.IdGenerator;
-
 namespace ThingsGateway.Plugin.SqlDB;
 
 /// <summary>
@@ -52,9 +50,9 @@ public partial class SqlDBProducer : BusinessBaseWithCacheInterval<SQLHistoryVal
 
         _config = new TypeAdapterConfig();
         _config.ForType<VariableRunTime, SQLHistoryValue>()
-.Map(dest => dest.Id, (src) =>
-YitIdHelper.NextId())
-.Map(dest => dest.CreateTime, (src) => DateTime.Now);
+            //.Map(dest => dest.Id, (src) =>YitIdHelper.NextId())
+            .Map(dest => dest.Id, src => src.Id)//Id更改为变量Id
+            .Map(dest => dest.CreateTime, (src) => DateTime.Now);
 
         _exRealTimerTick = new(_driverPropertys.BusinessInterval);
 
@@ -112,7 +110,7 @@ YitIdHelper.NextId())
                              .WhereIF(input.StartTime != null, a => a.CreateTime >= input.StartTime)
                            .WhereIF(input.EndTime != null, a => a.CreateTime <= input.EndTime)
                            .WhereIF(!string.IsNullOrEmpty(input.VariableName), it => it.Name.Contains(input.VariableName))
-                           .WhereIF(input.VariableNames != null, it => input.VariableName.Contains(it.Name))
+                           .WhereIF(input.VariableNames != null, it => input.VariableNames.Contains(it.Name))
                            ;
 
         for (int i = input.SortField.Count - 1; i >= 0; i--)

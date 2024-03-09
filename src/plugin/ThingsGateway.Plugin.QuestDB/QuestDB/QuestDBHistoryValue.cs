@@ -12,7 +12,6 @@ using SqlSugar;
 
 using System.ComponentModel;
 
-using ThingsGateway.Admin.Core;
 using ThingsGateway.Core;
 
 namespace ThingsGateway.Plugin.QuestDB;
@@ -22,10 +21,10 @@ namespace ThingsGateway.Plugin.QuestDB;
 /// </summary>
 [SugarTable("historyValue", TableDescription = "历史数据表")]
 [SugarIndex(null, nameof(QuestDBHistoryValue.Name), OrderByType.Asc)]
-public class QuestDBHistoryValue : PrimaryIdEntity, IDBHistoryValue
+public class QuestDBHistoryValue : IPrimaryIdEntity, IDBHistoryValue
 {
-    [SugarColumn(IsIgnore = true)]
-    public override long Id { get; set; }
+    [SugarColumn(ColumnDescription = "变量Id", ColumnDataType = "symbol")]
+    public long Id { get; set; }
 
     /// <summary>
     /// 采集时间

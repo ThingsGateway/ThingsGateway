@@ -12,6 +12,7 @@ namespace ThingsGateway.Gateway.Application
 {
     public interface IDBHistoryValue
     {
+        public long Id { get; set; }
         DateTime CollectTime { get; set; }
         DateTime CreateTime { get; set; }
         string DeviceName { get; set; }

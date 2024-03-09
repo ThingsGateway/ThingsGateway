@@ -16,8 +16,6 @@ using ThingsGateway.Admin.Core;
 using ThingsGateway.Core;
 using ThingsGateway.Foundation;
 
-using Yitter.IdGenerator;
-
 namespace ThingsGateway.Plugin.QuestDB;
 
 /// <summary>
@@ -52,7 +50,8 @@ public partial class QuestDBProducer : BusinessBaseWithCacheInterval<QuestDBHist
 
         _config = new TypeAdapterConfig();
         _config.ForType<VariableRunTime, QuestDBHistoryValue>()
-            .Map(dest => dest.Id, src => YitIdHelper.NextId())
+            //.Map(dest => dest.Id, src => YitIdHelper.NextId())
+            .Map(dest => dest.Id, src => src.Id)//Id更改为变量Id
             .Map(dest => dest.Value, src => src.Value == null ? string.Empty : src.Value.ToString() ?? string.Empty)
             .Map(dest => dest.CollectTime, (src) => src.CollectTime < DateTime.MinValue ? DateTime.MinValue.ToUniversalTime() : src.CollectTime!.Value.ToUniversalTime())//注意sqlsugar插入时无时区，直接utc时间
             .Map(dest => dest.CreateTime, (src) => DateTime.UtcNow)
@@ -85,7 +84,7 @@ public partial class QuestDBProducer : BusinessBaseWithCacheInterval<QuestDBHist
                              .WhereIF(input.StartTime != null, a => a.CreateTime >= input.StartTime)
                            .WhereIF(input.EndTime != null, a => a.CreateTime <= input.EndTime)
                            .WhereIF(!string.IsNullOrEmpty(input.VariableName), it => it.Name.Contains(input.VariableName))
-                           .WhereIF(input.VariableNames != null, it => input.VariableName.Contains(it.Name))
+                           .WhereIF(input.VariableNames != null, it => input.VariableNames.Contains(it.Name))
                            ;
 
         for (int i = input.SortField.Count - 1; i >= 0; i--)

@@ -15,12 +15,13 @@ using ThingsGateway.Core;
 namespace ThingsGateway.Plugin.SqlDB;
 
 [SugarTable(TableDescription = "设备采集实时表")]
+[SugarIndex("{table}_index_Id", nameof(SQLRealValue.Id), OrderByType.Desc)]
 [SugarIndex("{table}_index_Name", nameof(SQLRealValue.Name), OrderByType.Desc)]
 [SugarIndex("{table}_index_DeviceName", nameof(SQLRealValue.DeviceName), OrderByType.Desc)]
 [SugarIndex("{table}_index_CollectTime", nameof(SQLRealValue.CollectTime), OrderByType.Desc)]
 public class SQLRealValue : IPrimaryIdEntity
 {
-    [SugarColumn(ColumnDescription = "Id", IsPrimaryKey = true)]
+    [SugarColumn(ColumnDescription = "变量Id", IsPrimaryKey = true)]
     [DataTable(Order = 1, IsShow = true, Sortable = true, DefaultFilter = true, CellClass = " table-text-truncate ")]
     public long Id { get; set; }
 

@@ -14,7 +14,7 @@ using TouchSocket.Rpc;
 
 namespace ThingsGateway.Gateway.Application;
 
-internal class ReverseCallbackServer : RpcServer
+internal partial class ReverseCallbackServer : RpcServer
 {
     private ILog _logger;
     private ManagementWoker managementWoker;

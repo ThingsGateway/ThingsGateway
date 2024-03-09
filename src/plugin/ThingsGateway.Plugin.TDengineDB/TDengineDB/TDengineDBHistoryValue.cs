@@ -23,7 +23,7 @@ namespace ThingsGateway.Plugin.TDengineDB;
 [SugarTable("historyValue")]
 public class TDengineDBHistoryValue : STable, IPrimaryIdEntity, IDBHistoryValue
 {
-    [SugarColumn(IsIgnore = true)]
+    [SugarColumn(ColumnDescription = "变量Id")]
     public long Id { get; set; }
 
     /// <summary>
