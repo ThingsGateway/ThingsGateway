@@ -125,16 +125,12 @@ public static class DbContext
         //异常
         db.Aop.OnError = (ex) =>
         {
-            //如果不是开发环境就打印日志
-            if (App.WebHostEnvironment.IsDevelopment())
-            {
-                if (ex.Parametres == null) return;
-                Console.ForegroundColor = ConsoleColor.Red;
-                var pars = db.Utilities.SerializeObject(((SugarParameter[])ex.Parametres).ToDictionary(it => it.ParameterName, it => it.Value));
-                WriteLog($"{config.ConfigId}库操作异常");
-                WriteErrorLogWithSql(UtilMethods.GetSqlString(config.DbType, ex.Sql, (SugarParameter[])ex.Parametres) + "\r\n");
-                Console.ForegroundColor = ConsoleColor.White;
-            }
+            if (ex.Parametres == null) return;
+            Console.ForegroundColor = ConsoleColor.Red;
+            var pars = db.Utilities.SerializeObject(((SugarParameter[])ex.Parametres).ToDictionary(it => it.ParameterName, it => it.Value));
+            WriteLog($"{config.ConfigId}库操作异常");
+            WriteErrorLogWithSql(UtilMethods.GetSqlString(config.DbType, ex.Sql, (SugarParameter[])ex.Parametres) + "\r\n");
+            Console.ForegroundColor = ConsoleColor.White;
         };
         //插入和更新过滤器
         db.Aop.DataExecuting = (oldValue, entityInfo) =>
