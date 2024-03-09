@@ -28,7 +28,6 @@ namespace ThingsGateway.Foundation
         {
             this.Protocol = Protocol.Tcp;
         }
-
         /// <summary>
         /// Tcp客户端
         /// </summary>
@@ -36,14 +35,13 @@ namespace ThingsGateway.Foundation
         {
             Dispose(true);
         }
-
         #region 变量
 
         private DelaySender m_delaySender;
         private volatile bool m_online;
         private readonly EasyLock m_semaphoreForConnect = new();
         private readonly TcpCore m_tcpCore = new();
-
+        private readonly object m_lock = new object();
         #endregion 变量
 
         #region 事件
@@ -216,10 +214,6 @@ namespace ThingsGateway.Foundation
         public int Port { get; private set; }
 
         /// <inheritdoc/>
-        [Obsolete("该配置已被弃用，正式版发布时会直接删除", true)]
-        public ReceiveType ReceiveType { get; private set; }
-
-        /// <inheritdoc/>
         public bool UseSsl => this.GetTcpCore().UseSsl;
 
         /// <inheritdoc/>
@@ -238,7 +232,7 @@ namespace ThingsGateway.Foundation
         /// <inheritdoc/>
         public virtual void Close(string msg)
         {
-            lock (this.GetTcpCore())
+            lock (this.m_lock)
             {
                 if (this.m_online)
                 {
@@ -256,14 +250,20 @@ namespace ThingsGateway.Foundation
         protected override void Dispose(bool disposing)
         {
             if (DisposedValue) return;
-            lock (this.GetTcpCore())
+            if (disposing)
             {
-                if (this.m_online)
+                lock (this.m_lock)
                 {
-                    this.PrivateOnDisconnecting(new DisconnectEventArgs(true, string.Format(FoundationConst.ProactivelyDisconnect, nameof(Dispose)))).GetFalseAwaitResult();
-                    this.BreakOut(true, string.Format(FoundationConst.ProactivelyDisconnect, nameof(Dispose)));
+                    if (this.m_online)
+                    {
+                        this.PrivateOnDisconnecting(new DisconnectEventArgs(true, string.Format(FoundationConst.ProactivelyDisconnect, nameof(Dispose)))).GetFalseAwaitResult();
+                        this.BreakOut(true, string.Format(FoundationConst.ProactivelyDisconnect, nameof(Dispose)));
+                    }
                 }
+
+                this.m_tcpCore.SafeDispose();
             }
+
             base.Dispose(disposing);
         }
 
@@ -457,7 +457,7 @@ namespace ThingsGateway.Foundation
         /// <inheritdoc/>
         public IReceiver CreateReceiver()
         {
-            return this.m_receiver ??= new TgReceiver(this);
+            return this.m_receiver ??= new(this);
         }
 
         /// <inheritdoc/>
@@ -467,7 +467,6 @@ namespace ThingsGateway.Foundation
         }
 
         #endregion Receiver
-
         /// <inheritdoc/>
         public override string ToString()
         {
@@ -486,7 +485,7 @@ namespace ThingsGateway.Foundation
         /// <param name="msg"></param>
         protected void BreakOut(bool manual, string msg)
         {
-            lock (this.GetTcpCore())
+            lock (this.m_lock)
             {
                 if (this.m_online)
                 {
@@ -839,6 +838,7 @@ namespace ThingsGateway.Foundation
             {
                 this.m_delaySender = new DelaySender(delaySenderOption, this.GetTcpCore().Send);
             }
+
             this.m_tcpCore.Reset(socket);
             this.m_tcpCore.OnReceived = this.HandleReceived;
             this.m_tcpCore.OnBreakOut = this.TcpCoreBreakOut;
@@ -892,9 +892,5 @@ namespace ThingsGateway.Foundation
             }
             return Task.FromResult(false);
         }
-
-        /// <inheritdoc/>
-        [Obsolete("该配置已被弃用，正式版发布时会直接删除", true)]
-        public Stream? GetStream() => default;
     }
 }

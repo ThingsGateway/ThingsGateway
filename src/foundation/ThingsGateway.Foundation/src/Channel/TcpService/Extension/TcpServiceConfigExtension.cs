@@ -11,27 +11,22 @@
 namespace ThingsGateway.Foundation
 {
     /// <summary>
-    /// TcpClientConfigExtension
+    /// TcpServiceConfigExtension
     /// </summary>
-    public static class TcpClientConfigExtension
+    public static class TcpServiceConfigExtension
     {
         /// <summary>
-        /// 获取一个新的Tcp客户端通道。传入远程服务端地址
+        /// 获取一个新的Tcp服务端通道。传入绑定地址
         /// </summary>
         /// <returns></returns>
-        public static TgTcpClient GetTcpClientWithIPHost(this TouchSocketConfig config, IPHost remoteUrl, string? bindUrl = default)
+        public static TgTcpService GetTcpServiceWithBindIPHost(this TouchSocketConfig config, IPHost bindUrl)
         {
-            if (remoteUrl == null)
-                throw new ArgumentNullException(nameof(IPHost));
-            config.SetRemoteIPHost(remoteUrl);
-            if (!string.IsNullOrEmpty(bindUrl))
-                config.SetBindIPHost(bindUrl);
+            if (bindUrl == null) throw new ArgumentNullException(nameof(IPHost));
+            config.SetListenIPHosts(new IPHost[] { bindUrl });
             //载入配置
-            TgTcpClient tgTcpClient = new TgTcpClient();
-            tgTcpClient.Setup(config);
-            return tgTcpClient;
+            TgTcpService tgTcpService = new TgTcpService();
+            tgTcpService.Setup(config);
+            return tgTcpService;
         }
-
-
     }
 }

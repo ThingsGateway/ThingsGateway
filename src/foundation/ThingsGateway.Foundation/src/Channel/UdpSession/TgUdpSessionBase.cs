@@ -41,7 +41,6 @@ namespace ThingsGateway.Foundation
         {
             Dispose(true);
         }
-
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
@@ -314,10 +313,9 @@ namespace ThingsGateway.Foundation
                     this.m_socketAsyncs.Clear();
 
                     this.PluginManager?.Raise(nameof(IServerStartedPlugin.OnServerStarted), this, new ServiceStateEventArgs(this.m_serverState, default));
-                    this.PluginManager.SafeDispose();
+                    this.PluginManager?.SafeDispose();
                 }
             }
-
             base.Dispose(disposing);
         }
 
@@ -377,6 +375,7 @@ namespace ThingsGateway.Foundation
                 throw new ArgumentNullException(nameof(adapter));
             }
 
+
             if (adapter.Owner != null && adapter.Owner != this)
             {
                 throw new Exception(FoundationConst.CannotUseAdapterAgain);
@@ -390,6 +389,7 @@ namespace ThingsGateway.Foundation
             adapter.OnLoaded(this);
             adapter.ReceivedCallBack = this.PrivateHandleReceivedData;
             adapter.SendCallBack = this.DefaultSend;
+            adapter.SendCallBackAsync = this.DefaultSendAsync;
             this.DataHandlingAdapter = adapter;
         }
 
@@ -407,6 +407,7 @@ namespace ThingsGateway.Foundation
             }
 
             #region Windows下UDP连接被重置错误10054
+
 
             if (NewLife.Runtime.Windows)
             {
@@ -489,7 +490,7 @@ namespace ThingsGateway.Foundation
         {
             try
             {
-                this.LastReceivedTime = DateTimeUtil.Now;
+                this.LastReceivedTime = DateTime.Now;
                 if (this.DisposedValue)
                 {
                     return;
@@ -513,7 +514,7 @@ namespace ThingsGateway.Foundation
 
         private void IO_Completed(object? sender, SocketAsyncEventArgs e)
         {
-            this.ProcessReceive((Socket)sender!, e);
+            this.ProcessReceive((Socket)sender, e);
         }
 
         private void PrivateHandleReceivedData(EndPoint remoteEndPoint, ByteBlock byteBlock, IRequestInfo requestInfo)
@@ -545,10 +546,6 @@ namespace ThingsGateway.Foundation
             if (this.DataHandlingAdapter == null)
             {
                 throw new ArgumentNullException(nameof(this.DataHandlingAdapter), TouchSocketResource.NullDataAdapter.GetDescription());
-            }
-            if (!this.DataHandlingAdapter.CanSendRequestInfo)
-            {
-                throw new NotSupportedException(FoundationConst.CannotSendIRequestInfo);
             }
         }
 
@@ -678,9 +675,9 @@ namespace ThingsGateway.Foundation
             if (e.SocketError == SocketError.Success)
             {
                 var byteBlock = (ByteBlock)e.UserToken;
-                byteBlock!.SetLength(e.BytesTransferred);
+                byteBlock.SetLength(e.BytesTransferred);
 
-                this.HandleBuffer(e.RemoteEndPoint!, byteBlock);
+                this.HandleBuffer(e.RemoteEndPoint, byteBlock);
 
                 var newByteBlock = new ByteBlock(1024 * 64);
                 e.UserToken = newByteBlock;
@@ -708,14 +705,10 @@ namespace ThingsGateway.Foundation
 
         #region DefaultSend
 
-        /// <summary>
         /// <inheritdoc/>
-        /// </summary>
-        /// <param name="buffer"></param>
-        /// <param name="offset"></param>
-        /// <param name="length"></param>
         public void DefaultSend(byte[] buffer, int offset, int length)
         {
+            this.ThorwIfRemoteIPHostNull();
             this.DefaultSend(this.RemoteIPHost.EndPoint, buffer, offset, length);
         }
 
@@ -728,14 +721,11 @@ namespace ThingsGateway.Foundation
         /// <param name="length"></param>
         public void DefaultSend(EndPoint endPoint, byte[] buffer, int offset, int length)
         {
+            this.ThrowIfDisposed();
             if (this.HandleSendingData(endPoint, buffer, offset, length))
             {
-                if (this.CanSend)
-                {
-                    this.Monitor.Socket.SendTo(buffer, offset, length, SocketFlags.None, endPoint);
-                }
-
-                this.LastSendTime = DateTimeUtil.Now;
+                this.Monitor.Socket.SendTo(buffer, offset, length, SocketFlags.None, endPoint);
+                this.LastSendTime = DateTime.Now;
             }
         }
 
@@ -751,10 +741,7 @@ namespace ThingsGateway.Foundation
         /// <param name="length"></param>
         public Task DefaultSendAsync(byte[] buffer, int offset, int length)
         {
-            if (this.RemoteIPHost == null)
-            {
-                throw new ArgumentNullException(nameof(RemoteIPHost));
-            }
+            this.ThorwIfRemoteIPHostNull();
             return this.DefaultSendAsync(this.RemoteIPHost.EndPoint, buffer, offset, length);
         }
 
@@ -802,10 +789,7 @@ namespace ThingsGateway.Foundation
         /// <param name="transferBytes"></param>
         public void Send(IList<ArraySegment<byte>> transferBytes)
         {
-            if (this.RemoteIPHost == null)
-            {
-                throw new ArgumentNullException(nameof(RemoteIPHost));
-            }
+            this.ThorwIfRemoteIPHostNull();
             this.Send(this.RemoteIPHost.EndPoint, transferBytes);
         }
 
@@ -816,10 +800,7 @@ namespace ThingsGateway.Foundation
         /// <param name="transferBytes"></param>
         public void Send(EndPoint endPoint, IList<ArraySegment<byte>> transferBytes)
         {
-            if (this.DataHandlingAdapter == null)
-            {
-                throw new ArgumentNullException(nameof(this.DataHandlingAdapter), TouchSocketResource.NullDataAdapter.GetDescription());
-            }
+            ThorwIfDataHandlingAdapterNull();
 
             if (!this.DataHandlingAdapter.CanSplicingSend)
             {
@@ -834,10 +815,7 @@ namespace ThingsGateway.Foundation
         /// <param name="transferBytes"></param>
         public Task SendAsync(IList<ArraySegment<byte>> transferBytes)
         {
-            if (this.RemoteIPHost == null)
-            {
-                throw new ArgumentNullException(nameof(RemoteIPHost));
-            }
+            this.ThorwIfRemoteIPHostNull();
             return this.SendAsync(this.RemoteIPHost.EndPoint, transferBytes);
         }
 
@@ -848,15 +826,7 @@ namespace ThingsGateway.Foundation
         /// <param name="transferBytes"></param>
         public Task SendAsync(EndPoint endPoint, IList<ArraySegment<byte>> transferBytes)
         {
-            if (this.DataHandlingAdapter == null)
-            {
-                throw new ArgumentNullException(nameof(this.DataHandlingAdapter), TouchSocketResource.NullDataAdapter.GetDescription());
-            }
-
-            if (!this.DataHandlingAdapter.CanSplicingSend)
-            {
-                throw new NotSupportedException(FoundationConst.CannotSplicingSend);
-            }
+            ThorwIfDataHandlingAdapterNull();
             return this.DataHandlingAdapter.SendInputAsync(endPoint, transferBytes);
         }
 
@@ -869,7 +839,7 @@ namespace ThingsGateway.Foundation
         /// <inheritdoc/>
         public IReceiver CreateReceiver()
         {
-            return this.m_receiver ??= new TgReceiver(this);
+            return this.m_receiver ??= new(this);
         }
 
         /// <inheritdoc/>

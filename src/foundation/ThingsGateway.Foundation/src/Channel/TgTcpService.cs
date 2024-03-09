@@ -13,7 +13,7 @@ using System.Net.Sockets;
 namespace ThingsGateway.Foundation
 {
     /// <inheritdoc/>
-    public class TgTcpServiceBase<TClient> : TcpServiceBase<TClient>, ITcpService<TClient> where TClient : TgSocketClient, new()
+    public class TgTcpServiceBase<TClient> : TcpService<TClient>, ITcpService<TClient> where TClient : TgSocketClient, new()
     {
         /// <inheritdoc/>
         ~TgTcpServiceBase()
@@ -165,16 +165,13 @@ namespace ThingsGateway.Foundation
             {
                 return;
             }
-
-            if (disposing)
-            {
-                if (Monitors.Count() > 0)
-                {
-                    if (Monitors.Count() == 0)
-                        Logger.Info($"{this}{FoundationConst.ServiceStoped}");
-                }
-            }
+            var count = Monitors.Count();
             base.Dispose(disposing);
+            if (count > 0)
+            {
+                if (Monitors.Count() == 0)
+                    Logger.Info($"{this}{FoundationConst.ServiceStoped}");
+            }
         }
     }
 

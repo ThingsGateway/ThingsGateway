@@ -292,6 +292,11 @@
             <param name="fromType">注册类型</param>
             <param name="toType">实例类型</param>
         </member>
+        <member name="T:TouchSocket.Core.GeneratorPackageAttribute">
+            <summary>
+            标识源生成<see cref="T:TouchSocket.Core.IPackage"/>的实现。
+            </summary>
+        </member>
         <member name="T:TouchSocket.Core.GeneratorPluginAttribute">
             <summary>
             使用源生成插件的调用。
@@ -302,11 +307,6 @@
             使用源生成插件的调用。
             </summary>
             <param name="pluginName">插件名称，一般建议使用nameof()解决。</param>
-        </member>
-        <member name="T:TouchSocket.Rpc.GeneratorRpcMethodAttribute">
-            <summary>
-            标识该接口方法将自动生成调用的扩展方法
-            </summary>
         </member>
         <member name="T:TouchSocket.Rpc.GeneratorRpcProxyAttribute">
             <summary>
@@ -343,11 +343,6 @@
             生成代码
             </summary>
         </member>
-        <member name="P:TouchSocket.Rpc.GeneratorRpcProxyAttribute.MethodFlags">
-            <summary>
-            函数标识
-            </summary>
-        </member>
         <member name="P:TouchSocket.Rpc.GeneratorRpcProxyAttribute.InheritedInterface">
             <summary>
             继承接口
@@ -356,6 +351,31 @@
         <member name="T:TouchSocket.Rpc.GeneratorRpcServerAttribute">
             <summary>
             标识将通过源生成器生成Rpc服务的调用委托。
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Rpc.GeneratorRpcServerRegisterAttribute">
+            <summary>
+            标识将通过源生成器生成Rpc服务的注册代码。
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Rpc.GeneratorRpcServerRegisterAttribute.MethodName">
+            <summary>
+            方法名称。默认是“RegisterAllFrom+AssemblyName”
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Rpc.GeneratorRpcServerRegisterAttribute.ClassName">
+            <summary>
+            扩展类类名，默认是“RegisterRpcServerFrom+AssemblyName+Extension”
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Rpc.GeneratorRpcServerRegisterAttribute.Accessibility">
+            <summary>
+            访问修饰。
+            <para>
+            如果为<see cref="F:TouchSocket.Rpc.Accessibility.Both"/>，将生成注册公共Rpc服务与非公共服务两个方法。其中非公共方法会在<see cref="P:TouchSocket.Rpc.GeneratorRpcServerRegisterAttribute.MethodName"/>之前以Internal开头。
+            如果为<see cref="F:TouchSocket.Rpc.Accessibility.Internal"/>，将只生成注册非公共Rpc服务。
+            如果为<see cref="F:TouchSocket.Rpc.Accessibility.Public"/>，将只生成注册公共Rpc服务。
+            </para>
             </summary>
         </member>
     </members>

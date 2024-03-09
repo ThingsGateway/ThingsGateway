@@ -16,7 +16,7 @@ namespace ThingsGateway.Foundation
     /// TgSocketClient
     /// </summary>
     [DebuggerDisplay("Id={Id},IPAdress={IP}:{Port}")]
-    public class TgSocketClient : TgSocketClientBase, IClientChannel
+    public class TgSocketClient : SocketClient, IClientChannel
     {
         /// <summary>
         /// TgSocketClient
@@ -126,7 +126,7 @@ namespace ThingsGateway.Foundation
             return base.OnDisconnected(e);
         }
 
-        #region 无
+        #region 
 
         /// <inheritdoc/>
         public void Setup(TouchSocketConfig config)

@@ -25,7 +25,7 @@
 		<PackageReference Include="CS-Script" Version="4.8.14" />
 		<!--CS-Script与Furion冲突，直接安装覆盖版本-->
 		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.9.2" />
-		<PackageReference Include="TouchSocket.Dmtp" Version="2.0.0-rc.2" />
+		<PackageReference Include="TouchSocket.Dmtp" Version="2.0.0" />
 	</ItemGroup>
 
 

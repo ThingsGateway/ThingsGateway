@@ -169,11 +169,11 @@ public abstract class DriverBase : DisposableObject
             }
             try
             {
-                await DisposeAsync();
+                Dispose();
             }
             catch (Exception ex)
             {
-                Logger?.LogError(ex, $"插件执行{nameof(DisposeAsync)}方法失败");
+                Logger?.LogError(ex, $"插件执行{nameof(Dispose)}方法失败");
             }
             Logger?.LogInformation($"{DeviceName}：线程已停止");
         }
