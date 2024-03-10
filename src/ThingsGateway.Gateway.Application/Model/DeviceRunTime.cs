@@ -45,7 +45,7 @@ public class DeviceRunTime : Device
     /// 设备活跃时间
     /// </summary>
     [Description("活跃时间")]
-    public DateTime? ActiveTime { get; internal set; }
+    public DateTime? ActiveTime { get; internal set; } = DateTime.UnixEpoch.ToLocalTime();
 
     /// <summary>
     /// 设备状态

@@ -40,7 +40,7 @@ public class VariableRunTime : Variable, IVariable
     /// </summary>
     [Description("变化时间")]
     [DataTable(Order = 2, IsShow = true, Sortable = true)]
-    public DateTime? ChangeTime { get; private set; }
+    public DateTime? ChangeTime { get; private set; } = DateTime.UnixEpoch.ToLocalTime();
 
     /// <summary>
     /// 所在采集设备
@@ -72,7 +72,7 @@ public class VariableRunTime : Variable, IVariable
     /// </summary>
     [Description("采集时间")]
     [DataTable(Order = 2, IsShow = true, Sortable = true)]
-    public DateTime? CollectTime { get; private set; }
+    public DateTime? CollectTime { get; private set; } = DateTime.UnixEpoch.ToLocalTime();
 
     /// <summary>
     /// 设备名称
