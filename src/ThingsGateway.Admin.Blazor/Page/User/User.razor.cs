@@ -84,7 +84,7 @@ public partial class User
         var result = (bool?)await PopupService.OpenAsync(typeof(GrantResource), new Dictionary<string, object?>()
         {
             {nameof(GrantResource.Id),context.Id},
-            {nameof(GrantApi.IsRole),false}
+            {nameof(GrantResource.IsRole),false}
 });
         if (result == true)
             await MainLayout.StateHasChangedAsync();
