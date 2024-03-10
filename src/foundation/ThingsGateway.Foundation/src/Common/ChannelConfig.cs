@@ -23,7 +23,7 @@ public class ChannelConfig : AppConfigBase
     /// <summary>
     /// <inheritdoc/>
     /// </summary>
-    public ChannelConfig() : base(($"{nameof(ChannelConfig)}.json"))
+    public ChannelConfig() : base(($"channel.config.json"))
     {
     }
 }
