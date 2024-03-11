@@ -42,12 +42,12 @@ public class Startup : AppStartup
                 );
             };
         });
+        services.AddConfigurableOptions<ManagementOptions>();
         services.AddHostedService<ManagementWoker>();
         services.AddHostedService<HardwareInfoWorker>();
         services.AddHostedService<CollectDeviceWorker>();
         services.AddHostedService<BusinessDeviceWorker>();
         services.AddHostedService<AlarmWorker>();
-        services.AddConfigurableOptions<ManagementOptions>();
 
         TypeExtension.DefaultDisplayNameFuncs.Add(a => a.GetCustomAttribute<DynamicPropertyAttribute>()?.Description);
     }

@@ -124,7 +124,7 @@ public class ManagementWoker : BackgroundService
         await _easyLock?.WaitAsync();
         CollectDeviceWorker = WorkerUtil.GetWoker<CollectDeviceWorker>();
         GlobalData = _serviceScope.ServiceProvider.GetService<GlobalData>();
-        Options = App.GetOptions<ManagementOptions>();
+        Options = App.GetOptions<ManagementOptions>(_serviceScope.ServiceProvider);
         IsStartBusinessDevice = Options.Redundancy.Enable ? Options.Redundancy.IsStartBusinessDevice : true;
         //初始化直接启动
         IsStart = true;
