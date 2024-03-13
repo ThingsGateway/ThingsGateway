@@ -23,7 +23,7 @@ namespace ThingsGateway.Plugin.QuestDB;
 [SugarIndex(null, nameof(QuestDBHistoryValue.Name), OrderByType.Asc)]
 public class QuestDBHistoryValue : IPrimaryIdEntity, IDBHistoryValue
 {
-    [SugarColumn(ColumnDescription = "变量Id", ColumnDataType = "symbol")]
+    [SugarColumn(ColumnDescription = "变量Id")]
     public long Id { get; set; }
 
     /// <summary>

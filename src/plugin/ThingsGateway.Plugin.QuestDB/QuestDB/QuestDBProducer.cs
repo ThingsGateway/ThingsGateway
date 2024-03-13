@@ -98,7 +98,7 @@ public partial class QuestDBProducer : BusinessBaseWithCacheInterval<QuestDBHist
 
     public async Task<List<IDBHistoryValue>> GetDBHistoryValuesAsync(DBPageInput input)
     {
-        var data = await Query(input).Select<IDBHistoryValue>().ToListAsync();
+        var data = await Query(input).ToListAsync();
         return data.Cast<IDBHistoryValue>().ToList(); ;
     }
 

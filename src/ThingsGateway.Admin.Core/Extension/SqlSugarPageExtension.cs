@@ -88,6 +88,7 @@ public static class SqlSugarPageExtension
             HasPrevPages = current - 1 > 0
         };
     }
+
     /// <summary>
     /// SqlSugar分页扩展
     /// </summary>
@@ -113,6 +114,7 @@ public static class SqlSugarPageExtension
             HasPrevPages = current - 1 > 0
         };
     }
+
     /// <summary>
     /// SqlSugar分页扩展
     /// </summary>
