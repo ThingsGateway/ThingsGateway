@@ -207,7 +207,7 @@ public abstract class DeviceWorker : BackgroundService
             }
             else
             {
-                if (ManagementWoker.Options.Redundancy.IsStartBusinessDevice)
+                if (ManagementWoker.IsStartBusinessDevice)
                 {
                     //业务设备启动
                     await item.StartThreadAsync();

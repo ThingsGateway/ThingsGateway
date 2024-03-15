@@ -40,7 +40,7 @@ internal partial class ReverseCallbackServer : RpcServer
             {
                 GatewayState result = new();
                 result.IsStart = managementWoker.IsStart;
-                result.IsPrimary = managementWoker.Options.Redundancy.IsPrimary;
+                result.IsPrimary = managementWoker.Options?.Redundancy?.IsPrimary == true;
                 return result;
             }
         }

@@ -125,11 +125,11 @@ public class ManagementWoker : BackgroundService
         CollectDeviceWorker = WorkerUtil.GetWoker<CollectDeviceWorker>();
         GlobalData = _serviceScope.ServiceProvider.GetService<GlobalData>();
         Options = App.GetOptions<ManagementOptions>(_serviceScope.ServiceProvider);
-        IsStartBusinessDevice = Options.Redundancy.Enable ? Options.Redundancy.IsStartBusinessDevice : true;
+        IsStartBusinessDevice = Options?.Redundancy?.Enable == true ? Options?.Redundancy?.IsStartBusinessDevice == true : true;
         //初始化直接启动
         IsStart = true;
         StartLock.Release();
-        if (Options.Redundancy.Enable)
+        if (Options?.Redundancy?.Enable == true)
         {
             var udpDmtp = GetUdpDmtp(Options);
             await udpDmtp.StartAsync();//启动
