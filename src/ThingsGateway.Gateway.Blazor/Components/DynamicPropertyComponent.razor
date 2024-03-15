@@ -35,28 +35,23 @@
 
 
     }
-    else if (Type.PropertyType == typeof(DateTime))
+@*     else if (Type.PropertyType == typeof(DateTime))
     {
-        <MTooltip Disabled=@(string.IsNullOrEmpty(Remark)) Bottom Context="tip">
-             <ActivatorContent>
-                 <PDateTimePicker @bind-Value=Value @attributes="@tip.Attrs"
+                 <PDateTimePicker @bind-Value=Value 
                                   TimeFormat="TimeFormat.Hr24"
                                   ViewType="DateTimePickerViewType.Compact">
                      <ActivatorContent Context="dt">
                          <MTextField Value=@Value ValueChanged=@ValueChanged Label=@Description Required=!Type.IsNullable() Clearable=Type.IsNullable()
-                                     Class="my-1  mx-2 " ValueExpression="()=>Value"
+                                      ValueExpression="()=>Value"
                                             Filled Outlined
+                          HideDetails=@("auto")
                                             Readonly Dense
                                      @attributes="@dt.Attrs">
                          </MTextField>
                      </ActivatorContent>
                      </PDateTimePicker>
-                 </ActivatorContent>
-                 <ChildContent>
-                     <span>@Remark</span>
-            </ChildContent>
-        </MTooltip>
-    }
+
+    } *@
     else if (Type.PropertyType.IsEnum)
     {
         <MTooltip Disabled=@(string.IsNullOrEmpty(Remark)) Bottom Context="tip">

@@ -7,14 +7,12 @@
 			set dir1=&quot;$(PublishDir)Plugins&quot;&#xD;&#xA; 
 		if not exist %dir1%  md %dir1%  &#xD;&#xA;
 			xcopy %dir% %dir1% /E /H /C /K /Y  &#xD;&#xA;&#xD;&#xA;" />
-			
-	</Target>
-	
-	<Target Name="PostPublish" AfterTargets="Publish">
+
 		<ItemGroup>
 			<PDBFilesToDelete Include="$(PublishDir)\*.pdb"/>
 		</ItemGroup>
 		<Delete Files="@(PDBFilesToDelete)" />
+		
 	</Target>
 	
 	<!--<Target Name="RemoveTranslationsAfterBuild" AfterTargets="AfterBuild" Condition=" '$(Configuration)' == 'Release' ">
