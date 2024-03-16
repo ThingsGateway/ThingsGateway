@@ -158,7 +158,7 @@ public partial class AdapterDebugPage : AdapterDebugBase
                         var result = TextFileReader.LastLog(files.FirstOrDefault().FullName, 0);
                         if (result.IsSuccess)
                         {
-                            Messages = result.Content.Select(a => ((int)a.LogLevel, $"{a.LogTime} - {a.Message}")).ToList();
+                            Messages = result.Content.Select(a => ((int)a.LogLevel, $"{a.LogTime} - {a.Message} - {a.ExceptionString}")).ToList();
                         }
                         else
                         {
