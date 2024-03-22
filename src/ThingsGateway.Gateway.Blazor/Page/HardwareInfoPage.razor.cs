@@ -64,9 +64,12 @@ public partial class HardwareInfoPage
             }
         }
     }
+
     #region CPU曲线
-    private object hardwareInfoEChartsOption;
+
+    private object hardwareInfoEChartsOption = new();
     private MECharts hardwareInfoECharts;
+
     private async Task GetHardwareInfoEChartsOption()
     {
         var hisDatas = _hardwareInfoWorker.GetHis();
@@ -130,7 +133,6 @@ public partial class HardwareInfoPage
         },
     }
             };
-
         }
         else
         {
@@ -166,12 +168,10 @@ public partial class HardwareInfoPage
     }
             };
             await hardwareInfoECharts.SetOption(option, false, false);
-
         }
-
 
         await InvokeStateHasChangedAsync();
     }
-    #endregion
 
+    #endregion CPU曲线
 }
