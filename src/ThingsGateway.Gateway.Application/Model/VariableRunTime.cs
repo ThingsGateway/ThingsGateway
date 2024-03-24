@@ -12,6 +12,7 @@ using Mapster;
 
 using System.ComponentModel;
 
+using ThingsGateway.Core.Extension.Json;
 using ThingsGateway.Gateway.Application.Extensions;
 
 namespace ThingsGateway.Gateway.Application;
@@ -184,7 +185,8 @@ public class VariableRunTime : Variable, IVariable
             DateTime time = dateTime != default ? dateTime : DateTimeUtil.Now;
             CollectTime = time;
 
-            if ((data?.ToString() != _value?.ToString()) || _isOnlineChanged == true)
+            if ((data is Array array ? array?.ToJsonString() != _value?.ToJsonString() : (data?.ToString() != _value?.ToString()))
+                || _isOnlineChanged == true)
             {
                 ChangeTime = time;
 
