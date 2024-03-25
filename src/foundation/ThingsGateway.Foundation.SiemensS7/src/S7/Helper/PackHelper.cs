@@ -33,7 +33,7 @@ internal static class PackHelper
             IThingsGatewayBitConverter transformParameter = ByteTransUtil.GetTransByAddress(ref address, byteConverter);
             item.ThingsGatewayBitConverter = transformParameter;
             //item.Address = address;//需要使用过滤后的地址
-            item.Index = device.GetBitOffset(item.RegisterAddress);
+            item.Index = device.GetBitOffset(address);
         }
         //按读取间隔分组
         var tags = deviceVariables.GroupBy(it => it.IntervalTime ?? defaultIntervalTime);

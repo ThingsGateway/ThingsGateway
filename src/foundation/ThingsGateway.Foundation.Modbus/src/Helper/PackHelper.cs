@@ -37,7 +37,7 @@ public class PackHelper
             IThingsGatewayBitConverter transformParameter = ByteTransUtil.GetTransByAddress(ref address, byteConverter);
             item.ThingsGatewayBitConverter = transformParameter;
             //item.RegisterAddress = address;
-            item.Index = device.GetBitOffset(item.RegisterAddress);
+            item.Index = device.GetBitOffset(address);
         }
         var deviceVariableRunTimeGroups = deviceVariables.GroupBy(it => it.IntervalTime ?? defaultIntervalTime);
         foreach (var group in deviceVariableRunTimeGroups)

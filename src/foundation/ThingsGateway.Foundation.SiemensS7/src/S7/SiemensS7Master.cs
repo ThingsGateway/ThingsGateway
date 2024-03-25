@@ -90,7 +90,8 @@ public partial class SiemensS7Master : ProtocolBase
     {
         if (address.IndexOf('.') > 0)
         {
-            string[] addressSplits = address.SplitStringByDelimiter();
+            var addressSplits1 = address.SplitStringBySemicolon().Where(a => !a.Contains("=")).FirstOrDefault();
+            string[] addressSplits = addressSplits1.SplitStringByDelimiter();
             try
             {
                 int bitIndex = 0;
