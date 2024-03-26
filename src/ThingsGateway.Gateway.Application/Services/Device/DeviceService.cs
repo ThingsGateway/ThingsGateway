@@ -368,7 +368,7 @@ public class DeviceService : DbRepository<Device>, IDeviceService
     {
         string fileName;
         Dictionary<string, object> sheets;
-        ExportCore(data, pluginType, out fileName, out sheets);
+        ExportCore(data, pluginType, out fileName, out sheets, channelName);
         var memoryStream = new MemoryStream();
         await memoryStream.SaveAsAsync(sheets);
         return memoryStream;
