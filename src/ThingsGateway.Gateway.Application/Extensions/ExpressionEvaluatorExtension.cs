@@ -19,6 +19,7 @@ namespace ThingsGateway.Gateway.Application.Extensions;
 public static class ExpressionEvaluatorExtension
 {
     private static readonly GlobalData GlobalData = App.RootServices.GetService<GlobalData>();
+    private static bool PreEvaluateVariableEnable = App.GetConfig<bool?>("ExpressionEvaluator:PreEvaluateVariable") ?? false;
 
     /// <summary>
     /// 计算表达式：例如：raw*100，raw为原始值
@@ -41,7 +42,8 @@ public static class ExpressionEvaluatorExtension
         //
         ExpressionEvaluator expressionEvaluator = new();
         expressionEvaluator.OptionScriptNeedSemicolonAtTheEndOfLastExpression = false;
-        expressionEvaluator.PreEvaluateVariable += Evaluator_PreEvaluateVariable;
+        if (PreEvaluateVariableEnable)
+            expressionEvaluator.PreEvaluateVariable += Evaluator_PreEvaluateVariable;
         expressionEvaluator.Assemblies.Add(typeof(Newtonsoft.Json.JsonConverter).Assembly);
         expressionEvaluator.Namespaces.Add("Newtonsoft.Json.Linq");
         expressionEvaluator.Namespaces.Add("Newtonsoft.Json");

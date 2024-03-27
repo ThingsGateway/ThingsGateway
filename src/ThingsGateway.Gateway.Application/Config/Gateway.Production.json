@@ -6,5 +6,8 @@
   },
   "ChannelThread": {
     "CycleInterval": 20 //最小循环间隔
+  },
+  "ExpressionEvaluator": {
+    "PreEvaluateVariableEnable": false //启用后，读取表达式/写入表达式中可以用变量名称获取全局变量的值
   }
 }
