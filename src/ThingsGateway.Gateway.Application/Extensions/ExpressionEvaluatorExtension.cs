@@ -8,16 +8,62 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using CodingSeb.ExpressionEvaluator;
+using CSScriptLib;
 
 namespace ThingsGateway.Gateway.Application.Extensions;
 
 /// <summary>
+/// 读写表达式脚本
+/// </summary>
+public interface ReadWriteExpressions
+{
+    object GetNewValue(dynamic a);
+}
+
+/// <summary>
 /// 表达式扩展
 /// </summary>
-[System.Security.SecuritySafeCritical]
 public static class ExpressionEvaluatorExtension
 {
+    /// <summary>
+    /// 执行脚本获取返回值，通常用于上传实体返回脚本，参数为input
+    /// </summary>
+    public static ReadWriteExpressions GetReadWriteExpressions(string source)
+    {
+        // 生成缓存键
+        var cacheKey = $"{nameof(CSharpScriptEngine)}-{nameof(GetReadWriteExpressions)}-{source}";
+        var runScript = NewLife.Caching.Cache.Default.GetOrAdd(cacheKey, c =>
+        {
+            // 清理输入源字符串
+            source = source.Trim();
+            if (!source.Contains("return"))
+            {
+                source = $"return {source}";//只判断简单脚本中可省略return字符串
+            }
+
+            // 动态加载并执行代码
+            var runScript = CSScript.Evaluator.LoadCode<ReadWriteExpressions>(
+                $@"
+        using System;
+        using System.Linq;
+        using System.Collections.Generic;
+        using Newtonsoft.Json;
+        using Newtonsoft.Json.Linq;
+        using ThingsGateway.Gateway.Application;
+        using ThingsGateway.Gateway.Application.Extensions;
+        public class Script:ReadWriteExpressions
+        {{
+            public object GetNewValue(dynamic raw)
+            {{
+                {source};
+            }}
+        }}
+    ");
+            return runScript;
+        });
+        return runScript;
+    }
+
     private static readonly GlobalData GlobalData = App.RootServices.GetService<GlobalData>();
     private static bool PreEvaluateVariableEnable = App.GetConfig<bool?>("ExpressionEvaluator:PreEvaluateVariable") ?? false;
 
@@ -31,45 +77,24 @@ public static class ExpressionEvaluatorExtension
             return rawvalue;
         }
 
-        //JArray内部转换
-        //
-        //JArray newValue = new JArray(raw);
-        //for (int i = 0; i < raw.Count; i++)
-        //{
-        //newValue[i] = JToken.FromObject(Extensions.Value<int>(raw[i]) * 1000);
-        //}
-        //return newValue;
-        //
-        ExpressionEvaluator expressionEvaluator = new();
-        expressionEvaluator.OptionScriptNeedSemicolonAtTheEndOfLastExpression = false;
-        if (PreEvaluateVariableEnable)
-            expressionEvaluator.PreEvaluateVariable += Evaluator_PreEvaluateVariable;
-        expressionEvaluator.Assemblies.Add(typeof(Newtonsoft.Json.JsonConverter).Assembly);
-        expressionEvaluator.Namespaces.Add("Newtonsoft.Json.Linq");
-        expressionEvaluator.Namespaces.Add("Newtonsoft.Json");
-        expressionEvaluator.StaticTypesForExtensionsMethods.Add(typeof(Enumerable));//LINQ
-        expressionEvaluator.Variables = new Dictionary<string, object>()
-            {
-              { "Raw", rawvalue},
-              { "raw", rawvalue},
-            };
-        var value = expressionEvaluator.ScriptEvaluate(expressions);
+        var readWriteExpressions = GetReadWriteExpressions(expressions);
+        var value = readWriteExpressions.GetNewValue(rawvalue);
         return value;
     }
 
-    /// <summary>
-    /// 表达式的扩展变量来源
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
-    public static void Evaluator_PreEvaluateVariable(object? sender, VariablePreEvaluationEventArg e)
-    {
-        var obj = GlobalData.AllVariables.FirstOrDefault(it => it.Name == e.Name);
-        if (obj == null)
-        {
-            return;
-        }
-        if (obj.Value != null)
-            e.Value = obj.Value;
-    }
+    ///// <summary>
+    ///// 表达式的扩展变量来源
+    ///// </summary>
+    ///// <param name="sender"></param>
+    ///// <param name="e"></param>
+    //public static void Evaluator_PreEvaluateVariable(object? sender, VariablePreEvaluationEventArg e)
+    //{
+    //    var obj = GlobalData.AllVariables.FirstOrDefault(it => it.Name == e.Name);
+    //    if (obj == null)
+    //    {
+    //        return;
+    //    }
+    //    if (obj.Value != null)
+    //        e.Value = obj.Value;
+    //}
 }
