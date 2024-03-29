@@ -26,7 +26,7 @@ namespace ThingsGateway.Gateway.Application;
 public class BackendLogDatabaseLoggingWriter : IDatabaseLoggingWriter
 {
     /// <inheritdoc/>
-    public void Write(LogMessage logMsg, bool flush)
+    public Task WriteAsync(LogMessage logMsg, bool flush)
     {
         var customLevel = App.GetConfig<LogLevel?>("Logging:BackendLog:LogLevel:Default") ?? LogLevel.Trace;
         if (logMsg.LogLevel >= customLevel)
@@ -41,6 +41,7 @@ public class BackendLogDatabaseLoggingWriter : IDatabaseLoggingWriter
             };
             WriteToQueue(logRuntime);
         }
+        return Task.CompletedTask; //暂时保留原方式
     }
 
     /// <summary>

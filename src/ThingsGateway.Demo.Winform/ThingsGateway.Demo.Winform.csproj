@@ -17,15 +17,16 @@
 			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
 		</Content>
 	</ItemGroup>
+	<ItemGroup Condition="'$(TargetFramework)'=='net8.0-windows'">
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebView.WindowsForms" Version="8.0.14" />
+	</ItemGroup>
 	<ItemGroup Condition="'$(TargetFramework)'=='net6.0-windows'">
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebView.WindowsForms" Version="6.0.553" />
 	</ItemGroup>
 	<ItemGroup Condition="'$(TargetFramework)'=='net7.0-windows'">
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebView.WindowsForms" Version="7.0.101" />
 	</ItemGroup>
-	<ItemGroup Condition="'$(TargetFramework)'=='net8.0-windows'">
-		<PackageReference Include="Microsoft.AspNetCore.Components.WebView.WindowsForms" Version="8.0.7" />
-	</ItemGroup>
+
 	<ItemGroup>
 	  <ProjectReference Include="..\ThingsGateway.Demo.Rcl\ThingsGateway.Demo.Rcl.csproj" />
 	</ItemGroup>

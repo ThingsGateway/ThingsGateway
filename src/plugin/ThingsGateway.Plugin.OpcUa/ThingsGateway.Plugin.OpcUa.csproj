@@ -39,7 +39,7 @@
 
 
 	<ItemGroup>
-		<PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Server" Version="1.5.373.121" />
+		<PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Server" Version="1.5.374.27" />
 
 		<ProjectReference Include="..\..\foundation\ThingsGateway.Foundation.OpcUa\src\ThingsGateway.Foundation.OpcUa.csproj" />
 

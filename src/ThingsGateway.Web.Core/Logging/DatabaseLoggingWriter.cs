@@ -33,7 +33,7 @@ public class DatabaseLoggingWriter : IDatabaseLoggingWriter
     /// </summary>
     /// <param name="logMsg"></param>
     /// <param name="flush"></param>
-    public void Write(LogMessage logMsg, bool flush)
+    public Task WriteAsync(LogMessage logMsg, bool flush)
     {
         //获取请求json字符串
         var jsonString = logMsg.Context.Get("loggingMonitor").ToString();
@@ -73,6 +73,7 @@ public class DatabaseLoggingWriter : IDatabaseLoggingWriter
                 }
             }
         }
+        return Task.CompletedTask; //暂时保留原方式
     }
 
     /// <summary>
