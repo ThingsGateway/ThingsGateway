@@ -90,7 +90,7 @@ public partial class Index
     {
         try
         {
-            await GetHardwareInfoEChartsOption();
+            GetHardwareInfoEChartsOption();
             _sysVisitLogs = (await _serviceScope.ServiceProvider.GetService<IVisitLogService>().PageAsync(new() { Size = 5, Account = UserResoures.CurrentUser?.Account })).Records.ToList();
             _sysOperateLogs = (await _serviceScope.ServiceProvider.GetService<IOperateLogService>().PageAsync(new() { Size = 5, Account = UserResoures.CurrentUser?.Account })).Records.ToList();
             _rpcLogs = (await _serviceScope.ServiceProvider.GetService<IRpcLogService>().PageAsync(new() { Size = 5, })).Records.ToList();
@@ -116,18 +116,16 @@ public partial class Index
     private object hardwareInfoEChartsOption = new();
     private MECharts hardwareInfoECharts;
 
-    private async Task GetHardwareInfoEChartsOption()
+    private void GetHardwareInfoEChartsOption()
     {
         var hisDatas = _hardwareInfoWorker.GetHis();
-        if (hardwareInfoEChartsOption == null)
+        hardwareInfoEChartsOption = new
         {
-            hardwareInfoEChartsOption ??= new
+            backgroundColor = "",
+            tooltip = new { trigger = "axis" },
+            legend = new
             {
-                backgroundColor = "",
-                tooltip = new { trigger = "axis" },
-                legend = new
-                {
-                    data = new[] {
+                data = new[] {
                 AppService.I18n.T("CPU使用率"),
                 AppService.I18n.T("内存使用率"),
                 AppService.I18n.T("磁盘使用率"),
@@ -136,18 +134,18 @@ public partial class Index
                 AppService.I18n.T("上载速度"),
                 AppService.I18n.T("下载速度")
             },
-                    left = "5%"
-                },
-                grid = new { left = "3%", right = "4%", bottom = "3%", containLabel = true },
-                toolbox = new { feature = new { saveAsImage = new { } } },
-                xAxis = new
-                {
-                    type = "category",
-                    boundaryGap = false,
-                    data = hisDatas.Select(a => a.Date.ToString("yyyy-MM-dd HH:mm")).ToArray()
-                },
-                yAxis = new { type = "value" },
-                series = new[]
+                left = "5%"
+            },
+            grid = new { left = "3%", right = "4%", bottom = "3%", containLabel = true },
+            toolbox = new { feature = new { saveAsImage = new { } } },
+            xAxis = new
+            {
+                type = "category",
+                boundaryGap = false,
+                data = hisDatas.Select(a => a.Date.ToString("yyyy-MM-dd HH:mm")).ToArray()
+            },
+            yAxis = new { type = "value" },
+            series = new[]
 {
         new { name =AppService.I18n.T( "CPU使用率"), type = "line",
                 data = hisDatas.Select(a=>a.CpuUsage).ToArray(),
@@ -178,43 +176,7 @@ public partial class Index
             smooth=true
         },
     }
-            };
-        }
-        else
-        {
-            var option = new
-            {
-                xAxis = new
-                {
-                    data = hisDatas.Select(a => a.Date.ToString("yyyy-MM-dd HH:mm")).ToArray()
-                },
-                series = new[]
-  {
-        new { name =AppService.I18n.T( "CPU使用率"),
-                data = hisDatas.Select(a=>a.CpuUsage).ToArray(),
-        },
-        new { name = AppService.I18n.T("内存使用率"),
-                data = hisDatas.Select(a=>a.MemoryUsage).ToArray(),
-        },
-        new { name = AppService.I18n.T("磁盘使用率"),
-                data = hisDatas.Select(a=>a.DriveUsage).ToArray(),
-        },
-        new { name = AppService.I18n.T("温度"),
-                data = hisDatas.Select(a=>a.Temperature).ToArray(),
-        },
-                new { name = AppService.I18n.T("电池"),
-                data = hisDatas.Select(a=>a.Battery).ToArray(),
-        },
-        new { name = AppService.I18n.T("上载速度"),
-                data = hisDatas.Select(a=>a.UplinkSpeed).ToArray(),
-        },
-        new { name = AppService.I18n.T("下载速度"),
-                data = hisDatas.Select(a=>a.DownlinkSpeed).ToArray(),
-        },
-    }
-            };
-            await hardwareInfoECharts.SetOption(option, false, false);
-        }
+        };
     }
 
     #endregion CPU曲线
