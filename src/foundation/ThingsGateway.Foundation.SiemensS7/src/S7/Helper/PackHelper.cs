@@ -112,21 +112,21 @@ internal static class PackHelper
             });
 
             //获取变量的地址
-            var modbusAddressList = map.Keys.Where(a => a != null).ToList();
+            var s7AddressList = map.Keys.Where(a => a != null).ToList();
 
             //获取S7数据代码
-            var functionCodes = modbusAddressList.Select(t => t.DataCode).Distinct();
+            var functionCodes = s7AddressList.Select(t => t.DataCode).Distinct();
             foreach (var functionCode in functionCodes)
             {
                 //相同数据代码的变量集合
-                var modbusAddressSameFunList = modbusAddressList
+                var s7AddressSameFunList = s7AddressList
                     .Where(t => t.DataCode == functionCode);
                 //相同数据代码的变量集合中的不同DB块
-                var stationNumbers = modbusAddressSameFunList
+                var dbNumbers = s7AddressSameFunList
                     .Select(t => t.DbBlock).Distinct();
-                foreach (var stationNumber in stationNumbers)
+                foreach (var stationNumber in dbNumbers)
                 {
-                    var addressList = modbusAddressSameFunList.Where(t => t.DbBlock == stationNumber)
+                    var addressList = s7AddressSameFunList.Where(t => t.DbBlock == stationNumber)
                         .ToDictionary(t => t, t => map[t]);
                     //循环对数据代码，站号都一样的变量进行分配连读包
                     var tempResult = LoadSourceRead<T>(addressList, functionCode, item.Key, device);
@@ -159,12 +159,12 @@ internal static class PackHelper
         var maxAddress = addresss.Last().AddressStart;
         while (maxAddress >= minAddress)
         {
-            //这里直接避免末位变量长度超限的情况，pdu长度-8
-            int readLength = siemensS7Net.PduLength == 0 ? 200 : siemensS7Net.PduLength - 8;
+            //这里直接避免末位变量长度超限的情况，pdu长度-28
+            int readLength = siemensS7Net.PduLength == 0 ? 200 : siemensS7Net.PduLength - 28;
             List<SiemensAddress> tempAddress = new();
             if (functionCode == (byte)S7WordLength.Counter || functionCode == (byte)S7WordLength.Timer)
             {
-                tempAddress = addresss.Where(t => t.AddressStart >= minAddress && ((t.AddressStart) + t.Length) <= ((minAddress) + readLength)).ToList();
+                tempAddress = addresss.Where(t => t.AddressStart >= minAddress && ((t.AddressStart) + t.Length) <= ((minAddress) + readLength / 2)).ToList();
                 while ((tempAddress.Last().AddressStart * 2) + tempAddress.Last().Length - (tempAddress.First().AddressStart * 2) > readLength)
                 {
                     tempAddress.Remove(tempAddress.Last());
@@ -172,7 +172,7 @@ internal static class PackHelper
             }
             else
             {
-                tempAddress = addresss.Where(t => t.AddressStart >= minAddress && ((t.AddressStart) + t.Length) <= ((minAddress) + readLength)).ToList();
+                tempAddress = addresss.Where(t => t.AddressStart >= minAddress && ((t.AddressStart) + t.Length) <= ((minAddress) + readLength * 8)).ToList();
                 while ((tempAddress.Last().AddressStart / 8) + tempAddress.Last().Length - (tempAddress.First().AddressStart / 8) > readLength)
                 {
                     tempAddress.Remove(tempAddress.Last());
