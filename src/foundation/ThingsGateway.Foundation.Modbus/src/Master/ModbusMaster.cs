@@ -374,12 +374,14 @@ internal class DtuPlugin : PluginBase, ITcpReceivingPlugin
                 var id = $"ID={Encoding.UTF8.GetString(bytes)}";
                 client.Logger.Info(string.Format(FoundationConst.DtuConnected, id));
                 socket.ResetId(id);
+                e.Handled = true;
             }
             if (_modbusMaster.HeartbeatHexString == bytes.ToHexString())
             {
                 //回应心跳包
                 socket.DefaultSend(bytes);
                 socket.Logger?.Trace($"{socket.ToString()}- {FoundationConst.Send}:{bytes.ToHexString(' ')}");
+                e.Handled = true;
             }
         }
         await e.InvokeNext();//如果本插件无法处理当前数据，请将数据转至下一个插件。
