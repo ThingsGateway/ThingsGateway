@@ -1,0 +1,27 @@
+﻿@page "/admin/role"
+@attribute [Authorize]
+@attribute [RolePermission]
+@inherits ComponentDefault
+@using ThingsGateway.Admin.Application
+@namespace ThingsGateway.Admin.Razor
+
+<div style="height: var(--table-height);padding: 2px 5px 10px 5px;">
+    <AdminTable @ref=table TItem="SysRole" AutoGenerateColumns="true" AllowDragColumn="true" ShowAdvancedSearch=false
+                AllowResizing="true" IsFixedHeader=true IsMultipleSelect=true SearchModel=SearchModel
+                ShowExtendButtons=true
+                ShowDefaultButtons=true ExtendButtonColumnWidth=500
+                OnQueryAsync="OnQueryAsync" IsPagination=true
+                OnSaveAsync="Save" OnDeleteAsync="Delete">
+
+
+        <RowButtonTemplate>
+            <TableCellButton IsShow=@AuthorizeButton("授权用户") Size="Size.ExtraSmall" Color="Color.Success" Icon="fa-solid fa-people-roof" Text="@OperDescLocalizer["GrantUser"]" OnClick="()=>GrantUser(context.Id)" />
+            <TableCellButton IsShow=@AuthorizeButton("授权资源") Size="Size.ExtraSmall" Color="Color.Warning" Icon="fa-solid fa-bars" Text="@OperDescLocalizer["GrantResource"]" OnClick="()=>GrantResource(context.Id)" />
+            <TableCellButton IsShow=@AuthorizeButton("授权Api") Size="Size.ExtraSmall" Icon="fa fa-list" Text="@OperDescLocalizer["GrantApi"]" OnClick="()=>GrantApi(context.Id)" />
+        </RowButtonTemplate>
+    </AdminTable>
+</div>
+
+@code {
+    AdminTable<SysRole> table;
+}

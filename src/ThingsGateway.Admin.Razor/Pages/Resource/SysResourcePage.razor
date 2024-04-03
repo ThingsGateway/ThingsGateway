@@ -1,0 +1,57 @@
+﻿@page "/admin/resource"
+@attribute [Authorize]
+@attribute [RolePermission]
+@inherits ComponentDefault
+@using ThingsGateway.Admin.Application
+@namespace ThingsGateway.Admin.Razor
+
+
+<div style="height: var(--table-height);padding: 2px 5px 10px 5px;">
+    <AdminTable @ref=table TItem="SysResource" AutoGenerateColumns="true" AllowDragColumn="true" ShowAdvancedSearch=true
+                AllowResizing="true" IsFixedHeader=true IsMultipleSelect=true
+                ShowExtendButtons=true SearchMode=SearchMode.Top
+                ShowDefaultButtons=true ShowResetButton=false
+                IsTree="true" OnTreeExpand="OnTreeExpand" TreeNodeConverter="TreeNodeConverter" ModelEqualityComparer="ModelEqualityComparer"
+                OnAfterModifyAsync="OnAfterModifyAsync" 
+                OnQueryAsync="OnQueryAsync" CustomerSearchModel="@CustomerSearchModel"
+                OnSaveAsync="Save" OnDeleteAsync="Delete">
+
+        <CustomerSearchTemplate>
+            @if (context is ResourceSearchInput model)
+            {
+                @Render(model)
+            }
+        </CustomerSearchTemplate>
+        <TableColumns>
+            <TableColumn @bind-Field="@context.Icon" Width="50" Align="Alignment.Center">
+                <Template Context="icon">
+                    <i class="text-info cell-icon @icon.Value"></i>
+                </Template>
+
+            </TableColumn>
+        </TableColumns>
+        <EditTemplate Context="context"  >
+            <SysResourceEdit Model=context ParementMenus=ParementSelectedItems ModuleId=CustomerSearchModel.Module></SysResourceEdit>
+        </EditTemplate>
+    </AdminTable>
+</div>
+
+@code {
+    AdminTable<SysResource> table;
+}
+@code {
+    RenderFragment Render(ResourceSearchInput model) =>
+    @<div class="row form-inline g-3">
+        <div class="col-12 col-sm-6">
+            <label class="form-label">@model.GetType().GetPropertyDisplayName(nameof(model.Module))</label>
+            <Select Items="ModuleSelectedItems" @bind-Value=model.Module />
+        </div>
+        <div class="col-12 col-sm-6">
+            <BootstrapInput @bind-Value="model.Title" ShowLabel="true" />
+        </div>
+        <div class="col-12 col-sm-6">
+            <BootstrapInput @bind-Value="model.Href" ShowLabel="true" />
+        </div>
+    </div>;
+
+}

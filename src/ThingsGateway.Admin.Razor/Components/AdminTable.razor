@@ -1,0 +1,32 @@
+﻿@namespace ThingsGateway.Admin.Razor
+@typeparam TItem
+
+<Table TItem="TItem" IsBordered="true" IsStriped="true" IsMultipleSelect="IsMultipleSelect" @ref="Instance" TableSize=TableSize 
+       IsPagination="IsPagination" PageItemsSource="PageItemsSource" IsFixedHeader="IsFixedHeader" IndentSize=24 RowHeight=RowHeight PageItems=PageItems
+       IsTree="IsTree" OnTreeExpand="OnTreeExpand!" TreeNodeConverter="TreeNodeConverter!" TreeIcon="fa-solid fa-circle-chevron-right" TreeExpandIcon="fa-solid fa-circle-chevron-right fa-rotate-90"
+       ShowDefaultButtons="ShowDefaultButtons" ShowAdvancedSearch="ShowAdvancedSearch" ShowResetButton=ShowResetButton
+       ShowEmpty="ShowEmpty" EmptyText="@EmptyText" EmptyImage="@($"{WebsiteConst.DefaultResourceUrl}images/empty.svg")" SortString="@SortString"
+       OnQueryAsync="OnQueryAsync!" OnDeleteAsync="OnDeleteAsync!" OnSaveAsync="OnSaveAsync!"
+       ShowSkeleton="true" ShowLoading="ShowLoading" ShowSearch="ShowSearch" SearchModel=@SearchModel
+        SearchMode=SearchMode ShowExportPdfButton=ShowExportPdfButton
+       ShowExportButton=@ShowExportButton Items=Items ClickToSelect=ClickToSelect ScrollMode=ScrollMode
+       ShowExportCsvButton=@ShowExportCsvButton SelectedRowsChanged=SelectedRowsChanged ShowCardView=ShowCardView
+       ClientTableName="@typeof(TItem).TypeHandle.Value.ToString()" 
+       AllowDragColumn=@AllowDragColumn Height=@Height ShowRefresh=ShowRefresh
+       AllowResizing=@AllowResizing ExportButtonDropdownTemplate=ExportButtonDropdownTemplate
+       ShowToolbar="ShowToolbar" 
+       ShowExtendButtons="ShowExtendButtons"
+       ShowAddButton=@(ShowAddButton??AuthorizeButton(AdminOperConst.Add))
+       ShowDeleteButton=@(ShowDeleteButton??AuthorizeButton(AdminOperConst.Delete))
+       ShowEditButton=@(ShowEditButton??AuthorizeButton(AdminOperConst.Edit))
+       ShowExtendDeleteButton=@(ShowExtendDeleteButton??AuthorizeButton(AdminOperConst.Delete))
+       ShowExtendEditButton=@(ShowExtendEditButton??AuthorizeButton(AdminOperConst.Edit))
+       ShowMultiFilterHeader=ShowMultiFilterHeader
+       ShowFilterHeader=ShowFilterHeader
+       ShowColumnList=ShowColumnList ExtendButtonColumnWidth="@ExtendButtonColumnWidth"
+       CustomerSearchModel="CustomerSearchModel" SelectedRows="SelectedRows" ModelEqualityComparer="ModelEqualityComparer!"
+       ShowExtendEditButtonCallback="ShowEditButtonCallback!" ShowExtendDeleteButtonCallback="ShowDeleteButtonCallback!"
+       OnAfterModifyAsync="OnAfterModifyAsync!" AutoGenerateColumns="AutoGenerateColumns"
+       TableToolbarTemplate="TableToolbarTemplate" TableColumns="TableColumns" EditTemplate="EditTemplate!"
+       CustomerSearchTemplate="CustomerSearchTemplate!" RowButtonTemplate="RowButtonTemplate!">
+</Table>

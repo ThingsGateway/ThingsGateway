@@ -1,0 +1,12 @@
+﻿@using ThingsGateway.Admin.Application
+@using ThingsGateway.Admin.Razor
+<Router AppAssembly="@typeof(BlazorApp).Assembly" AdditionalAssemblies="App.RazorAssemblies">
+    <Found Context="routeData">
+        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+    </Found>
+    <NotFound>
+        <LayoutView Layout="@typeof(BaseLayout)">
+                <ThingsGateway.Admin.Razor.NotFound404></ThingsGateway.Admin.Razor.NotFound404>
+            </LayoutView>
+        </NotFound>
+</Router>

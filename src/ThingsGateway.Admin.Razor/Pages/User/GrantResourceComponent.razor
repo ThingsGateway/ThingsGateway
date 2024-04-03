@@ -1,0 +1,22 @@
+﻿@inherits ComponentDefault
+@using ThingsGateway.Admin.Application
+@namespace ThingsGateway.Admin.Razor
+
+<div class="tree-menu">
+    <TreeView TItem="SysResource" Items="Items" ShowCheckbox="true" ShowIcon="true" AutoCheckParent="true" AutoCheckChildren="true" OnTreeItemChecked="OnTreeItemChecked" ModelEqualityComparer="ModelEqualityComparer"></TreeView>
+
+    <div class="form-footer">
+        <Button Color="Color.Secondary" Icon="fa-solid fa-xmark" Text="@DefaultLocalizer["Close"]" OnClickWithoutRender="OnClickClose" />
+        <Button Color="Color.Primary" Icon="fa-solid fa-check" Text="@DefaultLocalizer["Save"]" OnClickWithoutRender="OnClickSave" />
+    </div>
+</div>
+
+@code {
+    RenderFragment<SysResource> RenderTreeItem => item =>
+    @<div class="d-flex flex-fill">
+        <span class="flex-fill">@item.Title</span>
+        <span class="mx-3">@item.SortCode</span>
+        <span class="menu-type">@item.Category.ToDisplayName()</span>
+        <span class="menu-text">@GetApp(item.Module)</span>
+    </div>;
+}

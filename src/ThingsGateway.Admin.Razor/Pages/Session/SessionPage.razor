@@ -1,0 +1,27 @@
+﻿@page "/admin/session"
+@attribute [Authorize]
+@attribute [RolePermission]
+@inherits ComponentDefault
+@using ThingsGateway.Admin.Application
+@namespace ThingsGateway.Admin.Razor
+
+
+
+<div style="height: var(--table-height);padding: 2px 5px 10px 5px;">
+    <AdminTable @ref=table TItem="SessionOutput" AutoGenerateColumns="true" AllowDragColumn="true" ShowAdvancedSearch=false
+                AllowResizing="true" IsFixedHeader=true IsMultipleSelect=false SearchModel=SearchModel
+                ShowExtendButtons=true ShowExtendDeleteButton=false ShowExtendEditButton=false
+                ShowDefaultButtons=false ExtendButtonColumnWidth=320
+                OnQueryAsync="OnQueryAsync" IsPagination=true>
+
+        <RowButtonTemplate>
+            
+            <TableCellPopConfirmButton  IsShow=@AuthorizeButton("强退会话") Text="@Localizer[nameof(SessionService.ExitSession)]" Size="Size.ExtraSmall" Color=Color.Warning Icon="fa fa-sign-out" OnConfirm="@(async()=>{await SessionService.ExitSession(context.Id);await table.QueryAsync();await ToastService.Default(); })" />
+            <TableCellButton Size="Size.ExtraSmall" Icon="fa fa-list" Text="@Localizer[ nameof(VerificatInfo)]" OnClick="()=>ShowVerificatList(context)" />
+        </RowButtonTemplate>
+    </AdminTable>
+</div>
+
+@code {
+    AdminTable<SessionOutput> table;
+}

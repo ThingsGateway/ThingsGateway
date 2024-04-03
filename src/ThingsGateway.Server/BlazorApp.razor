@@ -1,0 +1,46 @@
+﻿@using BootstrapBlazor.Components
+@inject IHostEnvironment Env
+@inject IStringLocalizer<BlazorApp> Localizer
+
+<!DOCTYPE html>
+<html lang="en" data-bs-theme='light'>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="keywords" content="thingsgateway,iot,netcore,blazor">
+    <meta name="description" content="ThingsGateway边缘采集网关">
+    <meta name="author" content="Diego">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" href="favicon.png">
+    <base href="/" />
+    <title>ThingsGateway</title>
+    <Link Href="_content/BootstrapBlazor.FontAwesome/css/font-awesome.min.css" />
+    <Link Href="_content/BootstrapBlazor/css/bootstrap.blazor.bundle.min.css" />
+    <Link Href="_content/BootstrapBlazor/css/motronic.min.css" />
+    <Link Href="ThingsGateway.Server.styles.css" rel="stylesheet" />
+    <Link Href=@($"{WebsiteConst.DefaultResourceUrl}css/site.css") rel="stylesheet" />
+    <Script Src=@($"{WebsiteConst.DefaultResourceUrl}js/theme.js") type="module"></Script><!-- 初始主题 -->
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="./manifest.json" />
+    <HeadOutlet @rendermode="new InteractiveServerRenderMode(false)" />
+</head>
+
+<body>
+    <Routes @rendermode="new InteractiveServerRenderMode(false)" />
+
+    <ReconnectorOutlet ReconnectInterval="5000" @rendermode="new InteractiveServerRenderMode(false)" />
+
+    <BlazorReconnector @rendermode="new InteractiveServerRenderMode(false)" />
+
+    <Script Src="_content/BootstrapBlazor/js/bootstrap.blazor.bundle.min.js"></Script>
+    <script src="_framework/blazor.web.js"></script>
+    <!-- PWA Service Worker -->
+    <script type="text/javascript">'serviceWorker' in navigator && navigator.serviceWorker.register('./service-worker.js')</script>
+
+</body>
+
+</html>

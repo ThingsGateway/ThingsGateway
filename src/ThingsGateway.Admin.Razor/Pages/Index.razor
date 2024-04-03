@@ -1,0 +1,43 @@
+﻿@namespace ThingsGateway.Admin.Razor
+@page "/index"
+@page "/"
+@using ThingsGateway.Admin.Application
+@attribute [Authorize]
+@attribute [IgnoreRolePermission]
+
+
+<div class="row g-3 form-inline">
+
+    <div class="col-12 col-sm-6 col-md-6" style="height:100%">
+
+        <Card IsShadow=true class="m-2 flex-fill" Color="Color.Primary">
+            <HeaderTemplate>
+                @Localizer["Shortcuts"]
+            </HeaderTemplate>
+
+            <BodyTemplate>
+                @foreach (var menu in AppContext.UserWorkbenchOutputs ?? new List<SysResource>())
+                {
+                    <LinkButton Url="@menu.Href" Target="@menu.Target.ToString()" Color="Color.Primary">
+                        <i class="@menu.Icon"></i>
+                        <span>@menu.Title</span>
+                    </LinkButton>
+                }
+            </BodyTemplate>
+        </Card>
+    </div>
+
+    <div class="col-12 col-sm-6 col-md-6 " style="height:100%">
+
+        <Card IsShadow=true class="m-2 flex-fill">
+            <HeaderTemplate>
+                @Localizer["OperLog"]
+            </HeaderTemplate>
+
+            <BodyTemplate>
+                <Timeline Items="Items"></Timeline>
+            </BodyTemplate>
+        </Card>
+
+    </div>
+</div>

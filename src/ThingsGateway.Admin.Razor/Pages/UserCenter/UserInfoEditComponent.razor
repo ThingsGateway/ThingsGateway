@@ -1,0 +1,14 @@
+﻿@namespace ThingsGateway.Admin.Razor
+@inherits ComponentDefault
+@using ThingsGateway.Admin.Application
+@using NewLife
+
+<ValidateForm class="m-2" Model="@Model" OnValidSubmit="OnSave">
+
+     <AvatarUpload @bind-Value="@Picture" IsSingle Accept="image/*" OnChange="OnAvatarUpload" DefaultFileList=PreviewFileList></AvatarUpload>
+
+    <BootstrapInput @bind-Value=@Model.Phone></BootstrapInput>
+    <BootstrapInput @bind-Value=@Model.Email></BootstrapInput>
+
+    <Button class="mt-2" ButtonType="ButtonType.Submit" Icon="fa-solid fa-floppy-disk" IsAsync Text=@DefaultLocalizer["Save"] />
+</ValidateForm>

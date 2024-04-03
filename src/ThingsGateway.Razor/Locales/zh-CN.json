@@ -1,0 +1,37 @@
+﻿{
+  "ThingsGateway.Razor.MenuIconList": {
+    "ChoiceIcon": "选择图标",
+    "Choice": "选择"
+  },
+
+  "ThingsGateway.Razor.CommitItem": {
+    "CommitCount": "共 {0} 个提交",
+    "Author": "提交作者：",
+    "Branch": "分支名称：",
+    "Message": "提交信息："
+  },
+  "ThingsGateway.Razor._Imports": {
+    "EmptyText": "空"
+  },
+  "ThingsGateway.Razor.ThemeToggle": {
+    "ThemeToggle": "夜间/白天"
+  },
+
+  "ThingsGateway.Razor.BlazorReconnector": {
+    "Reconnecting1": "重连中...",
+    "Reconnecting2": "正在尝试重新连接服务器",
+    "Reconnecting3": "服务器正在更新新版本，稍等一会儿即可提供服务，或者 <kbd>F12</kbd> 打开 <b>Developer tools</b> 查看 <b>控制台</b> 是否有错误输出，请与管理员联系",
+    "ReconnectFailed1": "重连中...",
+    "ReconnectFailed2": "与服务器连接失败",
+    "ReconnectFailed3": "请确认网络是否正常，或者 <kbd>F12</kbd> 打开 <b>Developer tools</b> 查看 <b>控制台</b> 是否有错误输出，请与管理员联系",
+    "ReconnectFailed4": "重新连接",
+    "ReconnectFailed5": "重新加载",
+    "ReconnectRejected1": "重连中...",
+    "ReconnectRejected2": "服务器拒绝连接",
+    "ReconnectRejected3": "所有的连接尝试都被拒绝了，这很有可能是由于网络问题或者服务器问题引起的，请与管理员联系",
+    "ReconnectRejected4": "重新加载",
+    "RenderThingsGateway1": "ThingsGateway 边缘采集网关",
+    "RenderThingsGateway2": "数据集中，多路转发",
+    "RenderThingsGateway3": "边缘计算，高效处理"
+  }
+}

@@ -1,0 +1,157 @@
+﻿/*覆盖样式*/
+:root {
+    --bs-nav-link-font-size: 1rem;
+    --bs-primary: var(--bs-blue);
+    --bs-primary-bg1: rgba(var(--bs-blue-rgb),0.1);
+    --bs-primary-bg7: rgba(var(--bs-blue-rgb),0.7);
+    --bs-nav-link-font-size: 0.8rem;
+    --bb-layout-header-height: 44px;
+    --bb-layout-headerbar-background: transparent;
+    --bs-navbar-color: var(--bb-layout-header-color);
+    --bs-navbar-hover-color: var(--bs-primary);
+    --bb-layout-header-background: var(--tg-nav-bg);
+    --bb-layout-sidebar-background: var(--tg-nav-bg);
+    --bb-layout-footer-background: var(--tg-nav-bg);
+    --bb-layout-sidebar-banner-background: var(--tg-nav-bg);
+    --bb-layout-banner-font-size: 1.2rem;
+    --bb-layout-banner-logo-width: 36px;
+    --bb-layout-banner-logo-height: 36px;
+    --line-chart-height: 350px;
+    --bb-layout-body-height: calc(100vh - var(--bs-header-height) - var(--bb-layout-header-height) - 20px);
+    --line-chart-table-height: calc(100vh - var(--bs-header-height) - var(--bb-layout-header-height) - var(--line-chart-height) - 20px);
+    --table-height: calc(100vh - var(--bs-header-height) - var(--bb-layout-header-height) - 20px);
+    --bs-header-height: 30px;
+}
+
+.bs-tooltip-auto .tooltip-inner {
+    text-align: start !important;
+    white-space: pre-line !important;
+}
+
+[data-bs-theme="dark"] .fil a {
+    background-color: rgba(0,0,0,0.3);
+}
+
+.select {
+    width: 100%;
+}
+
+.border-primary {
+    --bs-border-opacity: 1;
+    /* border-color: rgba(var(--bs-primary-rgb),var(--bs-border-opacity))!important; */
+    border: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color) !important;
+}
+
+.card-header, [data-bs-theme="light"] {
+    --bs-card-cap-bg: #343a40;
+    --bs-card-cap-color: #f0f3fe;
+}
+
+.dropdown-menu {
+    --bs-dropdown-link-active-bg: var(--bs-blue) !important;
+}
+/*tab*/
+.toast-body {
+    white-space: pre-line;
+}
+
+/*#*/
+.menu {
+    --bb-menu-item-hover-bg: var(--bs-primary-bg1);
+    --bb-menu-item-hover-color: var(--bs-primary);
+}
+
+/*顶栏文字样式*/
+.navbar-header-text {
+    color: var(--bs-navbar-color);
+}
+
+@media (min-width: 768px) {
+    :root {
+        --bs-header-height: 30px;
+    }
+
+    header.hide {
+        transform: translate3d(0,calc(-100% - 2px),0);
+    }
+}
+
+:root, [data-bs-theme="light"] {
+    --bs-blue: #2196F3;
+    --bs-blue-rgb: 33, 150, 243;
+    --bs-link-color: #0096F3;
+    --tabs-body-bg: #f0f3fe;
+}
+
+[data-bs-theme="dark"] {
+    --bs-blue: #2196F3;
+    --bs-blue-rgb: 33, 150, 243;
+    --bs-link-color: #0096F3;
+    --tabs-body-bg: #272727;
+    --bb-shadow: 0 0 8px 0 rgba(42,43,46,.3),0 2px 4px 0 rgba(42,43,46,.1);
+    --bb-hover-shadow: 0 1px 7px 0 rgba(232,233,238,.0509803922),0 2px 8px 0 rgba(232,233,238,.0705882353),0 3px 9px 0 rgba(232,233,238,.0588235294),0 5px 10px 0 rgba(232,233,238,.031372549);
+}
+
+/*重连样式*/
+.connection-mask {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #000;
+    opacity: 0.5;
+}
+
+.connection-body {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: var(--bs-body-bg);
+    padding: 1rem;
+    color: var(--bs-body-color);
+}
+
+[data-bs-theme='dark'] .connection-body {
+    background-color: #222939;
+}
+
+.connection-body-tail {
+    border-right: 1px solid var(--bs-border-color);
+    width: 1px;
+    margin-left: 1rem;
+}
+
+.connection-link {
+    color: #1371C3;
+    text-decoration: underline;
+    font-weight: bolder;
+    margin-left: 0.5rem;
+}
+
+.connection-box {
+    border-radius: var(--bs-border-radius);
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    margin-bottom: 1rem;
+    position: relative;
+    overflow: hidden;
+    min-height: 300px;
+}
+
+    .connection-box .connection-mask,
+    .connection-box .connection-body {
+        position: absolute;
+    }
+
+.connection-body img {
+    height: 110px;
+    margin-left: 1rem;
+}
+
+@supports not selector(::-webkit-scrollbar) {
+    .scroll {
+        scrollbar-color: rgba(0,0,0,0.3) rgba(0,0,0,0);
+        scrollbar-width: thin;
+    }
+}

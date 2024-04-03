@@ -1,0 +1,151 @@
+﻿::deep .avatar {
+    border-radius: 1.5rem;
+    width: 36px;
+    height: 36px;
+    background-color: var(--bs-green);
+    color: #fff;
+    flex: 0 0 auto;
+    font-size: 1rem;
+}
+
+.mainlayout ::deep .menu-icon {
+    width: 16px;
+}
+
+.mainlayout ::deep .layout-main > .tabs > .tabs-body {
+    background-color: var(--tabs-body-bg);
+}
+
+    .mainlayout ::deep .layout-main > .tabs > .tabs-body > .tabs-body-content {
+        height: var(--bb-layout-body-height);
+        background-color: var(--bs-body-bg);
+        padding: 4px;
+    }
+
+.mainlayout ::deep .tabs {
+    --bb-tabs-item-height: 32px;
+    --bb-tabs-body-padding: 0.5rem;
+}
+
+    .mainlayout ::deep .tabs.tabs-border-card {
+        box-shadow: 0 0px 0px 0 rgba(0,0,0,0),0 0 6px 0 rgba(0,0,0,0);
+    }
+
+    .mainlayout ::deep .tabs .extend .nav-link-bar.left {
+        border-width: 0px 0px 0px 0px;
+    }
+
+.mainlayout ::deep .tabs-nav-wrap > .nav-link-bar.dropdown {
+    border-width: 0px 0px 0px 0px;
+}
+
+.mainlayout ::deep .tabs .extend .nav-link-bar.right {
+    border-width: 0px 0px 0px 0px;
+}
+
+.mainlayout ::deep .tabs .tabs-item-fix {
+    border-width: 0px 0px 0px 0px;
+}
+
+.mainlayout ::deep .tabs.tabs-card > .tabs-header .tabs-item {
+    border-width: 0px 0px 0px 0px;
+    border: none;
+}
+
+.mainlayout ::deep .tabs.tabs-border-card > .tabs-header .tabs-item {
+    border-width: 0px 0px 0px 0px;
+    border: none;
+}
+
+.mainlayout ::deep .tabs.tabs-card .tabs-header .tabs-item.active {
+    border-width: 0px 0px 1px 0px;
+    border-style: solid;
+    border-color: var(--bb-tabs-item-active-color);
+}
+
+.mainlayout ::deep .tabs.tabs-border-card .tabs-header .tabs-item.active {
+    border-width: 0px 0px 1px 0px;
+    border-style: solid;
+    border-color: var(--bb-tabs-item-active-color);
+}
+
+.mainlayout ::deep .tabs.tabs-card .tabs-header .tabs-item.active {
+    background-color: var(--bs-primary-bg1);
+}
+
+.mainlayout ::deep.tabs.tabs-card .tabs-header .tabs-item:hover {
+    background-color: var(--bs-primary-bg1);
+}
+
+.mainlayout ::deep.tabs.tabs-border-card .tabs-header .tabs-item:hover {
+    background-color: var(--bs-primary-bg1);
+}
+
+.mainlayout ::deep .tabs-nav-wrap .nav-link-bar {
+    font-size: 0.7rem;
+}
+
+.mainlayout ::deep .tabs-item .tabs-item-close {
+    top: 5px;
+}
+
+.mainlayout ::deep .table-wrapper {
+    border-radius: unset;
+}
+
+.mainlayout ::deep .table-fixed .table-fixed-body {
+    overflow-x: auto;
+    overflow-y: auto;
+}
+
+.mainlayout ::deep .layout-side {
+    box-shadow: inset -1px 0 0px 0px var(--bs-border-color); /* 下内阴影 */
+}
+
+.mainlayout ::deep .layout-banner {
+    box-shadow: inset -1px 0 0px 0px var(--bs-border-color); /* 下内阴影 */
+}
+
+.mainlayout ::deep .layout {
+    --bb-layout-header-height: 44px;
+    --bb-layout-headerbar-background: transparent;
+    --bs-navbar-color: var(--bb-layout-header-color);
+    --bs-navbar-hover-color: var(--bs-primary);
+    --bb-layout-header-background: var(--tg-nav-bg);
+    --bb-layout-sidebar-background: var(--tg-nav-bg);
+    --bb-layout-footer-background: var(--tg-nav-bg);
+    --bb-layout-sidebar-banner-background: var(--tg-nav-bg);
+    --bb-layout-banner-font-size: 1.2rem;
+    --bb-layout-banner-logo-width: 36px;
+    --bb-layout-banner-logo-height: 36px;
+    --line-chart-height: 350px;
+    --bb-layout-body-height: calc(100vh - var(--bs-header-height) - var(--bb-layout-header-height) - 20px);
+    --line-chart-table-height: calc(100vh - var(--bs-header-height) - var(--bb-layout-header-height) - var(--line-chart-height) - 20px);
+    --table-height: calc(100vh - var(--bs-header-height) - var(--bb-layout-header-height) - 20px);
+    --bs-header-height: 30px;
+}
+
+.mainlayout ::deep .dropdown-logout {
+    --bb-logout-avatar-width: 32px;
+    --bb-logout-avatar-height: 32px;
+    --bb-logout-user-bg: rgba(52,58,64,0.7);
+    --bb-logout-menu-border-color: var(--bs-border-color);
+}
+
+:root, [data-bs-theme='dark'] {
+    --tg-nav-bg: var(--bs-body-bg);
+}
+
+:root, [data-bs-theme='light'] {
+    --tg-nav-bg: var(--bs-body-bg);
+}
+
+.mainlayout ::deep .layout-header-bar {
+    border-color: transparent;
+    border: 0px;
+    color: var(--bb-layout-header-color);
+}
+
+    .mainlayout ::deep .layout-header-bar:hover {
+        color: var(--bs-navbar-hover-color);
+    }
