@@ -56,13 +56,16 @@ public static class BusinessDatabaseUtil
     {
         try
         {
-            var businessDevice = WorkerUtil.GetWoker<BusinessDeviceWorker>().DriverBases.Where(a => a is IDBHistoryService b).Where(a => a.DeviceName == businessDeviceName).Select(a => (IDBHistoryService)a).FirstOrDefault();
+            var businessDevice = WorkerUtil.GetWoker<BusinessDeviceWorker>().DriverBases.Where(a => a is IDBHistoryService b).Where(a => a.DeviceName == businessDeviceName).FirstOrDefault();
             if (businessDevice == null)
             {
                 return new("业务设备不存在");
             }
-
-            var data = await businessDevice.GetDBHistoryValuesAsync(input);
+            if (!businessDevice.IsConnected())
+            {
+                return new("业务设备未连接");
+            }
+            var data = await ((IDBHistoryService)businessDevice).GetDBHistoryValuesAsync(input);
             return OperResult.CreateSuccessResult(data);
         }
         catch (Exception ex)
@@ -80,12 +83,16 @@ public static class BusinessDatabaseUtil
     {
         try
         {
-            var businessDevice = WorkerUtil.GetWoker<BusinessDeviceWorker>().DriverBases.Where(a => a is IDBHistoryService b).Where(a => a.DeviceName == businessDeviceName).Select(a => (IDBHistoryService)a).FirstOrDefault();
+            var businessDevice = WorkerUtil.GetWoker<BusinessDeviceWorker>().DriverBases.Where(a => a is IDBHistoryService b).Where(a => a.DeviceName == businessDeviceName).FirstOrDefault();
             if (businessDevice == null)
             {
                 return new("业务设备不存在");
             }
-            var data = await businessDevice.GetDBHistoryValuePagesAsync(input);
+            if (!businessDevice.IsConnected())
+            {
+                return new("业务设备未连接");
+            }
+            var data = await ((IDBHistoryService)businessDevice).GetDBHistoryValuePagesAsync(input);
             return OperResult.CreateSuccessResult(data);
         }
         catch (Exception ex)
