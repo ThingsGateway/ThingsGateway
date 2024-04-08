@@ -81,13 +81,24 @@ public class PackHelper
                 var stationNumbers = modbusAddressSameFunList.Select(t => t.Station).Distinct();
                 foreach (var stationNumber in stationNumbers)
                 {
-                    var modbusAddressSameStationList = modbusAddressList.Where(t => t.ReadFunction == stationNumber);
+                    var modbusAddressSameStationList = modbusAddressList.Where(t => t.Station == stationNumber);
                     var socketIds = modbusAddressSameStationList.Select(t => t.SocketId).Distinct();
-                    foreach (var socketId in socketIds)//DTU区分
+                    if (socketIds.Any())
                     {
-                        var addressList = modbusAddressSameFunList
- .Where(t => t.Station == stationNumber)
- .ToDictionary(t => t, t => map[t]);
+                        foreach (var socketId in socketIds)//DTU区分
+                        {
+                            var addressList = modbusAddressSameFunList
+     .Where(t => t.SocketId == socketId)
+     .ToDictionary(t => t, t => map[t]);
+
+                            var tempResult = LoadSourceRead<T>(addressList, functionCode, group.Key, maxPack);
+                            deviceVariableSourceReads.AddRange(tempResult);
+                        }
+                    }
+                    else
+                    {
+                        var addressList = modbusAddressSameStationList
+.ToDictionary(t => t, t => map[t]);
 
                         var tempResult = LoadSourceRead<T>(addressList, functionCode, group.Key, maxPack);
                         deviceVariableSourceReads.AddRange(tempResult);
