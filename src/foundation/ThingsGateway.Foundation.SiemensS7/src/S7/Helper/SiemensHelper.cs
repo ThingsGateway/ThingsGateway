@@ -57,19 +57,24 @@ internal partial class SiemensHelper
                 Content2 = FilterResult.Cache
             };
         }
+
+        if (content.Length >= 22)
+        {
+            //添加返回代码校验
+            if (content[21] != 0xff)
+            {
+                return new($"PLC返回错误，返回代码{content[21].ToString("X2")}")
+                {
+                    Content2 = FilterResult.Success
+                };
+            }
+        }
+
         if (content.Length < 25 + content[20])
         {
             return new($"长度不足")
             {
                 Content2 = FilterResult.Cache
-            };
-        }
-        //添加返回代码校验
-        if (content[21] != 0xff)
-        {
-            return new($"PLC返回错误，返回代码{content[21].ToString("X2")}")
-            {
-                Content2 = FilterResult.Success
             };
         }
 
