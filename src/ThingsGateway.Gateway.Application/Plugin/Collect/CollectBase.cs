@@ -200,56 +200,57 @@ public abstract class CollectBase : DriverBase
         int deviceSourceVariableSuccessNum = 0;
         int deviceSourceVariableFailedNum = 0;
 
-        await CurrentDevice.VariableSourceReads.ParallelForEachAsync(async (variableSourceRead, cancellationToken) =>
-        //foreach (var variableSource in CurrentDevice.VariableSourceReads)
-          {
-              if (KeepRun != true)
-                  return;
-              if (cancellationToken.IsCancellationRequested)
-                  return;
+        //await CurrentDevice.VariableSourceReads.ParallelForEachAsync(async (variableSourceRead, cancellationToken) =>
+        foreach (var variableSourceRead in CurrentDevice.VariableSourceReads)
+        {
+            if (KeepRun != true)
+                return;
+            if (cancellationToken.IsCancellationRequested)
+                return;
 
-              //连读变量
-              if (variableSourceRead.CheckIfRequestAndUpdateTime(DateTimeUtil.Now))
-              {
-                  var readErrorCount = 0;
-                  var readResult = await ReadSourceAsync(variableSourceRead, cancellationToken);
-                  //读取一定次数后，判定失败
-                  while (readResult != null && !readResult.IsSuccess && readErrorCount < DriverPropertys.RetryCount)
-                  {
-                      if (KeepRun != true)
-                          return;
-                      if (cancellationToken.IsCancellationRequested)
-                          return;
-                      readErrorCount++;
-                      LogMessage?.Trace($"{DeviceName} - 采集[{variableSourceRead?.RegisterAddress} - {variableSourceRead?.Length}] 数据失败 - {readResult?.ToString()}");
-                      readResult = await ReadSourceAsync(variableSourceRead, cancellationToken);
-                  }
+            //连读变量
+            if (variableSourceRead.CheckIfRequestAndUpdateTime(DateTimeUtil.Now))
+            {
+                var readErrorCount = 0;
+                var readResult = await ReadSourceAsync(variableSourceRead, cancellationToken);
+                //读取一定次数后，判定失败
+                while (readResult != null && !readResult.IsSuccess && readErrorCount < DriverPropertys.RetryCount)
+                {
+                    if (KeepRun != true)
+                        return;
+                    if (cancellationToken.IsCancellationRequested)
+                        return;
+                    readErrorCount++;
+                    LogMessage?.Trace($"{DeviceName} - 采集[{variableSourceRead?.RegisterAddress} - {variableSourceRead?.Length}] 数据失败 - {readResult?.ToString()}");
+                    readResult = await ReadSourceAsync(variableSourceRead, cancellationToken);
+                }
 
-                  if (readResult != null && readResult.IsSuccess)
-                  {
-                      LogMessage?.Trace($"{DeviceName} - 采集[{variableSourceRead?.RegisterAddress} - {variableSourceRead?.Length}] 数据成功 - {readResult?.Content?.ToHexString(' ')}");
-                      deviceSourceVariableSuccessNum++;
-                  }
-                  else
-                  {
-                      if (readResult != null)
-                      {
-                          if (variableSourceRead.LastErrorMessage != readResult?.ErrorMessage)
-                              LogMessage?.LogWarning(readResult.Exception, $"{DeviceName} - 采集[{variableSourceRead?.RegisterAddress} - {variableSourceRead?.Length}] 数据失败 - {readResult?.ErrorMessage}");
-                          else
-                              LogMessage?.Trace($"{DeviceName} - 采集[{variableSourceRead?.RegisterAddress} - {variableSourceRead?.Length}] 数据连续失败 - {readResult?.ToString()}");
+                if (readResult != null && readResult.IsSuccess)
+                {
+                    LogMessage?.Trace($"{DeviceName} - 采集[{variableSourceRead?.RegisterAddress} - {variableSourceRead?.Length}] 数据成功 - {readResult?.Content?.ToHexString(' ')}");
+                    deviceSourceVariableSuccessNum++;
+                }
+                else
+                {
+                    if (readResult != null)
+                    {
+                        if (variableSourceRead.LastErrorMessage != readResult?.ErrorMessage)
+                            LogMessage?.LogWarning(readResult.Exception, $"{DeviceName} - 采集[{variableSourceRead?.RegisterAddress} - {variableSourceRead?.Length}] 数据失败 - {readResult?.ErrorMessage}");
+                        else
+                            LogMessage?.Trace($"{DeviceName} - 采集[{variableSourceRead?.RegisterAddress} - {variableSourceRead?.Length}] 数据连续失败 - {readResult?.ToString()}");
 
-                          deviceSourceVariableFailedNum++;
-                          variableSourceRead.LastErrorMessage = readResult?.ErrorMessage;
-                          CurrentDevice.SetDeviceStatus(DateTimeUtil.Now, CurrentDevice.ErrorCount + 1, readResult?.ErrorMessage);
-                          variableSourceRead.VariableRunTimes.ForEach(a => a.SetValue(null, isOnline: false));
-                      }
-                  }
-              }
-          }, DriverPropertys.ConcurrentCount, cancellationToken);
+                        deviceSourceVariableFailedNum++;
+                        variableSourceRead.LastErrorMessage = readResult?.ErrorMessage;
+                        CurrentDevice.SetDeviceStatus(DateTimeUtil.Now, CurrentDevice.ErrorCount + 1, readResult?.ErrorMessage);
+                        variableSourceRead.VariableRunTimes.ForEach(a => a.SetValue(null, isOnline: false));
+                    }
+                }
+            }
+        }
+        //, DriverPropertys.ConcurrentCount, cancellationToken);
 
-        await CurrentDevice.ReadVariableMethods.ParallelForEachAsync(async (readVariableMethods, cancellationToken) =>
-        //foreach (var readVariableMethods in CurrentDevice.ReadVariableMethods)
+        //await CurrentDevice.ReadVariableMethods.ParallelForEachAsync(async (readVariableMethods, cancellationToken) =>
+        foreach (var readVariableMethods in CurrentDevice.ReadVariableMethods)
         {
             if (KeepRun != true)
                 return;
@@ -293,7 +294,8 @@ public abstract class CollectBase : DriverBase
                     }
                 }
             }
-        }, DriverPropertys.ConcurrentCount, cancellationToken);
+        }
+        //, DriverPropertys.ConcurrentCount, cancellationToken);
 
         if (deviceMethodsVariableFailedNum == 0 && deviceSourceVariableFailedNum == 0 && (deviceMethodsVariableSuccessNum != 0 || deviceSourceVariableSuccessNum != 0))
         {

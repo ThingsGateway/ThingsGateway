@@ -24,6 +24,7 @@ public class BusinessDeviceWorker : DeviceWorker
     {
         _logger = _serviceScope.ServiceProvider.GetService<ILoggerFactory>().CreateLogger("业务设备服务");
     }
+
     private async Task CollectDeviceWorker_Starting()
     {
         if (started)
@@ -31,7 +32,6 @@ public class BusinessDeviceWorker : DeviceWorker
             await StopAsync(true);
         }
         await CreatThreadsAsync();
-
     }
 
     private async Task CollectDeviceWorker_Started()
