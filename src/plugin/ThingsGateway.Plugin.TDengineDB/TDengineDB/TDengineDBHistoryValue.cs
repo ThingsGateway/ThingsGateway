@@ -29,7 +29,7 @@ public class TDengineDBHistoryValue : STable, IPrimaryIdEntity, IDBHistoryValue
     /// <summary>
     /// 上传时间
     /// </summary>
-    [SugarColumn(IsPrimaryKey = true, InsertServerTime = true)]
+    [SugarColumn(InsertServerTime = true)]
     [Description("上传时间")]
     [DataTable(Order = 1, IsShow = true, Sortable = true, DefaultFilter = false, CellClass = " table-text-truncate ")]
     public DateTime CreateTime { get; set; }
