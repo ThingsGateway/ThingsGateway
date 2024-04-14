@@ -280,7 +280,7 @@ public abstract class CollectBase : DriverBase
             {
                 if (cancellationToken.IsCancellationRequested)
                     return;
-                await ReadVariableSource(readResultCount, variableSourceRead, cancellationToken);
+                await ReadVariableSource(readResultCount, variableSourceRead, cancellationToken, CurrentDevice.VariableSourceReads.Count >= 5);
             }
         }
 
@@ -301,7 +301,7 @@ public abstract class CollectBase : DriverBase
             {
                 if (cancellationToken.IsCancellationRequested)
                     return;
-                await ReadVariableMed(readResultCount, readVariableMethods, cancellationToken);
+                await ReadVariableMed(readResultCount, readVariableMethods, cancellationToken, CurrentDevice.ReadVariableMethods.Count >= 5);
             }
         }
         // 如果所有方法和变量读取都成功，则清零错误计数器
