@@ -214,7 +214,7 @@ public class PluginService : IPluginService
             if (!pluginName.IsNullOrEmpty())
             {
                 // 从缓存中获取属性类型数据
-                var data = App.CacheService.HashGetAll<IEnumerable<IEditorItem>>(_cacheKeyGetDriverPropertyTypes);
+                var data = App.CacheService.HashGetAll<List<IEditorItem>>(_cacheKeyGetDriverPropertyTypes);
                 // 如果缓存中存在数据
                 if (data?.ContainsKey(pluginName) == true)
                 {
@@ -251,7 +251,7 @@ public class PluginService : IPluginService
             var dispose = businessBase == null;
             businessBase ??= (BusinessBase)this.GetDriver(pluginName); // 如果 driverBase 为 null， 获取驱动实例
 
-            var data = App.CacheService.HashGetAll<IEnumerable<IEditorItem>>(_cacheKeyGetVariablePropertyTypes);
+            var data = App.CacheService.HashGetAll<List<IEditorItem>>(_cacheKeyGetVariablePropertyTypes);
             if (data?.ContainsKey(pluginName) == true)
             {
                 return (data[pluginName], businessBase.VariablePropertys);
