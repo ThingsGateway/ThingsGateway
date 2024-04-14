@@ -1,0 +1,22 @@
+﻿{
+  "ThingsGateway.Plugin.Dlt645.Dlt645_2007MasterProperty": {
+    "EnableFEHead": "EnableFEHead",
+    "OperCode": "OperCode",
+    "Password": "Password",
+    "Station": "DefaultStation",
+
+    "HeartbeatHexString": "HeartbeatHexString",
+    "DataFormat": "DataFormat",
+    "IsStringReverseByteWord": "StringReverseByteWord",
+    "CheckClearTime": "CheckClearTime",
+    "Timeout": "Timeout",
+    "ConnectTimeout": "ConnectTimeout",
+    "SendDelayTime": "SendDelayTime",
+    "CacheTimeout": "CacheTimeout",
+    "MaxPack": "MaxPack",
+    "ReIntervalTime": "ReIntervalTime",
+    "RetryCount": "RetryCount",
+    "ConcurrentCount": "ConcurrentCount"
+  }
+
+}

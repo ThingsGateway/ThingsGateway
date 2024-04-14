@@ -1,3 +1,4 @@
+
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -7,6 +8,9 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
+
+
 
 // 版权归百小僧及百签科技（广东）有限公司所有。
 
@@ -22,6 +26,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 
 using NewLife;
+using NewLife.Extension;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -907,7 +912,8 @@ public sealed class LoggingMonitorAttribute : Attribute, IAsyncActionFilter, IOr
         else
         {
             // 如果不是验证异常，写入 Error
-            if (!isValidationException) logger.LogError(exception, finalMessage);
+            if (!isValidationException)
+                logger.LogError(exception, finalMessage);
             else
             {
                 // 读取配置的日志级别并写入

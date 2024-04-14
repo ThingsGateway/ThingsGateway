@@ -1,4 +1,5 @@
-﻿//------------------------------------------------------------------------------
+﻿
+//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -7,6 +8,9 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
+
+
 
 using ThingsGateway.Admin.Application;
 
@@ -40,7 +44,7 @@ public partial class SysRolePage
         }
         catch (Exception ex)
         {
-            await ToastService.Warning(string.Empty, $"{ex.Message}");
+            await ToastService.Warning(null, $"{ex.Message}");
             return false;
         }
     }
@@ -53,7 +57,7 @@ public partial class SysRolePage
         }
         catch (Exception ex)
         {
-            await ToastService.Warning(string.Empty, $"{ex.Message}");
+            await ToastService.Warning(null, $"{ex.Message}");
             return false;
         }
     }
@@ -84,7 +88,7 @@ public partial class SysRolePage
         var op = new DialogOption()
         {
             IsScrolling = true,
-            Size = Size.Large,
+            Size = Size.ExtraLarge,
             Title = OperDescLocalizer["RoleGrantResource"],
             ShowCloseButton = false,
             BodyTemplate = BootstrapDynamicComponent.CreateComponent<GrantResourceComponent>(new Dictionary<string, object?>
@@ -105,7 +109,7 @@ public partial class SysRolePage
         var op = new DialogOption()
         {
             IsScrolling = true,
-            Size = Size.Large,
+            Size = Size.ExtraLarge,
             Title = OperDescLocalizer["RoleGrantApiPermission"],
             ShowCloseButton = false,
             BodyTemplate = BootstrapDynamicComponent.CreateComponent<GrantApiComponent>(new Dictionary<string, object?>
@@ -119,18 +123,4 @@ public partial class SysRolePage
     }
 
     #endregion 授权
-
-    [Inject]
-    [NotNull]
-    private NavigationManager? NavigationManager { get; set; }
-
-    [Inject]
-    [NotNull]
-    private BlazorAppContext? AppContext { get; set; }
-
-    private bool AuthorizeButton(string operate)
-    {
-        var url = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
-        return AppContext.IsHasButtonWithRole(url, operate);
-    }
 }

@@ -1,0 +1,29 @@
+﻿{
+  "ThingsGateway.Foundation.Dlt645.Dlt645_2007Master": {
+    "EnableFEHead": "前导符报文头",
+    "OperCode": "操作员代码",
+    "Password": "写入密码",
+    "Station": "通讯地址",
+    "CheckClearTime": "连接滑动过期时间",
+    "HeartbeatHexString": "心跳检测"
+  },
+
+  "ThingsGateway.Foundation.Dlt645.DltResource": {
+    "AddressDes": "数据标识地址\n\n查看附带文档或者相关资料，下面列举一些常见的数据标识地址\n\n地址                       说明\n-----------------------------------------\n02010100    A相电压\n02020100    A相电流\n02030000    瞬时总有功功率\n00000000    (当前)组合有功总电能\n00010000    (当前)正向有功总电能",
+    "SumError": "和校验错误",
+    "StationNotSame": "站号不一致",
+    "FunctionError": "异常控制码：{0}，错误信息：{1}",
+    "FunctionNotSame": "功能码不一致，请求功能码 {0}，返回功能码 {1}",
+    "DataIdNotSame": "返回数据标识不符合规则",
+    "BaudRateError": "不支持此波特率 {0}",
+    "CountError": "写入参数数量不符合地址要求",
+    "Error1": "其他错误",
+    "Error2": "费率数超",
+    "Error3": "日时段数超",
+    "Error4": "年时区数超",
+    "Error5": "通信速率不能更改",
+    "Error6": "密码错/未授权",
+    "Error7": "无请求数据",
+    "Error8": "其他错误"
+  }
+}

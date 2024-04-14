@@ -1,0 +1,225 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AdapterTypeError" xml:space="preserve">
+    <value>必须继承 {0} 才能使用这个适配器</value>
+  </data>
+  <data name="CannotSendIRequestInfo" xml:space="preserve">
+    <value>当前适配器不支持对象发送</value>
+  </data>
+  <data name="CannotSet" xml:space="preserve">
+    <value>不允许自由调用 {0} 进行赋值</value>
+  </data>
+  <data name="CannotSplicingSend" xml:space="preserve">
+    <value>该适配器不支持拼接发送</value>
+  </data>
+  <data name="CannotUseAdapterAgain" xml:space="preserve">
+    <value>此适配器已被其他终端使用，请重新创建对象</value>
+  </data>
+  <data name="ConfigNotNull" xml:space="preserve">
+    <value>配置文件不能为空</value>
+  </data>
+  <data name="Connected" xml:space="preserve">
+    <value>连接成功</value>
+  </data>
+  <data name="Connecting" xml:space="preserve">
+    <value>正在连接</value>
+  </data>
+  <data name="ConnectTimeout" xml:space="preserve">
+    <value>连接超时</value>
+  </data>
+  <data name="DataLengthError" xml:space="preserve">
+    <value>数据长度错误 {0} </value>
+  </data>
+  <data name="DataTypeNotSupported" xml:space="preserve">
+    <value> {0} 数据类型未实现</value>
+  </data>
+  <data name="DefaultAddressDes" xml:space="preserve">
+    <value>————————————————————
+        4字节数据转换格式：data=ABCD;可选ABCD=&gt;Big-Endian;BADC=&gt;;Big-Endian Byte Swap;CDAB=&gt;Little-Endian Byte Swap;DCBA=&gt;Little-Endian。
+        字符串长度：len=1。
+        数组长度：arraylen=1。
+        Bcd格式：bcd=C8421，可选C8421;C5421;C2421;C3;Gray。
+        字符格式：encoding=UTF-8，可选UTF-8;ASCII;Default;Unicode等。
+————————————————————</value>
+  </data>
+  <data name="Disconnected" xml:space="preserve">
+    <value>断开连接</value>
+  </data>
+  <data name="Disconnecting" xml:space="preserve">
+    <value>正在断开连接</value>
+  </data>
+  <data name="DtuConnected" xml:space="preserve">
+    <value>Dtu标识 {0} 连接成功</value>
+  </data>
+  <data name="DtuNoConnectedWaining" xml:space="preserve">
+    <value>客户端未连接或寄存器设置不正确。寄存器必须设置id＝｛Dtu注册包｝</value>
+  </data>
+  <data name="ErrorMessage" xml:space="preserve">
+    <value>错误信息</value>
+  </data>
+  <data name="EventError" xml:space="preserve">
+    <value>在事件 {0} 中发生错误</value>
+  </data>
+  <data name="Exception" xml:space="preserve">
+    <value>异常堆栈</value>
+  </data>
+  <data name="LengthShortError" xml:space="preserve">
+    <value>数据长度不足，原始数据：{0}</value>
+  </data>
+  <data name="NotActiveQueryError" xml:space="preserve">
+    <value>接收数据正确，但主机并没有主动请求数据</value>
+  </data>
+  <data name="ProactivelyDisconnect" xml:space="preserve">
+    <value>主动断开</value>
+  </data>
+  <data name="ProcessReceiveError" xml:space="preserve">
+    <value>接收出现错误 {0}，错误代码 {1}</value>
+  </data>
+  <data name="Receive" xml:space="preserve">
+    <value>接收</value>
+  </data>
+  <data name="ReceiveError" xml:space="preserve">
+    <value>在处理数据时发生错误</value>
+  </data>
+  <data name="RemoteClose" xml:space="preserve">
+    <value>远程终端已关闭</value>
+  </data>
+  <data name="Send" xml:space="preserve">
+    <value>发送</value>
+  </data>
+  <data name="SerialPortNotClient" xml:space="preserve">
+    <value>新的SerialPort必须在连接状态</value>
+  </data>
+  <data name="ServiceStarted" xml:space="preserve">
+    <value>启动</value>
+  </data>
+  <data name="ServiceStoped" xml:space="preserve">
+    <value>停止</value>
+  </data>
+  <data name="StringAddressError" xml:space="preserve">
+    <value>字符串读写必须在寄存器地址中指定长度，例如 len=10;</value>
+  </data>
+  <data name="TransBytesError" xml:space="preserve">
+    <value>转换失败-原始字节数组  {0}，长度 {1}</value>
+  </data>
+  <data name="UnknowError" xml:space="preserve">
+    <value>未知错误</value>
+  </data>
+</root>

@@ -1,4 +1,19 @@
 ﻿{
+  "ThingsGateway.Admin.Application.APPInfo": {
+    "Environment": "主机环境",
+    "FrameworkDescription": "NET框架",
+    "OsArchitecture": "系统架构",
+    "UUID": "唯一编码",
+    "UpdateTime": "更新时间"
+  },
+  "ThingsGateway.Admin.Application.HisHardwareInfo": {
+    "DriveUsage": "磁盘使用率",
+    "MemoryUsage": "内存使用率",
+    "CpuUsage": "CPU使用率",
+    "Temperature": "温度",
+    "Battery": "电池"
+  },
+
   //controller
   "ThingsGateway.Admin.Application.AuthController": {
     //auth
@@ -125,7 +140,9 @@
   },
   "ThingsGateway.Admin.Application.RoleService": {
   },
-
+  "ThingsGateway.Admin.Application.HardwareInfoService": {
+    "GetHardwareInfoFail": "获取硬件信息出错"
+  },
   "ThingsGateway.Admin.Application.AuthService": {
     "SingleLoginWarn": "您的账号已在别处登录"
   },

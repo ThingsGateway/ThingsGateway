@@ -1,4 +1,5 @@
-﻿//------------------------------------------------------------------------------
+﻿
+//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -7,6 +8,9 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
+
+
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -46,10 +50,11 @@ public static class App
 
     static App()
     {
-        Assemblies = GetAssemblies();
-        EffectiveTypes = Assemblies!.SelectMany(a => a.GetTypes());
+        Assemblies = GetAssemblies().ToList();
+        EffectiveTypes = Assemblies!.SelectMany(a =>
+        a.GetTypes());
         RazorAssemblies = EffectiveTypes.Where(u => !u.IsInterface && !u.IsAbstract && u.IsClass
-    && u.IsDefined(typeof(Microsoft.AspNetCore.Components.RouteAttribute), true)).Select(a => a.Assembly).Distinct();
+    && u.IsDefined(typeof(Microsoft.AspNetCore.Components.RouteAttribute), true)).Select(a => a.Assembly).Distinct().ToList();
     }
 
     /// <summary>

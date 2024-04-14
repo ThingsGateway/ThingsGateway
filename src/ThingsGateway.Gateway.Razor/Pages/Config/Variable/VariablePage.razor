@@ -1,0 +1,69 @@
+﻿@page "/gateway/variable"
+@namespace ThingsGateway.Gateway.Razor
+@using ThingsGateway.Admin.Application
+@using ThingsGateway.Admin.Razor
+@using ThingsGateway.Gateway.Application
+@attribute [Authorize]
+@attribute [RolePermission]
+@inherits ComponentDefault
+
+
+<div style="height: var(--table-height);padding: 2px 5px 10px 5px;">
+
+    <AdminTable @ref=table TItem="Variable" AutoGenerateColumns="true" ShowAdvancedSearch=false
+                AllowResizing="true" IsFixedHeader=true IsMultipleSelect=true SearchModel=SearchModel
+                ShowExtendButtons=true ShowExportButton
+                ShowDefaultButtons=true ExtendButtonColumnWidth=150
+                OnQueryAsync="OnQueryAsync" IsPagination=true
+                OnSaveAsync="Save" OnDeleteAsync="Delete">
+
+        <TableColumns>
+
+            <TableColumn @bind-Field="@context.DeviceId" Width="50" Align="Alignment.Center">
+                <Template Context="deviceId">
+                    @{
+                        CollectDeviceDict.TryGetValue(deviceId.Value!.Value, out var device);
+                    }
+                    @device?.Name
+                </Template>
+
+            </TableColumn>
+        </TableColumns>
+        <EditTemplate Context="context">
+            <VariableEditComponent Model=context BusinessDevices="BusinessDeviceNames" CollectDevices="CollectDeviceNames" BusinessDeviceDict=BusinessDeviceDict CollectDeviceDict=CollectDeviceDict></VariableEditComponent>
+
+        </EditTemplate>
+
+
+        <ExportButtonDropdownTemplate Context="ExportContext">
+            <Button class="dropdown-item" OnClick="() => ExcelExportAsync(ExportContext)">
+                <i class="fas fa-file-export"></i>
+                <span>@DefaultLocalizer["TablesExportButtonExcelText"]</span>
+            </Button>
+            <Button class="dropdown-item" OnClick="() => ExcelImportAsync(ExportContext)" IsDisabled=@(!AuthorizeButton("导入"))>
+                <i class="fas fa-file-import"></i>
+                <span>@DefaultLocalizer["TablesImportButtonExcelText"]</span>
+            </Button>
+        </ExportButtonDropdownTemplate>
+        <TableToolbarTemplate>
+            <TableToolbarButton TItem="Variable"
+                                Color=Color.Warning Text="@Localizer["Clear"]"
+                                IsAsync OnClickCallback=@(async(a)=>{ await VariableService.ClearVariableAsync();await ToastService.Default(); await table.QueryAsync(); }) />
+
+            <PopConfirmButton TItem="Variable"
+                              Color=Color.Warning Text="@Localizer["Test"]"
+                              IsAsync OnConfirm=@(async()=>{await Task.Run(async()=> {await VariableService.InsertTestDataAsync(TestCount);await ToastService.Default(); await InvokeAsync(table.QueryAsync);});} )>
+
+                <BodyTemplate>
+                    <BootstrapInput @bind-Value=TestCount ShowLabel="true" ShowLabelTooltip="true" />
+                </BodyTemplate>
+
+            </PopConfirmButton>
+
+        </TableToolbarTemplate>
+    </AdminTable>
+</div>
+
+@code {
+    AdminTable<Variable> table;
+}

@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<Import Project="$(SolutionDir)Foundation.props" />
+	<Import Project="$(SolutionDir)PackNuget.props" />
+	<PropertyGroup>
+		<Description>工业设备通讯协议-Dlt645协议</Description>
+		<DocumentationFile></DocumentationFile>
+	</PropertyGroup>
+	<ItemGroup>
+		<Content Remove="Locales\*.json" />
+		<EmbeddedResource Include="Locales\*.json" />
+	</ItemGroup>
+
+	<ItemGroup>
+
+
+		<ProjectReference Include="$(SolutionDir)\ThingsGateway.Foundation\ThingsGateway.Foundation.csproj">
+		</ProjectReference>
+	</ItemGroup>
+
+
+
+</Project>

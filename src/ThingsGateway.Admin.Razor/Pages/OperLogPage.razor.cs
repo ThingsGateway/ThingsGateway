@@ -1,4 +1,5 @@
-﻿//------------------------------------------------------------------------------
+﻿
+//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -7,6 +8,9 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
+
+
 
 using ThingsGateway.Admin.Application;
 
@@ -20,6 +24,7 @@ public partial class OperLogPage
 
     #region 曲线
 
+    private bool chartInit { get; set; }
     private Chart LineChart { get; set; }
     private ChartDataSource? ChartDataSource { get; set; }
 
@@ -36,24 +41,28 @@ public partial class OperLogPage
             ChartDataSource.Data.Add(new ChartDataset()
             {
                 Tension = 0.4f,
+                PointRadius = 1,
                 Label = Localizer["Operate"],
                 Data = dayStatisticsOutputs.Select(a => (object)a.OperateCount),
             });
             ChartDataSource.Data.Add(new ChartDataset()
             {
                 Tension = 0.4f,
+                PointRadius = 1,
                 Label = Localizer["Exception"],
                 Data = dayStatisticsOutputs.Select(a => (object)a.ExceptionCount),
             });
             ChartDataSource.Data.Add(new ChartDataset()
             {
                 Tension = 0.4f,
+                PointRadius = 1,
                 Label = Localizer["Login"],
                 Data = dayStatisticsOutputs.Select(a => (object)a.LoginCount),
             });
             ChartDataSource.Data.Add(new ChartDataset()
             {
                 Tension = 0.4f,
+                PointRadius = 1,
                 Label = Localizer["Logout"],
                 Data = dayStatisticsOutputs.Select(a => (object)a.LogoutCount),
             });
@@ -61,6 +70,7 @@ public partial class OperLogPage
         else
         {
             var dayStatisticsOutputs = await SysOperateLogService.StatisticsByDayAsync(7);
+            ChartDataSource.Labels = dayStatisticsOutputs.Select(a => a.Date);
             ChartDataSource.Data[0].Data = dayStatisticsOutputs.Select(a => (object)a.OperateCount);
             ChartDataSource.Data[1].Data = dayStatisticsOutputs.Select(a => (object)a.ExceptionCount);
             ChartDataSource.Data[2].Data = dayStatisticsOutputs.Select(a => (object)a.LoginCount);
@@ -77,6 +87,8 @@ public partial class OperLogPage
 
     private async Task<QueryData<SysOperateLog>> OnQueryAsync(QueryPageOptions options)
     {
+        if (chartInit)
+            await LineChart.Update(ChartAction.Update);
         var data = await SysOperateLogService.PageAsync(options);
         return data;
     }

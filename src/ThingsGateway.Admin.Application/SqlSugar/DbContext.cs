@@ -1,4 +1,5 @@
-﻿//------------------------------------------------------------------------------
+﻿
+//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -7,6 +8,9 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
+
+
 
 using Mapster;
 
@@ -35,35 +39,14 @@ public static class DbContext
     /// </summary>
     public static readonly SqlSugarScope Db = new(DbConfigs.Adapt<List<ConnectionConfig>>(), db =>
     {
-        //遍历配置的数据库
-        DbConfigs?.ForEach(it =>
+        DbConfigs.ForEach(it =>
         {
             var sqlsugarScope = db.GetConnectionScope(it.ConfigId);//获取当前库
             MoreSetting(sqlsugarScope);//更多设置
-            ExternalServicesSetting(sqlsugarScope);//实体拓展配置
             AopSetting(sqlsugarScope, it.IsShowSql);//aop配置
-            FilterSetting(sqlsugarScope);//过滤器配置
-        });
+        }
+        );
     });
-
-    /// <summary>
-    /// 实体拓展配置,自定义类型多库兼容
-    /// </summary>
-    /// <param name="db"></param>
-    private static void ExternalServicesSetting(SqlSugarScopeProvider db)
-    {
-        db.CurrentConnectionConfig.ConfigureExternalServices = new ConfigureExternalServices
-        {
-            // 处理表
-            EntityNameService = (type, entity) =>
-            {
-            },
-            //自定义类型多库兼容
-            EntityService = (c, p) =>
-            {
-            }
-        };
-    }
 
     /// <summary>
     /// Aop设置
@@ -75,37 +58,36 @@ public static class DbContext
         // 设置超时时间
         db.Ado.CommandTimeOut = 10;
 
-        // 打印SQL语句
-        db.Aop.OnLogExecuting = (sql, pars) =>
+        if (isShowSql)
         {
-            //如果不是开发环境就打印sql
-            if (isShowSql)
+            // 打印SQL语句
+            db.Aop.OnLogExecuting = (sql, pars) =>
+        {
+            if (sql.StartsWith("SELECT"))
             {
-                if (sql.StartsWith("SELECT"))
-                {
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    WriteLog($"查询{config.ConfigId}库操作");
-                }
-                if (sql.StartsWith("UPDATE"))
-                {
-                    Console.ForegroundColor = ConsoleColor.Blue;
-                    WriteLog($"修改{config.ConfigId}库操作");
-                }
-                if (sql.StartsWith("INSERT"))
-                {
-                    Console.ForegroundColor = ConsoleColor.Yellow;
-                    WriteLog($"添加{config.ConfigId}库操作");
-                }
-                if (sql.StartsWith("DELETE"))
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    WriteLog($"删除{config.ConfigId}库操作");
-                }
-                WriteLogWithSql(UtilMethods.GetSqlString(config.DbType, sql, pars));
-                WriteLog($"{config.ConfigId}库操作结束");
-                Console.ForegroundColor = ConsoleColor.White;
+                Console.ForegroundColor = ConsoleColor.Green;
+                WriteLog($"查询{config.ConfigId}库操作");
             }
+            if (sql.StartsWith("UPDATE"))
+            {
+                Console.ForegroundColor = ConsoleColor.Blue;
+                WriteLog($"修改{config.ConfigId}库操作");
+            }
+            if (sql.StartsWith("INSERT"))
+            {
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                WriteLog($"添加{config.ConfigId}库操作");
+            }
+            if (sql.StartsWith("DELETE"))
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                WriteLog($"删除{config.ConfigId}库操作");
+            }
+            WriteLogWithSql(UtilMethods.GetSqlString(config.DbType, sql, pars));
+            WriteLog($"{config.ConfigId}库操作结束");
+            Console.ForegroundColor = ConsoleColor.White;
         };
+        }
         //异常
         db.Aop.OnError = (ex) =>
         {
@@ -174,14 +156,6 @@ public static class DbContext
         {
             SqlServerCodeFirstNvarchar = true//设置默认nvarchar
         };
-    }
-
-    /// <summary>
-    /// 过滤器设置
-    /// </summary>
-    /// <param name="db"></param>
-    public static void FilterSetting(SqlSugarScopeProvider db)
-    {
     }
 
     private static void WriteLog(string msg)

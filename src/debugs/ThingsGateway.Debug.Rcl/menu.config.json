@@ -1,0 +1,26 @@
+{
+  "MenuItems": [
+    {
+      "Text": "Modbus",
+      "Items": [
+        {
+          "Url": "/ModbusMaster",
+          "Text": "ModbusMaster"
+        },
+        {
+          "Url": "/ModbusSlave",
+          "Text": "ModbusSlave"
+        }
+      ]
+    },
+    {
+      "Url": "/SiemensS7Master",
+      "Text": "Siemens"
+    },
+    {
+      "Url": "/Dlt645_2007Master",
+      "Text": "Dlt645_2007Master"
+    }
+
+  ]
+}

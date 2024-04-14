@@ -1,4 +1,5 @@
-﻿//------------------------------------------------------------------------------
+﻿
+//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -7,6 +8,9 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
+
+
 
 using ThingsGateway.Admin.Application;
 using ThingsGateway.Core;
@@ -83,7 +87,7 @@ public partial class MainLayout : IDisposable
         op = new DialogOption()
         {
             IsScrolling = true,
-            Size = Size.Large,
+            Size = Size.ExtraLarge,
             ShowFooter = false,
             Title = Localizer["ChoiceModule"],
             BodyTemplate = BootstrapDynamicComponent.CreateComponent<ChoiceModuleComponent>(new Dictionary<string, object?>
@@ -141,6 +145,10 @@ public partial class MainLayout : IDisposable
     [Inject]
     [NotNull]
     private BlazorAppContext? AppContext { get; set; }
+
+    [Inject]
+    [NotNull]
+    private IMenuService? MenuService { get; set; }
 
     [Inject]
     [NotNull]

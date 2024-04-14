@@ -1,4 +1,24 @@
 ﻿{
+  "ThingsGateway.Razor._Imports": {
+    "Add": "Add",
+    "Remove": "Remove",
+    "Close": "Close",
+    "True": "Yes",
+    "False": "No",
+    "Save": "Save",
+    "Fail": "Fail {0}",
+    "Fail1": "Fail",
+    "Success": "Success",
+    "TablesExportButtonExcelText": "Export Excel",
+    "TablesImportButtonExcelText": "Import Excel",
+    "ExportButtonText": "Export/Import",
+    "EmptyText": "Empty"
+  },
+
+  "ThingsGateway.Razor.GlobalSearch": {
+    "SearchText": "Search Page"
+  },
+
   "ThingsGateway.Razor.MenuIconList": {
     "ChoiceIcon": "Icon for Selection",
     "Choice": "Select"
@@ -10,9 +30,7 @@
     "Branch": "Branch name??",
     "Message": "Commit message??"
   },
-  "ThingsGateway.Razor._Imports": {
-    "EmptyText": "Empty"
-  },
+
   "ThingsGateway.Razor.ThemeToggle": {
     "ThemeToggle": "Night/Day"
   },

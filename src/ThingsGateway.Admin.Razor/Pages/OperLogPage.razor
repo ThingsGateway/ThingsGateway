@@ -5,9 +5,9 @@
 @using ThingsGateway.Admin.Application
 @namespace ThingsGateway.Admin.Razor
 
-<Chart @ref=LineChart OnInitAsync="OnInit" Height="var(--line-chart-height)" Width="100%" />
+<Chart @ref=LineChart OnInitAsync="OnInit" Height="var(--line-chart-height)" Width="100%" OnAfterInitAsync="()=>{chartInit=true;return Task.CompletedTask;}" />
 <div style="height: var(--line-chart-table-height);padding: 2px 5px 10px 5px;">
-    <AdminTable TItem="SysOperateLog" AutoGenerateColumns="true" ShowDefaultButtons=false AllowDragColumn="true"
+    <AdminTable TItem="SysOperateLog" AutoGenerateColumns="true" ShowDefaultButtons=false 
                 AllowResizing="true" IsFixedHeader=true IsMultipleSelect=false
                 ShowExtendEditButton=false ShowExtendDeleteButton=false ShowExtendButtons=false
                 ShowExportButton="true"  
@@ -20,7 +20,7 @@
         </CustomerSearchTemplate>
         <ExportButtonDropdownTemplate Context="ExportContext">
             <div class="dropdown-item" @onclick="() => ExcelExportAsync(ExportContext)">
-                <i class="fa-regular fa-file-excel"></i>
+                <i class="fas fa-file-export"></i>
                 <span>@DefaultLocalizer["TablesExportButtonExcelText"]</span>
             </div>
         </ExportButtonDropdownTemplate>
@@ -28,14 +28,14 @@
 </div>
 @code {
     RenderFragment Render(OperateLogPageInput model) =>
-    @<div class="row form-inline g-3">
-        <div class="col-12 col-sm-6">
+    @<div class="row form-inline g-2">
+        <div class="col-12 ">
             <BootstrapInput @bind-Value="model.Account" ShowLabel="true" />
         </div>
-        <div class="col-12 col-sm-6">
+        <div class="col-12 ">
             <DateTimeRange @bind-Value="model.SearchDate" ShowLabel="true" />
         </div>
-        <div class="col-12 col-sm-6">
+        <div class="col-12 ">
             <Select @bind-Value="model.Category" ShowLabel="true" PlaceHolder="All" />
         </div>
     </div>;

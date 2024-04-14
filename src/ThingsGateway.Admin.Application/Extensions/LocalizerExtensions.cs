@@ -1,4 +1,5 @@
-﻿//------------------------------------------------------------------------------
+﻿
+//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -8,6 +9,12 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+
+
+
+using BootstrapBlazor.Components;
+
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.Extensions.Localization;
 
 using System.ComponentModel;
@@ -25,6 +32,103 @@ public static class LocalizerExtensions
     public static MethodInfo? GetMethodByName(this Type type, string methodName) => type.GetRuntimeMethods().FirstOrDefault(p => p.Name == methodName);
 
     public static FieldInfo? GetFieldByName(this Type type, string fieldName) => type.GetRuntimeFields().FirstOrDefault(p => p.Name == fieldName);
+
+    private static bool IsPublic(PropertyInfo p) => p.GetMethod != null && p.SetMethod != null && p.GetMethod.IsPublic && p.SetMethod.IsPublic;
+
+    /// <summary>
+    /// 验证整个模型时验证属性方法
+    /// </summary>
+    /// <param name="context"></param>
+    /// <param name="results"></param>
+    public static void ValidateProperty(this ValidationContext context, List<ValidationResult> results)
+    {
+        // 获得所有可写属性
+        var properties = context.ObjectType.GetRuntimeProperties().Where(p => IsPublic(p) && p.CanWrite && p.GetIndexParameters().Length == 0);
+        foreach (var pi in properties)
+        {
+            var fieldIdentifier = new FieldIdentifier(context.ObjectInstance, pi.Name);
+            context.DisplayName = fieldIdentifier.GetDisplayName();
+            context.MemberName = fieldIdentifier.FieldName;
+
+            var propertyValue = BootstrapBlazor.Components.Utility.GetPropertyValue(context.ObjectInstance, context.MemberName);
+
+            // 验证 DataAnnotations
+            var messages = new List<ValidationResult>();
+            // 组件进行验证
+            ValidateDataAnnotations(propertyValue, context, messages, pi);
+            if (messages.Count > 0)
+                results.AddRange(messages);
+        }
+    }
+
+    /// <summary>
+    /// 通过属性设置的 DataAnnotation 进行数据验证
+    /// </summary>
+    /// <param name="value"></param>
+    /// <param name="context"></param>
+    /// <param name="results"></param>
+    /// <param name="propertyInfo"></param>
+    /// <param name="memberName"></param>
+    private static void ValidateDataAnnotations(object? value, ValidationContext context, List<ValidationResult> results, PropertyInfo propertyInfo, string? memberName = null)
+    {
+        var rules = propertyInfo.GetCustomAttributes(true).OfType<ValidationAttribute>();
+        var metadataType = context.ObjectType.GetCustomAttribute<MetadataTypeAttribute>(false);
+        if (metadataType != null)
+        {
+            var p = metadataType.MetadataClassType.GetPropertyByName(propertyInfo.Name);
+            if (p != null)
+            {
+                rules = rules.Concat(p.GetCustomAttributes(true).OfType<ValidationAttribute>());
+            }
+        }
+        var displayName = context.DisplayName;
+        memberName ??= propertyInfo.Name;
+        var attributeSpan = nameof(Attribute).AsSpan();
+        foreach (var rule in rules)
+        {
+            var result = rule.GetValidationResult(value, context);
+            if (result != null && result != ValidationResult.Success)
+            {
+                var find = false;
+                var ruleNameSpan = rule.GetType().Name.AsSpan();
+                var index = ruleNameSpan.IndexOf(attributeSpan, StringComparison.OrdinalIgnoreCase);
+                var ruleName = ruleNameSpan[..index];
+                //// 通过设置 ErrorMessage 检索
+                //if (!context.ObjectType.Assembly.IsDynamic && !find
+                //    && !string.IsNullOrEmpty(rule.ErrorMessage)
+                //    && App.CreateLocalizerByType(context.ObjectType).TryGetLocalizerString(rule.ErrorMessage, out var msg))
+                //{
+                //    rule.ErrorMessage = msg;
+                //    find = true;
+                //}
+
+                //// 通过 Attribute 检索
+                //if (!rule.GetType().Assembly.IsDynamic && !find
+                //    && App.CreateLocalizerByType(rule.GetType()).TryGetLocalizerString(nameof(rule.ErrorMessage), out msg))
+                //{
+                //    rule.ErrorMessage = msg;
+                //    find = true;
+                //}
+
+                // 通过 字段.规则名称 检索
+                if (!context.ObjectType.Assembly.IsDynamic && !find
+                    && App.CreateLocalizerByType(context.ObjectType).TryGetLocalizerString($"{memberName}.{ruleName.ToString()}", out var msg))
+                {
+                    rule.ErrorMessage = msg;
+                    find = true;
+                }
+
+                if (!find)
+                {
+                    rule.ErrorMessage = result.ErrorMessage;
+                }
+                var errorMessage = !string.IsNullOrEmpty(rule.ErrorMessage) && rule.ErrorMessage.Contains("{0}")
+                    ? rule.FormatErrorMessage(displayName)
+                    : rule.ErrorMessage;
+                results.Add(new ValidationResult(errorMessage, new string[] { memberName }));
+            }
+        }
+    }
 
     /// <summary>
     /// 获取指定 Type 的资源文件

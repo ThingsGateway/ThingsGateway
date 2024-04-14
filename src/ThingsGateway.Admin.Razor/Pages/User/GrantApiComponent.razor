@@ -13,8 +13,8 @@
 
 @code {
     RenderFragment<OpenApiPermissionTreeSelector> RenderTreeItem => item =>
-    @<div class="d-flex flex-fill">
+    @<div class="d-flex flex-fill " style="padding-right: 5rem!important;padding-left: 0rem!important;">
         <span class="flex-fill">@item.ApiName</span>
-        <span class="mx-3 menu-type">@item.ApiRoute</span>
+        <span class="mx-1 menu-type">@item.ApiRoute</span>
     </div>;
 }

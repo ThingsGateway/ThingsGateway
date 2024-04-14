@@ -1,4 +1,5 @@
-﻿//------------------------------------------------------------------------------
+﻿
+//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -7,6 +8,8 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
+
 
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
@@ -29,7 +32,7 @@ public class Program
         //当前工作目录设为程序集的基目录
         System.IO.Directory.SetCurrentDirectory(AppContext.BaseDirectory);
 
-        // 增加中文编码支持用于定位服务
+        // 增加中文编码支持
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
         #region 控制台输出Logo
@@ -46,6 +49,13 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
         // 增加中文编码支持网页源码显示汉字
         builder.Services.AddSingleton(HtmlEncoder.Create(UnicodeRanges.All));
+
+        //并发启动/停止host
+        builder.Services.Configure<HostOptions>(options =>
+        {
+            options.ServicesStartConcurrently = true;
+            options.ServicesStopConcurrently = true;
+        });
 
         if (!builder.Environment.IsDevelopment())
         {
@@ -189,6 +199,7 @@ public class Program
             .AddInteractiveServerRenderMode();
 
         app.MapHub<SysHub>(HubConst.SysHubUrl);
+
         app.Run();
 
         #endregion build

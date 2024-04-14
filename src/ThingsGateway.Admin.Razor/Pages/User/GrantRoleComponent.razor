@@ -3,9 +3,9 @@
 @using ThingsGateway.Core.Extension
 @namespace ThingsGateway.Admin.Razor
 
-<div class="row g-3 form-inline">
+<div class="row g-2 mx-1 form-inline">
 
-    <div class="col-12 col-sm-6 col-md-6" style="height:100%">
+    <div class="col-12  col-md-6" style="height:100%">
 
         <AdminTable @ref="table1" TItem="SysRole" AutoGenerateColumns="true" @bind-SelectedRows="@SelectedAddRows" ClickToSelect="true" 
                     ShowToolbar="true" ShowDefaultButtons="false" IsMultipleSelect="true" ShowAdvancedSearch=false ShowResetButton=false
@@ -21,7 +21,7 @@
             </TableToolbarTemplate>
         </AdminTable>
     </div>
-    <div class="col-12 col-sm-6 col-md-6" style="height:100%">
+    <div class="col-12  col-md-6" style="height:100%">
 
         <AdminTable @ref="table2" TItem="SysRole" AutoGenerateColumns="true" @bind-SelectedRows="@SelectedDeleteRows" ClickToSelect="true" 
                     ShowToolbar="true" ShowDefaultButtons="false" IsMultipleSelect="true" ShowAdvancedSearch=false ShowResetButton=false PageItems=20

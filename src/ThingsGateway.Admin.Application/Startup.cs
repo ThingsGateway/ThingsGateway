@@ -1,4 +1,5 @@
-﻿//------------------------------------------------------------------------------
+﻿
+//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -7,6 +8,9 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
+
+
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc.Controllers;
@@ -26,7 +30,7 @@ using Yitter.IdGenerator;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
-[AppStartup(2)]
+[AppStartup(1000)]
 public class Startup : AppStartup
 {
     public void ConfigureAdminApp(IServiceCollection services)
@@ -34,7 +38,11 @@ public class Startup : AppStartup
         services.AddSingleton<ICacheService, MemoryCacheService>();
 
         //检查ConfigId
-        CheckSameConfigId();
+        var configIdGroup = DbContext.DbConfigs.GroupBy(it => it.ConfigId);
+        foreach (var configId in configIdGroup)
+        {
+            if (configId.Count() > 1) throw new($"Sqlsugar connect configId: {configId.Key} Duplicate!");
+        }
 
         //遍历配置
         DbContext.DbConfigs?.ForEach(it =>
@@ -56,6 +64,19 @@ public class Startup : AppStartup
 
         services.AddConsoleFormatter(options =>
         {
+            options.WriteFilter = (logMsg) =>
+            {
+                //如果不是LoggingMonitor日志才格式化
+                if (logMsg.LogName != "System.Logging.LoggingMonitor")
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            };
+
             options.MessageFormat = (logMsg) =>
             {
                 //如果不是LoggingMonitor日志才格式化
@@ -100,8 +121,6 @@ public class Startup : AppStartup
 
         #endregion 控制台美化
 
-        var parser = Parser.GetDefault();
-
         #region api日志
 
         //Monitor日志配置
@@ -116,6 +135,7 @@ public class Startup : AppStartup
                 var userAgent = httpContext.Request.Headers["User-Agent"];
                 if (string.IsNullOrEmpty(userAgent)) userAgent = "Other";//如果没有这个头就指定一个
 
+                var parser = Parser.GetDefault();
                 //获取客户端信息
                 var client = parser.Parse(userAgent);
                 // 获取控制器/操作描述器
@@ -161,13 +181,14 @@ public class Startup : AppStartup
         services.AddSingleton<IUnifyResultProvider, UnifyResultProvider>();
 
         services.AddHostedService<AdminTaskService>();
+        services.AddHostedService<HardwareInfoService>();
     }
 
     public void UseAdminCore(IApplicationBuilder app)
     {
         //删除在线用户统计
         var verificatInfoCacheService = app.ApplicationServices.GetService<IVerificatInfoCacheService>();
-        var verificatInfos = verificatInfoCacheService.HashGetAll();
+        var verificatInfos = verificatInfoCacheService.GetAll();
         //获取当前客户端ID所在的verificat信息
         foreach (var infos in verificatInfos.Values)
         {
@@ -177,18 +198,5 @@ public class Startup : AppStartup
             }
         }
         verificatInfoCacheService.HashSet(verificatInfos);//更新
-    }
-
-    /// <summary>
-    /// 检查是否有相同的ConfigId
-    /// </summary>
-    /// <returns></returns>
-    private void CheckSameConfigId()
-    {
-        var configIdGroup = DbContext.DbConfigs.GroupBy(it => it.ConfigId);
-        foreach (var configId in configIdGroup)
-        {
-            if (configId.Count() > 1) throw new($"Sqlsugar connect configId: {configId.Key} Duplicate!");
-        }
     }
 }

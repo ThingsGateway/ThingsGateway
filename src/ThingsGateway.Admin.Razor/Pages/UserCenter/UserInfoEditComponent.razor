@@ -3,7 +3,7 @@
 @using ThingsGateway.Admin.Application
 @using NewLife
 
-<ValidateForm class="m-2" Model="@Model" OnValidSubmit="OnSave">
+<ValidateForm class="p-4" Model="@Model" OnValidSubmit="OnSave">
 
      <AvatarUpload @bind-Value="@Picture" IsSingle Accept="image/*" OnChange="OnAvatarUpload" DefaultFileList=PreviewFileList></AvatarUpload>
 

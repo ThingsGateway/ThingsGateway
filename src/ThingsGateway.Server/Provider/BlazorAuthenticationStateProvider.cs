@@ -1,4 +1,5 @@
-﻿//------------------------------------------------------------------------------
+﻿
+//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -7,6 +8,8 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
+
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
@@ -74,9 +77,9 @@ public class BlazorAuthenticationStateProvider : AppAuthorizeHandler
     {
         var userId = context.User.Claims.FirstOrDefault(it => it.Type == ClaimConst.UserId)?.Value?.ToLong(0) ?? 0;
 
+        var user = await _sysUserService.GetUserByIdAsync(userId);
         if (context.Resource is Microsoft.AspNetCore.Components.RouteData routeData)
         {
-            var user = await _sysUserService.GetUserByIdAsync(userId);
             var roles = await _sysRoleService.GetRoleListByUserIdAsync(userId);
             if (roles.All(a => a.Category != RoleCategoryEnum.Global))
                 return false;
@@ -128,7 +131,6 @@ public class BlazorAuthenticationStateProvider : AppAuthorizeHandler
         }
         else
         {
-            var user = await _sysUserService.GetUserByIdAsync(userId);
             //这里鉴别用户使能状态
             if (user == null || !user.Status) { return false; }
 
@@ -198,7 +200,7 @@ public class BlazorAuthenticationStateProvider : AppAuthorizeHandler
             {
                 return false;
             }
-            var verificatInfo = verificatInfos.Where(it => it.Id == verificatId).FirstOrDefault(); //获取redis中token值是当前token的对象
+            var verificatInfo = verificatInfos.FirstOrDefault(it => it.Id == verificatId); //获取cache中token值是当前token的对象
             if (verificatInfo != null)
             {
                 return true;
@@ -213,18 +215,18 @@ public class BlazorAuthenticationStateProvider : AppAuthorizeHandler
             var expire = (await _sysDictService.GetAppConfigAsync()).LoginPolicy.VerificatExpireTime;
             if (JWTEncryption.AutoRefreshToken(context, currentHttpContext, expire, expire * 2))
             {
-                var token = JWTEncryption.GetJwtBearerToken(currentHttpContext); //获取当前token
+                //var token = JWTEncryption.GetJwtBearerToken(currentHttpContext); //获取当前token
 
                 var verificatInfos = userId != null ? _verificatInfoCacheService.HashGetOne(userId.Value) : null;//获取token信息
                 if (verificatInfos == null) //如果还是空
                 {
                     return false;
                 }
-                var verificatInfo = verificatInfos.Where(it => it.Id == verificatId).FirstOrDefault(); //获取redis中token值是当前token的对象
+                var verificatInfo = verificatInfos.FirstOrDefault(it => it.Id == verificatId); //获取cache中token值是当前token的对象
                 if (verificatInfo != null)
                 {
                     verificatInfo.VerificatTimeout = DateTime.Now.AddMinutes(expire); //新的过期时间
-                    _verificatInfoCacheService.HashAdd(userId!.Value, verificatInfos); //更新tokne信息到redis
+                    _verificatInfoCacheService.HashAdd(userId!.Value, verificatInfos); //更新tokne信息到cache
                     return true;
                 }
                 else

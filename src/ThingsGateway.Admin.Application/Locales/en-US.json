@@ -1,4 +1,19 @@
 ﻿{
+  "ThingsGateway.Admin.Application.APPInfo": {
+    "Environment": "HostEnvironment",
+    "FrameworkDescription": ".NETFramework",
+    "OsArchitecture": "System Architecture",
+    "UUID": "UUID",
+    "UpdateTime": "UpdateTime"
+  },
+  "ThingsGateway.Admin.Application.HisHardwareInfo": {
+    "DriveUsage": "Disk Usage",
+    "MemoryUsage": "Memory Usage",
+    "CpuUsage": "CPU Usage",
+    "Temperature": "Temperature",
+    "Battery": "Battery"
+  },
+
   //controller
   "ThingsGateway.Admin.Application.AuthController": {
     //auth
@@ -126,7 +141,9 @@
   },
   "ThingsGateway.Admin.Application.RoleService": {
   },
-
+  "ThingsGateway.Admin.Application.HardwareInfoService": {
+    "GetHardwareInfoFail": "Get Hardwareinfo Fail"
+  },
   "ThingsGateway.Admin.Application.AuthService": {
     "SingleLoginWarn": "Your account is logged in elsewhere"
   },
@@ -170,28 +187,28 @@
 
     "Avatar": "Avatar",
     "Account": "Account",
-    "Account.Required": "{0} is required",
+    "Account.Required": "Account.Required",
     "Password": "Password",
     "Status": "Status",
     "Phone": "Phone",
     "Email": "Email",
-    "LastLoginIp": "Last login IP",
-    "LastLoginDevice": "Last login device",
-    "LastLoginTime": "Last login time",
-    "LastLoginAddress": "Last login address",
-    "LatestLoginIp": "Latest login IP",
-    "LatestLoginTime": "Latest login time",
-    "LatestLoginDevice": "Latest login device",
-    "LatestLoginAddress": "Latest login address",
-    "SortCode": "Sort"
+    "LastLoginIp": "LastLoginIp",
+    "LastLoginDevice": "LastLoginDevice",
+    "LastLoginTime": "LastLoginTime",
+    "LastLoginAddress": "LastLoginAddress",
+    "LatestLoginIp": "LatestLoginIp",
+    "LatestLoginTime": "LatestLoginTime",
+    "LatestLoginDevice": "LatestLoginDevice",
+    "LatestLoginAddress": "LatestLoginAddress",
+    "SortCode": "SortCode"
   },
   "ThingsGateway.Admin.Application.VerificatInfo": {
-    "Expire": "Expiration time (min)",
-    "Online": "Online status",
-    "OnlineNum": "Number of online",
-    "VerificatRemain": "Remaining validity period",
-    "VerificatTimeout": "Timeout time",
-    "Device": "Login device"
+    "Expire": "Expire(min)",
+    "Online": "Online",
+    "OnlineNum": "OnlineNum",
+    "VerificatRemain": "VerificatRemain",
+    "VerificatTimeout": "VerificatTimeout",
+    "Device": "Device"
   },
 
   "ThingsGateway.Admin.Application.SessionOutput": {
@@ -222,37 +239,37 @@
     "Href": "Path",
     "Code": "Code",
     "Category": "Category",
-    "Target": "Redirect type",
-    "NavLinkMatch": "Matching type",
+    "Target": "Target",
+    "NavLinkMatch": "NavLinkMatch",
     "SortCode": "Sort"
   },
 
   "ThingsGateway.Admin.Application.SysOperateLog": {
-    "ClassName": "Class name",
-    "ExeMessage": "Specific message",
-    "MethodName": "Method name",
-    "ParamJson": "Request parameters",
-    "ReqMethod": "Request method",
-    "ReqUrl": "Request address",
-    "ResultJson": "Return result",
-    "Category": "Log category",
-    "ExeStatus": "Execution status",
-    "Name": "Log name",
-    "OpAccount": "Account",
-    "OpBrowser": "Browser",
-    "OpIp": "IP",
-    "OpOs": "System",
-    "OpTime": "Operation time",
-    "VerificatId": "Verification ID"
+    "ClassName": "ClassName",
+    "ExeMessage": "ExeMessage",
+    "MethodName": "MethodName",
+    "ParamJson": "ParamJson",
+    "ReqMethod": "RequestMethod",
+    "ReqUrl": "RequestUrl",
+    "ResultJson": "ResultJson",
+    "Category": "Category",
+    "ExeStatus": "ExeStatus",
+    "Name": "Name",
+    "OpAccount": "OpAccount",
+    "OpBrowser": "OpBrowser",
+    "OpIp": "OpIp",
+    "OpOs": "OpOs",
+    "OpTime": "OpTime",
+    "VerificatId": "VerificatId"
   },
   "ThingsGateway.Admin.Application.OperateLogPageInput": {
-    "SearchDate": "Time range",
-    "Account": "Operational account",
+    "SearchDate": "SearchDate",
+    "Account": "Account",
     "Category": "Category"
   },
   "ThingsGateway.Admin.Application.LoginInput": {
-    "Account": "Login account",
-    "Password": "Login password",
+    "Account": "Account",
+    "Password": "Password",
     "Account.Required": "{0} is required",
     "Password.Required": "{0} is required"
   },
@@ -260,10 +277,10 @@
     "VerificatId.Required": "{0} is required"
   },
   "ThingsGateway.Admin.Application.AppConfig": {
-    "LoginPolicy": "Login policy",
-    "PasswordPolicy": "Password policy",
-    "PagePolicy": "Page settings",
-    "WebsitePolicy": "Website settings"
+    "LoginPolicy": "LoginPolicy",
+    "PasswordPolicy": "PasswordPolicy",
+    "PagePolicy": "PagePolicy",
+    "WebsitePolicy": "WebsitePolicy"
   },
   "ThingsGateway.Admin.Application.LoginPolicy": {
     "SingleOpen": "Single user login switch",
@@ -291,8 +308,8 @@
     "PasswordContainChar": "Contain special characters"
   },
   "ThingsGateway.Admin.Application.WebsitePolicy": {
-    "WebStatus": "Is open",
-    "CloseTip": "Close tip",
+    "WebStatus": "WebStatus",
+    "CloseTip": "CloseTip",
     "CloseTip.Required": "{0} is required"
   },
   //enum
@@ -313,8 +330,8 @@
     "_top": "Top window"
   },
   "ThingsGateway.Admin.Application.DictTypeEnum": {
-    "System": "System configuration",
-    "Define": "Business configuration"
+    "System": "System",
+    "Define": "Business"
   },
 
   "ThingsGateway.Admin.Application.LogCateGoryEnum": {

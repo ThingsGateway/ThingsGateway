@@ -1,4 +1,22 @@
 ﻿{
+  "ThingsGateway.Admin.Razor.HardwareInfoPage": {
+    "SystemInfo": "System Information",
+    "HardwareInfo": "Hardware Resources",
+    "HardwareInfoChart": "Hardware Resources History Chart",
+    "CpuUsage": "CPU Usage",
+    "AvailableMemory": "Available Memory",
+    "TotalMemory": "Total Memory",
+    "MemoryUsage": "Memory Usage",
+    "AvailableDisk": "Available Disk",
+    "TotalDisk": "Total Disk",
+    "DiskUsage": "Disk Usage",
+    "HisHardwareInfo": "Historical Trends",
+    "DateTime": "Date Time",
+    "Data": "Data",
+    "OSName": "OS Name",
+    "OSVersion": "OS Version"
+  },
+
   "ThingsGateway.Admin.Razor.AccessDenied": {
     "404": "Sorry, the page you are looking for does not exist.",
     "401": "Sorry, you do not have permission to access this page.",
@@ -20,21 +38,7 @@
     "Password": "Password",
     "Login": "Login"
   },
-  "ThingsGateway.Admin.Razor.GlobalSearch": {
-    "SearchText": "Search Page"
-  },
-  "ThingsGateway.Admin.Razor._Imports": {
-    "Add": "Add",
-    "Remove": "Remove",
-    "Close": "Close",
-    "True": "Yes",
-    "False": "No",
-    "Save": "Save",
-    "Fail": "Fail {0}",
-    "Fail1": "Fail",
-    "Success": "Success",
-    "TablesExportButtonExcelText": "Export Excel"
-  },
+
   "ThingsGateway.Admin.Razor.MainLayout": {
     "FullScreenButton": "Full Screen",
     "UserCenter": "User Center",

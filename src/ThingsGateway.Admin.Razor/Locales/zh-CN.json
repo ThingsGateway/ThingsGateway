@@ -1,4 +1,21 @@
 ﻿{
+  "ThingsGateway.Admin.Razor.HardwareInfoPage": {
+    "SystemInfo": "系统信息",
+    "HardwareInfo": "硬件资源",
+    "HardwareInfoChart": "硬件资源历史曲线",
+    "CpuUsage": "CPU使用率",
+    "AvailableMemory": "可用内存",
+    "TotalMemory": "总内存",
+    "MemoryUsage": "内存使用率",
+    "AvailableDisk": "可用磁盘",
+    "TotalDisk": "总磁盘",
+    "DiskUsage": "磁盘使用率",
+    "HisHardwareInfo": "历史曲线",
+    "DateTime": "时间",
+    "Data": "数据",
+    "OSName": "系统名称",
+    "OSVersion": "系统版本"
+  },
   "ThingsGateway.Admin.Razor.AccessDenied": {
     "404": "抱歉，您访问的页面不存在。",
     "401": "抱歉，您无权限访问该页面。",
@@ -22,21 +39,7 @@
     "Password": "登录密码",
     "Login": "登录"
   },
-  "ThingsGateway.Admin.Razor.GlobalSearch": {
-    "SearchText": "搜索页面"
-  },
-  "ThingsGateway.Admin.Razor._Imports": {
-    "Add": "添加",
-    "Remove": "移除",
-    "Close": "关闭",
-    "True": "是",
-    "False": "否",
-    "Save": "保存",
-    "Fail": "失败 {0}",
-    "Fail1": "失败",
-    "Success": "成功",
-    "TablesExportButtonExcelText": "导出excel"
-  },
+
   "ThingsGateway.Admin.Razor.MainLayout": {
     "FullScreenButton": "全屏",
     "UserCenter": "个人中心",
@@ -82,6 +85,10 @@
   },
   "ThingsGateway.Admin.Razor.Index": {
     "Shortcuts": "快捷方式",
-    "OperLog": "最近操作"
+    "OperLog": "最近操作",
+    "HardwareInfoChart": "硬件信息历史曲线",
+    "DateTime": "时间",
+    "Data": "数据",
+    "HisHardwareInfo": "历史曲线"
   }
 }

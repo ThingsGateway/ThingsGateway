@@ -12,13 +12,13 @@
         <div class="mainlayout">
 
             <Layout SideWidth="0" IsPage="true" IsFullSide="true" IsFixedHeader="true"
-                    ShowGotoTop="true" ShowCollapseBar="true" Menus="@AppContext.OwnMenuItems"
+                    ShowGotoTop="true" ShowCollapseBar="true" Menus="@MenuService.MenuItems"
                     AdditionalAssemblies=App.RazorAssemblies AllowDragTab=true
-                    UseTabSet="true" TabDefaultUrl="/">
+                    UseTabSet="false" TabDefaultUrl="/">
                 <Header>
 
                     @* 搜索框 *@
-                    <GlobalSearch Menus=@(AppContext.OwnMenus?.Where(i => !string.IsNullOrEmpty(i.Href)))/>
+                    <GlobalSearch Menus=@(MenuService.SameLevelMenuItems) />
 
                     @* 语言选择 *@
                     <CultureChooser />
@@ -42,7 +42,7 @@
                             @* 切换模块 *@
                             <a @onclick="ChoiceModule"><i class="fas fa-arrow-right-arrow-left me-2" />@Localizer["ChoiceModule"]</a>
                             <a @onclick="@OnUserInfoDialog"><i class="fa-solid fa-suitcase me-2"></i>@Localizer["UserCenter"]</a>
-                            <LogoutLink Url=@("auth/logout?returnUrl="+NavigationManager.ToBaseRelativePath(NavigationManager.Uri)) />
+                            <LogoutLink Url=@("api/auth/logout?returnUrl="+NavigationManager.ToBaseRelativePath(NavigationManager.Uri)) />
 
                         </LinkTemplate>
                     </Logout>
@@ -59,8 +59,8 @@
                     </div>
                 </Side>
                 <Main>
-                    <Tab ClickTabToNavigation="true" ShowExtendButtons="false" ShowClose="true" AllowDrag=true
-                         AdditionalAssemblies="@App.RazorAssemblies"
+                    <Tab ClickTabToNavigation="true" ShowExtendButtons="true" ShowClose="true" AllowDrag=true
+                         AdditionalAssemblies="@App.RazorAssemblies" Menus="@MenuService.MenuItems"
                          DefaultUrl=@("/") Body=@(Body!)>
                     </Tab>
 

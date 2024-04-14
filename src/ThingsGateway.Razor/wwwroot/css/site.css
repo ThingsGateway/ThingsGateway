@@ -23,6 +23,14 @@
     --bs-header-height: 30px;
 }
 
+:root, [data-bs-theme='dark'] {
+    --tg-nav-bg: var(--bs-body-bg);
+}
+
+:root, [data-bs-theme='light'] {
+    --tg-nav-bg: var(--bs-body-bg);
+}
+
 .bs-tooltip-auto .tooltip-inner {
     text-align: start !important;
     white-space: pre-line !important;
@@ -30,6 +38,18 @@
 
 [data-bs-theme="dark"] .fil a {
     background-color: rgba(0,0,0,0.3);
+}
+
+.tabs-body-content {
+    overflow-y: auto;
+}
+
+.green--text {
+    color: #4CAF50
+}
+
+.red--text {
+    color: #F44336
 }
 
 .select {

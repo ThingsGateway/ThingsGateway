@@ -1,4 +1,5 @@
-﻿//------------------------------------------------------------------------------
+﻿
+//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -7,6 +8,9 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
+
+
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -39,10 +43,11 @@ public class OperDescAttribute : MoAttribute
         Task.Factory.StartNew(ProcessQueue, TaskCreationOptions.LongRunning);
     }
 
-    public OperDescAttribute(string description, bool isRecordPar = true)
+    public OperDescAttribute(string description, bool isRecordPar = true, object localizerType = null)
     {
         Description = description;
         IsRecordPar = isRecordPar;
+        LocalizerType = (Type)localizerType;
     }
 
     public override AccessFlags Flags => AccessFlags.Public | AccessFlags.Method;
@@ -53,6 +58,8 @@ public class OperDescAttribute : MoAttribute
     /// </summary>
     public string Description { get; }
 
+    public Type? LocalizerType { get; }
+
     /// <summary>
     /// 是否记录进出参数
     /// </summary>
@@ -61,14 +68,14 @@ public class OperDescAttribute : MoAttribute
     public override void OnSuccess(MethodContext context)
     {
         //插入操作日志
-        SysOperateLog log = GetOperLog(context);
+        SysOperateLog log = GetOperLog(LocalizerType, context);
         WriteToQueue(log);
     }
 
     public override void OnException(MethodContext context)
     {
         //插入异常日志
-        SysOperateLog log = GetOperLog(context);
+        SysOperateLog log = GetOperLog(LocalizerType, context);
 
         log.Category = LogCateGoryEnum.Exception;//操作类型为异常
         log.ExeStatus = false;//操作状态为失败
@@ -85,7 +92,7 @@ public class OperDescAttribute : MoAttribute
     /// </summary>
     private static async Task ProcessQueue()
     {
-        var db = DbContext.Db.CopyNew();
+        var db = DbContext.Db.GetConnectionScopeWithAttr<SysOperateLog>().CopyNew();
         var appLifetime = App.RootServices!.GetService<IHostApplicationLifetime>()!;
         while (!(appLifetime.ApplicationStopping.IsCancellationRequested || appLifetime.ApplicationStopped.IsCancellationRequested))
         {
@@ -104,7 +111,7 @@ public class OperDescAttribute : MoAttribute
         }
     }
 
-    private SysOperateLog GetOperLog(MethodContext context)
+    private SysOperateLog GetOperLog(Type? localizerType, MethodContext context)
     {
         var str = App.HttpContext?.Request?.Headers?.UserAgent;
         var methodBase = context.Method;
@@ -131,7 +138,7 @@ public class OperDescAttribute : MoAttribute
         //操作日志表实体
         var log = new SysOperateLog
         {
-            Name = App.CreateLocalizerByType(typeof(OperDescAttribute))![Description],
+            Name = (localizerType == null ? App.CreateLocalizerByType(typeof(OperDescAttribute)) : App.CreateLocalizerByType(localizerType))![Description],
             Category = LogCateGoryEnum.Operate,
             ExeStatus = true,
             OpIp = App.HttpContext?.Connection?.RemoteIpAddress?.MapToIPv4()?.ToString(),

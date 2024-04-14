@@ -1,4 +1,5 @@
-﻿//------------------------------------------------------------------------------
+﻿
+//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -8,9 +9,13 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+
+
+
 // 版权归百小僧及百签科技（广东）有限公司所有。
 
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 using System.Collections.Concurrent;
@@ -114,7 +119,7 @@ public sealed class DatabaseLoggerProvider : ILoggerProvider, ISupportExternalSc
             // 设置 1.5秒的缓冲时间，避免还有日志消息没有完成写入数据库中
             _processQueueTask?.Wait(1500);
         }
-        catch (TaskCanceledException) { }
+        catch (OperationCanceledException) { }
         catch (AggregateException ex) when (ex.InnerExceptions.Count == 1 && ex.InnerExceptions[0] is TaskCanceledException) { }
         catch { }
 
@@ -171,25 +176,34 @@ public sealed class DatabaseLoggerProvider : ILoggerProvider, ISupportExternalSc
     /// <remarks></remarks>
     private async Task ProcessQueueAsync()
     {
-        foreach (var logMsg in _logMessageQueue.GetConsumingEnumerable())
+        var lifetime = _serviceScope.ServiceProvider.GetService<IHostApplicationLifetime>();
+        try
         {
-            try
+
+            foreach (var logMsg in _logMessageQueue.GetConsumingEnumerable(lifetime.ApplicationStopping))
             {
-                // 调用数据库写入器写入数据库方法
-                await _databaseLoggingWriter.WriteAsync(logMsg, _logMessageQueue.Count == 0);
-            }
-            catch (Exception ex)
-            {
-                // 处理数据库写入错误
-                if (LoggerOptions.HandleWriteError != null)
+                try
                 {
-                    var databaseWriteError = new DatabaseWriteError(ex);
-                    LoggerOptions.HandleWriteError(databaseWriteError);
+                    // 调用数据库写入器写入数据库方法
+                    await _databaseLoggingWriter.WriteAsync(logMsg, _logMessageQueue.Count == 0);
                 }
-                // 这里不抛出异常，避免中断日志写入
-                else { }
+                catch (Exception ex)
+                {
+                    // 处理数据库写入错误
+                    if (LoggerOptions.HandleWriteError != null)
+                    {
+                        var databaseWriteError = new DatabaseWriteError(ex);
+                        LoggerOptions.HandleWriteError(databaseWriteError);
+                    }
+                    // 这里不抛出异常，避免中断日志写入
+                    else { }
+                }
+                finally { }
             }
-            finally { }
+        }
+        catch (OperationCanceledException)
+        {
+
         }
     }
 }

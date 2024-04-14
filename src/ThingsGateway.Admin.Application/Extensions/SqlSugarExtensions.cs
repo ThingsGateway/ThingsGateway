@@ -1,4 +1,5 @@
-﻿//------------------------------------------------------------------------------
+﻿
+//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -8,9 +9,13 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+
+
+
 using SqlSugar;
 
 using System.Linq.Expressions;
+using System.Reflection;
 
 using ThingsGateway.Core;
 
@@ -166,5 +171,72 @@ public static class SqlSugarExtensions
             HasNextPages = pageIndex < totalPages,
             HasPrevPages = pageIndex - 1 > 0
         };
+    }
+
+    /// <summary>
+    /// 分页查询
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="list">数据列表</param>
+    /// <param name="basePageInput">参数</param>
+    /// <param name="isAll">不分页</param>
+    /// <returns>分页集合</returns>
+    public static SqlSugarPagedList<T> ToPagedList<T>(this IEnumerable<T> list, BasePageInput basePageInput = null, bool isAll = false)
+    {
+        if (isAll)
+        {
+            list = Sort(list, basePageInput);
+            var data = new SqlSugarPagedList<T>
+            {
+                Current = 1,
+                Size = list?.Count() ?? 0,
+                Records = list,
+                Total = list?.Count() ?? 0,
+                Pages = 1,
+                HasNextPages = false,
+                HasPrevPages = false
+            };
+            return data;
+        }
+
+        int _PageIndex = basePageInput.Current;
+        int _PageSize = basePageInput.Size;
+        var num = list.Count();
+        var pageConut = (double)num / _PageSize;
+        int PageConut = (int)Math.Ceiling(pageConut);
+        list = Sort(list, basePageInput);
+        if (PageConut >= _PageIndex)
+        {
+            list = list.Skip((_PageIndex - 1) * _PageSize).Take(_PageSize);
+        }
+        return new SqlSugarPagedList<T>
+        {
+            Current = _PageIndex,
+            Size = _PageSize,
+            Records = list,
+            Total = num,
+            Pages = PageConut,
+            HasNextPages = _PageIndex < PageConut,
+            HasPrevPages = _PageIndex - 1 > 0
+        };
+    }
+
+    public static IEnumerable<T> Sort<T>(this IEnumerable<T> list, BasePageInput basePageInput)
+    {
+        if (basePageInput != null && basePageInput.SortField != null)
+        {
+            for (int i = 0; i < basePageInput.SortField.Count; i++)
+            {
+                var pro = typeof(T).GetRuntimeProperty(basePageInput.SortField[i]);
+                if (pro != null)
+                {
+                    if (!basePageInput.SortDesc[i])
+                        list = list.OrderBy(a => pro.GetValue(a));
+                    else
+                        list = list.OrderByDescending(a => pro.GetValue(a));
+                }
+            }
+        }
+        return list;
     }
 }

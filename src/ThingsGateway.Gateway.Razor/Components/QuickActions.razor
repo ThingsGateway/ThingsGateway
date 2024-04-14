@@ -1,0 +1,35 @@
+﻿@inherits ThingsGatewayModuleComponentBase
+@attribute [JSModuleAutoLoader("Components/QuickActions.razor.js")]
+@namespace ThingsGateway.Gateway.Razor
+
+<div id="@Id">
+    <PulseButton class="btn-quickactions" Color="Color.None" ImageUrl=@($"{WebsiteConst.DefaultResourceUrl}images/quickactions.svg")
+                 TooltipText="@TooltipText" TooltipPlacement="Placement.Left" OnClick=@(ToggleOpen) />
+    <div class="quickactions-list">
+        <div class="quickactions-header">
+            <div class="flex-fill">@HeaderText</div>
+            <button class="btn-close btn-close-white" type="button" aria-label="Close" onclick=@(async ()=>await ToggleOpen())></button>
+        </div>
+        <PopConfirmButton Placement="Placement.Top"
+                          class="m-2"
+                          Color="Color.Danger"
+                          ConfirmIcon="fa-solid fa-triangle-exclamation text-danger"
+                          ConfirmButtonColor="Color.Danger"
+                          Text=@(ReloadPluginText)
+                          Content=@(ReloadPluginConfirmText)
+                          Icon="fas fa-rotate"
+                          IsAsync="true"
+                          OnConfirm="OnReloadPlugin" />
+        <PopConfirmButton Placement="Placement.Top"
+                          class="m-2"
+                          Color="Color.Danger"
+                          ConfirmIcon="fa-solid fa-triangle-exclamation text-danger"
+                          ConfirmButtonColor="Color.Danger"
+                          Text=@(ReloadServiceText)
+                          Content=@(ReloadServiceConfirmText)
+                          Icon="fas fa-rotate"
+                          IsAsync="true"
+                          OnConfirm="OnReloadService" />
+
+    </div>
+</div>

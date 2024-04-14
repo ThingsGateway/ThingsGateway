@@ -1,0 +1,12 @@
+﻿.circle-hardware {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-flow: column;
+}
+
+@media (min-width: 768px) {
+    .sh {
+        flex: 1;
+    }
+}

@@ -1,4 +1,22 @@
 ﻿{
+  "ThingsGateway.Razor._Imports": {
+    "Add": "添加",
+    "Remove": "移除",
+    "Close": "关闭",
+    "True": "是",
+    "False": "否",
+    "Save": "保存",
+    "Fail": "失败 {0}",
+    "Fail1": "失败",
+    "Success": "成功",
+    "TablesExportButtonExcelText": "导出Excel",
+    "TablesImportButtonExcelText": "导入Excel",
+    "ExportButtonText": "导出/导入",
+    "EmptyText": "空"
+  },
+  "ThingsGateway.Razor.GlobalSearch": {
+    "SearchText": "搜索页面"
+  },
   "ThingsGateway.Razor.MenuIconList": {
     "ChoiceIcon": "选择图标",
     "Choice": "选择"
@@ -10,9 +28,7 @@
     "Branch": "分支名称：",
     "Message": "提交信息："
   },
-  "ThingsGateway.Razor._Imports": {
-    "EmptyText": "空"
-  },
+
   "ThingsGateway.Razor.ThemeToggle": {
     "ThemeToggle": "夜间/白天"
   },

@@ -1,4 +1,5 @@
-﻿//------------------------------------------------------------------------------
+﻿
+//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -7,6 +8,11 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
+
+
+
+using ThingsGateway.Admin.Application;
 
 namespace ThingsGateway.Admin.Razor;
 
@@ -37,9 +43,17 @@ public partial class AdminTable<TItem> where TItem : class, new()
     [Parameter]
     public string? SortString { get; set; }
 
+    /// <inheritdoc cref="Table{TItem}.EditFooterTemplate"/>
+    [Parameter]
+    public RenderFragment<TItem> EditFooterTemplate { get; set; }
+
     /// <inheritdoc cref="Table{TItem}.SearchModel"/>
     [Parameter]
     public TItem SearchModel { get; set; }
+
+    /// <inheritdoc cref="Table{TItem}.ExportButtonText"/>
+    [Parameter]
+    public string? ExportButtonText { get; set; } = App.CreateLocalizerByType(typeof(ThingsGateway.Razor._Imports))["ExportButtonText"];
 
     /// <inheritdoc cref="Table{TItem}.ScrollMode"/>
     [Parameter]
@@ -60,6 +74,14 @@ public partial class AdminTable<TItem> where TItem : class, new()
     /// <inheritdoc cref="Table{TItem}.ShowCardView"/>
     [Parameter]
     public bool ShowCardView { get; set; } = true;
+
+    /// <inheritdoc cref="Table{TItem}.IsAutoRefresh"/>
+    [Parameter]
+    public bool IsAutoRefresh { get; set; } = true;
+
+    /// <inheritdoc cref="Table{TItem}.AutoRefreshInterval"/>
+    [Parameter]
+    public int AutoRefreshInterval { get; set; }
 
     /// <inheritdoc cref="Table{TItem}.TableColumns"/>
     [NotNull]

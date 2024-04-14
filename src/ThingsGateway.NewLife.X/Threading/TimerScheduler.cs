@@ -1,4 +1,5 @@
-﻿//------------------------------------------------------------------------------
+﻿
+//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -7,6 +8,9 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
+
+
 
 using NewLife.Reflection;
 
@@ -207,7 +211,8 @@ public class TimerScheduler
             catch { }
 
             _waitForTimer ??= new AutoResetEvent(false);
-            if (_period > 0) _waitForTimer.WaitOne(_period, true);
+            if (_period > 0)
+                _waitForTimer.WaitOne(_period, true);
         }
     }
 
@@ -270,6 +275,7 @@ public class TimerScheduler
         }
         finally
         {
+            sw.Stop();
             OnExecuted(timer, (Int32)sw.ElapsedMilliseconds);
         }
     }
@@ -324,8 +330,9 @@ public class TimerScheduler
 
         TimerX.Current = null;
 
-        // 调度线程可能在等待，需要唤醒
-        Wake();
+        if (timer.Cost > 100)
+            // 调度线程可能在等待，需要唤醒
+            Wake();
     }
 
     private void OnFinish(TimerX timer)

@@ -8,13 +8,13 @@
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 
-		<EmbeddedResource Include="Locales\en-US.json" />
-		<EmbeddedResource Include="Locales\zh-CN.json" />
+		<Content Remove="Locales\*.json" />
+		<EmbeddedResource Include="Locales\*.json" />
 	</ItemGroup>
-	
+
 	<ItemGroup>
-		<PackageReference Include="BootstrapBlazor" Version="8.3.10" />
-		<PackageReference Include="BootstrapBlazor.FontAwesome" Version="8.0.1" />
+		<PackageReference Include="BootstrapBlazor" Version="8.4.8" />
+		<PackageReference Include="BootstrapBlazor.FontAwesome" Version="8.0.2" />
 	</ItemGroup>
 	
 	<ItemGroup>

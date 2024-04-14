@@ -1,4 +1,5 @@
-﻿//------------------------------------------------------------------------------
+﻿
+//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -7,6 +8,9 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
+
+
 
 namespace ThingsGateway.Admin.Application;
 
@@ -36,8 +40,7 @@ public interface IVerificatInfoCacheService
     /// <summary>
     /// 获取所有VerificatInfo数据
     /// </summary>
-    /// <returns>以id为键，VerificatInfo列表为值的字典</returns>
-    Dictionary<long, List<VerificatInfo>> HashGetAll();
+    Dictionary<long, List<VerificatInfo>> GetAll();
 
     /// <summary>
     /// 设置整个VerificatInfo缓存数据
@@ -55,4 +58,10 @@ public interface IVerificatInfoCacheService
     /// </summary>
     /// <param name="ids">要删除的id数组</param>
     void HashDel(params long[] ids);
+
+    /// <summary>
+    /// 持久化数据
+    /// </summary>
+    /// <param name="dictionary">数据</param>
+    void HashSetDB(Dictionary<long, List<VerificatInfo>> dictionary);
 }

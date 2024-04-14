@@ -8,8 +8,6 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using System;
-
 namespace NewLife.Security
 {
     /// <summary>ASN.1标签</summary>

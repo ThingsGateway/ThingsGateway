@@ -1,20 +1,20 @@
 ﻿@namespace ThingsGateway.Admin.Razor
 @typeparam TItem
 
-<Table TItem="TItem" IsBordered="true" IsStriped="true" IsMultipleSelect="IsMultipleSelect" @ref="Instance" TableSize=TableSize 
+<Table TItem="TItem" IsBordered="true" IsStriped="true" IsMultipleSelect="IsMultipleSelect" @ref="Instance" TableSize=TableSize
        IsPagination="IsPagination" PageItemsSource="PageItemsSource" IsFixedHeader="IsFixedHeader" IndentSize=24 RowHeight=RowHeight PageItems=PageItems
        IsTree="IsTree" OnTreeExpand="OnTreeExpand!" TreeNodeConverter="TreeNodeConverter!" TreeIcon="fa-solid fa-circle-chevron-right" TreeExpandIcon="fa-solid fa-circle-chevron-right fa-rotate-90"
        ShowDefaultButtons="ShowDefaultButtons" ShowAdvancedSearch="ShowAdvancedSearch" ShowResetButton=ShowResetButton
        ShowEmpty="ShowEmpty" EmptyText="@EmptyText" EmptyImage="@($"{WebsiteConst.DefaultResourceUrl}images/empty.svg")" SortString="@SortString"
-       OnQueryAsync="OnQueryAsync!" OnDeleteAsync="OnDeleteAsync!" OnSaveAsync="OnSaveAsync!"
-       ShowSkeleton="true" ShowLoading="ShowLoading" ShowSearch="ShowSearch" SearchModel=@SearchModel
-        SearchMode=SearchMode ShowExportPdfButton=ShowExportPdfButton
-       ShowExportButton=@ShowExportButton Items=Items ClickToSelect=ClickToSelect ScrollMode=ScrollMode
+       OnQueryAsync="OnQueryAsync!" OnDeleteAsync="OnDeleteAsync!" OnSaveAsync="OnSaveAsync!" EditFooterTemplate=EditFooterTemplate
+       ShowSkeleton="true" ShowLoading="ShowLoading" ShowSearch="ShowSearch" SearchModel=@SearchModel ShowLineNo
+       SearchMode=SearchMode ShowExportPdfButton=ShowExportPdfButton ExportButtonText=@ExportButtonText 
+       ShowExportButton=@ShowExportButton Items=Items ClickToSelect=ClickToSelect ScrollMode=ScrollMode  
        ShowExportCsvButton=@ShowExportCsvButton SelectedRowsChanged=SelectedRowsChanged ShowCardView=ShowCardView
-       ClientTableName="@typeof(TItem).TypeHandle.Value.ToString()" 
+       ClientTableName="@typeof(TItem).TypeHandle.Value.ToString()" FixedExtendButtonsColumn IsAutoRefresh=IsAutoRefresh AutoRefreshInterval=AutoRefreshInterval
        AllowDragColumn=@AllowDragColumn Height=@Height ShowRefresh=ShowRefresh
        AllowResizing=@AllowResizing ExportButtonDropdownTemplate=ExportButtonDropdownTemplate
-       ShowToolbar="ShowToolbar" 
+       ShowToolbar="ShowToolbar"
        ShowExtendButtons="ShowExtendButtons"
        ShowAddButton=@(ShowAddButton??AuthorizeButton(AdminOperConst.Add))
        ShowDeleteButton=@(ShowDeleteButton??AuthorizeButton(AdminOperConst.Delete))

@@ -1,4 +1,5 @@
-﻿//------------------------------------------------------------------------------
+﻿
+//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -7,6 +8,11 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
+
+
+
+
+using NewLife.Extension;
 
 using ThingsGateway.Admin.Application;
 
@@ -17,14 +23,13 @@ namespace ThingsGateway.Admin.Razor;
 /// </summary>
 public class BlazorAppContext : IAsyncDisposable
 {
-    public BlazorAppContext(WebClientService webClientService
-        , ISysResourceService sysResourceService
+    public BlazorAppContext(
+        ISysResourceService sysResourceService
         , IUserCenterService userCenterService,
         ISysUserService sysUserService
         )
     {
         SysUserService = sysUserService;
-        WebClientService = webClientService;
         UserCenterService = userCenterService;
         ResourceService = sysResourceService;
     }
@@ -55,11 +60,15 @@ public class BlazorAppContext : IAsyncDisposable
     public IEnumerable<MenuItem> OwnMenuItems { get; private set; }
 
     /// <summary>
+    /// 用户个人菜单，非树形
+    /// </summary>
+    public IEnumerable<MenuItem> OwnSameLevelMenuItems { get; private set; }
+
+    /// <summary>
     /// 当前用户
     /// </summary>
     public SysUser CurrentUser { get; private set; }
 
-    public WebClientService WebClientService { get; }
     private ISysUserService SysUserService { get; }
     private IUserCenterService UserCenterService { get; }
     private ISysResourceService ResourceService { get; }
@@ -93,7 +102,14 @@ public class BlazorAppContext : IAsyncDisposable
             UserWorkBench = await UserCenterService.GetLoginWorkbenchAsync(UserManager.UserId);
             OwnMenus = await UserCenterService.GetOwnMenuAsync(UserManager.UserId, module ?? CurrentUser.DefaultModule);
             OwnMenuItems = ResourceUtil.BuildMenuTrees(OwnMenus).ToList();
-
+            OwnSameLevelMenuItems = OwnMenus.Where(a => !a.Href.IsNullOrWhiteSpace()).Select(item => new MenuItem()
+            {
+                Match = item.NavLinkMatch ?? Microsoft.AspNetCore.Components.Routing.NavLinkMatch.All,
+                Text = item.Title,
+                Icon = item.Icon,
+                Url = item.Href,
+                Target = item.Target.ToString(),
+            });
             UserWorkbenchOutputs = AllMenus.Where(it => UserWorkBench.Shortcuts.Contains(it.Id));
         }
     }

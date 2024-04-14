@@ -1,0 +1,26 @@
+﻿@namespace ThingsGateway.Gateway.Razor
+@using BootstrapBlazor.Components
+@using ThingsGateway.Admin.Application
+@using ThingsGateway.Admin.Razor
+@using ThingsGateway.Gateway.Application
+@inherits ComponentDefault
+
+<ValidateForm Model="Model" OnValidSubmit="OnSave">
+    <div class="row g-2 mx-1 form-inline">
+        <div class="col-12">
+            <h6 class="mt-4 " style="color:var(--bs-red);">   @Localizer["SavePlugin"] </h6>
+        </div>
+        <div class="col-12">
+            <ButtonUpload @ref=ButtonUpload @bind-Value="@Model.MainFile" Accept=".dll" IsSingle ShowLabelTooltip="true" />
+        </div>
+        <div class="col-12">
+            <ButtonUpload @bind-Value="@Model.OtherFiles" IsMultiple  ShowLabelTooltip="true"/>
+        </div>
+    </div>
+    <div class="form-footer">
+        <Button Text="@DefaultLocalizer["Save"]" ButtonType="@ButtonType.Submit" />
+    </div>
+</ValidateForm>
+
+
+

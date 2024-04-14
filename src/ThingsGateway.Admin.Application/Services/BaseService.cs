@@ -1,4 +1,5 @@
-﻿//------------------------------------------------------------------------------
+﻿
+//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -8,9 +9,10 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using BootstrapBlazor.Components;
 
-using LiteDB;
+
+
+using BootstrapBlazor.Components;
 
 using Microsoft.Extensions.Localization;
 
@@ -20,7 +22,7 @@ namespace ThingsGateway.Admin.Application;
 
 public abstract class BaseService<T> : IDisposable where T : class, new()
 {
-    protected readonly IStringLocalizer Localizer;
+    protected IStringLocalizer Localizer { get; }
 
     protected BaseService()
     {
@@ -29,7 +31,7 @@ public abstract class BaseService<T> : IDisposable where T : class, new()
 
     protected SqlSugarClient GetDB()
     {
-        return DbContext.Db.CopyNew().GetConnectionScopeWithAttr<T>().CopyNew();
+        return DbContext.Db.GetConnectionScopeWithAttr<T>().CopyNew();
     }
 
     protected virtual async Task<bool> DeleteAsync(IEnumerable<long> models)

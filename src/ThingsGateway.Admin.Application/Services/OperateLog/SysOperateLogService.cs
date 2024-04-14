@@ -1,4 +1,5 @@
-﻿//------------------------------------------------------------------------------
+﻿
+//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -8,11 +9,14 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+
+
+
 using BootstrapBlazor.Components;
 
 using Microsoft.AspNetCore.Mvc;
 
-using NewLife;
+using NewLife.Extension;
 
 using SqlSugar;
 
@@ -44,10 +48,10 @@ public class SysOperateLogService : BaseService<SysOperateLog>, ISysOperateLogSe
     /// 最新十条
     /// </summary>
     /// <param name="account">操作人</param>
-    public async Task<List<SysOperateLog>> GetNewLog(string account)
+    public async Task<List<OperateLogIndexOutput>> GetNewLog(string account)
     {
         using var db = GetDB();
-        var data = await db.Queryable<SysOperateLog>().Where(a => a.OpAccount == account).OrderByDescending(a => a.OpTime).Take(10).ToListAsync();
+        var data = await db.Queryable<SysOperateLog>().Select(a => new OperateLogIndexOutput { OpTime = a.OpTime, Name = a.Name, OpAccount = a.OpAccount, OpBrowser = a.OpBrowser, OpIp = a.OpIp }).Where(a => a.OpAccount == account).OrderByDescending(a => a.OpTime).Take(10).ToListAsync();
         return data;
     }
 

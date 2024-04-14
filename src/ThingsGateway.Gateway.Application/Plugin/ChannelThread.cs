@@ -1,0 +1,577 @@
+﻿
+//------------------------------------------------------------------------------
+//  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
+//  此代码版权（除特别声明外的代码）归作者本人Diego所有
+//  源代码使用协议遵循本仓库的开源协议及附加协议
+//  Gitee源代码仓库：https://gitee.com/diego2098/ThingsGateway
+//  Github源代码仓库：https://github.com/kimdiego2098/ThingsGateway
+//  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
+//  QQ群：605534569
+//------------------------------------------------------------------------------
+
+
+
+
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
+
+using System.Collections.Concurrent;
+
+using ThingsGateway.Core.Extension;
+using ThingsGateway.Gateway.Application.Generic;
+
+using TouchSocket.Core;
+
+namespace ThingsGateway.Gateway.Application;
+
+/// <summary>
+/// 设备线程管理
+/// </summary>
+public class ChannelThread
+{
+    static ChannelThread()
+    {
+        var cycleInterval = App.Configuration.GetSection("ChannelThread:CycleInterval").Get<int?>() ?? 10;
+        CycleInterval = cycleInterval < 10 ? 10 : cycleInterval;
+    }
+
+    /// <summary>
+    /// 通道线程构造函数，用于初始化通道线程实例。
+    /// </summary>
+    /// <param name="channel">通道实例</param>
+    /// <param name="getChannel">获取通道的方法</param>
+    public ChannelThread(Channel channel, Func<TouchSocketConfig, IChannel> getChannel)
+    {
+        Localizer = App.CreateLocalizerByType(typeof(ChannelThread))!;
+        // 初始化日志记录器，使用通道名称作为日志记录器的名称
+        Logger = App.RootServices.GetService<ILoggerFactory>().CreateLogger($"Channel[{channel.Name}]");
+
+        // 设置通道信息
+        ChannelTable = channel;
+        ChannelId = channel.Id;
+
+        // 初始化底层配置
+        LogMessage = new LoggerGroup() { LogLevel = TouchSocket.Core.LogLevel.Warning };
+
+        // 添加默认日志记录器
+        LogMessage.AddLogger(new EasyLogger(Log_Out) { LogLevel = TouchSocket.Core.LogLevel.Trace });
+
+        // 初始化基础配置容器
+        FoundataionConfig = new();
+
+        // 配置容器中注册日志记录器实例
+        FoundataionConfig.ConfigureContainer(a => a.RegisterSingleton<ILog>(LogMessage));
+
+        // 根据配置获取通道实例
+        Channel = getChannel(FoundataionConfig);
+
+        // 设置日志路径为通道ID对应的日志路径
+        LogPath = channel.Id.GetLogPath();
+
+        // 设置日志使能状态
+        LogEnable = channel.LogEnable;
+    }
+
+    private IStringLocalizer Localizer { get; }
+
+    /// <summary>
+    /// 插件集合
+    /// </summary>
+    private ConcurrentList<DriverBase> DriverBases { get; set; } = new();
+
+    /// <summary>
+    /// 启停锁
+    /// </summary>
+    protected EasyLock EasyLock { get; set; } = new();
+
+    /// <summary>
+    /// 读写锁
+    /// </summary>
+    protected EasyLock WriteLock { get; set; } = new();
+
+    /// <summary>
+    /// 设备线程
+    /// </summary>
+    protected internal DoTask DriverTask { get; set; }
+
+    /// <summary>
+    /// 线程最小等待间隔时间
+    /// </summary>
+    public static volatile int CycleInterval = 10;
+
+    /// <summary>
+    /// <inheritdoc cref="TouchSocket.Core.TouchSocketConfig"/>
+    /// </summary>
+    protected internal TouchSocketConfig FoundataionConfig { get; set; }
+
+    /// <summary>
+    /// 是否采集通道
+    /// </summary>
+    public bool IsCollectChannel { get; private set; }
+
+    /// <summary>
+    /// 取消令箭列表
+    /// </summary>
+    private ConcurrentDictionary<long, CancellationTokenSource> CancellationTokenSources { get; set; } = new();
+
+    #region 日志
+
+    public LoggerGroup LogMessage { get; internal set; }
+
+    /// <summary>
+    /// 日志
+    /// </summary>
+    protected internal ILogger Logger { get; set; }
+
+    /// <summary>
+    /// 底层错误日志输出
+    /// </summary>
+    protected internal virtual void Log_Out(TouchSocket.Core.LogLevel arg1, object arg2, string arg3, Exception arg4)
+    {
+        if (arg1 >= TouchSocket.Core.LogLevel.Warning)
+        {
+            foreach (var item in DriverBases)
+            {
+                item.CurrentDevice.SetDeviceStatus(lastErrorMessage: arg3);
+            }
+        }
+        Logger.Log_Out(arg1, arg2, arg3, arg4);
+    }
+
+    public string LogPath { get; }
+
+    #endregion 日志
+
+    #region 通道
+
+    private Channel ChannelTable { get; }
+
+    public long ChannelId { get; }
+
+    protected IChannel? Channel { get; }
+
+    #endregion 通道
+
+    #region 调试日志
+
+    private TextFileLogger? TextLogger;
+    private bool logEnable { get; set; }
+    private object logEnableLock = new();
+
+    /// <summary>
+    /// 获取或设置日志使能状态。当设置为 true 时，将启用日志记录功能；当设置为 false 时，将禁用日志记录功能。
+    /// </summary>
+    public bool LogEnable
+    {
+        get
+        {
+            // 返回日志使能状态
+            return logEnable;
+        }
+        set
+        {
+            // 使用锁确保线程安全
+            lock (logEnableLock)
+            {
+                // 更新通道的日志使能状态
+                ChannelTable.LogEnable = value;
+
+                // 更新日志使能状态
+                logEnable = value;
+                // 如果日志使能状态为 true
+                if (value)
+                {
+                    LogMessage.LogLevel = TouchSocket.Core.LogLevel.Trace;
+                    // 移除旧的文件日志记录器并释放资源
+                    if (TextLogger != null)
+                    {
+                        LogMessage.RemoveLogger(TextLogger);
+                        TextLogger?.Dispose();
+                    }
+
+                    // 创建新的文件日志记录器，并设置日志级别为 Trace
+                    TextLogger = TextFileLogger.Create(LogPath);
+                    TextLogger.LogLevel = TouchSocket.Core.LogLevel.Trace;
+
+                    // 将文件日志记录器添加到日志消息组中
+                    LogMessage.AddLogger(TextLogger);
+                }
+                else
+                {
+                    LogMessage.LogLevel = TouchSocket.Core.LogLevel.Warning;
+                    // 如果日志使能状态为 false，移除文件日志记录器并释放资源
+                    if (TextLogger != null)
+                    {
+                        LogMessage.RemoveLogger(TextLogger);
+                        TextLogger?.Dispose();
+                    }
+                }
+            }
+        }
+    }
+
+    #endregion 调试日志
+
+    #region 线程管理
+
+    /// <summary>
+    /// 向当前通道添加驱动程序。
+    /// </summary>
+    /// <param name="driverBase">要添加的驱动程序对象。</param>
+    internal void AddDriver(DriverBase driverBase)
+    {
+        if (DriverBases.Any())
+        {
+            if (DriverBases[0].IsCollectDevice != driverBase.IsCollectDevice)
+            {
+                Logger.LogWarning(Localizer["PluginTypeDiff", driverBase.DeviceName, ChannelTable.Name]);
+                return;
+            }
+        }
+
+        // 将驱动程序对象添加到驱动程序集合中
+        DriverBases.Add(driverBase);
+
+        // 将当前通道线程分配给驱动程序对象
+        driverBase.ChannelThread = this;
+
+        // 将日志记录器分配给驱动程序对象
+        driverBase.Logger = Logger;
+
+        // 将写入锁分配给驱动程序对象
+        driverBase.WriteLock = WriteLock;
+
+        // 将日志路径分配给驱动程序对象
+        driverBase.LogPath = LogPath;
+
+        // 将日志消息分配给驱动程序对象
+        driverBase.LogMessage = LogMessage;
+
+        // 将基础配置分配给驱动程序对象
+        driverBase.FoundataionConfig = FoundataionConfig;
+
+        try
+        {
+            // 初始化驱动程序对象，并加载源读取
+            driverBase.Init(Channel);
+            driverBase.LoadSourceRead(driverBase.CurrentDevice?.VariableRunTimes.Values);
+        }
+        catch (Exception ex)
+        {
+            // 如果初始化过程中发生异常，设置初始化状态为失败，并记录警告日志
+            driverBase.IsInitSuccess = false;
+            Logger?.LogWarning(ex, Localizer["InitFail", driverBase.CurrentDevice.PluginName, driverBase.DeviceName]);
+        }
+
+        // 创建令牌并与驱动程序对象的设备ID关联，用于取消操作
+        lock (CancellationTokenSources)
+        {
+            if (!CancellationTokenSources.ContainsKey(0))
+                CancellationTokenSources.TryAdd(0, new CancellationTokenSource());
+
+            CancellationTokenSources.TryGetValue(0, out var cts);
+            if (!CancellationTokenSources.ContainsKey(driverBase.DeviceId))
+                CancellationTokenSources.TryAdd(driverBase.DeviceId, CancellationTokenSource.CreateLinkedTokenSource(cts.Token));
+        }
+
+        // 更新当前通道是否正在收集数据的状态
+        IsCollectChannel = driverBase.IsCollectDevice;
+    }
+
+    /// <summary>
+    /// 异步移除指定设备ID对应的驱动程序。
+    /// </summary>
+    /// <param name="deviceId">要移除的设备ID。</param>
+    /// <returns>表示异步移除操作的任务。</returns>
+    internal async Task RemoveDriverAsync(long deviceId)
+    {
+        // 查找具有指定设备ID的驱动程序对象
+        var driverBase = DriverBases.FirstOrDefault(a => a.DeviceId == deviceId);
+        if (driverBase != null)
+        {
+            // 取消驱动程序的操作
+            lock (CancellationTokenSources)
+            {
+                if (CancellationTokenSources.TryGetValue(deviceId, out var token))
+                {
+                    if (token != null)
+                    {
+                        token.Cancel();
+                        token.Dispose();
+                    }
+                }
+            }
+
+            await Task.Delay(100);
+
+            driverBase.AfterStop();
+
+            // 从驱动程序集合和令牌源集合中移除驱动程序对象和相关令牌
+            DriverBases.Remove(driverBase);
+            CancellationTokenSources.Remove(deviceId);
+        }
+    }
+
+    #endregion 线程管理
+
+    #region 外部获取
+
+    internal DriverBase GetDriver(long deviceId)
+    {
+        var driverBase = DriverBases.FirstOrDefault(a => a.DeviceId == deviceId);
+        return driverBase;
+    }
+
+    internal IEnumerable<DriverBase> GetDriverEnumerable()
+    {
+        return DriverBases;
+    }
+
+    internal bool Has(long deviceId)
+    {
+        return DriverBases.Any(a => a.DeviceId == deviceId);
+    }
+
+    #endregion 外部获取
+
+    #region 线程生命周期
+
+    /// <summary>
+    /// 停止插件前，执行取消传播
+    /// </summary>
+    internal virtual void BeforeStopThread()
+    {
+        lock (CancellationTokenSources)
+        {
+            CancellationTokenSources.TryGetValue(0, out var cts);
+
+            if (cts != null)
+            {
+                try
+                {
+                    if (!cts.IsCancellationRequested)// 检查是否已请求取消，若未请求取消则尝试取消操作
+                    {
+                        cts?.Cancel();
+                    }
+                }
+                catch
+                {
+                    // 捕获异常以确保不会影响其他令牌的取消操作
+                }
+            }
+        }
+        // foreach (var cancellationToken in CancellationTokenSources)
+        //{
+        //    _ = Task.Run(() =>
+        //    {
+        //        try
+        //        {
+        //            if (!cancellationToken.Value.IsCancellationRequested)// 检查是否已请求取消，若未请求取消则尝试取消操作
+        //            {
+        //                cancellationToken.Value?.Cancel();
+        //                cancellationToken.Value?.Dispose();
+        //            }
+        //        }
+        //        catch
+        //        {
+        //            // 捕获异常以确保不会影响其他令牌的取消操作
+        //        }
+        //    });
+        //}
+    }
+
+    /// <summary>
+    /// 异步开始执行线程任务。
+    /// </summary>
+    internal virtual async Task StartThreadAsync()
+    {
+        try
+        {
+            // 等待EasyLock锁的获取
+            await EasyLock.WaitAsync();
+
+            // 如果DriverTask不为null，则执行以下操作
+            if (DriverTask != null)
+            {
+                // 关闭通道的底层插件管理器
+                Channel?.PluginManager?.SafeDispose();
+
+                // 从FoundataionConfig中移除TouchSocketCoreConfigExtension.ConfigurePluginsProperty
+                FoundataionConfig.RemoveValue(TouchSocketCoreConfigExtension.ConfigurePluginsProperty);
+
+                // 配置每个驱动程序的底层插件
+                foreach (var driver in DriverBases)
+                {
+                    driver?.ConfigurePlugins();
+                }
+
+                // 设置通道的底层配置
+                Channel?.Setup(FoundataionConfig);
+            }
+            else
+            {
+                // 初始化业务线程
+                DriverTask = new(DoWork, Logger, null);
+                lock (CancellationTokenSources)
+                {
+                    if (!CancellationTokenSources.ContainsKey(0))
+                        CancellationTokenSources.TryAdd(0, new CancellationTokenSource());
+
+                    CancellationTokenSources.TryGetValue(0, out var cts);
+                    DriverTask.Start(cts.Token);
+                }
+            }
+        }
+        finally
+        {
+            // 释放EasyLock锁
+            EasyLock.Release();
+        }
+    }
+
+    /// <summary>
+    /// 异步停止线程任务。
+    /// </summary>
+    /// <param name="isRemoveDevice">指示是否移除设备。</param>
+    internal virtual async Task StopThreadAsync(bool isRemoveDevice)
+    {
+        // 如果DriverTask为null，则直接返回，无需执行停止操作
+        if (DriverTask == null)
+        {
+            return;
+        }
+
+        try
+        {
+            // 等待EasyLock锁的获取
+            await EasyLock.WaitAsync();
+
+            BeforeStopThread();
+
+            // 等待DriverTask最多30s
+            await DriverTask.StopAsync(TimeSpan.FromSeconds(30));
+
+            DriverBases.ForEach(a =>
+            {
+                a.AfterStop();
+            });
+
+            // 如果需要移除设备
+            if (isRemoveDevice)
+            {
+                // 如果需要移除的是采集设备
+                if (IsCollectChannel)
+                {
+                    // 锁定采集设备集合，并移除与DriverBases关联的设备
+                    //lock (GlobalData.CollectDevices)
+                    {
+                        GlobalData.CollectDevices.RemoveWhere(it => DriverBases.Any(a => a.DeviceId == it.Value.Id));
+                        GlobalData.Variables.RemoveWhere(it => DriverBases.Any(a => a.DeviceId == it.Value.DeviceId));
+                    }
+                }
+                else
+                {
+                    // 锁定业务设备集合，并移除与DriverBases关联的设备
+                    //lock (GlobalData.BusinessDevices)
+                    {
+                        GlobalData.BusinessDevices.RemoveWhere(it => DriverBases.Any(a => a.DeviceId == it.Value.Id));
+                    }
+                }
+            }
+
+            // 将DriverTask置为null
+            DriverTask = null;
+
+            DriverBases.Clear();
+            // 清空CancellationTokenSources集合
+            CancellationTokenSources.ForEach(a => a.Value.SafeDispose());
+            CancellationTokenSources.Clear();
+        }
+        finally
+        {
+            // 释放EasyLock锁
+            EasyLock.Release();
+        }
+    }
+
+    /// <summary>
+    /// DoWork
+    /// </summary>
+    /// <param name="cancellation">取消标记。</param>
+    protected async Task DoWork(CancellationToken stoppingToken)
+    {
+        foreach (var driver in DriverBases)
+        {
+            try
+            {
+                if (!CancellationTokenSources.TryGetValue(driver.DeviceId, out var stoken))
+                {
+                    await Task.Delay(CycleInterval, stoppingToken);
+                    continue;
+                }
+                var token = stoken.Token;
+
+                // 只有当驱动成功初始化后才执行操作
+                if (driver.IsInitSuccess)
+                {
+                    if (!driver.IsBeforStarted)
+                        await driver.BeforStartAsync(token); // 调用驱动的启动前异步方法，如果已经执行，会直接返回
+
+                    var result = await driver.ExecuteAsync(token); // 执行驱动的异步执行操作
+
+                    // 根据执行结果进行不同的处理
+                    if (result == ThreadRunReturnTypeEnum.None)
+                    {
+                        // 如果驱动处于离线状态且为采集驱动，则根据配置的间隔时间进行延迟
+                        if (driver.CurrentDevice.DeviceStatus == DeviceStatusEnum.OffLine && driver.IsCollectDevice)
+                        {
+                            if (DriverBases.Count == 1)
+                                await Task.Delay(Math.Min(((CollectBase)driver).CollectProperties.ReIntervalTime, DeviceHostedService.CheckIntervalTime / 2) * 1000 - CycleInterval, token);
+                        }
+                        else
+                        {
+                            if (DriverBases.Count == 1)
+                                await Task.Delay(CycleInterval, token); // 默认延迟一段时间后再继续执行
+                        }
+                    }
+                    else if (result == ThreadRunReturnTypeEnum.Continue)
+                    {
+                        if (DriverBases.Count == 1)
+                            await Task.Delay(1000, token); // 如果执行结果为继续，则延迟一段较短的时间后再继续执行
+                    }
+                    else if (result == ThreadRunReturnTypeEnum.Break)
+                    {
+                        driver.AfterStop(); // 执行驱动的释放操作
+                        continue; // 结束当前循环
+                    }
+                }
+                else
+                {
+                    if (DriverBases.Count == 1)
+                        await Task.Delay(1000, token); // 默认延迟一段时间后再继续执行
+                }
+            }
+            catch (TaskCanceledException)
+            {
+                driver.AfterStop(); // 执行驱动的释放操作
+                break;
+            }
+            catch (ObjectDisposedException)
+            {
+                driver.AfterStop(); // 执行驱动的释放操作
+                break;
+            }
+        }
+
+        // 如果驱动实例数量大于1，则延迟一段时间后继续执行下一轮循环
+        if (DriverBases.Count > 1)
+            await Task.Delay(CycleInterval, stoppingToken);
+
+        // 如果驱动实例数量为0，则延迟一段时间后继续执行下一轮循环
+        if (DriverBases.Count == 0)
+            await Task.Delay(1000, stoppingToken);
+    }
+
+    #endregion 线程生命周期
+}

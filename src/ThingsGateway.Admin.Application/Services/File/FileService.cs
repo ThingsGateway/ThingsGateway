@@ -1,4 +1,5 @@
-﻿//------------------------------------------------------------------------------
+﻿
+//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -8,11 +9,16 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+
+
+
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Mvc;
 
 using System.Text;
 using System.Web;
+
+using Yitter.IdGenerator;
 
 namespace ThingsGateway.Admin.Application;
 
@@ -91,12 +97,12 @@ public class FileService : IFileService
     private async Task<string> StorageLocal(string pPath, IBrowserFile file)
     {
         string uploadFileFolder = App.WebRootPath!;//赋值路径
-        var now = DateTime.Now.ToString("d");
+        var now = YitIdHelper.NextId();
         var filePath = Path.Combine(uploadFileFolder, pPath);
         if (!Directory.Exists(filePath))//如果不存在就创建文件夹
             Directory.CreateDirectory(filePath);
-        var fileSuffix = Path.GetExtension(file.Name).ToLower();// 文件后缀
-        var fileObjectName = $"{file}{now}";//存储后的文件名
+        //var fileSuffix = Path.GetExtension(file.Name).ToLower();// 文件后缀
+        var fileObjectName = $"{now}{file.Name}";//存储后的文件名
         var fileName = Path.Combine(filePath, fileObjectName);//获取文件全路径
         fileName = fileName.Replace("\\", "/");//格式化一系
         //存储文件

@@ -1,4 +1,5 @@
-﻿//------------------------------------------------------------------------------
+﻿
+//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -8,9 +9,12 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+
+
+
 using BootstrapBlazor.Components;
 
-using NewLife;
+using NewLife.Extension;
 
 using ThingsGateway.Core.Json.Extension;
 
@@ -26,6 +30,8 @@ public class SysRoleService : BaseService<SysRole>, ISysRoleService
         _relationService = relationService;
         _sysResourceService = sysResourceService;
     }
+
+    #region 查询
 
     /// <summary>
     /// 从缓存/数据库获取全部角色信息
@@ -64,6 +70,10 @@ public class SysRoleService : BaseService<SysRole>, ISysRoleService
     {
         return QueryAsync(option, a => a.WhereIF(!option.SearchText.IsNullOrWhiteSpace(), a => a.Name.Contains(option.SearchText!)));
     }
+
+    #endregion 查询
+
+    #region 修改
 
     /// <summary>
     /// 保存角色
@@ -130,6 +140,10 @@ public class SysRoleService : BaseService<SysRole>, ISysRoleService
             throw new(result.ErrorMessage, result.ErrorException);
         }
     }
+
+    #endregion 修改
+
+    #region 授权
 
     /// <summary>
     /// 获取拥有的资源
@@ -351,6 +365,8 @@ public class SysRoleService : BaseService<SysRole>, ISysRoleService
         var roleList = roles.Where(it => input.Contains(it.Id));
         return roleList;
     }
+
+    #endregion 授权
 
     #region 方法
 

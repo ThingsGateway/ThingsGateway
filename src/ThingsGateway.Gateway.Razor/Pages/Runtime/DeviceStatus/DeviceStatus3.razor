@@ -1,0 +1,46 @@
+﻿@namespace ThingsGateway.Gateway.Razor
+@using ThingsGateway.Admin.Application
+@using ThingsGateway.Admin.Razor
+@using ThingsGateway.Debug
+@using ThingsGateway.Gateway.Application
+@using ThingsGateway.Core.Extension
+@inherits ComponentDefault
+
+
+<div class="device">
+    @if (Item.CurrentDevice is CollectDeviceRunTime collectDeviceRunTime)
+    {
+        <EditorFormObject Model=@collectDeviceRunTime AutoGenerateAllItem=false IsDisplay LabelWidth="80"  RowType="RowType.Inline" ItemsPerRow="3" ShowLabelTooltip="true">
+
+            <FieldItems>
+
+                <EditorItem Field=@context.ActiveTime FieldExpression=@(()=> context.ActiveTime ) />
+                <EditorItem Field=@context.ChannelName FieldExpression=@(()=> context.ChannelName ) />
+                <EditorItem Field=@context.PluginName FieldExpression=@(()=> context.PluginName ) />
+                <EditorItem Field=@context.SourceVariableCount FieldExpression=@(()=> context.SourceVariableCount ) />
+                <EditorItem Field=@context.DeviceVariableCount FieldExpression=@(()=> context.DeviceVariableCount ) />
+                <EditorItem Field=@context.MethodVariableCount FieldExpression=@(()=> context.MethodVariableCount ) />
+                <EditorItem Field=@context.LastErrorMessage FieldExpression=@(()=> context.LastErrorMessage ) Rows="1" ShowLabelTooltip="false" />
+
+
+            </FieldItems>
+
+        </EditorFormObject>
+    }
+    else
+    {
+        <EditorFormObject Model=@Item.CurrentDevice AutoGenerateAllItem=false IsDisplay LabelWidth="80"   RowType="RowType.Inline" ItemsPerRow="3" ShowLabelTooltip="true">
+            <FieldItems>
+                <EditorItem Field=@context.ActiveTime FieldExpression=@(()=> context.ActiveTime ) />
+                <EditorItem Field=@context.PluginName FieldExpression=@(()=> context.PluginName ) />
+                <EditorItem Field=@context.DeviceVariableCount FieldExpression=@(()=> context.DeviceVariableCount ) />
+                <EditorItem Field=@context.LastErrorMessage FieldExpression=@(()=> context.LastErrorMessage ) Rows="1" ShowLabelTooltip="false" />
+
+            </FieldItems>
+
+        </EditorFormObject>
+
+    }
+
+
+</div>

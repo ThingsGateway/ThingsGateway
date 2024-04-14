@@ -1,4 +1,5 @@
-﻿//------------------------------------------------------------------------------
+﻿
+//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -8,7 +9,10 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using NewLife;
+
+
+
+using NewLife.Extension;
 
 using SqlSugar;
 
@@ -50,7 +54,7 @@ public class DatabaseLoggingWriter : IDatabaseLoggingWriter
             var path = logMsg.Context.Get(LoggingConst.Path).ToString();//获取操作名称
             var method = logMsg.Context.Get(LoggingConst.Method).ToString();//获取方法
             //表示访问日志
-            if (path == "/auth/login" || path == "/auth/logout")
+            if (path == "/api/auth/login" || path == "/api/auth/logout")
             {
                 //如果没有异常信息
                 if (loggingMonitor.Exception == null)
@@ -110,7 +114,7 @@ public class DatabaseLoggingWriter : IDatabaseLoggingWriter
         var sysLogOperate = new SysOperateLog
         {
             Name = operation,
-            Category = LogCateGoryEnum.Login,
+            Category = LogCateGoryEnum.Operate,
             ExeStatus = true,
             OpIp = loggingMonitor.RemoteIPv4,
             OpBrowser = clientInfo.UA.Family + clientInfo.UA.Major,
@@ -141,7 +145,7 @@ public class DatabaseLoggingWriter : IDatabaseLoggingWriter
 
         if (flush)
         {
-            SqlSugarClient ??= DbContext.Db.CopyNew();
+            SqlSugarClient ??= DbContext.Db.GetConnectionScopeWithAttr<SysOperateLog>().CopyNew();
             await SqlSugarClient.InsertableWithAttr(_operateLogMessageQueue.ToListWithDequeue()).ExecuteCommandAsync();//入库
             return true;
         }
@@ -167,7 +171,7 @@ public class DatabaseLoggingWriter : IDatabaseLoggingWriter
     {
         long verificatId = 0;//验证Id
         var opAccount = "";//用户账号
-        if (path == "/auth/login")
+        if (path == "/api/auth/login")
         {
             //如果是登录，用户信息就从返回值里拿
             var result = loggingMonitor.ReturnInformation?.Value?.ToSystemTextJsonString();//返回值转json
@@ -185,7 +189,7 @@ public class DatabaseLoggingWriter : IDatabaseLoggingWriter
         var sysLogVisit = new SysOperateLog
         {
             Name = operation,
-            Category = path == "/auth/login" ? LogCateGoryEnum.Login : LogCateGoryEnum.Logout,
+            Category = path == "/api/auth/login" ? LogCateGoryEnum.Login : LogCateGoryEnum.Logout,
             ExeStatus = true,
             OpIp = loggingMonitor.RemoteIPv4,
             OpBrowser = clientInfo.UA.Family + clientInfo.UA.Major,
@@ -205,7 +209,7 @@ public class DatabaseLoggingWriter : IDatabaseLoggingWriter
 
         if (flush)
         {
-            SqlSugarClient ??= DbContext.Db.CopyNew();
+            SqlSugarClient ??= DbContext.Db.GetConnectionScopeWithAttr<SysOperateLog>().CopyNew();
             await SqlSugarClient.InsertableWithAttr(_operateLogMessageQueue.ToListWithDequeue()).ExecuteCommandAsync();//入库
             return true;
         }

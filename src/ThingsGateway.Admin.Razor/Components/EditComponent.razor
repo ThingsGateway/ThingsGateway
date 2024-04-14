@@ -4,9 +4,9 @@
 @typeparam T where T : class, new()
 <div class="editpage">
 
-    <ValidateForm class="m-2" Model="@Model" OnValidSubmit="OnSave">
+    <ValidateForm class="p-4" Model="@Model" OnValidSubmit="OnSave">
 
-        <EditorForm RowType=RowType.Inline ItemsPerRow=ItemsPerRow ShowLabelTooltip=true LabelWidth=200 TModel="T">
+        <EditorForm RowType=RowType.Inline ItemsPerRow=ItemsPerRow ShowLabelTooltip=true LabelWidth=200 Model="Model">
             <Buttons>
                 <Button ButtonType="ButtonType.Submit" Icon="fa-solid fa-floppy-disk" IsAsync Text=@DefaultLocalizer["Save"] />
             </Buttons>

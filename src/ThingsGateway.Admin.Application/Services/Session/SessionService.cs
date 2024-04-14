@@ -1,4 +1,5 @@
-﻿//------------------------------------------------------------------------------
+﻿
+//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -8,9 +9,12 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+
+
+
 using BootstrapBlazor.Components;
 
-using NewLife;
+using NewLife.Extension;
 
 using SqlSugar;
 
@@ -27,6 +31,8 @@ public class SessionService : BaseService<SysUser>, ISessionService
         _verificatInfoCacheService = verificatInfoCacheService;
     }
 
+    #region 查询
+
     /// <summary>
     /// 表格查询
     /// </summary>
@@ -34,7 +40,7 @@ public class SessionService : BaseService<SysUser>, ISessionService
     public async Task<QueryData<SessionOutput>> PageAsync(QueryPageOptions option)
     {
         //获取verificat列表
-        var bTokenInfoDic = GetTokenDicFromRedis();
+        var bTokenInfoDic = GetTokenDicFromCache();
         //获取用户ID列表
         var userIds = bTokenInfoDic.Keys.Select(it => it.ToLong());
         var ret = new QueryData<SessionOutput>()
@@ -89,6 +95,10 @@ public class SessionService : BaseService<SysUser>, ISessionService
         return ret;
     }
 
+    #endregion 查询
+
+    #region 修改
+
     /// <summary>
     /// 强退会话
     /// </summary>
@@ -125,16 +135,18 @@ public class SessionService : BaseService<SysUser>, ISessionService
         await NoticeUserLoginOut(userId, deleteVerificats);
     }
 
+    #endregion 修改
+
     #region 方法
 
     /// <summary>
-    /// 获取redis中verificat信息列表
+    /// 获取cache中verificat信息列表
     /// </summary>
     /// <returns></returns>
-    private Dictionary<long, List<VerificatInfo>> GetTokenDicFromRedis()
+    private Dictionary<long, List<VerificatInfo>> GetTokenDicFromCache()
     {
-        //redis获取verificat信息hash集合,并转成字典
-        var bTokenDic = _verificatInfoCacheService.HashGetAll();
+        //cache获取verificat信息hash集合,并转成字典
+        var bTokenDic = _verificatInfoCacheService.GetAll();
         if (bTokenDic != null)
         {
             foreach (var it in bTokenDic)
