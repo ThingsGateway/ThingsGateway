@@ -80,8 +80,6 @@ public class Dlt645_2007Address
     /// <summary>
     /// 解析地址
     /// </summary>
-    /// <param name="address"></param>
-    /// <returns></returns>
     public static Dlt645_2007Address ParseFrom(string address, bool isCache = true)
     {
         var cacheKey = $"{nameof(Dlt645_2007Address)}_{nameof(ParseFrom)}_{typeof(Dlt645_2007Address).FullName}_{typeof(Dlt645_2007Address).TypeHandle.Value}_{address}";
