@@ -15,6 +15,7 @@ using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Runtime.Loader;
 using System.Xml.Linq;
 
@@ -569,6 +570,15 @@ public class PluginService : IPluginService
 
             foreach (string folderPath in folderPaths)
             {
+                //linux 环境下 OPCDA 不可用
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                {
+                    if (folderPath.ToLower().Contains("opcda"))
+                    {
+                        continue;
+                    }
+                }
+
                 PluginOutput driverPlugin = new();
                 driverPlugin.Name = Path.GetFileName(folderPath);
                 try

@@ -52,11 +52,11 @@ public static class BusinessDatabaseUtil
     /// </summary>
     /// <param name="input"></param>
     /// <returns></returns>
-    public static async Task<OperResult<List<IDBHistoryValue>>> GetDBHistoryValuesAsync(string businessDeviceName, DBPageInput input)
+    public static async Task<OperResult<List<IDBHistoryValue>>> GetDBHistoryValuesAsync(string businessDeviceName, DBValuePageInput input)
     {
         try
         {
-            var businessDevice = WorkerUtil.GetWoker<BusinessDeviceWorker>().DriverBases.Where(a => a is IDBHistoryService b).Where(a => a.DeviceName == businessDeviceName).FirstOrDefault();
+            var businessDevice = WorkerUtil.GetWoker<BusinessDeviceWorker>().DriverBases.Where(a => a is IDBHistoryValueService b).Where(a => a.DeviceName == businessDeviceName).FirstOrDefault();
             if (businessDevice == null)
             {
                 return new("业务设备不存在");
@@ -65,7 +65,7 @@ public static class BusinessDatabaseUtil
             {
                 return new("业务设备未连接");
             }
-            var data = await ((IDBHistoryService)businessDevice).GetDBHistoryValuesAsync(input);
+            var data = await ((IDBHistoryValueService)businessDevice).GetDBHistoryValuesAsync(input);
             return OperResult.CreateSuccessResult(data);
         }
         catch (Exception ex)
@@ -79,11 +79,11 @@ public static class BusinessDatabaseUtil
     /// </summary>
     /// <param name="input"></param>
     /// <returns></returns>
-    public static async Task<OperResult<SqlSugarPagedList<IDBHistoryValue>>> GetDBHistoryValuePagesAsync(string businessDeviceName, DBPageInput input)
+    public static async Task<OperResult<SqlSugarPagedList<IDBHistoryValue>>> GetDBHistoryValuePagesAsync(string businessDeviceName, DBValuePageInput input)
     {
         try
         {
-            var businessDevice = WorkerUtil.GetWoker<BusinessDeviceWorker>().DriverBases.Where(a => a is IDBHistoryService b).Where(a => a.DeviceName == businessDeviceName).FirstOrDefault();
+            var businessDevice = WorkerUtil.GetWoker<BusinessDeviceWorker>().DriverBases.Where(a => a is IDBHistoryValueService b).Where(a => a.DeviceName == businessDeviceName).FirstOrDefault();
             if (businessDevice == null)
             {
                 return new("业务设备不存在");
@@ -92,7 +92,61 @@ public static class BusinessDatabaseUtil
             {
                 return new("业务设备未连接");
             }
-            var data = await ((IDBHistoryService)businessDevice).GetDBHistoryValuePagesAsync(input);
+            var data = await ((IDBHistoryValueService)businessDevice).GetDBHistoryValuePagesAsync(input);
+            return OperResult.CreateSuccessResult(data);
+        }
+        catch (Exception ex)
+        {
+            return new("查询历史数据错误", ex);
+        }
+    }
+
+    /// <summary>
+    /// 按条件获取DB插件中的全部历史报警(不分页)
+    /// </summary>
+    /// <param name="input"></param>
+    /// <returns></returns>
+    public static async Task<OperResult<List<IDBHistoryAlarm>>> GetDBHistoryAlarmsAsync(string businessDeviceName, DBAlarmPageInput input)
+    {
+        try
+        {
+            var businessDevice = WorkerUtil.GetWoker<BusinessDeviceWorker>().DriverBases.Where(a => a is IDBHistoryAlarmService b).Where(a => a.DeviceName == businessDeviceName).FirstOrDefault();
+            if (businessDevice == null)
+            {
+                return new("业务设备不存在");
+            }
+            if (!businessDevice.IsConnected())
+            {
+                return new("业务设备未连接");
+            }
+            var data = await ((IDBHistoryAlarmService)businessDevice).GetDBHistoryAlarmsAsync(input);
+            return OperResult.CreateSuccessResult(data);
+        }
+        catch (Exception ex)
+        {
+            return new("查询历史数据错误", ex);
+        }
+    }
+
+    /// <summary>
+    /// 按条件获取DB插件中的全部历史报警(不分页)
+    /// </summary>
+    /// <param name="input"></param>
+    /// <returns></returns>
+    public static async Task<OperResult<SqlSugarPagedList<IDBHistoryAlarm>>> GetDBHistoryAlarmPagesAsync(string businessDeviceName, DBAlarmPageInput input)
+    {
+        try
+        {
+            var businessDevice = WorkerUtil.GetWoker<BusinessDeviceWorker>().DriverBases.Where(a => a is IDBHistoryAlarmService b).Where(a => a.DeviceName == businessDeviceName).FirstOrDefault();
+            if (businessDevice == null)
+            {
+                return new("业务设备不存在");
+            }
+            if (!businessDevice.IsConnected())
+            {
+                return new("业务设备未连接");
+            }
+            var data = await ((IDBHistoryAlarmService)businessDevice).GetDBHistoryAlarmPagesAsync(input);
             return OperResult.CreateSuccessResult(data);
         }
         catch (Exception ex)

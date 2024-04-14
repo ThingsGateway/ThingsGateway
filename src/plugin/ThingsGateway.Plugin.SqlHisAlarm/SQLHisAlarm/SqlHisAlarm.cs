@@ -9,7 +9,9 @@
 //------------------------------------------------------------------------------
 
 using Mapster;
-
+using SqlSugar;
+using ThingsGateway.Admin.Core;
+using ThingsGateway.Core;
 using ThingsGateway.Foundation;
 using ThingsGateway.Gateway.Application;
 
@@ -20,7 +22,7 @@ namespace ThingsGateway.Plugin.SqlHisAlarm;
 /// <summary>
 /// SqlHisAlarm
 /// </summary>
-public partial class SqlHisAlarm : BusinessBaseWithCacheT<HistoryAlarm>
+public partial class SqlHisAlarm : BusinessBaseWithCacheT<HistoryAlarm>,IDBHistoryAlarmService
 {
     private readonly SqlHisAlarmVariableProperty _variablePropertys = new();
     internal readonly SqlHisAlarmProperty _driverPropertys = new();
@@ -67,5 +69,37 @@ public partial class SqlHisAlarm : BusinessBaseWithCacheT<HistoryAlarm>
         var alarmWorker = WorkerUtil.GetWoker<AlarmWorker>();
         alarmWorker.OnAlarmChanged -= AlarmWorker_OnAlarmChanged;
         base.Dispose(disposing);
+    }
+
+    internal ISugarQueryable<HistoryAlarm> Query(DBAlarmPageInput input)
+    {
+        var db = BusinessDatabaseUtil.GetDb(_driverPropertys.DbType, _driverPropertys.BigTextConnectStr);
+        var query = db.Queryable<HistoryAlarm>()
+                           .WhereIF(input.StartTime != null, a => a.EventTime >= input.StartTime)
+                           .WhereIF(input.EndTime != null, a => a.EventTime <= input.EndTime)
+                           .WhereIF(!string.IsNullOrEmpty(input.VariableName), it => it.Name.Contains(input.VariableName))
+                           .WhereIF(input.AlarmType != null, it => it.AlarmType == input.AlarmType)
+                           .WhereIF(input.EventType != null, it => it.EventType == input.EventType)
+            ;
+
+        for (int i = input.SortField.Count - 1; i >= 0; i--)
+        {
+            query = query.OrderByIF(!string.IsNullOrEmpty(input.SortField[i]), $"{input.SortField[i]} {(input.SortDesc[i] ? "desc" : "asc")}");
+        }
+        query = query.OrderBy(it => it.Id, OrderByType.Desc);//排序
+
+        return query;
+    }
+
+    public async Task<List<IDBHistoryAlarm>> GetDBHistoryAlarmsAsync(DBAlarmPageInput input)
+    {
+        var data = await Query(input).ToListAsync();
+        return data.Cast<IDBHistoryAlarm>().ToList(); ;
+    }
+
+    public async Task<SqlSugarPagedList<IDBHistoryAlarm>> GetDBHistoryAlarmPagesAsync(DBAlarmPageInput input)
+    {
+        var data = await Query(input).ToPagedListAsync<HistoryAlarm, IDBHistoryAlarm>(input.Current, input.Size);//分页
+        return data;
     }
 }

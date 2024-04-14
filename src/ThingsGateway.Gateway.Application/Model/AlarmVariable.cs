@@ -15,7 +15,7 @@ namespace ThingsGateway.Gateway.Application;
 /// <summary>
 /// 报警变量
 /// </summary>
-public class AlarmVariable : PrimaryIdEntity
+public class AlarmVariable : PrimaryIdEntity,IDBHistoryAlarm
 {
     /// <inheritdoc  cref="Variable.Name"/>
     [SugarColumn(ColumnDescription = "变量名称", IsNullable = false)]
