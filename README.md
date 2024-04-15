@@ -19,16 +19,19 @@
 #### 采集插件
 | 插件名称 | 备注 | 
 |-------|-------|
-| SiemensS7Master | Rtu/Tcp报文格式，支持串口/Tcp/Udp链路 | 
+| ModbusMaster | Rtu/Tcp报文格式，支持串口/Tcp/Udp链路 | 
 | S7 | 西门子PLC S7系列 | 
 | Dlt6452007 | Master，支持串口/Tcp/Udp链路 | 
+
+``` 
+待更新
 | OpcDaClient | 64位编译 |
 | OpcUaClient | 支持证书登录，扩展对象Json读写 |
-
+```
 #### 业务插件
 | 插件名称 | 备注 | 
 |-------|-------|
-| SiemensS7Slave | Rtu/Tcp报文格式，支持串口/Tcp/Udp链路，支持Rpc反写 | 
+| ModbusSlave | Rtu/Tcp报文格式，支持串口/Tcp/Udp链路，支持Rpc反写 | 
 | OpcUaServer | OpcUa服务端，支持Rpc反写 | 
 | Mqtt Client | Mqtt客户端，支持Rpc反写，脚本自定义上传内容 | 
 | Mqtt Server | Mqtt服务端，支持WebSocket，支持Rpc反写，脚本自定义上传内容 | 
@@ -47,9 +50,11 @@
 
 [ThingsGateway演示地址](http://120.24.62.140:5000/)
 
-账户	:  **superAdmin**	
+账户	:  **SuperAdmin**	
 
 密码 : **111111**
+
+右上角个人弹出框中，切换到物联网关模块
 
 ## 赞助
 
