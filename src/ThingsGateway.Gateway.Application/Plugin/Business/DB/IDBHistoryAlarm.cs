@@ -43,5 +43,6 @@ namespace ThingsGateway.Gateway.Application
         public string Remark3 { get; set; }
 
         public string Remark4 { get; set; }
+        public string Remark5 { get; set; }
     }
 }

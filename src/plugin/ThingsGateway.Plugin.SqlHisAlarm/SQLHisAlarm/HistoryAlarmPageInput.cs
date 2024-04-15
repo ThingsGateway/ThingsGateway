@@ -11,8 +11,9 @@
 using System.ComponentModel;
 
 using ThingsGateway.Core;
+using ThingsGateway.Gateway.Application;
 
-namespace ThingsGateway.Gateway.Application;
+namespace ThingsGateway.Plugin.SqlHisAlarm;
 
 /// <summary>
 /// HistoryAlarmPageInput

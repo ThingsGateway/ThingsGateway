@@ -8,7 +8,7 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-namespace ThingsGateway.Gateway.Application;
+namespace ThingsGateway.Plugin.SqlHisAlarm;
 
 public class HisAlarmDayStatisticsOutput
 {
