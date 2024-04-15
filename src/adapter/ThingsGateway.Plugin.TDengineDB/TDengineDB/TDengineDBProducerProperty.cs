@@ -8,7 +8,11 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using BootstrapBlazor.Components;
+
 using SqlSugar;
+
+using System.ComponentModel.DataAnnotations;
 
 namespace ThingsGateway.Plugin.TDengineDB;
 
@@ -17,5 +21,7 @@ public class TDengineDBProducerProperty : BusinessPropertyWithCacheInterval
     public DbType DbType { get; set; } = DbType.TDengine;
 
     [DynamicProperty]
+    [Required]
+    [AutoGenerateColumn(ComponentType = typeof(Textarea))]
     public string BigTextConnectStr { get; set; } = "Host=localhost;Port=6030;Username=root;Password=taosdata;Database=test";
 }

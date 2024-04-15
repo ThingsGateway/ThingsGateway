@@ -8,6 +8,8 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using BootstrapBlazor.Components;
+
 using SqlSugar;
 
 using System.ComponentModel.DataAnnotations;
@@ -36,5 +38,6 @@ public class SqlDBProducerProperty : BusinessPropertyWithCacheInterval
 
     [DynamicProperty]
     [Required]
+    [AutoGenerateColumn(ComponentType = typeof(Textarea))]
     public string BigTextConnectStr { get; set; } = "server=.;uid=sa;pwd=111111;database=test;";
 }
