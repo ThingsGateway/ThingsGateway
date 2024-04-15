@@ -8,6 +8,8 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using BootstrapBlazor.Components;
+
 using SqlSugar;
 
 using System.ComponentModel.DataAnnotations;
@@ -20,5 +22,6 @@ public class QuestDBProducerProperty : BusinessPropertyWithCacheInterval
 
     [DynamicProperty]
     [Required]
+    [AutoGenerateColumn(ComponentType = typeof(Textarea))]
     public string BigTextConnectStr { get; set; } = "host=localhost;port=8812;username=admin;password=quest;database=qdb;ServerCompatibilityMode=NoTypeLoading;";
 }

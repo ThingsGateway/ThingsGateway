@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -8,9 +7,6 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
-
-
-
 
 using BootstrapBlazor.Components;
 
@@ -92,6 +88,47 @@ public static class PluginServiceUtil
     }
 
     /// <summary>
+    /// 属性赋值方法
+    /// </summary>
+    /// <param name="dest"></param>
+    /// <param name="source"></param>
+    public static void CopyValue(this IEditorItem dest, IEditorItem source)
+    {
+        if (source.ComponentType != null) dest.ComponentType = source.ComponentType;
+        if (source.ComponentParameters != null) dest.ComponentParameters = source.ComponentParameters;
+        if (!source.Editable) dest.Editable = source.Editable;
+        if (source.EditTemplate != null) dest.EditTemplate = source.EditTemplate;
+        if (source.Items != null) dest.Items = source.Items;
+        if (source.Lookup != null) dest.Lookup = source.Lookup;
+        if (source.ShowSearchWhenSelect) dest.ShowSearchWhenSelect = source.ShowSearchWhenSelect;
+        if (source.IsPopover) dest.IsPopover = source.IsPopover;
+        if (source.LookupStringComparison != StringComparison.OrdinalIgnoreCase) dest.LookupStringComparison = source.LookupStringComparison;
+        if (source.LookupServiceKey != null) dest.LookupServiceKey = source.LookupServiceKey;
+        if (source.LookupServiceData != null) dest.LookupServiceData = source.LookupServiceData;
+        if (source.IsReadonlyWhenAdd.HasValue) dest.IsReadonlyWhenAdd = source.IsReadonlyWhenAdd;
+        if (source.IsReadonlyWhenEdit.HasValue) dest.IsReadonlyWhenEdit = source.IsReadonlyWhenEdit;
+        if (source.Readonly) dest.Readonly = source.Readonly;
+        if (source.IsVisibleWhenAdd.HasValue) dest.IsVisibleWhenAdd = source.IsVisibleWhenAdd;
+        if (source.IsVisibleWhenEdit.HasValue) dest.IsVisibleWhenEdit = source.IsVisibleWhenEdit;
+        if (source.Visible) dest.Visible = source.Visible;
+        if (source.Rows > 0) dest.Rows = source.Rows;
+        if (source.SkipValidate) dest.SkipValidate = source.SkipValidate;
+        if (!string.IsNullOrEmpty(source.Text)) dest.Text = source.Text;
+        if (source.ValidateRules != null) dest.ValidateRules = source.ValidateRules;
+        if (source.ShowLabelTooltip != null) dest.ShowLabelTooltip = source.ShowLabelTooltip;
+        if (!string.IsNullOrEmpty(source.GroupName)) dest.GroupName = source.GroupName;
+        if (source.GroupOrder != 0) dest.GroupOrder = source.GroupOrder;
+        if (!string.IsNullOrEmpty(source.PlaceHolder)) dest.PlaceHolder = source.PlaceHolder;
+        if (!string.IsNullOrEmpty(source.Step)) dest.Step = source.Step;
+        if (source.Order != 0) dest.Order = source.Order;
+
+        if (source is ITableColumn col)
+        {
+            col.CopyValue(dest);
+        }
+    }
+
+    /// <summary>
     /// 通过特定类型模型获取模型属性集合
     /// </summary>
     /// <param name="type">绑定模型类型</param>
@@ -105,10 +142,13 @@ public static class PluginServiceUtil
         {
             //获取插件自定义属性
             var classAttribute = prop.GetCustomAttribute<DynamicPropertyAttribute>(false);
+            var autoGenerateColumnAttribute = prop.GetCustomAttribute<AutoGenerateColumnAttribute>(true);
             if (classAttribute == null) continue;//删除不需要显示的属性
             IEditorItem? tc;
             var displayName = classAttribute.Description ?? BootstrapBlazor.Components.Utility.GetDisplayName(type, prop.Name);
             tc = new InternalEditorItem(prop.Name, prop.PropertyType, displayName);
+            if (autoGenerateColumnAttribute != null)
+                CopyValue(tc, autoGenerateColumnAttribute);
             if (classAttribute.Remark != null)
             {
                 var dict = new Dictionary<string, object>
