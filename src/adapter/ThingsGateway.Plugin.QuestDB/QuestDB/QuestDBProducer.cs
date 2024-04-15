@@ -8,11 +8,13 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using BootstrapBlazor.Components;
+
 using Mapster;
 
 using SqlSugar;
 
-using ThingsGateway.Admin.Core;
+using ThingsGateway.Admin.Application;
 using ThingsGateway.Core;
 using ThingsGateway.Foundation;
 
@@ -21,7 +23,7 @@ namespace ThingsGateway.Plugin.QuestDB;
 /// <summary>
 /// QuestDBProducer
 /// </summary>
-public partial class QuestDBProducer : BusinessBaseWithCacheInterval<QuestDBHistoryValue>, IDBHistoryService
+public partial class QuestDBProducer : BusinessBaseWithCacheIntervalVarModel<QuestDBHistoryValue>, IDBHistoryService
 {
     private readonly QuestDBProducerVariableProperty _variablePropertys = new();
     internal readonly QuestDBProducerProperty _driverPropertys = new();
@@ -70,11 +72,54 @@ public partial class QuestDBProducer : BusinessBaseWithCacheInterval<QuestDBHist
 
     protected override async Task ProtectedExecuteAsync(CancellationToken cancellationToken)
     {
-        await UpdateTMemory(cancellationToken);
+        await UpdateVarModelMemory(cancellationToken);
 
-        await UpdateTCache(cancellationToken);
+        await UpdateVarModelCache(cancellationToken);
 
         await Delay(cancellationToken);
+    }
+
+    internal async Task<QueryData<QuestDBHistoryValue>> QueryData(QueryPageOptions option)
+    {
+        using var db = BusinessDatabaseUtil.GetDb(_driverPropertys.DbType, _driverPropertys.BigTextConnectStr);
+        var ret = new QueryData<QuestDBHistoryValue>()
+        {
+            IsSorted = option.SortOrder != SortOrder.Unset,
+            IsFiltered = option.Filters.Any(),
+            IsAdvanceSearch = option.AdvanceSearches.Any(),
+            IsSearch = option.Searches.Any() || option.CustomerSearches.Any()
+        };
+
+        var query = db.GetQuery<QuestDBHistoryValue>(option);
+
+        if (option.IsPage)
+        {
+            RefAsync<int> totalCount = 0;
+
+            var items = await query
+                .ToPageListAsync(option.PageIndex, option.PageItems, totalCount);
+
+            ret.TotalCount = totalCount;
+            ret.Items = items;
+        }
+        else if (option.IsVirtualScroll)
+        {
+            RefAsync<int> totalCount = 0;
+
+            var items = await query
+                .ToPageListAsync(option.StartIndex, option.PageItems, totalCount);
+
+            ret.TotalCount = totalCount;
+            ret.Items = items;
+        }
+        else
+        {
+            var items = await query
+                .ToListAsync();
+            ret.TotalCount = items.Count;
+            ret.Items = items;
+        }
+        return ret;
     }
 
     internal ISugarQueryable<QuestDBHistoryValue> Query(DBPageInput input)

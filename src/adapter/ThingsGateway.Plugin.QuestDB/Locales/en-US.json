@@ -1,0 +1,35 @@
+﻿{
+  "ThingsGateway.Plugin.Kafka.KafkaProducerProperty": {
+    "BigTextConnectStr": "ConnectString",
+
+    "IsInterval": "IsInterval",
+    "BusinessInterval": "BusinessInterval",
+    "IsAllVariable": "IsAllVariable",
+    "QueueMaxCount": "QueueMaxCount",
+    "SplitSize": "SplitSize",
+    "CacheEnable": "CacheEnable"
+  },
+  "ThingsGateway.Plugin.Mqtt.MqttServerProperty": {
+    "IP": "IP",
+    "Port": "Port",
+    "WebSocketPort": "WebSocketPort",
+    "StartWithId": "StartWithId",
+    "DeviceRpcEnable": "DeviceRpcEnable",
+    "RpcWriteTopic": "RpcWriteTopic",
+    "BigTextScriptDeviceModel": "BigTextScriptDeviceModel",
+    "BigTextScriptVariableModel": "BigTextScriptVariableModel",
+    "BigTextScriptAlarmModel": "BigTextScriptAlarmModel",
+    "IsDeviceList": "IsDeviceList",
+    "IsVariableList": "IsVariableList",
+    "IsAlarmList": "IsAlarmList",
+    "DeviceTopic": "DeviceTopic",
+    "VariableTopic": "VariableTopic",
+    "AlarmTopic": "AlarmTopic",
+    "IsInterval": "IsInterval",
+    "BusinessInterval": "BusinessInterval",
+    "IsAllVariable": "IsAllVariable",
+    "QueueMaxCount": "QueueMaxCount",
+    "SplitSize": "SplitSize",
+    "CacheEnable": "CacheEnable"
+  }
+}

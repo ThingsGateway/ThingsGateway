@@ -12,7 +12,6 @@ using Mapster;
 
 using SqlSugar;
 
-using ThingsGateway.Admin.Core;
 using ThingsGateway.Core;
 using ThingsGateway.Foundation;
 
@@ -21,7 +20,7 @@ namespace ThingsGateway.Plugin.SqlDB;
 /// <summary>
 /// SqlDBProducer
 /// </summary>
-public partial class SqlDBProducer : BusinessBaseWithCacheInterval<SQLHistoryValue>, IDBHistoryService
+public partial class SqlDBProducer : BusinessBaseWithCacheIntervalVarModel<SQLHistoryValue>, IDBHistoryService
 {
     private readonly SqlDBProducerVariableProperty _variablePropertys = new();
     internal readonly SqlDBProducerProperty _driverPropertys = new();

@@ -32,13 +32,13 @@ public partial class KafkaProducer : BusinessBaseWithCacheIntervalScript<Variabl
 
     protected override void VariableChange(VariableRunTime variableRunTime, VariableData variable)
     {
-        AddQueueVarModel(new(variableRunTime.Adapt<VariableData>()));
+        AddQueueVarModel(new(variable));
         base.VariableChange(variableRunTime, variable);
     }
 
     protected override void DeviceChange(DeviceRunTime deviceRunTime, DeviceData deviceData)
     {
-        AddQueueDevModel(new(deviceRunTime.Adapt<DeviceData>()));
+        AddQueueDevModel(new(deviceData));
         base.DeviceChange(deviceRunTime, deviceData);
     }
 
@@ -112,8 +112,9 @@ public partial class KafkaProducer : BusinessBaseWithCacheIntervalScript<Variabl
     {
         //保留消息
         //分解List，避免超出字节大小限制
-        var varData = CurrentDevice.VariableRunTimes.Adapt<List<VariableData>>().ChunkBetter(_driverPropertys.SplitSize);
-        var devData = CollectDevices.Adapt<List<DeviceData>>().ChunkBetter(_driverPropertys.SplitSize);
+        var varData = CurrentDevice.VariableRunTimes.Values.Adapt<List<VariableData>>().ChunkBetter(_driverPropertys.SplitSize);
+        var devData = CollectDevices.Values.Adapt<List<DeviceData>>().ChunkBetter(_driverPropertys.SplitSize);
+        var alramData = GlobalData.ReadOnlyRealAlarmVariables.Adapt<List<AlarmVariable>>().ChunkBetter(_driverPropertys.SplitSize);
         foreach (var item in varData)
         {
             if (!success)
@@ -126,6 +127,12 @@ public partial class KafkaProducer : BusinessBaseWithCacheIntervalScript<Variabl
             if (!success)
                 break;
             await UpdateDevModel(item, cancellationToken);
+        }
+        foreach (var item in alramData)
+        {
+            if (!success)
+                break;
+            await UpdateAlarmModel(item, cancellationToken);
         }
     }
 

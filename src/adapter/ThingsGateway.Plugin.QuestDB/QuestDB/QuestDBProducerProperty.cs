@@ -15,5 +15,7 @@ namespace ThingsGateway.Plugin.QuestDB;
 public class QuestDBProducerProperty : BusinessPropertyWithCacheInterval
 {
     public DbType DbType { get; set; } = DbType.QuestDB;
-    [DynamicProperty("链接字符串", "")] public string BigTextConnectStr { get; set; } = "host=localhost;port=8812;username=admin;password=quest;database=qdb;ServerCompatibilityMode=NoTypeLoading;";
+
+    [DynamicProperty]
+    public string BigTextConnectStr { get; set; } = "host=localhost;port=8812;username=admin;password=quest;database=qdb;ServerCompatibilityMode=NoTypeLoading;";
 }

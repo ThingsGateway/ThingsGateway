@@ -8,6 +8,8 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using BootstrapBlazor.Components;
+
 using SqlSugar;
 
 using System.ComponentModel;
@@ -24,6 +26,7 @@ namespace ThingsGateway.Plugin.QuestDB;
 public class QuestDBHistoryValue : IPrimaryIdEntity, IDBHistoryValue
 {
     [SugarColumn(ColumnDescription = "变量Id")]
+    [AutoGenerateColumn(Ignore = true)]
     public long Id { get; set; }
 
     /// <summary>
@@ -31,21 +34,21 @@ public class QuestDBHistoryValue : IPrimaryIdEntity, IDBHistoryValue
     /// </summary>
     [TimeDbSplitField(DateType.Month)]
     [Description("采集时间")]
-    [DataTable(Order = 1, IsShow = true, Sortable = true, DefaultFilter = false, CellClass = " table-text-truncate ")]
+    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
     public DateTime CollectTime { get; set; }
 
     /// <summary>
     /// 上传时间
     /// </summary>
     [Description("上传时间")]
-    [DataTable(Order = 1, IsShow = true, Sortable = true, DefaultFilter = false, CellClass = " table-text-truncate ")]
+    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
     public DateTime CreateTime { get; set; }
 
     /// <summary>
     /// 设备名称
     /// </summary>
     [Description("设备名称")]
-    [DataTable(Order = 1, IsShow = true, Sortable = true, DefaultFilter = false, CellClass = " table-text-truncate ")]
+    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
     public string DeviceName { get; set; }
 
     /// <summary>
@@ -53,20 +56,20 @@ public class QuestDBHistoryValue : IPrimaryIdEntity, IDBHistoryValue
     /// </summary>
     [SugarColumn(ColumnDataType = "symbol")]
     [Description("变量名称")]
-    [DataTable(Order = 1, IsShow = true, Sortable = true, DefaultFilter = false, CellClass = " table-text-truncate ")]
+    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
     public string Name { get; set; }
 
     /// <summary>
     /// 是否在线
     /// </summary>
     [Description("是否在线")]
-    [DataTable(Order = 1, IsShow = true, Sortable = true, DefaultFilter = false, CellClass = " table-text-truncate ")]
+    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
     public bool IsOnline { get; set; }
 
     /// <summary>
     /// 变量值
     /// </summary>
     [Description("变量值")]
-    [DataTable(Order = 1, IsShow = true, Sortable = true, DefaultFilter = false, CellClass = " table-text-truncate ")]
+    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
     public string Value { get; set; }
 }

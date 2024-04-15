@@ -10,6 +10,7 @@
 
 using Mapster;
 
+using ThingsGateway.Admin.Application;
 using ThingsGateway.Foundation;
 
 using TouchSocket.Core;
@@ -19,7 +20,7 @@ namespace ThingsGateway.Plugin.SqlDB;
 /// <summary>
 /// SqlDBProducer
 /// </summary>
-public partial class SqlDBProducer : BusinessBaseWithCacheInterval<SQLHistoryValue>
+public partial class SqlDBProducer : BusinessBaseWithCacheIntervalVarModel<SQLHistoryValue>
 {
     private TypeAdapterConfig _config;
     private TimeTick _exRealTimerTick;

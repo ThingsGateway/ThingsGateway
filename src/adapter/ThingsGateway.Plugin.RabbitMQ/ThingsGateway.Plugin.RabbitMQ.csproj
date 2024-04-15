@@ -15,6 +15,7 @@
 	<PropertyGroup>
 		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 	</PropertyGroup>
+
 	<ItemGroup>
 		<Content Remove="Locales\*.json" />
 		<EmbeddedResource Include="Locales\*.json" />

@@ -20,37 +20,37 @@ public class RabbitMQProducerProperty : BusinessPropertyWithCacheIntervalScript
     /// <summary>
     /// IP
     /// </summary>
-    [DynamicProperty("IP", "")]
+    [DynamicProperty]
     public string IP { get; set; } = "localhost";
 
     /// <summary>
     /// 端口
     /// </summary>
-    [DynamicProperty("端口", "")]
+    [DynamicProperty]
     public int Port { get; set; } = 5672;
 
     /// <summary>
     /// UserName
     /// </summary>
-    [DynamicProperty("账号", "")]
+    [DynamicProperty]
     public string UserName { get; set; } = "guest";
 
     /// <summary>
     /// Password
     /// </summary>
-    [DynamicProperty("密码", "")]
+    [DynamicProperty]
     public string Password { get; set; } = "guest";
 
     /// <summary>
     /// IsQueueDeclare
     /// </summary>
-    [DynamicProperty("是否声明队列", "不支持动态通配符主题")]
+    [DynamicProperty]
     public bool IsQueueDeclare { get; set; } = false;
 
     /// <summary>
     /// VirtualHost
     /// </summary>
-    [DynamicProperty("虚拟Host", "")]
+    [DynamicProperty]
     public string VirtualHost { get; set; } = ConnectionFactory.DefaultVHost;
 
     ///// <summary>
@@ -62,6 +62,6 @@ public class RabbitMQProducerProperty : BusinessPropertyWithCacheIntervalScript
     /// <summary>
     /// 交换机名称
     /// </summary>
-    [DynamicProperty("交换机名称", "")]
+    [DynamicProperty]
     public string? ExchangeName { get; set; } = "";
 }

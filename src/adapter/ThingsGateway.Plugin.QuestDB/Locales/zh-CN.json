@@ -1,0 +1,12 @@
+﻿{
+  "ThingsGateway.Plugin.QuestDB.QuestDBProducerProperty": {
+    "BigTextConnectStr": "连接字符串",
+
+    "IsInterval": "启用定时上传",
+    "BusinessInterval": "定时上传间隔",
+    "IsAllVariable": "选择全部变量",
+    "QueueMaxCount": "内存队列最大数量",
+    "SplitSize": "上传每页条数",
+    "CacheEnable": "启用缓存"
+  }
+}

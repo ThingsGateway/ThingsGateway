@@ -8,12 +8,19 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using Mapster;
+
+using ThingsGateway.Admin.Application;
+using ThingsGateway.Foundation;
+
+using TouchSocket.Core;
+
 namespace ThingsGateway.Plugin.QuestDB;
 
 /// <summary>
 /// RabbitMQProducer
 /// </summary>
-public partial class QuestDBProducer : BusinessBaseWithCacheInterval<QuestDBHistoryValue>
+public partial class QuestDBProducer : BusinessBaseWithCacheIntervalVarModel<QuestDBHistoryValue>
 {
     private TypeAdapterConfig _config;
 
@@ -53,7 +60,7 @@ public partial class QuestDBProducer : BusinessBaseWithCacheInterval<QuestDBHist
             //var result = await db.Insertable(dbInserts).SplitTable().ExecuteCommandAsync();
             if (result > 0)
             {
-                LogMessage.Trace($"主题：{nameof(QuestDBHistoryValue)}，数量：{result}");
+                LogMessage.Trace($"Topic：{nameof(QuestDBHistoryValue)}，Count：{result}");
             }
             return new();
         }

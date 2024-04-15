@@ -14,6 +14,7 @@ using RabbitMQ.Client;
 
 using System.Text;
 
+using ThingsGateway.Admin.Application;
 using ThingsGateway.Foundation;
 using ThingsGateway.Foundation.Extension.Generic;
 
@@ -32,13 +33,13 @@ public partial class RabbitMQProducer : BusinessBaseWithCacheIntervalScript<Vari
 
     protected override void VariableChange(VariableRunTime variableRunTime, VariableData variable)
     {
-        AddQueueVarModel(new(variableRunTime.Adapt<VariableData>()));
+        AddQueueVarModel(new(variable));
         base.VariableChange(variableRunTime, variable);
     }
 
     protected override void DeviceChange(DeviceRunTime deviceRunTime, DeviceData deviceData)
     {
-        AddQueueDevModel(new(deviceRunTime.Adapt<DeviceData>()));
+        AddQueueDevModel(new(deviceData));
         base.DeviceChange(deviceRunTime, deviceData);
     }
 
@@ -112,9 +113,9 @@ public partial class RabbitMQProducer : BusinessBaseWithCacheIntervalScript<Vari
     {
         //保留消息
         //分解List，避免超出字节大小限制
-        var varData = CurrentDevice.VariableRunTimes.Adapt<List<VariableData>>().ChunkBetter(_driverPropertys.SplitSize);
-        var devData = CollectDevices.Adapt<List<DeviceData>>().ChunkBetter(_driverPropertys.SplitSize);
-        var alramData = WorkerUtil.GetWoker<AlarmWorker>().RealAlarmVariables.Adapt<List<AlarmVariable>>().ChunkBetter(_driverPropertys.SplitSize);
+        var varData = CurrentDevice.VariableRunTimes.Values.Adapt<List<VariableData>>().ChunkBetter(_driverPropertys.SplitSize);
+        var devData = CollectDevices.Values.Adapt<List<DeviceData>>().ChunkBetter(_driverPropertys.SplitSize);
+        var alramData = GlobalData.ReadOnlyRealAlarmVariables.Adapt<List<AlarmVariable>>().ChunkBetter(_driverPropertys.SplitSize);
         foreach (var item in varData)
         {
             if (!success)
@@ -149,12 +150,12 @@ public partial class RabbitMQProducer : BusinessBaseWithCacheIntervalScript<Vari
             if (_model != null)
             {
                 _model.BasicPublish(_driverPropertys.ExchangeName, topic, properties, Encoding.UTF8.GetBytes(payLoad));
-                LogMessage.Trace($"主题：{topic}{Environment.NewLine}负载：{payLoad}");
+                LogMessage.Trace($"Topic：{topic}{Environment.NewLine}PayLoad：{payLoad}");
                 return new();
             }
             else
             {
-                return new("上传失败");
+                return new("Upload fail");
             }
         }
         catch (Exception ex)
