@@ -1,4 +1,3 @@
-
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -9,9 +8,6 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-
-
-
 using BootstrapBlazor.Components;
 
 using Microsoft.CodeAnalysis;
@@ -21,6 +17,7 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 using System.Data;
+using System.Globalization;
 using System.Reflection;
 using System.Runtime.Loader;
 using System.Xml.Linq;
@@ -193,10 +190,6 @@ public class PluginService : IPluginService
         }
     }
 
-    private const string _cacheKeyGetDriverMethodInfos = $"{nameof(PluginService)}_{nameof(GetDriverMethodInfos)}";
-    private const string _cacheKeyGetDriverPropertyTypes = $"{nameof(PluginService)}_{nameof(GetDriverPropertyTypes)}";
-    private const string _cacheKeyGetVariablePropertyTypes = $"{nameof(PluginService)}_{nameof(GetVariablePropertyTypes)}";
-
     /// <summary>
     /// 获取指定插件的属性类型及其信息，将其缓存在内存中
     /// </summary>
@@ -208,13 +201,15 @@ public class PluginService : IPluginService
         // 使用锁确保线程安全
         lock (this)
         {
+            string cacheKey = $"{nameof(PluginService)}_{nameof(GetDriverPropertyTypes)}_{CultureInfo.CurrentUICulture.Name}";
+
             var dispose = driverBase == null;
             driverBase ??= this.GetDriver(pluginName); // 如果 driverBase 为 null， 获取驱动实例
             // 检查插件名称是否为空或空字符串
             if (!pluginName.IsNullOrEmpty())
             {
                 // 从缓存中获取属性类型数据
-                var data = App.CacheService.HashGetAll<List<IEditorItem>>(_cacheKeyGetDriverPropertyTypes);
+                var data = App.CacheService.HashGetAll<List<IEditorItem>>(cacheKey);
                 // 如果缓存中存在数据
                 if (data?.ContainsKey(pluginName) == true)
                 {
@@ -225,7 +220,7 @@ public class PluginService : IPluginService
             }
             // 如果缓存中不存在该插件的数据，则重新获取并缓存
 
-            return (SetCache(driverBase, pluginName, _cacheKeyGetDriverPropertyTypes, dispose), driverBase.DriverProperties); // 调用 SetCache 方法进行缓存并返回结果
+            return (SetCache(driverBase, pluginName, cacheKey, dispose), driverBase.DriverProperties); // 调用 SetCache 方法进行缓存并返回结果
 
             // 定义 SetCache 方法，用于设置缓存并返回
             IEnumerable<IEditorItem> SetCache(DriverBase driverBase, string pluginName, string cacheKey, bool dispose)
@@ -248,16 +243,17 @@ public class PluginService : IPluginService
     {
         lock (this)
         {
+            string cacheKey = $"{nameof(PluginService)}_{nameof(GetVariablePropertyTypes)}_{CultureInfo.CurrentUICulture.Name}";
             var dispose = businessBase == null;
             businessBase ??= (BusinessBase)this.GetDriver(pluginName); // 如果 driverBase 为 null， 获取驱动实例
 
-            var data = App.CacheService.HashGetAll<List<IEditorItem>>(_cacheKeyGetVariablePropertyTypes);
+            var data = App.CacheService.HashGetAll<List<IEditorItem>>(cacheKey);
             if (data?.ContainsKey(pluginName) == true)
             {
                 return (data[pluginName], businessBase.VariablePropertys);
             }
             // 如果缓存中不存在该插件的数据，则重新获取并缓存
-            return (SetCache(pluginName, _cacheKeyGetVariablePropertyTypes), businessBase.VariablePropertys);
+            return (SetCache(pluginName, cacheKey), businessBase.VariablePropertys);
 
             // 定义 SetCache 方法，用于设置缓存并返回
             IEnumerable<IEditorItem> SetCache(string pluginName, string cacheKey)
@@ -284,6 +280,7 @@ public class PluginService : IPluginService
         // 线程安全地执行方法
         lock (this)
         {
+            string cacheKey = $"{nameof(PluginService)}_{nameof(GetDriverMethodInfos)}_{CultureInfo.CurrentUICulture.Name}";
             // 如果未提供驱动基类对象，则尝试根据插件名称获取驱动对象
             var dispose = driverBase == null; // 标记是否需要释放驱动对象
             driverBase ??= this.GetDriver(pluginName); // 如果未提供驱动对象，则根据插件名称获取驱动对象
@@ -292,7 +289,7 @@ public class PluginService : IPluginService
             if (!pluginName.IsNullOrEmpty())
             {
                 // 尝试从缓存中获取指定插件的属性信息
-                var data = App.CacheService.HashGetAll<List<DriverMethodInfo>>(_cacheKeyGetDriverMethodInfos);
+                var data = App.CacheService.HashGetAll<List<DriverMethodInfo>>(cacheKey);
                 // 如果缓存中存在指定插件的属性信息，则直接返回
                 if (data?.ContainsKey(pluginName) == true)
                 {
@@ -301,7 +298,7 @@ public class PluginService : IPluginService
             }
 
             // 如果未从缓存中获取到指定插件的属性信息，则尝试从驱动基类对象中获取
-            return SetDriverMethodInfosCache(driverBase, pluginName, _cacheKeyGetDriverMethodInfos, dispose); // 获取并设置属性信息缓存
+            return SetDriverMethodInfosCache(driverBase, pluginName, cacheKey, dispose); // 获取并设置属性信息缓存
 
             // 用于设置驱动方法信息缓存的内部方法
             List<DriverMethodInfo> SetDriverMethodInfosCache(DriverBase driverBase, string pluginName, string cacheKey, bool dispose)
@@ -401,10 +398,8 @@ public class PluginService : IPluginService
     {
         lock (this)
         {
-            App.CacheService.Remove(_cacheKeyGetDriverMethodInfos);
-            App.CacheService.Remove(_cacheKeyGetDriverPropertyTypes);
-            App.CacheService.Remove(_cacheKeyGetVariablePropertyTypes);
             App.CacheService.Remove(_cacheKeyGetPluginOutputs);
+            App.CacheService.DelByPattern($"{nameof(PluginService)}_");
 
             // 获取私有字段
             FieldInfo fieldInfo = typeof(ResourceManagerStringLocalizerFactory).GetField("_localizerCache", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -415,7 +410,6 @@ public class PluginService : IPluginService
                 // 移除特定键
                 dictionary.RemoveWhere(a => item.Value.Assembly.ExportedTypes.Select(b => b.AssemblyQualifiedName).Contains(a.Key));
             }
-
         }
     }
 

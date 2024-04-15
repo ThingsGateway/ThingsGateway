@@ -1,5 +1,5 @@
 ﻿{
-  "ThingsGateway.Plugin.SqlDB.SqlDBProducerProperty": {
+  "ThingsGateway.Plugin.SqlHisAlarm.SQLHisAlarmProperty": {
     "DbType": "DbType",
     "BigTextConnectStr": "ConnectString",
 

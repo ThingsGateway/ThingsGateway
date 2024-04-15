@@ -1,5 +1,5 @@
 ﻿{
-  "ThingsGateway.Plugin.SqlDB.SqlDBProducerProperty": {
+  "ThingsGateway.Plugin.SqlHisAlarm.SQLHisAlarmProperty": {
     "DbType": "数据库类型",
     "BigTextConnectStr": "链接字符串",
 
