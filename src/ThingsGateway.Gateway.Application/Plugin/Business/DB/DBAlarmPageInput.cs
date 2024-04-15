@@ -12,27 +12,36 @@ using System.ComponentModel;
 
 namespace ThingsGateway.Gateway.Application;
 
-public class DBPageInput : BasePageInput
+/// <summary>
+/// DBAlarmPageInput
+/// </summary>
+public class DBAlarmPageInput : BasePageInput
 {
     /// <summary>
     /// 开始时间
     /// </summary>
-    public virtual DateTime? StartTime { get; set; } = DateTime.Now.AddDays(-1);
+    public DateTime? StartTime { get; set; } = DateTime.Now.AddDays(-1);
 
     /// <summary>
     /// 结束时间
     /// </summary>
-    public virtual DateTime? EndTime { get; set; } = DateTime.Now.AddDays(1);
+    public DateTime? EndTime { get; set; } = DateTime.Now.AddDays(1);
 
     /// <summary>
-    /// 变量名称，不为空时忽略<see cref="VariableNames"/>
+    /// 日志源
     /// </summary>
     [Description("变量名称")]
-    public virtual string? VariableName { get; set; }
+    public string VariableName { get; set; }
 
     /// <summary>
-    /// 变量名称组
+    /// 报警类型
     /// </summary>
-    [Description("变量名称")]
-    public virtual string[]? VariableNames { get; set; }
+    [Description("报警类型")]
+    public AlarmTypeEnum? AlarmType { get; set; }
+
+    /// <summary>
+    /// 事件类型
+    /// </summary>
+    [Description("事件类型")]
+    public EventTypeEnum? EventType { get; set; }
 }

@@ -10,7 +10,7 @@
 
 namespace ThingsGateway.Gateway.Application;
 
-public class QuestDBPageInput : DBPageInput
+public class QuestDBPageInput : DBValuePageInput
 {
     /// <summary>
     /// 开始时间

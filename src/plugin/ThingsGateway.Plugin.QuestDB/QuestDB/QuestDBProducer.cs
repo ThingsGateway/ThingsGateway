@@ -21,7 +21,7 @@ namespace ThingsGateway.Plugin.QuestDB;
 /// <summary>
 /// QuestDBProducer
 /// </summary>
-public partial class QuestDBProducer : BusinessBaseWithCacheInterval<QuestDBHistoryValue>, IDBHistoryService
+public partial class QuestDBProducer : BusinessBaseWithCacheInterval<QuestDBHistoryValue>, IDBHistoryValueService
 {
     private readonly QuestDBProducerVariableProperty _variablePropertys = new();
     internal readonly QuestDBProducerProperty _driverPropertys = new();
@@ -77,7 +77,7 @@ public partial class QuestDBProducer : BusinessBaseWithCacheInterval<QuestDBHist
         await Delay(cancellationToken);
     }
 
-    internal ISugarQueryable<QuestDBHistoryValue> Query(DBPageInput input)
+    internal ISugarQueryable<QuestDBHistoryValue> Query(DBValuePageInput input)
     {
         var db = BusinessDatabaseUtil.GetDb(_driverPropertys.DbType, _driverPropertys.BigTextConnectStr);
         var query = db.Queryable<QuestDBHistoryValue>()
@@ -96,13 +96,13 @@ public partial class QuestDBProducer : BusinessBaseWithCacheInterval<QuestDBHist
         return query;
     }
 
-    public async Task<List<IDBHistoryValue>> GetDBHistoryValuesAsync(DBPageInput input)
+    public async Task<List<IDBHistoryValue>> GetDBHistoryValuesAsync(DBValuePageInput input)
     {
         var data = await Query(input).ToListAsync();
         return data.Cast<IDBHistoryValue>().ToList(); ;
     }
 
-    public async Task<SqlSugarPagedList<IDBHistoryValue>> GetDBHistoryValuePagesAsync(DBPageInput input)
+    public async Task<SqlSugarPagedList<IDBHistoryValue>> GetDBHistoryValuePagesAsync(DBValuePageInput input)
     {
         var data = await Query(input).ToPagedListAsync<QuestDBHistoryValue, IDBHistoryValue>(input.Current, input.Size);//分页
         return data;

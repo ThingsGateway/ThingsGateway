@@ -302,7 +302,14 @@ namespace ThingsGateway.Foundation
 
                 var task = Task.Run(() =>
                 {
-                    socket.Connect(iPHost.Host, iPHost.Port);
+                    try
+                    {
+                        socket.Connect(iPHost.Host, iPHost.Port);
+                    }
+                    catch (SocketException ex)
+                    {
+                        return;
+                    }
                 }, token);
                 task.ConfigureFalseAwait();
                 try
