@@ -20,7 +20,11 @@
                 <EditorItem Field=@context.SourceVariableCount FieldExpression=@(()=> context.SourceVariableCount ) />
                 <EditorItem Field=@context.DeviceVariableCount FieldExpression=@(()=> context.DeviceVariableCount ) />
                 <EditorItem Field=@context.MethodVariableCount FieldExpression=@(()=> context.MethodVariableCount ) />
-                <EditorItem Field=@context.LastErrorMessage FieldExpression=@(()=> context.LastErrorMessage ) Rows="1" ShowLabelTooltip="false" />
+                <EditorItem Field=@context.LastErrorMessage FieldExpression=@(()=> context.LastErrorMessage ) Rows="1" ShowLabelTooltip="false" >
+                    <EditTemplate Context="value">
+                            <Display Value=@value.LastErrorMessage ValueExpression=@(()=> context.LastErrorMessage ) ShowTooltip class="red--text" ShowLabel="true"/>
+                    </EditTemplate>
+                </EditorItem>
 
 
             </FieldItems>
@@ -34,8 +38,11 @@
                 <EditorItem Field=@context.ActiveTime FieldExpression=@(()=> context.ActiveTime ) />
                 <EditorItem Field=@context.PluginName FieldExpression=@(()=> context.PluginName ) />
                 <EditorItem Field=@context.DeviceVariableCount FieldExpression=@(()=> context.DeviceVariableCount ) />
-                <EditorItem Field=@context.LastErrorMessage FieldExpression=@(()=> context.LastErrorMessage ) Rows="1" ShowLabelTooltip="false" />
-
+                <EditorItem Field=@context.LastErrorMessage FieldExpression=@(()=> context.LastErrorMessage ) Rows="1" ShowLabelTooltip="false">
+                    <EditTemplate Context="value">
+                            <Display Value=@value.LastErrorMessage ValueExpression=@(()=> context.LastErrorMessage ) ShowTooltip class="red--text" ShowLabel="true" />
+                    </EditTemplate>
+                </EditorItem>
             </FieldItems>
 
         </EditorFormObject>

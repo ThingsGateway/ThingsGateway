@@ -12,7 +12,7 @@
 <AdminTable TItem="QuestDBHistoryValue" AutoGenerateColumns="true" ShowDefaultButtons=false
                 AllowResizing="true" IsFixedHeader=true IsMultipleSelect=false
                 ShowExtendEditButton=false ShowExtendDeleteButton=false ShowExtendButtons=false
-                ShowExportButton="true"
+            ShowExportButton="true" IsAutoQueryFirstRender=false
                 OnQueryAsync="OnQueryAsync" IsPagination=true CustomerSearchModel="@CustomerSearchModel">
         <CustomerSearchTemplate>
         @if (context is QuestDBPageInput model)

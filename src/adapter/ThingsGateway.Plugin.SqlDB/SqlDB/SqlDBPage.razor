@@ -17,7 +17,7 @@
     <AdminTable TItem="SQLHistoryValue" AutoGenerateColumns="true" ShowDefaultButtons=false
                 AllowResizing="true" IsFixedHeader=true IsMultipleSelect=false
                 ShowExtendEditButton=false ShowExtendDeleteButton=false ShowExtendButtons=false
-                ShowExportButton="true"
+                ShowExportButton="true" IsAutoQueryFirstRender=false
                 OnQueryAsync="OnQueryHisAsync" IsPagination=true CustomerSearchModel="@_searchHis">
         <CustomerSearchTemplate>
             @if (context is SqlDBPageInput model)
