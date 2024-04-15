@@ -84,6 +84,10 @@ public partial class SysSignalR : IAsyncDisposable
                 });
                 await _hubConnection.StartAsync();
             }
+            catch (OperationCanceledException)
+            {
+
+            }
             catch (Exception ex)
             {
                 System.Console.WriteLine(ex);
