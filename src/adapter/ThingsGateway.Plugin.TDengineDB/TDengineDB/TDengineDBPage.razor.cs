@@ -8,22 +8,24 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using BootstrapBlazor.Components;
+
+using Microsoft.AspNetCore.Components;
+
 namespace ThingsGateway.Plugin.TDengineDB;
 
 public partial class TDengineDBPage : IDriverUIBase
 {
-    private readonly TDengineDBPageInput _search = new();
-    private IAppDataTable _datatable;
-
     [Parameter, EditorRequired]
     public object Driver { get; set; }
 
-    public TDengineDBProducer TDengineDBProducer => (TDengineDBProducer)Driver;
+    private TDengineDBPageInput CustomerSearchModel { get; set; } = new();
 
-    private async Task<SqlSugarPagedList<TDengineDBHistoryValue>> QueryCallAsync(TDengineDBPageInput input)
+    private async Task<QueryData<TDengineDBHistoryValue>> OnQueryAsync(QueryPageOptions options)
     {
-        var query = TDengineDBProducer.Query(input);
-        var pageInfo = await query.ToPagedListAsync(input.Current, input.Size);//分页
-        return pageInfo;
+        var query = await TDengineDBProducer.QueryData(options);
+        return query;
     }
+
+    public TDengineDBProducer TDengineDBProducer => (TDengineDBProducer)Driver;
 }

@@ -10,7 +10,7 @@
 
 using Mapster;
 
-using ThingsGateway.Cache;
+using ThingsGateway.Admin.Application;
 using ThingsGateway.Foundation;
 
 using TouchSocket.Core;
@@ -20,7 +20,7 @@ namespace ThingsGateway.Plugin.TDengineDB;
 /// <summary>
 /// RabbitMQProducer
 /// </summary>
-public partial class TDengineDBProducer : BusinessBaseWithCacheInterval<TDengineDBHistoryValue>
+public partial class TDengineDBProducer : BusinessBaseWithCacheIntervalVarModel<TDengineDBHistoryValue>
 {
     private TypeAdapterConfig _config;
 

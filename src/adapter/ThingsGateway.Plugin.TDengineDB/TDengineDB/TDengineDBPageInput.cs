@@ -8,17 +8,39 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using BootstrapBlazor.Components;
+
+using ThingsGateway.Core.Extension;
+using ThingsGateway.Plugin.TDengineDB;
+
 namespace ThingsGateway.Gateway.Application;
 
-public class TDengineDBPageInput : DBPageInput
+public class TDengineDBPageInput : ITableSearchModel
 {
     /// <summary>
-    /// 开始时间
+    /// 时间区间
     /// </summary>
-    public override DateTime? StartTime { get; set; } = DateTime.Now.AddDays(-1);
+    public DateTimeRangeValue? SearchDate { get; set; }
 
     /// <summary>
-    /// 结束时间
+    /// 变量名称，不为空时忽略<see cref="VariableNames"/>
     /// </summary>
-    public override DateTime? EndTime { get; set; } = DateTime.Now.AddDays(1);
+    public virtual string? VariableName { get; set; }
+
+    /// <inheritdoc/>
+    public IEnumerable<IFilterAction> GetSearches()
+    {
+        var ret = new List<IFilterAction>();
+        ret.AddIF(!string.IsNullOrEmpty(VariableName), () => new SearchFilterAction(nameof(TDengineDBHistoryValue.Name), VariableName));
+        ret.AddIF(SearchDate != null, () => new SearchFilterAction(nameof(TDengineDBHistoryValue.CreateTime), SearchDate!.Start, FilterAction.GreaterThanOrEqual));
+        ret.AddIF(SearchDate != null, () => new SearchFilterAction(nameof(TDengineDBHistoryValue.CreateTime), SearchDate!.End, FilterAction.LessThanOrEqual));
+        return ret;
+    }
+
+    /// <inheritdoc/>
+    public void Reset()
+    {
+        SearchDate = null;
+        VariableName = null;
+    }
 }

@@ -15,5 +15,7 @@ namespace ThingsGateway.Plugin.TDengineDB;
 public class TDengineDBProducerProperty : BusinessPropertyWithCacheInterval
 {
     public DbType DbType { get; set; } = DbType.TDengine;
-    [DynamicProperty("链接字符串", "")] public string BigTextConnectStr { get; set; } = "Host=localhost;Port=6030;Username=root;Password=taosdata;Database=test";
+
+    [DynamicProperty]
+    public string BigTextConnectStr { get; set; } = "Host=localhost;Port=6030;Username=root;Password=taosdata;Database=test";
 }

@@ -2,57 +2,36 @@
 @using Microsoft.AspNetCore.Authorization;
 @using Microsoft.Extensions.Logging
 @using ThingsGateway.Admin.Application;
-@using ThingsGateway.Admin.Blazor
+@using ThingsGateway.Admin.Razor
 @using ThingsGateway.Core.Extension
 @using ThingsGateway.Gateway.Application
+@using BootstrapBlazor.Components
 @namespace ThingsGateway.Plugin.TDengineDB
-@inject UserResoures UserResoures
-@inherits BaseComponentBase
 
 
-<AppDataTable @ref="_datatable" TItem="TDengineDBHistoryValue" SearchItem="TDengineDBPageInput"
-              AddItem="object" EditItem="object" IsShowSelect=false
-              SearchModel="@_search" IsShowOperCol=true
-              QueryCallAsync="QueryCallAsync" FirstQuery=false
-                IsShowDetailButton IsShowQueryButton>
-    <SearchTemplate>
+<AdminTable TItem="TDengineDBHistoryValue" AutoGenerateColumns="true" ShowDefaultButtons=false
+                AllowResizing="true" IsFixedHeader=true IsMultipleSelect=false
+                ShowExtendEditButton=false ShowExtendDeleteButton=false ShowExtendButtons=false
+                ShowExportButton="true"
+                OnQueryAsync="OnQueryAsync" IsPagination=true CustomerSearchModel="@CustomerSearchModel">
+        <CustomerSearchTemplate>
+        @if (context is TDengineDBPageInput model)
+            {
+                @Render(model)
+            }
+        </CustomerSearchTemplate>
 
-        <PDateTimePicker @bind-Value="context.StartTime"
-                         TimeFormat="TimeFormat.Hr24"
-                         ViewType="DateTimePickerViewType.Compact">
-            <ActivatorContent Context="dt">
-                <MTextField @bind-Value="context.StartTime" Label=@AppService.I18n.T(context.Description(x => x.StartTime))
-                                    Clearable Class="my-1  mx-2 "
-                                    Filled Outlined
-                                    Readonly Dense
-                             @attributes="@dt.Attrs">
-                 </MTextField>
-             </ActivatorContent>
-             </PDateTimePicker>
+    </AdminTable>
 
-             <PDateTimePicker @bind-Value="context.EndTime"
-                              TimeFormat="TimeFormat.Hr24"
-                              ViewType="DateTimePickerViewType.Compact">
-             <ActivatorContent Context="dt">
-                 <MTextField @bind-Value="context.EndTime" Label=@AppService.I18n.T(context.Description(x => x.EndTime))
-                                    Clearable Class="my-1  mx-2 "
-                                    Filled Outlined
-                                    Readonly Dense
-                             @attributes="@dt.Attrs">
-                 </MTextField>
-             </ActivatorContent>
-             </PDateTimePicker>
+@code {
+    RenderFragment Render(TDengineDBPageInput model) =>
+    @<div class="row form-inline g-2">
+        <div class="col-12 ">
+            <BootstrapInput @bind-Value="model.VariableName" ShowLabel="true" />
+        </div>
+        <div class="col-12 ">
+            <DateTimeRange @bind-Value="model.SearchDate" ShowLabel="true" />
+        </div>
+    </div>;
 
-
-
-             <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="my-1 mx-2 " Outlined
-                     @bind-Value="context.VariableName" Label=@AppService.I18n.T(context.Description(x => x.VariableName)) />
-
-
-
-     </SearchTemplate>
-
-
-     </AppDataTable>
-
-
+}

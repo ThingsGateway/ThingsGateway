@@ -8,47 +8,31 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using BootstrapBlazor.Components;
+
 using Microsoft.AspNetCore.Components;
-
-using SqlSugar;
-
-using ThingsGateway.Admin.Core;
-using ThingsGateway.Core;
 
 namespace ThingsGateway.Plugin.SqlDB;
 
 public partial class SqlDBPage : IDriverUIBase
 {
-    private readonly SqlDBPageInput _search = new();
+    private readonly SqlDBPageInput _searchHis = new();
     private readonly SqlDBPageInput _searchReal = new();
-    private IAppDataTable _datatable;
 
     [Parameter, EditorRequired]
     public object Driver { get; set; }
 
     public SqlDBProducer SqlDBProducer => (SqlDBProducer)Driver;
 
-    private async Task<SqlSugarPagedList<SQLHistoryValue>> QueryCallAsync(SqlDBPageInput input)
+    private async Task<QueryData<SQLHistoryValue>> OnQueryHisAsync(QueryPageOptions options)
     {
-        var query = SqlDBProducer.Query(input);
-        var pageInfo = await query.ToPagedListAsync(input.Current, input.Size);//分页
-        return pageInfo;
+        var query = await SqlDBProducer.QueryHisData(options);
+        return query;
     }
 
-    private async Task<SqlSugarPagedList<SQLRealValue>> RealQueryCallAsync(SqlDBPageInput input)
+    private async Task<QueryData<SQLRealValue>> OnQueryRealAsync(QueryPageOptions options)
     {
-        using var db = SqlDBBusinessDatabaseUtil.GetDb(SqlDBProducer._driverPropertys);
-        var query = db.Queryable<SQLRealValue>().AS(SqlDBProducer._driverPropertys.ReadDBTableName)
-                           .WhereIF(!string.IsNullOrEmpty(input.VariableName), it => it.Name.Contains(input.VariableName))
-                           ;
-
-        for (int i = input.SortField.Count - 1; i >= 0; i--)
-        {
-            query = query.OrderByIF(!string.IsNullOrEmpty(input.SortField[i]), $"{input.SortField[i]} {(input.SortDesc[i] ? "desc" : "asc")}");
-        }
-        query = query.OrderBy(it => it.Id, OrderByType.Desc);//排序
-
-        var pageInfo = await query.ToPagedListAsync(input.Current, input.Size);//分页
-        return pageInfo;
+        var query = await SqlDBProducer.QueryRealData(options);
+        return query;
     }
 }

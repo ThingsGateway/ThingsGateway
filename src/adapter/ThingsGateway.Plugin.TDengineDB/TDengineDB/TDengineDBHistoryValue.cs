@@ -8,6 +8,8 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using BootstrapBlazor.Components;
+
 using SqlSugar;
 using SqlSugar.TDengine;
 
@@ -31,35 +33,35 @@ public class TDengineDBHistoryValue : STable, IPrimaryIdEntity, IDBHistoryValue
     /// </summary>
     [SugarColumn(InsertServerTime = true)]
     [Description("上传时间")]
-    [DataTable(Order = 1, IsShow = true, Sortable = true, DefaultFilter = false, CellClass = " table-text-truncate ")]
+    [AutoGenerateColumn(Order = 1, Visible = true, Sortable = true, Filterable = false)]
     public DateTime CreateTime { get; set; }
 
     /// <summary>
     /// 采集时间
     /// </summary>
     [Description("采集时间")]
-    [DataTable(Order = 1, IsShow = true, Sortable = true, DefaultFilter = false, CellClass = " table-text-truncate ")]
+    [AutoGenerateColumn(Order = 1, Visible = true, Sortable = true, Filterable = false)]
     public DateTime CollectTime { get; set; }
 
     /// <summary>
     /// 设备名称
     /// </summary>
     [Description("设备名称")]
-    [DataTable(Order = 1, IsShow = true, Sortable = true, DefaultFilter = false, CellClass = " table-text-truncate ")]
+    [AutoGenerateColumn(Order = 1, Visible = true, Sortable = true, Filterable = false)]
     public string DeviceName { get; set; }
 
     /// <summary>
     /// 变量名称
     /// </summary>
     [Description("变量名称")]
-    [DataTable(Order = 1, IsShow = true, Sortable = true, DefaultFilter = false, CellClass = " table-text-truncate ")]
+    [AutoGenerateColumn(Order = 1, Visible = true, Sortable = true, Filterable = false)]
     public string Name { get; set; }
 
     /// <summary>
     /// 是否在线
     /// </summary>
     [Description("是否在线")]
-    [DataTable(Order = 1, IsShow = true, Sortable = true, DefaultFilter = false, CellClass = " table-text-truncate ")]
+    [AutoGenerateColumn(Order = 1, Visible = true, Sortable = true, Filterable = false)]
     public bool IsOnline { get; set; }
 
     /// <summary>
@@ -67,6 +69,6 @@ public class TDengineDBHistoryValue : STable, IPrimaryIdEntity, IDBHistoryValue
     /// </summary>
     [Description("变量值")]
     [SugarColumn(Length = 18, DecimalDigits = 2)]
-    [DataTable(Order = 1, IsShow = true, Sortable = true, DefaultFilter = false, CellClass = " table-text-truncate ")]
+    [AutoGenerateColumn(Order = 1, Visible = true, Sortable = true, Filterable = false)]
     public string Value { get; set; }
 }

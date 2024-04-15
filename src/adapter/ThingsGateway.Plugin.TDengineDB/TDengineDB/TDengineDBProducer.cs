@@ -8,11 +8,13 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using BootstrapBlazor.Components;
+
 using Mapster;
 
 using SqlSugar;
 
-using ThingsGateway.Admin.Core;
+using ThingsGateway.Admin.Application;
 using ThingsGateway.Core;
 using ThingsGateway.Foundation;
 
@@ -21,7 +23,7 @@ namespace ThingsGateway.Plugin.TDengineDB;
 /// <summary>
 /// TDengineDBProducer
 /// </summary>
-public partial class TDengineDBProducer : BusinessBaseWithCacheInterval<TDengineDBHistoryValue>, IDBHistoryService
+public partial class TDengineDBProducer : BusinessBaseWithCacheIntervalVarModel<TDengineDBHistoryValue>, IDBHistoryService
 {
     private readonly TDengineDBProducerVariableProperty _variablePropertys = new();
     internal readonly TDengineDBProducerProperty _driverPropertys = new();
@@ -68,10 +70,53 @@ public partial class TDengineDBProducer : BusinessBaseWithCacheInterval<TDengine
 
     protected override async Task ProtectedExecuteAsync(CancellationToken cancellationToken)
     {
-        await UpdateTMemory(cancellationToken);
-        await UpdateTCache(cancellationToken);
+        await UpdateVarModelMemory(cancellationToken);
+        await UpdateVarModelCache(cancellationToken);
 
         await Delay(cancellationToken);
+    }
+
+    internal async Task<QueryData<TDengineDBHistoryValue>> QueryData(QueryPageOptions option)
+    {
+        using var db = BusinessDatabaseUtil.GetDb(_driverPropertys.DbType, _driverPropertys.BigTextConnectStr);
+        var ret = new QueryData<TDengineDBHistoryValue>()
+        {
+            IsSorted = option.SortOrder != SortOrder.Unset,
+            IsFiltered = option.Filters.Any(),
+            IsAdvanceSearch = option.AdvanceSearches.Any(),
+            IsSearch = option.Searches.Any() || option.CustomerSearches.Any()
+        };
+
+        var query = db.GetQuery<TDengineDBHistoryValue>(option);
+
+        if (option.IsPage)
+        {
+            RefAsync<int> totalCount = 0;
+
+            var items = await query
+                .ToPageListAsync(option.PageIndex, option.PageItems, totalCount);
+
+            ret.TotalCount = totalCount;
+            ret.Items = items;
+        }
+        else if (option.IsVirtualScroll)
+        {
+            RefAsync<int> totalCount = 0;
+
+            var items = await query
+                .ToPageListAsync(option.StartIndex, option.PageItems, totalCount);
+
+            ret.TotalCount = totalCount;
+            ret.Items = items;
+        }
+        else
+        {
+            var items = await query
+                .ToListAsync();
+            ret.TotalCount = items.Count;
+            ret.Items = items;
+        }
+        return ret;
     }
 
     internal ISugarQueryable<TDengineDBHistoryValue> Query(DBPageInput input)

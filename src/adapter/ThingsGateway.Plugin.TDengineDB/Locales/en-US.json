@@ -1,0 +1,12 @@
+﻿{
+  "ThingsGateway.Plugin.TDengineDB.TDengineDBProducerProperty": {
+    "BigTextConnectStr": "ConnectString",
+
+    "IsInterval": "IsInterval",
+    "BusinessInterval": "BusinessInterval",
+    "IsAllVariable": "IsAllVariable",
+    "QueueMaxCount": "QueueMaxCount",
+    "SplitSize": "SplitSize",
+    "CacheEnable": "CacheEnable"
+  }
+}

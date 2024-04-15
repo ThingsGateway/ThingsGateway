@@ -8,6 +8,8 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using BootstrapBlazor.Components;
+
 using Mapster;
 
 using SqlSugar;
@@ -102,6 +104,92 @@ public partial class SqlDBProducer : BusinessBaseWithCacheIntervalVarModel<SQLHi
             await UpdateVarModelCache(cancellationToken);
         }
         await Delay(cancellationToken);
+    }
+
+    internal async Task<QueryData<SQLHistoryValue>> QueryHisData(QueryPageOptions option)
+    {
+        var db = SqlDBBusinessDatabaseUtil.GetDb(_driverPropertys);
+        var ret = new QueryData<SQLHistoryValue>()
+        {
+            IsSorted = option.SortOrder != SortOrder.Unset,
+            IsFiltered = option.Filters.Any(),
+            IsAdvanceSearch = option.AdvanceSearches.Any(),
+            IsSearch = option.Searches.Any() || option.CustomerSearches.Any()
+        };
+
+        var query = db.GetQuery<SQLHistoryValue>(option);
+
+        if (option.IsPage)
+        {
+            RefAsync<int> totalCount = 0;
+
+            var items = await query
+                .ToPageListAsync(option.PageIndex, option.PageItems, totalCount);
+
+            ret.TotalCount = totalCount;
+            ret.Items = items;
+        }
+        else if (option.IsVirtualScroll)
+        {
+            RefAsync<int> totalCount = 0;
+
+            var items = await query
+                .ToPageListAsync(option.StartIndex, option.PageItems, totalCount);
+
+            ret.TotalCount = totalCount;
+            ret.Items = items;
+        }
+        else
+        {
+            var items = await query
+                .ToListAsync();
+            ret.TotalCount = items.Count;
+            ret.Items = items;
+        }
+        return ret;
+    }
+
+    internal async Task<QueryData<SQLRealValue>> QueryRealData(QueryPageOptions option)
+    {
+        var db = SqlDBBusinessDatabaseUtil.GetDb(_driverPropertys);
+        var ret = new QueryData<SQLRealValue>()
+        {
+            IsSorted = option.SortOrder != SortOrder.Unset,
+            IsFiltered = option.Filters.Any(),
+            IsAdvanceSearch = option.AdvanceSearches.Any(),
+            IsSearch = option.Searches.Any() || option.CustomerSearches.Any()
+        };
+
+        var query = db.GetQuery<SQLRealValue>(option);
+
+        if (option.IsPage)
+        {
+            RefAsync<int> totalCount = 0;
+
+            var items = await query
+                .ToPageListAsync(option.PageIndex, option.PageItems, totalCount);
+
+            ret.TotalCount = totalCount;
+            ret.Items = items;
+        }
+        else if (option.IsVirtualScroll)
+        {
+            RefAsync<int> totalCount = 0;
+
+            var items = await query
+                .ToPageListAsync(option.StartIndex, option.PageItems, totalCount);
+
+            ret.TotalCount = totalCount;
+            ret.Items = items;
+        }
+        else
+        {
+            var items = await query
+                .ToListAsync();
+            ret.TotalCount = items.Count;
+            ret.Items = items;
+        }
+        return ret;
     }
 
     internal ISugarQueryable<SQLHistoryValue> Query(DBPageInput input)

@@ -2,86 +2,66 @@
 @using Microsoft.AspNetCore.Authorization;
 @using Microsoft.Extensions.Logging
 @using ThingsGateway.Admin.Application;
-@using ThingsGateway.Admin.Blazor
+@using ThingsGateway.Admin.Razor
 @using ThingsGateway.Core.Extension
+@using BootstrapBlazor.Components
 @using ThingsGateway.Gateway.Application
 @namespace ThingsGateway.Plugin.SqlDB
-@inject UserResoures UserResoures
-@inherits BaseComponentBase
 
 @if (SqlDBProducer._driverPropertys.IsHisDB)
 {
-    <MCardText>
-        @AppService.I18n.T("历史表")
-    </MCardText>
+    <div>
+        HistoryValue
+    </div>
 
-    <AppDataTable @ref="_datatable" TItem="SQLHistoryValue" SearchItem="SqlDBPageInput"
-                  AddItem="object" EditItem="object" IsShowSelect=false
-                  SearchModel="@_search" IsShowOperCol=true
-                  QueryCallAsync="QueryCallAsync" FirstQuery=false
-                    IsShowDetailButton IsShowQueryButton>
-     <SearchTemplate>
+    <AdminTable TItem="SQLHistoryValue" AutoGenerateColumns="true" ShowDefaultButtons=false
+                AllowResizing="true" IsFixedHeader=true IsMultipleSelect=false
+                ShowExtendEditButton=false ShowExtendDeleteButton=false ShowExtendButtons=false
+                ShowExportButton="true"
+                OnQueryAsync="OnQueryHisAsync" IsPagination=true CustomerSearchModel="@_searchHis">
+        <CustomerSearchTemplate>
+            @if (context is SqlDBPageInput model)
+            {
+                @Render(model)
+            }
+        </CustomerSearchTemplate>
 
-         <PDateTimePicker @bind-Value="context.StartTime"
-                          TimeFormat="TimeFormat.Hr24"
-                          ViewType="DateTimePickerViewType.Compact">
-             <ActivatorContent Context="dt">
-                 <MTextField @bind-Value="context.StartTime" Label=@AppService.I18n.T(context.Description(x => x.StartTime))
-                                        Clearable Class="my-1  mx-2 "
-                                        Filled Outlined
-                                        Readonly Dense
-                                 @attributes="@dt.Attrs">
-                     </MTextField>
-                 </ActivatorContent>
-                 </PDateTimePicker>
-
-                 <PDateTimePicker @bind-Value="context.EndTime"
-                                  TimeFormat="TimeFormat.Hr24"
-                                  ViewType="DateTimePickerViewType.Compact">
-                 <ActivatorContent Context="dt">
-                     <MTextField @bind-Value="context.EndTime" Label=@AppService.I18n.T(context.Description(x => x.EndTime))
-                                        Clearable Class="my-1  mx-2 "
-                                        Filled Outlined
-                                        Readonly Dense
-                                 @attributes="@dt.Attrs">
-                     </MTextField>
-                 </ActivatorContent>
-                 </PDateTimePicker>
+    </AdminTable>
 
 
-
-                 <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="my-1 mx-2 " Outlined
-                         @bind-Value="context.VariableName" Label=@AppService.I18n.T(context.Description(x => x.VariableName)) />
-
-
-
-         </SearchTemplate>
-
-
-         </AppDataTable>
 
 
 }
 @if (SqlDBProducer._driverPropertys.IsReadDB)
 {
-    <MCardText>
-        @AppService.I18n.T("实时表")
-    </MCardText>
-    <AppDataTable @ref="_datatable" TItem="SQLRealValue" SearchItem="SqlDBPageInput"
-                  AddItem="object" EditItem="object" IsShowSelect=false
-                  SearchModel="@_searchReal" IsShowOperCol=true
-                  QueryCallAsync="RealQueryCallAsync" FirstQuery=false
-                    IsShowDetailButton IsShowQueryButton>
-     <SearchTemplate>
+    <div>
+        ReadValue
+    </div>
 
-         <MTextField Dense Style="max-width:200px;" HideDetails=@("auto") Class="my-1 mx-2 " Outlined
-                         @bind-Value="context.VariableName" Label=@AppService.I18n.T(context.Description(x => x.VariableName)) />
+    <AdminTable TItem="SQLRealValue" AutoGenerateColumns="true" ShowDefaultButtons=false
+                AllowResizing="true" IsFixedHeader=true IsMultipleSelect=false
+                ShowExtendEditButton=false ShowExtendDeleteButton=false ShowExtendButtons=false
+                ShowExportButton="true"
+                OnQueryAsync="OnQueryRealAsync" IsPagination=true CustomerSearchModel="@_searchReal">
+        <CustomerSearchTemplate>
+            @if (context is SqlDBPageInput model)
+            {
+                @Render(model)
+            }
+        </CustomerSearchTemplate>
 
+    </AdminTable>
 
-         </SearchTemplate>
-
-
-         </AppDataTable>
-
+}
+@code {
+    RenderFragment Render(SqlDBPageInput model) =>
+    @<div class="row form-inline g-2">
+        <div class="col-12 ">
+            <BootstrapInput @bind-Value="model.VariableName" ShowLabel="true" />
+        </div>
+        <div class="col-12 ">
+            <DateTimeRange @bind-Value="model.SearchDate" ShowLabel="true" />
+        </div>
+    </div>;
 
 }
