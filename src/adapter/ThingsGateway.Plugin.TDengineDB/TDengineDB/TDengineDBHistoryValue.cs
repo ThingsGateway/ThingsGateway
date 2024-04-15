@@ -13,8 +13,6 @@ using BootstrapBlazor.Components;
 using SqlSugar;
 using SqlSugar.TDengine;
 
-using System.ComponentModel;
-
 using ThingsGateway.Core;
 
 namespace ThingsGateway.Plugin.TDengineDB;
@@ -32,42 +30,36 @@ public class TDengineDBHistoryValue : STable, IPrimaryIdEntity, IDBHistoryValue
     /// 上传时间
     /// </summary>
     [SugarColumn(InsertServerTime = true)]
-    [Description("上传时间")]
     [AutoGenerateColumn(Order = 1, Visible = true, Sortable = true, Filterable = false)]
     public DateTime CreateTime { get; set; }
 
     /// <summary>
     /// 采集时间
     /// </summary>
-    [Description("采集时间")]
     [AutoGenerateColumn(Order = 1, Visible = true, Sortable = true, Filterable = false)]
     public DateTime CollectTime { get; set; }
 
     /// <summary>
     /// 设备名称
     /// </summary>
-    [Description("设备名称")]
     [AutoGenerateColumn(Order = 1, Visible = true, Sortable = true, Filterable = false)]
     public string DeviceName { get; set; }
 
     /// <summary>
     /// 变量名称
     /// </summary>
-    [Description("变量名称")]
     [AutoGenerateColumn(Order = 1, Visible = true, Sortable = true, Filterable = false)]
     public string Name { get; set; }
 
     /// <summary>
     /// 是否在线
     /// </summary>
-    [Description("是否在线")]
     [AutoGenerateColumn(Order = 1, Visible = true, Sortable = true, Filterable = false)]
     public bool IsOnline { get; set; }
 
     /// <summary>
     /// 变量值
     /// </summary>
-    [Description("变量值")]
     [SugarColumn(Length = 18, DecimalDigits = 2)]
     [AutoGenerateColumn(Order = 1, Visible = true, Sortable = true, Filterable = false)]
     public string Value { get; set; }

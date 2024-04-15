@@ -8,5 +8,15 @@
     "QueueMaxCount": "QueueMaxCount",
     "SplitSize": "SplitSize",
     "CacheEnable": "CacheEnable"
+  },
+  "ThingsGateway.Plugin.TDengineDB.TDengineDBHistoryValue": {
+    "Id": "Id",
+
+    "CollectTime": "CollectTime",
+    "CreateTime": "CreateTime",
+    "DeviceName": "DeviceName",
+    "Name": "Name",
+    "IsOnline": "IsOnline",
+    "Value": "Value"
   }
 }

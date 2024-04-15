@@ -12,8 +12,6 @@ using BootstrapBlazor.Components;
 
 using SqlSugar;
 
-using System.ComponentModel;
-
 using ThingsGateway.Core;
 
 namespace ThingsGateway.Plugin.QuestDB;
@@ -26,28 +24,25 @@ namespace ThingsGateway.Plugin.QuestDB;
 public class QuestDBHistoryValue : IPrimaryIdEntity, IDBHistoryValue
 {
     [SugarColumn(ColumnDescription = "变量Id")]
-    [AutoGenerateColumn(Ignore = true)]
+    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
     public long Id { get; set; }
 
     /// <summary>
     /// 采集时间
     /// </summary>
     [TimeDbSplitField(DateType.Month)]
-    [Description("采集时间")]
     [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
     public DateTime CollectTime { get; set; }
 
     /// <summary>
     /// 上传时间
     /// </summary>
-    [Description("上传时间")]
     [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
     public DateTime CreateTime { get; set; }
 
     /// <summary>
     /// 设备名称
     /// </summary>
-    [Description("设备名称")]
     [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
     public string DeviceName { get; set; }
 
@@ -55,21 +50,18 @@ public class QuestDBHistoryValue : IPrimaryIdEntity, IDBHistoryValue
     /// 变量名称
     /// </summary>
     [SugarColumn(ColumnDataType = "symbol")]
-    [Description("变量名称")]
     [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
     public string Name { get; set; }
 
     /// <summary>
     /// 是否在线
     /// </summary>
-    [Description("是否在线")]
     [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
     public bool IsOnline { get; set; }
 
     /// <summary>
     /// 变量值
     /// </summary>
-    [Description("变量值")]
     [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
     public string Value { get; set; }
 }

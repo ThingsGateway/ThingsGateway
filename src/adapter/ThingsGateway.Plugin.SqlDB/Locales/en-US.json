@@ -13,5 +13,25 @@
     "QueueMaxCount": "QueueMaxCount",
     "SplitSize": "SplitSize",
     "CacheEnable": "CacheEnable"
+  },
+  "ThingsGateway.Plugin.SqlDB.SQLHistoryValue": {
+    "Id": "Id",
+
+    "CollectTime": "CollectTime",
+    "CreateTime": "CreateTime",
+    "DeviceName": "DeviceName",
+    "Name": "Name",
+    "IsOnline": "IsOnline",
+    "Value": "Value"
+  },
+  "ThingsGateway.Plugin.SqlDB.SQLRealValue": {
+    "Id": "Id",
+
+    "CollectTime": "CollectTime",
+    "CreateTime": "CreateTime",
+    "DeviceName": "DeviceName",
+    "Name": "Name",
+    "IsOnline": "IsOnline",
+    "Value": "Value"
   }
 }
