@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -8,8 +7,6 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
-
-
 
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Localization;
@@ -121,8 +118,11 @@ public abstract class DeviceHostedService : BackgroundService
                     return null;
                 }
                 // 确保通道不为 null
-                ArgumentNullException.ThrowIfNull(channel, "channel");
-
+                ArgumentNullException.ThrowIfNull(channel);
+                if (ChannelThreads.Count > ChannelThread.MaxCount)
+                {
+                    throw new Exception($"Exceeded maximum number of channels：{ChannelThread.MaxCount}");
+                }
                 // 创建新的通道线程，并将驱动程序添加到其中
                 ChannelThread channelThread = new ChannelThread(channel, (a =>
                 {

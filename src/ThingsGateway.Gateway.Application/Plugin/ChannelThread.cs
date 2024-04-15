@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -8,9 +7,6 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
-
-
-
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Localization;
@@ -34,7 +30,16 @@ public class ChannelThread
     {
         var cycleInterval = App.Configuration.GetSection("ChannelThread:CycleInterval").Get<int?>() ?? 10;
         CycleInterval = cycleInterval < 10 ? 10 : cycleInterval;
+        var maxCount = App.Configuration.GetSection("ChannelThread:MaxCount").Get<int?>() ?? 1000;
+        MaxCount = maxCount < 10 ? 10 : maxCount;
     }
+
+    /// <summary>
+    /// 线程最小等待间隔时间
+    /// </summary>
+    public static volatile int CycleInterval = 10;
+
+    internal static volatile int MaxCount;
 
     /// <summary>
     /// 通道线程构造函数，用于初始化通道线程实例。
@@ -94,11 +99,6 @@ public class ChannelThread
     /// 设备线程
     /// </summary>
     protected internal DoTask DriverTask { get; set; }
-
-    /// <summary>
-    /// 线程最小等待间隔时间
-    /// </summary>
-    public static volatile int CycleInterval = 10;
 
     /// <summary>
     /// <inheritdoc cref="TouchSocket.Core.TouchSocketConfig"/>
