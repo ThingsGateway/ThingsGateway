@@ -75,6 +75,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThingsGateway.Plugin.Kafka"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThingsGateway.Plugin.QuestDB", "adapter\ThingsGateway.Plugin.QuestDB\ThingsGateway.Plugin.QuestDB.csproj", "{ADA5E7F6-E0E5-40B0-8887-34AD1631BC8E}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThingsGateway.Plugin.SqlHisAlarm", "adapter\ThingsGateway.Plugin.SqlHisAlarm\ThingsGateway.Plugin.SqlHisAlarm.csproj", "{CDD6DE0F-BB86-401F-A069-65C62B196723}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -181,6 +183,10 @@ Global
 		{ADA5E7F6-E0E5-40B0-8887-34AD1631BC8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ADA5E7F6-E0E5-40B0-8887-34AD1631BC8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ADA5E7F6-E0E5-40B0-8887-34AD1631BC8E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CDD6DE0F-BB86-401F-A069-65C62B196723}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CDD6DE0F-BB86-401F-A069-65C62B196723}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CDD6DE0F-BB86-401F-A069-65C62B196723}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CDD6DE0F-BB86-401F-A069-65C62B196723}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -212,6 +218,7 @@ Global
 		{A3E21DDD-570F-4096-B5CA-7C74D98B5E28} = {2A74392A-F697-4B1B-A599-864DBAABE38B}
 		{F5DA5644-ACCB-4347-85E1-53C3C1D3DE3D} = {2A74392A-F697-4B1B-A599-864DBAABE38B}
 		{ADA5E7F6-E0E5-40B0-8887-34AD1631BC8E} = {2A74392A-F697-4B1B-A599-864DBAABE38B}
+		{CDD6DE0F-BB86-401F-A069-65C62B196723} = {2A74392A-F697-4B1B-A599-864DBAABE38B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		RESX_Rules = {"EnabledRules":[]}

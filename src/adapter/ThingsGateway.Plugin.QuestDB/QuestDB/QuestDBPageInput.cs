@@ -11,9 +11,8 @@
 using BootstrapBlazor.Components;
 
 using ThingsGateway.Core.Extension;
-using ThingsGateway.Plugin.QuestDB;
 
-namespace ThingsGateway.Gateway.Application;
+namespace ThingsGateway.Plugin.QuestDB;
 
 public class QuestDBPageInput : ITableSearchModel
 {
@@ -23,7 +22,7 @@ public class QuestDBPageInput : ITableSearchModel
     public DateTimeRangeValue? SearchDate { get; set; }
 
     /// <summary>
-    /// 变量名称，不为空时忽略<see cref="VariableNames"/>
+    /// 变量名称
     /// </summary>
     public virtual string? VariableName { get; set; }
 

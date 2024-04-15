@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -9,30 +8,22 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-
-
-
 namespace ThingsGateway.Gateway.Application;
 
-public class DBPageInput : BasePageInput
+public class HisAlarmDayStatisticsOutput
 {
     /// <summary>
-    /// 开始时间
+    /// 日期
     /// </summary>
-    public virtual DateTime? StartTime { get; set; } = DateTime.Now.AddDays(-1);
+    public string Date { get; set; }
 
     /// <summary>
-    /// 结束时间
+    /// 报警次数
     /// </summary>
-    public virtual DateTime? EndTime { get; set; } = DateTime.Now.AddDays(1);
+    public int AlarmCount { get; set; }
 
     /// <summary>
-    /// 变量名称
+    /// 报警恢复次数
     /// </summary>
-    public virtual string? VariableName { get; set; }
-
-    /// <summary>
-    /// 变量名称组
-    /// </summary>
-    public virtual string[]? VariableNames { get; set; }
+    public int FinishCount { get; set; }
 }

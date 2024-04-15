@@ -11,10 +11,11 @@
 using BootstrapBlazor.Components;
 
 using ThingsGateway.Core.Extension;
+using ThingsGateway.Gateway.Application;
 
-namespace ThingsGateway.Plugin.TDengineDB;
+namespace ThingsGateway.Plugin.SqlHisAlarm;
 
-public class TDengineDBPageInput : ITableSearchModel
+public class HistoryAlarmPageInput : ITableSearchModel
 {
     /// <summary>
     /// 时间区间
@@ -26,13 +27,26 @@ public class TDengineDBPageInput : ITableSearchModel
     /// </summary>
     public virtual string? VariableName { get; set; }
 
+    /// <summary>
+    /// 报警类型
+    /// </summary>
+    public AlarmTypeEnum? AlarmType { get; set; }
+
+    /// <summary>
+    /// 事件类型
+    /// </summary>
+    public EventTypeEnum? EventType { get; set; }
+
     /// <inheritdoc/>
     public IEnumerable<IFilterAction> GetSearches()
     {
         var ret = new List<IFilterAction>();
-        ret.AddIF(!string.IsNullOrEmpty(VariableName), () => new SearchFilterAction(nameof(TDengineDBHistoryValue.Name), VariableName));
-        ret.AddIF(SearchDate != null, () => new SearchFilterAction(nameof(TDengineDBHistoryValue.CreateTime), SearchDate!.Start, FilterAction.GreaterThanOrEqual));
-        ret.AddIF(SearchDate != null, () => new SearchFilterAction(nameof(TDengineDBHistoryValue.CreateTime), SearchDate!.End, FilterAction.LessThanOrEqual));
+        ret.AddIF(!string.IsNullOrEmpty(VariableName), () => new SearchFilterAction(nameof(HistoryAlarm.Name), VariableName));
+        ret.AddIF(SearchDate != null, () => new SearchFilterAction(nameof(HistoryAlarm.EventTime), SearchDate!.Start, FilterAction.GreaterThanOrEqual));
+        ret.AddIF(SearchDate != null, () => new SearchFilterAction(nameof(HistoryAlarm.EventTime), SearchDate!.End, FilterAction.LessThanOrEqual));
+        ret.AddIF(AlarmType != null, () => new SearchFilterAction(nameof(HistoryAlarm.AlarmType), AlarmType, FilterAction.Equal));
+        ret.AddIF(EventType != null, () => new SearchFilterAction(nameof(HistoryAlarm.EventType), EventType, FilterAction.Equal));
+
         return ret;
     }
 
@@ -41,5 +55,7 @@ public class TDengineDBPageInput : ITableSearchModel
     {
         SearchDate = null;
         VariableName = null;
+        EventType = null;
+        AlarmType = null;
     }
 }
