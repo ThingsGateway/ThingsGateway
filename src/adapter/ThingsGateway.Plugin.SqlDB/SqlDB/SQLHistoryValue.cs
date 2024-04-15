@@ -8,6 +8,8 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using BootstrapBlazor.Components;
+
 using SqlSugar;
 
 using ThingsGateway.Core;
@@ -23,41 +25,41 @@ namespace ThingsGateway.Plugin.SqlDB;
 public class SQLHistoryValue : IPrimaryIdEntity, IDBHistoryValue
 {
     [SugarColumn(ColumnDescription = "变量Id")]
-    [DataTable(Order = 1, IsShow = true, Sortable = true, DefaultFilter = true, CellClass = " table-text-truncate ")]
+    [AutoGenerateColumn(Order = 1, Visible = true, Sortable = true, Filterable = true)]
     public long Id { get; set; }
 
     /// <summary>
     /// 变量名称
     /// </summary>
     [SugarColumn(ColumnDescription = "变量名称")]
-    [DataTable(Order = 13, IsShow = true, Sortable = true, DefaultFilter = false, CellClass = " table-text-truncate ")]
+    [AutoGenerateColumn(Order = 13, Visible = true, Sortable = true, Filterable = false)]
     public string Name { get; set; }
 
     /// <summary>
     /// 设备名称
     /// </summary>
     [SugarColumn(ColumnDescription = "设备名称")]
-    [DataTable(Order = 21, IsShow = true, Sortable = true, DefaultFilter = false, CellClass = " table-text-truncate ")]
+    [AutoGenerateColumn(Order = 21, Visible = true, Sortable = true, Filterable = false)]
     public string DeviceName { get; set; }
 
     ///<summary>
     ///实时值
     ///</summary>
     [SugarColumn(ColumnDescription = "实时值")]
-    [DataTable(Order = 23, IsShow = true, Sortable = true, DefaultFilter = false, CellClass = " table-text-truncate ")]
+    [AutoGenerateColumn(Order = 23, Visible = true, Sortable = true, Filterable = false)]
     public string Value { get; set; }
 
     ///<summary>
     ///是否在线
     ///</summary>
     [SugarColumn(ColumnDescription = "是否在线")]
-    [DataTable(Order = 24, IsShow = true, Sortable = true, DefaultFilter = false, CellClass = " table-text-truncate ")]
+    [AutoGenerateColumn(Order = 24, Visible = true, Sortable = true, Filterable = false)]
     public bool IsOnline { get; set; }
 
     [SugarColumn(ColumnDescription = "采集时间")]
     public DateTime CollectTime { get; set; }
 
     [SplitField] //分表字段 在插入的时候会根据这个字段插入哪个表，在更新删除的时候用这个字段找出相关表
-    [DataTable(Order = 11, IsShow = true, Sortable = true, DefaultFilter = false, CellClass = " table-text-truncate ")]
+    [AutoGenerateColumn(Order = 11, Visible = true, Sortable = true, Filterable = false)]
     public DateTime CreateTime { get; set; }
 }

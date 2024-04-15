@@ -10,6 +10,8 @@
 
 using SqlSugar;
 
+using System.ComponentModel.DataAnnotations;
+
 namespace ThingsGateway.Plugin.SqlDB;
 
 /// <summary>
@@ -17,11 +19,22 @@ namespace ThingsGateway.Plugin.SqlDB;
 /// </summary>
 public class SqlDBProducerProperty : BusinessPropertyWithCacheInterval
 {
-    [DynamicProperty("是否实时表", "true=>实时表更新")] public bool IsReadDB { get; set; } = false;
-    [DynamicProperty("是否历史表", "true=>历史存储(按月分表)")] public bool IsHisDB { get; set; } = true;
-    [DynamicProperty("实时表名称", "")] public string ReadDBTableName { get; set; } = "ReadDBTableName";
-    [DynamicProperty("历史表名称", "")] public string HisDBTableName { get; set; } = "HisDBTableName";
+    [DynamicProperty]
+    public bool IsReadDB { get; set; } = false;
 
-    [DynamicProperty("数据库类型", "MySql/SqlServer")] public DbType DbType { get; set; } = DbType.SqlServer;
-    [DynamicProperty("链接字符串", "")] public string BigTextConnectStr { get; set; } = "server=.;uid=sa;pwd=111111;database=test;";
+    [DynamicProperty]
+    public bool IsHisDB { get; set; } = true;
+
+    [DynamicProperty]
+    public string ReadDBTableName { get; set; } = "ReadDBTableName";
+
+    [DynamicProperty]
+    public string HisDBTableName { get; set; } = "HisDBTableName";
+
+    [DynamicProperty]
+    public DbType DbType { get; set; } = DbType.SqlServer;
+
+    [DynamicProperty]
+    [Required]
+    public string BigTextConnectStr { get; set; } = "server=.;uid=sa;pwd=111111;database=test;";
 }

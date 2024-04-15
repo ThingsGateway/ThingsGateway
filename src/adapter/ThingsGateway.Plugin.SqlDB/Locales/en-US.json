@@ -1,5 +1,10 @@
 ﻿{
-  "ThingsGateway.Plugin.QuestDB.QuestDBProducerProperty": {
+  "ThingsGateway.Plugin.SqlDB.SqlDBProducerProperty": {
+    "IsReadDB": "IsReadDB",
+    "IsHisDB": "IsHisDB",
+    "ReadDBTableName": "ReadDBTableName",
+    "HisDBTableName": "HisDBTableName",
+    "DbType": "DbType",
     "BigTextConnectStr": "ConnectString",
 
     "IsInterval": "IsInterval",

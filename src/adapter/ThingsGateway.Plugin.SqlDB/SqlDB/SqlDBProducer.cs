@@ -12,6 +12,7 @@ using Mapster;
 
 using SqlSugar;
 
+using ThingsGateway.Admin.Application;
 using ThingsGateway.Core;
 using ThingsGateway.Foundation;
 
@@ -97,8 +98,8 @@ public partial class SqlDBProducer : BusinessBaseWithCacheIntervalVarModel<SQLHi
 
         if (_driverPropertys.IsHisDB)
         {
-            await UpdateTMemory(cancellationToken);
-            await UpdateTCache(cancellationToken);
+            await UpdateVarModelMemory(cancellationToken);
+            await UpdateVarModelCache(cancellationToken);
         }
         await Delay(cancellationToken);
     }

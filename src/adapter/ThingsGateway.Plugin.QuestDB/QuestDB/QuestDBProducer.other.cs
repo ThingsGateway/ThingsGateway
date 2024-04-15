@@ -60,7 +60,7 @@ public partial class QuestDBProducer : BusinessBaseWithCacheIntervalVarModel<Que
             //var result = await db.Insertable(dbInserts).SplitTable().ExecuteCommandAsync();
             if (result > 0)
             {
-                LogMessage.Trace($"Topic：{nameof(QuestDBHistoryValue)}，Count：{result}");
+                LogMessage.Trace($"TableName：{nameof(QuestDBHistoryValue)}，Count：{result}");
             }
             return new();
         }

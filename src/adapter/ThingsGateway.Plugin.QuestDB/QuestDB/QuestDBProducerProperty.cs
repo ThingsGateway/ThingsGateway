@@ -10,6 +10,8 @@
 
 using SqlSugar;
 
+using System.ComponentModel.DataAnnotations;
+
 namespace ThingsGateway.Plugin.QuestDB;
 
 public class QuestDBProducerProperty : BusinessPropertyWithCacheInterval
@@ -17,5 +19,6 @@ public class QuestDBProducerProperty : BusinessPropertyWithCacheInterval
     public DbType DbType { get; set; } = DbType.QuestDB;
 
     [DynamicProperty]
+    [Required]
     public string BigTextConnectStr { get; set; } = "host=localhost;port=8812;username=admin;password=quest;database=qdb;ServerCompatibilityMode=NoTypeLoading;";
 }

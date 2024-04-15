@@ -8,6 +8,8 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using BootstrapBlazor.Components;
+
 using SqlSugar;
 
 using ThingsGateway.Core;
@@ -22,38 +24,38 @@ namespace ThingsGateway.Plugin.SqlDB;
 public class SQLRealValue : IPrimaryIdEntity
 {
     [SugarColumn(ColumnDescription = "变量Id", IsPrimaryKey = true)]
-    [DataTable(Order = 1, IsShow = true, Sortable = true, DefaultFilter = true, CellClass = " table-text-truncate ")]
+    [AutoGenerateColumn(Order = 1, Visible = true, Sortable = true, Filterable = false)]
     public long Id { get; set; }
 
     /// <summary>
     /// 变量名称
     /// </summary>
     [SugarColumn(ColumnDescription = "变量名称")]
-    [DataTable(Order = 14, IsShow = true, Sortable = true, DefaultFilter = false, CellClass = " table-text-truncate ")]
+    [AutoGenerateColumn(Order = 14, Visible = true, Sortable = true, Filterable = false)]
     public string Name { get; set; }
 
     /// <summary>
     /// 设备名称
     /// </summary>
     [SugarColumn(ColumnDescription = "设备名称")]
-    [DataTable(Order = 15, IsShow = true, Sortable = true, DefaultFilter = false, CellClass = " table-text-truncate ")]
+    [AutoGenerateColumn(Order = 15, Visible = true, Sortable = true, Filterable = false)]
     public string DeviceName { get; set; }
 
     ///<summary>
     ///实时值
     ///</summary>
     [SugarColumn(ColumnDescription = "实时值")]
-    [DataTable(Order = 21, IsShow = true, Sortable = true, DefaultFilter = false, CellClass = " table-text-truncate ")]
+    [AutoGenerateColumn(Order = 21, Visible = true, Sortable = true, Filterable = false)]
     public string Value { get; set; }
 
     ///<summary>
     ///是否在线
     ///</summary>
     [SugarColumn(ColumnDescription = "是否在线")]
-    [DataTable(Order = 23, IsShow = true, Sortable = true, DefaultFilter = false, CellClass = " table-text-truncate ")]
+    [AutoGenerateColumn(Order = 23, Visible = true, Sortable = true, Filterable = false)]
     public bool IsOnline { get; set; }
 
-    [DataTable(Order = 22, IsShow = true, Sortable = true, DefaultFilter = false, CellClass = " table-text-truncate ")]
+    [AutoGenerateColumn(Order = 22, Visible = true, Sortable = true, Filterable = false)]
     [SugarColumn(ColumnDescription = "采集时间")]
     public DateTime CollectTime { get; set; }
 }
