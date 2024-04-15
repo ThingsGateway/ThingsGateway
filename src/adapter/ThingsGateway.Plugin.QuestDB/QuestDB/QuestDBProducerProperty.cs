@@ -22,6 +22,6 @@ public class QuestDBProducerProperty : BusinessPropertyWithCacheInterval
 
     [DynamicProperty]
     [Required]
-    [AutoGenerateColumn(ComponentType = typeof(Textarea))]
+    [AutoGenerateColumn(ComponentType = typeof(Textarea), Rows = 1)]
     public string BigTextConnectStr { get; set; } = "host=localhost;port=8812;username=admin;password=quest;database=qdb;ServerCompatibilityMode=NoTypeLoading;";
 }

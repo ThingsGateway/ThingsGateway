@@ -38,6 +38,6 @@ public class SqlDBProducerProperty : BusinessPropertyWithCacheInterval
 
     [DynamicProperty]
     [Required]
-    [AutoGenerateColumn(ComponentType = typeof(Textarea))]
+    [AutoGenerateColumn(ComponentType = typeof(Textarea), Rows = 1)]
     public string BigTextConnectStr { get; set; } = "server=.;uid=sa;pwd=111111;database=test;";
 }

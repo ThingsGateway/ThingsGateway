@@ -22,6 +22,6 @@ public class TDengineDBProducerProperty : BusinessPropertyWithCacheInterval
 
     [DynamicProperty]
     [Required]
-    [AutoGenerateColumn(ComponentType = typeof(Textarea))]
+    [AutoGenerateColumn(ComponentType = typeof(Textarea), Rows = 1)]
     public string BigTextConnectStr { get; set; } = "Host=localhost;Port=6030;Username=root;Password=taosdata;Database=test";
 }
