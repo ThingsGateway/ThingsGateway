@@ -65,6 +65,16 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThingsGateway.Plugin.Dlt645
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThingsGateway.Plugin.Mqtt", "adapter\ThingsGateway.Plugin.Mqtt\ThingsGateway.Plugin.Mqtt.csproj", "{4B578B49-8F5F-4945-A5E8-7CAB7195C1AA}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThingsGateway.Plugin.RabbitMQ", "adapter\ThingsGateway.Plugin.RabbitMQ\ThingsGateway.Plugin.RabbitMQ.csproj", "{D592E826-6127-4518-988E-602FA1BCB4C7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThingsGateway.Plugin.SqlDB", "adapter\ThingsGateway.Plugin.SqlDB\ThingsGateway.Plugin.SqlDB.csproj", "{98533C48-7125-43B4-BB01-79E1D978B7F5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThingsGateway.Plugin.TDengineDB", "adapter\ThingsGateway.Plugin.TDengineDB\ThingsGateway.Plugin.TDengineDB.csproj", "{A3E21DDD-570F-4096-B5CA-7C74D98B5E28}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThingsGateway.Plugin.Kafka", "adapter\ThingsGateway.Plugin.Kafka\ThingsGateway.Plugin.Kafka.csproj", "{F5DA5644-ACCB-4347-85E1-53C3C1D3DE3D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThingsGateway.Plugin.QuestDB", "adapter\ThingsGateway.Plugin.QuestDB\ThingsGateway.Plugin.QuestDB.csproj", "{ADA5E7F6-E0E5-40B0-8887-34AD1631BC8E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -151,6 +161,26 @@ Global
 		{4B578B49-8F5F-4945-A5E8-7CAB7195C1AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4B578B49-8F5F-4945-A5E8-7CAB7195C1AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4B578B49-8F5F-4945-A5E8-7CAB7195C1AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D592E826-6127-4518-988E-602FA1BCB4C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D592E826-6127-4518-988E-602FA1BCB4C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D592E826-6127-4518-988E-602FA1BCB4C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D592E826-6127-4518-988E-602FA1BCB4C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{98533C48-7125-43B4-BB01-79E1D978B7F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{98533C48-7125-43B4-BB01-79E1D978B7F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{98533C48-7125-43B4-BB01-79E1D978B7F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{98533C48-7125-43B4-BB01-79E1D978B7F5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A3E21DDD-570F-4096-B5CA-7C74D98B5E28}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3E21DDD-570F-4096-B5CA-7C74D98B5E28}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3E21DDD-570F-4096-B5CA-7C74D98B5E28}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3E21DDD-570F-4096-B5CA-7C74D98B5E28}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F5DA5644-ACCB-4347-85E1-53C3C1D3DE3D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F5DA5644-ACCB-4347-85E1-53C3C1D3DE3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F5DA5644-ACCB-4347-85E1-53C3C1D3DE3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F5DA5644-ACCB-4347-85E1-53C3C1D3DE3D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ADA5E7F6-E0E5-40B0-8887-34AD1631BC8E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ADA5E7F6-E0E5-40B0-8887-34AD1631BC8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ADA5E7F6-E0E5-40B0-8887-34AD1631BC8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ADA5E7F6-E0E5-40B0-8887-34AD1631BC8E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -177,10 +207,15 @@ Global
 		{A830DA83-6735-48ED-AA93-CE5463EF18B2} = {2A74392A-F697-4B1B-A599-864DBAABE38B}
 		{35096FEB-7AEA-4E91-B2FF-BDF4E7052C3C} = {2A74392A-F697-4B1B-A599-864DBAABE38B}
 		{4B578B49-8F5F-4945-A5E8-7CAB7195C1AA} = {2A74392A-F697-4B1B-A599-864DBAABE38B}
+		{D592E826-6127-4518-988E-602FA1BCB4C7} = {2A74392A-F697-4B1B-A599-864DBAABE38B}
+		{98533C48-7125-43B4-BB01-79E1D978B7F5} = {2A74392A-F697-4B1B-A599-864DBAABE38B}
+		{A3E21DDD-570F-4096-B5CA-7C74D98B5E28} = {2A74392A-F697-4B1B-A599-864DBAABE38B}
+		{F5DA5644-ACCB-4347-85E1-53C3C1D3DE3D} = {2A74392A-F697-4B1B-A599-864DBAABE38B}
+		{ADA5E7F6-E0E5-40B0-8887-34AD1631BC8E} = {2A74392A-F697-4B1B-A599-864DBAABE38B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		RESX_NeutralResourcesLanguage = zh-Hans
-		SolutionGuid = {199B1B96-4F56-4828-9531-813BA02DB282}
 		RESX_Rules = {"EnabledRules":[]}
+		SolutionGuid = {199B1B96-4F56-4828-9531-813BA02DB282}
+		RESX_NeutralResourcesLanguage = zh-Hans
 	EndGlobalSection
 EndGlobal

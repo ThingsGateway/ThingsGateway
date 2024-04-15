@@ -161,7 +161,7 @@ public abstract class BusinessBaseWithCacheIntervalAlarmModel<VarModel, DevModel
     }
 
     /// <summary>
-    /// 当设备状态变化时触发此方法。如果不需要进行设备上传，则可以忽略此方法。通常情况下，需要在此方法中执行 <see cref="BusinessBaseWithCacheDevModel{T,T2}.AddQueueT2(T2)"/> 方法。
+    /// 当设备状态变化时触发此方法。如果不需要进行设备上传，则可以忽略此方法。通常情况下，需要在此方法中执行 <see cref="BusinessBaseWithCacheDevModel{T,T2}.AddQueueDevModel(T2)"/> 方法。
     /// </summary>
     /// <param name="deviceRunTime">设备运行时信息</param>
     /// <param name="deviceData">设备数据</param>
@@ -171,7 +171,7 @@ public abstract class BusinessBaseWithCacheIntervalAlarmModel<VarModel, DevModel
     }
 
     /// <summary>
-    /// 当变量状态变化时触发此方法。如果不需要进行变量上传，则可以忽略此方法。通常情况下，需要在此方法中执行 <see cref="BusinessBaseWithCacheVarModel{T}.AddQueueT(T)"/> 方法。
+    /// 当变量状态变化时触发此方法。如果不需要进行变量上传，则可以忽略此方法。通常情况下，需要在此方法中执行 <see cref="BusinessBaseWithCacheVarModel{T}.AddQueueVarModel(T)"/> 方法。
     /// </summary>
     /// <param name="variableRunTime">变量运行时信息</param>
     /// <param name="variable">变量数据</param>
