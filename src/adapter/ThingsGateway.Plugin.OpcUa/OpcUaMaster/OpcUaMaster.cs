@@ -308,7 +308,7 @@ public class OpcUaMaster : CollectBase
                     if (type.Namespace.StartsWith("System"))
                     {
                         var enumValues = Enum.GetValues<DataTypeEnum>();
-                        var stringList = enumValues.Select(e => e.ToString()).ToList();
+                        var stringList = enumValues.Select(e => e.ToString());
                         if (stringList.Contains(type.Name))
                             try { item.DataType = Enum.Parse<DataTypeEnum>(type.Name); } catch { }
                     }

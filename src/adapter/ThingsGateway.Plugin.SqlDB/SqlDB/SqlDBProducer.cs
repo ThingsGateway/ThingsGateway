@@ -81,7 +81,7 @@ public partial class SqlDBProducer : BusinessBaseWithCacheIntervalVarModel<SQLHi
             {
                 try
                 {
-                    var varList = CurrentDevice.VariableRunTimes.ToList().Adapt<List<SQLRealValue>>();
+                    var varList = CurrentDevice.VariableRunTimes.Values.Adapt<List<SQLRealValue>>();
 
                     var result = await UpdateAsync(varList, cancellationToken);
                     if (result != null && success != result.IsSuccess)

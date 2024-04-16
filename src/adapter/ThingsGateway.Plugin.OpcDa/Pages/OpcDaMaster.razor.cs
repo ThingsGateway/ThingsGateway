@@ -8,6 +8,8 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using BootstrapBlazor.Components;
+
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 
@@ -121,14 +123,22 @@ public partial class OpcDaMaster : IDisposable
     {
         _plc.RemoveItems(new List<string>() { RegisterAddress });
     }
-
+    [Inject]
+    DialogService DialogService { get; set; }
     private async Task ShowImport()
     {
-        //    await PopupService.OpenAsync(typeof(OpcDaImportVariable), new Dictionary<string, object?>()
-        //{
-        //    {nameof(OpcDaImportVariable._plc),_plc},
-        //});
-        await Task.CompletedTask;
+        var op = new DialogOption()
+        {
+            Title = OpcDaPropertyLocalizer["ShowImport"],
+            ShowFooter = false,
+            ShowCloseButton = false,
+            Size = Size.ExtraLarge
+        };
+        op.Component = BootstrapDynamicComponent.CreateComponent<OpcDaImportVariable>(new Dictionary<string, object?>
+        {
+            [nameof(OpcDaImportVariable.Plc)] = _plc,
+        });
+        await DialogService.Show(op);
     }
 
     private async Task WriteAsync()

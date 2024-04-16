@@ -8,6 +8,8 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using BootstrapBlazor.Components;
+
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 
@@ -31,15 +33,19 @@ public partial class OpcUaMaster : IDisposable
     {
         this.SafeDispose();
     }
+
     private AdapterDebugComponent AdapterDebugComponent { get; set; }
+
     [Inject]
-    IStringLocalizer<OpcUaProperty> OpcUaPropertyLocalizer { get; set; }
+    private IStringLocalizer<OpcUaProperty> OpcUaPropertyLocalizer { get; set; }
+
     /// <inheritdoc/>
     public void Dispose()
     {
         _plc?.SafeDispose();
         GC.SuppressFinalize(this);
     }
+
     protected override void OnInitialized()
     {
         _plc = new ThingsGateway.Foundation.OpcUa.OpcUaMaster();
@@ -68,6 +74,7 @@ public partial class OpcUaMaster : IDisposable
             LogMessage?.Log(LogLevel.Error, null, ex.Message, ex);
         }
     }
+
     private void Disconnect()
     {
         try
@@ -102,7 +109,6 @@ public partial class OpcUaMaster : IDisposable
 
     private async Task ReadAsync()
     {
-
         if (_plc.Connected)
         {
             try
@@ -116,7 +122,6 @@ public partial class OpcUaMaster : IDisposable
                 LogMessage?.LogWarning(ex);
             }
         }
-
     }
 
     private void Remove()
@@ -125,13 +130,23 @@ public partial class OpcUaMaster : IDisposable
             _plc.RemoveSubscription("");
     }
 
+    [Inject]
+    private DialogService DialogService { get; set; }
+
     private async Task ShowImport()
     {
-        //    await PopupService.OpenAsync(typeof(OpcUaImportVariable), new Dictionary<string, object?>()
-        //{
-        //    {nameof(OpcUaImportVariable._plc),_plc},
-        //});
-        await Task.CompletedTask;
+        var op = new DialogOption()
+        {
+            Title = OpcUaPropertyLocalizer["ShowImport"],
+            ShowFooter = false,
+            ShowCloseButton = false,
+            Size = Size.ExtraLarge
+        };
+        op.Component = BootstrapDynamicComponent.CreateComponent<OpcUaImportVariable>(new Dictionary<string, object?>
+        {
+            [nameof(OpcUaImportVariable.Plc)] = _plc,
+        });
+        await DialogService.Show(op);
     }
 
     private async Task WriteAsync()
@@ -153,6 +168,5 @@ public partial class OpcUaMaster : IDisposable
                     LogMessage?.LogWarning(item.ToJsonString());
             }
         }
-
     }
 }

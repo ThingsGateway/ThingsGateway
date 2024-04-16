@@ -166,7 +166,7 @@ public class OpcDaMaster : IDisposable
     public Dictionary<string, List<OpcItem>> AddItemsWithSave(List<string> items)
     {
         int i = 0;
-        ItemDicts = items.ToList().ConvertAll(o => new OpcItem(o)).ChunkTrivialBetter(OpcDaProperty.GroupSize).ToDictionary(a => "default" + (i++));
+        ItemDicts = items.ConvertAll(o => new OpcItem(o)).ChunkTrivialBetter(OpcDaProperty.GroupSize).ToDictionary(a => "default" + (i++));
         return ItemDicts;
     }
 

@@ -355,6 +355,7 @@ public class DeviceService : BaseService<Device>, IDeviceService
         ExportCore(data, pluginType, out fileName, out sheets, channelName);
         var memoryStream = new MemoryStream();
         await memoryStream.SaveAsAsync(sheets);
+        memoryStream.Seek(0, SeekOrigin.Begin);
         return memoryStream;
     }
 

@@ -102,7 +102,7 @@ public class OpcDaMaster : CollectBase
               TimeTick = new(_driverProperties.UpdateRate),
               RegisterAddress = it.Key,
           };
-          var variables = deviceVariables.Where(a => it.Value.Select(b => b.ItemID).Contains(a.RegisterAddress)).ToList();
+          var variables = deviceVariables.Where(a => it.Value.Select(b => b.ItemID).Contains(a.RegisterAddress));
           foreach (var v in variables)
           {
               read.AddVariable(v);
@@ -239,7 +239,7 @@ public class OpcDaMaster : CollectBase
                             if (type.Namespace.StartsWith("System"))
                             {
                                 var enumValues = Enum.GetValues<DataTypeEnum>();
-                                var stringList = enumValues.Select(e => e.ToString()).ToList();
+                                var stringList = enumValues.Select(e => e.ToString());
                                 if (stringList.Contains(type.Name))
                                     try { item.DataType = Enum.Parse<DataTypeEnum>(type.Name); } catch { }
                             }

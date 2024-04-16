@@ -9,11 +9,5 @@
     "OpcName": "OpcName",
     "UpdateRate": "UpdateRate",
     "SourceTimestampEnable": "SourceTimestampEnable"
-  },
-
-
-    "ThingsGateway.Plugin.OpcDa.OpcDaImportVariable": {
-      "NoVariablesAvailable": "No variables available",
-      "Success": "Success"
-    }
   }
+}

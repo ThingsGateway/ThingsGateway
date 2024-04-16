@@ -27,7 +27,7 @@ public class PackHelper
     /// <param name="maxPack">最大打包长度</param>
     /// <param name="defaultIntervalTime">默认间隔时间</param>
     /// <returns></returns>
-    public static List<T> LoadSourceRead<T>(IProtocol device, List<IVariable> deviceVariables, int maxPack, int defaultIntervalTime) where T : IVariableSource, new()
+    public static List<T> LoadSourceRead<T>(IProtocol device, IEnumerable<IVariable> deviceVariables, int maxPack, int defaultIntervalTime) where T : IVariableSource, new()
     {
         // 检查参数是否为空
         if (deviceVariables == null)
@@ -164,7 +164,7 @@ public class PackHelper
             }
 
             // 获取当前一组打包地址信息，使得地址不超过读取长度
-            var tempAddressEnd = orderByAddressEnd.Where(t => t.AddressEnd <= minAddress + readLength).ToList();
+            var tempAddressEnd = orderByAddressEnd.Where(t => t.AddressEnd <= minAddress + readLength);
             // 获取起始地址（当前组打包地址中起始地址最小的）
             var startAddress = tempAddressEnd.OrderBy(it => it.AddressStart).First();
             // 计算读取寄存器长度

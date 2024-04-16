@@ -3,14 +3,14 @@
 @using Microsoft.AspNetCore.Components.Web;
 @using System.Reflection;
 
-@using ThingsGateway.Foundation.OpcDa;
-@using ThingsGateway.Foundation.OpcDa.Rcw;
+@using ThingsGateway.Foundation.OpcUa;
+@using ThingsGateway.Foundation.OpcUa.Rcw;
 
 <div class="row " style="max-height:80vh;overflow: auto;">
 
 
     <div class="col-12 col-md-6 p-1" style="min-height:500px;">
-        <TreeView TItem="OpcDaTagModel" Items="Items" ShowIcon="true" ShowCheckbox="true"  AutoCheckParent="true" AutoCheckChildren="true"
+        <TreeView TItem="OpcUaTagModel" Items="Items" ShowIcon="true" ShowCheckbox="true"  AutoCheckParent="true" AutoCheckChildren="true"
                   OnExpandNodeAsync=OnExpandNodeAsync OnTreeItemChecked="OnTreeItemChecked" OnTreeItemClick=@(async a=>
                   {
                   if(a?.Value?.Tag?.Properties!=null)
@@ -34,18 +34,18 @@
 
 </div>
 <div class="form-footer">
-    <Button IsAsync Color="Color.Secondary" Icon="fa-solid fa-xmark" Text="@OpcDaPropertyLocalizer["Close"]" OnClickWithoutRender="OnClickClose" />
-    <Button IsAsync Color="Color.Primary" Icon="fa-solid fa-check" Text="@OpcDaPropertyLocalizer["Export"]" OnClickWithoutRender="OnClickExport" />
+    <Button IsAsync Color="Color.Secondary" Icon="fa-solid fa-xmark" Text="@OpcUaPropertyLocalizer["Close"]" OnClickWithoutRender="OnClickClose" />
+    <Button IsAsync Color="Color.Primary" Icon="fa-solid fa-check" Text="@OpcUaPropertyLocalizer["Export"]" OnClickWithoutRender="OnClickExport" />
 
-    <Button IsAsync Color="Color.Primary" Icon="fa-solid fa-check" Text="@OpcDaPropertyLocalizer["Save"]" OnClickWithoutRender="OnClickSave" />
+    <Button IsAsync Color="Color.Primary" Icon="fa-solid fa-check" Text="@OpcUaPropertyLocalizer["Save"]" OnClickWithoutRender="OnClickSave" />
 </div>
 
 
 
 @code {
-    RenderFragment<OpcDaTagModel> RenderTreeItem => item =>
+    RenderFragment<OpcUaTagModel> RenderTreeItem => item =>
     @<span class="flex-fill">@item.Name</span>
         ;
 
-    private TreeViewItem<OpcDaTagModel> ClickItem;
+    private TreeViewItem<OpcUaTagModel> ClickItem;
 }

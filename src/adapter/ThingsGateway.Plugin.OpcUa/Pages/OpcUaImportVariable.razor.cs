@@ -18,10 +18,8 @@ using System.Diagnostics.CodeAnalysis;
 
 using ThingsGateway.Admin.Application;
 using ThingsGateway.Core.Extension;
-using ThingsGateway.Foundation.OpcDa;
-using ThingsGateway.Foundation.OpcDa.Rcw;
+using ThingsGateway.Foundation.OpcUa;
 using ThingsGateway.Gateway.Application;
-using ThingsGateway.Plugin.OpcDa;
 using ThingsGateway.Razor;
 
 namespace ThingsGateway.Debug;
@@ -29,24 +27,24 @@ namespace ThingsGateway.Debug;
 /// <summary>
 /// 导入变量
 /// </summary>
-public partial class OpcDaImportVariable
+public partial class OpcUaImportVariable
 {
-    private List<TreeViewItem<OpcDaTagModel>> Items = new();
-    private IEnumerable<OpcDaTagModel> Nodes;
+    private List<TreeViewItem<OpcUaTagModel>> Items = new();
+    private IEnumerable<OpcUaTagModel> Nodes;
     private bool ShowSkeleton = true;
 
     /// <summary>
     /// Opc对象
     /// </summary>
     [Parameter]
-    public ThingsGateway.Foundation.OpcDa.OpcDaMaster Plc { get; set; }
+    public ThingsGateway.Foundation.OpcUa.OpcUaMaster Plc { get; set; }
 
     [CascadingParameter]
     private Func<Task>? OnCloseAsync { get; set; }
 
     [Inject]
     [NotNull]
-    private IStringLocalizer<OpcDaProperty>? OpcDaPropertyLocalizer { get; set; }
+    private IStringLocalizer<OpcUaProperty>? OpcUaPropertyLocalizer { get; set; }
 
     [Inject]
     [NotNull]
@@ -69,14 +67,14 @@ public partial class OpcDaImportVariable
     /// <summary>
     /// 构建树节点，传入的列表已经是树结构
     /// </summary>
-    private static IEnumerable<TreeViewItem<OpcDaTagModel>> BuildTreeItemList(IEnumerable<OpcDaTagModel> opcDaTagModels, Microsoft.AspNetCore.Components.RenderFragment<OpcDaTagModel> render = null, TreeViewItem<OpcDaTagModel>? parent = null)
+    private static IEnumerable<TreeViewItem<OpcUaTagModel>> BuildTreeItemList(IEnumerable<OpcUaTagModel> opcDaTagModels, Microsoft.AspNetCore.Components.RenderFragment<OpcUaTagModel> render = null, TreeViewItem<OpcUaTagModel>? parent = null)
     {
-        if (opcDaTagModels == null) return Enumerable.Empty<TreeViewItem<OpcDaTagModel>>();
-        var trees = new List<TreeViewItem<OpcDaTagModel>>();
+        if (opcDaTagModels == null) return Enumerable.Empty<TreeViewItem<OpcUaTagModel>>();
+        var trees = new List<TreeViewItem<OpcUaTagModel>>();
         foreach (var node in opcDaTagModels)
         {
             if (node == null) continue;
-            var item = new TreeViewItem<OpcDaTagModel>(node)
+            var item = new TreeViewItem<OpcUaTagModel>(node)
             {
                 Text = node.Name,
                 Parent = parent,
@@ -90,9 +88,9 @@ public partial class OpcDaImportVariable
         return trees;
     }
 
-    private List<OpcDaTagModel> GetAllTag(IEnumerable<OpcDaTagModel> opcDaTagModels)
+    private List<OpcUaTagModel> GetAllTag(IEnumerable<OpcUaTagModel> opcDaTagModels)
     {
-        List<OpcDaTagModel> result = new();
+        List<OpcUaTagModel> result = new();
         foreach (var item in opcDaTagModels)
         {
             PopulateBranch(item);
@@ -103,7 +101,7 @@ public partial class OpcDaImportVariable
         return result;
     }
 
-    private bool ModelEqualityComparer(OpcDaTagModel x, OpcDaTagModel y) => x.NodeId == y.NodeId;
+    private bool ModelEqualityComparer(OpcUaTagModel x, OpcUaTagModel y) => x.NodeId == y.NodeId;
 
     private async Task OnClickClose()
     {
@@ -118,7 +116,7 @@ public partial class OpcDaImportVariable
             var data = GetImportVariableList(GetAllTag(Nodes));
             if (data.Item3 == null || data.Item3?.Count == 0)
             {
-                await ToastService.Warning(OpcDaPropertyLocalizer["NoVariablesAvailable"], OpcDaPropertyLocalizer["NoVariablesAvailable"]);
+                await ToastService.Warning(OpcUaPropertyLocalizer["NoVariablesAvailable"], OpcUaPropertyLocalizer["NoVariablesAvailable"]);
                 return;
             }
 
@@ -140,7 +138,7 @@ public partial class OpcDaImportVariable
             var data = GetImportVariableList(GetAllTag(Nodes));
             if (data.Item3 == null || data.Item3?.Count == 0)
             {
-                await ToastService.Warning(OpcDaPropertyLocalizer["NoVariablesAvailable"], OpcDaPropertyLocalizer["NoVariablesAvailable"]);
+                await ToastService.Warning(OpcUaPropertyLocalizer["NoVariablesAvailable"], OpcUaPropertyLocalizer["NoVariablesAvailable"]);
                 return;
             }
             await App.RootServices.GetRequiredService<IChannelService>().SaveChannelAsync(data.Item1, ItemChangedType.Add);
@@ -154,19 +152,19 @@ public partial class OpcDaImportVariable
         }
     }
 
-    private Task<IEnumerable<TreeViewItem<OpcDaTagModel>>> OnExpandNodeAsync(TreeViewItem<OpcDaTagModel> treeViewItem)
+    private Task<IEnumerable<TreeViewItem<OpcUaTagModel>>> OnExpandNodeAsync(TreeViewItem<OpcUaTagModel> treeViewItem)
     {
         var data = BuildTreeItemList(PopulateBranch(treeViewItem.Value.NodeId), RenderTreeItem);
         return Task.FromResult(data);
     }
 
-    private Task OnTreeItemChecked(List<TreeViewItem<OpcDaTagModel>> items)
+    private Task OnTreeItemChecked(List<TreeViewItem<OpcUaTagModel>> items)
     {
         Nodes = items.Select(a => a.Value);
         return Task.CompletedTask;
     }
 
-    private void PopulateBranch(OpcDaTagModel model)
+    private void PopulateBranch(OpcUaTagModel model)
     {
         if (model.Children != null)
         {
@@ -182,22 +180,22 @@ public partial class OpcDaImportVariable
         }
     }
 
-    private List<OpcDaTagModel> PopulateBranch(string sourceId = null, bool isAll = false)
+    private List<OpcUaTagModel> PopulateBranch(string sourceId = null, bool isAll = false)
     {
-        List<OpcDaTagModel> nodes = new()
+        List<OpcUaTagModel> nodes = new()
         {
-            new OpcDaTagModel() { Name = "Browsering..." }
+            new OpcUaTagModel() { Name = "Browsering..." }
         };
         try
         {
             var references = Plc.GetBrowseElements(sourceId);
-            List<OpcDaTagModel> list = new();
+            List<OpcUaTagModel> list = new();
             if (references != null)
             {
                 for (int ii = 0; ii < references.Count; ii++)
                 {
                     var target = references[ii];
-                    OpcDaTagModel child = new()
+                    OpcUaTagModel child = new()
                     {
                         Name = target.Name,
                         Tag = target
@@ -215,7 +213,7 @@ public partial class OpcDaImportVariable
                 }
             }
 
-            List<OpcDaTagModel> listNode = list;
+            List<OpcUaTagModel> listNode = list;
             nodes.Clear();
             nodes.AddRange(listNode.ToArray());
             return nodes;
@@ -242,7 +240,7 @@ public partial class OpcDaImportVariable
     /// 获取设备与变量列表
     /// </summary>
     /// <returns></returns>
-    private (Channel, Device, List<Variable>) GetImportVariableList(IEnumerable<OpcDaTagModel> opcDaTagModels)
+    private (Channel, Device, List<Variable>) GetImportVariableList(IEnumerable<OpcUaTagModel> opcDaTagModels)
     {
         var channel = GetImportChannel();
         var device = GetImportDevice(channel.Id);
@@ -286,20 +284,20 @@ public partial class OpcDaImportVariable
         var id = Yitter.IdGenerator.YitIdHelper.NextId();
         var data = new Device()
         {
-            Name = Plc.OpcDaProperty.OpcName + "-" + id,
+            Name = Plc.OpcUaProperty.OpcName + "-" + id,
             Id = id,
             ChannelId = channelId,
             Enable = true,
             DevicePropertys = new(),
-            PluginName = "ThingsGateway.Plugin.OpcDa.OpcDaMaster",
+            PluginName = "ThingsGateway.Plugin.OpcUa.OpcUaMaster",
         };
-        data.DevicePropertys.Add(nameof(OpcDaMasterProperty.OpcName), Plc.OpcDaProperty.OpcName);
-        data.DevicePropertys.Add(nameof(OpcDaMasterProperty.OpcIP), Plc.OpcDaProperty.OpcIP);
-        data.DevicePropertys.Add(nameof(OpcDaMasterProperty.ActiveSubscribe), Plc.OpcDaProperty.ActiveSubscribe.ToString());
-        data.DevicePropertys.Add(nameof(OpcDaMasterProperty.CheckRate), Plc.OpcDaProperty.CheckRate.ToString());
-        data.DevicePropertys.Add(nameof(OpcDaMasterProperty.DeadBand), Plc.OpcDaProperty.DeadBand.ToString());
-        data.DevicePropertys.Add(nameof(OpcDaMasterProperty.GroupSize), Plc.OpcDaProperty.GroupSize.ToString());
-        data.DevicePropertys.Add(nameof(OpcDaMasterProperty.UpdateRate), Plc.OpcDaProperty.UpdateRate.ToString());
+        data.DevicePropertys.Add(nameof(OpcUaMasterProperty.OpcName), Plc.OpcUaProperty.OpcName);
+        data.DevicePropertys.Add(nameof(OpcUaMasterProperty.OpcIP), Plc.OpcUaProperty.OpcIP);
+        data.DevicePropertys.Add(nameof(OpcUaMasterProperty.ActiveSubscribe), Plc.OpcUaProperty.ActiveSubscribe.ToString());
+        data.DevicePropertys.Add(nameof(OpcUaMasterProperty.CheckRate), Plc.OpcUaProperty.CheckRate.ToString());
+        data.DevicePropertys.Add(nameof(OpcUaMasterProperty.DeadBand), Plc.OpcUaProperty.DeadBand.ToString());
+        data.DevicePropertys.Add(nameof(OpcUaMasterProperty.GroupSize), Plc.OpcUaProperty.GroupSize.ToString());
+        data.DevicePropertys.Add(nameof(OpcUaMasterProperty.UpdateRate), Plc.OpcUaProperty.UpdateRate.ToString());
         return data;
     }
 
@@ -308,7 +306,7 @@ public partial class OpcDaImportVariable
         var id = Yitter.IdGenerator.YitIdHelper.NextId();
         var data = new Channel()
         {
-            Name = Plc.OpcDaProperty.OpcName + "-" + id,
+            Name = Plc.OpcUaProperty.OpcName + "-" + id,
             Id = id,
             Enable = true,
             ChannelType = ChannelTypeEnum.Other,
@@ -351,25 +349,25 @@ public partial class OpcDaImportVariable
 
 #endif
 
-    internal class OpcDaTagModel
+    internal class OpcUaTagModel
     {
-        internal List<OpcDaTagModel> Children { get; set; }
+        internal List<OpcUaTagModel> Children { get; set; }
         internal string Name { get; set; }
         internal string NodeId => (Tag?.ItemName)?.ToString();
         internal BrowseElement Tag { get; set; }
 
-        public List<OpcDaTagModel> GetAllTags()
+        public List<OpcUaTagModel> GetAllTags()
         {
-            List<OpcDaTagModel> allTags = new();
+            List<OpcUaTagModel> allTags = new();
             GetAllTagsRecursive(this, allTags);
             return allTags;
         }
 
-        private void GetAllTagsRecursive(OpcDaTagModel parentTag, List<OpcDaTagModel> allTags)
+        private void GetAllTagsRecursive(OpcUaTagModel parentTag, List<OpcUaTagModel> allTags)
         {
             allTags.Add(parentTag);
             if (parentTag.Children != null)
-                foreach (OpcDaTagModel childTag in parentTag.Children)
+                foreach (OpcUaTagModel childTag in parentTag.Children)
                 {
                     GetAllTagsRecursive(childTag, allTags);
                 }

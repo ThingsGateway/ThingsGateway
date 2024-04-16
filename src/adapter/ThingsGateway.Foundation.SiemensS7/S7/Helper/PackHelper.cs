@@ -25,7 +25,7 @@ internal static class PackHelper
     /// <param name="maxPack">int，最大打包长度</param>
     /// <param name="defaultIntervalTime">int，默认间隔时间</param>
     /// <returns>List&lt;T&gt;，包含打包后的源数据列表</returns>
-    public static List<T> LoadSourceRead<T>(SiemensS7Master device, List<IVariable> deviceVariables, int maxPack, int defaultIntervalTime) where T : IVariableSource, new()
+    public static List<T> LoadSourceRead<T>(SiemensS7Master device, IEnumerable<IVariable> deviceVariables, int maxPack, int defaultIntervalTime) where T : IVariableSource, new()
     {
         var byteConverter = device.ThingsGatewayBitConverter;
         var result = new List<T>();
@@ -117,7 +117,7 @@ internal static class PackHelper
             });
 
             // 获取变量的地址列表
-            var s7AddressList = map.Keys.Where(a => a != null).ToList();
+            var s7AddressList = map.Keys.Where(a => a != null);
 
             // 获取S7数据代码
             var functionCodes = s7AddressList.Select(t => t.DataCode).Distinct();

@@ -94,7 +94,7 @@ public class BusinessDeviceHostedService : DeviceHostedService
             var deviceRunTimes = await DeviceService.GetBusinessDeviceRuntimeAsync();
             _logger.LogInformation(Localizer["DeviceRuntimeGeted"]);
             var idSet = deviceRunTimes.ToDictionary(a => a.Id);
-            var result = deviceRunTimes.Where(a => !idSet.ContainsKey(a.RedundantDeviceId ?? 0) && !a.RedundantEnable).ToList();
+            var result = deviceRunTimes.Where(a => !idSet.ContainsKey(a.RedundantDeviceId ?? 0) && !a.RedundantEnable);
             result.ParallelForEach(collectDeviceRunTime =>
             {
                 if (!_stoppingToken.IsCancellationRequested)

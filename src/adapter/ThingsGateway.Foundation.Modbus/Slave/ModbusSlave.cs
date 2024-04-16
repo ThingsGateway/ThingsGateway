@@ -181,7 +181,7 @@ public class ModbusSlave : ProtocolBase
     /// <inheritdoc/>
     public override List<T> LoadSourceRead<T>(IEnumerable<IVariable> deviceVariables, int maxPack, int defaultIntervalTime)
     {
-        return PackHelper.LoadSourceRead<T>(this, deviceVariables.ToList(), maxPack, defaultIntervalTime);
+        return PackHelper.LoadSourceRead<T>(this, deviceVariables, maxPack, defaultIntervalTime);
     }
 
     /// <inheritdoc/>

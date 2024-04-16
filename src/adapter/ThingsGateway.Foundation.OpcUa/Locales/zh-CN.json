@@ -12,7 +12,6 @@
     "UseSecurity": "安全策略",
     "LoadType": "加载服务端数据类型",
 
-
     "Connect": "连接",
     "Disconnect": "断开",
     "Add": "添加",
@@ -21,10 +20,15 @@
     "Write": "写入",
     "ShowImport": "查看OPC空间",
     "RegisterAddress": "地址",
-    "WriteValue": "写入值"
+    "WriteValue": "写入值",
+
+    "NoVariablesAvailable": "无可用变量",
+    "Success": "成功",
+    "Close": "关闭",
+    "Save": "导入到系统",
+    "Export": "导出"
   },
 
   "ThingsGateway.Foundation.OpcUa.OpcUaResource": {
-
   }
 }

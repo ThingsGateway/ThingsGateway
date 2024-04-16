@@ -16,7 +16,13 @@
     "Write": "Write",
     "ShowImport": "View OPC space",
     "RegisterAddress": "RegisterAddress",
-    "WriteValue": "WriteValue"
+    "WriteValue": "WriteValue",
+
+    "NoVariablesAvailable": "No variables available",
+    "Success": "Success",
+    "Close": "Close",
+    "Save": "Import to system",
+    "Export": "Export"
   },
 
   "ThingsGateway.Foundation.OpcDa.OpcDaResource": {

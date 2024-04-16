@@ -158,6 +158,18 @@ public class VariableService : BaseService<Variable>, IVariableService
 
     #endregion 测试
 
+    /// <inheritdoc/>
+    [OperDesc("SaveVariable", isRecordPar: false, localizerType: typeof(Variable))]
+    public Task AddBatchAsync(List<Variable> input)
+    {
+        foreach (var item in input)
+        {
+            CheckInput(item);
+        }
+        using var db = GetDB();
+        return db.Insertable(input).ExecuteCommandAsync();
+    }
+
     /// <summary>
     /// 保存变量
     /// </summary>
@@ -298,6 +310,7 @@ public class VariableService : BaseService<Variable>, IVariableService
 
         var memoryStream = new MemoryStream();
         await memoryStream.SaveAsAsync(sheets);
+        memoryStream.Seek(0, SeekOrigin.Begin);
         return memoryStream;
     }
 

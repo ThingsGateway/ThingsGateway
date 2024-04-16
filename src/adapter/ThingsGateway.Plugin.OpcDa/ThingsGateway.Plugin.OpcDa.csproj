@@ -15,10 +15,6 @@
 		<EmbeddedResource Include="Locales\*.json" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Compile Remove="Pages\OpcDaImportVariable.razor.cs" />
-		<Content Remove="Pages\OpcDaImportVariable.razor" />
-	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="$(SolutionDir)\adapter\ThingsGateway.Foundation.OpcDa\ThingsGateway.Foundation.OpcDa.csproj" />
