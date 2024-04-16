@@ -23,7 +23,7 @@ namespace ThingsGateway.Plugin.TDengineDB;
 /// <summary>
 /// TDengineDBProducer
 /// </summary>
-public partial class TDengineDBProducer : BusinessBaseWithCacheIntervalVarModel<TDengineDBHistoryValue>, IDBHistoryService
+public partial class TDengineDBProducer : BusinessBaseWithCacheIntervalVarModel<TDengineDBHistoryValue>, IDBHistoryValueService
 {
     private readonly TDengineDBProducerVariableProperty _variablePropertys = new();
     internal readonly TDengineDBProducerProperty _driverPropertys = new();
@@ -119,7 +119,7 @@ public partial class TDengineDBProducer : BusinessBaseWithCacheIntervalVarModel<
         return ret;
     }
 
-    internal ISugarQueryable<TDengineDBHistoryValue> Query(DBPageInput input)
+    internal ISugarQueryable<TDengineDBHistoryValue> Query(DBHistoryValuePageInput input)
     {
         var db = BusinessDatabaseUtil.GetDb(_driverPropertys.DbType, _driverPropertys.BigTextConnectStr);
         var query = db.Queryable<TDengineDBHistoryValue>()
@@ -138,13 +138,13 @@ public partial class TDengineDBProducer : BusinessBaseWithCacheIntervalVarModel<
         return query;
     }
 
-    public async Task<List<IDBHistoryValue>> GetDBHistoryValuesAsync(DBPageInput input)
+    public async Task<List<IDBHistoryValue>> GetDBHistoryValuesAsync(DBHistoryValuePageInput input)
     {
         var data = await Query(input).ToListAsync();
         return data.Cast<IDBHistoryValue>().ToList(); ;
     }
 
-    public async Task<SqlSugarPagedList<IDBHistoryValue>> GetDBHistoryValuePagesAsync(DBPageInput input)
+    public async Task<SqlSugarPagedList<IDBHistoryValue>> GetDBHistoryValuePagesAsync(DBHistoryValuePageInput input)
     {
         var data = await Query(input).ToPagedListAsync<TDengineDBHistoryValue, IDBHistoryValue>(input.Current, input.Size);//分页
         return data;

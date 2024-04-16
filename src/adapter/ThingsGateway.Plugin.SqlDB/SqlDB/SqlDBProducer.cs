@@ -23,7 +23,7 @@ namespace ThingsGateway.Plugin.SqlDB;
 /// <summary>
 /// SqlDBProducer
 /// </summary>
-public partial class SqlDBProducer : BusinessBaseWithCacheIntervalVarModel<SQLHistoryValue>, IDBHistoryService
+public partial class SqlDBProducer : BusinessBaseWithCacheIntervalVarModel<SQLHistoryValue>, IDBHistoryValueService
 {
     private readonly SqlDBProducerVariableProperty _variablePropertys = new();
     internal readonly SqlDBProducerProperty _driverPropertys = new();
@@ -192,7 +192,7 @@ public partial class SqlDBProducer : BusinessBaseWithCacheIntervalVarModel<SQLHi
         return ret;
     }
 
-    internal ISugarQueryable<SQLHistoryValue> Query(DBPageInput input)
+    internal ISugarQueryable<SQLHistoryValue> Query(DBHistoryValuePageInput input)
     {
         var db = SqlDBBusinessDatabaseUtil.GetDb(_driverPropertys);
         var query = db.Queryable<SQLHistoryValue>().SplitTable()
@@ -211,13 +211,13 @@ public partial class SqlDBProducer : BusinessBaseWithCacheIntervalVarModel<SQLHi
         return query;
     }
 
-    public async Task<List<IDBHistoryValue>> GetDBHistoryValuesAsync(DBPageInput input)
+    public async Task<List<IDBHistoryValue>> GetDBHistoryValuesAsync(DBHistoryValuePageInput input)
     {
         var data = await Query(input).ToListAsync();
         return data.Cast<IDBHistoryValue>().ToList();
     }
 
-    public async Task<SqlSugarPagedList<IDBHistoryValue>> GetDBHistoryValuePagesAsync(DBPageInput input)
+    public async Task<SqlSugarPagedList<IDBHistoryValue>> GetDBHistoryValuePagesAsync(DBHistoryValuePageInput input)
     {
         var data = await Query(input).ToPagedListAsync<SQLHistoryValue, IDBHistoryValue>(input.Current, input.Size);//分页
         return data;

@@ -15,6 +15,7 @@ using Mapster;
 using SqlSugar;
 
 using ThingsGateway.Admin.Application;
+using ThingsGateway.Core;
 using ThingsGateway.Foundation;
 using ThingsGateway.Gateway.Application;
 
@@ -25,7 +26,7 @@ namespace ThingsGateway.Plugin.SqlHisAlarm;
 /// <summary>
 /// SqlHisAlarm
 /// </summary>
-public partial class SqlHisAlarm : BusinessBaseWithCacheVarModel<HistoryAlarm>
+public partial class SqlHisAlarm : BusinessBaseWithCacheVarModel<HistoryAlarm>, IDBHistoryAlarmService
 {
     private readonly SqlHisAlarmVariableProperty _variablePropertys = new();
     internal readonly SqlHisAlarmProperty _driverPropertys = new();
@@ -67,6 +68,14 @@ public partial class SqlHisAlarm : BusinessBaseWithCacheVarModel<HistoryAlarm>
 
         await Delay(cancellationToken);
     }
+
+    protected override void Dispose(bool disposing)
+    {
+        HostedServiceUtil.AlarmHostedService.OnAlarmChanged -= AlarmWorker_OnAlarmChanged;
+        base.Dispose(disposing);
+    }
+
+    #region 数据查询
 
     internal async Task<QueryData<HistoryAlarm>> QueryData(QueryPageOptions option)
     {
@@ -111,9 +120,37 @@ public partial class SqlHisAlarm : BusinessBaseWithCacheVarModel<HistoryAlarm>
         return ret;
     }
 
-    protected override void Dispose(bool disposing)
+    internal ISugarQueryable<HistoryAlarm> Query(DBHistoryAlarmPageInput input)
     {
-        HostedServiceUtil.AlarmHostedService.OnAlarmChanged -= AlarmWorker_OnAlarmChanged;
-        base.Dispose(disposing);
+        using var db = BusinessDatabaseUtil.GetDb(_driverPropertys.DbType, _driverPropertys.BigTextConnectStr);
+        var query = db.Queryable<HistoryAlarm>().SplitTable()
+                             .WhereIF(input.StartTime != null, a => a.EventTime >= input.StartTime)
+                           .WhereIF(input.EndTime != null, a => a.EventTime <= input.EndTime)
+                           .WhereIF(!string.IsNullOrEmpty(input.VariableName), it => it.Name.Contains(input.VariableName))
+                           .WhereIF(input.AlarmType != null, a => a.AlarmType == input.AlarmType)
+                           .WhereIF(input.EventType != null, a => a.EventType == input.EventType)
+                           ;
+
+        for (int i = input.SortField.Count - 1; i >= 0; i--)
+        {
+            query = query.OrderByIF(!string.IsNullOrEmpty(input.SortField[i]), $"{input.SortField[i]} {(input.SortDesc[i] ? "desc" : "asc")}");
+        }
+        query = query.OrderBy(it => it.Id, OrderByType.Desc);//排序
+
+        return query;
     }
+
+    public async Task<List<IDBHistoryAlarm>> GetDBHistoryAlarmsAsync(DBHistoryAlarmPageInput input)
+    {
+        var data = await Query(input).ToListAsync();
+        return data.Cast<IDBHistoryAlarm>().ToList();
+    }
+
+    public async Task<SqlSugarPagedList<IDBHistoryAlarm>> GetDBHistoryAlarmPagesAsync(DBHistoryAlarmPageInput input)
+    {
+        var data = await Query(input).ToPagedListAsync<HistoryAlarm, IDBHistoryAlarm>(input.Current, input.Size);//分页
+        return data;
+    }
+
+    #endregion 数据查询
 }

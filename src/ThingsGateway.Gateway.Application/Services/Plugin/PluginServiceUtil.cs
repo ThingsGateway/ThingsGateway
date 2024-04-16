@@ -14,11 +14,25 @@ using NewLife.Extension;
 
 using System.Collections.Concurrent;
 using System.Reflection;
+using System.Runtime.InteropServices;
 
 namespace ThingsGateway.Gateway.Application;
 
 public static class PluginServiceUtil
 {
+    /// <summary>
+    /// 插件是否支持平台
+    /// </summary>
+    /// <param name="type"></param>
+    /// <returns></returns>
+    public static bool IsSupported(Type type)
+    {
+        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            return !Attribute.IsDefined(type, typeof(OnlyWindowsSupportAttribute));
+
+        return true;
+    }
+
     /// <summary>
     /// 通过实体赋值到字典中
     /// </summary>

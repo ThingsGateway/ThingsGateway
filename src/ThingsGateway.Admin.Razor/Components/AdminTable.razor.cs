@@ -17,7 +17,14 @@ public partial class AdminTable<TItem> where TItem : class, new()
 {
     /// <inheritdoc cref="Table{TItem}.PageItemsSource"/>
     [Parameter]
-    public IEnumerable<int>? PageItemsSource { get; set; }
+    public IEnumerable<int>? PageItemsSource { get; set; } = new int[]
+    {
+        10,
+        20,
+        50,
+        100,
+        200
+    };
 
     /// <inheritdoc cref="Table{TItem}.ExtendButtonColumnWidth"/>
     [Parameter]

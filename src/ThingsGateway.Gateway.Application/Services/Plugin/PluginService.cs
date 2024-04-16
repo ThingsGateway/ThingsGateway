@@ -465,7 +465,7 @@ public class PluginService : IPluginService
                     catch (Exception ex)
                     {
                         // 加载失败时记录警告信息
-                        _logger?.LogWarning(Localizer[$"LoadOtherFileFail", item], ex);
+                        _logger?.LogWarning(ex, Localizer[$"LoadOtherFileFail", item]);
                     }
                 }
 
@@ -554,18 +554,21 @@ public class PluginService : IPluginService
             // 遍历程序集上下文默认驱动字典，生成默认驱动插件信息
             foreach (var item in _defaultDriverBaseDict)
             {
-                FileInfo fileInfo = new FileInfo(this.GetType().Assembly.Location); //文件信息
-                DateTime lastWriteTime = fileInfo.LastWriteTime;//作为编译时间
-                plugins.Add(
-                    new PluginOutput()
-                    {
-                        Name = item.Key,//插件名称
-                        FileName = DefaultKey,//插件文件名称（分类）
-                        PluginType = (typeof(CollectBase).IsAssignableFrom(item.Value)) ? PluginTypeEnum.Collect : PluginTypeEnum.Business, //插件类型
-                        Version = item.Value.Assembly.GetName().Version.ToString(), //插件版本
-                        LastWriteTime = lastWriteTime, //编译时间
-                    }
-                );
+                if (PluginServiceUtil.IsSupported(item.Value))
+                {
+                    FileInfo fileInfo = new FileInfo(this.GetType().Assembly.Location); //文件信息
+                    DateTime lastWriteTime = fileInfo.LastWriteTime;//作为编译时间
+                    plugins.Add(
+                        new PluginOutput()
+                        {
+                            Name = item.Key,//插件名称
+                            FileName = DefaultKey,//插件文件名称（分类）
+                            PluginType = (typeof(CollectBase).IsAssignableFrom(item.Value)) ? PluginTypeEnum.Collect : PluginTypeEnum.Business, //插件类型
+                            Version = item.Value.Assembly.GetName().Version.ToString(), //插件版本
+                            LastWriteTime = lastWriteTime, //编译时间
+                        }
+                    );
+                }
             }
 
             // 获取插件文件夹路径列表
@@ -589,29 +592,32 @@ public class PluginService : IPluginService
                     // 遍历驱动类型，生成插件信息，并将其添加到插件列表中
                     foreach (var type in driverTypes)
                     {
-                        // 先判断是否已经拥有插件模块
-                        if (!_driverBaseDict.ContainsKey($"{driverMainName}.{type.Name}"))
+                        if (PluginServiceUtil.IsSupported(type))
                         {
-                            //添加到字典
-                            _driverBaseDict.TryAdd($"{driverMainName}.{type.Name}", type);
-                            _logger?.LogInformation(Localizer[$"LoadTypeSuccess", PluginServiceUtil.GetFullName(driverMainName, type.Name)]);
-                        }
-                        plugins.Add(
-                            new PluginOutput()
+                            // 先判断是否已经拥有插件模块
+                            if (!_driverBaseDict.ContainsKey($"{driverMainName}.{type.Name}"))
                             {
-                                Name = type.Name, //类型名称
-                                FileName = $"{driverMainName}", //主程序集名称
-                                PluginType = (typeof(CollectBase).IsAssignableFrom(type)) ? PluginTypeEnum.Collect : PluginTypeEnum.Business,//插件类型
-                                Version = assembly.GetName().Version.ToString(),//插件版本
-                                LastWriteTime = lastWriteTime, //编译时间
+                                //添加到字典
+                                _driverBaseDict.TryAdd($"{driverMainName}.{type.Name}", type);
+                                _logger?.LogInformation(Localizer[$"LoadTypeSuccess", PluginServiceUtil.GetFullName(driverMainName, type.Name)]);
                             }
-                        );
+                            plugins.Add(
+                                new PluginOutput()
+                                {
+                                    Name = type.Name, //类型名称
+                                    FileName = $"{driverMainName}", //主程序集名称
+                                    PluginType = (typeof(CollectBase).IsAssignableFrom(type)) ? PluginTypeEnum.Collect : PluginTypeEnum.Business,//插件类型
+                                    Version = assembly.GetName().Version.ToString(),//插件版本
+                                    LastWriteTime = lastWriteTime, //编译时间
+                                }
+                            );
+                        }
                     }
                 }
                 catch (Exception ex)
                 {
                     // 记录加载插件失败的日志
-                    _logger?.LogWarning(Localizer[$"LoadPluginFail", Path.GetRelativePath(AppContext.BaseDirectory.CombinePathWithOs(DirName), folderPath)], ex);
+                    _logger?.LogWarning(ex, Localizer[$"LoadPluginFail", Path.GetRelativePath(AppContext.BaseDirectory.CombinePathWithOs(DirName), folderPath)]);
                 }
             }
             return plugins;
@@ -693,7 +699,7 @@ public class PluginService : IPluginService
                 }
                 catch (Exception ex)
                 {
-                    _logger?.LogWarning(Localizer[$"LoadOtherFileFail", item], ex);
+                    _logger?.LogWarning(ex, Localizer[$"LoadOtherFileFail", item]);
                 }
             }
         }
