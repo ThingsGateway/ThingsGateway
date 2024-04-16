@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -8,9 +7,6 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
-
-
-
 
 using BootstrapBlazor.Components;
 
@@ -23,6 +19,7 @@ using MiniExcelLibs;
 
 using SqlSugar;
 
+using System.Collections.Concurrent;
 using System.ComponentModel.DataAnnotations;
 using System.Dynamic;
 using System.Reflection;
@@ -376,6 +373,7 @@ public class DeviceService : BaseService<Device>, IDeviceService
         List<Dictionary<string, object>> deviceExports = new();
         //设备附加属性，转成Dict<表名,List<Dict<列名，列数据>>>的形式
         Dictionary<string, List<Dictionary<string, object>>> devicePropertys = new();
+        ConcurrentDictionary<string, (object, Dictionary<string, PropertyInfo>)> propertysDict = new();
 
         #region 列名称
 
@@ -418,20 +416,28 @@ public class DeviceService : BaseService<Device>, IDeviceService
             Dictionary<string, object> driverInfo = new();
 
             var propDict = device.DevicePropertys;
-
-            var driverProperties = _pluginService.GetDriver(device.PluginName).DriverProperties;
-            var driverPropertyType = driverProperties.GetType();
-            var propertys = driverPropertyType.GetRuntimeProperties()
+            if (propertysDict.TryGetValue(device.PluginName, out var propertys))
+            {
+            }
+            else
+            {
+                var driverProperties = _pluginService.GetDriver(device.PluginName).DriverProperties;
+                propertys.Item1 = driverProperties;
+                var driverPropertyType = driverProperties.GetType();
+                propertys.Item2 = driverPropertyType.GetRuntimeProperties()
 .Where(a => a.GetCustomAttribute<DynamicPropertyAttribute>() != null)
 .ToDictionary(a => driverPropertyType.GetPropertyDisplayName(a.Name), a => a);
 
-            if (propertys.Any())
+                propertysDict.TryAdd(device.PluginName, propertys);
+            }
+
+            if (propertys.Item2.Any())
             {
                 //没有包含设备名称，手动插入
                 driverInfo.Add(ExportString.DeviceName, device.Name);
             }
             //根据插件的配置属性项生成列，从数据库中获取值或者获取属性默认值
-            foreach (var item in propertys)
+            foreach (var item in propertys.Item2)
             {
                 if (propDict.TryGetValue(item.Value.Name, out var dependencyProperty))
                 {
@@ -440,7 +446,7 @@ public class DeviceService : BaseService<Device>, IDeviceService
                 else
                 {
                     //添加对应属性数据
-                    driverInfo.Add(item.Key, ThingsGatewayStringConverter.Default.Serialize(null, item.Value.GetValue(driverProperties)));
+                    driverInfo.Add(item.Key, ThingsGatewayStringConverter.Default.Serialize(null, item.Value.GetValue(propertys.Item1)));
                 }
             }
 
@@ -541,6 +547,7 @@ public class DeviceService : BaseService<Device>, IDeviceService
 
             // 获取所有驱动程序，并将驱动程序名称作为键构建字典
             var driverPluginNameDict = _pluginService.GetList().ToDictionary(a => a.Name);
+            ConcurrentDictionary<string, (Type, Dictionary<string, PropertyInfo>, Dictionary<string, PropertyInfo>)> propertysDict = new();
             foreach (var sheetName in sheetNames)
             {
                 var rows = MiniExcel.Query(path, useHeaderRow: true, sheetName: sheetName).Cast<IDictionary<string, object>>();
@@ -561,6 +568,10 @@ public class DeviceService : BaseService<Device>, IDeviceService
 
                     // 创建设备列表
                     List<Device> devices = new();
+                    var type = typeof(Device);
+                    // 获取目标类型的所有属性，并根据是否需要过滤 IgnoreExcelAttribute 进行筛选
+                    var deviceProperties = type.GetRuntimeProperties().Where(a => (a.GetCustomAttribute<IgnoreExcelAttribute>() == null) && a.CanWrite)
+                                                .ToDictionary(a => type.GetPropertyDisplayName(a.Name));
 
                     // 遍历每一行数据
                     rows.ForEach(item =>
@@ -568,7 +579,7 @@ public class DeviceService : BaseService<Device>, IDeviceService
                         try
                         {
                             // 尝试将导入的项转换为 Device 对象
-                            var device = (item as ExpandoObject)?.ConvertToEntity<Device>(true);
+                            var device = (item as ExpandoObject)?.ConvertToEntity<Device>(deviceProperties);
 
                             // 如果转换失败，则添加错误信息到导入预览结果并返回
                             if (device == null)
@@ -708,14 +719,28 @@ public class DeviceService : BaseService<Device>, IDeviceService
                         continue;
                     }
 
-                    // 获取驱动插件实例
-                    var driver = _pluginService.GetDriver(driverPluginType.FullName);
-                    var type = driver.DriverProperties.GetType();
+                    if (propertysDict.TryGetValue(driverPluginType.FullName, out var propertys))
+                    {
+                    }
+                    else
+                    {
+                        // 获取驱动插件实例
+                        var driver = _pluginService.GetDriver(driverPluginType.FullName);
+                        var type = driver.DriverProperties.GetType();
 
-                    // 获取动态属性字典
-                    var propertys = type.GetProperties()
-                        .Where(a => a.GetCustomAttribute<DynamicPropertyAttribute>() != null)
-                        .ToDictionary(a => type.GetPropertyDisplayName(a.Name));
+                        propertys.Item1 = type;
+
+                        propertys.Item2 = type.GetRuntimeProperties()
+                            .Where(a => a.GetCustomAttribute<DynamicPropertyAttribute>() != null && a.CanWrite)
+                            .ToDictionary(a => type.GetPropertyDisplayName(a.Name));
+
+                        // 获取目标类型的所有属性，并根据是否需要过滤 IgnoreExcelAttribute 进行筛选
+                        var properties = propertys.Item1.GetRuntimeProperties().Where(a => (a.GetCustomAttribute<IgnoreExcelAttribute>() == null) && a.CanWrite)
+                                        .ToDictionary(a => propertys.Item1.GetPropertyDisplayName(a.Name));
+
+                        propertys.Item3 = properties;
+                        propertysDict.TryAdd(driverPluginType.FullName, propertys);
+                    }
 
                     // 遍历每一行数据
                     foreach (var item in rows)
@@ -743,7 +768,7 @@ public class DeviceService : BaseService<Device>, IDeviceService
                             }
 
                             // 尝试将导入的项转换为对象
-                            var pluginProp = (item as ExpandoObject)?.ConvertToEntity(type, true);
+                            var pluginProp = (item as ExpandoObject)?.ConvertToEntity(propertys.Item1, propertys.Item3);
 
                             // 如果转换失败，则添加错误信息到导入预览结果并返回
                             if (pluginProp == null)
@@ -780,7 +805,7 @@ public class DeviceService : BaseService<Device>, IDeviceService
                             Dictionary<string, string> devices = new();
                             foreach (var keyValuePair in item)
                             {
-                                if (propertys.TryGetValue(keyValuePair.Key, out var propertyInfo))
+                                if (propertys.Item2.TryGetValue(keyValuePair.Key, out var propertyInfo))
                                 {
                                     devices.Add(propertyInfo.Name, keyValuePair.Value?.ToString());
                                 }

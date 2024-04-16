@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -8,8 +7,6 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
-
-
 
 using System.Dynamic; // 引入 System.Dynamic 命名空间
 using System.Reflection; // 引入 System.Reflection 命名空间
@@ -30,12 +27,9 @@ namespace ThingsGateway.Gateway.Application.Extensions
         /// <param name="type">要转换的目标实体类型</param>
         /// <param name="filter">是否过滤属性上的 IgnoreExcelAttribute 特性</param>
         /// <returns>转换后的实体对象</returns>
-        public static object ConvertToEntity(this ExpandoObject expandoObject, Type type, bool filter)
+        public static object ConvertToEntity(this ExpandoObject expandoObject, Type type, Dictionary<string, PropertyInfo> properties)
         {
             var entity = Activator.CreateInstance(type);
-            // 获取目标类型的所有属性，并根据是否需要过滤 IgnoreExcelAttribute 进行筛选
-            var properties = type.GetRuntimeProperties().Where(a => (!filter || a.GetCustomAttribute<IgnoreExcelAttribute>() == null) && a.CanWrite)
-                                        .ToDictionary(a => type.GetPropertyDisplayName(a.Name));
 
             // 遍历动态对象的属性
             expandoObject.ForEach(keyValuePair =>
@@ -58,13 +52,9 @@ namespace ThingsGateway.Gateway.Application.Extensions
         /// <param name="expandoObject">动态对象</param>
         /// <param name="filter">是否过滤属性上的 IgnoreExcelAttribute 特性</param>
         /// <returns>转换后的实体对象</returns>
-        public static T ConvertToEntity<T>(this ExpandoObject expandoObject, bool filter) where T : new()
+        public static T ConvertToEntity<T>(this ExpandoObject expandoObject, Dictionary<string, PropertyInfo> properties) where T : new()
         {
             var entity = new T(); // 创建目标类型的实例
-            var type = typeof(T); // 获取目标类型的 Type 对象
-            // 获取目标类型的所有属性，并根据是否需要过滤 IgnoreExcelAttribute 进行筛选
-            var properties = type.GetRuntimeProperties().Where(a => (!filter || a.GetCustomAttribute<IgnoreExcelAttribute>() == null) && a.CanWrite)
-                                        .ToDictionary(a => type.GetPropertyDisplayName(a.Name));
 
             // 遍历动态对象的属性
             expandoObject.ForEach(keyValuePair =>

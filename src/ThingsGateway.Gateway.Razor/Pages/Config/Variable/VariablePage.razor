@@ -46,9 +46,9 @@
             </Button>
         </ExportButtonDropdownTemplate>
         <TableToolbarTemplate>
-            <TableToolbarButton TItem="Variable"
+            <TableToolbarPopConfirmButton TItem="Variable"
                                 Color=Color.Warning Text="@Localizer["Clear"]"
-                                IsAsync OnClickCallback=@(async(a)=>{ await VariableService.ClearVariableAsync();await ToastService.Default(); await table.QueryAsync(); }) />
+                                IsAsync OnConfirm=@(async()=>{ await VariableService.ClearVariableAsync();await ToastService.Default(); await table.QueryAsync(); }) />
 
             <PopConfirmButton TItem="Variable"
                               Color=Color.Warning Text="@Localizer["Test"]"

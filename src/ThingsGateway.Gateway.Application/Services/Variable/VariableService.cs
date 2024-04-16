@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -8,9 +7,6 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
-
-
-
 
 using BootstrapBlazor.Components;
 
@@ -23,6 +19,7 @@ using MiniExcelLibs;
 
 using SqlSugar;
 
+using System.Collections.Concurrent;
 using System.ComponentModel.DataAnnotations;
 using System.Dynamic;
 using System.Reflection;
@@ -315,35 +312,36 @@ public class VariableService : BaseService<Variable>, IVariableService
         //总数据
         Dictionary<string, object> sheets = new();
         //变量页
-        List<Dictionary<string, object>> variableExports = new();
+        ConcurrentList<ConcurrentDictionary<string, object>> variableExports = new();
         //变量附加属性，转成Dict<表名,List<Dict<列名，列数据>>>的形式
-        Dictionary<string, List<Dictionary<string, object>>> devicePropertys = new();
+        ConcurrentDictionary<string, ConcurrentList<ConcurrentDictionary<string, object>>> devicePropertys = new();
+        ConcurrentDictionary<string, (VariablePropertyBase, Dictionary<string, PropertyInfo>)> propertysDict = new();
 
         #region 列名称
 
         var type = typeof(Variable);
-        var propertyInfos = type.GetProperties().Where(a => a.GetCustomAttribute<IgnoreExcelAttribute>() == null).OrderBy(
+        var propertyInfos = type.GetRuntimeProperties().Where(a => a.GetCustomAttribute<IgnoreExcelAttribute>() == null).OrderBy(
            a =>
            {
                return a.GetCustomAttribute<AutoGenerateColumnAttribute>()?.Order ?? 999999;
            }
-           );
+           ).ToList();
 
         #endregion 列名称
 
-        foreach (var variable in data)
+        data.ParallelForEach((variable, state, index) =>
         {
-            Dictionary<string, object> varExport = new();
+            ConcurrentDictionary<string, object> varExport = new();
             deviceDicts.TryGetValue(variable.DeviceId.Value, out var device);
 
             //设备实体没有包含设备名称，手动插入
-            varExport.Add(ExportString.DeviceName, device?.Name ?? deviceName);
+            varExport.TryAdd(ExportString.DeviceName, device?.Name ?? deviceName);
             foreach (var item in propertyInfos)
             {
                 //描述
                 var desc = type.GetPropertyDisplayName(item.Name);
                 //数据源增加
-                varExport.Add(desc ?? item.Name, item.GetValue(variable)?.ToString());
+                varExport.TryAdd(desc ?? item.Name, item.GetValue(variable)?.ToString());
             }
 
             //添加完整设备信息
@@ -355,33 +353,41 @@ public class VariableService : BaseService<Variable>, IVariableService
             {
                 //插件属性
                 //单个设备的行数据
-                Dictionary<string, object> driverInfo = new();
+                ConcurrentDictionary<string, object> driverInfo = new();
                 var has = deviceDicts.TryGetValue(item.Key, out var businessDevice);
                 if (!has)
                     continue;
                 //没有包含设备名称，手动插入
-                driverInfo.Add(ExportString.DeviceName, businessDevice.Name);
-                driverInfo.Add(ExportString.VariableName, variable.Name);
+                driverInfo.TryAdd(ExportString.DeviceName, businessDevice.Name);
+                driverInfo.TryAdd(ExportString.VariableName, variable.Name);
 
                 var propDict = item.Value;
 
-                var variableProperty = ((BusinessBase)_pluginService.GetDriver(businessDevice.PluginName)).VariablePropertys;
-                var variablePropertyType = variableProperty.GetType();
-                var propertys = variablePropertyType.GetRuntimeProperties()
-    .Where(a => a.GetCustomAttribute<DynamicPropertyAttribute>() != null)
-    .ToDictionary(a => variablePropertyType.GetPropertyDisplayName(a.Name));
+                if (propertysDict.TryGetValue(businessDevice.PluginName, out var propertys))
+                {
+                }
+                else
+                {
+                    var variableProperty = ((BusinessBase)_pluginService.GetDriver(businessDevice.PluginName)).VariablePropertys;
+                    propertys.Item1 = variableProperty;
+                    var variablePropertyType = variableProperty.GetType();
+                    propertys.Item2 = variablePropertyType.GetRuntimeProperties()
+       .Where(a => a.GetCustomAttribute<DynamicPropertyAttribute>() != null)
+       .ToDictionary(a => variablePropertyType.GetPropertyDisplayName(a.Name));
+                    propertysDict.TryAdd(businessDevice.PluginName, propertys);
+                }
 
                 //根据插件的配置属性项生成列，从数据库中获取值或者获取属性默认值
-                foreach (var item1 in propertys)
+                foreach (var item1 in propertys.Item2)
                 {
                     if (propDict.TryGetValue(item1.Value.Name, out var dependencyProperty))
                     {
-                        driverInfo.Add(item1.Key, dependencyProperty);
+                        driverInfo.TryAdd(item1.Key, dependencyProperty);
                     }
                     else
                     {
                         //添加对应属性数据
-                        driverInfo.Add(item1.Key, ThingsGatewayStringConverter.Default.Serialize(null, item1.Value.GetValue(variableProperty)));
+                        driverInfo.TryAdd(item1.Key, ThingsGatewayStringConverter.Default.Serialize(null, item1.Value.GetValue(propertys.Item1)));
                     }
                 }
 
@@ -405,33 +411,27 @@ public class VariableService : BaseService<Variable>, IVariableService
             }
 
             #endregion 插件sheet
-        }
+        });
+
         //添加设备页
         sheets.Add(ExportString.VariableName, variableExports);
 
         //HASH
         foreach (var item in devicePropertys)
         {
-            HashSet<string> allKeys = new();
+            //HashSet<string> allKeys = item.Value.SelectMany(a => a.Keys).ToHashSet();
 
-            foreach (var dict in item.Value)
-            {
-                foreach (var key in dict.Keys)
-                {
-                    allKeys.Add(key);
-                }
-            }
-            foreach (var dict in item.Value)
-            {
-                foreach (var key in allKeys)
-                {
-                    if (!dict.ContainsKey(key))
-                    {
-                        // 添加缺失的键，并设置默认值
-                        dict.Add(key, null);
-                    }
-                }
-            }
+            //foreach (var dict in item.Value)
+            //{
+            //    foreach (var key in allKeys)
+            //    {
+            //        if (!dict.ContainsKey(key))
+            //        {
+            //            // 添加缺失的键，并设置默认值
+            //            dict.TryAdd(key, null);
+            //        }
+            //    }
+            //}
 
             sheets.Add(item.Key, item.Value);
         }
@@ -477,7 +477,6 @@ public class VariableService : BaseService<Variable>, IVariableService
             // 获取所有设备的字典，以设备名称作为键
             var deviceDicts = _deviceService.GetAll().ToDictionary(a => a.Name);
 
-            // 使用 MiniExcel 打开文件
             using var db = GetDB();
 
             // 从数据库中获取所有变量，并转换为字典，以变量名称作为键
@@ -493,6 +492,7 @@ public class VariableService : BaseService<Variable>, IVariableService
             // 获取驱动插件的全名和名称的字典
             var driverPluginFullNameDict = _pluginService.GetList().ToDictionary(a => a.FullName);
             var driverPluginNameDict = _pluginService.GetList().ToDictionary(a => a.Name);
+            ConcurrentDictionary<string, (Type, Dictionary<string, PropertyInfo>, Dictionary<string, PropertyInfo>)> propertysDict = new();
 
             // 遍历每个工作表
             foreach (var sheetName in sheetNames)
@@ -510,6 +510,10 @@ public class VariableService : BaseService<Variable>, IVariableService
 
                     // 线程安全的变量列表
                     var variables = new ConcurrentList<Variable>();
+                    var type = typeof(Variable);
+                    // 获取目标类型的所有属性，并根据是否需要过滤 IgnoreExcelAttribute 进行筛选
+                    var variableProperties = type.GetRuntimeProperties().Where(a => (a.GetCustomAttribute<IgnoreExcelAttribute>() == null) && a.CanWrite)
+                                                .ToDictionary(a => type.GetPropertyDisplayName(a.Name));
 
                     // 并行处理每一行数据
                     rows.ParallelForEach((item, state, index) =>
@@ -517,7 +521,7 @@ public class VariableService : BaseService<Variable>, IVariableService
                         try
                         {
                             // 尝试将行数据转换为 Variable 对象
-                            var variable = ((ExpandoObject)item!).ConvertToEntity<Variable>(true);
+                            var variable = ((ExpandoObject)item!).ConvertToEntity<Variable>(variableProperties);
                             variable.Row = index;
 
                             // 获取设备名称并查找对应的设备
@@ -609,18 +613,32 @@ public class VariableService : BaseService<Variable>, IVariableService
                             continue;
                         }
 
-                        var variableProperty = ((BusinessBase)_pluginService.GetDriver(driverPluginType.FullName)).VariablePropertys;
-                        var variablePropertyType = variableProperty.GetType();
-                        var propertys = variablePropertyType.GetRuntimeProperties()
-                            .Where(a => a.GetCustomAttribute<DynamicPropertyAttribute>() != null)
-                            .ToDictionary(a => variablePropertyType.GetPropertyDisplayName(a.Name));
+                        if (propertysDict.TryGetValue(driverPluginType.FullName, out var propertys))
+                        {
+                        }
+                        else
+                        {
+                            var variableProperty = ((BusinessBase)_pluginService.GetDriver(driverPluginType.FullName)).VariablePropertys;
+                            var variablePropertyType = variableProperty.GetType();
+                            propertys.Item1 = variablePropertyType;
+                            propertys.Item2 = variablePropertyType.GetRuntimeProperties()
+                                .Where(a => a.GetCustomAttribute<DynamicPropertyAttribute>() != null)
+                                .ToDictionary(a => variablePropertyType.GetPropertyDisplayName(a.Name));
+
+                            // 获取目标类型的所有属性，并根据是否需要过滤 IgnoreExcelAttribute 进行筛选
+                            var properties = propertys.Item1.GetRuntimeProperties().Where(a => (a.GetCustomAttribute<IgnoreExcelAttribute>() == null) && a.CanWrite)
+                                            .ToDictionary(a => propertys.Item1.GetPropertyDisplayName(a.Name));
+
+                            propertys.Item3 = properties;
+                            propertysDict.TryAdd(driverPluginType.FullName, propertys);
+                        }
 
                         rows.ParallelForEach(item =>
                         {
                             try
                             {
                                 // 尝试将导入的项转换为对象
-                                var pluginProp = (item as ExpandoObject)?.ConvertToEntity(variablePropertyType, true);
+                                var pluginProp = (item as ExpandoObject)?.ConvertToEntity(propertys.Item1, propertys.Item3);
 
                                 // 如果转换失败，则添加错误信息到导入预览结果并返回
                                 if (pluginProp == null)
@@ -676,7 +694,7 @@ public class VariableService : BaseService<Variable>, IVariableService
                                 Dictionary<string, string> dependencyProperties = new();
                                 foreach (var keyValuePair in item)
                                 {
-                                    if (propertys.TryGetValue(keyValuePair.Key, out var propertyInfo))
+                                    if (propertys.Item2.TryGetValue(keyValuePair.Key, out var propertyInfo))
                                     {
                                         dependencyProperties.Add(propertyInfo.Name, keyValuePair.Value?.ToString());
                                     }

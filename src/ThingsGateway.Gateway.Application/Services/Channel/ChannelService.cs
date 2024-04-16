@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -8,9 +7,6 @@
 //  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
-
-
-
 
 using BootstrapBlazor.Components;
 
@@ -359,12 +355,16 @@ public class ChannelService : BaseService<Channel>, IChannelService
                     ImportPreviews.Add(sheetName, importPreviewOutput);
                     channelImportPreview = importPreviewOutput;
                     List<Channel> channels = new();
+                    var type = typeof(Channel);
+                    // 获取目标类型的所有属性，并根据是否需要过滤 IgnoreExcelAttribute 进行筛选
+                    var channelProperties = type.GetRuntimeProperties().Where(a => (a.GetCustomAttribute<IgnoreExcelAttribute>() == null) && a.CanWrite)
+                                                .ToDictionary(a => type.GetPropertyDisplayName(a.Name));
 
                     rows.ForEach(item =>
                     {
                         try
                         {
-                            var channel = ((ExpandoObject)item!).ConvertToEntity<Channel>(true);
+                            var channel = ((ExpandoObject)item!).ConvertToEntity<Channel>(channelProperties);
                             if (channel == null)
                             {
                                 importPreviewOutput.HasError = true;
