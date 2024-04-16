@@ -307,11 +307,11 @@ internal class OpcGroup : IOPCDataCallback, IDisposable
                 Marshal.Copy(pErrors, PErrors, 0, OpcItems.Count);
                 if (PErrors.Any(a => a > 0))
                 {
-                    throw new("读取错误，错误代码：" + pErrors);
+                    throw new("Read fail，Code：" + pErrors);
                 }
             }
             else
-                throw new("连接无效");
+                throw new ArgumentNullException(nameof(m_Async2IO));
         }
         finally
         {
@@ -387,7 +387,7 @@ internal class OpcGroup : IOPCDataCallback, IDisposable
             }
         }
         else
-            throw new("连接无效");
+            throw new ArgumentNullException(nameof(m_Async2IO));
     }
 
     protected virtual void Dispose(bool disposing)

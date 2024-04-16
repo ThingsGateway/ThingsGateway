@@ -8,126 +8,151 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using ThingsGateway.Debug;
-using ThingsGateway.Foundation;
+using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
+
+using ThingsGateway.Foundation.OpcUa;
 
 using TouchSocket.Core;
 
-namespace ThingsGateway.Debug
+namespace ThingsGateway.Debug;
+
+public partial class OpcUaMaster : IDisposable
 {
-    public partial class OpcUaMaster
+    public LoggerGroup? LogMessage;
+    private readonly OpcUaProperty OpcUaProperty = new();
+    private ThingsGateway.Foundation.OpcUa.OpcUaMaster _plc;
+    private string LogPath;
+    private string RegisterAddress;
+    private string WriteValue;
+
+    /// <inheritdoc/>
+    ~OpcUaMaster()
     {
-        private ThingsGateway.Foundation.OpcUa.OpcUaMaster Plc => opcUaMasterConnectPage.Plc;
-        private OpcUaMasterConnectPage opcUaMasterConnectPage;
-        private string RegisterAddress;
+        this.SafeDispose();
+    }
+    private AdapterDebugComponent AdapterDebugComponent { get; set; }
+    [Inject]
+    IStringLocalizer<OpcUaProperty> OpcUaPropertyLocalizer { get; set; }
+    /// <inheritdoc/>
+    public void Dispose()
+    {
+        _plc?.SafeDispose();
+        GC.SuppressFinalize(this);
+    }
+    protected override void OnInitialized()
+    {
+        _plc = new ThingsGateway.Foundation.OpcUa.OpcUaMaster();
+        _plc.OpcUaProperty = OpcUaProperty;
 
-        private string LogPath;
-        private AdapterDebugComponent AdapterDebugPage { get; set; }
+        LogMessage = new TouchSocket.Core.LoggerGroup() { LogLevel = TouchSocket.Core.LogLevel.Trace };
+        var logger = TextFileLogger.Create(_plc.GetHashCode().ToLong().GetDebugLogPath());
+        logger.LogLevel = LogLevel.Trace;
+        LogMessage.AddLogger(logger);
 
-        private void OnConnectClick()
+        _plc.LogEvent = (a, b, c, d) => LogMessage.Log((LogLevel)a, b, c, d);
+        _plc.DataChangedHandler += (a) => LogMessage.Trace(a.ToJsonString());
+        base.OnInitialized();
+    }
+
+    private async Task Connect()
+    {
+        try
         {
+            _plc.Disconnect();
+            LogPath = _plc?.GetHashCode().ToLong().GetDebugLogPath();
+            await GetOpc().ConnectAsync(CancellationToken.None);
         }
-
-        protected override async Task OnAfterRenderAsync(bool firstRender)
+        catch (Exception ex)
         {
-            await base.OnAfterRenderAsync(firstRender);
-            if (firstRender)
-            {
-                //载入配置
-                StateHasChanged();
-            }
+            LogMessage?.Log(LogLevel.Error, null, ex.Message, ex);
         }
-
-        protected override Task OnInitializedAsync()
+    }
+    private void Disconnect()
+    {
+        try
         {
-            return base.OnInitializedAsync();
+            _plc.Disconnect();
         }
-
-        private string WriteValue;
-
-        private async Task Add()
+        catch (Exception ex)
         {
-            if (Plc.Connected)
-                await Plc.AddSubscriptionAsync(Guid.NewGuid().ToString(), new[] { RegisterAddress });
-            else
-            {
-                opcUaMasterConnectPage.LogMessage?.LogWarning($"未连接");
-            }
+            LogMessage?.Log(LogLevel.Error, null, ex.Message, ex);
         }
+    }
 
-        private async Task WriteAsync()
+    private ThingsGateway.Foundation.OpcUa.OpcUaMaster GetOpc()
+    {
+        //载入配置
+        _plc.OpcUaProperty = OpcUaProperty;
+        return _plc;
+    }
+
+    private async Task Add()
+    {
+        try
+        {
+            if (_plc.Connected)
+                await _plc.AddSubscriptionAsync(Guid.NewGuid().ToString(), new[] { RegisterAddress });
+        }
+        catch (Exception ex)
+        {
+            LogMessage?.LogWarning(ex);
+        }
+    }
+
+    private async Task ReadAsync()
+    {
+
+        if (_plc.Connected)
         {
             try
             {
-                if (Plc.Connected)
-                {
-                    var data = await Plc.WriteNodeAsync(
-                        new()
-                        {
-                        {RegisterAddress, WriteValue.GetJTokenFromString()}
-                        }
-                        );
+                var data = await _plc.ReadJTokenValueAsync(new string[] { RegisterAddress });
 
-                    foreach (var item in data)
-                    {
-                        if (item.Value.Item1)
-                            opcUaMasterConnectPage.LogMessage?.LogInformation(item.ToJsonString());
-                        else
-                            opcUaMasterConnectPage.LogMessage?.LogWarning(item.ToJsonString());
-                    }
-                }
-                else
-                {
-                    opcUaMasterConnectPage.LogMessage?.LogWarning($"未连接");
-                }
+                LogMessage?.LogInformation($" {data[0].Item1}：{data[0].Item3}");
             }
             catch (Exception ex)
             {
-                opcUaMasterConnectPage.LogMessage?.LogWarning(ex, $"写入失败");
+                LogMessage?.LogWarning(ex);
             }
         }
 
-        private async Task ShowImport()
-        {
-            await PopupService.OpenAsync(typeof(OpcUaImportVariable), new Dictionary<string, object?>()
-        {
-            {nameof(OpcUaImportVariable.Plc),Plc},
-            {nameof(OpcUaImportVariable.IsShowSubvariable),IsShowSubvariable},
-        });
-        }
+    }
 
-        private bool IsShowSubvariable;
+    private void Remove()
+    {
+        if (_plc.Connected)
+            _plc.RemoveSubscription("");
+    }
 
-        private async Task ReadAsync()
+    private async Task ShowImport()
+    {
+        //    await PopupService.OpenAsync(typeof(OpcUaImportVariable), new Dictionary<string, object?>()
+        //{
+        //    {nameof(OpcUaImportVariable._plc),_plc},
+        //});
+        await Task.CompletedTask;
+    }
 
+    private async Task WriteAsync()
+    {
+        if (_plc.Connected)
         {
-            if (Plc.Connected)
-            {
-                try
+            var data = await _plc.WriteNodeAsync(
+                new()
                 {
-                    var data = await Plc.ReadJTokenValueAsync(new string[] { RegisterAddress });
+                        {RegisterAddress, WriteValue.GetJTokenFromString()}
+                }
+                );
 
-                    opcUaMasterConnectPage.LogMessage?.LogInformation($" {data[0].Item1}：{data[0].Item3}");
-                }
-                catch (Exception ex)
-                {
-                    opcUaMasterConnectPage.LogMessage?.LogWarning(ex, $"读取失败");
-                }
-            }
-            else
+            foreach (var item in data)
             {
-                opcUaMasterConnectPage.LogMessage?.LogWarning($"未连接");
+                if (item.Value.Item1)
+                    LogMessage?.LogInformation(item.ToJsonString());
+                else
+                    LogMessage?.LogWarning(item.ToJsonString());
             }
         }
 
-        private void Remove()
-        {
-            if (Plc.Connected)
-                Plc.RemoveSubscription("");
-            else
-            {
-                opcUaMasterConnectPage.LogMessage?.LogWarning($"未连接");
-            }
-        }
     }
 }

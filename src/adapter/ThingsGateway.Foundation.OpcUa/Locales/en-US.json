@@ -1,9 +1,19 @@
 ﻿{
-  "ThingsGateway.Foundation.OpcUa.OpcUaMaster": {
-    
+  "ThingsGateway.Foundation.OpcUa.OpcUaProperty": {
+    "OpcUrl": "OpcUrl",
+    "UserName": "UserName",
+    "Password": "Password",
+    "CheckDomain": "CheckDomain",
+    "UpdateRate": "UpdateRate",
+    "ActiveSubscribe": "ActiveSubscribe",
+    "GroupSize": "GroupSize",
+    "DeadBand": "DeadBand",
+    "KeepAliveInterval": "KeepAliveInterval(ms)",
+    "UseSecurity": "IsUseSecurity",
+    "LoadType": "LoadType"
   },
 
   "ThingsGateway.Foundation.OpcUa.OpcUaResource": {
-    
+
   }
 }

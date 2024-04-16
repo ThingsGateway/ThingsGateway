@@ -10,32 +10,7 @@
 
 namespace ThingsGateway.Foundation.OpcUa;
 
-/// <summary>
-/// OPC UA的状态更新消息
-/// </summary>
-public class OpcUaStatusEventArgs
-{
-    /// <summary>
-    /// 日志等级，<br></br>
-    /// 更为详细的步骤型日志输出 Trace = 0,<br></br>
-    /// 调试信息日志Debug = 1,<br></br>
-    /// 消息类日志输出 Info = 2,<br></br>
-    /// 警告类日志输出 Warning = 3,<br></br>
-    /// 错误类日志输出 Error = 4,<br></br>
-    /// 不可控中断类日输出Critical = 5,
-    /// </summary>
-    public int LogLevel { get; set; }
 
-    /// <summary>
-    /// 时间
-    /// </summary>
-    public DateTime Time { get; set; }
-
-    /// <summary>
-    /// 文本
-    /// </summary>
-    public string Text { get; set; }
-}
 
 /// <summary>
 /// 读取属性过程中用于描述的

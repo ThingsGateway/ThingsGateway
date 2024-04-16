@@ -18,6 +18,6 @@ public class OpcUaServerVariableProperty : VariablePropertyBase
     /// <summary>
     /// 数据类型
     /// </summary>
-    [DynamicProperty("数据类型", "")]
-    public DataTypeEnum DataTypeEnum { get; set; } = DataTypeEnum.Object;
+    [DynamicProperty()]
+    public DataTypeEnum DataType { get; set; } = DataTypeEnum.Object;
 }

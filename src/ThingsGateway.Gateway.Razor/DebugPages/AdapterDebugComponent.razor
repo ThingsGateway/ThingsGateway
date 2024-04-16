@@ -8,15 +8,15 @@
 @namespace ThingsGateway.Debug
 @inherits AdapterDebugBase
 
-<div class=@($"{ClassString} row mt-2 px-2  mx-1") style="min-height:700px;height: 50%;">
+<div class=@($"{ClassString} row mt-2 px-2 mx-1") style="min-height:700px;height: 50%;">
 
     <div class="col-12 col-md-5 h-100">
         <Tab class="h-100">
             <TabItem Text=@Localizer["CommonFunctions"]>
                 @if (ShowDefaultReadWriteContent)
                 {
-                        <BootstrapInput title=@Plc?.GetAddressDescription() @bind-Value=@RegisterAddress
-                                        ShowLabel="true" style="width:100%" />
+                    <BootstrapInput title=@Plc?.GetAddressDescription() @bind-Value=@RegisterAddress
+                                    ShowLabel="true" style="width:100%" />
 
 
                     <div class="row mx-1 form-inline mt-2">
@@ -70,41 +70,46 @@
                     @ReadWriteContent
                 }
             </TabItem>
-            <TabItem Text=@Localizer["SpecialFunctions"]>
 
-                @foreach (var item in VariableRunTimes)
+
+            <TabItem Text=@Localizer["SpecialFunctions"]>
+                @if (ShowDefaultOtherContent)
                 {
 
-                    <div class="row mx-1 form-inline mt-2">
+                    @foreach (var item in VariableRunTimes)
+                    {
 
-                        <div class="col-12 col-md-8 p-1">
+                        <div class="row mx-1 form-inline mt-2">
 
-                            <div class="p-1">
+                            <div class="col-12 col-md-8 p-1">
+
+                                <div class="p-1">
 
                                     <BootstrapInput @bind-Value=@item.RegisterAddress title="@Plc?.GetAddressDescription()"
                                                     ShowLabel="true" style="width:100%" />
 
-                                <Select @bind-Value="@DataType" ShowLabel="true" />
+                                    <Select @bind-Value="@DataType" ShowLabel="true" />
+                                </div>
+
                             </div>
+                            <div class="col-12 col-md-4 p-1">
 
+                                <div title=@(item.LastErrorMessage) class=@(item.IsOnline?"green--text":"red--text")>@(item.Value?.ToJsonNetString())</div>
+
+                            </div>
                         </div>
-                        <div class="col-12 col-md-4 p-1">
 
-                            <div title=@(item.LastErrorMessage) class=@(item.IsOnline?"green--text":"red--text")>@(item.Value?.ToJsonNetString())</div>
+                    }
 
-                        </div>
-                    </div>
+
+
+                    <Divider />
+
+
+                    <Button IsAsync Color="Color.Primary" OnClick="MulRead">@Localizer["MulRead"]</Button>
+
 
                 }
-
-                
-
-                <Divider />
-
-
-                <Button IsAsync Color="Color.Primary" OnClick="MulRead">@Localizer["MulRead"]</Button>
-
-                
 
             </TabItem>
 

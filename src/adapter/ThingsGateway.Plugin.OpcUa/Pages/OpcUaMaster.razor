@@ -1,75 +1,103 @@
 ﻿@page "/OpcUaMaster"
+@using BootstrapBlazor.Components
 @using ThingsGateway.Core.Extension
 @using ThingsGateway.Foundation
 @namespace ThingsGateway.Debug
 @using ThingsGateway.Foundation.OpcUa
 @using TouchSocket.Core
-@inherits BaseComponentBase
-
-<OpcUaMasterConnectPage @ref=opcUaMasterConnectPage OnConnectClick=OnConnectClick></OpcUaMasterConnectPage>
-
-<AdapterDebugPage LogPath=@LogPath @ref=AdapterDebugPage HeaderText="HeaderText" Height=@($"calc(100vh - {BlazorAppService.DefaultHeight+400}px)") ShowDefaultOtherContent=false ShowDefaultReadWriteContent=false>
-
-    <ReadWriteContent>
-
-        <MContainer>
-            <MRow Justify="JustifyTypes.Start" Align="AlignTypes.Center">
-
-                <MTooltip Right Context="tip">
-                     <ActivatorContent>
-                         <MTextarea Class="pa-1" Style="max-width:200px" Dense Outlined HideDetails="@("auto")"
-                                    Label=@AppService.I18n.T("Register Address") @attributes="@tip.Attrs" @bind-Value=@RegisterAddress />
-                     </ActivatorContent>
-                     <ChildContent>
-                         <span style="white-space: pre-wrap;">@Plc?.GetAddressDescription()</span>
-                    </ChildContent>
-                </MTooltip>
 
 
-                <MCol Align="AlignTypes.Center">
-                    <MButton Class="mx-1 my-1" Color="primary" OnClick="Add">
-                        @AppService.I18n.T("添加")
+<div style="height:100%; width:100%;">
 
-                    </MButton>
-                    <MButton Class="mx-1 my-1" Color="primary" OnClick="Remove">
-                        @AppService.I18n.T("移除")
+    @if (_plc?.OpcUaProperty != null)
+    {
+        <Card class="mt-2">
+            <BodyTemplate>
 
-                    </MButton>
-                    <MButton Class="ma-1" Color="primary" OnClick="ReadAsync">
-                        @AppService.I18n.T("读取")
-                    </MButton>
-
-                </MCol>
-            </MRow>
+                <EditorForm Model="_plc.OpcUaProperty" AutoGenerateAllItem=false RowType="RowType.Inline" ItemsPerRow="4" ShowLabelTooltip="true" ShowLabel="true">
+                    <FieldItems>
 
 
-            <MRow Class="mt-8" Justify="JustifyTypes.Start" Align="AlignTypes.Center">
+                        <EditorItem @bind-Field=context.CheckDomain />
+                        <EditorItem @bind-Field=context.UseSecurity />
+                        <EditorItem @bind-Field=context.ActiveSubscribe />
+                        <EditorItem @bind-Field=context.GroupSize />
+                        <EditorItem @bind-Field=context.UpdateRate />
+                        <EditorItem @bind-Field=context.DeadBand />
+                        <EditorItem @bind-Field=context.Password />
+                        <EditorItem @bind-Field=context.OpcUrl />
+                        <EditorItem @bind-Field=context.UserName />
+                        <EditorItem @bind-Field=context.LoadType />
+                        <EditorItem @bind-Field=context.KeepAliveInterval />
 
-                <MTextarea Class="pa-1" Style="max-width:200px" Dense Outlined HideDetails="@("auto")"
-                            Label=@AppService.I18n.T("WriteValue") @bind-Value=@WriteValue />
-                 <MCol Align="AlignTypes.Center">
-                     <MButton Class="ma-1" Color="primary" OnClick="WriteAsync">
-                         @AppService.I18n.T("Write")
-                    </MButton>
-                </MCol>
-            </MRow>
+                    </FieldItems>
 
-            <MRow Class="mt-8" Justify="JustifyTypes.Start" Align="AlignTypes.Center">
+                </EditorForm>
 
-                <MCheckbox Class="ma-1" HideDetails="@("auto")" @bind-Value=IsShowSubvariable Dense Label="是否显示子变量" />
+                <Button IsAsync Color="Color.Primary" OnClick="Connect">@OpcUaPropertyLocalizer["Connect"]</Button>
 
-                <MButton Class="ma-1" Color="primary" OnClick="ShowImport">
-                    @AppService.I18n.T("查看Opc节点空间")
-                </MButton>
+                <Button IsAsync Color="Color.Warning" OnClick="Disconnect">@OpcUaPropertyLocalizer["Disconnect"]</Button>
+            </BodyTemplate>
+        </Card>
 
-            </MRow>
+    }
 
+    <AdapterDebugComponent Plc=null LogPath=@LogPath @ref=AdapterDebugComponent  ShowDefaultOtherContent=false ShowDefaultReadWriteContent=false>
 
-        </MContainer>
+        <ReadWriteContent>
+
+            <BootstrapInput @bind-Value=@RegisterAddress
+                            ShowLabel="true" style="width:100%" />
 
 
-    </ReadWriteContent>
+            <div class="row mx-1 form-inline mt-2">
 
 
-</AdapterDebugPage>
+                <div class="col-12 col-md-4 p-1">
+
+                    <Button IsAsync Color="Color.Primary" OnClick="Add">@OpcUaPropertyLocalizer["Add"]</Button>
+
+                </div>
+                <div class="col-12 col-md-4 p-1">
+
+                    <Button IsAsync Color="Color.Primary" OnClick="Remove">@OpcUaPropertyLocalizer["Remove"]</Button>
+
+                </div>
+
+                <div class="col-12 col-md-4 p-1">
+
+                    <Button IsAsync Color="Color.Primary" OnClick="ReadAsync">@OpcUaPropertyLocalizer["Read"]</Button>
+
+                </div>
+            </div>
+
+            <Divider />
+
+            <div class="row mx-1 form-inline mt-2">
+
+                <div class="col-12 col-md-8 p-1">
+                    <Textarea @bind-Value=@WriteValue ShowLabelTooltip="true"
+                              ShowLabel="true" />
+
+                </div>
+                <div class="col-12 col-md-4 p-1">
+                    <Button IsAsync Color="Color.Primary" OnClick="WriteAsync">@OpcUaPropertyLocalizer["Write"]</Button>
+                </div>
+            </div>
+
+            <div class="row mx-1 form-inline mt-2">
+
+                <div class="col-12 col-md-4 p-1">
+                    <Button IsAsync Color="Color.Primary" OnClick="ShowImport">@OpcUaPropertyLocalizer["ShowImport"]</Button>
+                </div>
+            </div>
+
+
+        </ReadWriteContent>
+
+
+    </AdapterDebugComponent>
+</div>
+
+
 

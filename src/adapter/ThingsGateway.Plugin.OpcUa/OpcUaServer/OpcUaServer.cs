@@ -10,15 +10,20 @@
 
 using Mapster;
 
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+
+using NewLife.Threading;
 
 using Opc.Ua;
 using Opc.Ua.Configuration;
 
 using System.Collections.Concurrent;
 
-using ThingsGateway.Foundation.Extension.ConcurrentQueue;
+using ThingsGateway.Admin.Application;
+using ThingsGateway.Core.Extension;
 using ThingsGateway.Gateway.Application;
+using ThingsGateway.Gateway.Application.Generic;
 
 using TouchSocket.Core;
 
@@ -47,11 +52,10 @@ public partial class OpcUaServer : BusinessBase
 
     public override void Init(IChannel? channel = null)
     {
-        base.Init(channel);
         if (_driverPropertys.IsAllVariable)
         {
-            CurrentDevice.VariableRunTimes = GlobalData.AllVariables.ToList();
-            CollectDevices = GlobalData.CollectDevices.ToList();
+            CurrentDevice.VariableRunTimes = GlobalData.ReadOnlyVariables;
+            CollectDevices = GlobalData.ReadOnlyCollectDevices;
         }
 
         ApplicationInstance.MessageDlg = new ApplicationMessageDlg(LogMessage);//默认返回true
@@ -72,12 +76,15 @@ public partial class OpcUaServer : BusinessBase
         m_server = new(this);
 
         CollectVariableRunTimes.Clear();
+
+        GlobalData.VariableValueChangeEvent += VariableValueChange;
         CurrentDevice.VariableRunTimes.ForEach(a =>
         {
-            VariableValueChange(a);
-            a.VariableValueChange += VariableValueChange;
+            VariableValueChange(a.Value, a.Value.Adapt<VariableData>());
         });
+        Localizer = App.CreateLocalizerByType(typeof(OpcUaServer))!;
     }
+    protected IStringLocalizer Localizer { get; private set; }
 
     /// <inheritdoc/>
     public override bool IsConnected() => m_server?.CurrentInstance.CurrentState == Opc.Ua.ServerState.Running;
@@ -85,20 +92,13 @@ public partial class OpcUaServer : BusinessBase
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
-        CurrentDevice?.VariableRunTimes?.ForEach(a =>
-        {
-            a.VariableValueChange -= VariableValueChange;
-        });
+        GlobalData.VariableValueChangeEvent -= VariableValueChange;
+        m_application?.Stop();
         m_server?.SafeDispose();
-        CollectVariableRunTimes.Clear();
+        CollectVariableRunTimes?.Clear();
         base.Dispose(disposing);
     }
 
-    protected override Task ProtectedAfterStopAsync()
-    {
-        m_application.Stop();
-        return base.ProtectedAfterStopAsync();
-    }
 
     protected override async Task ProtectedBeforStartAsync(CancellationToken cancellationToken)
     {
@@ -115,11 +115,11 @@ public partial class OpcUaServer : BusinessBase
             if (IsConnected())
             {
                 //更新设备活动时间
-                CurrentDevice.SetDeviceStatus(DateTimeUtil.Now, 0);
+                CurrentDevice.SetDeviceStatus(TimerX.Now, 0);
             }
             else
             {
-                CurrentDevice.SetDeviceStatus(DateTimeUtil.Now, 999);
+                CurrentDevice.SetDeviceStatus(TimerX.Now, 999);
                 try
                 {
                     await m_application.CheckApplicationInstanceCertificate(false, 0, 1200);
@@ -129,7 +129,7 @@ public partial class OpcUaServer : BusinessBase
                 catch (Exception ex)
                 {
                     if (success)
-                        LogMessage.LogWarning(ex, "无法启动服务");
+                        LogMessage.LogWarning(ex, Localizer["CanStartService"]);
                     success = false;
                 }
             }
@@ -329,10 +329,11 @@ public partial class OpcUaServer : BusinessBase
         return config;
     }
 
-    private void VariableValueChange(VariableRunTime variableRunTime)
+    private void VariableValueChange(VariableRunTime variableRunTime, VariableData variableData)
     {
         if (!CurrentDevice.KeepRun)
             return;
-        CollectVariableRunTimes.Enqueue(variableRunTime.Adapt<VariableData>());
+        if (DisposedValue) return;
+        CollectVariableRunTimes.Enqueue(variableData);
     }
 }

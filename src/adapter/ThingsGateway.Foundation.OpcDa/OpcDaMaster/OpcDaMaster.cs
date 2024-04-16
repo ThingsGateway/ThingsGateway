@@ -50,7 +50,7 @@ public class OpcDaMaster : IDisposable
     /// <summary>
     /// 当前配置
     /// </summary>
-    public OpcDaConfig OpcDaConfig { get; private set; }
+    public OpcDaProperty OpcDaProperty { get; private set; }
 
     /// <summary>
     /// 数据变化事件
@@ -86,7 +86,7 @@ public class OpcDaMaster : IDisposable
 #if (NET6_0_OR_GREATER)
         if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
-            throw new NotSupportedException("不支持非windows系统");
+            throw new NotSupportedException("Non Windows systems are not supported");
         }
 #endif
     }
@@ -113,14 +113,14 @@ public class OpcDaMaster : IDisposable
     /// <param name="items">组名称/变量节点，注意每次添加的组名称不能相同</param>
     public void AddItems(Dictionary<string, List<OpcItem>> items)
     {
-        if (IsExit == 1) throw new ObjectDisposedException("对象已释放");
+        if (IsExit == 1) throw new ObjectDisposedException(nameof(OpcDaMaster));
         foreach (var item in items)
         {
-            if (IsExit == 1) throw new("对象已释放");
+            if (IsExit == 1) throw new ObjectDisposedException(nameof(OpcDaMaster));
             try
             {
-                var subscription = m_server.AddGroup(item.Key, true, OpcDaConfig.UpdateRate, OpcDaConfig.DeadBand);
-                subscription.ActiveSubscribe = OpcDaConfig.ActiveSubscribe;
+                var subscription = m_server.AddGroup(item.Key, true, OpcDaProperty.UpdateRate, OpcDaProperty.DeadBand);
+                subscription.ActiveSubscribe = OpcDaProperty.ActiveSubscribe;
                 subscription.OnDataChanged += Subscription_OnDataChanged;
                 subscription.OnReadCompleted += Subscription_OnDataChanged;
 
@@ -132,7 +132,7 @@ public class OpcDaMaster : IDisposable
                     {
                         stringBuilder.Append($"{item1.Item1.ItemID}：{item1.Item2}");
                     }
-                    LogEvent?.Invoke(3, this, $"添加变量失败：{stringBuilder}", null);
+                    LogEvent?.Invoke(3, this, $"Failed to add variable：{stringBuilder}", null);
                 }
                 else
                 {
@@ -141,7 +141,7 @@ public class OpcDaMaster : IDisposable
             }
             catch (Exception ex)
             {
-                LogEvent?.Invoke(3, this, $"添加组失败：{ex.Message}", ex);
+                LogEvent?.Invoke(3, this, $"Failed to add group：{ex.Message}", ex);
             }
         }
         for (int i = 0; i < Groups?.Count; i++)
@@ -166,7 +166,7 @@ public class OpcDaMaster : IDisposable
     public Dictionary<string, List<OpcItem>> AddItemsWithSave(List<string> items)
     {
         int i = 0;
-        ItemDicts = items.ToList().ConvertAll(o => new OpcItem(o)).ChunkTrivialBetter(OpcDaConfig.GroupSize).ToDictionary(a => "default" + (i++));
+        ItemDicts = items.ToList().ConvertAll(o => new OpcItem(o)).ChunkTrivialBetter(OpcDaProperty.GroupSize).ToDictionary(a => "default" + (i++));
         return ItemDicts;
     }
 
@@ -198,8 +198,9 @@ public class OpcDaMaster : IDisposable
         }
         catch (Exception ex)
         {
-            LogEvent?.Invoke(3, this, $"连接释放失败：{ex.Message}", ex);
+            LogEvent?.Invoke(3, this, $"Disconnect warn：{ex.Message}", ex);
         }
+        checkTimer?.Dispose();
         Interlocked.CompareExchange(ref IsExit, 1, 0);
     }
 
@@ -226,13 +227,13 @@ public class OpcDaMaster : IDisposable
     /// 初始化设置
     /// </summary>
     /// <param name="config"></param>
-    public void Init(OpcDaConfig config)
+    public void Init(OpcDaProperty config)
     {
         if (config != null)
-            OpcDaConfig = config;
+            OpcDaProperty = config;
         checkTimer?.Stop();
         checkTimer?.Dispose();
-        checkTimer = new Timer(Math.Min(OpcDaConfig.CheckRate, 1) * 60 * 1000);
+        checkTimer = new Timer(Math.Min(OpcDaProperty.CheckRate, 1) * 60 * 1000);
         checkTimer.Elapsed += CheckTimer_Elapsed;
         checkTimer.Start();
         try
@@ -241,9 +242,9 @@ public class OpcDaMaster : IDisposable
         }
         catch (Exception ex)
         {
-            LogEvent?.Invoke(3, this, $"连接释放失败：{ex.Message}", ex);
+            LogEvent?.Invoke(3, this, $"Disconnect warn：{ex.Message}", ex);
         }
-        m_server = new OpcServer(OpcDaConfig.OpcName, OpcDaConfig.OpcIP);
+        m_server = new OpcServer(OpcDaProperty.OpcName, OpcDaProperty.OpcIP);
     }
 
     /// <summary>
@@ -253,7 +254,7 @@ public class OpcDaMaster : IDisposable
     /// <returns></returns>
     public void ReadItemsWithGroup(string groupName = null)
     {
-        if (IsExit == 1) throw new ObjectDisposedException("对象已释放");
+        if (IsExit == 1) throw new ObjectDisposedException(nameof(OpcDaMaster));
         {
             var groups = groupName != null ? Groups.Where(a => a.Name == groupName) : Groups;
             foreach (var group in groups)
@@ -298,7 +299,7 @@ public class OpcDaMaster : IDisposable
     /// <inheritdoc/>
     public override string ToString()
     {
-        return OpcDaConfig?.ToString();
+        return OpcDaProperty?.ToString();
     }
 
     /// <summary>
@@ -307,7 +308,7 @@ public class OpcDaMaster : IDisposable
     /// <returns></returns>
     public Dictionary<string, Tuple<bool, string>> WriteItem(Dictionary<string, object> writeInfos)
     {
-        if (IsExit == 1) throw new ObjectDisposedException("对象已释放");
+        if (IsExit == 1) throw new ObjectDisposedException(nameof(OpcDaMaster));
         Dictionary<string, Tuple<bool, string>> results = new();
 
         var valueGroup = writeInfos.GroupBy(itemId =>
@@ -324,7 +325,7 @@ public class OpcDaMaster : IDisposable
                 {
                     foreach (var item2 in item1)
                     {
-                        results.AddOrUpdate(item2.Key, Tuple.Create(false, $"不存在该变量{item2.Key}"));
+                        results.AddOrUpdate(item2.Key, Tuple.Create(false, $"The variable does not exist {item2.Key}"));
                     }
                 }
                 else
@@ -345,12 +346,12 @@ public class OpcDaMaster : IDisposable
                     var data = item1.ToList();
                     foreach (var item2 in result)
                     {
-                        results.AddOrUpdate(handleItems[item2.Item1].ItemID, Tuple.Create(false, $"错误代码{item2.Item2}"));
+                        results.AddOrUpdate(handleItems[item2.Item1].ItemID, Tuple.Create(false, $"Error code{item2.Item2}"));
                     }
                 }
                 foreach (var item2 in item1)
                 {
-                    results.AddOrUpdate(item2.Key, Tuple.Create(true, $"成功"));
+                    results.AddOrUpdate(item2.Key, Tuple.Create(true, $"Success"));
                 }
             }
             catch (Exception ex)
@@ -383,11 +384,11 @@ public class OpcDaMaster : IDisposable
                         try
                         {
                             PrivateConnect();
-                            LogEvent?.Invoke(1, this, $"重新链接成功", null);
+                            LogEvent?.Invoke(1, this, $"Successfully reconnected", null);
                         }
                         catch (Exception ex)
                         {
-                            LogEvent?.Invoke(3, this, $"重新链接失败：{ex.Message}", ex);
+                            LogEvent?.Invoke(3, this, $"Reconnect failed：{ex.Message}", ex);
                         }
                     }
                 }
@@ -409,7 +410,7 @@ public class OpcDaMaster : IDisposable
         }
         catch (Exception ex)
         {
-            LogEvent?.Invoke(3, this, $"添加点位失败：{ex.Message}", ex);
+            LogEvent?.Invoke(3, this, $"Add variable failed：{ex.Message}", ex);
         }
     }
 
@@ -431,18 +432,18 @@ public class OpcDaMaster : IDisposable
                     }
                     catch
                     {
-                        Init(OpcDaConfig);
+                        Init(OpcDaProperty);
                         m_server?.Connect();
-                        LogEvent?.Invoke(1, this, $"{m_server.Host} - {m_server.Name} - 连接成功", null);
+                        LogEvent?.Invoke(1, this, $"{m_server.Host} - {m_server.Name} - Connection successful", null);
                         PrivateAddItems();
                     }
                 }
             }
             else
             {
-                Init(OpcDaConfig);
+                Init(OpcDaProperty);
                 m_server?.Connect();
-                LogEvent?.Invoke(1, this, $"{m_server.Host} - {m_server.Name} - 连接成功", null);
+                LogEvent?.Invoke(1, this, $"{m_server.Host} - {m_server.Name} - Connection successful", null);
                 PrivateAddItems();
             }
         }
@@ -453,7 +454,7 @@ public class OpcDaMaster : IDisposable
         lock (this)
         {
             if (IsConnected)
-                LogEvent?.Invoke(1, this, $"{m_server.Host} - {m_server.Name} - 断开连接", null);
+                LogEvent?.Invoke(1, this, $"{m_server.Host} - {m_server.Name} - Disconnect", null);
             if (checkTimer != null)
             {
                 checkTimer.Enabled = false;
@@ -467,7 +468,7 @@ public class OpcDaMaster : IDisposable
             }
             catch (Exception ex)
             {
-                LogEvent?.Invoke(3, this, $"连接释放失败：{ex.Message}", ex);
+                LogEvent?.Invoke(3, this, $"Connection dispose failed：{ex.Message}", ex);
             }
         }
     }

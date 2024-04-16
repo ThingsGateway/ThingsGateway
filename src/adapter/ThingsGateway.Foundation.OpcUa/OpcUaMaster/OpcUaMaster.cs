@@ -17,6 +17,10 @@ namespace ThingsGateway.Foundation.OpcUa;
 /// </summary>
 /// <param name="value"></param>
 public delegate void DataChangedEventHandler((VariableNode variableNode, DataValue dataValue, JToken jToken) value);
+/// <summary>
+/// 日志输出
+/// </summary>
+public delegate void LogEventHandler(byte level, object sender, string message, Exception ex);
 
 /// <summary>
 /// OpcUaMaster
@@ -28,7 +32,7 @@ public class OpcUaMaster : IDisposable
     /// <summary>
     /// 当前配置
     /// </summary>
-    public OpcUaConfig OpcUaConfig;
+    public OpcUaProperty OpcUaProperty;
 
     /// <summary>
     /// ProductUri
@@ -60,7 +64,6 @@ public class OpcUaMaster : IDisposable
     private EventHandler m_ReconnectStarting;
     private EventHandler<KeepAliveEventArgs> m_KeepAliveComplete;
     private EventHandler<bool> m_ConnectComplete;
-    private EventHandler<OpcUaStatusEventArgs> m_OpcStatusChange;
 
     private ISession m_session;
 
@@ -202,11 +205,7 @@ public class OpcUaMaster : IDisposable
     /// <summary>
     /// Raised after the client status change
     /// </summary>
-    public event EventHandler<OpcUaStatusEventArgs> OpcStatusChange
-    {
-        add { m_OpcStatusChange += value; }
-        remove { m_OpcStatusChange -= value; }
-    }
+    public LogEventHandler LogEvent;
 
     /// <summary>
     /// 配置信息
@@ -263,15 +262,15 @@ public class OpcUaMaster : IDisposable
                     StartNodeId = loadType ? variableNodes[i].NodeId : items[i],
                     AttributeId = Attributes.Value,
                     DisplayName = items[i],
-                    Filter = OpcUaConfig.DeadBand == 0 ? null : new DataChangeFilter() { DeadbandValue = OpcUaConfig.DeadBand, DeadbandType = (int)DeadbandType.Absolute, Trigger = DataChangeTrigger.StatusValue },
-                    SamplingInterval = OpcUaConfig?.UpdateRate ?? 1000,
+                    Filter = OpcUaProperty.DeadBand == 0 ? null : new DataChangeFilter() { DeadbandValue = OpcUaProperty.DeadBand, DeadbandType = (int)DeadbandType.Absolute, Trigger = DataChangeTrigger.StatusValue },
+                    SamplingInterval = OpcUaProperty?.UpdateRate ?? 1000,
                 };
                 item.Notification += Callback;
                 monitoredItems.Add(item);
             }
             catch (Exception ex)
             {
-                UpdateStatus(3, DateTime.Now, $"初始化{items[i]}变量订阅失败，错误原因：{ex}");
+                Log(3, ex, $"Failed to initialize {items[i]} variable subscription");
             }
         }
         m_subscription.AddItems(monitoredItems);
@@ -280,14 +279,14 @@ public class OpcUaMaster : IDisposable
         m_subscription.Create();
         foreach (var item in m_subscription.MonitoredItems.Where(a => a.Status.Error != null && StatusCode.IsBad(a.Status.Error.StatusCode)))
         {
-            item.Filter = OpcUaConfig.DeadBand == 0 ? null : new DataChangeFilter() { DeadbandValue = OpcUaConfig.DeadBand, DeadbandType = (int)DeadbandType.None, Trigger = DataChangeTrigger.StatusValue };
+            item.Filter = OpcUaProperty.DeadBand == 0 ? null : new DataChangeFilter() { DeadbandValue = OpcUaProperty.DeadBand, DeadbandType = (int)DeadbandType.None, Trigger = DataChangeTrigger.StatusValue };
         }
         m_subscription.ApplyChanges();
 
         var isError = m_subscription.MonitoredItems.Any(a => a.Status.Error != null && StatusCode.IsBad(a.Status.Error.StatusCode));
         if (isError)
         {
-            UpdateStatus(3, DateTime.Now, $"创建以下变量订阅失败：{Environment.NewLine}{m_subscription.MonitoredItems.Where(
+            Log(3, null, $"Failed to create subscription for the following variables：{Environment.NewLine}{m_subscription.MonitoredItems.Where(
                 a => a.Status.Error != null && StatusCode.IsBad(a.Status.Error.StatusCode))
                 .Select(a => $"{a.StartNodeId.ToString()}：{a.Status.Error.ToString()}").ToJsonString()}");
         }
@@ -467,7 +466,7 @@ public class OpcUaMaster : IDisposable
     /// </summary>
     public async Task ConnectAsync(CancellationToken cancellationToken)
     {
-        await ConnectAsync(OpcUaConfig.OpcUrl, cancellationToken);
+        await ConnectAsync(OpcUaProperty.OpcUrl, cancellationToken);
     }
 
     /// <summary>
@@ -544,7 +543,7 @@ public class OpcUaMaster : IDisposable
                     results.Add(keys[i], Tuple.Create(false, result.Results[i].ToString()));
                 else
                 {
-                    results.Add(keys[i], Tuple.Create(true, "成功"));
+                    results.Add(keys[i], Tuple.Create(true, "Success"));
                 }
             }
 
@@ -806,7 +805,7 @@ public class OpcUaMaster : IDisposable
                         var data = JsonUtils.Encode(m_session.MessageContext, TypeInfo.GetBuiltInType(variableNode.DataType, m_session.SystemContext.TypeTable), value.Value);
                         if (data == null && value.Value != null)
                         {
-                            UpdateStatus(3, DateTime.Now, $"{monitoreditem.StartNodeId}转换出错，原始值String为{value.Value}");
+                            Log(3, null, $"{monitoreditem.StartNodeId}Conversion error, original value is{value.Value}");
                             var data1 = JsonUtils.Encode(m_session.MessageContext, TypeInfo.GetBuiltInType(variableNode.DataType, m_session.SystemContext.TypeTable), value.Value);
                         }
                         DataChangedHandler?.Invoke((variableNode, value, data!));
@@ -821,7 +820,7 @@ public class OpcUaMaster : IDisposable
         }
         catch (Exception ex)
         {
-            UpdateStatus(3, DateTime.Now, $"{monitoreditem.StartNodeId}订阅处理错误，错误原因：" + ex);
+            Log(3, ex, $"{monitoreditem.StartNodeId}Subscription processing error");
         }
     }
 
@@ -839,17 +838,17 @@ public class OpcUaMaster : IDisposable
 
         if (m_configuration == null)
         {
-            throw new ArgumentNullException("未初始化配置");
+            throw new ArgumentNullException(nameof(m_configuration));
         }
-        var useSecurity = OpcUaConfig?.IsUseSecurity ?? true;
+        var useSecurity = OpcUaProperty?.UseSecurity ?? true;
 
         EndpointDescription endpointDescription = CoreClientUtils.SelectEndpoint(m_configuration, serverUrl, useSecurity, 10000);
         EndpointConfiguration endpointConfiguration = EndpointConfiguration.Create(m_configuration);
         ConfiguredEndpoint endpoint = new(null, endpointDescription, endpointConfiguration);
         UserIdentity userIdentity;
-        if (!string.IsNullOrEmpty(OpcUaConfig.UserName))
+        if (!string.IsNullOrEmpty(OpcUaProperty.UserName))
         {
-            userIdentity = new UserIdentity(OpcUaConfig.UserName, OpcUaConfig.Password);
+            userIdentity = new UserIdentity(OpcUaProperty.UserName, OpcUaProperty.Password);
         }
         else
         {
@@ -862,7 +861,7 @@ public class OpcUaMaster : IDisposable
         m_configuration,
         endpoint,
         false,
-        OpcUaConfig.CheckDomain,
+        OpcUaProperty.CheckDomain,
         (string.IsNullOrEmpty(OPCUAName)) ? m_configuration.ApplicationName : OPCUAName,
         60000,
         userIdentity,
@@ -870,20 +869,20 @@ public class OpcUaMaster : IDisposable
         ).ConfigureAwait(false);
         typeSystem = new ComplexTypeSystem(m_session);
 
-        m_session.KeepAliveInterval = OpcUaConfig.KeepAliveInterval == 0 ? 60000 : OpcUaConfig.KeepAliveInterval;
+        m_session.KeepAliveInterval = OpcUaProperty.KeepAliveInterval == 0 ? 60000 : OpcUaProperty.KeepAliveInterval;
         m_session.KeepAlive += Session_KeepAlive;
 
         // raise an event.
         DoConnectComplete(true);
 
-        UpdateStatus(2, DateTime.UtcNow, "Connected");
+        Log(2, null, "Connected");
 
         //如果是订阅模式，连接时添加订阅组
-        if (OpcUaConfig.ActiveSubscribe)
+        if (OpcUaProperty.ActiveSubscribe)
         {
             foreach (var item in Variables)
             {
-                await AddSubscriptionAsync(Guid.NewGuid().ToString(), item.ToArray(), OpcUaConfig.LoadType);
+                await AddSubscriptionAsync(Guid.NewGuid().ToString(), item.ToArray(), OpcUaProperty.LoadType);
             }
         }
         return m_session;
@@ -906,7 +905,7 @@ public class OpcUaMaster : IDisposable
 
         if (state)
         {
-            UpdateStatus(2, DateTime.UtcNow, "Disconnected");
+            Log(2, null, "Disconnected");
             DoConnectComplete(false);
         }
     }
@@ -922,7 +921,7 @@ public class OpcUaMaster : IDisposable
     {
         if (m_session == null)
         {
-            throw new("服务器未初始化连接");
+            throw new ArgumentNullException(nameof(m_session));
         }
         ReadValueIdCollection nodesToRead = new();
         for (int i = 0; i < nodeIds.Length; i++)
@@ -970,7 +969,7 @@ public class OpcUaMaster : IDisposable
         }
         NodeId nodeToRead = new(nodeIdStr);
         var node = (VariableNode)await m_session.ReadNodeAsync(nodeToRead, NodeClass.Variable, false, cancellationToken);
-        if (OpcUaConfig.LoadType)
+        if (OpcUaProperty.LoadType)
             await typeSystem.LoadType(node.DataType).ConfigureAwait(false);
         _variableDicts.AddOrUpdate(nodeIdStr, node);
         return node;
@@ -1016,7 +1015,7 @@ public class OpcUaMaster : IDisposable
             }
             else
             {
-                UpdateStatus(3, DateTime.Now, $"获取服务器节点信息失败{nodes.Item2[i]}");
+                Log(3, null, $"Failed to obtain server node information： {nodes.Item2[i]}");
             }
         }
         return nodes.Item1.ToList();
@@ -1033,7 +1032,7 @@ public class OpcUaMaster : IDisposable
         else if (eventArgs.Error.StatusCode.Code == StatusCodes.BadCertificateUntrusted)
             eventArgs.Accept = true;
         else
-            throw new Exception(string.Format("验证证书失败，错误代码:{0}: {1}", eventArgs.Error.Code, eventArgs.Error.AdditionalInfo));
+            throw new Exception(string.Format("Verification certificate failed with error code: {0}: {1}", eventArgs.Error.Code, eventArgs.Error.AdditionalInfo));
     }
 
     private async Task<Dictionary<string, List<OPCNodeAttribute>>> ReadNoteAttributeAsync(BrowseDescriptionCollection nodesToBrowse, ReadValueIdCollection nodesToRead, CancellationToken cancellationToken)
@@ -1145,7 +1144,7 @@ public class OpcUaMaster : IDisposable
         }
         catch (Exception ex)
         {
-            UpdateStatus(3, DateTime.Now, $"{nameof(Server_ReconnectComplete)}错误：{ex}");
+            Log(3, ex, $"{nameof(Server_ReconnectComplete)}");
         }
     }
 
@@ -1156,14 +1155,9 @@ public class OpcUaMaster : IDisposable
     /// <param name="time">The time associated with the status.</param>
     /// <param name="status">The status message.</param>
     /// <param name="args">Arguments used to format the status message.</param>
-    private void UpdateStatus(int logLevel, DateTime time, string status, params object[] args)
+    private void Log(byte logLevel, Exception exception, string status, params object[] args)
     {
-        m_OpcStatusChange?.Invoke(this, new OpcUaStatusEventArgs()
-        {
-            LogLevel = logLevel,
-            Time = time.ToLocalTime(),
-            Text = String.Format(status, args),
-        });
+        LogEvent?.Invoke(logLevel, this, string.Format(status, args), exception);
     }
 
     private void Session_KeepAlive(ISession session, KeepAliveEventArgs e)
@@ -1179,11 +1173,11 @@ public class OpcUaMaster : IDisposable
             {
                 if (m_session.KeepAliveInterval <= 0)
                 {
-                    UpdateStatus(3, e.CurrentTime, "Communication Error ({0})", e.Status);
+                    Log(3, null, "Communication Error ({0})", e.Status);
                     return;
                 }
 
-                UpdateStatus(3, e.CurrentTime, "Reconnecting in {0}s", 10);
+                Log(3, null, "Reconnecting in {0}s", 10);
 
                 if (m_reConnectHandler == null)
                 {
@@ -1196,7 +1190,7 @@ public class OpcUaMaster : IDisposable
             }
 
             // update status.
-            UpdateStatus(0, e.CurrentTime, "Session_KeepAlive Connected [{0}]", session.Endpoint.EndpointUrl);
+            Log(0, null, "Session_KeepAlive Connected [{0}]", session.Endpoint.EndpointUrl);
 
             // raise any additional notifications.
             m_KeepAliveComplete?.Invoke(this, e);

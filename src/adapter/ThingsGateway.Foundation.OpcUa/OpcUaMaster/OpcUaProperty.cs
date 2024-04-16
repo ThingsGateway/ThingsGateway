@@ -8,79 +8,64 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using System.ComponentModel;
-
 namespace ThingsGateway.Foundation.OpcUa;
 
 /// <summary>
 /// OpcUaMaster配置项
 /// </summary>
-public class OpcUaConfig
+public class OpcUaProperty
 {
     /// <summary>
     /// OpcUrl
     /// </summary>
-    [Description("OpcUrl")]
     public string OpcUrl { get; set; } = "opc.tcp://127.0.0.1:49320";
 
     /// <summary>
     /// 登录账号
     /// </summary>
-    [Description("登录账号")]
     public string UserName { get; set; }
 
     /// <summary>
     /// 登录密码
     /// </summary>
-    [Description("登录密码")]
     public string Password { get; set; }
 
     /// <summary>
     /// 检查域
     /// </summary>
-    [Description("检查域")]
     public bool CheckDomain { get; set; }
 
     /// <summary>
     /// 更新间隔
     /// </summary>
-    [Description("更新间隔")]
     public int UpdateRate { get; set; } = 1000;
 
     /// <summary>
     /// 是否订阅
     /// </summary>
-    [Description("是否订阅")]
     public bool ActiveSubscribe { get; set; } = true;
 
     /// <summary>
     /// 分组大小
     /// </summary>
-    [Description("分组大小")]
     public int GroupSize { get; set; } = 500;
 
     /// <summary>
     /// 死区
     /// </summary>
-    [Description("死区")]
     public double DeadBand { get; set; } = 0;
 
-    /// <summary>
-    /// 心跳间隔/ms
-    /// </summary>
-    [Description("心跳间隔/ms")]
+
     public int KeepAliveInterval { get; set; } = 3000;
 
     /// <summary>
     /// 安全策略
     /// </summary>
-    [Description("安全策略")]
-    public bool IsUseSecurity { get; set; } = false;
+    public bool UseSecurity { get; set; } = false;
 
     /// <summary>
     /// 加载服务端数据类型
     /// </summary>
-    [Description("加载服务端数据类型")]
     public bool LoadType { get; set; } = true;
 
     /// <inheritdoc/>

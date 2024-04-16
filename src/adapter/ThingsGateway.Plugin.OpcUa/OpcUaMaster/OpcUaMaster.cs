@@ -8,6 +8,8 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using NewLife.Threading;
+
 using Newtonsoft.Json.Linq;
 
 using Opc.Ua;
@@ -37,7 +39,7 @@ public class OpcUaMaster : CollectBase
     public override Type DriverDebugUIType => typeof(ThingsGateway.Debug.OpcUaMaster);
 
     /// <inheritdoc/>
-    public override CollectPropertyBase DriverProperties => _driverProperties;
+    public override CollectPropertyBase CollectProperties => _driverProperties;
 
     public override Type DriverUIType => null;
 
@@ -61,14 +63,14 @@ public class OpcUaMaster : CollectBase
     public override void Init(IChannel? channel = null)
     {
         //载入配置
-        OpcUaConfig config = new()
+        OpcUaProperty config = new()
         {
             OpcUrl = _driverProperties.OpcUrl,
             UpdateRate = _driverProperties.UpdateRate,
             DeadBand = _driverProperties.DeadBand,
             GroupSize = _driverProperties.GroupSize,
             KeepAliveInterval = _driverProperties.KeepAliveInterval,
-            IsUseSecurity = _driverProperties.IsUseSecurity,
+            UseSecurity = _driverProperties.UseSecurity,
             ActiveSubscribe = _driverProperties.ActiveSubscribe,
             UserName = _driverProperties.UserName,
             Password = _driverProperties.Password,
@@ -78,12 +80,11 @@ public class OpcUaMaster : CollectBase
         if (_plc == null)
         {
             _plc = new();
-            _plc.OpcStatusChange += _plc_OpcStatusChange;
+            _plc.LogEvent += _plc_LogEvent;
             _plc.DataChangedHandler += DataChangedHandler;
         }
-        _plc.OpcUaConfig = config;
+        _plc.OpcUaProperty = config;
 
-        base.Init(channel);
     }
 
     /// <inheritdoc/>
@@ -94,12 +95,6 @@ public class OpcUaMaster : CollectBase
         _token = cancellationToken;
         await _plc.ConnectAsync(cancellationToken);
         await base.ProtectedBeforStartAsync(cancellationToken);
-    }
-
-    protected override Task ProtectedAfterStopAsync()
-    {
-        _plc?.Disconnect();
-        return base.ProtectedAfterStopAsync();
     }
 
     protected override string GetAddressDescription()
@@ -182,12 +177,12 @@ public class OpcUaMaster : CollectBase
                             item.VariableSource.LastErrorMessage = data.Item2.StatusCode.ToString();
                         }
                     }
-                    LogMessage.Trace($"{ToString()} 状态变化:{Environment.NewLine}{data.Item1} : {data.Item3}");
+                    LogMessage.Trace($"{ToString()} Change:{Environment.NewLine}{data.Item1} : {data.Item3}");
                 }
             }
             if (result.Any(a => StatusCode.IsBad(a.Item2.StatusCode)))
             {
-                return new OperResult<byte[]>($"读取失败");
+                return new OperResult<byte[]>($"OPC quality bad");
             }
             else
             {
@@ -210,7 +205,7 @@ public class OpcUaMaster : CollectBase
             var result = await _plc.WriteNodeAsync(writeInfoLists.ToDictionary(a => a.Key.RegisterAddress!, a => a.Value), cancellationToken);
             return result.ToDictionary(a =>
             {
-                return writeInfoLists.Keys.FirstOrDefault(b => b.RegisterAddress == a.Key)?.Name;
+                return writeInfoLists.Keys.FirstOrDefault(b => b.RegisterAddress == a.Key)?.Name!;
             }
             , a =>
             {
@@ -218,7 +213,7 @@ public class OpcUaMaster : CollectBase
                     return new OperResult(a.Value.Item2);
                 else
                     return new();
-            });
+            })!;
         }
         finally
         {
@@ -235,11 +230,11 @@ public class OpcUaMaster : CollectBase
             if (IsConnected())
             {
                 //更新设备活动时间
-                CurrentDevice.SetDeviceStatus(DateTimeUtil.TimerXNow, 0);
+                CurrentDevice.SetDeviceStatus(TimerX.Now, 0);
             }
             else
             {
-                CurrentDevice.SetDeviceStatus(DateTimeUtil.TimerXNow, 999);
+                CurrentDevice.SetDeviceStatus(TimerX.Now, 999);
             }
         }
         else
@@ -255,7 +250,7 @@ public class OpcUaMaster : CollectBase
         if (_plc != null)
         {
             _plc.DataChangedHandler -= DataChangedHandler;
-            _plc.OpcStatusChange -= _plc_OpcStatusChange;
+            _plc.LogEvent -= _plc_LogEvent;
 
             _plc.Disconnect();
             _plc.SafeDispose();
@@ -263,9 +258,9 @@ public class OpcUaMaster : CollectBase
         base.Dispose(disposing);
     }
 
-    private void _plc_OpcStatusChange(object? sender, OpcUaStatusEventArgs e)
+    private void _plc_LogEvent(byte level, object sender, string message, Exception ex)
     {
-        LogMessage?.Log((LogLevel)e.LogLevel, null, e.Text, null);
+        LogMessage?.Log((LogLevel)level, sender, message, ex);
     }
 
     private void DataChangedHandler((VariableNode variableNode, DataValue dataValue, JToken jToken) data)
@@ -277,7 +272,7 @@ public class OpcUaMaster : CollectBase
             if (_token.IsCancellationRequested)
                 return;
 
-            LogMessage.Trace($"{ToString()} 状态变化: {Environment.NewLine} {data.variableNode.NodeId} : {data.jToken?.ToString()}");
+            LogMessage.Trace($"{ToString()} Change: {Environment.NewLine} {data.variableNode.NodeId} : {data.jToken?.ToString()}");
 
             if (!CurrentDevice.KeepRun)
             {
@@ -286,7 +281,7 @@ public class OpcUaMaster : CollectBase
             //尝试固定点位的数据类型
             var type = TypeInfo.GetSystemType(TypeInfo.GetBuiltInType(data.variableNode.DataType, _plc.Session.SystemContext.TypeTable), data.variableNode.ValueRank);
 
-            var itemReads = CurrentDevice.VariableRunTimes.Where(it => it.RegisterAddress == data.variableNode.NodeId).ToList();
+            var itemReads = CurrentDevice.VariableRunTimes.Values.Where(it => it.RegisterAddress == data.variableNode.NodeId);
 
             object value;
             if (data.jToken is JValue jValue)

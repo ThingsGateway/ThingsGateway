@@ -55,7 +55,7 @@ internal class OpcServer : IDisposable
     internal OpcGroup AddGroup(string groupName, bool active, int reqUpdateRate, float deadBand)
     {
         if (null == m_OpcServer || IsConnected == false)
-            throw new("未初始化连接！");
+            throw new("Uninitialized connection");
         OpcGroup group = new(groupName, active, reqUpdateRate, deadBand);
         Guid riid = typeof(IOPCItemMgt).GUID;
         m_OpcServer?.AddGroup(group.Name,
@@ -76,7 +76,7 @@ internal class OpcServer : IDisposable
         }
         else
         {
-            throw new("添加OPC组错误，OPC服务器返回null");
+            throw new("Error adding OPC group, OPC server returns null");
         }
         return group;
     }
@@ -89,7 +89,7 @@ internal class OpcServer : IDisposable
         lock (this)
         {
             if (null == m_OpcServer || IsConnected == false)
-                throw new("未初始化连接！");
+                throw new("Uninitialized connection");
 
             var count = 0;
             var moreElements = 0;
@@ -137,13 +137,13 @@ internal class OpcServer : IDisposable
             object o = Comn.ComInterop.CreateInstance(info.CLSID, Host);
             if (o == null)
             {
-                throw new(string.Format("{0}{1}无法创建com对象", info.CLSID, Host));
+                throw new(string.Format("{0} {1} Unable to create com object", info.CLSID, Host));
             }
             m_OpcServer = (IOPCServer)o;
             IsConnected = true;
         }
         else
-            throw new("应初始化Host与Name");
+            throw new("Host and Name should be initialized");
     }
 
     /// <summary>
@@ -156,7 +156,7 @@ internal class OpcServer : IDisposable
         try
         {
             if (null == m_OpcServer || IsConnected == false)
-                throw new("未初始化连接！");
+                throw new("Uninitialized connection");
             IntPtr statusPtr = IntPtr.Zero;
             m_OpcServer?.GetStatus(out statusPtr);
             OPCSERVERSTATUS status;
@@ -183,13 +183,13 @@ internal class OpcServer : IDisposable
                 else
                 {
                     IsConnected = false;
-                    throw new("未知错误");
+                    throw new("GetServerStatus error");
                 }
             }
             else
             {
                 IsConnected = false;
-                throw new("未知错误");
+                throw new("GetServerStatus error");
             }
         }
         finally

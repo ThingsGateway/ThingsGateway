@@ -8,33 +8,21 @@
 
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
 
-		<Exec Command="@echo off&#xD;&#xA;setlocal enabledelayedexpansion&#xD;&#xA;&#xD;&#xA;set &quot;targetFWS=net6.0 net7.0 net8.0&quot;&#xD;&#xA;for %25%25f in (%25targetFWS%25) do (&#xD;&#xA;    set &quot;dir=$(SolutionDir)bin\$(Configuration)\ThingsGateway.Web.Entry\%25%25f\Plugins\$(AssemblyName)&quot;&#xD;&#xA;    if not exist &quot;!dir!&quot; md &quot;!dir!&quot;&#xD;&#xA;    copy &quot;$(TargetDir)*OpcUa*.dll&quot; &quot;!dir!&quot;&#xD;&#xA;    copy &quot;$(TargetDir)*Opc.Ua*.dll&quot; &quot;!dir!&quot;&#xD;&#xA;    copy &quot;$(TargetDir)*System.Formats.Asn1*.dll&quot; &quot;!dir!&quot;&#xD;&#xA;)&#xD;&#xA;&#xD;&#xA;endlocal&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;" />
+		<Exec Command="@echo off&#xD;&#xA;setlocal enabledelayedexpansion&#xD;&#xA;&#xD;&#xA;set targetFWS=$(TargetFrameworks)&#xD;&#xA;for %25%25f in (%25targetFWS%25) do (&#xD;&#xA;    set &quot;dir=$(SolutionDir)ThingsGateway.Server\bin\$(Configuration)\%25%25f\Plugins\$(AssemblyName)&quot;&#xD;&#xA;    if not exist &quot;!dir!&quot; md &quot;!dir!&quot;&#xD;&#xA;    copy &quot;$(TargetDir)*OpcUa*.dll&quot; &quot;!dir!&quot;&#xD;&#xA;    copy &quot;$(TargetDir)*Opc.Ua*.dll&quot; &quot;!dir!&quot;&#xD;&#xA;&#xD;&#xA;)&#xD;&#xA;&#xD;&#xA;endlocal&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;" />
 	</Target>
 
-
 	<ItemGroup>
-	  <Content Remove="Locales\en-US.json" />
-	  <Content Remove="Locales\zh-CN.json" />
+		<Content Remove="Locales\*.json" />
+		<EmbeddedResource Include="Locales\*.json" />
 	</ItemGroup>
 
-
 	<ItemGroup>
-	  <EmbeddedResource Include="Locales\en-US.json" />
-	  <EmbeddedResource Include="Locales\zh-CN.json" />
-	</ItemGroup>
-
-
-
-
-
-	<ItemGroup>
-		<PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Server" Version="1.5.374.27" />
-
-		<ProjectReference Include="..\..\foundation\ThingsGateway.Foundation.OpcUa\src\ThingsGateway.Foundation.OpcUa.csproj" />
+		<PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Server" Version="1.5.374.36" />
 
 		<ProjectReference Include="..\ThingsGateway.Foundation.OpcUa\ThingsGateway.Foundation.OpcUa.csproj" />
 
 	</ItemGroup>
+
 
 	<PropertyGroup>
 		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>

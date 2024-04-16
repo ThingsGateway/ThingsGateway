@@ -11,5 +11,4 @@
 global using System;
 global using System.Collections.Generic;
 
-global using ThingsGateway.Components;
 global using ThingsGateway.Foundation;

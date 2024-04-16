@@ -8,6 +8,8 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using NewLife.Threading;
+
 using Newtonsoft.Json.Linq;
 
 using ThingsGateway.Foundation.OpcDa;
@@ -35,20 +37,12 @@ public class OpcDaMaster : CollectBase
     public override Type DriverDebugUIType => typeof(ThingsGateway.Debug.OpcDaMaster);
 
     /// <inheritdoc/>
-    public override CollectPropertyBase DriverProperties => _driverProperties;
+    public override CollectPropertyBase CollectProperties => _driverProperties;
 
     public override Type DriverUIType => null;
 
     /// <inheritdoc/>
     protected override IProtocol Protocol => null;
-
-    protected override bool IsSingleThread
-    {
-        get
-        {
-            return true;
-        }
-    }
 
     public override string ToString()
     {
@@ -59,7 +53,7 @@ public class OpcDaMaster : CollectBase
     public override void Init(IChannel? channel = null)
     {
         //载入配置
-        OpcDaConfig opcNode = new()
+        OpcDaProperty opcNode = new()
         {
             OpcIP = _driverProperties.OpcIP,
             OpcName = _driverProperties.OpcName,
@@ -73,10 +67,10 @@ public class OpcDaMaster : CollectBase
         {
             _plc = new();
             _plc.DataChangedHandler += DataChangedHandler;
+            _plc.LogEvent = (a, b, c, d) => LogMessage.Log((LogLevel)a, b, c, d);
         }
         _plc.Init(opcNode);
 
-        base.Init(channel);
     }
 
     /// <inheritdoc/>
@@ -126,13 +120,14 @@ public class OpcDaMaster : CollectBase
     /// <inheritdoc/>
     protected override async Task<OperResult<byte[]>> ReadSourceAsync(VariableSourceRead deviceVariableSourceRead, CancellationToken cancellationToken)
     {
-        if (IsSingleThread)
+        // 如果是单线程模式，并且有其他线程正在等待写入锁
+        if (IsSingleThread && WriteLock.IsWaitting)
         {
-            while (WriteLock.IsWaitting)
-            {
-                //等待写入完成
-                await Task.Delay(100);
-            }
+            // 等待写入锁释放
+            await WriteLock.WaitAsync(cancellationToken).ConfigureAwait(false);
+
+            // 立即释放写入锁，允许其他线程继续执行写入操作
+            WriteLock.Release();
         }
         try
         {
@@ -180,11 +175,11 @@ public class OpcDaMaster : CollectBase
             if (IsConnected())
             {
                 //更新设备活动时间
-                CurrentDevice.SetDeviceStatus(DateTimeUtil.TimerXNow, 0);
+                CurrentDevice.SetDeviceStatus(TimerX.Now, 0);
             }
             else
             {
-                CurrentDevice.SetDeviceStatus(DateTimeUtil.TimerXNow, 999);
+                CurrentDevice.SetDeviceStatus(TimerX.Now, 999);
             }
         }
         else
@@ -211,7 +206,7 @@ public class OpcDaMaster : CollectBase
                 return;
             if (_token.IsCancellationRequested)
                 return;
-            LogMessage.Trace($"{ToString()} 状态变化:{Environment.NewLine} {values?.ToJsonString()}");
+            LogMessage.Trace($"{ToString()} Change:{Environment.NewLine} {values?.ToJsonString()}");
 
             foreach (var data in values)
             {
@@ -224,7 +219,7 @@ public class OpcDaMaster : CollectBase
                 {
                     type = type.GetElementType();
                 }
-                var itemReads = CurrentDevice.VariableRunTimes.Where(it => it.RegisterAddress == data.Name).ToList();
+                var itemReads = CurrentDevice.VariableRunTimes.Values.Where(it => it.RegisterAddress == data.Name);
                 foreach (var item in itemReads)
                 {
                     if (!CurrentDevice.KeepRun)
@@ -264,7 +259,7 @@ public class OpcDaMaster : CollectBase
                     else
                     {
                         item.SetValue(null, time, false);
-                        item.VariableSource.LastErrorMessage = $"错误质量戳：{quality}";
+                        item.VariableSource.LastErrorMessage = $"Bad quality：{quality}";
                     }
                 }
             }

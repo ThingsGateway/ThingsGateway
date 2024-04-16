@@ -8,55 +8,46 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using System.ComponentModel;
-
 namespace ThingsGateway.Foundation.OpcDa;
 
 /// <summary>
 /// OpcDA连接配置项
 /// </summary>
-public class OpcDaConfig
+public class OpcDaProperty
 {
     /// <summary>
     /// 是否订阅
     /// </summary>
-    [Description("订阅")]
     public bool ActiveSubscribe { get; set; } = true;
 
     /// <summary>
     /// 内部检测重连间隔/min
     /// </summary>
-    [Description("重连间隔/min")]
     public int CheckRate { get; set; } = 30;
 
     /// <summary>
     /// 死区
     /// </summary>
-    [Description("死区")]
     public float DeadBand { get; set; } = 0;
 
     /// <summary>
     /// 最大组大小
     /// </summary>
-    [Description("最大组大小")]
     public int GroupSize { get; set; } = 500;
 
     /// <summary>
     /// OpcIP
     /// </summary>
-    [Description("OpcIP")]
     public string OpcIP { get; set; } = "localhost";
 
     /// <summary>
-    /// OpcNAME
+    /// OpcName
     /// </summary>
-    [Description("OpcNAME")]
     public string OpcName { get; set; } = "Kepware.KEPServerEX.V6";
 
     /// <summary>
-    /// 订阅间隔
+    /// 订阅推送间隔
     /// </summary>
-    [Description("订阅间隔")]
     public int UpdateRate { get; set; } = 1000;
 
     /// <summary>

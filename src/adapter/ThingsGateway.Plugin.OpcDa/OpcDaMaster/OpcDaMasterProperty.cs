@@ -20,43 +20,50 @@ public class OpcDaMasterProperty : CollectPropertyBase
     /// <summary>
     /// OpcIP
     /// </summary>
-    [DynamicProperty("IP", "")] public string OpcIP { get; set; } = "localhost";
+    [DynamicProperty]
+    public string OpcIP { get; set; } = "localhost";
 
     /// <summary>
     /// Opc名称
     /// </summary>
-    [DynamicProperty("Opc名称", "")] public string OpcName { get; set; } = "Kepware.KEPServerEX.V6";
+    [DynamicProperty]
+    public string OpcName { get; set; } = "Kepware.KEPServerEX.V6";
 
     /// <summary>
     /// 是否使用SourceTime
     /// </summary>
-    [DynamicProperty("使用SourceTime", "")]
+    [DynamicProperty]
     public bool SourceTimestampEnable { get; set; } = true;
 
     /// <summary>
     /// 激活订阅
     /// </summary>
-    [DynamicProperty("激活订阅", "")] public bool ActiveSubscribe { get; set; } = true;
+    [DynamicProperty]
+    public bool ActiveSubscribe { get; set; } = true;
 
     /// <summary>
     /// 检测重连频率min
     /// </summary>
-    [DynamicProperty("检测重连频率min", "")] public int CheckRate { get; set; } = 10;
+    [DynamicProperty]
+    public int CheckRate { get; set; } = 10;
 
     /// <summary>
     /// 死区
     /// </summary>
-    [DynamicProperty("死区", "")] public float DeadBand { get; set; } = 0;
+    [DynamicProperty]
+    public float DeadBand { get; set; } = 0;
 
     /// <summary>
     /// 最大组大小
     /// </summary>
-    [DynamicProperty("最大组大小", "")] public int GroupSize { get; set; } = 500;
+    [DynamicProperty]
+    public int GroupSize { get; set; } = 500;
 
     /// <summary>
     /// 更新频率
     /// </summary>
-    [DynamicProperty("更新频率", "")] public int UpdateRate { get; set; } = 1000;
+    [DynamicProperty]
+    public int UpdateRate { get; set; } = 1000;
 
     public override int ConcurrentCount { get; set; } = 1;
 }

@@ -30,7 +30,7 @@ public partial class SiemensS7Master : IDisposable
         this.SafeDispose();
     }
 
-    private AdapterDebugComponent AdapterDebugPage { get; set; }
+    private AdapterDebugComponent AdapterDebugComponent { get; set; }
 
     private ChannelData ChannelData { get; set; }
 

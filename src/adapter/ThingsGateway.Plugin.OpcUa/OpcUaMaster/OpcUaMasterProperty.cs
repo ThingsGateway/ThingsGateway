@@ -20,73 +20,73 @@ public class OpcUaMasterProperty : CollectPropertyBase
     /// <summary>
     /// 连接Url
     /// </summary>
-    [DynamicProperty("连接Url", "")]
+    [DynamicProperty]
     public string OpcUrl { get; set; } = "opc.tcp://127.0.0.1:49320";
 
     /// <summary>
     /// 登录账号
     /// </summary>
-    [DynamicProperty("登录账号", "为空时将采用匿名方式登录")]
+    [DynamicProperty]
     public string? UserName { get; set; }
 
     /// <summary>
     /// 登录密码
     /// </summary>
-    [DynamicProperty("登录密码", "")]
+    [DynamicProperty]
     public string? Password { get; set; }
 
     /// <summary>
     /// 检查域
     /// </summary>
-    [DynamicProperty("检查域", "默认false")]
+    [DynamicProperty]
     public bool CheckDomain { get; set; }
 
     /// <summary>
     /// 安全策略
     /// </summary>
-    [DynamicProperty("安全策略", "True为使用安全策略，False为无")]
-    public bool IsUseSecurity { get; set; } = true;
+    [DynamicProperty]
+    public bool UseSecurity { get; set; } = true;
 
     /// <summary>
     /// 是否使用SourceTime
     /// </summary>
-    [DynamicProperty("使用SourceTime", "")]
+    [DynamicProperty]
     public bool SourceTimestampEnable { get; set; } = true;
 
     /// <summary>
     /// 加载服务端数据类型
     /// </summary>
-    [DynamicProperty("加载服务端数据类型")]
+    [DynamicProperty]
     public bool LoadType { get; set; } = true;
 
     /// <summary>
     /// 激活订阅
     /// </summary>
-    [DynamicProperty("激活订阅", "")]
+    [DynamicProperty]
     public bool ActiveSubscribe { get; set; } = true;
 
     /// <summary>
     /// 更新频率
     /// </summary>
-    [DynamicProperty("更新频率", "")]
+    [DynamicProperty]
     public int UpdateRate { get; set; } = 1000;
 
     /// <summary>
     /// 死区
     /// </summary>
-    [DynamicProperty("死区", "")]
+    [DynamicProperty]
     public double DeadBand { get; set; } = 0;
 
     /// <summary>
     /// 最大组大小
     /// </summary>
-    [DynamicProperty("最大组大小", "")]
+    [DynamicProperty]
     public int GroupSize { get; set; } = 500;
 
     /// <summary>
     /// 心跳频率
     /// </summary>
-    [DynamicProperty("心跳频率", "")]
+    [DynamicProperty]
     public int KeepAliveInterval { get; set; } = 3000;
 
     public override int ConcurrentCount { get; set; } = 1;

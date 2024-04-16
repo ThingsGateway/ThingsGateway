@@ -27,7 +27,7 @@ internal static class DictionaryExtension
     /// <param name="pairs"></param>
     /// <param name="func"></param>
     /// <returns></returns>
-    internal static int RemoveWhen<TKey, TValue>(this ConcurrentDictionary<TKey, TValue> pairs, Func<KeyValuePair<TKey, TValue>, bool> func)
+    internal static int RemoveWhen<TKey, TValue>(this ConcurrentDictionary<TKey, TValue> pairs, Func<KeyValuePair<TKey, TValue>, bool> func) where TKey : notnull
     {
         var list = new List<TKey>();
         foreach (var item in pairs)
@@ -54,13 +54,13 @@ internal static class DictionaryExtension
     /// <summary>
     /// 尝试添加
     /// </summary>
-    /// <typeparam name="Tkey"></typeparam>
+    /// <typeparam name="TKey"></typeparam>
     /// <typeparam name="TValue"></typeparam>
     /// <param name="dictionary"></param>
     /// <param name="tkey"></param>
     /// <param name="value"></param>
     /// <returns></returns>
-    internal static bool TryAdd<Tkey, TValue>(this Dictionary<Tkey, TValue> dictionary, Tkey tkey, TValue value)
+    internal static bool TryAdd<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TKey tkey, TValue value)
     {
         if (dictionary.ContainsKey(tkey))
         {
@@ -75,13 +75,13 @@ internal static class DictionaryExtension
     /// <summary>
     /// 尝试添加
     /// </summary>
-    /// <typeparam name="Tkey"></typeparam>
+    /// <typeparam name="TKey"></typeparam>
     /// <typeparam name="TValue"></typeparam>
     /// <param name="dictionary"></param>
     /// <param name="tkey"></param>
     /// <param name="value"></param>
     /// <returns></returns>
-    internal static void AddOrUpdate<Tkey, TValue>(this Dictionary<Tkey, TValue> dictionary, Tkey tkey, TValue value)
+    internal static void AddOrUpdate<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TKey tkey, TValue value) where TKey : notnull
     {
         if (dictionary.ContainsKey(tkey))
         {
@@ -96,12 +96,12 @@ internal static class DictionaryExtension
     /// <summary>
     /// 获取值。如果键不存在，则返回默认值。
     /// </summary>
-    /// <typeparam name="Tkey"></typeparam>
+    /// <typeparam name="TKey"></typeparam>
     /// <typeparam name="TValue"></typeparam>
     /// <param name="dictionary"></param>
     /// <param name="tkey"></param>
     /// <returns></returns>
-    internal static TValue GetValue<Tkey, TValue>(this Dictionary<Tkey, TValue> dictionary, Tkey tkey)
+    internal static TValue GetValue<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TKey tkey) where TKey : notnull
     {
         return dictionary.TryGetValue(tkey, out var value) ? value : default;
     }

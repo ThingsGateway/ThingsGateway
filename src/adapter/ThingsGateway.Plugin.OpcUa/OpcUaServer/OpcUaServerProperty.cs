@@ -8,6 +8,8 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using BootstrapBlazor.Components;
+
 using Opc.Ua;
 
 using ThingsGateway.Gateway.Application;
@@ -17,36 +19,38 @@ namespace ThingsGateway.Plugin.OpcUa;
 /// <inheritdoc/>
 public class OpcUaServerProperty : BusinessPropertyBase
 {
-    [DynamicProperty("是否选择全部变量", "")]
+    [DynamicProperty]
     public bool IsAllVariable { get; set; } = false;
 
     /// <summary>
     /// 服务地址
     /// </summary>
-    [DynamicProperty("服务地址", "分号分割数组，可设置多个url")]
+    [DynamicProperty(Remark = "分号分割数组，可设置多个url")]
     public string OpcUaStringUrl { get; set; } = "opc.tcp://127.0.0.1:49321";
 
     /// <summary>
     /// SubjectName
     /// </summary>
-    [DynamicProperty("SubjectName", "")]
+    [DynamicProperty()]
+    [AutoGenerateColumn(ComponentType = typeof(Textarea), Rows = 1)]
     public string BigTextSubjectName { get; set; } = "CN=ThingsGateway OPCUAServer, C=CN, S=GUANGZHOU, O=ThingsGateway, DC=" + System.Net.Dns.GetHostName();
 
     /// <summary>
     /// ApplicationUri
     /// </summary>
-    [DynamicProperty("ApplicationUri", "")]
+    [AutoGenerateColumn(ComponentType = typeof(Textarea), Rows = 1)]
+    [DynamicProperty()]
     public string BigTextApplicationUri { get; set; } = Utils.Format(@"urn:{0}:thingsgatewayopcuaserver", System.Net.Dns.GetHostName());
 
     /// <summary>
     /// 安全策略
     /// </summary>
-    [DynamicProperty("安全策略", "")]
+    [DynamicProperty()]
     public bool SecurityPolicy { get; set; }
 
     /// <summary>
     /// 接受不受信任的证书
     /// </summary>
-    [DynamicProperty("自动接受不受信任的证书", "")]
+    [DynamicProperty()]
     public bool AutoAcceptUntrustedCertificates { get; set; } = true;
 }

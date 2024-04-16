@@ -6,14 +6,12 @@
 		<DocumentationFile></DocumentationFile>
 		<IncludeSymbols>false</IncludeSymbols>
 	</PropertyGroup>
+	
 	<ItemGroup>
-	  <None Remove="Locales\en-US.json" />
-	  <None Remove="Locales\zh-CN.json" />
+		<Content Remove="Locales\*.json" />
+		<EmbeddedResource Include="Locales\*.json" />
 	</ItemGroup>
-	<ItemGroup>
-	  <EmbeddedResource Include="Locales\en-US.json" />
-	  <EmbeddedResource Include="Locales\zh-CN.json" />
-	</ItemGroup>
+
 	<ItemGroup>
 	  <ProjectReference Include="..\..\ThingsGateway.Foundation\ThingsGateway.Foundation.csproj" />
 	</ItemGroup>

@@ -66,8 +66,8 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
             AddRootNotifier(rootFolder);
 
             //创建设备树
-            var _geviceGroup = _businessBase.CurrentDevice.VariableRunTimes
-                .GroupBy(a => { if (a.DeviceName.IsNullOrEmpty()) return "内存变量"; else return a.DeviceName; });
+            var _geviceGroup = _businessBase.CurrentDevice.VariableRunTimes.Values
+                .GroupBy(a => a.DeviceName);
             // 开始寻找设备信息，并计算一些节点信息
             foreach (var item in _geviceGroup)
             {
@@ -284,7 +284,7 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
         catch (Exception ex)
         {
             if (success)
-                _businessBase.LogMessage.LogWarning(ex, "转化值错误");
+                _businessBase.LogMessage.LogWarning(ex, "Conversion value error");
             success = false;
             newValue = value;
         }
@@ -400,7 +400,7 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
     /// <returns></returns>
     private NodeId DataNodeType(VariableRunTime variableRunTime)
     {
-        var str = variableRunTime.GetPropertyValue(_businessBase.DeviceId, nameof(OpcUaServerVariableProperty.DataTypeEnum))?.Value ?? "";
+        var str = variableRunTime.GetPropertyValue(_businessBase.DeviceId, nameof(OpcUaServerVariableProperty.DataType)) ?? "";
         Type tp;
         if (Enum.TryParse(str, out DataTypeEnum result))
         {

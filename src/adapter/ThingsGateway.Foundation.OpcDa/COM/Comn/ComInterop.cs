@@ -254,7 +254,7 @@ internal class ComInterop
 
         if (error != 0)
         {
-            throw new ExternalException("COM初始化安全: " + GetSystemMessage(error), error);
+            throw new ExternalException("InitializeSecurity fail: " + GetSystemMessage(error), error);
         }
     }
 

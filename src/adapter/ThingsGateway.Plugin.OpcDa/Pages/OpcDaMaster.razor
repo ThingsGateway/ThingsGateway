@@ -1,75 +1,99 @@
 ﻿@page "/OpcDaMaster"
+@using BootstrapBlazor.Components
 @using ThingsGateway.Core.Extension
 @using ThingsGateway.Foundation
 @namespace ThingsGateway.Debug
 @using ThingsGateway.Foundation.OpcDa
 @using TouchSocket.Core
-@inherits BaseComponentBase
-
-<OpcDaMasterConnectPage @ref=opcDaMasterConnectPage OnConnectClick=OnConnectClick></OpcDaMasterConnectPage>
 
 
-<AdapterDebugPage LogPath=@LogPath @ref=AdapterDebugPage HeaderText="HeaderText" Height=@($"calc(100vh - {BlazorAppService.DefaultHeight+400}px)") ShowDefaultOtherContent=false ShowDefaultReadWriteContent=false>
+<div style="height:100%; width:100%;">
 
-    <ReadWriteContent>
+    @if (_plc?.OpcDaProperty != null)
+    {
+        <Card class="mt-2">
+            <BodyTemplate>
 
-        <MContainer>
-            <MRow Justify="JustifyTypes.Start" Align="AlignTypes.Center">
-
-                <MTooltip Right Context="tip">
-                     <ActivatorContent>
-                         <MTextarea Class="pa-1" Style="max-width:200px" Dense Outlined HideDetails="@("auto")"
-                                    Label=@AppService.I18n.T("Register Address") @attributes="@tip.Attrs" @bind-Value=@RegisterAddress />
-                     </ActivatorContent>
-                     <ChildContent>
-                         <span style="white-space: pre-wrap;">@Plc?.GetAddressDescription()</span>
-                    </ChildContent>
-                </MTooltip>
+                <EditorForm Model="_plc.OpcDaProperty" AutoGenerateAllItem=false RowType="RowType.Inline" ItemsPerRow="4" ShowLabelTooltip="true" ShowLabel="true">
+                    <FieldItems>
 
 
-                <MCol Align="AlignTypes.Center">
-                    <MButton Class="mx-1 my-1" Color="primary" OnClick="Add">
-                        @AppService.I18n.T("添加")
+                        <EditorItem @bind-Field=context.OpcIP />
+                        <EditorItem @bind-Field=context.OpcName />
+                        <EditorItem @bind-Field=context.CheckRate />
+                        <EditorItem @bind-Field=context.GroupSize />
+                        <EditorItem @bind-Field=context.ActiveSubscribe />
+                        <EditorItem @bind-Field=context.UpdateRate />
+                        <EditorItem @bind-Field=context.DeadBand />
 
-                    </MButton>
-                    <MButton Class="mx-1 my-1" Color="primary" OnClick="Remove">
-                        @AppService.I18n.T("移除")
+                    </FieldItems>
 
-                    </MButton>
-                    <MButton Class="ma-1" Color="primary" OnClick="ReadAsync">
-                        @AppService.I18n.T("读取")
-                    </MButton>
+                </EditorForm>
 
-                </MCol>
-            </MRow>
+                <Button IsAsync Color="Color.Primary" OnClick="Connect">@OpcDaPropertyLocalizer["Connect"]</Button>
 
+                <Button IsAsync Color="Color.Warning" OnClick="Disconnect">@OpcDaPropertyLocalizer["Disconnect"]</Button>
+            </BodyTemplate>
+        </Card>
 
-            <MRow Class="mt-8" Justify="JustifyTypes.Start" Align="AlignTypes.Center">
+    }
 
-                <MTextarea Class="pa-1" Style="max-width:200px" Dense Outlined HideDetails="@("auto")"
-                            Label=@AppService.I18n.T("WriteValue") @bind-Value=@WriteValue />
-                 <MCol Align="AlignTypes.Center">
-                     <MButton Class="ma-1" Color="primary" OnClick="WriteAsync">
-                         @AppService.I18n.T("Write")
-                    </MButton>
-                </MCol>
-            </MRow>
+    <AdapterDebugComponent Plc=null LogPath=@LogPath @ref=AdapterDebugComponent  ShowDefaultOtherContent=false ShowDefaultReadWriteContent=false>
 
-            <MRow Class="mt-8" Justify="JustifyTypes.Start" Align="AlignTypes.Center">
+        <ReadWriteContent>
+
+            <BootstrapInput @bind-Value=@RegisterAddress
+                            ShowLabel="true" style="width:100%" />
 
 
-                <MButton Class="ma-1" Color="primary" OnClick="ShowImport">
-                    @AppService.I18n.T("查看Opc节点空间")
-                </MButton>
-
-            </MRow>
+            <div class="row mx-1 form-inline mt-2">
 
 
-        </MContainer>
+                <div class="col-12 col-md-4 p-1">
+
+                    <Button IsAsync Color="Color.Primary" OnClick="Add">@OpcDaPropertyLocalizer["Add"]</Button>
+
+                </div>
+                <div class="col-12 col-md-4 p-1">
+
+                    <Button IsAsync Color="Color.Primary" OnClick="Remove">@OpcDaPropertyLocalizer["Remove"]</Button>
+
+                </div>
+
+                <div class="col-12 col-md-4 p-1">
+
+                    <Button IsAsync Color="Color.Primary" OnClick="ReadAsync">@OpcDaPropertyLocalizer["Read"]</Button>
+
+                </div>
+            </div>
+
+            <Divider />
+
+            <div class="row mx-1 form-inline mt-2">
+
+                <div class="col-12 col-md-8 p-1">
+                    <Textarea @bind-Value=@WriteValue ShowLabelTooltip="true"
+                              ShowLabel="true" />
+
+                </div>
+                <div class="col-12 col-md-4 p-1">
+                    <Button IsAsync Color="Color.Primary" OnClick="WriteAsync">@OpcDaPropertyLocalizer["Write"]</Button>
+                </div>
+            </div>
+
+            <div class="row mx-1 form-inline mt-2">
+
+                <div class="col-12 col-md-4 p-1">
+                    <Button IsAsync Color="Color.Primary" OnClick="ShowImport">@OpcDaPropertyLocalizer["ShowImport"]</Button>
+                </div>
+            </div>
 
 
-    </ReadWriteContent>
+        </ReadWriteContent>
 
 
-</AdapterDebugPage>
+    </AdapterDebugComponent>
+</div>
+
+
 

@@ -32,7 +32,7 @@ namespace ThingsGateway.Debug
             this.SafeDispose();
         }
 
-        private AdapterDebugComponent AdapterDebugPage { get; set; }
+        private AdapterDebugComponent AdapterDebugComponent { get; set; }
 
         private ChannelData ChannelData { get; set; }
 

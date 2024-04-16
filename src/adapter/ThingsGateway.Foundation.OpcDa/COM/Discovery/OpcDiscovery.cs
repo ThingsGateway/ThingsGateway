@@ -38,13 +38,13 @@ internal class OpcDiscovery
     {
         if (string.IsNullOrEmpty(serverName))
         {
-            throw new("检索失败，需提供OPCName");
+            throw new ArgumentNullException(nameof(serverName));
         }
         ServerInfo result = null;
         ServerInfo[] serverInfos = null;
         object o_Server = Comn.ComInterop.CreateInstance(OPCEnumCLSID, host);
         if (o_Server == null)
-            throw new("检索失败，请检查是否安装OPC Runtime");
+            throw new("GetOpcServer failed, please check if OPC runtime is installed");
         try
         {
             Guid catid = CATID_OPC_DA20;
@@ -72,10 +72,7 @@ internal class OpcDiscovery
                 {
                     sb.AppendLine(item.ToString());
                 }
-                throw new($"无法创建OPCServer连接，请检查OPC名称是否一致，以下为{host}中的OPC列表:"
-                    + Environment.NewLine +
-                  sb.ToString()
-                    );
+                throw new($"Unable to create OPCServer connection. Please check if the OPC name is consistent. The following is a list of OPCServers in {host}:{Environment.NewLine}{sb}");
             }
             return result;
         }

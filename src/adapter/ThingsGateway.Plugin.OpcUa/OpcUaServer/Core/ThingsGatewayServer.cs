@@ -132,13 +132,13 @@ public partial class ThingsGatewayServer : StandardServer
         // 当用户身份改变时请求。
         server.SessionManager.ImpersonateUser += SessionManager_ImpersonateUser;
         base.OnServerStarted(server);
-        _businessBase.LogMessage.LogInformation("OPCUAServer启动成功");
+        _businessBase.LogMessage.LogInformation("OPCUAServer Started");
     }
 
     /// <inheritdoc/>
     protected override void OnServerStarting(ApplicationConfiguration configuration)
     {
-        _businessBase.LogMessage.LogInformation("OPCUAServer正在启动");
+        _businessBase.LogMessage.LogInformation("OPCUAServer Starting");
         base.OnServerStarting(configuration);
 
         // 由应用程序决定如何验证用户身份令牌。
@@ -149,7 +149,7 @@ public partial class ThingsGatewayServer : StandardServer
     /// <inheritdoc/>
     protected override void OnServerStopping()
     {
-        _businessBase.LogMessage.LogInformation("OPCUAServer正在停止");
+        _businessBase.LogMessage.LogInformation("OPCUAServer Stoping");
         base.OnServerStopping();
     }
 
@@ -251,8 +251,8 @@ public partial class ThingsGatewayServer : StandardServer
             throw ServiceResultException.Create(StatusCodes.BadIdentityTokenRejected,
                 "Security cancellationToken is not a valid username cancellationToken. An empty password is not accepted.");
         }
-        var _openApiUserService = _businessBase.ServiceScope.ServiceProvider.GetService<ISysUserService>();
-        var userInfo = _openApiUserService.GetUserByAccountAsync(userName).ConfigureAwait(true).GetAwaiter().GetResult();//获取用户信息
+        var sysUserService = App.RootServices.GetService<ISysUserService>();
+        var userInfo = sysUserService.GetUserByAccountAsync(userName).ConfigureAwait(true).GetAwaiter().GetResult();//获取用户信息
         if (userInfo == null)
         {
             // construct translation object with default text.

@@ -8,117 +8,158 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
+
 using Newtonsoft.Json.Linq;
-using ThingsGateway.Debug;
-using ThingsGateway.Foundation;
+
+using ThingsGateway.Foundation.OpcDa;
 using ThingsGateway.Foundation.OpcDa.Da;
 
 using TouchSocket.Core;
 
-namespace ThingsGateway.Debug
+namespace ThingsGateway.Debug;
+
+public partial class OpcDaMaster : IDisposable
 {
-    public partial class OpcDaMaster
+    public LoggerGroup? LogMessage;
+    private readonly OpcDaProperty OpcDaProperty = new();
+    private ThingsGateway.Foundation.OpcDa.OpcDaMaster _plc;
+    private string LogPath;
+    private string RegisterAddress;
+    private string WriteValue;
+
+    /// <inheritdoc/>
+    ~OpcDaMaster()
     {
-        private ThingsGateway.Foundation.OpcDa.OpcDaMaster Plc => opcDaMasterConnectPage.Plc;
-        private OpcDaMasterConnectPage opcDaMasterConnectPage;
-        private string RegisterAddress;
+        this.SafeDispose();
+    }
+    private AdapterDebugComponent AdapterDebugComponent { get; set; }
+    [Inject]
+    IStringLocalizer<OpcDaProperty> OpcDaPropertyLocalizer { get; set; }
+    /// <inheritdoc/>
+    public void Dispose()
+    {
+        _plc?.SafeDispose();
+        GC.SuppressFinalize(this);
+    }
+    protected override void OnInitialized()
+    {
+        _plc = new ThingsGateway.Foundation.OpcDa.OpcDaMaster();
 
-        private string LogPath;
-        private AdapterDebugComponent AdapterDebugPage { get; set; }
+        _plc.Init(OpcDaProperty);
+        LogMessage = new TouchSocket.Core.LoggerGroup() { LogLevel = TouchSocket.Core.LogLevel.Trace };
+        var logger = TextFileLogger.Create(_plc.GetHashCode().ToLong().GetDebugLogPath());
+        logger.LogLevel = LogLevel.Trace;
+        LogMessage.AddLogger(logger);
 
-        private void OnConnectClick()
+        _plc.LogEvent = (a, b, c, d) => LogMessage.Log((LogLevel)a, b, c, d);
+        _plc.DataChangedHandler += (a) => LogMessage.Trace(a.ToJsonString());
+        base.OnInitialized();
+    }
+    private void Add()
+    {
+        var tags = new Dictionary<string, List<OpcItem>>();
+        var tag = new OpcItem(RegisterAddress);
+        tags.Add(Guid.NewGuid().ToString(), new List<OpcItem>() { tag });
+        try
         {
+            _plc.AddItems(tags);
+        }
+        catch (Exception ex)
+        {
+            LogMessage?.LogWarning(ex);
+        }
+    }
+
+    private void Connect()
+    {
+        try
+        {
+            _plc.Disconnect();
+            LogPath = _plc?.GetHashCode().ToLong().GetDebugLogPath();
+            GetOpc().Connect();
+        }
+        catch (Exception ex)
+        {
+            LogMessage?.Log(LogLevel.Error, null, ex.Message, ex);
+        }
+    }
+    private void Disconnect()
+    {
+        try
+        {
+            _plc.Disconnect();
+        }
+        catch (Exception ex)
+        {
+            LogMessage?.Log(LogLevel.Error, null, ex.Message, ex);
+        }
+    }
+
+    private ThingsGateway.Foundation.OpcDa.OpcDaMaster GetOpc()
+    {
+        //载入配置
+        _plc.Init(OpcDaProperty);
+        return _plc;
+    }
+    private async Task ReadAsync()
+    {
+        try
+        {
+            _plc.ReadItemsWithGroup();
+        }
+        catch (Exception ex)
+        {
+            LogMessage?.LogWarning(ex);
         }
 
-        protected override async Task OnAfterRenderAsync(bool firstRender)
+        await Task.CompletedTask;
+    }
+
+    private void Remove()
+    {
+        _plc.RemoveItems(new List<string>() { RegisterAddress });
+    }
+
+    private async Task ShowImport()
+    {
+        //    await PopupService.OpenAsync(typeof(OpcDaImportVariable), new Dictionary<string, object?>()
+        //{
+        //    {nameof(OpcDaImportVariable._plc),_plc},
+        //});
+        await Task.CompletedTask;
+    }
+
+    private async Task WriteAsync()
+    {
+        try
         {
-            await base.OnAfterRenderAsync(firstRender);
-            if (firstRender)
-            {
-                //载入配置
-                StateHasChanged();
-            }
-        }
+            JToken tagValue = WriteValue.GetJTokenFromString();
+            var obj = tagValue.GetObjectFromJToken();
 
-        protected override Task OnInitializedAsync()
-        {
-            return base.OnInitializedAsync();
-        }
-
-        private string WriteValue;
-
-        private void Add()
-        {
-            var tags = new Dictionary<string, List<OpcItem>>();
-            var tag = new OpcItem(RegisterAddress);
-            tags.Add(Guid.NewGuid().ToString(), new List<OpcItem>() { tag });
-            try
-            {
-                Plc.AddItems(tags);
-            }
-            catch (Exception ex)
-            {
-                opcDaMasterConnectPage.LogMessage?.LogWarning(ex, $"添加失败");
-            }
-        }
-
-        private async Task WriteAsync()
-        {
-            try
-            {
-                JToken tagValue = WriteValue.GetJTokenFromString();
-                var obj = tagValue.GetObjectFromJToken();
-
-                var data = Plc.WriteItem(
-                    new()
-                    {
-                    {RegisterAddress,  obj}
-                    }
-                    );
-                if (data.Count > 0)
+            var data = _plc.WriteItem(
+                new()
                 {
-                    foreach (var item in data)
-                    {
-                        if (item.Value.Item1)
-                            opcDaMasterConnectPage.LogMessage?.LogInformation(item.ToJsonString());
-                        else
-                            opcDaMasterConnectPage.LogMessage?.LogWarning(item.ToJsonString());
-                    }
+                {RegisterAddress,  obj}
+                }
+                );
+            if (data.Count > 0)
+            {
+                foreach (var item in data)
+                {
+                    if (item.Value.Item1)
+                        LogMessage?.LogInformation(item.ToJsonString());
+                    else
+                        LogMessage?.LogWarning(item.ToJsonString());
                 }
             }
-            catch (Exception ex)
-            {
-                opcDaMasterConnectPage.LogMessage?.LogWarning(ex, $"写入失败");
-            }
-
-            await Task.CompletedTask;
+        }
+        catch (Exception ex)
+        {
+            LogMessage?.LogWarning(ex);
         }
 
-        private async Task ShowImport()
-        {
-            await PopupService.OpenAsync(typeof(OpcDaImportVariable), new Dictionary<string, object?>()
-        {
-            {nameof(OpcDaImportVariable.Plc),Plc},
-        });
-        }
-
-        private async Task ReadAsync()
-        {
-            try
-            {
-                Plc.ReadItemsWithGroup();
-            }
-            catch (Exception ex)
-            {
-                opcDaMasterConnectPage.LogMessage?.LogWarning(ex, $"读取失败");
-            }
-
-            await Task.CompletedTask;
-        }
-
-        private void Remove()
-        {
-            Plc.RemoveItems(new List<string>() { RegisterAddress });
-        }
+        await Task.CompletedTask;
     }
 }

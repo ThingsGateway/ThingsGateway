@@ -1,6 +1,16 @@
 ﻿{
-  "ThingsGateway.Foundation.OpcUa.OpcUaMaster": {
-
+  "ThingsGateway.Foundation.OpcUa.OpcUaProperty": {
+    "OpcUrl": "OpcUrl",
+    "UserName": "登录账号",
+    "Password": "登录密码",
+    "CheckDomain": "检查域",
+    "UpdateRate": "推送间隔",
+    "ActiveSubscribe": "订阅",
+    "GroupSize": "分组大小",
+    "DeadBand": "死区",
+    "KeepAliveInterval": "心跳间隔(ms)",
+    "UseSecurity": "安全策略",
+    "LoadType": "加载服务端数据类型"
   },
 
   "ThingsGateway.Foundation.OpcUa.OpcUaResource": {
