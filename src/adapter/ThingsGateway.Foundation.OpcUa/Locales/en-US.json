@@ -10,7 +10,16 @@
     "DeadBand": "DeadBand",
     "KeepAliveInterval": "KeepAliveInterval(ms)",
     "UseSecurity": "IsUseSecurity",
-    "LoadType": "LoadType"
+    "LoadType": "LoadType",
+
+
+    "Connect": "Connect",
+    "Disconnect": "Disconnect",
+    "Add": "Add",
+    "Remove": "Remove",
+    "Read": "Read",
+    "Write": "Write",
+    "ShowImport": "View OPC space"
   },
 
   "ThingsGateway.Foundation.OpcUa.OpcUaResource": {

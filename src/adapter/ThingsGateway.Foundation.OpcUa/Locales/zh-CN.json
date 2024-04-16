@@ -10,7 +10,16 @@
     "DeadBand": "死区",
     "KeepAliveInterval": "心跳间隔(ms)",
     "UseSecurity": "安全策略",
-    "LoadType": "加载服务端数据类型"
+    "LoadType": "加载服务端数据类型",
+
+
+    "Connect": "连接",
+    "Disconnect": "断开",
+    "Add": "添加",
+    "Remove": "移除",
+    "Read": "读取",
+    "Write": "写入",
+    "ShowImport": "查看OPC空间"
   },
 
   "ThingsGateway.Foundation.OpcUa.OpcUaResource": {
