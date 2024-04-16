@@ -19,7 +19,9 @@
     "Remove": "移除",
     "Read": "读取",
     "Write": "写入",
-    "ShowImport": "查看OPC空间"
+    "ShowImport": "查看OPC空间",
+    "RegisterAddress": "地址",
+    "WriteValue": "写入值"
   },
 
   "ThingsGateway.Foundation.OpcUa.OpcUaResource": {

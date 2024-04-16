@@ -17,36 +17,37 @@
                 <EditorForm Model="_plc.OpcUaProperty" AutoGenerateAllItem=false RowType="RowType.Inline" ItemsPerRow="4" ShowLabelTooltip="true" ShowLabel="true">
                     <FieldItems>
 
-
-                        <EditorItem @bind-Field=context.CheckDomain />
-                        <EditorItem @bind-Field=context.UseSecurity />
-                        <EditorItem @bind-Field=context.ActiveSubscribe />
+                        <EditorItem @bind-Field=context.OpcUrl />
+                        <EditorItem @bind-Field=context.UserName />
+                        <EditorItem @bind-Field=context.Password />
+                        <EditorItem @bind-Field=context.KeepAliveInterval />
                         <EditorItem @bind-Field=context.GroupSize />
                         <EditorItem @bind-Field=context.UpdateRate />
                         <EditorItem @bind-Field=context.DeadBand />
-                        <EditorItem @bind-Field=context.Password />
-                        <EditorItem @bind-Field=context.OpcUrl />
-                        <EditorItem @bind-Field=context.UserName />
+                        <EditorItem @bind-Field=context.UseSecurity />
+                        <EditorItem @bind-Field=context.ActiveSubscribe />
+                        <EditorItem @bind-Field=context.CheckDomain />
                         <EditorItem @bind-Field=context.LoadType />
-                        <EditorItem @bind-Field=context.KeepAliveInterval />
 
                     </FieldItems>
+                    <Buttons>
+                        <Button IsAsync Color="Color.Primary" OnClick="Connect">@OpcUaPropertyLocalizer["Connect"]</Button>
 
+                        <Button IsAsync Color="Color.Warning" OnClick="Disconnect">@OpcUaPropertyLocalizer["Disconnect"]</Button>
+                    </Buttons>
                 </EditorForm>
 
-                <Button IsAsync Color="Color.Primary" OnClick="Connect">@OpcUaPropertyLocalizer["Connect"]</Button>
 
-                <Button IsAsync Color="Color.Warning" OnClick="Disconnect">@OpcUaPropertyLocalizer["Disconnect"]</Button>
             </BodyTemplate>
         </Card>
 
     }
 
-    <AdapterDebugComponent Plc=null LogPath=@LogPath @ref=AdapterDebugComponent  ShowDefaultOtherContent=false ShowDefaultReadWriteContent=false>
+    <AdapterDebugComponent Plc=null LogPath=@LogPath @ref=AdapterDebugComponent ShowDefaultOtherContent=false ShowDefaultReadWriteContent=false>
 
         <ReadWriteContent>
 
-            <BootstrapInput @bind-Value=@RegisterAddress
+            <BootstrapInput @bind-Value=@RegisterAddress DisplayText=@OpcUaPropertyLocalizer["RegisterAddress"]
                             ShowLabel="true" style="width:100%" />
 
 
@@ -76,7 +77,7 @@
             <div class="row mx-1 form-inline mt-2">
 
                 <div class="col-12 col-md-8 p-1">
-                    <Textarea @bind-Value=@WriteValue ShowLabelTooltip="true"
+                    <Textarea @bind-Value=@WriteValue ShowLabelTooltip="true"  DisplayText=@OpcUaPropertyLocalizer["WriteValue"]
                               ShowLabel="true" />
 
                 </div>

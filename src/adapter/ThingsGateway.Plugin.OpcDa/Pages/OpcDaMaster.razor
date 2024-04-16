@@ -27,12 +27,15 @@
                         <EditorItem @bind-Field=context.DeadBand />
 
                     </FieldItems>
+                    <Buttons>
+                        <Button IsAsync Color="Color.Primary" OnClick="Connect">@OpcDaPropertyLocalizer["Connect"]</Button>
 
+                        <Button IsAsync Color="Color.Warning" OnClick="Disconnect">@OpcDaPropertyLocalizer["Disconnect"]</Button>
+                    </Buttons>
                 </EditorForm>
 
-                <Button IsAsync Color="Color.Primary" OnClick="Connect">@OpcDaPropertyLocalizer["Connect"]</Button>
-
-                <Button IsAsync Color="Color.Warning" OnClick="Disconnect">@OpcDaPropertyLocalizer["Disconnect"]</Button>
+                
+              
             </BodyTemplate>
         </Card>
 
@@ -42,7 +45,7 @@
 
         <ReadWriteContent>
 
-            <BootstrapInput @bind-Value=@RegisterAddress
+            <BootstrapInput @bind-Value=@RegisterAddress DisplayText=@OpcDaPropertyLocalizer["RegisterAddress"]
                             ShowLabel="true" style="width:100%" />
 
 
@@ -72,7 +75,7 @@
             <div class="row mx-1 form-inline mt-2">
 
                 <div class="col-12 col-md-8 p-1">
-                    <Textarea @bind-Value=@WriteValue ShowLabelTooltip="true"
+                    <Textarea @bind-Value=@WriteValue ShowLabelTooltip="true" DisplayText=@OpcDaPropertyLocalizer["WriteValue"]
                               ShowLabel="true" />
 
                 </div>

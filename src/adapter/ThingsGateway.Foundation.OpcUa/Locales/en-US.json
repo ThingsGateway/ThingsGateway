@@ -19,7 +19,9 @@
     "Remove": "Remove",
     "Read": "Read",
     "Write": "Write",
-    "ShowImport": "View OPC space"
+    "ShowImport": "View OPC space",
+    "RegisterAddress": "RegisterAddress",
+    "WriteValue": "WriteValue"
   },
 
   "ThingsGateway.Foundation.OpcUa.OpcUaResource": {
