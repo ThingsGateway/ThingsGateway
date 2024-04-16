@@ -566,7 +566,7 @@ public abstract class DeviceHostedService : BackgroundService
                             }
 
                             //线程卡死/初始化失败检测
-                            if ((driverBase.CurrentDevice.ActiveTime != null && driverBase.CurrentDevice.ActiveTime.Value.AddMinutes(CheckIntervalTime) <= DateTime.Now)
+                            if ((driverBase.CurrentDevice.ActiveTime != null && driverBase.CurrentDevice.ActiveTime != DateTime.UnixEpoch.ToLocalTime() && driverBase.CurrentDevice.ActiveTime.Value.AddMinutes(CheckIntervalTime) <= DateTime.Now)
                                 || (driverBase.IsInitSuccess == false))
                             {
                                 //如果线程处于暂停状态，跳过

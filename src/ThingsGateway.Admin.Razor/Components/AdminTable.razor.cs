@@ -124,9 +124,7 @@ public partial class AdminTable<TItem> where TItem : class, new()
     [Parameter]
     public float RowHeight { get; set; } = 38;
 
-    /// <inheritdoc cref="Table{TItem}.PageItems"/>
-    [Parameter]
-    public int PageItems { get; set; }
+
 
     /// <inheritdoc cref="Table{TItem}.IsFixedHeader"/>
     [Parameter]

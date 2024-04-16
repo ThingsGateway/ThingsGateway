@@ -8,22 +8,17 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using BlazorComponent;
 using BootstrapBlazor.Components;
-using Masa.Blazor;
 
 using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
+
 using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
-using ThingsGateway.Admin.Application;
+
 using ThingsGateway.Foundation.OpcDa.Rcw;
 
 #if Plugin
 
-using ThingsGateway.Gateway.Application;
-using ThingsGateway.Plugin.OpcDa;
 
 #endif
 
@@ -32,16 +27,17 @@ namespace ThingsGateway.Debug;
 /// <summary>
 /// 导入变量
 /// </summary>
-public partial class OpcDaImportVariable : BasePopupComponentBase
+public partial class OpcDaImportVariable
 {
     private List<BrowseElement> actived = new();
 
-    private ItemProperty[] nodeAttributes;
-
     private List<OpcDaTagModel> Nodes = new();
+    private List<TreeViewItem<OpcDaTagModel>> Items = new();
+    private bool ModelEqualityComparer(OpcDaTagModel x, OpcDaTagModel y) => x.NodeId == y.NodeId;
+    private Task<IEnumerable<TreeViewItem<OpcDaTagModel>>> OnExpandNodeAsync(TreeViewItem<OpcDaTagModel> treeViewItem)
+    {
 
-    private bool overlay = true;
-
+    }
     [Inject]
     [NotNull]
     private IStringLocalizer<OpcDaImportVariable>? Localizer { get; set; }
@@ -55,23 +51,10 @@ public partial class OpcDaImportVariable : BasePopupComponentBase
     /// </summary>
     [Parameter]
     public ThingsGateway.Foundation.OpcDa.OpcDaMaster Plc { get; set; }
-
-    private List<BrowseElement> Actived
-    {
-        get => actived;
-        set
-        {
-            if (actived?.FirstOrDefault() != value?.FirstOrDefault() && value?.Count > 0)
-            {
-                actived = value;
-                nodeAttributes = actived.FirstOrDefault().Properties;
-            }
-        }
-    }
-
+    private bool ShowSkeleton = true;
     private List<BrowseElement> Selected { get; set; } = new();
 
-#if Plugin
+#if Plugin1
 
     private bool isDownLoading;
 
@@ -244,8 +227,8 @@ public partial class OpcDaImportVariable : BasePopupComponentBase
     {
         await Task.Factory.StartNew(async () =>
         {
-            Nodes = PopulateBranch("");
-            overlay = false;
+            Items = PopulateBranch("");
+            ShowSkeleton = false;
             await InvokeAsync(StateHasChanged);
         });
         await base.OnInitializedAsync();
@@ -275,13 +258,13 @@ public partial class OpcDaImportVariable : BasePopupComponentBase
                     if (target.HasChildren)
                     {
                         if (isAll)
-                            child.Nodes = PopulateBranch(target.ItemName);
+                            child.Items = PopulateBranch(target.ItemName);
                         else
-                            child.Nodes = new();
+                            child.Items = new();
                     }
                     else
                     {
-                        child.Nodes = null;
+                        child.Items = null;
                     }
 
                     list.Add(child);
@@ -301,7 +284,7 @@ public partial class OpcDaImportVariable : BasePopupComponentBase
                 {
                     Name = ex.Message,
                     Tag = new(),
-                    Nodes = null
+                    Items = null
                 }
             };
         }
@@ -312,7 +295,7 @@ public partial class OpcDaImportVariable : BasePopupComponentBase
         await Task.Run(() =>
        {
            var sourceId = model.Tag.ItemName;
-           model.Nodes = PopulateBranch(sourceId);
+           model.Items = PopulateBranch(sourceId);
        });
     }
 
@@ -320,7 +303,7 @@ public partial class OpcDaImportVariable : BasePopupComponentBase
     {
         internal string Name { get; set; }
         internal string NodeId => (Tag?.ItemName)?.ToString();
-        internal List<OpcDaTagModel> Nodes { get; set; } = new();
+        internal List<OpcDaTagModel> Items { get; set; } = new();
         internal BrowseElement Tag { get; set; }
 
         public List<OpcDaTagModel> GetAllTags()
@@ -333,8 +316,8 @@ public partial class OpcDaImportVariable : BasePopupComponentBase
         private void GetAllTagsRecursive(OpcDaTagModel parentTag, List<OpcDaTagModel> allTags)
         {
             allTags.Add(parentTag);
-            if (parentTag.Nodes != null)
-                foreach (OpcDaTagModel childTag in parentTag.Nodes)
+            if (parentTag.Items != null)
+                foreach (OpcDaTagModel childTag in parentTag.Items)
                 {
                     GetAllTagsRecursive(childTag, allTags);
                 }
