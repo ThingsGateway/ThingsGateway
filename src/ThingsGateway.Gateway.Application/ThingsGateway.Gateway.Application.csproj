@@ -8,7 +8,7 @@
 
 
 	<ItemGroup>
-		<PackageReference Include="SqlSugar.TDengineCore" Version="4.1.6" />
+		<PackageReference Include="SqlSugar.TDengineCore" Version="4.1.7" />
 		<PackageReference Include="Rougamo.Fody" Version="2.3.0" />
 	</ItemGroup>
 	<ItemGroup>
