@@ -1,0 +1,75 @@
+﻿@page "/OpcDaMaster"
+@using ThingsGateway.Core.Extension
+@using ThingsGateway.Foundation
+@namespace ThingsGateway.Debug
+@using ThingsGateway.Foundation.OpcDa
+@using TouchSocket.Core
+@inherits BaseComponentBase
+
+<OpcDaMasterConnectPage @ref=opcDaMasterConnectPage OnConnectClick=OnConnectClick></OpcDaMasterConnectPage>
+
+
+<AdapterDebugPage LogPath=@LogPath @ref=AdapterDebugPage HeaderText="HeaderText" Height=@($"calc(100vh - {BlazorAppService.DefaultHeight+400}px)") ShowDefaultOtherContent=false ShowDefaultReadWriteContent=false>
+
+    <ReadWriteContent>
+
+        <MContainer>
+            <MRow Justify="JustifyTypes.Start" Align="AlignTypes.Center">
+
+                <MTooltip Right Context="tip">
+                     <ActivatorContent>
+                         <MTextarea Class="pa-1" Style="max-width:200px" Dense Outlined HideDetails="@("auto")"
+                                    Label=@AppService.I18n.T("Register Address") @attributes="@tip.Attrs" @bind-Value=@RegisterAddress />
+                     </ActivatorContent>
+                     <ChildContent>
+                         <span style="white-space: pre-wrap;">@Plc?.GetAddressDescription()</span>
+                    </ChildContent>
+                </MTooltip>
+
+
+                <MCol Align="AlignTypes.Center">
+                    <MButton Class="mx-1 my-1" Color="primary" OnClick="Add">
+                        @AppService.I18n.T("添加")
+
+                    </MButton>
+                    <MButton Class="mx-1 my-1" Color="primary" OnClick="Remove">
+                        @AppService.I18n.T("移除")
+
+                    </MButton>
+                    <MButton Class="ma-1" Color="primary" OnClick="ReadAsync">
+                        @AppService.I18n.T("读取")
+                    </MButton>
+
+                </MCol>
+            </MRow>
+
+
+            <MRow Class="mt-8" Justify="JustifyTypes.Start" Align="AlignTypes.Center">
+
+                <MTextarea Class="pa-1" Style="max-width:200px" Dense Outlined HideDetails="@("auto")"
+                            Label=@AppService.I18n.T("WriteValue") @bind-Value=@WriteValue />
+                 <MCol Align="AlignTypes.Center">
+                     <MButton Class="ma-1" Color="primary" OnClick="WriteAsync">
+                         @AppService.I18n.T("Write")
+                    </MButton>
+                </MCol>
+            </MRow>
+
+            <MRow Class="mt-8" Justify="JustifyTypes.Start" Align="AlignTypes.Center">
+
+
+                <MButton Class="ma-1" Color="primary" OnClick="ShowImport">
+                    @AppService.I18n.T("查看Opc节点空间")
+                </MButton>
+
+            </MRow>
+
+
+        </MContainer>
+
+
+    </ReadWriteContent>
+
+
+</AdapterDebugPage>
+

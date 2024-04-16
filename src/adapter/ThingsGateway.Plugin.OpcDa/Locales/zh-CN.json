@@ -1,0 +1,6 @@
+﻿{
+    "ThingsGateway.Plugin.OpcDa.OpcDaImportVariable": {
+      "NoVariablesAvailable": "无可用变量",
+      "Success": "成功"
+    }
+}

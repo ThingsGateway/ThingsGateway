@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+	<Import Project="$(SolutionDir)Plugin.props" />
+
+	<PropertyGroup>
+		<DefineConstants>Plugin</DefineConstants>
+	</PropertyGroup>
+
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+
+		<Exec Command="@echo off&#xD;&#xA;setlocal enabledelayedexpansion&#xD;&#xA;&#xD;&#xA;set &quot;targetFWS=net6.0 net7.0 net8.0&quot;&#xD;&#xA;for %25%25f in (%25targetFWS%25) do (&#xD;&#xA;    set &quot;dir=$(SolutionDir)bin\$(Configuration)\ThingsGateway.Web.Entry\%25%25f\Plugins\$(AssemblyName)&quot;&#xD;&#xA;    if not exist &quot;!dir!&quot; md &quot;!dir!&quot;&#xD;&#xA;    copy &quot;$(TargetDir)*OpcDa*.dll&quot; &quot;!dir!&quot;&#xD;&#xA;)&#xD;&#xA;&#xD;&#xA;endlocal&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;" />
+	</Target>
+
+	<ItemGroup>
+	  <Content Remove="Locales\en-US.json" />
+	  <Content Remove="Locales\zh-CN.json" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Include="Locales\en-US.json" />
+	  <EmbeddedResource Include="Locales\zh-CN.json" />
+	</ItemGroup>
+
+
+	<ItemGroup>
+
+		<ProjectReference Include="..\..\foundation\ThingsGateway.Foundation.OpcDa\src\ThingsGateway.Foundation.OpcDa.csproj" />
+
+		<ProjectReference Include="..\ThingsGateway.Foundation.OpcDa\ThingsGateway.Foundation.OpcDa.csproj" />
+
+
+	</ItemGroup>
+
+
+
+</Project>
