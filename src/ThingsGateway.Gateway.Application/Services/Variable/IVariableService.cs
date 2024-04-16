@@ -49,7 +49,7 @@ public interface IVariableService
     /// </summary>
     /// <param name="data">要导出的变量数据。</param>
     /// <param name="deviceName">设备名称（可选）。</param>
-    Task<MemoryStream> ExportVariableAsync(IEnumerable<Variable> data, string deviceName = null);
+    Task<MemoryStream> ExportMemoryStream(IEnumerable<Variable> data, string deviceName = null);
 
     /// <summary>
     /// 异步导出变量数据到文件流中。

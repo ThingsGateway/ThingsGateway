@@ -128,7 +128,6 @@ public partial class VariablePage
         string fileName = DateTime.Now.ToFileDateTimeFormat();
         var dtoObject = tableExportContext.BuildQueryPageOptions();
         await ajaxJS.InvokeVoidAsync("blazor_downloadFile", url, fileName, dtoObject);
-
         // 返回 true 时自动弹出提示框
         await ToastService.Default();
     }

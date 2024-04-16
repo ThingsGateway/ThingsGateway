@@ -292,7 +292,7 @@ public class VariableService : BaseService<Variable>, IVariableService
     /// <param name="input"></param>
     /// <returns></returns>
     [OperDesc("ExportVariable", isRecordPar: false, localizerType: typeof(Variable))]
-    public async Task<MemoryStream> ExportVariableAsync(IEnumerable<Variable> data, string deviceName = null)
+    public async Task<MemoryStream> ExportMemoryStream(IEnumerable<Variable> data, string deviceName = null)
     {
         Dictionary<string, object> sheets = ExportCore(data, deviceName);
 
