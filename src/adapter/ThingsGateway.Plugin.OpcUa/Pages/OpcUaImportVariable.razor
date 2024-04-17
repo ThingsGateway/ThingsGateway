@@ -3,8 +3,8 @@
 @using Microsoft.AspNetCore.Components.Web;
 @using System.Reflection;
 
+@using Opc.Ua
 @using ThingsGateway.Foundation.OpcUa;
-@using ThingsGateway.Foundation.OpcUa.Rcw;
 
 <div class="row " style="max-height:80vh;overflow: auto;">
 
@@ -13,20 +13,24 @@
         <TreeView TItem="OpcUaTagModel" Items="Items" ShowIcon="true" ShowCheckbox="true"  AutoCheckParent="true" AutoCheckChildren="true"
                   OnExpandNodeAsync=OnExpandNodeAsync OnTreeItemChecked="OnTreeItemChecked" OnTreeItemClick=@(async a=>
                   {
-                  if(a?.Value?.Tag?.Properties!=null)
+                  if(a?.Value?.Tag?.NodeId!=null)
+                  {
                   ClickItem=a;
+                  NodeAttributes = Plc.ReadNoteAttributes(ClickItem.Value.NodeId.ToString());
+                  }
+
                   await InvokeAsync(StateHasChanged);
                   }) ShowSkeleton=ShowSkeleton
                   IsAccordion ClickToggleNode ModelEqualityComparer="ModelEqualityComparer" />
     </div>
     <div class="col-12 col-md-6 p-1">
 
-        @if (ClickItem?.Value?.Tag?.Properties != null)
+        @if (ClickItem?.Value?.Tag?.NodeId != null && NodeAttributes!=null)
         {
-            <Display @bind-Value=@ClickItem.Value.Tag.ItemName DisplayText="ItemName" ShowLabel ="true" />
-            foreach (var item in ClickItem.Value.Tag.Properties)
+            <Display @bind-Value=@ClickItem.Value.Tag.NodeId DisplayText="NodeId" ShowLabel="true" />
+            foreach (var item in NodeAttributes)
             {
-                <Display class=@($"{(item.ResultID.Failed()?"red--text":"green--text")}") @bind-Value=@item.Value DisplayText=@item.Description ShowLabel="true" />
+                <Display class=@($"{(StatusCode.IsBad(item.StatusCode)?"red--text":"green--text")}") @bind-Value=@item.Value DisplayText=@item.Name ShowLabel="true" />
             }
         }
     </div>
@@ -46,6 +50,6 @@
     RenderFragment<OpcUaTagModel> RenderTreeItem => item =>
     @<span class="flex-fill">@item.Name</span>
         ;
-
+    private OPCNodeAttribute[] NodeAttributes = new OPCNodeAttribute[] { };
     private TreeViewItem<OpcUaTagModel> ClickItem;
 }

@@ -26,7 +26,8 @@
     "Success": "Success",
     "Close": "Close",
     "Save": "Import to system",
-    "Export": "Export"
+    "Export": "Export",
+    "ShowSubvariable": "ShowSubvariable"
   },
 
   "ThingsGateway.Foundation.OpcUa.OpcUaResource": {

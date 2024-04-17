@@ -26,7 +26,8 @@
     "Success": "成功",
     "Close": "关闭",
     "Save": "导入到系统",
-    "Export": "导出"
+    "Export": "导出",
+    "ShowSubvariable": "显示变量子节点"
   },
 
   "ThingsGateway.Foundation.OpcUa.OpcUaResource": {

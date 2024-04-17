@@ -27,6 +27,7 @@ public partial class OpcUaMaster : IDisposable
     private string LogPath;
     private string RegisterAddress;
     private string WriteValue;
+    private bool ShowSubvariable;
 
     /// <inheritdoc/>
     ~OpcUaMaster()
@@ -145,6 +146,7 @@ public partial class OpcUaMaster : IDisposable
         op.Component = BootstrapDynamicComponent.CreateComponent<OpcUaImportVariable>(new Dictionary<string, object?>
         {
             [nameof(OpcUaImportVariable.Plc)] = _plc,
+            [nameof(OpcUaImportVariable.ShowSubvariable)] = ShowSubvariable,
         });
         await DialogService.Show(op);
     }

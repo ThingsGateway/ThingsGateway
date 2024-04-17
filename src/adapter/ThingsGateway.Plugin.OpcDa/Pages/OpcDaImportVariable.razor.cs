@@ -67,7 +67,7 @@ public partial class OpcDaImportVariable
     }
 
     /// <summary>
-    /// 构建树节点，传入的列表已经是树结构
+    /// 构建树节点
     /// </summary>
     private static IEnumerable<TreeViewItem<OpcDaTagModel>> BuildTreeItemList(IEnumerable<OpcDaTagModel> opcDaTagModels, Microsoft.AspNetCore.Components.RenderFragment<OpcDaTagModel> render = null, TreeViewItem<OpcDaTagModel>? parent = null)
     {
@@ -90,69 +90,7 @@ public partial class OpcDaImportVariable
         return trees;
     }
 
-    private List<OpcDaTagModel> GetAllTag(IEnumerable<OpcDaTagModel> opcDaTagModels)
-    {
-        List<OpcDaTagModel> result = new();
-        foreach (var item in opcDaTagModels)
-        {
-            PopulateBranch(item);
-
-            result.AddRange(item.GetAllTags().Where(a => a.Children == null));
-        }
-
-        return result;
-    }
-
     private bool ModelEqualityComparer(OpcDaTagModel x, OpcDaTagModel y) => x.NodeId == y.NodeId;
-
-    private async Task OnClickClose()
-    {
-        if (OnCloseAsync != null)
-            await OnCloseAsync();
-    }
-
-    private async Task OnClickExport()
-    {
-        try
-        {
-            var data = GetImportVariableList(GetAllTag(Nodes));
-            if (data.Item3 == null || data.Item3?.Count == 0)
-            {
-                await ToastService.Warning(OpcDaPropertyLocalizer["NoVariablesAvailable"], OpcDaPropertyLocalizer["NoVariablesAvailable"]);
-                return;
-            }
-
-            await DownChannelExportAsync(data.Item1);
-            await DownDeviceExportAsync(data.Item2, data.Item1.Name);
-            await DownDeviceVariableExportAsync(data.Item3, data.Item2.Name);
-            await ToastService.Default();
-        }
-        catch (Exception ex)
-        {
-            await ToastService.Warning(ex.Message);
-        }
-    }
-
-    private async Task OnClickSave()
-    {
-        try
-        {
-            var data = GetImportVariableList(GetAllTag(Nodes));
-            if (data.Item3 == null || data.Item3?.Count == 0)
-            {
-                await ToastService.Warning(OpcDaPropertyLocalizer["NoVariablesAvailable"], OpcDaPropertyLocalizer["NoVariablesAvailable"]);
-                return;
-            }
-            await App.RootServices.GetRequiredService<IChannelService>().SaveChannelAsync(data.Item1, ItemChangedType.Add);
-            await App.RootServices.GetRequiredService<IDeviceService>().SaveDeviceAsync(data.Item2, ItemChangedType.Add);
-            await App.RootServices.GetRequiredService<IVariableService>().AddBatchAsync(data.Item3);
-            await ToastService.Default();
-        }
-        catch (Exception ex)
-        {
-            await ToastService.Warning(ex.Message);
-        }
-    }
 
     private Task<IEnumerable<TreeViewItem<OpcDaTagModel>>> OnExpandNodeAsync(TreeViewItem<OpcDaTagModel> treeViewItem)
     {
@@ -164,22 +102,6 @@ public partial class OpcDaImportVariable
     {
         Nodes = items.Select(a => a.Value);
         return Task.CompletedTask;
-    }
-
-    private void PopulateBranch(OpcDaTagModel model)
-    {
-        if (model.Children != null)
-        {
-            if (model.Children.Count == 0)
-            {
-                var sourceId = model.Tag.ItemName;
-                model.Children = PopulateBranch(sourceId);
-            }
-            foreach (var item in model.Children)
-            {
-                PopulateBranch(item);
-            }
-        }
     }
 
     private List<OpcDaTagModel> PopulateBranch(string sourceId = null, bool isAll = false)
@@ -236,7 +158,83 @@ public partial class OpcDaImportVariable
 
 #if Plugin
 
-    private bool isDownLoading;
+    private void PopulateBranch(OpcDaTagModel model)
+    {
+        if (model.Children != null)
+        {
+            if (model.Children.Count == 0)
+            {
+                var sourceId = model.Tag.ItemName;
+                model.Children = PopulateBranch(sourceId);
+            }
+            foreach (var item in model.Children)
+            {
+                PopulateBranch(item);
+            }
+        }
+    }
+
+    private List<OpcDaTagModel> GetAllTag(IEnumerable<OpcDaTagModel> opcDaTagModels)
+    {
+        List<OpcDaTagModel> result = new();
+        foreach (var item in opcDaTagModels)
+        {
+            PopulateBranch(item);
+
+            result.AddRange(item.GetAllTags().Where(a => a.Children == null));
+        }
+
+        return result;
+    }
+
+    private async Task OnClickClose()
+    {
+        if (OnCloseAsync != null)
+            await OnCloseAsync();
+    }
+
+    private async Task OnClickExport()
+    {
+        try
+        {
+            var data = GetImportVariableList(GetAllTag(Nodes));
+            if (data.Item3 == null || data.Item3?.Count == 0)
+            {
+                await ToastService.Warning(OpcDaPropertyLocalizer["NoVariablesAvailable"], OpcDaPropertyLocalizer["NoVariablesAvailable"]);
+                return;
+            }
+
+            await DownChannelExportAsync(data.Item1);
+            await DownDeviceExportAsync(data.Item2, data.Item1.Name);
+            await DownDeviceVariableExportAsync(data.Item3, data.Item2.Name);
+            await ToastService.Default();
+        }
+        catch (Exception ex)
+        {
+            await ToastService.Warning(ex.Message);
+        }
+    }
+
+    private async Task OnClickSave()
+    {
+        try
+        {
+            var data = GetImportVariableList(GetAllTag(Nodes));
+            if (data.Item3 == null || data.Item3?.Count == 0)
+            {
+                await ToastService.Warning(OpcDaPropertyLocalizer["NoVariablesAvailable"], OpcDaPropertyLocalizer["NoVariablesAvailable"]);
+                return;
+            }
+            await App.RootServices.GetRequiredService<IChannelService>().SaveChannelAsync(data.Item1, ItemChangedType.Add);
+            await App.RootServices.GetRequiredService<IDeviceService>().SaveDeviceAsync(data.Item2, ItemChangedType.Add);
+            await App.RootServices.GetRequiredService<IVariableService>().AddBatchAsync(data.Item3);
+            await ToastService.Default();
+        }
+        catch (Exception ex)
+        {
+            await ToastService.Warning(ex.Message);
+        }
+    }
 
     /// <summary>
     /// 获取设备与变量列表
