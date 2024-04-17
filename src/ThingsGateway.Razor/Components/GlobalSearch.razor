@@ -1,0 +1,5 @@
+﻿@namespace ThingsGateway.Razor
+@* 响应布局，xl断点下显示，其他情况 不显示 *@
+<div class="d-none d-xl-flex flex-xl-fill justify-content-xl-end px-2"> 
+    <Search PlaceHolder="@SearchText" SearchButtonText=@string.Empty IsSelectAllTextOnEnter="true" IsSelectAllTextOnFocus="true" IsLikeMatch="true" Items="@ComponentItems" OnSearch="OnSearch" OnSelectedItemChanged="OnSelectedItemChanged" SearchButtonColor="Color.None" />
+</div>

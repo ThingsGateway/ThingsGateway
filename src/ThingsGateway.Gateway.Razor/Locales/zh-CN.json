@@ -1,0 +1,160 @@
+﻿{
+  "ThingsGateway.Gateway.Razor.DeviceStatus2": {
+    "GatewayDeviceShowDriverUI": "插件UI",
+    "DeviceRedundantThread": "切换冗余",
+    "GatewayDeviceLog": "通道日志",
+    "GatewayDevicePause": "暂停/运行",
+    "GatewayDeviceRestart": "重启设备",
+  },
+  "ThingsGateway.Gateway.Razor.DeviceStatus": {
+    "LogConsole": "通道日志"
+  },
+  "ThingsGateway.Gateway.Razor.DeviceStatusPage": {
+    "CollectDevice": "采集设备",
+    "BusinessDevice": "业务设备"
+  },
+  "ThingsGateway.Gateway.Razor.VariableRuntimePage": {
+    "WriteVariable": "写入",
+    "WriteValue": "写入值"
+  },
+  "ThingsGateway.Gateway.Razor.MainLayout": {
+    "FullScreenButton": "全屏",
+    "UserCenter": "个人中心",
+    "ChoiceModule": "切换模块",
+    "GiteePostTitleText": "代码提交推送通知"
+  },
+  "ThingsGateway.Debug.AdapterDebugBase": {
+    "WriteSuccess": "写入成功",
+    "DefaultSend": "直接发送",
+    "Send": "发送",
+    "DataType": "数据类型",
+    "RegisterAddress": "寄存器地址",
+    "ArrayLength": "数组长度",
+    "WriteValue": "写入值",
+    "SendValue": "发送原始报文"
+  },
+  "ThingsGateway.Debug.AdapterDebugComponent": {
+    "HeaderText": "通道日志",
+    "WriteSuccess": "写入成功",
+    "DefaultSend": "直接发送",
+    "Send": "发送",
+    "DataType": "数据类型",
+    "RegisterAddress": "寄存器地址",
+    "ArrayLength": "数组长度",
+    "WriteValue": "写入值",
+    "SendValue": "发送原始报文",
+    "CommonFunctions": "常用功能",
+    "SpecialFunctions": "特殊功能",
+    "Read": "读取",
+    "Write": "写入",
+    "MulRead": "多读"
+  },
+  "ThingsGateway.Debug.ChannelDataEditComponent": {
+    "BasicInformation": "基础信息",
+    "Connection": "连接"
+  },
+
+  "ThingsGateway.Gateway.Razor.DriverDebugPage": {
+    "PluginUINotNull": "此插件未实现调试页面",
+    "New": "新建"
+  },
+
+  "ThingsGateway.Gateway.Razor.Index": {
+    "CollectDevice": "采集设备",
+    "BusinessDevice": "业务设备",
+    "Variable": "变量",
+    "Alarm": "实时报警",
+    "AlarmCount": "报警数量",
+    "OnLine": "在线",
+    "OffLine": "离线",
+    "Shortcuts": "快捷方式",
+    "OperLog": "最近操作",
+    "BackendLog": "网关后台日志",
+    "RpcLog": "网关RPC日志",
+    "HardwareInfoChart": "硬件信息历史曲线",
+    "DateTime": "时间",
+    "Data": "数据",
+    "HisHardwareInfo": "历史曲线"
+  },
+  "ThingsGateway.Gateway.Razor.QuickActions": {
+    "TooltipText": "快捷操作",
+    "HeaderText": "快捷操作",
+    "ReloadPluginText": "重载插件",
+    "ReloadServiceText": "重启运行时",
+    "ReloadPluginConfirmText": "确定重载插件?",
+    "ReloadServiceConfirmText": "确定重启运行时?"
+  },
+  "ThingsGateway.Gateway.Razor.SavePlugin": {
+    "SavePlugin": "注意：文件名称相同的插件将被覆盖"
+  },
+
+  "ThingsGateway.Gateway.Razor.BackendLogPage": {
+    "BackendLog": "网关后台日志",
+    "Date": "日期",
+    "Count": "数量"
+  },
+  "ThingsGateway.Gateway.Razor.RpcLogPage": {
+    "RpcLog": "网关RPC日志",
+    "Date": "日期",
+    "Count": "数量"
+  },
+  "ThingsGateway.Gateway.Razor.ChannelPage": {
+    "ImportExcel": "导入通道",
+    "Clear": "清空"
+  },
+  "ThingsGateway.Gateway.Razor.CollectDevicePage": {
+    "ImportExcel": "导入采集设备",
+    "Clear": "清空"
+  },
+  "ThingsGateway.Gateway.Razor.BusinessDevicePage": {
+    "ImportExcel": "导入业务设备",
+    "Clear": "清空"
+  },
+  "ThingsGateway.Gateway.Razor.VariablePage": {
+    "ImportExcel": "导入变量",
+    "Clear": "清空",
+    "TestCount": "测试变量数量",
+    "Test": "一键添加测试变量"
+  },
+  "ThingsGateway.Gateway.Razor.DeviceEditComponent": {
+    "DeviceInformation": "设备信息",
+    "PluginInformation": "插件信息",
+    "BasicInformation": "基础信息",
+    "Connection": "连接",
+    "Redundant": "冗余",
+    "Remark": "备用"
+  },
+  "ThingsGateway.Gateway.Razor.VariableEditComponent": {
+    "VariableInformation": "变量信息",
+    "AlarmInformation": "报警信息",
+    "PluginInformation": "业务信息",
+
+    "BasicInformation": "基础信息",
+    "Connection": "连接",
+    "Remark": "备用",
+
+    "RefreshBusinessProperty": "添加/刷新业务属性",
+    "RefreshBusinessPropertyError": "需选择业务设备，再添加业务属性",
+
+    "ChoiceBusinessDeviceId": "业务设备"
+  },
+
+  "ThingsGateway.Gateway.Razor.ChannelEditComponent": {
+    "BasicInformation": "基础信息",
+    "Connection": "连接"
+  },
+
+  "ThingsGateway.Gateway.Razor.ImportExcel": {
+    "First": "第一步",
+    "Upload": "上传文件",
+    "Validate": "验证",
+    "Second": "第二步",
+    "ValidateText": "验证内容",
+    "UploadCount": " 表 {0}，预计导入 {1} 条数据",
+    "Third": "第三",
+    "Import": "导入",
+    "Next": "下一步",
+    "Reset": "重置",
+    "Tip": "数据量较大时(大于20万)，所需导入时间可能超过1分钟，请耐心等待"
+  }
+}

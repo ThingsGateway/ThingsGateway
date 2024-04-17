@@ -1,0 +1,44 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+	<PropertyGroup Condition="'$(SolutionName)'=='ThingsGateway - Admin'">
+		<DefineConstants>Admin</DefineConstants>
+	</PropertyGroup>
+
+	<!--资源-->
+ 
+	<ItemGroup>
+		<Content Remove="Locales\*.json" />
+		<EmbeddedResource Include="Locales\*.json" />
+	</ItemGroup>
+ 
+	<ItemGroup>
+	  <None Remove="Pages\HardwareInfoPage.razor.css" />
+	  <None Remove="Pages\Index.razor.css" />
+	</ItemGroup>
+ 
+	<ItemGroup>
+	  <Content Include="Pages\HardwareInfoPage.razor.css" />
+	  <Content Include="Pages\Index.razor.css" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="$(SolutionDir)\ThingsGateway.Admin.Application\ThingsGateway.Admin.Application.csproj" />
+		<ProjectReference Include="$(SolutionDir)\ThingsGateway.Razor\ThingsGateway.Razor.csproj" />
+		<PackageReference Include="BootstrapBlazor.Chart" Version="8.1.0" />
+		<PackageReference Include="BootstrapBlazor.TableExport" Version="8.0.5" />
+	</ItemGroup>
+
+
+	<ItemGroup Condition="'$(TargetFramework)'=='net8.0'">
+		<PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.4" />
+	</ItemGroup>
+
+
+	<ItemGroup>
+	  <Content Update="Pages\HardwareInfoPage.razor">
+	    <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+	  </Content>
+	</ItemGroup>
+	
+</Project>
+
+

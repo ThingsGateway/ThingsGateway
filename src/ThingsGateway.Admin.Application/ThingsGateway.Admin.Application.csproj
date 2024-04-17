@@ -1,0 +1,56 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+
+
+
+	<ItemGroup>
+		<Content Remove="Locales\*.json" />
+		<EmbeddedResource Include="Locales\*.json" />
+	</ItemGroup>
+
+
+	<ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+		<PackageReference Include="Microsoft.Extensions.DependencyModel" Version="8.0.0" />
+		<PackageReference Include="MiniExcel" Version="1.31.3" />
+		<PackageReference Include="Rougamo.Fody" Version="2.3.0" />
+		<PackageReference Include="UAParser" Version="3.1.47" />
+		<PackageReference Include="SqlSugarCore" Version="5.1.4.152" />
+		<PackageReference Include="Mapster" Version="7.4.1-pre01" />
+		<PackageReference Include="BootstrapBlazor" Version="8.4.7" />
+		<PackageReference Include="Yitter.IdGenerator" Version="1.0.14" />
+	</ItemGroup>
+
+
+
+	<ItemGroup>
+		<ProjectReference Include="$(SolutionDir)\ThingsGateway.Core\ThingsGateway.Core.csproj" />
+	</ItemGroup>
+
+
+	<ItemGroup>
+		<None Update="SeedData\Json\seed_sys_dict.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="SeedData\Json\seed_sys_relation.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="SeedData\Json\seed_sys_resource.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="SeedData\Json\seed_sys_resourcebutton.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="SeedData\Json\seed_sys_role.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="SeedData\Json\seed_sys_user.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
+
+
+
+
+</Project>

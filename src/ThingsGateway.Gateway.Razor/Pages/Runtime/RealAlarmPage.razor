@@ -1,0 +1,93 @@
+﻿@page "/gateway/realalarm"
+@namespace ThingsGateway.Gateway.Razor
+@using ThingsGateway.Admin.Application
+@using ThingsGateway.Admin.Razor
+@using ThingsGateway.Gateway.Application
+@attribute [Authorize]
+@attribute [RolePermission]
+@inherits ComponentDefault
+
+
+<div style="height: var(--table-height);padding: 2px 5px 10px 5px;">
+
+    <AdminTable @ref=table TItem="VariableRunTime" AutoGenerateColumns="false" ShowAdvancedSearch=false
+                AllowResizing="true" IsFixedHeader=true IsMultipleSelect=false SearchModel=SearchModel  
+                ShowExtendButtons=false ShowExportButton=false ShowExtendDeleteButton=false ShowExtendEditButton=false
+                ShowDefaultButtons=false ExtendButtonColumnWidth=150 AutoRefreshInterval="2000" IsAutoRefresh
+                OnQueryAsync="OnQueryAsync" IsPagination=true>
+
+        <TableColumns>
+            <TableColumn @bind-Field="@context.DeviceName" Editable Visible />
+            <TableColumn @bind-Field="@context.Name" Editable Visible />
+            <TableColumn @bind-Field="@context.Description" Editable Visible />
+            <TableColumn @bind-Field="@context.DataType" Editable Visible />
+            <TableColumn @bind-Field="@context.AlarmTime" Editable Visible />
+            <TableColumn @bind-Field="@context.AlarmCode" Editable Visible />
+            <TableColumn @bind-Field="@context.AlarmLimit" Editable Visible />
+            <TableColumn @bind-Field="@context.AlarmText" Editable Visible />
+            <TableColumn @bind-Field="@context.AlarmType" Editable Visible />
+            <TableColumn @bind-Field="@context.EventTime" Editable Visible />
+            <TableColumn @bind-Field="@context.EventType" Editable Visible />
+
+@* 
+            <TableColumn @bind-Field="@context.DeviceId" Editable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.Unit" Editable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.ReadExpressions" Editable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.WriteExpressions" Editable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.Enable" Editable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.IntervalTime" Editable="false" Visible="false" />
+            <TableColumn Field="@context.ChangeTime" FieldExpression=@(()=>context.ChangeTime) Editable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.CollectDeviceRunTime" Editable="false" Visible="false" />
+            <TableColumn Field="@context.CollectTime" FieldExpression=@(()=>context.CollectTime) Editable="false" Visible="false" />
+            <TableColumn Field="@context.IsOnline" FieldExpression=@(()=>context.IsOnline) Editable="false" Visible="false" />
+            <TableColumn Field="@context.LastErrorMessage" FieldExpression=@(()=>context.LastErrorMessage) Editable="false" Visible="false" />
+            <TableColumn Field="@context.LastSetValue" FieldExpression=@(()=>context.LastSetValue) Editable="false" Visible="false" />
+            <TableColumn Field="@context.RawValue" FieldExpression=@(()=>context.RawValue) Editable="false" Visible="false" />
+            <TableColumn Field="@context.Value" FieldExpression=@(()=>context.Value) Editable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.Index" Editable="false" Visible="false" />
+            <TableColumn Field="@context.AlarmEnable" FieldExpression=@(()=>context.AlarmEnable) Editable="false" Visible="false" />
+
+            <TableColumn @bind-Field="@context.RegisterAddress" Editable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.OtherMethod" Editable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.RpcWriteEnable" Editable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.VariablePropertys" Editable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.BoolOpenAlarmEnable" Editable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.BoolOpenRestrainExpressions" Editable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.BoolOpenAlarmText" Editable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.BoolCloseAlarmEnable" Editable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.BoolCloseRestrainExpressions" Editable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.BoolCloseAlarmText" Editable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.HAlarmEnable" Editable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.HRestrainExpressions" Editable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.HAlarmText" Editable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.HAlarmCode" Editable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.HHAlarmEnable" Editable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.HHRestrainExpressions" Editable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.HHAlarmText" Editable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.HHAlarmCode" Editable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.LAlarmEnable" Editable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.LRestrainExpressions" Editable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.LAlarmText" Editable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.LAlarmCode" Editable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.LLAlarmEnable" Editable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.LLRestrainExpressions" Editable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.LLAlarmText" Editable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.LLAlarmCode" Editable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.CustomAlarmEnable" Editable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.CustomRestrainExpressions" Editable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.CustomAlarmText" Editable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.CustomAlarmCode" Editable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.Remark1" Editable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.Remark2" Editable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.Remark3" Editable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.Remark4" Editable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.Remark5" Editable="false" Visible="false" /> *@
+
+        </TableColumns>
+
+    </AdminTable>
+</div>
+
+@code {
+    AdminTable<VariableRunTime> table;
+}

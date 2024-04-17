@@ -1,0 +1,38 @@
+﻿@namespace ThingsGateway.Gateway.Razor
+@using ThingsGateway.Admin.Application
+@using ThingsGateway.Admin.Razor
+
+
+
+<div class="row g-2 mx-1 form-inline">
+    <div class="col-12 col-sm-3 col-md-3" style="height:100%">
+        <Card IsShadow=true class="m-2 flex-fill" Color="Color.Primary">
+            <BodyTemplate>
+                <Chart @ref=CollectDevicePie ChartType="ChartType.Pie" OnInitAsync="@OnInitCollectDevicePie" Height="120px" Width="120px" OnAfterInitAsync="()=>{CollectDevicePieInit=true;return Task.CompletedTask;}" />
+            </BodyTemplate>
+        </Card>
+    </div>
+    <div class="col-12 col-sm-3 col-md-3" style="height:100%">
+        <Card IsShadow=true class="m-2 flex-fill" Color="Color.Primary">
+            <BodyTemplate>
+                <Chart @ref=BusinessDevicePie ChartType="ChartType.Pie" OnInitAsync="@OnInitBusinessDevicePie" Height="120px" Width="120px" OnAfterInitAsync="()=>{BusinessDevicePieInit=true;return Task.CompletedTask;}" />
+            </BodyTemplate>
+        </Card>
+    </div>
+    <div class="col-12 col-sm-3 col-md-3" style="height:100%">
+        <Card IsShadow=true class="m-2 flex-fill" Color="Color.Primary">
+            <BodyTemplate>
+                <Chart @ref=VariablePie ChartType="ChartType.Pie" OnInitAsync="@OnInitVariablePie" Height="120px" Width="120px" OnAfterInitAsync="()=>{VariablePieInit=true;return Task.CompletedTask;}" />
+            </BodyTemplate>
+        </Card>
+    </div>
+    <div class="col-12 col-sm-3 col-md-3" style="height:100%">
+        <Card IsShadow=true class="m-2 flex-fill" Color="Color.Primary">
+            <BodyTemplate>
+                <Chart @ref=AlarmPie ChartType="ChartType.Pie" OnInitAsync="@OnInitAlarmPie" Height="120px" Width="120px" OnAfterInitAsync="()=>{AlarmPieInit=true;return Task.CompletedTask;}" />
+            </BodyTemplate>
+        </Card>
+    </div>
+</div>
+
+

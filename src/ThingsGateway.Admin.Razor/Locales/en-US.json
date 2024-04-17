@@ -1,0 +1,88 @@
+﻿{
+  "ThingsGateway.Admin.Razor.HardwareInfoPage": {
+    "SystemInfo": "System Information",
+    "HardwareInfo": "Hardware Resources",
+    "HardwareInfoChart": "Hardware Resources History Chart",
+    "CpuUsage": "CPU Usage",
+    "AvailableMemory": "Available Memory",
+    "TotalMemory": "Total Memory",
+    "MemoryUsage": "Memory Usage",
+    "AvailableDisk": "Available Disk",
+    "TotalDisk": "Total Disk",
+    "DiskUsage": "Disk Usage",
+    "HisHardwareInfo": "Historical Trends",
+    "DateTime": "Date Time",
+    "Data": "Data",
+    "OSName": "OS Name",
+    "OSVersion": "OS Version"
+  },
+
+  "ThingsGateway.Admin.Razor.AccessDenied": {
+    "404": "Sorry, the page you are looking for does not exist.",
+    "401": "Sorry, you do not have permission to access this page.",
+    "Home": "Back to Home"
+  },
+  "ThingsGateway.Admin.Razor.Login": {
+    "LoginErrorh1": "Login Error",
+    "LoginSuccessh1": "Login Success",
+    "LoginSuccessc1": "Redirecting to the page",
+    "LoginErrorh2": "Login Failed",
+    "LoginErrorc2": "Please contact the administrator!",
+    "Remark1": "Edge Collection Gateway",
+    "Remark2": "Data Aggregation, Multi-path Forwarding",
+    "Remark3": "Edge Computing, Efficient Processing",
+    "Welcome": "Welcome"
+  },
+  "ThingsGateway.Admin.Razor.UserLogin": {
+    "Account": "Username",
+    "Password": "Password",
+    "Login": "Login"
+  },
+
+  "ThingsGateway.Admin.Razor.MainLayout": {
+    "FullScreenButton": "Full Screen",
+    "UserCenter": "User Center",
+    "ChoiceModule": "Switch Module",
+    "GiteePostTitleText": "Code Commit Push Notification"
+  },
+  "ThingsGateway.Admin.Razor.OperLogPage": {
+    "Date": "Date",
+    "Count": "Count",
+    "Operate": "Succeed",
+    "Exception": "Failed",
+    "Login": "Login",
+    "Logout": "Logout",
+    "SysOperateLog": "Operation Log"
+  },
+  "ThingsGateway.Admin.Razor.SysDictPage": {},
+  "ThingsGateway.Admin.Razor.SessionPage": {
+    "VerificatInfo": "Token List",
+    "ExitSession": "Force Logout"
+  },
+  "ThingsGateway.Admin.Razor.VerificatListPage": {
+    "ExitVerificat": "Force Logout Token"
+  },
+  "ThingsGateway.Admin.Razor.SysUserAvatarEdit": {
+    "Picture": "Avatar"
+  },
+  "ThingsGateway.Admin.Razor.UserInfoEditComponent": {
+    "Picture": "Avatar"
+  },
+  "ThingsGateway.Admin.Razor.ParentMenu": {
+    "ChoiceMenu": "Select Menu"
+  },
+  "ThingsGateway.Admin.Razor.SysResourcePage": {
+    "Root": "Root Menu"
+  },
+  "ThingsGateway.Admin.Razor.UserCenterPage": {
+    "UpdateUserInfo": "Update Personal Information",
+    "UserInfo": "Personal Information",
+    "UpdatePasswordInfo": "Change Password",
+    "UpdateWorkbenchInfo": "Update Personal Workbench",
+    "WorkbenchInfo": "Personal Workbench"
+  },
+  "ThingsGateway.Admin.Razor.Index": {
+    "Shortcuts": "Shortcuts",
+    "OperLog": "Recent Operations"
+  }
+}

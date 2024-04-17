@@ -1,0 +1,22 @@
+﻿{
+  "ThingsGateway.Plugin.Dlt645.Dlt645_2007MasterProperty": {
+    "EnableFEHead": "前导符报文头",
+    "OperCode": "操作员代码",
+    "Password": "写入密码",
+    "Station": "通讯地址",
+
+    "HeartbeatHexString": "心跳验证(HexString)",
+    "DataFormat": "解析规则",
+    "IsStringReverseByteWord": "字符串反转",
+    "CheckClearTime": "客户端连接滑动过期时间",
+    "Timeout": "读写超时时间",
+    "ConnectTimeout": "连接超时时间",
+    "SendDelayTime": "发送延时",
+    "CacheTimeout": "组包缓存过期时间",
+    "MaxPack": "最大打包长度",
+    "ReIntervalTime": "离线恢复时间",
+    "RetryCount": "失败重试次数",
+    "ConcurrentCount": "最大并发数量"
+  }
+
+}

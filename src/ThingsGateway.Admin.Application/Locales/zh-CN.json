@@ -1,0 +1,346 @@
+﻿{
+  "ThingsGateway.Admin.Application.APPInfo": {
+    "Environment": "主机环境",
+    "FrameworkDescription": "NET框架",
+    "OsArchitecture": "系统架构",
+    "UUID": "唯一编码",
+    "UpdateTime": "更新时间"
+  },
+  "ThingsGateway.Admin.Application.HisHardwareInfo": {
+    "DriveUsage": "磁盘使用率",
+    "MemoryUsage": "内存使用率",
+    "CpuUsage": "CPU使用率",
+    "Temperature": "温度",
+    "Battery": "电池"
+  },
+
+  //controller
+  "ThingsGateway.Admin.Application.AuthController": {
+    //auth
+    "AuthController": "登录API",
+    "LoginAsync": "登录",
+    "LogoutAsync": "注销"
+  },
+  "ThingsGateway.Admin.Application.TestController": {
+    //auth
+    "TestController": "测试API",
+    "Test": "测试"
+  },
+  "ThingsGateway.Admin.Application.OpenApiAuthController": {
+    //auth
+    "OpenApiAuthController": "登录API",
+    "LoginAsync": "登录",
+    "LogoutAsync": "注销"
+  },
+  //oops
+  "ThingsGateway.Admin.Application.Oops": {
+    //auth
+    "UserNull": "用户 {0} 不存在",
+    "PasswordError": "密码错误次数过多，请 {0} 分钟后再试",
+    "AuthErrorMax": "账号密码错误，超过 {0} 次后将锁定 {1} 分钟，错误次数 {2} ",
+    "UserDisable": "账号 {0} 已停用",
+    "MustDesc": "密码需要DESC加密后传入",
+    //dict
+    "DictDup": "存在重复的配置 分类 {0} 名称 {0}",
+    "DemoCanotUpdateWebsitePolicy": "DEMO环境不允许修改网站设置",
+    //file
+    "FileNullError": "文件不能为空",
+    "FileLengthError": "文件大小不允许超过 {0} M",
+    "FileTypeError": "不支持 {0} 格式",
+
+    //resource
+    "ResourceDup": "存在重复的名称 {0}",
+    "ResourceParentChoiceSelf": "父级不能选择自己",
+    "ResourceParentNull": "父级不存在 {0}",
+    "NotFoundResource": "系统异常，没找到该菜单",
+    "ModuleIdDiff": "模块与上级菜单不一致",
+    "CanotDeleteSystemResource": "不可删除系统资源 {0}",
+    "ResourceMenuHrefNotNull": "菜单的路径不能为空",
+    //role
+    "CanotDeleteAdmin": "不可删除系统内置超管角色",
+    "CanotEditAdmin": "不可编辑超管角色",
+    "ApiRoleCanotGrantResource": "API角色不允许授权资源",
+    "CategoryError": "角色所属分类 {0} 错误",
+    "NameDup": "存在重复的角色名称 {0}",
+
+    //user
+    "CheckSelf": "禁止 {0} 自己",
+    "CanotDeleteAdminUser": "不可删除系统内置超管用户",
+    "CanotEditAdminUser": "不可编辑超管用户",
+    "CanotGrantAdmin": "不能给超管分配角色",
+    "EmailDup": "存在重复的邮箱 {0}",
+    "AccountDup": "存在重复的账号 {0}",
+    "CanotDeleteSelf": "不可删除自己",
+    "EmailError": "邮箱 {0} 格式错误",
+    "PhoneError": "手机号码 {0} 格式错误",
+    "UserNoModule": "该账号未分配模块,请联系管理员",
+    //usercenter
+    "DemoCanotUpdatePassword": "DEMO环境不允许修改密码",
+    "OldPasswordError": "原密码错误",
+    "ConfirmPasswordDiff": "两次输入的密码不一致",
+    "PasswordLengthLess": "密码长度不能小于 {0} ",
+    "PasswordMustNum ": "密码必须包含数字",
+    "PasswordMustLow": "密码必须包含小写字母",
+    "PasswordMustUpp": "密码必须包含大写字母",
+    "PasswordMustSpecial": "密码必须包含特殊字符"
+  },
+  //oper
+
+  "ThingsGateway.Admin.Application.OperDescAttribute": {
+    //dict
+    "SaveDict": "修改字典",
+    "DeleteDict": "删除字典",
+    "EditLoginPolicy": "修改登录策略",
+    "EditPasswordPolicy": "修改密码策略",
+    "EditPagePolicy": "修改页面策略",
+    "EditWebsitePolicy": "修改网站设置",
+    //operlog
+    "DeleteOperLog": "删除操作日志",
+    "ExportOperLog": "导出操作日志",
+
+    //resource
+    "SaveResource": "修改资源",
+    "DeleteResource": "删除资源",
+
+    //role
+    "SaveRole": "修改角色",
+    "DeleteRole": "删除角色",
+    "RoleGrantResource": "角色授权资源",
+    "RoleGrantUser": "角色授权用户",
+    "RoleGrantApiPermission": "角色授权OpenApi",
+    "GrantApi": "API",
+    "GrantUser": "用户",
+    "GrantRole": "角色",
+    "GrantResource": "资源",
+    //user
+    "SaveUser": "修改用户",
+    "DeleteuSER": "删除用户",
+    "ResetPassword": "重置密码",
+    "UserGrantRole": "用户授权角色",
+    "UserGrantResource": "用户授权资源",
+    "UserGrantApiPermission": "用户授权OpenApi",
+
+    //usercenter
+    "UpdateUserInfo": "更新个人信息",
+    "WorkbenchInfo": "更新个人工作台",
+    "UpdatePassword": "更新个人密码",
+
+    //session
+    "ExitVerificat": "强退令牌",
+    "ExitSession": "强退会话"
+  },
+
+  "ThingsGateway.Admin.Application.UnifyResultProvider": {
+    "TokenOver": "登录已过期，请重新登录",
+    "NoPermission": "禁止访问，没有权限"
+  },
+
+  //service
+  "ThingsGateway.Admin.Application.SessionService": {
+  },
+  "ThingsGateway.Admin.Application.RoleService": {
+  },
+  "ThingsGateway.Admin.Application.HardwareInfoService": {
+    "GetHardwareInfoFail": "获取硬件信息出错"
+  },
+  "ThingsGateway.Admin.Application.AuthService": {
+    "SingleLoginWarn": "您的账号已在别处登录"
+  },
+
+  //dto
+  "ThingsGateway.Admin.Application.UserSelectorOutput": {
+    "Account": "账号"
+  },
+  "ThingsGateway.Admin.Application.ResourceSearchInput": {
+    "Module": "模块",
+    "Href": "路径",
+    "Title": "标题"
+  },
+  "ThingsGateway.Admin.Application.WorkbenchInfo": {
+    "Razor": "主页",
+    "Shortcuts": "快捷方式"
+  },
+  "ThingsGateway.Admin.Application.UpdatePasswordInput": {
+    "Password": "密码",
+    "NewPassword": "新密码",
+    "ConfirmPassword": "确认密码",
+    "Password.Required": " {0} 是必填项",
+    "NewPassword.Required": " {0} 是必填项",
+    "ConfirmPassword.Required": " {0} 是必填项"
+  },
+  "ThingsGateway.Admin.Application.SysRole": {
+    "Code": "编码",
+    "Name": "名称",
+    "Name.Required": " {0} 是必填项",
+    "Category": "分类",
+    "SortCode": "排序"
+  },
+
+  "ThingsGateway.Admin.Application.SysUser": {
+    "Disable": "禁用",
+    "Enable": "启用",
+    "GrantRole": "分配角色",
+    "SingleLoginWarn": "您的账号已在别处登录",
+    "ExitVerificat": "您已被强制下线",
+    "PasswordEdited": "密码被修改，已退出登录",
+    "Avatar": "头像",
+    "Account": "账号",
+    "Account.Required": " {0} 是必填项",
+    "Password": "密码",
+    "Status": "启用",
+    "Phone": "手机",
+    "Email": "邮箱",
+    "LastLoginIp": "上次登录ip",
+    "LastLoginDevice": "上次登录设备",
+    "LastLoginTime": "上次登录时间",
+    "LastLoginAddress": "上次登录地点",
+    "LatestLoginIp": "最新登录ip",
+    "LatestLoginTime": "最新登录时间",
+    "LatestLoginDevice": "最新登录设备",
+    "LatestLoginAddress": "最新登录地点",
+    "SortCode": "排序"
+  },
+  "ThingsGateway.Admin.Application.VerificatInfo": {
+    "Expire": "过期时间(分)",
+    "Online": "在线状态",
+    "OnlineNum": "在线数量",
+    "VerificatRemain": "剩余有效期",
+    "VerificatTimeout": "超时时间",
+    "Device": "登录设备"
+  },
+
+  "ThingsGateway.Admin.Application.SessionOutput": {
+    "Account": "账号",
+    "Online": "在线状态",
+    "LatestLoginIp": "最新登录ip",
+    "LatestLoginTime": "最新登录时间",
+    "VerificatCount": "令牌数量"
+  },
+
+  "ThingsGateway.Admin.Application.SysDict": {
+    "Category.Required": "{0} 是必填项",
+    "Name.Required": "{0} 是必填项",
+    "Code.Required": "{0} 是必填项",
+    "Category": "分类",
+    "Name": "名称",
+    "Code": "代码",
+    "Remark": "备注",
+    "SortCode": "排序"
+  },
+
+  "ThingsGateway.Admin.Application.SysResource": {
+    "Title": "标题",
+    "Module": "模块",
+    "Title.Required": "{0} 是必填项",
+    "Href.Required": "{0} 是必填项",
+    "Icon": "图标",
+    "Href": "路径",
+    "Code": "编码",
+    "Category": "分类",
+    "Target": "跳转类型",
+    "NavLinkMatch": "匹配类型",
+    "SortCode": "排序"
+  },
+
+  "ThingsGateway.Admin.Application.SysOperateLog": {
+    "ClassName": "类名",
+    "ExeMessage": "具体消息",
+    "MethodName": "方法名称",
+    "ParamJson": "请求参数",
+    "ReqMethod": "请求方式",
+    "ReqUrl": "请求地址",
+    "ResultJson": "返回结果",
+    "Category": "日志分类",
+    "ExeStatus": "执行状态",
+    "Name": "日志名称",
+    "OpAccount": "账号",
+    "OpBrowser": "浏览器",
+    "OpIp": "ip",
+    "OpOs": "系统",
+    "OpTime": "操作时间",
+    "VerificatId": "验证Id"
+  },
+  "ThingsGateway.Admin.Application.OperateLogPageInput": {
+    "SearchDate": "时间范围",
+    "Account": "操作账号",
+    "Category": "分类"
+  },
+  "ThingsGateway.Admin.Application.LoginInput": {
+    "Account": "登录账号",
+    "Password": "登录密码",
+    "Account.Required": "{0} 是必填项",
+    "Password.Required": "{0} 是必填项"
+  },
+  "ThingsGateway.Admin.Application.LogoutInput": {
+    "VerificatId.Required": "{0} 是必填项"
+  },
+  "ThingsGateway.Admin.Application.AppConfig": {
+    "LoginPolicy": "登录策略",
+    "PasswordPolicy": "密码策略",
+    "PagePolicy": "页面设置",
+    "WebsitePolicy": "网站设置"
+  },
+  "ThingsGateway.Admin.Application.LoginPolicy": {
+    "SingleOpen": "单用户登录开关",
+    "ErrorLockTime": "登录错误锁定时长(分)",
+    "ErrorResetTime": "登录错误次数过期时长(分)",
+    "ErrorCount": "登录错误次数锁定阈值",
+    "VerificatExpireTime": "登录过期时间(分)",
+    "ErrorLockTime.MinValue": " {0} 值太小",
+    "ErrorResetTime.MinValue": " {0} 值太小",
+    "ErrorCount.MinValue": " {0} 值太小",
+    "VerificatExpireTime.MinValue": " {0} 值太小"
+  },
+  "ThingsGateway.Admin.Application.PagePolicy": {
+    "DefaultShortcuts": "默认快捷方式",
+    "DefaultRazor": "默认主页"
+  },
+  "ThingsGateway.Admin.Application.PasswordPolicy": {
+    "DefaultPassword": "默认用户密码",
+    "DefaultPassword.Required": " {0} 是必填项",
+    "PasswordMinLen": "密码最小长度",
+    "PasswordMinLen.MinValue": " {0} 值太小",
+    "PasswordContainNum": "包含数字",
+    "PasswordContainLower": "包含小写字母",
+    "PasswordContainUpper": "包含大写字母",
+    "PasswordContainChar": "包含特殊字符"
+  },
+  "ThingsGateway.Admin.Application.WebsitePolicy": {
+    "WebStatus": "是否开放",
+    "CloseTip": "关闭提示",
+    "CloseTip.Required": " {0} 是必填项"
+  },
+  //enum
+  "ThingsGateway.Admin.Application.ResourceCategoryEnum": {
+    "Module": "模块",
+    "Menu": "菜单",
+    "Button": "按钮"
+  },
+  "Microsoft.AspNetCore.Components.Routing.NavLinkMatch": {
+    "Prefix": "本窗口",
+    "All": "新窗口"
+  },
+
+  "ThingsGateway.Admin.Application.TargetEnum": {
+    "_self": "本窗口",
+    "_blank": "新窗口",
+    "_parent": "父级窗口",
+    "_top": "顶级窗口"
+  },
+  "ThingsGateway.Admin.Application.DictTypeEnum": {
+    "System": "系统配置",
+    "Define": "业务配置"
+  },
+
+  "ThingsGateway.Admin.Application.LogCateGoryEnum": {
+    "Login": "登录",
+    "Logout": "注销",
+    "Operate": "操作",
+    "Exception": "异常"
+  },
+
+  "ThingsGateway.Admin.Application.LogEnum": {
+    "SUCCESS": "成功",
+    "FAIL": "失败"
+  }
+}

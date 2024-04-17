@@ -1,0 +1,29 @@
+﻿{
+  "ThingsGateway.Foundation.Dlt645.Dlt645_2007Master": {
+    "EnableFEHead": "Front-end identifier in message header",
+    "OperCode": "Operator code",
+    "Password": "Write password",
+    "Station": "Communication address",
+    "CheckClearTime": "Connection sliding expiration time",
+    "HeartbeatHexString": "Heartbeat detection"
+  },
+
+  "ThingsGateway.Foundation.Dlt645.DltResource": {
+    "AddressDes": "Data identification address\n\nRefer to accompanying documents or related materials. Below are some common data identification addresses\n\nAddress                       Description\n-----------------------------------------\n02010100    Phase A voltage\n02020100    Phase A current\n02030000    Instantaneous total active power\n00000000    (Current) Total active energy\n00010000    (Current) Forward active energy",
+    "SumError": "Checksum error",
+    "StationNotSame": "Inconsistent station number",
+    "FunctionError": "Exception control code: {0}, error message: {1}",
+    "FunctionNotSame": "Inconsistent function code, requested function code {0}, returned function code {1}",
+    "DataIdNotSame": "Returned data identification does not comply with the rules",
+    "BaudRateError": "Unsupported baud rate {0}",
+    "CountError": "Number of parameters written does not meet address requirements",
+    "Error1": "Other errors",
+    "Error2": "Excessive number of rates",
+    "Error3": "Excessive number of daily time periods",
+    "Error4": "Excessive number of yearly time zones",
+    "Error5": "Communication rate cannot be changed",
+    "Error6": "Incorrect password / unauthorized",
+    "Error7": "No request data",
+    "Error8": "Other errors"
+  }
+}

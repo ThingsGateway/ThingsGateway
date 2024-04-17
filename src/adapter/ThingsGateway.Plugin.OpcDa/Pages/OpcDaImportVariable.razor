@@ -1,0 +1,58 @@
+﻿@namespace ThingsGateway.Debug
+@using BootstrapBlazor.Components
+@using Microsoft.AspNetCore.Components.Web;
+@using System.Reflection;
+
+@using ThingsGateway.Foundation.OpcDa;
+@using ThingsGateway.Foundation.OpcDa.Rcw;
+
+<div class="row ">
+
+
+    <div class="col-12 col-md-6 p-1" style="min-height:500px;max-height:80vh;overflow: auto;">
+        <TreeView TItem="OpcDaTagModel" Items="Items" ShowIcon="true" ShowCheckbox="true"  AutoCheckParent="true" AutoCheckChildren="true"
+                  OnExpandNodeAsync=OnExpandNodeAsync OnTreeItemChecked="OnTreeItemChecked" OnTreeItemClick=@(async a=>
+                  {
+                  if(a?.Value?.Tag?.Properties!=null)
+                  ClickItem=a;
+                  await InvokeAsync(StateHasChanged);
+                  }) ShowSkeleton=ShowSkeleton
+                  IsAccordion ClickToggleNode ModelEqualityComparer="ModelEqualityComparer" />
+    </div>
+    <div class="col-12 col-md-6 p-2" style="min-height:500px;max-height:80vh;overflow: auto;">
+
+        @if (ClickItem?.Value?.Tag?.Properties != null)
+        {
+            <Display @bind-Value=@ClickItem.Value.Tag.ItemName DisplayText="ItemName" ShowLabel ="true" />
+            foreach (var item in ClickItem.Value.Tag.Properties)
+            {
+                <Display class=@($"{(item.ResultID.Failed()?"red--text":"green--text")}") @bind-Value=@item.Value DisplayText=@item.Description ShowLabel="true" />
+            }
+        }
+    </div>
+
+
+</div>
+
+@{
+#if Plugin
+}
+
+<div class="form-footer">
+    <Button IsAsync Color="Color.Secondary" Icon="fa-solid fa-xmark" Text="@OpcDaPropertyLocalizer["Close"]" OnClickWithoutRender="OnClickClose" />
+    <Button IsAsync Color="Color.Primary" Icon="fa-solid fa-check" Text="@OpcDaPropertyLocalizer["Export"]" OnClickWithoutRender="OnClickExport" />
+
+    <Button IsAsync Color="Color.Primary" Icon="fa-solid fa-check" Text="@OpcDaPropertyLocalizer["Save"]" OnClickWithoutRender="OnClickSave" />
+</div>
+
+@{
+#endif
+}
+
+@code {
+    RenderFragment<OpcDaTagModel> RenderTreeItem => item =>
+    @<span class="flex-fill">@item.Name</span>
+        ;
+
+    private TreeViewItem<OpcDaTagModel> ClickItem;
+}

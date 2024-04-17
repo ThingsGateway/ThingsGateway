@@ -1,0 +1,22 @@
+﻿{
+  "ThingsGateway.Plugin.QuestDB.QuestDBProducerProperty": {
+    "BigTextConnectStr": "连接字符串",
+
+    "IsInterval": "启用定时上传",
+    "BusinessInterval": "定时上传间隔",
+    "IsAllVariable": "选择全部变量",
+    "QueueMaxCount": "内存队列最大数量",
+    "SplitSize": "上传每页条数",
+    "CacheEnable": "启用缓存"
+  },
+  "ThingsGateway.Plugin.QuestDB.QuestDBHistoryValue": {
+    "Id": "变量Id",
+
+    "CollectTime": "采集时间",
+    "CreateTime": "上传时间",
+    "DeviceName": "设备名称",
+    "Name": "变量名称",
+    "IsOnline": "是否在线",
+    "Value": "变量值"
+  }
+}

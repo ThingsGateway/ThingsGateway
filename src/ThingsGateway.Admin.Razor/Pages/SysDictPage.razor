@@ -1,0 +1,16 @@
+﻿@page "/admin/dict"
+@attribute [Authorize]
+@attribute [RolePermission]
+@inherits ComponentDefault
+@using ThingsGateway.Admin.Application
+@namespace ThingsGateway.Admin.Razor
+
+<div style="height: var(--table-height);padding: 2px 5px 10px 5px;">
+<AdminTable TItem="SysDict" AutoGenerateColumns="true" ShowDefaultButtons=true 
+                  AllowResizing="true" IsFixedHeader=true IsMultipleSelect=true SearchModel=SearchModel 
+                  ShowExtendButtons=true
+                OnQueryAsync="OnQueryAsync" IsPagination=true
+                OnSaveAsync="SysDictService.SaveDictAsync" OnDeleteAsync="@(a=>SysDictService.DeleteDictAsync(a.Select(a=>a.Id)))">
+
+</AdminTable>
+</div>

@@ -1,0 +1,62 @@
+﻿@namespace ThingsGateway.Gateway.Razor
+@using ThingsGateway.Admin.Application
+@using ThingsGateway.Admin.Razor
+@using ThingsGateway.Gateway.Application
+@attribute [Authorize]
+@attribute [RolePermission]
+@inherits ComponentDefault
+
+
+<div style="height: var(--table-height);padding: 2px 5px 10px 5px;">
+
+    <AdminTable @ref=table TItem="Device" AutoGenerateColumns="true" ShowAdvancedSearch=false
+                AllowResizing="true" IsFixedHeader=true IsMultipleSelect=true SearchModel=SearchModel
+                ShowExtendButtons=true ShowExportButton
+                ShowDefaultButtons=true ExtendButtonColumnWidth=150
+                OnQueryAsync="OnQueryAsync" IsPagination=true
+                OnSaveAsync="Save" OnDeleteAsync="Delete">
+
+        <TableColumns>
+            <TableColumn @bind-Field="@context.PluginName" Width="50" Align="Alignment.Center">
+                <Template Context="pluginName">
+                    @PluginServiceUtil.GetFileNameAndTypeName(pluginName?.Value).TypeName
+                </Template>
+
+            </TableColumn>
+
+            <TableColumn @bind-Field="@context.ChannelId" Width="50" Align="Alignment.Center">
+                <Template Context="channelId">
+                    @{
+                        ChannelDict.TryGetValue(channelId.Value, out var channel);
+                    }
+                    @channel?.Name
+                </Template>
+
+            </TableColumn>
+        </TableColumns>
+        <EditTemplate Context="context">
+            <DeviceEditComponent Model=context PluginType=PluginType PluginNames="PluginNames" RedundantDevicesQuery="OnRedundantDevicesQuery"></DeviceEditComponent>
+        </EditTemplate>
+
+
+        <ExportButtonDropdownTemplate Context="ExportContext">
+            <Button class="dropdown-item" OnClick="() => ExcelExportAsync(ExportContext)">
+                <i class="fas fa-file-export"></i>
+                <span>@DefaultLocalizer["TablesExportButtonExcelText"]</span>
+            </Button>
+            <Button class="dropdown-item" OnClick="() => ExcelImportAsync(ExportContext)" IsDisabled=@(!AuthorizeButton("导入"))>
+                <i class="fas fa-file-import"></i>
+                <span>@DefaultLocalizer["TablesImportButtonExcelText"]</span>
+            </Button>
+        </ExportButtonDropdownTemplate>
+        <TableToolbarTemplate>
+            <TableToolbarPopConfirmButton TItem="Device"
+                                          Color=Color.Warning Text="@Localizer["Clear"]"
+                                          IsAsync OnConfirm=@(async()=>{await DeviceService.ClearDeviceAsync(PluginType);await ToastService.Default(); await table.QueryAsync(); }) />
+        </TableToolbarTemplate>
+    </AdminTable>
+</div>
+
+@code {
+    AdminTable<Device> table;
+}

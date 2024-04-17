@@ -1,0 +1,26 @@
+﻿
+
+@page "/"
+@layout BaseLayout
+@inject NavigationManager NavigationManager
+@namespace ThingsGateway.Debug
+@using Microsoft.AspNetCore.Authorization;
+
+@code {
+
+    /// <summary>
+    /// <inheritdoc/>
+    /// </summary>
+    /// <param name="firstRender"></param>
+    /// <returns></returns>
+    protected override  Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            NavigationManager.NavigateTo("ModbusMaster");
+        }
+
+        return base.OnAfterRenderAsync(firstRender);
+
+    }
+}

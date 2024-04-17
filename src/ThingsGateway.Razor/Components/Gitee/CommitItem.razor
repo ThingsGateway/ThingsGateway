@@ -1,0 +1,8 @@
+﻿@namespace ThingsGateway.Razor
+<div class="d-flex fw-bold mb-1">
+    <span class="text-success flex-fill">@Timestamp</span>
+    <span>@Localizer["CommitCount", TotalCount]</span>
+</div>
+<div>@Localizer["Author"] <span class="text-info fw-bold">@Author</span></div>
+<div>@Localizer["Branch"] <span class="text-info fw-bold">@Branch</span></div>
+<div>@Localizer["Message"] <a href="@Url" target="_blank">@Message</a></div>

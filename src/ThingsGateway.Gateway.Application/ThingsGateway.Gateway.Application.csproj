@@ -1,0 +1,40 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+
+	<ItemGroup>
+		<Content Remove="Locales\*.json" />
+		<EmbeddedResource Include="Locales\*.json" />
+	</ItemGroup>
+
+
+	<ItemGroup>
+		<PackageReference Include="SqlSugar.TDengineCore" Version="4.1.7" />
+		<PackageReference Include="Rougamo.Fody" Version="2.3.0" />
+	</ItemGroup>
+	<ItemGroup>
+		<!--kafka在某些系统中出现无法动态加载资源的情况，需要手动拷贝到主程序下，所以这里直接引用native内容，发布会自动生成-->
+		<PackageReference Include="Confluent.Kafka" Version="2.3.0">
+			<Private>false</Private>
+			<IncludeAssets> native; </IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="CS-Script" Version="4.8.14" />
+		<PackageReference Include="TouchSocket.Dmtp" Version="2.0.3" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="$(SolutionDir)\ThingsGateway.Admin.Application\ThingsGateway.Admin.Application.csproj" />
+	  <ProjectReference Include="$(SolutionDir)\ThingsGateway.Foundation\ThingsGateway.Foundation.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="SeedData\Json\seed_gateway_resource.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
+
+
+
+</Project>

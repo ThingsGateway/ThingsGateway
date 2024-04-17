@@ -1,0 +1,26 @@
+﻿@namespace ThingsGateway.Debug
+@using Microsoft.AspNetCore.Components.Web;
+@using System.IO.Ports;
+@using ThingsGateway.Foundation
+@using TouchSocket.Core
+@using BootstrapBlazor.Components
+
+<Card>
+    <BodyTemplate>
+        <div class=@($"{ClassString} row mx-2")>
+            <div class="col-12  col-md-6 ">
+                <BootstrapInputGroup>
+                    <BootstrapInputGroupLabel DisplayText=@Localizer["Channel"] />
+                    <Select IsVirtualize @bind-Value="@ChannelId" Items="@ChannelDataItems" ShowSearch="true" ShowLabel="true" OnSelectedItemChanged="OnSelectedItemChanged" />
+                    <Button class="text-end" Icon="fa-solid fa-plus" OnClick="HandleAddClick"></Button>
+                    <Button class="text-end" Icon="fa-solid fa-edit" OnClick="HandleEditClick"></Button>
+                    <PopConfirmButton class="text-end" Icon="far fa-trash-alt" OnConfirm="HandleDeleteClick" Color="Color.Warning"></PopConfirmButton>
+                </BootstrapInputGroup>
+            </div>
+            <div class="col-12  col-md-6 ">
+                <Button IsAsync class="mx-2" Color=Color.Primary OnClick="ConnectClick">@Localizer["Connect"]</Button>
+                <Button IsAsync class="mx-2" Color=Color.Warning OnClick="OnDisconnectClick">@Localizer["Disconnect"]</Button>
+            </div>
+        </div>
+    </BodyTemplate>
+</Card>
