@@ -1,0 +1,34 @@
+---
+id: 305
+title: TDengineDBProducer
+---
+
+
+import useBaseUrl from "@docusaurus/useBaseUrl";
+import Tag from "@site/src/components/Tag.js";
+import Highlight from '@site/src/components/Highlight.js';
+
+ 
+ 
+## 一、说明
+
+TDengineDBProducer适配TDengineDB时序数据库，可以定时/变化存储变量数据
+
+通道只支持 Other 
+
+## 二、插件属性配置项
+
+<img src={require("@site/static/img/docs/TDengineDBProducer.png").default} />
+
+| 属性           |  说明                    | 备注|
+| ---------------| --------------------------| ---|
+| 链接字符串         | 链接字符串              | Host=localhost;Port=6030;Username=root;Password=taosdata;Database=test|
+| 是否选择全部变量         | 是否选择全部变量，true时不需要单个变量添加业务属性            |  |
+| 是否间隔执行         | 是否选择全部变量，true间隔上传，False变化检测上传            |  |
+| 间隔执行时间         | 间隔执行时间           |  |
+| 启用缓存         | 是否启用缓存           |  |
+| 上传列表最大数量         | 每一次上传的列表最大数量           |  |
+| 内存队列最大数量         | 内存队列的最大数量，超出或失败时转入文件缓存，根据数据量设定适当值           |  |
+
+
+

@@ -1,0 +1,39 @@
+---
+id: 102
+title: 通道
+---
+
+
+import useBaseUrl from "@docusaurus/useBaseUrl";
+import Tag from "@site/src/components/Tag.js";
+import Highlight from '@site/src/components/Highlight.js';
+
+:::tip `配置须知`
+
+ 更改设备/变量/插件等，需要重启后台(右上角重启后台按钮)
+
+:::
+## 一、说明
+
+**ThingsGateway** 网关通道其实是一个实际的串口/TCP/UDP链路，或者是线程池中的一个任务
+
+## 二、添加通道/修改通道
+
+<img src={require("@site/static/img/docs/添加通道.png").default} />
+
+## 三、通道配置项
+|  属性| 说明 |
+| --- | --- |
+| 名称 | 通道名称|
+| 通道类型 | 选择 TcpClient/TcpService/SerialPortClient/UdpSession/Other |
+| 使能 | 是否启用此通道 |
+| 调试日志 | 初始运行时，是否启用调试日志，可在运行状态界面中再次启用/停用 |
+| 远程地址 | 对于TcpClient/UdpSession 作为客户端有效， 填入服务端的Url信息，比如192.168.0.1:502  |
+| 本地地址 | 对于TcpClient/TcpService/UdpSession 有效，作为本机的绑定地址，可选择填入，为空时是随机绑定端口 |
+| COM口 | 对于SerialPortClient有效，串口名称 |
+| 波特率 | 对于SerialPortClient有效，串口波特率 |
+| 数据位 | 对于SerialPortClient有效，串口数据位 |
+| 校验位 | 对于SerialPortClient有效，串口校验位 |
+| 停止位 | 对于SerialPortClient有效，串口停止位 |
+| 启用Dtr | 对于SerialPortClient有效，串口DtrEnable |
+| 启用Rts | 对于SerialPortClient有效，串口RtsEnable |

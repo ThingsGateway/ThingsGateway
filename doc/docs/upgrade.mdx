@@ -1,0 +1,80 @@
+---
+id: upgrade
+title: 更新日志
+---
+
+import useBaseUrl from "@docusaurus/useBaseUrl";
+import Tag from "@site/src/components/Tag.js";
+import Highlight from '@site/src/components/Highlight.js';
+
+
+
+
+## v5.0.0.1
+> 2024-1-21
+
+**更新描述：**
+
+此版本是大版本更新。可能会产生很多不兼容部分，所以升级之前请做好备份。
+
+如果需要从5.0前升级，请按以下操作进行
+
+1、导出旧版本的excel配置文件，包括采集设备、上传设备、变量等
+
+2、5.0框架中，只建立一个对应插件的设备/变量，这一步是因为插件是按需导出的，需要建立对应插件，才会导出相应的sheet，建好后导出excel
+
+3、参照5.0版本的excel内容，把旧版本的配置内容移到新版本excel文件中
+
+4、导入已修改好的5.0版本excel配置文件
+
+**更新详情：**
+
+- &nbsp;<Tag>调整</Tag> 重构采集驱动底层，网关缓存
+- &nbsp;<Tag>调整</Tag> 重构网关权限管理框架
+- &nbsp;<Tag>调整</Tag> 重构网关线程管理器
+- &nbsp;<Tag>调整</Tag> 重构网关断线续传功能
+- &nbsp;<Tag>调整</Tag> 重构脚本支持，方便对应各大云平台的iot格式
+- &nbsp;<Tag>调整</Tag> 调整网关UI外观风格
+
+
+
+## v3.0.0.25
+
+- &nbsp;<Tag>调整</Tag> 删除S7插件中的DstTSAP属性,用插槽号与机架号代替，更直观
+- &nbsp;<Tag>调整</Tag> OPCUAServer插件 url属性支持多个url，以逗号分割
+
+## v3.0.0.19
+
+- &nbsp;<Tag>新增</Tag> 添加TDengineDB时序库上传插件
+- &nbsp;<Tag>新增</Tag> 添加QuestDB时序库上传插件
+- &nbsp;<Tag>新增</Tag> 添加DLT645采集插件
+- &nbsp;<Tag>新增</Tag> 添加调试软件
+
+
+## v1.7.0
+
+- &nbsp;<Tag>优化</Tag> OPCUAClient支持动态类型
+
+
+## v1.2.0
+
+  - &nbsp;<Tag>新增</Tag> 添加OPCUAServer插件
+
+##
+
+## v1.1.0
+
+  - &nbsp;<Tag>新增</Tag> 添加OPCDAClient采集插件
+
+  - &nbsp;<Tag>新增</Tag> 添加OPCUAClient采集插件
+
+  - &nbsp;<Tag>新增</Tag> 串口基础框架
+
+##
+
+## v1.0.0
+
+  - &nbsp;<Tag>新增</Tag> 初始发布
+
+
+##

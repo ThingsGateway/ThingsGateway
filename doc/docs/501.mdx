@@ -1,0 +1,47 @@
+---
+id: 501
+title: 常见问题
+---
+
+import useBaseUrl from "@docusaurus/useBaseUrl";
+import Tag from "@site/src/components/Tag.js";
+import Highlight from '@site/src/components/Highlight.js';
+
+
+#### 1、Modbus地址可以只写地址0吗，一定要写成类似400001?
+
+按照PLC Modbus寄存器的格式，以区域号为起始字符，后续加上（寄存器地址+1）  
+所以一定要写成400001
+
+#### 2、数据如何设置小数位
+
+网关提供灵活的脚本式配置转换，可以在变量的读取表达式中进行配置转换 
+如果要设置小数位为2，可以填入 
+```
+Math.Round(raw, 2)
+```
+
+#### 3、源码打开razor文件时，不出现智能提示，有waring警告(波浪线)
+
+VS的bug导致的，可以尝试升级vs，把工程目录下的.vs文件夹已经全部的bin OR obj 删除后，重新打开解决方案
+
+#### 4、报警属性中的报警约束如何定义
+
+报警约束和变量表达式类似，填入脚本，返回值为true时，报警生效
+
+
+  ```csharp
+  
+  //新建testInt1,testInt2两个变量
+
+  //在testInt1的高高报警值为1，开启使能
+  //在testInt1的高高报警约束中定义testInt2>10
+
+
+  //testInt1为8,testInt2为11时，产生testInt1报警
+  //testInt1为8,testInt2为10时，不会产生testInt1报警
+  ```
+
+#### 5、启动项目之后，驱动调试页面没有任何信息，设备选择插件时也不出现任何选择项
+
+网关插件未编译，需要编译解决方案，查看入门指南；或者插件未能成功拷贝到插件目录(Plugins)

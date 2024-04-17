@@ -1,0 +1,38 @@
+---
+id: 601
+title: 采集插件开发
+---
+
+import useBaseUrl from "@docusaurus/useBaseUrl";
+import Tag from "@site/src/components/Tag.js";
+import Highlight from '@site/src/components/Highlight.js';
+
+## 说明
+
+ThingsGateway封装了丰富的协议解析方法，方便开发多种PLC通讯插件  
+下面我们以Omron FinsTcp/Udp为例，讲解如何基于ThingsGateway开发一个**通用驱动**以及ThingsGateway插件
+
+## 一、协议解析
+
+ `Fins` 协议是OSI模型第7层上的应用层报文传输协议，我们画一个简单的应用层协议报文解析图
+
+| Fins over TCP           |   Fins over UDP                      |
+| ---------------| --------------------------|
+|  FinsTCP Header |  None      |
+|  FinsUDP Header    |  FinsUDP Header  |  
+|  Command Data    |Command Data    |  
+
+
+可以看出，基于Tcp的Fins和基于Udp的Fins协议，差别只是Tcp连接时会加一个FinsTcp报文头。    
+下面我们进行每个部分的说明
+
+
+### 1、FinsTCP Header
+
+FinsTcp头部固定为16个字节
+
+| FinsTCP Header           |   说明                      |
+| ---------------| --------------------------|
+|  Magic  |  固定0x46494E53，也就是FINS字符串的ASCII码      |
+|  Length     |  后续全部字节的长度  |  
+|  Command     | 0是客户端请求握手，1是服务端返回握手信息，除0,1外是其他方法   |  
