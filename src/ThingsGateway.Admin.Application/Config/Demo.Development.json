@@ -1,6 +1,0 @@
-{
-  "Demo": {
-    "IsDemo": false,
-    "UpPWEnable": false //是否允许修改密码
-  }
-}

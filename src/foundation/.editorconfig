@@ -1,4 +1,0 @@
-﻿[*.cs]
-
-# Default severity for all analyzer diagnostics
-dotnet_analyzer_diagnostic.severity = none
