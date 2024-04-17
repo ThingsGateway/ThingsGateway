@@ -19,8 +19,8 @@
 | Modbus | Rtu/Tcp报文格式，支持串口/Tcp/Udp链路 | 
 | SiemensS7 | 西门子PLC S7系列 | 
 | Dlt6452007 | 支持串口/Tcp/Udp链路 | 
-| OpcUaClient | 64位编译 |
-| OpcUaClient | 支持证书登录，扩展对象，Json读写 |
+| OpcDaMaster | 64位编译 |
+| OpcUaMaster | 支持证书登录，扩展对象，Json读写 |
 
 #### 业务插件
 | 插件名称 | 备注 | 
@@ -42,7 +42,7 @@
 
 ## 演示
 
-[ThingsGateway演示地址](http://120.24.62.140:5000/)
+[ThingsGateway演示地址](http://47.119.161.158:5000/)
 
 账户	:  **SuperAdmin**	
 

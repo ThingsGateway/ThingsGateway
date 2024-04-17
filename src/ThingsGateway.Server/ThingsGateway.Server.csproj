@@ -26,6 +26,8 @@
 	<PropertyGroup Condition="'$(SolutionName)'=='ThingsGateway - Admin'">
 		<DefineConstants>Admin</DefineConstants>
 	</PropertyGroup>
+
+
 	<ItemGroup>
 		<ProjectReference Include="$(SolutionDir)\ThingsGateway.Admin.Razor\ThingsGateway.Admin.Razor.csproj" />
 		<!--<ProjectReference Include="$(SolutionDir)\ThingsGateway.Gateway.Application\ThingsGateway.Gateway.Application.csproj" />-->
@@ -48,7 +50,21 @@
 		<PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="8.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="8.0.0" />
 	</ItemGroup>
+
 	<ItemGroup>
+		<None Update="Dockerfile">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="pm2-windows.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="pm2-linux.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="thingsgateway.service">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		
 		<None Update="WindowsServiceCreate.bat">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
