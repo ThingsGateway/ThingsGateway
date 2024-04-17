@@ -1,0 +1,13 @@
+﻿{
+  "ThingsGateway.Plugin.SqlHisAlarm.SQLHisAlarmProperty": {
+    "DbType": "DbType",
+    "BigTextConnectStr": "ConnectString",
+
+    "IsInterval": "IsInterval",
+    "BusinessInterval": "BusinessInterval",
+    "IsAllVariable": "IsAllVariable",
+    "QueueMaxCount": "QueueMaxCount",
+    "SplitSize": "SplitSize",
+    "CacheEnable": "CacheEnable"
+  }
+}

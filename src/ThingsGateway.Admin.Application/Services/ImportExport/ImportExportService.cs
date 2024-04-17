@@ -19,15 +19,10 @@ using System.Reflection;
 using System.Text;
 using System.Web;
 
-using ThingsGateway.Core.Extension;
-
 using Yitter.IdGenerator;
 
 namespace ThingsGateway.Admin.Application;
 
-/// <summary>
-///  <inheritdoc cref="IImportExportService"/>
-/// </summary>
 public class ImportExportService : IImportExportService
 {
     private readonly IFileService _fileService;
@@ -39,19 +34,28 @@ public class ImportExportService : IImportExportService
 
     #region 导出
 
-    public async Task<FileStreamResult> ExportAsync<T>(object input, string fileName, bool isDynamicExcelColumn = true) where T : class, new()
+    /// <summary>
+    /// 导出excel文件流
+    /// </summary>
+    /// <typeparam name="T">实体</typeparam>
+    /// <param name="input">实体对象或者IDataReader</param>
+    /// <param name="fileName">文件名称</param>
+    /// <param name="isDynamicExcelColumn">动态excel列，根据实体的<see cref="IgnoreExcelAttribute"/>属性判断是否生成 </param>
+    /// <returns></returns>
+    public async Task<FileStreamResult> ExportAsync<T>(object input, string fileName, bool isDynamicExcelColumn = true) where T : class
     {
         var config = new OpenXmlConfiguration();
         if (isDynamicExcelColumn)
         {
-            var data = typeof(T).GetProperties();
+            var type = typeof(T);
+            var data = type.GetRuntimeProperties();
             List<DynamicExcelColumn> dynamicExcelColumns = new();
             int index = 0;
             foreach (var item in data)
             {
                 var ignore = item.GetCustomAttribute<IgnoreExcelAttribute>() != null;
                 //描述
-                var desc = item.FindDisplayAttribute();
+                var desc = type.GetPropertyDisplayName(item.Name);
                 //数据源增加
                 dynamicExcelColumns.Add(new DynamicExcelColumn(item.Name) { Ignore = ignore, Index = index, Name = desc ?? item.Name, Width = 30 });
                 if (!ignore)
@@ -69,8 +73,9 @@ public class ImportExportService : IImportExportService
 
         string searchPattern = $"*{fileName}"; // 文件名匹配模式
         string[] files = Directory.GetFiles(path, searchPattern);
-        //删除同后缀的文件，考虑多个客户端并发导出，删除前一分钟的文件
-        var whereFiles = files.Where(file => File.GetLastWriteTime(file) < DateTime.Now.AddMinutes(-1));
+
+        //删除同后缀的文件
+        var whereFiles = files.Where(file => File.GetLastWriteTime(file) < DateTime.Now.AddMinutes(-2));
 
         foreach (var file in whereFiles)
         {
@@ -87,7 +92,6 @@ public class ImportExportService : IImportExportService
         {
             await MiniExcel.SaveAsAsync(fs, input, configuration: config);
         }
-
         var result = _fileService.GetFileStreamResult(filePath, fileName);
         return result;
     }
@@ -96,16 +100,15 @@ public class ImportExportService : IImportExportService
 
     #region 导入
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// 上传文件
+    /// </summary>
+    /// <param name="file">文件</param>
+    /// <returns>保存全路径</returns>
     public async Task<string> UploadFileAsync(IBrowserFile file)
     {
         _fileService.Verification(file);
-
-        Directory.CreateDirectory(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "imports"));
-        var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "imports", $"{YitIdHelper.NextId()}{file.Name}");
-        await using FileStream fs = new(path, FileMode.Create);
-        await file.OpenReadStream(200 * 1024 * 1024).CopyToAsync(fs);
-        return path;
+        return await _fileService.UploadFileAsync("imports", file);
     }
 
     #endregion 导入
@@ -113,11 +116,11 @@ public class ImportExportService : IImportExportService
     #region 方法
 
     /// <summary>
-    /// 获取文件名
+    /// 获取文件名，默认xlsx类型
     /// </summary>
-    /// <param name="fileName"></param>
+    /// <param name="fileName">文件名称，不含类型名称的话默认xlsx</param>
     /// <returns></returns>
-    public string GetFileName(string fileName)
+    public string GetUrlEncodeFileName(string fileName)
     {
         if (!fileName.Contains("."))
             fileName += ".xlsx";

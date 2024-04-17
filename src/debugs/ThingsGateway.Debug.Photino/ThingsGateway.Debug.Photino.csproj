@@ -1,0 +1,42 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+	<PropertyGroup>
+		<DefineConstants>DriverDebug</DefineConstants>
+	</PropertyGroup>
+	
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<ApplicationIcon>favicon.ico</ApplicationIcon>
+		<TargetFrameworks>net8.0</TargetFrameworks>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Content Include="favicon.ico">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+		</Content>
+	</ItemGroup>
+
+
+	<ItemGroup>
+		<PackageReference Include="Photino.NET" Version="2.6.0" />
+		<PackageReference Include="Photino.Blazor" Version="2.7.0" />
+
+	</ItemGroup>
+
+
+	<ItemGroup>
+
+	  <ProjectReference Include="..\ThingsGateway.Debug.Rcl\ThingsGateway.Debug.Rcl.csproj" />
+	</ItemGroup>
+
+
+	<ItemGroup>
+		<Content Update="wwwroot\**">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+
+
+
+</Project>

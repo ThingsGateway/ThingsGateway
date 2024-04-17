@@ -10,7 +10,7 @@
 
 using Mapster;
 
-using System.ComponentModel;
+using NewLife.Threading;
 
 using ThingsGateway.Core.Extension;
 
@@ -21,36 +21,33 @@ namespace ThingsGateway.Gateway.Application;
 /// </summary>
 public class DeviceRunTime : Device
 {
-    protected DeviceStatusEnum _deviceStatus = DeviceStatusEnum.Default;
+    protected volatile DeviceStatusEnum _deviceStatus = DeviceStatusEnum.Default;
 
     protected int? _errorCount;
 
     private string? _lastErrorMessage;
 
     /// <summary>
-    /// 设备状态变化事件
-    /// </summary>
-    public event DelegateOnDeviceChanged DeviceStatusChange;
-
-    /// <summary>
     /// 通道表
     /// </summary>
-    [Description("通道")]
     [System.Text.Json.Serialization.JsonIgnore]
     [Newtonsoft.Json.JsonIgnore]
     [AdaptIgnore]
     public Channel? Channel { get; set; }
 
     /// <summary>
+    /// 通道名称
+    /// </summary>
+    public string? ChannelName => Channel?.Name;
+
+    /// <summary>
     /// 设备活跃时间
     /// </summary>
-    [Description("活跃时间")]
     public DateTime? ActiveTime { get; internal set; } = DateTime.UnixEpoch.ToLocalTime();
 
     /// <summary>
     /// 设备状态
     /// </summary>
-    [Description("设备状态")]
     public virtual DeviceStatusEnum DeviceStatus
     {
         get
@@ -65,7 +62,7 @@ public class DeviceRunTime : Device
             if (_deviceStatus != value)
             {
                 _deviceStatus = value;
-                DeviceStatusChange?.Invoke(this);
+                GlobalData.DeviceStatusChange(this);
             }
         }
     }
@@ -73,7 +70,6 @@ public class DeviceRunTime : Device
     /// <summary>
     /// 设备变量数量
     /// </summary>
-    [Description("变量数量")]
     public int DeviceVariableCount { get => VariableRunTimes == null ? 0 : VariableRunTimes.Count; }
 
     /// <summary>
@@ -81,12 +77,11 @@ public class DeviceRunTime : Device
     /// </summary>
     [System.Text.Json.Serialization.JsonIgnore]
     [Newtonsoft.Json.JsonIgnore]
-    public List<VariableRunTime>? VariableRunTimes { get; set; }
+    public IReadOnlyDictionary<string, VariableRunTime>? VariableRunTimes { get; set; }
 
     /// <summary>
     /// 距上次成功时的读取失败次数,超过3次设备更新为离线，等于0时设备更新为在线
     /// </summary>
-    [Description("失败次数")]
     public virtual int? ErrorCount
     {
         get
@@ -110,13 +105,11 @@ public class DeviceRunTime : Device
     /// <summary>
     /// 运行
     /// </summary>
-    [Description("运行")]
     public bool KeepRun { get; set; } = true;
 
     /// <summary>
     /// 最后一次失败原因
     /// </summary>
-    [Description("最后一次失败原因")]
     public string? LastErrorMessage
     {
         get
@@ -125,20 +118,18 @@ public class DeviceRunTime : Device
         }
         internal set
         {
-            _lastErrorMessage = DateTimeUtil.TimerXNow.ToDefaultDateTimeFormat() + " - " + value;
+            _lastErrorMessage = TimerX.Now.ToDefaultDateTimeFormat() + " - " + value;
         }
     }
 
     /// <summary>
     /// 设备属性数量
     /// </summary>
-    [Description("属性数量")]
     public int PropertysCount { get => DevicePropertys == null ? 0 : DevicePropertys.Count; }
 
     /// <summary>
     /// 冗余状态
     /// </summary>
-    [Description("冗余状态")]
     public RedundantTypeEnum? RedundantType { get; set; } = RedundantTypeEnum.Primary;
 
     /// <summary>
@@ -149,7 +140,7 @@ public class DeviceRunTime : Device
     /// <param name="lastErrorMessage"></param>
     public void SetDeviceStatus(DateTime? activeTime = null, int? errorCount = null, string lastErrorMessage = null)
     {
-        lock (this)
+        //lock (this)
         {
             if (activeTime != null)
                 ActiveTime = activeTime.Value;
@@ -160,9 +151,3 @@ public class DeviceRunTime : Device
         }
     }
 }
-
-/// <summary>
-/// 设备变化委托
-/// </summary>
-/// <param name="collectDeviceRunTime"></param>
-public delegate void DelegateOnDeviceChanged(DeviceRunTime collectDeviceRunTime);

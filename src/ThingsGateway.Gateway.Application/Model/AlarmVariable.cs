@@ -8,79 +8,83 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using BootstrapBlazor.Components;
+
 using Newtonsoft.Json;
+
+using SqlSugar;
 
 namespace ThingsGateway.Gateway.Application;
 
 /// <summary>
 /// 报警变量
 /// </summary>
-public class AlarmVariable : PrimaryIdEntity,IDBHistoryAlarm
+public class AlarmVariable : PrimaryIdEntity, IDBHistoryAlarm
 {
     /// <inheritdoc  cref="Variable.Name"/>
     [SugarColumn(ColumnDescription = "变量名称", IsNullable = false)]
-    [DataTable(Order = 1, IsShow = true, Sortable = true, CellClass = " table-text-truncate ")]
+    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
     public string Name { get; set; }
 
     /// <inheritdoc  cref="Variable.Description"/>
     [SugarColumn(ColumnDescription = "描述", IsNullable = true)]
-    [DataTable(Order = 2, IsShow = true, Sortable = true, CellClass = " table-text-truncate ")]
+    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
     public string? Description { get; set; }
 
     /// <inheritdoc  cref="VariableRunTime.DeviceName"/>
     [SugarColumn(ColumnDescription = "设备名称", IsNullable = true)]
-    [DataTable(Order = 3, IsShow = true, Sortable = true, CellClass = " table-text-truncate ")]
+    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
     public string DeviceName { get; set; }
 
     /// <inheritdoc  cref="Variable.RegisterAddress"/>
     [SugarColumn(ColumnDescription = "变量地址")]
-    [DataTable(Order = 4, IsShow = true, Sortable = true, CellClass = " table-text-truncate ")]
+    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
     public string RegisterAddress { get; set; }
 
     /// <inheritdoc  cref="Variable.DataType"/>
-    [SugarColumn(ColumnDescription = "数据类型", ColumnDataType = "varchar(100)")]
-    [DataTable(Order = 5, IsShow = true, Sortable = true, CellClass = " table-text-truncate ")]
+    [SugarColumn(ColumnDescription = "数据类型")]
+    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
     public DataTypeEnum DataType { get; set; }
 
     /// <inheritdoc  cref="VariableRunTime.AlarmCode"/>
     [SugarColumn(ColumnDescription = "报警值", IsNullable = false)]
-    [DataTable(Order = 8, IsShow = true, Sortable = true, CellClass = " table-text-truncate ")]
+    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
     public string AlarmCode { get; set; }
 
     /// <inheritdoc  cref="VariableRunTime.AlarmLimit"/>
     [SugarColumn(ColumnDescription = "报警限值", IsNullable = false)]
-    [DataTable(Order = 8, IsShow = true, Sortable = true, CellClass = " table-text-truncate ")]
+    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
     public string AlarmLimit { get; set; }
 
     /// <inheritdoc  cref="VariableRunTime.AlarmText"/>
     [SugarColumn(ColumnDescription = "报警文本", IsNullable = true)]
-    [DataTable(Order = 8, IsShow = true, Sortable = true, CellClass = " table-text-truncate ")]
+    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
     public string? AlarmText { get; set; }
 
     /// <inheritdoc  cref="VariableRunTime.AlarmTime"/>
     [SugarColumn(ColumnDescription = "报警时间", IsNullable = false)]
-    [DataTable(Order = 8, IsShow = true, Sortable = true, CellClass = " table-text-truncate ")]
+    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
     public DateTime AlarmTime { get; set; }
 
     /// <inheritdoc  cref="VariableRunTime.EventTime"/>
     [SugarColumn(ColumnDescription = "事件时间", IsNullable = false)]
-    [DataTable(Order = 8, IsShow = true, Sortable = true, CellClass = " table-text-truncate ")]
+    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
     public DateTime EventTime { get; set; }
 
     /// <summary>
     /// 报警类型
     /// </summary>
-    [SugarColumn(ColumnDescription = "报警类型", IsNullable = false, ColumnDataType = "varchar(100)")]
-    [DataTable(Order = 8, IsShow = true, Sortable = true, CellClass = " table-text-truncate ")]
+    [SugarColumn(ColumnDescription = "报警类型", IsNullable = false)]
+    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
     public AlarmTypeEnum? AlarmType { get; set; }
 
     /// <summary>
     /// 事件类型
     /// </summary>
-    [SugarColumn(ColumnDescription = "事件类型", IsNullable = false, ColumnDataType = "varchar(100)")]
-    [DataTable(Order = 8, IsShow = true, Sortable = true, CellClass = " table-text-truncate ")]
+    [SugarColumn(ColumnDescription = "事件类型", IsNullable = false)]
+    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
     public EventTypeEnum EventType { get; set; }
 
     /// <inheritdoc cref="Device.Remark1"/>

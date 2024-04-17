@@ -8,22 +8,21 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-namespace ThingsGateway.Gateway.Application
-{
-    public interface IDBHistoryAlarmService
-    {
-        /// <summary>
-        /// 按条件获取DB插件中的全部历史报警(不分页)
-        /// </summary>
-        /// <param name="input"></param>
-        /// <returns></returns>
-        public Task<List<IDBHistoryAlarm>> GetDBHistoryAlarmsAsync(DBAlarmPageInput input);
+namespace ThingsGateway.Gateway.Application;
 
-        /// <summary>
-        /// 按条件获取DB插件中的全部历史报警(分页)
-        /// </summary>
-        /// <param name="input"></param>
-        /// <returns></returns>
-        public Task<SqlSugarPagedList<IDBHistoryAlarm>> GetDBHistoryAlarmPagesAsync(DBAlarmPageInput input);
-    }
+public interface IDBHistoryAlarmService
+{
+    /// <summary>
+    /// 按条件获取DB插件中的全部历史报警(不分页)
+    /// </summary>
+    /// <param name="input"></param>
+    /// <returns></returns>
+    public Task<List<IDBHistoryAlarm>> GetDBHistoryAlarmsAsync(DBHistoryAlarmPageInput input);
+
+    /// <summary>
+    /// 按条件获取DB插件中的全部历史报警(分页)
+    /// </summary>
+    /// <param name="input"></param>
+    /// <returns></returns>
+    public Task<SqlSugarPagedList<IDBHistoryAlarm>> GetDBHistoryAlarmPagesAsync(DBHistoryAlarmPageInput input);
 }

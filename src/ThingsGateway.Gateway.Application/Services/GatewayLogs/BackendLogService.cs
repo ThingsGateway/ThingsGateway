@@ -1,4 +1,5 @@
-﻿//------------------------------------------------------------------------------
+﻿
+//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -8,92 +9,73 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using Mapster;
 
-using Microsoft.AspNetCore.Mvc;
+
+
+using BootstrapBlazor.Components;
+
+using SqlSugar;
 
 using System.Data;
 
 namespace ThingsGateway.Gateway.Application;
 
-/// <inheritdoc cref="IBackendLogService"/>
-[Injection(Proxy = typeof(OperDispatchProxy))]
-public class BackendLogService : DbRepository<BackendLog>, IBackendLogService
+public class BackendLogService : BaseService<BackendLog>, IBackendLogService
 {
-    private readonly IImportExportService _importExportService;
+    #region 查询
 
-    public BackendLogService(IImportExportService importExportService)
+    /// <summary>
+    /// 表格查询
+    /// </summary>
+    /// <param name="option">查询条件</param>
+    public Task<QueryData<BackendLog>> PageAsync(QueryPageOptions option)
     {
-        _importExportService = importExportService;
+        return QueryAsync(option);
     }
 
-    /// <inheritdoc />
-    [OperDesc("删除网关运行日志")]
-    public async Task DeleteAsync()
+    /// <summary>
+    /// 最新十条
+    /// </summary>
+    /// <param name="account">操作人</param>
+    public async Task<List<BackendLog>> GetNewLog()
     {
-        await AsDeleteable().ExecuteCommandAsync();
+        using var db = GetDB();
+        var data = await db.Queryable<BackendLog>().OrderByDescending(a => a.LogTime).Take(10).ToListAsync();
+        return data;
     }
 
-    /// <inheritdoc />
-    public async Task<SqlSugarPagedList<BackendLog>> PageAsync(BackendLogPageInput input)
-    {
-        var query = GetPage(input);
+    #endregion 查询
 
-        var pageInfo = await query.ToPagedListAsync(input.Current, input.Size);//分页
-        return pageInfo;
+    #region 删除
+
+    /// <summary>
+    /// 删除日志
+    /// </summary>
+    [OperDesc("DeleteBackendLog", isRecordPar: false, localizerType: typeof(BackendLog))]
+    public async Task DeleteBackendLogAsync()
+    {
+        using var db = GetDB();
+        await db.Deleteable<BackendLog>().ExecuteCommandAsync();
     }
 
-    private ISugarQueryable<BackendLog> GetPage(BackendLogPageInput input)
-    {
-        var query = Context.Queryable<BackendLog>()
-                           .WhereIF(input.StartTime != null, a => a.LogTime >= input.StartTime)
-                           .WhereIF(input.EndTime != null, a => a.LogTime <= input.EndTime)
-                           .WhereIF(!string.IsNullOrEmpty(input.Source), it => it.LogSource == input.Source)
-                           .WhereIF(input.Level != null, it => it.LogLevel == input.Level);
-        for (int i = input.SortField.Count - 1; i >= 0; i--)
-        {
-            query = query.OrderByIF(!string.IsNullOrEmpty(input.SortField[i]), $"{input.SortField[i]} {(input.SortDesc[i] ? "desc" : "asc")}");
-        }
-        query = query.OrderBy(it => it.Id, OrderByType.Desc);//排序
+    #endregion 删除
 
-        return query;
-    }
-
-    /// <inheritdoc/>
-    [OperDesc("导出网关后台日志", IsRecordPar = false)]
-    public async Task<FileStreamResult> ExportFileAsync(IDataReader? input = null)
-    {
-        if (input != null)
-        {
-            return await _importExportService.ExportAsync<BackendLog>(input, "BackendLog");
-        }
-
-        var query = Context.Queryable<BackendLog>().ExportIgnoreColumns();
-        var sqlObj = query.ToSql();
-        using IDataReader? dataReader = await Context.Ado.GetDataReaderAsync(sqlObj.Key, sqlObj.Value);
-        return await _importExportService.ExportAsync<BackendLog>(dataReader, "BackendLog");
-    }
-
-    /// <inheritdoc/>
-    [OperDesc("导出网关后台日志", IsRecordPar = false)]
-    public async Task<FileStreamResult> ExportFileAsync(BackendLogInput input)
-    {
-        var query = GetPage(input.Adapt<BackendLogPageInput>()).ExportIgnoreColumns();
-        var sqlObj = query.ToSql();
-        using IDataReader? dataReader = await Context.Ado.GetDataReaderAsync(sqlObj.Key, sqlObj.Value);
-        return await ExportFileAsync(dataReader);
-    }
-
+    /// <summary>
+    /// 获取n天的统计信息
+    /// </summary>
+    /// <param name="day">天</param>
+    /// <returns>统计信息</returns>
     public async Task<List<BackendLogDayStatisticsOutput>> StatisticsByDayAsync(int day)
     {
+        using var db = GetDB();
         //取最近七天
         var dayArray = Enumerable.Range(0, day).Select(it => DateTime.Now.Date.AddDays(it * -1)).ToList();
         //生成时间表
-        var queryableLeft = Context.Reportable(dayArray).ToQueryable<DateTime>();
+        var queryableLeft = db.Reportable(dayArray).ToQueryable<DateTime>();
         //ReportableDateType.MonthsInLast1yea 表式近一年月份 并且queryable之后还能在where过滤
-        var queryableRight = Context.Queryable<BackendLog>(); //声名表
+        var queryableRight = db.Queryable<BackendLog>(); //声名表
         //报表查询
-        var list = await Context.Queryable(queryableLeft, queryableRight, JoinType.Left, (x1, x2)
+        var list = await db.Queryable(queryableLeft, queryableRight, JoinType.Left, (x1, x2)
             => x2.LogTime.ToString("yyyy-MM-dd") == x1.ColumnName.ToString("yyyy-MM-dd"))
         .GroupBy((x1, x2) => x1.ColumnName)//根据时间分组
         .OrderBy((x1, x2) => x1.ColumnName)//根据时间升序排序

@@ -1,0 +1,32 @@
+﻿@page "/gateway/plugin"
+@attribute [Authorize]
+@attribute [RolePermission]
+
+@namespace ThingsGateway.Gateway.Razor
+@using BootstrapBlazor.Components
+@using ThingsGateway.Admin.Application
+@using ThingsGateway.Admin.Razor
+@using ThingsGateway.Gateway.Application
+@inherits ComponentDefault
+
+
+<div style="height: var(--table-height);padding: 2px 5px 10px 5px;">
+    <AdminTable TItem="PluginOutput" AutoGenerateColumns="true" ShowDefaultButtons=false 
+                AllowResizing="true" IsFixedHeader=true IsMultipleSelect=false
+                ShowExtendEditButton=false ShowExtendDeleteButton=false ShowExtendButtons=false
+                ShowExportButton="true" ShowAdvancedSearch=false SearchModel=SearchModel
+                OnQueryAsync="OnQueryAsync">
+
+        <TableToolbarTemplate>
+            <TableToolbarButton TItem="PluginOutput" Color="Color.Info" Icon="fa fa-plus" Text="@DefaultLocalizer["Add"]"
+                                OnClickCallback="OnAdd" />
+        </TableToolbarTemplate>
+
+        <ExportButtonDropdownTemplate Context="ExportContext">
+            <div class="dropdown-item" @onclick="() => ExcelExportAsync(ExportContext)">
+                <i class="fas fa-file-export"></i>
+                <span>@DefaultLocalizer["TablesExportButtonExcelText"]</span>
+            </div>
+        </ExportButtonDropdownTemplate>
+    </AdminTable>
+</div>

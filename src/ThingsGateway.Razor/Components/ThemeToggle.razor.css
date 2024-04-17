@@ -1,0 +1,11 @@
+﻿.icon-theme .icon-light {
+    display: none;
+}
+
+[data-bs-theme='dark'] .icon-dark {
+    display: none;
+}
+
+[data-bs-theme='dark'] .icon-light {
+    display: block;
+}

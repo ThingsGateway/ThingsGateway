@@ -1,0 +1,20 @@
+﻿{
+  "ThingsGateway.Plugin.SiemensS7.SiemensS7MasterProperty": {
+    "SiemensS7Type": "协议类型",
+    "Rack": "机架号",
+    "LocalTSAP": "本地TSAP",
+    "Slot": "槽号",
+
+    "DataFormat": "解析规则",
+    "IsStringReverseByteWord": "字符串反转",
+    "CheckClearTime": "客户端连接滑动过期时间",
+    "Timeout": "读写超时时间",
+    "ConnectTimeout": "连接超时时间",
+    "SendDelayTime": "发送延时",
+    "CacheTimeout": "组包缓存过期时间",
+    "MaxPack": "最大打包长度",
+    "ReIntervalTime": "离线恢复时间",
+    "RetryCount": "失败重试次数",
+    "ConcurrentCount": "最大并发数量"
+  }
+}

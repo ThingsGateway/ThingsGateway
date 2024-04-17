@@ -1,0 +1,41 @@
+﻿@page "/gateway/driverdebug"
+@namespace ThingsGateway.Gateway.Razor
+@using System.Linq.Expressions;
+@using Mapster;
+@using System.IO;
+@using Microsoft.AspNetCore.Authorization;
+
+@using ThingsGateway.Admin.Razor;
+@using ThingsGateway.Admin.Application;
+@using ThingsGateway.Gateway.Application;
+@using ThingsGateway.Core.Extension
+
+@attribute [Authorize]
+@inherits ComponentDefault
+@attribute [RolePermission]
+
+<div class="h-100">
+    <Split Basis="20%">
+        <FirstPaneTemplate>
+                <ContextMenuZone>
+                    <TreeView TItem="PluginOutput" Items="PluginTreeViewItems"  ClickToggleNode />
+                    <ContextMenu>
+                        <ContextMenuItem Text=@Localizer["New"] OnClick="NewPluginRender"></ContextMenuItem>
+                    </ContextMenu>
+                </ContextMenuZone>
+        </FirstPaneTemplate>
+        <SecondPaneTemplate>
+
+            <Tab ShowClose @ref=tab>
+                
+            </Tab>
+        </SecondPaneTemplate>
+    </Split>
+</div>
+
+
+@code{
+    Tab tab;
+
+
+}

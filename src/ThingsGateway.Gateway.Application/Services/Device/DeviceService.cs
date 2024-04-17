@@ -8,7 +8,7 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using Furion.FriendlyException;
+using BootstrapBlazor.Components;
 
 using Mapster;
 
@@ -17,12 +17,14 @@ using Microsoft.AspNetCore.Mvc;
 
 using MiniExcelLibs;
 
+using SqlSugar;
+
+using System.Collections.Concurrent;
+using System.ComponentModel.DataAnnotations;
 using System.Dynamic;
 using System.Reflection;
-using System.Text.RegularExpressions;
+using System.Text;
 
-using ThingsGateway.Cache;
-using ThingsGateway.Core.Extension;
 using ThingsGateway.Foundation.Extension.Generic;
 using ThingsGateway.Gateway.Application.Extensions;
 
@@ -32,75 +34,57 @@ using Yitter.IdGenerator;
 
 namespace ThingsGateway.Gateway.Application;
 
-/// <inheritdoc cref="IDeviceService"/>
-[Injection(Proxy = typeof(OperDispatchProxy))]
-public class DeviceService : DbRepository<Device>, IDeviceService
+public class DeviceService : BaseService<Device>, IDeviceService
 {
     protected readonly IFileService _fileService;
-    protected readonly IServiceScope _serviceScope;
-    protected readonly ISimpleCacheService _simpleCacheService;
     protected readonly IImportExportService _importExportService;
+    protected readonly IChannelService _channelService;
+    protected readonly IPluginService _pluginService;
 
-    /// <inheritdoc cref="IDeviceService"/>
     public DeviceService(
-    IServiceScopeFactory serviceScopeFactory,
     IFileService fileService,
-    IImportExportService importExportService,
-    ISimpleCacheService simpleCacheService
+    IImportExportService importExportService
         )
     {
         _fileService = fileService;
-        _serviceScope = serviceScopeFactory.CreateScope();
-        _simpleCacheService = simpleCacheService;
+        _channelService = App.RootServices.GetRequiredService<IChannelService>();
+        _pluginService = App.RootServices.GetRequiredService<IPluginService>();
         _importExportService = importExportService;
     }
 
-    [OperDesc("添加设备")]
-    public async Task AddAsync(DeviceAddInput input)
+    /// <summary>
+    /// 保存设备
+    /// </summary>
+    /// <param name="input">设备</param>
+    /// <param name="type">保存类型</param>
+    [OperDesc("SaveDevice", localizerType: typeof(Device))]
+    public async Task<bool> SaveDeviceAsync(Device input, ItemChangedType type)
     {
-        var model_Id = GetIdByName(input.Name);
-        if (model_Id > 0 && model_Id != input.Id)
-            throw Oops.Bah($"存在重复的名称:{input.Name}"); //缓存不要求全部数据，最后会由数据库约束报错
-        await InsertAsync(input);//添加数据
-        DeleteDeviceFromRedis();
-    }
-
-    [OperDesc("复制设备", IsRecordPar = false)]
-    public async Task CopyAsync(IEnumerable<Device> input, int count)
-    {
-        List<Device> newDevs = new();
-
-        for (int i = 0; i < count; i++)
+        CheckInput(input);
+        if (await base.SaveAsync(input, type))
         {
-            var newDev = input.Adapt<List<Device>>();
-
-            newDev.ForEach(a =>
-            {
-                a.Id = YitIdHelper.NextId();
-                a.Name = $"{Regex.Replace(a.Name, @"\d", "")}{a.Id}";
-            });
-            newDevs.AddRange(newDev);
+            DeleteDeviceFromCache();
+            return true;
         }
-
-        await Context.Fastest<Device>().PageSize(50000).BulkCopyAsync(newDevs);
-        DeleteDeviceFromRedis();
+        return false;
     }
 
-    [OperDesc("删除设备")]
-    public async Task DeleteAsync(List<BaseIdInput> input)
+    [OperDesc("DeleteDevice", isRecordPar: false, localizerType: typeof(Device))]
+    public async Task<bool> DeleteDeviceAsync(IEnumerable<long> ids)
     {
-        var ids = input.Select(a => a.Id).ToList();
-        var variableService = _serviceScope.ServiceProvider.GetService<IVariableService>();
-        variableService.NewContent = NewContent;
+        var variableService = App.RootServices.GetRequiredService<IVariableService>();
+
+        using var db = GetDB();
         //事务
-        var result = await NewContent.UseTranAsync(async () =>
+        var result = await db.UseTranAsync(async () =>
         {
-            await Context.Deleteable<Device>().Where(a => ids.Contains(a.Id)).ExecuteCommandAsync();
-            await variableService.DeleteByDeviceIdAsync(ids);
+            await db.Deleteable<Device>().Where(a => ids.Contains(a.Id)).ExecuteCommandAsync();
+            await variableService.DeleteByDeviceIdAsync(ids, db);
         });
         if (result.IsSuccess)//如果成功了
         {
-            DeleteDeviceFromRedis();
+            DeleteDeviceFromCache();
+            return true;
         }
         else
         {
@@ -109,21 +93,21 @@ public class DeviceService : DbRepository<Device>, IDeviceService
         }
     }
 
-    [OperDesc("清空设备")]
-    public async Task ClearAsync(PluginTypeEnum pluginType)
+    [OperDesc("ClearDevice", localizerType: typeof(Device))]
+    public async Task ClearDeviceAsync(PluginTypeEnum pluginType)
     {
-        var variableService = _serviceScope.ServiceProvider.GetService<IVariableService>();
-        variableService.NewContent = NewContent;
+        var variableService = App.RootServices.GetRequiredService<IVariableService>();
+        using var db = GetDB();
         //事务
-        var result = await NewContent.UseTranAsync(async () =>
+        var result = await db.UseTranAsync(async () =>
         {
-            await Context.Deleteable<Device>().Where(a => a.PluginType == pluginType).ExecuteCommandAsync();
+            await db.Deleteable<Device>().Where(a => a.PluginType == pluginType).ExecuteCommandAsync();
             if (pluginType == PluginTypeEnum.Collect)
-                await variableService.ClearAsync();
+                await variableService.ClearVariableAsync();
         });
         if (result.IsSuccess)//如果成功了
         {
-            DeleteDeviceFromRedis();
+            DeleteDeviceFromCache();
         }
         else
         {
@@ -132,22 +116,20 @@ public class DeviceService : DbRepository<Device>, IDeviceService
         }
     }
 
-    [OperDesc("删除设备")]
-    public async Task DeleteByChannelIdAsync(List<BaseIdInput> input)
+    [OperDesc("DeleteDevice", isRecordPar: false, localizerType: typeof(Device))]
+    public async Task DeleteByChannelIdAsync(IEnumerable<long> ids, SqlSugarClient db)
     {
-        var ids = input.Select(a => a.Id).ToList();
-        var variableService = _serviceScope.ServiceProvider.GetService<IVariableService>();
-        variableService.NewContent = NewContent;
+        var variableService = App.RootServices.GetRequiredService<IVariableService>();
         //事务
-        var result = await NewContent.UseTranAsync(async () =>
+        var result = await db.UseTranAsync(async () =>
         {
-            var deviceIds = await Context.Queryable<Device>().Where(a => ids.Contains(a.ChannelId)).Select(a => a.Id).ToListAsync();
-            await Context.Deleteable<Device>().Where(a => deviceIds.Contains(a.Id)).ExecuteCommandAsync();
-            await variableService.DeleteByDeviceIdAsync(deviceIds);
+            var deviceIds = await db.Queryable<Device>().Where(a => ids.Contains(a.ChannelId)).Select(a => a.Id).ToListAsync();
+            await db.Deleteable<Device>().Where(a => deviceIds.Contains(a.Id)).ExecuteCommandAsync();
+            await variableService.DeleteByDeviceIdAsync(deviceIds, db);
         });
         if (result.IsSuccess)//如果成功了
         {
-            DeleteDeviceFromRedis();
+            DeleteDeviceFromCache();
         }
         else
         {
@@ -157,69 +139,174 @@ public class DeviceService : DbRepository<Device>, IDeviceService
     }
 
     /// <inheritdoc />
-    public void DeleteDeviceFromRedis()
+    public void DeleteDeviceFromCache()
     {
-        _simpleCacheService.Remove(ThingsGatewayCacheConst.Cache_Device);//删除设备缓存
-    }
-
-    [OperDesc("编辑设备")]
-    public async Task EditAsync(DeviceEditInput input)
-    {
-        var model_Id = GetIdByName(input.Name);
-        if (model_Id > 0 && model_Id != input.Id)
-            throw Oops.Bah($"存在重复的名称:{input.Name}");//缓存不要求全部数据，最后会由数据库约束报错
-
-        if (await Context.Updateable(input.Adapt<Device>()).ExecuteCommandAsync() > 0)//修改数据
-            DeleteDeviceFromRedis();
-    }
-
-    [OperDesc("编辑设备", IsRecordPar = false)]
-    public async Task EditAsync(List<Device> input)
-    {
-        if (await Context.Updateable(input).ExecuteCommandAsync() > 0)//修改数据
-            DeleteDeviceFromRedis();
+        App.CacheService.Remove(ThingsGatewayCacheConst.Cache_Device);//删除设备缓存
     }
 
     public Device? GetDeviceById(long id)
     {
-        var data = GetCacheList();
+        var data = GetAll();
         return data?.FirstOrDefault(x => x.Id == id);
     }
 
-    public List<Device> GetCacheList()
+    /// <summary>
+    /// 从缓存/数据库获取全部信息
+    /// </summary>
+    /// <returns>列表</returns>
+    public List<Device> GetAll()
     {
-        var device = _simpleCacheService.HashGetAll<Device>(ThingsGatewayCacheConst.Cache_Device);
-        if (device == null || device.Count == 0)
+        var key = ThingsGatewayCacheConst.Cache_Device;
+        var devices = App.CacheService.Get<List<Device>>(key);
+        if (devices == null)
         {
-            var data = GetList();
-            _simpleCacheService.HashSet(ThingsGatewayCacheConst.Cache_Device, data.ToDictionary(a => a.Id.ToString()));
-            return data;
+            using var db = GetDB();
+            devices = db.Queryable<Device>().ToList();
+            App.CacheService.Set(key, devices);
         }
-        return device.Values.ToList();
+        return devices;
     }
 
     public long? GetIdByName(string name)
     {
-        var data = GetCacheList();
+        var data = GetAll();
         return data?.FirstOrDefault(x => x.Name == name)?.Id;
     }
 
     public string? GetNameById(long id)
     {
-        var data = GetCacheList();
+        var data = GetAll();
         return data?.FirstOrDefault(x => x.Id == id)?.Name;
     }
 
+    /// <summary>
+    /// 报表查询
+    /// </summary>
+    /// <param name="option">查询条件</param>
+    public Task<QueryData<Device>> PageAsync(QueryPageOptions option, PluginTypeEnum pluginType)
+    {
+        return QueryAsync(option, a => a.WhereIF(!option.SearchText.IsNullOrWhiteSpace(), a => a.Name.Contains(option.SearchText!)).Where(a => a.PluginType == pluginType));
+    }
+
+    public async Task<List<CollectDeviceRunTime>> GetCollectDeviceRuntimeAsync(long? devId = null)
+    {
+        try
+        {
+            if (devId == null)
+            {
+                var variableService = App.RootServices.GetRequiredService<IVariableService>();
+                var devices = GetAll().Where(a => a.Enable && a.PluginType == PluginTypeEnum.Collect);
+                var channels = _channelService.GetAll().Where(a => a.Enable);
+                devices = devices.Where(a => channels.Select(a => a.Id).Contains(a.ChannelId));
+                var runtime = devices.Adapt<List<CollectDeviceRunTime>>().ToDictionary(a => a.Id);
+                var collectVariableRunTimes = await variableService.GetVariableRuntimeAsync();
+                runtime.Values.ParallelForEach(device =>
+                {
+                    device.Channel = channels.FirstOrDefault(a => a.Id == device.ChannelId);
+
+                    device.VariableRunTimes = collectVariableRunTimes.Where(a => a.DeviceId == device.Id).ToDictionary(a => a.Name);
+                });
+
+                collectVariableRunTimes.ParallelForEach(variable =>
+                {
+                    if (runtime.TryGetValue(variable.DeviceId.Value, out var device))
+                    {
+                        variable.CollectDeviceRunTime = device;
+                        variable.DeviceName = device.Name;
+                    }
+                });
+                return runtime.Values.ToList();
+            }
+            else
+            {
+                var device = GetAll().FirstOrDefault(a => a.Enable && a.PluginType == PluginTypeEnum.Collect && a.Id == devId);
+                if (device == null)
+                {
+                    return new List<CollectDeviceRunTime>() { };
+                }
+                var channels = _channelService.GetAll().Where(a => a.Enable);
+                if (!channels.Select(a => a.Id).Contains(device.ChannelId))
+                {
+                    return new List<CollectDeviceRunTime>() { };
+                }
+
+                var runtime = device.Adapt<CollectDeviceRunTime>();
+                var variableService = App.RootServices.GetRequiredService<IVariableService>();
+                var collectVariableRunTimes = await variableService.GetVariableRuntimeAsync(devId);
+                runtime.VariableRunTimes = collectVariableRunTimes.ToDictionary(a => a.Name);
+                runtime.Channel = channels.FirstOrDefault(a => a.Id == runtime.ChannelId);
+
+                collectVariableRunTimes.ParallelForEach(variable =>
+                {
+                    variable.CollectDeviceRunTime = runtime;
+                    variable.DeviceName = runtime.Name;
+                });
+                return new List<CollectDeviceRunTime>() { runtime };
+            }
+        }
+        finally
+        {
+            GC.Collect();
+            // 等待垃圾回收完成
+            GC.WaitForPendingFinalizers();
+        }
+    }
+
+    public async Task<List<DeviceRunTime>> GetBusinessDeviceRuntimeAsync(long? devId = null)
+    {
+        await Task.CompletedTask;
+        if (devId == null)
+        {
+            var devices = GetAll().Where(a => a.Enable && a.PluginType == PluginTypeEnum.Business);
+            var channels = _channelService.GetAll().Where(a => a.Enable);
+            devices = devices.Where(a => channels.Select(a => a.Id).Contains(a.ChannelId));
+
+            var runtime = devices.Adapt<List<DeviceRunTime>>();
+            runtime.ParallelForEach(device =>
+            {
+                device.Channel = channels.FirstOrDefault(a => a.Id == device.ChannelId);
+            });
+            return runtime;
+        }
+        else
+        {
+            var device = GetAll().FirstOrDefault(a => a.Enable && a.PluginType == PluginTypeEnum.Business && a.Id == devId);
+            if (device == null)
+            {
+                return new List<DeviceRunTime>() { };
+            }
+            var channels = _channelService.GetAll().Where(a => a.Enable);
+            if (!channels.Select(a => a.Id).Contains(device.ChannelId))
+            {
+                return new List<DeviceRunTime>() { };
+            }
+            var runtime = device.Adapt<DeviceRunTime>();
+            runtime.Channel = channels.FirstOrDefault(a => a.Id == runtime.ChannelId);
+            return new List<DeviceRunTime>() { runtime };
+        }
+    }
+
+    private void CheckInput(Device input)
+    {
+        if (input.RedundantEnable && input.RedundantDeviceId != null)
+        {
+            throw Oops.Bah(Localizer["RedundantDeviceNotNull"]);
+        }
+    }
+
+    #region API查询
+
     public Task<SqlSugarPagedList<Device>> PageAsync(DevicePageInput input)
     {
-        var query = GetPage(input);
+        using var db = GetDB();
+        var query = GetPage(db, input);
         return query.ToPagedListAsync(input.Current, input.Size);//分页
     }
 
     /// <inheritdoc/>
-    private ISugarQueryable<Device> GetPage(DevicePageInput input)
+    private ISugarQueryable<Device> GetPage(SqlSugarClient db, DevicePageInput input)
     {
-        ISugarQueryable<Device> query = Context.Queryable<Device>()
+        ISugarQueryable<Device> query = db.Queryable<Device>()
          .WhereIF(!string.IsNullOrEmpty(input.Name), u => u.Name.Contains(input.Name))
          .WhereIF(input.ChannelId != null, u => u.ChannelId == input.ChannelId)
          .WhereIF(!string.IsNullOrEmpty(input.PluginName), u => u.PluginName == input.PluginName)
@@ -233,97 +320,7 @@ public class DeviceService : DbRepository<Device>, IDeviceService
         return query;
     }
 
-    public async Task<List<CollectDeviceRunTime>> GetCollectDeviceRuntimeAsync(long? devId = null)
-    {
-        if (devId == null)
-        {
-            var devices = GetCacheList().Where(a => a.Enable && a.PluginType == PluginTypeEnum.Collect);
-            var channelService = _serviceScope.ServiceProvider.GetService<IChannelService>();
-            var channels = channelService.GetCacheList().Where(a => a.Enable);
-            devices = devices.Where(a => channels.Select(a => a.Id).Contains(a.ChannelId));
-            var runtime = devices.Adapt<List<CollectDeviceRunTime>>().ToDictionary(a => a.Id);
-            var variableService = _serviceScope.ServiceProvider.GetService<IVariableService>();
-            var collectVariableRunTimes = await variableService.GetVariableRuntimeAsync();
-            runtime.Values.ParallelForEach(device =>
-            {
-                device.Channel = channels.FirstOrDefault(a => a.Id == device.ChannelId);
-                device.VariableRunTimes = collectVariableRunTimes.Where(a => a.DeviceId == device.Id).ToList();
-            });
-
-            collectVariableRunTimes.ParallelForEach(variable =>
-            {
-                if (runtime.TryGetValue(variable.DeviceId, out var device))
-                {
-                    variable.CollectDeviceRunTime = device;
-                    variable.DeviceName = device.Name;
-                }
-            });
-            return runtime.Values.ToList();
-        }
-        else
-        {
-            var device = GetCacheList().FirstOrDefault(a => a.Enable && a.PluginType == PluginTypeEnum.Collect && a.Id == devId);
-            if (device == null)
-            {
-                return new List<CollectDeviceRunTime>() { };
-            }
-            var channelService = _serviceScope.ServiceProvider.GetService<IChannelService>();
-            var channels = channelService.GetCacheList().Where(a => a.Enable);
-            if (!channels.Select(a => a.Id).Contains(device.ChannelId))
-            {
-                return new List<CollectDeviceRunTime>() { };
-            }
-
-            var runtime = device.Adapt<CollectDeviceRunTime>();
-            var variableService = _serviceScope.ServiceProvider.GetService<IVariableService>();
-            var collectVariableRunTimes = await variableService.GetVariableRuntimeAsync(devId);
-            runtime.VariableRunTimes = collectVariableRunTimes;
-            runtime.Channel = channels.FirstOrDefault(a => a.Id == runtime.ChannelId);
-
-            collectVariableRunTimes.ParallelForEach(variable =>
-            {
-                variable.CollectDeviceRunTime = runtime;
-                variable.DeviceName = runtime.Name;
-            });
-            return new List<CollectDeviceRunTime>() { runtime };
-        }
-    }
-
-    public async Task<List<DeviceRunTime>> GetBusinessDeviceRuntimeAsync(long? devId = null)
-    {
-        await Task.CompletedTask;
-        if (devId == null)
-        {
-            var devices = GetCacheList().Where(a => a.Enable && a.PluginType == PluginTypeEnum.Business);
-            var channelService = _serviceScope.ServiceProvider.GetService<IChannelService>();
-            var channels = channelService.GetCacheList().Where(a => a.Enable);
-            devices = devices.Where(a => channels.Select(a => a.Id).Contains(a.ChannelId));
-
-            var runtime = devices.Adapt<List<DeviceRunTime>>();
-            runtime.ParallelForEach(device =>
-            {
-                device.Channel = channels.FirstOrDefault(a => a.Id == device.ChannelId);
-            });
-            return runtime;
-        }
-        else
-        {
-            var device = GetCacheList().FirstOrDefault(a => a.Enable && a.PluginType == PluginTypeEnum.Business && a.Id == devId);
-            if (device == null)
-            {
-                return new List<DeviceRunTime>() { };
-            }
-            var channelService = _serviceScope.ServiceProvider.GetService<IChannelService>();
-            var channels = channelService.GetCacheList().Where(a => a.Enable);
-            if (!channels.Select(a => a.Id).Contains(device.ChannelId))
-            {
-                return new List<DeviceRunTime>() { };
-            }
-            var runtime = device.Adapt<CollectDeviceRunTime>();
-            runtime.Channel = channels.FirstOrDefault(a => a.Id == runtime.ChannelId);
-            return new List<DeviceRunTime>() { runtime };
-        }
-    }
+    #endregion API查询
 
     #region 导出
 
@@ -331,39 +328,26 @@ public class DeviceService : DbRepository<Device>, IDeviceService
     /// 导出文件
     /// </summary>
     /// <returns></returns>
-    [OperDesc("导出设备", IsRecordPar = false)]
-    public async Task<FileStreamResult> ExportFileAsync(PluginTypeEnum input)
+    [OperDesc("ExportDevice", isRecordPar: false, localizerType: typeof(Device))]
+    public async Task<FileStreamResult> ExportDeviceAsync(QueryPageOptions options, PluginTypeEnum pluginType)
     {
         //导出
-        var data = GetCacheList().Where(a => a.PluginType == input)?.OrderBy(a => a.PluginType);
-        return await Export(data, input);
+        var data = await PageAsync(options, pluginType);
+        return await ExportDeviceAsync(data.Items, pluginType);
     }
 
-    /// <summary>
-    /// 导出文件
-    /// </summary>
-    /// <param name="input"></param>
-    /// <returns></returns>
-    [OperDesc("导出设备", IsRecordPar = false)]
-    public async Task<FileStreamResult> ExportFileAsync(DeviceInput input)
-    {
-        var data = (await GetPage(input.Adapt<DevicePageInput>()).ExportIgnoreColumns().ToListAsync())?.OrderBy(a => a.PluginType);
-        return await Export(data, input.PluginType);
-    }
-
-    private async Task<FileStreamResult> Export(IEnumerable<Device>? data, PluginTypeEnum pluginType)
+    private async Task<FileStreamResult> ExportDeviceAsync(IEnumerable<Device>? data, PluginTypeEnum pluginType)
     {
         string fileName;
         Dictionary<string, object> sheets;
         ExportCore(data, pluginType, out fileName, out sheets);
-
         return await _importExportService.ExportAsync<Device>(sheets, fileName, false);
     }
 
     /// <summary>
     /// 导出文件
     /// </summary>
-    [OperDesc("导出设备", IsRecordPar = false)]
+    [OperDesc("ExportDevice", isRecordPar: false, localizerType: typeof(Device))]
     public async Task<MemoryStream> ExportMemoryStream(IEnumerable<Device>? data, PluginTypeEnum pluginType, string channelName = null)
     {
         string fileName;
@@ -371,6 +355,7 @@ public class DeviceService : DbRepository<Device>, IDeviceService
         ExportCore(data, pluginType, out fileName, out sheets, channelName);
         var memoryStream = new MemoryStream();
         await memoryStream.SaveAsAsync(sheets);
+        memoryStream.Seek(0, SeekOrigin.Begin);
         return memoryStream;
     }
 
@@ -381,14 +366,15 @@ public class DeviceService : DbRepository<Device>, IDeviceService
             data = new List<Device>();
         }
         fileName = pluginType == PluginTypeEnum.Collect ? "CollectDevice" : "BusinessDevice";
-        var deviceDicts = GetCacheList().ToDictionary(a => a.Id);
-        var channelDicts = _serviceScope.ServiceProvider.GetService<IChannelService>().GetCacheList().ToDictionary(a => a.Id);
+        var deviceDicts = GetAll().ToDictionary(a => a.Id);
+        var channelDicts = _channelService.GetAll().ToDictionary(a => a.Id);
         //总数据
         sheets = new();
         //设备页
         List<Dictionary<string, object>> deviceExports = new();
         //设备附加属性，转成Dict<表名,List<Dict<列名，列数据>>>的形式
         Dictionary<string, List<Dictionary<string, object>>> devicePropertys = new();
+        ConcurrentDictionary<string, (object, Dictionary<string, PropertyInfo>)> propertysDict = new();
 
         #region 列名称
 
@@ -396,7 +382,7 @@ public class DeviceService : DbRepository<Device>, IDeviceService
         var propertyInfos = type.GetProperties().Where(a => a.GetCustomAttribute<IgnoreExcelAttribute>() == null).OrderBy(
            a =>
            {
-               return a.GetCustomAttribute<DataTableAttribute>()?.Order ?? 999999;
+               return a.GetCustomAttribute<AutoGenerateColumnAttribute>()?.Order ?? 999999;
            }
            );
 
@@ -405,21 +391,21 @@ public class DeviceService : DbRepository<Device>, IDeviceService
         foreach (var device in data)
         {
             Dictionary<string, object> devExport = new();
-            deviceDicts.TryGetValue(device.RedundantDeviceId, out var redundantDevice);
+            deviceDicts.TryGetValue(device.RedundantDeviceId ?? 0, out var redundantDevice);
             channelDicts.TryGetValue(device.ChannelId, out var channel);
 
-            devExport.Add(ExportConst.ChannelName, channel?.Name ?? channelName);
+            devExport.Add(ExportString.ChannelName, channel?.Name ?? channelName);
 
             foreach (var item in propertyInfos)
             {
                 //描述
-                var desc = item.FindDisplayAttribute();
+                var desc = type.GetPropertyDisplayName(item.Name);
                 //数据源增加
                 devExport.Add(desc ?? item.Name, item.GetValue(device)?.ToString());
             }
 
             //设备实体没有包含冗余设备名称，手动插入
-            devExport.Add(ExportConst.RedundantDeviceName, redundantDevice?.Name);
+            devExport.Add(ExportString.RedundantDeviceName, redundantDevice?.Name);
 
             //添加完整设备信息
             deviceExports.Add(devExport);
@@ -429,33 +415,58 @@ public class DeviceService : DbRepository<Device>, IDeviceService
             //插件属性
             //单个设备的行数据
             Dictionary<string, object> driverInfo = new();
-            //没有包含设备名称，手动插入
-            if (device.DevicePropertys.Count > 0)
+
+            var propDict = device.DevicePropertys;
+            if (propertysDict.TryGetValue(device.PluginName, out var propertys))
             {
-                driverInfo.Add(ExportConst.DeviceName, device.Name);
             }
-            foreach (var item in device.DevicePropertys ?? new())
+            else
             {
-                //添加对应属性数据
-                driverInfo.Add(item.Description, item.Value);
+                var driverProperties = _pluginService.GetDriver(device.PluginName).DriverProperties;
+                propertys.Item1 = driverProperties;
+                var driverPropertyType = driverProperties.GetType();
+                propertys.Item2 = driverPropertyType.GetRuntimeProperties()
+.Where(a => a.GetCustomAttribute<DynamicPropertyAttribute>() != null)
+.ToDictionary(a => driverPropertyType.GetPropertyDisplayName(a.Name), a => a);
+
+                propertysDict.TryAdd(device.PluginName, propertys);
             }
 
-            var pluginName = device.PluginName.GetFileNameAndTypeName();
-            if (devicePropertys.ContainsKey(pluginName.Item2))
+            if (propertys.Item2.Any())
+            {
+                //没有包含设备名称，手动插入
+                driverInfo.Add(ExportString.DeviceName, device.Name);
+            }
+            //根据插件的配置属性项生成列，从数据库中获取值或者获取属性默认值
+            foreach (var item in propertys.Item2)
+            {
+                if (propDict.TryGetValue(item.Value.Name, out var dependencyProperty))
+                {
+                    driverInfo.Add(item.Key, dependencyProperty);
+                }
+                else
+                {
+                    //添加对应属性数据
+                    driverInfo.Add(item.Key, ThingsGatewayStringConverter.Default.Serialize(null, item.Value.GetValue(propertys.Item1)));
+                }
+            }
+
+            var pluginName = PluginServiceUtil.GetFileNameAndTypeName(device.PluginName);
+            if (devicePropertys.ContainsKey(pluginName.TypeName))
             {
                 if (driverInfo.Count > 0)
-                    devicePropertys[pluginName.Item2].Add(driverInfo);
+                    devicePropertys[pluginName.TypeName].Add(driverInfo);
             }
             else
             {
                 if (driverInfo.Count > 0)
-                    devicePropertys.Add(pluginName.Item2, new() { driverInfo });
+                    devicePropertys.Add(pluginName.TypeName, new() { driverInfo });
             }
 
             #endregion 插件sheet
         }
         //添加设备页
-        sheets.Add(ExportConst.DeviceName, deviceExports);
+        sheets.Add(ExportString.DeviceName, deviceExports);
 
         //HASH
         foreach (var item in devicePropertys)
@@ -490,13 +501,13 @@ public class DeviceService : DbRepository<Device>, IDeviceService
     #region 导入
 
     /// <inheritdoc/>
-    [OperDesc("导入设备表", IsRecordPar = false)]
-    public async Task ImportAsync(Dictionary<string, ImportPreviewOutputBase> input)
+    [OperDesc("ImportDevice", isRecordPar: false, localizerType: typeof(Device))]
+    public async Task ImportDeviceAsync(Dictionary<string, ImportPreviewOutputBase> input)
     {
         var collectDevices = new List<Device>();
         foreach (var item in input)
         {
-            if (item.Key == ExportConst.DeviceName)
+            if (item.Key == ExportString.DeviceName)
             {
                 var collectDeviceImports = ((ImportPreviewOutput<Device>)item.Value).Data;
                 collectDevices = new List<Device>(collectDeviceImports.Values);
@@ -505,104 +516,156 @@ public class DeviceService : DbRepository<Device>, IDeviceService
         }
         var upData = collectDevices.Where(a => a.IsUp).ToList();
         var insertData = collectDevices.Where(a => !a.IsUp).ToList();
-        await Context.Fastest<Device>().PageSize(100000).BulkCopyAsync(insertData);
-        await Context.Fastest<Device>().PageSize(100000).BulkUpdateAsync(upData);
-        DeleteDeviceFromRedis();
+        using var db = GetDB();
+        await db.Fastest<Device>().PageSize(100000).BulkCopyAsync(insertData);
+        await db.Fastest<Device>().PageSize(100000).BulkUpdateAsync(upData);
+        DeleteDeviceFromCache();
     }
 
     public async Task<Dictionary<string, ImportPreviewOutputBase>> PreviewAsync(IBrowserFile browserFile)
     {
-        var path = await _importExportService.UploadFileAsync(browserFile);
+        var path = await _importExportService.UploadFileAsync(browserFile); // 上传文件并获取文件路径
+
         try
         {
+            // 获取 Excel 文件中所有工作表的名称
             var sheetNames = MiniExcel.GetSheetNames(path);
-            var deviceDicts = GetCacheList().ToDictionary(a => a.Name);
-            var channelService = _serviceScope.ServiceProvider.GetService<IChannelService>();
-            var channelDicts = channelService.GetCacheList().ToDictionary(a => a.Name);
 
-            //导入检验结果
+            // 获取所有设备，并将设备名称作为键构建设备字典
+            var deviceDicts = GetAll().ToDictionary(a => a.Name);
+
+            // 获取所有通道，并将通道名称作为键构建通道字典
+            var channelDicts = _channelService.GetAll().ToDictionary(a => a.Name);
+
+            // 导入检验结果的预览字典，键为名称，值为导入预览对象
             Dictionary<string, ImportPreviewOutputBase> ImportPreviews = new();
-            //设备页
+
+            // 设备页的导入预览对象
             ImportPreviewOutput<Device> deviceImportPreview = new();
-            var pluginService = _serviceScope.ServiceProvider.GetService<IPluginService>();
-            var driverPluginFullNameDict = pluginService.GetList().SelectMany(a => a.Children).ToDictionary(a => a.FullName);
-            var driverPluginNameDict = pluginService.GetList().SelectMany(a => a.Children).ToDictionary(a => a.Name);
+
+            // 获取所有驱动程序，并将驱动程序的完整名称作为键构建字典
+            var driverPluginFullNameDict = _pluginService.GetList().ToDictionary(a => a.FullName);
+
+            // 获取所有驱动程序，并将驱动程序名称作为键构建字典
+            var driverPluginNameDict = _pluginService.GetList().ToDictionary(a => a.Name);
+            ConcurrentDictionary<string, (Type, Dictionary<string, PropertyInfo>, Dictionary<string, PropertyInfo>)> propertysDict = new();
             foreach (var sheetName in sheetNames)
             {
                 var rows = MiniExcel.Query(path, useHeaderRow: true, sheetName: sheetName).Cast<IDictionary<string, object>>();
 
                 #region 采集设备sheet
 
-                if (sheetName == ExportConst.DeviceName)
+                if (sheetName == ExportString.DeviceName)
                 {
+                    // 初始化行数
                     int row = 1;
+
+                    // 创建导入预览输出对象，并将其添加到导入预览集合中
                     ImportPreviewOutput<Device> importPreviewOutput = new();
                     ImportPreviews.Add(sheetName, importPreviewOutput);
-                    deviceImportPreview = importPreviewOutput;
-                    List<Device> devices = new();
 
+                    // 为设备导入预览对象赋值
+                    deviceImportPreview = importPreviewOutput;
+
+                    // 创建设备列表
+                    List<Device> devices = new();
+                    var type = typeof(Device);
+                    // 获取目标类型的所有属性，并根据是否需要过滤 IgnoreExcelAttribute 进行筛选
+                    var deviceProperties = type.GetRuntimeProperties().Where(a => (a.GetCustomAttribute<IgnoreExcelAttribute>() == null) && a.CanWrite)
+                                                .ToDictionary(a => type.GetPropertyDisplayName(a.Name));
+
+                    // 遍历每一行数据
                     rows.ForEach(item =>
                     {
                         try
                         {
-                            var device = ((ExpandoObject)item).ConvertToEntity<Device>(true);
+                            // 尝试将导入的项转换为 Device 对象
+                            var device = (item as ExpandoObject)?.ConvertToEntity<Device>(deviceProperties);
+
+                            // 如果转换失败，则添加错误信息到导入预览结果并返回
                             if (device == null)
                             {
                                 importPreviewOutput.HasError = true;
-                                importPreviewOutput.Results.Add((row++, false, "无法识别任何信息"));
+                                importPreviewOutput.Results.Add((row++, false, Localizer["ImportNullError"]));
                                 return;
                             }
 
-                            #region 特殊转化名称
+                            // 转换冗余设备名称
+                            var hasRedundant = item.TryGetValue(ExportString.RedundantDeviceName, out var redundantObj);
+                            var hasChannel = item.TryGetValue(ExportString.ChannelName, out var channelObj);
 
-                            //转化冗余设备名称
-                            var hasRedundant = item.TryGetValue(ExportConst.RedundantDeviceName, out var redundantObj);
-                            var hasChannel = item.TryGetValue(ExportConst.ChannelName, out var channelObj);
-
-                            #endregion 特殊转化名称
-
-                            //设备ID、冗余设备ID都需要手动补录
+                            // 设备ID、冗余设备ID都需要手动补录
                             if (hasRedundant && redundantObj != null)
                             {
-                                if (deviceDicts.TryGetValue(redundantObj.ToString(), out var rendundantDevice))
-                                    device.RedundantDeviceId = rendundantDevice.Id;
+                                if (deviceDicts.TryGetValue(redundantObj.ToString(), out var redundantDevice))
+                                    device.RedundantDeviceId = redundantDevice.Id;
                                 else
                                 {
+                                    // 如果找不到对应的冗余设备，则添加错误信息到导入预览结果并返回
                                     importPreviewOutput.HasError = true;
-                                    importPreviewOutput.Results.Add((row++, false, "冗余设备错误"));
+                                    importPreviewOutput.Results.Add((row++, false, Localizer["RedundantDeviceError"]));
                                     return;
                                 }
                             }
                             else
                             {
-                                if (device.IsRedundant)
+                                // 如果冗余设备未启用，则添加错误信息到导入预览结果并返回
+                                if (device.RedundantEnable)
                                 {
                                     importPreviewOutput.HasError = true;
-                                    importPreviewOutput.Results.Add((row++, false, "冗余设备错误"));
+                                    importPreviewOutput.Results.Add((row++, false, Localizer["RedundantDeviceError"]));
                                     return;
                                 }
                             }
+
+                            // 检查是否提供了通道信息，如果是，则尝试将其转换为通道对象并关联到设备
                             if (hasChannel && channelObj != null)
                             {
                                 if (channelDicts.TryGetValue(channelObj.ToString(), out var channel))
                                     device.ChannelId = channel.Id;
                                 else
                                 {
+                                    // 如果找不到对应的通道信息，则添加错误信息到导入预览结果并返回
                                     importPreviewOutput.HasError = true;
-                                    importPreviewOutput.Results.Add((row++, false, "通道错误"));
+                                    importPreviewOutput.Results.Add((row++, false, "ChannelError"));
                                     return;
                                 }
                             }
                             else
                             {
+                                // 如果未提供通道信息，则添加错误信息到导入预览结果并返回
                                 importPreviewOutput.HasError = true;
-                                importPreviewOutput.Results.Add((row++, false, "通道错误"));
+                                importPreviewOutput.Results.Add((row++, false, "ChannelError"));
                                 return;
                             }
 
-                            if (deviceDicts.TryGetValue(device.Name, out var collectDevice))
+                            // 进行设备对象属性的验证
+                            var validationContext = new ValidationContext(device);
+                            var validationResults = new List<ValidationResult>();
+                            validationContext.ValidateProperty(validationResults);
+
+                            // 构建验证结果的错误信息
+                            StringBuilder stringBuilder = new();
+                            foreach (var validationResult in validationResults.Where(v => !string.IsNullOrEmpty(v.ErrorMessage)))
                             {
-                                device.Id = collectDevice.Id;
+                                foreach (var memberName in validationResult.MemberNames)
+                                {
+                                    stringBuilder.Append(validationResult.ErrorMessage!);
+                                }
+                            }
+
+                            // 如果有验证错误，则添加错误信息到导入预览结果并返回
+                            if (stringBuilder.Length > 0)
+                            {
+                                importPreviewOutput.HasError = true;
+                                importPreviewOutput.Results.Add((row++, false, stringBuilder.ToString()));
+                                return;
+                            }
+
+                            // 检查设备名称是否已存在于设备字典中，如果存在，则更新设备ID；否则，生成新的设备ID
+                            if (deviceDicts.TryGetValue(device.Name, out var existingDevice))
+                            {
+                                device.Id = existingDevice.Id;
                                 device.IsUp = true;
                             }
                             else
@@ -611,17 +674,21 @@ public class DeviceService : DbRepository<Device>, IDeviceService
                                 device.IsUp = false;
                             }
 
+                            // 将设备添加到设备列表中，并添加成功信息到导入预览结果
                             devices.Add(device);
                             importPreviewOutput.Results.Add((row++, true, null));
                             return;
                         }
                         catch (Exception ex)
                         {
+                            // 捕获异常并添加错误信息到导入预览结果
                             importPreviewOutput.HasError = true;
                             importPreviewOutput.Results.Add((row++, false, ex.Message));
                             return;
                         }
                     });
+
+                    // 将设备列表转换为字典，并赋值给导入预览输出对象的 Data 属性
                     importPreviewOutput.Data = devices.ToDictionary(a => a.Name);
                 }
 
@@ -629,56 +696,135 @@ public class DeviceService : DbRepository<Device>, IDeviceService
 
                 else
                 {
+                    // 如果设备导入预览数据为空或者数量为0，则直接返回导入预览集合
                     if (deviceImportPreview.Data == null || deviceImportPreview.Data.Count == 0)
                         return ImportPreviews;
+
+                    // 初始化行数
                     int row = 1;
+
+                    // 创建导入预览输出对象
                     ImportPreviewOutput<string> importPreviewOutput = new();
+
+                    // 将导入预览输出对象添加到导入预览集合中
                     ImportPreviews.Add(sheetName, importPreviewOutput);
-                    //插件属性需加上前置名称
+
+                    // 插件属性需加上前置名称
                     _ = driverPluginNameDict.TryGetValue(sheetName, out var driverPluginType);
+
+                    // 如果未找到驱动插件类型，则添加错误信息到导入预览结果并继续下一轮循环
                     if (driverPluginType == null)
                     {
                         importPreviewOutput.HasError = true;
-                        importPreviewOutput.Results.Add((row++, false, $"插件{sheetName}不存在"));
+                        importPreviewOutput.Results.Add((row++, false, Localizer["NotNull", sheetName]));
                         continue;
                     }
 
-                    var driver = pluginService.GetDriver(driverPluginType.FullName);
-                    var propertys = driver.DriverPropertys.GetType().GetProperties()
-        .Where(a => a.GetCustomAttribute<DynamicPropertyAttribute>() != null)
-        .ToDictionary(a => a.FindDisplayAttribute(a => a.GetCustomAttribute<DynamicPropertyAttribute>()?.Description));
-                    rows.ForEach(item =>
+                    if (propertysDict.TryGetValue(driverPluginType.FullName, out var propertys))
+                    {
+                    }
+                    else
+                    {
+                        // 获取驱动插件实例
+                        var driver = _pluginService.GetDriver(driverPluginType.FullName);
+                        var type = driver.DriverProperties.GetType();
+
+                        propertys.Item1 = type;
+
+                        propertys.Item2 = type.GetRuntimeProperties()
+                            .Where(a => a.GetCustomAttribute<DynamicPropertyAttribute>() != null && a.CanWrite)
+                            .ToDictionary(a => type.GetPropertyDisplayName(a.Name));
+
+                        // 获取目标类型的所有属性，并根据是否需要过滤 IgnoreExcelAttribute 进行筛选
+                        var properties = propertys.Item1.GetRuntimeProperties().Where(a => (a.GetCustomAttribute<IgnoreExcelAttribute>() == null) && a.CanWrite)
+                                        .ToDictionary(a => propertys.Item1.GetPropertyDisplayName(a.Name));
+
+                        propertys.Item3 = properties;
+                        propertysDict.TryAdd(driverPluginType.FullName, propertys);
+                    }
+
+                    // 遍历每一行数据
+                    foreach (var item in rows)
                     {
                         try
                         {
-                            List<DependencyProperty> devices = new();
-                            foreach (var keyValuePair in item)
+                            // 获取设备名称
+                            if (!item.TryGetValue(ExportString.DeviceName, out var deviceName))
                             {
-                                if (propertys.TryGetValue(keyValuePair.Key, out var propertyInfo))
+                                importPreviewOutput.HasError = true;
+                                importPreviewOutput.Results.Add((row++, false, Localizer["DeviceNotNull"]));
+                                continue;
+                            }
+
+                            // 转化插件名称
+                            var value = item[ExportString.DeviceName]?.ToString();
+
+                            // 检查设备名称是否存在于设备导入预览数据中，如果不存在，则添加错误信息到导入预览结果并继续下一轮循环
+                            var hasDevice = deviceImportPreview.Data.ContainsKey(value);
+                            if (!hasDevice)
+                            {
+                                importPreviewOutput.HasError = true;
+                                importPreviewOutput.Results.Add((row++, false, Localizer["NotNull", value]));
+                                continue;
+                            }
+
+                            // 尝试将导入的项转换为对象
+                            var pluginProp = (item as ExpandoObject)?.ConvertToEntity(propertys.Item1, propertys.Item3);
+
+                            // 如果转换失败，则添加错误信息到导入预览结果并返回
+                            if (pluginProp == null)
+                            {
+                                importPreviewOutput.HasError = true;
+                                importPreviewOutput.Results.Add((row++, false, Localizer["ImportNullError"]));
+                                return ImportPreviews;
+                            }
+
+                            // 检查属性的验证结果
+                            var validationContext = new ValidationContext(pluginProp);
+                            var validationResults = new List<ValidationResult>();
+                            validationContext.ValidateProperty(validationResults);
+
+                            // 构建验证结果的错误信息
+                            StringBuilder stringBuilder = new();
+                            foreach (var validationResult in validationResults.Where(v => !string.IsNullOrEmpty(v.ErrorMessage)))
+                            {
+                                foreach (var memberName in validationResult.MemberNames)
                                 {
-                                    devices.Add(new()
-                                    {
-                                        Name = propertyInfo.Name,
-                                        Description = keyValuePair.Key.ToString(),
-                                        Value = keyValuePair.Value?.ToString()
-                                    });
+                                    stringBuilder.Append(validationResult.ErrorMessage!);
                                 }
                             }
-                            //转化插件名称
 
-                            var value = item[ExportConst.DeviceName];
+                            // 如果有验证错误，则添加错误信息到导入预览结果并返回
+                            if (stringBuilder.Length > 0)
+                            {
+                                importPreviewOutput.HasError = true;
+                                importPreviewOutput.Results.Add((row++, false, stringBuilder.ToString()));
+                                return ImportPreviews;
+                            }
 
-                            deviceImportPreview.Data[value.ToString()].DevicePropertys = devices;
-                            importPreviewOutput.Results.Add((row++, true, "成功"));
-                            return;
+                            // 将动态属性映射到设备属性字典中
+                            Dictionary<string, string> devices = new();
+                            foreach (var keyValuePair in item)
+                            {
+                                if (propertys.Item2.TryGetValue(keyValuePair.Key, out var propertyInfo))
+                                {
+                                    devices.Add(propertyInfo.Name, keyValuePair.Value?.ToString());
+                                }
+                            }
+
+                            // 更新设备导入预览数据中对应设备的属性信息，并添加成功信息到导入预览结果
+                            deviceImportPreview.Data[value].DevicePropertys = devices;
+                            importPreviewOutput.Results.Add((row++, true, null));
+                            continue;
                         }
                         catch (Exception ex)
                         {
+                            // 捕获异常并添加错误信息到导入预览结果并返回
                             importPreviewOutput.HasError = true;
                             importPreviewOutput.Results.Add((row++, false, ex.Message));
-                            return;
+                            return ImportPreviews;
                         }
-                    });
+                    }
                 }
             }
 
@@ -691,4 +837,22 @@ public class DeviceService : DbRepository<Device>, IDeviceService
     }
 
     #endregion 导入
+}
+
+/// <summary>
+/// 设备分页查询DTO
+/// </summary>
+public class DevicePageInput : BasePageInput
+{
+    /// <inheritdoc/>
+    public string? Name { get; set; }
+
+    /// <inheritdoc/>
+    public string? PluginName { get; set; }
+
+    /// <inheritdoc/>
+    public long? ChannelId { get; set; }
+
+    /// <inheritdoc/>
+    public PluginTypeEnum PluginType { get; set; }
 }

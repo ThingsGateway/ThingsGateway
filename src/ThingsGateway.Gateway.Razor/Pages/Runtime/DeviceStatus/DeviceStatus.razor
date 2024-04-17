@@ -1,0 +1,52 @@
+﻿@namespace ThingsGateway.Gateway.Razor
+@using ThingsGateway.Admin.Application
+@using ThingsGateway.Admin.Razor
+@using ThingsGateway.Debug
+@using ThingsGateway.Gateway.Application
+@using ThingsGateway.Core.Extension
+@inherits ComponentDefault
+
+
+
+<div class="device row mt-1 mx-1 ">
+
+    <div class="col-12 col-md-5 h-100">
+
+        <div class=" row">
+
+            <div class="col-12 col-md-4">
+                <Select IsVirtualize @bind-Value="DeviceInput.ChannelId" Items="@Channels" ShowSearch="true" ShowLabel="true"  IsPopover IsClearable/>
+            </div>
+
+            <div class="col-12 col-md-4">
+                <Select IsVirtualize @bind-Value="DeviceInput.Name" Items="@Devices" ShowSearch="true" ShowLabel="true" IsPopover IsClearable />
+            </div>
+            <div class="col-12 col-md-4">
+                <Select IsVirtualize @bind-Value="DeviceInput.PluginName" Items="@Plugins" ShowSearch="true" ShowLabel="true" IsPopover IsClearable />
+            </div>
+        </div>
+
+        <div style="height:var(--virtualize-height);overflow-y:scroll" class="mt-2">
+            <DeviceStatus1 DriverBases=DriverBases DeviceInput=DeviceInput DriverBaseOnClick=DriverBaseOnClick />
+        </div>
+
+    </div>
+
+    <div class="col-12 col-md-7 h-100">
+
+        @if (_driverBaseItem != null && _driverBaseItem?.CurrentDevice != null)
+        {
+            <DeviceStatus2 Item="_driverBaseItem" DeviceHostedService=DeviceHostedService DeviceQuery=DeviceQuery DeviceRedundantThreadAsync=DeviceRedundantThreadAsync PasueThread=PasueThread RestartAsync=RestartAsync ShowDriverUI=ShowDriverUI
+                           SetLogEnable="SetLogEnable" />
+
+        }
+
+        @if (_driverBaseItem != null && _driverBaseItem?.CurrentDevice != null && _driverBaseItem.CurrentDevice.Channel.LogEnable == true)
+        {
+            <LogConsole LogPath=@_driverBaseItem.LogPath HeaderText="@Localizer["LogConsole"]" HeightText="var(--logconsle-height)"></LogConsole>
+        }
+
+
+
+    </div>
+</div>

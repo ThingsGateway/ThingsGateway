@@ -1,4 +1,5 @@
-﻿//------------------------------------------------------------------------------
+﻿
+//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -8,42 +9,40 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using Microsoft.AspNetCore.Mvc;
 
-using System.Data;
+
+
+using BootstrapBlazor.Components;
 
 namespace ThingsGateway.Gateway.Application;
 
-/// <summary>
-/// RPC日志服务
-/// </summary>
-public interface IRpcLogService : ISugarService, ITransient
+public interface IRpcLogService
 {
     /// <summary>
-    /// 删除
+    /// 分页查询 RpcLog 数据
     /// </summary>
-    /// <returns></returns>
-    Task DeleteAsync();
+    /// <param name="option">查询选项</param>
+    /// <returns>查询到的数据</returns>
+    Task<QueryData<RpcLog>> PageAsync(QueryPageOptions option);
 
     /// <summary>
-    /// 分页查询
+    /// 获取最新的十条 RpcLog 记录
     /// </summary>
-    Task<SqlSugarPagedList<RpcLog>> PageAsync(RpcLogPageInput input);
+    /// <returns>最新的十条记录</returns>
+    Task<List<RpcLog>> GetNewLog();
 
     /// <summary>
-    /// 导出
+    /// 删除 RpcLog 表中的所有记录
     /// </summary>
-    Task<FileStreamResult> ExportFileAsync(RpcLogInput input);
+    /// <remarks>
+    /// 调用此方法会删除 RpcLog 表中的所有记录。
+    /// </remarks>
+    Task DeleteRpcLogAsync();
 
     /// <summary>
-    /// 导出
+    /// 按天统计 RpcLog 数据
     /// </summary>
-    Task<FileStreamResult> ExportFileAsync(IDataReader? input = null);
-
-    /// <summary>
-    /// 按天统计
-    /// </summary>
-    /// <param name="day"></param>
-    /// <returns></returns>
+    /// <param name="day">统计的天数</param>
+    /// <returns>按天统计的结果列表</returns>
     Task<List<RpcLogDayStatisticsOutput>> StatisticsByDayAsync(int day);
 }

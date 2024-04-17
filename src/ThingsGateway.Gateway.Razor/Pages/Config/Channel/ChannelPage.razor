@@ -1,0 +1,46 @@
+﻿@page "/gateway/channel"
+@namespace ThingsGateway.Gateway.Razor
+@using ThingsGateway.Admin.Application
+@using ThingsGateway.Admin.Razor
+@using ThingsGateway.Gateway.Application
+@attribute [Authorize]
+@attribute [RolePermission]
+@inherits ComponentDefault
+
+
+<div style="height: var(--table-height);padding: 2px 5px 10px 5px;">
+
+    <AdminTable @ref=table TItem="Channel" AutoGenerateColumns="true" ShowAdvancedSearch=false
+                AllowResizing="true" IsFixedHeader=true IsMultipleSelect=true SearchModel=SearchModel
+                ShowExtendButtons=true
+                ShowDefaultButtons=true ExtendButtonColumnWidth=150 ShowExportButton="true"
+                OnQueryAsync="OnQueryAsync" IsPagination=true
+                OnSaveAsync="Save" OnDeleteAsync="Delete">
+
+        <EditTemplate Context="context">
+            <ChannelEditComponent Model="context"></ChannelEditComponent>
+        </EditTemplate>
+
+        <ExportButtonDropdownTemplate Context="ExportContext">
+            <Button class="dropdown-item" OnClick="() => ExcelExportAsync(ExportContext)">
+                <i class="fas fa-file-export"></i>
+                <span>@DefaultLocalizer["TablesExportButtonExcelText"]</span>
+            </Button>
+            <Button class="dropdown-item" OnClick="() => ExcelImportAsync(ExportContext)" IsDisabled=@(!AuthorizeButton("导入"))>
+                <i class="fas fa-file-import"></i>
+                <span>@DefaultLocalizer["TablesImportButtonExcelText"]</span>
+            </Button>
+        </ExportButtonDropdownTemplate>
+
+        <TableToolbarTemplate>
+            <TableToolbarPopConfirmButton TItem="Channel"
+                                          Color=Color.Warning Text="@Localizer["Clear"]"
+                                          IsAsync OnConfirm=@(async()=>{ await ChannelService.ClearChannelAsync();await ToastService.Default(); await table.QueryAsync(); }) />
+        </TableToolbarTemplate>
+
+    </AdminTable>
+</div>
+
+@code {
+    AdminTable<Channel> table;
+}

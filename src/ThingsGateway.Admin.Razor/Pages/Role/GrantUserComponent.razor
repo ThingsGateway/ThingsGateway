@@ -1,0 +1,45 @@
+﻿@inherits ComponentDefault
+@using ThingsGateway.Admin.Application
+@using ThingsGateway.Core.Extension
+@namespace ThingsGateway.Admin.Razor
+
+<div class="row g-2 mx-1 form-inline">
+
+    <div class="col-12  col-md-6" style="height:100%">
+
+        <AdminTable @ref="table1" TItem="UserSelectorOutput" AutoGenerateColumns="true" @bind-SelectedRows="@SelectedAddRows" ClickToSelect="true"
+                    ShowToolbar="true" ShowDefaultButtons="false" IsMultipleSelect="true" ShowAdvancedSearch=false ShowResetButton=false
+                    ShowCardView=false ShowColumnList=false 
+                    OnQueryAsync="OnQueryAsync" IsPagination=true>
+            <TableToolbarTemplate>
+                <TableToolbarButton TItem="UserSelectorOutput" Color="Color.Info" Icon="fa-solid fa-users-gear" Text="@DefaultLocalizer["Add"]"
+                                    OnClickCallback="async(a) =>{foreach (var item in a)
+                                                        {
+                                                            SelectedRows.Add(item);
+                                                            await table2.QueryAsync();
+                                                        }}" />
+            </TableToolbarTemplate>
+        </AdminTable>
+    </div>
+    <div class="col-12  col-md-6" style="height:100%">
+
+        <AdminTable @ref="table2" TItem="UserSelectorOutput" AutoGenerateColumns="true" @bind-SelectedRows="@SelectedDeleteRows" ClickToSelect="true"
+                    ShowToolbar="true" ShowDefaultButtons="false" IsMultipleSelect="true" ShowAdvancedSearch=false ShowResetButton=false
+                    ShowCardView=false ShowColumnList=false ShowSearch=false ShowRefresh=false ScrollMode=ScrollMode.Virtual Items=SelectedRows
+                    IsPagination=false>
+            <TableToolbarTemplate>
+                <TableToolbarButton TItem="UserSelectorOutput" Color="Color.Info" Icon="fa-solid fa-users-gear" Text="@DefaultLocalizer["Remove"]"
+                                    OnClickCallback="async(a) =>{ SelectedRows.RemoveWhere(b=>a.Contains(b));await table2.QueryAsync();}" />
+            </TableToolbarTemplate>
+        </AdminTable>
+    </div>
+
+ 
+</div>
+<div class="form-footer">
+    <Button Text="@DefaultLocalizer["Save"]" OnClick="OnSave" />
+</div>
+@code {
+    AdminTable<UserSelectorOutput> table1;
+    AdminTable<UserSelectorOutput> table2;
+}

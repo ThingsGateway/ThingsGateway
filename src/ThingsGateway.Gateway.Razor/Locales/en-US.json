@@ -1,0 +1,153 @@
+﻿{
+  "ThingsGateway.Gateway.Razor.DeviceStatus2": {
+    "GatewayDeviceShowDriverUI": "DriverUI",
+    "DeviceRedundantThread": "RedundantSwitch",
+    "GatewayDeviceLog": "ChannelLog",
+    "GatewayDevicePause": "DevicePause",
+    "GatewayDeviceRestart": "DeviceRestart"
+  },
+  "ThingsGateway.Gateway.Razor.DeviceStatus": {
+    "LogConsole": "ChannelLog"
+  },
+  "ThingsGateway.Gateway.Razor.DeviceStatusPage": {
+    "CollectDevice": "CollectDevice",
+    "BusinessDevice": "BusinessDevice"
+  },
+
+  "ThingsGateway.Gateway.Razor.VariableRuntimePage": {
+    "WriteVariable": "Write",
+    "WriteValue": "Value"
+  },
+  "ThingsGateway.Gateway.Razor.MainLayout": {
+    "FullScreenButton": "Full Screen",
+    "UserCenter": "User Center",
+    "ChoiceModule": "Switch Module",
+    "GiteePostTitleText": "Code Commit Push Notification"
+  },
+  "ThingsGateway.Debug.AdapterDebugBase": {
+    "WriteSuccess": "Write Successful",
+    "DefaultSend": "Direct Send",
+    "Send": "Send",
+    "DataType": "Data Type",
+    "RegisterAddress": "Register Address",
+    "ArrayLength": "Array Length",
+    "WriteValue": "Write Value",
+    "SendValue": "Send Raw Message"
+  },
+  "ThingsGateway.Debug.AdapterDebugComponent": {
+    "HeaderText": "Channel Log",
+    "WriteSuccess": "Write Successful",
+    "DefaultSend": "Direct Send",
+    "Send": "Send",
+    "DataType": "Data Type",
+    "RegisterAddress": "Register Address",
+    "ArrayLength": "Array Length",
+    "WriteValue": "Write Value",
+    "SendValue": "Send Raw Message",
+    "CommonFunctions": "Common Functions",
+    "SpecialFunctions": "Special Functions",
+    "Read": "Read",
+    "Write": "Write",
+    "MulRead": "Multiple Read"
+  },
+  "ThingsGateway.Debug.ChannelDataEditComponent": {
+    "BasicInformation": "Basic Information",
+    "Connection": "Connection"
+  },
+  "ThingsGateway.Gateway.Razor.DriverDebugPage": {
+    "PluginUINotNull": "This plugin does not implement a debug page",
+    "New": "New"
+  },
+  "ThingsGateway.Gateway.Razor.Index": {
+    "CollectDevice": "Collect Device",
+    "BusinessDevice": "Business Device",
+    "Variable": "Variable",
+    "Alarm": "Real-time Alarm",
+    "AlarmCount": "Alarm Count",
+    "OnLine": "Online",
+    "OffLine": "Offline",
+    "Shortcuts": "Shortcuts",
+    "OperLog": "Recent Operations",
+    "BackendLog": "Gateway Backend Log",
+    "RpcLog": "Gateway RPC Log",
+    "HardwareInfoChart": "Hardware Information Historical Chart",
+    "DateTime": "Date Time",
+    "Data": "Data",
+    "HisHardwareInfo": "Historical Chart"
+  },
+  "ThingsGateway.Gateway.Razor.QuickActions": {
+    "TooltipText": "Quick Actions",
+    "HeaderText": "Quick Actions",
+    "ReloadPluginText": "Reload Plugin",
+    "ReloadServiceText": "Restart Runtime",
+    "ReloadPluginConfirmText": "Are you sure you want to reload the plugin?",
+    "ReloadServiceConfirmText": "Are you sure you want to restart the runtime?"
+  },
+  "ThingsGateway.Gateway.Razor.SavePlugin": {
+    "SavePlugin": "Note: Plugins with the same file name will be overwritten"
+  },
+  "ThingsGateway.Gateway.Razor.BackendLogPage": {
+    "BackendLog": "Gateway Backend Log",
+    "Date": "Date",
+    "Count": "Count"
+  },
+  "ThingsGateway.Gateway.Razor.RpcLogPage": {
+    "RpcLog": "Gateway RPC Log",
+    "Date": "Date",
+    "Count": "Count"
+  },
+  "ThingsGateway.Gateway.Razor.ChannelPage": {
+    "ImportExcel": "Import Channel",
+    "Clear": "Clear"
+  },
+  "ThingsGateway.Gateway.Razor.CollectDevicePage": {
+    "ImportExcel": "Import Collect Device",
+    "Clear": "Clear"
+  },
+  "ThingsGateway.Gateway.Razor.BusinessDevicePage": {
+    "ImportExcel": "Import Business Device",
+    "Clear": "Clear"
+  },
+  "ThingsGateway.Gateway.Razor.VariablePage": {
+    "ImportExcel": "Import Variable",
+    "Clear": "Clear",
+    "TestCount": "TestVariableCount",
+    "Test": "AddTestVariable"
+  },
+  "ThingsGateway.Gateway.Razor.DeviceEditComponent": {
+    "DeviceInformation": "Device Information",
+    "PluginInformation": "Plugin Information",
+    "BasicInformation": "Basic Information",
+    "Connection": "Connection",
+    "Redundant": "Redundant",
+    "Remark": "Remark"
+  },
+  "ThingsGateway.Gateway.Razor.VariableEditComponent": {
+    "VariableInformation": "Variable Information",
+    "AlarmInformation": "Alarm Information",
+    "PluginInformation": "Business Information",
+    "BasicInformation": "Basic Information",
+    "Connection": "Connection",
+    "Remark": "Remark",
+    "RefreshBusinessProperty": "Add/Refresh Business Property",
+    "RefreshBusinessPropertyError": "You need to select a business device before adding business properties",
+    "ChoiceBusinessDeviceId": "Business Device"
+  },
+  "ThingsGateway.Gateway.Razor.ChannelEditComponent": {
+    "BasicInformation": "Basic Information",
+    "Connection": "Connection"
+  },
+  "ThingsGateway.Gateway.Razor.ImportExcel": {
+    "First": "Step 1",
+    "Upload": "Upload File",
+    "Validate": "Validate",
+    "Second": "Step 2",
+    "ValidateText": "Validation Content",
+    "UploadCount": " Table {0}, expecting to import {1} records",
+    "Third": "Step 3",
+    "Import": "Import",
+    "Next": "Next",
+    "Reset": "Reset",
+    "Tip": "When the data volume is large (more than 200,000), the import may take more than 1 minute, please be patient"
+  }
+}

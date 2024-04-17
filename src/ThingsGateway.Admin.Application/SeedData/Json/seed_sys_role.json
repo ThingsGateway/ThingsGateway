@@ -1,8 +1,8 @@
-{
+﻿{
   "RECORDS": [
     {
       "Id": 212725263001001,
-      "Code": "superAdmin",
+      "Code": "SuperAdmin",
       "Name": "超级管理员",
       "Category": "GLOBAL",
       "CreateUserId": 0,
@@ -11,7 +11,7 @@
     },
     {
       "Id": 212725263001002,
-      "Code": "bizAdmin",
+      "Code": "BizAdmin",
       "Name": "业务管理员",
       "Category": "GLOBAL",
       "CreateUserId": 0,
@@ -20,7 +20,7 @@
     },
     {
       "Id": 502961260494917,
-      "Code": "QXJiu7EPwR",
+      "Code": "ApiAdmin",
       "Name": "Api管理员",
       "Category": "API",
       "IsDelete": "0",

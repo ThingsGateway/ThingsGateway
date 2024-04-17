@@ -1,0 +1,35 @@
+﻿{
+  "ThingsGateway.Foundation.OpcUa.OpcUaProperty": {
+    "OpcUrl": "OpcUrl",
+    "UserName": "UserName",
+    "Password": "Password",
+    "CheckDomain": "CheckDomain",
+    "UpdateRate": "UpdateRate",
+    "ActiveSubscribe": "ActiveSubscribe",
+    "GroupSize": "GroupSize",
+    "DeadBand": "DeadBand",
+    "KeepAliveInterval": "KeepAliveInterval(ms)",
+    "UseSecurity": "IsUseSecurity",
+    "LoadType": "LoadType",
+
+    "Connect": "Connect",
+    "Disconnect": "Disconnect",
+    "Add": "Add",
+    "Remove": "Remove",
+    "Read": "Read",
+    "Write": "Write",
+    "ShowImport": "View OPC space",
+    "RegisterAddress": "RegisterAddress",
+    "WriteValue": "WriteValue",
+
+    "NoVariablesAvailable": "No variables available",
+    "Success": "Success",
+    "Close": "Close",
+    "Save": "Import to system",
+    "Export": "Export",
+    "ShowSubvariable": "ShowSubvariable"
+  },
+
+  "ThingsGateway.Foundation.OpcUa.OpcUaResource": {
+  }
+}

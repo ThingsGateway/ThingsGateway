@@ -1,0 +1,88 @@
+﻿::deep, [data-bs-theme="light"] {
+    --tg-quickactions-button-bg: #2196F3;
+    --tg-quickactions-button-hover-bg: #2196F3;
+    --tg-quickactions-button-active-bg: #2196F3;
+    --tg-quickactions-button-shadow: 0 0 6px #2196F3;
+    --tg-quickactions-button-update-bg: #2196F3;
+    --tg-button-quickactions-list-header-color: rgba(255,255,255,.8);
+    --bb-button-quickactions-item-bg: rgba(0,0,0,.8);
+    --bb-button-quickactions-item-hover-color: rgba(255,255,255,.8);
+    --bb-button-quickactions-item-hover-bg: #6c4bfa;
+    --bb-button-quickactions-item-active-color: rgba(255,255,255,.8);
+    --bb-button-quickactions-item-active-bg: #6c4bfa;
+    --bb-button-quickactions-item-color: var(--bs-body-color);
+}
+
+::deep, [data-bs-theme="dark"] {
+    --tg-quickactions-button-bg: #2196F3;
+    --tg-quickactions-button-hover-bg: #2196F3;
+    --tg-quickactions-button-active-bg: #2196F3;
+    --tg-quickactions-button-shadow: 0 0 6px #2196F3;
+    --tg-quickactions-button-update-bg: #2196F3;
+    --tg-button-quickactions-list-header-color: rgba(255,255,255,.8);
+    --bb-button-quickactions-item-bg: rgba(0,0,0,.8);
+    --bb-button-quickactions-item-hover-color: rgba(255,255,255,.8);
+    --bb-button-quickactions-item-hover-bg: #6c4bfa;
+    --bb-button-quickactions-item-active-color: rgba(255,255,255,.8);
+    --bb-button-quickactions-item-active-bg: #6c4bfa;
+    --bb-button-quickactions-item-color: var(--bs-body-color);
+}
+
+.quickactions-list {
+    /*背景颜色*/
+    background: var(--bs-body-bg);
+    /*边框圆角半径*/
+    border-radius: var(--bs-border-radius);
+    /*阴影样式*/
+    box-shadow: var(--tg-quickactions-button-shadow);
+    position: fixed;
+    z-index: 100;
+    bottom: 12rem;
+    right: 1rem;
+    width: 250px;
+    /*//初始高度为0*/
+    height: 0;
+    overflow: hidden;
+    /*高度变化动画 */
+    transition: height .3s ease-in-out;
+}
+    /*切换高度*/
+    .quickactions-list.is-open {
+        height: 300px;
+    }
+
+.quickactions-header {
+    background-color: var(--tg-quickactions-button-update-bg);
+    color: var(--tg-button-quickactions-list-header-color);
+    padding: 0.75rem 1rem;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    display: flex;
+    margin-bottom: 1rem;
+}
+
+::deep .btn-quickactions {
+    --bs-btn-bg: var(--tg-quickactions-button-bg);
+    --bs-btn-hover-bg: var(--tg-quickactions-button-hover-bg);
+    --bs-btn-active-bg: var(--tg-quickactions-button-active-bg);
+    /*阴影样式*/
+    box-shadow: var(--tg-quickactions-button-shadow);
+    right: 1rem;
+    bottom: 9rem;
+    --bb-button-circle-width: 40px;
+    --bb-button-circle-height: 40px;
+    /*透明度*/
+    opacity: 0.7;
+    /*透明度动画*/
+    transition: opacity .3s linear;
+    position: fixed;
+    z-index: 100;
+}
+
+    ::deep .btn-quickactions:hover {
+        opacity: 1;
+    }
+    /*按钮图标大小*/
+    ::deep .btn-quickactions img {
+        width: 20px;
+    }

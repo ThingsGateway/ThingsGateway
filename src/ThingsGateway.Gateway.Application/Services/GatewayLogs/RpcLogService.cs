@@ -1,4 +1,5 @@
-﻿//------------------------------------------------------------------------------
+﻿
+//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -8,93 +9,66 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using Mapster;
 
-using Microsoft.AspNetCore.Mvc;
+
+
+using BootstrapBlazor.Components;
+
+using SqlSugar;
 
 using System.Data;
 
 namespace ThingsGateway.Gateway.Application;
 
-/// <inheritdoc cref="IRpcLogService"/>
-[Injection(Proxy = typeof(OperDispatchProxy))]
-public class RpcLogService : DbRepository<RpcLog>, IRpcLogService
+public class RpcLogService : BaseService<RpcLog>, IRpcLogService
 {
-    private readonly IImportExportService _importExportService;
+    #region 查询
 
-    public RpcLogService(IImportExportService importExportService)
+    /// <summary>
+    /// 表格查询
+    /// </summary>
+    /// <param name="option">查询条件</param>
+    public Task<QueryData<RpcLog>> PageAsync(QueryPageOptions option)
     {
-        _importExportService = importExportService;
+        return QueryAsync(option);
     }
+
+    /// <summary>
+    /// 最新十条
+    /// </summary>
+    /// <param name="account">操作人</param>
+    public async Task<List<RpcLog>> GetNewLog()
+    {
+        using var db = GetDB();
+        var data = await db.Queryable<RpcLog>().OrderByDescending(a => a.LogTime).Take(10).ToListAsync();
+        return data;
+    }
+
+    #endregion 查询
+
+    #region 删除
 
     /// <inheritdoc />
-    [OperDesc("删除网关Rpc日志")]
-    public async Task DeleteAsync()
+    [OperDesc("DeleteRpcLog", localizerType: typeof(RpcLog))]
+    public async Task DeleteRpcLogAsync()
     {
-        await AsDeleteable().ExecuteCommandAsync();
+        using var db = GetDB();
+        await db.Deleteable<RpcLog>().ExecuteCommandAsync();
     }
 
-    /// <inheritdoc />
-    public async Task<SqlSugarPagedList<RpcLog>> PageAsync(RpcLogPageInput input)
-    {
-        var query = GetPage(input);
-        var pageInfo = await query.ToPagedListAsync(input.Current, input.Size);//分页
-        return pageInfo;
-    }
-
-    /// <inheritdoc/>
-    private ISugarQueryable<RpcLog> GetPage(RpcLogPageInput input)
-    {
-        var query = Context.Queryable<RpcLog>()
-                           .WhereIF(input.StartTime != null, a => a.LogTime >= input.StartTime)
-                           .WhereIF(input.EndTime != null, a => a.LogTime <= input.EndTime)
-                           .WhereIF(!string.IsNullOrEmpty(input.Source), it => it.OperateSource.Contains(input.Source))
-                           .WhereIF(!string.IsNullOrEmpty(input.Object), it => it.OperateObject.Contains(input.Object))
-                           .WhereIF(!string.IsNullOrEmpty(input.Method), it => it.OperateMethod.Contains(input.Method));
-        for (int i = input.SortField.Count - 1; i >= 0; i--)
-        {
-            query = query.OrderByIF(!string.IsNullOrEmpty(input.SortField[i]), $"{input.SortField[i]} {(input.SortDesc[i] ? "desc" : "asc")}");
-        }
-        query = query.OrderBy(it => it.Id, OrderByType.Desc);//排序
-
-        return query;
-    }
-
-    /// <inheritdoc/>
-    [OperDesc("导出RPC日志", IsRecordPar = false)]
-    public async Task<FileStreamResult> ExportFileAsync(IDataReader? input = null)
-    {
-        if (input != null)
-        {
-            return await _importExportService.ExportAsync<RpcLog>(input, "RpcLog");
-        }
-
-        var query = Context.Queryable<RpcLog>().ExportIgnoreColumns();
-        var sqlObj = query.ToSql();
-        using IDataReader? dataReader = await Context.Ado.GetDataReaderAsync(sqlObj.Key, sqlObj.Value);
-        return await _importExportService.ExportAsync<RpcLog>(dataReader, "RpcLog");
-    }
-
-    /// <inheritdoc/>
-    [OperDesc("导出RPC日志", IsRecordPar = false)]
-    public async Task<FileStreamResult> ExportFileAsync(RpcLogInput input)
-    {
-        var query = GetPage(input.Adapt<RpcLogPageInput>()).ExportIgnoreColumns();
-        var sqlObj = query.ToSql();
-        using IDataReader? dataReader = await Context.Ado.GetDataReaderAsync(sqlObj.Key, sqlObj.Value);
-        return await ExportFileAsync(dataReader);
-    }
+    #endregion 删除
 
     public async Task<List<RpcLogDayStatisticsOutput>> StatisticsByDayAsync(int day)
     {
+        using var db = GetDB();
         //取最近七天
         var dayArray = Enumerable.Range(0, day).Select(it => DateTime.Now.Date.AddDays(it * -1)).ToList();
         //生成时间表
-        var queryableLeft = Context.Reportable(dayArray).ToQueryable<DateTime>();
+        var queryableLeft = db.Reportable(dayArray).ToQueryable<DateTime>();
         //ReportableDateType.MonthsInLast1yea 表式近一年月份 并且queryable之后还能在where过滤
-        var queryableRight = Context.Queryable<RpcLog>(); //声名表
+        var queryableRight = db.Queryable<RpcLog>(); //声名表
         //报表查询
-        var list = await Context.Queryable(queryableLeft, queryableRight, JoinType.Left, (x1, x2)
+        var list = await db.Queryable(queryableLeft, queryableRight, JoinType.Left, (x1, x2)
             => x2.LogTime.ToString("yyyy-MM-dd") == x1.ColumnName.ToString("yyyy-MM-dd"))
         .GroupBy((x1, x2) => x1.ColumnName)//根据时间分组
         .OrderBy((x1, x2) => x1.ColumnName)//根据时间升序排序

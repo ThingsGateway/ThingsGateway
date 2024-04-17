@@ -12,37 +12,22 @@ namespace ThingsGateway.Gateway.Application
 {
     public interface IDBHistoryAlarm
     {
-        public string Name { get; set; }
-
-        public string? Description { get; set; }
-
-        public string DeviceName { get; set; }
-
-        public string RegisterAddress { get; set; }
-
-        public DataTypeEnum DataType { get; set; }
-
-        public string AlarmCode { get; set; }
-
-        public string AlarmLimit { get; set; }
-
-        public string? AlarmText { get; set; }
-
-        public DateTime AlarmTime { get; set; }
-
-        public DateTime EventTime { get; set; }
-
-        public AlarmTypeEnum? AlarmType { get; set; }
-
-        public EventTypeEnum EventType { get; set; }
-
-        public string Remark1 { get; set; }
-
-        public string Remark2 { get; set; }
-
-        public string Remark3 { get; set; }
-
-        public string Remark4 { get; set; }
-        public string Remark5 { get; set; }
+        string AlarmCode { get; set; }
+        string AlarmLimit { get; set; }
+        string? AlarmText { get; set; }
+        DateTime AlarmTime { get; set; }
+        AlarmTypeEnum? AlarmType { get; set; }
+        DataTypeEnum DataType { get; set; }
+        string? Description { get; set; }
+        string DeviceName { get; set; }
+        DateTime EventTime { get; set; }
+        EventTypeEnum EventType { get; set; }
+        string Name { get; set; }
+        string RegisterAddress { get; set; }
+        string Remark1 { get; set; }
+        string Remark2 { get; set; }
+        string Remark3 { get; set; }
+        string Remark4 { get; set; }
+        string Remark5 { get; set; }
     }
 }

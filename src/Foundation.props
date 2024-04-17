@@ -1,24 +1,8 @@
 <Project>
 	<PropertyGroup>
-		<TargetFrameworks>net45;netstandard2.0;net6.0;</TargetFrameworks>
-		<GenerateDocumentationFile>True</GenerateDocumentationFile>
-		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<IncludeSymbols>true</IncludeSymbols>
-		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
-		<PackageOutputPath>$(SolutionDir)nupkgs</PackageOutputPath>
-		<PackageVersion>$(Version)</PackageVersion>
-		<PackageTags>ThingsGateway;Diego;Blazor;设备采集;边缘网关;物联网</PackageTags>
-		<PackageProjectUrl>https://gitee.com/diego2098/ThingsGateway</PackageProjectUrl>
-		<PackageIcon>icon.png</PackageIcon>
-		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-		<OutputPath></OutputPath>
+		<TargetFrameworks>net462;netstandard2.0;net6.0;</TargetFrameworks>
 	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)' == 'Release'">
-		<DebugSymbols>True</DebugSymbols>
-		<DebugType>Embedded</DebugType>
-		<EmbedAllSources>True</EmbedAllSources>
-	</PropertyGroup>
+
 	<ItemGroup>
 		<None Include="$(SolutionDir)Foundation.props" Pack="true" PackagePath="\" />
 	</ItemGroup>

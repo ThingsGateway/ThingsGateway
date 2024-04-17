@@ -1,0 +1,58 @@
+﻿@namespace ThingsGateway.Debug
+@using ThingsGateway.Admin.Application
+@using ThingsGateway.Admin.Razor
+@using ThingsGateway.Foundation
+@using BootstrapBlazor.Components
+
+
+<ValidateForm Model="Model" OnValidSubmit="ValidSubmit">
+
+    <EditorForm class="p-2" AutoGenerateAllItem="false" RowType=RowType.Inline ItemsPerRow=2 LabelWidth=200 Model="Model">
+
+        <FieldItems>
+            <EditorItem TValue="string" TModel="ChannelData">
+                <EditTemplate Context="value">
+                    <div class="col-12">
+                        <h6 style="font-size: 1rem;  font-weight: bold;">
+                            @Localizer["BasicInformation"]
+                        </h6>
+                    </div>
+                </EditTemplate>
+            </EditorItem>
+            <EditorItem @bind-Field="@context.Name" />
+            <EditorItem @bind-Field="@context.ChannelType" />
+
+            <EditorItem TValue="string" TModel="ChannelData">
+                <EditTemplate Context="value">
+                    <div class="col-12">
+                        <h6 style="font-size: 1rem;  font-weight: bold;">
+                            @Localizer["Connection"]</h6>
+                    </div>
+                </EditTemplate>
+            </EditorItem>
+
+            <EditorItem @bind-Field="@context.RemoteUrl" />
+            <EditorItem @bind-Field="@context.BindUrl" />
+            <EditorItem @bind-Field="@context.PortName" />
+            <EditorItem @bind-Field="@context.BaudRate" />
+            <EditorItem @bind-Field="@context.DataBits" />
+            <EditorItem @bind-Field="@context.Parity" />
+            <EditorItem @bind-Field="@context.StopBits" />
+            <EditorItem @bind-Field="@context.DtrEnable" />
+            <EditorItem @bind-Field="@context.RtsEnable" />
+
+        </FieldItems>
+        <Buttons>
+            <Button ButtonType="ButtonType.Submit" Icon="fa-solid fa-floppy-disk" IsAsync Text=@DefaultLocalizer["Save"] />
+        </Buttons>
+    </EditorForm>
+
+
+
+</ValidateForm>
+
+
+
+
+
+

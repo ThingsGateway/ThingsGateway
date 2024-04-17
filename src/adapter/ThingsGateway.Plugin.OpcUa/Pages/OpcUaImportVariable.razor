@@ -1,0 +1,59 @@
+﻿@namespace ThingsGateway.Debug
+@using BootstrapBlazor.Components
+@using Microsoft.AspNetCore.Components.Web;
+@using System.Reflection;
+
+@using Opc.Ua
+@using ThingsGateway.Foundation.OpcUa;
+
+<div class="row ">
+
+    <div class="col-12 col-md-6 p-1" style="min-height:500px;max-height:80vh;overflow: auto;">
+        <TreeView TItem="OpcUaTagModel" Items="Items" ShowIcon="true" ShowCheckbox="true" AutoCheckParent="true" AutoCheckChildren="true"
+                  OnExpandNodeAsync=OnExpandNodeAsync OnTreeItemChecked="OnTreeItemChecked" OnTreeItemClick=@(async a=>
+                  {
+                  if(a?.Value?.Tag?.NodeId!=null)
+                  {
+                  ClickItem=a;
+                  NodeAttributes = Plc.ReadNoteAttributes(ClickItem.Value.NodeId.ToString());
+                  }
+                  await InvokeAsync(StateHasChanged);
+                  }) ShowSkeleton=ShowSkeleton
+                  IsAccordion ClickToggleNode ModelEqualityComparer="ModelEqualityComparer" />
+    </div>
+    <div class="col-12 col-md-6 p-2" style="min-height:500px;max-height:80vh;overflow: auto;">
+
+        @if (ClickItem?.Value?.Tag?.NodeId != null && NodeAttributes != null)
+        {
+            <Display @bind-Value=@ClickItem.Value.Tag.NodeId DisplayText="NodeId" ShowLabel="true" />
+            foreach (var item in NodeAttributes)
+            {
+                <Display class=@($"{(StatusCode.IsBad(item.StatusCode)?"red--text":"green--text")}") @bind-Value=@item.Value DisplayText=@item.Name ShowLabel="true" />
+            }
+        }
+    </div>
+
+
+</div>
+@{
+#if Plugin
+}
+<div class="form-footer">
+    <Button IsAsync Color="Color.Secondary" Icon="fa-solid fa-xmark" Text="@OpcUaPropertyLocalizer["Close"]" OnClickWithoutRender="OnClickClose" />
+    <Button IsAsync Color="Color.Primary" Icon="fa-solid fa-check" Text="@OpcUaPropertyLocalizer["Export"]" OnClickWithoutRender="OnClickExport" />
+
+    <Button IsAsync Color="Color.Primary" Icon="fa-solid fa-check" Text="@OpcUaPropertyLocalizer["Save"]" OnClickWithoutRender="OnClickSave" />
+</div>
+@{
+#endif
+}
+
+
+
+@code {
+    RenderFragment<OpcUaTagModel> RenderTreeItem => item =>
+    @<span class="flex-fill">@item.Name</span>
+        ;
+    private OPCNodeAttribute[] NodeAttributes = new OPCNodeAttribute[] { };
+    private TreeViewItem<OpcUaTagModel> ClickItem;
+}

@@ -1,4 +1,5 @@
-﻿//------------------------------------------------------------------------------
+﻿
+//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -8,45 +9,33 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+
+
+using Microsoft.Extensions.Localization;
+
 namespace ThingsGateway.Gateway.Application;
 
-/// <summary>
-/// 导入导出常量
-/// </summary>
-public static class ExportConst
+public class ExportString
 {
+    public static IStringLocalizer Localizer { get; private set; }
+
     /// <summary>
     /// 变量表名称
     /// </summary>
-    public const string VariableName = "变量";
-
-    /// <summary>
-    /// 采集设备表名称
-    /// </summary>
-    public const string CollectDeviceSheetName = "采集设备";
-
-    /// <summary>
-    /// 上传设备表名称
-    /// </summary>
-    public const string BusinessDeviceSheetName = "业务设备";
-
-    /// <summary>
-    /// 插件
-    /// </summary>
-    public const string PluginName = "插件";
+    public static string VariableName = (Localizer ?? App.CreateLocalizerByType(typeof(ExportString)))["VariableName"];
 
     /// <summary>
     /// 冗余设备名称
     /// </summary>
-    public const string RedundantDeviceName = "冗余设备";
+    public static string RedundantDeviceName = (Localizer ?? App.CreateLocalizerByType(typeof(ExportString)))["RedundantDeviceName"];
 
     /// <summary>
     /// 通道名称
     /// </summary>
-    public const string ChannelName = "通道";
+    public static string ChannelName = (Localizer ?? App.CreateLocalizerByType(typeof(ExportString)))["ChannelName"];
 
     /// <summary>
     /// 设备名称
     /// </summary>
-    public const string DeviceName = "设备";
+    public static string DeviceName = (Localizer ?? App.CreateLocalizerByType(typeof(ExportString)))["DeviceName"];
 }

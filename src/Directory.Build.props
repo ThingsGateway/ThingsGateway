@@ -1,11 +1,11 @@
 <Project>
 	<PropertyGroup>
-		<NoWarn>CS8618;CS8625;CS8600;CS8601;CS8604;CS8714;CS8602;CS8603;CS8619;CS8621</NoWarn>
-		<TargetFrameworks>net6.0;</TargetFrameworks>
-		<LangVersion>11.0</LangVersion>
+		<NoWarn>CS8603;CS8618;CS1591;CS8625;CS8602;CS8604;CS8600;CS8601;</NoWarn>
+		<TargetFrameworks>net8.0;</TargetFrameworks>
+		<LangVersion>12.0</LangVersion>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
-		<Version>5.0.4.4</Version>
+		<Version>6.0.0.0</Version>
 		<Authors>Diego</Authors>
 		<Company>Diego</Company>
 		<Product>Diego</Product>
@@ -14,9 +14,7 @@
 		<RepositoryType>Gitee</RepositoryType>
 		<GenerateResxSourceIncludeDefaultValues>true</GenerateResxSourceIncludeDefaultValues>
 	</PropertyGroup>
-	<PropertyGroup Condition="'$(SolutionName)'=='ThingsGateway - Admin'">
-		<DefineConstants>Admin</DefineConstants>
-	</PropertyGroup>
+
 	<ItemGroup>
 		<None Include="$(SolutionDir)..\README.md" Pack="true" PackagePath="\" />
 		<None Include="$(SolutionDir)..\LICENSE" Pack="true" PackagePath="\" />

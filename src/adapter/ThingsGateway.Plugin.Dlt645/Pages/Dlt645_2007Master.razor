@@ -1,0 +1,45 @@
+﻿@page "/Dlt645_2007Master"
+@using BootstrapBlazor.Components
+@using ThingsGateway.Core.Extension
+@using ThingsGateway.Foundation
+@using ThingsGateway.Foundation.Dlt645
+@namespace ThingsGateway.Debug
+@using TouchSocket.Core
+
+
+<div style="height:100%; width:100%;">
+    <ChannelDataDebugComponent OnConnectClick="OnConnectClick" OnEditClick="OnEditClick" />
+
+    @if (_plc != null)
+    {
+        <Card class="mt-2">
+            <BodyTemplate>
+
+                <EditorForm Model="_plc" AutoGenerateAllItem=false RowType="RowType.Inline" ItemsPerRow="4" ShowLabelTooltip="true" ShowLabel="true">
+                    <FieldItems>
+
+                        <EditorItem @bind-Field=context.EnableFEHead />
+                        <EditorItem @bind-Field=context.OperCode />
+                        <EditorItem @bind-Field=context.Password />
+                        <EditorItem @bind-Field=context.ConnectTimeout />
+                        <EditorItem @bind-Field=context.Station />
+                        <EditorItem @bind-Field=context.CheckClearTime />
+                        <EditorItem @bind-Field=context.HeartbeatHexString />
+                        <EditorItem @bind-Field=context.CacheTimeout />
+                        <EditorItem @bind-Field=context.DataFormat />
+                        <EditorItem @bind-Field=context.SendDelayTime />
+                        <EditorItem @bind-Field=context.Timeout />
+                        <EditorItem @bind-Field=context.IsStringReverseByteWord />
+
+                    </FieldItems>
+
+                </EditorForm>
+            </BodyTemplate>
+        </Card>
+
+    }
+
+    <AdapterDebugComponent Plc=_plc LogPath=@LogPath @ref=AdapterDebugComponent ></AdapterDebugComponent>
+</div>
+
+

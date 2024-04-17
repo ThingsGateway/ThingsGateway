@@ -1,0 +1,73 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+	<PropertyGroup>
+		<DefineConstants>DriverDebug</DefineConstants>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Content Remove="Locales\en-US.json" />
+		<Content Remove="Locales\zh-CN.json" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Include="..\..\adapter\ThingsGateway.Plugin.Dlt645\Pages\Dlt645_2007Master.razor.cs" Link="Pages\Dlt645_2007Master.razor.cs" />
+		<Compile Include="..\..\adapter\ThingsGateway.Plugin.Modbus\Pages\ModbusMaster.razor.cs" Link="Pages\ModbusMaster.razor.cs" />
+		<Compile Include="..\..\adapter\ThingsGateway.Plugin.Modbus\Pages\ModbusSlave.razor.cs" Link="Pages\ModbusSlave.razor.cs" />
+		<Compile Include="..\..\adapter\ThingsGateway.Plugin.OpcDa\Pages\OpcDaImportVariable.razor.cs" Link="Pages\OpcDaImportVariable.razor.cs" />
+		<Compile Include="..\..\adapter\ThingsGateway.Plugin.OpcDa\Pages\OpcDaMaster.razor.cs" Link="Pages\OpcDaMaster.razor.cs" />
+		<Compile Include="..\..\adapter\ThingsGateway.Plugin.OpcUa\Pages\OpcUaImportVariable.razor.cs" Link="Pages\OpcUaImportVariable.razor.cs" />
+		<Compile Include="..\..\adapter\ThingsGateway.Plugin.OpcUa\Pages\OpcUaMaster.razor.cs" Link="Pages\OpcUaMaster.razor.cs" />
+		<Compile Include="..\..\adapter\ThingsGateway.Plugin.SiemensS7\Pages\SiemensS7Master.razor.cs" Link="Pages\SiemensS7Master.razor.cs" />
+		<Compile Include="..\..\ThingsGateway.Admin.Razor\Services\VersionService.cs" Link="Services\VersionService.cs" />
+		<Compile Include="..\..\ThingsGateway.Gateway.Razor\DebugPages\AdapterDebugBase.cs" Link="DebugPages\AdapterDebugBase.cs" />
+		<Compile Include="..\..\ThingsGateway.Gateway.Razor\DebugPages\AdapterDebugComponent.razor.cs" Link="DebugPages\AdapterDebugComponent.razor.cs" />
+		<Compile Include="..\..\ThingsGateway.Gateway.Razor\DebugPages\ChannelDataDebugComponent.razor.cs" Link="DebugPages\ChannelDataDebugComponent.razor.cs" />
+		<Compile Include="..\..\ThingsGateway.Gateway.Razor\DebugPages\ChannelDataEditComponent.razor.cs" Link="DebugPages\ChannelDataEditComponent.razor.cs" />
+		<Compile Include="..\..\ThingsGateway.Gateway.Razor\DebugPages\LogConsole.razor.cs" Link="DebugPages\LogConsole.razor.cs" />
+		<Compile Include="..\..\ThingsGateway.Gateway.Razor\Services\PlatformService.cs" Link="Services\PlatformService.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<EmbeddedResource Include="Locales\en-US.json" />
+		<EmbeddedResource Include="Locales\zh-CN.json" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\adapter\ThingsGateway.Foundation.Dlt645\ThingsGateway.Foundation.Dlt645.csproj" />
+		<ProjectReference Include="..\..\adapter\ThingsGateway.Foundation.OpcDa\ThingsGateway.Foundation.OpcDa.csproj" />
+		<ProjectReference Include="..\..\adapter\ThingsGateway.Foundation.OpcUa\ThingsGateway.Foundation.OpcUa.csproj" />
+		<ProjectReference Include="..\..\ThingsGateway.Foundation\ThingsGateway.Foundation.csproj" />
+		<ProjectReference Include="..\..\ThingsGateway.Razor\ThingsGateway.Razor.csproj" />
+		<ProjectReference Include="..\..\adapter\ThingsGateway.Foundation.Modbus\ThingsGateway.Foundation.Modbus.csproj" />
+		<ProjectReference Include="..\..\adapter\ThingsGateway.Foundation.SiemensS7\ThingsGateway.Foundation.SiemensS7.csproj" />
+	</ItemGroup>
+
+
+	<ItemGroup>
+		<Content Include="..\..\adapter\ThingsGateway.Plugin.Modbus\Pages\ModbusMaster.razor" Link="Pages\ModbusMaster.razor" />
+		<Content Include="..\..\adapter\ThingsGateway.Plugin.Modbus\Pages\ModbusSlave.razor" Link="Pages\ModbusSlave.razor" />
+		<Content Include="..\..\ThingsGateway.Gateway.Razor\DebugPages\AdapterDebugComponent.razor" Link="DebugPages\AdapterDebugComponent.razor" />
+		<Content Include="..\..\ThingsGateway.Gateway.Razor\DebugPages\ChannelDataDebugComponent.razor" Link="DebugPages\ChannelDataDebugComponent.razor" />
+		<Content Include="..\..\ThingsGateway.Gateway.Razor\DebugPages\ChannelDataEditComponent.razor" Link="DebugPages\ChannelDataEditComponent.razor" />
+		<Content Include="..\..\ThingsGateway.Gateway.Razor\DebugPages\LogConsole.razor" Link="DebugPages\LogConsole.razor" />
+	</ItemGroup>
+
+
+	<ItemGroup>
+	  <Content Include="..\..\adapter\ThingsGateway.Plugin.SiemensS7\Pages\SiemensS7Master.razor" Link="Pages\SiemensS7Master.razor" />
+	</ItemGroup>
+
+
+	<ItemGroup>
+	  <None Include="..\..\adapter\ThingsGateway.Plugin.Dlt645\Pages\Dlt645_2007Master.razor" Link="Pages\Dlt645_2007Master.razor" />
+	  <Content Include="..\..\adapter\ThingsGateway.Plugin.OpcDa\Pages\OpcDaImportVariable.razor" Link="Pages\OpcDaImportVariable.razor" />
+	  <Content Include="..\..\adapter\ThingsGateway.Plugin.OpcDa\Pages\OpcDaMaster.razor" Link="Pages\OpcDaMaster.razor" />
+	  <Content Include="..\..\adapter\ThingsGateway.Plugin.OpcUa\Pages\OpcUaImportVariable.razor" Link="Pages\OpcUaImportVariable.razor" />
+	  <Content Include="..\..\adapter\ThingsGateway.Plugin.OpcUa\Pages\OpcUaMaster.razor" Link="Pages\OpcUaMaster.razor" />
+	</ItemGroup>
+
+
+
+
+
+</Project>

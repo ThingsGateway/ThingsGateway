@@ -1,0 +1,59 @@
+﻿@namespace ThingsGateway.Admin.Razor
+
+
+
+@using ThingsGateway.Admin.Application
+@attribute [Authorize]
+@attribute [IgnoreRolePermission]
+
+
+@{
+#if Admin
+
+    <div class="row g-2 mx-1 form-inline">
+
+    <div class="col-12  col-md-6 sh" >
+
+        <Card IsShadow=true class="m-2 flex-fill" Color="Color.Primary">
+            <HeaderTemplate>
+                @Localizer["Shortcuts"]
+            </HeaderTemplate>
+
+            <BodyTemplate>
+                @foreach (var menu in AppContext.UserWorkbenchOutputs ?? new List<SysResource>())
+                {
+                    <LinkButton Url="@menu.Href" Target="@menu.Target.ToString()" Color="Color.Primary">
+                        <i class="@menu.Icon"></i>
+                        <span>@menu.Title</span>
+                    </LinkButton>
+                }
+            </BodyTemplate>
+        </Card>
+    </div>
+
+    <div class="col-12  col-md-6 sh" >
+
+        <Card IsShadow=true class="m-2 flex-fill">
+            <HeaderTemplate>
+                @Localizer["OperLog"]
+            </HeaderTemplate>
+
+            <BodyTemplate>
+                <Timeline Items="Items"></Timeline>
+            </BodyTemplate>
+        </Card>
+
+    </div>
+</div>
+
+    <Card IsShadow=true class="m-2 flex-fill" Color="Color.Primary">
+        <HeaderTemplate>
+            @Localizer["HardwareInfoChart"]
+        </HeaderTemplate>
+
+        <BodyTemplate>
+            <Chart @ref=CPULineChart OnInitAsync="OnCPUInit" Height="var(--line-chart-height)" Width="100%" OnAfterInitAsync="()=>{chartInit=true;return Task.CompletedTask;}" />
+        </BodyTemplate>
+    </Card>
+#endif
+}

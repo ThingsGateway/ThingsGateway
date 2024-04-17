@@ -1,0 +1,108 @@
+﻿@namespace ThingsGateway.Gateway.Razor
+@using ThingsGateway.Admin.Application
+@using ThingsGateway.Admin.Razor
+@using ThingsGateway.Gateway.Application
+@inherits ComponentDefault
+
+
+<Tab>
+    <TabItem Text=@Localizer["DeviceInformation"]>
+        <EditorForm class="p-2" AutoGenerateAllItem="false" RowType=RowType.Inline ItemsPerRow=2 LabelWidth=250 Model="Model">
+            <FieldItems>
+                <EditorItem TValue="string" TModel="Device">
+                    <EditTemplate Context="value">
+                        <div class="col-12">
+                            <h6>@Localizer["BasicInformation"]</h6>
+                        </div>
+                    </EditTemplate>
+                </EditorItem>
+                <EditorItem @bind-Field="@context.Name" />
+                <EditorItem @bind-Field="@context.Enable" />
+                <EditorItem @bind-Field="@context.Description" />
+
+                <EditorItem TValue="string" TModel="Device">
+                    <EditTemplate Context="value">
+                        <div class="col-12">
+                            <h6>@Localizer["Connection"]</h6>
+                        </div>
+                    </EditTemplate>
+                </EditorItem>
+
+                <EditorItem @bind-Field="@context.ChannelId">
+                    <EditTemplate Context="value">
+                        <div class="col-12  col-md-6 ">
+                            <BootstrapInputGroup>
+                                <BootstrapInputGroupLabel DisplayText=@value.GetType().GetPropertyDisplayName(nameof(value.ChannelId)) />
+                                <Select IsVirtualize @bind-Value="@value.ChannelId" Items="@Channels" ShowSearch="true" ShowLabel="true" />
+                                <Button class="text-end" Icon="fa-solid fa-plus" OnClick="AddChannel"></Button>
+                            </BootstrapInputGroup>
+                        </div>
+                    </EditTemplate>
+                </EditorItem>
+                <EditorItem @bind-Field="@context.PluginName">
+                    <EditTemplate Context="value">
+                        <div class="col-12  col-md-6">
+                            <Select @bind-Value="@value.PluginName"
+                                    Items="@PluginNames" OnSelectedItemChanged=OnPluginNameChanged
+                                    ShowSearch="true" />
+                        </div>
+                    </EditTemplate>
+                </EditorItem>
+                <EditorItem @bind-Field="@context.IntervalTime" />
+
+                <EditorItem TValue="string" TModel="Device">
+                    <EditTemplate Context="value">
+                        <div class="col-12">
+                            <h6>@Localizer["Redundant"]</h6>
+                        </div>
+                    </EditTemplate>
+                </EditorItem>
+                <EditorItem @bind-Field="@context.RedundantEnable" />
+                <EditorItem @bind-Field="@context.RedundantDeviceId">
+                    <EditTemplate Context="value">
+                        <div class="col-12  col-md-6">
+                            <Select IsVirtualize @bind-Value="@value.RedundantDeviceId" style="width:100%"
+                                    OnQueryAsync="OnRedundantDevicesQuery"
+                                    ShowSearch="true" />
+                        </div>
+                    </EditTemplate>
+
+                </EditorItem>
+                <div class="col-12  col-md-6" />
+                <div class="col-12  col-md-6" />
+
+                <EditorItem TValue="string" TModel="Device">
+                    <EditTemplate Context="value">
+                        <div class="col-12">
+                            <h6>@Localizer["Remark"]</h6>
+                        </div>
+                    </EditTemplate>
+                </EditorItem>
+                <EditorItem @bind-Field="@context.Remark1" />
+                <EditorItem @bind-Field="@context.Remark2" />
+                <EditorItem @bind-Field="@context.Remark3" />
+                <EditorItem @bind-Field="@context.Remark4" />
+                <EditorItem @bind-Field="@context.Remark5" />
+            </FieldItems>
+        </EditorForm>
+    </TabItem>
+    <TabItem Text=@Localizer["PluginInformation"]>
+        @if (Model.PluginPropertyModel != null)
+        {
+            <ValidateForm Model="Model.PluginPropertyModel.Value" @ref=Model.PluginPropertyModel.ValidateForm Id="@Model.Id.ToString()">
+
+                <EditorFormObject class="p-2" Items=PluginPropertyEditorItems AutoGenerateAllItem="true" RowType=RowType.Inline ItemsPerRow=2 ShowLabelTooltip=true LabelWidth=250 Model="Model.PluginPropertyModel.Value" @key=Model.PluginPropertyModel.Value.GetType().TypeHandle.Value>
+
+                </EditorFormObject>
+            </ValidateForm>
+        }
+    </TabItem>
+
+
+</Tab>
+
+
+
+
+
+

@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AdapterTypeError" xml:space="preserve">
+    <value>You must inherit {0} to use this adapter</value>
+  </data>
+  <data name="CannotSendIRequestInfo" xml:space="preserve">
+    <value>The current adapter does not support object sending</value>
+  </data>
+  <data name="CannotSet" xml:space="preserve">
+    <value>Freedom call {0} is not allowed to assign to</value>
+  </data>
+  <data name="CannotSplicingSend" xml:space="preserve">
+    <value>This adapter does not support stitching sending</value>
+  </data>
+  <data name="CannotUseAdapterAgain" xml:space="preserve">
+    <value>This adapter has been used by other terminals, please re -create the object</value>
+  </data>
+  <data name="ConfigNotNull" xml:space="preserve">
+    <value>The configuration file cannot be empty</value>
+  </data>
+  <data name="Connected" xml:space="preserve">
+    <value>connection succeeded</value>
+  </data>
+  <data name="Connecting" xml:space="preserve">
+    <value>connecting</value>
+  </data>
+  <data name="ConnectTimeout" xml:space="preserve">
+    <value>Connection timed out</value>
+  </data>
+  <data name="DataLengthError" xml:space="preserve">
+    <value>Data length error {0} </value>
+  </data>
+  <data name="DataTypeNotSupported" xml:space="preserve">
+    <value> {0} Data type is not realized</value>
+  </data>
+  <data name="DefaultAddressDes" xml:space="preserve">
+    <value>—————————————————————————————
+        4 byte data conversion format: data = abcd; optional ABCD =&gt; Big-endian; badc =&gt;; big-endian byte swap; cdab =&gt; Little-endian byte swap; dcba =&gt; little-endian.
+        String length: len = 1.
+        Array length: Arraylen = 1.
+        BCD format: BCD = C8421, optional C8421; C5421; C2421; C3; Gray.
+        Character format: Encoding = UTF-8, optional UTF-8; ascii; default; unicode, etc.
+—————————————————————————————</value>
+  </data>
+  <data name="Disconnected" xml:space="preserve">
+    <value>Disconnect</value>
+  </data>
+  <data name="Disconnecting" xml:space="preserve">
+    <value>Discard connection</value>
+  </data>
+  <data name="DtuConnected" xml:space="preserve">
+    <value>DTU logo {0} Connected successful connection</value>
+  </data>
+  <data name="DtuNoConnectedWaining" xml:space="preserve">
+    <value>The client is not connected or the register settings are incorrect. The register must set ID = ｛DTU registration package｝</value>
+  </data>
+  <data name="ErrorMessage" xml:space="preserve">
+    <value>error message</value>
+  </data>
+  <data name="EventError" xml:space="preserve">
+    <value>Error occurs in event {0}</value>
+  </data>
+  <data name="Exception" xml:space="preserve">
+    <value>Abnormal stack</value>
+  </data>
+  <data name="LengthShortError" xml:space="preserve">
+    <value>Insufficient data length, original data: {0}</value>
+  </data>
+  <data name="NotActiveQueryError" xml:space="preserve">
+    <value>The receiving data is correct, but the host does not take the initiative to request data</value>
+  </data>
+  <data name="ProactivelyDisconnect" xml:space="preserve">
+    <value>Actively disconnect</value>
+  </data>
+  <data name="ProcessReceiveError" xml:space="preserve">
+    <value>Error {0} occurs, error code {1}</value>
+  </data>
+  <data name="Receive" xml:space="preserve">
+    <value>take over</value>
+  </data>
+  <data name="ReceiveError" xml:space="preserve">
+    <value>Error occurs when processing data</value>
+  </data>
+  <data name="RemoteClose" xml:space="preserve">
+    <value>Remote terminals have been closed</value>
+  </data>
+  <data name="Send" xml:space="preserve">
+    <value>send</value>
+  </data>
+  <data name="SerialPortNotClient" xml:space="preserve">
+    <value>The new serverport must be in the connection state</value>
+  </data>
+  <data name="ServiceStarted" xml:space="preserve">
+    <value>start up</value>
+  </data>
+  <data name="ServiceStoped" xml:space="preserve">
+    <value>stop</value>
+  </data>
+  <data name="StringAddressError" xml:space="preserve">
+    <value>The string read and write must specify the length in the register address, such as len = 10;</value>
+  </data>
+  <data name="TransBytesError" xml:space="preserve">
+    <value>Conversion failed-original byte array {0}, length {1}</value>
+  </data>
+  <data name="UnknowError" xml:space="preserve">
+    <value>unknown mistake</value>
+  </data>
+</root>

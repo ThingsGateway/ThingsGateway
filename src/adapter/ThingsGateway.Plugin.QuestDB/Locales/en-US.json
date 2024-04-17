@@ -1,0 +1,22 @@
+﻿{
+  "ThingsGateway.Plugin.QuestDB.QuestDBProducerProperty": {
+    "BigTextConnectStr": "ConnectString",
+
+    "IsInterval": "IsInterval",
+    "BusinessInterval": "BusinessInterval",
+    "IsAllVariable": "IsAllVariable",
+    "QueueMaxCount": "QueueMaxCount",
+    "SplitSize": "SplitSize",
+    "CacheEnable": "CacheEnable"
+  },
+  "ThingsGateway.Plugin.QuestDB.QuestDBHistoryValue": {
+    "Id": "Id",
+
+    "CollectTime": "CollectTime",
+    "CreateTime": "CreateTime",
+    "DeviceName": "DeviceName",
+    "Name": "Name",
+    "IsOnline": "IsOnline",
+    "Value": "Value"
+  }
+}

@@ -1,4 +1,5 @@
-﻿//------------------------------------------------------------------------------
+﻿
+//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -8,136 +9,87 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+
+
+
+using BootstrapBlazor.Components;
+
 using Microsoft.Extensions.Logging;
 
-using System.ComponentModel;
+using ThingsGateway.Core.Extension;
 
 namespace ThingsGateway.Gateway.Application;
 
-/// <summary>
-/// 运行日志分页DTO
-/// </summary>
-public class BackendLogPageInput : BasePageInput
+public class BackendLogPageInput : ITableSearchModel
 {
     /// <summary>
-    /// 开始时间
+    /// 时间区间
     /// </summary>
-    public DateTime? StartTime { get; set; } = DateTime.Now.AddDays(-1);
+    public DateTimeRangeValue? SearchDate { get; set; }
 
     /// <summary>
-    /// 结束时间
+    /// 分类
     /// </summary>
-    public DateTime? EndTime { get; set; } = DateTime.Now.AddDays(1);
+    public virtual LogLevel? LogLevel { get; set; }
 
     /// <summary>
     /// 日志源
     /// </summary>
-    [Description("日志源")]
-    public string Source { get; set; }
+    public string? LogSource { get; set; }
 
-    /// <summary>
-    /// 日志等级
-    /// </summary>
-    [Description("日志等级")]
-    public LogLevel? Level { get; set; }
+    /// <inheritdoc/>
+    public IEnumerable<IFilterAction> GetSearches()
+    {
+        var ret = new List<IFilterAction>();
+        ret.AddIF(!string.IsNullOrEmpty(LogSource), () => new SearchFilterAction(nameof(BackendLog.LogSource), LogSource));
+        ret.AddIF(LogLevel != null, () => new SearchFilterAction(nameof(BackendLog.LogLevel), LogLevel!.Value, FilterAction.Equal));
+        ret.AddIF(SearchDate != null, () => new SearchFilterAction(nameof(BackendLog.LogTime), SearchDate!.Start, FilterAction.GreaterThanOrEqual));
+        ret.AddIF(SearchDate != null, () => new SearchFilterAction(nameof(BackendLog.LogTime), SearchDate!.End, FilterAction.LessThanOrEqual));
+        return ret;
+    }
+
+    /// <inheritdoc/>
+    public void Reset()
+    {
+        SearchDate = null;
+        LogLevel = null;
+        LogSource = null;
+    }
 }
 
-/// <summary>
-/// 运行日志分页DTO
-/// </summary>
-public class BackendLogInput
+public class RpcLogPageInput : ITableSearchModel
 {
     /// <summary>
-    /// 开始时间
+    /// 时间区间
     /// </summary>
-    public DateTime? StartTime { get; set; } = DateTime.Now.AddDays(-1);
+    public DateTimeRangeValue? SearchDate { get; set; }
 
     /// <summary>
-    /// 结束时间
+    /// 分类
     /// </summary>
-    public DateTime? EndTime { get; set; } = DateTime.Now.AddDays(1);
+    public string? OperateObject { get; set; }
 
     /// <summary>
-    /// 日志源
+    /// 账号
     /// </summary>
-    [Description("日志源")]
-    public string Source { get; set; }
+    public string? OperateSource { get; set; }
 
-    /// <summary>
-    /// 日志等级
-    /// </summary>
-    [Description("日志等级")]
-    public string Level { get; set; }
+    /// <inheritdoc/>
+    public IEnumerable<IFilterAction> GetSearches()
+    {
+        var ret = new List<IFilterAction>();
+        ret.AddIF(!string.IsNullOrEmpty(OperateSource), () => new SearchFilterAction(nameof(RpcLog.OperateSource), OperateSource));
+        ret.AddIF(!string.IsNullOrEmpty(OperateObject), () => new SearchFilterAction(nameof(RpcLog.OperateObject), OperateObject));
+        ret.AddIF(SearchDate != null, () => new SearchFilterAction(nameof(RpcLog.LogTime), SearchDate!.Start, FilterAction.GreaterThanOrEqual));
+        ret.AddIF(SearchDate != null, () => new SearchFilterAction(nameof(RpcLog.LogTime), SearchDate!.End, FilterAction.LessThanOrEqual));
+        return ret;
+    }
 
-    public bool All { get; set; }
-}
-
-/// <summary>
-/// RPC日志分页DTO
-/// </summary>
-public class RpcLogPageInput : BasePageInput
-{
-    /// <summary>
-    /// 开始时间
-    /// </summary>
-    public DateTime? StartTime { get; set; } = DateTime.UtcNow.AddDays(-1);
-
-    /// <summary>
-    /// 结束时间
-    /// </summary>
-    public DateTime? EndTime { get; set; } = DateTime.UtcNow.AddDays(1);
-
-    /// <summary>
-    /// 操作源
-    /// </summary>
-    [Description("操作源")]
-    public string Source { get; set; }
-
-    /// <summary>
-    /// 操作源
-    /// </summary>
-    [Description("操作对象")]
-    public string Object { get; set; }
-
-    /// <summary>
-    /// 方法
-    /// </summary>
-    [Description("方法")]
-    public string Method { get; set; }
-}
-
-/// <summary>
-/// RPC日志分页DTO
-/// </summary>
-public class RpcLogInput
-{
-    /// <summary>
-    /// 开始时间
-    /// </summary>
-    public DateTime? StartTime { get; set; } = DateTime.Now.AddDays(-1);
-
-    /// <summary>
-    /// 结束时间
-    /// </summary>
-    public DateTime? EndTime { get; set; } = DateTime.Now.AddDays(1);
-
-    /// <summary>
-    /// 操作源
-    /// </summary>
-    [Description("操作源")]
-    public string Source { get; set; }
-
-    /// <summary>
-    /// 操作源
-    /// </summary>
-    [Description("操作对象")]
-    public string Object { get; set; }
-
-    /// <summary>
-    /// 方法
-    /// </summary>
-    [Description("方法")]
-    public string Method { get; set; }
-
-    public bool All { get; set; }
+    /// <inheritdoc/>
+    public void Reset()
+    {
+        SearchDate = null;
+        OperateObject = null;
+        OperateSource = null;
+    }
 }

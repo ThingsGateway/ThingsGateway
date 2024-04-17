@@ -1,4 +1,5 @@
-﻿//------------------------------------------------------------------------------
+﻿
+//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -8,7 +9,7 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using ThingsGateway.Foundation.Extension.Generic;
+
 
 using TouchSocket.Core;
 
@@ -30,14 +31,7 @@ public class VariableMethod
         MethodInfo = method;
         Variable = variable;
         variable.VariableMethod = this;
-        Converter = new ThingsGatewayStringConverter();
-        Converter.Add(new StringToEncodingConverter());
     }
-
-    /// <summary>
-    /// 字符串转换器
-    /// </summary>
-    public ThingsGatewayStringConverter Converter { get; }
 
     /// <summary>
     /// 需分配的变量
@@ -54,7 +48,7 @@ public class VariableMethod
     /// </summary>
     public string? LastErrorMessage { get; internal set; }
 
-    private object[]? OS;
+    private object?[]? OS;
 
     /// <summary>
     /// 执行方法
@@ -62,11 +56,11 @@ public class VariableMethod
     /// <param name="value">以,逗号分割的参数</param>
     /// <param name="cancellationToken">取消令箭</param>
     /// <returns></returns>
-    public async Task<OperResult> InvokeMethodAsync(DriverBase driverBase, string? value = null, CancellationToken cancellationToken = default)
+    public async Task<IOperResult> InvokeMethodAsync(object driverBase, string? value = null, CancellationToken cancellationToken = default)
     {
         try
         {
-            object[]? os = null;
+            object?[]? os = null;
             if (value == null && OS == null)
             {
                 //默认的参数
@@ -82,52 +76,45 @@ public class VariableMethod
                 var addresss = Variable.RegisterAddress?.Trim()?.TrimEnd(',').Split(',') ?? Array.Empty<string>();
                 var values = value?.Trim()?.TrimEnd(',').Split(',') ?? Array.Empty<string>();
                 //通过分号分割，并且合并参数
-                var strs = addresss.SpliceArray(values);
+                var strs = DataTransUtil.SpliceArray(addresss, values);
 
                 os = GetOS(strs, cancellationToken);
             }
 
-            try
+            dynamic result;
+            switch (MethodInfo.TaskType)
             {
-                dynamic result;
-                switch (MethodInfo.TaskType)
-                {
-                    case TaskReturnType.Task:
-                        await MethodInfo.InvokeAsync(driverBase, os);
-                        result = new OperResult();
-                        break;
+                case TaskReturnType.Task:
+                    await MethodInfo.InvokeAsync(driverBase, os);
+                    result = new OperResult();
+                    break;
 
-                    case TaskReturnType.TaskObject:
-                        result = await MethodInfo.InvokeObjectAsync(driverBase, os);
-                        break;
+                case TaskReturnType.TaskObject:
+                    result = await MethodInfo.InvokeObjectAsync(driverBase, os);
+                    break;
 
-                    case TaskReturnType.None:
-                    default:
-                        result = MethodInfo.Invoke(driverBase, os);
-                        break;
-                }
-                if (MethodInfo.HasReturn)
-                {
-                    return result;
-                }
-                return new();
+                case TaskReturnType.None:
+                default:
+                    result = MethodInfo.Invoke(driverBase, os);
+                    break;
             }
-            catch (Exception ex)
+            if (MethodInfo.HasReturn)
             {
-                return new(ex);
+                return result;
             }
+            return new OperResult();
         }
         catch (Exception ex)
         {
-            return new(ex);
+            return new OperResult(ex);
         }
     }
 
-    private object[] GetOS(string[] strs, CancellationToken cancellationToken)
+    private object?[] GetOS(string[] strs, CancellationToken cancellationToken)
     {
         var method = MethodInfo;
         var ps = method.Info.GetParameters();
-        var os = new object[ps.Length];
+        var os = new object?[ps.Length];
         var index = 0;
         for (var i = 0; i < ps.Length; i++)
         {
@@ -137,7 +124,7 @@ public class VariableMethod
             }
             else
             {
-                os[i] = this.Converter.Deserialize(null, strs[index], ps[i].ParameterType);
+                os[i] = ThingsGatewayStringConverter.Default.Deserialize(null, strs[index], ps[i].ParameterType);
                 index++;
             }
         }

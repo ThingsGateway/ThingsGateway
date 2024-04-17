@@ -8,104 +8,100 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using BootstrapBlazor.Components;
+
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Mvc;
 
+using SqlSugar;
+
 namespace ThingsGateway.Gateway.Application;
 
-public interface IVariableService : ISugarService, ITransient
+/// <summary>
+/// 定义了变量相关的服务接口
+/// </summary>
+public interface IVariableService
 {
     /// <summary>
-    /// 添加变量
+    /// 异步插入变量信息。
     /// </summary>
-    /// <param name="input"></param>
-    /// <returns></returns>
-    Task AddAsync(VariableAddInput input);
+    /// <param name="input">要保存的设备信息。</param>
+    /// <param name="type">变量变化类型。</param>
+    Task AddBatchAsync(List<Variable> input);
 
     /// <summary>
-    /// 批量添加变量
+    /// 异步清除变量数据。
     /// </summary>
-    /// <param name="input"></param>
-    /// <returns></returns>
-    Task AddBatchAsync(List<VariableAddInput> input);
+    Task ClearVariableAsync();
 
     /// <summary>
-    /// 清空变量
+    /// 根据设备ID异步删除变量数据。
     /// </summary>
-    /// <returns></returns>
-    Task ClearAsync();
+    /// <param name="input">要删除的设备ID列表。</param>
+    /// <param name="db">SqlSugar 客户端。</param>
+    Task DeleteByDeviceIdAsync(IEnumerable<long> input, SqlSugarClient db);
 
     /// <summary>
-    /// 复制变量
+    /// 根据ID异步删除变量数据。
     /// </summary>
-    /// <param name="variables"></param>
-    /// <param name="result"></param>
-    /// <returns></returns>
-    Task CopyAsync(IEnumerable<Variable> variables, int result);
+    /// <param name="ids">要删除的变量ID列表。</param>
+    Task<bool> DeleteVariableAsync(IEnumerable<long> ids);
 
     /// <summary>
-    /// 删除变量
+    /// 异步导出变量数据到内存流中。
     /// </summary>
-    /// <param name="input"></param>
-    /// <returns></returns>
-    Task DeleteAsync(List<BaseIdInput> input);
+    /// <param name="data">要导出的变量数据。</param>
+    /// <param name="deviceName">设备名称（可选）。</param>
+    Task<MemoryStream> ExportMemoryStream(IEnumerable<Variable> data, string deviceName = null);
 
     /// <summary>
-    /// 根据设备Id删除变量
+    /// 异步导出变量数据到文件流中。
     /// </summary>
-    /// <param name="input"></param>
-    /// <returns></returns>
-    Task DeleteByDeviceIdAsync(List<long> input);
+    /// <param name="options">查询分页选项。</param>
+    Task<FileStreamResult> ExportVariableAsync(QueryPageOptions options);
 
     /// <summary>
-    /// 编辑变量
+    /// 异步获取变量的运行时信息。
     /// </summary>
-    /// <param name="input"></param>
-    /// <returns></returns>
-    Task EditAsync(VariableEditInput input);
-
-    /// <summary>
-    /// 获取变量Runtime
-    /// </summary>
-    /// <returns></returns>
+    /// <param name="devId">设备ID（可选）。</param>
     Task<List<VariableRunTime>> GetVariableRuntimeAsync(long? devId = null);
 
     /// <summary>
-    /// 分页查询
+    /// 异步导入变量数据。
+    /// </summary>
+    /// <param name="input">要导入的数据。</param>
+    Task ImportVariableAsync(Dictionary<string, ImportPreviewOutputBase> input);
+
+    /// <summary>
+    /// 创建n个modbus变量，n/1000个设备，n/1000个通道，1个modbus 模拟服务端
+    /// </summary>
+    /// <param name="count"></param>
+    /// <returns></returns>
+    Task InsertTestDataAsync(int count);
+
+    /// <summary>
+    /// 表格查询。
+    /// </summary>
+    /// <param name="option">查询分页选项。</param>
+    Task<QueryData<Variable>> PageAsync(QueryPageOptions option);
+
+    /// <summary>
+    /// API查询
     /// </summary>
     /// <param name="input"></param>
     /// <returns></returns>
     Task<SqlSugarPagedList<Variable>> PageAsync(VariablePageInput input);
 
     /// <summary>
-    /// 导出文件
+    /// 异步预览导入的数据。
     /// </summary>
-    /// <returns></returns>
-    Task<FileStreamResult> ExportFileAsync();
-
-    /// <summary>
-    /// 导出文件
-    /// </summary>
-    /// <param name="input"></param>
-    /// <returns></returns>
-    Task<FileStreamResult> ExportFileAsync(VariableInput input);
-
-    /// <summary>
-    /// 导入预览
-    /// </summary>
-    /// <param name="browserFile"></param>
-    /// <returns></returns>
+    /// <param name="browserFile">要预览的文件。</param>
     Task<Dictionary<string, ImportPreviewOutputBase>> PreviewAsync(IBrowserFile browserFile);
 
     /// <summary>
-    /// 导入
+    /// 异步插入变量信息。
     /// </summary>
-    /// <param name="input"></param>
-    /// <returns></returns>
-    Task ImportAsync(Dictionary<string, ImportPreviewOutputBase> input);
-
-    /// <summary>
-    /// 导出文件
-    /// </summary>
-    Task<MemoryStream> ExportMemoryStream(IEnumerable<Variable> data, string deviceName = null);
+    /// <param name="input">要保存的设备信息。</param>
+    /// <param name="type">变量变化类型。</param>
+    Task<bool> SaveVariableAsync(Variable input, ItemChangedType type);
 }

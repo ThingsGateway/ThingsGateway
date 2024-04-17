@@ -1,0 +1,35 @@
+﻿{
+  "ThingsGateway.Foundation.OpcUa.OpcUaProperty": {
+    "OpcUrl": "OpcUrl",
+    "UserName": "登录账号",
+    "Password": "登录密码",
+    "CheckDomain": "检查域",
+    "UpdateRate": "推送间隔",
+    "ActiveSubscribe": "订阅",
+    "GroupSize": "分组大小",
+    "DeadBand": "死区",
+    "KeepAliveInterval": "心跳间隔(ms)",
+    "UseSecurity": "安全策略",
+    "LoadType": "加载服务端数据类型",
+
+    "Connect": "连接",
+    "Disconnect": "断开",
+    "Add": "添加",
+    "Remove": "移除",
+    "Read": "读取",
+    "Write": "写入",
+    "ShowImport": "查看OPC空间",
+    "RegisterAddress": "地址",
+    "WriteValue": "写入值",
+
+    "NoVariablesAvailable": "无可用变量",
+    "Success": "成功",
+    "Close": "关闭",
+    "Save": "导入到系统",
+    "Export": "导出",
+    "ShowSubvariable": "显示变量子节点"
+  },
+
+  "ThingsGateway.Foundation.OpcUa.OpcUaResource": {
+  }
+}

@@ -361,11 +361,3 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
-
-/src/*Pro*/
-/src/*Pro*
-/src/*pro*
-/src/*pro*/
-/src/ThingsGateway.Web.Entry/.config/
-/doc/.*
-

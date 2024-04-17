@@ -8,7 +8,7 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using Furion.FriendlyException;
+using BootstrapBlazor.Components;
 
 using Mapster;
 
@@ -17,13 +17,14 @@ using Microsoft.AspNetCore.Mvc;
 
 using MiniExcelLibs;
 
+using SqlSugar;
+
+using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Dynamic;
 using System.Reflection;
-using System.Text.RegularExpressions;
+using System.Text;
 
-using ThingsGateway.Cache;
-using ThingsGateway.Core.Extension;
 using ThingsGateway.Foundation.Extension.Generic;
 using ThingsGateway.Gateway.Application.Extensions;
 
@@ -33,75 +34,80 @@ using Yitter.IdGenerator;
 
 namespace ThingsGateway.Gateway.Application;
 
-/// <inheritdoc cref="IChannelService"/>
-[Injection(Proxy = typeof(OperDispatchProxy))]
-public class ChannelService : DbRepository<Channel>, IChannelService
+public class ChannelService : BaseService<Channel>, IChannelService
 {
     protected readonly IFileService _fileService;
-    protected readonly IServiceScope _serviceScope;
-    protected readonly ISimpleCacheService _simpleCacheService;
     protected readonly IImportExportService _importExportService;
 
     /// <inheritdoc cref="IChannelService"/>
     public ChannelService(
-    IServiceScopeFactory serviceScopeFactory,
     IFileService fileService,
-    ISimpleCacheService simpleCacheService,
     IImportExportService importExportService
         )
     {
         _fileService = fileService;
-        _serviceScope = serviceScopeFactory.CreateScope();
-        _simpleCacheService = simpleCacheService;
         _importExportService = importExportService;
     }
 
-    [OperDesc("添加通道")]
-    public async Task AddAsync(ChannelAddInput input)
+    /// <summary>
+    /// 报表查询
+    /// </summary>
+    /// <param name="option">查询条件</param>
+    public Task<QueryData<Channel>> PageAsync(QueryPageOptions option)
     {
-        var model_Id = GetIdByName(input.Name);
-        if (model_Id > 0 && model_Id != input.Id)
-            throw Oops.Bah($"存在重复的名称:{input.Name}"); //缓存不要求全部数据，最后会由数据库约束报错
-        await InsertAsync(input);//添加数据
-        DeleteChannelFromRedis();
+        return QueryAsync(option, a => a.WhereIF(!option.SearchText.IsNullOrWhiteSpace(), a => a.Name.Contains(option.SearchText!)));
     }
 
-    [OperDesc("复制通道", IsRecordPar = false)]
-    public async Task CopyAsync(IEnumerable<Channel> input, int count)
+    /// <summary>
+    /// 从缓存/数据库获取全部信息
+    /// </summary>
+    /// <returns>列表</returns>
+    public List<Channel> GetAll()
     {
-        List<Channel> newDevs = new();
-
-        for (int i = 0; i < count; i++)
+        var key = ThingsGatewayCacheConst.Cache_Channel;
+        var channels = App.CacheService.Get<List<Channel>>(key);
+        if (channels == null)
         {
-            var newDev = input.Adapt<List<Channel>>();
-
-            newDev.ForEach(a =>
-            {
-                a.Id = YitIdHelper.NextId();
-                a.Name = $"{Regex.Replace(a.Name, @"\d", "")}{a.Id}";
-            });
-            newDevs.AddRange(newDev);
+            using var db = GetDB();
+            channels = db.Queryable<Channel>().ToList();
+            App.CacheService.Set(key, channels);
         }
-        await Context.Fastest<Channel>().PageSize(50000).BulkCopyAsync(newDevs);
-        DeleteChannelFromRedis();
+        return channels;
     }
 
-    [OperDesc("删除通道")]
-    public async Task DeleteAsync(List<BaseIdInput> input)
+    /// <summary>
+    /// 保存通道
+    /// </summary>
+    /// <param name="input">通道</param>
+    /// <param name="type">保存类型</param>
+    [OperDesc("SaveChannel", localizerType: typeof(Channel))]
+    public async Task<bool> SaveChannelAsync(Channel input, ItemChangedType type)
     {
-        var ids = input.Select(a => a.Id).ToList();
-
-        var deviceService = _serviceScope.ServiceProvider.GetService<IDeviceService>();
-        deviceService.NewContent = NewContent;
-        //事务
-        var result = await NewContent.UseTranAsync(async () =>
+        //验证
+        CheckInput(input);
+        if (await base.SaveAsync(input, type))
         {
-            await Context.Deleteable<Channel>().Where(a => ids.Contains(a.Id)).ExecuteCommandAsync();
-            await deviceService.DeleteByChannelIdAsync(input);
+            DeleteChannelFromCache();
+            return true;
+        }
+        return false;
+    }
+
+    [OperDesc("DeleteChannel", localizerType: typeof(Channel))]
+    public async Task<bool> DeleteChannelAsync(IEnumerable<long> ids)
+    {
+        var deviceService = App.RootServices.GetRequiredService<IDeviceService>();
+        using var db = GetDB();
+        //事务
+        var result = await db.UseTranAsync(async () =>
+        {
+            await db.Deleteable<Channel>().Where(a => ids.Contains(a.Id)).ExecuteCommandAsync();
+            await deviceService.DeleteByChannelIdAsync(ids, db);
         });
         if (result.IsSuccess)//如果成功了
         {
-            DeleteChannelFromRedis();
+            DeleteChannelFromCache();
+            return true;
         }
         else
         {
@@ -110,21 +116,21 @@ public class ChannelService : DbRepository<Channel>, IChannelService
         }
     }
 
-    [OperDesc("清空通道")]
-    public async Task ClearAsync()
+    [OperDesc("ClearChannel", localizerType: typeof(Channel))]
+    public async Task ClearChannelAsync()
     {
-        var deviceService = _serviceScope.ServiceProvider.GetService<IDeviceService>();
-        deviceService.NewContent = NewContent;
+        var deviceService = App.RootServices.GetRequiredService<IDeviceService>();
+        using var db = GetDB();
         //事务
-        var result = await NewContent.UseTranAsync(async () =>
+        var result = await db.UseTranAsync(async () =>
         {
-            var data = GetCacheList();
-            await Context.Deleteable<Channel>().ExecuteCommandAsync();
-            await deviceService.DeleteByChannelIdAsync(data.Adapt<List<BaseIdInput>>());
+            var data = GetAll();
+            await db.Deleteable<Channel>().ExecuteCommandAsync();
+            await deviceService.DeleteByChannelIdAsync(data.Select(a => a.Id), db);
         });
         if (result.IsSuccess)//如果成功了
         {
-            DeleteChannelFromRedis();
+            DeleteChannelFromCache();
         }
         else
         {
@@ -139,62 +145,74 @@ public class ChannelService : DbRepository<Channel>, IChannelService
     }
 
     /// <inheritdoc />
-    public void DeleteChannelFromRedis()
+    public void DeleteChannelFromCache()
     {
-        _simpleCacheService.Remove(ThingsGatewayCacheConst.Cache_Channel);//删除通道缓存
-    }
-
-    [OperDesc("编辑通道")]
-    public async Task EditAsync(ChannelEditInput input)
-    {
-        var model_Id = GetIdByName(input.Name);
-        if (model_Id > 0 && model_Id != input.Id)
-            throw Oops.Bah($"存在重复的名称:{input.Name}");//缓存不要求全部数据，最后会由数据库约束报错
-
-        if (await Context.Updateable(input.Adapt<Channel>()).ExecuteCommandAsync() > 0)//修改数据
-            DeleteChannelFromRedis();
+        App.CacheService.Remove(ThingsGatewayCacheConst.Cache_Channel);//删除通道缓存
     }
 
     public Channel? GetChannelById(long id)
     {
-        var data = GetCacheList();
+        var data = GetAll();
         return data?.FirstOrDefault(x => x.Id == id);
-    }
-
-    public List<Channel> GetCacheList()
-    {
-        var channel = _simpleCacheService.HashGetAll<Channel>(ThingsGatewayCacheConst.Cache_Channel);
-        if (channel == null || channel.Count == 0)
-        {
-            var data = GetList();
-            _simpleCacheService.HashSet(ThingsGatewayCacheConst.Cache_Channel, data.ToDictionary(a => a.Id.ToString()));
-            return data;
-        }
-        return channel.Values.ToList();
     }
 
     public long? GetIdByName(string name)
     {
-        var data = GetCacheList();
+        var data = GetAll();
         return data?.FirstOrDefault(x => x.Name == name)?.Id;
     }
 
     public string? GetNameById(long id)
     {
-        var data = GetCacheList();
+        var data = GetAll();
         return data?.FirstOrDefault(x => x.Id == id)?.Name;
     }
 
+    private void CheckInput(Channel input)
+    {
+        if (input.ChannelType == ChannelTypeEnum.TcpClient)
+        {
+            if (string.IsNullOrEmpty(input.RemoteUrl))
+                throw Oops.Bah(Localizer["RemoteUrlNotNull"]);
+        }
+        else if (input.ChannelType == ChannelTypeEnum.TcpService)
+        {
+            if (string.IsNullOrEmpty(input.BindUrl))
+                throw Oops.Bah(Localizer["BindUrlNotNull"]);
+        }
+        else if (input.ChannelType == ChannelTypeEnum.UdpSession)
+        {
+            if (string.IsNullOrEmpty(input.BindUrl) && string.IsNullOrEmpty(input.RemoteUrl))
+                throw Oops.Bah(Localizer["BindUrlOrRemoteUrlNotNull"]);
+        }
+        else if (input.ChannelType == ChannelTypeEnum.SerialPortClient)
+        {
+            if (string.IsNullOrEmpty(input.PortName))
+                throw Oops.Bah(Localizer["PortNameNotNull"]);
+            if (input.BaudRate == null)
+                throw Oops.Bah(Localizer["BaudRateNotNull"]);
+            if (input.DataBits == null)
+                throw Oops.Bah(Localizer["DataBitsNotNull"]);
+            if (input.Parity == null)
+                throw Oops.Bah(Localizer["ParityNotNull"]);
+            if (input.StopBits == null)
+                throw Oops.Bah(Localizer["StopBitsNotNull"]);
+        }
+    }
+
+    #region API查询
+
     public Task<SqlSugarPagedList<Channel>> PageAsync(ChannelPageInput input)
     {
-        var query = GetPage(input);
+        using var db = GetDB();
+        var query = GetPage(db, input);
         return query.ToPagedListAsync(input.Current, input.Size);//分页
     }
 
     /// <inheritdoc/>
-    private ISugarQueryable<Channel> GetPage(ChannelPageInput input)
+    private ISugarQueryable<Channel> GetPage(SqlSugarClient db, ChannelPageInput input)
     {
-        ISugarQueryable<Channel> query = Context.Queryable<Channel>()
+        ISugarQueryable<Channel> query = db.Queryable<Channel>()
          .WhereIF(!string.IsNullOrEmpty(input.Name), u => u.Name.Contains(input.Name))
          .WhereIF(input.ChannelType != null, u => u.ChannelType == input.ChannelType);
         for (int i = input.SortField.Count - 1; i >= 0; i--)
@@ -206,47 +224,51 @@ public class ChannelService : DbRepository<Channel>, IChannelService
         return query;
     }
 
+    #endregion API查询
+
     #region 导出
 
     /// <inheritdoc/>
-    [OperDesc("导出通道配置", IsRecordPar = false)]
-    public async Task<FileStreamResult> ExportFileAsync(IDataReader? input = null)
+    [OperDesc("ExportChannel", isRecordPar: false, localizerType: typeof(Channel))]
+    public async Task<FileStreamResult> ExportChannelAsync(IDataReader? input = null)
     {
         if (input != null)
         {
             return await _importExportService.ExportAsync<Channel>(input, "Channel");
         }
         //导出
-        var data = (GetCacheList())?.OrderBy(a => a.ChannelType);
-        return await Export(data);
+        var data = (GetAll())?.OrderBy(a => a.ChannelType);
+        return await ExportChannel(data);
     }
 
     /// <inheritdoc/>
-    [OperDesc("导出通道配置", IsRecordPar = false)]
-    public async Task<FileStreamResult> ExportFileAsync(ChannelInput input)
+    [OperDesc("ExportChannel", isRecordPar: false, localizerType: typeof(Channel))]
+    public async Task<FileStreamResult> ExportChannelAsync(QueryPageOptions options)
     {
-        var data = (await GetPage(input.Adapt<ChannelPageInput>()).ExportIgnoreColumns().ToListAsync())?.OrderBy(a => a.ChannelType);
-        return await Export(data);
+        var data = await PageAsync(options);
+        return await ExportChannel(data.Items);
     }
 
     /// <inheritdoc/>
-    [OperDesc("导出通道配置", IsRecordPar = false)]
+    [OperDesc("ExportChannel", isRecordPar: false, localizerType: typeof(Channel))]
     public async Task<MemoryStream> ExportMemoryStream(List<Channel> data)
     {
-        Dictionary<string, object> sheets = ExportCore(data);
+        Dictionary<string, object> sheets = ExportChannelCore(data);
         var memoryStream = new MemoryStream();
         await memoryStream.SaveAsAsync(sheets);
+        memoryStream.Seek(0, SeekOrigin.Begin);
+
         return memoryStream;
     }
 
-    private async Task<FileStreamResult> Export(IEnumerable<Channel>? data)
+    private async Task<FileStreamResult> ExportChannel(IEnumerable<Channel>? data)
     {
-        Dictionary<string, object> sheets = ExportCore(data);
+        Dictionary<string, object> sheets = ExportChannelCore(data);
 
         return await _importExportService.ExportAsync<Channel>(sheets, "Channel", false);
     }
 
-    private static Dictionary<string, object> ExportCore(IEnumerable<Channel>? data)
+    private static Dictionary<string, object> ExportChannelCore(IEnumerable<Channel>? data)
     {
         //总数据
         Dictionary<string, object> sheets = new();
@@ -259,7 +281,7 @@ public class ChannelService : DbRepository<Channel>, IChannelService
         var propertyInfos = type.GetProperties().Where(a => a.GetCustomAttribute<IgnoreExcelAttribute>() == null).OrderBy(
            a =>
            {
-               return a.GetCustomAttribute<DataTableAttribute>()?.Order ?? 999999;
+               return a.GetCustomAttribute<AutoGenerateColumnAttribute>()?.Order ?? 999999;
            }
            );
 
@@ -271,7 +293,7 @@ public class ChannelService : DbRepository<Channel>, IChannelService
             foreach (var item in propertyInfos)
             {
                 //描述
-                var desc = item.FindDisplayAttribute();
+                var desc = type.GetPropertyDisplayName(item.Name);
                 //数据源增加
                 channelExport.Add(desc ?? item.Name, item.GetValue(device)?.ToString());
             }
@@ -280,7 +302,7 @@ public class ChannelService : DbRepository<Channel>, IChannelService
             channelExports.Add(channelExport);
         }
         //添加设备页
-        sheets.Add(ExportConst.ChannelName, channelExports);
+        sheets.Add(ExportString.ChannelName, channelExports);
         return sheets;
     }
 
@@ -289,13 +311,13 @@ public class ChannelService : DbRepository<Channel>, IChannelService
     #region 导入
 
     /// <inheritdoc/>
-    [OperDesc("导入通道表", IsRecordPar = false)]
-    public async Task ImportAsync(Dictionary<string, ImportPreviewOutputBase> input)
+    [OperDesc("ImportChannel", isRecordPar: false, localizerType: typeof(Channel))]
+    public async Task ImportChannelAsync(Dictionary<string, ImportPreviewOutputBase> input)
     {
         var channels = new List<Channel>();
         foreach (var item in input)
         {
-            if (item.Key == ExportConst.ChannelName)
+            if (item.Key == ExportString.ChannelName)
             {
                 var collectChannelImports = ((ImportPreviewOutput<Channel>)item.Value).Data;
                 channels = new List<Channel>(collectChannelImports.Values);
@@ -304,18 +326,20 @@ public class ChannelService : DbRepository<Channel>, IChannelService
         }
         var upData = channels.Where(a => a.IsUp).ToList();
         var insertData = channels.Where(a => !a.IsUp).ToList();
-        await Context.Fastest<Channel>().PageSize(100000).BulkCopyAsync(insertData);
-        await Context.Fastest<Channel>().PageSize(100000).BulkUpdateAsync(upData);
-        DeleteChannelFromRedis();
+        using var db = GetDB();
+        await db.Fastest<Channel>().PageSize(100000).BulkCopyAsync(insertData);
+        await db.Fastest<Channel>().PageSize(100000).BulkUpdateAsync(upData);
+        DeleteChannelFromCache();
     }
 
+    /// <inheritdoc/>
     public async Task<Dictionary<string, ImportPreviewOutputBase>> PreviewAsync(IBrowserFile browserFile)
     {
         var path = await _importExportService.UploadFileAsync(browserFile);
         try
         {
             var sheetNames = MiniExcel.GetSheetNames(path);
-            var channelDicts = GetCacheList().ToDictionary(a => a.Name);
+            var channelDicts = GetAll().ToDictionary(a => a.Name);
             //导入检验结果
             Dictionary<string, ImportPreviewOutputBase> ImportPreviews = new();
             //设备页
@@ -326,23 +350,50 @@ public class ChannelService : DbRepository<Channel>, IChannelService
 
                 #region sheet
 
-                if (sheetName == ExportConst.ChannelName)
+                if (sheetName == ExportString.ChannelName)
                 {
                     int row = 1;
                     ImportPreviewOutput<Channel> importPreviewOutput = new();
                     ImportPreviews.Add(sheetName, importPreviewOutput);
                     channelImportPreview = importPreviewOutput;
                     List<Channel> channels = new();
+                    var type = typeof(Channel);
+                    // 获取目标类型的所有属性，并根据是否需要过滤 IgnoreExcelAttribute 进行筛选
+                    var channelProperties = type.GetRuntimeProperties().Where(a => (a.GetCustomAttribute<IgnoreExcelAttribute>() == null) && a.CanWrite)
+                                                .ToDictionary(a => type.GetPropertyDisplayName(a.Name));
 
                     rows.ForEach(item =>
                     {
                         try
                         {
-                            var channel = ((ExpandoObject)item).ConvertToEntity<Channel>(true);
+                            var channel = ((ExpandoObject)item!).ConvertToEntity<Channel>(channelProperties);
                             if (channel == null)
                             {
                                 importPreviewOutput.HasError = true;
-                                importPreviewOutput.Results.Add((row++, false, "无法识别任何信息"));
+                                importPreviewOutput.Results.Add((row++, false, Localizer["ImportNullError"]));
+                                return;
+                            }
+
+                            // 进行对象属性的验证
+                            var validationContext = new ValidationContext(channel);
+                            var validationResults = new List<ValidationResult>();
+                            validationContext.ValidateProperty(validationResults);
+
+                            // 构建验证结果的错误信息
+                            StringBuilder stringBuilder = new();
+                            foreach (var validationResult in validationResults.Where(v => !string.IsNullOrEmpty(v.ErrorMessage)))
+                            {
+                                foreach (var memberName in validationResult.MemberNames)
+                                {
+                                    stringBuilder.Append(validationResult.ErrorMessage!);
+                                }
+                            }
+
+                            // 如果有验证错误，则添加错误信息到导入预览结果并返回
+                            if (stringBuilder.Length > 0)
+                            {
+                                importPreviewOutput.HasError = true;
+                                importPreviewOutput.Results.Add((row++, false, stringBuilder.ToString()));
                                 return;
                             }
 
@@ -383,4 +434,13 @@ public class ChannelService : DbRepository<Channel>, IChannelService
     }
 
     #endregion 导入
+}
+
+public class ChannelPageInput : BasePageInput
+{
+    /// <inheritdoc/>
+    public string Name { get; set; }
+
+    /// <inheritdoc/>
+    public ChannelTypeEnum? ChannelType { get; set; }
 }

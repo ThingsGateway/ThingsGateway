@@ -1,6 +1,6 @@
 <Project>
 	<PropertyGroup>
-		<TargetFrameworks>net6.0;</TargetFrameworks>
+		<TargetFrameworks>net8.0;</TargetFrameworks>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -9,7 +9,7 @@
 
 	<ItemGroup>
 
-		<ProjectReference Include="$(SolutionDir)ThingsGateway.Gateway.Blazor\ThingsGateway.Gateway.Blazor.csproj">
+		<ProjectReference Include="$(SolutionDir)ThingsGateway.Gateway.Razor\ThingsGateway.Gateway.Razor.csproj">
 			<Private>false</Private>
 			<ExcludeAssets>runtime</ExcludeAssets>
 		</ProjectReference>

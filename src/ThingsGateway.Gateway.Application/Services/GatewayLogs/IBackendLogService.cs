@@ -1,4 +1,5 @@
-﻿//------------------------------------------------------------------------------
+﻿
+//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -8,42 +9,40 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using Microsoft.AspNetCore.Mvc;
 
-using System.Data;
+
+
+using BootstrapBlazor.Components;
 
 namespace ThingsGateway.Gateway.Application;
 
-/// <summary>
-/// 运行日志服务
-/// </summary>
-public interface IBackendLogService : ISugarService, ITransient
+public interface IBackendLogService
 {
     /// <summary>
-    /// 删除
+    /// 分页查询 BackendLog 数据
     /// </summary>
-    /// <returns></returns>
-    Task DeleteAsync();
+    /// <param name="option">查询选项</param>
+    /// <returns>查询到的数据</returns>
+    Task<QueryData<BackendLog>> PageAsync(QueryPageOptions option);
 
     /// <summary>
-    /// 分页查询
+    /// 获取最新的十条 BackendLog 记录
     /// </summary>
-    Task<SqlSugarPagedList<BackendLog>> PageAsync(BackendLogPageInput input);
+    /// <returns>最新的十条记录</returns>
+    Task<List<BackendLog>> GetNewLog();
 
     /// <summary>
-    /// 导出
+    /// 删除 BackendLog 表中的所有记录
     /// </summary>
-    Task<FileStreamResult> ExportFileAsync(BackendLogInput input);
+    /// <remarks>
+    /// 调用此方法会删除 BackendLog 表中的所有记录。
+    /// </remarks>
+    Task DeleteBackendLogAsync();
 
     /// <summary>
-    /// 导出
+    /// 获取最近一段时间内每天的后端日志统计信息
     /// </summary>
-    Task<FileStreamResult> ExportFileAsync(IDataReader? input = null);
-
-    /// <summary>
-    /// 按天统计
-    /// </summary>
-    /// <param name="day"></param>
-    /// <returns></returns>
+    /// <param name="day">要统计的天数</param>
+    /// <returns>按天统计的后端日志信息列表</returns>
     Task<List<BackendLogDayStatisticsOutput>> StatisticsByDayAsync(int day);
 }

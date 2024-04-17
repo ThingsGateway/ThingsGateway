@@ -1,0 +1,68 @@
+﻿@namespace ThingsGateway.Gateway.Razor
+@using ThingsGateway.Admin.Application
+@using ThingsGateway.Admin.Razor
+@using ThingsGateway.Debug
+@using ThingsGateway.Gateway.Application
+@using ThingsGateway.Core.Extension
+@inherits ComponentDefault
+
+
+<div class="device">
+    <Card class="mb-2">
+
+        <HeaderTemplate>
+
+            <span class=@("text-h6 mx-1") style="overflow:auto;">
+                <span class="mx-1" style="white-space: nowrap !important;overflow: hidden !important; text-overflow: ellipsis !important;" title=@Item.CurrentDevice?.Name>@Item.CurrentDevice?.Name</span>
+            </span>
+
+            <div style="flex-grow: 1;"></div>
+            @if (Item?.DriverUIType != null)
+            {
+                <Tooltip Title="@Localizer["GatewayDeviceShowDriverUI"]" Placement="Placement.Bottom">
+
+                    <Button OnClick=@(ShowDriverUI) IsDisabled=@(!AuthorizeButton("GatewayDeviceShowDriverUI")) class="mx-2" Color="Color.None" style="color: var(--bs-card-titlecolor);" Icon=@("fab fa-simplybuilt") />
+                </Tooltip>
+
+            }
+
+            @if (Item?.CurrentDevice.RedundantEnable == true)
+            {
+                <Tooltip Title="@Localizer["DeviceRedundantThread"]" Placement="Placement.Bottom">
+
+                    <PopConfirmButton OnConfirm=@(()=>DeviceRedundantThreadAsync(Item.DeviceId)) IsDisabled=@(!AuthorizeButton("GatewayDeviceRestart")) class="mx-2" Color="Color.None" style="color: var(--bs-card-title-color);" Icon=@("fas fa-exchange-alt") />
+                </Tooltip>
+
+            }
+            <Tooltip Title="@Localizer["GatewayDeviceLog"]" Placement="Placement.Bottom">
+
+                <Button OnClick=@(SetLogEnable) IsDisabled=@(!AuthorizeButton("GatewayDeviceLog")) class="mx-2" Color="Color.None" style="color: var(--bs-card-title-color);" Icon=@(Item.ChannelThread.LogEnable?"fa fa-pause":"fa fa-play") />
+            </Tooltip>
+
+            <Tooltip Title="@Localizer["GatewayDevicePause"]" Placement="Placement.Bottom">
+
+                <Button OnClick=@(()=>PasueThread(Item.DeviceId,!Item.CurrentDevice?.KeepRun)) IsDisabled=@(!AuthorizeButton("GatewayDevicePause")) class="mx-2" Color="Color.None" style="color: var(--bs-card-title-color);" Icon=@(Item.CurrentDevice.KeepRun?"fa fa-pause":"fa fa-play") />
+            </Tooltip>
+
+            <Tooltip Title="@Localizer["GatewayDeviceRestart"]" Placement="Placement.Bottom">
+
+                <PopConfirmButton OnConfirm=@(()=>RestartAsync(Item.DeviceId)) IsDisabled=@(!AuthorizeButton("GatewayDeviceRestart")) class="mx-2" Color="Color.None" style="color: var(--bs-card-title-color);" Icon=@("fa-solid fa-rotate") />
+            </Tooltip>
+
+
+
+        </HeaderTemplate>
+
+        <BodyTemplate>
+            <div style="overflow:auto ; height:200px;">
+
+                <DeviceStatus3 Item="@Item"></DeviceStatus3>
+                <EditorFormObject class="mt-2" Items="@Item.PluginPropertyEditorItems" Model=@Item.DriverProperties AutoGenerateAllItem=false IsDisplay LabelWidth="80" RowType="RowType.Inline" ItemsPerRow="3" ShowLabelTooltip="true" @key=Item.DriverProperties.GetHashCode()>
+
+                </EditorFormObject>
+            </div>
+        </BodyTemplate>
+    </Card>
+
+
+</div>

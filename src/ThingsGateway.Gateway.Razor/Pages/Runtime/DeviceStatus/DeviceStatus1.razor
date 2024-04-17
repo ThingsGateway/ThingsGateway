@@ -1,0 +1,32 @@
+﻿@namespace ThingsGateway.Gateway.Razor
+@using ThingsGateway.Admin.Application
+@using ThingsGateway.Admin.Razor
+@using ThingsGateway.Debug
+@using ThingsGateway.Gateway.Application
+@using ThingsGateway.Core.Extension
+@inherits ComponentDefault
+
+<div class="device">
+
+    <Virtualize Items="DriverBases.WhereIF(!string.IsNullOrEmpty(DeviceInput.Name), u => u.CurrentDevice.Name.Contains(DeviceInput.Name)).WhereIF(DeviceInput.ChannelId >0, u => u.CurrentDevice.ChannelId == DeviceInput.ChannelId)
+                                                         .WhereIF(!string.IsNullOrEmpty(DeviceInput.PluginName), u => u.CurrentDevice.PluginName == DeviceInput.PluginName).ToList()" Context="item" ItemSize="60" OverscanCount=2>
+        <ItemContent>
+            <Card IsShadow="true" @onclick=@(()=>DriverBaseOnClick.InvokeAsync(item)) class="m-1 deviceVirtualize">
+                <BodyTemplate>
+                    <span class=@((item.CurrentDevice?.DeviceStatus==DeviceStatusEnum.OnLine?"green--text":"red--text")+$" text-h6")>
+                        <div class="mt-1  d-flex align-start justify-start" style="white-space: nowrap !important;overflow: hidden !important; text-overflow: ellipsis !important;" title=@item.CurrentDevice?.Name>
+                            <span>@item.CurrentDevice?.Name</span>
+
+                        </div>
+                        <div style="white-space: nowrap !important;overflow: hidden !important; text-overflow: ellipsis !important;" class="text-caption mx-1">
+                            @(item.CurrentDevice?.ActiveTime?.ToDefaultDateTimeFormat() + "     " + item.CurrentDevice?.DeviceStatus.ToDisplayName())
+                        </div>
+                    </span>
+
+                </BodyTemplate>
+            </Card>
+        </ItemContent>
+    </Virtualize>
+
+
+</div>
