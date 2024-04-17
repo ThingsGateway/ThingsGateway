@@ -35,12 +35,18 @@
 
 
 </div>
+@{
+#if Plugin
+}
 <div class="form-footer">
     <Button IsAsync Color="Color.Secondary" Icon="fa-solid fa-xmark" Text="@OpcUaPropertyLocalizer["Close"]" OnClickWithoutRender="OnClickClose" />
     <Button IsAsync Color="Color.Primary" Icon="fa-solid fa-check" Text="@OpcUaPropertyLocalizer["Export"]" OnClickWithoutRender="OnClickExport" />
 
     <Button IsAsync Color="Color.Primary" Icon="fa-solid fa-check" Text="@OpcUaPropertyLocalizer["Save"]" OnClickWithoutRender="OnClickSave" />
 </div>
+@{
+#endif
+}
 
 
 

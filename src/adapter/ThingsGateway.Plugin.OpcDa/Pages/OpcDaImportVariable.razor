@@ -33,6 +33,11 @@
 
 
 </div>
+
+@{
+#if Plugin
+}
+
 <div class="form-footer">
     <Button IsAsync Color="Color.Secondary" Icon="fa-solid fa-xmark" Text="@OpcDaPropertyLocalizer["Close"]" OnClickWithoutRender="OnClickClose" />
     <Button IsAsync Color="Color.Primary" Icon="fa-solid fa-check" Text="@OpcDaPropertyLocalizer["Export"]" OnClickWithoutRender="OnClickExport" />
@@ -40,7 +45,9 @@
     <Button IsAsync Color="Color.Primary" Icon="fa-solid fa-check" Text="@OpcDaPropertyLocalizer["Save"]" OnClickWithoutRender="OnClickSave" />
 </div>
 
-
+@{
+#endif
+}
 
 @code {
     RenderFragment<OpcDaTagModel> RenderTreeItem => item =>

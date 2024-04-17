@@ -13,6 +13,10 @@
 		<Compile Include="..\..\adapter\ThingsGateway.Plugin.Dlt645\Pages\Dlt645_2007Master.razor.cs" Link="Pages\Dlt645_2007Master.razor.cs" />
 		<Compile Include="..\..\adapter\ThingsGateway.Plugin.Modbus\Pages\ModbusMaster.razor.cs" Link="Pages\ModbusMaster.razor.cs" />
 		<Compile Include="..\..\adapter\ThingsGateway.Plugin.Modbus\Pages\ModbusSlave.razor.cs" Link="Pages\ModbusSlave.razor.cs" />
+		<Compile Include="..\..\adapter\ThingsGateway.Plugin.OpcDa\Pages\OpcDaImportVariable.razor.cs" Link="Pages\OpcDaImportVariable.razor.cs" />
+		<Compile Include="..\..\adapter\ThingsGateway.Plugin.OpcDa\Pages\OpcDaMaster.razor.cs" Link="Pages\OpcDaMaster.razor.cs" />
+		<Compile Include="..\..\adapter\ThingsGateway.Plugin.OpcUa\Pages\OpcUaImportVariable.razor.cs" Link="Pages\OpcUaImportVariable.razor.cs" />
+		<Compile Include="..\..\adapter\ThingsGateway.Plugin.OpcUa\Pages\OpcUaMaster.razor.cs" Link="Pages\OpcUaMaster.razor.cs" />
 		<Compile Include="..\..\adapter\ThingsGateway.Plugin.SiemensS7\Pages\SiemensS7Master.razor.cs" Link="Pages\SiemensS7Master.razor.cs" />
 		<Compile Include="..\..\ThingsGateway.Admin.Razor\Services\VersionService.cs" Link="Services\VersionService.cs" />
 		<Compile Include="..\..\ThingsGateway.Gateway.Razor\DebugPages\AdapterDebugBase.cs" Link="DebugPages\AdapterDebugBase.cs" />
@@ -30,6 +34,8 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\..\adapter\ThingsGateway.Foundation.Dlt645\ThingsGateway.Foundation.Dlt645.csproj" />
+		<ProjectReference Include="..\..\adapter\ThingsGateway.Foundation.OpcDa\ThingsGateway.Foundation.OpcDa.csproj" />
+		<ProjectReference Include="..\..\adapter\ThingsGateway.Foundation.OpcUa\ThingsGateway.Foundation.OpcUa.csproj" />
 		<ProjectReference Include="..\..\ThingsGateway.Foundation\ThingsGateway.Foundation.csproj" />
 		<ProjectReference Include="..\..\ThingsGateway.Razor\ThingsGateway.Razor.csproj" />
 		<ProjectReference Include="..\..\adapter\ThingsGateway.Foundation.Modbus\ThingsGateway.Foundation.Modbus.csproj" />
@@ -54,6 +60,10 @@
 
 	<ItemGroup>
 	  <None Include="..\..\adapter\ThingsGateway.Plugin.Dlt645\Pages\Dlt645_2007Master.razor" Link="Pages\Dlt645_2007Master.razor" />
+	  <Content Include="..\..\adapter\ThingsGateway.Plugin.OpcDa\Pages\OpcDaImportVariable.razor" Link="Pages\OpcDaImportVariable.razor" />
+	  <Content Include="..\..\adapter\ThingsGateway.Plugin.OpcDa\Pages\OpcDaMaster.razor" Link="Pages\OpcDaMaster.razor" />
+	  <Content Include="..\..\adapter\ThingsGateway.Plugin.OpcUa\Pages\OpcUaImportVariable.razor" Link="Pages\OpcUaImportVariable.razor" />
+	  <Content Include="..\..\adapter\ThingsGateway.Plugin.OpcUa\Pages\OpcUaMaster.razor" Link="Pages\OpcUaMaster.razor" />
 	</ItemGroup>
 
 

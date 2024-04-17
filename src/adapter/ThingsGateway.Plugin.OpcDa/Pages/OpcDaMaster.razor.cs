@@ -15,6 +15,7 @@ using Microsoft.Extensions.Localization;
 
 using Newtonsoft.Json.Linq;
 
+using ThingsGateway.Foundation;
 using ThingsGateway.Foundation.OpcDa;
 using ThingsGateway.Foundation.OpcDa.Da;
 
@@ -36,15 +37,19 @@ public partial class OpcDaMaster : IDisposable
     {
         this.SafeDispose();
     }
+
     private AdapterDebugComponent AdapterDebugComponent { get; set; }
+
     [Inject]
-    IStringLocalizer<OpcDaProperty> OpcDaPropertyLocalizer { get; set; }
+    private IStringLocalizer<OpcDaProperty> OpcDaPropertyLocalizer { get; set; }
+
     /// <inheritdoc/>
     public void Dispose()
     {
         _plc?.SafeDispose();
         GC.SuppressFinalize(this);
     }
+
     protected override void OnInitialized()
     {
         _plc = new ThingsGateway.Foundation.OpcDa.OpcDaMaster();
@@ -59,6 +64,7 @@ public partial class OpcDaMaster : IDisposable
         _plc.DataChangedHandler += (a) => LogMessage.Trace(a.ToJsonString());
         base.OnInitialized();
     }
+
     private void Add()
     {
         var tags = new Dictionary<string, List<OpcItem>>();
@@ -87,6 +93,7 @@ public partial class OpcDaMaster : IDisposable
             LogMessage?.Log(LogLevel.Error, null, ex.Message, ex);
         }
     }
+
     private void Disconnect()
     {
         try
@@ -105,6 +112,7 @@ public partial class OpcDaMaster : IDisposable
         _plc.Init(OpcDaProperty);
         return _plc;
     }
+
     private async Task ReadAsync()
     {
         try
@@ -123,8 +131,10 @@ public partial class OpcDaMaster : IDisposable
     {
         _plc.RemoveItems(new List<string>() { RegisterAddress });
     }
+
     [Inject]
-    DialogService DialogService { get; set; }
+    private DialogService DialogService { get; set; }
+
     private async Task ShowImport()
     {
         var op = new DialogOption()

@@ -20,8 +20,12 @@ using ThingsGateway.Admin.Application;
 using ThingsGateway.Core.Extension;
 using ThingsGateway.Foundation.OpcDa;
 using ThingsGateway.Foundation.OpcDa.Rcw;
+
+#if Plugin
 using ThingsGateway.Gateway.Application;
 using ThingsGateway.Plugin.OpcDa;
+#endif
+
 using ThingsGateway.Razor;
 
 namespace ThingsGateway.Debug;

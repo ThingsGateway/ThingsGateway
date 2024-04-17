@@ -21,8 +21,13 @@ using System.Diagnostics.CodeAnalysis;
 using ThingsGateway.Admin.Application;
 using ThingsGateway.Core.Extension;
 using ThingsGateway.Foundation.OpcUa;
+
+#if Plugin
+
 using ThingsGateway.Gateway.Application;
 using ThingsGateway.Plugin.OpcUa;
+#endif
+
 using ThingsGateway.Razor;
 
 using TouchSocket.Core;
