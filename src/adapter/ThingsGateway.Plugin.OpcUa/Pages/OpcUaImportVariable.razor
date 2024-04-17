@@ -6,11 +6,10 @@
 @using Opc.Ua
 @using ThingsGateway.Foundation.OpcUa;
 
-<div class="row " style="max-height:80vh;overflow: auto;">
+<div class="row ">
 
-
-    <div class="col-12 col-md-6 p-1" style="min-height:500px;">
-        <TreeView TItem="OpcUaTagModel" Items="Items" ShowIcon="true" ShowCheckbox="true"  AutoCheckParent="true" AutoCheckChildren="true"
+    <div class="col-12 col-md-6 p-1" style="min-height:500px;max-height:80vh;overflow: auto;">
+        <TreeView TItem="OpcUaTagModel" Items="Items" ShowIcon="true" ShowCheckbox="true" AutoCheckParent="true" AutoCheckChildren="true"
                   OnExpandNodeAsync=OnExpandNodeAsync OnTreeItemChecked="OnTreeItemChecked" OnTreeItemClick=@(async a=>
                   {
                   if(a?.Value?.Tag?.NodeId!=null)
@@ -18,14 +17,13 @@
                   ClickItem=a;
                   NodeAttributes = Plc.ReadNoteAttributes(ClickItem.Value.NodeId.ToString());
                   }
-
                   await InvokeAsync(StateHasChanged);
                   }) ShowSkeleton=ShowSkeleton
                   IsAccordion ClickToggleNode ModelEqualityComparer="ModelEqualityComparer" />
     </div>
     <div class="col-12 col-md-6 p-1">
 
-        @if (ClickItem?.Value?.Tag?.NodeId != null && NodeAttributes!=null)
+        @if (ClickItem?.Value?.Tag?.NodeId != null && NodeAttributes != null)
         {
             <Display @bind-Value=@ClickItem.Value.Tag.NodeId DisplayText="NodeId" ShowLabel="true" />
             foreach (var item in NodeAttributes)

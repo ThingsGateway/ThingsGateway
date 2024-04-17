@@ -6,10 +6,10 @@
 @using ThingsGateway.Foundation.OpcDa;
 @using ThingsGateway.Foundation.OpcDa.Rcw;
 
-<div class="row " style="max-height:80vh;overflow: auto;">
+<div class="row ">
 
 
-    <div class="col-12 col-md-6 p-1" style="min-height:500px;">
+    <div class="col-12 col-md-6 p-1" style="min-height:500px;max-height:80vh;overflow: auto;">
         <TreeView TItem="OpcDaTagModel" Items="Items" ShowIcon="true" ShowCheckbox="true"  AutoCheckParent="true" AutoCheckChildren="true"
                   OnExpandNodeAsync=OnExpandNodeAsync OnTreeItemChecked="OnTreeItemChecked" OnTreeItemClick=@(async a=>
                   {

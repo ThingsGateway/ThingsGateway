@@ -197,6 +197,7 @@ public partial class OpcDaImportVariable
     {
         try
         {
+            if (Nodes == null) return;
             var data = GetImportVariableList(GetAllTag(Nodes));
             if (data.Item3 == null || data.Item3?.Count == 0)
             {
@@ -219,6 +220,7 @@ public partial class OpcDaImportVariable
     {
         try
         {
+            if (Nodes == null) return;
             var data = GetImportVariableList(GetAllTag(Nodes));
             if (data.Item3 == null || data.Item3?.Count == 0)
             {

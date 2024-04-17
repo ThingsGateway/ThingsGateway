@@ -61,7 +61,7 @@ public partial class OpcUaImportVariable
         {
             await Task.Factory.StartNew(async () =>
             {
-                Items = BuildTreeItemList(await PopulateBranchAsync(ObjectIds.ObjectsFolder, isShowSubvariable: ShowSubvariable), RenderTreeItem).ToList();
+                Items = BuildTreeItemList(await PopulateBranchAsync(ObjectIds.ObjectsFolder), RenderTreeItem).ToList();
                 ShowSkeleton = false;
                 await InvokeAsync(StateHasChanged);
             });
@@ -97,7 +97,7 @@ public partial class OpcUaImportVariable
 
     private async Task<IEnumerable<TreeViewItem<OpcUaTagModel>>> OnExpandNodeAsync(TreeViewItem<OpcUaTagModel> treeViewItem)
     {
-        var data = BuildTreeItemList(await PopulateBranchAsync(treeViewItem.Value.NodeId, isShowSubvariable: ShowSubvariable), RenderTreeItem);
+        var data = BuildTreeItemList(await PopulateBranchAsync(treeViewItem.Value.NodeId), RenderTreeItem);
         return data;
     }
 
@@ -113,7 +113,7 @@ public partial class OpcUaImportVariable
         {
             if (model.Children.Count == 0)
             {
-                model.Children = await PopulateBranchAsync((NodeId)model.Tag.NodeId, isShowSubvariable: ShowSubvariable);
+                model.Children = await PopulateBranchAsync((NodeId)model.Tag.NodeId);
             }
             foreach (var item in model.Children)
             {
@@ -154,16 +154,10 @@ public partial class OpcUaImportVariable
         return references;
     }
 
-    private async Task PopulateBranchAsync(OpcUaTagModel model)
-    {
-        var sourceId = (NodeId)model.Tag.NodeId;
-        model.Children = await PopulateBranchAsync(sourceId, isShowSubvariable: ShowSubvariable);
-    }
-
     [Parameter]
     public bool ShowSubvariable { get; set; }
 
-    private async Task<List<OpcUaTagModel>> PopulateBranchAsync(NodeId sourceId, bool isAll = false, bool isShowSubvariable = false)
+    private async Task<List<OpcUaTagModel>> PopulateBranchAsync(NodeId sourceId, bool isAll = false)
     {
         if (!Plc.Connected)
         {
@@ -185,13 +179,13 @@ public partial class OpcUaImportVariable
                     Name = Utils.Format("{0}", target),
                     Tag = target
                 };
-                if (isShowSubvariable || target.NodeClass != NodeClass.Variable)
+                if (ShowSubvariable || target.NodeClass != NodeClass.Variable)
                 {
                     var data = await GetReferenceDescriptionCollectionAsync((NodeId)target.NodeId);
                     if (data != null && data.Count > 0)
                     {
                         if (isAll)
-                            child.Children = await PopulateBranchAsync((NodeId)target.NodeId, isShowSubvariable: ShowSubvariable);
+                            child.Children = await PopulateBranchAsync((NodeId)target.NodeId);
                         else
                             child.Children = new();
                     }
@@ -231,6 +225,7 @@ public partial class OpcUaImportVariable
     {
         try
         {
+            if (Nodes == null) return;
             var data = await GetImportVariableList(await GetAllTag(Nodes));
             if (data.Item3 == null || data.Item3?.Count == 0)
             {
@@ -245,7 +240,7 @@ public partial class OpcUaImportVariable
         }
         catch (Exception ex)
         {
-            await ToastService.Warning(ex.Message);
+            await ToastService.Warn(ex);
         }
     }
 
@@ -253,6 +248,7 @@ public partial class OpcUaImportVariable
     {
         try
         {
+            if (Nodes == null) return;
             var data = await GetImportVariableList(await GetAllTag(Nodes));
             if (data.Item3 == null || data.Item3?.Count == 0)
             {
