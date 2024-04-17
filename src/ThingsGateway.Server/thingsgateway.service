@@ -4,16 +4,16 @@ Description=ThingsGateway
 
 # Service 配置参数
 [Service]
-Type=notify
-KillSignal=SIGINT
-KillMode=mixed
+#Type=notify
+#KillSignal=SIGINT
+#KillMode=mixed
 # 自启动项目所在的位置路径
 WorkingDirectory=/iot/ThingsGateway
 
 # 自启动项目的命令
 ExecStart=/usr/share/dotnet/dotnet /iot/ThingsGateway/ThingsGateway.Server.dll --urls=http://*:5000
 Restart=always
-RestartSec=120
+RestartSec=10
 # User=iot
 TimeoutStopSec=90
 SyslogIdentifier=ThingsGateway
