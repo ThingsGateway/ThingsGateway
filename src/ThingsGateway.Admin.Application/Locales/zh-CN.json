@@ -203,7 +203,6 @@
   "ThingsGateway.Admin.Application.VerificatInfo": {
     "Expire": "过期时间(分)",
     "Online": "在线状态",
-    "OnlineNum": "在线数量",
     "VerificatRemain": "剩余有效期",
     "VerificatTimeout": "超时时间",
     "Device": "登录设备"

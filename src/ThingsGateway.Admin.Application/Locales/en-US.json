@@ -205,7 +205,6 @@
   "ThingsGateway.Admin.Application.VerificatInfo": {
     "Expire": "Expire(min)",
     "Online": "Online",
-    "OnlineNum": "OnlineNum",
     "VerificatRemain": "VerificatRemain",
     "VerificatTimeout": "VerificatTimeout",
     "Device": "Device"
