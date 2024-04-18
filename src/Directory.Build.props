@@ -5,7 +5,7 @@
     <LangVersion>12.0</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Version>6.0.0.0</Version>
+    <Version>6.0.0.1</Version>
     <Authors>Diego</Authors>
     <Company>Diego</Company>
     <Product>Diego</Product>
@@ -15,10 +15,7 @@
     <GenerateResxSourceIncludeDefaultValues>true</GenerateResxSourceIncludeDefaultValues>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Content Remove="Locales\*.json" />
-    <EmbeddedResource Include="Locales\*.json" />
-  </ItemGroup>
+
 
   <ItemGroup>
     <None Include="$(SolutionDir)..\README.md" Pack="true" PackagePath="\" />
