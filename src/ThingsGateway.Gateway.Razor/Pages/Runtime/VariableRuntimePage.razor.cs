@@ -10,7 +10,10 @@
 //------------------------------------------------------------------------------
 
 
+using NewLife.Extension;
+
 using ThingsGateway.Admin.Application;
+using ThingsGateway.Core.Extension;
 using ThingsGateway.Core.Json.Extension;
 using ThingsGateway.Gateway.Application;
 using ThingsGateway.Razor;
@@ -55,7 +58,7 @@ public partial class VariableRuntimePage : IDisposable
 
     private Task<QueryData<VariableRunTime>> OnQueryAsync(QueryPageOptions options)
     {
-        var data = GlobalData.ReadOnlyVariables.Values.GetQueryData(options);
+        var data = GlobalData.ReadOnlyVariables.Values.WhereIF(!options.SearchText.IsNullOrWhiteSpace(), a => a.Name.Contains(options.SearchText)).GetQueryData(options);
         return Task.FromResult(data);
     }
 
