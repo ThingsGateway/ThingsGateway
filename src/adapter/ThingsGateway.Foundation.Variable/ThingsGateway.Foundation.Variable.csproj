@@ -1,22 +1,21 @@
 <Project Sdk="Microsoft.NET.Sdk">
-	<Import Project="$(SolutionDir)Foundation.props" />
-	<Import Project="$(SolutionDir)PackNuget.props" />
+  <Import Project="$(SolutionDir)Foundation.props" />
+  <Import Project="$(SolutionDir)PackNuget.props" />
 
-	<PropertyGroup>
-		<Description>工业设备通讯协议-变量</Description>
-		<TargetFrameworks>netstandard2.0;net6.0;</TargetFrameworks>
-	</PropertyGroup>
+  <PropertyGroup>
+    <Description>工业设备通讯协议-变量</Description>
+    <TargetFrameworks>netstandard2.0;net6.0;</TargetFrameworks>
+  </PropertyGroup>
 
-  
-	<ItemGroup>
-		<PackageReference Include="CS-Script" Version="4.8.14" />
-		<ProjectReference Include="$(SolutionDir)\adapter\ThingsGateway.Foundation.SourceGenerator\ThingsGateway.Foundation.SourceGenerator.csproj" ReferenceOutputAssembly="false" />
-		<ProjectReference Include="$(SolutionDir)\ThingsGateway.Foundation\ThingsGateway.Foundation.csproj" />
-	</ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="CS-Script" Version="4.8.14" />
+    <ProjectReference Include="$(SolutionDir)\adapter\ThingsGateway.Foundation.SourceGenerator\ThingsGateway.Foundation.SourceGenerator.csproj" ReferenceOutputAssembly="false" />
+    <ProjectReference Include="$(SolutionDir)\ThingsGateway.Foundation\ThingsGateway.Foundation.csproj" />
+  </ItemGroup>
 
-	<ItemGroup>
-		<None Include="$(SolutionDir)\adapter\ThingsGateway.Foundation.SourceGenerator\tools\*.ps1" PackagePath="tools" Pack="true" Visible="false" />
-		<None Include="$(SolutionDir)\adapter\ThingsGateway.Foundation.SourceGenerator\bin\$(Configuration)\netstandard2.0\ThingsGateway.Foundation.SourceGenerator.dll" PackagePath="analyzers\dotnet\cs" Pack="true" Visible="false" />
-	</ItemGroup>
-	
+  <ItemGroup>
+    <None Include="$(SolutionDir)\adapter\ThingsGateway.Foundation.SourceGenerator\tools\*.ps1" PackagePath="tools" Pack="true" Visible="false" />
+    <None Include="$(SolutionDir)\adapter\ThingsGateway.Foundation.SourceGenerator\bin\$(Configuration)\netstandard2.0\ThingsGateway.Foundation.SourceGenerator.dll" PackagePath="analyzers\dotnet\cs" Pack="true" Visible="false" />
+  </ItemGroup>
+
 </Project>

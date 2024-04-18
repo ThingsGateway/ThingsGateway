@@ -1,24 +1,18 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
-	<Import Project="$(SolutionDir)Plugin.props" />
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+  <Import Project="$(SolutionDir)Plugin.props" />
 
-	<PropertyGroup>
-		<DefineConstants>Plugin</DefineConstants>
-	</PropertyGroup>
+  <PropertyGroup>
+    <DefineConstants>Plugin</DefineConstants>
+  </PropertyGroup>
 
-	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
 
-		<Exec Command="@echo off&#xD;&#xA;setlocal enabledelayedexpansion&#xD;&#xA;&#xD;&#xA;set targetFWS=$(TargetFrameworks)&#xD;&#xA;for %25%25f in (%25targetFWS%25) do (&#xD;&#xA;    set &quot;dir=$(SolutionDir)ThingsGateway.Server\bin\$(Configuration)\%25%25f\Plugins\$(AssemblyName)&quot;&#xD;&#xA;    if not exist &quot;!dir!&quot; md &quot;!dir!&quot;&#xD;&#xA;    copy &quot;$(TargetDir)*OpcDa*.dll&quot; &quot;!dir!&quot;&#xD;&#xA;)&#xD;&#xA;&#xD;&#xA;endlocal&#xD;&#xA;&#xD;&#xA;" />
-	</Target>
+    <Exec Command="@echo off&#xD;&#xA;setlocal enabledelayedexpansion&#xD;&#xA;&#xD;&#xA;set targetFWS=$(TargetFrameworks)&#xD;&#xA;for %25%25f in (%25targetFWS%25) do (&#xD;&#xA;    set &quot;dir=$(SolutionDir)ThingsGateway.Server\bin\$(Configuration)\%25%25f\Plugins\$(AssemblyName)&quot;&#xD;&#xA;    if not exist &quot;!dir!&quot; md &quot;!dir!&quot;&#xD;&#xA;    copy &quot;$(TargetDir)*OpcDa*.dll&quot; &quot;!dir!&quot;&#xD;&#xA;)&#xD;&#xA;&#xD;&#xA;endlocal&#xD;&#xA;&#xD;&#xA;" />
+  </Target>
 
-	<ItemGroup>
-		<Content Remove="Locales\*.json" />
-		<EmbeddedResource Include="Locales\*.json" />
-	</ItemGroup>
-
-
-	<ItemGroup>
-		<ProjectReference Include="$(SolutionDir)\adapter\ThingsGateway.Foundation.OpcDa\ThingsGateway.Foundation.OpcDa.csproj" />
-	</ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="$(SolutionDir)\adapter\ThingsGateway.Foundation.OpcDa\ThingsGateway.Foundation.OpcDa.csproj" />
+  </ItemGroup>
 
 
 </Project>

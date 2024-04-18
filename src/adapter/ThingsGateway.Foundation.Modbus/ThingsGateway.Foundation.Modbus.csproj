@@ -1,23 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-	<Import Project="$(SolutionDir)Foundation.props" />
-	<Import Project="$(SolutionDir)PackNuget.props" />
-	<PropertyGroup>
-		<Description>工业设备通讯协议-Modbus协议</Description>
-		<DocumentationFile></DocumentationFile>
-
-	</PropertyGroup>
-	
-	<ItemGroup>
-		<Content Remove="Locales\*.json" />
-		<EmbeddedResource Include="Locales\*.json" />
-	</ItemGroup>
+  <Import Project="$(SolutionDir)Foundation.props" />
+  <Import Project="$(SolutionDir)PackNuget.props" />
+  <PropertyGroup>
+    <Description>工业设备通讯协议-Modbus协议</Description>
+    <DocumentationFile></DocumentationFile>
+  </PropertyGroup>
 
 
+  <ItemGroup>
+    <ProjectReference Include="$(SolutionDir)\ThingsGateway.Foundation\ThingsGateway.Foundation.csproj" />
+  </ItemGroup>
 
-	<ItemGroup>
-		<ProjectReference Include="$(SolutionDir)\ThingsGateway.Foundation\ThingsGateway.Foundation.csproj">
-		</ProjectReference>
-	</ItemGroup>
 
 </Project>

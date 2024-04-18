@@ -1,28 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-		<Import Project="$(SolutionDir)Foundation.props" />
+
+  <PropertyGroup>
+    <TargetFrameworks>net48;netstandard2.1;net6.0;</TargetFrameworks>
+    <Description>工业设备通讯协议-OpcUa协议</Description>
+    <DocumentationFile></DocumentationFile>
+  </PropertyGroup>
 
 
-	<PropertyGroup>
-		<TargetFrameworks>net48;netstandard2.1;net6.0;</TargetFrameworks>
-		<DocumentationFile></DocumentationFile>
-	</PropertyGroup>
-	
-	<PropertyGroup>
-		<Description>工业设备通讯协议-OpcUa协议</Description>
-	</PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Client" Version="1.5.374.36" />
+    <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Client.ComplexTypes" Version="1.5.374.36" />
+  </ItemGroup>
 
-	<ItemGroup>
-		<Content Remove="Locales\*.json" />
-		<EmbeddedResource Include="Locales\*.json" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-		<PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Client" Version="1.5.374.36" />
-		<PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Client.ComplexTypes" Version="1.5.374.36" />
-	</ItemGroup>
-	<ItemGroup>
-	  <ProjectReference Include="..\..\ThingsGateway.Foundation\ThingsGateway.Foundation.csproj" />
-	</ItemGroup>
 </Project>

@@ -1,25 +1,10 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+<Project Sdk="Microsoft.NET.Sdk.Razor">
 
-
-
-	<!--资源-->
-
-
-	<ItemGroup>
-		<Content Remove="Locales\*.json" />
-		<EmbeddedResource Include="Locales\*.json" />
-	</ItemGroup>
-
-
-	
 	<ItemGroup>
 		<ProjectReference Include="$(SolutionDir)\ThingsGateway.Admin.Razor\ThingsGateway.Admin.Razor.csproj" />
 		<ProjectReference Include="$(SolutionDir)\ThingsGateway.Gateway.Application\ThingsGateway.Gateway.Application.csproj" />
 	</ItemGroup>
-	
 
-
-	
 </Project>
 
 

@@ -7,15 +7,10 @@
 		<DocumentationFile></DocumentationFile>
 	</PropertyGroup>
 
-	<ItemGroup>
-		<Content Remove="Locales\*.json" />
-		<EmbeddedResource Include="Locales\*.json" />
-	</ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="$(SolutionDir)\ThingsGateway.Foundation\ThingsGateway.Foundation.csproj" />
+  </ItemGroup>
 
-	<ItemGroup>
-		<ProjectReference Include="$(SolutionDir)\ThingsGateway.Foundation\ThingsGateway.Foundation.csproj">
-		</ProjectReference>
-	</ItemGroup>
-	
+  
 </Project>
