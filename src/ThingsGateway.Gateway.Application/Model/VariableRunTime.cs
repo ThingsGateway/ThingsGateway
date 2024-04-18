@@ -1,4 +1,4 @@
-
+﻿
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -214,7 +214,7 @@ public class VariableRunTime : Variable, IVariable
                 Type type = data?.GetType();
                 if (typeof(IComparable).IsAssignableFrom(type))
                 {
-                    changed = (data != _value);
+                    changed = !(data.Equals(_value));
                 }
                 else
                 {
