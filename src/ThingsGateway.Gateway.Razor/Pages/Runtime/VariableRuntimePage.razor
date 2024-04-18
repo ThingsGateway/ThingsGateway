@@ -45,6 +45,7 @@
             <TableColumn @bind-Field="@context.Unit" Visible="false" />
 
             <TableColumn @bind-Field="@context.Index" Visible="false" />
+            <TableColumn @bind-Field="@context.Id" Visible="false" DefaultSort=true DefaultSortOrder="SortOrder.Asc"/>
             @* <TableColumn Field="@context.AlarmEnable" FieldExpression=@(()=>context.AlarmEnable) Editable="false" Visible="false" />
 
             <TableColumn @bind-Field="@context.BoolOpenAlarmEnable" Editable="false" Visible="false" />
