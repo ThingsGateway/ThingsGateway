@@ -6,7 +6,12 @@
 	<ItemGroup>
 		<None Include="$(SolutionDir)Plugin.props" Pack="true" PackagePath="\" />
 	</ItemGroup>
-
+  <ItemGroup>
+    <Content Remove="Locales\*.json" />
+    <EmbeddedResource Include="Locales\*.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
 	<ItemGroup>
 
 		<ProjectReference Include="$(SolutionDir)ThingsGateway.Gateway.Razor\ThingsGateway.Gateway.Razor.csproj">

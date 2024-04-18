@@ -1,4 +1,4 @@
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -1152,7 +1152,7 @@ public class OpcUaMaster : IDisposable
     /// Report the client status
     /// </summary>
     /// <param name="logLevel">Whether the status represents an error. </param>
-    /// <param name="time">The time associated with the status.</param>
+    /// <param name="exception">exception</param>
     /// <param name="status">The status message.</param>
     /// <param name="args">Arguments used to format the status message.</param>
     private void Log(byte logLevel, Exception exception, string status, params object[] args)

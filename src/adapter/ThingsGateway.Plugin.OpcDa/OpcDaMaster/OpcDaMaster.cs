@@ -23,6 +23,7 @@ namespace ThingsGateway.Plugin.OpcDa;
 /// <summary>
 /// <inheritdoc/>
 /// </summary>
+[OnlyWindowsSupport]
 public class OpcDaMaster : CollectBase
 {
     private readonly OpcDaMasterProperty _driverProperties = new();
