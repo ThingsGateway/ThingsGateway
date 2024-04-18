@@ -34,15 +34,6 @@ public class Dlt645_2007Master : ProtocolBase
     }
 
     /// <inheritdoc/>
-    public override bool IsSingleThread
-    {
-        get
-        {
-            return true;
-        }
-    }
-
-    /// <inheritdoc/>
     public bool EnableFEHead { get; set; }
 
     /// <inheritdoc/>

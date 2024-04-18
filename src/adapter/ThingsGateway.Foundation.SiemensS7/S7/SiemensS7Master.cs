@@ -60,15 +60,6 @@ public partial class SiemensS7Master : ProtocolBase
     #endregion 设置
 
     /// <inheritdoc/>
-    public override bool IsSingleThread
-    {
-        get
-        {
-            return true;
-        }
-    }
-
-    /// <inheritdoc/>
     public override string GetAddressDescription()
     {
         var str = SiemensS7Resource.Localizer["AddressDes"];
