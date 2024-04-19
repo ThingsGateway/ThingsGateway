@@ -139,7 +139,7 @@ public class SysUserService : BaseService<SysUser>, ISysUserService
             }
             else
             {
-                buttonCodeList.Add(href, new List<string>());
+                buttonCodeList.Add(href, new List<string>() { item.Title });
             }
         }
         return buttonCodeList!;
