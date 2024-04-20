@@ -28,7 +28,7 @@ public class CacheDBUtil
         var dir = GetFilePath(folder);
         var fileStart = GetFileName(name);
         var fullName = dir.CombinePathWithOs($"{fileStart}{ex}");
-        var cache = new CacheDB(tableType, new CacheDBOption() { DataSource = fullName });
+        var cache = new CacheDB(tableType, new CacheDBOption() { DataSource = $"DataSource={fullName}" });
         return cache;
     }
 

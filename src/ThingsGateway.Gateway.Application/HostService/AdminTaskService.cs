@@ -41,7 +41,7 @@ internal class AdminTaskService : BackgroundService
                 await DeleteBackendLog(daysAgo, stoppingToken);
                 await DeleteRpcLog(daysAgo, stoppingToken);
                 await DeleteTextLog(stoppingToken);
-                await DeleteLiteDB(stoppingToken);
+                await DeleteLocalDB(stoppingToken);
                 await Task.Delay(TimeSpan.FromDays(1), stoppingToken);
             }
             catch (OperationCanceledException)
@@ -122,7 +122,7 @@ internal class AdminTaskService : BackgroundService
         return Task.CompletedTask;
     }
 
-    public Task DeleteLiteDB(CancellationToken stoppingToken)
+    public Task DeleteLocalDB(CancellationToken stoppingToken)
     {
         var deviceService = App.RootServices.GetService<IDeviceService>();
         var data = deviceService.GetAll().Where(a => a.PluginType == PluginTypeEnum.Business).Select(a => a.Id);

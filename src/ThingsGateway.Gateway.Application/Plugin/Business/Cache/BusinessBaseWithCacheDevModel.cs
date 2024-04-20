@@ -33,7 +33,7 @@ public abstract class BusinessBaseWithCacheDevModel<VarModel, DevModel> : Busine
     {
         if (data?.Count > 0)
         {
-            using var cache = LiteDBCacheDevModel();
+            using var cache = LocalDBCacheDevModel();
             cache.DBProvider.Fastest<CacheDBItem<DevModel>>().PageSize(50000).BulkCopy(data);
         }
     }
@@ -64,12 +64,19 @@ public abstract class BusinessBaseWithCacheDevModel<VarModel, DevModel> : Busine
         _memoryDevModelQueue.Enqueue(data);
     }
 
+    private volatile bool LocalDBCacheDevModelInited;
     /// <summary>
     /// 获取缓存对象，注意每次获取的对象可能不一样，如顺序操作，需固定引用
     /// </summary>
-    protected virtual CacheDB LiteDBCacheDevModel()
+    protected virtual CacheDB LocalDBCacheDevModel()
     {
-        return CacheDBUtil.GetCache(typeof(CacheDBItem<DevModel>), CurrentDevice.Id.ToString(), $"{CurrentDevice.PluginName}{typeof(DevModel).FullName}_{nameof(DevModel)}");
+        var cacheDb = CacheDBUtil.GetCache(typeof(CacheDBItem<DevModel>), CurrentDevice.Id.ToString(), $"{CurrentDevice.PluginName}_{typeof(DevModel).FullName}_{nameof(DevModel)}");
+        if (!LocalDBCacheDevModelInited)
+        {
+            cacheDb.InitDb();
+            LocalDBCacheDevModelInited = true;
+        }
+        return cacheDb;
     }
 
     protected override async Task Update(CancellationToken cancellationToken)
@@ -100,7 +107,7 @@ public abstract class BusinessBaseWithCacheDevModel<VarModel, DevModel> : Busine
                 {
                     while (!cancellationToken.IsCancellationRequested)
                     {
-                        using var cache = LiteDBCacheDevModel();
+                        using var cache = LocalDBCacheDevModel();
 
                         //循环获取
                         var varList = await cache.DBProvider.Queryable<CacheDBItem<DevModel>>().Take(_businessPropertyWithCache.SplitSize).ToListAsync();

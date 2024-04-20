@@ -33,7 +33,7 @@ public abstract class BusinessBaseWithCacheAlarmModel<VarModel, DevModel, AlarmM
     {
         if (data?.Count > 0)
         {
-            using var cache = LiteDBCacheAlarmModel();
+            using var cache = LocalDBCacheAlarmModel();
             cache.DBProvider.Fastest<CacheDBItem<AlarmModel>>().PageSize(50000).BulkCopy(data);
         }
     }
@@ -63,13 +63,21 @@ public abstract class BusinessBaseWithCacheAlarmModel<VarModel, DevModel, AlarmM
 
         _memoryAlarmModelQueue.Enqueue(data);
     }
+    private volatile bool LocalDBCacheAlarmModelInited;
 
     /// <summary>
     /// 获取缓存对象，注意每次获取的对象可能不一样，如顺序操作，需固定引用
     /// </summary>
-    protected virtual CacheDB LiteDBCacheAlarmModel()
+    protected virtual CacheDB LocalDBCacheAlarmModel()
     {
-        return CacheDBUtil.GetCache(typeof(CacheDBItem<AlarmModel>), CurrentDevice.Id.ToString(), $"{CurrentDevice.PluginName}{typeof(AlarmModel).FullName}_{nameof(AlarmModel)}");
+        var cacheDb = CacheDBUtil.GetCache(typeof(CacheDBItem<AlarmModel>), CurrentDevice.Id.ToString(), $"{CurrentDevice.PluginName}_{typeof(AlarmModel).FullName}_{nameof(AlarmModel)}");
+
+        if (!LocalDBCacheAlarmModelInited)
+        {
+            cacheDb.InitDb();
+            LocalDBCacheAlarmModelInited = true;
+        }
+        return cacheDb;
     }
 
     protected override async Task Update(CancellationToken cancellationToken)
@@ -102,7 +110,7 @@ public abstract class BusinessBaseWithCacheAlarmModel<VarModel, DevModel, AlarmM
                 {
                     while (!cancellationToken.IsCancellationRequested)
                     {
-                        using var cache = LiteDBCacheAlarmModel();
+                        using var cache = LocalDBCacheAlarmModel();
 
                         //循环获取，固定读最大行数量，执行完成需删除行
                         var varList = await cache.DBProvider.Queryable<CacheDBItem<AlarmModel>>().Take(_businessPropertyWithCache.SplitSize).ToListAsync();

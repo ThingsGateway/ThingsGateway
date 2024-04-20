@@ -60,6 +60,7 @@ public class CacheDB : DisposeBase
             DbType = DbType.Sqlite,
             IsAutoCloseConnection = true,
         });
+        DbContext.AopSetting(db, App.IsDevelopment);
         return db;
     }
 }

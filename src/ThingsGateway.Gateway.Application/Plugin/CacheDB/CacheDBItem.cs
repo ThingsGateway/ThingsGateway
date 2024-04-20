@@ -16,6 +16,7 @@ using Yitter.IdGenerator;
 
 namespace ThingsGateway.Admin.Application;
 
+[SqlSugar.SugarTable("CacheDBItem")]
 public class CacheDBItem<T> : IPrimaryIdEntity
 {
     public CacheDBItem()
