@@ -55,7 +55,7 @@ public class Device : PrimaryIdEntity
     /// 插件类型
     /// </summary>
     [SugarColumn(ColumnDescription = "插件类型")]
-    [AutoGenerateColumn(Visible = false, Filterable = false, Sortable = false)]
+    [AutoGenerateColumn(Ignore = true)]
     public virtual PluginTypeEnum PluginType { get; set; }
 
     /// <summary>

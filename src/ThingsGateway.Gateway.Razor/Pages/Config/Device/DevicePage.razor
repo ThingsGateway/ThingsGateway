@@ -17,14 +17,14 @@
                 OnSaveAsync="Save" OnDeleteAsync="Delete">
 
         <TableColumns>
-            <TableColumn @bind-Field="@context.PluginName" Width="50" Align="Alignment.Center">
+            <TableColumn @bind-Field="@context.PluginName" Align="Alignment.Center">
                 <Template Context="pluginName">
                     @PluginServiceUtil.GetFileNameAndTypeName(pluginName?.Value).TypeName
                 </Template>
 
             </TableColumn>
 
-            <TableColumn @bind-Field="@context.ChannelId" Width="50" Align="Alignment.Center">
+            <TableColumn @bind-Field="@context.ChannelId" Align="Alignment.Center">
                 <Template Context="channelId">
                     @{
                         ChannelDict.TryGetValue(channelId.Value, out var channel);

@@ -19,7 +19,7 @@
 
         <TableColumns>
 
-            <TableColumn @bind-Field="@context.DeviceId" Width="50" Align="Alignment.Center">
+            <TableColumn @bind-Field="@context.DeviceId" Align="Alignment.Center">
                 <Template Context="deviceId">
                     @{
                         CollectDeviceDict.TryGetValue(deviceId.Value!.Value, out var device);
