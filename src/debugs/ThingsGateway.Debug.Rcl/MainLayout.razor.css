@@ -93,11 +93,6 @@
     border-radius: unset;
 }
 
-.mainlayout ::deep .table-fixed .table-fixed-body {
-    overflow-x: auto;
-    overflow-y: auto;
-}
-
 .mainlayout ::deep .layout-side {
     box-shadow: inset -1px 0 0px 0px var(--bs-border-color); /* 下内阴影 */
 }
