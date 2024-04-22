@@ -1,6 +1,6 @@
 ﻿{
   "ThingsGateway.Foundation.Dlt645.Dlt645_2007Master": {
-    "EnableFEHead": "前导符报文头",
+    "FEHead": "前导符报文头",
     "OperCode": "操作员代码",
     "Password": "写入密码",
     "Station": "通讯地址",

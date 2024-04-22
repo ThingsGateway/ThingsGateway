@@ -1,6 +1,6 @@
 ﻿{
   "ThingsGateway.Plugin.Dlt645.Dlt645_2007MasterProperty": {
-    "EnableFEHead": "EnableFEHead",
+    "FEHead": "FEHead",
     "OperCode": "OperCode",
     "Password": "Password",
     "Station": "DefaultStation",

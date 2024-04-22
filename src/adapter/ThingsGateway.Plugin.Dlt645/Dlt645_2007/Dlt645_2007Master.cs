@@ -48,7 +48,7 @@ public class Dlt645_2007Master : CollectBase
             CacheTimeout = _driverPropertys.CacheTimeout,
             ConnectTimeout = _driverPropertys.ConnectTimeout,
             Timeout = _driverPropertys.Timeout,
-            EnableFEHead = _driverPropertys.EnableFEHead,
+            FEHead = _driverPropertys.FEHead,
             OperCode = _driverPropertys.OperCode,
             Password = _driverPropertys.Password,
             CheckClearTime = _driverPropertys.CheckClearTime,

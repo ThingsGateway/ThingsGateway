@@ -12,7 +12,10 @@
 
 
 
+using NewLife.Extension;
+
 using ThingsGateway.Foundation.Extension.Generic;
+using ThingsGateway.Foundation.Extension.String;
 
 namespace ThingsGateway.Foundation.Dlt645;
 
@@ -24,15 +27,15 @@ internal class Dlt645_2007UdpDataHandleAdapter : ReadWriteDevicesUdpDataHandleAd
     /// <summary>
     /// 增加FE FE FE FE的报文头部
     /// </summary>
-    public bool EnableFEHead { get; set; }
+    public string FEHead { get; set; }
 
     /// <inheritdoc/>
     public override byte[] PackCommand(byte[] command, Dlt645_2007Message item)
     {
         //打包时加上4个FE字节
-        if (EnableFEHead)
+        if (!FEHead.IsNullOrWhiteSpace())
         {
-            return DataTransUtil.SpliceArray(new byte[4] { 0xFE, 0xFE, 0xFE, 0xFE }, command);
+            return DataTransUtil.SpliceArray(FEHead.HexStringToBytes(), command);
         }
         return command;
     }

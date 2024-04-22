@@ -1,4 +1,4 @@
-
+﻿
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -221,6 +221,7 @@ namespace ThingsGateway.Foundation
         /// <inheritdoc/>
         public virtual void Close(string msg = TouchSocketCoreUtility.Empty)
         {
+            if(this.DisposedValue) return;
             lock (this.GetSerialCore())
             {
                 if (this.m_online)

@@ -1,6 +1,6 @@
 ﻿{
   "ThingsGateway.Foundation.Dlt645.Dlt645_2007Master": {
-    "EnableFEHead": "Front-end identifier in message header",
+    "FEHead": "Front-end identifier in message header",
     "OperCode": "Operator code",
     "Password": "Write password",
     "Station": "Communication address",

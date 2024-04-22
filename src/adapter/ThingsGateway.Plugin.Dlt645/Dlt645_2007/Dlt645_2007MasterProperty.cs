@@ -85,7 +85,7 @@ public class Dlt645_2007MasterProperty : CollectPropertyBase
     /// 前导符报文头
     /// </summary>
     [DynamicProperty]
-    public bool EnableFEHead { get; set; } = true;
+    public string FEHead { get; set; } = "FEFEFEFE";
 
     public override int ConcurrentCount { get; set; } = 1;
 }

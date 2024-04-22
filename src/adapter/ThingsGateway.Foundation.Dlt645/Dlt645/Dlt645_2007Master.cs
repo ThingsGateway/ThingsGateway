@@ -34,7 +34,7 @@ public class Dlt645_2007Master : ProtocolBase,IDtu
     }
 
     /// <inheritdoc/>
-    public bool EnableFEHead { get; set; }
+    public string FEHead { get; set; } = "FEFEFEFE";
 
     /// <inheritdoc/>
     public string OperCode { get; set; }
@@ -98,20 +98,20 @@ public class Dlt645_2007Master : ProtocolBase,IDtu
             case ChannelTypeEnum.SerialPortClient:
                 return new Dlt645_2007DataHandleAdapter
                 {
-                    EnableFEHead = EnableFEHead,
+                    FEHead = FEHead,
                     CacheTimeout = TimeSpan.FromMilliseconds(CacheTimeout)
                 };
 
             case ChannelTypeEnum.UdpSession:
                 return new Dlt645_2007UdpDataHandleAdapter()
                 {
-                    EnableFEHead = EnableFEHead,
+                    FEHead = FEHead,
                 };
         }
 
         return new Dlt645_2007DataHandleAdapter
         {
-            EnableFEHead = EnableFEHead,
+            FEHead = FEHead,
             CacheTimeout = TimeSpan.FromMilliseconds(CacheTimeout)
         };
     }
