@@ -1,5 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <Import Project="$(SolutionDir)Foundation.props" />
+  <Import Project="$(SolutionDir)PackNuget.props" />
 
   <PropertyGroup>
     <Description>工业设备通讯协议-基础类库</Description>
