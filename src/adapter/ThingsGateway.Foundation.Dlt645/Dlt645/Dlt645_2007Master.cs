@@ -127,9 +127,9 @@ public class Dlt645_2007Master : ProtocolBase,IDtu
     {
         try
         {
-            var commandResult = Dlt645Helper.GetDlt645_2007Command(address, (byte)ControlCode.Read, Station);
-
-            return SendThenReturn(address, commandResult, cancellationToken);
+            var dAddress = Dlt645_2007Address.ParseFrom(address);
+            var commandResult = Dlt645Helper.GetDlt645_2007Command(dAddress, (byte)ControlCode.Read, Station);
+            return SendThenReturn(dAddress.SocketId, commandResult, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -137,39 +137,7 @@ public class Dlt645_2007Master : ProtocolBase,IDtu
         }
     }
 
-    private OperResult Send(string address, byte[] commandResult, CancellationToken cancellationToken)
-    {
-        if (Channel.ChannelType == ChannelTypeEnum.TcpService)
-        {
-            var mAddress = Dlt645_2007Address.ParseFrom(address);
-            if (((TcpServiceBase)Channel).SocketClients.TryGetSocketClient($"ID={mAddress.SocketId}", out TgSocketClient? client))
-            {
-                Send(commandResult, client);
-                return new();
-            }
-            else
-                return new OperResult<byte[]>(DefaultResource.Localizer["DtuNoConnectedWaining"]);
-        }
-        else
-        {
-            Send(commandResult);
-            return new();
-        }
-    }
-
-    private OperResult<byte[]> SendThenReturn(string address, byte[] commandResult, CancellationToken cancellationToken)
-    {
-        if (Channel.ChannelType == ChannelTypeEnum.TcpService)
-        {
-            var mAddress = Dlt645_2007Address.ParseFrom(address);
-            if (((TcpServiceBase)Channel).SocketClients.TryGetSocketClient($"ID={mAddress.SocketId}", out TgSocketClient? client))
-                return SendThenReturn(new SendMessage(commandResult), cancellationToken, client);
-            else
-                return new OperResult<byte[]>(DefaultResource.Localizer["DtuNoConnectedWaining"]);
-        }
-        else
-            return SendThenReturn(new SendMessage(commandResult), cancellationToken);
-    }
+     
 
     /// <inheritdoc/>
     public override OperResult<string[]> ReadString(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
@@ -192,8 +160,9 @@ public class Dlt645_2007Master : ProtocolBase,IDtu
     {
         try
         {
-            var commandResult = Dlt645Helper.GetDlt645_2007Command(address, (byte)ControlCode.Read, Station);
-            return await SendThenReturnAsync(address, commandResult, cancellationToken);
+            var dAddress = Dlt645_2007Address.ParseFrom(address);
+            var commandResult = Dlt645Helper.GetDlt645_2007Command(dAddress, (byte)ControlCode.Read, Station);
+            return await SendThenReturnAsync(dAddress.SocketId, commandResult, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -201,20 +170,7 @@ public class Dlt645_2007Master : ProtocolBase,IDtu
         }
     }
 
-    private Task<OperResult<byte[]>> SendThenReturnAsync(string address, byte[] commandResult, CancellationToken cancellationToken)
-    {
-        if (Channel.ChannelType == ChannelTypeEnum.TcpService)
-        {
-            var mAddress = Dlt645_2007Address.ParseFrom(address);
-            if (((TcpServiceBase)Channel).SocketClients.TryGetSocketClient($"ID={mAddress.SocketId}", out TgSocketClient? client))
-                return SendThenReturnAsync(new SendMessage(commandResult), cancellationToken, client);
-            else
-                return Task.FromResult(new OperResult<byte[]>(DefaultResource.Localizer["DtuNoConnectedWaining"]));
-        }
-        else
-            return SendThenReturnAsync(new SendMessage(commandResult), cancellationToken);
-    }
-
+ 
     /// <inheritdoc/>
     public override OperResult Write(string address, string value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
     {
@@ -229,8 +185,9 @@ public class Dlt645_2007Master : ProtocolBase,IDtu
 
             var data = DataTransUtil.SpliceArray(Password.ByHexStringToBytes(), OperCode.ByHexStringToBytes());
             string[] strArray = value.SplitStringBySemicolon();
-            var commandResult = Dlt645Helper.GetDlt645_2007Command(address, (byte)ControlCode.Write, Station, data, strArray);
-            return SendThenReturn(string.Empty, commandResult, cancellationToken);
+            var dAddress = Dlt645_2007Address.ParseFrom(address);
+            var commandResult = Dlt645Helper.GetDlt645_2007Command(dAddress, (byte)ControlCode.Write, Station, data, strArray);
+            return SendThenReturn(dAddress.SocketId, commandResult, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -252,8 +209,9 @@ public class Dlt645_2007Master : ProtocolBase,IDtu
 
             var data = DataTransUtil.SpliceArray(Password.ByHexStringToBytes(), OperCode.ByHexStringToBytes());
             string[] strArray = value.SplitStringBySemicolon();
-            var commandResult = Dlt645Helper.GetDlt645_2007Command(address, (byte)ControlCode.Write, Station, data, strArray);
-            return await SendThenReturnAsync(string.Empty, commandResult, cancellationToken);
+            var dAddress = Dlt645_2007Address.ParseFrom(address);
+            var commandResult = Dlt645Helper.GetDlt645_2007Command(dAddress, (byte)ControlCode.Write, Station, data, strArray);
+            return await SendThenReturnAsync(dAddress.SocketId, commandResult, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -327,10 +285,11 @@ public class Dlt645_2007Master : ProtocolBase,IDtu
     /// <summary>
     /// 冻结
     /// </summary>
+    /// <param name="socketId">socketId</param>
     /// <param name="dateTime">时间</param>
     /// <param name="cancellationToken">取消令箭</param>
     /// <returns></returns>
-    public async Task<OperResult> FreezeAsync(DateTime dateTime, CancellationToken cancellationToken = default)
+    public async Task<OperResult> FreezeAsync(string socketId,DateTime dateTime, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -338,7 +297,7 @@ public class Dlt645_2007Master : ProtocolBase,IDtu
             if (Station.IsNullOrEmpty()) Station = string.Empty;
             if (Station.Length < 12) Station = Station.PadLeft(12, '0');
             var commandResult = Dlt645Helper.GetDlt645_2007Command((byte)ControlCode.Freeze, str.ByHexStringToBytes().ToArray(), Station.ByHexStringToBytes().Reverse().ToArray());
-            return await SendThenReturnAsync(string.Empty, commandResult, cancellationToken);
+            return await SendThenReturnAsync(socketId, commandResult, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -349,14 +308,15 @@ public class Dlt645_2007Master : ProtocolBase,IDtu
     /// <summary>
     /// 读取通信地址
     /// </summary>
+    /// <param name="socketId">socketId</param>
     /// <param name="cancellationToken">取消令箭</param>
     /// <returns></returns>
-    public async Task<OperResult<string>> ReadDeviceStationAsync(CancellationToken cancellationToken = default)
+    public async Task<OperResult<string>> ReadDeviceStationAsync(string socketId, CancellationToken cancellationToken = default)
     {
         try
         {
             var commandResult = Dlt645Helper.GetDlt645_2007Command((byte)ControlCode.ReadStation, null, "AAAAAAAAAAAA".ByHexStringToBytes());
-            var result = await SendThenReturnAsync(string.Empty, commandResult, cancellationToken);
+            var result = await SendThenReturnAsync(socketId, commandResult, cancellationToken);
             if (result.IsSuccess)
             {
                 var buffer = result.Content.SelectMiddle(0, 6).BytesAdd(-0x33);
@@ -376,10 +336,11 @@ public class Dlt645_2007Master : ProtocolBase,IDtu
     /// <summary>
     /// 修改波特率
     /// </summary>
+    /// <param name="socketId">socketId</param>
     /// <param name="baudRate">波特率</param>
     /// <param name="cancellationToken">取消令箭</param>
     /// <returns></returns>
-    public async Task<OperResult> WriteBaudRateAsync(int baudRate, CancellationToken cancellationToken = default)
+    public async Task<OperResult> WriteBaudRateAsync(string socketId,int baudRate, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -397,7 +358,7 @@ public class Dlt645_2007Master : ProtocolBase,IDtu
             if (Station.IsNullOrEmpty()) Station = string.Empty;
             if (Station.Length < 12) Station = Station.PadLeft(12, '0');
             var commandResult = Dlt645Helper.GetDlt645_2007Command((byte)ControlCode.WriteBaudRate, new byte[] { baudRateByte }, Station.ByHexStringToBytes().Reverse().ToArray());
-            return await SendThenReturnAsync(string.Empty, commandResult, cancellationToken);
+            return await SendThenReturnAsync(socketId, commandResult, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -408,15 +369,16 @@ public class Dlt645_2007Master : ProtocolBase,IDtu
     /// <summary>
     /// 更新通信地址
     /// </summary>
+    /// <param name="socketId">socketId</param>
     /// <param name="station">站号</param>
     /// <param name="cancellationToken">取消令箭</param>
     /// <returns></returns>
-    public async Task<OperResult> WriteDeviceStationAsync(string station, CancellationToken cancellationToken = default)
+    public async Task<OperResult> WriteDeviceStationAsync(string socketId,string station, CancellationToken cancellationToken = default)
     {
         try
         {
             var commandResult = Dlt645Helper.GetDlt645_2007Command((byte)ControlCode.WriteStation, station.ByHexStringToBytes().Reverse().ToArray(), "AAAAAAAAAAAA".ByHexStringToBytes());
-            return await SendThenReturnAsync(string.Empty, commandResult, cancellationToken);
+            return await SendThenReturnAsync(socketId, commandResult, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -427,12 +389,13 @@ public class Dlt645_2007Master : ProtocolBase,IDtu
     /// <summary>
     /// 修改密码
     /// </summary>
+    /// <param name="socketId">socketId</param>
     /// <param name="level">密码等级，0-8</param>
     /// <param name="oldPassword">旧密码</param>
     /// <param name="newPassword">新密码</param>
     /// <param name="cancellationToken">取消令箭</param>
     /// <returns></returns>
-    public async Task<OperResult> WritePasswordAsync(byte level, string oldPassword, string newPassword, CancellationToken cancellationToken = default)
+    public async Task<OperResult> WritePasswordAsync(string socketId,byte level, string oldPassword, string newPassword, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -447,7 +410,7 @@ public class Dlt645_2007Master : ProtocolBase,IDtu
             var commandResult = Dlt645Helper.GetDlt645_2007Command((byte)ControlCode.WritePassword,
                 bytes
                 , Station.ByHexStringToBytes().Reverse().ToArray());
-            return await SendThenReturnAsync(string.Empty, commandResult, cancellationToken);
+            return await SendThenReturnAsync(socketId, commandResult, cancellationToken);
         }
         catch (Exception ex)
         {

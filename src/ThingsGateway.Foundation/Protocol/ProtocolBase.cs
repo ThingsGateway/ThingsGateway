@@ -330,6 +330,51 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
         return result;
     }
 
+    public virtual OperResult<byte[]> SendThenReturn(string socketId, byte[] commandResult, CancellationToken cancellationToken)
+    {
+        if (Channel.ChannelType == ChannelTypeEnum.TcpService)
+        {
+            if (((TcpServiceBase)Channel).SocketClients.TryGetSocketClient($"ID={socketId}", out TgSocketClient? client))
+                return SendThenReturn(new SendMessage(commandResult), cancellationToken, client);
+            else
+                return new OperResult<byte[]>(DefaultResource.Localizer["DtuNoConnectedWaining"]);
+        }
+        else
+            return SendThenReturn(new SendMessage(commandResult), cancellationToken);
+    }
+
+    public virtual Task<OperResult<byte[]>> SendThenReturnAsync(string socketId, byte[] commandResult, CancellationToken cancellationToken)
+    {
+        if (Channel.ChannelType == ChannelTypeEnum.TcpService)
+        {
+            if (((TcpServiceBase)Channel).SocketClients.TryGetSocketClient($"ID={socketId}", out TgSocketClient? client))
+                return SendThenReturnAsync(new SendMessage(commandResult), cancellationToken, client);
+            else
+                return Task.FromResult(new OperResult<byte[]>(DefaultResource.Localizer["DtuNoConnectedWaining"]));
+        }
+        else
+            return SendThenReturnAsync(new SendMessage(commandResult), cancellationToken);
+    }
+
+    public virtual OperResult Send(string socketId, byte[] commandResult, CancellationToken cancellationToken)
+    {
+        if (Channel.ChannelType == ChannelTypeEnum.TcpService)
+        {
+            if (((TcpServiceBase)Channel).SocketClients.TryGetSocketClient($"ID={socketId}", out TgSocketClient? client))
+            {
+                Send(commandResult, client);
+                return new();
+            }
+            else
+                return new OperResult<byte[]>(DefaultResource.Localizer["DtuNoConnectedWaining"]);
+        }
+        else
+        {
+            Send(commandResult);
+            return new();
+        }
+    }
+
     /// <summary>
     /// 是否需要并发锁，默认为true，对于工业主从协议，通常是必须的
     /// </summary>

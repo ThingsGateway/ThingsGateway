@@ -1174,7 +1174,7 @@ internal static class Dlt645Helper
     /// 获取Dlt645报文
     /// </summary>
     internal static byte[] GetDlt645_2007Command(
-      string address,
+      Dlt645_2007Address address,
       byte control,
       string defaultStation,
       byte[] codes = null,
@@ -1183,8 +1183,7 @@ internal static class Dlt645Helper
     {
         codes ??= new byte[0];
         datas ??= new string[0];
-        var operResult = Dlt645_2007Address.ParseFrom(address);
-        var buffer = operResult.DataId;
+        var buffer = address.DataId;
         if (buffer.Length > 0)
         {
             var dataInfos = GetDataInfos(buffer);
@@ -1241,7 +1240,7 @@ internal static class Dlt645Helper
         }
 
         byte[] stationBytes;
-        if (operResult.Station.Length == 0)
+        if (address.Station.Length == 0)
         {
             if (defaultStation.IsNullOrEmpty()) defaultStation = string.Empty;
             if (defaultStation.Length < 12)
@@ -1250,7 +1249,7 @@ internal static class Dlt645Helper
         }
         else
         {
-            stationBytes = operResult.Station;
+            stationBytes = address.Station;
         }
 
         return GetDlt645_2007Command(control, buffer, stationBytes);

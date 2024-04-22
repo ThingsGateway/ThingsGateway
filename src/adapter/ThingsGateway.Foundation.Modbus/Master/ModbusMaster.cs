@@ -174,7 +174,7 @@ public partial class ModbusMaster : ProtocolBase, IDtu
         {
             var mAddress = ModbusAddress.ParseFrom(address, Station);
             var commandResult = ModbusHelper.GetReadModbusCommand(mAddress, (ushort)length);
-            return SendThenReturn(mAddress, commandResult, cancellationToken);
+            return SendThenReturn(mAddress.SocketId, commandResult, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -189,7 +189,7 @@ public partial class ModbusMaster : ProtocolBase, IDtu
         {
             var mAddress = ModbusAddress.ParseFrom(address, Station);
             var commandResult = ModbusHelper.GetReadModbusCommand(mAddress, (ushort)length);
-            return await SendThenReturnAsync(mAddress, commandResult, cancellationToken);
+            return await SendThenReturnAsync(mAddress.SocketId, commandResult, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -210,7 +210,7 @@ public partial class ModbusMaster : ProtocolBase, IDtu
                 commandResult = ModbusHelper.GetWriteModbusCommand(mAddress, value);
             else
                 commandResult = ModbusHelper.GetWriteOneModbusCommand(mAddress, value);
-            return SendThenReturn(mAddress, commandResult, cancellationToken);
+            return SendThenReturn(mAddress.SocketId, commandResult, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -228,26 +228,26 @@ public partial class ModbusMaster : ProtocolBase, IDtu
             if (value.Length > 1 || mAddress.WriteFunction == 15)
             {
                 var commandResult = ModbusHelper.GetWriteBoolModbusCommand(mAddress, value, (ushort)value.Length);
-                return SendThenReturn(mAddress, commandResult, cancellationToken);
+                return SendThenReturn(mAddress.SocketId, commandResult, cancellationToken);
             }
             else
             {
                 if (mAddress.BitIndex == null)
                 {
                     var commandResult = ModbusHelper.GetWriteBoolModbusCommand(mAddress, value[0]);
-                    return SendThenReturn(mAddress, commandResult, cancellationToken);
+                    return SendThenReturn(mAddress.SocketId, commandResult, cancellationToken);
                 }
                 else if (mAddress.BitIndex < 16)
                 {
                     //比如40001.1
                     var read = ModbusHelper.GetReadModbusCommand(mAddress, 1);
-                    var readData = SendThenReturn(mAddress, read, cancellationToken);
+                    var readData = SendThenReturn(mAddress.SocketId, read, cancellationToken);
                     if (!readData.IsSuccess) return readData;
                     var writeData = ThingsGatewayBitConverter.ToUInt16(readData.Content, 0);
                     ushort mask = (ushort)(1 << mAddress.BitIndex);
                     ushort result = (ushort)(value[0] ? (writeData | mask) : (writeData & ~mask));
                     var write = ModbusHelper.GetWriteOneModbusCommand(mAddress, ThingsGatewayBitConverter.GetBytes(result));
-                    return SendThenReturn(mAddress, write, cancellationToken);
+                    return SendThenReturn(mAddress.SocketId, write, cancellationToken);
                 }
                 else
                 {
@@ -274,7 +274,7 @@ public partial class ModbusMaster : ProtocolBase, IDtu
                 commandResult = ModbusHelper.GetWriteModbusCommand(mAddress, value);
             else
                 commandResult = ModbusHelper.GetWriteOneModbusCommand(mAddress, value);
-            return await SendThenReturnAsync(mAddress, commandResult, cancellationToken);
+            return await SendThenReturnAsync(mAddress.SocketId, commandResult, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -292,27 +292,27 @@ public partial class ModbusMaster : ProtocolBase, IDtu
             if (value.Length > 1 || mAddress.WriteFunction == 15)
             {
                 var commandResult = ModbusHelper.GetWriteBoolModbusCommand(mAddress, value, (ushort)value.Length);
-                return await SendThenReturnAsync(mAddress, commandResult, cancellationToken);
+                return await SendThenReturnAsync(mAddress.SocketId, commandResult, cancellationToken);
             }
             else
             {
                 if (mAddress.BitIndex == null)
                 {
                     var commandResult = ModbusHelper.GetWriteBoolModbusCommand(mAddress, value[0]);
-                    return await SendThenReturnAsync(mAddress, commandResult, cancellationToken);
+                    return await SendThenReturnAsync(mAddress.SocketId, commandResult, cancellationToken);
                 }
                 else if (mAddress.BitIndex < 16)
                 {
                     //比如40001.1
 
                     var read = ModbusHelper.GetReadModbusCommand(mAddress, 1);
-                    var readData = await SendThenReturnAsync(mAddress, read, cancellationToken);
+                    var readData = await SendThenReturnAsync(mAddress.SocketId, read, cancellationToken);
                     if (!readData.IsSuccess) return readData;
                     var writeData = ThingsGatewayBitConverter.ToUInt16(readData.Content, 0);
                     ushort mask = (ushort)(1 << mAddress.BitIndex);
                     ushort result = (ushort)(value[0] ? (writeData | mask) : (writeData & ~mask));
                     var write = ModbusHelper.GetWriteOneModbusCommand(mAddress, ThingsGatewayBitConverter.GetBytes(result));
-                    return await SendThenReturnAsync(mAddress, write, cancellationToken);
+                    return await SendThenReturnAsync(mAddress.SocketId, write, cancellationToken);
                 }
                 else
                 {
@@ -326,29 +326,4 @@ public partial class ModbusMaster : ProtocolBase, IDtu
         }
     }
 
-    private OperResult<byte[]> SendThenReturn(ModbusAddress mAddress, byte[] commandResult, CancellationToken cancellationToken)
-    {
-        if (Channel.ChannelType == ChannelTypeEnum.TcpService)
-        {
-            if (((TcpServiceBase)Channel).SocketClients.TryGetSocketClient($"ID={mAddress.SocketId}", out TgSocketClient? client))
-                return SendThenReturn(new SendMessage(commandResult), cancellationToken, client);
-            else
-                return new OperResult<byte[]>(DefaultResource.Localizer["DtuNoConnectedWaining"]);
-        }
-        else
-            return SendThenReturn(new SendMessage(commandResult), cancellationToken);
-    }
-
-    private Task<OperResult<byte[]>> SendThenReturnAsync(ModbusAddress mAddress, byte[] commandResult, CancellationToken cancellationToken)
-    {
-        if (Channel.ChannelType == ChannelTypeEnum.TcpService)
-        {
-            if (((TcpServiceBase)Channel).SocketClients.TryGetSocketClient($"ID={mAddress.SocketId}", out TgSocketClient? client))
-                return SendThenReturnAsync(new SendMessage(commandResult), cancellationToken, client);
-            else
-                return Task.FromResult(new OperResult<byte[]>(DefaultResource.Localizer["DtuNoConnectedWaining"]));
-        }
-        else
-            return SendThenReturnAsync(new SendMessage(commandResult), cancellationToken);
-    }
 }
