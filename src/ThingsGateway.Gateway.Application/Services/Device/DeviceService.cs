@@ -379,12 +379,23 @@ public class DeviceService : BaseService<Device>, IDeviceService
         #region 列名称
 
         var type = typeof(Device);
-        var propertyInfos = type.GetProperties().Where(a => a.GetCustomAttribute<IgnoreExcelAttribute>() == null).OrderBy(
-           a =>
-           {
-               return a.GetCustomAttribute<AutoGenerateColumnAttribute>()?.Order ?? 999999;
-           }
-           );
+        var propertyInfos = type.GetRuntimeProperties().Where(a => a.GetCustomAttribute<IgnoreExcelAttribute>() == null)
+             .OrderBy(
+            a =>
+            {
+                var order = a.GetCustomAttribute<AutoGenerateColumnAttribute>()?.Order ?? int.MaxValue; ;
+                if (order < 0)
+                {
+                    order = order + 10000000;
+                }
+                else if (order == 0)
+                {
+                    order = 10000000;
+                }
+                return order;
+            }
+            )
+            ;
 
         #endregion 列名称
 

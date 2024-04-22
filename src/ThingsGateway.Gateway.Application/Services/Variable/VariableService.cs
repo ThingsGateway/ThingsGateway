@@ -325,7 +325,7 @@ public class VariableService : BaseService<Variable>, IVariableService
         //总数据
         Dictionary<string, object> sheets = new();
         //变量页
-        ConcurrentList<ConcurrentDictionary<string, object>> variableExports = new();
+        ConcurrentList<Dictionary<string, object>> variableExports = new();
         //变量附加属性，转成Dict<表名,List<Dict<列名，列数据>>>的形式
         ConcurrentDictionary<string, ConcurrentList<ConcurrentDictionary<string, object>>> devicePropertys = new();
         ConcurrentDictionary<string, (VariablePropertyBase, Dictionary<string, PropertyInfo>)> propertysDict = new();
@@ -333,18 +333,29 @@ public class VariableService : BaseService<Variable>, IVariableService
         #region 列名称
 
         var type = typeof(Variable);
-        var propertyInfos = type.GetRuntimeProperties().Where(a => a.GetCustomAttribute<IgnoreExcelAttribute>() == null).OrderBy(
-           a =>
-           {
-               return a.GetCustomAttribute<AutoGenerateColumnAttribute>()?.Order ?? 999999;
-           }
-           ).ToList();
+        var propertyInfos = type.GetRuntimeProperties().Where(a => a.GetCustomAttribute<IgnoreExcelAttribute>() == null)
+             .OrderBy(
+            a =>
+            {
+                var order = a.GetCustomAttribute<AutoGenerateColumnAttribute>()?.Order ?? int.MaxValue; ;
+                if (order < 0)
+                {
+                    order = order + 10000000;
+                }
+                else if (order == 0)
+                {
+                    order = 10000000;
+                }
+                return order;
+            }
+            )
+            ;
 
         #endregion 列名称
 
         data.ParallelForEach((variable, state, index) =>
         {
-            ConcurrentDictionary<string, object> varExport = new();
+            Dictionary<string, object> varExport = new();
             deviceDicts.TryGetValue(variable.DeviceId.Value, out var device);
 
             //设备实体没有包含设备名称，手动插入
