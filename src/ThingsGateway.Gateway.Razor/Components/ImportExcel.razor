@@ -29,12 +29,14 @@
                 if (item.Value.HasError)
                 {
                     <div style="height:300px;overflow-y:scroll">
-                        <Virtualize Items="item.Value.Results.Where(a=>!a.Success).ToList()" Context="item1" ItemSize="60" OverscanCount=2>
+                        <Virtualize Items="item.Value.Results.Where(a=>!a.Success).OrderBy(a=>a.Row).ToList()" Context="item1" ItemSize="60" OverscanCount=2>
                             <ItemContent>
-                                <span class="avatar">@item1.Row</span>
-                                <span class=@((item1.Success?"green--text":"red--text"))>
-                                    <strong>@item1.ErrorMessage</strong>
-                                </span>
+                                <div>
+                                    <span class="avatar">@item1.Row</span>
+                                    <span class=@((item1.Success?"green--text":"red--text"))>
+                                        <strong>@item1.ErrorMessage</strong>
+                                    </span>
+                                </div>
                             </ItemContent>
                         </Virtualize>
                     </div>

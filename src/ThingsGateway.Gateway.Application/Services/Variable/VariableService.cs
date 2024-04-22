@@ -572,7 +572,7 @@ public class VariableService : BaseService<Variable>, IVariableService
                             if (stringBuilder.Length > 0)
                             {
                                 importPreviewOutput.HasError = true;
-                                importPreviewOutput.Results.Add((row++, false, stringBuilder.ToString()));
+                                importPreviewOutput.Results.Add((Interlocked.Add(ref row, 1), false, stringBuilder.ToString()));
                                 return;
                             }
 
@@ -657,7 +657,7 @@ public class VariableService : BaseService<Variable>, IVariableService
                                 if (pluginProp == null)
                                 {
                                     importPreviewOutput.HasError = true;
-                                    importPreviewOutput.Results.Add((row++, false, Localizer["ImportNullError"]));
+                                    importPreviewOutput.Results.Add((Interlocked.Add(ref row, 1), false, Localizer["ImportNullError"]));
                                     return;
                                 }
 
@@ -670,13 +670,13 @@ public class VariableService : BaseService<Variable>, IVariableService
                                 if (businessDevName == null || businessDevice == null)
                                 {
                                     importPreviewOutput.HasError = true;
-                                    importPreviewOutput.Results.Add((Interlocked.Add(ref row, 1), true, Localizer["DeviceNotNull"]));
+                                    importPreviewOutput.Results.Add((Interlocked.Add(ref row, 1), false, Localizer["DeviceNotNull"]));
                                     return;
                                 }
                                 if (variableNameObj == null)
                                 {
                                     importPreviewOutput.HasError = true;
-                                    importPreviewOutput.Results.Add((Interlocked.Add(ref row, 1), true, Localizer["VariableNotNull"]));
+                                    importPreviewOutput.Results.Add((Interlocked.Add(ref row, 1), false, Localizer["VariableNotNull"]));
                                     return;
                                 }
 
@@ -699,7 +699,7 @@ public class VariableService : BaseService<Variable>, IVariableService
                                 if (stringBuilder.Length > 0)
                                 {
                                     importPreviewOutput.HasError = true;
-                                    importPreviewOutput.Results.Add((row++, false, stringBuilder.ToString()));
+                                    importPreviewOutput.Results.Add((Interlocked.Add(ref row, 1), false, stringBuilder.ToString()));
                                     return;
                                 }
 
@@ -726,7 +726,7 @@ public class VariableService : BaseService<Variable>, IVariableService
                                 else
                                 {
                                     importPreviewOutput.HasError = true;
-                                    importPreviewOutput.Results.Add((Interlocked.Add(ref row, 1), true, Localizer["VariableNotNull"]));
+                                    importPreviewOutput.Results.Add((Interlocked.Add(ref row, 1), false, Localizer["VariableNotNull"]));
                                     return;
                                 }
                             }
