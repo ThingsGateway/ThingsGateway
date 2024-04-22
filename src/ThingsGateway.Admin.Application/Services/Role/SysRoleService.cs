@@ -253,6 +253,7 @@ public class SysRoleService : BaseService<SysRole>, ISysRoleService
             {
                 _relationService.RefreshCache(RelationCategoryEnum.RoleHasResource);//刷新关系缓存
                 _relationService.RefreshCache(RelationCategoryEnum.RoleHasPermission);//刷新关系缓存
+                _relationService.RefreshCache(RelationCategoryEnum.RoleHasModule);//关系表刷新
                 await ClearTokenUtil.DeleteUserCacheByRoleIds(new List<long> { input.Id });//清除角色下用户缓存
             }
             else

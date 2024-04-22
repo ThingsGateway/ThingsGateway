@@ -104,9 +104,9 @@ public class RelationService : BaseService<SysRelation>, IRelationService
             moduleIds = roleRelation.Where(it => roleIdList.Contains(it.ObjectId)).Select(it => it.TargetId.ToLong());
         }
         var userRelation = await GetRelationByCategoryAsync(RelationCategoryEnum.UserHasModule);//获取用户模块关系集合
-        if (userRelation?.Count > 0)
+        var userModuleIds = userRelation.Where(it => it.ObjectId == userId).Select(it => it.TargetId.ToLong());
+        if (userModuleIds.Any())
         {
-            var userModuleIds = userRelation.Where(it => it.ObjectId == userId).Select(it => it.TargetId.ToLong());
             moduleIds = (userModuleIds);
         }
         return moduleIds;
