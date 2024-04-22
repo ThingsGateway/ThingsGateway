@@ -45,7 +45,7 @@ public partial class UserCenterPage
     {
         SysUser = AppContext.CurrentUser.Adapt<SysUser>();
         SysUser.Avatar = AppContext.CurrentUser.Avatar;
-        WorkbenchInfo = await UserCenterService.GetLoginWorkbenchAsync(SysUser.Id);
+        WorkbenchInfo = (await UserCenterService.GetLoginWorkbenchAsync(SysUser.Id)).Adapt<WorkbenchInfo>();
         SelectedItems = ResourceUtil.BuildMenuSelectList(AppContext.OwnMenus.Where(a => !a.Href.IsNullOrWhiteSpace()));
         await base.OnParametersSetAsync();
     }

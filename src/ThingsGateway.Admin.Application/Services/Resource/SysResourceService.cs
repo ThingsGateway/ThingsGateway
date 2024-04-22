@@ -54,10 +54,9 @@ public class SysResourceService : BaseService<SysResource>, ISysResourceService
     /// <param name="options">查询条件</param>
     /// <param name="searchModel">查询条件</param>
     /// <returns></returns>
-    public async Task<QueryData<SysResource>> PageAsync(QueryPageOptions options, ResourceSearchInput searchModel)
+    public Task<QueryData<SysResource>> PageAsync(QueryPageOptions options, ResourceSearchInput searchModel)
     {
-        var data = (await GetAllAsync()).Where(a => (a.Category == ResourceCategoryEnum.Module && a.Id == searchModel.Module) || (a.Category != ResourceCategoryEnum.Module && a.Module == searchModel.Module));
-        return data.GetQueryData(options);
+        return QueryAsync(options, b => b.Where(a => (a.Category == ResourceCategoryEnum.Module && a.Id == searchModel.Module) || (a.Category != ResourceCategoryEnum.Module && a.Module == searchModel.Module)));
     }
 
     /// <summary>

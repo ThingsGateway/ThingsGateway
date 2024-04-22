@@ -12,6 +12,8 @@
 
 
 
+using Mapster;
+
 using Microsoft.AspNetCore.Components.Forms;
 
 using NewLife.Extension;
@@ -35,7 +37,7 @@ public partial class AppConfigPage
 
     protected override async Task OnParametersSetAsync()
     {
-        AppConfig = await SysDictService.GetAppConfigAsync();
+        AppConfig = (await SysDictService.GetAppConfigAsync()).Adapt<AppConfig>();
         SelectedItems = ResourceUtil.BuildMenuSelectList(AppContext.AllMenus.Where(a => !a.Href.IsNullOrWhiteSpace()));
         await base.OnParametersSetAsync();
     }
