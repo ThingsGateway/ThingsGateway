@@ -23,6 +23,7 @@
     "BusinessInterval": "定时上传间隔",
     "IsAllVariable": "选择全部变量",
     "QueueMaxCount": "内存队列最大数量",
+    "CacheFileMaxLength": "缓存文件最大长度(mb)",
     "SplitSize": "上传每页条数",
     "CacheEnable": "启用缓存"
   }

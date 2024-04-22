@@ -16,5 +16,7 @@ namespace ThingsGateway.Admin.Application;
 
 public class CacheDBOption
 {
-    public string DataSource { get; set; }
+    public string DataSource => $"DataSource={FileFullName}";
+
+    public string FileFullName { get; set; }
 }

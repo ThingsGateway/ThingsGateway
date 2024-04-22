@@ -18,7 +18,7 @@ namespace ThingsGateway.Admin.Application;
 
 public class CacheDBUtil
 {
-    private const string ex = ".db";
+    public const string EX = ".db";
 
     /// <summary>
     /// 获取缓存链接
@@ -27,11 +27,36 @@ public class CacheDBUtil
     {
         var dir = GetFilePath(folder);
         var fileStart = GetFileName(name);
-        var fullName = dir.CombinePathWithOs($"{fileStart}{ex}");
-        var cache = new CacheDB(tableType, new CacheDBOption() { DataSource = $"DataSource={fullName}" });
-        return cache;
-    }
+        var fullName = dir.CombinePathWithOs($"{fileStart}{EX}");
 
+        lock (fullName)
+        {
+            var cache = new CacheDB(tableType, new CacheDBOption() { FileFullName = $"{fullName}" });
+            return cache;
+        }
+    }
+    /// <summary>
+    /// 删除缓存文件
+    /// </summary>
+    public static bool DeleteCache(double maxFileLength, string fullName)
+    {
+
+        lock (fullName)
+        {
+            try
+            {
+                var fileLength = GetFileLength(fullName);
+                if (fileLength > maxFileLength)
+                    DeleteFile(fullName);
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+    }
     public static string GetFilePath(string folderName)
     {
         var dir = GetFileBasePath().CombinePathWithOs(folderName);
@@ -72,7 +97,7 @@ public class CacheDBUtil
         return mb1;
     }
 
-    private static string GetFileName(string typeName)
+    public static string GetFileName(string typeName)
     {
         var fileStart = $"{Regex.Replace($"{typeName}", "[^a-zA-Z0-9]", "_")}";
         return fileStart;

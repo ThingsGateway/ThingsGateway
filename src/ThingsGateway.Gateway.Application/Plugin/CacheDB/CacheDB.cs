@@ -26,27 +26,34 @@ public class CacheDB : DisposeBase
     internal CacheDB(Type type, CacheDBOption? cacheDBOption = null)
     {
         TableType = type;
-        DBProvider = GetConnection(cacheDBOption);
+        CacheDBOption = cacheDBOption;
+        _dBProvider = GetConnection(cacheDBOption);
     }
-
+    public CacheDBOption CacheDBOption { get; }
     private Type TableType { get; set; }
-    public SqlSugarClient DBProvider { get; private set; }
+    public SqlSugarClient DBProvider
+    {
+        get
+        {
+            return _dBProvider;
+        }
+    }
+    private SqlSugarClient _dBProvider;
 
     public void InitDb()
     {
-        try
+        lock (CacheDBOption.FileFullName)
         {
-            DBProvider.DbMaintenance.CreateDatabase();//创建数据库,如果存在则不创建
-            DBProvider.CodeFirst.InitTables(TableType);
-        }
-        catch
-        {
+            if (!Disposed)
+            {
+                DBProvider.DbMaintenance.CreateDatabase();//创建数据库,如果存在则不创建
+                DBProvider.CodeFirst.InitTables(TableType);
+            }
         }
     }
 
     protected override void Dispose(bool disposing)
     {
-        lock (this)
         {
             try { DBProvider.Dispose(); } catch { }
         }

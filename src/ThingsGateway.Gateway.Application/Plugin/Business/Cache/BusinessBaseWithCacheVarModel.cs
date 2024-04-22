@@ -39,8 +39,36 @@ public abstract class BusinessBaseWithCacheVarModel<VarModel> : BusinessBase
     {
         if (data?.Count > 0)
         {
-            using var cache = LocalDBCacheVarModel();
-            cache.DBProvider.Fastest<CacheDBItem<VarModel>>().PageSize(50000).BulkCopy(data);
+            try
+            {
+                var dir = CacheDBUtil.GetFilePath(CurrentDevice.Id.ToString());
+                var fileStart = CacheDBUtil.GetFileName($"{CurrentDevice.PluginName}_{typeof(VarModel).FullName}_{nameof(VarModel)}");
+                var fullName = dir.CombinePathWithOs($"{fileStart}{CacheDBUtil.EX}");
+
+                lock (fullName)
+                {
+                    bool s = false;
+                    while (!s)
+                    {
+                        s = CacheDBUtil.DeleteCache(_businessPropertyWithCache.CacheFileMaxLength, fullName);
+                    }
+                    using var cache = LocalDBCacheVarModel();
+                    cache.DBProvider.Fastest<CacheDBItem<VarModel>>().PageSize(50000).BulkCopy(data);
+                }
+            }
+            catch
+            {
+                try
+                {
+                    using var cache = LocalDBCacheVarModel();
+                    lock (cache.CacheDBOption.FileFullName)
+                        cache.DBProvider.Fastest<CacheDBItem<VarModel>>().PageSize(50000).BulkCopy(data);
+                }
+                catch (Exception ex)
+                {
+                    LogMessage.LogWarning(ex, "Add cache fail");
+                }
+            }
         }
     }
 

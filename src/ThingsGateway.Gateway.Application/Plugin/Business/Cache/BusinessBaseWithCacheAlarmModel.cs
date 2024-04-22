@@ -33,8 +33,39 @@ public abstract class BusinessBaseWithCacheAlarmModel<VarModel, DevModel, AlarmM
     {
         if (data?.Count > 0)
         {
-            using var cache = LocalDBCacheAlarmModel();
-            cache.DBProvider.Fastest<CacheDBItem<AlarmModel>>().PageSize(50000).BulkCopy(data);
+            try
+            {
+                var dir = CacheDBUtil.GetFilePath(CurrentDevice.Id.ToString());
+                var fileStart = CacheDBUtil.GetFileName($"{CurrentDevice.PluginName}_{typeof(AlarmModel).FullName}_{nameof(AlarmModel)}");
+                var fullName = dir.CombinePathWithOs($"{fileStart}{CacheDBUtil.EX}");
+
+                lock (fullName)
+                {
+                    bool s = false;
+                    while (!s)
+                    {
+                        s = CacheDBUtil.DeleteCache(_businessPropertyWithCache.CacheFileMaxLength, fullName);
+                    }
+                    using var cache = LocalDBCacheAlarmModel();
+                    cache.DBProvider.Fastest<CacheDBItem<AlarmModel>>().PageSize(50000).BulkCopy(data);
+                }
+
+            }
+            catch
+            {
+                try
+                {
+                    using var cache = LocalDBCacheAlarmModel();
+                    lock (cache.CacheDBOption.FileFullName)
+                    {
+                        cache.DBProvider.Fastest<CacheDBItem<AlarmModel>>().PageSize(50000).BulkCopy(data);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogMessage.LogWarning(ex, "Add cache fail");
+                }
+            }
         }
     }
 

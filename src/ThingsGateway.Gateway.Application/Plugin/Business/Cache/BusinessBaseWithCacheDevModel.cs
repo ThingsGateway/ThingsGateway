@@ -33,8 +33,39 @@ public abstract class BusinessBaseWithCacheDevModel<VarModel, DevModel> : Busine
     {
         if (data?.Count > 0)
         {
-            using var cache = LocalDBCacheDevModel();
-            cache.DBProvider.Fastest<CacheDBItem<DevModel>>().PageSize(50000).BulkCopy(data);
+            try
+            {
+                var dir = CacheDBUtil.GetFilePath(CurrentDevice.Id.ToString());
+                var fileStart = CacheDBUtil.GetFileName($"{CurrentDevice.PluginName}_{typeof(DevModel).FullName}_{nameof(DevModel)}");
+                var fullName = dir.CombinePathWithOs($"{fileStart}{CacheDBUtil.EX}");
+
+                lock (fullName)
+                {
+                    bool s = false;
+                    while (!s)
+                    {
+                        s = CacheDBUtil.DeleteCache(_businessPropertyWithCache.CacheFileMaxLength, fullName);
+                    }
+                    using var cache = LocalDBCacheDevModel();
+                    cache.DBProvider.Fastest<CacheDBItem<DevModel>>().PageSize(50000).BulkCopy(data);
+                }
+
+            }
+            catch
+            {
+                try
+                {
+                    using var cache = LocalDBCacheDevModel();
+                    lock (cache.CacheDBOption.FileFullName)
+                    {
+                        cache.DBProvider.Fastest<CacheDBItem<DevModel>>().PageSize(50000).BulkCopy(data);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogMessage.LogWarning(ex, "Add cache fail");
+                }
+            }
         }
     }
 

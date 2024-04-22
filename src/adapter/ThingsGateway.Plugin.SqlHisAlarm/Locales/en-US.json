@@ -7,6 +7,7 @@
     "BusinessInterval": "BusinessInterval",
     "IsAllVariable": "IsAllVariable",
     "QueueMaxCount": "QueueMaxCount",
+    "CacheFileMaxLength": "CacheFileMaxLength(mb)",
     "SplitSize": "SplitSize",
     "CacheEnable": "CacheEnable"
   }

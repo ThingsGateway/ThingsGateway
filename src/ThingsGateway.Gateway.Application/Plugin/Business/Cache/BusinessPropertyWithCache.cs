@@ -24,7 +24,11 @@ public class BusinessPropertyWithCache : BusinessPropertyBase
     /// </summary>
     [DynamicProperty]
     public virtual bool CacheEnable { get; set; } = false;
-
+    /// <summary>
+    /// 缓存文件最大长度(mb)
+    /// </summary>
+    [DynamicProperty]
+    public virtual double CacheFileMaxLength { get; set; } = 1024;
     /// <summary>
     /// 上传列表最大数量
     /// </summary>
