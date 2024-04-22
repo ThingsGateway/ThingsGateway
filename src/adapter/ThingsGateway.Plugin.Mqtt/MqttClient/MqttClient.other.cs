@@ -302,7 +302,8 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
                 var result = await _mqttClient.PublishAsync(variableMessage, cancellationToken);
                 if (result.IsSuccess)
                 {
-                    LogMessage.LogTrace($"Topic：{topic}{Environment.NewLine}PayLoad：{payLoad}");
+                    if (LogMessage.LogLevel <= TouchSocket.Core.LogLevel.Trace)
+                        LogMessage.LogTrace($"Topic：{topic}{Environment.NewLine}PayLoad：{payLoad}");
                     return new();
                 }
                 else

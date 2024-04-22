@@ -233,7 +233,8 @@ public partial class MqttServer : BusinessBaseWithCacheIntervalScript<VariableDa
 .WithPayload(payLoad).Build();
             await _mqttServer.InjectApplicationMessage(
                     new InjectedMqttApplicationMessage(message), cancellationToken);
-            LogMessage.LogTrace($"Topic：{topic}{Environment.NewLine}PayLoad：{payLoad}");
+            if (LogMessage.LogLevel <= TouchSocket.Core.LogLevel.Trace)
+                LogMessage.LogTrace($"Topic：{topic}{Environment.NewLine}PayLoad：{payLoad}");
             return new();
         }
         catch (Exception ex)
