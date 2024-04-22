@@ -40,7 +40,7 @@
 
 
         <ExportButtonDropdownTemplate Context="ExportContext">
-            <Button class="dropdown-item" OnClick="() => ExcelExportAsync(ExportContext)">
+            <Button class="dropdown-item" OnClick="() => ExcelExportAsync(ExportContext)" IsDisabled=@(!AuthorizeButton("导出"))>
                 <i class="fas fa-file-export"></i>
                 <span>@DefaultLocalizer["TablesExportButtonExcelText"]</span>
             </Button>
@@ -51,7 +51,7 @@
         </ExportButtonDropdownTemplate>
         <TableToolbarTemplate>
             <TableToolbarPopConfirmButton TItem="Device"
-                                          Color=Color.Warning Text="@Localizer["Clear"]"
+                                          Color=Color.Warning Text="@Localizer["Clear"]" IsDisabled=@(!AuthorizeButton("清空"))
                                           IsAsync OnConfirm=@(async()=>{await DeviceService.ClearDeviceAsync(PluginType);await ToastService.Default(); await table.QueryAsync(); }) />
         </TableToolbarTemplate>
     </AdminTable>

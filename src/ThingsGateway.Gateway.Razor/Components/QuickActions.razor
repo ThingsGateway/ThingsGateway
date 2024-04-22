@@ -19,7 +19,7 @@
                           Content=@(ReloadPluginConfirmText)
                           Icon="fas fa-rotate"
                           IsAsync="true"
-                          OnConfirm="OnReloadPlugin" />
+                          OnConfirm="OnReloadPlugin" IsDisabled=@(!AuthorizeButton("重启"))/>
         <PopConfirmButton Placement="Placement.Top"
                           class="m-2"
                           Color="Color.Danger"
@@ -29,7 +29,7 @@
                           Content=@(ReloadServiceConfirmText)
                           Icon="fas fa-rotate"
                           IsAsync="true"
-                          OnConfirm="OnReloadService" />
+                          OnConfirm="OnReloadService" IsDisabled=@(!AuthorizeButton("重启"))/>
 
     </div>
 </div>

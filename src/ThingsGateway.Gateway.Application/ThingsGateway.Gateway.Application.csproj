@@ -25,6 +25,9 @@
     <None Update="SeedData\Json\seed_gateway_resource.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="SeedData\Json\seed_gateway_resourcebutton.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Remove="Locales\*.json" />

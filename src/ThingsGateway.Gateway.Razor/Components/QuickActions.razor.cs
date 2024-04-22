@@ -10,6 +10,7 @@
 //------------------------------------------------------------------------------
 
 
+using ThingsGateway.Admin.Razor;
 using ThingsGateway.Gateway.Application;
 
 namespace ThingsGateway.Gateway.Razor;
@@ -57,7 +58,14 @@ public partial class QuickActions
 
         return Task.CompletedTask;
     }
+    [Inject]
+    [NotNull]
+    protected BlazorAppContext? AppContext { get; set; }
 
+    protected bool AuthorizeButton(string operate)
+    {
+        return AppContext.IsHasButtonWithRole("/gateway/devicestatus", operate);
+    }
     private async Task OnReloadService()
     {
         try

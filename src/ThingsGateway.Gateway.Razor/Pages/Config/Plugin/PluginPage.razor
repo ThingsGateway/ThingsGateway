@@ -19,11 +19,11 @@
 
         <TableToolbarTemplate>
             <TableToolbarButton TItem="PluginOutput" Color="Color.Info" Icon="fa fa-plus" Text="@DefaultLocalizer["Add"]"
-                                OnClickCallback="OnAdd" />
+                                OnClickCallback="OnAdd" IsDisabled=@(!AuthorizeButton("添加")) />
         </TableToolbarTemplate>
 
         <ExportButtonDropdownTemplate Context="ExportContext">
-            <div class="dropdown-item" @onclick="() => ExcelExportAsync(ExportContext)">
+            <div class="dropdown-item" @onclick="() => ExcelExportAsync(ExportContext)" IsDisabled=@(!AuthorizeButton("导出"))>
                 <i class="fas fa-file-export"></i>
                 <span>@DefaultLocalizer["TablesExportButtonExcelText"]</span>
             </div>

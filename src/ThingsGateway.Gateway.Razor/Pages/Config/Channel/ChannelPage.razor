@@ -22,7 +22,7 @@
         </EditTemplate>
 
         <ExportButtonDropdownTemplate Context="ExportContext">
-            <Button class="dropdown-item" OnClick="() => ExcelExportAsync(ExportContext)">
+            <Button class="dropdown-item" OnClick="() => ExcelExportAsync(ExportContext)" IsDisabled=@(!AuthorizeButton("导出"))>
                 <i class="fas fa-file-export"></i>
                 <span>@DefaultLocalizer["TablesExportButtonExcelText"]</span>
             </Button>
@@ -33,7 +33,7 @@
         </ExportButtonDropdownTemplate>
 
         <TableToolbarTemplate>
-            <TableToolbarPopConfirmButton TItem="Channel"
+            <TableToolbarPopConfirmButton TItem="Channel"  IsDisabled=@(!AuthorizeButton("清空"))
                                           Color=Color.Warning Text="@Localizer["Clear"]"
                                           IsAsync OnConfirm=@(async()=>{ await ChannelService.ClearChannelAsync();await ToastService.Default(); await table.QueryAsync(); }) />
         </TableToolbarTemplate>
