@@ -21,7 +21,7 @@ using TouchSocket.Sockets;
 namespace ThingsGateway.Foundation.Modbus;
 
 /// <inheritdoc/>
-public partial class ModbusMaster : ProtocolBase
+public partial class ModbusMaster : ProtocolBase, IDtu
 {
     private ModbusTypeEnum modbusType;
 
@@ -107,8 +107,7 @@ public partial class ModbusMaster : ProtocolBase
 
                 action += a =>
                    {
-                       DtuPlugin dtuPlugin = new(this);
-                       a.Add(dtuPlugin);
+                       a.Add(new DtuPlugin(this));
                    };
                 return action;
         }
@@ -351,40 +350,5 @@ public partial class ModbusMaster : ProtocolBase
         }
         else
             return SendThenReturnAsync(new SendMessage(commandResult), cancellationToken);
-    }
-}
-
-[PluginOption(Singleton = true)]
-internal class DtuPlugin : PluginBase, ITcpReceivingPlugin
-{
-    private ModbusMaster _modbusMaster;
-
-    public DtuPlugin(ModbusMaster modbusMaster)
-    {
-        this._modbusMaster = modbusMaster;
-    }
-
-    public async Task OnTcpReceiving(ITcpClientBase client, ByteBlockEventArgs e)
-    {
-        if (client is ISocketClient socket)
-        {
-            var bytes = e.ByteBlock.ToArray();
-            if (!socket.Id.StartsWith("ID="))
-            {
-                var id = $"ID={Encoding.UTF8.GetString(bytes)}";
-                client.Logger.Info(DefaultResource.Localizer["DtuConnected", id]);
-                socket.ResetId(id);
-                e.Handled = true;
-            }
-            if (_modbusMaster.HeartbeatHexString == bytes.ToHexString())
-            {
-                //回应心跳包
-                socket.DefaultSend(bytes);
-                e.Handled = true;
-                if (socket.Logger.LogLevel <= LogLevel.Trace)
-                    socket.Logger?.Trace($"{socket.ToString()}- Send:{bytes.ToHexString(' ')}");
-            }
-        }
-        await e.InvokeNext();//如果本插件无法处理当前数据，请将数据转至下一个插件。
     }
 }

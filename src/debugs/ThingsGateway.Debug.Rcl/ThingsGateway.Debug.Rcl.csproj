@@ -3,7 +3,13 @@
   <PropertyGroup>
     <DefineConstants>DriverDebug</DefineConstants>
   </PropertyGroup>
-
+  <ItemGroup>
+    <Content Remove="Locales\*.json" />
+    <EmbeddedResource Include="Locales\*.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+  
   <ItemGroup>
     <ProjectReference Include="..\..\adapter\ThingsGateway.Foundation.Dlt645\ThingsGateway.Foundation.Dlt645.csproj" />
     <ProjectReference Include="..\..\adapter\ThingsGateway.Foundation.OpcDa\ThingsGateway.Foundation.OpcDa.csproj" />

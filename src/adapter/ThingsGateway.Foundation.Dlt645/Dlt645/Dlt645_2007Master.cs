@@ -23,7 +23,7 @@ using TouchSocket.Sockets;
 namespace ThingsGateway.Foundation.Dlt645;
 
 /// <inheritdoc/>
-public class Dlt645_2007Master : ProtocolBase
+public class Dlt645_2007Master : ProtocolBase,IDtu
 {
     /// <inheritdoc/>
     public Dlt645_2007Master(IChannel channel) : base(channel)
@@ -81,7 +81,7 @@ public class Dlt645_2007Master : ProtocolBase
 
                 action += a =>
                 {
-                    a.Add<DtuPlugin>();
+                    a.Add (new DtuPlugin(this));
                 };
                 return action;
         }
@@ -458,34 +458,3 @@ public class Dlt645_2007Master : ProtocolBase
     #endregion 其他方法
 }
 
-[PluginOption(Singleton = true)]
-internal class DtuPlugin : PluginBase, ITcpReceivingPlugin
-{
-    private Dlt645_2007Master _dlt645_2007Master;
-
-    public DtuPlugin(Dlt645_2007Master dlt645_2007Master)
-    {
-        _dlt645_2007Master = dlt645_2007Master;
-    }
-
-    public async Task OnTcpReceiving(ITcpClientBase client, ByteBlockEventArgs e)
-    {
-        if (client is ISocketClient socket)
-        {
-            var bytes = e.ByteBlock.ToArray();
-            if (!socket.Id.StartsWith("ID="))
-            {
-                var id = $"ID={Encoding.UTF8.GetString(bytes)}";
-                client.Logger.Info(DefaultResource.Localizer["DtuConnected", id]);
-                socket.ResetId(id);
-            }
-            if (_dlt645_2007Master.HeartbeatHexString == bytes.ToHexString())
-            {
-                //回应心跳包
-                socket.DefaultSend(bytes);
-                socket.Logger?.Trace($"{socket.ToString()}- Send:{bytes.ToHexString(' ')}");
-            }
-        }
-        await e.InvokeNext();//如果本插件无法处理当前数据，请将数据转至下一个插件。
-    }
-}
