@@ -23,9 +23,6 @@ namespace ThingsGateway.Gateway.Application;
 /// </summary>
 public abstract partial class BusinessBaseWithCacheIntervalScript<VarModel, DevModel, AlarmModel> : BusinessBaseWithCacheIntervalAlarmModel<VarModel, DevModel, AlarmModel>
 {
-    /// <summary>
-    /// <inheritdoc cref="DriverPropertys"/>
-    /// </summary>
     protected override BusinessPropertyWithCacheInterval _businessPropertyWithCacheInterval => _businessPropertyWithCacheIntervalScript;
 
     protected abstract BusinessPropertyWithCacheIntervalScript _businessPropertyWithCacheIntervalScript { get; }

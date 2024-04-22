@@ -92,31 +92,33 @@ public abstract class CollectBase : DriverBase
     /// </summary>
     protected virtual async Task<OperResult<byte[]>> ReadSourceAsync(VariableSourceRead variableSourceRead, CancellationToken cancellationToken)
     {
-        // 如果是单线程模式，并且有其他线程正在等待写入锁
-        if (IsSingleThread && WriteLock.IsWaitting)
+        try
         {
-            // 等待写入锁释放
-            await WriteLock.WaitAsync(cancellationToken).ConfigureAwait(false);
+            if (IsSingleThread)
+                await WriteLock.WaitAsync(cancellationToken).ConfigureAwait(false);
 
-            // 立即释放写入锁，允许其他线程继续执行写入操作
-            WriteLock.Release();
+            if (cancellationToken.IsCancellationRequested)
+                throw new OperationCanceledException();
+            // 从协议读取数据
+            OperResult<byte[]> read = await Protocol.ReadAsync(variableSourceRead.RegisterAddress, variableSourceRead.Length, cancellationToken);
+
+            // 增加变量源的读取次数
+            Interlocked.Increment(ref variableSourceRead.ReadCount);
+
+            // 如果读取成功且有有效内容，则解析结构化内容
+            if (read?.IsSuccess == true)
+            {
+                variableSourceRead.VariableRunTimes.PraseStructContent(Protocol, read.Content);
+            }
+
+            // 返回读取结果
+            return read;
         }
-        if (cancellationToken.IsCancellationRequested)
-            throw new OperationCanceledException();
-        // 从协议读取数据
-        OperResult<byte[]> read = await Protocol.ReadAsync(variableSourceRead.RegisterAddress, variableSourceRead.Length, cancellationToken);
-
-        // 增加变量源的读取次数
-        Interlocked.Increment(ref variableSourceRead.ReadCount);
-
-        // 如果读取成功且有有效内容，则解析结构化内容
-        if (read?.IsSuccess == true)
+        finally
         {
-            variableSourceRead.VariableRunTimes.PraseStructContent(Protocol, read.Content);
+            if (IsSingleThread)
+                WriteLock.Release();
         }
-
-        // 返回读取结果
-        return read;
     }
 
     /// <summary>

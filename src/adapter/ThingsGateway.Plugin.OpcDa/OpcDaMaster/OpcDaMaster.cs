@@ -121,23 +121,21 @@ public class OpcDaMaster : CollectBase
     /// <inheritdoc/>
     protected override async Task<OperResult<byte[]>> ReadSourceAsync(VariableSourceRead deviceVariableSourceRead, CancellationToken cancellationToken)
     {
-        // 如果是单线程模式，并且有其他线程正在等待写入锁
-        if (IsSingleThread && WriteLock.IsWaitting)
-        {
-            // 等待写入锁释放
-            await WriteLock.WaitAsync(cancellationToken).ConfigureAwait(false);
-
-            // 立即释放写入锁，允许其他线程继续执行写入操作
-            WriteLock.Release();
-        }
         try
         {
+            if (IsSingleThread)
+                await WriteLock.WaitAsync(cancellationToken);
             _plc.ReadItemsWithGroup(deviceVariableSourceRead.RegisterAddress);
             return OperResult.CreateSuccessResult(Array.Empty<byte>());
         }
         catch (Exception ex)
         {
             return new OperResult<byte[]>($"ReadSourceAsync Error：{Environment.NewLine}{ex}");
+        }
+        finally
+        {
+            if (IsSingleThread)
+                WriteLock.Release();
         }
     }
 

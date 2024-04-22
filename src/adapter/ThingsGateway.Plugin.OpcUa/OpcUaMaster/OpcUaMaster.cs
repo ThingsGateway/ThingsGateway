@@ -136,16 +136,10 @@ public class OpcUaMaster : CollectBase
     /// <inheritdoc/>
     protected override async Task<OperResult<byte[]>> ReadSourceAsync(VariableSourceRead deviceVariableSourceRead, CancellationToken cancellationToken)
     {
-        if (IsSingleThread)
-        {
-            while (WriteLock.IsWaitting)
-            {
-                //等待写入完成
-                await Task.Delay(100);
-            }
-        }
         try
         {
+            if (IsSingleThread)
+                await WriteLock.WaitAsync(cancellationToken);
             var result = await _plc.ReadJTokenValueAsync(deviceVariableSourceRead.VariableRunTimes.Where(a => !a.RegisterAddress.IsNullOrEmpty()).Select(a => a.RegisterAddress!).ToArray(), cancellationToken);
             foreach (var data in result)
             {
@@ -192,6 +186,11 @@ public class OpcUaMaster : CollectBase
         catch (Exception ex)
         {
             return new OperResult<byte[]>($"ReadSourceAsync Error：{Environment.NewLine}{ex}");
+        }
+        finally
+        {
+            if (IsSingleThread)
+                WriteLock.Release();
         }
     }
 
