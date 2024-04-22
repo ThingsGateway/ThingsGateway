@@ -21,7 +21,7 @@ using TouchSocket.Sockets;
 namespace ThingsGateway.Foundation.Modbus;
 
 /// <inheritdoc/>
-public class ModbusMaster : ProtocolBase
+public partial class ModbusMaster : ProtocolBase
 {
     private ModbusTypeEnum modbusType;
 
