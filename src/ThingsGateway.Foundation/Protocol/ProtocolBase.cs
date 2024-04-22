@@ -355,6 +355,15 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
         else
             return SendThenReturnAsync(new SendMessage(commandResult), cancellationToken);
     }
+    public virtual OperResult<byte[]> SendThenReturn(byte[] commandResult, CancellationToken cancellationToken)
+    {
+        return SendThenReturn(new SendMessage(commandResult), cancellationToken);
+    }
+
+    public virtual Task<OperResult<byte[]>> SendThenReturnAsync(byte[] commandResult, CancellationToken cancellationToken)
+    {
+        return SendThenReturnAsync(new SendMessage(commandResult), cancellationToken);
+    }
 
     public virtual OperResult Send(string socketId, byte[] commandResult, CancellationToken cancellationToken)
     {

@@ -234,16 +234,6 @@ public partial class SiemensS7Master : ProtocolBase
         }
     }
 
-    private OperResult<byte[]> SendThenReturn(byte[] commandResult, CancellationToken cancellationToken)
-    {
-        return SendThenReturn(new SendMessage(commandResult), cancellationToken);
-    }
-
-    private Task<OperResult<byte[]>> SendThenReturnAsync(byte[] commandResult, CancellationToken cancellationToken)
-    {
-        return SendThenReturnAsync(new SendMessage(commandResult), cancellationToken);
-    }
-
     #endregion 读写
 
     #region 初始握手

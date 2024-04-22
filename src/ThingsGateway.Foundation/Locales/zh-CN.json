@@ -31,7 +31,7 @@
     "ServiceStoped": "停止",
     "StringAddressError": "字符串读写必须在寄存器地址中指定长度，例如 len=10;",
     "TransBytesError": "转换失败-原始字节数组  {0}，长度 {1}",
-    "UnknownError": "未知错误",
+    "UnknownError": "未知错误，错误代码：{0}",
     "StringTypePackError": "数据类型为字符串时，必须指定字符串长度，才能进行打包"
   },
 

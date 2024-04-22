@@ -140,7 +140,7 @@ internal class ModbusHelper
             8 => ModbusResource.Localizer["ModbusError8"],
             10 => ModbusResource.Localizer["ModbusError10"],
             11 => ModbusResource.Localizer["ModbusError11"],
-            _ => DefaultResource.Localizer["UnknownError"],
+            _ => DefaultResource.Localizer["UnknownError", code],
         };
     }
 

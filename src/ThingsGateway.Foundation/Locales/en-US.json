@@ -31,7 +31,7 @@
     "ServiceStoped": "Stopped",
     "StringAddressError": "String read and write must specify length in register address, for example len=10;",
     "TransBytesError": "Conversion failed - original byte array {0}, length {1}",
-    "UnknownError": "Unknown error",
+    "UnknownError": "Unknown error, code: {0}",
     "StringTypePackError": "When the data type is string, the string length must be specified in order to pack it"
   },
   "ThingsGateway.Foundation.ChannelData": {
