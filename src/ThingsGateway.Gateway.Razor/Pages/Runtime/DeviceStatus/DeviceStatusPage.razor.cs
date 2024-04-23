@@ -34,11 +34,11 @@ public partial class DeviceStatusPage
 
     protected override Task OnParametersSetAsync()
     {
-        Channels = ChannelService.GetAll().BuildChannelSelectList().Concat(new List<SelectedItem>() { new SelectedItem("0", "null") });
-        CollectDevices = DeviceService.GetAll().Where(a => a.PluginType == PluginTypeEnum.Collect).BuildDeviceSelectList().Concat(new List<SelectedItem>() { new SelectedItem(string.Empty, "null") });
-        BusinessDevices = DeviceService.GetAll().Where(a => a.PluginType == PluginTypeEnum.Business).BuildDeviceSelectList().Concat(new List<SelectedItem>() { new SelectedItem(string.Empty, "null") });
+        Channels = ChannelService.GetAll().BuildChannelSelectList().Concat(new List<SelectedItem>() { new SelectedItem("0", "none") });
+        CollectDevices = DeviceService.GetAll().Where(a => a.PluginType == PluginTypeEnum.Collect).BuildDeviceSelectList().Concat(new List<SelectedItem>() { new SelectedItem(string.Empty, "none") });
+        BusinessDevices = DeviceService.GetAll().Where(a => a.PluginType == PluginTypeEnum.Business).BuildDeviceSelectList().Concat(new List<SelectedItem>() { new SelectedItem(string.Empty, "none") });
         //获取插件信息
-        Plugins = PluginService.GetList().BuildPluginSelectList().Concat(new List<SelectedItem>() { new SelectedItem(string.Empty, "null") });
+        Plugins = PluginService.GetList().BuildPluginSelectList().Concat(new List<SelectedItem>() { new SelectedItem(string.Empty, "none") });
         CollectBases = HostedServiceUtil.CollectDeviceHostedService?.DriverBases.Select(a => (CollectBase)a)!;
         BusinessBases = HostedServiceUtil.BusinessDeviceHostedService?.DriverBases.Select(a => (BusinessBase)a)!;
         return base.OnParametersSetAsync();
