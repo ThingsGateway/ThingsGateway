@@ -58,6 +58,9 @@ public class VerificatInfoCacheService : BaseService<VerificatInfoCacheItem>, IV
             {
                 data.TryAdd(id, verificatInfos);
             }
+#if DEBUG
+                HashSetDB(data);
+#endif
         }
     }
 
@@ -68,6 +71,9 @@ public class VerificatInfoCacheService : BaseService<VerificatInfoCacheItem>, IV
         {
             var key = CacheConst.Cache_Token;
             App.CacheService.Set(key, dict);
+#if DEBUG
+                HashSetDB(dict);
+#endif
         }
     }
 
@@ -78,6 +84,9 @@ public class VerificatInfoCacheService : BaseService<VerificatInfoCacheItem>, IV
         {
             var key = CacheConst.Cache_Token;
             App.CacheService.Set(key, new Dictionary<long, List<VerificatInfo>>());
+#if DEBUG
+                HashSetDB(new Dictionary<long, List<VerificatInfo>>());
+#endif
         }
     }
 
@@ -88,6 +97,12 @@ public class VerificatInfoCacheService : BaseService<VerificatInfoCacheItem>, IV
         {
             var data = GetAll();
             data.RemoveWhere(a => ids.Contains(a.Key));
+#if DEBUG
+            if(ids.Length > 0)
+            {
+                HashSetDB(data);
+            }
+#endif
         }
     }
 
