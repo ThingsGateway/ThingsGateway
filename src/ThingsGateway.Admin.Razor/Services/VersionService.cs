@@ -21,14 +21,7 @@ public class VersionService : IAppVersionService
 {
     public VersionService()
     {
-        if (OperatingSystem.IsBrowser())
-        {
-            Version = this.GetType().Assembly.GetName().Version?.ToString();
-        }
-        else
-        {
-            Version = System.Diagnostics.FileVersionInfo.GetVersionInfo(this.GetType().Assembly.Location).ProductVersion;
-        }
+        Version = this.GetType().Assembly.GetName().Version?.ToString();
 
         if (!string.IsNullOrEmpty(Version))
         {
