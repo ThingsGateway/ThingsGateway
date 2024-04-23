@@ -252,7 +252,7 @@ public class OpcUaMaster : IDisposable
             DisplayName = subscriptionName
         };
         List<MonitoredItem> monitoredItems = new();
-        var variableNodes = loadType ? await ReadNodesAsync(items) : null;
+        var variableNodes = loadType ? await ReadNodesAsync(items).ConfigureAwait(false) : null;
         for (int i = 0; i < items.Length; i++)
         {
             try
@@ -382,7 +382,7 @@ public class OpcUaMaster : IDisposable
         };
 
         // fetch references from the server.
-        ReferenceDescriptionCollection references = await FormUtils.BrowseAsync(m_session, nodesToBrowse, false);
+        ReferenceDescriptionCollection references = await FormUtils.BrowseAsync(m_session, nodesToBrowse, false).ConfigureAwait(false);
 
         return references.ToArray();
     }
@@ -446,7 +446,7 @@ public class OpcUaMaster : IDisposable
              TimestampsToReturn.Both,
              false,
              nodesToRead,
-             cancellationToken);
+             cancellationToken).ConfigureAwait(false);
         var results = result.Results;
         var diagnosticInfos = result.DiagnosticInfos;
         ClientBase.ValidateResponse(results, nodesToRead);
@@ -466,7 +466,7 @@ public class OpcUaMaster : IDisposable
     /// </summary>
     public async Task ConnectAsync(CancellationToken cancellationToken)
     {
-        await ConnectAsync(OpcUaProperty.OpcUrl, cancellationToken);
+        await ConnectAsync(OpcUaProperty.OpcUrl, cancellationToken).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -496,7 +496,7 @@ public class OpcUaMaster : IDisposable
     /// </summary>
     public async Task<List<(string, DataValue, JToken)>> ReadJTokenValueAsync(string[] tags, CancellationToken cancellationToken = default)
     {
-        var result = await ReadJTokenValueAsync(tags.Select(a => new NodeId(a)).ToArray(), cancellationToken);
+        var result = await ReadJTokenValueAsync(tags.Select(a => new NodeId(a)).ToArray(), cancellationToken).ConfigureAwait(false);
         return result;
     }
 
@@ -516,7 +516,7 @@ public class OpcUaMaster : IDisposable
                     NodeId = new NodeId(item.Key),
                     AttributeId = Attributes.Value,
                 };
-                var variableNode = await ReadNodeAsync(item.Key, false, cancellationToken);
+                var variableNode = await ReadNodeAsync(item.Key, false, cancellationToken).ConfigureAwait(false);
                 var dataValue = JsonUtils.Decode(
                     m_session.MessageContext,
                     variableNode.DataType,
@@ -531,7 +531,7 @@ public class OpcUaMaster : IDisposable
 
             var result = await m_session.WriteAsync(
      requestHeader: null,
-     nodesToWrite: valuesToWrite, cancellationToken);
+     nodesToWrite: valuesToWrite, cancellationToken).ConfigureAwait(false);
 
             ClientBase.ValidateResponse(result.Results, valuesToWrite);
             ClientBase.ValidateDiagnosticInfos(result.DiagnosticInfos, valuesToWrite);
@@ -586,7 +586,7 @@ public class OpcUaMaster : IDisposable
         };
         nodesToBrowse.Add(nodeToBrowse);
 
-        var result1 = await ReadNoteAttributeAsync(nodesToBrowse, nodesToRead, cancellationToken);
+        var result1 = await ReadNoteAttributeAsync(nodesToBrowse, nodesToRead, cancellationToken).ConfigureAwait(false);
 
         var result2 = result1.Values.FirstOrDefault();
         return result2;
@@ -624,7 +624,7 @@ public class OpcUaMaster : IDisposable
             nodesToBrowse.Add(nodeToBrowse);
         }
 
-        return await ReadNoteAttributeAsync(nodesToBrowse, nodesToRead, cancellationToken);
+        return await ReadNoteAttributeAsync(nodesToBrowse, nodesToRead, cancellationToken).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -856,7 +856,7 @@ public class OpcUaMaster : IDisposable
         }
         //创建本地证书
         if (useSecurity)
-            await m_application.CheckApplicationInstanceCertificate(true, 0, 1200);
+            await m_application.CheckApplicationInstanceCertificate(true, 0, 1200).ConfigureAwait(false);
         m_session = await Opc.Ua.Client.Session.Create(
         m_configuration,
         endpoint,
@@ -882,7 +882,7 @@ public class OpcUaMaster : IDisposable
         {
             foreach (var item in Variables)
             {
-                await AddSubscriptionAsync(Guid.NewGuid().ToString(), item.ToArray(), OpcUaProperty.LoadType);
+                await AddSubscriptionAsync(Guid.NewGuid().ToString(), item.ToArray(), OpcUaProperty.LoadType).ConfigureAwait(false);
             }
         }
         return m_session;
@@ -939,7 +939,7 @@ public class OpcUaMaster : IDisposable
              0,
              TimestampsToReturn.Neither,
              nodesToRead,
-             cancellationToken);
+             cancellationToken).ConfigureAwait(false);
         var results = result.Results;
         var diagnosticInfos = result.DiagnosticInfos;
         ClientBase.ValidateResponse(results, nodesToRead);
@@ -947,7 +947,7 @@ public class OpcUaMaster : IDisposable
         List<(string, DataValue, JToken)> jTokens = new();
         for (int i = 0; i < results.Count; i++)
         {
-            var variableNode = await ReadNodeAsync(nodeIds[i].ToString(), false, cancellationToken);
+            var variableNode = await ReadNodeAsync(nodeIds[i].ToString(), false, cancellationToken).ConfigureAwait(false);
             var type = TypeInfo.GetBuiltInType(variableNode.DataType, m_session.SystemContext.TypeTable);
             var jToken = JsonUtils.Encode(m_session.MessageContext, type, results[i].Value);
             jTokens.Add((variableNode.NodeId.ToString(), results[i], jToken));
@@ -968,7 +968,7 @@ public class OpcUaMaster : IDisposable
             }
         }
         NodeId nodeToRead = new(nodeIdStr);
-        var node = (VariableNode)await m_session.ReadNodeAsync(nodeToRead, NodeClass.Variable, false, cancellationToken);
+        var node = (VariableNode)await m_session.ReadNodeAsync(nodeToRead, NodeClass.Variable, false, cancellationToken).ConfigureAwait(false);
         if (OpcUaProperty.LoadType)
             await typeSystem.LoadType(node.DataType).ConfigureAwait(false);
         _variableDicts.AddOrUpdate(nodeIdStr, node);
@@ -1004,7 +1004,7 @@ public class OpcUaMaster : IDisposable
             NodeId nodeToRead = new(item);
             nodeIds.Add(nodeToRead);
         }
-        (IList<Node>, IList<ServiceResult>) nodes = await m_session.ReadNodesAsync(nodeIds, NodeClass.Variable, false, cancellationToken);
+        (IList<Node>, IList<ServiceResult>) nodes = await m_session.ReadNodesAsync(nodeIds, NodeClass.Variable, false, cancellationToken).ConfigureAwait(false);
         for (int i = 0; i < nodes.Item1.Count; i++)
         {
             if (StatusCode.IsGood(nodes.Item2[i].StatusCode))
@@ -1039,7 +1039,7 @@ public class OpcUaMaster : IDisposable
     {
         int startOfProperties = nodesToRead.Count;
 
-        ReferenceDescriptionCollection references = await FormUtils.BrowseAsync(m_session, nodesToBrowse, false, cancellationToken);
+        ReferenceDescriptionCollection references = await FormUtils.BrowseAsync(m_session, nodesToBrowse, false, cancellationToken).ConfigureAwait(false);
 
         if (references == null)
         {

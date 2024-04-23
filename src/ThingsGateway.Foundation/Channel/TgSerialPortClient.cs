@@ -61,31 +61,31 @@ namespace ThingsGateway.Foundation
         }
 
         /// <inheritdoc/>
-        protected override async Task ReceivedData(ReceivedDataEventArgs e)
+        protected override  Task ReceivedData(ReceivedDataEventArgs e)
         {
             if (this.Received != null)
             {
-                await this.Received.Invoke(this, e);
+                return this.Received.Invoke(this, e);
             }
-            await base.ReceivedData(e);
+            return base.ReceivedData(e);
         }
 
         /// <inheritdoc/>
-        protected override async Task OnConnected(ConnectedEventArgs e)
+        protected override Task OnConnected(ConnectedEventArgs e)
         {
             Logger?.Debug($"{ToString()}  Connected");
             if (Started != null)
-                await Started.Invoke(this);
-            await base.OnConnected(e);
+                return Started.Invoke(this);
+            return base.OnConnected(e);
         }
 
         /// <inheritdoc/>
-        protected override async Task OnConnecting(SerialConnectingEventArgs e)
+        protected override  Task OnConnecting(SerialConnectingEventArgs e)
         {
             Logger?.Debug($"{ToString()}  Connecting{(e.Message.IsNullOrEmpty() ? string.Empty : $" -{e.Message}")}");
             if (Starting != null)
-                await Starting.Invoke(this);
-            await base.OnConnecting(e);
+                return Starting.Invoke(this);
+            return base.OnConnecting(e);
         }
 
         /// <inheritdoc/>
@@ -96,12 +96,12 @@ namespace ThingsGateway.Foundation
         }
 
         /// <inheritdoc/>
-        protected override async Task OnDisconnected(DisconnectEventArgs e)
+        protected override Task OnDisconnected(DisconnectEventArgs e)
         {
             Logger?.Debug($"{ToString()}  Disconnected{(e.Message.IsNullOrEmpty() ? string.Empty : $"-{e.Message}")}");
             if (Stoped != null)
-                await Stoped.Invoke(this);
-            await base.OnDisconnected(e);
+                return Stoped.Invoke(this);
+            return base.OnDisconnected(e);
         }
     }
 }

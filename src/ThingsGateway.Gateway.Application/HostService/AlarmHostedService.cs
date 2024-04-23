@@ -365,7 +365,7 @@ public class AlarmHostedService : BackgroundService
     private async Task DoWork(CancellationToken cancellation)
     {
         // 延迟一段时间，避免过于频繁地执行任务
-        await Task.Delay(500, cancellation);
+        await Task.Delay(500, cancellation).ConfigureAwait(false);
 
         // 获取设备变量列表
         var list = _deviceVariables.ToListWithDequeue();
@@ -407,25 +407,25 @@ public class AlarmHostedService : BackgroundService
         return Task.CompletedTask;
     }
 
-    private async Task CollectDeviceHostedService_Started()
+    private Task CollectDeviceHostedService_Started()
     {
-        await StartAsync();
+        return StartAsync();
     }
 
-    private async Task CollectDeviceHostedService_Stoping()
+    private Task CollectDeviceHostedService_Stoping()
     {
-        await StopAsync();
+        return StopAsync();
     }
 
     internal async Task StartAsync()
     {
         try
         {
-            await RestartLock.WaitAsync(); // 等待获取锁，以确保只有一个线程可以执行以下代码
+            await RestartLock.WaitAsync().ConfigureAwait(false); // 等待获取锁，以确保只有一个线程可以执行以下代码
 
             if (RealAlarmTask != null)
             {
-                await RealAlarmTask.StopAsync(TimeSpan.FromSeconds(10)); // 停止现有任务，等待最多10秒钟
+                await RealAlarmTask.StopAsync(TimeSpan.FromSeconds(10)).ConfigureAwait(false); // 停止现有任务，等待最多10秒钟
             }
 
             RealAlarmTask = new DoTask(a => DoWork(a), _logger, Localizer["RealAlarmTask"]); // 创建新的任务
@@ -445,11 +445,11 @@ public class AlarmHostedService : BackgroundService
     {
         try
         {
-            await RestartLock.WaitAsync(); // 等待获取锁，以确保只有一个线程可以执行以下代码
+            await RestartLock.WaitAsync().ConfigureAwait(false); // 等待获取锁，以确保只有一个线程可以执行以下代码
 
             if (RealAlarmTask != null)
             {
-                await RealAlarmTask.StopAsync(TimeSpan.FromSeconds(10)); // 停止任务，等待最多10秒钟
+                await RealAlarmTask.StopAsync(TimeSpan.FromSeconds(10)).ConfigureAwait(false); // 停止任务，等待最多10秒钟
             }
             RealAlarmTask = null;
             RealAlarmVariables.Clear(); // 清空任务相关的变量

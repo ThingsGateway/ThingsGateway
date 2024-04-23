@@ -23,7 +23,7 @@ public partial class QuestDBPage : IDriverUIBase
 
     private async Task<QueryData<QuestDBHistoryValue>> OnQueryAsync(QueryPageOptions options)
     {
-        var query = await QuestDBProducer.QueryData(options);
+        var query = await QuestDBProducer.QueryData(options).ConfigureAwait(false);
         return query;
     }
 

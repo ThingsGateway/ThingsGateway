@@ -25,7 +25,7 @@ internal partial class ReverseCallbackServer : RpcServer
     {
         try
         {
-            await easyLock.WaitAsync();
+            await easyLock.WaitAsync().ConfigureAwait(false);
 
             //冗余双方站点可能存在同时执行冗余切换的情况
             {

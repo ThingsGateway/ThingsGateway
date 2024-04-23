@@ -64,9 +64,9 @@ public partial class SqlHisAlarm : BusinessBaseWithCacheVarModel<HistoryAlarm>, 
 
     protected override async Task ProtectedExecuteAsync(CancellationToken cancellationToken)
     {
-        await Update(cancellationToken);
+        await Update(cancellationToken).ConfigureAwait(false);
 
-        await Delay(cancellationToken);
+        await Delay(cancellationToken).ConfigureAwait(false);
     }
 
     protected override void Dispose(bool disposing)

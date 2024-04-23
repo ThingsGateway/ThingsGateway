@@ -116,8 +116,8 @@ public abstract class BusinessBaseWithCacheVarModel<VarModel> : BusinessBase
 
     protected virtual async Task Update(CancellationToken cancellationToken)
     {
-        await UpdateVarModelMemory(cancellationToken);
-        await UpdateVarModelCache(cancellationToken);
+        await UpdateVarModelMemory(cancellationToken).ConfigureAwait(false);
+        await UpdateVarModelCache(cancellationToken).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -149,7 +149,7 @@ public abstract class BusinessBaseWithCacheVarModel<VarModel> : BusinessBase
                             {
                                 if (!cancellationToken.IsCancellationRequested)
                                 {
-                                    OperResult result = await UpdateVarModel(varList, cancellationToken);
+                                    OperResult result = await UpdateVarModel(varList, cancellationToken).ConfigureAwait(false);
                                     if (result.IsSuccess)
                                     {
                                         //删除缓存
@@ -203,7 +203,7 @@ public abstract class BusinessBaseWithCacheVarModel<VarModel> : BusinessBase
                     {
                         if (!cancellationToken.IsCancellationRequested)
                         {
-                            OperResult result = await UpdateVarModel(item, cancellationToken);
+                            OperResult result = await UpdateVarModel(item, cancellationToken).ConfigureAwait(false);
                             if (!result.IsSuccess)
                             {
                                 AddCache(item.ToList());

@@ -68,14 +68,14 @@ public partial class KafkaProducer : BusinessBaseWithCacheIntervalScript<Variabl
     private async Task<OperResult> UpdateAlarmModel(IEnumerable<AlarmVariable> item, CancellationToken cancellationToken)
     {
         List<TopicJson> topicJsonList = GetAlarms(item);
-        return await Update(topicJsonList, cancellationToken);
+        return await Update(topicJsonList, cancellationToken).ConfigureAwait(false);
     }
 
     private async Task<OperResult> Update(List<TopicJson> topicJsonList, CancellationToken cancellationToken)
     {
         foreach (var topicJson in topicJsonList)
         {
-            var result = await KafKaUpAsync(topicJson.Topic, topicJson.Json, cancellationToken);
+            var result = await KafKaUpAsync(topicJson.Topic, topicJson.Json, cancellationToken).ConfigureAwait(false);
             if (success != result.IsSuccess)
             {
                 if (!result.IsSuccess)
@@ -95,13 +95,13 @@ public partial class KafkaProducer : BusinessBaseWithCacheIntervalScript<Variabl
     private async Task<OperResult> UpdateDevModel(IEnumerable<DeviceData> item, CancellationToken cancellationToken)
     {
         List<TopicJson> topicJsonList = GetDeviceData(item);
-        return await Update(topicJsonList, cancellationToken);
+        return await Update(topicJsonList, cancellationToken).ConfigureAwait(false);
     }
 
     private async Task<OperResult> UpdateVarModel(IEnumerable<VariableData> item, CancellationToken cancellationToken)
     {
         List<TopicJson> topicJsonList = GetVariable(item);
-        return await Update(topicJsonList, cancellationToken);
+        return await Update(topicJsonList, cancellationToken).ConfigureAwait(false);
     }
 
     #endregion private
@@ -119,20 +119,20 @@ public partial class KafkaProducer : BusinessBaseWithCacheIntervalScript<Variabl
         {
             if (!success)
                 break;
-            await UpdateVarModel(item, cancellationToken);
+            await UpdateVarModel(item, cancellationToken).ConfigureAwait(false);
         }
 
         foreach (var item in devData)
         {
             if (!success)
                 break;
-            await UpdateDevModel(item, cancellationToken);
+            await UpdateDevModel(item, cancellationToken).ConfigureAwait(false);
         }
         foreach (var item in alramData)
         {
             if (!success)
                 break;
-            await UpdateAlarmModel(item, cancellationToken);
+            await UpdateAlarmModel(item, cancellationToken).ConfigureAwait(false);
         }
     }
 
@@ -146,7 +146,7 @@ public partial class KafkaProducer : BusinessBaseWithCacheIntervalScript<Variabl
             using CancellationTokenSource cancellationTokenSource = new();
             using CancellationTokenSource stoppingToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationTokenSource.Token, cancellationToken);
             Task<DeliveryResult<Null, string>> resultTask = _producer.ProduceAsync(topic, new Message<Null, string> { Value = payLoad }, stoppingToken.Token);
-            var timeOutResult = await Task.WhenAny(resultTask, Task.Delay(_driverPropertys.Timeout, stoppingToken.Token));
+            var timeOutResult = await Task.WhenAny(resultTask, Task.Delay(_driverPropertys.Timeout, stoppingToken.Token)).ConfigureAwait(false);
             if (timeOutResult == resultTask)
             {
                 var result = (timeOutResult as Task<DeliveryResult<Null, string>>).Result;

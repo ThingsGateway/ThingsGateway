@@ -257,13 +257,13 @@ namespace ThingsGateway.Foundation
 
                 this.m_serverState = ServerState.Running;
 
-                await this.PluginManager.RaiseAsync(nameof(IServerStartedPlugin.OnServerStarted), this, new ServiceStateEventArgs(this.m_serverState, default)).ConfigureFalseAwait();
+                await this.PluginManager.RaiseAsync(nameof(IServerStartedPlugin.OnServerStarted), this, new ServiceStateEventArgs(this.m_serverState, default)).ConfigureAwait(false);
                 return;
             }
             catch (Exception ex)
             {
                 this.m_serverState = ServerState.Exception;
-                await this.PluginManager.RaiseAsync(nameof(IServerStartedPlugin.OnServerStarted), this, new ServiceStateEventArgs(this.m_serverState, ex) { Message = ex.Message }).ConfigureFalseAwait();
+                await this.PluginManager.RaiseAsync(nameof(IServerStartedPlugin.OnServerStarted), this, new ServiceStateEventArgs(this.m_serverState, ex) { Message = ex.Message }).ConfigureAwait(false);
                 throw;
             }
         }
@@ -295,7 +295,7 @@ namespace ThingsGateway.Foundation
             }
             this.m_socketAsyncs.Clear();
 
-            await this.PluginManager.RaiseAsync(nameof(IServerStartedPlugin.OnServerStarted), this, new ServiceStateEventArgs(this.m_serverState, default)).ConfigureFalseAwait();
+            await this.PluginManager.RaiseAsync(nameof(IServerStartedPlugin.OnServerStarted), this, new ServiceStateEventArgs(this.m_serverState, default)).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -763,7 +763,7 @@ namespace ThingsGateway.Foundation
             {
                 if (this.CanSend)
                 {
-                    await this.Monitor.Socket.SendToAsync(new ReadOnlyMemory<byte>(buffer, offset, length), SocketFlags.None, endPoint);
+                    await this.Monitor.Socket.SendToAsync(new ReadOnlyMemory<byte>(buffer, offset, length), SocketFlags.None, endPoint).ConfigureAwait(false);
                 }
 
                 this.LastSendTime = DateTime.Now;
@@ -777,7 +777,7 @@ namespace ThingsGateway.Foundation
             await Task.Run(() =>
             {
                 this.DefaultSend(endPoint, buffer, offset, length);
-            });
+            }).ConfigureAwait(false);
         }
 
 #endif

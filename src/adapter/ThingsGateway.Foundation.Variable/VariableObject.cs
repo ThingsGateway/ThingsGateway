@@ -69,7 +69,7 @@ public abstract class VariableObject
             //连读
             foreach (var item in DeviceVariableSourceReads)
             {
-                var result = await Protocol.ReadAsync(item.RegisterAddress, item.Length, cancellationToken);
+                var result = await Protocol.ReadAsync(item.RegisterAddress, item.Length, cancellationToken).ConfigureAwait(false);
                 if (result.IsSuccess)
                 {
                     item.VariableRunTimes.PraseStructContent(Protocol, result.Content, exWhenAny: true);
@@ -225,7 +225,7 @@ public abstract class VariableObject
 
             JToken jToken = GetExpressionsValue(value, variableRuntimeProperty);
 
-            var result = await Protocol.WriteAsync(variableRuntimeProperty.VariableClass.RegisterAddress, jToken, variableRuntimeProperty.VariableClass.DataType, cancellationToken);
+            var result = await Protocol.WriteAsync(variableRuntimeProperty.VariableClass.RegisterAddress, jToken, variableRuntimeProperty.VariableClass.DataType, cancellationToken).ConfigureAwait(false);
             return result;
         }
         catch (Exception ex)

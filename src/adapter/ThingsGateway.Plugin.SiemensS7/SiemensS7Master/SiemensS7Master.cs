@@ -76,9 +76,9 @@ public class SiemensS7Master : CollectBase
     public async Task<OperResult<System.DateTime>> ReadWriteDateAsync(string address, System.DateTime? value = null, CancellationToken cancellationToken = default)
     {
         if (value == null)
-            return await _plc?.ReadDateAsync(address, cancellationToken);
+            return await _plc.ReadDateAsync(address, cancellationToken).ConfigureAwait(false);
         else
-            return new(await _plc?.WriteDateAsync(address, value.Value, cancellationToken));
+            return new(await _plc.WriteDateAsync(address, value.Value, cancellationToken));
     }
 
     /// <summary>
@@ -92,8 +92,8 @@ public class SiemensS7Master : CollectBase
     public async Task<OperResult<System.DateTime>> ReadWriteDateTimeAsync(string address, System.DateTime? value = null, CancellationToken cancellationToken = default)
     {
         if (value == null)
-            return await _plc?.ReadDateTimeAsync(address, cancellationToken);
+            return await _plc.ReadDateTimeAsync(address, cancellationToken);
         else
-            return new(await _plc?.WriteDateTimeAsync(address, value.Value, cancellationToken));
+            return new(await _plc.WriteDateTimeAsync(address, value.Value, cancellationToken).ConfigureAwait(false));
     }
 }

@@ -85,12 +85,12 @@ public class VariableMethod
             switch (MethodInfo.TaskType)
             {
                 case TaskReturnType.Task:
-                    await MethodInfo.InvokeAsync(driverBase, os);
+                    await MethodInfo.InvokeAsync(driverBase, os).ConfigureAwait(false);
                     result = new OperResult();
                     break;
 
                 case TaskReturnType.TaskObject:
-                    result = await MethodInfo.InvokeObjectAsync(driverBase, os);
+                    result = await MethodInfo.InvokeObjectAsync(driverBase, os).ConfigureAwait(false);
                     break;
 
                 case TaskReturnType.None:

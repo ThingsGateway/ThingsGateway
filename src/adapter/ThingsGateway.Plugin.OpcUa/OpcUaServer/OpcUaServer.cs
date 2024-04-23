@@ -103,9 +103,9 @@ public partial class OpcUaServer : BusinessBase
     protected override async Task ProtectedBeforStartAsync(CancellationToken cancellationToken)
     {
         // 启动服务器。
-        await m_application.CheckApplicationInstanceCertificate(false, 0, 1200);
-        await m_application.Start(m_server);
-        await base.ProtectedBeforStartAsync(cancellationToken);
+        await m_application.CheckApplicationInstanceCertificate(false, 0, 1200).ConfigureAwait(false);
+        await m_application.Start(m_server).ConfigureAwait(false);
+        await base.ProtectedBeforStartAsync(cancellationToken).ConfigureAwait(false);
     }
 
     protected override async Task ProtectedExecuteAsync(CancellationToken cancellationToken)
@@ -122,8 +122,8 @@ public partial class OpcUaServer : BusinessBase
                 CurrentDevice.SetDeviceStatus(TimerX.Now, 999);
                 try
                 {
-                    await m_application.CheckApplicationInstanceCertificate(false, 0, 1200);
-                    await m_application.Start(m_server);
+                    await m_application.CheckApplicationInstanceCertificate(false, 0, 1200).ConfigureAwait(false);
+                    await m_application.Start(m_server).ConfigureAwait(false);
                     success = true;
                 }
                 catch (Exception ex)
@@ -166,7 +166,7 @@ public partial class OpcUaServer : BusinessBase
             success = false;
         }
 
-        await Delay(cancellationToken);
+        await Delay(cancellationToken).ConfigureAwait(false);
     }
 
     private ApplicationConfiguration GetDefaultConfiguration()

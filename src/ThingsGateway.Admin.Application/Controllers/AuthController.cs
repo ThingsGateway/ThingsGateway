@@ -32,9 +32,9 @@ public class AuthController : ControllerBase
 
     [HttpPost("login")]
     [AllowAnonymous]
-    public async Task<LoginOutput> LoginAsync([FromBody] LoginInput input)
+    public   Task<LoginOutput> LoginAsync([FromBody] LoginInput input)
     {
-        return await _authService.LoginAsync(input);
+        return   _authService.LoginAsync(input);
     }
 
     [HttpGet("logout")]

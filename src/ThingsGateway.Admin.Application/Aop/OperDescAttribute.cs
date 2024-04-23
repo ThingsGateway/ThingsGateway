@@ -102,7 +102,7 @@ public class OperDescAttribute : MoAttribute
                 {
                     await db.InsertableWithAttr(_logMessageQueue.ToListWithDequeue()).ExecuteCommandAsync();//入库
                 }
-                await Task.Delay(3000, appLifetime.ApplicationStopping);
+                await Task.Delay(3000, appLifetime.ApplicationStopping).ConfigureAwait(false);
             }
             catch (Exception ex)
             {

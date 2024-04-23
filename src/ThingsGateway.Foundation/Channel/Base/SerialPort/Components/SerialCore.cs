@@ -1,4 +1,4 @@
-
+﻿
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -139,14 +139,14 @@ namespace ThingsGateway.Foundation
                 var byteBlock = new ByteBlock(this.ReceiveBufferSize);
                 try
                 {
-                    var r = await this.m_serialPort.BaseStream.ReadAsync(byteBlock.Buffer, 0, byteBlock.Capacity, default).ConfigureFalseAwait();
+                    var r = await this.m_serialPort.BaseStream.ReadAsync(byteBlock.Buffer, 0, byteBlock.Capacity, default).ConfigureAwait(false);
                     if (r == 0)
                     {
                         this.PrivateBreakOut(false, DefaultResource.Localizer["RemoteClose"]);
                         return;
                     }
                     if (m_serialPort.BytesToRead > 0)
-                        r += await this.m_serialPort.BaseStream.ReadAsync(byteBlock.Buffer, r, byteBlock.Capacity - r, default).ConfigureFalseAwait();
+                        r += await this.m_serialPort.BaseStream.ReadAsync(byteBlock.Buffer, r, byteBlock.Capacity - r, default).ConfigureAwait(false);
 
                     byteBlock.SetLength(r);
                     this.HandleBuffer(byteBlock);
@@ -240,7 +240,7 @@ namespace ThingsGateway.Foundation
             this.ThrowIfNotConnected();
             try
             {
-                await this.m_semaphoreForSend.WaitAsync();
+                await this.m_semaphoreForSend.WaitAsync().ConfigureAwait(false);
 
                 this.m_serialPort.Write(buffer, offset, length);
                 this.m_sendCounter.Increment(length);

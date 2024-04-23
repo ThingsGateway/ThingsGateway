@@ -303,7 +303,7 @@ public class ChannelThread
                 }
             }
 
-            await Task.Delay(100);
+            await Task.Delay(100).ConfigureAwait(false);
 
             driverBase.AfterStop();
 
@@ -389,7 +389,7 @@ public class ChannelThread
         try
         {
             // 等待EasyLock锁的获取
-            await EasyLock.WaitAsync();
+            await EasyLock.WaitAsync().ConfigureAwait(false);
 
             // 如果DriverTask不为null，则执行以下操作
             if (DriverTask != null)
@@ -445,12 +445,12 @@ public class ChannelThread
         try
         {
             // 等待EasyLock锁的获取
-            await EasyLock.WaitAsync();
+            await EasyLock.WaitAsync().ConfigureAwait(false);
 
             BeforeStopThread();
 
             // 等待DriverTask最多30s
-            await DriverTask.StopAsync(TimeSpan.FromSeconds(30));
+            await DriverTask.StopAsync(TimeSpan.FromSeconds(30)).ConfigureAwait(false);
 
             DriverBases.ForEach(a =>
             {
@@ -507,7 +507,7 @@ public class ChannelThread
             {
                 if (!CancellationTokenSources.TryGetValue(driver.DeviceId, out var stoken))
                 {
-                    await Task.Delay(CycleInterval, stoppingToken);
+                    await Task.Delay(CycleInterval, stoppingToken).ConfigureAwait(false);
                     continue;
                 }
                 var token = stoken.Token;
@@ -516,9 +516,9 @@ public class ChannelThread
                 if (driver.IsInitSuccess)
                 {
                     if (!driver.IsBeforStarted)
-                        await driver.BeforStartAsync(token); // 调用驱动的启动前异步方法，如果已经执行，会直接返回
+                        await driver.BeforStartAsync(token).ConfigureAwait(false); // 调用驱动的启动前异步方法，如果已经执行，会直接返回
 
-                    var result = await driver.ExecuteAsync(token); // 执行驱动的异步执行操作
+                    var result = await driver.ExecuteAsync(token).ConfigureAwait(false); // 执行驱动的异步执行操作
 
                     // 根据执行结果进行不同的处理
                     if (result == ThreadRunReturnTypeEnum.None)
@@ -527,18 +527,18 @@ public class ChannelThread
                         if (driver.CurrentDevice.DeviceStatus == DeviceStatusEnum.OffLine && driver.IsCollectDevice)
                         {
                             if (DriverBases.Count == 1)
-                                await Task.Delay(Math.Min(((CollectBase)driver).CollectProperties.ReIntervalTime, DeviceHostedService.CheckIntervalTime / 2) * 1000 - CycleInterval, token);
+                                await Task.Delay(Math.Min(((CollectBase)driver).CollectProperties.ReIntervalTime, DeviceHostedService.CheckIntervalTime / 2) * 1000 - CycleInterval, token).ConfigureAwait(false);
                         }
                         else
                         {
                             if (DriverBases.Count == 1)
-                                await Task.Delay(CycleInterval, token); // 默认延迟一段时间后再继续执行
+                                await Task.Delay(CycleInterval, token).ConfigureAwait(false); // 默认延迟一段时间后再继续执行
                         }
                     }
                     else if (result == ThreadRunReturnTypeEnum.Continue)
                     {
                         if (DriverBases.Count == 1)
-                            await Task.Delay(1000, token); // 如果执行结果为继续，则延迟一段较短的时间后再继续执行
+                            await Task.Delay(1000, token).ConfigureAwait(false); // 如果执行结果为继续，则延迟一段较短的时间后再继续执行
                     }
                     else if (result == ThreadRunReturnTypeEnum.Break)
                     {
@@ -549,7 +549,7 @@ public class ChannelThread
                 else
                 {
                     if (DriverBases.Count == 1)
-                        await Task.Delay(1000, token); // 默认延迟一段时间后再继续执行
+                        await Task.Delay(1000, token).ConfigureAwait(false); // 默认延迟一段时间后再继续执行
                 }
             }
             catch (TaskCanceledException)
@@ -566,11 +566,11 @@ public class ChannelThread
 
         // 如果驱动实例数量大于1，则延迟一段时间后继续执行下一轮循环
         if (DriverBases.Count > 1)
-            await Task.Delay(CycleInterval, stoppingToken);
+            await Task.Delay(CycleInterval, stoppingToken).ConfigureAwait(false);
 
         // 如果驱动实例数量为0，则延迟一段时间后继续执行下一轮循环
         if (DriverBases.Count == 0)
-            await Task.Delay(1000, stoppingToken);
+            await Task.Delay(1000, stoppingToken).ConfigureAwait(false);
     }
 
     #endregion 线程生命周期

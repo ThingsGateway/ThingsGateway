@@ -113,12 +113,12 @@ public abstract class BusinessBaseWithCacheAlarmModel<VarModel, DevModel, AlarmM
 
     protected override async Task Update(CancellationToken cancellationToken)
     {
-        await UpdateVarModelMemory(cancellationToken);
-        await UpdateDevModelMemory(cancellationToken);
-        await UpdateAlarmModelMemory(cancellationToken);
-        await UpdateVarModelCache(cancellationToken);
-        await UpdateDevModelCache(cancellationToken);
-        await UpdateAlarmModelCache(cancellationToken);
+        await UpdateVarModelMemory(cancellationToken).ConfigureAwait(false);
+        await UpdateDevModelMemory(cancellationToken).ConfigureAwait(false);
+        await UpdateAlarmModelMemory(cancellationToken).ConfigureAwait(false);
+        await UpdateVarModelCache(cancellationToken).ConfigureAwait(false);
+        await UpdateDevModelCache(cancellationToken).ConfigureAwait(false);
+        await UpdateAlarmModelCache(cancellationToken).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -151,7 +151,7 @@ public abstract class BusinessBaseWithCacheAlarmModel<VarModel, DevModel, AlarmM
                             {
                                 if (!cancellationToken.IsCancellationRequested)
                                 {
-                                    OperResult result = await UpdateAlarmModel(varList, cancellationToken);
+                                    OperResult result = await UpdateAlarmModel(varList, cancellationToken).ConfigureAwait(false);
                                     if (result.IsSuccess)
                                     {
                                         //删除缓存
@@ -205,7 +205,7 @@ public abstract class BusinessBaseWithCacheAlarmModel<VarModel, DevModel, AlarmM
                     {
                         if (!cancellationToken.IsCancellationRequested)
                         {
-                            OperResult result = await UpdateAlarmModel(item, cancellationToken);
+                            OperResult result = await UpdateAlarmModel(item, cancellationToken).ConfigureAwait(false);
                             if (!result.IsSuccess)
                             {
                                 AddCache(item.ToList());

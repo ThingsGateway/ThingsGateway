@@ -143,21 +143,21 @@ public abstract class DeviceHostedService : BackgroundService
     protected async Task RemoveAllChannelThreadAsync(bool isRemoveDevice)
     {
         // 执行删除所有通道线程前的操作
-        await BeforeRemoveAllChannelThreadAsync();
+        await BeforeRemoveAllChannelThreadAsync().ConfigureAwait(false);
 
         // 并行遍历通道线程列表，并停止每个通道线程
         await ChannelThreads.ParallelForEachAsync(async (channelThread, cancellationToken) =>
         {
             try
             {
-                await channelThread.StopThreadAsync(isRemoveDevice);
+                await channelThread.StopThreadAsync(isRemoveDevice).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
                 // 记录停止通道线程时的异常信息
                 _logger?.LogError(ex, channelThread.ToString());
             }
-        }, Environment.ProcessorCount / 2);
+        }, Environment.ProcessorCount / 2).ConfigureAwait(false);
 
         // 如果指定了同时移除相关设备，则清空通道线程列表
         if (isRemoveDevice)
@@ -188,7 +188,7 @@ public abstract class DeviceHostedService : BackgroundService
         });
 
         // 等待一小段时间，以确保 BeforeStopThread 方法有足够的时间执行
-        await Task.Delay(100);
+        await Task.Delay(100).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -204,7 +204,7 @@ public abstract class DeviceHostedService : BackgroundService
             {
                 if (!_stoppingToken.IsCancellationRequested)
                 {
-                    await StartChannelThreadAsync(item);
+                    await StartChannelThreadAsync(item).ConfigureAwait(false);
                 }
             }
         }
@@ -221,7 +221,7 @@ public abstract class DeviceHostedService : BackgroundService
         if (item.IsCollectChannel && HostedServiceUtil.ManagementHostedService.StartCollectDeviceEnable)
         {
             // 启动通道线程
-            await item.StartThreadAsync();
+            await item.StartThreadAsync().ConfigureAwait(false);
         }
         else
         {
@@ -229,7 +229,7 @@ public abstract class DeviceHostedService : BackgroundService
             if (HostedServiceUtil.ManagementHostedService.StartCollectDeviceEnable)
             {
                 // 如果启动采集设备选项已启用，则启动通道线程
-                await item.StartThreadAsync();
+                await item.StartThreadAsync().ConfigureAwait(false);
             }
             else
             {
@@ -237,7 +237,7 @@ public abstract class DeviceHostedService : BackgroundService
                 if (HostedServiceUtil.ManagementHostedService.StartBusinessDeviceEnable)
                 {
                     // 启动通道线程
-                    await item.StartThreadAsync();
+                    await item.StartThreadAsync().ConfigureAwait(false);
                 }
             }
         }
@@ -266,27 +266,27 @@ public abstract class DeviceHostedService : BackgroundService
         try
         {
             // 等待单个重启锁
-            await singleRestartLock.WaitAsync();
+            await singleRestartLock.WaitAsync().ConfigureAwait(false);
 
             // 如果没有收到停止请求
             if (!_stoppingToken.IsCancellationRequested)
             {
                 // 如果设备已更改，则停止
                 if (isChanged)
-                    await ProtectedStoping();
+                    await ProtectedStoping().ConfigureAwait(false);
 
                 // 获取包含指定设备ID的通道线程，如果找不到则抛出异常
                 var channelThread = ChannelThreads.FirstOrDefault(it => it.Has(deviceId))
                     ?? throw new Exception(Localizer["UpadteDeviceIdNotFound", deviceId]);
 
                 // 获取设备运行时信息或者使用通道线程中当前设备的信息
-                var dev = isChanged ? (await GetDeviceRunTimeAsync(deviceId)).FirstOrDefault() : channelThread.GetDriver(deviceId).CurrentDevice;
+                var dev = isChanged ? (await GetDeviceRunTimeAsync(deviceId).ConfigureAwait(false)).FirstOrDefault() : channelThread.GetDriver(deviceId).CurrentDevice;
 
                 // 先移除设备驱动，此操作会取消线程，需要重新启动线程
-                await channelThread.RemoveDriverAsync(deviceId);
+                await channelThread.RemoveDriverAsync(deviceId).ConfigureAwait(false);
 
                 if (isChanged)
-                    await ProtectedStoped();
+                    await ProtectedStoped().ConfigureAwait(false);
 
                 // 如果设备信息不为空
                 if (dev != null)
@@ -300,17 +300,17 @@ public abstract class DeviceHostedService : BackgroundService
                     {
                         // 如果设备已更改，则执行启动前的操作
                         if (isChanged)
-                            await ProtectedStarting();
+                            await ProtectedStarting().ConfigureAwait(false);
 
                         try
                         {
                             // 启动新的通道线程
-                            await StartChannelThreadAsync(newChannelThread);
+                            await StartChannelThreadAsync(newChannelThread).ConfigureAwait(false);
                         }
                         finally
                         {
                             if (isChanged)
-                                await ProtectedStarted();
+                                await ProtectedStarted().ConfigureAwait(false);
                         }
                     }
                     else
@@ -318,8 +318,8 @@ public abstract class DeviceHostedService : BackgroundService
                         // 如果找不到对应的通道线程，则执行启动前后的操作
                         if (isChanged)
                         {
-                            await ProtectedStarting();
-                            await ProtectedStarted();
+                            await ProtectedStarting().ConfigureAwait(false);
+                            await ProtectedStarted().ConfigureAwait(false);
                         }
                     }
                 }
@@ -328,8 +328,8 @@ public abstract class DeviceHostedService : BackgroundService
                     // 如果设备信息为空，则执行启动前后的操作
                     if (isChanged)
                     {
-                        await ProtectedStarting();
-                        await ProtectedStarted();
+                        await ProtectedStarting().ConfigureAwait(false);
+                        await ProtectedStarted().ConfigureAwait(false);
                     }
                 }
             }
@@ -348,14 +348,14 @@ public abstract class DeviceHostedService : BackgroundService
     {
         try
         {
-            await singleRestartLock.WaitAsync();
+            await singleRestartLock.WaitAsync().ConfigureAwait(false);
 
             if (!_stoppingToken.IsCancellationRequested)
             {
                 var channelThread = ChannelThreads.FirstOrDefault(it => it.Has(deviceId))
                     ?? throw new(Localizer["UpadteDeviceIdNotFound", deviceId]);
                 //这里先停止采集，操作会使线程取消，需要重新恢复线程
-                await channelThread.RemoveDriverAsync(deviceId);
+                await channelThread.RemoveDriverAsync(deviceId).ConfigureAwait(false);
 
                 var dev = channelThread.GetDriver(deviceId).CurrentDevice;
 
@@ -403,7 +403,7 @@ public abstract class DeviceHostedService : BackgroundService
                 var newChannelThread = GetChannelThread(newDriverBase);
                 if (newChannelThread != null)
                 {
-                    await StartChannelThreadAsync(newChannelThread);
+                    await StartChannelThreadAsync(newChannelThread).ConfigureAwait(false);
                 }
             }
         }
@@ -501,7 +501,7 @@ public abstract class DeviceHostedService : BackgroundService
             if (!otherstarted)
                 if (HostedServiceUtil.ManagementHostedService.StartCollectDeviceEnable || HostedServiceUtil.ManagementHostedService.StartBusinessDeviceEnable)
                     if (Started != null)
-                        await Started.Invoke();
+                        await Started.Invoke().ConfigureAwait(false);
         }
         finally
         {
@@ -512,7 +512,7 @@ public abstract class DeviceHostedService : BackgroundService
     protected virtual async Task ProtectedStarting()
     {
         if (Starting != null)
-            await Starting.Invoke();
+            await Starting.Invoke().ConfigureAwait(false);
     }
 
     protected virtual async Task ProtectedStoped()
@@ -521,7 +521,7 @@ public abstract class DeviceHostedService : BackgroundService
         {
             if (otherstarted)
                 if (Stoped != null)
-                    await Stoped.Invoke();
+                    await Stoped.Invoke().ConfigureAwait(false);
         }
         finally
         {
@@ -532,7 +532,7 @@ public abstract class DeviceHostedService : BackgroundService
     protected virtual async Task ProtectedStoping()
     {
         if (Stoping != null)
-            await Stoping.Invoke();
+            await Stoping.Invoke().ConfigureAwait(false);
     }
 
     protected abstract Task<IEnumerable<DeviceRunTime>> GetDeviceRunTimeAsync(long deviceId);
@@ -544,7 +544,7 @@ public abstract class DeviceHostedService : BackgroundService
             try
             {
                 //每5分钟检测一次
-                await Task.Delay(300000, stoppingToken);
+                await Task.Delay(300000, stoppingToken).ConfigureAwait(false);
 
                 //检测设备线程假死
                 var data = DriverBases.ToList();
@@ -561,7 +561,7 @@ public abstract class DeviceHostedService : BackgroundService
                             {
                                 if (driverBase.CurrentDevice.RedundantEnable && DeviceService.GetAll().Any(a => a.Id == driverBase.CurrentDevice.RedundantDeviceId))
                                 {
-                                    await DeviceRedundantThreadAsync(driverBase.CurrentDevice.Id);
+                                    await DeviceRedundantThreadAsync(driverBase.CurrentDevice.Id).ConfigureAwait(false);
                                 }
                             }
 
@@ -578,7 +578,7 @@ public abstract class DeviceHostedService : BackgroundService
                                 else
                                     _logger?.LogWarning(Localizer["DeviceTaskDeath", driverBase.CurrentDevice.Name]);
                                 //重启线程
-                                await RestartChannelThreadAsync(driverBase.CurrentDevice.Id, false);
+                                await RestartChannelThreadAsync(driverBase.CurrentDevice.Id, false).ConfigureAwait(false);
                                 break;
                             }
                         }
@@ -612,10 +612,9 @@ public abstract class DeviceHostedService : BackgroundService
     {
         try
         {
-            await publicRestartLock.WaitAsync();
-
-            await StopAsync(true);
-            await StartAsync();
+            await publicRestartLock.WaitAsync().ConfigureAwait(false);
+            await StopAsync(true).ConfigureAwait(false);
+            await StartAsync().ConfigureAwait(false);
         }
         finally
         {
@@ -630,16 +629,16 @@ public abstract class DeviceHostedService : BackgroundService
     {
         try
         {
-            await restartLock.WaitAsync();
-            await singleRestartLock.WaitAsync();
+            await restartLock.WaitAsync().ConfigureAwait(false);
+            await singleRestartLock.WaitAsync().ConfigureAwait(false);
             if (!started)
             {
                 ChannelThreads.Clear();
-                await CreatAllChannelThreadsAsync();
-                await ProtectedStarting();
+                await CreatAllChannelThreadsAsync().ConfigureAwait(false);
+                await ProtectedStarting().ConfigureAwait(false);
             }
-            await StartAllChannelThreadsAsync();
-            await ProtectedStarted();
+            await StartAllChannelThreadsAsync().ConfigureAwait(false);
+            await ProtectedStarted().ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -660,13 +659,13 @@ public abstract class DeviceHostedService : BackgroundService
     {
         try
         {
-            await restartLock.WaitAsync();
-            await singleRestartLock.WaitAsync();
+            await restartLock.WaitAsync().ConfigureAwait(false);
+            await singleRestartLock.WaitAsync().ConfigureAwait(false);
             if (!started)
             {
                 ChannelThreads.Clear();
-                await CreatAllChannelThreadsAsync();
-                await ProtectedStarting();
+                await CreatAllChannelThreadsAsync().ConfigureAwait(false);
+                await ProtectedStarting().ConfigureAwait(false);
             }
         }
         catch (Exception ex)
@@ -688,9 +687,9 @@ public abstract class DeviceHostedService : BackgroundService
     {
         try
         {
-            await restartLock.WaitAsync();
-            await singleRestartLock.WaitAsync();
-            await StopThreadAsync(isRemoveDevice);
+            await restartLock.WaitAsync().ConfigureAwait(false);
+            await singleRestartLock.WaitAsync().ConfigureAwait(false);
+            await StopThreadAsync(isRemoveDevice).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -708,15 +707,15 @@ public abstract class DeviceHostedService : BackgroundService
         if (started)
         {
             //取消全部采集线程
-            await BeforeRemoveAllChannelThreadAsync();
+            await BeforeRemoveAllChannelThreadAsync().ConfigureAwait(false);
             if (isRemoveDevice)
                 //取消其他后台服务
-                await ProtectedStoping();
+                await ProtectedStoping().ConfigureAwait(false);
             //停止全部采集线程
-            await RemoveAllChannelThreadAsync(isRemoveDevice);
+            await RemoveAllChannelThreadAsync(isRemoveDevice).ConfigureAwait(false);
             if (isRemoveDevice)
                 //停止其他后台服务
-                await ProtectedStoped();
+                await ProtectedStoped().ConfigureAwait(false);
             //清空内存列表
         }
         started = false;

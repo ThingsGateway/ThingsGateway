@@ -87,10 +87,10 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
 
     protected override async Task ProtectedBeforStartAsync(CancellationToken cancellationToken)
     {
-        await base.ProtectedBeforStartAsync(cancellationToken);
+        await base.ProtectedBeforStartAsync(cancellationToken).ConfigureAwait(false);
         if (_mqttClient != null)
         {
-            var result = await TryMqttClientAsync(cancellationToken);
+            var result = await TryMqttClientAsync(cancellationToken).ConfigureAwait(false);
             if (!result.IsSuccess)
             {
                 LogMessage?.LogWarning(result.Exception, $"{ToString()} Connect fail {result.ErrorMessage}");
@@ -100,7 +100,7 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
 
     protected override async Task ProtectedExecuteAsync(CancellationToken cancellationToken)
     {
-        var clientResult = await TryMqttClientAsync(cancellationToken);
+        var clientResult = await TryMqttClientAsync(cancellationToken).ConfigureAwait(false);
         if (!clientResult.IsSuccess)
         {
             if (success != clientResult.IsSuccess)
@@ -109,12 +109,12 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
                     LogMessage.LogWarning(clientResult.Exception, clientResult.ErrorMessage);
                 success = clientResult.IsSuccess;
             }
-            await Delay(cancellationToken);
+            await Delay(cancellationToken).ConfigureAwait(false);
             //return;
         }
 
-        await Update(cancellationToken);
+        await Update(cancellationToken).ConfigureAwait(false);
 
-        await Delay(cancellationToken);
+        await Delay(cancellationToken).ConfigureAwait(false);
     }
 }

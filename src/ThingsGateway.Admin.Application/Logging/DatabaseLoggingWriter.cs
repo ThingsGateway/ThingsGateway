@@ -59,12 +59,12 @@ public class DatabaseLoggingWriter : IDatabaseLoggingWriter
                 //如果没有异常信息
                 if (loggingMonitor.Exception == null)
                 {
-                    save = await CreateVisitLog(operation, path, loggingMonitor, client, flush);//添加到访问日志
+                    save = await CreateVisitLog(operation, path, loggingMonitor, client, flush).ConfigureAwait(false);//添加到访问日志
                 }
                 else
                 {
                     //添加到异常日志
-                    save = await CreateOperationLog(operation, path, loggingMonitor, client, flush);
+                    save = await CreateOperationLog(operation, path, loggingMonitor, client, flush).ConfigureAwait(false);
                 }
             }
             else
@@ -73,13 +73,13 @@ public class DatabaseLoggingWriter : IDatabaseLoggingWriter
                 if (!operation.IsNullOrWhiteSpace() && method == "POST")
                 {
                     //添加到操作日志
-                    save = await CreateOperationLog(operation, path, loggingMonitor, client, flush);
+                    save = await CreateOperationLog(operation, path, loggingMonitor, client, flush).ConfigureAwait(false);
                 }
             }
         }
         if (save)
         {
-            await Task.Delay(1000);
+            await Task.Delay(1000).ConfigureAwait(false);
         }
     }
 

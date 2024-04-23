@@ -108,7 +108,7 @@ public abstract class BusinessBaseWithCacheIntervalAlarmModel<VarModel, DevModel
         {
             if (CurrentDevice?.KeepRun == false)
             {
-                await Delay(cancellationToken);
+                await Delay(cancellationToken).ConfigureAwait(false);
                 continue;
             }
 
@@ -147,7 +147,7 @@ public abstract class BusinessBaseWithCacheIntervalAlarmModel<VarModel, DevModel
                 }
             }
 
-            await Delay(cancellationToken);
+            await Delay(cancellationToken).ConfigureAwait(false);
         }
     }
 

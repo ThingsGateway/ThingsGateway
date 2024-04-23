@@ -30,7 +30,7 @@ public class ClearTokenUtil
         // 解析角色服务
         RelationService ??= App.RootServices!.GetRequiredService<IRelationService>();
         //获取用户和角色关系
-        var relations = await RelationService.GetRelationListByTargetIdListAndCategoryAsync(roleIds.Select(it => it.ToString()), RelationCategoryEnum.UserHasRole);
+        var relations = await RelationService.GetRelationListByTargetIdListAndCategoryAsync(roleIds.Select(it => it.ToString()), RelationCategoryEnum.UserHasRole).ConfigureAwait(false);
         if (relations.Any())
         {
             var userIds = relations.Select(it => it.ObjectId);//用户ID列表
@@ -49,13 +49,13 @@ public class ClearTokenUtil
         // 解析关系服务
         RelationService ??= App.RootServices!.GetRequiredService<IRelationService>();
         var roleModuleRelations =
-            await RelationService.GetRelationListByTargetIdAndCategoryAsync(moduleId.ToString(), RelationCategoryEnum.RoleHasModule);//角色模块关系
+            await RelationService.GetRelationListByTargetIdAndCategoryAsync(moduleId.ToString(), RelationCategoryEnum.RoleHasModule).ConfigureAwait(false);//角色模块关系
         var userModuleRelations =
-            await RelationService.GetRelationListByTargetIdAndCategoryAsync(moduleId.ToString(), RelationCategoryEnum.UserHasModule);//用户模块关系
+            await RelationService.GetRelationListByTargetIdAndCategoryAsync(moduleId.ToString(), RelationCategoryEnum.UserHasModule).ConfigureAwait(false);//用户模块关系
         var userIds = userModuleRelations.Select(it => it.ObjectId).ToList();//用户ID列表
         var roleIds = roleModuleRelations.Select(it => it.ObjectId).ToList();//角色ID列表
         var userRoleRelations = await RelationService.GetRelationListByTargetIdListAndCategoryAsync(roleIds.Select(it => it.ToString()).ToList(),
-            RelationCategoryEnum.UserHasRole);//用户角色关系
+            RelationCategoryEnum.UserHasRole).ConfigureAwait(false);//用户角色关系
         userIds.AddRange(userRoleRelations.Select(it => it.ObjectId));//添加用户ID列表
 
         // 解析用户服务
@@ -71,7 +71,7 @@ public class ClearTokenUtil
         VerificatInfoCacheService.HashDel(userIds.ToArray());
         foreach (var item in verificatInfos)
         {
-            await NoticeUtil.UserLoginOut(new UserLoginOutEvent() { VerificatInfos = item, Message = App.CreateLocalizerByType(typeof(SysUser))["ExitVerificat"] });
+            await NoticeUtil.UserLoginOut(new UserLoginOutEvent() { VerificatInfos = item, Message = App.CreateLocalizerByType(typeof(SysUser))["ExitVerificat"] }).ConfigureAwait(false);
         }
     }
 }

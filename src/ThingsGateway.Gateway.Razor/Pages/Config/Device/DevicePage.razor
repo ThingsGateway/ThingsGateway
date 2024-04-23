@@ -52,7 +52,12 @@
         <TableToolbarTemplate>
             <TableToolbarPopConfirmButton TItem="Device"
                                           Color=Color.Warning Text="@Localizer["Clear"]" IsDisabled=@(!AuthorizeButton("清空"))
-                                          IsAsync OnConfirm=@(async()=>{await DeviceService.ClearDeviceAsync(PluginType);await ToastService.Default(); await table.QueryAsync(); }) />
+                                          IsAsync OnConfirm=@(async()=>{await Task.Run(async()=> { await DeviceService.ClearDeviceAsync(PluginType);
+                                          await InvokeAsync(async()=>
+                                          {
+                                          await ToastService.Default(); await table.QueryAsync();
+                                          });
+                                          });} ) />
         </TableToolbarTemplate>
     </AdminTable>
 </div>

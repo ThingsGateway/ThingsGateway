@@ -259,7 +259,7 @@ public abstract class DriverBase : DisposableObject
             try
             {
                 // 异步执行初始化操作，并设置超时时间
-                await ProtectedBeforStartAsync(cancellationToken).WaitAsync(TimeSpan.FromSeconds(timeout), cancellationToken);
+                await ProtectedBeforStartAsync(cancellationToken).WaitAsync(TimeSpan.FromSeconds(timeout), cancellationToken).ConfigureAwait(false);
             }
             catch (TimeoutException)
             {
@@ -345,7 +345,7 @@ public abstract class DriverBase : DisposableObject
             }
 
             // 执行任务操作
-            await ProtectedExecuteAsync(cancellationToken);
+            await ProtectedExecuteAsync(cancellationToken).ConfigureAwait(false);
 
             // 再次检查取消操作是否被请求
             if (cancellationToken.IsCancellationRequested)
@@ -427,7 +427,7 @@ public abstract class DriverBase : DisposableObject
     protected virtual async Task ProtectedBeforStartAsync(CancellationToken cancellationToken)
     {
         if (Protocol?.Channel != null)
-            await Protocol.Channel.ConnectAsync(3000, cancellationToken);
+            await Protocol.Channel.ConnectAsync(3000, cancellationToken).ConfigureAwait(false);
     }
 
     /// <summary>

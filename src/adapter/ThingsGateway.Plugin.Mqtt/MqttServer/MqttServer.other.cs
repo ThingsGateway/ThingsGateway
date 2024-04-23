@@ -77,17 +77,17 @@ public partial class MqttServer : BusinessBaseWithCacheIntervalScript<VariableDa
 
     #region private
 
-    private async Task<OperResult> UpdateAlarmModel(IEnumerable<AlarmVariable> item, CancellationToken cancellationToken)
+    private Task<OperResult> UpdateAlarmModel(IEnumerable<AlarmVariable> item, CancellationToken cancellationToken)
     {
         List<TopicJson> topicJsonList = GetAlarms(item);
-        return await Update(topicJsonList, cancellationToken);
+        return Update(topicJsonList, cancellationToken);
     }
 
     private async Task<OperResult> Update(List<TopicJson> topicJsonList, CancellationToken cancellationToken)
     {
         foreach (var topicJson in topicJsonList)
         {
-            var result = await MqttUpAsync(topicJson.Topic, topicJson.Json, cancellationToken);
+            var result = await MqttUpAsync(topicJson.Topic, topicJson.Json, cancellationToken).ConfigureAwait(false);
             if (success != result.IsSuccess)
             {
                 if (!result.IsSuccess)
@@ -104,16 +104,16 @@ public partial class MqttServer : BusinessBaseWithCacheIntervalScript<VariableDa
         return new();
     }
 
-    private async Task<OperResult> UpdateDevModel(IEnumerable<DeviceData> item, CancellationToken cancellationToken)
+    private Task<OperResult> UpdateDevModel(IEnumerable<DeviceData> item, CancellationToken cancellationToken)
     {
         List<TopicJson> topicJsonList = GetDeviceData(item);
-        return await Update(topicJsonList, cancellationToken);
+        return Update(topicJsonList, cancellationToken);
     }
 
-    private async Task<OperResult> UpdateVarModel(IEnumerable<VariableData> item, CancellationToken cancellationToken)
+    private Task<OperResult> UpdateVarModel(IEnumerable<VariableData> item, CancellationToken cancellationToken)
     {
         List<TopicJson> topicJsonList = GetVariable(item);
-        return await Update(topicJsonList, cancellationToken);
+        return Update(topicJsonList, cancellationToken);
     }
 
     #endregion private
@@ -128,7 +128,7 @@ public partial class MqttServer : BusinessBaseWithCacheIntervalScript<VariableDa
         var rpcDatas = Encoding.UTF8.GetString(args.ApplicationMessage.PayloadSegment).FromJsonNetString<Dictionary<string, JToken>>();
         if (rpcDatas == null)
             return;
-        Dictionary<string, OperResult> mqttRpcResult = await GetResult(args, rpcDatas);
+        Dictionary<string, OperResult> mqttRpcResult = await GetResult(args, rpcDatas).ConfigureAwait(false);
 
         try
         {
@@ -136,7 +136,7 @@ public partial class MqttServer : BusinessBaseWithCacheIntervalScript<VariableDa
 .WithTopic($"{args.ApplicationMessage.Topic}/Response")
 .WithPayload(mqttRpcResult.ToJsonNetString()).Build();
             await _mqttServer.InjectApplicationMessage(
-                     new InjectedMqttApplicationMessage(variableMessage));
+                     new InjectedMqttApplicationMessage(variableMessage)).ConfigureAwait(false);
         }
         catch
         {
@@ -167,7 +167,7 @@ public partial class MqttServer : BusinessBaseWithCacheIntervalScript<VariableDa
 
             var result = await RpcService.InvokeDeviceMethodAsync(ToString() + "-" + args.ClientId,
                 rpcDatas.Where(
-                a => !mqttRpcResult.Any(b => b.Key == a.Key)).ToDictionary(a => a.Key, a => a.Value.ToString()));
+                a => !mqttRpcResult.Any(b => b.Key == a.Key)).ToDictionary(a => a.Key, a => a.Value.ToString())).ConfigureAwait(false);
 
             mqttRpcResult.AddRange(result);
         }
@@ -195,7 +195,7 @@ public partial class MqttServer : BusinessBaseWithCacheIntervalScript<VariableDa
         }
 
         var _userService = App.RootServices.GetRequiredService<ISysUserService>();
-        var userInfo = await _userService.GetUserByAccountAsync(arg.UserName);//获取用户信息
+        var userInfo = await _userService.GetUserByAccountAsync(arg.UserName).ConfigureAwait(false);//获取用户信息
         if (userInfo == null)
         {
             arg.ReasonCode = MqttConnectReasonCode.BadUserNameOrPassword;
@@ -210,12 +210,12 @@ public partial class MqttServer : BusinessBaseWithCacheIntervalScript<VariableDa
         _ = Task.Run(async () =>
         {
             //延时发送
-            await Task.Delay(1000);
+            await Task.Delay(1000).ConfigureAwait(false);
             List<MqttApplicationMessage> data = GetRetainedMessages();
             foreach (var item in data)
             {
                 await _mqttServer.InjectApplicationMessage(
-     new InjectedMqttApplicationMessage(item));
+     new InjectedMqttApplicationMessage(item)).ConfigureAwait(false);
                 //await _mqttServer.UpdateRetainedMessageAsync(item);
             }
         });
@@ -232,7 +232,7 @@ public partial class MqttServer : BusinessBaseWithCacheIntervalScript<VariableDa
 .WithTopic(topic)
 .WithPayload(payLoad).Build();
             await _mqttServer.InjectApplicationMessage(
-                    new InjectedMqttApplicationMessage(message), cancellationToken);
+                    new InjectedMqttApplicationMessage(message), cancellationToken).ConfigureAwait(false);
             if (LogMessage.LogLevel <= TouchSocket.Core.LogLevel.Trace)
                 LogMessage.LogTrace($"Topic：{topic}{Environment.NewLine}PayLoad：{payLoad}");
             return new();

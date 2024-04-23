@@ -144,7 +144,7 @@ public partial class SiemensS7Master : ProtocolBase
             List<byte> bytes = new();
             foreach (var item in commandResult)
             {
-                var result = await SendThenReturnAsync(item, cancellationToken);
+                var result = await SendThenReturnAsync(item, cancellationToken).ConfigureAwait(false);
                 if (result.IsSuccess)
                     bytes.AddRange(result.Content);
                 else
@@ -204,7 +204,7 @@ public partial class SiemensS7Master : ProtocolBase
             var commandResult = GetWriteByteCommand(address, value);
             foreach (var item in commandResult)
             {
-                var result = await SendThenReturnAsync(item, cancellationToken);
+                var result = await SendThenReturnAsync(item, cancellationToken).ConfigureAwait(false);
                 if (!result.IsSuccess)
                     return result;
             }
@@ -226,7 +226,7 @@ public partial class SiemensS7Master : ProtocolBase
         try
         {
             var commandResult = GetWriteBitCommand(address, value[0]);
-            return await SendThenReturnAsync(commandResult, cancellationToken);
+            return await SendThenReturnAsync(commandResult, cancellationToken).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -305,7 +305,7 @@ public partial class SiemensS7Master : ProtocolBase
             //channel.SetDataHandlingAdapter(dataHandleAdapter);
             try
             {
-                var result2 = await GetResponsedDataAsync(new SendMessage(ISO_CR), Timeout, channel, CancellationToken.None);
+                var result2 = await GetResponsedDataAsync(new SendMessage(ISO_CR), Timeout, channel, CancellationToken.None).ConfigureAwait(false);
                 if (!result2.IsSuccess)
                 {
                     Logger?.LogWarning(SiemensS7Resource.Localizer["HandshakeError1", channel.ToString(), result2.ErrorMessage]);
@@ -321,7 +321,7 @@ public partial class SiemensS7Master : ProtocolBase
             }
             try
             {
-                var result2 = await GetResponsedDataAsync(new SendMessage(S7_PN), Timeout, channel, CancellationToken.None);
+                var result2 = await GetResponsedDataAsync(new SendMessage(S7_PN), Timeout, channel, CancellationToken.None).ConfigureAwait(false);
                 if (!result2.IsSuccess)
                 {
                     Logger?.LogWarning(SiemensS7Resource.Localizer["HandshakeError2", channel.ToString(), result2.ErrorMessage]);
@@ -346,7 +346,7 @@ public partial class SiemensS7Master : ProtocolBase
         finally
         {
             channel.SetDataHandlingAdapter(GetDataAdapter());
-            await base.ChannelStarted(channel);
+            await base.ChannelStarted(channel).ConfigureAwait(false);
         }
     }
 
@@ -360,7 +360,7 @@ public partial class SiemensS7Master : ProtocolBase
     /// <returns></returns>
     public async Task<OperResult<System.DateTime>> ReadDateAsync(string address, CancellationToken cancellationToken)
     {
-        return (await this.ReadAsync(address, 2, cancellationToken)).
+        return (await this.ReadAsync(address, 2, cancellationToken).ConfigureAwait(false)).
              Then(m => OperResult.CreateSuccessResult(S7DateTime.SpecMinimumDateTime.AddDays(
                  ThingsGatewayBitConverter.ToUInt16(m, 0)))
              );
@@ -372,25 +372,25 @@ public partial class SiemensS7Master : ProtocolBase
     /// <returns></returns>
     public async Task<OperResult<System.DateTime>> ReadDateTimeAsync(string address, CancellationToken cancellationToken)
     {
-        return OperResultExtension.GetResultFromBytes(await ReadAsync(address, 8, cancellationToken), S7DateTime.FromByteArray);
+        return OperResultExtension.GetResultFromBytes(await ReadAsync(address, 8, cancellationToken).ConfigureAwait(false), S7DateTime.FromByteArray);
     }
 
     /// <summary>
     /// 写入日期
     /// </summary>
     /// <returns></returns>
-    public async Task<OperResult> WriteDateAsync(string address, System.DateTime dateTime, CancellationToken cancellationToken)
+    public Task<OperResult> WriteDateAsync(string address, System.DateTime dateTime, CancellationToken cancellationToken)
     {
-        return await base.WriteAsync(address, Convert.ToUInt16((dateTime - S7DateTime.SpecMinimumDateTime).TotalDays), null, cancellationToken);
+        return base.WriteAsync(address, Convert.ToUInt16((dateTime - S7DateTime.SpecMinimumDateTime).TotalDays), null, cancellationToken);
     }
 
     /// <summary>
     /// 写入时间
     /// </summary>
     /// <returns></returns>
-    public async Task<OperResult> WriteDateTimeAsync(string address, System.DateTime dateTime, CancellationToken cancellationToken)
+    public Task<OperResult> WriteDateTimeAsync(string address, System.DateTime dateTime, CancellationToken cancellationToken)
     {
-        return await WriteAsync(address, S7DateTime.ToByteArray(dateTime), cancellationToken);
+        return WriteAsync(address, S7DateTime.ToByteArray(dateTime), cancellationToken);
     }
 
     #endregion 其他方法
@@ -435,7 +435,7 @@ public partial class SiemensS7Master : ProtocolBase
             {
                 return new(SiemensS7Resource.Localizer["StringLengthReadError"]);
             }
-            var result = await SiemensHelper.ReadStringAsync(this, address, bitConverter.Encoding, cancellationToken);
+            var result = await SiemensHelper.ReadStringAsync(this, address, bitConverter.Encoding, cancellationToken).ConfigureAwait(false);
             if (result.IsSuccess)
             {
                 return new() { Content = new string[] { result.Content } };
@@ -447,7 +447,7 @@ public partial class SiemensS7Master : ProtocolBase
         }
         else
         {
-            return await base.ReadStringAsync(address, length, bitConverter, cancellationToken);
+            return await base.ReadStringAsync(address, length, bitConverter, cancellationToken).ConfigureAwait(false);
         }
     }
 

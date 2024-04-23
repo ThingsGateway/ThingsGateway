@@ -61,7 +61,7 @@ public abstract class BusinessBase : DriverBase
     /// </summary>
     protected async Task Delay(CancellationToken cancellationToken)
     {
-        await Task.Delay(Math.Max(CurrentDevice.IntervalTime - ChannelThread.CycleInterval, ChannelThread.CycleInterval), cancellationToken);
+        await Task.Delay(Math.Max(CurrentDevice.IntervalTime - ChannelThread.CycleInterval, ChannelThread.CycleInterval), cancellationToken).ConfigureAwait(false);
     }
 
     /// <summary>

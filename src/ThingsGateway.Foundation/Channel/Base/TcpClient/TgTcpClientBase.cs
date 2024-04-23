@@ -80,13 +80,13 @@ namespace ThingsGateway.Foundation
             {
                 if (this.Connected != null)
                 {
-                    await this.Connected.Invoke(this, e);
+                    await this.Connected.Invoke(this, e).ConfigureAwait(false);
                     if (e.Handled)
                     {
                         return;
                     }
                 }
-                await this.PluginManager.RaiseAsync(nameof(ITcpConnectedPlugin.OnTcpConnected), this, e).ConfigureFalseAwait();
+                await this.PluginManager.RaiseAsync(nameof(ITcpConnectedPlugin.OnTcpConnected), this, e).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -114,13 +114,13 @@ namespace ThingsGateway.Foundation
             {
                 if (this.Connecting != null)
                 {
-                    await this.Connecting.Invoke(this, e);
+                    await this.Connecting.Invoke(this, e).ConfigureAwait(false);
                     if (e.Handled)
                     {
                         return;
                     }
                 }
-                await this.PluginManager.RaiseAsync(nameof(ITcpConnectingPlugin.OnTcpConnecting), this, e);
+                await this.PluginManager.RaiseAsync(nameof(ITcpConnectingPlugin.OnTcpConnecting), this, e).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -316,7 +316,7 @@ namespace ThingsGateway.Foundation
                 {
                     socket.Connect(iPHost.Host, iPHost.Port);
                 }, token);
-                    task.ConfigureFalseAwait();
+                    task.ConfigureAwait(false);
 
                     if (!task.Wait(timeout, token))
                     {
@@ -364,7 +364,7 @@ namespace ThingsGateway.Foundation
                 if (cancellationToken.IsCancellationRequested)
                     return;
 
-                await this.m_semaphoreForConnect.WaitAsync();
+                await this.m_semaphoreForConnect.WaitAsync().ConfigureAwait(false);
                 if (this.m_online)
                 {
                     return;
@@ -378,7 +378,7 @@ namespace ThingsGateway.Foundation
                 var iPHost = this.Config.GetValue(TouchSocketConfigExtension.RemoteIPHostProperty) ?? throw new ArgumentNullException(nameof(IPHost));
                 this.MainSocket.SafeDispose();
                 var socket = this.CreateSocket(iPHost);
-                await this.PrivateOnConnecting(new ConnectingEventArgs(socket));
+                await this.PrivateOnConnecting(new ConnectingEventArgs(socket)).ConfigureAwait(false);
 
 #if NET6_0_OR_GREATER
 
@@ -388,7 +388,7 @@ namespace ThingsGateway.Foundation
                     {
                         try
                         {
-                            await socket.ConnectAsync(iPHost.EndPoint, cancellationTokenSource.Token);
+                            await socket.ConnectAsync(iPHost.EndPoint, cancellationTokenSource.Token).ConfigureAwait(false);
                         }
                         catch (OperationCanceledException)
                         {
@@ -402,7 +402,7 @@ namespace ThingsGateway.Foundation
                         {
                             if (cancellationToken.IsCancellationRequested)
                                 return;
-                            await socket.ConnectAsync(iPHost.Host, iPHost.Port, stoppingToken.Token);
+                            await socket.ConnectAsync(iPHost.Host, iPHost.Port, stoppingToken.Token).ConfigureAwait(false);
                         }
                         catch (OperationCanceledException)
                         {
@@ -410,14 +410,14 @@ namespace ThingsGateway.Foundation
                         }
                     }
                 }
-                await Success(socket);
+                await Success(socket).ConfigureAwait(false);
 
 #else
 
                 using CancellationTokenSource cancellationTokenSource = new();
                 using CancellationTokenSource stoppingToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationTokenSource.Token, cancellationToken);
                 var task = Task.Factory.FromAsync(socket.BeginConnect(iPHost.EndPoint, null, null), socket.EndConnect);
-                var result = await Task.WhenAny(task, Task.Delay(timeout, stoppingToken.Token));
+                var result = await Task.WhenAny(task, Task.Delay(timeout, stoppingToken.Token)).ConfigureAwait(false);
                 if (result == task)
                 {
                     cancellationTokenSource.Cancel();
@@ -428,7 +428,7 @@ namespace ThingsGateway.Foundation
                     }
                     else
                     {
-                        await Success(socket);
+                        await Success(socket).ConfigureAwait(false);
                     }
                 }
                 else
@@ -443,7 +443,7 @@ namespace ThingsGateway.Foundation
                     this.m_online = true;
                     this.SetSocket(socket);
                     this.BeginReceive();
-                    await this.PrivateOnConnected(new ConnectedEventArgs());
+                    await this.PrivateOnConnected(new ConnectedEventArgs()).ConfigureAwait(false);
                     //_ = Task.Factory.StartNew(this.PrivateOnConnected, new ConnectedEventArgs());
                 }
             }
@@ -460,9 +460,9 @@ namespace ThingsGateway.Foundation
         }
 
         /// <inheritdoc/>
-        public virtual async Task ConnectAsync(int timeout, CancellationToken cancellationToken)
+        public virtual Task ConnectAsync(int timeout, CancellationToken cancellationToken)
         {
-            await this.TcpConnectAsync(timeout, cancellationToken);
+            return this.TcpConnectAsync(timeout, cancellationToken);
         }
 
         #endregion Connect
@@ -566,7 +566,7 @@ namespace ThingsGateway.Foundation
             if (this.PluginManager.GetPluginCount(nameof(ITcpSendingPlugin.OnTcpSending)) > 0)
             {
                 var args = new SendingEventArgs(buffer, offset, length);
-                await this.PluginManager.RaiseAsync(nameof(ITcpSendingPlugin.OnTcpSending), this, args).ConfigureFalseAwait();
+                await this.PluginManager.RaiseAsync(nameof(ITcpSendingPlugin.OnTcpSending), this, args).ConfigureAwait(false);
                 return args.IsPermitOperation;
             }
             return true;
@@ -831,9 +831,9 @@ namespace ThingsGateway.Foundation
         /// <inheritdoc/>
         public async Task DefaultSendAsync(byte[] buffer, int offset, int length)
         {
-            if (await this.SendingData(buffer, offset, length))
+            if (await this.SendingData(buffer, offset, length).ConfigureAwait(false))
             {
-                await this.GetTcpCore().SendAsync(buffer, offset, length);
+                await this.GetTcpCore().SendAsync(buffer, offset, length).ConfigureAwait(false);
             }
         }
 

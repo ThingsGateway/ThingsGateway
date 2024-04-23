@@ -110,7 +110,7 @@ public class DoTask
                 {
                     if (TaskName != null)
                         Logger?.LogInformation(Localizer[$"Stoping", TaskName]);
-                    await PrivateTask.WaitAsync(waitTime ?? TimeSpan.FromSeconds(10));
+                    await PrivateTask.WaitAsync(waitTime ?? TimeSpan.FromSeconds(10)).ConfigureAwait(false);
                     if (TaskName != null)
                         Logger?.LogInformation(Localizer[$"Stoped", TaskName]);
                 }

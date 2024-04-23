@@ -83,8 +83,8 @@ public partial class KafkaProducer : BusinessBaseWithCacheIntervalScript<Variabl
 
     protected override async Task ProtectedExecuteAsync(CancellationToken cancellationToken)
     {
-        await Update(cancellationToken);
+        await Update(cancellationToken).ConfigureAwait(false);
 
-        await Delay(cancellationToken);
+        await Delay(cancellationToken).ConfigureAwait(false);
     }
 }

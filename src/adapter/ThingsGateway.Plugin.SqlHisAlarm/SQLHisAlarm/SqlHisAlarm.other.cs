@@ -39,7 +39,7 @@ public partial class SqlHisAlarm : BusinessBaseWithCacheVarModel<HistoryAlarm>
 
     private async Task<OperResult> UpdateT(IEnumerable<HistoryAlarm> item, CancellationToken cancellationToken)
     {
-        var result = await InserableAsync(item.ToList(), cancellationToken);
+        var result = await InserableAsync(item.ToList(), cancellationToken).ConfigureAwait(false);
         if (success != result.IsSuccess)
         {
             if (!result.IsSuccess)

@@ -274,7 +274,7 @@ public class ModbusSlave : ProtocolBase
                     if (this.WriteData != null)
                     {
                         // 接收外部写入时，传出变量地址/写入字节组/转换规则/客户端
-                        if ((await this.WriteData(modbusServerMessage.ModbusAddress, modbusServerMessage.Content, this.ThingsGatewayBitConverter, client)).IsSuccess)
+                        if ((await this.WriteData(modbusServerMessage.ModbusAddress, modbusServerMessage.Content, this.ThingsGatewayBitConverter, client).ConfigureAwait(false)).IsSuccess)
                         {
                             WriteSuccess(this.ModbusType, client, modbusServerMessage, e);
                             if (this.IsWriteMemory)
@@ -312,7 +312,7 @@ public class ModbusSlave : ProtocolBase
                     //写入寄存器
                     if (this.WriteData != null)
                     {
-                        if ((await this.WriteData(modbusServerMessage.ModbusAddress, modbusServerMessage.Content, this.ThingsGatewayBitConverter, client)).IsSuccess)
+                        if ((await this.WriteData(modbusServerMessage.ModbusAddress, modbusServerMessage.Content, this.ThingsGatewayBitConverter, client).ConfigureAwait(false)).IsSuccess)
                         {
                             if (this.IsWriteMemory)
                             {

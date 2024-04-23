@@ -275,7 +275,7 @@ internal partial class SiemensHelper
         //先读取一次获取长度，再读取实际值
         if (plc.SiemensS7Type != SiemensTypeEnum.S200Smart)
         {
-            var result1 = await plc.ReadAsync(address, 2, cancellationToken);
+            var result1 = await plc.ReadAsync(address, 2, cancellationToken).ConfigureAwait(false);
             if (!result1.IsSuccess)
             {
                 return new(result1);
@@ -284,7 +284,7 @@ internal partial class SiemensHelper
             {
                 return new OperResult<string>(SiemensS7Resource.Localizer["NotString"]);
             }
-            var result2 = await plc.ReadAsync(address, 2 + result1.Content[1], cancellationToken);
+            var result2 = await plc.ReadAsync(address, 2 + result1.Content[1], cancellationToken).ConfigureAwait(false);
             if (!result2.IsSuccess)
             {
                 return new(result2);
@@ -296,10 +296,10 @@ internal partial class SiemensHelper
         }
         else
         {
-            var result1 = await plc.ReadAsync(address, 1, cancellationToken);
+            var result1 = await plc.ReadAsync(address, 1, cancellationToken).ConfigureAwait(false);
             if (!result1.IsSuccess)
                 return new(result1);
-            var result2 = await plc.ReadAsync(address, 1 + result1.Content[0], cancellationToken);
+            var result2 = await plc.ReadAsync(address, 1 + result1.Content[0], cancellationToken).ConfigureAwait(false);
             if (!result2.IsSuccess)
             {
                 return new(result2);
@@ -360,7 +360,7 @@ internal partial class SiemensHelper
         //    inBytes = inBytes.BytesReverseByWord();
         if (plc.SiemensS7Type != SiemensTypeEnum.S200Smart)
         {
-            OperResult<byte[]> result = await plc.ReadAsync(address, 2);
+            OperResult<byte[]> result = await plc.ReadAsync(address, 2).ConfigureAwait(false);
             if (!result.IsSuccess) return result;
             if (result.Content[0] == byte.MaxValue) return new OperResult<string>(SiemensS7Resource.Localizer["NotString"]);
             if (result.Content[0] == 0) result.Content[0] = 254;
@@ -369,12 +369,12 @@ internal partial class SiemensHelper
                 address,
                 DataTransUtil.SpliceArray(new byte[2] { result.Content[0], (byte)value.Length },
                 inBytes
-                ));
+                )).ConfigureAwait(false);
         }
         return await plc.WriteAsync(address, DataTransUtil.SpliceArray<byte>(new byte[1]
         {
     (byte) value.Length
-        }, inBytes));
+        }, inBytes)).ConfigureAwait(false);
     }
 
     internal static OperResult Write(SiemensS7Master plc, string address, string value, Encoding encoding, CancellationToken cancellationToken)

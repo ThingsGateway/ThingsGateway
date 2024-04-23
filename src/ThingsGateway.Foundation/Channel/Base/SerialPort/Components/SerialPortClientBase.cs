@@ -72,13 +72,13 @@ namespace ThingsGateway.Foundation
             {
                 if (this.Connected != null)
                 {
-                    await this.Connected.Invoke(this, e);
+                    await this.Connected.Invoke(this, e).ConfigureAwait(false);
                     if (e.Handled)
                     {
                         return;
                     }
                 }
-                await this.PluginManager.RaiseAsync(nameof(ISerialConnectedPlugin.OnSerialConnected), this, e);
+                await this.PluginManager.RaiseAsync(nameof(ISerialConnectedPlugin.OnSerialConnected), this, e).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -96,13 +96,13 @@ namespace ThingsGateway.Foundation
             {
                 if (this.Connecting != null)
                 {
-                    await this.Connecting.Invoke(this, e);
+                    await this.Connecting.Invoke(this, e).ConfigureAwait(false);
                     if (e.Handled)
                     {
                         return;
                     }
                 }
-                await this.PluginManager.RaiseAsync(nameof(ISerialConnectingPlugin.OnSerialConnecting), this, e);
+                await this.PluginManager.RaiseAsync(nameof(ISerialConnectingPlugin.OnSerialConnecting), this, e).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -374,7 +374,7 @@ namespace ThingsGateway.Foundation
                 return;
             }
             if (PluginManager != null)
-                await this.PluginManager.RaiseAsync(nameof(ISerialReceivedPlugin.OnSerialReceived), this, e).ConfigureFalseAwait();
+                await this.PluginManager.RaiseAsync(nameof(ISerialReceivedPlugin.OnSerialReceived), this, e).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -403,7 +403,7 @@ namespace ThingsGateway.Foundation
             if (this.PluginManager.GetPluginCount(nameof(ISerialSendingPlugin.OnSerialSending)) > 0)
             {
                 var args = new SendingEventArgs(buffer, offset, length);
-                await this.PluginManager.RaiseAsync(nameof(ISerialSendingPlugin.OnSerialSending), this, args).ConfigureFalseAwait();
+                await this.PluginManager.RaiseAsync(nameof(ISerialSendingPlugin.OnSerialSending), this, args).ConfigureAwait(false);
                 return args.IsPermitOperation;
             }
             return true;
@@ -670,9 +670,9 @@ namespace ThingsGateway.Foundation
         /// <inheritdoc/>
         public async Task DefaultSendAsync(byte[] buffer, int offset, int length)
         {
-            if (await this.SendingData(buffer, offset, length))
+            if (await this.SendingData(buffer, offset, length).ConfigureAwait(false))
             {
-                await this.GetSerialCore().SendAsync(buffer, offset, length);
+                await this.GetSerialCore().SendAsync(buffer, offset, length).ConfigureAwait(false);
             }
         }
 

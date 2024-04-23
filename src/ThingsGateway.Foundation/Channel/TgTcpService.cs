@@ -1,4 +1,4 @@
-
+﻿
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -117,7 +117,7 @@ namespace ThingsGateway.Foundation
         {
             if (this.ServerState != ServerState.Running)
             {
-                await base.StartAsync();
+                await base.StartAsync().ConfigureAwait(false);
                 if (this.ServerState == ServerState.Running)
                 {
                     Logger.Info($"{Monitors.FirstOrDefault()?.Option.IpHost}{DefaultResource.Localizer["ServiceStarted"]}");
@@ -125,7 +125,7 @@ namespace ThingsGateway.Foundation
             }
             else
             {
-                await base.StartAsync();
+                await base.StartAsync().ConfigureAwait(false);
             }
         }
 
@@ -149,13 +149,13 @@ namespace ThingsGateway.Foundation
         {
             if (Monitors.Count() > 0)
             {
-                await base.StopAsync();
+                await base.StopAsync().ConfigureAwait(false);
                 if (Monitors.Count() == 0)
                     Logger.Info($"{Monitors.FirstOrDefault()?.Option.IpHost}{DefaultResource.Localizer["ServiceStoped"]}");
             }
             else
             {
-                await base.StopAsync();
+                await base.StopAsync().ConfigureAwait(false);
             }
         }
 
@@ -219,35 +219,35 @@ namespace ThingsGateway.Foundation
         }
 
         /// <inheritdoc/>
-        protected override async Task OnConnected(TgSocketClient socketClient, ConnectedEventArgs e)
+        protected override Task OnConnected(TgSocketClient socketClient, ConnectedEventArgs e)
         {
             if (Started != null)
-                await Started.Invoke(socketClient);
-            await base.OnConnected(socketClient, e);
+                return Started.Invoke(socketClient);
+            return base.OnConnected(socketClient, e);
         }
 
         /// <inheritdoc/>
-        protected override async Task OnConnecting(TgSocketClient socketClient, ConnectingEventArgs e)
+        protected override Task OnConnecting(TgSocketClient socketClient, ConnectingEventArgs e)
         {
             if (Starting != null)
-                await Starting.Invoke(socketClient);
-            await base.OnConnecting(socketClient, e);
+                return Starting.Invoke(socketClient);
+            return base.OnConnecting(socketClient, e);
         }
 
         /// <inheritdoc/>
-        protected override async Task OnDisconnected(TgSocketClient socketClient, DisconnectEventArgs e)
+        protected override Task OnDisconnected(TgSocketClient socketClient, DisconnectEventArgs e)
         {
             if (Stoped != null)
-                await Stoped.Invoke(socketClient);
-            await base.OnDisconnected(socketClient, e);
+                return Stoped.Invoke(socketClient);
+            return base.OnDisconnected(socketClient, e);
         }
 
         /// <inheritdoc/>
-        public async Task ConnectAsync(int timeout, CancellationToken token)
+        public Task ConnectAsync(int timeout, CancellationToken token)
         {
             if (token.IsCancellationRequested)
-                return;
-            await base.StartAsync();
+                return EasyTask.CompletedTask;
+            return base.StartAsync();
         }
 
         /// <inheritdoc/>
@@ -255,13 +255,13 @@ namespace ThingsGateway.Foundation
         {
             if (this.Received != null)
             {
-                await this.Received.Invoke(socketClient, e).ConfigureFalseAwait();
+                await this.Received.Invoke(socketClient, e).ConfigureAwait(false);
                 if (e.Handled)
                 {
                     return;
                 }
             }
-            await base.OnReceived(socketClient, e);
+            await base.OnReceived(socketClient, e).ConfigureAwait(false);
         }
     }
 }

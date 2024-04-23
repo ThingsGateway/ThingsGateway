@@ -159,13 +159,13 @@ public class ManagementHostedService : BackgroundService
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         await Task.Yield();
-        await Task.Delay(1000);
+        await Task.Delay(1000).ConfigureAwait(false);
         Options = App.Configuration.GetSection(nameof(ManagementOptions)).Get<ManagementOptions?>() ?? new();
         StartBusinessDeviceEnable = Options?.Redundancy?.Enable == true ? Options?.Redundancy?.IsStartBusinessDevice == true : true;
         if (Options?.Redundancy?.Enable == true)
         {
             var udpDmtp = GetUdpDmtp(Options);
-            await udpDmtp.StartAsync();//启动
+            await udpDmtp.StartAsync().ConfigureAwait(false);//启动
 
             if (Options.Redundancy.IsPrimary)
             {
@@ -191,7 +191,7 @@ public class ManagementHostedService : BackgroundService
                         GatewayState? gatewayState = null;
 
                         // 发送 Ping 请求以检查设备是否在线，超时时间为 3000 毫秒
-                        online = await udpDmtp.PingAsync(3000);
+                        online = await udpDmtp.PingAsync(3000).ConfigureAwait(false);
 
                         // 如果设备在线
                         if (online)
@@ -205,7 +205,7 @@ public class ManagementHostedService : BackgroundService
                                 try
                                 {
                                     // 尝试调用反向回调服务器的 GetGatewayStateAsync 方法获取网关状态
-                                    gatewayState = await udpDmtp.GetDmtpRpcActor().InvokeTAsync<GatewayState>(nameof(ReverseCallbackServer.GetGatewayStateAsync), waitInvoke, StartCollectDeviceEnable);
+                                    gatewayState = await udpDmtp.GetDmtpRpcActor().InvokeTAsync<GatewayState>(nameof(ReverseCallbackServer.GetGatewayStateAsync), waitInvoke, StartCollectDeviceEnable).ConfigureAwait(false);
 
                                     // 如果成功获取网关状态，则跳出循环
                                     break;
@@ -294,7 +294,7 @@ public class ManagementHostedService : BackgroundService
                             {
                                 // 调用 udpDmtp.GetDmtpRpcActor() 的 ReverseCallbackServer.UpdateGatewayDataAsync 方法，
                                 // 将 GlobalData.CollectDevices 和 GlobalData.Variables 同步到从站
-                                await udpDmtp.GetDmtpRpcActor().InvokeAsync(nameof(ReverseCallbackServer.UpdateGatewayDataAsync), waitInvoke, GlobalData.CollectDevices.Adapt<Dictionary<string, DeviceDataWithValue>>(), GlobalData.Variables.Adapt<Dictionary<string, VariableDataWithValue>>());
+                                await udpDmtp.GetDmtpRpcActor().InvokeAsync(nameof(ReverseCallbackServer.UpdateGatewayDataAsync), waitInvoke, GlobalData.CollectDevices.Adapt<Dictionary<string, DeviceDataWithValue>>(), GlobalData.Variables.Adapt<Dictionary<string, VariableDataWithValue>>()).ConfigureAwait(false);
                             }
                         }
                         catch (Exception ex)
@@ -304,7 +304,7 @@ public class ManagementHostedService : BackgroundService
                         }
                     }
 
-                    await Task.Delay(1000, stoppingToken);
+                    await Task.Delay(1000, stoppingToken).ConfigureAwait(false);
                 }
                 catch (TaskCanceledException)
                 {

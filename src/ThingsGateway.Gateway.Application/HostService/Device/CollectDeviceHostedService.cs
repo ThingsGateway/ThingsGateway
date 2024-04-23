@@ -37,7 +37,7 @@ public class CollectDeviceHostedService : DeviceHostedService
         using var stoppingToken = new CancellationTokenSource();
         _stoppingToken = stoppingToken.Token;
         stoppingToken.Cancel();
-        await StopThreadAsync(true);
+        await StopThreadAsync(true).ConfigureAwait(false);
         await base.StopAsync(cancellationToken);
     }
 
@@ -49,14 +49,14 @@ public class CollectDeviceHostedService : DeviceHostedService
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         //重启采集线程，会启动其他后台服务
-        await HostedServiceUtil.ManagementHostedService.StartLock.WaitAsync();
+        await HostedServiceUtil.ManagementHostedService.StartLock.WaitAsync().ConfigureAwait(false);
         //await RestartAsync();
         await WhileExecuteAsync(stoppingToken);
     }
 
     protected override async Task<IEnumerable<DeviceRunTime>> GetDeviceRunTimeAsync(long deviceId)
     {
-        return await DeviceService.GetCollectDeviceRuntimeAsync(deviceId);
+        return await DeviceService.GetCollectDeviceRuntimeAsync(deviceId).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -68,7 +68,7 @@ public class CollectDeviceHostedService : DeviceHostedService
         if (!_stoppingToken.IsCancellationRequested)
         {
             _logger.LogInformation(Localizer["DeviceRuntimeGeting"]);
-            var collectDeviceRunTimes = (await DeviceService.GetCollectDeviceRuntimeAsync());
+            var collectDeviceRunTimes = (await DeviceService.GetCollectDeviceRuntimeAsync().ConfigureAwait(false));
             _logger.LogInformation(Localizer["DeviceRuntimeGeted"]);
             var idSet = collectDeviceRunTimes.ToDictionary(a => a.Id);
             var result = collectDeviceRunTimes.Where(a => !idSet.ContainsKey(a.RedundantDeviceId ?? 0) && !a.RedundantEnable);

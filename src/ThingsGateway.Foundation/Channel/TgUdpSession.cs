@@ -1,4 +1,4 @@
-
+﻿
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -92,7 +92,7 @@ namespace ThingsGateway.Foundation
         {
             if (this.ServerState != ServerState.Running)
             {
-                await base.StartAsync();
+                await base.StartAsync().ConfigureAwait(false);
                 if (this.ServerState == ServerState.Running)
                 {
                     Logger.Info($"{Monitor.IPHost}{DefaultResource.Localizer["ServiceStarted"]}");
@@ -100,7 +100,7 @@ namespace ThingsGateway.Foundation
             }
             else
             {
-                await base.StartAsync();
+                await base.StartAsync().ConfigureAwait(false);
             }
         }
 
@@ -126,16 +126,16 @@ namespace ThingsGateway.Foundation
         {
             if (Monitor != null)
             {
-                await base.StopAsync();
+                await base.StopAsync().ConfigureAwait(false);
                 if (Monitor == null)
                     Logger.Info($"{Monitor.IPHost}{DefaultResource.Localizer["ServiceStoped"]}");
             }
             else
             {
-                await base.StopAsync();
+                await base.StopAsync().ConfigureAwait(false);
             }
             if (Stoped != null)
-                await Stoped.Invoke(this);
+                await Stoped.Invoke(this).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
@@ -156,10 +156,10 @@ namespace ThingsGateway.Foundation
             if (token.IsCancellationRequested)
                 return;
             if (Starting != null)
-                await Starting.Invoke(this);
-            await StartAsync();
+                await Starting.Invoke(this).ConfigureAwait(false);
+            await StartAsync().ConfigureAwait(false);
             if (Started != null)
-                await Started.Invoke(this);
+                await Started.Invoke(this).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
@@ -167,13 +167,13 @@ namespace ThingsGateway.Foundation
         {
             if (this.Received != null)
             {
-                await this.Received.Invoke(this, e);
+                await this.Received.Invoke(this, e).ConfigureAwait(false);
                 if (e.Handled)
                 {
                     return;
                 }
             }
-            await base.ReceivedData(e);
+            await base.ReceivedData(e).ConfigureAwait(false);
         }
     }
 }

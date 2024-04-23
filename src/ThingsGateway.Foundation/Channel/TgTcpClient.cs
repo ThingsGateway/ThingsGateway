@@ -1,4 +1,4 @@
-
+﻿
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -59,31 +59,31 @@ namespace ThingsGateway.Foundation
         {
             if (this.Received != null)
             {
-                await this.Received.Invoke(this, e);
+                await this.Received.Invoke(this, e).ConfigureAwait(false);
                 if (e.Handled)
                 {
                     return;
                 }
             }
-            await base.ReceivedData(e);
+            await base.ReceivedData(e).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
-        protected override async Task OnConnected(ConnectedEventArgs e)
+        protected override Task OnConnected(ConnectedEventArgs e)
         {
             Logger?.Debug($"{ToString()}  Connected");
             if (Started != null)
-                await Started.Invoke(this);
-            await base.OnConnected(e);
+                return Started.Invoke(this);
+            return base.OnConnected(e);
         }
 
         /// <inheritdoc/>
-        protected override async Task OnConnecting(ConnectingEventArgs e)
+        protected override Task OnConnecting(ConnectingEventArgs e)
         {
             Logger?.Debug($"{ToString()}  Connecting{(e.Message.IsNullOrEmpty() ? string.Empty : $"-{e.Message}")}");
             if (Starting != null)
-                await Starting.Invoke(this);
-            await base.OnConnecting(e);
+                return Starting.Invoke(this);
+            return base.OnConnecting(e);
         }
 
         /// <inheritdoc/>
@@ -94,12 +94,12 @@ namespace ThingsGateway.Foundation
         }
 
         /// <inheritdoc/>
-        protected override async Task OnDisconnected(DisconnectEventArgs e)
+        protected override Task OnDisconnected(DisconnectEventArgs e)
         {
             Logger?.Debug($"{ToString()}   Disconnected{(e.Message.IsNullOrEmpty() ? string.Empty : $"-{e.Message}")}");
             if (Stoped != null)
-                await Stoped.Invoke(this);
-            await base.OnDisconnected(e);
+                return Stoped.Invoke(this);
+            return base.OnDisconnected(e);
         }
     }
 }

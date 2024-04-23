@@ -38,11 +38,11 @@ internal class AdminTaskService : BackgroundService
         {
             try
             {
-                await DeleteBackendLog(daysAgo, stoppingToken);
-                await DeleteRpcLog(daysAgo, stoppingToken);
-                await DeleteTextLog(stoppingToken);
-                await DeleteLocalDB(stoppingToken);
-                await Task.Delay(TimeSpan.FromDays(1), stoppingToken);
+                await DeleteBackendLog(daysAgo, stoppingToken).ConfigureAwait(false);
+                await DeleteRpcLog(daysAgo, stoppingToken).ConfigureAwait(false);
+                await DeleteTextLog(stoppingToken).ConfigureAwait(false);
+                await DeleteLocalDB(stoppingToken).ConfigureAwait(false);
+                await Task.Delay(TimeSpan.FromDays(1), stoppingToken).ConfigureAwait(false);
             }
             catch (OperationCanceledException)
             {

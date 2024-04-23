@@ -47,6 +47,6 @@ public class DtuPlugin : PluginBase, ITcpReceivingPlugin
                     socket.Logger?.Trace($"{socket.ToString()}- Send:{bytes.ToHexString(' ')}");
             }
         }
-        await e.InvokeNext();//如果本插件无法处理当前数据，请将数据转至下一个插件。
+        await e.InvokeNext().ConfigureAwait(false);//如果本插件无法处理当前数据，请将数据转至下一个插件。
     }
 }

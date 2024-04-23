@@ -93,8 +93,8 @@ public class OpcUaMaster : CollectBase
     protected override async Task ProtectedBeforStartAsync(CancellationToken cancellationToken)
     {
         _token = cancellationToken;
-        await _plc.ConnectAsync(cancellationToken);
-        await base.ProtectedBeforStartAsync(cancellationToken);
+        await _plc.ConnectAsync(cancellationToken).ConfigureAwait(false);
+        await base.ProtectedBeforStartAsync(cancellationToken).ConfigureAwait(false);
     }
 
     protected override string GetAddressDescription()
@@ -139,8 +139,8 @@ public class OpcUaMaster : CollectBase
         try
         {
             if (IsSingleThread)
-                await WriteLock.WaitAsync(cancellationToken);
-            var result = await _plc.ReadJTokenValueAsync(deviceVariableSourceRead.VariableRunTimes.Where(a => !a.RegisterAddress.IsNullOrEmpty()).Select(a => a.RegisterAddress!).ToArray(), cancellationToken);
+                await WriteLock.WaitAsync(cancellationToken).ConfigureAwait(false);
+            var result = await _plc.ReadJTokenValueAsync(deviceVariableSourceRead.VariableRunTimes.Where(a => !a.RegisterAddress.IsNullOrEmpty()).Select(a => a.RegisterAddress!).ToArray(), cancellationToken).ConfigureAwait(false);
             foreach (var data in result)
             {
                 if (!cancellationToken.IsCancellationRequested)
@@ -200,8 +200,8 @@ public class OpcUaMaster : CollectBase
         try
         {
             if (IsSingleThread)
-                await WriteLock.WaitAsync(cancellationToken);
-            var result = await _plc.WriteNodeAsync(writeInfoLists.ToDictionary(a => a.Key.RegisterAddress!, a => a.Value), cancellationToken);
+                await WriteLock.WaitAsync(cancellationToken).ConfigureAwait(false);
+            var result = await _plc.WriteNodeAsync(writeInfoLists.ToDictionary(a => a.Key.RegisterAddress!, a => a.Value), cancellationToken).ConfigureAwait(false);
             return result.ToDictionary(a =>
             {
                 return writeInfoLists.Keys.FirstOrDefault(b => b.RegisterAddress == a.Key)?.Name!;
@@ -238,7 +238,7 @@ public class OpcUaMaster : CollectBase
         }
         else
         {
-            await base.ProtectedExecuteAsync(cancellationToken);
+            await base.ProtectedExecuteAsync(cancellationToken).ConfigureAwait(false);
         }
     }
 

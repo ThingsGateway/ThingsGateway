@@ -46,7 +46,7 @@ public class TgReceiver : DisposableObject, IReceiver
     public async Task<ReceiverResult> ReadAsync(CancellationToken token)
     {
         this.ThrowIfDisposed();
-        await this.m_resetEventForRead.WaitOneAsync(token).ConfigureFalseAwait();
+        await this.m_resetEventForRead.WaitOneAsync(token).ConfigureAwait(false);
         return new ReceiverResult(this.ComplateRead, this.m_byteBlock, this.m_requestInfo);
     }
 
@@ -55,7 +55,7 @@ public class TgReceiver : DisposableObject, IReceiver
     public async ValueTask<ReceiverResult> ValueReadAsync(CancellationToken token)
     {
         this.ThrowIfDisposed();
-        await this.m_resetEventForRead.WaitOneAsync(token).ConfigureFalseAwait();
+        await this.m_resetEventForRead.WaitOneAsync(token).ConfigureAwait(false);
         return new ReceiverResult(this.ComplateRead, this.m_byteBlock, this.m_requestInfo);
     }
 #endif

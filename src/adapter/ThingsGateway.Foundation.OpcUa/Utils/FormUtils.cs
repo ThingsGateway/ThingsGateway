@@ -168,7 +168,7 @@ public class FormUtils
                         null,
                         null,
                         0,
-                        nodesToBrowse, cancellationToken);
+                        nodesToBrowse, cancellationToken).ConfigureAwait(false);
                 var results = result.Results;
                 var diagnosticInfos = result.DiagnosticInfos;
                 ClientBase.ValidateResponse(results, nodesToBrowse);
@@ -209,7 +209,7 @@ public class FormUtils
                           null,
                           false,
                           continuationPoints
-                          , cancellationToken);
+                          , cancellationToken).ConfigureAwait(false);
                     results = nextResult.Results;
                     diagnosticInfos = nextResult.DiagnosticInfos;
                     ClientBase.ValidateResponse(results, continuationPoints);
@@ -282,7 +282,7 @@ public class FormUtils
                   null,
                   null,
                   0,
-                  nodesToBrowse, cancellationToken);
+                  nodesToBrowse, cancellationToken).ConfigureAwait(false);
             var results = result.Results;
             var diagnosticInfos = result.DiagnosticInfos;
             ClientBase.ValidateResponse(results, nodesToBrowse);
@@ -317,7 +317,7 @@ public class FormUtils
                 var nextResult = await session.BrowseNextAsync(
                       null,
                       false,
-                      continuationPoints, cancellationToken);
+                      continuationPoints, cancellationToken).ConfigureAwait(false);
                 results = nextResult.Results;
                 diagnosticInfos = nextResult.DiagnosticInfos;
                 ClientBase.ValidateResponse(results, continuationPoints);
@@ -364,7 +364,7 @@ public class FormUtils
                 ResultMask = (uint)BrowseResultMask.All
             };
 
-            ReferenceDescriptionCollection references = await BrowseAsync(session, nodeToBrowse, throwOnError);
+            ReferenceDescriptionCollection references = await BrowseAsync(session, nodeToBrowse, throwOnError).ConfigureAwait(false);
 
             while (references != null && references.Count > 0)
             {
@@ -379,7 +379,7 @@ public class FormUtils
 
                 // get the references for the next level up.
                 nodeToBrowse.NodeId = (NodeId)references[0].NodeId;
-                references = await BrowseAsync(session, nodeToBrowse, throwOnError);
+                references = await BrowseAsync(session, nodeToBrowse, throwOnError).ConfigureAwait(false);
             }
 
             // return complete list.
@@ -403,7 +403,7 @@ public class FormUtils
     {
         Dictionary<NodeId, QualifiedNameCollection> foundNodes = new();
         QualifiedNameCollection parentPath = new();
-        await CollectFieldsAsync(session, instanceId, parentPath, fields, fieldNodeIds, foundNodes);
+        await CollectFieldsAsync(session, instanceId, parentPath, fields, fieldNodeIds, foundNodes).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -412,7 +412,7 @@ public class FormUtils
     public static async Task CollectFieldsForType(ISession session, NodeId typeId, SimpleAttributeOperandCollection fields, List<NodeId> fieldNodeIds)
     {
         // get the supertypes.
-        ReferenceDescriptionCollection supertypes = await FormUtils.BrowseSuperTypesAsync(session, typeId, false);
+        ReferenceDescriptionCollection supertypes = await FormUtils.BrowseSuperTypesAsync(session, typeId, false).ConfigureAwait(false);
 
         if (supertypes == null)
         {
@@ -425,11 +425,11 @@ public class FormUtils
 
         for (int ii = supertypes.Count - 1; ii >= 0; ii--)
         {
-            await CollectFieldsAsync(session, (NodeId)supertypes[ii].NodeId, parentPath, fields, fieldNodeIds, foundNodes);
+            await CollectFieldsAsync(session, (NodeId)supertypes[ii].NodeId, parentPath, fields, fieldNodeIds, foundNodes).ConfigureAwait(false);
         }
 
         // collect the fields for the selected type.
-        await CollectFieldsAsync(session, typeId, parentPath, fields, fieldNodeIds, foundNodes);
+        await CollectFieldsAsync(session, typeId, parentPath, fields, fieldNodeIds, foundNodes).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -479,7 +479,7 @@ public class FormUtils
         if (knownType == null)
         {
             // browse for the supertypes of the event type.
-            ReferenceDescriptionCollection supertypes = await FormUtils.BrowseSuperTypesAsync(session, eventTypeId, false);
+            ReferenceDescriptionCollection supertypes = await FormUtils.BrowseSuperTypesAsync(session, eventTypeId, false).ConfigureAwait(false);
 
             // can't do anything with unknown types.
             if (supertypes == null)
@@ -820,7 +820,7 @@ public class FormUtils
         var result = await session.TranslateBrowsePathsToNodeIdsAsync(
             null,
             browsePaths,
-            cancellationToken);
+            cancellationToken).ConfigureAwait(false);
         BrowsePathResultCollection results = result.Results;
         DiagnosticInfoCollection diagnosticInfos = result.DiagnosticInfos;
         // ensure that the server returned valid results.
@@ -893,7 +893,7 @@ public class FormUtils
             ResultMask = (uint)BrowseResultMask.All
         };
 
-        ReferenceDescriptionCollection children = await FormUtils.BrowseAsync(session, nodeToBrowse, false);
+        ReferenceDescriptionCollection children = await FormUtils.BrowseAsync(session, nodeToBrowse, false).ConfigureAwait(false);
 
         if (children == null)
         {
@@ -939,7 +939,7 @@ public class FormUtils
             if (!foundNodes.ContainsKey(targetId))
             {
                 foundNodes.Add(targetId, browsePath);
-                await CollectFieldsAsync(session, (NodeId)child.NodeId, browsePath, fields, fieldNodeIds, foundNodes);
+                await CollectFieldsAsync(session, (NodeId)child.NodeId, browsePath, fields, fieldNodeIds, foundNodes).ConfigureAwait(false);
             }
         }
     }

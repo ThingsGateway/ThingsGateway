@@ -67,16 +67,16 @@ public partial class QuestDBProducer : BusinessBaseWithCacheIntervalVarModel<Que
         var db = BusinessDatabaseUtil.GetDb(_driverPropertys.DbType, _driverPropertys.BigTextConnectStr);
         db.DbMaintenance.CreateDatabase();
         db.CodeFirst.InitTables(typeof(QuestDBHistoryValue));
-        await base.ProtectedBeforStartAsync(cancellationToken);
+        await base.ProtectedBeforStartAsync(cancellationToken).ConfigureAwait(false);
     }
 
     protected override async Task ProtectedExecuteAsync(CancellationToken cancellationToken)
     {
-        await UpdateVarModelMemory(cancellationToken);
+        await UpdateVarModelMemory(cancellationToken).ConfigureAwait(false);
 
-        await UpdateVarModelCache(cancellationToken);
+        await UpdateVarModelCache(cancellationToken).ConfigureAwait(false);
 
-        await Delay(cancellationToken);
+        await Delay(cancellationToken).ConfigureAwait(false);
     }
 
     internal async Task<QueryData<QuestDBHistoryValue>> QueryData(QueryPageOptions option)

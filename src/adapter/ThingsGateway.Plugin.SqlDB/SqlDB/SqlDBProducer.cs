@@ -70,7 +70,7 @@ public partial class SqlDBProducer : BusinessBaseWithCacheIntervalVarModel<SQLHi
             db.CodeFirst.As<SQLRealValue>(_driverPropertys.ReadDBTableName).InitTables<SQLRealValue>();
         //该功能索引名要加占位符
         //[SugarIndex("{table}index_codetable1_name",nameof(CodeFirstTable1.Name),OrderByType.Asc)]
-        await base.ProtectedBeforStartAsync(cancellationToken);
+        await base.ProtectedBeforStartAsync(cancellationToken).ConfigureAwait(false);
     }
 
     protected override async Task ProtectedExecuteAsync(CancellationToken cancellationToken)
@@ -83,7 +83,7 @@ public partial class SqlDBProducer : BusinessBaseWithCacheIntervalVarModel<SQLHi
                 {
                     var varList = CurrentDevice.VariableRunTimes.Values.Adapt<List<SQLRealValue>>();
 
-                    var result = await UpdateAsync(varList, cancellationToken);
+                    var result = await UpdateAsync(varList, cancellationToken).ConfigureAwait(false);
                     if (result != null && success != result.IsSuccess)
                     {
                         if (!result.IsSuccess)
@@ -100,10 +100,10 @@ public partial class SqlDBProducer : BusinessBaseWithCacheIntervalVarModel<SQLHi
 
         if (_driverPropertys.IsHisDB)
         {
-            await UpdateVarModelMemory(cancellationToken);
-            await UpdateVarModelCache(cancellationToken);
+            await UpdateVarModelMemory(cancellationToken).ConfigureAwait(false);
+            await UpdateVarModelCache(cancellationToken).ConfigureAwait(false);
         }
-        await Delay(cancellationToken);
+        await Delay(cancellationToken).ConfigureAwait(false);
     }
 
     internal async Task<QueryData<SQLHistoryValue>> QueryHisData(QueryPageOptions option)

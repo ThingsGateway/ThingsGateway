@@ -151,7 +151,7 @@ public class Dlt645_2007Master : ProtocolBase,IDtu
     public override async Task<OperResult<string[]>> ReadStringAsync(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
     {
         bitConverter ??= ThingsGatewayBitConverter.GetTransByAddress(ref address);
-        var result = await ReadAsync(address, GetLength(address, length, 8), cancellationToken);
+        var result = await ReadAsync(address, GetLength(address, length, 8), cancellationToken).ConfigureAwait(false);
         return result.OperResultFrom(() => new[] { bitConverter.ToString(result.Content, 0, length) });
     }
 
@@ -162,7 +162,7 @@ public class Dlt645_2007Master : ProtocolBase,IDtu
         {
             var dAddress = Dlt645_2007Address.ParseFrom(address);
             var commandResult = Dlt645Helper.GetDlt645_2007Command(dAddress, (byte)ControlCode.Read, Station);
-            return await SendThenReturnAsync(dAddress.SocketId, commandResult, cancellationToken);
+            return await SendThenReturnAsync(dAddress.SocketId, commandResult, cancellationToken).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -211,7 +211,7 @@ public class Dlt645_2007Master : ProtocolBase,IDtu
             string[] strArray = value.SplitStringBySemicolon();
             var dAddress = Dlt645_2007Address.ParseFrom(address);
             var commandResult = Dlt645Helper.GetDlt645_2007Command(dAddress, (byte)ControlCode.Write, Station, data, strArray);
-            return await SendThenReturnAsync(dAddress.SocketId, commandResult, cancellationToken);
+            return await SendThenReturnAsync(dAddress.SocketId, commandResult, cancellationToken).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -297,7 +297,7 @@ public class Dlt645_2007Master : ProtocolBase,IDtu
             if (Station.IsNullOrEmpty()) Station = string.Empty;
             if (Station.Length < 12) Station = Station.PadLeft(12, '0');
             var commandResult = Dlt645Helper.GetDlt645_2007Command((byte)ControlCode.Freeze, str.ByHexStringToBytes().ToArray(), Station.ByHexStringToBytes().Reverse().ToArray());
-            return await SendThenReturnAsync(socketId, commandResult, cancellationToken);
+            return await SendThenReturnAsync(socketId, commandResult, cancellationToken).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -316,7 +316,7 @@ public class Dlt645_2007Master : ProtocolBase,IDtu
         try
         {
             var commandResult = Dlt645Helper.GetDlt645_2007Command((byte)ControlCode.ReadStation, null, "AAAAAAAAAAAA".ByHexStringToBytes());
-            var result = await SendThenReturnAsync(socketId, commandResult, cancellationToken);
+            var result = await SendThenReturnAsync(socketId, commandResult, cancellationToken).ConfigureAwait(false);
             if (result.IsSuccess)
             {
                 var buffer = result.Content.SelectMiddle(0, 6).BytesAdd(-0x33);
@@ -358,7 +358,7 @@ public class Dlt645_2007Master : ProtocolBase,IDtu
             if (Station.IsNullOrEmpty()) Station = string.Empty;
             if (Station.Length < 12) Station = Station.PadLeft(12, '0');
             var commandResult = Dlt645Helper.GetDlt645_2007Command((byte)ControlCode.WriteBaudRate, new byte[] { baudRateByte }, Station.ByHexStringToBytes().Reverse().ToArray());
-            return await SendThenReturnAsync(socketId, commandResult, cancellationToken);
+            return await SendThenReturnAsync(socketId, commandResult, cancellationToken).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -378,7 +378,7 @@ public class Dlt645_2007Master : ProtocolBase,IDtu
         try
         {
             var commandResult = Dlt645Helper.GetDlt645_2007Command((byte)ControlCode.WriteStation, station.ByHexStringToBytes().Reverse().ToArray(), "AAAAAAAAAAAA".ByHexStringToBytes());
-            return await SendThenReturnAsync(socketId, commandResult, cancellationToken);
+            return await SendThenReturnAsync(socketId, commandResult, cancellationToken).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -410,7 +410,7 @@ public class Dlt645_2007Master : ProtocolBase,IDtu
             var commandResult = Dlt645Helper.GetDlt645_2007Command((byte)ControlCode.WritePassword,
                 bytes
                 , Station.ByHexStringToBytes().Reverse().ToArray());
-            return await SendThenReturnAsync(socketId, commandResult, cancellationToken);
+            return await SendThenReturnAsync(socketId, commandResult, cancellationToken).ConfigureAwait(false);
         }
         catch (Exception ex)
         {

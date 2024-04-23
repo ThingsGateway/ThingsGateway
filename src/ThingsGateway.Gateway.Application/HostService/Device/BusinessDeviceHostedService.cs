@@ -33,20 +33,20 @@ public class BusinessDeviceHostedService : DeviceHostedService
     {
         if (started)
         {
-            await StopAsync(true);
+            await StopAsync(true).ConfigureAwait(false);
         }
-        await CreatThreadsAsync();
+        await CreatThreadsAsync().ConfigureAwait(false);
     }
 
     private async Task CollectDeviceHostedService_Started()
     {
-        await Task.Delay(1000);
-        await StartAsync();
+        await Task.Delay(1000).ConfigureAwait(false);
+        await StartAsync().ConfigureAwait(false);
     }
 
     private async Task CollectDeviceHostedService_Stoping()
     {
-        await StopAsync(true);
+        await StopAsync(true).ConfigureAwait(false);
     }
 
     #region worker服务
@@ -79,7 +79,7 @@ public class BusinessDeviceHostedService : DeviceHostedService
 
     protected override async Task<IEnumerable<DeviceRunTime>> GetDeviceRunTimeAsync(long deviceId)
     {
-        return await DeviceService.GetBusinessDeviceRuntimeAsync(deviceId);
+        return await DeviceService.GetBusinessDeviceRuntimeAsync(deviceId).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -91,7 +91,7 @@ public class BusinessDeviceHostedService : DeviceHostedService
         if (!_stoppingToken.IsCancellationRequested)
         {
             _logger.LogInformation(Localizer["DeviceRuntimeGeting"]);
-            var deviceRunTimes = await DeviceService.GetBusinessDeviceRuntimeAsync();
+            var deviceRunTimes = await DeviceService.GetBusinessDeviceRuntimeAsync().ConfigureAwait(false);
             _logger.LogInformation(Localizer["DeviceRuntimeGeted"]);
             var idSet = deviceRunTimes.ToDictionary(a => a.Id);
             var result = deviceRunTimes.Where(a => !idSet.ContainsKey(a.RedundantDeviceId ?? 0) && !a.RedundantEnable);

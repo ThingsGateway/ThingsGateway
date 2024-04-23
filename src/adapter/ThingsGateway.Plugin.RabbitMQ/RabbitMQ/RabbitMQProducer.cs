@@ -93,9 +93,9 @@ public partial class RabbitMQProducer : BusinessBaseWithCacheIntervalScript<Vari
         }
         else
         {
-            await Update(cancellationToken);
+            await Update(cancellationToken).ConfigureAwait(false);
         }
 
-        await Delay(cancellationToken);
+        await Delay(cancellationToken).ConfigureAwait(false);
     }
 }

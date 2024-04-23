@@ -30,7 +30,7 @@ public class NoticeUtil
     {
         NoticeService ??= App.RootServices!.GetRequiredService<ISignalrNoticeService>();//获取服务
         //遍历verificat列表获取客户端ID列表
-        await NoticeService.UserLoginOut(userLoginOutEvent?.VerificatInfos?.SelectMany(a => a.ClientIds), userLoginOutEvent!.Message);//发送消息
+        await NoticeService.UserLoginOut(userLoginOutEvent?.VerificatInfos?.SelectMany(a => a.ClientIds), userLoginOutEvent!.Message).ConfigureAwait(false);//发送消息
     }
 
     /// <summary>
@@ -57,7 +57,7 @@ public class NoticeUtil
             }
         });
         NoticeService ??= App.RootServices!.GetRequiredService<ISignalrNoticeService>();//获取服务
-        await NoticeService.NewMesage(clientIds, newMessageEvent.Message);//发送消息
+        await NoticeService.NewMesage(clientIds, newMessageEvent.Message).ConfigureAwait(false);//发送消息
     }
 }
 

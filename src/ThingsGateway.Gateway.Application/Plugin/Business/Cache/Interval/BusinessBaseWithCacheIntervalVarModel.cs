@@ -102,13 +102,13 @@ public abstract class BusinessBaseWithCacheIntervalVarModel<T> : BusinessBaseWit
         {
             if (CurrentDevice?.KeepRun == false)
             {
-                await Delay(cancellationToken);
+                await Delay(cancellationToken).ConfigureAwait(false);
                 continue;
             }
             //间隔上传
             IntervalInsertVariable();
 
-            await Delay(cancellationToken);
+            await Delay(cancellationToken).ConfigureAwait(false);
         }
     }
 

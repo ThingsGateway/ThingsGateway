@@ -67,7 +67,7 @@ public static class BusinessDatabaseUtil
             {
                 return new(new Exception("Connect Fail"));
             }
-            var data = await ((IDBHistoryValueService)businessDevice).GetDBHistoryValuesAsync(input);
+            var data = await ((IDBHistoryValueService)businessDevice).GetDBHistoryValuesAsync(input).ConfigureAwait(false);
             return OperResult.CreateSuccessResult(data);
         }
         catch (Exception ex)
@@ -94,7 +94,7 @@ public static class BusinessDatabaseUtil
             {
                 return new(new Exception("Connect Fail"));
             }
-            var data = await ((IDBHistoryValueService)businessDevice).GetDBHistoryValuePagesAsync(input);
+            var data = await ((IDBHistoryValueService)businessDevice).GetDBHistoryValuePagesAsync(input).ConfigureAwait(false);
             return OperResult.CreateSuccessResult(data);
         }
         catch (Exception ex)
@@ -121,7 +121,7 @@ public static class BusinessDatabaseUtil
             {
                 return new(new Exception("Connect Fail"));
             }
-            var data = await ((IDBHistoryAlarmService)businessDevice).GetDBHistoryAlarmsAsync(input);
+            var data = await ((IDBHistoryAlarmService)businessDevice).GetDBHistoryAlarmsAsync(input).ConfigureAwait(false);
             return OperResult.CreateSuccessResult(data);
         }
         catch (Exception ex)
@@ -148,7 +148,7 @@ public static class BusinessDatabaseUtil
             {
                 return new(new Exception("Connect Fail"));
             }
-            var data = await ((IDBHistoryAlarmService)businessDevice).GetDBHistoryAlarmPagesAsync(input);
+            var data = await ((IDBHistoryAlarmService)businessDevice).GetDBHistoryAlarmPagesAsync(input).ConfigureAwait(false);
             return OperResult.CreateSuccessResult(data);
         }
         catch (Exception ex)

@@ -66,10 +66,10 @@ public partial class RabbitMQProducer : BusinessBaseWithCacheIntervalScript<Vari
 
     #region private
 
-    private async Task<OperResult> UpdateAlarmModel(IEnumerable<AlarmVariable> item, CancellationToken cancellationToken)
+    private Task<OperResult> UpdateAlarmModel(IEnumerable<AlarmVariable> item, CancellationToken cancellationToken)
     {
         List<TopicJson> topicJsonList = GetAlarms(item);
-        return await Update(topicJsonList, cancellationToken);
+        return Update(topicJsonList, cancellationToken);
     }
 
     private Task<OperResult> Update(List<TopicJson> topicJsonList, CancellationToken cancellationToken)
@@ -93,16 +93,16 @@ public partial class RabbitMQProducer : BusinessBaseWithCacheIntervalScript<Vari
         return Task.FromResult(new OperResult());
     }
 
-    private async Task<OperResult> UpdateDevModel(IEnumerable<DeviceData> item, CancellationToken cancellationToken)
+    private Task<OperResult> UpdateDevModel(IEnumerable<DeviceData> item, CancellationToken cancellationToken)
     {
         List<TopicJson> topicJsonList = GetDeviceData(item);
-        return await Update(topicJsonList, cancellationToken);
+        return Update(topicJsonList, cancellationToken);
     }
 
-    private async Task<OperResult> UpdateVarModel(IEnumerable<VariableData> item, CancellationToken cancellationToken)
+    private Task<OperResult> UpdateVarModel(IEnumerable<VariableData> item, CancellationToken cancellationToken)
     {
         List<TopicJson> topicJsonList = GetVariable(item);
-        return await Update(topicJsonList, cancellationToken);
+        return Update(topicJsonList, cancellationToken);
     }
 
     #endregion private
@@ -120,21 +120,21 @@ public partial class RabbitMQProducer : BusinessBaseWithCacheIntervalScript<Vari
         {
             if (!success)
                 break;
-            await UpdateVarModel(item, cancellationToken);
+            await UpdateVarModel(item, cancellationToken).ConfigureAwait(false);
         }
 
         foreach (var item in devData)
         {
             if (!success)
                 break;
-            await UpdateDevModel(item, cancellationToken);
+            await UpdateDevModel(item, cancellationToken).ConfigureAwait(false);
         }
 
         foreach (var item in alramData)
         {
             if (!success)
                 break;
-            await UpdateAlarmModel(item, cancellationToken);
+            await UpdateAlarmModel(item, cancellationToken).ConfigureAwait(false);
         }
     }
 

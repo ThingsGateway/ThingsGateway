@@ -81,16 +81,16 @@ public partial class MqttServer : BusinessBaseWithCacheIntervalScript<VariableDa
             _mqttServer.ValidatingConnectionAsync += MqttServer_ValidatingConnectionAsync;
             _mqttServer.InterceptingPublishAsync += MqttServer_InterceptingPublishAsync;
             _mqttServer.LoadingRetainedMessageAsync += MqttServer_LoadingRetainedMessageAsync;
-            await _mqttServer.StartAsync();
+            await _mqttServer.StartAsync().ConfigureAwait(false);
         }
-        await base.ProtectedBeforStartAsync(cancellationToken);
+        await base.ProtectedBeforStartAsync(cancellationToken).ConfigureAwait(false);
     }
 
     protected override async Task ProtectedExecuteAsync(CancellationToken cancellationToken)
     {
-        await Update(cancellationToken);
+        await Update(cancellationToken).ConfigureAwait(false);
 
-        await Delay(cancellationToken);
+        await Delay(cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>

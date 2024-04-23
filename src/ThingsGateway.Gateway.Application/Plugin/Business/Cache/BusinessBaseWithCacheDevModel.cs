@@ -112,10 +112,10 @@ public abstract class BusinessBaseWithCacheDevModel<VarModel, DevModel> : Busine
 
     protected override async Task Update(CancellationToken cancellationToken)
     {
-        await UpdateVarModelMemory(cancellationToken);
-        await UpdateDevModelMemory(cancellationToken);
-        await UpdateVarModelCache(cancellationToken);
-        await UpdateDevModelCache(cancellationToken);
+        await UpdateVarModelMemory(cancellationToken).ConfigureAwait(false);
+        await UpdateDevModelMemory(cancellationToken).ConfigureAwait(false);
+        await UpdateVarModelCache(cancellationToken).ConfigureAwait(false);
+        await UpdateDevModelCache(cancellationToken).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -148,7 +148,7 @@ public abstract class BusinessBaseWithCacheDevModel<VarModel, DevModel> : Busine
                             {
                                 if (!cancellationToken.IsCancellationRequested)
                                 {
-                                    OperResult result = await UpdateDevModel(varList, cancellationToken);
+                                    OperResult result = await UpdateDevModel(varList, cancellationToken).ConfigureAwait(false);
                                     if (result.IsSuccess)
                                     {
                                         //删除缓存
@@ -202,7 +202,7 @@ public abstract class BusinessBaseWithCacheDevModel<VarModel, DevModel> : Busine
                     {
                         if (!cancellationToken.IsCancellationRequested)
                         {
-                            OperResult result = await UpdateDevModel(item, cancellationToken);
+                            OperResult result = await UpdateDevModel(item, cancellationToken).ConfigureAwait(false);
                             if (!result.IsSuccess)
                             {
                                 AddCache(item.ToList());

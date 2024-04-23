@@ -200,7 +200,7 @@ public abstract class ReadWriteDevicesSingleStreamDataHandleAdapter<TRequest> : 
             bytes = item;
         Request = request;
         Request.SendBytes = bytes;
-        await GoSendAsync(bytes, 0, bytes.Length);
+        await GoSendAsync(bytes, 0, bytes.Length).ConfigureAwait(false);
         if (Logger.LogLevel <= LogLevel.Trace)
             Logger?.Trace($"{ToString()}- Send:{(IsHexData ? bytes.ToHexString(' ') : Encoding.UTF8.GetString(bytes))}");
     }

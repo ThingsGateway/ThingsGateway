@@ -38,9 +38,9 @@ internal class AdminTaskService : BackgroundService
         {
             try
             {
-                await DeleteSysOperateLog(daysAgo, stoppingToken);
+                await DeleteSysOperateLog(daysAgo, stoppingToken).ConfigureAwait(false);
                 verificatInfoCacheService.HashSetDB(verificatInfoCacheService.GetAll());
-                await Task.Delay(TimeSpan.FromDays(1), stoppingToken);
+                await Task.Delay(TimeSpan.FromDays(1), stoppingToken).ConfigureAwait(false);
             }
             catch (OperationCanceledException)
             {

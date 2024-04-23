@@ -81,17 +81,17 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
 
     #region private
 
-    private async Task<OperResult> UpdateAlarmModel(IEnumerable<AlarmVariable> item, CancellationToken cancellationToken)
+    private Task<OperResult> UpdateAlarmModel(IEnumerable<AlarmVariable> item, CancellationToken cancellationToken)
     {
         List<TopicJson> topicJsonList = GetAlarms(item);
-        return await Update(topicJsonList, cancellationToken);
+        return Update(topicJsonList, cancellationToken);
     }
 
     private async Task<OperResult> Update(List<TopicJson> topicJsonList, CancellationToken cancellationToken)
     {
         foreach (var topicJson in topicJsonList)
         {
-            var result = await MqttUpAsync(topicJson.Topic, topicJson.Json, cancellationToken);
+            var result = await MqttUpAsync(topicJson.Topic, topicJson.Json, cancellationToken).ConfigureAwait(false);
             if (success != result.IsSuccess)
             {
                 if (!result.IsSuccess)
@@ -108,16 +108,16 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
         return new();
     }
 
-    private async Task<OperResult> UpdateDevModel(IEnumerable<DeviceData> item, CancellationToken cancellationToken)
+    private Task<OperResult> UpdateDevModel(IEnumerable<DeviceData> item, CancellationToken cancellationToken)
     {
         List<TopicJson> topicJsonList = GetDeviceData(item);
-        return await Update(topicJsonList, cancellationToken);
+        return Update(topicJsonList, cancellationToken);
     }
 
-    private async Task<OperResult> UpdateVarModel(IEnumerable<VariableData> item, CancellationToken cancellationToken)
+    private Task<OperResult> UpdateVarModel(IEnumerable<VariableData> item, CancellationToken cancellationToken)
     {
         List<TopicJson> topicJsonList = GetVariable(item);
-        return await Update(topicJsonList, cancellationToken);
+        return Update(topicJsonList, cancellationToken);
     }
 
     #endregion private
@@ -133,21 +133,21 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
         {
             if (!success)
                 break;
-            await UpdateVarModel(item, cancellationToken);
+            await UpdateVarModel(item, cancellationToken).ConfigureAwait(false);
         }
 
         foreach (var item in devData)
         {
             if (!success)
                 break;
-            await UpdateDevModel(item, cancellationToken);
+            await UpdateDevModel(item, cancellationToken).ConfigureAwait(false);
         }
 
         foreach (var item in alramData)
         {
             if (!success)
                 break;
-            await UpdateAlarmModel(item, cancellationToken);
+            await UpdateAlarmModel(item, cancellationToken).ConfigureAwait(false);
         }
     }
 
@@ -155,7 +155,7 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
     {
         if (args.ApplicationMessage.Topic == _driverPropertys.RpcQuestTopic && args.ApplicationMessage.PayloadSegment.Count > 0)
         {
-            await AllPublishAsync(CancellationToken.None);
+            await AllPublishAsync(CancellationToken.None).ConfigureAwait(false);
             return;
         }
 
@@ -167,16 +167,16 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
         var rpcDatas = Encoding.UTF8.GetString(args.ApplicationMessage.PayloadSegment).FromJsonNetString<Dictionary<string, JToken>>();
         if (rpcDatas == null)
             return;
-        Dictionary<string, OperResult> mqttRpcResult = await GetResult(args, rpcDatas);
+        Dictionary<string, OperResult> mqttRpcResult = await GetResult(args, rpcDatas).ConfigureAwait(false);
         try
         {
-            var isConnect = await TryMqttClientAsync(CancellationToken.None);
+            var isConnect = await TryMqttClientAsync(CancellationToken.None).ConfigureAwait(false);
             if (isConnect.IsSuccess)
             {
                 var variableMessage = new MqttApplicationMessageBuilder()
 .WithTopic($"{args.ApplicationMessage.Topic}/Response")
 .WithPayload(mqttRpcResult.ToJsonNetString()).Build();
-                await _mqttClient.PublishAsync(variableMessage);
+                await _mqttClient.PublishAsync(variableMessage).ConfigureAwait(false);
             }
         }
         catch
@@ -208,7 +208,7 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
 
             var result = await RpcService.InvokeDeviceMethodAsync(ToString() + "-" + args.ClientId,
                 rpcDatas.Where(
-                a => !mqttRpcResult.Any(b => b.Key == a.Key)).ToDictionary(a => a.Key, a => a.Value.ToString()));
+                a => !mqttRpcResult.Any(b => b.Key == a.Key)).ToDictionary(a => a.Key, a => a.Value.ToString())).ConfigureAwait(false);
 
             mqttRpcResult.AddRange(result);
         }
@@ -223,7 +223,7 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
     private async Task MqttClient_ConnectedAsync(MQTTnet.Client.MqttClientConnectedEventArgs args)
     {
         //连接成功后订阅相关主题
-        var subResult = await _mqttClient.SubscribeAsync(_mqttSubscribeOptions);
+        var subResult = await _mqttClient.SubscribeAsync(_mqttSubscribeOptions).ConfigureAwait(false);
         if (subResult.Items.Any(a => a.ResultCode > (MqttClientSubscribeResultCode)10))
         {
             LogMessage?.LogWarning($"Subscribe fail  {subResult.Items
@@ -243,7 +243,7 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
     {
         if (_mqttClient?.IsConnected == true)
             return new();
-        return await Cilent();
+        return await Cilent().ConfigureAwait(false);
 
         async Task<OperResult> Cilent()
         {
@@ -251,7 +251,7 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
                 return new();
             try
             {
-                await ConnectLock.WaitAsync();
+                await ConnectLock.WaitAsync().ConfigureAwait(false);
                 if (_mqttClient?.IsConnected == true)
                     return new();
                 using var timeoutToken = new CancellationTokenSource(TimeSpan.FromMilliseconds(_driverPropertys.ConnectTimeout));
@@ -262,7 +262,7 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
                 {
                     return new OperResult("mqttClient is null");
                 }
-                var result = await _mqttClient?.ConnectAsync(_mqttClientOptions, stoppingToken.Token);
+                var result = await _mqttClient.ConnectAsync(_mqttClientOptions, stoppingToken.Token).ConfigureAwait(false);
                 if (_mqttClient.IsConnected)
                 {
                     return new();
@@ -293,13 +293,13 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
     {
         try
         {
-            var isConnect = await TryMqttClientAsync(cancellationToken);
+            var isConnect = await TryMqttClientAsync(cancellationToken).ConfigureAwait(false);
             if (isConnect.IsSuccess)
             {
                 var variableMessage = new MqttApplicationMessageBuilder()
     .WithTopic(topic).WithRetainFlag(true)
     .WithPayload(payLoad).Build();
-                var result = await _mqttClient.PublishAsync(variableMessage, cancellationToken);
+                var result = await _mqttClient.PublishAsync(variableMessage, cancellationToken).ConfigureAwait(false);
                 if (result.IsSuccess)
                 {
                     if (LogMessage.LogLevel <= TouchSocket.Core.LogLevel.Trace)

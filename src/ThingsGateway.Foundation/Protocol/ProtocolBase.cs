@@ -269,17 +269,17 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     public virtual async Task SendAsync(byte[] command, IClientChannel channel = default, CancellationToken cancellationToken = default)
     {
         var item = command;
-        await Channel.ConnectAsync(ConnectTimeout, cancellationToken);
+        await Channel.ConnectAsync(ConnectTimeout, cancellationToken).ConfigureAwait(false);
         if (SendDelayTime != 0)
-            await Task.Delay(SendDelayTime, cancellationToken);
+            await Task.Delay(SendDelayTime, cancellationToken).ConfigureAwait(false);
         if (channel == default)
         {
             if (Channel is not IClientChannel clientChannel) { throw new ArgumentNullException(nameof(channel)); }
-            await clientChannel.SendAsync(item);
+            await clientChannel.SendAsync(item).ConfigureAwait(false);
         }
         else
         {
-            await channel.SendAsync(item);
+            await channel.SendAsync(item).ConfigureAwait(false);
         }
     }
 
@@ -311,20 +311,20 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     public virtual async Task<OperResult<byte[]>> SendThenReturnAsync(ISendMessage command, CancellationToken cancellationToken, IClientChannel channel = default)
     {
         var item = command;
-        await Channel.ConnectAsync(ConnectTimeout, cancellationToken);
+        await Channel.ConnectAsync(ConnectTimeout, cancellationToken).ConfigureAwait(false);
         if (SendDelayTime != 0)
-            await Task.Delay(SendDelayTime, cancellationToken);
+            await Task.Delay(SendDelayTime, cancellationToken).ConfigureAwait(false);
         SetDataAdapter();
         MessageBase? result;
 
         if (channel == default)
         {
             if (Channel is not IClientChannel clientChannel) { throw new ArgumentNullException(nameof(channel)); }
-            result = await GetResponsedDataAsync(item, Timeout, clientChannel, cancellationToken);
+            result = await GetResponsedDataAsync(item, Timeout, clientChannel, cancellationToken).ConfigureAwait(false);
         }
         else
         {
-            result = await GetResponsedDataAsync(item, Timeout, channel, cancellationToken);
+            result = await GetResponsedDataAsync(item, Timeout, channel, cancellationToken).ConfigureAwait(false);
         }
 
         return result;
@@ -400,14 +400,14 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     protected virtual async Task<MessageBase> GetResponsedDataAsync(ISendMessage item, int timeout, IClientChannel clientChannel, CancellationToken cancellationToken)
     {
         if (IsSingleThread)
-            await clientChannel.WaitLock.WaitAsync(cancellationToken);
+            await clientChannel.WaitLock.WaitAsync(cancellationToken).ConfigureAwait(false);
         var waitData = WaitHandlePool.GetWaitDataAsync(out var sign);
         try
         {
             item.Sign = sign;
             waitData.SetCancellationToken(cancellationToken);
-            await clientChannel.SendAsync(item);
-            var waitDataStatus = await waitData.WaitAsync(timeout);
+            await clientChannel.SendAsync(item).ConfigureAwait(false);
+            var waitDataStatus = await waitData.WaitAsync(timeout).ConfigureAwait(false);
             waitDataStatus.ThrowIfNotRunning();
             var response = waitData.WaitResult;
             return response;
@@ -460,17 +460,17 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     {
         return dataType switch
         {
-            DataTypeEnum.String => await ReadStringAsync(address, length, cancellationToken: cancellationToken),
-            DataTypeEnum.Boolean => await ReadBooleanAsync(address, length, cancellationToken: cancellationToken),
-            DataTypeEnum.Byte => await ReadAsync(address, length, cancellationToken),
-            DataTypeEnum.Int16 => await ReadInt16Async(address, length, cancellationToken: cancellationToken),
-            DataTypeEnum.UInt16 => await ReadUInt16Async(address, length, cancellationToken: cancellationToken),
-            DataTypeEnum.Int32 => await ReadInt32Async(address, length, cancellationToken: cancellationToken),
-            DataTypeEnum.UInt32 => await ReadUInt32Async(address, length, cancellationToken: cancellationToken),
-            DataTypeEnum.Int64 => await ReadInt64Async(address, length, cancellationToken: cancellationToken),
-            DataTypeEnum.UInt64 => await ReadUInt64Async(address, length, cancellationToken: cancellationToken),
-            DataTypeEnum.Single => await ReadSingleAsync(address, length, cancellationToken: cancellationToken),
-            DataTypeEnum.Double => await ReadDoubleAsync(address, length, cancellationToken: cancellationToken),
+            DataTypeEnum.String => await ReadStringAsync(address, length, cancellationToken: cancellationToken).ConfigureAwait(false),
+            DataTypeEnum.Boolean => await ReadBooleanAsync(address, length, cancellationToken: cancellationToken).ConfigureAwait(false),
+            DataTypeEnum.Byte => await ReadAsync(address, length, cancellationToken).ConfigureAwait(false),
+            DataTypeEnum.Int16 => await ReadInt16Async(address, length, cancellationToken: cancellationToken).ConfigureAwait(false),
+            DataTypeEnum.UInt16 => await ReadUInt16Async(address, length, cancellationToken: cancellationToken).ConfigureAwait(false),
+            DataTypeEnum.Int32 => await ReadInt32Async(address, length, cancellationToken: cancellationToken).ConfigureAwait(false),
+            DataTypeEnum.UInt32 => await ReadUInt32Async(address, length, cancellationToken: cancellationToken).ConfigureAwait(false),
+            DataTypeEnum.Int64 => await ReadInt64Async(address, length, cancellationToken: cancellationToken).ConfigureAwait(false),
+            DataTypeEnum.UInt64 => await ReadUInt64Async(address, length, cancellationToken: cancellationToken).ConfigureAwait(false),
+            DataTypeEnum.Single => await ReadSingleAsync(address, length, cancellationToken: cancellationToken).ConfigureAwait(false),
+            DataTypeEnum.Double => await ReadDoubleAsync(address, length, cancellationToken: cancellationToken).ConfigureAwait(false),
             _ => new OperResult<Array>(DefaultResource.Localizer["DataTypeNotSupported", dataType]),
         };
     }
@@ -504,17 +504,17 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
             {
                 return dataType switch
                 {
-                    DataTypeEnum.String => await WriteAsync(address, jArray.ToObject<String[]>(), cancellationToken: cancellationToken),
-                    DataTypeEnum.Boolean => await WriteAsync(address, jArray.ToObject<Boolean[]>(), cancellationToken),
-                    DataTypeEnum.Byte => await WriteAsync(address, jArray.ToObject<Byte[]>(), cancellationToken),
-                    DataTypeEnum.Int16 => await WriteAsync(address, jArray.ToObject<Int16[]>(), cancellationToken: cancellationToken),
-                    DataTypeEnum.UInt16 => await WriteAsync(address, jArray.ToObject<UInt16[]>(), cancellationToken: cancellationToken),
-                    DataTypeEnum.Int32 => await WriteAsync(address, jArray.ToObject<Int32[]>(), cancellationToken: cancellationToken),
-                    DataTypeEnum.UInt32 => await WriteAsync(address, jArray.ToObject<UInt32[]>(), cancellationToken: cancellationToken),
-                    DataTypeEnum.Int64 => await WriteAsync(address, jArray.ToObject<Int64[]>(), cancellationToken: cancellationToken),
-                    DataTypeEnum.UInt64 => await WriteAsync(address, jArray.ToObject<UInt64[]>(), cancellationToken: cancellationToken),
-                    DataTypeEnum.Single => await WriteAsync(address, jArray.ToObject<Single[]>(), cancellationToken: cancellationToken),
-                    DataTypeEnum.Double => await WriteAsync(address, jArray.ToObject<Double[]>(), cancellationToken: cancellationToken),
+                    DataTypeEnum.String => await WriteAsync(address, jArray.ToObject<String[]>(), cancellationToken: cancellationToken).ConfigureAwait(false),
+                    DataTypeEnum.Boolean => await WriteAsync(address, jArray.ToObject<Boolean[]>(), cancellationToken).ConfigureAwait(false),
+                    DataTypeEnum.Byte => await WriteAsync(address, jArray.ToObject<Byte[]>(), cancellationToken).ConfigureAwait(false),
+                    DataTypeEnum.Int16 => await WriteAsync(address, jArray.ToObject<Int16[]>(), cancellationToken: cancellationToken).ConfigureAwait(false),
+                    DataTypeEnum.UInt16 => await WriteAsync(address, jArray.ToObject<UInt16[]>(), cancellationToken: cancellationToken).ConfigureAwait(false),
+                    DataTypeEnum.Int32 => await WriteAsync(address, jArray.ToObject<Int32[]>(), cancellationToken: cancellationToken).ConfigureAwait(false),
+                    DataTypeEnum.UInt32 => await WriteAsync(address, jArray.ToObject<UInt32[]>(), cancellationToken: cancellationToken).ConfigureAwait(false),
+                    DataTypeEnum.Int64 => await WriteAsync(address, jArray.ToObject<Int64[]>(), cancellationToken: cancellationToken).ConfigureAwait(false),
+                    DataTypeEnum.UInt64 => await WriteAsync(address, jArray.ToObject<UInt64[]>(), cancellationToken: cancellationToken).ConfigureAwait(false),
+                    DataTypeEnum.Single => await WriteAsync(address, jArray.ToObject<Single[]>(), cancellationToken: cancellationToken).ConfigureAwait(false),
+                    DataTypeEnum.Double => await WriteAsync(address, jArray.ToObject<Double[]>(), cancellationToken: cancellationToken).ConfigureAwait(false),
                     _ => new OperResult(DefaultResource.Localizer["DataTypeNotSupported", dataType]),
                 };
             }
@@ -527,17 +527,17 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
                 }
                 return dataType switch
                 {
-                    DataTypeEnum.String => await WriteAsync(address, value.ToObject<String>(), bitConverter, cancellationToken),
-                    DataTypeEnum.Boolean => await WriteAsync(address, value.ToObject<Boolean>(), bitConverter, cancellationToken),
-                    DataTypeEnum.Byte => await WriteAsync(address, value.ToObject<Byte>(), bitConverter, cancellationToken),
-                    DataTypeEnum.Int16 => await WriteAsync(address, value.ToObject<Int16>(), bitConverter, cancellationToken),
-                    DataTypeEnum.UInt16 => await WriteAsync(address, value.ToObject<UInt16>(), bitConverter, cancellationToken),
-                    DataTypeEnum.Int32 => await WriteAsync(address, value.ToObject<Int32>(), bitConverter, cancellationToken),
-                    DataTypeEnum.UInt32 => await WriteAsync(address, value.ToObject<UInt32>(), bitConverter, cancellationToken),
-                    DataTypeEnum.Int64 => await WriteAsync(address, value.ToObject<Int64>(), bitConverter, cancellationToken),
-                    DataTypeEnum.UInt64 => await WriteAsync(address, value.ToObject<UInt64>(), bitConverter, cancellationToken),
-                    DataTypeEnum.Single => await WriteAsync(address, value.ToObject<Single>(), bitConverter, cancellationToken),
-                    DataTypeEnum.Double => await WriteAsync(address, value.ToObject<Double>(), bitConverter, cancellationToken),
+                    DataTypeEnum.String => await WriteAsync(address, value.ToObject<String>(), bitConverter, cancellationToken).ConfigureAwait(false),
+                    DataTypeEnum.Boolean => await WriteAsync(address, value.ToObject<Boolean>(), bitConverter, cancellationToken).ConfigureAwait(false),
+                    DataTypeEnum.Byte => await WriteAsync(address, value.ToObject<Byte>(), bitConverter, cancellationToken).ConfigureAwait(false),
+                    DataTypeEnum.Int16 => await WriteAsync(address, value.ToObject<Int16>(), bitConverter, cancellationToken).ConfigureAwait(false),
+                    DataTypeEnum.UInt16 => await WriteAsync(address, value.ToObject<UInt16>(), bitConverter, cancellationToken).ConfigureAwait(false),
+                    DataTypeEnum.Int32 => await WriteAsync(address, value.ToObject<Int32>(), bitConverter, cancellationToken).ConfigureAwait(false),
+                    DataTypeEnum.UInt32 => await WriteAsync(address, value.ToObject<UInt32>(), bitConverter, cancellationToken).ConfigureAwait(false),
+                    DataTypeEnum.Int64 => await WriteAsync(address, value.ToObject<Int64>(), bitConverter, cancellationToken).ConfigureAwait(false),
+                    DataTypeEnum.UInt64 => await WriteAsync(address, value.ToObject<UInt64>(), bitConverter, cancellationToken).ConfigureAwait(false),
+                    DataTypeEnum.Single => await WriteAsync(address, value.ToObject<Single>(), bitConverter, cancellationToken).ConfigureAwait(false),
+                    DataTypeEnum.Double => await WriteAsync(address, value.ToObject<Double>(), bitConverter, cancellationToken).ConfigureAwait(false),
                     _ => new OperResult(DefaultResource.Localizer["DataTypeNotSupported", dataType]),
                 };
             }
@@ -616,7 +616,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     {
         bitConverter ??= ThingsGatewayBitConverter.GetTransByAddress(ref address);
 
-        var result = await ReadAsync(address, GetLength(address, length, RegisterByteLength, true), cancellationToken);
+        var result = await ReadAsync(address, GetLength(address, length, RegisterByteLength, true), cancellationToken).ConfigureAwait(false);
         return result.OperResultFrom(() => bitConverter.ToBoolean(result.Content, GetBitOffset(address), length, BitReverse(address)));
     }
 
@@ -624,7 +624,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     public virtual async Task<OperResult<Int16[]>> ReadInt16Async(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
     {
         bitConverter ??= ThingsGatewayBitConverter.GetTransByAddress(ref address);
-        var result = await ReadAsync(address, GetLength(address, length, 2), cancellationToken);
+        var result = await ReadAsync(address, GetLength(address, length, 2), cancellationToken).ConfigureAwait(false);
         return result.OperResultFrom(() => bitConverter.ToInt16(result.Content, 0, length));
     }
 
@@ -632,7 +632,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     public virtual async Task<OperResult<UInt16[]>> ReadUInt16Async(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
     {
         bitConverter ??= ThingsGatewayBitConverter.GetTransByAddress(ref address);
-        var result = await ReadAsync(address, GetLength(address, length, 2), cancellationToken);
+        var result = await ReadAsync(address, GetLength(address, length, 2), cancellationToken).ConfigureAwait(false);
         return result.OperResultFrom(() => bitConverter.ToUInt16(result.Content, 0, length));
     }
 
@@ -640,7 +640,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     public virtual async Task<OperResult<Int32[]>> ReadInt32Async(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
     {
         bitConverter ??= ThingsGatewayBitConverter.GetTransByAddress(ref address);
-        var result = await ReadAsync(address, GetLength(address, length, 4), cancellationToken);
+        var result = await ReadAsync(address, GetLength(address, length, 4), cancellationToken).ConfigureAwait(false);
         return result.OperResultFrom(() => bitConverter.ToInt32(result.Content, 0, length));
     }
 
@@ -648,7 +648,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     public virtual async Task<OperResult<UInt32[]>> ReadUInt32Async(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
     {
         bitConverter ??= ThingsGatewayBitConverter.GetTransByAddress(ref address);
-        var result = await ReadAsync(address, GetLength(address, length, 4), cancellationToken);
+        var result = await ReadAsync(address, GetLength(address, length, 4), cancellationToken).ConfigureAwait(false);
         return result.OperResultFrom(() => bitConverter.ToUInt32(result.Content, 0, length));
     }
 
@@ -656,7 +656,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     public virtual async Task<OperResult<Int64[]>> ReadInt64Async(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
     {
         bitConverter ??= ThingsGatewayBitConverter.GetTransByAddress(ref address);
-        var result = await ReadAsync(address, GetLength(address, length, 8), cancellationToken);
+        var result = await ReadAsync(address, GetLength(address, length, 8), cancellationToken).ConfigureAwait(false);
         return result.OperResultFrom(() => bitConverter.ToInt64(result.Content, 0, length));
     }
 
@@ -664,7 +664,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     public virtual async Task<OperResult<UInt64[]>> ReadUInt64Async(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
     {
         bitConverter ??= ThingsGatewayBitConverter.GetTransByAddress(ref address);
-        var result = await ReadAsync(address, GetLength(address, length, 8), cancellationToken);
+        var result = await ReadAsync(address, GetLength(address, length, 8), cancellationToken).ConfigureAwait(false);
         return result.OperResultFrom(() => bitConverter.ToUInt64(result.Content, 0, length));
     }
 
@@ -672,7 +672,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     public virtual async Task<OperResult<Single[]>> ReadSingleAsync(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
     {
         bitConverter ??= ThingsGatewayBitConverter.GetTransByAddress(ref address);
-        var result = await ReadAsync(address, GetLength(address, length, 4), cancellationToken);
+        var result = await ReadAsync(address, GetLength(address, length, 4), cancellationToken).ConfigureAwait(false);
         return result.OperResultFrom(() => bitConverter.ToSingle(result.Content, 0, length));
     }
 
@@ -680,7 +680,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     public virtual async Task<OperResult<Double[]>> ReadDoubleAsync(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
     {
         bitConverter ??= ThingsGatewayBitConverter.GetTransByAddress(ref address);
-        var result = await ReadAsync(address, GetLength(address, length, 8), cancellationToken);
+        var result = await ReadAsync(address, GetLength(address, length, 8), cancellationToken).ConfigureAwait(false);
         return result.OperResultFrom(() => bitConverter.ToDouble(result.Content, 0, length));
     }
 
@@ -691,7 +691,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
         if (bitConverter.StringLength == null) return new(DefaultResource.Localizer["StringAddressError"]);
         var len = bitConverter.StringLength * length;
 
-        var result = await ReadAsync(address, GetLength(address, len.Value, 1), cancellationToken);
+        var result = await ReadAsync(address, GetLength(address, len.Value, 1), cancellationToken).ConfigureAwait(false);
         return result.OperResultFrom(() =>
         {
             List<String> strings = new();
@@ -1039,7 +1039,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
             var data = bitConverter.GetBytes(a);
             bytes.AddRange(data.ArrayExpandToLength(bitConverter.StringLength ?? data.Length));
         }));
-        return await WriteAsync(address, bytes.ToArray(), cancellationToken);
+        return await WriteAsync(address, bytes.ToArray(), cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>

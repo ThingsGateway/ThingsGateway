@@ -70,7 +70,7 @@ public class BackendLogDatabaseLoggingWriter : IDatabaseLoggingWriter
                 await SqlSugarClient.InsertableWithAttr(_logQueues.ToListWithDequeue()).ExecuteCommandAsync();
 
                 // 延时1秒，避免过于频繁的数据库操作
-                await Task.Delay(1000);
+                await Task.Delay(1000).ConfigureAwait(false);
             }
         }
     }

@@ -105,7 +105,7 @@ public abstract class ReadWriteDevicesUdpDataHandleAdapter<TRequest> : UdpDataHa
             bytes = item;
         Request = request;
         Request.SendBytes = bytes;
-        await GoSendAsync(endPoint, bytes, 0, bytes.Length);
+        await GoSendAsync(endPoint, bytes, 0, bytes.Length).ConfigureAwait(false);
         if (Logger.LogLevel <= LogLevel.Trace)
             Logger?.Trace($"{endPoint}- Send:{(IsHexData ? Request.SendBytes.ToHexString(' ') : Encoding.UTF8.GetString(Request.SendBytes))}");
     }

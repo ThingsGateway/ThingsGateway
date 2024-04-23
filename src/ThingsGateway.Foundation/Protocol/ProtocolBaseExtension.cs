@@ -24,70 +24,70 @@ public static class ProtocolBaseExtension
     /// <inheritdoc/>
     public static async Task<OperResult<Boolean>> ReadBooleanAsync(this IProtocol protocol, string address, IThingsGatewayBitConverter bitConverter, CancellationToken cancellationToken = default)
     {
-        var result = await protocol.ReadBooleanAsync(address, 1, bitConverter, cancellationToken);
+        var result = await protocol.ReadBooleanAsync(address, 1, bitConverter, cancellationToken).ConfigureAwait(false);
         return result.OperResultFrom(() => result.Content[0]);
     }
 
     /// <inheritdoc/>
     public static async Task<OperResult<Int16>> ReadInt16Async(this IProtocol protocol, string address, IThingsGatewayBitConverter bitConverter, CancellationToken cancellationToken = default)
     {
-        var result = await protocol.ReadInt16Async(address, 1, bitConverter, cancellationToken);
+        var result = await protocol.ReadInt16Async(address, 1, bitConverter, cancellationToken).ConfigureAwait(false);
         return result.OperResultFrom(() => result.Content[0]);
     }
 
     /// <inheritdoc/>
     public static async Task<OperResult<UInt16>> ReadUInt16Async(this IProtocol protocol, string address, IThingsGatewayBitConverter bitConverter, CancellationToken cancellationToken = default)
     {
-        var result = await protocol.ReadUInt16Async(address, 1, bitConverter, cancellationToken);
+        var result = await protocol.ReadUInt16Async(address, 1, bitConverter, cancellationToken).ConfigureAwait(false);
         return result.OperResultFrom(() => result.Content[0]);
     }
 
     /// <inheritdoc/>
     public static async Task<OperResult<Int32>> ReadInt32Async(this IProtocol protocol, string address, IThingsGatewayBitConverter bitConverter, CancellationToken cancellationToken = default)
     {
-        var result = await protocol.ReadInt32Async(address, 1, bitConverter, cancellationToken);
+        var result = await protocol.ReadInt32Async(address, 1, bitConverter, cancellationToken).ConfigureAwait(false);
         return result.OperResultFrom(() => result.Content[0]);
     }
 
     /// <inheritdoc/>
     public static async Task<OperResult<UInt32>> ReadUInt32Async(this IProtocol protocol, string address, IThingsGatewayBitConverter bitConverter, CancellationToken cancellationToken = default)
     {
-        var result = await protocol.ReadUInt32Async(address, 1, bitConverter, cancellationToken);
+        var result = await protocol.ReadUInt32Async(address, 1, bitConverter, cancellationToken).ConfigureAwait(false);
         return result.OperResultFrom(() => result.Content[0]);
     }
 
     /// <inheritdoc/>
     public static async Task<OperResult<Int64>> ReadInt64Async(this IProtocol protocol, string address, IThingsGatewayBitConverter bitConverter, CancellationToken cancellationToken = default)
     {
-        var result = await protocol.ReadInt64Async(address, 1, bitConverter, cancellationToken);
+        var result = await protocol.ReadInt64Async(address, 1, bitConverter, cancellationToken).ConfigureAwait(false);
         return result.OperResultFrom(() => result.Content[0]);
     }
 
     /// <inheritdoc/>
     public static async Task<OperResult<UInt64>> ReadUInt64Async(this IProtocol protocol, string address, IThingsGatewayBitConverter bitConverter, CancellationToken cancellationToken = default)
     {
-        var result = await protocol.ReadUInt64Async(address, 1, bitConverter, cancellationToken);
+        var result = await protocol.ReadUInt64Async(address, 1, bitConverter, cancellationToken).ConfigureAwait(false);
         return result.OperResultFrom(() => result.Content[0]);
     }
 
     /// <inheritdoc/>
     public static async Task<OperResult<Single>> ReadSingleAsync(this IProtocol protocol, string address, IThingsGatewayBitConverter bitConverter, CancellationToken cancellationToken = default)
     {
-        var result = await protocol.ReadSingleAsync(address, 1, bitConverter, cancellationToken);
+        var result = await protocol.ReadSingleAsync(address, 1, bitConverter, cancellationToken).ConfigureAwait(false);
         return result.OperResultFrom(() => result.Content[0]);
     }
 
     /// <inheritdoc/>
     public static async Task<OperResult<Double>> ReadDoubleAsync(this IProtocol protocol, string address, IThingsGatewayBitConverter bitConverter, CancellationToken cancellationToken = default)
     {
-        var result = await protocol.ReadDoubleAsync(address, 1, bitConverter, cancellationToken);
+        var result = await protocol.ReadDoubleAsync(address, 1, bitConverter, cancellationToken).ConfigureAwait(false);
         return result.OperResultFrom(() => result.Content[0]);
     }
 
     /// <inheritdoc/>
     public static async Task<OperResult<String>> ReadStringAsync(this IProtocol protocol, string address, IThingsGatewayBitConverter bitConverter, CancellationToken cancellationToken = default)
     {
-        var result = await protocol.ReadStringAsync(address, 1, bitConverter, cancellationToken);
+        var result = await protocol.ReadStringAsync(address, 1, bitConverter, cancellationToken).ConfigureAwait(false);
         return result.OperResultFrom(() => result.Content[0]);
     }
 

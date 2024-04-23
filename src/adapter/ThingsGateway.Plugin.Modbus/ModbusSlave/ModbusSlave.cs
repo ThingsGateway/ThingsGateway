@@ -119,7 +119,7 @@ public class ModbusSlave : BusinessBase
             try
             {
                 Protocol.Channel.Close();
-                await Protocol.Channel.ConnectAsync(3000, cancellationToken);
+                await Protocol.Channel.ConnectAsync(3000, cancellationToken).ConfigureAwait(false);
                 success = true;
             }
             catch (Exception ex)
@@ -137,15 +137,15 @@ public class ModbusSlave : BusinessBase
             var type = item.Item2.GetPropertyValue(CurrentDevice.Id, nameof(ModbusSlaveVariableProperty.DataType));
             if (Enum.TryParse(type, out DataTypeEnum result))
             {
-                await _plc.WriteAsync(item.Item1, JToken.FromObject(item.Item2.Value), result, cancellationToken);
+                await _plc.WriteAsync(item.Item1, JToken.FromObject(item.Item2.Value), result, cancellationToken).ConfigureAwait(false);
             }
             else
             {
-                await _plc.WriteAsync(item.Item1, JToken.FromObject(item.Item2.Value), item.Item2.DataType, cancellationToken);
+                await _plc.WriteAsync(item.Item1, JToken.FromObject(item.Item2.Value), item.Item2.DataType, cancellationToken).ConfigureAwait(false);
             }
         }
 
-        await Delay(cancellationToken);
+        await Delay(cancellationToken).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -171,7 +171,7 @@ public class ModbusSlave : BusinessBase
             var data = thingsGatewayBitConverter.GetDataFormBytes(writeValue, Enum.TryParse(type, out DataTypeEnum dataType) ? dataType : tag.Value.DataType);
             if (!data.IsSuccess) return data;
             var result = await tag.Value.SetValueToDeviceAsync(data.Content.ToString(),
-                    $"{nameof(ModbusSlave)}-{CurrentDevice.Name}-{$"{channel}"}");
+                    $"{nameof(ModbusSlave)}-{CurrentDevice.Name}-{$"{channel}"}").ConfigureAwait(false);
             return result;
         }
         catch (Exception ex)

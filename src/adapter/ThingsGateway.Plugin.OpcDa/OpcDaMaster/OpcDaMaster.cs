@@ -124,7 +124,7 @@ public class OpcDaMaster : CollectBase
         try
         {
             if (IsSingleThread)
-                await WriteLock.WaitAsync(cancellationToken);
+                await WriteLock.WaitAsync(cancellationToken).ConfigureAwait(false);
             _plc.ReadItemsWithGroup(deviceVariableSourceRead.RegisterAddress);
             return OperResult.CreateSuccessResult(Array.Empty<byte>());
         }
@@ -145,7 +145,7 @@ public class OpcDaMaster : CollectBase
         try
         {
             if (IsSingleThread)
-                await WriteLock.WaitAsync(cancellationToken);
+                await WriteLock.WaitAsync(cancellationToken).ConfigureAwait(false);
             var result = _plc.WriteItem(writeInfoLists.ToDictionary(a => a.Key.RegisterAddress!, a => a.Value.GetObjectFromJToken()!));
             return result.ToDictionary(a =>
             {
@@ -183,7 +183,7 @@ public class OpcDaMaster : CollectBase
         }
         else
         {
-            await base.ProtectedExecuteAsync(cancellationToken);
+            await base.ProtectedExecuteAsync(cancellationToken).ConfigureAwait(false);
         }
     }
 

@@ -128,7 +128,7 @@ public class HardwareInfoService : BackgroundService
                         await db.Deleteable<HisHardwareInfo>(a => a.Date <= sevenDaysAgo).ExecuteCommandAsync();
                     }
                 }
-                await Task.Delay(HardwareInfoConfig.RealInterval * 1000, stoppingToken);
+                await Task.Delay(HardwareInfoConfig.RealInterval * 1000, stoppingToken).ConfigureAwait(false);
                 error = false;
             }
             catch (OperationCanceledException)
