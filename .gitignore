@@ -367,3 +367,4 @@ FodyWeavers.xsd
 /src/*pro*
 /src/*pro*/
 /doc/.*
+/src/ThingsGateway.Server/.config/

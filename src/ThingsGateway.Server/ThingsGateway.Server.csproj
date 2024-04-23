@@ -26,6 +26,10 @@
     <ProjectReference Include="$(SolutionDir)\ThingsGateway.Gateway.Razor\ThingsGateway.Gateway.Razor.csproj" />
   </ItemGroup>
 
+  <ItemGroup Condition="'$(SolutionName)'=='ThingsGateway - Pro'">
+    <ProjectReference Include="$(SolutionDir)\pro\ThingsGateway.Gateway.ProRazor\ThingsGateway.Gateway.ProRazor.csproj" />
+  </ItemGroup>
+
   <ItemGroup>
     <Content Update="wwwroot\**">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
