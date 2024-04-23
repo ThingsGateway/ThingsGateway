@@ -12,7 +12,7 @@
 
 
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
 using System.Text.Json.Serialization;
 
 #endif
@@ -43,7 +43,7 @@ public interface IThingsGatewayBitConverter
     /// <summary>
     /// 当前的字符串编码类型
     /// </summary>
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
     [System.Text.Json.Serialization.JsonConverter(typeof(EncodingConverter))]
     [JsonProperty(ItemConverterType = typeof(NewtonsoftEncodingConverter))]
 #else

@@ -12,7 +12,7 @@
 
 
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
 using System.Text.Json.Serialization;
 using System.Text.Json;
 
@@ -24,7 +24,7 @@ using System.Text;
 
 namespace ThingsGateway.Foundation;
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
 
 /// <inheritdoc/>
 public class EncodingConverter : System.Text.Json.Serialization.JsonConverter<Encoding>

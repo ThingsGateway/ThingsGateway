@@ -426,7 +426,7 @@ namespace ThingsGateway.Foundation
 
             this.Monitor = new UdpNetworkMonitor(iPHost, socket);
 
-#if NET45_OR_GREATER || NET6_0_OR_GREATER
+#if NET45_OR_GREATER || NET8_0_OR_GREATER
             for (var i = 0; i < threadCount; i++)
             {
                 var eventArg = new SocketAsyncEventArgs();
@@ -755,7 +755,7 @@ namespace ThingsGateway.Foundation
         /// <param name="buffer"></param>
         /// <param name="offset"></param>
         /// <param name="length"></param>
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         public async Task DefaultSendAsync(EndPoint endPoint, byte[] buffer, int offset, int length)
         {
             ThrowIfDisposed();

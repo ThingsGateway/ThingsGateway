@@ -119,7 +119,7 @@ public class OperResult : IOperResult
     /// <summary>
     /// 异常堆栈
     /// </summary>
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
     [System.Text.Json.Serialization.JsonIgnore]
 #endif
 
@@ -195,7 +195,7 @@ public class OperResult : IOperResult
     public string? ErrorMessage { get; set; }
 
     /// <inheritdoc/>
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
     [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
 #endif
 

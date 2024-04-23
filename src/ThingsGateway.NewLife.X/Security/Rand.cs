@@ -89,7 +89,7 @@ public static class Rand
     /// <returns></returns>
     public static Byte[] NextBytes(Int32 count)
     {
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         return RandomNumberGenerator.GetBytes(count);
 #elif NETFRAMEWORK || NETSTANDARD2_0
         return new Random().NextBytes(count);
