@@ -64,7 +64,7 @@ public class ModbusAddress
             var data = Address?.SplitStringByDelimiter();
             if (data?.Length == 2)
             {
-                return data[1].ToInt();
+                return Convert.ToInt32(data[1]);
             }
             else
             {
@@ -104,7 +104,7 @@ public class ModbusAddress
         {
             stringGeter.Append($"id={SocketId};");
         }
-        stringGeter.Append(GetFunctionString(ReadFunction) + (AddressStart + 1).ToString());
+        stringGeter.Append($"{GetFunctionString(ReadFunction)}{AddressStart + 1}{(BitIndex != null ? $".{BitIndex}" : null)}");
         return stringGeter.ToString();
     }
 

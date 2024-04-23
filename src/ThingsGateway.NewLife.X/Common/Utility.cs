@@ -12,8 +12,6 @@
 
 
 
-using NewLife;
-
 using System.ComponentModel;
 using System.Globalization;
 using System.Reflection;
@@ -222,7 +220,15 @@ public class DefaultConvert
             // 拷贝而来的逗号分隔整数
             str = str.Replace(",", null);
             str = ToDBC(str).Trim();
-            return str.IsNullOrEmpty() ? defaultValue : Int32.TryParse(str, out var n) ? n : defaultValue;
+
+            if (str.Contains("."))
+            {
+                return str.IsNullOrEmpty() ? defaultValue : Double.TryParse(str, out var n) ? (int)n : defaultValue;
+            }
+            else
+            {
+                return str.IsNullOrEmpty() ? defaultValue : Int32.TryParse(str, out var n) ? n : defaultValue;
+            }
         }
 
         // 特殊处理时间，转Unix秒
