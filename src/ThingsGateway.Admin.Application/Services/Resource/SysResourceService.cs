@@ -14,6 +14,8 @@
 
 using BootstrapBlazor.Components;
 
+using Microsoft.Extensions.DependencyInjection;
+
 using NewLife.Extension;
 
 using SqlSugar;
@@ -215,6 +217,8 @@ public class SysResourceService : BaseService<SysResource>, ISysResourceService
     public void RefreshCache()
     {
         App.CacheService.Remove($"{CacheConst.Cache_SysResource}");
+        //删除超级管理员的缓存
+        App.RootServices.GetRequiredService<ISysUserService>().DeleteUserFromCache(RoleConst.SuperAdminId);
     }
 
     #endregion 缓存
@@ -233,11 +237,11 @@ public class SysResourceService : BaseService<SysResource>, ISysResourceService
         }
 
         //如果菜单类型是菜单
-        if (sysResource.Category == ResourceCategoryEnum.Menu)
-        {
-            if (string.IsNullOrEmpty(sysResource.Href))
-                throw Oops.Bah("ResourceMenuHrefNotNull");
-        }
+        //if (sysResource.Category == ResourceCategoryEnum.Menu)
+        //{
+        //    if (string.IsNullOrEmpty(sysResource.Href))
+        //        throw Oops.Bah("ResourceMenuHrefNotNull");
+        //}
 
         //获取所有列表
         var menList = await GetAllAsync();

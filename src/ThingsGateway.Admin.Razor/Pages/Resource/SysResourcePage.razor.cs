@@ -30,6 +30,9 @@ public partial class SysResourcePage
     [CascadingParameter(Name = "ReloadMenu")]
     private Func<Task>? ReloadMenu { get; set; }
 
+    [CascadingParameter(Name = "ReloadUser")]
+    private Func<Task>? ReloadUser { get; set; }
+
     protected override async Task OnParametersSetAsync()
     {
         ModuleSelectedItems = ResourceUtil.BuildModuleSelectList((await SysResourceService.GetAllAsync())).ToList();
@@ -62,7 +65,12 @@ public partial class SysResourcePage
         {
             if (itemChangedType == ItemChangedType.Add && sysResource.Category != ResourceCategoryEnum.Module)
                 sysResource.Module = CustomerSearchModel.Module;
-            return await SysResourceService.SaveResourceAsync(sysResource, itemChangedType);
+            var result = await SysResourceService.SaveResourceAsync(sysResource, itemChangedType);
+            if (ReloadUser != null)
+            {
+                await ReloadUser();
+            }
+            return result;
         }
         catch (Exception ex)
         {
@@ -75,7 +83,12 @@ public partial class SysResourcePage
     {
         try
         {
-            return await SysResourceService.DeleteResourceAsync(sysResources.Select(a => a.Id));
+            var result = await SysResourceService.DeleteResourceAsync(sysResources.Select(a => a.Id));
+            if (ReloadUser != null)
+            {
+                await ReloadUser();
+            }
+            return result;
         }
         catch (Exception ex)
         {

@@ -20,6 +20,11 @@ namespace ThingsGateway.Admin.Application;
 public class RoleConst
 {
     /// <summary>
+    /// 超级管理员Id
+    /// </summary>
+    public const long SuperAdminId = 212725263002001;
+
+    /// <summary>
     /// 超级管理员
     /// </summary>
     public const string SuperAdmin = "SuperAdmin";

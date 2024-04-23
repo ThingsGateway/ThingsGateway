@@ -1,15 +1,6 @@
 ﻿{
   "RECORDS": [
     {
-      "Id": 212725263002001,
-      "Account": "SuperAdmin",
-      "Password": "7DA385A25A98388E",
-      "Status": "1",
-      "DefaultModule": 6,
-      "IsDelete": "0",
-      "SortCode": 0
-    },
-    {
       "Id": 201725263002001,
       "Account": "BizAdmin",
       "Password": "7DA385A25A98388E",

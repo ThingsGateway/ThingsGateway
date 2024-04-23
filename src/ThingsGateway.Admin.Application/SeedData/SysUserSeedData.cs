@@ -22,6 +22,18 @@ public class SysUserSeedData : ISqlSugarEntitySeedData<SysUser>
     /// <inheritdoc/>
     public IEnumerable<SysUser> SeedData()
     {
-        return SeedDataUtil.GetSeedData<SysUser>("seed_sys_user.json");
+        return new List<SysUser>()
+        {
+            new SysUser()
+            {
+                  Id=RoleConst.SuperAdminId,
+                  Account= "SuperAdmin",
+                  Password="7DA385A25A98388E",
+                  Status=true,
+                  DefaultModule=6,
+                  IsDelete=false,
+                  SortCode=0
+            }
+        }.Concat(SeedDataUtil.GetSeedData<SysUser>("seed_sys_user.json"));
     }
 }
