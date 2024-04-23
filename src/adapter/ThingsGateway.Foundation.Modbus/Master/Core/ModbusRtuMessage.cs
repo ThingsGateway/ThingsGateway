@@ -48,12 +48,11 @@ internal class ModbusRtuMessage : MessageBase, IMessage
             if (heads[1] <= 0x10)
             {
                 //modbusRtu 写入
-                BodyLength = 6 + 2; //数据区+crc
+                BodyLength = 3 + 2; //数据区+crc
             }
             else
             {
-                //错误码
-                BodyLength = 3 + 2; //数据区+crc
+                BodyLength = 0 + 2; //数据区+crc
             }
         }
 
