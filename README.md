@@ -1,66 +1,65 @@
-
 # ThingsGateway
+﻿
+## Introduction
+﻿
+A cross-platform, high-performance edge data collection gateway based on net8, capable of handling millions of data points per.
+﻿
+## Documentation
+﻿
+[ThingsGateway Documentation](https://diego2098.gitee.io/thingsgateway-docs/).
+﻿
+[**NuGet Address**](https://www.nuget.org/packages?q=Tags%3A%22ThingsGateway%22)
+﻿
+### Plugin List
+﻿
+#### Data Collection Plugins
 
-## 介绍
-
-基于net8的跨平台高性能边缘采集网关，单机采集数据点位可达百万
-
-## 文档
-
-[ThingsGateway](https://diego2098.gitee.io/thingsgateway-docs/) 文档。
-
-[**底层驱动 NuGet地址**](https://www.nuget.org/packages?q=Tags%3A%22ThingsGateway%22)
-
-### 插件列表
-
-#### 采集插件
-| 插件名称 | 备注 | 
+| Plugin Name | Remarks | 
 |-------|-------|
-| Modbus | Rtu/Tcp报文格式，支持串口/Tcp/Udp链路 | 
-| SiemensS7 | 西门子PLC S7系列 | 
-| Dlt6452007 | 支持串口/Tcp/Udp链路 | 
-| OpcDaMaster | 64位编译 |
-| OpcUaMaster | 支持证书登录，扩展对象，Json读写 |
+| Modbus | Supports Rtu/Tcp message formats, with Serial/Tcp/Udp links | 
+| SiemensS7 | Siemens PLC S7 series | 
+| Dlt6452007 | Supports Serial/Tcp/Udp links | 
+| OpcDaMaster | Compiled for 64-bit |
+| OpcUaMaster | Supports certificate login, object extension, Json read/write |
 
-#### 业务插件
-| 插件名称 | 备注 | 
+#### Business Plugins
+
+| Plugin Name | Remarks | 
 |-------|-------|
-| ModbusSlave | Rtu/Tcp报文格式，支持串口/Tcp/Udp链路，支持Rpc反写 | 
-| OpcUaServer | OpcUa服务端，支持Rpc反写 | 
-| MqttClient | Mqtt客户端，支持Rpc反写，脚本自定义上传内容 | 
-| MqttServer | Mqtt服务端，支持WebSocket，支持Rpc反写，脚本自定义上传内容 | 
-| KafkaProducer | 脚本自定义上传内容 | 
-| RabbitMQProducer  | 脚本自定义上传内容 | 
-| SqlDB | 关系数据库存储，支持历史存储和实时数据更新 | 
-| SqlHisAlarm | 报警历史数据关系数据库存储 | 
-| TDengineDB | 时序数据库存储 | 
-| QuestDB | 时序数据库存储 | 
+| ModbusSlave | Supports Rtu/Tcp message formats, with Serial/Tcp/Udp links, supports Rpc reverse writing | 
+| OpcUaServer | OpcUa server, supports Rpc reverse writing | 
+| MqttClient | Mqtt client, supports Rpc reverse writing, script-customizable upload content | 
+| MqttServer | Mqtt server, supports WebSocket, supports Rpc reverse writing, script-customizable upload content | 
+| KafkaProducer | Script-customizable upload content | 
+| RabbitMQProducer | Script-customizable upload content | 
+| SqlDB | Relational database storage, supports historical storage and real-time data updates | 
+| SqlHisAlarm | Alarm historical data relational database storage | 
+| TDengineDB | Time-series database storage | 
+| QuestDB | Time-series database storage | 
 
-## 协议
-
+﻿
+## License
+﻿
 [Apache-2.0](https://gitee.com/diego2098/ThingsGateway/blob/master/LICENSE)
-
-## 演示
-
-[ThingsGateway演示地址](http://47.119.161.158:5000/)
-
-账户	:  **SuperAdmin**	
-
-密码 : **111111**
-
-**右上角个人弹出框中，切换到物联网关模块**
-
-## 赞助
-
-[赞助途径](https://diego2098.gitee.io/thingsgateway-docs/docs/1000)
-
-## 社区
-
-QQ群：605534569 [跳转](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=NnBjPO-8kcNFzo_RzSbdICflb97u2O1i&authKey=V1MI3iJtpDMHc08myszP262kDykbx2Yev6ebE4Me0elTe0P0IFAmtU5l7Sy5w0jx&noverify=0&group_code=605534569)
-
-## Pro插件
-
-[插件列表](https://diego2098.gitee.io/thingsgateway-docs/docs/1001)
-
-
-
+﻿
+## Demo
+﻿
+[ThingsGateway Demo Address](http://47.119.161.158:5000/)
+﻿
+Account: **SuperAdmin**
+﻿
+Password: **111111**
+﻿
+**In the upper-right corner, switch to the IoT Gateway module in the personal popup box**
+﻿
+## Sponsorship
+﻿
+[Sponsorship Approach](https://diego2098.gitee.io/thingsgateway-docs/docs/1000)
+﻿
+## Community
+﻿
+QQ Group: 605534569 [Jump](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=NnBjPO-8kcNFzo_RzSbdICflb97u2O1i&authKey=V1MI3iJtpDMHc08myszP262kDykbx2Yev6ebE4Me0elTe0P0IFAmtU5l7Sy5w0jx&noverify=0&group_code=605534569)
+﻿
+## Pro Plugins
+﻿
+[Plugin List](https://diego2098.gitee.io/thingsgateway-docs/docs/1001)

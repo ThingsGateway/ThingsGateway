@@ -21,6 +21,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "others", "others", "{2C6B6E
 		PackNuget.props = PackNuget.props
 		Plugin.props = Plugin.props
 		..\README.md = ..\README.md
+		..\README.zh-CN.md = ..\README.zh-CN.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThingsGateway.Admin.Razor", "ThingsGateway.Admin.Razor\ThingsGateway.Admin.Razor.csproj", "{81C3B3AF-9DA6-404B-A20A-31F2FC1CE832}"
@@ -235,8 +236,8 @@ Global
 		{99574995-6925-426C-8F8C-FBF9C27E7227} = {2A74392A-F697-4B1B-A599-864DBAABE38B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		RESX_NeutralResourcesLanguage = zh-Hans
-		SolutionGuid = {199B1B96-4F56-4828-9531-813BA02DB282}
 		RESX_Rules = {"EnabledRules":[]}
+		SolutionGuid = {199B1B96-4F56-4828-9531-813BA02DB282}
+		RESX_NeutralResourcesLanguage = zh-Hans
 	EndGlobalSection
 EndGlobal
