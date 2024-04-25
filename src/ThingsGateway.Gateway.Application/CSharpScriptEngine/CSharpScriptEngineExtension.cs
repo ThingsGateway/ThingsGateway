@@ -106,7 +106,7 @@ public static class CSharpScriptEngineExtension
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using ThingsGateway.Core.Extension.Json;
+using ThingsGateway.Core.Json.Extension;
 using ThingsGateway.Gateway.Application;
 {_source}
 ");
