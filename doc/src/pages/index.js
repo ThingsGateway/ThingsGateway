@@ -83,7 +83,7 @@ function Banner() {
           <div className="ThingsGateway-get-start-btn">
             <Link className="ThingsGateway-get-start" to={useBaseUrl("docs/")}>
               入门指南
-              <span className="ThingsGateway-version">v5.0</span>
+              <span className="ThingsGateway-version">v6.0</span>
             </Link>
           </div>
         </div>
@@ -114,7 +114,7 @@ function Gitee() {
             className={"ThingsGateway-log-jiao" + (isDarkTheme ? " dark" : "")}
           ></div>
           <div className="ThingsGateway-log-number">
-            <div style={{ color: "#723cff" }}>600 +</div>
+            <div style={{ color: "#723cff" }}>700 +</div>
             <span className={isDarkTheme ? " dark" : ""}>Stars</span>
           </div>
         </div>
