@@ -27,7 +27,7 @@ namespace ThingsGateway.Foundation;
 public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
 {
     /// <inheritdoc/>
-#if NET8_0_OR_GREATER
+#if NET6_0_OR_GREATER
 
     [System.Text.Json.Serialization.JsonConverter(typeof(EncodingConverter))]
     [JsonConverter(typeof(NewtonsoftEncodingConverter))]

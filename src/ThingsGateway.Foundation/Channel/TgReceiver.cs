@@ -50,7 +50,7 @@ public class TgReceiver : DisposableObject, IReceiver
         return new ReceiverResult(this.ComplateRead, this.m_byteBlock, this.m_requestInfo);
     }
 
-#if NET8_0_OR_GREATER
+#if NET6_0_OR_GREATER
     /// <inheritdoc/>
     public async ValueTask<ReceiverResult> ValueReadAsync(CancellationToken token)
     {

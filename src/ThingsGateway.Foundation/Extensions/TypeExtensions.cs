@@ -27,7 +27,7 @@ public static class TypeExtensions
     /// </summary>
     public static bool IsNullable(this PropertyInfo property)
     {
-#if NET8_0_OR_GREATER
+#if NET6_0_OR_GREATER
         return new NullabilityInfoContext().Create(property).WriteState is NullabilityState.Nullable;
 #else
         return IsNullableHelper(property.PropertyType, property.DeclaringType, property.CustomAttributes);
@@ -39,7 +39,7 @@ public static class TypeExtensions
     /// </summary>
     public static bool IsNullable(this FieldInfo field)
     {
-#if NET8_0_OR_GREATER
+#if NET6_0_OR_GREATER
         return new NullabilityInfoContext().Create(field).WriteState is NullabilityState.Nullable;
 #else
         return IsNullableHelper(field.FieldType, field.DeclaringType, field.CustomAttributes);
@@ -51,7 +51,7 @@ public static class TypeExtensions
     /// </summary>
     public static bool IsNullable(this ParameterInfo parameter)
     {
-#if NET8_0_OR_GREATER
+#if NET6_0_OR_GREATER
         return new NullabilityInfoContext().Create(parameter).WriteState is NullabilityState.Nullable;
 #else
         return IsNullableHelper(parameter.ParameterType, parameter.Member, parameter.CustomAttributes);

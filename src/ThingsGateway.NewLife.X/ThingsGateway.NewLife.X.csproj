@@ -3,10 +3,10 @@
   <Import Project="$(SolutionDir)PackNuget.props" />
   
   <PropertyGroup>
-    <TargetFrameworks>net462;netstandard2.0;netstandard2.1;net8.0;</TargetFrameworks>
+    <TargetFrameworks>net462;netstandard2.0;netstandard2.1;net6.0;</TargetFrameworks>
   </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(TargetFramework)'=='net462' or '$(TargetFramework)'=='net8.0-windows'">
+  <PropertyGroup Condition=" '$(TargetFramework)'=='net462' or '$(TargetFramework)'=='net6.0-windows'">
     <DefineConstants>$(DefineConstants);__WIN__</DefineConstants>
   </PropertyGroup>
 

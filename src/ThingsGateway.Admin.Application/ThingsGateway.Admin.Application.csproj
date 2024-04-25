@@ -2,7 +2,8 @@
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
-    <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />
     <PackageReference Include="MiniExcel" Version="1.31.3" />
     <PackageReference Include="Rougamo.Fody" Version="2.3.0" />
     <PackageReference Include="UAParser" Version="3.1.47" />

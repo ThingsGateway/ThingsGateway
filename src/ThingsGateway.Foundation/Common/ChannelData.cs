@@ -88,7 +88,7 @@ public class ChannelData : IChannelData
     /// <summary>
     /// TouchSocketConfig
     /// </summary>
-#if NET8_0_OR_GREATER
+#if NET6_0_OR_GREATER
 
     [System.Text.Json.Serialization.JsonIgnore]
 #endif
@@ -99,7 +99,7 @@ public class ChannelData : IChannelData
     /// <summary>
     /// Channel
     /// </summary>
-#if NET8_0_OR_GREATER
+#if NET6_0_OR_GREATER
 
     [System.Text.Json.Serialization.JsonIgnore]
 #endif

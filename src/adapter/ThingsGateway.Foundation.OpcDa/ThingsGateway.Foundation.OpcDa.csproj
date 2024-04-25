@@ -2,7 +2,7 @@
 
   <Import Project="$(SolutionDir)PackNuget.props" />
   <PropertyGroup>
-    <TargetFrameworks>net462;netstandard2.0;net8.0;</TargetFrameworks>
+    <TargetFrameworks>net462;netstandard2.0;net6.0;</TargetFrameworks>
     <Description>工业设备通讯协议-OpcDa协议</Description>
 		<DocumentationFile></DocumentationFile>
 		<IncludeSymbols>false</IncludeSymbols>

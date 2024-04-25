@@ -59,7 +59,7 @@ public sealed class FileLogger : ILogger
     /// <typeparam name="TState">标识符类型参数</typeparam>
     /// <param name="state">要写入的项/对象</param>
     /// <returns><see cref="IDisposable"/></returns>
-    public IDisposable BeginScope<TState>(TState state) where TState : notnull
+    public IDisposable BeginScope<TState>(TState state)
     {
         return _fileLoggerProvider.ScopeProvider.Push(state);
     }

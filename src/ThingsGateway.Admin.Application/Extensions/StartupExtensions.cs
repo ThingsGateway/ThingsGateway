@@ -34,7 +34,7 @@ public static class StartupExtensions
     /// 反射获取所有AppStartup的继承类，执行名称为第一个参数是<see cref="IServiceCollection"/>的方法
     /// </summary>
     /// <param name="service"></param>
-    public static void ConfigureServices(this IHostApplicationBuilder service)
+    public static void ConfigureServices(this WebApplicationBuilder service)
     {
         AddStartups(service);
     }
@@ -50,7 +50,7 @@ public static class StartupExtensions
     /// <summary>
     /// 添加 Startup 自动扫描
     /// </summary>
-    internal static void AddStartups(this IHostApplicationBuilder builder)
+    internal static void AddStartups(this WebApplicationBuilder builder)
     {
         App.Configuration = builder.Configuration;
         if (builder.Environment is IWebHostEnvironment webHostEnvironment)

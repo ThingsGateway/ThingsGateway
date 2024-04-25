@@ -77,12 +77,12 @@ public abstract class BusinessBase : DriverBase
         var variables = GlobalData.Variables.Where(a => a.Value.VariablePropertys.ContainsKey(device.Id));
 
         // 将变量与设备关联，并保存到设备运行时的变量字典中
-        device.VariableRunTimes = variables.ToDictionary();
+        device.VariableRunTimes = variables.ToDictionary(a=>a.Key,a=>a.Value);
 
         // 获取当前设备需要采集的设备
         CollectDevices = GlobalData.CollectDevices
                                 .Where(a => device.VariableRunTimes.Select(b => b.Value.DeviceId).Contains(a.Value.Id))
-                                .ToDictionary();
+                                .ToDictionary(a => a.Key, a => a.Value);
 
         // 使用线程安全的方式更新全局业务设备字典
         //lock (GlobalData.BusinessDevices)

@@ -46,10 +46,10 @@ public partial class SqlHisAlarm : BusinessBaseWithCacheVarModel<HistoryAlarm>, 
 
     public override void Init(IChannel? channel = null)
     {
-        CurrentDevice.VariableRunTimes = CurrentDevice.VariableRunTimes.Where(a => a.Value.AlarmEnable).ToDictionary();
+        CurrentDevice.VariableRunTimes = CurrentDevice.VariableRunTimes.Where(a => a.Value.AlarmEnable).ToDictionary(a => a.Key, a => a.Value);
         CollectDevices = CollectDevices
                                 .Where(a => CurrentDevice.VariableRunTimes.Select(b => b.Value.DeviceId).Contains(a.Value.Id))
-                                .ToDictionary();
+                                .ToDictionary(a => a.Key, a => a.Value);
 
         _config.ForType<AlarmVariable, HistoryAlarm>().Map(dest => dest.Id, (src) => YitIdHelper.NextId());
         HostedServiceUtil.AlarmHostedService.OnAlarmChanged += AlarmWorker_OnAlarmChanged;

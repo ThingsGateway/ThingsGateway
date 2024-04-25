@@ -380,7 +380,7 @@ namespace ThingsGateway.Foundation
                 var socket = this.CreateSocket(iPHost);
                 await this.PrivateOnConnecting(new ConnectingEventArgs(socket)).ConfigureAwait(false);
 
-#if NET8_0_OR_GREATER
+#if NET6_0_OR_GREATER
 
                 using (CancellationTokenSource cancellationTokenSource = new(timeout))
                 {

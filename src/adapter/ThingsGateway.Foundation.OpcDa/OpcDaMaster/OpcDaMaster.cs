@@ -83,7 +83,7 @@ public class OpcDaMaster : IDisposable
     /// </summary>
     public OpcDaMaster()
     {
-#if (NET8_0_OR_GREATER)
+#if (NET6_0_OR_GREATER)
         if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
             throw new NotSupportedException("Non Windows systems are not supported");

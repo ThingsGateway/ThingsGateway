@@ -216,7 +216,7 @@ public class MachineInfo
         var str = "";
 
         // 从注册表读取 MachineGuid
-#if NETFRAMEWORK || NET8_0_OR_GREATER
+#if NETFRAMEWORK || NET6_0_OR_GREATER
         var reg = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Cryptography");
         if (reg != null) str = reg.GetValue("MachineGuid") + "";
         if (str.IsNullOrEmpty())
