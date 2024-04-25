@@ -21,6 +21,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.Linq.Expressions;
 using System.Reflection;
 
 namespace ThingsGateway.Admin.Application;
@@ -199,6 +200,33 @@ public static class LocalizerExtensions
 
             return dn;
         }
+    }
+    /// <summary>
+    /// 获取 DisplayName属性名称
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException"></exception>
+    /// <exception cref="ArgumentException"></exception>
+    public static string Description<T>(this T item, Expression<Func<T, object>> accessor)
+    {
+        if (accessor.Body == null)
+        {
+            throw new ArgumentNullException(nameof(accessor));
+        }
+
+        var expression = accessor.Body;
+        if (expression is UnaryExpression unaryExpression && unaryExpression.NodeType == ExpressionType.Convert && unaryExpression.Type == typeof(object))
+        {
+            expression = unaryExpression.Operand;
+        }
+
+        if (expression is not MemberExpression memberExpression)
+        {
+            throw new ArgumentException("Can only access properties");
+        }
+
+        return typeof(T).GetPropertyDisplayName(memberExpression.Member.Name) ?? memberExpression.Member.Name;
     }
 
     /// <summary>
