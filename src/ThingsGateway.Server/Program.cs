@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.StaticFiles;
 
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Unicode;
@@ -63,6 +64,11 @@ public class Program
         #region config
 
         var builder = WebApplication.CreateBuilder(args);
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            builder.Host.UseWindowsService();
+        else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            builder.Host.UseSystemd();
+
         // 增加中文编码支持网页源码显示汉字
         builder.Services.AddSingleton(HtmlEncoder.Create(UnicodeRanges.All));
 
