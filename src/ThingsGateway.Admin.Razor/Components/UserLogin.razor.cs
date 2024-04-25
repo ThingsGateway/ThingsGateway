@@ -40,10 +40,16 @@ public partial class UserLogin
     protected override void OnInitialized()
     {
         base.OnInitialized();
+#if DEBUG
+            Model.Account = "SuperAdmin";
+            Model.Password = "111111";
+#else
         if (WebsiteOption.Value.Demo)
         {
             Model.Account = "SuperAdmin";
             Model.Password = "111111";
         }
+#endif
+
     }
 }
