@@ -3,7 +3,7 @@
 
   <ItemGroup>
     <PackageReference Include="SqlSugar.TDengineCore" Version="4.1.7" />
-    <PackageReference Include="Rougamo.Fody" Version="2.3.0" />
+    <PackageReference Include="Rougamo.Fody" Version="2.3.1" />
     <PackageReference Include="CS-Script" Version="4.8.14" />
     <PackageReference Include="TouchSocket.Dmtp" Version="2.0.3" />
   </ItemGroup>
