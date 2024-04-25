@@ -21,7 +21,7 @@ using ThingsGateway.Razor;
 
 namespace ThingsGateway.Gateway.Razor;
 
-public partial class VariablePage
+public partial class VariablePage : IDisposable
 {
     protected IEnumerable<SelectedItem> CollectDeviceNames;
     protected IEnumerable<SelectedItem> BusinessDeviceNames;
@@ -38,7 +38,27 @@ public partial class VariablePage
     [NotNull]
     private IVariableService? VariableService { get; set; }
 
+    [Inject]
+    [NotNull]
+    private IDispatchService<Device>? DeviceDispatchService { get; set; }
+
     private Variable? SearchModel { get; set; } = new();
+    protected override Task OnInitializedAsync()
+    {
+        DeviceDispatchService.Subscribe(Notify);
+        return base.OnInitializedAsync();
+    }
+
+    private async Task Notify(DispatchEntry<Device> entry)
+    {
+        await Change();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        DeviceDispatchService.UnSubscribe(Notify);
+    }
 
     protected override Task OnParametersSetAsync()
     {
@@ -151,8 +171,16 @@ public partial class VariablePage
         });
         await DialogService.Show(op);
 
+        await Change();
         await table.QueryAsync();
     }
 
+
     #endregion 导出
+
+    private async Task Change()
+    {
+        await OnParametersSetAsync();
+    }
+
 }

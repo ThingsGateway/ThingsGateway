@@ -28,6 +28,9 @@ public partial class ChannelPage
     private IChannelService? ChannelService { get; set; }
 
     private Channel? SearchModel { get; set; } = new();
+    [Inject]
+    [NotNull]
+    private IDispatchService<Channel>? DispatchService { get; set; }
 
     #region 查询
 
@@ -46,6 +49,7 @@ public partial class ChannelPage
         try
         {
             await ChannelService.ClearChannelAsync();
+            await Change();
         }
         catch (Exception ex)
         {
@@ -53,11 +57,19 @@ public partial class ChannelPage
         }
     }
 
+    private async Task Change()
+    {
+        DispatchService.Dispatch(new());
+        await OnParametersSetAsync();
+    }
+
     private async Task<bool> Save(Channel channel, ItemChangedType itemChangedType)
     {
         try
         {
-            return await ChannelService.SaveChannelAsync(channel, itemChangedType);
+            var result = await ChannelService.SaveChannelAsync(channel, itemChangedType);
+            await Change();
+            return result;
         }
         catch (Exception ex)
         {
@@ -70,7 +82,9 @@ public partial class ChannelPage
     {
         try
         {
-            return await ChannelService.DeleteChannelAsync(channels.Select(a => a.Id));
+            var result = await ChannelService.DeleteChannelAsync(channels.Select(a => a.Id));
+            await Change();
+            return result;
         }
         catch (Exception ex)
         {
@@ -122,6 +136,7 @@ public partial class ChannelPage
         await DialogService.Show(op);
 
         await table.QueryAsync();
+        await Change();
     }
 
     #endregion 导出

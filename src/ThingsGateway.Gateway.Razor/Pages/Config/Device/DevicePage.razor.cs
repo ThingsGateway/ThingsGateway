@@ -23,7 +23,7 @@ using ThingsGateway.Razor;
 
 namespace ThingsGateway.Gateway.Razor;
 
-public abstract partial class DevicePage
+public abstract partial class DevicePage : IDisposable
 {
     protected IEnumerable<SelectedItem> PluginNames;
     protected abstract PluginTypeEnum PluginType { get; }
@@ -40,8 +40,30 @@ public abstract partial class DevicePage
     [Inject]
     [NotNull]
     private IChannelService? ChannelService { get; set; }
+    [Inject]
+    [NotNull]
+    private IDispatchService<Channel>? ChannelDispatchService { get; set; }
+    [Inject]
+    [NotNull]
+    private IDispatchService<Device>? DeviceDispatchService { get; set; }
 
     private Device? SearchModel { get; set; } = new();
+    protected override Task OnInitializedAsync()
+    {
+        ChannelDispatchService.Subscribe(Notify);
+        return base.OnInitializedAsync();
+    }
+
+    private async Task Notify(DispatchEntry<Channel> entry)
+    {
+        await OnParametersSetAsync();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        ChannelDispatchService.UnSubscribe(Notify);
+    }
 
     protected override void OnInitialized()
     {
@@ -50,10 +72,12 @@ public abstract partial class DevicePage
     }
 
     private Dictionary<long, Channel> ChannelDict { get; set; } = new();
+    private Dictionary<long, string> DeviceDict { get; set; } = new();
 
     protected override Task OnParametersSetAsync()
     {
         ChannelDict = ChannelService.GetAll().ToDictionary(a => a.Id);
+        DeviceDict = DeviceService.GetAll().ToDictionary(a => a.Id, a => a.Name);
         PluginNames = PluginService.GetList(PluginType).BuildPluginSelectList();
         return base.OnParametersSetAsync();
     }
@@ -91,11 +115,18 @@ public abstract partial class DevicePage
         try
         {
             await DeviceService.ClearDeviceAsync(PluginType);
+            await Change();
         }
         catch (Exception ex)
         {
             await ToastService.Warning(null, $"{ex.Message}");
         }
+    }
+
+    private async Task Change()
+    {
+        DeviceDispatchService.Dispatch(new());
+        await OnParametersSetAsync();
     }
 
     private async Task<bool> Save(Device device, ItemChangedType itemChangedType)
@@ -109,7 +140,9 @@ public abstract partial class DevicePage
             }
             device.PluginType = PluginType;
             device.DevicePropertys = PluginServiceUtil.SetDict(device.PluginPropertyModel.Value);
-            return await DeviceService.SaveDeviceAsync(device, itemChangedType);
+            var saveResult = await DeviceService.SaveDeviceAsync(device, itemChangedType);
+            await Change();
+            return saveResult;
         }
         catch (Exception ex)
         {
@@ -122,7 +155,9 @@ public abstract partial class DevicePage
     {
         try
         {
-            return await DeviceService.DeleteDeviceAsync(devices.Select(a => a.Id));
+            var result = await DeviceService.DeleteDeviceAsync(devices.Select(a => a.Id));
+            await Change();
+            return result;
         }
         catch (Exception ex)
         {
@@ -174,6 +209,7 @@ public abstract partial class DevicePage
         await DialogService.Show(op);
 
         await table.QueryAsync();
+        await Change();
     }
 
     #endregion 导出

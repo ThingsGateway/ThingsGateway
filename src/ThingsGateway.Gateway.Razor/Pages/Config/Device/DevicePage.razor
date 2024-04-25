@@ -33,6 +33,19 @@
                 </Template>
 
             </TableColumn>
+
+            <TableColumn @bind-Field="@context.RedundantDeviceId" Align="Alignment.Center">
+                <Template Context="deviceId">
+                    @{
+                        string device = null;
+                        if (deviceId.Value.HasValue)
+                            DeviceDict.TryGetValue(deviceId.Value.Value, out device);
+                    }
+                    @device
+                </Template>
+
+            </TableColumn>
+
         </TableColumns>
         <EditTemplate Context="context">
             <DeviceEditComponent Model=context PluginType=PluginType PluginNames="PluginNames" RedundantDevicesQuery="OnRedundantDevicesQuery"></DeviceEditComponent>
