@@ -13,7 +13,9 @@
         <HeaderTemplate>
 
             <span class=@("text-h6 mx-1") style="overflow:auto;">
-                <span class="mx-1" style="white-space: nowrap !important;overflow: hidden !important; text-overflow: ellipsis !important;" title=@Item.CurrentDevice?.Name>@Item.CurrentDevice?.Name</span>
+                <span style="white-space: nowrap !important;overflow: hidden !important; text-overflow: ellipsis !important;"
+                      class=@((Item.CurrentDevice?.DeviceStatus==DeviceStatusEnum.OnLine?"green--text mx-1":"red--text mx-1"))
+                      title=@Item.CurrentDevice?.Name>@Item.CurrentDevice?.Name</span>
             </span>
 
             <div style="flex-grow: 1;"></div>
