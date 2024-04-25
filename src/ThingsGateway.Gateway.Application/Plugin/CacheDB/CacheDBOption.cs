@@ -12,7 +12,7 @@
 
 
 
-namespace ThingsGateway.Admin.Application;
+namespace ThingsGateway.Gateway.Application;
 
 public class CacheDBOption
 {

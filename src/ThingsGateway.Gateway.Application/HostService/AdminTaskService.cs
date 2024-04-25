@@ -14,11 +14,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-using ThingsGateway.Gateway.Application;
-
 using LoggerExtensions = ThingsGateway.Foundation.LoggerExtensions;
 
-namespace ThingsGateway.Admin.Application;
+namespace ThingsGateway.Gateway.Application;
 
 internal class AdminTaskService : BackgroundService
 {

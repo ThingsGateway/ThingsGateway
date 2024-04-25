@@ -16,7 +16,7 @@ using NewLife;
 
 using SqlSugar;
 
-namespace ThingsGateway.Admin.Application;
+namespace ThingsGateway.Gateway.Application;
 
 /// <summary>
 /// 缓存

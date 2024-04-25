@@ -14,7 +14,7 @@
 
 using System.Text.RegularExpressions;
 
-namespace ThingsGateway.Admin.Application;
+namespace ThingsGateway.Gateway.Application;
 
 public class CacheDBUtil
 {
