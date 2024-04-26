@@ -66,6 +66,11 @@ public interface IProtocol : IDisposable
     /// <inheritdoc/>
     bool OnLine { get; }
 
+    /// <summary>
+    /// 是否需要并发锁，默认为true，对于工业主从协议，通常是必须的
+    /// </summary>
+    bool IsSingleThread { get; }
+
     #endregion 属性
 
     #region 适配器
