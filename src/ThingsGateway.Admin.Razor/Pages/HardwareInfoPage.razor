@@ -88,8 +88,11 @@
                                         StrokeWidth="4">
                                     <div class="circle-hardware">
                                         <h6>   @((100 - (availableMemory * 100.00 / memory)).ToString("F2") + " %")  </h6>
+
+                                        <span>   @Localizer["WorkingSet"] <i> @(HardwareInfoService.APPInfo.WorkingSet + " MB")</i></span>
                                         <span>   @Localizer["AvailableMemory"] <i> @((availableMemory / 1024.00 / 1024 / 1024).ToString("F2") + " GB")</i></span>
                                         <span>   @Localizer["TotalMemory"] <i> @((memory / 1024.00 / 1024 / 1024).ToString("F2") + " GB")</i></span>
+
                                     </div>
                                 </Circle>
                                 <div class="mt-1">

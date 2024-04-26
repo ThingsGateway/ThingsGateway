@@ -6,6 +6,7 @@
     "CpuUsage": "CPU使用率",
     "AvailableMemory": "可用内存",
     "TotalMemory": "总内存",
+    "WorkingSet": "进程内存",
     "MemoryUsage": "内存使用率",
     "AvailableDisk": "可用磁盘",
     "TotalDisk": "总磁盘",

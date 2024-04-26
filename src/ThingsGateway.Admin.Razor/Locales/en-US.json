@@ -6,6 +6,7 @@
     "CpuUsage": "CPU Usage",
     "AvailableMemory": "Available Memory",
     "TotalMemory": "Total Memory",
+    "WorkingSet": "WorkingSet",
     "MemoryUsage": "Memory Usage",
     "AvailableDisk": "Available Disk",
     "TotalDisk": "Total Disk",

@@ -12,6 +12,8 @@
 
 
 
+using BootstrapBlazor.Components;
+
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -106,6 +108,7 @@ public class HardwareInfoService : BackgroundService
                 {
                     APPInfo.MachineInfo.Refresh();
                     APPInfo.UpdateTime = TimerX.Now.ToDefaultDateTimeFormat();
+                    APPInfo.WorkingSet = (Environment.WorkingSet / 1024.0 / 1024.0).ToString("F2");
 
                     if (DateTime.Now > hisInsertTime.Add(TimeSpan.FromSeconds(HardwareInfoConfig.HisInterval)))
                     {
@@ -126,6 +129,7 @@ public class HardwareInfoService : BackgroundService
                         var sevenDaysAgo = TimerX.Now.AddDays(-HardwareInfoConfig.DaysAgo);
                         //删除特定信息
                         await db.Deleteable<HisHardwareInfo>(a => a.Date <= sevenDaysAgo).ExecuteCommandAsync();
+
                     }
                 }
                 await Task.Delay(HardwareInfoConfig.RealInterval * 1000, stoppingToken).ConfigureAwait(false);
@@ -178,9 +182,17 @@ public class APPInfo
     public string UUID { get; set; }
 
     /// <summary>
+    /// 进程占用内存
+    /// </summary>
+    [AutoGenerateColumn(Ignore = true)]
+    public string WorkingSet { get; set; }
+
+    /// <summary>
     /// 更新时间
     /// </summary>
     public string UpdateTime { get; set; }
+
+
 }
 
 [SugarTable("tg_hardwareinfo", TableDescription = "硬件信息历史表")]
