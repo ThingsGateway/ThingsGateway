@@ -46,9 +46,13 @@ public class TimeTick
     public bool IsTickHappen(DateTime currentTime)
     {
         var nextTime = LastTime.AddMilliseconds(intervalMilliseconds);
-        if (currentTime < nextTime)
+        var diffMilliseconds = (currentTime - nextTime).TotalMilliseconds;
+        if (diffMilliseconds < 0)
             return false;
-        LastTime = nextTime;
+        else if (diffMilliseconds > intervalMilliseconds)
+            LastTime = currentTime; //选择当前时间
+        else
+            LastTime = nextTime;
         return true;
     }
 
