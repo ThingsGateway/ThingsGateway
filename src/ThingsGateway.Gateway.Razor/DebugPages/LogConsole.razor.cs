@@ -75,7 +75,7 @@ public partial class LogConsole : IDisposable
             memoryStream.Seek(0, SeekOrigin.Begin);
 
             // 定义文件名称规则的正则表达式模式
-            string pattern = @"[^a-zA-Z0-9_./\\-]";
+            string pattern = @"[\\/:*?""<>|]";
             // 使用正则表达式将不符合规则的部分替换为下划线
             string sanitizedFileName = Regex.Replace(HeaderText, pattern, "_");
             await DownloadService.DownloadFromStreamAsync(sanitizedFileName + DateTime.Now.ToFileDateTimeFormat(), memoryStream);
