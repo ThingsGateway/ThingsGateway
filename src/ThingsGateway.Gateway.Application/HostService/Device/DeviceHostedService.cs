@@ -8,6 +8,8 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using BootstrapBlazor.Components;
+
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -23,12 +25,15 @@ namespace ThingsGateway.Gateway.Application;
 /// </summary>
 public abstract class DeviceHostedService : BackgroundService
 {
+    protected IDispatchService<DeviceRunTime> dispatchService;
     public DeviceHostedService()
     {
         DeviceService = App.RootServices.GetRequiredService<IDeviceService>();
         ChannelService = App.RootServices.GetRequiredService<IChannelService>();
         PluginService = App.RootServices.GetRequiredService<IPluginService>();
         Localizer = App.CreateLocalizerByType(typeof(DeviceHostedService))!;
+        dispatchService = App.RootServices.GetService<IDispatchService<DeviceRunTime>>();
+
     }
 
     private IStringLocalizer Localizer { get; }
@@ -333,6 +338,9 @@ public abstract class DeviceHostedService : BackgroundService
                     }
                 }
             }
+
+            dispatchService.Dispatch(new());
+
         }
         finally
         {
@@ -639,6 +647,7 @@ public abstract class DeviceHostedService : BackgroundService
             }
             await StartAllChannelThreadsAsync().ConfigureAwait(false);
             await ProtectedStarted().ConfigureAwait(false);
+            dispatchService.Dispatch(new());
         }
         catch (Exception ex)
         {

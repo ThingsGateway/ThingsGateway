@@ -1,4 +1,10 @@
 ﻿{
+  "ThingsGateway.Gateway.Application.VariableSearchInput": {
+    "Name": "Name",
+    "DeviceId": "Device",
+    "RegisterAddress": "RegisterAddress"
+  },
+
   "ThingsGateway.Gateway.Application.CollectDeviceRuntime": {
     "SourceVariableCount": "SourceVariableCount",
     "MethodVariableCount": "MethodVariableCount",

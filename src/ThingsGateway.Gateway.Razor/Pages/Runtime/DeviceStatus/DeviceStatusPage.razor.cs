@@ -14,7 +14,7 @@ using ThingsGateway.Gateway.Application;
 
 namespace ThingsGateway.Gateway.Razor;
 
-public partial class DeviceStatusPage
+public partial class DeviceStatusPage:IDisposable
 {
     private IEnumerable<DriverBase>? CollectBases;
     private IEnumerable<DriverBase>? BusinessBases;
@@ -31,6 +31,36 @@ public partial class DeviceStatusPage
 
     [Inject]
     private IPluginService PluginService { get; set; }
+    [Inject]
+    [NotNull]
+    private IDispatchService<PluginOutput>? PluginDispatchService { get; set; }
+    [Inject]
+    [NotNull]
+    private IDispatchService<DeviceRunTime>? DeviceRunTimeDispatchService { get; set; }
+
+    protected override Task OnInitializedAsync()
+    {
+        DeviceRunTimeDispatchService.Subscribe(Notify);
+        PluginDispatchService.Subscribe(Notify);
+        return base.OnInitializedAsync();
+    }
+    private async Task Notify(DispatchEntry<PluginOutput> entry)
+    {
+        await OnParametersSetAsync();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task Notify(DispatchEntry<DeviceRunTime> entry)
+    {
+        await OnParametersSetAsync();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        DeviceRunTimeDispatchService.UnSubscribe(Notify);
+        PluginDispatchService.UnSubscribe(Notify);
+    }
 
     protected override Task OnParametersSetAsync()
     {

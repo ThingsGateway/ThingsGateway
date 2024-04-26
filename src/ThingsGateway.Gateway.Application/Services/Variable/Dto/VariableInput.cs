@@ -12,4 +12,62 @@
 
 
 
+using BootstrapBlazor.Components;
+
+using System.ComponentModel;
+using System.Reflection;
+
+using ThingsGateway.Core.Extension;
+
 namespace ThingsGateway.Gateway.Application;
+
+/// <summary>
+/// 变量分页查询参数
+/// </summary>
+public class VariablePageInput : BasePageInput
+{
+    /// <inheritdoc/>
+    public string Name { get; set; }
+
+    /// <inheritdoc/>
+    public long? DeviceId { get; set; }
+
+    /// <inheritdoc/>
+    public string RegisterAddress { get; set; }
+
+    /// <inheritdoc/>
+    public long? BusinessDeviceId { get; set; }
+}
+
+
+
+public class VariableSearchInput : ITableSearchModel
+{
+    /// <inheritdoc/>
+    public string Name { get; set; }
+
+    /// <inheritdoc/>
+    public long? DeviceId { get; set; }
+
+    /// <inheritdoc/>
+    public string RegisterAddress { get; set; }
+
+    /// <inheritdoc/>
+    public IEnumerable<IFilterAction> GetSearches()
+    {
+        var ret = new List<IFilterAction>();
+        ret.AddIF(!string.IsNullOrEmpty(Name), () => new SearchFilterAction(nameof(Variable.Name), Name));
+        ret.AddIF(!string.IsNullOrEmpty(RegisterAddress), () => new SearchFilterAction(nameof(Variable.RegisterAddress), RegisterAddress));
+        ret.AddIF(DeviceId > 0, () => new SearchFilterAction(nameof(Variable.DeviceId), DeviceId, FilterAction.Equal));
+        return ret;
+    }
+
+    /// <inheritdoc/>
+    public void Reset()
+    {
+        Name = null;
+        RegisterAddress = null;
+        DeviceId = null;
+    }
+}
+

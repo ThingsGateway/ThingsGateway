@@ -46,14 +46,22 @@ public abstract partial class DevicePage : IDisposable
     [Inject]
     [NotNull]
     private IDispatchService<Device>? DeviceDispatchService { get; set; }
+    [Inject]
+    [NotNull]
+    private IDispatchService<PluginOutput>? PluginDispatchService { get; set; }
 
     private Device? SearchModel { get; set; } = new();
     protected override Task OnInitializedAsync()
     {
         ChannelDispatchService.Subscribe(Notify);
+        PluginDispatchService.Subscribe(Notify);
         return base.OnInitializedAsync();
     }
-
+    private async Task Notify(DispatchEntry<PluginOutput> entry)
+    {
+        await OnParametersSetAsync();
+        await InvokeAsync(StateHasChanged);
+    }
     private async Task Notify(DispatchEntry<Channel> entry)
     {
         await OnParametersSetAsync();
@@ -63,6 +71,7 @@ public abstract partial class DevicePage : IDisposable
     public void Dispose()
     {
         ChannelDispatchService.UnSubscribe(Notify);
+        PluginDispatchService.UnSubscribe(Notify);
     }
 
     protected override void OnInitialized()
@@ -92,7 +101,8 @@ public abstract partial class DevicePage : IDisposable
             IsSearch = !option.SearchText.IsNullOrWhiteSpace()
         };
         var items = DeviceService.GetAll().WhereIF(!option.SearchText.IsNullOrWhiteSpace(), a => a.Name.Contains(option.SearchText))
-            .Where(a => a.PluginName == device.PluginName && a.Id != device.Id).BuildDeviceSelectList();
+            .Where(a => a.PluginName == device.PluginName && a.Id != device.Id).BuildDeviceSelectList().Concat(new List<SelectedItem>() { new SelectedItem(string.Empty, "none") });
+
         ret.TotalCount = items.Count();
         ret.Items = items;
         return Task.FromResult(ret);

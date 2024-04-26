@@ -1,4 +1,11 @@
 ﻿{
+
+  "ThingsGateway.Gateway.Application.VariableSearchInput": {
+    "Name": "变量名称",
+    "DeviceId": "采集设备",
+    "RegisterAddress": "寄存器地址"
+  },
+
   "ThingsGateway.Gateway.Application.CollectDeviceRuntime": {
     "SourceVariableCount": "打包数量",
     "MethodVariableCount": "方法数量",

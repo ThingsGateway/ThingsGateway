@@ -10,12 +10,19 @@
 
 <div style="height: var(--table-height);padding: 2px 5px 10px 5px;">
 
-    <AdminTable @ref=table TItem="Variable" AutoGenerateColumns="true" ShowAdvancedSearch=false
-                AllowResizing="true" IsFixedHeader=true IsMultipleSelect=true SearchModel=SearchModel
+    <AdminTable @ref=table TItem="Variable" AutoGenerateColumns="true" ShowAdvancedSearch=true
+                AllowResizing="true" IsFixedHeader=true IsMultipleSelect=true CustomerSearchModel="@CustomerSearchModel" SearchMode=SearchMode.Top
                 ShowExtendButtons=true ShowExportButton
                 ShowDefaultButtons=true ExtendButtonColumnWidth=150
                 OnQueryAsync="OnQueryAsync" IsPagination=true
                 OnSaveAsync="Save" OnDeleteAsync="Delete">
+
+        <CustomerSearchTemplate>
+            @if (context is VariableSearchInput model)
+            {
+                @Render(model)
+            }
+        </CustomerSearchTemplate>
 
         <TableColumns>
 
@@ -76,4 +83,19 @@
 
 @code {
     AdminTable<Variable> table;
+}
+@code {
+    RenderFragment Render(VariableSearchInput model) =>
+    @<div class="row form-inline g-2">
+        <div class="col-12 col-md-6">
+            <Select IsVirtualize @bind-Value="model.DeviceId" Items="@CollectDeviceNames" ShowSearch="true" ShowLabel="true"  IsClearable  DisableItemChangedWhenFirstRender=true/>
+        </div>
+        <div class="col-12 col-md-6">
+            <BootstrapInput @bind-Value="model.Name" ShowLabel="true" />
+        </div>
+        <div class="col-12 col-md-6">
+            <BootstrapInput @bind-Value="model.RegisterAddress" ShowLabel="true" />
+        </div>
+    </div>;
+
 }

@@ -156,7 +156,7 @@ public abstract class DriverBase : DisposableObject
     /// 并且读取或者写入会并发进行，需要另外在底层实现锁
     /// </summary>
     /// <returns></returns>
-    protected virtual bool IsSingleThread => true;
+    protected virtual bool IsSingleThread => Protocol?.IsSingleThread ?? true;
 
     /// <summary>
     /// 全局插件服务

@@ -45,7 +45,7 @@ public class Device : PrimaryIdEntity
     /// 通道
     /// </summary>
     [SugarColumn(ColumnDescription = "通道", Length = 200)]
-    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
+    [AutoGenerateColumn(Visible = true, Filterable = false, Sortable = false)]
     [IgnoreExcel]
     [MinValue(1)]
     [Required]
@@ -102,7 +102,7 @@ public class Device : PrimaryIdEntity
     /// 冗余设备Id,只能选择相同驱动
     /// </summary>
     [SugarColumn(ColumnDescription = "冗余设备", IsNullable = true)]
-    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
+    [AutoGenerateColumn(Visible = true, Filterable = false, Sortable = false)]
     [IgnoreExcel]
     public long? RedundantDeviceId { get; set; }
 

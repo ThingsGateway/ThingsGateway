@@ -1,4 +1,4 @@
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -57,9 +57,11 @@ public class PluginService : IPluginService
     private readonly ILogger _logger;
 
     private readonly EasyLock _locker = new();
+    private readonly IDispatchService<PluginOutput> _dispatchService;
 
-    public PluginService(ILogger<PluginService> logger, IStringLocalizer<PluginService> localizer)
+    public PluginService(ILogger<PluginService> logger, IStringLocalizer<PluginService> localizer, IDispatchService<PluginOutput> dispatchService)
     {
+        _dispatchService = dispatchService;
         Localizer = localizer;
         _logger = logger;
 
@@ -410,6 +412,8 @@ public class PluginService : IPluginService
                 // 移除特定键
                 dictionary.RemoveWhere(a => item.Value.Assembly.ExportedTypes.Select(b => b.AssemblyQualifiedName).Contains(a.Key));
             }
+
+            _dispatchService.Dispatch(new());
         }
     }
 

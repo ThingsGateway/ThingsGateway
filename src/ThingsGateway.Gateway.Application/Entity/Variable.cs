@@ -34,7 +34,7 @@ public class Variable : PrimaryIdEntity
     /// 设备
     /// </summary>
     [SugarColumn(ColumnDescription = "设备")]
-    [AutoGenerateColumn(Visible = true, Order = 1, Filterable = true, Sortable = true)]
+    [AutoGenerateColumn(Visible = true, Order = 1, Filterable = false, Sortable = false)]
     [IgnoreExcel]
     [Required]
     [NotNull]

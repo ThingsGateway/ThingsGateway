@@ -770,20 +770,3 @@ public class VariableService : BaseService<Variable>, IVariableService
     #endregion 导入
 }
 
-/// <summary>
-/// 变量分页查询参数
-/// </summary>
-public class VariablePageInput : BasePageInput
-{
-    /// <inheritdoc/>
-    public string Name { get; set; }
-
-    /// <inheritdoc/>
-    public long? DeviceId { get; set; }
-
-    /// <inheritdoc/>
-    public string RegisterAddress { get; set; }
-
-    /// <inheritdoc/>
-    public long? BusinessDeviceId { get; set; }
-}

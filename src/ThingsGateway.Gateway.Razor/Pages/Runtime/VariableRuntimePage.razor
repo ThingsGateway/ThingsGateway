@@ -12,12 +12,24 @@
 
 <div style="height: var(--table-height);padding: 2px 5px 10px 5px;">
 
-    <AdminTable @ref=table TItem="VariableRunTime" AutoGenerateColumns="false" ShowAdvancedSearch=false
-                AllowResizing="true" IsFixedHeader=true IsMultipleSelect=false SearchModel=SearchModel
+    <AdminTable @ref=table TItem="VariableRunTime" AutoGenerateColumns="false" ShowAdvancedSearch=true
+                AllowResizing="true" IsFixedHeader=true IsMultipleSelect=false SearchModel=SearchModel SearchMode=SearchMode.Top
                 ShowExtendButtons=true ShowExportButton=false ShowExtendDeleteButton=false ShowExtendEditButton=false
                 ShowDefaultButtons=false ExtendButtonColumnWidth=150 AutoRefreshInterval="10000" IsAutoRefresh 
-                OnQueryAsync="OnQueryAsync" IsPagination=true> 
-
+                OnQueryAsync="OnQueryAsync" IsPagination=true>
+        <SearchTemplate>
+            <div class="row form-inline g-2">
+                <div class="col-12 col-md-6">
+                    <Select IsVirtualize @bind-Value="context.DeviceName" Items="@CollectDeviceNames" ShowSearch="true" ShowLabel="true" IsClearable DisableItemChangedWhenFirstRender=true />
+                </div>
+                <div class="col-12 col-md-6">
+                    <BootstrapInput @bind-Value="context.Name" ShowLabel="true" />
+                </div>
+                <div class="col-12 col-md-6">
+                    <BootstrapInput @bind-Value="context.RegisterAddress" ShowLabel="true" />
+                </div>
+            </div>
+        </SearchTemplate>
         <TableColumns>
             <TableColumn @bind-Field="@context.DeviceName" ShowTips Editable Visible />
             <TableColumn @bind-Field="@context.Name" ShowTips Editable Visible />

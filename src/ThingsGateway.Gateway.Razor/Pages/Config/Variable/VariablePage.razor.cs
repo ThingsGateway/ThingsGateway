@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.JSInterop;
 
 using System.Data;
+using System.Linq;
 
 using ThingsGateway.Core.Extension;
 using ThingsGateway.Gateway.Application;
@@ -27,7 +28,7 @@ public partial class VariablePage : IDisposable
     protected IEnumerable<SelectedItem> BusinessDeviceNames;
     private Dictionary<long, Device> CollectDeviceDict { get; set; } = new();
     private Dictionary<long, Device> BusinessDeviceDict { get; set; } = new();
-
+ 
     private int TestCount { get; set; }
 
     [Inject]
@@ -42,7 +43,8 @@ public partial class VariablePage : IDisposable
     [NotNull]
     private IDispatchService<Device>? DeviceDispatchService { get; set; }
 
-    private Variable? SearchModel { get; set; } = new();
+    private VariableSearchInput CustomerSearchModel { get; set; } = new VariableSearchInput();
+
     protected override Task OnInitializedAsync()
     {
         DeviceDispatchService.Subscribe(Notify);
@@ -65,8 +67,9 @@ public partial class VariablePage : IDisposable
         CollectDeviceDict = DeviceService.GetAll().Where(a => a.PluginType == PluginTypeEnum.Collect).ToDictionary(a => a.Id);
         BusinessDeviceDict = DeviceService.GetAll().Where(a => a.PluginType == PluginTypeEnum.Business).ToDictionary(a => a.Id);
 
-        CollectDeviceNames = DeviceService.GetAll().Where(a => a.PluginType == PluginTypeEnum.Collect).BuildDeviceSelectList();
-        BusinessDeviceNames = DeviceService.GetAll().Where(a => a.PluginType == PluginTypeEnum.Business).BuildDeviceSelectList();
+        CollectDeviceNames = DeviceService.GetAll().Where(a => a.PluginType == PluginTypeEnum.Collect).BuildDeviceSelectList().Concat(new List<SelectedItem>() {   new SelectedItem(string.Empty, "none") });
+        BusinessDeviceNames = DeviceService.GetAll().Where(a => a.PluginType == PluginTypeEnum.Business).BuildDeviceSelectList().Concat(new List<SelectedItem>() { new SelectedItem(string.Empty, "none") });
+
         return base.OnParametersSetAsync();
     }
 
