@@ -10,6 +10,8 @@
 //------------------------------------------------------------------------------
 
 
+using Mapster;
+
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.JSInterop;
 
@@ -76,6 +78,36 @@ public partial class ChannelPage
             await ToastService.Warning(null, $"{ex.Message}");
             return false;
         }
+    }
+    private async Task BatchEdit(IEnumerable<Channel> channels)
+    {
+        var op = new DialogOption()
+        {
+            Title = DefaultLocalizer["BatchEdit"],
+            ShowFooter = false,
+            ShowCloseButton = false,
+            Size = Size.ExtraLarge
+        };
+        var oldmodel = channels.FirstOrDefault();//默认值显示第一个
+        var model = channels.FirstOrDefault().Adapt<Channel>();//默认值显示第一个
+        op.Component = BootstrapDynamicComponent.CreateComponent<ChannelEditComponent>(new Dictionary<string, object?>
+        {
+             {nameof(ChannelEditComponent.OnValidSubmit), async () =>
+            {
+                await ChannelService.BatchEditAsync(channels,oldmodel,model);
+
+                await InvokeAsync(async ()=>
+                {
+        await table.QueryAsync();
+        await Change();
+                });
+            }},
+            {nameof(ChannelEditComponent.Model),model },
+            {nameof(ChannelEditComponent.ValidateEnable),true },
+            {nameof(ChannelEditComponent.BatchEditEnable),true },
+        });
+        await DialogService.Show(op);
+
     }
 
     private async Task<bool> Delete(IEnumerable<Channel> channels)

@@ -2,6 +2,8 @@
   "ThingsGateway.Razor._Imports": {
     "Add": "Add",
     "Remove": "Remove",
+    "BatchEdit": "BacthEdit",
+    "Edit": "Edit",
     "Close": "Close",
     "True": "Yes",
     "False": "No",

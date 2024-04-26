@@ -26,6 +26,7 @@ using System.Reflection;
 using System.Text;
 
 using ThingsGateway.Gateway.Application.Extensions;
+using ThingsGateway.Gateway.Application.Generic;
 
 using TouchSocket.Core;
 
@@ -168,6 +169,23 @@ public class VariableService : BaseService<Variable>, IVariableService
         }
         using var db = GetDB();
         return db.Insertable(input).ExecuteCommandAsync();
+    }
+    /// <inheritdoc/>
+    [OperDesc("SaveVariable", localizerType: typeof(Variable), isRecordPar: false)]
+    public async Task<bool> BatchEditAsync(IEnumerable<Variable> models, Variable oldModel, Variable model)
+    {
+        var differences = models.GetDiffProperty(oldModel, model);
+        differences.Remove(nameof(Variable.VariablePropertys));
+        if (differences?.Count > 0)
+        {
+            using var db = GetDB();
+
+            return (await db.Updateable(models.ToList()).UpdateColumns(differences.Select(a => a.Key).ToArray()).ExecuteCommandAsync()) > 0;
+        }
+        else
+        {
+            return true;
+        }
     }
 
     /// <summary>

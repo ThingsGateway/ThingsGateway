@@ -33,6 +33,10 @@
         </ExportButtonDropdownTemplate>
 
         <TableToolbarTemplate>
+            <TableToolbarButton TItem="Channel" IsDisabled=@(!AuthorizeButton(AdminOperConst.Edit))
+                                          Color=Color.Info Text="@DefaultLocalizer["BatchEdit"]"
+                                 OnClickCallback=@(BatchEdit) />
+
             <TableToolbarPopConfirmButton TItem="Channel" IsDisabled=@(!AuthorizeButton("清空"))
                                           Color=Color.Warning Text="@Localizer["Clear"]"
                                           IsAsync OnConfirm=@(async()=>{await Task.Run(async()=> { await ChannelService.ClearChannelAsync();

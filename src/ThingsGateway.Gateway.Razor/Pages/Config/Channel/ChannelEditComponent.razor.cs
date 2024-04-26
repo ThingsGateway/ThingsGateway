@@ -24,6 +24,9 @@ public partial class ChannelEditComponent
     public Channel Model { get; set; }
 
     [Parameter]
+    public bool BatchEditEnable { get; set; }
+
+    [Parameter]
     public bool ValidateEnable { get; set; }
 
     [Parameter]

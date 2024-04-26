@@ -10,6 +10,8 @@
 //------------------------------------------------------------------------------
 
 
+using Mapster;
+
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.JSInterop;
 
@@ -161,6 +163,37 @@ public abstract partial class DevicePage : IDisposable
         }
     }
 
+
+    private async Task BatchEdit(IEnumerable<Device> devices)
+    {
+        var op = new DialogOption()
+        {
+            Title = DefaultLocalizer["BatchEdit"],
+            ShowFooter = false,
+            ShowCloseButton = false,
+            Size = Size.ExtraLarge
+        };
+        var oldmodel = devices.FirstOrDefault();//默认值显示第一个
+        var model = devices.FirstOrDefault().Adapt<Device>();//默认值显示第一个
+        op.Component = BootstrapDynamicComponent.CreateComponent<DeviceEditComponent>(new Dictionary<string, object?>
+        {
+             {nameof(DeviceEditComponent.OnValidSubmit), async () =>
+            {
+                await DeviceService.BatchEditAsync(devices,oldmodel,model);
+
+                await InvokeAsync(async ()=>
+                {
+        await table.QueryAsync();
+        await Change();
+                });
+            }},
+            {nameof(DeviceEditComponent.Model),model },
+            {nameof(DeviceEditComponent.ValidateEnable),true },
+            {nameof(DeviceEditComponent.BatchEditEnable),true },
+        });
+        await DialogService.Show(op);
+
+    }
     private async Task<bool> Delete(IEnumerable<Device> devices)
     {
         try

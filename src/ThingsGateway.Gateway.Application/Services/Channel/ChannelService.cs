@@ -25,8 +25,8 @@ using System.Dynamic;
 using System.Reflection;
 using System.Text;
 
-using ThingsGateway.Foundation.Extension.Generic;
 using ThingsGateway.Gateway.Application.Extensions;
+using ThingsGateway.Gateway.Application.Generic;
 
 using TouchSocket.Core;
 
@@ -75,6 +75,22 @@ public class ChannelService : BaseService<Channel>, IChannelService
         return channels;
     }
 
+    /// <inheritdoc/>
+    [OperDesc("SaveChannel", localizerType: typeof(Channel), isRecordPar: false)]
+    public async Task<bool> BatchEditAsync(IEnumerable<Channel> models, Channel oldModel, Channel model)
+    {
+        var differences = models.GetDiffProperty(oldModel, model);
+        if (differences?.Count > 0)
+        {
+            using var db = GetDB();
+
+            return (await db.Updateable(models.ToList()).UpdateColumns(differences.Select(a => a.Key).ToArray()).ExecuteCommandAsync()) > 0;
+        }
+        else
+        {
+            return true;
+        }
+    }
     /// <summary>
     /// 保存通道
     /// </summary>

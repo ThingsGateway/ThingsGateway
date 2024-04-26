@@ -11,6 +11,8 @@
 
 
 
+using System.Reflection;
+
 namespace ThingsGateway.Gateway.Application.Generic;
 
 /// <inheritdoc/>
@@ -29,4 +31,36 @@ public static class GenericExtensions
             action(obj);
         }
     }
+
+    /// <summary>
+    /// 把已修改的属性赋值到列表中，并返回字典
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="models"></param>
+    /// <param name="oldModel"></param>
+    /// <param name="model"></param>
+    /// <returns></returns>
+    public static Dictionary<string, object?> GetDiffProperty<T>(this IEnumerable<T> models, T oldModel, T model)
+    {
+        // 获取Channel类型的所有公共属性  
+        var properties = typeof(T).GetRuntimeProperties();
+
+        // 比较oldModel和model的属性，找出差异  
+        var differences = properties
+            .Where(prop => prop.CanRead && prop.CanWrite) // 确保属性可读可写  
+            .Where(prop => !Equals(prop.GetValue(oldModel), prop.GetValue(model))) // 找出值不同的属性  
+            .ToDictionary(prop => prop.Name, prop => prop.GetValue(model)); // 将属性名和新值存储到字典中  
+
+        // 应用差异到channels列表中的每个Channel对象  
+        foreach (var channel in models)
+        {
+            foreach (var difference in differences)
+            {
+                BootstrapBlazor.Components.Utility.SetPropertyValue(channel, difference.Key, difference.Value);
+            }
+        }
+
+        return differences;
+    }
+
 }

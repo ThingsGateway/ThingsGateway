@@ -10,9 +10,11 @@
 //------------------------------------------------------------------------------
 
 
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Web;
 
 using ThingsGateway.Gateway.Application;
+using ThingsGateway.Razor;
 
 namespace ThingsGateway.Gateway.Razor;
 
@@ -27,6 +29,15 @@ public partial class DeviceEditComponent
     [EditorRequired]
     [NotNull]
     public Device? Model { get; set; }
+
+    [Parameter]
+    public bool BatchEditEnable { get; set; }
+
+    [Parameter]
+    public bool ValidateEnable { get; set; }
+
+    [Parameter]
+    public Func<Task> OnValidSubmit { get; set; }
 
     [Parameter]
     [EditorRequired]
@@ -108,5 +119,25 @@ public partial class DeviceEditComponent
             return await RedundantDevicesQuery.Invoke(option, Model);
         else
             return new();
+    }
+
+
+    [CascadingParameter]
+    private Func<Task>? OnCloseAsync { get; set; }
+
+    public async Task ValidSubmit(EditContext editContext)
+    {
+        try
+        {
+            if (OnValidSubmit != null)
+                await OnValidSubmit.Invoke();
+            if (OnCloseAsync != null)
+                await OnCloseAsync();
+            await ToastService.Default();
+        }
+        catch (Exception ex)
+        {
+            await ToastService.Warning(ex.Message);
+        }
     }
 }

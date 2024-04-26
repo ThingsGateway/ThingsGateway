@@ -160,10 +160,7 @@ public class Device : PrimaryIdEntity
     /// <summary>
     /// 插件属性
     /// </summary>
-    [IgnoreExcel]
-    [SugarColumn(IsIgnore = true)]
     [System.Text.Json.Serialization.JsonIgnore]
     [Newtonsoft.Json.JsonIgnore]
-    [AutoGenerateColumn(Ignore = true)]
-    public ModelValueValidateForm PluginPropertyModel { get; set; }
+    public ModelValueValidateForm PluginPropertyModel;
 }

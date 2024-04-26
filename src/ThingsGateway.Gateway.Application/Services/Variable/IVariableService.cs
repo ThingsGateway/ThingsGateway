@@ -30,6 +30,15 @@ public interface IVariableService
     Task AddBatchAsync(List<Variable> input);
 
     /// <summary>
+    /// 批量修改
+    /// </summary>
+    /// <param name="models">列表</param>
+    /// <param name="oldModel">旧数据</param>
+    /// <param name="model">新数据</param>
+    /// <returns></returns>
+    Task<bool> BatchEditAsync(IEnumerable<Variable> models, Variable oldModel, Variable model);
+
+    /// <summary>
     /// 异步清除变量数据。
     /// </summary>
     Task ClearVariableAsync();

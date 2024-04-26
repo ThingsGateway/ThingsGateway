@@ -63,6 +63,10 @@
             </Button>
         </ExportButtonDropdownTemplate>
         <TableToolbarTemplate>
+            <TableToolbarButton TItem="Device" IsDisabled=@(!AuthorizeButton(AdminOperConst.Edit))
+                                Color=Color.Info Text="@DefaultLocalizer["BatchEdit"]"
+                                OnClickCallback=@(BatchEdit) />
+
             <TableToolbarPopConfirmButton TItem="Device"
                                           Color=Color.Warning Text="@Localizer["Clear"]" IsDisabled=@(!AuthorizeButton("清空"))
                                           IsAsync OnConfirm=@(async()=>{await Task.Run(async()=> { await DeviceService.ClearDeviceAsync(PluginType);

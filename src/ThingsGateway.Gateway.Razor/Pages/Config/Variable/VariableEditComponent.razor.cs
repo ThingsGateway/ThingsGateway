@@ -10,9 +10,12 @@
 //------------------------------------------------------------------------------
 
 
+using Microsoft.AspNetCore.Components.Forms;
+
 using System.Collections.Concurrent;
 
 using ThingsGateway.Gateway.Application;
+using ThingsGateway.Razor;
 
 using TouchSocket.Core;
 
@@ -54,6 +57,15 @@ public partial class VariableEditComponent
     [Inject]
     [NotNull]
     private IPluginService PluginService { get; set; }
+
+    [Parameter]
+    public bool BatchEditEnable { get; set; }
+
+    [Parameter]
+    public bool ValidateEnable { get; set; }
+
+    [Parameter]
+    public Func<Task> OnValidSubmit { get; set; }
 
     private Task OnDeviceSelectedItemChanged(SelectedItem selectedItem)
     {
@@ -102,6 +114,26 @@ public partial class VariableEditComponent
         else
         {
             await ToastService.Warning(null, Localizer["RefreshBusinessPropertyError"]);
+        }
+    }
+
+
+    [CascadingParameter]
+    private Func<Task>? OnCloseAsync { get; set; }
+
+    public async Task ValidSubmit(EditContext editContext)
+    {
+        try
+        {
+            if (OnValidSubmit != null)
+                await OnValidSubmit.Invoke();
+            if (OnCloseAsync != null)
+                await OnCloseAsync();
+            await ToastService.Default();
+        }
+        catch (Exception ex)
+        {
+            await ToastService.Warning(ex.Message);
         }
     }
 }

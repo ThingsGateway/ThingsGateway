@@ -10,6 +10,8 @@
 //------------------------------------------------------------------------------
 
 
+using Mapster;
+
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.JSInterop;
 
@@ -121,6 +123,41 @@ public partial class VariablePage : IDisposable
         }
     }
 
+    private async Task BatchEdit(IEnumerable<Variable> variables)
+    {
+        var op = new DialogOption()
+        {
+            Title = DefaultLocalizer["BatchEdit"],
+            ShowFooter = false,
+            ShowCloseButton = false,
+            Size = Size.ExtraLarge
+        };
+        var oldmodel = variables.FirstOrDefault();//默认值显示第一个
+        var model = variables.FirstOrDefault().Adapt<Variable>();//默认值显示第一个
+        op.Component = BootstrapDynamicComponent.CreateComponent<VariableEditComponent>(new Dictionary<string, object?>
+        {
+             {nameof(VariableEditComponent.OnValidSubmit), async () =>
+            {
+                await VariableService.BatchEditAsync(variables,oldmodel,model);
+
+                await InvokeAsync(async ()=>
+                {
+        await table.QueryAsync();
+        await Change();
+                });
+            }},
+            {nameof(VariableEditComponent.Model),model },
+            {nameof(VariableEditComponent.ValidateEnable),true },
+            {nameof(VariableEditComponent.BatchEditEnable),true },
+            {nameof(VariableEditComponent.BusinessDevices),BusinessDeviceNames },
+            {nameof(VariableEditComponent.CollectDevices),CollectDeviceNames },
+            {nameof(VariableEditComponent.BusinessDeviceDict),BusinessDeviceDict },
+            {nameof(VariableEditComponent.CollectDeviceDict),CollectDeviceDict },
+
+        });
+        await DialogService.Show(op);
+
+    }
     private async Task<bool> Delete(IEnumerable<Variable> devices)
     {
         try

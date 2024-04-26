@@ -2,6 +2,8 @@
   "ThingsGateway.Razor._Imports": {
     "Add": "添加",
     "Remove": "移除",
+    "BatchEdit": "批量编辑",
+    "Edit": "编辑",
     "Close": "关闭",
     "True": "是",
     "False": "否",

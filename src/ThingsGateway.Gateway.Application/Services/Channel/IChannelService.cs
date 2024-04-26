@@ -131,4 +131,13 @@ public interface IChannelService
     /// <param name="input"></param>
     /// <returns></returns>
     Task<SqlSugarPagedList<Channel>> PageAsync(ChannelPageInput input);
+
+    /// <summary>
+    /// 批量修改
+    /// </summary>
+    /// <param name="models">列表</param>
+    /// <param name="oldModel">旧数据</param>
+    /// <param name="model">新数据</param>
+    /// <returns></returns>
+    Task<bool> BatchEditAsync(IEnumerable<Channel> models, Channel oldModel, Channel model);
 }
