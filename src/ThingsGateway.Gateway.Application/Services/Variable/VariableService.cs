@@ -731,6 +731,7 @@ public class VariableService : BaseService<Variable>, IVariableService
                                 // 如果存在，则更新变量属性字典，并添加成功信息到导入预览结果；否则，添加错误信息到导入预览结果并返回
                                 if (has)
                                 {
+                                    deviceVariable.VariablePropertys ??= new();
                                     deviceVariable.VariablePropertys?.AddOrUpdate(businessDevice.Id, a => dependencyProperties, (a, b) => dependencyProperties);
                                     importPreviewOutput.Results.Add((Interlocked.Add(ref row, 1), true, null));
                                 }

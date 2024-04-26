@@ -101,6 +101,7 @@ public partial class VariablePage : IDisposable
     {
         try
         {
+            variable.VariablePropertyModels ??= new();
             foreach (var item in variable.VariablePropertyModels)
             {
                 var result = item.Value.ValidateForm?.Validate();

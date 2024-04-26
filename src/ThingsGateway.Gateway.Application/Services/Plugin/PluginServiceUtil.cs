@@ -38,9 +38,10 @@ public static class PluginServiceUtil
     /// </summary>
     /// <param name="model"></param>
     /// <param name="dict"></param>
-    public static ConcurrentDictionary<long, Dictionary<string, string>> SetDict(ConcurrentDictionary<long, ModelValueValidateForm> models)
+    public static ConcurrentDictionary<long, Dictionary<string, string>> SetDict(ConcurrentDictionary<long, ModelValueValidateForm>? models)
     {
         ConcurrentDictionary<long, Dictionary<string, string>> results = new();
+        models ??= new();
         foreach (var model in models)
         {
             var data = SetDict(model.Value.Value);

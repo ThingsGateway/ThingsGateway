@@ -131,7 +131,7 @@ public class Variable : PrimaryIdEntity
     [SugarColumn(IsJson = true, ColumnDataType = StaticConfig.CodeFirst_BigString, ColumnDescription = "变量属性Json", IsNullable = true)]
     [IgnoreExcel]
     [AutoGenerateColumn(Visible = false)]
-    public ConcurrentDictionary<long, Dictionary<string, string>>? VariablePropertys { get; set; } = new();
+    public ConcurrentDictionary<long, Dictionary<string, string>>? VariablePropertys { get; set; }
 
     #region 报警
 
@@ -383,7 +383,7 @@ public class Variable : PrimaryIdEntity
     /// </summary>
     [System.Text.Json.Serialization.JsonIgnore]
     [Newtonsoft.Json.JsonIgnore]
-    public ConcurrentDictionary<long, ModelValueValidateForm>? VariablePropertyModels = new();
+    public ConcurrentDictionary<long, ModelValueValidateForm>? VariablePropertyModels;
 }
 
 public class ModelValueValidateForm

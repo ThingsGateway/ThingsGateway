@@ -118,29 +118,32 @@
                     <Button OnClick="() => RefreshBusinessPropertyClickAsync(ChoiceBusinessDeviceId)">@Localizer["RefreshBusinessProperty"]</Button>
                 </div>
             </div>
-            @foreach (var item in Model.VariablePropertyModels)
+            @if (Model.VariablePropertyModels!=null)
             {
-                var has = VariablePropertyEditors.TryGetValue(item.Key, out var items);
-                if (has)
+                @foreach (var item in Model.VariablePropertyModels)
                 {
+                    var has = VariablePropertyEditors.TryGetValue(item.Key, out var items);
+                    if (has)
+                    {
 
-                    <Card IsShadow=true class="m-2 flex-fill" Color="Color.Primary">
-                        <HeaderTemplate>
-                            @{
-                                BusinessDeviceDict.TryGetValue(item.Key, out var items);
-                            }
-                            @($"{items.Name} - {PluginServiceUtil.GetFileNameAndTypeName(items?.PluginName).TypeName}")
-                        </HeaderTemplate>
+                        <Card IsShadow=true class="m-2 flex-fill" Color="Color.Primary">
+                            <HeaderTemplate>
+                                @{
+                                    BusinessDeviceDict.TryGetValue(item.Key, out var items);
+                                }
+                                @($"{items.Name} - {PluginServiceUtil.GetFileNameAndTypeName(items?.PluginName).TypeName}")
+                            </HeaderTemplate>
 
-                        <BodyTemplate>
-                            <ValidateForm Model="item.Value.Value" Id=@((item.Key+Model.Id).ToString()) @ref=item.Value.ValidateForm>
+                            <BodyTemplate>
+                                <ValidateForm Model="item.Value.Value" Id=@((item.Key+Model.Id).ToString()) @ref=item.Value.ValidateForm>
 
-                                <EditorFormObject class="p-2" Items=items AutoGenerateAllItem="true" RowType=RowType.Inline ItemsPerRow=2 ShowLabelTooltip=true LabelWidth=250 Model="item.Value.Value" @key=item.Value.Value.GetType().TypeHandle.Value>
+                                    <EditorFormObject class="p-2" Items=items AutoGenerateAllItem="true" RowType=RowType.Inline ItemsPerRow=2 ShowLabelTooltip=true LabelWidth=250 Model="item.Value.Value" @key=item.Value.Value.GetType().TypeHandle.Value>
 
-                                </EditorFormObject>
-                            </ValidateForm>
-                        </BodyTemplate>
-                    </Card>
+                                    </EditorFormObject>
+                                </ValidateForm>
+                            </BodyTemplate>
+                        </Card>
+                    }
                 }
             }
         </div>

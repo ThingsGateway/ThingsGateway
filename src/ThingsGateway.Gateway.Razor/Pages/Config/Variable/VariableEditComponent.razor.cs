@@ -76,6 +76,7 @@ public partial class VariableEditComponent
     {
         await base.OnInitializedAsync();
 
+        Model.VariablePropertys ??= new();
         foreach (var item in Model.VariablePropertys)
         {
             await RefreshBusinessPropertyClickAsync(item.Key);
@@ -89,6 +90,7 @@ public partial class VariableEditComponent
             if (BusinessDeviceDict.TryGetValue(id, out var device))
             {
                 var data = PluginService.GetVariablePropertyTypes(device.PluginName);
+                Model.VariablePropertyModels ??= new();
                 Model.VariablePropertyModels.AddOrUpdate(id, (a) => new ModelValueValidateForm() { Value = data.Model }, (a, b) => new ModelValueValidateForm() { Value = data.Model });
                 VariablePropertyEditors.TryAdd(id, data.EditorItems);
                 if (Model.VariablePropertys.TryGetValue(id, out var dict))

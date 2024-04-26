@@ -66,7 +66,7 @@ public static class DriverBaseExtension
             return null;
 
         // 检查是否存在对应的业务设备Id
-        if (variableRunTime.VariablePropertys.ContainsKey(businessId))
+        if (variableRunTime.VariablePropertys?.ContainsKey(businessId)==true)
         {
             variableRunTime.VariablePropertys[businessId].TryGetValue(propertyName, out var value);
             return value; // 返回属性值
