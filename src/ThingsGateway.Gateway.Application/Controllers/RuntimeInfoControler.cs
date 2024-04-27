@@ -33,9 +33,15 @@ public class RuntimeInfoControler : ControllerBase
     /// </summary>
     /// <returns></returns>
     [HttpGet("deviceList")]
-    public List<DeviceData> GetCollectDeviceList()
+    public SqlSugarPagedList<DeviceData> GetCollectDeviceList([FromQuery] DevicePageInput input)
     {
-        return GlobalData.CollectDevices.Values.Adapt<List<DeviceData>>();
+        var data = GlobalData.CollectDevices.Values
+         .WhereIF(!string.IsNullOrEmpty(input.Name), u => u.Name.Contains(input.Name))
+         .WhereIF(input.ChannelId != null, u => u.ChannelId == input.ChannelId)
+         .WhereIF(!string.IsNullOrEmpty(input.PluginName), u => u.PluginName == input.PluginName)
+         .Where(u => u.PluginType == input.PluginType)
+         .ToPagedList(input);
+        return data.Adapt<SqlSugarPagedList<DeviceData>>();
     }
 
     /// <summary>
@@ -43,14 +49,14 @@ public class RuntimeInfoControler : ControllerBase
     /// </summary>
     /// <returns></returns>
     [HttpGet("variableList")]
-    public async Task<SqlSugarPagedList<VariableData>> GetVariableList([FromQuery] VariablePageInput input)
+    public SqlSugarPagedList<VariableData> GetVariableList([FromQuery] VariablePageInput input)
     {
         var data = GlobalData.ReadOnlyVariables.Values
             .WhereIF(!input.Name.IsNullOrWhiteSpace(), a => a.Name == input.Name)
             .WhereIF(input.DeviceId != null, a => a.DeviceId == input.DeviceId)
             .WhereIF(!input.RegisterAddress.IsNullOrWhiteSpace(), a => a.RegisterAddress == input.RegisterAddress)
             .ToPagedList(input);
-        return await Task.FromResult(data.Adapt<SqlSugarPagedList<VariableData>>());
+        return data.Adapt<SqlSugarPagedList<VariableData>>();
     }
 
     /// <summary>
@@ -58,12 +64,12 @@ public class RuntimeInfoControler : ControllerBase
     /// </summary>
     /// <returns></returns>
     [HttpGet("realAlarmList")]
-    public async Task<SqlSugarPagedList<VariableData>> GetRealAlarmList([FromQuery] VariablePageInput input)
+    public SqlSugarPagedList<VariableData> GetRealAlarmList([FromQuery] VariablePageInput input)
     {
         var data = GlobalData.ReadOnlyRealAlarmVariables
             .WhereIF(!input.Name.IsNullOrEmpty(), a => a.Name == input.Name)
             .WhereIF(input.DeviceId != null, a => a.DeviceId == input.DeviceId)
             .ToPagedList(input);
-        return await Task.FromResult(data.Adapt<SqlSugarPagedList<VariableData>>());
+        return data.Adapt<SqlSugarPagedList<VariableData>>();
     }
 }

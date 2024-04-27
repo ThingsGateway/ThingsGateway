@@ -30,6 +30,7 @@ public class AlarmVariable : PrimaryIdEntity, IDBHistoryAlarm
     [SugarColumn(ColumnDescription = "描述", IsNullable = true)]
     [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public string? Description { get; set; }
 
     /// <inheritdoc  cref="VariableRunTime.DeviceName"/>
@@ -41,6 +42,7 @@ public class AlarmVariable : PrimaryIdEntity, IDBHistoryAlarm
     [SugarColumn(ColumnDescription = "变量地址")]
     [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public string RegisterAddress { get; set; }
 
     /// <inheritdoc  cref="Variable.DataType"/>
@@ -89,21 +91,26 @@ public class AlarmVariable : PrimaryIdEntity, IDBHistoryAlarm
 
     /// <inheritdoc cref="Device.Remark1"/>
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public string Remark1 { get; set; }
 
     /// <inheritdoc cref="Device.Remark2"/>
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public string Remark2 { get; set; }
 
     /// <inheritdoc cref="Device.Remark3"/>
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public string Remark3 { get; set; }
 
     /// <inheritdoc cref="Device.Remark4"/>
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public string Remark4 { get; set; }
 
     /// <inheritdoc cref="Device.Remark5"/>
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public string Remark5 { get; set; }
 }

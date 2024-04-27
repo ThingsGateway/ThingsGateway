@@ -34,26 +34,32 @@ public class DeviceData : IPrimaryIdEntity
 
     /// <inheritdoc cref="DeviceRunTime.LastErrorMessage"/>
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public string LastErrorMessage { get; set; }
 
     /// <inheritdoc cref="Device.Remark1"/>
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public string Remark1 { get; set; }
 
     /// <inheritdoc cref="Device.Remark2"/>
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public string Remark2 { get; set; }
 
     /// <inheritdoc cref="Device.Remark3"/>
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public string Remark3 { get; set; }
 
     /// <inheritdoc cref="Device.Remark4"/>
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public string Remark4 { get; set; }
 
     /// <inheritdoc cref="Device.Remark5"/>
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public string Remark5 { get; set; }
 }
 
@@ -67,6 +73,7 @@ public class DeviceBasicData : DeviceData
 
     /// <inheritdoc cref="Device.Description"/>
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public string? Description { get; set; }
 }
 
@@ -83,5 +90,6 @@ public class DeviceDataWithValue : IPrimaryIdEntity
 
     /// <inheritdoc cref="DeviceRunTime.LastErrorMessage"/>
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public string LastErrorMessage { get; set; }
 }
