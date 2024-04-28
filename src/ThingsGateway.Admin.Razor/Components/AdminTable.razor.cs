@@ -19,7 +19,6 @@ public partial class AdminTable<TItem> where TItem : class, new()
     [Parameter]
     public IEnumerable<int>? PageItemsSource { get; set; } = new int[]
     {
-        10,
         20,
         50,
         100,
