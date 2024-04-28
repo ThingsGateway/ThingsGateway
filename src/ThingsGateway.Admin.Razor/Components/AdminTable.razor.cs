@@ -26,6 +26,12 @@ public partial class AdminTable<TItem> where TItem : class, new()
         200
     };
 
+    /// <summary>
+    /// <inheritdoc cref="Table{TItem}.ClientTableName"/>
+    /// </summary>
+    [Parameter]
+    public string? ClientTableName { get; set; }
+
     /// <inheritdoc cref="Table{TItem}.ExtendButtonColumnWidth"/>
     [Parameter]
     public int ExtendButtonColumnWidth { get; set; } = 130;
@@ -114,8 +120,8 @@ public partial class AdminTable<TItem> where TItem : class, new()
 
     /// <inheritdoc cref="Table{TItem}.SearchTemplate"/>
     [Parameter]
-    public RenderFragment<TItem>? SearchTemplate { get; set; } 
-    
+    public RenderFragment<TItem>? SearchTemplate { get; set; }
+
     /// <inheritdoc cref="Table{TItem}.IsMultipleSelect"/>
     [Parameter]
     public bool IsMultipleSelect { get; set; } = true;
