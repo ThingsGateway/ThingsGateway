@@ -64,45 +64,48 @@ import Highlight from '@site/src/components/Highlight.js';
 下面举例说明 采集ModbusTcp设备中的寄存器，通过MqttServer发布 的具体流程
 
 ### 1、建立通道
-<img src={require("@site/static/img/docs/通道配置.png").default} />
+<img src={require("@site/static/img/docs/添加通道.png").default} />
+
+添加tcpClient通道
 <img src={require("@site/static/img/docs/通道配置1.png").default} />
+
+添加mqttClient通道，选择other即可
 <img src={require("@site/static/img/docs/通道配置2.png").default} />
 
 ### 2、建立采集设备
-<img src={require("@site/static/img/docs/采集设备.png").default} />
+添加采集设备，选择tcpClient通道，modbusTcp驱动
 <img src={require("@site/static/img/docs/采集设备1.png").default} />
 <img src={require("@site/static/img/docs/采集设备2.png").default} />
 
 ### 3、建立业务设备
-<img src={require("@site/static/img/docs/业务设备.png").default} />
+添加业务设备，选择mqttClient通道，mqttClient驱动，插件属性中填入第三方MqttBroker的连接信息
 <img src={require("@site/static/img/docs/业务设备1.png").default} />
 <img src={require("@site/static/img/docs/业务设备2.png").default} />
 
 ### 4、建立变量
-<img src={require("@site/static/img/docs/变量.png").default} />
+
+添加变量，选择modbusTcp设备，填写变量寄存器地址
 <img src={require("@site/static/img/docs/变量1.png").default} />
+<img src={require("@site/static/img/docs/变量2.png").default} />
 
 
 ### 5、验证
 
-经过以上的配置，已经可以从127.0.0.1:502的模拟Modbus设备中，采集到PLC地址(400001)，并通过网关的mqttServer服务发布
+经过以上的配置，已经可以从127.0.0.1:502的模拟Modbus设备中，采集到PLC地址(400001)，并通过网关的mqttClient插件发布到第三方mqttBroker
 。下面来验证一下
 
 首先先启动模拟的modbusSlave软件
 <img src={require("@site/static/img/docs/modbus模拟软件.png").default} />
 
 
-然后重启一下网关后台线程，注意这个意思并不是重新启动软件，
-而是**重新加载网关的组态配置到运行态中**，通过**网页顶部的重启按钮**进行操作
+然后重启网关后台服务，注意并不是需要重新启动软件进程，
+而是**重新加载网关的组态配置到运行态中**，通过**网页右下角的重启运行时按钮**进行操作
 
 <img src={require("@site/static/img/docs/重启后台.png").default} />
 
 跳转到网关的运行状态查看
 
 <img src={require("@site/static/img/docs/运行状态.png").default} />
-<img src={require("@site/static/img/docs/运行状态1.png").default} />
-<img src={require("@site/static/img/docs/运行状态2.png").default} />
-<img src={require("@site/static/img/docs/运行状态3.png").default} />
 
 开启调试日志的话，可以看到每次交互的modbus报文以及结果状态
 
@@ -112,19 +115,9 @@ import Highlight from '@site/src/components/Highlight.js';
 
 可以看到值与采集时间等等的变化，注意这里的页面实时值变化是1s的间隔时间，如果配置了采集间隔小于1s，页面刷新不及时是正常的，不影响业务上传
 
-MqttServer的日志也可以在运行状态中看到
-<img src={require("@site/static/img/docs/运行状态4.png").default} />
+MqttClient的日志也可以在运行状态中看到
+<img src={require("@site/static/img/docs/运行状态1.png").default} />
 
-这里我们启动一个常用的mqtt调试客户端Mqttx
-
-<img src={require("@site/static/img/docs/mqttx.png").default} />
-
-连接成功后，添加对应的主题订阅，这里我们使用通配符+，适用主题名称的设备名称区间
-
-<img src={require("@site/static/img/docs/mqttx1.png").default} />
-<img src={require("@site/static/img/docs/mqttx2.png").default} />
-
-恭喜你成功体验了Modbus设备的采集到MqttServer发布全流程
 
 ## 五、详细说明
 
