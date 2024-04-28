@@ -65,11 +65,11 @@ public class ModbusSlaveProperty : BusinessPropertyBase
     /// 允许写入
     /// </summary>
     [DynamicProperty]
-    public bool DeviceRpcEnable { get; set; }
+    public bool DeviceRpcEnable { get; set; } = true;
 
     /// <summary>
     /// 立即写入内存
     /// </summary>
     [DynamicProperty]
-    public bool IsWriteMemory { get; set; }
+    public bool IsWriteMemory { get; set; } = true;
 }
