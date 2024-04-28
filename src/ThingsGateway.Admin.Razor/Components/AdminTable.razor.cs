@@ -114,8 +114,8 @@ public partial class AdminTable<TItem> where TItem : class, new()
 
     /// <inheritdoc cref="Table{TItem}.SearchTemplate"/>
     [Parameter]
-    public RenderFragment<TItem>? SearchTemplate { get; set; } 
-    
+    public RenderFragment<TItem>? SearchTemplate { get; set; }
+
     /// <inheritdoc cref="Table{TItem}.IsMultipleSelect"/>
     [Parameter]
     public bool IsMultipleSelect { get; set; } = true;
