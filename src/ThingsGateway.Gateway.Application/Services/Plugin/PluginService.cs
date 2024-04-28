@@ -398,23 +398,20 @@ public class PluginService : IPluginService
     /// </summary>
     private void ClearCache()
     {
-        lock (this)
+        App.CacheService.Remove(_cacheKeyGetPluginOutputs);
+        App.CacheService.DelByPattern($"{nameof(PluginService)}_");
+
+        // 获取私有字段
+        FieldInfo fieldInfo = typeof(ResourceManagerStringLocalizerFactory).GetField("_localizerCache", BindingFlags.Instance | BindingFlags.NonPublic);
+        // 获取字段的值
+        var dictionary = (ConcurrentDictionary<string, ResourceManagerStringLocalizer>)fieldInfo.GetValue(App.StringLocalizerFactory);
+        foreach (var item in _assemblyLoadContextDict)
         {
-            App.CacheService.Remove(_cacheKeyGetPluginOutputs);
-            App.CacheService.DelByPattern($"{nameof(PluginService)}_");
-
-            // 获取私有字段
-            FieldInfo fieldInfo = typeof(ResourceManagerStringLocalizerFactory).GetField("_localizerCache", BindingFlags.Instance | BindingFlags.NonPublic);
-            // 获取字段的值
-            var dictionary = (ConcurrentDictionary<string, ResourceManagerStringLocalizer>)fieldInfo.GetValue(App.StringLocalizerFactory);
-            foreach (var item in _assemblyLoadContextDict)
-            {
-                // 移除特定键
-                dictionary.RemoveWhere(a => item.Value.Assembly.ExportedTypes.Select(b => b.AssemblyQualifiedName).Contains(a.Key));
-            }
-
-            _dispatchService.Dispatch(new());
+            // 移除特定键
+            dictionary.RemoveWhere(a => item.Value.Assembly.ExportedTypes.Select(b => b.AssemblyQualifiedName).Contains(a.Key));
         }
+
+        _dispatchService.Dispatch(new());
     }
 
     /// <summary>
