@@ -5,7 +5,7 @@
 //  源代码使用协议遵循本仓库的开源协议及附加协议
 //  Gitee源代码仓库：https://gitee.com/diego2098/ThingsGateway
 //  Github源代码仓库：https://github.com/kimdiego2098/ThingsGateway
-//  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
+//  使用文档：https://kimdiego2098.github.io/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
@@ -27,7 +27,7 @@ public class WebsiteOptions
     /// <summary>
     /// 文档地址
     /// </summary>
-    public string WikiUrl { get; set; } = "https://diego2098.gitee.io/thingsgateway-docs/";
+    public string WikiUrl { get; set; } = "https://kimdiego2098.github.io/";
 
     /// <summary>
     /// QQ群链接地址

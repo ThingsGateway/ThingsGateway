@@ -4,7 +4,7 @@
 //  源代码使用协议遵循本仓库的开源协议及附加协议
 //  Gitee源代码仓库：https://gitee.com/diego2098/ThingsGateway
 //  Github源代码仓库：https://github.com/kimdiego2098/ThingsGateway
-//  使用文档：https://diego2098.gitee.io/thingsgateway-docs/
+//  使用文档：https://kimdiego2098.github.io/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
@@ -25,7 +25,7 @@ namespace ThingsGateway.Plugin.OpcUa;
 /// </summary>
 public class ThingsGatewayNodeManager : CustomNodeManager2
 {
-    private const string ReferenceServer = "https://diego2098.gitee.io/thingsgateway-docs/";
+    private const string ReferenceServer = "https://kimdiego2098.github.io/";
     private BusinessBase _businessBase;
 
     //private readonly TypeAdapterConfig _config;

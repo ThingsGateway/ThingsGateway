@@ -7,7 +7,7 @@
 
 ## 文档
 
-[ThingsGateway](https://diego2098.gitee.io/thingsgateway-docs/) 文档。
+[ThingsGateway](https://kimdiego2098.github.io/) 文档。
 
 [**底层驱动 NuGet地址**](https://www.nuget.org/packages?q=Tags%3A%22ThingsGateway%22)
 
@@ -52,7 +52,7 @@
 
 ## 赞助
 
-[赞助途径](https://diego2098.gitee.io/thingsgateway-docs/docs/1000)
+[赞助途径](https://kimdiego2098.github.io/docs/1000)
 
 ## 社区
 
@@ -60,7 +60,7 @@ QQ群：605534569 [跳转](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=NnBjPO-8kcN
 
 ## Pro插件
 
-[插件列表](https://diego2098.gitee.io/thingsgateway-docs/docs/1001)
+[插件列表](https://kimdiego2098.github.io/docs/1001)
 
 
 
