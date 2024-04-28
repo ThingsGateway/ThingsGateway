@@ -6,9 +6,9 @@ A cross-platform, high-performance edge data collection gateway based on net8, c
 ﻿
 ## Documentation
 ﻿
-[ThingsGateway Documentation](https://kimdiego2098.github.io/).
+[Documentation](https://kimdiego2098.github.io/).
 ﻿
-[**NuGet Address**](https://www.nuget.org/packages?q=Tags%3A%22ThingsGateway%22)
+[NuGet](https://www.nuget.org/packages?q=Tags%3A%22ThingsGateway%22)
 ﻿
 ### Plugin List
 ﻿

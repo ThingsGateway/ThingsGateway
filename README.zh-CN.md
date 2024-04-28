@@ -7,9 +7,9 @@
 
 ## 文档
 
-[ThingsGateway](https://kimdiego2098.github.io/) 文档。
+[文档](https://kimdiego2098.github.io/)
 
-[**底层驱动 NuGet地址**](https://www.nuget.org/packages?q=Tags%3A%22ThingsGateway%22)
+[NuGet](https://www.nuget.org/packages?q=Tags%3A%22ThingsGateway%22)
 
 ### 插件列表
 
