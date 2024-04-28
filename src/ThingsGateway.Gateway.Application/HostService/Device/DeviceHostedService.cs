@@ -339,7 +339,10 @@ public abstract class DeviceHostedService : BackgroundService
                 }
             }
 
-            dispatchService.Dispatch(new());
+            _ = Task.Run(() =>
+            {
+                dispatchService.Dispatch(new());
+            });
 
         }
         finally
@@ -647,7 +650,10 @@ public abstract class DeviceHostedService : BackgroundService
             }
             await StartAllChannelThreadsAsync().ConfigureAwait(false);
             await ProtectedStarted().ConfigureAwait(false);
-            dispatchService.Dispatch(new());
+            _ = Task.Run(() =>
+            {
+                dispatchService.Dispatch(new());
+            });
         }
         catch (Exception ex)
         {
