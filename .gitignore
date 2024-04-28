@@ -367,5 +367,7 @@ FodyWeavers.xsd
 /src/*pro*
 /src/*pro*/
 /doc/.*
+/doc/build/
 /src/ThingsGateway.Server/.config/
 /src/nuget.exe
+
