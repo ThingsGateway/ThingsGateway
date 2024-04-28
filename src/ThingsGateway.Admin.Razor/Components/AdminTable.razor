@@ -14,7 +14,7 @@
        FixedExtendButtonsColumn IsAutoRefresh=IsAutoRefresh AutoRefreshInterval=AutoRefreshInterval
        AllowDragColumn=@AllowDragColumn Height=@Height ShowRefresh=ShowRefresh
        AllowResizing=@AllowResizing ExportButtonDropdownTemplate=ExportButtonDropdownTemplate
-       ShowToolbar="ShowToolbar"
+       ShowToolbar="ShowToolbar" ClientTableName="@ClientTableName"
        ShowExtendButtons="ShowExtendButtons"
        ShowAddButton=@(ShowAddButton??AuthorizeButton(AdminOperConst.Add))
        ShowDeleteButton=@(ShowDeleteButton??AuthorizeButton(AdminOperConst.Delete))

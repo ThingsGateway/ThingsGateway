@@ -26,6 +26,12 @@ public partial class AdminTable<TItem> where TItem : class, new()
         200
     };
 
+    /// <summary>
+    /// <inheritdoc cref="Table{TItem}.ClientTableName"/>
+    /// </summary>
+    [Parameter]
+    public string? ClientTableName { get; set; }
+
     /// <inheritdoc cref="Table{TItem}.ExtendButtonColumnWidth"/>
     [Parameter]
     public int ExtendButtonColumnWidth { get; set; } = 130;
