@@ -122,8 +122,15 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     /// <returns></returns>
     protected Task ChannelStoped(IClientChannel channel)
     {
-        //取消全部等待池
-        WaitHandlePool.CancelAll();
+        if(channel==this.Channel)
+        {
+            //取消全部等待池
+            WaitHandlePool.CancelAll();
+        }
+        else
+        {
+
+        }
 
         return EasyTask.CompletedTask;
     }
