@@ -49,7 +49,7 @@
     "IsAlarmList": "报警列表上传",
     "DeviceTopic": "设备主题",
     "VariableTopic": "变量主题",
-    "AlarmTopic": "比较主题",
+    "AlarmTopic": "报警主题",
 
     "IsInterval": "启用定时上传",
     "BusinessInterval": "定时上传间隔",

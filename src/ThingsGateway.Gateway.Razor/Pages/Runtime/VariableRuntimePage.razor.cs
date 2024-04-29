@@ -79,7 +79,7 @@ public partial class VariableRuntimePage : IDisposable
 
     protected override Task OnParametersSetAsync()
     {
-        CollectDeviceNames = GlobalData.ReadOnlyCollectDevices.Keys.Select(a => new SelectedItem(a, a)).Concat(new List<SelectedItem>() { new SelectedItem(string.Empty, "none") });
+        CollectDeviceNames = new List<SelectedItem>() { new SelectedItem(string.Empty, "All") }.Concat(GlobalData.ReadOnlyCollectDevices.Keys.Select(a => new SelectedItem(a, a)));
         return base.OnParametersSetAsync();
     }
 
