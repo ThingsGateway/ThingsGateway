@@ -53,8 +53,7 @@ public static class ExpressionEvaluatorExtension
         using System.Collections.Generic;
         using Newtonsoft.Json;
         using Newtonsoft.Json.Linq;
-        using ThingsGateway.Gateway.Application;
-        using ThingsGateway.Gateway.Application.Extensions;
+        using ThingsGateway.Foundation;
         public class Script:ReadWriteExpressions
         {{
             public object GetNewValue(dynamic raw)
