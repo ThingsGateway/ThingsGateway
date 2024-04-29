@@ -8,13 +8,18 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using static System.Net.Mime.MediaTypeNames;
+
 namespace ThingsGateway.Foundation
 {
     internal class Program
     {
         private static void Main(string[] args)
         {
-            ModbusMasterTest.Test();
+            ModbusMasterTest.Test1();
+            ModbusMasterTest.Test2();
+            ModbusMasterTest.Test3();
+
             //S7MatserTest.Test();
         }
     }

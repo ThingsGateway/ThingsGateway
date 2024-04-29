@@ -1,12 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <Import Project="$(SolutionDir)Foundation.props" />
-  <Import Project="$(SolutionDir)PackNuget.props" />
   <PropertyGroup>
-    		<TargetFrameworks>net6.0;</TargetFrameworks>
-		<OutputType>Exe</OutputType>    <TargetFrameworks>net6.0;</TargetFrameworks>
-    
+    <TargetFrameworks>net6.0;</TargetFrameworks>
+    <OutputType>Exe</OutputType>
+
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="ThingsGateway.Foundation.Variable" Version="6.0.0.13-beta02" />
+  </ItemGroup>
 
 
   <ItemGroup>
