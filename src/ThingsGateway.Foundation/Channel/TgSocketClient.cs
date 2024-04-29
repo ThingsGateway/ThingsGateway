@@ -20,7 +20,7 @@ namespace ThingsGateway.Foundation
     /// TgSocketClient
     /// </summary>
     [DebuggerDisplay("Id={Id},IPAdress={IP}:{Port}")]
-    public class TgSocketClient : SocketClient, IClientChannel
+    public class TgSocketClient : TcpSessionClient, IClientChannel
     {
         /// <summary>
         /// TgSocketClient
@@ -64,11 +64,13 @@ namespace ThingsGateway.Foundation
         /// <inheritdoc/>
         public ChannelEventHandler Starting { get; set; }
 
+        public bool CanSend => this.Online;
+
         /// <inheritdoc/>
         public void SetDataHandlingAdapter(DataHandlingAdapter adapter)
         {
             if (adapter is SingleStreamDataHandlingAdapter single)
-                base.SetDataHandlingAdapter(single);
+                base.SetAdapter(single);
             else
                 throw new NotSupportedException(DefaultResource.Localizer["AdapterTypeError", nameof(SingleStreamDataHandlingAdapter)]);
         }
@@ -83,51 +85,47 @@ namespace ThingsGateway.Foundation
         }
 
         /// <inheritdoc/>
-        public void Connect(int timeout, CancellationToken token) => throw new NotImplementedException();
-
-        /// <inheritdoc/>
         public Task ConnectAsync(int timeout, CancellationToken token) => throw new NotImplementedException();
 
-        /// <inheritdoc/>
-        protected override Task ReceivedData(ReceivedDataEventArgs e)
+        protected override Task OnTcpReceived(ReceivedDataEventArgs e)
         {
             if (this.Received != null)
             {
                 return this.Received.Invoke(this, e);
             }
-            return base.ReceivedData(e);
+            return base.OnTcpReceived(e);
         }
 
         /// <inheritdoc/>
-        protected override Task OnConnected(ConnectedEventArgs e)
+        protected override Task OnTcpConnected(ConnectedEventArgs e)
         {
             //Logger?.Debug($"{ToString()}{FoundationConst.Connected}");
             if (Started != null)
                 return Started.Invoke(this);
-            return base.OnConnected(e);
+            return base.OnTcpConnected(e);
         }
 
         /// <inheritdoc/>
-        protected override Task OnConnecting(ConnectingEventArgs e)
+        protected override Task OnTcpConnecting(ConnectingEventArgs e)
         {
             //Logger?.Debug($"{ToString()}{FoundationConst.Connecting}{(e.Message.IsNullOrEmpty() ? string.Empty : $"-{e.Message}")}");
             if (Starting != null)
                 return Starting.Invoke(this);
-            return base.OnConnecting(e);
+            return base.OnTcpConnecting(e);
         }
 
         /// <inheritdoc/>
-        protected override Task OnDisconnecting(DisconnectEventArgs e)
+        protected override Task OnTcpClosing(ClosingEventArgs e)
         {
             Logger?.Debug($"{ToString()} Disconnecting{(e.Message.IsNullOrEmpty() ? string.Empty : $"-{e.Message}")}");
-            return base.OnDisconnecting(e);
+            return base.OnTcpClosing(e);
         }
 
         /// <inheritdoc/>
-        protected override Task OnDisconnected(DisconnectEventArgs e)
+        protected override Task OnTcpClosed(ClosedEventArgs e)
         {
             Logger?.Debug($"{ToString()} Disconnected{(e.Message.IsNullOrEmpty() ? string.Empty : $"-{e.Message}")}");
-            return base.OnDisconnected(e);
+            return base.OnTcpClosed(e);
         }
 
         #region

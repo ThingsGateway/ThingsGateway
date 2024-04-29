@@ -8,7 +8,8 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="8.0.4" />
-    <PackageReference Include="TouchSocket" Version="2.0.3" />
+    <PackageReference Include="TouchSocket" Version="2.1.0-alpha.2" />
+    <PackageReference Include="TouchSocket.SerialPorts" Version="2.1.0-alpha.2" />
     <ProjectReference Include="$(SolutionDir)\ThingsGateway.NewLife.X\ThingsGateway.NewLife.X.csproj" />
   </ItemGroup>
 

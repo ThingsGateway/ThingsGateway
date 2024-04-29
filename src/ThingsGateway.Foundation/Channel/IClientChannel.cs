@@ -17,7 +17,7 @@ namespace ThingsGateway.Foundation;
 /// <summary>
 /// 通道管理，对于TgTcpService，是TgSocketClient类继承此接口
 /// </summary>
-public interface IClientChannel : IChannel, ISender, IClient, IClientSender, IDefaultSender, IOnlineClient, IConnectObject, ICloseObject, IDisposable
+public interface IClientChannel : IChannel, ISender, IClient, IClientSender, IOnlineClient, IConnectableClient, IClosableClient, IDisposable
 {
     #region 属性
 
@@ -27,20 +27,9 @@ public interface IClientChannel : IChannel, ISender, IClient, IClientSender, IDe
     EasyLock WaitLock { get; }
 
     /// <summary>
-    /// 是否允许自由调用<see cref="SetDataHandlingAdapter"/>进行赋值。
-    /// </summary>
-    bool CanSetDataHandlingAdapter { get; }
-
-    /// <summary>
     /// 数据处理适配器
     /// </summary>
     DataHandlingAdapter DataHandlingAdapter { get; }
-
-    /// <summary>
-    /// 设置数据处理适配器
-    /// </summary>
-    /// <param name="adapter"></param>
-    void SetDataHandlingAdapter(DataHandlingAdapter adapter);
 
     #endregion 属性
 }

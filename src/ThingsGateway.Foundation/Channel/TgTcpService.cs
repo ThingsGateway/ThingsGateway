@@ -17,7 +17,7 @@ using System.Net.Sockets;
 namespace ThingsGateway.Foundation
 {
     /// <inheritdoc/>
-    public class TgTcpServiceBase<TClient> : TcpService<TClient>, ITcpService<TClient> where TClient : TgSocketClient, new()
+    public abstract class TgTcpServiceBase<TClient> : TcpService<TClient>, ITcpService<TClient> where TClient : TgSocketClient, new()
     {
         /// <inheritdoc/>
         ~TgTcpServiceBase()
@@ -31,39 +31,29 @@ namespace ThingsGateway.Foundation
         #region 事件
 
         /// <inheritdoc/>
-        protected override Task OnConnected(TClient socketClient, ConnectedEventArgs e)
+        protected override Task OnTcpConnected(TClient socketClient, ConnectedEventArgs e)
         {
             Logger?.Debug($"{socketClient}  Connected");
-            return base.OnConnected(socketClient, e);
+            return base.OnTcpConnected(socketClient, e);
         }
 
         /// <inheritdoc/>
-        protected override Task OnConnecting(TClient socketClient, ConnectingEventArgs e)
+        protected override Task OnTcpConnecting(TClient socketClient, ConnectingEventArgs e)
         {
             Logger?.Debug($"{socketClient}  Connecting");
-            return base.OnConnecting(socketClient, e);
+            return base.OnTcpConnecting(socketClient, e);
         }
 
-        /// <summary>
-        /// 客户端断开连接，覆盖父类方法将不会触发事件。
-        /// </summary>
-        /// <param name="socketClient"></param>
-        /// <param name="e"></param>
-        protected override Task OnDisconnected(TClient socketClient, DisconnectEventArgs e)
+        protected override Task OnTcpClosed(TClient socketClient, ClosedEventArgs e)
         {
             Logger?.Debug($"{socketClient}  Disconnected");
-            return base.OnDisconnected(socketClient, e);
+            return base.OnTcpClosed(socketClient, e);
         }
 
-        /// <summary>
-        /// 即将断开连接(仅主动断开时有效)。
-        /// </summary>
-        /// <param name="socketClient"></param>
-        /// <param name="e"></param>
-        protected override Task OnDisconnecting(TClient socketClient, DisconnectEventArgs e)
+        protected override Task OnTcpClosing(TClient socketClient, ClosingEventArgs e)
         {
             Logger?.Debug($"{socketClient} Disconnecting");
-            return base.OnDisconnecting(socketClient, e);
+            return base.OnTcpClosing(socketClient, e);
         }
 
         #endregion 事件
@@ -75,7 +65,7 @@ namespace ThingsGateway.Foundation
 
         private void ShutDown()
         {
-            foreach (var item in GetClients())
+            foreach (var item in Clients)
             {
                 try
                 {
@@ -89,27 +79,9 @@ namespace ThingsGateway.Foundation
             }
         }
 
-        /// <inheritdoc/>
-        public override void Clear()
+        public override async Task ClearAsync()
         {
             ShutDown();
-        }
-
-        /// <inheritdoc/>
-        public override void Start()
-        {
-            if (this.ServerState != ServerState.Running)
-            {
-                base.Start();
-                if (this.ServerState == ServerState.Running)
-                {
-                    Logger.Info($"{Monitors.FirstOrDefault()?.Option.IpHost}{DefaultResource.Localizer["ServiceStarted"]}");
-                }
-            }
-            else
-            {
-                base.Start();
-            }
         }
 
         /// <inheritdoc/>
@@ -126,21 +98,6 @@ namespace ThingsGateway.Foundation
             else
             {
                 await base.StartAsync().ConfigureAwait(false);
-            }
-        }
-
-        /// <inheritdoc/>
-        public override void Stop()
-        {
-            if (Monitors.Count() > 0)
-            {
-                base.Stop();
-                if (Monitors.Count() == 0)
-                    Logger.Info($"{Monitors.FirstOrDefault()?.Option.IpHost}{DefaultResource.Localizer["ServiceStoped"]}");
-            }
-            else
-            {
-                base.Stop();
             }
         }
 
@@ -207,7 +164,7 @@ namespace ThingsGateway.Foundation
         /// <inheritdoc/>
         public void Close(string msg)
         {
-            base.Stop();
+            this.Stop();
         }
 
         /// <inheritdoc/>
@@ -215,31 +172,31 @@ namespace ThingsGateway.Foundation
         {
             if (token.IsCancellationRequested)
                 return;
-            base.Start();
+            this.Start();
         }
 
         /// <inheritdoc/>
-        protected override Task OnConnected(TgSocketClient socketClient, ConnectedEventArgs e)
+        protected override Task OnTcpConnected(TgSocketClient socketClient, ConnectedEventArgs e)
         {
             if (Started != null)
                 return Started.Invoke(socketClient);
-            return base.OnConnected(socketClient, e);
+            return base.OnTcpConnected(socketClient, e);
         }
 
         /// <inheritdoc/>
-        protected override Task OnConnecting(TgSocketClient socketClient, ConnectingEventArgs e)
+        protected override Task OnTcpConnecting(TgSocketClient socketClient, ConnectingEventArgs e)
         {
             if (Starting != null)
                 return Starting.Invoke(socketClient);
-            return base.OnConnecting(socketClient, e);
+            return base.OnTcpConnecting(socketClient, e);
         }
 
         /// <inheritdoc/>
-        protected override Task OnDisconnected(TgSocketClient socketClient, DisconnectEventArgs e)
+        protected override Task OnTcpClosed(TgSocketClient socketClient, ClosedEventArgs e)
         {
             if (Stoped != null)
                 return Stoped.Invoke(socketClient);
-            return base.OnDisconnected(socketClient, e);
+            return base.OnTcpClosed(socketClient, e);
         }
 
         /// <inheritdoc/>
@@ -251,7 +208,7 @@ namespace ThingsGateway.Foundation
         }
 
         /// <inheritdoc/>
-        protected override async Task OnReceived(TgSocketClient socketClient, ReceivedDataEventArgs e)
+        protected override async Task OnTcpReceived(TgSocketClient socketClient, ReceivedDataEventArgs e)
         {
             if (this.Received != null)
             {
@@ -261,7 +218,12 @@ namespace ThingsGateway.Foundation
                     return;
                 }
             }
-            await base.OnReceived(socketClient, e).ConfigureAwait(false);
+            await base.OnTcpReceived(socketClient, e).ConfigureAwait(false);
+        }
+
+        protected override TgSocketClient NewClient()
+        {
+            return new TgSocketClient();
         }
     }
 }
