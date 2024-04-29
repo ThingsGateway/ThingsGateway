@@ -308,9 +308,4 @@ public partial class AdminTable<TItem> where TItem : class, new()
 
     [NotNull]
     private string? EmptyText { get; set; }
-
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-    }
 }
