@@ -17,6 +17,7 @@
                     AdditionalAssemblies=App.RazorAssemblies AllowDragTab=true
                     UseTabSet="false" TabDefaultUrl="/">
                 <Header>
+                    <div class="flex-fill"></div>
 
                     @* 搜索框 *@
                     <GlobalSearch Menus=@(MenuService.SameLevelMenuItems) />
@@ -24,12 +25,8 @@
                     @* 语言选择 *@
                     <CultureChooser />
 
-
                     @* 主题切换 *@
                     <ThemeToggle />
-
-
-
 
                     @* 全屏按钮 *@
                     <FullScreenButton class="layout-header-bar d-none d-lg-flex px-2" FullScreenIcon="fa fa-arrows-alt"
