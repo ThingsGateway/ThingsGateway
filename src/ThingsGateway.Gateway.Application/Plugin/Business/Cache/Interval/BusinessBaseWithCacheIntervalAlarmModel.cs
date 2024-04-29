@@ -55,6 +55,9 @@ public abstract class BusinessBaseWithCacheIntervalAlarmModel<VarModel, DevModel
         _exTTimerTick = new(_businessPropertyWithCacheInterval.BusinessInterval);
         _exT2TimerTick = new(_businessPropertyWithCacheInterval.BusinessInterval);
 
+        HostedServiceUtil.AlarmHostedService.OnAlarmChanged -= AlarmValueChange;
+        HostedServiceUtil.AlarmHostedService.OnAlarmChanged += AlarmValueChange;
+
         // 根据业务属性的缓存是否为间隔上传来决定事件绑定
         if (!_businessPropertyWithCacheInterval.IsInterval)
         {
