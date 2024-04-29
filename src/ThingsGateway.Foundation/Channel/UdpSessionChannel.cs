@@ -15,10 +15,10 @@
 namespace ThingsGateway.Foundation
 {
     /// <inheritdoc/>
-    public class TgUdpSession : TgUdpSessionBase, IClientChannel
+    public class UdpSessionChannel : UdpSession, IClientChannel
     {
         /// <inheritdoc/>
-        ~TgUdpSession()
+        ~UdpSessionChannel()
         {
             Dispose(false);
         }
@@ -29,13 +29,7 @@ namespace ThingsGateway.Foundation
         /// <summary>
         /// 当收到数据时
         /// </summary>
-        public TgReceivedEventHandler Received { get; set; }
-
-        /// <inheritdoc/>
-        public override string? ToString()
-        {
-            return RemoteIPHost?.ToString().Replace("tcp", "udp");
-        }
+        public ChannelReceivedEventHandler ChannelReceived { get; set; }
 
         /// <inheritdoc/>
         public ChannelEventHandler Started { get; set; }
@@ -50,43 +44,16 @@ namespace ThingsGateway.Foundation
         public ChannelTypeEnum ChannelType => ChannelTypeEnum.UdpSession;
 
         /// <inheritdoc/>
-        public bool Online => this.CanSend;
-
-        /// <inheritdoc/>
-        DataHandlingAdapter IClientChannel.DataHandlingAdapter => DataHandlingAdapter;
+        public bool Online => ServerState == ServerState.Running;
 
         /// <inheritdoc/>
         public ConcurrentList<IProtocol> Collects { get; } = new();
 
         /// <inheritdoc/>
-        public void SetDataHandlingAdapter(DataHandlingAdapter adapter)
+        public override string? ToString()
         {
-            if (adapter is UdpDataHandlingAdapter udp)
-                base.SetDataHandlingAdapter(udp);
-            else
-                throw new NotSupportedException(DefaultResource.Localizer["AdapterTypeError", nameof(UdpDataHandlingAdapter)]);
+            return RemoteIPHost?.ToString().Replace("tcp", "udp");
         }
-
-        /// <inheritdoc/>
-        public void Close(string msg) => this.Stop();
-
-        /// <inheritdoc/>
-        public override void Start()
-        {
-            if (this.ServerState != ServerState.Running)
-            {
-                base.Start();
-                if (this.ServerState == ServerState.Running)
-                {
-                    Logger.Info($"{Monitor.IPHost}{DefaultResource.Localizer["ServiceStarted"]}");
-                }
-            }
-            else
-            {
-                base.Start();
-            }
-        }
-
         /// <inheritdoc/>
         public override async Task StartAsync()
         {
@@ -102,23 +69,6 @@ namespace ThingsGateway.Foundation
             {
                 await base.StartAsync().ConfigureAwait(false);
             }
-        }
-
-        /// <inheritdoc/>
-        public override void Stop()
-        {
-            if (Monitor != null)
-            {
-                base.Stop();
-                if (Monitor == null)
-                    Logger.Info($"{Monitor?.IPHost}{DefaultResource.Localizer["ServiceStoped"]}");
-            }
-            else
-            {
-                base.Stop();
-            }
-            if (Stoped != null)
-                Stoped.Invoke(this).GetFalseAwaitResult();
         }
 
         /// <inheritdoc/>
@@ -139,19 +89,7 @@ namespace ThingsGateway.Foundation
         }
 
         /// <inheritdoc/>
-        public void Connect(int timeout, CancellationToken token)
-        {
-            if (token.IsCancellationRequested)
-                return;
-            if (Starting != null)
-                Starting.Invoke(this).GetFalseAwaitResult();
-            this.Start();
-            if (Started != null)
-                Started.Invoke(this).GetFalseAwaitResult();
-        }
-
-        /// <inheritdoc/>
-        public async Task ConnectAsync(int timeout, CancellationToken token)
+        public async Task ConnectAsync(int timeout=3000, CancellationToken token=default)
         {
             if (token.IsCancellationRequested)
                 return;
@@ -162,12 +100,17 @@ namespace ThingsGateway.Foundation
                 await Started.Invoke(this).ConfigureAwait(false);
         }
 
+        public Task CloseAsync(string msg)
+        {
+            return this.StopAsync();
+        }
+
         /// <inheritdoc/>
         protected override async Task ReceivedData(UdpReceivedDataEventArgs e)
         {
-            if (this.Received != null)
+            if (this.ChannelReceived != null)
             {
-                await this.Received.Invoke(this, e).ConfigureAwait(false);
+                await this.ChannelReceived.Invoke(this, e).ConfigureAwait(false);
                 if (e.Handled)
                 {
                     return;

@@ -93,7 +93,7 @@ namespace ThingsGateway.Foundation
 
             codeString.AppendLine($"namespace {this.m_pluginClass.ContainingNamespace}");
             codeString.AppendLine("{");
-            codeString.AppendLine($"[global::System.CodeDom.Compiler.GeneratedCode(\"ThingsGateway.Foundation\",\"{Assembly.GetExecutingAssembly().GetName().Version.ToString()}\")]");
+            codeString.AppendLine($"[global::System.CodeDom.Compiler.GeneratedCode(\"ThingsGateway.Foundation\",\"{Assembly.GetExecutingAssembly().GetName().Version}\")]");
             codeString.AppendLine($"partial class {this.m_pluginClass.Name}");
             codeString.AppendLine("{");
             foreach (var item in propertys)

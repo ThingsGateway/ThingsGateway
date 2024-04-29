@@ -64,7 +64,7 @@ public partial class SiemensS7Master : ProtocolBase
     {
         var str = SiemensS7Resource.Localizer["AddressDes"];
 
-        return $"{base.GetAddressDescription()}{Environment.NewLine}{str.ToString()}";
+        return $"{base.GetAddressDescription()}{Environment.NewLine}{str}";
     }
 
     /// <inheritdoc/>

@@ -341,7 +341,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     {
         if (Channel.ChannelType == ChannelTypeEnum.TcpService)
         {
-            if (((TcpServiceBase)Channel).SocketClients.TryGetSocketClient($"ID={socketId}", out TgSocketClient? client))
+            if (((TcpServiceBase)Channel).SocketClients.TryGetSocketClient($"ID={socketId}", out SocketClientChannel? client))
                 return SendThenReturn(new SendMessage(commandResult), cancellationToken, client);
             else
                 return new OperResult<byte[]>(DefaultResource.Localizer["DtuNoConnectedWaining"]);
@@ -354,7 +354,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     {
         if (Channel.ChannelType == ChannelTypeEnum.TcpService)
         {
-            if (((TcpServiceBase)Channel).SocketClients.TryGetSocketClient($"ID={socketId}", out TgSocketClient? client))
+            if (((TcpServiceBase)Channel).SocketClients.TryGetSocketClient($"ID={socketId}", out SocketClientChannel? client))
                 return SendThenReturnAsync(new SendMessage(commandResult), cancellationToken, client);
             else
                 return Task.FromResult(new OperResult<byte[]>(DefaultResource.Localizer["DtuNoConnectedWaining"]));
@@ -376,7 +376,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     {
         if (Channel.ChannelType == ChannelTypeEnum.TcpService)
         {
-            if (((TcpServiceBase)Channel).SocketClients.TryGetSocketClient($"ID={socketId}", out TgSocketClient? client))
+            if (((TcpServiceBase)Channel).SocketClients.TryGetSocketClient($"ID={socketId}", out SocketClientChannel? client))
             {
                 Send(commandResult, client);
                 return new();

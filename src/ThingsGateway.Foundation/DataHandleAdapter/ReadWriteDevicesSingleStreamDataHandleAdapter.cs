@@ -56,7 +56,7 @@ public abstract class ReadWriteDevicesSingleStreamDataHandleAdapter<TRequest> : 
     /// <inheritdoc/>
     public override string? ToString()
     {
-        if (Owner is TgSocketClient client)
+        if (Owner is SocketClientChannel client)
         {
             return client.GetIPPort();
         }

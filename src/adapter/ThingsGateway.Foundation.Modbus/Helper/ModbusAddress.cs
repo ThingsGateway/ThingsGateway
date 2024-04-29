@@ -94,11 +94,11 @@ public class ModbusAddress
         StringBuilder stringGeter = new();
         if (Station > 0)
         {
-            stringGeter.Append($"s={Station.ToString()};");
+            stringGeter.Append($"s={Station};");
         }
         if (WriteFunction > 0)
         {
-            stringGeter.Append($"w={WriteFunction.ToString()};");
+            stringGeter.Append($"w={WriteFunction};");
         }
         if (!string.IsNullOrEmpty(SocketId))
         {

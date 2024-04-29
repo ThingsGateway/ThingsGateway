@@ -17,7 +17,7 @@ namespace ThingsGateway.Foundation
     /// <summary>
     /// 简单Tcp客户端
     /// </summary>
-    public class TgTcpClient : TgTcpClientBase, IClientChannel
+    public class TcpClientChannel : TcpClient, IClientChannel
     {
         /// <inheritdoc/>
         public ConcurrentList<IProtocol> Collects { get; } = new();
@@ -28,7 +28,7 @@ namespace ThingsGateway.Foundation
         /// <summary>
         /// 接收到数据
         /// </summary>
-        public TgReceivedEventHandler Received { get; set; }
+        public ChannelReceivedEventHandler ChannelReceived { get; set; }
 
         /// <inheritdoc/>
         public ChannelTypeEnum ChannelType => ChannelTypeEnum.TcpClient;
@@ -43,63 +43,51 @@ namespace ThingsGateway.Foundation
         public ChannelEventHandler Starting { get; set; }
 
         /// <inheritdoc/>
-        DataHandlingAdapter IClientChannel.DataHandlingAdapter => DataHandlingAdapter;
-
-        /// <inheritdoc/>
-        public void SetDataHandlingAdapter(DataHandlingAdapter adapter)
+        protected override async Task OnTcpReceived(ReceivedDataEventArgs e)
         {
-            if (adapter is SingleStreamDataHandlingAdapter single)
-                base.SetDataHandlingAdapter(single);
-            else
-                throw new NotSupportedException(DefaultResource.Localizer["AdapterTypeError", nameof(SingleStreamDataHandlingAdapter)]);
-        }
-
-        /// <inheritdoc/>
-        protected override async Task ReceivedData(ReceivedDataEventArgs e)
-        {
-            if (this.Received != null)
+            if (this.ChannelReceived != null)
             {
-                await this.Received.Invoke(this, e).ConfigureAwait(false);
+                await this.ChannelReceived.Invoke(this, e).ConfigureAwait(false);
                 if (e.Handled)
                 {
                     return;
                 }
             }
-            await base.ReceivedData(e).ConfigureAwait(false);
+             await base.OnTcpReceived(e);
         }
 
         /// <inheritdoc/>
-        protected override Task OnConnected(ConnectedEventArgs e)
+        protected override Task OnTcpConnected(ConnectedEventArgs e)
         {
             Logger?.Debug($"{ToString()}  Connected");
             if (Started != null)
                 return Started.Invoke(this);
-            return base.OnConnected(e);
+            return base.OnTcpConnected(e);
         }
 
         /// <inheritdoc/>
-        protected override Task OnConnecting(ConnectingEventArgs e)
+        protected override Task OnTcpConnecting(ConnectingEventArgs e)
         {
             Logger?.Debug($"{ToString()}  Connecting{(e.Message.IsNullOrEmpty() ? string.Empty : $"-{e.Message}")}");
             if (Starting != null)
                 return Starting.Invoke(this);
-            return base.OnConnecting(e);
+            return base.OnTcpConnecting(e);
         }
 
         /// <inheritdoc/>
-        protected override Task OnDisconnecting(DisconnectEventArgs e)
+        protected override Task OnTcpClosing(ClosingEventArgs e)
         {
             Logger?.Debug($"{ToString()}  Disconnecting{(e.Message.IsNullOrEmpty() ? string.Empty : $" -{e.Message}")}");
-            return base.OnDisconnecting(e);
+            return base.OnTcpClosing(e);
         }
 
         /// <inheritdoc/>
-        protected override Task OnDisconnected(DisconnectEventArgs e)
+        protected override Task OnTcpClosed(ClosedEventArgs e)
         {
             Logger?.Debug($"{ToString()}   Disconnected{(e.Message.IsNullOrEmpty() ? string.Empty : $"-{e.Message}")}");
             if (Stoped != null)
                 return Stoped.Invoke(this);
-            return base.OnDisconnected(e);
+            return base.OnTcpClosed(e);
         }
     }
 }

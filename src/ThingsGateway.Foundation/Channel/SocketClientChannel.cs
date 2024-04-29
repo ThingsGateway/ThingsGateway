@@ -17,15 +17,15 @@ using System.Diagnostics;
 namespace ThingsGateway.Foundation
 {
     /// <summary>
-    /// TgSocketClient
+    /// SocketClientChannel
     /// </summary>
     [DebuggerDisplay("Id={Id},IPAdress={IP}:{Port}")]
-    public class TgSocketClient : TcpSessionClient, IClientChannel
+    public class SocketClientChannel : TcpSessionClient, IClientChannel
     {
         /// <summary>
-        /// TgSocketClient
+        /// SocketClientChannel
         /// </summary>
-        ~TgSocketClient()
+        ~SocketClientChannel()
         {
             Dispose(false);
         }
@@ -47,13 +47,10 @@ namespace ThingsGateway.Foundation
         /// <summary>
         /// 接收到数据
         /// </summary>
-        public TgReceivedEventHandler Received { get; set; }
+        public ChannelReceivedEventHandler ChannelReceived { get; set; }
 
         /// <inheritdoc/>
         public ChannelTypeEnum ChannelType => ChannelTypeEnum.TcpService;
-
-        /// <inheritdoc/>
-        DataHandlingAdapter IClientChannel.DataHandlingAdapter => DataHandlingAdapter;
 
         /// <inheritdoc/>
         public ChannelEventHandler Started { get; set; }
@@ -63,18 +60,7 @@ namespace ThingsGateway.Foundation
 
         /// <inheritdoc/>
         public ChannelEventHandler Starting { get; set; }
-
-        public bool CanSend => this.Online;
-
-        /// <inheritdoc/>
-        public void SetDataHandlingAdapter(DataHandlingAdapter adapter)
-        {
-            if (adapter is SingleStreamDataHandlingAdapter single)
-                base.SetAdapter(single);
-            else
-                throw new NotSupportedException(DefaultResource.Localizer["AdapterTypeError", nameof(SingleStreamDataHandlingAdapter)]);
-        }
-
+ 
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
@@ -89,9 +75,9 @@ namespace ThingsGateway.Foundation
 
         protected override Task OnTcpReceived(ReceivedDataEventArgs e)
         {
-            if (this.Received != null)
+            if (this.ChannelReceived != null)
             {
-                return this.Received.Invoke(this, e);
+                return this.ChannelReceived.Invoke(this, e);
             }
             return base.OnTcpReceived(e);
         }
@@ -108,7 +94,6 @@ namespace ThingsGateway.Foundation
         /// <inheritdoc/>
         protected override Task OnTcpConnecting(ConnectingEventArgs e)
         {
-            //Logger?.Debug($"{ToString()}{FoundationConst.Connecting}{(e.Message.IsNullOrEmpty() ? string.Empty : $"-{e.Message}")}");
             if (Starting != null)
                 return Starting.Invoke(this);
             return base.OnTcpConnecting(e);
@@ -129,11 +114,6 @@ namespace ThingsGateway.Foundation
         }
 
         #region
-
-        /// <inheritdoc/>
-        public void Setup(TouchSocketConfig config)
-        {
-        }
 
         /// <inheritdoc/>
         public Task SetupAsync(TouchSocketConfig config)

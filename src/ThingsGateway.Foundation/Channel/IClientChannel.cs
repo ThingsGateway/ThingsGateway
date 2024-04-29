@@ -15,9 +15,9 @@
 namespace ThingsGateway.Foundation;
 
 /// <summary>
-/// 通道管理，对于TgTcpService，是TgSocketClient类继承此接口
+/// 通道管理，对于TgTcpService，是SocketClientChannel类继承此接口
 /// </summary>
-public interface IClientChannel : IChannel, ISender, IClient, IClientSender, IOnlineClient, IConnectableClient, IClosableClient, IDisposable
+public interface IClientChannel : IChannel, ISender, IClient, IClientSender, IOnlineClient
 {
     #region 属性
 
@@ -25,11 +25,6 @@ public interface IClientChannel : IChannel, ISender, IClient, IClientSender, IOn
     /// 等待锁，对于大部分工业主从协议是必须的，一个通道一个实现
     /// </summary>
     EasyLock WaitLock { get; }
-
-    /// <summary>
-    /// 数据处理适配器
-    /// </summary>
-    DataHandlingAdapter DataHandlingAdapter { get; }
 
     #endregion 属性
 }

@@ -65,11 +65,11 @@ public class SiemensAddress
     {
         if (DataCode == (byte)S7Area.TM)
         {
-            return $"T{Address.ToString()}{(IsString ? ";" : ";W=false;")}";
+            return $"T{Address}{(IsString ? ";" : ";W=false;")}";
         }
         if (DataCode == (byte)S7Area.CT)
         {
-            return $"C{Address.ToString()}{(IsString ? ";" : ";W=false;")}";
+            return $"C{Address}{(IsString ? ";" : ";W=false;")}";
         }
 
         if (DataCode == (byte)S7Area.AI)
@@ -97,7 +97,7 @@ public class SiemensAddress
             return $"M{GetStringAddress(AddressStart)}{(IsString ? ";" : ";W=false;")}";
         }
 
-        return DataCode == (byte)S7Area.DB ? $"DB{DbBlock.ToString()}.{GetStringAddress(AddressStart)}{(IsString ? ";" : ";W=false;")}" : Address.ToString() + (IsString ? ";" : ";W=false;");
+        return DataCode == (byte)S7Area.DB ? $"DB{DbBlock}.{GetStringAddress(AddressStart)}{(IsString ? ";" : ";W=false;")}" : Address.ToString() + (IsString ? ";" : ";W=false;");
     }
 
     private static string GetStringAddress(int addressStart)

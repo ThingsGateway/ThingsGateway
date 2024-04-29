@@ -34,7 +34,7 @@ namespace ThingsGateway.Foundation
         /// <summary>
         /// 接收到数据
         /// </summary>
-        public TgReceivedEventHandler Received { get; set; }
+        public ChannelReceivedEventHandler Received { get; set; }
 
         /// <inheritdoc/>
         public ChannelTypeEnum ChannelType => ChannelTypeEnum.SerialPortClient;
