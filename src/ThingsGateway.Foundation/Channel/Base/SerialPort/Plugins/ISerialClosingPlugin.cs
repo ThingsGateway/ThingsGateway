@@ -15,23 +15,23 @@
 namespace ThingsGateway.Foundation
 {
     /// <summary>
-    /// 具有断开连接的插件接口
+    /// 即将断开连接(仅主动断开时有效)。
     /// </summary>
-    public interface ISerialDisconnectedPlugin<in TClient> : IPlugin where TClient : ISerialPortClient
+    public interface ISerialClosingPlugin<in TClient> : IPlugin where TClient : ISerialPortClient
     {
         /// <summary>
-        /// 会话断开后触发
+        /// 即将断开连接(仅主动断开时有效)。
         /// </summary>
         /// <param name="client"></param>
         /// <param name="e"></param>
         /// <returns></returns>
-        Task OnSerialDisconnected(TClient client, ClosedEventArgs e);
+        Task OnSerialDisconnecting(TClient client, ClosingEventArgs e);
     }
 
     /// <summary>
-    /// ISerialDisconnectedPlugin
+    /// ISerialClosingPlugin
     /// </summary>
-    public interface ISerialDisconnectedPlugin : ISerialDisconnectedPlugin<ISerialPortClient>
+    public interface ISerialClosingPlugin : ISerialClosingPlugin<ISerialPortClient>
     {
     }
 }
