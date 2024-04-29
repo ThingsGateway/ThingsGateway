@@ -71,7 +71,7 @@ namespace ThingsGateway.Foundation
         }
 
         /// <inheritdoc/>
-        public Task ConnectAsync(int timeout, CancellationToken token) => throw new NotImplementedException();
+        public ValueTask ConnectAsync(int timeout, CancellationToken token) => throw new NotImplementedException();
 
         protected override Task OnTcpReceived(ReceivedDataEventArgs e)
         {
@@ -116,7 +116,7 @@ namespace ThingsGateway.Foundation
         #region
 
         /// <inheritdoc/>
-        public Task SetupAsync(TouchSocketConfig config)
+        public ValueTask SetupAsync(TouchSocketConfig config)
         {
             return EasyTask.CompletedTask;
         }

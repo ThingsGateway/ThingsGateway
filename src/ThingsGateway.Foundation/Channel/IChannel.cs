@@ -62,18 +62,18 @@ public interface IChannel :  ISetupConfigObject, IDisposable, IClosableClient
     /// <param name="token">可取消令箭</param>
     /// <exception cref="TimeoutException"></exception>
     /// <exception cref="Exception"></exception>
-    Task ConnectAsync(int millisecondsTimeout=3000, CancellationToken token=default);
+    ValueTask ConnectAsync(int millisecondsTimeout=3000, CancellationToken token=default);
 
 }
 
 /// <summary>
 /// ChannelEventHandler
 /// </summary>
-public delegate Task ChannelEventHandler(IClientChannel channel);
+public delegate ValueTask ChannelEventHandler(IClientChannel channel);
 
 /// <summary>
 /// 接收数据
 /// </summary>
 /// <param name="client"></param>
 /// <param name="e"></param>
-public delegate Task ChannelReceivedEventHandler(IClientChannel client, ReceivedDataEventArgs e);
+public delegate ValueTask ChannelReceivedEventHandler(IClientChannel client, ReceivedDataEventArgs e);

@@ -96,7 +96,7 @@ public abstract class ReadWriteDevicesUdpDataHandleAdapter<TRequest> : UdpDataHa
     /// <summary>
     /// 预发送方法，会对命令重新打包并发送字节数组
     /// </summary>
-    protected async Task GoSendAsync(EndPoint endPoint, byte[] item, TRequest request)
+    protected async ValueTask GoSendAsync(EndPoint endPoint, byte[] item, TRequest request)
     {
         byte[] bytes;
         if (IsSendPackCommand)
@@ -137,7 +137,7 @@ public abstract class ReadWriteDevicesUdpDataHandleAdapter<TRequest> : UdpDataHa
     }
 
     /// <inheritdoc/>
-    protected override void PreviewReceived(EndPoint remoteEndPoint, ByteBlock byteBlock)
+    protected override Task PreviewReceived(EndPoint remoteEndPoint, ByteBlock byteBlock)
     {
         var allBytes = byteBlock.ToArray(0, byteBlock.Len);
         if (Logger.LogLevel <= LogLevel.Trace)
@@ -145,8 +145,7 @@ public abstract class ReadWriteDevicesUdpDataHandleAdapter<TRequest> : UdpDataHa
 
         //if (Request?.SendBytes == null)
         //{
-        //    GoReceived(remoteEndPoint, byteBlock, null);
-        //    return;
+        //    return GoReceived(remoteEndPoint, byteBlock, null);
         //}
         byte[] header = new byte[] { };
         if (Request.HeadBytesLength > 0)
@@ -170,17 +169,19 @@ public abstract class ReadWriteDevicesUdpDataHandleAdapter<TRequest> : UdpDataHa
             {
                 Request.Content = unpackbytes.Content;
                 Request.ReceivedBytes = bytes;
-                GoReceived(remoteEndPoint, null, Request);
-                return;
+                return GoReceived(remoteEndPoint, null, Request);
             }
             else
             {
                 byteBlock.Pos = byteBlock.Len;
                 Request.ReceivedBytes = byteBlock.ToArray(0, byteBlock.Len);
                 Logger?.Warning(unpackbytes.ErrorMessage);
-                GoReceived(remoteEndPoint, null, Request);
-                return;
+                return GoReceived(remoteEndPoint, null, Request);
             }
+        }
+        else
+        {
+            return EasyTask.CompletedTask;
         }
     }
 

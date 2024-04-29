@@ -89,7 +89,7 @@ namespace ThingsGateway.Foundation
         }
 
         /// <inheritdoc/>
-        public async Task ConnectAsync(int timeout=3000, CancellationToken token=default)
+        public async ValueTask ConnectAsync(int timeout=3000, CancellationToken token=default)
         {
             if (token.IsCancellationRequested)
                 return;
@@ -100,7 +100,7 @@ namespace ThingsGateway.Foundation
                 await Started.Invoke(this).ConfigureAwait(false);
         }
 
-        public Task CloseAsync(string msg)
+        public ValueTask CloseAsync(string msg)
         {
             return this.StopAsync();
         }

@@ -76,7 +76,7 @@ public sealed class EasyLock : DisposableObject
     /// <summary>
     /// 进入锁
     /// </summary>
-    public Task WaitAsync(CancellationToken cancellationToken = default)
+    public ValueTask WaitAsync(CancellationToken cancellationToken = default)
     {
         return m_waiterLock.WaitAsync(cancellationToken);
     }
@@ -84,7 +84,7 @@ public sealed class EasyLock : DisposableObject
     /// <summary>
     /// 进入锁
     /// </summary>
-    public Task<bool> WaitAsync(TimeSpan timeSpan, CancellationToken cancellationToken = default)
+    public ValueTask<bool> WaitAsync(TimeSpan timeSpan, CancellationToken cancellationToken = default)
     {
         return m_waiterLock.WaitAsync(timeSpan, cancellationToken);
     }

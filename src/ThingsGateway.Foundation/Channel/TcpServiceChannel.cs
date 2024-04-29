@@ -152,7 +152,7 @@ namespace ThingsGateway.Foundation
         public bool Online => ServerState == ServerState.Running;
 
         /// <inheritdoc/>
-        public Task ConnectAsync(int timeout = 3000, CancellationToken token = default)
+        public ValueTask ConnectAsync(int timeout = 3000, CancellationToken token = default)
         {
             if (token.IsCancellationRequested)
                 return EasyTask.CompletedTask;
@@ -160,7 +160,7 @@ namespace ThingsGateway.Foundation
             return base.StartAsync();
         }
 
-        public Task CloseAsync(string msg)
+        public ValueTask CloseAsync(string msg)
         {
             return this.StopAsync();
         }

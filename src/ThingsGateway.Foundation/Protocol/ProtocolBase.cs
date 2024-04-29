@@ -110,7 +110,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     /// </summary>
     /// <param name="channel"></param>
     /// <returns></returns>
-    protected virtual Task ChannelStarted(IClientChannel channel)
+    protected virtual ValueTask ChannelStarted(IClientChannel channel)
     {
         return EasyTask.CompletedTask;
     }
@@ -120,7 +120,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     /// </summary>
     /// <param name="channel"></param>
     /// <returns></returns>
-    protected Task ChannelStoped(IClientChannel channel)
+    protected ValueTask ChannelStoped(IClientChannel channel)
     {
         if(channel==this.Channel)
         {
@@ -140,7 +140,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     /// </summary>
     /// <param name="channel"></param>
     /// <returns></returns>
-    protected virtual Task ChannelStarting(IClientChannel channel)
+    protected virtual ValueTask ChannelStarting(IClientChannel channel)
     {
         channel.SetDataHandlingAdapter(GetDataAdapter());
 
@@ -223,7 +223,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     /// <param name="client"></param>
     /// <param name="e"></param>
     /// <returns></returns>
-    protected virtual Task Received(IClientChannel client, ReceivedDataEventArgs e)
+    protected virtual ValueTask Received(IClientChannel client, ReceivedDataEventArgs e)
     {
         if (e.RequestInfo is MessageBase response)
         {
@@ -273,12 +273,12 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     }
 
     /// <inheritdoc/>
-    public virtual async Task SendAsync(byte[] command, IClientChannel channel = default, CancellationToken cancellationToken = default)
+    public virtual async ValueTask SendAsync(byte[] command, IClientChannel channel = default, CancellationToken cancellationToken = default)
     {
         var item = command;
         await Channel.ConnectAsync(ConnectTimeout, cancellationToken).ConfigureAwait(false);
         if (SendDelayTime != 0)
-            await Task.Delay(SendDelayTime, cancellationToken).ConfigureAwait(false);
+            await ValueTask.Delay(SendDelayTime, cancellationToken).ConfigureAwait(false);
         if (channel == default)
         {
             if (Channel is not IClientChannel clientChannel) { throw new ArgumentNullException(nameof(channel)); }
@@ -315,12 +315,12 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     }
 
     /// <inheritdoc/>
-    public virtual async Task<OperResult<byte[]>> SendThenReturnAsync(ISendMessage command, CancellationToken cancellationToken, IClientChannel channel = default)
+    public virtual async ValueTask<OperResult<byte[]>> SendThenReturnAsync(ISendMessage command, CancellationToken cancellationToken, IClientChannel channel = default)
     {
         var item = command;
         await Channel.ConnectAsync(ConnectTimeout, cancellationToken).ConfigureAwait(false);
         if (SendDelayTime != 0)
-            await Task.Delay(SendDelayTime, cancellationToken).ConfigureAwait(false);
+            await ValueTask.Delay(SendDelayTime, cancellationToken).ConfigureAwait(false);
         SetDataAdapter();
         MessageBase? result;
 
@@ -350,14 +350,14 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
             return SendThenReturn(new SendMessage(commandResult), cancellationToken);
     }
 
-    public virtual Task<OperResult<byte[]>> SendThenReturnAsync(string socketId, byte[] commandResult, CancellationToken cancellationToken)
+    public virtual ValueTask<OperResult<byte[]>> SendThenReturnAsync(string socketId, byte[] commandResult, CancellationToken cancellationToken)
     {
         if (Channel.ChannelType == ChannelTypeEnum.TcpService)
         {
             if (((TcpServiceBase)Channel).SocketClients.TryGetSocketClient($"ID={socketId}", out SocketClientChannel? client))
                 return SendThenReturnAsync(new SendMessage(commandResult), cancellationToken, client);
             else
-                return Task.FromResult(new OperResult<byte[]>(DefaultResource.Localizer["DtuNoConnectedWaining"]));
+                return ValueTask.FromResult(new OperResult<byte[]>(DefaultResource.Localizer["DtuNoConnectedWaining"]));
         }
         else
             return SendThenReturnAsync(new SendMessage(commandResult), cancellationToken);
@@ -367,7 +367,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
         return SendThenReturn(new SendMessage(commandResult), cancellationToken);
     }
 
-    public virtual Task<OperResult<byte[]>> SendThenReturnAsync(byte[] commandResult, CancellationToken cancellationToken)
+    public virtual ValueTask<OperResult<byte[]>> SendThenReturnAsync(byte[] commandResult, CancellationToken cancellationToken)
     {
         return SendThenReturnAsync(new SendMessage(commandResult), cancellationToken);
     }
@@ -403,7 +403,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     /// <param name="clientChannel"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    protected virtual async Task<MessageBase> GetResponsedDataAsync(ISendMessage item, int timeout, IClientChannel clientChannel, CancellationToken cancellationToken)
+    protected virtual async ValueTask<MessageBase> GetResponsedDataAsync(ISendMessage item, int timeout, IClientChannel clientChannel, CancellationToken cancellationToken)
     {
         if (IsSingleThread)
             await clientChannel.WaitLock.WaitAsync(cancellationToken).ConfigureAwait(false);
@@ -462,7 +462,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     #region 动态类型读写
 
     /// <inheritdoc/>
-    public virtual async Task<IOperResult<Array>> ReadAsync(string address, int length, DataTypeEnum dataType, CancellationToken cancellationToken = default)
+    public virtual async ValueTask<IOperResult<Array>> ReadAsync(string address, int length, DataTypeEnum dataType, CancellationToken cancellationToken = default)
     {
         return dataType switch
         {
@@ -502,7 +502,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     }
 
     /// <inheritdoc/>
-    public virtual async Task<OperResult> WriteAsync(string address, JToken value, DataTypeEnum dataType, CancellationToken cancellationToken = default)
+    public virtual async ValueTask<OperResult> WriteAsync(string address, JToken value, DataTypeEnum dataType, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -615,10 +615,10 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     public abstract OperResult<byte[]> Read(string address, int length, CancellationToken cancellationToken = default);
 
     /// <inheritdoc/>
-    public abstract Task<OperResult<byte[]>> ReadAsync(string address, int length, CancellationToken cancellationToken = default);
+    public abstract ValueTask<OperResult<byte[]>> ReadAsync(string address, int length, CancellationToken cancellationToken = default);
 
     /// <inheritdoc/>
-    public virtual async Task<OperResult<Boolean[]>> ReadBooleanAsync(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
+    public virtual async ValueTask<OperResult<Boolean[]>> ReadBooleanAsync(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
     {
         bitConverter ??= ThingsGatewayBitConverter.GetTransByAddress(ref address);
 
@@ -627,7 +627,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     }
 
     /// <inheritdoc/>
-    public virtual async Task<OperResult<Int16[]>> ReadInt16Async(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
+    public virtual async ValueTask<OperResult<Int16[]>> ReadInt16Async(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
     {
         bitConverter ??= ThingsGatewayBitConverter.GetTransByAddress(ref address);
         var result = await ReadAsync(address, GetLength(address, length, 2), cancellationToken).ConfigureAwait(false);
@@ -635,7 +635,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     }
 
     /// <inheritdoc/>
-    public virtual async Task<OperResult<UInt16[]>> ReadUInt16Async(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
+    public virtual async ValueTask<OperResult<UInt16[]>> ReadUInt16Async(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
     {
         bitConverter ??= ThingsGatewayBitConverter.GetTransByAddress(ref address);
         var result = await ReadAsync(address, GetLength(address, length, 2), cancellationToken).ConfigureAwait(false);
@@ -643,7 +643,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     }
 
     /// <inheritdoc/>
-    public virtual async Task<OperResult<Int32[]>> ReadInt32Async(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
+    public virtual async ValueTask<OperResult<Int32[]>> ReadInt32Async(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
     {
         bitConverter ??= ThingsGatewayBitConverter.GetTransByAddress(ref address);
         var result = await ReadAsync(address, GetLength(address, length, 4), cancellationToken).ConfigureAwait(false);
@@ -651,7 +651,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     }
 
     /// <inheritdoc/>
-    public virtual async Task<OperResult<UInt32[]>> ReadUInt32Async(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
+    public virtual async ValueTask<OperResult<UInt32[]>> ReadUInt32Async(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
     {
         bitConverter ??= ThingsGatewayBitConverter.GetTransByAddress(ref address);
         var result = await ReadAsync(address, GetLength(address, length, 4), cancellationToken).ConfigureAwait(false);
@@ -659,7 +659,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     }
 
     /// <inheritdoc/>
-    public virtual async Task<OperResult<Int64[]>> ReadInt64Async(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
+    public virtual async ValueTask<OperResult<Int64[]>> ReadInt64Async(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
     {
         bitConverter ??= ThingsGatewayBitConverter.GetTransByAddress(ref address);
         var result = await ReadAsync(address, GetLength(address, length, 8), cancellationToken).ConfigureAwait(false);
@@ -667,7 +667,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     }
 
     /// <inheritdoc/>
-    public virtual async Task<OperResult<UInt64[]>> ReadUInt64Async(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
+    public virtual async ValueTask<OperResult<UInt64[]>> ReadUInt64Async(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
     {
         bitConverter ??= ThingsGatewayBitConverter.GetTransByAddress(ref address);
         var result = await ReadAsync(address, GetLength(address, length, 8), cancellationToken).ConfigureAwait(false);
@@ -675,7 +675,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     }
 
     /// <inheritdoc/>
-    public virtual async Task<OperResult<Single[]>> ReadSingleAsync(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
+    public virtual async ValueTask<OperResult<Single[]>> ReadSingleAsync(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
     {
         bitConverter ??= ThingsGatewayBitConverter.GetTransByAddress(ref address);
         var result = await ReadAsync(address, GetLength(address, length, 4), cancellationToken).ConfigureAwait(false);
@@ -683,7 +683,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     }
 
     /// <inheritdoc/>
-    public virtual async Task<OperResult<Double[]>> ReadDoubleAsync(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
+    public virtual async ValueTask<OperResult<Double[]>> ReadDoubleAsync(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
     {
         bitConverter ??= ThingsGatewayBitConverter.GetTransByAddress(ref address);
         var result = await ReadAsync(address, GetLength(address, length, 8), cancellationToken).ConfigureAwait(false);
@@ -691,7 +691,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     }
 
     /// <inheritdoc/>
-    public virtual async Task<OperResult<String[]>> ReadStringAsync(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
+    public virtual async ValueTask<OperResult<String[]>> ReadStringAsync(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
     {
         bitConverter ??= ThingsGatewayBitConverter.GetTransByAddress(ref address);
         if (bitConverter.StringLength == null) return new(DefaultResource.Localizer["StringAddressError"]);
@@ -809,82 +809,82 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     #region 写入
 
     /// <inheritdoc/>
-    public abstract Task<OperResult> WriteAsync(string address, byte[] value, CancellationToken cancellationToken = default);
+    public abstract ValueTask<OperResult> WriteAsync(string address, byte[] value, CancellationToken cancellationToken = default);
 
     /// <inheritdoc/>
-    public abstract Task<OperResult> WriteAsync(string address, bool[] value, CancellationToken cancellationToken = default);
+    public abstract ValueTask<OperResult> WriteAsync(string address, bool[] value, CancellationToken cancellationToken = default);
 
     /// <inheritdoc/>
-    public virtual Task<OperResult> WriteAsync(string address, bool value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
+    public virtual ValueTask<OperResult> WriteAsync(string address, bool value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
     {
         return WriteAsync(address, new bool[1] { value }, cancellationToken);
     }
 
     /// <inheritdoc/>
-    public virtual Task<OperResult> WriteAsync(string address, byte value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
+    public virtual ValueTask<OperResult> WriteAsync(string address, byte value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
     {
         bitConverter ??= ThingsGatewayBitConverter.GetTransByAddress(ref address);
         return WriteAsync(address, bitConverter.GetBytes(value), cancellationToken);
     }
 
     /// <inheritdoc/>
-    public virtual Task<OperResult> WriteAsync(string address, short value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
+    public virtual ValueTask<OperResult> WriteAsync(string address, short value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
     {
         bitConverter ??= ThingsGatewayBitConverter.GetTransByAddress(ref address);
         return WriteAsync(address, bitConverter.GetBytes(value), cancellationToken);
     }
 
     /// <inheritdoc/>
-    public virtual Task<OperResult> WriteAsync(string address, ushort value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
+    public virtual ValueTask<OperResult> WriteAsync(string address, ushort value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
     {
         bitConverter ??= ThingsGatewayBitConverter.GetTransByAddress(ref address);
         return WriteAsync(address, bitConverter.GetBytes(value), cancellationToken);
     }
 
     /// <inheritdoc/>
-    public virtual Task<OperResult> WriteAsync(string address, int value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
+    public virtual ValueTask<OperResult> WriteAsync(string address, int value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
     {
         bitConverter ??= ThingsGatewayBitConverter.GetTransByAddress(ref address);
         return WriteAsync(address, bitConverter.GetBytes(value), cancellationToken);
     }
 
     /// <inheritdoc/>
-    public virtual Task<OperResult> WriteAsync(string address, uint value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
+    public virtual ValueTask<OperResult> WriteAsync(string address, uint value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
     {
         bitConverter ??= ThingsGatewayBitConverter.GetTransByAddress(ref address);
         return WriteAsync(address, bitConverter.GetBytes(value), cancellationToken);
     }
 
     /// <inheritdoc/>
-    public virtual Task<OperResult> WriteAsync(string address, long value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
+    public virtual ValueTask<OperResult> WriteAsync(string address, long value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
     {
         bitConverter ??= ThingsGatewayBitConverter.GetTransByAddress(ref address);
         return WriteAsync(address, bitConverter.GetBytes(value), cancellationToken);
     }
 
     /// <inheritdoc/>
-    public virtual Task<OperResult> WriteAsync(string address, ulong value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
+    public virtual ValueTask<OperResult> WriteAsync(string address, ulong value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
     {
         bitConverter ??= ThingsGatewayBitConverter.GetTransByAddress(ref address);
         return WriteAsync(address, bitConverter.GetBytes(value), cancellationToken);
     }
 
     /// <inheritdoc/>
-    public virtual Task<OperResult> WriteAsync(string address, float value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
+    public virtual ValueTask<OperResult> WriteAsync(string address, float value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
     {
         bitConverter ??= ThingsGatewayBitConverter.GetTransByAddress(ref address);
         return WriteAsync(address, bitConverter.GetBytes(value), cancellationToken);
     }
 
     /// <inheritdoc/>
-    public virtual Task<OperResult> WriteAsync(string address, double value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
+    public virtual ValueTask<OperResult> WriteAsync(string address, double value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
     {
         bitConverter ??= ThingsGatewayBitConverter.GetTransByAddress(ref address);
         return WriteAsync(address, bitConverter.GetBytes(value), cancellationToken);
     }
 
     /// <inheritdoc/>
-    public virtual Task<OperResult> WriteAsync(string address, string value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
+    public virtual ValueTask<OperResult> WriteAsync(string address, string value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
     {
         bitConverter ??= ThingsGatewayBitConverter.GetTransByAddress(ref address);
         var data = bitConverter.GetBytes(value);
@@ -979,63 +979,63 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     #region 写入数组
 
     /// <inheritdoc/>
-    public virtual Task<OperResult> WriteAsync(string address, short[] value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
+    public virtual ValueTask<OperResult> WriteAsync(string address, short[] value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
     {
         bitConverter ??= ThingsGatewayBitConverter.GetTransByAddress(ref address);
         return WriteAsync(address, bitConverter.GetBytes(value), cancellationToken);
     }
 
     /// <inheritdoc/>
-    public virtual Task<OperResult> WriteAsync(string address, ushort[] value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
+    public virtual ValueTask<OperResult> WriteAsync(string address, ushort[] value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
     {
         bitConverter ??= ThingsGatewayBitConverter.GetTransByAddress(ref address);
         return WriteAsync(address, bitConverter.GetBytes(value), cancellationToken);
     }
 
     /// <inheritdoc/>
-    public virtual Task<OperResult> WriteAsync(string address, int[] value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
+    public virtual ValueTask<OperResult> WriteAsync(string address, int[] value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
     {
         bitConverter ??= ThingsGatewayBitConverter.GetTransByAddress(ref address);
         return WriteAsync(address, bitConverter.GetBytes(value), cancellationToken);
     }
 
     /// <inheritdoc/>
-    public virtual Task<OperResult> WriteAsync(string address, uint[] value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
+    public virtual ValueTask<OperResult> WriteAsync(string address, uint[] value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
     {
         bitConverter ??= ThingsGatewayBitConverter.GetTransByAddress(ref address);
         return WriteAsync(address, bitConverter.GetBytes(value), cancellationToken);
     }
 
     /// <inheritdoc/>
-    public virtual Task<OperResult> WriteAsync(string address, long[] value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
+    public virtual ValueTask<OperResult> WriteAsync(string address, long[] value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
     {
         bitConverter ??= ThingsGatewayBitConverter.GetTransByAddress(ref address);
         return WriteAsync(address, bitConverter.GetBytes(value), cancellationToken);
     }
 
     /// <inheritdoc/>
-    public virtual Task<OperResult> WriteAsync(string address, ulong[] value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
+    public virtual ValueTask<OperResult> WriteAsync(string address, ulong[] value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
     {
         bitConverter ??= ThingsGatewayBitConverter.GetTransByAddress(ref address);
         return WriteAsync(address, bitConverter.GetBytes(value), cancellationToken);
     }
 
     /// <inheritdoc/>
-    public virtual Task<OperResult> WriteAsync(string address, float[] value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
+    public virtual ValueTask<OperResult> WriteAsync(string address, float[] value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
     {
         bitConverter ??= ThingsGatewayBitConverter.GetTransByAddress(ref address);
         return WriteAsync(address, bitConverter.GetBytes(value), cancellationToken);
     }
 
     /// <inheritdoc/>
-    public virtual Task<OperResult> WriteAsync(string address, double[] value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
+    public virtual ValueTask<OperResult> WriteAsync(string address, double[] value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
     {
         bitConverter ??= ThingsGatewayBitConverter.GetTransByAddress(ref address);
         return WriteAsync(address, bitConverter.GetBytes(value), cancellationToken);
     }
 
     /// <inheritdoc/>
-    public virtual async Task<OperResult> WriteAsync(string address, string[] value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
+    public virtual async ValueTask<OperResult> WriteAsync(string address, string[] value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
     {
         bitConverter ??= ThingsGatewayBitConverter.GetTransByAddress(ref address);
         if (bitConverter.StringLength == null) return new(DefaultResource.Localizer["StringAddressError"]);

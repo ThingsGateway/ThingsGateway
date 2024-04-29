@@ -26,9 +26,9 @@ public class DtuPlugin : PluginBase, ITcpReceivingPlugin
         this.DtuService = dtuService;
     }
 
-    public async Task OnTcpReceiving(ITcpSession client, ByteBlockEventArgs e)
+    public async ValueTask OnTcpReceiving(ITcpSession client, ByteBlockEventArgs e)
     {
-        if (client is ITcpSessionClient socket)
+        if (client is SocketClientChannel socket)
         {
             var bytes = e.ByteBlock.ToArray();
             if (!socket.Id.StartsWith("ID="))
@@ -41,7 +41,7 @@ public class DtuPlugin : PluginBase, ITcpReceivingPlugin
             if (DtuService.HeartbeatHexString == bytes.ToHexString())
             {
                 //回应心跳包
-                socket.SEN(bytes);
+                socket.(bytes);
                 e.Handled = true;
                 if (socket.Logger.LogLevel <= LogLevel.Trace)
                     socket.Logger?.Trace($"{socket}- Send:{bytes.ToHexString(' ')}");
