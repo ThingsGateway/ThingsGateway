@@ -1,7 +1,5 @@
 ﻿@namespace ThingsGateway.Admin.Razor
 @typeparam TItem
-@* 列宽持久化 *@
-@* ClientTableName="@typeof(TItem).TypeHandle.Value.ToString()" *@ 
 
 <Table TItem="TItem" IsBordered="true" IsStriped="true" IsMultipleSelect="IsMultipleSelect" @ref="Instance" TableSize=TableSize SearchTemplate=SearchTemplate
        IsPagination="IsPagination" PageItemsSource="PageItemsSource" IsFixedHeader="IsFixedHeader" IndentSize=24 RowHeight=RowHeight 
@@ -16,7 +14,7 @@
        FixedExtendButtonsColumn IsAutoRefresh=IsAutoRefresh AutoRefreshInterval=AutoRefreshInterval
        AllowDragColumn=@AllowDragColumn Height=@Height ShowRefresh=ShowRefresh
        AllowResizing=@AllowResizing ExportButtonDropdownTemplate=ExportButtonDropdownTemplate
-       ShowToolbar="ShowToolbar"
+       ShowToolbar="ShowToolbar" ClientTableName="@ClientTableName"
        ShowExtendButtons="ShowExtendButtons"
        ShowAddButton=@(ShowAddButton??AuthorizeButton(AdminOperConst.Add))
        ShowDeleteButton=@(ShowDeleteButton??AuthorizeButton(AdminOperConst.Delete))
