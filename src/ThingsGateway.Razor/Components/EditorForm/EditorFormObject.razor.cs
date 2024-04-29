@@ -10,7 +10,12 @@
 //------------------------------------------------------------------------------
 
 
+// Copyright (c) Argo Zhang (argo@163.com). All rights reserved.
+// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
+// Website: https://www.blazor.zone or https://argozhang.github.io/
+
 using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.Extensions.Localization;
 
 using ThingsGateway.Razor;
 
@@ -19,11 +24,10 @@ namespace BootstrapBlazor.Components;
 /// <summary>
 /// 编辑表单基类
 /// </summary>
-
 [CascadingTypeParameter(nameof(TModel))]
 public partial class EditorFormObject<TModel> : IShowLabel
 {
-    private string? ClassString => CssBuilder.Default("form-body")
+    private string? ClassString => CssBuilder.Default("bb-editor form-body")
         .AddClassFromAttributes(AdditionalAttributes)
         .Build();
 
@@ -46,11 +50,11 @@ public partial class EditorFormObject<TModel> : IShowLabel
         }
         return CssBuilder.Default("col-12")
             .AddClass($"col-sm-{cols}", cols > 0) // 指定 Cols
-            .AddClass($" col-md-{mdCols}", cols == 0 && item.Items == null && item.Rows == 0) // 指定 ItemsPerRow
+            .AddClass($"col-sm-6 col-md-{mdCols}", cols == 0 && item.Items == null && item.Rows == 0) // 指定 ItemsPerRow
             .Build();
     }
 
-    private string? FormClassString => CssBuilder.Default("row g-2 mx-1")
+    private string? FormClassString => CssBuilder.Default("row g-3")
         .AddClass("form-inline", RowType == RowType.Inline)
         .AddClass("form-inline-end", RowType == RowType.Inline && LabelAlign == Alignment.Right)
         .AddClass("form-inline-center", RowType == RowType.Inline && LabelAlign == Alignment.Center)
@@ -91,7 +95,7 @@ public partial class EditorFormObject<TModel> : IShowLabel
     public int? LabelWidth { get; set; }
 
     /// <summary>
-    /// 获得/设置 列模板
+    /// 获得/设置 列模板 设置 <see cref="Items"/> 时本参数不生效
     /// </summary>
     [Parameter]
     public RenderFragment<TModel>? FieldItems { get; set; }
@@ -142,7 +146,7 @@ public partial class EditorFormObject<TModel> : IShowLabel
     public bool AutoGenerateAllItem { get; set; } = true;
 
     /// <summary>
-    /// 获得/设置 级联上下文绑定字段信息集合
+    /// 获得/设置 级联上下文绑定字段信息集合 设置此参数后 <see cref="FieldItems"/> 模板不生效
     /// </summary>
     [Parameter]
     public IEnumerable<IEditorItem>? Items { get; set; }
@@ -194,7 +198,8 @@ public partial class EditorFormObject<TModel> : IShowLabel
     /// <summary>
     /// 获得/设置 渲染的编辑项集合
     /// </summary>
-    private readonly List<IEditorItem> _formItems = [];
+    [NotNull]
+    private List<IEditorItem>? _formItems = null;
 
     private IEnumerable<IEditorItem> UnsetGroupItems => _formItems.Where(i => string.IsNullOrEmpty(i.GroupName) && i.IsVisible(ItemChangedType, IsSearch.Value));
 
@@ -228,7 +233,7 @@ public partial class EditorFormObject<TModel> : IShowLabel
     }
 
     /// <summary>
-    /// OnParametersSet 方法
+    /// <inheritdoc/>
     /// </summary>
     protected override void OnParametersSet()
     {
@@ -236,26 +241,29 @@ public partial class EditorFormObject<TModel> : IShowLabel
 
         // 为空时使用级联参数 ValidateForm 的 ShowLabel
         ShowLabel ??= ValidateForm?.ShowLabel;
+        _formItems = null;
     }
 
-    private bool _firstRender = true;
+    private bool _inited;
 
-    /// <summary>
-    /// OnAfterRenderAsync 方法
-    /// </summary>
-    /// <param name="firstRender"></param>
-    /// <returns></returns>
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    private Task OnRenderAsync(bool firstRender)
     {
-        await base.OnAfterRenderAsync(firstRender);
-
         if (firstRender)
         {
-            _firstRender = false;
+            _inited = true;
+            StateHasChanged();
+        }
+        return Task.CompletedTask;
+    }
 
+    private void ResetItems()
+    {
+        if (_formItems == null)
+        {
+            _formItems = [];
             if (Items != null)
             {
-                _formItems.AddRange(Items);
+                _formItems.AddRange(Items.Where(i => !i.Ignore));
             }
             else
             {
@@ -272,14 +280,13 @@ public partial class EditorFormObject<TModel> : IShowLabel
                         if (item != null)
                         {
                             // 过滤掉不编辑与不可见的列
-                            if (!el.Editable || !el.IsVisible(ItemChangedType, IsSearch.Value))
+                            if (el.Ignore || !el.IsVisible(ItemChangedType, IsSearch.Value))
                             {
                                 items.Remove(item);
                             }
                             else
                             {
                                 // 设置只读属性与列模板
-                                item.Editable = true;
                                 item.CopyValue(el);
                             }
                         }
@@ -288,10 +295,9 @@ public partial class EditorFormObject<TModel> : IShowLabel
                 }
                 else
                 {
-                    _formItems.AddRange(_editorItems.Where(i => i.Editable && i.IsVisible(ItemChangedType, IsSearch.Value)));
+                    _formItems.AddRange(_editorItems.Where(i => !i.Ignore && i.IsVisible(ItemChangedType, IsSearch.Value)));
                 }
             }
-            StateHasChanged();
         }
     }
 

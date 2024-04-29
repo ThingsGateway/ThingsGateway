@@ -2,19 +2,15 @@
 @typeparam TModel
 @inherits BootstrapComponentBase
 
-<CascadingValue Value="@_editorItems" IsFixed="true">
-    @FieldItems?.Invoke(Model)
-</CascadingValue>
-@if (_firstRender)
-{
-    <div class="ef-loading">
-        <Spinner Color="Color.Primary" />
-    </div>
-}
-else
-{
-    <div class="@ClassString">
-        <CascadingValue Value="this" Name="EditorForm">
+<div class="@ClassString">
+    <CascadingValue Value="@_editorItems" IsFixed="true">
+        @FieldItems?.Invoke(Model)
+    </CascadingValue>
+    <CascadingValue Value="this" Name="EditorForm">
+        <RenderTemplate OnRenderAsync="OnRenderAsync">
+            @{
+                ResetItems();
+            }
             @if (ShowUnsetGroupItemsOnTop)
             {
                 if (UnsetGroupItems.Any())
@@ -37,53 +33,61 @@ else
                     @RenderUnsetGroupItems
                 }
             }
-        </CascadingValue>
-    </div>
+        </RenderTemplate>
+    </CascadingValue>
+
     @if (Buttons != null)
     {
-        <div class="form-footer">
+        <div class="bb-editor-footer form-footer">
             @Buttons
         </div>
     }
-}
+
+    @if (!_inited)
+    {
+        <div class="ef-loading">
+            <Spinner Color="Color.Primary" />
+        </div>
+    }
+</div>
 
 @code
 {
     RenderFragment RenderUnsetGroupItems =>
     @<div class="@FormClassString" style="@FormStyleString">
         @foreach (var item in UnsetGroupItems)
-        {
-            var render = GetRenderTemplate(item);
-            @if (render != null)
-            {
-                @render(Model)
-            }
-            else
-            {
-                <div class="@GetCssString(item)">
-                    @AutoGenerateTemplate(item)
-                </div>
-            }
-        }
+    {
+    var render = GetRenderTemplate(item);
+        @if (render != null)
+    {
+        @render(Model)
+    }
+    else
+    {
+        <div class="@GetCssString(item)">
+            @AutoGenerateTemplate(item)
+        </div>
+    }
+    }
     </div>;
 
     RenderFragment<KeyValuePair<string, IOrderedEnumerable<IEditorItem>>> RenderGroupItems => g =>
     @<GroupBox Title="@g.Key">
         <div class="@FormClassString">
             @foreach (var item in g.Value)
-            {
-                var render = GetRenderTemplate(item);
-                @if (render != null)
-                {
-                    @render(Model)
-                }
-                else
-                {
-                    <div class="@GetCssString(item)">
-                        @AutoGenerateTemplate(item)
-                    </div>
-                }
-            }
+        {
+        var render = GetRenderTemplate(item);
+            @if (render != null)
+        {
+            @render(Model)
+        }
+        else
+        {
+            <div class="@GetCssString(item)">
+                @AutoGenerateTemplate(item)
+            </div>
+        }
+        }
         </div>
     </GroupBox>;
 }

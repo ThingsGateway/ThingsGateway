@@ -69,8 +69,8 @@ public partial class VariablePage : IDisposable
         CollectDeviceDict = DeviceService.GetAll().Where(a => a.PluginType == PluginTypeEnum.Collect).ToDictionary(a => a.Id);
         BusinessDeviceDict = DeviceService.GetAll().Where(a => a.PluginType == PluginTypeEnum.Business).ToDictionary(a => a.Id);
 
-        CollectDeviceNames = DeviceService.GetAll().Where(a => a.PluginType == PluginTypeEnum.Collect).BuildDeviceSelectList().Concat(new List<SelectedItem>() {   new SelectedItem(string.Empty, "none") });
-        BusinessDeviceNames = DeviceService.GetAll().Where(a => a.PluginType == PluginTypeEnum.Business).BuildDeviceSelectList().Concat(new List<SelectedItem>() { new SelectedItem(string.Empty, "none") });
+        CollectDeviceNames = DeviceService.GetAll().Where(a => a.PluginType == PluginTypeEnum.Collect).BuildDeviceSelectList();
+        BusinessDeviceNames = DeviceService.GetAll().Where(a => a.PluginType == PluginTypeEnum.Business).BuildDeviceSelectList();
 
         return base.OnParametersSetAsync();
     }
