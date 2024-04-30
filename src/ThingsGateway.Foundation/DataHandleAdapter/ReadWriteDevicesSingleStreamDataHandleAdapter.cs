@@ -86,8 +86,7 @@ public abstract class ReadWriteDevicesSingleStreamDataHandleAdapter<TRequest> : 
                 return FilterResult.Cache;//当头部都无法解析时，直接缓存
             }
 
-
-            byte[] header=Array.Empty<byte>();
+            byte[] header = Array.Empty<byte>();
             if (request.HeadBytesLength > 0)
             {
                 //当解析消息设定固定头长度大于0时，获取头部字节
@@ -115,22 +114,21 @@ public abstract class ReadWriteDevicesSingleStreamDataHandleAdapter<TRequest> : 
                     request.BodyLength = byteBlock.Len;
                 }
 
-                var block = new ByteBlock(byteBlock.Len);
+                using var block = new ByteBlock(byteBlock.Len);
                 block.Write(byteBlock.Buffer, byteBlock.Pos, request.BodyLength);
                 block.SeekToStart();
+                request.ReceivedBytes = byteBlock.ToArray();
 
-                var bytes = DataTransUtil.SpliceArray(request.HeadBytes, body) ?? body;
-                if (bytes.Length > 2048)
-                {
-                    if (Logger.LogLevel <= LogLevel.Trace)
-                        Logger?.Trace($"{ToString()}-Note that the receiving size exceeds 2048, length:{bytes.Length}");
-                }
                 var result = GetResponse(byteBlock, request, body, bytes);
                 if (result == FilterResult.Cache)
                 {
                     if (Logger.LogLevel <= LogLevel.Trace)
                         Logger.Trace($"{ToString()}-Received incomplete, cached message, current length:{bytes.Length}  {request?.ErrorMessage}");
-                    byteBlock.Pos = pos;//回退游标
+                    byteBlock.SeekToStart();//回退游标
+                }
+                else if (result == FilterResult.GoOn)
+                {
+                    byteBlock.Pos += 1;
                 }
                 return result;
             }
@@ -157,23 +155,6 @@ public abstract class ReadWriteDevicesSingleStreamDataHandleAdapter<TRequest> : 
     protected virtual FilterResult GetResponse(ByteBlock byteBlock, TRequest request, byte[] body, byte[] bytes)
     {
         var unpackbytes = UnpackResponse(request, request.SendBytes, body, bytes);
-        request.ReceivedBytes = bytes;
-        switch (unpackbytes)
-        {
-            case FilterResult.Cache:
-                return FilterResult.Cache;
-
-            case FilterResult.Success:
-                return FilterResult.Success;
-
-            case FilterResult.GoOn:
-                byteBlock.Pos = byteBlock.Len;
-                return FilterResult.GoOn;
-
-            default:
-                byteBlock.Pos = byteBlock.Len;
-                return FilterResult.GoOn;
-        }
     }
 
     /// <summary>
