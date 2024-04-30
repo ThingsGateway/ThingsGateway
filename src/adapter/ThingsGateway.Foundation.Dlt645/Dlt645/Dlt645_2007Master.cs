@@ -357,7 +357,7 @@ public class Dlt645_2007Master : ProtocolBase,IDtu
             }
             if (Station.IsNullOrEmpty()) Station = string.Empty;
             if (Station.Length < 12) Station = Station.PadLeft(12, '0');
-            var commandResult = Dlt645Helper.GetDlt645_2007Command((byte)ControlCode.WriteBaudRate, new byte[] { baudRateByte }, Station.ByHexStringToBytes().Reverse().ToArray());
+            var commandResult = Dlt645Helper.GetDlt645_2007Command((byte)ControlCode.WriteBaudRate, new byte[1] { baudRateByte }, Station.ByHexStringToBytes().Reverse().ToArray());
             return await SendThenReturnAsync(socketId, commandResult, cancellationToken).ConfigureAwait(false);
         }
         catch (Exception ex)

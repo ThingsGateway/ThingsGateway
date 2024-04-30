@@ -34,7 +34,7 @@ internal class ModbusRtuServerDataHandleAdapter : ReadWriteDevicesSingleStreamDa
     /// <inheritdoc/>
     protected override FilterResult UnpackResponse(ModbusRtuServerMessage request, byte[]? send, byte[] body, byte[] response)
     {
-        var result1 = ModbusHelper.GetModbusRtuData(new byte[0], response, true);
+        var result1 = ModbusHelper.GetModbusRtuData(Array.Empty<byte>(), response, true);
 
         if (result1.IsSuccess)
         {

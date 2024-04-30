@@ -1,4 +1,4 @@
-
+﻿
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -92,7 +92,7 @@ public static class ByteExtensions
     {
         if (inBytes.Length == 0)
         {
-            return new byte[] { };
+            return Array.Empty<byte>() { };
         }
         // 创建新数组进行补齐
         byte[] paddedBytes = inBytes.CopyArray<byte>().ArrayExpandToLengthEven();

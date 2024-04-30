@@ -1,4 +1,4 @@
-
+﻿
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -80,6 +80,30 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
 
     /// <inheritdoc/>
     public virtual bool IsStringReverseByteWord { get; set; }
+
+ 
+
+    /// <inheritdoc/>
+    public virtual byte[] GetBytes(decimal value)
+    {
+        var bytes = DecimalConver.ToBytes(value);
+        if (!this.IsSameOfSet())
+        {
+            Array.Reverse(bytes);
+        }
+        return bytes;
+    }
+    /// <inheritdoc/>
+    public virtual byte[] GetBytes(char value)
+    {
+        var bytes = BitConverter.GetBytes(value);
+        if (!this.IsSameOfSet())
+        {
+            Array.Reverse(bytes);
+        }
+
+        return bytes;
+    }
 
     /// <inheritdoc/>
     public virtual byte[] GetBytes(bool value)
@@ -255,7 +279,7 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
     {
         if (string.IsNullOrEmpty(value))
         {
-            return new byte[0];
+            return Array.Empty<byte>();
         }
         if (StringLength != null)
         {
@@ -421,6 +445,39 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
     {
         byte[] bytes = ByteTransDataFormat8(buffer, offset);
         return BitConverter.ToUInt64(bytes, 0);
+    }
+
+    /// <inheritdoc/>
+    public virtual char ToChar(byte[] buffer, int offset)
+    {
+        if (this.IsSameOfSet())
+        {
+            return BitConverter.ToChar(buffer, offset);
+        }
+        else
+        {
+            var bytes = new byte[2];
+            Array.Copy(buffer, offset, bytes, 0, bytes.Length);
+            Array.Reverse(bytes);
+            return BitConverter.ToChar(bytes, 0);
+        }
+    }
+
+
+    /// <inheritdoc/>
+    public virtual decimal ToDecimal(byte[] buffer, int offset)
+    {
+        var bytes = new byte[16];
+        Array.Copy(buffer, offset, bytes, 0, bytes.Length);
+        if (this.IsSameOfSet())
+        {
+            return DecimalConver.FromBytes(bytes);
+        }
+        else
+        {
+            Array.Reverse(bytes);
+            return DecimalConver.FromBytes(bytes);
+        }
     }
 
     /// <summary>反转多字节的数据信息</summary>
@@ -618,6 +675,16 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
         for (int index = 0; index < len; ++index)
         {
             numArray[index] = ToUInt64(buffer, offset + 8 * index);
+        }
+        return numArray;
+    }
+    /// <inheritdoc/>
+    public virtual decimal[] ToDecimal(byte[] buffer, int offset, int len)
+    {
+        decimal[] numArray = new decimal[len];
+        for (int index = 0; index < len; ++index)
+        {
+            numArray[index] = ToDecimal(buffer, offset + 8 * index);
         }
         return numArray;
     }

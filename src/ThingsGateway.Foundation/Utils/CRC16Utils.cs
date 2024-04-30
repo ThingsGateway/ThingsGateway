@@ -157,7 +157,7 @@ public class CRC16Utils
                 }
             }
         }
-        return new byte[] { num1, num2 };
+        return new byte[2] { num1, num2 };
     }
 
     #endregion Public Methods

@@ -286,7 +286,7 @@ public class DataTransUtil
         // 如果输入字符串为空，则返回空字节数组
         if (string.IsNullOrEmpty(value))
         {
-            return new byte[0];
+            return Array.Empty<byte>();
         }
 
         // 计算输出字节数组的长度

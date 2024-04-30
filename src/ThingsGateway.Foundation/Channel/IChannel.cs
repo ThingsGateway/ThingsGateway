@@ -17,7 +17,7 @@ namespace ThingsGateway.Foundation;
 /// <summary>
 /// 通道管理
 /// </summary>
-public interface IChannel : ISetupConfigObject, IDisposable ,IClosableClient,IConnectableClient
+public interface IChannel : ISetupConfigObject, IDisposable, IClosableClient
 {
     /// <summary>
     /// 该通道下的所有设备
@@ -68,8 +68,15 @@ public interface IChannel : ISetupConfigObject, IDisposable ,IClosableClient,ICo
     /// <exception cref="TimeoutException"></exception>
     /// <exception cref="Exception"></exception>
     void Connect(int millisecondsTimeout = 3000, CancellationToken token = default);
- 
 
+    /// <summary>
+    /// 异步连接
+    /// </summary>
+    /// <param name="millisecondsTimeout">最大等待时间</param>
+    /// <param name="token">可取消令箭</param>
+    /// <exception cref="TimeoutException"></exception>
+    /// <exception cref="Exception"></exception>
+    Task ConnectAsync(int millisecondsTimeout = 3000, CancellationToken token = default);
 }
 
 /// <summary>

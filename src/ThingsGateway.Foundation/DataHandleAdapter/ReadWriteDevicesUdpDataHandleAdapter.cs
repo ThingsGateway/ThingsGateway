@@ -147,7 +147,7 @@ public abstract class ReadWriteDevicesUdpDataHandleAdapter<TRequest> : UdpDataHa
         //{
         //    return GoReceived(remoteEndPoint, byteBlock, null);
         //}
-        byte[] header = new byte[] { };
+        byte[] header = Array.Empty<byte>();
         if (Request.HeadBytesLength > 0)
         {
             //当解析消息设定固定头长度大于0时，获取头部字节

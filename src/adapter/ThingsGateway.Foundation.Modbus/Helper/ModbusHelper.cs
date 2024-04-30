@@ -27,11 +27,8 @@ internal class ModbusHelper
         //解析01 03 00 00 00 0A
         var station = ThingsGatewayBitConverter.ToByte(response, 0 + offset);
         var function = ThingsGatewayBitConverter.ToByte(response, 1 + offset);
-        int addressStart = ThingsGatewayBitConverter.ToInt16(response, 2 + offset);
-        if (addressStart == -1)
-        {
-            addressStart = 65535;
-        }
+        int addressStart = ThingsGatewayBitConverter.ToUInt16(response, 2 + offset);
+
         if (function > 4)
         {
             if (function > 6)

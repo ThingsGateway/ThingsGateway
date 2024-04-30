@@ -69,10 +69,8 @@ public abstract class ReadWriteDevicesSingleStreamDataHandleAdapter<TRequest> : 
     /// <inheritdoc/>
     protected override FilterResult Filter(in ByteBlock byteBlock, bool beCached, ref TRequest request, ref int tempCapacity)
     {
-        //获取全部内容
-        var allBytes = byteBlock.ToArray(0, byteBlock.Len);
         if (Logger.LogLevel <= LogLevel.Trace)
-            Logger?.Trace($"{ToString()}- Receive:{(IsHexData ? allBytes.ToHexString(' ') : Encoding.UTF8.GetString(allBytes))}");
+            Logger?.Trace($"{ToString()}- Receive:{(IsHexData ? byteBlock.ToArray().ToHexString(' ') : Encoding.UTF8.GetString(byteBlock.ToArray()))}");
         //缓存/不缓存解析一样，因为游标已经归0
         {
             if (IsSingleThread)
@@ -88,22 +86,27 @@ public abstract class ReadWriteDevicesSingleStreamDataHandleAdapter<TRequest> : 
                 return FilterResult.Cache;//当头部都无法解析时，直接缓存
             }
 
-            var pos = byteBlock.Pos;//记录初始游标位置，防止本次无法解析时，回退游标。
 
-            byte[] header = new byte[] { };
+            byte[] header=Array.Empty<byte>();
             if (request.HeadBytesLength > 0)
             {
                 //当解析消息设定固定头长度大于0时，获取头部字节
-                byteBlock.Read(out header, request.HeadBytesLength);
+                header = byteBlock.ToArray(byteBlock.Pos, request.HeadBytesLength);
             }
             //检查头部合法性
             if (request.CheckHeadBytes(header))
             {
+                byteBlock.Pos += request.HeadBytesLength;
+                if (request.BodyLength > this.MaxPackageSize)
+                {
+                    this.OnError(default, $"Received BodyLength={request.BodyLength}, greater than the set MaxPackageSize={this.MaxPackageSize}", true, true);
+                    return FilterResult.GoOn;
+                }
+
                 if (request.BodyLength > byteBlock.CanReadLen)
                 {
                     //body不满足解析，开始缓存，然后保存对象
-                    byteBlock.Pos = pos;//回退游标
-                    request.ReceivedBytes = header;
+                    tempCapacity = request.BodyLength + request.HeadBytesLength;
                     return FilterResult.Cache;
                 }
                 if (request.BodyLength <= 0)
@@ -112,7 +115,9 @@ public abstract class ReadWriteDevicesSingleStreamDataHandleAdapter<TRequest> : 
                     request.BodyLength = byteBlock.Len;
                 }
 
-                byteBlock.Read(out byte[] body, request.BodyLength);
+                var block = new ByteBlock(byteBlock.Len);
+                block.Write(byteBlock.Buffer, byteBlock.Pos, request.BodyLength);
+                block.SeekToStart();
 
                 var bytes = DataTransUtil.SpliceArray(request.HeadBytes, body) ?? body;
                 if (bytes.Length > 2048)

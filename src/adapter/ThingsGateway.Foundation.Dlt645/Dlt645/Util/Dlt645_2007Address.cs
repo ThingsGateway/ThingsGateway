@@ -37,7 +37,7 @@ public class Dlt645_2007Address
     /// <summary>
     /// 数据标识
     /// </summary>
-    public byte[] DataId { get; set; } = new byte[0];
+    public byte[] DataId { get; set; } = Array.Empty<byte>();
 
     /// <summary>
     /// 反转解析
@@ -47,7 +47,7 @@ public class Dlt645_2007Address
     /// <summary>
     /// 站号信息
     /// </summary>
-    public byte[] Station { get; set; } = new byte[0];
+    public byte[] Station { get; set; } = Array.Empty<byte>();
 
     /// <summary>
     /// 作为Slave时需提供的SocketId，用于分辨Socket客户端，通常对比的是初始链接时的注册包
@@ -89,7 +89,7 @@ public class Dlt645_2007Address
 
         Dlt645_2007Address dlt645_2007Address = new();
         byte[] array;
-        array = new byte[0];
+        array = Array.Empty<byte>();
         if (address.IndexOf(';') < 0)
         {
             array = address.ByHexStringToBytes().Reverse().ToArray();

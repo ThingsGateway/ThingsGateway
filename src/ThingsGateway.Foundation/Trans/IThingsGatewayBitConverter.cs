@@ -81,6 +81,18 @@ public interface IThingsGatewayBitConverter
     bool IsSameOfSet();
 
     #region GetBytes
+    /// <summary>
+    /// 转换为指定端16字节
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    byte[] GetBytes(decimal value);
+    /// <summary>
+    /// 转换为指定端2字节
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    byte[] GetBytes(char value);
 
     /// <summary>
     /// bool变量转化缓存数据，一般来说单bool只能转化为0x01 或是 0x00<br />
@@ -307,6 +319,34 @@ public interface IThingsGatewayBitConverter
 
     /// <inheritdoc/>
     ulong[] ToUInt64(byte[] buffer, int offset, int len);
+
+
+    /// <summary>
+    ///  转换为指定端模式的<see cref="decimal"/>数据。
+    /// </summary>
+    /// <param name="buffer"></param>
+    /// <param name="offset"></param>
+    /// <returns></returns>
+    decimal ToDecimal(byte[] buffer, int offset);
+
+    /// <summary>
+    ///  转换为指定端模式的Char数据。
+    /// </summary>
+    /// <param name="buffer"></param>
+    /// <param name="offset"></param>
+    /// <returns></returns>
+    char ToChar(byte[] buffer, int offset);
+
+
+    /// <summary>
+    /// 从缓存中提取decimal结果，需要指定起始的字节索引，按照字节为单位，一个decimal占用16个字节<b />
+    /// </summary>
+    /// <param name="buffer">缓存数据</param>
+    /// <param name="offset">索引位置</param>
+    /// <returns>decimal对象</returns>
+    decimal[] ToDecimal(byte[] buffer, int offset, int len);
+
+
 
     #endregion ToValue
 }

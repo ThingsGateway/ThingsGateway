@@ -1181,8 +1181,8 @@ internal static class Dlt645Helper
       string[] datas = null
         )
     {
-        codes ??= new byte[0];
-        datas ??= new string[0];
+        codes ??= Array.Empty<byte>();
+        datas ??= Array.Empty<string>();
         var buffer = address.DataId;
         if (buffer.Length > 0)
         {
@@ -1257,7 +1257,7 @@ internal static class Dlt645Helper
 
     internal static byte[] GetDlt645_2007Command(byte control, byte[] buffer, byte[] stationBytes)
     {
-        buffer ??= new byte[0];
+        buffer ??= Array.Empty<byte>();
         byte[] array = new byte[12 + buffer.Length];
         array[0] = 0x68;//帧起始符
         stationBytes.CopyTo(array, 1);//6个字节地址域
