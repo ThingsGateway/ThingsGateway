@@ -20,15 +20,15 @@ namespace ThingsGateway.Foundation
     /// SocketClientChannel
     /// </summary>
     [DebuggerDisplay("Id={Id},IPAdress={IP}:{Port}")]
-    public class SocketClientChannel : TcpSessionClient, IClientChannel
+    public class SocketClientChannel : TcpSessionClient, IClientChannel, IDefaultSender
     {
-        /// <summary>
-        /// SocketClientChannel
-        /// </summary>
-        ~SocketClientChannel()
-        {
-            Dispose(false);
-        }
+        ///// <summary>
+        ///// SocketClientChannel
+        ///// </summary>
+        //~SocketClientChannel()
+        //{
+        //    Dispose(false);
+        //}
 
         /// <inheritdoc/>
         public EasyLock WaitLock { get; } = new EasyLock();
@@ -60,18 +60,15 @@ namespace ThingsGateway.Foundation
 
         /// <inheritdoc/>
         public ChannelEventHandler Starting { get; set; }
- 
-        /// <summary>
+
         /// <inheritdoc/>
-        /// </summary>
-        /// <returns></returns>
         public override string ToString()
         {
             return $"{IP}:{Port}";
         }
 
         /// <inheritdoc/>
-        public ValueTask ConnectAsync(int timeout, CancellationToken token) => throw new NotImplementedException();
+        public Task ConnectAsync(int timeout, CancellationToken token) => throw new NotImplementedException();
 
         protected override Task OnTcpReceived(ReceivedDataEventArgs e)
         {
@@ -116,11 +113,22 @@ namespace ThingsGateway.Foundation
         #region
 
         /// <inheritdoc/>
-        public ValueTask SetupAsync(TouchSocketConfig config)
+        public Task SetupAsync(TouchSocketConfig config)
         {
             return EasyTask.CompletedTask;
         }
 
+        public void DefaultSend(byte[] buffer, int offset, int length)
+        {
+            this.ProtectedDefaultSend(buffer, offset, length);
+        }
+
+
+        public void SetDataHandlingAdapter(DataHandlingAdapter adapter)
+        {
+            if (adapter is SingleStreamDataHandlingAdapter singleStreamDataHandlingAdapter)
+                this.SetAdapter(singleStreamDataHandlingAdapter);
+        }
         #endregion 无
     }
 }

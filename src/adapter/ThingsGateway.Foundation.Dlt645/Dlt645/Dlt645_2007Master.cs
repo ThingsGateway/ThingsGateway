@@ -95,7 +95,7 @@ public class Dlt645_2007Master : ProtocolBase,IDtu
         {
             case ChannelTypeEnum.TcpClient:
             case ChannelTypeEnum.TcpService:
-            case ChannelTypeEnum.SerialPortClient:
+            case ChannelTypeEnum.SerialPort:
                 return new Dlt645_2007DataHandleAdapter
                 {
                     FEHead = FEHead,

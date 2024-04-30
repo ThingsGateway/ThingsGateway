@@ -12,18 +12,19 @@
 
 
 
+using TouchSocket.SerialPorts;
+
 namespace ThingsGateway.Foundation
 {
-    /// <inheritdoc cref="SerialPortClientBase"/>
-    public class TgSerialPortClient : SerialPortClientBase, IClientChannel
+    /// <inheritdoc cref="SerialPortClient"/>
+    public class SerialPortChannel : SerialPortClient, IClientChannel, IDefaultSender
     {
-        /// <summary>
-        /// Tcp客户端
-        /// </summary>
-        ~TgSerialPortClient()
-        {
-            Dispose(false);
-        }
+
+        //~SerialPortChannel()
+        //{
+        //    Dispose(false);
+        //}
+
 
         /// <inheritdoc/>
         public EasyLock WaitLock { get; } = new EasyLock();
@@ -34,13 +35,10 @@ namespace ThingsGateway.Foundation
         /// <summary>
         /// 接收到数据
         /// </summary>
-        public ChannelReceivedEventHandler Received { get; set; }
+        public ChannelReceivedEventHandler ChannelReceived { get; set; }
 
         /// <inheritdoc/>
-        public ChannelTypeEnum ChannelType => ChannelTypeEnum.SerialPortClient;
-
-        /// <inheritdoc/>
-        DataHandlingAdapter IClientChannel.DataHandlingAdapter => DataHandlingAdapter;
+        public ChannelTypeEnum ChannelType => ChannelTypeEnum.SerialPort;
 
         /// <inheritdoc/>
         public ChannelEventHandler Started { get; set; }
@@ -51,57 +49,67 @@ namespace ThingsGateway.Foundation
         /// <inheritdoc/>
         public ChannelEventHandler Starting { get; set; }
 
-        /// <inheritdoc/>
-        public void SetDataHandlingAdapter(DataHandlingAdapter adapter)
-        {
-            if (adapter is SingleStreamDataHandlingAdapter single)
-                base.SetDataHandlingAdapter(single);
-            else
-                throw new NotSupportedException(DefaultResource.Localizer["AdapterTypeError", nameof(SingleStreamDataHandlingAdapter)]);
-        }
 
         /// <inheritdoc/>
-        protected override  Task ReceivedData(ReceivedDataEventArgs e)
+        protected override Task OnSerialReceived(ReceivedDataEventArgs e)
         {
             if (this.Received != null)
             {
                 return this.Received.Invoke(this, e);
             }
-            return base.ReceivedData(e);
+            return base.OnSerialReceived(e);
         }
 
         /// <inheritdoc/>
-        protected override Task OnConnected(ConnectedEventArgs e)
+        protected override Task OnSerialConnected(ConnectedEventArgs e)
         {
             Logger?.Debug($"{ToString()}  Connected");
             if (Started != null)
                 return Started.Invoke(this);
-            return base.OnConnected(e);
+            return base.OnSerialConnected(e);
         }
 
         /// <inheritdoc/>
-        protected override  Task OnConnecting(SerialConnectingEventArgs e)
+        protected override Task OnSerialConnecting(ConnectingEventArgs e)
         {
             Logger?.Debug($"{ToString()}  Connecting{(e.Message.IsNullOrEmpty() ? string.Empty : $" -{e.Message}")}");
             if (Starting != null)
                 return Starting.Invoke(this);
-            return base.OnConnecting(e);
+            return base.OnSerialConnecting(e);
         }
 
         /// <inheritdoc/>
-        protected override Task OnDisconnecting(DisconnectEventArgs e)
+        protected override Task OnSerialClosing(ClosingEventArgs e)
         {
-            Logger?.Debug($"{ToString()} Disconnecting{(e.Message.IsNullOrEmpty() ? string.Empty : $" -{e.Message}")}");
-            return base.OnDisconnecting(e);
+            Logger?.Debug($"{ToString()} Closing{(e.Message.IsNullOrEmpty() ? string.Empty : $" -{e.Message}")}");
+            return base.OnSerialClosing(e);
         }
 
         /// <inheritdoc/>
-        protected override Task OnDisconnected(DisconnectEventArgs e)
+        protected override Task OnSerialClosed(ClosedEventArgs e)
         {
-            Logger?.Debug($"{ToString()}  Disconnected{(e.Message.IsNullOrEmpty() ? string.Empty : $"-{e.Message}")}");
+            Logger?.Debug($"{ToString()}  Closed{(e.Message.IsNullOrEmpty() ? string.Empty : $"-{e.Message}")}");
             if (Stoped != null)
                 return Stoped.Invoke(this);
-            return base.OnDisconnected(e);
+            return base.OnSerialClosed(e);
+        }
+
+        public override string ToString()
+        {
+            if (ProtectedMainSerialPort != null)
+                return $"{ProtectedMainSerialPort.PortName}[{ProtectedMainSerialPort.BaudRate},{ProtectedMainSerialPort.DataBits},{ProtectedMainSerialPort.StopBits},{ProtectedMainSerialPort.Parity}]";
+            return base.ToString();
+        }
+
+        public void DefaultSend(byte[] buffer, int offset, int length)
+        {
+            this.ProtectedDefaultSend(buffer, offset, length);
+        }
+
+        public void SetDataHandlingAdapter(DataHandlingAdapter adapter)
+        {
+            if (adapter is SingleStreamDataHandlingAdapter singleStreamDataHandlingAdapter)
+                this.SetAdapter(singleStreamDataHandlingAdapter);
         }
     }
 }

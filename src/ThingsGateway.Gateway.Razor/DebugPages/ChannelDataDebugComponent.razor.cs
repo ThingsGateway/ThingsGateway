@@ -77,7 +77,7 @@ public partial class ChannelDataDebugComponent : ComponentBase
             if (string.IsNullOrEmpty(input.BindUrl) && string.IsNullOrEmpty(input.RemoteUrl))
                 throw new(Localizer["BindUrlOrRemoteUrlNotNull"]);
         }
-        else if (input.ChannelType == ChannelTypeEnum.SerialPortClient)
+        else if (input.ChannelType == ChannelTypeEnum.SerialPort)
         {
             if (string.IsNullOrEmpty(input.PortName))
                 throw new(Localizer["PortNameNotNull"]);

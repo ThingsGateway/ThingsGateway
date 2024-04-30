@@ -561,7 +561,7 @@ public interface IProtocol : IDisposable
     /// <param name="cancellationToken">取消令箭</param>
     /// <param name="channel">通道</param>
     /// <returns>返回消息体</returns>
-    ValueTask<OperResult<byte[]>> SendThenReturnAsync(ISendMessage command, CancellationToken cancellationToken, IClientChannel channel = null);
+    Task<OperResult<byte[]>> SendThenReturnAsync(ISendMessage command, CancellationToken cancellationToken, IClientChannel channel = null);
 
     /// <inheritdoc cref="SendThenReturnAsync(ISendMessage, CancellationToken, IClientChannel)"/>
     OperResult<byte[]> SendThenReturn(ISendMessage command, CancellationToken cancellationToken, IClientChannel channel = null);

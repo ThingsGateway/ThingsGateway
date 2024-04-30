@@ -13,6 +13,8 @@ using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 using System.IO.Ports;
 
+using TouchSocket.SerialPorts;
+
 namespace ThingsGateway.Foundation;
 
 /// <inheritdoc/>
@@ -138,7 +140,7 @@ public class ChannelData : IChannelData
                 channelData.Channel = channelData.TouchSocketConfig.GetTcpServiceWithBindIPHost(channelData.BindUrl);
                 break;
 
-            case ChannelTypeEnum.SerialPortClient:
+            case ChannelTypeEnum.SerialPort:
                 channelData.Channel = channelData.TouchSocketConfig.GetSerialPortWithOption(channelData.Map<SerialPortOption>());
                 break;
 

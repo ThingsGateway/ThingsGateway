@@ -19,15 +19,15 @@ namespace ThingsGateway.Foundation
     /// <inheritdoc/>
     public abstract class TcpServiceChannelBase<TClient> : TcpService<TClient>, ITcpService<TClient> where TClient : SocketClientChannel, new()
     {
-        /// <inheritdoc/>
-        ~TcpServiceChannelBase()
-        {
-            Dispose(true);
-        }
+        ///// <inheritdoc/>
+        //~TcpServiceChannelBase()
+        //{
+        //    Dispose(true);
+        //}
 
         /// <inheritdoc/>
         public ConcurrentList<IProtocol> Collects { get; } = new();
-
+  
         #region 事件
 
         /// <summary>
@@ -152,7 +152,7 @@ namespace ThingsGateway.Foundation
         public bool Online => ServerState == ServerState.Running;
 
         /// <inheritdoc/>
-        public ValueTask ConnectAsync(int timeout = 3000, CancellationToken token = default)
+        public Task ConnectAsync(int timeout = 3000, CancellationToken token = default)
         {
             if (token.IsCancellationRequested)
                 return EasyTask.CompletedTask;
@@ -160,7 +160,7 @@ namespace ThingsGateway.Foundation
             return base.StartAsync();
         }
 
-        public ValueTask CloseAsync(string msg)
+        public Task CloseAsync(string msg)
         {
             return this.StopAsync();
         }

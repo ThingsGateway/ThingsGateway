@@ -96,7 +96,7 @@ public abstract class ReadWriteDevicesUdpDataHandleAdapter<TRequest> : UdpDataHa
     /// <summary>
     /// 预发送方法，会对命令重新打包并发送字节数组
     /// </summary>
-    protected async ValueTask GoSendAsync(EndPoint endPoint, byte[] item, TRequest request)
+    protected async Task GoSendAsync(EndPoint endPoint, byte[] item, TRequest request)
     {
         byte[] bytes;
         if (IsSendPackCommand)

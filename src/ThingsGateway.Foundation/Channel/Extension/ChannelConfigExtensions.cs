@@ -12,6 +12,8 @@
 
 
 
+using TouchSocket.SerialPorts;
+
 namespace ThingsGateway.Foundation
 {
     public static class ChannelConfigExtensions
@@ -47,7 +49,7 @@ namespace ThingsGateway.Foundation
                     if (string.IsNullOrEmpty(bindUrl)) throw new ArgumentNullException(nameof(IPHost));
                     return config.GetTcpServiceWithBindIPHost(bindUrl);
 
-                case ChannelTypeEnum.SerialPortClient:
+                case ChannelTypeEnum.SerialPort:
                     if (serialPortOption == null) throw new ArgumentNullException(nameof(SerialPortOption));
                     return config.GetSerialPortWithOption(serialPortOption);
 
@@ -70,9 +72,9 @@ namespace ThingsGateway.Foundation
             if (!string.IsNullOrEmpty(bindUrl))
                 config.SetBindIPHost(bindUrl);
             //载入配置
-            TcpClientChannel tgTcpClient = new TcpClientChannel();
-            tgTcpClient.Setup(config);
-            return tgTcpClient;
+            TcpClientChannel tcpClientChannel = new TcpClientChannel();
+            tcpClientChannel.Setup(config);
+            return tcpClientChannel;
         }
 
         /// <summary>
@@ -84,9 +86,9 @@ namespace ThingsGateway.Foundation
             if (bindUrl == null) throw new ArgumentNullException(nameof(IPHost));
             config.SetListenIPHosts(new IPHost[] { bindUrl });
             //载入配置
-            TcpServiceChannel tgTcpService = new TcpServiceChannel();
-            tgTcpService.Setup(config);
-            return tgTcpService;
+            TcpServiceChannel tcpServiceChannel = new TcpServiceChannel();
+            tcpServiceChannel.Setup(config);
+            return tcpServiceChannel;
         }
 
         /// <summary>
@@ -103,9 +105,27 @@ namespace ThingsGateway.Foundation
                 config.SetBindIPHost(new IPHost(0));
 
             //载入配置
-            UdpSessionChannel tgUdpSession = new UdpSessionChannel();
-            tgUdpSession.Setup(config);
-            return tgUdpSession;
+            UdpSessionChannel udpSessionChannel = new UdpSessionChannel();
+            udpSessionChannel.Setup(config);
+            return udpSessionChannel;
+        }
+
+        /// <summary>
+        /// 获取一个新的串口通道。传入串口配置信息
+        /// </summary>
+        /// <param name="config"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static SerialPortChannel GetSerialPortWithOption(this TouchSocketConfig config, SerialPortOption value)
+        {
+            if (value == null) throw new ArgumentNullException(nameof(SerialPortOption));
+            config.SetSerialPortOption( value);
+
+            //载入配置
+            SerialPortChannel serialPortChannel = new SerialPortChannel();
+            serialPortChannel.Setup(config);
+
+            return serialPortChannel;
         }
     }
 }

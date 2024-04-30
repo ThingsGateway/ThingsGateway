@@ -201,7 +201,7 @@ public class ChannelService : BaseService<Channel>, IChannelService
             if (string.IsNullOrEmpty(input.BindUrl) && string.IsNullOrEmpty(input.RemoteUrl))
                 throw Oops.Bah(Localizer["BindUrlOrRemoteUrlNotNull"]);
         }
-        else if (input.ChannelType == ChannelTypeEnum.SerialPortClient)
+        else if (input.ChannelType == ChannelTypeEnum.SerialPort)
         {
             if (string.IsNullOrEmpty(input.PortName))
                 throw Oops.Bah(Localizer["PortNameNotNull"]);

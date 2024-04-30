@@ -17,11 +17,11 @@ namespace ThingsGateway.Foundation
     /// <inheritdoc/>
     public class UdpSessionChannel : UdpSession, IClientChannel
     {
-        /// <inheritdoc/>
-        ~UdpSessionChannel()
-        {
-            Dispose(false);
-        }
+        ///// <inheritdoc/>
+        //~UdpSessionChannel()
+        //{
+        //    Dispose(false);
+        //}
 
         /// <inheritdoc/>
         public EasyLock WaitLock { get; } = new EasyLock();
@@ -89,18 +89,18 @@ namespace ThingsGateway.Foundation
         }
 
         /// <inheritdoc/>
-        public async ValueTask ConnectAsync(int timeout=3000, CancellationToken token=default)
+        public async Task ConnectAsync(int timeout=3000, CancellationToken token=default)
         {
             if (token.IsCancellationRequested)
                 return;
             if (Starting != null)
-                await Starting.Invoke(this).ConfigureAwait(false);
+                await Starting.Invoke(this);
             await StartAsync().ConfigureAwait(false);
             if (Started != null)
                 await Started.Invoke(this).ConfigureAwait(false);
         }
 
-        public ValueTask CloseAsync(string msg)
+        public Task CloseAsync(string msg)
         {
             return this.StopAsync();
         }
@@ -118,5 +118,16 @@ namespace ThingsGateway.Foundation
             }
             await base.ReceivedData(e).ConfigureAwait(false);
         }
+        public void SetDataHandlingAdapter(DataHandlingAdapter adapter)
+        {
+            if (adapter is UdpDataHandlingAdapter udpDataHandlingAdapter)
+                this.SetAdapter(udpDataHandlingAdapter);
+        }
+
+        public void DefaultSend(byte[] buffer, int offset, int length)
+        {
+            this.ProtectedDefaultSend(buffer, offset, length);
+        }
+
     }
 }

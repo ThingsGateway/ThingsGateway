@@ -32,7 +32,7 @@ public enum ChannelTypeEnum
     /// <summary>
     /// 串口
     /// </summary>
-    SerialPortClient,
+    SerialPort,
 
     /// <summary>
     /// Udp

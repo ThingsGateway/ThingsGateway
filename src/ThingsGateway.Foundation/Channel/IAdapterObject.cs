@@ -1,4 +1,4 @@
-
+﻿
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -10,28 +10,16 @@
 //------------------------------------------------------------------------------
 
 
+namespace ThingsGateway.Foundation;
 
-
-namespace ThingsGateway.Foundation
+/// <summary>
+/// 能对适配器做配置的客户端
+/// </summary>
+public interface IAdapterObject
 {
     /// <summary>
-    /// 具有预备连接的插件接口
+    /// 设置数据处理适配器
     /// </summary>
-    public interface ISerialConnectingPlugin<in TClient> : IPlugin where TClient : ISerialPortClient
-    {
-        /// <summary>
-        /// 在即将完成连接时触发。
-        /// </summary>
-        /// <param name="client"></param>
-        /// <param name="e"></param>
-        /// <returns></returns>
-        Task OnSerialConnecting(TClient client, ConnectingEventArgs e);
-    }
-
-    /// <summary>
-    /// ISerialConnectingPlugin
-    /// </summary>
-    public interface ISerialConnectingPlugin : ISerialConnectingPlugin<ISerialPortClient>
-    {
-    }
+    /// <param name="adapter"></param>
+    void SetDataHandlingAdapter(DataHandlingAdapter adapter);
 }

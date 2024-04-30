@@ -124,7 +124,7 @@ public partial class ModbusMaster : ProtocolBase, IDtu
                 {
                     case ChannelTypeEnum.TcpClient:
                     case ChannelTypeEnum.TcpService:
-                    case ChannelTypeEnum.SerialPortClient:
+                    case ChannelTypeEnum.SerialPort:
                         return new ModbusTcpDataHandleAdapter()
                         {
                             CacheTimeout = TimeSpan.FromMilliseconds(CacheTimeout)
@@ -142,7 +142,7 @@ public partial class ModbusMaster : ProtocolBase, IDtu
                 {
                     case ChannelTypeEnum.TcpClient:
                     case ChannelTypeEnum.TcpService:
-                    case ChannelTypeEnum.SerialPortClient:
+                    case ChannelTypeEnum.SerialPort:
                         return new ModbusRtuDataHandleAdapter()
                         {
                             CacheTimeout = TimeSpan.FromMilliseconds(CacheTimeout)

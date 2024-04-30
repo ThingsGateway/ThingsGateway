@@ -17,7 +17,7 @@ namespace ThingsGateway.Foundation;
 /// <summary>
 /// 通道管理
 /// </summary>
-public interface IChannel :  ISetupConfigObject, IDisposable, IClosableClient
+public interface IChannel : ISetupConfigObject, IDisposable, IClosableClient
 {
     /// <summary>
     /// 该通道下的所有设备
@@ -62,18 +62,18 @@ public interface IChannel :  ISetupConfigObject, IDisposable, IClosableClient
     /// <param name="token">可取消令箭</param>
     /// <exception cref="TimeoutException"></exception>
     /// <exception cref="Exception"></exception>
-    ValueTask ConnectAsync(int millisecondsTimeout=3000, CancellationToken token=default);
+    Task ConnectAsync(int millisecondsTimeout = 3000, CancellationToken token = default);
 
 }
 
 /// <summary>
 /// ChannelEventHandler
 /// </summary>
-public delegate ValueTask ChannelEventHandler(IClientChannel channel);
+public delegate Task ChannelEventHandler(IClientChannel channel);
 
 /// <summary>
 /// 接收数据
 /// </summary>
 /// <param name="client"></param>
 /// <param name="e"></param>
-public delegate ValueTask ChannelReceivedEventHandler(IClientChannel client, ReceivedDataEventArgs e);
+public delegate Task ChannelReceivedEventHandler(IClientChannel client, ReceivedDataEventArgs e);

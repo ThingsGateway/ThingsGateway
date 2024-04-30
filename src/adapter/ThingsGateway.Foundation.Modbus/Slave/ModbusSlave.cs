@@ -141,7 +141,7 @@ public class ModbusSlave : ProtocolBase
                 {
                     case ChannelTypeEnum.TcpClient:
                     case ChannelTypeEnum.TcpService:
-                    case ChannelTypeEnum.SerialPortClient:
+                    case ChannelTypeEnum.SerialPort:
                         return new ModbusTcpServerDataHandleAdapter()
                         {
                             CacheTimeout = TimeSpan.FromMilliseconds(CacheTimeout)
@@ -159,7 +159,7 @@ public class ModbusSlave : ProtocolBase
                 {
                     case ChannelTypeEnum.TcpClient:
                     case ChannelTypeEnum.TcpService:
-                    case ChannelTypeEnum.SerialPortClient:
+                    case ChannelTypeEnum.SerialPort:
                         return new ModbusRtuServerDataHandleAdapter()
                         {
                             CacheTimeout = TimeSpan.FromMilliseconds(CacheTimeout)
@@ -222,7 +222,7 @@ public class ModbusSlave : ProtocolBase
     #region 核心
 
     /// <inheritdoc/>
-    protected override async Task Received(IClientChannel client, ReceivedDataEventArgs e)
+    protected override async Task ChannelReceived(IClientChannel client, ReceivedDataEventArgs e)
     {
         var requestInfo = e.RequestInfo;
         //接收外部报文

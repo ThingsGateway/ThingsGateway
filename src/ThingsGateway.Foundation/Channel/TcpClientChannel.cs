@@ -17,7 +17,7 @@ namespace ThingsGateway.Foundation
     /// <summary>
     /// 简单Tcp客户端
     /// </summary>
-    public class TcpClientChannel : TcpClient, IClientChannel
+    public class TcpClientChannel : TcpClient, IClientChannel,IDefaultSender
     {
         /// <inheritdoc/>
         public ConcurrentList<IProtocol> Collects { get; } = new();
@@ -42,6 +42,11 @@ namespace ThingsGateway.Foundation
         /// <inheritdoc/>
         public ChannelEventHandler Starting { get; set; }
 
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            return $"{IP}:{Port}";
+        }
         /// <inheritdoc/>
         protected override async Task OnTcpReceived(ReceivedDataEventArgs e)
         {
@@ -88,6 +93,18 @@ namespace ThingsGateway.Foundation
             if (Stoped != null)
                 return Stoped.Invoke(this);
             return base.OnTcpClosed(e);
+        }
+
+        public void DefaultSend(byte[] buffer, int offset, int length)
+        {
+            this.ProtectedDefaultSend(buffer, offset, length);
+        }
+
+
+        public void SetDataHandlingAdapter(DataHandlingAdapter adapter)
+        {
+            if (adapter is SingleStreamDataHandlingAdapter singleStreamDataHandlingAdapter)
+                this.SetAdapter(singleStreamDataHandlingAdapter);
         }
     }
 }
