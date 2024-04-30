@@ -19,6 +19,8 @@ namespace ThingsGateway.Foundation
     /// </summary>
     public class TcpClientChannel : TcpClient, IClientChannel,IDefaultSender
     {
+        private readonly EasyLock m_semaphoreForConnect = new EasyLock();
+
         /// <inheritdoc/>
         public ConcurrentList<IProtocol> Collects { get; } = new();
 
@@ -62,9 +64,6 @@ namespace ThingsGateway.Foundation
         {
             this.CloseAsync(msg).GetFalseAwaitResult();
         }
-
-        private readonly EasyLock m_semaphoreForConnect = new EasyLock();
-
         public void Connect(int millisecondsTimeout = 3000, CancellationToken token = default)
         {
             this.ConnectAsync(millisecondsTimeout, token).GetFalseAwaitResult();

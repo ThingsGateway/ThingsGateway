@@ -104,9 +104,30 @@ namespace ThingsGateway.Foundation
         {
             return this.StopAsync();
         }
- 
 
- 
+
+
+        public void SetDataHandlingAdapter(DataHandlingAdapter adapter)
+        {
+            if (adapter is UdpDataHandlingAdapter udpDataHandlingAdapter)
+                this.SetAdapter(udpDataHandlingAdapter);
+        }
+
+        public void DefaultSend(byte[] buffer, int offset, int length)
+        {
+            this.ProtectedDefaultSend(buffer, offset, length);
+        }
+
+        public void Close(string msg)
+        {
+            this.CloseAsync(msg).GetFalseAwaitResult();
+        }
+
+        public void Connect(int millisecondsTimeout = 3000, CancellationToken token = default)
+        {
+            this.ConnectAsync(millisecondsTimeout, token).GetFalseAwaitResult();
+        }
+
         /// <inheritdoc/>
         protected override async Task ReceivedData(UdpReceivedDataEventArgs e)
         {
@@ -119,25 +140,6 @@ namespace ThingsGateway.Foundation
                 }
             }
             await base.ReceivedData(e).ConfigureAwait(false);
-        }
-        public void SetDataHandlingAdapter(DataHandlingAdapter adapter)
-        {
-            if (adapter is UdpDataHandlingAdapter udpDataHandlingAdapter)
-                this.SetAdapter(udpDataHandlingAdapter);
-        }
-
-        public void DefaultSend(byte[] buffer, int offset, int length)
-        {
-            this.ProtectedDefaultSend(buffer, offset, length);
-        }
-        public void Close(string msg)
-        {
-            this.CloseAsync(msg).GetFalseAwaitResult();
-        }
-
-        public void Connect(int millisecondsTimeout = 3000, CancellationToken token = default)
-        {
-            this.ConnectAsync(millisecondsTimeout, token).GetFalseAwaitResult();
         }
     }
 }
