@@ -124,7 +124,7 @@ public abstract class BusinessBaseWithCacheDevModel<VarModel, DevModel> : Busine
     /// <param name="item"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    protected abstract Task<OperResult> UpdateDevModel(IEnumerable<CacheDBItem<DevModel>> item, CancellationToken cancellationToken);
+    protected abstract ValueTask<IOperResult> UpdateDevModel(IEnumerable<CacheDBItem<DevModel>> item, CancellationToken cancellationToken);
 
     protected async Task UpdateDevModelCache(CancellationToken cancellationToken)
     {
@@ -148,7 +148,7 @@ public abstract class BusinessBaseWithCacheDevModel<VarModel, DevModel> : Busine
                             {
                                 if (!cancellationToken.IsCancellationRequested)
                                 {
-                                    OperResult result = await UpdateDevModel(varList, cancellationToken).ConfigureAwait(false);
+                                    var result = await UpdateDevModel(varList, cancellationToken).ConfigureAwait(false);
                                     if (result.IsSuccess)
                                     {
                                         //删除缓存
@@ -202,7 +202,7 @@ public abstract class BusinessBaseWithCacheDevModel<VarModel, DevModel> : Busine
                     {
                         if (!cancellationToken.IsCancellationRequested)
                         {
-                            OperResult result = await UpdateDevModel(item, cancellationToken).ConfigureAwait(false);
+                            var result = await UpdateDevModel(item, cancellationToken).ConfigureAwait(false);
                             if (!result.IsSuccess)
                             {
                                 AddCache(item.ToList());

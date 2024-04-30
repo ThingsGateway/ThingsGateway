@@ -37,7 +37,7 @@ internal class ModbusRtuOverUdpDataHandleAdapter : ReadWriteDevicesUdpDataHandle
     }
 
     /// <inheritdoc/>
-    protected override OperResult<byte[]> UnpackResponse(ModbusRtuMessage request, byte[]? send, byte[] response)
+    protected override IOperResult<byte[]> UnpackResponse(ModbusRtuMessage request, byte[]? send, byte[] response)
     {
         var result = ModbusHelper.GetModbusRtuData(send!, response, IsCheckCrc16);
         return result;

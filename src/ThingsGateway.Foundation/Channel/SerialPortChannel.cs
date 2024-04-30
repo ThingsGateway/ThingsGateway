@@ -12,6 +12,8 @@
 
 
 
+using Newtonsoft.Json.Linq;
+
 using TouchSocket.SerialPorts;
 
 namespace ThingsGateway.Foundation
@@ -26,12 +28,14 @@ namespace ThingsGateway.Foundation
         //}
 
 
+        private readonly EasyLock m_semaphoreForConnect = new EasyLock();
+
         /// <inheritdoc/>
         public EasyLock WaitLock { get; } = new EasyLock();
 
         /// <inheritdoc/>
         public ConcurrentList<IProtocol> Collects { get; } = new();
-
+        
         /// <summary>
         /// 接收到数据
         /// </summary>
@@ -48,8 +52,62 @@ namespace ThingsGateway.Foundation
 
         /// <inheritdoc/>
         public ChannelEventHandler Starting { get; set; }
+        public override string ToString()
+        {
+            if (ProtectedMainSerialPort != null)
+                return $"{ProtectedMainSerialPort.PortName}[{ProtectedMainSerialPort.BaudRate},{ProtectedMainSerialPort.DataBits},{ProtectedMainSerialPort.StopBits},{ProtectedMainSerialPort.Parity}]";
+            return base.ToString();
+        }
 
+        public void DefaultSend(byte[] buffer, int offset, int length)
+        {
+            this.ProtectedDefaultSend(buffer, offset, length);
+        }
 
+        public void SetDataHandlingAdapter(DataHandlingAdapter adapter)
+        {
+            if (adapter is SingleStreamDataHandlingAdapter singleStreamDataHandlingAdapter)
+                this.SetAdapter(singleStreamDataHandlingAdapter);
+        }
+
+        public void Close(string msg)
+        {
+            this.CloseAsync(msg).GetFalseAwaitResult();
+        }
+
+        public void Connect(int millisecondsTimeout = 3000, CancellationToken token = default)
+        {
+            this.ConnectAsync(millisecondsTimeout, token).GetFalseAwaitResult();
+        }
+        public new  async Task ConnectAsync(int millisecondsTimeout, CancellationToken token)
+        {
+            try
+            {
+                await this.m_semaphoreForConnect.WaitAsync(token);
+                if (!this.Online)
+                {
+                    await base.ConnectAsync(millisecondsTimeout, token);
+                    Logger?.Debug($"{ToString()}  Connected");
+                    if (Started != null)
+                        await Started.Invoke(this);
+                }
+            }
+            finally
+            {
+                this.m_semaphoreForConnect.Release();
+            }
+        }
+
+        public override async Task CloseAsync(string msg)
+        {
+            if (!this.Online)
+            {
+                await base.CloseAsync(msg);
+                Logger?.Debug($"{ToString()}  Closed{msg}");
+                if (Stoped != null)
+                    await Stoped.Invoke(this);
+            }
+        }
         /// <inheritdoc/>
         protected override Task OnSerialReceived(ReceivedDataEventArgs e)
         {
@@ -58,15 +116,6 @@ namespace ThingsGateway.Foundation
                 return this.Received.Invoke(this, e);
             }
             return base.OnSerialReceived(e);
-        }
-
-        /// <inheritdoc/>
-        protected override Task OnSerialConnected(ConnectedEventArgs e)
-        {
-            Logger?.Debug($"{ToString()}  Connected");
-            if (Started != null)
-                return Started.Invoke(this);
-            return base.OnSerialConnected(e);
         }
 
         /// <inheritdoc/>
@@ -85,31 +134,6 @@ namespace ThingsGateway.Foundation
             return base.OnSerialClosing(e);
         }
 
-        /// <inheritdoc/>
-        protected override Task OnSerialClosed(ClosedEventArgs e)
-        {
-            Logger?.Debug($"{ToString()}  Closed{(e.Message.IsNullOrEmpty() ? string.Empty : $"-{e.Message}")}");
-            if (Stoped != null)
-                return Stoped.Invoke(this);
-            return base.OnSerialClosed(e);
-        }
-
-        public override string ToString()
-        {
-            if (ProtectedMainSerialPort != null)
-                return $"{ProtectedMainSerialPort.PortName}[{ProtectedMainSerialPort.BaudRate},{ProtectedMainSerialPort.DataBits},{ProtectedMainSerialPort.StopBits},{ProtectedMainSerialPort.Parity}]";
-            return base.ToString();
-        }
-
-        public void DefaultSend(byte[] buffer, int offset, int length)
-        {
-            this.ProtectedDefaultSend(buffer, offset, length);
-        }
-
-        public void SetDataHandlingAdapter(DataHandlingAdapter adapter)
-        {
-            if (adapter is SingleStreamDataHandlingAdapter singleStreamDataHandlingAdapter)
-                this.SetAdapter(singleStreamDataHandlingAdapter);
-        }
+ 
     }
 }

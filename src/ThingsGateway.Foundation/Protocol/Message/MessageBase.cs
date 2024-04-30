@@ -12,11 +12,106 @@
 
 
 
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+
 namespace ThingsGateway.Foundation;
 
 /// <inheritdoc cref="IMessage"/>
-public abstract class MessageBase : OperResult<byte[]>, IMessage, IWaitHandle
+public abstract class MessageBase : IOperResult<byte[]>, IMessage, IWaitHandle
 {
+    #region Result
+    /// <summary>
+    /// 异常堆栈
+    /// </summary>
+#if NET6_0_OR_GREATER
+    [System.Text.Json.Serialization.JsonIgnore]
+#endif
+
+    [JsonIgnore]
+    public Exception? Exception { get; set; }
+
+    /// <summary>
+    /// 默认构造，操作结果会是成功
+    /// </summary>
+    public MessageBase()
+    {
+    }
+
+    /// <summary>
+    /// 从另一个操作对象中赋值信息
+    /// </summary>
+    public MessageBase(IOperResult operResult)
+    {
+        OperCode = operResult.OperCode;
+        ErrorMessage = operResult.ErrorMessage;
+        Exception = operResult.Exception;
+        ErrorCode = operResult.ErrorCode;
+    }
+
+    /// <summary>
+    /// 传入错误信息
+    /// </summary>
+    /// <param name="msg"></param>
+    public MessageBase(string msg)
+    {
+        OperCode = 500;
+        ErrorMessage = msg;
+    }
+
+    /// <summary>
+    /// 传入异常堆栈
+    /// </summary>
+    public MessageBase(Exception ex)
+    {
+        OperCode = 500;
+        Exception = ex;
+        ErrorMessage = ex.Message;
+        //指定Timeout或OperationCanceled为超时取消
+        if (ex is TimeoutException || ex is OperationCanceledException)
+        {
+            ErrorCode = ErrorCodeEnum.Canceled;
+        }
+        else if (ex is ReturnErrorException)
+        {
+            ErrorCode = ErrorCodeEnum.RetuenError;
+        }
+        else
+        {
+            ErrorCode = ErrorCodeEnum.InvokeFail;
+        }
+    }
+
+    /// <summary>
+    /// 传入错误信息与异常堆栈
+    /// </summary>
+    public MessageBase(string msg, Exception ex) : this(ex)
+    {
+        ErrorMessage = msg;
+    }
+
+    /// <inheritdoc/>
+    public int? OperCode { get; set; }
+
+    /// <inheritdoc/>
+    public bool IsSuccess => OperCode == null || OperCode == 0;
+
+    /// <inheritdoc/>
+    public string? ErrorMessage { get; set; }
+
+    /// <inheritdoc/>
+#if NET6_0_OR_GREATER
+    [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+#endif
+
+    [JsonConverter(typeof(StringEnumConverter))]
+    public ErrorCodeEnum? ErrorCode { get; private set; } = ErrorCodeEnum.RetuenError;
+
+    /// <inheritdoc/>
+    public byte[] Content { get; set; }
+
+    #endregion
+
     /// <inheritdoc/>
     public virtual long Sign { get; set; }
 

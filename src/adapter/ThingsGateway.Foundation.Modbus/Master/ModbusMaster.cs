@@ -168,7 +168,7 @@ public partial class ModbusMaster : ProtocolBase, IDtu
     }
 
     /// <inheritdoc/>
-    public override OperResult<byte[]> Read(string address, int length, CancellationToken cancellationToken = default)
+    public override IOperResult<byte[]> Read(string address, int length, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -183,7 +183,7 @@ public partial class ModbusMaster : ProtocolBase, IDtu
     }
 
     /// <inheritdoc/>
-    public override async Task<OperResult<byte[]>> ReadAsync(string address, int length, CancellationToken cancellationToken = default)
+    public override async ValueTask<IOperResult<byte[]>> ReadAsync(string address, int length, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -198,7 +198,7 @@ public partial class ModbusMaster : ProtocolBase, IDtu
     }
 
     /// <inheritdoc/>
-    public override OperResult Write(string address, byte[] value, CancellationToken cancellationToken = default)
+    public override IOperResult Write(string address, byte[] value, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -219,7 +219,7 @@ public partial class ModbusMaster : ProtocolBase, IDtu
     }
 
     /// <inheritdoc/>
-    public override OperResult Write(string address, bool[] value, CancellationToken cancellationToken = default)
+    public override IOperResult Write(string address, bool[] value, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -251,7 +251,7 @@ public partial class ModbusMaster : ProtocolBase, IDtu
                 }
                 else
                 {
-                    return new(ModbusResource.Localizer["ValueOverlimit", nameof(mAddress.BitIndex), 16]);
+                    return new OperResult(ModbusResource.Localizer["ValueOverlimit", nameof(mAddress.BitIndex), 16]);
                 }
             }
         }
@@ -262,7 +262,7 @@ public partial class ModbusMaster : ProtocolBase, IDtu
     }
 
     /// <inheritdoc/>
-    public override async Task<OperResult> WriteAsync(string address, byte[] value, CancellationToken cancellationToken = default)
+    public override async ValueTask<IOperResult> WriteAsync(string address, byte[] value, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -283,7 +283,7 @@ public partial class ModbusMaster : ProtocolBase, IDtu
     }
 
     /// <inheritdoc/>
-    public override async Task<OperResult> WriteAsync(string address, bool[] value, CancellationToken cancellationToken = default)
+    public override async ValueTask<IOperResult> WriteAsync(string address, bool[] value, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -316,7 +316,7 @@ public partial class ModbusMaster : ProtocolBase, IDtu
                 }
                 else
                 {
-                    return new(ModbusResource.Localizer["ValueOverlimit", nameof(mAddress.BitIndex), 16]);
+                    return new OperResult(ModbusResource.Localizer["ValueOverlimit", nameof(mAddress.BitIndex), 16]);
                 }
             }
         }

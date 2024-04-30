@@ -40,7 +40,7 @@ namespace ThingsGateway.Foundation
             using ModbusMaster modbusMaster = GetMaster();
 
             modbusMaster.HeartbeatHexString = "ccccdddd";//心跳
-            modbusMaster.Channel.Connect(3000,CancellationToken.None);
+            modbusMaster.Channel.ConnectAsync().GetFalseAwaitResult();
             Console.WriteLine("回车后读取注册包为abcd的客户端");
             Console.ReadLine();
             //构造实体类对象，传入协议对象与连读打包的最大数量

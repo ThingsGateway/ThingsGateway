@@ -47,6 +47,58 @@ namespace ThingsGateway.Foundation
         {
             return $"{IP}:{Port}";
         }
+        public void DefaultSend(byte[] buffer, int offset, int length)
+        {
+            this.ProtectedDefaultSend(buffer, offset, length);
+        }
+
+        public void SetDataHandlingAdapter(DataHandlingAdapter adapter)
+        {
+            if (adapter is SingleStreamDataHandlingAdapter singleStreamDataHandlingAdapter)
+                this.SetAdapter(singleStreamDataHandlingAdapter);
+        }
+
+        public void Close(string msg)
+        {
+            this.CloseAsync(msg).GetFalseAwaitResult();
+        }
+
+        private readonly EasyLock m_semaphoreForConnect = new EasyLock();
+
+        public void Connect(int millisecondsTimeout = 3000, CancellationToken token = default)
+        {
+            this.ConnectAsync(millisecondsTimeout, token).GetFalseAwaitResult();
+        }
+        public override async Task ConnectAsync(int millisecondsTimeout, CancellationToken token)
+        {
+            try
+            {
+                await this.m_semaphoreForConnect.WaitAsync(token);
+                if (!this.Online)
+                {
+                    await base.ConnectAsync(millisecondsTimeout, token);
+                    Logger?.Debug($"{ToString()}  Connected");
+                    if (Started != null)
+                        await Started.Invoke(this);
+                }
+            }
+            finally
+            {
+                this.m_semaphoreForConnect.Release();
+            }
+        }
+
+        public override async Task CloseAsync(string msg)
+        {
+            if (!this.Online)
+            {
+                await base.CloseAsync(msg);
+                Logger?.Debug($"{ToString()}  Closed{msg}");
+                if (Stoped != null)
+                    await Stoped.Invoke(this);
+            }
+        }
+
         /// <inheritdoc/>
         protected override async Task OnTcpReceived(ReceivedDataEventArgs e)
         {
@@ -61,14 +113,7 @@ namespace ThingsGateway.Foundation
              await base.OnTcpReceived(e);
         }
 
-        /// <inheritdoc/>
-        protected override Task OnTcpConnected(ConnectedEventArgs e)
-        {
-            Logger?.Debug($"{ToString()}  Connected");
-            if (Started != null)
-                return Started.Invoke(this);
-            return base.OnTcpConnected(e);
-        }
+ 
 
         /// <inheritdoc/>
         protected override Task OnTcpConnecting(ConnectingEventArgs e)
@@ -82,29 +127,10 @@ namespace ThingsGateway.Foundation
         /// <inheritdoc/>
         protected override Task OnTcpClosing(ClosingEventArgs e)
         {
-            Logger?.Debug($"{ToString()}  Disconnecting{(e.Message.IsNullOrEmpty() ? string.Empty : $" -{e.Message}")}");
+            Logger?.Debug($"{ToString()}  Closing{(e.Message.IsNullOrEmpty() ? string.Empty : $" -{e.Message}")}");
             return base.OnTcpClosing(e);
         }
 
-        /// <inheritdoc/>
-        protected override Task OnTcpClosed(ClosedEventArgs e)
-        {
-            Logger?.Debug($"{ToString()}   Disconnected{(e.Message.IsNullOrEmpty() ? string.Empty : $"-{e.Message}")}");
-            if (Stoped != null)
-                return Stoped.Invoke(this);
-            return base.OnTcpClosed(e);
-        }
-
-        public void DefaultSend(byte[] buffer, int offset, int length)
-        {
-            this.ProtectedDefaultSend(buffer, offset, length);
-        }
-
-
-        public void SetDataHandlingAdapter(DataHandlingAdapter adapter)
-        {
-            if (adapter is SingleStreamDataHandlingAdapter singleStreamDataHandlingAdapter)
-                this.SetAdapter(singleStreamDataHandlingAdapter);
-        }
+ 
     }
 }

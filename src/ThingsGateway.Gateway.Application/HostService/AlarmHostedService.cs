@@ -362,7 +362,7 @@ public class AlarmHostedService : BackgroundService
     /// 执行工作任务，对设备变量进行报警分析。
     /// </summary>
     /// <param name="cancellation">取消任务的 CancellationToken</param>
-    private async Task DoWork(CancellationToken cancellation)
+    private async ValueTask DoWork(CancellationToken cancellation)
     {
         // 延迟一段时间，避免过于频繁地执行任务
         await Task.Delay(500, cancellation).ConfigureAwait(false);

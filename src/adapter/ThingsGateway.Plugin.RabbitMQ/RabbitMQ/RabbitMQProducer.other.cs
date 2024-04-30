@@ -49,30 +49,30 @@ public partial class RabbitMQProducer : BusinessBaseWithCacheIntervalScript<Vari
         base.AlarmChange(alarmVariable);
     }
 
-    protected override Task<OperResult> UpdateAlarmModel(IEnumerable<CacheDBItem<AlarmVariable>> item, CancellationToken cancellationToken)
+    protected override ValueTask<IOperResult> UpdateAlarmModel(IEnumerable<CacheDBItem<AlarmVariable>> item, CancellationToken cancellationToken)
     {
         return UpdateAlarmModel(item.Select(a => a.Value), cancellationToken);
     }
 
-    protected override Task<OperResult> UpdateDevModel(IEnumerable<CacheDBItem<DeviceData>> item, CancellationToken cancellationToken)
+    protected override ValueTask<IOperResult> UpdateDevModel(IEnumerable<CacheDBItem<DeviceData>> item, CancellationToken cancellationToken)
     {
         return UpdateDevModel(item.Select(a => a.Value), cancellationToken);
     }
 
-    protected override Task<OperResult> UpdateVarModel(IEnumerable<CacheDBItem<VariableData>> item, CancellationToken cancellationToken)
+    protected override ValueTask<IOperResult> UpdateVarModel(IEnumerable<CacheDBItem<VariableData>> item, CancellationToken cancellationToken)
     {
         return UpdateVarModel(item.Select(a => a.Value), cancellationToken);
     }
 
     #region private
 
-    private Task<OperResult> UpdateAlarmModel(IEnumerable<AlarmVariable> item, CancellationToken cancellationToken)
+    private ValueTask<IOperResult> UpdateAlarmModel(IEnumerable<AlarmVariable> item, CancellationToken cancellationToken)
     {
         List<TopicJson> topicJsonList = GetAlarms(item);
         return Update(topicJsonList, cancellationToken);
     }
 
-    private Task<OperResult> Update(List<TopicJson> topicJsonList, CancellationToken cancellationToken)
+    private ValueTask<IOperResult> Update(List<TopicJson> topicJsonList, CancellationToken cancellationToken)
     {
         foreach (var topicJson in topicJsonList)
         {
@@ -87,19 +87,20 @@ public partial class RabbitMQProducer : BusinessBaseWithCacheIntervalScript<Vari
             }
             if (!result.IsSuccess)
             {
-                return Task.FromResult(result);
+                return ValueTask.FromResult(result);
             }
         }
-        return Task.FromResult(new OperResult());
+        IOperResult operResult = OperResult.Success;
+        return ValueTask.FromResult(operResult);
     }
 
-    private Task<OperResult> UpdateDevModel(IEnumerable<DeviceData> item, CancellationToken cancellationToken)
+    private ValueTask<IOperResult> UpdateDevModel(IEnumerable<DeviceData> item, CancellationToken cancellationToken)
     {
         List<TopicJson> topicJsonList = GetDeviceData(item);
         return Update(topicJsonList, cancellationToken);
     }
 
-    private Task<OperResult> UpdateVarModel(IEnumerable<VariableData> item, CancellationToken cancellationToken)
+    private ValueTask<IOperResult> UpdateVarModel(IEnumerable<VariableData> item, CancellationToken cancellationToken)
     {
         List<TopicJson> topicJsonList = GetVariable(item);
         return Update(topicJsonList, cancellationToken);
@@ -109,7 +110,7 @@ public partial class RabbitMQProducer : BusinessBaseWithCacheIntervalScript<Vari
 
     #region 方法
 
-    private async Task AllPublishAsync(CancellationToken cancellationToken)
+    private async ValueTask AllPublishAsync(CancellationToken cancellationToken)
     {
         //保留消息
         //分解List，避免超出字节大小限制
@@ -141,7 +142,7 @@ public partial class RabbitMQProducer : BusinessBaseWithCacheIntervalScript<Vari
     /// <summary>
     /// 上传，返回上传结果
     /// </summary>
-    private OperResult Publish(string topic, string payLoad, IBasicProperties properties)
+    private IOperResult Publish(string topic, string payLoad, IBasicProperties properties)
     {
         try
         {
@@ -151,11 +152,11 @@ public partial class RabbitMQProducer : BusinessBaseWithCacheIntervalScript<Vari
             {
                 _model.BasicPublish(_driverPropertys.ExchangeName, topic, properties, Encoding.UTF8.GetBytes(payLoad));
                 LogMessage.Trace($"Topic：{topic}{Environment.NewLine}PayLoad：{payLoad}");
-                return new();
+                return OperResult.Success;
             }
             else
             {
-                return new("Upload fail");
+                return new OperResult("Upload fail");
             }
         }
         catch (Exception ex)

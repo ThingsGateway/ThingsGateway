@@ -105,7 +105,7 @@ public class ModbusSlave : BusinessBase
     private volatile bool success = true;
     protected IStringLocalizer Localizer { get; private set; }
 
-    protected override async Task ProtectedExecuteAsync(CancellationToken cancellationToken)
+    protected override async ValueTask ProtectedExecuteAsync(CancellationToken cancellationToken)
     {
         //获取设备连接状态
         if (IsConnected())
@@ -156,12 +156,12 @@ public class ModbusSlave : BusinessBase
     /// <param name="thingsGatewayBitConverter"></param>
     /// <param name="client"></param>
     /// <returns></returns>
-    private async Task<OperResult> OnWriteData(ModbusAddress modbusAddress, byte[] writeValue, IThingsGatewayBitConverter bitConverter, IClientChannel channel)
+    private async ValueTask<IOperResult> OnWriteData(ModbusAddress modbusAddress, byte[] writeValue, IThingsGatewayBitConverter bitConverter, IClientChannel channel)
     {
         try
         {
             var tag = _modbusTags.FirstOrDefault(a => a.Key?.AddressStart == modbusAddress.AddressStart && a.Key?.Station == modbusAddress.Station && a.Key?.ReadFunction == modbusAddress.ReadFunction);
-            if (tag.Value == null) return new();
+            if (tag.Value == null) return OperResult.Success;
             var enable = tag.Value.GetPropertyValue(DeviceId, nameof(_variablePropertys.VariableRpcEnable)).ToBoolean(false) && _driverPropertys.DeviceRpcEnable;
             if (!enable) return new OperResult(Localizer["NotWriteEnable"]);
             var type = tag.Value.GetPropertyValue(DeviceId, nameof(ModbusSlaveVariableProperty.DataType));

@@ -123,7 +123,7 @@ public class Dlt645_2007Master : ProtocolBase,IDtu
     }
 
     /// <inheritdoc/>
-    public override OperResult<byte[]> Read(string address, int length, CancellationToken cancellationToken = default)
+    public override IOperResult<byte[]> Read(string address, int length, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -140,7 +140,7 @@ public class Dlt645_2007Master : ProtocolBase,IDtu
      
 
     /// <inheritdoc/>
-    public override OperResult<string[]> ReadString(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
+    public override IOperResult<string[]> ReadString(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
     {
         bitConverter ??= ThingsGatewayBitConverter.GetTransByAddress(ref address);
         var result = Read(address, GetLength(address, length, 8), cancellationToken);
@@ -148,7 +148,7 @@ public class Dlt645_2007Master : ProtocolBase,IDtu
     }
 
     /// <inheritdoc/>
-    public override async Task<OperResult<string[]>> ReadStringAsync(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
+    public override async ValueTask<IOperResult<string[]>> ReadStringAsync(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
     {
         bitConverter ??= ThingsGatewayBitConverter.GetTransByAddress(ref address);
         var result = await ReadAsync(address, GetLength(address, length, 8), cancellationToken).ConfigureAwait(false);
@@ -156,7 +156,7 @@ public class Dlt645_2007Master : ProtocolBase,IDtu
     }
 
     /// <inheritdoc/>
-    public override async Task<OperResult<byte[]>> ReadAsync(string address, int length, CancellationToken cancellationToken = default)
+    public override async ValueTask<IOperResult<byte[]>> ReadAsync(string address, int length, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -172,7 +172,7 @@ public class Dlt645_2007Master : ProtocolBase,IDtu
 
  
     /// <inheritdoc/>
-    public override OperResult Write(string address, string value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
+    public override IOperResult Write(string address, string value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -196,7 +196,7 @@ public class Dlt645_2007Master : ProtocolBase,IDtu
     }
 
     /// <inheritdoc/>
-    public override async Task<OperResult> WriteAsync(string address, string value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
+    public override async ValueTask<IOperResult> WriteAsync(string address, string value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -222,40 +222,40 @@ public class Dlt645_2007Master : ProtocolBase,IDtu
     #region
 
     /// <inheritdoc/>
-    public override OperResult Write(string address, byte[] value, CancellationToken cancellationToken = default) => Write(address, value.ToString(), null, cancellationToken);
+    public override IOperResult Write(string address, byte[] value, CancellationToken cancellationToken = default) => Write(address, value.ToString(), null, cancellationToken);
 
     /// <inheritdoc/>
-    public override OperResult Write(string address, bool[] value, CancellationToken cancellationToken = default) => Write(address, value.ToString(), null, cancellationToken);
+    public override IOperResult Write(string address, bool[] value, CancellationToken cancellationToken = default) => Write(address, value.ToString(), null, cancellationToken);
 
     /// <inheritdoc/>
-    public override Task<OperResult> WriteAsync(string address, byte[] value, CancellationToken cancellationToken = default) => Task.FromResult(new OperResult());
+    public override ValueTask<IOperResult> WriteAsync(string address, byte[] value, CancellationToken cancellationToken = default) => throw new NotSupportedException();
 
     /// <inheritdoc/>
-    public override Task<OperResult> WriteAsync(string address, uint value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default) => WriteAsync(address, value.ToString(), bitConverter, cancellationToken);
+    public override ValueTask<IOperResult> WriteAsync(string address, uint value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default) => WriteAsync(address, value.ToString(), bitConverter, cancellationToken);
 
     /// <inheritdoc/>
-    public override Task<OperResult> WriteAsync(string address, double value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default) => WriteAsync(address, value.ToString(), bitConverter, cancellationToken);
+    public override ValueTask<IOperResult> WriteAsync(string address, double value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default) => WriteAsync(address, value.ToString(), bitConverter, cancellationToken);
 
     /// <inheritdoc/>
-    public override Task<OperResult> WriteAsync(string address, float value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default) => WriteAsync(address, value.ToString(), bitConverter, cancellationToken);
+    public override ValueTask<IOperResult> WriteAsync(string address, float value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default) => WriteAsync(address, value.ToString(), bitConverter, cancellationToken);
 
     /// <inheritdoc/>
-    public override Task<OperResult> WriteAsync(string address, long value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default) => WriteAsync(address, value.ToString(), bitConverter, cancellationToken);
+    public override ValueTask<IOperResult> WriteAsync(string address, long value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default) => WriteAsync(address, value.ToString(), bitConverter, cancellationToken);
 
     /// <inheritdoc/>
-    public override Task<OperResult> WriteAsync(string address, ulong value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default) => WriteAsync(address, value.ToString(), bitConverter, cancellationToken);
+    public override ValueTask<IOperResult> WriteAsync(string address, ulong value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default) => WriteAsync(address, value.ToString(), bitConverter, cancellationToken);
 
     /// <inheritdoc/>
-    public override Task<OperResult> WriteAsync(string address, ushort value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default) => WriteAsync(address, value.ToString(), bitConverter, cancellationToken);
+    public override ValueTask<IOperResult> WriteAsync(string address, ushort value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default) => WriteAsync(address, value.ToString(), bitConverter, cancellationToken);
 
     /// <inheritdoc/>
-    public override Task<OperResult> WriteAsync(string address, short value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default) => WriteAsync(address, value.ToString(), bitConverter, cancellationToken);
+    public override ValueTask<IOperResult> WriteAsync(string address, short value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default) => WriteAsync(address, value.ToString(), bitConverter, cancellationToken);
 
     /// <inheritdoc/>
-    public override Task<OperResult> WriteAsync(string address, int value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default) => WriteAsync(address, value.ToString(), bitConverter, cancellationToken);
+    public override ValueTask<IOperResult> WriteAsync(string address, int value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default) => WriteAsync(address, value.ToString(), bitConverter, cancellationToken);
 
     /// <inheritdoc/>
-    public override Task<OperResult> WriteAsync(string address, bool[] value, CancellationToken cancellationToken = default) => Task.FromResult(new OperResult());
+    public override ValueTask<IOperResult> WriteAsync(string address, bool[] value, CancellationToken cancellationToken = default) => throw new NotSupportedException();
 
     #endregion
 
@@ -267,18 +267,18 @@ public class Dlt645_2007Master : ProtocolBase,IDtu
     /// <param name="dateTime">时间</param>
     /// <param name="cancellationToken">取消令箭</param>
     /// <returns></returns>
-    public OperResult BroadcastTime(DateTime dateTime, CancellationToken cancellationToken = default)
+    public IOperResult BroadcastTime(DateTime dateTime, CancellationToken cancellationToken = default)
     {
         try
         {
             string str = $"{dateTime.Second:D2}{dateTime.Minute:D2}{dateTime.Hour:D2}{dateTime.Day:D2}{dateTime.Month:D2}{dateTime.Year % 100:D2}";
             var commandResult = Dlt645Helper.GetDlt645_2007Command((byte)ControlCode.BroadcastTime, str.ByHexStringToBytes().ToArray(), "999999999999".ByHexStringToBytes());
             Send(string.Empty, commandResult, cancellationToken);
-            return new();
+            return OperResult.Success;
         }
         catch (Exception ex)
         {
-            return new OperResult<string>(ex);
+            return new OperResult(ex);
         }
     }
 
@@ -289,7 +289,7 @@ public class Dlt645_2007Master : ProtocolBase,IDtu
     /// <param name="dateTime">时间</param>
     /// <param name="cancellationToken">取消令箭</param>
     /// <returns></returns>
-    public async Task<OperResult> FreezeAsync(string socketId,DateTime dateTime, CancellationToken cancellationToken = default)
+    public async ValueTask<IOperResult> FreezeAsync(string socketId,DateTime dateTime, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -311,7 +311,7 @@ public class Dlt645_2007Master : ProtocolBase,IDtu
     /// <param name="socketId">socketId</param>
     /// <param name="cancellationToken">取消令箭</param>
     /// <returns></returns>
-    public async Task<OperResult<string>> ReadDeviceStationAsync(string socketId, CancellationToken cancellationToken = default)
+    public async ValueTask<IOperResult<string>> ReadDeviceStationAsync(string socketId, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -324,12 +324,12 @@ public class Dlt645_2007Master : ProtocolBase,IDtu
             }
             else
             {
-                return new(result);
+                return new  OperResult<string>(result);
             }
         }
         catch (Exception ex)
         {
-            return new(ex);
+            return new  OperResult<string>(ex);
         }
     }
 
@@ -340,7 +340,7 @@ public class Dlt645_2007Master : ProtocolBase,IDtu
     /// <param name="baudRate">波特率</param>
     /// <param name="cancellationToken">取消令箭</param>
     /// <returns></returns>
-    public async Task<OperResult> WriteBaudRateAsync(string socketId,int baudRate, CancellationToken cancellationToken = default)
+    public async ValueTask<IOperResult> WriteBaudRateAsync(string socketId,int baudRate, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -373,7 +373,7 @@ public class Dlt645_2007Master : ProtocolBase,IDtu
     /// <param name="station">站号</param>
     /// <param name="cancellationToken">取消令箭</param>
     /// <returns></returns>
-    public async Task<OperResult> WriteDeviceStationAsync(string socketId,string station, CancellationToken cancellationToken = default)
+    public async ValueTask<IOperResult> WriteDeviceStationAsync(string socketId,string station, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -395,7 +395,7 @@ public class Dlt645_2007Master : ProtocolBase,IDtu
     /// <param name="newPassword">新密码</param>
     /// <param name="cancellationToken">取消令箭</param>
     /// <returns></returns>
-    public async Task<OperResult> WritePasswordAsync(string socketId,byte level, string oldPassword, string newPassword, CancellationToken cancellationToken = default)
+    public async ValueTask<IOperResult> WritePasswordAsync(string socketId,byte level, string oldPassword, string newPassword, CancellationToken cancellationToken = default)
     {
         try
         {

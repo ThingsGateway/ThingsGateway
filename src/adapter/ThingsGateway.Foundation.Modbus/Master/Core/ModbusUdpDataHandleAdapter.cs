@@ -36,7 +36,7 @@ internal class ModbusUdpDataHandleAdapter : ReadWriteDevicesUdpDataHandleAdapter
     }
 
     /// <inheritdoc/>
-    protected override OperResult<byte[]> UnpackResponse(ModbusTcpMessage request, byte[]? send, byte[] response)
+    protected override IOperResult<byte[]> UnpackResponse(ModbusTcpMessage request, byte[]? send, byte[] response)
     {
         var result = ModbusHelper.GetModbusData(send?.RemoveBegin(6), response.RemoveBegin(6));
         return result;

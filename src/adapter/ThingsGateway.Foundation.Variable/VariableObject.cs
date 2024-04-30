@@ -61,7 +61,7 @@ public abstract class VariableObject
     /// <summary>
     /// <see cref="VariableRuntimeAttribute"/>特性连读，反射赋值到继承类中的属性
     /// </summary>
-    public virtual async Task<OperResult> MulReadAsync(CancellationToken cancellationToken = default)
+    public virtual async ValueTask<IOperResult> MulReadAsync(CancellationToken cancellationToken = default)
     {
         try
         {
@@ -78,16 +78,16 @@ public abstract class VariableObject
                 {
                     item.LastErrorMessage = result.ErrorMessage;
                     item.VariableRunTimes.ForEach(a => a.SetValue(null, isOnline: false));
-                    return new(result);
+                    return new OperResult(result);
                 }
             }
 
             SetValue();
-            return new();
+            return OperResult.Success;
         }
         catch (Exception ex)
         {
-            return new(ex);
+            return new OperResult(ex);
         }
     }
 
@@ -141,7 +141,7 @@ public abstract class VariableObject
     /// <summary>
     /// <see cref="VariableRuntimeAttribute"/>特性连读，反射赋值到继承类中的属性
     /// </summary>
-    public virtual OperResult MulRead(CancellationToken cancellationToken = default)
+    public virtual IOperResult MulRead(CancellationToken cancellationToken = default)
     {
         try
         {
@@ -158,15 +158,15 @@ public abstract class VariableObject
                 {
                     item.LastErrorMessage = result.ErrorMessage;
                     item.VariableRunTimes.ForEach(a => a.SetValue(null, isOnline: false));
-                    return new(result);
+                    return result;
                 }
             }
             SetValue();
-            return new();
+            return OperResult.Success;
         }
         catch (Exception ex)
         {
-            return new(ex);
+            return new OperResult(ex);
         }
     }
 
@@ -176,19 +176,19 @@ public abstract class VariableObject
     /// <param name="propertyName">属性名称，必须使用<see cref="VariableRuntimeAttribute"/>特性</param>
     /// <param name="value">写入值</param>
     /// <param name="cancellationToken">取消令箭</param>
-    public virtual OperResult WriteValue(string propertyName, object value, CancellationToken cancellationToken = default)
+    public virtual IOperResult WriteValue(string propertyName, object value, CancellationToken cancellationToken = default)
     {
         try
         {
             GetVariableSources();
             if (string.IsNullOrEmpty(propertyName))
             {
-                return new($"PropertyName cannot be null or empty.");
+                return new OperResult($"PropertyName cannot be null or empty.");
             }
 
             if (!VariableRuntimePropertyDict.TryGetValue(propertyName, out var variableRuntimeProperty))
             {
-                return new($"This attribute is not recognized and may not have been identified using the {typeof(VariableRuntimeAttribute)} attribute");
+                return new OperResult($"This attribute is not recognized and may not have been identified using the {typeof(VariableRuntimeAttribute)} attribute");
             }
 
             JToken jToken = GetExpressionsValue(value, variableRuntimeProperty);
@@ -198,7 +198,7 @@ public abstract class VariableObject
         }
         catch (Exception ex)
         {
-            return new(ex);
+            return new OperResult(ex);
         }
     }
 
@@ -208,19 +208,19 @@ public abstract class VariableObject
     /// <param name="propertyName">属性名称，必须使用<see cref="VariableRuntimeAttribute"/>特性</param>
     /// <param name="value">写入值</param>
     /// <param name="cancellationToken">取消令箭</param>
-    public virtual async Task<OperResult> WriteValueAsync(string propertyName, object value, CancellationToken cancellationToken = default)
+    public virtual async ValueTask<IOperResult> WriteValueAsync(string propertyName, object value, CancellationToken cancellationToken = default)
     {
         try
         {
             GetVariableSources();
             if (string.IsNullOrEmpty(propertyName))
             {
-                return new($"PropertyName cannot be null or empty.");
+                return new OperResult($"PropertyName cannot be null or empty.");
             }
 
             if (!VariableRuntimePropertyDict.TryGetValue(propertyName, out var variableRuntimeProperty))
             {
-                return new($"This attribute is not recognized and may not have been identified using the {typeof(VariableRuntimeAttribute)} attribute");
+                return new OperResult($"This attribute is not recognized and may not have been identified using the {typeof(VariableRuntimeAttribute)} attribute");
             }
 
             JToken jToken = GetExpressionsValue(value, variableRuntimeProperty);
@@ -230,7 +230,7 @@ public abstract class VariableObject
         }
         catch (Exception ex)
         {
-            return new(ex);
+            return new OperResult(ex);
         }
     }
 

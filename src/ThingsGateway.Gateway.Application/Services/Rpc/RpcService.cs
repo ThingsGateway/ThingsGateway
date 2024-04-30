@@ -1,4 +1,4 @@
-
+﻿
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -45,13 +45,13 @@ public class RpcService : IRpcService
     }
 
     /// <inheritdoc />
-    public async Task<Dictionary<string, OperResult>> InvokeDeviceMethodAsync(string sourceDes, Dictionary<string, string> items, CancellationToken cancellationToken = default)
+    public async Task<Dictionary<string, IOperResult>> InvokeDeviceMethodAsync(string sourceDes, Dictionary<string, string> items, CancellationToken cancellationToken = default)
     {
         // 初始化用于存储将要写入的变量和方法的字典
         Dictionary<CollectBase, Dictionary<VariableRunTime, JToken>> WriteVariables = new();
         Dictionary<CollectBase, Dictionary<VariableRunTime, string>> WriteMethods = new();
         // 用于存储结果的并发字典
-        ConcurrentDictionary<string, OperResult> results = new();
+        ConcurrentDictionary<string, IOperResult> results = new();
 
         // 对每个要操作的变量进行检查和处理
         foreach (var item in items)
@@ -175,7 +175,7 @@ public class RpcService : IRpcService
                 // 将异常信息添加到结果字典中
                 results.AddRange(item.Value.Select((KeyValuePair<VariableRunTime, JToken> a) =>
                 {
-                    return new KeyValuePair<string, OperResult>(a.Key.Name, new OperResult(ex));
+                    return new KeyValuePair<string, IOperResult>(a.Key.Name, new OperResult(ex));
                 }));
             }
         }, Environment.ProcessorCount / 2, cancellationToken);
@@ -187,14 +187,14 @@ public class RpcService : IRpcService
             {
                 // 执行变量附带的方法
                 var method = item.Key.CurrentDevice.VariableMethods.FirstOrDefault(it => it.Variable == writeMethod.Key);
-                OperResult<object> result;
+                IOperResult<object> result;
                 try
                 {
                     result = await item.Key.InvokeMethodAsync(method, writeMethod.Value, false, cancellationToken);
                 }
                 catch (Exception ex)
                 {
-                    result = new(ex);
+                    result = new OperResult<object>(ex);
                 }
 
                 // 写入日志

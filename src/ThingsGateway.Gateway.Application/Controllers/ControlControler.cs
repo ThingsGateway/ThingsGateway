@@ -91,7 +91,7 @@ public class ControlControler : ControllerBase
     /// 写入多个变量
     /// </summary>
     [HttpPost("writeVariables")]
-    public async Task<Dictionary<string, OperResult>> WriteDeviceMethods(Dictionary<string, string> objs)
+    public async Task<Dictionary<string, IOperResult>> WriteDeviceMethods(Dictionary<string, string> objs)
     {
         var result = await _rpcService.InvokeDeviceMethodAsync($"WebApi-{UserManager.UserAccount}-{App.HttpContext.Connection.RemoteIpAddress.MapToIPv4()}", objs);
         return result;

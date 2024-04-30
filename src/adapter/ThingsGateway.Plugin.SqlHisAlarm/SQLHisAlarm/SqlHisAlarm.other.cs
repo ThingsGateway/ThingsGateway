@@ -32,12 +32,12 @@ public partial class SqlHisAlarm : BusinessBaseWithCacheVarModel<HistoryAlarm>
         AddQueueVarModel(new(alarmVariable.Adapt<HistoryAlarm>(_config)));
     }
 
-    protected override Task<OperResult> UpdateVarModel(IEnumerable<CacheDBItem<HistoryAlarm>> item, CancellationToken cancellationToken)
+    protected override ValueTask<IOperResult> UpdateVarModel(IEnumerable<CacheDBItem<HistoryAlarm>> item, CancellationToken cancellationToken)
     {
         return UpdateT(item.Select(a => a.Value), cancellationToken);
     }
 
-    private async Task<OperResult> UpdateT(IEnumerable<HistoryAlarm> item, CancellationToken cancellationToken)
+    private async ValueTask<IOperResult> UpdateT(IEnumerable<HistoryAlarm> item, CancellationToken cancellationToken)
     {
         var result = await InserableAsync(item.ToList(), cancellationToken).ConfigureAwait(false);
         if (success != result.IsSuccess)
@@ -50,7 +50,7 @@ public partial class SqlHisAlarm : BusinessBaseWithCacheVarModel<HistoryAlarm>
         return result;
     }
 
-    private async Task<OperResult> InserableAsync(List<HistoryAlarm> dbInserts, CancellationToken cancellationToken)
+    private async ValueTask<IOperResult> InserableAsync(List<HistoryAlarm> dbInserts, CancellationToken cancellationToken)
     {
         try
         {
@@ -63,12 +63,12 @@ public partial class SqlHisAlarm : BusinessBaseWithCacheVarModel<HistoryAlarm>
                 CurrentDevice.SetDeviceStatus(TimerX.Now, 0);
                 LogMessage.Trace($"上传成功，数量：{dbInserts.Count}");
             }
-            return new();
+            return OperResult.Success;
         }
         catch (Exception ex)
         {
             CurrentDevice.SetDeviceStatus(TimerX.Now, 999);
-            return new(ex);
+            return new OperResult(ex);
         }
     }
 }

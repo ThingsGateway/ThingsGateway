@@ -244,7 +244,7 @@ public class VariableRunTime : Variable, IVariable
     }
 
     /// <inheritdoc/>
-    public async Task<OperResult> SetValueToDeviceAsync(string value, string? executive = "BLAZOR", CancellationToken cancellationToken = default)
+    public async ValueTask<IOperResult> SetValueToDeviceAsync(string value, string? executive = "BLAZOR", CancellationToken cancellationToken = default)
     {
         var data = await GlobalData.RpcService.InvokeDeviceMethodAsync(executive, new Dictionary<string, string>() { { Name, value } }, cancellationToken).ConfigureAwait(false);
         return data.Values.FirstOrDefault();

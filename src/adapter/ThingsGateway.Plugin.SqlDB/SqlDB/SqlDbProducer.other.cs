@@ -35,12 +35,12 @@ public partial class SqlDBProducer : BusinessBaseWithCacheIntervalVarModel<SQLHi
         }
     }
 
-    protected override Task<OperResult> UpdateVarModel(IEnumerable<CacheDBItem<SQLHistoryValue>> item, CancellationToken cancellationToken)
+    protected override ValueTask<IOperResult> UpdateVarModel(IEnumerable<CacheDBItem<SQLHistoryValue>> item, CancellationToken cancellationToken)
     {
         return UpdateVarModel(item.Select(a => a.Value), cancellationToken);
     }
 
-    private async Task<OperResult> UpdateVarModel(IEnumerable<SQLHistoryValue> item, CancellationToken cancellationToken)
+    private async ValueTask<IOperResult> UpdateVarModel(IEnumerable<SQLHistoryValue> item, CancellationToken cancellationToken)
     {
         var result = await InserableAsync(item.ToList(), cancellationToken).ConfigureAwait(false);
         if (success != result.IsSuccess)
@@ -55,7 +55,7 @@ public partial class SqlDBProducer : BusinessBaseWithCacheIntervalVarModel<SQLHi
 
     #region 方法
 
-    private async Task<OperResult> InserableAsync(List<SQLHistoryValue> dbInserts, CancellationToken cancellationToken)
+    private async ValueTask<IOperResult> InserableAsync(List<SQLHistoryValue> dbInserts, CancellationToken cancellationToken)
     {
         try
         {
@@ -67,15 +67,15 @@ public partial class SqlDBProducer : BusinessBaseWithCacheIntervalVarModel<SQLHi
             {
                 LogMessage.Trace($"TableName：{nameof(SQLHistoryValue)}，Count：{result}");
             }
-            return new();
+            return OperResult.Success;
         }
         catch (Exception ex)
         {
-            return new(ex);
+            return new OperResult(ex);
         }
     }
 
-    private async Task<OperResult> UpdateAsync(List<SQLRealValue> datas, CancellationToken cancellationToken)
+    private async ValueTask<IOperResult?> UpdateAsync(List<SQLRealValue> datas, CancellationToken cancellationToken)
     {
         try
         {
@@ -89,7 +89,7 @@ public partial class SqlDBProducer : BusinessBaseWithCacheIntervalVarModel<SQLHi
                     if (result > 0)
                         LogMessage.Trace($"TableName：{nameof(SQLRealValue)}{Environment.NewLine} ，Count：{result}");
                     _initRealData = true;
-                    return new();
+                    return OperResult.Success;
                 }
                 return null;
             }
@@ -99,14 +99,14 @@ public partial class SqlDBProducer : BusinessBaseWithCacheIntervalVarModel<SQLHi
                 {
                     var result = await db.Fastest<SQLRealValue>().AS(_driverPropertys.ReadDBTableName).PageSize(100000).BulkUpdateAsync(datas);
                     LogMessage.Trace($"TableName：{nameof(SQLRealValue)}{Environment.NewLine} ，Count：{result}");
-                    return new();
+                    return OperResult.Success;
                 }
                 return null;
             }
         }
         catch (Exception ex)
         {
-            return new(ex);
+            return new OperResult(ex);
         }
     }
 

@@ -26,6 +26,12 @@ public class SiemensS7MasterProperty : CollectPropertyBase
     public SiemensTypeEnum SiemensS7Type { get; set; }
 
     /// <summary>
+    /// 最大打包长度
+    /// </summary>
+    [DynamicProperty]
+    public ushort MaxPack { get; set; } = 200;
+
+    /// <summary>
     /// Rack
     /// </summary>
     [DynamicProperty]

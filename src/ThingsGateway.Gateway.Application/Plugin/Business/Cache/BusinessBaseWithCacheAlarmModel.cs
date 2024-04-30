@@ -127,7 +127,7 @@ public abstract class BusinessBaseWithCacheAlarmModel<VarModel, DevModel, AlarmM
     /// <param name="item"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    protected abstract Task<OperResult> UpdateAlarmModel(IEnumerable<CacheDBItem<AlarmModel>> item, CancellationToken cancellationToken);
+    protected abstract ValueTask<IOperResult> UpdateAlarmModel(IEnumerable<CacheDBItem<AlarmModel>> item, CancellationToken cancellationToken);
 
     protected async Task UpdateAlarmModelCache(CancellationToken cancellationToken)
     {
@@ -151,7 +151,7 @@ public abstract class BusinessBaseWithCacheAlarmModel<VarModel, DevModel, AlarmM
                             {
                                 if (!cancellationToken.IsCancellationRequested)
                                 {
-                                    OperResult result = await UpdateAlarmModel(varList, cancellationToken).ConfigureAwait(false);
+                                    var result = await UpdateAlarmModel(varList, cancellationToken).ConfigureAwait(false);
                                     if (result.IsSuccess)
                                     {
                                         //删除缓存
@@ -205,7 +205,7 @@ public abstract class BusinessBaseWithCacheAlarmModel<VarModel, DevModel, AlarmM
                     {
                         if (!cancellationToken.IsCancellationRequested)
                         {
-                            OperResult result = await UpdateAlarmModel(item, cancellationToken).ConfigureAwait(false);
+                            var result = await UpdateAlarmModel(item, cancellationToken).ConfigureAwait(false);
                             if (!result.IsSuccess)
                             {
                                 AddCache(item.ToList());

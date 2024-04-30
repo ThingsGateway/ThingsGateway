@@ -30,12 +30,12 @@ public partial class TDengineDBProducer : BusinessBaseWithCacheIntervalVarModel<
         base.VariableChange(variableRunTime, variable);
     }
 
-    protected override Task<OperResult> UpdateVarModel(IEnumerable<CacheDBItem<TDengineDBHistoryValue>> item, CancellationToken cancellationToken)
+    protected override ValueTask<IOperResult> UpdateVarModel(IEnumerable<CacheDBItem<TDengineDBHistoryValue>> item, CancellationToken cancellationToken)
     {
         return UpdateVarModel(item.Select(a => a.Value), cancellationToken);
     }
 
-    private async Task<OperResult> UpdateVarModel(IEnumerable<TDengineDBHistoryValue> item, CancellationToken cancellationToken)
+    private async ValueTask<IOperResult> UpdateVarModel(IEnumerable<TDengineDBHistoryValue> item, CancellationToken cancellationToken)
     {
         var result = await InserableAsync(item.ToList(), cancellationToken).ConfigureAwait(false);
         if (success != result.IsSuccess)
@@ -50,7 +50,7 @@ public partial class TDengineDBProducer : BusinessBaseWithCacheIntervalVarModel<
 
     #region 方法
 
-    private async Task<OperResult> InserableAsync(List<TDengineDBHistoryValue> dbInserts, CancellationToken cancellationToken)
+    private async ValueTask<IOperResult> InserableAsync(List<TDengineDBHistoryValue> dbInserts, CancellationToken cancellationToken)
     {
         try
         {
@@ -62,11 +62,11 @@ public partial class TDengineDBProducer : BusinessBaseWithCacheIntervalVarModel<
             {
                 LogMessage.Trace($"主题：{nameof(TDengineDBHistoryValue)}，数量：{result}");
             }
-            return new();
+            return OperResult.Success;
         }
         catch (Exception ex)
         {
-            return new(ex);
+            return new OperResult(ex);
         }
     }
 

@@ -17,7 +17,7 @@ namespace ThingsGateway.Gateway.Application;
 
 public class DoTask
 {
-    public DoTask(Func<CancellationToken, Task> doWork, ILogger logger, string taskName = null)
+    public DoTask(Func<CancellationToken, ValueTask> doWork, ILogger logger, string taskName = null)
     {
         DoWork = doWork; Logger = logger; TaskName = taskName;
     }
@@ -44,7 +44,7 @@ public class DoTask
     /// <summary>
     /// 执行任务方法
     /// </summary>
-    public Func<CancellationToken, Task> DoWork { get; }
+    public Func<CancellationToken, ValueTask> DoWork { get; }
 
     private Task PrivateTask { get; set; }
 

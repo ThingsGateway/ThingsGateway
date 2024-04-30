@@ -26,7 +26,7 @@ public static class OperResultExtension
     /// <param name="result"></param>
     /// <param name="translator"></param>
     /// <returns></returns>
-    public static OperResult<TResult> GetResultFromBytes<TResult>(this OperResult<byte[]> result, Func<byte[]?, TResult> translator)
+    public static IOperResult<TResult> GetResultFromBytes<TResult>(this IOperResult<byte[]> result, Func<byte[]?, TResult> translator)
     {
         try
         {
@@ -45,7 +45,7 @@ public static class OperResultExtension
     /// <param name="result"></param>
     /// <param name="func"></param>
     /// <returns></returns>
-    public static OperResult<T1> OperResultFrom<T1>(this OperResult result, Func<T1> func)
+    public static IOperResult<T1> OperResultFrom<T1>(this IOperResult result, Func<T1> func)
     {
         if (result.IsSuccess)
             return new OperResult<T1>() { Content = func() };
@@ -59,26 +59,26 @@ public static class OperResultExtension
     /// <param name="result"></param>
     /// <param name="func"></param>
     /// <returns></returns>
-    public static OperResult Then(this OperResult result, Func<OperResult> func)
+    public static IOperResult Then(this IOperResult result, Func<IOperResult> func)
     {
         return !result.IsSuccess ? result : func();
     }
 
-    /// <inheritdoc cref="Then(OperResult, Func{OperResult})"/>
-    public static OperResult<T> Then<T>(this OperResult result, Func<OperResult<T>> func)
+    /// <inheritdoc cref="Then(IOperResult, Func{IOperResult})"/>
+    public static IOperResult<T> Then<T>(this IOperResult result, Func<IOperResult<T>> func)
     {
-        return !result.IsSuccess ? new(result) : func();
+        return !result.IsSuccess ? new OperResult<T>(result) : func();
     }
 
-    /// <inheritdoc cref="Then(OperResult, Func{OperResult})"/>
-    public static OperResult<T2> Then<T, T2>(this OperResult<T> result, Func<T?, OperResult<T2>> func)
+    /// <inheritdoc cref="Then(IOperResult, Func{IOperResult})"/>
+    public static IOperResult<T2> Then<T, T2>(this IOperResult<T> result, Func<T?, IOperResult<T2>> func)
     {
-        return !result.IsSuccess ? new(result) : func(result.Content);
+        return !result.IsSuccess ? new OperResult<T2>(result) : func(result.Content);
     }
 
-    /// <inheritdoc cref="Then(OperResult, Func{OperResult})"/>
-    public static OperResult<T, T2> Then<T, T2>(this OperResult result, Func<OperResult<T, T2>> func)
+    /// <inheritdoc cref="Then(IOperResult, Func{IOperResult})"/>
+    public static IOperResult<T, T2> Then<T, T2>(this IOperResult result, Func<IOperResult<T, T2>> func)
     {
-        return !result.IsSuccess ? new(result) : func();
+        return !result.IsSuccess ? new OperResult<T, T2>(result) : func();
     }
 }

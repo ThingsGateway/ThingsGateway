@@ -17,7 +17,7 @@ namespace ThingsGateway.Foundation;
 /// <summary>
 /// 通道管理
 /// </summary>
-public interface IChannel : ISetupConfigObject, IDisposable, IClosableClient
+public interface IChannel : ISetupConfigObject, IDisposable ,IClosableClient,IConnectableClient
 {
     /// <summary>
     /// 该通道下的所有设备
@@ -54,6 +54,11 @@ public interface IChannel : ISetupConfigObject, IDisposable, IClosableClient
     /// </summary>
     ChannelTypeEnum ChannelType { get; }
 
+    /// <summary>
+    /// 关闭客户端。
+    /// </summary>
+    /// <param name="msg"></param>
+    void Close(string msg);
 
     /// <summary>
     /// 启动
@@ -62,7 +67,8 @@ public interface IChannel : ISetupConfigObject, IDisposable, IClosableClient
     /// <param name="token">可取消令箭</param>
     /// <exception cref="TimeoutException"></exception>
     /// <exception cref="Exception"></exception>
-    Task ConnectAsync(int millisecondsTimeout = 3000, CancellationToken token = default);
+    void Connect(int millisecondsTimeout = 3000, CancellationToken token = default);
+ 
 
 }
 

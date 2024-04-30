@@ -23,5 +23,5 @@ public interface IRpcService
     /// <param name="items">指定键为变量名称，值为附带方法参数或写入值，方法参数会按逗号分割解析</param>
     /// <param name="cancellationToken"><see cref="CancellationToken"/> 取消令箭</param>
     /// <returns></returns>
-    Task<Dictionary<string, OperResult>> InvokeDeviceMethodAsync(string sourceDes, Dictionary<string, string> items, CancellationToken cancellationToken = default);
+    Task<Dictionary<string, IOperResult>> InvokeDeviceMethodAsync(string sourceDes, Dictionary<string, string> items, CancellationToken cancellationToken = default);
 }

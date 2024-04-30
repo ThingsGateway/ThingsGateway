@@ -60,30 +60,30 @@ public partial class MqttServer : BusinessBaseWithCacheIntervalScript<VariableDa
         base.AlarmChange(alarmVariable);
     }
 
-    protected override Task<OperResult> UpdateAlarmModel(IEnumerable<CacheDBItem<AlarmVariable>> item, CancellationToken cancellationToken)
+    protected override ValueTask<IOperResult> UpdateAlarmModel(IEnumerable<CacheDBItem<AlarmVariable>> item, CancellationToken cancellationToken)
     {
         return UpdateAlarmModel(item.Select(a => a.Value), cancellationToken);
     }
 
-    protected override Task<OperResult> UpdateDevModel(IEnumerable<CacheDBItem<DeviceData>> item, CancellationToken cancellationToken)
+    protected override ValueTask<IOperResult> UpdateDevModel(IEnumerable<CacheDBItem<DeviceData>> item, CancellationToken cancellationToken)
     {
         return UpdateDevModel(item.Select(a => a.Value), cancellationToken);
     }
 
-    protected override Task<OperResult> UpdateVarModel(IEnumerable<CacheDBItem<VariableData>> item, CancellationToken cancellationToken)
+    protected override ValueTask<IOperResult> UpdateVarModel(IEnumerable<CacheDBItem<VariableData>> item, CancellationToken cancellationToken)
     {
         return UpdateVarModel(item.Select(a => a.Value), cancellationToken);
     }
 
     #region private
 
-    private Task<OperResult> UpdateAlarmModel(IEnumerable<AlarmVariable> item, CancellationToken cancellationToken)
+    private ValueTask<IOperResult> UpdateAlarmModel(IEnumerable<AlarmVariable> item, CancellationToken cancellationToken)
     {
         List<TopicJson> topicJsonList = GetAlarms(item);
         return Update(topicJsonList, cancellationToken);
     }
 
-    private async Task<OperResult> Update(List<TopicJson> topicJsonList, CancellationToken cancellationToken)
+    private async ValueTask<IOperResult> Update(List<TopicJson> topicJsonList, CancellationToken cancellationToken)
     {
         foreach (var topicJson in topicJsonList)
         {
@@ -101,16 +101,16 @@ public partial class MqttServer : BusinessBaseWithCacheIntervalScript<VariableDa
                 return result;
             }
         }
-        return new();
+        return OperResult.Success;
     }
 
-    private Task<OperResult> UpdateDevModel(IEnumerable<DeviceData> item, CancellationToken cancellationToken)
+    private ValueTask<IOperResult> UpdateDevModel(IEnumerable<DeviceData> item, CancellationToken cancellationToken)
     {
         List<TopicJson> topicJsonList = GetDeviceData(item);
         return Update(topicJsonList, cancellationToken);
     }
 
-    private Task<OperResult> UpdateVarModel(IEnumerable<VariableData> item, CancellationToken cancellationToken)
+    private ValueTask<IOperResult> UpdateVarModel(IEnumerable<VariableData> item, CancellationToken cancellationToken)
     {
         List<TopicJson> topicJsonList = GetVariable(item);
         return Update(topicJsonList, cancellationToken);
@@ -128,7 +128,7 @@ public partial class MqttServer : BusinessBaseWithCacheIntervalScript<VariableDa
         var rpcDatas = Encoding.UTF8.GetString(args.ApplicationMessage.PayloadSegment).FromJsonNetString<Dictionary<string, JToken>>();
         if (rpcDatas == null)
             return;
-        Dictionary<string, OperResult> mqttRpcResult = await GetResult(args, rpcDatas).ConfigureAwait(false);
+        Dictionary<string, IOperResult> mqttRpcResult = await GetResult(args, rpcDatas).ConfigureAwait(false);
 
         try
         {
@@ -143,9 +143,9 @@ public partial class MqttServer : BusinessBaseWithCacheIntervalScript<VariableDa
         }
     }
 
-    private async Task<Dictionary<string, OperResult>> GetResult(InterceptingPublishEventArgs args, Dictionary<string, JToken> rpcDatas)
+    private async ValueTask<Dictionary<string, IOperResult>> GetResult(InterceptingPublishEventArgs args, Dictionary<string, JToken> rpcDatas)
     {
-        var mqttRpcResult = new Dictionary<string, OperResult>();
+        var mqttRpcResult = new Dictionary<string, IOperResult>();
         try
         {
             foreach (var rpcData in rpcDatas)
@@ -156,12 +156,12 @@ public partial class MqttServer : BusinessBaseWithCacheIntervalScript<VariableDa
                     var rpcEnable = tag.GetPropertyValue(DeviceId, nameof(_variablePropertys.VariableRpcEnable))?.ToBoolean();
                     if (rpcEnable == false)
                     {
-                        mqttRpcResult.Add(rpcData.Key, new("RPCEnable is False"));
+                        mqttRpcResult.Add(rpcData.Key, new OperResult("RPCEnable is False"));
                     }
                 }
                 else
                 {
-                    mqttRpcResult.Add(rpcData.Key, new("The variable does not exist"));
+                    mqttRpcResult.Add(rpcData.Key, new OperResult("The variable does not exist"));
                 }
             }
 
@@ -224,7 +224,7 @@ public partial class MqttServer : BusinessBaseWithCacheIntervalScript<VariableDa
     /// <summary>
     /// 上传mqtt，返回上传结果
     /// </summary>
-    private async Task<OperResult> MqttUpAsync(string topic, string payLoad, CancellationToken cancellationToken)
+    private async ValueTask<IOperResult> MqttUpAsync(string topic, string payLoad, CancellationToken cancellationToken)
     {
         try
         {
@@ -235,11 +235,11 @@ public partial class MqttServer : BusinessBaseWithCacheIntervalScript<VariableDa
                     new InjectedMqttApplicationMessage(message), cancellationToken).ConfigureAwait(false);
             if (LogMessage.LogLevel <= TouchSocket.Core.LogLevel.Trace)
                 LogMessage.LogTrace($"Topic：{topic}{Environment.NewLine}PayLoad：{payLoad}");
-            return new();
+            return OperResult.Success;
         }
         catch (Exception ex)
         {
-            return new("Upload fail", ex);
+            return new OperResult("Upload fail", ex);
         }
     }
 

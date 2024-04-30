@@ -38,6 +38,11 @@ public interface IOperResult : IRequestInfo
     /// 执行错误返回类型
     /// </summary>
     ErrorCodeEnum? ErrorCode { get; }
+
+    /// <summary>
+    /// 异常堆栈
+    /// </summary>
+    public Exception? Exception { get; set; }
 }
 
 /// <summary>

@@ -34,7 +34,7 @@ internal class ModbusUdpServerDataHandleAdapter : ReadWriteDevicesUdpDataHandleA
     }
 
     /// <inheritdoc/>
-    protected override OperResult<byte[]> UnpackResponse(ModbusTcpServerMessage request, byte[]? send, byte[] response)
+    protected override IOperResult<byte[]> UnpackResponse(ModbusTcpServerMessage request, byte[]? send, byte[] response)
     {
         var result = ModbusHelper.GetModbusWriteData(response.RemoveBegin(6));
         request.OperCode = result.OperCode;

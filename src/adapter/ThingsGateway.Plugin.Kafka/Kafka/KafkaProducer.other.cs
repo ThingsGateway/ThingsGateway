@@ -48,30 +48,30 @@ public partial class KafkaProducer : BusinessBaseWithCacheIntervalScript<Variabl
         base.AlarmChange(alarmVariable);
     }
 
-    protected override Task<OperResult> UpdateAlarmModel(IEnumerable<CacheDBItem<AlarmVariable>> item, CancellationToken cancellationToken)
+    protected override ValueTask<IOperResult> UpdateAlarmModel(IEnumerable<CacheDBItem<AlarmVariable>> item, CancellationToken cancellationToken)
     {
         return UpdateAlarmModel(item.Select(a => a.Value), cancellationToken);
     }
 
-    protected override Task<OperResult> UpdateDevModel(IEnumerable<CacheDBItem<DeviceData>> item, CancellationToken cancellationToken)
+    protected override ValueTask<IOperResult> UpdateDevModel(IEnumerable<CacheDBItem<DeviceData>> item, CancellationToken cancellationToken)
     {
         return UpdateDevModel(item.Select(a => a.Value), cancellationToken);
     }
 
-    protected override Task<OperResult> UpdateVarModel(IEnumerable<CacheDBItem<VariableData>> item, CancellationToken cancellationToken)
+    protected override ValueTask<IOperResult> UpdateVarModel(IEnumerable<CacheDBItem<VariableData>> item, CancellationToken cancellationToken)
     {
         return UpdateVarModel(item.Select(a => a.Value), cancellationToken);
     }
 
     #region private
 
-    private async Task<OperResult> UpdateAlarmModel(IEnumerable<AlarmVariable> item, CancellationToken cancellationToken)
+    private async ValueTask<IOperResult> UpdateAlarmModel(IEnumerable<AlarmVariable> item, CancellationToken cancellationToken)
     {
         List<TopicJson> topicJsonList = GetAlarms(item);
         return await Update(topicJsonList, cancellationToken).ConfigureAwait(false);
     }
 
-    private async Task<OperResult> Update(List<TopicJson> topicJsonList, CancellationToken cancellationToken)
+    private async ValueTask<IOperResult> Update(List<TopicJson> topicJsonList, CancellationToken cancellationToken)
     {
         foreach (var topicJson in topicJsonList)
         {
@@ -89,16 +89,16 @@ public partial class KafkaProducer : BusinessBaseWithCacheIntervalScript<Variabl
                 return result;
             }
         }
-        return new();
+        return OperResult.Success;
     }
 
-    private async Task<OperResult> UpdateDevModel(IEnumerable<DeviceData> item, CancellationToken cancellationToken)
+    private async ValueTask<IOperResult> UpdateDevModel(IEnumerable<DeviceData> item, CancellationToken cancellationToken)
     {
         List<TopicJson> topicJsonList = GetDeviceData(item);
         return await Update(topicJsonList, cancellationToken).ConfigureAwait(false);
     }
 
-    private async Task<OperResult> UpdateVarModel(IEnumerable<VariableData> item, CancellationToken cancellationToken)
+    private async ValueTask<IOperResult> UpdateVarModel(IEnumerable<VariableData> item, CancellationToken cancellationToken)
     {
         List<TopicJson> topicJsonList = GetVariable(item);
         return await Update(topicJsonList, cancellationToken).ConfigureAwait(false);
@@ -139,7 +139,7 @@ public partial class KafkaProducer : BusinessBaseWithCacheIntervalScript<Variabl
     /// <summary>
     /// kafka上传，返回上传结果
     /// </summary>
-    private async Task<OperResult> KafKaUpAsync(string topic, string payLoad, CancellationToken cancellationToken)
+    private async ValueTask<IOperResult> KafKaUpAsync(string topic, string payLoad, CancellationToken cancellationToken)
     {
         try
         {
@@ -152,18 +152,18 @@ public partial class KafkaProducer : BusinessBaseWithCacheIntervalScript<Variabl
                 var result = (timeOutResult as Task<DeliveryResult<Null, string>>).Result;
                 if (result.Status != PersistenceStatus.Persisted)
                 {
-                    return new("Upload fail");
+                    return new OperResult("Upload fail");
                 }
                 else
                 {
                     LogMessage.Trace($"Topic：{topic}{Environment.NewLine}PayLoad：{payLoad}");
-                    return new();
+                    return OperResult.Success;
                 }
             }
             else
             {
                 stoppingToken.Cancel();
-                return new("Upload timeout");
+                return new OperResult("Upload timeout");
             }
         }
         catch (Exception ex)

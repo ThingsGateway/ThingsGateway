@@ -29,6 +29,7 @@ using ThingsGateway.Gateway.Application.Extensions;
 using ThingsGateway.Gateway.Application.Generic;
 
 using TouchSocket.Core;
+using TouchSocket.SerialPorts;
 
 using Yitter.IdGenerator;
 

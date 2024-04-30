@@ -18,104 +18,9 @@ using Newtonsoft.Json.Converters;
 namespace ThingsGateway.Foundation;
 
 /// <inheritdoc/>
-public class OperResult<T> : OperResult, IOperResult<T>
+public struct OperResult<T> : IOperResult<T>
 {
-    /// <inheritdoc/>
-    public OperResult() : base()
-    {
-    }
 
-    /// <inheritdoc/>
-    public OperResult(OperResult operResult) : base(operResult)
-    {
-    }
-
-    /// <inheritdoc/>
-    public OperResult(string msg) : base(msg)
-    {
-    }
-
-    /// <inheritdoc/>
-    public OperResult(Exception ex) : base(ex)
-    {
-    }
-
-    /// <inheritdoc/>
-    public OperResult(string msg, Exception ex) : base(msg, ex)
-    {
-    }
-
-    /// <inheritdoc/>
-    public T Content { get; set; }
-}
-
-/// <inheritdoc/>
-public class OperResult<T, T2> : OperResult<T>, IOperResult<T, T2>
-{
-    /// <inheritdoc/>
-    public OperResult() : base()
-    {
-    }
-
-    /// <inheritdoc/>
-    public OperResult(OperResult operResult) : base(operResult)
-    {
-    }
-
-    /// <inheritdoc/>
-    public OperResult(string msg) : base(msg)
-    {
-    }
-
-    /// <inheritdoc/>
-    public OperResult(Exception ex) : base(ex)
-    {
-    }
-
-    /// <inheritdoc/>
-    public OperResult(string msg, Exception ex) : base(msg, ex)
-    {
-    }
-
-    /// <inheritdoc/>
-    public T2 Content2 { get; set; }
-}
-
-/// <inheritdoc/>
-public class OperResult<T, T2, T3> : OperResult<T, T2>, IOperResult<T, T2, T3>
-{
-    /// <inheritdoc/>
-    public OperResult() : base()
-    {
-    }
-
-    /// <inheritdoc/>
-    public OperResult(OperResult operResult) : base(operResult)
-    {
-    }
-
-    /// <inheritdoc/>
-    public OperResult(string msg) : base(msg)
-    {
-    }
-
-    /// <inheritdoc/>
-    public OperResult(Exception ex) : base(ex)
-    {
-    }
-
-    /// <inheritdoc/>
-    public OperResult(string msg, Exception ex) : base(msg, ex)
-    {
-    }
-
-    /// <inheritdoc/>
-    public T3 Content3 { get; set; }
-}
-
-/// <inheritdoc cref="IOperResult"/>
-public class OperResult : IOperResult
-{
     /// <summary>
     /// 异常堆栈
     /// </summary>
@@ -124,7 +29,7 @@ public class OperResult : IOperResult
 #endif
 
     [JsonIgnore]
-    public Exception? Exception;
+    public Exception? Exception { get; set; }
 
     /// <summary>
     /// 默认构造，操作结果会是成功
@@ -136,7 +41,287 @@ public class OperResult : IOperResult
     /// <summary>
     /// 从另一个操作对象中赋值信息
     /// </summary>
-    public OperResult(OperResult operResult)
+    public OperResult(IOperResult operResult)
+    {
+        OperCode = operResult.OperCode;
+        ErrorMessage = operResult.ErrorMessage;
+        Exception = operResult.Exception;
+        ErrorCode = operResult.ErrorCode;
+    }
+
+    /// <summary>
+    /// 传入错误信息
+    /// </summary>
+    /// <param name="msg"></param>
+    public OperResult(string msg)
+    {
+        OperCode = 500;
+        ErrorMessage = msg;
+    }
+
+    /// <summary>
+    /// 传入异常堆栈
+    /// </summary>
+    public OperResult(Exception ex)
+    {
+        OperCode = 500;
+        Exception = ex;
+        ErrorMessage = ex.Message;
+        //指定Timeout或OperationCanceled为超时取消
+        if (ex is TimeoutException || ex is OperationCanceledException)
+        {
+            ErrorCode = ErrorCodeEnum.Canceled;
+        }
+        else if (ex is ReturnErrorException)
+        {
+            ErrorCode = ErrorCodeEnum.RetuenError;
+        }
+        else
+        {
+            ErrorCode = ErrorCodeEnum.InvokeFail;
+        }
+    }
+
+    /// <summary>
+    /// 传入错误信息与异常堆栈
+    /// </summary>
+    public OperResult(string msg, Exception ex) : this(ex)
+    {
+        ErrorMessage = msg;
+    }
+
+    /// <inheritdoc/>
+    public int? OperCode { get; set; }
+
+    /// <inheritdoc/>
+    public bool IsSuccess => OperCode == null || OperCode == 0;
+
+    /// <inheritdoc/>
+    public string? ErrorMessage { get; set; }
+
+    /// <inheritdoc/>
+#if NET6_0_OR_GREATER
+    [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+#endif
+
+    [JsonConverter(typeof(StringEnumConverter))]
+    public ErrorCodeEnum? ErrorCode { get; private set; } = ErrorCodeEnum.RetuenError;
+
+    /// <inheritdoc/>
+    public T Content { get; set; }
+}
+
+/// <inheritdoc/>
+public struct OperResult<T, T2> : IOperResult<T, T2>
+{
+    /// <summary>
+    /// 异常堆栈
+    /// </summary>
+#if NET6_0_OR_GREATER
+    [System.Text.Json.Serialization.JsonIgnore]
+#endif
+
+    [JsonIgnore]
+    public Exception? Exception { get; set; }
+
+    /// <summary>
+    /// 默认构造，操作结果会是成功
+    /// </summary>
+    public OperResult()
+    {
+    }
+
+    /// <summary>
+    /// 从另一个操作对象中赋值信息
+    /// </summary>
+    public OperResult(IOperResult operResult)
+    {
+        OperCode = operResult.OperCode;
+        ErrorMessage = operResult.ErrorMessage;
+        Exception = operResult.Exception;
+        ErrorCode = operResult.ErrorCode;
+    }
+
+    /// <summary>
+    /// 传入错误信息
+    /// </summary>
+    /// <param name="msg"></param>
+    public OperResult(string msg)
+    {
+        OperCode = 500;
+        ErrorMessage = msg;
+    }
+
+    /// <summary>
+    /// 传入异常堆栈
+    /// </summary>
+    public OperResult(Exception ex)
+    {
+        OperCode = 500;
+        Exception = ex;
+        ErrorMessage = ex.Message;
+        //指定Timeout或OperationCanceled为超时取消
+        if (ex is TimeoutException || ex is OperationCanceledException)
+        {
+            ErrorCode = ErrorCodeEnum.Canceled;
+        }
+        else if (ex is ReturnErrorException)
+        {
+            ErrorCode = ErrorCodeEnum.RetuenError;
+        }
+        else
+        {
+            ErrorCode = ErrorCodeEnum.InvokeFail;
+        }
+    }
+
+    /// <summary>
+    /// 传入错误信息与异常堆栈
+    /// </summary>
+    public OperResult(string msg, Exception ex) : this(ex)
+    {
+        ErrorMessage = msg;
+    }
+
+    /// <inheritdoc/>
+    public int? OperCode { get; set; }
+
+    /// <inheritdoc/>
+    public bool IsSuccess => OperCode == null || OperCode == 0;
+
+    /// <inheritdoc/>
+    public string? ErrorMessage { get; set; }
+
+    /// <inheritdoc/>
+#if NET6_0_OR_GREATER
+    [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+#endif
+
+    [JsonConverter(typeof(StringEnumConverter))]
+    public ErrorCodeEnum? ErrorCode { get; private set; } = ErrorCodeEnum.RetuenError;
+
+    /// <inheritdoc/>
+    public T2 Content2 { get; set; }
+
+    /// <inheritdoc/>
+    public T Content { get; set; }
+}
+
+/// <inheritdoc/>
+public class OperResult<T, T2, T3> : IOperResult<T, T2, T3>
+{
+    /// <summary>
+    /// 异常堆栈
+    /// </summary>
+#if NET6_0_OR_GREATER
+    [System.Text.Json.Serialization.JsonIgnore]
+#endif
+
+    [JsonIgnore]
+    public Exception? Exception { get; set; }
+
+    /// <summary>
+    /// 默认构造，操作结果会是成功
+    /// </summary>
+    public OperResult()
+    {
+    }
+
+    /// <summary>
+    /// 从另一个操作对象中赋值信息
+    /// </summary>
+    public OperResult(IOperResult operResult)
+    {
+        OperCode = operResult.OperCode;
+        ErrorMessage = operResult.ErrorMessage;
+        Exception = operResult.Exception;
+        ErrorCode = operResult.ErrorCode;
+    }
+
+    /// <summary>
+    /// 传入错误信息
+    /// </summary>
+    /// <param name="msg"></param>
+    public OperResult(string msg)
+    {
+        OperCode = 500;
+        ErrorMessage = msg;
+    }
+
+    /// <summary>
+    /// 传入异常堆栈
+    /// </summary>
+    public OperResult(Exception ex)
+    {
+        OperCode = 500;
+        Exception = ex;
+        ErrorMessage = ex.Message;
+        //指定Timeout或OperationCanceled为超时取消
+        if (ex is TimeoutException || ex is OperationCanceledException)
+        {
+            ErrorCode = ErrorCodeEnum.Canceled;
+        }
+        else if (ex is ReturnErrorException)
+        {
+            ErrorCode = ErrorCodeEnum.RetuenError;
+        }
+        else
+        {
+            ErrorCode = ErrorCodeEnum.InvokeFail;
+        }
+    }
+
+    /// <summary>
+    /// 传入错误信息与异常堆栈
+    /// </summary>
+    public OperResult(string msg, Exception ex) : this(ex)
+    {
+        ErrorMessage = msg;
+    }
+
+    /// <inheritdoc/>
+    public int? OperCode { get; set; }
+
+    /// <inheritdoc/>
+    public bool IsSuccess => OperCode == null || OperCode == 0;
+
+    /// <inheritdoc/>
+    public string? ErrorMessage { get; set; }
+
+    /// <inheritdoc/>
+#if NET6_0_OR_GREATER
+    [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+#endif
+
+    [JsonConverter(typeof(StringEnumConverter))]
+    public ErrorCodeEnum? ErrorCode { get; private set; } = ErrorCodeEnum.RetuenError;
+    /// <inheritdoc/>
+    public T Content { get; set; }
+    /// <inheritdoc/>
+    public T2 Content2 { get; set; }
+    /// <inheritdoc/>
+    public T3 Content3 { get; set; }
+}
+
+/// <inheritdoc cref="IOperResult"/>
+public struct OperResult : IOperResult
+{
+    public static OperResult Success = new OperResult();
+
+    /// <summary>
+    /// 异常堆栈
+    /// </summary>
+#if NET6_0_OR_GREATER
+    [System.Text.Json.Serialization.JsonIgnore]
+#endif
+
+    [JsonIgnore]
+    public Exception? Exception { get; set; }
+
+    /// <summary>
+    /// 从另一个操作对象中赋值信息
+    /// </summary>
+    public OperResult(IOperResult operResult)
     {
         OperCode = operResult.OperCode;
         ErrorMessage = operResult.ErrorMessage;

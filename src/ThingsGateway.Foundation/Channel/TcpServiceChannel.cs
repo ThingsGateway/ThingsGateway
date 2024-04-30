@@ -27,8 +27,7 @@ namespace ThingsGateway.Foundation
 
         /// <inheritdoc/>
         public ConcurrentList<IProtocol> Collects { get; } = new();
-  
-        #region 事件
+ 
 
         /// <summary>
         /// 停止时是否发送ShutDown
@@ -99,17 +98,16 @@ namespace ThingsGateway.Foundation
 
         protected override Task OnTcpClosed(TClient socketClient, ClosedEventArgs e)
         {
-            Logger?.Debug($"{socketClient}  Disconnected");
+            Logger?.Debug($"{socketClient}  Closed");
             return base.OnTcpClosed(socketClient, e);
         }
 
         protected override Task OnTcpClosing(TClient socketClient, ClosingEventArgs e)
         {
-            Logger?.Debug($"{socketClient} Disconnecting");
+            Logger?.Debug($"{socketClient} Closing");
             return base.OnTcpClosing(socketClient, e);
         }
-
-        #endregion 事件
+ 
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
@@ -163,6 +161,16 @@ namespace ThingsGateway.Foundation
         public Task CloseAsync(string msg)
         {
             return this.StopAsync();
+        }
+
+        public void Close(string msg)
+        {
+            this.CloseAsync(msg).GetFalseAwaitResult();
+        }
+
+        public void Connect(int millisecondsTimeout = 3000, CancellationToken token = default)
+        {
+            this.ConnectAsync(millisecondsTimeout, token).GetFalseAwaitResult();
         }
 
         /// <inheritdoc/>

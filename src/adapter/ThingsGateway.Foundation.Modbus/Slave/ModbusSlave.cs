@@ -23,7 +23,7 @@ namespace ThingsGateway.Foundation.Modbus;
 /// <summary>
 /// ChannelEventHandler
 /// </summary>
-public delegate Task<OperResult> ModbusServerWriteEventHandler(ModbusAddress modbusAddress, byte[] writeValue, IThingsGatewayBitConverter bitConverter, IClientChannel channel);
+public delegate ValueTask<IOperResult> ModbusServerWriteEventHandler(ModbusAddress modbusAddress, byte[] writeValue, IThingsGatewayBitConverter bitConverter, IClientChannel channel);
 
 /// <inheritdoc/>
 public class ModbusSlave : ProtocolBase
@@ -398,7 +398,7 @@ public class ModbusSlave : ProtocolBase
     private readonly ReaderWriterLockSlim _lockSlim = new();
 
     /// <inheritdoc/>
-    public override OperResult<byte[]> Read(string address, int length, CancellationToken cancellationToken = default)
+    public override IOperResult<byte[]> Read(string address, int length, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -458,18 +458,18 @@ public class ModbusSlave : ProtocolBase
         }
         catch (Exception ex)
         {
-            return new(ex);
+            return new OperResult<byte[]>(ex);
         }
     }
 
     /// <inheritdoc/>
-    public override Task<OperResult<byte[]>> ReadAsync(string address, int length, CancellationToken cancellationToken = default)
+    public override ValueTask<IOperResult<byte[]>> ReadAsync(string address, int length, CancellationToken cancellationToken = default)
     {
-        return Task.FromResult(Read(address, length, cancellationToken));
+        return EasyValueTask.FromResult(Read(address, length, cancellationToken));
     }
 
     /// <inheritdoc/>
-    public override OperResult Write(string address, byte[] value, CancellationToken cancellationToken = default)
+    public override IOperResult Write(string address, byte[] value, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -497,24 +497,24 @@ public class ModbusSlave : ProtocolBase
                     case 3:
                         ModbusServer03ByteBlock.Pos = mAddress.AddressStart * this.RegisterByteLength;
                         ModbusServer03ByteBlock.Write(value);
-                        return new();
+                        return OperResult.Success;
 
                     case 4:
                         ModbusServer04ByteBlock.Pos = mAddress.AddressStart * this.RegisterByteLength;
                         ModbusServer04ByteBlock.Write(value);
-                        return new();
+                        return OperResult.Success;
                 }
             }
             return new OperResult<byte[]>(ModbusResource.Localizer["FunctionError"]);
         }
         catch (Exception ex)
         {
-            return new(ex);
+            return new OperResult(ex);
         }
     }
 
     /// <inheritdoc/>
-    public override OperResult Write(string address, bool[] value, CancellationToken cancellationToken = default)
+    public override IOperResult Write(string address, bool[] value, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -542,32 +542,32 @@ public class ModbusSlave : ProtocolBase
                     case 1:
                         ModbusServer01ByteBlock.Pos = mAddress.AddressStart;
                         ModbusServer01ByteBlock.Write(value.BoolArrayToByte());
-                        return new();
+                        return OperResult.Success;
 
                     case 2:
                         ModbusServer02ByteBlock.Pos = mAddress.AddressStart;
                         ModbusServer02ByteBlock.Write(value.BoolArrayToByte());
-                        return new();
+                        return OperResult.Success;
                 }
             }
             return new OperResult<byte[]>(ModbusResource.Localizer["FunctionError"]);
         }
         catch (Exception ex)
         {
-            return new(ex);
+            return new OperResult(ex);
         }
     }
 
     /// <inheritdoc/>
-    public override Task<OperResult> WriteAsync(string address, byte[] value, CancellationToken cancellationToken = default)
+    public override ValueTask<IOperResult> WriteAsync(string address, byte[] value, CancellationToken cancellationToken = default)
     {
-        return Task.FromResult(Write(address, value, cancellationToken));
+        return EasyValueTask.FromResult(Write(address, value, cancellationToken));
     }
 
     /// <inheritdoc/>
-    public override Task<OperResult> WriteAsync(string address, bool[] value, CancellationToken cancellationToken = default)
+    public override ValueTask<IOperResult> WriteAsync(string address, bool[] value, CancellationToken cancellationToken = default)
     {
-        return Task.FromResult(Write(address, value, cancellationToken));
+        return EasyValueTask.FromResult(Write(address, value, cancellationToken));
     }
 
     #endregion 核心

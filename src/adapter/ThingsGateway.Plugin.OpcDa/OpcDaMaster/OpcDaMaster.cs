@@ -119,7 +119,7 @@ public class OpcDaMaster : CollectBase
     }
 
     /// <inheritdoc/>
-    protected override async Task<OperResult<byte[]>> ReadSourceAsync(VariableSourceRead deviceVariableSourceRead, CancellationToken cancellationToken)
+    protected override async ValueTask<IOperResult<byte[]>> ReadSourceAsync(VariableSourceRead deviceVariableSourceRead, CancellationToken cancellationToken)
     {
         try
         {
@@ -140,14 +140,14 @@ public class OpcDaMaster : CollectBase
     }
 
     /// <inheritdoc/>
-    protected override async Task<Dictionary<string, OperResult>> WriteValuesAsync(Dictionary<VariableRunTime, JToken> writeInfoLists, CancellationToken cancellationToken)
+    protected override async ValueTask<Dictionary<string, IOperResult>> WriteValuesAsync(Dictionary<VariableRunTime, JToken> writeInfoLists, CancellationToken cancellationToken)
     {
         try
         {
             if (IsSingleThread)
                 await WriteLock.WaitAsync(cancellationToken).ConfigureAwait(false);
             var result = _plc.WriteItem(writeInfoLists.ToDictionary(a => a.Key.RegisterAddress!, a => a.Value.GetObjectFromJToken()!));
-            return result.ToDictionary(a =>
+            return result.ToDictionary<KeyValuePair<string, Tuple<bool, string>>, string, IOperResult>(a =>
             {
                 return writeInfoLists.Keys.FirstOrDefault(b => b.RegisterAddress == a.Key).Name;
             }, a =>
@@ -155,7 +155,7 @@ public class OpcDaMaster : CollectBase
                 if (!a.Value.Item1)
                     return new OperResult(a.Value.Item2);
                 else
-                    return new();
+                    return OperResult.Success;
             }
                  );
         }
@@ -166,7 +166,7 @@ public class OpcDaMaster : CollectBase
         }
     }
 
-    protected override async Task ProtectedExecuteAsync(CancellationToken cancellationToken)
+    protected override async ValueTask ProtectedExecuteAsync(CancellationToken cancellationToken)
     {
         if (_driverProperties.ActiveSubscribe)
         {

@@ -56,7 +56,7 @@ public class VariableMethod
     /// <param name="value">以,逗号分割的参数</param>
     /// <param name="cancellationToken">取消令箭</param>
     /// <returns></returns>
-    public async Task<IOperResult> InvokeMethodAsync(object driverBase, string? value = null, CancellationToken cancellationToken = default)
+    public async ValueTask<IOperResult> InvokeMethodAsync(object driverBase, string? value = null, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -86,7 +86,7 @@ public class VariableMethod
             {
                 case TaskReturnType.Task:
                     await MethodInfo.InvokeAsync(driverBase, os).ConfigureAwait(false);
-                    result = new OperResult();
+                    result = OperResult.Success;
                     break;
 
                 case TaskReturnType.TaskObject:
@@ -102,7 +102,7 @@ public class VariableMethod
             {
                 return result;
             }
-            return new OperResult();
+            return OperResult.Success;
         }
         catch (Exception ex)
         {

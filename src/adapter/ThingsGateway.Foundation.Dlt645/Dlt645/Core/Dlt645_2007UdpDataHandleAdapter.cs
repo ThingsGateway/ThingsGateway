@@ -46,7 +46,7 @@ internal class Dlt645_2007UdpDataHandleAdapter : ReadWriteDevicesUdpDataHandleAd
         return new Dlt645_2007Message();
     }
 
-    protected override OperResult<byte[]> UnpackResponse(Dlt645_2007Message request, byte[]? send, byte[] response)
+    protected override IOperResult<byte[]> UnpackResponse(Dlt645_2007Message request, byte[]? send, byte[] response)
     {
         //因为设备可能带有FE前导符开头，这里找到0x68的位置
         int headCodeIndex = -1;

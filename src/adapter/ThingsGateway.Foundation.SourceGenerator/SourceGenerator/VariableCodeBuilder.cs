@@ -1,4 +1,4 @@
-
+﻿
 //------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
@@ -110,13 +110,13 @@ namespace ThingsGateway.Foundation
         {
             var attributeData = propertySymbol.GetAttributes().FirstOrDefault(a => a.AttributeClass.ToDisplayString() == VariableSyntaxReceiver.VariableRuntimeAttributeTypeName);
             stringBuilder.AppendLine();
-            stringBuilder.AppendLine($"public OperResult Write{propertySymbol.Name}(object value,CancellationToken cancellationToken=default)");
+            stringBuilder.AppendLine($"public IOperResult Write{propertySymbol.Name}(object value,CancellationToken cancellationToken=default)");
             stringBuilder.AppendLine("{");
             stringBuilder.AppendLine($"return WriteValue(\"{propertySymbol.Name}\",value,cancellationToken);");
             stringBuilder.AppendLine("}");
             stringBuilder.AppendLine();
             stringBuilder.AppendLine();
-            stringBuilder.AppendLine($"public Task<OperResult> Write{propertySymbol.Name}Async(object value,CancellationToken cancellationToken=default)");
+            stringBuilder.AppendLine($"public ValueTask<IOperResult> Write{propertySymbol.Name}Async(object value,CancellationToken cancellationToken=default)");
             stringBuilder.AppendLine("{");
             stringBuilder.AppendLine($"return WriteValueAsync(\"{propertySymbol.Name}\",value,cancellationToken);");
             stringBuilder.AppendLine("}");

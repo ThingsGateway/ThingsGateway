@@ -104,7 +104,9 @@ namespace ThingsGateway.Foundation
         {
             return this.StopAsync();
         }
+ 
 
+ 
         /// <inheritdoc/>
         protected override async Task ReceivedData(UdpReceivedDataEventArgs e)
         {
@@ -128,6 +130,14 @@ namespace ThingsGateway.Foundation
         {
             this.ProtectedDefaultSend(buffer, offset, length);
         }
+        public void Close(string msg)
+        {
+            this.CloseAsync(msg).GetFalseAwaitResult();
+        }
 
+        public void Connect(int millisecondsTimeout = 3000, CancellationToken token = default)
+        {
+            this.ConnectAsync(millisecondsTimeout, token).GetFalseAwaitResult();
+        }
     }
 }

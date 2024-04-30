@@ -200,5 +200,5 @@ public abstract class ReadWriteDevicesUdpDataHandleAdapter<TRequest> : UdpDataHa
     /// <param name="send">发送的原始报文数据</param>
     /// <param name="response">设备方反馈的原始报文内容</param>
     /// <returns>返回拆包之后的报文信息，默认不进行任何的拆包操作</returns>
-    protected abstract OperResult<byte[]> UnpackResponse(TRequest request, byte[]? send, byte[] response);
+    protected abstract IOperResult<byte[]> UnpackResponse(TRequest request, byte[]? send, byte[] response);
 }

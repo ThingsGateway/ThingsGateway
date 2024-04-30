@@ -90,7 +90,7 @@ public abstract class CollectBase : DriverBase
     /// <summary>
     /// 采集驱动读取，读取成功后直接赋值变量，失败不做处理，注意非通用设备需重写
     /// </summary>
-    protected virtual async Task<OperResult<byte[]>> ReadSourceAsync(VariableSourceRead variableSourceRead, CancellationToken cancellationToken)
+    protected virtual async ValueTask<IOperResult<byte[]>> ReadSourceAsync(VariableSourceRead variableSourceRead, CancellationToken cancellationToken)
     {
         try
         {
@@ -100,13 +100,13 @@ public abstract class CollectBase : DriverBase
             if (cancellationToken.IsCancellationRequested)
                 throw new OperationCanceledException();
             // 从协议读取数据
-            OperResult<byte[]> read = await Protocol.ReadAsync(variableSourceRead.RegisterAddress, variableSourceRead.Length, cancellationToken).ConfigureAwait(false);
+            var read = await Protocol.ReadAsync(variableSourceRead.RegisterAddress, variableSourceRead.Length, cancellationToken).ConfigureAwait(false);
 
             // 增加变量源的读取次数
             Interlocked.Increment(ref variableSourceRead.ReadCount);
 
             // 如果读取成功且有有效内容，则解析结构化内容
-            if (read?.IsSuccess == true)
+            if (read.IsSuccess)
             {
                 variableSourceRead.VariableRunTimes.PraseStructContent(Protocol, read.Content);
             }
@@ -125,7 +125,7 @@ public abstract class CollectBase : DriverBase
     /// 批量写入变量值,需返回变量名称/结果，注意非通用设备需重写
     /// </summary>
     /// <returns></returns>
-    protected virtual async Task<Dictionary<string, OperResult>> WriteValuesAsync(Dictionary<VariableRunTime, JToken> writeInfoLists, CancellationToken cancellationToken)
+    protected virtual async ValueTask<Dictionary<string, IOperResult>> WriteValuesAsync(Dictionary<VariableRunTime, JToken> writeInfoLists, CancellationToken cancellationToken)
     {
         try
         {
@@ -138,7 +138,7 @@ public abstract class CollectBase : DriverBase
                 throw new NotSupportedException();
 
             // 创建用于存储操作结果的并发字典
-            ConcurrentDictionary<string, OperResult> operResults = new();
+            ConcurrentDictionary<string, IOperResult> operResults = new();
 
             // 使用并发方式遍历写入信息列表，并进行异步写入操作
             await writeInfoLists.ParallelForEachAsync(async (writeInfo, cancellationToken) =>
@@ -151,7 +151,7 @@ public abstract class CollectBase : DriverBase
             }, CollectProperties.ConcurrentCount, cancellationToken).ConfigureAwait(false);
 
             // 返回包含操作结果的字典
-            return new Dictionary<string, OperResult>(operResults);
+            return new Dictionary<string, IOperResult>(operResults);
         }
         finally
         {
@@ -260,7 +260,7 @@ public abstract class CollectBase : DriverBase
     /// </summary>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    protected override async Task ProtectedExecuteAsync(CancellationToken cancellationToken)
+    protected override async ValueTask ProtectedExecuteAsync(CancellationToken cancellationToken)
     {
         ReadResultCount readResultCount = new();
         if (cancellationToken.IsCancellationRequested)
@@ -313,7 +313,7 @@ public abstract class CollectBase : DriverBase
             CurrentDevice.SetDeviceStatus(TimerX.Now, 0);
         }
 
-        async Task ReadVariableMed(ReadResultCount readResultCount, VariableMethod readVariableMethods, CancellationToken cancellationToken, bool delay = true)
+        async ValueTask ReadVariableMed(ReadResultCount readResultCount, VariableMethod readVariableMethods, CancellationToken cancellationToken, bool delay = true)
         {
             if (KeepRun != true)
                 return;
@@ -329,7 +329,7 @@ public abstract class CollectBase : DriverBase
                 var readResult = await InvokeMethodAsync(readVariableMethods, cancellationToken: cancellationToken).ConfigureAwait(false);
 
                 // 方法调用失败时重试一定次数
-                while (readResult != null && !readResult.IsSuccess && readErrorCount < CollectProperties.RetryCount)
+                while (!readResult.IsSuccess && readErrorCount < CollectProperties.RetryCount)
                 {
                     if (KeepRun != true)
                         return;
@@ -337,46 +337,43 @@ public abstract class CollectBase : DriverBase
                         return;
                     readErrorCount++;
                     if (LogMessage.LogLevel <= TouchSocket.Core.LogLevel.Trace)
-                        LogMessage?.Trace(string.Format("{0} - Execute method[{1}] - Failed {2}", DeviceName, readVariableMethods.MethodInfo.Name, readResult?.ErrorMessage));
+                        LogMessage?.Trace(string.Format("{0} - Execute method[{1}] - Failed {2}", DeviceName, readVariableMethods.MethodInfo.Name, readResult.ErrorMessage));
 
                     readResult = await InvokeMethodAsync(readVariableMethods, cancellationToken: cancellationToken).ConfigureAwait(false);
                 }
 
-                if (readResult != null && readResult.IsSuccess)
+                if (readResult.IsSuccess)
                 {
                     // 方法调用成功时记录日志并增加成功计数器
                     if (LogMessage.LogLevel <= TouchSocket.Core.LogLevel.Trace)
-                        LogMessage?.Trace(string.Format("{0} - Execute method[{1}] - Succeeded {2}", DeviceName, readVariableMethods.MethodInfo.Name, readResult?.Content?.ToSystemTextJsonString()));
+                        LogMessage?.Trace(string.Format("{0} - Execute method[{1}] - Succeeded {2}", DeviceName, readVariableMethods.MethodInfo.Name, readResult.Content?.ToSystemTextJsonString()));
                     readResultCount.deviceMethodsVariableSuccessNum++;
                 }
                 else
                 {
-                    if (readResult != null)
-                    {
                         // 方法调用失败时记录日志并增加失败计数器，更新错误信息
-                        if (readVariableMethods.LastErrorMessage != readResult?.ErrorMessage)
+                        if (readVariableMethods.LastErrorMessage != readResult.ErrorMessage)
                         {
                             if (!cancellationToken.IsCancellationRequested)
-                                LogMessage?.LogWarning(readResult.Exception, Localizer["MethodFail", DeviceName, readVariableMethods.MethodInfo.Name, readResult?.ErrorMessage]);
+                                LogMessage?.LogWarning(readResult.Exception, Localizer["MethodFail", DeviceName, readVariableMethods.MethodInfo.Name, readResult.ErrorMessage]);
                         }
                         else
                         {
                             if (!cancellationToken.IsCancellationRequested)
                                 if (LogMessage.LogLevel <= TouchSocket.Core.LogLevel.Trace)
-                                    LogMessage?.Trace(string.Format("{0} - Execute method[{1}] - Failed {2}", DeviceName, readVariableMethods.MethodInfo.Name, readResult?.ErrorMessage));
+                                    LogMessage?.Trace(string.Format("{0} - Execute method[{1}] - Failed {2}", DeviceName, readVariableMethods.MethodInfo.Name, readResult.ErrorMessage));
                         }
 
                         readResultCount.deviceMethodsVariableFailedNum++;
-                        readVariableMethods.LastErrorMessage = readResult?.ErrorMessage;
-                        CurrentDevice.SetDeviceStatus(DateTime.Now, CurrentDevice.ErrorCount + 1, readResult?.ToString());
-                    }
+                        readVariableMethods.LastErrorMessage = readResult.ErrorMessage;
+                        CurrentDevice.SetDeviceStatus(DateTime.Now, CurrentDevice.ErrorCount + 1, readResult.ToString());
                 }
                 if (delay)
                     await Task.Delay(ChannelThread.CycleInterval, cancellationToken).ConfigureAwait(false);
             }
         }
 
-        async Task ReadVariableSource(ReadResultCount readResultCount, VariableSourceRead? variableSourceRead, CancellationToken cancellationToken, bool delay = true)
+        async ValueTask ReadVariableSource(ReadResultCount readResultCount, VariableSourceRead? variableSourceRead, CancellationToken cancellationToken, bool delay = true)
         {
             if (KeepRun != true)
                 return;
@@ -458,7 +455,7 @@ public abstract class CollectBase : DriverBase
     /// <param name="isRead">指示是否为读取操作</param>
     /// <param name="cancellationToken">取消操作的通知</param>
     /// <returns>操作结果，包含执行方法的结果</returns>
-    internal async Task<OperResult<object>> InvokeMethodAsync(VariableMethod variableMethod, string? value = null, bool isRead = true, CancellationToken cancellationToken = default)
+    internal async ValueTask<IOperResult<object>> InvokeMethodAsync(VariableMethod variableMethod, string? value = null, bool isRead = true, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -467,7 +464,7 @@ public abstract class CollectBase : DriverBase
                 await WriteLock.WaitAsync(cancellationToken).ConfigureAwait(false);
 
             // 初始化操作结果
-            OperResult<object> result = new OperResult<object>();
+            IOperResult<object> result = new OperResult<object>();
 
             // 获取要执行的方法
             var method = variableMethod.MethodInfo;
@@ -483,18 +480,12 @@ public abstract class CollectBase : DriverBase
             {
                 // 调用方法并获取结果
                 var data = await variableMethod.InvokeMethodAsync(this, value, cancellationToken).ConfigureAwait(false);
-                var result1 = data?.Adapt<OperResult<object>>();
-
-                // 将结果转换为 JToken 格式，并将操作结果设置为成功
-                if (result1 != null)
-                {
-                    result = result1;
-                }
+                result = data.Adapt<OperResult<object>>();
 
                 // 如果方法有返回值，并且是读取操作
                 if (method.HasReturn && isRead)
                 {
-                    if (result?.IsSuccess == true)
+                    if (result.IsSuccess == true)
                     {
                         // 将结果序列化并设置到变量中
                         var variableResult = variableMethod.Variable.SetValue(result.Content);
@@ -515,7 +506,7 @@ public abstract class CollectBase : DriverBase
         catch (Exception ex)
         {
             // 捕获异常并返回错误结果
-            return new(ex);
+            return new OperResult<object>(ex);
         }
         finally
         {
@@ -531,10 +522,10 @@ public abstract class CollectBase : DriverBase
     /// <param name="writeInfoLists">要写入的变量及其对应的数据</param>
     /// <param name="cancellationToken">取消操作的通知</param>
     /// <returns>写入操作的结果字典</returns>
-    internal async Task<Dictionary<string, OperResult>> InVokeWriteAsync(Dictionary<VariableRunTime, JToken> writeInfoLists, CancellationToken cancellationToken)
+    internal async ValueTask<Dictionary<string, IOperResult>> InVokeWriteAsync(Dictionary<VariableRunTime, JToken> writeInfoLists, CancellationToken cancellationToken)
     {
         // 初始化结果字典
-        Dictionary<string, OperResult> results = new Dictionary<string, OperResult>();
+        Dictionary<string, IOperResult> results = new Dictionary<string, IOperResult>();
 
         // 遍历写入信息列表
         foreach (var (deviceVariable, jToken) in writeInfoLists)

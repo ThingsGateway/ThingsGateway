@@ -14,6 +14,7 @@
 
 using ThingsGateway.Gateway.Application;
 
+using TouchSocket.Core;
 using TouchSocket.Sockets;
 
 namespace ThingsGateway.Plugin.SiemensS7;
@@ -60,10 +61,10 @@ public class SiemensS7Master : CollectBase
     /// <inheritdoc/>
     protected override List<VariableSourceRead> ProtectedLoadSourceRead(List<VariableRunTime> deviceVariables)
     {
-        try { _plc.Channel.Connect(_driverPropertys.ConnectTimeout, CancellationToken.None); } catch { }
+        try { _plc.Channel.ConnectAsync(_driverPropertys.ConnectTimeout).GetFalseAwaitResult(); } catch { }
         try
         {
-            return _plc.LoadSourceRead<VariableSourceRead>(deviceVariables, 0, CurrentDevice.IntervalTime);
+            return _plc.LoadSourceRead<VariableSourceRead>(deviceVariables, _plc.OnLine? _plc.PduLength:_driverPropertys.MaxPack, CurrentDevice.IntervalTime);
         }
         finally { _plc.Channel.Close(); }
     }
@@ -73,12 +74,12 @@ public class SiemensS7Master : CollectBase
     /// </summary>
     /// <returns></returns>
     [DynamicMethod("ReadWriteDateAsync", "读写日期格式")]
-    public async Task<OperResult<System.DateTime>> ReadWriteDateAsync(string address, System.DateTime? value = null, CancellationToken cancellationToken = default)
+    public async ValueTask<IOperResult<System.DateTime>> ReadWriteDateAsync(string address, System.DateTime? value = null, CancellationToken cancellationToken = default)
     {
         if (value == null)
             return await _plc.ReadDateAsync(address, cancellationToken).ConfigureAwait(false);
         else
-            return new(await _plc.WriteDateAsync(address, value.Value, cancellationToken));
+            return new OperResult<System.DateTime>(await _plc.WriteDateAsync(address, value.Value, cancellationToken));
     }
 
     /// <summary>
@@ -89,11 +90,11 @@ public class SiemensS7Master : CollectBase
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     [DynamicMethod("ReadWriteDateTimeAsync", "读写日期时间格式")]
-    public async Task<OperResult<System.DateTime>> ReadWriteDateTimeAsync(string address, System.DateTime? value = null, CancellationToken cancellationToken = default)
+    public async ValueTask<IOperResult<System.DateTime>> ReadWriteDateTimeAsync(string address, System.DateTime? value = null, CancellationToken cancellationToken = default)
     {
         if (value == null)
             return await _plc.ReadDateTimeAsync(address, cancellationToken);
         else
-            return new(await _plc.WriteDateTimeAsync(address, value.Value, cancellationToken).ConfigureAwait(false));
+            return new OperResult<System.DateTime>(await _plc.WriteDateTimeAsync(address, value.Value, cancellationToken).ConfigureAwait(false));
     }
 }

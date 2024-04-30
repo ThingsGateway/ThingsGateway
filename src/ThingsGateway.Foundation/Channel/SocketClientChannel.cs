@@ -36,14 +36,6 @@ namespace ThingsGateway.Foundation
         /// <inheritdoc/>
         public ConcurrentList<IProtocol> Collects { get; } = new();
 
-        /// <inheritdoc/>
-        protected override void Dispose(bool disposing)
-        {
-            if (DisposedValue) return;
-            base.Dispose(disposing);
-            PluginManager?.SafeDispose();
-        }
-
         /// <summary>
         /// 接收到数据
         /// </summary>
@@ -70,6 +62,40 @@ namespace ThingsGateway.Foundation
         /// <inheritdoc/>
         public Task ConnectAsync(int timeout, CancellationToken token) => throw new NotImplementedException();
 
+        /// <inheritdoc/>
+        public Task SetupAsync(TouchSocketConfig config)
+        {
+            return EasyTask.CompletedTask;
+        }
+
+        public void DefaultSend(byte[] buffer, int offset, int length)
+        {
+            this.ProtectedDefaultSend(buffer, offset, length);
+        }
+
+        public void SetDataHandlingAdapter(DataHandlingAdapter adapter)
+        {
+            if (adapter is SingleStreamDataHandlingAdapter singleStreamDataHandlingAdapter)
+                this.SetAdapter(singleStreamDataHandlingAdapter);
+        }
+
+        public void Close(string msg)
+        {
+            this.CloseAsync(msg).GetFalseAwaitResult();
+        }
+
+        public void Connect(int millisecondsTimeout = 3000, CancellationToken token = default)
+        {
+            throw new NotSupportedException();
+        }
+
+        /// <inheritdoc/>
+        protected override void Dispose(bool disposing)
+        {
+            if (DisposedValue) return;
+            base.Dispose(disposing);
+            PluginManager?.SafeDispose();
+        }
         protected override Task OnTcpReceived(ReceivedDataEventArgs e)
         {
             if (this.ChannelReceived != null)
@@ -99,36 +125,17 @@ namespace ThingsGateway.Foundation
         /// <inheritdoc/>
         protected override Task OnTcpClosing(ClosingEventArgs e)
         {
-            Logger?.Debug($"{ToString()} Disconnecting{(e.Message.IsNullOrEmpty() ? string.Empty : $"-{e.Message}")}");
+            Logger?.Debug($"{ToString()} Closing{(e.Message.IsNullOrEmpty() ? string.Empty : $"-{e.Message}")}");
             return base.OnTcpClosing(e);
         }
 
         /// <inheritdoc/>
         protected override Task OnTcpClosed(ClosedEventArgs e)
         {
-            Logger?.Debug($"{ToString()} Disconnected{(e.Message.IsNullOrEmpty() ? string.Empty : $"-{e.Message}")}");
+            Logger?.Debug($"{ToString()} Closed{(e.Message.IsNullOrEmpty() ? string.Empty : $"-{e.Message}")}");
             return base.OnTcpClosed(e);
         }
 
-        #region
-
-        /// <inheritdoc/>
-        public Task SetupAsync(TouchSocketConfig config)
-        {
-            return EasyTask.CompletedTask;
-        }
-
-        public void DefaultSend(byte[] buffer, int offset, int length)
-        {
-            this.ProtectedDefaultSend(buffer, offset, length);
-        }
-
-
-        public void SetDataHandlingAdapter(DataHandlingAdapter adapter)
-        {
-            if (adapter is SingleStreamDataHandlingAdapter singleStreamDataHandlingAdapter)
-                this.SetAdapter(singleStreamDataHandlingAdapter);
-        }
-        #endregion 无
+         
     }
 }
