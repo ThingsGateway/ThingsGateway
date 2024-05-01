@@ -92,7 +92,7 @@ public static class ByteExtensions
     {
         if (inBytes.Length == 0)
         {
-            return Array.Empty<byte>() { };
+            return Array.Empty<byte>();
         }
         // 创建新数组进行补齐
         byte[] paddedBytes = inBytes.CopyArray<byte>().ArrayExpandToLengthEven();
@@ -157,4 +157,15 @@ public static class ByteExtensions
     {
         return DataTransUtil.ByteToHexString(buffer, splite);
     }
+    /// <summary>
+    /// 字节数组默认转16进制字符
+    /// </summary>
+    /// <param name="buffer"></param>
+    /// <param name="splite"></param>
+    /// <returns></returns>
+    public static string ToHexString(this byte[] buffer, int offset, int length, char splite = default, int newLineCount = 0)
+    {
+        return DataTransUtil.ByteToHexString(buffer, offset, length, splite, newLineCount);
+    }
+
 }

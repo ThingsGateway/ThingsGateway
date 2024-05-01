@@ -237,10 +237,9 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     }
 
     /// <inheritdoc/>
-    public virtual void DefaultSend(byte[] command, IClientChannel channel = default,CancellationToken token=default)
+    public virtual void DefaultSend(byte[] command, int offset, int length, IClientChannel channel = default, CancellationToken token = default)
     {
         Channel.Connect(ConnectTimeout, token);
-        var item = command;
         if (SendDelayTime != 0)
             Thread.Sleep(SendDelayTime);
 
@@ -249,39 +248,37 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
         if (channel == default)
         {
             if (Channel is not IClientChannel clientChannel) { throw new ArgumentNullException(nameof(channel)); }
-            clientChannel.DefaultSend(item, 0, item.Length);
+            clientChannel.DefaultSend(command, offset, length);
         }
         else
         {
-            channel.DefaultSend(item, 0, item.Length);
+            channel.DefaultSend(command, offset, length);
         }
     }
     /// <inheritdoc/>
-    public virtual async ValueTask DefaultSendAsync(byte[] command, IClientChannel channel = default,CancellationToken token=default)
+    public virtual async ValueTask DefaultSendAsync(byte[] command, int offset, int length, IClientChannel channel = default, CancellationToken token = default)
     {
         await Channel.ConnectAsync(ConnectTimeout, token).ConfigureAwait(false);
-        var item = command;
         if (SendDelayTime != 0)
-            await Task.Delay(SendDelayTime,token).ConfigureAwait(false);
+            await Task.Delay(SendDelayTime, token).ConfigureAwait(false);
 
         if (token.IsCancellationRequested)
             return;
         if (channel == default)
         {
             if (Channel is not IClientChannel clientChannel) { throw new ArgumentNullException(nameof(channel)); }
-            clientChannel.DefaultSend(item, 0, item.Length);
+            clientChannel.DefaultSend(command, offset, length);
         }
         else
         {
-            channel.DefaultSend(item, 0, item.Length);
+            channel.DefaultSend(command, offset, length);
         }
     }
 
     /// <inheritdoc/>
-    public virtual void Send(byte[] command, IClientChannel channel = default, CancellationToken token = default)
+    public virtual void Send(byte[] command, int offset, int length, IClientChannel channel = default, CancellationToken token = default)
     {
         Channel.Connect(ConnectTimeout, token);
-        var item = command;
         if (SendDelayTime != 0)
             Thread.Sleep(SendDelayTime);
 
@@ -290,18 +287,17 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
         if (channel == default)
         {
             if (Channel is not IClientChannel clientChannel) { throw new ArgumentNullException(nameof(channel)); }
-            clientChannel.Send(item);
+            clientChannel.Send(command, offset, length);
         }
         else
         {
-            channel.Send(item);
+            channel.Send(command, offset, length);
         }
     }
 
     /// <inheritdoc/>
-    public virtual async ValueTask SendAsync(byte[] command, IClientChannel channel = default, CancellationToken token = default)
+    public virtual async ValueTask SendAsync(byte[] command, int offset, int length, IClientChannel channel = default, CancellationToken token = default)
     {
-        var item = command;
         await Channel.ConnectAsync(ConnectTimeout, token).ConfigureAwait(false);
         if (SendDelayTime != 0)
             await Task.Delay(SendDelayTime, token).ConfigureAwait(false);
@@ -312,23 +308,22 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
         if (channel == default)
         {
             if (Channel is not IClientChannel clientChannel) { throw new ArgumentNullException(nameof(channel)); }
-            await clientChannel.SendAsync(item).ConfigureAwait(false);
+            await clientChannel.SendAsync(command, offset, length).ConfigureAwait(false);
         }
         else
         {
-            await channel.SendAsync(item).ConfigureAwait(false);
+            await channel.SendAsync(command, offset, length).ConfigureAwait(false);
         }
     }
 
     /// <inheritdoc/>
     public virtual IOperResult<byte[]> SendThenReturn(ISendMessage command, CancellationToken cancellationToken, IClientChannel channel = default)
     {
-        var item = command;
         Channel.Connect(ConnectTimeout, cancellationToken);
         if (SendDelayTime != 0)
             Thread.Sleep(SendDelayTime);
 
- 
+
         SetDataAdapter();
         MessageBase? result;
 
@@ -336,11 +331,11 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
         {
             if (Channel is not IClientChannel clientChannel) { throw new ArgumentNullException(nameof(channel)); }
 
-            result = GetResponsedData(item, Timeout, clientChannel, cancellationToken);
+            result = GetResponsedData(command, Timeout, clientChannel, cancellationToken);
         }
         else
         {
-            result = GetResponsedData(item, Timeout, channel, cancellationToken);
+            result = GetResponsedData(command, Timeout, channel, cancellationToken);
         }
 
         return result;
@@ -349,70 +344,70 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     /// <inheritdoc/>
     public virtual async ValueTask<IOperResult<byte[]>> SendThenReturnAsync(ISendMessage command, CancellationToken cancellationToken, IClientChannel channel = default)
     {
-        var item = command;
         await Channel.ConnectAsync(ConnectTimeout, cancellationToken).ConfigureAwait(false);
         if (SendDelayTime != 0)
             await Task.Delay(SendDelayTime, cancellationToken).ConfigureAwait(false);
         SetDataAdapter();
 
- 
+
         MessageBase? result;
 
         if (channel == default)
         {
             if (Channel is not IClientChannel clientChannel) { throw new ArgumentNullException(nameof(channel)); }
-            result = await GetResponsedDataAsync(item, Timeout, clientChannel, cancellationToken).ConfigureAwait(false);
+            result = await GetResponsedDataAsync(command, Timeout, clientChannel, cancellationToken).ConfigureAwait(false);
         }
         else
         {
-            result = await GetResponsedDataAsync(item, Timeout, channel, cancellationToken).ConfigureAwait(false);
+            result = await GetResponsedDataAsync(command, Timeout, channel, cancellationToken).ConfigureAwait(false);
         }
 
         return result;
     }
 
-    public virtual IOperResult<byte[]> SendThenReturn(string socketId, byte[] commandResult, CancellationToken cancellationToken)
+    public virtual IOperResult<byte[]> SendThenReturn(string socketId, ByteBlock sendByteBlock, CancellationToken cancellationToken)
     {
         if (Channel.ChannelType == ChannelTypeEnum.TcpService)
         {
             if (((TcpServiceChannel)Channel).Clients.TryGetClient($"ID={socketId}", out SocketClientChannel? client))
-                return SendThenReturn(new SendMessage(commandResult), cancellationToken, client);
+                return SendThenReturn(new SendMessage(sendByteBlock), cancellationToken, client);
             else
                 return new OperResult<byte[]>(DefaultResource.Localizer["DtuNoConnectedWaining"]);
         }
         else
-            return SendThenReturn(new SendMessage(commandResult), cancellationToken);
+            return SendThenReturn(new SendMessage(sendByteBlock), cancellationToken);
     }
 
-    public virtual async ValueTask<IOperResult<byte[]>> SendThenReturnAsync(string socketId, byte[] commandResult, CancellationToken cancellationToken)
+    public virtual async ValueTask<IOperResult<byte[]>> SendThenReturnAsync(string socketId, ByteBlock sendByteBlock, CancellationToken cancellationToken)
     {
         if (Channel.ChannelType == ChannelTypeEnum.TcpService)
         {
             if (((TcpServiceChannel)Channel).Clients.TryGetClient($"ID={socketId}", out SocketClientChannel? client))
-                return await SendThenReturnAsync(new SendMessage(commandResult), cancellationToken, client);
+                return await SendThenReturnAsync(new SendMessage(sendByteBlock), cancellationToken, client);
             else
                 return (new OperResult<byte[]>(DefaultResource.Localizer["DtuNoConnectedWaining"]));
         }
         else
-            return await SendThenReturnAsync(new SendMessage(commandResult), cancellationToken);
-    }
-    public virtual IOperResult<byte[]> SendThenReturn(byte[] commandResult, CancellationToken cancellationToken)
-    {
-        return SendThenReturn(new SendMessage(commandResult), cancellationToken);
+            return await SendThenReturnAsync(new SendMessage(sendByteBlock), cancellationToken);
     }
 
-    public virtual ValueTask<IOperResult<byte[]>> SendThenReturnAsync(byte[] commandResult, CancellationToken cancellationToken)
+    public virtual IOperResult<byte[]> SendThenReturn(ByteBlock sendByteBlock, CancellationToken cancellationToken)
     {
-        return SendThenReturnAsync(new SendMessage(commandResult), cancellationToken);
+        return SendThenReturn(new SendMessage(sendByteBlock), cancellationToken);
     }
 
-    public virtual IOperResult Send(string socketId, byte[] commandResult, CancellationToken cancellationToken)
+    public virtual ValueTask<IOperResult<byte[]>> SendThenReturnAsync(ByteBlock sendByteBlock, CancellationToken cancellationToken)
+    {
+        return SendThenReturnAsync(new SendMessage(sendByteBlock), cancellationToken);
+    }
+
+    public virtual IOperResult Send(string socketId, byte[] command, int offset, int length, CancellationToken cancellationToken)
     {
         if (Channel.ChannelType == ChannelTypeEnum.TcpService)
         {
             if (((TcpServiceChannel)Channel).Clients.TryGetClient($"ID={socketId}", out SocketClientChannel? client))
             {
-                Send(commandResult, client);
+                Send(command, offset, length, client);
                 return OperResult.Success;
             }
             else
@@ -420,7 +415,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
         }
         else
         {
-            Send(commandResult);
+            Send(command, offset, length);
             return OperResult.Success;
         }
     }

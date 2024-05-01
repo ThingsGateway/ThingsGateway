@@ -35,13 +35,13 @@ public class DtuPlugin : PluginBase, ITcpReceivingPlugin
             {
                 var id = $"ID={Encoding.UTF8.GetString(bytes)}";
                 client.Logger.Info(DefaultResource.Localizer["DtuConnected", id]);
-                socket.ResetId(id);
+                await socket.ResetIdAsync(id);
                 e.Handled = true;
             }
             if (DtuService.HeartbeatHexString == bytes.ToHexString())
             {
                 //回应心跳包
-                socket.DefaultSend(bytes,0,bytes.Length);
+                socket.DefaultSend(bytes, 0, bytes.Length);
                 e.Handled = true;
                 if (socket.Logger.LogLevel <= LogLevel.Trace)
                     socket.Logger?.Trace($"{socket}- Send:{bytes.ToHexString(' ')}");

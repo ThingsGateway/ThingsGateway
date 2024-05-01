@@ -17,7 +17,7 @@ namespace ThingsGateway.Foundation.Dlt645;
 /// <summary>
 /// <inheritdoc/>
 /// </summary>
-internal class Dlt645_2007Message : MessageBase, IMessage
+internal class Dlt645_2007Message : MessageBase, IResultMessage
 {
     /// <inheritdoc/>
     public override int HeadBytesLength => -1;

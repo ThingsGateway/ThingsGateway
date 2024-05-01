@@ -15,7 +15,7 @@
 namespace ThingsGateway.Foundation.SiemensS7;
 
 /// <inheritdoc/>
-internal class SiemensMessage : MessageBase, IMessage
+internal class SiemensMessage : MessageBase, IResultMessage
 {
     /// <inheritdoc/>
     public override int HeadBytesLength => 4;

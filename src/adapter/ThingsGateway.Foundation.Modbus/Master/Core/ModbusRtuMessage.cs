@@ -17,7 +17,7 @@ namespace ThingsGateway.Foundation.Modbus;
 /// <summary>
 /// <inheritdoc/>
 /// </summary>
-internal class ModbusRtuMessage : MessageBase, IMessage
+internal class ModbusRtuMessage : MessageBase, IResultMessage
 {
     /// <inheritdoc/>
     public override int HeadBytesLength => 3;

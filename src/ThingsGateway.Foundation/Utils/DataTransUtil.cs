@@ -63,6 +63,38 @@ public class DataTransUtil
     /// <param name="segment">用于分隔每个字节的字符</param>
     /// <param name="newLineCount">指定在何处换行，设为0则不换行</param>
     /// <returns>转换后的十六进制字符串</returns>
+    public static string ByteToHexString(byte[] inBytes, int offset, int length, char segment, int newLineCount)
+    {
+        if (inBytes == null || inBytes.Length == 0)
+            return string.Empty;
+
+        StringBuilder stringBuilder = new();
+        var len = length + offset;
+        for (int i = offset; i < len; i++)
+        {
+            // 将字节转换为两位十六进制数并追加到字符串构建器中
+            stringBuilder.Append(inBytes[i].ToString("X2"));
+
+            // 如果设置了分隔符并且不是最后一个字节，则添加分隔符
+            if (segment != char.MinValue && i < len - 1)
+                stringBuilder.Append(segment);
+
+            // 如果设置了换行数且当前位置满足换行条件，则换行
+            if (newLineCount > 0 && (i + 1) % newLineCount == 0)
+                stringBuilder.AppendLine();
+        }
+
+        return stringBuilder.ToString();
+    }
+
+
+    /// <summary>
+    /// 将字节数组转换为十六进制表示的字符串
+    /// </summary>
+    /// <param name="inBytes">输入的字节数组</param>
+    /// <param name="segment">用于分隔每个字节的字符</param>
+    /// <param name="newLineCount">指定在何处换行，设为0则不换行</param>
+    /// <returns>转换后的十六进制字符串</returns>
     public static string ByteToHexString(byte[] inBytes, char segment, int newLineCount)
     {
         if (inBytes == null || inBytes.Length == 0)

@@ -17,7 +17,7 @@ namespace ThingsGateway.Foundation.Modbus
     /// <summary>
     /// <inheritdoc/>
     /// </summary>
-    internal class ModbusTcpServerMessage : MessageBase, IMessage, IModbusServerMessage
+    internal class ModbusTcpServerMessage : MessageBase, IResultMessage, IModbusServerMessage
     {
         /// <summary>
         /// 当前关联的地址

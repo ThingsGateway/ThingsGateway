@@ -571,12 +571,12 @@ public interface IProtocol : IDisposable
     /// </summary>
     /// <param name="command"></param>
     /// <param name="channel"></param>
-    void DefaultSend(byte[] command, IClientChannel channel = null, CancellationToken token = default);
+    void DefaultSend(byte[] command, int offset, int length, IClientChannel channel = null, CancellationToken token = default);
 
     /// <summary>
     /// 配置IPluginManager
     /// </summary>
     Action<IPluginManager> ConfigurePlugins();
-    ValueTask SendAsync(byte[] command, IClientChannel channel = null, CancellationToken cancellationToken = default);
-    ValueTask DefaultSendAsync(byte[] command, IClientChannel channel = null, CancellationToken token = default);
+    ValueTask SendAsync(byte[] command, int offset, int length, IClientChannel channel = null, CancellationToken cancellationToken = default);
+    ValueTask DefaultSendAsync(byte[] command, int offset, int length, IClientChannel channel = null, CancellationToken token = default);
 }

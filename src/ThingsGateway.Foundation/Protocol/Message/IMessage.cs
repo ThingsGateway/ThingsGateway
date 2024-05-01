@@ -17,49 +17,44 @@ namespace ThingsGateway.Foundation;
 /// <summary>
 /// 采集返回消息
 /// </summary>
-public interface IMessage : IOperResult, IRequestInfo
+public interface IResultMessage : IOperResult, IRequestInfo, IDisposableObject
 {
     /// <summary>
-    /// 等待标识，对于并发协议，必须从协议中例如固定头部获取标识字段
-    /// </summary>
-    long Sign { get; set; }
-
-    /// <summary>
-    /// 实体数据长度
+    /// 实体数据长度,不固定是返回0
     /// </summary>
     int BodyLength { get; set; }
 
     /// <summary>
     /// 解析后的字节数据
     /// </summary>
-    byte[] Content { get; set; }
+    public byte[] Content { get; set; }
 
     /// <summary>
-    /// 消息头字节
-    /// </summary>
-    byte[] HeadBytes { get; }
-
-    /// <summary>
-    /// 消息头的指令长度
+    /// 消息头的指令长度,不固定时返回0
     /// </summary>
     int HeadBytesLength { get; }
 
     /// <summary>
     /// 接收的字节信息
     /// </summary>
-    byte[] ReceivedBytes { get; set; }
+    ByteBlock ReceivedByteBlock { get; set; }
 
     /// <summary>
-    /// 发送的字节信息
+    /// 发送的字节信息，对于非并发主从协议，可能需要从中获取校验字段，其他情况下可以为空
     /// </summary>
-    byte[]? SendBytes { get; set; }
+    ByteBlock? SendByteBlock { get; set; }
+
+    /// <summary>
+    /// 等待标识，对于并发协议，必须从协议中例如固定头部获取标识字段
+    /// </summary>
+    long Sign { get; set; }
 
     /// <summary>
     /// 检查头子节的合法性,并赋值<see cref="BodyLength"/><br />
     /// </summary>
     /// <param name="heads">接收的头子节</param>
     /// <returns>是否成功的结果</returns>
-    bool CheckHeadBytes(byte[] heads);
+    bool CheckHeadBytes(ByteBlock? headByteBlock);
 }
 
 /// <summary>
@@ -68,12 +63,11 @@ public interface IMessage : IOperResult, IRequestInfo
 public interface ISendMessage : IRequestInfo
 {
     /// <summary>
+    /// 发送的字节信息
+    /// </summary>
+    ByteBlock SendByteBlock { get; set; }
+    /// <summary>
     /// 等待标识，对于并发协议，必须获取标识字段后写入协议报文
     /// </summary>
     long Sign { get; set; }
-
-    /// <summary>
-    /// 发送的字节信息
-    /// </summary>
-    byte[] SendBytes { get; set; }
 }

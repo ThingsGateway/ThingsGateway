@@ -17,9 +17,15 @@ using Newtonsoft.Json.Converters;
 
 namespace ThingsGateway.Foundation;
 
-/// <inheritdoc cref="IMessage"/>
-public abstract class MessageBase : IOperResult<byte[]>, IMessage, IWaitHandle
+/// <inheritdoc cref="IResultMessage"/>
+public abstract class MessageBase : DisposableObject, IOperResult<byte[]>, IResultMessage, IWaitHandle
 {
+
+    ~MessageBase()
+    {
+        this.SafeDispose();
+    }
+
     #region Result
     /// <summary>
     /// 异常堆栈
@@ -115,42 +121,23 @@ public abstract class MessageBase : IOperResult<byte[]>, IMessage, IWaitHandle
     /// <inheritdoc/>
     public virtual long Sign { get; set; }
 
-    private byte[]? sendBytes;
-
     /// <inheritdoc/>
     public int BodyLength { get; set; }
 
     /// <inheritdoc/>
-    public byte[] HeadBytes { get; set; }
+    public abstract int HeadBytesLength { get; }
+
+    public ByteBlock ReceivedByteBlock { get; set; }
+    public ByteBlock? SendByteBlock { get; set; }
 
     /// <inheritdoc/>
-    public virtual int HeadBytesLength { get; }
+    public abstract bool CheckHeadBytes(ByteBlock? headByteBlock);
 
-    /// <inheritdoc/>
-    public byte[] ReceivedBytes { get; set; }
-
-    /// <inheritdoc/>
-    public byte[]? SendBytes
+    protected override void Dispose(bool disposing)
     {
-        get
-        {
-            return sendBytes;
-        }
-        set
-        {
-            sendBytes = value;
-            SendBytesThen();
-        }
-    }
-
-    /// <inheritdoc/>
-    public abstract bool CheckHeadBytes(byte[] heads);
-
-    /// <summary>
-    /// 写入<see cref="SendBytes"/>后触发此方法
-    /// </summary>
-    protected virtual void SendBytesThen()
-    {
+        ReceivedByteBlock?.SafeDispose();
+        SendByteBlock?.SafeDispose();
+        base.Dispose(disposing);
     }
 }
 
@@ -158,14 +145,15 @@ public abstract class MessageBase : IOperResult<byte[]>, IMessage, IWaitHandle
 public class SendMessage : ISendMessage
 {
     /// <inheritdoc/>
-    public SendMessage(byte[] sendBytes)
+    public SendMessage(ByteBlock sendByteBlock)
     {
-        SendBytes = sendBytes;
+        SendByteBlock = sendByteBlock;
     }
-
     /// <inheritdoc/>
     public virtual long Sign { get; set; }
 
     /// <inheritdoc/>
-    public byte[] SendBytes { get; set; }
+    public ByteBlock SendByteBlock { get; set; }
+
+
 }

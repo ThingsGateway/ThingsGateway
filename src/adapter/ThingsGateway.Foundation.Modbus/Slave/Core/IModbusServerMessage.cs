@@ -17,7 +17,7 @@ namespace ThingsGateway.Foundation.Modbus
     /// <summary>
     /// ModbusServerMessage
     /// </summary>
-    internal interface IModbusServerMessage : IMessage
+    internal interface IModbusServerMessage : IResultMessage
     {
         /// <summary>
         /// 读写长度

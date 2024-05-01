@@ -8,31 +8,19 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using System.Text;
 
 namespace ThingsGateway.Foundation;
 
 /// <summary>
 /// TCP/Serial适配器基类
 /// </summary>
-public abstract class ReadWriteDevicesSingleStreamDataHandleAdapter<TRequest> : CustomDataHandlingAdapter<TRequest> where TRequest : class, IMessage
+public abstract class ReadWriteDevicesSingleStreamDataHandleAdapter<TRequest> : CustomDataHandlingAdapter<TRequest> where TRequest : class, IResultMessage, new()
 {
     /// <inheritdoc cref="ReadWriteDevicesSingleStreamDataHandleAdapter{TRequest}"/>
     public ReadWriteDevicesSingleStreamDataHandleAdapter()
     {
-        Request = GetInstance();
         CacheTimeoutEnable = true;
     }
-
-    /// <summary>
-    /// 是否非并发协议
-    /// </summary>
-    public virtual bool IsSingleThread { get; } = true;
-
-    /// <summary>
-    /// 报文输出时采用字符串还是HexString
-    /// </summary>
-    public virtual bool IsHexData { get; set; } = true;
 
     /// <inheritdoc/>
     public override bool CanSendRequestInfo => true;
@@ -40,9 +28,18 @@ public abstract class ReadWriteDevicesSingleStreamDataHandleAdapter<TRequest> : 
     /// <inheritdoc/>
     public override bool CanSplicingSend => false;
 
+    /// <summary>
+    /// 报文输出时采用字符串还是HexString
+    /// </summary>
+    public virtual bool IsHexData { get; set; } = true;
+
     /// <inheritdoc/>
     public virtual bool IsSendPackCommand { get; set; } = true;
 
+    /// <summary>
+    /// 是否非并发协议
+    /// </summary>
+    public virtual bool IsSingleThread { get; } = true;
     /// <summary>
     /// 非并发协议中，每次交互的对象，会在发送时重新获取
     /// </summary>
@@ -51,32 +48,27 @@ public abstract class ReadWriteDevicesSingleStreamDataHandleAdapter<TRequest> : 
     /// <summary>
     /// 发送前，对当前的命令进行打包处理
     /// </summary>
-    public abstract byte[] PackCommand(byte[] command, TRequest item);
+    public abstract void PackCommand(ISendMessage item);
 
     /// <inheritdoc/>
     public override string? ToString()
     {
-        if (Owner is SocketClientChannel client)
-        {
-            return client.GetIPPort();
-        }
-        else
-        {
-            return Owner.ToString();
-        }
+        return Owner.ToString();
     }
-
     /// <inheritdoc/>
     protected override FilterResult Filter(in ByteBlock byteBlock, bool beCached, ref TRequest request, ref int tempCapacity)
     {
+        //整个流程都不会改变流的游标位置，所以对于是否缓存的情况都是一样的处理
+
         if (Logger.LogLevel <= LogLevel.Trace)
-            Logger?.Trace($"{ToString()}- Receive:{(IsHexData ? byteBlock.ToArray().ToHexString(' ') : Encoding.UTF8.GetString(byteBlock.ToArray()))}");
-        //缓存/不缓存解析一样，因为游标已经归0
+            Logger?.Trace($"{ToString()}- Receive:{(IsHexData ? byteBlock.Buffer.ToHexString(byteBlock.Pos, byteBlock.Len, ' ') : byteBlock.ToString())}");
         {
+            //非并发协议,复用对象
             if (IsSingleThread)
-                request = Request;
+                request = Request == null ? GetInstance() : Request.DisposedValue ? GetInstance() : Request;
             else
             {
+                //并发协议非缓存模式下，重新获取对象
                 if (!beCached)
                     request = GetInstance();
             }
@@ -86,16 +78,27 @@ public abstract class ReadWriteDevicesSingleStreamDataHandleAdapter<TRequest> : 
                 return FilterResult.Cache;//当头部都无法解析时，直接缓存
             }
 
-            byte[] header = Array.Empty<byte>();
+            //传入新的ByteBlock对象，避免影响原有的游标
+            //当解析消息设定固定头长度大于0时，获取头部字节
             if (request.HeadBytesLength > 0)
             {
-                //当解析消息设定固定头长度大于0时，获取头部字节
-                header = byteBlock.ToArray(byteBlock.Pos, request.HeadBytesLength);
+                using var header = new ByteBlock(request.HeadBytesLength);
+                header.Write(byteBlock.Buffer, byteBlock.Pos, request.HeadBytesLength);
+                header.SeekToStart();
+                return Check(byteBlock, request, ref tempCapacity, header);
             }
+            else
+            {
+                return Check(byteBlock, request, ref tempCapacity, null);
+            }
+
+        }
+
+        FilterResult Check(ByteBlock byteBlock, TRequest request, ref int tempCapacity, ByteBlock? header)
+        {
             //检查头部合法性
             if (request.CheckHeadBytes(header))
             {
-                byteBlock.Pos += request.HeadBytesLength;
                 if (request.BodyLength > this.MaxPackageSize)
                 {
                     this.OnError(default, $"Received BodyLength={request.BodyLength}, greater than the set MaxPackageSize={this.MaxPackageSize}", true, true);
@@ -114,27 +117,37 @@ public abstract class ReadWriteDevicesSingleStreamDataHandleAdapter<TRequest> : 
                     request.BodyLength = byteBlock.Len;
                 }
 
+                //传入新的ByteBlock对象，避免影响原有的游标
                 using var block = new ByteBlock(byteBlock.Len);
-                block.Write(byteBlock.Buffer, byteBlock.Pos, request.BodyLength);
+                block.Write(byteBlock.Buffer, byteBlock.Pos, request.BodyLength + request.HeadBytesLength);
                 block.SeekToStart();
-                request.ReceivedBytes = byteBlock.ToArray();
+                request.ReceivedByteBlock = byteBlock;
 
-                var result = GetResponse(byteBlock, request, body, bytes);
-                if (result == FilterResult.Cache)
+                using var result = UnpackResponse(block);
+                if (result.FilterResult == FilterResult.Cache)
                 {
                     if (Logger.LogLevel <= LogLevel.Trace)
-                        Logger.Trace($"{ToString()}-Received incomplete, cached message, current length:{bytes.Length}  {request?.ErrorMessage}");
-                    byteBlock.SeekToStart();//回退游标
+                        Logger.Trace($"{ToString()}-Received incomplete, cached message, current length:{byteBlock.Len}  {request?.ErrorMessage}");
+                    tempCapacity = request.BodyLength + request.HeadBytesLength;
+                    request.OperCode = -1;
                 }
-                else if (result == FilterResult.GoOn)
+                else if (result.FilterResult == FilterResult.GoOn)
                 {
                     byteBlock.Pos += 1;
+                    request.OperCode = -1;
                 }
-                return result;
+                else if (result.FilterResult == FilterResult.Success)
+                {
+                    byteBlock.Pos += request.BodyLength;
+                    request.OperCode = null;
+                    request.Content = result.ByteBlock;
+                }
+                return result.FilterResult;
             }
             else
             {
                 byteBlock.Pos = byteBlock.Len;//移动游标
+                request.OperCode = -1;
                 return FilterResult.GoOn;//放弃解析
             }
         }
@@ -144,93 +157,106 @@ public abstract class ReadWriteDevicesSingleStreamDataHandleAdapter<TRequest> : 
     /// 获取泛型实例。
     /// </summary>
     /// <returns></returns>
-    protected abstract TRequest GetInstance();
-
-    /// <summary>
-    /// 解包获取实际数据包
-    /// <para>当不满足解析条件时，请返回<see cref="FilterResult.Cache"/>，此时会保存<see cref="ByteBlock.CanReadLen"/>的数据</para>
-    /// <para>当数据部分异常时，请移动<see cref="ByteBlock.Pos"/>到指定位置，然后返回<see cref="FilterResult.GoOn"/></para>
-    /// <para>当完全满足解析条件时，请返回<see cref="FilterResult.Success"/>最后将<see cref="ByteBlock.Pos"/>移至指定位置。</para>
-    /// </summary>
-    protected virtual FilterResult GetResponse(ByteBlock byteBlock, TRequest request, byte[] body, byte[] bytes)
+    protected virtual TRequest GetInstance()
     {
-        var unpackbytes = UnpackResponse(request, request.SendBytes, body, bytes);
+        return new TRequest();
     }
 
-    /// <summary>
-    /// 发送方法,会重新建立<see cref="Request"/>
-    /// </summary>
-    protected virtual void GoSend(byte[] item, TRequest request)
+    /// <inheritdoc/>
+    protected override void OnReceivedSuccess(TRequest request)
     {
-        byte[] bytes;
-        if (IsSendPackCommand)
-            bytes = PackCommand(item, request);
-        else
-            bytes = item;
-        Request = request;
-        Request.SendBytes = bytes;
-        GoSend(bytes, 0, bytes.Length);
-        if (Logger.LogLevel <= LogLevel.Trace)
-            Logger?.Trace($"{ToString()}- Send:{(IsHexData ? bytes.ToHexString(' ') : Encoding.UTF8.GetString(bytes))}");
-    }
-
-    /// <summary>
-    /// 发送方法,会重新建立<see cref="Request"/>
-    /// </summary>
-    protected virtual async Task GoSendAsync(byte[] item, TRequest request)
-    {
-        byte[] bytes;
-        if (IsSendPackCommand)
-            bytes = PackCommand(item, request);
-        else
-            bytes = item;
-        Request = request;
-        Request.SendBytes = bytes;
-        await GoSendAsync(bytes, 0, bytes.Length).ConfigureAwait(false);
-        if (Logger.LogLevel <= LogLevel.Trace)
-            Logger?.Trace($"{ToString()}- Send:{(IsHexData ? bytes.ToHexString(' ') : Encoding.UTF8.GetString(bytes))}");
+        request.SafeDispose();
     }
 
     /// <inheritdoc/>
     protected override void PreviewSend(IRequestInfo requestInfo)
     {
-        if (requestInfo == null)
+        if (!(requestInfo is ISendMessage message))
         {
-            throw new ArgumentNullException(nameof(requestInfo));
+            throw new Exception($"Unable to convert {nameof(requestInfo)} to {nameof(ISendMessage)}");
         }
-        var message = (ISendMessage)requestInfo;
-        var request = GetInstance();
-        request.Sign = message.Sign;
-        GoSend(message.SendBytes, request);
-    }
+        //发送前打包
+        if (IsSendPackCommand)
+            PackCommand(message);
 
-    /// <inheritdoc/>
-    protected override Task PreviewSendAsync(IRequestInfo requestInfo)
-    {
-        if (requestInfo == null)
+        //发送
+        this.GoSend(message.SendByteBlock.Buffer, 0, message.SendByteBlock.Len);
+
+        //非并发主从协议
+        if (IsSingleThread)
         {
-            throw new ArgumentNullException(nameof(requestInfo));
+            var request = GetInstance();
+            request.Sign = message.Sign;
+            request.SendByteBlock = message.SendByteBlock;
+            Request = request;
         }
-        var message = (ISendMessage)requestInfo;
-        var request = GetInstance();
-        request.Sign = message.Sign;
-        return GoSendAsync(message.SendBytes, request);
+        else
+        {
+            //并发协议，直接释放内存池
+            message.SendByteBlock.SafeDispose();
+        }
+        if (Logger.LogLevel <= LogLevel.Trace)
+            Logger?.Trace($"{ToString()}- Send:{(IsHexData ? message.SendByteBlock.Buffer.ToHexString(message.SendByteBlock.Pos, message.SendByteBlock.Len, ' ') : message.SendByteBlock.ToString())}");
     }
 
     /// <inheritdoc/>
     protected override void PreviewSend(byte[] buffer, int offset, int length)
     {
-        GoSend(buffer, GetInstance());
+        throw new NotSupportedException();
     }
 
     /// <inheritdoc/>
+    protected override async Task PreviewSendAsync(IRequestInfo requestInfo)
+    {
+        if (!(requestInfo is ISendMessage message))
+        {
+            throw new Exception($"Unable to convert {nameof(requestInfo)} to {nameof(ISendMessage)}");
+        }
+        //发送前打包
+        if (IsSendPackCommand)
+            PackCommand(message);
+
+        //发送
+        await this.GoSendAsync(message.SendByteBlock.Buffer, 0, message.SendByteBlock.Len).ConfigureAwait(false);
+
+        //非并发主从协议
+        if (IsSingleThread)
+        {
+            var request = GetInstance();
+            request.Sign = message.Sign;
+            request.SendByteBlock = message.SendByteBlock;
+            Request = request;
+        }
+        else
+        {
+            //并发协议，直接释放内存池
+            message.SendByteBlock.SafeDispose();
+        }
+        if (Logger.LogLevel <= LogLevel.Trace)
+            Logger?.Trace($"{ToString()}- Send:{(IsHexData ? message.SendByteBlock.Buffer.ToHexString(message.SendByteBlock.Pos, message.SendByteBlock.Len, ' ') : message.SendByteBlock.ToString())}");
+    }
+    /// <inheritdoc/>
     protected override Task PreviewSendAsync(byte[] buffer, int offset, int length)
     {
-        return GoSendAsync(buffer, GetInstance());
+        throw new NotSupportedException();
     }
 
     /// <summary>
-    /// 报文拆包
+    /// 解包获取实际数据包
     /// </summary>
-    protected abstract FilterResult UnpackResponse(TRequest request, byte[]? send, byte[] body, byte[] response);
+    protected abstract AdapterResult UnpackResponse(ByteBlock bodyBlock);
+}
+
+
+public class AdapterResult : DisposableObject
+{
+    public FilterResult FilterResult { get; }
+    public ByteBlock ByteBlock { get; }
+
+    protected override void Dispose(bool disposing)
+    {
+        ByteBlock.SafeDispose();
+        base.Dispose(disposing);
+    }
+
 }

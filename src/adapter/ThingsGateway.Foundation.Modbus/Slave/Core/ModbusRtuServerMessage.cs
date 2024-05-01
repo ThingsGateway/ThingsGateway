@@ -17,7 +17,7 @@ namespace ThingsGateway.Foundation.Modbus;
 /// <summary>
 /// <inheritdoc/>
 /// </summary>
-internal class ModbusRtuServerMessage : MessageBase, IMessage, IModbusServerMessage
+internal class ModbusRtuServerMessage : MessageBase, IResultMessage, IModbusServerMessage
 {
     /// <inheritdoc/>
     public ModbusAddress ModbusAddress { get; set; }
