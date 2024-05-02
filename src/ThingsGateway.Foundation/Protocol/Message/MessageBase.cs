@@ -162,6 +162,12 @@ public class SendMessage : ISendMessage
         SendByteBlock = sendByteBlock;
     }
     /// <inheritdoc/>
+    public SendMessage(byte[] sendBytes)
+    {
+        SendByteBlock = new(sendBytes);
+        SendByteBlock.SetLength(sendBytes.Length);
+    }
+    /// <inheritdoc/>
     public virtual long Sign { get; set; }
 
     /// <inheritdoc/>

@@ -76,6 +76,7 @@ namespace ThingsGateway.Foundation
                     if (Started != null)
                         await Started.Invoke(this);
                 }
+
             }
             finally
             {

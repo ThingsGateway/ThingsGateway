@@ -5,7 +5,14 @@
     "Password": "写入密码",
     "Station": "通讯地址",
     "CheckClearTime": "连接滑动过期时间",
-    "HeartbeatHexString": "心跳检测"
+    "HeartbeatHexString": "心跳检测",
+
+    "CacheTimeout": "组包缓存时间",
+    "SendDelayTime": "发送延时",
+    "DataFormat": "解析规则",
+    "Timeout": "读写超时",
+    "ConnectTimeout": "连接超时",
+    "IsStringReverseByteWord": "字符串反转"
   },
 
   "ThingsGateway.Foundation.Dlt645.DltResource": {

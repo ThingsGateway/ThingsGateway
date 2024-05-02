@@ -12,6 +12,8 @@
 
 
 
+using TouchSocket.Core;
+
 namespace ThingsGateway.Foundation.SiemensS7;
 
 /// <inheritdoc/>
@@ -20,17 +22,16 @@ internal class SiemensMessage : MessageBase, IResultMessage
     /// <inheritdoc/>
     public override int HeadBytesLength => 4;
 
+
     /// <inheritdoc/>
-    public override bool CheckHeadBytes(byte[] heads)
+    public override bool CheckHeadBytes(ByteBlock? headByteBlock)
     {
-        HeadBytes = heads;
-        byte[] headBytes = HeadBytes;
-        if (headBytes == null || headBytes.Length < 4)
+        if (headByteBlock == null || headByteBlock.Length < 4)
             BodyLength = 0;
-        int length = (HeadBytes[2] * 256) + HeadBytes[3] - 4;
+        int length = (headByteBlock[2] * 256) + headByteBlock[3] - 4;
         if (length < 0)
             length = 0;
         BodyLength = length;
-        return HeadBytes != null && HeadBytes[0] == 3 && HeadBytes[1] == 0;
+        return headByteBlock != null && headByteBlock[0] == 3 && headByteBlock[1] == 0;
     }
 }

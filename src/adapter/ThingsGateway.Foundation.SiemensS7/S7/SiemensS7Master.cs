@@ -305,7 +305,8 @@ public partial class SiemensS7Master : ProtocolBase
             //channel.SetDataHandlingAdapter(dataHandleAdapter);
             try
             {
-                var result2 = await GetResponsedDataAsync(new SendMessage(ISO_CR), Timeout, channel, CancellationToken.None).ConfigureAwait(false);
+
+                var result2 = await SendThenReturnAsync(new SendMessage(ISO_CR), CancellationToken.None, channel).ConfigureAwait(false);
                 if (!result2.IsSuccess)
                 {
                     Logger?.LogWarning(SiemensS7Resource.Localizer["HandshakeError1", channel.ToString(), result2.ErrorMessage]);
@@ -321,7 +322,7 @@ public partial class SiemensS7Master : ProtocolBase
             }
             try
             {
-                var result2 = await GetResponsedDataAsync(new SendMessage(S7_PN), Timeout, channel, CancellationToken.None).ConfigureAwait(false);
+                var result2 = await SendThenReturnAsync(new SendMessage(S7_PN), CancellationToken.None, channel).ConfigureAwait(false);
                 if (!result2.IsSuccess)
                 {
                     Logger?.LogWarning(SiemensS7Resource.Localizer["HandshakeError2", channel.ToString(), result2.ErrorMessage]);
@@ -345,7 +346,6 @@ public partial class SiemensS7Master : ProtocolBase
         }
         finally
         {
-            channel.SetDataHandlingAdapter(GetDataAdapter());
             await base.ChannelStarted(channel).ConfigureAwait(false);
         }
     }

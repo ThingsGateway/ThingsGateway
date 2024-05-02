@@ -119,11 +119,10 @@ public class ChannelData : IChannelData
     {
         if (channelData.Channel != null)
         {
-            channelData.Channel.Close();
+            channelData.Channel.SafeDispose();
         }
         channelData.TouchSocketConfig?.Dispose();
-        channelData.TouchSocketConfig = null;
-        channelData.TouchSocketConfig ??= new TouchSocket.Core.TouchSocketConfig();
+        channelData.TouchSocketConfig = new TouchSocket.Core.TouchSocketConfig();
         var LogMessage = new TouchSocket.Core.LoggerGroup() { LogLevel = TouchSocket.Core.LogLevel.Trace };
         var logger = TextFileLogger.Create(channelData.Id.GetDebugLogPath());
         logger.LogLevel = LogLevel.Trace;

@@ -5,7 +5,14 @@
     "Password": "Write password",
     "Station": "Communication address",
     "CheckClearTime": "Connection sliding expiration time",
-    "HeartbeatHexString": "Heartbeat detection"
+    "HeartbeatHexString": "Heartbeat detection",
+
+    "CacheTimeout": "Packet Assembly Cache Time",
+    "SendDelayTime": "Send Delay Time",
+    "DataFormat": "Parsing Rules",
+    "Timeout": "Read/Write Timeout",
+    "ConnectTimeout": "Connection Timeout",
+    "IsStringReverseByteWord": "String Byte/Word Reversal"
   },
 
   "ThingsGateway.Foundation.Dlt645.DltResource": {
