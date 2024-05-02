@@ -9,6 +9,8 @@
 //------------------------------------------------------------------------------
 
 
+using System.Text;
+
 namespace ThingsGateway.Foundation;
 
 /// <summary>
@@ -61,7 +63,7 @@ public abstract class ReadWriteDevicesSingleStreamDataHandleAdapter<TRequest> : 
         //整个流程都不会改变流的游标位置，所以对于是否缓存的情况都是一样的处理
 
         if (Logger.LogLevel <= LogLevel.Trace)
-            Logger?.Trace($"{ToString()}- Receive:{(IsHexData ? byteBlock.Buffer.ToHexString(byteBlock.Pos, byteBlock.Len, ' ') : byteBlock.ToString())}");
+            Logger?.Trace($"{ToString()}- Receive:{(IsHexData ? byteBlock.Buffer.ToHexString(0, byteBlock.Len, ' ') : byteBlock.ToString())}");
         {
             //非并发协议,复用对象
             if (IsSingleThread)
@@ -118,12 +120,9 @@ public abstract class ReadWriteDevicesSingleStreamDataHandleAdapter<TRequest> : 
                 }
 
                 //传入新的ByteBlock对象，避免影响原有的游标
-                using var block = new ByteBlock(byteBlock.Len);
-                block.Write(byteBlock.Buffer, byteBlock.Pos, request.BodyLength + request.HeadBytesLength);
-                block.SeekToStart();
                 request.ReceivedByteBlock = byteBlock;
 
-                using var result = UnpackResponse(block);
+                using var result = UnpackResponse(request);
                 if (result.FilterResult == FilterResult.Cache)
                 {
                     if (Logger.LogLevel <= LogLevel.Trace)
@@ -139,7 +138,6 @@ public abstract class ReadWriteDevicesSingleStreamDataHandleAdapter<TRequest> : 
                 else if (result.FilterResult == FilterResult.Success)
                 {
                     byteBlock.Pos += request.BodyLength;
-                    request.OperCode = null;
                     request.Content = result.ByteBlock;
                 }
                 return result.FilterResult;
@@ -179,6 +177,9 @@ public abstract class ReadWriteDevicesSingleStreamDataHandleAdapter<TRequest> : 
         if (IsSendPackCommand)
             PackCommand(message);
 
+        if (Logger.LogLevel <= LogLevel.Trace)
+            Logger?.Trace($"{ToString()}- Send:{(IsHexData ? message.SendByteBlock.Buffer.ToHexString(0, message.SendByteBlock.Len, ' ') : message.SendByteBlock.ToString())}");
+
         //发送
         this.GoSend(message.SendByteBlock.Buffer, 0, message.SendByteBlock.Len);
 
@@ -195,14 +196,16 @@ public abstract class ReadWriteDevicesSingleStreamDataHandleAdapter<TRequest> : 
             //并发协议，直接释放内存池
             message.SendByteBlock.SafeDispose();
         }
-        if (Logger.LogLevel <= LogLevel.Trace)
-            Logger?.Trace($"{ToString()}- Send:{(IsHexData ? message.SendByteBlock.Buffer.ToHexString(message.SendByteBlock.Pos, message.SendByteBlock.Len, ' ') : message.SendByteBlock.ToString())}");
+
     }
 
     /// <inheritdoc/>
     protected override void PreviewSend(byte[] buffer, int offset, int length)
     {
-        throw new NotSupportedException();
+        if (Logger.LogLevel <= LogLevel.Trace)
+            Logger?.Trace($"{ToString()}- Send:{(IsHexData ? buffer.ToHexString(0, length, ' ') : Encoding.UTF8.GetString(buffer, offset, length))}");
+        //发送
+        this.GoSend(buffer, offset, length);
     }
 
     /// <inheritdoc/>
@@ -215,6 +218,9 @@ public abstract class ReadWriteDevicesSingleStreamDataHandleAdapter<TRequest> : 
         //发送前打包
         if (IsSendPackCommand)
             PackCommand(message);
+
+        if (Logger.LogLevel <= LogLevel.Trace)
+            Logger?.Trace($"{ToString()}- Send:{(IsHexData ? message.SendByteBlock.Buffer.ToHexString(0, message.SendByteBlock.Len, ' ') : message.SendByteBlock.ToString())}");
 
         //发送
         await this.GoSendAsync(message.SendByteBlock.Buffer, 0, message.SendByteBlock.Len).ConfigureAwait(false);
@@ -232,31 +238,34 @@ public abstract class ReadWriteDevicesSingleStreamDataHandleAdapter<TRequest> : 
             //并发协议，直接释放内存池
             message.SendByteBlock.SafeDispose();
         }
-        if (Logger.LogLevel <= LogLevel.Trace)
-            Logger?.Trace($"{ToString()}- Send:{(IsHexData ? message.SendByteBlock.Buffer.ToHexString(message.SendByteBlock.Pos, message.SendByteBlock.Len, ' ') : message.SendByteBlock.ToString())}");
+
     }
     /// <inheritdoc/>
     protected override Task PreviewSendAsync(byte[] buffer, int offset, int length)
     {
-        throw new NotSupportedException();
+        if (Logger.LogLevel <= LogLevel.Trace)
+            Logger?.Trace($"{ToString()}- Send:{(IsHexData ? buffer.ToHexString(0, length, ' ') : Encoding.UTF8.GetString(buffer, offset, length))}");
+        //发送
+        return this.GoSendAsync(buffer, offset, length);
+
     }
 
     /// <summary>
     /// 解包获取实际数据包
     /// </summary>
-    protected abstract AdapterResult UnpackResponse(ByteBlock bodyBlock);
+    protected abstract AdapterResult UnpackResponse(TRequest request);
 }
 
 
-public class AdapterResult : DisposableObject
+public struct AdapterResult : IDisposable
 {
-    public FilterResult FilterResult { get; }
-    public ByteBlock ByteBlock { get; }
+    public FilterResult FilterResult { get; set; }
+    public ByteBlock ByteBlock { get; set; }
 
-    protected override void Dispose(bool disposing)
+    public void Dispose()
     {
         ByteBlock.SafeDispose();
-        base.Dispose(disposing);
     }
+
 
 }

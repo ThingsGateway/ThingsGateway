@@ -103,8 +103,9 @@ public abstract class AdapterDebugBase : ComponentBase, IDisposable
         {
             try
             {
-                Plc.DefaultSend(SendValue.HexStringToBytes());
-                Plc.Logger?.Trace($"{Plc.Channel}- DefaultSend {SendValue.HexStringToBytes().ToHexString(' ')}");
+                var data = SendValue.HexStringToBytes();
+                Plc.DefaultSend(data, 0, data.Length);
+                Plc.Logger?.Trace($"{Plc.Channel}- DefaultSend {data.ToHexString(' ')}");
             }
             catch (Exception ex)
             {

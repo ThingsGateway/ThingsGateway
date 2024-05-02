@@ -23,22 +23,22 @@ internal class ModbusUdpDataHandleAdapter : ReadWriteDevicesUdpDataHandleAdapter
 {
     private readonly IncrementCount _incrementCount = new(ushort.MaxValue);
 
-    /// <inheritdoc/>
-    public override byte[] PackCommand(byte[] command, ModbusTcpMessage item)
+
+    public override void PackCommand(ISendMessage item)
     {
-        return ModbusHelper.AddModbusTcpHead(command, (ushort)Request.Sign);
+        ModbusHelper.AddModbusTcpHead(item);
     }
 
-    /// <inheritdoc/>
-    protected override ModbusTcpMessage GetInstance()
-    {
-        return new ModbusTcpMessage();
-    }
 
     /// <inheritdoc/>
-    protected override IOperResult<byte[]> UnpackResponse(ModbusTcpMessage request, byte[]? send, byte[] response)
+    protected override ByteBlock UnpackResponse(ModbusTcpMessage request)
     {
-        var result = ModbusHelper.GetModbusData(send?.RemoveBegin(6), response.RemoveBegin(6));
-        return result;
+        using var send = request.SendByteBlock?.RemoveBegin(6);
+        using var response = request.ReceivedByteBlock.RemoveBegin(6);
+        var result = ModbusHelper.GetModbusData(send, response);
+        request.OperCode = result.OperCode;
+        request.ErrorMessage = result.ErrorMessage;
+        request.Sign = TouchSocketBitConverter.BigEndian.ToUInt16(response.Buffer, 0);
+        return result.Content.ByteBlock;
     }
 }

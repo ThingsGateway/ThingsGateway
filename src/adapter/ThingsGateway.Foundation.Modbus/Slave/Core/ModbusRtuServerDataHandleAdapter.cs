@@ -20,21 +20,20 @@ namespace ThingsGateway.Foundation.Modbus;
 internal class ModbusRtuServerDataHandleAdapter : ReadWriteDevicesSingleStreamDataHandleAdapter<ModbusRtuServerMessage>
 {
     /// <inheritdoc/>
-    public override byte[] PackCommand(byte[] command, ModbusRtuServerMessage item)
+    public override void PackCommand(ISendMessage item)
     {
-        return ModbusHelper.AddCrc(command);
+        var crc = CRC16Utils.CRC16Only(item.SendByteBlock.Buffer, 0, item.SendByteBlock.Len);
+        item.SendByteBlock.SeekToEnd();
+        item.SendByteBlock.Write(crc);
     }
 
-    /// <inheritdoc/>
-    protected override ModbusRtuServerMessage GetInstance()
-    {
-        return new ModbusRtuServerMessage();
-    }
 
     /// <inheritdoc/>
-    protected override FilterResult UnpackResponse(ModbusRtuServerMessage request, byte[]? send, byte[] body, byte[] response)
+    protected override AdapterResult UnpackResponse(ModbusRtuServerMessage request)
     {
-        var result1 = ModbusHelper.GetModbusRtuData(Array.Empty<byte>(), response, true);
+        var send = request.SendByteBlock;
+        var response = request.ReceivedByteBlock;
+        var result1 = ModbusHelper.GetModbusRtuData(send, response, true);
 
         if (result1.IsSuccess)
         {
@@ -44,17 +43,17 @@ internal class ModbusRtuServerDataHandleAdapter : ReadWriteDevicesSingleStreamDa
             if (result.IsSuccess)
             {
                 int offset = 0;
-                ModbusHelper.ModbusServerAnalysisAddressValue(request, response, result, offset);
-                return FilterResult.Success;
+                var bytes = ModbusHelper.ModbusServerAnalysisAddressValue(request, response, result.Content.ByteBlock, offset);
+                return new AdapterResult() { FilterResult = FilterResult.Success, ByteBlock = bytes };
             }
             else
             {
-                return result.Content2;
+                return result.Content;
             }
         }
         else
         {
-            return result1.Content2;
+            return result1.Content;
         }
     }
 }

@@ -55,6 +55,13 @@ public class DataTransUtil
     /// <param name="segment">分割符</param>
     /// <returns>返回的字符串</returns>
     public static string ByteToHexString(byte[] InBytes, char segment) => ByteToHexString(InBytes, segment, 0);
+    /// <summary>
+    /// 字节数据转化成16进制表示的字符串
+    /// </summary>
+    /// <param name="InBytes">字节数组</param>
+    /// <param name="segment">分割符</param>
+    /// <returns>返回的字符串</returns>
+    public static string ByteToHexString(ByteBlock InBytes, char segment) => ByteToHexString(InBytes.Buffer, segment, 0);
 
     /// <summary>
     /// 将字节数组转换为十六进制表示的字符串

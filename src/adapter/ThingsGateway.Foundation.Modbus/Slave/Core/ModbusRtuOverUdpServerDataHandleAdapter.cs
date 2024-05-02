@@ -21,22 +21,20 @@ namespace ThingsGateway.Foundation.Modbus;
 /// </summary>
 internal class ModbusRtuOverUdpServerDataHandleAdapter : ReadWriteDevicesUdpDataHandleAdapter<ModbusRtuServerMessage>
 {
-    /// <inheritdoc/>
-    public override byte[] PackCommand(byte[] command, ModbusRtuServerMessage item)
+
+    public override void PackCommand(ISendMessage item)
     {
-        return ModbusHelper.AddCrc(command);
+        var crc = CRC16Utils.CRC16Only(item.SendByteBlock.Buffer, 0, item.SendByteBlock.Len);
+        item.SendByteBlock.SeekToEnd();
+        item.SendByteBlock.Write(crc);
     }
 
     /// <inheritdoc/>
-    protected override ModbusRtuServerMessage GetInstance()
+    protected override ByteBlock UnpackResponse(ModbusRtuServerMessage request)
     {
-        return new ModbusRtuServerMessage();
-    }
-
-    /// <inheritdoc/>
-    protected override IOperResult<byte[]> UnpackResponse(ModbusRtuServerMessage request, byte[]? send, byte[] response)
-    {
-        var result1 = ModbusHelper.GetModbusRtuData(Array.Empty<byte>(), response, true);
+        var send = request.SendByteBlock;
+        var response = request.ReceivedByteBlock;
+        var result1 = ModbusHelper.GetModbusRtuData(send, response, true);
         request.OperCode = result1.OperCode;
         request.ErrorMessage = result1.ErrorMessage;
         if (result1.IsSuccess)
@@ -47,17 +45,17 @@ internal class ModbusRtuOverUdpServerDataHandleAdapter : ReadWriteDevicesUdpData
             if (result.IsSuccess)
             {
                 int offset = 0;
-                ModbusHelper.ModbusServerAnalysisAddressValue(request, response, result, offset);
-                return request;
+                var bytes = ModbusHelper.ModbusServerAnalysisAddressValue(request, response, result.Content.ByteBlock, offset);
+                return bytes;
             }
             else
             {
-                return request;
+                return new ByteBlock(0);
             }
         }
         else
         {
-            return request;
+            return new ByteBlock(0);
         }
     }
 }

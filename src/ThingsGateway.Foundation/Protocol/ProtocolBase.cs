@@ -248,11 +248,11 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
         if (channel == default)
         {
             if (Channel is not IClientChannel clientChannel) { throw new ArgumentNullException(nameof(channel)); }
-            clientChannel.DefaultSend(command, offset, length);
+            clientChannel.Send(command, offset, length);
         }
         else
         {
-            channel.DefaultSend(command, offset, length);
+            channel.Send(command, offset, length);
         }
     }
     /// <inheritdoc/>
@@ -267,11 +267,11 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
         if (channel == default)
         {
             if (Channel is not IClientChannel clientChannel) { throw new ArgumentNullException(nameof(channel)); }
-            clientChannel.DefaultSend(command, offset, length);
+            clientChannel.Send(command, offset, length);
         }
         else
         {
-            channel.DefaultSend(command, offset, length);
+            channel.Send(command, offset, length);
         }
     }
 
@@ -322,7 +322,6 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
         Channel.Connect(ConnectTimeout, cancellationToken);
         if (SendDelayTime != 0)
             Thread.Sleep(SendDelayTime);
-
 
         SetDataAdapter();
         MessageBase? result;

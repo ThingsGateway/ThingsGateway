@@ -12,14 +12,12 @@
 
 
 
-using Newtonsoft.Json.Linq;
-
 using TouchSocket.SerialPorts;
 
 namespace ThingsGateway.Foundation
 {
     /// <inheritdoc cref="SerialPortClient"/>
-    public class SerialPortChannel : SerialPortClient, IClientChannel, IDefaultSender
+    public class SerialPortChannel : SerialPortClient, IClientChannel
     {
 
         //~SerialPortChannel()
@@ -35,7 +33,7 @@ namespace ThingsGateway.Foundation
 
         /// <inheritdoc/>
         public ConcurrentList<IProtocol> Collects { get; } = new();
-        
+
         /// <summary>
         /// 接收到数据
         /// </summary>
@@ -59,11 +57,6 @@ namespace ThingsGateway.Foundation
             return base.ToString();
         }
 
-        public void DefaultSend(byte[] buffer, int offset, int length)
-        {
-            this.ProtectedDefaultSend(buffer, offset, length);
-        }
-
         public void SetDataHandlingAdapter(DataHandlingAdapter adapter)
         {
             if (adapter is SingleStreamDataHandlingAdapter singleStreamDataHandlingAdapter)
@@ -79,7 +72,7 @@ namespace ThingsGateway.Foundation
         {
             this.ConnectAsync(millisecondsTimeout, token).GetFalseAwaitResult();
         }
-        public new  async Task ConnectAsync(int millisecondsTimeout, CancellationToken token)
+        public new async Task ConnectAsync(int millisecondsTimeout, CancellationToken token)
         {
             try
             {
@@ -134,6 +127,6 @@ namespace ThingsGateway.Foundation
             return base.OnSerialClosing(e);
         }
 
- 
+
     }
 }

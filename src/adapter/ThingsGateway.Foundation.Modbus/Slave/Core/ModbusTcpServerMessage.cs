@@ -33,12 +33,11 @@ namespace ThingsGateway.Foundation.Modbus
         public override int HeadBytesLength => 6;
 
         /// <inheritdoc/>
-        public override bool CheckHeadBytes(byte[] heads)
+        public override bool CheckHeadBytes(ByteBlock? headByteBlock)
         {
-            if (heads == null || heads.Length != 6) return false;
-            HeadBytes = heads;
+            if (headByteBlock == null || headByteBlock.Length <= 0) return false;
 
-            int num = (HeadBytes[4] * 256) + HeadBytes[5];
+            int num = (headByteBlock[4] * 256) + headByteBlock[5];
             if (num > 0xff + 3) return false;
             BodyLength = num;
 

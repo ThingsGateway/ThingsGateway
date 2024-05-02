@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -8,9 +7,6 @@
 //  使用文档：https://kimdiego2098.github.io/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
-
-
-
 
 namespace ThingsGateway.Foundation.Extension.Generic;
 
@@ -176,14 +172,43 @@ public static class GenericExtensions
     }
 
     /// <summary>
+    /// 将一个数组的前后移除指定位数，返回新的一个数组<br />
+    /// </summary>
+    public static ByteBlock RemoveArray(this ByteBlock value, int leftLength, int rightLength)
+    {
+        if (value == null || value.Length == 0)
+        {
+            return new ByteBlock(0);
+        }
+
+        int newLength = value.Len - leftLength - rightLength;
+        if (newLength <= 0)
+        {
+            return new ByteBlock(0);
+        }
+
+        ByteBlock result = new ByteBlock(newLength);
+        result.Write(value.Buffer, leftLength, newLength);
+        return result;
+    }
+
+    /// <summary>
     /// 将一个数组的前面指定位数移除，返回新的一个数组<br />
     /// </summary>
     public static T[] RemoveBegin<T>(this T[] value, int length) => value.RemoveArray(length, 0);
+    /// <summary>
+    /// 将一个数组的前面指定位数移除，返回新的一个数组<br />
+    /// </summary>
+    public static ByteBlock RemoveBegin(this ByteBlock value, int length) => value.RemoveArray(length, 0);
 
     /// <summary>
     /// 将一个数组的后面指定位数移除，返回新的一个数组<br />
     /// </summary>
     public static T[] RemoveLast<T>(this T[] value, int length) => value.RemoveArray(0, length);
+    /// <summary>
+    /// 将一个数组的后面指定位数移除，返回新的一个数组<br />
+    /// </summary>
+    public static ByteBlock RemoveLast(this ByteBlock value, int length) => value.RemoveArray(0, length);
 
     /// <summary>
     /// 选择数组中的最后几个元素组成新的数组
@@ -236,6 +261,31 @@ public static class GenericExtensions
 
         // 复制中间指定长度的元素到新数组中
         Array.Copy(value, index, result, 0, count);
+
+        return result;
+    }
+    /// <summary>
+    /// 从数组中获取指定索引开始的中间一段长度的子数组
+    /// </summary>
+    /// <typeparam name="T">数组元素类型</typeparam>
+    /// <param name="value">输入数组</param>
+    /// <param name="index">起始索引</param>
+    /// <param name="length">选择的元素个数</param>
+    /// <returns>中间指定长度的子数组</returns>
+    public static ByteBlock SelectMiddle(this ByteBlock value, int index, int length)
+    {
+        // 如果输入数组为空，则返回空数组
+        if (value == null || value.Length == 0)
+        {
+            return new ByteBlock(0);
+        }
+
+        // 计算实际需要复制的元素个数，取输入数组剩余元素和指定长度的较小值
+        int count = Math.Min(value.Len - index, length);
+
+        ByteBlock result = new ByteBlock(count);
+
+        result.Write(value.Buffer, index, count);
 
         return result;
     }

@@ -21,33 +21,29 @@ namespace ThingsGateway.Foundation.Modbus;
 /// </summary>
 internal class ModbusUdpServerDataHandleAdapter : ReadWriteDevicesUdpDataHandleAdapter<ModbusTcpServerMessage>
 {
+    public override bool IsSendPackCommand { get; set; } = false;
     /// <inheritdoc/>
-    public override byte[] PackCommand(byte[] command, ModbusTcpServerMessage item)
+    public override void PackCommand(ISendMessage item)
     {
-        return command;
     }
 
     /// <inheritdoc/>
-    protected override ModbusTcpServerMessage GetInstance()
+    protected override ByteBlock UnpackResponse(ModbusTcpServerMessage request)
     {
-        return new ModbusTcpServerMessage();
-    }
-
-    /// <inheritdoc/>
-    protected override IOperResult<byte[]> UnpackResponse(ModbusTcpServerMessage request, byte[]? send, byte[] response)
-    {
-        var result = ModbusHelper.GetModbusWriteData(response.RemoveBegin(6));
+        var send = request.SendByteBlock;
+        using var response = request.ReceivedByteBlock.RemoveBegin(6);
+        var result = ModbusHelper.GetModbusWriteData(response);
         request.OperCode = result.OperCode;
         request.ErrorMessage = result.ErrorMessage;
         if (result.IsSuccess)
         {
-            int offset = 6;
-            ModbusHelper.ModbusServerAnalysisAddressValue(request, response, result, offset);
-            return request;
+            int offset = 0;
+            var bytes = ModbusHelper.ModbusServerAnalysisAddressValue(request, response, result.Content.ByteBlock, offset);
+            return bytes;
         }
         else
         {
-            return request;
+            return result.Content.ByteBlock;
         }
     }
 }

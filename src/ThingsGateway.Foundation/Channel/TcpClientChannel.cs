@@ -17,7 +17,7 @@ namespace ThingsGateway.Foundation
     /// <summary>
     /// 简单Tcp客户端
     /// </summary>
-    public class TcpClientChannel : TcpClient, IClientChannel,IDefaultSender
+    public class TcpClientChannel : TcpClient, IClientChannel
     {
         private readonly EasyLock m_semaphoreForConnect = new EasyLock();
 
@@ -48,10 +48,6 @@ namespace ThingsGateway.Foundation
         public override string ToString()
         {
             return $"{IP}:{Port}";
-        }
-        public void DefaultSend(byte[] buffer, int offset, int length)
-        {
-            this.ProtectedDefaultSend(buffer, offset, length);
         }
 
         public void SetDataHandlingAdapter(DataHandlingAdapter adapter)
@@ -109,10 +105,10 @@ namespace ThingsGateway.Foundation
                     return;
                 }
             }
-             await base.OnTcpReceived(e);
+            await base.OnTcpReceived(e);
         }
 
- 
+
 
         /// <inheritdoc/>
         protected override Task OnTcpConnecting(ConnectingEventArgs e)
@@ -130,6 +126,6 @@ namespace ThingsGateway.Foundation
             return base.OnTcpClosing(e);
         }
 
- 
+
     }
 }

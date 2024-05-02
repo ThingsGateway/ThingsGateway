@@ -12,6 +12,7 @@
 
 
 
+
 namespace ThingsGateway.Foundation.Modbus;
 
 /// <summary>
@@ -23,10 +24,9 @@ internal class ModbusRtuMessage : MessageBase, IResultMessage
     public override int HeadBytesLength => 3;
 
     /// <inheritdoc/>
-    public override bool CheckHeadBytes(byte[] heads)
+    public override bool CheckHeadBytes(ByteBlock? headByteBlock)
     {
-        if (heads == null || heads.Length <= 0) return false;
-        HeadBytes = heads;
+        if (headByteBlock == null || headByteBlock.Length <= 0) return false;
         //01 03 02 00 01 xx xx
         //01 04 02 00 01 xx xx
         //01 01 02 00 01 xx xx
@@ -37,15 +37,15 @@ internal class ModbusRtuMessage : MessageBase, IResultMessage
         //01 10 00 00 00 01 xx xx
 
         //modbusRtu 读取
-        if (heads[1] <= 0x04)
+        if (headByteBlock[1] <= 0x04)
         {
-            int num = (heads[2]);
+            int num = (headByteBlock[2]);
             if (num > 0xff - 4) return false;
             BodyLength = num + 2; //数据区+crc
         }
         else
         {
-            if (heads[1] <= 0x10)
+            if (headByteBlock[1] <= 0x10)
             {
                 //modbusRtu 写入
                 BodyLength = 3 + 2; //数据区+crc
@@ -56,7 +56,7 @@ internal class ModbusRtuMessage : MessageBase, IResultMessage
             }
         }
 
-        if (SendBytes?.Length > 0)
+        if (SendByteBlock?.Length > 0)
         {
             return true;
         }

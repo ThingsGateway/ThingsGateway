@@ -17,7 +17,7 @@ namespace ThingsGateway.Foundation;
 /// <summary>
 /// 通道管理，对于TgTcpService，是SocketClientChannel类继承此接口
 /// </summary>
-public interface IClientChannel : IChannel, ISender, IClient, IClientSender, IOnlineClient, IAdapterObject,IDefaultSender
+public interface IClientChannel : IChannel, ISender, IClient, IClientSender, IOnlineClient, IAdapterObject
 {
     #region 属性
 

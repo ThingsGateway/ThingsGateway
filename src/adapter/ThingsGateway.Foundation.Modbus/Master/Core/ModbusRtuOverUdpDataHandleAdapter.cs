@@ -12,6 +12,7 @@
 
 
 
+
 namespace ThingsGateway.Foundation.Modbus;
 
 /// <summary>
@@ -25,21 +26,23 @@ internal class ModbusRtuOverUdpDataHandleAdapter : ReadWriteDevicesUdpDataHandle
     public bool IsCheckCrc16 { get; set; } = true;
 
     /// <inheritdoc/>
-    public override byte[] PackCommand(byte[] command, ModbusRtuMessage item)
+    public override void PackCommand(ISendMessage item)
     {
-        return ModbusHelper.AddCrc(command);
+        var crc = CRC16Utils.CRC16Only(item.SendByteBlock.Buffer, 0, item.SendByteBlock.Len);
+        item.SendByteBlock.SeekToEnd();
+        item.SendByteBlock.Write(crc);
     }
 
-    /// <inheritdoc/>
-    protected override ModbusRtuMessage GetInstance()
-    {
-        return new ModbusRtuMessage();
-    }
+
 
     /// <inheritdoc/>
-    protected override IOperResult<byte[]> UnpackResponse(ModbusRtuMessage request, byte[]? send, byte[] response)
+    protected override ByteBlock UnpackResponse(ModbusRtuMessage request)
     {
-        var result = ModbusHelper.GetModbusRtuData(send!, response, IsCheckCrc16);
-        return result;
+        var send = request.SendByteBlock;
+        var response = request.ReceivedByteBlock;
+        var result = ModbusHelper.GetModbusRtuData(send, response, IsCheckCrc16);
+        request.OperCode = result.OperCode;
+        request.ErrorMessage = result.ErrorMessage;
+        return result.Content.ByteBlock;
     }
 }

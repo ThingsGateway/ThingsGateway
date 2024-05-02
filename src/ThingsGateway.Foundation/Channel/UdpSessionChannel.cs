@@ -89,7 +89,7 @@ namespace ThingsGateway.Foundation
         }
 
         /// <inheritdoc/>
-        public async Task ConnectAsync(int timeout=3000, CancellationToken token=default)
+        public async Task ConnectAsync(int timeout = 3000, CancellationToken token = default)
         {
             if (token.IsCancellationRequested)
                 return;
@@ -113,10 +113,6 @@ namespace ThingsGateway.Foundation
                 this.SetAdapter(udpDataHandlingAdapter);
         }
 
-        public void DefaultSend(byte[] buffer, int offset, int length)
-        {
-            this.ProtectedDefaultSend(buffer, offset, length);
-        }
 
         public void Close(string msg)
         {

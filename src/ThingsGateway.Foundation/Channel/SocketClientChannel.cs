@@ -20,7 +20,7 @@ namespace ThingsGateway.Foundation
     /// SocketClientChannel
     /// </summary>
     [DebuggerDisplay("Id={Id},IPAdress={IP}:{Port}")]
-    public class SocketClientChannel : TcpSessionClient, IClientChannel, IDefaultSender
+    public class SocketClientChannel : TcpSessionClient, IClientChannel
     {
         ///// <summary>
         ///// SocketClientChannel
@@ -68,10 +68,6 @@ namespace ThingsGateway.Foundation
             return EasyTask.CompletedTask;
         }
 
-        public void DefaultSend(byte[] buffer, int offset, int length)
-        {
-            this.ProtectedDefaultSend(buffer, offset, length);
-        }
 
         public void SetDataHandlingAdapter(DataHandlingAdapter adapter)
         {
@@ -136,6 +132,6 @@ namespace ThingsGateway.Foundation
             return base.OnTcpClosed(e);
         }
 
-         
+
     }
 }

@@ -22,7 +22,7 @@
                          itemMessage.Level>=(byte)Microsoft.Extensions.Logging.LogLevel.Warning? " red--text ":"green--text ")
                          style="white-space: nowrap !important;overflow: hidden !important; text-overflow: ellipsis !important;">
 
-                        @itemMessage.Message.Substring(0, Math.Min(itemMessage.Message.Length, 100))
+                        @itemMessage.Message.Substring(0, Math.Min(itemMessage.Message.Length, 150))
 
                     </div>
                 </ItemContent>
