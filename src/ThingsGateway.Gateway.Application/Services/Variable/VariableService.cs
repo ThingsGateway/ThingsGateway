@@ -63,8 +63,6 @@ public class VariableService : BaseService<Variable>, IVariableService
         List<Channel> newChannels = new();
         List<Device> newDevices = new();
         List<Variable> newVariables = new();
-        //最大1百万个变量
-        if (count > 1000000) count = 1000000;
         var addressNum = 1;
         var variableCount = 1000;
         var channelCount = Math.Max(count / variableCount, 1);
