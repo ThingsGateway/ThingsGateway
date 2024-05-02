@@ -11,11 +11,11 @@
     <GarbageCollectionAdaptationMode>true</GarbageCollectionAdaptationMode>
     <!--使用自托管线程池-->
     <!--<UseWindowsThreadPool>false</UseWindowsThreadPool> -->
-    
+
+    <!--使用工作站GC-->
     <ServerGarbageCollection>false</ServerGarbageCollection>
+
     <!--<PlatformTarget>x86</PlatformTarget>-->
-
-
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(SolutionName)'=='ThingsGateway - Admin'">

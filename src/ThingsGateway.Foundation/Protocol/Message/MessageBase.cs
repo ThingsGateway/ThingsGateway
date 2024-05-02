@@ -139,6 +139,18 @@ public abstract class MessageBase : DisposableObject, IOperResult<byte[]>, IResu
         SendByteBlock?.SafeDispose();
         base.Dispose(disposing);
     }
+
+    /// <summary>
+    /// 返回错误信息与异常堆栈等信息
+    /// </summary>
+    /// <returns></returns>
+    public override string ToString()
+    {
+        string messageString = ErrorMessage == null ? string.Empty : $"{DefaultResource.Localizer["ErrorMessage"]}:{ErrorMessage}";
+        string exceptionString = Exception == null ? string.Empty : ErrorMessage == null ? $"{DefaultResource.Localizer["Exception"]}:{Exception}" : $"{Environment.NewLine}{DefaultResource.Localizer["Exception"]}:{Exception}";
+
+        return $"{messageString}{exceptionString}";
+    }
 }
 
 /// <inheritdoc/>

@@ -275,6 +275,7 @@ internal class ModbusHelper
         var lenByte = TouchSocketBitConverter.BigEndian.GetBytes((ushort)item.SendByteBlock.Len);
         bytes.Write(lenByte);
         bytes.Write(item.SendByteBlock.Buffer, 0, item.SendByteBlock.Len);
+        item.SendByteBlock.Dispose();
         item.SendByteBlock = bytes;
     }
 

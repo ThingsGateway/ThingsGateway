@@ -12,10 +12,12 @@
 
 
 
-using NewLife.Extension;
 
 using ThingsGateway.Foundation.Extension.Generic;
 using ThingsGateway.Foundation.Extension.String;
+
+using TouchSocket.Core;
+
 
 namespace ThingsGateway.Foundation.Dlt645;
 
@@ -30,26 +32,27 @@ internal class Dlt645_2007UdpDataHandleAdapter : ReadWriteDevicesUdpDataHandleAd
     public string FEHead { get; set; }
 
     /// <inheritdoc/>
-    public override byte[] PackCommand(byte[] command, Dlt645_2007Message item)
+    public override void PackCommand(ISendMessage item)
     {
-        //打包时加上4个FE字节
         if (!FEHead.IsNullOrWhiteSpace())
         {
-            return DataTransUtil.SpliceArray(FEHead.HexStringToBytes(), command);
+            var head = FEHead.HexStringToBytes();
+            ByteBlock bytes = new ByteBlock(item.SendByteBlock.Len + head.Length);
+            bytes.Write(head);
+            bytes.Write(item.SendByteBlock.Buffer, 0, item.SendByteBlock.Len);
+            item.SendByteBlock.Dispose();
+            item.SendByteBlock = bytes;
         }
-        return command;
     }
 
-    /// <inheritdoc/>
-    protected override Dlt645_2007Message GetInstance()
-    {
-        return new Dlt645_2007Message();
-    }
 
-    protected override IOperResult<byte[]> UnpackResponse(Dlt645_2007Message request, byte[]? send, byte[] response)
+
+    protected override ByteBlock UnpackResponse(Dlt645_2007Message request)
     {
+        var send = request.SendByteBlock;
+        var response = request.ReceivedByteBlock;
         //因为设备可能带有FE前导符开头，这里找到0x68的位置
-        int headCodeIndex = -1;
+        int headCodeIndex = 0;
         if (response != null)
         {
             for (int index = 0; index < response.Length; index++)
@@ -76,13 +79,19 @@ internal class Dlt645_2007UdpDataHandleAdapter : ReadWriteDevicesUdpDataHandleAd
 
         //帧起始符 地址域  帧起始符 控制码 数据域长度共10个字节
         if (headCodeIndex < 0 || headCodeIndex + 10 > response.Length)
-            return request;
+        {
+            request.OperCode = 999;
+            request.ErrorMessage = "Length error";
+            return null;
+        }
 
         var len = 10 + response[headCodeIndex + 9] + 2;
 
         if (response.Length - headCodeIndex < len)
         {
-            return request;
+            request.OperCode = 999;
+            request.ErrorMessage = "Length error";
+            return null;
         }
         if (response.Length - headCodeIndex >= len && response[len + headCodeIndex - 1] == 0x16)
         {
@@ -95,7 +104,7 @@ internal class Dlt645_2007UdpDataHandleAdapter : ReadWriteDevicesUdpDataHandleAd
                 //校验错误
                 request.ErrorMessage = DltResource.Localizer["SumError"];
                 request.OperCode = 999;
-                return request;
+                return null;
             }
 
             if (
@@ -121,7 +130,7 @@ internal class Dlt645_2007UdpDataHandleAdapter : ReadWriteDevicesUdpDataHandleAd
                 {
                     request.ErrorMessage = DltResource.Localizer["StationNotSame"];
                     request.OperCode = 999;
-                    return request;
+                    return null;
                 }
             }
 
@@ -130,7 +139,7 @@ internal class Dlt645_2007UdpDataHandleAdapter : ReadWriteDevicesUdpDataHandleAd
                 request.ErrorMessage =
                      DltResource.Localizer["FunctionNotSame", $"0x{response[headCodeIndex + 8]:X2}", $"0x{send[sendHeadCodeIndex + 8]:X2}"];
                 request.OperCode = 999;
-                return request;
+                return null;
             }
 
             if ((response[headCodeIndex + 8] & 0x40) == 0x40)//控制码bit6为1时，返回错误
@@ -139,7 +148,7 @@ internal class Dlt645_2007UdpDataHandleAdapter : ReadWriteDevicesUdpDataHandleAd
                 var error = Dlt645Helper.Get2007ErrorMessage(byte1);
                 request.ErrorMessage = DltResource.Localizer["FunctionError", $"0x{response[headCodeIndex + 8]:X2}", error];
                 request.OperCode = 999;
-                return request;
+                return null;
             }
 
             if (send[sendHeadCodeIndex + 8] == (byte)ControlCode.Read ||
@@ -159,18 +168,17 @@ internal class Dlt645_2007UdpDataHandleAdapter : ReadWriteDevicesUdpDataHandleAd
                 {
                     request.ErrorMessage = DltResource.Localizer["DataIdNotSame"];
                     request.OperCode = 999;
-                    return request;
+                    return null;
                 }
             }
 
-            request.Content = response.RemoveBegin(headCodeIndex + 10).RemoveLast(response.Length + 2 - len - headCodeIndex);
             request.OperCode = 0;
-            return request;
+            return response.RemoveBegin(headCodeIndex + 10).RemoveLast(response.Len + 2 - len - headCodeIndex);
         }
         else
         {
             request.OperCode = 999;
-            return request;
+            return null;
         }
     }
 }

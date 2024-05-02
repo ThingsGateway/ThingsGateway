@@ -104,9 +104,9 @@ namespace ThingsGateway.Foundation
         /// <inheritdoc/>
         protected override Task OnSerialReceived(ReceivedDataEventArgs e)
         {
-            if (this.Received != null)
+            if (this.ChannelReceived != null)
             {
-                return this.Received.Invoke(this, e);
+                return this.ChannelReceived.Invoke(this, e);
             }
             return base.OnSerialReceived(e);
         }

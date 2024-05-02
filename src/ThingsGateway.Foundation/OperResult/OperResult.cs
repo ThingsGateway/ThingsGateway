@@ -109,6 +109,17 @@ public struct OperResult<T> : IOperResult<T>
 
     /// <inheritdoc/>
     public T Content { get; set; }
+    /// <summary>
+    /// 返回错误信息与异常堆栈等信息
+    /// </summary>
+    /// <returns></returns>
+    public override string ToString()
+    {
+        string messageString = ErrorMessage == null ? string.Empty : $"{DefaultResource.Localizer["ErrorMessage"]}:{ErrorMessage}";
+        string exceptionString = Exception == null ? string.Empty : ErrorMessage == null ? $"{DefaultResource.Localizer["Exception"]}:{Exception}" : $"{Environment.NewLine}{DefaultResource.Localizer["Exception"]}:{Exception}";
+
+        return $"{messageString}{exceptionString}";
+    }
 }
 
 /// <inheritdoc/>
@@ -205,10 +216,22 @@ public struct OperResult<T, T2> : IOperResult<T, T2>
 
     /// <inheritdoc/>
     public T Content { get; set; }
+
+    /// <summary>
+    /// 返回错误信息与异常堆栈等信息
+    /// </summary>
+    /// <returns></returns>
+    public override string ToString()
+    {
+        string messageString = ErrorMessage == null ? string.Empty : $"{DefaultResource.Localizer["ErrorMessage"]}:{ErrorMessage}";
+        string exceptionString = Exception == null ? string.Empty : ErrorMessage == null ? $"{DefaultResource.Localizer["Exception"]}:{Exception}" : $"{Environment.NewLine}{DefaultResource.Localizer["Exception"]}:{Exception}";
+
+        return $"{messageString}{exceptionString}";
+    }
 }
 
 /// <inheritdoc/>
-public class OperResult<T, T2, T3> : IOperResult<T, T2, T3>
+public struct OperResult<T, T2, T3> : IOperResult<T, T2, T3>
 {
     /// <summary>
     /// 异常堆栈
@@ -301,6 +324,18 @@ public class OperResult<T, T2, T3> : IOperResult<T, T2, T3>
     public T2 Content2 { get; set; }
     /// <inheritdoc/>
     public T3 Content3 { get; set; }
+
+    /// <summary>
+    /// 返回错误信息与异常堆栈等信息
+    /// </summary>
+    /// <returns></returns>
+    public override string ToString()
+    {
+        string messageString = ErrorMessage == null ? string.Empty : $"{DefaultResource.Localizer["ErrorMessage"]}:{ErrorMessage}";
+        string exceptionString = Exception == null ? string.Empty : ErrorMessage == null ? $"{DefaultResource.Localizer["Exception"]}:{Exception}" : $"{Environment.NewLine}{DefaultResource.Localizer["Exception"]}:{Exception}";
+
+        return $"{messageString}{exceptionString}";
+    }
 }
 
 /// <inheritdoc cref="IOperResult"/>

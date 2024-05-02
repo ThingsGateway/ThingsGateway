@@ -1173,7 +1173,7 @@ internal static class Dlt645Helper
     /// <summary>
     /// 获取Dlt645报文
     /// </summary>
-    internal static byte[] GetDlt645_2007Command(
+    internal static ByteBlock GetDlt645_2007Command(
       Dlt645_2007Address address,
       byte control,
       string defaultStation,
@@ -1184,6 +1184,10 @@ internal static class Dlt645Helper
         codes ??= Array.Empty<byte>();
         datas ??= Array.Empty<string>();
         var buffer = address.DataId;
+        if (buffer.Length < 4)
+        {
+            throw new(DltResource.Localizer["DataIdError"]);
+        }
         if (buffer.Length > 0)
         {
             var dataInfos = GetDataInfos(buffer);
@@ -1255,27 +1259,27 @@ internal static class Dlt645Helper
         return GetDlt645_2007Command(control, buffer, stationBytes);
     }
 
-    internal static byte[] GetDlt645_2007Command(byte control, byte[] buffer, byte[] stationBytes)
+    internal static ByteBlock GetDlt645_2007Command(byte control, byte[] buffer, byte[] stationBytes)
     {
         buffer ??= Array.Empty<byte>();
-        byte[] array = new byte[12 + buffer.Length];
-        array[0] = 0x68;//帧起始符
-        stationBytes.CopyTo(array, 1);//6个字节地址域
-        array[7] = 0x68;//帧起始符
-        array[8] = control;//控制码
-        array[9] = (byte)buffer.Length;//数据域长度
+        ByteBlock array = new ByteBlock(12 + buffer.Length);
+        array.Write((byte)0x68);//帧起始符
+        array.Write(stationBytes);//6个字节地址域
+        array.Write((byte)0x68);//帧起始符
+        array.Write((byte)control);//控制码
+        array.Write((byte)buffer.Length);//数据域长度
         if (buffer.Length != 0)//数据域标识DI3、DI2、DI1、DI0
         {
-            buffer.CopyTo(array, 10);
+            array.Write(buffer);//6个字节地址域
             for (int index = 0; index < buffer.Length; ++index)
                 array[index + 10] += 0x33;
             //传输时发送方按字节进行加33H处理，接收方按字节进行减33H处理
         }
         int num = 0;
-        for (int index = 0; index < array.Length - 2; ++index)
+        for (int index = 0; index < array.Length; ++index)
             num += array[index];
-        array[array.Length - 2] = (byte)num;//校验码,总加和
-        array[array.Length - 1] = 0x16;//	结束符
+        array.Write((byte)num);//校验码,总加和
+        array.Write((byte)0x16);//	结束符
         return array;
     }
 }

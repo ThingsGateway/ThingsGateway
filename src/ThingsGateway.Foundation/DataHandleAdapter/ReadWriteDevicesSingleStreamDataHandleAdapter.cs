@@ -119,7 +119,6 @@ public abstract class ReadWriteDevicesSingleStreamDataHandleAdapter<TRequest> : 
                     request.BodyLength = byteBlock.Len;
                 }
 
-                //传入新的ByteBlock对象，避免影响原有的游标
                 request.ReceivedByteBlock = byteBlock;
 
                 using var result = UnpackResponse(request);
@@ -181,9 +180,6 @@ public abstract class ReadWriteDevicesSingleStreamDataHandleAdapter<TRequest> : 
         if (Logger.LogLevel <= LogLevel.Trace)
             Logger?.Trace($"{ToString()}- Send:{(IsHexData ? message.SendByteBlock.Buffer.ToHexString(0, message.SendByteBlock.Len, ' ') : message.SendByteBlock.ToString())}");
 
-        //发送
-        this.GoSend(message.SendByteBlock.Buffer, 0, message.SendByteBlock.Len);
-
         //非并发主从协议
         if (IsSingleThread)
         {
@@ -192,7 +188,10 @@ public abstract class ReadWriteDevicesSingleStreamDataHandleAdapter<TRequest> : 
             request.SendByteBlock = message.SendByteBlock;
             Request = request;
         }
-        else
+        //发送
+        this.GoSend(message.SendByteBlock.Buffer, 0, message.SendByteBlock.Len);
+
+        if (!IsSingleThread)
         {
             //并发协议，直接释放内存池
             message.SendByteBlock.SafeDispose();
@@ -230,9 +229,6 @@ public abstract class ReadWriteDevicesSingleStreamDataHandleAdapter<TRequest> : 
         if (Logger.LogLevel <= LogLevel.Trace)
             Logger?.Trace($"{ToString()}- Send:{(IsHexData ? message.SendByteBlock.Buffer.ToHexString(0, message.SendByteBlock.Len, ' ') : message.SendByteBlock.ToString())}");
 
-        //发送
-        await this.GoSendAsync(message.SendByteBlock.Buffer, 0, message.SendByteBlock.Len).ConfigureAwait(false);
-
         //非并发主从协议
         if (IsSingleThread)
         {
@@ -241,7 +237,10 @@ public abstract class ReadWriteDevicesSingleStreamDataHandleAdapter<TRequest> : 
             request.SendByteBlock = message.SendByteBlock;
             Request = request;
         }
-        else
+        //发送
+        await this.GoSendAsync(message.SendByteBlock.Buffer, 0, message.SendByteBlock.Len).ConfigureAwait(false);
+
+        if (!IsSingleThread)
         {
             //并发协议，直接释放内存池
             message.SendByteBlock.SafeDispose();

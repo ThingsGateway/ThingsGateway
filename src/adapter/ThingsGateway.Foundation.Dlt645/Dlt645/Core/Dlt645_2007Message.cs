@@ -12,6 +12,8 @@
 
 
 
+using TouchSocket.Core;
+
 namespace ThingsGateway.Foundation.Dlt645;
 
 /// <summary>
@@ -20,14 +22,14 @@ namespace ThingsGateway.Foundation.Dlt645;
 internal class Dlt645_2007Message : MessageBase, IResultMessage
 {
     /// <inheritdoc/>
-    public override int HeadBytesLength => -1;
+    public override int HeadBytesLength => 0;
 
     /// <inheritdoc/>
-    public override bool CheckHeadBytes(byte[] heads)
+    public override bool CheckHeadBytes(ByteBlock? headByteBlock)
     {
-        if (SendBytes?.Length > 0)
+        if (SendByteBlock?.Length > 0)
         {
-            BodyLength = -1;
+            BodyLength = 0;
             return true;
         }
         else

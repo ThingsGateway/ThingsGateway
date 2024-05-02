@@ -12,8 +12,8 @@
 
 
 
-using Newtonsoft.Json.Converters;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 using System.Text;
 
@@ -145,6 +145,18 @@ namespace ThingsGateway.Foundation
         /// 流位置
         /// </summary>
         public long Position { set; get; }
+
+        /// <summary>
+        /// 返回错误信息与异常堆栈等信息
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            string messageString = ErrorMessage == null ? string.Empty : $"{DefaultResource.Localizer["ErrorMessage"]}:{ErrorMessage}";
+            string exceptionString = Exception == null ? string.Empty : ErrorMessage == null ? $"{DefaultResource.Localizer["Exception"]}:{Exception}" : $"{Environment.NewLine}{DefaultResource.Localizer["Exception"]}:{Exception}";
+
+            return $"{messageString}{exceptionString}";
+        }
     }
 
     /// <summary>
@@ -161,7 +173,7 @@ namespace ThingsGateway.Foundation
 #endif
 
         [JsonIgnore]
-        public Exception? Exception {  get; set; }
+        public Exception? Exception { get; set; }
 
         /// <summary>
         /// 默认构造，操作结果会是成功
@@ -238,7 +250,7 @@ namespace ThingsGateway.Foundation
 
         [JsonConverter(typeof(StringEnumConverter))]
         public ErrorCodeEnum? ErrorCode { get; private set; } = ErrorCodeEnum.RetuenError;
- 
+
 
         #endregion
 
@@ -251,6 +263,18 @@ namespace ThingsGateway.Foundation
         /// 全名称
         /// </summary>
         public string FullName { set; get; }
+
+        /// <summary>
+        /// 返回错误信息与异常堆栈等信息
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            string messageString = ErrorMessage == null ? string.Empty : $"{DefaultResource.Localizer["ErrorMessage"]}:{ErrorMessage}";
+            string exceptionString = Exception == null ? string.Empty : ErrorMessage == null ? $"{DefaultResource.Localizer["Exception"]}:{Exception}" : $"{Environment.NewLine}{DefaultResource.Localizer["Exception"]}:{Exception}";
+
+            return $"{messageString}{exceptionString}";
+        }
     }
 
     /// <summary>日志文本文件倒序读取</summary>

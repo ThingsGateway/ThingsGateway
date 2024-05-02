@@ -12,8 +12,6 @@
 
 
 
-using System.Text;
-
 using ThingsGateway.Foundation.Extension.Generic;
 using ThingsGateway.Foundation.Extension.String;
 
@@ -23,7 +21,7 @@ using TouchSocket.Sockets;
 namespace ThingsGateway.Foundation.Dlt645;
 
 /// <inheritdoc/>
-public class Dlt645_2007Master : ProtocolBase,IDtu
+public class Dlt645_2007Master : ProtocolBase, IDtu
 {
     /// <inheritdoc/>
     public Dlt645_2007Master(IChannel channel) : base(channel)
@@ -81,7 +79,7 @@ public class Dlt645_2007Master : ProtocolBase,IDtu
 
                 action += a =>
                 {
-                    a.Add (new DtuPlugin(this));
+                    a.Add(new DtuPlugin(this));
                 };
                 return action;
         }
@@ -137,7 +135,7 @@ public class Dlt645_2007Master : ProtocolBase,IDtu
         }
     }
 
-     
+
 
     /// <inheritdoc/>
     public override IOperResult<string[]> ReadString(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
@@ -170,7 +168,7 @@ public class Dlt645_2007Master : ProtocolBase,IDtu
         }
     }
 
- 
+
     /// <inheritdoc/>
     public override IOperResult Write(string address, string value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
     {
@@ -273,7 +271,7 @@ public class Dlt645_2007Master : ProtocolBase,IDtu
         {
             string str = $"{dateTime.Second:D2}{dateTime.Minute:D2}{dateTime.Hour:D2}{dateTime.Day:D2}{dateTime.Month:D2}{dateTime.Year % 100:D2}";
             var commandResult = Dlt645Helper.GetDlt645_2007Command((byte)ControlCode.BroadcastTime, str.ByHexStringToBytes().ToArray(), "999999999999".ByHexStringToBytes());
-            Send(string.Empty, commandResult, cancellationToken);
+            Send(string.Empty, commandResult, 0, commandResult.Len, cancellationToken);
             return OperResult.Success;
         }
         catch (Exception ex)
@@ -289,7 +287,7 @@ public class Dlt645_2007Master : ProtocolBase,IDtu
     /// <param name="dateTime">时间</param>
     /// <param name="cancellationToken">取消令箭</param>
     /// <returns></returns>
-    public async ValueTask<IOperResult> FreezeAsync(string socketId,DateTime dateTime, CancellationToken cancellationToken = default)
+    public async ValueTask<IOperResult> FreezeAsync(string socketId, DateTime dateTime, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -324,12 +322,12 @@ public class Dlt645_2007Master : ProtocolBase,IDtu
             }
             else
             {
-                return new  OperResult<string>(result);
+                return new OperResult<string>(result);
             }
         }
         catch (Exception ex)
         {
-            return new  OperResult<string>(ex);
+            return new OperResult<string>(ex);
         }
     }
 
@@ -340,7 +338,7 @@ public class Dlt645_2007Master : ProtocolBase,IDtu
     /// <param name="baudRate">波特率</param>
     /// <param name="cancellationToken">取消令箭</param>
     /// <returns></returns>
-    public async ValueTask<IOperResult> WriteBaudRateAsync(string socketId,int baudRate, CancellationToken cancellationToken = default)
+    public async ValueTask<IOperResult> WriteBaudRateAsync(string socketId, int baudRate, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -373,7 +371,7 @@ public class Dlt645_2007Master : ProtocolBase,IDtu
     /// <param name="station">站号</param>
     /// <param name="cancellationToken">取消令箭</param>
     /// <returns></returns>
-    public async ValueTask<IOperResult> WriteDeviceStationAsync(string socketId,string station, CancellationToken cancellationToken = default)
+    public async ValueTask<IOperResult> WriteDeviceStationAsync(string socketId, string station, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -395,7 +393,7 @@ public class Dlt645_2007Master : ProtocolBase,IDtu
     /// <param name="newPassword">新密码</param>
     /// <param name="cancellationToken">取消令箭</param>
     /// <returns></returns>
-    public async ValueTask<IOperResult> WritePasswordAsync(string socketId,byte level, string oldPassword, string newPassword, CancellationToken cancellationToken = default)
+    public async ValueTask<IOperResult> WritePasswordAsync(string socketId, byte level, string oldPassword, string newPassword, CancellationToken cancellationToken = default)
     {
         try
         {
