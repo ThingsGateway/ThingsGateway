@@ -248,7 +248,8 @@ internal class ModbusHelper
 
         //crc校验
         using var data = response.SelectMiddle(0, response[1] <= 0x04 ? response[2] != 0 ? response[2] + 5 : 8 : 8);
-        if (crcCheck && !CRC16Utils.CheckCRC16(data))
+        var crc = CRC16Utils.CRC16Only(data.Buffer, 0, data.Len - 2);
+        if (crcCheck && (data[data.Len - 2] != crc[0] || data[data.Len - 1] != crc[1]))
             return new OperResult<AdapterResult>($"{ModbusResource.Localizer["CrcError"]} {DataTransUtil.ByteToHexString(data, ' ')}")
             {
                 Content = new() { FilterResult = FilterResult.Success }

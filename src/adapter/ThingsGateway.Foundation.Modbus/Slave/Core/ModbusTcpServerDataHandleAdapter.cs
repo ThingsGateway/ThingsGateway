@@ -36,7 +36,7 @@ internal class ModbusTcpServerDataHandleAdapter : ReadWriteDevicesSingleStreamDa
         request.ErrorMessage = result.ErrorMessage;
         if (result.IsSuccess)
         {
-            int offset = 6;
+            int offset = 0;
             var bytes = ModbusHelper.ModbusServerAnalysisAddressValue(request, response, result.Content.ByteBlock, offset);
             return new AdapterResult() { FilterResult = FilterResult.Success, ByteBlock = bytes };
         }

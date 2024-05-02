@@ -107,7 +107,7 @@ public abstract class ReadWriteDevicesSingleStreamDataHandleAdapter<TRequest> : 
                     return FilterResult.GoOn;
                 }
 
-                if (request.BodyLength > byteBlock.CanReadLen)
+                if (request.BodyLength + request.HeadBytesLength > byteBlock.CanReadLen)
                 {
                     //body不满足解析，开始缓存，然后保存对象
                     tempCapacity = request.BodyLength + request.HeadBytesLength;
@@ -138,7 +138,8 @@ public abstract class ReadWriteDevicesSingleStreamDataHandleAdapter<TRequest> : 
                 else if (result.FilterResult == FilterResult.Success)
                 {
                     byteBlock.Pos += request.BodyLength;
-                    request.Content = result.ByteBlock;
+                    if (request.IsSuccess)
+                        request.Content = result.ByteBlock;
                 }
                 return result.FilterResult;
             }
@@ -202,10 +203,17 @@ public abstract class ReadWriteDevicesSingleStreamDataHandleAdapter<TRequest> : 
     /// <inheritdoc/>
     protected override void PreviewSend(byte[] buffer, int offset, int length)
     {
+        using var byteBlock = new ByteBlock(length);
+        byteBlock.Write(buffer, offset, length);
+        var send = new SendMessage(byteBlock);
+        //发送前打包
+        if (IsSendPackCommand)
+            PackCommand(send);
+
         if (Logger.LogLevel <= LogLevel.Trace)
             Logger?.Trace($"{ToString()}- Send:{(IsHexData ? buffer.ToHexString(0, length, ' ') : Encoding.UTF8.GetString(buffer, offset, length))}");
         //发送
-        this.GoSend(buffer, offset, length);
+        this.GoSend(send.SendByteBlock.Buffer, 0, send.SendByteBlock.Len);
     }
 
     /// <inheritdoc/>
@@ -241,12 +249,18 @@ public abstract class ReadWriteDevicesSingleStreamDataHandleAdapter<TRequest> : 
 
     }
     /// <inheritdoc/>
-    protected override Task PreviewSendAsync(byte[] buffer, int offset, int length)
+    protected override async Task PreviewSendAsync(byte[] buffer, int offset, int length)
     {
+        using var byteBlock = new ByteBlock(length);
+        byteBlock.Write(buffer, offset, length);
+        var send = new SendMessage(byteBlock);
+        //发送前打包
+        if (IsSendPackCommand)
+            PackCommand(send);
         if (Logger.LogLevel <= LogLevel.Trace)
             Logger?.Trace($"{ToString()}- Send:{(IsHexData ? buffer.ToHexString(0, length, ' ') : Encoding.UTF8.GetString(buffer, offset, length))}");
         //发送
-        return this.GoSendAsync(buffer, offset, length);
+        await this.GoSendAsync(send.SendByteBlock.Buffer, 0, send.SendByteBlock.Len).ConfigureAwait(false);
 
     }
 

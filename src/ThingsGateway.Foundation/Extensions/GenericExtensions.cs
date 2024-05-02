@@ -285,7 +285,7 @@ public static class GenericExtensions
 
         ByteBlock result = new ByteBlock(count);
 
-        result.Write(value.Buffer, index, count);
+        result.Write(value.Buffer, 0, count);
 
         return result;
     }

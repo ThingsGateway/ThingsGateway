@@ -38,7 +38,7 @@ internal class ModbusUdpDataHandleAdapter : ReadWriteDevicesUdpDataHandleAdapter
         var result = ModbusHelper.GetModbusData(send, response);
         request.OperCode = result.OperCode;
         request.ErrorMessage = result.ErrorMessage;
-        request.Sign = TouchSocketBitConverter.BigEndian.ToUInt16(response.Buffer, 0);
+        request.Sign = TouchSocketBitConverter.BigEndian.ToUInt16(request.ReceivedByteBlock.Buffer, 0);
         return result.Content.ByteBlock;
     }
 }

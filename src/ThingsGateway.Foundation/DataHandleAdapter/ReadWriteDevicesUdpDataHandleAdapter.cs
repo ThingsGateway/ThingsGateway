@@ -108,7 +108,7 @@ public abstract class ReadWriteDevicesUdpDataHandleAdapter<TRequest> : UdpDataHa
                     return;
                 }
 
-                if (request.BodyLength > byteBlock.CanReadLen)
+                if (request.BodyLength + request.HeadBytesLength > byteBlock.CanReadLen)
                 {
                     return;
                 }
@@ -123,7 +123,8 @@ public abstract class ReadWriteDevicesUdpDataHandleAdapter<TRequest> : UdpDataHa
                 var result = UnpackResponse(request);
 
                 byteBlock.Pos += request.BodyLength;
-                request.Content = result;
+                if (request.IsSuccess)
+                    request.Content = result;
                 return;
             }
             else
@@ -139,10 +140,16 @@ public abstract class ReadWriteDevicesUdpDataHandleAdapter<TRequest> : UdpDataHa
     /// <inheritdoc/>
     protected override void PreviewSend(EndPoint endPoint, byte[] buffer, int offset, int length)
     {
+        using var byteBlock = new ByteBlock(length);
+        byteBlock.Write(buffer, offset, length);
+        var send = new SendMessage(byteBlock);
+        //发送前打包
+        if (IsSendPackCommand)
+            PackCommand(send);
         if (Logger.LogLevel <= LogLevel.Trace)
             Logger?.Trace($"{ToString()}- Send:{(IsHexData ? buffer.ToHexString(0, length, ' ') : Encoding.UTF8.GetString(buffer, offset, length))}");
         //发送
-        this.GoSend(endPoint, buffer, offset, length);
+        this.GoSend(endPoint, send.SendByteBlock.Buffer, 0, send.SendByteBlock.Len);
     }
 
     /// <inheritdoc/>
@@ -180,12 +187,18 @@ public abstract class ReadWriteDevicesUdpDataHandleAdapter<TRequest> : UdpDataHa
     }
 
     /// <inheritdoc/>
-    protected override Task PreviewSendAsync(EndPoint endPoint, byte[] buffer, int offset, int length)
+    protected override async Task PreviewSendAsync(EndPoint endPoint, byte[] buffer, int offset, int length)
     {
+        using var byteBlock = new ByteBlock(length);
+        byteBlock.Write(buffer, offset, length);
+        var send = new SendMessage(byteBlock);
+        //发送前打包
+        if (IsSendPackCommand)
+            PackCommand(send);
         if (Logger.LogLevel <= LogLevel.Trace)
             Logger?.Trace($"{ToString()}- Send:{(IsHexData ? buffer.ToHexString(0, length, ' ') : Encoding.UTF8.GetString(buffer, offset, length))}");
         //发送
-        return this.GoSendAsync(endPoint, buffer, offset, length);
+        await this.GoSendAsync(endPoint, send.SendByteBlock.Buffer, 0, send.SendByteBlock.Len).ConfigureAwait(false);
     }
     /// <inheritdoc/>
     protected override async Task PreviewSendAsync(EndPoint endPoint, IRequestInfo requestInfo)
