@@ -105,7 +105,7 @@ public class ModbusSlave : BusinessBase
     private volatile bool success = true;
     protected IStringLocalizer Localizer { get; private set; }
 
-    protected override async Task ProtectedExecuteAsync(CancellationToken cancellationToken)
+    protected override async ValueTask ProtectedExecuteAsync(CancellationToken cancellationToken)
     {
         //获取设备连接状态
         if (IsConnected())

@@ -260,7 +260,7 @@ public abstract class CollectBase : DriverBase
     /// </summary>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    protected override async Task ProtectedExecuteAsync(CancellationToken cancellationToken)
+    protected override async ValueTask ProtectedExecuteAsync(CancellationToken cancellationToken)
     {
         ReadResultCount readResultCount = new();
         if (cancellationToken.IsCancellationRequested)
@@ -313,7 +313,7 @@ public abstract class CollectBase : DriverBase
             CurrentDevice.SetDeviceStatus(TimerX.Now, 0);
         }
 
-        async Task ReadVariableMed(ReadResultCount readResultCount, VariableMethod readVariableMethods, CancellationToken cancellationToken, bool delay = true)
+        async ValueTask ReadVariableMed(ReadResultCount readResultCount, VariableMethod readVariableMethods, CancellationToken cancellationToken, bool delay = true)
         {
             if (KeepRun != true)
                 return;
@@ -351,29 +351,29 @@ public abstract class CollectBase : DriverBase
                 }
                 else
                 {
-                    // 方法调用失败时记录日志并增加失败计数器，更新错误信息
-                    if (readVariableMethods.LastErrorMessage != readResult.ErrorMessage)
-                    {
-                        if (!cancellationToken.IsCancellationRequested)
-                            LogMessage?.LogWarning(readResult.Exception, Localizer["MethodFail", DeviceName, readVariableMethods.MethodInfo.Name, readResult.ErrorMessage]);
-                    }
-                    else
-                    {
-                        if (!cancellationToken.IsCancellationRequested)
-                            if (LogMessage.LogLevel <= TouchSocket.Core.LogLevel.Trace)
-                                LogMessage?.Trace(string.Format("{0} - Execute method[{1}] - Failed {2}", DeviceName, readVariableMethods.MethodInfo.Name, readResult.ErrorMessage));
-                    }
+                        // 方法调用失败时记录日志并增加失败计数器，更新错误信息
+                        if (readVariableMethods.LastErrorMessage != readResult.ErrorMessage)
+                        {
+                            if (!cancellationToken.IsCancellationRequested)
+                                LogMessage?.LogWarning(readResult.Exception, Localizer["MethodFail", DeviceName, readVariableMethods.MethodInfo.Name, readResult.ErrorMessage]);
+                        }
+                        else
+                        {
+                            if (!cancellationToken.IsCancellationRequested)
+                                if (LogMessage.LogLevel <= TouchSocket.Core.LogLevel.Trace)
+                                    LogMessage?.Trace(string.Format("{0} - Execute method[{1}] - Failed {2}", DeviceName, readVariableMethods.MethodInfo.Name, readResult.ErrorMessage));
+                        }
 
-                    readResultCount.deviceMethodsVariableFailedNum++;
-                    readVariableMethods.LastErrorMessage = readResult.ErrorMessage;
-                    CurrentDevice.SetDeviceStatus(DateTime.Now, CurrentDevice.ErrorCount + 1, readResult.ToString());
+                        readResultCount.deviceMethodsVariableFailedNum++;
+                        readVariableMethods.LastErrorMessage = readResult.ErrorMessage;
+                        CurrentDevice.SetDeviceStatus(DateTime.Now, CurrentDevice.ErrorCount + 1, readResult.ToString());
                 }
                 if (delay)
                     await Task.Delay(ChannelThread.CycleInterval, cancellationToken).ConfigureAwait(false);
             }
         }
 
-        async Task ReadVariableSource(ReadResultCount readResultCount, VariableSourceRead? variableSourceRead, CancellationToken cancellationToken, bool delay = true)
+        async ValueTask ReadVariableSource(ReadResultCount readResultCount, VariableSourceRead? variableSourceRead, CancellationToken cancellationToken, bool delay = true)
         {
             if (KeepRun != true)
                 return;

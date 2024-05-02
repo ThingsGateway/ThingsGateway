@@ -575,6 +575,6 @@ public interface IProtocol : IDisposable
     /// 配置IPluginManager
     /// </summary>
     Action<IPluginManager> ConfigurePlugins();
-    Task SendAsync(byte[] command, int offset, int length, IClientChannel channel = null, CancellationToken cancellationToken = default);
-    Task DefaultSendAsync(byte[] command, int offset, int length, IClientChannel channel = null, CancellationToken token = default);
+    ValueTask SendAsync(byte[] command, int offset, int length, IClientChannel channel = null, CancellationToken cancellationToken = default);
+    ValueTask DefaultSendAsync(byte[] command, int offset, int length, IClientChannel channel = null, CancellationToken token = default);
 }

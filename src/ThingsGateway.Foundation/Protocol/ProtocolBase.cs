@@ -256,7 +256,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
         }
     }
     /// <inheritdoc/>
-    public virtual async Task DefaultSendAsync(byte[] command, int offset, int length, IClientChannel channel = default, CancellationToken token = default)
+    public virtual async ValueTask DefaultSendAsync(byte[] command, int offset, int length, IClientChannel channel = default, CancellationToken token = default)
     {
         await Channel.ConnectAsync(ConnectTimeout, token).ConfigureAwait(false);
         if (SendDelayTime != 0)
@@ -296,7 +296,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     }
 
     /// <inheritdoc/>
-    public virtual async Task SendAsync(byte[] command, int offset, int length, IClientChannel channel = default, CancellationToken token = default)
+    public virtual async ValueTask SendAsync(byte[] command, int offset, int length, IClientChannel channel = default, CancellationToken token = default)
     {
         await Channel.ConnectAsync(ConnectTimeout, token).ConfigureAwait(false);
         if (SendDelayTime != 0)
