@@ -14,7 +14,6 @@ using RabbitMQ.Client;
 
 using System.Text;
 
-using ThingsGateway.Admin.Application;
 using ThingsGateway.Foundation;
 using ThingsGateway.Foundation.Extension.Generic;
 
@@ -110,7 +109,7 @@ public partial class RabbitMQProducer : BusinessBaseWithCacheIntervalScript<Vari
 
     #region 方法
 
-    private async ValueTask AllPublishAsync(CancellationToken cancellationToken)
+    private async Task AllPublishAsync(CancellationToken cancellationToken)
     {
         //保留消息
         //分解List，避免超出字节大小限制

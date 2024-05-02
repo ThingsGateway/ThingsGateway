@@ -499,7 +499,7 @@ public class ChannelThread
     /// DoWork
     /// </summary>
     /// <param name="cancellation">取消标记。</param>
-    protected async ValueTask DoWork(CancellationToken stoppingToken)
+    protected async Task DoWork(CancellationToken stoppingToken)
     {
         var count = DriverBases.Count;
         foreach (var driver in DriverBases)

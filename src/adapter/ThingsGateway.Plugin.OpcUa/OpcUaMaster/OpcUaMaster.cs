@@ -221,7 +221,7 @@ public class OpcUaMaster : CollectBase
         }
     }
 
-    protected override async ValueTask ProtectedExecuteAsync(CancellationToken cancellationToken)
+    protected override async Task ProtectedExecuteAsync(CancellationToken cancellationToken)
     {
         if (_driverProperties.ActiveSubscribe)
         {

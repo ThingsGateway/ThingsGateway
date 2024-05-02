@@ -21,7 +21,6 @@ using Newtonsoft.Json.Linq;
 
 using System.Text;
 
-using ThingsGateway.Admin.Application;
 using ThingsGateway.Foundation;
 using ThingsGateway.Foundation.Extension.Collection;
 using ThingsGateway.Foundation.Extension.Generic;
@@ -122,7 +121,7 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
 
     #endregion private
 
-    private async ValueTask AllPublishAsync(CancellationToken cancellationToken)
+    private async Task AllPublishAsync(CancellationToken cancellationToken)
     {
         //保留消息
         //分解List，避免超出mqtt字节大小限制
