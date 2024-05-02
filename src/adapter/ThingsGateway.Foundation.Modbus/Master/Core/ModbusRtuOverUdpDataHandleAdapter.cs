@@ -33,8 +33,6 @@ internal class ModbusRtuOverUdpDataHandleAdapter : ReadWriteDevicesUdpDataHandle
         item.SendByteBlock.Write(crc);
     }
 
-
-
     /// <inheritdoc/>
     protected override ByteBlock UnpackResponse(ModbusRtuMessage request)
     {

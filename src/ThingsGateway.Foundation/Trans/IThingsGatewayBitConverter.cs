@@ -343,8 +343,9 @@ public interface IThingsGatewayBitConverter
     /// </summary>
     /// <param name="buffer">缓存数据</param>
     /// <param name="offset">索引位置</param>
+    /// <param name="length">length</param>
     /// <returns>decimal对象</returns>
-    decimal[] ToDecimal(byte[] buffer, int offset, int len);
+    decimal[] ToDecimal(byte[] buffer, int offset, int length);
 
 
 

@@ -14,6 +14,7 @@
 
 using Newtonsoft.Json;
 
+using System.Runtime.CompilerServices;
 using System.Text;
 
 using ThingsGateway.Foundation.Extension.Generic;
@@ -81,7 +82,157 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
     /// <inheritdoc/>
     public virtual bool IsStringReverseByteWord { get; set; }
 
- 
+
+    #region new
+
+    #region Tool
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void ByteTransDataFormat2_Net6(ref byte value)
+    {
+        unsafe
+        {
+            fixed (byte* p = &value)
+            {
+                var a = Unsafe.ReadUnaligned<byte>(p);
+                var b = Unsafe.ReadUnaligned<byte>(p + 1);
+                Unsafe.WriteUnaligned(p, b);
+                Unsafe.WriteUnaligned(p + 1, a);
+            }
+        }
+
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void ByteTransDataFormat4_Net6(ref byte value)
+    {
+        unsafe
+        {
+            fixed (byte* p = &value)
+            {
+                var a = Unsafe.ReadUnaligned<byte>(p);
+                var b = Unsafe.ReadUnaligned<byte>(p + 1);
+                var c = Unsafe.ReadUnaligned<byte>(p + 2);
+                var d = Unsafe.ReadUnaligned<byte>(p + 3);
+
+                switch (DataFormat)
+                {
+                    case DataFormatEnum.ABCD:
+                        Unsafe.WriteUnaligned(p, d);
+                        Unsafe.WriteUnaligned(p + 1, c);
+                        Unsafe.WriteUnaligned(p + 2, b);
+                        Unsafe.WriteUnaligned(p + 3, a);
+                        break;
+
+                    case DataFormatEnum.BADC:
+                        Unsafe.WriteUnaligned(p, c);
+                        Unsafe.WriteUnaligned(p + 1, d);
+                        Unsafe.WriteUnaligned(p + 2, a);
+                        Unsafe.WriteUnaligned(p + 3, b);
+                        break;
+
+                    case DataFormatEnum.CDAB:
+                        Unsafe.WriteUnaligned(p, b);
+                        Unsafe.WriteUnaligned(p + 1, a);
+                        Unsafe.WriteUnaligned(p + 2, d);
+                        Unsafe.WriteUnaligned(p + 3, c);
+                        break;
+                    case DataFormatEnum.DCBA:
+                        return;
+                }
+            }
+        }
+
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void ByteTransDataFormat8_Net6(ref byte value)
+    {
+        unsafe
+        {
+            fixed (byte* p = &value)
+            {
+                var a = Unsafe.ReadUnaligned<byte>(p);
+                var b = Unsafe.ReadUnaligned<byte>(p + 1);
+                var c = Unsafe.ReadUnaligned<byte>(p + 2);
+                var d = Unsafe.ReadUnaligned<byte>(p + 3);
+                var e = Unsafe.ReadUnaligned<byte>(p + 4);
+                var f = Unsafe.ReadUnaligned<byte>(p + 5);
+                var g = Unsafe.ReadUnaligned<byte>(p + 6);
+                var h = Unsafe.ReadUnaligned<byte>(p + 7);
+
+                switch (DataFormat)
+                {
+                    case DataFormatEnum.ABCD:
+                        Unsafe.WriteUnaligned(p, h);
+                        Unsafe.WriteUnaligned(p + 1, g);
+                        Unsafe.WriteUnaligned(p + 2, f);
+                        Unsafe.WriteUnaligned(p + 3, e);
+                        Unsafe.WriteUnaligned(p + 4, d);
+                        Unsafe.WriteUnaligned(p + 5, c);
+                        Unsafe.WriteUnaligned(p + 6, b);
+                        Unsafe.WriteUnaligned(p + 7, a);
+                        break;
+
+                    case DataFormatEnum.BADC:
+                        Unsafe.WriteUnaligned(p, g);
+                        Unsafe.WriteUnaligned(p + 1, h);
+                        Unsafe.WriteUnaligned(p + 2, e);
+                        Unsafe.WriteUnaligned(p + 3, f);
+                        Unsafe.WriteUnaligned(p + 4, c);
+                        Unsafe.WriteUnaligned(p + 5, d);
+                        Unsafe.WriteUnaligned(p + 6, a);
+                        Unsafe.WriteUnaligned(p + 7, b);
+                        break;
+
+                    case DataFormatEnum.CDAB:
+                        Unsafe.WriteUnaligned(p, b);
+                        Unsafe.WriteUnaligned(p + 1, a);
+                        Unsafe.WriteUnaligned(p + 2, d);
+                        Unsafe.WriteUnaligned(p + 3, c);
+                        Unsafe.WriteUnaligned(p + 4, f);
+                        Unsafe.WriteUnaligned(p + 5, e);
+                        Unsafe.WriteUnaligned(p + 6, h);
+                        Unsafe.WriteUnaligned(p + 7, g);
+                        break;
+
+                    case DataFormatEnum.DCBA:
+                        break;
+                }
+            }
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void ByteTransDataFormat16_Net6(ref byte value)
+    {
+        unsafe
+        {
+            fixed (byte* p = &value)
+            {
+
+                switch (this.DataFormat)
+                {
+                    case DataFormatEnum.ABCD:
+                        var span = new Span<byte>(p, 16);
+                        span.Reverse();
+                        break;
+                    case DataFormatEnum.DCBA:
+                        return;
+                    default:
+                    case DataFormatEnum.BADC:
+                    case DataFormatEnum.CDAB:
+                        throw new NotSupportedException();
+                }
+            }
+        }
+    }
+
+    #endregion Tool
+
+    #endregion
+
+    #region GetBytes 
 
     /// <inheritdoc/>
     public virtual byte[] GetBytes(decimal value)
@@ -93,6 +244,7 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
         }
         return bytes;
     }
+
     /// <inheritdoc/>
     public virtual byte[] GetBytes(char value)
     {
@@ -309,6 +461,8 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
         }
     }
 
+    #endregion
+
     /// <inheritdoc/>
     public virtual bool IsSameOfSet()
     {
@@ -358,44 +512,135 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
     /// <returns></returns>
     public virtual double ToDouble(byte[] buffer, int offset)
     {
-        byte[] bytes = ByteTransDataFormat8(buffer, offset);
+        if (buffer.Length - offset < 8)
+        {
+            throw new ArgumentOutOfRangeException(nameof(offset));
+        }
 
-        return BitConverter.ToDouble(bytes, 0);
+        unsafe
+        {
+            fixed (byte* p = &buffer[offset])
+            {
+                if (this.IsSameOfSet())
+                {
+                    return Unsafe.Read<double>(p);
+                }
+                else
+                {
+                    this.ByteTransDataFormat8_Net6(ref buffer[offset]);
+                    var v = Unsafe.Read<double>(p);
+                    this.ByteTransDataFormat8_Net6(ref buffer[offset]);
+                    return v;
+                }
+            }
+        }
     }
 
     /// <inheritdoc/>
     public virtual short ToInt16(byte[] buffer, int offset)
     {
-        byte[] bytes = new byte[2];
-        Array.Copy(buffer, offset, bytes, 0, bytes.Length);
-        if (!IsSameOfSet())
+        if (buffer.Length - offset < 2)
         {
-            Array.Reverse(bytes);
+            throw new ArgumentOutOfRangeException(nameof(offset));
         }
-        return BitConverter.ToInt16(bytes, 0);
-    }
 
+        unsafe
+        {
+            fixed (byte* p = &buffer[offset])
+            {
+                if (this.IsSameOfSet())
+                {
+                    return Unsafe.Read<short>(p);
+                }
+                else
+                {
+                    this.ByteTransDataFormat2_Net6(ref buffer[offset]);
+                    var v = Unsafe.Read<short>(p);
+                    this.ByteTransDataFormat2_Net6(ref buffer[offset]);
+                    return v;
+                }
+            }
+        }
+    }
     /// <inheritdoc/>
     public virtual int ToInt32(byte[] buffer, int offset)
     {
-        byte[] bytes = ByteTransDataFormat4(buffer, offset);
+        if (buffer.Length - offset < 4)
+        {
+            throw new ArgumentOutOfRangeException(nameof(offset));
+        }
 
-        return BitConverter.ToInt32(bytes, 0);
+        unsafe
+        {
+            fixed (byte* p = &buffer[offset])
+            {
+                if (this.IsSameOfSet())
+                {
+                    return Unsafe.Read<int>(p);
+                }
+                else
+                {
+                    this.ByteTransDataFormat4_Net6(ref buffer[offset]);
+                    var v = Unsafe.Read<int>(p);
+                    this.ByteTransDataFormat4_Net6(ref buffer[offset]);
+                    return v;
+                }
+            }
+        }
     }
 
     /// <inheritdoc/>
     public virtual long ToInt64(byte[] buffer, int offset)
     {
-        byte[] bytes = ByteTransDataFormat8(buffer, offset);
-        return BitConverter.ToInt64(bytes, 0);
+        if (buffer.Length - offset < 8)
+        {
+            throw new ArgumentOutOfRangeException(nameof(offset));
+        }
+
+        unsafe
+        {
+            fixed (byte* p = &buffer[offset])
+            {
+                if (this.IsSameOfSet())
+                {
+                    return Unsafe.Read<long>(p);
+                }
+                else
+                {
+                    this.ByteTransDataFormat8_Net6(ref buffer[offset]);
+                    var v = Unsafe.Read<long>(p);
+                    this.ByteTransDataFormat8_Net6(ref buffer[offset]);
+                    return v;
+                }
+            }
+        }
     }
 
     /// <inheritdoc/>
     public virtual float ToSingle(byte[] buffer, int offset)
     {
-        byte[] bytes = ByteTransDataFormat4(buffer, offset);
+        if (buffer.Length - offset < 4)
+        {
+            throw new ArgumentOutOfRangeException(nameof(offset));
+        }
 
-        return BitConverter.ToSingle(bytes, 0);
+        unsafe
+        {
+            fixed (byte* p = &buffer[offset])
+            {
+                if (this.IsSameOfSet())
+                {
+                    return Unsafe.Read<float>(p);
+                }
+                else
+                {
+                    this.ByteTransDataFormat4_Net6(ref buffer[offset]);
+                    var v = Unsafe.Read<float>(p);
+                    this.ByteTransDataFormat4_Net6(ref buffer[offset]);
+                    return v;
+                }
+            }
+        }
     }
 
     /// <inheritdoc/>
@@ -423,43 +668,108 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
     /// <inheritdoc/>
     public virtual ushort ToUInt16(byte[] buffer, int offset)
     {
-        byte[] bytes = new byte[2];
-        Array.Copy(buffer, offset, bytes, 0, 2);
-        if (!IsSameOfSet())
+        if (buffer.Length - offset < 2)
         {
-            Array.Reverse(bytes);
+            throw new ArgumentOutOfRangeException(nameof(offset));
         }
-        return BitConverter.ToUInt16(bytes, 0);
+
+        unsafe
+        {
+            fixed (byte* p = &buffer[offset])
+            {
+                if (this.IsSameOfSet())
+                {
+                    return Unsafe.Read<ushort>(p);
+                }
+                else
+                {
+                    this.ByteTransDataFormat2_Net6(ref buffer[offset]);
+                    var v = Unsafe.Read<ushort>(p);
+                    this.ByteTransDataFormat2_Net6(ref buffer[offset]);
+                    return v;
+                }
+            }
+        }
     }
 
     /// <inheritdoc/>
     public virtual uint ToUInt32(byte[] buffer, int offset)
     {
-        byte[] bytes = ByteTransDataFormat4(buffer, offset);
+        if (buffer.Length - offset < 4)
+        {
+            throw new ArgumentOutOfRangeException(nameof(offset));
+        }
 
-        return BitConverter.ToUInt32(bytes, 0);
+        unsafe
+        {
+            fixed (byte* p = &buffer[offset])
+            {
+                if (this.IsSameOfSet())
+                {
+                    return Unsafe.Read<uint>(p);
+                }
+                else
+                {
+                    this.ByteTransDataFormat4_Net6(ref buffer[offset]);
+                    var v = Unsafe.Read<uint>(p);
+                    this.ByteTransDataFormat4_Net6(ref buffer[offset]);
+                    return v;
+                }
+            }
+        }
     }
 
     /// <inheritdoc/>
     public virtual ulong ToUInt64(byte[] buffer, int offset)
     {
-        byte[] bytes = ByteTransDataFormat8(buffer, offset);
-        return BitConverter.ToUInt64(bytes, 0);
+        if (buffer.Length - offset < 8)
+        {
+            throw new ArgumentOutOfRangeException(nameof(offset));
+        }
+
+        unsafe
+        {
+            fixed (byte* p = &buffer[offset])
+            {
+                if (this.IsSameOfSet())
+                {
+                    return Unsafe.Read<ulong>(p);
+                }
+                else
+                {
+                    this.ByteTransDataFormat8_Net6(ref buffer[offset]);
+                    var v = Unsafe.Read<ulong>(p);
+                    this.ByteTransDataFormat8_Net6(ref buffer[offset]);
+                    return v;
+                }
+            }
+        }
     }
 
     /// <inheritdoc/>
     public virtual char ToChar(byte[] buffer, int offset)
     {
-        if (this.IsSameOfSet())
+        if (buffer.Length - offset < 2)
         {
-            return BitConverter.ToChar(buffer, offset);
+            throw new ArgumentOutOfRangeException(nameof(offset));
         }
-        else
+
+        unsafe
         {
-            var bytes = new byte[2];
-            Array.Copy(buffer, offset, bytes, 0, bytes.Length);
-            Array.Reverse(bytes);
-            return BitConverter.ToChar(bytes, 0);
+            fixed (byte* p = &buffer[offset])
+            {
+                if (this.IsSameOfSet())
+                {
+                    return Unsafe.Read<char>(p);
+                }
+                else
+                {
+                    this.ByteTransDataFormat2_Net6(ref buffer[offset]);
+                    var v = Unsafe.Read<char>(p);
+                    this.ByteTransDataFormat2_Net6(ref buffer[offset]);
+                    return v;
+                }
+            }
         }
     }
 
@@ -467,16 +777,27 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
     /// <inheritdoc/>
     public virtual decimal ToDecimal(byte[] buffer, int offset)
     {
-        var bytes = new byte[16];
-        Array.Copy(buffer, offset, bytes, 0, bytes.Length);
-        if (this.IsSameOfSet())
+        if (buffer.Length - offset < 16)
         {
-            return DecimalConver.FromBytes(bytes);
+            throw new ArgumentOutOfRangeException(nameof(offset));
         }
-        else
+
+        unsafe
         {
-            Array.Reverse(bytes);
-            return DecimalConver.FromBytes(bytes);
+            fixed (byte* p = &buffer[offset])
+            {
+                if (this.IsSameOfSet())
+                {
+                    return Unsafe.Read<decimal>(p);
+                }
+                else
+                {
+                    this.ByteTransDataFormat16_Net6(ref buffer[offset]);
+                    var v = Unsafe.Read<decimal>(p);
+                    this.ByteTransDataFormat16_Net6(ref buffer[offset]);
+                    return v;
+                }
+            }
         }
     }
 

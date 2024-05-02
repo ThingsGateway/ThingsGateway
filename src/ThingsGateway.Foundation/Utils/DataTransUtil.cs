@@ -67,6 +67,8 @@ public class DataTransUtil
     /// 将字节数组转换为十六进制表示的字符串
     /// </summary>
     /// <param name="inBytes">输入的字节数组</param>
+    /// <param name="offset">索引位置</param>
+    /// <param name="length">length</param>
     /// <param name="segment">用于分隔每个字节的字符</param>
     /// <param name="newLineCount">指定在何处换行，设为0则不换行</param>
     /// <returns>转换后的十六进制字符串</returns>

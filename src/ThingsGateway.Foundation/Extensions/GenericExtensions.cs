@@ -267,7 +267,6 @@ public static class GenericExtensions
     /// <summary>
     /// 从数组中获取指定索引开始的中间一段长度的子数组
     /// </summary>
-    /// <typeparam name="T">数组元素类型</typeparam>
     /// <param name="value">输入数组</param>
     /// <param name="index">起始索引</param>
     /// <param name="length">选择的元素个数</param>

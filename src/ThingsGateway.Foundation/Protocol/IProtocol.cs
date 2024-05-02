@@ -569,8 +569,6 @@ public interface IProtocol : IDisposable
     /// <summary>
     /// 发送数据，不经过适配器
     /// </summary>
-    /// <param name="command"></param>
-    /// <param name="channel"></param>
     void DefaultSend(byte[] command, int offset, int length, IClientChannel channel = null, CancellationToken token = default);
 
     /// <summary>

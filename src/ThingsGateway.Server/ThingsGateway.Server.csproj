@@ -7,11 +7,12 @@
     <ApplicationIcon>wwwroot\favicon.ico</ApplicationIcon>
     <TargetFrameworks>net8.0;</TargetFrameworks>
 
-    <GarbageCollectionAdaptationMode>true</GarbageCollectionAdaptationMode>
     <!--动态适用GC-->
-    <!--<UseWindowsThreadPool>false</UseWindowsThreadPool> -->
+    <GarbageCollectionAdaptationMode>true</GarbageCollectionAdaptationMode>
     <!--使用自托管线程池-->
-    <!--<ServerGarbageCollection>false</ServerGarbageCollection>-->
+    <!--<UseWindowsThreadPool>false</UseWindowsThreadPool> -->
+    
+    <ServerGarbageCollection>false</ServerGarbageCollection>
     <!--<PlatformTarget>x86</PlatformTarget>-->
 
 

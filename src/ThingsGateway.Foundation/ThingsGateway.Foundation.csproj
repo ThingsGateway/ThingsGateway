@@ -4,6 +4,7 @@
 
   <PropertyGroup>
     <Description>工业设备通讯协议-基础类库</Description>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
 
