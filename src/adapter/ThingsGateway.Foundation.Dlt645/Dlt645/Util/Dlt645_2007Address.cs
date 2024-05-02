@@ -82,7 +82,7 @@ public class Dlt645_2007Address
     /// </summary>
     public static Dlt645_2007Address ParseFrom(string address, bool isCache = true)
     {
-        var cacheKey = $"{nameof(Dlt645_2007Address)}_{nameof(ParseFrom)}_{typeof(Dlt645_2007Address).FullName}_{typeof(Dlt645_2007Address).TypeHandle.Value}_{address}";
+        var cacheKey = $"{nameof(ParseFrom)}_{typeof(Dlt645_2007Address).FullName}_{typeof(Dlt645_2007Address).TypeHandle.Value}_{address}";
         if (isCache)
             if (Cache.Default.TryGetValue(cacheKey, out Dlt645_2007Address dAddress))
                 return dAddress;

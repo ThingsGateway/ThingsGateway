@@ -155,7 +155,7 @@ public class SiemensAddress
     /// </summary>
     public static SiemensAddress ParseFrom(string address, bool isCache = true)
     {
-        var cacheKey = $"{nameof(SiemensAddress)}_{nameof(ParseFrom)}_{typeof(SiemensAddress).FullName}_{typeof(SiemensAddress).TypeHandle.Value}_{address}";
+        var cacheKey = $"{nameof(ParseFrom)}_{typeof(SiemensAddress).FullName}_{typeof(SiemensAddress).TypeHandle.Value}_{address}";
         if (isCache)
             if (Cache.Default.TryGetValue(cacheKey, out SiemensAddress sAddress))
                 return sAddress.Map();

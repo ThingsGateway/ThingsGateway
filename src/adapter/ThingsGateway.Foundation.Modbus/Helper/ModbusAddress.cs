@@ -123,27 +123,15 @@ public class ModbusAddress
     /// <summary>
     /// 解析地址
     /// </summary>
-    public static ModbusAddress ParseFrom(string address, byte station)
+    public static ModbusAddress? ParseFrom(string address, byte? station = null, bool isCache = true)
     {
-        ModbusAddress modbusAddress = new()
-        {
-            Station = station
-        };
-        return ParseFrom(address, modbusAddress);
-    }
-
-    /// <summary>
-    /// 解析地址
-    /// </summary>
-    public static ModbusAddress ParseFrom(string address, ModbusAddress modbusAddress = null, bool isCache = true)
-    {
-        if (address.IsNullOrWhiteSpace()) { return modbusAddress; }
-        var cacheKey = $"{nameof(ModbusAddress)}_{nameof(ParseFrom)}_{typeof(ModbusAddress).FullName}_{typeof(ModbusAddress).TypeHandle.Value}_{modbusAddress?.ToJsonString()}_{address}";
+        if (address.IsNullOrWhiteSpace()) { return null; }
+        var cacheKey = $"{nameof(ParseFrom)}_{typeof(ModbusAddress).FullName}_{typeof(ModbusAddress).TypeHandle.Value}_{station}_{address}";
         if (isCache)
             if (Cache.Default.TryGetValue(cacheKey, out ModbusAddress mAddress))
                 return mAddress;
 
-        modbusAddress ??= new();
+        var modbusAddress = new ModbusAddress();
         if (address.IndexOf(';') < 0)
         {
             Address(address);

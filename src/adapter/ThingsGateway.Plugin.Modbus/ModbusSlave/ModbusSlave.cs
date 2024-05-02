@@ -94,7 +94,7 @@ public class ModbusSlave : BusinessBase
             ModbusAddress address = ModbusAddress.ParseFrom(
                 a.Value.GetPropertyValue(DeviceId,
                 nameof(_variablePropertys.ServiceAddress)), _driverPropertys.Station);
-            return address;
+            return address!;
         },
         a => a.Value
         );
