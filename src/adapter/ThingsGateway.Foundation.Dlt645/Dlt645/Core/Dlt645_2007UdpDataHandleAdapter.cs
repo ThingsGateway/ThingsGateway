@@ -42,7 +42,7 @@ internal class Dlt645_2007UdpDataHandleAdapter : ReadWriteDevicesUdpDataHandleAd
 
 
 
-    protected override ByteBlock UnpackResponse(Dlt645_2007Message request)
+    protected override byte[] UnpackResponse(Dlt645_2007Message request)
     {
         var send = request.SendBytes;
         var response = request.ReceivedByteBlock;

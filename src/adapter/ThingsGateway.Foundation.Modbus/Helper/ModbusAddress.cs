@@ -132,6 +132,8 @@ public class ModbusAddress
                 return mAddress;
 
         var modbusAddress = new ModbusAddress();
+        if (station != null)
+            modbusAddress.Station = station.Value;
         if (address.IndexOf(';') < 0)
         {
             Address(address);

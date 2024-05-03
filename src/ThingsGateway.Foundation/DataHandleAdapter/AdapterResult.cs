@@ -10,15 +10,10 @@
 
 namespace ThingsGateway.Foundation;
 
-public struct AdapterResult : IDisposable
+public struct AdapterResult
 {
     public FilterResult FilterResult { get; set; }
-    public ByteBlock ByteBlock { get; set; }
-
-    public void Dispose()
-    {
-        ByteBlock.SafeDispose();
-    }
-
+    public byte[] Bytes { get; set; }
 
 }
+

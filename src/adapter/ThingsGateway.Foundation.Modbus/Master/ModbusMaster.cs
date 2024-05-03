@@ -202,7 +202,7 @@ public partial class ModbusMaster : ProtocolBase, IDtu
         {
             var mAddress = ModbusAddress.ParseFrom(address, Station);
             value = value.ArrayExpandToLengthEven();
-            ByteBlock? commandResult = null;
+            byte[]? commandResult = null;
             //功能码或实际长度
             if (value.Length > 2 || mAddress.WriteFunction == 16)
                 commandResult = ModbusHelper.GetWriteModbusCommand(mAddress, value);
@@ -266,7 +266,7 @@ public partial class ModbusMaster : ProtocolBase, IDtu
         {
             var mAddress = ModbusAddress.ParseFrom(address, Station);
             value = value.ArrayExpandToLengthEven();
-            ByteBlock? commandResult = null;
+            byte[]? commandResult = null;
             //功能码或实际长度
             if (value.Length > 2 || mAddress.WriteFunction == 16)
                 commandResult = ModbusHelper.GetWriteModbusCommand(mAddress, value);

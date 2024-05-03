@@ -8,8 +8,6 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using ThingsGateway.Foundation.Extension.Generic;
-
 namespace ThingsGateway.Foundation.Modbus;
 
 /// <summary>
@@ -20,7 +18,7 @@ internal class ModbusTcpDataHandleAdapter : ReadWriteDevicesSingleStreamDataHand
     /// <inheritdoc/>
     public override void PackCommand(ISendMessage item)
     {
-        ModbusHelper.AddModbusTcpHead(item);
+        item.SetBytes(ModbusHelper.AddModbusTcpHead(item.SendBytes, item.Offset, item.Length, (ushort)item.Sign));
     }
 
     public override bool IsSingleThread { get; } = false;
@@ -31,9 +29,9 @@ internal class ModbusTcpDataHandleAdapter : ReadWriteDevicesSingleStreamDataHand
     /// <inheritdoc/>
     protected override AdapterResult UnpackResponse(ModbusTcpMessage request)
     {
-        using var send = request.SendBytes?.RemoveBegin(6);
-        using var response = request.ReceivedByteBlock.RemoveBegin(6);
-        var result = ModbusHelper.GetModbusData(send, response);
+        var send = request.SendBytes;
+        request.ReceivedByteBlock.Pos = 6;
+        var result = ModbusHelper.GetModbusData(send, request.ReceivedByteBlock);
         request.OperCode = result.OperCode;
         request.ErrorMessage = result.ErrorMessage;
         request.Sign = TouchSocketBitConverter.BigEndian.ToUInt16(request.ReceivedByteBlock.Buffer, 0);

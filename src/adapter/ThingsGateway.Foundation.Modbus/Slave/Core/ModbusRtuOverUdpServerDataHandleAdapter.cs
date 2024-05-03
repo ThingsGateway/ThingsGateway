@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -8,11 +7,6 @@
 //  使用文档：https://kimdiego2098.github.io/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
-
-
-
-
-using ThingsGateway.Foundation.Extension.Generic;
 
 namespace ThingsGateway.Foundation.Modbus;
 
@@ -24,38 +18,29 @@ internal class ModbusRtuOverUdpServerDataHandleAdapter : ReadWriteDevicesUdpData
 
     public override void PackCommand(ISendMessage item)
     {
-        var crc = CRC16Utils.CRC16Only(item.SendBytes.Buffer, 0, item.SendBytes.Len);
-        item.SendBytes.SeekToEnd();
-        item.SendBytes.Write(crc);
+        var crc = CRC16Utils.CRC16Only(item.SendBytes, item.Offset, item.Length);
+        byte[] bytes = new byte[item.Length + crc.Length];
+        Array.Copy(item.SendBytes, item.Offset, bytes, 0, item.Length);
+        Array.Copy(crc, 0, bytes, item.Length, crc.Length);
+        item.SetBytes(bytes);
     }
 
     /// <inheritdoc/>
-    protected override ByteBlock UnpackResponse(ModbusRtuServerMessage request)
+    protected override byte[] UnpackResponse(ModbusRtuServerMessage request)
     {
-        var send = request.SendBytes;
         var response = request.ReceivedByteBlock;
-        var result1 = ModbusHelper.GetModbusRtuData(send, response, true);
-        request.OperCode = result1.OperCode;
-        request.ErrorMessage = result1.ErrorMessage;
-        if (result1.IsSuccess)
+        var result = ModbusHelper.CheckCrc(response);
+        request.OperCode = result.OperCode;
+        request.ErrorMessage = result.ErrorMessage;
+        if (result.IsSuccess)
         {
-            var result = ModbusHelper.GetModbusWriteData(response.RemoveLast(2));
-            request.OperCode = result.OperCode;
-            request.ErrorMessage = result.ErrorMessage;
-            if (result.IsSuccess)
-            {
-                int offset = 0;
-                var bytes = ModbusHelper.ModbusServerAnalysisAddressValue(request, response, result.Content.ByteBlock, offset);
-                return bytes;
-            }
-            else
-            {
-                return new ByteBlock(0);
-            }
+            response.Pos = 0;
+            var bytes = ModbusHelper.ModbusServerAnalysisAddressValue(request, response);
+            return bytes;
         }
         else
         {
-            return new ByteBlock(0);
+            return null;
         }
     }
 }

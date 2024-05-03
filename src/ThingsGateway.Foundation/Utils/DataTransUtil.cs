@@ -55,13 +55,13 @@ public class DataTransUtil
     /// <param name="segment">分割符</param>
     /// <returns>返回的字符串</returns>
     public static string ByteToHexString(byte[] InBytes, char segment) => ByteToHexString(InBytes, segment, 0);
-    /// <summary>
-    /// 字节数据转化成16进制表示的字符串
-    /// </summary>
-    /// <param name="InBytes">字节数组</param>
-    /// <param name="segment">分割符</param>
-    /// <returns>返回的字符串</returns>
-    public static string ByteToHexString(ByteBlock InBytes, char segment) => ByteToHexString(InBytes.Buffer, segment, 0);
+    ///// <summary>
+    ///// 字节数据转化成16进制表示的字符串
+    ///// </summary>
+    ///// <param name="InBytes">字节数组</param>
+    ///// <param name="segment">分割符</param>
+    ///// <returns>返回的字符串</returns>
+    //public static string ByteToHexString(ByteBlock InBytes, char segment) => ByteToHexString(InBytes.Buffer, 0, InBytes.Len, segment, 0);
 
     /// <summary>
     /// 将字节数组转换为十六进制表示的字符串
@@ -72,7 +72,7 @@ public class DataTransUtil
     /// <param name="segment">用于分隔每个字节的字符</param>
     /// <param name="newLineCount">指定在何处换行，设为0则不换行</param>
     /// <returns>转换后的十六进制字符串</returns>
-    public static string ByteToHexString(byte[] inBytes, int offset, int length, char segment, int newLineCount)
+    public static string ByteToHexString(byte[] inBytes, int offset, int length, char segment, int newLineCount = 0)
     {
         if (inBytes == null || inBytes.Length == 0)
             return string.Empty;

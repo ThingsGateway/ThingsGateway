@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -8,11 +7,6 @@
 //  使用文档：https://kimdiego2098.github.io/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
-
-
-
-
-using ThingsGateway.Foundation.Extension.Generic;
 
 namespace ThingsGateway.Foundation.Modbus;
 
@@ -29,20 +23,10 @@ internal class ModbusTcpServerDataHandleAdapter : ReadWriteDevicesSingleStreamDa
     /// <inheritdoc/>
     protected override AdapterResult UnpackResponse(ModbusTcpServerMessage request)
     {
-        var send = request.SendBytes;
-        using var response = request.ReceivedByteBlock.RemoveBegin(6);
-        var result = ModbusHelper.GetModbusWriteData(response);
-        request.OperCode = result.OperCode;
-        request.ErrorMessage = result.ErrorMessage;
-        if (result.IsSuccess)
-        {
-            int offset = 0;
-            var bytes = ModbusHelper.ModbusServerAnalysisAddressValue(request, response, result.Content.ByteBlock, offset);
-            return new AdapterResult() { FilterResult = FilterResult.Success, ByteBlock = bytes };
-        }
-        else
-        {
-            return result.Content;
-        }
+        var response = request.ReceivedByteBlock;
+        response.Pos = 6;
+        var bytes = ModbusHelper.ModbusServerAnalysisAddressValue(request, response);
+        return new AdapterResult() { FilterResult = FilterResult.Success, Bytes = bytes };
+
     }
 }

@@ -18,9 +18,11 @@ internal class ModbusRtuDataHandleAdapter : ReadWriteDevicesSingleStreamDataHand
     /// <inheritdoc/>
     public override void PackCommand(ISendMessage item)
     {
-        var crc = CRC16Utils.CRC16Only(item.SendBytes.Buffer, 0, item.SendBytes.Len);
-        item.SendBytes.SeekToEnd();
-        item.SendBytes.Write(crc);
+        var crc = CRC16Utils.CRC16Only(item.SendBytes, item.Offset, item.Length);
+        byte[] bytes = new byte[item.Length + crc.Length];
+        Array.Copy(item.SendBytes, item.Offset, bytes, 0, item.Length);
+        Array.Copy(crc, 0, bytes, item.Length, crc.Length);
+        item.SetBytes(bytes);
     }
 
     /// <inheritdoc/>
@@ -28,38 +30,32 @@ internal class ModbusRtuDataHandleAdapter : ReadWriteDevicesSingleStreamDataHand
     {
         var send = request.SendBytes;
         var response = request.ReceivedByteBlock;
-        if (send?.Length > 0)
-        {
-            //通道干扰时需剔除前缀中的多于字节，初步按站号+功能码找寻初始字节
-            //int index = -1;
-            //for (int i = 0; i < response.Length - 1; i++)
-            //{
-            //    if (response[i] == send[0] && (response[i + 1] == send[1] || response[i + 1] == (send[1] + 0x80)))
-            //    {
-            //        index = i;
-            //        break;
-            //    }
-            //}
+        //通道干扰时需剔除前缀中的多于字节，初步按站号+功能码找寻初始字节
+        //int index = -1;
+        //for (int i = 0; i < response.Length - 1; i++)
+        //{
+        //    if (response[i] == send[0] && (response[i + 1] == send[1] || response[i + 1] == (send[1] + 0x80)))
+        //    {
+        //        index = i;
+        //        break;
+        //    }
+        //}
 
-            //using var response1 = new ByteBlock(response.Len);
-            //if (index > 0)
-            //{
-            //    response1.Write(response.Buffer, index, response.Len - index);
-            //}
-            //else
-            //{
-            //    response1.Write(response.Buffer);
-            //}
-            //response1.SeekToStart();
+        //using var response1 = new ByteBlock(response.Len);
+        //if (index > 0)
+        //{
+        //    response1.Write(response.Buffer, index, response.Len - index);
+        //}
+        //else
+        //{
+        //    response1.Write(response.Buffer);
+        //}
+        //response1.SeekToStart();
 
-            var result = ModbusHelper.GetModbusRtuData(send, response, true);
-            request.OperCode = result.OperCode;
-            request.ErrorMessage = result.ErrorMessage;
-            return result.Content;
-        }
-        else
-        {
-            return new AdapterResult() { FilterResult = FilterResult.Success };
-        }
+        var result = ModbusHelper.GetModbusRtuData(send, response, true);
+        request.OperCode = result.OperCode;
+        request.ErrorMessage = result.ErrorMessage;
+        return result.Content;
+
     }
 }

@@ -26,7 +26,7 @@ internal class ModbusRtuMessage : MessageBase, IResultMessage
     /// <inheritdoc/>
     public override bool CheckHeadBytes(byte[]? headBytes)
     {
-        if (headByteBlock == null || headByteBlock.Length <= 0) return false;
+        if (headBytes == null || headBytes.Length <= 0) return false;
         //01 03 02 00 01 xx xx
         //01 04 02 00 01 xx xx
         //01 01 02 00 01 xx xx
@@ -37,15 +37,15 @@ internal class ModbusRtuMessage : MessageBase, IResultMessage
         //01 10 00 00 00 01 xx xx
 
         //modbusRtu 读取
-        if (headByteBlock[1] <= 0x04)
+        if (headBytes[1] <= 0x04)
         {
-            int num = (headByteBlock[2]);
+            int num = (headBytes[2]);
             if (num > 0xff - 4) return false;
             BodyLength = num + 2; //数据区+crc
         }
         else
         {
-            if (headByteBlock[1] <= 0x10)
+            if (headBytes[1] <= 0x10)
             {
                 //modbusRtu 写入
                 BodyLength = 3 + 2; //数据区+crc

@@ -30,21 +30,21 @@ public class DtuPlugin : PluginBase, ITcpReceivingPlugin
     {
         if (client is SocketClientChannel socket)
         {
-            var bytes = e.ByteBlock.ToArray();
+
             if (!socket.Id.StartsWith("ID="))
             {
-                var id = $"ID={Encoding.UTF8.GetString(bytes)}";
+                var id = $"ID={Encoding.UTF8.GetString(e.ByteBlock.Buffer, 0, e.ByteBlock.Len)}";
                 client.Logger.Info(DefaultResource.Localizer["DtuConnected", id]);
                 await socket.ResetIdAsync(id);
                 e.Handled = true;
             }
-            if (DtuService.HeartbeatHexString == bytes.ToHexString())
+            if (DtuService.HeartbeatHexString == e.ByteBlock.Buffer.ToHexString(0, e.ByteBlock.Len))
             {
                 //回应心跳包
-                socket.Send(bytes, 0, bytes.Length);
+                socket.Send(e.ByteBlock.Buffer, 0, e.ByteBlock.Len);
                 e.Handled = true;
                 if (socket.Logger.LogLevel <= LogLevel.Trace)
-                    socket.Logger?.Trace($"{socket}- Send:{bytes.ToHexString(' ')}");
+                    socket.Logger?.Trace($"{socket}- Send:{DtuService.HeartbeatHexString}");
             }
         }
         await e.InvokeNext().ConfigureAwait(false);//如果本插件无法处理当前数据，请将数据转至下一个插件。

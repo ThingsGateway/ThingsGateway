@@ -155,16 +155,34 @@ public abstract class MessageBase : DisposableObject, IOperResult<byte[]>, IResu
 /// <inheritdoc/>
 public class SendMessage : ISendMessage
 {
-
     /// <inheritdoc/>
     public SendMessage(byte[] sendBytes)
     {
         SendBytes = sendBytes;
+        Offset = 0;
+        Length = sendBytes.Length;
     }
+    /// <inheritdoc/>
+    public SendMessage(byte[] sendBytes, int offset, int length)
+    {
+        SendBytes = sendBytes;
+        Offset = offset;
+        Length = length;
+    }
+
     /// <inheritdoc/>
     public virtual long Sign { get; set; }
 
+    public int Offset { get; private set; }
+    public int Length { get; private set; }
+
     /// <inheritdoc/>
-    public byte[] SendBytes { get; set; }
+    public byte[] SendBytes { get; private set; }
+    public void SetBytes(byte[] sendBytes, int offset = 0, int length = -1)
+    {
+        SendBytes = sendBytes;
+        Offset = offset;
+        Length = length != -1 ? length : sendBytes.Length;
+    }
 
 }

@@ -63,9 +63,21 @@ public interface IResultMessage : IOperResult, IRequestInfo, IDisposableObject
 public interface ISendMessage : IRequestInfo
 {
     /// <summary>
+    /// Offset
+    /// </summary>
+    public int Offset { get; }
+    /// <summary>
+    /// Length
+    /// </summary>
+    public int Length { get; }
+
+    /// <summary>
     /// 发送的字节信息
     /// </summary>
-    byte[] SendBytes { get; set; }
+    byte[] SendBytes { get; }
+
+    void SetBytes(byte[] sendBytes, int offset = 0, int length = -1);
+
     /// <summary>
     /// 等待标识，对于并发协议，必须获取标识字段后写入协议报文
     /// </summary>

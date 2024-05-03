@@ -157,16 +157,16 @@ public static class ByteExtensions
     {
         return DataTransUtil.ByteToHexString(buffer, splite);
     }
-    /// <summary>
-    /// 字节数组默认转16进制字符
-    /// </summary>
-    /// <param name="buffer"></param>
-    /// <param name="splite"></param>
-    /// <returns></returns>
-    public static string ToHexString(this ByteBlock buffer, char splite = default)
-    {
-        return DataTransUtil.ByteToHexString(buffer.Buffer, splite);
-    }
+    ///// <summary>
+    ///// 字节数组默认转16进制字符
+    ///// </summary>
+    ///// <param name="buffer"></param>
+    ///// <param name="splite"></param>
+    ///// <returns></returns>
+    //public static string ToHexString(this ByteBlock buffer, char splite = default)
+    //{
+    //    return DataTransUtil.ByteToHexString(buffer.Buffer, splite);
+    //}
     /// <summary>
     /// 字节数组默认转16进制字符
     /// </summary>

@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -9,11 +8,6 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-
-
-
-using ThingsGateway.Foundation.Extension.Generic;
-
 namespace ThingsGateway.Foundation.Modbus;
 
 internal class ModbusHelper
@@ -21,8 +15,9 @@ internal class ModbusHelper
 
     #region modbusServer
 
-    internal static ByteBlock ModbusServerAnalysisAddressValue(IModbusServerMessage request, ByteBlock response, ByteBlock writeSource, int offset)
+    internal static byte[] ModbusServerAnalysisAddressValue(IModbusServerMessage request, ByteBlock response)
     {
+        var offset = response.Pos;
         //解析01 03 00 00 00 0A
         var station = response[0 + offset];
         var function = response[1 + offset];
@@ -40,7 +35,7 @@ internal class ModbusHelper
                     ReadFunction = (byte)(function == 16 ? 3 : function == 15 ? 1 : 3),
                 };
                 request.Length = response[5 + offset];
-                return writeSource.RemoveBegin(7);
+                return response.ToArray(7 + offset);
             }
             else
             {
@@ -52,7 +47,7 @@ internal class ModbusHelper
                     ReadFunction = (byte)(function == 6 ? 3 : function == 5 ? 1 : 3),
                 };
                 request.Length = 1;
-                return writeSource.RemoveBegin(4);
+                return response.ToArray(4 + offset);
             }
         }
         else
@@ -64,75 +59,10 @@ internal class ModbusHelper
                 ReadFunction = function,
             };
             request.Length = response[5 + offset];
-            return new ByteBlock(0);
+            return Array.Empty<byte>();
         }
     }
 
-    /// <summary>
-    /// 获取modbus写入数据区内容
-    /// </summary>
-    /// <param name="response">返回数据</param>
-    /// <returns></returns>
-    internal static OperResult<AdapterResult> GetModbusWriteData(ByteBlock response)
-    {
-        try
-        {
-            var func = response[1];
-            if (func == 1 || func == 2 || func == 3 || func == 4 || func == 5 || func == 6)
-            {
-                if (response.Length == 6)
-                    return new OperResult<AdapterResult>()
-                    {
-                        Content = new AdapterResult()
-                        {
-                            ByteBlock = response,
-                            FilterResult = FilterResult.Success
-                        }
-                    };
-            }
-            else if (func == 15 || func == 16)
-            {
-                var length = response[6];
-                if (response.Length == 7 + length)
-                {
-                    return new OperResult<AdapterResult>()
-                    {
-                        Content = new AdapterResult()
-                        {
-                            ByteBlock = response,
-                            FilterResult = FilterResult.Success
-                        }
-                    };
-                }
-                if (response.Length > 7 + length)
-                {
-                    return new(DefaultResource.Localizer["DataLengthError", response.Length])
-                    {
-                        Content = new AdapterResult()
-                        {
-                            FilterResult = FilterResult.Success
-                        }
-                    };
-                }
-                else
-                {
-                    return new(DefaultResource.Localizer["DataLengthError", response.Length])
-                    {
-                        Content = new AdapterResult()
-                        {
-                            FilterResult = FilterResult.Cache
-                        }
-                    };
-                }
-            }
-
-            return new(DefaultResource.Localizer["DataLengthError", response.Length]) { Content = new AdapterResult() { FilterResult = FilterResult.Success } };
-        }
-        catch (Exception ex)
-        {
-            return new(ex) { Content = new AdapterResult() { FilterResult = FilterResult.Success } };
-        }
-    }
 
     #endregion modbusServer
 
@@ -173,12 +103,12 @@ internal class ModbusHelper
     /// <param name="send">发送数据</param>
     /// <param name="response">返回数据</param>
     /// <returns></returns>
-    internal static OperResult<AdapterResult> GetModbusData(ByteBlock send, ByteBlock response)
+    internal static OperResult<AdapterResult> GetModbusData(byte[] send, ByteBlock response)
     {
         try
         {
-            if (response[1] >= 0x80)//错误码
-                return new OperResult<AdapterResult>(GetDescriptionByErrorCode(response[2])) { Content = new AdapterResult() { FilterResult = FilterResult.Success } };
+            if (response[response.Pos + 1] >= 0x80)//错误码
+                return new OperResult<AdapterResult>(GetDescriptionByErrorCode(response[response.Pos + 2])) { Content = new AdapterResult() { FilterResult = FilterResult.Success } };
 
             if (send == null || send.Length == 0)
             {
@@ -186,14 +116,14 @@ internal class ModbusHelper
                 {
                     Content = new()
                     {
-                        ByteBlock = response.RemoveBegin(3),
+                        Bytes = response.ToArray(response.Pos + 3),
                         FilterResult = FilterResult.Success
                     }
                 };
             }
             //站号验证
-            if (send[0] != response[0])
-                return new OperResult<AdapterResult>(ModbusResource.Localizer["StationNotSame", send[0], response[0]])
+            if (send[response.Pos + 0] != response[response.Pos + 0])
+                return new OperResult<AdapterResult>(ModbusResource.Localizer["StationNotSame", send[response.Pos + 0], response[response.Pos + 0]])
                 {
                     Content = new()
                     {
@@ -201,8 +131,8 @@ internal class ModbusHelper
                     }
                 };
             //功能码验证
-            if (send[1] != response[1])
-                return new OperResult<AdapterResult>(ModbusResource.Localizer["FunctionNotSame", send[1], response[1]])
+            if (send[response.Pos + 1] != response[response.Pos + 1])
+                return new OperResult<AdapterResult>(ModbusResource.Localizer["FunctionNotSame", send[response.Pos + 1], response[response.Pos + 1]])
                 {
                     Content = new()
                     {
@@ -213,7 +143,7 @@ internal class ModbusHelper
             {
                 Content = new()
                 {
-                    ByteBlock = response.RemoveBegin(3),
+                    Bytes = response.ToArray(response.Pos + 3),
                     FilterResult = FilterResult.Success
                 }
             };
@@ -230,6 +160,25 @@ internal class ModbusHelper
             };
         }
     }
+    /// <summary>
+    /// 检测crc
+    /// </summary>
+    /// <param name="response"></param>
+    /// <returns></returns>
+    internal static IOperResult CheckCrc(ByteBlock response)
+    {
+        //crc校验
+        var dataLen = response.Len;
+        var crc = CRC16Utils.CRC16Only(response.Buffer, 0, dataLen - 2);
+        if ((response[dataLen - 2] != crc[0] || response[dataLen - 1] != crc[1]))
+            return new OperResult($"{ModbusResource.Localizer["CrcError"]} {DataTransUtil.ByteToHexString(response.Buffer, 0, dataLen, ' ')}")
+            {
+
+            };
+        response.SetLength(dataLen - 2);
+        return new OperResult();
+    }
+
 
     /// <summary>
     /// 去除Crc，返回modbus数据区
@@ -238,23 +187,20 @@ internal class ModbusHelper
     /// <param name="response"></param>
     /// <param name="crcCheck"></param>
     /// <returns></returns>
-    internal static OperResult<AdapterResult> GetModbusRtuData(ByteBlock send, ByteBlock response, bool crcCheck = true)
+    internal static OperResult<AdapterResult> GetModbusRtuData(byte[] send, ByteBlock response, bool crcCheck = true)
     {
-        if (response[1] >= 0x80)//错误码
-            return new OperResult<AdapterResult>(GetDescriptionByErrorCode(response[2]))
-            {
-                Content = new() { FilterResult = FilterResult.Success }
-            };
-
         //crc校验
-        using var data = response.SelectMiddle(0, response[1] <= 0x04 ? response[2] != 0 ? response[2] + 5 : 8 : 8);
-        var crc = CRC16Utils.CRC16Only(data.Buffer, 0, data.Len - 2);
-        if (crcCheck && (data[data.Len - 2] != crc[0] || data[data.Len - 1] != crc[1]))
-            return new OperResult<AdapterResult>($"{ModbusResource.Localizer["CrcError"]} {DataTransUtil.ByteToHexString(data, ' ')}")
+        var dataLen = response[1] <= 0x04 ? response[2] != 0 ? response[2] + 5 : 8 : 8;
+        var result = CheckCrc(response);
+        if (!result.IsSuccess)
+        {
+            return new OperResult<AdapterResult>(result)
             {
                 Content = new() { FilterResult = FilterResult.Success }
             };
-        return GetModbusData(send, data.RemoveLast(2));
+        }
+
+        return GetModbusData(send, response);
     }
 
     #endregion 解析
@@ -262,111 +208,119 @@ internal class ModbusHelper
     #region 报文构建
 
 
-
     /// <summary>
     /// 添加ModbusTcp报文头
     /// </summary>
-    internal static void AddModbusTcpHead(ISendMessage item)
+    internal static byte[] AddModbusTcpHead(byte[] modbus, int offset, int length, ushort id)
     {
-        ByteBlock bytes = new ByteBlock(item.SendBytes.Len + 6);
-        var addressByte = TouchSocketBitConverter.BigEndian.GetBytes((ushort)item.Sign);
-        bytes.Write(addressByte);
-        bytes.Write((ushort)0);
-        var lenByte = TouchSocketBitConverter.BigEndian.GetBytes((ushort)item.SendBytes.Len);
-        bytes.Write(lenByte);
-        bytes.Write(item.SendBytes.Buffer, 0, item.SendBytes.Len);
-        item.SendBytes.Dispose();
-        item.SendBytes = bytes;
+        byte[] tcp = new byte[length + 6];
+        var ids = BitConverter.GetBytes(id);
+        var lens = BitConverter.GetBytes(length);
+        tcp[0] = ids[1];
+        tcp[1] = ids[0];
+        tcp[4] = lens[1];
+        tcp[5] = lens[0];
+        Array.Copy(modbus, offset, tcp, 6, length);
+        return tcp;
     }
 
     /// <summary>
     /// 获取读取报文
     /// </summary>
-    internal static ByteBlock GetReadModbusCommand(ModbusAddress mAddress, ushort length)
+    internal static byte[] GetReadModbusCommand(ModbusAddress mAddress, ushort length)
     {
-        ByteBlock bytes = new ByteBlock(6);
-        bytes.Write(mAddress.Station);
-        bytes.Write(mAddress.ReadFunction);
-        var addressByte = TouchSocketBitConverter.BigEndian.GetBytes(mAddress.AddressStart);
-        bytes.Write(addressByte);
-        var lenBytes = TouchSocketBitConverter.BigEndian.GetBytes(length);
-        bytes.Write(lenBytes);
-        return bytes;
+        var addresss = BitConverter.GetBytes(mAddress.AddressStart);
+        var lens = BitConverter.GetBytes(length);
+        byte[] array = new byte[6]
+        {
+        (byte) mAddress.Station,
+        (byte) mAddress.ReadFunction,
+        addresss[1],
+        addresss[0],
+        lens[1],
+        lens[0]
+        };
+        return array;
     }
 
     /// <summary>
     /// 获取05写入布尔量报文
     /// </summary>
-    internal static ByteBlock GetWriteBoolModbusCommand(ModbusAddress mAddress, bool value)
+    internal static byte[] GetWriteBoolModbusCommand(ModbusAddress mAddress, bool value)
     {
-        ByteBlock bytes = new ByteBlock(6);
-        bytes.Write(mAddress.Station);
-        bytes.Write((byte)5);
-        var addressByte = TouchSocketBitConverter.BigEndian.GetBytes(mAddress.AddressStart);
-        bytes.Write(addressByte);
+        var addresss = BitConverter.GetBytes(mAddress.AddressStart);
+        byte[] array = new byte[6]
+        {
+    (byte) mAddress.Station,
+    (byte)5,
+    addresss[1],
+    addresss[0],
+     0,
+     0
+        };
         if (value)
         {
-            bytes.Write((byte)0xFF);
-            bytes.Write((byte)0x00);
+            array[4] = 0xFF;
+            array[5] = 0;
         }
         else
         {
-            bytes.Write((byte)0x00);
-            bytes.Write((byte)0x00);
+            array[4] = 0;
+            array[5] = 0;
         }
-        return bytes;
-
+        return array;
     }
 
     /// <summary>
     /// 获取15写入布尔量报文
     /// </summary>
-    internal static ByteBlock GetWriteBoolModbusCommand(ModbusAddress mAddress, bool[] values, ushort length)
+    internal static byte[] GetWriteBoolModbusCommand(ModbusAddress mAddress, bool[] values, ushort length)
     {
+        var addresss = BitConverter.GetBytes(mAddress.AddressStart);
         byte[] numArray1 = values.BoolArrayToByte();
-        ByteBlock bytes = new ByteBlock(7 + numArray1.Length);
-        bytes.Write(mAddress.Station);
-        bytes.Write((byte)15);
-        var addressByte = TouchSocketBitConverter.BigEndian.GetBytes(mAddress.AddressStart);
-        bytes.Write(addressByte);
-
-        bytes.Write((byte)(length / 256));
-        bytes.Write((byte)(length % 256));
-        bytes.Write((byte)numArray1.Length);
-        bytes.Write(numArray1);
-        return bytes;
+        byte[] numArray2 = new byte[7 + numArray1.Length];
+        numArray2[0] = (byte)mAddress.Station;
+        numArray2[1] = (byte)15;
+        numArray2[2] = addresss[1];
+        numArray2[3] = addresss[0];
+        numArray2[4] = (byte)(length / 256);
+        numArray2[5] = (byte)(length % 256);
+        numArray2[6] = (byte)numArray1.Length;
+        numArray1.CopyTo(numArray2, 7);
+        return numArray2;
     }
 
     /// <summary>
     /// 获取16写入字报文
     /// </summary>
-    internal static ByteBlock GetWriteModbusCommand(ModbusAddress mAddress, byte[] values)
+    internal static byte[] GetWriteModbusCommand(ModbusAddress mAddress, byte[] values)
     {
-        ByteBlock bytes = new ByteBlock(7 + values.Length);
-        bytes.Write(mAddress.Station);
-        bytes.Write((byte)16);
-        var addressByte = TouchSocketBitConverter.BigEndian.GetBytes(mAddress.AddressStart);
-        bytes.Write(addressByte);
-        bytes.Write((byte)(values.Length / 2 / 256));
-        bytes.Write((byte)(values.Length / 2 % 256));
-        bytes.Write((byte)values.Length);
-        bytes.Write(values);
-
-        return bytes;
+        var addresss = BitConverter.GetBytes(mAddress.AddressStart);
+        byte[] numArray = new byte[7 + values.Length];
+        numArray[0] = (byte)mAddress.Station;
+        numArray[1] = (byte)16;
+        numArray[2] = addresss[1];
+        numArray[3] = addresss[0];
+        numArray[4] = (byte)(values.Length / 2 / 256);
+        numArray[5] = (byte)(values.Length / 2 % 256);
+        numArray[6] = (byte)values.Length;
+        values.CopyTo(numArray, 7);
+        return numArray;
     }
 
     /// <summary>
     /// 获取6写入字报文
     /// </summary>
-    internal static ByteBlock GetWriteOneModbusCommand(ModbusAddress mAddress, byte[] values)
+    internal static byte[] GetWriteOneModbusCommand(ModbusAddress mAddress, byte[] values)
     {
-        ByteBlock bytes = new ByteBlock(4 + values.Length);
-        bytes.Write(mAddress.Station);
-        bytes.Write((byte)6);
-        var addressByte = TouchSocketBitConverter.BigEndian.GetBytes(mAddress.AddressStart);
-        bytes.Write(addressByte);
-        bytes.Write(values);
-        return bytes;
+        var addresss = BitConverter.GetBytes(mAddress.AddressStart);
+        byte[] numArray = new byte[4 + values.Length];
+        numArray[0] = (byte)mAddress.Station;
+        numArray[1] = (byte)6;
+        numArray[2] = addresss[1];
+        numArray[3] = addresss[0];
+        values.CopyTo(numArray, 4);
+        return numArray;
     }
 
     #endregion 报文构建

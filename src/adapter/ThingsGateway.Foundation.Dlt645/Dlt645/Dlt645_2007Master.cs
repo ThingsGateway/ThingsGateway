@@ -271,7 +271,7 @@ public class Dlt645_2007Master : ProtocolBase, IDtu
         {
             string str = $"{dateTime.Second:D2}{dateTime.Minute:D2}{dateTime.Hour:D2}{dateTime.Day:D2}{dateTime.Month:D2}{dateTime.Year % 100:D2}";
             var commandResult = Dlt645Helper.GetDlt645_2007Command((byte)ControlCode.BroadcastTime, str.ByHexStringToBytes().ToArray(), "999999999999".ByHexStringToBytes());
-            Send(string.Empty, commandResult, 0, commandResult.Len, cancellationToken);
+            Send(string.Empty, commandResult, 0, commandResult.Length, cancellationToken);
             return OperResult.Success;
         }
         catch (Exception ex)

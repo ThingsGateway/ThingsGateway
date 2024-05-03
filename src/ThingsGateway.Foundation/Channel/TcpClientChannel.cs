@@ -86,7 +86,7 @@ namespace ThingsGateway.Foundation
 
         public override async Task CloseAsync(string msg)
         {
-            if (!this.Online)
+            if (this.Online)
             {
                 await base.CloseAsync(msg);
                 Logger?.Debug($"{ToString()}  Closed{msg}");

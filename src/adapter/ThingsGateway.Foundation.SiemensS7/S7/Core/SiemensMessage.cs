@@ -26,12 +26,12 @@ internal class SiemensMessage : MessageBase, IResultMessage
     /// <inheritdoc/>
     public override bool CheckHeadBytes(byte[]? headBytes)
     {
-        if (headByteBlock == null || headByteBlock.Length < 4)
+        if (headBytes == null || headBytes.Length < 4)
             BodyLength = 0;
-        int length = (headByteBlock[2] * 256) + headByteBlock[3] - 4;
+        int length = (headBytes[2] * 256) + headBytes[3] - 4;
         if (length < 0)
             length = 0;
         BodyLength = length;
-        return headByteBlock != null && headByteBlock[0] == 3 && headByteBlock[1] == 0;
+        return headBytes != null && headBytes[0] == 3 && headBytes[1] == 0;
     }
 }

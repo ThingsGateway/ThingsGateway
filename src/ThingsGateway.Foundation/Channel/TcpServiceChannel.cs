@@ -27,7 +27,7 @@ namespace ThingsGateway.Foundation
 
         /// <inheritdoc/>
         public ConcurrentList<IProtocol> Collects { get; } = new();
- 
+
 
         /// <summary>
         /// 停止时是否发送ShutDown
@@ -66,15 +66,20 @@ namespace ThingsGateway.Foundation
                 await base.StartAsync().ConfigureAwait(false);
             }
         }
+        public override string ToString()
+        {
+            return Monitors.FirstOrDefault()?.Option?.IpHost.ToString();
+        }
 
         /// <inheritdoc/>
         public override async Task StopAsync()
         {
             if (Monitors.Any())
             {
+                var iPHost = Monitors.FirstOrDefault()?.Option.IpHost;
                 await base.StopAsync().ConfigureAwait(false);
                 if (!Monitors.Any())
-                    Logger.Info($"{Monitors.FirstOrDefault()?.Option.IpHost}{DefaultResource.Localizer["ServiceStoped"]}");
+                    Logger.Info($"{iPHost}{DefaultResource.Localizer["ServiceStoped"]}");
             }
             else
             {
@@ -107,7 +112,7 @@ namespace ThingsGateway.Foundation
             Logger?.Debug($"{socketClient} Closing");
             return base.OnTcpClosing(socketClient, e);
         }
- 
+
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
