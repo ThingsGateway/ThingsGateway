@@ -39,16 +39,15 @@ internal partial class SiemensHelper
     //    return OperResult.CreateSuccessResult<byte[]>(numArray);
     //}
 
-    internal static OperResult<AdapterResult> AnalysisReadByte(ByteBlock sends, ByteBlock content)
+    internal static OperResult<AdapterResult> AnalysisReadByte(byte[] sends, ByteBlock content)
     {
         int length = 0;
-        int itemLen = (sends.Len - 19) / 12;
+        int itemLen = (sends.Length - 19) / 12;
 
         //添加错误代码校验
         if (content[17] + content[18] > 0)
         {
-            return new(SiemensS7Resource.Localizer["ReturnError", content[17].ToString("X2"), content[18].ToString("X2")]) { Content = new AdapterResult() { ByteBlock = content, FilterResult = FilterResult.Success } };
-
+            return new(SiemensS7Resource.Localizer["ReturnError", content[17].ToString("X2"), content[18].ToString("X2")]) { Content = new AdapterResult() { Bytes = Array.Empty<byte>(), FilterResult = FilterResult.Success } };
         }
 
         if (content.Length >= 22)
@@ -56,7 +55,7 @@ internal partial class SiemensHelper
             //添加返回代码校验
             if (content[21] != 0xff)
             {
-                return new(SiemensS7Resource.Localizer["ReturnCode", content[21].ToString("X2")]) { Content = new AdapterResult() { ByteBlock = content, FilterResult = FilterResult.Success } };
+                return new(SiemensS7Resource.Localizer["ReturnCode", content[21].ToString("X2")]) { Content = new AdapterResult() { Bytes = Array.Empty<byte>(), FilterResult = FilterResult.Success } };
             }
         }
 
@@ -77,8 +76,9 @@ internal partial class SiemensHelper
             return new(SiemensS7Resource.Localizer["DataLengthError"]);
         }
 
-        ByteBlock dataArray = new ByteBlock(length);
+        byte[] dataArray = new byte[length];
         int index1 = 0;
+        int dataIndex = 0;
         for (int index2 = 21; index2 < content.Length; index2++)
         {
             if (index2 + 1 < content.Length)
@@ -94,8 +94,9 @@ internal partial class SiemensHelper
                 }
                 if (content[index2] == byte.MaxValue && content[index2 + 1] == 4)//Bit:3;Byte:4;Counter或者Timer:9
                 {
-                    dataArray.Write(content, index2 + 4, s7len);
+                    Array.Copy(content, index2 + 4, dataArray, dataIndex, s7len);
                     index2 += s7len + 3;
+                    dataIndex += s7len;
                     index1++;
                 }
                 else if (content[index2] == byte.MaxValue && content[index2 + 1] == 9)//Counter或者Timer:9
@@ -105,14 +106,16 @@ internal partial class SiemensHelper
                     {
                         for (int index3 = 0; index3 < num / 3; index3++)
                         {
-                            dataArray.Write(content, index2 + 5 + (3 * index3), 2);
+                            Array.Copy(content, index2 + 5 + (3 * index3), dataArray, dataIndex, 2);
+                            dataIndex += 2;
                         }
                     }
                     else
                     {
                         for (int index4 = 0; index4 < num / 5; index4++)
                         {
-                            dataArray.Write(content, index2 + 7 + (5 * index4), 2);
+                            Array.Copy(content, index2 + 7 + (5 * index4), dataArray, dataIndex, 2);
+                            dataIndex += 2;
                         }
                     }
                     index2 += num + 4;
@@ -121,11 +124,12 @@ internal partial class SiemensHelper
                 else
                 {
                     return new(SiemensS7Resource.Localizer["ValidateDataError", content[index2], GetCpuError(content[index2])])
-                    { Content = new AdapterResult() { ByteBlock = content, FilterResult = FilterResult.Success } };
+                    { Content = new AdapterResult() { Bytes = Array.Empty<byte>(), FilterResult = FilterResult.Success } };
+
                 }
             }
         }
-        return new() { Content = new AdapterResult() { ByteBlock = dataArray, FilterResult = FilterResult.Success } }; ;
+        return new() { Content = new AdapterResult() { Bytes = dataArray, FilterResult = FilterResult.Success } }; ;
     }
 
     internal static OperResult<AdapterResult> AnalysisWrite(ByteBlock content)
@@ -133,25 +137,25 @@ internal partial class SiemensHelper
         if (content.Len < 22 || content[21] != byte.MaxValue)
         {
             if (content.Len < 22)
-                return new("ValidateDataError") { Content = new AdapterResult() { ByteBlock = content, FilterResult = FilterResult.Success } };
+                return new("ValidateDataError") { Content = new AdapterResult() { Bytes = Array.Empty<byte>(), FilterResult = FilterResult.Success } };
             return new(SiemensS7Resource.Localizer["ValidateDataError", content[21], GetCpuError(content[21])])
-            { Content = new AdapterResult() { ByteBlock = content, FilterResult = FilterResult.Success } };
+            { Content = new AdapterResult() { Bytes = Array.Empty<byte>(), FilterResult = FilterResult.Success } };
         }
         else
         {
-            return new() { Content = new AdapterResult() { ByteBlock = content, FilterResult = FilterResult.Success } }; ;
+            return new() { Content = new AdapterResult() { Bytes = Array.Empty<byte>(), FilterResult = FilterResult.Success } }; ;
         }
     }
 
-    internal static ByteBlock GetReadCommand(SiemensAddress[] siemensAddress)
+    internal static byte[] GetReadCommand(SiemensAddress[] siemensAddress)
     {
         int len = siemensAddress.Length;
         int telegramLen = len * 12 + 19;
         int parameterLen = len * 12 + 2;
 
-        ByteBlock numArray = new ByteBlock(telegramLen);
+        byte[] numArray = new byte[telegramLen];
 
-        numArray.Write(S7_MULRW_HEADER);
+        Array.Copy(S7_MULRW_HEADER, 0, numArray, 0, S7_MULRW_HEADER.Length);
         numArray[2] = (byte)(telegramLen / 256);
         numArray[3] = (byte)(telegramLen % 256);
         numArray[13] = (byte)(parameterLen / 256);
@@ -160,7 +164,7 @@ internal partial class SiemensHelper
 
         for (int index = 0; index < len; index++)
         {
-            numArray.Write(S7_MULRD_ITEM);
+            Array.Copy(S7_MULRD_ITEM, 0, numArray, 19 + (index * 12), S7_MULRD_ITEM.Length);
             if (siemensAddress[index].DataCode == (byte)S7WordLength.Counter || siemensAddress[index].DataCode == (byte)S7WordLength.Timer)
             {
                 numArray[22 + (index * 12)] = siemensAddress[index].DataCode;
@@ -183,16 +187,15 @@ internal partial class SiemensHelper
         return numArray;
     }
 
-    internal static ByteBlock GetWriteBitCommand(SiemensAddress address, bool data)
+    internal static byte[] GetWriteBitCommand(SiemensAddress address, bool data)
     {
         int len = 1;
         int telegramLen = 16 + 19 + len;//最后的1是写入值的byte数量
         int parameterLen = 12 + 2;
 
-        ByteBlock numArray = new ByteBlock(telegramLen);
-        numArray.SetLength(telegramLen);
+        byte[] numArray = new byte[telegramLen];
 
-        numArray.Write(S7_MULRW_HEADER);
+        Array.Copy(S7_MULRW_HEADER, 0, numArray, 0, S7_MULRW_HEADER.Length);
         numArray[2] = (byte)(telegramLen / 256);
         numArray[3] = (byte)(telegramLen % 256);
         numArray[13] = (byte)(parameterLen / 256);
@@ -224,16 +227,15 @@ internal partial class SiemensHelper
         return numArray;
     }
 
-    internal static ByteBlock GetWriteByteCommand(SiemensAddress address, byte[] data)
+    internal static byte[] GetWriteByteCommand(SiemensAddress address, byte[] data)
     {
         int len = data.Length;
         int telegramLen = 16 + 19 + len;//最后的1是写入值的byte数量
         int parameterLen = 12 + 2;
 
-        ByteBlock numArray = new ByteBlock(telegramLen);
-        numArray.SetLength(telegramLen);
+        byte[] numArray = new byte[telegramLen];
 
-        numArray.Write(S7_MULRW_HEADER);
+        Array.Copy(S7_MULRW_HEADER, 0, numArray, 0, S7_MULRW_HEADER.Length);
         numArray[2] = (byte)(telegramLen / 256);
         numArray[3] = (byte)(telegramLen % 256);
         numArray[13] = (byte)(parameterLen / 256);
@@ -261,9 +263,7 @@ internal partial class SiemensHelper
         numArray[32] = 4;//Bit:3;Byte:4;Counter或者Timer:9
         numArray[33] = (byte)(len * 8 / 256);
         numArray[34] = (byte)(len * 8 % 256);
-
-        numArray.Pos = 35;
-        numArray.Write(data);
+        data.CopyTo(numArray, 35);
 
         return numArray;
     }

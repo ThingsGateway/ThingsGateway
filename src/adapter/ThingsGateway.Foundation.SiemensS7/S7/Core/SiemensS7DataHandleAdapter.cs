@@ -31,11 +31,10 @@ internal class SiemensS7DataHandleAdapter : ReadWriteDevicesSingleStreamDataHand
     {
         var send = request.SendBytes;
         var response = request.ReceivedByteBlock;
-
         var result = new OperResult<AdapterResult>(); // 创建一个操作结果对象
         if (response[2] * 256 + response[3] == 7) // 判断响应中的状态信息是否为7
         {
-            result = new() { Content = new AdapterResult() { ByteBlock = response, FilterResult = FilterResult.Success } }; // 如果是7，则表示成功，设置操作结果为成功
+            result = new() { Content = new AdapterResult() { Bytes = Array.Empty<byte>(), FilterResult = FilterResult.Success } }; // 如果是7，则表示成功，设置操作结果为成功
         }
         else
         {
@@ -55,19 +54,18 @@ internal class SiemensS7DataHandleAdapter : ReadWriteDevicesSingleStreamDataHand
 
                     if (response[5] == 0xD0) // 首次握手0XD0连接确认
                     {
-                        result = new() { Content = new AdapterResult() { ByteBlock = response, FilterResult = FilterResult.Success } }; // 如果是7，则表示成功，设置操作结果为成功
+                        result = new() { Content = new AdapterResult() { Bytes = Array.Empty<byte>(), FilterResult = FilterResult.Success } }; // 如果是7，则表示成功，设置操作结果为成功
                     }
                     else
                     {
                         // 其余情况判断错误代码
                         if (response[17] + response[18] > 0) // 如果错误代码不为0
                         {
-                            result = new(SiemensS7Resource.Localizer["ReturnError", response[17].ToString("X2"), response[18].ToString("X2")]) { Content = new AdapterResult() { ByteBlock = response, FilterResult = FilterResult.Success } };
-
+                            result = new(SiemensS7Resource.Localizer["ReturnError", response[17].ToString("X2"), response[18].ToString("X2")]) { Content = new AdapterResult() { Bytes = Array.Empty<byte>(), FilterResult = FilterResult.Success } };
                         }
                         else
                         {
-                            result = new() { Content = new AdapterResult() { ByteBlock = response, FilterResult = FilterResult.Success } }; // 如果错误代码为0，则设置操作结果为成功
+                            result = new() { Content = new AdapterResult() { Bytes = Array.Empty<byte>(), FilterResult = FilterResult.Success } }; // 如果错误代码为0，则设置操作结果为成功
                         }
                     }
 

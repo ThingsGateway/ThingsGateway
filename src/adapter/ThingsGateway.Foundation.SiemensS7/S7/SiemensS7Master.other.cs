@@ -21,17 +21,17 @@ namespace ThingsGateway.Foundation.SiemensS7;
 /// <inheritdoc/>
 public partial class SiemensS7Master : ProtocolBase
 {
-    private static ByteBlock GetWriteBitCommand(string address, bool data)
+    private static byte[] GetWriteBitCommand(string address, bool data)
     {
         var result = SiemensAddress.ParseFrom(address);
         return SiemensHelper.GetWriteBitCommand(result, data);
     }
 
-    private List<ByteBlock> GetReadByteCommand(string address, int length)
+    private List<byte[]> GetReadByteCommand(string address, int length)
     {
         var from = SiemensAddress.ParseFrom(address, length);
         ushort num1 = 0;
-        var listBytes = new List<ByteBlock>();
+        var listBytes = new List<byte[]>();
         while (num1 < length)
         {
             //pdu长度，重复生成报文，直至全部生成
@@ -52,14 +52,14 @@ public partial class SiemensS7Master : ProtocolBase
         return listBytes;
     }
 
-    private List<ByteBlock> GetReadByteCommand(SiemensAddress[] siemensAddress)
+    private List<byte[]> GetReadByteCommand(SiemensAddress[] siemensAddress)
     {
         if (siemensAddress.Length <= 19)
         {
-            return new List<ByteBlock>() { SiemensHelper.GetReadCommand(siemensAddress) };
+            return new List<byte[]>() { SiemensHelper.GetReadCommand(siemensAddress) };
         }
 
-        List<ByteBlock> byteList = new();
+        List<byte[]> byteList = new();
         List<SiemensAddress[]> s7AddressDataArrayList = siemensAddress.ArraySplitByLength(19);
         for (int index = 0; index < s7AddressDataArrayList.Count; ++index)
         {
@@ -69,7 +69,7 @@ public partial class SiemensS7Master : ProtocolBase
         return byteList;
     }
 
-    private List<ByteBlock> GetWriteByteCommand(string address, byte[] value)
+    private List<byte[]> GetWriteByteCommand(string address, byte[] value)
     {
         var s_Address = SiemensAddress.ParseFrom(address);
 
@@ -81,11 +81,11 @@ public partial class SiemensS7Master : ProtocolBase
     /// </summary>
     public static ThingsGatewayBitConverter DefaultConverter = new(BitConverter.IsLittleEndian ? EndianType.Little : EndianType.Big);
 
-    private List<ByteBlock> GetWriteByteCommand(SiemensAddress address, byte[] value)
+    private List<byte[]> GetWriteByteCommand(SiemensAddress address, byte[] value)
     {
         int length1 = value.Length;
         ushort index = 0;
-        List<ByteBlock> bytes = new();
+        List<byte[]> bytes = new();
         while (index < length1)
         {
             //pdu长度，重复生成报文，直至全部生成
