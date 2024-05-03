@@ -8,27 +8,17 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-namespace ThingsGateway.Foundation.Dlt645;
+namespace ThingsGateway.Foundation;
 
-/// <summary>
-/// <inheritdoc/>
-/// </summary>
-internal class Dlt645_2007Message : MessageBase, IResultMessage
+public struct AdapterResult : IDisposable
 {
-    /// <inheritdoc/>
-    public override int HeadBytesLength => 0;
+    public FilterResult FilterResult { get; set; }
+    public ByteBlock ByteBlock { get; set; }
 
-    /// <inheritdoc/>
-    public override bool CheckHeadBytes(byte[]? headBytes)
+    public void Dispose()
     {
-        if (SendBytes?.Length > 0)
-        {
-            BodyLength = 0;
-            return true;
-        }
-        else
-        {
-            return false;//不是主动请求的，可能是心跳DTU包，直接放弃
-        }
+        ByteBlock.SafeDispose();
     }
+
+
 }

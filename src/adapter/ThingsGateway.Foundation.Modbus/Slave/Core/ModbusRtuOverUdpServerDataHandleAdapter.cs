@@ -24,15 +24,15 @@ internal class ModbusRtuOverUdpServerDataHandleAdapter : ReadWriteDevicesUdpData
 
     public override void PackCommand(ISendMessage item)
     {
-        var crc = CRC16Utils.CRC16Only(item.SendByteBlock.Buffer, 0, item.SendByteBlock.Len);
-        item.SendByteBlock.SeekToEnd();
-        item.SendByteBlock.Write(crc);
+        var crc = CRC16Utils.CRC16Only(item.SendBytes.Buffer, 0, item.SendBytes.Len);
+        item.SendBytes.SeekToEnd();
+        item.SendBytes.Write(crc);
     }
 
     /// <inheritdoc/>
     protected override ByteBlock UnpackResponse(ModbusRtuServerMessage request)
     {
-        var send = request.SendByteBlock;
+        var send = request.SendBytes;
         var response = request.ReceivedByteBlock;
         var result1 = ModbusHelper.GetModbusRtuData(send, response, true);
         request.OperCode = result1.OperCode;

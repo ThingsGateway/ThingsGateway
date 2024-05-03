@@ -705,6 +705,7 @@ public abstract class DeviceHostedService : BackgroundService
             await restartLock.WaitAsync().ConfigureAwait(false);
             await singleRestartLock.WaitAsync().ConfigureAwait(false);
             await StopThreadAsync(isRemoveDevice).ConfigureAwait(false);
+            BytePool.Default.Clear(); // 清空内存池
         }
         catch (Exception ex)
         {

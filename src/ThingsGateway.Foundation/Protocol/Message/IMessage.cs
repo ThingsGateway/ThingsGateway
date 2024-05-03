@@ -42,7 +42,7 @@ public interface IResultMessage : IOperResult, IRequestInfo, IDisposableObject
     /// <summary>
     /// 发送的字节信息，对于非并发主从协议，可能需要从中获取校验字段，其他情况下可以为空
     /// </summary>
-    ByteBlock? SendByteBlock { get; set; }
+    byte[]? SendBytes { get; set; }
 
     /// <summary>
     /// 等待标识，对于并发协议，必须从协议中例如固定头部获取标识字段
@@ -52,9 +52,9 @@ public interface IResultMessage : IOperResult, IRequestInfo, IDisposableObject
     /// <summary>
     /// 检查头子节的合法性,并赋值<see cref="BodyLength"/><br />
     /// </summary>
-    /// <param name="headByteBlock">接收的头子节</param>
+    /// <param name="headBytes">接收的头子节</param>
     /// <returns>是否成功的结果</returns>
-    bool CheckHeadBytes(ByteBlock? headByteBlock);
+    bool CheckHeadBytes(byte[]? headBytes);
 }
 
 /// <summary>
@@ -65,7 +65,7 @@ public interface ISendMessage : IRequestInfo
     /// <summary>
     /// 发送的字节信息
     /// </summary>
-    ByteBlock SendByteBlock { get; set; }
+    byte[] SendBytes { get; set; }
     /// <summary>
     /// 等待标识，对于并发协议，必须获取标识字段后写入协议报文
     /// </summary>

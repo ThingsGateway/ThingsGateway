@@ -402,9 +402,21 @@ public class AlarmHostedService : BackgroundService
         return base.StartAsync(cancellationToken);
     }
 
-    protected override Task ExecuteAsync(CancellationToken stoppingToken)
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        return Task.CompletedTask;
+        try
+        {
+            while (!stoppingToken.IsCancellationRequested)
+            {
+                _logger.LogInformation("BytePool.Default.Capacity：" + BytePool.Default.Capacity);
+                _logger.LogInformation("BytePool.Default.GetPoolSize：" + BytePool.Default.GetPoolSize());
+                await Task.Delay(10000, stoppingToken);
+            }
+        }
+        catch (OperationCanceledException)
+        {
+
+        }
     }
 
     private Task CollectDeviceHostedService_Started()

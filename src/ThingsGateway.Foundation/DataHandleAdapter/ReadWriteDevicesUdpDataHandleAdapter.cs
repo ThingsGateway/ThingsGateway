@@ -83,9 +83,7 @@ public abstract class ReadWriteDevicesUdpDataHandleAdapter<TRequest> : UdpDataHa
         //当解析消息设定固定头长度大于0时，获取头部字节
         if (request.HeadBytesLength > 0)
         {
-            using var header = new ByteBlock(request.HeadBytesLength);
-            header.Write(byteBlock.Buffer, byteBlock.Pos, request.HeadBytesLength);
-            header.SeekToStart();
+            var header = byteBlock.ToArrayTake(request.HeadBytesLength);
             Check(byteBlock, header);
             request.SafeDispose();
             return GoReceived(remoteEndPoint, null, request);
@@ -97,7 +95,7 @@ public abstract class ReadWriteDevicesUdpDataHandleAdapter<TRequest> : UdpDataHa
             return GoReceived(remoteEndPoint, null, request);
         }
 
-        void Check(ByteBlock byteBlock, ByteBlock? header)
+        void Check(ByteBlock byteBlock, byte[]? header)
         {
             //检查头部合法性
             if (request.CheckHeadBytes(header))
@@ -140,16 +138,14 @@ public abstract class ReadWriteDevicesUdpDataHandleAdapter<TRequest> : UdpDataHa
     /// <inheritdoc/>
     protected override void PreviewSend(EndPoint endPoint, byte[] buffer, int offset, int length)
     {
-        using var byteBlock = new ByteBlock(length);
-        byteBlock.Write(buffer, offset, length);
-        var send = new SendMessage(byteBlock);
+        var send = new SendMessage(buffer);
         //发送前打包
         if (IsSendPackCommand)
             PackCommand(send);
         if (Logger.LogLevel <= LogLevel.Trace)
-            Logger?.Trace($"{ToString()}- Send:{(IsHexData ? buffer.ToHexString(0, length, ' ') : Encoding.UTF8.GetString(buffer, offset, length))}");
+            Logger?.Trace($"{ToString()}- Send:{(IsHexData ? send.SendBytes.ToHexString(offset, length, ' ') : Encoding.UTF8.GetString(send.SendBytes, offset, length))}");
         //发送
-        this.GoSend(endPoint, send.SendByteBlock.Buffer, 0, send.SendByteBlock.Len);
+        this.GoSend(endPoint, send.SendBytes, offset, length);
     }
 
     /// <inheritdoc/>
@@ -164,24 +160,19 @@ public abstract class ReadWriteDevicesUdpDataHandleAdapter<TRequest> : UdpDataHa
             PackCommand(message);
 
         if (Logger.LogLevel <= LogLevel.Trace)
-            Logger?.Trace($"{ToString()}- Send:{(IsHexData ? message.SendByteBlock.Buffer.ToHexString(0, message.SendByteBlock.Len, ' ') : message.SendByteBlock.ToString())}");
+            Logger?.Trace($"{ToString()}- Send:{(IsHexData ? message.SendBytes.ToHexString(0, message.SendBytes.Length, ' ') : Encoding.UTF8.GetString(message.SendBytes))}");
         //非并发主从协议
         if (IsSingleThread)
         {
             var request = GetInstance();
             request.Sign = message.Sign;
-            request.SendByteBlock = message.SendByteBlock;
+            request.SendBytes = message.SendBytes;
             Request = request;
         }
         //发送
-        this.GoSend(endPoint, message.SendByteBlock.Buffer, 0, message.SendByteBlock.Len);
+        this.GoSend(endPoint, message.SendBytes, 0, message.SendBytes.Length);
 
 
-        if (!IsSingleThread)
-        {
-            //并发协议，直接释放内存池
-            message.SendByteBlock.SafeDispose();
-        }
 
 
     }
@@ -189,16 +180,15 @@ public abstract class ReadWriteDevicesUdpDataHandleAdapter<TRequest> : UdpDataHa
     /// <inheritdoc/>
     protected override async Task PreviewSendAsync(EndPoint endPoint, byte[] buffer, int offset, int length)
     {
-        using var byteBlock = new ByteBlock(length);
-        byteBlock.Write(buffer, offset, length);
-        var send = new SendMessage(byteBlock);
+
+        var send = new SendMessage(buffer);
         //发送前打包
         if (IsSendPackCommand)
             PackCommand(send);
         if (Logger.LogLevel <= LogLevel.Trace)
-            Logger?.Trace($"{ToString()}- Send:{(IsHexData ? buffer.ToHexString(0, length, ' ') : Encoding.UTF8.GetString(buffer, offset, length))}");
+            Logger?.Trace($"{ToString()}- Send:{(IsHexData ? send.SendBytes.ToHexString(offset, length, ' ') : Encoding.UTF8.GetString(send.SendBytes, offset, length))}");
         //发送
-        await this.GoSendAsync(endPoint, send.SendByteBlock.Buffer, 0, send.SendByteBlock.Len).ConfigureAwait(false);
+        await this.GoSendAsync(endPoint, send.SendBytes, offset, length).ConfigureAwait(false);
     }
     /// <inheritdoc/>
     protected override async Task PreviewSendAsync(EndPoint endPoint, IRequestInfo requestInfo)
@@ -212,24 +202,18 @@ public abstract class ReadWriteDevicesUdpDataHandleAdapter<TRequest> : UdpDataHa
             PackCommand(message);
 
         if (Logger.LogLevel <= LogLevel.Trace)
-            Logger?.Trace($"{ToString()}- Send:{(IsHexData ? message.SendByteBlock.Buffer.ToHexString(0, message.SendByteBlock.Len, ' ') : message.SendByteBlock.ToString())}");
+            Logger?.Trace($"{ToString()}- Send:{(IsHexData ? message.SendBytes.ToHexString(0, message.SendBytes.Length, ' ') : Encoding.UTF8.GetString(message.SendBytes))}");
 
         //非并发主从协议
         if (IsSingleThread)
         {
             var request = GetInstance();
             request.Sign = message.Sign;
-            request.SendByteBlock = message.SendByteBlock;
+            request.SendBytes = message.SendBytes;
             Request = request;
         }
         //发送
-        await this.GoSendAsync(endPoint, message.SendByteBlock.Buffer, 0, message.SendByteBlock.Len).ConfigureAwait(false);
-
-        if (!IsSingleThread)
-        {
-            //并发协议，直接释放内存池
-            message.SendByteBlock.SafeDispose();
-        }
+        await this.GoSendAsync(endPoint, message.SendBytes, 0, message.SendBytes.Length).ConfigureAwait(false);
 
 
     }

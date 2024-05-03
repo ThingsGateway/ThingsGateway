@@ -29,7 +29,7 @@ internal class ModbusTcpServerDataHandleAdapter : ReadWriteDevicesSingleStreamDa
     /// <inheritdoc/>
     protected override AdapterResult UnpackResponse(ModbusTcpServerMessage request)
     {
-        var send = request.SendByteBlock;
+        var send = request.SendBytes;
         using var response = request.ReceivedByteBlock.RemoveBegin(6);
         var result = ModbusHelper.GetModbusWriteData(response);
         request.OperCode = result.OperCode;

@@ -268,15 +268,15 @@ internal class ModbusHelper
     /// </summary>
     internal static void AddModbusTcpHead(ISendMessage item)
     {
-        ByteBlock bytes = new ByteBlock(item.SendByteBlock.Len + 6);
+        ByteBlock bytes = new ByteBlock(item.SendBytes.Len + 6);
         var addressByte = TouchSocketBitConverter.BigEndian.GetBytes((ushort)item.Sign);
         bytes.Write(addressByte);
         bytes.Write((ushort)0);
-        var lenByte = TouchSocketBitConverter.BigEndian.GetBytes((ushort)item.SendByteBlock.Len);
+        var lenByte = TouchSocketBitConverter.BigEndian.GetBytes((ushort)item.SendBytes.Len);
         bytes.Write(lenByte);
-        bytes.Write(item.SendByteBlock.Buffer, 0, item.SendByteBlock.Len);
-        item.SendByteBlock.Dispose();
-        item.SendByteBlock = bytes;
+        bytes.Write(item.SendBytes.Buffer, 0, item.SendBytes.Len);
+        item.SendBytes.Dispose();
+        item.SendBytes = bytes;
     }
 
     /// <summary>

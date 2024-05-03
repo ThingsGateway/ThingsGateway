@@ -29,7 +29,7 @@ internal class ModbusRtuServerMessage : MessageBase, IResultMessage, IModbusServ
     public override int HeadBytesLength => 7; //主站发送的报文最低也有8个字节
 
     /// <inheritdoc/>
-    public override bool CheckHeadBytes(ByteBlock? headByteBlock)
+    public override bool CheckHeadBytes(byte[]? headBytes)
     {
         if (headByteBlock == null || headByteBlock.Length <= 0) return false;
         //01 03 00 00 00 01 xx xx

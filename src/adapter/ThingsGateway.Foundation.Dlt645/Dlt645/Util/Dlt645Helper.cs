@@ -1173,7 +1173,7 @@ internal static class Dlt645Helper
     /// <summary>
     /// 获取Dlt645报文
     /// </summary>
-    internal static ByteBlock GetDlt645_2007Command(
+    internal static byte[] GetDlt645_2007Command(
       Dlt645_2007Address address,
       byte control,
       string defaultStation,
@@ -1259,7 +1259,7 @@ internal static class Dlt645Helper
         return GetDlt645_2007Command(control, buffer, stationBytes);
     }
 
-    internal static ByteBlock GetDlt645_2007Command(byte control, byte[] buffer, byte[] stationBytes)
+    internal static byte[] GetDlt645_2007Command(byte control, byte[] buffer, byte[] stationBytes)
     {
         buffer ??= Array.Empty<byte>();
         ByteBlock array = new ByteBlock(12 + buffer.Length);

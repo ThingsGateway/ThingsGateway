@@ -36,12 +36,7 @@ internal class Dlt645_2007UdpDataHandleAdapter : ReadWriteDevicesUdpDataHandleAd
     {
         if (!FEHead.IsNullOrWhiteSpace())
         {
-            var head = FEHead.HexStringToBytes();
-            ByteBlock bytes = new ByteBlock(item.SendByteBlock.Len + head.Length);
-            bytes.Write(head);
-            bytes.Write(item.SendByteBlock.Buffer, 0, item.SendByteBlock.Len);
-            item.SendByteBlock.Dispose();
-            item.SendByteBlock = bytes;
+            item.SendBytes = DataTransUtil.SpliceArray(FEHead.HexStringToBytes(), item.SendBytes);
         }
     }
 
@@ -49,7 +44,7 @@ internal class Dlt645_2007UdpDataHandleAdapter : ReadWriteDevicesUdpDataHandleAd
 
     protected override ByteBlock UnpackResponse(Dlt645_2007Message request)
     {
-        var send = request.SendByteBlock;
+        var send = request.SendBytes;
         var response = request.ReceivedByteBlock;
         //因为设备可能带有FE前导符开头，这里找到0x68的位置
         int headCodeIndex = 0;

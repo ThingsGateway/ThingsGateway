@@ -29,7 +29,7 @@ internal class SiemensS7DataHandleAdapter : ReadWriteDevicesSingleStreamDataHand
     /// <inheritdoc/>
     protected override AdapterResult UnpackResponse(SiemensMessage request)
     {
-        var send = request.SendByteBlock;
+        var send = request.SendBytes;
         var response = request.ReceivedByteBlock;
 
         var result = new OperResult<AdapterResult>(); // 创建一个操作结果对象

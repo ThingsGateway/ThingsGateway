@@ -24,7 +24,7 @@ internal class ModbusRtuMessage : MessageBase, IResultMessage
     public override int HeadBytesLength => 3;
 
     /// <inheritdoc/>
-    public override bool CheckHeadBytes(ByteBlock? headByteBlock)
+    public override bool CheckHeadBytes(byte[]? headBytes)
     {
         if (headByteBlock == null || headByteBlock.Length <= 0) return false;
         //01 03 02 00 01 xx xx
@@ -56,7 +56,7 @@ internal class ModbusRtuMessage : MessageBase, IResultMessage
             }
         }
 
-        if (SendByteBlock?.Length > 0)
+        if (SendBytes?.Length > 0)
         {
             return true;
         }

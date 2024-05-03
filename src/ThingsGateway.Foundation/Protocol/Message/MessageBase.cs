@@ -128,15 +128,14 @@ public abstract class MessageBase : DisposableObject, IOperResult<byte[]>, IResu
     public abstract int HeadBytesLength { get; }
 
     public ByteBlock ReceivedByteBlock { get; set; }
-    public ByteBlock? SendByteBlock { get; set; }
+    public byte[]? SendBytes { get; set; }
 
     /// <inheritdoc/>
-    public abstract bool CheckHeadBytes(ByteBlock? headByteBlock);
+    public abstract bool CheckHeadBytes(byte[]? headBytes);
 
     protected override void Dispose(bool disposing)
     {
         ReceivedByteBlock?.SafeDispose();
-        SendByteBlock?.SafeDispose();
         base.Dispose(disposing);
     }
 
@@ -156,22 +155,16 @@ public abstract class MessageBase : DisposableObject, IOperResult<byte[]>, IResu
 /// <inheritdoc/>
 public class SendMessage : ISendMessage
 {
-    /// <inheritdoc/>
-    public SendMessage(ByteBlock sendByteBlock)
-    {
-        SendByteBlock = sendByteBlock;
-    }
+
     /// <inheritdoc/>
     public SendMessage(byte[] sendBytes)
     {
-        SendByteBlock = new(sendBytes);
-        SendByteBlock.SetLength(sendBytes.Length);
+        SendBytes = sendBytes;
     }
     /// <inheritdoc/>
     public virtual long Sign { get; set; }
 
     /// <inheritdoc/>
-    public ByteBlock SendByteBlock { get; set; }
-
+    public byte[] SendBytes { get; set; }
 
 }

@@ -364,40 +364,40 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
         return result;
     }
 
-    public virtual IOperResult<byte[]> SendThenReturn(string socketId, ByteBlock sendByteBlock, CancellationToken cancellationToken)
+    public virtual IOperResult<byte[]> SendThenReturn(string socketId, byte[] sendBytes, CancellationToken cancellationToken)
     {
         if (Channel.ChannelType == ChannelTypeEnum.TcpService)
         {
             if (((TcpServiceChannel)Channel).Clients.TryGetClient($"ID={socketId}", out SocketClientChannel? client))
-                return SendThenReturn(new SendMessage(sendByteBlock), cancellationToken, client);
+                return SendThenReturn(new SendMessage(sendBytes), cancellationToken, client);
             else
                 return new OperResult<byte[]>(DefaultResource.Localizer["DtuNoConnectedWaining"]);
         }
         else
-            return SendThenReturn(new SendMessage(sendByteBlock), cancellationToken);
+            return SendThenReturn(new SendMessage(sendBytes), cancellationToken);
     }
 
-    public virtual async ValueTask<IOperResult<byte[]>> SendThenReturnAsync(string socketId, ByteBlock sendByteBlock, CancellationToken cancellationToken)
+    public virtual async ValueTask<IOperResult<byte[]>> SendThenReturnAsync(string socketId, byte[] sendBytes, CancellationToken cancellationToken)
     {
         if (Channel.ChannelType == ChannelTypeEnum.TcpService)
         {
             if (((TcpServiceChannel)Channel).Clients.TryGetClient($"ID={socketId}", out SocketClientChannel? client))
-                return await SendThenReturnAsync(new SendMessage(sendByteBlock), cancellationToken, client);
+                return await SendThenReturnAsync(new SendMessage(sendBytes), cancellationToken, client);
             else
                 return (new OperResult<byte[]>(DefaultResource.Localizer["DtuNoConnectedWaining"]));
         }
         else
-            return await SendThenReturnAsync(new SendMessage(sendByteBlock), cancellationToken);
+            return await SendThenReturnAsync(new SendMessage(sendBytes), cancellationToken);
     }
 
-    public virtual IOperResult<byte[]> SendThenReturn(ByteBlock sendByteBlock, CancellationToken cancellationToken)
+    public virtual IOperResult<byte[]> SendThenReturn(byte[] sendBytes, CancellationToken cancellationToken)
     {
-        return SendThenReturn(new SendMessage(sendByteBlock), cancellationToken);
+        return SendThenReturn(new SendMessage(sendBytes), cancellationToken);
     }
 
-    public virtual ValueTask<IOperResult<byte[]>> SendThenReturnAsync(ByteBlock sendByteBlock, CancellationToken cancellationToken)
+    public virtual ValueTask<IOperResult<byte[]>> SendThenReturnAsync(byte[] sendBytes, CancellationToken cancellationToken)
     {
-        return SendThenReturnAsync(new SendMessage(sendByteBlock), cancellationToken);
+        return SendThenReturnAsync(new SendMessage(sendBytes), cancellationToken);
     }
 
     public virtual IOperResult Send(string socketId, byte[] command, int offset, int length, CancellationToken cancellationToken)

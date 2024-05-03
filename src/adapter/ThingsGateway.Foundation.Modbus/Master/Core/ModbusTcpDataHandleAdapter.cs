@@ -31,7 +31,7 @@ internal class ModbusTcpDataHandleAdapter : ReadWriteDevicesSingleStreamDataHand
     /// <inheritdoc/>
     protected override AdapterResult UnpackResponse(ModbusTcpMessage request)
     {
-        using var send = request.SendByteBlock?.RemoveBegin(6);
+        using var send = request.SendBytes?.RemoveBegin(6);
         using var response = request.ReceivedByteBlock.RemoveBegin(6);
         var result = ModbusHelper.GetModbusData(send, response);
         request.OperCode = result.OperCode;
