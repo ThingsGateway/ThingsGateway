@@ -65,7 +65,7 @@ internal class SiemensS7DataHandleAdapter : ReadWriteDevicesSingleStreamDataHand
                         }
                         else
                         {
-                            result = new() { Content = new AdapterResult() { Bytes = Array.Empty<byte>(), FilterResult = FilterResult.Success } }; // 如果错误代码为0，则设置操作结果为成功
+                            result = new() { Content = new AdapterResult() { Bytes = response.ToArray(), FilterResult = FilterResult.Success } }; // 如果错误代码为0，则设置操作结果为成功
                         }
                     }
 

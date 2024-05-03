@@ -13,8 +13,6 @@
 using ThingsGateway.Admin.Razor;
 using ThingsGateway.Gateway.Application;
 
-using TouchSocket.Core;
-
 namespace ThingsGateway.Gateway.Razor;
 
 /// <summary>
@@ -72,7 +70,10 @@ public partial class QuickActions
     {
         try
         {
-            await HostedServiceUtil.CollectDeviceHostedService.RestartAsync();
+            await Task.Run(async () =>
+            {
+                await HostedServiceUtil.CollectDeviceHostedService.RestartAsync();
+            });
         }
         finally
         {

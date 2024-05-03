@@ -89,7 +89,8 @@ public class HardwareInfoService : BackgroundService
 
         HardwareInfoConfig = App.Configuration.GetSection(nameof(HardwareInfoConfig)).Get<HardwareInfoConfig?>() ?? new HardwareInfoConfig();
         HardwareInfoConfig.DaysAgo = Math.Min(Math.Max(HardwareInfoConfig.DaysAgo, 1), 7);
-        if (HardwareInfoConfig.RealInterval < 30) HardwareInfoConfig.RealInterval = 30;
+        HardwareInfoConfig.RealInterval = 30;
+        HardwareInfoConfig.Enable = true;
         if (HardwareInfoConfig.HisInterval < 120) HardwareInfoConfig.HisInterval = 120;
         APPInfo.DriveInfo = drive;
         APPInfo.OsArchitecture = Environment.OSVersion.Platform.ToString() + " " + RuntimeInformation.OSArchitecture.ToString(); // 系统架构

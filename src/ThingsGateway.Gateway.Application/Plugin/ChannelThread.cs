@@ -9,6 +9,7 @@
 //------------------------------------------------------------------------------
 
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
@@ -26,20 +27,76 @@ namespace ThingsGateway.Gateway.Application;
 /// </summary>
 public class ChannelThread
 {
+
+    #region 动态配置
     static ChannelThread()
     {
-        var cycleInterval = App.Configuration.GetSection("ChannelThread:CycleInterval").Get<int?>() ?? 10;
-        CycleInterval = cycleInterval < 10 ? 10 : cycleInterval;
+        var minCycleInterval = App.Configuration.GetSection("ChannelThread:MinCycleInterval").Get<int?>() ?? 10;
+        MinCycleInterval = minCycleInterval < 10 ? 10 : minCycleInterval;
+
+        var maxCycleInterval = App.Configuration.GetSection("ChannelThread:MaxCycleInterval").Get<int?>() ?? 100;
+        MaxCycleInterval = maxCycleInterval < 100 ? 100 : maxCycleInterval;
+
         var maxCount = App.Configuration.GetSection("ChannelThread:MaxCount").Get<int?>() ?? 1000;
         MaxCount = maxCount < 10 ? 10 : maxCount;
+
+        CycleInterval = MaxCycleInterval;
+
+        Task.Factory.StartNew(SetCycleInterval, TaskCreationOptions.LongRunning);
     }
 
+    private static async Task SetCycleInterval()
+    {
+        var db = DbContext.Db.GetConnectionScopeWithAttr<SysOperateLog>().CopyNew();
+        var appLifetime = App.RootServices!.GetService<IHostApplicationLifetime>()!;
+        var hardwareInfoService = HostedServiceUtil.GetHostedService<HardwareInfoService>();
+        List<float> cpus = new();
+        while (!(appLifetime.ApplicationStopping.IsCancellationRequested || appLifetime.ApplicationStopped.IsCancellationRequested))
+        {
+            try
+            {
+                if (hardwareInfoService?.APPInfo?.MachineInfo?.CpuRate == null) continue;
+                cpus.Add(hardwareInfoService.APPInfo.MachineInfo.CpuRate * 100);
+                if (cpus.Count == 1 || cpus.Count > 5)
+                {
+                    var avg = cpus.Average();
+                    cpus.RemoveAt(0);
+                    //Console.WriteLine($"CPU平均值：{avg}");
+                    if (avg > 50)
+                    {
+                        CycleInterval = Math.Max(CycleInterval, (int)(MaxCycleInterval * avg / 100));
+                    }
+                    else if (avg < 30)
+                    {
+                        CycleInterval = Math.Min(CycleInterval, MinCycleInterval);
+                    }
+                }
+                await Task.Delay(hardwareInfoService.HardwareInfoConfig.RealInterval * 1000, appLifetime.ApplicationStopping).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+        }
+    }
+    /// <summary>
+    /// 线程最大等待间隔时间
+    /// </summary>
+    public static int MaxCycleInterval = 100;
     /// <summary>
     /// 线程最小等待间隔时间
+    /// </summary>
+    public static int MinCycleInterval = 10;
+
+    /// <summary>
+    /// 线程等待间隔时间
     /// </summary>
     public static volatile int CycleInterval = 10;
 
     internal static volatile int MaxCount;
+
+
+    #endregion
 
     /// <summary>
     /// 通道线程构造函数，用于初始化通道线程实例。
