@@ -404,7 +404,7 @@ public class AlarmHostedService : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        return Task.CompletedTask;
+        await Task.CompletedTask;
         //try
         //{
         //    while (!stoppingToken.IsCancellationRequested)
