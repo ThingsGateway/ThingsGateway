@@ -207,7 +207,14 @@ internal class ModbusHelper
 
     #region 报文构建
 
-
+    public static void AddCrc(ISendMessage item)
+    {
+        var crc = CRC16Utils.CRC16Only(item.SendBytes, item.Offset, item.Length);
+        byte[] bytes = new byte[item.Length + crc.Length];
+        Array.Copy(item.SendBytes, item.Offset, bytes, 0, item.Length);
+        Array.Copy(crc, 0, bytes, item.Length, crc.Length);
+        item.SetBytes(bytes);
+    }
     /// <summary>
     /// 添加ModbusTcp报文头
     /// </summary>
