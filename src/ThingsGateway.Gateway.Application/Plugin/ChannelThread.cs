@@ -62,11 +62,11 @@ public class ChannelThread
                     var avg = cpus.Average();
                     cpus.RemoveAt(0);
                     //Console.WriteLine($"CPU平均值：{avg}");
-                    if (avg > 50)
+                    if (avg > 80)
                     {
                         CycleInterval = Math.Max(CycleInterval, (int)(MaxCycleInterval * avg / 100));
                     }
-                    else if (avg < 30)
+                    else if (avg < 50)
                     {
                         CycleInterval = Math.Min(CycleInterval, MinCycleInterval);
                     }
