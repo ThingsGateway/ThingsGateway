@@ -23,7 +23,7 @@
             {
                 <Tooltip Title="@Localizer["GatewayDeviceShowDriverUI"]" Placement="Placement.Bottom">
 
-                    <Button OnClick=@(ShowDriverUI) IsDisabled=@(!AuthorizeButton("插件页面")) class="mx-2" Color="Color.None" style="color: var(--bs-card-titlecolor);" Icon=@("fab fa-simplybuilt")  />
+                    <Button OnClick=@(ShowDriverUI) IsDisabled=@(!AuthorizeButton("插件页面")) class="mx-2" Color="Color.None" style="color: var(--bs-card-titlecolor);" Icon=@("fab fa-simplybuilt") />
                 </Tooltip>
 
             }
@@ -55,7 +55,7 @@
         </HeaderTemplate>
 
         <BodyTemplate>
-            <div style="overflow:auto ; height:200px;">
+            <div style="overflow-y:auto ;overflow-x:hidden ; height:200px;">
 
                 <DeviceStatus3 Item="@Item"></DeviceStatus3>
                 <EditorFormObject class="mt-2" Items="@Item.PluginPropertyEditorItems" Model=@Item.DriverProperties AutoGenerateAllItem=false IsDisplay LabelWidth="80" RowType="RowType.Inline" ItemsPerRow="3" ShowLabelTooltip="true" @key=Item.DriverProperties.GetHashCode()>
