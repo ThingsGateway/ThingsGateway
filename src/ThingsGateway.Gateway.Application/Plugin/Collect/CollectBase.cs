@@ -278,11 +278,11 @@ public abstract class CollectBase : DriverBase
         }
         else
         {
-            foreach (var variableSourceRead in CurrentDevice.VariableSourceReads)
+            for (int i = 0; i < CurrentDevice.VariableSourceReads.Count; i++)
             {
                 if (cancellationToken.IsCancellationRequested)
                     return;
-                await ReadVariableSource(readResultCount, variableSourceRead, cancellationToken, CurrentDevice.VariableSourceReads.Count >= 5).ConfigureAwait(false);
+                await ReadVariableSource(readResultCount, CurrentDevice.VariableSourceReads[i], cancellationToken, CurrentDevice.VariableSourceReads.Count > 1).ConfigureAwait(false);
             }
         }
 
@@ -299,11 +299,11 @@ public abstract class CollectBase : DriverBase
         }
         else
         {
-            foreach (var readVariableMethods in CurrentDevice.ReadVariableMethods)
+            for (int i = 0; i < CurrentDevice.ReadVariableMethods.Count; i++)
             {
                 if (cancellationToken.IsCancellationRequested)
                     return;
-                await ReadVariableMed(readResultCount, readVariableMethods, cancellationToken, CurrentDevice.ReadVariableMethods.Count >= 5).ConfigureAwait(false);
+                await ReadVariableMed(readResultCount, CurrentDevice.ReadVariableMethods[i], cancellationToken, CurrentDevice.ReadVariableMethods.Count > 1).ConfigureAwait(false);
             }
         }
         // 如果所有方法和变量读取都成功，则清零错误计数器
@@ -351,25 +351,25 @@ public abstract class CollectBase : DriverBase
                 }
                 else
                 {
-                        // 方法调用失败时记录日志并增加失败计数器，更新错误信息
-                        if (readVariableMethods.LastErrorMessage != readResult.ErrorMessage)
-                        {
-                            if (!cancellationToken.IsCancellationRequested)
-                                LogMessage?.LogWarning(readResult.Exception, Localizer["MethodFail", DeviceName, readVariableMethods.MethodInfo.Name, readResult.ErrorMessage]);
-                        }
-                        else
-                        {
-                            if (!cancellationToken.IsCancellationRequested)
-                                if (LogMessage.LogLevel <= TouchSocket.Core.LogLevel.Trace)
-                                    LogMessage?.Trace(string.Format("{0} - Execute method[{1}] - Failed {2}", DeviceName, readVariableMethods.MethodInfo.Name, readResult.ErrorMessage));
-                        }
+                    // 方法调用失败时记录日志并增加失败计数器，更新错误信息
+                    if (readVariableMethods.LastErrorMessage != readResult.ErrorMessage)
+                    {
+                        if (!cancellationToken.IsCancellationRequested)
+                            LogMessage?.LogWarning(readResult.Exception, Localizer["MethodFail", DeviceName, readVariableMethods.MethodInfo.Name, readResult.ErrorMessage]);
+                    }
+                    else
+                    {
+                        if (!cancellationToken.IsCancellationRequested)
+                            if (LogMessage.LogLevel <= TouchSocket.Core.LogLevel.Trace)
+                                LogMessage?.Trace(string.Format("{0} - Execute method[{1}] - Failed {2}", DeviceName, readVariableMethods.MethodInfo.Name, readResult.ErrorMessage));
+                    }
 
-                        readResultCount.deviceMethodsVariableFailedNum++;
-                        readVariableMethods.LastErrorMessage = readResult.ErrorMessage;
-                        CurrentDevice.SetDeviceStatus(DateTime.Now, CurrentDevice.ErrorCount + 1, readResult.ToString());
+                    readResultCount.deviceMethodsVariableFailedNum++;
+                    readVariableMethods.LastErrorMessage = readResult.ErrorMessage;
+                    CurrentDevice.SetDeviceStatus(DateTime.Now, CurrentDevice.ErrorCount + 1, readResult.ToString());
                 }
                 if (delay)
-                    await Task.Delay(ChannelThread.CycleInterval, cancellationToken).ConfigureAwait(false);
+                    await Task.Delay(ChannelThread.MinCycleInterval, cancellationToken).ConfigureAwait(false);
             }
         }
 
@@ -432,7 +432,7 @@ public abstract class CollectBase : DriverBase
                     }
                 }
                 if (delay)
-                    await Task.Delay(ChannelThread.CycleInterval, cancellationToken).ConfigureAwait(false);
+                    await Task.Delay(ChannelThread.MinCycleInterval, cancellationToken).ConfigureAwait(false);
             }
         }
     }

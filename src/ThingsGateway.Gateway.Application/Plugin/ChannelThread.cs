@@ -559,8 +559,9 @@ public class ChannelThread
     protected async ValueTask DoWork(CancellationToken stoppingToken)
     {
         var count = DriverBases.Count;
-        foreach (var driver in DriverBases)
+        for (int i = 0; i < count; i++)
         {
+            var driver = DriverBases[i];
             try
             {
                 if (!CancellationTokenSources.TryGetValue(driver.DeviceId, out var stoken))
@@ -624,7 +625,7 @@ public class ChannelThread
 
         // 如果驱动实例数量大于1，则延迟一段时间后继续执行下一轮循环
         if (count > 1)
-            await Task.Delay(CycleInterval, stoppingToken).ConfigureAwait(false);
+            await Task.Delay(MinCycleInterval, stoppingToken).ConfigureAwait(false);
 
         // 如果驱动实例数量为0，则延迟一段时间后继续执行下一轮循环
         if (count == 0)
