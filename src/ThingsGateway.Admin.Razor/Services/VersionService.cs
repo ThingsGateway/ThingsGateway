@@ -13,6 +13,8 @@
 
 
 
+using System.Reflection;
+
 using ThingsGateway.Razor;
 
 namespace ThingsGateway.Admin.Razor;
@@ -21,8 +23,8 @@ public class VersionService : IAppVersionService
 {
     public VersionService()
     {
-        Version = this.GetType().Assembly.GetName().Version?.ToString();
-
+        Version = ((AssemblyInformationalVersionAttribute?)this.GetType().Assembly.GetCustomAttributes(typeof(AssemblyInformationalVersionAttribute), false).FirstOrDefault())?.InformationalVersion;
+        Version ??= this.GetType().Assembly.GetName().Version?.ToString();
         if (!string.IsNullOrEmpty(Version))
         {
             var index = Version.IndexOf('+');
