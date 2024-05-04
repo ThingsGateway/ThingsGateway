@@ -55,6 +55,7 @@ internal class InternalEditorItem(string fieldName, Type fieldType, string? fiel
     public int Order { get; set; }
     public string? GroupName { get; set; }
     public int GroupOrder { get; set; }
+    public bool Ignore { get; set; }
 
     public string GetDisplayName() => Text;
 
