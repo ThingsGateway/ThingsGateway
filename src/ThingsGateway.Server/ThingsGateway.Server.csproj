@@ -14,17 +14,18 @@
     <!--<ServerGarbageCollection>false</ServerGarbageCollection>-->
     <!--<PlatformTarget>x86</PlatformTarget>-->
 
-
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(SolutionName)'=='ThingsGateway - Admin'">
     <DefineConstants>Admin</DefineConstants>
   </PropertyGroup>
 
+  <ItemGroup Condition="'$(SolutionName)'!='ThingsGateway - Admin'">
+    <ProjectReference Include="$(SolutionDir)\ThingsGateway.Gateway.Razor\ThingsGateway.Gateway.Razor.csproj" />
+  </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="$(SolutionDir)\ThingsGateway.Admin.Razor\ThingsGateway.Admin.Razor.csproj" />
-    <!--<ProjectReference Include="$(SolutionDir)\ThingsGateway.Gateway.Application\ThingsGateway.Gateway.Application.csproj" />-->
-    <ProjectReference Include="$(SolutionDir)\ThingsGateway.Gateway.Razor\ThingsGateway.Gateway.Razor.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(SolutionName)'=='ThingsGateway - Pro'">
