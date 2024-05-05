@@ -143,7 +143,6 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     protected virtual Task ChannelStarting(IClientChannel channel)
     {
         channel.SetDataHandlingAdapter(GetDataAdapter());
-
         return EasyTask.CompletedTask;
     }
 

@@ -113,20 +113,6 @@ namespace ThingsGateway.Foundation
             return base.OnTcpClosing(socketClient, e);
         }
 
-        /// <summary>
-        /// <inheritdoc/>
-        /// </summary>
-        /// <param name="disposing"></param>
-        protected override void Dispose(bool disposing)
-        {
-            if (this.DisposedValue)
-            {
-                return;
-            }
-            base.Dispose(disposing);
-            if (!Monitors.Any())
-                Logger.Info($"{this}{DefaultResource.Localizer["ServiceStoped"]}");
-        }
     }
 
     /// <summary>
@@ -160,7 +146,7 @@ namespace ThingsGateway.Foundation
             if (token.IsCancellationRequested)
                 return EasyTask.CompletedTask;
 
-            return base.StartAsync();
+            return this.StartAsync();
         }
 
         public Task CloseAsync(string msg)
@@ -170,36 +156,36 @@ namespace ThingsGateway.Foundation
 
         public void Close(string msg)
         {
-            this.CloseAsync(msg).GetFalseAwaitResult();
+            this.CloseAsync(msg).ConfigureAwait(false);
         }
 
         public void Connect(int millisecondsTimeout = 3000, CancellationToken token = default)
         {
-            this.ConnectAsync(millisecondsTimeout, token).GetFalseAwaitResult();
+            this.ConnectAsync(millisecondsTimeout, token).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
-        protected override Task OnTcpConnected(SocketClientChannel socketClient, ConnectedEventArgs e)
+        protected override async Task OnTcpConnected(SocketClientChannel socketClient, ConnectedEventArgs e)
         {
             if (Started != null)
-                return Started.Invoke(socketClient);
-            return base.OnTcpConnected(socketClient, e);
+                await Started.Invoke(socketClient).ConfigureAwait(false);
+            await base.OnTcpConnected(socketClient, e).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
-        protected override Task OnTcpConnecting(SocketClientChannel socketClient, ConnectingEventArgs e)
+        protected override async Task OnTcpConnecting(SocketClientChannel socketClient, ConnectingEventArgs e)
         {
             if (Starting != null)
-                return Starting.Invoke(socketClient);
-            return base.OnTcpConnecting(socketClient, e);
+                await Starting.Invoke(socketClient).ConfigureAwait(false);
+            await base.OnTcpConnecting(socketClient, e).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
-        protected override Task OnTcpClosed(SocketClientChannel socketClient, ClosedEventArgs e)
+        protected override async Task OnTcpClosed(SocketClientChannel socketClient, ClosedEventArgs e)
         {
             if (Stoped != null)
-                return Stoped.Invoke(socketClient);
-            return base.OnTcpClosed(socketClient, e);
+                await Stoped.Invoke(socketClient).ConfigureAwait(false);
+            await base.OnTcpClosed(socketClient, e).ConfigureAwait(false);
         }
         /// <inheritdoc/>
         protected override async Task OnTcpReceived(SocketClientChannel socketClient, ReceivedDataEventArgs e)

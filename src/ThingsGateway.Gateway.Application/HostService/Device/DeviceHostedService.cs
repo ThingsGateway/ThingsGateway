@@ -128,6 +128,11 @@ public abstract class DeviceHostedService : BackgroundService
                 {
                     throw new Exception($"Exceeded maximum number of channels：{ChannelThread.MaxCount}");
                 }
+                if (DriverBases.Select(a => a.CurrentDevice.VariableRunTimes.Count).Sum() > ChannelThread.MaxVariableCount)
+                {
+                    throw new Exception($"Exceeded maximum number of variables：{ChannelThread.MaxVariableCount}");
+                }
+
                 // 创建新的通道线程，并将驱动程序添加到其中
                 ChannelThread channelThread = new ChannelThread(channel, (a =>
                 {

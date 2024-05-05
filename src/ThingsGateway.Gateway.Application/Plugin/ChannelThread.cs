@@ -40,6 +40,9 @@ public class ChannelThread
         var maxCount = App.Configuration.GetSection("ChannelThread:MaxCount").Get<int?>() ?? 1000;
         MaxCount = maxCount < 10 ? 10 : maxCount;
 
+        var maxVariableCount = App.Configuration.GetSection("ChannelThread:MaxVariableCount").Get<int?>() ?? 1000000;
+        MaxVariableCount = maxVariableCount < 1000 ? 1000 : maxVariableCount;
+
         CycleInterval = MaxCycleInterval;
 
         Task.Factory.StartNew(SetCycleInterval, TaskCreationOptions.LongRunning);
@@ -94,6 +97,7 @@ public class ChannelThread
     public static volatile int CycleInterval = 10;
 
     internal static volatile int MaxCount;
+    internal static volatile int MaxVariableCount;
 
 
     #endregion

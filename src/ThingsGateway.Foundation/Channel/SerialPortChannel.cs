@@ -65,24 +65,24 @@ namespace ThingsGateway.Foundation
 
         public void Close(string msg)
         {
-            this.CloseAsync(msg).GetFalseAwaitResult();
+            this.CloseAsync(msg).ConfigureAwait(false);
         }
 
         public void Connect(int millisecondsTimeout = 3000, CancellationToken token = default)
         {
-            this.ConnectAsync(millisecondsTimeout, token).GetFalseAwaitResult();
+            this.ConnectAsync(millisecondsTimeout, token).ConfigureAwait(false);
         }
         public new async Task ConnectAsync(int millisecondsTimeout, CancellationToken token)
         {
             try
             {
-                await this.m_semaphoreForConnect.WaitAsync(token);
+                await this.m_semaphoreForConnect.WaitAsync(token).ConfigureAwait(false);
                 if (!this.Online)
                 {
-                    await base.ConnectAsync(millisecondsTimeout, token);
+                    await base.ConnectAsync(millisecondsTimeout, token).ConfigureAwait(false);
                     Logger?.Debug($"{ToString()}  Connected");
                     if (Started != null)
-                        await Started.Invoke(this);
+                        await Started.Invoke(this).ConfigureAwait(false);
                 }
             }
             finally
@@ -95,36 +95,40 @@ namespace ThingsGateway.Foundation
         {
             if (this.Online)
             {
-                await base.CloseAsync(msg);
+                await base.CloseAsync(msg).ConfigureAwait(false);
                 Logger?.Debug($"{ToString()}  Closed{msg}");
                 if (Stoped != null)
-                    await Stoped.Invoke(this);
+                    await Stoped.Invoke(this).ConfigureAwait(false);
             }
         }
         /// <inheritdoc/>
-        protected override Task OnSerialReceived(ReceivedDataEventArgs e)
+        protected override async Task OnSerialReceived(ReceivedDataEventArgs e)
         {
             if (this.ChannelReceived != null)
             {
-                return this.ChannelReceived.Invoke(this, e);
+                await this.ChannelReceived.Invoke(this, e).ConfigureAwait(false);
+                if (e.Handled)
+                {
+                    return;
+                }
             }
-            return base.OnSerialReceived(e);
+            await base.OnSerialReceived(e).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
-        protected override Task OnSerialConnecting(ConnectingEventArgs e)
+        protected override async Task OnSerialConnecting(ConnectingEventArgs e)
         {
             Logger?.Debug($"{ToString()}  Connecting{(e.Message.IsNullOrEmpty() ? string.Empty : $" -{e.Message}")}");
             if (Starting != null)
-                return Starting.Invoke(this);
-            return base.OnSerialConnecting(e);
+                await Starting.Invoke(this).ConfigureAwait(false);
+            await base.OnSerialConnecting(e).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
-        protected override Task OnSerialClosing(ClosingEventArgs e)
+        protected override async Task OnSerialClosing(ClosingEventArgs e)
         {
             Logger?.Debug($"{ToString()} Closing{(e.Message.IsNullOrEmpty() ? string.Empty : $" -{e.Message}")}");
-            return base.OnSerialClosing(e);
+            await base.OnSerialClosing(e).ConfigureAwait(false);
         }
 
 

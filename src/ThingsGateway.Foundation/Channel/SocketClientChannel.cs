@@ -77,7 +77,7 @@ namespace ThingsGateway.Foundation
 
         public void Close(string msg)
         {
-            this.CloseAsync(msg).GetFalseAwaitResult();
+            this.CloseAsync(msg).ConfigureAwait(false);
         }
 
         public void Connect(int millisecondsTimeout = 3000, CancellationToken token = default)
@@ -92,44 +92,44 @@ namespace ThingsGateway.Foundation
             base.Dispose(disposing);
             PluginManager?.SafeDispose();
         }
-        protected override Task OnTcpReceived(ReceivedDataEventArgs e)
+        protected override async Task OnTcpReceived(ReceivedDataEventArgs e)
         {
             if (this.ChannelReceived != null)
             {
-                return this.ChannelReceived.Invoke(this, e);
+                await this.ChannelReceived.Invoke(this, e).ConfigureAwait(false);
             }
-            return base.OnTcpReceived(e);
+            await base.OnTcpReceived(e);
         }
 
         /// <inheritdoc/>
-        protected override Task OnTcpConnected(ConnectedEventArgs e)
+        protected override async Task OnTcpConnected(ConnectedEventArgs e)
         {
             //Logger?.Debug($"{ToString()}{FoundationConst.Connected}");
             if (Started != null)
-                return Started.Invoke(this);
-            return base.OnTcpConnected(e);
+                await Started.Invoke(this).ConfigureAwait(false);
+            await base.OnTcpConnected(e).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
-        protected override Task OnTcpConnecting(ConnectingEventArgs e)
+        protected override async Task OnTcpConnecting(ConnectingEventArgs e)
         {
             if (Starting != null)
-                return Starting.Invoke(this);
-            return base.OnTcpConnecting(e);
+                await Starting.Invoke(this).ConfigureAwait(false);
+            await base.OnTcpConnecting(e).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
-        protected override Task OnTcpClosing(ClosingEventArgs e)
+        protected override async Task OnTcpClosing(ClosingEventArgs e)
         {
             Logger?.Debug($"{ToString()} Closing{(e.Message.IsNullOrEmpty() ? string.Empty : $"-{e.Message}")}");
-            return base.OnTcpClosing(e);
+            await base.OnTcpClosing(e).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
-        protected override Task OnTcpClosed(ClosedEventArgs e)
+        protected override async Task OnTcpClosed(ClosedEventArgs e)
         {
             Logger?.Debug($"{ToString()} Closed{(e.Message.IsNullOrEmpty() ? string.Empty : $"-{e.Message}")}");
-            return base.OnTcpClosed(e);
+            await base.OnTcpClosed(e).ConfigureAwait(false);
         }
 
 
