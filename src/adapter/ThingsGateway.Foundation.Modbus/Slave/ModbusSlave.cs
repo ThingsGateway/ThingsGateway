@@ -250,20 +250,14 @@ public class ModbusSlave : ProtocolBase
                     //rtu返回头
                     if (ModbusType == ModbusTypeEnum.ModbusRtu)
                     {
-                        using var byteBlock = new ByteBlock(coreData.Length + 3);
-                        byteBlock.Write(modbusServerMessage.ReceivedByteBlock.Buffer, 0, 2);
-                        byteBlock.Write((byte)coreData.Length);
-                        byteBlock.Write(coreData);
-                        ReturnData(client, e, byteBlock);
+                        var sendData = DataTransUtil.SpliceArray(modbusServerMessage.ReceivedByteBlock.Buffer.SelectMiddle(0, 2), new byte[] { (byte)coreData.Length }, coreData);
+                        ReturnData(client, e, sendData);
                     }
                     else
                     {
-                        using var byteBlock = new ByteBlock(coreData.Length + 9);
-                        byteBlock.Write(modbusServerMessage.ReceivedByteBlock.Buffer, 0, 8);
-                        byteBlock.Write((byte)coreData.Length);
-                        byteBlock.Write(coreData);
-                        byteBlock[5] = (byte)(byteBlock.Length - 6);
-                        ReturnData(client, e, byteBlock);
+                        var sendData = DataTransUtil.SpliceArray(modbusServerMessage.ReceivedByteBlock.Buffer.SelectMiddle(0, 8), new byte[] { (byte)coreData.Length }, coreData);
+                        sendData[5] = (byte)(sendData.Length - 6);
+                        ReturnData(client, e, sendData);
                     }
                 }
                 else
@@ -353,14 +347,13 @@ public class ModbusSlave : ProtocolBase
         }
     }
 
-    private static void ReturnData(IClientChannel client, ReceivedDataEventArgs e, ByteBlock sendData)
+    private static void ReturnData(IClientChannel client, ReceivedDataEventArgs e, byte[] sendData)
     {
         if (client is IUdpClientSender udpClientSender)
             udpClientSender.Send(((UdpReceivedDataEventArgs)e).EndPoint, sendData);
         else
             client.Send(sendData);
     }
-
     /// <summary>
     /// 返回错误码
     /// </summary>
@@ -368,21 +361,18 @@ public class ModbusSlave : ProtocolBase
     {
         if (modbusType == ModbusTypeEnum.ModbusRtu)
         {
-            using var byteBlock = new ByteBlock(3);
-            byteBlock.Write(modbusServerMessage.ReceivedByteBlock.Buffer, 0, 2);
-            byteBlock.Write((byte)1);
-            byteBlock[1] = ((byte)(byteBlock[1] + 128));
-            ReturnData(client, e, byteBlock);
-
+            var sendData = DataTransUtil
+.SpliceArray(modbusServerMessage.ReceivedByteBlock.Buffer.SelectMiddle(0, 2), new byte[] { (byte)1 });//01 lllegal function
+            sendData[1] = (byte)(sendData[1] + 128);
+            ReturnData(client, e, sendData);
         }
         else
         {
-            using var byteBlock = new ByteBlock(9);
-            byteBlock.Write(modbusServerMessage.ReceivedByteBlock.Buffer, 0, 8);
-            byteBlock.Write((byte)1);
-            byteBlock[5] = (byte)(byteBlock.Length - 6);
-            byteBlock[7] = ((byte)(byteBlock[7] + 128));
-            ReturnData(client, e, byteBlock);
+            var sendData = DataTransUtil
+.SpliceArray(modbusServerMessage.ReceivedByteBlock.Buffer.SelectMiddle(0, 8), new byte[] { (byte)1 });//01 lllegal function
+            sendData[5] = (byte)(sendData.Length - 6);
+            sendData[7] = (byte)(sendData[7] + 128);
+            ReturnData(client, e, sendData);
         }
     }
 
@@ -393,18 +383,17 @@ public class ModbusSlave : ProtocolBase
     {
         if (modbusType == ModbusTypeEnum.ModbusRtu)
         {
-            using var byteBlock = new ByteBlock(6);
-            byteBlock.Write(modbusServerMessage.ReceivedByteBlock.Buffer, 0, 6);
-            ReturnData(client, e, byteBlock);
+            var sendData = modbusServerMessage.ReceivedByteBlock.Buffer.SelectMiddle(0, 6);
+            ReturnData(client, e, sendData);
         }
         else
         {
-            using var byteBlock = new ByteBlock(12);
-            byteBlock.Write(modbusServerMessage.ReceivedByteBlock.Buffer, 0, 12);
-            byteBlock[5] = (byte)(byteBlock.Length - 6);
-            ReturnData(client, e, byteBlock);
+            var sendData = modbusServerMessage.ReceivedByteBlock.Buffer.SelectMiddle(0, 12);
+            sendData[5] = (byte)(sendData.Length - 6);
+            ReturnData(client, e, sendData);
         }
     }
+
 
     private readonly ReaderWriterLockSlim _lockSlim = new();
 
