@@ -33,11 +33,11 @@
         </ExportButtonDropdownTemplate>
 
         <TableToolbarTemplate>
-            <TableToolbarButton TItem="Channel" IsDisabled=@(!AuthorizeButton(AdminOperConst.Edit))
+            <TableToolbarButton TItem="Channel" IsShow=@(AuthorizeButton(AdminOperConst.Edit))
                                           Color=Color.Info Text="@DefaultLocalizer["BatchEdit"]"
                                  OnClickCallback=@(BatchEdit) />
 
-            <TableToolbarPopConfirmButton TItem="Channel" IsDisabled=@(!AuthorizeButton("清空"))
+            <TableToolbarPopConfirmButton TItem="Channel" IsShow=@(AuthorizeButton("清空"))
                                           Color=Color.Warning Text="@Localizer["Clear"]"
                                           IsAsync OnConfirm=@(async()=>{await Task.Run(async()=> { await ChannelService.ClearChannelAsync();
                                           await InvokeAsync(async()=>
