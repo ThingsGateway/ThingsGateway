@@ -123,7 +123,8 @@ public class BlazorAppContext : IAsyncDisposable
     {
         if (UserManager.SuperAdmin)
             return true;
-        return CurrentUser?.ButtonCodeList?.TryGetValue(url.StartsWith("/") ? url : $"/{url}", out var titles) == true && titles.Contains(code);
+        var data= CurrentUser?.ButtonCodeList?.TryGetValue(url.StartsWith("/") ? url : $"/{url}", out var titles) == true && titles.Contains(code);
+        return data;
     }
 
     public ValueTask DisposeAsync()
