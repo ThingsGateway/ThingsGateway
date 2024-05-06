@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -9,8 +8,7 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-
-
+using Mapster;
 
 using NewLife.Extension;
 
@@ -85,6 +83,8 @@ public class BlazorAppContext : IAsyncDisposable
         }
     }
 
+    public IStringLocalizer TitleLocalizer;
+
     /// <summary>
     /// 获取当前的个人菜单，传入当前url，根据url判断模块，失败时使用默认模块
     /// </summary>
@@ -94,13 +94,27 @@ public class BlazorAppContext : IAsyncDisposable
         if (UserManager.UserId > 0)
         {
             url = url.StartsWith("/") ? url : $"/{url}";
-            var sysResources = await ResourceService.GetAllAsync();
+            var sysResources = (await ResourceService.GetAllAsync()).Adapt<List<SysResource>>();
+            if (TitleLocalizer != null)
+            {
+                sysResources.ForEach(a =>
+                {
+                    a.Title = TitleLocalizer[a.Title];
+                });
+            }
             AllMenus = sysResources.Where(a => a.Category == ResourceCategoryEnum.Menu);
             var module = AllMenus.FirstOrDefault(a => a.Href == url)?.Module;
             if (module == ResourceConst.SpaId)
                 module = null;//SPA页面取消url传入的模块
             UserWorkBench = await UserCenterService.GetLoginWorkbenchAsync(UserManager.UserId);
             OwnMenus = await UserCenterService.GetOwnMenuAsync(UserManager.UserId, module ?? CurrentUser.DefaultModule);
+            if (TitleLocalizer != null)
+            {
+                foreach (var a in OwnMenus)
+                {
+                    a.Title = TitleLocalizer[a.Title];
+                }
+            }
             OwnMenuItems = ResourceUtil.BuildMenuTrees(OwnMenus).ToList();
             OwnSameLevelMenuItems = OwnMenus.Where(a => !a.Href.IsNullOrWhiteSpace()).Select(item => new MenuItem()
             {
@@ -123,7 +137,7 @@ public class BlazorAppContext : IAsyncDisposable
     {
         if (UserManager.SuperAdmin)
             return true;
-        var data= CurrentUser?.ButtonCodeList?.TryGetValue(url.StartsWith("/") ? url : $"/{url}", out var titles) == true && titles.Contains(code);
+        var data = CurrentUser?.ButtonCodeList?.TryGetValue(url.StartsWith("/") ? url : $"/{url}", out var titles) == true && titles.Contains(code);
         return data;
     }
 

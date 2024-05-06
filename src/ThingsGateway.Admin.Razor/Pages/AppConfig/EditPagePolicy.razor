@@ -3,7 +3,7 @@
 @using ThingsGateway.Admin.Application
 @using NewLife
 
-<ValidateForm class="p-4" Model="@Model" OnValidSubmit="OnSave">
+<ValidateForm class="p-4 h-100" Model="@Model" OnValidSubmit="OnSave">
     <MultiSelect class="mb-2" Items="@SelectedItems" @bind-Value="@Model.DefaultShortcuts" ShowSearch="true" ShowToolbar="true" />
     <Select Items="@SelectedItems" @bind-Value="@Model.DefaultRazor" ShowSearch="true" />
     <Button class="mt-2" ButtonType="ButtonType.Submit" Icon="fa-solid fa-floppy-disk" IsAsync Text=@DefaultLocalizer["Save"] />

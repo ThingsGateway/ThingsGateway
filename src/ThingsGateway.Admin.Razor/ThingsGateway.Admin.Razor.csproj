@@ -18,6 +18,14 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Pages\AppConfig\AppConfigPage.razor.css" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Pages\AppConfig\AppConfigPage.razor.css" />
+  </ItemGroup>
   
 </Project>
 

@@ -44,7 +44,19 @@
     "FullScreenButton": "Full Screen",
     "UserCenter": "User Center",
     "ChoiceModule": "Switch Module",
-    "GiteePostTitleText": "Code Commit Push Notification"
+    "GiteePostTitleText": "Code Commit Push Notification",
+
+    "系统首页": "Home",
+    "权限管理": "Permission",
+    "用户管理": "User",
+    "角色管理": "Role",
+    "菜单管理": "Menu",
+    "系统运维": "SystemOperation",
+    "系统配置": "System",
+    "字典管理": "Dictionary",
+    "操作日志": "Operation",
+    "会话管理": "Session",
+    "硬件信息": "HardwareInfo"
   },
   "ThingsGateway.Admin.Razor.OperLogPage": {
     "Date": "Date",

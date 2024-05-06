@@ -45,7 +45,19 @@
     "FullScreenButton": "全屏",
     "UserCenter": "个人中心",
     "ChoiceModule": "切换模块",
-    "GiteePostTitleText": "代码提交推送通知"
+    "GiteePostTitleText": "代码提交推送通知",
+
+    "系统首页": "系统首页",
+    "权限管理": "权限管理",
+    "用户管理": "用户管理",
+    "角色管理": "角色管理",
+    "菜单管理": "菜单管理",
+    "系统运维": "系统运维",
+    "系统配置": "系统配置",
+    "字典管理": "字典管理",
+    "操作日志": "操作日志",
+    "会话管理": "会话管理",
+    "硬件信息": "硬件信息"
   },
   "ThingsGateway.Admin.Razor.OperLogPage": {
     "Date": "日期",

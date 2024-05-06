@@ -1,26 +1,27 @@
-﻿
-@page "/admin/config"
+﻿@page "/admin/config"
 @attribute [Authorize]
 @attribute [RolePermission]
 @inherits ComponentDefault
 @using ThingsGateway.Admin.Application
 @namespace ThingsGateway.Admin.Razor
 
-<Tab>
-    <TabItem Text=@AppConfigLocalizer[nameof(LoginPolicy)]>
-        <EditComponent Model="AppConfig.LoginPolicy" OnSave="OnSaveLogin" />
-    </TabItem>
-    <TabItem Text=@AppConfigLocalizer[nameof(PasswordPolicy)]>
-        <EditComponent Model="AppConfig.PasswordPolicy" OnSave="OnSavePassword" />
-    </TabItem>
-    <TabItem Text=@AppConfigLocalizer[nameof(PagePolicy)]>
-        <EditPagePolicy Model="AppConfig.PagePolicy" OnSave="OnSavePagePolicy" SelectedItems="SelectedItems" />
-    </TabItem>
-    <TabItem Text=@AppConfigLocalizer[nameof(WebsitePolicy)]>
-        <EditComponent Model="AppConfig.WebsitePolicy" OnSave="OnSaveWebsite" />
-    </TabItem>
+<div class="appconfig">
+    <Tab class="h-100">
+        <TabItem Text=@AppConfigLocalizer[nameof(LoginPolicy)]>
+            <EditComponent Model="AppConfig.LoginPolicy" OnSave="OnSaveLogin" />
+        </TabItem>
+        <TabItem Text=@AppConfigLocalizer[nameof(PasswordPolicy)]>
+            <EditComponent Model="AppConfig.PasswordPolicy" OnSave="OnSavePassword" />
+        </TabItem>
+        <TabItem Text=@AppConfigLocalizer[nameof(PagePolicy)]>
+            <EditPagePolicy Model="AppConfig.PagePolicy" OnSave="OnSavePagePolicy" SelectedItems="SelectedItems" />
+        </TabItem>
+        <TabItem Text=@AppConfigLocalizer[nameof(WebsitePolicy)]>
+            <EditComponent Model="AppConfig.WebsitePolicy" OnSave="OnSaveWebsite" />
+        </TabItem>
 
-</Tab>
+    </Tab>
 
+</div>
 
 
