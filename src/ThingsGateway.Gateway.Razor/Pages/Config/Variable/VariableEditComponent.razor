@@ -207,7 +207,15 @@ else
                                     @{
                                         BusinessDeviceDict.TryGetValue(item.Key, out var items);
                                     }
-                                    @($"{items.Name} - {PluginServiceUtil.GetFileNameAndTypeName(items?.PluginName).TypeName}")
+                                    <div class="flex-fill">
+                                        @($"{items.Name} - {PluginServiceUtil.GetFileNameAndTypeName(items?.PluginName).TypeName}")
+                                    </div>
+
+                                    <Button OnClick=@((a)=>
+                            {
+                            Model.VariablePropertyModels.Remove(item.Key);
+                            }) class="mx-2" Color="Color.None" style="color: var(--bs-card-titlecolor);" Icon=@("fas fa-delete-left") />
+
                                 </HeaderTemplate>
 
                                 <BodyTemplate>

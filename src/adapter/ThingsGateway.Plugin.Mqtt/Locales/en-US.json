@@ -1,4 +1,7 @@
 ﻿{
+  "ThingsGateway.Plugin.Mqtt.MqttClientVariableProperty": {
+    "VariableRpcEnable": "VariableRpcEnable"
+  },
   "ThingsGateway.Plugin.Mqtt.MqttClientProperty": {
     "IP": "IP",
     "Port": "Port",

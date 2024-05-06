@@ -1,4 +1,8 @@
 ﻿{
+  "ThingsGateway.Plugin.Mqtt.MqttClientVariableProperty": {
+    "VariableRpcEnable": "启用RPC"
+  },
+
   "ThingsGateway.Plugin.Mqtt.MqttClientProperty": {
     "IP": "IP",
     "Port": "端口",
@@ -59,5 +63,4 @@
     "SplitSize": "上传每页条数",
     "CacheEnable": "启用缓存"
   }
-
 }
