@@ -1,5 +1,4 @@
 ﻿{
-
   "ThingsGateway.Gateway.Application.VariableSearchInput": {
     "Name": "变量名称",
     "DeviceId": "采集设备",
@@ -390,11 +389,11 @@
   "ThingsGateway.Gateway.Application.Variable": {
     "AddressOrOtherMethodNotNull": " 变量地址或特殊方法不能同时为空 ",
     "SaveVariable": "添加/修改变量",
-    "CopyDevice": "复制变量",
-    "DeleteDevice": "复制变量",
-    "ClearDevice": "清空变量",
-    "ExportDevice": "导出变量",
-    "ImportDevice": "导入变量",
+    "CopyVariable": "复制变量",
+    "DeleteVariable": "复制变量",
+    "ClearVariable": "清空变量",
+    "ExportVariable": "导出变量",
+    "ImportVariable": "导入变量",
 
     "NotNull": " {0} 不存在",
     "DeviceNotNull": "设备名称不存在",
