@@ -5,11 +5,11 @@
     <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />
     <PackageReference Include="MiniExcel" Version="1.31.3" />
-    <PackageReference Include="Rougamo.Fody" Version="2.3.1" />
+    <PackageReference Include="Rougamo.Fody" Version="3.0.0" />
     <PackageReference Include="UAParser" Version="3.1.47" />
     <PackageReference Include="SqlSugarCore" Version="5.1.4.154" />
     <PackageReference Include="Mapster" Version="7.4.0" />
-    <PackageReference Include="BootstrapBlazor" Version="8.5.1" />
+    <PackageReference Include="BootstrapBlazor" Version="8.5.4" />
     <PackageReference Include="Yitter.IdGenerator" Version="1.0.14" />
   </ItemGroup>
 

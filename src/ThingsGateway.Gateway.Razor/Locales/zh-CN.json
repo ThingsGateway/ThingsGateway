@@ -4,7 +4,7 @@
     "DeviceRedundantThread": "切换冗余",
     "GatewayDeviceLog": "通道日志",
     "GatewayDevicePause": "暂停/运行",
-    "GatewayDeviceRestart": "重启设备",
+    "GatewayDeviceRestart": "重启设备"
   },
   "ThingsGateway.Gateway.Razor.DeviceStatus": {
     "LogConsole": "通道日志"
