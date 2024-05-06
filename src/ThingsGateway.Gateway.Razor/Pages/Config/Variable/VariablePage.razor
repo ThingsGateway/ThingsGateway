@@ -54,13 +54,13 @@
         </ExportButtonDropdownTemplate>
         <TableToolbarTemplate>
 
-            <TableToolbarButton TItem="Variable" IsDisabled=@(!AuthorizeButton(AdminOperConst.Edit))
+            <TableToolbarButton TItem="Variable" IsShow=@(AuthorizeButton(AdminOperConst.Edit))
                                 Color=Color.Info Text="@DefaultLocalizer["BatchEdit"]"
                                 OnClickCallback=@(BatchEdit) />
 
 
             <TableToolbarPopConfirmButton TItem="Variable"
-                                          Color=Color.Warning Text="@Localizer["Clear"]" IsDisabled=@(!AuthorizeButton("清空"))
+                                          Color=Color.Warning Text="@Localizer["Clear"]" IsShow=@(AuthorizeButton("清空"))
                                           IsAsync OnConfirm=@(async()=>{await Task.Run(async()=> { await VariableService.ClearVariableAsync();
                                           await InvokeAsync(async()=>
                                           {
@@ -68,7 +68,7 @@
                                           });
                                           });} ) />
 
-            <PopConfirmButton TItem="Variable"
+            <PopConfirmButton 
                               Color=Color.Warning Text="@Localizer["Test"]" IsDisabled=@(!AuthorizeButton("测试"))
                               IsAsync OnConfirm=@(async()=>{await Task.Run(async()=> {await VariableService.InsertTestDataAsync(TestCount);
                               await InvokeAsync(async()=>

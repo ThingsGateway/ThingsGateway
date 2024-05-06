@@ -19,7 +19,7 @@
 
         <TableToolbarTemplate>
             <TableToolbarButton TItem="PluginOutput" Color="Color.Info" Icon="fa fa-plus" Text="@DefaultLocalizer["Add"]"
-                                OnClickCallback="OnAdd" IsDisabled=@(!AuthorizeButton("添加")) />
+                                OnClickCallback="OnAdd" IsShow=@(!AuthorizeButton("添加")) />
         </TableToolbarTemplate>
 
         <ExportButtonDropdownTemplate Context="ExportContext">
