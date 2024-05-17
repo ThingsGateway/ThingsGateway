@@ -12,6 +12,8 @@
 
 
 
+using Mapster;
+
 using NewLife.Extension;
 
 using ThingsGateway.Gateway.Application;
@@ -32,7 +34,7 @@ public partial class DriverDebugPage
     /// <inheritdoc/>
     protected override void OnParametersSet()
     {
-        var pluginOutputs = PluginService.GetList();
+        var pluginOutputs = PluginService.GetList().Adapt<List<PluginOutput>>();
 
         foreach (var pluginOutput in pluginOutputs.ToList())
         {
