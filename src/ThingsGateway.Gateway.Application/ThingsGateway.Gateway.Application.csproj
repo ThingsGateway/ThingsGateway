@@ -5,12 +5,12 @@
     <PackageReference Include="SqlSugar.TDengineCore" Version="4.1.7" />
     <PackageReference Include="Rougamo.Fody" Version="3.0.0" />
     <PackageReference Include="CS-Script" Version="4.8.14" />
-    <PackageReference Include="TouchSocket.Dmtp" Version="2.1.0-alpha.2" />
+    <PackageReference Include="TouchSocket.Dmtp" Version="2.1.0-alpha.4" />
   </ItemGroup>
 
   <ItemGroup>
     <!--kafka在某些系统中出现无法动态加载资源的情况，需要手动拷贝到主程序下，所以这里直接引用native内容，发布会自动生成-->
-    <PackageReference Include="Confluent.Kafka" Version="2.3.0">
+    <PackageReference Include="Confluent.Kafka" Version="2.4.0">
       <Private>false</Private>
       <IncludeAssets> native; </IncludeAssets>
     </PackageReference>
