@@ -15,6 +15,7 @@
             <TabItem Text=@Localizer["CommonFunctions"]>
                 @if (ShowDefaultReadWriteContent)
                 {
+
                     <BootstrapInput title=@Plc?.GetAddressDescription() @bind-Value=@RegisterAddress
                                     ShowLabel="true" style="width:100%" />
 
@@ -26,7 +27,7 @@
                             <div class="p-1">
 
                                 <BootstrapInputNumber @bind-Value=@ArrayLength ShowLabel="true" />
-                                <Select @bind-Value="@DataType" ShowLabel="true" />
+                                <Select @bind-Value="@DataType" ShowLabel="true"  IsPopover="true"/>
                             </div>
 
                         </div>
@@ -77,7 +78,7 @@
                                     <BootstrapInput @bind-Value=@item.RegisterAddress title="@Plc?.GetAddressDescription()"
                                                     ShowLabel="true" style="width:100%" />
 
-                                    <Select @bind-Value="@DataType" ShowLabel="true" />
+                                    <Select @bind-Value="@DataType" ShowLabel="true" IsPopover />
                                 </div>
 
                             </div>

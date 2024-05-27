@@ -94,7 +94,7 @@
     RenderFragment Render(VariableSearchInput model) =>
     @<div class="row form-inline g-2">
         <div class="col-12 col-md-6">
-            <Select IsVirtualize @bind-Value="model.DeviceId" Items="@CollectDeviceNames" ShowSearch="true" ShowLabel="true"  IsClearable  DisableItemChangedWhenFirstRender=true/>
+            <Select IsVirtualize @bind-Value="model.DeviceId" Items="@CollectDeviceNames" ShowSearch="true" ShowLabel="true" IsClearable DisableItemChangedWhenFirstRender=true IsPopover />
         </div>
         <div class="col-12 col-md-6">
             <BootstrapInput @bind-Value="model.Name" ShowLabel="true" />

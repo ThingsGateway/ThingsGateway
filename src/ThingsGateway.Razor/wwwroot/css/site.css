@@ -52,10 +52,6 @@
     color: #F44336
 }
 
-.select {
-    width: 100%;
-}
-
 .border-primary {
     --bs-border-opacity: 1;
     /* border-color: rgba(var(--bs-primary-rgb),var(--bs-border-opacity))!important; */
