@@ -7,8 +7,8 @@
 	</Target>
 
 	<ItemGroup>
-		<PackageReference Include="MQTTnet.AspNetCore" Version="4.3.4.1084" />
-		<PackageReference Include="MQTTnet.Extensions.Rpc" Version="4.3.4.1084" />
+		<PackageReference Include="MQTTnet.AspNetCore" Version="4.3.6.1152" />
+		<PackageReference Include="MQTTnet.Extensions.Rpc" Version="4.3.6.1152" />
 	</ItemGroup>
 
 	<PropertyGroup>

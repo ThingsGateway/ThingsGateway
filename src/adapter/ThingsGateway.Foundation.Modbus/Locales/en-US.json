@@ -7,7 +7,7 @@
 
     "CacheTimeout": "Packet Assembly Cache Time",
     "SendDelayTime": "Send Delay Time",
-    "DataFormat": "Parsing Rules",
+    "EndianType": "Parsing Rules",
     "Timeout": "Read/Write Timeout",
     "ConnectTimeout": "Connection Timeout",
     "IsStringReverseByteWord": "String Byte/Word Reversal"
@@ -22,7 +22,7 @@
 
     "CacheTimeout": "Packet Assembly Cache Time",
     "SendDelayTime": "Send Delay Time",
-    "DataFormat": "Parsing Rules",
+    "EndianType": "Parsing Rules",
     "Timeout": "Read/Write Timeout",
     "ConnectTimeout": "Connection Timeout",
     "IsStringReverseByteWord": "String Byte/Word Reversal"

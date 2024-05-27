@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -8,9 +7,6 @@
 //  使用文档：https://kimdiego2098.github.io/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
-
-
-
 
 using System.Net;
 using System.Text;
@@ -32,21 +28,27 @@ public abstract class ReadWriteDevicesUdpDataHandleAdapter<TRequest> : UdpDataHa
     /// 报文输出时采用字符串还是HexString
     /// </summary>
     public virtual bool IsHexData { get; set; } = true;
-    /// <inheritdoc/>
-    public virtual bool IsSendPackCommand { get; set; } = true;
+
     /// <summary>
     /// 是否非并发协议
     /// </summary>
     public virtual bool IsSingleThread { get; } = true;
+
+    /// <inheritdoc/>
+    public virtual bool IsSendPackCommand { get; set; } = false;
+
+    /// <summary>
+    /// 发送前，对当前的命令进行打包处理
+    /// </summary>
+    public virtual byte[] PackCommand(ISendMessage item)
+    {
+        return item.SendBytes;
+    }
+
     /// <summary>
     /// 非并发协议中，每次交互的对象，会在发送时重新获取
     /// </summary>
     public TRequest Request { get; set; }
-
-    /// <summary>
-    /// 发送前，对当前的命令进行打包处理<br />
-    /// </summary>
-    public abstract void PackCommand(ISendMessage item);
 
     /// <inheritdoc/>
     public override string? ToString()
@@ -64,15 +66,25 @@ public abstract class ReadWriteDevicesUdpDataHandleAdapter<TRequest> : UdpDataHa
     }
 
     /// <inheritdoc/>
-    protected override Task PreviewReceived(EndPoint remoteEndPoint, ByteBlock byteBlock)
+    protected override async Task PreviewSendAsync(EndPoint endPoint, ReadOnlyMemory<byte> memory)
     {
         if (Logger.LogLevel <= LogLevel.Trace)
-            Logger?.Trace($"{ToString()}- Receive:{(IsHexData ? byteBlock.Buffer.ToHexString(0, byteBlock.Len, ' ') : byteBlock.ToString())}");
+            Logger?.Trace($"{ToString()}- Send:{(IsHexData ? memory.Span.ToHexString() : (memory.Span.ToString(Encoding.UTF8)))}");
+
+        //发送
+        await this.GoSendAsync(endPoint, memory).ConfigureFalseAwait();
+    }
+
+    /// <inheritdoc/>
+    protected override async Task PreviewReceived(EndPoint remoteEndPoint, ByteBlock byteBlock)
+    {
+        if (Logger.LogLevel <= LogLevel.Trace)
+            Logger?.Trace($"{ToString()}- Receive:{(IsHexData ? byteBlock.AsSegment().ToHexString() : byteBlock.ToString())}");
 
         TRequest request = null;
         //非并发协议,复用对象
         if (IsSingleThread)
-            request = request == null ? GetInstance() : request.DisposedValue ? GetInstance() : request;
+            request = request == null ? GetInstance() : request;
         else
         {
             //并发协议非缓存模式下，重新获取对象
@@ -83,22 +95,19 @@ public abstract class ReadWriteDevicesUdpDataHandleAdapter<TRequest> : UdpDataHa
         //当解析消息设定固定头长度大于0时，获取头部字节
         if (request.HeadBytesLength > 0)
         {
-            var header = byteBlock.ToArrayTake(request.HeadBytesLength);
+            var header = byteBlock.AsSegment(0, request.HeadBytesLength);
             Check(byteBlock, header);
-            request.SafeDispose();
-            return GoReceived(remoteEndPoint, null, request);
         }
         else
         {
             Check(byteBlock, null);
-            request.SafeDispose();
-            return GoReceived(remoteEndPoint, null, request);
         }
+        await GoReceived(remoteEndPoint, null, request);
 
-        void Check(ByteBlock byteBlock, byte[]? header)
+        void Check(ByteBlock byteBlock, ArraySegment<byte>? header)
         {
             //检查头部合法性
-            if (request.CheckHeadBytes(header))
+            if (request.CheckHeadBytes(header?.Array))
             {
                 if (request.BodyLength > this.MaxPackageSize)
                 {
@@ -106,132 +115,65 @@ public abstract class ReadWriteDevicesUdpDataHandleAdapter<TRequest> : UdpDataHa
                     return;
                 }
 
-                if (request.BodyLength + request.HeadBytesLength > byteBlock.CanReadLen)
+                if (request.BodyLength + request.HeadBytesLength > byteBlock.CanReadLength)
                 {
                     return;
                 }
                 if (request.BodyLength <= 0)
                 {
                     //如果body长度无法确定，直接读取全部
-                    request.BodyLength = byteBlock.Len;
+                    request.BodyLength = byteBlock.Length;
                 }
 
-                request.ReceivedByteBlock = byteBlock;
+                var result = UnpackResponse(request, byteBlock);
 
-                var result = UnpackResponse(request);
-
-                byteBlock.Pos += request.BodyLength;
+                byteBlock.Position += request.BodyLength;
                 if (request.IsSuccess)
-                    request.Content = result;
+                {
+                    request.Content = result.Content;
+                    byteBlock.Position = byteBlock.Length;
+                    request.ReceivedBytes = byteBlock;
+                }
                 return;
             }
             else
             {
-                byteBlock.Pos = byteBlock.Len;//移动游标
+                byteBlock.Position = byteBlock.Length;//移动游标
                 request.OperCode = -1;
                 return;
             }
         }
-
     }
 
-    /// <inheritdoc/>
-    protected override void PreviewSend(EndPoint endPoint, byte[] buffer, int offset, int length)
-    {
-        var send = new SendMessage(buffer, offset, length);
-        //发送前打包
-        if (IsSendPackCommand)
-            PackCommand(send);
-        if (Logger.LogLevel <= LogLevel.Trace)
-            Logger?.Trace($"{ToString()}- Send:{(IsHexData ? send.SendBytes.ToHexString(send.Offset, send.Length, ' ') : Encoding.UTF8.GetString(send.SendBytes, send.Offset, send.Length))}");
-        //发送
-        this.GoSend(endPoint, send.SendBytes, send.Offset, send.Length);
-    }
-
-    /// <inheritdoc/>
-    protected override void PreviewSend(EndPoint endPoint, IRequestInfo requestInfo)
-    {
-        if (!(requestInfo is ISendMessage message))
-        {
-            throw new Exception($"Unable to convert {nameof(requestInfo)} to {nameof(ISendMessage)}");
-        }
-        //发送前打包
-        if (IsSendPackCommand)
-            PackCommand(message);
-
-        if (Logger.LogLevel <= LogLevel.Trace)
-            Logger?.Trace($"{ToString()}- Send:{(IsHexData ? message.SendBytes.ToHexString(message.Offset, message.Length, ' ') : Encoding.UTF8.GetString(message.SendBytes, message.Offset, message.Length))}");
-        //非并发主从协议
-        if (IsSingleThread)
-        {
-            var request = GetInstance();
-            request.Sign = message.Sign;
-            if (message.Offset != 0 || message.Length != message.SendBytes.Length)
-                request.SendBytes = message.SendBytes;
-            else
-            {
-                byte[] bytes = new byte[message.Length];
-                Array.Copy(message.SendBytes, message.Offset, bytes, 0, message.Length);
-                request.SendBytes = bytes;
-            }
-
-            Request = request;
-        }
-        //发送
-        this.GoSend(endPoint, message.SendBytes, message.Offset, message.Length);
-
-
-    }
-
-    /// <inheritdoc/>
-    protected override async Task PreviewSendAsync(EndPoint endPoint, byte[] buffer, int offset, int length)
-    {
-        var send = new SendMessage(buffer, offset, length);
-        //发送前打包
-        if (IsSendPackCommand)
-            PackCommand(send);
-        if (Logger.LogLevel <= LogLevel.Trace)
-            Logger?.Trace($"{ToString()}- Send:{(IsHexData ? send.SendBytes.ToHexString(send.Offset, send.Length, ' ') : Encoding.UTF8.GetString(send.SendBytes, send.Offset, send.Length))}");
-        //发送
-        await this.GoSendAsync(endPoint, send.SendBytes, send.Offset, send.Length).ConfigureAwait(false);
-    }
     /// <inheritdoc/>
     protected override async Task PreviewSendAsync(EndPoint endPoint, IRequestInfo requestInfo)
     {
-        if (!(requestInfo is ISendMessage message))
+        if (!(requestInfo is ISendMessage sendMessage))
         {
             throw new Exception($"Unable to convert {nameof(requestInfo)} to {nameof(ISendMessage)}");
         }
-        //发送前打包
+        var sendData = sendMessage.SendBytes;
+
         if (IsSendPackCommand)
-            PackCommand(message);
+            sendData = PackCommand(sendMessage);
 
         if (Logger.LogLevel <= LogLevel.Trace)
-            Logger?.Trace($"{ToString()}- Send:{(IsHexData ? message.SendBytes.ToHexString(message.Offset, message.Length, ' ') : Encoding.UTF8.GetString(message.SendBytes, message.Offset, message.Length))}");
-
+            Logger?.Trace($"{ToString()}- Send:{(IsHexData ? sendData.ToHexString(' ') : Encoding.UTF8.GetString(sendData))}");
         //非并发主从协议
         if (IsSingleThread)
         {
             var request = GetInstance();
-            request.Sign = message.Sign;
-            if (message.Offset != 0 || message.Length != message.SendBytes.Length)
-                request.SendBytes = message.SendBytes;
-            else
-            {
-                byte[] bytes = new byte[message.Length];
-                Array.Copy(message.SendBytes, message.Offset, bytes, 0, message.Length);
-                request.SendBytes = bytes;
-            }
+            request.Sign = sendMessage.Sign;
+            request.SendInfo(sendData);
             Request = request;
         }
+
         //发送
-        await this.GoSendAsync(endPoint, message.SendBytes, message.Offset, message.Length).ConfigureAwait(false);
-
-
+        await this.GoSendAsync(endPoint, sendData).ConfigureFalseAwait();
     }
 
     /// <summary>
     /// 解包获取实际数据包
     /// </summary>
-    protected abstract byte[] UnpackResponse(TRequest request);
+    protected abstract AdapterResult UnpackResponse(TRequest request, IByteBlock byteBlock);
 }

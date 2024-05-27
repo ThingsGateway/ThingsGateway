@@ -13,20 +13,11 @@ namespace ThingsGateway.Foundation.Modbus;
 /// <inheritdoc/>
 internal class ModbusTcpServerDataHandleAdapter : ReadWriteDevicesSingleStreamDataHandleAdapter<ModbusTcpServerMessage>
 {
-    public override bool IsSendPackCommand { get; set; } = false;
     /// <inheritdoc/>
-    public override void PackCommand(ISendMessage item)
+    protected override AdapterResult UnpackResponse(ModbusTcpServerMessage request, IByteBlock byteBlock)
     {
-    }
-
-
-    /// <inheritdoc/>
-    protected override AdapterResult UnpackResponse(ModbusTcpServerMessage request)
-    {
-        var response = request.ReceivedByteBlock;
-        response.Pos = 6;
-        var bytes = ModbusHelper.ModbusServerAnalysisAddressValue(request, response);
-        return new AdapterResult() { FilterResult = FilterResult.Success, Bytes = bytes };
-
+        byteBlock.Position = 6;
+        var bytes = ModbusHelper.ModbusServerAnalysisAddressValue(request, byteBlock);
+        return new AdapterResult() { FilterResult = FilterResult.Success, Content = bytes };
     }
 }

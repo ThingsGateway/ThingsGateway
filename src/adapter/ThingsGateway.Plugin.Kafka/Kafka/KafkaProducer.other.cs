@@ -12,7 +12,6 @@ using Confluent.Kafka;
 
 using Mapster;
 
-using ThingsGateway.Admin.Application;
 using ThingsGateway.Foundation;
 using ThingsGateway.Foundation.Extension.Generic;
 
@@ -48,30 +47,30 @@ public partial class KafkaProducer : BusinessBaseWithCacheIntervalScript<Variabl
         base.AlarmChange(alarmVariable);
     }
 
-    protected override ValueTask<IOperResult> UpdateAlarmModel(IEnumerable<CacheDBItem<AlarmVariable>> item, CancellationToken cancellationToken)
+    protected override ValueTask<OperResult> UpdateAlarmModel(IEnumerable<CacheDBItem<AlarmVariable>> item, CancellationToken cancellationToken)
     {
         return UpdateAlarmModel(item.Select(a => a.Value), cancellationToken);
     }
 
-    protected override ValueTask<IOperResult> UpdateDevModel(IEnumerable<CacheDBItem<DeviceData>> item, CancellationToken cancellationToken)
+    protected override ValueTask<OperResult> UpdateDevModel(IEnumerable<CacheDBItem<DeviceData>> item, CancellationToken cancellationToken)
     {
         return UpdateDevModel(item.Select(a => a.Value), cancellationToken);
     }
 
-    protected override ValueTask<IOperResult> UpdateVarModel(IEnumerable<CacheDBItem<VariableData>> item, CancellationToken cancellationToken)
+    protected override ValueTask<OperResult> UpdateVarModel(IEnumerable<CacheDBItem<VariableData>> item, CancellationToken cancellationToken)
     {
         return UpdateVarModel(item.Select(a => a.Value), cancellationToken);
     }
 
     #region private
 
-    private async ValueTask<IOperResult> UpdateAlarmModel(IEnumerable<AlarmVariable> item, CancellationToken cancellationToken)
+    private async ValueTask<OperResult> UpdateAlarmModel(IEnumerable<AlarmVariable> item, CancellationToken cancellationToken)
     {
         List<TopicJson> topicJsonList = GetAlarms(item);
         return await Update(topicJsonList, cancellationToken).ConfigureAwait(false);
     }
 
-    private async ValueTask<IOperResult> Update(List<TopicJson> topicJsonList, CancellationToken cancellationToken)
+    private async ValueTask<OperResult> Update(List<TopicJson> topicJsonList, CancellationToken cancellationToken)
     {
         foreach (var topicJson in topicJsonList)
         {
@@ -92,13 +91,13 @@ public partial class KafkaProducer : BusinessBaseWithCacheIntervalScript<Variabl
         return OperResult.Success;
     }
 
-    private async ValueTask<IOperResult> UpdateDevModel(IEnumerable<DeviceData> item, CancellationToken cancellationToken)
+    private async ValueTask<OperResult> UpdateDevModel(IEnumerable<DeviceData> item, CancellationToken cancellationToken)
     {
         List<TopicJson> topicJsonList = GetDeviceData(item);
         return await Update(topicJsonList, cancellationToken).ConfigureAwait(false);
     }
 
-    private async ValueTask<IOperResult> UpdateVarModel(IEnumerable<VariableData> item, CancellationToken cancellationToken)
+    private async ValueTask<OperResult> UpdateVarModel(IEnumerable<VariableData> item, CancellationToken cancellationToken)
     {
         List<TopicJson> topicJsonList = GetVariable(item);
         return await Update(topicJsonList, cancellationToken).ConfigureAwait(false);
@@ -139,7 +138,7 @@ public partial class KafkaProducer : BusinessBaseWithCacheIntervalScript<Variabl
     /// <summary>
     /// kafka上传，返回上传结果
     /// </summary>
-    private async ValueTask<IOperResult> KafKaUpAsync(string topic, string payLoad, CancellationToken cancellationToken)
+    private async ValueTask<OperResult> KafKaUpAsync(string topic, string payLoad, CancellationToken cancellationToken)
     {
         try
         {

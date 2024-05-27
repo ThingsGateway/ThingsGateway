@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -9,12 +8,11 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-
 using ThingsGateway.Gateway.Application;
 
 namespace ThingsGateway.Gateway.Razor;
 
-public partial class DeviceStatusPage:IDisposable
+public partial class DeviceStatusPage : IDisposable
 {
     private IEnumerable<DriverBase>? CollectBases;
     private IEnumerable<DriverBase>? BusinessBases;
@@ -31,9 +29,11 @@ public partial class DeviceStatusPage:IDisposable
 
     [Inject]
     private IPluginService PluginService { get; set; }
+
     [Inject]
     [NotNull]
     private IDispatchService<PluginOutput>? PluginDispatchService { get; set; }
+
     [Inject]
     [NotNull]
     private IDispatchService<DeviceRunTime>? DeviceRunTimeDispatchService { get; set; }
@@ -44,6 +44,7 @@ public partial class DeviceStatusPage:IDisposable
         PluginDispatchService.Subscribe(Notify);
         return base.OnInitializedAsync();
     }
+
     private async Task Notify(DispatchEntry<PluginOutput> entry)
     {
         await OnParametersSetAsync();

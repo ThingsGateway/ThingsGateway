@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "ThingsGateway.Debug.Photino": {
+      "commandName": "Project"
+    },
+    "WSL": {
+      "commandName": "WSL2",
+      "distributionName": ""
+    }
+  }
+}

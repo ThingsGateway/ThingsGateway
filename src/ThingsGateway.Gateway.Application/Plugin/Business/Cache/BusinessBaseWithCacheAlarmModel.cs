@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -8,8 +7,6 @@
 //  使用文档：https://kimdiego2098.github.io/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
-
-
 
 using System.Collections.Concurrent;
 
@@ -49,7 +46,6 @@ public abstract class BusinessBaseWithCacheAlarmModel<VarModel, DevModel, AlarmM
                     using var cache = LocalDBCacheAlarmModel();
                     cache.DBProvider.Fastest<CacheDBItem<AlarmModel>>().PageSize(50000).BulkCopy(data);
                 }
-
             }
             catch
             {
@@ -94,6 +90,7 @@ public abstract class BusinessBaseWithCacheAlarmModel<VarModel, DevModel, AlarmM
 
         _memoryAlarmModelQueue.Enqueue(data);
     }
+
     private volatile bool LocalDBCacheAlarmModelInited;
 
     /// <summary>
@@ -127,7 +124,7 @@ public abstract class BusinessBaseWithCacheAlarmModel<VarModel, DevModel, AlarmM
     /// <param name="item"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    protected abstract ValueTask<IOperResult> UpdateAlarmModel(IEnumerable<CacheDBItem<AlarmModel>> item, CancellationToken cancellationToken);
+    protected abstract ValueTask<OperResult> UpdateAlarmModel(IEnumerable<CacheDBItem<AlarmModel>> item, CancellationToken cancellationToken);
 
     protected async Task UpdateAlarmModelCache(CancellationToken cancellationToken)
     {

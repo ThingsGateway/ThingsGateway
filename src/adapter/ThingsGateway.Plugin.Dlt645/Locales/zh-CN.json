@@ -6,7 +6,7 @@
     "Station": "通讯地址",
 
     "HeartbeatHexString": "心跳验证(HexString)",
-    "DataFormat": "解析规则",
+    "EndianType": "解析规则",
     "IsStringReverseByteWord": "字符串反转",
     "CheckClearTime": "客户端连接滑动过期时间",
     "Timeout": "读写超时时间",
@@ -18,5 +18,4 @@
     "RetryCount": "失败重试次数",
     "ConcurrentCount": "最大并发数量"
   }
-
 }

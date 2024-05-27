@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -8,8 +7,6 @@
 //  使用文档：https://kimdiego2098.github.io/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
-
-
 
 using Mapster;
 
@@ -294,7 +291,8 @@ public class ManagementHostedService : BackgroundService
                             {
                                 // 调用 udpDmtp.GetDmtpRpcActor() 的 ReverseCallbackServer.UpdateGatewayDataAsync 方法，
                                 // 将 GlobalData.CollectDevices 和 GlobalData.Variables 同步到从站
-                                await udpDmtp.GetDmtpRpcActor().InvokeAsync(nameof(ReverseCallbackServer.UpdateGatewayDataAsync), waitInvoke, GlobalData.CollectDevices.Adapt<Dictionary<string, DeviceDataWithValue>>(), GlobalData.Variables.Adapt<Dictionary<string, VariableDataWithValue>>()).ConfigureAwait(false);
+                                await udpDmtp.GetDmtpRpcActor().InvokeAsync(
+                                    new RpcRequest(nameof(ReverseCallbackServer.UpdateGatewayDataAsync), null, waitInvoke, new object[] { GlobalData.CollectDevices.Adapt<Dictionary<string, DeviceDataWithValue>>(), GlobalData.Variables.Adapt<Dictionary<string, VariableDataWithValue>>() }, null)).ConfigureAwait(false);
                             }
                         }
                         catch (Exception ex)

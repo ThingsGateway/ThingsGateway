@@ -226,7 +226,7 @@ internal class OpcGroup : IOPCDataCallback, IDisposable
             }
             //添加OPC项组
             m_ItemManagement?.AddItems(items.Length, itemDefyArray, out pResults, out pErrors);
-            IntPtr Pos = pResults;
+            IntPtr Position = pResults;
             Marshal.Copy(pErrors, errors, 0, items.Length);
             List<Tuple<OpcItem, int>> results = new();
             for (int j = 0; j < items.Length; j++)
@@ -235,16 +235,16 @@ internal class OpcGroup : IOPCDataCallback, IDisposable
                 {
                     if (j != 0)
                     {
-                        Pos = IntPtr.Add(Pos, Marshal.SizeOf(typeof(OPCITEMRESULT)));
+                        Position = IntPtr.Add(Position, Marshal.SizeOf(typeof(OPCITEMRESULT)));
                     }
-                    object o = Marshal.PtrToStructure(Pos, typeof(OPCITEMRESULT));
+                    object o = Marshal.PtrToStructure(Position, typeof(OPCITEMRESULT));
                     if (o != null)
                     {
                         var result = (OPCITEMRESULT)o;
 
                         items[j].RunTimeDataType = result.vtCanonicalDataType;
                         itemServerHandle[j] = items[j].ServerHandle = result.hServer;
-                        Marshal.DestroyStructure(Pos, typeof(OPCITEMRESULT));
+                        Marshal.DestroyStructure(Position, typeof(OPCITEMRESULT));
                         OpcItems.Add(items[j]);
                     }
                 }

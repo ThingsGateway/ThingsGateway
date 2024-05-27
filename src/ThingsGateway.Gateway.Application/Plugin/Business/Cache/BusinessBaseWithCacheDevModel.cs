@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -8,8 +7,6 @@
 //  使用文档：https://kimdiego2098.github.io/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
-
-
 
 using System.Collections.Concurrent;
 
@@ -49,7 +46,6 @@ public abstract class BusinessBaseWithCacheDevModel<VarModel, DevModel> : Busine
                     using var cache = LocalDBCacheDevModel();
                     cache.DBProvider.Fastest<CacheDBItem<DevModel>>().PageSize(50000).BulkCopy(data);
                 }
-
             }
             catch
             {
@@ -96,6 +92,7 @@ public abstract class BusinessBaseWithCacheDevModel<VarModel, DevModel> : Busine
     }
 
     private volatile bool LocalDBCacheDevModelInited;
+
     /// <summary>
     /// 获取缓存对象，注意每次获取的对象可能不一样，如顺序操作，需固定引用
     /// </summary>
@@ -124,7 +121,7 @@ public abstract class BusinessBaseWithCacheDevModel<VarModel, DevModel> : Busine
     /// <param name="item"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    protected abstract ValueTask<IOperResult> UpdateDevModel(IEnumerable<CacheDBItem<DevModel>> item, CancellationToken cancellationToken);
+    protected abstract ValueTask<OperResult> UpdateDevModel(IEnumerable<CacheDBItem<DevModel>> item, CancellationToken cancellationToken);
 
     protected async Task UpdateDevModelCache(CancellationToken cancellationToken)
     {

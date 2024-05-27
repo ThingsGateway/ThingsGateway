@@ -123,11 +123,11 @@ public class ChannelData : IChannelData
         }
         channelData.TouchSocketConfig?.Dispose();
         channelData.TouchSocketConfig = new TouchSocket.Core.TouchSocketConfig();
-        var LogMessage = new TouchSocket.Core.LoggerGroup() { LogLevel = TouchSocket.Core.LogLevel.Trace };
+        var logMessage = new TouchSocket.Core.LoggerGroup() { LogLevel = TouchSocket.Core.LogLevel.Trace };
         var logger = TextFileLogger.Create(channelData.Id.GetDebugLogPath());
         logger.LogLevel = LogLevel.Trace;
-        LogMessage.AddLogger(logger);
-        channelData.TouchSocketConfig.ConfigureContainer(a => a.RegisterSingleton<ILog>(LogMessage));
+        logMessage.AddLogger(logger);
+        channelData.TouchSocketConfig.ConfigureContainer(a => a.RegisterSingleton<ILog>(logMessage));
 
         switch (channelData.ChannelType)
         {

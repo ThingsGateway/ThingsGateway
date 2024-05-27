@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -8,9 +7,6 @@
 //  使用文档：https://kimdiego2098.github.io/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
-
-
-
 
 using NewLife.Caching;
 
@@ -157,7 +153,7 @@ public class SiemensAddress
     {
         var cacheKey = $"{nameof(ParseFrom)}_{typeof(SiemensAddress).FullName}_{typeof(SiemensAddress).TypeHandle.Value}_{address}";
         if (isCache)
-            if (Cache.Default.TryGetValue(cacheKey, out SiemensAddress sAddress))
+            if (MemoryCache.Instance.TryGetValue(cacheKey, out SiemensAddress sAddress))
                 return sAddress.Map();
 
         SiemensAddress s7AddressData = new();
@@ -292,7 +288,7 @@ public class SiemensAddress
         }
 
         if (isCache)
-            Cache.Default.Set(cacheKey, s7AddressData.Map<SiemensAddress>(), 3600);
+            MemoryCache.Instance.Set(cacheKey, s7AddressData.Map<SiemensAddress>(), 3600);
 
         return s7AddressData;
     }

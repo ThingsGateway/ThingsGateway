@@ -18,6 +18,13 @@ internal class Dlt645_2007Message : MessageBase, IResultMessage
     /// <inheritdoc/>
     public override int HeadBytesLength => 0;
 
+    public byte[] SendBytes { get; set; }
+
+    public override void SendInfo(byte[]? sendBytes)
+    {
+        SendBytes = sendBytes;
+    }
+
     /// <inheritdoc/>
     public override bool CheckHeadBytes(byte[]? headBytes)
     {

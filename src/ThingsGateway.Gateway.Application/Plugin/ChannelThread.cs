@@ -16,7 +16,6 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Concurrent;
 
 using ThingsGateway.Core.Extension;
-using ThingsGateway.Gateway.Application.Generic;
 
 using TouchSocket.Core;
 
@@ -27,8 +26,8 @@ namespace ThingsGateway.Gateway.Application;
 /// </summary>
 public class ChannelThread
 {
-
     #region 动态配置
+
     static ChannelThread()
     {
         var minCycleInterval = App.Configuration.GetSection("ChannelThread:MinCycleInterval").Get<int?>() ?? 10;
@@ -82,10 +81,12 @@ public class ChannelThread
             }
         }
     }
+
     /// <summary>
     /// 线程最大等待间隔时间
     /// </summary>
     public static int MaxCycleInterval = 100;
+
     /// <summary>
     /// 线程最小等待间隔时间
     /// </summary>
@@ -99,8 +100,7 @@ public class ChannelThread
     internal static volatile int MaxCount;
     internal static volatile int MaxVariableCount;
 
-
-    #endregion
+    #endregion 动态配置
 
     /// <summary>
     /// 通道线程构造函数，用于初始化通道线程实例。

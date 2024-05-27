@@ -12,7 +12,6 @@ using Mapster;
 
 using NewLife.Threading;
 
-using ThingsGateway.Admin.Application;
 using ThingsGateway.Foundation;
 using ThingsGateway.Gateway.Application;
 
@@ -32,12 +31,12 @@ public partial class SqlHisAlarm : BusinessBaseWithCacheVarModel<HistoryAlarm>
         AddQueueVarModel(new(alarmVariable.Adapt<HistoryAlarm>(_config)));
     }
 
-    protected override ValueTask<IOperResult> UpdateVarModel(IEnumerable<CacheDBItem<HistoryAlarm>> item, CancellationToken cancellationToken)
+    protected override ValueTask<OperResult> UpdateVarModel(IEnumerable<CacheDBItem<HistoryAlarm>> item, CancellationToken cancellationToken)
     {
         return UpdateT(item.Select(a => a.Value), cancellationToken);
     }
 
-    private async ValueTask<IOperResult> UpdateT(IEnumerable<HistoryAlarm> item, CancellationToken cancellationToken)
+    private async ValueTask<OperResult> UpdateT(IEnumerable<HistoryAlarm> item, CancellationToken cancellationToken)
     {
         var result = await InserableAsync(item.ToList(), cancellationToken).ConfigureAwait(false);
         if (success != result.IsSuccess)
@@ -50,7 +49,7 @@ public partial class SqlHisAlarm : BusinessBaseWithCacheVarModel<HistoryAlarm>
         return result;
     }
 
-    private async ValueTask<IOperResult> InserableAsync(List<HistoryAlarm> dbInserts, CancellationToken cancellationToken)
+    private async ValueTask<OperResult> InserableAsync(List<HistoryAlarm> dbInserts, CancellationToken cancellationToken)
     {
         try
         {

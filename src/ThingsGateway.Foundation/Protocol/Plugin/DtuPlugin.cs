@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -8,11 +7,6 @@
 //  使用文档：https://kimdiego2098.github.io/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
-
-
-
-
-using System.Text;
 
 namespace ThingsGateway.Foundation;
 
@@ -28,20 +22,19 @@ public class DtuPlugin : PluginBase, ITcpReceivingPlugin
 
     public async Task OnTcpReceiving(ITcpSession client, ByteBlockEventArgs e)
     {
-        if (client is SocketClientChannel socket)
+        if (client is TcpSessionClientChannel socket)
         {
-
             if (!socket.Id.StartsWith("ID="))
             {
-                var id = $"ID={Encoding.UTF8.GetString(e.ByteBlock.Buffer, 0, e.ByteBlock.Len)}";
-                client.Logger.Info(DefaultResource.Localizer["DtuConnected", id]);
+                var id = $"ID={e.ByteBlock}";
                 await socket.ResetIdAsync(id);
+                client.Logger.Info(DefaultResource.Localizer["DtuConnected", id]);
                 e.Handled = true;
             }
-            if (DtuService.HeartbeatHexString == e.ByteBlock.Buffer.ToHexString(0, e.ByteBlock.Len))
+            if (DtuService.HeartbeatHexString == e.ByteBlock.AsSegment().ToHexString())
             {
                 //回应心跳包
-                socket.Send(e.ByteBlock.Buffer, 0, e.ByteBlock.Len);
+                socket.Send(e.ByteBlock.AsSegment());
                 e.Handled = true;
                 if (socket.Logger.LogLevel <= LogLevel.Trace)
                     socket.Logger?.Trace($"{socket}- Send:{DtuService.HeartbeatHexString}");

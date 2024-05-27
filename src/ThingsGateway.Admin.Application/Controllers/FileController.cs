@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -9,40 +8,36 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-
-
-
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ThingsGateway.Admin.Application
+namespace ThingsGateway.Admin.Application;
+
+/// <summary>
+/// 文件下载
+/// </summary>
+[Route("api/file")]
+public class FileController : ControllerBase
 {
     /// <summary>
-    /// 文件下载
+    /// 下载wwwroot文件夹下的文件
     /// </summary>
-    [Route("api/file")]
-    public class FileController : ControllerBase
+    /// <param name="fileName">相对路径</param>
+    /// <returns></returns>
+    [HttpGet("download")]
+    public IActionResult Download(string fileName)
     {
-        /// <summary>
-        /// 下载wwwroot文件夹下的文件
-        /// </summary>
-        /// <param name="fileName">相对路径</param>
-        /// <returns></returns>
-        [HttpGet("download")]
-        public IActionResult Download(string fileName)
+        var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", fileName);
+
+        if (!System.IO.File.Exists(filePath))
         {
-            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", fileName);
-
-            if (!System.IO.File.Exists(filePath))
-            {
-                return NotFound();
-            }
-
-            var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-
-            Response.Headers.Append("Access-Control-Expose-Headers", "Content-Disposition");
-
-            return File(fileStream, "application/octet-stream", (fileName.Replace('/', '_')));
+            return NotFound();
         }
+
+        var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+
+        Response.Headers.Append("Access-Control-Expose-Headers", "Content-Disposition");
+
+        return File(fileStream, "application/octet-stream", (fileName.Replace('/', '_')));
     }
 }

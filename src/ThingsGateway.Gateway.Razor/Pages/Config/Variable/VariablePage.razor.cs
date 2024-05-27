@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -9,14 +8,12 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-
 using Mapster;
 
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.JSInterop;
 
 using System.Data;
-using System.Linq;
 
 using ThingsGateway.Core.Extension;
 using ThingsGateway.Gateway.Application;
@@ -30,7 +27,7 @@ public partial class VariablePage : IDisposable
     protected IEnumerable<SelectedItem> BusinessDeviceNames;
     private Dictionary<long, Device> CollectDeviceDict { get; set; } = new();
     private Dictionary<long, Device> BusinessDeviceDict { get; set; } = new();
- 
+
     private int TestCount { get; set; }
 
     [Inject]
@@ -69,7 +66,7 @@ public partial class VariablePage : IDisposable
         CollectDeviceDict = DeviceService.GetAll().Where(a => a.PluginType == PluginTypeEnum.Collect).ToDictionary(a => a.Id);
         BusinessDeviceDict = DeviceService.GetAll().Where(a => a.PluginType == PluginTypeEnum.Business).ToDictionary(a => a.Id);
 
-        CollectDeviceNames = DeviceService.GetAll().Where(a => a.PluginType == PluginTypeEnum.Collect).BuildDeviceSelectList().Concat(new List<SelectedItem>() {   new SelectedItem(string.Empty, "none") });
+        CollectDeviceNames = DeviceService.GetAll().Where(a => a.PluginType == PluginTypeEnum.Collect).BuildDeviceSelectList().Concat(new List<SelectedItem>() { new SelectedItem(string.Empty, "none") });
         BusinessDeviceNames = DeviceService.GetAll().Where(a => a.PluginType == PluginTypeEnum.Business).BuildDeviceSelectList().Concat(new List<SelectedItem>() { new SelectedItem(string.Empty, "none") });
 
         return base.OnParametersSetAsync();
@@ -153,11 +150,10 @@ public partial class VariablePage : IDisposable
             {nameof(VariableEditComponent.CollectDevices),CollectDeviceNames },
             {nameof(VariableEditComponent.BusinessDeviceDict),BusinessDeviceDict },
             {nameof(VariableEditComponent.CollectDeviceDict),CollectDeviceDict },
-
         });
         await DialogService.Show(op);
-
     }
+
     private async Task<bool> Delete(IEnumerable<Variable> devices)
     {
         try
@@ -216,12 +212,10 @@ public partial class VariablePage : IDisposable
         await table.QueryAsync();
     }
 
-
     #endregion 导出
 
     private async Task Change()
     {
         await OnParametersSetAsync();
     }
-
 }

@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -8,9 +7,6 @@
 //  使用文档：https://kimdiego2098.github.io/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
-
-
-
 
 using ThingsGateway.Gateway.Application;
 
@@ -46,7 +42,7 @@ public class SiemensS7Master : CollectBase
         //载入配置
         _plc = new(channel)
         {
-            DataFormat = _driverPropertys.DataFormat,
+            EndianType = _driverPropertys.EndianType,
             SendDelayTime = _driverPropertys.SendDelayTime,
             CacheTimeout = _driverPropertys.CacheTimeout,
             ConnectTimeout = _driverPropertys.ConnectTimeout,
@@ -64,7 +60,7 @@ public class SiemensS7Master : CollectBase
         try { _plc.Channel.ConnectAsync(_driverPropertys.ConnectTimeout).GetFalseAwaitResult(); } catch { }
         try
         {
-            return _plc.LoadSourceRead<VariableSourceRead>(deviceVariables, _plc.OnLine? _plc.PduLength:_driverPropertys.MaxPack, CurrentDevice.IntervalTime);
+            return _plc.LoadSourceRead<VariableSourceRead>(deviceVariables, _plc.OnLine ? _plc.PduLength : _driverPropertys.MaxPack, CurrentDevice.IntervalTime);
         }
         finally { _plc.Channel.Close(); }
     }
@@ -74,7 +70,7 @@ public class SiemensS7Master : CollectBase
     /// </summary>
     /// <returns></returns>
     [DynamicMethod("ReadWriteDateAsync", "读写日期格式")]
-    public async ValueTask<IOperResult<System.DateTime>> ReadWriteDateAsync(string address, System.DateTime? value = null, CancellationToken cancellationToken = default)
+    public async ValueTask<OperResult<System.DateTime>> ReadWriteDateAsync(string address, System.DateTime? value = null, CancellationToken cancellationToken = default)
     {
         if (value == null)
             return await _plc.ReadDateAsync(address, cancellationToken).ConfigureAwait(false);
@@ -90,7 +86,7 @@ public class SiemensS7Master : CollectBase
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     [DynamicMethod("ReadWriteDateTimeAsync", "读写日期时间格式")]
-    public async ValueTask<IOperResult<System.DateTime>> ReadWriteDateTimeAsync(string address, System.DateTime? value = null, CancellationToken cancellationToken = default)
+    public async ValueTask<OperResult<System.DateTime>> ReadWriteDateTimeAsync(string address, System.DateTime? value = null, CancellationToken cancellationToken = default)
     {
         if (value == null)
             return await _plc.ReadDateTimeAsync(address, cancellationToken);

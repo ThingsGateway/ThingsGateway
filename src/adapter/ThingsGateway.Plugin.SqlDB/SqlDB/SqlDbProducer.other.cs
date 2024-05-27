@@ -10,7 +10,6 @@
 
 using Mapster;
 
-using ThingsGateway.Admin.Application;
 using ThingsGateway.Foundation;
 
 using TouchSocket.Core;
@@ -35,12 +34,12 @@ public partial class SqlDBProducer : BusinessBaseWithCacheIntervalVarModel<SQLHi
         }
     }
 
-    protected override ValueTask<IOperResult> UpdateVarModel(IEnumerable<CacheDBItem<SQLHistoryValue>> item, CancellationToken cancellationToken)
+    protected override ValueTask<OperResult> UpdateVarModel(IEnumerable<CacheDBItem<SQLHistoryValue>> item, CancellationToken cancellationToken)
     {
         return UpdateVarModel(item.Select(a => a.Value), cancellationToken);
     }
 
-    private async ValueTask<IOperResult> UpdateVarModel(IEnumerable<SQLHistoryValue> item, CancellationToken cancellationToken)
+    private async ValueTask<OperResult> UpdateVarModel(IEnumerable<SQLHistoryValue> item, CancellationToken cancellationToken)
     {
         var result = await InserableAsync(item.ToList(), cancellationToken).ConfigureAwait(false);
         if (success != result.IsSuccess)
@@ -55,7 +54,7 @@ public partial class SqlDBProducer : BusinessBaseWithCacheIntervalVarModel<SQLHi
 
     #region 方法
 
-    private async ValueTask<IOperResult> InserableAsync(List<SQLHistoryValue> dbInserts, CancellationToken cancellationToken)
+    private async ValueTask<OperResult> InserableAsync(List<SQLHistoryValue> dbInserts, CancellationToken cancellationToken)
     {
         try
         {
@@ -75,7 +74,7 @@ public partial class SqlDBProducer : BusinessBaseWithCacheIntervalVarModel<SQLHi
         }
     }
 
-    private async ValueTask<IOperResult?> UpdateAsync(List<SQLRealValue> datas, CancellationToken cancellationToken)
+    private async ValueTask<OperResult> UpdateAsync(List<SQLRealValue> datas, CancellationToken cancellationToken)
     {
         try
         {
@@ -91,7 +90,7 @@ public partial class SqlDBProducer : BusinessBaseWithCacheIntervalVarModel<SQLHi
                     _initRealData = true;
                     return OperResult.Success;
                 }
-                return null;
+                return OperResult.Success;
             }
             else
             {
@@ -101,7 +100,7 @@ public partial class SqlDBProducer : BusinessBaseWithCacheIntervalVarModel<SQLHi
                     LogMessage.Trace($"TableName：{nameof(SQLRealValue)}{Environment.NewLine} ，Count：{result}");
                     return OperResult.Success;
                 }
-                return null;
+                return OperResult.Success;
             }
         }
         catch (Exception ex)

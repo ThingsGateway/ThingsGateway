@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -9,10 +8,6 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-
-
-
-using ThingsGateway.Foundation.Extension.Generic;
 using ThingsGateway.Foundation.Extension.String;
 
 using TouchSocket.Core;
@@ -27,6 +22,7 @@ public partial class SiemensS7Master : ProtocolBase
     public SiemensS7Master(IChannel channel) : base(channel)
     {
         RegisterByteLength = 1;
+        IsBoolReverseByteWord = false;
         ThingsGatewayBitConverter = new ThingsGatewayBitConverter(EndianType.Big);
     }
 
@@ -90,12 +86,6 @@ public partial class SiemensS7Master : ProtocolBase
     }
 
     /// <inheritdoc/>
-    public override bool BitReverse(string address)
-    {
-        return false;
-    }
-
-    /// <inheritdoc/>
     public override DataHandlingAdapter GetDataAdapter()
     {
         return new SiemensS7DataHandleAdapter()
@@ -113,30 +103,7 @@ public partial class SiemensS7Master : ProtocolBase
     #region 读写
 
     /// <inheritdoc/>
-    public override IOperResult<byte[]> Read(string address, int length, CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            var commandResult = GetReadByteCommand(address, length);
-            List<byte> bytes = new();
-            foreach (var item in commandResult)
-            {
-                var result = SendThenReturn(item, cancellationToken);
-                if (result.IsSuccess)
-                    bytes.AddRange(result.Content);
-                else
-                    return result;
-            }
-            return OperResult.CreateSuccessResult(bytes.ToArray());
-        }
-        catch (Exception ex)
-        {
-            return new OperResult<byte[]>(ex);
-        }
-    }
-
-    /// <inheritdoc/>
-    public override async ValueTask<IOperResult<byte[]>> ReadAsync(string address, int length, CancellationToken cancellationToken = default)
+    public override async ValueTask<OperResult<byte[]>> ReadAsync(string address, int length, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -159,45 +126,7 @@ public partial class SiemensS7Master : ProtocolBase
     }
 
     /// <inheritdoc/>
-    public override IOperResult Write(string address, byte[] value, CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            var commandResult = GetWriteByteCommand(address, value);
-            foreach (var item in commandResult)
-            {
-                var result = SendThenReturn(item, cancellationToken);
-                if (!result.IsSuccess)
-                    return result;
-            }
-            return OperResult.Success;
-        }
-        catch (Exception ex)
-        {
-            return new OperResult(ex);
-        }
-    }
-
-    /// <inheritdoc/>
-    public override IOperResult Write(string address, bool[] value, CancellationToken cancellationToken = default)
-    {
-        if (value.Length > 1)
-        {
-            return new OperResult(SiemensS7Resource.Localizer["MulWriteError"]);
-        }
-        try
-        {
-            var commandResult = GetWriteBitCommand(address, value[0]);
-            return SendThenReturn(commandResult, cancellationToken);
-        }
-        catch (Exception ex)
-        {
-            return new OperResult(ex);
-        }
-    }
-
-    /// <inheritdoc/>
-    public override async ValueTask<IOperResult> WriteAsync(string address, byte[] value, CancellationToken cancellationToken = default)
+    public override async ValueTask<OperResult> WriteAsync(string address, byte[] value, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -217,7 +146,7 @@ public partial class SiemensS7Master : ProtocolBase
     }
 
     /// <inheritdoc/>
-    public override async ValueTask<IOperResult> WriteAsync(string address, bool[] value, CancellationToken cancellationToken = default)
+    public override async ValueTask<OperResult> WriteAsync(string address, bool[] value, CancellationToken cancellationToken = default)
     {
         if (value.Length > 1)
         {
@@ -305,8 +234,7 @@ public partial class SiemensS7Master : ProtocolBase
             //channel.SetDataHandlingAdapter(dataHandleAdapter);
             try
             {
-
-                var result2 = await SendThenReturnAsync(new SendMessage(ISO_CR), CancellationToken.None, channel).ConfigureAwait(false);
+                var result2 = await GetResponsedDataAsync(new SendMessage(ISO_CR), Timeout, (IClientChannel)Channel, CancellationToken.None).ConfigureAwait(false);
                 if (!result2.IsSuccess)
                 {
                     Logger?.LogWarning(SiemensS7Resource.Localizer["HandshakeError1", channel.ToString(), result2.ErrorMessage]);
@@ -322,14 +250,15 @@ public partial class SiemensS7Master : ProtocolBase
             }
             try
             {
-                var result2 = await SendThenReturnAsync(new SendMessage(S7_PN), CancellationToken.None, channel).ConfigureAwait(false);
+                var result2 = await GetResponsedDataAsync(new SendMessage(S7_PN), Timeout, (IClientChannel)Channel, CancellationToken.None).ConfigureAwait(false);
                 if (!result2.IsSuccess)
                 {
                     Logger?.LogWarning(SiemensS7Resource.Localizer["HandshakeError2", channel.ToString(), result2.ErrorMessage]);
                     channel.Close();
                     return;
                 }
-                PduLength = ThingsGatewayBitConverter.ToUInt16(result2.Content.SelectLast(2), 0);
+                PduLength = ThingsGatewayBitConverter.ToUInt16(result2.Content, 0);
+                Logger?.LogInformation($"PduLength：{PduLength}");
                 PduLength = PduLength < 200 ? 200 : PduLength;
             }
             catch (Exception ex)
@@ -358,7 +287,7 @@ public partial class SiemensS7Master : ProtocolBase
     /// 读取日期
     /// </summary>
     /// <returns></returns>
-    public async ValueTask<IOperResult<System.DateTime>> ReadDateAsync(string address, CancellationToken cancellationToken)
+    public async ValueTask<OperResult<System.DateTime>> ReadDateAsync(string address, CancellationToken cancellationToken)
     {
         return (await this.ReadAsync(address, 2, cancellationToken).ConfigureAwait(false)).
              Then(m => OperResult.CreateSuccessResult(S7DateTime.SpecMinimumDateTime.AddDays(
@@ -370,7 +299,7 @@ public partial class SiemensS7Master : ProtocolBase
     /// 读取时间
     /// </summary>
     /// <returns></returns>
-    public async ValueTask<IOperResult<System.DateTime>> ReadDateTimeAsync(string address, CancellationToken cancellationToken)
+    public async ValueTask<OperResult<System.DateTime>> ReadDateTimeAsync(string address, CancellationToken cancellationToken)
     {
         return OperResultExtension.GetResultFromBytes(await ReadAsync(address, 8, cancellationToken).ConfigureAwait(false), S7DateTime.FromByteArray);
     }
@@ -379,7 +308,7 @@ public partial class SiemensS7Master : ProtocolBase
     /// 写入日期
     /// </summary>
     /// <returns></returns>
-    public ValueTask<IOperResult> WriteDateAsync(string address, System.DateTime dateTime, CancellationToken cancellationToken)
+    public ValueTask<OperResult> WriteDateAsync(string address, System.DateTime dateTime, CancellationToken cancellationToken)
     {
         return base.WriteAsync(address, Convert.ToUInt16((dateTime - S7DateTime.SpecMinimumDateTime).TotalDays), null, cancellationToken);
     }
@@ -388,7 +317,7 @@ public partial class SiemensS7Master : ProtocolBase
     /// 写入时间
     /// </summary>
     /// <returns></returns>
-    public ValueTask<IOperResult> WriteDateTimeAsync(string address, System.DateTime dateTime, CancellationToken cancellationToken)
+    public ValueTask<OperResult> WriteDateTimeAsync(string address, System.DateTime dateTime, CancellationToken cancellationToken)
     {
         return WriteAsync(address, S7DateTime.ToByteArray(dateTime), cancellationToken);
     }
@@ -398,34 +327,7 @@ public partial class SiemensS7Master : ProtocolBase
     #region 字符串读写
 
     /// <inheritdoc/>
-    public override IOperResult<string[]> ReadString(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
-    {
-        var siemensAddress = SiemensAddress.ParseFrom(address);
-        if (siemensAddress.IsString)
-        {
-            bitConverter ??= ThingsGatewayBitConverter.GetTransByAddress(ref address);
-            if (length > 1)
-            {
-                return new OperResult<string[]>(SiemensS7Resource.Localizer["StringLengthReadError"]);
-            }
-            var result = SiemensHelper.ReadString(this, address, bitConverter.Encoding, cancellationToken);
-            if (result.IsSuccess)
-            {
-                return OperResult.CreateSuccessResult(new string[] { result.Content });
-            }
-            else
-            {
-                return new OperResult<string[]>(result);
-            }
-        }
-        else
-        {
-            return base.ReadString(address, length, bitConverter, cancellationToken);
-        }
-    }
-
-    /// <inheritdoc/>
-    public override async ValueTask<IOperResult<string[]>> ReadStringAsync(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
+    public override async ValueTask<OperResult<string[]>> ReadStringAsync(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
     {
         var siemensAddress = SiemensAddress.ParseFrom(address);
         if (siemensAddress.IsString)
@@ -452,22 +354,7 @@ public partial class SiemensS7Master : ProtocolBase
     }
 
     /// <inheritdoc/>
-    public override IOperResult Write(string address, string value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
-    {
-        var siemensAddress = SiemensAddress.ParseFrom(address);
-        if (siemensAddress.IsString)
-        {
-            bitConverter ??= ThingsGatewayBitConverter.GetTransByAddress(ref address);
-            return SiemensHelper.Write(this, address, value, bitConverter.Encoding, cancellationToken);
-        }
-        else
-        {
-            return base.Write(address, value, bitConverter, cancellationToken);
-        }
-    }
-
-    /// <inheritdoc/>
-    public override ValueTask<IOperResult> WriteAsync(string address, string value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
+    public override ValueTask<OperResult> WriteAsync(string address, string value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
     {
         var siemensAddress = SiemensAddress.ParseFrom(address);
         if (siemensAddress.IsString)

@@ -168,6 +168,7 @@ public class VariableService : BaseService<Variable>, IVariableService
         using var db = GetDB();
         return db.Insertable(input).ExecuteCommandAsync();
     }
+
     /// <inheritdoc/>
     [OperDesc("SaveVariable", localizerType: typeof(Variable), isRecordPar: false)]
     public async Task<bool> BatchEditAsync(IEnumerable<Variable> models, Variable oldModel, Variable model)
@@ -786,4 +787,3 @@ public class VariableService : BaseService<Variable>, IVariableService
 
     #endregion 导入
 }
-

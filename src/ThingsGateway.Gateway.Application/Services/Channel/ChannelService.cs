@@ -92,6 +92,7 @@ public class ChannelService : BaseService<Channel>, IChannelService
             return true;
         }
     }
+
     /// <summary>
     /// 保存通道
     /// </summary>

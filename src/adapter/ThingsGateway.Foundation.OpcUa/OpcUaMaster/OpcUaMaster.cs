@@ -17,6 +17,7 @@ namespace ThingsGateway.Foundation.OpcUa;
 /// </summary>
 /// <param name="value"></param>
 public delegate void DataChangedEventHandler((VariableNode variableNode, DataValue dataValue, JToken jToken) value);
+
 /// <summary>
 /// 日志输出
 /// </summary>

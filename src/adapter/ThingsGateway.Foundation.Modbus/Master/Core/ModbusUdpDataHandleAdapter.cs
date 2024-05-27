@@ -15,24 +15,28 @@ namespace ThingsGateway.Foundation.Modbus;
 /// </summary>
 internal class ModbusUdpDataHandleAdapter : ReadWriteDevicesUdpDataHandleAdapter<ModbusTcpMessage>
 {
-    private readonly IncrementCount _incrementCount = new(ushort.MaxValue);
-
-
-    public override void PackCommand(ISendMessage item)
+    public ModbusUdpDataHandleAdapter()
     {
-        item.SetBytes(ModbusHelper.AddModbusTcpHead(item.SendBytes, item.Offset, item.Length, (ushort)item.Sign));
+        IsSendPackCommand = true;
     }
 
+    public override byte[] PackCommand(ISendMessage item)
+    {
+        return ModbusHelper.AddModbusTcpHead(item.SendBytes, 0, item.SendBytes.Length, (ushort)item.Sign);
+    }
+
+    public override bool IsSingleThread { get; } = false;
 
     /// <inheritdoc/>
-    protected override byte[] UnpackResponse(ModbusTcpMessage request)
+    protected override AdapterResult UnpackResponse(ModbusTcpMessage request, IByteBlock byteBlock)
     {
-        var send = request.SendBytes;
-        request.ReceivedByteBlock.Pos = 6;
-        var result = ModbusHelper.GetModbusData(send, request.ReceivedByteBlock);
+        byteBlock.Position = 6;
+        var result = ModbusHelper.GetModbusData(null, byteBlock);
         request.OperCode = result.OperCode;
         request.ErrorMessage = result.ErrorMessage;
-        request.Sign = TouchSocketBitConverter.BigEndian.ToUInt16(request.ReceivedByteBlock.Buffer, 0);
-        return result.Content.Bytes;
+
+        byteBlock.Position = 0;
+        request.Sign = byteBlock.ReadUInt16(EndianType.Big);
+        return result.Content;
     }
 }

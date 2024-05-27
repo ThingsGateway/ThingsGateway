@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -9,46 +8,42 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+namespace NewLife.Data;
 
-
-
-namespace NewLife.Data
+/// <summary>
+/// 时序点，用于时序数据计算
+/// </summary>
+public struct TimePoint
 {
     /// <summary>
-    /// 时序点，用于时序数据计算
+    /// 时间
     /// </summary>
-    public struct TimePoint
-    {
-        /// <summary>
-        /// 时间
-        /// </summary>
-        public Int64 Time;
+    public Int64 Time;
 
-        /// <summary>
-        /// 数值
-        /// </summary>
-        public Double Value;
+    /// <summary>
+    /// 数值
+    /// </summary>
+    public Double Value;
 
-        /// <summary>
-        /// 已重载
-        /// </summary>
-        /// <returns></returns>
-        public override String ToString() => $"({Time}, {Value})";
-    }
-
-    ///// <summary>
-    ///// 时序点，用于时序数据计算
-    ///// </summary>
-    //public struct LongTimePoint
-    //{
-    //    /// <summary>
-    //    /// 时间
-    //    /// </summary>
-    //    public Int64 Time;
-
-    //    /// <summary>
-    //    /// 数值
-    //    /// </summary>
-    //    public Double Value;
-    //}
+    /// <summary>
+    /// 已重载
+    /// </summary>
+    /// <returns></returns>
+    public override String ToString() => $"({Time}, {Value})";
 }
+
+///// <summary>
+///// 时序点，用于时序数据计算
+///// </summary>
+//public struct LongTimePoint
+//{
+//    /// <summary>
+//    /// 时间
+//    /// </summary>
+//    public Int64 Time;
+
+//    /// <summary>
+//    /// 数值
+//    /// </summary>
+//    public Double Value;
+//}

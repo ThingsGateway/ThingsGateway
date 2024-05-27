@@ -23,7 +23,6 @@ using System.Collections.Concurrent;
 using ThingsGateway.Admin.Application;
 using ThingsGateway.Core.Extension;
 using ThingsGateway.Gateway.Application;
-using ThingsGateway.Gateway.Application.Generic;
 
 using TouchSocket.Core;
 
@@ -84,6 +83,7 @@ public partial class OpcUaServer : BusinessBase
         });
         Localizer = App.CreateLocalizerByType(typeof(OpcUaServer))!;
     }
+
     protected IStringLocalizer Localizer { get; private set; }
 
     /// <inheritdoc/>
@@ -98,7 +98,6 @@ public partial class OpcUaServer : BusinessBase
         CollectVariableRunTimes?.Clear();
         base.Dispose(disposing);
     }
-
 
     protected override async Task ProtectedBeforStartAsync(CancellationToken cancellationToken)
     {

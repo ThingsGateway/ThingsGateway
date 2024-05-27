@@ -52,17 +52,6 @@
                         </div>
                     </div>
 
-                    <div class="row mx-1 form-inline mt-2">
-
-                        <div class="col-12 col-md-8 p-1">
-                            <Textarea @bind-Value=@SendValue ShowLabelTooltip="true"
-                                      ShowLabel="true" />
-
-                        </div>
-                        <div class="col-12 col-md-4 p-1">
-                            <Button IsAsync Color="Color.Primary" OnClick="Send">@Localizer["Send"]</Button>
-                        </div>
-                    </div>
 
                 }
                 @if (ReadWriteContent != null)

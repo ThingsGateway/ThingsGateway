@@ -12,17 +12,16 @@ namespace ThingsGateway.Foundation.Modbus;
 
 internal class ModbusHelper
 {
-
     #region modbusServer
 
-    internal static byte[] ModbusServerAnalysisAddressValue(IModbusServerMessage request, ByteBlock response)
+    internal static byte[] ModbusServerAnalysisAddressValue(IModbusServerMessage request, IByteBlock response)
     {
-        var offset = response.Pos;
+        var offset = response.Position;
         //解析01 03 00 00 00 0A
         var station = response[0 + offset];
         var function = response[1 + offset];
-        int addressStart = TouchSocketBitConverter.BigEndian.ToUInt16(response.Buffer, 2 + offset);
-
+        response.Position = 2 + offset;
+        int addressStart = response.ReadUInt16(EndianType.Big);
         if (function > 4)
         {
             if (function > 6)
@@ -63,7 +62,6 @@ internal class ModbusHelper
         }
     }
 
-
     #endregion modbusServer
 
     #region 解析
@@ -103,12 +101,12 @@ internal class ModbusHelper
     /// <param name="send">发送数据</param>
     /// <param name="response">返回数据</param>
     /// <returns></returns>
-    internal static OperResult<AdapterResult> GetModbusData(byte[] send, ByteBlock response)
+    internal static OperResult<AdapterResult> GetModbusData(byte[] send, IByteBlock response)
     {
         try
         {
-            if (response[response.Pos + 1] >= 0x80)//错误码
-                return new OperResult<AdapterResult>(GetDescriptionByErrorCode(response[response.Pos + 2])) { Content = new AdapterResult() { FilterResult = FilterResult.Success } };
+            if (response[response.Position + 1] >= 0x80)//错误码
+                return new OperResult<AdapterResult>(GetDescriptionByErrorCode(response[response.Position + 2])) { Content = new AdapterResult() { FilterResult = FilterResult.Success } };
 
             if (send == null || send.Length == 0)
             {
@@ -116,14 +114,14 @@ internal class ModbusHelper
                 {
                     Content = new()
                     {
-                        Bytes = response.ToArray(response.Pos + 3),
+                        Content = response.ToArray(response.Position + 3),
                         FilterResult = FilterResult.Success
                     }
                 };
             }
             //站号验证
-            if (send[response.Pos + 0] != response[response.Pos + 0])
-                return new OperResult<AdapterResult>(ModbusResource.Localizer["StationNotSame", send[response.Pos + 0], response[response.Pos + 0]])
+            if (send[response.Position + 0] != response[response.Position + 0])
+                return new OperResult<AdapterResult>(ModbusResource.Localizer["StationNotSame", send[response.Position + 0], response[response.Position + 0]])
                 {
                     Content = new()
                     {
@@ -131,8 +129,8 @@ internal class ModbusHelper
                     }
                 };
             //功能码验证
-            if (send[response.Pos + 1] != response[response.Pos + 1])
-                return new OperResult<AdapterResult>(ModbusResource.Localizer["FunctionNotSame", send[response.Pos + 1], response[response.Pos + 1]])
+            if (send[response.Position + 1] != response[response.Position + 1])
+                return new OperResult<AdapterResult>(ModbusResource.Localizer["FunctionNotSame", send[response.Position + 1], response[response.Position + 1]])
                 {
                     Content = new()
                     {
@@ -143,11 +141,10 @@ internal class ModbusHelper
             {
                 Content = new()
                 {
-                    Bytes = response.ToArray(response.Pos + 3),
+                    Content = response.ToArray(response.Position + 3),
                     FilterResult = FilterResult.Success
                 }
             };
-
         }
         catch (Exception ex)
         {
@@ -160,37 +157,33 @@ internal class ModbusHelper
             };
         }
     }
+
     /// <summary>
     /// 检测crc
     /// </summary>
     /// <param name="response"></param>
     /// <returns></returns>
-    internal static IOperResult CheckCrc(ByteBlock response)
+    internal static OperResult CheckCrc(IByteBlock response)
     {
         //crc校验
-        var dataLen = response.Len;
-        var crc = CRC16Utils.CRC16Only(response.Buffer, 0, dataLen - 2);
+        var dataLen = response.Length;
+        var crc = CRC16Utils.CRC16Only(response.AsSegment().Array, 0, dataLen - 2);
         if ((response[dataLen - 2] != crc[0] || response[dataLen - 1] != crc[1]))
-            return new OperResult($"{ModbusResource.Localizer["CrcError"]} {DataTransUtil.ByteToHexString(response.Buffer, 0, dataLen, ' ')}")
+            return new OperResult($"{ModbusResource.Localizer["CrcError"]} {DataTransUtil.ByteToHexString(response.Span, ' ')}")
             {
-
             };
         response.SetLength(dataLen - 2);
         return new OperResult();
     }
-
 
     /// <summary>
     /// 去除Crc，返回modbus数据区
     /// </summary>
     /// <param name="send"></param>
     /// <param name="response"></param>
-    /// <param name="crcCheck"></param>
     /// <returns></returns>
-    internal static OperResult<AdapterResult> GetModbusRtuData(byte[] send, ByteBlock response, bool crcCheck = true)
+    internal static OperResult<AdapterResult> GetModbusRtuData(byte[] send, IByteBlock response)
     {
-        //crc校验
-        var dataLen = response[1] <= 0x04 ? response[2] != 0 ? response[2] + 5 : 8 : 8;
         var result = CheckCrc(response);
         if (!result.IsSuccess)
         {
@@ -207,14 +200,12 @@ internal class ModbusHelper
 
     #region 报文构建
 
-    public static void AddCrc(ISendMessage item)
+    public static byte[] AddCrc(ISendMessage item)
     {
-        var crc = CRC16Utils.CRC16Only(item.SendBytes, item.Offset, item.Length);
-        byte[] bytes = new byte[item.Length + crc.Length];
-        Array.Copy(item.SendBytes, item.Offset, bytes, 0, item.Length);
-        Array.Copy(crc, 0, bytes, item.Length, crc.Length);
-        item.SetBytes(bytes);
+        var crc = CRC16Utils.CRC16(item.SendBytes);
+        return crc;
     }
+
     /// <summary>
     /// 添加ModbusTcp报文头
     /// </summary>

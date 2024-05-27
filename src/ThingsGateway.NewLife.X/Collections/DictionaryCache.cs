@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -9,423 +8,419 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-
-
-
 using NewLife.Threading;
 
 using System.Collections;
 using System.Collections.Concurrent;
 
-namespace NewLife.Collections
-{
+namespace NewLife.Collections;
+
 #pragma warning disable CS8603 // 可能返回 null 引用。
 #pragma warning disable CS8601 // 引用类型赋值可能为 null。
 #pragma warning disable CS8714 // 类型不能用作泛型类型或方法中的类型参数。类型参数的为 Null 性与 "notnull" 约束不匹配。
 #pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
 
-    /// <summary>字典缓存。当指定键的缓存项不存在时，调用委托获取值，并写入缓存。</summary>
-    /// <remarks>
-    /// 文档 https://newlifex.com/core/dictionary_cache
-    /// 常用匿名函数或者Lambda表达式作为委托。
-    /// </remarks>
-    /// <typeparam name="TKey">键类型</typeparam>
-    /// <typeparam name="TValue">值类型</typeparam>
-    public class DictionaryCache<TKey, TValue> : DisposeBase, IEnumerable<KeyValuePair<TKey, TValue>>
+/// <summary>字典缓存。当指定键的缓存项不存在时，调用委托获取值，并写入缓存。</summary>
+/// <remarks>
+/// 文档 https://newlifex.com/core/dictionary_cache
+/// 常用匿名函数或者Lambda表达式作为委托。
+/// </remarks>
+/// <typeparam name="TKey">键类型</typeparam>
+/// <typeparam name="TValue">值类型</typeparam>
+public class DictionaryCache<TKey, TValue> : DisposeBase, IEnumerable<KeyValuePair<TKey, TValue>>
+{
+    #region 属性
+
+    /// <summary>过期时间。单位是秒，默认0秒，表示永不过期</summary>
+    public Int32 Expire { get; set; }
+
+    /// <summary>定时清理时间，默认0秒，表示不清理过期项</summary>
+    public Int32 Period { get; set; }
+
+    /// <summary>容量。容量超标时，采用LRU机制删除，默认10_000</summary>
+    public Int32 Capacity { get; set; } = 10_000;
+
+    /// <summary>是否允许缓存控制，避免缓存穿透。默认false</summary>
+    public Boolean AllowNull { get; set; }
+
+    /// <summary>查找数据的方法</summary>
+    public Func<TKey, TValue> FindMethod { get; set; }
+
+    private readonly ConcurrentDictionary<TKey, CacheItem> _cache;
+
+    #endregion 属性
+
+    #region 构造
+
+    /// <summary>实例化一个字典缓存</summary>
+    public DictionaryCache() => _cache = new ConcurrentDictionary<TKey, CacheItem>();
+
+    /// <summary>实例化一个字典缓存</summary>
+    /// <param name="comparer"></param>
+    public DictionaryCache(IEqualityComparer<TKey> comparer) => _cache = new ConcurrentDictionary<TKey, CacheItem>(comparer);
+
+    /// <summary>实例化一个字典缓存</summary>
+    /// <param name="findMethod"></param>
+    /// <param name="comparer"></param>
+    public DictionaryCache(Func<TKey, TValue> findMethod, IEqualityComparer<TKey>? comparer = null)
     {
-        #region 属性
+        FindMethod = findMethod;
 
-        /// <summary>过期时间。单位是秒，默认0秒，表示永不过期</summary>
-        public Int32 Expire { get; set; }
+        if (comparer != null)
+            _cache = new ConcurrentDictionary<TKey, CacheItem>(comparer);
+        else
+            _cache = new ConcurrentDictionary<TKey, CacheItem>();
+    }
 
-        /// <summary>定时清理时间，默认0秒，表示不清理过期项</summary>
-        public Int32 Period { get; set; }
+    /// <summary>销毁</summary>
+    /// <param name="disposing"></param>
+    protected override void Dispose(Boolean disposing)
+    {
+        base.Dispose(disposing);
 
-        /// <summary>容量。容量超标时，采用LRU机制删除，默认10_000</summary>
-        public Int32 Capacity { get; set; } = 10_000;
+        _count = 0;
+        //_cache.Clear();
 
-        /// <summary>是否允许缓存控制，避免缓存穿透。默认false</summary>
-        public Boolean AllowNull { get; set; }
+        StopTimer();
+    }
 
-        /// <summary>查找数据的方法</summary>
-        public Func<TKey, TValue> FindMethod { get; set; }
+    #endregion 构造
 
-        private readonly ConcurrentDictionary<TKey, CacheItem> _cache;
+    #region 缓存项
 
-        #endregion 属性
+    /// <summary>缓存项</summary>
+    private class CacheItem
+    {
+        /// <summary>数值</summary>
+        public TValue Value { get; private set; }
 
-        #region 构造
+        /// <summary>过期时间</summary>
+        public DateTime ExpiredTime { get; private set; }
 
-        /// <summary>实例化一个字典缓存</summary>
-        public DictionaryCache() => _cache = new ConcurrentDictionary<TKey, CacheItem>();
+        /// <summary>是否过期</summary>
+        public Boolean Expired => ExpiredTime <= DateTime.Now;
 
-        /// <summary>实例化一个字典缓存</summary>
-        /// <param name="comparer"></param>
-        public DictionaryCache(IEqualityComparer<TKey> comparer) => _cache = new ConcurrentDictionary<TKey, CacheItem>(comparer);
+        /// <summary>访问时间</summary>
+        public DateTime VisitTime { get; private set; }
 
-        /// <summary>实例化一个字典缓存</summary>
-        /// <param name="findMethod"></param>
-        /// <param name="comparer"></param>
-        public DictionaryCache(Func<TKey, TValue> findMethod, IEqualityComparer<TKey>? comparer = null)
+        public CacheItem(TValue value, Int32 seconds) => Set(value, seconds);
+
+        public void Set(TValue value, Int32 seconds)
         {
-            FindMethod = findMethod;
+            Value = value;
 
-            if (comparer != null)
-                _cache = new ConcurrentDictionary<TKey, CacheItem>(comparer);
-            else
-                _cache = new ConcurrentDictionary<TKey, CacheItem>();
+            var now = VisitTime = DateTime.Now;
+            if (seconds > 0) ExpiredTime = now.AddSeconds(seconds);
         }
 
-        /// <summary>销毁</summary>
-        /// <param name="disposing"></param>
-        protected override void Dispose(Boolean disposing)
-        {
-            base.Dispose(disposing);
-
-            _count = 0;
-            //_cache.Clear();
-
-            StopTimer();
-        }
-
-        #endregion 构造
-
-        #region 缓存项
-
-        /// <summary>缓存项</summary>
-        private class CacheItem
-        {
-            /// <summary>数值</summary>
-            public TValue Value { get; private set; }
-
-            /// <summary>过期时间</summary>
-            public DateTime ExpiredTime { get; private set; }
-
-            /// <summary>是否过期</summary>
-            public Boolean Expired => ExpiredTime <= DateTime.Now;
-
-            /// <summary>访问时间</summary>
-            public DateTime VisitTime { get; private set; }
-
-            public CacheItem(TValue value, Int32 seconds) => Set(value, seconds);
-
-            public void Set(TValue value, Int32 seconds)
-            {
-                Value = value;
-
-                var now = VisitTime = DateTime.Now;
-                if (seconds > 0) ExpiredTime = now.AddSeconds(seconds);
-            }
-
-            /// <summary>更新访问时间并返回数值</summary>
-            /// <returns></returns>
-            public TValue Visit()
-            {
-                VisitTime = TimerX.Now;
-                return Value;
-            }
-        }
-
-        #endregion 缓存项
-
-        #region 核心取值方法
-
-        /// <summary>重写索引器。取值时如果没有该项则返回默认值；赋值时如果已存在该项则覆盖，否则添加。</summary>
-        /// <param name="key"></param>
+        /// <summary>更新访问时间并返回数值</summary>
         /// <returns></returns>
-        public TValue this[TKey key] { get => GetOrAdd(key); set => Set(key, value); }
-
-        /// <summary>获取 GetOrAdd</summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        public virtual TValue GetOrAdd(TKey key)
+        public TValue Visit()
         {
-            var func = FindMethod;
+            VisitTime = TimerX.Now;
+            return Value;
+        }
+    }
 
-            if (_cache.TryGetValue(key, out var item))
+    #endregion 缓存项
+
+    #region 核心取值方法
+
+    /// <summary>重写索引器。取值时如果没有该项则返回默认值；赋值时如果已存在该项则覆盖，否则添加。</summary>
+    /// <param name="key"></param>
+    /// <returns></returns>
+    public TValue this[TKey key] { get => GetOrAdd(key); set => Set(key, value); }
+
+    /// <summary>获取 GetOrAdd</summary>
+    /// <param name="key"></param>
+    /// <returns></returns>
+    public virtual TValue GetOrAdd(TKey key)
+    {
+        var func = FindMethod;
+
+        if (_cache.TryGetValue(key, out var item))
+        {
+            // 找到后判断过期
+            if (Expire > 0 && item.Expired)
             {
-                // 找到后判断过期
-                if (Expire > 0 && item.Expired)
+                // 超时异步更新
+                if (func != null)
                 {
-                    // 超时异步更新
-                    if (func != null)
-                    {
-                        item.Set(item.Value, Expire);
-                        Task.Factory.StartNew(() => item.Set(func(key), Expire));
-                    }
-                    else
-                        _cache.Remove(key);
+                    item.Set(item.Value, Expire);
+                    Task.Factory.StartNew(() => item.Set(func(key), Expire));
                 }
-
-                return item.Visit();
+                else
+                    _cache.Remove(key);
             }
-
-            // 找不到，则查找数据并加入缓存
-            if (func != null)
-            {
-                // 查数据，避免缓存穿透
-                var value = func(key);
-                if (value != null || AllowNull)
-                {
-                    // 如果没有添加成功，则返回旧值
-                    if (!TryAdd(key, value, false, out var rs)) return rs;
-                    return value;
-                }
-            }
-
-            return default;
-        }
-
-        /// <summary>获取 GetOrAdd</summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        public virtual TValue Get(TKey key)
-        {
-            if (!_cache.TryGetValue(key, out var item) || item.Expired) return default;
 
             return item.Visit();
         }
 
-        /// <summary>尝试获取数据</summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public virtual Boolean TryGetValue(TKey key, out TValue value)
+        // 找不到，则查找数据并加入缓存
+        if (func != null)
         {
-            value = default!;
-
-            if (!_cache.TryGetValue(key, out var item) || item.Expired) return false;
-
-            value = item.Visit();
-
-            return true;
-        }
-
-        /// <summary>设置 AddOrUpdate</summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public virtual Boolean Set(TKey key, TValue value)
-        {
-            // 不用AddOrUpdate，避免匿名委托带来的GC损耗
-            return TryAdd(key, value, true, out _);
-        }
-
-        /// <summary>尝试添加，或返回旧值</summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        /// <param name="updateIfExists"></param>
-        /// <param name="resultingValue"></param>
-        /// <returns></returns>
-        public virtual Boolean TryAdd(TKey key, TValue value, Boolean updateIfExists, out TValue resultingValue)
-        {
-            // 不用AddOrUpdate，避免匿名委托带来的GC损耗
-            CacheItem? ci = null;
-            do
+            // 查数据，避免缓存穿透
+            var value = func(key);
+            if (value != null || AllowNull)
             {
-                if (_cache.TryGetValue(key, out var item))
-                {
-                    resultingValue = item.Value;
-                    if (updateIfExists) item.Set(value, Expire);
-
-                    return false;
-                }
-
-                if (ci == null) ci = new CacheItem(value, Expire);
-            } while (!_cache.TryAdd(key, ci));
-
-            Interlocked.Increment(ref _count);
-
-            resultingValue = default;
-
-            StartTimer();
-
-            return true;
-        }
-
-        /// <summary>扩展获取数据项，当数据项不存在时，通过调用委托获取数据项。线程安全。</summary>
-        /// <param name="key">键</param>
-        /// <param name="func">获取值的委托，该委托以键作为参数</param>
-        /// <returns></returns>
-        public virtual TValue GetItem(TKey key, Func<TKey, TValue> func)
-        {
-            var exp = Expire;
-            var items = _cache;
-            if (items.TryGetValue(key, out var item) && (exp <= 0 || !item.Expired)) return item.Visit();
-
-            // 提前计算，避免因为不同的Key错误锁定了主键
-            var value = default(TValue);
-
-            lock (items)
-            {
-                if (items.TryGetValue(key, out item) && (exp <= 0 || !item.Expired)) return item.Visit();
-
-                if (func != null)
-                {
-                    // 过期时，异步加载
-                    if (item != null)
-                    {
-                        value = item.Visit();
-                        item.Set(value, Expire);
-                        ThreadPoolX.QueueUserWorkItem(() => value = func(key));
-                    }
-                    else
-                    {
-                        value = func(key);
-                        if (value != null || AllowNull)
-                        {
-                            items[key] = new CacheItem(value, exp);
-
-                            Interlocked.Increment(ref _count);
-                        }
-                    }
-                }
-                StartTimer();
-
+                // 如果没有添加成功，则返回旧值
+                if (!TryAdd(key, value, false, out var rs)) return rs;
                 return value;
             }
         }
 
-        /// <summary>移除指定缓存项</summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        public virtual Boolean Remove(TKey key)
+        return default;
+    }
+
+    /// <summary>获取 GetOrAdd</summary>
+    /// <param name="key"></param>
+    /// <returns></returns>
+    public virtual TValue Get(TKey key)
+    {
+        if (!_cache.TryGetValue(key, out var item) || item.Expired) return default;
+
+        return item.Visit();
+    }
+
+    /// <summary>尝试获取数据</summary>
+    /// <param name="key"></param>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public virtual Boolean TryGetValue(TKey key, out TValue value)
+    {
+        value = default!;
+
+        if (!_cache.TryGetValue(key, out var item) || item.Expired) return false;
+
+        value = item.Visit();
+
+        return true;
+    }
+
+    /// <summary>设置 AddOrUpdate</summary>
+    /// <param name="key"></param>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public virtual Boolean Set(TKey key, TValue value)
+    {
+        // 不用AddOrUpdate，避免匿名委托带来的GC损耗
+        return TryAdd(key, value, true, out _);
+    }
+
+    /// <summary>尝试添加，或返回旧值</summary>
+    /// <param name="key"></param>
+    /// <param name="value"></param>
+    /// <param name="updateIfExists"></param>
+    /// <param name="resultingValue"></param>
+    /// <returns></returns>
+    public virtual Boolean TryAdd(TKey key, TValue value, Boolean updateIfExists, out TValue resultingValue)
+    {
+        // 不用AddOrUpdate，避免匿名委托带来的GC损耗
+        CacheItem? ci = null;
+        do
         {
-            if (!_cache.Remove(key)) return false;
-
-            Interlocked.Decrement(ref _count);
-
-            return true;
-        }
-
-        /// <summary>清空</summary>
-        public virtual void Clear() => _cache?.Clear();
-
-        #endregion 核心取值方法
-
-        #region 辅助
-
-        private Int32 _count;
-
-        /// <summary>缓存项。原子计数</summary>
-        public Int32 Count => _count;
-
-        /// <summary>是否包含指定键</summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        public Boolean ContainsKey(TKey key) => _cache.ContainsKey(key);
-
-        /// <summary>赋值到目标缓存</summary>
-        /// <param name="cache"></param>
-        public void CopyTo(DictionaryCache<TKey, TValue> cache)
-        {
-            if (_cache.IsEmpty) return;
-
-            foreach (var item in _cache)
+            if (_cache.TryGetValue(key, out var item))
             {
-                cache[item.Key] = item.Value.Visit();
+                resultingValue = item.Value;
+                if (updateIfExists) item.Set(value, Expire);
+
+                return false;
             }
-        }
 
-        #endregion 辅助
+            if (ci == null) ci = new CacheItem(value, Expire);
+        } while (!_cache.TryAdd(key, ci));
 
-        #region 清理过期缓存
+        Interlocked.Increment(ref _count);
 
-        /// <summary>清理会话计时器</summary>
-        private TimerX? _timer;
+        resultingValue = default;
 
-        private void StartTimer()
+        StartTimer();
+
+        return true;
+    }
+
+    /// <summary>扩展获取数据项，当数据项不存在时，通过调用委托获取数据项。线程安全。</summary>
+    /// <param name="key">键</param>
+    /// <param name="func">获取值的委托，该委托以键作为参数</param>
+    /// <returns></returns>
+    public virtual TValue GetItem(TKey key, Func<TKey, TValue> func)
+    {
+        var exp = Expire;
+        var items = _cache;
+        if (items.TryGetValue(key, out var item) && (exp <= 0 || !item.Expired)) return item.Visit();
+
+        // 提前计算，避免因为不同的Key错误锁定了主键
+        var value = default(TValue);
+
+        lock (items)
         {
-            var period = Period;
-            // 缓存数大于0才启动定时器
-            if (period <= 0 || _count <= 0) return;
+            if (items.TryGetValue(key, out item) && (exp <= 0 || !item.Expired)) return item.Visit();
 
-            if (_timer == null)
+            if (func != null)
             {
-                lock (this)
+                // 过期时，异步加载
+                if (item != null)
                 {
-                    if (_timer == null) _timer = new TimerX(RemoveNotAlive, null, period * 1000, period * 1000) { Async = true };
+                    value = item.Visit();
+                    item.Set(value, Expire);
+                    ThreadPoolX.QueueUserWorkItem(() => value = func(key));
                 }
-            }
-        }
-
-        private void StopTimer()
-        {
-            _timer.TryDispose();
-            _timer = null;
-        }
-
-        /// <summary>移除过期的缓存项</summary>
-        private void RemoveNotAlive(Object? state)
-        {
-            var dic = _cache;
-            if (_count == 0 && !dic.Any())
-            {
-                // 缓存数小于0时关闭定时器
-                StopTimer();
-                return;
-            }
-
-            // 这里先计算，性能很重要
-            var now = TimerX.Now;
-            var ds = new List<TKey>();
-            var k = 0;
-            foreach (var item in dic)
-            {
-                var t = item.Value.ExpiredTime;
-                if (t < now)
-                    ds.Add(item.Key);
                 else
-                    k++;
-            }
-
-            // 计算容量
-            var dt = now.AddSeconds(-Expire);
-            var k2 = 0;
-            while (Capacity > 0 && k > Capacity)
-            {
-                // 选定一个截止时间，最后一次访问在这之前的项逐出
-                // 以10%的步进来选时间
-                dt = dt.AddSeconds(Expire / 10);
-                if (dt >= now) break;
-
-                foreach (var item in dic)
                 {
-                    var t = item.Value.VisitTime;
-                    if (t < dt)
+                    value = func(key);
+                    if (value != null || AllowNull)
                     {
-                        ds.Add(item.Key);
-                        k--;
-                        k2++;
+                        items[key] = new CacheItem(value, exp);
+
+                        Interlocked.Increment(ref _count);
                     }
                 }
             }
+            StartTimer();
 
-            foreach (var item in ds)
-            {
-                dic.Remove(item);
-            }
-
-            // 修正
-            _count = k;
+            return value;
         }
-
-        #endregion 清理过期缓存
-
-        #region 枚举
-
-        /// <summary>枚举</summary>
-        /// <returns></returns>
-        public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
-        {
-            foreach (var item in _cache)
-            {
-                yield return new KeyValuePair<TKey, TValue>(item.Key, item.Value.Visit());
-            }
-        }
-
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-
-        #endregion 枚举
     }
+
+    /// <summary>移除指定缓存项</summary>
+    /// <param name="key"></param>
+    /// <returns></returns>
+    public virtual Boolean Remove(TKey key)
+    {
+        if (!_cache.Remove(key)) return false;
+
+        Interlocked.Decrement(ref _count);
+
+        return true;
+    }
+
+    /// <summary>清空</summary>
+    public virtual void Clear() => _cache?.Clear();
+
+    #endregion 核心取值方法
+
+    #region 辅助
+
+    private Int32 _count;
+
+    /// <summary>缓存项。原子计数</summary>
+    public Int32 Count => _count;
+
+    /// <summary>是否包含指定键</summary>
+    /// <param name="key"></param>
+    /// <returns></returns>
+    public Boolean ContainsKey(TKey key) => _cache.ContainsKey(key);
+
+    /// <summary>赋值到目标缓存</summary>
+    /// <param name="cache"></param>
+    public void CopyTo(DictionaryCache<TKey, TValue> cache)
+    {
+        if (_cache.IsEmpty) return;
+
+        foreach (var item in _cache)
+        {
+            cache[item.Key] = item.Value.Visit();
+        }
+    }
+
+    #endregion 辅助
+
+    #region 清理过期缓存
+
+    /// <summary>清理会话计时器</summary>
+    private TimerX? _timer;
+
+    private void StartTimer()
+    {
+        var period = Period;
+        // 缓存数大于0才启动定时器
+        if (period <= 0 || _count <= 0) return;
+
+        if (_timer == null)
+        {
+            lock (this)
+            {
+                if (_timer == null) _timer = new TimerX(RemoveNotAlive, null, period * 1000, period * 1000) { Async = true };
+            }
+        }
+    }
+
+    private void StopTimer()
+    {
+        _timer.TryDispose();
+        _timer = null;
+    }
+
+    /// <summary>移除过期的缓存项</summary>
+    private void RemoveNotAlive(Object? state)
+    {
+        var dic = _cache;
+        if (_count == 0 && !dic.Any())
+        {
+            // 缓存数小于0时关闭定时器
+            StopTimer();
+            return;
+        }
+
+        // 这里先计算，性能很重要
+        var now = TimerX.Now;
+        var ds = new List<TKey>();
+        var k = 0;
+        foreach (var item in dic)
+        {
+            var t = item.Value.ExpiredTime;
+            if (t < now)
+                ds.Add(item.Key);
+            else
+                k++;
+        }
+
+        // 计算容量
+        var dt = now.AddSeconds(-Expire);
+        var k2 = 0;
+        while (Capacity > 0 && k > Capacity)
+        {
+            // 选定一个截止时间，最后一次访问在这之前的项逐出
+            // 以10%的步进来选时间
+            dt = dt.AddSeconds(Expire / 10);
+            if (dt >= now) break;
+
+            foreach (var item in dic)
+            {
+                var t = item.Value.VisitTime;
+                if (t < dt)
+                {
+                    ds.Add(item.Key);
+                    k--;
+                    k2++;
+                }
+            }
+        }
+
+        foreach (var item in ds)
+        {
+            dic.Remove(item);
+        }
+
+        // 修正
+        _count = k;
+    }
+
+    #endregion 清理过期缓存
+
+    #region 枚举
+
+    /// <summary>枚举</summary>
+    /// <returns></returns>
+    public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
+    {
+        foreach (var item in _cache)
+        {
+            yield return new KeyValuePair<TKey, TValue>(item.Key, item.Value.Visit());
+        }
+    }
+
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+    #endregion 枚举
 }

@@ -15,18 +15,16 @@ namespace ThingsGateway.Foundation.Modbus;
 /// </summary>
 internal class ModbusUdpServerDataHandleAdapter : ReadWriteDevicesUdpDataHandleAdapter<ModbusTcpServerMessage>
 {
-    public override bool IsSendPackCommand { get; set; } = false;
-    /// <inheritdoc/>
-    public override void PackCommand(ISendMessage item)
+    public override byte[] PackCommand(ISendMessage item)
     {
+        throw new NotImplementedException();
     }
 
     /// <inheritdoc/>
-    protected override byte[] UnpackResponse(ModbusTcpServerMessage request)
+    protected override AdapterResult UnpackResponse(ModbusTcpServerMessage request, IByteBlock byteBlock)
     {
-        var response = request.ReceivedByteBlock;
-        response.Pos = 6;
-        var bytes = ModbusHelper.ModbusServerAnalysisAddressValue(request, response);
-        return bytes;
+        byteBlock.Position = 6;
+        var bytes = ModbusHelper.ModbusServerAnalysisAddressValue(request, byteBlock);
+        return new AdapterResult() { FilterResult = FilterResult.Success, Content = bytes };
     }
 }

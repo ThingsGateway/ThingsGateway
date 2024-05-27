@@ -14,8 +14,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
-using ThingsGateway.Foundation.Extension.Generic;
-
 using TouchSocket.Core;
 
 namespace ThingsGateway.Gateway.Application;
@@ -26,6 +24,7 @@ namespace ThingsGateway.Gateway.Application;
 public abstract class DeviceHostedService : BackgroundService
 {
     protected IDispatchService<DeviceRunTime> dispatchService;
+
     public DeviceHostedService()
     {
         DeviceService = App.RootServices.GetRequiredService<IDeviceService>();
@@ -33,7 +32,6 @@ public abstract class DeviceHostedService : BackgroundService
         PluginService = App.RootServices.GetRequiredService<IPluginService>();
         Localizer = App.CreateLocalizerByType(typeof(DeviceHostedService))!;
         dispatchService = App.RootServices.GetService<IDispatchService<DeviceRunTime>>();
-
     }
 
     private IStringLocalizer Localizer { get; }
@@ -348,7 +346,6 @@ public abstract class DeviceHostedService : BackgroundService
             {
                 dispatchService.Dispatch(new());
             });
-
         }
         finally
         {

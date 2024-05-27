@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -8,9 +7,6 @@
 //  使用文档：https://kimdiego2098.github.io/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
-
-
-
 
 using NewLife.Caching;
 
@@ -128,8 +124,8 @@ public class ModbusAddress
         if (address.IsNullOrWhiteSpace()) { return null; }
         var cacheKey = $"{nameof(ParseFrom)}_{typeof(ModbusAddress).FullName}_{typeof(ModbusAddress).TypeHandle.Value}_{station}_{address}";
         if (isCache)
-            if (Cache.Default.TryGetValue(cacheKey, out ModbusAddress mAddress))
-                return mAddress;
+            if (MemoryCache.Instance.TryGetValue(cacheKey, out ModbusAddress mAddress))
+                return mAddress.Map();
 
         var modbusAddress = new ModbusAddress();
         if (station != null)
@@ -165,7 +161,7 @@ public class ModbusAddress
         }
 
         if (isCache)
-            Cache.Default.Set(cacheKey, modbusAddress.Map<ModbusAddress>(), 3600);
+            MemoryCache.Instance.Set(cacheKey, modbusAddress.Map(), 3600);
 
         return modbusAddress;
 

@@ -84,11 +84,9 @@ public class DeviceService : BaseService<Device>, IDeviceService
         }
         else
         {
-
             return true;
         }
     }
-
 
     [OperDesc("DeleteDevice", isRecordPar: false, localizerType: typeof(Device))]
     public async Task<bool> DeleteDeviceAsync(IEnumerable<long> ids)

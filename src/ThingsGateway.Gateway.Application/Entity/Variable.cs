@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -8,8 +7,6 @@
 //  使用文档：https://kimdiego2098.github.io/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
-
-
 
 using BootstrapBlazor.Components;
 
@@ -70,7 +67,7 @@ public class Variable : PrimaryIdEntity
     public virtual int? IntervalTime { get; set; }
 
     /// <summary>
-    /// 变量地址，可能带有额外的信息，比如<see cref="DataFormatEnum"/> ，以;分割
+    /// 变量地址，可能带有额外的信息，比如<see cref="EndianType"/> ，以;分割
     /// </summary>
     [SugarColumn(ColumnDescription = "变量地址", Length = 200, IsNullable = true)]
     [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]

@@ -15,29 +15,31 @@ namespace ThingsGateway.Foundation.Modbus;
 /// </summary>
 internal class ModbusRtuOverUdpServerDataHandleAdapter : ReadWriteDevicesUdpDataHandleAdapter<ModbusRtuServerMessage>
 {
-
-    public override void PackCommand(ISendMessage item)
+    public ModbusRtuOverUdpServerDataHandleAdapter()
     {
-        ModbusHelper.AddCrc(item);
+        IsSendPackCommand = true;
+    }
 
+    public override byte[] PackCommand(ISendMessage item)
+    {
+        return ModbusHelper.AddCrc(item);
     }
 
     /// <inheritdoc/>
-    protected override byte[] UnpackResponse(ModbusRtuServerMessage request)
+    protected override AdapterResult UnpackResponse(ModbusRtuServerMessage request, IByteBlock byteBlock)
     {
-        var response = request.ReceivedByteBlock;
-        var result = ModbusHelper.CheckCrc(response);
+        var result = ModbusHelper.CheckCrc(byteBlock);
         request.OperCode = result.OperCode;
         request.ErrorMessage = result.ErrorMessage;
         if (result.IsSuccess)
         {
-            response.Pos = 0;
-            var bytes = ModbusHelper.ModbusServerAnalysisAddressValue(request, response);
-            return bytes;
+            byteBlock.Position = 0;
+            var bytes = ModbusHelper.ModbusServerAnalysisAddressValue(request, byteBlock);
+            return new AdapterResult() { FilterResult = FilterResult.Success, Content = bytes };
         }
         else
         {
-            return null;
+            return new AdapterResult() { FilterResult = FilterResult.Success };
         }
     }
 }

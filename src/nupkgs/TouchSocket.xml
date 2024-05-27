@@ -1,0 +1,4396 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TouchSocket</name>
+    </assembly>
+    <members>
+        <member name="T:TouchSocket.Sockets.IPHost">
+            <summary>
+            IP解析映射
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.IPHost.#ctor(System.String)">
+            <summary>
+            IP解析映射
+            <para>
+            支持端口，ip，域名等。具体格式如下：
+            <list type="bullet">
+            <item>端口：直接按<see cref="T:System.Int32"/>入参，该操作一般在监听时使用。</item>
+            <item>IPv4：按"127.0.0.1:7789"入参。</item>
+            <item>IPv6：按"[*::*]:7789"入参。</item>
+            <item>域名(1)："tcp://127.0.0.1:7789"</item>
+            <item>域名(2)："tcp://[*::*]:7789"</item>
+            <item>域名(3)："http://touchsocket.net"</item>
+            <item>域名(4)："http://touchsocket.net:7789"</item>
+            </list>
+            </para>
+            </summary>
+            <param name="uriString"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.IPHost.#ctor(System.Int32)">
+            <summary>
+            从端口号创建IPv4的Any地址。
+            </summary>
+            <param name="port"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.IPHost.#ctor(System.Net.IPAddress,System.Int32)">
+            <summary>
+            从<see cref="T:System.Net.IPAddress"/>
+            </summary>
+            <param name="address"></param>
+            <param name="port"></param>
+        </member>
+        <member name="P:TouchSocket.Sockets.IPHost.EndPoint">
+            <summary>
+            获取终结点。
+            </summary>
+            <returns></returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="P:TouchSocket.Sockets.IPHost.Port">
+            <summary>
+            端口号
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.IPHost.op_Implicit(System.String)~TouchSocket.Sockets.IPHost">
+            <summary>
+            由字符串向<see cref="T:TouchSocket.Sockets.IPHost"/>转换
+            </summary>
+            <param name="value"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.IPHost.op_Implicit(System.Int32)~TouchSocket.Sockets.IPHost">
+            <summary>
+            由端口向<see cref="T:TouchSocket.Sockets.IPHost"/>转换
+            </summary>
+            <param name="value"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.IPHost.ParseIPHosts(System.String[])">
+            <summary>
+            解析一个组的地址。
+            </summary>
+            <param name="strs"></param>
+            <returns></returns>
+        </member>
+        <member name="T:TouchSocket.Sockets.KeepAliveValue">
+            <summary>
+            保活机制
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.KeepAliveValue.KeepAliveTime">
+            <summary>
+            保活机制
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.KeepAliveValue.Interval">
+            <summary>
+            发送间隔，默认20*1000ms
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.KeepAliveValue.AckInterval">
+            <summary>
+            确认间隔，默认2*1000ms
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Sockets.ClientSslOption">
+            <summary>
+            客户端Ssl验证
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.ClientSslOption.#ctor">
+            <summary>
+            构造函数
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.ClientSslOption.TargetHost">
+            <summary>
+            目标Host
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.ClientSslOption.ClientCertificates">
+            <summary>
+            验证组合
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Sockets.ServiceSslOption">
+            <summary>
+            服务器Ssl设置
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.ServiceSslOption.Certificate">
+            <summary>
+            证书
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.ServiceSslOption.ClientCertificateRequired">
+            <summary>
+            该值指定是否向客户端请求证书用于进行身份验证。 请注意，这只是一个请求 - 如果没有提供任何证书，服务器仍然可接受连接请求
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Sockets.SslOption">
+            <summary>
+            Ssl配置
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.SslOption.#ctor">
+            <summary>
+            Ssl配置
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.SslOption.SslProtocols">
+            <summary>
+            协议版本
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.SslOption.CheckCertificateRevocation">
+            <summary>
+            该值指定身份验证期间是否检查证书吊销列表
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.SslOption.CertificateValidationCallback">
+            <summary>
+            SSL验证回调。
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Sockets.TcpListenOption">
+            <summary>
+            监听配置
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpListenOption.Name">
+            <summary>
+            名称
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpListenOption.IpHost">
+            <summary>
+            监听地址
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpListenOption.SendTimeout">
+            <summary>
+            发送超时时间
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpListenOption.ReuseAddress">
+            <summary>
+            是否使用地址复用
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpListenOption.Backlog">
+            <summary>
+            Tcp处理并发连接时最大半连接队列
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpListenOption.NoDelay">
+            <summary>
+            禁用延迟发送
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpListenOption.UseSsl">
+            <summary>
+            是否使用ssl加密
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpListenOption.ServiceSslOption">
+            <summary>
+            用于Ssl加密的证书
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpListenOption.Adapter">
+            <summary>
+            配置Tcp适配器
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Sockets.Protocol">
+            <summary>
+            协议类
+            </summary>
+        </member>
+        <member name="F:TouchSocket.Sockets.Protocol.m_value">
+            <summary>
+            值
+            </summary>
+        </member>
+        <member name="F:TouchSocket.Sockets.Protocol.None">
+            <summary>
+            表示无协议
+            </summary>
+        </member>
+        <member name="F:TouchSocket.Sockets.Protocol.Http">
+            <summary>
+            获取http协议
+            </summary>
+        </member>
+        <member name="F:TouchSocket.Sockets.Protocol.Tcp">
+            <summary>
+            Tcp协议
+            </summary>
+        </member>
+        <member name="F:TouchSocket.Sockets.Protocol.NamedPipe">
+            <summary>
+            命名管道
+            </summary>
+        </member>
+        <member name="F:TouchSocket.Sockets.Protocol.Udp">
+            <summary>
+            UDP协议
+            </summary>
+        </member>
+        <member name="F:TouchSocket.Sockets.Protocol.WebSocket">
+            <summary>
+            获取WebSocket协议
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.Protocol.#ctor(System.String)">
+            <summary>
+            表示
+            </summary>
+            <param name="value">值</param>
+        </member>
+        <member name="M:TouchSocket.Sockets.Protocol.ToString">
+            <summary>
+            转换为字符串
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.Protocol.GetHashCode">
+            <summary>
+            获取哈希码
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.Protocol.Equals(System.Object)">
+            <summary>
+            比较是否和目标相等
+            </summary>
+            <param name="obj">目标</param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.Protocol.op_Equality(TouchSocket.Sockets.Protocol,TouchSocket.Sockets.Protocol)">
+            <summary>
+            等于
+            </summary>
+            <param name="a"></param>
+            <param name="b"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.Protocol.op_Inequality(TouchSocket.Sockets.Protocol,TouchSocket.Sockets.Protocol)">
+            <summary>
+            不等于
+            </summary>
+            <param name="a"></param>
+            <param name="b"></param>
+            <returns></returns>
+        </member>
+        <member name="T:TouchSocket.Sockets.TcpNetworkMonitor">
+            <summary>
+            Tcp网络监听器
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpNetworkMonitor.#ctor(TouchSocket.Sockets.TcpListenOption,System.Net.Sockets.Socket,System.Net.Sockets.SocketAsyncEventArgs)">
+            <summary>
+            Tcp网络监听器
+            </summary>
+            <param name="option"></param>
+            <param name="socket"></param>
+            <param name="e"></param>
+            <exception cref="T:System.ArgumentNullException"></exception>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpNetworkMonitor.Option">
+            <summary>
+            监听配置
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpNetworkMonitor.Socket">
+            <summary>
+            Socket组件
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpNetworkMonitor.SocketAsyncEvent">
+            <summary>
+            SocketAsyncEventArgs
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Sockets.TouchSocketUtility">
+            <summary>
+            TouchSocketUtility
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Sockets.UdpNetworkMonitor">
+            <summary>
+            Udp监听器
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.UdpNetworkMonitor.#ctor(TouchSocket.Sockets.IPHost,System.Net.Sockets.Socket)">
+            <summary>
+            Udp监听器
+            </summary>
+            <param name="iPHost"></param>
+            <param name="socket"></param>
+            <exception cref="T:System.ArgumentNullException"></exception>
+        </member>
+        <member name="P:TouchSocket.Sockets.UdpNetworkMonitor.IPHost">
+            <summary>
+            IPHost
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.UdpNetworkMonitor.Socket">
+            <summary>
+            Socket组件
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Sockets.ConnectableService">
+            <summary>
+            表示可连接的服务器基类
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.ConnectableService.#ctor">
+            <summary>
+            表示可连接的服务器基类
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.ConnectableService.Count">
+            <inheritdoc/>
+        </member>
+        <member name="P:TouchSocket.Sockets.ConnectableService.MaxCount">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Sockets.ConnectableService.ClearAsync">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Sockets.ConnectableService.ClientExists(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Sockets.ConnectableService.GetIds">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Sockets.ConnectableService.ResetIdAsync(System.String,System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Sockets.ConnectableService.GetClients">
+            <inheritdoc cref="M:TouchSocket.Sockets.IConnectableService.GetClients"/>
+        </member>
+        <member name="M:TouchSocket.Sockets.ConnectableService.GetNextNewId">
+            <summary>
+            获取下一个新Id
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.ConnectableService.LoadConfig(TouchSocket.Core.TouchSocketConfig)">
+            <inheritdoc/>
+        </member>
+        <member name="P:TouchSocket.Sockets.ConnectableService`1.Clients">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Sockets.ConnectableService`1.ClientInitialized(`0)">
+            <summary>
+            客户端实例初始化完成。
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.ConnectableService`1.GetClients">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Sockets.ConnectableService`1.NewClient">
+            <summary>
+            创建客户端实例。
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:TouchSocket.Sockets.ServiceBase">
+            <summary>
+            服务器基类
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.ServiceBase.ServerName">
+            <inheritdoc/>
+        </member>
+        <member name="P:TouchSocket.Sockets.ServiceBase.ServerState">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Sockets.ServiceBase.StartAsync">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Sockets.ServiceBase.StopAsync">
+            <inheritdoc/>
+        </member>
+        <member name="T:TouchSocket.Sockets.TcpCore">
+            <summary>
+            Tcp核心
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpCore.MinBufferSize">
+            <summary>
+            最小缓存尺寸
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpCore.MaxBufferSize">
+            <summary>
+            最大缓存尺寸
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpCore.#ctor">
+            <summary>
+            Tcp核心
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpCore.Finalize">
+            <summary>
+            析构函数
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpCore.ReceiveBufferSize">
+            <summary>
+            接收缓存池,运行时的值会根据流速自动调整
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpCore.ReceiveCounter">
+            <summary>
+            接收计数器
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpCore.SendBufferSize">
+            <summary>
+            发送缓存池,运行时的值会根据流速自动调整
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpCore.SendCounter">
+            <summary>
+            发送计数器
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpCore.Socket">
+            <summary>
+            Socket
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpCore.SslStream">
+            <summary>
+            提供一个用于客户端-服务器通信的流，该流使用安全套接字层 (SSL) 安全协议对服务器和（可选）客户端进行身份验证。
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpCore.UseSsl">
+            <summary>
+            是否启用了Ssl
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpCore.Authenticate(TouchSocket.Sockets.ServiceSslOption)">
+            <summary>
+            以Ssl服务器模式授权
+            </summary>
+            <param name="sslOption"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpCore.Authenticate(TouchSocket.Sockets.ClientSslOption)">
+            <summary>
+            以Ssl客户端模式授权
+            </summary>
+            <param name="sslOption"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpCore.AuthenticateAsync(TouchSocket.Sockets.ServiceSslOption)">
+            <summary>
+            以Ssl服务器模式授权
+            </summary>
+            <param name="sslOption"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpCore.AuthenticateAsync(TouchSocket.Sockets.ClientSslOption)">
+            <summary>
+            以Ssl客户端模式授权
+            </summary>
+            <param name="sslOption"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpCore.Reset(System.Net.Sockets.Socket)">
+            <summary>
+            重置环境，并设置新的<see cref="P:TouchSocket.Sockets.TcpCore.Socket"/>。
+            </summary>
+            <param name="socket"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpCore.Reset">
+            <summary>
+            重置环境。
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpCore.SendAsync(System.ReadOnlyMemory{System.Byte})">
+            <summary>
+            异步发送数据。
+            <para>
+            内部会根据是否启用Ssl，进行直接发送，还是Ssl发送。
+            </para>
+            </summary>
+            <param name="memory"></param>
+            <returns></returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="T:TouchSocket.Sockets.ClientFactory`1">
+            <summary>
+            Client工厂
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.ClientFactory`1.AvailableCount">
+            <summary>
+            获取可用的客户端数量。
+            <para>
+            该值指示了当前空闲的客户端数量和未创建的客户端数量。
+            </para>
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:TouchSocket.Sockets.ClientFactory`1.CreatedCount">
+            <summary>
+            获取已经创建的客户端数量。
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:TouchSocket.Sockets.ClientFactory`1.FreeCount">
+            <summary>
+            获取空闲的客户端数量。
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.ClientFactory`1.MaxCount">
+            <summary>
+            最大客户端数量。默认10。
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.ClientFactory`1.MinCount">
+            <summary>
+            池中维护的最小客户端数量。默认0。
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.ClientFactory`1.CreatedClients">
+            <summary>
+            已创建的客户端安全列表，一般不要直接操作。
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.ClientFactory`1.FreeClients">
+            <summary>
+            空闲客户端的安全队列，一般不要直接操作。
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.ClientFactory`1.Clear">
+            <summary>
+            清理池中的所有客户端。
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.ClientFactory`1.DisposeClient(`0)">
+            <summary>
+            释放客户端最后的调用。
+            </summary>
+            <param name="client"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.ClientFactory`1.GetClient(System.TimeSpan)">
+            <summary>
+            获取用于传输的客户端结果。可以支持<see cref="T:System.IDisposable"/>。
+            </summary>
+            <param name="waitTime"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.ClientFactory`1.GetClient">
+            <summary>
+            获取一个指定客户端，默认情况下等待1秒。
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.ClientFactory`1.IsAlive(`0)">
+            <summary>
+            判断客户端是不是存活状态。
+            </summary>
+            <param name="client"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.ClientFactory`1.CreateClient">
+            <summary>
+            创建客户端
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.ClientFactory`1.Dispose(System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Sockets.ClientFactory`1.RentClient(System.TimeSpan)">
+            <summary>
+            租赁客户端
+            </summary>
+            <param name="waitTime"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.ClientFactory`1.ReturnClient(`0)">
+            <summary>
+            放回使用完成的客户端
+            </summary>
+            <param name="client"></param>
+        </member>
+        <member name="T:TouchSocket.Sockets.ClientFactoryResult`1">
+            <summary>
+            ClientFactoryResult
+            </summary>
+            <typeparam name="TClient"></typeparam>
+        </member>
+        <member name="M:TouchSocket.Sockets.ClientFactoryResult`1.#ctor(`0,System.Action{`0})">
+            <summary>
+            ClientFactoryResult
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.ClientFactoryResult`1.Client">
+            <summary>
+            客户端
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.ClientFactoryResult`1.Dispose">
+            <summary>
+            释放
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Sockets.ConnectableClientFactory`1">
+            <summary>
+            适用于可连接客户端的连接工厂。
+            </summary>
+            <typeparam name="TClient"></typeparam>
+        </member>
+        <member name="P:TouchSocket.Sockets.ConnectableClientFactory`1.ConnectTimeout">
+            <summary>
+            连接超时设定
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.ConnectableClientFactory`1.GetConfig">
+            <summary>
+            获取传输的客户端配置
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.ConnectableClientFactory`1.OnGetConfig">
+            <summary>
+            获取配置。
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:TouchSocket.Sockets.TcpClientFactory`1">
+            <summary>
+            适用于Tcp客户端的连接工厂。
+            </summary>
+            <typeparam name="TClient"></typeparam>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpClientFactory`1.IsAlive(`0)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpClientFactory`1.DisposeClient(`0)">
+            <inheritdoc/>
+        </member>
+        <member name="T:TouchSocket.Sockets.TcpClientFactory">
+            <summary>
+             适用于基于<see cref="T:TouchSocket.Sockets.TcpClient"/>的连接工厂。
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpClientFactory.CreateClient">
+            <inheritdoc/>
+        </member>
+        <member name="T:TouchSocket.Sockets.NATService">
+            <summary>
+            Tcp端口转发服务器
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.NATService.ClientInitialized(TouchSocket.Sockets.NATSessionClient)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Sockets.NATService.NewClient">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Sockets.NATService.OnNATReceived(TouchSocket.Sockets.NATSessionClient,TouchSocket.Sockets.ReceivedDataEventArgs)">
+            <summary>
+            在NAT服务器收到数据时。
+            </summary>
+            <param name="socketClient"></param>
+            <param name="e"></param>
+            <returns>需要转发的数据。</returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.NATService.OnTcpReceived(TouchSocket.Sockets.NATSessionClient,TouchSocket.Sockets.ReceivedDataEventArgs)">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <param name="socketClient"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.NATService.OnTargetClientDisconnected(TouchSocket.Sockets.NATSessionClient,TouchSocket.Sockets.ITcpClient,TouchSocket.Sockets.ClosedEventArgs)">
+            <summary>
+            当目标客户端断开。
+            </summary>
+            <param name="socketClient"></param>
+            <param name="tcpClient"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.NATService.OnTargetClientReceived(TouchSocket.Sockets.NATSessionClient,TouchSocket.Sockets.ITcpClient,TouchSocket.Sockets.ReceivedDataEventArgs)">
+            <summary>
+            在目标客户端收到数据时。
+            </summary>
+            <param name="socketClient"></param>
+            <param name="tcpClient"></param>
+            <param name="e"></param>
+            <returns></returns>
+        </member>
+        <member name="T:TouchSocket.Sockets.NATSessionClient">
+            <summary>
+            端口转发辅助
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.NATSessionClient.AddTargetClientAsync(TouchSocket.Core.TouchSocketConfig,System.Action{TouchSocket.Sockets.ITcpClient})">
+            <summary>
+            添加转发客户端。
+            </summary>
+            <param name="config">配置文件</param>
+            <param name="setupAction">当完成配置，但是还未连接时回调。</param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.NATSessionClient.GetTargetClients">
+            <summary>
+            获取所有目标客户端
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.NATSessionClient.SendToTargetClientAsync(System.Memory{System.Byte})">
+            <summary>
+            发送数据到全部转发端。
+            </summary>
+            <param name="buffer"></param>
+            <param name="offset"></param>
+            <param name="length"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.NATSessionClient.OnTcpClosed(TouchSocket.Sockets.ClosedEventArgs)">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="T:TouchSocket.Sockets.TcpClient">
+            <summary>
+            Tcp客户端
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpClient.Closed">
+            <inheritdoc/>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpClient.Closing">
+            <inheritdoc/>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpClient.Connected">
+            <inheritdoc/>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpClient.Connecting">
+            <inheritdoc/>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpClient.Received">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpClient.OnTcpClosed(TouchSocket.Sockets.ClosedEventArgs)">
+            <summary>
+            断开连接。在客户端未设置连接状态时，不会触发
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpClient.OnTcpClosing(TouchSocket.Sockets.ClosingEventArgs)">
+            <summary>
+            即将断开连接(仅主动断开时有效)。
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpClient.OnTcpConnected(TouchSocket.Sockets.ConnectedEventArgs)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpClient.OnTcpConnecting(TouchSocket.Sockets.ConnectingEventArgs)">
+            <summary>
+            准备连接的时候，此时已初始化Socket，但是并未建立Tcp连接
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpClient.ConnectAsync(System.Int32,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpClient.ClearReceiver">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpClient.CreateReceiver">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpClient.OnTcpReceived(TouchSocket.Sockets.ReceivedDataEventArgs)">
+            <summary>
+            当收到适配器处理的数据时。
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpClient.OnTcpReceiving(TouchSocket.Core.ByteBlock)">
+            <summary>
+            当收到原始数据
+            </summary>
+            <param name="byteBlock"></param>
+            <returns>如果返回<see langword="true"/>则表示数据已被处理，且不会再向下传递。</returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpClient.SendAsync(System.ReadOnlyMemory{System.Byte})">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <param name="buffer"></param>
+            <param name="offset"></param>
+            <param name="length"></param>
+            <exception cref="T:TouchSocket.Sockets.ClientNotConnectedException"></exception>
+            <exception cref="T:TouchSocket.Core.OverlengthException"></exception>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpClient.SendAsync(TouchSocket.Core.IRequestInfo)">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <param name="requestInfo"></param>
+            <exception cref="T:TouchSocket.Sockets.ClientNotConnectedException"></exception>
+            <exception cref="T:TouchSocket.Core.OverlengthException"></exception>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpClient.SendAsync(System.Collections.Generic.IList{System.ArraySegment{System.Byte}})">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <param name="transferBytes"></param>
+            <returns></returns>
+            <exception cref="T:System.ArgumentNullException"></exception>
+        </member>
+        <member name="T:TouchSocket.Sockets.TcpClientBase">
+            <summary>
+            Tcp客户端
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpClientBase.#ctor">
+            <summary>
+            Tcp客户端
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpClientBase.OnTcpConnected(TouchSocket.Sockets.ConnectedEventArgs)">
+            <summary>
+            已经建立Tcp连接
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpClientBase.OnTcpConnecting(TouchSocket.Sockets.ConnectingEventArgs)">
+            <summary>
+            准备连接的时候，此时已初始化Socket，但是并未建立Tcp连接
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpClientBase.OnTcpClosed(TouchSocket.Sockets.ClosedEventArgs)">
+            <summary>
+            断开连接。在客户端未设置连接状态时，不会触发
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpClientBase.OnTcpClosing(TouchSocket.Sockets.ClosingEventArgs)">
+            <summary>
+            即将断开连接(仅主动断开时有效)。
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpClientBase.LastReceivedTime">
+            <inheritdoc/>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpClientBase.LastSendTime">
+            <inheritdoc/>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpClientBase.DataHandlingAdapter">
+            <inheritdoc/>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpClientBase.IP">
+            <inheritdoc/>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpClientBase.MainSocket">
+            <inheritdoc/>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpClientBase.Online">
+            <inheritdoc/>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpClientBase.Port">
+            <inheritdoc/>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpClientBase.UseSsl">
+            <inheritdoc/>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpClientBase.Protocol">
+            <inheritdoc/>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpClientBase.RemoteIPHost">
+            <inheritdoc/>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpClientBase.IsClient">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpClientBase.CloseAsync(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpClientBase.Dispose(System.Boolean)">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <param name="disposing"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpClientBase.TcpConnectAsync(System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            异步连接服务器
+            </summary>
+            <param name="millisecondsTimeout"></param>
+            <param name="token"></param>
+            <returns></returns>
+            <exception cref="T:System.ObjectDisposedException"></exception>
+            <exception cref="T:System.ArgumentNullException"></exception>
+            <exception cref="T:System.TimeoutException"></exception>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpClientBase.Abort(System.Boolean,System.String)">
+            <summary>
+            Abort
+            </summary>
+            <param name="manual"></param>
+            <param name="msg"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpClientBase.ProtectedCreateReceiver(TouchSocket.Sockets.IReceiverClient{TouchSocket.Sockets.IReceiverResult})">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpClientBase.ProtectedClearReceiver">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpClientBase.OnTcpReceived(TouchSocket.Sockets.ReceivedDataEventArgs)">
+            <summary>
+            当收到适配器处理的数据时。
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpClientBase.OnTcpSending(System.ReadOnlyMemory{System.Byte})">
+            <summary>
+            当即将发送时，如果覆盖父类方法，则不会触发插件。
+            </summary>
+            <param name="memory"></param>
+            <returns>返回值表示是否允许发送</returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpClientBase.SetAdapter(TouchSocket.Core.SingleStreamDataHandlingAdapter)">
+            <summary>
+            设置适配器。
+            </summary>
+            <param name="adapter"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpClientBase.OnTcpReceiving(TouchSocket.Core.ByteBlock)">
+            <summary>
+            当收到原始数据
+            </summary>
+            <param name="byteBlock"></param>
+            <returns>如果返回<see langword="true"/>则表示数据已被处理，且不会再向下传递。</returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpClientBase.ProtectedDefaultSendAsync(System.ReadOnlyMemory{System.Byte})">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpClientBase.ProtectedSendAsync(System.ReadOnlyMemory{System.Byte})">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <exception cref="T:TouchSocket.Sockets.ClientNotConnectedException"></exception>
+            <exception cref="T:TouchSocket.Core.OverlengthException"></exception>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpClientBase.ProtectedSendAsync(TouchSocket.Core.IRequestInfo)">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <param name="requestInfo"></param>
+            <exception cref="T:TouchSocket.Sockets.ClientNotConnectedException"></exception>
+            <exception cref="T:TouchSocket.Core.OverlengthException"></exception>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpClientBase.ProtectedSendAsync(System.Collections.Generic.IList{System.ArraySegment{System.Byte}})">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <param name="transferBytes"></param>
+            <returns></returns>
+            <exception cref="T:System.ArgumentNullException"></exception>
+        </member>
+        <member name="T:TouchSocket.Sockets.TcpService">
+            <summary>
+            Tcp服务器
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpService.NewClient">
+            <inheritdoc/>
+        </member>
+        <member name="T:TouchSocket.Sockets.TcpServiceBase`1">
+            <summary>
+            Tcp服务器基类
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpServiceBase`1.Clients">
+            <inheritdoc/>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpServiceBase`1.Count">
+            <inheritdoc/>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpServiceBase`1.Monitors">
+            <inheritdoc/>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpServiceBase`1.ServerState">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpServiceBase`1.AddListen(TouchSocket.Sockets.TcpListenOption)">
+            <inheritdoc/>
+            <exception cref="T:System.ArgumentNullException"></exception>
+            <exception cref="T:System.ObjectDisposedException"></exception>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpServiceBase`1.ClearAsync">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpServiceBase`1.ClientExists(System.String)">
+             <summary>
+            <inheritdoc/>
+             </summary>
+             <param name="id"></param>
+             <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpServiceBase`1.GetIds">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpServiceBase`1.RemoveListen(TouchSocket.Sockets.TcpNetworkMonitor)">
+            <inheritdoc/>
+            <returns></returns>
+            <exception cref="T:System.ArgumentNullException"></exception>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpServiceBase`1.ResetIdAsync(System.String,System.String)">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <param name="sourceId"></param>
+            <param name="targetId"></param>
+            <exception cref="T:TouchSocket.Sockets.ClientNotFindException"></exception>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpServiceBase`1.StartAsync">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpServiceBase`1.StopAsync">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpServiceBase`1.Dispose(System.Boolean)">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <param name="disposing"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpServiceBase`1.OnAuthenticatingError(System.Exception)">
+            <summary>
+            在验证Ssl发送错误时。
+            </summary>
+            <param name="ex"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpServiceBase`1.PreviewBind(TouchSocket.Sockets.TcpNetworkMonitor)">
+            <inheritdoc/>
+        </member>
+        <member name="T:TouchSocket.Sockets.TcpService`1">
+            <summary>
+            Tcp泛型服务器，由使用者自己指定<see cref="T:TouchSocket.Sockets.TcpSessionClient"/>类型。
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpService`1.ClientInitialized(`0)">
+            <inheritdoc/>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpService`1.Closed">
+            <summary>
+            有用户断开连接
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpService`1.Closing">
+            <summary>
+            即将断开连接(仅主动断开时有效)。
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpService`1.Connected">
+            <summary>
+            用户连接完成
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpService`1.Connecting">
+            <summary>
+            有用户连接的时候
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpService`1.Received">
+            <summary>
+            处理数据
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpService`1.OnTcpClosed(`0,TouchSocket.Sockets.ClosedEventArgs)">
+            <summary>
+            客户端断开连接，覆盖父类方法将不会触发事件。
+            </summary>
+            <param name="socketClient"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpService`1.OnTcpClosing(`0,TouchSocket.Sockets.ClosingEventArgs)">
+            <summary>
+            即将断开连接(仅主动断开时有效)。
+            </summary>
+            <param name="socketClient"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpService`1.OnTcpConnected(`0,TouchSocket.Sockets.ConnectedEventArgs)">
+            <summary>
+            客户端连接完成，覆盖父类方法将不会触发事件。
+            </summary>
+            <param name="socketClient"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpService`1.OnTcpConnecting(`0,TouchSocket.Sockets.ConnectingEventArgs)">
+            <summary>
+            客户端请求连接，覆盖父类方法将不会触发事件。
+            </summary>
+            <param name="socketClient"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpService`1.OnTcpReceived(`0,TouchSocket.Sockets.ReceivedDataEventArgs)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpService`1.SendAsync(System.String,System.ReadOnlyMemory{System.Byte})">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpService`1.SendAsync(System.String,TouchSocket.Core.IRequestInfo)">
+            <inheritdoc/>
+        </member>
+        <member name="T:TouchSocket.Sockets.TcpSessionClient">
+            <summary>
+            SessionClient
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpSessionClient.Closed">
+            <inheritdoc/>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpSessionClient.Closing">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpSessionClient.OnTcpConnected(TouchSocket.Sockets.ConnectedEventArgs)">
+            <summary>
+            当客户端完整建立Tcp连接。
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpSessionClient.OnTcpConnecting(TouchSocket.Sockets.ConnectingEventArgs)">
+            <summary>
+            客户端正在连接。
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpSessionClient.OnTcpClosed(TouchSocket.Sockets.ClosedEventArgs)">
+            <summary>
+            客户端已断开连接。
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpSessionClient.OnTcpClosing(TouchSocket.Sockets.ClosingEventArgs)">
+            <summary>
+            即将断开连接(仅主动断开时有效)。
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpSessionClient.OnTcpReceived(TouchSocket.Sockets.ReceivedDataEventArgs)">
+            <summary>
+            当收到适配器处理的数据时。
+            </summary>
+            <returns>如果返回<see langword="true"/>则表示数据已被处理，且不会再向下传递。</returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpSessionClient.OnTcpReceiving(TouchSocket.Core.ByteBlock)">
+            <summary>
+            当收到原始数据
+            </summary>
+            <param name="byteBlock"></param>
+            <returns>如果返回<see langword="true"/>则表示数据已被处理，且不会再向下传递。</returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpSessionClient.OnTcpSending(System.ReadOnlyMemory{System.Byte})">
+            <summary>
+            当即将发送时，如果覆盖父类方法，则不会触发插件。
+            </summary>
+            <param name="buffer">数据缓存区</param>
+            <param name="offset">偏移</param>
+            <param name="length">长度</param>
+            <returns>返回值表示是否允许发送</returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpSessionClient.SendAsync(System.ReadOnlyMemory{System.Byte})">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <param name="buffer"></param>
+            <param name="offset"></param>
+            <param name="length"></param>
+            <exception cref="T:TouchSocket.Sockets.ClientNotConnectedException"></exception>
+            <exception cref="T:TouchSocket.Core.OverlengthException"></exception>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpSessionClient.SendAsync(TouchSocket.Core.IRequestInfo)">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <param name="requestInfo"></param>
+            <exception cref="T:TouchSocket.Sockets.ClientNotConnectedException"></exception>
+            <exception cref="T:TouchSocket.Core.OverlengthException"></exception>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpSessionClient.SendAsync(System.Collections.Generic.IList{System.ArraySegment{System.Byte}})">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <param name="transferBytes"></param>
+            <returns></returns>
+            <exception cref="T:System.ArgumentNullException"></exception>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpSessionClient.SendAsync(System.String,System.ReadOnlyMemory{System.Byte})">
+            <summary>
+            发送字节流
+            </summary>
+            <param name="id">用于检索TcpSessionClient</param>
+            <param name="buffer"></param>
+            <param name="offset"></param>
+            <param name="length"></param>
+            <exception cref="T:System.Collections.Generic.KeyNotFoundException"></exception>
+            <exception cref="T:TouchSocket.Sockets.ClientNotConnectedException"></exception>
+            <exception cref="T:TouchSocket.Core.OverlengthException"></exception>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpSessionClient.SendAsync(System.String,TouchSocket.Core.IRequestInfo)">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <param name="id"></param>
+            <param name="requestInfo"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpSessionClient.ClearReceiver">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpSessionClient.CreateReceiver">
+            <inheritdoc/>
+        </member>
+        <member name="T:TouchSocket.Sockets.TcpSessionClientBase">
+            <summary>
+            SessionClient
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpSessionClientBase.#ctor">
+            <summary>
+            构造函数
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpSessionClientBase.Config">
+            <inheritdoc/>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpSessionClientBase.DataHandlingAdapter">
+            <inheritdoc/>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpSessionClientBase.Id">
+            <inheritdoc/>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpSessionClientBase.IP">
+            <inheritdoc/>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpSessionClientBase.IsClient">
+            <inheritdoc/>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpSessionClientBase.LastReceivedTime">
+            <inheritdoc/>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpSessionClientBase.LastSendTime">
+            <inheritdoc/>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpSessionClientBase.ListenOption">
+            <inheritdoc/>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpSessionClientBase.MainSocket">
+            <inheritdoc/>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpSessionClientBase.Online">
+            <inheritdoc/>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpSessionClientBase.PluginManager">
+            <inheritdoc/>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpSessionClientBase.Port">
+            <inheritdoc/>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpSessionClientBase.Protocol">
+            <inheritdoc/>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpSessionClientBase.Resolver">
+            <inheritdoc/>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpSessionClientBase.Service">
+            <inheritdoc/>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpSessionClientBase.ServiceIP">
+            <inheritdoc/>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpSessionClientBase.ServicePort">
+            <inheritdoc/>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpSessionClientBase.UseSsl">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpSessionClientBase.Abort(System.Boolean,System.String)">
+            <summary>
+            中断连接
+            </summary>
+            <param name="manual"></param>
+            <param name="msg"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpSessionClientBase.OnInitialized">
+            <summary>
+            当初始化完成时，执行在<see cref="M:TouchSocket.Sockets.TcpSessionClientBase.OnTcpConnecting(TouchSocket.Sockets.ConnectingEventArgs)"/>之前。
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpSessionClientBase.OnTcpClosed(TouchSocket.Sockets.ClosedEventArgs)">
+            <summary>
+            客户端已断开连接。
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpSessionClientBase.OnTcpClosing(TouchSocket.Sockets.ClosingEventArgs)">
+            <summary>
+            即将断开连接(仅主动断开时有效)。
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpSessionClientBase.OnTcpConnected(TouchSocket.Sockets.ConnectedEventArgs)">
+            <summary>
+            当客户端完整建立Tcp连接。
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpSessionClientBase.OnTcpConnecting(TouchSocket.Sockets.ConnectingEventArgs)">
+            <summary>
+            客户端正在连接。
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpSessionClientBase.CloseAsync(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpSessionClientBase.ResetIdAsync(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpSessionClientBase.Dispose(System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpSessionClientBase.IdChanged(System.String,System.String)">
+            <summary>
+            当Id更新的时候触发
+            </summary>
+            <param name="sourceId"></param>
+            <param name="targetId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpSessionClientBase.OnTcpReceived(TouchSocket.Sockets.ReceivedDataEventArgs)">
+            <summary>
+            当收到适配器处理的数据时。
+            </summary>
+            <returns>如果返回<see langword="true"/>则表示数据已被处理，且不会再向下传递。</returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpSessionClientBase.OnTcpReceiving(TouchSocket.Core.ByteBlock)">
+            <summary>
+            当收到原始数据
+            </summary>
+            <param name="byteBlock"></param>
+            <returns>如果返回<see langword="true"/>则表示数据已被处理，且不会再向下传递。</returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpSessionClientBase.OnTcpSending(System.ReadOnlyMemory{System.Byte})">
+            <summary>
+            当即将发送时，如果覆盖父类方法，则不会触发插件。
+            </summary>
+            <param name="memory"></param>
+            <returns>返回值表示是否允许发送</returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpSessionClientBase.ProtectedResetId(System.String)">
+            <summary>
+            直接重置内部Id。
+            </summary>
+            <param name="targetId"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpSessionClientBase.ProtectedTryGetClient(System.String,TouchSocket.Sockets.TcpSessionClientBase@)">
+            <summary>
+            尝试通过Id获得对应的客户端
+            </summary>
+            <param name="id"></param>
+            <param name="socketClient"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpSessionClientBase.SetAdapter(TouchSocket.Core.SingleStreamDataHandlingAdapter)">
+            <summary>
+            设置适配器
+            </summary>
+            <param name="adapter"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpSessionClientBase.ProtectedDefaultSendAsync(System.ReadOnlyMemory{System.Byte})">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpSessionClientBase.ProtectedSendAsync(System.ReadOnlyMemory{System.Byte})">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <param name="buffer"></param>
+            <param name="offset"></param>
+            <param name="length"></param>
+            <exception cref="T:TouchSocket.Sockets.ClientNotConnectedException"></exception>
+            <exception cref="T:TouchSocket.Core.OverlengthException"></exception>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpSessionClientBase.ProtectedSendAsync(TouchSocket.Core.IRequestInfo)">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <param name="requestInfo"></param>
+            <exception cref="T:TouchSocket.Sockets.ClientNotConnectedException"></exception>
+            <exception cref="T:TouchSocket.Core.OverlengthException"></exception>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpSessionClientBase.ProtectedSendAsync(System.Collections.Generic.IList{System.ArraySegment{System.Byte}})">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <param name="transferBytes"></param>
+            <returns></returns>
+            <exception cref="T:System.ArgumentNullException"></exception>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpSessionClientBase.ProtectedClearReceiver">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpSessionClientBase.ProtectedCreateReceiver(TouchSocket.Sockets.IReceiverClient{TouchSocket.Sockets.IReceiverResult})">
+            <inheritdoc/>
+        </member>
+        <member name="T:TouchSocket.Sockets.UdpSession">
+            <summary>
+            UDP基类服务器。
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.UdpSession.DataHandlingAdapter">
+            <inheritdoc/>
+        </member>
+        <member name="P:TouchSocket.Sockets.UdpSession.Received">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Sockets.UdpSession.ReceivedData(TouchSocket.Sockets.UdpReceivedDataEventArgs)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Sockets.UdpSession.SendAsync(System.ReadOnlyMemory{System.Byte})">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Sockets.UdpSession.SendAsync(TouchSocket.Core.IRequestInfo)">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <param name="requestInfo"></param>
+            <exception cref="T:TouchSocket.Core.OverlengthException"></exception>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:TouchSocket.Sockets.UdpSession.SendAsync(System.Net.EndPoint,System.ReadOnlyMemory{System.Byte})">
+            <summary>
+            向设置的远程异步发送
+            </summary>
+            <param name="endPoint"></param>
+            <param name="buffer"></param>
+            <param name="offset"></param>
+            <param name="length"></param>
+            <exception cref="T:TouchSocket.Sockets.ClientNotConnectedException"></exception>
+            <exception cref="T:TouchSocket.Core.OverlengthException"></exception>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:TouchSocket.Sockets.UdpSession.SendAsync(System.Net.EndPoint,TouchSocket.Core.IRequestInfo)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Sockets.UdpSession.SendAsync(System.Collections.Generic.IList{System.ArraySegment{System.Byte}})">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <param name="transferBytes"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.UdpSession.SendAsync(System.Net.EndPoint,System.Collections.Generic.IList{System.ArraySegment{System.Byte}})">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <param name="endPoint"></param>
+            <param name="transferBytes"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.UdpSession.ClearReceiver">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Sockets.UdpSession.CreateReceiver">
+            <inheritdoc/>
+        </member>
+        <member name="T:TouchSocket.Sockets.UdpSessionBase">
+            <summary>
+            UDP基类服务器。
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.UdpSessionBase.#ctor">
+            <summary>
+            构造函数
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.UdpSessionBase.LastReceivedTime">
+            <inheritdoc/>
+        </member>
+        <member name="P:TouchSocket.Sockets.UdpSessionBase.LastSendTime">
+            <inheritdoc/>
+        </member>
+        <member name="P:TouchSocket.Sockets.UdpSessionBase.ProtectedDataHandlingAdapter">
+            <summary>
+            数据处理适配器
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.UdpSessionBase.Monitor">
+            <summary>
+            监听器
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.UdpSessionBase.Protocol">
+            <inheritdoc/>
+        </member>
+        <member name="P:TouchSocket.Sockets.UdpSessionBase.RemoteIPHost">
+            <summary>
+            默认远程节点
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.UdpSessionBase.ServerState">
+            <inheritdoc/>
+        </member>
+        <member name="P:TouchSocket.Sockets.UdpSessionBase.IsClient">
+            <summary>
+            在Udp中，该值没有意义，且可以自由赋值。
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.UdpSessionBase.DropMulticastGroup(System.Net.IPAddress)">
+            <summary>
+            退出组播
+            </summary>
+            <param name="multicastAddr"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.UdpSessionBase.JoinMulticastGroup(System.Net.IPAddress)">
+            <summary>
+            加入组播。
+            <para>组播地址为 224.0.0.0 ~ 239.255.255.255，其中 224.0.0.0~224.255.255.255 不建议在用户程序中使用，因为它们一般都有特殊用途。</para>
+            </summary>
+            <param name="multicastAddr"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.UdpSessionBase.StartAsync">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Sockets.UdpSessionBase.StopAsync">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Sockets.UdpSessionBase.Dispose(System.Boolean)">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <param name="disposing"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.UdpSessionBase.ReceivedData(TouchSocket.Sockets.UdpReceivedDataEventArgs)">
+            <summary>
+            处理已接收到的数据。
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.UdpSessionBase.SendingData(System.Net.EndPoint,System.ReadOnlyMemory{System.Byte})">
+            <summary>
+            当即将发送时，如果覆盖父类方法，则不会触发插件。
+            </summary>
+            <param name="endPoint"></param>
+            <param name="memory">数据缓存区</param>
+            <returns>返回值表示是否允许发送</returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.UdpSessionBase.PreviewBind(System.Net.Sockets.Socket)">
+            <summary>
+            在Socket初始化对象后，Bind之前调用。
+            可用于设置Socket参数。
+            父类方法可覆盖。
+            </summary>
+            <param name="socket"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.UdpSessionBase.SetAdapter(TouchSocket.Sockets.UdpDataHandlingAdapter)">
+            <summary>
+            设置适配器
+            </summary>
+            <param name="adapter"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.UdpSessionBase.LoadConfig(TouchSocket.Core.TouchSocketConfig)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Sockets.UdpSessionBase.ReceivingData(TouchSocket.Core.ByteBlock)">
+            <summary>
+            当收到原始数据
+            </summary>
+            <param name="byteBlock"></param>
+            <returns>如果返回<see langword="true"/>则表示数据已被处理，且不会再向下传递。</returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.UdpSessionBase.ProtectedSendAsync(System.ReadOnlyMemory{System.Byte})">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Sockets.UdpSessionBase.ProtectedSendAsync(TouchSocket.Core.IRequestInfo)">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <param name="requestInfo"></param>
+            <exception cref="T:TouchSocket.Core.OverlengthException"></exception>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:TouchSocket.Sockets.UdpSessionBase.ProtectedSendAsync(System.Net.EndPoint,System.ReadOnlyMemory{System.Byte})">
+            <summary>
+            向设置的远程异步发送
+            </summary>
+            <param name="endPoint"></param>
+            <param name="memory"></param>
+            <exception cref="T:TouchSocket.Sockets.ClientNotConnectedException"></exception>
+            <exception cref="T:TouchSocket.Core.OverlengthException"></exception>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:TouchSocket.Sockets.UdpSessionBase.ProtectedSendAsync(System.Net.EndPoint,TouchSocket.Core.IRequestInfo)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Sockets.UdpSessionBase.ProtectedDefaultSendAsync(System.ReadOnlyMemory{System.Byte})">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <param name="buffer"></param>
+            <param name="offset"></param>
+            <param name="length"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.UdpSessionBase.ProtectedDefaultSendAsync(System.Net.EndPoint,System.ReadOnlyMemory{System.Byte})">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <param name="endPoint"></param>
+            <param name="memory"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.UdpSessionBase.ProtectedSendAsync(System.Collections.Generic.IList{System.ArraySegment{System.Byte}})">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <param name="transferBytes"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.UdpSessionBase.ProtectedSendAsync(System.Net.EndPoint,System.Collections.Generic.IList{System.ArraySegment{System.Byte}})">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <param name="endPoint"></param>
+            <param name="transferBytes"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.UdpSessionBase.ProtectedCreateReceiver(TouchSocket.Sockets.IReceiverClient{TouchSocket.Sockets.IUdpReceiverResult})">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Sockets.UdpSessionBase.ProtectedClearReceiver">
+            <inheritdoc/>
+        </member>
+        <member name="T:TouchSocket.Sockets.TcpDataAdapterTester">
+            <summary>
+            Tcp数据处理适配器测试
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Sockets.UdpDataAdapterTester">
+            <summary>
+            Udp数据处理适配器测试
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.UdpDataAdapterTester.CreateTester(TouchSocket.Sockets.UdpDataHandlingAdapter,System.Int32,System.Func{TouchSocket.Core.ByteBlock,TouchSocket.Core.IRequestInfo,System.Threading.Tasks.Task})">
+            <summary>
+            获取测试器
+            </summary>
+            <param name="adapter">待测试适配器</param>
+            <param name="multiThread">并发多线程数量</param>
+            <param name="receivedCallBack">收到数据回调</param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.UdpDataAdapterTester.Dispose">
+            <summary>
+            释放
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.UdpDataAdapterTester.Run(System.ReadOnlyMemory{System.Byte},System.Int32,System.Int32,System.Int32)">
+            <summary>
+            模拟测试运行发送
+            </summary>
+            <param name="buffer"></param>
+            <param name="offset"></param>
+            <param name="length"></param>
+            <param name="testCount">测试次数</param>
+            <param name="expectedCount">期待测试次数</param>
+            <param name="millisecondsTimeout">超时</param>
+            <returns></returns>
+        </member>
+        <member name="T:TouchSocket.Sockets.NormalUdpDataHandlingAdapter">
+            <summary>
+            常规UDP数据处理适配器
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.NormalUdpDataHandlingAdapter.CanSplicingSend">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.NormalUdpDataHandlingAdapter.CanSendRequestInfo">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.NormalUdpDataHandlingAdapter.PreviewReceived(System.Net.EndPoint,TouchSocket.Core.ByteBlock)">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <param name="remoteEndPoint"></param>
+            <param name="byteBlock"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.NormalUdpDataHandlingAdapter.PreviewSendAsync(System.Net.EndPoint,System.Collections.Generic.IList{System.ArraySegment{System.Byte}})">
+            <inheritdoc/>
+        </member>
+        <member name="T:TouchSocket.Sockets.UdpDataHandlingAdapter">
+            <summary>
+            Udp数据处理适配器
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.UdpDataHandlingAdapter.CanSendRequestInfo">
+            <inheritdoc/>
+        </member>
+        <member name="P:TouchSocket.Sockets.UdpDataHandlingAdapter.CanSplicingSend">
+            <inheritdoc/>
+        </member>
+        <member name="P:TouchSocket.Sockets.UdpDataHandlingAdapter.ReceivedCallBack">
+            <summary>
+            当接收数据处理完成后，回调该函数执行接收
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.UdpDataHandlingAdapter.SendCallBackAsync">
+            <summary>
+            当接收数据处理完成后，异步回调该函数执行发送
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.UdpDataHandlingAdapter.ReceivedInput(System.Net.EndPoint,TouchSocket.Core.ByteBlock)">
+            <summary>
+            收到数据的切入点，该方法由框架自动调用。
+            </summary>
+            <param name="remoteEndPoint"></param>
+            <param name="byteBlock"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.UdpDataHandlingAdapter.SendInputAsync(System.Net.EndPoint,System.ReadOnlyMemory{System.Byte})">
+            <summary>
+            发送数据的切入点，该方法由框架自动调用。
+            </summary>
+            <param name="endPoint"></param>
+            <param name="buffer"></param>
+            <param name="offset"></param>
+            <param name="length"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.UdpDataHandlingAdapter.SendInputAsync(System.Net.EndPoint,TouchSocket.Core.IRequestInfo)">
+            <summary>
+            发送数据的切入点，该方法由框架自动调用。
+            </summary>
+            <param name="endPoint"></param>
+            <param name="requestInfo"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.UdpDataHandlingAdapter.SendInputAsync(System.Net.EndPoint,System.Collections.Generic.IList{System.ArraySegment{System.Byte}})">
+            <summary>
+            发送数据的切入点，该方法由框架自动调用。
+            </summary>
+            <param name="endPoint"></param>
+            <param name="transferBytes"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.UdpDataHandlingAdapter.GoReceived(System.Net.EndPoint,TouchSocket.Core.ByteBlock,TouchSocket.Core.IRequestInfo)">
+            <summary>
+            处理已经经过预先处理后的数据
+            </summary>
+            <param name="remoteEndPoint"></param>
+            <param name="byteBlock">以二进制形式传递</param>
+            <param name="requestInfo">以解析实例传递</param>
+        </member>
+        <member name="M:TouchSocket.Sockets.UdpDataHandlingAdapter.GoSendAsync(System.Net.EndPoint,System.ReadOnlyMemory{System.Byte})">
+            <summary>
+            发送已经经过预先处理后的数据
+            </summary>
+            <param name="endPoint"></param>
+            <param name="buffer"></param>
+            <param name="offset"></param>
+            <param name="length"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.UdpDataHandlingAdapter.PreviewReceived(System.Net.EndPoint,TouchSocket.Core.ByteBlock)">
+            <summary>
+            当接收到数据后预先处理数据,然后调用<see cref="M:TouchSocket.Sockets.UdpDataHandlingAdapter.GoReceived(System.Net.EndPoint,TouchSocket.Core.ByteBlock,TouchSocket.Core.IRequestInfo)"/>处理数据
+            </summary>
+            <param name="remoteEndPoint"></param>
+            <param name="byteBlock"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.UdpDataHandlingAdapter.PreviewSendAsync(System.Net.EndPoint,TouchSocket.Core.IRequestInfo)">
+            <summary>
+            当发送数据前预先处理数据
+            </summary>
+            <param name="endPoint"></param>
+            <param name="requestInfo"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.UdpDataHandlingAdapter.PreviewSendAsync(System.Net.EndPoint,System.ReadOnlyMemory{System.Byte})">
+            <summary>
+            当发送数据前预先处理数据
+            </summary>
+            <param name="endPoint"></param>
+            <param name="buffer"></param>
+            <param name="offset"></param>
+            <param name="length"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.UdpDataHandlingAdapter.PreviewSendAsync(System.Net.EndPoint,System.Collections.Generic.IList{System.ArraySegment{System.Byte}})">
+            <summary>
+            组合发送预处理数据，
+            当属性SplicingSend实现为True时，系统才会调用该方法。
+            </summary>
+            <param name="endPoint"></param>
+            <param name="transferBytes"></param>
+            <exception cref="T:System.NotImplementedException"></exception>
+        </member>
+        <member name="M:TouchSocket.Sockets.UdpDataHandlingAdapter.Reset">
+            <inheritdoc/>
+        </member>
+        <member name="T:TouchSocket.Sockets.UdpFrame">
+            <summary>
+            UDP数据帧
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.UdpFrame.Crc">
+            <summary>
+            Crc校验
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.UdpFrame.Data">
+            <summary>
+            数据
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.UdpFrame.FIN">
+            <summary>
+            是否为终结帧
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.UdpFrame.Id">
+            <summary>
+            数据Id
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.UdpFrame.SN">
+            <summary>
+            帧序号
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.UdpFrame.Parse(System.ReadOnlySpan{System.Byte})">
+            <summary>
+            解析
+            </summary>
+            <param name="buffer"></param>
+            <param name="offset"></param>
+            <param name="length"></param>
+            <returns></returns>
+        </member>
+        <member name="T:TouchSocket.Sockets.UdpPackage">
+            <summary>
+            UDP数据包
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.UdpPackage.#ctor(System.Int64,System.Int32,System.Collections.Concurrent.ConcurrentDictionary{System.Int64,TouchSocket.Sockets.UdpPackage})">
+            <summary>
+            构造函数
+            </summary>
+            <param name="id"></param>
+            <param name="millisecondsTimeout"></param>
+            <param name="revStore"></param>
+        </member>
+        <member name="P:TouchSocket.Sockets.UdpPackage.Count">
+            <summary>
+            当前长度
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.UdpPackage.Crc">
+            <summary>
+            Crc
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.UdpPackage.Id">
+            <summary>
+            包唯一标识
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.UdpPackage.IsComplated">
+            <summary>
+            是否已完成
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.UdpPackage.Length">
+            <summary>
+            当前数据长度
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.UdpPackage.MTU">
+            <summary>
+            MTU
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.UdpPackage.TotalCount">
+            <summary>
+            总长度，在收到最后一帧之前，为-1。
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.UdpPackage.Add(TouchSocket.Sockets.UdpFrame)">
+            <summary>
+            添加帧
+            </summary>
+            <param name="frame"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.UdpPackage.TryGetData(TouchSocket.Core.ByteBlock)">
+            <summary>
+            获得数据
+            </summary>
+            <param name="byteBlock"></param>
+            <returns></returns>
+        </member>
+        <member name="T:TouchSocket.Sockets.UdpPackageAdapter">
+            <summary>
+            UDP数据包的适配器
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.UdpPackageAdapter.#ctor">
+            <summary>
+            构造函数
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.UdpPackageAdapter.CanSendRequestInfo">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.UdpPackageAdapter.CanSplicingSend">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.UdpPackageAdapter.MTU">
+            <summary>
+            最大传输单元
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.UdpPackageAdapter.Timeout">
+            <summary>
+            接收超时时间，默认5000ms
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.UdpPackageAdapter.PreviewReceived(System.Net.EndPoint,TouchSocket.Core.ByteBlock)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Sockets.UdpPackageAdapter.PreviewSendAsync(System.Net.EndPoint,System.ReadOnlyMemory{System.Byte})">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Sockets.UdpPackageAdapter.PreviewSendAsync(System.Net.EndPoint,System.Collections.Generic.IList{System.ArraySegment{System.Byte}})">
+            <inheritdoc/>
+        </member>
+        <member name="T:TouchSocket.Sockets.ClosedEventHandler`1">
+            <summary>
+            客户端已断开连接
+            </summary>
+            <typeparam name="TClient"></typeparam>
+            <param name="client"></param>
+            <param name="e"></param>
+            <returns></returns>
+        </member>
+        <member name="T:TouchSocket.Sockets.ClosingEventHandler`1">
+            <summary>
+            客户端即将断开连接
+            </summary>
+            <typeparam name="TClient"></typeparam>
+            <param name="client"></param>
+            <param name="e"></param>
+        </member>
+        <member name="T:TouchSocket.Sockets.ConnectedEventHandler`1">
+            <summary>
+            Connected
+            </summary>
+            <typeparam name="TClient"></typeparam>
+            <param name="client"></param>
+            <param name="e"></param>
+        </member>
+        <member name="T:TouchSocket.Sockets.ConnectingEventHandler`1">
+            <summary>
+            Connecting
+            </summary>
+            <typeparam name="TClient"></typeparam>
+            <param name="client"></param>
+            <param name="e"></param>
+        </member>
+        <member name="T:TouchSocket.Sockets.ReceivedEventHandler`1">
+            <summary>
+            接收数据
+            </summary>
+            <param name="client"></param>
+            <param name="e"></param>
+        </member>
+        <member name="T:TouchSocket.Sockets.TryOutEventHandler`1">
+            <summary>
+            尝试out委托
+            </summary>
+            <typeparam name="TClient"></typeparam>
+            <param name="id"></param>
+            <param name="client"></param>
+            <returns></returns>
+        </member>
+        <member name="T:TouchSocket.Sockets.UdpReceivedEventHandler`1">
+            <summary>
+            Udp接收
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Sockets.CheckClearType">
+            <summary>
+            检查清理类型
+            </summary>
+        </member>
+        <member name="F:TouchSocket.Sockets.CheckClearType.OnlySend">
+            <summary>
+            仅统计发送
+            </summary>
+        </member>
+        <member name="F:TouchSocket.Sockets.CheckClearType.OnlyReceive">
+            <summary>
+            仅统计接收
+            </summary>
+        </member>
+        <member name="F:TouchSocket.Sockets.CheckClearType.All">
+            <summary>
+            全部
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Sockets.ServerState">
+            <summary>
+            服务器状态
+            </summary>
+        </member>
+        <member name="F:TouchSocket.Sockets.ServerState.None">
+            <summary>
+            无状态，指示为初建
+            </summary>
+        </member>
+        <member name="F:TouchSocket.Sockets.ServerState.Running">
+            <summary>
+            正在运行
+            </summary>
+        </member>
+        <member name="F:TouchSocket.Sockets.ServerState.Exception">
+            <summary>
+            运行遇到异常
+            </summary>
+        </member>
+        <member name="F:TouchSocket.Sockets.ServerState.Stopped">
+            <summary>
+            已停止
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Sockets.ByteBlockEventArgs">
+            <summary>
+            字节事件
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.ByteBlockEventArgs.#ctor(TouchSocket.Core.ByteBlock)">
+            <summary>
+            构造函数
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.ByteBlockEventArgs.ByteBlock">
+            <summary>
+            数据块
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Sockets.BytesEventArgs">
+            <summary>
+            字节事件
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.BytesEventArgs.#ctor(System.Byte[])">
+            <summary>
+            构造函数
+            </summary>
+            <param name="data"></param>
+        </member>
+        <member name="P:TouchSocket.Sockets.BytesEventArgs.ReceivedDataBytes">
+            <summary>
+            字节数组
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Sockets.ClosedEventArgs">
+            <summary>
+            断开连接事件参数
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.ClosedEventArgs.#ctor(System.Boolean,System.String)">
+            <summary>
+            构造函数
+            </summary>
+            <param name="manual"></param>
+            <param name="mes"></param>
+        </member>
+        <member name="P:TouchSocket.Sockets.ClosedEventArgs.Manual">
+            <summary>
+            是否为主动行为。
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Sockets.ClosingEventArgs">
+            <summary>
+            断开连接事件参数
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Sockets.ConnectedEventArgs">
+            <summary>
+            ConnectedEventArgs
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Sockets.ConnectingEventArgs">
+            <summary>
+            客户端连接事件。
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.ConnectingEventArgs.#ctor">
+            <summary>
+            构造函数
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.ConnectingEventArgs.Id">
+            <summary>
+            客户端Id。该Id的赋值，仅在服务器适用。
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Sockets.IdChangedEventArgs">
+            <summary>
+            IdChangedEventArgs
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.IdChangedEventArgs.#ctor(System.String,System.String)">
+            <summary>
+            IdChangedEventArgs
+            </summary>
+            <param name="sourceId"></param>
+            <param name="targetId"></param>
+        </member>
+        <member name="P:TouchSocket.Sockets.IdChangedEventArgs.OldId">
+            <summary>
+            旧Id
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.IdChangedEventArgs.NewId">
+            <summary>
+            新Id
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Sockets.ReceivedDataEventArgs">
+            <summary>
+            插件处理事件
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.ReceivedDataEventArgs.#ctor(TouchSocket.Core.ByteBlock,TouchSocket.Core.IRequestInfo)">
+            <summary>
+            构造函数
+            </summary>
+            <param name="byteBlock"></param>
+            <param name="requestInfo"></param>
+        </member>
+        <member name="P:TouchSocket.Sockets.ReceivedDataEventArgs.RequestInfo">
+            <summary>
+            对象载体
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Sockets.SendingEventArgs">
+            <summary>
+            发送事件
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.SendingEventArgs.#ctor(System.ReadOnlyMemory{System.Byte})">
+            <summary>
+            构造函数
+            </summary>
+            <param name="buffer"></param>
+            <param name="offset"></param>
+            <param name="length"></param>
+        </member>
+        <member name="P:TouchSocket.Sockets.SendingEventArgs.Memory">
+            <summary>
+            数据缓存区，该属性可能获取来自于内存池，所以最好不要引用该对象，可以同步使用该对象
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Sockets.ServiceStateEventArgs">
+            <summary>
+            服务器状态事件参数
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.ServiceStateEventArgs.#ctor(TouchSocket.Sockets.ServerState,System.Exception)">
+            <summary>
+            服务器状态事件参数
+            </summary>
+            <param name="serverState"></param>
+            <param name="exception"></param>
+        </member>
+        <member name="P:TouchSocket.Sockets.ServiceStateEventArgs.ServerState">
+            <summary>
+            服务器状态
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.ServiceStateEventArgs.Exception">
+            <summary>
+            异常类
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Sockets.UdpReceivedDataEventArgs">
+            <summary>
+            Udp接收消息
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.UdpReceivedDataEventArgs.#ctor(System.Net.EndPoint,TouchSocket.Core.ByteBlock,TouchSocket.Core.IRequestInfo)">
+            <summary>
+            构造函数
+            </summary>
+            <param name="endPoint"></param>
+            <param name="byteBlock"></param>
+            <param name="requestInfo"></param>
+        </member>
+        <member name="P:TouchSocket.Sockets.UdpReceivedDataEventArgs.EndPoint">
+            <summary>
+            接收终结点
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Sockets.ClientNotConnectedException">
+            <summary>
+            未连接异常
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.ClientNotConnectedException.#ctor">
+            <summary>
+            构造函数
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.ClientNotConnectedException.#ctor(System.String)">
+            <summary>
+            构造函数
+            </summary>
+            <param name="message"></param>
+        </member>
+        <member name="T:TouchSocket.Sockets.ClientNotFindException">
+            <summary>
+            没有找到Id对应的客户端
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.ClientNotFindException.#ctor">
+            <summary>
+            构造函数
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.ClientNotFindException.#ctor(System.String)">
+            <summary>
+            构造函数
+            </summary>
+            <param name="message"></param>
+        </member>
+        <member name="T:TouchSocket.Sockets.ClientExtension">
+            <summary>
+            客户端扩展类
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.ClientExtension.GetInfo``1(``0)">
+             <summary>
+             获取相关信息。格式：
+            <para>IPPort=IP:Port,Id=id,Protocol=Protocol</para>
+             </summary>
+             <typeparam name="T"></typeparam>
+             <param name="client"></param>
+             <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.ClientExtension.GetIPPort``1(``0)">
+            <summary>
+            获取IP和端口。
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="client"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.ClientExtension.GetLastActiveTime``1(``0)">
+            <summary>
+            获取最后活动时间。即<see cref="P:TouchSocket.Sockets.IClient.LastReceivedTime"/>与<see cref="P:TouchSocket.Sockets.IClient.LastSendTime"/>的最近值。
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="client"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.ClientExtension.GetOtherIds``1(``0)">
+            <summary>
+            获取服务器中，除自身以外的所有客户端id
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="client"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.ClientExtension.TryShutdown``1(``0,System.Net.Sockets.SocketShutdown)">
+            <summary>
+            安全性发送关闭报文
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="client"></param>
+            <param name="how"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.ClientExtension.CloseAsync``1(``0)">
+            <summary>
+            <inheritdoc cref="M:TouchSocket.Sockets.IClosableClient.CloseAsync(System.String)"/>
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="client"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.ClientExtension.SafeCloseAsync``1(``0,System.String)">
+            <summary>
+            安全性关闭。不会抛出异常。
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="client"></param>
+            <param name="msg"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.ClientExtension.SafeCloseAsync``1(``0)">
+            <summary>
+             安全性关闭。不会抛出异常。
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="client"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.ClientExtension.Close``1(``0)">
+            <summary>
+            同步关闭客户端
+            </summary>
+            <remarks>
+            请注意，该同步方法由<see cref="M:TouchSocket.Sockets.IClosableClient.CloseAsync(System.String)"/>异步转同步而来。所以请谨慎使用。建议直接使用异步。
+            </remarks>
+            <typeparam name="T"></typeparam>
+            <param name="client"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.ClientExtension.Close``1(``0,System.String)">
+            <summary>
+            同步关闭客户端
+            </summary>
+            <remarks>
+            请注意，该同步方法由<see cref="M:TouchSocket.Sockets.IClosableClient.CloseAsync(System.String)"/>异步转同步而来。所以请谨慎使用。建议直接使用异步。
+            </remarks>
+            <typeparam name="T"></typeparam>
+            <param name="client"></param>
+            <param name="msg"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.ClientExtension.SafeClose``1(``0,System.String)">
+            <summary>
+            安全性关闭。不会抛出异常。
+            </summary>
+            <remarks>
+            请注意，该同步方法由<see cref="M:TouchSocket.Sockets.IClosableClient.CloseAsync(System.String)"/>异步转同步而来。所以请谨慎使用。建议直接使用异步。
+            </remarks>
+            <typeparam name="T"></typeparam>
+            <param name="client"></param>
+            <param name="msg"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.ClientExtension.SafeClose``1(``0)">
+            <summary>
+             安全性关闭。不会抛出异常。
+            </summary>
+            <remarks>
+            请注意，该同步方法由<see cref="M:TouchSocket.Sockets.IClosableClient.CloseAsync(System.String)"/>异步转同步而来。所以请谨慎使用。建议直接使用异步。
+            </remarks>
+            <typeparam name="T"></typeparam>
+            <param name="client"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.ClientExtension.ConnectAsync(TouchSocket.Sockets.IConnectableClient,System.Int32)">
+            <inheritdoc cref="M:TouchSocket.Sockets.IConnectableClient.ConnectAsync(System.Int32,System.Threading.CancellationToken)"/>
+        </member>
+        <member name="M:TouchSocket.Sockets.ClientExtension.ConnectAsync``1(``0,TouchSocket.Sockets.IPHost,System.Int32)">
+            <inheritdoc cref="M:TouchSocket.Sockets.IConnectableClient.ConnectAsync(System.Int32,System.Threading.CancellationToken)"/>
+        </member>
+        <member name="M:TouchSocket.Sockets.ClientExtension.TryConnectAsync(TouchSocket.Sockets.IConnectableClient,System.Int32)">
+            <summary>
+            尝试连接。不会抛出异常。
+            </summary>
+            <param name="client"></param>
+            <param name="millisecondsTimeout"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.ClientExtension.TryConnectAsync``1(``0,System.Int32)">
+            <summary>
+            尝试连接。不会抛出异常。
+            </summary>
+            <typeparam name="TClient"></typeparam>
+            <param name="client"></param>
+            <param name="millisecondsTimeout"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.ClientExtension.Connect(TouchSocket.Sockets.IConnectableClient,System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            同步执行连接操作。
+            </summary>
+            <remarks>
+            注意，本同步操作是直接等待的<see cref="M:TouchSocket.Sockets.IConnectableClient.ConnectAsync(System.Int32,System.Threading.CancellationToken)"/>，所以请谨慎使用。
+            </remarks>
+            <param name="client"></param>
+            <param name="millisecondsTimeout"></param>
+            <param name="cancellationToken"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.ClientExtension.Connect``1(``0,TouchSocket.Sockets.IPHost,System.Int32)">
+            <summary>
+            同步执行连接操作。
+            </summary>
+            <remarks>
+            注意，本同步操作是直接等待的<see cref="M:TouchSocket.Sockets.IConnectableClient.ConnectAsync(System.Int32,System.Threading.CancellationToken)"/>，所以请谨慎使用。
+            </remarks>
+            <typeparam name="TClient"></typeparam>
+            <param name="client"></param>
+            <param name="ipHost"></param>
+            <param name="millisecondsTimeout"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.ClientExtension.TryConnect(TouchSocket.Sockets.IConnectableClient,System.Int32)">
+            <summary>
+            同步执行连接操作。不会抛出异常。
+            </summary>
+            <remarks>
+            注意，本同步操作是直接等待的<see cref="M:TouchSocket.Sockets.IConnectableClient.ConnectAsync(System.Int32,System.Threading.CancellationToken)"/>，所以请谨慎使用。
+            </remarks>
+            <param name="client"></param>
+            <param name="millisecondsTimeout"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.ClientExtension.TryConnect``1(``0,System.Int32)">
+            <summary>
+            同步执行连接操作。不会抛出异常。
+            </summary>
+            <remarks>
+            注意，本同步操作是直接等待的<see cref="M:TouchSocket.Sockets.IConnectableClient.ConnectAsync(System.Int32,System.Threading.CancellationToken)"/>，所以请谨慎使用。
+            </remarks>
+            <typeparam name="TClient"></typeparam>
+            <param name="client"></param>
+            <param name="millisecondsTimeout"></param>
+            <returns></returns>
+        </member>
+        <member name="T:TouchSocket.Sockets.HeartbeatPluginExtension">
+            <summary>
+            HeartbeatPluginExtension
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.HeartbeatPluginExtension.SetTick``1(``0,System.TimeSpan)">
+            <summary>
+            设置心跳间隔。默认3秒。
+            </summary>
+            <typeparam name="THeartbeatPlugin"></typeparam>
+            <param name="heartbeatPlugin"></param>
+            <param name="timeSpan"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.HeartbeatPluginExtension.SetMaxFailCount``1(``0,System.Int32)">
+            <summary>
+            设置最大失败次数，默认3。
+            </summary>
+            <typeparam name="THeartbeatPlugin"></typeparam>
+            <param name="heartbeatPlugin"></param>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="T:TouchSocket.Sockets.SenderExtension">
+            <summary>
+            SenderExtension
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.SenderExtension.Send``1(``0,System.String)">
+            <summary>
+            以UTF-8的编码同步发送字符串。
+            </summary>
+            <typeparam name="TClient"></typeparam>
+            <param name="client"></param>
+            <param name="value"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.SenderExtension.SendAsync``1(``0,System.String)">
+            <summary>
+            以UTF-8的编码异步发送字符串。
+            </summary>
+            <typeparam name="TClient"></typeparam>
+            <param name="client"></param>
+            <param name="value"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.SenderExtension.Send``1(``0,System.String,System.String)">
+            <summary>
+            以UTF-8的编码同步发送字符串。
+            </summary>
+            <typeparam name="TClient"></typeparam>
+            <param name="client"></param>
+            <param name="id"></param>
+            <param name="value"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.SenderExtension.Send``1(``0,System.String,System.Byte[])">
+            <summary>
+            同步发送数据。
+            </summary>
+            <typeparam name="TClient"></typeparam>
+            <param name="client"></param>
+            <param name="id"></param>
+            <param name="buffer"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.SenderExtension.SendAsync``1(``0,System.String,System.String)">
+            <summary>
+            以UTF-8的编码异步发送字符串。
+            </summary>
+            <typeparam name="TClient"></typeparam>
+            <param name="client"></param>
+            <param name="id"></param>
+            <param name="value"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.SenderExtension.Send``1(``0,System.Net.EndPoint,System.String)">
+            <summary>
+            以UTF-8的编码同步发送字符串。
+            </summary>
+            <typeparam name="TClient"></typeparam>
+            <param name="client"></param>
+            <param name="endPoint"></param>
+            <param name="value"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.SenderExtension.SendAsync``1(``0,System.Net.EndPoint,System.String)">
+            <summary>
+            以UTF-8的编码异步发送字符串。
+            </summary>
+            <typeparam name="TClient"></typeparam>
+            <param name="client"></param>
+            <param name="endPoint"></param>
+            <param name="value"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.SenderExtension.SendThenReturn(TouchSocket.Sockets.IWaitSender,System.String,System.Int32)">
+            <summary>
+            发送字节流
+            </summary>
+            <param name="client"></param>
+            <param name="msg"></param>
+            <param name="millisecondsTimeout"></param>
+            <exception cref="T:TouchSocket.Sockets.ClientNotConnectedException">客户端没有连接</exception>
+            <exception cref="T:TouchSocket.Core.OverlengthException">发送数据超长</exception>
+            <exception cref="T:System.Exception">其他异常</exception>
+            <returns>返回的数据</returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.SenderExtension.SendThenReturn(TouchSocket.Sockets.IWaitSender,System.Memory{System.Byte},System.Int32)">
+            <summary>
+            发送字节流
+            </summary>
+            <param name="client">客户端</param>
+            <param name="buffer">数据缓存区</param>
+            <param name="offset">数据偏移</param>
+            <param name="length">数据长度</param>
+            <param name="millisecondsTimeout">超时时间</param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.SenderExtension.SendThenReturnAsync(TouchSocket.Sockets.IWaitSender,System.String,System.Int32)">
+            <summary>
+            异步发送
+            </summary>
+            <param name="client"></param>
+            <param name="msg"></param>
+            <param name="millisecondsTimeout"></param>
+            <exception cref="T:TouchSocket.Sockets.ClientNotConnectedException">客户端没有连接</exception>
+            <exception cref="T:TouchSocket.Core.OverlengthException">发送数据超长</exception>
+            <exception cref="T:System.Exception">其他异常</exception>
+            <returns>返回的数据</returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.SenderExtension.SendThenReturnAsync(TouchSocket.Sockets.IWaitSender,System.Memory{System.Byte},System.Int32)">
+            <summary>
+            异步发送并等待响应数据
+            </summary>
+            <param name="client">客户端</param>
+            <param name="buffer">数据缓存区</param>
+            <param name="offset">数据偏移</param>
+            <param name="length">数据长度</param>
+            <param name="millisecondsTimeout">超时时间</param>
+            <returns></returns>
+            <exception cref="T:System.TimeoutException"></exception>
+        </member>
+        <member name="T:TouchSocket.Sockets.ServiceExtension">
+            <summary>
+            ServiceExtension
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.ServiceExtension.StartAsync``1(``0,TouchSocket.Sockets.IPHost[])">
+            <inheritdoc cref="M:TouchSocket.Sockets.IServiceBase.StartAsync"/>
+        </member>
+        <member name="M:TouchSocket.Sockets.ServiceExtension.Start``1(``0,TouchSocket.Sockets.IPHost[])">
+            <inheritdoc cref="M:TouchSocket.Sockets.IServiceBase.StartAsync"/>
+        </member>
+        <member name="M:TouchSocket.Sockets.ServiceExtension.StartAsync``1(``0,TouchSocket.Sockets.IPHost)">
+            <inheritdoc cref="M:TouchSocket.Sockets.IServiceBase.StartAsync"/>
+        </member>
+        <member name="M:TouchSocket.Sockets.ServiceExtension.Start``1(``0,TouchSocket.Sockets.IPHost)">
+            <inheritdoc cref="M:TouchSocket.Sockets.IServiceBase.StartAsync"/>
+        </member>
+        <member name="T:TouchSocket.Sockets.SocketExtension">
+            <summary>
+            SocketExtension
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.SocketExtension.AbsoluteSend(System.Net.Sockets.Socket,System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            会使用同步锁，保证所有数据上缓存区。
+            </summary>
+            <param name="socket"></param>
+            <param name="buffer"></param>
+            <param name="offset"></param>
+            <param name="length"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.SocketExtension.TryClose(System.Net.Sockets.Socket)">
+            <summary>
+            尝试关闭<see cref="T:System.Net.Sockets.Socket"/>。不会抛出异常。
+            </summary>
+            <param name="socket"></param>
+        </member>
+        <member name="T:TouchSocket.Sockets.SocketPluginManagerExtension">
+            <summary>
+            SocketPluginManagerExtension
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.SocketPluginManagerExtension.UseCheckClear(TouchSocket.Core.IPluginManager)">
+            <summary>
+             检查连接客户端活性插件。
+             <para>当在设置的周期内，没有接收/发送任何数据，则判定该客户端掉线。执行清理。默认配置：60秒为一个周期，同时检测发送和接收。</para>
+             服务器、客户端均适用。
+            </summary>
+            <param name="pluginManager"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.SocketPluginManagerExtension.UseCheckClear``1(TouchSocket.Core.IPluginManager)">
+            <summary>
+             检查连接客户端活性插件。
+             <para>当在设置的周期内，没有接收/发送任何数据，则判定该客户端掉线。执行清理。默认配置：60秒为一个周期，同时检测发送和接收。</para>
+             服务器、客户端均适用。
+            </summary>
+            <param name="pluginManager"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.SocketPluginManagerExtension.UseReconnection``1(TouchSocket.Core.IPluginManager)">
+            <summary>
+            使用断线重连。
+            </summary>
+            <typeparam name="TClient"></typeparam>
+            <param name="pluginManager"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.SocketPluginManagerExtension.UseReconnection(TouchSocket.Core.IPluginManager,System.Int32,System.Boolean,System.Int32,System.Action{TouchSocket.Sockets.ITcpClient})">
+            <summary>
+            使用断线重连。
+            <para>该效果仅客户端在完成首次连接，且为被动断开时有效。</para>
+            </summary>
+            <param name="pluginManager"></param>
+            <param name="successCallback">成功回调函数</param>
+            <param name="tryCount">尝试重连次数，设为-1时则永远尝试连接</param>
+            <param name="printLog">是否输出日志。</param>
+            <param name="sleepTime">失败时，停留时间</param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.SocketPluginManagerExtension.UseReconnection(TouchSocket.Core.IPluginManager,System.TimeSpan,System.Func{TouchSocket.Sockets.ITcpClient,System.Int32,System.Exception,System.Boolean},System.Action{TouchSocket.Sockets.ITcpClient})">
+            <summary>
+            使用断线重连。
+            <para>该效果仅客户端在完成首次连接，且为被动断开时有效。</para>
+            </summary>
+            <param name="pluginManager"></param>
+            <param name="sleepTime">失败时间隔时间</param>
+            <param name="failCallback">失败时回调（参数依次为：客户端，本轮尝试重连次数，异常信息）。如果回调为null或者返回false，则终止尝试下次连接。</param>
+            <param name="successCallback">成功连接时回调。</param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.SocketPluginManagerExtension.UseTcpReconnection``1(TouchSocket.Core.IPluginManager)">
+            <summary>
+            使用断线重连。
+            </summary>
+            <typeparam name="TClient"></typeparam>
+            <param name="pluginManager"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.SocketPluginManagerExtension.UseTcpReconnection(TouchSocket.Core.IPluginManager,System.Int32,System.Boolean,System.Int32,System.Action{TouchSocket.Sockets.ITcpClient})">
+            <summary>
+            使用断线重连。
+            <para>该效果仅客户端在完成首次连接，且为被动断开时有效。</para>
+            </summary>
+            <param name="pluginManager"></param>
+            <param name="successCallback">成功回调函数</param>
+            <param name="tryCount">尝试重连次数，设为-1时则永远尝试连接</param>
+            <param name="printLog">是否输出日志。</param>
+            <param name="sleepTime">失败时，停留时间</param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.SocketPluginManagerExtension.UseTcpReconnection(TouchSocket.Core.IPluginManager,System.TimeSpan,System.Func{TouchSocket.Sockets.ITcpClient,System.Int32,System.Exception,System.Boolean},System.Action{TouchSocket.Sockets.ITcpClient})">
+            <summary>
+            使用断线重连。
+            <para>该效果仅客户端在完成首次连接，且为被动断开时有效。</para>
+            </summary>
+            <param name="pluginManager"></param>
+            <param name="sleepTime">失败时间隔时间</param>
+            <param name="failCallback">失败时回调（参数依次为：客户端，本轮尝试重连次数，异常信息）。如果回调为null或者返回false，则终止尝试下次连接。</param>
+            <param name="successCallback">成功连接时回调。</param>
+            <returns></returns>
+        </member>
+        <member name="T:TouchSocket.Sockets.TouchSocketConfigExtension">
+            <summary>
+            TouchSocketConfigExtension
+            </summary>
+        </member>
+        <member name="F:TouchSocket.Sockets.TouchSocketConfigExtension.SendTimeoutProperty">
+            <summary>
+            发送超时设定，默认为0。
+            所需类型<see cref="T:System.Int32"/>
+            </summary>
+        </member>
+        <member name="F:TouchSocket.Sockets.TouchSocketConfigExtension.TcpDataHandlingAdapterProperty">
+            <summary>
+            数据处理适配器
+            所需类型<see cref="T:System.Func`1"/>
+            </summary>
+        </member>
+        <member name="F:TouchSocket.Sockets.TouchSocketConfigExtension.UdpDataHandlingAdapterProperty">
+            <summary>
+            数据处理适配器
+            所需类型<see cref="T:System.Func`1"/>
+            </summary>
+        </member>
+        <member name="F:TouchSocket.Sockets.TouchSocketConfigExtension.MinBufferSizeProperty">
+            <summary>
+            最小缓存池尺寸
+            所需类型<see cref="T:System.Int32"/>
+            </summary>
+        </member>
+        <member name="F:TouchSocket.Sockets.TouchSocketConfigExtension.MaxBufferSizeProperty">
+            <summary>
+            最大缓存池尺寸
+            所需类型<see cref="T:System.Int32"/>
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.TouchSocketConfigExtension.SetMinBufferSize(TouchSocket.Core.TouchSocketConfig,System.Int32)">
+            <summary>
+            最小缓存容量，默认缺省。
+            <list type="number">
+            </list>
+            </summary>
+            <param name="config"></param>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.TouchSocketConfigExtension.SetMaxBufferSize(TouchSocket.Core.TouchSocketConfig,System.Int32)">
+            <summary>
+            最大缓存容量，默认缺省。
+            <list type="number">
+            </list>
+            </summary>
+            <param name="config"></param>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.TouchSocketConfigExtension.SetSendTimeout(TouchSocket.Core.TouchSocketConfig,System.Int32)">
+            <summary>
+            发送超时设定，单位毫秒，默认为0。意为禁用该配置。
+            </summary>
+            <param name="config"></param>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.TouchSocketConfigExtension.SetTcpDataHandlingAdapter(TouchSocket.Core.TouchSocketConfig,System.Func{TouchSocket.Core.SingleStreamDataHandlingAdapter})">
+            <summary>
+            设置(Tcp系)数据处理适配器。
+            </summary>
+            <param name="config"></param>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.TouchSocketConfigExtension.SetUdpDataHandlingAdapter(TouchSocket.Core.TouchSocketConfig,System.Func{TouchSocket.Sockets.UdpDataHandlingAdapter})">
+            <summary>
+            设置(Udp系)数据处理适配器。
+            </summary>
+            <param name="config"></param>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="F:TouchSocket.Sockets.TouchSocketConfigExtension.ServerNameProperty">
+            <summary>
+            服务名称，用于标识，无实际意义，所需类型<see cref="T:System.String"/>
+            </summary>
+        </member>
+        <member name="F:TouchSocket.Sockets.TouchSocketConfigExtension.ThreadCountProperty">
+            <summary>
+            多线程数量。默认-1缺省。
+            <para>UDP模式中，该值为重叠IO并发数</para>
+            所需类型<see cref="T:System.Int32"/>
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.TouchSocketConfigExtension.SetServerName(TouchSocket.Core.TouchSocketConfig,System.String)">
+            <summary>
+            服务名称，用于标识，无实际意义
+            </summary>
+            <param name="config"></param>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.TouchSocketConfigExtension.SetThreadCount(TouchSocket.Core.TouchSocketConfig,System.Int32)">
+            <summary>
+            多线程数量，默认为-1缺省，实际上在udp中相当于1。
+            <para>UDP模式中，该值为重叠IO并发数</para>
+            </summary>
+            <param name="config"></param>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="F:TouchSocket.Sockets.TouchSocketConfigExtension.BindIPHostProperty">
+            <summary>
+            Tcp固定端口绑定，
+            所需类型<see cref="T:TouchSocket.Sockets.IPHost"/>
+            </summary>
+        </member>
+        <member name="F:TouchSocket.Sockets.TouchSocketConfigExtension.KeepAliveValueProperty">
+            <summary>
+            在Socket配置KeepAlive属性，这个是操作tcp底层的，如果你对底层不了解，建议不要动。
+            所需类型<see cref="T:System.Boolean"/>
+            </summary>
+        </member>
+        <member name="F:TouchSocket.Sockets.TouchSocketConfigExtension.NoDelayProperty">
+            <summary>
+            设置Socket不使用Delay算法，
+            所需类型<see cref="T:System.Boolean"/>
+            </summary>
+        </member>
+        <member name="F:TouchSocket.Sockets.TouchSocketConfigExtension.RemoteIPHostProperty">
+            <summary>
+            远程目标地址，所需类型<see cref="T:TouchSocket.Sockets.IPHost"/>
+            </summary>
+        </member>
+        <member name="F:TouchSocket.Sockets.TouchSocketConfigExtension.SslOptionProperty">
+            <summary>
+            Ssl配置，为Null时则不启用
+            所需类型<see cref="T:TouchSocket.Sockets.SslOption"/>
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.TouchSocketConfigExtension.SetBindIPHost(TouchSocket.Core.TouchSocketConfig,TouchSocket.Sockets.IPHost)">
+            <summary>
+            固定端口绑定。
+            <para>在<see cref="T:TouchSocket.Sockets.UdpSessionBase"/>中表示本地监听地址</para>
+            <para>在<see cref="T:TouchSocket.Sockets.TcpClientBase"/>中表示固定客户端端口号。</para>
+            </summary>
+            <param name="config"></param>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.TouchSocketConfigExtension.SetClientSslOption(TouchSocket.Core.TouchSocketConfig,TouchSocket.Sockets.ClientSslOption)">
+            <summary>
+            设置客户端Ssl配置，为Null时则不启用。
+            </summary>
+            <param name="config"></param>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.TouchSocketConfigExtension.SetKeepAliveValue(TouchSocket.Core.TouchSocketConfig,TouchSocket.Sockets.KeepAliveValue)">
+            <summary>
+            在Socket的KeepAlive属性。
+            <para>注意：这个是操作tcp底层的，如果你对底层不了解，建议不要动。</para>
+            </summary>
+            <param name="config"></param>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.TouchSocketConfigExtension.SetRemoteIPHost(TouchSocket.Core.TouchSocketConfig,TouchSocket.Sockets.IPHost)">
+            <summary>
+            设置远程目标地址。在<see cref="T:TouchSocket.Sockets.UdpSessionBase"/>中，表示默认发送时的目标地址。
+            </summary>
+            <param name="config"></param>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.TouchSocketConfigExtension.SetNoDelay(TouchSocket.Core.TouchSocketConfig,System.Boolean)">
+            <summary>
+            设置Socket的NoDelay属性，默认不做处理。
+            </summary>
+            <param name="config"></param>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="F:TouchSocket.Sockets.TouchSocketConfigExtension.BacklogProperty">
+            <summary>
+            挂起连接队列的最大长度，所需类型<see cref="T:System.Int32"/>
+            </summary>
+        </member>
+        <member name="F:TouchSocket.Sockets.TouchSocketConfigExtension.GetDefaultNewIdProperty">
+            <summary>
+            设置默认Id的获取方式，所需类型<see cref="T:System.Func`2"/>
+            </summary>
+        </member>
+        <member name="F:TouchSocket.Sockets.TouchSocketConfigExtension.ListenIPHostsProperty">
+            <summary>
+            服务器负责监听的地址组。所需类型<see cref="T:TouchSocket.Sockets.IPHost"/>数组
+            </summary>
+        </member>
+        <member name="F:TouchSocket.Sockets.TouchSocketConfigExtension.ListenOptionsProperty">
+            <summary>
+            直接单个配置服务器监听的地址组。所需类型<see cref="T:System.Action"/>
+            </summary>
+        </member>
+        <member name="F:TouchSocket.Sockets.TouchSocketConfigExtension.MaxCountProperty">
+            <summary>
+            最大可连接数，默认为10000，所需类型<see cref="T:System.Int32"/>
+            </summary>
+        </member>
+        <member name="F:TouchSocket.Sockets.TouchSocketConfigExtension.ReuseAddressProperty">
+            <summary>
+            端口复用，默认为false，所需类型<see cref="T:System.Boolean"/>
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.TouchSocketConfigExtension.SetBacklog(TouchSocket.Core.TouchSocketConfig,System.Int32)">
+            <summary>
+            挂起连接队列的最大长度，默认不设置值。
+            </summary>
+            <param name="config"></param>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.TouchSocketConfigExtension.SetGetDefaultNewId(TouchSocket.Core.TouchSocketConfig,System.Func{System.String})">
+            <summary>
+            设置Tcp服务器默认Id的获取方式。仅服务器生效。
+            </summary>
+            <param name="config"></param>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.TouchSocketConfigExtension.SetListenIPHosts(TouchSocket.Core.TouchSocketConfig,TouchSocket.Sockets.IPHost[])">
+            <summary>
+            服务器负责监听的地址组。
+            </summary>
+            <param name="config"></param>
+            <param name="values"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.TouchSocketConfigExtension.SetListenOptions(TouchSocket.Core.TouchSocketConfig,System.Action{System.Collections.Generic.List{TouchSocket.Sockets.TcpListenOption}})">
+            <summary>
+            直接单个配置服务器监听的地址组。
+            </summary>
+            <param name="config"></param>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.TouchSocketConfigExtension.SetMaxCount(TouchSocket.Core.TouchSocketConfig,System.Int32)">
+            <summary>
+            最大可连接数，默认为10000。
+            </summary>
+            <param name="config"></param>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.TouchSocketConfigExtension.SetServiceSslOption(TouchSocket.Core.TouchSocketConfig,TouchSocket.Sockets.ServiceSslOption)">
+            <summary>
+            设置客户端Ssl配置，为Null时则不启用。
+            </summary>
+            <param name="config"></param>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.TouchSocketConfigExtension.UseReuseAddress(TouchSocket.Core.TouchSocketConfig)">
+            <summary>
+            启用端口复用。
+            <para>该配置可在服务器、或客户端在监听端口时，运行监听同一个端口。可以一定程度缓解端口来不及释放的问题</para>
+            </summary>
+            <param name="config"></param>
+            <returns></returns>
+        </member>
+        <member name="F:TouchSocket.Sockets.TouchSocketConfigExtension.EnableBroadcastProperty">
+            <summary>
+            该值指定 System.Net.Sockets.Socket可以发送或接收广播数据包。
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.TouchSocketConfigExtension.UseBroadcast(TouchSocket.Core.TouchSocketConfig)">
+            <summary>
+            该值指定 System.Net.Sockets.Socket可以发送或接收广播数据包。
+            </summary>
+            <param name="config"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.TouchSocketConfigExtension.UseUdpReceive(TouchSocket.Core.TouchSocketConfig)">
+            <summary>
+            当udp作为客户端时，开始接收数据。起作用相当于<see cref="M:TouchSocket.Sockets.TouchSocketConfigExtension.SetBindIPHost(TouchSocket.Core.TouchSocketConfig,TouchSocket.Sockets.IPHost)"/>随机端口。
+            </summary>
+            <param name="config"></param>
+            <returns></returns>
+        </member>
+        <member name="F:TouchSocket.Sockets.TouchSocketConfigExtension.UdpConnResetProperty">
+            <summary>
+            解决Windows下UDP连接被重置错误10054。
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.TouchSocketConfigExtension.UseUdpConnReset(TouchSocket.Core.TouchSocketConfig)">
+            <summary>
+            解决Windows下UDP连接被重置错误10054。
+            </summary>
+            <param name="config"></param>
+            <returns></returns>
+        </member>
+        <member name="T:TouchSocket.Sockets.IClient">
+            <summary>
+            终端接口
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.IClient.Protocol">
+            <summary>
+            终端协议
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.IClient.LastReceivedTime">
+            <summary>
+            最后一次接收到数据的时间
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.IClient.LastSendTime">
+            <summary>
+            最后一次发送数据的时间
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.IClient.IsClient">
+            <summary>
+            表示是否为客户端终端。当为<see langword="true"/>时，表示是客户端。否则为服务器通讯终端。
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Sockets.IClientCollection`1">
+            <summary>
+            客户端集合类
+            </summary>
+            <typeparam name="TClient"></typeparam>
+        </member>
+        <member name="P:TouchSocket.Sockets.IClientCollection`1.Count">
+            <summary>
+            集合长度
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.IClientCollection`1.Item(System.String)">
+            <summary>
+            通过Id查找。如果没有找到，应该返回null。
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.IClientCollection`1.GetIds">
+            <summary>
+            获取Id集合
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.IClientCollection`1.ClientExist(System.String)">
+            <summary>
+            根据Id判断Client是否存在
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.IClientCollection`1.TryGetClient(System.String,`0@)">
+            <summary>
+            尝试获取实例
+            </summary>
+            <param name="id"></param>
+            <param name="client"></param>
+            <returns></returns>
+        </member>
+        <member name="T:TouchSocket.Sockets.IClosableClient">
+            <summary>
+            具有关闭动作的对象。
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.IClosableClient.CloseAsync(System.String)">
+            <summary>
+            关闭客户端。
+            </summary>
+            <param name="msg"></param>
+        </member>
+        <member name="T:TouchSocket.Sockets.IConnectableClient">
+            <summary>
+            具有连接动作的对象
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.IConnectableClient.ConnectAsync(System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            异步连接
+            </summary>
+            <param name="millisecondsTimeout">最大等待时间</param>
+            <param name="token">可取消令箭</param>
+            <exception cref="T:System.TimeoutException"></exception>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="T:TouchSocket.Sockets.IConnectableService">
+            <summary>
+            表示可连接的服务器基类接口
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.IConnectableService.Count">
+            <summary>
+            获取已连接的客户端数量
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.IConnectableService.MaxCount">
+            <summary>
+            获取已配置的最大可连接数量
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.IConnectableService.ClearAsync">
+            <summary>
+            清理（断开）已连接的所有客户端
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.IConnectableService.GetIds">
+            <summary>
+            获取已连接的所有客户端Id集合
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.IConnectableService.ResetIdAsync(System.String,System.String)">
+            <summary>
+            重置指定客户端的Id
+            </summary>
+            <param name="sourceId">源Id</param>
+            <param name="targetId">目标Id</param>
+        </member>
+        <member name="M:TouchSocket.Sockets.IConnectableService.ClientExists(System.String)">
+            <summary>
+            根据Id判断对应的客户端是否存在
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.IConnectableService.GetClients">
+            <summary>
+            获取已连接的所有客户端。
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:TouchSocket.Sockets.IConnectableService`1">
+            <summary>
+            表示可连接的泛型服务器基类接口
+            </summary>
+            <typeparam name="TClient"></typeparam>
+        </member>
+        <member name="P:TouchSocket.Sockets.IConnectableService`1.Clients">
+            <summary>
+            获取已连接的客户端集合。
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Sockets.IIdClient">
+            <summary>
+            具有Id的客户端
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.IIdClient.ResetIdAsync(System.String)">
+            <summary>
+            重新设置Id
+            </summary>
+            <param name="newId"></param>
+        </member>
+        <member name="P:TouchSocket.Sockets.IIdClient.Id">
+            <summary>
+            用于索引的Id
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Sockets.INATSessionClient">
+            <summary>
+            INATSessionClient
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.INATSessionClient.AddTargetClient(TouchSocket.Core.TouchSocketConfig,System.Action{TouchSocket.Sockets.ITcpClient})">
+            <summary>
+            添加转发客户端。
+            </summary>
+            <param name="config">配置文件</param>
+            <param name="setupAction">当完成配置，但是还未连接时回调。</param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.INATSessionClient.AddTargetClientAsync(TouchSocket.Core.TouchSocketConfig,System.Action{TouchSocket.Sockets.ITcpClient})">
+            <summary>
+            添加转发客户端。
+            </summary>
+            <param name="config">配置文件</param>
+            <param name="setupAction">当完成配置，但是还未连接时回调。</param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.INATSessionClient.GetTargetClients">
+            <summary>
+            获取所有目标客户端
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.INATSessionClient.SendToTargetClient(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            发送数据到全部转发端。
+            </summary>
+            <param name="buffer"></param>
+            <param name="offset"></param>
+            <param name="length"></param>
+        </member>
+        <member name="T:TouchSocket.Sockets.IOnlineClient">
+            <summary>
+            标识在线状态的对象
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.IOnlineClient.Online">
+            <summary>
+            判断是否在线
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Sockets.IClientSender">
+            <summary>
+            客户端发送接口
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.IClientSender.SendAsync(System.Collections.Generic.IList{System.ArraySegment{System.Byte}})">
+            <summary>
+            异步组合发送数据。
+            <para>该发送会经过适配器封装，具体封装内容由适配器决定。</para>
+            </summary>
+            <param name="transferBytes">组合数据</param>
+            <exception cref="T:TouchSocket.Sockets.ClientNotConnectedException">客户端没有连接</exception>
+            <exception cref="T:TouchSocket.Core.OverlengthException">发送数据超长</exception>
+            <exception cref="T:System.Exception">其他异常</exception>
+        </member>
+        <member name="T:TouchSocket.Sockets.IIdRequsetInfoSender">
+            <summary>
+            IIdRequsetInfoSender
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.IIdRequsetInfoSender.SendAsync(System.String,TouchSocket.Core.IRequestInfo)">
+            <summary>
+            异步发送数据。
+            <para>在<see cref="T:TouchSocket.Sockets.ITcpClient"/>时，如果使用独立线程发送，则不会触发异常。</para>
+            <para>在<see cref="T:TouchSocket.Sockets.ITcpClientBase"/>时，相当于<see cref="M:System.Net.Sockets.Socket.BeginSend(System.Byte[],System.Int32,System.Int32,System.Net.Sockets.SocketFlags,System.Net.Sockets.SocketError@,System.AsyncCallback,System.Object)"/>。</para>
+            <para>该发送会经过适配器封装，具体封装内容由适配器决定。</para>
+            </summary>
+            <param name="id"></param>
+            <param name="requestInfo">解析对象</param>
+            <exception cref="T:TouchSocket.Sockets.ClientNotConnectedException">客户端没有连接</exception>
+            <exception cref="T:TouchSocket.Core.OverlengthException">发送数据超长</exception>
+            <exception cref="T:System.Exception">其他异常</exception>
+        </member>
+        <member name="T:TouchSocket.Sockets.IIdSender">
+            <summary>
+            通过Id发送
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.IIdSender.SendAsync(System.String,System.ReadOnlyMemory{System.Byte})">
+            <summary>
+            向对应Id的客户端发送
+            </summary>
+            <param name="id">目标Id</param>
+            <param name="buffer">数据</param>
+            <param name="offset">偏移</param>
+            <param name="length">长度</param>
+            <exception cref="T:TouchSocket.Sockets.ClientNotConnectedException">未连接异常</exception>
+            <exception cref="T:TouchSocket.Sockets.ClientNotFindException">未找到Id对应的客户端</exception>
+            <exception cref="T:System.Exception">其他异常</exception>
+        </member>
+        <member name="T:TouchSocket.Sockets.IRequsetInfoSender">
+            <summary>
+            IRequsetInfoSend
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.IRequsetInfoSender.SendAsync(TouchSocket.Core.IRequestInfo)">
+            <summary>
+            异步发送数据。
+            <para>该发送会经过适配器封装，具体封装内容由适配器决定。</para>
+            </summary>
+            <param name="requestInfo">解析对象</param>
+            <exception cref="T:TouchSocket.Sockets.ClientNotConnectedException">客户端没有连接</exception>
+            <exception cref="T:TouchSocket.Core.OverlengthException">发送数据超长</exception>
+            <exception cref="T:System.Exception">其他异常</exception>
+        </member>
+        <member name="T:TouchSocket.Sockets.ISender">
+            <summary>
+            具有发送功能的接口
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.ISender.SendAsync(System.ReadOnlyMemory{System.Byte})">
+            <summary>
+            异步发送数据。
+            <para>该发送会经过适配器封装，具体封装内容由适配器决定。</para>
+            </summary>
+            <param name="memory"></param>
+            <exception cref="T:TouchSocket.Sockets.ClientNotConnectedException">客户端没有连接</exception>
+            <exception cref="T:TouchSocket.Core.OverlengthException">发送数据超长</exception>
+            <exception cref="T:System.Exception">其他异常</exception>
+        </member>
+        <member name="T:TouchSocket.Sockets.IUdpClientSender">
+            <summary>
+            具有Udp终结点的发送
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.IUdpClientSender.SendAsync(System.Net.EndPoint,System.Collections.Generic.IList{System.ArraySegment{System.Byte}})">
+            <summary>
+            异步组合发送数据。
+            <para>该发送会经过适配器封装，具体封装内容由适配器决定。</para>
+            </summary>
+            <param name="endPoint">远程终结点</param>
+            <param name="transferBytes">组合数据</param>
+            <exception cref="T:TouchSocket.Sockets.ClientNotConnectedException">客户端没有连接</exception>
+            <exception cref="T:TouchSocket.Core.OverlengthException">发送数据超长</exception>
+            <exception cref="T:System.Exception">其他异常</exception>
+        </member>
+        <member name="M:TouchSocket.Sockets.IUdpClientSender.SendAsync(System.Net.EndPoint,System.ReadOnlyMemory{System.Byte})">
+            <summary>
+            异步组合发送数据。
+            <para>该发送会经过适配器封装，具体封装内容由适配器决定。</para>
+            </summary>
+            <param name="endPoint">远程终结点</param>
+            <param name="buffer"></param>
+            <param name="offset"></param>
+            <param name="length"></param>
+            <exception cref="T:TouchSocket.Core.OverlengthException">发送数据超长</exception>
+            <exception cref="T:System.Exception">其他异常</exception>
+        </member>
+        <member name="T:TouchSocket.Sockets.IUdpRequsetInfoSender">
+            <summary>
+            IUdpRequsetInfoSender
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.IUdpRequsetInfoSender.SendAsync(System.Net.EndPoint,TouchSocket.Core.IRequestInfo)">
+            <summary>
+            异步发送数据。
+            <para>该发送会经过适配器封装，具体封装内容由适配器决定。</para>
+            </summary>
+            <param name="endPoint"></param>
+            <param name="requestInfo">解析对象</param>
+            <exception cref="T:TouchSocket.Sockets.ClientNotConnectedException">客户端没有连接</exception>
+            <exception cref="T:TouchSocket.Core.OverlengthException">发送数据超长</exception>
+            <exception cref="T:System.Exception">其他异常</exception>
+        </member>
+        <member name="T:TouchSocket.Sockets.IWaitSender">
+            <summary>
+            发送等待接口
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.IWaitSender.SendThenReturnAsync(System.Memory{System.Byte},System.Threading.CancellationToken)">
+            <summary>
+            异步发送
+            </summary>
+            <param name="buffer">数据缓存区</param>
+            <param name="offset">偏移</param>
+            <param name="length">长度</param>
+            <param name="token">取消令箭</param>
+            <exception cref="T:TouchSocket.Sockets.ClientNotConnectedException">客户端没有连接</exception>
+            <exception cref="T:TouchSocket.Core.OverlengthException">发送数据超长</exception>
+            <exception cref="T:System.Exception">其他异常</exception>
+            <returns>返回的数据</returns>
+        </member>
+        <member name="T:TouchSocket.Sockets.IServiceBase">
+            <summary>
+            服务器接口
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.IServiceBase.ServerName">
+            <summary>
+            名称
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.IServiceBase.ServerState">
+            <summary>
+            服务器状态
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.IServiceBase.StartAsync">
+            <summary>
+            异步启动
+            </summary>
+            <exception cref="T:System.Exception"></exception>
+            <exception cref="T:System.ArgumentNullException"></exception>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:TouchSocket.Sockets.IServiceBase.StopAsync">
+            <summary>
+            异步停止
+            </summary>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="T:TouchSocket.Sockets.ISessionClient">
+            <summary>
+            会话客户端
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Sockets.ITcpClient">
+            <summary>
+            Tcp客户端终端接口
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.ITcpClient.Connected">
+            <summary>
+            成功连接到服务器
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.ITcpClient.Connecting">
+            <summary>
+            准备连接的时候
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.ITcpClient.Closed">
+            <summary>
+            断开连接
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.ITcpClient.Closing">
+            <summary>
+            即将断开连接(仅主动断开时有效)。
+            <para>
+            </para>
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.ITcpClient.Received">
+            <summary>
+            接收到数据
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Sockets.ITcpConnectableClient">
+            <summary>
+            Tcp连接动作的接口
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.ITcpConnectableClient.RemoteIPHost">
+            <summary>
+            远程IPHost。
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Sockets.ITcpListenableClient">
+            <summary>
+            ITcpListenableClient
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.ITcpListenableClient.Service">
+            <summary>
+            包含此辅助类的主服务器类
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.ITcpListenableClient.ServiceIP">
+            <summary>
+            接收此客户端的服务器IP地址
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.ITcpListenableClient.ServicePort">
+            <summary>
+            接收此客户端的服务器端口
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.ITcpListenableClient.ListenOption">
+            <summary>
+            监听配置。
+            <para>
+            注意：一般情况下不要随意修改该值。
+            </para>
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Sockets.ITcpService">
+            <summary>
+            Tcp系列服务器接口
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Sockets.ITcpServiceBase">
+            <summary>
+            Tcp服务器接口
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.ITcpServiceBase.Monitors">
+            <summary>
+            网络监听集合
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.ITcpServiceBase.AddListen(TouchSocket.Sockets.TcpListenOption)">
+            <summary>
+            添加一个地址监听。支持在服务器运行过程中动态添加。
+            </summary>
+            <param name="options"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.ITcpServiceBase.RemoveListen(TouchSocket.Sockets.TcpNetworkMonitor)">
+            <summary>
+            移除一个地址监听。支持在服务器运行过程中动态移除。
+            </summary>
+            <param name="monitor">监听器</param>
+            <returns>返回是否已成功移除</returns>
+        </member>
+        <member name="T:TouchSocket.Sockets.ITcpServiceBase`1">
+            <summary>
+            Tcp服务器接口
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Sockets.ITcpService`1">
+            <summary>
+            Tcp系列服务器接口
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.ITcpService`1.Connected">
+            <summary>
+            用户连接完成
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.ITcpService`1.Connecting">
+            <summary>
+            有用户连接的时候
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.ITcpService`1.Closed">
+            <summary>
+            有用户断开连接
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.ITcpService`1.Closing">
+            <summary>
+            即将断开连接(仅主动断开时有效)。
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Sockets.ITcpSession">
+            <summary>
+            表示Tcp连接链路
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.ITcpSession.DataHandlingAdapter">
+            <summary>
+            数据处理适配器
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.ITcpSession.IP">
+            <summary>
+            IP地址
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.ITcpSession.MainSocket">
+            <summary>
+            主通信器
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.ITcpSession.Port">
+            <summary>
+            端口号
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.ITcpSession.UseSsl">
+            <summary>
+            使用Ssl加密
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Sockets.ITcpSessionClient">
+            <summary>
+            服务器辅助类接口
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.ITcpSessionClient.Closed">
+            <summary>
+            断开连接
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.ITcpSessionClient.Closing">
+            <summary>
+            即将断开连接(仅主动断开时有效)。
+            <para>
+            </para>
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Sockets.IUdpSession">
+            <summary>
+            UDP会话
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.IUdpSession.DataHandlingAdapter">
+            <summary>
+            数据处理适配器
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Sockets.ITcpClientBase">
+            <inheritdoc/>
+        </member>
+        <member name="T:TouchSocket.Sockets.ISocketClient">
+            <inheritdoc/>
+        </member>
+        <member name="T:TouchSocket.Sockets.SocketClient">
+            <inheritdoc/>
+        </member>
+        <member name="T:TouchSocket.Sockets.TcpClientSlim">
+            <summary>
+            轻量级Tcp客户端
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Sockets.ITcpDisconnectedPlugin`1">
+            <summary>
+            ITcpDisconnectedPlugin
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Sockets.ITcpDisconnectedPlugin">
+            <summary>
+            ITcpDisconnectedPlugin
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Sockets.ITcpDisconnectingPlugin`1">
+            <summary>
+            ITcpDisconnectingPlugin
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Sockets.ITcpDisconnectingPlugin">
+            <summary>
+            ITcpDisconnectingPlugin
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Sockets.DisconnectEventArgs">
+            <summary>
+            DisconnectEventArgs
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Sockets.CheckClearPlugin`1">
+            <summary>
+            检查清理连接插件。服务器与客户端均适用。
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.CheckClearPlugin`1.#ctor(TouchSocket.Core.ILog)">
+            <summary>
+            检查清理连接插件。服务器与客户端均适用。
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.CheckClearPlugin`1.CheckClearType">
+            <summary>
+            清理统计类型。默认为：<see cref="F:TouchSocket.Sockets.CheckClearType.All"/>。当设置为<see cref="F:TouchSocket.Sockets.CheckClearType.OnlySend"/>时，
+            则只检验发送方向是否有数据流动。没有的话则会断开连接。
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.CheckClearPlugin`1.OnClose">
+            <summary>
+            当因为超出时间限定而关闭。
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.CheckClearPlugin`1.Tick">
+            <summary>
+            获取或设置清理无数据交互的Client，默认60秒。
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.CheckClearPlugin`1.SetCheckClearType(TouchSocket.Sockets.CheckClearType)">
+            <summary>
+            清理统计类型。默认为：<see cref="F:TouchSocket.Sockets.CheckClearType.All"/>。当设置为<see cref="F:TouchSocket.Sockets.CheckClearType.OnlySend"/>时，
+            则只检验发送方向是否有数据流动。没有的话则会断开连接。
+            </summary>
+            <param name="clearType"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.CheckClearPlugin`1.SetOnClose(System.Action{`0,TouchSocket.Sockets.CheckClearType})">
+            <summary>
+            当因为超出时间限定而关闭。
+            </summary>
+            <param name="action"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.CheckClearPlugin`1.SetTick(System.TimeSpan)">
+            <summary>
+            设置清理无数据交互的Client，默认60秒。
+            </summary>
+            <param name="timeSpan"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.CheckClearPlugin`1.Loaded(TouchSocket.Core.IPluginManager)">
+            <inheritdoc/>
+        </member>
+        <member name="T:TouchSocket.Sockets.HeartbeatPlugin">
+            <summary>
+            HeartbeatPlugin
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.HeartbeatPlugin.MaxFailCount">
+            <summary>
+            最大失败次数，默认3。
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.HeartbeatPlugin.Tick">
+            <summary>
+            心跳间隔。默认3秒。
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Sockets.IIdChangedPlugin`1">
+            <summary>
+            IIdChangedPlugin
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.IIdChangedPlugin`1.OnIdChanged(`0,TouchSocket.Sockets.IdChangedEventArgs)">
+            <summary>
+            当Client的Id被更改后触发
+            </summary>
+            <param name="client"></param>
+            <param name="e"></param>
+            <returns></returns>
+        </member>
+        <member name="T:TouchSocket.Sockets.IIdChangedPlugin">
+            <summary>
+            IIdChangedPlugin
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Sockets.IServerStartedPlugin`1">
+            <summary>
+            IServerStartedPlugin
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.IServerStartedPlugin`1.OnServerStarted(`0,TouchSocket.Sockets.ServiceStateEventArgs)">
+            <summary>
+            当服务器执行<see cref="M:TouchSocket.Sockets.IServiceBase.StartAsync"/>后时。
+            <para>
+            注意：此处并不表示服务器成功启动，具体状态请看<see cref="P:TouchSocket.Sockets.ServiceStateEventArgs.ServerState"/>
+            </para>
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="T:TouchSocket.Sockets.IServerStartedPlugin">
+            <summary>
+            IServerStartedPlugin
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Sockets.IServerStopedPlugin`1">
+            <summary>
+            IServerStopedPlugin
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.IServerStopedPlugin`1.OnServerStoped(`0,TouchSocket.Sockets.ServiceStateEventArgs)">
+            <summary>
+            当服务器调用<see cref="M:TouchSocket.Sockets.IServiceBase.StopAsync"/>或者<see cref="M:System.IDisposable.Dispose"/>时
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="T:TouchSocket.Sockets.IServerStopedPlugin">
+            <summary>
+            IServerStopedPlugin
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Sockets.ITcpClosedPlugin`1">
+            <summary>
+            具有断开连接的插件接口
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.ITcpClosedPlugin`1.OnTcpClosed(`0,TouchSocket.Sockets.ClosedEventArgs)">
+            <summary>
+            会话断开后触发
+            </summary>
+            <param name="client"></param>
+            <param name="e"></param>
+            <returns></returns>
+        </member>
+        <member name="T:TouchSocket.Sockets.ITcpClosedPlugin">
+            <summary>
+            ITcpDisconnectedPlugin
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Sockets.ITcpClosingPlugin`1">
+            <summary>
+            即将断开连接(仅主动断开时有效)。
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.ITcpClosingPlugin`1.OnTcpClosing(`0,TouchSocket.Sockets.ClosingEventArgs)">
+            <summary>
+            即将断开连接(仅主动断开时有效)。
+            </summary>
+            <param name="client"></param>
+            <param name="e"></param>
+            <returns></returns>
+        </member>
+        <member name="T:TouchSocket.Sockets.ITcpClosingPlugin">
+            <summary>
+            ITcpClosingPlugin
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Sockets.ITcpConnectedPlugin`1">
+            <summary>
+            具有完成连接动作的插件接口
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.ITcpConnectedPlugin`1.OnTcpConnected(`0,TouchSocket.Sockets.ConnectedEventArgs)">
+            <summary>
+            客户端连接成功后触发
+            </summary>
+            <param name="client"></param>
+            <param name="e"></param>
+            <returns></returns>
+        </member>
+        <member name="T:TouchSocket.Sockets.ITcpConnectedPlugin">
+            <summary>
+            ITcpConnectedPlugin
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Sockets.ITcpConnectingPlugin`1">
+            <summary>
+            具有预备连接的插件接口
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.ITcpConnectingPlugin`1.OnTcpConnecting(`0,TouchSocket.Sockets.ConnectingEventArgs)">
+            <summary>
+            在即将完成连接时触发。
+            </summary>
+            <param name="client"></param>
+            <param name="e"></param>
+            <returns></returns>
+        </member>
+        <member name="T:TouchSocket.Sockets.ITcpConnectingPlugin">
+            <summary>
+            ITcpConnectingPlugin
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Sockets.ITcpReceivedPlugin`1">
+            <summary>
+            ITcpReceivedPlugin
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.ITcpReceivedPlugin`1.OnTcpReceived(`0,TouchSocket.Sockets.ReceivedDataEventArgs)">
+            <summary>
+            在收到数据时触发
+            </summary>
+            <param name="client"></param>
+            <param name="e"></param>
+            <returns></returns>
+        </member>
+        <member name="T:TouchSocket.Sockets.ITcpReceivedPlugin">
+            <summary>
+            ITcpReceivedPlugin
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Sockets.ITcpReceivingPlugin`1">
+            <summary>
+            ITcpReceivingPlugin
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.ITcpReceivingPlugin`1.OnTcpReceiving(`0,TouchSocket.Sockets.ByteBlockEventArgs)">
+            <summary>
+            在刚收到数据时触发，即在适配器之前。
+            </summary>
+            <param name="client"></param>
+            <param name="e"></param>
+            <returns></returns>
+        </member>
+        <member name="T:TouchSocket.Sockets.ITcpReceivingPlugin">
+            <summary>
+            ITcpReceivingPlugin
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Sockets.ITcpSendingPlugin`1">
+            <summary>
+            ITcpSendingPlugin
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.ITcpSendingPlugin`1.OnTcpSending(`0,TouchSocket.Sockets.SendingEventArgs)">
+            <summary>
+            当即将发送数据时，调用该方法在适配器之后，接下来即会发送数据。
+            </summary>
+            <param name="client"></param>
+            <param name="e"></param>
+            <returns></returns>
+        </member>
+        <member name="T:TouchSocket.Sockets.ITcpSendingPlugin">
+            <summary>
+            ITcpSendingPlugin
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Sockets.IUdpReceivedPlugin`1">
+            <summary>
+            IUdpReceivedPlugin
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.IUdpReceivedPlugin`1.OnUdpReceived(`0,TouchSocket.Sockets.UdpReceivedDataEventArgs)">
+            <summary>
+            在收到数据时触发
+            </summary>
+            <param name="client"></param>
+            <param name="e"></param>
+            <returns></returns>
+        </member>
+        <member name="T:TouchSocket.Sockets.IUdpReceivedPlugin">
+            <summary>
+            IUdpReceivedPlugin
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Sockets.ReconnectionPlugin`1">
+            <summary>
+            重连插件
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.ReconnectionPlugin`1.#ctor">
+            <summary>
+            重连插件
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.ReconnectionPlugin`1.ActionForCheck">
+            <summary>
+            每个周期可执行的委托。用于检验客户端活性。返回true表示存活，返回
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.ReconnectionPlugin`1.ActionForConnect">
+            <summary>
+            ActionForConnect
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.ReconnectionPlugin`1.Tick">
+            <summary>
+            检验时间间隔
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.ReconnectionPlugin`1.SetActionForCheck(System.Func{`0,System.Int32,System.Threading.Tasks.Task{System.Nullable{System.Boolean}}})">
+            <summary>
+            每个周期可执行的委托。返回值为True标识客户端存活。返回False，表示失活，立即重连。返回null时，表示跳过此次检验。
+            </summary>
+            <param name="actionForCheck"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.ReconnectionPlugin`1.SetActionForCheck(System.Func{`0,System.Int32,System.Nullable{System.Boolean}})">
+            <summary>
+            每个周期可执行的委托。返回值为True标识客户端存活。返回False，表示失活，立即重连。返回null时，表示跳过此次检验。
+            </summary>
+            <param name="actionForCheck"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.ReconnectionPlugin`1.SetConnectAction(System.Func{`0,System.Threading.Tasks.Task{System.Boolean}})">
+            <summary>
+            设置连接动作
+            </summary>
+            <param name="tryConnect"></param>
+            <returns>无论如何，只要返回True，则结束本轮尝试</returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.ReconnectionPlugin`1.SetConnectAction(System.Func{`0,System.Boolean})">
+            <summary>
+            设置连接动作
+            </summary>
+            <param name="tryConnect"></param>
+            <returns>无论如何，只要返回True，则结束本轮尝试</returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.ReconnectionPlugin`1.UsePolling(System.TimeSpan)">
+            <summary>
+            使用轮询保持活性。
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.ReconnectionPlugin`1.Loaded(TouchSocket.Core.IPluginManager)">
+            <inheritdoc/>
+        </member>
+        <member name="T:TouchSocket.Sockets.TcpCommandLinePlugin">
+            <summary>
+            Tcp命令行插件。
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpCommandLinePlugin.#ctor(TouchSocket.Core.ILog)">
+            <summary>
+            Tcp命令行插件。
+            </summary>
+            <param name="logger"></param>
+            <exception cref="T:System.ArgumentNullException"></exception>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpCommandLinePlugin.Converter">
+            <summary>
+            字符串转换器，默认支持基础类型和Json。可以自定义。
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.TcpCommandLinePlugin.ReturnException">
+            <summary>
+            是否返回执行异常。
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpCommandLinePlugin.NoReturnException">
+            <summary>
+            当有执行异常时，不返回异常。
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.TcpCommandLinePlugin.OnTcpReceived(TouchSocket.Sockets.ITcpSession,TouchSocket.Sockets.ReceivedDataEventArgs)">
+            <inheritdoc/>
+        </member>
+        <member name="T:TouchSocket.Sockets.InternalUdpReceiver">
+            <summary>
+            Receiver
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.InternalUdpReceiver.#ctor(TouchSocket.Sockets.IReceiverClient{TouchSocket.Sockets.IUdpReceiverResult})">
+            <summary>
+            Receiver
+            </summary>
+            <param name="client"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.InternalUdpReceiver.ReadAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Sockets.InternalUdpReceiver.ValueReadAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Sockets.InternalUdpReceiver.InputReceive(System.Net.EndPoint,TouchSocket.Core.ByteBlock,TouchSocket.Core.IRequestInfo)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Sockets.InternalUdpReceiver.Dispose(System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="T:TouchSocket.Sockets.IReceiver`1">
+            <summary>
+            IReceiver
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.IReceiver`1.ReadAsync(System.Threading.CancellationToken)">
+            <summary>
+            异步等待并读取
+            </summary>
+            <param name="token"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.IReceiver`1.ValueReadAsync(System.Threading.CancellationToken)">
+            <summary>
+            值异步等待并读取
+            </summary>
+            <param name="token"></param>
+            <returns></returns>
+        </member>
+        <member name="T:TouchSocket.Sockets.IReceiverClient`1">
+            <summary>
+            IReceiverClient
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.IReceiverClient`1.CreateReceiver">
+            <summary>
+            获取一个同步数据接收器
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.IReceiverClient`1.ClearReceiver">
+            <summary>
+            移除同步数据接收器
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.IReceiverResult.ByteBlock">
+            <summary>
+            字节块
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.IReceiverResult.RequestInfo">
+            <summary>
+            数据对象
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Sockets.UdpReceiverResult">
+            <summary>
+            ReceiverResult
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Sockets.IWaitingClient`2">
+            <summary>
+            等待型客户端。
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.IWaitingClient`2.WaitingOptions">
+            <summary>
+            等待设置。
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.IWaitingClient`2.Client">
+            <summary>
+            客户端终端
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.IWaitingClient`2.SendThenResponseAsync(System.ReadOnlyMemory{System.Byte},System.Threading.CancellationToken)">
+            <summary>
+            异步发送
+            </summary>
+            <param name="memory"></param>
+            <param name="token">取消令箭</param>
+            <exception cref="T:TouchSocket.Sockets.ClientNotConnectedException">客户端没有连接</exception>
+            <exception cref="T:TouchSocket.Core.OverlengthException">发送数据超长</exception>
+            <exception cref="T:System.Exception">其他异常</exception>
+            <returns>返回的数据</returns>
+        </member>
+        <member name="T:TouchSocket.Sockets.ResponsedData">
+            <summary>
+            响应数据。
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.ResponsedData.#ctor(System.Byte[],TouchSocket.Core.IRequestInfo)">
+            <summary>
+            构造函数
+            </summary>
+            <param name="data"></param>
+            <param name="requestInfo"></param>
+        </member>
+        <member name="P:TouchSocket.Sockets.ResponsedData.Data">
+            <summary>
+            数据
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.ResponsedData.RequestInfo">
+            <summary>
+            RequestInfo
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Sockets.WaitingClientExtension">
+            <summary>
+            WaitingClientExtensions
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.WaitingClientExtension.CreateWaitingClient``2(``0,TouchSocket.Sockets.WaitingOptions)">
+            <summary>
+            创建可等待的客户端。
+            </summary>
+            <typeparam name="TClient"></typeparam>
+            <param name="client"></param>
+            <param name="waitingOptions"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.WaitingClientExtension.SendThenResponseAsync``2(TouchSocket.Sockets.IWaitingClient{``0,``1},System.String,System.Threading.CancellationToken)">
+            <summary>
+            发送数据并等待
+            </summary>
+            <param name="client"></param>
+            <param name="msg"></param>
+            <param name="token">取消令箭</param>
+            <exception cref="T:TouchSocket.Sockets.ClientNotConnectedException">客户端没有连接</exception>
+            <exception cref="T:TouchSocket.Core.OverlengthException">发送数据超长</exception>
+            <exception cref="T:System.Exception">其他异常</exception>
+            <returns>返回的数据</returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.WaitingClientExtension.SendThenResponseAsync``2(TouchSocket.Sockets.IWaitingClient{``0,``1},System.String,System.Int32)">
+            <summary>
+            发送数据并等待
+            </summary>
+            <param name="client"></param>
+            <param name="msg"></param>
+            <param name="millisecondsTimeout">超时时间</param>
+            <exception cref="T:TouchSocket.Sockets.ClientNotConnectedException">客户端没有连接</exception>
+            <exception cref="T:TouchSocket.Core.OverlengthException">发送数据超长</exception>
+            <exception cref="T:System.Exception">其他异常</exception>
+            <returns>返回的数据</returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.WaitingClientExtension.SendThenResponseAsync``2(TouchSocket.Sockets.IWaitingClient{``0,``1},System.Memory{System.Byte},System.Int32)">
+            <summary>
+            发送数据并等待
+            </summary>
+            <typeparam name="TClient">客户端泛型</typeparam>
+            <param name="client">客户端</param>
+            <param name="buffer">数据区</param>
+            <param name="offset">数据偏移</param>
+            <param name="length">长度</param>
+            <param name="millisecondsTimeout">超时时间</param>
+            <returns></returns>
+            <exception cref="T:System.TimeoutException"></exception>
+        </member>
+        <member name="M:TouchSocket.Sockets.WaitingClientExtension.SendThenResponse``2(TouchSocket.Sockets.IWaitingClient{``0,``1},System.Byte[],System.Threading.CancellationToken)">
+            <summary>
+            发送数据并等待
+            </summary>
+            <param name="client"></param>
+            <param name="buffer">数据缓存区</param>
+            <param name="token">取消令箭</param>
+            <exception cref="T:TouchSocket.Sockets.ClientNotConnectedException">客户端没有连接</exception>
+            <exception cref="T:TouchSocket.Core.OverlengthException">发送数据超长</exception>
+            <exception cref="T:System.Exception">其他异常</exception>
+            <returns>返回的数据</returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.WaitingClientExtension.SendThenResponse``2(TouchSocket.Sockets.IWaitingClient{``0,``1},System.String,System.Threading.CancellationToken)">
+            <summary>
+            发送数据并等待
+            </summary>
+            <param name="client"></param>
+            <param name="msg"></param>
+            <param name="token">取消令箭</param>
+            <exception cref="T:TouchSocket.Sockets.ClientNotConnectedException">客户端没有连接</exception>
+            <exception cref="T:TouchSocket.Core.OverlengthException">发送数据超长</exception>
+            <exception cref="T:System.Exception">其他异常</exception>
+            <returns>返回的数据</returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.WaitingClientExtension.SendThenResponse``2(TouchSocket.Sockets.IWaitingClient{``0,``1},System.String,System.Int32)">
+            <summary>
+            发送数据并等待
+            </summary>
+            <param name="client"></param>
+            <param name="msg"></param>
+            <param name="millisecondsTimeout"></param>
+            <exception cref="T:TouchSocket.Sockets.ClientNotConnectedException">客户端没有连接</exception>
+            <exception cref="T:TouchSocket.Core.OverlengthException">发送数据超长</exception>
+            <exception cref="T:System.Exception">其他异常</exception>
+            <returns>返回的数据</returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.WaitingClientExtension.SendThenResponse``2(TouchSocket.Sockets.IWaitingClient{``0,``1},TouchSocket.Core.ByteBlock,System.Threading.CancellationToken)">
+            <summary>
+            发送数据并等待
+            </summary>
+            <param name="client"></param>
+            <param name="byteBlock">数据块载体</param>
+            <param name="token">取消令箭</param>
+            <exception cref="T:TouchSocket.Sockets.ClientNotConnectedException">客户端没有连接</exception>
+            <exception cref="T:TouchSocket.Core.OverlengthException">发送数据超长</exception>
+            <exception cref="T:System.Exception">其他异常</exception>
+            <returns>返回的数据</returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.WaitingClientExtension.SendThenResponse``2(TouchSocket.Sockets.IWaitingClient{``0,``1},System.Memory{System.Byte},System.Int32)">
+            <summary>
+            发送数据并等待
+            </summary>
+            <typeparam name="TClient">客户端</typeparam>
+            <param name="client"></param>
+            <param name="buffer"></param>
+            <param name="offset"></param>
+            <param name="length"></param>
+            <param name="millisecondsTimeout"></param>
+            <returns></returns>
+            <exception cref="T:System.TimeoutException"></exception>
+        </member>
+        <member name="T:TouchSocket.Sockets.WaitingOptions">
+            <summary>
+            等待设置
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.WaitingOptions.RemoteIPHost">
+            <summary>
+            远程地址(仅在Udp模式下生效)
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.WaitingOptions.FilterFunc">
+            <summary>
+            筛选函数
+            </summary>
+        </member>
+        <member name="T:TouchSocket.Sockets.InternalClientCollection`1">
+            <summary>
+            ClientCollection
+            </summary>
+            <typeparam name="TClient"></typeparam>
+        </member>
+        <member name="M:TouchSocket.Sockets.InternalClientCollection`1.ClientExist(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Sockets.InternalClientCollection`1.GetIds">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Sockets.InternalClientCollection`1.TryAdd(`0)">
+            <summary>
+            添加客户端
+            </summary>
+            <param name="client"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TouchSocket.Sockets.InternalClientCollection`1.TryGetClient(System.String,`0@)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Sockets.InternalClientCollection`1.TryRemove(System.String,`0@)">
+            <summary>
+            移除对应客户端
+            </summary>
+            <param name="id"></param>
+            <param name="client"></param>
+            <returns></returns>
+        </member>
+        <member name="T:TouchSocket.Sockets.InternalReceiver">
+            <summary>
+            Receiver
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.InternalReceiver.#ctor(TouchSocket.Sockets.IReceiverClient{TouchSocket.Sockets.IReceiverResult})">
+            <summary>
+            Receiver
+            </summary>
+            <param name="client"></param>
+        </member>
+        <member name="M:TouchSocket.Sockets.InternalReceiver.ReadAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Sockets.InternalReceiver.ValueReadAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Sockets.InternalReceiver.InputReceive(TouchSocket.Core.ByteBlock,TouchSocket.Core.IRequestInfo)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TouchSocket.Sockets.InternalReceiver.Dispose(System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="T:TouchSocket.Sockets.InternalReceiverResult">
+            <summary>
+            ReceiverResult
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.InternalReceiverResult.#ctor(System.Action)">
+            <summary>
+            ReceiverResult
+            </summary>
+            <param name="disAction"></param>
+        </member>
+        <member name="P:TouchSocket.Sockets.InternalReceiverResult.ByteBlock">
+            <summary>
+            字节块
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Sockets.InternalReceiverResult.RequestInfo">
+            <summary>
+            数据对象
+            </summary>
+        </member>
+        <member name="M:TouchSocket.Sockets.InternalReceiverResult.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="T:TouchSocket.Resources.TouchSocketResource">
+            <summary>
+              一个强类型的资源类，用于查找本地化的字符串等。
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Resources.TouchSocketResource.ResourceManager">
+            <summary>
+              返回此类使用的缓存的 ResourceManager 实例。
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Resources.TouchSocketResource.Culture">
+            <summary>
+              重写当前线程的 CurrentUICulture 属性，对
+              使用此强类型资源类的所有资源查找执行重写。
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Resources.TouchSocketResource.CannotSendRequestInfo">
+            <summary>
+              查找类似 当前适配器为空或者不支持对象（IRequestInfo）发送。 的本地化字符串。
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Resources.TouchSocketResource.ClientNotConnected">
+            <summary>
+              查找类似 客户端没有连接。 的本地化字符串。
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Resources.TouchSocketResource.ClientNotFind">
+            <summary>
+              查找类似 没有找到Id为‘{0}’的客户端。 的本地化字符串。
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Resources.TouchSocketResource.ConnectedMaximum">
+            <summary>
+              查找类似 已连接的客户端数量已达到设定（{0}）最大值。 的本地化字符串。
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Resources.TouchSocketResource.DisposeClose">
+            <summary>
+              查找类似 调用Dispose主动断开。 的本地化字符串。
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Resources.TouchSocketResource.IdAlreadyExists">
+            <summary>
+              查找类似 Id为‘{0}’的客户端已存在。 的本地化字符串。
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Resources.TouchSocketResource.IncompleteDataTransmission">
+            <summary>
+              查找类似 发送数据不完全。 的本地化字符串。
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Resources.TouchSocketResource.RemoteDisconnects">
+            <summary>
+              查找类似 远程终端主动断开。 的本地化字符串。
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Resources.TouchSocketResource.SocketHaveToConnected">
+            <summary>
+              查找类似 新的Socket必须在连接状态。 的本地化字符串。
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Resources.TouchSocketResource.TimedoutWithoutAll">
+            <summary>
+              查找类似 超时无数据交互，主动断开连接。 的本地化字符串。
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Resources.TouchSocketResource.TimedoutWithoutReceiving">
+            <summary>
+              查找类似 超时无数据Receive交互，主动断开连接。 的本地化字符串。
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Resources.TouchSocketResource.TimedoutWithoutSending">
+            <summary>
+              查找类似 超时无数据Send交互，主动断开连接。 的本地化字符串。
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Resources.TouchSocketResource.UdpStopped">
+            <summary>
+              查找类似 Udp不在运行状态。 的本地化字符串。
+            </summary>
+        </member>
+        <member name="P:TouchSocket.Resources.TouchSocketResource.UnableToObtainEndpoint">
+            <summary>
+              查找类似 无法获取终结点。 的本地化字符串。
+            </summary>
+        </member>
+    </members>
+</doc>

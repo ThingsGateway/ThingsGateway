@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -8,9 +7,6 @@
 //  使用文档：https://kimdiego2098.github.io/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
-
-
-
 
 using Mapster;
 
@@ -21,7 +17,6 @@ using Newtonsoft.Json.Linq;
 
 using System.Text;
 
-using ThingsGateway.Admin.Application;
 using ThingsGateway.Foundation;
 using ThingsGateway.Foundation.Extension.Collection;
 using ThingsGateway.Foundation.Extension.Generic;
@@ -42,7 +37,6 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
 
     private EasyLock ConnectLock = new();
 
-
     protected override void VariableChange(VariableRunTime variableRunTime, VariableData variable)
     {
         AddQueueVarModel(new(variable));
@@ -61,18 +55,17 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
         base.AlarmChange(alarmVariable);
     }
 
-    protected override ValueTask<IOperResult> UpdateAlarmModel(IEnumerable<CacheDBItem<AlarmVariable>> item, CancellationToken cancellationToken)
+    protected override ValueTask<OperResult> UpdateAlarmModel(IEnumerable<CacheDBItem<AlarmVariable>> item, CancellationToken cancellationToken)
     {
         return UpdateAlarmModel(item.Select(a => a.Value), cancellationToken);
     }
 
-
-    protected override ValueTask<IOperResult> UpdateDevModel(IEnumerable<CacheDBItem<DeviceData>> item, CancellationToken cancellationToken)
+    protected override ValueTask<OperResult> UpdateDevModel(IEnumerable<CacheDBItem<DeviceData>> item, CancellationToken cancellationToken)
     {
         return UpdateDevModel(item.Select(a => a.Value), cancellationToken);
     }
 
-    protected override ValueTask<IOperResult> UpdateVarModel(IEnumerable<CacheDBItem<VariableData>> item, CancellationToken cancellationToken)
+    protected override ValueTask<OperResult> UpdateVarModel(IEnumerable<CacheDBItem<VariableData>> item, CancellationToken cancellationToken)
     {
         return UpdateVarModel(item.Select(a => a.Value), cancellationToken);
     }
@@ -81,13 +74,13 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
 
     #region private
 
-    private ValueTask<IOperResult> UpdateAlarmModel(IEnumerable<AlarmVariable> item, CancellationToken cancellationToken)
+    private ValueTask<OperResult> UpdateAlarmModel(IEnumerable<AlarmVariable> item, CancellationToken cancellationToken)
     {
         List<TopicJson> topicJsonList = GetAlarms(item);
         return Update(topicJsonList, cancellationToken);
     }
 
-    private async ValueTask<IOperResult> Update(List<TopicJson> topicJsonList, CancellationToken cancellationToken)
+    private async ValueTask<OperResult> Update(List<TopicJson> topicJsonList, CancellationToken cancellationToken)
     {
         foreach (var topicJson in topicJsonList)
         {
@@ -108,13 +101,13 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
         return OperResult.Success;
     }
 
-    private ValueTask<IOperResult> UpdateDevModel(IEnumerable<DeviceData> item, CancellationToken cancellationToken)
+    private ValueTask<OperResult> UpdateDevModel(IEnumerable<DeviceData> item, CancellationToken cancellationToken)
     {
         List<TopicJson> topicJsonList = GetDeviceData(item);
         return Update(topicJsonList, cancellationToken);
     }
 
-    private ValueTask<IOperResult> UpdateVarModel(IEnumerable<VariableData> item, CancellationToken cancellationToken)
+    private ValueTask<OperResult> UpdateVarModel(IEnumerable<VariableData> item, CancellationToken cancellationToken)
     {
         List<TopicJson> topicJsonList = GetVariable(item);
         return Update(topicJsonList, cancellationToken);
@@ -167,7 +160,7 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
         var rpcDatas = Encoding.UTF8.GetString(args.ApplicationMessage.PayloadSegment).FromJsonNetString<Dictionary<string, JToken>>();
         if (rpcDatas == null)
             return;
-        Dictionary<string, IOperResult> mqttRpcResult = await GetResult(args, rpcDatas).ConfigureAwait(false);
+        Dictionary<string, OperResult> mqttRpcResult = await GetResult(args, rpcDatas).ConfigureAwait(false);
         try
         {
             var isConnect = await TryMqttClientAsync(CancellationToken.None).ConfigureAwait(false);
@@ -184,9 +177,9 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
         }
     }
 
-    private async ValueTask<Dictionary<string, IOperResult>> GetResult(MqttApplicationMessageReceivedEventArgs args, Dictionary<string, JToken> rpcDatas)
+    private async ValueTask<Dictionary<string, OperResult>> GetResult(MqttApplicationMessageReceivedEventArgs args, Dictionary<string, JToken> rpcDatas)
     {
-        var mqttRpcResult = new Dictionary<string, IOperResult>();
+        var mqttRpcResult = new Dictionary<string, OperResult>();
         try
         {
             foreach (var rpcData in rpcDatas)
@@ -239,13 +232,13 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
         }
     }
 
-    private async ValueTask<IOperResult> TryMqttClientAsync(CancellationToken cancellationToken)
+    private async ValueTask<OperResult> TryMqttClientAsync(CancellationToken cancellationToken)
     {
         if (_mqttClient?.IsConnected == true)
             return OperResult.Success;
         return await Cilent().ConfigureAwait(false);
 
-        async ValueTask<IOperResult> Cilent()
+        async ValueTask<OperResult> Cilent()
         {
             if (_mqttClient?.IsConnected == true)
                 return OperResult.Success;
@@ -289,7 +282,7 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
     /// <summary>
     /// 上传mqtt，返回上传结果
     /// </summary>
-    private async ValueTask<IOperResult> MqttUpAsync(string topic, string payLoad, CancellationToken cancellationToken)
+    private async ValueTask<OperResult> MqttUpAsync(string topic, string payLoad, CancellationToken cancellationToken)
     {
         try
         {

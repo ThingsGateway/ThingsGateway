@@ -13,31 +13,31 @@ namespace ThingsGateway.Foundation.Modbus;
 /// <inheritdoc/>
 internal class ModbusRtuServerDataHandleAdapter : ReadWriteDevicesSingleStreamDataHandleAdapter<ModbusRtuServerMessage>
 {
-    /// <inheritdoc/>
-    public override void PackCommand(ISendMessage item)
+    public ModbusRtuServerDataHandleAdapter()
     {
-        ModbusHelper.AddCrc(item);
-
+        IsSendPackCommand = true;
     }
 
+    public override byte[] PackCommand(ISendMessage item)
+    {
+        return ModbusHelper.AddCrc(item);
+    }
 
     /// <inheritdoc/>
-    protected override AdapterResult UnpackResponse(ModbusRtuServerMessage request)
+    protected override AdapterResult UnpackResponse(ModbusRtuServerMessage request, IByteBlock byteBlock)
     {
-        var response = request.ReceivedByteBlock;
-        var result = ModbusHelper.CheckCrc(response);
+        var result = ModbusHelper.CheckCrc(byteBlock);
         request.OperCode = result.OperCode;
         request.ErrorMessage = result.ErrorMessage;
         if (result.IsSuccess)
         {
-            response.Pos = 0;
-            var bytes = ModbusHelper.ModbusServerAnalysisAddressValue(request, response);
-            return new AdapterResult() { FilterResult = FilterResult.Success, Bytes = bytes };
+            byteBlock.Position = 0;
+            var bytes = ModbusHelper.ModbusServerAnalysisAddressValue(request, byteBlock);
+            return new AdapterResult() { FilterResult = FilterResult.Success, Content = bytes };
         }
         else
         {
-            return new AdapterResult() { FilterResult = FilterResult.Success, Bytes = null };
+            return new AdapterResult() { FilterResult = FilterResult.Success };
         }
-
     }
 }

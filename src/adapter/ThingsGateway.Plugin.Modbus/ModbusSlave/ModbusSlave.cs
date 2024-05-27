@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -8,9 +7,6 @@
 //  使用文档：https://kimdiego2098.github.io/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
-
-
-
 
 using Microsoft.Extensions.Localization;
 
@@ -24,10 +20,11 @@ using System.Collections.Concurrent;
 
 using ThingsGateway.Admin.Application;
 using ThingsGateway.Core.Extension;
+using ThingsGateway.Core.Json.Extension;
 using ThingsGateway.Foundation.Modbus;
 using ThingsGateway.Gateway.Application;
-using ThingsGateway.Gateway.Application.Generic;
 
+using TouchSocket.Core;
 using TouchSocket.Sockets;
 
 namespace ThingsGateway.Plugin.Modbus;
@@ -71,7 +68,7 @@ public class ModbusSlave : BusinessBase
         //载入配置
         _plc = new(channel)
         {
-            DataFormat = _driverPropertys.DataFormat,
+            EndianType = _driverPropertys.EndianType,
             IsStringReverseByteWord = _driverPropertys.IsStringReverseByteWord,
             CacheTimeout = _driverPropertys.CacheTimeout,
             Station = _driverPropertys.Station,
@@ -156,7 +153,7 @@ public class ModbusSlave : BusinessBase
     /// <param name="thingsGatewayBitConverter"></param>
     /// <param name="client"></param>
     /// <returns></returns>
-    private async ValueTask<IOperResult> OnWriteData(ModbusAddress modbusAddress, byte[] writeValue, IThingsGatewayBitConverter bitConverter, IClientChannel channel)
+    private async ValueTask<OperResult> OnWriteData(ModbusAddress modbusAddress, byte[] writeValue, IThingsGatewayBitConverter bitConverter, IClientChannel channel)
     {
         try
         {
@@ -168,9 +165,8 @@ public class ModbusSlave : BusinessBase
             var addressStr = tag.Value.GetPropertyValue(DeviceId, nameof(ModbusSlaveVariableProperty.ServiceAddress));
 
             var thingsGatewayBitConverter = bitConverter.GetTransByAddress(ref addressStr);
-            var data = thingsGatewayBitConverter.GetDataFormBytes(writeValue, Enum.TryParse(type, out DataTypeEnum dataType) ? dataType : tag.Value.DataType);
-            if (!data.IsSuccess) return data;
-            var result = await tag.Value.SetValueToDeviceAsync(data.Content.ToString(),
+            var data = thingsGatewayBitConverter.GetDataFormBytes(writeValue, 0, Enum.TryParse(type, out DataTypeEnum dataType) ? dataType : tag.Value.DataType);
+            var result = await tag.Value.SetValueToDeviceAsync(data.ToSystemTextJsonString(),
                     $"{nameof(ModbusSlave)}-{CurrentDevice.Name}-{$"{channel}"}").ConfigureAwait(false);
             return result;
         }

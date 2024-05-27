@@ -84,7 +84,6 @@ public class OpcUaMaster : CollectBase
             _plc.DataChangedHandler += DataChangedHandler;
         }
         _plc.OpcUaProperty = config;
-
     }
 
     /// <inheritdoc/>
@@ -134,7 +133,7 @@ public class OpcUaMaster : CollectBase
     }
 
     /// <inheritdoc/>
-    protected override async ValueTask<IOperResult<byte[]>> ReadSourceAsync(VariableSourceRead deviceVariableSourceRead, CancellationToken cancellationToken)
+    protected override async ValueTask<OperResult<byte[]>> ReadSourceAsync(VariableSourceRead deviceVariableSourceRead, CancellationToken cancellationToken)
     {
         try
         {
@@ -195,14 +194,14 @@ public class OpcUaMaster : CollectBase
     }
 
     /// <inheritdoc/>
-    protected override async ValueTask<Dictionary<string, IOperResult>> WriteValuesAsync(Dictionary<VariableRunTime, JToken> writeInfoLists, CancellationToken cancellationToken)
+    protected override async ValueTask<Dictionary<string, OperResult>> WriteValuesAsync(Dictionary<VariableRunTime, JToken> writeInfoLists, CancellationToken cancellationToken)
     {
         try
         {
             if (IsSingleThread)
                 await WriteLock.WaitAsync(cancellationToken).ConfigureAwait(false);
             var result = await _plc.WriteNodeAsync(writeInfoLists.ToDictionary(a => a.Key.RegisterAddress!, a => a.Value), cancellationToken).ConfigureAwait(false);
-            return result.ToDictionary<KeyValuePair<string, Tuple<bool, string>>, string, IOperResult>(a =>
+            return result.ToDictionary<KeyValuePair<string, Tuple<bool, string>>, string, OperResult>(a =>
             {
                 return writeInfoLists.Keys.FirstOrDefault(b => b.RegisterAddress == a.Key)?.Name!;
             }

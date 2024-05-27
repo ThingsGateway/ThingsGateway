@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -8,8 +7,6 @@
 //  使用文档：https://kimdiego2098.github.io/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
-
-
 
 using NewLife.Caching;
 
@@ -22,7 +19,7 @@ namespace ThingsGateway.Foundation;
 public static class AddressConverterExtensions
 {
     /// <summary>
-    /// 从设备地址中解析附加信息，包括 dataFormat=XX;4字节数据解析规则、encoding=XX;字符串解析规则、len=XX;读写长度、bcdFormat=XX; bcd解析规则等。
+    /// 从设备地址中解析附加信息，包括 endianType=XX;4字节数据解析规则、encoding=XX;字符串解析规则、len=XX;读写长度、bcdFormat=XX; bcd解析规则等。
     /// 这个方法获取<see cref="IThingsGatewayBitConverter"/>，并去掉地址中的所有额外信息。
     /// 解析步骤将被缓存。
     /// </summary>
@@ -36,9 +33,9 @@ public static class AddressConverterExtensions
         var type = defaultBitConverter.GetType();
         // 尝试从缓存中获取解析结果
         var cacheKey = $"{nameof(AddressConverterExtensions)}_{nameof(GetTransByAddress)}_{type.FullName}_{defaultBitConverter.ToJsonString()}_{registerAddress}";
-        if (Cache.Default.TryGetValue(cacheKey, out IThingsGatewayBitConverter cachedConverter))
+        if (MemoryCache.Instance.TryGetValue(cacheKey, out IThingsGatewayBitConverter cachedConverter))
         {
-            return (IThingsGatewayBitConverter)cachedConverter!.ToJsonString().FromJsonString(type);
+            return (IThingsGatewayBitConverter)cachedConverter!.Map(type);
         }
 
         // 去除设备地址两端的空格
@@ -47,7 +44,7 @@ public static class AddressConverterExtensions
         // 根据分号拆分附加信息
         var strs = registerAddress.SplitStringBySemicolon();
 
-        DataFormatEnum? dataFormat = null;
+        EndianType? endianType = null;
         Encoding? encoding = null;
         int? length = null;
         int? stringlength = null;
@@ -55,11 +52,11 @@ public static class AddressConverterExtensions
         StringBuilder sb = new();
         foreach (var str in strs)
         {
-            // 解析 dataFormat
+            // 解析 endianType
             if (str.ToLower().StartsWith("data="))
             {
-                var dataFormatName = str.Substring(5);
-                try { if (Enum.TryParse<DataFormatEnum>(dataFormatName, true, out var dataFormat1)) dataFormat = dataFormat1; } catch { }
+                var endianTypeName = str.Substring(5);
+                try { if (Enum.TryParse<EndianType>(endianTypeName, true, out var endianType1)) endianType = endianType1; } catch { }
             }
             // 解析 encoding
             else if (str.ToLower().StartsWith("encoding="))
@@ -99,13 +96,13 @@ public static class AddressConverterExtensions
         registerAddress = sb.ToString();
 
         // 如果没有解析出任何附加信息，则直接返回默认的数据转换器
-        if (bcdFormat == null && length == null && stringlength == null && encoding == null && dataFormat == null)
+        if (bcdFormat == null && length == null && stringlength == null && encoding == null && endianType == null)
         {
             return defaultBitConverter;
         }
 
         // 根据默认的数据转换器创建新的数据转换器实例
-        var converter = (IThingsGatewayBitConverter)defaultBitConverter!.ToJsonString().FromJsonString(type);
+        var converter = (IThingsGatewayBitConverter)defaultBitConverter!.Map(type);
 
         // 更新新的数据转换器实例的属性值
         if (encoding != null)
@@ -124,13 +121,13 @@ public static class AddressConverterExtensions
         {
             converter.StringLength = stringlength.Value;
         }
-        if (dataFormat != null)
+        if (endianType != null)
         {
-            converter.DataFormat = dataFormat.Value;
+            converter.EndianType = endianType.Value;
         }
 
         // 将解析结果添加到缓存中，缓存有效期为3600秒
-        Cache.Default.Set(cacheKey, (IThingsGatewayBitConverter)converter!.ToJsonString().FromJsonString(type), 3600);
+        MemoryCache.Instance.Set(cacheKey, (IThingsGatewayBitConverter)converter!.Map(type), 3600);
         return converter;
     }
 }

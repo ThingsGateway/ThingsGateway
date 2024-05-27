@@ -23,8 +23,5 @@
     "Close": "Close",
     "Save": "Import to system",
     "Export": "Export"
-  },
-
-  "ThingsGateway.Foundation.OpcDa.OpcDaResource": {
   }
 }

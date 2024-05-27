@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -8,9 +7,6 @@
 //  使用文档：https://kimdiego2098.github.io/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
-
-
-
 
 #if NET6_0_OR_GREATER
 using System.Text.Json.Serialization;
@@ -28,17 +24,10 @@ namespace ThingsGateway.Foundation;
 /// </summary>
 public interface IThingsGatewayBitConverter
 {
-    #region Public Properties
-
-    /// <summary>
-    /// 4字节数据转换规则
-    /// </summary>
-    DataFormatEnum? DataFormat { get; set; }
-
     /// <summary>
     /// 指定大小端。
     /// </summary>
-    EndianType EndianType { get; }
+    EndianType EndianType { get; set; }
 
     /// <summary>
     /// 当前的字符串编码类型
@@ -53,7 +42,7 @@ public interface IThingsGatewayBitConverter
     Encoding Encoding { get; set; }
 
     /// <summary>
-    /// 当前的BCD编码类型
+    /// 当前的Bcd编码类型
     /// </summary>
     BcdFormatEnum? BcdFormat { get; set; }
 
@@ -68,25 +57,24 @@ public interface IThingsGatewayBitConverter
     int? ArrayLength { get; set; }
 
     /// <summary>
+    /// 获取或设置在解析布尔的时候是否将字节按照字单位反转
+    /// </summary>
+    bool IsBoolReverseByteWord { get; set; }
+
+    /// <summary>
     /// 获取或设置在解析字符串的时候是否将字节按照字单位反转
     /// </summary>
     bool IsStringReverseByteWord { get; set; }
 
-    #endregion Public Properties
-
-    /// <summary>
-    /// 判断当前系统是否为设置的大小端
-    /// </summary>
-    /// <returns></returns>
-    bool IsSameOfSet();
-
     #region GetBytes
+
     /// <summary>
     /// 转换为指定端16字节
     /// </summary>
     /// <param name="value"></param>
     /// <returns></returns>
     byte[] GetBytes(decimal value);
+
     /// <summary>
     /// 转换为指定端2字节
     /// </summary>
@@ -204,11 +192,10 @@ public interface IThingsGatewayBitConverter
     /// </summary>
     /// <param name="buffer">等待提取的缓存数据</param>
     /// <param name="offset">位的索引，注意：是从0开始的位索引，10则表示 buffer[1] 的第二位。</param>
-    /// <param name="isReverse">是否需要按字反转</param>
-    bool ToBoolean(byte[] buffer, int offset, bool isReverse = false);
+    bool ToBoolean(byte[] buffer, int offset);
 
     /// <inheritdoc/>
-    bool[] ToBoolean(byte[] buffer, int offset, int len, bool isReverse = false);
+    bool[] ToBoolean(byte[] buffer, int offset, int len);
 
     /// <inheritdoc/>
     byte ToByte(byte[] buffer, int offset);
@@ -272,13 +259,6 @@ public interface IThingsGatewayBitConverter
     float[] ToSingle(byte[] buffer, int offset, int len);
 
     /// <summary>
-    /// 从缓存中提取string结果，使用指定的编码将全部的缓存转为字符串<br />
-    /// </summary>
-    /// <param name="buffer">缓存对象</param>
-    /// <returns>string对象</returns>
-    string ToString(byte[] buffer);
-
-    /// <summary>
     /// 从缓存中的部分字节数组转化为string结果，使用指定的编码，指定起始的字节索引，字节长度信息。<br />
     /// </summary>
     /// <param name="buffer">缓存对象</param>
@@ -320,7 +300,6 @@ public interface IThingsGatewayBitConverter
     /// <inheritdoc/>
     ulong[] ToUInt64(byte[] buffer, int offset, int len);
 
-
     /// <summary>
     ///  转换为指定端模式的<see cref="decimal"/>数据。
     /// </summary>
@@ -337,7 +316,6 @@ public interface IThingsGatewayBitConverter
     /// <returns></returns>
     char ToChar(byte[] buffer, int offset);
 
-
     /// <summary>
     /// 从缓存中提取decimal结果，需要指定起始的字节索引，按照字节为单位，一个decimal占用16个字节<b />
     /// </summary>
@@ -346,8 +324,6 @@ public interface IThingsGatewayBitConverter
     /// <param name="length">length</param>
     /// <returns>decimal对象</returns>
     decimal[] ToDecimal(byte[] buffer, int offset, int length);
-
-
 
     #endregion ToValue
 }

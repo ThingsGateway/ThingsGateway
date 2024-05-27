@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -8,9 +7,6 @@
 //  使用文档：https://kimdiego2098.github.io/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
-
-
-
 
 using CSScriptLib;
 
@@ -30,13 +26,13 @@ public interface ReadWriteExpressions
 public static class ExpressionEvaluatorExtension
 {
     /// <summary>
-    /// 执行脚本获取返回值，通常用于上传实体返回脚本，参数为input
+    /// 执行脚本获取返回值
     /// </summary>
     public static ReadWriteExpressions GetReadWriteExpressions(string source)
     {
         // 生成缓存键
         var cacheKey = $"{nameof(ExpressionEvaluatorExtension)}-{nameof(GetReadWriteExpressions)}-{source}";
-        var runScript = NewLife.Caching.Cache.Default.GetOrAdd(cacheKey, c =>
+        var runScript = NewLife.Caching.MemoryCache.Instance.GetOrAdd(cacheKey, c =>
         {
             // 清理输入源字符串
             source = source.Trim();
@@ -53,8 +49,8 @@ public static class ExpressionEvaluatorExtension
         using System.Collections.Generic;
         using Newtonsoft.Json;
         using Newtonsoft.Json.Linq;
-        using ThingsGateway.Gateway.Application;
-        using ThingsGateway.Gateway.Application.Extensions;
+        using ThingsGateway.Foundation;
+        using ThingsGateway.Foundation.Json.Extension;
         public class Script:ReadWriteExpressions
         {{
             public object GetNewValue(dynamic raw)
@@ -73,7 +69,7 @@ public static class ExpressionEvaluatorExtension
     /// </summary>
     public static object GetExpressionsResult(this string expressions, object? rawvalue)
     {
-        if (string.IsNullOrEmpty(expressions))
+        if (string.IsNullOrWhiteSpace(expressions))
         {
             return rawvalue;
         }

@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -8,9 +7,6 @@
 //  使用文档：https://kimdiego2098.github.io/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
-
-
-
 
 using System.Text;
 
@@ -58,18 +54,16 @@ internal static class Dlt645Helper
         };
         return error;
     }
-    public static void AddFE(ISendMessage item, string fehead)
+
+    public static byte[] AddFE(ISendMessage item, string fehead)
     {
         var fe = fehead.HexStringToBytes();
-        byte[] bytes = new byte[item.Length + fe.Length];
-        Array.Copy(fe, 0, bytes, 0, fe.Length);
-        Array.Copy(item.SendBytes, item.Offset, bytes, fe.Length, item.Length);
-        item.SetBytes(bytes);
+        return DataTransUtil.SpliceArray(item.SendBytes, fe);
     }
-    public static AdapterResult GetResponse(Dlt645_2007Message request)
+
+    public static AdapterResult GetResponse(Dlt645_2007Message request, IByteBlock response)
     {
         var send = request.SendBytes;
-        var response = request.ReceivedByteBlock;
 
         //因为设备可能带有FE前导符开头，这里找到0x68的位置
         int headCodeIndex = 0;
@@ -188,7 +182,7 @@ internal static class Dlt645Helper
             request.OperCode = 0;
             return new AdapterResult()
             {
-                Bytes = response.ToArray(headCodeIndex + 10, len - 12),
+                Content = response.ToArray(headCodeIndex + 10, len - 12),
                 FilterResult = FilterResult.Success
             };
         }

@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -9,14 +8,9 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-
-
-
 using System.Text;
 
 using ThingsGateway.Foundation.Extension.Generic;
-
-using TouchSocket.Core;
 
 namespace ThingsGateway.Foundation.Dlt645;
 
@@ -25,13 +19,6 @@ namespace ThingsGateway.Foundation.Dlt645;
 /// </summary>
 public class Dlt645_2007BitConverter : ThingsGatewayBitConverter
 {
-    /// <summary>
-    /// Dlt645_2007
-    /// </summary>
-    public Dlt645_2007BitConverter(EndianType endianType) : base(endianType)
-    {
-    }
-
     /// <inheritdoc/>
     public override short ToInt16(byte[] buffer, int offset)
     {
@@ -83,12 +70,6 @@ public class Dlt645_2007BitConverter : ThingsGatewayBitConverter
     public override double ToDouble(byte[] buffer, int offset)
     {
         return Convert.ToDouble(this.ToString(buffer, offset, buffer.Length));
-    }
-
-    /// <inheritdoc/>
-    public override string ToString(byte[] buffer)
-    {
-        return this.ToString(buffer, 0, buffer.Length);
     }
 
     /// <inheritdoc/>

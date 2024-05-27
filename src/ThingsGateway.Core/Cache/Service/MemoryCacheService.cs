@@ -40,7 +40,16 @@ public partial class MemoryCacheService : ICacheService
     /// <inheritdoc/>
     public T? GetOrCreate<T>(string key, Func<string, T> callback, int expire = -1)
     {
-        return _memoryCache.GetOrAdd(key, callback(key), expire);
+        if (_memoryCache.TryGetValue<T>(key, out var item))
+        {
+            return item;
+        }
+        else
+        {
+            var data = callback(key);
+            _memoryCache.Add(key, data, expire);
+            return data;
+        }
     }
 
     /// <inheritdoc/>

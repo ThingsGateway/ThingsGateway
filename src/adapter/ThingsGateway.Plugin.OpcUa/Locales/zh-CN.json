@@ -16,7 +16,9 @@
     "KeepAliveInterval": "心跳间隔(ms)",
     "UseSecurity": "安全策略",
     "LoadType": "加载服务端数据类型",
-    "SourceTimestampEnable": "服务端时间戳"
+    "SourceTimestampEnable": "服务端时间戳",
+    "ReIntervalTime": "离线恢复时间",
+    "RetryCount": "失败重试次数"
   },
   "ThingsGateway.Plugin.OpcUa.OpcUaServerProperty": {
     "IsAllVariable": "选择全部变量",

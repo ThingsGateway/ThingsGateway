@@ -27,7 +27,6 @@ public static class GenericExtensions
         {
             return data;
         }
-
         Array.Resize(ref data, length);
 
         return data;
@@ -40,7 +39,7 @@ public static class GenericExtensions
     {
         if (data == null)
         {
-            return new T[0];
+            return Array.Empty<T>();
         }
 
         return data.Length % 2 == 1 ? data.ArrayExpandToLength(data.Length + 1) : data;
@@ -64,7 +63,7 @@ public static class GenericExtensions
         // 如果输入数组为空或者剩余长度不足以移除左右两侧指定的元素，则返回空数组
         if (value == null || value.Length <= leftLength + rightLength)
         {
-            return new T[0];
+            return Array.Empty<T>();
         }
 
         // 计算新数组的长度
@@ -109,7 +108,7 @@ public static class GenericExtensions
     {
         if (value == null)
         {
-            return new T[0];
+            return Array.Empty<T>();
         }
 
         T[] destinationArray = new T[value.Length];
@@ -136,33 +135,19 @@ public static class GenericExtensions
     }
 
     /// <summary>
-    /// For循环
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="objs"></param>
-    /// <param name="action"></param>
-    public static void ForEach<T>(this IEnumerable<T> objs, Action<T> action)
-    {
-        foreach (T obj in objs)
-        {
-            action(obj);
-        }
-    }
-
-    /// <summary>
     /// 将一个数组的前后移除指定位数，返回新的一个数组<br />
     /// </summary>
     public static T[] RemoveArray<T>(this T[] value, int leftLength, int rightLength)
     {
         if (value == null || value.Length == 0)
         {
-            return new T[0];
+            return Array.Empty<T>();
         }
 
         int newLength = value.Length - leftLength - rightLength;
         if (newLength <= 0)
         {
-            return new T[0];
+            return Array.Empty<T>();
         }
 
         T[] result = new T[newLength];
@@ -170,7 +155,6 @@ public static class GenericExtensions
 
         return result;
     }
-
 
     /// <summary>
     /// 将一个数组的前面指定位数移除，返回新的一个数组<br />
@@ -181,60 +165,6 @@ public static class GenericExtensions
     /// 将一个数组的后面指定位数移除，返回新的一个数组<br />
     /// </summary>
     public static T[] RemoveLast<T>(this T[] value, int length) => value.RemoveArray(0, length);
-
-    ///// <summary>
-    ///// 将一个数组的前面指定位数移除，返回新的一个数组<br />
-    ///// </summary>
-    //public static ByteBlock RemoveBegin(this ByteBlock value, int length) => value.RemoveArray(length, 0);
-
-    ///// <summary>
-    ///// 将一个数组的后面指定位数移除，返回新的一个数组<br />
-    ///// </summary>
-    //public static ByteBlock RemoveLast(this ByteBlock value, int length) => value.RemoveArray(0, length);
-    ///// <summary>
-    ///// 从数组中获取指定索引开始的中间一段长度的子数组
-    ///// </summary>
-    ///// <param name="value">输入数组</param>
-    ///// <param name="index">起始索引</param>
-    ///// <param name="length">选择的元素个数</param>
-    ///// <returns>中间指定长度的子数组</returns>
-    //public static ByteBlock SelectMiddle(this ByteBlock value, int index, int length)
-    //{
-    //    // 如果输入数组为空，则返回空数组
-    //    if (value == null || value.Length == 0)
-    //    {
-    //        return new ByteBlock(0);
-    //    }
-
-    //    // 计算实际需要复制的元素个数，取输入数组剩余元素和指定长度的较小值
-    //    int count = Math.Min(value.Len - index, length);
-
-    //    ByteBlock result = new ByteBlock(count);
-
-    //    result.Write(value.Buffer, 0, count);
-
-    //    return result;
-    //}
-    ///// <summary>
-    ///// 将一个数组的前后移除指定位数，返回新的一个数组<br />
-    ///// </summary>
-    //public static ByteBlock RemoveArray(this ByteBlock value, int leftLength, int rightLength)
-    //{
-    //    if (value == null || value.Length == 0)
-    //    {
-    //        return new ByteBlock(0);
-    //    }
-
-    //    int newLength = value.Len - leftLength - rightLength;
-    //    if (newLength <= 0)
-    //    {
-    //        return new ByteBlock(0);
-    //    }
-
-    //    ByteBlock result = new ByteBlock(newLength);
-    //    result.Write(value.Buffer, leftLength, newLength);
-    //    return result;
-    //}
 
     /// <summary>
     /// 选择数组中的最后几个元素组成新的数组
@@ -248,7 +178,7 @@ public static class GenericExtensions
         // 如果输入数组为空，则返回空数组
         if (value == null || value.Length == 0)
         {
-            return new T[0];
+            return Array.Empty<T>();
         }
 
         // 计算实际需要复制的元素个数，取输入数组长度和指定长度的较小值
@@ -276,7 +206,7 @@ public static class GenericExtensions
         // 如果输入数组为空，则返回空数组
         if (value == null || value.Length == 0)
         {
-            return new T[0];
+            return Array.Empty<T>();
         }
 
         // 计算实际需要复制的元素个数，取输入数组剩余元素和指定长度的较小值

@@ -102,7 +102,6 @@ public static class PluginServiceUtil
         }
     }
 
-
     /// <summary>
     /// 属性赋值方法
     /// </summary>
@@ -132,7 +131,6 @@ public static class PluginServiceUtil
         if (!string.IsNullOrEmpty(source.PlaceHolder)) dest.PlaceHolder = source.PlaceHolder;
         if (!string.IsNullOrEmpty(source.Step)) dest.Step = source.Step;
         if (source.Order != 0) dest.Order = source.Order;
-
 
         if (source is ITableColumn source1 && dest is ITableColumn dest1)
         {

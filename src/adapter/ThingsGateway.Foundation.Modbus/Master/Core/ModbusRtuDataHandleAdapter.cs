@@ -15,45 +15,22 @@ namespace ThingsGateway.Foundation.Modbus;
 /// </summary>
 internal class ModbusRtuDataHandleAdapter : ReadWriteDevicesSingleStreamDataHandleAdapter<ModbusRtuMessage>
 {
-    /// <inheritdoc/>
-    public override void PackCommand(ISendMessage item)
+    public ModbusRtuDataHandleAdapter()
     {
-        ModbusHelper.AddCrc(item);
+        IsSendPackCommand = true;
     }
 
-
+    public override byte[] PackCommand(ISendMessage item)
+    {
+        return ModbusHelper.AddCrc(item);
+    }
 
     /// <inheritdoc/>
-    protected override AdapterResult UnpackResponse(ModbusRtuMessage request)
+    protected override AdapterResult UnpackResponse(ModbusRtuMessage request, IByteBlock byteBlock)
     {
-        var send = request.SendBytes;
-        var response = request.ReceivedByteBlock;
-        //通道干扰时需剔除前缀中的多于字节，初步按站号+功能码找寻初始字节
-        //int index = -1;
-        //for (int i = 0; i < response.Length - 1; i++)
-        //{
-        //    if (response[i] == send[0] && (response[i + 1] == send[1] || response[i + 1] == (send[1] + 0x80)))
-        //    {
-        //        index = i;
-        //        break;
-        //    }
-        //}
-
-        //using var response1 = new ByteBlock(response.Len);
-        //if (index > 0)
-        //{
-        //    response1.Write(response.Buffer, index, response.Len - index);
-        //}
-        //else
-        //{
-        //    response1.Write(response.Buffer);
-        //}
-        //response1.SeekToStart();
-
-        var result = ModbusHelper.GetModbusRtuData(send, response, true);
+        var result = ModbusHelper.GetModbusRtuData(request.SendBytes, byteBlock);
         request.OperCode = result.OperCode;
         request.ErrorMessage = result.ErrorMessage;
         return result.Content;
-
     }
 }

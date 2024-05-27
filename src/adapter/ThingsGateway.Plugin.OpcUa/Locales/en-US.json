@@ -15,7 +15,9 @@
     "KeepAliveInterval": "KeepAliveInterval(ms)",
     "UseSecurity": "UseSecurity",
     "LoadType": "LoadType",
-    "SourceTimestampEnable": "SourceTimestampEnable"
+    "SourceTimestampEnable": "SourceTimestampEnable",
+    "ReIntervalTime": "ReIntervalTime",
+    "RetryCount": "RetryCount"
   },
   "ThingsGateway.Plugin.OpcUa.OpcUaServerProperty": {
     "IsAllVariable": "IsAllVariable",
