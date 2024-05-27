@@ -289,7 +289,6 @@ public class ManagementHostedService : BackgroundService
                             // 如果 online 为 true，表示设备在线
                             if (online)
                             {
-                                // 调用 udpDmtp.GetDmtpRpcActor() 的 ReverseCallbackServer.UpdateGatewayDataAsync 方法，
                                 // 将 GlobalData.CollectDevices 和 GlobalData.Variables 同步到从站
                                 await udpDmtp.GetDmtpRpcActor().InvokeAsync(
                                     new RpcRequest(nameof(ReverseCallbackServer.UpdateGatewayDataAsync), null, waitInvoke, new object[] { GlobalData.CollectDevices.Adapt<Dictionary<string, DeviceDataWithValue>>(), GlobalData.Variables.Adapt<Dictionary<string, VariableDataWithValue>>() }, null)).ConfigureAwait(false);
