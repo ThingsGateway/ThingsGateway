@@ -14,6 +14,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 using System.Runtime.InteropServices;
 
@@ -80,6 +81,11 @@ public class Redundancy
     /// 获取或设置是否为启动业务的设备。
     /// </summary>
     public bool IsStartBusinessDevice { get; set; }
+
+    /// <summary>
+    /// 获取或设置冗余数据同步间隔(ms)。
+    /// </summary>
+    public int SyncInterval { get; set; }
 }
 
 public class ManagementHostedService : BackgroundService
@@ -159,6 +165,7 @@ public class ManagementHostedService : BackgroundService
         await Task.Delay(1000).ConfigureAwait(false);
         Options = App.Configuration.GetSection(nameof(ManagementOptions)).Get<ManagementOptions?>() ?? new();
         StartBusinessDeviceEnable = Options?.Redundancy?.Enable == true ? Options?.Redundancy?.IsStartBusinessDevice == true : true;
+        Options.Redundancy.SyncInterval = Math.Max(Options.Redundancy.SyncInterval, 1000);
         if (Options?.Redundancy?.Enable == true)
         {
             var udpDmtp = GetUdpDmtp(Options);
@@ -301,7 +308,7 @@ public class ManagementHostedService : BackgroundService
                         }
                     }
 
-                    await Task.Delay(1000, stoppingToken).ConfigureAwait(false);
+                    await Task.Delay(Options.Redundancy.SyncInterval, stoppingToken).ConfigureAwait(false);
                 }
                 catch (TaskCanceledException)
                 {
