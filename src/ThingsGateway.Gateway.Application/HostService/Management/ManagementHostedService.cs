@@ -161,7 +161,7 @@ public class ManagementHostedService : BackgroundService
                 try
                 {
                     bool online = false;
-                    var waitInvoke = new DmtpInvokeOption(millisecondsTimeout: 5000)
+                    var waitInvoke = new DmtpInvokeOption()
                     {
                         FeedbackType = FeedbackType.WaitInvoke,
                         Token = stoppingToken,
