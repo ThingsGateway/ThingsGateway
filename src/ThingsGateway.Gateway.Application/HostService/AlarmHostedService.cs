@@ -14,7 +14,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
-using System.Collections.Concurrent;
+using System.Diagnostics;
 
 using ThingsGateway.Core.Extension;
 using ThingsGateway.Gateway.Application.Extensions;
@@ -40,7 +40,7 @@ public class AlarmHostedService : BackgroundService
     /// </summary>
     private EasyLock RestartLock { get; } = new();
 
-    private ConcurrentQueue<VariableRunTime> _deviceVariables = new();
+    private IEnumerable<VariableRunTime> _deviceVariables => GlobalData.Variables.Select(a => a.Value).Where(a => a.IsOnline && a.AlarmEnable);
 
     private DoTask RealAlarmTask { get; set; }
     private IStringLocalizer Localizer { get; }
@@ -345,12 +345,6 @@ public class AlarmHostedService : BackgroundService
         }
     }
 
-    private void DeviceVariableChange(VariableRunTime variable)
-    {
-        //这里不能序列化变量，报警服务需改变同一个变量指向的属性
-        _deviceVariables.Enqueue(variable);
-    }
-
     #endregion 核心实现
 
     #region 线程任务
@@ -363,12 +357,9 @@ public class AlarmHostedService : BackgroundService
     {
         // 延迟一段时间，避免过于频繁地执行任务
         await Task.Delay(500, cancellation).ConfigureAwait(false);
-
-        // 获取设备变量列表
-        var list = _deviceVariables.ToListWithDequeue();
-
+        //Stopwatch stopwatch = Stopwatch.StartNew();
         // 遍历设备变量列表
-        foreach (var item in list)
+        foreach (var item in _deviceVariables)
         {
             // 如果取消请求已经被触发，则结束任务
             if (cancellation.IsCancellationRequested)
@@ -385,6 +376,8 @@ public class AlarmHostedService : BackgroundService
             // 对该变量进行报警分析
             AlarmAnalysis(item);
         }
+        //stopwatch.Stop();
+        //_logger.LogInformation("报警分析耗时：" + stopwatch.ElapsedMilliseconds + "ms");
     }
 
     #endregion 线程任务
@@ -395,7 +388,6 @@ public class AlarmHostedService : BackgroundService
     {
         HostedServiceUtil.CollectDeviceHostedService.Started += CollectDeviceHostedService_Started;
         HostedServiceUtil.CollectDeviceHostedService.Stoping += CollectDeviceHostedService_Stoping;
-        GlobalData.VariableCollectChangeEvent += DeviceVariableChange;
         return base.StartAsync(cancellationToken);
     }
 

@@ -88,16 +88,12 @@ public abstract class DriverBase : DisposableObject
     /// </summary>
     public LoggerGroup LogMessage { get; internal set; }
 
-    #endregion 任务管理器传入
-
-    #region 插件管理器传入
-
     /// <summary>
     /// 当前插件目录
     /// </summary>
     public string Directory { get; internal set; }
 
-    #endregion 插件管理器传入
+    #endregion 任务管理器传入
 
     private IStringLocalizer Localizer { get; }
 
@@ -166,7 +162,7 @@ public abstract class DriverBase : DisposableObject
     /// <summary>
     /// 底层驱动，有可能为null
     /// </summary>
-    protected abstract IProtocol? Protocol { get; }
+    public abstract IProtocol? Protocol { get; }
 
     /// <summary>
     /// RPC服务

@@ -1,4 +1,11 @@
 ﻿{
+  "ThingsGateway.Gateway.Razor.TcpSessionClientDto": {
+    "Id": "Id",
+    "IP": "IP",
+    "Port": "端口",
+    "LastReceivedTime": "最近接收时间",
+    "LastSentTime": "最近发送时间"
+  },
   "ThingsGateway.Gateway.Razor.DeviceStatus2": {
     "GatewayDeviceShowDriverUI": "插件UI",
     "DeviceRedundantThread": "切换冗余",

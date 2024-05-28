@@ -46,9 +46,16 @@ public partial class MemoryCacheService : ICacheService
         }
         else
         {
-            var data = callback(key);
-            _memoryCache.Add(key, data, expire);
-            return data;
+            lock (key)
+            {
+                if (_memoryCache.TryGetValue<T>(key, out var item1))
+                {
+                    return item1;
+                }
+                var data = callback(key);
+                _memoryCache.Add(key, data, expire);
+                return data;
+            }
         }
     }
 

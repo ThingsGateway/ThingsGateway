@@ -85,7 +85,7 @@ public partial class VariableRuntimePage : IDisposable
 
     private Task<QueryData<VariableRunTime>> OnQueryAsync(QueryPageOptions options)
     {
-        var data = GlobalData.ReadOnlyVariables.Values
+        var data = GlobalData.ReadOnlyVariables.Select(a => a.Value)
             .WhereIF(!options.SearchText.IsNullOrWhiteSpace(), a => a.Name.Contains(options.SearchText))
             .WhereIF(!SearchModel.Name.IsNullOrWhiteSpace(), a => a.Name.Contains(SearchModel.Name))
             .WhereIF(!SearchModel.RegisterAddress.IsNullOrWhiteSpace(), a => a.RegisterAddress.Contains(SearchModel.RegisterAddress))

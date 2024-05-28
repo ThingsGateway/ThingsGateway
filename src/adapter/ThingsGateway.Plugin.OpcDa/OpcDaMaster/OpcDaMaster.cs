@@ -43,7 +43,7 @@ public class OpcDaMaster : CollectBase
     public override Type DriverUIType => null;
 
     /// <inheritdoc/>
-    protected override IProtocol Protocol => null;
+    public override IProtocol Protocol => null;
 
     public override string ToString()
     {
@@ -217,7 +217,7 @@ public class OpcDaMaster : CollectBase
                 {
                     type = type.GetElementType();
                 }
-                var itemReads = CurrentDevice.VariableRunTimes.Values.Where(it => it.RegisterAddress == data.Name);
+                var itemReads = CurrentDevice.VariableRunTimes.Select(a => a.Value).Where(it => it.RegisterAddress == data.Name);
                 foreach (var item in itemReads)
                 {
                     if (!CurrentDevice.KeepRun)

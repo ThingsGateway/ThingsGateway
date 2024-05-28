@@ -51,7 +51,7 @@ public class RuntimeInfoControler : ControllerBase
     [HttpGet("variableList")]
     public SqlSugarPagedList<VariableData> GetVariableList([FromQuery] VariablePageInput input)
     {
-        var data = GlobalData.ReadOnlyVariables.Values
+        var data = GlobalData.ReadOnlyVariables.Select(a => a.Value)
             .WhereIF(!input.Name.IsNullOrWhiteSpace(), a => a.Name == input.Name)
             .WhereIF(input.DeviceId != null, a => a.DeviceId == input.DeviceId)
             .WhereIF(!input.RegisterAddress.IsNullOrWhiteSpace(), a => a.RegisterAddress == input.RegisterAddress)

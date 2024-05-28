@@ -46,7 +46,7 @@ public partial class OpcUaServer : BusinessBase
     /// <inheritdoc/>
     protected override BusinessPropertyBase _businessPropertyBase => _driverPropertys;
 
-    protected override IProtocol? Protocol => null;
+    public override IProtocol? Protocol => null;
     private ConcurrentQueue<VariableData> CollectVariableRunTimes { get; set; } = new();
 
     public override void Init(IChannel? channel = null)

@@ -85,6 +85,11 @@ public class CollectDeviceHostedService : DeviceHostedService
                 }
             });
         }
+        for (int i = 0; i < 3; i++)
+        {
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+        }
     }
 
     #endregion 重写

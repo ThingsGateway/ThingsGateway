@@ -1,4 +1,12 @@
 ﻿{
+  "ThingsGateway.Gateway.Razor.TcpSessionClientDto": {
+    "Id": "Id",
+    "IP": "IP",
+    "Port": "Port",
+    "LastReceivedTime": "LastReceivedTime",
+    "LastSentTime": "LastSentTime"
+  },
+
   "ThingsGateway.Gateway.Razor.DeviceStatus2": {
     "GatewayDeviceShowDriverUI": "DriverUI",
     "DeviceRedundantThread": "RedundantSwitch",

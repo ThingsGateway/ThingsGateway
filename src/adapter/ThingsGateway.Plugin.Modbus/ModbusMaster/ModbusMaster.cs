@@ -27,10 +27,20 @@ public class ModbusMaster : CollectBase
     /// <inheritdoc/>
     public override CollectPropertyBase CollectProperties => _driverPropertys;
 
-    public override Type DriverUIType => null;
+    /// <inheritdoc/>
+    public override Type DriverUIType
+    {
+        get
+        {
+            if (Protocol.Channel.ChannelType == ChannelTypeEnum.TcpService)
+                return typeof(ThingsGateway.Gateway.Razor.TcpServicePage);
+            else
+                return null;
+        }
+    }
 
     /// <inheritdoc/>
-    protected override IProtocol Protocol => _plc;
+    public override IProtocol Protocol => _plc;
 
     /// <inheritdoc/>
     public override void Init(IChannel? channel = null)

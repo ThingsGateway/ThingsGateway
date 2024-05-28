@@ -10,6 +10,8 @@
 
 using System.Net.Sockets;
 
+using TouchSocket.Sockets;
+
 namespace ThingsGateway.Foundation;
 
 /// <inheritdoc/>
@@ -31,11 +33,21 @@ public abstract class TcpServiceChannelBase<TClient> : TcpService<TClient>, ITcp
             if (this.TryGetClient(id, out var client))
             {
                 if (ShutDownEnable)
-                    client.MainSocket?.Shutdown(SocketShutdown.Both);
-
-                await client.CloseAsync();
+                    client.TryShutdown();
+                await client.CloseAsync().ConfigureAwait(false);
                 client.SafeDispose();
             }
+        }
+    }
+
+    public async Task ClientDispose(string id)
+    {
+        if (this.TryGetClient(id, out var client))
+        {
+            if (ShutDownEnable)
+                client.TryShutdown();
+            await client.CloseAsync().ConfigureAwait(false);
+            client.SafeDispose();
         }
     }
 

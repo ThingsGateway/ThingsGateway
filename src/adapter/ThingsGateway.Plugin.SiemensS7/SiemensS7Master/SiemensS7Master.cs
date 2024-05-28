@@ -33,7 +33,7 @@ public class SiemensS7Master : CollectBase
     public override Type DriverUIType => null;
 
     /// <inheritdoc/>
-    protected override IProtocol Protocol => _plc;
+    public override IProtocol Protocol => _plc;
 
     /// <inheritdoc/>
     public override void Init(IChannel? channel = null)

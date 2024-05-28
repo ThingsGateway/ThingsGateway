@@ -26,7 +26,7 @@ public abstract class BusinessBaseWithCacheVarModel<VarModel> : BusinessBase
 
     protected abstract BusinessPropertyWithCache _businessPropertyWithCache { get; }
 
-    protected override IProtocol? Protocol => null;
+    public override IProtocol? Protocol => null;
 
     /// <summary>
     /// 入缓存

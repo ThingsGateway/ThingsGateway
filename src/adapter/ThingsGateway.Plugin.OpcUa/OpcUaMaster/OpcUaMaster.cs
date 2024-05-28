@@ -44,7 +44,7 @@ public class OpcUaMaster : CollectBase
     public override Type DriverUIType => null;
 
     /// <inheritdoc/>
-    protected override IProtocol Protocol => null;
+    public override IProtocol Protocol => null;
 
     public override string ToString()
     {
@@ -279,7 +279,7 @@ public class OpcUaMaster : CollectBase
             //尝试固定点位的数据类型
             var type = TypeInfo.GetSystemType(TypeInfo.GetBuiltInType(data.variableNode.DataType, _plc.Session.SystemContext.TypeTable), data.variableNode.ValueRank);
 
-            var itemReads = CurrentDevice.VariableRunTimes.Values.Where(it => it.RegisterAddress == data.variableNode.NodeId);
+            var itemReads = CurrentDevice.VariableRunTimes.Select(a => a.Value).Where(it => it.RegisterAddress == data.variableNode.NodeId);
 
             object value;
             if (data.jToken is JValue jValue)

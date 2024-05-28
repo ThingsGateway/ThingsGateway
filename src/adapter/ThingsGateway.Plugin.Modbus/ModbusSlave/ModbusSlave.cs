@@ -44,13 +44,23 @@ public class ModbusSlave : BusinessBase
     /// <inheritdoc/>
     protected override BusinessPropertyBase _businessPropertyBase => _driverPropertys;
 
-    public override Type DriverUIType => null;
+    /// <inheritdoc/>
+    public override Type DriverUIType
+    {
+        get
+        {
+            if (Protocol.Channel.ChannelType == ChannelTypeEnum.TcpService)
+                return typeof(ThingsGateway.Gateway.Razor.TcpServicePage);
+            else
+                return null;
+        }
+    }
 
     /// <inheritdoc/>
     public override VariablePropertyBase VariablePropertys => _variablePropertys;
 
     /// <inheritdoc/>
-    protected override IProtocol Protocol => _plc;
+    public override IProtocol Protocol => _plc;
 
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)

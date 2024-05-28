@@ -316,7 +316,7 @@ public class ChannelThread
         {
             // 初始化驱动程序对象，并加载源读取
             driverBase.Init(Channel);
-            driverBase.LoadSourceRead(driverBase.CurrentDevice?.VariableRunTimes.Values);
+            driverBase.LoadSourceRead(driverBase.CurrentDevice?.VariableRunTimes.Select(a => a.Value));
         }
         catch (Exception ex)
         {

@@ -113,7 +113,7 @@ public class UdpSessionChannel : UdpSession, IClientChannel
     }
 
     /// <inheritdoc/>
-    protected override async Task ReceivedData(UdpReceivedDataEventArgs e)
+    protected override async Task OnUdpReceived(UdpReceivedDataEventArgs e)
     {
         if (this.ChannelReceived != null)
         {
@@ -123,6 +123,6 @@ public class UdpSessionChannel : UdpSession, IClientChannel
                 return;
             }
         }
-        await base.ReceivedData(e).ConfigureAwait(false);
+        await base.OnUdpReceived(e).ConfigureAwait(false);
     }
 }

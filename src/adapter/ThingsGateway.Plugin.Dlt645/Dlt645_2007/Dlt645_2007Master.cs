@@ -30,7 +30,7 @@ public class Dlt645_2007Master : CollectBase
     public override Type DriverUIType => null;
 
     /// <inheritdoc/>
-    protected override IProtocol Protocol => _plc;
+    public override IProtocol Protocol => _plc;
 
     /// <inheritdoc/>
     public override void Init(IChannel? channel = null)
