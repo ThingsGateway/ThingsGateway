@@ -34,7 +34,7 @@ public class CollectDeviceHostedService : DeviceHostedService
         using var stoppingToken = new CancellationTokenSource();
         _stoppingToken = stoppingToken.Token;
         stoppingToken.Cancel();
-        await StopThreadAsync(true).ConfigureAwait(false);
+        await StopThreadAsync().ConfigureAwait(false);
         await base.StopAsync(cancellationToken);
     }
 

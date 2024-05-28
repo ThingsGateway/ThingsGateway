@@ -146,9 +146,8 @@ public abstract class DeviceHostedService : BackgroundService
     /// <summary>
     /// 删除所有通道线程，并释放资源（可选择同时移除相关设备）
     /// </summary>
-    /// <param name="isRemoveDevice">指示是否同时移除相关设备</param>
     /// <returns>异步任务</returns>
-    protected async Task RemoveAllChannelThreadAsync(bool isRemoveDevice)
+    protected async Task RemoveAllChannelThreadAsync()
     {
         // 执行删除所有通道线程前的操作
         await BeforeRemoveAllChannelThreadAsync().ConfigureAwait(false);
@@ -158,7 +157,7 @@ public abstract class DeviceHostedService : BackgroundService
         {
             try
             {
-                await channelThread.StopThreadAsync(isRemoveDevice).ConfigureAwait(false);
+                await channelThread.StopThreadAsync().ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -168,7 +167,7 @@ public abstract class DeviceHostedService : BackgroundService
         }, Environment.ProcessorCount / 2).ConfigureAwait(false);
 
         // 如果指定了同时移除相关设备，则清空通道线程列表
-        if (isRemoveDevice)
+        if (!HostedServiceUtil.ManagementHostedService.StartBusinessDeviceEnable)
             ChannelThreads.Clear();
     }
 
@@ -226,27 +225,19 @@ public abstract class DeviceHostedService : BackgroundService
     private async Task StartChannelThreadAsync(ChannelThread item)
     {
         // 如果通道线程是采集通道，并且启动采集设备选项已启用
-        if (item.IsCollectChannel && HostedServiceUtil.ManagementHostedService.StartCollectDeviceEnable)
+        if (item.IsCollectChannel)
         {
             // 启动通道线程
-            await item.StartThreadAsync().ConfigureAwait(false);
+            if (HostedServiceUtil.ManagementHostedService.StartCollectDeviceEnable)
+                await item.StartThreadAsync().ConfigureAwait(false);
         }
         else
         {
-            // 如果通道线程是业务通道
-            if (HostedServiceUtil.ManagementHostedService.StartCollectDeviceEnable)
+            // 如果启动采集设备选项未启用，但启动业务设备选项已启用
+            if (HostedServiceUtil.ManagementHostedService.StartBusinessDeviceEnable)
             {
-                // 如果启动采集设备选项已启用，则启动通道线程
+                // 启动通道线程
                 await item.StartThreadAsync().ConfigureAwait(false);
-            }
-            else
-            {
-                // 如果启动采集设备选项未启用，但启动业务设备选项已启用
-                if (HostedServiceUtil.ManagementHostedService.StartBusinessDeviceEnable)
-                {
-                    // 启动通道线程
-                    await item.StartThreadAsync().ConfigureAwait(false);
-                }
             }
         }
     }
@@ -626,7 +617,7 @@ public abstract class DeviceHostedService : BackgroundService
         try
         {
             await publicRestartLock.WaitAsync().ConfigureAwait(false);
-            await StopAsync(true).ConfigureAwait(false);
+            await StopAsync().ConfigureAwait(false);
             await StartAsync().ConfigureAwait(false);
         }
         finally
@@ -636,7 +627,7 @@ public abstract class DeviceHostedService : BackgroundService
     }
 
     /// <summary>
-    /// 启动全部设备，如果没有找到设备会创建
+    /// 启动/创建全部设备，如果没有找到设备会创建
     /// </summary>
     public async Task StartAsync()
     {
@@ -700,13 +691,13 @@ public abstract class DeviceHostedService : BackgroundService
     /// <summary>
     /// 停止
     /// </summary>
-    public async Task StopAsync(bool isRemoveDevice)
+    public async Task StopAsync()
     {
         try
         {
             await restartLock.WaitAsync().ConfigureAwait(false);
             await singleRestartLock.WaitAsync().ConfigureAwait(false);
-            await StopThreadAsync(isRemoveDevice).ConfigureAwait(false);
+            await StopThreadAsync().ConfigureAwait(false);
             BytePool.Default.Clear(); // 清空内存池
         }
         catch (Exception ex)
@@ -720,18 +711,18 @@ public abstract class DeviceHostedService : BackgroundService
         }
     }
 
-    protected async Task StopThreadAsync(bool isRemoveDevice = true)
+    protected async Task StopThreadAsync()
     {
         if (started)
         {
             //取消全部采集线程
             await BeforeRemoveAllChannelThreadAsync().ConfigureAwait(false);
-            if (isRemoveDevice)
+            if (!HostedServiceUtil.ManagementHostedService.StartBusinessDeviceEnable)
                 //取消其他后台服务
                 await ProtectedStoping().ConfigureAwait(false);
             //停止全部采集线程
-            await RemoveAllChannelThreadAsync(isRemoveDevice).ConfigureAwait(false);
-            if (isRemoveDevice)
+            await RemoveAllChannelThreadAsync().ConfigureAwait(false);
+            if (!HostedServiceUtil.ManagementHostedService.StartBusinessDeviceEnable)
                 //停止其他后台服务
                 await ProtectedStoped().ConfigureAwait(false);
             //清空内存列表

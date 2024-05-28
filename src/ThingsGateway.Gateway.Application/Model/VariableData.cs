@@ -91,10 +91,10 @@ public class VariableBasicData : VariableData
     public DataTypeEnum DataType { get; set; }
 }
 
-internal class VariableDataWithValue : IPrimaryIdEntity
+internal class VariableDataWithValue
 {
-    /// <inheritdoc cref="PrimaryIdEntity.Id"/>
-    public long Id { get; set; }
+    /// <inheritdoc cref="DeviceRunTime.Name"/>
+    public string Name { get; set; }
 
     /// <inheritdoc cref="VariableRunTime.Value"/>
     public object RawValue { get; set; }

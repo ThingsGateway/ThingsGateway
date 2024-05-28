@@ -30,7 +30,7 @@ public class BusinessDeviceHostedService : DeviceHostedService
     {
         if (started)
         {
-            await StopAsync(true).ConfigureAwait(false);
+            await StopAsync().ConfigureAwait(false);
         }
         await CreatThreadsAsync().ConfigureAwait(false);
     }
@@ -43,7 +43,7 @@ public class BusinessDeviceHostedService : DeviceHostedService
 
     private async Task CollectDeviceHostedService_Stoping()
     {
-        await StopAsync(true).ConfigureAwait(false);
+        await StopAsync().ConfigureAwait(false);
     }
 
     #region worker服务

@@ -97,7 +97,7 @@ internal class AdminTaskService : BackgroundService
     .Select(a => Path.GetFileName(a))
     .ToArray();
 
-        ChannelConfig channelConfig = TouchSocket.Core.AppConfigBase.GetNewDefault<ChannelConfig>();
+        ChannelConfig channelConfig = AppConfigBase.GetNewDefault<ChannelConfig>();
         foreach (var item in debugDirs)
         {
             if (stoppingToken.IsCancellationRequested)

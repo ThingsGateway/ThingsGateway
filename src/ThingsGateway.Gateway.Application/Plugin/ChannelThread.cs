@@ -494,8 +494,7 @@ public class ChannelThread
     /// <summary>
     /// 异步停止线程任务。
     /// </summary>
-    /// <param name="isRemoveDevice">指示是否移除设备。</param>
-    internal virtual async Task StopThreadAsync(bool isRemoveDevice)
+    internal virtual async Task StopThreadAsync()
     {
         // 如果DriverTask为null，则直接返回，无需执行停止操作
         if (DriverTask == null)
@@ -519,7 +518,7 @@ public class ChannelThread
             });
 
             // 如果需要移除设备
-            if (isRemoveDevice)
+            if (!HostedServiceUtil.ManagementHostedService.StartBusinessDeviceEnable)
             {
                 // 如果需要移除的是采集设备
                 if (IsCollectChannel)
@@ -539,12 +538,12 @@ public class ChannelThread
                         GlobalData.BusinessDevices.RemoveWhere(it => DriverBases.Any(a => a.DeviceId == it.Value.Id));
                     }
                 }
+                DriverBases.Clear();
             }
 
             // 将DriverTask置为null
             DriverTask = null;
 
-            DriverBases.Clear();
             // 清空CancellationTokenSources集合
             CancellationTokenSources.ForEach(a => a.Value.SafeDispose());
             CancellationTokenSources.Clear();

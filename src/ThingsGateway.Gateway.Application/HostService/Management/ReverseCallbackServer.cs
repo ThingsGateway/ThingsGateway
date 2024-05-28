@@ -39,24 +39,24 @@ internal partial class ReverseCallbackServer : RpcServer
     }
 
     [DmtpRpc(true)]//使用方法名作为调用键
-    public async Task UpdateGatewayDataAsync(Dictionary<string, DeviceDataWithValue> deviceDatas, Dictionary<string, VariableDataWithValue> variableDatas)
+    public async Task UpdateGatewayDataAsync(List<DeviceDataWithValue> deviceDatas, List<VariableDataWithValue> variableDatas)
     {
         await Task.CompletedTask;
         foreach (var deviceData in deviceDatas)
         {
-            if (GlobalData.CollectDevices.TryGetValue(deviceData.Key, out var value))
+            if (GlobalData.CollectDevices.TryGetValue(deviceData.Name, out var value))
             {
-                value.ActiveTime = deviceData.Value.ActiveTime;
-                value.DeviceStatus = deviceData.Value.DeviceStatus;
-                value.LastErrorMessage = deviceData.Value.LastErrorMessage;
+                value.ActiveTime = deviceData.ActiveTime;
+                value.DeviceStatus = deviceData.DeviceStatus;
+                value.LastErrorMessage = deviceData.LastErrorMessage;
             }
         }
         foreach (var variableData in variableDatas)
         {
-            if (GlobalData.Variables.TryGetValue(variableData.Key, out var value))
+            if (GlobalData.Variables.TryGetValue(variableData.Name, out var value))
             {
-                value.SetValue(variableData.Value.RawValue, variableData.Value.CollectTime, variableData.Value.IsOnline);
-                value.SetErrorMessage(variableData.Value.LastErrorMessage);
+                value.SetValue(variableData.RawValue, variableData.CollectTime, variableData.IsOnline);
+                value.SetErrorMessage(variableData.LastErrorMessage);
             }
         }
     }

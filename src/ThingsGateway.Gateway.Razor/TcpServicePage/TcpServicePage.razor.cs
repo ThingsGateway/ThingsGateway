@@ -66,9 +66,18 @@ public partial class TcpServicePage : IDriverUIBase
 
 public class TcpSessionClientDto
 {
+    [AutoGenerateColumn(Searchable = true, Filterable = true, Sortable = true)]
     public string Id { get; set; }
+
+    [AutoGenerateColumn(Searchable = true, Filterable = true, Sortable = true)]
     public string IP { get; set; }
+
+    [AutoGenerateColumn(Searchable = true, Filterable = true, Sortable = true)]
     public int Port { get; set; }
+
+    [AutoGenerateColumn(Searchable = true, Filterable = true, Sortable = true)]
     public DateTime LastReceivedTime { get; set; }
+
+    [AutoGenerateColumn(Searchable = true, Filterable = true, Sortable = true)]
     public DateTime LastSentTime { get; set; }
 }

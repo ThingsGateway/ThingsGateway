@@ -74,10 +74,10 @@ public class DeviceBasicData : DeviceData
     public string? Description { get; set; }
 }
 
-public class DeviceDataWithValue : IPrimaryIdEntity
+public class DeviceDataWithValue
 {
-    /// <inheritdoc cref="PrimaryIdEntity.Id"/>
-    public long Id { get; set; }
+    /// <inheritdoc cref="DeviceRunTime.Name"/>
+    public string Name { get; set; }
 
     /// <inheritdoc cref="DeviceRunTime.ActiveTime"/>
     public DateTime ActiveTime { get; set; }

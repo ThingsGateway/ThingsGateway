@@ -197,20 +197,23 @@ public abstract class DriverBase : DisposableObject
                     // 执行资源释放操作
                     this.SafeDispose();
                     // 根据是否正在采集设备来从全局设备集合或业务设备集合中移除指定设备ID的驱动程序对象
-                    if (IsCollectDevice)
+                    if (!HostedServiceUtil.ManagementHostedService.StartBusinessDeviceEnable)
                     {
-                        //lock (GlobalData.CollectDevices)
+                        if (IsCollectDevice)
                         {
-                            GlobalData.CollectDevices.RemoveWhere(it => it.Value.Id == DeviceId);
+                            //lock (GlobalData.CollectDevices)
+                            {
+                                GlobalData.CollectDevices.RemoveWhere(it => it.Value.Id == DeviceId);
 
-                            GlobalData.Variables.RemoveWhere(it => it.Value.DeviceId == DeviceId);
+                                GlobalData.Variables.RemoveWhere(it => it.Value.DeviceId == DeviceId);
+                            }
                         }
-                    }
-                    else
-                    {
-                        //lock (GlobalData.BusinessDevices)
+                        else
                         {
-                            GlobalData.BusinessDevices.RemoveWhere(it => it.Value.Id == DeviceId);
+                            //lock (GlobalData.BusinessDevices)
+                            {
+                                GlobalData.BusinessDevices.RemoveWhere(it => it.Value.Id == DeviceId);
+                            }
                         }
                     }
                 }
