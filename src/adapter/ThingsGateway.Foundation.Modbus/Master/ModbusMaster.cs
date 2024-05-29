@@ -88,23 +88,7 @@ public partial class ModbusMaster : ProtocolBase, IDtu
         switch (Channel.ChannelType)
         {
             case ChannelTypeEnum.TcpService:
-                Action<IPluginManager> action = a => { };
-                {
-                    action = a => a.UseCheckClear()
-      .SetCheckClearType(CheckClearType.All)
-      .SetTick(TimeSpan.FromSeconds(CheckClearTime))
-      .SetOnClose((c, t) =>
-      {
-          c.TryShutdown();
-          c.SafeClose($"{CheckClearTime}s Timeout");
-      });
-                }
-
-                action += a =>
-                   {
-                       a.Add(new DtuPlugin(this));
-                   };
-                return action;
+                return PluginUtil.GetPlugin(this);
         }
         return base.ConfigurePlugins();
     }

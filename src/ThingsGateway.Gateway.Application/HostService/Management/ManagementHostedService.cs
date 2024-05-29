@@ -15,6 +15,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
+using ThingsGateway.Foundation.Extension.Generic;
+
 using TouchSocket.Core;
 using TouchSocket.Dmtp;
 using TouchSocket.Dmtp.FileTransfer;
@@ -165,7 +167,7 @@ public class ManagementHostedService : BackgroundService
                     {
                         FeedbackType = FeedbackType.WaitInvoke,
                         Token = stoppingToken,
-                        Timeout = 3000,
+                        Timeout = 30000,
                         SerializationType = SerializationType.Json,
                     };
 
@@ -181,13 +183,35 @@ public class ManagementHostedService : BackgroundService
                             // 如果 online 为 true，表示设备在线
                             if (online)
                             {
-                                // 将 GlobalData.CollectDevices 和 GlobalData.Variables 同步到从站
-                                await tcpDmtpService.Clients.FirstOrDefault().GetDmtpRpcActor().InvokeAsync(
-                                    new RpcRequest(nameof(ReverseCallbackServer.UpdateGatewayDataAsync), null, waitInvoke,
-                                    new object[2]
+                                var deviceRunTimes = GlobalData.CollectDevices.Values.Adapt<List<DeviceDataWithValue>>();
+                                var variableRunTimes = GlobalData.Variables.Values.Adapt<List<VariableDataWithValue>>();
+                                var variableRunTimes1 = variableRunTimes.ChunkBetter(80000);
+                                var variableRuntimes1Count = variableRunTimes1.Count();
+                                int itemsPerList = (int)Math.Ceiling((double)deviceRunTimes.Count / variableRuntimes1Count);
+                                var deviceRunTimes1 = deviceRunTimes.ChunkBetter(itemsPerList, true).ToList();
+
+                                int i = 0;
+                                List<Task> tasks = new List<Task>();
+                                foreach (var item in variableRunTimes1)
+                                {
+                                    List<DeviceDataWithValue> devices = new();
+                                    if (deviceRunTimes1.Count >= i + 1)
                                     {
-                                        GlobalData.CollectDevices.Values.Adapt<List<DeviceDataWithValue>>(), GlobalData.Variables.Values.Adapt<List< VariableDataWithValue>>()
-                                    }, null)).ConfigureAwait(false);
+                                        devices = deviceRunTimes1[i].ToList();
+                                    }
+                                    var variables = item.ToList();
+                                    // 将 GlobalData.CollectDevices 和 GlobalData.Variables 同步到从站
+                                    Task task = tcpDmtpService.Clients.FirstOrDefault().GetDmtpRpcActor().InvokeAsync(
+                                        new RpcRequest(nameof(ReverseCallbackServer.UpdateGatewayDataAsync), null, waitInvoke,
+                                        new object[2]
+                                        {
+                                            devices,
+                                            variables
+                                        }, null));
+                                    tasks.Add(task);
+                                    i++;
+                                }
+                                await Task.WhenAll(tasks);
                             }
                         }
                         catch (Exception ex)
@@ -201,8 +225,28 @@ public class ManagementHostedService : BackgroundService
                         try
                         {
                             await tcpDmtpClient.TryConnectAsync();
-                            // 发送 Ping 请求以检查设备是否在线，超时时间为 3000 毫秒
-                            online = await tcpDmtpClient.PingAsync(3000).ConfigureAwait(false);
+
+                            {
+                                // 初始化读取错误计数器
+                                var readErrorCount = 0;
+                                // 当读取错误次数小于最大错误计数时循环执行
+                                while (readErrorCount < Options.MaxErrorCount)
+                                {
+                                    try
+                                    {
+                                        // 发送 Ping 请求以检查设备是否在线，超时时间为 10000 毫秒
+                                        online = await tcpDmtpClient.PingAsync(10000).ConfigureAwait(false);
+                                        if (online)
+                                            break;
+                                    }
+                                    catch
+                                    {
+                                        // 捕获异常，增加读取错误计数器
+                                        readErrorCount++;
+                                        await Task.Delay(1000);
+                                    }
+                                }
+                            }
 
                             // 声明一个可空的 GatewayState 变量，初始化为 null
                             GatewayState? gatewayState = null;
@@ -218,8 +262,8 @@ public class ManagementHostedService : BackgroundService
                                 {
                                     try
                                     {
-                                        // 尝试调用反向回调服务器的 GetGatewayStateAsync 方法获取网关状态
-                                        gatewayState = await tcpDmtpClient.GetDmtpRpcActor().InvokeTAsync<GatewayState>(nameof(ReverseCallbackServer.GetGatewayStateAsync), waitInvoke, StartCollectDeviceEnable).ConfigureAwait(false);
+                                        // 尝试调用回调服务器的 GetGatewayState 方法获取网关状态
+                                        gatewayState = tcpDmtpClient.GetDmtpRpcActor().InvokeT<GatewayState>(nameof(ReverseCallbackServer.GetGatewayState), waitInvoke, StartCollectDeviceEnable);
 
                                         // 如果成功获取网关状态，则跳出循环
                                         break;
@@ -342,6 +386,7 @@ public class ManagementHostedService : BackgroundService
         var tcpDmtpService = new TcpDmtpService();
         var config = new TouchSocketConfig()
                .SetListenIPHosts(options.PrimaryUri)
+               .SetAdapterOption(new AdapterOption() { MaxPackageSize = 1024 * 1024 * 1024 })
                .SetDmtpOption(new DmtpOption() { VerifyToken = options.VerifyToken })
                .ConfigureContainer(a =>
                {
@@ -371,6 +416,7 @@ public class ManagementHostedService : BackgroundService
         var tcpDmtpClient = new TcpDmtpClient();
         var config = new TouchSocketConfig()
                .SetRemoteIPHost(options.PrimaryUri)
+               .SetAdapterOption(new AdapterOption() { MaxPackageSize = 1024 * 1024 * 1024 })
                .SetDmtpOption(new DmtpOption() { VerifyToken = options.VerifyToken })
                .ConfigureContainer(a =>
                {

@@ -216,6 +216,9 @@ public abstract class DriverBase : DisposableObject
                             }
                         }
                     }
+
+                    IsInitSuccess = true;
+                    IsBeforStarted = false;
                 }
                 catch (Exception ex)
                 {

@@ -42,6 +42,7 @@
   },
 
   "ThingsGateway.Admin.Razor.MainLayout": {
+    "About": "关于",
     "FullScreenButton": "全屏",
     "UserCenter": "个人中心",
     "ChoiceModule": "切换模块",

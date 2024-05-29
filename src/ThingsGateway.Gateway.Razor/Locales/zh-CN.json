@@ -25,6 +25,7 @@
     "WriteValue": "写入值"
   },
   "ThingsGateway.Gateway.Razor.MainLayout": {
+    "About": "关于",
     "FullScreenButton": "全屏",
     "UserCenter": "个人中心",
     "ChoiceModule": "切换模块",

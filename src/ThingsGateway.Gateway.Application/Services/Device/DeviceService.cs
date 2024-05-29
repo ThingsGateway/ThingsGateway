@@ -298,7 +298,7 @@ public class DeviceService : BaseService<Device>, IDeviceService
 
     private void CheckInput(Device input)
     {
-        if (input.RedundantEnable && input.RedundantDeviceId != null)
+        if (input.RedundantEnable && input.RedundantDeviceId == null)
         {
             throw Oops.Bah(Localizer["RedundantDeviceNotNull"]);
         }

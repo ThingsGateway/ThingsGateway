@@ -210,7 +210,8 @@
     "RedundancyDisable": "Redundant gateway site not enabled"
   },
   "ThingsGateway.Gateway.Application.AlarmHostedService": {
-    "RealAlarmTask": "Real-time alarm thread"
+    "RealAlarmTask": "Real-time alarm thread",
+    "RealAlarmTaskStart": "Real-time alarm thread start"
   },
   "ThingsGateway.Gateway.Application.PluginService": {
     "LoadTypeSuccess": "Plugin {0} loaded successfully",

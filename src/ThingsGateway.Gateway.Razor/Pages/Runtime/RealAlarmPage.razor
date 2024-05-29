@@ -17,71 +17,71 @@
                 OnQueryAsync="OnQueryAsync" IsPagination=true>
 
         <TableColumns>
-            <TableColumn @bind-Field="@context.DeviceName" Editable Visible />
-            <TableColumn @bind-Field="@context.Name" Editable Visible />
-            <TableColumn @bind-Field="@context.Description" Editable Visible />
-            <TableColumn @bind-Field="@context.DataType" Editable Visible />
-            <TableColumn @bind-Field="@context.AlarmTime" Editable Visible />
-            <TableColumn @bind-Field="@context.AlarmCode" Editable Visible />
-            <TableColumn @bind-Field="@context.AlarmLimit" Editable Visible />
-            <TableColumn @bind-Field="@context.AlarmText" Editable Visible />
-            <TableColumn @bind-Field="@context.AlarmType" Editable Visible />
-            <TableColumn @bind-Field="@context.EventTime" Editable Visible />
-            <TableColumn @bind-Field="@context.EventType" Editable Visible />
+            <TableColumn @bind-Field="@context.DeviceName" Filterable Sortable Visible />
+            <TableColumn @bind-Field="@context.Name" Filterable Sortable Visible />
+            <TableColumn @bind-Field="@context.Description" Filterable Sortable Visible />
+            <TableColumn @bind-Field="@context.DataType" Filterable Sortable Visible />
+            <TableColumn @bind-Field="@context.AlarmTime" Filterable Sortable Visible />
+            <TableColumn @bind-Field="@context.AlarmCode" Filterable Sortable Visible />
+            <TableColumn @bind-Field="@context.AlarmLimit" Filterable Sortable Visible />
+            <TableColumn @bind-Field="@context.AlarmText" Filterable Sortable Visible />
+            <TableColumn @bind-Field="@context.AlarmType" Filterable Sortable Visible />
+            <TableColumn @bind-Field="@context.EventTime" Filterable Sortable Visible />
+            <TableColumn @bind-Field="@context.EventType" Filterable Sortable Visible />
 
 @* 
-            <TableColumn @bind-Field="@context.DeviceId" Editable="false" Visible="false" />
-            <TableColumn @bind-Field="@context.Unit" Editable="false" Visible="false" />
-            <TableColumn @bind-Field="@context.ReadExpressions" Editable="false" Visible="false" />
-            <TableColumn @bind-Field="@context.WriteExpressions" Editable="false" Visible="false" />
-            <TableColumn @bind-Field="@context.Enable" Editable="false" Visible="false" />
-            <TableColumn @bind-Field="@context.IntervalTime" Editable="false" Visible="false" />
-            <TableColumn Field="@context.ChangeTime" FieldExpression=@(()=>context.ChangeTime) Editable="false" Visible="false" />
-            <TableColumn @bind-Field="@context.CollectDeviceRunTime" Editable="false" Visible="false" />
-            <TableColumn Field="@context.CollectTime" FieldExpression=@(()=>context.CollectTime) Editable="false" Visible="false" />
-            <TableColumn Field="@context.IsOnline" FieldExpression=@(()=>context.IsOnline) Editable="false" Visible="false" />
-            <TableColumn Field="@context.LastErrorMessage" FieldExpression=@(()=>context.LastErrorMessage) Editable="false" Visible="false" />
-            <TableColumn Field="@context.LastSetValue" FieldExpression=@(()=>context.LastSetValue) Editable="false" Visible="false" />
-            <TableColumn Field="@context.RawValue" FieldExpression=@(()=>context.RawValue) Editable="false" Visible="false" />
-            <TableColumn Field="@context.Value" FieldExpression=@(()=>context.Value) Editable="false" Visible="false" />
-            <TableColumn @bind-Field="@context.Index" Editable="false" Visible="false" />
-            <TableColumn Field="@context.AlarmEnable" FieldExpression=@(()=>context.AlarmEnable) Editable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.DeviceId" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.Unit" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.ReadExpressions" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.WriteExpressions" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.Enable" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.IntervalTime" Filterable Sortable="false" Visible="false" />
+            <TableColumn Field="@context.ChangeTime" FieldExpression=@(()=>context.ChangeTime) Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.CollectDeviceRunTime" Filterable Sortable="false" Visible="false" />
+            <TableColumn Field="@context.CollectTime" FieldExpression=@(()=>context.CollectTime) Filterable Sortable="false" Visible="false" />
+            <TableColumn Field="@context.IsOnline" FieldExpression=@(()=>context.IsOnline) Filterable Sortable="false" Visible="false" />
+            <TableColumn Field="@context.LastErrorMessage" FieldExpression=@(()=>context.LastErrorMessage) Filterable Sortable="false" Visible="false" />
+            <TableColumn Field="@context.LastSetValue" FieldExpression=@(()=>context.LastSetValue) Filterable Sortable="false" Visible="false" />
+            <TableColumn Field="@context.RawValue" FieldExpression=@(()=>context.RawValue) Filterable Sortable="false" Visible="false" />
+            <TableColumn Field="@context.Value" FieldExpression=@(()=>context.Value) Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.Index" Filterable Sortable="false" Visible="false" />
+            <TableColumn Field="@context.AlarmEnable" FieldExpression=@(()=>context.AlarmEnable) Filterable Sortable="false" Visible="false" />
 
-            <TableColumn @bind-Field="@context.RegisterAddress" Editable="false" Visible="false" />
-            <TableColumn @bind-Field="@context.OtherMethod" Editable="false" Visible="false" />
-            <TableColumn @bind-Field="@context.RpcWriteEnable" Editable="false" Visible="false" />
-            <TableColumn @bind-Field="@context.VariablePropertys" Editable="false" Visible="false" />
-            <TableColumn @bind-Field="@context.BoolOpenAlarmEnable" Editable="false" Visible="false" />
-            <TableColumn @bind-Field="@context.BoolOpenRestrainExpressions" Editable="false" Visible="false" />
-            <TableColumn @bind-Field="@context.BoolOpenAlarmText" Editable="false" Visible="false" />
-            <TableColumn @bind-Field="@context.BoolCloseAlarmEnable" Editable="false" Visible="false" />
-            <TableColumn @bind-Field="@context.BoolCloseRestrainExpressions" Editable="false" Visible="false" />
-            <TableColumn @bind-Field="@context.BoolCloseAlarmText" Editable="false" Visible="false" />
-            <TableColumn @bind-Field="@context.HAlarmEnable" Editable="false" Visible="false" />
-            <TableColumn @bind-Field="@context.HRestrainExpressions" Editable="false" Visible="false" />
-            <TableColumn @bind-Field="@context.HAlarmText" Editable="false" Visible="false" />
-            <TableColumn @bind-Field="@context.HAlarmCode" Editable="false" Visible="false" />
-            <TableColumn @bind-Field="@context.HHAlarmEnable" Editable="false" Visible="false" />
-            <TableColumn @bind-Field="@context.HHRestrainExpressions" Editable="false" Visible="false" />
-            <TableColumn @bind-Field="@context.HHAlarmText" Editable="false" Visible="false" />
-            <TableColumn @bind-Field="@context.HHAlarmCode" Editable="false" Visible="false" />
-            <TableColumn @bind-Field="@context.LAlarmEnable" Editable="false" Visible="false" />
-            <TableColumn @bind-Field="@context.LRestrainExpressions" Editable="false" Visible="false" />
-            <TableColumn @bind-Field="@context.LAlarmText" Editable="false" Visible="false" />
-            <TableColumn @bind-Field="@context.LAlarmCode" Editable="false" Visible="false" />
-            <TableColumn @bind-Field="@context.LLAlarmEnable" Editable="false" Visible="false" />
-            <TableColumn @bind-Field="@context.LLRestrainExpressions" Editable="false" Visible="false" />
-            <TableColumn @bind-Field="@context.LLAlarmText" Editable="false" Visible="false" />
-            <TableColumn @bind-Field="@context.LLAlarmCode" Editable="false" Visible="false" />
-            <TableColumn @bind-Field="@context.CustomAlarmEnable" Editable="false" Visible="false" />
-            <TableColumn @bind-Field="@context.CustomRestrainExpressions" Editable="false" Visible="false" />
-            <TableColumn @bind-Field="@context.CustomAlarmText" Editable="false" Visible="false" />
-            <TableColumn @bind-Field="@context.CustomAlarmCode" Editable="false" Visible="false" />
-            <TableColumn @bind-Field="@context.Remark1" Editable="false" Visible="false" />
-            <TableColumn @bind-Field="@context.Remark2" Editable="false" Visible="false" />
-            <TableColumn @bind-Field="@context.Remark3" Editable="false" Visible="false" />
-            <TableColumn @bind-Field="@context.Remark4" Editable="false" Visible="false" />
-            <TableColumn @bind-Field="@context.Remark5" Editable="false" Visible="false" /> *@
+            <TableColumn @bind-Field="@context.RegisterAddress" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.OtherMethod" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.RpcWriteEnable" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.VariablePropertys" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.BoolOpenAlarmEnable" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.BoolOpenRestrainExpressions" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.BoolOpenAlarmText" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.BoolCloseAlarmEnable" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.BoolCloseRestrainExpressions" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.BoolCloseAlarmText" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.HAlarmEnable" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.HRestrainExpressions" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.HAlarmText" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.HAlarmCode" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.HHAlarmEnable" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.HHRestrainExpressions" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.HHAlarmText" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.HHAlarmCode" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.LAlarmEnable" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.LRestrainExpressions" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.LAlarmText" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.LAlarmCode" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.LLAlarmEnable" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.LLRestrainExpressions" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.LLAlarmText" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.LLAlarmCode" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.CustomAlarmEnable" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.CustomRestrainExpressions" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.CustomAlarmText" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.CustomAlarmCode" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.Remark1" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.Remark2" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.Remark3" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.Remark4" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.Remark5" Filterable Sortable="false" Visible="false" /> *@
 
         </TableColumns>
 

@@ -15,27 +15,13 @@ namespace ThingsGateway.Gateway.Application;
 
 internal partial class ReverseCallbackServer : RpcServer
 {
-    private EasyLock easyLock = new();
-
     [DmtpRpc(true)]//使用方法名作为调用键
-    public async Task<GatewayState> GetGatewayStateAsync(bool isStart)
+    public GatewayState GetGatewayState(bool isStart)
     {
-        try
-        {
-            await easyLock.WaitAsync().ConfigureAwait(false);
-
-            //冗余双方站点可能存在同时执行冗余切换的情况
-            {
-                GatewayState result = new();
-                result.IsStart = HostedServiceUtil.ManagementHostedService.StartCollectDeviceEnable;
-                result.IsPrimary = HostedServiceUtil.ManagementHostedService.Options?.Redundancy?.IsPrimary == true;
-                return result;
-            }
-        }
-        finally
-        {
-            easyLock.Release();
-        }
+        GatewayState result = new();
+        result.IsStart = HostedServiceUtil.ManagementHostedService.StartCollectDeviceEnable;
+        result.IsPrimary = HostedServiceUtil.ManagementHostedService.Options?.Redundancy?.IsPrimary == true;
+        return result;
     }
 
     [DmtpRpc(true)]//使用方法名作为调用键

@@ -110,6 +110,21 @@ public partial class MainLayout : IDisposable
 
     #endregion 切换模块
 
+    private async Task ShowAbout()
+    {
+        DialogOption? op = null;
+
+        op = new DialogOption()
+        {
+            IsScrolling = true,
+            Size = Size.Medium,
+            ShowFooter = false,
+            Title = Localizer["About"],
+            BodyTemplate = BootstrapDynamicComponent.CreateComponent<About>().Render(),
+        };
+        await DialogService.Show(op);
+    }
+
     #region 个人信息修改
 
     private Task OnUserInfoDialog() => DialogService.Show(new DialogOption()

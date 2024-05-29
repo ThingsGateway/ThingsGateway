@@ -16,6 +16,16 @@ namespace ThingsGateway.Core;
 public class WebsiteOptions
 {
     /// <summary>
+    /// Copyright
+    /// </summary>
+    public string Copyright { get; set; }
+
+    /// <summary>
+    /// 是否显示关于页面
+    /// </summary>
+    public bool Show { get; set; }
+
+    /// <summary>
     /// 开源地址
     /// </summary>
     public string SourceUrl { get; set; } = "https://gitee.com/diego2098/ThingsGateway";
@@ -29,6 +39,11 @@ public class WebsiteOptions
     /// QQ群链接地址
     /// </summary>
     public string? QQGroup1Link { get; set; } = "http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=NnBjPO-8kcNFzo_RzSbdICflb97u2O1i&authKey=V1MI3iJtpDMHc08myszP262kDykbx2Yev6ebE4Me0elTe0P0IFAmtU5l7Sy5w0jx&noverify=0&group_code=605534569";
+
+    /// <summary>
+    /// QQ群链接地址
+    /// </summary>
+    public string? QQGroup1Number { get; set; } = "605534569";
 
     public string? Title { get; set; } = "ThingsGateway";
 

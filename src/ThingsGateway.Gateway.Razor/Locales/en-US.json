@@ -27,6 +27,7 @@
     "WriteValue": "Value"
   },
   "ThingsGateway.Gateway.Razor.MainLayout": {
+    "About": "About",
     "FullScreenButton": "Full Screen",
     "UserCenter": "User Center",
     "ChoiceModule": "Switch Module",

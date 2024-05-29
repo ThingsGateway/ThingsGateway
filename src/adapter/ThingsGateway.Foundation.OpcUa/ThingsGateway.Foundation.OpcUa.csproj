@@ -2,6 +2,7 @@
 
 
   <Import Project="$(SolutionDir)PackNuget.props" />
+  <Import Project="$(SolutionDir)Version.props" />
   <PropertyGroup>
     <TargetFrameworks>net48;netstandard2.1;net6.0;</TargetFrameworks>
     <Description>工业设备通讯协议-OpcUa协议</Description>

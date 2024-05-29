@@ -111,6 +111,9 @@ public partial class DeviceEditComponent
         return Task.CompletedTask;
     }
 
+    [Parameter]
+    public Dictionary<long, string> DeviceDict { get; set; } = new();
+
     private async Task<QueryData<SelectedItem>> OnRedundantDevicesQuery(VirtualizeQueryOption option)
     {
         if (RedundantDevicesQuery != null)

@@ -64,6 +64,7 @@
     "Connection": "Connection"
   },
   "ThingsGateway.Debug.MainLayout": {
-    "FullScreenButton": "Full Screen"
+    "FullScreenButton": "Full Screen",
+    "About": "About"
   }
 }

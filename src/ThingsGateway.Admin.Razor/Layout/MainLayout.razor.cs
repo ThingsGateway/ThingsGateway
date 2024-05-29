@@ -119,6 +119,21 @@ public partial class MainLayout : IDisposable
 
     #endregion 个人信息修改
 
+    private async Task ShowAbout()
+    {
+        DialogOption? op = null;
+
+        op = new DialogOption()
+        {
+            IsScrolling = true,
+            Size = Size.Medium,
+            ShowFooter = false,
+            Title = Localizer["About"],
+            BodyTemplate = BootstrapDynamicComponent.CreateComponent<About>().Render(),
+        };
+        await DialogService.Show(op);
+    }
+
     [Inject]
     private DialogService DialogService { get; set; }
 

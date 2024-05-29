@@ -67,8 +67,8 @@ public class CollectDeviceHostedService : DeviceHostedService
             _logger.LogInformation(Localizer["DeviceRuntimeGeting"]);
             var collectDeviceRunTimes = (await DeviceService.GetCollectDeviceRuntimeAsync().ConfigureAwait(false));
             _logger.LogInformation(Localizer["DeviceRuntimeGeted"]);
-            var idSet = collectDeviceRunTimes.ToDictionary(a => a.Id);
-            var result = collectDeviceRunTimes.Where(a => !idSet.ContainsKey(a.RedundantDeviceId ?? 0) && !a.RedundantEnable);
+            var idSet = collectDeviceRunTimes.Where(a => a.RedundantEnable && a.RedundantDeviceId != null).Select(a => a.RedundantDeviceId ?? 0).ToHashSet().ToDictionary(a => a);
+            var result = collectDeviceRunTimes.Where(a => !idSet.ContainsKey(a.Id));
             result.ParallelForEach(collectDeviceRunTime =>
             {
                 if (!_stoppingToken.IsCancellationRequested)

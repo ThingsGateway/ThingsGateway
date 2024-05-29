@@ -8,12 +8,17 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-namespace ThingsGateway.Foundation;
+using ThingsGateway.Core;
 
-public interface IDtu : ITcpService
+namespace ThingsGateway.Razor;
+
+public partial class About
 {
-    /// <summary>
-    /// 心跳检测(大写16进制字符串)
-    /// </summary>
-    public string HeartbeatHexString { get; set; }
+    [Inject]
+    [NotNull]
+    private IOptions<WebsiteOptions>? WebsiteOption { get; set; }
+
+    [Inject]
+    [NotNull]
+    private IStringLocalizer<About>? Localizer { get; set; }
 }

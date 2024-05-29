@@ -10,6 +10,7 @@
 
 using Mapster;
 
+using NewLife.Extension;
 using NewLife.Threading;
 
 using ThingsGateway.Core.Extension;
@@ -118,7 +119,8 @@ public class DeviceRunTime : Device
         }
         internal set
         {
-            _lastErrorMessage = TimerX.Now.ToDefaultDateTimeFormat() + " - " + value;
+            if (!value.IsNullOrWhiteSpace())
+                _lastErrorMessage = TimerX.Now.ToDefaultDateTimeFormat() + " - " + value;
         }
     }
 

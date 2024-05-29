@@ -22,7 +22,7 @@ namespace ThingsGateway.Foundation.Modbus;
 public delegate ValueTask<OperResult> ModbusServerWriteEventHandler(ModbusAddress modbusAddress, byte[] writeValue, IThingsGatewayBitConverter bitConverter, IClientChannel channel);
 
 /// <inheritdoc/>
-public class ModbusSlave : ProtocolBase
+public class ModbusSlave : ProtocolBase, ITcpService
 {
     /// <inheritdoc/>
     public ModbusSlave(IChannel channel) : base(channel)
@@ -111,20 +111,7 @@ public class ModbusSlave : ProtocolBase
         switch (Channel.ChannelType)
         {
             case ChannelTypeEnum.TcpService:
-                Action<IPluginManager> action = a => { };
-
-                {
-                    action = a => a.UseCheckClear()
-        .SetCheckClearType(CheckClearType.All)
-        .SetTick(TimeSpan.FromSeconds(CheckClearTime))
-        .SetOnClose((c, t) =>
-        {
-            c.TryShutdown();
-            c.SafeClose($"{CheckClearTime}s Timeout");
-        });
-                }
-
-                return action;
+                return PluginUtil.GetTcpServicePlugin(this);
         }
         return base.ConfigurePlugins();
     }

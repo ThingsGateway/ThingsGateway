@@ -2,7 +2,8 @@
 
 	<Import Project="$(SolutionDir)Foundation.props" />
 	<Import Project="$(SolutionDir)PackNuget.props" />
-	<PropertyGroup>
+  <Import Project="$(SolutionDir)Version.props" />
+  <PropertyGroup>
 		<Description>工业设备通讯协议-西门子S7协议</Description>
 		<DocumentationFile></DocumentationFile>
 	</PropertyGroup>

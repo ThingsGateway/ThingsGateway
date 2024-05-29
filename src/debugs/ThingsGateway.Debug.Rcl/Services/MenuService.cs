@@ -10,6 +10,7 @@
 
 using BootstrapBlazor.Components;
 
+using ThingsGateway.Foundation;
 using ThingsGateway.Razor;
 
 using TouchSocket.Core;

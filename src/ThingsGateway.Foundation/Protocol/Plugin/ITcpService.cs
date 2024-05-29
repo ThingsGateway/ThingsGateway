@@ -10,10 +10,10 @@
 
 namespace ThingsGateway.Foundation;
 
-public interface IDtu : ITcpService
+public interface ITcpService
 {
     /// <summary>
-    /// 心跳检测(大写16进制字符串)
+    /// 客户端连接滑动过期时间(TCP服务通道时)
     /// </summary>
-    public string HeartbeatHexString { get; set; }
+    public int CheckClearTime { get; set; }
 }

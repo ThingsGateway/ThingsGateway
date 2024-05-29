@@ -72,7 +72,6 @@ public class TcpSessionClientChannel : TcpSessionClient, IClientChannel
     {
         if (DisposedValue) return;
         base.Dispose(disposing);
-        PluginManager?.SafeDispose();
     }
 
     protected override async Task OnTcpReceived(ReceivedDataEventArgs e)

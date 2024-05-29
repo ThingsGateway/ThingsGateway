@@ -1,4 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
+  <Import Project="$(SolutionDir)Version.props" />
 
   <PropertyGroup Condition="'$(SolutionName)'=='ThingsGateway - Admin'">
     <DefineConstants>Admin</DefineConstants>

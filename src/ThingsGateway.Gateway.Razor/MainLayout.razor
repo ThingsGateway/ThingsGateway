@@ -32,6 +32,8 @@
                     <FullScreenButton class="layout-header-bar d-none d-lg-flex px-2" Icon="fa fa-arrows-alt"
                                       TooltipPlacement=Placement.Bottom TooltipText="@Localizer[nameof(FullScreenButton)]" />
 
+                    <Button @onclick="ShowAbout" Icon="fa fa-info" Color="Color.None" TooltipText="@Localizer[nameof(About)]" />
+
                     @* 版本号 *@
                     <div class="px-2 navbar-header-text d-none d-lg-block">@_versionString</div>
 

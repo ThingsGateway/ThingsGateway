@@ -8,6 +8,8 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using BootstrapBlazor.Components;
+
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
@@ -23,6 +25,10 @@ namespace ThingsGateway.Debug;
 public partial class MainLayout
 {
     private IEnumerable<Assembly> _assemblyList => new List<Assembly>() { typeof(MainLayout).Assembly };
+
+    [Inject]
+    [NotNull]
+    private DialogService? DialogService { get; set; }
 
     [Inject]
     [NotNull]
@@ -46,5 +52,20 @@ public partial class MainLayout
     {
         _versionString = $"v{VersionService.Version}";
         await base.OnInitializedAsync();
+    }
+
+    private async Task ShowAbout()
+    {
+        DialogOption? op = null;
+
+        op = new DialogOption()
+        {
+            IsScrolling = true,
+            Size = Size.Medium,
+            ShowFooter = false,
+            Title = Localizer["About"],
+            BodyTemplate = BootstrapDynamicComponent.CreateComponent<About>().Render(),
+        };
+        await DialogService.Show(op);
     }
 }

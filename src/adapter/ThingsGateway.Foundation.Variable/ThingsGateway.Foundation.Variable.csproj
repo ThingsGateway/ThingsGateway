@@ -5,6 +5,7 @@
   <PropertyGroup>
     <Description>工业设备通讯协议-变量</Description>
     <TargetFrameworks>netstandard2.0;net6.0;</TargetFrameworks>
+    <Version>8.0</Version>
   </PropertyGroup>
 
   <ItemGroup>

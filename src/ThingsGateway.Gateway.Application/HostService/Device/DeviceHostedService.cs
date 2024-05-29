@@ -345,6 +345,29 @@ public abstract class DeviceHostedService : BackgroundService
         }
     }
 
+    private void DeviceRedundantThread(DeviceRunTime deviceRunTime, DeviceData deviceData)
+    {
+        _ = Task.Run(async () =>
+        {
+            var driverBase = DriverBases.FirstOrDefault(a => a.CurrentDevice.Id == deviceData.Id);
+            if (driverBase != null)
+            {
+                if (driverBase.CurrentDevice.DeviceStatus == DeviceStatusEnum.OffLine && (driverBase.IsInitSuccess == false || driverBase.IsBeforStarted))
+                {
+                    await Task.Delay(10000).ConfigureAwait(false);//10s后再次检测
+                    if (driverBase.CurrentDevice.DeviceStatus == DeviceStatusEnum.OffLine && (driverBase.IsInitSuccess == false || driverBase.IsBeforStarted))
+                    {
+                        //冗余切换
+                        if (driverBase.CurrentDevice.RedundantEnable && DeviceService.GetAll().Any(a => a.Id == driverBase.CurrentDevice.RedundantDeviceId))
+                        {
+                            await DeviceRedundantThreadAsync(driverBase.CurrentDevice.Id).ConfigureAwait(false);
+                        }
+                    }
+                }
+            }
+        });
+    }
+
     /// <summary>
     /// 更新设备线程,切换为冗余通道
     /// </summary>
@@ -359,9 +382,9 @@ public abstract class DeviceHostedService : BackgroundService
                 var channelThread = ChannelThreads.FirstOrDefault(it => it.Has(deviceId))
                     ?? throw new(Localizer["UpadteDeviceIdNotFound", deviceId]);
                 //这里先停止采集，操作会使线程取消，需要重新恢复线程
+                var dev = channelThread.GetDriver(deviceId).CurrentDevice;
                 await channelThread.RemoveDriverAsync(deviceId).ConfigureAwait(false);
 
-                var dev = channelThread.GetDriver(deviceId).CurrentDevice;
 
                 if (dev.RedundantEnable)
                 {
@@ -543,6 +566,7 @@ public abstract class DeviceHostedService : BackgroundService
 
     protected virtual async Task WhileExecuteAsync(CancellationToken stoppingToken)
     {
+        GlobalData.DeviceStatusChangeEvent += DeviceRedundantThread;
         while (!stoppingToken.IsCancellationRequested)
         {
             try
@@ -560,15 +584,6 @@ public abstract class DeviceHostedService : BackgroundService
                     {
                         if (driverBase.CurrentDevice != null)
                         {
-                            //冗余切换
-                            if (driverBase.CurrentDevice.DeviceStatus == DeviceStatusEnum.OffLine && (driverBase.IsInitSuccess == false || driverBase.IsBeforStarted))
-                            {
-                                if (driverBase.CurrentDevice.RedundantEnable && DeviceService.GetAll().Any(a => a.Id == driverBase.CurrentDevice.RedundantDeviceId))
-                                {
-                                    await DeviceRedundantThreadAsync(driverBase.CurrentDevice.Id).ConfigureAwait(false);
-                                }
-                            }
-
                             //线程卡死/初始化失败检测
                             if ((driverBase.CurrentDevice.ActiveTime != null && driverBase.CurrentDevice.ActiveTime != DateTime.UnixEpoch.ToLocalTime() && driverBase.CurrentDevice.ActiveTime.Value.AddMinutes(CheckIntervalTime) <= DateTime.Now)
                                 || (driverBase.IsInitSuccess == false))

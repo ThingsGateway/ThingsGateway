@@ -432,6 +432,7 @@ public class AlarmHostedService : BackgroundService
 
             RealAlarmTask = new DoTask(a => DoWork(a), _logger, Localizer["RealAlarmTask"]); // 创建新的任务
             RealAlarmTask.Start(); // 启动任务
+            _logger.LogInformation(Localizer["RealAlarmTaskStart"]);
         }
         catch (Exception ex)
         {
