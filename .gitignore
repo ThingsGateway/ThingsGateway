@@ -370,4 +370,6 @@ FodyWeavers.xsd
 /doc/build/
 /src/ThingsGateway.Server/.config/
 /src/nuget.exe
+/src/nupkgs/
+/src/nupkgs
 
