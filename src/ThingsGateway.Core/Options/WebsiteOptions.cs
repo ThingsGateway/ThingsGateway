@@ -23,7 +23,7 @@ public class WebsiteOptions
     /// <summary>
     /// 是否显示关于页面
     /// </summary>
-    public bool Show { get; set; }
+    public bool IsShowAbout { get; set; }
 
     /// <summary>
     /// 开源地址
