@@ -46,10 +46,6 @@ public partial class QuestDBProducer : BusinessBaseWithCacheIntervalVarModel<Que
 
     public override void Init(IChannel? channel = null)
     {
-        base.Init(channel);
-
-        #region 初始化
-
         _config = new TypeAdapterConfig();
         _config.ForType<VariableRunTime, QuestDBHistoryValue>()
             //.Map(dest => dest.Id, src => YitIdHelper.NextId())
@@ -59,7 +55,7 @@ public partial class QuestDBProducer : BusinessBaseWithCacheIntervalVarModel<Que
             .Map(dest => dest.CreateTime, (src) => DateTime.UtcNow)
             ;//注意sqlsugar插入时无时区，直接utc时间
 
-        #endregion 初始化
+        base.Init(channel);
     }
 
     protected override async Task ProtectedBeforStartAsync(CancellationToken cancellationToken)

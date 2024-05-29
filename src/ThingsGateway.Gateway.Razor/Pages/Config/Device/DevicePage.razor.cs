@@ -106,8 +106,9 @@ public abstract partial class DevicePage : IDisposable
             IsAdvanceSearch = false,
             IsSearch = !option.SearchText.IsNullOrWhiteSpace()
         };
-        var items = DeviceService.GetAll().WhereIF(!option.SearchText.IsNullOrWhiteSpace(), a => a.Name.Contains(option.SearchText))
-            .Where(a => a.PluginName == device.PluginName && a.Id != device.Id).BuildDeviceSelectList().Concat(new List<SelectedItem>() { new SelectedItem(string.Empty, "none") });
+        var items = new List<SelectedItem>() { new SelectedItem(string.Empty, "none") }.Concat(DeviceService.GetAll().WhereIF(!option.SearchText.IsNullOrWhiteSpace(), a => a.Name.Contains(option.SearchText))
+            .Where(a => a.PluginName == device.PluginName && a.Id != device.Id).BuildDeviceSelectList()
+            );
 
         ret.TotalCount = items.Count();
         ret.Items = items;

@@ -33,6 +33,11 @@ public abstract class BusinessBaseWithCacheIntervalDevModel<VarModel, DevModel> 
     protected abstract BusinessPropertyWithCacheInterval _businessPropertyWithCacheInterval { get; }
 
     /// <summary>
+    /// 获取具体业务属性的缓存设置。
+    /// </summary>
+    protected override BusinessPropertyWithCache _businessPropertyWithCache => _businessPropertyWithCacheInterval;
+
+    /// <summary>
     /// 初始化方法，初始化插件。
     /// </summary>
     /// <param name="channel">通道对象</param>

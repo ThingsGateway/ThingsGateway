@@ -46,10 +46,6 @@ public partial class SqlDBProducer : BusinessBaseWithCacheIntervalVarModel<SQLHi
 
     public override void Init(IChannel? channel = null)
     {
-        base.Init(channel);
-
-        #region 初始化
-
         _config = new TypeAdapterConfig();
         _config.ForType<VariableRunTime, SQLHistoryValue>()
             //.Map(dest => dest.Id, (src) =>YitIdHelper.NextId())
@@ -58,7 +54,7 @@ public partial class SqlDBProducer : BusinessBaseWithCacheIntervalVarModel<SQLHi
 
         _exRealTimerTick = new(_driverPropertys.BusinessInterval);
 
-        #endregion 初始化
+        base.Init(channel);
     }
 
     protected override async Task ProtectedBeforStartAsync(CancellationToken cancellationToken)

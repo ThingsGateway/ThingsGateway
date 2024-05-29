@@ -10,6 +10,8 @@
 
 using Microsoft.AspNetCore.Components;
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace BootstrapBlazor.Components;
 
 /// <summary>
@@ -22,6 +24,7 @@ internal class InternalEditorItem(string fieldName, Type fieldType, string? fiel
 {
     public Type PropertyType => fieldType;
 
+    [ExcludeFromCodeCoverage]
     public bool Editable { get; set; } = true;
     public bool Readonly { get; set; }
     public bool? IsReadonlyWhenAdd { get; set; }
@@ -32,7 +35,10 @@ internal class InternalEditorItem(string fieldName, Type fieldType, string? fiel
     public bool? IsVisibleWhenAdd { get; set; } = true;
 
     public bool? IsVisibleWhenEdit { get; set; } = true;
-
+    /// <summary>
+    /// <inheritdoc/>
+    /// </summary>
+    public bool Ignore { get; set; }
     public bool SkipValidate { get; set; }
     public string? Text { get; set; } = fieldText;
     public bool? ShowLabelTooltip { get; set; }
