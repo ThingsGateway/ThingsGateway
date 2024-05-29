@@ -26,6 +26,7 @@ internal class InternalEditorItem(string fieldName, Type fieldType, string? fiel
 
     [ExcludeFromCodeCoverage]
     public bool Editable { get; set; } = true;
+
     public bool Readonly { get; set; }
     public bool? IsReadonlyWhenAdd { get; set; }
     public bool? IsReadonlyWhenEdit { get; set; }
@@ -35,10 +36,12 @@ internal class InternalEditorItem(string fieldName, Type fieldType, string? fiel
     public bool? IsVisibleWhenAdd { get; set; } = true;
 
     public bool? IsVisibleWhenEdit { get; set; } = true;
+
     /// <summary>
     /// <inheritdoc/>
     /// </summary>
     public bool Ignore { get; set; }
+
     public bool SkipValidate { get; set; }
     public string? Text { get; set; } = fieldText;
     public bool? ShowLabelTooltip { get; set; }
@@ -59,7 +62,6 @@ internal class InternalEditorItem(string fieldName, Type fieldType, string? fiel
     public int Order { get; set; }
     public string? GroupName { get; set; }
     public int GroupOrder { get; set; }
-    public bool Ignore { get; set; }
 
     public string GetDisplayName() => Text;
 
