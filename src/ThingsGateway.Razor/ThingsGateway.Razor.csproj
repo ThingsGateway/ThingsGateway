@@ -1,5 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
 
+  <Import Project="$(SolutionDir)Version.props" />
 
   <ItemGroup>
     <Content Remove="Locales\*.json" />
@@ -9,8 +10,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="BootstrapBlazor" Version="8.5.1" />
-    <PackageReference Include="BootstrapBlazor.FontAwesome" Version="8.0.2" />
+    <PackageReference Include="BootstrapBlazor" Version="8.5.11" />
+    <PackageReference Include="BootstrapBlazor.FontAwesome" Version="8.0.4" />
   </ItemGroup>
 
   <ItemGroup>

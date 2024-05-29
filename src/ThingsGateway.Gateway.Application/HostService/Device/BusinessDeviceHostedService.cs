@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -8,8 +7,6 @@
 //  使用文档：https://kimdiego2098.github.io/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
-
-
 
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -33,7 +30,7 @@ public class BusinessDeviceHostedService : DeviceHostedService
     {
         if (started)
         {
-            await StopAsync(true).ConfigureAwait(false);
+            await StopAsync().ConfigureAwait(false);
         }
         await CreatThreadsAsync().ConfigureAwait(false);
     }
@@ -46,7 +43,7 @@ public class BusinessDeviceHostedService : DeviceHostedService
 
     private async Task CollectDeviceHostedService_Stoping()
     {
-        await StopAsync(true).ConfigureAwait(false);
+        await StopAsync().ConfigureAwait(false);
     }
 
     #region worker服务
@@ -93,8 +90,8 @@ public class BusinessDeviceHostedService : DeviceHostedService
             _logger.LogInformation(Localizer["DeviceRuntimeGeting"]);
             var deviceRunTimes = await DeviceService.GetBusinessDeviceRuntimeAsync().ConfigureAwait(false);
             _logger.LogInformation(Localizer["DeviceRuntimeGeted"]);
-            var idSet = deviceRunTimes.ToDictionary(a => a.Id);
-            var result = deviceRunTimes.Where(a => !idSet.ContainsKey(a.RedundantDeviceId ?? 0) && !a.RedundantEnable);
+            var idSet = deviceRunTimes.Where(a => a.RedundantEnable && a.RedundantDeviceId != null).Select(a => a.RedundantDeviceId ?? 0).ToHashSet().ToDictionary(a => a);
+            var result = deviceRunTimes.Where(a => !idSet.ContainsKey(a.Id));
             result.ParallelForEach(collectDeviceRunTime =>
             {
                 if (!_stoppingToken.IsCancellationRequested)
@@ -110,6 +107,11 @@ public class BusinessDeviceHostedService : DeviceHostedService
                     }
                 }
             });
+        }
+        for (int i = 0; i < 3; i++)
+        {
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
         }
     }
 

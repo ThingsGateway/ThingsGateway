@@ -88,16 +88,12 @@ public abstract class DriverBase : DisposableObject
     /// </summary>
     public LoggerGroup LogMessage { get; internal set; }
 
-    #endregion 任务管理器传入
-
-    #region 插件管理器传入
-
     /// <summary>
     /// 当前插件目录
     /// </summary>
     public string Directory { get; internal set; }
 
-    #endregion 插件管理器传入
+    #endregion 任务管理器传入
 
     private IStringLocalizer Localizer { get; }
 
@@ -166,7 +162,7 @@ public abstract class DriverBase : DisposableObject
     /// <summary>
     /// 底层驱动，有可能为null
     /// </summary>
-    protected abstract IProtocol? Protocol { get; }
+    public abstract IProtocol? Protocol { get; }
 
     /// <summary>
     /// RPC服务
@@ -201,22 +197,28 @@ public abstract class DriverBase : DisposableObject
                     // 执行资源释放操作
                     this.SafeDispose();
                     // 根据是否正在采集设备来从全局设备集合或业务设备集合中移除指定设备ID的驱动程序对象
-                    if (IsCollectDevice)
+                    if (!HostedServiceUtil.ManagementHostedService.StartBusinessDeviceEnable)
                     {
-                        //lock (GlobalData.CollectDevices)
+                        if (IsCollectDevice)
                         {
-                            GlobalData.CollectDevices.RemoveWhere(it => it.Value.Id == DeviceId);
+                            //lock (GlobalData.CollectDevices)
+                            {
+                                GlobalData.CollectDevices.RemoveWhere(it => it.Value.Id == DeviceId);
 
-                            GlobalData.Variables.RemoveWhere(it => it.Value.DeviceId == DeviceId);
+                                GlobalData.Variables.RemoveWhere(it => it.Value.DeviceId == DeviceId);
+                            }
                         }
-                    }
-                    else
-                    {
-                        //lock (GlobalData.BusinessDevices)
+                        else
                         {
-                            GlobalData.BusinessDevices.RemoveWhere(it => it.Value.Id == DeviceId);
+                            //lock (GlobalData.BusinessDevices)
+                            {
+                                GlobalData.BusinessDevices.RemoveWhere(it => it.Value.Id == DeviceId);
+                            }
                         }
                     }
+
+                    IsInitSuccess = true;
+                    IsBeforStarted = false;
                 }
                 catch (Exception ex)
                 {
@@ -235,7 +237,7 @@ public abstract class DriverBase : DisposableObject
     /// </summary>
     /// <param name="cancellationToken">取消操作的令牌。</param>
     /// <returns>表示异步操作的任务。</returns>
-    public virtual async Task BeforStartAsync(CancellationToken cancellationToken)
+    public virtual async ValueTask BeforStartAsync(CancellationToken cancellationToken)
     {
         // 如果已经执行过初始化，则直接返回
         if (IsBeforStarted)
@@ -288,7 +290,7 @@ public abstract class DriverBase : DisposableObject
     /// </summary>
     /// <param name="cancellationToken">取消操作的令牌。</param>
     /// <returns>表示异步操作结果的枚举。</returns>
-    public virtual async Task<ThreadRunReturnTypeEnum> ExecuteAsync(CancellationToken cancellationToken)
+    public virtual async ValueTask<ThreadRunReturnTypeEnum> ExecuteAsync(CancellationToken cancellationToken)
     {
         try
         {
@@ -433,7 +435,7 @@ public abstract class DriverBase : DisposableObject
     /// <summary>
     /// 间隔执行
     /// </summary>
-    protected abstract Task ProtectedExecuteAsync(CancellationToken cancellationToken);
+    protected abstract ValueTask ProtectedExecuteAsync(CancellationToken cancellationToken);
 
     /// <summary>
     /// 获取设备变量打包列表/特殊方法列表

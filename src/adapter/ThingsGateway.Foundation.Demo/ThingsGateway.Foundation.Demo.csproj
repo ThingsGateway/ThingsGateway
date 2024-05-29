@@ -4,10 +4,9 @@
   <PropertyGroup>
     <TargetFrameworks>net6.0;</TargetFrameworks>
     <OutputType>Exe</OutputType>
-
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="ThingsGateway.Foundation.Variable" Version="6.0.0.13-beta02" />
+    <PackageReference Include="ThingsGateway.Foundation.Variable" Version="8.0" />
   </ItemGroup>
 
 

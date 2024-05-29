@@ -10,7 +10,6 @@
 
 using Mapster;
 
-using ThingsGateway.Admin.Application;
 using ThingsGateway.Foundation;
 
 using TouchSocket.Core;
@@ -30,12 +29,12 @@ public partial class QuestDBProducer : BusinessBaseWithCacheIntervalVarModel<Que
         base.VariableChange(variableRunTime, variable);
     }
 
-    protected override Task<OperResult> UpdateVarModel(IEnumerable<CacheDBItem<QuestDBHistoryValue>> item, CancellationToken cancellationToken)
+    protected override ValueTask<OperResult> UpdateVarModel(IEnumerable<CacheDBItem<QuestDBHistoryValue>> item, CancellationToken cancellationToken)
     {
         return UpdateVarModel(item.Select(a => a.Value), cancellationToken);
     }
 
-    private async Task<OperResult> UpdateVarModel(IEnumerable<QuestDBHistoryValue> item, CancellationToken cancellationToken)
+    private async ValueTask<OperResult> UpdateVarModel(IEnumerable<QuestDBHistoryValue> item, CancellationToken cancellationToken)
     {
         var result = await InserableAsync(item.ToList(), cancellationToken);
         if (success != result.IsSuccess)
@@ -50,7 +49,7 @@ public partial class QuestDBProducer : BusinessBaseWithCacheIntervalVarModel<Que
 
     #region 方法
 
-    private async Task<OperResult> InserableAsync(List<QuestDBHistoryValue> dbInserts, CancellationToken cancellationToken)
+    private async ValueTask<OperResult> InserableAsync(List<QuestDBHistoryValue> dbInserts, CancellationToken cancellationToken)
     {
         try
         {
@@ -62,11 +61,11 @@ public partial class QuestDBProducer : BusinessBaseWithCacheIntervalVarModel<Que
             {
                 LogMessage.Trace($"TableName：{nameof(QuestDBHistoryValue)}，Count：{result}");
             }
-            return new();
+            return OperResult.Success;
         }
         catch (Exception ex)
         {
-            return new(ex);
+            return new OperResult(ex);
         }
     }
 

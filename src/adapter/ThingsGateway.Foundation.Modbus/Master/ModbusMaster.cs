@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -8,11 +7,6 @@
 //  使用文档：https://kimdiego2098.github.io/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
-
-
-
-
-using System.Text;
 
 using ThingsGateway.Foundation.Extension.Generic;
 
@@ -29,6 +23,7 @@ public partial class ModbusMaster : ProtocolBase, IDtu
     public ModbusMaster(IChannel channel) : base(channel)
     {
         ThingsGatewayBitConverter = new ThingsGatewayBitConverter(EndianType.Big);
+        IsBoolReverseByteWord = true;
         RegisterByteLength = 2;
         WaitHandlePool.MaxSign = ushort.MaxValue;
     }
@@ -93,23 +88,7 @@ public partial class ModbusMaster : ProtocolBase, IDtu
         switch (Channel.ChannelType)
         {
             case ChannelTypeEnum.TcpService:
-                Action<IPluginManager> action = a => { };
-                {
-                    action = a => a.UseCheckClear()
-      .SetCheckClearType(CheckClearType.All)
-      .SetTick(TimeSpan.FromSeconds(CheckClearTime))
-      .SetOnClose((c, t) =>
-      {
-          c.TryShutdown();
-          c.SafeClose($"{CheckClearTime}s Timeout");
-      });
-                }
-
-                action += a =>
-                   {
-                       a.Add(new DtuPlugin(this));
-                   };
-                return action;
+                return PluginUtil.GetPlugin(this);
         }
         return base.ConfigurePlugins();
     }
@@ -124,7 +103,7 @@ public partial class ModbusMaster : ProtocolBase, IDtu
                 {
                     case ChannelTypeEnum.TcpClient:
                     case ChannelTypeEnum.TcpService:
-                    case ChannelTypeEnum.SerialPortClient:
+                    case ChannelTypeEnum.SerialPort:
                         return new ModbusTcpDataHandleAdapter()
                         {
                             CacheTimeout = TimeSpan.FromMilliseconds(CacheTimeout)
@@ -142,7 +121,7 @@ public partial class ModbusMaster : ProtocolBase, IDtu
                 {
                     case ChannelTypeEnum.TcpClient:
                     case ChannelTypeEnum.TcpService:
-                    case ChannelTypeEnum.SerialPortClient:
+                    case ChannelTypeEnum.SerialPort:
                         return new ModbusRtuDataHandleAdapter()
                         {
                             CacheTimeout = TimeSpan.FromMilliseconds(CacheTimeout)
@@ -168,22 +147,7 @@ public partial class ModbusMaster : ProtocolBase, IDtu
     }
 
     /// <inheritdoc/>
-    public override OperResult<byte[]> Read(string address, int length, CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            var mAddress = ModbusAddress.ParseFrom(address, Station);
-            var commandResult = ModbusHelper.GetReadModbusCommand(mAddress, (ushort)length);
-            return SendThenReturn(mAddress.SocketId, commandResult, cancellationToken);
-        }
-        catch (Exception ex)
-        {
-            return new OperResult<byte[]>(ex);
-        }
-    }
-
-    /// <inheritdoc/>
-    public override async Task<OperResult<byte[]>> ReadAsync(string address, int length, CancellationToken cancellationToken = default)
+    public override async ValueTask<OperResult<byte[]>> ReadAsync(string address, int length, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -198,71 +162,7 @@ public partial class ModbusMaster : ProtocolBase, IDtu
     }
 
     /// <inheritdoc/>
-    public override OperResult Write(string address, byte[] value, CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            var mAddress = ModbusAddress.ParseFrom(address, Station);
-            value = value.ArrayExpandToLengthEven();
-            byte[]? commandResult = null;
-            //功能码或实际长度
-            if (value.Length > 2 || mAddress.WriteFunction == 16)
-                commandResult = ModbusHelper.GetWriteModbusCommand(mAddress, value);
-            else
-                commandResult = ModbusHelper.GetWriteOneModbusCommand(mAddress, value);
-            return SendThenReturn(mAddress.SocketId, commandResult, cancellationToken);
-        }
-        catch (Exception ex)
-        {
-            return new OperResult(ex);
-        }
-    }
-
-    /// <inheritdoc/>
-    public override OperResult Write(string address, bool[] value, CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            var mAddress = ModbusAddress.ParseFrom(address, Station);
-            //功能码或实际长度
-            if (value.Length > 1 || mAddress.WriteFunction == 15)
-            {
-                var commandResult = ModbusHelper.GetWriteBoolModbusCommand(mAddress, value, (ushort)value.Length);
-                return SendThenReturn(mAddress.SocketId, commandResult, cancellationToken);
-            }
-            else
-            {
-                if (mAddress.BitIndex == null)
-                {
-                    var commandResult = ModbusHelper.GetWriteBoolModbusCommand(mAddress, value[0]);
-                    return SendThenReturn(mAddress.SocketId, commandResult, cancellationToken);
-                }
-                else if (mAddress.BitIndex < 16)
-                {
-                    //比如40001.1
-                    var read = ModbusHelper.GetReadModbusCommand(mAddress, 1);
-                    var readData = SendThenReturn(mAddress.SocketId, read, cancellationToken);
-                    if (!readData.IsSuccess) return readData;
-                    var writeData = ThingsGatewayBitConverter.ToUInt16(readData.Content, 0);
-                    ushort mask = (ushort)(1 << mAddress.BitIndex);
-                    ushort result = (ushort)(value[0] ? (writeData | mask) : (writeData & ~mask));
-                    var write = ModbusHelper.GetWriteOneModbusCommand(mAddress, ThingsGatewayBitConverter.GetBytes(result));
-                    return SendThenReturn(mAddress.SocketId, write, cancellationToken);
-                }
-                else
-                {
-                    return new(ModbusResource.Localizer["ValueOverlimit", nameof(mAddress.BitIndex), 16]);
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            return new OperResult(ex);
-        }
-    }
-
-    /// <inheritdoc/>
-    public override async Task<OperResult> WriteAsync(string address, byte[] value, CancellationToken cancellationToken = default)
+    public override async ValueTask<OperResult> WriteAsync(string address, byte[] value, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -283,7 +183,7 @@ public partial class ModbusMaster : ProtocolBase, IDtu
     }
 
     /// <inheritdoc/>
-    public override async Task<OperResult> WriteAsync(string address, bool[] value, CancellationToken cancellationToken = default)
+    public override async ValueTask<OperResult> WriteAsync(string address, bool[] value, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -316,7 +216,7 @@ public partial class ModbusMaster : ProtocolBase, IDtu
                 }
                 else
                 {
-                    return new(ModbusResource.Localizer["ValueOverlimit", nameof(mAddress.BitIndex), 16]);
+                    return new OperResult(ModbusResource.Localizer["ValueOverlimit", nameof(mAddress.BitIndex), 16]);
                 }
             }
         }
@@ -325,5 +225,4 @@ public partial class ModbusMaster : ProtocolBase, IDtu
             return new OperResult(ex);
         }
     }
-
 }

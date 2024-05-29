@@ -71,6 +71,7 @@
   },
 
   "ThingsGateway.Debug.MainLayout": {
-    "FullScreenButton": "全屏"
+    "FullScreenButton": "全屏",
+    "About": "关于"
   }
 }

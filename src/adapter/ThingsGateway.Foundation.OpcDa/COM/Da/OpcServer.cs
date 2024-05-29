@@ -170,7 +170,7 @@ internal class OpcServer : IDisposable
                 {
                     status = (OPCSERVERSTATUS)o;
                     serverStatus = new();
-                    serverStatus.Version = $"{status.wMajorVersion.ToString()}.{status.wMinorVersion.ToString()}.{status.wBuildNumber.ToString()}";
+                    serverStatus.Version = $"{status.wMajorVersion}.{status.wMinorVersion}.{status.wBuildNumber}";
                     serverStatus.ServerState = status.dwServerState;
                     serverStatus.StartTime = Comn.Convert.FileTimeToDateTime(status.ftStartTime);
                     serverStatus.CurrentTime = Comn.Convert.FileTimeToDateTime(status.ftCurrentTime);

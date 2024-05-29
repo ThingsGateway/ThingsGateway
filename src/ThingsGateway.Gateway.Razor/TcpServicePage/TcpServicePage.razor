@@ -1,0 +1,23 @@
+﻿@using System.Linq.Expressions;
+@using BootstrapBlazor.Components
+@using Microsoft.AspNetCore.Authorization;
+@using Microsoft.Extensions.Logging
+@using ThingsGateway.Admin.Application;
+@using ThingsGateway.Admin.Razor
+@using ThingsGateway.Core.Extension
+@using ThingsGateway.Gateway.Application
+@namespace ThingsGateway.Gateway.Razor
+
+
+<AdminTable TItem="TcpSessionClientDto" AutoGenerateColumns="true" ShowDefaultButtons=true
+            AllowResizing="true" IsFixedHeader=true IsMultipleSelect=true
+            ShowExtendEditButton=false ShowExtendDeleteButton=true ShowExtendButtons=true
+            ShowDeleteButton="true" ShowAddButton="false" ShowEditButton="false"
+            OnDeleteAsync="OnDeleteAsync"
+            ShowExportButton="true" IsAutoQueryFirstRender=false ShowAdvancedSearch=false
+            OnQueryAsync="OnQueryAsync" IsPagination=true SearchModel="SearchModel">
+
+
+</AdminTable>
+
+

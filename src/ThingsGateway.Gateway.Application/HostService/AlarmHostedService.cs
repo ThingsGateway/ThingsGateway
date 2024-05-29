@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -9,15 +8,13 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-
-
 using Mapster;
 
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
-using System.Collections.Concurrent;
+using System.Diagnostics;
 
 using ThingsGateway.Core.Extension;
 using ThingsGateway.Gateway.Application.Extensions;
@@ -43,7 +40,7 @@ public class AlarmHostedService : BackgroundService
     /// </summary>
     private EasyLock RestartLock { get; } = new();
 
-    private ConcurrentQueue<VariableRunTime> _deviceVariables = new();
+    private IEnumerable<VariableRunTime> _deviceVariables => GlobalData.Variables.Select(a => a.Value).Where(a => a.IsOnline && a.AlarmEnable);
 
     private DoTask RealAlarmTask { get; set; }
     private IStringLocalizer Localizer { get; }
@@ -348,12 +345,6 @@ public class AlarmHostedService : BackgroundService
         }
     }
 
-    private void DeviceVariableChange(VariableRunTime variable)
-    {
-        //这里不能序列化变量，报警服务需改变同一个变量指向的属性
-        _deviceVariables.Enqueue(variable);
-    }
-
     #endregion 核心实现
 
     #region 线程任务
@@ -362,16 +353,13 @@ public class AlarmHostedService : BackgroundService
     /// 执行工作任务，对设备变量进行报警分析。
     /// </summary>
     /// <param name="cancellation">取消任务的 CancellationToken</param>
-    private async Task DoWork(CancellationToken cancellation)
+    private async ValueTask DoWork(CancellationToken cancellation)
     {
         // 延迟一段时间，避免过于频繁地执行任务
         await Task.Delay(500, cancellation).ConfigureAwait(false);
-
-        // 获取设备变量列表
-        var list = _deviceVariables.ToListWithDequeue();
-
+        //Stopwatch stopwatch = Stopwatch.StartNew();
         // 遍历设备变量列表
-        foreach (var item in list)
+        foreach (var item in _deviceVariables)
         {
             // 如果取消请求已经被触发，则结束任务
             if (cancellation.IsCancellationRequested)
@@ -388,6 +376,8 @@ public class AlarmHostedService : BackgroundService
             // 对该变量进行报警分析
             AlarmAnalysis(item);
         }
+        //stopwatch.Stop();
+        //_logger.LogInformation("报警分析耗时：" + stopwatch.ElapsedMilliseconds + "ms");
     }
 
     #endregion 线程任务
@@ -398,13 +388,25 @@ public class AlarmHostedService : BackgroundService
     {
         HostedServiceUtil.CollectDeviceHostedService.Started += CollectDeviceHostedService_Started;
         HostedServiceUtil.CollectDeviceHostedService.Stoping += CollectDeviceHostedService_Stoping;
-        GlobalData.VariableCollectChangeEvent += DeviceVariableChange;
         return base.StartAsync(cancellationToken);
     }
 
-    protected override Task ExecuteAsync(CancellationToken stoppingToken)
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        return Task.CompletedTask;
+        await Task.CompletedTask;
+        //try
+        //{
+        //    while (!stoppingToken.IsCancellationRequested)
+        //    {
+        //        _logger.LogInformation("BytePool.Default.Capacity：" + BytePool.Default.Capacity);
+        //        _logger.LogInformation("BytePool.Default.GetPoolSize：" + BytePool.Default.GetPoolSize());
+        //        _logger.LogInformation("ChannelThread.CycleInterval：" + ChannelThread.CycleInterval);
+        //        await Task.Delay(10000, stoppingToken);
+        //    }
+        //}
+        //catch (OperationCanceledException)
+        //{
+        //}
     }
 
     private Task CollectDeviceHostedService_Started()
@@ -430,6 +432,7 @@ public class AlarmHostedService : BackgroundService
 
             RealAlarmTask = new DoTask(a => DoWork(a), _logger, Localizer["RealAlarmTask"]); // 创建新的任务
             RealAlarmTask.Start(); // 启动任务
+            _logger.LogInformation(Localizer["RealAlarmTaskStart"]);
         }
         catch (Exception ex)
         {

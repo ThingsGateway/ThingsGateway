@@ -1,5 +1,4 @@
-
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -8,9 +7,6 @@
 //  使用文档：https://kimdiego2098.github.io/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
-
-
-
 
 using System.Text;
 
@@ -92,7 +88,7 @@ public static class ByteExtensions
     {
         if (inBytes.Length == 0)
         {
-            return new byte[] { };
+            return Array.Empty<byte>();
         }
         // 创建新数组进行补齐
         byte[] paddedBytes = inBytes.CopyArray<byte>().ArrayExpandToLengthEven();
@@ -153,8 +149,39 @@ public static class ByteExtensions
     /// <param name="buffer"></param>
     /// <param name="splite"></param>
     /// <returns></returns>
+    public static string ToHexString(this ArraySegment<byte> buffer, char splite = ' ')
+    {
+        return DataTransUtil.ByteToHexString(buffer, splite);
+    }
+
+    /// <summary>
+    /// 字节数组默认转16进制字符
+    /// </summary>
+    /// <param name="buffer"></param>
+    /// <param name="splite"></param>
+    /// <returns></returns>
+    public static string ToHexString(this ReadOnlySpan<byte> buffer, char splite = ' ')
+    {
+        return DataTransUtil.ByteToHexString(buffer, splite);
+    }
+
+    /// <summary>
+    /// 字节数组默认转16进制字符
+    /// </summary>
+    /// <param name="buffer"></param>
+    /// <param name="splite"></param>
+    /// <returns></returns>
     public static string ToHexString(this byte[] buffer, char splite = default)
     {
         return DataTransUtil.ByteToHexString(buffer, splite);
+    }
+
+    /// <summary>
+    /// 字节数组默认转16进制字符
+    /// </summary>
+    /// <returns></returns>
+    public static string ToHexString(this byte[] buffer, int offset, int length, char splite = ' ', int newLineCount = 0)
+    {
+        return DataTransUtil.ByteToHexString(buffer, offset, length, splite, newLineCount);
     }
 }

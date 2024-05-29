@@ -44,7 +44,7 @@
     @<div class="row form-inline g-2">
         <div class="col-12 ">
             <label class="form-label">@model.GetType().GetPropertyDisplayName(nameof(model.Module))</label>
-            <Select Items="ModuleSelectedItems" @bind-Value=model.Module />
+            <Select Items="ModuleSelectedItems" @bind-Value=model.Module IsPopover />
         </div>
         <div class="col-12 ">
             <BootstrapInput @bind-Value="model.Title" ShowLabel="true" />

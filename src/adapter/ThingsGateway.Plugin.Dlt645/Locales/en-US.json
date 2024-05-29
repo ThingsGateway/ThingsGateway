@@ -6,7 +6,7 @@
     "Station": "DefaultStation",
 
     "HeartbeatHexString": "HeartbeatHexString",
-    "DataFormat": "DataFormat",
+    "EndianType": "EndianType",
     "IsStringReverseByteWord": "StringReverseByteWord",
     "CheckClearTime": "CheckClearTime",
     "Timeout": "Timeout",
@@ -18,5 +18,4 @@
     "RetryCount": "RetryCount",
     "ConcurrentCount": "ConcurrentCount"
   }
-
 }

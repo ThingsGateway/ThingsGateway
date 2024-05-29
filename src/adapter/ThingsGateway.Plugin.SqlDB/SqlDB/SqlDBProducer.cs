@@ -69,7 +69,7 @@ public partial class SqlDBProducer : BusinessBaseWithCacheIntervalVarModel<SQLHi
         await base.ProtectedBeforStartAsync(cancellationToken).ConfigureAwait(false);
     }
 
-    protected override async Task ProtectedExecuteAsync(CancellationToken cancellationToken)
+    protected override async ValueTask ProtectedExecuteAsync(CancellationToken cancellationToken)
     {
         if (_driverPropertys.IsReadDB)
         {
@@ -77,10 +77,10 @@ public partial class SqlDBProducer : BusinessBaseWithCacheIntervalVarModel<SQLHi
             {
                 try
                 {
-                    var varList = CurrentDevice.VariableRunTimes.Values.Adapt<List<SQLRealValue>>();
+                    var varList = CurrentDevice.VariableRunTimes.Select(a => a.Value).Adapt<List<SQLRealValue>>();
 
                     var result = await UpdateAsync(varList, cancellationToken).ConfigureAwait(false);
-                    if (result != null && success != result.IsSuccess)
+                    if (success != result.IsSuccess)
                     {
                         if (!result.IsSuccess)
                             LogMessage.LogWarning(result.ToString());

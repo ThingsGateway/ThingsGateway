@@ -10,6 +10,7 @@
 
 using Mapster;
 
+using NewLife.Extension;
 using NewLife.Threading;
 
 using ThingsGateway.Core.Extension;
@@ -23,7 +24,7 @@ public class DeviceRunTime : Device
 {
     protected volatile DeviceStatusEnum _deviceStatus = DeviceStatusEnum.Default;
 
-    protected int? _errorCount;
+    protected int _errorCount;
 
     private string? _lastErrorMessage;
 
@@ -82,7 +83,7 @@ public class DeviceRunTime : Device
     /// <summary>
     /// 距上次成功时的读取失败次数,超过3次设备更新为离线，等于0时设备更新为在线
     /// </summary>
-    public virtual int? ErrorCount
+    public virtual int ErrorCount
     {
         get
         {
@@ -118,7 +119,8 @@ public class DeviceRunTime : Device
         }
         internal set
         {
-            _lastErrorMessage = TimerX.Now.ToDefaultDateTimeFormat() + " - " + value;
+            if (!value.IsNullOrWhiteSpace())
+                _lastErrorMessage = TimerX.Now.ToDefaultDateTimeFormat() + " - " + value;
         }
     }
 

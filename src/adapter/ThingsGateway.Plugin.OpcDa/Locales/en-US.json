@@ -1,5 +1,4 @@
 ﻿{
-
   "ThingsGateway.Plugin.OpcDa.OpcDaMasterProperty": {
     "ActiveSubscribe": "ActiveSubscribe",
     "CheckRate": "CheckRate(min)",
@@ -8,6 +7,8 @@
     "OpcIP": "OpcIP",
     "OpcName": "OpcName",
     "UpdateRate": "UpdateRate",
-    "SourceTimestampEnable": "SourceTimestampEnable"
+    "SourceTimestampEnable": "SourceTimestampEnable",
+    "ReIntervalTime": "ReIntervalTime",
+    "RetryCount": "RetryCount"
   }
 }

@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -9,15 +8,10 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-
-
-
 using NewLife.Reflection;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-
-using ThingsGateway.Foundation.Extension.Generic;
 
 namespace ThingsGateway.Foundation;
 
@@ -61,7 +55,7 @@ public abstract class VariableObject
     /// <summary>
     /// <see cref="VariableRuntimeAttribute"/>特性连读，反射赋值到继承类中的属性
     /// </summary>
-    public virtual async Task<OperResult> MulReadAsync(CancellationToken cancellationToken = default)
+    public virtual async ValueTask<OperResult> MultiReadAsync(CancellationToken cancellationToken = default)
     {
         try
         {
@@ -72,22 +66,22 @@ public abstract class VariableObject
                 var result = await Protocol.ReadAsync(item.RegisterAddress, item.Length, cancellationToken).ConfigureAwait(false);
                 if (result.IsSuccess)
                 {
-                    item.VariableRunTimes.PraseStructContent(Protocol, result.Content, exWhenAny: true);
+                    item.VariableRunTimes.PraseStructContent(result.Content, exWhenAny: true);
                 }
                 else
                 {
                     item.LastErrorMessage = result.ErrorMessage;
                     item.VariableRunTimes.ForEach(a => a.SetValue(null, isOnline: false));
-                    return new(result);
+                    return new OperResult(result);
                 }
             }
 
             SetValue();
-            return new();
+            return OperResult.Success;
         }
         catch (Exception ex)
         {
-            return new(ex);
+            return new OperResult(ex);
         }
     }
 
@@ -139,88 +133,24 @@ public abstract class VariableObject
     }
 
     /// <summary>
-    /// <see cref="VariableRuntimeAttribute"/>特性连读，反射赋值到继承类中的属性
-    /// </summary>
-    public virtual OperResult MulRead(CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            GetVariableSources();
-            //连读
-            foreach (var item in DeviceVariableSourceReads)
-            {
-                var result = Protocol.Read(item.RegisterAddress, item.Length, cancellationToken);
-                if (result.IsSuccess)
-                {
-                    item.VariableRunTimes.PraseStructContent(Protocol, result.Content, exWhenAny: true);
-                }
-                else
-                {
-                    item.LastErrorMessage = result.ErrorMessage;
-                    item.VariableRunTimes.ForEach(a => a.SetValue(null, isOnline: false));
-                    return new(result);
-                }
-            }
-            SetValue();
-            return new();
-        }
-        catch (Exception ex)
-        {
-            return new(ex);
-        }
-    }
-
-    /// <summary>
     /// 写入值到设备中
     /// </summary>
     /// <param name="propertyName">属性名称，必须使用<see cref="VariableRuntimeAttribute"/>特性</param>
     /// <param name="value">写入值</param>
     /// <param name="cancellationToken">取消令箭</param>
-    public virtual OperResult WriteValue(string propertyName, object value, CancellationToken cancellationToken = default)
+    public virtual async ValueTask<OperResult> WriteValueAsync(string propertyName, object value, CancellationToken cancellationToken = default)
     {
         try
         {
             GetVariableSources();
             if (string.IsNullOrEmpty(propertyName))
             {
-                return new($"PropertyName cannot be null or empty.");
+                return new OperResult($"PropertyName cannot be null or empty.");
             }
 
             if (!VariableRuntimePropertyDict.TryGetValue(propertyName, out var variableRuntimeProperty))
             {
-                return new($"This attribute is not recognized and may not have been identified using the {typeof(VariableRuntimeAttribute)} attribute");
-            }
-
-            JToken jToken = GetExpressionsValue(value, variableRuntimeProperty);
-
-            var result = Protocol.Write(variableRuntimeProperty.VariableClass.RegisterAddress, jToken, variableRuntimeProperty.VariableClass.DataType, cancellationToken);
-            return result;
-        }
-        catch (Exception ex)
-        {
-            return new(ex);
-        }
-    }
-
-    /// <summary>
-    /// 写入值到设备中
-    /// </summary>
-    /// <param name="propertyName">属性名称，必须使用<see cref="VariableRuntimeAttribute"/>特性</param>
-    /// <param name="value">写入值</param>
-    /// <param name="cancellationToken">取消令箭</param>
-    public virtual async Task<OperResult> WriteValueAsync(string propertyName, object value, CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            GetVariableSources();
-            if (string.IsNullOrEmpty(propertyName))
-            {
-                return new($"PropertyName cannot be null or empty.");
-            }
-
-            if (!VariableRuntimePropertyDict.TryGetValue(propertyName, out var variableRuntimeProperty))
-            {
-                return new($"This attribute is not recognized and may not have been identified using the {typeof(VariableRuntimeAttribute)} attribute");
+                return new OperResult($"This attribute is not recognized and may not have been identified using the {typeof(VariableRuntimeAttribute)} attribute");
             }
 
             JToken jToken = GetExpressionsValue(value, variableRuntimeProperty);
@@ -230,7 +160,7 @@ public abstract class VariableObject
         }
         catch (Exception ex)
         {
-            return new(ex);
+            return new OperResult(ex);
         }
     }
 

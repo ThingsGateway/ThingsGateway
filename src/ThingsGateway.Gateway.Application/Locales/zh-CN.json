@@ -259,7 +259,8 @@
     "RedundancyDisable": "不启用网关冗余站点"
   },
   "ThingsGateway.Gateway.Application.AlarmHostedService": {
-    "RealAlarmTask": "实时报警线程"
+    "RealAlarmTask": "实时报警线程",
+    "RealAlarmTaskStart": "实时报警线程启动"
   },
   "ThingsGateway.Gateway.Application.PluginService": {
     "LoadTypeSuccess": "加载插件 {0} 成功",

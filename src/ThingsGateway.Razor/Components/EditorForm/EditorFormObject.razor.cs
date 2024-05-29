@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -9,6 +8,9 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+// Copyright (c) Argo Zhang (argo@163.com). All rights reserved.
+// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
+// Website: https://www.blazor.zone or https://argozhang.github.io/
 
 // Copyright (c) Argo Zhang (argo@163.com). All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
@@ -217,7 +219,7 @@ public partial class EditorFormObject<TModel> : IShowLabel
 
         if (CascadedEditContext != null && IsSearch is not true)
         {
-            var message = Localizer["ModelInvalidOperationExceptionMessage", nameof(EditorForm<TModel>)];
+            var message = Localizer["ModelInvalidOperationExceptionMessage", nameof(EditorFormObject<TModel>)];
             if (!CascadedEditContext.Model.GetType().IsAssignableTo(typeof(TModel)))
             {
                 throw new InvalidCastException(message);

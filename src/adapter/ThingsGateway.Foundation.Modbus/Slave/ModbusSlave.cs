@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -8,9 +7,6 @@
 //  使用文档：https://kimdiego2098.github.io/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
-
-
-
 
 using System.Collections.Concurrent;
 
@@ -23,16 +19,18 @@ namespace ThingsGateway.Foundation.Modbus;
 /// <summary>
 /// ChannelEventHandler
 /// </summary>
-public delegate Task<OperResult> ModbusServerWriteEventHandler(ModbusAddress modbusAddress, byte[] writeValue, IThingsGatewayBitConverter bitConverter, IClientChannel channel);
+public delegate ValueTask<OperResult> ModbusServerWriteEventHandler(ModbusAddress modbusAddress, byte[] writeValue, IThingsGatewayBitConverter bitConverter, IClientChannel channel);
 
 /// <inheritdoc/>
-public class ModbusSlave : ProtocolBase
+public class ModbusSlave : ProtocolBase, ITcpService
 {
     /// <inheritdoc/>
     public ModbusSlave(IChannel channel) : base(channel)
     {
         ThingsGatewayBitConverter = new ThingsGatewayBitConverter(EndianType.Big);
+        IsBoolReverseByteWord = true;
         RegisterByteLength = 2;
+        WaitHandlePool.MaxSign = ushort.MaxValue;
     }
 
     #region 属性
@@ -83,22 +81,22 @@ public class ModbusSlave : ProtocolBase
     /// <summary>
     /// 继电器
     /// </summary>
-    private ConcurrentDictionary<byte, ByteBlock> ModbusServer01ByteBlocks = new();
+    private ConcurrentDictionary<byte, ValueByteBlock> ModbusServer01ByteBlocks = new();
 
     /// <summary>
     /// 开关输入
     /// </summary>
-    private ConcurrentDictionary<byte, ByteBlock> ModbusServer02ByteBlocks = new();
+    private ConcurrentDictionary<byte, ValueByteBlock> ModbusServer02ByteBlocks = new();
 
     /// <summary>
     /// 输入寄存器
     /// </summary>
-    private ConcurrentDictionary<byte, ByteBlock> ModbusServer03ByteBlocks = new();
+    private ConcurrentDictionary<byte, ValueByteBlock> ModbusServer03ByteBlocks = new();
 
     /// <summary>
     /// 保持寄存器
     /// </summary>
-    private ConcurrentDictionary<byte, ByteBlock> ModbusServer04ByteBlocks = new();
+    private ConcurrentDictionary<byte, ValueByteBlock> ModbusServer04ByteBlocks = new();
 
     /// <inheritdoc/>
     public override string GetAddressDescription()
@@ -113,20 +111,7 @@ public class ModbusSlave : ProtocolBase
         switch (Channel.ChannelType)
         {
             case ChannelTypeEnum.TcpService:
-                Action<IPluginManager> action = a => { };
-
-                {
-                    action = a => a.UseCheckClear()
-        .SetCheckClearType(CheckClearType.All)
-        .SetTick(TimeSpan.FromSeconds(CheckClearTime))
-        .SetOnClose((c, t) =>
-        {
-            c.TryShutdown();
-            c.SafeClose($"{CheckClearTime}s Timeout");
-        });
-                }
-
-                return action;
+                return PluginUtil.GetTcpServicePlugin(this);
         }
         return base.ConfigurePlugins();
     }
@@ -141,7 +126,7 @@ public class ModbusSlave : ProtocolBase
                 {
                     case ChannelTypeEnum.TcpClient:
                     case ChannelTypeEnum.TcpService:
-                    case ChannelTypeEnum.SerialPortClient:
+                    case ChannelTypeEnum.SerialPort:
                         return new ModbusTcpServerDataHandleAdapter()
                         {
                             CacheTimeout = TimeSpan.FromMilliseconds(CacheTimeout)
@@ -159,7 +144,7 @@ public class ModbusSlave : ProtocolBase
                 {
                     case ChannelTypeEnum.TcpClient:
                     case ChannelTypeEnum.TcpService:
-                    case ChannelTypeEnum.SerialPortClient:
+                    case ChannelTypeEnum.SerialPort:
                         return new ModbusRtuServerDataHandleAdapter()
                         {
                             CacheTimeout = TimeSpan.FromMilliseconds(CacheTimeout)
@@ -187,10 +172,10 @@ public class ModbusSlave : ProtocolBase
     /// <inheritdoc/>
     private void Init(ModbusAddress mAddress)
     {
-        ModbusServer01ByteBlocks.GetOrAdd(mAddress.Station, a => new ByteBlock(new byte[ushort.MaxValue * 2]));
-        ModbusServer02ByteBlocks.GetOrAdd(mAddress.Station, a => new ByteBlock(new byte[ushort.MaxValue * 2]));
-        ModbusServer03ByteBlocks.GetOrAdd(mAddress.Station, a => new ByteBlock(new byte[ushort.MaxValue * 2]));
-        ModbusServer04ByteBlocks.GetOrAdd(mAddress.Station, a => new ByteBlock(new byte[ushort.MaxValue * 2]));
+        ModbusServer01ByteBlocks.GetOrAdd(mAddress.Station, a => new ValueByteBlock(new byte[ushort.MaxValue * 2]));
+        ModbusServer02ByteBlocks.GetOrAdd(mAddress.Station, a => new ValueByteBlock(new byte[ushort.MaxValue * 2]));
+        ModbusServer03ByteBlocks.GetOrAdd(mAddress.Station, a => new ValueByteBlock(new byte[ushort.MaxValue * 2]));
+        ModbusServer04ByteBlocks.GetOrAdd(mAddress.Station, a => new ValueByteBlock(new byte[ushort.MaxValue * 2]));
     }
 
     /// <inheritdoc/>
@@ -222,7 +207,7 @@ public class ModbusSlave : ProtocolBase
     #region 核心
 
     /// <inheritdoc/>
-    protected override async Task Received(IClientChannel client, ReceivedDataEventArgs e)
+    protected override async Task ChannelReceived(IClientChannel client, ReceivedDataEventArgs e)
     {
         var requestInfo = e.RequestInfo;
         //接收外部报文
@@ -250,12 +235,12 @@ public class ModbusSlave : ProtocolBase
                     //rtu返回头
                     if (ModbusType == ModbusTypeEnum.ModbusRtu)
                     {
-                        var sendData = DataTransUtil.SpliceArray(modbusServerMessage.ReceivedBytes.SelectMiddle(0, 2), new byte[] { (byte)coreData.Length }, coreData);
+                        var sendData = DataTransUtil.SpliceArray(modbusServerMessage.ReceivedBytes.ToArray(0, 2), new byte[] { (byte)coreData.Length }, coreData);
                         ReturnData(client, e, sendData);
                     }
                     else
                     {
-                        var sendData = DataTransUtil.SpliceArray(modbusServerMessage.ReceivedBytes.SelectMiddle(0, 8), new byte[] { (byte)coreData.Length }, coreData);
+                        var sendData = DataTransUtil.SpliceArray(modbusServerMessage.ReceivedBytes.ToArray(0, 8), new byte[] { (byte)coreData.Length }, coreData);
                         sendData[5] = (byte)(sendData.Length - 6);
                         ReturnData(client, e, sendData);
                     }
@@ -363,14 +348,14 @@ public class ModbusSlave : ProtocolBase
         if (modbusType == ModbusTypeEnum.ModbusRtu)
         {
             var sendData = DataTransUtil
-.SpliceArray(modbusServerMessage.ReceivedBytes.SelectMiddle(0, 2), new byte[] { (byte)1 });//01 lllegal function
+.SpliceArray(modbusServerMessage.ReceivedBytes.ToArray(0, 2), new byte[] { (byte)1 });//01 lllegal function
             sendData[1] = (byte)(sendData[1] + 128);
             ReturnData(client, e, sendData);
         }
         else
         {
             var sendData = DataTransUtil
-.SpliceArray(modbusServerMessage.ReceivedBytes.SelectMiddle(0, 8), new byte[] { (byte)1 });//01 lllegal function
+.SpliceArray(modbusServerMessage.ReceivedBytes.ToArray(0, 8), new byte[] { (byte)1 });//01 lllegal function
             sendData[5] = (byte)(sendData.Length - 6);
             sendData[7] = (byte)(sendData[7] + 128);
             ReturnData(client, e, sendData);
@@ -384,12 +369,12 @@ public class ModbusSlave : ProtocolBase
     {
         if (modbusType == ModbusTypeEnum.ModbusRtu)
         {
-            var sendData = modbusServerMessage.ReceivedBytes.SelectMiddle(0, 6);
+            var sendData = modbusServerMessage.ReceivedBytes.ToArray(0, 6);
             ReturnData(client, e, sendData);
         }
         else
         {
-            var sendData = modbusServerMessage.ReceivedBytes.SelectMiddle(0, 12);
+            var sendData = modbusServerMessage.ReceivedBytes.ToArray(0, 12);
             sendData[5] = (byte)(sendData.Length - 6);
             ReturnData(client, e, sendData);
         }
@@ -398,7 +383,7 @@ public class ModbusSlave : ProtocolBase
     private readonly ReaderWriterLockSlim _lockSlim = new();
 
     /// <inheritdoc/>
-    public override OperResult<byte[]> Read(string address, int length, CancellationToken cancellationToken = default)
+    public OperResult<byte[]> Read(string address, int length, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -429,26 +414,26 @@ public class ModbusSlave : ProtocolBase
                 {
                     case 1:
                         byte[] bytes0 = new byte[len];
-                        ModbusServer01ByteBlock.Pos = mAddress.AddressStart;
+                        ModbusServer01ByteBlock.Position = mAddress.AddressStart;
                         ModbusServer01ByteBlock.Read(bytes0);
                         return OperResult.CreateSuccessResult(bytes0);
 
                     case 2:
                         byte[] bytes1 = new byte[len];
-                        ModbusServer02ByteBlock.Pos = mAddress.AddressStart;
+                        ModbusServer02ByteBlock.Position = mAddress.AddressStart;
                         ModbusServer02ByteBlock.Read(bytes1);
                         return OperResult.CreateSuccessResult(bytes1);
 
                     case 3:
 
                         byte[] bytes3 = new byte[len];
-                        ModbusServer03ByteBlock.Pos = mAddress.AddressStart * this.RegisterByteLength;
+                        ModbusServer03ByteBlock.Position = mAddress.AddressStart * this.RegisterByteLength;
                         ModbusServer03ByteBlock.Read(bytes3);
                         return OperResult.CreateSuccessResult(bytes3);
 
                     case 4:
                         byte[] bytes4 = new byte[len];
-                        ModbusServer04ByteBlock.Pos = mAddress.AddressStart * this.RegisterByteLength;
+                        ModbusServer04ByteBlock.Position = mAddress.AddressStart * this.RegisterByteLength;
                         ModbusServer04ByteBlock.Read(bytes4);
                         return OperResult.CreateSuccessResult(bytes4);
                 }
@@ -458,18 +443,18 @@ public class ModbusSlave : ProtocolBase
         }
         catch (Exception ex)
         {
-            return new(ex);
+            return new OperResult<byte[]>(ex);
         }
     }
 
     /// <inheritdoc/>
-    public override Task<OperResult<byte[]>> ReadAsync(string address, int length, CancellationToken cancellationToken = default)
+    public override ValueTask<OperResult<byte[]>> ReadAsync(string address, int length, CancellationToken cancellationToken = default)
     {
-        return Task.FromResult(Read(address, length, cancellationToken));
+        return EasyValueTask.FromResult(Read(address, length, cancellationToken));
     }
 
     /// <inheritdoc/>
-    public override OperResult Write(string address, byte[] value, CancellationToken cancellationToken = default)
+    public OperResult Write(string address, byte[] value, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -495,26 +480,26 @@ public class ModbusSlave : ProtocolBase
                 switch (mAddress.ReadFunction)
                 {
                     case 3:
-                        ModbusServer03ByteBlock.Pos = mAddress.AddressStart * this.RegisterByteLength;
+                        ModbusServer03ByteBlock.Position = mAddress.AddressStart * this.RegisterByteLength;
                         ModbusServer03ByteBlock.Write(value);
-                        return new();
+                        return OperResult.Success;
 
                     case 4:
-                        ModbusServer04ByteBlock.Pos = mAddress.AddressStart * this.RegisterByteLength;
+                        ModbusServer04ByteBlock.Position = mAddress.AddressStart * this.RegisterByteLength;
                         ModbusServer04ByteBlock.Write(value);
-                        return new();
+                        return OperResult.Success;
                 }
             }
             return new OperResult<byte[]>(ModbusResource.Localizer["FunctionError"]);
         }
         catch (Exception ex)
         {
-            return new(ex);
+            return new OperResult(ex);
         }
     }
 
     /// <inheritdoc/>
-    public override OperResult Write(string address, bool[] value, CancellationToken cancellationToken = default)
+    public OperResult Write(string address, bool[] value, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -540,34 +525,34 @@ public class ModbusSlave : ProtocolBase
                 switch (mAddress.ReadFunction)
                 {
                     case 1:
-                        ModbusServer01ByteBlock.Pos = mAddress.AddressStart;
+                        ModbusServer01ByteBlock.Position = mAddress.AddressStart;
                         ModbusServer01ByteBlock.Write(value.BoolArrayToByte());
-                        return new();
+                        return OperResult.Success;
 
                     case 2:
-                        ModbusServer02ByteBlock.Pos = mAddress.AddressStart;
+                        ModbusServer02ByteBlock.Position = mAddress.AddressStart;
                         ModbusServer02ByteBlock.Write(value.BoolArrayToByte());
-                        return new();
+                        return OperResult.Success;
                 }
             }
             return new OperResult<byte[]>(ModbusResource.Localizer["FunctionError"]);
         }
         catch (Exception ex)
         {
-            return new(ex);
+            return new OperResult(ex);
         }
     }
 
     /// <inheritdoc/>
-    public override Task<OperResult> WriteAsync(string address, byte[] value, CancellationToken cancellationToken = default)
+    public override ValueTask<OperResult> WriteAsync(string address, byte[] value, CancellationToken cancellationToken = default)
     {
-        return Task.FromResult(Write(address, value, cancellationToken));
+        return EasyValueTask.FromResult(Write(address, value, cancellationToken));
     }
 
     /// <inheritdoc/>
-    public override Task<OperResult> WriteAsync(string address, bool[] value, CancellationToken cancellationToken = default)
+    public override ValueTask<OperResult> WriteAsync(string address, bool[] value, CancellationToken cancellationToken = default)
     {
-        return Task.FromResult(Write(address, value, cancellationToken));
+        return EasyValueTask.FromResult(Write(address, value, cancellationToken));
     }
 
     #endregion 核心

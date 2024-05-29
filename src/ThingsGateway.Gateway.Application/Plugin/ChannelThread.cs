@@ -9,13 +9,13 @@
 //------------------------------------------------------------------------------
 
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
 using System.Collections.Concurrent;
 
 using ThingsGateway.Core.Extension;
-using ThingsGateway.Gateway.Application.Generic;
 
 using TouchSocket.Core;
 
@@ -26,20 +26,81 @@ namespace ThingsGateway.Gateway.Application;
 /// </summary>
 public class ChannelThread
 {
+    #region 动态配置
+
     static ChannelThread()
     {
-        var cycleInterval = App.Configuration.GetSection("ChannelThread:CycleInterval").Get<int?>() ?? 10;
-        CycleInterval = cycleInterval < 10 ? 10 : cycleInterval;
+        var minCycleInterval = App.Configuration.GetSection("ChannelThread:MinCycleInterval").Get<int?>() ?? 10;
+        MinCycleInterval = minCycleInterval < 10 ? 10 : minCycleInterval;
+
+        var maxCycleInterval = App.Configuration.GetSection("ChannelThread:MaxCycleInterval").Get<int?>() ?? 100;
+        MaxCycleInterval = maxCycleInterval < 100 ? 100 : maxCycleInterval;
+
         var maxCount = App.Configuration.GetSection("ChannelThread:MaxCount").Get<int?>() ?? 1000;
         MaxCount = maxCount < 10 ? 10 : maxCount;
+
+        var maxVariableCount = App.Configuration.GetSection("ChannelThread:MaxVariableCount").Get<int?>() ?? 1000000;
+        MaxVariableCount = maxVariableCount < 1000 ? 1000 : maxVariableCount;
+
+        CycleInterval = MaxCycleInterval;
+
+        Task.Factory.StartNew(SetCycleInterval, TaskCreationOptions.LongRunning);
     }
+
+    private static async Task SetCycleInterval()
+    {
+        var db = DbContext.Db.GetConnectionScopeWithAttr<SysOperateLog>().CopyNew();
+        var appLifetime = App.RootServices!.GetService<IHostApplicationLifetime>()!;
+        var hardwareInfoService = HostedServiceUtil.GetHostedService<HardwareInfoService>();
+        List<float> cpus = new();
+        while (!(appLifetime.ApplicationStopping.IsCancellationRequested || appLifetime.ApplicationStopped.IsCancellationRequested))
+        {
+            try
+            {
+                if (hardwareInfoService?.APPInfo?.MachineInfo?.CpuRate == null) continue;
+                cpus.Add(hardwareInfoService.APPInfo.MachineInfo.CpuRate * 100);
+                if (cpus.Count == 1 || cpus.Count > 5)
+                {
+                    var avg = cpus.Average();
+                    cpus.RemoveAt(0);
+                    //Console.WriteLine($"CPU平均值：{avg}");
+                    if (avg > 80)
+                    {
+                        CycleInterval = Math.Max(CycleInterval, (int)(MaxCycleInterval * avg / 100));
+                    }
+                    else if (avg < 50)
+                    {
+                        CycleInterval = Math.Min(CycleInterval, MinCycleInterval);
+                    }
+                }
+                await Task.Delay(hardwareInfoService.HardwareInfoConfig.RealInterval * 1000, appLifetime.ApplicationStopping).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+        }
+    }
+
+    /// <summary>
+    /// 线程最大等待间隔时间
+    /// </summary>
+    public static int MaxCycleInterval = 100;
 
     /// <summary>
     /// 线程最小等待间隔时间
     /// </summary>
+    public static int MinCycleInterval = 10;
+
+    /// <summary>
+    /// 线程等待间隔时间
+    /// </summary>
     public static volatile int CycleInterval = 10;
 
     internal static volatile int MaxCount;
+    internal static volatile int MaxVariableCount;
+
+    #endregion 动态配置
 
     /// <summary>
     /// 通道线程构造函数，用于初始化通道线程实例。
@@ -255,7 +316,7 @@ public class ChannelThread
         {
             // 初始化驱动程序对象，并加载源读取
             driverBase.Init(Channel);
-            driverBase.LoadSourceRead(driverBase.CurrentDevice?.VariableRunTimes.Values);
+            driverBase.LoadSourceRead(driverBase.CurrentDevice?.VariableRunTimes.Select(a => a.Value));
         }
         catch (Exception ex)
         {
@@ -433,8 +494,7 @@ public class ChannelThread
     /// <summary>
     /// 异步停止线程任务。
     /// </summary>
-    /// <param name="isRemoveDevice">指示是否移除设备。</param>
-    internal virtual async Task StopThreadAsync(bool isRemoveDevice)
+    internal virtual async Task StopThreadAsync()
     {
         // 如果DriverTask为null，则直接返回，无需执行停止操作
         if (DriverTask == null)
@@ -458,7 +518,7 @@ public class ChannelThread
             });
 
             // 如果需要移除设备
-            if (isRemoveDevice)
+            if (!HostedServiceUtil.ManagementHostedService.StartBusinessDeviceEnable)
             {
                 // 如果需要移除的是采集设备
                 if (IsCollectChannel)
@@ -478,12 +538,12 @@ public class ChannelThread
                         GlobalData.BusinessDevices.RemoveWhere(it => DriverBases.Any(a => a.DeviceId == it.Value.Id));
                     }
                 }
+                DriverBases.Clear();
             }
 
             // 将DriverTask置为null
             DriverTask = null;
 
-            DriverBases.Clear();
             // 清空CancellationTokenSources集合
             CancellationTokenSources.ForEach(a => a.Value.SafeDispose());
             CancellationTokenSources.Clear();
@@ -499,10 +559,12 @@ public class ChannelThread
     /// DoWork
     /// </summary>
     /// <param name="cancellation">取消标记。</param>
-    protected async Task DoWork(CancellationToken stoppingToken)
+    protected async ValueTask DoWork(CancellationToken stoppingToken)
     {
-        foreach (var driver in DriverBases)
+        var count = DriverBases.Count;
+        for (int i = 0; i < count; i++)
         {
+            var driver = DriverBases[i];
             try
             {
                 if (!CancellationTokenSources.TryGetValue(driver.DeviceId, out var stoken))
@@ -526,18 +588,18 @@ public class ChannelThread
                         // 如果驱动处于离线状态且为采集驱动，则根据配置的间隔时间进行延迟
                         if (driver.CurrentDevice.DeviceStatus == DeviceStatusEnum.OffLine && driver.IsCollectDevice)
                         {
-                            if (DriverBases.Count == 1)
+                            if (count == 1)
                                 await Task.Delay(Math.Min(((CollectBase)driver).CollectProperties.ReIntervalTime, DeviceHostedService.CheckIntervalTime / 2) * 1000 - CycleInterval, token).ConfigureAwait(false);
                         }
                         else
                         {
-                            if (DriverBases.Count == 1)
+                            if (count == 1)
                                 await Task.Delay(CycleInterval, token).ConfigureAwait(false); // 默认延迟一段时间后再继续执行
                         }
                     }
                     else if (result == ThreadRunReturnTypeEnum.Continue)
                     {
-                        if (DriverBases.Count == 1)
+                        if (count == 1)
                             await Task.Delay(1000, token).ConfigureAwait(false); // 如果执行结果为继续，则延迟一段较短的时间后再继续执行
                     }
                     else if (result == ThreadRunReturnTypeEnum.Break)
@@ -548,7 +610,7 @@ public class ChannelThread
                 }
                 else
                 {
-                    if (DriverBases.Count == 1)
+                    if (count == 1)
                         await Task.Delay(1000, token).ConfigureAwait(false); // 默认延迟一段时间后再继续执行
                 }
             }
@@ -565,11 +627,11 @@ public class ChannelThread
         }
 
         // 如果驱动实例数量大于1，则延迟一段时间后继续执行下一轮循环
-        if (DriverBases.Count > 1)
-            await Task.Delay(CycleInterval, stoppingToken).ConfigureAwait(false);
+        if (count > 1)
+            await Task.Delay(MinCycleInterval, stoppingToken).ConfigureAwait(false);
 
         // 如果驱动实例数量为0，则延迟一段时间后继续执行下一轮循环
-        if (DriverBases.Count == 0)
+        if (count == 0)
             await Task.Delay(1000, stoppingToken).ConfigureAwait(false);
     }
 

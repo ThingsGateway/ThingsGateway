@@ -74,10 +74,10 @@ public abstract class BusinessBase : DriverBase
         base.Init(device); // 调用基类的初始化方法
 
         // 获取与当前设备相关的变量
-        var variables = GlobalData.Variables.Where(a => a.Value.VariablePropertys?.ContainsKey(device.Id)==true);
+        var variables = GlobalData.Variables.Where(a => a.Value.VariablePropertys?.ContainsKey(device.Id) == true);
 
         // 将变量与设备关联，并保存到设备运行时的变量字典中
-        device.VariableRunTimes = variables.ToDictionary(a=>a.Key,a=>a.Value);
+        device.VariableRunTimes = variables.ToDictionary(a => a.Key, a => a.Value);
 
         // 获取当前设备需要采集的设备
         CollectDevices = GlobalData.CollectDevices

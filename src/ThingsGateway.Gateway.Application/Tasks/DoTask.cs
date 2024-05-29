@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -9,7 +8,6 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
@@ -17,7 +15,7 @@ namespace ThingsGateway.Gateway.Application;
 
 public class DoTask
 {
-    public DoTask(Func<CancellationToken, Task> doWork, ILogger logger, string taskName = null)
+    public DoTask(Func<CancellationToken, ValueTask> doWork, ILogger logger, string taskName = null)
     {
         DoWork = doWork; Logger = logger; TaskName = taskName;
     }
@@ -44,7 +42,7 @@ public class DoTask
     /// <summary>
     /// 执行任务方法
     /// </summary>
-    public Func<CancellationToken, Task> DoWork { get; }
+    public Func<CancellationToken, ValueTask> DoWork { get; }
 
     private Task PrivateTask { get; set; }
 

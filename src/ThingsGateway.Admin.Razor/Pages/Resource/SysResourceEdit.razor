@@ -12,7 +12,7 @@
         </div>
     }
     <div class="col-12  col-md-6">
-        <Select @bind-Value="Model.Category"></Select>
+        <Select @bind-Value="Model.Category" IsPopover></Select>
     </div>
 
     @if (Model.Category != ResourceCategoryEnum.Button)
@@ -33,10 +33,10 @@
             <BootstrapInput @bind-Value="Model.Href"></BootstrapInput>
         </div>
         <div class="col-12  col-md-6">
-            <Select @bind-Value="Model.Target"></Select>
+            <Select @bind-Value="Model.Target" IsPopover></Select>
         </div>
         <div class="col-12  col-md-6">
-            <Select @bind-Value="Model.NavLinkMatch"></Select>
+            <Select @bind-Value="Model.NavLinkMatch" IsPopover></Select>
         </div>
 
     }

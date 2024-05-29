@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -8,9 +7,6 @@
 //  使用文档：https://kimdiego2098.github.io/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
-
-
-
 
 using System.Text;
 
@@ -39,7 +35,7 @@ internal partial class SiemensHelper
     //    return OperResult.CreateSuccessResult<byte[]>(numArray);
     //}
 
-    internal static OperResult<byte[], FilterResult> AnalysisReadByte(byte[] sends, byte[] content)
+    internal static OperResult<AdapterResult> AnalysisReadByte(byte[] sends, IByteBlock content)
     {
         int length = 0;
         int itemLen = (sends.Length - 19) / 12;
@@ -47,7 +43,7 @@ internal partial class SiemensHelper
         //添加错误代码校验
         if (content[17] + content[18] > 0)
         {
-            return new(SiemensS7Resource.Localizer["ReturnError", content[17].ToString("X2"), content[18].ToString("X2")]) { Content = content, Content2 = FilterResult.Success };
+            return new(SiemensS7Resource.Localizer["ReturnError", content[17].ToString("X2"), content[18].ToString("X2")]) { Content = new AdapterResult() { Content = Array.Empty<byte>(), FilterResult = FilterResult.Success } };
         }
 
         if (content.Length >= 22)
@@ -55,7 +51,7 @@ internal partial class SiemensHelper
             //添加返回代码校验
             if (content[21] != 0xff)
             {
-                return new(SiemensS7Resource.Localizer["ReturnCode", content[21].ToString("X2")]) { Content = content, Content2 = FilterResult.Success };
+                return new(SiemensS7Resource.Localizer["ReturnCode", content[21].ToString("X2")]) { Content = new AdapterResult() { Content = Array.Empty<byte>(), FilterResult = FilterResult.Success } };
             }
         }
 
@@ -94,7 +90,7 @@ internal partial class SiemensHelper
                 }
                 if (content[index2] == byte.MaxValue && content[index2 + 1] == 4)//Bit:3;Byte:4;Counter或者Timer:9
                 {
-                    Array.Copy(content, index2 + 4, dataArray, dataIndex, s7len);
+                    Array.Copy(content.AsSegment().Array, index2 + 4, dataArray, dataIndex, s7len);
                     index2 += s7len + 3;
                     dataIndex += s7len;
                     index1++;
@@ -106,7 +102,7 @@ internal partial class SiemensHelper
                     {
                         for (int index3 = 0; index3 < num / 3; index3++)
                         {
-                            Array.Copy(content, index2 + 5 + (3 * index3), dataArray, dataIndex, 2);
+                            Array.Copy(content.AsSegment().Array, index2 + 5 + (3 * index3), dataArray, dataIndex, 2);
                             dataIndex += 2;
                         }
                     }
@@ -114,7 +110,7 @@ internal partial class SiemensHelper
                     {
                         for (int index4 = 0; index4 < num / 5; index4++)
                         {
-                            Array.Copy(content, index2 + 7 + (5 * index4), dataArray, dataIndex, 2);
+                            Array.Copy(content.AsSegment().Array, index2 + 7 + (5 * index4), dataArray, dataIndex, 2);
                             dataIndex += 2;
                         }
                     }
@@ -124,28 +120,25 @@ internal partial class SiemensHelper
                 else
                 {
                     return new(SiemensS7Resource.Localizer["ValidateDataError", content[index2], GetCpuError(content[index2])])
-                    {
-                        Content2 = FilterResult.Success
-                    };
+                    { Content = new AdapterResult() { Content = Array.Empty<byte>(), FilterResult = FilterResult.Success } };
                 }
             }
         }
-        return new OperResult<byte[], FilterResult>() { Content = dataArray, Content2 = FilterResult.Success };
+        return new() { Content = new AdapterResult() { Content = dataArray, FilterResult = FilterResult.Success } }; ;
     }
 
-    internal static OperResult<byte[], FilterResult> AnalysisWrite(byte[] content)
+    internal static OperResult<AdapterResult> AnalysisWrite(IByteBlock content)
     {
-        byte err = content[21];
-        if (err != byte.MaxValue)
+        if (content.Length < 22 || content[21] != byte.MaxValue)
         {
+            if (content.Length < 22)
+                return new("ValidateDataError") { Content = new AdapterResult() { Content = Array.Empty<byte>(), FilterResult = FilterResult.Success } };
             return new(SiemensS7Resource.Localizer["ValidateDataError", content[21], GetCpuError(content[21])])
-            {
-                Content2 = FilterResult.Success
-            };
+            { Content = new AdapterResult() { Content = Array.Empty<byte>(), FilterResult = FilterResult.Success } };
         }
         else
         {
-            return new OperResult<byte[], FilterResult> { Content = content, Content2 = FilterResult.Success };
+            return new() { Content = new AdapterResult() { Content = Array.Empty<byte>(), FilterResult = FilterResult.Success } }; ;
         }
     }
 
@@ -270,7 +263,7 @@ internal partial class SiemensHelper
         return numArray;
     }
 
-    internal static async Task<OperResult<string>> ReadStringAsync(SiemensS7Master plc, string address, Encoding encoding, CancellationToken cancellationToken)
+    internal static async ValueTask<OperResult<string>> ReadStringAsync(SiemensS7Master plc, string address, Encoding encoding, CancellationToken cancellationToken)
     {
         //先读取一次获取长度，再读取实际值
         if (plc.SiemensS7Type != SiemensTypeEnum.S200Smart)
@@ -278,7 +271,7 @@ internal partial class SiemensHelper
             var result1 = await plc.ReadAsync(address, 2, cancellationToken).ConfigureAwait(false);
             if (!result1.IsSuccess)
             {
-                return new(result1);
+                return new OperResult<string>(result1);
             }
             if (result1.Content[0] == (byte)0 || result1.Content[0] == byte.MaxValue)
             {
@@ -287,7 +280,7 @@ internal partial class SiemensHelper
             var result2 = await plc.ReadAsync(address, 2 + result1.Content[1], cancellationToken).ConfigureAwait(false);
             if (!result2.IsSuccess)
             {
-                return new(result2);
+                return new OperResult<string>(result2);
             }
             else
             {
@@ -298,11 +291,11 @@ internal partial class SiemensHelper
         {
             var result1 = await plc.ReadAsync(address, 1, cancellationToken).ConfigureAwait(false);
             if (!result1.IsSuccess)
-                return new(result1);
+                return new OperResult<string>(result1);
             var result2 = await plc.ReadAsync(address, 1 + result1.Content[0], cancellationToken).ConfigureAwait(false);
             if (!result2.IsSuccess)
             {
-                return new(result2);
+                return new OperResult<string>(result2);
             }
             else
             {
@@ -311,48 +304,7 @@ internal partial class SiemensHelper
         }
     }
 
-    internal static OperResult<string> ReadString(SiemensS7Master plc, string address, Encoding encoding, CancellationToken cancellationToken)
-    {
-        //先读取一次获取长度，再读取实际值
-        if (plc.SiemensS7Type != SiemensTypeEnum.S200Smart)
-        {
-            var result1 = plc.Read(address, 2, cancellationToken);
-            if (!result1.IsSuccess)
-            {
-                return new(result1);
-            }
-            if (result1.Content[0] == (byte)0 || result1.Content[0] == byte.MaxValue)
-            {
-                return new OperResult<string>(SiemensS7Resource.Localizer["NotString"]);
-            }
-            var result2 = plc.Read(address, 2 + result1.Content[1], cancellationToken);
-            if (!result2.IsSuccess)
-            {
-                return new(result2);
-            }
-            else
-            {
-                return OperResult.CreateSuccessResult(encoding.GetString(result2.Content, 2, result2.Content.Length - 2));
-            }
-        }
-        else
-        {
-            var result1 = plc.Read(address, 1, cancellationToken);
-            if (!result1.IsSuccess)
-                return new(result1);
-            var result2 = plc.Read(address, 1 + result1.Content[0], cancellationToken);
-            if (!result2.IsSuccess)
-            {
-                return new(result2);
-            }
-            else
-            {
-                return OperResult.CreateSuccessResult(encoding.GetString(result2.Content, 1, result2.Content.Length - 1));
-            }
-        }
-    }
-
-    internal static async Task<OperResult> WriteAsync(SiemensS7Master plc, string address, string value, Encoding encoding)
+    internal static async ValueTask<OperResult> WriteAsync(SiemensS7Master plc, string address, string value, Encoding encoding)
     {
         value ??= string.Empty;
         byte[] inBytes = encoding.GetBytes(value);
@@ -360,7 +312,7 @@ internal partial class SiemensHelper
         //    inBytes = inBytes.BytesReverseByWord();
         if (plc.SiemensS7Type != SiemensTypeEnum.S200Smart)
         {
-            OperResult<byte[]> result = await plc.ReadAsync(address, 2).ConfigureAwait(false);
+            var result = await plc.ReadAsync(address, 2).ConfigureAwait(false);
             if (!result.IsSuccess) return result;
             if (result.Content[0] == byte.MaxValue) return new OperResult<string>(SiemensS7Resource.Localizer["NotString"]);
             if (result.Content[0] == 0) result.Content[0] = 254;
@@ -375,31 +327,6 @@ internal partial class SiemensHelper
         {
     (byte) value.Length
         }, inBytes)).ConfigureAwait(false);
-    }
-
-    internal static OperResult Write(SiemensS7Master plc, string address, string value, Encoding encoding, CancellationToken cancellationToken)
-    {
-        value ??= string.Empty;
-        byte[] inBytes = encoding.GetBytes(value);
-        //if (encoding == Encoding.Unicode)
-        //    inBytes = inBytes.BytesReverseByWord();
-        if (plc.SiemensS7Type != SiemensTypeEnum.S200Smart)
-        {
-            OperResult<byte[]> result = plc.Read(address, 2);
-            if (!result.IsSuccess) return result;
-            if (result.Content[0] == byte.MaxValue) return new OperResult<string>(SiemensS7Resource.Localizer["NotString"]);
-            if (result.Content[0] == 0) result.Content[0] = 254;
-            if (value.Length > result.Content[0]) return new OperResult<string>(SiemensS7Resource.Localizer["WriteDataLengthMore"]);
-            return plc.Write(
-                address,
-                DataTransUtil.SpliceArray(new byte[2] { result.Content[0], (byte)value.Length },
-                inBytes
-                ));
-        }
-        return plc.Write(address, DataTransUtil.SpliceArray<byte>(new byte[1]
-        {
-    (byte) value.Length
-        }, inBytes), cancellationToken);
     }
 
     private static string GetCpuError(ushort Error)

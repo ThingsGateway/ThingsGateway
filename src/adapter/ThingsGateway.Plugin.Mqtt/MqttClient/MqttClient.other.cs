@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -8,9 +7,6 @@
 //  使用文档：https://kimdiego2098.github.io/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
-
-
-
 
 using Mapster;
 
@@ -21,7 +17,6 @@ using Newtonsoft.Json.Linq;
 
 using System.Text;
 
-using ThingsGateway.Admin.Application;
 using ThingsGateway.Foundation;
 using ThingsGateway.Foundation.Extension.Collection;
 using ThingsGateway.Foundation.Extension.Generic;
@@ -42,7 +37,6 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
 
     private EasyLock ConnectLock = new();
 
-
     protected override void VariableChange(VariableRunTime variableRunTime, VariableData variable)
     {
         AddQueueVarModel(new(variable));
@@ -61,18 +55,17 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
         base.AlarmChange(alarmVariable);
     }
 
-    protected override Task<OperResult> UpdateAlarmModel(IEnumerable<CacheDBItem<AlarmVariable>> item, CancellationToken cancellationToken)
+    protected override ValueTask<OperResult> UpdateAlarmModel(IEnumerable<CacheDBItem<AlarmVariable>> item, CancellationToken cancellationToken)
     {
         return UpdateAlarmModel(item.Select(a => a.Value), cancellationToken);
     }
 
-
-    protected override Task<OperResult> UpdateDevModel(IEnumerable<CacheDBItem<DeviceData>> item, CancellationToken cancellationToken)
+    protected override ValueTask<OperResult> UpdateDevModel(IEnumerable<CacheDBItem<DeviceData>> item, CancellationToken cancellationToken)
     {
         return UpdateDevModel(item.Select(a => a.Value), cancellationToken);
     }
 
-    protected override Task<OperResult> UpdateVarModel(IEnumerable<CacheDBItem<VariableData>> item, CancellationToken cancellationToken)
+    protected override ValueTask<OperResult> UpdateVarModel(IEnumerable<CacheDBItem<VariableData>> item, CancellationToken cancellationToken)
     {
         return UpdateVarModel(item.Select(a => a.Value), cancellationToken);
     }
@@ -81,13 +74,13 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
 
     #region private
 
-    private Task<OperResult> UpdateAlarmModel(IEnumerable<AlarmVariable> item, CancellationToken cancellationToken)
+    private ValueTask<OperResult> UpdateAlarmModel(IEnumerable<AlarmVariable> item, CancellationToken cancellationToken)
     {
         List<TopicJson> topicJsonList = GetAlarms(item);
         return Update(topicJsonList, cancellationToken);
     }
 
-    private async Task<OperResult> Update(List<TopicJson> topicJsonList, CancellationToken cancellationToken)
+    private async ValueTask<OperResult> Update(List<TopicJson> topicJsonList, CancellationToken cancellationToken)
     {
         foreach (var topicJson in topicJsonList)
         {
@@ -105,16 +98,16 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
                 return result;
             }
         }
-        return new();
+        return OperResult.Success;
     }
 
-    private Task<OperResult> UpdateDevModel(IEnumerable<DeviceData> item, CancellationToken cancellationToken)
+    private ValueTask<OperResult> UpdateDevModel(IEnumerable<DeviceData> item, CancellationToken cancellationToken)
     {
         List<TopicJson> topicJsonList = GetDeviceData(item);
         return Update(topicJsonList, cancellationToken);
     }
 
-    private Task<OperResult> UpdateVarModel(IEnumerable<VariableData> item, CancellationToken cancellationToken)
+    private ValueTask<OperResult> UpdateVarModel(IEnumerable<VariableData> item, CancellationToken cancellationToken)
     {
         List<TopicJson> topicJsonList = GetVariable(item);
         return Update(topicJsonList, cancellationToken);
@@ -122,12 +115,12 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
 
     #endregion private
 
-    private async Task AllPublishAsync(CancellationToken cancellationToken)
+    private async ValueTask AllPublishAsync(CancellationToken cancellationToken)
     {
         //保留消息
         //分解List，避免超出mqtt字节大小限制
-        var varData = CurrentDevice.VariableRunTimes.Values.Adapt<List<VariableData>>().ChunkBetter(_driverPropertys.SplitSize);
-        var devData = CollectDevices.Values.Adapt<List<DeviceData>>().ChunkBetter(_driverPropertys.SplitSize);
+        var varData = CurrentDevice.VariableRunTimes.Select(a => a.Value).Adapt<List<VariableData>>().ChunkBetter(_driverPropertys.SplitSize);
+        var devData = CollectDevices.Select(a => a.Value).Adapt<List<DeviceData>>().ChunkBetter(_driverPropertys.SplitSize);
         var alramData = GlobalData.ReadOnlyRealAlarmVariables.Adapt<List<AlarmVariable>>().ChunkBetter(_driverPropertys.SplitSize);
         foreach (var item in varData)
         {
@@ -184,7 +177,7 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
         }
     }
 
-    private async Task<Dictionary<string, OperResult>> GetResult(MqttApplicationMessageReceivedEventArgs args, Dictionary<string, JToken> rpcDatas)
+    private async ValueTask<Dictionary<string, OperResult>> GetResult(MqttApplicationMessageReceivedEventArgs args, Dictionary<string, JToken> rpcDatas)
     {
         var mqttRpcResult = new Dictionary<string, OperResult>();
         try
@@ -197,12 +190,12 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
                     var rpcEnable = tag.GetPropertyValue(DeviceId, nameof(_variablePropertys.VariableRpcEnable))?.ToBoolean();
                     if (rpcEnable == false)
                     {
-                        mqttRpcResult.Add(rpcData.Key, new("RPCEnable is False"));
+                        mqttRpcResult.Add(rpcData.Key, new OperResult("RPCEnable is False"));
                     }
                 }
                 else
                 {
-                    mqttRpcResult.Add(rpcData.Key, new("The variable does not exist"));
+                    mqttRpcResult.Add(rpcData.Key, new OperResult("The variable does not exist"));
                 }
             }
 
@@ -239,25 +232,25 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
         }
     }
 
-    private async Task<OperResult> TryMqttClientAsync(CancellationToken cancellationToken)
+    private async ValueTask<OperResult> TryMqttClientAsync(CancellationToken cancellationToken)
     {
         if (_mqttClient?.IsConnected == true)
-            return new();
+            return OperResult.Success;
         return await Cilent().ConfigureAwait(false);
 
-        async Task<OperResult> Cilent()
+        async ValueTask<OperResult> Cilent()
         {
             if (_mqttClient?.IsConnected == true)
-                return new();
+                return OperResult.Success;
             try
             {
                 await ConnectLock.WaitAsync().ConfigureAwait(false);
                 if (_mqttClient?.IsConnected == true)
-                    return new();
+                    return OperResult.Success;
                 using var timeoutToken = new CancellationTokenSource(TimeSpan.FromMilliseconds(_driverPropertys.ConnectTimeout));
                 using CancellationTokenSource stoppingToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutToken.Token);
                 if (_mqttClient?.IsConnected == true)
-                    return new();
+                    return OperResult.Success;
                 if (_mqttClient == null)
                 {
                     return new OperResult("mqttClient is null");
@@ -265,7 +258,7 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
                 var result = await _mqttClient.ConnectAsync(_mqttClientOptions, stoppingToken.Token).ConfigureAwait(false);
                 if (_mqttClient.IsConnected)
                 {
-                    return new();
+                    return OperResult.Success;
                 }
                 else
                 {
@@ -289,7 +282,7 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
     /// <summary>
     /// 上传mqtt，返回上传结果
     /// </summary>
-    private async Task<OperResult> MqttUpAsync(string topic, string payLoad, CancellationToken cancellationToken)
+    private async ValueTask<OperResult> MqttUpAsync(string topic, string payLoad, CancellationToken cancellationToken)
     {
         try
         {
@@ -304,11 +297,11 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
                 {
                     if (LogMessage.LogLevel <= TouchSocket.Core.LogLevel.Trace)
                         LogMessage.LogTrace($"Topic：{topic}{Environment.NewLine}PayLoad：{payLoad}");
-                    return new();
+                    return OperResult.Success;
                 }
                 else
                 {
-                    return new($"Upload fail{result.ReasonString}");
+                    return new OperResult($"Upload fail{result.ReasonString}");
                 }
             }
             else
@@ -318,7 +311,7 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
         }
         catch (Exception ex)
         {
-            return new($"Upload fail", ex);
+            return new OperResult($"Upload fail", ex);
         }
     }
 

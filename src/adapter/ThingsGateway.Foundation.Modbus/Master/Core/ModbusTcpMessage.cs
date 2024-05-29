@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -9,26 +8,22 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-
-
-
 namespace ThingsGateway.Foundation.Modbus;
 
 /// <summary>
 /// <inheritdoc/>
 /// </summary>
-internal class ModbusTcpMessage : MessageBase, IMessage
+internal class ModbusTcpMessage : MessageBase, IResultMessage
 {
     /// <inheritdoc/>
     public override int HeadBytesLength => 6;
 
     /// <inheritdoc/>
-    public override bool CheckHeadBytes(byte[] heads)
+    public override bool CheckHeadBytes(byte[]? headBytes)
     {
-        if (heads == null || heads.Length <= 0) return false;
-        HeadBytes = heads;
+        if (headBytes == null || headBytes.Length <= 0) return false;
 
-        int num = (HeadBytes[4] * 256) + HeadBytes[5];
+        int num = (headBytes[4] * 256) + headBytes[5];
         if (num > 0xff + 3) return false;
         BodyLength = num;
 

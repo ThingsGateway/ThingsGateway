@@ -36,7 +36,11 @@
   "ThingsGateway.Razor.ThemeToggle": {
     "ThemeToggle": "Night/Day"
   },
-
+  "ThingsGateway.Razor.About": {
+    "Docs": "Docs",
+    "Community": "Community",
+    "QQGroup": "QQGroup"
+  },
   "ThingsGateway.Razor.BlazorReconnector": {
     "Reconnecting1": "Reconnecting...",
     "Reconnecting2": "Attempting to reconnect to the server",

@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -9,11 +8,6 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-
-
-
-using ThingsGateway.Foundation.Extension.Generic;
-
 namespace ThingsGateway.Foundation.Modbus;
 
 /// <summary>
@@ -21,33 +15,28 @@ namespace ThingsGateway.Foundation.Modbus;
 /// </summary>
 internal class ModbusTcpDataHandleAdapter : ReadWriteDevicesSingleStreamDataHandleAdapter<ModbusTcpMessage>
 {
-    private readonly IncrementCount _incrementCount = new(ushort.MaxValue);
-
-    /// <inheritdoc/>
-    public override byte[] PackCommand(byte[] command, ModbusTcpMessage modbusTcpMessage)
+    public ModbusTcpDataHandleAdapter()
     {
-        return ModbusHelper.AddModbusTcpHead(command, (ushort)modbusTcpMessage.Sign);
+        IsSendPackCommand = true;
+    }
+
+    public override byte[] PackCommand(ISendMessage item)
+    {
+        return ModbusHelper.AddModbusTcpHead(item.SendBytes, 0, item.SendBytes.Length, (ushort)item.Sign);
     }
 
     public override bool IsSingleThread { get; } = false;
 
     /// <inheritdoc/>
-    protected override ModbusTcpMessage GetInstance()
+    protected override AdapterResult UnpackResponse(ModbusTcpMessage request, IByteBlock byteBlock)
     {
-        return new ModbusTcpMessage();
-    }
-
-    /// <inheritdoc/>
-    protected override FilterResult UnpackResponse(ModbusTcpMessage request, byte[]? send, byte[] body, byte[] response)
-    {
-        var result = ModbusHelper.GetModbusData(send?.RemoveBegin(6), response.RemoveBegin(6));
+        byteBlock.Position = 6;
+        var result = ModbusHelper.GetModbusData(null, byteBlock);
         request.OperCode = result.OperCode;
         request.ErrorMessage = result.ErrorMessage;
-        request.Sign = TouchSocketBitConverter.BigEndian.ToUInt16(response, 0);
-        if (result.IsSuccess)
-        {
-            request.Content = result.Content;
-        }
-        return result.Content2;
+
+        byteBlock.Position = 0;
+        request.Sign = byteBlock.ReadUInt16(EndianType.Big);
+        return result.Content;
     }
 }

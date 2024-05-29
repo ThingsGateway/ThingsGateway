@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -9,11 +8,6 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-
-
-
-using ThingsGateway.Foundation.Extension.Generic;
-
 namespace ThingsGateway.Foundation.Modbus;
 
 /// <summary>
@@ -21,33 +15,16 @@ namespace ThingsGateway.Foundation.Modbus;
 /// </summary>
 internal class ModbusUdpServerDataHandleAdapter : ReadWriteDevicesUdpDataHandleAdapter<ModbusTcpServerMessage>
 {
-    /// <inheritdoc/>
-    public override byte[] PackCommand(byte[] command, ModbusTcpServerMessage item)
+    public override byte[] PackCommand(ISendMessage item)
     {
-        return command;
+        throw new NotImplementedException();
     }
 
     /// <inheritdoc/>
-    protected override ModbusTcpServerMessage GetInstance()
+    protected override AdapterResult UnpackResponse(ModbusTcpServerMessage request, IByteBlock byteBlock)
     {
-        return new ModbusTcpServerMessage();
-    }
-
-    /// <inheritdoc/>
-    protected override OperResult<byte[]> UnpackResponse(ModbusTcpServerMessage request, byte[]? send, byte[] response)
-    {
-        var result = ModbusHelper.GetModbusWriteData(response.RemoveBegin(6));
-        request.OperCode = result.OperCode;
-        request.ErrorMessage = result.ErrorMessage;
-        if (result.IsSuccess)
-        {
-            int offset = 6;
-            ModbusHelper.ModbusServerAnalysisAddressValue(request, response, result, offset);
-            return request;
-        }
-        else
-        {
-            return request;
-        }
+        byteBlock.Position = 6;
+        var bytes = ModbusHelper.ModbusServerAnalysisAddressValue(request, byteBlock);
+        return new AdapterResult() { FilterResult = FilterResult.Success, Content = bytes };
     }
 }

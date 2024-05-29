@@ -1,5 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
   <Import Project="$(SolutionDir)Plugin.props" />
+  <Import Project="$(SolutionDir)Version.props" />
 
   <PropertyGroup>
     <DefineConstants>Plugin</DefineConstants>
@@ -12,7 +13,7 @@
   </Target>
 
   <ItemGroup>
-    <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Server" Version="1.5.374.36" />
+    <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Server" Version="1.5.374.54" />
     <ProjectReference Include="..\ThingsGateway.Foundation.OpcUa\ThingsGateway.Foundation.OpcUa.csproj" />
   </ItemGroup>
 

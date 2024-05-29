@@ -5,7 +5,14 @@
     "Password": "Write password",
     "Station": "Communication address",
     "CheckClearTime": "Connection sliding expiration time",
-    "HeartbeatHexString": "Heartbeat detection"
+    "HeartbeatHexString": "Heartbeat detection",
+
+    "CacheTimeout": "Packet Assembly Cache Time",
+    "SendDelayTime": "Send Delay Time",
+    "EndianType": "Parsing Rules",
+    "Timeout": "Read/Write Timeout",
+    "ConnectTimeout": "Connection Timeout",
+    "IsStringReverseByteWord": "String Byte/Word Reversal"
   },
 
   "ThingsGateway.Foundation.Dlt645.DltResource": {
@@ -17,6 +24,7 @@
     "DataIdNotSame": "Returned data identification does not comply with the rules",
     "BaudRateError": "Unsupported baud rate {0}",
     "CountError": "Number of parameters written does not meet address requirements",
+    "DataIdError": "Variable Address error",
     "Error1": "Other errors",
     "Error2": "Excessive number of rates",
     "Error3": "Excessive number of daily time periods",

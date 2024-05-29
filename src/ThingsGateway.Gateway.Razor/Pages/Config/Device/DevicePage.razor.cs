@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -8,7 +7,6 @@
 //  使用文档：https://kimdiego2098.github.io/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
-
 
 using Mapster;
 
@@ -42,28 +40,34 @@ public abstract partial class DevicePage : IDisposable
     [Inject]
     [NotNull]
     private IChannelService? ChannelService { get; set; }
+
     [Inject]
     [NotNull]
     private IDispatchService<Channel>? ChannelDispatchService { get; set; }
+
     [Inject]
     [NotNull]
     private IDispatchService<Device>? DeviceDispatchService { get; set; }
+
     [Inject]
     [NotNull]
     private IDispatchService<PluginOutput>? PluginDispatchService { get; set; }
 
     private Device? SearchModel { get; set; } = new();
+
     protected override Task OnInitializedAsync()
     {
         ChannelDispatchService.Subscribe(Notify);
         PluginDispatchService.Subscribe(Notify);
         return base.OnInitializedAsync();
     }
+
     private async Task Notify(DispatchEntry<PluginOutput> entry)
     {
         await OnParametersSetAsync();
         await InvokeAsync(StateHasChanged);
     }
+
     private async Task Notify(DispatchEntry<Channel> entry)
     {
         await OnParametersSetAsync();
@@ -164,7 +168,6 @@ public abstract partial class DevicePage : IDisposable
         }
     }
 
-
     private async Task BatchEdit(IEnumerable<Device> devices)
     {
         var op = new DialogOption()
@@ -193,8 +196,8 @@ public abstract partial class DevicePage : IDisposable
             {nameof(DeviceEditComponent.BatchEditEnable),true },
         });
         await DialogService.Show(op);
-
     }
+
     private async Task<bool> Delete(IEnumerable<Device> devices)
     {
         try

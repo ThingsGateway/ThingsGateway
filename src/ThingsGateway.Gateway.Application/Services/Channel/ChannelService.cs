@@ -29,6 +29,7 @@ using ThingsGateway.Gateway.Application.Extensions;
 using ThingsGateway.Gateway.Application.Generic;
 
 using TouchSocket.Core;
+using TouchSocket.SerialPorts;
 
 using Yitter.IdGenerator;
 
@@ -91,6 +92,7 @@ public class ChannelService : BaseService<Channel>, IChannelService
             return true;
         }
     }
+
     /// <summary>
     /// 保存通道
     /// </summary>
@@ -201,7 +203,7 @@ public class ChannelService : BaseService<Channel>, IChannelService
             if (string.IsNullOrEmpty(input.BindUrl) && string.IsNullOrEmpty(input.RemoteUrl))
                 throw Oops.Bah(Localizer["BindUrlOrRemoteUrlNotNull"]);
         }
-        else if (input.ChannelType == ChannelTypeEnum.SerialPortClient)
+        else if (input.ChannelType == ChannelTypeEnum.SerialPort)
         {
             if (string.IsNullOrEmpty(input.PortName))
                 throw Oops.Bah(Localizer["PortNameNotNull"]);

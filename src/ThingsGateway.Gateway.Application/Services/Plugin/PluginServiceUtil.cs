@@ -132,7 +132,6 @@ public static class PluginServiceUtil
         if (!string.IsNullOrEmpty(source.Step)) dest.Step = source.Step;
         if (source.Order != 0) dest.Order = source.Order;
 
-
         if (source is ITableColumn source1 && dest is ITableColumn dest1)
         {
             source1.CopyValue(dest1);
@@ -175,9 +174,6 @@ public static class PluginServiceUtil
         if (col.IsReadonlyWhenAdd.HasValue) dest.IsReadonlyWhenAdd = col.IsReadonlyWhenAdd;
         if (col.IsReadonlyWhenEdit.HasValue) dest.IsReadonlyWhenEdit = col.IsReadonlyWhenEdit;
     }
-
-
-
 
     /// <summary>
     /// 通过特定类型模型获取模型属性集合

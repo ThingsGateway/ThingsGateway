@@ -8,26 +8,25 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-namespace ThingsGateway.Gateway.Application
+namespace ThingsGateway.Gateway.Application;
+
+public interface IDBHistoryAlarm
 {
-    public interface IDBHistoryAlarm
-    {
-        string AlarmCode { get; set; }
-        string AlarmLimit { get; set; }
-        string? AlarmText { get; set; }
-        DateTime AlarmTime { get; set; }
-        AlarmTypeEnum? AlarmType { get; set; }
-        DataTypeEnum DataType { get; set; }
-        string? Description { get; set; }
-        string DeviceName { get; set; }
-        DateTime EventTime { get; set; }
-        EventTypeEnum EventType { get; set; }
-        string Name { get; set; }
-        string RegisterAddress { get; set; }
-        string Remark1 { get; set; }
-        string Remark2 { get; set; }
-        string Remark3 { get; set; }
-        string Remark4 { get; set; }
-        string Remark5 { get; set; }
-    }
+    string AlarmCode { get; set; }
+    string AlarmLimit { get; set; }
+    string? AlarmText { get; set; }
+    DateTime AlarmTime { get; set; }
+    AlarmTypeEnum? AlarmType { get; set; }
+    DataTypeEnum DataType { get; set; }
+    string? Description { get; set; }
+    string DeviceName { get; set; }
+    DateTime EventTime { get; set; }
+    EventTypeEnum EventType { get; set; }
+    string Name { get; set; }
+    string RegisterAddress { get; set; }
+    string Remark1 { get; set; }
+    string Remark2 { get; set; }
+    string Remark3 { get; set; }
+    string Remark4 { get; set; }
+    string Remark5 { get; set; }
 }

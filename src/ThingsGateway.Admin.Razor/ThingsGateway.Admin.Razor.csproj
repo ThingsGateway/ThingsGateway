@@ -1,4 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
+  <Import Project="$(SolutionDir)Version.props" />
 
   <PropertyGroup Condition="'$(SolutionName)'=='ThingsGateway - Admin'">
     <DefineConstants>Admin</DefineConstants>
@@ -7,9 +8,9 @@
   <ItemGroup>
     <ProjectReference Include="$(SolutionDir)\ThingsGateway.Admin.Application\ThingsGateway.Admin.Application.csproj" />
     <ProjectReference Include="$(SolutionDir)\ThingsGateway.Razor\ThingsGateway.Razor.csproj" />
-    <PackageReference Include="BootstrapBlazor.Chart" Version="8.1.0" />
+    <PackageReference Include="BootstrapBlazor.Chart" Version="8.1.5" />
     <PackageReference Include="BootstrapBlazor.TableExport" Version="8.1.0" />
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.4" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.6" />
   </ItemGroup>
 
   <ItemGroup>
@@ -17,6 +18,14 @@
     <EmbeddedResource Include="Locales\*.json">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Pages\AppConfig\AppConfigPage.razor.css" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Pages\AppConfig\AppConfigPage.razor.css" />
   </ItemGroup>
   
 </Project>

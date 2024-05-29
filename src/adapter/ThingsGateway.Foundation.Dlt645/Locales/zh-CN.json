@@ -5,7 +5,14 @@
     "Password": "写入密码",
     "Station": "通讯地址",
     "CheckClearTime": "连接滑动过期时间",
-    "HeartbeatHexString": "心跳检测"
+    "HeartbeatHexString": "心跳检测",
+
+    "CacheTimeout": "组包缓存时间",
+    "SendDelayTime": "发送延时",
+    "EndianType": "解析规则",
+    "Timeout": "读写超时",
+    "ConnectTimeout": "连接超时",
+    "IsStringReverseByteWord": "字符串反转"
   },
 
   "ThingsGateway.Foundation.Dlt645.DltResource": {
@@ -17,6 +24,7 @@
     "DataIdNotSame": "返回数据标识不符合规则",
     "BaudRateError": "不支持此波特率 {0}",
     "CountError": "写入参数数量不符合地址要求",
+    "DataIdError": "变量寄存器地址错误",
     "Error1": "其他错误",
     "Error2": "费率数超",
     "Error3": "日时段数超",

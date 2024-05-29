@@ -133,8 +133,6 @@ public partial class AdminTable<TItem> where TItem : class, new()
     [Parameter]
     public float RowHeight { get; set; } = 38;
 
-
-
     /// <inheritdoc cref="Table{TItem}.IsFixedHeader"/>
     [Parameter]
     public bool IsFixedHeader { get; set; } = true;

@@ -149,7 +149,7 @@ internal class ComInterop
     private static extern int GetUserDefaultLangID();
 
     #endregion win32 api
-
+    
     /// <summary>
     /// 创建一个COM服务器的实例。
     /// </summary>

@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -9,9 +8,8 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-
-
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Localization;
 
 using ThingsGateway.Admin.Application;
 using ThingsGateway.Admin.Razor;
@@ -49,7 +47,20 @@ public class Startup : AppStartup
             }
         });
 
-        services.AddScoped<BlazorAppContext>();
+        services.AddScoped<BlazorAppContext>(a =>
+        {
+            var sysResourceService = a.GetService<ISysResourceService>();
+            var userCenterService = a.GetService<IUserCenterService>();
+            var userService = a.GetService<ISysUserService>();
+            var appContext = new BlazorAppContext(sysResourceService, userCenterService, userService);
+#if Admin
+            appContext.TitleLocalizer = a.GetRequiredService<IStringLocalizer<ThingsGateway.Admin.Razor.MainLayout>>();
+#else
+            appContext.TitleLocalizer = a.GetRequiredService<IStringLocalizer<ThingsGateway.Gateway.Razor.MainLayout>>();
+#endif
+
+            return appContext;
+        });
 
         services.AddHttpContextAccessor();
 

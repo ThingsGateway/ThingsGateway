@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -8,7 +7,6 @@
 //  使用文档：https://kimdiego2098.github.io/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
-
 
 using Microsoft.AspNetCore.Components;
 
@@ -28,6 +26,7 @@ internal class InternalEditorItem(string fieldName, Type fieldType, string? fiel
 
     [ExcludeFromCodeCoverage]
     public bool Editable { get; set; } = true;
+
     public bool Readonly { get; set; }
     public bool? IsReadonlyWhenAdd { get; set; }
     public bool? IsReadonlyWhenEdit { get; set; }
@@ -37,10 +36,12 @@ internal class InternalEditorItem(string fieldName, Type fieldType, string? fiel
     public bool? IsVisibleWhenAdd { get; set; } = true;
 
     public bool? IsVisibleWhenEdit { get; set; } = true;
+
     /// <summary>
     /// <inheritdoc/>
     /// </summary>
     public bool Ignore { get; set; }
+
     public bool SkipValidate { get; set; }
     public string? Text { get; set; } = fieldText;
     public bool? ShowLabelTooltip { get; set; }

@@ -1,5 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
-	<PropertyGroup>
+  <Import Project="$(SolutionDir)Version.props" />
+  <PropertyGroup>
 		<DefineConstants>DriverDebug</DefineConstants>
 	</PropertyGroup>
 	

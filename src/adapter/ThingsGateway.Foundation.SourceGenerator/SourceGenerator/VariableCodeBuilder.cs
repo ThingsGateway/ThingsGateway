@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -8,9 +7,6 @@
 //  使用文档：https://kimdiego2098.github.io/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
-
-
-
 
 //------------------------------------------------------------------------------
 //  此代码版权（除特别声明或在XREF结尾的命名空间的代码）归作者本人若汝棋茗所有
@@ -32,107 +28,100 @@ using Microsoft.CodeAnalysis.Text;
 using System.Reflection;
 using System.Text;
 
-namespace ThingsGateway.Foundation
+namespace ThingsGateway.Foundation;
+
+internal sealed class VariableCodeBuilder
 {
-    internal sealed class VariableCodeBuilder
+    private readonly INamedTypeSymbol m_pluginClass;
+
+    public VariableCodeBuilder(INamedTypeSymbol pluginClass)
     {
-        private readonly INamedTypeSymbol m_pluginClass;
+        this.m_pluginClass = pluginClass;
+    }
 
-        public VariableCodeBuilder(INamedTypeSymbol pluginClass)
+    public string Prefix { get; set; }
+
+    public IEnumerable<string> Usings
+    {
+        get
         {
-            this.m_pluginClass = pluginClass;
+            yield return "using System;";
+            yield return "using System.Diagnostics;";
+            yield return "using ThingsGateway.Foundation;";
+            yield return "using System.Threading.Tasks;";
+        }
+    }
+
+    public string GetFileName()
+    {
+        return this.m_pluginClass.ToDisplayString() + "Generator";
+    }
+
+    public bool TryToSourceText(out SourceText sourceText)
+    {
+        var code = this.ToString();
+        if (string.IsNullOrEmpty(code))
+        {
+            sourceText = null;
+            return false;
+        }
+        sourceText = SourceText.From(code, Encoding.UTF8);
+        return true;
+    }
+
+    public override string ToString()
+    {
+        var propertys = this.FindPropertys().ToList();
+        if (propertys.Count == 0)
+        {
+            return null;
+        }
+        var codeString = new StringBuilder();
+        codeString.AppendLine("/*");
+        codeString.AppendLine("此代码由SourceGenerator工具直接生成，非必要请不要修改此处代码");
+        codeString.AppendLine("*/");
+        codeString.AppendLine("#pragma warning disable");
+
+        foreach (var item in this.Usings)
+        {
+            codeString.AppendLine(item);
         }
 
-        public string Prefix { get; set; }
-
-        public IEnumerable<string> Usings
+        codeString.AppendLine($"namespace {this.m_pluginClass.ContainingNamespace}");
+        codeString.AppendLine("{");
+        codeString.AppendLine($"[global::System.CodeDom.Compiler.GeneratedCode(\"ThingsGateway.Foundation\",\"{Assembly.GetExecutingAssembly().GetName().Version}\")]");
+        codeString.AppendLine($"partial class {this.m_pluginClass.Name}");
+        codeString.AppendLine("{");
+        foreach (var item in propertys)
         {
-            get
+            this.BuildMethod(codeString, item);
+        }
+        codeString.AppendLine("}");
+        codeString.AppendLine("}");
+
+        return codeString.ToString();
+    }
+
+    private void BuildMethod(StringBuilder stringBuilder, IPropertySymbol propertySymbol)
+    {
+        var attributeData = propertySymbol.GetAttributes().FirstOrDefault(a => a.AttributeClass.ToDisplayString() == VariableSyntaxReceiver.VariableRuntimeAttributeTypeName);
+        stringBuilder.AppendLine();
+        stringBuilder.AppendLine($"public ValueTask<OperResult> Write{propertySymbol.Name}Async(object value,CancellationToken cancellationToken=default)");
+        stringBuilder.AppendLine("{");
+        stringBuilder.AppendLine($"return WriteValueAsync(\"{propertySymbol.Name}\",value,cancellationToken);");
+        stringBuilder.AppendLine("}");
+        stringBuilder.AppendLine();
+    }
+
+    private IEnumerable<IPropertySymbol> FindPropertys()
+    {
+        return this.m_pluginClass
+            .GetMembers()
+            .OfType<IPropertySymbol>()
+            .Where(m =>
             {
-                yield return "using System;";
-                yield return "using System.Diagnostics;";
-                yield return "using ThingsGateway.Foundation;";
-                yield return "using System.Threading.Tasks;";
-            }
-        }
-
-        public string GetFileName()
-        {
-            return this.m_pluginClass.ToDisplayString() + "Generator";
-        }
-
-        public bool TryToSourceText(out SourceText sourceText)
-        {
-            var code = this.ToString();
-            if (string.IsNullOrEmpty(code))
-            {
-                sourceText = null;
-                return false;
-            }
-            sourceText = SourceText.From(code, Encoding.UTF8);
-            return true;
-        }
-
-        public override string ToString()
-        {
-            var propertys = this.FindPropertys().ToList();
-            if (propertys.Count == 0)
-            {
-                return null;
-            }
-            var codeString = new StringBuilder();
-            codeString.AppendLine("/*");
-            codeString.AppendLine("此代码由Variable工具直接生成，非必要请不要修改此处代码");
-            codeString.AppendLine("*/");
-            codeString.AppendLine("#pragma warning disable");
-
-            foreach (var item in this.Usings)
-            {
-                codeString.AppendLine(item);
-            }
-
-            codeString.AppendLine($"namespace {this.m_pluginClass.ContainingNamespace}");
-            codeString.AppendLine("{");
-            codeString.AppendLine($"[global::System.CodeDom.Compiler.GeneratedCode(\"ThingsGateway.Foundation\",\"{Assembly.GetExecutingAssembly().GetName().Version.ToString()}\")]");
-            codeString.AppendLine($"partial class {this.m_pluginClass.Name}");
-            codeString.AppendLine("{");
-            foreach (var item in propertys)
-            {
-                this.BuildMethod(codeString, item);
-            }
-            codeString.AppendLine("}");
-            codeString.AppendLine("}");
-
-            return codeString.ToString();
-        }
-
-        private void BuildMethod(StringBuilder stringBuilder, IPropertySymbol propertySymbol)
-        {
-            var attributeData = propertySymbol.GetAttributes().FirstOrDefault(a => a.AttributeClass.ToDisplayString() == VariableSyntaxReceiver.VariableRuntimeAttributeTypeName);
-            stringBuilder.AppendLine();
-            stringBuilder.AppendLine($"public OperResult Write{propertySymbol.Name}({propertySymbol.Type} value,CancellationToken cancellationToken=default)");
-            stringBuilder.AppendLine("{");
-            stringBuilder.AppendLine($"return WriteValue(\"{propertySymbol.Name}\",value,cancellationToken);");
-            stringBuilder.AppendLine("}");
-            stringBuilder.AppendLine();
-            stringBuilder.AppendLine();
-            stringBuilder.AppendLine($"public Task<OperResult> Write{propertySymbol.Name}Async({propertySymbol.Type} value,CancellationToken cancellationToken=default)");
-            stringBuilder.AppendLine("{");
-            stringBuilder.AppendLine($"return WriteValueAsync(\"{propertySymbol.Name}\",value,cancellationToken);");
-            stringBuilder.AppendLine("}");
-            stringBuilder.AppendLine();
-        }
-
-        private IEnumerable<IPropertySymbol> FindPropertys()
-        {
-            return this.m_pluginClass
-                .GetMembers()
-                .OfType<IPropertySymbol>()
-                .Where(m =>
-                {
-                    return m.GetAttributes().Any(a => a.AttributeClass.ToDisplayString() == VariableSyntaxReceiver.VariableRuntimeAttributeTypeName);
-                });
-        }
+                return m.GetAttributes().Any(a => a.AttributeClass.ToDisplayString() == VariableSyntaxReceiver.VariableRuntimeAttributeTypeName);
+            });
     }
 }
 

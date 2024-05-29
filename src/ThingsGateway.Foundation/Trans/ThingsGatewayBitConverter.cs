@@ -1,5 +1,4 @@
-
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -8,9 +7,6 @@
 //  使用文档：https://kimdiego2098.github.io/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
-
-
-
 
 using Newtonsoft.Json;
 
@@ -64,198 +60,25 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
         this.EndianType = endianType;
     }
 
-    /// <summary>
-    /// 构造函数
-    /// </summary>
-    public ThingsGatewayBitConverter(EndianType endianType, DataFormatEnum dataFormat)
-    {
-        this.EndianType = endianType; this.DataFormat = dataFormat;
-    }
-
     /// <inheritdoc/>
-    public virtual DataFormatEnum? DataFormat { get; set; }
-
-    /// <inheritdoc/>
-    public virtual EndianType EndianType { get; init; }
+    public virtual EndianType EndianType { get; set; }
 
     /// <inheritdoc/>
     public virtual bool IsStringReverseByteWord { get; set; }
 
     /// <inheritdoc/>
-    public virtual byte[] GetBytes(bool value)
-    {
-        return GetBytes(new bool[1]
-        {
-              value
-        });
-    }
+    public virtual bool IsBoolReverseByteWord { get; set; }
 
-    /// <inheritdoc/>
-    public virtual byte[] GetBytes(bool[] values)
-    {
-        return values.BoolArrayToByte();
-    }
+    internal TouchSocketBitConverter TouchSocketBitConverter => TouchSocketBitConverter.GetBitConverter(EndianType);
 
-    /// <inheritdoc/>
-    public virtual byte[] GetBytes(short value)
-    {
-        byte[] bytes = BitConverter.GetBytes(value);
-        if (!IsSameOfSet())
-        {
-            Array.Reverse(bytes);
-        }
-        return bytes;
-    }
-
-    /// <inheritdoc/>
-    public virtual byte[] GetBytes(short[] value)
-    {
-        byte[] numArray = new byte[value.Length * 2];
-        for (int index = 0; index < value.Length; ++index)
-        {
-            byte[] bytes = GetBytes(value[index]);
-            bytes.CopyTo(numArray, 2 * index);
-        }
-        return numArray;
-    }
-
-    /// <inheritdoc/>
-    public virtual byte[] GetBytes(ushort value)
-    {
-        byte[] bytes = BitConverter.GetBytes(value);
-        if (!IsSameOfSet())
-        {
-            Array.Reverse(bytes);
-        }
-        return bytes;
-    }
-
-    /// <inheritdoc/>
-    public virtual byte[] GetBytes(ushort[] value)
-    {
-        byte[] numArray = new byte[value.Length * 2];
-        for (int index = 0; index < value.Length; ++index)
-        {
-            byte[] bytes = GetBytes(value[index]);
-            bytes.CopyTo(numArray, 2 * index);
-        }
-        return numArray;
-    }
-
-    /// <inheritdoc/>
-    public virtual byte[] GetBytes(int value)
-    {
-        return ByteTransDataFormat4(BitConverter.GetBytes(value));
-    }
-
-    /// <inheritdoc/>
-    public virtual byte[] GetBytes(int[] value)
-    {
-        byte[] numArray = new byte[value.Length * 2];
-        for (int index = 0; index < value.Length; ++index)
-        {
-            byte[] bytes = GetBytes(value[index]);
-            bytes.CopyTo(numArray, 2 * index);
-        }
-        return numArray;
-    }
-
-    /// <inheritdoc/>
-    public virtual byte[] GetBytes(uint value)
-    {
-        return ByteTransDataFormat4(BitConverter.GetBytes(value));
-    }
-
-    /// <inheritdoc/>
-    public virtual byte[] GetBytes(uint[] value)
-    {
-        byte[] numArray = new byte[value.Length * 2];
-        for (int index = 0; index < value.Length; ++index)
-        {
-            byte[] bytes = GetBytes(value[index]);
-            bytes.CopyTo(numArray, 2 * index);
-        }
-        return numArray;
-    }
-
-    /// <inheritdoc/>
-    public virtual byte[] GetBytes(long value)
-    {
-        return ByteTransDataFormat8(BitConverter.GetBytes(value));
-    }
-
-    /// <inheritdoc/>
-    public virtual byte[] GetBytes(long[] value)
-    {
-        byte[] numArray = new byte[value.Length * 2];
-        for (int index = 0; index < value.Length; ++index)
-        {
-            byte[] bytes = GetBytes(value[index]);
-            bytes.CopyTo(numArray, 2 * index);
-        }
-        return numArray;
-    }
-
-    /// <inheritdoc/>
-    public virtual byte[] GetBytes(ulong value)
-    {
-        return ByteTransDataFormat8(BitConverter.GetBytes(value));
-    }
-
-    /// <inheritdoc/>
-    public virtual byte[] GetBytes(ulong[] value)
-    {
-        byte[] numArray = new byte[value.Length * 2];
-        for (int index = 0; index < value.Length; ++index)
-        {
-            byte[] bytes = GetBytes(value[index]);
-            bytes.CopyTo(numArray, 2 * index);
-        }
-        return numArray;
-    }
-
-    /// <inheritdoc/>
-    public virtual byte[] GetBytes(float value)
-    {
-        return ByteTransDataFormat4(BitConverter.GetBytes(value));
-    }
-
-    /// <inheritdoc/>
-    public virtual byte[] GetBytes(float[] value)
-    {
-        byte[] numArray = new byte[value.Length * 2];
-        for (int index = 0; index < value.Length; ++index)
-        {
-            byte[] bytes = GetBytes(value[index]);
-            bytes.CopyTo(numArray, 2 * index);
-        }
-        return numArray;
-    }
-
-    /// <inheritdoc/>
-    public virtual byte[] GetBytes(double value)
-    {
-        return ByteTransDataFormat8(BitConverter.GetBytes(value));
-    }
-
-    /// <inheritdoc/>
-    public virtual byte[] GetBytes(double[] value)
-    {
-        byte[] numArray = new byte[value.Length * 2];
-        for (int index = 0; index < value.Length; ++index)
-        {
-            byte[] bytes = GetBytes(value[index]);
-            bytes.CopyTo(numArray, 2 * index);
-        }
-        return numArray;
-    }
+    #region GetBytes
 
     /// <inheritdoc/>
     public virtual byte[] GetBytes(string value)
     {
         if (string.IsNullOrEmpty(value))
         {
-            return new byte[0];
+            return Array.Empty<byte>();
         }
         if (StringLength != null)
         {
@@ -286,36 +109,191 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
     }
 
     /// <inheritdoc/>
-    public virtual bool IsSameOfSet()
+    public virtual byte[] GetBytes(short[] value)
     {
-        return !(BitConverter.IsLittleEndian ^ (EndianType == EndianType.Little));
+        using ValueByteBlock byteBlock = new ValueByteBlock(value.Length * 2);
+        for (int index = 0; index < value.Length; ++index)
+        {
+            byte[] bytes = TouchSocketBitConverter.GetBytes(value[index]);
+            byteBlock.Write(bytes);
+        }
+        return byteBlock.ToArray();
     }
 
     /// <inheritdoc/>
-    public virtual bool ToBoolean(byte[] buffer, int offset, bool isReverse = false)
+    public virtual byte[] GetBytes(ushort[] value)
     {
-        byte[] bytes = new byte[buffer.Length];
-        Array.Copy(buffer, 0, bytes, 0, buffer.Length);
-        if (isReverse && !IsSameOfSet())
+        using ValueByteBlock byteBlock = new ValueByteBlock(value.Length * 2);
+        for (int index = 0; index < value.Length; ++index)
+        {
+            byte[] bytes = TouchSocketBitConverter.GetBytes(value[index]);
+            byteBlock.Write(bytes);
+        }
+        return byteBlock.ToArray();
+    }
+
+    /// <inheritdoc/>
+    public virtual byte[] GetBytes(int[] value)
+    {
+        using ValueByteBlock byteBlock = new ValueByteBlock(value.Length * 4);
+        for (int index = 0; index < value.Length; ++index)
+        {
+            byte[] bytes = TouchSocketBitConverter.GetBytes(value[index]);
+            byteBlock.Write(bytes);
+        }
+        return byteBlock.ToArray();
+    }
+
+    /// <inheritdoc/>
+    public virtual byte[] GetBytes(uint[] value)
+    {
+        using ValueByteBlock byteBlock = new ValueByteBlock(value.Length * 4);
+        for (int index = 0; index < value.Length; ++index)
+        {
+            byte[] bytes = TouchSocketBitConverter.GetBytes(value[index]);
+            byteBlock.Write(bytes);
+        }
+        return byteBlock.ToArray();
+    }
+
+    /// <inheritdoc/>
+    public virtual byte[] GetBytes(long[] value)
+    {
+        using ValueByteBlock byteBlock = new ValueByteBlock(value.Length * 4);
+        for (int index = 0; index < value.Length; ++index)
+        {
+            byte[] bytes = TouchSocketBitConverter.GetBytes(value[index]);
+            byteBlock.Write(bytes);
+        }
+        return byteBlock.ToArray();
+    }
+
+    /// <inheritdoc/>
+    public virtual byte[] GetBytes(ulong[] value)
+    {
+        using ValueByteBlock byteBlock = new ValueByteBlock(value.Length * 4);
+        for (int index = 0; index < value.Length; ++index)
+        {
+            byte[] bytes = TouchSocketBitConverter.GetBytes(value[index]);
+            byteBlock.Write(bytes);
+        }
+        return byteBlock.ToArray();
+    }
+
+    /// <inheritdoc/>
+    public virtual byte[] GetBytes(float[] value)
+    {
+        using ValueByteBlock byteBlock = new ValueByteBlock(value.Length * 4);
+        for (int index = 0; index < value.Length; ++index)
+        {
+            byte[] bytes = TouchSocketBitConverter.GetBytes(value[index]);
+            byteBlock.Write(bytes);
+        }
+        return byteBlock.ToArray();
+    }
+
+    /// <inheritdoc/>
+    public virtual byte[] GetBytes(double[] value)
+    {
+        using ValueByteBlock byteBlock = new ValueByteBlock(value.Length * 4);
+        for (int index = 0; index < value.Length; ++index)
+        {
+            byte[] bytes = TouchSocketBitConverter.GetBytes(value[index]);
+            byteBlock.Write(bytes);
+        }
+        return byteBlock.ToArray();
+    }
+
+    #endregion GetBytes
+
+    /// <inheritdoc/>
+    public virtual string ToString(byte[] buffer, int offset, int len)
+    {
+        if (BcdFormat != null)
+        {
+            return IsStringReverseByteWord ? DataTransUtil.GetBcdValue(new ReadOnlySpan<byte>(buffer, offset, len).ToArray().BytesReverseByWord(), BcdFormat.Value) : DataTransUtil.GetBcdValue(new ReadOnlySpan<byte>(buffer, offset, len), BcdFormat.Value);
+        }
+        else
+        {
+            return IsStringReverseByteWord ?
+                Encoding.GetString(new ReadOnlySpan<byte>(buffer, offset, len).ToArray().BytesReverseByWord()).TrimEnd().Replace($"\0", "") :
+                Encoding.GetString(buffer, offset, len).TrimEnd().Replace($"\0", "");
+        }
+    }
+
+    /// <inheritdoc/>
+    public virtual bool ToBoolean(byte[] buffer, int offset)
+    {
+        byte[] bytes;
+        if (IsBoolReverseByteWord)
             bytes = buffer.BytesReverseByWord();
+        else
+            bytes = buffer.CopyArray();
         return bytes.GetBoolByIndex(offset);
     }
 
     /// <inheritdoc/>
     public virtual byte ToByte(byte[] buffer, int offset)
     {
-        if (buffer.Length - offset >= 2)
+        return buffer[offset];
+    }
+
+    /// <inheritdoc/>
+    public virtual short ToInt16(byte[] buffer, int offset)
+    {
+        return TouchSocketBitConverter.ToInt16(buffer, offset);
+    }
+
+    /// <inheritdoc/>
+    public virtual int ToInt32(byte[] buffer, int offset)
+    {
+        return TouchSocketBitConverter.ToInt32(buffer, offset);
+    }
+
+    /// <inheritdoc/>
+    public virtual long ToInt64(byte[] buffer, int offset)
+    {
+        return TouchSocketBitConverter.ToInt64(buffer, offset);
+    }
+
+    /// <inheritdoc/>
+    public virtual ushort ToUInt16(byte[] buffer, int offset)
+    {
+        return TouchSocketBitConverter.ToUInt16(buffer, offset);
+    }
+
+    /// <inheritdoc/>
+    public virtual uint ToUInt32(byte[] buffer, int offset)
+    {
+        return TouchSocketBitConverter.ToUInt32(buffer, offset);
+    }
+
+    /// <inheritdoc/>
+    public virtual ulong ToUInt64(byte[] buffer, int offset)
+    {
+        return TouchSocketBitConverter.ToUInt64(buffer, offset);
+    }
+
+    /// <inheritdoc/>
+    public virtual float ToSingle(byte[] buffer, int offset)
+    {
+        return TouchSocketBitConverter.ToSingle(buffer, offset);
+    }
+
+    public virtual double ToDouble(byte[] buffer, int offset)
+    {
+        return TouchSocketBitConverter.ToDouble(buffer, offset);
+    }
+
+    /// <inheritdoc/>
+    public virtual bool[] ToBoolean(byte[] buffer, int offset, int len)
+    {
+        bool[] result = new bool[len];
+        for (int i = 0; i < result.Length; i++)
         {
-            byte[] bytes = new byte[2];
-            Array.Copy(buffer, offset, bytes, 0, bytes.Length);
-            return bytes[0];
+            result[i] = ToBoolean(buffer, offset + i);
         }
-        else
-        {
-            byte[] bytes = new byte[1];
-            Array.Copy(buffer, offset, bytes, 0, bytes.Length);
-            return bytes[0];
-        }
+        return result;
     }
 
     /// <inheritdoc/>
@@ -324,214 +302,6 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
         byte[] bytes = new byte[length];
         Array.Copy(buffer, offset, bytes, 0, bytes.Length);
         return bytes;
-    }
-
-    /// <summary>
-    ///  转换为指定端模式的double数据。
-    /// </summary>
-    /// <param name="buffer"></param>
-    /// <param name="offset"></param>
-    /// <returns></returns>
-    public virtual double ToDouble(byte[] buffer, int offset)
-    {
-        byte[] bytes = ByteTransDataFormat8(buffer, offset);
-
-        return BitConverter.ToDouble(bytes, 0);
-    }
-
-    /// <inheritdoc/>
-    public virtual short ToInt16(byte[] buffer, int offset)
-    {
-        byte[] bytes = new byte[2];
-        Array.Copy(buffer, offset, bytes, 0, bytes.Length);
-        if (!IsSameOfSet())
-        {
-            Array.Reverse(bytes);
-        }
-        return BitConverter.ToInt16(bytes, 0);
-    }
-
-    /// <inheritdoc/>
-    public virtual int ToInt32(byte[] buffer, int offset)
-    {
-        byte[] bytes = ByteTransDataFormat4(buffer, offset);
-
-        return BitConverter.ToInt32(bytes, 0);
-    }
-
-    /// <inheritdoc/>
-    public virtual long ToInt64(byte[] buffer, int offset)
-    {
-        byte[] bytes = ByteTransDataFormat8(buffer, offset);
-        return BitConverter.ToInt64(bytes, 0);
-    }
-
-    /// <inheritdoc/>
-    public virtual float ToSingle(byte[] buffer, int offset)
-    {
-        byte[] bytes = ByteTransDataFormat4(buffer, offset);
-
-        return BitConverter.ToSingle(bytes, 0);
-    }
-
-    /// <inheritdoc/>
-    public virtual string ToString(byte[] buffer)
-    {
-        return ToString(buffer, 0, buffer.Length);
-    }
-
-    /// <inheritdoc/>
-    public virtual string ToString(byte[] buffer, int offset, int length)
-    {
-        byte[] numArray = buffer.SelectMiddle(offset, length);
-        if (BcdFormat != null)
-        {
-            return IsStringReverseByteWord ? DataTransUtil.GetBCDValue(buffer.SelectMiddle(offset, length).BytesReverseByWord(), BcdFormat.Value) : DataTransUtil.GetBCDValue(buffer.SelectMiddle(offset, length), BcdFormat.Value);
-        }
-        else
-        {
-            return IsStringReverseByteWord ?
-                Encoding.GetString(numArray.BytesReverseByWord()).TrimEnd().Replace($"\0", "") :
-                Encoding.GetString(numArray).TrimEnd().Replace($"\0", "");
-        }
-    }
-
-    /// <inheritdoc/>
-    public virtual ushort ToUInt16(byte[] buffer, int offset)
-    {
-        byte[] bytes = new byte[2];
-        Array.Copy(buffer, offset, bytes, 0, 2);
-        if (!IsSameOfSet())
-        {
-            Array.Reverse(bytes);
-        }
-        return BitConverter.ToUInt16(bytes, 0);
-    }
-
-    /// <inheritdoc/>
-    public virtual uint ToUInt32(byte[] buffer, int offset)
-    {
-        byte[] bytes = ByteTransDataFormat4(buffer, offset);
-
-        return BitConverter.ToUInt32(bytes, 0);
-    }
-
-    /// <inheritdoc/>
-    public virtual ulong ToUInt64(byte[] buffer, int offset)
-    {
-        byte[] bytes = ByteTransDataFormat8(buffer, offset);
-        return BitConverter.ToUInt64(bytes, 0);
-    }
-
-    /// <summary>反转多字节的数据信息</summary>
-    /// <param name="value">数据字节</param>
-    /// <param name="offset">起始索引，默认值为0</param>
-    /// <returns>实际字节信息</returns>
-    protected byte[] ByteTransDataFormat4(byte[] value, int offset = 0)
-    {
-        byte[] numArray = new byte[4];
-        switch (DataFormat)
-        {
-            case DataFormatEnum.ABCD:
-            case null:
-                numArray[0] = value[offset + 3];
-                numArray[1] = value[offset + 2];
-                numArray[2] = value[offset + 1];
-                numArray[3] = value[offset];
-                break;
-
-            case DataFormatEnum.BADC:
-                numArray[0] = value[offset + 2];
-                numArray[1] = value[offset + 3];
-                numArray[2] = value[offset];
-                numArray[3] = value[offset + 1];
-                break;
-
-            case DataFormatEnum.CDAB:
-                numArray[0] = value[offset + 1];
-                numArray[1] = value[offset];
-                numArray[2] = value[offset + 3];
-                numArray[3] = value[offset + 2];
-                break;
-
-            case DataFormatEnum.DCBA:
-                numArray[0] = value[offset];
-                numArray[1] = value[offset + 1];
-                numArray[2] = value[offset + 2];
-                numArray[3] = value[offset + 3];
-                break;
-        }
-        return numArray;
-    }
-
-    /// <summary>反转多字节的数据信息</summary>
-    /// <param name="value">数据字节</param>
-    /// <param name="offset">起始索引，默认值为0</param>
-    /// <returns>实际字节信息</returns>
-    protected byte[] ByteTransDataFormat8(byte[] value, int offset = 0)
-    {
-        byte[] numArray = new byte[8];
-        switch (DataFormat)
-        {
-            case DataFormatEnum.ABCD:
-            case null:
-                numArray[0] = value[offset + 7];
-                numArray[1] = value[offset + 6];
-                numArray[2] = value[offset + 5];
-                numArray[3] = value[offset + 4];
-                numArray[4] = value[offset + 3];
-                numArray[5] = value[offset + 2];
-                numArray[6] = value[offset + 1];
-                numArray[7] = value[offset];
-                break;
-
-            case DataFormatEnum.BADC:
-                numArray[0] = value[offset + 6];
-                numArray[1] = value[offset + 7];
-                numArray[2] = value[offset + 4];
-                numArray[3] = value[offset + 5];
-                numArray[4] = value[offset + 2];
-                numArray[5] = value[offset + 3];
-                numArray[6] = value[offset];
-                numArray[7] = value[offset + 1];
-                break;
-
-            case DataFormatEnum.CDAB:
-                numArray[0] = value[offset + 1];
-                numArray[1] = value[offset];
-                numArray[2] = value[offset + 3];
-                numArray[3] = value[offset + 2];
-                numArray[4] = value[offset + 5];
-                numArray[5] = value[offset + 4];
-                numArray[6] = value[offset + 7];
-                numArray[7] = value[offset + 6];
-                break;
-
-            case DataFormatEnum.DCBA:
-                numArray[0] = value[offset];
-                numArray[1] = value[offset + 1];
-                numArray[2] = value[offset + 2];
-                numArray[3] = value[offset + 3];
-                numArray[4] = value[offset + 4];
-                numArray[5] = value[offset + 5];
-                numArray[6] = value[offset + 6];
-                numArray[7] = value[offset + 7];
-                break;
-        }
-        return numArray;
-    }
-
-    /// <inheritdoc/>
-    public virtual bool[] ToBoolean(byte[] buffer, int offset, int len, bool isReverse = false)
-    {
-        byte[] bytes = new byte[buffer.Length];
-        Array.Copy(buffer, 0, bytes, 0, buffer.Length);
-        bool[] result = new bool[len];
-        for (int i = 0; i < result.Length; i++)
-        {
-            result[i] = ToBoolean(buffer, offset + i, isReverse);
-        }
-        return result;
     }
 
     /// <inheritdoc/>
@@ -620,5 +390,86 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
             numArray[index] = ToUInt64(buffer, offset + 8 * index);
         }
         return numArray;
+    }
+
+    /// <inheritdoc/>
+    public virtual decimal[] ToDecimal(byte[] buffer, int offset, int len)
+    {
+        decimal[] numArray = new decimal[len];
+        for (int index = 0; index < len; ++index)
+        {
+            numArray[index] = ToDecimal(buffer, offset + 8 * index);
+        }
+        return numArray;
+    }
+
+    public virtual byte[] GetBytes(decimal value)
+    {
+        return TouchSocketBitConverter.GetBytes(value);
+    }
+
+    public virtual byte[] GetBytes(char value)
+    {
+        return TouchSocketBitConverter.GetBytes(value);
+    }
+
+    public virtual byte[] GetBytes(bool value)
+    {
+        return TouchSocketBitConverter.GetBytes(value);
+    }
+
+    public virtual byte[] GetBytes(bool[] values)
+    {
+        return TouchSocketBitConverter.GetBytes(values);
+    }
+
+    public virtual byte[] GetBytes(short value)
+    {
+        return TouchSocketBitConverter.GetBytes(value);
+    }
+
+    public virtual byte[] GetBytes(ushort value)
+    {
+        return TouchSocketBitConverter.GetBytes(value);
+    }
+
+    public virtual byte[] GetBytes(int value)
+    {
+        return TouchSocketBitConverter.GetBytes(value);
+    }
+
+    public virtual byte[] GetBytes(uint value)
+    {
+        return TouchSocketBitConverter.GetBytes(value);
+    }
+
+    public virtual byte[] GetBytes(long value)
+    {
+        return TouchSocketBitConverter.GetBytes(value);
+    }
+
+    public virtual byte[] GetBytes(ulong value)
+    {
+        return TouchSocketBitConverter.GetBytes(value);
+    }
+
+    public virtual byte[] GetBytes(float value)
+    {
+        return TouchSocketBitConverter.GetBytes(value);
+    }
+
+    public virtual byte[] GetBytes(double value)
+    {
+        return TouchSocketBitConverter.GetBytes(value);
+    }
+
+    public virtual decimal ToDecimal(byte[] buffer, int offset)
+    {
+        return TouchSocketBitConverter.ToDecimal(buffer, offset);
+    }
+
+    public virtual char ToChar(byte[] buffer, int offset)
+    {
+        return TouchSocketBitConverter.ToChar(buffer, offset);
     }
 }

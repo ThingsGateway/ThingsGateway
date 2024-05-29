@@ -1,5 +1,4 @@
-
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -8,9 +7,6 @@
 //  使用文档：https://kimdiego2098.github.io/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
-
-
-
 
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Localization;
@@ -164,7 +160,11 @@ public class RpcService : IRpcService
 
                     // 不返回详细错误
                     if (!resultItem.Value.IsSuccess)
-                        resultItem.Value.Exception = null;
+                    {
+                        OperResult result1 = resultItem.Value;
+                        result1.Exception = null;
+                        result[resultItem.Key] = result1;
+                    }
                 }
 
                 // 将结果添加到结果字典中
@@ -194,7 +194,7 @@ public class RpcService : IRpcService
                 }
                 catch (Exception ex)
                 {
-                    result = new(ex);
+                    result = new OperResult<object>(ex);
                 }
 
                 // 写入日志

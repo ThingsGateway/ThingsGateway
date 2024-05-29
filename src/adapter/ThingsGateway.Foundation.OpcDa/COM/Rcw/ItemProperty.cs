@@ -326,7 +326,7 @@ public struct Quality
         string text = QualityBits.ToString();
         if (LimitBits != 0)
         {
-            text += $"[{LimitBits.ToString()}]";
+            text += $"[{LimitBits}]";
         }
 
         if (VendorBits != 0)

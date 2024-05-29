@@ -84,11 +84,9 @@ public class DeviceService : BaseService<Device>, IDeviceService
         }
         else
         {
-
             return true;
         }
     }
-
 
     [OperDesc("DeleteDevice", isRecordPar: false, localizerType: typeof(Device))]
     public async Task<bool> DeleteDeviceAsync(IEnumerable<long> ids)
@@ -211,65 +209,56 @@ public class DeviceService : BaseService<Device>, IDeviceService
 
     public async Task<List<CollectDeviceRunTime>> GetCollectDeviceRuntimeAsync(long? devId = null)
     {
-        try
+        if (devId == null)
         {
-            if (devId == null)
+            var variableService = App.RootServices.GetRequiredService<IVariableService>();
+            var devices = GetAll().Where(a => a.Enable && a.PluginType == PluginTypeEnum.Collect);
+            var channels = _channelService.GetAll().Where(a => a.Enable);
+            devices = devices.Where(a => channels.Select(a => a.Id).Contains(a.ChannelId));
+            var runtime = devices.Adapt<List<CollectDeviceRunTime>>().ToDictionary(a => a.Id);
+            var collectVariableRunTimes = await variableService.GetVariableRuntimeAsync();
+            runtime.Values.ParallelForEach(device =>
             {
-                var variableService = App.RootServices.GetRequiredService<IVariableService>();
-                var devices = GetAll().Where(a => a.Enable && a.PluginType == PluginTypeEnum.Collect);
-                var channels = _channelService.GetAll().Where(a => a.Enable);
-                devices = devices.Where(a => channels.Select(a => a.Id).Contains(a.ChannelId));
-                var runtime = devices.Adapt<List<CollectDeviceRunTime>>().ToDictionary(a => a.Id);
-                var collectVariableRunTimes = await variableService.GetVariableRuntimeAsync();
-                runtime.Values.ParallelForEach(device =>
-                {
-                    device.Channel = channels.FirstOrDefault(a => a.Id == device.ChannelId);
+                device.Channel = channels.FirstOrDefault(a => a.Id == device.ChannelId);
 
-                    device.VariableRunTimes = collectVariableRunTimes.Where(a => a.DeviceId == device.Id).ToDictionary(a => a.Name);
-                });
+                device.VariableRunTimes = collectVariableRunTimes.Where(a => a.DeviceId == device.Id).ToDictionary(a => a.Name);
+            });
 
-                collectVariableRunTimes.ParallelForEach(variable =>
-                {
-                    if (runtime.TryGetValue(variable.DeviceId.Value, out var device))
-                    {
-                        variable.CollectDeviceRunTime = device;
-                        variable.DeviceName = device.Name;
-                    }
-                });
-                return runtime.Values.ToList();
-            }
-            else
+            collectVariableRunTimes.ParallelForEach(variable =>
             {
-                var device = GetAll().FirstOrDefault(a => a.Enable && a.PluginType == PluginTypeEnum.Collect && a.Id == devId);
-                if (device == null)
+                if (runtime.TryGetValue(variable.DeviceId.Value, out var device))
                 {
-                    return new List<CollectDeviceRunTime>() { };
+                    variable.CollectDeviceRunTime = device;
+                    variable.DeviceName = device.Name;
                 }
-                var channels = _channelService.GetAll().Where(a => a.Enable);
-                if (!channels.Select(a => a.Id).Contains(device.ChannelId))
-                {
-                    return new List<CollectDeviceRunTime>() { };
-                }
-
-                var runtime = device.Adapt<CollectDeviceRunTime>();
-                var variableService = App.RootServices.GetRequiredService<IVariableService>();
-                var collectVariableRunTimes = await variableService.GetVariableRuntimeAsync(devId);
-                runtime.VariableRunTimes = collectVariableRunTimes.ToDictionary(a => a.Name);
-                runtime.Channel = channels.FirstOrDefault(a => a.Id == runtime.ChannelId);
-
-                collectVariableRunTimes.ParallelForEach(variable =>
-                {
-                    variable.CollectDeviceRunTime = runtime;
-                    variable.DeviceName = runtime.Name;
-                });
-                return new List<CollectDeviceRunTime>() { runtime };
-            }
+            });
+            return runtime.Values.ToList();
         }
-        finally
+        else
         {
-            GC.Collect();
-            // 等待垃圾回收完成
-            GC.WaitForPendingFinalizers();
+            var device = GetAll().FirstOrDefault(a => a.Enable && a.PluginType == PluginTypeEnum.Collect && a.Id == devId);
+            if (device == null)
+            {
+                return new List<CollectDeviceRunTime>() { };
+            }
+            var channels = _channelService.GetAll().Where(a => a.Enable);
+            if (!channels.Select(a => a.Id).Contains(device.ChannelId))
+            {
+                return new List<CollectDeviceRunTime>() { };
+            }
+
+            var runtime = device.Adapt<CollectDeviceRunTime>();
+            var variableService = App.RootServices.GetRequiredService<IVariableService>();
+            var collectVariableRunTimes = await variableService.GetVariableRuntimeAsync(devId);
+            runtime.VariableRunTimes = collectVariableRunTimes.ToDictionary(a => a.Name);
+            runtime.Channel = channels.FirstOrDefault(a => a.Id == runtime.ChannelId);
+
+            collectVariableRunTimes.ParallelForEach(variable =>
+            {
+                variable.CollectDeviceRunTime = runtime;
+                variable.DeviceName = runtime.Name;
+            });
+            return new List<CollectDeviceRunTime>() { runtime };
         }
     }
 
@@ -309,7 +298,7 @@ public class DeviceService : BaseService<Device>, IDeviceService
 
     private void CheckInput(Device input)
     {
-        if (input.RedundantEnable && input.RedundantDeviceId != null)
+        if (input.RedundantEnable && input.RedundantDeviceId == null)
         {
             throw Oops.Bah(Localizer["RedundantDeviceNotNull"]);
         }

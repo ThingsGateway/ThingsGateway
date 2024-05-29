@@ -17,6 +17,7 @@ namespace ThingsGateway.Foundation.OpcUa;
 /// </summary>
 /// <param name="value"></param>
 public delegate void DataChangedEventHandler((VariableNode variableNode, DataValue dataValue, JToken jToken) value);
+
 /// <summary>
 /// 日志输出
 /// </summary>
@@ -288,7 +289,7 @@ public class OpcUaMaster : IDisposable
         {
             Log(3, null, $"Failed to create subscription for the following variables：{Environment.NewLine}{m_subscription.MonitoredItems.Where(
                 a => a.Status.Error != null && StatusCode.IsBad(a.Status.Error.StatusCode))
-                .Select(a => $"{a.StartNodeId.ToString()}：{a.Status.Error.ToString()}").ToJsonString()}");
+                .Select(a => $"{a.StartNodeId}：{a.Status.Error}").ToJsonString()}");
         }
 
         lock (dic_subscriptions)

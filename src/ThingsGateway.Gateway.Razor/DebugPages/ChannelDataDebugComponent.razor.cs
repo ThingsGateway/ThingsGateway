@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -8,10 +7,6 @@
 //  使用文档：https://kimdiego2098.github.io/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
-
-
-
-
 
 using BootstrapBlazor.Components;
 
@@ -77,7 +72,7 @@ public partial class ChannelDataDebugComponent : ComponentBase
             if (string.IsNullOrEmpty(input.BindUrl) && string.IsNullOrEmpty(input.RemoteUrl))
                 throw new(Localizer["BindUrlOrRemoteUrlNotNull"]);
         }
-        else if (input.ChannelType == ChannelTypeEnum.SerialPortClient)
+        else if (input.ChannelType == ChannelTypeEnum.SerialPort)
         {
             if (string.IsNullOrEmpty(input.PortName))
                 throw new(Localizer["PortNameNotNull"]);

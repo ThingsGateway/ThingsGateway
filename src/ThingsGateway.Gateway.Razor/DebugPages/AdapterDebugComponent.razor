@@ -15,6 +15,7 @@
             <TabItem Text=@Localizer["CommonFunctions"]>
                 @if (ShowDefaultReadWriteContent)
                 {
+
                     <BootstrapInput title=@Plc?.GetAddressDescription() @bind-Value=@RegisterAddress
                                     ShowLabel="true" style="width:100%" />
 
@@ -26,7 +27,7 @@
                             <div class="p-1">
 
                                 <BootstrapInputNumber @bind-Value=@ArrayLength ShowLabel="true" />
-                                <Select @bind-Value="@DataType" ShowLabel="true" />
+                                <Select @bind-Value="@DataType" ShowLabel="true"  IsPopover="true"/>
                             </div>
 
                         </div>
@@ -52,17 +53,6 @@
                         </div>
                     </div>
 
-                    <div class="row mx-1 form-inline mt-2">
-
-                        <div class="col-12 col-md-8 p-1">
-                            <Textarea @bind-Value=@SendValue ShowLabelTooltip="true"
-                                      ShowLabel="true" />
-
-                        </div>
-                        <div class="col-12 col-md-4 p-1">
-                            <Button IsAsync Color="Color.Primary" OnClick="Send">@Localizer["Send"]</Button>
-                        </div>
-                    </div>
 
                 }
                 @if (ReadWriteContent != null)
@@ -88,7 +78,7 @@
                                     <BootstrapInput @bind-Value=@item.RegisterAddress title="@Plc?.GetAddressDescription()"
                                                     ShowLabel="true" style="width:100%" />
 
-                                    <Select @bind-Value="@DataType" ShowLabel="true" />
+                                    <Select @bind-Value="@DataType" ShowLabel="true" IsPopover />
                                 </div>
 
                             </div>

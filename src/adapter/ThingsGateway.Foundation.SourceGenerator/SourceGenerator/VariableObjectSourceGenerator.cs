@@ -1,5 +1,4 @@
-
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -8,9 +7,6 @@
 //  使用文档：https://kimdiego2098.github.io/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
-
-
-
 
 //------------------------------------------------------------------------------
 //  此代码版权（除特别声明或在XREF结尾的命名空间的代码）归作者本人若汝棋茗所有
@@ -29,15 +25,15 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 
-namespace ThingsGateway.Foundation
+namespace ThingsGateway.Foundation;
+
+/// <summary>
+/// 源生成
+/// </summary>
+[Generator]
+public class VariableObjectSourceGenerator : ISourceGenerator
 {
-    /// <summary>
-    /// 源生成
-    /// </summary>
-    [Generator]
-    public class VariableObjectSourceGenerator : ISourceGenerator
-    {
-        private string m_generatorVariableAttribute = @"
+    private string m_generatorVariableAttribute = @"
 using System;
 
 namespace ThingsGateway.Foundation
@@ -53,37 +49,36 @@ namespace ThingsGateway.Foundation
 
 ";
 
-        /// <inheritdoc/>
-        public void Initialize(GeneratorInitializationContext context)
+    /// <inheritdoc/>
+    public void Initialize(GeneratorInitializationContext context)
+    {
+        //Debugger.Launch();
+        context.RegisterForPostInitialization(a =>
         {
-            //Debugger.Launch();
-            context.RegisterForPostInitialization(a =>
-            {
-                a.AddSource(nameof(this.m_generatorVariableAttribute), this.m_generatorVariableAttribute);
-            });
-            context.RegisterForSyntaxNotifications(() => new VariableSyntaxReceiver());
-        }
+            a.AddSource(nameof(this.m_generatorVariableAttribute), this.m_generatorVariableAttribute);
+        });
+        context.RegisterForSyntaxNotifications(() => new VariableSyntaxReceiver());
+    }
 
-        /// <inheritdoc/>
-        public void Execute(GeneratorExecutionContext context)
+    /// <inheritdoc/>
+    public void Execute(GeneratorExecutionContext context)
+    {
+        var s = context.Compilation.GetMetadataReference(context.Compilation.Assembly);
+
+        if (context.SyntaxReceiver is VariableSyntaxReceiver receiver)
         {
-            var s = context.Compilation.GetMetadataReference(context.Compilation.Assembly);
-
-            if (context.SyntaxReceiver is VariableSyntaxReceiver receiver)
+            var builders = receiver
+                .GetVariableObjectTypes(context.Compilation)
+                .Select(i => new VariableCodeBuilder(i))
+                .Distinct();
+            foreach (var builder in builders)
             {
-                var builders = receiver
-                    .GetVariableObjectTypes(context.Compilation)
-                    .Select(i => new VariableCodeBuilder(i))
-                    .Distinct();
-                foreach (var builder in builders)
+                if (builder.TryToSourceText(out var sourceText))
                 {
-                    if (builder.TryToSourceText(out var sourceText))
-                    {
-                        var tree = CSharpSyntaxTree.ParseText(sourceText);
-                        var root = tree.GetRoot().NormalizeWhitespace();
-                        var ret = root.ToFullString();
-                        context.AddSource($"{builder.GetFileName()}.g.cs", ret);
-                    }
+                    var tree = CSharpSyntaxTree.ParseText(sourceText);
+                    var root = tree.GetRoot().NormalizeWhitespace();
+                    var ret = root.ToFullString();
+                    context.AddSource($"{builder.GetFileName()}.g.cs", ret);
                 }
             }
         }

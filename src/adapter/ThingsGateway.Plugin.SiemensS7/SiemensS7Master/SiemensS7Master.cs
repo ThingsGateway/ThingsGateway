@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -9,11 +8,9 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-
-
-
 using ThingsGateway.Gateway.Application;
 
+using TouchSocket.Core;
 using TouchSocket.Sockets;
 
 namespace ThingsGateway.Plugin.SiemensS7;
@@ -36,7 +33,7 @@ public class SiemensS7Master : CollectBase
     public override Type DriverUIType => null;
 
     /// <inheritdoc/>
-    protected override IProtocol Protocol => _plc;
+    public override IProtocol Protocol => _plc;
 
     /// <inheritdoc/>
     public override void Init(IChannel? channel = null)
@@ -45,7 +42,7 @@ public class SiemensS7Master : CollectBase
         //载入配置
         _plc = new(channel)
         {
-            DataFormat = _driverPropertys.DataFormat,
+            EndianType = _driverPropertys.EndianType,
             SendDelayTime = _driverPropertys.SendDelayTime,
             CacheTimeout = _driverPropertys.CacheTimeout,
             ConnectTimeout = _driverPropertys.ConnectTimeout,
@@ -60,10 +57,10 @@ public class SiemensS7Master : CollectBase
     /// <inheritdoc/>
     protected override List<VariableSourceRead> ProtectedLoadSourceRead(List<VariableRunTime> deviceVariables)
     {
-        try { _plc.Channel.Connect(_driverPropertys.ConnectTimeout, CancellationToken.None); } catch { }
+        try { _plc.Channel.ConnectAsync(_driverPropertys.ConnectTimeout).GetFalseAwaitResult(); } catch { }
         try
         {
-            return _plc.LoadSourceRead<VariableSourceRead>(deviceVariables, 0, CurrentDevice.IntervalTime);
+            return _plc.LoadSourceRead<VariableSourceRead>(deviceVariables, _plc.OnLine ? _plc.PduLength : _driverPropertys.MaxPack, CurrentDevice.IntervalTime);
         }
         finally { _plc.Channel.Close(); }
     }
@@ -73,12 +70,12 @@ public class SiemensS7Master : CollectBase
     /// </summary>
     /// <returns></returns>
     [DynamicMethod("ReadWriteDateAsync", "读写日期格式")]
-    public async Task<OperResult<System.DateTime>> ReadWriteDateAsync(string address, System.DateTime? value = null, CancellationToken cancellationToken = default)
+    public async ValueTask<OperResult<System.DateTime>> ReadWriteDateAsync(string address, System.DateTime? value = null, CancellationToken cancellationToken = default)
     {
         if (value == null)
             return await _plc.ReadDateAsync(address, cancellationToken).ConfigureAwait(false);
         else
-            return new(await _plc.WriteDateAsync(address, value.Value, cancellationToken));
+            return new OperResult<System.DateTime>(await _plc.WriteDateAsync(address, value.Value, cancellationToken));
     }
 
     /// <summary>
@@ -89,11 +86,11 @@ public class SiemensS7Master : CollectBase
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     [DynamicMethod("ReadWriteDateTimeAsync", "读写日期时间格式")]
-    public async Task<OperResult<System.DateTime>> ReadWriteDateTimeAsync(string address, System.DateTime? value = null, CancellationToken cancellationToken = default)
+    public async ValueTask<OperResult<System.DateTime>> ReadWriteDateTimeAsync(string address, System.DateTime? value = null, CancellationToken cancellationToken = default)
     {
         if (value == null)
             return await _plc.ReadDateTimeAsync(address, cancellationToken);
         else
-            return new(await _plc.WriteDateTimeAsync(address, value.Value, cancellationToken).ConfigureAwait(false));
+            return new OperResult<System.DateTime>(await _plc.WriteDateTimeAsync(address, value.Value, cancellationToken).ConfigureAwait(false));
     }
 }

@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -9,17 +8,12 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-
-
-
-
 namespace ThingsGateway.Debug;
 
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 
 using ThingsGateway.Foundation;
-using ThingsGateway.Foundation.Extension.String;
 using ThingsGateway.Foundation.Json.Extension;
 
 using TouchSocket.Core;
@@ -57,11 +51,6 @@ public abstract class AdapterDebugBase : ComponentBase, IDisposable
     public string WriteValue { get; set; }
 
     /// <summary>
-    /// 发送数据，16进制字符串
-    /// </summary>
-    public string SendValue { get; set; }
-
-    /// <summary>
     /// 数据类型
     /// </summary>
     protected DataTypeEnum DataType { get; set; } = DataTypeEnum.Int16;
@@ -89,22 +78,6 @@ public abstract class AdapterDebugBase : ComponentBase, IDisposable
                 {
                     Plc.Logger.Warning(data.ToString());
                 }
-            }
-            catch (Exception ex)
-            {
-                Plc.Logger.Exception(ex);
-            }
-        }
-    }
-
-    public virtual void Send()
-    {
-        if (Plc != null && !SendValue.IsNullOrEmpty())
-        {
-            try
-            {
-                Plc.DefaultSend(SendValue.HexStringToBytes());
-                Plc.Logger?.Trace($"{Plc.Channel}- DefaultSend {SendValue.HexStringToBytes().ToHexString(' ')}");
             }
             catch (Exception ex)
             {

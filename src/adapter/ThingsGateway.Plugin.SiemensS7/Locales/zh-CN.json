@@ -5,7 +5,7 @@
     "LocalTSAP": "本地TSAP",
     "Slot": "槽号",
 
-    "DataFormat": "解析规则",
+    "EndianType": "解析规则",
     "IsStringReverseByteWord": "字符串反转",
     "CheckClearTime": "客户端连接滑动过期时间",
     "Timeout": "读写超时时间",

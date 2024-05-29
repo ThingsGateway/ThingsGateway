@@ -13,6 +13,8 @@ using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 using System.IO.Ports;
 
+using TouchSocket.SerialPorts;
+
 namespace ThingsGateway.Foundation;
 
 /// <inheritdoc/>
@@ -117,16 +119,15 @@ public class ChannelData : IChannelData
     {
         if (channelData.Channel != null)
         {
-            channelData.Channel.Close();
+            channelData.Channel.SafeDispose();
         }
         channelData.TouchSocketConfig?.Dispose();
-        channelData.TouchSocketConfig = null;
-        channelData.TouchSocketConfig ??= new TouchSocket.Core.TouchSocketConfig();
-        var LogMessage = new TouchSocket.Core.LoggerGroup() { LogLevel = TouchSocket.Core.LogLevel.Trace };
+        channelData.TouchSocketConfig = new TouchSocket.Core.TouchSocketConfig();
+        var logMessage = new TouchSocket.Core.LoggerGroup() { LogLevel = TouchSocket.Core.LogLevel.Trace };
         var logger = TextFileLogger.Create(channelData.Id.GetDebugLogPath());
         logger.LogLevel = LogLevel.Trace;
-        LogMessage.AddLogger(logger);
-        channelData.TouchSocketConfig.ConfigureContainer(a => a.RegisterSingleton<ILog>(LogMessage));
+        logMessage.AddLogger(logger);
+        channelData.TouchSocketConfig.ConfigureContainer(a => a.RegisterSingleton<ILog>(logMessage));
 
         switch (channelData.ChannelType)
         {
@@ -138,7 +139,7 @@ public class ChannelData : IChannelData
                 channelData.Channel = channelData.TouchSocketConfig.GetTcpServiceWithBindIPHost(channelData.BindUrl);
                 break;
 
-            case ChannelTypeEnum.SerialPortClient:
+            case ChannelTypeEnum.SerialPort:
                 channelData.Channel = channelData.TouchSocketConfig.GetSerialPortWithOption(channelData.Map<SerialPortOption>());
                 break;
 

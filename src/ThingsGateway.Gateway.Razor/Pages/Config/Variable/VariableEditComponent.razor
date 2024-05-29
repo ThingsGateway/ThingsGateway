@@ -35,7 +35,7 @@
                 <EditorItem @bind-Field="@context.DeviceId">
                     <EditTemplate Context="value">
                         <div class="col-12  col-md-6">
-                            <Select IsVirtualize @bind-Value="@value.DeviceId" Items="@CollectDevices" ShowSearch="true" OnSelectedItemChanged="OnDeviceSelectedItemChanged" />
+                            <Select IsVirtualize @bind-Value="@value.DeviceId" Items="@CollectDevices" ShowSearch="true" OnSelectedItemChanged="OnDeviceSelectedItemChanged" IsPopover />
                         </div>
                     </EditTemplate>
                 </EditorItem>
@@ -47,7 +47,7 @@
                 <EditorItem @bind-Field="@context.OtherMethod">
                     <EditTemplate Context="value">
                         <div class="col-12  col-md-6">
-                            <Select IsVirtualize @bind-Value="@value.OtherMethod" Items="@OtherMethods" ShowSearch="true" />
+                            <Select IsVirtualize @bind-Value="@value.OtherMethod" Items="@OtherMethods" ShowSearch="true" IsPopover />
                         </div>
                     </EditTemplate>
                 </EditorItem>
@@ -110,7 +110,7 @@ else
                     <EditorItem @bind-Field="@context.DeviceId">
                         <EditTemplate Context="value">
                             <div class="col-12  col-md-6">
-                                <Select IsVirtualize @bind-Value="@value.DeviceId" Items="@CollectDevices" ShowSearch="true" OnSelectedItemChanged="OnDeviceSelectedItemChanged" />
+                                <Select IsVirtualize @bind-Value="@value.DeviceId" Items="@CollectDevices" ShowSearch="true" OnSelectedItemChanged="OnDeviceSelectedItemChanged" IsPopover />
                             </div>
                         </EditTemplate>
                     </EditorItem>
@@ -122,7 +122,7 @@ else
                     <EditorItem @bind-Field="@context.OtherMethod">
                         <EditTemplate Context="value">
                             <div class="col-12  col-md-6">
-                                <Select IsVirtualize @bind-Value="@value.OtherMethod" Items="@OtherMethods" ShowSearch="true" />
+                                <Select IsVirtualize @bind-Value="@value.OtherMethod" Items="@OtherMethods" ShowSearch="true" IsPopover />
                             </div>
                         </EditTemplate>
                     </EditorItem>
@@ -188,7 +188,7 @@ else
 
                     <div class="col-12 col-md-8">
                         <label required="true" style="width:20%">@Localizer["ChoiceBusinessDeviceId"]</label>
-                        <Select SkipValidate IsVirtualize @bind-Value="@ChoiceBusinessDeviceId" Items="@BusinessDevices" ShowSearch="true" ShowLabel="false" />
+                        <Select SkipValidate IsVirtualize @bind-Value="@ChoiceBusinessDeviceId" Items="@BusinessDevices" ShowSearch="true" ShowLabel="false" IsPopover />
                     </div>
                     <div class="col-12 col-md-4">
                         <Button OnClick="() => RefreshBusinessPropertyClickAsync(ChoiceBusinessDeviceId)">@Localizer["RefreshBusinessProperty"]</Button>

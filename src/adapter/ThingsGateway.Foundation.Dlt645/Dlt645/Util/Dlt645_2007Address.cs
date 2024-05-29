@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -8,9 +7,6 @@
 //  使用文档：https://kimdiego2098.github.io/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
-
-
-
 
 using NewLife.Caching;
 
@@ -37,7 +33,7 @@ public class Dlt645_2007Address
     /// <summary>
     /// 数据标识
     /// </summary>
-    public byte[] DataId { get; set; } = new byte[0];
+    public byte[] DataId { get; set; } = Array.Empty<byte>();
 
     /// <summary>
     /// 反转解析
@@ -47,7 +43,7 @@ public class Dlt645_2007Address
     /// <summary>
     /// 站号信息
     /// </summary>
-    public byte[] Station { get; set; } = new byte[0];
+    public byte[] Station { get; set; } = Array.Empty<byte>();
 
     /// <summary>
     /// 作为Slave时需提供的SocketId，用于分辨Socket客户端，通常对比的是初始链接时的注册包
@@ -82,14 +78,14 @@ public class Dlt645_2007Address
     /// </summary>
     public static Dlt645_2007Address ParseFrom(string address, bool isCache = true)
     {
-        var cacheKey = $"{nameof(Dlt645_2007Address)}_{nameof(ParseFrom)}_{typeof(Dlt645_2007Address).FullName}_{typeof(Dlt645_2007Address).TypeHandle.Value}_{address}";
+        var cacheKey = $"{nameof(ParseFrom)}_{typeof(Dlt645_2007Address).FullName}_{typeof(Dlt645_2007Address).TypeHandle.Value}_{address}";
         if (isCache)
-            if (Cache.Default.TryGetValue(cacheKey, out Dlt645_2007Address dAddress))
-                return dAddress;
+            if (MemoryCache.Instance.TryGetValue(cacheKey, out Dlt645_2007Address dAddress))
+                return dAddress.Map();
 
         Dlt645_2007Address dlt645_2007Address = new();
         byte[] array;
-        array = new byte[0];
+        array = Array.Empty<byte>();
         if (address.IndexOf(';') < 0)
         {
             array = address.ByHexStringToBytes().Reverse().ToArray();
@@ -125,7 +121,7 @@ public class Dlt645_2007Address
         dlt645_2007Address.DataId = array;
 
         if (isCache)
-            Cache.Default.Set(cacheKey, dlt645_2007Address.Map<Dlt645_2007Address>(), 3600);
+            MemoryCache.Instance.Set(cacheKey, dlt645_2007Address.Map<Dlt645_2007Address>(), 3600);
 
         return dlt645_2007Address;
     }

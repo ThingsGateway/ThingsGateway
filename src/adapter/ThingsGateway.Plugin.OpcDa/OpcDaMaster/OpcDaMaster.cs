@@ -43,7 +43,7 @@ public class OpcDaMaster : CollectBase
     public override Type DriverUIType => null;
 
     /// <inheritdoc/>
-    protected override IProtocol Protocol => null;
+    public override IProtocol Protocol => null;
 
     public override string ToString()
     {
@@ -71,7 +71,6 @@ public class OpcDaMaster : CollectBase
             _plc.LogEvent = (a, b, c, d) => LogMessage.Log((LogLevel)a, b, c, d);
         }
         _plc.Init(opcNode);
-
     }
 
     /// <inheritdoc/>
@@ -119,7 +118,7 @@ public class OpcDaMaster : CollectBase
     }
 
     /// <inheritdoc/>
-    protected override async Task<OperResult<byte[]>> ReadSourceAsync(VariableSourceRead deviceVariableSourceRead, CancellationToken cancellationToken)
+    protected override async ValueTask<OperResult<byte[]>> ReadSourceAsync(VariableSourceRead deviceVariableSourceRead, CancellationToken cancellationToken)
     {
         try
         {
@@ -140,14 +139,14 @@ public class OpcDaMaster : CollectBase
     }
 
     /// <inheritdoc/>
-    protected override async Task<Dictionary<string, OperResult>> WriteValuesAsync(Dictionary<VariableRunTime, JToken> writeInfoLists, CancellationToken cancellationToken)
+    protected override async ValueTask<Dictionary<string, OperResult>> WriteValuesAsync(Dictionary<VariableRunTime, JToken> writeInfoLists, CancellationToken cancellationToken)
     {
         try
         {
             if (IsSingleThread)
                 await WriteLock.WaitAsync(cancellationToken).ConfigureAwait(false);
             var result = _plc.WriteItem(writeInfoLists.ToDictionary(a => a.Key.RegisterAddress!, a => a.Value.GetObjectFromJToken()!));
-            return result.ToDictionary(a =>
+            return result.ToDictionary<KeyValuePair<string, Tuple<bool, string>>, string, OperResult>(a =>
             {
                 return writeInfoLists.Keys.FirstOrDefault(b => b.RegisterAddress == a.Key).Name;
             }, a =>
@@ -155,7 +154,7 @@ public class OpcDaMaster : CollectBase
                 if (!a.Value.Item1)
                     return new OperResult(a.Value.Item2);
                 else
-                    return new();
+                    return OperResult.Success;
             }
                  );
         }
@@ -166,7 +165,7 @@ public class OpcDaMaster : CollectBase
         }
     }
 
-    protected override async Task ProtectedExecuteAsync(CancellationToken cancellationToken)
+    protected override async ValueTask ProtectedExecuteAsync(CancellationToken cancellationToken)
     {
         if (_driverProperties.ActiveSubscribe)
         {
@@ -218,7 +217,7 @@ public class OpcDaMaster : CollectBase
                 {
                     type = type.GetElementType();
                 }
-                var itemReads = CurrentDevice.VariableRunTimes.Values.Where(it => it.RegisterAddress == data.Name);
+                var itemReads = CurrentDevice.VariableRunTimes.Select(a => a.Value).Where(it => it.RegisterAddress == data.Name);
                 foreach (var item in itemReads)
                 {
                     if (!CurrentDevice.KeepRun)

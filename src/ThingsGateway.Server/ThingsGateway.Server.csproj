@@ -1,5 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
+  <Import Project="$(SolutionDir)Version.props" />
   <PropertyGroup>
     <OpenApiGenerateDocuments>false</OpenApiGenerateDocuments>
     <SatelliteResourceLanguages>zh-Hans;en-US</SatelliteResourceLanguages>
@@ -7,25 +8,25 @@
     <ApplicationIcon>wwwroot\favicon.ico</ApplicationIcon>
     <TargetFrameworks>net8.0;</TargetFrameworks>
 
-    <GarbageCollectionAdaptationMode>true</GarbageCollectionAdaptationMode>
     <!--动态适用GC-->
-    <!--<UseWindowsThreadPool>false</UseWindowsThreadPool> -->
+    <GarbageCollectionAdaptationMode>true</GarbageCollectionAdaptationMode>
     <!--使用自托管线程池-->
-    <!--<ServerGarbageCollection>false</ServerGarbageCollection>-->
-    <!--<PlatformTarget>x86</PlatformTarget>-->
+    <!--<UseWindowsThreadPool>false</UseWindowsThreadPool> -->
 
+    <!--使用工作站GC-->
+    <!--<ServerGarbageCollection>false</ServerGarbageCollection>-->
+
+    <!--<PlatformTarget>x86</PlatformTarget>-->
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(SolutionName)'=='ThingsGateway - Admin'">
     <DefineConstants>Admin</DefineConstants>
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(SolutionName)'!='ThingsGateway - Admin'">
-    <ProjectReference Include="$(SolutionDir)\ThingsGateway.Gateway.Razor\ThingsGateway.Gateway.Razor.csproj" />
-  </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="$(SolutionDir)\ThingsGateway.Admin.Razor\ThingsGateway.Admin.Razor.csproj" />
+    <!--<ProjectReference Include="$(SolutionDir)\ThingsGateway.Gateway.Application\ThingsGateway.Gateway.Application.csproj" />-->
+    <ProjectReference Include="$(SolutionDir)\ThingsGateway.Gateway.Razor\ThingsGateway.Gateway.Razor.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(SolutionName)'=='ThingsGateway - Pro'">
@@ -40,8 +41,9 @@
 
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.4" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.6" />
+    <PackageReference Include="Microsoft.Data.Sqlite.Core" Version="8.0.6" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
   </ItemGroup>
 
   <!--安装服务守护-->

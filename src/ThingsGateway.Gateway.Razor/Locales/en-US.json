@@ -1,4 +1,12 @@
 ﻿{
+  "ThingsGateway.Gateway.Razor.TcpSessionClientDto": {
+    "Id": "Id",
+    "IP": "IP",
+    "Port": "Port",
+    "LastReceivedTime": "LastReceivedTime",
+    "LastSentTime": "LastSentTime"
+  },
+
   "ThingsGateway.Gateway.Razor.DeviceStatus2": {
     "GatewayDeviceShowDriverUI": "DriverUI",
     "DeviceRedundantThread": "RedundantSwitch",
@@ -19,10 +27,37 @@
     "WriteValue": "Value"
   },
   "ThingsGateway.Gateway.Razor.MainLayout": {
+    "About": "About",
     "FullScreenButton": "Full Screen",
     "UserCenter": "User Center",
     "ChoiceModule": "Switch Module",
-    "GiteePostTitleText": "Code Commit Push Notification"
+    "GiteePostTitleText": "Code Commit Push Notification",
+
+    "系统首页": "Home",
+    "权限管理": "Permission",
+    "用户管理": "User",
+    "角色管理": "Role",
+    "菜单管理": "Menu",
+    "系统运维": "SystemOperation",
+    "系统配置": "System",
+    "字典管理": "Dictionary",
+    "操作日志": "Operation",
+    "会话管理": "Session",
+    "硬件信息": "HardwareInfo",
+    "网关管理": "GatewayManagement",
+    "插件管理": "PluginManagement",
+    "插件调试": "PluginDebugging",
+    "通道管理": "Channel",
+    "采集设备": "CollectionDevices",
+    "业务设备": "BusinessDevices",
+    "变量管理": "Variable",
+    "网关状态": "GatewayStatus",
+    "设备状态": "Device",
+    "实时数据": "RealTimeData",
+    "实时报警": "RealTimeAlarms",
+    "网关日志": "GatewayLogs",
+    "后台日志": "Backend",
+    "RPC日志": "RPC"
   },
   "ThingsGateway.Debug.AdapterDebugBase": {
     "WriteSuccess": "Write Successful",

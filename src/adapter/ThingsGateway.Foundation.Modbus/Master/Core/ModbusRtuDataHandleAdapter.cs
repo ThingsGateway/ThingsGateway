@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -9,11 +8,6 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-
-
-
-using ThingsGateway.Foundation.Extension.Generic;
-
 namespace ThingsGateway.Foundation.Modbus;
 
 /// <summary>
@@ -21,51 +15,22 @@ namespace ThingsGateway.Foundation.Modbus;
 /// </summary>
 internal class ModbusRtuDataHandleAdapter : ReadWriteDevicesSingleStreamDataHandleAdapter<ModbusRtuMessage>
 {
-    /// <inheritdoc/>
-    public override byte[] PackCommand(byte[] command, ModbusRtuMessage item)
+    public ModbusRtuDataHandleAdapter()
     {
-        return ModbusHelper.AddCrc(command);
+        IsSendPackCommand = true;
+    }
+
+    public override byte[] PackCommand(ISendMessage item)
+    {
+        return ModbusHelper.AddCrc(item);
     }
 
     /// <inheritdoc/>
-    protected override ModbusRtuMessage GetInstance()
+    protected override AdapterResult UnpackResponse(ModbusRtuMessage request, IByteBlock byteBlock)
     {
-        return new ModbusRtuMessage();
-    }
-
-    /// <inheritdoc/>
-    protected override FilterResult UnpackResponse(ModbusRtuMessage request, byte[]? send, byte[] body, byte[] response)
-    {
-        //通道干扰时需剔除前缀中的多于字节，初步按站号+功能码找寻初始字节
-        if (send?.Length > 0)
-        {
-            int index = -1;
-            for (int i = 0; i < response.Length - 1; i++)
-            {
-                if (response[i] == send[0] && (response[i + 1] == send[1] || response[i + 1] == (send[1] + 0x80)))
-                {
-                    index = i;
-                    break;
-                }
-            }
-            if (index >= 0)
-            {
-                response = response.RemoveBegin(index);
-            }
-
-            //理想状态检测
-            var result = ModbusHelper.GetModbusRtuData(send, response, true);
-            request.OperCode = result.OperCode;
-            request.ErrorMessage = result.ErrorMessage;
-            if (result.IsSuccess)
-            {
-                request.Content = result.Content;
-            }
-            return result.Content2;
-        }
-        else
-        {
-            return FilterResult.Success;
-        }
+        var result = ModbusHelper.GetModbusRtuData(request.SendBytes, byteBlock);
+        request.OperCode = result.OperCode;
+        request.ErrorMessage = result.ErrorMessage;
+        return result.Content;
     }
 }

@@ -23,7 +23,6 @@ using System.Collections.Concurrent;
 using ThingsGateway.Admin.Application;
 using ThingsGateway.Core.Extension;
 using ThingsGateway.Gateway.Application;
-using ThingsGateway.Gateway.Application.Generic;
 
 using TouchSocket.Core;
 
@@ -47,7 +46,7 @@ public partial class OpcUaServer : BusinessBase
     /// <inheritdoc/>
     protected override BusinessPropertyBase _businessPropertyBase => _driverPropertys;
 
-    protected override IProtocol? Protocol => null;
+    public override IProtocol? Protocol => null;
     private ConcurrentQueue<VariableData> CollectVariableRunTimes { get; set; } = new();
 
     public override void Init(IChannel? channel = null)
@@ -84,6 +83,7 @@ public partial class OpcUaServer : BusinessBase
         });
         Localizer = App.CreateLocalizerByType(typeof(OpcUaServer))!;
     }
+
     protected IStringLocalizer Localizer { get; private set; }
 
     /// <inheritdoc/>
@@ -99,7 +99,6 @@ public partial class OpcUaServer : BusinessBase
         base.Dispose(disposing);
     }
 
-
     protected override async Task ProtectedBeforStartAsync(CancellationToken cancellationToken)
     {
         // 启动服务器。
@@ -108,7 +107,7 @@ public partial class OpcUaServer : BusinessBase
         await base.ProtectedBeforStartAsync(cancellationToken).ConfigureAwait(false);
     }
 
-    protected override async Task ProtectedExecuteAsync(CancellationToken cancellationToken)
+    protected override async ValueTask ProtectedExecuteAsync(CancellationToken cancellationToken)
     {
         try
         {

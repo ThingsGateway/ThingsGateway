@@ -14,7 +14,6 @@ using RabbitMQ.Client;
 
 using System.Text;
 
-using ThingsGateway.Admin.Application;
 using ThingsGateway.Foundation;
 using ThingsGateway.Foundation.Extension.Generic;
 
@@ -49,30 +48,30 @@ public partial class RabbitMQProducer : BusinessBaseWithCacheIntervalScript<Vari
         base.AlarmChange(alarmVariable);
     }
 
-    protected override Task<OperResult> UpdateAlarmModel(IEnumerable<CacheDBItem<AlarmVariable>> item, CancellationToken cancellationToken)
+    protected override ValueTask<OperResult> UpdateAlarmModel(IEnumerable<CacheDBItem<AlarmVariable>> item, CancellationToken cancellationToken)
     {
         return UpdateAlarmModel(item.Select(a => a.Value), cancellationToken);
     }
 
-    protected override Task<OperResult> UpdateDevModel(IEnumerable<CacheDBItem<DeviceData>> item, CancellationToken cancellationToken)
+    protected override ValueTask<OperResult> UpdateDevModel(IEnumerable<CacheDBItem<DeviceData>> item, CancellationToken cancellationToken)
     {
         return UpdateDevModel(item.Select(a => a.Value), cancellationToken);
     }
 
-    protected override Task<OperResult> UpdateVarModel(IEnumerable<CacheDBItem<VariableData>> item, CancellationToken cancellationToken)
+    protected override ValueTask<OperResult> UpdateVarModel(IEnumerable<CacheDBItem<VariableData>> item, CancellationToken cancellationToken)
     {
         return UpdateVarModel(item.Select(a => a.Value), cancellationToken);
     }
 
     #region private
 
-    private Task<OperResult> UpdateAlarmModel(IEnumerable<AlarmVariable> item, CancellationToken cancellationToken)
+    private ValueTask<OperResult> UpdateAlarmModel(IEnumerable<AlarmVariable> item, CancellationToken cancellationToken)
     {
         List<TopicJson> topicJsonList = GetAlarms(item);
         return Update(topicJsonList, cancellationToken);
     }
 
-    private Task<OperResult> Update(List<TopicJson> topicJsonList, CancellationToken cancellationToken)
+    private ValueTask<OperResult> Update(List<TopicJson> topicJsonList, CancellationToken cancellationToken)
     {
         foreach (var topicJson in topicJsonList)
         {
@@ -87,19 +86,20 @@ public partial class RabbitMQProducer : BusinessBaseWithCacheIntervalScript<Vari
             }
             if (!result.IsSuccess)
             {
-                return Task.FromResult(result);
+                return ValueTask.FromResult(result);
             }
         }
-        return Task.FromResult(new OperResult());
+        OperResult operResult = OperResult.Success;
+        return ValueTask.FromResult(operResult);
     }
 
-    private Task<OperResult> UpdateDevModel(IEnumerable<DeviceData> item, CancellationToken cancellationToken)
+    private ValueTask<OperResult> UpdateDevModel(IEnumerable<DeviceData> item, CancellationToken cancellationToken)
     {
         List<TopicJson> topicJsonList = GetDeviceData(item);
         return Update(topicJsonList, cancellationToken);
     }
 
-    private Task<OperResult> UpdateVarModel(IEnumerable<VariableData> item, CancellationToken cancellationToken)
+    private ValueTask<OperResult> UpdateVarModel(IEnumerable<VariableData> item, CancellationToken cancellationToken)
     {
         List<TopicJson> topicJsonList = GetVariable(item);
         return Update(topicJsonList, cancellationToken);
@@ -109,12 +109,12 @@ public partial class RabbitMQProducer : BusinessBaseWithCacheIntervalScript<Vari
 
     #region 方法
 
-    private async Task AllPublishAsync(CancellationToken cancellationToken)
+    private async ValueTask AllPublishAsync(CancellationToken cancellationToken)
     {
         //保留消息
         //分解List，避免超出字节大小限制
-        var varData = CurrentDevice.VariableRunTimes.Values.Adapt<List<VariableData>>().ChunkBetter(_driverPropertys.SplitSize);
-        var devData = CollectDevices.Values.Adapt<List<DeviceData>>().ChunkBetter(_driverPropertys.SplitSize);
+        var varData = CurrentDevice.VariableRunTimes.Select(a => a.Value).Adapt<List<VariableData>>().ChunkBetter(_driverPropertys.SplitSize);
+        var devData = CollectDevices.Select(a => a.Value).Adapt<List<DeviceData>>().ChunkBetter(_driverPropertys.SplitSize);
         var alramData = GlobalData.ReadOnlyRealAlarmVariables.Adapt<List<AlarmVariable>>().ChunkBetter(_driverPropertys.SplitSize);
         foreach (var item in varData)
         {
@@ -151,11 +151,11 @@ public partial class RabbitMQProducer : BusinessBaseWithCacheIntervalScript<Vari
             {
                 _model.BasicPublish(_driverPropertys.ExchangeName, topic, properties, Encoding.UTF8.GetBytes(payLoad));
                 LogMessage.Trace($"Topic：{topic}{Environment.NewLine}PayLoad：{payLoad}");
-                return new();
+                return OperResult.Success;
             }
             else
             {
-                return new("Upload fail");
+                return new OperResult("Upload fail");
             }
         }
         catch (Exception ex)

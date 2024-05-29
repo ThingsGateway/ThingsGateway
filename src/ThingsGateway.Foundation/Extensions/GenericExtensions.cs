@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -8,9 +7,6 @@
 //  使用文档：https://kimdiego2098.github.io/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
-
-
-
 
 namespace ThingsGateway.Foundation.Extension.Generic;
 
@@ -31,7 +27,6 @@ public static class GenericExtensions
         {
             return data;
         }
-
         Array.Resize(ref data, length);
 
         return data;
@@ -44,7 +39,7 @@ public static class GenericExtensions
     {
         if (data == null)
         {
-            return new T[0];
+            return Array.Empty<T>();
         }
 
         return data.Length % 2 == 1 ? data.ArrayExpandToLength(data.Length + 1) : data;
@@ -68,7 +63,7 @@ public static class GenericExtensions
         // 如果输入数组为空或者剩余长度不足以移除左右两侧指定的元素，则返回空数组
         if (value == null || value.Length <= leftLength + rightLength)
         {
-            return new T[0];
+            return Array.Empty<T>();
         }
 
         // 计算新数组的长度
@@ -113,7 +108,7 @@ public static class GenericExtensions
     {
         if (value == null)
         {
-            return new T[0];
+            return Array.Empty<T>();
         }
 
         T[] destinationArray = new T[value.Length];
@@ -140,33 +135,19 @@ public static class GenericExtensions
     }
 
     /// <summary>
-    /// For循环
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="objs"></param>
-    /// <param name="action"></param>
-    public static void ForEach<T>(this IEnumerable<T> objs, Action<T> action)
-    {
-        foreach (T obj in objs)
-        {
-            action(obj);
-        }
-    }
-
-    /// <summary>
     /// 将一个数组的前后移除指定位数，返回新的一个数组<br />
     /// </summary>
     public static T[] RemoveArray<T>(this T[] value, int leftLength, int rightLength)
     {
         if (value == null || value.Length == 0)
         {
-            return new T[0];
+            return Array.Empty<T>();
         }
 
         int newLength = value.Length - leftLength - rightLength;
         if (newLength <= 0)
         {
-            return new T[0];
+            return Array.Empty<T>();
         }
 
         T[] result = new T[newLength];
@@ -197,7 +178,7 @@ public static class GenericExtensions
         // 如果输入数组为空，则返回空数组
         if (value == null || value.Length == 0)
         {
-            return new T[0];
+            return Array.Empty<T>();
         }
 
         // 计算实际需要复制的元素个数，取输入数组长度和指定长度的较小值
@@ -225,7 +206,7 @@ public static class GenericExtensions
         // 如果输入数组为空，则返回空数组
         if (value == null || value.Length == 0)
         {
-            return new T[0];
+            return Array.Empty<T>();
         }
 
         // 计算实际需要复制的元素个数，取输入数组剩余元素和指定长度的较小值

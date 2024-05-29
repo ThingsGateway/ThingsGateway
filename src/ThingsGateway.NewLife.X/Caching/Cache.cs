@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -9,9 +8,6 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-
-
-
 using System.Diagnostics.CodeAnalysis;
 
 namespace NewLife.Caching;
@@ -19,13 +15,6 @@ namespace NewLife.Caching;
 /// <summary>缓存</summary>
 public abstract class Cache : DisposeBase, ICache
 {
-    #region 静态默认实现
-
-    /// <summary>默认缓存</summary>
-    public static ICache Default { get; set; } = new MemoryCache();
-
-    #endregion 静态默认实现
-
     #region 属性
 
     /// <summary>名称</summary>

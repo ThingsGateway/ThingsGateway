@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -9,11 +8,10 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-
-
-
 using ThingsGateway.Foundation.SiemensS7;
 using ThingsGateway.Gateway.Application;
+
+using TouchSocket.Core;
 
 namespace ThingsGateway.Plugin.SiemensS7;
 
@@ -24,6 +22,12 @@ public class SiemensS7MasterProperty : CollectPropertyBase
 {
     [DynamicProperty]
     public SiemensTypeEnum SiemensS7Type { get; set; }
+
+    /// <summary>
+    /// 最大打包长度
+    /// </summary>
+    [DynamicProperty]
+    public ushort MaxPack { get; set; } = 200;
 
     /// <summary>
     /// Rack
@@ -71,7 +75,7 @@ public class SiemensS7MasterProperty : CollectPropertyBase
     /// 默认解析顺序
     /// </summary>
     [DynamicProperty]
-    public DataFormatEnum DataFormat { get; set; }
+    public EndianType EndianType { get; set; }
 
     public override int ConcurrentCount { get; set; } = 1;
 }

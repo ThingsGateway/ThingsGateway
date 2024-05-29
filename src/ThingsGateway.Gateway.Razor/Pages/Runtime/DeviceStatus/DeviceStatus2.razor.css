@@ -27,6 +27,7 @@
     width: 100%;
     /*overflow: inherit;*/
 }
+
 .device ::deep .btn {
     color: var(--bs-card-title-color);
 }

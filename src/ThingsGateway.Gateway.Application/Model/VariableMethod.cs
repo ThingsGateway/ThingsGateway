@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -8,8 +7,6 @@
 //  使用文档：https://kimdiego2098.github.io/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
-
-
 
 using TouchSocket.Core;
 
@@ -56,7 +53,7 @@ public class VariableMethod
     /// <param name="value">以,逗号分割的参数</param>
     /// <param name="cancellationToken">取消令箭</param>
     /// <returns></returns>
-    public async Task<IOperResult> InvokeMethodAsync(object driverBase, string? value = null, CancellationToken cancellationToken = default)
+    public async ValueTask<OperResult> InvokeMethodAsync(object driverBase, string? value = null, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -86,7 +83,7 @@ public class VariableMethod
             {
                 case TaskReturnType.Task:
                     await MethodInfo.InvokeAsync(driverBase, os).ConfigureAwait(false);
-                    result = new OperResult();
+                    result = OperResult.Success;
                     break;
 
                 case TaskReturnType.TaskObject:
@@ -102,7 +99,7 @@ public class VariableMethod
             {
                 return result;
             }
-            return new OperResult();
+            return OperResult.Success;
         }
         catch (Exception ex)
         {

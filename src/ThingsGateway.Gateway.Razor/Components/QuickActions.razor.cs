@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -9,11 +8,8 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-
 using ThingsGateway.Admin.Razor;
 using ThingsGateway.Gateway.Application;
-
-using TouchSocket.Core;
 
 namespace ThingsGateway.Gateway.Razor;
 
@@ -60,6 +56,7 @@ public partial class QuickActions
 
         return Task.CompletedTask;
     }
+
     [Inject]
     [NotNull]
     protected BlazorAppContext? AppContext { get; set; }
@@ -68,11 +65,15 @@ public partial class QuickActions
     {
         return AppContext.IsHasButtonWithRole("/gateway/devicestatus", operate);
     }
+
     private async Task OnReloadService()
     {
         try
         {
-            await HostedServiceUtil.CollectDeviceHostedService.RestartAsync();
+            await Task.Run(async () =>
+            {
+                await HostedServiceUtil.CollectDeviceHostedService.RestartAsync();
+            });
         }
         finally
         {

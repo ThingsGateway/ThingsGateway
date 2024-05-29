@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -8,9 +7,6 @@
 //  使用文档：https://kimdiego2098.github.io/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
-
-
-
 
 using Newtonsoft.Json.Linq;
 
@@ -34,9 +30,9 @@ public interface IProtocol : IDisposable
     IChannel Channel { get; }
 
     /// <summary>
-    /// 默认多字节数据解析规则
+    /// 数据解析规则
     /// </summary>
-    DataFormatEnum? DataFormat { get; set; }
+    EndianType EndianType { get; set; }
 
     /// <summary>
     /// 数据解析规则
@@ -92,13 +88,6 @@ public interface IProtocol : IDisposable
     int GetBitOffset(string address);
 
     /// <summary>
-    /// 布尔量解析时是否需要按字反转
-    /// </summary>
-    /// <param name="address">变量地址</param>
-    /// <returns></returns>
-    bool BitReverse(string address);
-
-    /// <summary>
     /// 寄存器地址的详细说明
     /// </summary>
     /// <returns></returns>
@@ -131,10 +120,7 @@ public interface IProtocol : IDisposable
     /// <param name="dataType">数据类型</param>
     /// <param name="cancellationToken">取消令箭</param>
     /// <returns></returns>
-    IOperResult<Array> Read(string address, int length, DataTypeEnum dataType, CancellationToken cancellationToken = default);
-
-    /// <inheritdoc cref="Read(string, int, DataTypeEnum,   CancellationToken)"/>
-    Task<IOperResult<Array>> ReadAsync(string address, int length, DataTypeEnum dataType, CancellationToken cancellationToken = default);
+    ValueTask<IOperResult<Array>> ReadAsync(string address, int length, DataTypeEnum dataType, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 根据数据类型，写入类型值
@@ -144,10 +130,7 @@ public interface IProtocol : IDisposable
     /// <param name="dataType">数据类型</param>
     /// <param name="cancellationToken">取消令箭</param>
     /// <returns></returns>
-    OperResult Write(string address, JToken value, DataTypeEnum dataType, CancellationToken cancellationToken = default);
-
-    /// <inheritdoc cref="Write(string, JToken, DataTypeEnum,  CancellationToken)"/>
-    Task<OperResult> WriteAsync(string address, JToken value, DataTypeEnum dataType, CancellationToken cancellationToken = default);
+    ValueTask<OperResult> WriteAsync(string address, JToken value, DataTypeEnum dataType, CancellationToken cancellationToken = default);
 
     #endregion 动态类型读写
 
@@ -160,12 +143,7 @@ public interface IProtocol : IDisposable
     /// <param name="length">读取寄存器数量，对于不同PLC，对应的字节数量可能不一样</param>
     /// <param name="cancellationToken">取消令箭</param>
     /// <returns></returns>
-    Task<OperResult<byte[]>> ReadAsync(string address, int length, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// <inheritdoc cref="ReadAsync(string, int,  CancellationToken)"/>
-    /// </summary>
-    OperResult<byte[]> Read(string address, int length, CancellationToken cancellationToken = default);
+    ValueTask<OperResult<byte[]>> ReadAsync(string address, int length, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 读取布尔量数组
@@ -175,10 +153,7 @@ public interface IProtocol : IDisposable
     /// <param name="bitConverter">转换规则</param>
     /// <param name="cancellationToken">取消令箭</param>
     /// <returns></returns>
-    OperResult<bool[]> ReadBoolean(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
-
-    /// <inheritdoc cref="ReadBoolean(string, int, IThingsGatewayBitConverter, CancellationToken)"/>
-    Task<OperResult<bool[]>> ReadBooleanAsync(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
+    ValueTask<OperResult<bool[]>> ReadBooleanAsync(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 读取Double数组
@@ -188,10 +163,7 @@ public interface IProtocol : IDisposable
     /// <param name="bitConverter">转换规则</param>
     /// <param name="cancellationToken">取消令箭</param>
     /// <returns></returns>
-    OperResult<double[]> ReadDouble(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
-
-    /// <inheritdoc cref="ReadDouble(string, int, IThingsGatewayBitConverter, CancellationToken)"/>
-    Task<OperResult<double[]>> ReadDoubleAsync(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
+    ValueTask<OperResult<double[]>> ReadDoubleAsync(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 读取Int16数组
@@ -201,10 +173,7 @@ public interface IProtocol : IDisposable
     /// <param name="bitConverter">转换规则</param>
     /// <param name="cancellationToken">取消令箭</param>
     /// <returns></returns>
-    OperResult<short[]> ReadInt16(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
-
-    /// <inheritdoc cref="ReadInt16(string, int, IThingsGatewayBitConverter, CancellationToken)"/>
-    Task<OperResult<short[]>> ReadInt16Async(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
+    ValueTask<OperResult<short[]>> ReadInt16Async(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 读取Int32数组
@@ -214,10 +183,7 @@ public interface IProtocol : IDisposable
     /// <param name="bitConverter">转换规则</param>
     /// <param name="cancellationToken">取消令箭</param>
     /// <returns></returns>
-    OperResult<int[]> ReadInt32(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
-
-    /// <inheritdoc cref="ReadInt32(string, int, IThingsGatewayBitConverter, CancellationToken)"/>
-    Task<OperResult<int[]>> ReadInt32Async(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
+    ValueTask<OperResult<int[]>> ReadInt32Async(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 读取Int64数组
@@ -227,10 +193,7 @@ public interface IProtocol : IDisposable
     /// <param name="bitConverter">转换规则</param>
     /// <param name="cancellationToken">取消令箭</param>
     /// <returns></returns>
-    OperResult<long[]> ReadInt64(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
-
-    /// <inheritdoc cref="ReadInt64(string, int, IThingsGatewayBitConverter, CancellationToken)"/>
-    Task<OperResult<long[]>> ReadInt64Async(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
+    ValueTask<OperResult<long[]>> ReadInt64Async(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 读取Single数组
@@ -240,10 +203,7 @@ public interface IProtocol : IDisposable
     /// <param name="bitConverter">转换规则</param>
     /// <param name="cancellationToken">取消令箭</param>
     /// <returns></returns>
-    OperResult<float[]> ReadSingle(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
-
-    /// <inheritdoc cref="ReadSingle(string, int, IThingsGatewayBitConverter, CancellationToken)"/>
-    Task<OperResult<float[]>> ReadSingleAsync(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
+    ValueTask<OperResult<float[]>> ReadSingleAsync(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 读取String
@@ -253,10 +213,7 @@ public interface IProtocol : IDisposable
     /// <param name="bitConverter">转换规则</param>
     /// <param name="cancellationToken">取消令箭</param>
     /// <returns></returns>
-    OperResult<string[]> ReadString(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
-
-    /// <inheritdoc cref="ReadString(string, int, IThingsGatewayBitConverter, CancellationToken)"/>
-    Task<OperResult<string[]>> ReadStringAsync(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
+    ValueTask<OperResult<string[]>> ReadStringAsync(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 读取UInt16数组
@@ -266,10 +223,7 @@ public interface IProtocol : IDisposable
     /// <param name="bitConverter">转换规则</param>
     /// <param name="cancellationToken">取消令箭</param>
     /// <returns></returns>
-    OperResult<ushort[]> ReadUInt16(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
-
-    /// <inheritdoc cref="ReadUInt16(string, int, IThingsGatewayBitConverter, CancellationToken)"/>
-    Task<OperResult<ushort[]>> ReadUInt16Async(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
+    ValueTask<OperResult<ushort[]>> ReadUInt16Async(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 读取UInt32数组
@@ -279,10 +233,7 @@ public interface IProtocol : IDisposable
     /// <param name="bitConverter">转换规则</param>
     /// <param name="cancellationToken">取消令箭</param>
     /// <returns></returns>
-    OperResult<uint[]> ReadUInt32(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
-
-    /// <inheritdoc cref="ReadUInt32(string, int, IThingsGatewayBitConverter, CancellationToken)"/>
-    Task<OperResult<uint[]>> ReadUInt32Async(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
+    ValueTask<OperResult<uint[]>> ReadUInt32Async(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 读取UInt32数组
@@ -292,10 +243,7 @@ public interface IProtocol : IDisposable
     /// <param name="bitConverter">转换规则</param>
     /// <param name="cancellationToken">取消令箭</param>
     /// <returns></returns>
-    OperResult<ulong[]> ReadUInt64(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
-
-    /// <inheritdoc cref="ReadUInt64(string, int, IThingsGatewayBitConverter, CancellationToken)"/>
-    Task<OperResult<ulong[]>> ReadUInt64Async(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
+    ValueTask<OperResult<ulong[]>> ReadUInt64Async(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
 
     #endregion 读取
 
@@ -304,132 +252,67 @@ public interface IProtocol : IDisposable
     /// <summary>
     /// 写入原始的byte数组数据到指定的地址，返回结果
     /// </summary>
-    OperResult Write(string address, byte[] value, CancellationToken cancellationToken = default);
+    ValueTask<OperResult> WriteAsync(string address, byte[] value, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 写入bool数组数据，返回结果
     /// </summary>
-    OperResult Write(string address, bool[] value, CancellationToken cancellationToken = default);
+    ValueTask<OperResult> WriteAsync(string address, bool[] value, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 写入bool数据，返回结果
     /// </summary>
-    OperResult Write(string address, bool value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
+    ValueTask<OperResult> WriteAsync(string address, bool value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 写入byte数据，返回结果
     /// </summary>
-    OperResult Write(string address, byte value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
+    ValueTask<OperResult> WriteAsync(string address, byte value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 写入short数据，返回结果
     /// </summary>
-    OperResult Write(string address, short value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
+    ValueTask<OperResult> WriteAsync(string address, short value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 写入ushort数据，返回结果
     /// </summary>
-    OperResult Write(string address, ushort value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
+    ValueTask<OperResult> WriteAsync(string address, ushort value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 写入int数据，返回结果
     /// </summary>
-    OperResult Write(string address, int value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
+    ValueTask<OperResult> WriteAsync(string address, int value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 写入uint数据，返回结果
     /// </summary>
-    OperResult Write(string address, uint value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
+    ValueTask<OperResult> WriteAsync(string address, uint value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 写入long数据，返回结果
     /// </summary>
-    OperResult Write(string address, long value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
+    ValueTask<OperResult> WriteAsync(string address, long value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 写入ulong数据，返回结果
     /// </summary>
-    OperResult Write(string address, ulong value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
+    ValueTask<OperResult> WriteAsync(string address, ulong value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 写入float数据，返回结果
     /// </summary>
-    OperResult Write(string address, float value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
+    ValueTask<OperResult> WriteAsync(string address, float value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 写入double数据，返回结果
     /// </summary>
-    OperResult Write(string address, double value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
+    ValueTask<OperResult> WriteAsync(string address, double value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// 写入字符串信息
+    /// 写入string数据，返回结果
     /// </summary>
-    OperResult Write(string address, string value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// <inheritdoc cref="Write(string, byte[], CancellationToken)"/>
-    /// </summary>
-    Task<OperResult> WriteAsync(string address, byte[] value, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// <inheritdoc cref="Write(string, bool[], CancellationToken)"/>
-    /// </summary>
-    Task<OperResult> WriteAsync(string address, bool[] value, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// <inheritdoc cref="Write(string, bool, IThingsGatewayBitConverter, CancellationToken)"/>
-    /// </summary>
-    Task<OperResult> WriteAsync(string address, bool value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// <inheritdoc cref="Write(string, byte, IThingsGatewayBitConverter, CancellationToken)"/>
-    /// </summary>
-    Task<OperResult> WriteAsync(string address, byte value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// <inheritdoc cref="Write(string, short, IThingsGatewayBitConverter, CancellationToken)"/>
-    /// </summary>
-    Task<OperResult> WriteAsync(string address, short value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// <inheritdoc cref="Write(string, ushort, IThingsGatewayBitConverter, CancellationToken)"/>
-    /// </summary>
-    Task<OperResult> WriteAsync(string address, ushort value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// <inheritdoc cref="Write(string, int, IThingsGatewayBitConverter, CancellationToken)"/>
-    /// </summary>
-    Task<OperResult> WriteAsync(string address, int value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// <inheritdoc cref="Write(string, uint, IThingsGatewayBitConverter, CancellationToken)"/>
-    /// </summary>
-    Task<OperResult> WriteAsync(string address, uint value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// <inheritdoc cref="Write(string, long, IThingsGatewayBitConverter, CancellationToken)"/>
-    /// </summary>
-    Task<OperResult> WriteAsync(string address, long value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// <inheritdoc cref="Write(string, ulong, IThingsGatewayBitConverter, CancellationToken)"/>
-    /// </summary>
-    Task<OperResult> WriteAsync(string address, ulong value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// <inheritdoc cref="Write(string, float, IThingsGatewayBitConverter, CancellationToken)"/>
-    /// </summary>
-    Task<OperResult> WriteAsync(string address, float value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// <inheritdoc cref="Write(string, double, IThingsGatewayBitConverter, CancellationToken)"/>
-    /// </summary>
-    Task<OperResult> WriteAsync(string address, double value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// <inheritdoc cref="Write(string, string, IThingsGatewayBitConverter, CancellationToken)"/>
-    /// </summary>
-    Task<OperResult> WriteAsync(string address, string value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
+    ValueTask<OperResult> WriteAsync(string address, string value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
 
     #endregion 写入
 
@@ -443,7 +326,7 @@ public interface IProtocol : IDisposable
     /// <param name="bitConverter">转换规则</param>
     /// <param name="cancellationToken">取消令箭</param>
     /// <returns>写入结果</returns>
-    OperResult Write(string address, string[] value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
+    ValueTask<OperResult> WriteAsync(string address, string[] value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 写入Double数组
@@ -453,7 +336,7 @@ public interface IProtocol : IDisposable
     /// <param name="bitConverter">转换规则</param>
     /// <param name="cancellationToken">取消令箭</param>
     /// <returns>写入结果</returns>
-    OperResult Write(string address, double[] value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
+    ValueTask<OperResult> WriteAsync(string address, double[] value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 写入Single数组
@@ -463,7 +346,7 @@ public interface IProtocol : IDisposable
     /// <param name="bitConverter">转换规则</param>
     /// <param name="cancellationToken">取消令箭</param>
     /// <returns>写入结果</returns>
-    OperResult Write(string address, float[] value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
+    ValueTask<OperResult> WriteAsync(string address, float[] value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 写入Int32数组
@@ -473,7 +356,7 @@ public interface IProtocol : IDisposable
     /// <param name="bitConverter">转换规则</param>
     /// <param name="cancellationToken">取消令箭</param>
     /// <returns>写入结果</returns>
-    OperResult Write(string address, int[] value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
+    ValueTask<OperResult> WriteAsync(string address, int[] value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 写入Int64数组
@@ -483,7 +366,7 @@ public interface IProtocol : IDisposable
     /// <param name="bitConverter">转换规则</param>
     /// <param name="cancellationToken">取消令箭</param>
     /// <returns>写入结果</returns>
-    OperResult Write(string address, long[] value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
+    ValueTask<OperResult> WriteAsync(string address, long[] value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 写入Int16数组
@@ -493,7 +376,7 @@ public interface IProtocol : IDisposable
     /// <param name="bitConverter">转换规则</param>
     /// <param name="cancellationToken">取消令箭</param>
     /// <returns>写入结果</returns>
-    OperResult Write(string address, short[] value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
+    ValueTask<OperResult> WriteAsync(string address, short[] value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 写入UInt32数组
@@ -503,7 +386,7 @@ public interface IProtocol : IDisposable
     /// <param name="bitConverter">转换规则</param>
     /// <param name="cancellationToken">取消令箭</param>
     /// <returns>写入结果</returns>
-    OperResult Write(string address, uint[] value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
+    ValueTask<OperResult> WriteAsync(string address, uint[] value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 写入UInt64数组
@@ -513,7 +396,7 @@ public interface IProtocol : IDisposable
     /// <param name="bitConverter">转换规则</param>
     /// <param name="cancellationToken">取消令箭</param>
     /// <returns>写入结果</returns>
-    OperResult Write(string address, ulong[] value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
+    ValueTask<OperResult> WriteAsync(string address, ulong[] value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 写入UInt16数组
@@ -523,36 +406,32 @@ public interface IProtocol : IDisposable
     /// <param name="bitConverter">转换规则</param>
     /// <param name="cancellationToken">取消令箭</param>
     /// <returns>写入结果</returns>
-    OperResult Write(string address, ushort[] value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
-
-    /// <inheritdoc cref="Write(string, string[], IThingsGatewayBitConverter, CancellationToken)"/>
-    Task<OperResult> WriteAsync(string address, string[] value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
-
-    /// <inheritdoc cref="Write(string, double[], IThingsGatewayBitConverter, CancellationToken)"/>
-    Task<OperResult> WriteAsync(string address, double[] value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
-
-    /// <inheritdoc cref="Write(string, float[], IThingsGatewayBitConverter, CancellationToken)"/>
-    Task<OperResult> WriteAsync(string address, float[] value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
-
-    /// <inheritdoc cref="Write(string, int[], IThingsGatewayBitConverter, CancellationToken)"/>
-    Task<OperResult> WriteAsync(string address, int[] value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
-
-    /// <inheritdoc cref="Write(string, long[], IThingsGatewayBitConverter, CancellationToken)"/>
-    Task<OperResult> WriteAsync(string address, long[] value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
-
-    /// <inheritdoc cref="Write(string, short[], IThingsGatewayBitConverter, CancellationToken)"/>
-    Task<OperResult> WriteAsync(string address, short[] value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
-
-    /// <inheritdoc cref="Write(string, uint[], IThingsGatewayBitConverter,CancellationToken)"/>
-    Task<OperResult> WriteAsync(string address, uint[] value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
-
-    /// <inheritdoc cref="Write(string, ulong[], IThingsGatewayBitConverter, CancellationToken)"/>
-    Task<OperResult> WriteAsync(string address, ulong[] value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
-
-    /// <inheritdoc cref="Write(string, ushort[], IThingsGatewayBitConverter, CancellationToken)"/>
-    Task<OperResult> WriteAsync(string address, ushort[] value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
+    ValueTask<OperResult> WriteAsync(string address, ushort[] value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default);
 
     #endregion 写入数组
+
+    /// <summary>
+    /// 配置IPluginManager
+    /// </summary>
+    Action<IPluginManager> ConfigurePlugins();
+
+    /// <summary>
+    /// 发送，会经过适配器，可传入<see cref="IClientChannel"/>，如果为空，则默认通道必须为<see cref="IClientChannel"/>类型
+    /// </summary>
+    /// <param name="sendMessage">发送字节数组</param>
+    /// <param name="token">取消令箭</param>
+    /// <param name="channel">通道</param>
+    /// <returns>返回消息体</returns>
+    ValueTask SendAsync(ISendMessage sendMessage, IClientChannel channel = null, CancellationToken token = default);
+
+    /// <summary>
+    /// 发送，会经过适配器，可传入socketId，如果为空，则默认通道必须为<see cref="IClientChannel"/>类型
+    /// </summary>
+    /// <param name="socketId">通道</param>
+    /// <param name="sendMessage">发送字节数组</param>
+    /// <param name="cancellationToken">取消令箭</param>
+    /// <returns>返回消息体</returns>
+    ValueTask<OperResult> SendAsync(string socketId, ISendMessage sendMessage, CancellationToken cancellationToken);
 
     /// <summary>
     /// 发送并等待返回，会经过适配器，可传入<see cref="IClientChannel"/>，如果为空，则默认通道必须为<see cref="IClientChannel"/>类型
@@ -561,20 +440,18 @@ public interface IProtocol : IDisposable
     /// <param name="cancellationToken">取消令箭</param>
     /// <param name="channel">通道</param>
     /// <returns>返回消息体</returns>
-    Task<OperResult<byte[]>> SendThenReturnAsync(ISendMessage command, CancellationToken cancellationToken, IClientChannel channel = null);
-
-    /// <inheritdoc cref="SendThenReturnAsync(ISendMessage, CancellationToken, IClientChannel)"/>
-    OperResult<byte[]> SendThenReturn(ISendMessage command, CancellationToken cancellationToken, IClientChannel channel = null);
+    ValueTask<OperResult<byte[]>> SendThenReturnAsync(ISendMessage command, CancellationToken cancellationToken, IClientChannel channel = null);
 
     /// <summary>
-    /// 发送数据，不经过适配器
+    /// 发送并等待返回，会经过适配器，可传入socketId，如果为空，则默认通道必须为<see cref="IClientChannel"/>类型
     /// </summary>
-    /// <param name="command"></param>
-    /// <param name="channel"></param>
-    void DefaultSend(byte[] command, IClientChannel channel = null);
+    /// <param name="socketId">通道</param>
+    /// <param name="sendMessage">发送字节数组</param>
+    /// <param name="cancellationToken">取消令箭</param>
+    /// <returns>返回消息体</returns>
+    ValueTask<OperResult<byte[]>> SendThenReturnAsync(string socketId, ISendMessage sendMessage, CancellationToken cancellationToken);
 
-    /// <summary>
-    /// 配置IPluginManager
-    /// </summary>
-    Action<IPluginManager> ConfigurePlugins();
+    ValueTask<OperResult<byte[]>> SendThenReturnAsync(string socketId, byte[] sendBytes, CancellationToken cancellationToken);
+
+    ValueTask<OperResult<byte[]>> SendThenReturnAsync(byte[] sendBytes, CancellationToken cancellationToken);
 }

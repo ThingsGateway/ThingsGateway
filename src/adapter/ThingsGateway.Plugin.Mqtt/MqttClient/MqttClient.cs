@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -8,9 +7,6 @@
 //  使用文档：https://kimdiego2098.github.io/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
-
-
-
 
 using MQTTnet;
 
@@ -98,7 +94,7 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
         }
     }
 
-    protected override async Task ProtectedExecuteAsync(CancellationToken cancellationToken)
+    protected override async ValueTask ProtectedExecuteAsync(CancellationToken cancellationToken)
     {
         var clientResult = await TryMqttClientAsync(cancellationToken).ConfigureAwait(false);
         if (!clientResult.IsSuccess)

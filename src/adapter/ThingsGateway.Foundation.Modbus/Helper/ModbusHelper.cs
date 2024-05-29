@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -9,29 +8,20 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-
-
-
-using ThingsGateway.Foundation.Extension.Generic;
-
 namespace ThingsGateway.Foundation.Modbus;
 
 internal class ModbusHelper
 {
-    private static ThingsGatewayBitConverter ThingsGatewayBitConverter = new(EndianType.Big);
-
     #region modbusServer
 
-    internal static void ModbusServerAnalysisAddressValue(IModbusServerMessage request, byte[] response, OperResult<byte[], FilterResult> result, int offset)
+    internal static byte[] ModbusServerAnalysisAddressValue(IModbusServerMessage request, IByteBlock response)
     {
+        var offset = response.Position;
         //解析01 03 00 00 00 0A
-        var station = ThingsGatewayBitConverter.ToByte(response, 0 + offset);
-        var function = ThingsGatewayBitConverter.ToByte(response, 1 + offset);
-        int addressStart = ThingsGatewayBitConverter.ToInt16(response, 2 + offset);
-        if (addressStart == -1)
-        {
-            addressStart = 65535;
-        }
+        var station = response[0 + offset];
+        var function = response[1 + offset];
+        response.Position = 2 + offset;
+        int addressStart = response.ReadUInt16(EndianType.Big);
         if (function > 4)
         {
             if (function > 6)
@@ -43,8 +33,8 @@ internal class ModbusHelper
                     WriteFunction = function,
                     ReadFunction = (byte)(function == 16 ? 3 : function == 15 ? 1 : 3),
                 };
-                request.Length = ThingsGatewayBitConverter.ToByte(response, 5 + offset);
-                request.Content = result.Content.RemoveBegin(7);
+                request.Length = response[5 + offset];
+                return response.ToArray(7 + offset);
             }
             else
             {
@@ -56,7 +46,7 @@ internal class ModbusHelper
                     ReadFunction = (byte)(function == 6 ? 3 : function == 5 ? 1 : 3),
                 };
                 request.Length = 1;
-                request.Content = result.Content.RemoveBegin(4);
+                return response.ToArray(4 + offset);
             }
         }
         else
@@ -67,47 +57,8 @@ internal class ModbusHelper
                 Address = addressStart.ToString(),
                 ReadFunction = function,
             };
-            request.Length = ThingsGatewayBitConverter.ToByte(response, 5 + offset);
-        }
-    }
-
-    /// <summary>
-    /// 获取modbus写入数据区内容
-    /// </summary>
-    /// <param name="response">返回数据</param>
-    /// <returns></returns>
-    internal static OperResult<byte[], FilterResult> GetModbusWriteData(byte[] response)
-    {
-        try
-        {
-            var func = response[1];
-            if (func == 1 || func == 2 || func == 3 || func == 4 || func == 5 || func == 6)
-            {
-                if (response.Length == 6)
-                    return new() { Content = response, Content2 = FilterResult.Success };
-            }
-            else if (func == 15 || func == 16)
-            {
-                var length = response[6];
-                if (response.Length == 7 + length)
-                {
-                    return new() { Content = response, Content2 = FilterResult.Success };
-                }
-                if (response.Length > 7 + length)
-                {
-                    return new(DefaultResource.Localizer["DataLengthError", response.Length]) { Content2 = FilterResult.Success };
-                }
-                else
-                {
-                    return new(DefaultResource.Localizer["DataLengthError", response.Length]) { Content2 = FilterResult.Cache };
-                }
-            }
-
-            return new(DefaultResource.Localizer["DataLengthError", response.Length]) { Content2 = FilterResult.Success };
-        }
-        catch (Exception ex)
-        {
-            return new(ex) { Content2 = FilterResult.Success };
+            request.Length = response[5 + offset];
+            return Array.Empty<byte>();
         }
     }
 
@@ -150,30 +101,79 @@ internal class ModbusHelper
     /// <param name="send">发送数据</param>
     /// <param name="response">返回数据</param>
     /// <returns></returns>
-    internal static OperResult<byte[], FilterResult> GetModbusData(byte[] send, byte[] response)
+    internal static OperResult<AdapterResult> GetModbusData(byte[] send, IByteBlock response)
     {
         try
         {
-            if (response[1] >= 0x80)//错误码
-                return new OperResult<byte[], FilterResult>(GetDescriptionByErrorCode(response[2])) { Content2 = FilterResult.Success };
+            if (response[response.Position + 1] >= 0x80)//错误码
+                return new OperResult<AdapterResult>(GetDescriptionByErrorCode(response[response.Position + 2])) { Content = new AdapterResult() { FilterResult = FilterResult.Success } };
 
             if (send == null || send.Length == 0)
             {
-                return new() { Content = response.RemoveBegin(3), Content2 = FilterResult.Success };
+                return new OperResult<AdapterResult>()
+                {
+                    Content = new()
+                    {
+                        Content = response.ToArray(response.Position + 3),
+                        FilterResult = FilterResult.Success
+                    }
+                };
             }
-
             //站号验证
-            if (send[0] != response[0])
-                return new OperResult<byte[], FilterResult>(ModbusResource.Localizer["StationNotSame", send[0], response[0]]) { Content2 = FilterResult.Success };
+            if (send[response.Position + 0] != response[response.Position + 0])
+                return new OperResult<AdapterResult>(ModbusResource.Localizer["StationNotSame", send[response.Position + 0], response[response.Position + 0]])
+                {
+                    Content = new()
+                    {
+                        FilterResult = FilterResult.Success
+                    }
+                };
             //功能码验证
-            if (send[1] != response[1])
-                return new OperResult<byte[], FilterResult>(ModbusResource.Localizer["FunctionNotSame", send[1], response[1]]) { Content2 = FilterResult.Success };
-            return new() { Content = response.RemoveBegin(3), Content2 = FilterResult.Success };
+            if (send[response.Position + 1] != response[response.Position + 1])
+                return new OperResult<AdapterResult>(ModbusResource.Localizer["FunctionNotSame", send[response.Position + 1], response[response.Position + 1]])
+                {
+                    Content = new()
+                    {
+                        FilterResult = FilterResult.Success
+                    }
+                };
+            return new OperResult<AdapterResult>()
+            {
+                Content = new()
+                {
+                    Content = response.ToArray(response.Position + 3),
+                    FilterResult = FilterResult.Success
+                }
+            };
         }
         catch (Exception ex)
         {
-            return new OperResult<byte[], FilterResult>(ex) { Content2 = FilterResult.Success };
+            return new OperResult<AdapterResult>(ex)
+            {
+                Content = new()
+                {
+                    FilterResult = FilterResult.Success
+                }
+            };
         }
+    }
+
+    /// <summary>
+    /// 检测crc
+    /// </summary>
+    /// <param name="response"></param>
+    /// <returns></returns>
+    internal static OperResult CheckCrc(IByteBlock response)
+    {
+        //crc校验
+        var dataLen = response.Length;
+        var crc = CRC16Utils.CRC16Only(response.AsSegment().Array, 0, dataLen - 2);
+        if ((response[dataLen - 2] != crc[0] || response[dataLen - 1] != crc[1]))
+            return new OperResult($"{ModbusResource.Localizer["CrcError"]} {DataTransUtil.ByteToHexString(response.Span, ' ')}")
+            {
+            };
+        response.SetLength(dataLen - 2);
+        return new OperResult();
     }
 
     /// <summary>
@@ -181,43 +181,44 @@ internal class ModbusHelper
     /// </summary>
     /// <param name="send"></param>
     /// <param name="response"></param>
-    /// <param name="crcCheck"></param>
     /// <returns></returns>
-    internal static OperResult<byte[], FilterResult> GetModbusRtuData(byte[] send, byte[] response, bool crcCheck = true)
+    internal static OperResult<AdapterResult> GetModbusRtuData(byte[] send, IByteBlock response)
     {
-        if (response[1] >= 0x80)//错误码
-            return new OperResult<byte[], FilterResult>(GetDescriptionByErrorCode(response[2])) { Content2 = FilterResult.Success };
+        var result = CheckCrc(response);
+        if (!result.IsSuccess)
+        {
+            return new OperResult<AdapterResult>(result)
+            {
+                Content = new() { FilterResult = FilterResult.Success }
+            };
+        }
 
-        //crc校验
-        var data = response.SelectMiddle(0, response[1] <= 0x04 ? response[2] != 0 ? response[2] + 5 : 8 : 8);
-        if (crcCheck && !CRC16Utils.CheckCRC16(data))
-            return new OperResult<byte[], FilterResult>($"{ModbusResource.Localizer["CrcError"]} {DataTransUtil.ByteToHexString(data, ' ')}") { Content2 = FilterResult.Success };
-        return GetModbusData(send, data.RemoveLast(2));
+        return GetModbusData(send, response);
     }
 
     #endregion 解析
 
     #region 报文构建
 
-    /// <summary>
-    /// 添加Crc16
-    /// </summary>
-    internal static byte[] AddCrc(byte[] command)
+    public static byte[] AddCrc(ISendMessage item)
     {
-        return CRC16Utils.CRC16(command);
+        var crc = CRC16Utils.CRC16(item.SendBytes);
+        return crc;
     }
 
     /// <summary>
     /// 添加ModbusTcp报文头
     /// </summary>
-    internal static byte[] AddModbusTcpHead(byte[] modbus, ushort id)
+    internal static byte[] AddModbusTcpHead(byte[] modbus, int offset, int length, ushort id)
     {
-        byte[] tcp = new byte[modbus.Length + 6];
-        tcp[0] = BitConverter.GetBytes(id)[1];
-        tcp[1] = BitConverter.GetBytes(id)[0];
-        tcp[4] = BitConverter.GetBytes(modbus.Length)[1];
-        tcp[5] = BitConverter.GetBytes(modbus.Length)[0];
-        modbus.CopyTo(tcp, 6);
+        byte[] tcp = new byte[length + 6];
+        var ids = BitConverter.GetBytes(id);
+        var lens = BitConverter.GetBytes(length);
+        tcp[0] = ids[1];
+        tcp[1] = ids[0];
+        tcp[4] = lens[1];
+        tcp[5] = lens[0];
+        Array.Copy(modbus, offset, tcp, 6, length);
         return tcp;
     }
 
@@ -226,14 +227,16 @@ internal class ModbusHelper
     /// </summary>
     internal static byte[] GetReadModbusCommand(ModbusAddress mAddress, ushort length)
     {
+        var addresss = BitConverter.GetBytes(mAddress.AddressStart);
+        var lens = BitConverter.GetBytes(length);
         byte[] array = new byte[6]
         {
         (byte) mAddress.Station,
         (byte) mAddress.ReadFunction,
-        BitConverter.GetBytes(mAddress.AddressStart)[1],
-        BitConverter.GetBytes(mAddress.AddressStart)[0],
-        BitConverter.GetBytes(length)[1],
-        BitConverter.GetBytes(length)[0]
+        addresss[1],
+        addresss[0],
+        lens[1],
+        lens[0]
         };
         return array;
     }
@@ -243,12 +246,13 @@ internal class ModbusHelper
     /// </summary>
     internal static byte[] GetWriteBoolModbusCommand(ModbusAddress mAddress, bool value)
     {
+        var addresss = BitConverter.GetBytes(mAddress.AddressStart);
         byte[] array = new byte[6]
         {
     (byte) mAddress.Station,
     (byte)5,
-    BitConverter.GetBytes(mAddress.AddressStart)[1],
-    BitConverter.GetBytes(mAddress.AddressStart)[0],
+    addresss[1],
+    addresss[0],
      0,
      0
         };
@@ -270,12 +274,13 @@ internal class ModbusHelper
     /// </summary>
     internal static byte[] GetWriteBoolModbusCommand(ModbusAddress mAddress, bool[] values, ushort length)
     {
+        var addresss = BitConverter.GetBytes(mAddress.AddressStart);
         byte[] numArray1 = values.BoolArrayToByte();
         byte[] numArray2 = new byte[7 + numArray1.Length];
         numArray2[0] = (byte)mAddress.Station;
         numArray2[1] = (byte)15;
-        numArray2[2] = BitConverter.GetBytes(mAddress.AddressStart)[1];
-        numArray2[3] = BitConverter.GetBytes(mAddress.AddressStart)[0];
+        numArray2[2] = addresss[1];
+        numArray2[3] = addresss[0];
         numArray2[4] = (byte)(length / 256);
         numArray2[5] = (byte)(length % 256);
         numArray2[6] = (byte)numArray1.Length;
@@ -288,11 +293,12 @@ internal class ModbusHelper
     /// </summary>
     internal static byte[] GetWriteModbusCommand(ModbusAddress mAddress, byte[] values)
     {
+        var addresss = BitConverter.GetBytes(mAddress.AddressStart);
         byte[] numArray = new byte[7 + values.Length];
         numArray[0] = (byte)mAddress.Station;
         numArray[1] = (byte)16;
-        numArray[2] = BitConverter.GetBytes(mAddress.AddressStart)[1];
-        numArray[3] = BitConverter.GetBytes(mAddress.AddressStart)[0];
+        numArray[2] = addresss[1];
+        numArray[3] = addresss[0];
         numArray[4] = (byte)(values.Length / 2 / 256);
         numArray[5] = (byte)(values.Length / 2 % 256);
         numArray[6] = (byte)values.Length;
@@ -305,11 +311,12 @@ internal class ModbusHelper
     /// </summary>
     internal static byte[] GetWriteOneModbusCommand(ModbusAddress mAddress, byte[] values)
     {
+        var addresss = BitConverter.GetBytes(mAddress.AddressStart);
         byte[] numArray = new byte[4 + values.Length];
         numArray[0] = (byte)mAddress.Station;
         numArray[1] = (byte)6;
-        numArray[2] = BitConverter.GetBytes(mAddress.AddressStart)[1];
-        numArray[3] = BitConverter.GetBytes(mAddress.AddressStart)[0];
+        numArray[2] = addresss[1];
+        numArray[3] = addresss[0];
         values.CopyTo(numArray, 4);
         return numArray;
     }

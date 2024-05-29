@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -8,9 +7,6 @@
 //  使用文档：https://kimdiego2098.github.io/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
-
-
-
 
 using Microsoft.Extensions.Localization;
 
@@ -24,10 +20,11 @@ using System.Collections.Concurrent;
 
 using ThingsGateway.Admin.Application;
 using ThingsGateway.Core.Extension;
+using ThingsGateway.Core.Json.Extension;
 using ThingsGateway.Foundation.Modbus;
 using ThingsGateway.Gateway.Application;
-using ThingsGateway.Gateway.Application.Generic;
 
+using TouchSocket.Core;
 using TouchSocket.Sockets;
 
 namespace ThingsGateway.Plugin.Modbus;
@@ -47,13 +44,23 @@ public class ModbusSlave : BusinessBase
     /// <inheritdoc/>
     protected override BusinessPropertyBase _businessPropertyBase => _driverPropertys;
 
-    public override Type DriverUIType => null;
+    /// <inheritdoc/>
+    public override Type DriverUIType
+    {
+        get
+        {
+            if (Protocol.Channel.ChannelType == ChannelTypeEnum.TcpService)
+                return typeof(ThingsGateway.Gateway.Razor.TcpServicePage);
+            else
+                return null;
+        }
+    }
 
     /// <inheritdoc/>
     public override VariablePropertyBase VariablePropertys => _variablePropertys;
 
     /// <inheritdoc/>
-    protected override IProtocol Protocol => _plc;
+    public override IProtocol Protocol => _plc;
 
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
@@ -71,7 +78,7 @@ public class ModbusSlave : BusinessBase
         //载入配置
         _plc = new(channel)
         {
-            DataFormat = _driverPropertys.DataFormat,
+            EndianType = _driverPropertys.EndianType,
             IsStringReverseByteWord = _driverPropertys.IsStringReverseByteWord,
             CacheTimeout = _driverPropertys.CacheTimeout,
             Station = _driverPropertys.Station,
@@ -94,7 +101,7 @@ public class ModbusSlave : BusinessBase
             ModbusAddress address = ModbusAddress.ParseFrom(
                 a.Value.GetPropertyValue(DeviceId,
                 nameof(_variablePropertys.ServiceAddress)), _driverPropertys.Station);
-            return address;
+            return address!;
         },
         a => a.Value
         );
@@ -105,7 +112,7 @@ public class ModbusSlave : BusinessBase
     private volatile bool success = true;
     protected IStringLocalizer Localizer { get; private set; }
 
-    protected override async Task ProtectedExecuteAsync(CancellationToken cancellationToken)
+    protected override async ValueTask ProtectedExecuteAsync(CancellationToken cancellationToken)
     {
         //获取设备连接状态
         if (IsConnected())
@@ -156,21 +163,20 @@ public class ModbusSlave : BusinessBase
     /// <param name="thingsGatewayBitConverter"></param>
     /// <param name="client"></param>
     /// <returns></returns>
-    private async Task<OperResult> OnWriteData(ModbusAddress modbusAddress, byte[] writeValue, IThingsGatewayBitConverter bitConverter, IClientChannel channel)
+    private async ValueTask<OperResult> OnWriteData(ModbusAddress modbusAddress, byte[] writeValue, IThingsGatewayBitConverter bitConverter, IClientChannel channel)
     {
         try
         {
             var tag = _modbusTags.FirstOrDefault(a => a.Key?.AddressStart == modbusAddress.AddressStart && a.Key?.Station == modbusAddress.Station && a.Key?.ReadFunction == modbusAddress.ReadFunction);
-            if (tag.Value == null) return new();
+            if (tag.Value == null) return OperResult.Success;
             var enable = tag.Value.GetPropertyValue(DeviceId, nameof(_variablePropertys.VariableRpcEnable)).ToBoolean(false) && _driverPropertys.DeviceRpcEnable;
             if (!enable) return new OperResult(Localizer["NotWriteEnable"]);
             var type = tag.Value.GetPropertyValue(DeviceId, nameof(ModbusSlaveVariableProperty.DataType));
             var addressStr = tag.Value.GetPropertyValue(DeviceId, nameof(ModbusSlaveVariableProperty.ServiceAddress));
 
             var thingsGatewayBitConverter = bitConverter.GetTransByAddress(ref addressStr);
-            var data = thingsGatewayBitConverter.GetDataFormBytes(writeValue, Enum.TryParse(type, out DataTypeEnum dataType) ? dataType : tag.Value.DataType);
-            if (!data.IsSuccess) return data;
-            var result = await tag.Value.SetValueToDeviceAsync(data.Content.ToString(),
+            var data = thingsGatewayBitConverter.GetDataFormBytes(writeValue, 0, Enum.TryParse(type, out DataTypeEnum dataType) ? dataType : tag.Value.DataType);
+            var result = await tag.Value.SetValueToDeviceAsync(data.ToSystemTextJsonString(),
                     $"{nameof(ModbusSlave)}-{CurrentDevice.Name}-{$"{channel}"}").ConfigureAwait(false);
             return result;
         }
