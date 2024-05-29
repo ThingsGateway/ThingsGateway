@@ -13,7 +13,7 @@ export function init() {
                 else {
                     theme = 'dark';
                 }
-                setTheme(theme);
+                setTheme(theme,true);
             });
         });
     }

@@ -106,7 +106,7 @@ internal sealed class VariableCodeBuilder
     {
         var attributeData = propertySymbol.GetAttributes().FirstOrDefault(a => a.AttributeClass.ToDisplayString() == VariableSyntaxReceiver.VariableRuntimeAttributeTypeName);
         stringBuilder.AppendLine();
-        stringBuilder.AppendLine($"public ValueTask<OperResult> Write{propertySymbol.Name}Async(object value,CancellationToken cancellationToken=default)");
+        stringBuilder.AppendLine($"public ValueTask<OperResult> Write{propertySymbol.Name}Async({propertySymbol.Type} value,CancellationToken cancellationToken=default)");
         stringBuilder.AppendLine("{");
         stringBuilder.AppendLine($"return WriteValueAsync(\"{propertySymbol.Name}\",value,cancellationToken);");
         stringBuilder.AppendLine("}");

@@ -65,7 +65,11 @@
                         <div class="col-12  col-md-6">
                             <Select IsVirtualize @bind-Value="@value.RedundantDeviceId" style="width:100%"
                                     OnQueryAsync="OnRedundantDevicesQuery"
-                                    ShowSearch="true" IsPopover>
+                                    ShowSearch="true" IsPopover IsClearable OnClearAsync=@(()=>
+                                {
+                                value.RedundantDeviceId = default;
+                                return Task.CompletedTask;
+                                })>
                                 <DisplayTemplate Context="display">
                                     @{
                                         string device = "none";
@@ -169,7 +173,11 @@ else
                             <div class="col-12  col-md-6">
                                 <Select IsVirtualize @bind-Value="@value.RedundantDeviceId" style="width:100%"
                                         OnQueryAsync="OnRedundantDevicesQuery"
-                                        ShowSearch="true" IsPopover>
+                                        ShowSearch="true" IsPopover IsClearable OnClearAsync=@(()=>
+                                    {
+                                    value.RedundantDeviceId = default;
+                                    return Task.CompletedTask;
+                                    })>
                                     <DisplayTemplate Context="display">
                                         @{
                                             string device = "none";

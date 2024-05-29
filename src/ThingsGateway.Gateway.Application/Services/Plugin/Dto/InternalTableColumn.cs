@@ -37,9 +37,6 @@ internal class InternalEditorItem(string fieldName, Type fieldType, string? fiel
 
     public bool? IsVisibleWhenEdit { get; set; } = true;
 
-    /// <summary>
-    /// <inheritdoc/>
-    /// </summary>
     public bool Ignore { get; set; }
 
     public bool SkipValidate { get; set; }
