@@ -33,7 +33,7 @@ public class ModbusSlaveProperty : BusinessPropertyBase
     /// 默认解析顺序
     /// </summary>
     [DynamicProperty]
-    public EndianType EndianType { get; set; }
+    public EndianType EndianType { get; set; } = EndianType.Big;
 
     [DynamicProperty]
     public bool IsStringReverseByteWord { get; set; }

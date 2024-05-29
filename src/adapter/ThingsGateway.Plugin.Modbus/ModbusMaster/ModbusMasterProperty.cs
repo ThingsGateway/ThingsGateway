@@ -39,7 +39,7 @@ public class ModbusMasterProperty : CollectPropertyBase
     /// 默认解析顺序
     /// </summary>
     [DynamicProperty]
-    public EndianType EndianType { get; set; }
+    public EndianType EndianType { get; set; } = EndianType.Big;
 
     /// <summary>
     /// 读写超时时间
