@@ -215,7 +215,7 @@ public partial class OpcUaImportVariable
         {
             await PopulateBranch(item);
 
-            result.AddRange(item.GetAllTags().Where(a => a.Children == null));
+            result.AddRange(item.GetAllTags().Where(a => a.Children == null).ToList());
         }
 
         return result;
@@ -232,7 +232,7 @@ public partial class OpcUaImportVariable
         try
         {
             if (Nodes == null) return;
-            var data = await GetImportVariableList(await GetAllTag(Nodes));
+            var data = await GetImportVariableList((await GetAllTag(Nodes)).DistinctBy(a => a.NodeId));
             if (data.Item3 == null || data.Item3?.Count == 0)
             {
                 await ToastService.Warning(OpcUaPropertyLocalizer["NoVariablesAvailable"], OpcUaPropertyLocalizer["NoVariablesAvailable"]);
@@ -255,7 +255,7 @@ public partial class OpcUaImportVariable
         try
         {
             if (Nodes == null) return;
-            var data = await GetImportVariableList(await GetAllTag(Nodes));
+            var data = await GetImportVariableList((await GetAllTag(Nodes)).DistinctBy(a => a.NodeId));
             if (data.Item3 == null || data.Item3?.Count == 0)
             {
                 await ToastService.Warning(OpcUaPropertyLocalizer["NoVariablesAvailable"], OpcUaPropertyLocalizer["NoVariablesAvailable"]);

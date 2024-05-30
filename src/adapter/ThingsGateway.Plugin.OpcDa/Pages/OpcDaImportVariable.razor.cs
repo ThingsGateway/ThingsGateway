@@ -187,7 +187,7 @@ public partial class OpcDaImportVariable
         {
             PopulateBranch(item);
 
-            result.AddRange(item.GetAllTags().Where(a => a.Children == null));
+            result.AddRange(item.GetAllTags().Where(a => a.Children == null).ToList());
         }
 
         return result;
@@ -204,7 +204,7 @@ public partial class OpcDaImportVariable
         try
         {
             if (Nodes == null) return;
-            var data = GetImportVariableList(GetAllTag(Nodes));
+            var data = GetImportVariableList(GetAllTag(Nodes).DistinctBy(a => a.Name));
             if (data.Item3 == null || data.Item3?.Count == 0)
             {
                 await ToastService.Warning(OpcDaPropertyLocalizer["NoVariablesAvailable"], OpcDaPropertyLocalizer["NoVariablesAvailable"]);
@@ -227,7 +227,7 @@ public partial class OpcDaImportVariable
         try
         {
             if (Nodes == null) return;
-            var data = GetImportVariableList(GetAllTag(Nodes));
+            var data = GetImportVariableList(GetAllTag(Nodes).DistinctBy(a => a.Name));
             if (data.Item3 == null || data.Item3?.Count == 0)
             {
                 await ToastService.Warning(OpcDaPropertyLocalizer["NoVariablesAvailable"], OpcDaPropertyLocalizer["NoVariablesAvailable"]);
