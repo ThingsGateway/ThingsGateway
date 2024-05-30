@@ -473,7 +473,7 @@ public abstract class CollectBase : DriverBase
                     {
                         exception = ex;
                     }
-                    if (Protocol.OnLine == false)
+                    if (Protocol.OnLine == false && exception != null)
                     {
                         foreach (var item in CurrentDevice.VariableSourceReads)
                         {
