@@ -45,6 +45,15 @@ internal class ModbusMasterTest
         Console.WriteLine(data.ToJsonNetString());
         //Console.ReadLine();
 
+        //等待读取到指定值
+        var waitResult = await OperResultUtil.WaitAsync<short>(async (a) =>
+           {
+               return await modbusMaster.ReadInt16Async("40001;");
+           }
+           , 10, 10000
+          );
+
+        Console.WriteLine(waitResult.ToJsonString());
         //构造实体类对象，传入协议对象与连读打包的最大数量
         ModbusVariable modbusVariable = new(modbusMaster, 100);
 
