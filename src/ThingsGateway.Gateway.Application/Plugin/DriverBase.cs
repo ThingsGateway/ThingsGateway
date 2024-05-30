@@ -275,7 +275,7 @@ public abstract class DriverBase : DisposableObject
         catch (Exception ex)
         {
             // 记录执行过程中的异常信息，并设置设备状态为异常
-            Logger?.LogError(ex, "BeforStart");
+            Logger?.LogWarning(ex, "BeforStart Fail");
             CurrentDevice.SetDeviceStatus(DateTime.Now, 999, ex.Message);
         }
         finally
