@@ -109,8 +109,8 @@ public partial class SqlDBProducer : BusinessBaseWithCacheIntervalVarModel<SQLHi
         {
             IsSorted = option.SortOrder != SortOrder.Unset,
             IsFiltered = option.Filters.Any(),
-            IsAdvanceSearch = option.AdvanceSearches.Any(),
-            IsSearch = option.Searches.Any() || option.CustomerSearches.Any()
+            IsAdvanceSearch = option.AdvanceSearches.Any() || option.CustomerSearches.Any(),
+            IsSearch = option.Searches.Any()
         };
 
         var query = db.GetQuery<SQLHistoryValue>(option);
@@ -152,8 +152,8 @@ public partial class SqlDBProducer : BusinessBaseWithCacheIntervalVarModel<SQLHi
         {
             IsSorted = option.SortOrder != SortOrder.Unset,
             IsFiltered = option.Filters.Any(),
-            IsAdvanceSearch = option.AdvanceSearches.Any(),
-            IsSearch = option.Searches.Any() || option.CustomerSearches.Any()
+            IsAdvanceSearch = option.AdvanceSearches.Any() || option.CustomerSearches.Any(),
+            IsSearch = option.Searches.Any()
         };
 
         var query = db.GetQuery<SQLRealValue>(option);
