@@ -938,7 +938,7 @@ public class OpcUaMaster : IDisposable
         var result = await m_session.ReadAsync(
              null,
              0,
-             TimestampsToReturn.Neither,
+             TimestampsToReturn.Both,
              nodesToRead,
              cancellationToken).ConfigureAwait(false);
         var results = result.Results;
