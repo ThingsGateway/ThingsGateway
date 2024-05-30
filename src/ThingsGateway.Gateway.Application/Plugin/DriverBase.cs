@@ -197,7 +197,7 @@ public abstract class DriverBase : DisposableObject
                     // 执行资源释放操作
                     this.SafeDispose();
                     // 根据是否正在采集设备来从全局设备集合或业务设备集合中移除指定设备ID的驱动程序对象
-                    if (!HostedServiceUtil.ManagementHostedService.StartBusinessDeviceEnable)
+                    //if (!HostedServiceUtil.ManagementHostedService.StartBusinessDeviceEnable)
                     {
                         if (IsCollectDevice)
                         {

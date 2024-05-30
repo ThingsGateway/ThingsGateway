@@ -147,7 +147,7 @@ public abstract class DeviceHostedService : BackgroundService
     /// 删除所有通道线程，并释放资源（可选择同时移除相关设备）
     /// </summary>
     /// <returns>异步任务</returns>
-    protected async Task RemoveAllChannelThreadAsync()
+    protected async Task RemoveAllChannelThreadAsync(bool removeDevice)
     {
         // 执行删除所有通道线程前的操作
         await BeforeRemoveAllChannelThreadAsync().ConfigureAwait(false);
@@ -157,7 +157,7 @@ public abstract class DeviceHostedService : BackgroundService
         {
             try
             {
-                await channelThread.StopThreadAsync().ConfigureAwait(false);
+                await channelThread.StopThreadAsync(removeDevice).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -167,7 +167,7 @@ public abstract class DeviceHostedService : BackgroundService
         }, Environment.ProcessorCount / 2).ConfigureAwait(false);
 
         // 如果指定了同时移除相关设备，则清空通道线程列表
-        if (!HostedServiceUtil.ManagementHostedService.StartBusinessDeviceEnable)
+        if (removeDevice)
             ChannelThreads.Clear();
     }
 
@@ -384,7 +384,6 @@ public abstract class DeviceHostedService : BackgroundService
                 //这里先停止采集，操作会使线程取消，需要重新恢复线程
                 var dev = channelThread.GetDriver(deviceId).CurrentDevice;
                 await channelThread.RemoveDriverAsync(deviceId).ConfigureAwait(false);
-
 
                 if (dev.RedundantEnable)
                 {
@@ -627,12 +626,12 @@ public abstract class DeviceHostedService : BackgroundService
 
     private EasyLock publicRestartLock = new();
 
-    public async Task RestartAsync()
+    public async Task RestartAsync(bool removeDevice = true)
     {
         try
         {
             await publicRestartLock.WaitAsync().ConfigureAwait(false);
-            await StopAsync().ConfigureAwait(false);
+            await StopAsync(removeDevice).ConfigureAwait(false);
             await StartAsync().ConfigureAwait(false);
         }
         finally
@@ -706,13 +705,13 @@ public abstract class DeviceHostedService : BackgroundService
     /// <summary>
     /// 停止
     /// </summary>
-    public async Task StopAsync()
+    public async Task StopAsync(bool removeDevice)
     {
         try
         {
             await restartLock.WaitAsync().ConfigureAwait(false);
             await singleRestartLock.WaitAsync().ConfigureAwait(false);
-            await StopThreadAsync().ConfigureAwait(false);
+            await StopThreadAsync(removeDevice).ConfigureAwait(false);
             BytePool.Default.Clear(); // 清空内存池
         }
         catch (Exception ex)
@@ -726,7 +725,7 @@ public abstract class DeviceHostedService : BackgroundService
         }
     }
 
-    protected async Task StopThreadAsync()
+    protected async Task StopThreadAsync(bool removeDevice)
     {
         if (started)
         {
@@ -736,7 +735,7 @@ public abstract class DeviceHostedService : BackgroundService
                 //取消其他后台服务
                 await ProtectedStoping().ConfigureAwait(false);
             //停止全部采集线程
-            await RemoveAllChannelThreadAsync().ConfigureAwait(false);
+            await RemoveAllChannelThreadAsync(removeDevice).ConfigureAwait(false);
             if (!HostedServiceUtil.ManagementHostedService.StartBusinessDeviceEnable)
                 //停止其他后台服务
                 await ProtectedStoped().ConfigureAwait(false);

@@ -494,7 +494,7 @@ public class ChannelThread
     /// <summary>
     /// 异步停止线程任务。
     /// </summary>
-    internal virtual async Task StopThreadAsync()
+    internal virtual async Task StopThreadAsync(bool removeDevice)
     {
         // 如果DriverTask为null，则直接返回，无需执行停止操作
         if (DriverTask == null)
@@ -518,7 +518,7 @@ public class ChannelThread
             });
 
             // 如果需要移除设备
-            if (!HostedServiceUtil.ManagementHostedService.StartBusinessDeviceEnable)
+            if (removeDevice)
             {
                 // 如果需要移除的是采集设备
                 if (IsCollectChannel)

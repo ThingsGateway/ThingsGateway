@@ -104,7 +104,7 @@ public class ManagementHostedService : BackgroundService
     private void StopAsync()
     {
         //停止采集
-        _ = HostedServiceUtil.CollectDeviceHostedService.StopAsync();
+        _ = HostedServiceUtil.CollectDeviceHostedService.StopAsync(!StartBusinessDeviceEnable);
     }
 
     /// <summary>
