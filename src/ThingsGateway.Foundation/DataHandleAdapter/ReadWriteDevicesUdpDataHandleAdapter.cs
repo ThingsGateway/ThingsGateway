@@ -127,11 +127,10 @@ public abstract class ReadWriteDevicesUdpDataHandleAdapter<TRequest> : UdpDataHa
 
                 var result = UnpackResponse(request, byteBlock);
 
-                byteBlock.Position += request.BodyLength;
+                byteBlock.Position = byteBlock.Length;
                 if (request.IsSuccess)
                 {
                     request.Content = result.Content;
-                    byteBlock.Position = byteBlock.Length;
                     request.ReceivedBytes = byteBlock;
                 }
                 return;

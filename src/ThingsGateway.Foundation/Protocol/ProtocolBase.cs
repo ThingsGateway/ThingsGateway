@@ -59,9 +59,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     /// <inheritdoc/>
     public virtual int Timeout { get; set; } = 3000;
 
-    /// <summary>
-    /// 连接超时时间
-    /// </summary>
+    /// <inheritdoc/>
     public virtual ushort ConnectTimeout { get; set; } = 3000;
 
     /// <summary>

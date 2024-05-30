@@ -67,6 +67,11 @@ public interface IProtocol : IDisposable
     /// </summary>
     bool IsSingleThread { get; }
 
+    /// <summary>
+    /// 连接超时时间
+    /// </summary>
+    ushort ConnectTimeout { get; set; }
+
     #endregion 属性
 
     #region 适配器

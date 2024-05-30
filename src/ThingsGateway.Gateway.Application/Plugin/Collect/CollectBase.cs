@@ -260,6 +260,9 @@ public abstract class CollectBase : DriverBase
         ReadResultCount readResultCount = new();
         if (cancellationToken.IsCancellationRequested)
             return;
+        if (await TestOnline(cancellationToken))
+            return;
+
         if (CollectProperties.ConcurrentCount > 1 && !IsSingleThread)
         {
             // 并行处理每个变量读取
@@ -267,7 +270,8 @@ public abstract class CollectBase : DriverBase
             {
                 if (cancellationToken.IsCancellationRequested)
                     return;
-                await ReadVariableSource(readResultCount, variableSourceRead, cancellationToken, false).ConfigureAwait(false);
+                if (await ReadVariableSource(readResultCount, variableSourceRead, cancellationToken, false).ConfigureAwait(false))
+                    return;
             }
             , CollectProperties.ConcurrentCount, cancellationToken).ConfigureAwait(false);
         }
@@ -277,7 +281,8 @@ public abstract class CollectBase : DriverBase
             {
                 if (cancellationToken.IsCancellationRequested)
                     return;
-                await ReadVariableSource(readResultCount, CurrentDevice.VariableSourceReads[i], cancellationToken, CurrentDevice.VariableSourceReads.Count > 1).ConfigureAwait(false);
+                if (await ReadVariableSource(readResultCount, CurrentDevice.VariableSourceReads[i], cancellationToken, CurrentDevice.VariableSourceReads.Count > 1).ConfigureAwait(false))
+                    return;
             }
         }
 
@@ -288,7 +293,8 @@ public abstract class CollectBase : DriverBase
             {
                 if (cancellationToken.IsCancellationRequested)
                     return;
-                await ReadVariableMed(readResultCount, readVariableMethods, cancellationToken, false).ConfigureAwait(false);
+                if (await ReadVariableMed(readResultCount, readVariableMethods, cancellationToken, false).ConfigureAwait(false))
+                    return;
             }
         , CollectProperties.ConcurrentCount, cancellationToken).ConfigureAwait(false);
         }
@@ -298,7 +304,8 @@ public abstract class CollectBase : DriverBase
             {
                 if (cancellationToken.IsCancellationRequested)
                     return;
-                await ReadVariableMed(readResultCount, CurrentDevice.ReadVariableMethods[i], cancellationToken, CurrentDevice.ReadVariableMethods.Count > 1).ConfigureAwait(false);
+                if (await ReadVariableMed(readResultCount, CurrentDevice.ReadVariableMethods[i], cancellationToken, CurrentDevice.ReadVariableMethods.Count > 1).ConfigureAwait(false))
+                    return;
             }
         }
         // 如果所有方法和变量读取都成功，则清零错误计数器
@@ -308,18 +315,23 @@ public abstract class CollectBase : DriverBase
             CurrentDevice.SetDeviceStatus(TimerX.Now, 0);
         }
 
-        async ValueTask ReadVariableMed(ReadResultCount readResultCount, VariableMethod readVariableMethods, CancellationToken cancellationToken, bool delay = true)
+        async ValueTask<bool> ReadVariableMed(ReadResultCount readResultCount, VariableMethod readVariableMethods, CancellationToken cancellationToken, bool delay = true)
         {
             if (KeepRun != true)
-                return;
+                return true;
             if (cancellationToken.IsCancellationRequested)
-                return;
-
+                return true;
+            if (await TestOnline(cancellationToken))
+                return true;
             // 如果请求更新时间已到，则执行方法调用
             if (readVariableMethods.CheckIfRequestAndUpdateTime(DateTime.Now))
             {
                 if (cancellationToken.IsCancellationRequested)
-                    return;
+                    return true;
+                if (cancellationToken.IsCancellationRequested)
+                    return true;
+                if (await TestOnline(cancellationToken))
+                    return true;
                 var readErrorCount = 0;
                 var readResult = await InvokeMethodAsync(readVariableMethods, cancellationToken: cancellationToken).ConfigureAwait(false);
 
@@ -327,9 +339,11 @@ public abstract class CollectBase : DriverBase
                 while (!readResult.IsSuccess && readErrorCount < CollectProperties.RetryCount)
                 {
                     if (KeepRun != true)
-                        return;
+                        return true;
                     if (cancellationToken.IsCancellationRequested)
-                        return;
+                        return true;
+                    if (await TestOnline(cancellationToken))
+                        return true;
                     readErrorCount++;
                     if (LogMessage.LogLevel <= TouchSocket.Core.LogLevel.Trace)
                         LogMessage?.Trace(string.Format("{0} - Execute method[{1}] - Failed {2}", DeviceName, readVariableMethods.MethodInfo.Name, readResult.ErrorMessage));
@@ -366,20 +380,28 @@ public abstract class CollectBase : DriverBase
                 if (delay)
                     await Task.Delay(ChannelThread.MinCycleInterval, cancellationToken).ConfigureAwait(false);
             }
+
+            return false;
         }
 
-        async ValueTask ReadVariableSource(ReadResultCount readResultCount, VariableSourceRead? variableSourceRead, CancellationToken cancellationToken, bool delay = true)
+        async ValueTask<bool> ReadVariableSource(ReadResultCount readResultCount, VariableSourceRead? variableSourceRead, CancellationToken cancellationToken, bool delay = true)
         {
             if (KeepRun != true)
-                return;
+                return true;
             if (cancellationToken.IsCancellationRequested)
-                return;
-
+                return true;
+            if (await TestOnline(cancellationToken))
+                return true;
             // 如果请求更新时间已到，则执行变量读取
             if (variableSourceRead.CheckIfRequestAndUpdateTime(DateTime.Now))
             {
                 if (cancellationToken.IsCancellationRequested)
-                    return;
+                    return true;
+                if (KeepRun != true)
+                    return true;
+                if (await TestOnline(cancellationToken))
+                    return true;
+
                 var readErrorCount = 0;
                 var readResult = await ReadSourceAsync(variableSourceRead, cancellationToken).ConfigureAwait(false);
 
@@ -387,9 +409,11 @@ public abstract class CollectBase : DriverBase
                 while (!readResult.IsSuccess && readErrorCount < CollectProperties.RetryCount)
                 {
                     if (KeepRun != true)
-                        return;
+                        return true;
                     if (cancellationToken.IsCancellationRequested)
-                        return;
+                        return true;
+                    if (await TestOnline(cancellationToken))
+                        return true;
                     readErrorCount++;
                     if (LogMessage.LogLevel <= TouchSocket.Core.LogLevel.Trace)
                         LogMessage?.Trace(string.Format("{0} - Collection[{1} - {2}] data failed {3}", DeviceName, variableSourceRead?.RegisterAddress, variableSourceRead?.Length, readResult.ErrorMessage));
@@ -428,6 +452,58 @@ public abstract class CollectBase : DriverBase
                 if (delay)
                     await Task.Delay(ChannelThread.MinCycleInterval, cancellationToken).ConfigureAwait(false);
             }
+
+            return false;
+        }
+
+        async ValueTask<bool> TestOnline(CancellationToken cancellationToken)
+        {
+            //设备无法连接时
+            // 检查协议是否为空，如果为空则抛出异常
+            if (Protocol != null)
+            {
+                if (Protocol.OnLine == false)
+                {
+                    Exception exception = null;
+                    try
+                    {
+                        await Protocol.Channel.ConnectAsync(Protocol.ConnectTimeout, cancellationToken);
+                    }
+                    catch (Exception ex)
+                    {
+                        exception = ex;
+                    }
+                    if (Protocol.OnLine == false)
+                    {
+                        foreach (var item in CurrentDevice.VariableSourceReads)
+                        {
+                            if (item.LastErrorMessage != exception.Message)
+                            {
+                                if (!cancellationToken.IsCancellationRequested)
+                                    LogMessage?.LogWarning(exception, Localizer["CollectFail", DeviceName, item?.RegisterAddress, item?.Length, exception.Message]);
+                            }
+                            item.LastErrorMessage = exception.Message;
+                            CurrentDevice.SetDeviceStatus(DateTime.Now, CurrentDevice.ErrorCount + 1, exception.Message);
+                            item.VariableRunTimes.ForEach(a => a.SetValue(null, isOnline: false));
+                        }
+                        foreach (var item in CurrentDevice.ReadVariableMethods)
+                        {
+                            if (item.LastErrorMessage != exception.Message)
+                            {
+                                if (!cancellationToken.IsCancellationRequested)
+                                    LogMessage?.LogWarning(exception, Localizer["MethodFail", DeviceName, item.MethodInfo.Name, exception.Message]);
+                            }
+                            item.LastErrorMessage = exception.Message;
+                            CurrentDevice.SetDeviceStatus(DateTime.Now, CurrentDevice.ErrorCount + 1, exception.Message);
+                            item.Variable.SetValue(null, isOnline: false);
+                        }
+
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
     }
 

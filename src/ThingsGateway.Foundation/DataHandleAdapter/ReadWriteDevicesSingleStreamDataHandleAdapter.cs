@@ -131,11 +131,10 @@ public abstract class ReadWriteDevicesSingleStreamDataHandleAdapter<TRequest> : 
                 }
                 else if (result.FilterResult == FilterResult.Success)
                 {
-                    byteBlock.Position += request.BodyLength;
+                    byteBlock.Position = byteBlock.Length;
                     if (request.IsSuccess)
                     {
                         request.Content = result.Content;
-                        byteBlock.Position = byteBlock.Length;
                         request.ReceivedBytes = byteBlock;
                     }
                 }
