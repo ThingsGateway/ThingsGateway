@@ -48,16 +48,16 @@ internal class ModbusMasterTest
         //构造实体类对象，传入协议对象与连读打包的最大数量
         ModbusVariable modbusVariable = new(modbusMaster, 100);
 
-        await Test(modbusVariable, new ushort[] { 1, 2 });
+        await Test(modbusVariable);
         Console.WriteLine(modbusVariable.ToJsonString());
         Console.ReadLine();
 
-        static async Task Test(ModbusVariable modbusVariable, Array array)
+        static async Task Test(ModbusVariable modbusVariable)
         {
             //源生成WriteData1与WriteData2方法(Write{属性名称})
             await modbusVariable.WriteData3Async("123", default);
             await modbusVariable.WriteData2Async(1, default);
-            await modbusVariable.WriteData1Async(array, default);
+            await modbusVariable.WriteData1Async(new ushort[] { 1, 2 }, default);
 
             //执行连读
             await modbusVariable.MultiReadAsync();
