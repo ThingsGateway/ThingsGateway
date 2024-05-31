@@ -33,7 +33,7 @@
                                       TooltipPlacement=Placement.Bottom TooltipText="@Localizer[nameof(FullScreenButton)]" />
                     @if (WebsiteOption.Value.IsShowAbout)
                     {
-                        <Button @onclick="ShowAbout" Icon="fa fa-info" Color="Color.None" TooltipText="@Localizer[nameof(About)]" />
+                        <Button @onclick="ShowAbout" class="layout-header-bar d-none d-lg-flex px-2" Icon="fa fa-info" Color="Color.None" TooltipText="@Localizer[nameof(About)]" />
                     }
 
                     @* 版本号 *@

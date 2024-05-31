@@ -89,10 +89,19 @@ public class OpcUaMaster : CollectBase
     /// <inheritdoc/>
     public override bool IsConnected() => _plc?.Connected == true;
 
+    private volatile bool connectFirstFail;
+
     protected override async Task ProtectedBeforStartAsync(CancellationToken cancellationToken)
     {
         _token = cancellationToken;
-        await _plc.ConnectAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            await _plc.ConnectAsync(cancellationToken).ConfigureAwait(false);
+        }
+        catch
+        {
+            connectFirstFail = true;
+        }
         await base.ProtectedBeforStartAsync(cancellationToken).ConfigureAwait(false);
     }
 
@@ -220,8 +229,31 @@ public class OpcUaMaster : CollectBase
         }
     }
 
+    private volatile bool connectFirstFailLoged;
+
     protected override async ValueTask ProtectedExecuteAsync(CancellationToken cancellationToken)
     {
+        if (connectFirstFail && !IsConnected())
+        {
+            try
+            {
+                await _plc.ConnectAsync(cancellationToken).ConfigureAwait(false);
+                connectFirstFail = false;
+            }
+            catch (Exception ex)
+            {
+                if (!connectFirstFailLoged)
+                    LogMessage?.LogWarning(ex, "Connect Fail");
+
+                connectFirstFailLoged = true;
+                CurrentDevice.SetDeviceStatus(TimerX.Now, 999, ex.Message);
+                await Task.Delay(3000);
+            }
+        }
+        else
+        {
+            connectFirstFail = false;
+        }
         if (_driverProperties.ActiveSubscribe)
         {
             //获取设备连接状态

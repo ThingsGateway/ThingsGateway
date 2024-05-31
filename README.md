@@ -51,6 +51,13 @@ Account: **SuperAdmin**
 Password: **111111**
 ﻿
 **In the upper-right corner, switch to the IoT Gateway module in the personal popup box**
+
+## Docker 
+```shell
+
+docker pull diego2098/thingsgateway:latest
+
+```
 ﻿
 ## Sponsorship
 ﻿

@@ -18,12 +18,12 @@ public class WebsiteOptions
     /// <summary>
     /// Copyright
     /// </summary>
-    public string Copyright { get; set; }
+    public string Copyright { get; set; } = "版权所有 © 2023-present Diego";
 
     /// <summary>
     /// 是否显示关于页面
     /// </summary>
-    public bool IsShowAbout { get; set; }
+    public bool IsShowAbout { get; set; } = true;
 
     /// <summary>
     /// 开源地址

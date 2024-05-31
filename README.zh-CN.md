@@ -50,6 +50,13 @@
 
 **右上角个人弹出框中，切换到物联网关模块**
 
+## Docker 
+```shell
+
+docker pull diego2098/thingsgateway:latest
+
+```
+
 ## 赞助
 
 [赞助途径](https://kimdiego2098.github.io/docs/1000)
