@@ -281,7 +281,8 @@ public abstract class CollectBase : DriverBase
             {
                 if (cancellationToken.IsCancellationRequested)
                     return;
-                if (await ReadVariableSource(readResultCount, CurrentDevice.VariableSourceReads[i], cancellationToken, CurrentDevice.VariableSourceReads.Count > 1).ConfigureAwait(false))
+                // 每10包延迟一次
+                if (await ReadVariableSource(readResultCount, CurrentDevice.VariableSourceReads[i], cancellationToken, CurrentDevice.VariableSourceReads.Count % 10 == 0).ConfigureAwait(false))
                     return;
             }
         }
@@ -304,7 +305,8 @@ public abstract class CollectBase : DriverBase
             {
                 if (cancellationToken.IsCancellationRequested)
                     return;
-                if (await ReadVariableMed(readResultCount, CurrentDevice.ReadVariableMethods[i], cancellationToken, CurrentDevice.ReadVariableMethods.Count > 1).ConfigureAwait(false))
+                // 每10包延迟一次
+                if (await ReadVariableMed(readResultCount, CurrentDevice.ReadVariableMethods[i], cancellationToken, CurrentDevice.ReadVariableMethods.Count % 10 == 0).ConfigureAwait(false))
                     return;
             }
         }
