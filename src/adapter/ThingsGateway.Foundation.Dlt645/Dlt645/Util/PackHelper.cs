@@ -33,7 +33,8 @@ internal static class PackHelper
             IThingsGatewayBitConverter transformParameter = byteConverter.GetTransByAddress(ref address);
             item.ThingsGatewayBitConverter = transformParameter;
             //item.Address = address;
-            item.Index = device.GetBitOffset(item.RegisterAddress);
+            if (item.DataType == DataTypeEnum.Boolean)
+                item.Index = device.GetBitOffset(item.RegisterAddress);
             var r = new T()
             {
                 RegisterAddress = address!,

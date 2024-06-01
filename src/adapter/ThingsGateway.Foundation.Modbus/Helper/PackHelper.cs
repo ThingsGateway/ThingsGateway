@@ -44,7 +44,8 @@ public class PackHelper
             // 将转换器设置到变量中
             item.ThingsGatewayBitConverter = transformParameter;
             // 获取变量的位偏移量
-            item.Index = device.GetBitOffset(address);
+            if (item.DataType == DataTypeEnum.Boolean)
+                item.Index = device.GetBitOffset(address);
         }
 
         // 按照时间间隔将变量分组
