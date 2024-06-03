@@ -148,13 +148,6 @@ public abstract class DriverBase : DisposableObject
     public virtual bool IsCollectDevice => CurrentDevice.PluginType == PluginTypeEnum.Collect;
 
     /// <summary>
-    /// 读写锁，通常对于主从协议来说都需要，返回false时，需要在底层实现读写锁
-    /// 并且读取或者写入会并发进行，需要另外在底层实现锁
-    /// </summary>
-    /// <returns></returns>
-    protected virtual bool IsSingleThread => Protocol?.IsSingleThread ?? true;
-
-    /// <summary>
     /// 全局插件服务
     /// </summary>
     protected IPluginService PluginService { get; private set; }

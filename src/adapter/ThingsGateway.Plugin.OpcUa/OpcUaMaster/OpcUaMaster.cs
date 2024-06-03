@@ -51,14 +51,6 @@ public class OpcUaMaster : CollectBase
         return $"{_driverProperties.OpcUrl}";
     }
 
-    protected override bool IsSingleThread
-    {
-        get
-        {
-            return true;
-        }
-    }
-
     /// <inheritdoc/>
     public override void Init(IChannel? channel = null)
     {
@@ -146,8 +138,7 @@ public class OpcUaMaster : CollectBase
     {
         try
         {
-            if (IsSingleThread)
-                await WriteLock.WaitAsync(cancellationToken).ConfigureAwait(false);
+            await WriteLock.WaitAsync(cancellationToken).ConfigureAwait(false);
             var result = await _plc.ReadJTokenValueAsync(deviceVariableSourceRead.VariableRunTimes.Where(a => !a.RegisterAddress.IsNullOrEmpty()).Select(a => a.RegisterAddress!).ToArray(), cancellationToken).ConfigureAwait(false);
             foreach (var data in result)
             {
@@ -197,8 +188,7 @@ public class OpcUaMaster : CollectBase
         }
         finally
         {
-            if (IsSingleThread)
-                WriteLock.Release();
+            WriteLock.Release();
         }
     }
 
@@ -207,8 +197,7 @@ public class OpcUaMaster : CollectBase
     {
         try
         {
-            if (IsSingleThread)
-                await WriteLock.WaitAsync(cancellationToken).ConfigureAwait(false);
+            await WriteLock.WaitAsync(cancellationToken).ConfigureAwait(false);
             var result = await _plc.WriteNodeAsync(writeInfoLists.ToDictionary(a => a.Key.RegisterAddress!, a => a.Value), cancellationToken).ConfigureAwait(false);
             return result.ToDictionary<KeyValuePair<string, Tuple<bool, string>>, string, OperResult>(a =>
             {
@@ -224,8 +213,7 @@ public class OpcUaMaster : CollectBase
         }
         finally
         {
-            if (IsSingleThread)
-                WriteLock.Release();
+            WriteLock.Release();
         }
     }
 

@@ -89,8 +89,8 @@ public abstract class CollectBase : DriverBase
     {
         try
         {
-            if (IsSingleThread)
-                await WriteLock.WaitAsync(cancellationToken).ConfigureAwait(false);
+            //if (IsSingleThread)
+            //    await WriteLock.WaitAsync(cancellationToken).ConfigureAwait(false);
 
             if (cancellationToken.IsCancellationRequested)
                 throw new OperationCanceledException();
@@ -111,8 +111,8 @@ public abstract class CollectBase : DriverBase
         }
         finally
         {
-            if (IsSingleThread)
-                WriteLock.Release();
+            //if (IsSingleThread)
+            //    WriteLock.Release();
         }
     }
 
@@ -125,8 +125,8 @@ public abstract class CollectBase : DriverBase
         try
         {
             // 如果是单线程模式，则等待写入锁
-            if (IsSingleThread)
-                await WriteLock.WaitAsync(cancellationToken).ConfigureAwait(false);
+            //if (IsSingleThread)
+            //    await WriteLock.WaitAsync(cancellationToken).ConfigureAwait(false);
 
             // 检查协议是否为空，如果为空则抛出异常
             if (Protocol == null)
@@ -151,8 +151,8 @@ public abstract class CollectBase : DriverBase
         finally
         {
             // 如果是单线程模式，则释放写入锁
-            if (IsSingleThread)
-                WriteLock.Release();
+            //if (IsSingleThread)
+            //    WriteLock.Release();
         }
     }
 
@@ -263,7 +263,7 @@ public abstract class CollectBase : DriverBase
         if (await TestOnline(cancellationToken))
             return;
 
-        if (CollectProperties.ConcurrentCount > 1 && !IsSingleThread)
+        if (CollectProperties.ConcurrentCount > 1)
         {
             // 并行处理每个变量读取
             await CurrentDevice.VariableSourceReads.ParallelForEachAsync(async (variableSourceRead, cancellationToken) =>
@@ -287,7 +287,7 @@ public abstract class CollectBase : DriverBase
             }
         }
 
-        if (CollectProperties.ConcurrentCount > 1 && !IsSingleThread)
+        if (CollectProperties.ConcurrentCount > 1)
         {
             // 并行处理每个方法调用
             await CurrentDevice.ReadVariableMethods.ParallelForEachAsync(async (readVariableMethods, cancellationToken) =>
@@ -532,8 +532,8 @@ public abstract class CollectBase : DriverBase
         try
         {
             // 如果配置为单线程模式，则获取写入锁定
-            if (IsSingleThread)
-                await WriteLock.WaitAsync(cancellationToken).ConfigureAwait(false);
+            //if (IsSingleThread)
+            //    await WriteLock.WaitAsync(cancellationToken).ConfigureAwait(false);
 
             // 初始化操作结果
             OperResult<object> result = new OperResult<object>();
@@ -583,8 +583,8 @@ public abstract class CollectBase : DriverBase
         finally
         {
             // 如果配置为单线程模式，则释放写入锁定
-            if (IsSingleThread)
-                WriteLock.Release();
+            //if (IsSingleThread)
+            //    WriteLock.Release();
         }
     }
 

@@ -88,10 +88,9 @@ public abstract class DeviceHostedService : BackgroundService
     /// <returns>通道线程管理器</returns>
     protected ChannelThread GetChannelThread(DriverBase driverBase)
     {
-        //lock (this)
+        var channelId = driverBase.CurrentDevice.ChannelId;
+        lock (ChannelThreads)
         {
-            long channelId = driverBase.CurrentDevice.ChannelId;
-
             // 尝试从现有的通道线程管理器列表中查找匹配的通道线程
             var channelThread = ChannelThreads.FirstOrDefault(t => t.ChannelId == channelId);
             if (channelThread != null)
@@ -103,43 +102,43 @@ public abstract class DeviceHostedService : BackgroundService
 
             // 如果未找到匹配的通道线程，则创建一个新的通道线程
             return NewChannelThread(driverBase, channelId);
+        }
 
-            // 创建新的通道线程的内部方法
-            ChannelThread NewChannelThread(DriverBase driverBase, long channelId)
+        // 创建新的通道线程的内部方法
+        ChannelThread NewChannelThread(DriverBase driverBase, long channelId)
+        {
+            // 根据通道ID获取通道信息
+            var channel = ChannelService.GetChannelById(channelId);
+            if (channel == null)
             {
-                // 根据通道ID获取通道信息
-                var channel = ChannelService.GetChannelById(channelId);
-                if (channel == null)
-                {
-                    _logger.LogWarning(Localizer["ChannelNotNull", driverBase.CurrentDevice.Name, channelId]);
-                    return null;
-                }
-                // 检查通道是否启用
-                if (!channel.Enable)
-                {
-                    _logger.LogWarning(Localizer["ChannelNotEnable", driverBase.CurrentDevice.Name, channel.Name]);
-                    return null;
-                }
-                // 确保通道不为 null
-                ArgumentNullException.ThrowIfNull(channel);
-                if (ChannelThreads.Count > ChannelThread.MaxCount)
-                {
-                    throw new Exception($"Exceeded maximum number of channels：{ChannelThread.MaxCount}");
-                }
-                if (DriverBases.Select(a => a.CurrentDevice.VariableRunTimes.Count).Sum() > ChannelThread.MaxVariableCount)
-                {
-                    throw new Exception($"Exceeded maximum number of variables：{ChannelThread.MaxVariableCount}");
-                }
-
-                // 创建新的通道线程，并将驱动程序添加到其中
-                ChannelThread channelThread = new ChannelThread(channel, (a =>
-                {
-                    return ChannelService.GetChannel(channel, a);
-                }));
-                channelThread.AddDriver(driverBase);
-                ChannelThreads.Add(channelThread);
-                return channelThread;
+                _logger.LogWarning(Localizer["ChannelNotNull", driverBase.CurrentDevice.Name, channelId]);
+                return null;
             }
+            // 检查通道是否启用
+            if (!channel.Enable)
+            {
+                _logger.LogWarning(Localizer["ChannelNotEnable", driverBase.CurrentDevice.Name, channel.Name]);
+                return null;
+            }
+            // 确保通道不为 null
+            ArgumentNullException.ThrowIfNull(channel);
+            if (ChannelThreads.Count > ChannelThread.MaxCount)
+            {
+                throw new Exception($"Exceeded maximum number of channels：{ChannelThread.MaxCount}");
+            }
+            if (DriverBases.Select(a => a.CurrentDevice.VariableRunTimes.Count).Sum() > ChannelThread.MaxVariableCount)
+            {
+                throw new Exception($"Exceeded maximum number of variables：{ChannelThread.MaxVariableCount}");
+            }
+
+            // 创建新的通道线程，并将驱动程序添加到其中
+            ChannelThread channelThread = new ChannelThread(channel, (a =>
+            {
+                return ChannelService.GetChannel(channel, a);
+            }));
+            channelThread.AddDriver(driverBase);
+            ChannelThreads.Add(channelThread);
+            return channelThread;
         }
     }
 
@@ -180,18 +179,15 @@ public abstract class DeviceHostedService : BackgroundService
         // 遍历通道线程列表，并在每个通道线程上执行 BeforeStopThread 方法
         ChannelThreads.ParallelForEach((channelThread) =>
         {
-            _ = Task.Run(() =>
+            try
             {
-                try
-                {
-                    channelThread.BeforeStopThread();
-                }
-                catch (Exception ex)
-                {
-                    // 记录执行 BeforeStopThread 方法时的异常信息
-                    _logger?.LogError(ex, channelThread.ToString());
-                }
-            });
+                channelThread.BeforeStopThread();
+            }
+            catch (Exception ex)
+            {
+                // 记录执行 BeforeStopThread 方法时的异常信息
+                _logger?.LogError(ex, channelThread.ToString());
+            }
         });
 
         // 等待一小段时间，以确保 BeforeStopThread 方法有足够的时间执行

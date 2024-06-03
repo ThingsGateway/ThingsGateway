@@ -422,24 +422,6 @@ public class ChannelThread
                 }
             }
         }
-        // foreach (var cancellationToken in CancellationTokenSources)
-        //{
-        //    _ = Task.Run(() =>
-        //    {
-        //        try
-        //        {
-        //            if (!cancellationToken.Value.IsCancellationRequested)// 检查是否已请求取消，若未请求取消则尝试取消操作
-        //            {
-        //                cancellationToken.Value?.Cancel();
-        //                cancellationToken.Value?.Dispose();
-        //            }
-        //        }
-        //        catch
-        //        {
-        //            // 捕获异常以确保不会影响其他令牌的取消操作
-        //        }
-        //    });
-        //}
     }
 
     /// <summary>
