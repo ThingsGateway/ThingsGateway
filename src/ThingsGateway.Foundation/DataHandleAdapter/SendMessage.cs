@@ -21,5 +21,5 @@ public class SendMessage : ISendMessage
     public byte[] SendBytes { get; }
 
     /// <inheritdoc/>
-    public virtual int Sign { get; set; }
+    public virtual long Sign { get; set; }
 }

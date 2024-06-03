@@ -38,7 +38,7 @@ public interface IResultMessage : IOperResult, IRequestInfo
     /// <summary>
     /// 等待标识，对于并发协议，必须从协议中例如固定头部获取标识字段
     /// </summary>
-    int Sign { get; set; }
+    long Sign { get; set; }
 
     /// <summary>
     /// 检查头子节的合法性,并赋值<see cref="BodyLength"/><br />

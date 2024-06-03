@@ -88,7 +88,7 @@ public partial class ModbusMaster : ProtocolBase, IDtu
         switch (Channel.ChannelType)
         {
             case ChannelTypeEnum.TcpService:
-                return PluginUtil.GetPlugin(this);
+                return PluginUtil.GetDtuPlugin(this);
         }
         return base.ConfigurePlugins();
     }

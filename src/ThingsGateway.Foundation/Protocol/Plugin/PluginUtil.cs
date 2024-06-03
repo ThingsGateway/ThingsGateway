@@ -12,7 +12,7 @@ namespace ThingsGateway.Foundation;
 
 public static class PluginUtil
 {
-    public static Action<IPluginManager> GetPlugin(IDtu dtu)
+    public static Action<IPluginManager> GetDtuPlugin(IDtu dtu)
     {
         Action<IPluginManager> action = a => { };
 

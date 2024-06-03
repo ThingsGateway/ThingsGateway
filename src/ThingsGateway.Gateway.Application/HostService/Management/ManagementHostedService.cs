@@ -202,7 +202,12 @@ public class ManagementHostedService : BackgroundService
                                     var variables = item.ToList();
                                     // 将 GlobalData.CollectDevices 和 GlobalData.Variables 同步到从站
                                     Task task = tcpDmtpService.Clients.FirstOrDefault().GetDmtpRpcActor().InvokeAsync(
-                                       nameof(ReverseCallbackServer.UpdateGatewayDataAsync), null, waitInvoke, devices, variables);
+                                                     new RpcRequest(nameof(ReverseCallbackServer.UpdateGatewayDataAsync), null, waitInvoke,
+                                                     new object[2]
+                                                     {
+                                            devices,
+                                            variables
+                                                     }, null));
                                     tasks.Add(task);
                                     i++;
                                 }

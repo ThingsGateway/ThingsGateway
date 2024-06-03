@@ -20,7 +20,7 @@ public abstract class MessageBase : OperResultClass<byte[]>, IResultMessage, IWa
     public abstract int HeadBytesLength { get; }
 
     /// <inheritdoc/>
-    public virtual int Sign { get; set; }
+    public virtual long Sign { get; set; }
 
     /// <inheritdoc/>
     public IByteBlock ReceivedBytes { get; set; }
