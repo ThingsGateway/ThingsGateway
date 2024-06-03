@@ -108,7 +108,7 @@ public class PackHelper
                         foreach (var socketId in socketIds)//DTU区分
                         {
                             // 获取相同SocketId的地址
-                            var addressList = modbusAddressSameFunList
+                            var addressList = modbusAddressSameStationList
                                 .Where(t => t.SocketId == socketId)
                                 .ToDictionary(t => t, t => map[t]);
 
