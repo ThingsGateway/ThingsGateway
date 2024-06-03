@@ -466,8 +466,8 @@ public class ChannelThread
                 {
                     driver?.ConfigurePlugins();
                 }
-
                 // 设置通道的底层配置
+                FoundataionConfig = FoundataionConfig.Clone();
                 Channel?.Setup(FoundataionConfig);
             }
             else

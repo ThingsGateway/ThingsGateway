@@ -32,7 +32,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
         Channel.Started += ChannelStarted;
         Channel.ChannelReceived += ChannelReceived;
         Channel.Config.ConfigurePlugins(ConfigurePlugins());
-        channel.Setup(channel.Config);
+        channel.Setup(channel.Config.Clone());
     }
 
     /// <inheritdoc/>
