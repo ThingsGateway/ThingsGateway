@@ -1,5 +1,8 @@
 #See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
 
+#构建：docker build -t diego2098/thingsgateway:latest .
+
+
 #aspnetcore6.0环境
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 COPY .  /app
