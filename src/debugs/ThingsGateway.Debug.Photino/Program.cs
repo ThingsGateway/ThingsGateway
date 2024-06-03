@@ -41,8 +41,9 @@ internal class Program
         // 增加中文编码支持网页源码显示汉字
         builder.Services.AddSingleton(HtmlEncoder.Create(UnicodeRanges.All));
 
-        builder.RootComponents.Add<BlazorApp>("#app");
         builder.Services.AddBlazorRcl().AddDebugRcl();
+
+        builder.RootComponents.Add<BlazorApp>("#app");
 
         builder.Services.Configure<BootstrapBlazorOptions>(op =>
         {

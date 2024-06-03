@@ -31,6 +31,7 @@
     <Compile Include="..\..\adapter\ThingsGateway.Plugin.OpcUa\Pages\OpcUaImportVariable.razor.cs" Link="Pages\OpcUaImportVariable.razor.cs" />
     <Compile Include="..\..\adapter\ThingsGateway.Plugin.OpcUa\Pages\OpcUaMaster.razor.cs" Link="Pages\OpcUaMaster.razor.cs" />
     <Compile Include="..\..\adapter\ThingsGateway.Plugin.SiemensS7\Pages\SiemensS7Master.razor.cs" Link="Pages\SiemensS7Master.razor.cs" />
+
     <Compile Include="..\..\ThingsGateway.Admin.Razor\Services\VersionService.cs" Link="Services\VersionService.cs" />
     <Compile Include="..\..\ThingsGateway.Gateway.Razor\DebugPages\AdapterDebugBase.cs" Link="DebugPages\AdapterDebugBase.cs" />
     <Compile Include="..\..\ThingsGateway.Gateway.Razor\DebugPages\AdapterDebugComponent.razor.cs" Link="DebugPages\AdapterDebugComponent.razor.cs" />

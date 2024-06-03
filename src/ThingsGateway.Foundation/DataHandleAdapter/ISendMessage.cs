@@ -13,12 +13,7 @@ namespace ThingsGateway.Foundation;
 /// <summary>
 /// 发送消息
 /// </summary>
-public interface ISendMessage : IRequestInfo
+public interface ISendMessage : IRequestInfo, IWaitHandle
 {
-    /// <summary>
-    /// 等待标识，对于并发协议，必须获取标识字段后写入协议报文
-    /// </summary>
-    long Sign { get; set; }
-
     byte[] SendBytes { get; }
 }
