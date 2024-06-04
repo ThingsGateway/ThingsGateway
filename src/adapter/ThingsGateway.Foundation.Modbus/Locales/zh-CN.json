@@ -1,7 +1,8 @@
 ﻿{
   "ThingsGateway.Foundation.Modbus.ModbusMaster": {
     "ModbusType": "Modbus类型",
-    "Station": "默认站号",
+    "Station": "站号",
+    "DtuId": "Dtu注册包",
     "CheckClearTime": "连接滑动过期时间",
     "HeartbeatHexString": "心跳检测(大写16进制字符串)",
 

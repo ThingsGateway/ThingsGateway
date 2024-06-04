@@ -16,6 +16,8 @@ using ThingsGateway.Foundation.Extension.String;
 
 using TouchSocket.Core;
 
+using static System.Collections.Specialized.BitVector32;
+
 namespace ThingsGateway.Foundation.Dlt645;
 
 /// <summary>
@@ -76,7 +78,7 @@ public class Dlt645_2007Address
     /// <summary>
     /// 解析地址
     /// </summary>
-    public static Dlt645_2007Address ParseFrom(string address, bool isCache = true)
+    public static Dlt645_2007Address ParseFrom(string address, string defaultStation = null, string dtuid = null, bool isCache = true)
     {
         var cacheKey = $"{nameof(ParseFrom)}_{typeof(Dlt645_2007Address).FullName}_{typeof(Dlt645_2007Address).TypeHandle.Value}_{address}";
         if (isCache)
@@ -84,6 +86,15 @@ public class Dlt645_2007Address
                 return dAddress.Map();
 
         Dlt645_2007Address dlt645_2007Address = new();
+        if (defaultStation != null)
+        {
+            if (defaultStation.IsNullOrEmpty()) defaultStation = string.Empty;
+            if (defaultStation.Length < 12)
+                defaultStation = defaultStation.PadLeft(12, '0');
+            dlt645_2007Address.Station = defaultStation.ByHexStringToBytes().Reverse().ToArray();
+        }
+        if (dtuid != null)
+            dlt645_2007Address.SocketId = dtuid;
         byte[] array;
         array = Array.Empty<byte>();
         if (address.IndexOf(';') < 0)

@@ -40,6 +40,7 @@ public class Dlt645_2007Master : CollectBase
         _plc = new(channel)
         {
             EndianType = _driverPropertys.EndianType,
+            DtuId = _driverPropertys.DtuId,
             SendDelayTime = _driverPropertys.SendDelayTime,
             CacheTimeout = _driverPropertys.CacheTimeout,
             ConnectTimeout = _driverPropertys.ConnectTimeout,

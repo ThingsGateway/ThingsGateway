@@ -1,31 +1,32 @@
 ﻿{
   "ThingsGateway.Foundation.Modbus.ModbusMaster": {
-    "ModbusType": "Modbus Type",
-    "Station": "Default Station Number",
-    "CheckClearTime": "Connection Sliding Expiration Time",
-    "HeartbeatHexString": "Heartbeat Detection (Uppercase Hexadecimal String)",
+    "ModbusType": "ModbusType",
+    "Station": "Station",
+    "DtuId": "DtuId",
+    "CheckClearTime": "CheckClearTime",
+    "HeartbeatHexString": "HeartbeatHexString",
 
-    "CacheTimeout": "Packet Assembly Cache Time",
-    "SendDelayTime": "Send Delay Time",
-    "EndianType": "Parsing Rules",
-    "Timeout": "Read/Write Timeout",
-    "ConnectTimeout": "Connection Timeout",
-    "IsStringReverseByteWord": "String Byte/Word Reversal"
+    "CacheTimeout": "CacheTimeout",
+    "SendDelayTime": "SendDelayTime",
+    "EndianType": "EndianType",
+    "Timeout": "Timeout",
+    "ConnectTimeout": "ConnectTimeout",
+    "IsStringReverseByteWord": "IsStringReverseByteWord"
   },
   "ThingsGateway.Foundation.Modbus.ModbusSlave": {
-    "ModbusType": "Modbus Type",
-    "Station": "Default Station Number",
-    "CheckClearTime": "Connection Sliding Expiration Time",
-    "MulStation": "Multiple Stations",
-    "IsWriteMemory": "Immediate Memory Write",
-    "MaxClientCount": "Maximum Connection Count",
+    "ModbusType": "ModbusType",
+    "Station": "Station",
+    "CheckClearTime": "CheckClearTime",
+    "MulStation": "MulStation",
+    "IsWriteMemory": "IsWriteMemory",
+    "MaxClientCount": "MaxClientCount",
 
-    "CacheTimeout": "Packet Assembly Cache Time",
-    "SendDelayTime": "Send Delay Time",
-    "EndianType": "Parsing Rules",
-    "Timeout": "Read/Write Timeout",
-    "ConnectTimeout": "Connection Timeout",
-    "IsStringReverseByteWord": "String Byte/Word Reversal"
+    "CacheTimeout": "CacheTimeout",
+    "SendDelayTime": "SendDelayTime",
+    "EndianType": "EndianType",
+    "Timeout": "Timeout",
+    "ConnectTimeout": "ConnectTimeout",
+    "IsStringReverseByteWord": "IsStringReverseByteWord"
   },
 
   "ThingsGateway.Foundation.Modbus.ModbusResource": {

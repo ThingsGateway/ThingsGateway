@@ -4,6 +4,7 @@
     "OperCode": "操作员代码",
     "Password": "写入密码",
     "Station": "通讯地址",
+    "DtuId": "Dtu注册包",
     "CheckClearTime": "连接滑动过期时间",
     "HeartbeatHexString": "心跳检测",
 

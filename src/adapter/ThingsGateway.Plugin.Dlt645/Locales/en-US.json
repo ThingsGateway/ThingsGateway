@@ -4,6 +4,7 @@
     "OperCode": "OperCode",
     "Password": "Password",
     "Station": "DefaultStation",
+    "DtuId": "DefaultDtuId",
 
     "HeartbeatHexString": "HeartbeatHexString",
     "EndianType": "EndianType",

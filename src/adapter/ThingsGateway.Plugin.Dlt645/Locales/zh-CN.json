@@ -4,6 +4,7 @@
     "OperCode": "操作员代码",
     "Password": "写入密码",
     "Station": "通讯地址",
+    "DtuId": "默认DtuId",
 
     "HeartbeatHexString": "心跳验证(HexString)",
     "EndianType": "解析规则",

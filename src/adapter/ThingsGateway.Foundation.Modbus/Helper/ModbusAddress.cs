@@ -119,10 +119,10 @@ public class ModbusAddress
     /// <summary>
     /// 解析地址
     /// </summary>
-    public static ModbusAddress? ParseFrom(string address, byte? station = null, bool isCache = true)
+    public static ModbusAddress? ParseFrom(string address, byte? station = null, string dtuid = null, bool isCache = true)
     {
         if (address.IsNullOrWhiteSpace()) { return null; }
-        var cacheKey = $"{nameof(ParseFrom)}_{typeof(ModbusAddress).FullName}_{typeof(ModbusAddress).TypeHandle.Value}_{station}_{address}";
+        var cacheKey = $"{nameof(ParseFrom)}_{typeof(ModbusAddress).FullName}_{typeof(ModbusAddress).TypeHandle.Value}_{station}_{dtuid}_{address}";
         if (isCache)
             if (MemoryCache.Instance.TryGetValue(cacheKey, out ModbusAddress mAddress))
                 return mAddress.Map();
@@ -130,6 +130,8 @@ public class ModbusAddress
         var modbusAddress = new ModbusAddress();
         if (station != null)
             modbusAddress.Station = station.Value;
+        if (dtuid != null)
+            modbusAddress.SocketId = dtuid;
         if (address.IndexOf(';') < 0)
         {
             Address(address);

@@ -68,6 +68,11 @@ public partial class ModbusMaster : ProtocolBase, IDtu
     public byte Station { get; set; } = 1;
 
     /// <summary>
+    /// 默认Dtu注册包,utf-8字符串
+    /// </summary>
+    public string DtuId { get; set; } = "TEST";
+
+    /// <summary>
     /// 客户端连接滑动过期时间(TCP服务通道时)
     /// </summary>
     public int CheckClearTime { get; set; } = 120;
@@ -144,7 +149,7 @@ public partial class ModbusMaster : ProtocolBase, IDtu
     /// <inheritdoc/>
     public override List<T> LoadSourceRead<T>(IEnumerable<IVariable> deviceVariables, int maxPack, int defaultIntervalTime)
     {
-        return PackHelper.LoadSourceRead<T>(this, deviceVariables, maxPack, defaultIntervalTime);
+        return PackHelper.LoadSourceRead<T>(this, deviceVariables, maxPack, defaultIntervalTime, Station, DtuId);
     }
 
     /// <inheritdoc/>
@@ -152,7 +157,7 @@ public partial class ModbusMaster : ProtocolBase, IDtu
     {
         try
         {
-            var mAddress = ModbusAddress.ParseFrom(address, Station);
+            var mAddress = ModbusAddress.ParseFrom(address, Station, DtuId);
             var commandResult = ModbusHelper.GetReadModbusCommand(mAddress, (ushort)length);
             return await SendThenReturnAsync(mAddress.SocketId, commandResult, cancellationToken).ConfigureAwait(false);
         }
@@ -167,7 +172,7 @@ public partial class ModbusMaster : ProtocolBase, IDtu
     {
         try
         {
-            var mAddress = ModbusAddress.ParseFrom(address, Station);
+            var mAddress = ModbusAddress.ParseFrom(address, Station, DtuId);
             value = value.ArrayExpandToLengthEven();
             byte[]? commandResult = null;
             //功能码或实际长度
@@ -188,7 +193,7 @@ public partial class ModbusMaster : ProtocolBase, IDtu
     {
         try
         {
-            var mAddress = ModbusAddress.ParseFrom(address, Station);
+            var mAddress = ModbusAddress.ParseFrom(address, Station, DtuId);
             //功能码或实际长度
             if (value.Length > 1 || mAddress.WriteFunction == 15)
             {

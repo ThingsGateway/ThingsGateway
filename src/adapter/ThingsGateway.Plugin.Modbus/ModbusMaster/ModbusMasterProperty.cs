@@ -36,6 +36,12 @@ public class ModbusMasterProperty : CollectPropertyBase
     public byte Station { get; set; } = 1;
 
     /// <summary>
+    /// 默认DtuId
+    /// </summary>
+    [DynamicProperty]
+    public string? DtuId { get; set; }
+
+    /// <summary>
     /// 默认解析顺序
     /// </summary>
     [DynamicProperty]

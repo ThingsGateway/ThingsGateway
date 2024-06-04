@@ -22,8 +22,10 @@ public class PackHelper
     /// <param name="deviceVariables"></param>
     /// <param name="maxPack">最大打包长度</param>
     /// <param name="defaultIntervalTime">默认间隔时间</param>
+    /// <param name="station">默认站点</param>
+    /// <param name="dtuid">默认dtuid</param>
     /// <returns></returns>
-    public static List<T> LoadSourceRead<T>(IProtocol device, IEnumerable<IVariable> deviceVariables, int maxPack, int defaultIntervalTime) where T : IVariableSource, new()
+    public static List<T> LoadSourceRead<T>(IProtocol device, IEnumerable<IVariable> deviceVariables, int maxPack, int defaultIntervalTime, byte? station = null, string dtuid = null) where T : IVariableSource, new()
     {
         // 检查参数是否为空
         if (deviceVariables == null)
@@ -80,7 +82,7 @@ public class PackHelper
 
                 // 解析地址，并设置字节长度
                 var address = it.RegisterAddress;
-                var result = ModbusAddress.ParseFrom(address, isCache: false);
+                var result = ModbusAddress.ParseFrom(address, station, dtuid, isCache: false);
                 result.ByteLength = lastLen;
                 return result;
             }));

@@ -3,6 +3,7 @@
     "ModbusType": "ProtocolType",
     "HeartbeatHexString": "HeartbeatHexString",
     "Station": "DefaultStation",
+    "DtuId": "DefaultDtuId",
     "EndianType": "EndianType",
     "IsStringReverseByteWord": "StringReverseByteWord",
     "CheckClearTime": "CheckClearTime",

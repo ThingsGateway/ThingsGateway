@@ -50,6 +50,7 @@ public class ModbusMaster : CollectBase
         _plc = new(channel)
         {
             EndianType = _driverPropertys.EndianType,
+            DtuId = _driverPropertys.DtuId,
             IsStringReverseByteWord = _driverPropertys.IsStringReverseByteWord,
             SendDelayTime = _driverPropertys.SendDelayTime,
             CacheTimeout = _driverPropertys.CacheTimeout,

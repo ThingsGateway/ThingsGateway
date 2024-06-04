@@ -42,6 +42,11 @@ public class Dlt645_2007Master : ProtocolBase, IDtu
     public string Station { get; set; }
 
     /// <summary>
+    /// 默认Dtu注册包,utf-8字符串
+    /// </summary>
+    public string DtuId { get; set; } = "TEST";
+
+    /// <summary>
     /// 客户端连接滑动过期时间(TCP服务通道时)
     /// </summary>
     public int CheckClearTime { get; set; } = 120;
@@ -115,7 +120,7 @@ public class Dlt645_2007Master : ProtocolBase, IDtu
     {
         try
         {
-            var dAddress = Dlt645_2007Address.ParseFrom(address);
+            var dAddress = Dlt645_2007Address.ParseFrom(address, Station, DtuId);
             var commandResult = Dlt645Helper.GetDlt645_2007Command(dAddress, (byte)ControlCode.Read, Station);
             return await SendThenReturnAsync(dAddress.SocketId, commandResult, cancellationToken).ConfigureAwait(false);
         }
@@ -139,7 +144,7 @@ public class Dlt645_2007Master : ProtocolBase, IDtu
 
             var data = DataTransUtil.SpliceArray(Password.ByHexStringToBytes(), OperCode.ByHexStringToBytes());
             string[] strArray = value.SplitStringBySemicolon();
-            var dAddress = Dlt645_2007Address.ParseFrom(address);
+            var dAddress = Dlt645_2007Address.ParseFrom(address, Station, DtuId);
             var commandResult = Dlt645Helper.GetDlt645_2007Command(dAddress, (byte)ControlCode.Write, Station, data, strArray);
             return await SendThenReturnAsync(dAddress.SocketId, commandResult, cancellationToken).ConfigureAwait(false);
         }

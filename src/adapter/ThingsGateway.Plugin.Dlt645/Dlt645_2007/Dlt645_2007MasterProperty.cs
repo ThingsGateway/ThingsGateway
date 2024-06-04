@@ -68,6 +68,12 @@ public class Dlt645_2007MasterProperty : CollectPropertyBase
     public string Station { get; set; }
 
     /// <summary>
+    /// 默认DtuId
+    /// </summary>
+    [DynamicProperty]
+    public string? DtuId { get; set; }
+
+    /// <summary>
     /// 密码
     /// </summary>
     [DynamicProperty]

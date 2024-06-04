@@ -1,18 +1,19 @@
 ﻿{
   "ThingsGateway.Foundation.Dlt645.Dlt645_2007Master": {
-    "FEHead": "Front-end identifier in message header",
-    "OperCode": "Operator code",
-    "Password": "Write password",
-    "Station": "Communication address",
-    "CheckClearTime": "Connection sliding expiration time",
-    "HeartbeatHexString": "Heartbeat detection",
+    "FEHead": "FEHead",
+    "OperCode": "OperCode",
+    "Password": "Password",
+    "Station": "Station",
+    "DtuId": "DtuId",
+    "CheckClearTime": "CheckClearTime",
+    "HeartbeatHexString": "HeartbeatHexString",
 
-    "CacheTimeout": "Packet Assembly Cache Time",
-    "SendDelayTime": "Send Delay Time",
-    "EndianType": "Parsing Rules",
-    "Timeout": "Read/Write Timeout",
-    "ConnectTimeout": "Connection Timeout",
-    "IsStringReverseByteWord": "String Byte/Word Reversal"
+    "CacheTimeout": "CacheTimeout",
+    "SendDelayTime": "SendDelayTime",
+    "EndianType": "EndianType",
+    "Timeout": "Timeout",
+    "ConnectTimeout": "ConnectTimeout",
+    "IsStringReverseByteWord": "IsStringReverseByteWord"
   },
 
   "ThingsGateway.Foundation.Dlt645.DltResource": {
