@@ -9,6 +9,7 @@
   "ThingsGateway.Gateway.Razor.DeviceStatus2": {
     "GatewayDeviceShowDriverUI": "插件UI",
     "DeviceRedundantThread": "切换冗余",
+    "DeleteCache": "删除缓存",
     "GatewayDeviceLog": "通道日志",
     "GatewayDevicePause": "暂停/运行",
     "GatewayDeviceRestart": "重启设备"

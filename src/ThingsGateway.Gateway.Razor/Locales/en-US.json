@@ -10,6 +10,7 @@
   "ThingsGateway.Gateway.Razor.DeviceStatus2": {
     "GatewayDeviceShowDriverUI": "DriverUI",
     "DeviceRedundantThread": "RedundantSwitch",
+    "DeleteCache": "DeleteCache",
     "GatewayDeviceLog": "ChannelLog",
     "GatewayDevicePause": "DevicePause",
     "GatewayDeviceRestart": "DeviceRestart"

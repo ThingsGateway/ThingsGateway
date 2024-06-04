@@ -48,6 +48,12 @@ public partial class DeviceStatus
         await DeviceQuery.InvokeAsync();
     }
 
+    private async Task DeleteCacheAsync(DeviceRunTime deviceRunTime)
+    {
+        await DeviceHostedService.RestartChannelThreadAsync(deviceRunTime.Id, false, true);
+        await DeviceQuery.InvokeAsync();
+    }
+
     private void SetLogEnable()
     {
         _driverBaseItem.ChannelThread.LogEnable = !_driverBaseItem.ChannelThread.LogEnable;
@@ -60,7 +66,7 @@ public partial class DeviceStatus
 
     private async Task RestartAsync(long deviceId)
     {
-        await DeviceHostedService.RestartChannelThreadAsync(deviceId);
+        await DeviceHostedService.RestartChannelThreadAsync(deviceId, true);
         await DeviceQuery.InvokeAsync();
         _driverBaseItem = null;
     }

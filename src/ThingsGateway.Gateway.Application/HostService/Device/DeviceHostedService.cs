@@ -256,7 +256,7 @@ public abstract class DeviceHostedService : BackgroundService
     /// <summary>
     /// 更新设备线程
     /// </summary>
-    public async Task RestartChannelThreadAsync(long deviceId, bool isChanged = true)
+    public async Task RestartChannelThreadAsync(long deviceId, bool isChanged, bool deleteCache = false)
     {
         try
         {
@@ -282,6 +282,23 @@ public abstract class DeviceHostedService : BackgroundService
 
                 if (isChanged)
                     await ProtectedStoped().ConfigureAwait(false);
+
+                if (deleteCache)
+                {
+                    Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
+                    await Task.Delay(2000);
+                    var dir = CacheDBUtil.GetFileBasePath();
+                    var dirs = Directory.GetDirectories(dir).FirstOrDefault(a => Path.GetFileName(a) == deviceId.ToString());
+                    if (dirs != null)
+                    {
+                        //删除文件夹
+                        try
+                        {
+                            Directory.Delete(dirs, true);
+                        }
+                        catch { }
+                    }
+                }
 
                 // 如果设备信息不为空
                 if (dev != null)

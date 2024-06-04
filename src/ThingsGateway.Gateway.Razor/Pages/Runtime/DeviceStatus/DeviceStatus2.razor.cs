@@ -30,6 +30,9 @@ public partial class DeviceStatus2
     public Func<long, Task> DeviceRedundantThreadAsync { get; set; }
 
     [Parameter, EditorRequired]
+    public Func<DeviceRunTime, Task> DeleteCacheAsync { get; set; }
+
+    [Parameter, EditorRequired]
     public Action<long, bool?> PasueThread { get; set; }
 
     [Parameter, EditorRequired]

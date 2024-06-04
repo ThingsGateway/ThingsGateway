@@ -442,7 +442,8 @@ public class ChannelThread
             {
                 // 关闭通道的底层插件管理器
                 Channel?.PluginManager?.SafeDispose();
-
+                if (FoundataionConfig.DisposedValue)
+                    FoundataionConfig = new();
                 // 从FoundataionConfig中移除TouchSocketCoreConfigExtension.ConfigurePluginsProperty
                 FoundataionConfig.RemoveValue(TouchSocketCoreConfigExtension.ConfigurePluginsProperty);
 
@@ -595,7 +596,7 @@ public class ChannelThread
         {
             ParallelOptions parallelOptions = new();
             parallelOptions.CancellationToken = stoppingToken;
-            parallelOptions.MaxDegreeOfParallelism = DriverBases.Count;
+            parallelOptions.MaxDegreeOfParallelism = DriverBases.Count == 0 ? 1 : DriverBases.Count;
             await Parallel.ForEachAsync(DriverBases, parallelOptions, (async (driver, stoppingToken) =>
             {
                 await DoWork(driver, DriverBases.Count, stoppingToken, CancellationToken.None).ConfigureAwait(false);

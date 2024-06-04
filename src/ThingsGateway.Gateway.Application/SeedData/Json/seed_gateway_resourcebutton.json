@@ -384,7 +384,18 @@
       "CreateUserId": "212725263002001",
       "IsDelete": "0"
     },
-
+    {
+      "Id": "61000022001006",
+      "ParentId": "61000022001",
+      "Module": "6",
+      "Title": "删除缓存",
+      "Code": "System",
+      "Category": "2",
+      "CreateTime": "2024-04-22 09:15:47.5633638",
+      "CreateUser": "SuperAdmin",
+      "CreateUserId": "212725263002001",
+      "IsDelete": "0"
+    },
     {
       "Id": "61000022002001",
       "ParentId": "61000022002",

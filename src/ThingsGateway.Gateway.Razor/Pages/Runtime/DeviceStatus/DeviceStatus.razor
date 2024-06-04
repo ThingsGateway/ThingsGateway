@@ -37,7 +37,7 @@
         @if (_driverBaseItem != null && _driverBaseItem?.CurrentDevice != null)
         {
             <DeviceStatus2 Item="_driverBaseItem" DeviceHostedService=DeviceHostedService DeviceQuery=DeviceQuery DeviceRedundantThreadAsync=DeviceRedundantThreadAsync PasueThread=PasueThread RestartAsync=RestartAsync ShowDriverUI=ShowDriverUI
-                           SetLogEnable="SetLogEnable" />
+                           SetLogEnable="SetLogEnable" DeleteCacheAsync="DeleteCacheAsync" />
 
         }
 
