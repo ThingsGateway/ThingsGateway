@@ -179,7 +179,8 @@ public class VariableService : BaseService<Variable>, IVariableService
         {
             using var db = GetDB();
 
-            return (await db.Updateable(models.ToList()).UpdateColumns(differences.Select(a => a.Key).ToArray()).ExecuteCommandAsync()) > 0;
+            var result = (await db.Updateable(models.ToList()).UpdateColumns(differences.Select(a => a.Key).ToArray()).ExecuteCommandAsync()) > 0;
+            return result;
         }
         else
         {

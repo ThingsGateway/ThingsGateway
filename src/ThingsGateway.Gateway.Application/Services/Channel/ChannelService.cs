@@ -85,7 +85,10 @@ public class ChannelService : BaseService<Channel>, IChannelService
         {
             using var db = GetDB();
 
-            return (await db.Updateable(models.ToList()).UpdateColumns(differences.Select(a => a.Key).ToArray()).ExecuteCommandAsync()) > 0;
+            var result = (await db.Updateable(models.ToList()).UpdateColumns(differences.Select(a => a.Key).ToArray()).ExecuteCommandAsync()) > 0;
+            if (result)
+                DeleteChannelFromCache();
+            return result;
         }
         else
         {
