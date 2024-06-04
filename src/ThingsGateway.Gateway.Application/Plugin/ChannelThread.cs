@@ -443,7 +443,8 @@ public class ChannelThread
                 // 关闭通道的底层插件管理器
                 Channel?.PluginManager?.SafeDispose();
                 if (FoundataionConfig.DisposedValue)
-                    FoundataionConfig = new();
+                    FoundataionConfig = Channel.Config;
+
                 // 从FoundataionConfig中移除TouchSocketCoreConfigExtension.ConfigurePluginsProperty
                 FoundataionConfig.RemoveValue(TouchSocketCoreConfigExtension.ConfigurePluginsProperty);
 
@@ -549,7 +550,7 @@ public class ChannelThread
     /// <param name="cancellation">取消标记。</param>
     protected async ValueTask DoWork(CancellationToken stoppingToken)
     {
-        if (Channel.ChannelType == ChannelTypeEnum.TcpService && IsCollectChannel)
+        if (Channel?.ChannelType == ChannelTypeEnum.TcpService && IsCollectChannel)
         {
             //DTU采集，建立同一个Tcp服务通道，多个采集设备（对应各个DTU设备），并发采集
             releaseCount = 0;
