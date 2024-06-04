@@ -15,6 +15,11 @@ namespace ThingsGateway.Foundation;
 /// </summary>
 public class TcpClientChannel : TcpClient, IClientChannel
 {
+    public TcpClientChannel()
+    {
+        WaitHandlePool.MaxSign = ushort.MaxValue;
+    }
+
     private readonly EasyLock m_semaphoreForConnect = new EasyLock();
 
     /// <inheritdoc/>
@@ -22,6 +27,11 @@ public class TcpClientChannel : TcpClient, IClientChannel
 
     /// <inheritdoc/>
     public EasyLock WaitLock { get; } = new EasyLock();
+
+    /// <summary>
+    /// 等待池
+    /// </summary>
+    public WaitHandlePool<MessageBase> WaitHandlePool { get; } = new();
 
     /// <summary>
     /// 接收到数据

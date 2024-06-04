@@ -75,6 +75,9 @@ public class ChannelThread
                 }
                 await Task.Delay(hardwareInfoService.HardwareInfoConfig.RealInterval * 1000, appLifetime.ApplicationStopping).ConfigureAwait(false);
             }
+            catch (OperationCanceledException)
+            {
+            }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
@@ -206,11 +209,11 @@ public class ChannelThread
 
     #region 通道
 
-    private Channel ChannelTable { get; }
+    protected internal Channel ChannelTable { get; }
 
     public long ChannelId { get; }
 
-    protected IChannel? Channel { get; }
+    protected internal IChannel? Channel { get; }
 
     #endregion 通道
 
@@ -537,84 +540,148 @@ public class ChannelThread
         }
     }
 
+    private static int releaseCount = 0;
+
     /// <summary>
     /// DoWork
     /// </summary>
     /// <param name="cancellation">取消标记。</param>
     protected async ValueTask DoWork(CancellationToken stoppingToken)
     {
-        var count = DriverBases.Count;
-        for (int i = 0; i < count; i++)
+        if (Channel.ChannelType == ChannelTypeEnum.TcpService && IsCollectChannel)
         {
-            var driver = DriverBases[i];
-            try
+            //DTU采集，建立同一个Tcp服务通道，多个采集设备（对应各个DTU设备），并发采集
+            releaseCount = 0;
+            List<Task> tasks = new List<Task>();
+            ConcurrentList<DriverBase> driverBases = new();
+            EasyLock easyLock = new(false);
+            using CancellationTokenSource cancellationTokenSource = new();
+            foreach (var driver1 in DriverBases)
             {
-                if (!CancellationTokenSources.TryGetValue(driver.DeviceId, out var stoken))
+                var task = DoWork(driver1, DriverBases.Count, stoppingToken, cancellationTokenSource.Token).ContinueWith(_ =>
                 {
-                    await Task.Delay(CycleInterval, stoppingToken).ConfigureAwait(false);
-                    continue;
-                }
-                var token = stoken.Token;
-
-                // 只有当驱动成功初始化后才执行操作
-                if (driver.IsInitSuccess)
-                {
-                    if (!driver.IsBeforStarted)
-                        await driver.BeforStartAsync(token).ConfigureAwait(false); // 调用驱动的启动前异步方法，如果已经执行，会直接返回
-
-                    var result = await driver.ExecuteAsync(token).ConfigureAwait(false); // 执行驱动的异步执行操作
-
-                    // 根据执行结果进行不同的处理
-                    if (result == ThreadRunReturnTypeEnum.None)
+                    if (driverBases.Count < DriverBases.Count)
                     {
-                        // 如果驱动处于离线状态且为采集驱动，则根据配置的间隔时间进行延迟
-                        if (driver.CurrentDevice.DeviceStatus == DeviceStatusEnum.OffLine && driver.IsCollectDevice)
+                        if (!driverBases.Any(a => a == driver1))
+                            driverBases.Add(driver1);//添加到已完成的任务列表
+
+                        // 如果所有任务都已完成，则取消剩余的等待任务
+                        if (driverBases.Count >= DriverBases.Count)
+                            cancellationTokenSource.Cancel();
+
+                        _ = Task.Run(async () =>
                         {
-                            if (count == 1)
-                                await Task.Delay(Math.Min(((CollectBase)driver).CollectProperties.ReIntervalTime, DeviceHostedService.CheckIntervalTime / 2) * 1000 - CycleInterval, token).ConfigureAwait(false);
-                        }
-                        else
-                        {
-                            if (count == 1)
-                                await Task.Delay(CycleInterval, token).ConfigureAwait(false); // 默认延迟一段时间后再继续执行
-                        }
-                    }
-                    else if (result == ThreadRunReturnTypeEnum.Continue)
-                    {
-                        if (count == 1)
-                            await Task.Delay(1000, token).ConfigureAwait(false); // 如果执行结果为继续，则延迟一段较短的时间后再继续执行
-                    }
-                    else if (result == ThreadRunReturnTypeEnum.Break)
-                    {
-                        driver.AfterStop(); // 执行驱动的释放操作
-                        continue; // 结束当前循环
+                            while (driverBases.Count < DriverBases.Count)
+                            {
+                                await DoWork(driver1, DriverBases.Count, stoppingToken, cancellationTokenSource.Token);
+                                await Task.Delay(MinCycleInterval, stoppingToken).ConfigureAwait(false);
+                            }
+                            Interlocked.Increment(ref releaseCount);
+                            if (releaseCount >= DriverBases.Count)
+                            {
+                                easyLock.Release();
+                            }
+                        });
                     }
                 }
-                else
-                {
-                    if (count == 1)
-                        await Task.Delay(1000, token).ConfigureAwait(false); // 默认延迟一段时间后再继续执行
-                }
+                );
+                tasks.Add(task);
             }
-            catch (TaskCanceledException)
+
+            await Task.WhenAll(tasks);
+            await easyLock.WaitAsync(stoppingToken);
+        }
+        else
+        {
+            ParallelOptions parallelOptions = new();
+            parallelOptions.CancellationToken = stoppingToken;
+            parallelOptions.MaxDegreeOfParallelism = DriverBases.Count;
+            await Parallel.ForEachAsync(DriverBases, parallelOptions, (async (driver, stoppingToken) =>
             {
-                driver.AfterStop(); // 执行驱动的释放操作
-                break;
-            }
-            catch (ObjectDisposedException)
-            {
-                driver.AfterStop(); // 执行驱动的释放操作
-                break;
-            }
+                await DoWork(driver, DriverBases.Count, stoppingToken, CancellationToken.None).ConfigureAwait(false);
+            }));
         }
 
         // 如果驱动实例数量大于1，则延迟一段时间后继续执行下一轮循环
-        if (count > 1)
+        if (DriverBases.Count > 1)
             await Task.Delay(MinCycleInterval, stoppingToken).ConfigureAwait(false);
 
         // 如果驱动实例数量为0，则延迟一段时间后继续执行下一轮循环
-        if (count == 0)
+        if (DriverBases.Count == 0)
             await Task.Delay(1000, stoppingToken).ConfigureAwait(false);
+    }
+
+    private async Task DoWork(DriverBase driver, int count, CancellationToken stoppingToken, CancellationToken cancellationToken)
+    {
+        try
+        {
+            if (stoppingToken.IsCancellationRequested || cancellationToken.IsCancellationRequested)
+                return;
+            if (!CancellationTokenSources.TryGetValue(driver.DeviceId, out var stoken))
+            {
+                await Task.Delay(CycleInterval, stoppingToken).ConfigureAwait(false);
+                return;
+            }
+
+            using CancellationTokenSource cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, stoken.Token);
+
+            var token = cancellationTokenSource.Token;
+
+            if (token.IsCancellationRequested)
+                return;
+
+            // 只有当驱动成功初始化后才执行操作
+            if (driver.IsInitSuccess)
+            {
+                if (!driver.IsBeforStarted)
+                    await driver.BeforStartAsync(token).ConfigureAwait(false); // 调用驱动的启动前异步方法，如果已经执行，会直接返回
+
+                var result = await driver.ExecuteAsync(token).ConfigureAwait(false); // 执行驱动的异步执行操作
+
+                // 根据执行结果进行不同的处理
+                if (result == ThreadRunReturnTypeEnum.None)
+                {
+                    // 如果驱动处于离线状态且为采集驱动，则根据配置的间隔时间进行延迟
+                    if (driver.CurrentDevice.DeviceStatus == DeviceStatusEnum.OffLine && driver.IsCollectDevice)
+                    {
+                        if (count == 1)
+                            await Task.Delay(Math.Min(((CollectBase)driver).CollectProperties.ReIntervalTime, DeviceHostedService.CheckIntervalTime / 2) * 1000 - CycleInterval, token).ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        if (count == 1)
+                            await Task.Delay(CycleInterval, token).ConfigureAwait(false); // 默认延迟一段时间后再继续执行
+                    }
+                }
+                else if (result == ThreadRunReturnTypeEnum.Continue)
+                {
+                    if (count == 1)
+                        await Task.Delay(1000, token).ConfigureAwait(false); // 如果执行结果为继续，则延迟一段较短的时间后再继续执行
+                }
+                else if (result == ThreadRunReturnTypeEnum.Break && stoppingToken.IsCancellationRequested)
+                {
+                    driver.AfterStop(); // 执行驱动的释放操作
+                    return; // 结束当前循环
+                }
+            }
+            else
+            {
+                if (count == 1)
+                    await Task.Delay(1000, token).ConfigureAwait(false); // 默认延迟一段时间后再继续执行
+            }
+        }
+        catch (TaskCanceledException)
+        {
+            if (stoppingToken.IsCancellationRequested)
+                driver.AfterStop(); // 执行驱动的释放操作
+            return;
+        }
+        catch (ObjectDisposedException)
+        {
+            if (stoppingToken.IsCancellationRequested)
+                driver.AfterStop(); // 执行驱动的释放操作
+            return;
+        }
     }
 
     #endregion 线程生命周期

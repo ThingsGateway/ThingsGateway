@@ -87,41 +87,24 @@ public class PackHelper
 
             // 获取所有地址
             var modbusAddressList = map.Keys;
-
-            // 获取所有功能码
-            var functionCodes = modbusAddressList.Select(t => t.ReadFunction).Distinct();
-            foreach (var functionCode in functionCodes)
+            // 获取相同站号相同SocketId的地址
+            var socketIds = modbusAddressList.Select(t => t.SocketId).Distinct();
+            foreach (var socketId in socketIds)
             {
-                // 获取相同功能码的地址
-                var modbusAddressSameFunList = modbusAddressList.Where(t => t.ReadFunction == functionCode);
-                // 获取相同站号的地址
-                var stationNumbers = modbusAddressSameFunList.Select(t => t.Station).Distinct();
-                foreach (var stationNumber in stationNumbers)
+                var modbusAddressSameSocketIdList = modbusAddressList.Where(t => t.SocketId == socketId);
+                // 获取所有功能码
+                var functionCodes = modbusAddressSameSocketIdList.Select(t => t.ReadFunction).Distinct();
+                foreach (var functionCode in functionCodes)
                 {
+                    // 获取相同功能码的地址
+                    var modbusAddressSameFunList = modbusAddressSameSocketIdList.Where(t => t.ReadFunction == functionCode);
                     // 获取相同站号的地址
-                    var modbusAddressSameStationList = modbusAddressList.Where(t => t.Station == stationNumber);
-                    // 获取相同站号相同SocketId的地址
-                    var socketIds = modbusAddressSameStationList.Select(t => t.SocketId).Distinct();
-                    if (socketIds.Any())
+                    var stationNumbers = modbusAddressSameFunList.Select(t => t.Station).Distinct();
+                    foreach (var stationNumber in stationNumbers)
                     {
-                        // 如果存在SocketId，遍历每个SocketId
-                        foreach (var socketId in socketIds)//DTU区分
-                        {
-                            // 获取相同SocketId的地址
-                            var addressList = modbusAddressSameStationList
-                                .Where(t => t.SocketId == socketId)
-                                .ToDictionary(t => t, t => map[t]);
-
-                            // 加载并添加结果
-                            var tempResult = LoadSourceRead<T>(addressList, functionCode, group.Key, maxPack);
-                            deviceVariableSourceReads.AddRange(tempResult);
-                        }
-                    }
-                    else
-                    {
-                        // 如果没有SocketId，获取相同站号的地址
-                        var addressList = modbusAddressSameStationList
-                            .ToDictionary(t => t, t => map[t]);
+                        // 获取相同站号的地址
+                        var modbusAddressSameStationList = modbusAddressSameFunList.Where(t => t.Station == stationNumber);
+                        var addressList = modbusAddressSameStationList.ToDictionary(t => t, t => map[t]);
 
                         // 加载并添加结果
                         var tempResult = LoadSourceRead<T>(addressList, functionCode, group.Key, maxPack);

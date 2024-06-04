@@ -25,7 +25,7 @@ public static class ParallelExtensions
     {
         // 创建并行操作的选项对象，设置最大并行度为当前处理器数量的一半
         ParallelOptions options = new();
-        options.MaxDegreeOfParallelism = Environment.ProcessorCount / 2 == 0 ? 1 : Environment.ProcessorCount / 2;
+        options.MaxDegreeOfParallelism = Environment.ProcessorCount / 3 == 0 ? 1 : Environment.ProcessorCount / 3;
         // 使用 Parallel.ForEach 执行指定的操作
         Parallel.ForEach(source, options, (variable) =>
         {
@@ -43,7 +43,7 @@ public static class ParallelExtensions
     {
         // 创建并行操作的选项对象，设置最大并行度为当前处理器数量的一半
         ParallelOptions options = new();
-        options.MaxDegreeOfParallelism = Environment.ProcessorCount / 2 == 0 ? 1 : Environment.ProcessorCount / 2;
+        options.MaxDegreeOfParallelism = Environment.ProcessorCount / 3 == 0 ? 1 : Environment.ProcessorCount / 3;
         // 使用 Parallel.ForEach 执行指定的操作
         Parallel.ForEach(source, options, (variable, state, index) =>
         {
@@ -62,7 +62,7 @@ public static class ParallelExtensions
     {
         // 创建并行操作的选项对象，设置最大并行度为指定的值
         var options = new ParallelOptions();
-        options.MaxDegreeOfParallelism = parallelCount / 2 == 0 ? 1 : parallelCount;
+        options.MaxDegreeOfParallelism = parallelCount / 3 == 0 ? 1 : parallelCount;
         // 使用 Parallel.ForEach 执行指定的操作
         Parallel.ForEach(source, options, variable =>
         {
@@ -84,7 +84,7 @@ public static class ParallelExtensions
         // 创建并行操作的选项对象，设置最大并行度和取消标志
         var options = new ParallelOptions();
         options.CancellationToken = cancellationToken;
-        options.MaxDegreeOfParallelism = parallelCount / 2 == 0 ? 1 : parallelCount;
+        options.MaxDegreeOfParallelism = parallelCount / 3 == 0 ? 1 : parallelCount;
         // 使用 Parallel.ForEachAsync 异步执行指定的操作，并返回表示异步操作的任务
         return Parallel.ForEachAsync(source, options, body);
     }

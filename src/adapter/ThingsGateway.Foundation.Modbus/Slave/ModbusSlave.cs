@@ -30,7 +30,8 @@ public class ModbusSlave : ProtocolBase, ITcpService
         ThingsGatewayBitConverter = new ThingsGatewayBitConverter(EndianType.Big);
         IsBoolReverseByteWord = true;
         RegisterByteLength = 2;
-        WaitHandlePool.MaxSign = ushort.MaxValue;
+        if (channel is IClientChannel client)
+            client.WaitHandlePool.MaxSign = ushort.MaxValue;
     }
 
     #region 属性

@@ -47,9 +47,11 @@ public sealed class EasyLock : DisposableObject
     /// </summary>
     public void Release()
     {
-        //添加
-        if (IsWaitting)
-            m_waiterLock.Release();
+        lock (this)
+        {
+            if (IsWaitting)
+                m_waiterLock.Release();
+        }
     }
 
     /// <summary>

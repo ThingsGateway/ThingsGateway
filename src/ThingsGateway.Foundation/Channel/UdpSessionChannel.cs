@@ -13,8 +13,18 @@ namespace ThingsGateway.Foundation;
 /// <inheritdoc/>
 public class UdpSessionChannel : UdpSession, IClientChannel
 {
+    public UdpSessionChannel()
+    {
+        WaitHandlePool.MaxSign = ushort.MaxValue;
+    }
+
     /// <inheritdoc/>
     public EasyLock WaitLock { get; } = new EasyLock();
+
+    /// <summary>
+    /// 等待池
+    /// </summary>
+    public WaitHandlePool<MessageBase> WaitHandlePool { get; } = new();
 
     /// <summary>
     /// 当收到数据时

@@ -228,10 +228,10 @@ public class VariableService : BaseService<Variable>, IVariableService
     }
 
     /// <inheritdoc/>
-    [OperDesc("ClearVariable", localizerType: typeof(Variable))]
-    public async Task ClearVariableAsync()
+    [OperDesc("ClearVariable", localizerType: typeof(Variable), isRecordPar: false)]
+    public async Task ClearVariableAsync(SqlSugarClient db = null)
     {
-        using var db = GetDB();
+        db ??= GetDB();
         await db.Deleteable<Variable>().ExecuteCommandAsync();
     }
 

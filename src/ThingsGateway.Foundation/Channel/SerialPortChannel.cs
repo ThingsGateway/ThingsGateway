@@ -15,10 +15,20 @@ namespace ThingsGateway.Foundation;
 /// <inheritdoc cref="SerialPortClient"/>
 public class SerialPortChannel : SerialPortClient, IClientChannel
 {
+    public SerialPortChannel()
+    {
+        WaitHandlePool.MaxSign = ushort.MaxValue;
+    }
+
     private readonly EasyLock m_semaphoreForConnect = new EasyLock();
 
     /// <inheritdoc/>
     public EasyLock WaitLock { get; } = new EasyLock();
+
+    /// <summary>
+    /// 等待池
+    /// </summary>
+    public WaitHandlePool<MessageBase> WaitHandlePool { get; } = new();
 
     /// <inheritdoc/>
     public ConcurrentList<IProtocol> Collects { get; } = new();

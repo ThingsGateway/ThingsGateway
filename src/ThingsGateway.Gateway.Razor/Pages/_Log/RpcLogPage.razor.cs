@@ -61,7 +61,7 @@ public partial class RpcLogPage
 
     #region 查询
 
-    private BackendLogPageInput CustomerSearchModel { get; set; } = new BackendLogPageInput();
+    private RpcLogPageInput CustomerSearchModel { get; set; } = new RpcLogPageInput();
 
     private async Task<QueryData<RpcLog>> OnQueryAsync(QueryPageOptions options)
     {

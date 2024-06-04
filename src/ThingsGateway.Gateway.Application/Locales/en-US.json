@@ -4,7 +4,16 @@
     "DeviceId": "Device",
     "RegisterAddress": "RegisterAddress"
   },
-
+  "ThingsGateway.Gateway.Application.RpcLogPageInput": {
+    "SearchDate": "SearchDate",
+    "OperateObject": "OperateObject",
+    "OperateSource": "OperateSource"
+  },
+  "ThingsGateway.Gateway.Application.BackendLogPageInput": {
+    "SearchDate": "SearchDate",
+    "LogLevel": "LogLevel",
+    "LogSource": "LogSource"
+  },
   "ThingsGateway.Gateway.Application.CollectDeviceRuntime": {
     "SourceVariableCount": "SourceVariableCount",
     "MethodVariableCount": "MethodVariableCount",

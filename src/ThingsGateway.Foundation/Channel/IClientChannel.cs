@@ -22,5 +22,7 @@ public interface IClientChannel : IChannel, ISender, IClient, IClientSender, IOn
     /// </summary>
     EasyLock WaitLock { get; }
 
+    WaitHandlePool<MessageBase> WaitHandlePool { get; }
+
     #endregion 属性
 }

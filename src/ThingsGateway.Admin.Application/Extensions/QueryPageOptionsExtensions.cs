@@ -103,7 +103,7 @@ public static class QueryPageOptionsExtensions
         };
         var items = datas.GetData(option);
         ret.TotalCount = datas.Count();
-        ret.Items = items;
+        ret.Items = items.ToList();
         return ret;
     }
 }

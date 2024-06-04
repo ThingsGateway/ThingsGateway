@@ -25,7 +25,8 @@ public class Dlt645_2007Master : ProtocolBase, IDtu
         ThingsGatewayBitConverter = new Dlt645_2007BitConverter();
         ThingsGatewayBitConverter.EndianType = EndianType.Big;
         RegisterByteLength = 2;
-        WaitHandlePool.MaxSign = ushort.MaxValue;
+        if (channel is IClientChannel client)
+            client.WaitHandlePool.MaxSign = ushort.MaxValue;
     }
 
     /// <inheritdoc/>

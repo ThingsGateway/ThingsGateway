@@ -134,7 +134,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
         if (channel == this.Channel)
         {
             //取消全部等待池
-            WaitHandlePool.CancelAll();
+            channel.WaitHandlePool.CancelAll();
         }
         else
         {
@@ -214,11 +214,6 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     #region 设备异步返回
 
     /// <summary>
-    /// 等待池
-    /// </summary>
-    protected WaitHandlePool<MessageBase> WaitHandlePool = new();
-
-    /// <summary>
     /// 接收,非主动发送的情况，重写实现非主从并发通讯协议
     /// </summary>
     /// <param name="client"></param>
@@ -228,7 +223,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     {
         if (e.RequestInfo is MessageBase response)
         {
-            if (!WaitHandlePool.SetRun(response))
+            if (!client.WaitHandlePool.SetRun(response))
             {
                 //非主动发送的情况，重写实现非主从并发通讯协议
             }
@@ -342,7 +337,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     {
         if (IsSingleThread)
             await clientChannel.WaitLock.WaitAsync(cancellationToken).ConfigureAwait(false);
-        var waitData = WaitHandlePool.GetWaitDataAsync(out var sign);
+        var waitData = clientChannel.WaitHandlePool.GetWaitDataAsync(out var sign);
         try
         {
             item.Sign = sign;
@@ -355,7 +350,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
         }
         finally
         {
-            WaitHandlePool.Destroy(waitData);
+            clientChannel.WaitHandlePool.Destroy(waitData);
             if (IsSingleThread)
                 clientChannel.WaitLock.Release();
         }
@@ -723,6 +718,8 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
                     {
                         //只关闭，不释放
                         Channel.Close();
+                        if (Channel is IClientChannel client)
+                            client.WaitHandlePool.SafeDispose();
                     }
                     catch (Exception ex)
                     {
@@ -731,7 +728,6 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
                 }
             }
         }
-        WaitHandlePool.SafeDispose();
         base.Dispose(disposing);
     }
 

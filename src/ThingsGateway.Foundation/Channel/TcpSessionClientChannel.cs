@@ -13,8 +13,18 @@ namespace ThingsGateway.Foundation;
 /// <inheritdoc cref="TcpSessionClient"/>
 public class TcpSessionClientChannel : TcpSessionClient, IClientChannel
 {
+    public TcpSessionClientChannel()
+    {
+        WaitHandlePool.MaxSign = ushort.MaxValue;
+    }
+
     /// <inheritdoc/>
     public EasyLock WaitLock { get; } = new EasyLock();
+
+    /// <summary>
+    /// 等待池
+    /// </summary>
+    public WaitHandlePool<MessageBase> WaitHandlePool { get; } = new();
 
     /// <inheritdoc/>
     public ConcurrentList<IProtocol> Collects { get; } = new();

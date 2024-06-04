@@ -41,7 +41,7 @@ public interface IVariableService
     /// <summary>
     /// 异步清除变量数据。
     /// </summary>
-    Task ClearVariableAsync();
+    Task ClearVariableAsync(SqlSugarClient db = null);
 
     /// <summary>
     /// 根据设备ID异步删除变量数据。

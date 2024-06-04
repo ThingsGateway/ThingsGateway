@@ -89,7 +89,7 @@ public sealed class FileLoggerProvider : ILoggerProvider, ISupportExternalScope
         _fileLoggingWriter = new FileLoggingWriter(this);
 
         // 创建长时间运行的后台任务，并将日志消息队列中数据写入文件中
-        _processQueueTask = Task.Factory.StartNew(async state => await ((FileLoggerProvider)state!).ProcessQueueAsync()
+        _processQueueTask = Task.Factory.StartNew(state => ((FileLoggerProvider)state!).ProcessQueueAsync()
             , this, TaskCreationOptions.LongRunning);
     }
 

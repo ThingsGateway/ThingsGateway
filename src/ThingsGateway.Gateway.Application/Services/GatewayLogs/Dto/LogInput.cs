@@ -24,7 +24,7 @@ public class BackendLogPageInput : ITableSearchModel
     public DateTimeRangeValue? SearchDate { get; set; }
 
     /// <summary>
-    /// 分类
+    /// 日志等级
     /// </summary>
     public virtual LogLevel? LogLevel { get; set; }
 
@@ -61,12 +61,12 @@ public class RpcLogPageInput : ITableSearchModel
     public DateTimeRangeValue? SearchDate { get; set; }
 
     /// <summary>
-    /// 分类
+    /// 操作对象
     /// </summary>
     public string? OperateObject { get; set; }
 
     /// <summary>
-    /// 账号
+    /// 操作源
     /// </summary>
     public string? OperateSource { get; set; }
 

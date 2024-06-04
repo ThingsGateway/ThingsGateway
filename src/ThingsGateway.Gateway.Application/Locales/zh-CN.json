@@ -459,7 +459,16 @@
     "Remark4": "备用4",
     "Remark5": "备用5"
   },
-
+  "ThingsGateway.Gateway.Application.RpcLogPageInput": {
+    "SearchDate": "时间区间",
+    "OperateObject": "操作对象",
+    "OperateSource": "操作源"
+  },
+  "ThingsGateway.Gateway.Application.BackendLogPageInput": {
+    "SearchDate": "时间区间",
+    "LogLevel": "日志等级",
+    "LogSource": "日志源"
+  },
   "ThingsGateway.Gateway.Application.RpcService": {
     "VariableNotNull": " {0} 变量不存在",
     "VariableReadOnly": " {0} 变量只读",

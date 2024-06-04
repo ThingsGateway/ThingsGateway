@@ -122,7 +122,7 @@ public class DeviceService : BaseService<Device>, IDeviceService
         {
             await db.Deleteable<Device>().Where(a => a.PluginType == pluginType).ExecuteCommandAsync();
             if (pluginType == PluginTypeEnum.Collect)
-                await variableService.ClearVariableAsync();
+                await variableService.ClearVariableAsync(db);
         });
         if (result.IsSuccess)//如果成功了
         {
