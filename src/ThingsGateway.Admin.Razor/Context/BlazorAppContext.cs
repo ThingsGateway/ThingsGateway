@@ -107,7 +107,7 @@ public class BlazorAppContext : IAsyncDisposable
             if (module == ResourceConst.SpaId)
                 module = null;//SPA页面取消url传入的模块
             UserWorkBench = await UserCenterService.GetLoginWorkbenchAsync(UserManager.UserId);
-            OwnMenus = await UserCenterService.GetOwnMenuAsync(UserManager.UserId, module ?? CurrentUser.DefaultModule);
+            OwnMenus = (await UserCenterService.GetOwnMenuAsync(UserManager.UserId, module ?? CurrentUser.DefaultModule)).Adapt<List<SysResource>>();
             if (TitleLocalizer != null)
             {
                 foreach (var a in OwnMenus)
