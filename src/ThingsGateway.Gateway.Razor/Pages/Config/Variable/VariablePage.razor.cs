@@ -103,7 +103,7 @@ public partial class VariablePage : IDisposable
             variable.VariablePropertyModels ??= new();
             foreach (var item in variable.VariablePropertyModels)
             {
-                var result = item.Value.ValidateForm?.Validate();
+                var result = ((item.Value.ValidateForm?.Validate() != false) || (item.Value.ValidateForm.ValueChangedFields.Count == 0));
                 if (result == false)
                 {
                     return false;
