@@ -61,17 +61,17 @@ public abstract class DriverBase : DisposableObject
     /// <summary>
     /// 底层驱动配置
     /// </summary>
-    public TouchSocketConfig FoundataionConfig { get; internal set; }
+    public TouchSocketConfig FoundataionConfig => ChannelThread.FoundataionConfig;
 
     /// <summary>
     /// 写入锁
     /// </summary>
-    protected internal EasyLock WriteLock { get; set; }
+    protected internal EasyLock WriteLock => ChannelThread.WriteLock;
 
     /// <summary>
     /// 日志路径
     /// </summary>
-    public string LogPath { get; internal set; }
+    public string LogPath => ChannelThread.LogPath;
 
     /// <summary>
     /// 任务管理器
@@ -81,12 +81,12 @@ public abstract class DriverBase : DisposableObject
     /// <summary>
     /// 日志
     /// </summary>
-    public ILogger Logger { get; internal set; }
+    public ILogger Logger => ChannelThread.Logger;
 
     /// <summary>
     /// 底层日志，需由线程管理器传入
     /// </summary>
-    public LoggerGroup LogMessage { get; internal set; }
+    public LoggerGroup LogMessage => ChannelThread.LogMessage;
 
     /// <summary>
     /// 当前插件目录

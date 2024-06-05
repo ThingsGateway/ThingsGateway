@@ -152,12 +152,12 @@ public class ChannelThread
     /// <summary>
     /// 启停锁
     /// </summary>
-    protected EasyLock EasyLock { get; set; } = new();
+    protected EasyLock EasyLock { get; } = new();
 
     /// <summary>
     /// 读写锁
     /// </summary>
-    protected EasyLock WriteLock { get; set; } = new();
+    protected internal EasyLock WriteLock { get; } = new();
 
     /// <summary>
     /// 设备线程
@@ -300,21 +300,6 @@ public class ChannelThread
         // 将当前通道线程分配给驱动程序对象
         driverBase.ChannelThread = this;
 
-        // 将日志记录器分配给驱动程序对象
-        driverBase.Logger = Logger;
-
-        // 将写入锁分配给驱动程序对象
-        driverBase.WriteLock = WriteLock;
-
-        // 将日志路径分配给驱动程序对象
-        driverBase.LogPath = LogPath;
-
-        // 将日志消息分配给驱动程序对象
-        driverBase.LogMessage = LogMessage;
-
-        // 将基础配置分配给驱动程序对象
-        driverBase.FoundataionConfig = FoundataionConfig;
-
         try
         {
             // 初始化驱动程序对象，并加载源读取
@@ -440,8 +425,6 @@ public class ChannelThread
             // 如果DriverTask不为null，则执行以下操作
             if (DriverTask != null)
             {
-                // 关闭通道的底层插件管理器
-                Channel?.PluginManager?.SafeDispose();
                 if (FoundataionConfig.DisposedValue)
                     FoundataionConfig = Channel.Config;
 

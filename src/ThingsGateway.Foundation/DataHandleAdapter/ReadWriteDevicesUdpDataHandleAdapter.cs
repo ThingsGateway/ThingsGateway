@@ -90,57 +90,53 @@ public abstract class ReadWriteDevicesUdpDataHandleAdapter<TRequest> : UdpDataHa
             //并发协议非缓存模式下，重新获取对象
             request = GetInstance();
         }
-
+        ArraySegment<byte>? header = null;
         //传入新的ByteBlock对象，避免影响原有的游标
         //当解析消息设定固定头长度大于0时，获取头部字节
         if (request.HeadBytesLength > 0)
         {
-            var header = byteBlock.AsSegment(0, request.HeadBytesLength);
-            Check(byteBlock, header);
+            header = byteBlock.AsSegment(0, request.HeadBytesLength);
         }
         else
         {
-            Check(byteBlock, null);
         }
-        await GoReceived(remoteEndPoint, null, request);
-
-        void Check(ByteBlock byteBlock, ArraySegment<byte>? header)
+        //检查头部合法性
+        if (request.CheckHeadBytes(header?.Array))
         {
-            //检查头部合法性
-            if (request.CheckHeadBytes(header?.Array))
+            if (request.BodyLength > this.MaxPackageSize)
             {
-                if (request.BodyLength > this.MaxPackageSize)
-                {
-                    this.OnError(default, $"Received BodyLength={request.BodyLength}, greater than the set MaxPackageSize={this.MaxPackageSize}", true, true);
-                    return;
-                }
+                this.OnError(default, $"Received BodyLength={request.BodyLength}, greater than the set MaxPackageSize={this.MaxPackageSize}", true, true);
+                await GoReceived(remoteEndPoint, null, request);
+            }
 
-                if (request.BodyLength + request.HeadBytesLength > byteBlock.CanReadLength)
-                {
-                    return;
-                }
-                if (request.BodyLength <= 0)
-                {
-                    //如果body长度无法确定，直接读取全部
-                    request.BodyLength = byteBlock.Length;
-                }
-
-                var result = UnpackResponse(request, byteBlock);
-
-                byteBlock.Position = byteBlock.Length;
-                if (request.IsSuccess)
-                {
-                    request.Content = result.Content;
-                    request.ReceivedBytes = byteBlock;
-                }
+            if (request.BodyLength + request.HeadBytesLength > byteBlock.CanReadLength)
+            {
+                await GoReceived(remoteEndPoint, null, request);
                 return;
             }
-            else
+            if (request.BodyLength <= 0)
             {
-                byteBlock.Position = byteBlock.Length;//移动游标
-                request.OperCode = -1;
-                return;
+                //如果body长度无法确定，直接读取全部
+                request.BodyLength = byteBlock.Length;
             }
+
+            var result = UnpackResponse(request, byteBlock);
+
+            byteBlock.Position = byteBlock.Length;
+            if (request.IsSuccess)
+            {
+                request.Content = result.Content;
+                request.ReceivedBytes = byteBlock;
+            }
+            await GoReceived(remoteEndPoint, null, request);
+            return;
+        }
+        else
+        {
+            byteBlock.Position = byteBlock.Length;//移动游标
+            request.OperCode = -1;
+            await GoReceived(remoteEndPoint, null, request);
+            return;
         }
     }
 

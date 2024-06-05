@@ -81,22 +81,16 @@ public abstract class ReadWriteDevicesSingleStreamDataHandleAdapter<TRequest> : 
             {
                 return FilterResult.Cache;//当头部都无法解析时，直接缓存
             }
-
+            ArraySegment<byte>? header = null;
             //传入新的ByteBlock对象，避免影响原有的游标
             //当解析消息设定固定头长度大于0时，获取头部字节
             if (request.HeadBytesLength > 0)
             {
-                var header = byteBlock.AsSegment(0, request.HeadBytesLength);
-                return Check(byteBlock, request, ref tempCapacity, header);
+                header = byteBlock.AsSegment(0, request.HeadBytesLength);
             }
             else
             {
-                return Check(byteBlock, request, ref tempCapacity, null);
             }
-        }
-
-        FilterResult Check(IByteBlock byteBlock, TRequest request, ref int tempCapacity, ArraySegment<byte>? header)
-        {
             //检查头部合法性
             if (request.CheckHeadBytes(header?.Array))
             {
