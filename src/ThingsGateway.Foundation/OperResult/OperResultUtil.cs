@@ -33,7 +33,7 @@ public static class OperResultUtil
             {
                 if (result.Content.Equals(value))
                 {
-                    return new OperResult();
+                    return OperResult.Success;
                 }
             }
             else

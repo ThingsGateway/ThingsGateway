@@ -173,7 +173,7 @@ internal class ModbusHelper
             {
             };
         response.SetLength(dataLen - 2);
-        return new OperResult();
+        return OperResult.Success;
     }
 
     /// <summary>
