@@ -96,6 +96,10 @@ public partial class AdminTable<TItem> where TItem : class, new()
     [Parameter]
     public RenderFragment<TItem>? TableColumns { get; set; }
 
+    /// <inheritdoc cref="Table{TItem}.BeforeRowButtonTemplate"/>
+    [Parameter]
+    public RenderFragment<TItem>? BeforeRowButtonTemplate { get; set; }
+
     /// <inheritdoc cref="Table{TItem}.RowButtonTemplate"/>
     [Parameter]
     public RenderFragment<TItem>? RowButtonTemplate { get; set; }
