@@ -41,7 +41,7 @@ MqttServer支持Tcp/webSocket方式接入，可以定时/变化发布数据，�
 | WebSocket端口         | WebSocket绑定端口             | 8083，固定/mqtt路由 |
 | 允许连接的ID(前缀)         | 允许连接的ID(前缀)             |ClientId必须以这个属性开头  |
 | 允许Rpc写入         | 是否允许写入变量              |  |
-| Rpc写入Topic         | 写入变量的主题              | 实际的写入主题为固定通配 {ThingsGateway.Rpc/+/[填入值]} ,其中RpcWrite为该属性填入内容，+通配符是不固定GUID值，每次执行写入时会在不同的主题中返回；返回结果主题会在主题后添加Response , 也就是{ThingsGateway.Rpc/+/[填入值]/Response} |
+| Rpc写入Topic         | 写入变量的主题              | 实际的写入主题为固定通配 {RpcWrite/+} ，其中RpcWrite为该属性填入内容，+通配符是请求GUID值；返回结果主题会在主题后添加Response , 也就是{RpcWrite/+/Response} |
 | 设备是否列表         | 设备是否列表上传，false时每个设备实体都会单独发布，注意性能需求，默认为true             |  |
 | 变量是否列表         | 变量是否列表上传，false时每个变量实体都会单独发布，注意性能需求，默认为true             |  |
 | 报警是否列表         | 报警是否列表上传，false时每个报警实体都会单独发布，注意性能需求，默认为true             |  |
