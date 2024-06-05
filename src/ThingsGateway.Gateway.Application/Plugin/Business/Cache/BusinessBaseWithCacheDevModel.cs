@@ -98,7 +98,7 @@ public abstract class BusinessBaseWithCacheDevModel<VarModel, DevModel> : Busine
     /// </summary>
     protected virtual CacheDB LocalDBCacheDevModel()
     {
-        var cacheDb = CacheDBUtil.GetCache(typeof(CacheDBItem<DevModel>), CurrentDevice.Id.ToString(), $"{CurrentDevice.PluginName}_{typeof(DevModel).FullName}_{nameof(DevModel)}");
+        var cacheDb = CacheDBUtil.GetCache(typeof(CacheDBItem<DevModel>), CurrentDevice.Id.ToString(), $"{CurrentDevice.PluginName}_{typeof(DevModel).Name}");
         if (!LocalDBCacheDevModelInited)
         {
             cacheDb.InitDb();

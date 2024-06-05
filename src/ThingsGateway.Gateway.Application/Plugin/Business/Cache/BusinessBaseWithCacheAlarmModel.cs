@@ -98,7 +98,7 @@ public abstract class BusinessBaseWithCacheAlarmModel<VarModel, DevModel, AlarmM
     /// </summary>
     protected virtual CacheDB LocalDBCacheAlarmModel()
     {
-        var cacheDb = CacheDBUtil.GetCache(typeof(CacheDBItem<AlarmModel>), CurrentDevice.Id.ToString(), $"{CurrentDevice.PluginName}_{typeof(AlarmModel).FullName}_{nameof(AlarmModel)}");
+        var cacheDb = CacheDBUtil.GetCache(typeof(CacheDBItem<AlarmModel>), CurrentDevice.Id.ToString(), $"{CurrentDevice.PluginName}_{typeof(AlarmModel).Name}");
 
         if (!LocalDBCacheAlarmModelInited)
         {
