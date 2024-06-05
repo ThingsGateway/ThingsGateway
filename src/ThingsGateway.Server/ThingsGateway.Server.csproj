@@ -25,12 +25,14 @@
 
   <ItemGroup>
     <ProjectReference Include="$(SolutionDir)\ThingsGateway.Admin.Razor\ThingsGateway.Admin.Razor.csproj" />
-    <!--<ProjectReference Include="$(SolutionDir)\ThingsGateway.Gateway.Application\ThingsGateway.Gateway.Application.csproj" />-->
-    <ProjectReference Include="$(SolutionDir)\ThingsGateway.Gateway.Razor\ThingsGateway.Gateway.Razor.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(SolutionName)'=='ThingsGateway - Pro'">
     <ProjectReference Include="$(SolutionDir)\pro\ThingsGateway.Gateway.ProRazor\ThingsGateway.Gateway.ProRazor.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup Condition="'$(SolutionName)' != 'ThingsGateway - Admin'">
+    <ProjectReference Include="$(SolutionDir)\ThingsGateway.Gateway.Razor\ThingsGateway.Gateway.Razor.csproj" />
   </ItemGroup>
 
   <ItemGroup>

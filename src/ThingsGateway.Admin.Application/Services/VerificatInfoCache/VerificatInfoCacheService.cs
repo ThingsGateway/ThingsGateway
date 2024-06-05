@@ -59,7 +59,7 @@ public class VerificatInfoCacheService : BaseService<VerificatInfoCacheItem>, IV
                 data.TryAdd(id, verificatInfos);
             }
 #if DEBUG
-                HashSetDB(data);
+            HashSetDB(data);
 #endif
         }
     }
@@ -72,7 +72,7 @@ public class VerificatInfoCacheService : BaseService<VerificatInfoCacheItem>, IV
             var key = CacheConst.Cache_Token;
             App.CacheService.Set(key, dict);
 #if DEBUG
-                HashSetDB(dict);
+            HashSetDB(dict);
 #endif
         }
     }
@@ -85,7 +85,7 @@ public class VerificatInfoCacheService : BaseService<VerificatInfoCacheItem>, IV
             var key = CacheConst.Cache_Token;
             App.CacheService.Set(key, new Dictionary<long, List<VerificatInfo>>());
 #if DEBUG
-                HashSetDB(new Dictionary<long, List<VerificatInfo>>());
+            HashSetDB(new Dictionary<long, List<VerificatInfo>>());
 #endif
         }
     }
@@ -98,7 +98,7 @@ public class VerificatInfoCacheService : BaseService<VerificatInfoCacheItem>, IV
             var data = GetAll();
             data.RemoveWhere(a => ids.Contains(a.Key));
 #if DEBUG
-            if(ids.Length > 0)
+            if (ids.Length > 0)
             {
                 HashSetDB(data);
             }
@@ -164,8 +164,6 @@ public class VerificatInfo : PrimaryIdEntity
     /// <summary>
     /// 客户端ID列表
     /// </summary>
-    [Newtonsoft.Json.JsonIgnore]
-    [System.Text.Json.Serialization.JsonIgnore]
     [AutoGenerateColumn(Ignore = true)]
     public ConcurrentList<long> ClientIds { get; set; } = new();
 
