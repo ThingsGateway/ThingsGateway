@@ -78,7 +78,7 @@ public abstract class BusinessBaseWithCacheIntervalAlarmModel<VarModel, DevModel
     protected override Task ProtectedBeforStartAsync(CancellationToken cancellationToken)
     {
         // 启动间隔上传的数据获取线程
-        _ = IntervalInsert(cancellationToken);
+        _ = IntervalInsert();
         return base.ProtectedBeforStartAsync(cancellationToken);
     }
 
@@ -102,9 +102,9 @@ public abstract class BusinessBaseWithCacheIntervalAlarmModel<VarModel, DevModel
     /// <summary>
     /// 间隔上传数据的方法
     /// </summary>
-    protected virtual async Task IntervalInsert(CancellationToken cancellationToken)
+    protected virtual async Task IntervalInsert(CancellationToken cancellationToken = default)
     {
-        while (!cancellationToken.IsCancellationRequested)
+        while (!DisposedValue)
         {
             if (CurrentDevice?.KeepRun == false)
             {

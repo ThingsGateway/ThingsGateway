@@ -79,7 +79,7 @@ public abstract class BusinessBaseWithCacheIntervalDevModel<VarModel, DevModel> 
     /// <returns>异步任务</returns>
     protected override Task ProtectedBeforStartAsync(CancellationToken cancellationToken)
     {
-        _ = IntervalInsert(cancellationToken);
+        _ = IntervalInsert();
         return base.ProtectedBeforStartAsync(cancellationToken);
     }
 
@@ -104,9 +104,9 @@ public abstract class BusinessBaseWithCacheIntervalDevModel<VarModel, DevModel> 
     /// </summary>
     /// <param name="cancellationToken">取消令牌</param>
     /// <returns>异步任务</returns>
-    protected virtual async Task IntervalInsert(CancellationToken cancellationToken)
+    protected virtual async Task IntervalInsert(CancellationToken cancellationToken = default)
     {
-        while (!cancellationToken.IsCancellationRequested)
+        while (!DisposedValue)
         {
             if (CurrentDevice?.KeepRun == false)
             {

@@ -73,7 +73,7 @@ public abstract class BusinessBaseWithCacheIntervalVarModel<T> : BusinessBaseWit
     protected override Task ProtectedBeforStartAsync(CancellationToken cancellationToken)
     {
         // 启动间隔插入操作
-        _ = IntervalInsert(cancellationToken);
+        _ = IntervalInsert();
         return base.ProtectedBeforStartAsync(cancellationToken);
     }
 
@@ -93,9 +93,9 @@ public abstract class BusinessBaseWithCacheIntervalVarModel<T> : BusinessBaseWit
     /// </summary>
     /// <param name="cancellationToken">取消令牌</param>
     /// <returns>表示异步操作的任务</returns>
-    protected virtual async Task IntervalInsert(CancellationToken cancellationToken)
+    protected virtual async Task IntervalInsert(CancellationToken cancellationToken = default)
     {
-        while (!cancellationToken.IsCancellationRequested)
+        while (!DisposedValue)
         {
             if (CurrentDevice?.KeepRun == false)
             {
