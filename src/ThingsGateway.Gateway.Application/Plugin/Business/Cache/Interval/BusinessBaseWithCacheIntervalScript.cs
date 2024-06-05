@@ -78,7 +78,7 @@ public abstract partial class BusinessBaseWithCacheIntervalScript<VarModel, DevM
                     // 将主题中的占位符替换为分组键对应的值
                     for (int i = 0; i < topics.Count; i++)
                     {
-                        topic = topic.Replace(@"${" + topics[i] + @"}", group.Key[i].ToString());
+                        topic = topic.Replace(@"${" + topics[i] + @"}", group.Key[i]?.ToString());
                     }
 
                     // 上传内容
@@ -143,7 +143,7 @@ public abstract partial class BusinessBaseWithCacheIntervalScript<VarModel, DevM
                         // 将主题中的占位符替换为分组键对应的值
                         for (int i = 0; i < topics.Count; i++)
                         {
-                            topic = topic.Replace(@"${" + topics[i] + @"}", group.Key[i].ToString());
+                            topic = topic.Replace(@"${" + topics[i] + @"}", group.Key[i]?.ToString());
                         }
 
                         // 上传内容
@@ -208,7 +208,7 @@ public abstract partial class BusinessBaseWithCacheIntervalScript<VarModel, DevM
                         // 将主题中的占位符替换为分组键对应的值
                         for (int i = 0; i < topics.Count; i++)
                         {
-                            topic = topic.Replace(@"${" + topics[i] + @"}", group.Key[i].ToString());
+                            topic = topic.Replace(@"${" + topics[i] + @"}", group.Key[i]?.ToString());
                         }
 
                         // 上传内容

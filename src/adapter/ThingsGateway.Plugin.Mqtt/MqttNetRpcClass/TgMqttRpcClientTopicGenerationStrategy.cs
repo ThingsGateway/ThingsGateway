@@ -14,7 +14,7 @@ namespace ThingsGateway.Plugin.Mqtt;
 
 public sealed class TgMqttRpcClientTopicGenerationStrategy : IMqttRpcClientTopicGenerationStrategy
 {
-    public const string RpcTopic = "ThingsGateway.Rpc/+/{0}";
+    public const string RpcTopic = "{0}/+";
 
     public MqttRpcTopicPair CreateRpcTopics(TopicGenerationContext context)
     {

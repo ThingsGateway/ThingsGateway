@@ -38,19 +38,19 @@ public class BusinessPropertyWithCacheIntervalScript : BusinessPropertyWithCache
     /// <summary>
     /// 设备Topic
     /// </summary>
-    [DynamicProperty]
+    [DynamicProperty(Remark = "可使用${key}作为匹配项，key必须是上传实体中的属性，比如ThingsGateway/Device/${Name}")]
     public string DeviceTopic { get; set; } = "ThingsGateway/Device";
 
     /// <summary>
     /// 变量Topic
     /// </summary>
-    [DynamicProperty]
+    [DynamicProperty(Remark = "可使用${key}作为匹配项，key必须是上传实体中的属性，比如ThingsGateway/Variable/${DeviceName}")]
     public string VariableTopic { get; set; } = "ThingsGateway/Variable";
 
     /// <summary>
     /// 报警Topic
     /// </summary>
-    [DynamicProperty]
+    [DynamicProperty(Remark = "可使用${key}作为匹配项，key必须是上传实体中的属性，比如ThingsGateway/Alarm/${DeviceName}")]
     public string AlarmTopic { get; set; } = "ThingsGateway/Alarm";
 
     /// <summary>

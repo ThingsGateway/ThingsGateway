@@ -52,7 +52,7 @@ public class MqttServerProperty : BusinessPropertyWithCacheIntervalScript
     /// <summary>
     /// Rpc写入Topic
     /// </summary>
-    [DynamicProperty(Remark = "实际的写入主题为固定通配 {ThingsGateway.Rpc/+/[RpcWrite]} ,其中RpcWrite为该属性填入内容，+通配符是不固定GUID值，每次执行写入时会在不同的主题中返回；返回结果主题会在主题后添加Response , 也就是{ThingsGateway.Rpc/+/[RpcWrite]/Response}")]
+    [DynamicProperty(Remark = "实际的写入主题为固定通配 {RpcWrite/+} ，其中RpcWrite为该属性填入内容，+通配符是请求GUID值；返回结果主题会在主题后添加Response , 也就是{RpcWrite/+/Response}")]
     public string RpcWriteTopic
     {
         get
