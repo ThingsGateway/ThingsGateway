@@ -8,6 +8,8 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using Mapster;
+
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -28,9 +30,13 @@ public class OpenApiController : ControllerBase
 
     [HttpPost("login")]
     [AllowAnonymous]
-    public Task<LoginOutput> LoginAsync([FromBody] LoginInput input)
+    public async Task<OpenApiLoginOutput> LoginAsync([FromBody] OpenApiLoginInput input)
     {
-        return _authService.LoginAsync(input, false);
+        var output = await _authService.LoginAsync(input.Adapt<LoginInput>(), false);
+
+        var openApiLoginOutput = output.Adapt<OpenApiLoginOutput>();
+
+        return openApiLoginOutput;
     }
 
     [HttpGet("logout")]

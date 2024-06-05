@@ -10,6 +10,34 @@
 
 namespace ThingsGateway.Admin.Application;
 
+public class OpenApiLoginOutput
+{
+    /// <summary>
+    /// 验证ID
+    /// </summary>
+    public long VerificatId { get; set; }
+
+    /// <summary>
+    /// 账号
+    /// </summary>
+    public string Account { get; set; }
+
+    /// <summary>
+    /// 用户Id
+    /// </summary>
+    public long Id { get; set; }
+
+    /// <summary>
+    /// 令牌Token
+    /// </summary>
+    public string AccessToken { get; set; }
+
+    /// <summary>
+    /// 刷新Token
+    /// </summary>
+    public string RefreshToken { get; set; }
+}
+
 public class LoginOutput
 {
     /// <summary>
@@ -41,4 +69,14 @@ public class LoginOutput
     /// 模块列表
     /// </summary>
     public IEnumerable<SysResource> ModuleList { get; set; } = Enumerable.Empty<SysResource>();
+
+    /// <summary>
+    /// 令牌Token
+    /// </summary>
+    public string AccessToken { get; set; }
+
+    /// <summary>
+    /// 刷新Token
+    /// </summary>
+    public string RefreshToken { get; set; }
 }

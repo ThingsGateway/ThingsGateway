@@ -189,7 +189,7 @@ public class AlarmHostedService : BackgroundService
                 if (boolResult) // 如果计算结果为true
                 {
                     limit = tag.CustomAlarmCode; // 将报警限制值设置为自定义报警代码
-                    expressions = tag.CustomAlarmText!; // 获取自定义报警时的报警约束表达式
+                    expressions = tag.CustomRestrainExpressions!; // 获取自定义报警时的报警约束表达式
                     text = tag.CustomAlarmText!; // 获取自定义报警时的报警文本
                     return AlarmTypeEnum.Custom; // 返回自定义报警类型枚举
                 }

@@ -61,14 +61,17 @@ public class AuthService : IAuthService
         {
             throw Oops.Bah(appConfig.WebsitePolicy.CloseTip);
         }
-        string? password = null;
-        try
+        string? password = input.Password;
+        if (isCookie) //openApi登录不再需要解密
         {
-            password = DESCEncryption.Decrypt(input.Password);//解密
-        }
-        catch (Exception)
-        {
-            throw Oops.Bah("MustDesc");
+            try
+            {
+                password = DESCEncryption.Decrypt(input.Password);//解密
+            }
+            catch (Exception)
+            {
+                throw Oops.Bah("MustDesc");
+            }
         }
 
         BeforeLogin(appConfig, input.Account);//登录前校验
@@ -159,12 +162,14 @@ public class AuthService : IAuthService
 
         var verificatId = YitIdHelper.NextId();
         var expire = loginPolicy.VerificatExpireTime;
+        string accessToken = string.Empty;
+        string refreshToken = string.Empty;
         if (!isCookie)
         {
             #region Token
 
             //生成Token
-            var accessToken = JWTEncryption.Encrypt(new Dictionary<string, object>
+            accessToken = JWTEncryption.Encrypt(new Dictionary<string, object>
         {
             {
                 ClaimConst.UserId, sysUser.Id
@@ -180,7 +185,7 @@ public class AuthService : IAuthService
             }
         });
             // 生成刷新Token令牌
-            var refreshToken = JWTEncryption.GenerateRefreshToken(accessToken, expire * 2);
+            refreshToken = JWTEncryption.GenerateRefreshToken(accessToken, expire * 2);
             // 设置Swagger自动登录
             App.HttpContext!.SigninToSwagger(accessToken);
             // 设置响应报文头
@@ -234,7 +239,9 @@ public class AuthService : IAuthService
             Id = sysUser.Id,
             DefaultRazor = (await _sysResourceService.GetMenuByMenuIdsAsync(new List<long>() { (await _userCenterService.GetLoginWorkbenchAsync(sysUser.Id)).Razor })).FirstOrDefault()?.Href ?? "/",
             DefaultModule = sysUser.DefaultModule,
-            ModuleList = sysUser.ModuleList
+            ModuleList = sysUser.ModuleList,
+            AccessToken = accessToken,
+            RefreshToken = refreshToken
         };
     }
 

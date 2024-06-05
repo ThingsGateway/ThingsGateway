@@ -15,6 +15,26 @@ namespace ThingsGateway.Admin.Application;
 /// <summary>
 /// 登录输入参数
 /// </summary>
+public class OpenApiLoginInput
+{
+    /// <summary>
+    /// 账号
+    ///</summary>
+    /// <example>apiAdmin</example>
+    [Required]
+    public string Account { get; set; }
+
+    /// <summary>
+    /// 密码
+    ///</summary>
+    ///<example>111111</example>
+    [Required]
+    public string Password { get; set; }
+}
+
+/// <summary>
+/// 登录输入参数
+/// </summary>
 public class LoginInput
 {
     /// <summary>

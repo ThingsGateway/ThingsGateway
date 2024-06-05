@@ -9,7 +9,7 @@
 @namespace ThingsGateway.Plugin.TDengineDB
 
 
-<AdminTable TItem="TDengineDBHistoryValue" AutoGenerateColumns="true" ShowDefaultButtons=false
+<AdminTable TItem="TDengineDBHistoryValue" AutoGenerateColumns="false" ShowDefaultButtons=false
                 AllowResizing="true" IsFixedHeader=true IsMultipleSelect=false
                 ShowExtendEditButton=false ShowExtendDeleteButton=false ShowExtendButtons=false
             ShowExportButton="true" IsAutoQueryFirstRender=false
@@ -20,7 +20,15 @@
                 @Render(model)
             }
         </CustomerSearchTemplate>
+    <TableColumns>
+        <TableColumn @bind-Field="@context.DeviceName" ShowTips Filterable Sortable Visible />
+        <TableColumn @bind-Field="@context.Name" ShowTips Filterable Sortable Visible />
+        <TableColumn @bind-Field="@context.Value" ShowTips Filterable Sortable Visible />
+        <TableColumn Field="@context.CollectTime" ShowTips FieldExpression=@(()=>context.CollectTime) Filterable Sortable Visible />
+        <TableColumn Field="@context.IsOnline" FieldExpression=@(()=>context.IsOnline) Filterable Sortable Visible />
+        <TableColumn @bind-Field="@context.Id" Visible="false" DefaultSort=true DefaultSortOrder="SortOrder.Asc" />
 
+    </TableColumns>
     </AdminTable>
 
 @code {
