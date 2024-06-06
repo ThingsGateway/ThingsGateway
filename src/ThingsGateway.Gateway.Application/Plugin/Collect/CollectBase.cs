@@ -363,6 +363,9 @@ public abstract class CollectBase : DriverBase
                 }
                 else
                 {
+                    if (cancellationToken.IsCancellationRequested)
+                        return true;
+
                     // 方法调用失败时记录日志并增加失败计数器，更新错误信息
                     if (readVariableMethods.LastErrorMessage != readResult.ErrorMessage)
                     {
@@ -433,6 +436,9 @@ public abstract class CollectBase : DriverBase
                 else
                 {
                     {
+                        if (cancellationToken.IsCancellationRequested)
+                            return true;
+
                         // 读取失败时记录日志并增加失败计数器，更新错误信息并清除变量状态
                         if (variableSourceRead.LastErrorMessage != readResult.ErrorMessage)
                         {
