@@ -89,7 +89,9 @@ public partial class SqlDBProducer : BusinessBaseWithCacheIntervalVarModel<SQLHi
                 }
                 catch (Exception ex)
                 {
-                    LogMessage?.LogWarning(ex);
+                    if (success)
+                        LogMessage?.LogWarning(ex);
+                    success = false;
                 }
             }
         }

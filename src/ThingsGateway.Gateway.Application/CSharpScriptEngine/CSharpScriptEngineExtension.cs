@@ -151,8 +151,9 @@ using ThingsGateway.Gateway.Application;
         // 获取动态对象集合的类型
         var type = value.GetType().GetGenericArguments().LastOrDefault() ?? throw new ArgumentNullException(nameof(value));
 
+        var namesStr = names.ToSystemTextJsonString();
         // 构建缓存键，包括属性名和类型信息
-        var cacheKey = $"{names.ToSystemTextJsonString()}-{type.FullName}-{type.TypeHandle.Value}";
+        var cacheKey = $"{namesStr}-{type.FullName}-{type.TypeHandle.Value}";
 
         // 从缓存中获取属性信息，如果缓存不存在，则创建并缓存
         var result = App.CacheService.GetOrCreate(cacheKey, a =>
@@ -166,7 +167,7 @@ using ThingsGateway.Gateway.Application;
             // 检查是否找到了所有指定名称的属性，如果没有找到，则抛出异常
             if (names.Count() != properties.Count())
             {
-                throw new InvalidOperationException("Couldn't find all properties on type" + type.Name);
+                throw new InvalidOperationException($"Couldn't find properties on type：{type.Name}，{Environment.NewLine}names：{namesStr}");
             }
 
             return properties; // 返回属性信息集合

@@ -161,7 +161,8 @@ public abstract class BusinessBaseWithCacheDevModel<VarModel, DevModel> : Busine
                             }
                             catch (Exception ex)
                             {
-                                LogMessage?.LogWarning(ex);
+                                if (success)
+                                    LogMessage?.LogWarning(ex);
                                 success = false;
                                 break;
                             }
@@ -174,7 +175,8 @@ public abstract class BusinessBaseWithCacheDevModel<VarModel, DevModel> : Busine
                 }
                 catch (Exception ex)
                 {
-                    LogMessage?.LogWarning(ex);
+                    if (success)
+                        LogMessage?.LogWarning(ex);
                     success = false;
                 }
             }
@@ -212,16 +214,18 @@ public abstract class BusinessBaseWithCacheDevModel<VarModel, DevModel> : Busine
                     }
                     catch (Exception ex)
                     {
+                        if (success)
+                            LogMessage?.LogWarning(ex);
                         success = false;
-                        LogMessage?.LogWarning(ex);
                     }
                 }
             }
         }
         catch (Exception ex)
         {
+            if (success)
+                LogMessage?.LogWarning(ex);
             success = false;
-            LogMessage?.LogWarning(ex);
         }
 
         #endregion //上传设备内存队列中的数据
