@@ -25,7 +25,7 @@ ModbusSlave作为从站，响应主站的采集报文
 | ---------------| --------------------------| ---|
 | Modbus协议类型         | modbusTcp/modbusRtu格式报文           | |
 | 默认站号         | 默认的mudbus站号id            | **变量可单独配置站号**   |
-| 默认解析顺序         | 4个字节以上的数据解析，可设置为ABCD/BADC/CDBA/DCBA,默认ABCD , **变量可单独配置**|ABCD：Big-Endian<br></br>BADC：Big-Endian Byte Swap<br></br>CDAB：Little-Endian Byte Swap<br></br>DCBA：Little-Endian |
+| 默认解析顺序         | 4个字节以上的数据解析，可设置为BigSwap/LittleSwap/Big/Little,默认Little , **变量可单独配置**| |
 | 无交互2min时断开连接         |  没有发送/收到消息 ，2分钟后断开连接             | 仅适用于TcpService链路|
 | 组包缓存超时         | 分包时的分包间隔超时时间              | 1000 |
 | 多站点         | 是否区分不同的站号的数据              | true|
