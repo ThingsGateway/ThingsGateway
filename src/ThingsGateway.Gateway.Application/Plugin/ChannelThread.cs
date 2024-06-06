@@ -525,7 +525,7 @@ public class ChannelThread
         }
     }
 
-    private static int releaseCount = 0;
+    private int releaseCount = 0;
 
     /// <summary>
     /// DoWork
