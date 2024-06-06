@@ -31,13 +31,13 @@ public class DtuPlugin : PluginBase, ITcpReceivingPlugin
                 client.Logger.Info(DefaultResource.Localizer["DtuConnected", id]);
                 e.Handled = true;
             }
-            if (DtuService.HeartbeatHexString == e.ByteBlock.AsSegment().ToHexString())
+            if (DtuService.HeartbeatHexString == e.ByteBlock.AsSegment().ToHexString(default))
             {
                 //回应心跳包
                 socket.Send(e.ByteBlock.AsSegment());
                 e.Handled = true;
                 if (socket.Logger.LogLevel <= LogLevel.Trace)
-                    socket.Logger?.Trace($"{socket}- Send:{DtuService.HeartbeatHexString}");
+                    socket.Logger?.Trace($"{socket}- Heartbeat");
             }
         }
         await e.InvokeNext().ConfigureAwait(false);//如果本插件无法处理当前数据，请将数据转至下一个插件。
