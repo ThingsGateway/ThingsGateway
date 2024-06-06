@@ -99,8 +99,12 @@ public partial class MqttServer : BusinessBaseWithCacheIntervalScript<VariableDa
             _mqttServer.LoadingRetainedMessageAsync -= MqttServer_LoadingRetainedMessageAsync;
             _mqttServer?.SafeDispose();
         }
-        await _webHost?.StopAsync();
-        _webHost?.SafeDispose();
+        if (_webHost != null)
+        {
+            await _webHost?.StopAsync();
+            _webHost?.SafeDispose();
+        }
+
         base.Dispose(disposing);
     }
 }
