@@ -112,6 +112,11 @@ public partial class AdminTable<TItem> where TItem : class, new()
     [Parameter]
     public RenderFragment<TItem>? EditTemplate { get; set; }
 
+    /// <inheritdoc cref="Table{TItem}.TableToolbarBeforeTemplate"/>
+    [NotNull]
+    [Parameter]
+    public RenderFragment? TableToolbarBeforeTemplate { get; set; }
+
     /// <inheritdoc cref="Table{TItem}.TableToolbarTemplate"/>
     [NotNull]
     [Parameter]
