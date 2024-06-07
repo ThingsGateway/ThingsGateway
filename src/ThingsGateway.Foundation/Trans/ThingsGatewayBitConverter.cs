@@ -66,9 +66,6 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
     /// <inheritdoc/>
     public virtual bool IsStringReverseByteWord { get; set; }
 
-    /// <inheritdoc/>
-    public virtual bool IsBoolReverseByteWord { get; set; }
-
     internal TouchSocketBitConverter TouchSocketBitConverter => TouchSocketBitConverter.GetBitConverter(EndianType);
 
     #region GetBytes
@@ -222,10 +219,10 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
     }
 
     /// <inheritdoc/>
-    public virtual bool ToBoolean(byte[] buffer, int offset)
+    public virtual bool ToBoolean(byte[] buffer, int offset, bool isReverse)
     {
         byte[] bytes;
-        if (IsBoolReverseByteWord)
+        if (isReverse)
             bytes = buffer.BytesReverseByWord();
         else
             bytes = buffer.CopyArray();
@@ -286,12 +283,12 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
     }
 
     /// <inheritdoc/>
-    public virtual bool[] ToBoolean(byte[] buffer, int offset, int len)
+    public virtual bool[] ToBoolean(byte[] buffer, int offset, int len, bool isReverse = false)
     {
         bool[] result = new bool[len];
         for (int i = 0; i < result.Length; i++)
         {
-            result[i] = ToBoolean(buffer, offset + i);
+            result[i] = ToBoolean(buffer, offset + i, isReverse);
         }
         return result;
     }

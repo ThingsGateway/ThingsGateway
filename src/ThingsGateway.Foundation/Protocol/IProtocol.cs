@@ -459,4 +459,11 @@ public interface IProtocol : IDisposable
     ValueTask<OperResult<byte[]>> SendThenReturnAsync(string socketId, byte[] sendBytes, CancellationToken cancellationToken);
 
     ValueTask<OperResult<byte[]>> SendThenReturnAsync(byte[] sendBytes, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// 布尔量解析时是否需要按字反转
+    /// </summary>
+    /// <param name="address">变量地址</param>
+    /// <returns></returns>
+    bool BitReverse(string address);
 }

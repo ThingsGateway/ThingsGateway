@@ -24,14 +24,14 @@ public static class VariableValuePraseExtensions
     /// <param name="buffer">返回的字节数组</param>
     /// <param name="exWhenAny">任意一个失败时抛出异常</param>
     /// <returns>解析结果</returns>
-    public static void PraseStructContent<T>(this IEnumerable<T> variables, byte[] buffer, bool exWhenAny = false) where T : IVariable
+    public static void PraseStructContent<T>(this IEnumerable<T> variables, IProtocol protocol, byte[] buffer, bool exWhenAny = false) where T : IVariable
     {
         foreach (var variable in variables)
         {
             IThingsGatewayBitConverter byteConverter = variable.ThingsGatewayBitConverter;
             var dataType = variable.DataType;
             int index = variable.Index;
-            var data = byteConverter.GetDataFormBytes(buffer, index, dataType);
+            var data = byteConverter.GetDataFormBytes(protocol, variable.RegisterAddress, buffer, index, dataType);
             Set(variable, data);
         }
         void Set(IVariable organizedVariable, object num)

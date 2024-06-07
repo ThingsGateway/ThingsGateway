@@ -57,11 +57,6 @@ public interface IThingsGatewayBitConverter
     int? ArrayLength { get; set; }
 
     /// <summary>
-    /// 获取或设置在解析布尔的时候是否将字节按照字单位反转
-    /// </summary>
-    bool IsBoolReverseByteWord { get; set; }
-
-    /// <summary>
     /// 获取或设置在解析字符串的时候是否将字节按照字单位反转
     /// </summary>
     bool IsStringReverseByteWord { get; set; }
@@ -192,10 +187,11 @@ public interface IThingsGatewayBitConverter
     /// </summary>
     /// <param name="buffer">等待提取的缓存数据</param>
     /// <param name="offset">位的索引，注意：是从0开始的位索引，10则表示 buffer[1] 的第二位。</param>
-    bool ToBoolean(byte[] buffer, int offset);
+    /// <param name="isReverse">是否需要按字反转</param>
+    bool ToBoolean(byte[] buffer, int offset, bool isReverse);
 
     /// <inheritdoc/>
-    bool[] ToBoolean(byte[] buffer, int offset, int len);
+    bool[] ToBoolean(byte[] buffer, int offset, int len, bool isReverse);
 
     /// <inheritdoc/>
     byte ToByte(byte[] buffer, int offset);

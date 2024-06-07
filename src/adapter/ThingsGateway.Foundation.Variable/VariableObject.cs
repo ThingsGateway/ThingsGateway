@@ -66,7 +66,7 @@ public abstract class VariableObject
                 var result = await Protocol.ReadAsync(item.RegisterAddress, item.Length, cancellationToken).ConfigureAwait(false);
                 if (result.IsSuccess)
                 {
-                    item.VariableRunTimes.PraseStructContent(result.Content, exWhenAny: true);
+                    item.VariableRunTimes.PraseStructContent(Protocol, result.Content, exWhenAny: true);
                 }
                 else
                 {

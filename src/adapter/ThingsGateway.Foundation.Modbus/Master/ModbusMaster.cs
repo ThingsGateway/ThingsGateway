@@ -23,7 +23,6 @@ public partial class ModbusMaster : ProtocolBase, IDtu
     public ModbusMaster(IChannel channel) : base(channel)
     {
         ThingsGatewayBitConverter = new ThingsGatewayBitConverter(EndianType.Big);
-        IsBoolReverseByteWord = true;
         RegisterByteLength = 2;
         if (channel is IClientChannel client)
             client.WaitHandlePool.MaxSign = ushort.MaxValue;

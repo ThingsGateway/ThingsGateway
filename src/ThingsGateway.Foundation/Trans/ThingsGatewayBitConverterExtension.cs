@@ -8,7 +8,13 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using NewLife.Caching;
+
 using Newtonsoft.Json.Linq;
+
+using System.Text;
+
+using ThingsGateway.Foundation.Extension.String;
 
 namespace ThingsGateway.Foundation;
 
@@ -17,19 +23,132 @@ namespace ThingsGateway.Foundation;
 /// </summary>
 public static class ThingsGatewayBitConverterExtension
 {
+    /// <summary>
+    /// 从设备地址中解析附加信息，包括 endianType=XX;4字节数据解析规则、encoding=XX;字符串解析规则、len=XX;读写长度、bcdFormat=XX; bcd解析规则等。
+    /// 这个方法获取<see cref="IThingsGatewayBitConverter"/>，并去掉地址中的所有额外信息。
+    /// 解析步骤将被缓存。
+    /// </summary>
+    /// <param name="registerAddress">设备地址</param>
+    /// <param name="defaultBitConverter">默认的数据转换器</param>
+    /// <returns><see cref="IThingsGatewayBitConverter"/> 实例</returns>
+    public static IThingsGatewayBitConverter GetTransByAddress(this IThingsGatewayBitConverter defaultBitConverter, ref string? registerAddress)
+    {
+        if (registerAddress.IsNullOrEmpty()) return defaultBitConverter;
+
+        var type = defaultBitConverter.GetType();
+        // 尝试从缓存中获取解析结果
+        var cacheKey = $"{nameof(ThingsGatewayBitConverterExtension)}_{nameof(GetTransByAddress)}_{type.FullName}_{defaultBitConverter.ToJsonString()}_{registerAddress}";
+        if (MemoryCache.Instance.TryGetValue(cacheKey, out IThingsGatewayBitConverter cachedConverter))
+        {
+            return (IThingsGatewayBitConverter)cachedConverter!.Map(type);
+        }
+
+        // 去除设备地址两端的空格
+        registerAddress = registerAddress.Trim();
+
+        // 根据分号拆分附加信息
+        var strs = registerAddress.SplitStringBySemicolon();
+
+        EndianType? endianType = null;
+        Encoding? encoding = null;
+        int? length = null;
+        int? stringlength = null;
+        BcdFormatEnum? bcdFormat = null;
+        StringBuilder sb = new();
+        foreach (var str in strs)
+        {
+            // 解析 endianType
+            if (str.ToLower().StartsWith("data="))
+            {
+                var endianTypeName = str.Substring(5);
+                try { if (Enum.TryParse<EndianType>(endianTypeName, true, out var endianType1)) endianType = endianType1; } catch { }
+            }
+            // 解析 encoding
+            else if (str.ToLower().StartsWith("encoding="))
+            {
+                var encodingName = str.Substring(9);
+                try { encoding = Encoding.GetEncoding(encodingName); } catch { }
+            }
+            // 解析 length
+            else if (str.ToLower().StartsWith("len="))
+            {
+                var lenStr = str.Substring(4);
+                stringlength = lenStr.IsNullOrEmpty() ? null : Convert.ToUInt16(lenStr);
+            }
+            // 解析 array length
+            else if (str.ToLower().StartsWith("arraylen="))
+            {
+                var lenStr = str.Substring(9);
+                length = lenStr.IsNullOrEmpty() ? null : Convert.ToUInt16(lenStr);
+            }
+            // 解析 bcdFormat
+            else if (str.ToLower().StartsWith("bcd="))
+            {
+                var bcdName = str.Substring(4);
+                try { if (Enum.TryParse<BcdFormatEnum>(bcdName, true, out var bcdFormat1)) bcdFormat = bcdFormat1; } catch { }
+            }
+            // 处理其他情况，将未识别的部分拼接回去
+            else
+            {
+                if (sb.Length > 0)
+                    sb.Append($";{str}");
+                else
+                    sb.Append($"{str}");
+            }
+        }
+
+        // 更新设备地址为去除附加信息后的地址
+        registerAddress = sb.ToString();
+
+        // 如果没有解析出任何附加信息，则直接返回默认的数据转换器
+        if (bcdFormat == null && length == null && stringlength == null && encoding == null && endianType == null)
+        {
+            return defaultBitConverter;
+        }
+
+        // 根据默认的数据转换器创建新的数据转换器实例
+        var converter = (IThingsGatewayBitConverter)defaultBitConverter!.Map(type);
+
+        // 更新新的数据转换器实例的属性值
+        if (encoding != null)
+        {
+            converter.Encoding = encoding;
+        }
+        if (bcdFormat != null)
+        {
+            converter.BcdFormat = bcdFormat.Value;
+        }
+        if (length != null)
+        {
+            converter.ArrayLength = length.Value;
+        }
+        if (stringlength != null)
+        {
+            converter.StringLength = stringlength.Value;
+        }
+        if (endianType != null)
+        {
+            converter.EndianType = endianType.Value;
+        }
+
+        // 将解析结果添加到缓存中，缓存有效期为3600秒
+        MemoryCache.Instance.Set(cacheKey, (IThingsGatewayBitConverter)converter!.Map(type), 3600);
+        return converter;
+    }
+
     #region 获取对应数据类型的数据
 
     /// <summary>
     /// 根据数据类型获取实际值
     /// </summary>
-    public static object GetDataFormBytes(this IThingsGatewayBitConverter byteConverter, byte[] buffer, int index, DataTypeEnum dataType)
+    public static object GetDataFormBytes(this IThingsGatewayBitConverter byteConverter, IProtocol protocol, string address, byte[] buffer, int index, DataTypeEnum dataType)
     {
         switch (dataType)
         {
             case DataTypeEnum.Boolean:
                 return byteConverter.ArrayLength > 1 ?
-                byteConverter.ToBoolean(buffer, index, byteConverter.ArrayLength.Value) :
-                byteConverter.ToBoolean(buffer, index);
+                byteConverter.ToBoolean(buffer, index, byteConverter.ArrayLength.Value, protocol.BitReverse(address)) :
+                byteConverter.ToBoolean(buffer, index, protocol.BitReverse(address));
 
             case DataTypeEnum.Byte:
                 return

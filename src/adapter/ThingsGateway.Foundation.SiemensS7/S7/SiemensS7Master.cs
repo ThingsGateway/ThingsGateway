@@ -22,7 +22,6 @@ public partial class SiemensS7Master : ProtocolBase
     public SiemensS7Master(IChannel channel) : base(channel)
     {
         RegisterByteLength = 1;
-        IsBoolReverseByteWord = false;
         ThingsGatewayBitConverter = new ThingsGatewayBitConverter(EndianType.Big);
     }
 
@@ -83,6 +82,12 @@ public partial class SiemensS7Master : ProtocolBase
             }
         }
         return 0;
+    }
+
+    /// <inheritdoc/>
+    public override bool BitReverse(string address)
+    {
+        return false;
     }
 
     /// <inheritdoc/>

@@ -76,7 +76,7 @@ public partial class AdapterDebugComponent : AdapterDebugBase
                 {
                     try
                     {
-                        item.VariableRunTimes.PraseStructContent(result.Content, exWhenAny: true);
+                        item.VariableRunTimes.PraseStructContent(Plc, result.Content, exWhenAny: true);
                     }
                     catch (Exception ex)
                     {

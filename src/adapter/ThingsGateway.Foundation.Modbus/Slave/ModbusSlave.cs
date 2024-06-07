@@ -28,7 +28,6 @@ public class ModbusSlave : ProtocolBase, ITcpService
     public ModbusSlave(IChannel channel) : base(channel)
     {
         ThingsGatewayBitConverter = new ThingsGatewayBitConverter(EndianType.Big);
-        IsBoolReverseByteWord = true;
         RegisterByteLength = 2;
         if (channel is IClientChannel client)
             client.WaitHandlePool.MaxSign = ushort.MaxValue;

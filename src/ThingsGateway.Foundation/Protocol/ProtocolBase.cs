@@ -63,21 +63,6 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     public virtual ushort ConnectTimeout { get; set; } = 3000;
 
     /// <summary>
-    /// <inheritdoc cref="IThingsGatewayBitConverter.IsBoolReverseByteWord"/>
-    /// </summary>
-    public bool IsBoolReverseByteWord
-    {
-        get
-        {
-            return ThingsGatewayBitConverter.IsBoolReverseByteWord;
-        }
-        set
-        {
-            ThingsGatewayBitConverter.IsBoolReverseByteWord = value;
-        }
-    }
-
-    /// <summary>
     /// <inheritdoc cref="IThingsGatewayBitConverter.IsStringReverseByteWord"/>
     /// </summary>
     public bool IsStringReverseByteWord
@@ -195,10 +180,16 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     }
 
     /// <inheritdoc/>
+    public virtual bool BitReverse(string address)
+    {
+        return address?.IndexOf('.') > 0;
+    }
+
+    /// <inheritdoc/>
     public virtual int GetLength(string address, int length, int typeLength, bool isBool = false)
     {
         var result = Math.Ceiling((double)length * typeLength / RegisterByteLength);
-        if (isBool)
+        if (isBool && BitReverse(address))
         {
             var data = Math.Ceiling((double)length / RegisterByteLength / 8);
             return (int)data;
@@ -447,7 +438,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
 
         var result = await ReadAsync(address, GetLength(address, length, RegisterByteLength, true), cancellationToken).ConfigureAwait(false);
 
-        return result.OperResultFrom(() => bitConverter.ToBoolean(result.Content, GetBitOffset(address), length));
+        return result.OperResultFrom(() => bitConverter.ToBoolean(result.Content, GetBitOffset(address), length, BitReverse(address)));
     }
 
     /// <inheritdoc/>

@@ -103,7 +103,7 @@ public abstract class CollectBase : DriverBase
             // 如果读取成功且有有效内容，则解析结构化内容
             if (read.IsSuccess)
             {
-                variableSourceRead.VariableRunTimes.PraseStructContent(read.Content);
+                variableSourceRead.VariableRunTimes.PraseStructContent(Protocol, read.Content);
             }
 
             // 返回读取结果
