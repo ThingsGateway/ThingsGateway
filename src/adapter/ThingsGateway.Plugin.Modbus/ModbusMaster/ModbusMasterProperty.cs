@@ -39,7 +39,7 @@ public class ModbusMasterProperty : CollectPropertyBase
     /// 默认DtuId
     /// </summary>
     [DynamicProperty]
-    public string? DtuId { get; set; }
+    public string? DtuId { get; set; } = "TEST";
 
     /// <summary>
     /// 默认解析顺序

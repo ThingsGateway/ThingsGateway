@@ -33,6 +33,10 @@
     "MulStation": "多站点",
     "MaxClientCount": "最大连接数",
 
+    "DtuId": "Dtu注册包",
+    "HeartbeatTime": "心跳间隔时间",
+    "HeartbeatHexString": "心跳检测(大写16进制字符串)",
+
     "Timeout": "读写超时时间",
     "ConnectTimeout": "连接超时时间",
     "SendDelayTime": "发送延时",

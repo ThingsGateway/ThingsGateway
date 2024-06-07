@@ -21,6 +21,10 @@
     "IsWriteMemory": "立即写入内存",
     "MaxClientCount": "最大连接数量",
 
+    "DtuId": "Dtu注册包",
+    "HeartbeatTime": "心跳间隔时间",
+    "HeartbeatHexString": "心跳检测(大写16进制字符串)",
+
     "CacheTimeout": "组包缓存时间",
     "SendDelayTime": "发送延时",
     "EndianType": "解析规则",

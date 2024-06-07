@@ -22,7 +22,7 @@ namespace ThingsGateway.Foundation.Modbus;
 public delegate ValueTask<OperResult> ModbusServerWriteEventHandler(ModbusAddress modbusAddress, byte[] writeValue, IThingsGatewayBitConverter bitConverter, IClientChannel channel);
 
 /// <inheritdoc/>
-public class ModbusSlave : ProtocolBase, ITcpService
+public class ModbusSlave : ProtocolBase, ITcpService, IDtuClient
 {
     /// <inheritdoc/>
     public ModbusSlave(IChannel channel) : base(channel)
@@ -71,6 +71,10 @@ public class ModbusSlave : ProtocolBase, ITcpService
     /// </summary>
     public int MaxClientCount { get; set; } = 10000;
 
+    public string DtuId { get; set; } = "TEST";
+    public int HeartbeatTime { get; set; } = 5;
+    public string HeartbeatHexString { get; set; } = "FFFF8080";
+
     #endregion 属性
 
     /// <summary>
@@ -112,6 +116,9 @@ public class ModbusSlave : ProtocolBase, ITcpService
         {
             case ChannelTypeEnum.TcpService:
                 return PluginUtil.GetTcpServicePlugin(this);
+
+            case ChannelTypeEnum.TcpClient:
+                return PluginUtil.GetDtuClientPlugin(this);
         }
         return base.ConfigurePlugins();
     }

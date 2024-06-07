@@ -53,4 +53,15 @@ public static class PluginUtil
 
         return action;
     }
+
+    public static Action<IPluginManager> GetDtuClientPlugin(IDtuClient dtuClient)
+    {
+        Action<IPluginManager> action = a => { };
+
+        action += a =>
+        {
+            a.Add(new HeartbeatAndReceivePlugin(dtuClient));
+        };
+        return action;
+    }
 }

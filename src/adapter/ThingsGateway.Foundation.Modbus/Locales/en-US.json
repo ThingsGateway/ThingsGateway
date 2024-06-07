@@ -21,6 +21,10 @@
     "IsWriteMemory": "IsWriteMemory",
     "MaxClientCount": "MaxClientCount",
 
+    "DtuId": "DtuId",
+    "HeartbeatTime": "HeartbeatTime",
+    "HeartbeatHexString": "HeartbeatHexString",
+
     "CacheTimeout": "CacheTimeout",
     "SendDelayTime": "SendDelayTime",
     "EndianType": "EndianType",

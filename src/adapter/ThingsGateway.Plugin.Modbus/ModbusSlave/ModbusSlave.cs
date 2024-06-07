@@ -87,6 +87,9 @@ public class ModbusSlave : BusinessBase
             MulStation = _driverPropertys.MulStation,
             ModbusType = _driverPropertys.ModbusType,
             MaxClientCount = _driverPropertys.MaxClientCount,
+            DtuId = _driverPropertys.DtuId,
+            HeartbeatTime = _driverPropertys.HeartbeatTime,
+            HeartbeatHexString = _driverPropertys.HeartbeatHexString,
         };
 
         GlobalData.VariableValueChangeEvent -= VariableValueChange;

@@ -8,6 +8,10 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using System.ComponentModel.DataAnnotations;
+
+using TouchSocket.Core;
+
 namespace ThingsGateway.Foundation;
 
 [PluginOption(Singleton = true)]
