@@ -31,7 +31,7 @@ ModbusMatser作为主站，主动采集Modbus从站协议的设备
 | 连接超时时间         | 建立通讯链路的超时时间                | 3000|
 | 发送延时时间         | 在发送请求前的延时时间               | 0|
 | 组包缓存超时         | 返回分包时的分包间隔超时时间              | 1000 |
-| 默认解析顺序         | 4个字节以上的数据解析，可设置为BigSwap/LittleSwap/Big/Little,默认Little , **变量可单独配置**| |
+| 默认解析顺序         | 4个字节以上的数据解析，可设置为ABCD/BADC/CDBA/DCBA,默认ABCD , **变量可单独配置**|ABCD：Big-Endian<br></br>BADC：Big-Endian Byte Swap<br></br>CDAB：Little-Endian Byte Swap<br></br>DCBA：Little-Endian |
 | 最大打包长度         | 打包长度，最大限值是125              | 100 |
 | 离线重试间隔         | 设备检测到离线时，重新连接的间隔时间（秒）              | 30 |
 | 失败重试次数         | 读取失败时，重试n次后判定变量为离线              | 3 |
