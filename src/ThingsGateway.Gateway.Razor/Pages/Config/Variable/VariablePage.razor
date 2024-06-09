@@ -75,6 +75,8 @@
                               {
                               await ToastService.Default(); await table.QueryAsync();
                               });
+                              await Change();
+                              await InvokeAsync(StateHasChanged);
                               });} )>
 
                 <BodyTemplate>

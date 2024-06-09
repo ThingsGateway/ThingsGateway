@@ -7,20 +7,41 @@
 
 <Card>
     <BodyTemplate>
-        <div class=@($"{ClassString} row mx-2")>
-            <div class="col-12  col-md-6 ">
-                <BootstrapInputGroup>
-                    <BootstrapInputGroupLabel DisplayText=@Localizer["Channel"] />
-                    <Select IsVirtualize @bind-Value="@ChannelId" Items="@ChannelDataItems" ShowSearch="true" ShowLabel="true" OnSelectedItemChanged="OnSelectedItemChanged" />
-                    <Button class="text-end" Icon="fa-solid fa-plus" OnClick="HandleAddClick"></Button>
-                    <Button class="text-end" Icon="fa-solid fa-edit" OnClick="HandleEditClick"></Button>
-                    <PopConfirmButton class="text-end" Icon="far fa-trash-alt" OnConfirm="HandleDeleteClick" Color="Color.Warning"></PopConfirmButton>
-                </BootstrapInputGroup>
-            </div>
-            <div class="col-12  col-md-6 ">
-                <Button IsAsync class="mx-2" Color=Color.Primary OnClick="ConnectClick">@Localizer["Connect"]</Button>
-                <Button IsAsync class="mx-2" Color=Color.Warning OnClick="OnDisconnectClick">@Localizer["Disconnect"]</Button>
-            </div>
-        </div>
+        <ValidateForm Model="Model" OnValidSubmit="ValidSubmit">
+
+            <EditorForm class="p-2" AutoGenerateAllItem="false" RowType=RowType.Inline ItemsPerRow=4 LabelWidth=200 Model="Model" >
+
+                <FieldItems>
+
+                    <EditorItem @bind-Field="@context.ChannelType">
+
+                        <EditTemplate Context="value">
+                            <div class="col-12 col-sm-6 col-md-3">
+                                <Select SkipValidate="true" @bind-Value="@value.ChannelType" OnSelectedItemChanged=@((a)=>InvokeAsync(StateHasChanged)) />
+                            </div>
+                        </EditTemplate>
+
+                    </EditorItem>
+
+                    <EditorItem @bind-Field="@context.RemoteUrl" Ignore=@(context.ChannelType!=ChannelTypeEnum.TcpClient&&context.ChannelType!=ChannelTypeEnum.UdpSession) />
+                    <EditorItem @bind-Field="@context.BindUrl" Ignore=@(context.ChannelType!=ChannelTypeEnum.TcpClient&&context.ChannelType!=ChannelTypeEnum.UdpSession&&context.ChannelType!=ChannelTypeEnum.TcpService) />
+
+                    <EditorItem @bind-Field="@context.PortName" Ignore=@(context.ChannelType!=ChannelTypeEnum.SerialPort) />
+                    <EditorItem @bind-Field="@context.BaudRate" Ignore=@(context.ChannelType!=ChannelTypeEnum.SerialPort) />
+                    <EditorItem @bind-Field="@context.DataBits" Ignore=@(context.ChannelType!=ChannelTypeEnum.SerialPort) />
+                    <EditorItem @bind-Field="@context.Parity" Ignore=@(context.ChannelType!=ChannelTypeEnum.SerialPort) />
+                    <EditorItem @bind-Field="@context.StopBits" Ignore=@(context.ChannelType!=ChannelTypeEnum.SerialPort) />
+                    <EditorItem @bind-Field="@context.DtrEnable" Ignore=@(context.ChannelType!=ChannelTypeEnum.SerialPort) />
+                    <EditorItem @bind-Field="@context.RtsEnable" Ignore=@(context.ChannelType!=ChannelTypeEnum.SerialPort) />
+
+                </FieldItems>
+                <Buttons>
+                    <Button ButtonType="ButtonType.Submit"  IsAsync class="mx-2" Color=Color.Primary OnClick="ConnectClick">@Localizer["Connect"]</Button>
+                    <Button IsAsync class="mx-2" Color=Color.Warning OnClick="DisconnectClick">@Localizer["Disconnect"]</Button>
+                </Buttons>
+            </EditorForm>
+
+        </ValidateForm>
+
     </BodyTemplate>
 </Card>

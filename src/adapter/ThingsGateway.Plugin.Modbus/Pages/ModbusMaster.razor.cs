@@ -8,8 +8,6 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using BootstrapBlazor.Components;
-
 using Microsoft.AspNetCore.Components;
 
 using ThingsGateway.Foundation;
@@ -40,51 +38,25 @@ public partial class ModbusMaster : ComponentBase, IDisposable
         GC.SuppressFinalize(this);
     }
 
-    [Inject]
-    private IDispatchService<ChannelData>? DispatchService { get; set; }
-
-    protected override void OnInitialized()
-    {
-        DispatchService.Subscribe(Notify);
-        base.OnInitialized();
-    }
-
-    private async Task Notify(DispatchEntry<ChannelData> entry)
-    {
-        if (entry.Entry.Id == ChannelData.Id)
-        {
-            await OnEditClick(entry.Entry);
-        }
-    }
-
-    private async Task OnConnectClick()
-    {
-        if (ChannelData != null)
-        {
-            try
-            {
-                await ChannelData.Channel.ConnectAsync(_plc.ConnectTimeout, default);
-            }
-            catch (Exception ex)
-            {
-                ChannelData.Channel.Logger.Exception(ex);
-            }
-        }
-    }
-
-    private async Task OnEditClick(ChannelData channelData)
+    private async Task OnConnectClick(ChannelData channelData)
     {
         ChannelData = channelData;
-        if (channelData != null)
+        _plc = new ThingsGateway.Foundation.Modbus.ModbusMaster(channelData.Channel);
+        LogPath = channelData.Id.GetDebugLogPath();
+        try
         {
-            _plc = new ThingsGateway.Foundation.Modbus.ModbusMaster(channelData.Channel);
-            LogPath = channelData.Id.GetDebugLogPath();
+            await ChannelData.Channel.ConnectAsync(_plc.ConnectTimeout, default);
         }
-        else
+        catch (Exception ex)
         {
-            _plc?.Dispose();
-            _plc = null;
+            ChannelData.Channel.Logger.Exception(ex);
         }
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task OnDisConnectClick()
+    {
+        _plc?.SafeDispose();
         await InvokeAsync(StateHasChanged);
     }
 }

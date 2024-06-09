@@ -36,40 +36,25 @@ public partial class SiemensS7Master : IDisposable
         GC.SuppressFinalize(this);
     }
 
-    private void OnChannelChanged(ChannelData channelData)
-    {
-        _plc = new ThingsGateway.Foundation.SiemensS7.SiemensS7Master(channelData.Channel);
-        LogPath = channelData.Id.GetDebugLogPath();
-    }
-
-    private async Task OnConnectClick()
-    {
-        if (ChannelData != null)
-        {
-            try
-            {
-                await ChannelData.Channel.ConnectAsync(_plc.ConnectTimeout, default);
-            }
-            catch (Exception ex)
-            {
-                ChannelData.Channel.Logger.Exception(ex);
-            }
-        }
-    }
-
-    private async Task OnEditClick(ChannelData channelData)
+    private async Task OnConnectClick(ChannelData channelData)
     {
         ChannelData = channelData;
-        if (channelData != null)
+        _plc = new ThingsGateway.Foundation.SiemensS7.SiemensS7Master(channelData.Channel);
+        LogPath = channelData.Id.GetDebugLogPath();
+        try
         {
-            _plc = new ThingsGateway.Foundation.SiemensS7.SiemensS7Master(channelData.Channel);
-            LogPath = channelData.Id.GetDebugLogPath();
+            await ChannelData.Channel.ConnectAsync(_plc.ConnectTimeout, default);
         }
-        else
+        catch (Exception ex)
         {
-            _plc?.Dispose();
-            _plc = null;
+            ChannelData.Channel.Logger.Exception(ex);
         }
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task OnDisConnectClick()
+    {
+        _plc?.SafeDispose();
         await InvokeAsync(StateHasChanged);
     }
 }

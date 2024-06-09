@@ -11,12 +11,13 @@
 using BootstrapBlazor.Components;
 
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.Extensions.Localization;
 
 using ThingsGateway.Foundation;
+using ThingsGateway.Razor;
 
 using TouchSocket.Core;
-using TouchSocket.Sockets;
 
 namespace ThingsGateway.Debug;
 
@@ -26,19 +27,14 @@ public partial class ChannelDataDebugComponent : ComponentBase
     public string ClassString { get; set; }
 
     [Parameter]
-    public EventCallback OnConnectClick { get; set; }
+    public EventCallback<ChannelData> OnConnectClick { get; set; }
 
-    [Parameter, EditorRequired]
-    public EventCallback<ChannelData> OnEditClick { get; set; }
+    [Parameter]
+    public EventCallback OnDisConnectClick { get; set; }
 
-    private ChannelData? ChannelData { get; set; }
+    private ChannelData? Model { get; set; } = new();
 
     private IEnumerable<SelectedItem> ChannelDataItems { get; set; }
-
-    private long ChannelId { get; set; }
-
-    [Inject]
-    private DialogService DialogService { get; set; }
 
 #if DriverDebug
 
@@ -55,193 +51,99 @@ public partial class ChannelDataDebugComponent : ComponentBase
     [Inject]
     private ToastService ToastService { get; set; }
 
+    public Task ValidSubmit(EditContext editContext)
+    {
+        CheckInput(Model);
+        return Task.CompletedTask;
+    }
+
     private void CheckInput(ChannelData input)
     {
-        if (input.ChannelType == ChannelTypeEnum.TcpClient)
+        try
         {
-            if (string.IsNullOrEmpty(input.RemoteUrl))
-                throw new(Localizer["RemoteUrlNotNull"]);
-        }
-        else if (input.ChannelType == ChannelTypeEnum.TcpService)
-        {
-            if (string.IsNullOrEmpty(input.BindUrl))
-                throw new(Localizer["BindUrlNotNull"]);
-        }
-        else if (input.ChannelType == ChannelTypeEnum.UdpSession)
-        {
-            if (string.IsNullOrEmpty(input.BindUrl) && string.IsNullOrEmpty(input.RemoteUrl))
-                throw new(Localizer["BindUrlOrRemoteUrlNotNull"]);
-        }
-        else if (input.ChannelType == ChannelTypeEnum.SerialPort)
-        {
-            if (string.IsNullOrEmpty(input.PortName))
-                throw new(Localizer["PortNameNotNull"]);
-            if (input.BaudRate == null)
-                throw new(Localizer["BaudRateNotNull"]);
-            if (input.DataBits == null)
-                throw new(Localizer["DataBitsNotNull"]);
-            if (input.Parity == null)
-                throw new(Localizer["ParityNotNull"]);
-            if (input.StopBits == null)
-                throw new(Localizer["StopBitsNotNull"]);
-        }
-        else
-        {
-            throw new(Localizer["NotOther"]);
-        }
-    }
-
-    public static IEnumerable<SelectedItem> BuildChannelSelectList(IEnumerable<ChannelData> items)
-    {
-        var data = items
-        .Select((item, index) =>
-            new SelectedItem(item.Id.ToString(), item.Name)
+            if (input.ChannelType == ChannelTypeEnum.TcpClient)
             {
+                if (string.IsNullOrEmpty(input.RemoteUrl))
+                    throw new(Localizer["RemoteUrlNotNull"]);
             }
-        ).ToList();
-        return data;
-    }
-
-    protected override Task OnParametersSetAsync()
-    {
-        Refresh();
-        return base.OnParametersSetAsync();
-    }
-
-    private void Refresh()
-    {
-        ChannelDataItems = BuildChannelSelectList(ChannelConfig.Default.ChannelDatas);
-    }
-
-    private async Task HandleAddClick()
-    {
-        ChannelData channel = new();
-        var op = new DialogOption()
-        {
-            Title = Localizer["SaveChannel"],
-            ShowFooter = false,
-            ShowCloseButton = false,
-            Size = Size.ExtraLarge
-        };
-        op.Component = BootstrapDynamicComponent.CreateComponent<ChannelDataEditComponent>(new Dictionary<string, object?>
-        {
-            [nameof(ChannelDataEditComponent.Model)] = channel,
-            [nameof(ChannelDataEditComponent.OnValidSubmit)] = async () =>
+            else if (input.ChannelType == ChannelTypeEnum.TcpService)
             {
-                CheckInput(channel);
-                ChannelData.CreateChannel(channel);
-                ChannelConfig.Default.ChannelDatas.Add(channel);
-                ChannelConfig.Default.Save(true, out _);
-                Refresh();
-                await InvokeAsync(StateHasChanged);
-            },
-        });
-        await DialogService.Show(op);
-    }
-
-    private async Task HandleDeleteClick()
-    {
-        ChannelData?.Channel?.Close();
-        ChannelConfig.Default.ChannelDatas.Remove(ChannelData);
-        ChannelData = null;
-        ChannelConfig.Default.Save(true, out _);
-        Refresh();
-        await InvokeAsync(StateHasChanged);
-    }
-
-    private async Task HandleEditClick()
-    {
-        var op = new DialogOption()
-        {
-            Title = Localizer["SaveChannel"],
-            ShowFooter = false,
-            ShowCloseButton = false,
-            Size = Size.ExtraLarge
-        };
-        op.Component = BootstrapDynamicComponent.CreateComponent<ChannelDataEditComponent>(new Dictionary<string, object?>
-        {
-            [nameof(ChannelDataEditComponent.Model)] = ChannelData,
-            [nameof(ChannelDataEditComponent.OnValidSubmit)] = async () =>
+                if (string.IsNullOrEmpty(input.BindUrl))
+                    throw new(Localizer["BindUrlNotNull"]);
+            }
+            else if (input.ChannelType == ChannelTypeEnum.UdpSession)
             {
-                CheckInput(ChannelData);
-                await SetChannelData(ChannelData);
-                ChannelConfig.Default.Save(true, out _);
-                Refresh();
-                await InvokeAsync(StateHasChanged);
-            },
-        });
-        await DialogService.Show(op);
-        Refresh();
+                if (string.IsNullOrEmpty(input.BindUrl) && string.IsNullOrEmpty(input.RemoteUrl))
+                    throw new(Localizer["BindUrlOrRemoteUrlNotNull"]);
+            }
+            else if (input.ChannelType == ChannelTypeEnum.SerialPort)
+            {
+                if (string.IsNullOrEmpty(input.PortName))
+                    throw new(Localizer["PortNameNotNull"]);
+                if (input.BaudRate == null)
+                    throw new(Localizer["BaudRateNotNull"]);
+                if (input.DataBits == null)
+                    throw new(Localizer["DataBitsNotNull"]);
+                if (input.Parity == null)
+                    throw new(Localizer["ParityNotNull"]);
+                if (input.StopBits == null)
+                    throw new(Localizer["StopBitsNotNull"]);
+            }
+            else
+            {
+                throw new(Localizer["NotOther"]);
+            }
+        }
+        catch (Exception ex)
+        {
+            ToastService.Warn(ex);
+        }
     }
 
-    private void OnDisconnectClick()
+    private async Task DisconnectClick()
     {
-        if (ChannelData != null)
+        if (Model != null)
         {
             try
             {
-                ChannelData.Channel.Close(DefaultResource.Localizer["ProactivelyDisconnect", nameof(OnDisconnectClick)]);
+                Model.Channel.Close(DefaultResource.Localizer["ProactivelyDisconnect", nameof(DisconnectClick)]);
+                if (OnDisConnectClick.HasDelegate)
+                    await OnDisConnectClick.InvokeAsync();
             }
             catch (Exception ex)
             {
-                ChannelData.Channel.Logger.Exception(ex);
+                Model.Channel.Logger.Exception(ex);
             }
         }
     }
 
     private async Task ConnectClick()
     {
-        if (ChannelData != null)
+        ChannelData.CreateChannel(Model);
+        if (Model != null)
         {
             try
             {
                 if (OnConnectClick.HasDelegate)
-                    await OnConnectClick.InvokeAsync();
+                    await OnConnectClick.InvokeAsync(Model);
             }
             catch (ObjectDisposedException)
             {
-                await SetChannelData(ChannelData);
                 try
                 {
+                    ChannelData.CreateChannel(Model);
                     if (OnConnectClick.HasDelegate)
-                        await OnConnectClick.InvokeAsync();
+                        await OnConnectClick.InvokeAsync(Model);
                 }
                 catch (Exception ex)
                 {
-                    ChannelData.Channel.Logger.Exception(ex);
+                    Model.Channel.Logger.Exception(ex);
                 }
             }
             catch (Exception ex)
             {
-                ChannelData.Channel.Logger.Exception(ex);
+                Model.Channel.Logger.Exception(ex);
             }
         }
-    }
-
-    private async Task OnSelectedItemChanged(SelectedItem item)
-    {
-        var channelData = ChannelConfig.Default.ChannelDatas.FirstOrDefault(a => a.Id == item.Value.ToLong());
-        if (ChannelData != channelData)
-        {
-            await SetChannelData(channelData);
-        }
-    }
-
-    [Inject]
-    private IDispatchService<ChannelData>? DispatchService { get; set; }
-
-    private async Task SetChannelData(ChannelData? channelData)
-    {
-        ChannelData = channelData;
-        ChannelData.CreateChannel(ChannelData);
-
-        if (ChannelData != null)
-            await OnEditClick.InvokeAsync(ChannelData);
-
-        DispatchService.Dispatch(new DispatchEntry<ChannelData>()
-        {
-            Name = ChannelData.Id.ToString(),
-            Entry = ChannelData
-        });
     }
 }

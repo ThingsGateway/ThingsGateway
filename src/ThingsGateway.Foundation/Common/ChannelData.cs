@@ -18,29 +18,13 @@ using TouchSocket.SerialPorts;
 namespace ThingsGateway.Foundation;
 
 /// <inheritdoc/>
-public class ChannelData : IChannelData
+public class ChannelData
 {
     /// <inheritdoc/>
     public long Id { get; set; } = IncrementCount.GetCurrentValue();
 
-    /// <summary>
-    /// 通道名称
-    /// </summary>
-    [Required]
-    public virtual string Name { get; set; }
-
     /// <inheritdoc/>
     public virtual ChannelTypeEnum ChannelType { get; set; }
-
-    /// <summary>
-    /// 使能
-    /// </summary>
-    public virtual bool Enable { get; set; } = true;
-
-    /// <summary>
-    /// LogEnable
-    /// </summary>
-    public bool LogEnable { get; set; }
 
     /// <summary>
     /// 远程地址，可由<see cref="IPHost.IPHost(string)"/>与<see href="IPHost.ToString()"/>相互转化
