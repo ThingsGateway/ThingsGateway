@@ -23,14 +23,14 @@ public class BlazorAuthenticationStateProvider : AppAuthorizeHandler
     private readonly ISysUserService _sysUserService;
     private readonly ISysRoleService _sysRoleService;
     private readonly ISysDictService _sysDictService;
-    private readonly IVerificatInfoCacheService _verificatInfoCacheService;
+    private readonly IVerificatInfoService _verificatInfoService;
 
-    public BlazorAuthenticationStateProvider(IVerificatInfoCacheService verificatInfoCacheService, ISysUserService sysUserService, ISysRoleService sysRoleService, ISysDictService sysDictService)
+    public BlazorAuthenticationStateProvider(IVerificatInfoService verificatInfoService, ISysUserService sysUserService, ISysRoleService sysRoleService, ISysDictService sysDictService)
     {
         _sysUserService = sysUserService;
         _sysRoleService = sysRoleService;
         _sysDictService = sysDictService;
-        _verificatInfoCacheService = verificatInfoCacheService;
+        _verificatInfoService = verificatInfoService;
     }
 
     /// <inheritdoc/>
@@ -189,17 +189,18 @@ public class BlazorAuthenticationStateProvider : AppAuthorizeHandler
         DefaultHttpContext currentHttpContext = context.GetCurrentHttpContext();
         var userId = context.User.Claims.FirstOrDefault(it => it.Type == ClaimConst.UserId)?.Value?.ToLong();
         var verificatId = context.User.Claims.FirstOrDefault(it => it.Type == ClaimConst.VerificatId)?.Value?.ToLong();
+        var expire = (await _sysDictService.GetAppConfigAsync()).LoginPolicy.VerificatExpireTime;
         if (currentHttpContext == null)
         {
-            var verificatInfos = userId != null ? _verificatInfoCacheService.HashGetOne(userId.Value) : null;//获取token信息
+            var verificatInfo = userId != null ? _verificatInfoService.GetOne(verificatId ?? 0) : null;//获取token信息
 
-            if (verificatInfos == null) //如果还是空
-            {
-                return false;
-            }
-            var verificatInfo = verificatInfos.FirstOrDefault(it => it.Id == verificatId); //获取cache中token值是当前token的对象
             if (verificatInfo != null)
             {
+                if (verificatInfo.VerificatTimeout < DateTime.Now.AddMinutes(30))
+                {
+                    verificatInfo.VerificatTimeout = DateTime.Now.AddMinutes(expire); //新的过期时间
+                    _verificatInfoService.Update(verificatInfo); //更新tokne信息到cache
+                }
                 return true;
             }
             else
@@ -209,21 +210,18 @@ public class BlazorAuthenticationStateProvider : AppAuthorizeHandler
         }
         else
         {
-            var expire = (await _sysDictService.GetAppConfigAsync()).LoginPolicy.VerificatExpireTime;
             if (JWTEncryption.AutoRefreshToken(context, currentHttpContext, expire, expire * 2))
             {
                 //var token = JWTEncryption.GetJwtBearerToken(currentHttpContext); //获取当前token
 
-                var verificatInfos = userId != null ? _verificatInfoCacheService.HashGetOne(userId.Value) : null;//获取token信息
-                if (verificatInfos == null) //如果还是空
-                {
-                    return false;
-                }
-                var verificatInfo = verificatInfos.FirstOrDefault(it => it.Id == verificatId); //获取cache中token值是当前token的对象
+                var verificatInfo = userId != null ? _verificatInfoService.GetOne(verificatId ?? 0) : null;//获取token信息
                 if (verificatInfo != null)
                 {
-                    verificatInfo.VerificatTimeout = DateTime.Now.AddMinutes(expire); //新的过期时间
-                    _verificatInfoCacheService.HashAdd(userId!.Value, verificatInfos); //更新tokne信息到cache
+                    if (verificatInfo.VerificatTimeout < DateTime.Now.AddMinutes(30))
+                    {
+                        verificatInfo.VerificatTimeout = DateTime.Now.AddMinutes(expire); //新的过期时间
+                        _verificatInfoService.Update(verificatInfo); //更新tokne信息到cache
+                    }
                     return true;
                 }
                 else

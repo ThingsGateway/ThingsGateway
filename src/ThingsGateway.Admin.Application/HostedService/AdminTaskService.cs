@@ -28,14 +28,13 @@ internal class AdminTaskService : BackgroundService
     {
         //实现 删除过期日志 功能，不需要精确的时间
         var daysAgo = App.Configuration.GetSection("LogJob:DaysAgo").Get<int?>() ?? 1;
-        var verificatInfoCacheService = App.RootServices.GetService<IVerificatInfoCacheService>();
+        var verificatInfoService = App.RootServices.GetService<IVerificatInfoService>();
 
         while (!stoppingToken.IsCancellationRequested)
         {
             try
             {
                 await DeleteSysOperateLog(daysAgo, stoppingToken).ConfigureAwait(false);
-                verificatInfoCacheService.HashSetDB(verificatInfoCacheService.GetAll());
                 await Task.Delay(TimeSpan.FromDays(1), stoppingToken).ConfigureAwait(false);
             }
             catch (OperationCanceledException)
@@ -46,9 +45,6 @@ internal class AdminTaskService : BackgroundService
                 _logger.LogWarning(ex, "Execute waining");
             }
         }
-
-        //实现 程序退出时，持久化TokenCache
-        verificatInfoCacheService.HashSetDB(verificatInfoCacheService.GetAll());
     }
 
     private async Task DeleteSysOperateLog(int daysAgo, CancellationToken stoppingToken)

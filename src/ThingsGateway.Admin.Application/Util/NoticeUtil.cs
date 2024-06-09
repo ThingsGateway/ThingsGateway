@@ -15,7 +15,6 @@ namespace ThingsGateway.Admin.Application;
 public class NoticeUtil
 {
     private static ISignalrNoticeService NoticeService;
-    private static IVerificatInfoCacheService VerificatInfoCacheService;
 
     /// <summary>
     /// 通知用户下线事件
@@ -26,34 +25,7 @@ public class NoticeUtil
     {
         NoticeService ??= App.RootServices!.GetRequiredService<ISignalrNoticeService>();//获取服务
         //遍历verificat列表获取客户端ID列表
-        await NoticeService.UserLoginOut(userLoginOutEvent?.VerificatInfos?.SelectMany(a => a.ClientIds), userLoginOutEvent!.Message).ConfigureAwait(false);//发送消息
-    }
-
-    /// <summary>
-    /// 有新的消息
-    /// </summary>
-    /// <param name="newMessageEvent"></param>
-    /// <returns></returns>
-    public static async Task NewMessage(NewMessageEvent newMessageEvent)
-    {
-        VerificatInfoCacheService ??= App.RootServices!.GetRequiredService<IVerificatInfoCacheService>();//获取服务
-        var clientIds = new List<long>();
-        //获取用户verificat列表
-        var verificatInfos = VerificatInfoCacheService.HashGet(newMessageEvent.UserIds.ToArray()).ToList();
-        verificatInfos.ForEach(it =>
-        {
-            if (it != null)
-            {
-                it = it.Where(it => it.VerificatTimeout > DateTime.Now).ToList();//去掉登录超时的
-                //遍历verificat
-                it.ForEach(it =>
-                {
-                    clientIds.AddRange(it.ClientIds);//添加到客户端ID列表
-                });
-            }
-        });
-        NoticeService ??= App.RootServices!.GetRequiredService<ISignalrNoticeService>();//获取服务
-        await NoticeService.NewMesage(clientIds, newMessageEvent.Message).ConfigureAwait(false);//发送消息
+        await NoticeService.UserLoginOut(userLoginOutEvent?.ClientIds, userLoginOutEvent!.Message).ConfigureAwait(false);//发送消息
     }
 }
 
@@ -66,7 +38,7 @@ public class UserLoginOutEvent
     /// verificat信息
     /// </summary>
 
-    public IEnumerable<VerificatInfo>? VerificatInfos { get; set; }
+    public List<long>? ClientIds { get; set; }
 
     /// <summary>
     /// 内容

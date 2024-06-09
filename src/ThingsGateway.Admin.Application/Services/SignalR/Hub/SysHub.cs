@@ -17,11 +17,11 @@ namespace ThingsGateway.Admin.Application;
 
 public class SysHub : Hub<ISysHub>
 {
-    private readonly IVerificatInfoCacheService _verificatInfoCacheService;
+    private readonly IVerificatInfoService _verificatInfoService;
 
-    public SysHub(IVerificatInfoCacheService verificatInfoCacheService)
+    public SysHub(IVerificatInfoService verificatInfoService)
     {
-        _verificatInfoCacheService = verificatInfoCacheService;
+        _verificatInfoService = verificatInfoService;
     }
 
     /// <summary>
@@ -45,7 +45,9 @@ public class SysHub : Hub<ISysHub>
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
         var userIdentifier = Context.UserIdentifier.ToLong();//自定义的Id
-        UpdateVerificat(userIdentifier, isConnect: false);//更新cache
+        var feature = Context.Features.Get<IHttpContextFeature>();
+        var VerificatId = feature!.HttpContext!.Request.Headers[ClaimConst.VerificatId].FirstOrDefault().ToLong();
+        UpdateVerificat(userIdentifier, verificat: VerificatId, isConnect: false);//更新cache
         await base.OnDisconnectedAsync(exception);
     }
 
@@ -62,32 +64,28 @@ public class SysHub : Hub<ISysHub>
         if (userId != 0)
         {
             //获取cache当前用户的verificat信息列表
-            var verificatInfos = _verificatInfoCacheService.HashGetOne(userId);
-            if (verificatInfos != null)
+            if (isConnect)
             {
-                if (isConnect)
+                //获取cache中当前verificat
+                var verificatInfo = _verificatInfoService.GetOne(verificat);
+                if (verificatInfo != null)
                 {
-                    //获取cache中当前verificat
-                    var verificatInfo = verificatInfos.FirstOrDefault(it => it.Id == verificat);
-                    if (verificatInfo != null)
-                    {
-                        verificatInfo.ClientIds.Add(userId);//添加到客户端列表
-                        _verificatInfoCacheService.HashAdd(userId, verificatInfos);//更新Cache
-                    }
+                    verificatInfo.ClientIds.Add(userId);//添加到客户端列表
+                    _verificatInfoService.Update(verificatInfo);//更新Cache
                 }
-                else
+            }
+            else
+            {
+                //获取当前客户端ID所在的verificat信息
+                var verificatInfo = _verificatInfoService.GetOne(verificat);
+                if (verificatInfo != null)
                 {
-                    //获取当前客户端ID所在的verificat信息
-                    var verificatInfo = verificatInfos.FirstOrDefault(it => it.ClientIds.Contains(userId));
-                    if (verificatInfo != null)
-                    {
-                        verificatInfo.ClientIds.RemoveWhere(it => it == userId);//从客户端列表删除
-                        _verificatInfoCacheService.HashAdd(userId, verificatInfos);//更新Cache
-                    }
+                    verificatInfo.ClientIds.RemoveWhere(it => it == userId);//从客户端列表删除
+                    _verificatInfoService.Update(verificatInfo);//更新Cache
                 }
             }
         }
-    }
 
-    #endregion 方法
+        #endregion 方法
+    }
 }

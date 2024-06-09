@@ -26,10 +26,10 @@ public class SysUserService : BaseService<SysUser>, ISysUserService
     private readonly ISysResourceService _sysResourceService;
     private readonly ISysRoleService _roleService;
     private readonly ISysDictService _configService;
-    private readonly IVerificatInfoCacheService _verificatInfoCacheService;
+    private readonly IVerificatInfoService _verificatInfoService;
 
     public SysUserService(
-        IVerificatInfoCacheService verificatInfoCacheService,
+        IVerificatInfoService verificatInfoService,
         IRelationService relationService,
         ISysResourceService sysResourceService,
         ISysRoleService roleService,
@@ -39,7 +39,7 @@ public class SysUserService : BaseService<SysUser>, ISysUserService
         _sysResourceService = sysResourceService;
         _roleService = roleService;
         _configService = configService;
-        _verificatInfoCacheService = verificatInfoCacheService;
+        _verificatInfoService = verificatInfoService;
     }
 
     #region 查询
@@ -331,10 +331,12 @@ public class SysUserService : BaseService<SysUser>, ISysUserService
                 {
                     DeleteUserFromCache(sysUser.Id);//删除用户缓存
 
-                    var verificatInfos = _verificatInfoCacheService.HashGetOne(sysUser.Id);
+                    var verificatInfoIds = _verificatInfoService.GetListByUserId(sysUser.Id);
+
+                    //从列表中删除
                     //删除用户verificat缓存
-                    _verificatInfoCacheService.HashDel(sysUser.Id);
-                    await NoticeUtil.UserLoginOut(new UserLoginOutEvent() { VerificatInfos = verificatInfos, Message = Localizer["ExitVerificat"] });
+                    _verificatInfoService.Delete(verificatInfoIds.Select(a => a.Id).ToList());
+                    await NoticeUtil.UserLoginOut(new UserLoginOutEvent() { ClientIds = verificatInfoIds.SelectMany(a => a.ClientIds).ToList(), Message = Localizer["ExitVerificat"] });
                 }
                 return result;
             }
@@ -359,10 +361,10 @@ public class SysUserService : BaseService<SysUser>, ISysUserService
         }, it => it.Id == id))
         {
             DeleteUserFromCache(id);//从cache删除用户信息
-            var verificatInfos = _verificatInfoCacheService.HashGetOne(id);
+            var verificatInfoIds = _verificatInfoService.GetListByUserId(id);
             //删除用户verificat缓存
-            _verificatInfoCacheService.HashDel(id);
-            await NoticeUtil.UserLoginOut(new UserLoginOutEvent() { VerificatInfos = verificatInfos, Message = Localizer["ExitVerificat"] });
+            _verificatInfoService.Delete(verificatInfoIds.Select(a => a.Id).ToList());
+            await NoticeUtil.UserLoginOut(new UserLoginOutEvent() { ClientIds = verificatInfoIds.SelectMany(a => a.ClientIds).ToList(), Message = Localizer["ExitVerificat"] });
         }
     }
 
@@ -523,13 +525,12 @@ public class SysUserService : BaseService<SysUser>, ISysUserService
             _relationService.RefreshCache(RelationCategoryEnum.UserHasPermission);//关系表刷新UserHasRole缓存
             _relationService.RefreshCache(RelationCategoryEnum.UserHasOpenApiPermission);//关系表刷新Relation_SYS_USER_HAS_OPENAPIPERMISSION缓存
             //将这些用户踢下线，并永久注销这些用户
-            foreach (var item in ids)
+            foreach (var id in ids)
             {
-                var verificatInfos = _verificatInfoCacheService.HashGetOne(item);
-                await UserLoginOut(item, verificatInfos);
+                var verificatInfoIds = _verificatInfoService.GetListByUserId(id);
+                _verificatInfoService.Delete(verificatInfoIds.Select(a => a.Id).ToList());
+                await UserLoginOut(id, verificatInfoIds.SelectMany(a => a.ClientIds).ToList());
             }
-            //从列表中删除
-            _verificatInfoCacheService.HashDel(ids.ToArray());
 
             return true;
         }
@@ -572,13 +573,13 @@ public class SysUserService : BaseService<SysUser>, ISysUserService
     /// 通知用户下线
     /// </summary>
     /// <param name="userId">用户ID</param>
-    /// <param name="verificatInfos">Token列表</param>
-    private async Task UserLoginOut(long userId, IEnumerable<VerificatInfo>? verificatInfos)
+    /// <param name="verificatInfoIds">Token列表</param>
+    private async Task UserLoginOut(long userId, List<long>? verificatInfoIds)
     {
         await NoticeUtil.UserLoginOut(new UserLoginOutEvent
         {
             Message = Localizer["SingleLoginWarn"],
-            VerificatInfos = verificatInfos,
+            ClientIds = verificatInfoIds,
         });//通知用户下线
     }
 

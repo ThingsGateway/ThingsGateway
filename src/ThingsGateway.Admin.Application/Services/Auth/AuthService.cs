@@ -30,11 +30,11 @@ public class AuthService : IAuthService
     private readonly ISysResourceService _sysResourceService;
     private readonly IUserCenterService _userCenterService;
     private IStringLocalizer<AuthService> _localizer;
-    private IVerificatInfoCacheService _verificatInfoCacheService;
+    private IVerificatInfoService _verificatInfoService;
 
     public AuthService(ISysDictService configService, ISysResourceService sysResourceService,
         ISysUserService userService, IUserCenterService userCenterService,
-        IVerificatInfoCacheService verificatInfoCacheService,
+        IVerificatInfoService verificatInfoService,
         IStringLocalizer<AuthService> localizer)
     {
         _configService = configService;
@@ -42,7 +42,7 @@ public class AuthService : IAuthService
         _sysResourceService = sysResourceService;
         _userCenterService = userCenterService;
         _localizer = localizer;
-        _verificatInfoCacheService = verificatInfoCacheService;
+        _verificatInfoService = verificatInfoService;
     }
 
     /// <summary>
@@ -260,8 +260,7 @@ public class AuthService : IAuthService
         App.CacheService.Remove(key);//移除登录错误次数
 
         //获取用户verificat列表
-        var tokenInfos = _verificatInfoCacheService.HashGetOne(sysUser.Id);
-        var userToken = tokenInfos?.FirstOrDefault(it => it.Id == loginEvent.VerificatId);
+        var userToken = _verificatInfoService.GetOne(loginEvent.VerificatId);
 
         #endregion 登录/密码策略
 
@@ -294,7 +293,6 @@ public class AuthService : IAuthService
     private async Task WriteTokenToCache(LoginPolicy loginPolicy, LoginEvent loginEvent)
     {
         //获取verificat列表
-        var verificatInfos = GetTokenInfos(loginEvent.SysUser.Id)?.ToList();
         var tokenTimeout = loginEvent.DateTime.AddMinutes(loginEvent.Expire);
         //生成verificat信息
         var verificatInfo = new VerificatInfo
@@ -303,28 +301,16 @@ public class AuthService : IAuthService
             Expire = loginEvent.Expire,
             VerificatTimeout = tokenTimeout,
             Id = loginEvent.VerificatId,
+            UserId = loginEvent.SysUser.Id
         };
-        //如果cache有数据
-        if (verificatInfos != null)
+        //判断是否单用户登录
+        if (loginPolicy.SingleOpen)
         {
-            //判断是否单用户登录
-            if (loginPolicy.SingleOpen)
-            {
-                await SingleLogin(loginEvent.SysUser.Id, verificatInfos);//单用户登录方法
-                verificatInfos = new() { verificatInfo };
-            }
-            else
-            {
-                verificatInfos.Add(verificatInfo);
-            }
-        }
-        else
-        {
-            verificatInfos = new() { verificatInfo };
+            await SingleLogin(loginEvent.SysUser.Id);//单用户登录方法
         }
 
         //添加到verificat列表
-        _verificatInfoCacheService.HashAdd(loginEvent.SysUser.Id, verificatInfos);
+        _verificatInfoService.Add(verificatInfo);
     }
 
     /// <summary>
@@ -333,53 +319,21 @@ public class AuthService : IAuthService
     /// <param name="loginEvent">登录事件参数</param>
     private void RemoveTokenFromCache(LoginEvent loginEvent)
     {
-        //获取verificat列表
-        var verificatInfos = GetTokenInfos(loginEvent.SysUser.Id).ToList();
-        if (verificatInfos != null)
-        {
-            //获取当前用户的verificat
-            var verificat = verificatInfos.FirstOrDefault(it => it.Id == loginEvent.VerificatId);
-            if (verificat != null)
-                verificatInfos.Remove(verificat);
-            if (verificatInfos.Any())
-            {
-                //更新verificat列表
-                _verificatInfoCacheService.HashAdd(loginEvent.SysUser.Id, verificatInfos);
-            }
-            else
-            {
-                //从列表中删除
-                _verificatInfoCacheService.HashDel(loginEvent.SysUser.Id);
-            }
-        }
-    }
-
-    /// <summary>
-    /// 获取用户verificat列表
-    /// </summary>
-    /// <param name="userId">用户Id</param>
-    /// <returns>verificat列表</returns>
-    private IEnumerable<VerificatInfo> GetTokenInfos(long userId)
-    {
-        var verificatInfos = _verificatInfoCacheService.HashGetOne(userId);
-        if (verificatInfos != null)
-        {
-            return verificatInfos.Where(it => it.VerificatTimeout > DateTime.Now);//去掉登录超时的
-        }
-        return verificatInfos;
+        //更新verificat列表
+        _verificatInfoService.Delete(loginEvent.VerificatId);
     }
 
     /// <summary>
     /// 单用户登录通知用户下线
     /// </summary>
     /// <param name="userId">用户Id</param>
-    /// <param name="verificatInfos">verificat列表</param>
-    private async Task SingleLogin(long userId, IEnumerable<VerificatInfo> verificatInfos)
+    private async Task SingleLogin(long userId)
     {
+        var clientIds = _verificatInfoService.GetClientIdListByUserId(userId);
         await NoticeUtil.UserLoginOut(new UserLoginOutEvent
         {
             Message = _localizer["SingleLoginWarn"],
-            VerificatInfos = verificatInfos,
+            ClientIds = clientIds,
         });
     }
 

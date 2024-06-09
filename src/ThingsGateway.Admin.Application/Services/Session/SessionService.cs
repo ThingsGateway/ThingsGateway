@@ -10,6 +10,8 @@
 
 using BootstrapBlazor.Components;
 
+using Mapster;
+
 using NewLife.Extension;
 
 using SqlSugar;
@@ -20,11 +22,11 @@ namespace ThingsGateway.Admin.Application;
 
 public class SessionService : BaseService<SysUser>, ISessionService
 {
-    private readonly IVerificatInfoCacheService _verificatInfoCacheService;
+    private readonly IVerificatInfoService _verificatInfoService;
 
-    public SessionService(IVerificatInfoCacheService verificatInfoCacheService)
+    public SessionService(IVerificatInfoService verificatInfoService)
     {
-        _verificatInfoCacheService = verificatInfoCacheService;
+        _verificatInfoService = verificatInfoService;
     }
 
     #region 查询
@@ -35,10 +37,6 @@ public class SessionService : BaseService<SysUser>, ISessionService
     /// <param name="option">查询条件</param>
     public async Task<QueryData<SessionOutput>> PageAsync(QueryPageOptions option)
     {
-        //获取verificat列表
-        var bTokenInfoDic = GetTokenDicFromCache();
-        //获取用户ID列表
-        var userIds = bTokenInfoDic.Keys.Select(it => it.ToLong());
         var ret = new QueryData<SessionOutput>()
         {
             IsSorted = option.SortOrder != SortOrder.Unset,
@@ -48,19 +46,8 @@ public class SessionService : BaseService<SysUser>, ISessionService
         };
 
         using var db = GetDB();
-        var query = db.GetQuery<SysUser>(option).WhereIF(!option.SearchText.IsNullOrWhiteSpace(), a => a.Account.Contains(option.SearchText!)).Select<SessionOutput>()
-            .Mapper(it =>
-            {
-                if (bTokenInfoDic.TryGetValue(it.Id, out var verificatInfos))
-                {
-                    GetTokenInfos(ref verificatInfos);//获取剩余时间
-                    it.VerificatCount = verificatInfos.Count;//令牌数量
-                    it.VerificatSignList = verificatInfos;//令牌列表
+        var query = db.GetQuery<SysUser>(option).WhereIF(!option.SearchText.IsNullOrWhiteSpace(), a => a.Account.Contains(option.SearchText!));
 
-                    //如果有mqtt客户端ID就是在线
-                    it.Online = verificatInfos.Any(it => it.ClientIds.Count > 0);
-                }
-            });
         if (option.IsPage)
         {
             RefAsync<int> totalCount = 0;
@@ -68,8 +55,26 @@ public class SessionService : BaseService<SysUser>, ISessionService
             var items = await query
                 .ToPageListAsync(option.PageIndex, option.PageItems, totalCount);
 
+            var verificatInfoDicts = _verificatInfoService.GetListByUserIds(items.Select(a => a.Id).ToList()).GroupBy(a => a.UserId).ToDictionary(a => a.Key, a => a.ToList());
+
+            var r = items.Select((it) =>
+            {
+                var reuslt = it.Adapt<SessionOutput>();
+                if (verificatInfoDicts.TryGetValue(it.Id, out var verificatInfos))
+                {
+                    GetTokenInfos(verificatInfos);//获取剩余时间
+                    reuslt.VerificatCount = verificatInfos.Count;//令牌数量
+                    reuslt.VerificatSignList = verificatInfos;//令牌列表
+
+                    //如果有mqtt客户端ID就是在线
+                    reuslt.Online = verificatInfos.Any(it => it.ClientIds.Count > 0);
+                }
+
+                return reuslt;
+            }).ToList();
+
             ret.TotalCount = totalCount;
-            ret.Items = items;
+            ret.Items = r;
         }
         else if (option.IsVirtualScroll)
         {
@@ -77,16 +82,50 @@ public class SessionService : BaseService<SysUser>, ISessionService
 
             var items = await query
                 .ToPageListAsync(option.StartIndex, option.PageItems, totalCount);
+            var verificatInfoDicts = _verificatInfoService.GetListByUserIds(items.Select(a => a.Id).ToList()).GroupBy(a => a.UserId).ToDictionary(a => a.Key, a => a.ToList());
 
+            var r = items.Select((it) =>
+            {
+                var reuslt = it.Adapt<SessionOutput>();
+                if (verificatInfoDicts.TryGetValue(it.Id, out var verificatInfos))
+                {
+                    GetTokenInfos(verificatInfos);//获取剩余时间
+                    reuslt.VerificatCount = verificatInfos.Count;//令牌数量
+                    reuslt.VerificatSignList = verificatInfos;//令牌列表
+
+                    //如果有mqtt客户端ID就是在线
+                    reuslt.Online = verificatInfos.Any(it => it.ClientIds.Count > 0);
+                }
+
+                return reuslt;
+            }).ToList();
             ret.TotalCount = totalCount;
-            ret.Items = items;
+            ret.Items = r;
         }
         else
         {
             var items = await query
                 .ToListAsync();
+
+            var verificatInfoDicts = _verificatInfoService.GetListByUserIds(items.Select(a => a.Id).ToList()).GroupBy(a => a.UserId).ToDictionary(a => a.Key, a => a.ToList());
+
+            var r = items.Select((it) =>
+            {
+                var reuslt = it.Adapt<SessionOutput>();
+                if (verificatInfoDicts.TryGetValue(it.Id, out var verificatInfos))
+                {
+                    GetTokenInfos(verificatInfos);//获取剩余时间
+                    reuslt.VerificatCount = verificatInfos.Count;//令牌数量
+                    reuslt.VerificatSignList = verificatInfos;//令牌列表
+
+                    //如果有mqtt客户端ID就是在线
+                    reuslt.Online = verificatInfos.Any(it => it.ClientIds.Count > 0);
+                }
+
+                return reuslt;
+            }).ToList();
             ret.TotalCount = items.Count;
-            ret.Items = items;
+            ret.Items = r;
         }
         return ret;
     }
@@ -102,11 +141,10 @@ public class SessionService : BaseService<SysUser>, ISessionService
     [OperDesc("ExitSession")]
     public async Task ExitSession(long userId)
     {
+        var verificatInfoIds = _verificatInfoService.GetListByUserId(userId);
         //verificat列表
-        var verificatInfos = _verificatInfoCacheService.HashGetOne(userId);
-        //从列表中删除
-        _verificatInfoCacheService.HashDel(userId);
-        await NoticeUserLoginOut(userId, verificatInfos);
+        _verificatInfoService.Delete(verificatInfoIds.Select(a => a.Id).ToList());
+        await NoticeUserLoginOut(userId, verificatInfoIds.SelectMany(a => a.ClientIds).ToList());
     }
 
     /// <summary>
@@ -118,17 +156,13 @@ public class SessionService : BaseService<SysUser>, ISessionService
     public async Task ExitVerificat(ExitVerificatInput input)
     {
         var userId = input.Id;
-        //获取该用户的verificat信息
-        var verificatInfos = _verificatInfoCacheService.HashGetOne(userId);
-        //当前需要踢掉用户的verificat
-        var deleteVerificats = verificatInfos.Where(it => input.VerificatIds.Contains(it.Id));
-        //踢掉包含verificat列表的verificat信息
-        verificatInfos = verificatInfos.Where(it => !input.VerificatIds.Contains(it.Id)).ToList();
-        if (verificatInfos.Count > 0)
-            _verificatInfoCacheService.HashAdd(userId, verificatInfos);//如果还有verificat则更新verificat
-        else
-            _verificatInfoCacheService.HashDel(userId);//否则直接删除key
-        await NoticeUserLoginOut(userId, deleteVerificats);
+        var data = input.VerificatIds.ToList();
+        if (data.Any())
+        {
+            var data1 = _verificatInfoService.GetListByIds(data).SelectMany(a => a.ClientIds).ToList();
+            _verificatInfoService.Delete(data);//如果还有verificat则更新verificat
+            await NoticeUserLoginOut(userId, data1);
+        }
     }
 
     #endregion 修改
@@ -136,49 +170,10 @@ public class SessionService : BaseService<SysUser>, ISessionService
     #region 方法
 
     /// <summary>
-    /// 获取cache中verificat信息列表
-    /// </summary>
-    /// <returns></returns>
-    private Dictionary<long, List<VerificatInfo>> GetTokenDicFromCache()
-    {
-        //cache获取verificat信息hash集合,并转成字典
-        var bTokenDic = _verificatInfoCacheService.GetAll();
-        if (bTokenDic != null)
-        {
-            foreach (var it in bTokenDic)
-            {
-                var verificats = it.Value.Where(it => it.VerificatTimeout.AddSeconds(30) > DateTime.Now).ToList();//去掉登录超时的
-                if (verificats.Count == 0)
-                {
-                    //表示都过期了
-                    bTokenDic.Remove(it.Key);
-                }
-                else
-                {
-                    bTokenDic[it.Key] = verificats;//重新赋值verificat
-                }
-            }
-            if (bTokenDic.Count > 0)
-            {
-                _verificatInfoCacheService.HashSet(bTokenDic);
-            }
-            else
-            {
-                _verificatInfoCacheService.Remove();
-            }
-            return bTokenDic;
-        }
-        else
-        {
-            return new Dictionary<long, List<VerificatInfo>>();
-        }
-    }
-
-    /// <summary>
     /// 获取verificat剩余时间信息
     /// </summary>
     /// <param name="verificatInfos">verificat列表</param>
-    private void GetTokenInfos(ref List<VerificatInfo> verificatInfos)
+    private void GetTokenInfos(List<VerificatInfo> verificatInfos)
     {
         verificatInfos.ForEach(it =>
         {
@@ -191,12 +186,12 @@ public class SessionService : BaseService<SysUser>, ISessionService
     /// 通知用户下线
     /// </summary>
     /// <returns></returns>
-    private async Task NoticeUserLoginOut(long userId, IEnumerable<VerificatInfo> verificatInfos)
+    private async Task NoticeUserLoginOut(long userId, List<long> clientIds)
     {
         await NoticeUtil.UserLoginOut(new UserLoginOutEvent
         {
             Message = Localizer["ExitVerificat"],
-            VerificatInfos = verificatInfos,
+            ClientIds = clientIds,
         });//通知用户下线
     }
 

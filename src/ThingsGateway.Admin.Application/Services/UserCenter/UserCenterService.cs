@@ -26,11 +26,11 @@ public class UserCenterService : BaseService<SysUser>, IUserCenterService
     private readonly IRelationService _relationService;
     private readonly ISysResourceService _sysResourceService;
     private readonly ISysDictService _configService;
-    private readonly IVerificatInfoCacheService _verificatInfoCacheService;
+    private readonly IVerificatInfoService _verificatInfoService;
 
     public UserCenterService(ISysUserService userService,
         IRelationService relationService,
-        IVerificatInfoCacheService verificatInfoCacheService,
+        IVerificatInfoService verificatInfoService,
 
         ISysResourceService sysResourceService,
         ISysDictService configService)
@@ -39,7 +39,7 @@ public class UserCenterService : BaseService<SysUser>, IUserCenterService
         _relationService = relationService;
         _sysResourceService = sysResourceService;
         _configService = configService;
-        _verificatInfoCacheService = verificatInfoCacheService;
+        _verificatInfoService = verificatInfoService;
     }
 
     #region 查询
@@ -233,10 +233,10 @@ public class UserCenterService : BaseService<SysUser>, IUserCenterService
         _userService.DeleteUserFromCache(UserManager.UserId);//cache删除用户数据
 
         //将这些用户踢下线，并永久注销这些用户
-        var verificatInfos = _verificatInfoCacheService.HashGetOne(UserManager.UserId);
-        await UserLoginOut(UserManager.UserId, verificatInfos);
+        var verificatInfoIds = _verificatInfoService.GetListByUserId(UserManager.UserId);
         //从列表中删除
-        _verificatInfoCacheService.HashDel(UserManager.UserId);
+        _verificatInfoService.Delete(verificatInfoIds.Select(a => a.Id).ToList());
+        await UserLoginOut(UserManager.UserId, verificatInfoIds.SelectMany(a => a.ClientIds).ToList());
     }
 
     #endregion 编辑
@@ -247,13 +247,13 @@ public class UserCenterService : BaseService<SysUser>, IUserCenterService
     /// 通知用户下线
     /// </summary>
     /// <param name="userId">用户ID</param>
-    /// <param name="verificatInfos">Token列表</param>
-    private async Task UserLoginOut(long userId, IEnumerable<VerificatInfo> verificatInfos)
+    /// <param name="verificatInfoIds">Token列表</param>
+    private async Task UserLoginOut(long userId, List<long> clientIds)
     {
         await NoticeUtil.UserLoginOut(new UserLoginOutEvent
         {
             Message = Localizer["PasswordEdited"],
-            VerificatInfos = verificatInfos,
+            ClientIds = clientIds,
         });//通知用户下线
     }
 

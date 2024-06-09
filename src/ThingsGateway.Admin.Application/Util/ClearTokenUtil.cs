@@ -16,7 +16,7 @@ public class ClearTokenUtil
 {
     private static IRelationService RelationService;
     private static ISysUserService SysUserService;
-    private static IVerificatInfoCacheService VerificatInfoCacheService;
+    private static IVerificatInfoService VerificatInfoService;
 
     /// <summary>
     /// 根据角色ID列表清除用户缓存
@@ -59,15 +59,11 @@ public class ClearTokenUtil
         //从cache中删除用户信息
         SysUserService.DeleteUserFromCache(userIds);
 
-        VerificatInfoCacheService ??= App.RootServices!.GetRequiredService<IVerificatInfoCacheService>();//获取服务
+        VerificatInfoService ??= App.RootServices!.GetRequiredService<IVerificatInfoService>();//获取服务
 
-        var verificatInfos = userIds.Select(a => VerificatInfoCacheService.HashGetOne(a)).ToList();
-
+        var verificatInfoIds = userIds.SelectMany(a => VerificatInfoService.GetListByUserId(a)).ToList();
         //从cache中删除用户token
-        VerificatInfoCacheService.HashDel(userIds.ToArray());
-        foreach (var item in verificatInfos)
-        {
-            await NoticeUtil.UserLoginOut(new UserLoginOutEvent() { VerificatInfos = item, Message = App.CreateLocalizerByType(typeof(SysUser))["ExitVerificat"] }).ConfigureAwait(false);
-        }
+        VerificatInfoService.Delete(verificatInfoIds.Select(a => a.Id).ToList());
+        await NoticeUtil.UserLoginOut(new UserLoginOutEvent() { ClientIds = verificatInfoIds.SelectMany(a => a.ClientIds).ToList(), Message = App.CreateLocalizerByType(typeof(SysUser))["ExitVerificat"] }).ConfigureAwait(false);
     }
 }

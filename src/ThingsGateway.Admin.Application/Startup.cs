@@ -163,7 +163,7 @@ public class Startup : AppStartup
 
         services.AddSingleton<IFileService, FileService>();
         services.AddSingleton<IImportExportService, ImportExportService>();
-        services.AddSingleton<IVerificatInfoCacheService, VerificatInfoCacheService>();
+        services.AddSingleton<IVerificatInfoService, VerificatInfoService>();
         services.AddSingleton<IAuthService, AuthService>();
         services.AddSingleton<ISysDictService, SysDictService>();
         services.AddSingleton<ISysOperateLogService, SysOperateLogService>();
@@ -183,16 +183,7 @@ public class Startup : AppStartup
     public void UseAdminCore(IApplicationBuilder app)
     {
         //删除在线用户统计
-        var verificatInfoCacheService = app.ApplicationServices.GetService<IVerificatInfoCacheService>();
-        var verificatInfos = verificatInfoCacheService.GetAll();
-        //获取当前客户端ID所在的verificat信息
-        foreach (var infos in verificatInfos.Values)
-        {
-            foreach (var item in infos)
-            {
-                item.ClientIds.Clear();
-            }
-        }
-        verificatInfoCacheService.HashSet(verificatInfos);//更新
+        var verificatInfoService = app.ApplicationServices.GetService<IVerificatInfoService>();
+        verificatInfoService.RemoveAllClientId();
     }
 }
