@@ -537,10 +537,10 @@ public abstract class DeviceHostedService : BackgroundService
     {
         try
         {
-            if (!otherstarted)
-                if (HostedServiceUtil.ManagementHostedService.StartCollectDeviceEnable || HostedServiceUtil.ManagementHostedService.StartBusinessDeviceEnable)
-                    if (Started != null)
-                        await Started.Invoke().ConfigureAwait(false);
+            //if (!otherstarted)
+            if (HostedServiceUtil.ManagementHostedService.StartCollectDeviceEnable || HostedServiceUtil.ManagementHostedService.StartBusinessDeviceEnable)
+                if (Started != null)
+                    await Started.Invoke().ConfigureAwait(false);
         }
         finally
         {

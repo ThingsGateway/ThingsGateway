@@ -236,14 +236,14 @@ public class ManagementHostedService : BackgroundService
                                         else
                                         {
                                             readErrorCount++;
-                                            await Task.Delay(1000);
+                                            await Task.Delay(Options.Redundancy.SyncInterval);
                                         }
                                     }
                                     catch
                                     {
                                         // 捕获异常，增加读取错误计数器
                                         readErrorCount++;
-                                        await Task.Delay(1000);
+                                        await Task.Delay(Options.Redundancy.SyncInterval);
                                     }
                                 }
                             }
@@ -290,6 +290,8 @@ public class ManagementHostedService : BackgroundService
 
                                     // 将 IsStart 设置为 true，表示当前设备为启动业务的设备
                                     StartCollectDeviceEnable = true;
+                                    StartBusinessDeviceEnable = true;
+                                    StopAsync();
                                     StartAsync();
                                 }
                             }
@@ -309,7 +311,9 @@ public class ManagementHostedService : BackgroundService
 
                                         // 将 IsStart 设置为 false，表示当前设备为从站，切换到备用状态
                                         StartCollectDeviceEnable = false;
+                                        StartBusinessDeviceEnable = Options?.Redundancy?.Enable == true ? Options?.Redundancy?.IsStartBusinessDevice == true : true;
                                         StopAsync();
+                                        StartAsync();
                                     }
                                 }
                                 else
@@ -337,6 +341,8 @@ public class ManagementHostedService : BackgroundService
 
                                         // 将 IsStart 设置为 true，表示当前设备为主站，切换到正常状态
                                         StartCollectDeviceEnable = true;
+                                        StartBusinessDeviceEnable = true;
+                                        StopAsync();
                                         StartAsync();
                                     }
                                 }
