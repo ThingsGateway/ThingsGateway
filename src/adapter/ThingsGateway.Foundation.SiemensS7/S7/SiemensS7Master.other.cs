@@ -8,6 +8,8 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using System;
+
 using ThingsGateway.Foundation.Extension.Generic;
 
 using TouchSocket.Core;
@@ -72,11 +74,6 @@ public partial class SiemensS7Master : ProtocolBase
         return GetWriteByteCommand(s_Address, value);
     }
 
-    /// <summary>
-    /// DefaultConverter
-    /// </summary>
-    public static ThingsGatewayBitConverter DefaultConverter = new(BitConverter.IsLittleEndian ? EndianType.Little : EndianType.Big);
-
     private List<byte[]> GetWriteByteCommand(SiemensAddress address, byte[] value)
     {
         int length1 = value.Length;
@@ -86,7 +83,8 @@ public partial class SiemensS7Master : ProtocolBase
         {
             //pdu长度，重复生成报文，直至全部生成
             ushort length2 = (ushort)Math.Min(length1 - index, PduLength);
-            byte[] data = DefaultConverter.ToByte(value, index, length2);
+            byte[] data = new byte[length2];
+            Array.Copy(value, index, data, 0, data.Length);
             var result1 = SiemensHelper.GetWriteByteCommand(address, data);
             bytes.Add(result1);
             index += length2;
